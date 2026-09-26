@@ -124,7 +124,7 @@ lemma of_comp {g : M' → N} (hf : MDiffAt f x) (hg : MDiffAt g (f x))
   exact ContinuousLinearMap.HasLeftInverse.of_comp hfg
 
 lemma comp_isInvertible_mfderiv_left (hf : IsDiffImmersionAt I I' f x)
-    {f₀ : N → M} {y : N} (hxy : f₀ y = x) (hf₀ : (mfderiv% f₀ y) |>.IsInvertible) :
+    {f₀ : N → M} {y : N} (hxy : f₀ y = x) (hf₀ : (mfderiv% f₀ y).IsInvertible) :
     IsDiffImmersionAt J I' (f ∘ f₀) y :=
   (hxy ▸ hf).comp (.of_mfderiv_isInvertible hf₀)
 

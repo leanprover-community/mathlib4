@@ -879,7 +879,7 @@ instance ContinuousFunctionalCalculus.toNonUnital [ContinuousFunctionalCalculus 
   compactSpace_quasispectrum a := by
     have h_cpct : CompactSpace (spectrum R a) := inferInstance
     simp only [← isCompact_iff_compactSpace, quasispectrum_eq_spectrum_union_zero] at h_cpct ⊢
-    exact h_cpct |>.union isCompact_singleton
+    exact h_cpct.union isCompact_singleton
   exists_cfc_of_predicate _ ha :=
     ⟨cfcₙHom_of_cfcHom R ha,
       continuous_cfcₙHom_of_cfcHom ha,

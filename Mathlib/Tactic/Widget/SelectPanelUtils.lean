@@ -104,7 +104,7 @@ def mkSelectionPanelRPC {Params : Type} [SelectInsertParamsClass Params]
         return <span>{.text helpMsg}</span>
       mainGoal.ctx.val.runMetaM {} do
         let md ← mainGoal.mvarId.getDecl
-        let lctx := md.lctx |>.sanitizeNames.run' {options := (← getOptions)}
+        let lctx := md.lctx.sanitizeNames.run' {options := (← getOptions)}
         Meta.withLCtx lctx md.localInstances do
           let (linkText, newCode, range?) ← mkCmdStr (selectedLocations params) md.type.consumeMData
             params

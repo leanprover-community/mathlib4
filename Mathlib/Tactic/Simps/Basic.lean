@@ -1229,7 +1229,7 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
   let env ← withoutExporting getEnv
   let some d := env.find? nm | throwError "Declaration {nm} doesn't exist."
   let lhs : Expr := mkConst d.name <| d.levelParams.map Level.param
-  let todo := todo.eraseDups |>.map fun (proj, stx) ↦ (proj ++ "_", stx)
+  let todo := todo.eraseDups.map fun (proj, stx) ↦ (proj ++ "_", stx)
   let mut cfg := cfg
   let nm : NameStruct :=
     { parent := nm.getPrefix

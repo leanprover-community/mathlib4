@@ -569,7 +569,7 @@ inlines the declaration types if `verbose` is `true`. -/
 def traceCrossRefs (db : Database) (verbose : Bool := false) :
     Command.CommandElabM Unit := do
   let env ← getEnv
-  let entries := env.getSortedCrossRefs |>.filter (·.database == db)
+  let entries := env.getSortedCrossRefs.filter (·.database == db)
   if entries.isEmpty then logInfo "No tags found." else
   let mut msgs := #[m!""]
   for d in entries do

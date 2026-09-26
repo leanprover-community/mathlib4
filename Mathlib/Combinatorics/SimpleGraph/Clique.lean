@@ -756,7 +756,7 @@ theorem cliqueNum_of_isEmpty [IsEmpty α] : G.cliqueNum = 0 :=
 
 variable (G) in
 theorem cliqueNum_le_natCard [Finite α] : G.cliqueNum ≤ Nat.card α :=
-  csSup_le' fun _ ⟨s, h⟩ ↦ s.card_le_natCard |>.trans_eq' h.card_eq
+  csSup_le' fun _ ⟨s, h⟩ ↦ s.card_le_natCard.trans_eq' h.card_eq
 
 variable (G) in
 theorem cliqueNum_le_enatCard : G.cliqueNum ≤ ENat.card α := by

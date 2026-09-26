@@ -303,7 +303,7 @@ lemma coe_sSup_apply' {s : Set (GroupSeminorm E)} (hs : BddAbove s) {x : E} :
 lemma coe_iSup_apply {ι : Type*} (f : ι → GroupSeminorm E) (h : BddAbove (range f)) {x : E} :
     ⇑(⨆ i, f i) x = ⨆ i, (f i : GroupSeminorm E) x := by
   rw [← sSup_range, coe_sSup_apply h]
-  exact (Set.rangeFactorization_surjective.iSup_congr _ (by simp)) |>.symm
+  exact (Set.rangeFactorization_surjective.iSup_congr _ (by simp)).symm
 
 @[to_additive]
 instance : Max (GroupSeminorm E) :=
@@ -526,7 +526,7 @@ lemma coe_sSup_apply' {s : Set (NonarchAddGroupSeminorm E)} (hs : BddAbove s) {x
 lemma coe_iSup_apply {ι : Type*} (f : ι → NonarchAddGroupSeminorm E) (h : BddAbove (range f))
     {x : E} : ⇑(⨆ i, f i) x = ⨆ i, (f i : NonarchAddGroupSeminorm E) x := by
   rw [← sSup_range, coe_sSup_apply h]
-  exact (Set.rangeFactorization_surjective.iSup_congr _ (by simp)) |>.symm
+  exact (Set.rangeFactorization_surjective.iSup_congr _ (by simp)).symm
 
 instance : Max (NonarchAddGroupSeminorm E) :=
   ⟨fun p q =>

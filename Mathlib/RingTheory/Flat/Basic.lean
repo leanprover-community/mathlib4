@@ -359,7 +359,7 @@ theorem iff_lTensor_exact' [Small.{v'} R] : Flat R M ↔
       [Module R N] [Module R N'] [Module R N''] ⦃f : N →ₗ[R] N'⦄ ⦃g : N' →ₗ[R] N''⦄,
         Function.Exact f g → Function.Exact (f.lTensor M) (g.lTensor M) := by
   refine ⟨fun _ ↦ lTensor_exact _, fun H ↦ iff_lTensor_preserves_injective_linearMap'.mpr
-    fun N' N'' _ _ _ _ L hL ↦ LinearMap.ker_eq_bot |>.mp <| eq_bot_iff |>.mpr
+    fun N' N'' _ _ _ _ L hL ↦ LinearMap.ker_eq_bot.mp <| eq_bot_iff.mpr
       fun x (hx : _ = 0) ↦ ?_⟩
   simpa [Eq.comm] using @H PUnit N' N'' _ _ _ _ _ _ 0 L (fun x ↦ by
     simp_rw [Set.mem_range, LinearMap.zero_apply, exists_const]
@@ -381,7 +381,7 @@ theorem iff_rTensor_exact' [Small.{v'} R] : Flat R M ↔
       [Module R N] [Module R N'] [Module R N''] ⦃f : N →ₗ[R] N'⦄ ⦃g : N' →ₗ[R] N''⦄,
         Function.Exact f g → Function.Exact (f.rTensor M) (g.rTensor M) := by
   refine ⟨fun _ ↦ rTensor_exact _, fun H ↦ iff_rTensor_preserves_injective_linearMap'.mpr
-    fun N' N'' _ _ _ _ f hf ↦ LinearMap.ker_eq_bot |>.mp <| eq_bot_iff |>.mpr
+    fun N' N'' _ _ _ _ f hf ↦ LinearMap.ker_eq_bot.mp <| eq_bot_iff.mpr
       fun x (hx : _ = 0) ↦ ?_⟩
   simpa [Eq.comm] using @H PUnit N' N'' _ _ _ _ _ _ 0 f (fun x ↦ by
     simp_rw [Set.mem_range, LinearMap.zero_apply, exists_const]

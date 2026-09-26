@@ -644,7 +644,7 @@ theorem exists_contMDiffMap_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (
     ∃ g : C^n⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x :=
   let ⟨s, hs⟩ := exists_contMDiffSection_forall_mem_convex_of_local I (fun _ ↦ F) t ht
     (fun x₀ ↦ let ⟨U, hU, g, hgs, hgt⟩ := Hloc x₀
-      ⟨U, hU, g, fun y hy ↦ Bundle.contMDiffWithinAt_section |>.mpr <| hgs y hy, hgt⟩)
+      ⟨U, hU, g, fun y hy ↦ Bundle.contMDiffWithinAt_section.mpr <| hgs y hy, hgt⟩)
   ⟨⟨s, (Bundle.contMDiffAt_section _ |>.mp <| s.contMDiff ·)⟩, hs⟩
 
 /-- Let `M` be a σ-compact Hausdorff finite-dimensional topological manifold. Let `t : M → Set F` be

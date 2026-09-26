@@ -111,7 +111,7 @@ lemma posPart_smul {r : ℝ≥0} {a : A} : (r • a)⁺ = r • a⁺ := by
     simp [_root_.posPart_def, mul_max_of_nonneg]
   · obtain (rfl | hr) := eq_or_ne r 0
     · simp
-    · have := (not_iff_not.mpr <| (IsSelfAdjoint.all r).smul_iff hr.isUnit (x := a)) |>.mpr ha
+    · have := (not_iff_not.mpr <| (IsSelfAdjoint.all r).smul_iff hr.isUnit (x := a)).mpr ha
       simp [CFC.posPart_def, cfcₙ_apply_of_not_predicate a ha,
         cfcₙ_apply_of_not_predicate _ this]
 

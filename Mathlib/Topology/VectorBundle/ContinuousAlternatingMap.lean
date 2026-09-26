@@ -342,7 +342,7 @@ theorem baseSet_continuousAlternatingMap :
 theorem continuousAlternatingMap_apply
     (p : TotalSpace (F₁ [⋀^ι]→L[𝕜] F₂) (fun x ↦ E₁ x [⋀^ι]→L[𝕜] E₂ x)) :
     e₁.continuousAlternatingMap 𝕜 ι e₂ p =
-      ⟨p.1, (e₂.continuousLinearMapAt 𝕜 p.1 : _ →L[𝕜] _) |>.compContinuousAlternatingMap p.2
+      ⟨p.1, (e₂.continuousLinearMapAt 𝕜 p.1 : _ →L[𝕜] _).compContinuousAlternatingMap p.2
         |>.compContinuousLinearMap (e₁.symmL 𝕜 p.1 : F₁ →L[𝕜] E₁ p.1)⟩ :=
   rfl
 

@@ -12,7 +12,9 @@ public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Lean.Parser.Command
 
 /-!
-# Linter against deprecated syntax
+# Syntax based linters
+
+This linter discourages various kinds of syntax.
 
 `refine'`, `cases'` and `induction'` provide backward-compatible implementations of their
 unprimed equivalents in Lean 3 –`refine`, `cases` and `induction` respectively.
@@ -32,8 +34,6 @@ The `native_decide` tactic is not allowed in mathlib, as it trusts the entire Le
 (and not just the Lean kernel). Because the latter is large and complicated, at present it is
 probably possible to prove `False` using `native_decide`.
 
-This linter is an incentive to discourage uses of such deprecated syntax, without being a ban.
-It is not inherently limited to tactics.
 -/
 
 meta section
@@ -111,6 +111,12 @@ public register_option linter.style.maxHeartbeats : Bool := {
   descr := "enable the maxHeartbeats linter"
 }
 
+/-- The option `linter.style.redundantSyntax` flags pieces of syntax that are redundant. -/
+public register_option linter.style.redundantSyntax : Bool := {
+  defValue := false
+  descr := "enable the redundant syntax linter"
+}
+
 /-- If the input syntax is of the form `set_option <option> num in <string> cmd`,
 where `<option>` contains `maxHeartbeats`, then it returns
 * the `<option>`, as a name (typically, `maxHeartbeats` or `synthInstance.maxHeartbeats`);
@@ -146,55 +152,107 @@ def usesNativeConfig : Syntax → Bool
       | _ => false
   | _ => false
 
+/-- Return `true` for some common syntaxes that parse at `max` precedence.
+This excludes syntaxes that can parse subsequent expressions, like `fun`, `¬` and `!`.
+For example, `foo !bar baz` parses as `foo !(bar baz)` instead of `foo (!bar) baz`. -/
+partial def hasMaxPrec : Syntax → Bool
+  | .ident .. | .atom .. => true
+  | .node _ kind args =>
+    match kind with
+    -- ambiguous notations
+    | `choice => args.any hasMaxPrec
+    -- prefix notation: `@⋯`
+    | ``Parser.Term.explicit => args[1]?.any hasMaxPrec
+    -- literals
+    | `num | `scientific | `str | `char | ``Parser.Term.quotedName | ``Parser.Term.doubleQuotedName
+    -- brackets: `(⋯)`, `(⋯ : ⋯)`, `(⋯ :)`
+    | ``Parser.Term.paren | ``Parser.Term.typeAscription
+    -- tuples/lists: `(⋯, ⋯)`, `⟨...⟩`, `{ ... }`, `[...]`, `#[...]`, `#v[...]`
+    | ``Parser.Term.tuple | ``Parser.Term.anonymousCtor | ``Parser.Term.structInst
+    | ``«term[_]» | ``«term#[_,]» | ``Vector.«term#v[_,]»
+     -- postfix notation: `⋯.1`/`⋯.foo`, `⋯.{u}`, `⋯⁻¹`
+    | ``Parser.Term.proj | ``Parser.Term.explicitUniv | ``«term_⁻¹»
+    -- `getElem` notation
+    | ``«term__[_]» | ``«term__[_]'_» | ``«term__[_]_!» | ``«term__[_]_?»
+    -- miscellaneous: `·`, `.foo`,
+    | ``Parser.Term.cdot | ``Parser.Term.dotIdent
+      => true
+    | _ =>
+      -- atomic notation such as `Type*` or `ℕ`
+      if h : args.size = 1 then args[0].isAtom else false
+  | _ => false
+
 /-- `getDeprecatedSyntax t` returns all usages of deprecated syntax in the input syntax `t`. -/
 partial
-def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageData)
-  | stx@(.node _ kind args) =>
-    let rargs := args.flatMap getDeprecatedSyntax
+def getDeprecatedSyntax (fmap : FileMap) : Syntax → Array (SyntaxNodeKind × Syntax × MessageData)
+  | stx@(.node _ kind args) => Id.run do
+    let rargs := args.flatMap (getDeprecatedSyntax fmap)
     match kind with
     | ``Lean.Parser.Tactic.refine' =>
-      rargs.push (kind, stx,
+      return rargs.push (kind, stx,
         "The `refine'` tactic is discouraged: \
          please strongly consider using `refine` or `apply` instead.")
     | `Mathlib.Tactic.cases' =>
-      rargs.push (kind, stx,
+      return rargs.push (kind, stx,
         "The `cases'` tactic is discouraged: \
          please strongly consider using `obtain`, `rcases` or `cases` instead.")
     | `Mathlib.Tactic.induction' =>
-      rargs.push (kind, stx,
+      return rargs.push (kind, stx,
         "The `induction'` tactic is discouraged: \
          please strongly consider using `induction` instead.")
     | ``Lean.Parser.Tactic.tacticAdmit =>
-      rargs.push (kind, stx,
+      return rargs.push (kind, stx,
         "The `admit` tactic is discouraged: \
          please strongly consider using the synonymous `sorry` instead.")
     | ``Parser.Term.configItem | ``Parser.Tactic.configItem =>
       if usesNativeConfig stx then
-        rargs.push (kind, stx, m!"Using `+native` is not allowed in mathlib: \
+        return rargs.push (kind, stx, m!"Using `+native` is not allowed in mathlib: \
           because it trusts the entire Lean compiler (not just the Lean kernel), \
           it could quite possibly be used to prove `{.ofConstName ``False}`.")
-      else
-        rargs
     | ``Lean.Parser.Tactic.nativeDecide =>
-      rargs.push (kind, stx, m!"Using `native_decide` is not allowed in mathlib: \
+      return rargs.push (kind, stx, m!"Using `native_decide` is not allowed in mathlib: \
         because it trusts the entire Lean compiler (not just the Lean kernel), \
         it could quite possibly be used to prove `{.ofConstName ``False}`.")
     | ``Lean.Parser.Command.in =>
-      match getSetOptionMaxHeartbeatsComment stx with
-      | none => rargs
-      | some (opt, n, trailing) =>
+      if let some (opt, n, trailing) := getSetOptionMaxHeartbeatsComment stx then
         -- Since we are now seeing the currently outermost `maxHeartbeats` option,
         -- we remove all subsequent potential flags and only decide whether to lint or not
         -- based on whether the current option has a comment.
         let rargs := rargs.filter (·.1 != `MaxHeartbeats)
         if trailing.toString.trimAsciiStart.isEmpty then
-          rargs.push (`MaxHeartbeats, stx,
+          return rargs.push (`MaxHeartbeats, stx,
             s!"Please, add a comment explaining the need for modifying the maxHeartbeat limit, \
               as in\nset_option {opt} {n} in\n-- reason for change\n...")
         else
-          rargs
-    | _ => rargs
-  | _ => default
+          return rargs
+    | ``«term_<|_» =>
+      -- Suggest `f a` in place of `f <| a` when appropriate.
+      if h : args.size = 3 then
+        if (hasMaxPrec args[2] || args[2].isOfKind ``Parser.Term.do) &&
+          (hasMaxPrec args[0] || args[0].isOfKind ``Parser.Term.app) then
+          if let some pos := args[0].getTailPos? then
+          if let some tailPos := args[1].getTailPos? then
+          -- Trick: manually set the position info of `<|` in order to remove preceding whitespace.
+          return rargs.push (kind, args[1].setHeadInfo (.synthetic pos tailPos),
+            m!"`{args[2]}` can be parsed as a function argument, \
+            so the pipe operator `<|` can be omitted.")
+    | ``Parser.Term.pipeProj =>
+      -- Suggest `x.foo` in place of `x |>.foo` when appropriate.
+      if h : args.size ≥ 2 then
+        if hasMaxPrec args[0] && !(args[0].getKind matches ``Parser.Term.dotIdent | `num
+            | ``Parser.Term.quotedName | ``Parser.Term.doubleQuotedName) then
+          if let some pos := args[0].getTailPos? then
+          if let some tailPos := args[1].getTailPos? then
+          -- It is allowed to use `|>.` to break a long line into multiple lines,
+          -- So we only warn if `|>.` is used inline
+          if (fmap.utf8PosToLspPos pos).line = (fmap.utf8PosToLspPos tailPos).line then
+          -- Trick: manually set the position info of `|>.` in order to remove preceding whitespace.
+          return rargs.push (kind, args[1].setHeadInfo (.synthetic pos tailPos),
+            m!"`{args[0]}` can be parsed at maximal precedence, \
+            so the operator `|>.` can be replaced with a normal `.` projection.")
+    | _ => pure ()
+    return rargs
+  | _ => #[]
 
 -- TODO: Remove this `set_option` with `linter.style.nativeDecide`.
 set_option linter.deprecated false in
@@ -211,18 +269,20 @@ replacement syntax. For each individual case, linting can be turned on or off se
   (controlled by `linter.style.maxHeartbeats`)
 -/
 def deprecatedSyntaxLinter : Linter where run stx := do
-  unless getLinterValue linter.style.refine (← getLinterOptions) ||
-      getLinterValue linter.style.cases (← getLinterOptions) ||
-      getLinterValue linter.style.induction (← getLinterOptions) ||
-      getLinterValue linter.style.admit (← getLinterOptions) ||
-      getLinterValue linter.style.maxHeartbeats (← getLinterOptions) ||
-      getLinterValue linter.style.native (← getLinterOptions) ||
+  let opts ← getLinterOptions
+  unless getLinterValue linter.style.refine opts ||
+      getLinterValue linter.style.cases opts ||
+      getLinterValue linter.style.induction opts ||
+      getLinterValue linter.style.admit opts ||
+      getLinterValue linter.style.maxHeartbeats opts ||
+      getLinterValue linter.style.native opts ||
       -- TODO: Remove this line with `linter.style.nativeDecide`.
-      getLinterValue linter.style.nativeDecide (← getLinterOptions) do
+      getLinterValue linter.style.nativeDecide opts ||
+      getLinterValue linter.style.redundantSyntax opts do
     return
   if (← MonadState.get).messages.hasErrors then
     return
-  let deprecations := getDeprecatedSyntax stx
+  let deprecations := getDeprecatedSyntax (← getFileMap) stx
   -- Using `withSetOptionIn` here, allows the linter to parse also the "leading" `set_option`s
   -- but then flagging them only if the corresponding option is still set after elaborating the
   -- leading `set_option`s.
@@ -245,6 +305,16 @@ def deprecatedSyntaxLinter : Linter where run stx := do
         else if getLinterValue linter.style.nativeDecide options then
           Linter.logLint linter.style.nativeDecide stx' msg
       | `MaxHeartbeats => Linter.logLintIf linter.style.maxHeartbeats stx' msg
+      | ``«term_<|_» =>
+        if getLinterValue linter.style.redundantSyntax opts then
+          let sugg ← Command.liftCoreM <|
+            Meta.Hint.mkSuggestionsMessage #[{toTryThisSuggestion := ""}] stx' none false
+          Linter.logLint linter.style.redundantSyntax stx' m!"Try this:{sugg}\n\n{msg}"
+      | ``Parser.Term.pipeProj =>
+        if getLinterValue linter.style.redundantSyntax opts then
+          let sugg ← Command.liftCoreM <|
+            Meta.Hint.mkSuggestionsMessage #[{toTryThisSuggestion := "."}] stx' none false
+          Linter.logLint linter.style.redundantSyntax stx' m!"Try this:{sugg}\n\n{msg}"
       | _ => continue) stx
 
 initialize addLinter deprecatedSyntaxLinter

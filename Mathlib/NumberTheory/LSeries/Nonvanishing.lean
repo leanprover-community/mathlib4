@@ -349,7 +349,7 @@ private lemma LFunction_isBigO_horizontal_of_eq_zero {y : ℝ} (hy : y ≠ 0 ∨
   rw [← zero_add (1 + _)] at this
   simpa only [zero_add, h, sub_zero]
     using (Complex.isBigO_comp_ofReal_nhds
-      (this.comp_add_const 0 _).differentiableAt.isBigO_sub) |>.mono nhdsWithin_le_nhds
+      (this.comp_add_const 0 _).differentiableAt.isBigO_sub).mono nhdsWithin_le_nhds
 
 -- intermediate statement, special case of the next theorem
 private lemma LFunction_ne_zero_of_not_quadratic_or_ne_one {t : ℝ} (h : χ ^ 2 ≠ 1 ∨ t ≠ 0) :

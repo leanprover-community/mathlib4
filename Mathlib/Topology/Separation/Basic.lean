@@ -467,7 +467,7 @@ theorem t1Space_TFAE (X : Type u) [TopologicalSpace X] :
   tfae_have 4 → 2 := by
     intro h x
     rw [← CofiniteTopology.of.preimage_image {x}]
-    exact (Set.Finite.isClosed <| by simp) |>.preimage h
+    exact (Set.Finite.isClosed <| by simp).preimage h
   tfae_have 2 ↔ 10 := by
     simp only [← closure_subset_iff_isClosed, specializes_iff_mem_closure, subset_def,
       mem_singleton_iff, eq_comm]

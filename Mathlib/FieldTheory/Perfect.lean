@@ -344,7 +344,7 @@ instance Algebra.IsAlgebraic.isSeparable_of_perfectField {K L : Type*} [Field K]
 theorem Algebra.IsAlgebraic.perfectField (K : Type*) {L : Type*} [Field K] [Field L] [Algebra K L]
     [Algebra.IsAlgebraic K L] [PerfectField K] : PerfectField L := ⟨fun {f} hf ↦ by
   obtain ⟨_, _, hi, h⟩ := hf.exists_dvd_monic_irreducible_of_isIntegral (K := K)
-  exact (PerfectField.separable_of_irreducible hi).map |>.of_dvd h⟩
+  exact (PerfectField.separable_of_irreducible hi).map.of_dvd h⟩
 
 theorem PerfectField.of_ringEquiv {K L : Type*} [Field K] [Field L] (h : K ≃+* L) [PerfectField K] :
     PerfectField L :=
