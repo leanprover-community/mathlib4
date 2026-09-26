@@ -984,7 +984,9 @@ def _root_.FreeAddGroup.addEquivIntOfUnique [Unique α] : FreeAddGroup α ≃+ �
   right_inv x := by induction x <;> simp
   map_add' x y := by simp
 
-/-- A free additive group on `≤ 1` generators is an instance of a cyclic group. -/
+/-- A free additive group on `≤ 1` generators is an instance of a cyclic group.
+Note: this instance is named explicitly to match what @[to_additive existing] on the multiplicative
+instance below expects. -/
 instance _root_.FreeAddGroup.instIsAddCyclicOfSubsingleton [Subsingleton α] :
     IsAddCyclic (FreeAddGroup α) := by
   rcases (subsingleton_iff_isEmpty_or_unique _).mp ‹_› with _ | ⟨⟨_⟩⟩
