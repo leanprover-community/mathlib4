@@ -78,6 +78,10 @@ section Basic
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
 variable [MeasurableSpace E] [BorelSpace E]
 variable (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice ℝ L]
+#adaptation_note
+/-- The autoParam in this `variable` generates a private helper declaration, so every public
+declaration using the variable needs `set_option backward.privateInPublic true in`; see
+https://github.com/leanprover/lean4/issues/14708. Once that is fixed, those `set_option`s can go. -/
 variable (μ : Measure E := by volume_tac) [Measure.IsAddHaarMeasure μ]
 
 set_option backward.privateInPublic true in
