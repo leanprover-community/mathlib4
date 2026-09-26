@@ -4169,6 +4169,9 @@ Q18206266:
 
 Q18630480:
   title: Euler's quadrilateral theorem
+  decl: EuclideanGeometry.dist_sq_add_dist_sq_add_dist_sq_add_dist_sq_eq_dist_sq_add_dist_sq_add_four_mul_dist_sq
+  authors: Daniel Liao
+  date: 2026
 
 Q19323571:
   title: Chomsky–Schützenberger enumeration theorem
