@@ -486,6 +486,38 @@ end Comma
 
 namespace Arrow
 
+section
+
+variable (κ : Cardinal.{w}) [Fact κ.IsRegular]
+  [IsCardinalAccessibleCategory.{w} D κ]
+
+instance : IsCardinalAccessibleCategory.{w} (Arrow D) κ :=
+  Comma.isCardinalAccessibleCategory _ _ _
+
+instance : (Arrow.leftFunc : Arrow D ⥤ D).IsCardinalAccessible κ :=
+  inferInstanceAs (Functor.IsCardinalAccessible.{w} (Comma.fst _ _) κ)
+
+instance : (Arrow.rightFunc : Arrow D ⥤ D).IsCardinalAccessible κ :=
+  inferInstanceAs (Functor.IsCardinalAccessible.{w} (Comma.snd _ _) κ)
+
+instance : (Arrow.leftFunc : Arrow D ⥤ D).PreservesCardinalPresentable κ :=
+  inferInstanceAs ((Comma.fst _ _).PreservesCardinalPresentable κ)
+
+instance : (Arrow.rightFunc : Arrow D ⥤ D).PreservesCardinalPresentable κ :=
+  inferInstanceAs ((Comma.snd _ _).PreservesCardinalPresentable κ)
+
+instance (f : Arrow D) [IsCardinalPresentable f κ] :
+    IsCardinalPresentable f.left κ :=
+  inferInstanceAs (IsCardinalPresentable (Arrow.leftFunc.obj f) κ)
+
+instance (f : Arrow D) [IsCardinalPresentable f κ] :
+    IsCardinalPresentable f.right κ :=
+  inferInstanceAs (IsCardinalPresentable (Arrow.rightFunc.obj f) κ)
+
+end
+
+section
+
 variable [IsAccessibleCategory.{w} D]
 
 instance : IsAccessibleCategory.{w} (Arrow D) :=
@@ -496,6 +528,8 @@ instance : Functor.IsAccessible.{w} (Arrow.leftFunc : Arrow D ⥤ D) :=
 
 instance : Functor.IsAccessible.{w} (Arrow.rightFunc : Arrow D ⥤ D) :=
   inferInstanceAs (Functor.IsAccessible.{w} (Comma.snd _ _))
+
+end
 
 end Arrow
 
