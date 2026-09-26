@@ -216,6 +216,9 @@ theorem lcmUpto_ne_zero (n : ℕ) : lcmUpto n ≠ 0 := by simp [lcmUpto]
 
 theorem lcmUpto_pos (n : ℕ) : 0 < lcmUpto n := pos_of_ne_zero <| lcmUpto_ne_zero n
 
+lemma lcmUpto_dvd_lcmUpto {m n : ℕ} (h : m ≤ n) : lcmUpto m ∣ lcmUpto n :=
+  Finset.lcm_dvd fun _ _ ↦ dvd_lcm (by grind)
+
 theorem factorization_lcmUpto (n : ℕ) {p : ℕ} (hp : p.Prime) :
     (lcmUpto n).factorization p = p.log n := by
   rw [lcmUpto, Finset.factorization_lcm (fun _ _ ↦ by grind)]
@@ -324,6 +327,40 @@ theorem two_pow_le_mul_lcmUpto (n : ℕ) : 2 ^ n ≤ (n + 1) * lcmUpto n := calc
     gcongr with k hk
     exact le_of_dvd (lcmUpto_pos n) (choose_dvd_lcmUpto <| by grind)
   _ = _ := by simp
+
+lemma mul_choose_dvd_lcmUpto {n k : ℕ} (nk : k ≠ 0) (lk : k ≤ n) : k * n.choose k ∣ lcmUpto n := by
+  rw [← factorization_prime_le_iff_dvd (mul_ne_zero nk (choose_ne_zero lk)) (lcmUpto_ne_zero n)]
+  intro p pp
+  rw [factorization_lcmUpto n pp, factorization_mul nk (choose_ne_zero lk), Finsupp.add_apply]
+  exact factorization_add_factorization_choose_le_log lk
+
+lemma mul_mul_choose_dvd_lcmUpto {n : ℕ} (hn : n ≠ 0) :
+    n * (n + 1) * (2 * n + 1).choose n ∣ lcmUpto (2 * n + 1) := by
+  have co : n.Coprime (n + 1) := by simp [Coprime]
+  rw [← co.lcm_eq_mul, ← lcm_mul_right]
+  apply Nat.lcm_dvd (mul_choose_dvd_lcmUpto hn (by lia))
+  rw [← choose_symm_half]
+  apply mul_choose_dvd_lcmUpto <;> lia
+
+lemma mul_four_pow_le_lcmUpto {n : ℕ} (hn : n ≠ 0) : n * 4 ^ n ≤ lcmUpto (2 * n + 1) := calc
+  _ ≤ _ := mul_le_mul_left _ (four_pow_le_add_one_mul_choose n)
+  _ = _ := (mul_assoc ..).symm
+  _ ≤ _ := le_of_dvd (lcmUpto_pos _) (mul_mul_choose_dvd_lcmUpto hn)
+
+theorem two_pow_le_lcmUpto {n : ℕ} (hn : 7 ≤ n) : 2 ^ n ≤ lcmUpto n := by
+  have p2 (k) : 2 ^ (2 * k) = 4 ^ k := by simp [pow_mul]
+  obtain ⟨k, rfl | rfl⟩ := n.even_or_odd'
+  · obtain rfl | gk : k = 4 ∨ 4 ≤ k - 1 := by lia
+    · decide
+    · rw [p2, ← k.sub_one_add_one (by lia), pow_succ']
+      calc
+        _ ≤ _ := mul_le_mul_left gk _
+        _ ≤ _ := mul_four_pow_le_lcmUpto (by lia)
+        _ ≤ _ := le_of_dvd (lcmUpto_pos _) (lcmUpto_dvd_lcmUpto (by lia))
+  · rw [pow_succ', p2]
+    calc
+      _ ≤ _ := by gcongr; lia
+      _ ≤ _ := mul_four_pow_le_lcmUpto (by lia)
 
 /-!
 ## Relating `ψ` and `θ`
@@ -489,6 +526,10 @@ theorem psi_ge' {x : ℝ} (hx : 0 ≤ x) : (x - 1) * log 2 - log (x + 2) ≤ ψ 
   · exact (Nat.sub_one_lt_floor x).le
   · exact floor_le hx
   · exact one_le_two
+
+lemma psi_ge_of_seven_le {n : ℕ} (hn : 7 ≤ n) : n * log 2 ≤ ψ n := by
+  rw [psi_eq_log_lcmUpto, ← log_pow 2]
+  exact log_le_log (by positivity) <| mod_cast two_pow_le_lcmUpto hn
 
 theorem psi_sub_theta_le {x : ℝ} (hx : 1 ≤ x) : ψ x - θ x ≤ 2 * √x * log x := by
   grw [← abs_psi_sub_theta_le_sqrt_mul_log hx]
@@ -816,6 +857,18 @@ theorem pi_ge' {x : ℝ} (hx : 1 < x) :
     ((x - 1) * log 2 - log (x + 2)) / log x ≤ π ⌊x⌋₊ := by
   grw [div_le_iff₀ (log_pos hx), ← psi_le_primeCounting_mul_log', psi_ge']
   positivity
+
+lemma pi_ge_of_four_le {n : ℕ} (hn : 4 ≤ n) : n * log 2 / log n ≤ π n := by
+  obtain rfl | rfl | rfl | large : n = 4 ∨ n = 5 ∨ n = 6 ∨ 7 ≤ n := by lia
+  all_goals grw [div_le_iff₀ (log_pos (mod_cast (by lia)))]
+  on_goal 4 => grw [← psi_le_primeCounting_mul_log, psi_ge_of_seven_le large]
+  all_goals grw [← le_div_iff₀ (by positivity), mul_div_assoc, log_div_log,
+    ← div_le_iff₀' (mod_cast (by decide)), le_logb_iff_rpow_le one_lt_two (by simp)]
+  · norm_num [show π 4 = 2 by decide]
+  · grw [show π 5 = 3 by decide, div_eq_mul_inv, rpow_mul zero_le_two,
+      ← rpow_le_rpow_iff (by positivity) (by positivity) zero_lt_three, ← rpow_mul (by positivity)]
+    norm_num
+  · norm_num [show π 6 = 3 by decide]
 
 theorem theta_le_pi_mul_log (n : ℕ) : θ n ≤ (π n) * log n :=
   (theta_le_psi n).trans (psi_le_primeCounting_mul_log n)
