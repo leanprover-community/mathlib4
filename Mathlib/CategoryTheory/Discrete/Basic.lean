@@ -96,7 +96,7 @@ abbrev Discrete.Hom.mk' {α : Type u₁} {a b : α} (eq : b = a) : Discrete.Hom 
 
 /-- `Discrete.Hom.casesOn'` is the dual of `Discrete.Hom.casesOn`, which is needed for `to_dual`.
 Please avoid using this directly. -/
-@[to_dual existing casesOn]
+@[to_dual existing casesOn] -- TODO: use `to_dual_for`
 abbrev Discrete.Hom.casesOn' {α : Type u₁} {a b : α} {motive : Discrete.Hom a b → Sort*}
     (t : Discrete.Hom a b) (mk : (eq : b = a) → motive (mk' eq)) : motive t :=
   t.casesOn (mk ·.symm)

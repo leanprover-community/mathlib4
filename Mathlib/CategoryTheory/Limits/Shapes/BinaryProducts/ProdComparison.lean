@@ -58,7 +58,9 @@ theorem prodComparison_snd : prodComparison F A B ≫ prod.snd = F.map prod.snd 
   prod.lift_snd _ _
 
 @[deprecated (since := "2026-09-26")] alias coprodComparison_inl := inl_coprodComparison
+@[deprecated (since := "2026-09-26")] alias coprodComparison_inl_assoc := inl_coprodComparison_assoc
 @[deprecated (since := "2026-09-26")] alias coprodComparison_inr := inr_coprodComparison
+@[deprecated (since := "2026-09-26")] alias coprodComparison_inr_assoc := inr_coprodComparison_assoc
 
 variable {A B}
 
