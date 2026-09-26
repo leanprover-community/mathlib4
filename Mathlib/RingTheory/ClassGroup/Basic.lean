@@ -482,35 +482,4 @@ theorem FractionalIdeal.map_ringEquivOfRingEquiv_toPrincipalIdeal {S L : Type*} 
         ← FractionalIdeal.ringEquivOfRingEquiv_symm_eq, hu]
       rfl
 
-#adaptation_note
-/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
-/-- A ring isomorphism `R ≃+* R'` induces an isomorphism on their class groups. -/
-@[simps!]
-noncomputable def ClassGroup.mulEquiv {R' : Type*} [CommRing R'] [IsDomain R'] (g : R ≃+* R') :
-    ClassGroup R ≃* ClassGroup R' :=
-  (ClassGroup.equiv (R := R) (FractionRing R)).trans
-    ((QuotientGroup.congr (toPrincipalIdeal R (FractionRing R)).range
-        (toPrincipalIdeal R' (FractionRing R')).range
-        (Units.mapEquiv (FractionalIdeal.ringEquivOfRingEquiv (FractionRing R) (FractionRing R') g))
-        (FractionalIdeal.map_ringEquivOfRingEquiv_toPrincipalIdeal g)).trans
-      (ClassGroup.equiv (FractionRing R')).symm)
-
-/-- The class-group equivalence induced by a ring equivalence sends the class of a nonzero ideal
-to the class of its image. -/
-@[simp 1100]
-theorem ClassGroup.mulEquiv_mk0 {S : Type*} [CommRing S] [IsDedekindDomain R]
-    [IsDedekindDomain S] (e : R ≃+* S) (I : (Ideal R)⁰) :
-    ClassGroup.mulEquiv e (ClassGroup.mk0 I) =
-      ClassGroup.mk0 ⟨I.1.map e,
-        by
-          rw [mem_nonZeroDivisors_iff_ne_zero]
-          exact (Ideal.map_eq_bot_iff_of_injective e.injective).not.mpr
-            (mem_nonZeroDivisors_iff_ne_zero.mp I.2)⟩ := by
-  apply (ClassGroup.equiv (FractionRing S)).injective
-  simp only [ClassGroup.mulEquiv_apply, ClassGroup.equiv_mk0, QuotientGroup.mk'_apply,
-    MulEquiv.apply_symm_apply]
-  refine (QuotientGroup.congr_mk _ _ _ _ _).trans (congrArg _ (Units.ext ?_))
-  exact FractionalIdeal.ringEquivOfRingEquiv_coeIdeal _ _ e _
-
 end MulEquiv

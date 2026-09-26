@@ -1029,18 +1029,6 @@ lemma ringEquivOfRingEquiv_spanSingleton (x : K) :
     simp only [Algebra.smul_def, semilinearEquivOfRingEquiv_apply, map_mul, map_eq, RingHom.coe_coe,
       IsFractionRing.ringEquivOfRingEquiv_apply, RingEquiv.apply_symm_apply]
 
-set_option backward.isDefEq.respectTransparency.types false in
-lemma ringEquivOfRingEquiv_coeIdeal (I : Ideal R) :
-    ringEquivOfRingEquiv K L f (I : FractionalIdeal R⁰ K) = (I.map f : FractionalIdeal S⁰ L) := by
-  ext x
-  simp only [ringEquivOfRingEquiv_apply, ← mem_coe, coe_mk, val_eq_coe, coe_coeIdeal,
-    Submodule.mem_map, IsLocalization.mem_coeSubmodule, Ideal.mem_map_of_equiv]
-  constructor
-  · rintro ⟨_, ⟨r, hr, rfl⟩, rfl⟩
-    exact ⟨f r, ⟨r, hr, rfl⟩, by simp⟩
-  · rintro ⟨_, ⟨r, hr, rfl⟩, rfl⟩
-    exact ⟨algebraMap R K r, ⟨r, hr, rfl⟩, by simp⟩
-
 lemma ringEquivOfRingEquiv_symm_eq :
     (FractionalIdeal.ringEquivOfRingEquiv K L f).symm =
       FractionalIdeal.ringEquivOfRingEquiv L K f.symm := by
