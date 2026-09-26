@@ -359,7 +359,7 @@ instance : CompleteLattice (SubDPIdeal hI) := by
       ((⨆ (_ : J ∈ S), (J : Set.Iic I) : Set.Iic I) : Ideal A) = ⨆ (_ : J ∈ S), (J : Ideal A) := by
       by_cases hJ : J ∈ S
       · simp [ciSup_pos hJ]
-      · simp [hJ, not_false_eq_true, iSup_neg, Set.Iic.coe_bot]
+      · simp [hJ, Set.Iic.coe_bot]
     simp_rw [this]
     rfl
   · conv_rhs => rw [iInf]
@@ -369,7 +369,7 @@ instance : CompleteLattice (SubDPIdeal hI) := by
     apply iInf_congr (fun J ↦ ?_)
     by_cases hJ : J ∈ S
     · rw [ciInf_pos hJ, ciInf_pos hJ]; rfl
-    · simp [hJ, iInf_neg, le_top, inf_of_le_left, Set.Iic.coe_top]; rfl
+    · simp [hJ, le_top, inf_of_le_left, Set.Iic.coe_top]; rfl
 
 end CompleteLattice
 
