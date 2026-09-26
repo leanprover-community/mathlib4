@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
 public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 public import Mathlib.CategoryTheory.Localization.BousfieldTransfiniteComposition
 public import Mathlib.CategoryTheory.MorphismProperty.IsSmall
+public import Mathlib.CategoryTheory.ObjectProperty.IsClosedUnderCardinalFilteredColimits
 public import Mathlib.CategoryTheory.Presentable.Adjunction
 public import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
 
@@ -71,12 +72,11 @@ open Limits Localization Opposite
 
 variable {C : Type u} [Category.{v} C] (W : MorphismProperty C)
 
-lemma MorphismProperty.isClosedUnderColimitsOfShape_isLocal
-    (J : Type u') [Category.{v'} J] [EssentiallySmall.{w} J]
-    (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalFiltered J κ]
+lemma MorphismProperty.isClosedUnderCardinalFilteredColimits_isLocal
+    (κ : Cardinal.{w}) [Fact κ.IsRegular]
     (hW : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f → IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ) :
-    W.isLocal.IsClosedUnderColimitsOfShape J where
-  colimitsOfShape_le := fun Z ⟨p⟩ X Y f hf ↦ by
+    W.isLocal.IsClosedUnderCardinalFilteredColimits κ where
+  isCardinalClosedUnderColimitsOfShape' J _ _ := ⟨fun Z ⟨p⟩ X Y f hf ↦ by
     obtain ⟨_, _⟩ := hW f hf
     refine ⟨fun g₁ g₂ h ↦ ?_, fun g ↦ ?_⟩
     · obtain ⟨j₁, g₁, rfl⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ p.isColimit g₁
@@ -89,17 +89,24 @@ lemma MorphismProperty.isClosedUnderColimitsOfShape_isLocal
       rw [← p.w u, ← p.w v, reassoc_of% ((p.prop_diag_obj j₃ _ hf).1 huv)]
     · obtain ⟨j, g, rfl⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ p.isColimit g
       obtain ⟨g, rfl⟩ := (p.prop_diag_obj j _ hf).2 g
-      exact ⟨g ≫ p.ι.app j, by simp⟩
+      exact ⟨g ≫ p.ι.app j, by simp⟩⟩
+
+open ObjectProperty in
+@[deprecated isClosedUnderCardinalFilteredColimits_isLocal +typeChanged (since := "2026-09-20")]
+lemma MorphismProperty.isClosedUnderColimitsOfShape_isLocal
+    (J : Type u') [Category.{v'} J] [EssentiallySmall.{w} J]
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalFiltered J κ]
+    (hW : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f → IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ) :
+    W.isLocal.IsClosedUnderColimitsOfShape J := by
+  have := W.isClosedUnderCardinalFilteredColimits_isLocal κ hW
+  exact IsClosedUnderCardinalFilteredColimits.isCardinalClosedUnderColimitsOfShape W.isLocal κ J
 
 lemma MorphismProperty.isCardinalAccessible_ι_isLocal
-    (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    [HasCardinalFilteredColimits C κ]
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] [HasCardinalFilteredColimits C κ]
     (hW : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f → IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ) :
-    W.isLocal.ι.IsCardinalAccessible κ where
-  preservesColimitOfShape J _ _ := by
-    have := W.isClosedUnderColimitsOfShape_isLocal J κ hW
-    have := HasCardinalFilteredColimits.hasColimitsOfShape C κ J
-    infer_instance
+    W.isLocal.ι.IsCardinalAccessible κ := by
+  have := W.isClosedUnderCardinalFilteredColimits_isLocal κ hW
+  infer_instance
 
 namespace OrthogonalReflection
 
