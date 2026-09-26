@@ -9,7 +9,9 @@ import Mathlib.Topology.Separation.PerfectlyNormal
 import Mathlib.Topology.UnitInterval
 
 /-! # Cozero sets
-In this file cozero sets as sets that are the support of a continuous function to `ℝ`.
+In this file we define cozero sets as sets that are the support of a continuous function to `ℝ`. In
+perfectly normal spaces (in particular in metric spaces) this is equivalent to being open, but in
+general it is a stronger property.
 
 ## Main definitions & results:
 * `IsCozeroSet u`: predicate stating that `u` is the cozero set of some continuous function to `ℝ`.
