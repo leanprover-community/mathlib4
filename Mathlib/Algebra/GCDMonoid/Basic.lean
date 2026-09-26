@@ -328,6 +328,8 @@ class inductive IsGCDMonoid (α : Type*) [CommMonoidWithZero α] : Prop
 
 attribute [instance 100] GCDMonoid.toIsCancelMulZero
 
+instance GCDMonoid.toIsDomain (α) [CommSemiring α] [Nontrivial α] [GCDMonoid α] : IsDomain α := {}
+
 /-- Normalized GCD monoid: a cancellative `CommMonoidWithZero` with normalization and `gcd`
 (greatest common divisor) and `lcm` (least common multiple) operations. In this setting `gcd` and
 `lcm` form a bounded lattice on the associated elements where `gcd` is the infimum, `lcm` is the
