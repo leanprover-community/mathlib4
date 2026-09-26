@@ -433,3 +433,46 @@ lemma smul_iff {α} [SeminormedRing α] [Module α Y] [NormSMulClass α Y] (a : 
 end HolderWith
 
 end SeminormedAddCommGroup
+
+section SeminormedRing
+
+variable [PseudoMetricSpace X] [SeminormedRing Y] {C C' Cf Cg r : ℝ≥0} {f g : X → Y} {s : Set X}
+
+/-- The product of two Hölder continuous functions with the same exponent is Hölder continuous
+with that exponent on a set on which both functions are bounded. -/
+lemma HolderOnWith.mul (hf : HolderOnWith C r f s) (hg : HolderOnWith C' r g s)
+    (hCf : ∀ x ∈ s, ‖f x‖₊ ≤ Cf) (hCg : ∀ x ∈ s, ‖g x‖₊ ≤ Cg) :
+    HolderOnWith (Cf * C' + Cg * C) r (f * g) s := by
+  intro x hx y hy
+  have hmul : ∀ a b : Y, ‖a * b‖ₑ ≤ ‖a‖ₑ * ‖b‖ₑ := fun a b ↦ by
+    simp only [enorm_eq_nnnorm, ← ENNReal.coe_mul, ENNReal.coe_le_coe]
+    exact nnnorm_mul_le a b
+  have h₁ : edist (f x * g x) (f x * g y) ≤ (Cf : ℝ≥0∞) * (C' * edist x y ^ (r : ℝ)) := by
+    rw [edist_eq_enorm_sub, ← mul_sub]
+    refine (hmul _ _).trans ?_
+    rw [← edist_eq_enorm_sub]
+    gcongr
+    · exact_mod_cast hCf x hx
+    · exact hg x hx y hy
+  have h₂ : edist (f x * g y) (f y * g y) ≤ (Cg : ℝ≥0∞) * (C * edist x y ^ (r : ℝ)) := by
+    rw [edist_eq_enorm_sub, ← sub_mul]
+    refine (hmul _ _).trans ?_
+    rw [← edist_eq_enorm_sub, mul_comm]
+    gcongr
+    · exact_mod_cast hCg y hy
+    · exact hf x hx y hy
+  calc edist ((f * g) x) ((f * g) y)
+      ≤ edist (f x * g x) (f x * g y) + edist (f x * g y) (f y * g y) := edist_triangle ..
+    _ ≤ (Cf : ℝ≥0∞) * (C' * edist x y ^ (r : ℝ)) + Cg * (C * edist x y ^ (r : ℝ)) :=
+        add_le_add h₁ h₂
+    _ = ((Cf * C' + Cg * C : ℝ≥0) : ℝ≥0∞) * edist x y ^ (r : ℝ) := by push_cast; ring
+
+/-- The product of two bounded Hölder continuous functions with the same exponent is Hölder
+continuous with that exponent. -/
+lemma HolderWith.mul (hf : HolderWith C r f) (hg : HolderWith C' r g)
+    (hCf : ∀ x, ‖f x‖₊ ≤ Cf) (hCg : ∀ x, ‖g x‖₊ ≤ Cg) :
+    HolderWith (Cf * C' + Cg * C) r (f * g) :=
+  holderOnWith_univ.1 <| (hf.holderOnWith _).mul (hg.holderOnWith _)
+    (fun x _ ↦ hCf x) (fun x _ ↦ hCg x)
+
+end SeminormedRing
