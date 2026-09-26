@@ -427,16 +427,14 @@ theorem angle_eq_of_oangle_eq {p₁ p₂ p₃ p₄ p₅ p₆ : P} (h : ∡ p₁ 
 
 /-- If two oriented angles are equal, and the first triple is not collinear, then the
 corresponding unoriented angles are equal. -/
-theorem angle_eq_of_oangle_of_eq_not_collinear {p₁ p₂ p₃ p₄ p₅ p₆ : P}
-    (h_not_col1 : ¬ Collinear ℝ {p₁, p₂, p₃}) (h : ∡ p₁ p₂ p₃ = ∡ p₄ p₅ p₆) :
+theorem angle_eq_of_oangle_eq_of_not_collinear {p₁ p₂ p₃ p₄ p₅ p₆ : P}
+    (h : ∡ p₁ p₂ p₃ = ∡ p₄ p₅ p₆) (hnc₁₂₃ : ¬ Collinear ℝ {p₁, p₂, p₃}) :
     ∠ p₁ p₂ p₃ = ∠ p₄ p₅ p₆ := by
-  have h_ne1: p₂ ≠ p₁ := (ne₁₂_of_not_collinear h_not_col1).symm
-  have h_ne2: p₂ ≠ p₃ := (ne₂₃_of_not_collinear h_not_col1)
-  have h_not_col2 : ¬ Collinear ℝ {p₄, p₅, p₆} :=
-    (collinear_iff_of_two_zsmul_oangle_eq (by rw [h])).not.mp h_not_col1
-  have h_ne3: p₅ ≠ p₄ := (ne₁₂_of_not_collinear h_not_col2).symm
-  have h_ne4: p₅ ≠ p₆ := (ne₂₃_of_not_collinear h_not_col2)
-  exact angle_eq_of_oangle_eq h h_ne1 h_ne2 h_ne3 h_ne4
+  have hnc₄₅₆ : ¬ Collinear ℝ {p₄, p₅, p₆} :=
+    (collinear_iff_of_two_zsmul_oangle_eq (by rw [h])).not.mp hnc₁₂₃
+  exact angle_eq_of_oangle_eq h
+    (ne₁₂_of_not_collinear hnc₁₂₃) (ne₂₃_of_not_collinear hnc₁₂₃).symm
+    (ne₁₂_of_not_collinear hnc₄₅₆) (ne₂₃_of_not_collinear hnc₄₅₆).symm
 
 /-- The oriented angle between three points equals the unoriented angle if the sign is
 positive. -/
