@@ -136,11 +136,11 @@ theorem ext' {F} [FunLike F (M ⊗[R] N) P₂] [AddHomClass F (M ⊗[R] N) P₂]
 
 /-- The adjunction between tensor product over ℕ and internal hom in the category of
 `AddCommMonoid`s. -/
-def liftAddEquivNat : (M →+ N →+ P) ≃+ (M ⊗[ℕ] N →+ P) := .symm <|
-{ toFun := (LinearMap.toAddMonoidHom'.comp (TensorProduct.mk ℕ M N).toAddMonoidHom).compr₂
-  invFun f := liftAddHom f fun _ _ _ ↦ by simp
-  map_add' _ _ := rfl
-  left_inv f := ext' fun _ _ ↦ rfl }
+def liftAddEquivNat : (M →+ N →+ P) ≃+ (M ⊗[ℕ] N →+ P) := .symm
+  { toFun := (LinearMap.toAddMonoidHom'.comp (TensorProduct.mk ℕ M N).toAddMonoidHom).compr₂
+    invFun f := liftAddHom f fun _ _ _ ↦ by simp
+    map_add' _ _ := rfl
+    left_inv f := ext' fun _ _ ↦ rfl }
 
 /-- The adjunction between tensor product over ℤ and internal hom in the category of
 `AddCommGroup`s. -/
