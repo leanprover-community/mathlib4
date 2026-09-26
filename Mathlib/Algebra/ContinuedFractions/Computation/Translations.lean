@@ -98,7 +98,7 @@ theorem stream_succ_of_some {p : IntFractPair K} (h : IntFractPair.stream v n = 
 
 /-- The stream of `IntFractPair`s of an integer stops after the first term.
 -/
-theorem stream_succ_of_int [IsStrictOrderedRing K] (a : ℤ) (n : ℕ) :
+theorem stream_succ_of_int (a : ℤ) (n : ℕ) :
     IntFractPair.stream (a : K) (n + 1) = none := by
   induction n with
   | zero =>
@@ -260,7 +260,6 @@ theorem of_s_head (h : fract v ≠ 0) : (of v).s.head = some ⟨1, ⌊(fract v)�
   rfl
 
 variable (K)
-variable [IsStrictOrderedRing K]
 
 /-- If `a` is an integer, then the coefficient sequence of its continued fraction is empty.
 -/
