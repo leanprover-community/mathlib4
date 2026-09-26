@@ -136,7 +136,7 @@ example (p : Nat × Nat) (A B : Set Nat) : p ∈ A ×ˢ B := by
   guard_target =ₛ p ∈ A ×ˢ B
   exact test_sorry
 
-example (p : Nat × Nat) (A : Set Nat) : p ∈ Set.diagonal Nat ∪ Set.offDiag A := by
+example (p : Nat × Nat) (A : Set Nat) : p ∈ Set.diagonalUniv Nat ∪ Set.offDiagonal A := by
   push _ ∈ _
   guard_target =ₛ p.1 = p.2 ∨ p.1 ∈ A ∧ p.2 ∈ A ∧ p.1 ≠ p.2
   exact test_sorry

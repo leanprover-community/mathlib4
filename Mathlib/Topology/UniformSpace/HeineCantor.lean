@@ -40,8 +40,8 @@ continuous. -/
 theorem CompactSpace.uniformContinuous_of_continuous [CompactSpace α] {f : α → β}
     (h : Continuous f) : UniformContinuous f :=
   calc map (Prod.map f f) (𝓤 α)
-    = map (Prod.map f f) (𝓝ˢ (diagonal α)) := by rw [nhdsSet_diagonal_eq_uniformity]
-  _ ≤ 𝓝ˢ (diagonal β) := (h.prodMap h).tendsto_nhdsSet mapsTo_prodMap_diagonal
+    = map (Prod.map f f) (𝓝ˢ (diagonalUniv α)) := by rw [nhdsSet_diagonal_eq_uniformity]
+  _ ≤ 𝓝ˢ (diagonalUniv β) := (h.prodMap h).tendsto_nhdsSet mapsTo_prodMap_diagonalUniv
   _ ≤ 𝓤 β := nhdsSet_diagonal_le_uniformity
 
 /-- Heine-Cantor: a continuous function on a compact set of a uniform space is uniformly
