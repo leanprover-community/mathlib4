@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Analytic.IsolatedZeros
 public import Mathlib.Analysis.SpecialFunctions.Complex.CircleMap
+public import Mathlib.Analysis.SpecialFunctions.Log.PosLog
 public import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 
@@ -274,6 +275,18 @@ theorem continuousOn_mul {f g : ℂ → 𝕜} (hf : CircleIntegrable f c R)
     CircleIntegrable (g * f) c R :=
   IntervalIntegrable.continuousOn_mul hf
     (hg.comp (by fun_prop) (fun x hx ↦ circleMap_mem_sphere' c R x))
+
+/-- If `f : ℂ → ℝ` is circle integrable, then `log⁺ ∘ f` is circle integrable. -/
+@[to_fun (attr := fun_prop)]
+theorem posLog_comp {f : ℂ → ℝ} (hu : CircleIntegrable f c R) :
+    CircleIntegrable (log⁺ ∘ f) c R := by
+  apply IntervalIntegrable.mono_fun (IntervalIntegrable.abs hu)
+  · exact Real.continuous_posLog.comp_aestronglyMeasurable
+      (intervalIntegrable_iff.1 hu).aestronglyMeasurable
+  · filter_upwards with θ
+    simp only [Function.comp_apply, Real.norm_eq_abs, abs_abs]
+    rw [abs_of_nonneg Real.posLog_nonneg]
+    exact Real.posLog_le_abs _
 
 /--
 If `f` is circle integrable and `g` is continuous on the circle `sphere c |R|`, then `f * g` is

@@ -93,6 +93,11 @@ theorem strictConcaveOn_log_Ioi : StrictConcaveOn ℝ (Ioi 0) log := by
       _ = -(log x - log y) := by rw [log_div hx.ne' hy.ne']
       _ = log y - log x := by ring
 
+/-- `fun x ↦ Real.log (1 + x)` is strictly concave on `(-1, +∞)`. -/
+theorem strictConcaveOn_log_one_add : StrictConcaveOn ℝ (Ioi (-1)) (fun x ↦ log (1 + x)) :=
+  (strictConcaveOn_log_Ioi.translate_right 1).subset
+    (fun _ hx ↦ by simpa using hx) (convex_Ioi _)
+
 /-- **Bernoulli's inequality** for real exponents, strict version: for `1 < p` and `-1 ≤ s`, with
 `s ≠ 0`, we have `1 + p * s < (1 + s) ^ p`. -/
 theorem one_add_mul_self_lt_rpow_one_add {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 0) {p : ℝ} (hp : 1 < p) :
