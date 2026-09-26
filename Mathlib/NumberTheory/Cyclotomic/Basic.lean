@@ -651,11 +651,16 @@ section CyclotomicField
 /-- Given a nonzero `n : ℕ` and a field `K`, we define `CyclotomicField n K` as the
 splitting field of `cyclotomic n K`. If `n` is nonzero in `K`, it has
 the instance `IsCyclotomicExtension {n} K (CyclotomicField n K)`. -/
+@[implicit_reducible]
 def CyclotomicField : Type w :=
   (cyclotomic n K).SplittingField
 deriving Inhabited
 
 namespace CyclotomicField
+
+-- Define `IntCast` before deriving `Field` so it uses the inherited `ℤ`-algebra map.
+instance : IntCast (CyclotomicField n K) :=
+  ⟨algebraMap ℤ (cyclotomic n K).SplittingField⟩
 
 -- The `SMul` instance exists to avoid a zsmul diamond.
 variable [Algebra A K] in
@@ -663,9 +668,9 @@ deriving instance SMul A, Field, Algebra A, IsScalarTower A K for CyclotomicFiel
 
 instance algebra : Algebra K (CyclotomicField n K) := inferInstance
 
-/-- Ensure there are no diamonds when `A = ℤ` but there are `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906 -/
-example : Ring.toIntAlgebra (CyclotomicField n ℚ) = CyclotomicField.instAlgebra _ _ _ := rfl
-
+/-- Ensure there are no diamonds when `A = ℤ`. -/
+example : Ring.toIntAlgebra (CyclotomicField n ℚ) = CyclotomicField.instAlgebra _ _ _ := by
+  with_implicit rfl
 
 instance [CharZero K] : CharZero (CyclotomicField n K) :=
   charZero_of_injective_algebraMap (algebraMap K _).injective
@@ -703,6 +708,10 @@ instance [CharZero K] : IsCyclotomicExtension {n} K (CyclotomicField n K) :=
   match n with
   | 0 => inferInstance
   | _ + 1 => inferInstance
+
+-- Ensure that there are no diamonds with `ℚ`.
+example : CyclotomicField.algebra n ℚ = DivisionRing.toRatAlgebra := by
+  with_implicit rfl
 
 instance [NumberField K] : NumberField (CyclotomicField n K) :=
   IsCyclotomicExtension.numberField {n} K _
