@@ -213,6 +213,9 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `↑(Metric.sphere
 [Elab.DiffGeo.MDiff] 💥️ UpperHalfPlane
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Metric.sphere 0 1)` is not the complex upper half plane
+[Elab.DiffGeo.MDiff] 💥️ ComplexUnitDisc
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `↑(Metric.sphere 0 1)` is not the complex unit disc
 [Elab.DiffGeo.MDiff] 💥️ Units of algebra
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Metric.sphere 0 1)` is not a set of units, in particular not of a complete normed algebra
