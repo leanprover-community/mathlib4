@@ -145,11 +145,11 @@ def liftAddEquivNat : (M →+ N →+ P) ≃+ (M ⊗[ℕ] N →+ P) := .symm
 /-- The adjunction between tensor product over ℤ and internal hom in the category of
 `AddCommGroup`s. -/
 def liftAddEquivInt {M N P : Type*} [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] :
-    (M →+ N →+ P) ≃+ (M ⊗[ℤ] N →+ P) := .symm <|
-{ toFun := (LinearMap.toAddMonoidHom'.comp (TensorProduct.mk ℤ M N).toAddMonoidHom).compr₂
-  invFun f := liftAddHom f fun _ _ _ ↦ by simp
-  map_add' _ _ := rfl
-  left_inv f := ext' fun _ _ ↦ rfl }
+    (M →+ N →+ P) ≃+ (M ⊗[ℤ] N →+ P) := .symm
+  { toFun := (LinearMap.toAddMonoidHom'.comp (TensorProduct.mk ℤ M N).toAddMonoidHom).compr₂
+    invFun f := liftAddHom f fun _ _ _ ↦ by simp
+    map_add' _ _ := rfl
+    left_inv f := ext' fun _ _ ↦ rfl }
 
 theorem lift.unique {g : M ⊗[R] N →ₛₗ[σ₁₂] P₂} (H : ∀ x y, g (x ⊗ₜ y) = f' x y) : g = lift f' :=
   ext' fun m n => by rw [H, lift.tmul]
