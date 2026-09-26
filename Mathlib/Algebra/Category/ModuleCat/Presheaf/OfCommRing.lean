@@ -77,6 +77,11 @@ abbrev isoMk {M₁ M₂ : PresheafOfModulesOfCommRing.{v} R}
 abbrev _root_.PresheafOfModules.Hom.app' {M₁ M₂ : PresheafOfModulesOfCommRing.{v} R}
     (f : M₁ ⟶ M₂) (X : Cᵒᵖ) : M₁.obj X ⟶ M₂.obj X := f.app X
 
+/-- The forgetful functor to presheaves of abelian groups. -/
+noncomputable abbrev toPresheaf (R : Cᵒᵖ ⥤ CommRingCat.{u}) :
+    PresheafOfModulesOfCommRing.{v} R ⥤ Cᵒᵖ ⥤ AddCommGrpCat.{v} :=
+  PresheafOfModules.toPresheaf (R ⋙ forget₂ _ _)
+
 /-- The free presheaf of modules of rank one over a presheaf of commutative rings. -/
 noncomputable abbrev unit (R : Cᵒᵖ ⥤ CommRingCat.{u}) :
     PresheafOfModulesOfCommRing.{u} R :=
