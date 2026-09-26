@@ -53,7 +53,7 @@ theorem IsTrail.even_countP_edges_iff (ht : p.IsTrail) (x : V) :
     Even (p.edges.countP fun e ↦ x ∈ e) ↔ u ≠ v → x ≠ u ∧ x ≠ v := by
   induction p with
   | nil => simp
-  | cons huv p ih => grind [isTrail_cons, edges_cons, G.irrefl]
+  | cons huv p ih => grind [isTrail_cons, edges_cons, G.adj_irrefl]
 
 /-- An *Eulerian trail* (also known as an "Eulerian path") is a walk
 `p` that visits every edge exactly once.  The lemma `SimpleGraph.Walk.IsEulerian.IsTrail` shows

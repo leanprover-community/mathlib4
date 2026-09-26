@@ -64,13 +64,14 @@ namespace SimpleGraph
 variable {α : Type u} {G : SimpleGraph α} {s : Set α}
 
 /-- `G` is `IsCompleteMultipartite` iff non-adjacency is transitive -/
-def IsCompleteMultipartite (G : SimpleGraph α) : Prop := IsTrans α (¬ G.Adj · ·)
+def IsCompleteMultipartite (G : SimpleGraph α) : Prop :=
+  ∀ ⦃u v w⦄, ¬ G.Adj u v → ¬ G.Adj v w → ¬ G.Adj u w
 
-theorem IsCompleteMultipartite.top : (⊤ : SimpleGraph α).IsCompleteMultipartite :=
-  ⟨by simp⟩
+protected lemma IsCompleteMultipartite.bot : (emptyGraph α).IsCompleteMultipartite := by
+  simp [IsCompleteMultipartite]
 
-theorem IsCompleteMultipartite.bot : (⊥ : SimpleGraph α).IsCompleteMultipartite :=
-  ⟨by simp⟩
+protected lemma IsCompleteMultipartite.top : (completeGraph α).IsCompleteMultipartite := by
+  simp [IsCompleteMultipartite]
 
 @[deprecated (since := "2026-09-07")] alias bot_isCompleteMultipartite := IsCompleteMultipartite.bot
 
@@ -79,16 +80,16 @@ theorem IsCompleteMultipartite.completeBipartiteGraph (V W : Type*) :
   grind [IsCompleteMultipartite, isTrans_def]
 
 protected lemma IsCompleteMultipartite.induce (hG : G.IsCompleteMultipartite) :
-    (G.induce s).IsCompleteMultipartite where trans _u _v _w := hG.trans _ _ _
+    (G.induce s).IsCompleteMultipartite := fun _u _v _w ↦ @hG _ _ _
 
 /-- The setoid given by non-adjacency -/
 @[instance_reducible]
 def IsCompleteMultipartite.setoid (h : G.IsCompleteMultipartite) : Setoid α :=
-    ⟨(¬ G.Adj · ·), ⟨G.loopless.irrefl, fun h' ↦ by rwa [adj_comm] at h', h.trans _ _ _⟩⟩
+    ⟨(¬ G.Adj · ·), ⟨G.adj_irrefl, fun h' ↦ by rwa [adj_comm] at h', fun h1 h2 ↦ h h1 h2⟩⟩
 
 lemma completeMultipartiteGraph.isCompleteMultipartite {ι : Type*} (V : ι → Type*) :
-    (completeMultipartiteGraph V).IsCompleteMultipartite :=
-  ⟨by simp_all⟩
+    (completeMultipartiteGraph V).IsCompleteMultipartite := by
+  simp_all [IsCompleteMultipartite]
 
 /-- The graph isomorphism from a graph `G` that `IsCompleteMultipartite` to the corresponding
 `completeMultipartiteGraph` (see also `isCompleteMultipartite_iff`) -/
@@ -108,9 +109,9 @@ lemma isCompleteMultipartite_iff : G.IsCompleteMultipartite ↔ ∃ (ι : Type u
   constructor <;> intro h
   · exact ⟨_, _, fun _ ↦ ⟨_, h.setoid.refl _⟩, ⟨h.iso⟩⟩
   · obtain ⟨_, _, _, ⟨e⟩⟩ := h
-    refine ⟨fun _ _ _ h1 h2 ↦ ?_⟩
+    intro _ _ _ h1 h2
     rw [← e.map_rel_iff] at *
-    exact completeMultipartiteGraph.isCompleteMultipartite _ |>.trans _ _ _ h1 h2
+    exact completeMultipartiteGraph.isCompleteMultipartite _ h1 h2
 
 lemma IsCompleteMultipartite.colorable_of_cliqueFree {n : ℕ} (h : G.IsCompleteMultipartite)
     (hc : G.CliqueFree n) : G.Colorable (n - 1) :=
@@ -152,7 +153,7 @@ end IsPathGraph3Compl
 
 lemma exists_isPathGraph3Compl_of_not_isCompleteMultipartite (h : ¬ IsCompleteMultipartite G) :
     ∃ v w₁ w₂, G.IsPathGraph3Compl v w₁ w₂ := by
-  apply mt IsTrans.mk at h
+  rw [IsCompleteMultipartite] at h
   push Not at h
   obtain ⟨_, _, _, h1, h2, h3⟩ := h
   rw [adj_comm] at h1
@@ -161,7 +162,7 @@ lemma exists_isPathGraph3Compl_of_not_isCompleteMultipartite (h : ¬ IsCompleteM
 lemma not_isCompleteMultipartite_iff_exists_isPathGraph3Compl :
     ¬ IsCompleteMultipartite G ↔ ∃ v w₁ w₂, G.IsPathGraph3Compl v w₁ w₂ :=
   ⟨fun h ↦ G.exists_isPathGraph3Compl_of_not_isCompleteMultipartite h,
-   fun ⟨_, _, _, h1, h2, h3⟩ ↦ fun h ↦ h.trans _ _ _ (by rwa [adj_comm] at h2) h3 h1⟩
+   fun ⟨_, _, _, h1, h2, h3⟩ ↦ fun h ↦ h (by rwa [adj_comm] at h2) h3 h1⟩
 
 /--
 Any `IsPathGraph3Compl` in `G` gives rise to a graph embedding of the complement of the path graph
@@ -201,7 +202,7 @@ lemma not_isCompleteMultipartite_of_pathGraph3ComplEmbedding (e : (pathGraph 3)�
   have h0 : ¬ G.Adj (e 0) (e 1) := by simp [pathGraph_adj]
   have h1 : ¬ G.Adj (e 1) (e 2) := by simp [pathGraph_adj]
   have h2 : G.Adj (e 0) (e 2) := by simp [pathGraph_adj]
-  exact h.trans _ _ _ h0 h1 h2
+  exact h h0 h1 h2
 
 theorem IsCompleteMultipartite.comap {β : Type*} {H : SimpleGraph β} (f : H ↪g G) :
     G.IsCompleteMultipartite → H.IsCompleteMultipartite := by
@@ -376,7 +377,7 @@ theorem nonempty_of_eq_zero_or_eq_zero (h : r = 0 ∨ t = 0) :
 /-- The parts in a complete equipartite subgraph are pairwise disjoint. -/
 theorem disjoint : (K.parts : Set (Finset V)).Pairwise Disjoint :=
   fun _ h₁ _ h₂ hne ↦ Finset.disjoint_left.mpr fun _ h₁' h₂' ↦
-    G.irrefl <| K.isCompleteBetween h₁ h₂ hne h₁' h₂'
+    G.adj_irrefl (K.isCompleteBetween h₁ h₂ hne h₁' h₂')
 
 /-- The finset of vertices in a complete equipartite subgraph. -/
 def verts : Finset V := K.parts.disjiUnion id K.disjoint
@@ -496,7 +497,7 @@ theorem completeEquipartiteGraph_succ_isContained_iff :
         obtain ⟨v, hv⟩ : s.Nonempty := by
           rw [← Finset.card_pos, hs]
           exact Nat.pos_of_ne_zero ht
-        exact G.irrefl <| hadj s hs_mem hv hv
+        exact G.adj_irrefl <| hadj s hs_mem hv hv
       · rw [Finset.card_cons, K.card_parts.resolve_right ht]
         exact .inl rfl
       · simp_rw [mem_cons, forall_eq_or_imp]
