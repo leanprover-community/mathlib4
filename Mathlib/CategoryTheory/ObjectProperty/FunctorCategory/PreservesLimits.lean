@@ -5,8 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
+public import Mathlib.CategoryTheory.Limits.ColimitLimit
+public import Mathlib.CategoryTheory.ObjectProperty.FiniteLimits
 
 /-!
 # Preservation of limits, as a property of objects in the functor category
@@ -143,7 +144,6 @@ instance : (preservesFiniteColimits (J := J) (C := C)).IsClosedUnderIsomorphisms
 lemma preservesFiniteColimits_iff (F : J ⥤ C) :
     preservesFiniteColimits F ↔ PreservesFiniteColimits F := Iff.rfl
 
-set_option backward.defeqAttrib.useBackward true in
 instance [HasColimitsOfShape K' C]
     [PreservesLimitsOfShape K (colim (J := K') (C := C))] :
     (preservesLimitsOfShape K : ObjectProperty (J ⥤ C)).IsClosedUnderColimitsOfShape K' where
@@ -166,6 +166,74 @@ instance [HasColimitsOfShape K' C] [HasExactColimitsOfShape K' C] :
     rintro G ⟨h⟩
     have := h.prop_diag_obj
     exact ⟨fun K _ _ ↦ (preservesLimitsOfShape K).prop_of_isColimit h.isColimit inferInstance⟩
+
+instance [HasColimitsOfShape K' C] [HasLimitsOfShape K C]
+    [PreservesLimitsOfShape K (colim (J := K') (C := C))] :
+    ObjectProperty.IsClosedUnderLimitsOfShape
+      (preservesColimitsOfShape K' : ObjectProperty (J ⥤ C)) K where
+  limitsOfShape_le := by
+    have : PreservesColimitsOfShape K' (lim (J := K) (C := C)) := by
+      rwa [preservesColimitsOfShape_lim_iff_preservesLimitsOfShape_colim]
+    intro G ⟨p⟩
+    have := p.prop_diag_obj
+    have : PreservesColimitsOfShape K' p.diag.flip := ⟨fun {F} ↦ ⟨fun {c} hc ↦
+      ⟨evaluationJointlyReflectsColimits _
+        (fun k ↦ isColimitOfPreserves (p.diag.obj k) hc)⟩⟩⟩
+    let e : G ≅ p.diag.flip ⋙ lim :=
+      NatIso.ofComponents
+        (fun j ↦ (isLimitOfPreserves ((evaluation _ _).obj j) p.isLimit).conePointUniqueUpToIso
+          (limit.isLimit (p.diag.flip.obj j))) (fun {j₁ j₂} f ↦ by
+            dsimp
+            ext
+            simp [IsLimit.conePointUniqueUpToIso])
+    exact preservesColimitsOfShape_of_natIso e.symm
+
+instance [HasColimitsOfShape K' C] [HasExactColimitsOfShape K' C] [HasFiniteLimits C] :
+    ObjectProperty.IsClosedUnderFiniteLimits
+      (preservesColimitsOfShape K' : ObjectProperty (J ⥤ C)) where
+
+instance (F : K ⥤ J) [HasColimitsOfShape K' C] :
+    ObjectProperty.IsClosedUnderColimitsOfShape
+      (preservesColimit F : ObjectProperty (J ⥤ C)) K' where
+  colimitsOfShape_le := by
+    intro G ⟨p⟩
+    refine ⟨fun {c} hc ↦ ⟨?_⟩⟩
+    let hp (j : J):= isColimitOfPreserves ((evaluation _ _).obj j) p.isColimit
+    have := p.prop_diag_obj
+    let s' (s : Cocone (F ⋙ G)) (k' : K') : Cocone (F ⋙ p.diag.obj k') :=
+      { pt := s.pt
+        ι.app k := (p.ι.app k').app _ ≫ s.ι.app k
+        ι.naturality _ _ f := by simp [dsimp% s.w f] }
+    let s'' (s : Cocone (F ⋙ G)) : Cocone (p.diag ⋙ (evaluation J C).obj c.pt) :=
+      { pt := s.pt
+        ι.app k' := (isColimitOfPreserves (p.diag.obj k') hc).desc (s' s k')
+        ι.naturality {k₁' k₂'} f :=
+          (isColimitOfPreserves (p.diag.obj k₁') hc).hom_ext (fun k ↦ by
+            simp [s', dsimp% (isColimitOfPreserves (p.diag.obj k₁') hc).fac (s' s k₁') k,
+              dsimp% (isColimitOfPreserves (p.diag.obj k₂') hc).fac (s' s k₂') k]) }
+    have hs'' (s : Cocone (F ⋙ G)) (k : K) (k' : K'):
+        (p.diag.obj k').map (c.ι.app k) ≫ (s'' s).ι.app k' =
+        (p.ι.app k').app (F.obj k) ≫ s.ι.app k :=
+      (isColimitOfPreserves (p.diag.obj k') hc).fac (s' s k') k
+    exact {
+      desc s := (hp c.pt).desc (s'' s)
+      fac s k :=
+        (hp (F.obj k)).hom_ext (fun k' ↦ by
+          simp [← NatTrans.naturality_assoc, dsimp% (hp c.pt).fac (s'' s) k', hs''])
+      uniq s m hm :=
+        (hp c.pt).hom_ext
+          (fun k' ↦ (isColimitOfPreserves (p.diag.obj k') hc).hom_ext
+            (by simp [dsimp% hm, dsimp% (hp c.pt).fac (s'' s) k', hs''])) }
+
+instance [HasColimitsOfShape K' C] :
+    ObjectProperty.IsClosedUnderColimitsOfShape
+      (preservesColimitsOfShape K : ObjectProperty (J ⥤ C)) K' := by
+  rw [preservesColimitsOfShape_eq_iSup]
+  infer_instance
+
+instance [HasFiniteColimits C] :
+    ObjectProperty.IsClosedUnderFiniteColimits
+      (preservesColimitsOfShape K : ObjectProperty (J ⥤ C)) where
 
 end ObjectProperty
 
