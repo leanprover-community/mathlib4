@@ -187,7 +187,7 @@ lemma ringHom_ext {f g : AdjoinRoot p →+* T} (hAlg : f.comp (of p) = g.comp (o
     (hRoot : f (root p) = g (root p)) : f = g := by
   apply Ideal.Quotient.ringHom_ext
   ext x
-  · simpa using! congr($(hAlg) x)
+  · simpa using! congr($hAlg x)
   · simpa
 
 @[ext high] -- This should have higher precedence than `AlgHom.ext`.

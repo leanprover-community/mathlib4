@@ -48,7 +48,7 @@ theorem exists_partition_int (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b : ℤ} (hb :
     exact Int.emod_lt_abs _ hb
   intro i₀ i₁ hi
   have hi : (⌊↑(A i₀ % b) / abs b • ε⌋.natAbs : ℤ) = ⌊↑(A i₁ % b) / abs b • ε⌋.natAbs :=
-    congr_arg ((↑) : ℕ → ℤ) (Fin.mk_eq_mk.mp hi)
+    congr($(Fin.mk_eq_mk.mp hi))
   rw [natAbs_of_nonneg (hfloor i₀), natAbs_of_nonneg (hfloor i₁)] at hi
   have hi := abs_sub_lt_one_of_floor_eq_floor hi
   rw [abs_sub_comm, ← sub_div, abs_div, abs_of_nonneg hbε.le, div_lt_iff₀ hbε, one_mul] at hi
