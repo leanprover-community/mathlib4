@@ -311,7 +311,7 @@ theorem MemLp.uniformIntegrable_of_identDistrib {ι : Type*} {f : ι → α → 
   refine ⟨C.toNNReal, fun i ↦ hC₂.trans_eq' ?_⟩
   have : {x | C.toNNReal ≤ ‖f i x‖₊} = {x | C ≤ ‖f i x‖} := by
     ext x
-    simp_rw [Set.mem_ofPred_eq, Real.toNNReal_le_iff_le_coe, coe_nnnorm]
+    simp_rw [Set.mem_ofPred, Real.toNNReal_le_iff_le_coe, coe_nnnorm]
   rw [this, ← eLpNorm_norm _ <| (hmeas i).indicator₀
       (nullMeasurableSet_le aemeasurable_const (hmeas i).norm.aemeasurable),
     ← eLpNorm_norm (Set.indicator _ _) <| (hmeas j).indicator₀
