@@ -977,8 +977,8 @@ open TensorProduct
 sending `⟦g⟧, a` to `⟦single g a⟧`. -/
 def mkH1OfIsTrivial : Additive (Abelianization G) →ₗ[ℤ] A →ₗ[ℤ] H1 A :=
   AddMonoidHom.toIntLinearMap <| AddMonoidHom.toMultiplicativeRight.symm <| Abelianization.lift {
-    toFun g := Multiplicative.ofAdd (AddMonoidHom.toIntLinearMap (AddMonoidHom.ofClass
-      ((H1π A).hom ∘ₗ (cycles₁IsoOfIsTrivial A).inv.hom ∘ₗ lsingle g)))
+    toFun g := Multiplicative.ofAdd (AddMonoidHom.toIntLinearMap
+      ((H1π A).hom ∘ₗ (cycles₁IsoOfIsTrivial A).inv.hom ∘ₗ lsingle g).toAddMonoidHom)
     map_one' := Multiplicative.toAdd.injective <|
       LinearMap.ext fun _ => (H1π_eq_zero_iff _).2 <| single_one_mem_boundaries₁ _
     map_mul' g h := Multiplicative.toAdd.injective <| LinearMap.ext fun a => by
@@ -996,12 +996,12 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If a `G`-representation on `A` is trivial, this is the natural map `H₁(G, A) → Gᵃᵇ ⊗[ℤ] A`
 sending `⟦single g a⟧` to `⟦g⟧ ⊗ₜ a`. -/
 def H1ToTensorOfIsTrivial : H1 A →ₗ[ℤ] (Additive <| Abelianization G) ⊗[ℤ] A :=
-  ((QuotientAddGroup.lift _ ((Finsupp.liftAddHom fun g => AddMonoidHom.ofClass
-    (TensorProduct.mk ℤ _ _ (Additive.ofMul (Abelianization.of g)))).comp
+  ((QuotientAddGroup.lift _ ((Finsupp.liftAddHom fun g =>
+    (TensorProduct.mk ℤ _ _ (Additive.ofMul (Abelianization.of g))).toAddMonoidHom).comp
       (cycles₁ A).toAddSubgroup.subtype) fun ⟨y, hy⟩ ⟨z, hz⟩ => AddMonoidHom.mem_ker.2 <| by
       simp [← hz, d₂₁, sum_sum_index, sum_add_index', tmul_add, sum_sub_index, tmul_sub,
         shortComplexH1, isTrivial_apply]).comp <|
-          AddMonoidHom.ofClass (H1Iso A).hom.hom).toIntLinearMap
+          (H1Iso A).hom.hom.toAddMonoidHom).toIntLinearMap
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

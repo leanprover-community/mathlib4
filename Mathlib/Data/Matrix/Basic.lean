@@ -309,12 +309,12 @@ def entryAddMonoidHom (i : m) (j : n) : Matrix m n α →+ α where
   map_add' _ _ := rfl
   map_zero' := rfl
 
--- It is necessary to spell out the name of the coercion explicitly on the RHS
+-- It is necessary to spell out the underlying homomorphism explicitly on the RHS
 -- for unification to succeed
 lemma entryAddMonoidHom_eq_comp {i : m} {j : n} :
     entryAddMonoidHom α i j =
       ((Pi.evalAddMonoidHom (fun _ => α) j).comp (Pi.evalAddMonoidHom _ i)).comp
-        (AddMonoidHom.ofClass ofAddEquiv.symm) := by
+        ofAddEquiv.symm.toAddMonoidHom := by
   rfl
 
 @[simp] lemma evalAddMonoidHom_comp_diagAddMonoidHom (i : m) :
