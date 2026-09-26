@@ -131,7 +131,7 @@ attribute [local instance] monoidalOfHasFiniteCoproducts
 @[simps, instance_reducible]
 def symmetricOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] :
     SymmetricCategory C where
-  braiding := Limits.coprod.braiding
+  braiding X Y := Limits.coprod.braiding X Y
   braiding_naturality_left f g := by simp
   braiding_naturality_right f g := by simp
   hexagon_forward X Y Z := by dsimp [monoidalOfHasFiniteCoproducts.associator_hom]; simp
