@@ -88,9 +88,9 @@ def ApplyAtLemma.try (lem : ApplyAtLemma) (assignableMVars : Array Expr) :
     if unhelpfulMVars then
       pure none
     else
-      some <$> mkSuggestion tactic (.element "div" #[] htmls)
+      some <$> mkSuggestion tactic "apply" (.element "div" #[] htmls) (solves := false)
   htmls := htmls.push <div> {← lem.name.toHtml} </div>
-  let unfiltered ← mkSuggestion tactic (.element "div" #[] htmls)
+  let unfiltered ← mkSuggestion tactic "apply" (.element "div" #[] htmls) (solves := false)
   let pattern ← do
     let (xs, _, _) ← forallMetaTelescopeReducing (← lem.name.getType)
     exprToHtml (← inferType xs.back!)

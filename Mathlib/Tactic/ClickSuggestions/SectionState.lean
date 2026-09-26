@@ -94,7 +94,7 @@ inductive SectionKind where
 
 -- TODO?: add a `⏳️` with hover info that shows which lemmas are still being computed?
 /-- Create the HTML corresponding to `s`. -/
-def renderSection (tactic : String) (kind : SectionKind) (s : SectionState α) : Html := Id.run do
+def renderSection (kind : SectionKind) (s : SectionState α) : Html := Id.run do
   let { results, errors } := s
   if results.isEmpty && errors.isEmpty then
     return .text ""
@@ -108,7 +108,7 @@ def renderSection (tactic : String) (kind : SectionKind) (s : SectionState α) :
     | .hyp => " (local hypotheses)"
     | .currFile => " (current file)"
     | .imported => ""
-  let header := <span> {.text s!"{tactic} ("} {pattern} {.text ")"} {.text suffix} </span>
+  let header := <span> Pattern {pattern} {.text suffix} </span>
   if kind matches .imported then
     return <FilterDetails summary={header} all={all} filtered={filtered} initiallyFiltered={true} />
   else
