@@ -84,7 +84,6 @@ lemma map_algebraMap_ne_top_iff_disjoint (I : Ideal R) :
     IsLocalization.algebraMap_mem_map_algebraMap_iff M]
   simp [Set.disjoint_left]
 
-set_option backward.isDefEq.respectTransparency false in
 include M in
 protected theorem map_inf (I J : Ideal R) :
     (I ⊓ J).map (algebraMap R S) = I.map (algebraMap R S) ⊓ J.map (algebraMap R S) := by
@@ -321,7 +320,7 @@ theorem surjective_quotientMap_of_maximal_of_localization {I : Ideal S} [I.IsPri
     obtain ⟨rn, rfl⟩ := Ideal.Quotient.mk_surjective n
     refine ⟨(Ideal.Quotient.mk J) (r * rn), ?_⟩
     -- The rest of the proof is essentially just algebraic manipulations to prove the equality
-    replace hn := congr_arg (Ideal.quotientMap I (algebraMap R S) le_rfl) hn
+    replace hn := congr(Ideal.quotientMap I (algebraMap R S) le_rfl $hn)
     rw [map_one, map_mul] at hn
     rw [Ideal.quotientMap_mk, ← sub_eq_zero, ← map_sub, Ideal.Quotient.eq_zero_iff_mem, ←
       Ideal.Quotient.eq_zero_iff_mem, map_sub, sub_eq_zero, mk'_eq_mul_mk'_one]
@@ -387,7 +386,7 @@ lemma of_surjective {R' S' : Type*} [CommRing R'] [CommRing S'] [Algebra R' S']
     obtain ⟨z, rfl⟩ := hg z
     obtain ⟨⟨r, s⟩, e⟩ := IsLocalization.surj M z
     refine ⟨⟨f r, _, s.1, s.2, rfl⟩, ?_⟩
-    simpa only [map_mul, ← RingHom.comp_apply, H] using DFunLike.congr_arg g e
+    simpa only [map_mul, ← RingHom.comp_apply, H] using congr(g $e)
   exists_of_eq := by
     intro x y e
     obtain ⟨x, rfl⟩ := hf x

@@ -482,9 +482,8 @@ theorem norm_eq_one_iff {x : ℤ√d} : x.norm.natAbs = 1 ↔ IsUnit x :=
               Int.cast_neg, norm_eq_mul_conj, neg_mul_eq_mul_neg, eq_comm] at h⟩,
     fun h => by
     let ⟨y, hy⟩ := isUnit_iff_dvd_one.1 h
-    have := congr_arg (Int.natAbs ∘ norm) hy
-    rw [Function.comp_apply, Function.comp_apply, norm_mul, Int.natAbs_mul, norm_one,
-      Int.natAbs_one, eq_comm, mul_eq_one] at this
+    have := congr((norm $hy).natAbs)
+    rw [norm_mul, Int.natAbs_mul, norm_one, Int.natAbs_one, eq_comm, mul_eq_one] at this
     exact this.1⟩
 
 theorem isUnit_iff_norm_isUnit {d : ℤ} (z : ℤ√d) : IsUnit z ↔ IsUnit z.norm := by
@@ -620,11 +619,6 @@ protected theorem nonneg_total : ∀ a : ℤ√d, Nonneg a ∨ Nonneg (-a)
   | ⟨(_ + 1 : ℕ), -[_+1]⟩ => Nat.le_total _ _
   | ⟨-[_+1], (_ + 1 : ℕ)⟩ => Nat.le_total _ _
 
-@[deprecated _root_.le_total (since := "2026-02-19")]
-protected theorem le_total (a b : ℤ√d) : a ≤ b ∨ b ≤ a := by
-  have t := (b - a).nonneg_total
-  rwa [neg_sub] at t
-
 instance preorder : Preorder (ℤ√d) where
   le_refl a := show Nonneg (a - a) by simp only [sub_self]; trivial
   le_trans a b c hab hbc := by simpa [sub_add_sub_cancel'] using! hab.add hbc
@@ -652,12 +646,6 @@ theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
     simpa [SqLe, mul_comm, mul_left_comm] using Nat.mul_le_mul_right (y * y) (Nat.le_mul_self d)
   rw [show (x : ℤ) + d * Nat.succ y - x = d * Nat.succ y by simp]
   exact h (y + 1)
-
-@[deprecated _root_.add_le_add_left (since := "2026-02-19")]
-protected theorem add_le_add_left (a b : ℤ√d) (ab : a ≤ b) (c : ℤ√d) : a + c ≤ b + c :=
-  show Nonneg _ by rwa [add_sub_add_right_eq_sub]
-
-
 
 theorem nonneg_smul {a : ℤ√d} {n : ℕ} (ha : Nonneg a) : Nonneg ((n : ℤ√d) * a) := by
   rw [← Int.cast_natCast n]
@@ -784,10 +772,6 @@ theorem nonneg_antisymm : ∀ {a : ℤ√d}, Nonneg a → Nonneg (-a) → a = 0
     rw [one_mul] at t
     exact absurd t (not_divides_sq _ _)
 
-@[deprecated _root_.le_antisymm (since := "2026-02-19")]
-theorem le_antisymm {a b : ℤ√d} (ab : a ≤ b) (ba : b ≤ a) : a = b :=
-  eq_of_sub_eq_zero <| nonneg_antisymm ba (by rwa [neg_sub])
-
 instance linearOrder : LinearOrder (ℤ√d) :=
   { Zsqrtd.preorder with
     le_antisymm := fun _ _ ab ba => eq_of_sub_eq_zero <| nonneg_antisymm ba (by rwa [neg_sub])
@@ -843,14 +827,6 @@ instance : ZeroLEOneClass (ℤ√d) :=
 
 instance : IsOrderedAddMonoid (ℤ√d) :=
   { add_le_add_left := fun a b ab c => show Nonneg _ by rwa [add_sub_add_right_eq_sub] }
-
-@[deprecated _root_.le_of_add_le_add_left (since := "2026-02-19")]
-protected theorem le_of_add_le_add_left (a b c : ℤ√d) (h : c + a ≤ c + b) : a ≤ b := by
-  exact _root_.le_of_add_le_add_left h
-
-@[deprecated _root_.add_lt_add_left (since := "2026-02-19")]
-protected theorem add_lt_add_left (a b : ℤ√d) (h : a < b) (c) : c + a < c + b := fun h' =>
-  h (_root_.le_of_add_le_add_left h')
 
 instance : IsStrictOrderedRing (ℤ√d) :=
   .of_mul_pos Zsqrtd.mul_pos

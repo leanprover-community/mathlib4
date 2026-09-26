@@ -39,13 +39,16 @@ namespace FractionalIdeal
 variable {R : Type*} [CommRing R] [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R]
 variable {K : Type*} [CommRing K] [Algebra R K] [IsFractionRing R K]
 
+-- A nontrivial free `ℤ`-module is infinite; local to this file to supply `Infinite R`.
+local instance : Infinite R := Module.Free.infinite ℤ R
+
 theorem absNorm_div_norm_eq_absNorm_div_norm {I : FractionalIdeal R⁰ K} (a : R⁰) (I₀ : Ideal R)
     (h : a • (I : Submodule R K) = Submodule.map (Algebra.linearMap R K) I₀) :
     (Ideal.absNorm I.num : ℚ) / |Algebra.norm ℤ (I.den : R)| =
       (Ideal.absNorm I₀ : ℚ) / |Algebra.norm ℤ (a : R)| := by
   rw [div_eq_div_iff]
-  · replace h := congr_arg (I.den • ·) h
-    have h' := congr_arg (a • ·) (den_mul_self_eq_num I)
+  · replace h := congr(I.den • $h)
+    have h' := congr(a • $(den_mul_self_eq_num I))
     rw [smul_comm] at h
     rw [h, Submonoid.smul_def, Submonoid.smul_def, ← Submodule.ideal_span_singleton_smul,
       ← Submodule.ideal_span_singleton_smul, ← Submodule.map_smul'', ← Submodule.map_smul'',

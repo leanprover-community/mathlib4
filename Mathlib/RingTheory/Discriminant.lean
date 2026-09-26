@@ -185,9 +185,7 @@ theorem discr_powerBasis_eq_prod'' [Algebra.IsSeparable K L] (e : Fin pb.dim ≃
   rw [← Nat.cast_sum, ← @Finset.sum_range ℕ _ pb.dim fun i => i, sum_range_id]
   have hn : n = pb.dim := by
     rw [← AlgHom.card K L E, ← Fintype.card_fin pb.dim]
-    -- FIXME: Without the `Fintype` namespace, why does it complain about `Finset.card_congr` being
-    -- deprecated?
-    exact Fintype.card_congr e.symm
+    exact card_congr e.symm
   have h₂ : 2 ∣ pb.dim * (pb.dim - 1) := pb.dim.even_mul_pred_self.two_dvd
   have hne : ((2 : ℕ) : ℚ) ≠ 0 := by simp
   have hle : 1 ≤ pb.dim := by
@@ -275,10 +273,10 @@ theorem discr_mul_isIntegral_mem_adjoin [Algebra.IsSeparable K L] [IsIntegrallyC
     exact Subalgebra.pow_mem _ (subset_adjoin (Set.mem_singleton _)) _
   intro i
   rw [← H, ← mulVec_smul] at cramer
-  replace cramer := congr_arg (mulVec (traceMatrix K B.basis)⁻¹) cramer
+  replace cramer := congr((mulVec (traceMatrix K B.basis)⁻¹) $cramer)
   rw [mulVec_mulVec, nonsing_inv_mul _ hinv, mulVec_mulVec, nonsing_inv_mul _ hinv, one_mulVec,
     one_mulVec] at cramer
-  rw [← congr_fun cramer i, cramer_apply, det_apply]
+  rw [← congr($cramer i), cramer_apply, det_apply]
   refine
     Subalgebra.sum_mem _ fun σ _ => Subalgebra.zsmul_mem _ (Subalgebra.prod_mem _ fun j _ => ?_) _
   by_cases hji : j = i

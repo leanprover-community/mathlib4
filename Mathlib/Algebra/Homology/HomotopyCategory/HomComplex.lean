@@ -563,7 +563,7 @@ open HomComplex
 In degree `n : ℤ`, it consists of the abelian group `HomComplex.Cochain F G n`. -/
 @[simps! X d_hom_apply]
 def HomComplex : CochainComplex AddCommGrpCat ℤ where
-  X i := AddCommGrpCat.of (Cochain F G i)
+  X i := ↧(Cochain F G i)
   d i j := AddCommGrpCat.ofHom (δ_hom ℤ F G i j)
   shape _ _ hij := by ext; simp [δ_shape _ _ hij]
   d_comp_d' _ _ _ _ _ := by ext; simp [δ_δ]
@@ -717,7 +717,7 @@ def isKernel (hm : n + 1 = m) :
     (fun s ↦ AddCommGrpCat.ofHom
       { toFun x := ⟨s.ι x, by
           rw [mem_iff _ _ hm]
-          exact ConcreteCategory.congr_hom s.condition x⟩
+          congrm $s.condition x⟩
         map_zero' := by
           #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
           this was just `cat_disch`. -/

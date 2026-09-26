@@ -77,16 +77,16 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The p-adic integers are a binomial ring, i.e. a ring where binomial coefficients make sense. -/
 noncomputable instance instBinomialRing : BinomialRing ℤ_[p] where
   -- We define `multichoose` as a fraction in `ℚ_[p]` together with a proof that its norm is `≤ 1`.
-  multichoose x k := ⟨(ascPochhammer ℤ_[p] k).eval x / (k.factorial : ℚ_[p]), by
+  multichoose x k := (ascPochhammer ℤ_[p] k).eval x / (k.factorial : ℚ_[p]) |>.lift <| by
     rw [norm_div, div_le_one (by simpa using k.factorial_ne_zero)]
-    exact x.norm_ascPochhammer_le k⟩
-  factorial_nsmul_multichoose x k := by rw [← Subtype.coe_inj, nsmul_eq_mul, PadicInt.coe_mul,
-    PadicInt.coe_natCast, mul_div_cancel₀ _ (mod_cast k.factorial_ne_zero), Subtype.coe_inj,
-    Polynomial.eval_eq_smeval, Polynomial.ascPochhammer_smeval_cast]
+    exact x.norm_ascPochhammer_le k
+  factorial_nsmul_multichoose x k := by
+    simp [mul_div_cancel₀ _ (mod_cast k.factorial_ne_zero : (k.factorial : ℚ_[p]) ≠ 0),
+      ← PadicInt.coe_inj, Polynomial.eval_eq_smeval]
 
 @[fun_prop]
 lemma continuous_multichoose (k : ℕ) : Continuous (fun x : ℤ_[p] ↦ Ring.multichoose x k) := by
-  simp only [Ring.multichoose, BinomialRing.multichoose]
+  simp only [Ring.multichoose, BinomialRing.multichoose, Padic.lift]
   fun_prop
 
 @[fun_prop]

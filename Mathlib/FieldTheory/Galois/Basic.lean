@@ -270,6 +270,16 @@ def fixingSubgroupEquiv : fixingSubgroup K ≃* Gal(E/K) where
   invFun ϕ := ⟨ϕ.restrictScalars _, ϕ.commutes⟩
   map_mul' _ _ := by ext; rfl
 
+@[simp]
+theorem coe_fixingSubgroupEquiv_apply (σ : K.fixingSubgroup) :
+    ⇑(K.fixingSubgroupEquiv σ) = ⇑σ.1 :=
+  rfl
+
+@[simp]
+theorem coe_fixingSubgroupEquiv_symm_apply (σ : Gal(E/K)) :
+    ⇑(K.fixingSubgroupEquiv.symm σ).1 = ⇑σ :=
+  rfl
+
 theorem fixingSubgroup_fixedField [FiniteDimensional F E] : fixingSubgroup (fixedField H) = H := by
   have H_le : H ≤ fixingSubgroup (fixedField H) := (le_iff_le _ _).mp le_rfl
   suffices Nat.card H = Nat.card (fixingSubgroup (fixedField H)) by
@@ -287,6 +297,16 @@ A subgroup is isomorphic to the Galois group of its fixed field.
 def subgroupEquivAlgEquiv [FiniteDimensional F E] (H : Subgroup Gal(E/F)) :
     H ≃* Gal(E/IntermediateField.fixedField H) :=
   (MulEquiv.subgroupCongr (fixingSubgroup_fixedField H).symm).trans (fixingSubgroupEquiv _)
+
+@[simp]
+theorem coe_subgroupEquivAlgEquiv_apply [FiniteDimensional F E] (σ : H) :
+    ⇑(subgroupEquivAlgEquiv H σ) = ⇑σ.1 :=
+  rfl
+
+@[simp]
+theorem coe_subgroupEquivAlgEquiv_symm_apply [FiniteDimensional F E] (σ : Gal(E/fixedField H)) :
+    ⇑((subgroupEquivAlgEquiv H).symm σ).1 = ⇑σ :=
+  rfl
 
 instance fixedField.smul : SMul K (fixedField (fixingSubgroup K)) where
   smul x y := ⟨x * y, fun ϕ => by
@@ -563,7 +583,7 @@ theorem sup_right (K L : IntermediateField F E) [IsGalois F K] [FiniteDimensiona
   constructor
   · rw [Polynomial.map_map, ← IsScalarTower.algebraMap_eq]
     exact Polynomial.Splits.of_algHom hT₂.1 (IsScalarTower.toAlgHom _ _ _)
-  · have h' : T'.rootSet E = T.rootSet E := by simp [Set.ext_iff, Polynomial.mem_rootSet', T']
+  · have h' : T'.rootSet E = T.rootSet E := by simp [T']
     rw [← lift_inj, lift_adjoin, ← coe_val, hT₂.1.image_rootSet] at hT₂
     rw [← restrictScalars_eq_top_iff (K := F), restrictScalars_adjoin, adjoin_union, adjoin_self,
       h', hT₂.2, lift_top, sup_comm, h]
@@ -623,7 +643,9 @@ theorem restrictRestrictAlgEquivMapHom_apply (φ : Gal(E/L)) (x : K) :
 theorem restrictRestrictAlgEquivMapHom_injective (h : K ⊔ L = ⊤) :
     Function.Injective (restrictRestrictAlgEquivMapHom F K L E) := by
   refine (injective_iff_map_eq_one _).mpr fun φ hφ ↦ ?_
-  suffices h : MulSemiringAction.toAlgAut Gal(E/L) F E φ = 1 by rwa [AlgEquiv.ext_iff] at h ⊢
+  suffices h : MulSemiringAction.toAlgAut Gal(E/L) F E φ = 1 by
+    rw [AlgEquiv.ext_iff] at h ⊢
+    assumption
   rw [← Subgroup.mem_bot, ← fixingSubgroup_top, ← h, fixingSubgroup_sup]
   exact ⟨fun x ↦ (hφ ▸ restrictRestrictAlgEquivMapHom_apply K L φ x).symm, φ.commutes⟩
 
@@ -639,7 +661,7 @@ theorem restrictRestrictAlgEquivMapHom_surjective [FiniteDimensional F K] [Finit
     refine mem_bot.mp <| (IsGalois.mem_bot_iff_fixed _).mpr fun φ ↦ ?_
     rw [← restrictRestrictAlgEquivMapHom_apply K L φ ⟨x, hx₁⟩]
     rw [mem_fixedField_iff] at hx₂
-    exact congr_arg ((↑) : K → E) <| hx₂ (restrictRestrictAlgEquivMapHom F K L E φ) ⟨φ, rfl⟩
+    congrm $(hx₂ (restrictRestrictAlgEquivMapHom F K L E φ) ⟨φ, rfl⟩)
   obtain ⟨z, rfl⟩ : y ∈ (⊥ : IntermediateField F E) := h ▸ mem_inf.mpr ⟨hx₁, hy⟩
   exact mem_bot.mp ⟨z, rfl⟩
 
@@ -776,7 +798,7 @@ instance IsQuadraticExtension.isCyclic : IsCyclic Gal(K/F) := by
   · exact @isCyclic_of_subsingleton _ _ (Finite.card_le_one_iff_subsingleton.mp h.le)
   · exact isCyclic_of_prime_card h
 
-@[deprecated inferInstance (since := "2026-04-09")]
+@[deprecated inferInstance +typeChanged (since := "2026-04-09")]
 theorem IsQuadraticExtension.isMulCommutative_galoisGroup : IsMulCommutative Gal(K/F) :=
   inferInstance
 

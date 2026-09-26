@@ -116,7 +116,7 @@ alias _root_.IsSolvable := Group.IsSolvable
 @[deprecated (since := "2026-07-17")]
 alias _root_.isSolvable_def := Group.isSolvable_def
 
-instance (priority := 100) {G : Type*} [CommGroup G] : IsSolvable G :=
+instance (priority := 100) {G : Type*} [Group G] [IsMulCommutative G] : IsSolvable G :=
   ⟨⟨1, le_bot_iff.mp (Abelianization.commutator_subset_ker (MonoidHom.id G))⟩⟩
 
 theorem isSolvable_of_comm {G : Type*} [hG : Group G] (h : ∀ a b : G, a * b = b * a) :
@@ -180,6 +180,10 @@ theorem isSolvable_iff_subgroup_quotient (H : Subgroup G) [H.Normal] :
   ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦
     isSolvable_of_ker_le_range H.subtype (QuotientGroup.mk' H) (by simp)⟩
 
+theorem isSolvable_of_subgroup_quotient (H : Subgroup G) [H.Normal]
+    [IsSolvable H] [IsSolvable (G ⧸ H)] : IsSolvable G :=
+  (isSolvable_iff_subgroup_quotient H).mpr ⟨‹_›, ‹_›⟩
+
 instance {G' : Type*} [Group G'] [IsSolvable G] [IsSolvable G'] :
     IsSolvable (G × G') :=
   isSolvable_of_ker_le_range (MonoidHom.inl G G') (MonoidHom.snd G G') fun x hx =>
@@ -225,11 +229,14 @@ theorem isSolvable_iff_commutator_lt [WellFoundedLT (Subgroup G)] :
     induction n with
     | zero =>
       rw [derivedSeries_succ, derivedSeries_zero, derivedSeries_zero, map_commutator,
-        ← MonoidHom.range_eq_map, ← MonoidHom.range_eq_map, range_subtype, range_subtype]
+        Subgroup.map_top, Subgroup.map_top, range_subtype, range_subtype]
     | succ n ih => rw [derivedSeries_succ, map_commutator, ih, derivedSeries_succ, map_commutator]
 
 @[deprecated (since := "2026-07-16")]
 alias _root_.isSolvable_iff_commutator_lt := Group.isSolvable_iff_commutator_lt
+
+theorem isSolvable_commutator_iff : IsSolvable (commutator G) ↔ IsSolvable G :=
+  ⟨fun _ ↦ isSolvable_of_subgroup_quotient (commutator G), fun _ ↦ inferInstance⟩
 
 end Group
 
@@ -268,7 +275,7 @@ theorem not_isSolvable_of_mem_derivedSeries {g : G} (h1 : g ≠ 1)
     (h2 : ∀ n : ℕ, g ∈ derivedSeries G n) : ¬Group.IsSolvable G :=
   mt (Group.isSolvable_def _).mp
     (not_exists_of_forall_not fun n h =>
-      h1 (Subgroup.mem_bot.mp ((congr_arg (g ∈ ·) h).mp (h2 n))))
+      h1 (Subgroup.mem_bot.mp (congr(g ∈ $h).mp (h2 n))))
 
 @[deprecated (since := "2026-07-16")]
 alias not_solvable_of_mem_derivedSeries := not_isSolvable_of_mem_derivedSeries

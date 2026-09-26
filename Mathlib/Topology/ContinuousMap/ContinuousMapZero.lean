@@ -46,9 +46,10 @@ section Basic
 variable {X Y R : Type*} [Zero X] [Zero Y] [Zero R]
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace R]
 
+@[macro_inline]
 instance instFunLike : FunLike C(X, R)₀ X R where
   coe f := f.toFun
-  coe_injective _ _ h := congr(⟨⟨$(h), _⟩, _⟩)
+  coe_injective _ _ h := congr(⟨⟨$h, _⟩, _⟩)
 
 instance instContinuousMapClass : ContinuousMapClass C(X, R)₀ X R where
   map_continuous f := f.continuous
@@ -73,7 +74,7 @@ lemma ext {f g : C(X, R)₀} (h : ∀ x, f x = g x) : f = g := DFunLike.ext f g 
 lemma coe_mk {f : C(X, R)} {h0 : f 0 = 0} : ⇑(mk f h0) = f := rfl
 
 lemma toContinuousMap_injective : Injective ((↑) : C(X, R)₀ → C(X, R)) :=
-  fun _ _ h ↦ congr(.mk $(h) _)
+  fun _ _ h ↦ congr(.mk $h _)
 
 lemma range_toContinuousMap : range ((↑) : C(X, R)₀ → C(X, R)) = {f : C(X, R) | f 0 = 0} :=
   Set.ext fun f ↦ ⟨fun ⟨f', hf'⟩ ↦ hf' ▸ map_zero f', fun hf ↦ ⟨⟨f, hf⟩, rfl⟩⟩
@@ -99,7 +100,7 @@ protected instance instTopologicalSpace : TopologicalSpace C(X, R)₀ := fast_in
 
 lemma isEmbedding_toContinuousMap : IsEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
   eq_induced := rfl
-  injective _ _ h := ext fun x ↦ congr($(h) x)
+  injective _ _ h := ext fun x ↦ congr($h x)
 
 instance [T0Space R] : T0Space C(X, R)₀ := isEmbedding_toContinuousMap.t0Space
 instance [R0Space R] : R0Space C(X, R)₀ := isEmbedding_toContinuousMap.r0Space
@@ -127,8 +128,6 @@ lemma continuous_precomp (f : C(X, Y)₀) : Continuous fun g : C(Y, R)₀ ↦ g.
   rw [continuous_induced_rng]
   change Continuous fun g : C(Y, R)₀ ↦ (g : C(Y, R)).comp (f : C(X, Y))
   fun_prop
-
-@[deprecated (since := "2026-02-20")] alias continuous_comp_left := continuous_precomp
 
 theorem postcomp_injective (g : C(Y, R)₀) (hg : Injective g) :
     Injective (g.comp : C(X, Y)₀ → C(X, R)₀) :=
@@ -398,7 +397,7 @@ protected instance instUniformSpace : UniformSpace C(X, R)₀ :=
 lemma isUniformEmbedding_toContinuousMap :
     IsUniformEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
   comap_uniformity := rfl
-  injective _ _ h := ext fun x ↦ congr($(h) x)
+  injective _ _ h := ext fun x ↦ congr($h x)
 
 instance [T1Space R] [CompleteSpace C(X, R)] : CompleteSpace C(X, R)₀ :=
   completeSpace_iff_isComplete_range isUniformEmbedding_toContinuousMap.isUniformInducing

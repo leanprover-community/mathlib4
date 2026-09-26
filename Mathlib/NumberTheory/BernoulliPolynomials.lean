@@ -233,7 +233,7 @@ theorem bernoulli_comp_neg_X (n : ℕ) :
 
 theorem bernoulli_eval_neg (n : ℕ) (x : ℚ) :
     (bernoulli n).eval (-x) = (-1) ^ n * ((bernoulli n).eval x + n * x ^ (n - 1)) := by
-  simpa [mul_add] using congr_arg (Polynomial.eval x) (bernoulli_comp_neg_X n)
+  simpa [mul_add] using congr(Polynomial.eval x $(bernoulli_comp_neg_X n))
 
 theorem bernoulli_comp_one_sub_X (n : ℕ) :
     (bernoulli n).comp (1 - X) = (-1) ^ n * bernoulli n := by
@@ -247,7 +247,7 @@ theorem bernoulli_comp_one_sub_X (n : ℕ) :
 
 theorem bernoulli_eval_one_sub (n : ℕ) (x : ℚ) :
     (bernoulli n).eval (1 - x) = (-1) ^ n * (bernoulli n).eval x := by
-  simpa using congr_arg (Polynomial.eval x) (bernoulli_comp_one_sub_X n)
+  simpa using congr(Polynomial.eval x $(bernoulli_comp_one_sub_X n))
 
 open PowerSeries
 

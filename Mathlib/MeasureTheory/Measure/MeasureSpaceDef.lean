@@ -86,6 +86,7 @@ theorem Measure.toOuterMeasure_injective [MeasurableSpace α] :
     Injective (toOuterMeasure : Measure α → OuterMeasure α)
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
+@[macro_inline]
 instance Measure.instFunLike [MeasurableSpace α] : FunLike (Measure α) (Set α) ℝ≥0∞ where
   coe μ := μ.toOuterMeasure
   coe_injective | ⟨_, _, _⟩, ⟨_, _, _⟩, h => toOuterMeasure_injective <| DFunLike.coe_injective h
@@ -475,7 +476,7 @@ variable {δ : Type*} {X : δ → Type*} {mX : ∀ a, MeasurableSpace (X a)}
 protected theorem AEMeasurable.eval {g : α → Π a, X a} (hg : AEMeasurable g μ) (a : δ) :
     AEMeasurable (fun x ↦ g x a) μ := by
   use fun x ↦ hg.mk g x a, hg.measurable_mk.eval
-  exact hg.ae_eq_mk.mono fun _ h ↦ congrFun h _
+  exact hg.ae_eq_mk.mono fun _ h ↦ congr($h _)
 
 variable [Countable δ]
 

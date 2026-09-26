@@ -154,7 +154,7 @@ def deriv (f : 𝕜 → F) (x : 𝕜) :=
   fderiv 𝕜 f x 1
 
 variable {f : 𝕜 → F}
-variable {f' : F}
+variable {f' f₁' : F}
 variable {x : 𝕜}
 variable {s : Set 𝕜}
 variable {L : Filter (𝕜 × 𝕜)}
@@ -226,17 +226,6 @@ theorem differentiableWithinAt_of_derivWithin_ne_zero (h : derivWithin f s x ≠
     DifferentiableWithinAt 𝕜 f s x :=
   not_imp_comm.1 derivWithin_zero_of_not_differentiableWithinAt h
 
-end TVS
-
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
-variable {f f₀ f₁ : 𝕜 → F}
-variable {f' f₀' f₁' g' : F}
-variable {x : 𝕜}
-variable {s t : Set 𝕜}
-variable {L L₁ L₂ : Filter (𝕜 × 𝕜)}
-
 theorem derivWithin_zero_of_not_accPt (h : ¬AccPt x (𝓟 s)) : derivWithin f s x = 0 := by
   rw [derivWithin, fderivWithin_zero_of_not_accPt h, zero_apply]
 
@@ -255,9 +244,22 @@ theorem deriv_zero_of_not_differentiableAt (h : ¬DifferentiableAt 𝕜 f x) : d
 theorem differentiableAt_of_deriv_ne_zero (h : deriv f x ≠ 0) : DifferentiableAt 𝕜 f x :=
   not_imp_comm.1 deriv_zero_of_not_differentiableAt h
 
+variable [ContinuousAdd F] [ContinuousSMul 𝕜 F] [T2Space F]
+
 theorem UniqueDiffWithinAt.eq_deriv (s : Set 𝕜) (H : UniqueDiffWithinAt 𝕜 s x)
     (h : HasDerivWithinAt f f' s x) (h₁ : HasDerivWithinAt f f₁' s x) : f' = f₁' :=
   toSpanSingleton_inj.mp <| UniqueDiffWithinAt.eq H h h₁
+
+end TVS
+
+variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
+variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+
+variable {f f₀ f₁ : 𝕜 → F}
+variable {f' f₀' f₁' g' : F}
+variable {x : 𝕜}
+variable {s t : Set 𝕜}
+variable {L L₁ L₂ : Filter (𝕜 × 𝕜)}
 
 theorem hasDerivAtFilter_iff_isLittleO :
     HasDerivAtFilter f f' L ↔
@@ -315,11 +317,6 @@ theorem HasDerivAtFilter.isEquivalent_sub (hf : HasDerivAtFilter f f' L) (hf' : 
 theorem HasDerivAtFilter.isTheta_sub (hf : HasDerivAtFilter f f' L) (hf' : f' ≠ 0) :
     (fun p ↦ f p.1 - f p.2) =Θ[L] (fun p ↦ p.1 - p.2) :=
   HasFDerivAtFilter.isTheta_sub hf <| isInducing_toSpanSingleton hf'
-
-@[deprecated HasDerivAtFilter.isTheta_sub (since := "2026-02-04")]
-theorem HasDerivAtFilter.isBigO_sub_rev (hf : HasDerivAtFilter f f' L) (hf' : f' ≠ 0) :
-    (fun p => p.1 - p.2) =O[L] fun p => f p.1 - f p.2 :=
-  hf.isTheta_sub hf' |>.isBigO_symm
 
 theorem HasStrictDerivAt.hasDerivAt (h : HasStrictDerivAt f f' x) : HasDerivAt f f' x :=
   h.hasStrictFDerivAt.hasFDerivAt

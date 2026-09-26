@@ -174,7 +174,7 @@ theorem toMeasure_bind_apply [MeasurableSpace β] (hs : MeasurableSet s) :
   (toMeasure_apply_eq_toOuterMeasure_apply (p.bind f) hs).trans
     ((toOuterMeasure_bind_apply p f s).trans
       (tsum_congr fun a =>
-        congr_arg (fun x => p a * x) (toMeasure_apply_eq_toOuterMeasure_apply (f a) hs).symm))
+        congr(p a * $((toMeasure_apply_eq_toOuterMeasure_apply (f a) hs).symm))))
 
 end Measure
 

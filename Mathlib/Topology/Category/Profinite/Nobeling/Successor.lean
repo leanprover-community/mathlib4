@@ -256,7 +256,7 @@ theorem CC_exact {f : LocallyConstant C ℤ} (hf : Linear_CC' C hsC ho f = 0) :
     refine hyC.imp (fun hyC ↦ ?_) (fun hyC ↦ ⟨y, hyC, rfl⟩)
     rwa [C0_projOrd C hsC ho hyC]
   · intro x hx
-    simpa only [h₀, h₁, LocallyConstant.coe_comap] using! (congrFun hf ⟨x, hx⟩).symm
+    simpa only [h₀, h₁, LocallyConstant.coe_comap] using! congr($hf ⟨x, hx⟩).symm
   · ext ⟨x, hx⟩
     rw [← union_C0C1_eq C ho] at hx
     rcases hx with hx₀ | hx₁
@@ -342,7 +342,7 @@ noncomputable
 def sum_equiv (hsC : contained C (Order.succ o)) (ho : o < Ordinal.type (· < · : I → I → Prop)) :
     GoodProducts (π C (ord I · < o)) ⊕ (MaxProducts C ho) ≃ GoodProducts C :=
   calc _ ≃ Set.range (sum_to C ho) := Equiv.ofInjective (sum_to C ho) (injective_sum_to C ho)
-       _ ≃ _ := Equiv.Set.congr <| by rw [sum_to_range C ho, union_succ C hsC ho]
+       _ ≃ _ := Set.equivOfEq <| by rw [sum_to_range C ho, union_succ C hsC ho]
 
 theorem sum_equiv_comp_eval_eq_elim : eval C ∘ (sum_equiv C hsC ho).toFun =
     (Sum.elim (fun (l : GoodProducts (π C (ord I · < o))) ↦ Products.eval C l.1)

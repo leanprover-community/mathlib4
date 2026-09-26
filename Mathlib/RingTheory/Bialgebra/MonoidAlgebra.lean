@@ -187,6 +187,7 @@ variable [Algebra R A] [Monoid M]
 
 variable (R M A) in
 /-- `MonoidAlgebra.lift` as a `MulEquiv`. -/
+@[expose, simps!]
 def liftMulEquiv : (M →* A) ≃* WithConv (R[M] →ₐ[R] A) where
   toEquiv := (lift R A M).trans (WithConv.equiv _).symm
   map_mul' f g := by ext; simp [AlgHom.convMul_apply]
@@ -288,7 +289,7 @@ def mapDomainOfBialgHom (f : R[G] →ₐc[R] R[H]) : G →* H where
 lemma single_mapDomainOfBialgHom (f : R[G] →ₐc[R] R[H]) (g : G) (r : R) :
     single (mapDomainOfBialgHom f g) r = f (single g r) := by
   rw [← mul_one r, ← smul_eq_mul, ← smul_single, ← smul_single, map_smul]
-  exact congr(r • $(single_mapDomainOfBialgHomFun_one f g))
+  congrm r • $(single_mapDomainOfBialgHomFun_one f g)
 
 @[to_additive (dont_translate := R) (attr := simp)]
 lemma mapDomainBialgHom_mapDomainOfBialgHom (f : R[G] →ₐc[R] R[H]) :
@@ -381,6 +382,7 @@ variable [CommSemiring A] [Algebra R A] [AddMonoid M]
 
 variable (R M A) in
 /-- `AddMonoidAlgebra.lift` as a `MulEquiv`. -/
+@[expose, simps!]
 def liftMulEquiv : (Multiplicative M →* A) ≃* WithConv (R[M] →ₐ[R] A) where
   toEquiv := (lift R A M).trans (WithConv.equiv _).symm
   map_mul' f g := by ext; simp [AlgHom.convMul_apply]

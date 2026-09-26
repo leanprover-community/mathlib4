@@ -38,6 +38,11 @@ initialize_simps_projections PartOrdEmb (carrier → coe, -str)
 
 namespace PartOrdEmb
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `PartOrdEmb.of X` as `↧X`. -/
+@[app_delab PartOrdEmb.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 instance : CoeSort PartOrdEmb (Type _) :=
   ⟨PartOrdEmb.carrier⟩
 
@@ -46,22 +51,18 @@ attribute [coe] PartOrdEmb.carrier
 /-- The type of morphisms in `PartOrdEmb R`. -/
 @[ext]
 structure Hom (X Y : PartOrdEmb.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `OrderEmbedding`. -/
   hom' : X ↪o Y
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category PartOrdEmb.{u} where
   Hom X Y := Hom X Y
   id _ := ⟨RelEmbedding.refl _⟩
   comp f g := ⟨f.hom'.trans g.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory PartOrdEmb (· ↪o ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `PartOrdEmb` back into a `OrderEmbedding`. -/
 abbrev Hom.hom {X Y : PartOrdEmb.{u}} (f : Hom X Y) :=
@@ -151,7 +152,7 @@ lemma hom_inv_apply {X Y : PartOrdEmb} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) =
   simp
 
 instance hasForgetToPartOrd : HasForget₂ PartOrdEmb PartOrd where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := PartOrd.ofHom f.hom
 
 /-- Constructs an equivalence between partial orders from an order isomorphism between them. -/
@@ -232,9 +233,7 @@ instance : PartialOrder (CoconePt hc) where
     obtain ⟨l, a, b, h⟩ :=
       (Types.FilteredColimit.isColimit_eq_iff _ hc (xi := y₁) (xj := y₂)).1
         (hy₁.trans hy₂.symm)
-    exact ⟨l, F.map a x₁, F.map b z₁,
-      (ConcreteCategory.congr_hom (c.w a) x₁).trans hx₁,
-      (ConcreteCategory.congr_hom (c.w b) z₁).trans hz₁,
+    exact ⟨l, F.map a x₁, F.map b z₁, congr($(c.w a) x₁).trans hx₁, congr($(c.w b) z₁).trans hz₁,
       ((F.map a).hom.monotone hxy).trans
         (le_of_eq_of_le h ((F.map b).hom.monotone hyz))⟩
   le_antisymm := by
@@ -255,15 +254,14 @@ instance : PartialOrder (CoconePt hc) where
       le_antisymm
         (by simpa only [h₃, h₅] using (F.map a).hom.monotone h₁)
         (by simpa only [h₄, h₆] using (F.map b).hom.monotone h₂)
-    exact hx₁.symm.trans ((ConcreteCategory.congr_hom (c.w a) x₁).symm.trans
-      ((congr_arg (c.ι.app l) (h₃.symm.trans (h₇.trans h₅))).trans
-        ((ConcreteCategory.congr_hom (c.w a) y₁).trans hy₁)))
+    exact hx₁.symm.trans (congr($(c.w a) x₁).symm.trans
+      (congr(c.ι.app l $(h₃.symm.trans (h₇.trans h₅))).trans (congr($(c.w a) y₁).trans hy₁)))
 
 /-- The colimit cocone for a functor `F : J ⥤ PartOrdEmb` from a filtered
 category that is constructed from a colimit cocone for `F ⋙ forget _`. -/
 @[simps]
 def cocone : Cocone F where
-  pt := .of (CoconePt hc)
+  pt := ↧(CoconePt hc)
   ι.app j := ofHom
     { toFun := c.ι.app j
       inj' x y h := by
@@ -281,7 +279,7 @@ def cocone : Cocone F where
         conv_rhs => rw [h₂]
         conv_rhs at h => rw [h₁]
         simpa [← hl₁, ← hl₂] using h }
-  ι.naturality _ _ f := by ext x; exact ConcreteCategory.congr_hom (c.w f) x
+  ι.naturality _ _ f := by ext x; congrm $(c.w f) x
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -292,14 +290,14 @@ def CoconePt.desc (s : Cocone F) : CoconePt hc ↪o s.pt where
     obtain ⟨j, x', y', rfl, rfl⟩ :=
       Types.FilteredColimit.jointly_surjective_of_isColimit₂ hc x y
     obtain rfl := (s.ι.app j).injective
-      (((ConcreteCategory.congr_hom (hc.fac ((forget _).mapCocone s) j) x').symm.trans h).trans
-        (ConcreteCategory.congr_hom (hc.fac ((forget _).mapCocone s) j) y'))
+      ((congr($(hc.fac ((forget _).mapCocone s) j) x').symm.trans h).trans
+        congr($(hc.fac ((forget _).mapCocone s) j) y'))
     rfl
   map_rel_iff' {x y} := by
     obtain ⟨j, x', y', rfl, rfl⟩ :=
       Types.FilteredColimit.jointly_surjective_of_isColimit₂ hc x y
-    have hx := ConcreteCategory.congr_hom (hc.fac ((forget _).mapCocone s) j) x'
-    have hy := ConcreteCategory.congr_hom (hc.fac ((forget _).mapCocone s) j) y'
+    have hx := congr($(hc.fac ((forget _).mapCocone s) j) x')
+    have hy := congr($(hc.fac ((forget _).mapCocone s) j) y')
     simp only [Functor.mapCocone_pt, Functor.comp_obj, Functor.const_obj_obj,
       CategoryTheory.comp_apply, Functor.mapCocone_ι_app, ConcreteCategory.hom_ofHom,
       TypeCat.Fun.coe_mk, Function.Embedding.coeFn_mk] at hx hy ⊢
@@ -316,7 +314,7 @@ def CoconePt.desc (s : Cocone F) : CoconePt hc ↪o s.pt where
 @[simp]
 lemma CoconePt.fac_apply (s : Cocone F) (j : J) (x : F.obj j) :
     dsimp% CoconePt.desc hc s (c.ι.app j x) = s.ι.app j x :=
-  ConcreteCategory.congr_hom (hc.fac ((forget _).mapCocone s) j) x
+  congr($(hc.fac ((forget _).mapCocone s) j) x)
 
 /-- A colimit cocone for `F : J ⥤ PartOrdEmb` (with `J` filtered) can be
 obtained from a colimit cocone for `F ⋙ forget _`. -/
@@ -324,7 +322,7 @@ def isColimitCocone : IsColimit (cocone hc) where
   desc s := ofHom (CoconePt.desc hc s)
   fac s j := by
     ext x
-    exact ConcreteCategory.congr_hom (hc.fac ((forget _).mapCocone s) j) x
+    congrm $(hc.fac ((forget _).mapCocone s) j) x
   uniq s m hm := by
     ext x
     obtain ⟨j, x, rfl⟩ := Types.jointly_surjective_of_isColimit hc x
@@ -360,7 +358,7 @@ this is the functor `Subtype P ⥤ PartOrdEmb.{u}` which sends a subset `J` of `
 satisfying `P` to the induced partially ordered type `J`. -/
 @[simps obj map]
 def functorOfPredicateSet : Subtype P ⥤ PartOrdEmb.{u} where
-  obj J := .of J.val
+  obj J := ↧J.val
   map f :=
     ofHom {
       toFun x := ⟨x, leOfHom f x.prop⟩

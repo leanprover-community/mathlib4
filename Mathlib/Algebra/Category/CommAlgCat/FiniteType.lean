@@ -39,7 +39,7 @@ structure FGAlgCatSkeleton : Type u where
 
 /-- (Implementation detail): Realisation of a `FGAlgCatSkeleton`. -/
 noncomputable def FGAlgCatSkeleton.eval (A : FGAlgCatSkeleton R) : FGAlgCat.{u} R :=
-  ⟨CommAlgCat.of R (MvPolynomial (Fin A.n) R ⧸ A.I), inferInstanceAs <| Algebra.FiniteType _ _⟩
+  ⟨↧(MvPolynomial (Fin A.n) R ⧸ A.I), inferInstanceAs <| Algebra.FiniteType _ _⟩
 
 lemma Algebra.FiniteType.exists_fgAlgCatSkeleton (A : Type v) [CommRing A] [Algebra R A]
     [h : Algebra.FiniteType R A] :
@@ -91,7 +91,7 @@ instance : EssentiallySmall.{u} (FGAlgCat.{v} R) := by
     refine small_of_injective (f := f) fun u v h ↦ ?_
     ext a
     obtain ⟨a, rfl⟩ := eA.symm.surjective a
-    exact eB.injective (congr_fun h a)
+    exact eB.injective congr($h a)
 
 section Under
 

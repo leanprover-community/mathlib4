@@ -51,6 +51,7 @@ variable [UniformSpace α] [UniformSpace β] [UniformSpace γ] [UniformSpace δ]
 theorem toEquiv_injective : Function.Injective (toEquiv : α ≃ᵤ β → α ≃ β)
   | ⟨e, h₁, h₂⟩, ⟨e', h₁', h₂'⟩, h => by simpa only [mk.injEq]
 
+@[macro_inline]
 instance : EquivLike (α ≃ᵤ β) α β where
   coe h := h.toEquiv
   inv h := h.toEquiv.symm
@@ -222,7 +223,7 @@ noncomputable def ofIsUniformEmbedding (f : α → β) (hf : IsUniformEmbedding 
 def setCongr {s t : Set α} (h : s = t) : s ≃ᵤ t where
   uniformContinuous_toFun := uniformContinuous_subtype_val.subtype_mk _
   uniformContinuous_invFun := uniformContinuous_subtype_val.subtype_mk _
-  toEquiv := Equiv.Set.congr h
+  toEquiv := Set.equivOfEq h
 
 /-- Product of two uniform isomorphisms. -/
 def prodCongr (h₁ : α ≃ᵤ β) (h₂ : γ ≃ᵤ δ) : α × γ ≃ᵤ β × δ where
@@ -277,8 +278,6 @@ def prodPUnit : α × PUnit ≃ᵤ α where
   toEquiv := Equiv.prodPUnit α
   uniformContinuous_toFun := uniformContinuous_fst
   uniformContinuous_invFun := uniformContinuous_id.prodMk uniformContinuous_const
-
-@[deprecated (since := "2026-02-08")] alias prodPunit := prodPUnit
 
 /-- `{*} × α` is uniformly isomorphic to `α`. -/
 def punitProd : PUnit × α ≃ᵤ α :=
@@ -351,6 +350,24 @@ def ulift : ULift.{v, u} α ≃ᵤ α :=
       have hf : IsUniformInducing (@Equiv.ulift.{v, u} α).toFun := ⟨rfl⟩
       simp_rw [hf.uniformContinuous_iff]
       exact uniformContinuous_id }
+
+variable {α} in
+/-- `MulOpposite.op` as a uniform equivalence. -/
+@[to_additive (attr := simps! apply symm_apply toEquiv)
+/-- `AddOpposite.op` as a uniform equivalence. -/]
+def _root_.MulOpposite.opUniformEquiv : α ≃ᵤ αᵐᵒᵖ where
+  toEquiv := MulOpposite.opEquiv
+  uniformContinuous_toFun := MulOpposite.uniformContinuous_op
+  uniformContinuous_invFun := MulOpposite.uniformContinuous_unop
+
+variable {α} in
+@[to_additive (attr := simp)]
+theorem _root_.completeSpace_mulOpposite_iff : CompleteSpace αᵐᵒᵖ ↔ CompleteSpace α :=
+  MulOpposite.opUniformEquiv.symm.completeSpace_iff
+
+@[to_additive]
+instance _root_.CompleteSpace.mulOpposite [CompleteSpace α] : CompleteSpace αᵐᵒᵖ :=
+  completeSpace_mulOpposite_iff.2 ‹CompleteSpace α›
 
 end
 

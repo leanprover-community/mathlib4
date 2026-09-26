@@ -222,6 +222,10 @@ theorem projectionOnto_comp_subtype (h : IsCompl p q) :
     (projectionOnto p q h).comp p.subtype = LinearMap.id :=
   LinearMap.ext <| projectionOnto_apply_left h
 
+theorem projectionOnto_comp_subtype_eq_zero (h : IsCompl p q) :
+    p.projectionOnto q h ∘ₗ q.subtype = 0 := by
+  ext; simp
+
 theorem projectionOnto_projection (h : IsCompl p q) (x : E) :
     projectionOnto p q h (p.projection q h x) = projectionOnto p q h x :=
   projectionOnto_apply_left h _
@@ -246,6 +250,11 @@ theorem projection_add_projection_eq_self (hpq : IsCompl p q) (x : E) :
   dsimp only [projection, projectionOnto]
   rw [← prodComm_trans_prodEquivOfIsCompl _ _ hpq]
   exact (prodEquivOfIsCompl _ _ hpq).apply_symm_apply x
+
+theorem subtype_comp_projectionOnto_add_eq_id (h : IsCompl p q) :
+    p.subtype.comp (projectionOnto _ _ h) +
+      q.subtype.comp (projectionOnto _ _ h.symm) = LinearMap.id := by
+  ext; simp [projection_add_projection_eq_self]
 
 theorem projection_add_projection_eq_id (hpq : IsCompl p q) :
     p.projection q hpq + q.projection p hpq.symm = .id :=
@@ -525,7 +534,7 @@ correspondence with linear maps to the submodule that restrict to the identity o
   toFun f := ⟨f.1.codRestrict _ fun x ↦ by simp_rw [← f.2.2]; exact mem_range_self f.1 x,
     fun ⟨x, hx⟩ ↦ Subtype.ext <| by
       obtain ⟨x, rfl⟩ := f.2.2.symm ▸ hx
-      exact DFunLike.congr_fun f.2.1 x⟩
+      congrm $(f.2.1) x⟩
   invFun f := ⟨p.subtype ∘ₗ f.1, LinearMap.ext fun x ↦ by simp [f.2], le_antisymm
     ((range_comp_le_range _ _).trans_eq p.range_subtype)
     fun x hx ↦ ⟨x, Subtype.ext_iff.1 <| f.2 ⟨x, hx⟩⟩⟩
@@ -673,7 +682,7 @@ theorem IsIdempotentElem.comp_eq_right_iff {q : M →ₗ[S] M} (hq : IsIdempoten
     {E : Type*} [AddCommMonoid E] [Module S E] (p : E →ₗ[S] M) :
     q.comp p = p ↔ range p ≤ range q := by
   simp_rw [LinearMap.ext_iff, comp_apply, ← hq.mem_range_iff,
-    SetLike.le_def, mem_range, forall_exists_index, forall_apply_eq_imp_iff]
+    IsConcreteLE.le_iff, mem_range, forall_exists_index, forall_apply_eq_imp_iff]
 
 open LinearMap in
 /-- Idempotent operators are equal iff their range and kernels are. -/
