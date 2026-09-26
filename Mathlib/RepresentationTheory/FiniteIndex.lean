@@ -183,8 +183,9 @@ lemma resIndAdjunction_unit_app (B : Rep.{max w u v} k G) :
 lemma resIndAdjunction_homEquiv_apply (A : Rep.{max w u v} k S)
     {B : Rep.{max w u v} k G} (f : res.{u} S.subtype B ⟶ A) :
     (resIndAdjunction.{w} k S).homEquiv B A f =
-      resCoindHomEquiv.{max w u v} S.subtype B A f ≫ (indCoindIso.{max w u v} A).inv :=
-  Adjunction.homEquiv_ofNatIsoRight_apply _ _ _
+      resCoindHomEquiv.{max w u v} S.subtype B A f ≫ (indCoindIso.{max w u v} A).inv := by
+  rw [resIndAdjunction, Adjunction.homEquiv_ofNatIsoRight_apply]
+  simp
 
 lemma resIndAdjunction_homEquiv_symm_apply (A : Rep.{max w u v} k S)
     {B : Rep.{max w u v} k G}
