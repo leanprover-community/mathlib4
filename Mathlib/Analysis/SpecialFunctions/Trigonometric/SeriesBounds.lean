@@ -19,7 +19,9 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
   they generalise.
 * `Real.sum_lt_sin_of_pos`, `Real.sin_lt_sum_of_pos`, `Real.sum_lt_cos_of_pos` and
   `Real.cos_lt_sum_of_pos` bracket `sin x` and `cos x` strictly between consecutive partial sums
-  of their Taylor series, at every order and for every `x > 0`, with no bound on `x`.
+  of their Taylor series, at every order and for every `x > 0`, with no bound on `x`. The range is
+  indexed by `Even n` or `Odd n`, whichever gives the bound. `Real.cos_le_sum_of_pos` is the
+  non-strict form of the last, which needs no lower bound on `n`.
 * `Real.cos_lt_one_sub_sq_div_two_add_pow_four`, `Real.sin_lt_sub_cube_add_pow_five` and
   `Real.sub_cube_add_pow_five_lt_sin` are the low-order corollaries, with their non-strict forms.
   They complete the brackets whose lower halves are in
@@ -182,29 +184,55 @@ private theorem Real.sin_cos_bound_of_pos {x : ℝ} (hx : 0 < x) (n : ℕ) :
     simp only [mul_add_one, add_assoc]
     exact ⟨Hlt_sin _ hx, Hsin_lt _ hx, Hlt_cos _ hx, Hcos_lt _ hx⟩
 
-/-- For `x > 0`, the partial sum of the Taylor series of `sin` over `Finset.range (2 * n + 2)`
-is a strict lower bound for `sin x`. -/
-theorem Real.sum_lt_sin_of_pos {x : ℝ} (hx : 0 < x) (n : ℕ) :
-    ∑ i ∈ .range (2 * n + 2), (-1) ^ i * x ^ (2 * i + 1) / (2 * i + 1)! < x.sin :=
-  (Real.sin_cos_bound_of_pos hx n).1
+/-- For `x > 0` and even nonzero `n`, the partial sum of the Taylor series of `sin` over
+`Finset.range n` is a strict lower bound for `sin x`. -/
+theorem Real.sum_lt_sin_of_pos {x : ℝ} (hx : 0 < x) {n : ℕ} (hn : Even n) (hn0 : n ≠ 0) :
+    ∑ i ∈ .range n, (-1) ^ i * x ^ (2 * i + 1) / (2 * i + 1)! < x.sin := by
+  obtain ⟨m, rfl⟩ := even_iff_exists_two_mul.1 hn
+  obtain ⟨k, rfl⟩ := m.exists_eq_succ_of_ne_zero (by simpa using hn0)
+  rw [Nat.mul_succ]
+  exact (sin_cos_bound_of_pos hx k).1
 
-/-- For `x > 0`, the partial sum of the Taylor series of `sin` over `Finset.range (2 * n + 1)`
+/-- For `x > 0` and odd `n`, the partial sum of the Taylor series of `sin` over `Finset.range n`
 is a strict upper bound for `sin x`. -/
-theorem Real.sin_lt_sum_of_pos {x : ℝ} (hx : 0 < x) (n : ℕ) :
-    x.sin < ∑ i ∈ .range (2 * n + 1), (-1) ^ i * x ^ (2 * i + 1) / (2 * i + 1)! :=
-  (Real.sin_cos_bound_of_pos hx n).2.1
+theorem Real.sin_lt_sum_of_pos {x : ℝ} (hx : 0 < x) {n : ℕ} (hn : Odd n) :
+    x.sin < ∑ i ∈ .range n, (-1) ^ i * x ^ (2 * i + 1) / (2 * i + 1)! := by
+  obtain ⟨m, rfl⟩ := hn
+  exact (sin_cos_bound_of_pos hx m).2.1
 
-/-- For `x > 0`, the partial sum of the Taylor series of `cos` over `Finset.range (2 * n + 2)`
-is a strict lower bound for `cos x`. -/
-theorem Real.sum_lt_cos_of_pos {x : ℝ} (hx : 0 < x) (n : ℕ) :
-    ∑ i ∈ .range (2 * n + 2), (-1) ^ i * x ^ (2 * i) / (2 * i)! < x.cos :=
-  (Real.sin_cos_bound_of_pos hx n).2.2.1
+/-- For `x > 0` and even nonzero `n`, the partial sum of the Taylor series of `cos` over
+`Finset.range n` is a strict lower bound for `cos x`. -/
+theorem Real.sum_lt_cos_of_pos {x : ℝ} (hx : 0 < x) {n : ℕ} (hn : Even n) (hn0 : n ≠ 0) :
+    ∑ i ∈ .range n, (-1) ^ i * x ^ (2 * i) / (2 * i)! < x.cos := by
+  obtain ⟨m, rfl⟩ := even_iff_exists_two_mul.1 hn
+  obtain ⟨k, rfl⟩ := m.exists_eq_succ_of_ne_zero (by simpa using hn0)
+  rw [Nat.mul_succ]
+  exact (sin_cos_bound_of_pos hx k).2.2.1
 
-/-- For `x > 0`, the partial sum of the Taylor series of `cos` over `Finset.range (2 * n + 3)`
-is a strict upper bound for `cos x`. -/
-theorem Real.cos_lt_sum_of_pos {x : ℝ} (hx : 0 < x) (n : ℕ) :
-    x.cos < ∑ i ∈ .range (2 * n + 3), (-1) ^ i * x ^ (2 * i) / (2 * i)! :=
-  (Real.sin_cos_bound_of_pos hx n).2.2.2
+/-- For `x > 0` and odd `n > 1`, the partial sum of the Taylor series of `cos` over
+`Finset.range n` is a strict upper bound for `cos x`.
+
+The hypothesis `1 < n` is needed only for the strict inequality: see `Real.cos_le_sum_of_pos`,
+which holds for every odd `n`. -/
+theorem Real.cos_lt_sum_of_pos {x : ℝ} (hx : 0 < x) {n : ℕ} (hn : Odd n) (hn1 : 1 < n) :
+    x.cos < ∑ i ∈ .range n, (-1) ^ i * x ^ (2 * i) / (2 * i)! := by
+  obtain ⟨m, rfl⟩ := hn
+  obtain ⟨k, rfl⟩ := m.exists_eq_succ_of_ne_zero (by lia)
+  rw [Nat.mul_succ, add_right_comm]
+  exact (sin_cos_bound_of_pos hx k).2.2.2
+
+/-- For `x > 0` and odd `n`, the partial sum of the Taylor series of `cos` over `Finset.range n`
+is an upper bound for `cos x`.
+
+Unlike `Real.cos_lt_sum_of_pos` this needs no lower bound on `n`: at `n = 1` it degenerates to
+`Real.cos_le_one`. -/
+theorem Real.cos_le_sum_of_pos {x : ℝ} (hx : 0 < x) {n : ℕ} (hn : Odd n) :
+    x.cos ≤ ∑ i ∈ .range n, (-1) ^ i * x ^ (2 * i) / (2 * i)! := by
+  obtain ⟨m, rfl⟩ := hn
+  obtain _ | k := m
+  · simpa using cos_le_one x
+  · rw [Nat.mul_succ, add_right_comm]
+    exact (sin_cos_bound_of_pos hx k).2.2.2.le
 
 /-! ### Low-order corollaries
 
@@ -220,7 +248,7 @@ The upper half of the bracket whose lower half is `one_sub_sq_div_two_lt_cos`; t
 `x ≠ 0` matches that lemma's, since both sides here are even. -/
 theorem cos_lt_one_sub_sq_div_two_add_pow_four {x : ℝ} (hx : x ≠ 0) :
     cos x < 1 - x ^ 2 / 2 + x ^ 4 / 24 := by
-  have h := cos_lt_sum_of_pos (abs_pos.2 hx) 0
+  have h := cos_lt_sum_of_pos (n := 3) (abs_pos.2 hx) (by decide) (by norm_num)
   norm_num [Finset.sum_range_succ, Even.pow_abs] at h
   linarith
 
@@ -239,7 +267,7 @@ is one-sided: both sides are odd, so the inequality reverses for `x < 0` — see
 `sub_cube_add_pow_five_lt_sin`. -/
 theorem sin_lt_sub_cube_add_pow_five {x : ℝ} (hx : 0 < x) :
     sin x < x - x ^ 3 / 6 + x ^ 5 / 120 := by
-  have h := sin_lt_sum_of_pos hx 1
+  have h := sin_lt_sum_of_pos (n := 3) hx (by decide)
   norm_num [Finset.sum_range_succ] at h
   linarith
 
