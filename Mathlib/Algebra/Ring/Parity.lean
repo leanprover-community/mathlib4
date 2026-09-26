@@ -253,7 +253,7 @@ end Ring
 namespace Nat
 variable {m n : ℕ}
 
-@[grind =]
+@[grind =, lia =]
 lemma odd_iff : Odd n ↔ n % 2 = 1 :=
   ⟨fun ⟨m, hm⟩ ↦ by lia, fun h ↦ ⟨n / 2, by lia⟩⟩
 
