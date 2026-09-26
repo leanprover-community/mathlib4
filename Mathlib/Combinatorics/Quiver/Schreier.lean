@@ -369,16 +369,14 @@ lemma cayleyGraph_symmetrify_neighborSet_eq (g : CayleyGraph ι) :
       Nonempty (Symmetrify.of.obj g ⟶ (Symmetrify.of.obj h : Symmetrify (CayleyGraph ι)))} =
     ((fun m ↦ m • g) '' (Set.range ι)) ∪ ((fun m ↦ m⁻¹ • g) '' (Set.range ι)) := by
   refine Set.Subset.antisymm ?_ ?_
-  · rintro h ⟨e | e⟩
-    · obtain ⟨s, hs⟩ := e
-      exact .inl ⟨ι s, Set.mem_range_self s, hs⟩
-    · obtain ⟨s, hs⟩ := e
-      refine .inr ⟨ι s, Set.mem_range_self s, ?_⟩
+  · rintro h (⟨s, hs⟩ | ⟨s, hs⟩)
+    · exact .inl ⟨ι s, Set.mem_range_self s, hs⟩
+    · refine .inr ⟨ι s, Set.mem_range_self s, ?_⟩
       dsimp
       -- `Symmetrify` does not unfold during `rw`, so retype `hs` at the Cayley graph first
       have h_eq : (ι s • h : CayleyGraph ι) = g := hs
       rw [← h_eq, inv_smul_smul]
-  · rintro h (⟨m, ⟨s, rfl⟩, rfl⟩ | ⟨m, ⟨s, rfl⟩, rfl⟩)
+  · rintro _ (⟨m, ⟨s, rfl⟩, rfl⟩ | ⟨m, ⟨s, rfl⟩, rfl⟩)
     · exact ⟨.inl ⟨s, rfl⟩⟩
     · exact ⟨.inr ⟨s, smul_inv_smul (ι s) g⟩⟩
 
@@ -425,7 +423,7 @@ the entire group. -/
 theorem cayley_subsingleton_weaklyConnectedComponent
     (hgen : Subgroup.closure (Set.range ι) = ⊤) :
     Subsingleton (WeaklyConnectedComponent (CayleyGraph ι)) :=
-  ⟨Quotient.ind₂ fun x y ↦ Quotient.sound (cayley_preconnected ι hgen x y)⟩
+  ⟨Quotient.ind₂ (Quotient.sound <| cayley_preconnected ι hgen · ·)⟩
 
 /-- A Cayley graph is connected: it has exactly one weakly connected component, when the
 generators generate the entire group. -/
