@@ -35,9 +35,9 @@ lemma prod_neg [CommMonoid M] [HasDistribNeg M] (f : ι → M) :
   simpa using (s.1.map f).prod_map_neg
 
 /-- Double the range of a `Finset.prod`. -/
-@[to_additive]
-theorem prod_range_even [CommMonoid M] (n : ℕ) (f : ℕ → M) :
-    ∏ k ∈ range n, f k = ∏ k ∈ range (2 * n), if Even k then f (k / 2) else 1 := by
+@[to_additive sum_range_two_mul_ite_even /-- Double the range of a `Finset.sum`. -/]
+theorem prod_range_two_mul_ite_even {M} [CommMonoid M] (n : ℕ) (f : ℕ → M) :
+    ∏ k ∈ range (2 * n), (if Even k then f (k / 2) else 1) = ∏ k ∈ range n, f k := by
   induction n with
   | zero => simp
   | succ n h => simp [prod_range_succ, h, Nat.mul_add_one]
