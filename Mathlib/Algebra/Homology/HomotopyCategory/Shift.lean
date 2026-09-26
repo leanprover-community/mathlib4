@@ -170,6 +170,14 @@ lemma shiftFunctorComm_hom_app_f (K : CochainComplex C ℤ) (a b p : ℤ) :
   rw [shiftFunctorComm_eq _ _ _ _ rfl]
   simp [shiftFunctorAdd'_inv_app_f', shiftFunctorAdd'_hom_app_f']
 
+lemma shiftFunctorCompIsoId_hom_app (K : CochainComplex C ℤ) (a b : ℤ) (hab : a + b = 0) (n : ℤ) :
+    ((shiftFunctorCompIsoId _ a b hab).hom.app K).f n = (K.XIsoOfEq (by lia)).hom := by
+  simp [shiftFunctorCompIsoId, shiftFunctorAdd'_eq, shiftFunctorZero_eq]
+
+lemma shiftFunctorCompIsoId_inv_app (K : CochainComplex C ℤ) (a b : ℤ) (hab : a + b = 0) (n : ℤ) :
+    ((shiftFunctorCompIsoId _ a b hab).inv.app K).f n = (K.XIsoOfEq (by lia)).hom := by
+  simp [shiftFunctorCompIsoId, shiftFunctorAdd'_eq, shiftFunctorZero_eq]
+
 variable (C)
 
 attribute [local simp] XIsoOfEq_hom_naturality

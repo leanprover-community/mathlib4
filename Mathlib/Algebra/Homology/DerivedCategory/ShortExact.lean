@@ -50,7 +50,71 @@ lemma descShortComplex_triangleOfSESδ :
       (Functor.commShiftIso Q 1).hom.app S.X₁ := by
   simp [triangleOfSESδ]
 
-set_option backward.isDefEq.respectTransparency false in
+lemma triangleOfSESδ_liftShortComplex :
+    triangleOfSESδ hS ≫ (Q.map (CochainComplex.mappingCocone.liftShortComplex S))⟦(1 : ℤ)⟧' =
+      Q.map (CochainComplex.mappingCocone.triangle S.g).mor₃ ≫
+        (Q.commShiftIso (1 : ℤ)).hom.app _ := by
+  have := CochainComplex.mappingCone.quasiIso_descShortComplex hS
+  dsimp
+  rw [← cancel_epi (Q.map (CochainComplex.mappingCone.descShortComplex S)),
+    descShortComplex_triangleOfSESδ_assoc, ← Functor.commShiftIso_hom_naturality,
+    ← Functor.map_comp_assoc,
+    Q_map_eq_of_homotopy (CochainComplex.homotopyMappingConeTriangleMor₃CompliftShortComplex S),
+    Functor.map_comp_assoc]
+  dsimp
+
+section
+
+open CochainComplex
+
+variable (S) in
+@[implicit_reducible, simps]
+noncomputable def mappingConeTriangleToMappingCoconeTriangle :
+    Q.mapTriangle.obj (mappingCone.triangle S.f) ⟶
+    Q.mapTriangle.obj (mappingCocone.triangle S.g) where
+  hom₁ := Q.map (mappingCocone.liftShortComplex S)
+  hom₂ := 𝟙 _
+  hom₃ := Q.map (mappingCone.descShortComplex S)
+  comm₁ := by simp [← Functor.map_comp]
+  comm₂ := by simp [← Functor.map_comp]
+  comm₃ := by
+    simp [Category.assoc, ← Functor.commShiftIso_hom_naturality,
+      ← Functor.map_comp_assoc, -Functor.map_comp,
+      Q_map_eq_of_homotopy (homotopyMappingConeTriangleMor₃CompliftShortComplex S)]
+
+include hS in
+lemma _root_.CochainComplex.mappingCocone.quasiIso_liftShortComplex :
+    QuasiIso (mappingCocone.liftShortComplex S) := by
+  have := mappingCone.quasiIso_descShortComplex hS
+  rw [← isIso_Q_map_iff_quasiIso]
+  exact isIso₁_of_isIso₂₃ (mappingConeTriangleToMappingCoconeTriangle S)
+    (mappingCone_triangle_distinguished S.f)
+    (mappingCocone_triangle_distinguished S.g)
+    (by dsimp; infer_instance) (by dsimp; infer_instance)
+
+include hS in
+lemma isIso_mappingConeTriangleToMappingCoconeTriangle :
+    IsIso (mappingConeTriangleToMappingCoconeTriangle S) := by
+  have := hS
+  have := mappingCone.quasiIso_descShortComplex hS
+  have := mappingCocone.quasiIso_liftShortComplex hS
+  apply Triangle.isIso_of_isIsos
+  all_goals dsimp; infer_instance
+
+@[simps! hom_hom₁ hom_hom₂ hom_hom₃ inv_hom₂]
+noncomputable def mappingConeTriangleIsoMappingCoconeTriangle :
+    Q.mapTriangle.obj (mappingCone.triangle S.f) ≅
+    Q.mapTriangle.obj (mappingCocone.triangle S.g) :=
+  have := mappingCone.quasiIso_descShortComplex hS
+  have := mappingCocone.quasiIso_liftShortComplex hS
+  Triangle.isoMk _ _ (asIso (Q.map (mappingCocone.liftShortComplex S))) (Iso.refl _)
+    (asIso (Q.map (mappingCone.descShortComplex S)))
+    (mappingConeTriangleToMappingCoconeTriangle S).comm₁
+    (mappingConeTriangleToMappingCoconeTriangle S).comm₂
+    (mappingConeTriangleToMappingCoconeTriangle S).comm₃
+
+end
+
 @[reassoc]
 lemma triangleOfSESδ_naturality {S₁ S₂ : ShortComplex (CochainComplex C ℤ)}
     (hS₁ : S₁.ShortExact) (hS₂ : S₂.ShortExact) (f : S₁ ⟶ S₂) :
