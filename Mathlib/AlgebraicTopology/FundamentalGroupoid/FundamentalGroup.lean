@@ -58,23 +58,27 @@ def fundamentalGroupMulEquivOfPathConnected [PathConnectedSpace X] :
   fundamentalGroupMulEquivOfPath (PathConnectedSpace.somePath x₀ x₁)
 
 /-- An element of the fundamental group as an arrow in the fundamental groupoid. -/
+@[deprecated "Simply remove." (since := "2026-09-20")]
 abbrev toArrow {x : X} (p : FundamentalGroup X x) :
     FundamentalGroupoid.mk x ⟶ FundamentalGroupoid.mk x :=
   p
 
 /-- An element of the fundamental group as a quotient of homotopic paths. -/
+@[deprecated "Simply remove." (since := "2026-09-20")]
 abbrev toPath {x : X} (p : FundamentalGroup X x) : Path.Homotopic.Quotient x x :=
-  toArrow p
+  p
 
 /-- An element of the fundamental group, constructed from an arrow in the fundamental groupoid. -/
+@[deprecated "Simply remove." (since := "2026-09-20")]
 abbrev fromArrow {x : X}
     (p : FundamentalGroupoid.mk x ⟶ FundamentalGroupoid.mk x) :
     FundamentalGroup X x :=
   p
 
 /-- An element of the fundamental group, constructed from a quotient of homotopic paths. -/
+@[deprecated "Simply remove." (since := "2026-09-20")]
 abbrev fromPath {x : X} (p : Path.Homotopic.Quotient x x) : FundamentalGroup X x :=
-  fromArrow p
+  p
 
 /-- The homomorphism between fundamental groups induced by a continuous map. -/
 @[simps!] def map (f : C(X, Y)) (x : X) : FundamentalGroup X x →* FundamentalGroup Y (f x) :=
