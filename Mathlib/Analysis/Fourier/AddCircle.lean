@@ -178,6 +178,29 @@ theorem fourier_add' {m n : ℤ} {x : AddCircle T} :
     toCircle ((m + n) • x :) = fourier m x * fourier n x := by
   rw [← fourier_apply]; exact fourier_add
 
+-- simp normal form is `fourier_sub'`
+theorem fourier_sub {m n : ℤ} {x : AddCircle T} :
+    fourier (m - n) x = fourier m x * conj (fourier n x) := by
+  rw [sub_eq_add_neg, fourier_add, fourier_neg]
+
+@[simp]
+theorem fourier_sub' {m n : ℤ} {x : AddCircle T} :
+    toCircle ((m - n) • x :) = fourier m x * conj (fourier n x) := by
+  rw [← fourier_apply]; exact fourier_sub
+
+/-- `fourier n` is multiplicative in its argument: it is an additive character. -/
+theorem fourier_eval_add {n : ℤ} {x y : AddCircle T} :
+    fourier n (x + y) = fourier n x * fourier n y := by
+  simp_rw [fourier_apply, smul_add, toCircle_add, Circle.coe_mul]
+
+theorem fourier_eval_neg {n : ℤ} {x : AddCircle T} :
+    fourier n (-x) = conj (fourier n x) := by
+  rw [fourier_apply, smul_neg, fourier_neg']
+
+theorem fourier_eval_sub {n : ℤ} {x y : AddCircle T} :
+    fourier n (x - y) = fourier n x * conj (fourier n y) := by
+  rw [sub_eq_add_neg, fourier_eval_add, fourier_eval_neg]
+
 theorem fourier_norm [Fact (0 < T)] (n : ℤ) : ‖@fourier T n‖ = 1 := by
   rw [ContinuousMap.norm_eq_iSup_norm]
   have : ∀ x : AddCircle T, ‖fourier n x‖ = 1 := fun x => Circle.norm_coe _
