@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Elementwise
 public import Mathlib.Topology.ContinuousMap.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.Notation
+public import Mathlib.CategoryTheory.Endomorphism
 
 /-!
 # Category instance for topological spaces
@@ -151,6 +152,15 @@ lemma hom_inv_id_apply {X Y : TopCat.{u}} (f : X ≅ Y) (x : X) : f.inv (f.hom x
 
 lemma inv_hom_id_apply {X Y : TopCat.{u}} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y := by
   simp
+
+open scoped ContinuousMap.Monoid in
+/-- The continuous self-maps of a topological space and the endomorphisms as an object in `TopCat`
+are equipped with the same monoid structure. -/
+@[simps] def continuousMapEquivEnd {X : Type*} [TopologicalSpace X] :
+    C(X, X) ≃* End (TopCat.of X) where
+  toFun := TopCat.ofHom
+  invFun := TopCat.Hom.hom
+  map_mul' _ _ := rfl
 
 /-- Morphisms in `TopCat` are equivalent to continuous maps. -/
 @[simps]

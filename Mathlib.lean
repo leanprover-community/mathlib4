@@ -8235,6 +8235,7 @@ public import Mathlib.Topology.Homotopy.Contractible
 public import Mathlib.Topology.Homotopy.Equiv
 public import Mathlib.Topology.Homotopy.HSpaces
 public import Mathlib.Topology.Homotopy.HomotopyGroup
+public import Mathlib.Topology.Homotopy.Isotopy
 public import Mathlib.Topology.Homotopy.Lifting
 public import Mathlib.Topology.Homotopy.LocallyContractible
 public import Mathlib.Topology.Homotopy.Path

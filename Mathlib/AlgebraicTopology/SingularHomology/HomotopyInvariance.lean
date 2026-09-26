@@ -7,6 +7,8 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.HomotopyInvariance
 public import Mathlib.AlgebraicTopology.SingularHomology.Basic
+public import Mathlib.GroupTheory.Congruence.Hom
+public import Mathlib.Topology.Homotopy.Isotopy
 public import Mathlib.Topology.Homotopy.TopCat.ToSSet
 
 /-!
@@ -38,10 +40,10 @@ universe v u w
 
 open AlgebraicTopology CategoryTheory Limits
 
-namespace TopCat.Homotopy
-
 variable {C : Type u} [Category.{v} C] [Preadditive C] [HasCoproducts.{w} C]
   {X Y : TopCat.{w}} {f g : X ⟶ Y}
+
+namespace TopCat.Homotopy
 
 /-- Two homotopic morphisms in `TopCat` induce homotopic morphisms on the
 singular chain complexes with coefficients in `R` (e.g. `R := ℤ` considered as
@@ -62,3 +64,26 @@ lemma congr_homologyMap_singularChainComplexFunctor [CategoryWithHomology C]
   (H.singularChainComplexFunctorObjMap R).homologyMap_eq n
 
 end TopCat.Homotopy
+
+section TopologicalSpace
+
+variable [CategoryWithHomology C] (n : ℕ)
+
+open scoped ContinuousMap.Monoid in
+/-- Continuous self-maps up to homotopy act on the singular homology. -/
+noncomputable def MappingClassMonoid.toEndSinularHomology {c : C} :
+    MappingClassMonoid X →* End (singularHomology n X c) :=
+  Con.lift _ (ContinuousMap.toEndSingularHomology n) fun _ _ ⟨h⟩ ↦
+    TopCat.Homotopy.congr_homologyMap_singularChainComplexFunctor h c n
+
+/-- The (extended) mapping class group acts on the singular homology. If X is an orientable
+manifold, the mapping class group is usually defined to consist of orientation-preserving
+homeomorphisms, i.e. those acts trivially on Hₙ(X;ℤ), where `n = dim X`.
+If X is a surface, the Torelli subgroup consists of homeomorphisms that acts trivially
+on H₁(S;ℤ) and H₂(S;ℤ). -/
+noncomputable def MappingClassGroup.toAutSingularHomology {c : C} :
+    MappingClassGroup X →* Aut (singularHomology n X c) :=
+  Con.lift _ (Homeomorph.toAutSingularHomology n) fun _ _ ⟨h⟩ ↦ Iso.ext <|
+    TopCat.Homotopy.congr_homologyMap_singularChainComplexFunctor h.toHomotopy c n
+
+end TopologicalSpace
