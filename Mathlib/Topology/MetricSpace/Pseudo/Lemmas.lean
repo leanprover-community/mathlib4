@@ -125,3 +125,23 @@ theorem lebesgue_number_lemma_of_metric {s : Set α} {ι : Sort*} {c : ι → Se
 theorem lebesgue_number_lemma_of_metric_sUnion {s : Set α} {c : Set (Set α)} (hs : IsCompact s)
     (hc₁ : ∀ t ∈ c, IsOpen t) (hc₂ : s ⊆ ⋃₀ c) : ∃ δ > 0, ∀ x ∈ s, ∃ t ∈ c, ball x δ ⊆ t := by
   rw [sUnion_eq_iUnion] at hc₂; simpa using lebesgue_number_lemma_of_metric hs (by simpa) hc₂
+
+/-- For a compact set `s` with `f` continuous at each point, there exists a uniform `δ > 0` such
+that `f` has controlled variation near `s`: if `x ∈ s` and `y` is within distance `δ` of `x`,
+then `f x` and `f y` are within distance `ε`. -/
+theorem IsCompact.exists_forall_le_dist {β : Type*} [PseudoMetricSpace β] {s : Set α} {f : α → β}
+    (hs : IsCompact s) (hf : ∀ x ∈ s, ContinuousAt f x) {ε : ℝ} (hε : 0 < ε) :
+    ∃ δ > 0, ∀ x ∈ s, ∀ y, dist x y < δ → dist (f x) (f y) < ε := by
+  have h := fun x (hx : x ∈ s) ↦ Metric.continuousAt_iff.mp (hf x hx) (ε / 2) (half_pos hε)
+  choose δₓ hδₓ h using h
+  let c : s → Set α := fun ⟨x, hx⟩ ↦ ball x (δₓ x hx)
+  have hcover : s ⊆ ⋃ i, c i := fun x hx ↦ mem_iUnion.mpr ⟨⟨x, hx⟩, mem_ball_self (hδₓ x hx)⟩
+  obtain ⟨δ, hδ, hleb⟩ := lebesgue_number_lemma_of_metric hs (fun _ ↦ isOpen_ball) hcover
+  refine ⟨δ, hδ, fun x hx y hxy ↦ ?_⟩
+  obtain ⟨⟨z, hz⟩, hball⟩ := hleb x hx
+  have hxz : dist x z < δₓ z hz := hball (mem_ball_self hδ)
+  have hyz : dist y z < δₓ z hz := hball (by simpa only [mem_ball, dist_comm])
+  calc dist (f x) (f y)
+    _ ≤ dist (f x) (f z) + dist (f y) (f z) := dist_triangle_right _ _ _
+    _ < ε / 2 + ε / 2 := add_lt_add (h z hz hxz) (h z hz hyz)
+    _ = ε := add_halves ε
