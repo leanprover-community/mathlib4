@@ -5,7 +5,7 @@ Authors: Nicolò Cavalleri, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.FunLike.Basic
+public import Mathlib.Basic.FunLike.Basic
 public import Mathlib.Tactic.Continuity
 public import Mathlib.Tactic.Lift
 public import Mathlib.Topology.Defs.Basic

@@ -5,7 +5,7 @@ Authors: Weiyi Wang
 -/
 module
 
-public import Mathlib.Data.Int.SuccPred
+public import Mathlib.Order.SuccPred.Int
 
 /-!
 # Pentagonal numbers

@@ -5,9 +5,9 @@ Authors: Frédéric Dupuis
 -/
 module
 
+public import Mathlib.Algebra.Group.FunLike
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Order.Hom.Monoid
-public import Mathlib.Data.FunLike.Group
 public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-! # Positive linear maps

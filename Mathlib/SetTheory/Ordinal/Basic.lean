@@ -6,9 +6,9 @@ Authors: Mario Carneiro, Floris van Doorn
 module
 
 public import Mathlib.Algebra.Order.SuccPred
-public import Mathlib.Data.Sum.Order
 public import Mathlib.Order.IsNormal
 public import Mathlib.Order.Shrink
+public import Mathlib.Order.Sum.Order
 public import Mathlib.SetTheory.Cardinal.Basic
 public import Mathlib.Tactic.PPWithUniv
 

@@ -9,7 +9,7 @@ public import Mathlib.Algebra.MonoidAlgebra.Degree
 public import Mathlib.Algebra.Order.Ring.WithTop
 public import Mathlib.Algebra.Polynomial.Basic
 public import Mathlib.Data.Nat.Cast.WithTop
-public import Mathlib.Data.Nat.SuccPred
+public import Mathlib.Order.SuccPred.Nat
 public import Mathlib.Order.SuccPred.WithBot
 
 /-!
