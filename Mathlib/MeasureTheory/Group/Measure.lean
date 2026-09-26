@@ -85,7 +85,7 @@ variable [MeasurableMul G]
 @[to_additive]
 theorem measurePreserving_mul_left (μ : Measure G) [IsMulLeftInvariant μ] (g : G) :
     MeasurePreserving (g * ·) μ μ :=
-  ⟨measurable_const_mul g, map_mul_left_eq_self μ g⟩
+  ⟨(measurable_const_mul g).aemeasurable, map_mul_left_eq_self μ g⟩
 
 @[to_additive]
 theorem MeasurePreserving.mul_left (μ : Measure G) [IsMulLeftInvariant μ] (g : G) {X : Type*}
@@ -96,7 +96,7 @@ theorem MeasurePreserving.mul_left (μ : Measure G) [IsMulLeftInvariant μ] (g :
 @[to_additive]
 theorem measurePreserving_mul_right (μ : Measure G) [IsMulRightInvariant μ] (g : G) :
     MeasurePreserving (· * g) μ μ :=
-  ⟨measurable_mul_const g, map_mul_right_eq_self μ g⟩
+  ⟨(measurable_mul_const g).aemeasurable, map_mul_right_eq_self μ g⟩
 
 @[to_additive]
 theorem MeasurePreserving.mul_right (μ : Measure G) [IsMulRightInvariant μ] (g : G) {X : Type*}
@@ -132,7 +132,7 @@ theorem forall_measure_preimage_mul_right_iff (μ : Measure G) :
   exact ⟨fun h => ⟨h⟩, fun h => h.1⟩
 
 @[to_additive]
-instance Measure.prod.instIsMulLeftInvariant [IsMulLeftInvariant μ] [SFinite μ] {H : Type*}
+instance Measure.prod.instIsMulLeftInvariant [IsMulLeftInvariant μ] {H : Type*}
     [Mul H] {mH : MeasurableSpace H} {ν : Measure H} [MeasurableMul H] [IsMulLeftInvariant ν]
     [SFinite ν] : IsMulLeftInvariant (μ.prod ν) := by
   constructor
@@ -142,7 +142,7 @@ instance Measure.prod.instIsMulLeftInvariant [IsMulLeftInvariant μ] [SFinite μ
     map_mul_left_eq_self μ g, map_mul_left_eq_self ν h]
 
 @[to_additive]
-instance Measure.prod.instIsMulRightInvariant [IsMulRightInvariant μ] [SFinite μ] {H : Type*}
+instance Measure.prod.instIsMulRightInvariant [IsMulRightInvariant μ] {H : Type*}
     [Mul H] {mH : MeasurableSpace H} {ν : Measure H} [MeasurableMul H] [IsMulRightInvariant ν]
     [SFinite ν] : IsMulRightInvariant (μ.prod ν) := by
   constructor
@@ -334,7 +334,7 @@ variable [MeasurableInv G]
 
 @[to_additive]
 theorem measurePreserving_inv (μ : Measure G) [IsInvInvariant μ] : MeasurePreserving Inv.inv μ μ :=
-  ⟨measurable_inv, map_inv_eq_self μ⟩
+  ⟨measurable_inv.aemeasurable, map_inv_eq_self μ⟩
 
 @[to_additive]
 instance inv.instSFinite (μ : Measure G) [SFinite μ] : SFinite μ.inv := by
@@ -926,7 +926,7 @@ instance (priority := 100) IsHaarMeasure.sigmaFinite [SigmaCompactSpace G] : Sig
 @[to_additive]
 instance prod.instIsHaarMeasure {G : Type*} [Group G] [TopologicalSpace G] {_ : MeasurableSpace G}
     {H : Type*} [Group H] [TopologicalSpace H] {_ : MeasurableSpace H} (μ : Measure G)
-    (ν : Measure H) [IsHaarMeasure μ] [IsHaarMeasure ν] [SFinite μ] [SFinite ν]
+    (ν : Measure H) [IsHaarMeasure μ] [IsHaarMeasure ν] [SFinite ν]
     [MeasurableMul G] [MeasurableMul H] : IsHaarMeasure (μ.prod ν) where
 
 /-- If the neutral element of a group is not isolated, then a Haar measure on this group has value
