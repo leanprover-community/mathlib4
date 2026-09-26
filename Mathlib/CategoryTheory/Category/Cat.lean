@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Bicategory.Strict.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 public import Mathlib.CategoryTheory.Types.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.Notation
 
 /-!
 # Category of categories
@@ -376,7 +377,7 @@ attribute [local simp] eqToHom_map
 def equivOfIso {C D : Cat} (γ : C ≅ D) : C ≌ D where
   functor := γ.hom.toFunctor
   inverse := γ.inv.toFunctor
-  unitIso := eqToIso <| congr($(γ.hom_inv_id).toFunctor).symm
+  unitIso := eqToIso congr($(γ.hom_inv_id).toFunctor).symm
   counitIso := eqToIso <| congr($(γ.inv_hom_id).toFunctor)
 
 /-- Under certain hypotheses, an equivalence of categories actually

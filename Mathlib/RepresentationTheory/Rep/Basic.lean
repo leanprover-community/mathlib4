@@ -46,7 +46,9 @@ variable {k : Type u} {G : Type v} [Semiring k] [Monoid G] {X Y : Type w} [AddCo
   [AddCommGroup Y] [Module k X] [Module k Y] {ρ : Representation k G X} {σ : Representation k G Y}
   (A B C : Rep.{w} k G)
 
-attribute [instance] hV1 hV2
+attribute [instance] hV1
+
+attribute [instance 1100] hV2
 
 initialize_simps_projections Rep (-hV1, -hV2)
 
@@ -264,8 +266,8 @@ instance : AddCommGroup (A ⟶ B) := fast_instance% hom_injective.addCommGroup
     Rep.Hom.hom zero_hom add_hom neg_hom sub_hom nsmul_hom zsmul_hom
 
 instance : Preadditive (Rep.{w} k G) where
-  add_comp _ _ _ := add_comp
-  comp_add _ _ _ := comp_add
+  add_comp := by simp [add_comp]
+  comp_add := by simp [comp_add]
 
 lemma sum_hom {ι : Type u'} (f : ι → (A ⟶ B)) (s : Finset ι) :
     (∑ i ∈ s, f i).hom = ∑ i ∈ s, (f i).hom := by
@@ -615,8 +617,8 @@ instance {M N : Rep k G} : Module k (M ⟶ N) := fast_instance% hom_injective.mo
   _ ⟨⟨_, zero_hom⟩, add_hom⟩ <| by simp [smul_hom]
 
 instance : Linear k (Rep k G) where
-  smul_comp _ _ _ := smul_comp
-  comp_smul _ _ _ := comp_smul
+  smul_comp := by simp [smul_comp]
+  comp_smul := by simp [comp_smul]
 
 end CommSemiring
 

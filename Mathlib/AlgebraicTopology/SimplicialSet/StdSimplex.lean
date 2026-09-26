@@ -73,6 +73,7 @@ instance (n : SimplexCategory) (m : SimplexCategoryᵒᵖ) :
   fun a b ↦ decidable_of_iff (stdSimplex.objEquiv a = stdSimplex.objEquiv b) (by simp)
 
 /-- If `x : Δ[n] _⦋d⦌` and `i : Fin (d + 1)`, we may evaluate `x i : Fin (n + 1)`. -/
+@[macro_inline]
 instance (n i : ℕ) : FunLike (Δ[n] _⦋i⦌) (Fin (i + 1)) (Fin (n + 1)) where
   coe x j := (objEquiv x).toOrderHom j
   coe_injective _ _ h := objEquiv.injective (by ext : 3; apply congr_fun h)
@@ -415,8 +416,7 @@ def faceRepresentableBy {n : ℕ} (S : Finset (Fin (n + 1)))
         induction j using SimplexCategory.rec with | _ j
         dsimp
         ext i : 2
-        exact congr_arg Subtype.val
-          (e.apply_symm_apply ⟨(objEquiv x).toOrderHom i, _⟩) }
+        congrm $(e.apply_symm_apply ⟨(objEquiv x).toOrderHom i, _⟩).val }
   homEquiv_comp f g := by aesop
 
 /-- If a simplicial set `X` is representable by `⦋m⦌` for some `m : ℕ`, then this is the
@@ -635,7 +635,7 @@ private lemma bijective_image_objEquiv_toOrderHom_univ (m : ℕ) :
     apply SimplexCategory.Hom.ext
     rw [← OrderHom.range_eq_iff h₁ h₂]
     ext x
-    simpa using congr_fun (congrArg Membership.mem h₃) x
+    simpa using congr(x ∈ $h₃)
   · intro ⟨S, hS⟩
     dsimp at hS
     let e := monoEquivOfFin S (k := m + 1) (by simpa using hS)

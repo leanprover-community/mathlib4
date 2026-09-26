@@ -78,7 +78,7 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
       apply f.injective <| ContinuousLinearMap.ext fun z ↦ ?_
       obtain ⟨w, rfl⟩ := surj z
       simp [← this, hxy]
-    simpa [huv.isUnit.smul_left_cancel] using congr((fun f ↦ f u) $h_smul)
+    simpa [huv.isUnit.smul_left_cancel] using congr($h_smul u)
   set Tₗ : V ≃ₗ[𝕜] W := .ofBijective T.toLinearMap ⟨inj, surj⟩
   set T' := apply' _ (.id 𝕜) u ∘L f.symm.toContinuousAlgHom.toContinuousLinearMap ∘L
     smulRightL 𝕜 _ _ d
@@ -235,7 +235,7 @@ public instance (priority := 100) {F : Type*} [EquivLike F (V →L[𝕜] V) (W �
     OrderIsoClass F _ _ where
   map_le_map_iff f x y := by
     obtain ⟨U, hU⟩ := StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
-      (StarAlgEquiv.ofClass f : _ ≃⋆ₐ[𝕜] _) (map_continuous f)
+      (.ofClass f) (map_continuous f)
     have this a : f a = U.conjStarAlgEquiv a := by simpa using! congr($hU a)
     simp_rw [le_def, ← _root_.map_sub, ← isPositive_toLinearMap_iff, this]
     exact LinearMap.isPositive_linearIsometryEquiv_conj_iff U

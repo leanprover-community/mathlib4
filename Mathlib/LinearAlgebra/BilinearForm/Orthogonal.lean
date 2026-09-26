@@ -244,9 +244,9 @@ lemma ker_restrict_eq_of_codisjoint {p q : Submodule R M} (hpq : Codisjoint p q)
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · ext w
     obtain ⟨x, y, hx, hy, rfl⟩ := Submodule.codisjoint_iff_exists_add_eq.mp hpq w
-    simpa [hB z hz y hy] using LinearMap.congr_fun h ⟨x, hx⟩
+    simpa [hB z hz y hy] using congr($h ⟨x, hx⟩)
   · ext ⟨x, hx⟩
-    simpa using LinearMap.congr_fun h x
+    simpa using congr($h x)
 
 lemma inf_orthogonal_self_le_ker_restrict {W : Submodule R M} (b₁ : B.IsRefl) :
     W ⊓ B.orthogonal W ≤ (LinearMap.ker <| B.restrict W).map W.subtype := by

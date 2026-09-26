@@ -116,7 +116,7 @@ def mk {R} (f : ℕ → R) : R⟦X⟧ := fun s => f (s ())
 
 @[simp]
 theorem coeff_mk (n : ℕ) (f : ℕ → R) : coeff n (mk f) = f n :=
-  congr_arg f Finsupp.single_eq_same
+  congr(f $Finsupp.single_eq_same)
 
 theorem coeff_monomial (m n : ℕ) (a : R) : coeff m (monomial n a) = if m = n then a else 0 :=
   calc
@@ -227,7 +227,7 @@ theorem coeff_one_X : coeff 1 (X : R⟦X⟧) = 1 := by rw [coeff_X, ite_eq_left 
 
 @[simp]
 theorem X_ne_zero [Nontrivial R] : (X : R⟦X⟧) ≠ 0 := fun H => by
-  simpa only [coeff_one_X, one_ne_zero, map_zero] using congr_arg (coeff 1) H
+  simpa only [coeff_one_X, one_ne_zero, map_zero] using congr(coeff 1 $H)
 
 theorem X_pow_eq (n : ℕ) : (X : R⟦X⟧) ^ n = monomial n 1 :=
   MvPowerSeries.X_pow_eq _ n
@@ -687,7 +687,7 @@ lemma coeff_one_pow (n : ℕ) (φ : R⟦X⟧) :
           rw [h'] at h''
           simp only [pow_zero, one_mul, coeff_one, one_ne_zero, ↓reduceIte, zero_mul, add_zero,
             mul_one] at h''
-          norm_num at h''
+          simp at h''
         · rw [ih]
           · conv => lhs; arg 2; rw [mul_comm, ← mul_assoc]
             move_mul [← constantCoeff φ ^ (n' - 1)]
@@ -783,7 +783,7 @@ theorem coe_def : (φ : PowerSeries R) = PowerSeries.mk (coeff φ) :=
 
 @[simp]
 theorem coeff_coe (n) : PowerSeries.coeff n φ = coeff φ n :=
-  congr_arg (coeff φ) Finsupp.single_eq_same
+  congr(coeff φ $Finsupp.single_eq_same)
 
 @[simp, norm_cast]
 theorem coe_monomial (n : ℕ) (a : R) :

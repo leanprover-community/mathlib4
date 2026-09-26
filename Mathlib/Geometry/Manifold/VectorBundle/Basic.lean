@@ -236,7 +236,7 @@ theorem contMDiff_zeroSection : ContMDiff IB (IB.prod 𝓘(𝕜, F)) n (zeroSect
   apply (contMDiffAt_const (c := 0)).congr_of_eventuallyEq
   filter_upwards [(trivializationAt F E x).open_baseSet.mem_nhds
     (mem_baseSet_trivializationAt F E x)] with y hy
-    using congr_arg Prod.snd <| (trivializationAt F E x).zeroSection 𝕜 hy
+    using congr($((trivializationAt F E x).zeroSection 𝕜 hy).snd)
 
 theorem contMDiffOn_zeroSection {t : Set B} :
     ContMDiffOn IB (IB.prod 𝓘(𝕜, F)) n (zeroSection F E) t :=

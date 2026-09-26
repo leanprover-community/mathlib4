@@ -192,7 +192,7 @@ theorem isClassified_of_normalize_isPrimitiveClassified (hc : h.normalize.IsPrim
 theorem ne_zero_of_coprime (hc : Int.gcd x y = 1) : z ≠ 0 := by
   suffices 0 < z * z by
     rintro rfl
-    norm_num at this
+    simp at this
   rw [← h.eq, ← sq, ← sq]
   have hc' : Int.gcd x y ≠ 0 := by
     rw [hc]
@@ -435,7 +435,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
   let q := (circleEquivGen hQ).symm ⟨⟨v, w⟩, hp⟩
   have ht4 : v = 2 * q / (1 + q ^ 2) ∧ w = (1 - q ^ 2) / (1 + q ^ 2) := by
     apply Prod.mk.inj
-    exact congr_arg Subtype.val ((circleEquivGen hQ).apply_symm_apply ⟨⟨v, w⟩, hp⟩).symm
+    congrm $(((circleEquivGen hQ).apply_symm_apply ⟨⟨v, w⟩, hp⟩).symm).val
   let m := (q.den : ℤ)
   let n := q.num
   have hm0 : m ≠ 0 := by
@@ -494,7 +494,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
         rw [Int.ediv_mul_cancel h1.1, Int.ediv_mul_cancel h1.2.1, hw2, Rat.divInt_eq_div]
         norm_cast
       · lia
-    norm_num [h2.1, h1.2.2.1] at hyo
+    simp [h2.1, h1.2.2.1] at hyo
 
 theorem isPrimitiveClassified_of_coprime_of_pos (hc : Int.gcd x y = 1) (hzpos : 0 < z) :
     h.IsPrimitiveClassified := by

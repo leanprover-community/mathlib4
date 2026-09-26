@@ -377,7 +377,7 @@ theorem cycleIcc_of_gt (h : j < k) : (cycleIcc i j) k = k := by
       simp [range_natAdd_castLEEmb]; lia
     have : (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)
       = subNat i.1 (k.cast (by lia)) (by simp; lia) := by
-      simpa [symm_apply_eq] using eq_of_val_eq (by simp; lia)
+      simpa [-Function.Embedding.coe_trans, symm_apply_eq] using eq_of_val_eq (by simp; lia)
     simp only [cycleIcc_to_cycleRange hij kin, natAdd_castLEEmb, this,
       Function.Embedding.trans_apply, addNatEmb_apply, coe_toEmbedding, finCongr_apply]
     rw [cycleRange_of_gt]
@@ -394,7 +394,7 @@ theorem cycleIcc_of_le_of_le (hik : i ≤ k) (hkj : k ≤ j) [NeZero n] :
     simp [range_natAdd_castLEEmb]; lia
   have : (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)
       = subNat i.1 (k.cast (by lia)) (by simp; lia) := by
-    simpa [symm_apply_eq] using eq_of_val_eq (by simp; lia)
+    simpa [-Function.Embedding.coe_trans, symm_apply_eq] using eq_of_val_eq (by simp; lia)
   simp only [cycleIcc_to_cycleRange hij kin, natAdd_castLEEmb, this, Function.Embedding.trans_apply,
     addNatEmb_apply, coe_toEmbedding, finCongr_apply]
   refine eq_of_val_eq ?_
@@ -583,10 +583,10 @@ lemma decomposeFin'Symm_uncurry_bijective :
     Function.Bijective (decomposeFin'Symm (n := n)).uncurry := by
   rw [Nat.bijective_iff_injective_and_card]
   refine ⟨fun ⟨i, σ⟩ ⟨i', σ'⟩ h ↦ ?_, ?_⟩
-  · obtain rfl : i = i' := by simpa using DFunLike.congr_fun h 0
+  · obtain rfl : i = i' := by simpa using congr($h 0)
     obtain rfl : σ = σ' := by
       ext j : 1
-      simpa using DFunLike.congr_fun h j.succ
+      simpa using congr($h j.succ)
     rfl
   · rw [Nat.card_prod, Nat.card_perm, Nat.card_perm, Nat.card_eq_fintype_card,
       Nat.card_eq_fintype_card, Fintype.card_fin, Fintype.card_fin,

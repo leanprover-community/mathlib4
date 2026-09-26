@@ -41,9 +41,9 @@ theorem prod_apply_dite {p : ι → Prop} [DecidablePred p]
     _ = (∏ x : {x ∈ s | p x}, h (f x.1 <| by simpa using (mem_filter.mp x.2).2)) *
           ∏ x : {x ∈ s | ¬p x}, h (g x.1 <| by simpa using (mem_filter.mp x.2).2) :=
       congr_arg₂ _ (prod_congr rfl fun x _hx ↦
-        congr_arg h (dite_eq_left <| by simpa using (mem_filter.mp x.2).2))
+        congr(h $(dite_eq_left <| by simpa using (mem_filter.mp x.2).2)))
         (prod_congr rfl fun x _hx =>
-          congr_arg h (dite_eq_right <| by simpa using (mem_filter.mp x.2).2))
+          congr(h $(dite_eq_right <| by simpa using (mem_filter.mp x.2).2)))
 
 @[to_additive]
 theorem prod_apply_ite {s : Finset ι} {p : ι → Prop} [DecidablePred p] (f g : ι → γ)

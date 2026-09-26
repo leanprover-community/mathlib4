@@ -91,7 +91,6 @@ theorem IsPushout.IsVanKampen.flip {H : IsPushout f g h i} (H' : H.IsVanKampen) 
     H' g' f' i' h' αW αY αX αZ hg hf hi hh w.flip
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
     H.IsVanKampen ↔ IsVanKampenColimit (PushoutCocone.mk h i H.w) := by
   constructor
@@ -109,8 +108,8 @@ theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
       · refine Cocone.ext (Iso.refl c'.pt) ?_
         rintro (_ | _ | _) <;> dsimp <;>
           simp only [c'.w, Category.id_comp, Category.comp_id]
-    · exact ⟨NatTrans.congr_app eα.symm _⟩
-    · exact ⟨NatTrans.congr_app eα.symm _⟩
+    · exact ⟨congr($(eα.symm).app _)⟩
+    · exact ⟨congr($(eα.symm).app _)⟩
     · exact ⟨by simp⟩
     constructor
     · rintro ⟨h₁, h₂⟩ (_ | _ | _)
@@ -199,7 +198,7 @@ theorem is_coprod_iff_isPushout {X E Y YE : C} (c : BinaryCofan X E) (hc : IsCol
       · refine e₁.trans (Eq.symm ?_); exact h.fac _ _
   · refine fun H => ⟨?_⟩
     fapply Limits.BinaryCofan.isColimitMk
-    · exact fun s => H.isColimit.desc (PushoutCocone.mk s.inr _ <|
+    · exact fun s => H.isColimit.desc (PushoutCocone.mk s.inr _
         (hc.fac (BinaryCofan.mk (f ≫ s.inr) s.inl) ⟨WalkingPair.left⟩).symm)
     · intro s
       rw [Category.assoc]
@@ -218,7 +217,6 @@ theorem is_coprod_iff_isPushout {X E Y YE : C} (c : BinaryCofan X E) (hc : IsCol
           rfl
         · refine ((Category.assoc _ _ _).symm.trans e₁).trans ?_; symm; exact hc.fac _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsPushout.isVanKampen_inl {W E X Z : C} (c : BinaryCofan W E) [FinitaryExtensive C]
     [HasPullbacks C] (hc : IsColimit c) (f : W ⟶ X) (h : X ⟶ Z) (i : c.pt ⟶ Z)
     (H : IsPushout f c.inl h i) : H.IsVanKampen := by
