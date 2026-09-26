@@ -274,9 +274,19 @@ theorem LinearIndependent.linearCombination_ne_of_notMem_support [Nontrivial R]
 
 end Subtype
 
-theorem LinearIndepOn.id_imageₛ {s : Set M} {f : M →ₗ[R] M'} (hs : LinearIndepOn R id s)
-    (hf_inj : Set.InjOn f (span R s)) : LinearIndepOn R id (f '' s) :=
-  id_image <| hs.map_injOn f (by simpa using hf_inj)
+theorem linearIndepOn_id_imageₛ_iff {s : Set M} {f : M →ₗ[R] M'} (hf_inj : Set.InjOn f (span R s)) :
+    LinearIndepOn R id (f '' s) ↔ LinearIndepOn R id s := by
+  rw [← linearIndepOn_iff_image (hf_inj.mono subset_span)]
+  exact f.linearIndepOn_iff_of_injOn (by simpa using hf_inj)
+
+alias ⟨_, LinearIndepOn.id_imageₛ⟩ := linearIndepOn_id_imageₛ_iff
+
+open scoped Pointwise in
+@[simp]
+theorem linearIndepOn_id_smul_set_iff {G : Type*} [Group G] [DistribMulAction G M]
+    [SMulCommClass G R M] (a : G) (s : Set M) :
+    LinearIndepOn R id (a • s) ↔ LinearIndepOn R id s :=
+  linearIndepOn_id_imageₛ_iff (DistribMulAction.toLinearEquiv R M a).injective.injOn
 
 theorem surjective_of_linearIndependent_of_span [Nontrivial R] (hv : LinearIndependent R v)
     (f : ι' ↪ ι) (hss : range v ⊆ span R (range (v ∘ f))) : Surjective f := by
