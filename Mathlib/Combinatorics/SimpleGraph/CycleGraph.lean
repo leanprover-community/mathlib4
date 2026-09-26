@@ -57,7 +57,7 @@ theorem cycleGraph_adj' {n : ℕ} {u v : Fin n} :
   | 1 => simp [cycleGraph_one_adj]
   | n + 2 => simp [cycleGraph_adj, Fin.ext_iff]
 
-theorem cycleGraph_eq_top_iff_le_three {n : ℕ} : cycleGraph n = ⊤ ↔ n ≤ 3 := by
+theorem cycleGraph_eq_top_iff {n : ℕ} : cycleGraph n = ⊤ ↔ n ≤ 3 := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · contrapose! h
     refine ne_top_iff_exists_not_adj.mpr ⟨⟨0, by lia⟩, ⟨2, by lia⟩, by simp, ?_⟩
@@ -66,8 +66,8 @@ theorem cycleGraph_eq_top_iff_le_three {n : ℕ} : cycleGraph n = ⊤ ↔ n ≤ 
     match n with
     | 0 | 1 | 2 | 3 => decide
 
-theorem cycleGraph_two_eq_top : cycleGraph 2 = ⊤ := cycleGraph_eq_top_iff_le_three.mpr (by simp)
-theorem cycleGraph_three_eq_top : cycleGraph 3 = ⊤ := cycleGraph_eq_top_iff_le_three.mpr (by simp)
+theorem cycleGraph_two_eq_top : cycleGraph 2 = ⊤ := cycleGraph_eq_top_iff.mpr (by simp)
+theorem cycleGraph_three_eq_top : cycleGraph 3 = ⊤ := cycleGraph_eq_top_iff.mpr (by simp)
 
 theorem cycleGraph_neighborSet {n : ℕ} {v : Fin (n + 2)} :
     (cycleGraph (n + 2)).neighborSet v = {v - 1, v + 1} := by
@@ -155,7 +155,7 @@ end cycle
 
 theorem preconnected_cycleGraph {n : ℕ} : (cycleGraph n).Preconnected := by
   match n with
-  | 0 | 1 | 2 => simp [cycleGraph_eq_top_iff_le_three.mpr]
+  | 0 | 1 | 2 => simp [cycleGraph_eq_top_iff.mpr]
   | n + 3 =>
     exact fun _ _ ↦ reachable_of_mem_support
       (cycleGraph.mem_support_cycle _) (cycleGraph.mem_support_cycle _)
