@@ -67,11 +67,11 @@ instance : RankLeOne (valuation (K := K)) where
 open balls of the valuation `NormedField.valuation`. -/
 theorem hasBasis_nhds_zero :
     (𝓝 (0 : K)).HasBasis (fun _ ↦ True)
-      fun γ : (ValueGroup₀ (.ofClass (valuation (K := K))))ˣ ↦
+      fun γ : valuation (K := K).ValueGroup₀ˣ ↦
         { x | valuation.restrict x < γ } := by
   refine Metric.nhds_basis_ball.to_hasBasis (fun ε hε ↦ ?_) fun γ _ ↦ ?_
   · obtain ⟨γ, hγ⟩ := Real.exists_forall_lt_of_strictMono
-      (embedding_strictMono (f := .ofClass (valuation (K := K)))) hε
+      (embedding_strictMono (f := (valuation (K := K) : K →*₀ ℝ≥0))) hε
     exact ⟨γ, trivial, fun x hx ↦ mem_ball_zero_iff.2 (by simpa using hγ _ hx)⟩
   · refine ⟨(embedding γ.1 : ℝ≥0), ?_, fun x hx ↦ ?_⟩
     · simpa using embedding_strictMono.lt_iff_lt.mpr γ.zero_lt
@@ -131,20 +131,6 @@ def absoluteValue (v : Valuation L Γ₀) [hv : RankLeOne v] : AbsoluteValue L �
       v.norm (x + y) ≤ max (v.norm x) (v.norm y) := by
         simp [norm_def, hv.strictMono'.le_iff_le]
       _ ≤ v.norm x + v.norm y := by simp [v.norm_def]
-
-/-- Absolute value corresponding to a valuation of rank at most one. -/
-@[simps]
-def absoluteValue (v : Valuation L Γ₀) [hv : RankLeOne v] : AbsoluteValue L ℝ where
-  toFun    := v.norm
-  map_mul' := by simp [v.norm_def]
-  nonneg'  := by simp [v.norm_def]
-  eq_zero' := by simp [v.norm_def]
-  add_le' x y := by
-    calc
-      v.norm (x + y) ≤ max (v.norm x) (v.norm y) := by
-        simp [v.norm_def, hv.strictMono'.le_iff_le]
-      _ ≤ v.norm x + v.norm y :=
-        max_le_add_of_nonneg (by simp [v.norm_def]) (by simp [v.norm_def])
 
 end Valuation
 

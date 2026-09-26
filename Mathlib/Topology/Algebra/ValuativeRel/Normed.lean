@@ -19,7 +19,7 @@ of rank at most one.
   determined by the norm.
 * `NormedField.isValuativeTopology` : the topology on a nonarchimedean normed field `K` is the
   topology induced by the valuative relation determined by the norm.
-* `IsValuativeTopology.toNormedField` : the normed field structure determined by a valuative
+* `ValuativeRel.toNormedField` : the normed field structure determined by a valuative
   relation of rank at most one.
 * `IsValuativeTopology.toNontriviallyNormedField` : the nontrivially normed field structure
   determined by a rank one valuation.
@@ -105,44 +105,49 @@ variable {L : Type*} [Field L] [ValuativeRel L] [IsRankLeOne L] {x y : L}
 def absoluteValue : AbsoluteValue L ℝ :=
   (valuation L).absoluteValue
 
-@[simp]
 theorem absoluteValue_apply (x : L) : absoluteValue x = (valuation L).norm x := rfl
 
+@[simp]
 theorem absoluteValue_le_absoluteValue_iff : absoluteValue x ≤ absoluteValue y ↔ x ≤ᵥ y := by
-  simp [absoluteValue_apply, absoluteValue_apply, norm_def, strictMono.le_iff_le,
-    (valuation L).vle_iff_le]
+  simp [absoluteValue_apply, norm_def, (valuation L).vle_iff_le]
 
-theorem absoluteValue_lt_absoluteValue_iff : e.absoluteValue x < e.absoluteValue y ↔ x <ᵥ y := by
-  rw [absoluteValue_apply, absoluteValue_apply, NNReal.coe_lt_coe, e.strictMono.lt_iff_lt,
-    (valuation L).vlt_iff_lt]
+@[simp]
+theorem absoluteValue_lt_absoluteValue_iff : absoluteValue x < absoluteValue y ↔ x <ᵥ y := by
+  simpa only [not_le, not_vle] using absoluteValue_le_absoluteValue_iff (x := y) (y := x).not
 
-theorem absoluteValue_lt_emb_iff {γ : ValueGroupWithZero L} :
-    e.absoluteValue x < e.emb γ ↔ valuation L x < γ := by
-  rw [absoluteValue_apply, NNReal.coe_lt_coe, e.strictMono.lt_iff_lt]
+@[simp]
+theorem absoluteValue_eq_absoluteValue_iff : absoluteValue x = absoluteValue y ↔ x =ᵥ y := by
+  rw [le_antisymm_iff, veq_def]
+  exact Iff.and absoluteValue_le_absoluteValue_iff absoluteValue_le_absoluteValue_iff
 
-theorem absoluteValue_le_one_iff : e.absoluteValue x ≤ 1 ↔ x ≤ᵥ 1 := by
-  simpa using e.absoluteValue_le_absoluteValue_iff (x := x) (y := 1)
+@[simp]
+theorem absoluteValue_le_one_iff : absoluteValue x ≤ 1 ↔ x ≤ᵥ 1 := by
+  simpa using absoluteValue_le_absoluteValue_iff (x := x) (y := 1)
 
-theorem absoluteValue_lt_one_iff : e.absoluteValue x < 1 ↔ x <ᵥ 1 := by
-  simpa using e.absoluteValue_lt_absoluteValue_iff (x := x) (y := 1)
+@[simp]
+theorem absoluteValue_lt_one_iff : absoluteValue x < 1 ↔ x <ᵥ 1 := by
+  simpa using absoluteValue_lt_absoluteValue_iff (x := x) (y := 1)
 
-theorem one_le_absoluteValue_iff : 1 ≤ e.absoluteValue x ↔ 1 ≤ᵥ x := by
-  simpa using e.absoluteValue_le_absoluteValue_iff (x := 1) (y := x)
+@[simp]
+theorem absoluteValue_eq_one_iff : absoluteValue x = 1 ↔ x =ᵥ 1 := by
+  simpa using absoluteValue_eq_absoluteValue_iff (x := x) (y := 1)
 
-theorem one_lt_absoluteValue_iff : 1 < e.absoluteValue x ↔ 1 <ᵥ x := by
-  simpa using e.absoluteValue_lt_absoluteValue_iff (x := 1) (y := x)
+@[simp]
+theorem one_le_absoluteValue_iff : 1 ≤ absoluteValue x ↔ 1 ≤ᵥ x := by
+  simpa using absoluteValue_le_absoluteValue_iff (x := 1) (y := x)
 
-theorem absoluteValue_pos_iff : 0 < e.absoluteValue x ↔ 0 <ᵥ x := by
-  simpa using e.absoluteValue_lt_absoluteValue_iff (x := 0) (y := x)
+@[simp]
+theorem one_lt_absoluteValue_iff : 1 < absoluteValue x ↔ 1 <ᵥ x := by
+  simpa using absoluteValue_lt_absoluteValue_iff (x := 1) (y := x)
 
-theorem isNonarchimedean_absoluteValue : IsNonarchimedean e.absoluteValue := fun x y ↦
-  le_sup_iff.2 <| (vle_add_cases x y).imp e.absoluteValue_le_absoluteValue_iff.2
-    e.absoluteValue_le_absoluteValue_iff.2
+theorem isNonarchimedean_absoluteValue : IsNonarchimedean (absoluteValue (L := L)) :=
+  fun x y ↦ le_sup_iff.2 <| (vle_add_cases x y).imp absoluteValue_le_absoluteValue_iff.2
+    absoluteValue_le_absoluteValue_iff.2
 
-theorem exists_one_lt_absoluteValue [IsNontrivial L] : ∃ x : L, 1 < e.absoluteValue x := by
+theorem exists_one_lt_absoluteValue [IsNontrivial L] : ∃ x : L, 1 < absoluteValue x := by
   obtain ⟨γ, hγ₀, hγ₁⟩ := ValuativeRel.IsNontrivial.exists_lt_one (R := L)
   obtain ⟨x, hx⟩ := valuation_surjective γ⁻¹
-  exact ⟨x, e.one_lt_absoluteValue_iff.2 <| (valuation L).one_vlt_iff.2 <|
+  exact ⟨x, one_lt_absoluteValue_iff.2 <| (valuation L).one_vlt_iff.2 <|
     hx ▸ (one_lt_inv₀ hγ₀).2 hγ₁⟩
 
 section UniformSpace
@@ -150,126 +155,109 @@ section UniformSpace
 variable [UniformSpace L] [IsUniformAddGroup L] [IsValuativeTopology L]
 
 theorem hasBasis_uniformity : (𝓤 L).HasBasis (fun ε : ℝ ↦ 0 < ε)
-    fun ε ↦ { p : L × L | e.absoluteValue (p.1 - p.2) < ε } := by
-  refine (IsValuativeTopology.hasBasis_uniformity L).to_hasBasis (fun γ _ ↦ ?_) fun ε hε ↦ ?_
-  · refine ⟨e.emb γ, by simpa using e.strictMono γ.zero_lt, fun p hp ↦ ?_⟩
-    rw [mem_ofPred, (valuation L).map_sub_swap]
-    exact e.absoluteValue_lt_emb_iff.1 hp
-  · obtain ⟨γ, hγ⟩ := Real.exists_forall_lt_of_strictMono e.strictMono hε
-    exact ⟨γ, trivial, fun p hp ↦ (e.absoluteValue.map_sub _ _).trans_lt (hγ _ hp)⟩
+    fun ε ↦ { p : L × L | absoluteValue (p.1 - p.2) < ε } := by
+  refine (valuation L).hasBasis_uniformity.to_hasBasis (fun γ _ ↦ ?_) fun ε hε ↦ ?_
+  · refine ⟨RankLeOne.hom' (valuation L) γ, by simp [← NNReal.coe_zero], fun p hp ↦ ?_⟩
+    simpa [(valuation L).restrict.map_sub_swap, absoluteValue_apply, norm_def] using hp
+  · obtain ⟨γ, hγ⟩ := Real.exists_forall_lt_of_strictMono
+      (RankLeOne.strictMono' (v := valuation L)) hε
+    exact ⟨γ, trivial, fun p hp ↦ (absoluteValue.map_sub _ _).trans_lt (hγ _ hp)⟩
 
-theorem uniformity_eq : 𝓤 L = 𝓤[e.absoluteValue.toNormedField.toUniformSpace] :=
-  e.hasBasis_uniformity.eq_of_same_basis <| by
-    let := e.absoluteValue.toNormedField
+theorem uniformity_eq : 𝓤 L = 𝓤[absoluteValue.toNormedField.toUniformSpace] :=
+  hasBasis_uniformity.eq_of_same_basis <| by
+    let := absoluteValue.toNormedField (K := L)
     have := Metric.uniformity_basis_dist (α := L)
-    simp only [dist_eq_norm] at this
-    exact this
+    convert this
+    rw [dist_comm]
+    congr
+    abel
 
 /-- The normed field structure on `L` determined by an embedding `e` of the value group of `L`
 into `ℝ≥0`, whose uniform structure is the given one. -/
 @[instance_reducible]
 def toNormedField : NormedField L where
-  __ := e.absoluteValue.toNormedField
-  toMetricSpace := e.absoluteValue.toNormedField.toMetricSpace.replaceUniformity e.uniformity_eq
-
-instance isUltrametricDist_toNormedField :
-    letI := e.toNormedField
-    IsUltrametricDist L :=
-  letI := e.toNormedField
-  IsUltrametricDist.isUltrametricDist_of_isNonarchimedean_norm e.isNonarchimedean_absoluteValue
+  __ := absoluteValue.toNormedField
+  toMetricSpace := absoluteValue.toNormedField.toMetricSpace.replaceUniformity uniformity_eq
 
 /-- The nontrivially normed field structure on `L` determined by an embedding `e` of the value
 group of `L` into `ℝ≥0`, whose uniform structure is the given one. -/
 @[instance_reducible]
 def toNontriviallyNormedField [IsNontrivial L] : NontriviallyNormedField L where
-  __ := e.toNormedField
-  non_trivial := e.exists_one_lt_absoluteValue
-
-end UniformSpace
-
-end ValuativeRel.RankLeOneStruct
-
-namespace IsValuativeTopology
-
-variable (L : Type*) [Field L] [ValuativeRel L] [IsRankLeOne L] [UniformSpace L]
-  [IsUniformAddGroup L] [IsValuativeTopology L]
-
-/-- The normed field structure determined by a valuative relation of rank at most one, whose
-uniform structure is the given one. -/
-@[instance_reducible]
-def toNormedField : NormedField L := (IsRankLeOne.nonempty (R := L)).some.toNormedField
-
-/-- The nontrivially normed field structure determined by a rank one valuation, whose uniform
-structure is the given one. -/
-@[instance_reducible]
-def toNontriviallyNormedField [IsNontrivial L] : NontriviallyNormedField L :=
-  (IsRankLeOne.nonempty (R := L)).some.toNontriviallyNormedField
-
-end IsValuativeTopology
+  __ := toNormedField
+  non_trivial := exists_one_lt_absoluteValue
 
 -- When a field has a valuative topology of rank at most one, one inherits a `NormedField`.
 -- Scoped instances to avoid a typeclass loop or non-defeq topology or norms.
-scoped[IsValuativeTopology] attribute [instance] IsValuativeTopology.toNormedField
-  IsValuativeTopology.toNontriviallyNormedField
+scoped[ValuativeRel] attribute [instance] ValuativeRel.toNormedField
+  ValuativeRel.toNontriviallyNormedField
 
-namespace IsValuativeTopology
-
-open scoped IsValuativeTopology
-
-variable {L : Type*} [Field L] [ValuativeRel L] [IsRankLeOne L] [UniformSpace L]
-  [IsUniformAddGroup L] [IsValuativeTopology L] {x y : L}
+section toNormedField
 
 protected theorem isNonarchimedean_norm : IsNonarchimedean ((‖·‖) : L → ℝ) :=
-  (IsRankLeOne.nonempty (R := L)).some.isNonarchimedean_absoluteValue
+  isNonarchimedean_absoluteValue
 
-namespace toNormedField
+instance isUltrametricDist_toNormedField :
+    letI := toNormedField (L := L)
+    IsUltrametricDist L :=
+  letI := toNormedField (L := L)
+  IsUltrametricDist.isUltrametricDist_of_isNonarchimedean_norm ValuativeRel.isNonarchimedean_norm
 
-theorem norm_def : ‖x‖ = (IsRankLeOne.nonempty (R := L)).some.emb (valuation L x) := rfl
+theorem norm_def : ‖x‖ = RankLeOne.hom' (valuation L) ((valuation L).restrict x) := rfl
 
-theorem nnnorm_def : ‖x‖₊ = (IsRankLeOne.nonempty (R := L)).some.emb (valuation L x) := rfl
+theorem nnnorm_def : ‖x‖₊ = RankLeOne.hom' (valuation L) ((valuation L).restrict x) := rfl
 
 @[simp]
 theorem norm_le_iff : ‖x‖ ≤ ‖y‖ ↔ x ≤ᵥ y :=
-  (IsRankLeOne.nonempty (R := L)).some.absoluteValue_le_absoluteValue_iff
+  absoluteValue_le_absoluteValue_iff
 
 @[simp]
 theorem norm_lt_iff : ‖x‖ < ‖y‖ ↔ x <ᵥ y :=
-  (IsRankLeOne.nonempty (R := L)).some.absoluteValue_lt_absoluteValue_iff
+  absoluteValue_lt_absoluteValue_iff
+
+@[simp]
+theorem norm_eq_iff : ‖x‖ = ‖y‖ ↔ x =ᵥ y :=
+  absoluteValue_eq_absoluteValue_iff
 
 @[simp]
 theorem norm_le_one_iff : ‖x‖ ≤ 1 ↔ x ≤ᵥ 1 :=
-  (IsRankLeOne.nonempty (R := L)).some.absoluteValue_le_one_iff
+  absoluteValue_le_one_iff
 
 @[simp]
 theorem norm_lt_one_iff : ‖x‖ < 1 ↔ x <ᵥ 1 :=
-  (IsRankLeOne.nonempty (R := L)).some.absoluteValue_lt_one_iff
+  absoluteValue_lt_one_iff
+
+@[simp]
+theorem norm_eq_one_iff : ‖x‖ = 1 ↔ x =ᵥ 1 :=
+  absoluteValue_eq_one_iff
 
 @[simp]
 theorem one_le_norm_iff : 1 ≤ ‖x‖ ↔ 1 ≤ᵥ x :=
-  (IsRankLeOne.nonempty (R := L)).some.one_le_absoluteValue_iff
+  one_le_absoluteValue_iff
 
 @[simp]
 theorem one_lt_norm_iff : 1 < ‖x‖ ↔ 1 <ᵥ x :=
-  (IsRankLeOne.nonempty (R := L)).some.one_lt_absoluteValue_iff
+  one_lt_absoluteValue_iff
 
 theorem setOfPred_mem_integer_eq_closedBall :
     { x : L | x ∈ (valuation L).integer } = Metric.closedBall 0 1 := by
   ext x
   simp [mem_integer_iff, (valuation L).vle_one_iff]
 
-end toNormedField
-
 /-- The valuation `NormedField.valuation` of the normed field structure
-`IsValuativeTopology.toNormedField` is compatible with the valuative relation. -/
+`ValuativeRel.toNormedField` is compatible with the valuative relation. -/
 instance : (NormedField.valuation (K := L)).Compatible where
   vle_iff_le x y := by
     rw [NormedField.valuation_apply, NormedField.valuation_apply, ← NNReal.coe_le_coe, coe_nnnorm,
-      coe_nnnorm, toNormedField.norm_le_iff]
+      coe_nnnorm, norm_le_iff]
 
-/-- The valuative relation determined by the norm of `IsValuativeTopology.toNormedField` is the
+/-- The valuative relation determined by the norm of `ValuativeRel.toNormedField` is the
 original valuative relation. -/
-theorem toValuativeRel_eq : NormedField.toValuativeRel = ‹ValuativeRel L› := by
+theorem toValuativeRel_toNormedField : NormedField.toValuativeRel = ‹ValuativeRel L› := by
   ext x y
   exact NormedField.valuation.vle_iff_le.symm
 
-end IsValuativeTopology
+end toNormedField
+
+end UniformSpace
+
+end ValuativeRel

@@ -61,8 +61,16 @@ namespace RankLeOne
 variable (v : Valuation R Γ₀) [RankLeOne v]
 
 @[simp]
-lemma hom'_le_hom'_iff (x y : ValueGroup₀ (v)) :
-    hom' v x ≤ hom' v y ↔ x ≤ y := RankLeOne.strictMono'
+lemma hom'_le_hom'_iff (x y : v.ValueGroup₀) : hom' v x ≤ hom' v y ↔ x ≤ y :=
+  RankLeOne.strictMono'.le_iff_le
+
+@[simp]
+lemma hom'_lt_hom'_iff (x y : v.ValueGroup₀) : hom' v x < hom' v y ↔ x < y :=
+  RankLeOne.strictMono'.lt_iff_lt
+
+@[simp]
+lemma zero_lt_hom'_iff (x : v.ValueGroup₀) : 0 < hom' v x ↔ 0 < x := by
+  simpa using RankLeOne.strictMono'.lt_iff_lt (f := hom' v) (a := 0)
 
 open ValuativeRel
 
