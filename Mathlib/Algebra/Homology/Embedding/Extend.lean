@@ -351,7 +351,7 @@ variable (e : Embedding c c') (C : Type*) [Category* C] [HasZeroObject C]
 the functor `HomologicalComplex C c ⥤ HomologicalComplex C c'` which
 extend complexes along `e`: the extended complexes are zero
 in the degrees that are not in the image of `e.f`. -/
-@[simps]
+@[implicit_reducible, simps]
 noncomputable def extendFunctor [HasZeroMorphisms C] :
     HomologicalComplex C c ⥤ HomologicalComplex C c' where
   obj K := K.extend e
@@ -361,11 +361,17 @@ set_option backward.defeqAttrib.useBackward true in
 /-- Given an embedding `e : c.Embedding c'` of complex shapes, this is the isomorphism
 `e.extendFunctor C ⋙ HomologicalComplex.eval _ _ i' ≅ HomologicalComplex.eval _ _ i`
 when `e.f i = i'. -/
+@[simps!]
 noncomputable def extendFunctorCompEvalIso
     [HasZeroMorphisms C] {i : ι} {i' : ι'} (h : e.f i = i') :
     e.extendFunctor C ⋙ HomologicalComplex.eval _ _ i' ≅ HomologicalComplex.eval _ _ i :=
   NatIso.ofComponents (fun K ↦ K.extendXIso e h)
     (by simp [HomologicalComplex.extendMap_f _ _ h])
+
+lemma isZero_extendFunctor_comp_eval
+    [HasZeroMorphisms C] (i' : ι') (h : ∀ i, e.f i ≠ i') :
+    IsZero (e.extendFunctor C ⋙ HomologicalComplex.eval _ _ i') :=
+  Functor.isZero _ (fun _ ↦ HomologicalComplex.isZero_extend_X _ _ _ h)
 
 instance [HasZeroMorphisms C] : (e.extendFunctor C).PreservesZeroMorphisms where
 
