@@ -5532,6 +5532,7 @@ public import Mathlib.Logic.Small.List
 public import Mathlib.Logic.Small.Set
 public import Mathlib.MeasureTheory.Category.MeasCat
 public import Mathlib.MeasureTheory.Constructions.AddChar
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Annulus
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
@@ -8292,6 +8293,7 @@ public import Mathlib.Topology.Maps.Strict.Basic
 public import Mathlib.Topology.Maps.Strict.Group
 public import Mathlib.Topology.Maps.Strict.Module
 public import Mathlib.Topology.MetricSpace.Algebra
+public import Mathlib.Topology.MetricSpace.Annulus
 public import Mathlib.Topology.MetricSpace.Antilipschitz
 public import Mathlib.Topology.MetricSpace.Basic
 public import Mathlib.Topology.MetricSpace.Bilipschitz
