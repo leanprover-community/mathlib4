@@ -10,17 +10,15 @@ public import Mathlib.Init
 /-!
 # Parameterized computation core for the Bareiss elimination
 
-A computable model of a ring packages the representation the untrusted producer computes
-with: a value type `V`, its arithmetic (`RingOps V`), and the encoding between entry
-syntax and values. `mkProducer` assembles a `Producer` from a model's parts, and the
-tactic selects a model through the `bareiss_ext` extension registry.
+`bareissDecomp` computes the transform `L`, the echelon form `U`, the row swaps and the pivot
+columns of an echelon decomposition by fraction-free elimination on a carrier of values.
 
-## Main definitions
+As an optimisation, rows are scaled to clear their denominators (when applicable) before the
+elimination with the scales folded back into `L` afterwards.
 
-- `RingOps`: the arithmetic of a model's value type.
-- `bareissDecomp`: fraction-free Gaussian elimination over a model's values.
-- `mkProducer`: assemble a producer from a model's parts.
-- `bareiss_ext`: the attribute registering a `BareissExt` computation model.
+A computation model supplies the carrier, its arithmetic operations (`RingOps`) and the
+encoding between entry syntax and values, and the tactic selects a model through the `bareiss_ext`
+extension registry.
 
 ## Implementation notes
 
@@ -46,7 +44,7 @@ open Lean Meta
 
 namespace Mathlib.Tactic.Echelon
 
-/-- Arithmetic of a model's value type. -/
+/-- Arithmetic of a model's carrier. -/
 structure RingOps (V : Type) where
   /-- The zero value. -/
   zero : V
@@ -56,21 +54,36 @@ structure RingOps (V : Type) where
   mul : V → V → V
   /-- Subtraction. -/
   sub : V → V → V
-  /-- Exact division: total on the quotients of the elimination -/
+  /-- Exact division. -/
   divExact : V → V → V
   /-- The pivot zero test. -/
   isZero : V → Bool
 
-/-- Decomposition data with entries in `V`: the values of the elimination, or the
-ring expressions constructed (`V := Expr`). -/
+/-- The arithmetic of `V` on its literals with a `decode`-`encode` roundtrip per operation.
+This is less efficient than performing the elimination directly on `V`, but is a workaround for
+a restriction in the registry (see `Carrier`). Certificate construction is the bottleneck so
+this does not lead to much overall performance degradation.
+A literal `decode` rejects is read as 0 (should never happen for the literals provided by
+`encode`). -/
+def RingOps.lift {V : Type} (ops : RingOps V) (decode : Expr → Option V) (encode : V → Expr) :
+    RingOps Expr :=
+  let read (e : Expr) : V := (decode e).getD ops.zero
+  { zero := encode ops.zero
+    one := encode ops.one
+    mul x y := encode (ops.mul (read x) (read y))
+    sub x y := encode (ops.sub (read x) (read y))
+    divExact x y := encode (ops.divExact (read x) (read y))
+    isZero x := ops.isZero (read x) }
+
+/-- Decomposition data with entries in `V`, the carrier of the elimination or `Expr` once the
+entries are encoded. -/
 structure BareissData (V : Type) where
   /-- The lower-triangular transform. -/
   L : Array (Array V)
   /-- The echelon form, the final working matrix `L * A_σ` of the elimination. -/
   U : Array (Array V)
-  /-- The row swaps, in order. Stores the swaps instead of row re-indexing, since in
-  common cases swaps are infrequent and therefore produce a smaller term to be checked
-  by the kernel. The row permutation `σ` is later constructed by their product. -/
+  /-- The row swaps, in order. Swaps are infrequent in common cases, so their product is a
+  smaller term for the kernel than a row permutation. -/
   swaps : Array (Nat × Nat)
   /-- The pivot columns. The `k`-th entry is the column of the pivot in row `k` of the
   final echelon form. -/
@@ -87,9 +100,10 @@ that the swaps move to position `i`, that is, `σ i`. -/
 def BareissData.rowOrder {V : Type} (d : BareissData V) : Array Nat :=
   d.swaps.foldl (fun ord (a, b) => ord.swapIfInBounds a b) (Array.range d.L.size)
 
-/-- A producer: run the elimination on the entries of a matrix literal, returning
-the decomposition constructed. -/
-@[expose] def Producer := Array (Array Expr) → MetaM (BareissData Expr)
+/-- An entry certifier proves the scalar obligations of a certificate, an equation between a sum
+of products of entries and a recorded entry, or the nonzero-ness of an entry. It throws on a
+proposition it cannot prove. -/
+abbrev EntryCertifier := Expr → MetaM Expr
 
 /-- Core algorithm of fraction-free Gaussian elimination, with the arithmetic supplied
 by the model.
@@ -103,8 +117,8 @@ def bareissDecomp {V : Type} (ops : RingOps V) (A : Array (Array V)) :
   let cols := (A.getD 0 #[]).size
   let getEntry (M : Array (Array V)) (i j : Nat) : V := (M.getD i #[]).getD j ops.zero
   let eliminate (pivot coef prev : V) (row pivotRow : Array V) : Array V :=
-    Array.zipWith (fun a b => ops.divExact (ops.sub (ops.mul pivot a) (ops.mul coef b)) prev)
-      row pivotRow
+    row.zipWith (bs := pivotRow) fun a b =>
+      ops.divExact (ops.sub (ops.mul pivot a) (ops.mul coef b)) prev
   let mut W := A
   let mut L : Array (Array V) :=
     Array.ofFn (n := rows) fun i =>
@@ -146,24 +160,67 @@ def bareissDecomp {V : Type} (ops : RingOps V) (A : Array (Array V)) :
       r := r + 1
   return { L, U := W, swaps, pivot := pivotCols }
 
-/-- Assemble a producer from a computation model's parts.
-`ops` describes the ring operation structure;
-`prepare` reifies the entries into the values the elimination runs on, plus a
-function restoring the resulting decomposition to one of the original matrix;
-`mkEntry` constructs the value back in the ring. -/
-def mkProducer {V : Type} (ops : RingOps V)
-    (prepare : Array (Array Expr) →
-      MetaM (Array (Array V) × (BareissData V → BareissData V)))
-    (mkEntry : V → MetaM Expr) : Producer := fun entries => do
-  let (values, restore) ← prepare entries
-  let d ← bareissDecomp ops values
-  (restore d).mapM mkEntry
+/-- The carriers a model computes on, the integers or expressions of the ring.
+The most direct method is for a model to name the carrier type directly as a field of the extension,
+but that puts the model in a higher universe level, and the registry can only store `Type 0`
+elements. -/
+inductive Carrier
+  | int
+  | expr
+
+/-- The type of the values of a carrier. -/
+abbrev Carrier.type : Carrier → Type
+  | .int => Int
+  | .expr => Expr
+
+/-- A computation model of a ring on the carrier `V`. -/
+structure Model (V : Type) where
+  /-- The arithmetic of the carrier. -/
+  ops : RingOps V
+  /-- Evaluate an entry to a value with an optional denominator for the row scaling.
+  `(n, some d)` denotes `n / d` with `d` nonzero, and `(n, none)` denotes `n`. -/
+  evalEntry : Expr → MetaM (V × Option V)
+  /-- A nonzero common multiple for eliminating the denominators (`ops.mul` by default). A
+  carrier type with a cheap lcm could supply it as an optimisation to keep the scaled entries
+  small. -/
+  commonMultiple : V → V → V := ops.mul
+  /-- The expression of the ring denoting a value. -/
+  mkEntry : V → MetaM Expr
+  /-- The entry certifier, or `none` to leave the conditions to the kernel (`decide` on the entry
+  conditions, definitional unfolding of the product against the recorded entries). -/
+  entryCertifier? : Option EntryCertifier := none
+
+/-- Clear the denominators of the rows before the decomposition algorithm. -/
+def scaleRows {V : Type} (ops : RingOps V) (commonMultiple : V → V → V)
+    (rows : Array (Array (V × Option V))) : Array (Array V) × Array (Option V) :=
+  let scales := rows.map fun row =>
+    row.foldl (init := none) fun scale? entry => Option.merge commonMultiple scale? entry.2
+  let scaled := rows.zipWith (bs := scales) fun row scale? =>
+    match scale? with
+    | none => row.map Prod.fst
+    | some scale => row.map fun entry =>
+      match entry.2 with
+      | none => ops.mul entry.1 scale
+      | some den => ops.mul entry.1 (ops.divExact scale den)
+  (scaled, scales)
+
+/-- Fold the row scales into the transform after the decomposition algorithm. Column `j` of
+`L` is multiplied by the scale of the row that ends up in position `j` after permutation. -/
+def restoreScaling {V : Type} (ops : RingOps V) (scales : Array (Option V))
+    (d : BareissData V) : BareissData V :=
+  if scales.all Option.isNone then d
+  else
+    let colScale := d.rowOrder.map fun i => scales.getD i none
+    { d with L := d.L.map fun row => row.zipWith (bs := colScale) fun a scale? =>
+        match scale? with
+        | none => a
+        | some scale => ops.mul a scale }
 
 /-- An extension of the Bareiss ring computation model. -/
 structure BareissExt where
-  /-- The computation model for the ring type `R`, or `none` if the extension does not
+  /-- The model for the element type `R` and its carrier, or `none` if the extension does not
   handle `R`. -/
-  producer? (R : Expr) : MetaM (Option Producer)
+  model? (R : Expr) : MetaM (Option ((c : Carrier) × Model c.type))
 
 /-- Read a `bareiss_ext` extension from a declaration of the right type. -/
 def mkBareissExt (n : Name) : ImportM BareissExt := do
