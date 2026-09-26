@@ -294,7 +294,7 @@ theorem eq_of_trans_symm {γ γ' : Homotopic.Quotient x₀ x₁}
 
 /-- A loop whose conjugate by a path is trivial is itself trivial.
 This is the quotient analogue of `a * b * a⁻¹ = 1 → b = 1`. -/
-theorem of_conj_eq_refl {x₀ x₁ : X} {α : Homotopic.Quotient x₀ x₁}
+theorem eq_refl_of_conj {x₀ x₁ : X} {α : Homotopic.Quotient x₀ x₁}
     {δ : Homotopic.Quotient x₁ x₁}
     (h : (α.trans δ).trans α.symm = refl x₀) : δ = refl x₁ := by
   have h₁ := congrArg (fun q ↦ α.symm.trans (q.trans α)) h
@@ -309,7 +309,7 @@ theorem of_conj_nullhomotopic {x₀ x₁ : X} {α : Path x₀ x₁} {δ : Path x
     δ.Homotopic (Path.refl x₁) := by
   apply Quotient.eq.mp
   rw [Quotient.mk_refl]
-  apply Quotient.of_conj_eq_refl (α := Quotient.mk α)
+  apply Quotient.eq_refl_of_conj (α := Quotient.mk α)
   simpa only [← Quotient.mk_trans, ← Quotient.mk_symm, ← Quotient.mk_refl] using
     Quotient.eq.mpr h
 
