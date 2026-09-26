@@ -68,7 +68,7 @@ def spanUnop {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : Y ⟶ Z) :
 def opCospan {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
     (cospan f g).op ≅ walkingCospanOpEquiv.functor ⋙ span f.op g.op :=
   calc
-    (cospan f g).op ≅ 𝟭 _ ⋙ (cospan f g).op := .refl _
+    (cospan f g).op ≅ 𝟭 _ ⋙ (cospan f g).op := (Functor.leftUnitor _).symm
     _ ≅ (walkingCospanOpEquiv.functor ⋙ walkingCospanOpEquiv.inverse) ⋙ (cospan f g).op :=
       isoWhiskerRight walkingCospanOpEquiv.unitIso _
     _ ≅ walkingCospanOpEquiv.functor ⋙ walkingCospanOpEquiv.inverse ⋙ (cospan f g).op :=
@@ -102,7 +102,7 @@ def cospanUnop {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : X ⟶ Z) :
 def opSpan {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
     (span f g).op ≅ walkingSpanOpEquiv.functor ⋙ cospan f.op g.op :=
   calc
-    (span f g).op ≅ 𝟭 _ ⋙ (span f g).op := .refl _
+    (span f g).op ≅ 𝟭 _ ⋙ (span f g).op := (Functor.leftUnitor _).symm
     _ ≅ (walkingSpanOpEquiv.functor ⋙ walkingSpanOpEquiv.inverse) ⋙ (span f g).op :=
       isoWhiskerRight walkingSpanOpEquiv.unitIso _
     _ ≅ walkingSpanOpEquiv.functor ⋙ walkingSpanOpEquiv.inverse ⋙ (span f g).op :=

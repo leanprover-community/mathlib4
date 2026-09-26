@@ -73,8 +73,8 @@ def derived' [G'.IsLeftDerivedFunctor α W₁] [F'.IsRightDerivedFunctor β W₂
       hε (G.obj X₁), reassoc_of% eq₃, ← L₂.map_comp, adj.left_triangle_components,
       Functor.map_id, Category.comp_id]
   right_triangle_components := by
-    suffices F'.leftUnitor.inv ≫ whiskerLeft F' η ≫ (Functor.associator _ _ _).inv ≫
-      whiskerRight ε F' ≫ F'.rightUnitor.hom = 𝟙 _ from
+    suffices F'.rightUnitor.inv ≫ whiskerLeft F' η ≫ (Functor.associator _ _ _).inv ≫
+      whiskerRight ε F' ≫ F'.leftUnitor.hom = 𝟙 _ from
         fun Y₂ ↦ by simpa using congr_app this Y₂
     apply F'.rightDerived_ext β W₂
     ext X₂

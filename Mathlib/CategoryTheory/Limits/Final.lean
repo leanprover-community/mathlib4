@@ -312,7 +312,8 @@ set_option backward.defeqAttrib.useBackward true in
 instance (priority := 100) comp_preservesColimit {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [PreservesColimit G H] : PreservesColimit (F ⋙ G) H where
   preserves {c} hc := by
-    refine ⟨isColimitExtendCoconeEquiv (G := G ⋙ H) F (H.mapCocone c) ?_⟩
+    refine ⟨(IsColimit.precomposeInvEquiv (Functor.associator F G H) _)
+      (isColimitExtendCoconeEquiv (G := G ⋙ H) F _ ?_)⟩
     let hc' := isColimitOfPreserves H ((isColimitExtendCoconeEquiv F c).symm hc)
     exact IsColimit.ofIsoColimit hc' (Cocone.ext (Iso.refl _) (by simp))
 
@@ -321,15 +322,20 @@ instance (priority := 100) comp_reflectsColimit {B : Type u₄} [Category.{v₄}
     [ReflectsColimit G H] : ReflectsColimit (F ⋙ G) H where
   reflects {c} hc := by
     refine ⟨isColimitExtendCoconeEquiv F _ (isColimitOfReflects H ?_)⟩
-    let hc' := (isColimitExtendCoconeEquiv (G := G ⋙ H) F _).symm hc
+    let hc' := (isColimitExtendCoconeEquiv (G := G ⋙ H) F _).symm
+      ((IsColimit.precomposeInvEquiv (Functor.associator F G H) _).symm hc)
     exact IsColimit.ofIsoColimit hc' (Cocone.ext (Iso.refl _) (by simp))
 
 instance (priority := 100) compCreatesColimit {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [CreatesColimit G H] : CreatesColimit (F ⋙ G) H where
   lifts {c} hc := by
-    refine ⟨(liftColimit ((isColimitExtendCoconeEquiv F (G := G ⋙ H) _).symm hc)).whisker F, ?_⟩
-    let i := liftedColimitMapsToOriginal ((isColimitExtendCoconeEquiv F (G := G ⋙ H) _).symm hc)
-    exact (Cocone.whiskering F).mapIso i ≪≫ ((coconesEquiv F (G ⋙ H)).unitIso.app _).symm
+    let t := (isColimitExtendCoconeEquiv F (G := G ⋙ H) _).symm
+      ((IsColimit.precomposeInvEquiv (Functor.associator F G H) c).symm hc)
+    refine ⟨(liftColimit t).whisker F, ?_⟩
+    let i := liftedColimitMapsToOriginal t
+    refine ?_ ≪≫ (Cocone.precompose (Functor.associator F G H).hom).mapIso
+      ((Cocone.whiskering F).mapIso i ≪≫ ((coconesEquiv F (G ⋙ H)).unitIso.app _).symm) ≪≫ ?_
+    all_goals exact Cocone.ext (Iso.refl _) (by simp)
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
@@ -418,10 +424,14 @@ def createsColimitOfComp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [CreatesColimit (F ⋙ G) H] : CreatesColimit G H where
   reflects := (reflectsColimit_of_comp F).reflects
   lifts {c} hc := by
-    refine ⟨(extendCocone (F := F)).obj (liftColimit ((isColimitWhiskerEquiv F _).symm hc)), ?_⟩
-    let i := liftedColimitMapsToOriginal (K := (F ⋙ G)) ((isColimitWhiskerEquiv F _).symm hc)
-    refine ?_ ≪≫ ((extendCocone (F := F)).mapIso i) ≪≫ ((coconesEquiv F (G ⋙ H)).counitIso.app _)
-    exact Cocone.ext (Iso.refl _)
+    let t := (IsColimit.precomposeHomEquiv (Functor.associator F G H) _).symm
+      ((isColimitWhiskerEquiv F _).symm hc)
+    refine ⟨(extendCocone (F := F)).obj (liftColimit t), ?_⟩
+    let i := liftedColimitMapsToOriginal t
+    refine ?_ ≪≫ (extendCocone (F := F)).mapIso
+      ((Cocone.precompose (Functor.associator F G H).inv).mapIso i ≪≫ ?_) ≪≫
+      ((coconesEquiv F (G ⋙ H)).counitIso.app _)
+    all_goals exact Cocone.ext (Iso.refl _) (by simp)
 
 include F in
 theorem hasColimitsOfShape_of_final [HasColimitsOfShape C E] : HasColimitsOfShape D E where
@@ -674,7 +684,8 @@ set_option backward.defeqAttrib.useBackward true in
 instance (priority := 100) comp_preservesLimit {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [PreservesLimit G H] : PreservesLimit (F ⋙ G) H where
   preserves {c} hc := by
-    refine ⟨isLimitExtendConeEquiv (G := G ⋙ H) F (H.mapCone c) ?_⟩
+    refine ⟨(IsLimit.postcomposeHomEquiv (Functor.associator F G H) _)
+      (isLimitExtendConeEquiv (G := G ⋙ H) F _ ?_)⟩
     let hc' := isLimitOfPreserves H ((isLimitExtendConeEquiv F c).symm hc)
     exact IsLimit.ofIsoLimit hc' (Cone.ext (Iso.refl _) (by simp))
 
@@ -683,15 +694,20 @@ instance (priority := 100) comp_reflectsLimit {B : Type u₄} [Category.{v₄} B
     [ReflectsLimit G H] : ReflectsLimit (F ⋙ G) H where
   reflects {c} hc := by
     refine ⟨isLimitExtendConeEquiv F _ (isLimitOfReflects H ?_)⟩
-    let hc' := (isLimitExtendConeEquiv (G := G ⋙ H) F _).symm hc
+    let hc' := (isLimitExtendConeEquiv (G := G ⋙ H) F _).symm
+      ((IsLimit.postcomposeHomEquiv (Functor.associator F G H) _).symm hc)
     exact IsLimit.ofIsoLimit hc' (Cone.ext (Iso.refl _) (by simp))
 
 instance (priority := 100) compCreatesLimit {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [CreatesLimit G H] : CreatesLimit (F ⋙ G) H where
   lifts {c} hc := by
-    refine ⟨(liftLimit ((isLimitExtendConeEquiv F (G := G ⋙ H) _).symm hc)).whisker F, ?_⟩
-    let i := liftedLimitMapsToOriginal ((isLimitExtendConeEquiv F (G := G ⋙ H) _).symm hc)
-    exact (Cone.whiskering F).mapIso i ≪≫ ((conesEquiv F (G ⋙ H)).unitIso.app _).symm
+    let t := (isLimitExtendConeEquiv F (G := G ⋙ H) _).symm
+      ((IsLimit.postcomposeHomEquiv (Functor.associator F G H) c).symm hc)
+    refine ⟨(liftLimit t).whisker F, ?_⟩
+    let i := liftedLimitMapsToOriginal t
+    refine ?_ ≪≫ (Cone.postcompose (Functor.associator F G H).inv).mapIso
+      ((Cone.whiskering F).mapIso i ≪≫ ((conesEquiv F (G ⋙ H)).unitIso.app _).symm) ≪≫ ?_
+    all_goals exact Cone.ext (Iso.refl _) (by simp)
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
@@ -770,10 +786,14 @@ def createsLimitOfComp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [CreatesLimit (F ⋙ G) H] : CreatesLimit G H where
   reflects := (reflectsLimit_of_comp F).reflects
   lifts {c} hc := by
-    refine ⟨(extendCone (F := F)).obj (liftLimit ((isLimitWhiskerEquiv F _).symm hc)), ?_⟩
-    let i := liftedLimitMapsToOriginal (K := (F ⋙ G)) ((isLimitWhiskerEquiv F _).symm hc)
-    refine ?_ ≪≫ ((extendCone (F := F)).mapIso i) ≪≫ ((conesEquiv F (G ⋙ H)).counitIso.app _)
-    exact Cone.ext (Iso.refl _)
+    let t := (IsLimit.postcomposeInvEquiv (Functor.associator F G H) _).symm
+      ((isLimitWhiskerEquiv F _).symm hc)
+    refine ⟨(extendCone (F := F)).obj (liftLimit t), ?_⟩
+    let i := liftedLimitMapsToOriginal t
+    refine ?_ ≪≫ (extendCone (F := F)).mapIso
+      ((Cone.postcompose (Functor.associator F G H).hom).mapIso i ≪≫ ?_) ≪≫
+      ((conesEquiv F (G ⋙ H)).counitIso.app _)
+    all_goals exact Cone.ext (Iso.refl _) (by simp)
 
 include F in
 theorem hasLimitsOfShape_of_initial [HasLimitsOfShape C E] : HasLimitsOfShape D E where
@@ -870,8 +890,11 @@ instance final_comp [hF : Final F] [hG : Final G] : Final (F ⋙ G) := by
   rw [final_iff_comp_equivalence G s₃.functor, final_iff_equivalence_comp s₂.inverse,
     final_iff_isIso_colimit_pre] at hG
   intro H
-  rw [← colimit.pre_pre]
-  infer_instance
+  have : IsIso (colimit.pre ((s₂.inverse ⋙ G ⋙ s₃.functor) ⋙ H) (s₁.inverse ⋙ F ⋙ s₂.functor) ≫
+      colimit.pre H (s₂.inverse ⋙ G ⋙ s₃.functor)) := inferInstance
+  rw [colimit.pre_pre] at this
+  exact IsIso.of_isIso_comp_left (HasColimit.isoOfNatIso (Functor.associator
+    (s₁.inverse ⋙ F ⋙ s₂.functor) (s₂.inverse ⋙ G ⋙ s₃.functor) H)).inv _
 
 instance initial_comp [Initial F] [Initial G] : Initial (F ⋙ G) := by
   suffices Final (F ⋙ G).op from initial_of_final_op _
@@ -891,8 +914,11 @@ theorem final_of_final_comp [hF : Final F] [hFG : Final (F ⋙ G)] : Final G := 
   rw [final_iff_comp_equivalence (F ⋙ G) s₃.functor, final_iff_equivalence_comp s₁.inverse,
     final_natIso_iff _i, final_iff_isIso_colimit_pre] at hFG
   intro H
-  replace hFG := hFG H
-  rw [← colimit.pre_pre] at hFG
+  have := hFG H
+  have : IsIso (colimit.pre ((s₂.inverse ⋙ G ⋙ s₃.functor) ⋙ H) (s₁.inverse ⋙ F ⋙ s₂.functor) ≫
+      colimit.pre H (s₂.inverse ⋙ G ⋙ s₃.functor)) := by
+    rw [colimit.pre_pre]
+    infer_instance
   exact IsIso.of_isIso_comp_left (colimit.pre _ (s₁.inverse ⋙ F ⋙ s₂.functor)) _
 
 theorem initial_of_initial_comp [Initial F] [Initial (F ⋙ G)] : Initial G := by
