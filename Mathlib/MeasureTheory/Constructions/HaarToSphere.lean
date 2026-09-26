@@ -313,4 +313,51 @@ lemma integral_fun_norm_addHaar (f : ℝ → F) :
       · rw [NNReal.smul_def, Real.coe_toNNReal _ (pow_nonneg hx.out.le _)]
       · exact (measurable_subtype_coe.pow_const _).real_toNNReal
 
+/-- **Polar coordinates for a Lebesgue integral against an additive Haar measure.**
+
+Let `μ` be an additive Haar measure on a nontrivial finite-dimensional real normed space `E`
+of dimension `n`. Then the integral of a non-negative measurable function against `μ`
+decomposes as an integral over the unit sphere, with respect to the sphere measure
+`MeasureTheory.Measure.toSphere`, of a radial integral carrying the density `r ^ (n - 1)`.
+
+This is the `lintegral` form of
+`MeasureTheory.Measure.measurePreserving_homeomorphUnitSphereProd`, for a general integrand.
+The Bochner and integrability corollaries of that theorem,
+`MeasureTheory.integral_fun_norm_addHaar` and
+`MeasureTheory.integrableOn_fun_norm_addHaar`, are both restricted to radial integrands. -/
+theorem lintegral_addHaar_eq_lintegral_toSphere_lintegral_Ioi {f : E → ℝ≥0∞} (hf : Measurable f) :
+    ∫⁻ x, f x ∂μ = ∫⁻ ω : sphere (0 : E) 1,
+      (∫⁻ r in Ioi (0 : ℝ), ENNReal.ofReal (r ^ (dim E - 1)) * f (r • (ω : E))) ∂μ.toSphere := by
+  -- `homeomorphUnitSphereProd` carries `μ` on `{0}ᶜ` to `μ.toSphere.prod (volumeIoiPow _)`
+  have h := μ.measurePreserving_homeomorphUnitSphereProd.lintegral_comp_emb
+    (Homeomorph.measurableEmbedding _) fun p ↦ f ((homeomorphUnitSphereProd E).symm p)
+  simp only [Homeomorph.symm_apply_apply, homeomorphUnitSphereProd_symm_apply_coe,
+    lintegral_subtype_comap (measurableSet_singleton _).compl, restrict_compl_singleton] at h
+  -- Tonelli, then unfold the density of `volumeIoiPow` on the radial factor
+  rw [h, lintegral_prod _ (by fun_prop)]
+  refine lintegral_congr fun ω ↦ ?_
+  rw [Measure.volumeIoiPow, lintegral_withDensity_eq_lintegral_mul _ (by fun_prop) (by fun_prop),
+    ← lintegral_subtype_comap measurableSet_Ioi, Pi.mul_def]
+
+/-- **Polar coordinates on a ball.** For a measurable `f : E → ℝ≥0∞`, the integral of `f` over
+`ball c R` against `μ` is the integral over the unit sphere, against `μ.toSphere`, of the radial
+integral of `ρ ^ (n - 1) * f (c + ρ • ω)` over `Ioo 0 R`, where `n = Module.finrank ℝ E`.
+
+This is `lintegral_addHaar_eq_lintegral_toSphere_lintegral_Ioi` centred at `c` and localised to
+a ball. -/
+theorem setLIntegral_ball_eq_lintegral_toSphere_lintegral_Ioo (c : E) (R : ℝ) {f : E → ℝ≥0∞}
+    (hf : Measurable f) : ∫⁻ y in ball c R, f y ∂μ = ∫⁻ ω : sphere (0 : E) 1,
+      (∫⁻ ρ in Ioo (0 : ℝ) R, ENNReal.ofReal (ρ ^ (dim E - 1)) * f (c + ρ • (ω : E)))
+      ∂μ.toSphere := by
+  -- extend `f` by zero off the ball and translate the centre to `0`
+  rw [← lintegral_indicator measurableSet_ball,
+    ← lintegral_add_left_eq_self ((ball c R).indicator f) c,
+    lintegral_addHaar_eq_lintegral_toSphere_lintegral_Ioi μ
+      (by fun_prop (disch := exact measurableSet_ball))]
+  -- on each ray, the indicator of the ball cuts `Ioi 0` down to `Ioo 0 R`
+  refine lintegral_congr fun ω ↦ ?_
+  rw [← Ioi_inter_Iio, inter_comm, ← setLIntegral_indicator measurableSet_Iio]
+  refine setLIntegral_congr_fun measurableSet_Ioi fun ρ (hρ : 0 < ρ) ↦ ?_
+  simp [indicator, dist_self_add_left, norm_smul, abs_of_pos hρ]
+
 end MeasureTheory
