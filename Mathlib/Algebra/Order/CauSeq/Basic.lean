@@ -217,7 +217,7 @@ theorem const_apply (x : β) (i : ℕ) : (const x : ℕ → β) i = x :=
   rfl
 
 theorem const_inj {x y : β} : (const x : CauSeq β abv) = const y ↔ x = y :=
-  ⟨fun h => congr_arg (fun f : CauSeq β abv => (f : ℕ → β) 0) h, congr_arg _⟩
+  ⟨fun h => congr($h 0), congr_arg _⟩
 
 instance : Zero (CauSeq β abv) :=
   ⟨const 0⟩

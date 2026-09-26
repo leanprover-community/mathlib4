@@ -297,7 +297,7 @@ theorem isIntegral_of_irreducibleSpace_of_isReduced [IsReduced X] [H : Irreducib
     by_contra! h
     obtain ⟨x, ⟨hxU, hx₁⟩, _, hx₂⟩ :=
       nonempty_preirreducible_inter (X.basicOpen a).2 (X.basicOpen b).2 h.1 h.2
-    replace e := congr_arg (X.presheaf.germ U x hxU) e
+    replace e := congr(X.presheaf.germ U x hxU $e)
     rw [map_mul, map_zero] at e
     refine zero_ne_one' (X.presheaf.stalk x) (isUnit_zero_iff.1 ?_)
     convert! hx₁.mul hx₂

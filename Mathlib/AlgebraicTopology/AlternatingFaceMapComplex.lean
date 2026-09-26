@@ -94,8 +94,8 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
   · -- φ : S → Sᶜ is injective
     rintro ⟨i, j⟩ hij ⟨i', j'⟩ hij' h
     rw [Prod.mk_inj]
-    exact ⟨by simpa [φ] using! congr_arg Prod.snd h,
-      by simpa [φ, Fin.castSucc_castLT] using! congr_arg Fin.castSucc (congr_arg Prod.fst h)⟩
+    exact ⟨by simpa [φ] using! congr($(h).snd),
+      by simpa [φ, Fin.castSucc_castLT] using! congr(Fin.castSucc $(h).fst)⟩
   · -- φ : S → Sᶜ is surjective
     rintro ⟨i', j'⟩ hij'
     simp_rw [S, Finset.compl_filter, Finset.mem_filter_univ, not_le] at hij'

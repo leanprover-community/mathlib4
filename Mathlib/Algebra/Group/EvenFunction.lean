@@ -55,7 +55,7 @@ variable {γ : Type*}
 
 /-- If `f` is arbitrary and `g` is even, then `f ∘ g` is even. -/
 lemma Even.left_comp {g : α → β} (hg : g.Even) (f : β → γ) : (f ∘ g).Even :=
-  (congr_arg f <| hg ·)
+  (congr(f $(hg ·)))
 
 /-- If `f` is even and `g` is odd, then `f ∘ g` is even. -/
 lemma Even.comp_odd [Neg β] {f : β → γ} (hf : f.Even) {g : α → β} (hg : g.Odd) :

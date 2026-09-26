@@ -124,7 +124,7 @@ lemma basis_coord (s : powersetCard I n) :
 lemma basis_repr_apply (x : ⋀[R]^n M)
     (s : powersetCard I n) :
     Basis.repr (b.exteriorPower n) x s = ιMultiDual R n b s x := by
-  simpa [← Basis.coord_apply] using LinearMap.congr_fun (basis_coord R n b s) x
+  simpa [← Basis.coord_apply] using congr($(basis_coord R n b s) x)
 
 @[simp]
 lemma basis_repr_self (s : powersetCard I n) :

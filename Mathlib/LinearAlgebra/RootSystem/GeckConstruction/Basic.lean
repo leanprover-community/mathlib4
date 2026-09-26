@@ -277,7 +277,7 @@ lemma ω_mul_e [Fintype ι] (i : b.support) :
 lemma ω_mul_f [Fintype ι] (i : b.support) :
     ω b * f i = e i * ω b := by
   classical
-  have := congr_arg (· * ω b) (congr_arg (ω b * ·) (ω_mul_e i))
+  have := congr((ω b * $(ω_mul_e i)) * ω b)
   simp only [← mul_assoc, ω_mul_ω] at this
   simpa [mul_assoc, ω_mul_ω] using this.symm
 
