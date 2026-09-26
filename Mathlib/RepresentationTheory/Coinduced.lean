@@ -218,9 +218,7 @@ noncomputable def coindVEquiv :
   map_add' _ _ := coind'_ext φ <| by simp [Rep.add_hom]
   map_smul' _ _ := coind'_ext φ <| by simp [smul_hom]
   invFun f := ⟨fun h ↦ f.hom.toLinearMap (.single h 1), fun g h ↦ by
-    simp only [res_obj_V, res_obj_ρ, Representation.IntertwiningMap.toLinearMap_apply]
-    have := by simpa using (hom_comm_apply f g (.single h 1)).symm
-    rw [← this]⟩
+    simpa using (hom_comm_apply f g (.single h 1))⟩
   left_inv x := by simp
   right_inv x := coind'_ext φ fun _ => by simp
 
