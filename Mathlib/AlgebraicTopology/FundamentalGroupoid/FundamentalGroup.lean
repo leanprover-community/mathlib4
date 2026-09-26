@@ -90,4 +90,19 @@ theorem mapOfEq_apply (p : FundamentalGroup X x) :
     mapOfEq f h p = (Path.Homotopic.Quotient.map p f).cast h.symm h.symm :=
   FundamentalGroupoid.conj_eqToHom ..
 
+/-- `map f` sends the class of a loop `γ` to the class of `γ.map f`. -/
+theorem map_fromPath (f : C(X, Y)) {x : X} (γ : Path x x) :
+    map f x (fromPath ⟦γ⟧) = fromPath ⟦γ.map f.continuous⟧ :=
+  rfl
+
+/-- The map on fundamental groups induced by `f` is trivial iff it sends every loop at the
+basepoint to a nullhomotopic loop. -/
+theorem map_range_eq_bot_iff (f : C(X, Y)) (x : X) :
+    (map f x).range = ⊥ ↔ ∀ γ : Path x x, (γ.map f.continuous).Homotopic (.refl (f x)) := by
+  rw [MonoidHom.range_eq_bot_iff]
+  refine ⟨fun h γ ↦ Quotient.exact congr($h (fromPath ⟦γ⟧)), fun h ↦ ?_⟩
+  ext p
+  induction p using Quotient.ind
+  exact Quotient.sound (h _)
+
 end FundamentalGroup
