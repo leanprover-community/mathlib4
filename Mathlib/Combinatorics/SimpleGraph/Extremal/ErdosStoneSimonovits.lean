@@ -10,6 +10,8 @@ public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 public import Mathlib.Analysis.Real.Sqrt
 
+import Mathlib.Tactic.LinearCombination
+
 /-!
 # The Erdős-Stone-Simonovits theorem
 
@@ -41,8 +43,7 @@ This is an auxiliary definition for the Erdős-Stone theorem. -/
 def filter (t : ℕ) : Finset (Fin n) :=
   { v ∈ K.vertsᶜ | ∀ p ∈ K.parts, ∃ s ∈ p.powersetCard t, ∀ w ∈ s, G.Adj v w }
 
-theorem filter_subset_compl_verts : filter K t ⊆ K.vertsᶜ :=
-  filter_subset _ K.vertsᶜ
+theorem filter_subset_compl_verts : filter K t ⊆ K.vertsᶜ := filter_subset _ K.vertsᶜ
 
 omit [DecidableRel G.Adj] in
 theorem between_verts_isBipartiteWith :
@@ -50,14 +51,6 @@ theorem between_verts_isBipartiteWith :
   rw [coe_compl K.verts]
   exact between_isBipartiteWith (disjoint_compl_right)
 
-lemma le_card_edgeFinset_between_verts :
-    (#K.verts * (G.minDegree - #K.verts) : ℝ) ≤ #(G.between K.verts K.vertsᶜ).edgeFinset := by
-  rw [← isBipartiteWith_sum_degrees_eq_card_edges (between_verts_isBipartiteWith K),
-    ← nsmul_eq_mul, ← sum_const, Nat.cast_sum]
-  exact sum_le_sum (fun v hv ↦ sub_le_iff_le_add.mpr <|
-    mod_cast (G.minDegree_le_degree v).trans (degree_le_between_add hv))
-
-set_option backward.isDefEq.respectTransparency.types false in
 /-- For `v ∈ K.vertsᶜ \ ErdosStone.filter`, since `v` is adjacent to fewer than `t`
 vertices in at least one part of the complete equipartite subgraph, it follows that `v` is
 adjacent to fewer than `#K.verts - (t' - t)` vertices in `K.verts`.
@@ -70,11 +63,8 @@ lemma degree_between_verts_lt_of_mem_sdiff
     and_not_self_iff, false_or, not_forall, not_exists, not_and_or, not_forall, exists_prop] at hv
   obtain ⟨hv, p, hp, hs⟩ := hv
   rw [← card_neighborFinset_eq_degree,
-    isBipartiteWith_neighborFinset' (between_verts_isBipartiteWith K) hv]
-  conv =>
-    enter [1, 1, 2]
-    unfold CompleteEquipartiteSubgraph.verts
-  rw [filter_disjiUnion, card_disjiUnion, sum_eq_sum_sdiff_singleton_add hp]
+    isBipartiteWith_neighborFinset' (between_verts_isBipartiteWith K) hv,
+    K.card_filter_verts _, sum_eq_sum_sdiff_singleton_add hp]
   apply add_lt_add_of_le_of_lt
   · conv_rhs =>
       rw [K.card_verts, ← Nat.sub_one_mul, ← K.card_parts.resolve_right ht'_pos.ne',
@@ -92,10 +82,16 @@ lemma degree_between_verts_lt_of_mem_sdiff
       rwa [mem_filter, between_adj] at hw
     exact hadj.symm
 
+lemma le_card_edgeFinset_between_verts :
+    (#K.verts * (G.minDegree - #K.verts) : ℝ) ≤ #(G.between K.verts K.vertsᶜ).edgeFinset := by
+  rw [← isBipartiteWith_sum_degrees_eq_card_edges (between_verts_isBipartiteWith K),
+    ← nsmul_eq_mul, ← sum_const, Nat.cast_sum]
+  exact sum_le_sum (fun v hv ↦ sub_le_iff_le_add.mpr <|
+    mod_cast (G.minDegree_le_degree v).trans (degree_le_between_add hv))
+
 lemma card_edgeFinset_between_verts_le (hr_pos : 0 < r) (ht'_pos : 0 < t') :
-    (#(G.between K.verts K.vertsᶜ).edgeFinset : ℝ)
-      ≤ (n - #K.verts) * (#K.verts - (t' - t))
-        + #(filter K t) * (t' - t) :=
+    (#(G.between K.verts K.vertsᶜ).edgeFinset : ℝ) ≤
+      (n - #K.verts) * (#K.verts - (t' - t)) + #(filter K t) * (t' - t) :=
   calc (#(G.between K.verts K.vertsᶜ).edgeFinset : ℝ)
     _ = ∑ v ∈ K.vertsᶜ \ filter K t, ((G.between K.verts K.vertsᶜ).degree v : ℝ)
       + ∑ v ∈ filter K t, ((G.between K.verts K.vertsᶜ).degree v : ℝ) := by
@@ -125,16 +121,10 @@ lemma mul_le_card_filter_mul (hr_pos : 0 < r) (ht'_pos : 0 < t')
     {N : ℕ} (hN : (N + r * t') * (t' - t) ≤ n * (r * t' * ε - t)) :
     (N * (t' - t) : ℝ) ≤ (#(filter K t) * (t' - t) : ℝ) :=
   calc (N * (t' - t) : ℝ)
-    _ ≤ n * (r * t' * ε - t) - r * t' * (t' - t) := by
-        rw [← add_sub_cancel_right (N : ℝ) (r * t' : ℝ), sub_mul]
-        exact sub_le_sub_right hN _
-    _ = #K.verts * ((1 - 1 / r + ε) * n - #K.verts)
-      - (n - #K.verts) * (#K.verts - (t' - t)) := by
-        conv_rhs => rw [sub_eq_add_neg, ← neg_mul, neg_sub, sub_mul, mul_sub, ← add_sub_assoc,
-          mul_sub, ← add_sub_assoc, sub_add_cancel, sub_right_comm, ← mul_assoc, ← mul_rotate,
-          mul_assoc, ← mul_sub, mul_add, mul_sub (#K.verts : ℝ) _ _, mul_one,
-          sub_add_eq_add_sub, add_sub_assoc, add_sub_sub_cancel, K.card_verts, Nat.cast_mul,
-          mul_one_div, mul_div_cancel_left₀ (t' : ℝ) (mod_cast hr_pos.ne'), sub_add_sub_cancel]
+    _ ≤ n * (r * t' * ε - t) - r * t' * (t' - t) := by linarith
+    _ = #K.verts * ((1 - 1 / r + ε) * n - #K.verts) - (n - #K.verts) * (#K.verts - (t' - t)) := by
+        rw [K.card_verts, Nat.cast_mul]
+        linear_combination (n * t' : ℝ) * mul_inv_cancel₀ (mod_cast hr_pos.ne' : (r : ℝ) ≠ 0)
     _ ≤ #K.verts * (G.minDegree - #K.verts) - (n - #K.verts) * (#K.verts - (t' - t)) :=
         sub_le_sub_right (mul_le_mul_of_nonneg_left
           (sub_le_sub_right hδ _) (#K.verts).cast_nonneg) _
@@ -165,30 +155,19 @@ theorem filter.pi.exists_le_card_fiber (hr_pos : 0 < r) (ht'_pos : 0 < t')
     (ht_lt_t' : t < t') (hδ : G.minDegree ≥ (1 - 1 / r + ε) * n)
     (hN : (t'.choose t ^ r * t + r * t') * (t' - t) ≤ n * (r * t' * ε - t)) :
     ∃ y : K.parts.pi (·.powersetCard t), t ≤ #{ w | filter.pi K w = y } := by
-  have : Nonempty (K.parts.pi (·.powersetCard t)) := by
-    simp_rw [nonempty_coe_sort, pi_nonempty, powersetCard_nonempty]
-    intro p hp
-    rw [K.card_mem_parts hp]
-    exact ht_lt_t'.le
+  have : Nonempty (K.parts.pi (·.powersetCard t)) :=
+    nonempty_coe_sort.mpr <| pi_nonempty.mpr fun p hp ↦
+      powersetCard_nonempty.mpr <| ht_lt_t'.le.trans_eq (K.card_mem_parts hp).symm
+  have hcard : #(K.parts.pi (·.powersetCard t)) = t'.choose t ^ r := by
+    rw [Finset.card_pi, prod_eq_pow_card fun p hp ↦ by rw [card_powersetCard, K.card_mem_parts hp],
+      K.card_parts.resolve_right ht'_pos.ne']
   apply exists_le_card_fiber_of_mul_le_card
-  simp_rw [card_coe]
-  calc #(K.parts.pi (·.powersetCard t)) * t
-    _ = (∏ x ∈ K.parts, (#x).choose t) * t := by
-        simp_rw [Finset.card_pi, card_powersetCard]
-    _ = (∏ p ∈ K.parts, t'.choose t) * t :=
-        congrArg (· * t) <| prod_congr rfl
-          fun p hp ↦ congrArg (Nat.choose · t) <| K.card_mem_parts hp
-    _ ≤ t'.choose t ^ r * t := by
-        rw [prod_const, K.card_parts.resolve_right ht'_pos.ne']
-    _ ≤ #(filter K t) := by
-        refine Nat.le_of_mul_le_mul_right ?_ (Nat.sub_pos_of_lt ht_lt_t')
-        rw [← @Nat.cast_le ℝ, Nat.cast_mul _ (t' - t), Nat.cast_mul _ (t' - t),
-          Nat.cast_sub ht_lt_t'.le]
-        exact mul_le_card_filter_mul K hr_pos ht'_pos hδ (mod_cast hN)
+  simp_rw [card_coe, hcard]
+  exact_mod_cast le_of_mul_le_mul_right (mul_le_card_filter_mul K hr_pos ht'_pos hδ (mod_cast hN))
+    (sub_pos.mpr (mod_cast ht_lt_t'))
 
 end ErdosStone
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- If `G` has a minimal degree of at least `(1 - 1 / r + o(1)) * n`, then `G` contains a
 copy of a `completeEquipartiteGraph` in `r + 1` parts each of size `t`.
 
@@ -221,38 +200,34 @@ public theorem eventually_completeEquipartiteGraph_isContained_of_minDegree
     -- satisfy the pigeonhole principle
     let N := max (max 1 N') ⌈(t'.choose t ^ r * t + r * t') * (t' - t) / (r * t' * ε - t)⌉₊
     refine eventually_atTop.mpr ⟨N, fun n hn {G} _ hδ ↦ ?_⟩
-    have : Nonempty (Fin n) := by
-      rw [← Fin.pos_iff_nonempty]
-      exact hn.trans_lt' (lt_max_of_lt_left (lt_max_of_lt_left zero_lt_one))
+    have : Nonempty (Fin n) := Fin.pos_iff_nonempty.mp <|
+      hn.trans_lt' <| lt_max_of_lt_left <| lt_max_of_lt_left zero_lt_one
     -- `r` is less than `1 / ε` otherwise `G.minDegree = n`
     have hrε_lt_1 : r * ε < 1 := by
-      have hδ_lt_card : (G.minDegree : ℝ) < (n : ℝ) := by
-        conv_rhs =>
-          rw [← Fintype.card_fin n]
-        exact_mod_cast G.minDegree_lt_card
+      have hδ_lt_card : (G.minDegree : ℝ) < n :=
+        Nat.cast_lt.mpr (G.minDegree_lt_card.trans_eq (Fintype.card_fin n))
       contrapose! hδ_lt_card with h1_le_rε
       rw [← div_le_iff₀' (by positivity), ← sub_nonpos,
         ← le_sub_self_iff 1, ← sub_add] at h1_le_rε
       exact hδ.trans' (le_mul_of_one_le_left n.cast_nonneg h1_le_rε)
-    have ht_lt_t' : t < t' := by
-      rw [mul_comm (r : ℝ) (t' : ℝ), mul_assoc] at ht_lt_rt'ε
-      exact_mod_cast ht_lt_rt'ε.trans_le (mul_le_of_le_one_right (mod_cast ht'_pos.le) hrε_lt_1.le)
+    have hrt'ε_le_t' : (r * t' * ε : ℝ) ≤ t' := by
+      rw [mul_comm (r : ℝ) (t' : ℝ), mul_assoc]
+      exact mul_le_of_le_one_right t'.cast_nonneg hrε_lt_1.le
+    have ht_lt_t' : t < t' := mod_cast ht_lt_rt'ε.trans_le hrt'ε_le_t'
     -- identify a `completeEquipartiteGraph r t'` in `G` from the inductive hypothesis
     replace ih : completeEquipartiteGraph r t' ⊑ G := by
       rcases eq_or_ne r 1 with hr_eq_1 | hr_ne_1
       -- if `r = 1` then `completeEquipartiteGraph r t' = ⊥`
-      · have h0 : r ≤ 1 ∨ t' = 0 := Or.inl hr_eq_1.le
-        rw [completeEquipartiteGraph_eq_bot_iff.mpr h0, bot_isContained_iff_card_le,
+      · rw [completeEquipartiteGraph_eq_bot_iff.mpr (.inl hr_eq_1.le), bot_isContained_iff_card_le,
           card_prod, Fintype.card_fin, Fintype.card_fin, hr_eq_1, one_mul, Fintype.card_fin]
         apply hn.trans'
         exact_mod_cast calc (t' : ℝ)
-          _ ≤ r * t' := le_mul_of_one_le_left (by positivity) (mod_cast hr_pos)
-          _ ≤ t'.choose t ^ r * t + r * t' := le_add_of_nonneg_left (by positivity)
+          _ ≤ t'.choose t ^ r * t + r * t' := le_add_of_nonneg_of_le (by positivity) <|
+              le_mul_of_one_le_left (by positivity) (mod_cast hr_pos)
           _ ≤ (t'.choose t ^ r * t + r * t') * (t' - t) / (r * t' * ε - t) := by
             rw [mul_div_assoc, le_mul_iff_one_le_right (by positivity),
-              one_le_div (sub_pos.mpr ht_lt_rt'ε), sub_le_sub_iff_right,
-              mul_comm (r : ℝ) (t' : ℝ),  mul_assoc, mul_le_iff_le_one_right (by positivity)]
-            exact hrε_lt_1.le
+              one_le_div (sub_pos.mpr ht_lt_rt'ε), sub_le_sub_iff_right]
+            exact hrt'ε_le_t'
           _ ≤ ⌈(t'.choose t ^ r * t + r * t') * (t' - t) / (r * t' * ε - t)⌉₊ := Nat.le_ceil _
           _ ≤ N := Nat.cast_le.mpr (le_max_right _ _)
       -- if `r > 1` then `G` satisfies the inductive hypothesis
@@ -293,14 +268,13 @@ public theorem eventually_completeEquipartiteGraph_isContained_of_minDegree
         exact G.loopless.irrefl v
       · simp_rw [card_map, card_univ, card_coe]
         exact .inl (K.card_parts.resolve_right ht'_pos.ne')
-      · simp_rw [univ_eq_attach, Finset.mem_map, mem_attach,
-          Function.Embedding.coeFn_mk, true_and, Subtype.exists] at hp
+      · simp_rw [univ_eq_attach, Finset.mem_map, mem_attach, true_and, Subtype.exists] at hp
         replace ⟨p, hp, hyp⟩ := hp
         rw [← hyp]
         have hy' := mem_powersetCard.mp (hy p hp)
         exact hy'.right
-      · simp_rw [univ_eq_attach, coe_map, Function.Embedding.coeFn_mk,
-          Set.mem_image, mem_coe, mem_attach, true_and, Subtype.exists] at hp₁ hp₂
+      · simp_rw [univ_eq_attach, coe_map, Set.mem_image,
+          mem_coe, mem_attach, true_and, Subtype.exists] at hp₁ hp₂
         replace ⟨p₁, hp₁, hyp₁⟩ := hp₁
         rw [← hyp₁] at hv₁ hne
         have hy₁' := mem_powersetCard.mp (hy p₁ hp₁)
@@ -315,8 +289,7 @@ public theorem eventually_completeEquipartiteGraph_isContained_of_minDegree
     refine completeEquipartiteGraph_succ_isContained_iff.mpr
       ⟨K', s.map (.subtype _), by rwa [← card_map] at hcards, fun p' hp' v hv w hw ↦ ?_⟩
     obtain ⟨w', hw'_mem, (hw'_eq : ↑w' = w)⟩ := Finset.mem_map.mp hw
-    simp_rw [K', univ_eq_attach, Finset.mem_map, mem_attach,
-      Function.Embedding.coeFn_mk, true_and, Subtype.exists] at hp'
+    simp_rw [K', univ_eq_attach, Finset.mem_map, mem_attach, true_and, Subtype.exists] at hp'
     obtain ⟨p, hp, hp'_eq⟩ : ∃ p, ∃ (h : p ∈ K.parts), y p h = p' := hp'
     apply hs_subset at hw'_mem
     simp_rw [mem_filter, mem_univ, true_and, ErdosStone.filter.pi, Subtype.mk.injEq] at hw'_mem

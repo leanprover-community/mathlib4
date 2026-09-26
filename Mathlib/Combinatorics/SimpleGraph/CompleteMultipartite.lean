@@ -374,24 +374,35 @@ theorem nonempty_of_eq_zero_or_eq_zero (h : r = 0 ∨ t = 0) :
   ⟨{}, h.elim (fun hr ↦ by simp [hr]) (fun ht ↦ by simp [ht]), by simp, by simp⟩
 
 /-- The parts in a complete equipartite subgraph are pairwise disjoint. -/
-theorem disjoint : (K.parts : Set (Finset V)).Pairwise Disjoint :=
+theorem disjoint : (K.parts : Set (Finset V)).PairwiseDisjoint id :=
   fun _ h₁ _ h₂ hne ↦ Finset.disjoint_left.mpr fun _ h₁' h₂' ↦
     G.irrefl <| K.isCompleteBetween h₁ h₂ hne h₁' h₂'
 
 /-- The finset of vertices in a complete equipartite subgraph. -/
 def verts : Finset V := K.parts.disjiUnion id K.disjoint
 
-set_option backward.isDefEq.respectTransparency.types false in
+/-- The vertices of a complete equipartite subgraph, as a `disjiUnion` of its parts. -/
+lemma verts_eq_disjiUnion : K.verts = K.parts.disjiUnion id K.disjoint := rfl
+
 open scoped Classical in
 /-- The finset of vertices in a complete equipartite subgraph as a `biUnion`. -/
-lemma verts_eq_biUnion : K.verts = K.parts.biUnion id := by rw [verts, disjiUnion_eq_biUnion]
+lemma verts_eq_biUnion : K.verts = K.parts.biUnion id := by
+  rw [verts_eq_disjiUnion, disjiUnion_eq_biUnion]
 
-set_option backward.isDefEq.respectTransparency.types false in
+@[simp]
+lemma mem_verts {v : V} : v ∈ K.verts ↔ ∃ p ∈ K.parts, v ∈ p := by simp [verts_eq_disjiUnion]
+
+/-- Filtering the vertices of a complete equipartite subgraph splits across its parts. -/
+lemma card_filter_verts (P : V → Prop) [DecidablePred P] :
+    #{v ∈ K.verts | P v} = ∑ p ∈ K.parts, #{v ∈ p | P v} := by
+  rw [verts_eq_disjiUnion, filter_disjiUnion, card_disjiUnion]
+  exact sum_congr rfl fun _ _ ↦ rfl
+
 /-- There are `r * t` vertices in a complete equipartite subgraph with `r` parts of size `t`. -/
 theorem card_verts : #K.verts = r * t := by
-  simp_rw [verts, card_disjiUnion, id_eq, sum_congr rfl fun _ ↦ K.card_mem_parts, sum_const,
-    smul_eq_mul, mul_eq_mul_right_iff]
-  exact K.card_parts
+  rw [← filter_true K.verts, card_filter_verts,
+    ← mul_eq_mul_right_iff.mpr K.card_parts, ← smul_eq_mul, ← sum_const]
+  exact Finset.sum_congr rfl fun p hp ↦ by rw [filter_true, K.card_mem_parts hp]
 
 /-- A complete equipartite subgraph gives rise to a copy of a complete equipartite graph. -/
 noncomputable def toCopy : Copy (completeEquipartiteGraph r t) G := by
