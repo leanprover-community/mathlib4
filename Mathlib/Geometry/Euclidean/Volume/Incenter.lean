@@ -95,6 +95,17 @@ theorem excenterWeights_eq_excenterWeightsFace_div :
     excenterWeights, Pi.smul_apply, smul_eq_mul]
   field [‹NeZero n›.ne]
 
+theorem sum_excenterWeightsFace_singleton_pos [n.AtLeastTwo] (i : Fin (n + 1)) :
+    0 < ∑ j, s.excenterWeightsFace {i} j := by
+  simp_rw [excenterWeightsFace_eq_volume_mul_excenterWeightsUnnorm, ← Finset.mul_sum]
+  positivity [‹NeZero n›.pos, s.sum_excenterWeightsUnnorm_singleton_pos i]
+
+theorem sum_excenterWeightsFace_pos_of_card_le_one [Nat.AtLeastTwo n] {signs : Finset (Fin (n + 1))}
+    (h : signs.card ≤ 1) :
+    0 < ∑ j, s.excenterWeightsFace signs j := by
+  simp_rw [excenterWeightsFace_eq_volume_mul_excenterWeightsUnnorm, ← Finset.mul_sum]
+  positivity [‹NeZero n›.pos, s.sum_excenterWeightsUnnorm_pos_of_card_le_one h]
+
 variable {s signs} in
 theorem ExcenterExists.volume_eq_exradius_mul (h : s.ExcenterExists signs) :
     s.volume = (↑n)⁻¹ * s.exradius signs * |∑ i, s.excenterWeightsFace signs i| := by
