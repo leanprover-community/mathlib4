@@ -41,8 +41,7 @@ section Coeff
 theorem coeff_add (p q : R[X]) (n : ℕ) : coeff (p + q) n = coeff p n + coeff q n := by
   rcases p with ⟨⟩
   rcases q with ⟨⟩
-  simp_rw [← ofFinsupp_add, coeff]
-  exact Finsupp.add_apply _ _ _
+  simp_rw [← ofFinsupp_add, coeff, AddMonoidAlgebra.coeff_add, Finsupp.add_apply]
 
 @[simp]
 theorem coeff_smul [SMulZeroClass S R] (r : S) (p : R[X]) (n : ℕ) :
