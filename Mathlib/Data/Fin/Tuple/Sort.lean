@@ -24,6 +24,10 @@ This file provides an API for doing so, with the sorted `n`-tuple given by
 
 * `Tuple.sort`: given `f : Fin n → α`, produces a permutation on `Fin n`
 * `Tuple.monotone_sort`: `f ∘ Tuple.sort f` is `Monotone`
+* `Tuple.sortDesc`: given `f : Fin n → α`, produces a permutation on `Fin n` sorting into decreasing
+  order
+* `Tuple.antitone_sortDesc`: `f ∘ Tuple.sortDesc f` is `Antitone`
+* `Tuple.comp_sort_comp_rev_eq_comp_sortDesc`: sorting descending equals sorting ascending, reversed
 
 -/
 
@@ -94,6 +98,16 @@ theorem monotone_proj (f : Fin n → α) : Monotone (graph.proj : graph f → α
 theorem monotone_sort (f : Fin n → α) : Monotone (f ∘ sort f) := by
   rw [self_comp_sort]
   exact (monotone_proj f).comp (graphEquiv₂ f).monotone
+
+/-- `sortDesc f` is the permutation that orders `Fin n` according to the reverse order of the
+outputs of `f`, so that `f ∘ sortDesc f` is decreasing. -/
+def sortDesc (f : Fin n → α) : Equiv.Perm (Fin n) :=
+  sort (OrderDual.toDual ∘ f)
+
+theorem antitone_sortDesc (f : Fin n → α) : Antitone (f ∘ sortDesc f) := by
+  have hmono : Monotone ((OrderDual.toDual ∘ f) ∘ sort (OrderDual.toDual ∘ f)) := monotone_sort _
+  rw [Function.comp_assoc] at hmono
+  exact monotone_toDual_comp_iff.mp hmono
 
 end Tuple
 
@@ -180,6 +194,28 @@ theorem comp_sort_eq_comp_iff_monotone : f ∘ σ = f ∘ sort f ↔ Monotone (f
 theorem comp_perm_comp_sort_eq_comp_sort : (f ∘ σ) ∘ sort (f ∘ σ) = f ∘ sort f := by
   rw [Function.comp_assoc, ← Equiv.Perm.coe_mul]
   exact unique_monotone (monotone_sort (f ∘ σ)) (monotone_sort f)
+
+/-- The sorted-descending versions of a tuple `f` and of any permutation of `f` agree. -/
+theorem comp_perm_comp_sortDesc_eq_comp_sortDesc :
+    (f ∘ σ) ∘ sortDesc (f ∘ σ) = f ∘ sortDesc f := by
+  rw [Function.comp_assoc, ← Equiv.Perm.coe_mul]
+  exact unique_antitone (antitone_sortDesc (f ∘ σ)) (antitone_sortDesc f)
+
+/-- Sorting `f` in descending order is the same as sorting it in ascending order, then reversing. -/
+theorem comp_sort_comp_rev_eq_comp_sortDesc : f ∘ sort f ∘ Fin.rev = f ∘ sortDesc f := by
+  rw [show ⇑(sort f) ∘ Fin.rev = ⇑(sort f * Fin.revPerm : Equiv.Perm (Fin n)) from rfl]
+  exact unique_antitone ((monotone_sort f).comp_antitone Fin.rev_anti) (antitone_sortDesc f)
+
+/-- Sorting `f` in ascending order is the same as sorting it in descending order, then reversing. -/
+theorem comp_sortDesc_comp_rev_eq_comp_sort : f ∘ sortDesc f ∘ Fin.rev = f ∘ sort f := by
+  rw [show ⇑(sortDesc f) ∘ Fin.rev = ⇑(sortDesc f * Fin.revPerm : Equiv.Perm (Fin n)) from rfl]
+  exact unique_monotone ((antitone_sortDesc f).comp Fin.rev_anti) (monotone_sort f)
+
+/-- When `f` is injective there are no ties, so sorting descending agrees with sorting ascending
+then reversing, already as an equality of permutations. -/
+theorem sort_comp_rev_eq_sortDesc_of_injective (inj : Function.Injective f) :
+    sort f ∘ Fin.rev = sortDesc f :=
+  inj.comp_left comp_sort_comp_rev_eq_comp_sortDesc
 
 /-- If a permutation `f ∘ σ` of the tuple `f` is not the same as `f ∘ sort f`, then `f ∘ σ`
 has a pair of strictly decreasing entries. -/
