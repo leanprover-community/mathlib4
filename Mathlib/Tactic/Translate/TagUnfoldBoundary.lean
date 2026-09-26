@@ -67,7 +67,7 @@ def elabInsertCastAux (declName : Name) (castKind : CastKind) (stx : Term) (t : 
     addDecl name type value
     return (type, xs.size)
   -- Then, create the translated version, using `stx` to construct the value.
-  let (newType, _) ← (applyReplacementFun t type).run #[] #[]
+  let (newType, _) ← applyReplacementForall t [] type
   let newValue ← forallBoundedTelescope newType numFVars fun xs goalType ↦ do
     -- Make the goal easier to prove by unfolding the new lhs
     let goalType := (← unfoldLHS? castKind goalType).getD goalType
