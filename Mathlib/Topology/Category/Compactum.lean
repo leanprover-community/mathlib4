@@ -190,13 +190,13 @@ instance {X : Compactum} : CompactSpace X := by
   intro S h1 h2
   exact h2 F h1
 
-/-- A local definition used only in the proofs. -/
-private def basic {X : Compactum} (A : Set X) : Set (Ultrafilter X) :=
+/-- The set of ultrafilters on `X` containing `A`. -/
+def basic {X : Compactum} (A : Set X) : Set (Ultrafilter X) :=
   { F | A ∈ F }
 
-set_option backward.privateInPublic true in
-/-- A local definition used only in the proofs. -/
-private def cl {X : Compactum} (A : Set X) : Set X :=
+/-- The image under the structure map of the set of ultrafilters containing `A`; this is the
+closure of `A`, see `Compactum.cl_eq_closure`. -/
+def cl {X : Compactum} (A : Set X) : Set X :=
   X.str '' basic A
 
 private theorem basic_inter {X : Compactum} (A B : Set X) : basic (A ∩ B) = basic A ∩ basic B := by
@@ -269,8 +269,6 @@ private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
   apply claim4.finiteInter_mem T
   grw [← subset_finiteInterClosure, ← hT]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 theorem isClosed_cl {X : Compactum} (A : Set X) : IsClosed (cl A) := by
   rw [isClosed_iff]
   intro F hF
@@ -359,8 +357,6 @@ theorem lim_eq_str {X : Compactum} (F : Ultrafilter X) : F.lim = X.str F := by
   rw [Ultrafilter.lim_eq_iff_le_nhds, le_nhds_iff]
   tauto
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 theorem cl_eq_closure {X : Compactum} (A : Set X) : cl A = closure A := by
   ext
   rw [mem_closure_iff_ultrafilter]
