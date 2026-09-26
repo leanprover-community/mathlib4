@@ -491,6 +491,15 @@ lemma attachWith_map_subtypeVal {s : Sym2 α} {P : α → Prop} (h : ∀ a ∈ s
     (s.attachWith h).map Subtype.val = s := by
   cases s; rfl
 
+@[simp]
+lemma attachWith_mk {P : α → Prop} (a b : α) (h : ∀ x ∈ s(a, b), P x) :
+    s(a, b).attachWith h = s(⟨a, h a <| Sym2.mem_mk_left ..⟩, ⟨b, h b <| Sym2.mem_mk_right ..⟩) :=
+  rfl
+
+lemma attachWith_inj {P : α → Prop} {z₁ z₂ : Sym2 α} {h₁ : ∀ a ∈ z₁, P a} {h₂ : ∀ a ∈ z₂, P a}
+    (h : z₁.attachWith h₁ = z₂.attachWith h₂) : z₁ = z₂ := by
+  simpa using congr(($h).map Subtype.val)
+
 /-! ### Diagonal -/
 
 variable {z : Sym2 α} {f : α → β}

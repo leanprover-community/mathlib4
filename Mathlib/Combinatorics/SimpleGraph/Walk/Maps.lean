@@ -233,10 +233,31 @@ protected def induce {u v : V} :
 @[simp] lemma induce_cons (huu' : G.Adj u u') (w : G.Walk u' v) (hw) :
     (w.cons huu').induce s hw = .cons (induce_adj.2 huu') (w.induce s <| by simp_all) := rfl
 
+@[simp]
+lemma nil_induce {w : G.Walk u v} (hw) : (w.induce s hw).Nil ↔ w.Nil := by cases w <;> simp
+
+@[simp]
+lemma length_induce {u v} : ∀ {w : G.Walk u v} (hw), (w.induce s hw).length = w.length
+  | nil, _ => rfl
+  | cons .., _ => by simp [length_induce]
+
 @[simp] lemma support_induce {u v : V} :
     ∀ (w : G.Walk u v) (hw), (w.induce s hw).support = w.support.attachWith _ hw
   | .nil, hw => rfl
   | .cons (v := u') hu w, hw => by simp [support_induce]
+
+lemma darts_induce {u v} : ∀ {w : G.Walk u v} (hw),
+  (w.induce s hw).darts = w.darts.attach.map fun ⟨d, hd⟩ ↦ .mk
+    (⟨d.fst, hw d.fst <| dart_fst_mem_support_of_mem_darts w hd⟩,
+    ⟨d.snd, hw d.snd <| dart_snd_mem_support_of_mem_darts w hd⟩) d.adj
+  | nil, _ => rfl
+  | cons .., _ => by simp [darts_induce]
+
+lemma edges_induce {u v} : ∀ {w : G.Walk u v} (hw),
+    (w.induce s hw).edges = w.edges.attach.map
+      fun ⟨e, he⟩ ↦ e.attachWith (hw · <| mem_support_of_mem_edges he ·)
+  | nil, _ => rfl
+  | cons .., _ => by simp [edges_induce]
 
 @[simp] lemma map_induce {u v : V} :
     ∀ (w : G.Walk u v) (hw), (w.induce s hw).map (Embedding.induce _).toHom = w

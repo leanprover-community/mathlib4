@@ -225,6 +225,10 @@ theorem Nodup.pmap {p : α → Prop} {f : ∀ a, p a → β} {l : List α} {H}
     (hf : ∀ a ha b hb, f a ha = f b hb → a = b) (h : Nodup l) : Nodup (pmap f l H) := by
   grind
 
+@[simp]
+theorem nodup_attachWith {P : α → Prop} {h : ∀ x ∈ l, P x} : (l.attachWith P h).Nodup ↔ l.Nodup :=
+  ⟨(attachWith_map_subtype_val h ▸ ·.map Subtype.val_injective), .pmap <| by simp⟩
+
 theorem Nodup.filter (p : α → Bool) {l} : Nodup l → Nodup (filter p l) := by
   simpa using! Pairwise.filter p
 

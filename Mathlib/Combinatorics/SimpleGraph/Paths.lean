@@ -1227,6 +1227,31 @@ protected alias ⟨_, IsCycle.transfer⟩ := isCycle_transfer
 
 end Walk
 
+/-! ### Inducing -/
+
+namespace Walk
+
+variable {G} {u v : V} {s : Set V} {p : G.Walk u v} {c : G.Walk u u}
+
+@[simp]
+lemma isTrail_induce {hp : ∀ x ∈ p.support, x ∈ s} : (p.induce s hp).IsTrail ↔ p.IsTrail := by
+  rw [isTrail_def, isTrail_def, edges_induce, List.nodup_map_iff fun _ _ h ↦ ?_, List.nodup_attach]
+  simpa [Subtype.val_inj] using Sym2.attachWith_inj h
+
+@[simp]
+lemma isPath_induce {hp : ∀ x ∈ p.support, x ∈ s} : (p.induce s hp).IsPath ↔ p.IsPath := by
+  simp [isPath_def]
+
+@[simp]
+lemma isCircuit_induce {hc : ∀ x ∈ c.support, x ∈ s} : (c.induce s hc).IsCircuit ↔ c.IsCircuit := by
+  simp [isCircuit_def]
+
+@[simp]
+lemma isCycle_induce {hc : ∀ x ∈ c.support, x ∈ s} : (c.induce s hc).IsCycle ↔ c.IsCycle := by
+  simp [isCycle_def]
+
+end Walk
+
 /-! ## Deleting edges -/
 
 namespace Walk
