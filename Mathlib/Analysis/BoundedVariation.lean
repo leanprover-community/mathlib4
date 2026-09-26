@@ -181,8 +181,8 @@ theorem memLp [IsFiniteMeasure μ] {p : ℝ≥0∞} (hf : BoundedVariationOn f u
 theorem integrable [IsFiniteMeasure μ] (hf : BoundedVariationOn f univ) : Integrable f μ :=
   memLp_one_iff_integrable.1 hf.memLp
 
-/-- A function of bounded variation on `uIcc a b`, with values in any normed group, is interval
-integrable on `a..b` with respect to any locally finite measure. -/
+/-- A function with bounded variation on an unordered closed interval, with values in any normed
+group, is interval integrable on that interval with respect to any locally finite measure. -/
 theorem intervalIntegrable {f : ℝ → E} {a b : ℝ} {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
     (hf : BoundedVariationOn f (uIcc a b)) : IntervalIntegrable f μ a b := by
   -- clamp `ℝ` onto `uIcc a b`, so the variation over `univ` is at most that over `uIcc a b`
