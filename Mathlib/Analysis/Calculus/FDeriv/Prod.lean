@@ -114,6 +114,10 @@ theorem DifferentiableWithinAt.fderivWithin_prodMk (hf₁ : DifferentiableWithin
 
 end Prod
 
+theorem fderiv_fun_comp_prodMk {f : E × F → G} {a : E} {b : F} (hdf : DifferentiableAt 𝕜 f (a, b)) :
+    fderiv 𝕜 (fun y ↦ f (a, y)) b = fderiv 𝕜 f (a, b) ∘L .inr 𝕜 E F :=
+  hdf.hasFDerivAt.comp b (.prodMk (hasFDerivAt_const _ _) (hasFDerivAt_id _)) |>.fderiv
+
 section Fst
 
 variable {f₂ : E → F × G} {f₂' : E →L[𝕜] F × G} {p : E × F}
