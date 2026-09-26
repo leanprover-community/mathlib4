@@ -75,7 +75,7 @@ lemma BinaryFan.ext_inv_hom {A B : C} {c c' : BinaryFan A B} (e : c.pt ≅ c'.pt
     (ext e h₁ h₂).inv.hom = e.inv := rfl
 
 /-- A convenient way to show that a binary fan is a limit. -/
-@[to_dual IsColimit.mk]
+@[to_dual IsColimit.mk /-- A convenient way to show that a binary cofan is a colimit. -/]
 def BinaryFan.IsLimit.mk {X Y : C} (s : BinaryFan X Y)
     (lift : ∀ {T : C} (_ : T ⟶ X) (_ : T ⟶ Y), T ⟶ s.pt)
     (hl₁ : ∀ {T : C} (f : T ⟶ X) (g : T ⟶ Y), lift f g ≫ s.fst = f)
