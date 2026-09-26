@@ -93,9 +93,17 @@ variable (W') in
 def neg (P : R × R × R) : R × R × R :=
   (P x, W'.negY P, P z)
 
-@[deprecated (since := "2025-05-04")] alias neg_X := neg
-@[deprecated (since := "2025-05-04")] alias neg_Y := neg
-@[deprecated (since := "2025-05-04")] alias neg_Z := neg
+@[deprecated "Unfold `neg` instead" (since := "2025-05-04")]
+lemma neg_X (P : R × R × R) : (W'.neg P) x = P x :=
+  rfl
+
+@[deprecated "Unfold `neg` instead" (since := "2025-05-04")]
+lemma neg_Y (P : R × R × R) : (W'.neg P) y = W'.negY P :=
+  rfl
+
+@[deprecated "Unfold `neg` instead" (since := "2025-05-04")]
+lemma neg_Z (P : R × R × R) : (W'.neg P) z = P z :=
+  rfl
 
 protected lemma neg_smul (P : R × R × R) (u : R) : W'.neg (u • P) = u • W'.neg P := by
   rw [neg, negY_smul]
@@ -382,13 +390,13 @@ namespace Point
 lemma mk_point {P : PointClass R} (h : W'.NonsingularLift P) : (mk h).point = P :=
   rfl
 
-instance [Nontrivial R] : Zero W'.Point :=
+instance : Zero W'.Point :=
   ⟨⟨nonsingularLift_zero⟩⟩
 
-lemma zero_def [Nontrivial R] : (0 : W'.Point) = ⟨nonsingularLift_zero⟩ :=
+lemma zero_def : (0 : W'.Point) = ⟨nonsingularLift_zero⟩ :=
   rfl
 
-lemma zero_point [Nontrivial R] : (0 : W'.Point).point = ⟦(1, 1, 0)⟧ :=
+lemma zero_point : (0 : W'.Point).point = ⟦(1, 1, 0)⟧ :=
   rfl
 
 lemma mk_ne_zero [Nontrivial R] {X Y : R} (h : W'.NonsingularLift ⟦(X, Y, 1)⟧) : mk h ≠ 0 :=
@@ -396,14 +404,14 @@ lemma mk_ne_zero [Nontrivial R] {X Y : R} (h : W'.NonsingularLift ⟦(X, Y, 1)�
 
 /-- The natural map from a nonsingular point on a Weierstrass curve in affine coordinates to its
 corresponding nonsingular Jacobian point. -/
-def fromAffine [Nontrivial R] : W'.toAffine.Point → W'.Point
+def fromAffine : W'.toAffine.Point → W'.Point
   | 0 => 0
   | .some _ _ h => ⟨(nonsingularLift_some ..).mpr h⟩
 
-lemma fromAffine_zero [Nontrivial R] : fromAffine 0 = (0 : W'.Point) :=
+lemma fromAffine_zero : fromAffine 0 = (0 : W'.Point) :=
   rfl
 
-lemma fromAffine_some [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X Y) :
+lemma fromAffine_some {X Y : R} (h : W'.toAffine.Nonsingular X Y) :
     fromAffine (.some _ _ h) = ⟨(nonsingularLift_some ..).mpr h⟩ :=
   rfl
 
@@ -645,7 +653,7 @@ lemma baseChange_add [Algebra R S] [Algebra R F] [Algebra S F] [IsScalarTower R 
 end Jacobian
 
 /-- An abbreviation for `WeierstrassCurve.Jacobian.Point.fromAffine` for dot notation. -/
-abbrev Affine.Point.toJacobian [Nontrivial R] {W : Affine R} (P : W.Point) : W.toJacobian.Point :=
+abbrev Affine.Point.toJacobian {W : Affine R} (P : W.Point) : W.toJacobian.Point :=
   Jacobian.Point.fromAffine P
 
 end WeierstrassCurve

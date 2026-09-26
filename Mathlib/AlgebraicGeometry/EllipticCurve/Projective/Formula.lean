@@ -98,7 +98,9 @@ Weierstrass curve. -/
 def negY (P : R × R × R) : R :=
   -P y - W'.a₁ * P x - W'.a₃ * P z
 
-@[deprecated (since := "2025-05-04")] alias negY_eq := negY
+@[deprecated "Unfold `negY` instead" (since := "2025-05-04")]
+lemma negY_eq (X Y Z : R) : W'.negY (X, Y, Z) = -Y - W'.a₁ * X - W'.a₃ * Z :=
+  rfl
 
 lemma negY_smul (P : R × R × R) (u : R) : W'.negY (u • P) = u * W'.negY P := by
   simp_rw [negY, smul_eq]
@@ -560,9 +562,17 @@ Weierstrass curve. -/
 noncomputable def dblXYZ (P : R × R × R) : R × R × R :=
   (W'.dblX P, W'.dblY P, W'.dblZ P)
 
-@[deprecated (since := "2025-05-04")] alias dblXYZ_X := dblXYZ
-@[deprecated (since := "2025-05-04")] alias dblXYZ_Y := dblXYZ
-@[deprecated (since := "2025-05-04")] alias dblXYZ_Z := dblXYZ
+@[deprecated "Unfold `dblXYZ` instead" (since := "2025-05-04")]
+lemma dblXYZ_X (P : R × R × R) : (W'.dblXYZ P) x = W'.dblX P :=
+  rfl
+
+@[deprecated "Unfold `dblXYZ` instead" (since := "2025-05-04")]
+lemma dblXYZ_Y (P : R × R × R) : (W'.dblXYZ P) y = W'.dblY P :=
+  rfl
+
+@[deprecated "Unfold `dblXYZ` instead" (since := "2025-05-04")]
+lemma dblXYZ_Z (P : R × R × R) : (W'.dblXYZ P) z = W'.dblZ P :=
+  rfl
 
 lemma dblXYZ_smul (P : R × R × R) (u : R) : W'.dblXYZ (u • P) = u ^ 4 • W'.dblXYZ P := by
   simp_rw [dblXYZ, dblX_smul, dblY_smul, dblZ_smul, smul_eq]
@@ -881,9 +891,17 @@ If the representatives of `P` and `Q` are equal, then this returns the value `(0
 noncomputable def addXYZ (P Q : R × R × R) : R × R × R :=
   (W'.addX P Q, W'.addY P Q, W'.addZ P Q)
 
-@[deprecated (since := "2025-05-04")] alias addXYZ_X := addXYZ
-@[deprecated (since := "2025-05-04")] alias addXYZ_Y := addXYZ
-@[deprecated (since := "2025-05-04")] alias addXYZ_Z := addXYZ
+@[deprecated "Unfold `addXYZ` instead" (since := "2025-05-04")]
+lemma addXYZ_X (P Q : R × R × R) : (W'.addXYZ P Q) x = W'.addX P Q :=
+  rfl
+
+@[deprecated "Unfold `addXYZ` instead" (since := "2025-05-04")]
+lemma addXYZ_Y (P Q : R × R × R) : (W'.addXYZ P Q) y = W'.addY P Q :=
+  rfl
+
+@[deprecated "Unfold `addXYZ` instead" (since := "2025-05-04")]
+lemma addXYZ_Z (P Q : R × R × R) : (W'.addXYZ P Q) z = W'.addZ P Q :=
+  rfl
 
 lemma addXYZ_smul (P Q : R × R × R) (u v : R) :
     W'.addXYZ (u • P) (v • Q) = (u * v) ^ 2 • W'.addXYZ P Q := by
