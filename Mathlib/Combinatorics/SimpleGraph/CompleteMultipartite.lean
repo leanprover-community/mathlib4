@@ -374,15 +374,15 @@ theorem nonempty_of_eq_zero_or_eq_zero (h : r = 0 ∨ t = 0) :
   ⟨{}, h.elim (fun hr ↦ by simp [hr]) (fun ht ↦ by simp [ht]), by simp, by simp⟩
 
 /-- The parts in a complete equipartite subgraph are pairwise disjoint. -/
-theorem pairwiseDisjoint : (K.parts : Set (Finset V)).PairwiseDisjoint id :=
+theorem disjoint : (K.parts : Set (Finset V)).PairwiseDisjoint id :=
   fun _ h₁ _ h₂ hne ↦ Finset.disjoint_left.mpr fun _ h₁' h₂' ↦
     G.irrefl <| K.isCompleteBetween h₁ h₂ hne h₁' h₂'
 
 /-- The finset of vertices in a complete equipartite subgraph. -/
-def verts : Finset V := K.parts.disjiUnion id K.pairwiseDisjoint
+def verts : Finset V := K.parts.disjiUnion id K.disjoint
 
 /-- The vertices of a complete equipartite subgraph, as a `disjiUnion` of its parts. -/
-lemma verts_eq_disjiUnion : K.verts = K.parts.disjiUnion id K.pairwiseDisjoint := rfl
+lemma verts_eq_disjiUnion : K.verts = K.parts.disjiUnion id K.disjoint := rfl
 
 open scoped Classical in
 /-- The finset of vertices in a complete equipartite subgraph as a `biUnion`. -/
