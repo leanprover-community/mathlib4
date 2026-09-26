@@ -75,9 +75,39 @@ example : (37 : R) = 1 := by simp
 
 end AddMonoidWithOne
 
-section Semiring
+section AddGroupWithOne
 
-variable [Semiring R] [CharP R 2]
+variable [AddGroupWithOne R] [CharP R 2]
+
+@[scoped simp]
+theorem neg_one_eq_one : (-1 : R) = 1 := by
+  rw [neg_eq_iff_add_eq_zero, one_add_one_eq_two, two_eq_zero]
+
+@[scoped simp]
+theorem neg_natCast_eq (n : ℕ) : -(n : R) = n := by
+  rw [← nsmul_one, ← neg_nsmul, neg_one_eq_one]
+
+theorem intCast_eq_ite (n : ℤ) : (n : R) = if Even n then 0 else 1 := by
+  obtain ⟨n, rfl | rfl⟩ := n.eq_nat_or_neg <;> simpa using natCast_eq_ite n
+
+@[simp]
+theorem range_intCast : Set.range ((↑) : ℤ → R) = {0, 1} := by
+  rw [funext intCast_eq_ite, Set.range_ite_const]
+  · use 0; simp
+  · use 1; simp
+
+variable (R) in
+theorem intCast_cases (n : ℤ) : (n : R) = 0 ∨ (n : R) = 1 :=
+  (Set.ext_iff.1 range_intCast _).1 (Set.mem_range_self _)
+
+theorem intCast_eq_mod (n : ℤ) : (n : R) = (n % 2 : ℤ) := by
+  simp [intCast_eq_ite, Int.even_iff]
+
+end AddGroupWithOne
+
+section NonAssocSemiring
+
+variable [NonAssocSemiring R] [CharP R 2]
 
 -- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
@@ -97,11 +127,22 @@ protected theorem add_cancel_left (a b : R) : a + (a + b) = b := by
 protected theorem add_cancel_right (a b : R) : a + b + b = a := by
   rw [add_assoc, add_self_eq_zero, add_zero]
 
-end Semiring
+protected theorem add_eq_zero {a b : R} : a + b = 0 ↔ a = b := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [← CharTwo.add_cancel_left a b, h, add_zero]
+  · rw [h, add_self_eq_zero]
 
-section Ring
+theorem add_eq_iff_eq_add {a b c : R} : a + b = c ↔ a = c + b := by
+  rw [← CharTwo.add_eq_zero, add_assoc, CharTwo.add_eq_zero, add_comm]
 
-variable [Ring R] [CharP R 2]
+theorem eq_add_iff_add_eq {a b c : R} : a = b + c ↔ a + c = b := by
+  rw [← CharTwo.add_eq_zero, ← add_assoc, add_right_comm, CharTwo.add_eq_zero]
+
+end NonAssocSemiring
+
+section NonAssocRing
+
+variable [NonAssocRing R] [CharP R 2]
 
 -- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
@@ -115,37 +156,38 @@ theorem neg_eq' : Neg.neg = (id : R → R) :=
 @[scoped simp]
 theorem sub_eq_add (x y : R) : x - y = x + y := by rw [sub_eq_add_neg, neg_eq]
 
-theorem add_eq_iff_eq_add {a b c : R} : a + b = c ↔ a = c + b := by
-  rw [← sub_eq_iff_eq_add, sub_eq_add]
-
-theorem eq_add_iff_add_eq {a b c : R} : a = b + c ↔ a + c = b := by
-  rw [← eq_sub_iff_add_eq, sub_eq_add]
-
 -- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 protected theorem two_zsmul (x : R) : (2 : ℤ) • x = 0 := by
   rw [two_zsmul, add_self_eq_zero]
 
-protected theorem add_eq_zero {a b : R} : a + b = 0 ↔ a = b := by
-  rw [← CharTwo.sub_eq_add, sub_eq_iff_eq_add, zero_add]
+end NonAssocRing
 
-theorem intCast_eq_ite (n : ℤ) : (n : R) = if Even n then 0 else 1 := by
-  obtain ⟨n, rfl | rfl⟩ := n.eq_nat_or_neg <;> simpa using natCast_eq_ite n
+section NonAssocCommSemiring
 
-@[simp]
-theorem range_intCast : Set.range ((↑) : ℤ → R) = {0, 1} := by
-  rw [funext intCast_eq_ite, Set.range_ite_const]
-  · use 0; simp
-  · use 1; simp
+variable [NonAssocCommSemiring R] [CharP R 2]
 
-variable (R) in
-theorem intCast_cases (n : ℤ) : (n : R) = 0 ∨ (n : R) = 1 :=
-  (Set.ext_iff.1 range_intCast _).1 (Set.mem_range_self _)
+theorem add_mul_self (x y : R) : (x + y) * (x + y) = x * x + y * y := by
+  rw [mul_add, add_mul, add_mul, mul_comm y, add_assoc, CharTwo.add_cancel_left]
 
-theorem intCast_eq_mod (n : ℤ) : (n : R) = (n % 2 : ℤ) := by
-  simp [intCast_eq_ite, Int.even_iff]
+/-- See `frobenius` for the Frobenius map. -/
+private def mulSelfAddMonoidHom : R →+ R where
+  toFun x := x * x
+  map_zero' := mul_zero 0
+  map_add' := add_mul_self
 
-end Ring
+theorem list_sum_mul_self (l : List R) : l.sum * l.sum = (List.map (fun x => x * x) l).sum :=
+  map_list_sum mulSelfAddMonoidHom _
+
+theorem multiset_sum_mul_self (l : Multiset R) :
+    l.sum * l.sum = (Multiset.map (fun x => x * x) l).sum :=
+  map_multiset_sum mulSelfAddMonoidHom _
+
+theorem sum_mul_self (s : Finset ι) (f : ι → R) :
+    ((∑ i ∈ s, f i) * ∑ i ∈ s, f i) = ∑ i ∈ s, f i * f i :=
+  map_sum mulSelfAddMonoidHom _ _
+
+end NonAssocCommSemiring
 
 section CommSemiring
 
@@ -153,9 +195,6 @@ variable [CommSemiring R] [CharP R 2]
 
 theorem add_sq (x y : R) : (x + y) ^ 2 = x ^ 2 + y ^ 2 := by
   simp [add_pow_two]
-
-theorem add_mul_self (x y : R) : (x + y) * (x + y) = x * x + y * y := by
-  rw [← pow_two, ← pow_two, ← pow_two, add_sq]
 
 /-- See `frobenius` for the Frobenius map. -/
 private def sqAddMonoidHom : R →+ R where
@@ -166,26 +205,13 @@ private def sqAddMonoidHom : R →+ R where
 theorem list_sum_sq (l : List R) : l.sum ^ 2 = (l.map (· ^ 2)).sum :=
   map_list_sum sqAddMonoidHom _
 
-theorem list_sum_mul_self (l : List R) : l.sum * l.sum = (List.map (fun x => x * x) l).sum := by
-  simp_rw [← pow_two, list_sum_sq]
-
 theorem multiset_sum_sq (l : Multiset R) : l.sum ^ 2 = (l.map (· ^ 2)).sum :=
   map_multiset_sum sqAddMonoidHom _
-
-theorem multiset_sum_mul_self (l : Multiset R) :
-    l.sum * l.sum = (Multiset.map (fun x => x * x) l).sum := by simp_rw [← pow_two, multiset_sum_sq]
 
 theorem sum_sq (s : Finset ι) (f : ι → R) : (∑ i ∈ s, f i) ^ 2 = ∑ i ∈ s, f i ^ 2 :=
   map_sum sqAddMonoidHom _ _
 
-theorem sum_mul_self (s : Finset ι) (f : ι → R) :
-    ((∑ i ∈ s, f i) * ∑ i ∈ s, f i) = ∑ i ∈ s, f i * f i := by simp_rw [← pow_two, sum_sq]
-
-end CommSemiring
-
-section CommRing
-
-variable [CommRing R] [CharP R 2] [NoZeroDivisors R]
+variable [NoZeroDivisors R]
 
 theorem sq_injective : Function.Injective fun x : R ↦ x ^ 2 := by
   intro x y h
@@ -196,7 +222,13 @@ theorem sq_injective : Function.Injective fun x : R ↦ x ^ 2 := by
 theorem sq_inj {x y : R} : x ^ 2 = y ^ 2 ↔ x = y :=
   sq_injective.eq_iff
 
-end CommRing
+end CommSemiring
+
+@[deprecated (since := "2026-02-05")]
+alias CommRing.sq_injective := sq_injective
+
+@[deprecated (since := "2026-02-05")]
+alias CommRing.sq_inj := sq_inj
 
 end CharTwo
 
@@ -206,7 +238,7 @@ protected theorem IsSelfNeg.one [AddGroupWithOne R] [CharP R 2] : IsSelfNeg (1 :
 
 section ringChar
 
-variable [Ring R]
+variable [NonAssocRing R]
 
 theorem neg_one_eq_one_iff [Nontrivial R] : (-1 : R) = 1 ↔ ringChar R = 2 := by
   refine ⟨fun h => ?_, fun h => @CharTwo.neg_eq _ _ (ringChar.of_eq h) 1⟩
