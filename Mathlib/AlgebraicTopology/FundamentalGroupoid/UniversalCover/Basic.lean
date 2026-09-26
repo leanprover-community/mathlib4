@@ -82,6 +82,7 @@ instance instTopologicalSpace (x₀ : X) : TopologicalSpace (UniversalCover x₀
 @[fun_prop] theorem continuous_ofBasedPath (x₀ : X) : Continuous (ofBasedPath x₀) :=
   continuous_coinduced_rng
 
+@[simp]
 theorem ofBasedPath_ofPath {y : X} (p : Path x₀ y) :
     ofBasedPath x₀ (BasedPath.ofPath p) = mk y (Path.Homotopic.Quotient.mk p) :=
   UniversalCover.ext p.target (Path.Homotopic.hpath_hext fun _ ↦ rfl)
@@ -162,6 +163,7 @@ This is well defined by `BasedPath.pathComponent_preimage_saturated`. -/
   Quotient.liftOn q (fun p : Path x₀ x ↦ basedPathComponent U p)
     fun _ _ h ↦ BasedPath.pathComponent_preimage_saturated hxU h
 
+@[simp]
 theorem basedPathSheet_mk (U : Set X) (hxU : x ∈ U) (p : Path x₀ x) :
     basedPathSheet U hxU (Path.Homotopic.Quotient.mk p) = basedPathComponent U p :=
   rfl
@@ -224,10 +226,8 @@ theorem surjOn_proj_sheet {U : Set X} (hU : IsPathConnected U) (hxU : x ∈ U)
     obtain ⟨δ, hδ⟩ := hU.exists_path hxU hv
     let δ' : Path (BasedPath.endpoint (BasedPath.ofPath p)) v :=
       δ.cast (BasedPath.endpoint_ofPath p) rfl
-    have hp : BasedPath.endpoint (BasedPath.ofPath p) ∈ U :=
-      (BasedPath.endpoint_ofPath p).symm ▸ hxU
     refine ⟨ofBasedPath x₀ (BasedPath.append (BasedPath.ofPath p) δ'),
-      ⟨_, BasedPath.joinedIn_preimage_of_append (BasedPath.ofPath p) hp δ' hδ, rfl⟩, ?_⟩
+      ⟨_, BasedPath.joinedIn_preimage_of_append (BasedPath.ofPath p) δ' hδ, rfl⟩, ?_⟩
     rw [proj_ofBasedPath]
     exact BasedPath.endpoint_append _ _
 
@@ -262,7 +262,7 @@ theorem preimage_subset_iUnion_sheet {U : Set X} (hU : IsPathConnected U) (hxU :
   obtain ⟨η, hη⟩ := hU.exists_path he hxU
   -- `α` is joined to `ofPath (α.toPath.trans η) = append α η` inside `endpoint ⁻¹' U`.
   refine Set.mem_iUnion.mpr ⟨Path.Homotopic.Quotient.mk (α.toPath.trans η),
-    α, (BasedPath.joinedIn_preimage_of_append α he η hη).symm, rfl⟩
+    α, (BasedPath.joinedIn_preimage_of_append α η hη).symm, rfl⟩
 
 /-- Over a path-homotopy-trivial `U`, the projection is injective on each sheet. -/
 theorem injOn_proj_sheet {U : Set X} (hU : IsPathHomotopyTrivial U) (hxU : x ∈ U)
