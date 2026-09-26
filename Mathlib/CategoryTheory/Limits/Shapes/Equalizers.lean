@@ -105,7 +105,6 @@ theorem WalkingParallelPairHom.assoc {X Y Z W : WalkingParallelPair}
     (h : WalkingParallelPairHom Z W) : comp (comp f g) h = comp f (comp g h) := by
   cases f <;> cases g <;> cases h <;> rfl
 
-@[to_dual_do_translate] -- TODO: this attribute should not be necessary
 instance walkingParallelPairHomCategory : SmallCategory WalkingParallelPair where
   Hom := WalkingParallelPairHom
   id := id
@@ -171,6 +170,7 @@ theorem walkingParallelPairOpEquiv_unitIso_zero :
 @[to_dual (attr := simp)]
 theorem walkingParallelPairOpEquiv_counitIso_zero :
     walkingParallelPairOpEquiv.counitIso.app (op zero) = Iso.refl (op zero) := rfl
+
 @[to_dual (attr := simp) walkingParallelPairOpEquiv_unitIso_inv_app_one]
 theorem walkingParallelPairOpEquiv_unitIso_hom_app_zero :
     walkingParallelPairOpEquiv.unitIso.hom.app zero = 𝟙 zero := rfl
