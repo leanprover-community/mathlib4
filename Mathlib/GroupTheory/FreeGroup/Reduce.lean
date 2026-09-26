@@ -410,7 +410,7 @@ theorem eq_of_commute_of_of {a b : α} (h : Commute (of a) (of b)) : a = b := by
   simp [commute_iff_eq, ne_of_apply_ne toWord, toWord_mul, h]
 
 @[to_additive]
-theorem subsingleton_of_isMulCommutative [IsMulCommutative (FreeGroup α)] :
+private theorem subsingleton_of_isMulCommutative [IsMulCommutative (FreeGroup α)] :
     Subsingleton α :=
   ⟨fun _ _ ↦ eq_of_commute_of_of (mul_comm' _ _)⟩
 
