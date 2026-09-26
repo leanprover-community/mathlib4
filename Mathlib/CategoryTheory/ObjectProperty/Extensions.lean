@@ -7,13 +7,15 @@ module
 
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.CategoryTheory.ObjectProperty.Basic
+public import Mathlib.CategoryTheory.ObjectProperty.Opposite
 
 /-!
 # Properties of objects that are closed under extensions
 
 Given a category `C` and `P : ObjectProperty C`, we define a type
 class `P.IsClosedUnderExtensions` expressing that the property
-is closed under extensions.
+is closed under extensions. We also show that this condition is self-dual:
+`P.op` is closed under extensions iff `P` is.
 
 -/
 
@@ -62,6 +64,29 @@ instance [P.IsClosedUnderExtensions] (F : D ⥤ C)
     have := hS.mono_f
     have := hS.epi_g
     exact P.prop_X₂_of_shortExact (hS.map F) h₁ h₃
+
+section Opposite
+
+/-- A property of objects `P.op` is closed under extensions iff `P` is, since a short
+complex in `Cᵒᵖ` is short exact iff the corresponding short complex in `C` is. -/
+lemma isClosedUnderExtensions_op_iff :
+    P.op.IsClosedUnderExtensions ↔ P.IsClosedUnderExtensions :=
+  ⟨fun h ↦ ⟨fun hS h₁ h₃ ↦ h.prop_X₂_of_shortExact hS.op h₃ h₁⟩,
+    fun h ↦ ⟨fun hS h₁ h₃ ↦ h.prop_X₂_of_shortExact hS.unop h₃ h₁⟩⟩
+
+instance [P.IsClosedUnderExtensions] : P.op.IsClosedUnderExtensions := by
+  rwa [isClosedUnderExtensions_op_iff]
+
+/-- A property of objects `Q.unop` is closed under extensions iff `Q` is. -/
+lemma isClosedUnderExtensions_unop_iff (Q : ObjectProperty Cᵒᵖ) :
+    Q.unop.IsClosedUnderExtensions ↔ Q.IsClosedUnderExtensions :=
+  Q.unop.isClosedUnderExtensions_op_iff.symm
+
+instance (Q : ObjectProperty Cᵒᵖ) [Q.IsClosedUnderExtensions] :
+    Q.unop.IsClosedUnderExtensions := by
+  rwa [isClosedUnderExtensions_unop_iff]
+
+end Opposite
 
 end
 
