@@ -110,8 +110,8 @@ def nerveHomEquiv {X Y : OneTruncation₂ ((SSet.truncation 2).obj (nerve C))} :
 
 lemma nerveHomEquiv_apply {X Y : OneTruncation₂ ((SSet.truncation 2).obj (nerve C))}
     (f : X ⟶ Y) :
-    nerveHomEquiv f = eqToHom (congr_arg ComposableArrows.left f.src_eq.symm) ≫
-      f.edge.hom ≫ eqToHom (congr_arg ComposableArrows.left f.tgt_eq) :=
+    nerveHomEquiv f = eqToHom congr(ComposableArrows.left $f.src_eq.symm) ≫
+      f.edge.hom ≫ eqToHom congr(ComposableArrows.left $f.tgt_eq) :=
   rfl
 
 @[simp]
@@ -131,7 +131,7 @@ lemma nerve_hom_ext {X : (SSet.Truncated 2)} {C : Type u} [Category.{u} C]
     (h : OneTruncation₂.map F = OneTruncation₂.map G) : F = G :=
   SSet.Truncated.IsStrictSegal.hom_ext (fun f ↦ by
     obtain ⟨x₀, x₁, f, rfl⟩ := Truncated.Edge.exists_of_simplex f
-    simpa using congr_arg Truncated.Edge.edge (ReflPrefunctor.congr_hom h f))
+    simpa using congr(Truncated.Edge.edge $(ReflPrefunctor.congr_hom h f)))
 
 end
 end OneTruncation₂

@@ -54,7 +54,7 @@ This is generalized to bundled endomorphisms by:
 * `RelIso.applyMulAction`
 -/
 instance applyMulAction : MulAction (Function.End α) α where
-  smul := (· <| ·)
+  smul := (· ·)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 
@@ -110,7 +110,7 @@ variable [Monoid M]
 /-- The tautological action by `MulAut M` on `M`. -/
 @[to_additive /-- The tautological action by `AddAut M` on `M`. -/]
 instance applyMulAction : MulAction (MulAut M) M where
-  smul := (· <| ·)
+  smul := (· ·)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 
@@ -202,7 +202,7 @@ variable (G α) [AddGroup G] [AddAction G α]
 
 /-- Given an action of an additive group `G` on a set `α`, each `g : G` defines a permutation of
 `α`. -/
-@[simps!]
+@[simps! apply]
 def AddAction.toPermHom : G →+ Additive (Equiv.Perm α) := (MulAction.toPermHom ..).toAdditiveRight
 
 lemma AddAction.coe_toPermHom :

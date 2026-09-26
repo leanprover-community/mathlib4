@@ -218,7 +218,7 @@ theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
       LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLin,
       val_planeConformalMatrix, neg_neg, mulVecLin_apply, mulVec, dotProduct, Fin.sum_univ_two,
       cons_val_one, mB, f₁]
-  · convert! congr_arg (fun n : ℤ => (-n : ℝ)) g.det_coe.symm using 1
+  · convert! congr((-$g.det_coe.symm : ℝ)) using 1
     simp only [Fin.zero_eta, Function.comp_apply, lcRow0Extend_apply, cons_val_zero,
       LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLin,
       mulVecLin_apply, mulVec, dotProduct, det_fin_two, f₁]
@@ -236,7 +236,7 @@ theorem smul_eq_lcRow0_add {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) (hg 
       (lcRow0 p ↑(g : SL(2, ℝ)) : ℂ) / ((p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2) +
         ((p 1 : ℂ) * z - p 0) / (((p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2) * (p 0 * z + p 1)) := by
   have nonZ1 : (p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2 ≠ 0 := mod_cast hp.sq_add_sq_ne_zero
-  have : ((↑) : ℤ → ℝ) ∘ p ≠ 0 := fun h => hp.ne_zero (by ext i; simpa using congr_fun h i)
+  have : ((↑) : ℤ → ℝ) ∘ p ≠ 0 := fun h => hp.ne_zero (by ext i; simpa using congr($h i))
   have nonZ2 : (p 0 : ℂ) * z + p 1 ≠ 0 := by simpa using linear_ne_zero z this
   subst hg
   rw [coe_specialLinearGroup_apply]
@@ -385,7 +385,7 @@ lemma ρ_mem_fd : ρ ∈ 𝒟 := by
   constructor <;> norm_num [ρ, ← pow_two, div_pow]
 
 lemma I_mem_fd : I ∈ 𝒟 := by
-  constructor <;> norm_num
+  constructor <;> simp
 
 theorem abs_two_mul_re_lt_one_of_mem_fdo (h : z ∈ 𝒟ᵒ) : |2 * z.re| < 1 := by
   rw [abs_mul, abs_two, ← lt_div_iff₀' (zero_lt_two' ℝ)]
@@ -405,7 +405,7 @@ theorem three_le_four_mul_im_sq_of_mem_fd {τ : ℍ} (h : τ ∈ 𝒟) : 3 ≤ 4
 theorem one_lt_normSq_T_zpow_smul (hz : z ∈ 𝒟ᵒ) (n : ℤ) : 1 < normSq (T ^ n • z : ℍ) := by
   rw [coe_T_zpow_smul_eq]
   have hz₁ : 1 < z.re * z.re + z.im * z.im := hz.1
-  have hzn := Int.nneg_mul_add_sq_of_abs_le_one n (abs_two_mul_re_lt_one_of_mem_fdo hz).le
+  have hzn := Int.nonneg_mul_add_sq_of_abs_le_one n (abs_two_mul_re_lt_one_of_mem_fdo hz).le
   have : 1 < (z.re + ↑n) * (z.re + ↑n) + z.im * z.im := by linarith
   simpa [normSq, num, denom]
 
@@ -560,7 +560,7 @@ private lemma cases_c_one_d_zero (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) (hg' 
       rw [h, zpow_one] at hg'
       refine .inr <| .inr ⟨hg', eq_of_re_of_norm (by norm_num [hzre, ρ]) ?_⟩
       simp [hz', show 1 + (ρ : ℂ) = -ρ ^ 2 by grind [ρ_sq], norm_ρ]
-    · rw [abs_eq (by norm_num)] at hzre
+    · rw [abs_eq (by simp)] at hzre
       rcases hzre with hzre | hzre <;> [norm_num [hzre] at this; skip]
       rw [h, zpow_neg_one] at hg'
       exact .inr <| .inl ⟨hg', eq_of_re_of_norm (by norm_num [hzre, ρ]) (by rw [hz', norm_ρ])⟩
@@ -739,11 +739,11 @@ lemma stabilizer_I : g • I = I ↔ g ∈ ({1, -1, S, -S} : Finset SL(2, ℤ)) 
   constructor
   · intro hg
     have := cases_of_mem_fd_smul_mem_fd I_mem_fd (hg.symm ▸ I_mem_fd)
-    norm_num [UpperHalfPlane.ext_iff, Complex.ext_iff, ρ] at this
+    simp [UpperHalfPlane.ext_iff, Complex.ext_iff, ρ] at this
     grind
   · suffices S • I = I by simp +contextual [-sl_moeb, or_imp, this]
     rw [modular_S_smul, UpperHalfPlane.ext_iff]
-    norm_num
+    simp
 
 lemma stabilizer_ρ :
     g • ρ = ρ ↔ g ∈ ({1, -1, S * T, -(S * T), T⁻¹ * S, -(T⁻¹ * S)} : Finset SL(2, ℤ)) := by
@@ -757,7 +757,7 @@ lemma stabilizer_ρ :
     have neT : g ≠ T ∧ g ≠ -T ∧ g ≠ T⁻¹ ∧ g ≠ -T⁻¹ := by
       have : T • ρ ≠ ρ := by
         rw [ne_eq, UpperHalfPlane.ext_iff, modular_T_smul, coe_vadd]
-        norm_num
+        simp
       have : T⁻¹ • ρ ≠ ρ := by rwa [ne_eq, inv_smul_eq_iff, eq_comm]
       grind [SL_neg_smul]
     have neTST : g ≠ T * S * T ∧ g ≠ -(T * S * T) := by

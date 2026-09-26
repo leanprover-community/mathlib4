@@ -102,7 +102,7 @@ theorem LinearMap.eq_of_localization_maximal (g g' : M →ₗ[R] M₁)
       IsLocalizedModule.map P.primeCompl (f P) (f₁ P) g') :
     g = g' :=
   ext fun x ↦ Module.eq_of_localization_maximal _ f₁ _ _ fun P _ ↦ by
-    simpa only [IsLocalizedModule.map_apply] using DFunLike.congr_fun (h P) (f P x)
+    simpa only [IsLocalizedModule.map_apply] using congr($(h P) (f P x))
 
 include f in
 theorem Module.subsingleton_of_localization_maximal

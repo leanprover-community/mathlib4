@@ -238,14 +238,14 @@ theorem cons_map_snd_darts {u v : V} (p : G.Walk u v) : (u :: p.darts.map (·.sn
   induction p <;> simp [*]
 
 theorem map_snd_darts {u v : V} (p : G.Walk u v) : p.darts.map (·.snd) = p.support.tail := by
-  simpa using congr_arg List.tail (cons_map_snd_darts p)
+  simpa using congr($(cons_map_snd_darts p).tail)
 
 theorem map_fst_darts_append {u v : V} (p : G.Walk u v) :
     p.darts.map (·.fst) ++ [v] = p.support := by
   induction p <;> simp [*]
 
 theorem map_fst_darts {u v : V} (p : G.Walk u v) : p.darts.map (·.fst) = p.support.dropLast := by
-  simpa! using! congr_arg List.dropLast (map_fst_darts_append p)
+  simpa! using! congr($(map_fst_darts_append p).dropLast)
 
 @[simp]
 theorem edges_nil {u : V} : (nil : G.Walk u u).edges = [] := rfl
@@ -468,7 +468,7 @@ theorem mem_support_iff_exists_mem_edges_of_not_nil {u v w : V} {p : G.Walk u v}
 
 theorem nil_of_isIsolated_of_mem_support {p : G.Walk u v} (hw : G.IsIsolated w)
     (hwp : w ∈ p.support) : p.Nil := by
-  contrapose! hw with hnil
+  contrapose hw with hnil
   have ⟨e, hep, hwe⟩ := mem_support_iff_exists_mem_edges_of_not_nil hnil |>.mp hwp
   exact not_isIsolated_iff_exists_edgeSet_mem.mpr ⟨e, p.edges_subset_edgeSet hep, hwe⟩
 

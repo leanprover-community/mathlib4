@@ -686,7 +686,7 @@ theorem map_lieSpan :
   refine le_antisymm ?_ (lieSpan_le.mpr <| Set.image_mono subset_lieSpan)
   rw [map_le_iff_le_comap, lieSpan_le]
   change s ⊆ f ⁻¹' (lieSpan R L₂ (f '' s))
-  exact image_subset_iff.mp <| subset_lieSpan
+  exact image_subset_iff.mp subset_lieSpan
 
 variable (R L)
 
@@ -703,7 +703,7 @@ theorem span_empty : lieSpan R L (∅ : Set L) = ⊥ :=
 
 @[simp]
 theorem span_univ : lieSpan R L (Set.univ : Set L) = ⊤ :=
-  eq_top_iff.2 <| IsConcreteLE.le_iff.2 <| subset_lieSpan
+  eq_top_iff.2 <| IsConcreteLE.le_iff.2 subset_lieSpan
 
 variable {L}
 

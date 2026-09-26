@@ -99,7 +99,7 @@ theorem isNat_intOfNat : {n n' : ℕ} → IsNat n n' → IsNat (Int.ofNat n) n'
   return .isNat sℤ n' q(isNat_intOfNat $p)
 
 theorem isInt_negOfNat (m n : ℕ) (h : IsNat m n) : IsInt (Int.negOfNat m) (.negOfNat n) :=
-  ⟨congr_arg Int.negOfNat h.1⟩
+  ⟨congr(Int.negOfNat $(h.1))⟩
 
 /-- `norm_num` extension for `Int.negOfNat`.
 
@@ -203,10 +203,10 @@ theorem isNNRat_add {α} [Semiring α] {f : α → α → α} {a b : α} {na nb 
   have := invertibleOfMul' (α := α) h₂
   use this
   have H := (Nat.cast_commute (α := α) da db).invOf_left.invOf_right.right_comm
-  have h₁ := congr_arg (↑· * (⅟↑da * ⅟↑db : α)) h₁
+  have h₁ := congr($h₁ * (⅟↑da * ⅟↑db : α))
   simp only [Nat.cast_add, Nat.cast_mul, ← mul_assoc,
     add_mul, mul_invOf_cancel_right] at h₁
-  have h₂ := congr_arg (↑nc * ↑· * (⅟↑da * ⅟↑db * ⅟↑dc : α)) h₂
+  have h₂ := congr(↑nc * $h₂ * (⅟↑da * ⅟↑db * ⅟↑dc : α))
   simp only [H, mul_invOf_cancel_right', Nat.cast_mul, ← mul_assoc] at h₁ h₂
   rw [h₁, h₂, Nat.cast_commute]
   simp only [mul_invOf_cancel_right,
@@ -225,10 +225,10 @@ theorem isRat_add {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
   have := invertibleOfMul' (α := α) h₂
   use this
   have H := (Nat.cast_commute (α := α) da db).invOf_left.invOf_right.right_comm
-  have h₁ := congr_arg (↑· * (⅟↑da * ⅟↑db : α)) h₁
+  have h₁ := congr($h₁ * (⅟↑da * ⅟↑db : α))
   simp only [Int.cast_add, Int.cast_mul, Int.cast_natCast, ← mul_assoc,
     add_mul, mul_invOf_cancel_right] at h₁
-  have h₂ := congr_arg (↑nc * ↑· * (⅟↑da * ⅟↑db * ⅟↑dc : α)) h₂
+  have h₂ := congr(↑nc * $h₂ * (⅟↑da * ⅟↑db * ⅟↑dc : α))
   simp only [H, mul_invOf_cancel_right', Nat.cast_mul, ← mul_assoc] at h₁ h₂
   rw [h₁, h₂, Nat.cast_commute]
   simp only [mul_invOf_cancel_right,
@@ -451,10 +451,10 @@ theorem isNNRat_mul {α} [Semiring α] {f : α → α → α} {a b : α} {na nb 
   have := invertibleOfMul' (α := α) h₂
   refine ⟨this, ?_⟩
   have H := (Nat.cast_commute (α := α) da db).invOf_left.invOf_right.right_comm
-  have h₁ := congr_arg (Nat.cast (R := α)) h₁
+  have h₁ := congr(Nat.cast (R := α) $h₁)
   simp only [Nat.cast_mul] at h₁
   simp only [← mul_assoc, (Nat.cast_commute (α := α) da nb).invOf_left.right_comm, h₁]
-  have h₂ := congr_arg (↑nc * ↑· * (⅟↑da * ⅟↑db * ⅟↑dc : α)) h₂
+  have h₂ := congr(↑nc * $h₂ * (⅟↑da * ⅟↑db * ⅟↑dc : α))
   simp only [Nat.cast_mul, ← mul_assoc] at h₂; rw [H] at h₂
   simp only [mul_invOf_cancel_right'] at h₂; rw [h₂, Nat.cast_commute]
   simp only [mul_invOf_cancel_right',
@@ -471,10 +471,10 @@ theorem isRat_mul {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
   have := invertibleOfMul' (α := α) h₂
   refine ⟨this, ?_⟩
   have H := (Nat.cast_commute (α := α) da db).invOf_left.invOf_right.right_comm
-  have h₁ := congr_arg (Int.cast (R := α)) h₁
+  have h₁ := congr(Int.cast (R := α) $h₁)
   simp only [Int.cast_mul, Int.cast_natCast] at h₁
   simp only [← mul_assoc, (Nat.cast_commute (α := α) da nb).invOf_left.right_comm, h₁]
-  have h₂ := congr_arg (↑nc * ↑· * (⅟↑da * ⅟↑db * ⅟↑dc : α)) h₂
+  have h₂ := congr(↑nc * $h₂ * (⅟↑da * ⅟↑db * ⅟↑dc : α))
   simp only [Nat.cast_mul, ← mul_assoc] at h₂; rw [H] at h₂
   simp only [mul_invOf_cancel_right'] at h₂; rw [h₂, Nat.cast_commute]
   simp only [mul_invOf_cancel_right,

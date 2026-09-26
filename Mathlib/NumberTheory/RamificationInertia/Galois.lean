@@ -248,7 +248,7 @@ theorem ncard_primesOver_mul_ncard_primesOver :
   let f := restrictHom GAC G A B C
   let H := (stabilizer G P).comap f
   have key (Q Q' : Ideal C) [Q.LiesOver P] [Q'.LiesOver P] g (hg : g • Q = Q') : g ∈ H := by
-    simpa [← restrictHom_smul_under GAC G A, ← over_def _ P, H] using congr_arg (under B) hg
+    simpa [← restrictHom_smul_under GAC G A, ← over_def _ P, H] using congr(under B $hg)
   obtain ⟨Q, _, _⟩ := (inferInstance : Nonempty (P.primesOver C))
   have : Q.LiesOver p := .trans Q P p
   have orbit_eq : orbit H Q = P.primesOver C := by
@@ -263,10 +263,8 @@ theorem ncard_primesOver_mul_ncard_primesOver :
       obtain ⟨g, hg⟩ :=
         IsInvariant.exists_smul_of_under_eq A C GAC Q Q' ((Q.over_def p).symm.trans (Q'.over_def p))
       exact ⟨⟨g, key Q Q' g hg.symm⟩, by simpa [Subgroup.smul_def] using hg.symm⟩
-  have stabilizer_eq : stabilizer H Q = (stabilizer GAC Q).subgroupOf H := by
-    simp [Subgroup.ext_iff, Subgroup.mem_subgroupOf]
   rw [← IsInvariant.orbit_eq_primesOver A B G p P, ← index_stabilizer,
-    ← orbit_eq, ← index_stabilizer, stabilizer_eq, ← Subgroup.relIndex,
+    ← orbit_eq, ← index_stabilizer, ← stabilizer_subgroupOf, ← Subgroup.relIndex,
     ← IsInvariant.orbit_eq_primesOver A C GAC p Q, ← index_stabilizer,
     ← (stabilizer G P).index_comap_of_surjective (restrictHom_surjective GAC G A B C),
     mul_comm, Subgroup.relIndex_mul_index]

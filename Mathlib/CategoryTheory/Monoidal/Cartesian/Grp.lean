@@ -134,8 +134,8 @@ def yonedaGrpFullyFaithful : yonedaGrp (C := C).FullyFaithful where
     Grp.homMk' (yonedaMonFullyFaithful.preimage ((Functor.whiskerRight α (forget₂ GrpCat MonCat))))
   map_preimage {G H} α := by
     ext X : 3
-    exact congr(($(yonedaMonFullyFaithful.map_preimage (X := G.toMon) (Y := H.toMon)
-      (Functor.whiskerRight α (forget₂ GrpCat MonCat))).app X).hom)
+    congrm ($(yonedaMonFullyFaithful.map_preimage (X := G.toMon) (Y := H.toMon)
+     (Functor.whiskerRight α (forget₂ GrpCat MonCat))).app X).hom
   preimage_map f := by
     ext
     congr

@@ -105,7 +105,7 @@ theorem HasLimit.mk {F : J ⥤ C} (d : LimitCone F) : HasLimit F :=
 @[no_expose, to_dual
 /-- Use the axiom of choice to extract explicit `ColimitCocone F` from `HasColimit F`. -/]
 def getLimitCone (F : J ⥤ C) [HasLimit F] : LimitCone F :=
-  Classical.choice <| HasLimit.exists_limit
+  Classical.choice HasLimit.exists_limit
 
 variable (J C)
 
@@ -654,8 +654,8 @@ def isLimitConeOfAdj (F : J ⥤ C) :
     IsLimit (coneOfAdj adj F) where
   lift s := adj.homEquiv _ _ s.π
   fac s j := by
-    have eq := NatTrans.congr_app (adj.counit.naturality s.π) j
-    have eq' := NatTrans.congr_app (adj.left_triangle_components s.pt) j
+    have eq := congr($(adj.counit.naturality s.π).app j)
+    have eq' := congr($(adj.left_triangle_components s.pt).app j)
     dsimp at eq eq' ⊢
     rw [adj.homEquiv_unit, assoc, eq, reassoc_of% eq']
   uniq s m hm := (adj.homEquiv _ _).symm.injective (by ext j; simpa using! hm j)

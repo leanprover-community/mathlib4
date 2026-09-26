@@ -352,6 +352,36 @@ def curlRetryArgs (supportLegacyCurl : Bool) : Array String :=
   #["--retry", "5"] ++ (if supportLegacyCurl then #[] else #["--retry-all-errors"])
 
 /--
+Separates curl's JSON report from the raw header values after it on the
+same line. JSON allows no raw control character other than whitespace
+(RFC 8259), so the first 0x1F (ASCII unit separator) ends the report.
+-/
+def curlFieldSep : String := "\x1f"
+
+/-- The response headers that the get path records, in output order. -/
+def curlGetHeaders : List String := ["cf-ray", "cf-cache-status", "content-length"]
+
+/--
+`--write-out` format for the get path: curl's `%{json}` report, then the
+value of each header in `curlGetHeaders`, each after `curlFieldSep`.
+curl writes a header value unescaped, so the values stay outside the JSON.
+
+`%header{…}` needs curl 7.84. curl 7.83 shipped it as experimental only.
+Below 7.84, `validateCurl` downloads a newer curl on Linux. A curl that
+old on another platform prints `%header{…}` as literal text, and that text
+appears only in a failure line.
+-/
+def curlGetWriteOut : String :=
+  "%{json}" ++ String.join (curlGetHeaders.map (curlFieldSep ++ "%header{" ++ · ++ "}")) ++ "\n"
+
+/-- Splits a `--write-out` line into curl's JSON report and the header
+values after it. A line without `curlFieldSep` is all report. -/
+def splitWriteOut (line : String) : String × List String :=
+  match line.splitOn curlFieldSep with
+  | report :: headers => (report, headers)
+  | [] => (line, [])
+
+/--
 Construct the URL for the cache file `fileName` in repo `repo`, against the
 container reachable at `containerURL`.
 
@@ -439,16 +469,10 @@ def mkGetConfigContent (container : Option Container) (repo containerURL : Strin
 /--
 Whether an HTTP status returned for a single-file read should be treated as a
 cache miss (fall through to the next container in the chain) rather than a
-transfer failure worth reporting.
-
-`404` is always a miss. A `403` is a miss only when `treatForbiddenAsMiss` is
-set, which callers do for the `legacy` container: when its public read access is
-revoked ahead of retirement it answers reads with `403`, and old clients whose
-chain still lists `legacy` should fall through quietly instead of printing a
-per-file transfer failure. Any other status is a real failure.
+transfer failure worth reporting: `404` is the only miss.
 -/
-def isCacheMissStatus (httpCode : Nat) (treatForbiddenAsMiss : Bool) : Bool :=
-  httpCode == 404 || (httpCode == 403 && treatForbiddenAsMiss)
+def isCacheMissStatus (httpCode : Nat) : Bool :=
+  httpCode == 404
 
 /--
 Whether an HTTP status is the one Azure returns for a blob that already exists,
@@ -491,13 +515,12 @@ Classify one finished download; the parallel and serial paths share this
 table. A transfer delivers only when the status is 200/201 and curl exited
 cleanly: a nonzero exit code after a 200 means the body is truncated. The
 status alone decides a miss. `httpCode?` is `none` when there is no status
-to parse; `treatForbiddenAsMiss` is the `legacy` 403 policy.
+to parse.
 -/
-def classifyDownload (httpCode? : Option Nat) (exitCode : Nat)
-    (treatForbiddenAsMiss : Bool) : TransferVerdict .download :=
+def classifyDownload (httpCode? : Option Nat) (exitCode : Nat) : TransferVerdict .download :=
   match httpCode? with
   | some 200 | some 201 => if exitCode == 0 then .delivered else .failed
-  | some code => if isCacheMissStatus code treatForbiddenAsMiss then .miss else .failed
+  | some code => if isCacheMissStatus code then .miss else .failed
   | none => .failed
 
 /--
@@ -514,12 +537,9 @@ def classifyUpload (httpCode? : Option Nat) (exitCode : Nat)
   | none => .failed
 
 /-- Calls `curl` to download a single file from a specific container to `CACHEDIR`
-(`.cache`). `scope?` is the per-round SHA scope (see `mkGetConfigContent`).
-`treatForbiddenAsMiss` mirrors the parallel path: a `legacy` `403` (public read
-access revoked ahead of retirement) is a miss, not a failure. -/
+(`.cache`). `scope?` is the per-round SHA scope (see `mkGetConfigContent`). -/
 def downloadFile (container : Option Container) (repo containerURL : String)
-    (hash : UInt64) (scope? : Option String) (treatForbiddenAsMiss : Bool := false) :
-    IO (TransferVerdict .download) := do
+    (hash : UInt64) (scope? : Option String) : IO (TransferVerdict .download) := do
   let fileName := hash.asLTar
   let url := mkFileURL container repo containerURL fileName scope?
   let path := IO.CACHEDIR / fileName
@@ -533,7 +553,6 @@ def downloadFile (container : Option Container) (repo containerURL : String)
         #["--write-out", "%{http_code}", "-o", partPath.toString] }
   -- Anything short of a delivery leaves at most an error body in the part file.
   let verdict := classifyDownload out.stdout.trimAscii.toNat? out.exitCode.toNat
-    treatForbiddenAsMiss
   if verdict matches .delivered then
     IO.FS.rename partPath path
   else if ← partPath.pathExists then
@@ -639,6 +658,53 @@ def finalizeDecomp (state : DecompState) (config : DecompConfig) : IO (Nat × Na
       decompFailed := decompFailed + pending.size
   return (decompressed, decompFailed)
 
+/--
+Returns the per-transfer detail for a failure line, as `key=value` pairs.
+A status and an exit code say that a transfer failed; these say how.
+
+* `bytes` — the payload this transfer moved, over the size that
+  `content-length` promised when that header arrived. `bytes=4096/1421777`
+  locates a truncation, and `bytes=0/1421777` means nothing arrived.
+* `cf_ray` — Cloudflare's request id. The suffix names the Cloudflare data
+  center, and the id finds the request in Cloudflare's logs.
+* `cf_cache_status` — whether the edge cache served the body, or the read
+  reached a backend.
+* `http_version` — the HTTP version of the transfer.
+* `time_total` — how long the attempt lasted, which separates an immediate
+  reset from a slow stall.
+
+`report` is curl's own JSON report. `headers` holds the values of
+`curlGetHeaders`, in order, and is empty on the upload path. `dir` picks
+the counter that holds the payload: a download reads `size_download`, an
+upload `size_upload`.
+
+Each value describes curl's final attempt, because `--retry` hides the
+earlier ones. The function skips an absent or empty value, so a backend
+without `cf-*` headers gives fewer pairs.
+-/
+def transferDiagnostics (dir : TransferDirection) (report : Lean.Json)
+    (headers : List String) : String :=
+  let payloadKey := match dir with
+    | .download => "size_download"
+    | .upload => "size_upload"
+  let nonEmpty (s : String) : Option String := if s.isEmpty then none else some s
+  let header (name : String) : Option String :=
+    ((curlGetHeaders.zip headers).lookup name).bind nonEmpty
+  let field (key : String) : Option String :=
+    (report.getObjVal? key).toOption.bind fun
+      | .str s => nonEmpty s
+      | .null  => none
+      | value  => some value.compress
+  let pair (key : String) (value : Option String) : Option String :=
+    value.map fun value => s!"{key}={value}"
+  let bytes := (field payloadKey).map fun got =>
+    match header "content-length" with
+    | some want => s!"bytes={got}/{want}"
+    | none      => s!"bytes={got}"
+  " ".intercalate <| List.reduceOption
+    [bytes, pair "cf_ray" (header "cf-ray"), pair "cf_cache_status" (header "cf-cache-status"),
+      pair "http_version" (field "http_version"), pair "time_total" (field "time_total")]
+
 def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
     (caption : String) (speedVar : String)
     (classify : Option Nat → Nat → TransferVerdict dir) (removeOnError := false)
@@ -672,8 +738,11 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
     -- Classify each finished transfer: rename a delivered part file, report a
     -- failure, and remove the part file on any non-delivery.
     let line := line.trimAscii
+    -- Only curl's report decides the verdict. The header values reach only
+    -- the failure line.
+    let (report, headers) := splitWriteOut line.copy
     if !line.isEmpty then
-      match Lean.Json.parse line.copy with
+      match Lean.Json.parse report with
       | .ok result =>
         let code? := result.getObjValAs? Nat "http_code"
         let fn? := result.getObjValAs? String "filename_effective"
@@ -733,6 +802,9 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
                 msg := s!"{msg} (curl exit code: {exitCode})"
               if let .ok errMsg := msg? then
                 msg := s!"{msg}: {errMsg}"
+              let diag := transferDiagnostics dir result headers
+              if !diag.isEmpty then
+                msg := s!"{msg} [{diag}]"
               return msg
             let msg? := result.getObjValAs? String "errormsg"
             -- A download is named by its part file, an upload by its URL.
@@ -790,24 +862,18 @@ private def downloadFilesFromContainer
       -- Avoid passing `--fail` here: it slows parallel transfers on curl
       -- 8.13.0, and it makes `--retry-all-errors` retry every 404 miss.
       curlFollowRedirectArgs ++ curlRetryArgs (supportLegacyCurl := false) ++
-      #["--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
-    -- `legacy` answers reads with 403 once its public access is revoked ahead
-    -- of retirement; treat that as a miss so the chain stays quiet for clients
-    -- whose chain still lists it.
-    let treatForbiddenAsMiss := container == some Container.legacy
+      #["--write-out", curlGetWriteOut, "--config", IO.CURLCFG.toString]
     let (s, served) ← monitorCurl args size "Downloaded" "speed_download"
-      (classifyDownload · · treatForbiddenAsMiss) (removeOnError := true)
+      classifyDownload (removeOnError := true)
       decompConfig decompState
     IO.FS.removeFile IO.CURLCFG
     return (s, served)
   else
-    -- Mirror the parallel path's miss/failure split: a `legacy` 403 is a miss.
-    let treatForbiddenAsMiss := container == some Container.legacy
     let r ← hashMap.foldM (init := []) fun acc _ hash => do
       pure <| (hash, ← IO.asTask do
-        downloadFile container repo containerURL hash scope? treatForbiddenAsMiss) :: acc
+        downloadFile container repo containerURL hash scope?) :: acc
     -- Served hashes carry the remaining files to the next container; hard
-    -- failures (anything but a 404/legacy-403 miss, including a task that threw)
+    -- failures (anything but a 404 miss, including a task that threw)
     -- feed `TransferState.failed`, so they drive the exit code exactly as the
     -- parallel path threads its own `failed` count.
     let (served, failed) := r.foldl (init := ((∅ : Std.HashSet UInt64), 0))
@@ -833,8 +899,8 @@ are not SHA-scoped, so `headScope?` must not leak into their rounds.
 With `--unsafe` (`unsafeScopes` non-empty) the `forks` container — the only
 SHA-scoped container, whose markers the walk probed — is expanded into one round
 per discovered SHA, most recent first. Every other container reads unscoped
-(`master` is flat and serves the bulk of files by hash; `legacy` has no walked
-markers), so the base `scope?` is intentionally dropped here. -/
+(`master` is flat and serves the bulk of files by hash), so the base `scope?`
+is intentionally dropped here. -/
 def expandDownloadRounds (containerURLs : List (Option Container × String))
     (scope? : Option String) (unsafeScopes : List String)
     (headScope? : Option String := none) :
@@ -987,14 +1053,14 @@ into the `lean-toolchain` file at the root directory of your project"
 def packageEntrySrcDesc (entry : Lake.PackageEntry) : String :=
   match entry.src with
   | .git _ rev _ _ => (rev.take 12).toString
-  | .path dir => s!"path:{dir}"
+  | .path dir _ => s!"path:{dir}"
 
 /-- Check whether two manifest package entries refer to the same source. -/
 def packageEntrySrcMatch (a b : Lake.PackageEntry) : Bool :=
   match a.src, b.src with
   | .git urlA revA _ subDirA, .git urlB revB _ subDirB =>
     urlA == urlB && revA == revB && subDirA == subDirB
-  | .path dirA, .path dirB => dirA == dirB
+  | .path dirA _, .path dirB _ => dirA == dirB
   | _, _ => false
 
 /-- Check if the project's `lake-manifest.json` pins shared dependencies at different versions

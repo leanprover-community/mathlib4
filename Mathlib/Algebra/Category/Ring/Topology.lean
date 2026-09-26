@@ -87,7 +87,7 @@ lemma isEmbedding_precomp_of_surjective
     Topology.IsEmbedding ((f ≫ ·) : (B ⟶ R) → (A ⟶ R)) := by
   refine IsEmbedding.of_comp (continuous_precomp _) (IsInducing.induced _).continuous ?_
   suffices IsEmbedding ((· ∘ f.hom) : (B → R) → (A → R)) from
-    this.comp (.induced (fun f g e ↦ by ext a; exact congr($e a)))
+    this.comp (.induced (fun f g e ↦ by ext a; congrm $e a))
   exact Function.Surjective.isEmbedding_comp _ hf
 
 /-- `Hom(A/I, R)` is a closed subspace of `Hom(A, R)` if `R` is T1. -/

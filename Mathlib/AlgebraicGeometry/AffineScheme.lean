@@ -942,10 +942,10 @@ theorem iSup_basicOpen_eq_self_iff {s : Set Γ(X, U)} :
       exact X.basicOpen_le x
     · simp only [Opens.iSup_def, Set.preimage_iUnion]
       congr! 1
-      · refine congr_arg (Set.iUnion ·) ?_
+      · congrm Set.iUnion ?_
         ext1 x
-        exact congr_arg Opens.carrier (hU.fromSpec_preimage_basicOpen _)
-      · exact congr_arg Opens.carrier hU.fromSpec_preimage_self
+        congrm Opens.carrier $(hU.fromSpec_preimage_basicOpen _)
+      · congrm Opens.carrier $(hU.fromSpec_preimage_self)
   · simp only [Opens.carrier_eq_coe, PrimeSpectrum.basicOpen_eq_zeroLocus_compl]
     rw [← Set.compl_iInter, Set.compl_univ_iff, ← PrimeSpectrum.zeroLocus_iUnion, ←
       PrimeSpectrum.zeroLocus_empty_iff_eq_top, PrimeSpectrum.zeroLocus_span]
@@ -1239,7 +1239,7 @@ lemma Scheme.Hom.liftQuotient_comp (f : X.Hom (Spec A)) (I : Ideal A)
 is the scheme-theoretic image of `f`. For this quotient as an object of `CommRingCat` see
 `specTargetImage` below. -/
 def specTargetImageIdeal (f : X ⟶ Spec A) : Ideal A :=
-  (RingHom.ker <| (((ΓSpec.adjunction).homEquiv X (op A)).symm f).unop.hom)
+  (RingHom.ker (((ΓSpec.adjunction).homEquiv X (op A)).symm f).unop.hom)
 
 /-- If `X ⟶ Spec A` is a morphism of schemes, then `Spec` of `specTargetImage f` is the
 scheme-theoretic image of `f` and `f` factors as
@@ -1265,10 +1265,10 @@ lemma specTargetImageRingHom_surjective : Function.Surjective (specTargetImageRi
 
 set_option backward.isDefEq.respectTransparency false in
 lemma specTargetImageFactorization_app_injective :
-    Function.Injective <| (specTargetImageFactorization f).appTop := by
+    Function.Injective (specTargetImageFactorization f).appTop := by
   let φ : A ⟶ Γ(X, ⊤) := (((ΓSpec.adjunction).homEquiv X (op A)).symm f).unop
   let φ' : specTargetImage f ⟶ Scheme.Γ.obj (op X) := CommRingCat.ofHom (RingHom.kerLift φ.hom)
-  change Function.Injective <| ((ΓSpec.adjunction.homEquiv X _) φ'.op).appTop
+  change Function.Injective ((ΓSpec.adjunction.homEquiv X _) φ'.op).appTop
   rw [ΓSpec_adjunction_homEquiv_eq]
   apply (RingHom.kerLift_injective φ.hom).comp
   exact ((ConcreteCategory.isIso_iff_bijective (Scheme.ΓSpecIso _).hom).mp inferInstance).injective
