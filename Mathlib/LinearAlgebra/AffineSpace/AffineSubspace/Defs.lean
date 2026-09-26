@@ -232,23 +232,23 @@ theorem coe_toAffineSubspace (p : Submodule k V) : (p.toAffineSubspace : Set V) 
 theorem mem_toAffineSubspace {p : Submodule k V} {x : V} :
     x ∈ (p : AffineSubspace k V) ↔ x ∈ p := Iff.rfl
 
-/-- Reinterprets a `p : AffineSubspace k V` that includes `0` as a `Submodule k V`. -/
-def ofAffineSubspace {p : AffineSubspace k V} (hp : 0 ∈ p) : Submodule k V where
+/-- Reinterprets `p : AffineSubspace k V` that includes `0` as a `Submodule k V`. -/
+def ofAffineSubspace (p : AffineSubspace k V) (hp : 0 ∈ p) : Submodule k V where
   carrier := p
   add_mem' ha hb := by simpa using p.smul_vsub_vadd_mem' 1 ha hp hb
   zero_mem' := by simpa
   smul_mem' c x hx := by simpa using p.smul_vsub_vadd_mem' c hx hp hp
 
 @[simp]
-theorem ofAffineSubspace_toAffineSubspace {p : AffineSubspace k V} (hp : 0 ∈ p) :
-    ↑(ofAffineSubspace hp) = p := rfl
+theorem ofAffineSubspace_toAffineSubspace (p : AffineSubspace k V) (hp : 0 ∈ p) :
+    ↑(ofAffineSubspace p hp) = p := rfl
 
 @[simp]
-theorem toAffineSubspace_ofAffineSubspace {p : Submodule k V} :
-    ofAffineSubspace (mem_toAffineSubspace.mpr p.zero_mem) = p := rfl
+theorem toAffineSubspace_ofAffineSubspace (p : Submodule k V) :
+    ofAffineSubspace p (mem_toAffineSubspace.mpr p.zero_mem) = p := rfl
 
 instance : CanLift (AffineSubspace k V) (Submodule k V) toAffineSubspace (0 ∈ ·) where
-  prf _ hp := ⟨ofAffineSubspace hp, ofAffineSubspace_toAffineSubspace hp⟩
+  prf p hp := ⟨ofAffineSubspace p hp, ofAffineSubspace_toAffineSubspace p hp⟩
 
 end Submodule
 
