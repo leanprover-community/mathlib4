@@ -94,7 +94,8 @@ def coind : Representation k H (coindV φ ρ) where
 @[simp]
 lemma coe_coind_apply (h x : H) (f : coindV φ ρ) :
     (coind φ ρ h f) x = f (x * h) := rfl
- /-- tbd -/
+
+/-- tbd -/
 def coind.lift (f : IntertwiningMap (τ.comp φ) ρ) :
     τ.IntertwiningMap (coind φ ρ) :=
   ⟨(LinearMap.pi fun h => f.toLinearMap ∘ₗ τ h).codRestrict (coindV φ ρ) fun b =>
@@ -114,11 +115,11 @@ lemma coind.evalOne_apply (f : τ.IntertwiningMap (coind φ ρ)) (a : A) :
     coind.evalOne φ f a = f a 1 := rfl
 
 /-- The canonical equivariant map from a representation to the coinduction of its restriction. -/
-noncomputable abbrev coind.unit (σ : Representation k H B) :
+abbrev coind.unit (σ : Representation k H B) :
     IntertwiningMap σ (coind φ (σ.comp φ)) := coind.lift φ (IntertwiningMap.id (σ.comp φ))
 
 /-- Evaluate the coinduction of a restricted representation using its original group action. -/
-noncomputable abbrev coind.counit (ρ : Representation k G A) :
+abbrev coind.counit (ρ : Representation k G A) :
     IntertwiningMap ((coind φ ρ).comp φ) ρ := coind.evalOne φ (IntertwiningMap.id (coind φ ρ))
 
 /-- Given a monoid homomorphism `φ : G →* H` and an intertwining map `f : σ ⟶ ρ`, there is a
@@ -163,19 +164,19 @@ section Coind
 If `φ : G →* H` and  `A : Rep k G` then `coind φ A` is the coinduction of `A` along `φ`,
 defined by letting `H` act on the `G`-equivariant functions `H → A` by `(h • f) h₁ := f (h₁ * h)`.
 -/
-noncomputable abbrev coind : Rep k H := Rep.of (Representation.coind φ A.ρ)
+abbrev coind : Rep k H := Rep.of (Representation.coind φ A.ρ)
 
 /-- Given a monoid morphism `φ : G →* H` and a morphism of `G`-representations `f : A ⟶ B`, there
 is a natural `H`-representation morphism `coind φ A ⟶ coind φ B`, given by postcomposition by
 `f`. -/
-noncomputable abbrev coindMap {A B : Rep k G} (f : A ⟶ B) : coind φ A ⟶ coind φ B :=
+abbrev coindMap {A B : Rep k G} (f : A ⟶ B) : coind φ A ⟶ coind φ B :=
   ofHom <| Representation.coindMap φ f.hom
 
 variable (k) in
 /-- Given a monoid homomorphism `φ : G →* H`, this is the functor sending a `G`-representation `A`
 to the coinduced `H`-representation `coind φ A`, with action on maps given by postcomposition. -/
 @[implicit_reducible, simps obj map]
-noncomputable def coindFunctor : Rep.{t} k G ⥤ Rep k H where
+def coindFunctor : Rep.{t} k G ⥤ Rep k H where
   obj A := coind φ A
   map f := coindMap φ f
 
@@ -282,7 +283,7 @@ noncomputable def coindFunctorIso : coindFunctor k φ ≅ coindFunctor' k φ :=
 
 end CoindIso
 
-noncomputable section Adjunction
+section Adjunction
 
 open Representation
 
@@ -296,24 +297,24 @@ Note `Rep.resCoindHomEquiv.{t, u, v, w}` has the property that
 even with all inputs explicitly given, the first universe cannot be synthesized.
 -/
 @[pp_with_univ]
-def resCoindHomEquiv (B : Rep k H) (A : Rep k G) :
+def resCoindHomEquiv (B : Rep.{max w t} k H) (A : Rep.{max w t} k G) :
     (res φ B ⟶ A) ≃ₗ[k] (B ⟶ coind φ A) :=
   (homLinearEquiv _ _).trans <| (A.ρ.resCoindHomEquiv φ).trans (homLinearEquiv B (coind φ A)).symm
 
 @[simp]
-lemma resCoindHomEquiv_apply_hom (B : Rep k H) (A : Rep k G)
+lemma resCoindHomEquiv_apply_hom (B : Rep.{max w t} k H) (A : Rep.{max w t} k G)
     (f : res φ B ⟶ A) :
     (resCoindHomEquiv φ B A f).hom = Representation.coind.lift φ f.hom := rfl
 
 @[simp]
-lemma resCoindHomEquiv_symm_apply_hom (B : Rep k H) (A : Rep k G)
+lemma resCoindHomEquiv_symm_apply_hom (B : Rep.{max w t} k H) (A : Rep.{max w t} k G)
     (f : B ⟶ coind φ A) :
     ((resCoindHomEquiv φ B A).symm f).hom = Representation.coind.evalOne φ f.hom := rfl
 
 variable (k) in
 /-- Given a monoid homomorphism `φ : G →* H`, the coinduction functor `Rep k G ⥤ Rep k H` is right
 adjoint to the restriction functor along `φ`. -/
-noncomputable def resCoindAdjunction : resFunctor φ ⊣ coindFunctor k φ :=
+def resCoindAdjunction : resFunctor.{max w t} φ ⊣ coindFunctor k φ :=
   Adjunction.mkOfHomEquiv {
     homEquiv X Y := (resCoindHomEquiv φ X Y).toEquiv
     homEquiv_naturality_left_symm := by intros; rfl
@@ -325,17 +326,17 @@ lemma resCoindAdjunction_homEquiv :
   Adjunction.mkOfHomEquiv_homEquiv _
 
 @[simp]
-lemma resCoindAdjunction_unit_app_hom (B : Rep k H) :
+lemma resCoindAdjunction_unit_app_hom (B : Rep.{max w t} k H) :
     ((resCoindAdjunction k φ).unit.app B).hom.toLinearMap = (coind.unit φ B.ρ).toLinearMap := rfl
 
 @[simp]
-lemma resCoindAdjunction_counit_app_hom (A : Rep k G) :
+lemma resCoindAdjunction_counit_app_hom (A : Rep.{max w t} k G) :
     ((resCoindAdjunction k φ).counit.app A).hom.toLinearMap = (coind.counit φ _).toLinearMap := rfl
 
-noncomputable instance : (coindFunctor.{max w t} k φ).IsRightAdjoint :=
+instance : (coindFunctor.{max w t} k φ).IsRightAdjoint :=
   (resCoindAdjunction k φ).isRightAdjoint
 
-noncomputable instance : (resFunctor.{max w t} (k := k) φ).IsLeftAdjoint :=
+instance : (resFunctor.{max w t} (k := k) φ).IsLeftAdjoint :=
   (resCoindAdjunction k φ).isLeftAdjoint
 
 instance {G : Type w} [Group G] (S : Subgroup G) :
