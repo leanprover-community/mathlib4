@@ -63,8 +63,7 @@ noncomputable abbrev nnrpow (a : ℝ≥0) (b : ℝ≥0) : ℝ≥0 := a ^ (b : �
 @[simp] lemma nnrpow_def (a b : ℝ≥0) : nnrpow a b = a ^ (b : ℝ) := rfl
 
 @[fun_prop]
-lemma continuous_nnrpow_const (y : ℝ≥0) : Continuous (nnrpow · y) :=
-  continuous_rpow_const zero_le_coe
+lemma continuous_nnrpow_const (y : ℝ≥0) : Continuous (nnrpow · y) := by fun_prop
 
 /- This is a "redeclaration" of the attribute to speed up the proofs in this file. -/
 attribute [fun_prop] continuousOn_rpow_const
