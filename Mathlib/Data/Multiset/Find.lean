@@ -92,6 +92,8 @@ theorem find?_eq_none_iff {s : Multiset α} (hp) :
     dsimp [Set.Subsingleton] at hp
     grind
 
+-- TODO: add an equality hypothesis for each argument flagged by `linter.congrFixedArgs`.
+set_option linter.congrFixedArgs false in
 /-- If two predicates agree on all the elements, so does `find?`. -/
 @[congr]
 theorem find?_congr {p₁ p₂ : α → Prop} [DecidablePred p₁] [DecidablePred p₂] {s : Multiset α}

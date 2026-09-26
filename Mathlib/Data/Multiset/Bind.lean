@@ -154,6 +154,8 @@ theorem mem_bind {b s} {f : α → Multiset β} : b ∈ bind s f ↔ ∃ a ∈ s
 @[simp]
 theorem card_bind : card (s.bind f) = (s.map (card ∘ f)).sum := by simp [bind]
 
+-- TODO: add an equality hypothesis for each argument flagged by `linter.congrFixedArgs`.
+set_option linter.congrFixedArgs false in
 @[congr]
 theorem bind_congr {f g : α → Multiset β} {m : Multiset α} :
     (∀ a ∈ m, f a = g a) → bind m f = bind m g := by simp +contextual [bind]
