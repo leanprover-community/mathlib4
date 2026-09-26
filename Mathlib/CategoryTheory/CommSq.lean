@@ -158,7 +158,7 @@ variable (F : C ⥤ D) {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {
 
 @[to_dual self]
 theorem map_commSq (s : CommSq f g h i) : CommSq (F.map f) (F.map g) (F.map h) (F.map i) :=
-  ⟨by simpa using congr_arg (fun k : W ⟶ Z => F.map k) s.w⟩
+  ⟨by simpa using congr(F.map $s.w)⟩
 
 end Functor
 

@@ -381,7 +381,7 @@ components of `v` in `X` which intersect `u`. -/
 lemma IsClopen.biUnion_connectedComponentIn {X : Type*} [TopologicalSpace X] {u v : Set X}
     (hu : IsClopen (v ↓∩ u)) (huv₁ : u ⊆ v) :
     u = ⋃ x ∈ u, connectedComponentIn v x := by
-  have := congr(((↑) : Set v → Set X) $(hu.biUnion_connectedComponent_eq.symm))
+  have := congr(((↑) : Set v → Set X) $hu.biUnion_connectedComponent_eq.symm)
   simp only [Subtype.image_preimage_coe, mem_preimage, iUnion_coe_set, image_val_iUnion,
     inter_eq_right.mpr huv₁] at this
   nth_rw 1 [this]

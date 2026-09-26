@@ -183,7 +183,7 @@ instance instIsStarNormal (u : unitary R) : IsStarNormal u where
   star_comm_self := star_mul_self u |>.trans <| (mul_star_self u).symm
 
 instance coe_isStarNormal (u : unitary R) : IsStarNormal (u : R) where
-  star_comm_self := congr(Subtype.val $(star_comm_self' u))
+  star_comm_self := congr($(star_comm_self' u).val)
 
 @[aesop 10% apply (rule_sets := [CStarAlgebra])]
 lemma _root_.isStarNormal_of_mem_unitary {u : R} (hu : u ∈ unitary R) : IsStarNormal u :=
@@ -361,7 +361,7 @@ lemma toMonoidHom_mapEquiv (f : R ≃⋆* S) :
 @[simps!]
 def _root_.unitarySubgroupUnitsEquiv {M : Type*} [Monoid M] [StarMul M] :
     unitarySubgroup Mˣ ≃* unitary M where
-  toFun x := ⟨x.val, congr_arg Units.val x.prop.1, congr_arg Units.val x.prop.2⟩
+  toFun x := ⟨x.val, congr($(x.prop.1).val), congr($(x.prop.2).val)⟩
   invFun x := ⟨⟨x, star x, x.prop.2, x.prop.1⟩, Units.ext x.prop.1, Units.ext x.prop.2⟩
   map_mul' _ _ := rfl
   left_inv _ := Subtype.ext <| Units.ext rfl

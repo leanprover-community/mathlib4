@@ -199,7 +199,7 @@ series whose `k`-th term is given by `g ∘ (p k)`. -/
 theorem HasFTaylorSeriesUpToOn.continuousLinearMap_comp {n : ℕ∞ω} (g : F →L[𝕜] G)
     (hf : HasFTaylorSeriesUpToOn n f p s) :
     HasFTaylorSeriesUpToOn n (g ∘ f) (fun x k => g.compContinuousMultilinearMap (p x k)) s where
-  zero_eq x hx := congr_arg g (hf.zero_eq x hx)
+  zero_eq x hx := congr(g $(hf.zero_eq x hx))
   fderivWithin m hm x hx := (ContinuousLinearMap.compContinuousMultilinearMapL 𝕜
     (fun _ : Fin m => E) F G g).hasFDerivAt.comp_hasFDerivWithinAt x (hf.fderivWithin m hm x hx)
   cont m hm := (ContinuousLinearMap.compContinuousMultilinearMapL 𝕜

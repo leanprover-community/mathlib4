@@ -356,7 +356,7 @@ def ofQuotient [IsTrivial (ρ.comp S.subtype)] :
     rintro x y ⟨⟨z, hz⟩, rfl⟩
     ext w
     simp only [Subgroup.mk_smul, MulOpposite.smul_eq_mul_unop]
-    exact congr($(ρ.apply_eq_of_coe_eq S _ _ (by simpa)) w)
+    congrm $(ρ.apply_eq_of_coe_eq S _ _ (by simpa)) w
 
 @[simp]
 lemma ofQuotient_coe_apply [IsTrivial (ρ.comp S.subtype)] (g : G) (x : V) :
