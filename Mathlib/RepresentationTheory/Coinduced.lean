@@ -94,7 +94,7 @@ def coind : Representation k H (coindV φ ρ) where
 @[simp]
 lemma coe_coind_apply (h x : H) (f : coindV φ ρ) :
     (coind φ ρ h f) x = f (x * h) := rfl
-
+ /-- tbd -/
 def coind.lift (f : IntertwiningMap (τ.comp φ) ρ) :
     τ.IntertwiningMap (coind φ ρ) :=
   ⟨(LinearMap.pi fun h => f.toLinearMap ∘ₗ τ h).codRestrict (coindV φ ρ) fun b =>
@@ -104,6 +104,7 @@ def coind.lift (f : IntertwiningMap (τ.comp φ) ρ) :
 lemma coind.coe_lift_apply (f : IntertwiningMap (τ.comp φ) ρ) (a : A) (h : H) :
     coind.lift φ f a h = f (τ h a) := rfl
 
+/-- tbd -/
 def coind.evalOne (f : τ.IntertwiningMap (coind φ ρ)) :
     IntertwiningMap (τ.comp φ) ρ :=
   ⟨coindV.evalOne φ ∘ₗ f.toLinearMap, fun g => by ext x; simpa [f.isIntertwining] using (f x).2 g 1⟩
