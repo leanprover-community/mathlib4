@@ -150,16 +150,11 @@ lemma ord_of_isUnit {U : X.Opens} [Nonempty U] {f : Γ(X, U)} (hf : IsUnit f) {x
     ord_eq_iff hx, ordHom_of_isUnit hf hx hx']
 
 @[simp]
-lemma ord_of_isUnit_top {g : Γ(X, ⊤)} (hg : IsUnit g) (z : X) :
-    ord (X.germToFunctionField ⊤ g) z = 0 := ord_of_isUnit hg trivial
-
-@[simp]
 lemma ord_neg (f : X.functionField) (z : X) : ord (-f) z = ord f z := by
-  by_cases hf : f = 0
-  · simp [hf]
-  have h : ord (-1 : X.functionField) z = 0 :=
-    by simpa using ord_of_isUnit_top (g := (-1 : Γ(X, ⊤))) (by simp) z
-  simpa [h] using ord_mul (x := z) (f := (-1 : X.functionField)) (g := f) (by simp) hf
+  rcases eq_or_ne f 0 with rfl | hf
+  · simp
+  simpa [ord_mul hf hf, ← two_mul] using
+    (ord_mul (x := z) (neg_ne_zero.2 hf) (neg_ne_zero.2 hf)).symm
 
 lemma ord_le_ord_iff {x y : X} (hx : coheight x = 1) (hy : coheight y = 1) {f g : X.functionField}
     (hf : f ≠ 0) (hg : g ≠ 0) :
