@@ -123,6 +123,13 @@ theorem kroneckerTMul_mem_unitary {m : Type*} [Fintype m] [DecidableEq m] {U : M
 
 end TensorProduct
 
+theorem tr_of_unitary_similar {A B U : Matrix n n α} {hU : U ∈ Matrix.unitaryGroup n α}
+    (hABU : U * B * star U = A) :
+    (star A * A).trace = (star B * B).trace := by
+  rw [← hABU, Matrix.star_mul, Matrix.star_mul, star_star,
+    ← Matrix.trace_mul_cycle, mul_assoc, mul_assoc (U * B), unitary.star_mul_self_of_mem hU,
+    mul_one, mul_assoc, ← mul_assoc (star U), unitary.star_mul_self_of_mem hU, one_mul]
+
 namespace UnitaryGroup
 
 instance coeMatrix : Coe (unitaryGroup n α) (Matrix n n α) :=
