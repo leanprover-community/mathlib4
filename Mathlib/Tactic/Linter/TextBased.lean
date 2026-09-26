@@ -5,9 +5,7 @@ Authors: Michael Rothgang, Jon Eugster, Adomas Baliuka
 -/
 module
 
-public meta import Batteries.Data.String.Matcher
 public meta import Lake.Util.Casing
-public import Batteries.Data.String.Basic
 public import Mathlib.Data.Nat.Notation
 public meta import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
 public import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
@@ -34,9 +32,6 @@ Currently, this file contains linters checking
   `!`, `.` or spaces.
 - for any code containing unicode characters not on the allowlist
 - for incorrect usage of unicode variant selectors
-
-For historic reasons, some further such checks are written in a Python script `lint-style.py`:
-these are gradually being rewritten in Lean.
 
 This linter has a file for style exceptions (to avoid false positives in the implementation),
 or for downstream projects to allow a gradual adoption of this linter.
@@ -122,8 +117,8 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
         Consider deleting it."
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
--- FUTURE: we're matching the old codes in `lint-style.py` for compatibility;
--- in principle, we could also print something more readable.
+-- The error codes were chosen like this for historic reasons. In principle, we could also print
+-- something more readable.
 def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.adaptationNote => "ERR_ADN"
   | StyleError.windowsLineEnding => "ERR_WIN"
@@ -290,9 +285,9 @@ def adaptationNoteLinter : TextbasedLinter := fun opts lines ↦ Id.run do
     -- (e.g. "-- Adaptation note:" or "-- adaptation note:"), but not lines that
     -- merely reference the concept (e.g. "-- see adaptation note") or that
     -- use the correct #adaptation_note command.
-    if line.containsSubstr "daptation note" &&
-        !line.containsSubstr "#adaptation_note" &&
-        !line.containsSubstr "see adaptation note" then
+    if line.contains "daptation note" &&
+        !line.contains "#adaptation_note" &&
+        !line.contains "see adaptation note" then
       errors := errors.push (StyleError.adaptationNote, idx + 1)
   return (errors, none)
 
@@ -361,11 +356,13 @@ def findBadUnicodeAux (s : String) (pos : s.Pos) (c : Char)
       if ! isAllowedCharacter c then
         -- bad: character not allowed.
         findBadUnicodeAux s posₙ cₙ (err.push (.unwantedUnicode c))
-      else if cₙ == UnicodeVariant.emoji && !(emojis.contains c) then
+      else if cₙ == UnicodeVariant.emoji && !(emojis.contains c) && !(unrestricted.contains c) then
         -- bad: unwanted emoji variant selector.
         let errₙ := err.push (.unicodeVariant (String.ofList [c, cₙ]) none)
         findBadUnicodeAux s posₙ cₙ errₙ
-      else if cₙ == UnicodeVariant.text && !(nonEmojis.contains c) then
+      else if
+        cₙ == UnicodeVariant.text && !(nonEmojis.contains c) && !(unrestricted.contains c)
+      then
         -- bad: unwanted text variant selector.
         let errₙ := err.push (.unicodeVariant (String.ofList [c, cₙ]) none)
         findBadUnicodeAux s posₙ cₙ errₙ
@@ -499,12 +496,6 @@ def lintFile (opts : LinterOptions) (path : FilePath) (exceptions : Array ErrorC
     (allOutput.flatten.filter (fun e ↦ (e.find?_comparable exceptions).isNone))
   return (errors, if changes_made then some changed else none)
 
-/-- Enables the old Python-based style linters. -/
--- TODO: these linters assume they are being run in `./scripts` and do not work on
--- downstream projects. Fix this before re-enabling them by default.
--- Or better yet: port them to Lean 4.
-public register_option linter.pythonStyle : Bool := { defValue := false }
-
 /-- Lint a collection of modules for style violations.
 Print formatted errors for all unexpected style violations to standard output;
 correct automatically fixable style errors if configured so.
@@ -524,30 +515,13 @@ def lintModules (opts : LinterOptions) (nolints : Array String) (moduleNames : A
     -- Convert the module name to a file name, then lint that file.
     let path := mkFilePath (module.components.map toString)|>.addExtension "lean"
 
-    let (errors, changed) := ← lintFile opts path styleExceptions
+    let (errors, changed) ← lintFile opts path styleExceptions
     if let some c := changed then
       if fix then
-        let _ := ← IO.FS.writeFile path ("\n".intercalate c.toList)
+        let _ ← IO.FS.writeFile path ("\n".intercalate c.toList)
     if errors.size > 0 then
       allUnexpectedErrors := allUnexpectedErrors.append errors
       numberErrorFiles := numberErrorFiles + 1
-
-  -- Passing Lean options to Python files seems like a lot of work for something we want to
-  -- run entirely inside of Lean in the end anyway.
-  -- So for now, we enable/disable all of them with a single switch.
-  if getLinterValue linter.pythonStyle opts then
-    -- Run the remaining python linters. It is easier to just run on all files.
-    -- If this poses an issue, I can either filter the output
-    -- or wait until lint-style.py is fully rewritten in Lean.
-    let args := if fix then #["--fix"] else #[]
-    let output ← IO.Process.output { cmd := "./scripts/print-style-errors.sh", args := args }
-    if output.exitCode != 0 then
-      numberErrorFiles := numberErrorFiles + 1
-      IO.eprintln s!"error: `print-style-error.sh` exited with code {output.exitCode}"
-      IO.eprint output.stderr
-    else if output.stdout != "" then
-      numberErrorFiles := numberErrorFiles + 1
-      IO.eprint output.stdout
   formatErrors allUnexpectedErrors style
   if allUnexpectedErrors.size > 0 then
     IO.eprintln s!"error: found {allUnexpectedErrors.size} new style error(s)! \
@@ -568,6 +542,7 @@ def modulesNotUpperCamelCase (opts : LinterOptions) (modules : Array Lean.Name) 
   let exceptions := [
     `Mathlib.Analysis.CStarAlgebra.lpSpace,
     `Mathlib.Analysis.InnerProductSpace.l2Space,
+    `Mathlib.Analysis.Normed.Lp.lpHolder,
     `Mathlib.Analysis.Normed.Lp.lpSpace
   ]
   -- We allow only names in UpperCamelCase, possibly with a trailing underscore.
@@ -596,7 +571,7 @@ or `'` (causes shell escaping issues in scripts).
 Source: https://learn.microsoft.com/en-gb/windows/win32/fileio/naming-a-file.
 Return the number of module names violating this rule. -/
 public def modulesOSForbidden (opts : LinterOptions) (modules : Array Lean.Name) : IO Nat := do
-  unless getLinterValue linter.modulesUpperCamelCase opts do return 0
+  unless getLinterValue linter.modulesForbiddenWindows opts do return 0
   let forbiddenNames := [
     "CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8",
     "COM9", "COM¹", "COM²", "COM³", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8",

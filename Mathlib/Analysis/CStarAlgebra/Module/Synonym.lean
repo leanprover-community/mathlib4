@@ -8,7 +8,7 @@ module
 public import Mathlib.RingTheory.Finiteness.Defs
 public import Mathlib.Topology.Bornology.Constructions
 public import Mathlib.Topology.UniformSpace.Equiv
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 
 /-! # Type synonym for types with a `CStarModule` structure
@@ -302,7 +302,7 @@ We also provide a `CoeFun` instance for `WithCStarModule (Π i, E i)`. -/
 
 section Pi
 
-/- The following should not be a `FunLike` instance because then the coercion `⇑` would get
+/-- The following should not be a `FunLike` instance because then the coercion `⇑` would get
 unfolded to `FunLike.coe` instead of `WithCStarModule.equiv`. -/
 instance {A ι : Type*} (E : ι → Type*) : CoeFun (C⋆ᵐᵒᵈ(A, Π i, E i)) (fun _ ↦ Π i, E i) where
   coe := equiv _ _

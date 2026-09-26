@@ -155,7 +155,7 @@ lemma convolution_mul_moebius {n : ℕ} (χ : DirichletCharacter ℂ n) : ↗χ 
 lemma modZero_eq_delta {χ : DirichletCharacter ℂ 0} : ↗χ = δ := by
   ext n
   rcases eq_or_ne n 0 with rfl | hn
-  · simp_rw [cast_zero, χ.map_nonunit not_isUnit_zero, delta, reduceCtorEq, if_false]
+  · simp_rw [cast_zero, χ.map_nonunit not_isUnit_zero, delta, reduceCtorEq, ite_false]
   rcases eq_or_ne n 1 with rfl | hn'
   · simp [delta]
   have : ¬ IsUnit (n : ZMod 0) := fun h ↦ hn' <| ZMod.eq_one_of_isUnit_natCast h
@@ -168,7 +168,7 @@ lemma modOne_eq_one {R : Type*} [CommMonoidWithZero R] {χ : DirichletCharacter 
   rw [χ.level_one, MulChar.one_apply (isUnit_of_subsingleton _), Pi.one_apply]
 
 lemma LSeries_modOne_eq : L ↗χ₁ = L 1 :=
-  congr_arg L modOne_eq_one
+  congr(L $modOne_eq_one)
 
 /-- The L-series of a Dirichlet character mod `N > 0` does not converge absolutely at `s = 1`. -/
 lemma not_LSeriesSummable_at_one {N : ℕ} (hN : N ≠ 0) (χ : DirichletCharacter ℂ N) :
@@ -176,7 +176,7 @@ lemma not_LSeriesSummable_at_one {N : ℕ} (hN : N ≠ 0) (χ : DirichletCharact
   refine fun h ↦ (Real.not_summable_indicator_one_div_natCast hN 1) ?_
   refine h.norm.of_nonneg_of_le (fun m ↦ Set.indicator_apply_nonneg (fun _ ↦ by positivity))
     (fun n ↦ ?_)
-  simp only [norm_term_eq, Set.indicator, Set.mem_setOf_eq]
+  simp only [norm_term_eq, Set.indicator, Set.mem_ofPred_eq]
   split_ifs with h₁ h₂
   · simp [h₂]
   · simp [h₁, χ.map_one]
@@ -267,7 +267,7 @@ lemma LSeries_zeta_eq : L ↗ζ = L 1 := by
 /-- The `LSeries` associated to the arithmetic function `ζ` converges at `s` if and only if
 `re s > 1`. -/
 theorem LSeriesSummable_zeta_iff {s : ℂ} : LSeriesSummable (ζ ·) s ↔ 1 < s.re :=
-  (LSeriesSummable_congr s const_one_eq_zeta).symm.trans <| LSeriesSummable_one_iff
+  (LSeriesSummable_congr s const_one_eq_zeta).symm.trans LSeriesSummable_one_iff
 
 /-- The abscissa of (absolute) convergence of the arithmetic function `ζ` is `1`. -/
 lemma abscissaOfAbsConv_zeta : abscissaOfAbsConv ↗ζ = 1 := by
@@ -370,7 +370,7 @@ to an equality of complex sequences. -/
 lemma convolution_vonMangoldt_zeta : ↗Λ ⍟ ↗ζ = ↗Complex.log := by
   ext n
   simpa [apply_ite, LSeries.convolution_def, -vonMangoldt_mul_zeta]
-    using congr_arg (ofReal <| · n) vonMangoldt_mul_zeta
+    using congr(ofReal <| $vonMangoldt_mul_zeta n)
 
 lemma convolution_vonMangoldt_const_one : ↗Λ ⍟ 1 = ↗Complex.log :=
   (convolution_one_eq_convolution_zeta _).trans convolution_vonMangoldt_zeta
@@ -427,7 +427,7 @@ of the L-series of the constant sequence `1` on its domain of convergence `re s 
 lemma LSeries_vonMangoldt_eq {s : ℂ} (hs : 1 < s.re) : L ↗Λ s = - deriv (L 1) s / L 1 s := by
   refine (LSeries_congr (fun {n} _ ↦ ?_) s).trans <|
     LSeries_modOne_eq ▸ LSeries_twist_vonMangoldt_eq χ₁ hs
-  simp [Subsingleton.eq_one (n : ZMod 1)]
+  simp [Subsingleton.eq_one (α := ZMod 1)]
 
 /-- The L-series of the von Mangoldt function `Λ` equals the negative logarithmic derivative
 of the Riemann zeta function on its domain of convergence `re s > 1`. -/

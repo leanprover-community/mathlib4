@@ -13,6 +13,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Flat
 # Scheme-theoretically dominant morphisms
 
 In this file, we define scheme-theoretically dominant morphisms as morphisms with trivial kernel.
+
 ## Main results
 - `AlgebraicGeometry.IsSchemeTheoreticallyDominant`:
   The class of scheme-theoretically dominant morphisms.
@@ -89,7 +90,6 @@ lemma IsSchemeTheoreticallyDominant.isReduced (f : X ⟶ Y) [IsSchemeTheoretical
     [QuasiCompact f] [IsReduced X] : IsReduced Y :=
   ⟨fun _ ↦ isReduced_of_injective _ (f.app_injective _)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance IsSchemeTheoreticallyDominant.pullbackSnd (f : X ⟶ S) (g : Y ⟶ S)
     [IsSchemeTheoreticallyDominant f] [QuasiCompact f] [Flat g] :
     IsSchemeTheoreticallyDominant (pullback.snd f g) := by

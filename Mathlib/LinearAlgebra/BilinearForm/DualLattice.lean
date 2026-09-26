@@ -39,7 +39,7 @@ def dualSubmodule (N : Submodule R M) : Submodule R M where
   add_mem' {a b} ha hb y hy := by simpa using add_mem (ha y hy) (hb y hy)
   zero_mem' y _ := by rw [B.zero_left]; exact zero_mem _
   smul_mem' r a ha y hy := by
-    convert (1 : Submodule R S).smul_mem r (ha y hy)
+    convert! (1 : Submodule R S).smul_mem r (ha y hy)
     rw [← IsScalarTower.algebraMap_smul S r a]
     simp only [algebraMap_smul, map_smul_of_tower, LinearMap.smul_apply]
 
@@ -87,7 +87,7 @@ lemma dualSubmoduleToDual_injective [IsDomain R] (hB : B.Nondegenerate) [IsTorsi
   apply LinearMap.ker_eq_bot.mp hB.ker_eq_bot
   apply LinearMap.ext_on hN
   intro z hz
-  simpa using congr_arg (algebraMap R S) (LinearMap.congr_fun e ⟨z, hz⟩)
+  simpa using congr(algebraMap R S ($e ⟨z, hz⟩))
 
 lemma dualSubmodule_span_of_basis {ι} [Finite ι] [DecidableEq ι]
     (hB : B.Nondegenerate) (b : Basis ι S M) :
@@ -119,7 +119,7 @@ lemma dualSubmodule_dualSubmodule_flip_of_basis {ι : Type*} [Finite ι]
     B.dualSubmodule (B.flip.dualSubmodule (Submodule.span R (Set.range b))) =
       Submodule.span R (Set.range b) := by
   classical
-  letI := b.finiteDimensional_of_finite
+  let := b.finiteDimensional_of_finite
   rw [dualSubmodule_span_of_basis _ hB.flip, dualSubmodule_span_of_basis B hB,
     dualBasis_dualBasis_flip hB]
 
@@ -128,7 +128,7 @@ lemma dualSubmodule_flip_dualSubmodule_of_basis {ι : Type*} [Finite ι]
     B.flip.dualSubmodule (B.dualSubmodule (Submodule.span R (Set.range b))) =
       Submodule.span R (Set.range b) := by
   classical
-  letI := b.finiteDimensional_of_finite
+  let := b.finiteDimensional_of_finite
   rw [dualSubmodule_span_of_basis B hB, dualSubmodule_span_of_basis _ hB.flip,
     dualBasis_flip_dualBasis hB]
 
@@ -137,7 +137,7 @@ lemma dualSubmodule_dualSubmodule_of_basis
     B.dualSubmodule (B.dualSubmodule (Submodule.span R (Set.range b))) =
       Submodule.span R (Set.range b) := by
   classical
-  letI := b.finiteDimensional_of_finite
+  let := b.finiteDimensional_of_finite
   rw [dualSubmodule_span_of_basis B hB, dualSubmodule_span_of_basis B hB,
     dualBasis_dualBasis hB hB']
 

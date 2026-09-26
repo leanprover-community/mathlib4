@@ -116,11 +116,12 @@ end IsLocalRing
 
 section IsDedekindDomain
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma IsDedekindDomain.isOpen_of_ne_bot
     [IsDedekindDomain R] {I : Ideal R} (hI : I ≠ ⊥) :
     IsOpen (X := R) I := by
   rw [← Ideal.finprod_heightOneSpectrum_factorization hI,
-    finprod_eq_finset_prod_of_mulSupport_subset _
+    finprod_eq_finsetProd_of_mulSupport_subset _
       (s := (Ideal.hasFiniteMulSupport hI).toFinset) (by simp)]
   refine @AddSubgroup.isOpen_of_isClosed_of_finiteIndex _ _ _ _ (Submodule.toAddSubgroup _)
     ?_ (IsNoetherianRing.isClosed_ideal _)

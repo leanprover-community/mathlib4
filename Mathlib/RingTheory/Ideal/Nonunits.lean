@@ -48,7 +48,7 @@ theorem one_notMem_nonunits [Monoid α] : (1 : α) ∉ nonunits α :=
 @[simp high] -- High priority shortcut lemma
 theorem map_mem_nonunits_iff [Monoid α] [Monoid β] [FunLike F α β] [MonoidHomClass F α β] (f : F)
     [IsLocalHom f] (a) : f a ∈ nonunits β ↔ a ∈ nonunits α :=
-  ⟨fun h ha => h <| ha.map f, fun h ha => h <| ha.of_map⟩
+  ⟨fun h ha => h <| ha.map f, fun h ha => h ha.of_map⟩
 
 theorem coe_subset_nonunits [Semiring α] {I : Ideal α} (h : I ≠ ⊤) : (I : Set α) ⊆ nonunits α :=
   fun _x hx hu => h <| I.eq_top_of_isUnit_mem hx hu
@@ -72,7 +72,7 @@ variable {C : Type*} [SetLike C α]
 theorem inv_mem_of_isUnit [DivisionMonoid α] [SubmonoidClass C α] {S : C} {a : S} (ha : IsUnit a) :
     (a : α)⁻¹ ∈ S := by
   obtain ⟨u, rfl⟩ := ha
-  convert u⁻¹.1.2
+  convert! u⁻¹.1.2
   exact (map_inv ((subtype <| ofClass S).comp <| Units.coeHom S) u).symm
 
 section Group

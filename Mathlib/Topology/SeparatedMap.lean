@@ -161,7 +161,7 @@ theorem discreteTopology_iff_locallyInjective (y : Y) :
     DiscreteTopology X ↔ IsLocallyInjective fun _ : X ↦ y := by
   rw [discreteTopology_iff_singleton_mem_nhds, isLocallyInjective_iff_nhds]
   refine forall_congr' fun x ↦ ⟨fun h ↦ ⟨{x}, h, Set.injOn_singleton _ _⟩, fun ⟨U, hU, inj⟩ ↦ ?_⟩
-  convert hU; ext x'; refine ⟨?_, fun h ↦ inj h (mem_of_mem_nhds hU) rfl⟩
+  convert! hU; ext x'; refine ⟨?_, fun h ↦ inj h (mem_of_mem_nhds hU) rfl⟩
   rintro rfl; exact mem_of_mem_nhds hU
 
 theorem IsLocallyInjective.comp_left {A} {f : X → Y} (hf : IsLocallyInjective f) {g : Y → A}
@@ -181,12 +181,12 @@ include h₁ h₂
 
 theorem IsSeparatedMap.isClosed_eqLocus (sep : IsSeparatedMap f) (he : f ∘ g₁ = f ∘ g₂) :
     IsClosed {a | g₁ a = g₂ a} :=
-  let g : A → f.Pullback f := fun a ↦ ⟨⟨g₁ a, g₂ a⟩, congr_fun he a⟩
+  let g : A → f.Pullback f := fun a ↦ ⟨⟨g₁ a, g₂ a⟩, congr($he a)⟩
   (isSeparatedMap_iff_isClosed_diagonal.mp sep).preimage (by fun_prop : Continuous g)
 
 theorem IsLocallyInjective.isOpen_eqLocus (inj : IsLocallyInjective f) (he : f ∘ g₁ = f ∘ g₂) :
     IsOpen {a | g₁ a = g₂ a} :=
-  let g : A → f.Pullback f := fun a ↦ ⟨⟨g₁ a, g₂ a⟩, congr_fun he a⟩
+  let g : A → f.Pullback f := fun a ↦ ⟨⟨g₁ a, g₂ a⟩, congr($he a)⟩
   (isLocallyInjective_iff_isOpen_diagonal.mp inj).preimage (by fun_prop : Continuous g)
 
 end eqLocus
@@ -208,14 +208,14 @@ theorem eq_of_comp_eq
 
 theorem eqOn_of_comp_eqOn (hs : IsPreconnected s) (h₁ : ContinuousOn g₁ s) (h₂ : ContinuousOn g₂ s)
     (he : s.EqOn (p ∘ g₁) (p ∘ g₂)) {a : A} (has : a ∈ s) (ha : g₁ a = g₂ a) : s.EqOn g₁ g₂ := by
-  rw [← Set.restrict_eq_restrict_iff] at he ⊢
-  rw [continuousOn_iff_continuous_restrict] at h₁ h₂
+  rw [← Set.domRestrict_eq_domRestrict_iff] at he ⊢
+  rw [continuousOn_iff_continuous_domRestrict] at h₁ h₂
   rw [isPreconnected_iff_preconnectedSpace] at hs
   exact sep.eq_of_comp_eq inj h₁ h₂ he ⟨a, has⟩ ha
 
 theorem const_of_comp [PreconnectedSpace A] (cont : Continuous g)
     (he : ∀ a a', p (g a) = p (g a')) (a a') : g a = g a' :=
-  congr_fun (sep.eq_of_comp_eq inj cont continuous_const (funext fun a ↦ he a a') a' rfl) a
+  congr($(sep.eq_of_comp_eq inj cont continuous_const (funext fun a ↦ he a a') a' rfl) a)
 
 theorem constOn_of_comp (hs : IsPreconnected s) (cont : ContinuousOn g s)
     (he : ∀ a ∈ s, ∀ a' ∈ s, p (g a) = p (g a'))

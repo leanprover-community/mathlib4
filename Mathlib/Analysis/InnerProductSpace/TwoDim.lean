@@ -108,7 +108,7 @@ theorem areaForm_apply_self (x : E) : ω x x = 0 := by
 
 theorem areaForm_swap (x y : E) : ω x y = -ω y x := by
   simp only [areaForm_to_volumeForm]
-  convert o.volumeForm.map_swap ![y, x] (_ : (0 : Fin 2) ≠ 1)
+  convert! o.volumeForm.map_swap ![y, x] (_ : (0 : Fin 2) ≠ 1)
   · ext i
     fin_cases i <;> rfl
   · simp
@@ -157,7 +157,7 @@ theorem areaForm_map {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F
 theorem areaForm_comp_linearIsometryEquiv (φ : E ≃ₗᵢ[ℝ] E)
     (hφ : 0 < LinearMap.det (φ.toLinearEquiv : E →ₗ[ℝ] E)) (x y : E) :
     o.areaForm (φ x) (φ y) = o.areaForm x y := by
-  convert o.areaForm_map φ (φ x) (φ y)
+  convert! o.areaForm_map φ (φ x) (φ y)
   · symm
     rwa [← o.map_eq_iff_det_pos φ.toLinearEquiv] at hφ
     rw [@Fact.out (finrank ℝ E = 2), Fintype.card_fin]
@@ -171,7 +171,6 @@ irreducible_def rightAngleRotationAux₁ : E →ₗ[ℝ] E :=
     (InnerProductSpace.toDual ℝ E).toLinearEquiv ≪≫ₗ LinearMap.toContinuousLinearMap.symm
   ↑to_dual.symm ∘ₗ ω
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem inner_rightAngleRotationAux₁_left (x y : E) : ⟪o.rightAngleRotationAux₁ x, y⟫ = ω x y := by
   simp only [rightAngleRotationAux₁, LinearEquiv.trans_symm, LinearEquiv.symm_symm,
@@ -290,7 +289,7 @@ theorem rightAngleRotation_neg_orientation (x : E) :
 @[simp]
 theorem rightAngleRotation_trans_neg_orientation :
     (-o).rightAngleRotation = o.rightAngleRotation.trans (LinearIsometryEquiv.neg ℝ) :=
-  LinearIsometryEquiv.ext <| o.rightAngleRotation_neg_orientation
+  LinearIsometryEquiv.ext o.rightAngleRotation_neg_orientation
 
 theorem rightAngleRotation_map {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
     [hF : Fact (finrank ℝ F = 2)] (φ : E ≃ₗᵢ[ℝ] F) (x : F) :
@@ -308,7 +307,7 @@ theorem rightAngleRotation_map {F : Type*} [NormedAddCommGroup F] [InnerProductS
 /-- `J` commutes with any positively-oriented isometric automorphism. -/
 theorem linearIsometryEquiv_comp_rightAngleRotation (φ : E ≃ₗᵢ[ℝ] E)
     (hφ : 0 < LinearMap.det (φ.toLinearEquiv : E →ₗ[ℝ] E)) (x : E) : φ (J x) = J (φ x) := by
-  convert (o.rightAngleRotation_map φ (φ x)).symm
+  convert! (o.rightAngleRotation_map φ (φ x)).symm
   · simp
   · symm
     rwa [← o.map_eq_iff_det_pos φ.toLinearEquiv] at hφ
@@ -356,7 +355,7 @@ theorem inner_mul_inner_add_areaForm_mul_areaForm' (a x : E) :
 /-- For vectors `a x y : E`, the identity `⟪a, x⟫ * ⟪a, y⟫ + ω a x * ω a y = ‖a‖ ^ 2 * ⟪x, y⟫`. -/
 theorem inner_mul_inner_add_areaForm_mul_areaForm (a x y : E) :
     ⟪a, x⟫ * ⟪a, y⟫ + ω a x * ω a y = ‖a‖ ^ 2 * ⟪x, y⟫ :=
-  congr_arg (fun f : E →ₗ[ℝ] ℝ => f y) (o.inner_mul_inner_add_areaForm_mul_areaForm' a x)
+  congr($(o.inner_mul_inner_add_areaForm_mul_areaForm' a x) y)
 
 theorem inner_sq_add_areaForm_sq (a b : E) : ⟪a, b⟫ ^ 2 + ω a b ^ 2 = ‖a‖ ^ 2 * ‖b‖ ^ 2 := by
   simpa [sq, real_inner_self_eq_norm_sq] using o.inner_mul_inner_add_areaForm_mul_areaForm a b b
@@ -374,7 +373,7 @@ theorem inner_mul_areaForm_sub' (a x : E) : ⟪a, x⟫ • ω a - ω a x • inn
 
 /-- For vectors `a x y : E`, the identity `⟪a, x⟫ * ω a y - ω a x * ⟪a, y⟫ = ‖a‖ ^ 2 * ω x y`. -/
 theorem inner_mul_areaForm_sub (a x y : E) : ⟪a, x⟫ * ω a y - ω a x * ⟪a, y⟫ = ‖a‖ ^ 2 * ω x y :=
-  congr_arg (fun f : E →ₗ[ℝ] ℝ => f y) (o.inner_mul_areaForm_sub' a x)
+  congr($(o.inner_mul_areaForm_sub' a x) y)
 
 theorem nonneg_inner_and_areaForm_eq_zero_iff_sameRay (x y : E) :
     0 ≤ ⟪x, y⟫ ∧ ω x y = 0 ↔ SameRay ℝ x y := by
@@ -508,7 +507,6 @@ namespace Complex
 
 attribute [local instance] Complex.finrank_real_complex_fact
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected theorem areaForm (w z : ℂ) : Complex.orientation.areaForm w z = (conj w * z).im := by
   let o := Complex.orientation

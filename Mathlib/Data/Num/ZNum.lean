@@ -77,7 +77,7 @@ theorem zneg_pred (n : ZNum) : -n.pred = (-n).succ := by
 @[simp]
 theorem abs_to_nat : ∀ n, (abs n : ℕ) = Int.natAbs n
   | 0 => rfl
-  | pos p => congr_arg Int.natAbs p.to_nat_to_int
+  | pos p => congr($(p.to_nat_to_int).natAbs)
   | neg p => show Int.natAbs ((p : ℕ) : ℤ) = Int.natAbs (-p) by rw [p.to_nat_to_int, Int.natAbs_neg]
 
 @[simp]
@@ -93,12 +93,12 @@ theorem cast_to_int [AddGroupWithOne α] : ∀ n : ZNum, ((n : ℤ) : α) = n
 
 theorem bit0_of_bit0 : ∀ n : ZNum, n + n = n.bit0
   | 0 => rfl
-  | pos a => congr_arg pos a.bit0_of_bit0
-  | neg a => congr_arg neg a.bit0_of_bit0
+  | pos a => congr(pos $a.bit0_of_bit0)
+  | neg a => congr(neg $a.bit0_of_bit0)
 
 theorem bit1_of_bit1 : ∀ n : ZNum, n + n + 1 = n.bit1
   | 0 => rfl
-  | pos a => congr_arg pos a.bit1_of_bit1
+  | pos a => congr(pos $a.bit1_of_bit1)
   | neg a => show PosNum.sub' 1 (a + a) = _ by rw [PosNum.one_sub', a.bit0_of_bit0]; rfl
 
 @[simp, norm_cast]
@@ -115,7 +115,7 @@ theorem cast_bit1 [AddGroupWithOne α] : ∀ n : ZNum, (n.bit1 : α) = ((n : α)
   | neg p => by
     rw [ZNum.bit1, cast_neg, cast_neg]
     rcases e : pred' p with - | a <;>
-      have ep : p = _ := (succ'_pred' p).symm.trans (congr_arg Num.succ' e)
+      have ep : p = _ := (succ'_pred' p).symm.trans congr(Num.succ' $e)
     · conv at ep => change p = 1
       subst p
       simp
@@ -139,7 +139,7 @@ theorem zero_add (n : ZNum) : 0 + n = n := by cases n <;> rfl
 
 theorem add_one : ∀ n : ZNum, n + 1 = succ n
   | 0 => rfl
-  | pos p => congr_arg pos p.add_one
+  | pos p => congr(pos $p.add_one)
   | neg p => by cases p <;> rfl
 
 end ZNum
@@ -151,10 +151,10 @@ variable {α : Type*}
 theorem cast_to_znum : ∀ n : PosNum, (n : ZNum) = ZNum.pos n
   | 1 => rfl
   | bit0 p => by
-      have := congr_arg ZNum.bit0 (cast_to_znum p)
+      have := congr(ZNum.bit0 $(cast_to_znum p))
       rwa [← ZNum.bit0_of_bit0] at this
   | bit1 p => by
-      have := congr_arg ZNum.bit1 (cast_to_znum p)
+      have := congr(ZNum.bit1 $(cast_to_znum p))
       rwa [← ZNum.bit1_of_bit1] at this
 
 theorem cast_sub' [AddGroupWithOne α] : ∀ m n : PosNum, (sub' m n : α) = m - n
@@ -279,7 +279,7 @@ theorem cast_add [AddGroupWithOne α] : ∀ m n, ((m + n : ZNum) : α) = m + n
   | 0, a => by cases a <;> exact (_root_.zero_add _).symm
   | b, 0 => by cases b <;> exact (_root_.add_zero _).symm
   | pos _, pos _ => PosNum.cast_add _ _
-  | pos a, neg b => by simpa only [sub_eq_add_neg] using PosNum.cast_sub' (α := α) _ _
+  | pos a, neg b => by simpa only [sub_eq_add_neg] using! PosNum.cast_sub' (α := α) _ _
   | neg a, pos b =>
     have : (↑b + -↑a : α) = -↑a + ↑b := by
       rw [← PosNum.cast_to_int a, ← PosNum.cast_to_int b, ← Int.cast_neg, ← Int.cast_add (-a)]
@@ -324,7 +324,7 @@ theorem to_int_inj {m n : ZNum} : (m : ℤ) = n ↔ m = n :=
 
 theorem cmp_to_int : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℤ) < n) (m = n) ((n : ℤ) < m) : Prop)
   | 0, 0 => rfl
-  | pos a, pos b => by simpa using PosNum.cmp_to_nat a b
+  | pos a, pos b => by simpa using! PosNum.cmp_to_nat a b
   | neg a, neg b => by
     have := PosNum.cmp_to_nat b a; revert this; dsimp [cmp]
     cases PosNum.cmp b a <;> [simp; simp +contextual; simp]
@@ -430,11 +430,8 @@ instance addMonoidWithOne : AddMonoidWithOne ZNum :=
 
 -- The next theorems are declared outside of the instance to prevent timeouts.
 
-set_option backward.privateInPublic true in
 private theorem mul_comm : ∀ (a b : ZNum), a * b = b * a := by transfer
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance commRing : CommRing ZNum :=
   { ZNum.addCommGroup, ZNum.addMonoidWithOne with
     mul_assoc a b c := by transfer
@@ -448,7 +445,7 @@ instance commRing : CommRing ZNum :=
     right_distrib := by
       transfer
       simp [mul_add, _root_.mul_comm]
-    mul_comm := mul_comm }
+    mul_comm := private mul_comm }
 
 instance nontrivial : Nontrivial ZNum :=
   { exists_pair_ne := ⟨0, 1, by decide⟩ }

@@ -5,8 +5,8 @@ Authors: Johannes Hölzl
 -/
 module
 
+public import Mathlib.Basic.Unique
 public import Mathlib.Logic.Relation
-public import Mathlib.Logic.Unique
 public import Mathlib.Util.Notation3
 
 /-!
@@ -36,10 +36,10 @@ instance : CoeFun (Setoid α) (fun _ ↦ α → α → Prop) where
   coe := @Setoid.r _
 
 theorem ext {α : Sort*} : ∀ {s t : Setoid α}, (∀ a b, s a b ↔ t a b) → s = t
-  | ⟨r, _⟩, ⟨p, _⟩, Eq =>
-  by have : r = p := funext fun a ↦ funext fun b ↦ propext <| Eq a b
-     subst this
-     rfl
+  | ⟨r, _⟩, ⟨p, _⟩, Eq => by
+    have : r = p := funext fun a ↦ funext fun b ↦ propext <| Eq a b
+    subst this
+    rfl
 
 end Setoid
 
@@ -455,7 +455,7 @@ theorem true_equivalence : @Equivalence α fun _ _ ↦ True :=
 /-- Always-true relation as a `Setoid`.
 
 Note that in later files the preferred spelling is `⊤ : Setoid α`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def trueSetoid : Setoid α :=
   ⟨_, true_equivalence⟩
 

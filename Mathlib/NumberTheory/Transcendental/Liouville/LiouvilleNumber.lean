@@ -81,7 +81,7 @@ protected theorem summable {m : ℝ} (hm : 1 < m) : Summable fun i : ℕ => 1 / 
 
 theorem remainder_summable {m : ℝ} (hm : 1 < m) (k : ℕ) :
     Summable fun i : ℕ => 1 / m ^ (i + (k + 1))! := by
-  convert (summable_nat_add_iff (k + 1)).2 (LiouvilleNumber.summable hm)
+  convert! (summable_nat_add_iff (k + 1)).2 (LiouvilleNumber.summable hm)
 
 theorem remainder_pos {m : ℝ} (hm : 1 < m) (k : ℕ) : 0 < remainder m k :=
   (remainder_summable hm k).tsum_pos (fun _ => by positivity) 0 (by positivity)
@@ -135,7 +135,7 @@ theorem aux_calc (n : ℕ) {m : ℝ} (hm : 2 ≤ m) :
       -- the first factors satisfy the inequality `sub_one_div_inv_le_two`
       gcongr; exact sub_one_div_inv_le_two hm
     _ = 2 / m ^ (n + 1)! := mul_one_div 2 _
-    _ = 2 / m ^ (n ! * (n + 1)) := (congr_arg (2 / ·) (congr_arg (Pow.pow m) (mul_comm _ _)))
+    _ = 2 / m ^ (n ! * (n + 1)) := congr(2 / m ^ $(mul_comm ..))
     _ ≤ 1 / (m ^ n !) ^ n := by
       -- Clear denominators and massage*
       rw [← pow_mul, div_le_div_iff₀, one_mul, mul_add_one, pow_add, mul_comm 2]

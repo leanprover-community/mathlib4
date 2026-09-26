@@ -46,7 +46,8 @@ variable {A : Type v} [Ring A]
 namespace LieRing
 
 /-- An associative ring gives rise to a Lie ring by taking the bracket to be the ring commutator. -/
-instance (priority := 100) ofAssociativeRing : LieRing A where
+@[instance_reducible]
+def ofAssociativeRing : LieRing A where
   add_lie _ _ _ := by simp only [Ring.lie_def, right_distrib, left_distrib]; abel
   lie_add _ _ _ := by simp only [Ring.lie_def, right_distrib, left_distrib]; abel
   lie_self := by simp only [Ring.lie_def, forall_const, sub_self]
@@ -62,6 +63,8 @@ theorem lie_apply {α : Type*} (f g : α → A) (a : α) : ⁅f, g⁆ a = ⁅f a
 
 end LieRing
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 section AssociativeModule
 
 variable {M : Type w} [AddCommGroup M] [Module A M]
@@ -71,9 +74,9 @@ bracket equal to its ring commutator.
 
 Note that this cannot be a global instance because it would create a diamond when `M = A`,
 specifically we can build two mathematically-different `bracket A A`s:
- 1. `@Ring.bracket A _` which says `⁅a, b⁆ = a * b - b * a`
- 2. `(@LieRingModule.ofAssociativeModule A _ A _ _).toBracket` which says `⁅a, b⁆ = a • b`
-    (and thus `⁅a, b⁆ = a * b`)
+1. `@Ring.bracket A _` which says `⁅a, b⁆ = a * b - b * a`
+2. `(@LieRingModule.ofAssociativeModule A _ A _ _).toBracket` which says `⁅a, b⁆ = a • b`
+  (and thus `⁅a, b⁆ = a * b`)
 
 See note [reducible non-instances] -/
 abbrev LieRingModule.ofAssociativeModule : LieRingModule A M where
@@ -163,13 +166,15 @@ theorem toLieHom_comp : (g.comp f : A →ₗ⁅R⁆ C) = (g : B →ₗ⁅R⁆ C)
   rfl
 
 theorem toLieHom_injective {f g : A →ₐ[R] B} (h : (f : A →ₗ⁅R⁆ B) = (g : A →ₗ⁅R⁆ B)) : f = g := by
-  ext a; exact LieHom.congr_fun h a
+  ext a; congrm $h a
 
 end AlgHom
 
 end LieAlgebra
 
 end OfAssociative
+
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 section AdjointAction
 
@@ -330,7 +335,7 @@ lemma toEnd_pow_comp_lieHom :
 
 lemma toEnd_pow_apply_map (m : M) :
     (toEnd R L M₂ x ^ k) (f m) = f ((toEnd R L M x ^ k) m) :=
-  LinearMap.congr_fun (toEnd_pow_comp_lieHom f k x) m
+  congr($(toEnd_pow_comp_lieHom f k x) m)
 
 end LieModule
 
@@ -394,7 +399,6 @@ variable {R : Type u} {M₁ : Type v} {M₂ : Type w}
 variable [CommRing R] [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂]
 variable (e : M₁ ≃ₗ[R] M₂)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A linear equivalence of two modules induces a Lie algebra equivalence of their endomorphisms. -/
 def lieConj : Module.End R M₁ ≃ₗ⁅R⁆ Module.End R M₂ :=
   { e.conj with

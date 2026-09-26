@@ -173,7 +173,7 @@ theorem IsLocalMinOn.fderivWithin_eq_zero (h : IsLocalMinOn f s a)
 /-- **Fermat's Theorem**: the derivative of a function at a local minimum equals zero. -/
 theorem IsLocalMin.hasFDerivAt_eq_zero (h : IsLocalMin f a) (hf : HasFDerivAt f f' a) : f' = 0 := by
   ext y
-  apply (h.on univ).hasFDerivWithinAt_eq_zero hf.hasFDerivWithinAt <;>
+  apply (h.isLocalMinOn univ).hasFDerivWithinAt_eq_zero hf.hasFDerivWithinAt <;>
       rw [posTangentConeAt_univ] <;>
     apply mem_univ
 
@@ -235,7 +235,7 @@ lemma one_mem_posTangentConeAt_iff_frequently :
 
 /-- **Fermat's Theorem**: the derivative of a function at a local minimum equals zero. -/
 theorem IsLocalMin.hasDerivAt_eq_zero (h : IsLocalMin f a) (hf : HasDerivAt f f' a) : f' = 0 := by
-  simpa using DFunLike.congr_fun (h.hasFDerivAt_eq_zero (hasDerivAt_iff_hasFDerivAt.1 hf)) 1
+  simpa using congr($(h.hasFDerivAt_eq_zero (hasDerivAt_iff_hasFDerivAt.1 hf)) 1)
 
 /-- **Fermat's Theorem**: the derivative of a function at a local minimum equals zero. -/
 theorem IsLocalMin.deriv_eq_zero (h : IsLocalMin f a) : deriv f a = 0 := by

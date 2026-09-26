@@ -79,7 +79,7 @@ lemma monotone_sqrt : Monotone (sqrt : A → A) := by
   intro a b hab
   rw [CFC.sqrt_eq_nnrpow a, CFC.sqrt_eq_nnrpow b]
   refine (monotone_nnrpow (A := A) ?_) hab
-  constructor <;> norm_num
+  constructor <;> simp
 
 @[gcongr]
 lemma nnrpow_le_nnrpow {p : ℝ≥0} (hp : p ∈ Icc 0 1) {a b : A} (hab : a ≤ b) :
@@ -119,7 +119,7 @@ lemma concaveOn_nnrpow {p : ℝ≥0} (hp : p ∈ Icc 0 1) :
 lemma concaveOn_sqrt : ConcaveOn ℝ (Ici (0 : A)) (sqrt : A → A) := by
   eta_expand
   simp_rw [sqrt_eq_nnrpow]
-  exact concaveOn_nnrpow ⟨by norm_num, by norm_num⟩
+  exact concaveOn_nnrpow ⟨by simp, by simp⟩
 
 end NonUnitalCStarAlgebra
 
@@ -131,18 +131,16 @@ variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 lemma monotone_rpow {p : ℝ} (hp : p ∈ Icc 0 1) : Monotone (fun a : A => a ^ p) := by
   let q : ℝ≥0 := ⟨p, hp.1⟩
   change Monotone (fun a : A => a ^ (q : ℝ))
-  cases (zero_le q).lt_or_eq' with
-  | inl hq =>
-    simp_rw [← CFC.nnrpow_eq_rpow hq]
-    exact monotone_nnrpow hp
-  | inr hq =>
-    simp only [hq, NNReal.coe_zero]
+  obtain hq | hq := eq_zero_or_pos q
+  · rw [hq]
     intro a b hab
     by_cases ha : 0 ≤ a
     · have hb : 0 ≤ b := ha.trans hab
       simp [CFC.rpow_zero a, CFC.rpow_zero b]
     · have : a ^ (0 : ℝ) = 0 := cfc_apply_of_not_predicate a ha
       simp [this]
+  · simp_rw [← CFC.nnrpow_eq_rpow hq]
+    exact monotone_nnrpow hp
 
 @[gcongr]
 lemma rpow_le_rpow {p : ℝ} (hp : p ∈ Icc 0 1) {a b : A} (hab : a ≤ b) :
@@ -153,13 +151,11 @@ lemma concaveOn_rpow {p : ℝ} (hp : p ∈ Icc 0 1) :
     ConcaveOn ℝ (Ici (0 : A)) (fun a : A => a ^ p) := by
   let q : ℝ≥0 := ⟨p, hp.1⟩
   change ConcaveOn ℝ (Ici (0 : A)) (fun a : A => a ^ (q : ℝ))
-  cases (zero_le q).lt_or_eq' with
-  | inl hq =>
-    simp_rw [← CFC.nnrpow_eq_rpow hq]
-    exact concaveOn_nnrpow hp
-  | inr hq =>
-    simp only [hq, NNReal.coe_zero]
+  obtain hq | hq := eq_zero_or_pos q
+  · simp only [hq, NNReal.coe_zero]
     exact ConcaveOn.congr (concaveOn_const _ (convex_Ici _)) rpow_zero_eqOn.symm
+  · simp_rw [← CFC.nnrpow_eq_rpow hq]
+    exact concaveOn_nnrpow hp
 
 end UnitalCStarAlgebra
 

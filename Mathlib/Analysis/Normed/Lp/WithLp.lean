@@ -6,7 +6,7 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.Module.TransferInstance
-public import Mathlib.Data.ENNReal.Basic
+public import Mathlib.Basic.ENNReal.Basic
 public import Mathlib.RingTheory.Finiteness.Basic
 
 /-! # The `WithLp` type synonym
@@ -91,15 +91,14 @@ instance instAddCommGroup [AddCommGroup V] : AddCommGroup (WithLp p V) :=
   (WithLp.equiv p V).smul K
 @[to_additive] instance instMulAction [Monoid K] [MulAction K V] : MulAction K (WithLp p V) :=
   fast_instance% (WithLp.equiv p V).mulAction K
-instance instDistribMulAction [Monoid K] [AddCommGroup V] [DistribMulAction K V] :
-    DistribMulAction K (WithLp p V) := fast_instance% (WithLp.equiv p V).distribMulAction K
-instance instModule [Semiring K] [AddCommGroup V] [Module K V] : Module K (WithLp p V) :=
-  fast_instance% (WithLp.equiv p V).module K
 
 variable {K V}
 
 lemma ofLp_toLp (x : V) : ofLp (toLp p x) = x := rfl
 @[simp] lemma toLp_ofLp (x : WithLp p V) : toLp p (ofLp x) = x := rfl
+
+lemma ext_iff {x y : WithLp p V} : x = y ↔ x.ofLp = y.ofLp :=
+  (WithLp.equiv p V).injective.eq_iff.symm
 
 lemma ofLp_surjective : Function.Surjective (@ofLp p V) :=
   Function.RightInverse.surjective <| ofLp_toLp _
@@ -134,7 +133,7 @@ theorem map_comp (f : V' → V'') (g : V → V') :
 
 /-- Lift an equivalence to `WithLp`. -/
 protected def congr (f : V ≃ V') : WithLp p V ≃ WithLp p V' :=
-  (WithLp.equiv p V).trans <| f.trans <| (WithLp.equiv p V').symm
+  (WithLp.equiv p V).trans <| f.trans (WithLp.equiv p V').symm
 
 @[simp]
 theorem coe_congr (f : V ≃ V') : ⇑(WithLp.congr p f) = WithLp.map p f :=
@@ -177,17 +176,13 @@ end AddCommGroup
 
 @[to_additive]
 instance instIsScalarTower [SMul K K'] [SMul K V] [SMul K' V] [IsScalarTower K K' V] :
-    IsScalarTower K K' (WithLp p V) where
-  smul_assoc x y z := by
-    change toLp p ((x • y) • (ofLp z)) = toLp p (x • y • ofLp z)
-    simp
+    IsScalarTower K K' (WithLp p V) :=
+  (WithLp.equiv p V).isScalarTower K K'
 
 @[to_additive]
 instance instSMulCommClass [SMul K V] [SMul K' V] [SMulCommClass K K' V] :
-    SMulCommClass K K' (WithLp p V) where
-  smul_comm x y z := by
-    change toLp p (x • y • ofLp z) = toLp p (y • x • ofLp z)
-    rw [smul_comm]
+    SMulCommClass K K' (WithLp p V) :=
+  (WithLp.equiv p V).smulCommClass K K'
 
 variable (K V)
 
@@ -231,6 +226,11 @@ lemma ofLp_multisetSum [AddCommGroup V] (s : Multiset (WithLp p V)) :
 lemma toLp_multisetSum [AddCommGroup V] (s : Multiset V) :
     toLp p s.sum = (s.map (toLp p)).sum :=
   map_multiset_sum (WithLp.addEquiv _ _).symm _
+
+instance instDistribMulAction [Monoid K] [AddCommGroup V] [DistribMulAction K V] :
+    DistribMulAction K (WithLp p V) := fast_instance% (WithLp.addEquiv p V).distribMulAction K
+instance instModule [Semiring K] [AddCommGroup V] [Module K V] : Module K (WithLp p V) :=
+  fast_instance% (WithLp.addEquiv p V).module K
 
 /-- `WithLp.equiv` as a linear equivalence. -/
 @[simps apply symm_apply]
@@ -289,7 +289,7 @@ namespace LinearEquiv
 
 /-- Lift a (semi)linear equivalence to `WithLp`. -/
 def withLpCongr (f : V ≃ₛₗ[σ] V') : WithLp p V ≃ₛₗ[σ] WithLp p V' :=
-  (WithLp.linearEquiv p K V).trans <| f.trans <| (WithLp.linearEquiv p K' V').symm
+  (WithLp.linearEquiv p K V).trans <| f.trans (WithLp.linearEquiv p K' V').symm
 
 @[simp]
 theorem coe_withLpCongr (f : V ≃ₛₗ[σ] V') : ⇑(withLpCongr p f) = WithLp.map p f :=

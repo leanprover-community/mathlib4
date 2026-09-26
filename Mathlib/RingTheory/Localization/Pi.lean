@@ -47,7 +47,7 @@ instance (M : Π i, Submonoid (R i)) [∀ i, IsLocalization (M i) (S i)] :
     choose rm h using fun i ↦ surj (M := M i) (z i)
     exact ⟨(fun i ↦ (rm i).1, ⟨_, fun i _ ↦ (rm i).2.2⟩), funext h⟩
   exists_of_eq {x y} eq := by
-    choose c hc using fun i ↦ exists_of_eq (M := M i) (congr_fun eq i)
+    choose c hc using fun i ↦ exists_of_eq (M := M i) congr($eq i)
     exact ⟨⟨_, fun i _ ↦ (c i).2⟩, funext hc⟩
 
 variable (S' : Type*) [CommSemiring S'] [Algebra (Π i, R i) S'] (M : Submonoid (Π i, R i))
@@ -68,7 +68,7 @@ the projection of `M` onto each corresponding factor. Given a ring homomorphism 
 product `Π i, R i` to the product of the localizations of each `R i` at `M' i`, every `y : M`
 maps to a unit under this homomorphism. -/
 lemma isUnit_piRingHom_algebraMap_comp_piEvalRingHom (y : M) :
-    IsUnit ((Pi.ringHom fun i ↦ (algebraMap (R i) (S i)).comp (Pi.evalRingHom R i)) y) :=
+    IsUnit ((RingHom.pi fun i ↦ (algebraMap (R i) (S i)).comp (Pi.evalRingHom R i)) y) :=
   Pi.isUnit_iff.mpr fun i ↦ map_units _ (⟨y.1 i, y, y.2, rfl⟩ : M.map (Pi.evalRingHom R i))
 
 /-- Let `M` be a submonoid of a direct product of commutative rings `R i`, and let `M' i` denote
@@ -81,13 +81,13 @@ theorem bijective_lift_piRingHom_algebraMap_comp_piEvalRingHom [IsLocalization M
   (ringEquivOfRingEquiv (M := M) (T := M) _ _ (.refl _) <|
     Submonoid.map_equiv_eq_comap_symm _ _).bijective
 
-open Function Ideal
+open Function
 
 include M in
 variable {R} in
 lemma surjective_piRingHom_algebraMap_comp_piEvalRingHom
     [∀ i, Ring.KrullDimLE 0 (R i)] [∀ i, IsLocalRing (R i)] :
-    Surjective (Pi.ringHom (fun i ↦ (algebraMap (R i) (S i)).comp (Pi.evalRingHom R i))) := by
+    Surjective (RingHom.pi (fun i ↦ (algebraMap (R i) (S i)).comp (Pi.evalRingHom R i))) := by
   apply Surjective.piMap (fun i ↦ ?_)
   by_cases h₀ : (0 : R i) ∈ (M.map (Pi.evalRingHom R i))
   · have := uniqueOfZeroMem h₀ (S := (S i))

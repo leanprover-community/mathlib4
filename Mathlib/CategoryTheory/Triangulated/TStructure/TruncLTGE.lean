@@ -183,6 +183,7 @@ noncomputable def triangleMapOfLE (a b : ℤ) (h : a ≤ b) : triangle t a A ⟶
     comm₂ := by rw [H.choose.comm₂, H.choose_spec]
     comm₃ := H.choose.comm₃ }
 
+set_option backward.defeqAttrib.useBackward true in
 noncomputable def triangleFunctorNatTransOfLE (a b : ℤ) (h : a ≤ b) :
     triangleFunctor t a ⟶ triangleFunctor t b where
   app X := triangleMapOfLE t X a b h
@@ -195,6 +196,8 @@ noncomputable def triangleFunctorNatTransOfLE (a b : ℤ) (h : a ≤ b) :
 lemma triangleFunctorNatTransOfLE_app_hom₂ (a b : ℤ) (h : a ≤ b) (X : C) :
     ((triangleFunctorNatTransOfLE t a b h).app X).hom₂ = 𝟙 X := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 lemma triangleFunctorNatTransOfLE_trans (a b c : ℤ) (hab : a ≤ b) (hbc : b ≤ c) :
     triangleFunctorNatTransOfLE t a b hab ≫ triangleFunctorNatTransOfLE t b c hbc =
       triangleFunctorNatTransOfLE t a c (hab.trans hbc) := by
@@ -203,6 +206,7 @@ lemma triangleFunctorNatTransOfLE_trans (a b c : ℤ) (hab : a ≤ b) (hbc : b �
   exact triangle_map_ext t (triangleFunctor_obj_distinguished _ _ _)
     (triangleFunctor_obj_distinguished _ _ _) (a - 1) c inferInstance inferInstance (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma triangleFunctorNatTransOfLE_refl (a : ℤ) :
     triangleFunctorNatTransOfLE t a a (by rfl) = 𝟙 _ := by
   apply NatTrans.ext
@@ -210,6 +214,7 @@ lemma triangleFunctorNatTransOfLE_refl (a : ℤ) :
   exact triangle_map_ext t (triangleFunctor_obj_distinguished _ _ _)
     (triangleFunctor_obj_distinguished _ _ _) (a - 1) a inferInstance inferInstance (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (triangleFunctor t n).Additive where
 
 end TruncAux
@@ -221,6 +226,7 @@ is the `< n`-truncation functor. See also the natural transformation `truncLTι`
 noncomputable def truncLT (n : ℤ) : C ⥤ C :=
   TruncAux.triangleFunctor t n ⋙ Triangle.π₁
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance (n : ℤ) : (t.truncLT n).Additive where
   map_add {_ _ _ _} := by
@@ -238,6 +244,7 @@ is the `≥ n`-truncation functor. See also the natural transformation `truncGE�
 noncomputable def truncGE (n : ℤ) : C ⥤ C :=
   TruncAux.triangleFunctor t n ⋙ Triangle.π₃
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance (n : ℤ) : (t.truncGE n).Additive where
   map_add {_ _ _ _} := by
@@ -255,6 +262,7 @@ lemma truncGEπ_naturality (n : ℤ) {X Y : C} (f : X ⟶ Y) :
     (t.truncGEπ n).app X ≫ (t.truncGE n).map f = f ≫ (t.truncGEπ n).app Y :=
   ((t.truncGEπ n).naturality f).symm
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isLE_truncLT_obj (X : C) (a b : ℤ) (hn : a ≤ b + 1 := by lia) :
     t.IsLE ((t.truncLT a).obj X) b := by
   have : t.IsLE ((t.truncLT a).obj X) (a - 1) := by dsimp [truncLT]; infer_instance
@@ -266,6 +274,7 @@ instance (X : C) (n : ℤ) : t.IsLE ((t.truncLT n).obj X) (n - 1) :=
 instance (X : C) (n : ℤ) : t.IsLE ((t.truncLT (n + 1)).obj X) n :=
   t.isLE_truncLT_obj ..
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isGE_truncGE_obj (X : C) (a b : ℤ) (hn : b ≤ a := by lia) :
     t.IsGE ((t.truncGE a).obj X) b := by
   have : t.IsGE ((t.truncGE a).obj X) a := by dsimp [truncGE]; infer_instance
@@ -291,10 +300,12 @@ lemma triangleLTGE_distinguished (n : ℤ) (X : C) :
     (t.triangleLTGE n).obj X ∈ distTriang C :=
   TruncAux.triangleFunctor_obj_distinguished t n X
 
+set_option backward.defeqAttrib.useBackward true in
 instance (X : C) (n : ℤ) : t.IsLE ((t.triangleLTGE n).obj X).obj₁ (n - 1) := by
   dsimp
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance (X : C) (n : ℤ) : t.IsGE ((t.triangleLTGE n).obj X).obj₃ n := by
   dsimp
   infer_instance
@@ -314,18 +325,15 @@ lemma truncGEδLT_comp_truncLTι_app (n : ℤ) (X : C) :
     (t.truncGEδLT n).app X ≫ ((t.truncLTι n).app X)⟦(1 : ℤ)⟧' = 0 :=
   comp_distTriang_mor_zero₃₁ _ (t.triangleLTGE_distinguished n X)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma truncLTι_comp_truncGEπ (n : ℤ) :
     t.truncLTι n ≫ t.truncGEπ n = 0 := by
   cat_disch
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma truncGEπ_comp_truncGEδLT (n : ℤ) :
     t.truncGEπ n ≫ t.truncGEδLT n = 0 := by cat_disch
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma truncGEδLT_comp_truncLTι (n : ℤ) :
     t.truncGEδLT n ≫ Functor.whiskerRight (t.truncLTι n) (shiftFunctor C (1 : ℤ)) = 0 := by
@@ -341,22 +349,25 @@ noncomputable def natTransTruncGEOfLE (a b : ℤ) (h : a ≤ b) :
     t.truncGE a ⟶ t.truncGE b :=
   Functor.whiskerRight (TruncAux.triangleFunctorNatTransOfLE t a b h) Triangle.π₃
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma natTransTruncLTOfLE_ι_app (a b : ℤ) (h : a ≤ b) (X : C) :
     (t.natTransTruncLTOfLE a b h).app X ≫ (t.truncLTι b).app X = (t.truncLTι a).app X := by
-  simpa using ((TruncAux.triangleFunctorNatTransOfLE t a b h).app X).comm₁.symm
+  simpa using! ((TruncAux.triangleFunctorNatTransOfLE t a b h).app X).comm₁.symm
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma natTransTruncLTOfLE_ι (a b : ℤ) (h : a ≤ b) :
     t.natTransTruncLTOfLE a b h ≫ t.truncLTι b = t.truncLTι a := by
   cat_disch
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma π_natTransTruncGEOfLE_app (a b : ℤ) (h : a ≤ b) (X : C) :
     (t.truncGEπ a).app X ≫ (t.natTransTruncGEOfLE a b h).app X = (t.truncGEπ b).app X := by
   simpa only [TruncAux.triangleFunctor_obj, TruncAux.triangle_obj₂,
-    TruncAux.triangleFunctorNatTransOfLE_app_hom₂, Category.id_comp] using
+    TruncAux.triangleFunctorNatTransOfLE_app_hom₂, Category.id_comp] using!
     ((TruncAux.triangleFunctorNatTransOfLE t a b h).app X).comm₂
 
 @[reassoc]
@@ -372,7 +383,6 @@ lemma truncGEδLT_comp_whiskerRight_natTransTruncLTOfLE (a b : ℤ) (h : a ≤ b
   ext X
   exact t.truncGEδLT_comp_natTransTruncLTOfLE_app a b h X
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π_natTransTruncGEOfLE (a b : ℤ) (h : a ≤ b) :
     t.truncGEπ a ≫ t.natTransTruncGEOfLE a b h = t.truncGEπ b := by
@@ -399,7 +409,7 @@ lemma natTransTriangleLTGEOfLE_trans (a b c : ℤ) (hab : a ≤ b) (hbc : b ≤ 
 @[simp]
 lemma natTransTruncLTOfLE_refl (a : ℤ) :
     t.natTransTruncLTOfLE a a (by rfl) = 𝟙 _ :=
-  congr_arg (fun x ↦ Functor.whiskerRight x (Triangle.π₁)) (t.natTransTriangleLTGEOfLE_refl a)
+  congr(Functor.whiskerRight $(t.natTransTriangleLTGEOfLE_refl a) Triangle.π₁)
 
 @[simp]
 lemma natTransTruncLTOfLE_trans (a b c : ℤ) (hab : a ≤ b) (hbc : b ≤ c) :
@@ -411,7 +421,7 @@ lemma natTransTruncLTOfLE_trans (a b c : ℤ) (hab : a ≤ b) (hbc : b ≤ c) :
 @[simp]
 lemma natTransTruncGEOfLE_refl (a : ℤ) :
     t.natTransTruncGEOfLE a a (by rfl) = 𝟙 _ :=
-  congr_arg (fun x ↦ Functor.whiskerRight x (Triangle.π₃)) (t.natTransTriangleLTGEOfLE_refl a)
+  congr(Functor.whiskerRight $(t.natTransTriangleLTGEOfLE_refl a) Triangle.π₃)
 
 @[simp]
 lemma natTransTruncGEOfLE_trans (a b c : ℤ) (hab : a ≤ b) (hbc : b ≤ c) :
@@ -448,6 +458,7 @@ instance (n : ℤ) : t.IsLE (0 : C) n := t.isLE_of_isZero (isZero_zero C) n
 
 instance (n : ℤ) : t.IsGE (0 : C) n := t.isGE_of_isZero (isZero_zero C) n
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isLE_iff_isIso_truncLTι_app (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : C) :
     t.IsLE X n₀ ↔ IsIso (((t.truncLTι n₁)).app X) := by
@@ -467,6 +478,7 @@ lemma isLE_iff_isIso_truncLTι_app (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : 
   rw [this]
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isGE_iff_isIso_truncGEπ_app (n : ℤ) (X : C) :
     t.IsGE X n ↔ IsIso ((t.truncGEπ n).app X) := by
@@ -525,6 +537,7 @@ lemma from_truncGE_obj_ext {n : ℤ} {X : C} {Y : C}
     (by exact t.isLE_shift _ (n-1) 1 (n-2) (by lia)) inferInstance
   rw [hg, hg', comp_zero]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma to_truncLT_obj_ext {n : ℤ} {Y : C} {X : C}
     {f₁ f₂ : Y ⟶ (t.truncLT n).obj X}
@@ -540,13 +553,11 @@ lemma to_truncLT_obj_ext {n : ℤ} {Y : C} {X : C}
     (by dsimp; apply (t.isGE_shift _ n (-1) (n + 1) (by lia)))
   rw [hg, hg', zero_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma truncLT_map_truncLTι_app (n : ℤ) (X : C) :
     (t.truncLT n).map ((t.truncLTι n).app X) = (t.truncLTι n).app ((t.truncLT n).obj X) :=
   t.to_truncLT_obj_ext (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma truncGE_map_truncGEπ_app (n : ℤ) (X : C) :
     (t.truncGE n).map ((t.truncGEπ n).app X) = (t.truncGEπ n).app ((t.truncGE n).obj X) :=
@@ -556,6 +567,7 @@ section
 
 variable {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) [t.IsLE X n₀]
 
+set_option backward.defeqAttrib.useBackward true in
 include h in
 lemma liftTruncLT_aux :
     ∃ (f' : X ⟶ (t.truncLT n₁).obj Y), f = f' ≫ (t.truncLTι n₁).app Y :=
@@ -578,6 +590,7 @@ section
 
 variable {X Y : C} (f : X ⟶ Y) (n : ℤ) [t.IsGE Y n]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma descTruncGE_aux :
   ∃ (f' : (t.truncGE n).obj X ⟶ Y), f = (t.truncGEπ n).app X ≫ f' :=
   Triangle.yoneda_exact₂ _ (t.triangleLTGE_distinguished n X) f
@@ -640,6 +653,7 @@ instance : t.bounded.IsTriangulated := by
   dsimp [bounded]
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isIso_truncLT_map_iff {X Y : C} (f : X ⟶ Y) (n : ℤ) :
     IsIso ((t.truncLT n).map f) ↔
@@ -657,6 +671,7 @@ lemma isIso_truncLT_map_iff {X Y : C} (f : X ⟶ Y) (n : ℤ) :
     suffices ((t.truncLT n).map f) = e.hom.hom₁ by rw [this]; infer_instance
     exact t.to_truncLT_obj_ext (Eq.trans (by cat_disch) e.hom.comm₁)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isIso_truncGE_map_iff {Y Z : C} (g : Y ⟶ Z) (n₀ n₁ : ℤ) (hn : n₀ + 1 = n₁) :
     IsIso ((t.truncGE n₁).map g) ↔
@@ -681,7 +696,6 @@ instance (X : C) (a b : ℤ) [t.IsLE X b] : t.IsLE ((t.truncLT a).obj X) b := by
   · have := (t.isLE_iff_isIso_truncLTι_app (a - 1) a (by lia) X).1 (t.isLE_of_le _ b _ (by lia))
     exact t.isLE_of_iso (show X ≅ _ from (asIso ((t.truncLTι a).app X)).symm) _
 
-set_option backward.isDefEq.respectTransparency false in
 instance (X : C) (a b : ℤ) [t.IsGE X a] : t.IsGE ((t.truncGE b).obj X) a := by
   by_cases h : a ≤ b
   · exact t.isGE_truncGE_obj ..
@@ -694,9 +708,11 @@ noncomputable abbrev truncGELT (a b : ℤ) : C ⥤ C := t.truncLT b ⋙ t.truncG
 /-- The composition `t.truncGE b ⋙ t.truncLT a`. -/
 noncomputable abbrev truncLTGE (a b : ℤ) : C ⥤ C := t.truncGE a ⋙ t.truncLT b
 
+set_option backward.defeqAttrib.useBackward true in
 instance (X : C) (a b : ℤ) : t.IsGE ((t.truncGELT a b).obj X) a := by
   dsimp; infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance (X : C) (a b : ℤ) : t.IsLE ((t.truncLTGE a b).obj X) (b - 1) := by
   dsimp; infer_instance
 
@@ -704,6 +720,7 @@ section
 
 variable [IsTriangulated C]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isIso₁_truncLT_map_of_isGE (T : Triangle C) (hT : T ∈ distTriang C)
     (n : ℤ) (h₃ : t.IsGE T.obj₃ n) :
     IsIso ((t.truncLT n).map T.mor₁) := by
@@ -728,7 +745,7 @@ lemma isIso₂_truncGE_map_of_isLE (T : Triangle C) (hT : T ∈ distTriang C)
       (t.isLE_shift ((t.truncLT (n₀ + 1)).obj T.obj₃) n₀ 1 (n₀-1) (by lia))
   exact t.isLE_of_shift X n₀ 1 (n₀ - 1) (by lia)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 instance (X : C) (a b : ℤ) [t.IsGE X a] :
     t.IsGE ((t.truncLT b).obj X) a := by
   rw [t.isGE_iff_isZero_truncLT_obj]
@@ -738,7 +755,7 @@ instance (X : C) (a b : ℤ) [t.IsGE X a] :
   refine IsZero.of_iso ?_ (asIso ((t.truncLT a).map ((t.truncLTι b).app X)))
   rwa [← isGE_iff_isZero_truncLT_obj]
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 instance (X : C) (a b : ℤ) [t.IsLE X b] : t.IsLE ((t.truncGE a).obj X) b := by
   rw [t.isLE_iff_isZero_truncGE_obj b (b + 1) rfl]
   have := t.isIso₂_truncGE_map_of_isLE _ (t.triangleLTGE_distinguished a X) b _ rfl
@@ -747,10 +764,12 @@ instance (X : C) (a b : ℤ) [t.IsLE X b] : t.IsLE ((t.truncGE a).obj X) b := by
   refine IsZero.of_iso ?_ (asIso ((t.truncGE (b + 1)).map ((t.truncGEπ a).app X))).symm
   rwa [← isLE_iff_isZero_truncGE_obj _ _ _ rfl]
 
+set_option backward.defeqAttrib.useBackward true in
 instance (X : C) (a b : ℤ) :
     t.IsLE ((t.truncGELT a b).obj X) (b - 1) := by
   dsimp; infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance (X : C) (a b : ℤ) :
     t.IsGE ((t.truncLTGE a b).obj X) a := by
   dsimp; infer_instance
@@ -776,7 +795,6 @@ instance (a b : ℤ) (X : C) :
   rw [← t.isLE_iff_isIso_truncLTι_app (b - 1) b (by lia)]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation `t.truncGELT a b ⟶ t.truncLTGE a b`
 (which is an isomorphism, see `truncGELTIsoLTGE`.) -/
 noncomputable def truncGELTToLTGE (a b : ℤ) :
@@ -786,14 +804,12 @@ noncomputable def truncGELTToLTGE (a b : ℤ) :
   naturality _ _ _ :=
     t.to_truncLT_obj_ext (by dsimp; exact t.from_truncGE_obj_ext (by simp))
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma truncGELTToLTGE_app_pentagon (a b : ℤ) (X : C) :
     (t.truncGEπ a).app _ ≫ (t.truncGELTToLTGE a b).app X ≫ (t.truncLTι b).app _ =
       (t.truncLTι b).app X ≫ (t.truncGEπ a).app X := by
   simp [truncGELTToLTGE]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma truncGELTToLTGE_app_pentagon_uniqueness {a b : ℤ} {X : C}
     (φ : (t.truncGELT a b).obj X ⟶ (t.truncLTGE a b).obj X)
     (hφ : (t.truncGEπ a).app _ ≫ φ ≫ (t.truncLTι b).app _ =
@@ -801,7 +817,6 @@ lemma truncGELTToLTGE_app_pentagon_uniqueness {a b : ℤ} {X : C}
     (t.truncGELTToLTGE a b).app X = φ :=
   t.to_truncLT_obj_ext (by dsimp; exact t.from_truncGE_obj_ext (by cat_disch))
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma truncLT_map_truncGE_map_truncLTι_app_fac (a b : ℤ) (X : C) :
     (t.truncLTι b).app ((t.truncGE a).obj ((t.truncLT b).obj X)) ≫
@@ -828,7 +843,7 @@ noncomputable def triangleLTLTGELT (a b : ℤ) (h : a ≤ b) : C ⥤ Triangle C 
   Triangle.functorMk (t.natTransTruncLTOfLE a b h)
     (Functor.whiskerLeft (t.truncLT b) (t.truncGEπ a)) (t.truncGELTδLT a b)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 lemma triangleLTLTGELT_distinguished (a b : ℤ) (h : a ≤ b) (X : C) :
     (t.triangleLTLTGELT a b h).obj X ∈ distTriang C := by
   have := t.isIso_truncLT_map_truncLTι_app a b h X
@@ -839,7 +854,7 @@ lemma triangleLTLTGELT_distinguished (a b : ℤ) (h : a ≤ b) (X : C) :
   simp only [Category.comp_id, IsIso.eq_inv_comp]
   exact t.to_truncLT_obj_ext (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 instance (a b : ℤ) : IsIso (t.truncGELTToLTGE a b) := by
   rw [NatTrans.isIso_iff_isIso_app]
   intro X
@@ -865,7 +880,6 @@ instance (a b : ℤ) : IsIso (t.truncGELTToLTGE a b) := by
     refine ⟨0, ?_, ?_⟩
     all_goals exact IsZero.eq_of_src (t.isZero _ (b-1) a (by lia)) _ _
 
-set_option backward.isDefEq.respectTransparency false in
 instance (a b : ℤ) (X : C) :
     IsIso ((t.truncLT b).map ((t.truncGE a).map ((t.truncLTι b).app X))) := by
   rw [← t.truncLT_map_truncGE_map_truncLTι_app_fac a b X]

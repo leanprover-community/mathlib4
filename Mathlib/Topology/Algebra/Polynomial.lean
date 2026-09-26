@@ -51,7 +51,7 @@ variable {R S : Type*} [Semiring R] [TopologicalSpace R] [IsTopologicalSemiring 
 protected theorem continuous_eval₂ [Semiring S] (p : S[X]) (f : S →+* R) :
     Continuous fun x => p.eval₂ f x := by
   simp only [eval₂_eq_sum]
-  exact continuous_finset_sum _ fun c _ => continuous_const.mul (continuous_pow _)
+  exact continuous_finsetSum _ fun c _ => continuous_const.mul (continuous_pow _)
 
 @[continuity, fun_prop]
 protected theorem continuous : Continuous fun x => p.eval x :=
@@ -146,7 +146,7 @@ theorem isProperMap_eval [ProperSpace R] (p : R[X]) (h : 0 < degree p) : IsPrope
 
 theorem isClosedMap_eval [ProperSpace R] (p : R[X]) : IsClosedMap p.eval := by
   obtain h | h := le_or_gt p.degree 0
-  · rw [degree_le_zero_iff.mp h]; simpa using isClosedMap_const
+  · rw [degree_le_zero_iff.mp h]; simpa using! isClosedMap_const
   · exact (p.isProperMap_eval h).isClosedMap
 
 variable (R) in
@@ -158,6 +158,12 @@ section Roots
 open Polynomial NNReal
 
 variable {F K : Type*} [CommRing F] [NormedField K]
+
+/-- Nonzero polynomials are nonzero away from a codiscrete set. -/
+lemma eventually_eval_ne_zero_codiscrete [IsDomain F] [TopologicalSpace F] [T1Space F]
+    {g : F[X]} (hg : g ≠ 0) :
+    ∀ᶠ z in codiscrete F, g.eval z ≠ 0 :=
+  (eventually_eval_ne_zero_cofinite hg).filter_mono codiscrete_le_cofinite
 
 open Multiset
 
@@ -190,7 +196,7 @@ theorem coeff_le_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (i : ℕ) (h1 
   obtain ⟨_, ⟨s, hs, rfl⟩, rfl⟩ := hr
   rw [mem_powersetCard] at hs
   lift B to ℝ≥0 using hB
-  rw [← coe_nnnorm, ← NNReal.coe_pow, NNReal.coe_le_coe, ← nnnormHom_apply, ← MonoidHom.coe_coe,
+  rw [← coe_nnnorm, ← NNReal.coe_pow, NNReal.coe_le_coe, ← nnnormHom_apply, ← MonoidHom.coe_ofClass,
     MonoidHom.map_multiset_prod]
   refine (prod_le_pow_card _ B fun x hx => ?_).trans_eq (by rw [card_map, hs.2])
   obtain ⟨z, hz, rfl⟩ := Multiset.mem_map.1 hx
@@ -213,7 +219,7 @@ theorem coeff_bdd_of_roots_le {B : ℝ} {d : ℕ} (f : F →+* K) {p : F[X]} (h1
         gcongr; exact (i.choose_mono h3).trans (i.choose_le_middle d)
   · rw [eq_one_of_roots_le hB h1 h2 h4, Polynomial.map_one, coeff_one]
     refine le_trans ?_ (one_le_mul_of_one_le_of_one_le (one_le_pow₀ (le_max_right B 1)) ?_)
-    · split_ifs <;> norm_num
+    · split_ifs <;> simp
     · exact mod_cast Nat.succ_le_iff.mpr (Nat.choose_pos (d.div_le_self 2))
 
 end Roots

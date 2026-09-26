@@ -28,12 +28,12 @@ in the classification of Dynkin diagrams, root systems, and semisimple Lie algeb
 
 ## Main declarations
 
-* `pqr.A' q r`, the multiset `{1,q,r}`
-* `pqr.D' r`, the multiset `{2,2,r}`
-* `pqr.E6`, the multiset `{2,3,3}`
-* `pqr.E7`, the multiset `{2,3,4}`
-* `pqr.E8`, the multiset `{2,3,5}`
-* `pqr.classification`, the classification of solutions to `p⁻¹ + q⁻¹ + r⁻¹ > 1`
+* `ADEInequality.A' q r`, the multiset `{1,q,r}`
+* `ADEInequality.D' r`, the multiset `{2,2,r}`
+* `ADEInequality.E6`, the multiset `{2,3,3}`
+* `ADEInequality.E7`, the multiset `{2,3,4}`
+* `ADEInequality.E8`, the multiset `{2,3,5}`
+* `ADEInequality.classification`, the classification of solutions to `p⁻¹ + q⁻¹ + r⁻¹ > 1`
 
 -/
 
@@ -99,7 +99,7 @@ This solution is related to the Dynkin diagrams $E_8$. -/
 def E8 : Multiset ℕ+ :=
   E' 5
 
-/-- `sum_inv pqr` for a `pqr : Multiset ℕ+` is the sum of the inverses
+/-- `sumInv pqr` for a `pqr : Multiset ℕ+` is the sum of the inverses
 of the elements of `pqr`, as rational number.
 
 The intended argument is a multiset `{p,q,r}` of cardinality `3`. -/
@@ -110,7 +110,7 @@ theorem sumInv_pqr (p q r : ℕ+) : sumInv {p, q, r} = (p : ℚ)⁻¹ + (q : ℚ
   simp only [sumInv, insert_eq_cons, add_assoc, map_cons, sum_cons,
     map_singleton, sum_singleton]
 
-/-- A multiset `pqr` of positive natural numbers is `admissible`
+/-- A multiset `pqr` of positive natural numbers is `Admissible`
 if it is equal to `A' q r`, or `D' r`, or one of `E6`, `E7`, or `E8`. -/
 def Admissible (pqr : Multiset ℕ+) : Prop :=
   (∃ q r, A' q r = pqr) ∨ (∃ r, D' r = pqr) ∨ E' 3 = pqr ∨ E' 4 = pqr ∨ E' 5 = pqr
@@ -222,7 +222,7 @@ theorem admissible_of_one_lt_sumInv {p q r : ℕ+} (H : 1 < sumInv {p, q, r}) :
 
 /-- A multiset `{p,q,r}` of positive natural numbers
 is a solution to `(p⁻¹ + q⁻¹ + r⁻¹ : ℚ) > 1` if and only if
-it is `admissible` which means it is one of:
+it is `Admissible` which means it is one of:
 
 * `A' q r := {1,q,r}`
 * `D' r := {2,2,r}`

@@ -55,7 +55,7 @@ variable {𝕜 E F G : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-  {n m k : ℕ} {r : WithTop ℕ∞}
+  {n m : ℕ} {r : WithTop ℕ∞}
   {ω ω₁ ω₂ : E → E [⋀^Fin n]→L[𝕜] F} {s t : Set E} {x : E}
 
 /-- Exterior derivative of a differential form.
@@ -244,13 +244,13 @@ theorem extDerivWithin_pullback {ω : F → F [⋀^Fin n]→L[𝕜] G} {f : E �
     extDerivWithin (fun x ↦ (ω (f x)).compContinuousLinearMap (fderivWithin 𝕜 f s x)) s x =
       (extDerivWithin ω t (f x)).compContinuousLinearMap (fderivWithin 𝕜 f s x) := by
   have hdf : DifferentiableWithinAt 𝕜 f s x :=
-    hf.differentiableWithinAt <| (two_pos.trans_le <| le_minSmoothness.trans hr).ne'
+    hf.differentiableWithinAt (two_pos.trans_le <| le_minSmoothness.trans hr).ne'
   have hd2f : DifferentiableWithinAt 𝕜 (fderivWithin 𝕜 f s) s x :=
     (hf.fderivWithin_right hs (le_minSmoothness.trans hr) hxs).differentiableWithinAt one_ne_zero
   rw [extDerivWithin,
     fderivWithin_continuousAlternatingMapCompContinuousLinearMap (by exact hω.comp x hdf hst) hd2f
       (hs x hxs),
-    alternatizeUncurryFin_add, fderivWithin_comp' _ hω hdf hst (hs x hxs), extDerivWithin,
+    alternatizeUncurryFin_add, fderivWithin_fun_comp _ hω hdf hst (hs x hxs), extDerivWithin,
     alternatizeUncurryFin_fderivCompContinuousLinearMap_eq_zero, add_zero]
   · ext v
     simp +unfoldPartialApp [alternatizeUncurryFin_apply, Fin.removeNth, Function.comp_def]

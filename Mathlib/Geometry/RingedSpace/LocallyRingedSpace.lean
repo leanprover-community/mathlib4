@@ -57,6 +57,7 @@ abbrev toRingedSpace : RingedSpace :=
   X.toSheafedSpace
 
 /-- The underlying topological space of a locally ringed space. -/
+@[implicit_reducible]
 def toTopCat : TopCat :=
   X.1.carrier
 
@@ -84,7 +85,7 @@ structure Hom (X Y : LocallyRingedSpace.{u}) : Type _
 abbrev Hom.toShHom {X Y : LocallyRingedSpace.{u}} (f : X.Hom Y) :
   X.toSheafedSpace ⟶ Y.toSheafedSpace := InducedCategory.homMk f.1
 
-@[simp, nolint simpVarHead]
+@[simp]
 lemma Hom.toShHom_mk {X Y : LocallyRingedSpace.{u}}
     (f : X.toPresheafedSpace.Hom Y.toPresheafedSpace) (hf) :
   Hom.toShHom ⟨f, hf⟩ = InducedCategory.homMk f := rfl
@@ -99,7 +100,7 @@ instance : Quiver LocallyRingedSpace :=
 /-- A morphism of locally ringed spaces `f : X ⟶ Y` induces
 a local ring homomorphism from `Y.stalk (f x)` to `X.stalk x` for any `x : X`.
 -/
-noncomputable def Hom.stalkMap {X Y : LocallyRingedSpace.{u}} (f : Hom X Y) (x : X) :
+noncomputable def Hom.stalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
     Y.presheaf.stalk (f.1.1 x) ⟶ X.presheaf.stalk x :=
   f.toShHom.hom.stalkMap x
 
@@ -120,7 +121,7 @@ theorem isLocalHomValStalkMap {X Y : LocallyRingedSpace.{u}} (f : Hom X Y) (x : 
 set_option backward.isDefEq.respectTransparency false in
 /-- The identity morphism on a locally ringed space. -/
 def id (X : LocallyRingedSpace.{u}) : Hom X X :=
-  ⟨𝟙 X.toPresheafedSpace, fun x => by dsimp; erw [PresheafedSpace.stalkMap.id]; infer_instance⟩
+  ⟨𝟙 X.toPresheafedSpace, fun x => by dsimp; rw [PresheafedSpace.stalkMap.id]; infer_instance⟩
 
 instance (X : LocallyRingedSpace.{u}) : Inhabited (Hom X X) :=
   ⟨id X⟩
@@ -149,7 +150,7 @@ def forgetToSheafedSpace : LocallyRingedSpace.{u} ⥤ SheafedSpace CommRingCat.{
 instance : forgetToSheafedSpace.Faithful where
   map_injective h := by
     ext : 1
-    exact congr_arg InducedCategory.Hom.hom h
+    congrm $(h).hom
 
 /-- Constructor for morphisms in `LocallyRingedSpace`. -/
 @[simps toHom]
@@ -210,7 +211,7 @@ def homOfSheafedSpaceHomOfIsIso {X Y : LocallyRingedSpace.{u}}
     -- are isomorphisms and isomorphisms are local ring homomorphisms.
     inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Given two locally ringed spaces `X` and `Y`, an isomorphism between `X` and `Y` as _sheafed_
 spaces can be lifted to an isomorphism `X ⟶ Y` as locally ringed spaces.
 
@@ -242,7 +243,7 @@ instance is_sheafedSpace_iso {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) [IsIso
 /-- The restriction of a locally ringed space along an open embedding.
 -/
 @[simps!]
-def restrict {U : TopCat} (X : LocallyRingedSpace.{u}) {f : U ⟶ X.toTopCat}
+def restrict {U : TopCat.{u}} (X : LocallyRingedSpace.{u}) {f : U ⟶ X.toTopCat}
     (h : IsOpenEmbedding f) : LocallyRingedSpace where
   isLocalRing := by
     intro x
@@ -253,7 +254,7 @@ def restrict {U : TopCat} (X : LocallyRingedSpace.{u}) {f : U ⟶ X.toTopCat}
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The canonical map from the restriction to the subspace. -/
-def ofRestrict {U : TopCat} (X : LocallyRingedSpace.{u})
+def ofRestrict {U : TopCat.{u}} (X : LocallyRingedSpace.{u})
     {f : U ⟶ X.toTopCat} (h : IsOpenEmbedding f) : X.restrict h ⟶ X :=
   ⟨X.toPresheafedSpace.ofRestrict h, fun _ => inferInstance⟩
 
@@ -287,8 +288,8 @@ theorem Γ_map_op {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) : Γ.map f.op = f
 
 /-- The empty locally ringed space. -/
 def empty : LocallyRingedSpace.{u} where
-  carrier := TopCat.of PEmpty
-  presheaf := (CategoryTheory.Functor.const _).obj (CommRingCat.of PUnit)
+  carrier := ↧PEmpty
+  presheaf := (CategoryTheory.Functor.const _).obj ↧PUnit
   IsSheaf := Presheaf.isSheaf_of_isTerminal _ CommRingCat.punitIsTerminal
   isLocalRing x := PEmpty.elim x
 
@@ -313,7 +314,7 @@ def emptyIsInitial : Limits.IsInitial (∅ : LocallyRingedSpace.{u}) := Limits.I
 theorem basicOpen_zero (X : LocallyRingedSpace.{u}) (U : Opens X.carrier) :
     X.toRingedSpace.basicOpen (0 : X.presheaf.obj <| op U) = ⊥ := by
   ext x
-  simp only [RingedSpace.basicOpen, Opens.coe_mk, Set.mem_setOf_eq,
+  simp only [RingedSpace.basicOpen, Opens.coe_mk, Set.mem_ofPred_eq,
     Opens.coe_bot, Set.mem_empty_iff_false,
     iff_false, not_exists]
   intro hx
@@ -382,7 +383,7 @@ lemma stalkSpecializes_stalkMap (x x' : X) (h : x ⤳ x') :
 lemma stalkSpecializes_stalkMap_apply (x x' : X) (h : x ⤳ x') (y) :
     f.stalkMap x (Y.presheaf.stalkSpecializes (f.base.hom.map_specializes h) y) =
       (X.presheaf.stalkSpecializes h (f.stalkMap x' y)) :=
-  DFunLike.congr_fun (CommRingCat.hom_ext_iff.mp (stalkSpecializes_stalkMap f x x' h)) y
+  congr($(CommRingCat.hom_ext_iff.mp (stalkSpecializes_stalkMap f x x' h)) y)
 
 @[reassoc]
 lemma stalkMap_congr (f g : X ⟶ Y) (hfg : f = g) (x x' : X) (hxx' : x = x') :
@@ -417,7 +418,7 @@ lemma stalkMap_hom_inv (e : X ≅ Y) (y : Y) :
 lemma stalkMap_hom_inv_apply (e : X ≅ Y) (y : Y) (z) :
     e.inv.stalkMap y (e.hom.stalkMap (e.inv.base y) z) =
       Y.presheaf.stalkSpecializes (specializes_of_eq <| by simp) z :=
-  DFunLike.congr_fun (CommRingCat.hom_ext_iff.mp (stalkMap_hom_inv e y)) z
+  congr($(CommRingCat.hom_ext_iff.mp (stalkMap_hom_inv e y)) z)
 
 @[reassoc (attr := simp)]
 lemma stalkMap_inv_hom (e : X ≅ Y) (x : X) :
@@ -430,7 +431,7 @@ lemma stalkMap_inv_hom (e : X ≅ Y) (x : X) :
 lemma stalkMap_inv_hom_apply (e : X ≅ Y) (x : X) (y) :
     e.hom.stalkMap x (e.inv.stalkMap (e.hom.base x) y) =
       X.presheaf.stalkSpecializes (specializes_of_eq <| by simp) y :=
-  DFunLike.congr_fun (CommRingCat.hom_ext_iff.mp (stalkMap_inv_hom e x)) y
+  congr($(CommRingCat.hom_ext_iff.mp (stalkMap_inv_hom e x)) y)
 
 @[reassoc (attr := simp)]
 lemma stalkMap_germ (U : Opens Y) (x : X) (hx : f.base x ∈ U) :
@@ -443,6 +444,7 @@ lemma stalkMap_germ_apply (U : Opens Y) (x : X) (hx : f.base x ∈ U) (y) :
       X.presheaf.germ ((Opens.map f.base).obj U) x hx (f.c.app (op U) y) :=
   PresheafedSpace.stalkMap_germ_apply f.toHom U x hx y
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem preimage_basicOpen {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) {U : Opens Y}
     (s : Y.presheaf.obj (op U)) :
     (Opens.map f.base).obj (Y.toRingedSpace.basicOpen s) =
@@ -460,7 +462,7 @@ theorem preimage_basicOpen {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) {U : Ope
     rw [← stalkMap_germ_apply] at hx
     exact (isUnit_map_iff (f.stalkMap x).hom _).mp hx
 
-variable {U : TopCat} (X : LocallyRingedSpace.{u}) {f : U ⟶ X.toTopCat} (h : IsOpenEmbedding f)
+variable {U : TopCat.{u}} (X : LocallyRingedSpace.{u}) {f : U ⟶ X.toTopCat} (h : IsOpenEmbedding f)
   (V : Opens U) (x : U) (hx : x ∈ V)
 
 /-- For an open embedding `f : U ⟶ X` and a point `x : U`, we get an isomorphism between the stalk

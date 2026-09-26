@@ -38,7 +38,7 @@ def radical : Submodule R M where
   smul_mem' a x hx := by simp [QuadraticMap.map_smul, hx.1, hx.2]
   add_mem' := fun {x y} hx hy ↦ by
     refine ⟨?_, by simp [hx.2, hy.2]⟩
-    have := congr_arg (· y) hx.2
+    have := congr($(hx.2) y)
     simp only [QuadraticMap.polarBilin_apply_apply, QuadraticMap.polar,
       LinearMap.zero_apply, sub_sub, sub_eq_zero] at this
     rw [this, hx.1, hy.1, zero_add]
@@ -138,7 +138,7 @@ the radical of a quadratic map is the kernel of its associated bilinear map. -/
 lemma radical_eq_ker_associated : Q.radical = (QuadraticMap.associated Q).ker := by
   rw [radical_eq_ker_polarBilin]
   ext m
-  simp [LinearMap.ext_iff, QuadraticMap.polar, -smul_eq_mul, invOf_smul_eq_iff]
+  simp [associated_apply, LinearMap.ext_iff, QuadraticMap.polar, invOf_smul_eq_iff]
 
 /--
 If `2` is invertible in the coefficient ring,
@@ -160,7 +160,7 @@ lemma nondegenerate_associated_iff :
     (QuadraticMap.associated Q).Nondegenerate ↔ Q.Nondegenerate := by
   rw [nondegenerate_iff_radical_eq_bot, radical_eq_ker_associated,
     LinearMap.IsRefl.nondegenerate_iff_separatingLeft, LinearMap.separatingLeft_iff_ker_eq_bot]
-  exact fun x y ↦ (congr_arg (· x y) (associated_flip R Q)).trans
+  exact fun x y ↦ congr($(associated_flip R Q) x y).trans
 
 /-- If `2` is invertible in the coefficient ring,
 a quadratic map is nondegenerate

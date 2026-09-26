@@ -125,11 +125,10 @@ lemma Ring.neg_one_ne_one_of_char_ne_two {R : Type*} [NonAssocRing R] [Nontrivia
 
 /-- Characteristic `≠ 2` in a domain implies that `-a = a` iff `a = 0`. -/
 lemma Ring.eq_self_iff_eq_zero_of_char_ne_two {R : Type*} [NonAssocRing R] [Nontrivial R]
-    [NoZeroDivisors R] (hR : ringChar R ≠ 2) {a : R} : -a = a ↔ a = 0 :=
-  ⟨fun h =>
-    (mul_eq_zero.mp <| (two_mul a).trans <| neg_eq_iff_add_eq_zero.mp h).resolve_left
-      (Ring.two_ne_zero hR),
-    fun h => ((congr_arg (fun x => -x) h).trans neg_zero).trans h.symm⟩
+    [NoZeroDivisors R] (hR : ringChar R ≠ 2) {a : R} : -a = a ↔ a = 0 where
+  mp h := (mul_eq_zero.mp <| (two_mul a).trans <| neg_eq_iff_add_eq_zero.mp h).resolve_left
+    (Ring.two_ne_zero hR)
+  mpr h := by simp [h]
 
 end
 
@@ -145,13 +144,13 @@ instance Nat.lcm.charP [CharP S q] : CharP (R × S) (Nat.lcm p q) where
 /-- The characteristic of the product of two rings of the same characteristic
   is the same as the characteristic of the rings -/
 instance Prod.charP [CharP S p] : CharP (R × S) p := by
-  convert Nat.lcm.charP R S p p; simp
+  convert! Nat.lcm.charP R S p p; simp
 
 instance Prod.charZero_of_left [CharZero R] : CharZero (R × S) where
-  cast_injective _ _ h := CharZero.cast_injective congr(Prod.fst $h)
+  cast_injective _ _ h := CharZero.cast_injective congr($(h).fst)
 
 instance Prod.charZero_of_right [CharZero S] : CharZero (R × S) where
-  cast_injective _ _ h := CharZero.cast_injective congr(Prod.snd $h)
+  cast_injective _ _ h := CharZero.cast_injective congr($(h).snd)
 
 end Prod
 

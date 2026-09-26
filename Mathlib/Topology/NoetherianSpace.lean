@@ -12,8 +12,8 @@ public import Mathlib.Topology.Sets.Closeds
 # Noetherian space
 
 A Noetherian space is a topological space that satisfies any of the following equivalent conditions:
-- `WellFounded ((· > ·) : TopologicalSpace.Opens α → TopologicalSpace.Opens α → Prop)`
-- `WellFounded ((· < ·) : TopologicalSpace.Closeds α → TopologicalSpace.Closeds α → Prop)`
+- `WellFoundedGT (TopologicalSpace.Opens α)`
+- `WellFoundedLT (TopologicalSpace.Closeds α)`
 - `∀ s : Set α, IsCompact s`
 - `∀ s : TopologicalSpace.Opens α, IsCompact s`
 
@@ -52,8 +52,8 @@ namespace TopologicalSpace
 abbrev NoetherianSpace : Prop := WellFoundedGT (Opens α)
 
 theorem noetherianSpace_iff_opens : NoetherianSpace α ↔ ∀ s : Opens α, IsCompact (s : Set α) := by
-  rw [NoetherianSpace, CompleteLattice.wellFoundedGT_iff_isSupFiniteCompact,
-    CompleteLattice.isSupFiniteCompact_iff_all_elements_compact]
+  rw [NoetherianSpace, wellFoundedGT_iff_isSupFiniteCompact,
+    isSupFiniteCompact_iff_all_elements_compact]
   exact forall_congr' Opens.isCompactElement_iff
 
 instance (priority := 100) NoetherianSpace.compactSpace [h : NoetherianSpace α] : CompactSpace α :=
@@ -84,7 +84,6 @@ theorem noetherianSpace_TFAE :
       ∀ s : Set α, IsCompact s,
       ∀ s : Opens α, IsCompact (s : Set α)] := by
   tfae_have 1 ↔ 2 := by
-    simp_rw [isWellFounded_iff]
     exact Opens.compl_bijective.2.wellFounded_iff (@OrderIso.compl (Set α)).lt_iff_lt.symm
   tfae_have 1 ↔ 4 := noetherianSpace_iff_opens α
   tfae_have 1 → 3 := @NoetherianSpace.isCompact α _
@@ -92,10 +91,10 @@ theorem noetherianSpace_TFAE :
   tfae_finish
 
 theorem noetherianSpace_iff_isCompact : NoetherianSpace α ↔ ∀ s : Set α, IsCompact s :=
-  (noetherianSpace_TFAE α).out 0 2
+  (noetherianSpace_TFAE α).out 1 3
 
 instance [NoetherianSpace α] : WellFoundedLT (Closeds α) :=
-  Iff.mp ((noetherianSpace_TFAE α).out 0 1) ‹_›
+  Iff.mp ((noetherianSpace_TFAE α).out 1 2) ‹_›
 
 instance {α} : NoetherianSpace (CofiniteTopology α) := by
   simp only [noetherianSpace_iff_isCompact, isCompact_iff_ultrafilter_le_nhds,
@@ -147,7 +146,11 @@ theorem NoetherianSpace.finite [NoetherianSpace α] [T2Space α] : Finite α :=
   Finite.of_finite_univ (NoetherianSpace.isCompact Set.univ).finite_of_discrete
 
 instance (priority := 100) Finite.to_noetherianSpace [Finite α] : NoetherianSpace α :=
-  ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
+  Finite.wellFounded_of_trans_of_irrefl _
+
+instance (priority := 100) [IndiscreteTopology α] : NoetherianSpace α :=
+  noetherianSpace_of_surjective CofiniteTopology.of.symm continuous_of_indiscreteTopology
+    CofiniteTopology.of.symm.surjective
 
 /-- In a Noetherian space, every closed set is a finite union of irreducible closed sets. -/
 theorem NoetherianSpace.exists_finite_set_closeds_irreducible [NoetherianSpace α] (s : Closeds α) :
@@ -200,18 +203,22 @@ theorem NoetherianSpace.exists_isOpen_nonempty_subset_irreducibleComponent [Noet
     (Z : Set α) (H : Z ∈ irreducibleComponents α) :
     ∃ o : Set α, IsOpen o ∧ o.Nonempty ∧ o ⊆ Z := by
   have hα : (irreducibleComponents α).Finite := finite_irreducibleComponents
-  have hZ := closure_sUnion_irreducibleComponents_diff_singleton hα Z H
+  have hZ := closure_sUnion_irreducibleComponents_sdiff_singleton hα Z H
   refine ⟨(⋃₀ (irreducibleComponents α \ {Z}))ᶜ, ?_, ?_, subset_closure.trans hZ.le⟩
   · rw [Set.sUnion_eq_biUnion, isOpen_compl_iff]
-    exact hα.diff.isClosed_biUnion fun W hW ↦ isClosed_of_mem_irreducibleComponents W hW.1
+    exact hα.sdiff.isClosed_biUnion fun W hW ↦ isClosed_of_mem_irreducibleComponents W hW.1
   · contrapose! hZ
     rw [hZ, closure_empty, ← Set.nonempty_iff_empty_ne]
     exact H.1.nonempty
 
-@[deprecated exists_isOpen_nonempty_subset_irreducibleComponent (since := "2025-12-11")]
-theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [NoetherianSpace α]
-    (Z : Set α) (H : Z ∈ irreducibleComponents α) :
-    ∃ o : Set α, IsOpen o ∧ o.Nonempty ∧ o ≤ Z := by
-  simpa using exists_isOpen_nonempty_subset_irreducibleComponent Z H
+lemma NoetherianSpace.of_subset {W V : Set α} [NoetherianSpace W]
+    (h : V ⊆ W) : NoetherianSpace V :=
+  Topology.IsInducing.noetherianSpace (Topology.IsEmbedding.inclusion h).isInducing
+
+lemma NoetherianSpace.inter_of_left (W V : Set α) [NoetherianSpace W] :
+    NoetherianSpace (W ∩ V : Set α) := .of_subset Set.inter_subset_left
+
+lemma NoetherianSpace.inter_of_right (W V : Set α) [NoetherianSpace V] :
+    NoetherianSpace (W ∩ V : Set α) := .of_subset Set.inter_subset_right
 
 end TopologicalSpace

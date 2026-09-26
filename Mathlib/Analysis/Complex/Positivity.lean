@@ -53,7 +53,7 @@ theorem nonneg_of_iteratedDeriv_nonneg {f : ℂ → ℂ} (hf : Differentiable �
   refine hf.differentiableOn.nonneg_of_iteratedDeriv_nonneg (r := (z - c).re + 1) h hz ?_
   rw [← sub_nonneg] at hz
   rw [Metric.mem_ball, dist_eq, eq_re_of_ofReal_le hz]
-  simpa only [Complex.norm_of_nonneg (nonneg_iff.mp hz).1] using lt_add_one _
+  simpa only [Complex.norm_of_nonneg (nonneg_iff.mp hz).1] using! lt_add_one _
 
 /-- An entire function whose iterated derivatives at `c` are all nonnegative real (except
 possibly the value itself) has values of the form `f c + nonneg. real` on the set `c + ℝ≥0`. -/
@@ -75,8 +75,9 @@ set `c - ℝ≥0`. -/
 theorem apply_le_of_iteratedDeriv_alternating {f : ℂ → ℂ} {c : ℂ} (hf : Differentiable ℂ f)
     (h : ∀ n ≠ 0, 0 ≤ (-1) ^ n * iteratedDeriv n f c) ⦃z : ℂ⦄ (hz : z ≤ c) :
     f c ≤ f z := by
-  convert apply_le_of_iteratedDeriv_nonneg (f := fun z ↦ f (-z))
-    (hf.comp <| differentiable_neg) (fun n hn ↦ ?_) (neg_le_neg_iff.mpr hz) using 1
+  convert!
+    apply_le_of_iteratedDeriv_nonneg (f := fun z ↦ f (-z)) (hf.comp differentiable_neg)
+      (fun n hn ↦ ?_) (neg_le_neg_iff.mpr hz) using 1
   · simp only [neg_neg]
   · simp only [neg_neg]
   · simpa only [iteratedDeriv_comp_neg, neg_neg, smul_eq_mul] using h n hn

@@ -51,13 +51,13 @@ def neg (hr : ∀ ⦃X Y : C⦄ (f₁ f₂ g₁ g₂ : X ⟶ Y) (_ : r f₁ f₂
       simp only [HomRel.compClosure_iff_self] at hfg
       erw [functor_map_eq_iff]
       apply Congruence.equivalence.symm
-      convert hr f g _ _ hfg (Congruence.equivalence.refl (-f - g)) using 1 <;> abel)
+      convert! hr f g _ _ hfg (Congruence.equivalence.refl (-f - g)) using 1 <;> abel)
 
 end Preadditive
 
 /-- The preadditive structure on the category `Quotient r` when `r` is compatible
 with the addition. -/
-@[implicit_reducible]
+@[instance_reducible]
 def preadditive
     (hr : ∀ ⦃X Y : C⦄ (f₁ f₂ g₁ g₂ : X ⟶ Y) (_ : r f₁ f₂) (_ : r g₁ g₂), r (f₁ + g₁) (f₂ + g₂)) :
     Preadditive (Quotient r) where
@@ -68,20 +68,20 @@ def preadditive
       { add := Preadditive.add r hr }
     let iN : Neg (P ⟶ Q) :=
       { neg := Preadditive.neg r hr }
-    { add_assoc := by rintro ⟨_⟩ ⟨_⟩ ⟨_⟩; exact congr_arg (functor r).map (add_assoc _ _ _)
-      zero_add := by rintro ⟨_⟩; exact congr_arg (functor r).map (zero_add _)
-      add_zero := by rintro ⟨_⟩; exact congr_arg (functor r).map (add_zero _)
-      add_comm := by rintro ⟨_⟩ ⟨_⟩; exact congr_arg (functor r).map (add_comm _ _)
-      neg_add_cancel := by rintro ⟨_⟩; exact congr_arg (functor r).map (neg_add_cancel _)
+    { add_assoc := by rintro ⟨_⟩ ⟨_⟩ ⟨_⟩; congrm (functor r).map $(add_assoc _ _ _)
+      zero_add := by rintro ⟨_⟩; congrm (functor r).map $(zero_add _)
+      add_zero := by rintro ⟨_⟩; congrm (functor r).map $(add_zero _)
+      add_comm := by rintro ⟨_⟩ ⟨_⟩; congrm (functor r).map $(add_comm _ _)
+      neg_add_cancel := by rintro ⟨_⟩; congrm (functor r).map $(neg_add_cancel _)
       -- todo: use a better defeq
       nsmul := nsmulRec
       zsmul := zsmulRec }
   add_comp := by
     rintro _ _ _ ⟨_⟩ ⟨_⟩ ⟨_⟩
-    exact congr_arg (functor r).map (by apply Preadditive.add_comp)
+    congrm (functor r).map $(by apply Preadditive.add_comp)
   comp_add := by
     rintro _ _ _ ⟨_⟩ ⟨_⟩ ⟨_⟩
-    exact congr_arg (functor r).map (by apply Preadditive.comp_add)
+    congrm (functor r).map $(by apply Preadditive.comp_add)
 
 lemma functor_additive
     (hr : ∀ ⦃X Y : C⦄ (f₁ f₂ g₁ g₂ : X ⟶ Y) (_ : r f₁ f₂) (_ : r g₁ g₂), r (f₁ + g₁) (f₂ + g₂)) :

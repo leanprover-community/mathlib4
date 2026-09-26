@@ -32,7 +32,14 @@ namespace Matrix
 variable (I J K L R R' : Type*)
 
 /-- An `I` by `J` matrix where each entry is a `K` by `L` matrix is equivalent to
-    an `I × K` by `J × L` matrix -/
+an `I × K` by `J × L` matrix.
+
+This is available in bundled forms as:
+* `Matrix.compAddEquiv`
+* `Matrix.compLinearEquiv`
+* `Matrix.compRingEquiv`
+* `Matrix.compAlgEquiv`
+-/
 @[simps]
 def comp : Matrix I J (Matrix K L R) ≃ Matrix (I × K) (J × L) R where
   toFun m ik jl := m ik.1 jl.1 ik.2 jl.2
@@ -41,12 +48,14 @@ def comp : Matrix I J (Matrix K L R) ≃ Matrix (I × K) (J × L) R where
 section Basic
 variable {R I J K L}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comp_one [DecidableEq I] [DecidableEq J] [Zero R] [One R] : comp I I J J R 1 = 1 := by
   ext; simp only [comp, Equiv.coe_fn_mk, one_apply, apply_ite]; aesop
 
 theorem comp_map_map (M : Matrix I J (Matrix K L R)) (f : R → R') :
     comp I J K L _ (M.map (fun M' => M'.map f)) = (comp I J K L _ M).map f := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem comp_single_single
     [DecidableEq I] [DecidableEq J] [DecidableEq K] [DecidableEq L] [Zero R] (i j k l r) :
@@ -76,6 +85,7 @@ theorem comp_symm_single
       (single ii.1 jj.1 (single ii.2 jj.2 r)) :=
   (comp I J K L R).symm_apply_eq.2 <| comp_single_single _ _ _ _ _ |>.symm
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem comp_diagonal_diagonal [DecidableEq I] [DecidableEq J] [Zero R] (d : I → J → R) :
     comp I I J J R (diagonal fun i => diagonal fun j => d i j)
@@ -93,7 +103,7 @@ theorem comp_diagonal_diagonal [DecidableEq I] [DecidableEq J] [Zero R] (d : I �
 @[simp]
 theorem comp_symm_diagonal [DecidableEq I] [DecidableEq J] [Zero R] (d : I × J → R) :
     (comp I I J J R).symm (diagonal d) = diagonal fun i => diagonal fun j => d (i, j) :=
-  (comp I I J J R).symm_apply_eq.2 <| (comp_diagonal_diagonal fun i j => d (i, j)).symm
+  (comp I I J J R).symm_apply_eq.2 (comp_diagonal_diagonal fun i j => d (i, j)).symm
 
 theorem comp_transpose (M : Matrix I J (Matrix K L R)) :
     comp J I K L R Mᵀ = (comp _ _ _ _ R <| M.map (·ᵀ))ᵀ := rfl

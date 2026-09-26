@@ -158,7 +158,7 @@ partial def expandLinearCombo (ty : Option Expr) (stx : Syntax.Term) :
 def elabLinearCombination (tk : Syntax)
     (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term) :
     Tactic.TacticM Unit := Tactic.withMainContext <| Tactic.focus do
-  let eType ← withReducible <| (← Tactic.getMainGoal).getType'
+  let eType ← withReducible (← Tactic.getMainGoal).getType'
   let (goalRel, ty, _) ← eType.ineq?
   -- build the specified linear combination of the hypotheses
   let (hypRel, p) ← match input with
@@ -171,7 +171,7 @@ def elabLinearCombination (tk : Syntax)
       Prod.mk eq <$> `(Eq.refl 0)
     | .proof hypRel p => pure (hypRel, p)
   -- look up the lemma for the central `refine` in `linear_combination`
-  let (reduceLem, newGoalRel) : Name × Ineq := ← do
+  let (reduceLem, newGoalRel) : Name × Ineq ← do
     match Ineq.relImpRelData hypRel goalRel with
     | none => throwError "cannot prove an equality from inequality hypotheses"
     | some n => pure n

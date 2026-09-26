@@ -39,7 +39,7 @@ We have three ways to construct terms of `ℙ K V`:
 variable (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V]
 
 /-- The setoid whose quotient is the projectivization of `V`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def projectivizationSetoid : Setoid { v : V // v ≠ 0 } :=
   (MulAction.orbitRel Kˣ V).comap (↑)
 
@@ -131,7 +131,7 @@ variable {K}
 /-- An induction principle for `Projectivization`. Use as `induction v`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 theorem ind {P : ℙ K V → Prop} (h : ∀ (v : V) (h : v ≠ 0), P (mk K v h)) : ∀ p, P p :=
-  Quotient.ind' <| Subtype.rec <| h
+  Quotient.ind' <| Subtype.rec h
 
 @[simp]
 theorem submodule_mk (v : V) (hv : v ≠ 0) : (mk K v hv).submodule = K ∙ v :=
@@ -169,7 +169,7 @@ noncomputable def equivSubmodule : ℙ K V ≃ { H : Submodule K V // finrank K 
     rw [submodule_mk, SetLike.ext'_iff, Submodule.span_singleton_eq_range]
     refine (Set.range_subset_iff.2 fun _ ↦ H.smul_mem _ v.2).antisymm fun x hx ↦ ?_
     rcases hv ⟨x, hx⟩ with ⟨c, hc⟩
-    exact ⟨c, congr_arg Subtype.val hc⟩
+    exact ⟨c, congr($(hc).val)⟩
 
 variable {K V}
 
@@ -179,7 +179,7 @@ noncomputable def mk'' (H : Submodule K V) (h : finrank K H = 1) : ℙ K V :=
 
 @[simp]
 theorem submodule_mk'' (H : Submodule K V) (h : finrank K H = 1) : (mk'' H h).submodule = H :=
-  congr_arg Subtype.val <| (equivSubmodule K V).apply_symm_apply ⟨H, h⟩
+  congr($((equivSubmodule K V).apply_symm_apply ⟨H, h⟩).val)
 
 @[simp]
 theorem mk''_submodule (v : ℙ K V) : mk'' v.submodule v.finrank_submodule = v :=
@@ -243,9 +243,8 @@ theorem linearIndepOn_pair (D D' : ℙ K V) :
   by_cases h : D = D'
   · simpa [h] using D'.rep_nonzero
   rw [← ne_eq, ← linearIndependent_pair_iff_ne, LinearIndependent.pair_symm_iff,
-    ← linearIndepOn_id_range_iff] at h
-  · simpa using h
-  · simpa [injective_pair_iff_ne, injective_pair_iff_ne, ne_eq] using h.injective
+    ← linearIndepOn_id_range_iff h.injective] at h
+  simpa using h
 
 end linearIndependent
 

@@ -10,7 +10,9 @@ public import Mathlib.Algebra.Module.Shrink
 public import Mathlib.LinearAlgebra.LinearPMap
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Logic.Small.Basic
-public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.RingTheory.Ideal.Defs
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Injective modules
@@ -121,7 +123,7 @@ theorem ExtensionOf.dExt {a b : ExtensionOf i f} (domain_eq : a.domain = b.domai
 theorem ExtensionOf.dExt_iff {a b : ExtensionOf i f} :
     a = b ↔ ∃ _ : a.domain = b.domain, ∀ ⦃x : a.domain⦄ ⦃y : b.domain⦄,
     (x : N) = y → a.toLinearPMap x = b.toLinearPMap y :=
-  ⟨fun r => r ▸ ⟨rfl, fun _ _ h => congr_arg a.toFun <| mod_cast h⟩, fun ⟨h1, h2⟩ =>
+  ⟨fun r => r ▸ ⟨rfl, fun _ _ h => congr(a.toFun $(mod_cast h))⟩, fun ⟨h1, h2⟩ =>
     ExtensionOf.dExt h1 h2⟩
 
 theorem ExtensionOf.toLinearPMap_injective :
@@ -162,7 +164,7 @@ def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
   { LinearPMap.sSup _
       (IsChain.directedOn <| chain_linearPMap_of_chain_extensionOf hchain) with
     le := by
-      refine le_trans hnonempty.some.le <|
+      refine le_trans hnonempty.some.le
         (LinearPMap.le_sSup _ <|
             (Set.mem_image _ _ _).mpr ⟨hnonempty.some, hnonempty.choose_spec, rfl⟩).1
     is_extension := fun m => by
@@ -187,12 +189,12 @@ instance ExtensionOf.inhabited : Inhabited (ExtensionOf i f) where
       toFun :=
         { toFun := fun x => f x.2.choose
           map_add' := fun x y => by
-            have eq1 : _ + _ = (x + y).1 := congr_arg₂ (· + ·) x.2.choose_spec y.2.choose_spec
+            have eq1 : _ + _ = (x + y).1 := congr($(x.2.choose_spec) + $(y.2.choose_spec))
             rw [← map_add, ← (x + y).2.choose_spec] at eq1
             dsimp
             rw [← Fact.out (p := Function.Injective i) eq1, map_add]
           map_smul' := fun r x => by
-            have eq1 : r • _ = (r • x).1 := congr_arg (r • ·) x.2.choose_spec
+            have eq1 : r • _ = (r • x).1 := congr(r • $(x.2.choose_spec))
             rw [← map_smul, ← (r • x).2.choose_spec] at eq1
             dsimp
             rw [← Fact.out (p := Function.Injective i) eq1, map_smul] }
@@ -292,7 +294,7 @@ theorem ExtensionOfMaxAdjoin.extendIdealTo_wd (h : Module.Baer R Q) {y : N} (r r
     (eq1 : r • y = r' • y) : ExtensionOfMaxAdjoin.extendIdealTo i f h y r =
     ExtensionOfMaxAdjoin.extendIdealTo i f h y r' := by
   rw [← sub_eq_zero, ← map_sub]
-  convert ExtensionOfMaxAdjoin.extendIdealTo_wd' i f h (r - r') _
+  convert! ExtensionOfMaxAdjoin.extendIdealTo_wd' i f h (r - r') _
   rw [sub_smul, sub_eq_zero, eq1]
 
 theorem ExtensionOfMaxAdjoin.extendIdealTo_eq (h : Module.Baer R Q) {y : N} (r : R)
@@ -375,7 +377,6 @@ theorem extensionOfMax_le (h : Module.Baer R Q) {y : N} :
 theorem extensionOfMax_to_submodule_eq_top (h : Module.Baer R Q) :
     (extensionOfMax i f).domain = ⊤ := by
   refine Submodule.eq_top_iff'.mpr fun y => ?_
-  dsimp
   rw [← extensionOfMax_is_max i f _ (extensionOfMax_le i f h), extensionOfMaxAdjoin,
     Submodule.mem_sup]
   exact ⟨0, Submodule.zero_mem _, y, Submodule.mem_span_singleton_self _, zero_add _⟩
@@ -393,7 +394,7 @@ protected theorem extension_property (h : Module.Baer R Q)
 theorem extension_property_addMonoidHom (h : Module.Baer ℤ Q)
     (f : M →+ N) (hf : Function.Injective f) (g : M →+ Q) : ∃ h : N →+ Q, h.comp f = g :=
   have ⟨g', hg'⟩ := h.extension_property f.toIntLinearMap hf g.toIntLinearMap
-  ⟨g', congr(LinearMap.toAddMonoidHom $hg')⟩
+  ⟨g', congr($(hg').toAddMonoidHom)⟩
 
 /-- **Baer's criterion** for injective module : a Baer module is an injective module, i.e. if every
 linear map from an ideal can be extended, then the module is injective. -/
@@ -420,14 +421,14 @@ lemma Module.ulift_injective_of_injective
     (inj : Module.Injective R M) :
     Module.Injective R (ULift.{v'} M) := Module.Baer.injective fun I g ↦
   have ⟨g', hg'⟩ := Module.Baer.iff_injective.mpr inj I (ULift.moduleEquiv.toLinearMap ∘ₗ g)
-  ⟨ULift.moduleEquiv.symm.toLinearMap ∘ₗ g', fun r hr ↦ ULift.ext _ _ <| hg' r hr⟩
+  ⟨ULift.moduleEquiv.symm.toLinearMap ∘ₗ g', fun r hr ↦ ULift.ext <| hg' r hr⟩
 
 lemma Module.injective_of_ulift_injective
     (inj : Module.Injective R (ULift.{v'} M)) :
     Module.Injective R M where
   out _ _ _ _ _ _ f hf g :=
     have ⟨g', hg'⟩ := inj.out f hf (ULift.moduleEquiv.symm.toLinearMap ∘ₗ g)
-    ⟨ULift.moduleEquiv.toLinearMap ∘ₗ g', fun x ↦ congr(ULift.down $(hg' x))⟩
+    ⟨ULift.moduleEquiv.toLinearMap ∘ₗ g', fun x ↦ by congrm ULift.down $(hg' ⟨x⟩)⟩
 
 variable (M)
 
@@ -482,8 +483,9 @@ instance Module.Injective.pi
     choose l hl using fun i ↦ extension_property R _ _ _ f hf ((LinearMap.proj i).comp g)
     refine ⟨LinearMap.pi l, fun x ↦ ?_⟩
     ext i
-    exact DFunLike.congr_fun (hl i) x⟩
+    congrm $(hl i) x⟩
 
+set_option backward.isDefEq.respectTransparency false in
 universe u' in
 attribute [local instance] RingHomInvPair.of_ringEquiv in
 theorem Module.Injective.of_ringEquiv {R : Type u} [Ring R] {S : Type u'} [Ring S]

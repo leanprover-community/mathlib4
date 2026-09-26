@@ -35,7 +35,7 @@ noncomputable section
 
 open scoped LieGroup Manifold Derivation ContDiff
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω} {E : Type*} [NormedAddCommGroup E]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) (G : Type*)
   [TopologicalSpace G] [ChartedSpace H G] [Monoid G] [ContMDiffMul I ∞ G] (g h : G)
 
@@ -62,9 +62,10 @@ theorem toDerivation_injective :
     Function.Injective (toDerivation : LeftInvariantDerivation I G → _) :=
   fun X Y h => by cases X; cases Y; congr
 
+@[macro_inline]
 instance : FunLike (LeftInvariantDerivation I G) C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯ where
   coe f := f.toDerivation
-  coe_injective' _ _ h := toDerivation_injective <| DFunLike.ext' h
+  coe_injective _ _ h := toDerivation_injective <| DFunLike.ext' h
 
 instance : LinearMapClass (LeftInvariantDerivation I G) 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯ where
   map_add f := map_add f.1
@@ -214,12 +215,13 @@ theorem comp_L : (X f).comp (𝑳 I g) = X (f.comp (𝑳 I g)) := by
   rw [ContMDiffMap.comp_apply, L_apply, ← evalAt_apply, evalAt_mul, hfdifferential_apply,
     fdifferential_apply, evalAt_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Bracket (LeftInvariantDerivation I G) (LeftInvariantDerivation I G) where
   bracket X Y :=
     ⟨⁅(X : Derivation 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯), Y⁆, fun g => by
       ext f
-      have hX := Derivation.congr_fun (left_invariant' g X) (Y f)
-      have hY := Derivation.congr_fun (left_invariant' g Y) (X f)
+      have hX := congr($(left_invariant' g X) (Y f))
+      have hY := congr($(left_invariant' g Y) (X f))
       rw [hfdifferential_apply, fdifferential_apply, Derivation.evalAt_apply] at hX hY ⊢
       rw [comp_L] at hX hY
       rw [Derivation.commutator_apply, ContMDiffMap.coe_sub, Pi.sub_apply, coe_derivation]

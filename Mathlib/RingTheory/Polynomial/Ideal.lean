@@ -83,7 +83,7 @@ lemma mem_ideal_map_adjoin [CommSemiring R] [Semiring S] [Algebra R S] (x : S) (
     have : y = ∑ i ∈ p.support, p.coeff i • ⟨_, (X ^ i).aeval_mem_adjoin_singleton _ x⟩ := by
       trans ∑ i ∈ p.support, ⟨_, (C (p.coeff i) * X ^ i).aeval_mem_adjoin_singleton _ x⟩
       · ext1
-        simp only [AddSubmonoidClass.coe_finset_sum, ← map_sum, ← hp', ← as_sum_support_C_mul_X_pow]
+        simp only [AddSubmonoidClass.coe_finsetSum, ← map_sum, ← hp', ← as_sum_support_C_mul_X_pow]
       · congr with i
         simp [Algebra.smul_def]
     simp_rw [this, Algebra.smul_def]

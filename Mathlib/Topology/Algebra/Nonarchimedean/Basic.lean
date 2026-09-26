@@ -63,7 +63,8 @@ variable {H : Type*} [Group H] [TopologicalSpace H] [IsTopologicalGroup H]
 variable {K : Type*} [Group K] [TopologicalSpace K] [NonarchimedeanGroup K]
 
 /-- If a topological group embeds into a nonarchimedean group, then it is nonarchimedean. -/
-@[to_additive]
+@[to_additive /-- If a topological additive group embeds into a nonarchimedean additive group, then
+it is nonarchimedean. -/]
 theorem nonarchimedean_of_emb (f : G →* H) (emb : IsOpenEmbedding f) : NonarchimedeanGroup H :=
   { is_nonarchimedean := fun U hU =>
       have h₁ : f ⁻¹' U ∈ 𝓝 (1 : G) := by
@@ -126,7 +127,7 @@ theorem left_mul_subset (U : OpenAddSubgroup R) (r : R) :
 /-- An open subgroup of a nonarchimedean ring contains the square of another one. -/
 theorem mul_subset (U : OpenAddSubgroup R) : ∃ V : OpenAddSubgroup R, (V : Set R) * V ⊆ U := by
   let ⟨V, H⟩ := prod_self_subset <| (U.isOpen.preimage continuous_mul).mem_nhds <| by
-    simpa only [Set.mem_preimage, Prod.snd_zero, mul_zero] using U.zero_mem
+    simpa only [Set.mem_preimage, Prod.snd_zero, mul_zero] using! U.zero_mem
   use V
   rintro v ⟨a, ha, b, hb, hv⟩
   have hy := H (Set.mk_mem_prod ha hb)

@@ -88,6 +88,7 @@ theorem gradedCommAux_lof_tmul (i j : ι) (a : 𝒜 i) (b : ℬ j) :
   rw [gradedCommAux]
   simp [mul_comm i j]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem gradedCommAux_comp_gradedCommAux :
     gradedCommAux R 𝒜 ℬ ∘ₗ gradedCommAux R ℬ 𝒜 = LinearMap.id := by
@@ -102,7 +103,7 @@ This sends $a ⊗ b$ to $(-1)^{\deg a' \deg b} (b ⊗ a)$. -/
 def gradedComm :
     (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i) ≃ₗ[R] (⨁ i, ℬ i) ⊗[R] (⨁ i, 𝒜 i) := by
   refine TensorProduct.directSum R R 𝒜 ℬ ≪≫ₗ ?_ ≪≫ₗ (TensorProduct.directSum R R ℬ 𝒜).symm
-  exact LinearEquiv.ofLinear (gradedCommAux _ _ _) (gradedCommAux _ _ _)
+  exact LinearEquiv.ofLinearMap (gradedCommAux _ _ _) (gradedCommAux _ _ _)
     (gradedCommAux_comp_gradedCommAux _ _ _) (gradedCommAux_comp_gradedCommAux _ _ _)
 
 /-- The braiding is symmetric. -/
@@ -114,7 +115,7 @@ theorem gradedComm_of_tmul_of (i j : ι) (a : 𝒜 i) (b : ℬ j) :
     gradedComm R 𝒜 ℬ (lof R _ 𝒜 i a ⊗ₜ lof R _ ℬ j b) =
       (-1 : ℤˣ) ^ (j * i) • (lof R _ ℬ _ b ⊗ₜ lof R _ 𝒜 _ a) := by
   rw [gradedComm]
-  dsimp only [LinearEquiv.trans_apply, LinearEquiv.ofLinear_apply]
+  dsimp only [LinearEquiv.trans_apply, LinearEquiv.coe_ofLinearMap]
   rw [TensorProduct.directSum_lof_tmul_lof, gradedCommAux_lof_tmul, Units.smul_def,
     -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 specialized `map_smul` to `LinearEquiv.map_smul` to avoid timeouts.
     ← Int.cast_smul_eq_zsmul R, LinearEquiv.map_smul, TensorProduct.directSum_symm_lof_tmul,
@@ -126,7 +127,7 @@ theorem gradedComm_tmul_of_zero (a : ⨁ i, 𝒜 i) (b : ℬ 0) :
     (gradedComm R 𝒜 ℬ).toLinearMap ∘ₗ
         (TensorProduct.mk R (⨁ i, 𝒜 i) (⨁ i, ℬ i)).flip (lof R _ ℬ 0 b) =
       TensorProduct.mk R _ _ (lof R _ ℬ 0 b) from
-    DFunLike.congr_fun this a
+    congr($this a)
   ext i a
   dsimp
   rw [gradedComm_of_tmul_of, zero_mul, uzpow_zero, one_smul]
@@ -136,7 +137,7 @@ theorem gradedComm_of_zero_tmul (a : 𝒜 0) (b : ⨁ i, ℬ i) :
   suffices
     (gradedComm R 𝒜 ℬ).toLinearMap ∘ₗ (TensorProduct.mk R (⨁ i, 𝒜 i) (⨁ i, ℬ i)) (lof R _ 𝒜 0 a) =
       (TensorProduct.mk R _ _).flip (lof R _ 𝒜 0 a) from
-    DFunLike.congr_fun this b
+    congr($this b)
   ext i b
   dsimp
   rw [gradedComm_of_tmul_of, mul_zero, uzpow_zero, one_smul]
@@ -202,10 +203,11 @@ theorem tmul_of_gradedMul_of_tmul (j₁ i₂ : ι)
 
 variable {R}
 
+set_option backward.defeqAttrib.useBackward true in
 theorem algebraMap_gradedMul (r : R) (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     gradedMul R 𝒜 ℬ (algebraMap R _ r ⊗ₜ 1) x = r • x := by
   suffices gradedMul R 𝒜 ℬ (algebraMap R _ r ⊗ₜ 1) = DistribSMul.toLinearMap R _ r by
-    exact DFunLike.congr_fun this x
+    congrm $this x
   ext ia a ib b
   dsimp
   erw [tmul_of_gradedMul_of_tmul]
@@ -215,12 +217,13 @@ theorem algebraMap_gradedMul (r : R) (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i))
 theorem one_gradedMul (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     gradedMul R 𝒜 ℬ 1 x = x := by
   -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specialize `map_one` to avoid timeouts.
-  simpa only [RingHom.map_one, one_smul] using algebraMap_gradedMul 𝒜 ℬ 1 x
+  simpa only [RingHom.map_one, one_smul] using! algebraMap_gradedMul 𝒜 ℬ 1 x
 
+set_option backward.defeqAttrib.useBackward true in
 theorem gradedMul_algebraMap (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) (r : R) :
     gradedMul R 𝒜 ℬ x (algebraMap R _ r ⊗ₜ 1) = r • x := by
   suffices (gradedMul R 𝒜 ℬ).flip (algebraMap R _ r ⊗ₜ 1) = DistribSMul.toLinearMap R _ r by
-    exact DFunLike.congr_fun this x
+    congrm $this x
   ext
   dsimp
   erw [tmul_of_gradedMul_of_tmul]
@@ -231,8 +234,9 @@ theorem gradedMul_algebraMap (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) (r : R)
 theorem gradedMul_one (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     gradedMul R 𝒜 ℬ x 1 = x := by
   -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specialize `map_one` to avoid timeouts.
-  simpa only [RingHom.map_one, one_smul] using gradedMul_algebraMap 𝒜 ℬ x 1
+  simpa only [RingHom.map_one, one_smul] using! gradedMul_algebraMap 𝒜 ℬ x 1
 
+set_option backward.defeqAttrib.useBackward true in
 theorem gradedMul_assoc (x y z : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
     gradedMul R 𝒜 ℬ (gradedMul R 𝒜 ℬ x y) z = gradedMul R 𝒜 ℬ x (gradedMul R 𝒜 ℬ y z) := by
   let mA := gradedMul R 𝒜 ℬ
@@ -240,7 +244,7 @@ theorem gradedMul_assoc (x y z : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
   suffices LinearMap.llcomp R _ _ _ mA ∘ₗ mA =
       (LinearMap.llcomp R _ _ _ LinearMap.lflip.toLinearMap <|
         LinearMap.llcomp R _ _ _ mA.flip ∘ₗ mA).flip by
-    exact DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this x) y) z
+    congrm $this x y z
   ext ixa xa ixb xb iya ya iyb yb iza za izb zb
   dsimp [mA]
   simp_rw [tmul_of_gradedMul_of_tmul, Units.smul_def, ← Int.cast_smul_eq_zsmul R,
@@ -251,13 +255,14 @@ theorem gradedMul_assoc (x y z : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
   congr 2
   abel
 
+set_option backward.defeqAttrib.useBackward true in
 theorem gradedComm_gradedMul (x y : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
     gradedComm R 𝒜 ℬ (gradedMul R 𝒜 ℬ x y)
       = gradedMul R ℬ 𝒜 (gradedComm R 𝒜 ℬ x) (gradedComm R 𝒜 ℬ y) := by
   suffices (gradedMul R 𝒜 ℬ).compr₂ (gradedComm R 𝒜 ℬ).toLinearMap
       = (gradedMul R ℬ 𝒜 ∘ₗ (gradedComm R 𝒜 ℬ).toLinearMap).compl₂
         (gradedComm R 𝒜 ℬ).toLinearMap from
-    LinearMap.congr_fun₂ this x y
+    congr($this x y)
   ext i₁ a₁ j₁ b₁ i₂ a₂ j₂ b₂
   dsimp
   rw [gradedComm_of_tmul_of, gradedComm_of_tmul_of, tmul_of_gradedMul_of_tmul]

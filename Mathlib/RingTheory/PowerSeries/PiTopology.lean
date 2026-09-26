@@ -103,10 +103,9 @@ theorem tendsto_iff_coeff_tendsto [Semiring R] {ι : Type*}
     Tendsto f u (nhds g) ↔
     ∀ d : ℕ, Tendsto (fun i => coeff d (f i)) u (nhds (coeff d g)) := by
   rw [MvPowerSeries.WithPiTopology.tendsto_iff_coeff_tendsto]
-  apply (Finsupp.LinearEquiv.finsuppUnique ℕ ℕ Unit).toEquiv.forall_congr
+  apply (Finsupp.uniqueLinearEquiv ℕ ℕ ()).toEquiv.forall_congr
   intro d
-  simp only [LinearEquiv.coe_toEquiv, Finsupp.LinearEquiv.finsuppUnique_apply,
-    PUnit.default_eq_unit, coeff]
+  simp only [LinearEquiv.coe_toEquiv, Finsupp.uniqueLinearEquiv_apply, coeff]
   apply iff_of_eq
   congr
   · ext _; congr; ext; simp
@@ -236,7 +235,7 @@ theorem multipliable_one_sub_X_pow : Multipliable fun n ↦ (1 : R⟦X⟧) - X ^
 
 theorem tprod_one_sub_X_pow_ne_zero [T2Space R] [Nontrivial R] :
     ∏' i, (1 - X ^ (i + 1)) ≠ (0 : R⟦X⟧) := by
-  by_contra! h
+  by_contra h
   obtain h := PowerSeries.ext_iff.mp h 0
   simp [coeff_zero_eq_constantCoeff, (multipliable_one_sub_X_pow R).map_tprod _
     (continuous_constantCoeff R)] at h
@@ -318,18 +317,17 @@ section Summable
 
 variable [Semiring R] [TopologicalSpace R]
 
-open WithPiTopology MvPowerSeries.WithPiTopology
+open MvPowerSeries.WithPiTopology
 
 variable {R}
 
--- NOTE : one needs an API to apply `Finsupp.LinearEquiv.finsuppUnique`
+-- NOTE : one needs an API to apply `Finsupp.uniqueLinearEquiv`
 /-- A power series is the sum (in the sense of summable families) of its monomials -/
 theorem hasSum_of_monomials_self (f : PowerSeries R) :
     HasSum (fun d : ℕ => monomial d (coeff d f)) f := by
-  rw [← (Finsupp.LinearEquiv.finsuppUnique ℕ ℕ Unit).toEquiv.hasSum_iff]
-  convert MvPowerSeries.WithPiTopology.hasSum_of_monomials_self f
-  simp only [LinearEquiv.coe_toEquiv, comp_apply, monomial, coeff,
-    Finsupp.LinearEquiv.finsuppUnique_apply, PUnit.default_eq_unit]
+  rw [← (Finsupp.uniqueLinearEquiv ℕ ℕ ()).toEquiv.hasSum_iff]
+  convert! MvPowerSeries.WithPiTopology.hasSum_of_monomials_self f
+  simp only [LinearEquiv.coe_toEquiv, comp_apply, monomial, coeff]
   congr
   all_goals { ext; simp }
 

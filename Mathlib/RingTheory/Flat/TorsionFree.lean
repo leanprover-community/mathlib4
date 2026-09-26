@@ -23,8 +23,8 @@ domains and valuation rings.
 * `Module.Flat.isSMulRegular_of_nonZeroDivisors`: Scalar multiplication by a nonzerodivisor of `R`
   is injective on a flat `R`-module.
 * `Module.Flat.torsion_eq_bot`: `Torsion R M = ⊥` if `M` is a flat `R`-module.
-* `Module.Flat.flat_iff_torsion_eq_bot_of_valuationRing_localized_maximal`: if localizing `R` at
-  the complement of any maximal ideal is a valuation ring then `Torsion R M = ⊥` iff `M` is a
+* `Module.Flat.flat_iff_torsion_eq_bot_of_valuationRing_localization_isMaximal`: if localizing `R`
+  at the complement of any maximal ideal is a valuation ring then `Torsion R M = ⊥` iff `M` is a
   flat `R`-module.
 -/
 
@@ -53,7 +53,7 @@ lemma isSMulRegular_of_isRegular {r : R} (hr : IsRegular r) [Flat R M] :
   -- `r ∈ R⁰` implies that `toSpanSingleton R R r`, i.e. `(r * ⬝) : R → R` is injective
   -- Flatness implies that corresponding map `R ⊗[R] M →ₗ[R] R ⊗[R] M` is injective
   have h := Flat.rTensor_preserves_injective_linearMap (M := M)
-    (toSpanSingleton R R r) <| hr.right
+    (toSpanSingleton R R r) hr.right
   -- But precomposing and postcomposing with the isomorphism `M ≃ₗ[R] (R ⊗[R] M)`
   -- we get a map `M →ₗ[R] M` which is just `(r • ·)`.
   have h2 : (fun (x : M) ↦ r • x) = ((TensorProduct.lid R M) ∘ₗ
@@ -116,7 +116,7 @@ theorem flat_iff_torsion_eq_bot_of_isBezout [IsBezout R] [IsDomain R] :
     rw [← Submodule.isTorsionFree_iff_torsion_eq_bot] at htors
     refine Function.Injective.comp (LinearMap.lsmul_injective this) ?_
     rw [← Equiv.injective_comp (TensorProduct.lid R M).symm.toEquiv]
-    convert Function.injective_id
+    convert! Function.injective_id
     ext
     simp
 

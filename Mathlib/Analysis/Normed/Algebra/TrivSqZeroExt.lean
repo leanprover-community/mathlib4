@@ -49,7 +49,7 @@ we could keep the collection of instances behind an `open scoped`.
 
 -/
 
-@[expose] public section
+public section
 
 
 variable (𝕜 : Type*) {S R M : Type*}
@@ -112,7 +112,7 @@ theorem hasSum_expSeries_of_smul_comm
   have : HasSum (fun n => fst (expSeries 𝕜 (tsze R M) n fun _ => x)) e := by
     simpa [fst_expSeries] using h
   simpa only [inl_fst_add_inr_snd_eq] using
-    (hasSum_inl _ <| this).add (hasSum_inr _ <| hasSum_snd_expSeries_of_smul_comm 𝕜 x hx h)
+    (hasSum_inl _ this).add (hasSum_inr _ <| hasSum_snd_expSeries_of_smul_comm 𝕜 x hx h)
 
 variable [Algebra ℚ R] [Module ℚ M]
 variable [T2Space R] [T2Space M]
@@ -208,9 +208,10 @@ example :
     (TrivSqZeroExt.instUniformSpace : UniformSpace (tsze R M)) =
     PseudoMetricSpace.toUniformSpace := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem norm_def (x : tsze R M) : ‖x‖ = ‖fst x‖ + ‖snd x‖ := by
   erw [WithLp.norm_seminormedAddCommGroupToProd]
-  rw [WithLp.prod_norm_eq_add (by norm_num)]
+  rw [WithLp.prod_norm_eq_add (by simp)]
   simp only [WithLp.toLp_fst, ENNReal.toReal_one, Real.rpow_one, WithLp.toLp_snd, ne_eq,
     one_ne_zero, not_false_eq_true, div_self, fst, snd]
 
@@ -221,11 +222,13 @@ theorem nnnorm_def (x : tsze R M) : ‖x‖₊ = ‖fst x‖₊ + ‖snd x‖₊
 @[simp] theorem norm_inr (m : M) : ‖(inr m : tsze R M)‖ = ‖m‖ := by simp [norm_def]
 
 @[simp] theorem nnnorm_inl (r : R) : ‖(inl r : tsze R M)‖₊ = ‖r‖₊ := by simp [nnnorm_def]
+
 @[simp] theorem nnnorm_inr (m : M) : ‖(inr m : tsze R M)‖₊ = ‖m‖₊ := by simp [nnnorm_def]
 
 variable [Module R M] [IsBoundedSMul R M] [Module Rᵐᵒᵖ M] [IsBoundedSMul Rᵐᵒᵖ M]
   [SMulCommClass R Rᵐᵒᵖ M]
 
+set_option backward.isDefEq.respectTransparency false in
 instance instL1SeminormedRing : SeminormedRing (tsze R M) where
   norm_mul_le
   | ⟨r₁, m₁⟩, ⟨r₂, m₂⟩ => by

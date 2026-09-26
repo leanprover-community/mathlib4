@@ -20,7 +20,7 @@ structures as well as graphs which avoid this structure. These have two key uses
   first appeared. We give this proof below, see `colorable_of_cliqueFree_lt_minDegree`.
 
 If `G` is maximally `Kᵣ₊₂`-free and `¬ G.Adj x y` (with `x ≠ y`) then there exists an `r`-set `s`
- such that `s ∪ {x}` and `s ∪ {y}` are both `r + 1`-cliques.
+such that `s ∪ {x}` and `s ∪ {y}` are both `r + 1`-cliques.
 
 If `¬ G.IsCompleteMultipartite` then it contains a `G.IsPathGraph3Compl v w₁ w₂` consisting of
 an edge `w₁w₂` and a vertex `v` such that `vw₁` and `vw₂` are non-edges.
@@ -28,7 +28,7 @@ an edge `w₁w₂` and a vertex `v` such that `vw₁` and `vw₂` are non-edges.
 Hence any maximally `Kᵣ₊₂`-free graph that is not complete-multipartite must contain distinct
 vertices `v, w₁, w₂`, together with `r`-sets `s` and `t`, such that `{v, w₁, w₂}` induces the
 single edge `w₁w₂`, `s ∪ t` is disjoint from `{v, w₁, w₂}`, and `s ∪ {v}`, `t ∪ {v}`, `s ∪ {w₁}` and
- `t ∪ {w₂}` are all `r + 1`-cliques.
+`t ∪ {w₂}` are all `r + 1`-cliques.
 
 This leads to the definition of an `IsFiveWheelLike` structure which can be found in any maximally
 `Kᵣ₊₂`-free graph that is not complete-multipartite (see
@@ -275,8 +275,8 @@ include hw hcf
 
 /--
 If `G` is `Kᵣ₊₂`-free and contains a `Wᵣ,ₖ` together with a vertex `x` adjacent to all of its common
- clique vertices then there exist (not necessarily distinct) vertices `a, b, c, d`, one from each of
- the four `r + 1`-cliques of `Wᵣ,ₖ`, none of which are adjacent to `x`.
+clique vertices then there exist (not necessarily distinct) vertices `a, b, c, d`, one from each of
+the four `r + 1`-cliques of `Wᵣ,ₖ`, none of which are adjacent to `x`.
 -/
 private lemma exist_not_adj_of_adj_inter (hW : ∀ ⦃y⦄, y ∈ s ∩ t → G.Adj x y) :
     ∃ a b c d, a ∈ insert w₁ s ∧ ¬ G.Adj x a ∧ b ∈ insert w₂ t ∧ ¬ G.Adj x b ∧ c ∈ insert v s ∧
@@ -323,7 +323,7 @@ lemma exists_isFiveWheelLike_succ_of_not_adj_le_two (hW : ∀ ⦃y⦄, y ∈ s �
   -- from `W` we have `∀ w ∈ W, w ≠ a → w ≠ b → G.Adj w x`
   have wa : ∀ ⦃w⦄, w ∈ W → w ≠ a → w ≠ b → G.Adj w x := by
     intro _ hz haz hbz
-    by_contra! hf
+    by_contra hf
     apply h2.not_gt
     exact two_lt_card.2 ⟨_, by simp [has, hcj], _, by simp [hbt, hdj], _,
                          mem_filter.2 ⟨hz, by rwa [adj_comm] at hf⟩, hab, haz.symm, hbz.symm⟩
@@ -429,7 +429,7 @@ theorem colorable_of_cliqueFree_lt_minDegree [Fintype α] [DecidableRel G.Adj]
     -- If `H` is `r + 2`-colorable then so is `G`
     apply Colorable.mono_left hle
     -- Suppose, for a contradiction, that `H` is not `r + 2`-colorable
-    by_contra! hnotcol
+    by_contra hnotcol
     -- so `H` is not complete-multipartite
     have hn : ¬ H.IsCompleteMultipartite := fun hc ↦ hnotcol <| hc.colorable_of_cliqueFree hmcf.1
     -- Hence `H` contains `Wᵣ₊₁,ₖ` but not `Wᵣ₊₁,ₖ₊₁`, for some `k < r + 1`
@@ -444,7 +444,7 @@ theorem colorable_of_cliqueFree_lt_minDegree [Fintype α] [DecidableRel G.Adj]
       rw [← mul_assoc, mul_comm (2 * r + 2 + k + 3), mul_comm _ (_ * ‖α‖)]
       apply (Nat.mul_le_mul_right _ (Nat.div_mul_le_self ..)).trans
       nlinarith
-    exact (hd.trans_le <| minDegree_le_minDegree hle).not_ge <| hD.trans <| this
+    exact (hd.trans_le <| minDegree_le_minDegree hle).not_ge <| hD.trans this
 
 end AES
 end SimpleGraph

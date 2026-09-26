@@ -27,7 +27,6 @@ noncomputable section
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C] {X Y Z : C}
-variable {D : Type u₂} [Category.{v₂} D]
 
 namespace CategoryTheory
 
@@ -129,6 +128,7 @@ section Inf
 
 variable [HasPullbacks C]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- When `[HasPullbacks C]`, `MonoOver A` has "intersections", functorial in both arguments.
 
 As `MonoOver A` is only a preorder, this doesn't satisfy the axioms of `SemilatticeInf`,
@@ -154,7 +154,7 @@ def infLELeft {A : C} (f g : MonoOver A) : (inf.obj f).obj g ⟶ f :=
 def infLERight {A : C} (f g : MonoOver A) : (inf.obj f).obj g ⟶ g :=
   homMk _ pullback.condition
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- A morphism version of the `le_inf` axiom. -/
 def leInf {A : C} (f g h : MonoOver A) : (h ⟶ f) → (h ⟶ g) → (h ⟶ (inf.obj f).obj g) :=
   fun k₁ k₂ ↦ homMk (pullback.lift k₂.hom.left k₁.hom.left (by simp))
@@ -171,18 +171,22 @@ and which on `Subobject A` will induce a `SemilatticeSup`. -/
 def sup {A : C} : MonoOver A ⥤ MonoOver A ⥤ MonoOver A :=
   Functor.curryObj ((forget A).prod (forget A) ⋙ Functor.uncurry.obj Over.coprod ⋙ image)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A morphism version of `le_sup_left`. -/
 def leSupLeft {A : C} (f g : MonoOver A) : f ⟶ (sup.obj f).obj g := by
   refine homMk (coprod.inl ≫ factorThruImage _) ?_
   erw [Category.assoc, image.fac, coprod.inl_desc]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A morphism version of `le_sup_right`. -/
 def leSupRight {A : C} (f g : MonoOver A) : g ⟶ (sup.obj f).obj g := by
   refine homMk (coprod.inr ≫ factorThruImage _) ?_
   erw [Category.assoc, image.fac, coprod.inr_desc]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- A morphism version of `sup_le`. -/
 def supLe {A : C} (f g h : MonoOver A) : (f ⟶ h) → (g ⟶ h) → ((sup.obj f).obj g ⟶ h) := by
   intro k₁ k₂
@@ -214,7 +218,7 @@ theorem top_eq_id (B : C) : (⊤ : Subobject B) = Subobject.mk (𝟙 B) :=
   rfl
 
 theorem underlyingIso_top_hom {B : C} : (underlyingIso (𝟙 B)).hom = (⊤ : Subobject B).arrow := by
-  convert underlyingIso_hom_comp_eq_mk (𝟙 B)
+  convert! underlyingIso_hom_comp_eq_mk (𝟙 B)
   simp only [comp_id]
 
 instance top_arrow_isIso {B : C} : IsIso (⊤ : Subobject B).arrow := by
@@ -333,7 +337,7 @@ variable (C)
 @[simps]
 def functor [HasPullbacks C] : Cᵒᵖ ⥤ Type max u₁ v₁ where
   obj X := Subobject X.unop
-  map f := TypeCat.ofHom (pullback f.unop).obj
+  map f := ↾(pullback f.unop).obj
   map_id _ := by ext : 3; simp [pullback_id]
   map_comp _ _ := by ext : 3; simp [pullback_comp]
 
@@ -441,9 +445,16 @@ theorem inf_eq_map_pullback' {A : C} (f₁ : MonoOver A) (f₂ : Subobject A) :
   induction f₂ using Quotient.inductionOn'
   rfl
 
+theorem exists_pullback_eq_inf_of_mono [HasImages C] (f : X ⟶ Y) [Mono f] (Y' : Subobject Y) :
+    («exists» f).obj ((pullback f).obj Y') = Y' ⊓ mk f := by
+  rw [exists_iso_map]
+  change (map (MonoOver.mk f).arrow).obj ((pullback (MonoOver.mk f).arrow).obj Y') = _
+  rw [← inf_eq_map_pullback', inf_comm]
+  rfl
+
 theorem inf_eq_map_pullback {A : C} (f₁ : Subobject A) (f₂ : Subobject A) :
     (f₁ ⊓ f₂ : Subobject A) = (map f₁.arrow).obj ((pullback f₁.arrow).obj f₂) := by
-  convert inf_eq_map_pullback' (representative.obj f₁) f₂
+  convert! inf_eq_map_pullback' (representative.obj f₁) f₂
   ext1
   nth_rw 1 [← thinSkeleton_mk_representative_eq_self f₁]
   congr
@@ -503,6 +514,31 @@ theorem sup_factors_of_factors_left {A B : C} {X Y : Subobject B} {f : A ⟶ B} 
 theorem sup_factors_of_factors_right {A B : C} {X Y : Subobject B} {f : A ⟶ B} (P : Y.Factors f) :
     (X ⊔ Y).Factors f :=
   factors_of_le f le_sup_right P
+
+/-- If `C` has binary coproducts and `f g : Subobject A`, then `f ⨿ g ⟶ A` factors as
+  `f ⨿ g ⟶ f ⊔ g ⟶ A` -/
+@[simps, implicit_reducible]
+def supMonoFactorisation {A : C} (f g : Subobject A) :
+    MonoFactorisation (coprod.desc f.arrow g.arrow) where
+  I := underlying.obj (f ⊔ g)
+  m := (f ⊔ g).arrow
+  e := coprod.desc (f.ofLE (f ⊔ g) le_sup_left) (g.ofLE (f ⊔ g) le_sup_right)
+
+/-- If `C` has binary coproducts, then `f ⊔ g` is an image of `f ⨿ g ⟶ A`. -/
+def supIsImage {A : C} (f g : Subobject A) :
+    IsImage (supMonoFactorisation f g) where
+  lift F := by
+    refine (f ⊔ g).ofLEMk F.m (sup_le ?_ ?_)
+    · refine le_mk_of_comm (coprod.inl ≫ F.e) ?_
+      simp only [assoc, MonoFactorisation.fac, coprod.inl_desc]
+    · refine le_mk_of_comm (coprod.inr ≫ F.e) ?_
+      simp only [assoc, MonoFactorisation.fac, coprod.inr_desc]
+
+/-- If `C` has binary coproducts, then `f ⊔ g ≅ image (f ⨿ g ⟶ A)`. -/
+@[simps!]
+def supIsoImage {A : C} (f g : Subobject A) :
+    underlying.obj (f ⊔ g) ≅ image (coprod.desc f.arrow g.arrow) :=
+  IsImage.isoExt (supIsImage ..) <| Image.isImage _
 
 variable [HasInitial C] [InitialMonoClass C]
 
@@ -611,7 +647,7 @@ theorem sInf_le {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : sInf s ≤ 
   · dsimp [sInf]
     simp only [Category.assoc, ← underlyingIso_hom_comp_eq_mk,
       Iso.cancel_iso_hom_left]
-    convert limit.w (wideCospan s) (WidePullbackShape.Hom.term _)
+    convert! limit.w (wideCospan s) (WidePullbackShape.Hom.term _)
     simp
 
 set_option backward.isDefEq.respectTransparency false in
@@ -659,7 +695,6 @@ theorem symm_apply_mem_iff_mem_image {α β : Type*} (e : α ≃ β) (s : Set α
     rintro ⟨a, m, rfl⟩
     simpa using m⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sSup_le {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, g ≤ f) :
     sSup s ≤ f := by
   fapply le_of_comm
@@ -722,6 +757,7 @@ end ZeroObject
 
 section SubobjectSubobject
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The subobject lattice of a subobject `Y` is order isomorphic to the interval `Set.Iic Y`. -/
 def subobjectOrderIso {X : C} (Y : Subobject X) : Subobject (Y : C) ≃o Set.Iic Y where
   toFun Z :=

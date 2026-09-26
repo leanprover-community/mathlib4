@@ -31,9 +31,8 @@ variable {ι : Type*}
 section prime
 variable {p : ℕ} [Fact p.Prime] {s : Finset ι}
 
-set_option linter.unusedVariables false in
 /-- The first multivariate polynomial used in the proof of Erdős–Ginzburg–Ziv. -/
-private noncomputable def f₁ (s : Finset ι) (a : ι → ZMod p) : MvPolynomial s (ZMod p) :=
+private noncomputable def f₁ (s : Finset ι) (_a : ι → ZMod p) : MvPolynomial s (ZMod p) :=
   ∑ i, X i ^ (p - 1)
 
 /-- The second multivariate polynomial used in the proof of Erdős–Ginzburg–Ziv. -/
@@ -55,7 +54,7 @@ Any sequence of `2 * p - 1` elements of `ZMod p` contains a subsequence of `p` e
 zero. -/
 private theorem ZMod.erdos_ginzburg_ziv_prime (a : ι → ZMod p) (hs : #s = 2 * p - 1) :
     ∃ t ⊆ s, #t = p ∧ ∑ i ∈ t, a i = 0 := by
-  haveI : NeZero p := inferInstance
+  have : NeZero p := inferInstance
   classical
   -- Let `N` be the number of common roots of our polynomials `f₁` and `f₂` (`f s ff` and `f s tt`).
   set N := Fintype.card {x // eval x (f₁ s a) = 0 ∧ eval x (f₂ s a) = 0}
@@ -119,7 +118,7 @@ theorem Int.erdos_ginzburg_ziv (a : ι → ℤ) (hs : 2 * n - 1 ≤ #s) :
   | one => simpa using exists_subset_card_eq hs
   -- When `n := p` is prime, we use the prime case `Int.erdos_ginzburg_ziv_prime`.
   | prime p hp =>
-    haveI := Fact.mk hp
+    have := Fact.mk hp
     obtain ⟨t, hts, ht⟩ := exists_subset_card_eq hs
     obtain ⟨u, hut, hu⟩ := Int.erdos_ginzburg_ziv_prime a ht
     exact ⟨u, hut.trans hts, hu⟩
@@ -171,8 +170,7 @@ theorem Int.erdos_ginzburg_ziv (a : ι → ℤ) (hs : 2 * n - 1 ≤ #s) :
         simpa [← card_eq_zero, ht₀card] using sdiff_disjoint.mono ht₀ <| subset_biUnion_of_mem id h
       lia
     refine ⟨𝒜.cons t₀ this, by rw [card_cons, h𝒜card], ?_, ?_⟩
-    · simp only [cons_eq_insert, coe_insert, Set.pairwise_insert_of_symmetric symmetric_disjoint,
-        mem_coe, ne_eq]
+    · simp only [cons_eq_insert, coe_insert, Set.pairwise_insert_of_symm, mem_coe, ne_eq]
       exact ⟨h𝒜disj, fun t ht _ ↦ sdiff_disjoint.mono ht₀ <| subset_biUnion_of_mem id ht⟩
     · simp only [cons_eq_insert, mem_insert, forall_eq_or_imp, and_assoc]
       exact ⟨ht₀.trans sdiff_subset, ht₀card, ht₀sum, h𝒜⟩

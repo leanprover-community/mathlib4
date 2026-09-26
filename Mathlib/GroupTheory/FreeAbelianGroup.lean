@@ -122,13 +122,12 @@ open FreeAbelianGroup
 -- Porting note: needed to add `(β := Multiplicative β)`
 @[simp]
 theorem lift_apply_of (x : α) : lift f (of x) = f x := by
-  convert Abelianization.lift_apply_of
-     (FreeGroup.lift f (β := Multiplicative β)) (FreeGroup.of x)
+  convert! Abelianization.lift_apply_of (FreeGroup.lift f (β := Multiplicative β)) (FreeGroup.of x)
   exact (FreeGroup.lift_apply_of (β := Multiplicative β)).symm
 
 theorem lift_unique (g : FreeAbelianGroup α →+ β) (hg : ∀ x, g (of x) = f x) {x} :
     g x = lift f x :=
-  DFunLike.congr_fun (lift.symm_apply_eq.mp (funext hg : g ∘ of = f)) _
+  congr($(lift.symm_apply_eq.mp (funext hg : g ∘ of = f)) _)
 
 /-- See note [partially-applied ext lemmas]. -/
 @[ext high]
@@ -147,13 +146,13 @@ end lift
 
 section
 
-open scoped Classical in
-theorem of_injective : Function.Injective (of : α → FreeAbelianGroup α) :=
-  fun x y hoxy ↦ Classical.by_contradiction fun hxy : x ≠ y ↦
+theorem of_injective : Function.Injective (of : α → FreeAbelianGroup α) := by
+  classical
+  exact fun x y hoxy ↦ Classical.by_contradiction fun hxy : x ≠ y ↦
     let f : FreeAbelianGroup α →+ ℤ := lift fun z ↦ if x = z then (1 : ℤ) else 0
-    have hfx1 : f (of x) = 1 := (lift_apply_of _ _).trans <| if_pos rfl
+    have hfx1 : f (of x) = 1 := (lift_apply_of _ _).trans <| ite_eq_left rfl
     have hfy1 : f (of y) = 1 := hoxy ▸ hfx1
-    have hfy0 : f (of y) = 0 := (lift_apply_of _ _).trans <| if_neg hxy
+    have hfy0 : f (of y) = 0 := (lift_apply_of _ _).trans <| ite_eq_right hxy
     one_ne_zero <| hfy1.symm.trans hfy0
 
 @[simp]
@@ -171,8 +170,6 @@ instance [Nonempty α] : Nontrivial (FreeAbelianGroup α) where
   exists_pair_ne := let ⟨x⟩ := ‹Nonempty α›; ⟨0, of x, zero_ne_of _⟩
 
 end
-
-attribute [local instance] QuotientGroup.leftRel
 
 @[elab_as_elim]
 protected theorem induction_on
@@ -193,6 +190,9 @@ theorem lift_add_apply [AddCommGroup G] (f g : α → G) (a : FreeAbelianGroup �
 @[simp] lemma lift_add [AddCommGroup G] (f g : α → G) : lift (f + g) = lift f + lift g :=
   AddMonoidHom.ext <| lift_add_apply _ _
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `FreeAbelianGroup.lift` as an equivalence of groups. -/
 @[simps!]
 def liftAddEquiv [AddCommGroup G] : (α → G) ≃+ (FreeAbelianGroup α →+ G) := ⟨lift, lift_add⟩
@@ -496,22 +496,25 @@ def liftMonoid : (α →* R) ≃ (FreeAbelianGroup α →+* R) where
           exact f.map_mul _ _
         | neg L1 ih =>
           simp_rw [neg_mul, map_neg, neg_mul]
-          exact congr_arg Neg.neg ih
+          congrm -$ih
         | add x1 x2 ih1 ih2 => simp only [add_mul, map_add, ih1, ih2]
       | neg L2 ih => rw [mul_neg, map_neg, map_neg, mul_neg, ih]
       | add y1 y2 ih1 ih2 => rw [mul_add, map_add, map_add, mul_add, ih1, ih2] }
   invFun F := MonoidHom.comp (↑F) ofMulHom
   left_inv f := MonoidHom.ext <| by
-    simp only [RingHom.coe_monoidHom_mk, MonoidHom.coe_comp, MonoidHom.coe_mk, OneHom.coe_mk,
+    simp only [RingHom.toMonoidHom_mk, MonoidHom.coe_comp, MonoidHom.coe_mk, OneHom.coe_mk,
       ofMulHom_coe, Function.comp_apply, lift_apply_of, forall_const]
-  right_inv F := RingHom.coe_addMonoidHom_injective <| by
+  right_inv F := RingHom.toAddMonoidHom_injective <| by
     simp only
     rw [← lift.apply_symm_apply (↑F : FreeAbelianGroup α →+ R)]
     rfl
 
 @[simp]
-theorem liftMonoid_coe_addMonoidHom (f : α →* R) : ↑(liftMonoid f) = lift f :=
+theorem toAddMonoidHom_liftMonoid (f : α →* R) : ↑(liftMonoid f) = lift f :=
   rfl
+
+@[deprecated (since := "2026-09-15")]
+alias liftMonoid_coe_addMonoidHom := toAddMonoidHom_liftMonoid
 
 @[simp]
 theorem liftMonoid_coe (f : α →* R) : ⇑(liftMonoid f) = lift f :=

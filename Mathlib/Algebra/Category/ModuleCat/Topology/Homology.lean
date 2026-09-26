@@ -40,12 +40,13 @@ abbrev ker : TopModuleCat R := .of R φ.hom.ker
 /-- The inclusion map from the kernel in `TopModuleCat R`. -/
 def kerι : ker φ ⟶ M := ofHom ⟨Submodule.subtype _, continuous_subtype_val⟩
 
-instance : Mono (kerι φ) := ConcreteCategory.mono_of_injective (kerι φ) <| Subtype.val_injective
+instance : Mono (kerι φ) := ConcreteCategory.mono_of_injective (kerι φ) Subtype.val_injective
 
 @[simp] lemma kerι_comp : kerι φ ≫ φ = 0 := by ext ⟨_, hm⟩; exact hm
 
 @[simp] lemma kerι_apply (x) : kerι φ x = x.1 := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `TopModuleCat.ker` is indeed the kernel in `TopModuleCat R`. -/
 def isLimitKer : IsLimit (KernelFork.ofι (kerι φ) (kerι_comp φ)) :=
   isLimitAux (KernelFork.ofι (kerι φ) (kerι_comp φ))
@@ -63,7 +64,7 @@ section cokernel
 abbrev coker : TopModuleCat R := .of R (N ⧸ φ.hom.range)
 
 /-- The projection map to the cokernel in `TopModuleCat R`. -/
-def cokerπ : N ⟶ coker φ := ofHom <| ⟨Submodule.mkQ _, by tauto⟩
+def cokerπ : N ⟶ coker φ := ofHom ⟨Submodule.mkQ _, by tauto⟩
 
 @[simp]
 lemma hom_cokerπ (x) : (cokerπ φ).hom x = Submodule.mkQ _ x := rfl
@@ -77,13 +78,14 @@ instance : Epi (cokerπ φ) := ConcreteCategory.epi_of_surjective (cokerπ φ) (
   change Submodule.mkQ _ (φ m) = 0
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `TopModuleCat.coker` is indeed the cokernel in `TopModuleCat R`. -/
 def isColimitCoker : IsColimit (CokernelCofork.ofπ (cokerπ φ) (comp_cokerπ φ)) :=
   isColimitAux (.ofπ (cokerπ φ) (comp_cokerπ φ))
-  (fun s ↦ ofHom <|
+  (fun s ↦ ofHom
     { toLinearMap := φ.hom.range.liftQ s.π.hom.toLinearMap
         (LinearMap.range_le_ker_iff.mpr <| show (φ ≫ s.π).hom.toLinearMap = 0 by
-          rw [s.condition, hom_zero, ContinuousLinearMap.coe_zero])
+          rw [s.condition, hom_zero, ContinuousLinearMap.toLinearMap_zero])
       cont := Continuous.quotient_lift s.π.hom.2 _ })
   (fun s ↦ rfl)
   (fun s m h ↦ by dsimp at h ⊢; rw [← cancel_epi (cokerπ φ), h]; rfl)
@@ -111,14 +113,14 @@ instance : CategoryWithHomology (TopModuleCat R) := by
       (Submodule.isOpenQuotientMap_mkQ _).isQuotientMap
       (Submodule.isOpenQuotientMap_mkQ _)
       (Subtype.val_injective.comp hF.1) ?_
-    · rw [← ContinuousLinearMap.coe_comp', ← ContinuousLinearMap.coe_comp',
+    · rw [← ContinuousLinearMap.coe_comp, ← ContinuousLinearMap.coe_comp,
         ← hom_comp, ← hom_comp, ShortComplex.π_leftRightHomologyComparison'_ι]
     · suffices ∀ x y, S.g y = 0 → D₂.p y = D₂.p x → S.g x = 0 by
         simpa [Set.subset_def, D₁, kerι_apply S.g] using this
       intro x y hy e
       obtain ⟨z, hz⟩ := (Submodule.Quotient.eq _).mp e
       obtain rfl := eq_sub_iff_add_eq.mp hz
-      simpa [show S.g (S.f z) = 0 from ConcreteCategory.congr_hom S.zero z] using hy
+      simpa [show S.g (S.f z) = 0 from congr($S.zero z)] using hy
   rw [← isIso_iff_of_reflects_iso _ (forget₂ (TopModuleCat R) TopCat),
     TopCat.isIso_iff_isHomeomorph, isHomeomorph_iff_isEmbedding_surjective]
   exact ⟨hF', hF.2⟩

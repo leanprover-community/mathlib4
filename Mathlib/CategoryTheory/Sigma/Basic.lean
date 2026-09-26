@@ -56,13 +56,13 @@ lemma comp_def (i : I) (X Y Z : C i) (f : X ⟶ Y) (g : Y ⟶ Z) : comp (mk f) (
   rfl
 
 lemma assoc : ∀ {X Y Z W : Σ i, C i} (f : X ⟶ Y) (g : Y ⟶ Z) (h : Z ⟶ W), (f ≫ g) ≫ h = f ≫ g ≫ h
-  | _, _, _, _, mk _, mk _, mk _ => congr_arg mk (Category.assoc _ _ _)
+  | _, _, _, _, mk _, mk _, mk _ => congr(mk $(Category.assoc ..))
 
 lemma id_comp : ∀ {X Y : Σ i, C i} (f : X ⟶ Y), 𝟙 X ≫ f = f
-  | _, _, mk _ => congr_arg mk (Category.id_comp _)
+  | _, _, mk _ => congr(mk $(Category.id_comp _))
 
 lemma comp_id : ∀ {X Y : Σ i, C i} (f : X ⟶ Y), f ≫ 𝟙 Y = f
-  | _, _, mk _ => congr_arg mk (Category.comp_id _)
+  | _, _, mk _ => congr(mk $(Category.comp_id _))
 
 end SigmaHom
 
@@ -133,6 +133,7 @@ def desc : (Σ i, C i) ⥤ D where
 lemma desc_map_mk {i : I} (X Y : C i) (f : X ⟶ Y) : (desc F).map (SigmaHom.mk f) = (F i).map f :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 -- We hand-generate the simp lemmas about this since they come out cleaner.
 /-- This shows that when `desc F` is restricted to just the subcategory `C i`, `desc F` agrees with
 `F i`.
@@ -202,7 +203,6 @@ def inclCompMap (j : J) : incl j ⋙ map C g ≅ incl (g j) :=
 
 variable (I)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor `Sigma.map` applied to the identity function is just the identity functor. -/
 @[simps!]
 def mapId : map C (id : I → I) ≅ 𝟭 (Σ i, C i) :=
@@ -210,6 +210,9 @@ def mapId : map C (id : I → I) ≅ 𝟭 (Σ i, C i) :=
 
 variable {I} {K : Type w₃}
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor `Sigma.map` applied to a composition is a composition of functors. -/
 @[simps!]
 def mapComp (f : K → J) (g : J → I) : map (fun x ↦ C (g x)) f ⋙ (map C g :) ≅ map C (g ∘ f) :=

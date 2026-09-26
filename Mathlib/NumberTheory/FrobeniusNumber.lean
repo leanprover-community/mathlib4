@@ -50,7 +50,7 @@ def FrobeniusNumber (n : ℕ) (s : Set ℕ) : Prop :=
 
 theorem frobeniusNumber_iff {n : ℕ} {s : Set ℕ} :
     FrobeniusNumber n s ↔ n ∉ AddSubmonoid.closure s ∧ ∀ k > n, k ∈ AddSubmonoid.closure s := by
-  simp_rw [FrobeniusNumber, IsGreatest, upperBounds, Set.mem_setOf, not_imp_comm, not_le]
+  simp_rw [FrobeniusNumber, IsGreatest, upperBounds, Set.mem_ofPred, not_imp_comm, not_le]
 
 variable {m n : ℕ}
 
@@ -72,18 +72,9 @@ theorem frobeniusNumber_pair (cop : Coprime m n) (hm : 1 < m) (hn : 1 < n) :
   · intro k hk
     dsimp at hk
     contrapose! hk
-    let x := chineseRemainder cop 0 k
-    have hx : x.val < m * n := chineseRemainder_lt_mul cop 0 k (ne_bot_of_gt hm) (ne_bot_of_gt hn)
-    suffices key : x.1 ≤ k by
-      obtain ⟨a, ha⟩ := modEq_zero_iff_dvd.mp x.2.1
-      obtain ⟨b, hb⟩ := (modEq_iff_dvd' key).mp x.2.2
-      exact ⟨a, b, by rw [mul_comm, ← ha, mul_comm, ← hb, Nat.add_sub_of_le key]⟩
-    refine x.2.2.le_of_lt_add (lt_of_le_of_lt ?_ (add_lt_add_left hk n))
-    rw [Nat.sub_add_cancel (le_tsub_of_add_le_left hmn)]
-    exact
-      ModEq.le_of_lt_add
-        (x.2.1.trans (modEq_zero_iff_dvd.mpr (Nat.dvd_sub (dvd_mul_right m n) dvd_rfl)).symm)
-        (lt_of_lt_of_le hx le_tsub_add)
+    obtain ⟨a, b, h⟩ := exists_add_mul_eq_of_gcd_dvd_of_mul_pred_le m n k
+      (by simp [cop.gcd_eq_one]) (by grind [pred_mul, mul_pred, pred_eq_sub_one])
+    exact ⟨a, b, succ_inj.mp (congrArg succ h)⟩
 
 namespace Nat
 
@@ -161,9 +152,10 @@ theorem exists_mem_span_nat_finset_of_ge :
   obtain ⟨rx, hrx⟩ : setGcd s ∣ r := (dvd_mod_iff (setGcd_dvd_of_mem hxs)).mpr <|
     (Nat.dvd_add_right <| dvd_mul_of_dvd_right (Finset.dvd_sum fun i _ ↦
       dvd_mul_of_dvd_right (setGcd_dvd_of_mem (hts i.2)) _) _).mp dvd
-  convert (sum_mem fun i _ ↦ mul_mem_left _ _ (subset_span i.2) :
-    -- an explicit ℕ-linear combination of elements of `t` that is equal to `r + n`
-    ∑ i : t, (if 0 ≤ a i then rx else x / setGcd s - rx) * (a i).natAbs * i ∈ span t)
+  convert!
+    (sum_mem fun i _ ↦ mul_mem_left _ _ (subset_span i.2) :
+      -- an explicit ℕ-linear combination of elements of `t` that is equal to `r + n`
+       ∑ i : t, (if 0 ≤ a i then rx else x / setGcd s - rx) * (a i).natAbs * i ∈ span t)
   simp_rw [← Int.natCast_inj, hrx, n, Finset.mul_sum, mul_comm _ rx, cast_add, cast_sum, cast_mul,
     ← eq, Finset.mul_sum, smul_eq_mul, ← mul_assoc, ← Finset.sum_add_distrib, ← add_mul]
   congr! 2 with i
@@ -181,11 +173,14 @@ theorem exists_mem_closure_of_ge : ∃ n, ∀ m ≥ n, setGcd s ∣ m → m ∈ 
   ⟨n, fun m ge dvd ↦ (Submodule.span_nat_eq_addSubmonoidClosure s).le
     (Submodule.span_mono hts (hn m ge dvd))⟩
 
-theorem finite_setOf_setGcd_dvd_and_mem_span :
+theorem finite_setOfPred_setGcd_dvd_and_mem_span :
     {n | setGcd s ∣ n ∧ n ∉ Ideal.span s}.Finite :=
   have ⟨n, hn⟩ := exists_mem_closure_of_ge s
   (Finset.range n).finite_toSet.subset fun m h ↦ Finset.mem_range.mpr <|
     lt_of_not_ge fun ge ↦ h.2 <| (Submodule.span_nat_eq_addSubmonoidClosure s).ge (hn m ge h.1)
+
+@[deprecated (since := "2026-07-09")]
+alias finite_setOf_setGcd_dvd_and_mem_span := finite_setOfPred_setGcd_dvd_and_mem_span
 
 /-- `ℕ` is a Noetherian `ℕ`-module, i.e., `ℕ` is a Noetherian semiring. -/
 instance : IsNoetherian ℕ ℕ where

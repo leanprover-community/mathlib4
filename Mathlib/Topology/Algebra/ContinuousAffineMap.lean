@@ -6,7 +6,7 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
-public import Mathlib.Topology.Algebra.Module.LinearMapPiProd
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 public import Mathlib.Topology.Algebra.Affine
 
 /-!
@@ -14,11 +14,11 @@ public import Mathlib.Topology.Algebra.Affine
 
 This file defines a type of bundled continuous affine maps.
 
-## Main definitions:
+## Main definitions
 
 * `ContinuousAffineMap`
 
-## Notation:
+## Notation
 
 We introduce the notation `P →ᴬ[R] Q` for `ContinuousAffineMap R P Q` (not to be confused with the
 notation `A →A[R] B` for `ContinuousAlgHom`). Note that this is parallel to the notation `E →L[R] F`
@@ -54,9 +54,10 @@ theorem toAffineMap_injective {f g : P →ᴬ[R] Q} (h : (f : P →ᵃ[R] Q) = (
   cases g
   congr
 
+@[macro_inline]
 instance : FunLike (P →ᴬ[R] Q) P Q where
   coe f := f.toAffineMap
-  coe_injective' _ _ h := toAffineMap_injective <| DFunLike.coe_injective h
+  coe_injective _ _ h := toAffineMap_injective <| DFunLike.coe_injective h
 
 instance : ContinuousMapClass (P →ᴬ[R] Q) P Q where
   map_continuous := cont
@@ -71,7 +72,7 @@ theorem ext {f g : P →ᴬ[R] Q} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
 
 theorem congr_fun {f g : P →ᴬ[R] Q} (h : f = g) (x : P) : f x = g x :=
-  DFunLike.congr_fun h _
+  congr($h _)
 
 /-- Forgetting its algebraic properties, a continuous affine map is a continuous map. -/
 def toContinuousMap (f : P →ᴬ[R] Q) : C(P, Q) :=
@@ -92,7 +93,7 @@ theorem coe_to_continuousMap (f : P →ᴬ[R] Q) : ((f : C(P, Q)) : P → Q) = f
 theorem to_continuousMap_injective {f g : P →ᴬ[R] Q} (h : (f : C(P, Q)) = (g : C(P, Q))) :
     f = g := by
   ext a
-  exact ContinuousMap.congr_fun h a
+  congrm $h a
 
 @[norm_cast]
 theorem coe_toAffineMap_mk (f : P →ᵃ[R] Q) (h) : ((⟨f, h⟩ : P →ᴬ[R] Q) : P →ᵃ[R] Q) = f := rfl
@@ -129,7 +130,7 @@ def id : P →ᴬ[R] P := { AffineMap.id R P with cont := continuous_id }
 @[simp, norm_cast]
 theorem coe_id : ⇑(id R P) = _root_.id := rfl
 
-variable {R P} {W₂ Q₂ W₃ Q₃ : Type*}
+variable {R P} {W₂ Q₂ : Type*}
 variable [AddCommGroup W₂] [Module R W₂] [TopologicalSpace Q₂] [AddTorsor W₂ Q₂]
 
 /-- The composition of continuous affine maps as a continuous affine map -/
@@ -400,7 +401,7 @@ def prod (f : P₁ →ᴬ[k] P₂) (g : P₁ →ᴬ[k] P₃) : P₁ →ᴬ[k] P�
   __ := AffineMap.prod f g
   cont := by eta_expand; dsimp; fun_prop
 
-theorem coe_prod (f : P₁ →ᴬ[k] P₂) (g : P₁ →ᴬ[k] P₃) : prod f g = Pi.prod f g :=
+theorem coe_prod (f : P₁ →ᴬ[k] P₂) (g : P₁ →ᴬ[k] P₃) : prod f g = Function.prod f g :=
   rfl
 
 @[simp]
@@ -498,7 +499,7 @@ def decompEquiv : (V →ᴬ[R] Q) ≃ Q × (V →L[R] W) where
     simp_rw [vadd_apply, f.contLinear.coe_toContinuousAffineMap, coe_const, Function.const_apply,
       ← f.map_vadd, vadd_eq_add, add_zero]
   right_inv := by
-    haveI := IsTopologicalAddTorsor.to_isTopologicalAddGroup W Q
+    have := IsTopologicalAddTorsor.to_isTopologicalAddGroup W Q
     rintro ⟨v, f⟩; ext <;> simp
 
 @[simp]
@@ -519,7 +520,7 @@ theorem decompEquiv_symm_apply (p : Q × (V →L[R] W)) (x : V) :
 @[simp]
 theorem decompEquiv_symm_contLinear (p : Q × (V →L[R] W)) :
     ((decompEquiv R V Q).symm p).contLinear = p.2 := by
-  haveI := IsTopologicalAddTorsor.to_isTopologicalAddGroup W Q
+  have := IsTopologicalAddTorsor.to_isTopologicalAddGroup W Q
   ext; simp [decompEquiv]
 
 end

@@ -75,7 +75,7 @@ lemma threeAPFree_sphere {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   obtain rfl | hr := eq_or_ne r 0
   · rw [sphere_zero]
     exact threeAPFree_singleton _
-  · convert threeAPFree_frontier isClosed_closedBall (strictConvex_closedBall ℝ x r)
+  · convert! threeAPFree_frontier isClosed_closedBall (strictConvex_closedBall ℝ x r)
     exact (frontier_closedBall _ hr).symm
 
 namespace Behrend
@@ -144,6 +144,7 @@ theorem map_succ (a : Fin (n + 1) → ℕ) :
 theorem map_succ' (a : Fin (n + 1) → ℕ) : map d a = a 0 + map d (a ∘ Fin.succ) * d :=
   map_succ _
 
+set_option backward.defeqAttrib.useBackward true in
 theorem map_monotone (d : ℕ) : Monotone (map d : (Fin n → ℕ) → ℕ) := fun x y h => by
   dsimp; exact sum_le_sum fun i _ => Nat.mul_le_mul_right _ <| h i
 
@@ -176,7 +177,7 @@ nonrec theorem threeAPFree_sphere : ThreeAPFree (sphere n d k : Set (Fin n → �
     { toFun := fun f => toLp 2 (((↑) : ℕ → ℝ) ∘ f)
       map_zero' := PiLp.ext fun _ => cast_zero
       map_add' := fun _ _ => PiLp.ext fun _ => cast_add _ _ }
-  refine ThreeAPFree.of_image (AddMonoidHomClass.isAddFreimanHom f (Set.mapsTo_image _ _))
+  refine ThreeAPFree.of_image (AddHomClass.isAddFreimanHom f (Set.mapsTo_image _ _))
     ((toLp_injective 2).comp_injOn cast_injective.comp_left.injOn) (Set.subset_univ _) ?_
   refine (threeAPFree_sphere 0 (√↑k)).mono (Set.image_subset_iff.2 fun x => ?_)
   rw [Set.mem_preimage, mem_sphere_zero_iff_norm]
@@ -264,7 +265,7 @@ theorem bound_aux' (n d : ℕ) : ((d ^ n :) / (n * d ^ 2 :) : ℝ) ≤ rothNumbe
 
 theorem bound_aux (hd : d ≠ 0) (hn : 2 ≤ n) :
     (d ^ (n - 2 :) / n : ℝ) ≤ rothNumberNat ((2 * d - 1) ^ n) := by
-  convert bound_aux' n d using 1
+  convert! bound_aux' n d using 1
   rw [cast_mul, cast_pow, mul_comm, ← div_div, pow_sub₀ _ _ hn, ← div_eq_mul_inv, cast_pow]
   rwa [cast_ne_zero]
 
@@ -341,7 +342,7 @@ noncomputable def nValue (N : ℕ) : ℕ :=
 noncomputable def dValue (N : ℕ) : ℕ := ⌊(N : ℝ) ^ (nValue N : ℝ)⁻¹ / 2⌋₊
 
 theorem nValue_pos (hN : 2 ≤ N) : 0 < nValue N :=
-  ceil_pos.2 <| Real.sqrt_pos.2 <| log_pos <| one_lt_cast.2 <| hN
+  ceil_pos.2 <| Real.sqrt_pos.2 <| log_pos <| one_lt_cast.2 hN
 
 theorem three_le_nValue (hN : 64 ≤ N) : 3 ≤ nValue N := by
   rw [nValue, ← lt_iff_add_one_le, lt_ceil, cast_two]
@@ -483,6 +484,6 @@ theorem roth_lower_bound : (N : ℝ) * exp (-4 * √(log N)) ≤ rothNumberNat N
   obtain h₁ | h₁ := le_or_gt 4096 N
   · exact (roth_lower_bound_explicit h₁).le
   · apply (lower_bound_le_one hN h₁.le).trans
-    simpa using rothNumberNat.monotone hN
+    simpa using! rothNumberNat.monotone hN
 
 end Behrend

@@ -197,6 +197,7 @@ def varsToConstants : L.Term (γ ⊕ α) → L[[γ]].Term α
   | var (Sum.inl c) => Constants.term (Sum.inr c)
   | func f ts => func (Sum.inl f) fun i => (ts i).varsToConstants
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A bijection between terms with constants and terms with extra variables. -/
 @[simps]
 def constantsVarsEquiv : L[[γ]].Term α ≃ L.Term (γ ⊕ α) :=
@@ -784,6 +785,12 @@ noncomputable def iExsUnique [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formul
     ((φ.relabel (fun a => Sum.elim (.inl ∘ .inl) .inr a)).imp <|
       .iInf fun g => Term.equal (var (.inr g)) (var (.inl (.inr g))))
 
+variable [DecidableEq α] in
+/-- `exClosure φ` is the sentence asserting that there exist values for all free variables of `φ`
+such that `φ` holds. -/
+noncomputable def exClosure (φ : L.Formula α) : L.Sentence :=
+  iExs φ.freeVarFinset (Formula.relabel Sum.inr (φ.restrictFreeVar id))
+
 /-- The biimplication between formulas, as a formula. -/
 protected nonrec abbrev iff (φ ψ : L.Formula α) : L.Formula α :=
   φ.iff ψ
@@ -891,7 +898,7 @@ theorem distinctConstantsTheory_eq_iUnion (s : Set α) :
   classical
     simp only [distinctConstantsTheory]
     rw [← image_iUnion, ← iUnion_inter]
-    refine congr(_ '' ($(?_) ∩ _))
+    congrm _ '' (?_ ∩ _)
     ext ⟨i, j⟩
     simp only [prodMk_mem_set_prod_eq, Finset.coe_map, Function.Embedding.coe_subtype, mem_iUnion,
       mem_image, Finset.mem_coe, Subtype.exists, exists_and_right, exists_eq_right]

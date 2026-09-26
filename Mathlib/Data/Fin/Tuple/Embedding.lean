@@ -6,7 +6,9 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.Data.Fin.Tuple.Basic
-public import Mathlib.Order.Fin.Basic
+public import Mathlib.Data.Set.Basic
+
+import Mathlib.Data.Set.Disjoint
 
 /-! # Constructions of embeddings of `Fin n` into a type
 
@@ -81,7 +83,7 @@ theorem snoc_last {n : ℕ} {x : Fin n ↪ α} {a : α} {ha : a ∉ range x} :
 def append {m n : ℕ} {x : Fin m ↪ α} {y : Fin n ↪ α} (h : Disjoint (range x) (range y)) :
     Fin (m + n) ↪ α :=
   ⟨Fin.append x y,
-    Fin.append_injective_iff.mpr ⟨x.inj', y.inj', disjoint_range_iff.mp h⟩⟩
+    Fin.append_injective_iff.mpr ⟨x.inj', y.inj', by exact disjoint_range_iff.mp h⟩⟩
 
 @[simp, norm_cast]
 theorem coe_append {m n : ℕ} {x : Fin m ↪ α} {y : Fin n ↪ α} (h : Disjoint (range x) (range y)) :
@@ -93,10 +95,11 @@ namespace Function.Embedding
 
 variable {α : Type*}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural equivalence of `Fin 2 ↪ α` with pairs `(a, b)` of distinct elements of `α`. -/
 def twoEmbeddingEquiv : (Fin 2 ↪ α) ≃ {(a, b) : α × α | a ≠ b} where
   toFun e := ⟨(e 0, e 1), by
-    simp only [ne_eq, Fin.isValue, mem_setOf_eq, EmbeddingLike.apply_eq_iff_eq, zero_eq_one_iff,
+    simp only [ne_eq, Fin.isValue, mem_ofPred_eq, EmbeddingLike.apply_eq_iff_eq, zero_eq_one_iff,
       succ_ne_self, not_false_eq_true]⟩
   invFun := fun ⟨⟨a, b⟩, h⟩ ↦ {
     toFun i := if i = 0 then a else b
@@ -104,8 +107,8 @@ def twoEmbeddingEquiv : (Fin 2 ↪ α) ≃ {(a, b) : α × α | a ≠ b} where
       by_cases hi : i = 0
       · by_cases hj : j = 0
         · simp [hi, hj]
-        · simp only [if_pos hi, eq_one_of_ne_zero j hj,
-          if_neg (Ne.symm Fin.zero_ne_one)] at hij
+        · simp only [ite_eq_left hi, eq_one_of_ne_zero j hj,
+          ite_eq_right (Ne.symm Fin.zero_ne_one)] at hij
           apply (h hij).elim
       · rw [eq_one_of_ne_zero i hi] at hij ⊢
         by_cases hj : j = 0

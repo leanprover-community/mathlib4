@@ -83,7 +83,7 @@ theorem elim_injective (γ : Type*) (fγ : (Σ a : α, β a → γ) → γ)
   | ⟨a₁, f₁⟩, ⟨a₂, f₂⟩, h => by
     obtain ⟨rfl, h⟩ := Sigma.mk.inj_iff.mp (fγ_injective h)
     congr with x
-    exact elim_injective γ fγ fγ_injective (congr_fun (eq_of_heq h) x :)
+    exact elim_injective γ fγ fγ_injective congr($(eq_of_heq h) x)
 
 instance [hα : IsEmpty α] : IsEmpty (WType β) :=
   ⟨fun w => WType.recOn w (IsEmpty.elim hα)⟩
@@ -104,7 +104,7 @@ theorem infinite_of_nonempty_of_isEmpty (a b : α) [ha : Nonempty (β a)] [he : 
     | succ n ih =>
       rcases m with - | m
       · simp_all
-      · refine congr_arg Nat.succ (ih ?_)
+      · congrm $(ih ?_).succ
         simp_all [funext_iff]⟩
 
 variable [∀ a : α, Fintype (β a)]
@@ -129,14 +129,13 @@ We define an auxiliary type `WType' β n` of trees of depth at most `n`, and the
 induction on `n` that these are all encodable. These auxiliary constructions are not interesting in
 and of themselves, so we mark them as `private`.
 -/
-private abbrev WType' {α : Type*} (β : α → Type*) [∀ a : α, Fintype (β a)]
-    [∀ a : α, Encodable (β a)] (n : ℕ) :=
+private abbrev WType' {α : Type*} (β : α → Type*) [∀ a : α, Fintype (β a)] (n : ℕ) :=
   { t : WType β // t.depth ≤ n }
 
 variable [∀ a : α, Encodable (β a)]
 
 set_option backward.privateInPublic true in
-@[implicit_reducible]
+@[instance_reducible]
 private def encodable_zero : Encodable (WType' β 0) :=
   let f : WType' β 0 → Empty := fun ⟨_, h⟩ => False.elim <| not_lt_of_ge h (WType.depth_pos _)
   let finv : Empty → WType' β 0 := by
@@ -161,7 +160,7 @@ private def finv (n : ℕ) : (Σ a : α, β a → WType' β n) → WType' β (n 
 variable [Encodable α]
 
 set_option backward.privateInPublic true in
-@[implicit_reducible]
+@[instance_reducible]
 private def encodable_succ (n : Nat) (_ : Encodable (WType' β n)) : Encodable (WType' β (n + 1)) :=
   Encodable.ofLeftInverse (f n) (finv n)
     (by

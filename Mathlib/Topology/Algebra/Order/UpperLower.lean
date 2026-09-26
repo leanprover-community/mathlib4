@@ -24,9 +24,9 @@ provide `HasUpperLowerClosure`, an ad hoc axiomatisation of the properties we ne
 public section
 
 
-open Function Set
+open Set
 
-open Pointwise
+open scoped Pointwise
 
 /-- Ad hoc class stating that the closure of an upper set is an upper set. This is used to state
 lemmas that do not mention algebraic operations for both the additive and multiplicative versions

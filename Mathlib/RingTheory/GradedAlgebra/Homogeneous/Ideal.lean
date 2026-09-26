@@ -45,10 +45,8 @@ graded algebra, homogeneous
 
 @[expose] public section
 
-
 open SetLike DirectSum Set
-
-open Pointwise DirectSum
+open scoped Pointwise
 
 variable {ι σ A : Type*}
 
@@ -91,7 +89,7 @@ theorem HomogeneousIdeal.toIdeal_injective :
 instance HomogeneousIdeal.setLike : SetLike (HomogeneousIdeal 𝒜) A :=
   HomogeneousSubmodule.setLike 𝒜 𝒜
 
-instance : PartialOrder (HomogeneousIdeal 𝒜) := .ofSetLike (HomogeneousIdeal 𝒜) A
+instance : PartialOrder (HomogeneousIdeal 𝒜) := .ofSetLike (HomogeneousIdeal 𝒜)
 
 @[ext]
 theorem HomogeneousIdeal.ext {I J : HomogeneousIdeal 𝒜} (h : I.toIdeal = J.toIdeal) : I = J :=
@@ -155,15 +153,14 @@ theorem Ideal.mul_homogeneous_element_mem_of_mem
   · exact I.mul_mem_left _ hx₂
   · exact I.zero_mem
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Ideal.homogeneous_span (s : Set A) (h : ∀ x ∈ s, SetLike.IsHomogeneousElem 𝒜 x) :
     (Ideal.span s).IsHomogeneous 𝒜 := by
   rintro i r hr
   rw [Ideal.span, Finsupp.span_eq_range_linearCombination] at hr
   rw [LinearMap.mem_range] at hr
   obtain ⟨s, rfl⟩ := hr
-  rw [Finsupp.linearCombination_apply, Finsupp.sum, decompose_sum, DFinsupp.finset_sum_apply,
-    AddSubmonoidClass.coe_finset_sum]
+  rw [Finsupp.linearCombination_apply, Finsupp.sum, decompose_sum, DFinsupp.finsetSum_apply,
+    AddSubmonoidClass.coe_finsetSum]
   refine Ideal.sum_mem _ ?_
   rintro z hz1
   rw [smul_eq_mul]
@@ -177,7 +174,7 @@ is the largest homogeneous ideal of `A` contained in `I`. -/
 def Ideal.homogeneousCore : HomogeneousIdeal 𝒜 :=
   ⟨Ideal.homogeneousCore' 𝒜 I,
     Ideal.homogeneous_span _ _ fun _ h => by
-      have := Subtype.image_preimage_coe (setOf (SetLike.IsHomogeneousElem 𝒜)) (I : Set A)
+      have := Subtype.image_preimage_coe (Set.ofPred (SetLike.IsHomogeneousElem 𝒜)) (I : Set A)
       exact (cast congr(_ ∈ $this) h).1⟩
 
 theorem Ideal.homogeneousCore_mono : Monotone (Ideal.homogeneousCore 𝒜) :=
@@ -204,7 +201,7 @@ theorem Ideal.IsHomogeneous.toIdeal_homogeneousCore_eq_self (h : I.IsHomogeneous
 theorem HomogeneousIdeal.toIdeal_homogeneousCore_eq_self (I : HomogeneousIdeal 𝒜) :
     I.toIdeal.homogeneousCore 𝒜 = I := by
   ext1
-  convert Ideal.IsHomogeneous.toIdeal_homogeneousCore_eq_self I.isHomogeneous
+  convert! Ideal.IsHomogeneous.toIdeal_homogeneousCore_eq_self I.isHomogeneous
 
 variable (𝒜 I)
 
@@ -405,8 +402,8 @@ theorem Ideal.IsHomogeneous.mul {I J : Ideal A} (HI : I.IsHomogeneous 𝒜) (HJ 
     (I * J).IsHomogeneous 𝒜 := by
   rw [Ideal.IsHomogeneous.iff_exists] at HI HJ ⊢
   obtain ⟨⟨s₁, rfl⟩, ⟨s₂, rfl⟩⟩ := HI, HJ
-  rw [Ideal.span_mul_span']
-  exact ⟨s₁ * s₂, congr_arg _ <| (Set.image_mul (homogeneousSubmonoid 𝒜).subtype).symm⟩
+  rw [Ideal.span_mul_span]
+  exact ⟨s₁ * s₂, congr_arg _ (Set.image_mul (homogeneousSubmonoid 𝒜).subtype).symm⟩
 
 instance : Mul (HomogeneousIdeal 𝒜) where
   mul I J := ⟨I.toIdeal * J.toIdeal, I.isHomogeneous.mul J.isHomogeneous⟩
@@ -449,16 +446,16 @@ def Ideal.homogeneousCore.gi : GaloisCoinsertion toIdeal (Ideal.homogeneousCore 
 
 theorem Ideal.homogeneousCore_eq_sSup :
     I.homogeneousCore 𝒜 = sSup { J : HomogeneousIdeal 𝒜 | J.toIdeal ≤ I } :=
-  Eq.symm <| IsLUB.sSup_eq <| (Ideal.homogeneousCore.gc 𝒜).isGreatest_u.isLUB
+  Eq.symm <| IsLUB.sSup_eq (Ideal.homogeneousCore.gc 𝒜).isGreatest_u.isLUB
 
 theorem Ideal.homogeneousCore'_eq_sSup :
     I.homogeneousCore' 𝒜 = sSup { J : Ideal A | J.IsHomogeneous 𝒜 ∧ J ≤ I } := by
   refine (IsLUB.sSup_eq ?_).symm
   apply IsGreatest.isLUB
   have coe_mono : Monotone (toIdeal : HomogeneousIdeal 𝒜 → Ideal A) := fun x y => id
-  convert coe_mono.map_isGreatest (Ideal.homogeneousCore.gc 𝒜).isGreatest_u using 1
+  convert! coe_mono.map_isGreatest (Ideal.homogeneousCore.gc 𝒜).isGreatest_u using 1
   ext x
-  rw [mem_image, mem_setOf_eq]
+  rw [mem_image, mem_ofPred_eq]
   refine ⟨fun hI => ⟨⟨x, hI.1⟩, ⟨hI.2, rfl⟩⟩, ?_⟩
   rintro ⟨x, ⟨hx, rfl⟩⟩
   exact ⟨x.isHomogeneous, hx⟩
@@ -511,7 +508,7 @@ theorem Ideal.IsHomogeneous.toIdeal_homogeneousHull_eq_self (h : I.IsHomogeneous
 @[simp]
 theorem HomogeneousIdeal.homogeneousHull_toIdeal_eq_self (I : HomogeneousIdeal 𝒜) :
     I.toIdeal.homogeneousHull 𝒜 = I :=
-  HomogeneousIdeal.toIdeal_injective <| I.isHomogeneous.toIdeal_homogeneousHull_eq_self
+  HomogeneousIdeal.toIdeal_injective I.isHomogeneous.toIdeal_homogeneousHull_eq_self
 
 variable (I 𝒜)
 
@@ -520,7 +517,7 @@ theorem Ideal.toIdeal_homogeneousHull_eq_iSup :
   rw [← Ideal.span_iUnion]
   apply congr_arg Ideal.span _
   ext1
-  simp only [Set.mem_iUnion, Set.mem_image, mem_setOf_eq, GradedRing.proj_apply, SetLike.exists,
+  simp only [Set.mem_iUnion, Set.mem_image, mem_ofPred_eq, GradedRing.proj_apply, SetLike.exists,
     exists_prop, SetLike.mem_coe]
 
 theorem Ideal.homogeneousHull_eq_iSup :
@@ -554,7 +551,7 @@ def Ideal.homogeneousHull.gi : GaloisInsertion (Ideal.homogeneousHull 𝒜) toId
 
 theorem Ideal.homogeneousHull_eq_sInf (I : Ideal A) :
     Ideal.homogeneousHull 𝒜 I = sInf { J : HomogeneousIdeal 𝒜 | I ≤ J.toIdeal } :=
-  Eq.symm <| IsGLB.sInf_eq <| (Ideal.homogeneousHull.gc 𝒜).isLeast_l.isGLB
+  Eq.symm <| IsGLB.sInf_eq (Ideal.homogeneousHull.gc 𝒜).isLeast_l.isGLB
 
 end GaloisConnection
 

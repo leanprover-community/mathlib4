@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Matrix.Basic
 public import Mathlib.Data.Matrix.Block
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Symmetric matrices
@@ -30,6 +31,7 @@ variable {α β n m R : Type*}
 namespace Matrix
 
 /-- A matrix `A : Matrix n n α` is "symmetric" if `Aᵀ = A`. -/
+@[wikidata Q339011]
 def IsSymm (A : Matrix n n α) : Prop :=
   Aᵀ = A
 
@@ -134,6 +136,11 @@ theorem isSymm_smul_iff [Monoid R] [MulAction R α] {A : Matrix n n α} (k : R) 
   rw [← invOf_smul_smul k A]
   exact h.smul ⅟k
 
+lemma IsSymm.dotProduct_mulVec_comm [Fintype n] [NonUnitalCommSemiring α]
+    {A : Matrix n n α} (hA : A.IsSymm) {x y : n → α} :
+    x ⬝ᵥ A *ᵥ y = y ⬝ᵥ A *ᵥ x := by
+  rw [dotProduct_mulVec, ← mulVec_transpose, hA.eq, dotProduct_comm]
+
 @[simp]
 theorem IsSymm.submatrix {A : Matrix n n α} (h : A.IsSymm) (f : m → n) : (A.submatrix f f).IsSymm :=
   (transpose_submatrix _ _ _).trans (h.symm ▸ rfl)
@@ -166,8 +173,7 @@ theorem IsSymm.fromBlocks {A : Matrix m m α} {B : Matrix m n α} {C : Matrix n 
 theorem isSymm_fromBlocks_iff {A : Matrix m m α} {B : Matrix m n α} {C : Matrix n m α}
     {D : Matrix n n α} : (A.fromBlocks B C D).IsSymm ↔ A.IsSymm ∧ Bᵀ = C ∧ Cᵀ = B ∧ D.IsSymm :=
   ⟨fun h =>
-    ⟨(congr_arg toBlocks₁₁ h :), (congr_arg toBlocks₂₁ h :), (congr_arg toBlocks₁₂ h :),
-      (congr_arg toBlocks₂₂ h :)⟩,
+    ⟨congr(toBlocks₁₁ $h), congr(toBlocks₂₁ $h), congr(toBlocks₁₂ $h), congr(toBlocks₂₂ $h)⟩,
     fun ⟨hA, hBC, _, hD⟩ => IsSymm.fromBlocks hA hBC hD⟩
 
 theorem isSymm_comp_iff {A : Matrix m m (Matrix n n α)} :
