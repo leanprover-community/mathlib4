@@ -66,10 +66,8 @@ variable {X c}
 open scoped ContinuousMap.Monoid
 
 /-- Continuous self-maps act on the singular homology. -/
-def _root_.ContinuousMap.toEndSingularHomology : C(X, X) →* End (singularHomology n X c) where
-  toFun f := ((singularHomologyFunctor C n).obj c).map (TopCat.ofHom f)
-  map_one' := CategoryTheory.Functor.map_id ..
-  map_mul' _ _ := Functor.map_comp ..
+def _root_.ContinuousMap.toEndSingularHomology : C(X, X) →* End (singularHomology n X c) :=
+  (((singularHomologyFunctor C n).obj c).mapEnd _).comp TopCat.continuousMapEquivEnd.toMonoidHom
 
 /-- Homeomorphisms act on the singular homology. -/
 def _root_.Homeomorph.toAutSingularHomology : (X ≃ₜ X) →* Aut (singularHomology n X c) :=
