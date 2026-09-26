@@ -22,27 +22,37 @@ open Function
 
 variable {M G : Type*}
 
-section Monoid
-variable [Monoid M]
+section CommMonoid
 
-instance [AddCommMonoid M] [IsAddTorsionFree M] : Lean.Grind.NoNatZeroDivisors M where
-  no_nat_zero_divisors _ _ _ hk habk := IsAddTorsionFree.nsmul_right_injective hk habk
-
-@[to_additive] instance Subsingleton.to_isMulTorsionFree [Subsingleton M] : IsMulTorsionFree M where
-  pow_left_injective _ _ := injective_of_subsingleton _
+variable [CommMonoid M]
 
 variable [IsMulTorsionFree M] {n : ℕ} {a b : M}
 
 @[to_additive nsmul_right_injective]
 lemma pow_left_injective (hn : n ≠ 0) : Injective fun a : M ↦ a ^ n :=
-  IsMulTorsionFree.pow_left_injective hn
+  fun a b ↦ IsMulTorsionFree.pow_left_injective hn (mul_comm a b)
 
 @[to_additive nsmul_right_inj]
 lemma pow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (pow_left_injective hn).eq_iff
 
+end CommMonoid
+
+section Monoid
+
+instance [AddCommMonoid M] [IsAddTorsionFree M] : Lean.Grind.NoNatZeroDivisors M where
+  no_nat_zero_divisors _ _ _ hk := IsAddTorsionFree.nsmul_right_injective hk (add_comm _ _)
+
+variable [Monoid M]
+
+@[to_additive]
+instance Subsingleton.to_isMulTorsionFree [Subsingleton M] : HasUniqueRoots M where
+  pow_left_injective _ _ _ _ _ := Subsingleton.elim _ _
+
+variable [IsMulTorsionFree M] {n : ℕ} {a b : M}
+
 @[to_additive nsmul_eq_zero_iff_right]
 lemma pow_eq_one_iff_left (hn : n ≠ 0) : a ^ n = 1 ↔ a = 1 := by
-  rw [← pow_left_inj (a := a) hn, one_pow]
+  simpa +contextual [iff_def] using IsMulTorsionFree.pow_left_injective (b := (1 : M)) hn (by simp)
 
 -- We want to use `IsAddTorsion.nsmul_eq_zero_iff` earlier than `smul_eq_zero`.
 @[to_additive (attr := simp high)]
@@ -58,8 +68,9 @@ lemma sq_eq_one : a ^ 2 = 1 ↔ a = 1 := pow_eq_one_iff_left (by lia)
 
 end Monoid
 
-section Group
-variable [Group G] [IsMulTorsionFree G] {n : ℤ} {a b : G}
+section CommGroup
+
+variable [CommGroup G] [IsMulTorsionFree G] {n : ℤ} {a b : G}
 
 @[to_additive zsmul_right_injective]
 lemma zpow_left_injective : ∀ {n : ℤ}, n ≠ 0 → Injective fun a : G ↦ a ^ n
@@ -76,9 +87,15 @@ lemma zpow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (zpow_left_injec
 and `zsmul_lt_zsmul_iff'`. -/]
 lemma zpow_eq_zpow_iff' (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := zpow_left_inj hn
 
+end CommGroup
+
+section Group
+
+variable [Group G] [IsMulTorsionFree G] {n : ℤ} {a b : G}
+
 @[to_additive IsAddTorsionFree.zsmul_eq_zero_iff_right]
 lemma IsMulTorsionFree.zpow_eq_one_iff_left (hn : n ≠ 0) : a ^ n = 1 ↔ a = 1 := by
-  rw [← zpow_left_inj (a := a) hn, one_zpow]
+  cases n <;> simp_all
 
 -- We want to use `IsAddTorsion.zsmul_eq_zero_iff` earlier than `smul_eq_zero`.
 @[to_additive (attr := simp high)]

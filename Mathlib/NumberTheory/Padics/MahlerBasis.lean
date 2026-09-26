@@ -70,9 +70,6 @@ lemma norm_ascPochhammer_le (k : ℕ) (x : ℤ_[p]) :
     ← Ring.factorial_nsmul_multichoose_eq_ascPochhammer, smul_eq_mul, Nat.cast_mul, norm_mul]
   exact mul_le_of_le_one_right (norm_nonneg _) (norm_le_one _)
 
-instance : IsAddTorsionFree ℤ_[p] where
-  nsmul_right_injective _ := smul_right_injective ℤ_[p]
-
 set_option backward.isDefEq.respectTransparency false in
 /-- The p-adic integers are a binomial ring, i.e. a ring where binomial coefficients make sense. -/
 noncomputable instance instBinomialRing : BinomialRing ℤ_[p] where
