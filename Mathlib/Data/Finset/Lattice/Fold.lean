@@ -455,7 +455,7 @@ protected theorem le_sup_iff (ha : ⊥ < a) : a ≤ s.sup f ↔ ∃ b ∈ s, a �
   · induction s using cons_induction with
     | empty => exact (absurd · (not_le_of_gt ha))
     | cons c t hc ih =>
-      rw [sup_cons, le_sup_iff]
+      rw [sup_cons, le_max_iff]
       exact fun
       | Or.inl h => ⟨c, mem_cons.2 (Or.inl rfl), h⟩
       | Or.inr h => let ⟨b, hb, hle⟩ := ih h; ⟨b, mem_cons.2 (Or.inr hb), hle⟩
@@ -480,7 +480,7 @@ protected theorem lt_sup_iff : a < s.sup f ↔ ∃ b ∈ s, a < f b := by
   · induction s using cons_induction with
     | empty => exact (absurd · not_lt_bot)
     | cons c t hc ih =>
-      rw [sup_cons, lt_sup_iff]
+      rw [sup_cons, lt_max_iff]
       exact fun
       | Or.inl h => ⟨c, mem_cons.2 (Or.inl rfl), h⟩
       | Or.inr h => let ⟨b, hb, hlt⟩ := ih h; ⟨b, mem_cons.2 (Or.inr hb), hlt⟩
@@ -490,7 +490,7 @@ protected theorem lt_sup_iff : a < s.sup f ↔ ∃ b ∈ s, a < f b := by
 protected theorem sup_lt_iff (ha : ⊥ < a) : s.sup f < a ↔ ∀ b ∈ s, f b < a :=
   ⟨fun hs _ hb => lt_of_le_of_lt (le_sup hb) hs,
     Finset.cons_induction_on s (fun _ => ha) fun c t hc => by
-      simpa only [sup_cons, sup_lt_iff, mem_cons, forall_eq_or_imp] using And.imp_right⟩
+      simpa only [sup_cons, max_lt_iff, mem_cons, forall_eq_or_imp] using And.imp_right⟩
 
 @[to_dual]
 theorem sup_mem_of_nonempty (hs : s.Nonempty) : s.sup f ∈ f '' s := by
