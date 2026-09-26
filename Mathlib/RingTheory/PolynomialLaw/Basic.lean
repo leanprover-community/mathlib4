@@ -468,7 +468,7 @@ theorem exists_lift' (t : S ⊗[R] M) (s : S) : ∃ (n : ℕ) (ψ : MvPolynomial
   have hs : s ∈ (φ R gen).range := by
     rw [hgen]
     apply Algebra.subset_adjoin
-    simp only [Finset.coe_singleton, Set.sup_eq_union, Set.mem_union, SetLike.mem_coe]
+    simp only [Finset.coe_singleton, Set.mem_union, SetLike.mem_coe]
     exact Or.inr (Algebra.subset_adjoin rfl)
   use gen.card, φ R gen, p, hs.choose, hp, hs.choose_spec
 
