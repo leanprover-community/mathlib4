@@ -5,7 +5,7 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
 module
 
-public import Mathlib.MeasureTheory.PiSystem
+public import Mathlib.MeasureTheory.Constructions.Cylinders
 public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
@@ -17,6 +17,8 @@ This file defines compact systems of sets.
 
 * `IsCompactSystem`: A set of sets is a compact system if, whenever a countable subfamily has empty
   intersection, then finitely many of them already have empty intersection.
+* `compactClosedSquareCylinders`: The square cylinders in a product space whose sides are
+  compact and closed.
 
 ## Main results
 
@@ -24,6 +26,10 @@ This file defines compact systems of sets.
   gives a compact system.
 * `isCompactSystem_isCompact_isClosed`: The set of closed and compact sets is a compact system.
 * `isCompactSystem_isCompact`: In a `T2Space`, the set of compact sets is a compact system.
+* `IsCompactSystem.prod`, `IsCompactSystem.pi`: Products of sets from compact systems form a
+  compact system.
+* `isCompactSystem_compactClosedSquareCylinders`: Compact and closed square cylinders form a
+  compact system.
 -/
 
 @[expose] public section
@@ -181,3 +187,68 @@ theorem isCompactSystem_insert_univ_isCompact_isClosed (α : Type*) [Topological
   (isCompactSystem_isCompact_isClosed α).insert_univ
 
 end IsCompactIsClosed
+
+namespace IsCompactSystem
+
+/-- Products of sets from two compact systems form a compact system. -/
+theorem prod {β : Type*} {T : Set (Set β)} (hS : IsCompactSystem S) (hT : IsCompactSystem T) :
+    IsCompactSystem (image2 (· ×ˢ ·) S T) := by
+  intro u hu h_empty
+  choose s hs t ht hst using hu
+  obtain rfl : u = fun n ↦ s n ×ˢ t n := funext fun n ↦ (hst n).symm
+  rw [← iInter_prod_iInter, prod_eq_empty_iff] at h_empty
+  simp_rw [dissipate, ← iInter_prod_iInter, prod_eq_empty_iff]
+  obtain h | h := h_empty
+  · obtain ⟨n, hn⟩ := hS s hs h
+    exact ⟨n, .inl hn⟩
+  · obtain ⟨n, hn⟩ := hT t ht h
+    exact ⟨n, .inr hn⟩
+
+variable {ι : Type*} {α : ι → Type*}
+
+/-- Boxes formed by compact systems form a compact system. -/
+theorem pi {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCompactSystem (C i)) :
+    IsCompactSystem (univ.pi '' univ.pi C) := by
+  intro S hS h_empty
+  choose x hx hxS using hS
+  obtain rfl : S = fun n ↦ univ.pi (x n) := funext fun n ↦ (hxS n).symm
+  obtain ⟨i, hi⟩ := (iInter_univ_pi_eq_empty_iff x).mp h_empty
+  obtain ⟨n, hn⟩ := hC i (fun n ↦ x n i) (fun n ↦ hx n i (mem_univ i)) hi
+  exact ⟨n, (biInter_univ_pi_eq_empty_iff x _).mpr ⟨i, hn⟩⟩
+
+end IsCompactSystem
+
+/-- Products of two compact and closed sets form a compact system. -/
+theorem isCompactSystem_prod_isCompact_isClosed (α β : Type*) [TopologicalSpace α]
+    [TopologicalSpace β] :
+    IsCompactSystem (image2 (· ×ˢ ·) {s : Set α | IsCompact s ∧ IsClosed s}
+      {t : Set β | IsCompact t ∧ IsClosed t}) :=
+  (isCompactSystem_isCompact_isClosed α).prod (isCompactSystem_isCompact_isClosed β)
+
+section CompactClosedSquareCylinders
+
+variable {ι : Type*} (α : ι → Type*) [∀ i, TopologicalSpace (α i)]
+
+/-- The set of sets of the form `s.pi t`, where `s : Finset ι` and `t i` is both closed and
+compact for all `i ∈ s`. -/
+def compactClosedSquareCylinders : Set (Set (Π i, α i)) :=
+  MeasureTheory.squareCylinders fun i ↦ {t : Set (α i) | IsCompact t ∧ IsClosed t}
+
+/-- Boxes formed by compact and closed sets form a compact system. -/
+theorem isCompactSystem_pi_isCompact_isClosed :
+    IsCompactSystem (univ.pi '' univ.pi fun i ↦ {t : Set (α i) | IsCompact t ∧ IsClosed t}) :=
+  IsCompactSystem.pi fun i ↦ isCompactSystem_isCompact_isClosed (α i)
+
+/-- Boxes formed by sets that are either compact and closed, or `univ`, form a compact system. -/
+theorem isCompactSystem_pi_insert_univ_isCompact_isClosed :
+    IsCompactSystem
+      (univ.pi '' univ.pi fun i ↦ insert univ {t : Set (α i) | IsCompact t ∧ IsClosed t}) :=
+  IsCompactSystem.pi fun i ↦ isCompactSystem_insert_univ_isCompact_isClosed (α i)
+
+/-- Compact and closed square cylinders form a compact system. -/
+theorem isCompactSystem_compactClosedSquareCylinders :
+    IsCompactSystem (compactClosedSquareCylinders α) :=
+  (isCompactSystem_pi_insert_univ_isCompact_isClosed α).mono
+    (MeasureTheory.squareCylinders_subset_image_pi_insert_univ _)
+
+end CompactClosedSquareCylinders
