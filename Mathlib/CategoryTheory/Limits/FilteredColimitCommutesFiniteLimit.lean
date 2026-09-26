@@ -13,6 +13,7 @@ public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.Products.Bifunctor
+public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 
 /-!
 # Filtered colimits commute with finite limits.
@@ -392,3 +393,45 @@ theorem ι_colimitLimitIso_limit_π (F : J ⥤ K ⥤ C) (a) (b) :
 end
 
 end CategoryTheory.Limits
+
+section
+
+open CategoryTheory Limits
+
+namespace CategoryTheory.Limits
+
+/-- Filtered colimits commute with finite limits of types in any universe. -/
+lemma lim_preservesFilteredColimitsOfSize_of_types (K : Type w) [SmallCategory K] [FinCategory K] :
+    PreservesFilteredColimitsOfSize.{w, w} (lim : (K ⥤ Type (max w u)) ⥤ Type (max w u)) := by
+  refine ⟨fun J _ _ => ?_⟩
+  constructor
+  intro F
+  have : IsIso (colimit.post F (lim : (K ⥤ Type (max w u)) ⥤ Type (max w u))) := by
+    rw [show colimit.post F (lim : (K ⥤ Type (max w u)) ⥤ Type (max w u)) =
+        (HasColimit.isoOfNatIso (limitFlipIsoCompLim F).symm ≪≫ colimitLimitIso F.flip).hom by
+      apply colimit.hom_ext
+      intro j
+      apply limit.hom_ext
+      intro k
+      rw [colimit.ι_post]
+      simp only [Iso.trans_hom, Category.assoc]
+      rw [HasColimit.ι_isoOfNatIso_hom_assoc]
+      have hcomm := ι_colimitLimitIso_limit_π F.flip j k
+      simp only [Functor.flip_flip] at hcomm
+      rw [hcomm]
+      have hflip : (limitFlipIsoCompLim F).symm.hom.app j ≫ (limit.π F.flip k).app j =
+          limit.π (F.obj j) k := by
+        simp only [Iso.symm_hom]
+        rw [limitFlipIsoCompLim_inv_app]
+        rw [Category.assoc]
+        rw [limitObjIsoLimitCompEvaluation_inv_π_app]
+        rw [HasLimit.isoOfNatIso_inv_π]
+        rfl
+      rw [← Category.assoc, hflip]
+      exact limMap_π (colimit.ι F j) k]
+    infer_instance
+  exact preservesColimit_of_isIso_post (lim : (K ⥤ Type (max w u)) ⥤ Type (max w u)) F
+
+end CategoryTheory.Limits
+
+end
