@@ -7780,6 +7780,7 @@ public import Mathlib.Tactic.Setm
 public import Mathlib.Tactic.SimpIntro
 public import Mathlib.Tactic.SimpLibraryNote
 public import Mathlib.Tactic.SimpRw
+public import Mathlib.Tactic.SimpUtils
 public import Mathlib.Tactic.Simproc.Divisors
 public import Mathlib.Tactic.Simproc.ExistsAndEq
 public import Mathlib.Tactic.Simproc.Factors
