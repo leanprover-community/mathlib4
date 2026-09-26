@@ -57,12 +57,12 @@ theorem inverse_equiv (e : M ≃L[R] M₂) : inverse (e : M →L[R] M₂) = e.sy
 lemma IsInvertible.of_inverse {f : M →L[R] M₂} {g : M₂ →L[R] M}
     (hf : f ∘L g = .id R M₂) (hg : g ∘L f = .id R M) :
     f.IsInvertible :=
-  ⟨ContinuousLinearEquiv.equivOfInverse' _ _ hf hg, rfl⟩
+  ⟨ContinuousLinearEquiv.ofContinuousLinearMap' _ _ hf hg, rfl⟩
 
 lemma inverse_eq {f : M →L[R] M₂} {g : M₂ →L[R] M}
     (hf : f ∘L g = .id R M₂) (hg : g ∘L f = .id R M) :
     f.inverse = g := by
-  rw [← ContinuousLinearEquiv.toContinuousLinearMap_equivOfInverse' f g hf hg, inverse_equiv]
+  rw [← ContinuousLinearEquiv.toContinuousLinearMap_ofContinuousLinearMap' f g hf hg, inverse_equiv]
   simp
 
 @[simp]
