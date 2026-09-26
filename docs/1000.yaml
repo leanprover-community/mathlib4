@@ -2021,7 +2021,11 @@ Q2120067:
 
 Q2190744:
   title: Feuerbach's theorem
-  # in 100.yaml also
+  decls:
+    - Affine.Triangle.isExtTangent_exsphere_ninePointCircle
+    - Affine.Triangle.isIntTangent_insphere_ninePointCircle
+  authors: Weiyi Wang
+  date: 2026
 
 Q2197859:
   title: Nicomachus's theorem

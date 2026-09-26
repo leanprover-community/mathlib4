@@ -125,6 +125,10 @@
   title  : Pascal’s Hexagon Theorem
 29:
   title  : Feuerbach’s Theorem
+  decls  :
+    - Affine.Triangle.isExtTangent_exsphere_ninePointCircle
+    - Affine.Triangle.isIntTangent_insphere_ninePointCircle
+  authors: Weiyi Wang
 30:
   title  : The Ballot Problem
   authors: Bhavik Mehta and Kexing Ying

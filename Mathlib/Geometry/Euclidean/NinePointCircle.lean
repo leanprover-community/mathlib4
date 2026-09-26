@@ -74,6 +74,11 @@ theorem ninePointCircle_center_mem_affineSpan {n : ℕ} (s : Simplex ℝ P n) :
 theorem ninePointCircle_radius {n : ℕ} (s : Simplex ℝ P n) :
     s.ninePointCircle.radius = s.circumradius / (n : ℝ) := rfl
 
+theorem ninePointCircle_radius_nonneg {n : ℕ} (s : Simplex ℝ P n) :
+    0 ≤ s.ninePointCircle.radius := by
+  rw [s.ninePointCircle_radius]
+  exact div_nonneg s.circumradius_nonneg (by simp)
+
 @[simp]
 theorem ninePointCircle_reindex {m n : ℕ} (s : Simplex ℝ P n) (e : Fin (n + 1) ≃ Fin (m + 1)) :
     (s.reindex e).ninePointCircle = s.ninePointCircle := by
