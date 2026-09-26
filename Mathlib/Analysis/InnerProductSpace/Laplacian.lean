@@ -243,6 +243,14 @@ The Laplacian of a constant function is zero.
   simp [laplacian_eq_iteratedFDeriv_stdOrthonormalBasis, iteratedFDeriv_const_of_ne two_ne_zero,
     Pi.zero_def]
 
+/--
+Translations preserve the Laplacian.
+-/
+theorem laplacian_comp_add {k : E} :
+    Δ (fun x ↦ f (x + k)) x = Δ f (x + k) := by
+  simp_rw [laplacian_eq_iteratedFDeriv_orthonormalBasis _ <| stdOrthonormalBasis ..,
+    iteratedFDeriv_comp_add_right]
+
 /-!
 ## Congruence Lemmata for Δ
 -/
