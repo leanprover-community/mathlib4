@@ -197,10 +197,10 @@ lemma isUnit_iff_ordFrac_one_of_isDiscreteValuationRing {x : R} :
   simp [ordFrac_eq_valuation_inv, IsDiscreteValuationRing.maximalIdeal]
 
 lemma mker_ordFrac_eq_isUnitSubmonoid :
-    MonoidHom.mker (ordFrac R) = (IsUnit.submonoid R).map (algebraMap R K) := by
-  rw [ordFrac_eq_inverse_comp_valuation, ← MonoidWithZeroHom.comap_mker,
-      MonoidWithZeroHom.mker_inverse]
-  exact IsDiscreteValuationRing.mker_valuation_eq_isUnitSubmonoid
+    (ordFrac R (K := K) : K →* WithZero (Multiplicative ℤ)).mker =
+      (IsUnit.submonoid R).map (algebraMap R K : R →* K) := by
+  simpa [ordFrac_eq_inverse_comp_valuation, ← MonoidHom.comap_mker, MonoidWithZeroHom.mker_inverse]
+    using IsDiscreteValuationRing.mker_valuation_eq_isUnitSubmonoid
 
 /--
 For `x y : R`, if `x + y ≠ 0` then `min (ordFrac R x) (ordFrac R y) ≤ ordFrac R (x + y)`. The

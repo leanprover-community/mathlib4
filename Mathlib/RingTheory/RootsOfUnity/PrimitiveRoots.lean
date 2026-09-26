@@ -536,17 +536,15 @@ then the `n`-th roots of unity in `R` and `S` are isomorphic.
 Also see `IsPrimitiveRoot.map_rootsOfUnity` for the equality as `Subgroup Sˣ`. -/
 @[simps! -isSimp apply_coe_val apply_coe_inv_val]
 noncomputable
-def _root_.rootsOfUnityEquivOfPrimitiveRoots {S F} [CommRing S] [IsDomain S]
-    [FunLike F R S] [MonoidHomClass F R S]
-    {n : ℕ} [NeZero n] {f : F} (hf : Function.Injective f) (hζ : (primitiveRoots n R).Nonempty) :
+def _root_.rootsOfUnityEquivOfPrimitiveRoots {S} [CommRing S] [IsDomain S] {n : ℕ} [NeZero n]
+    {f : R →* S} (hf : Function.Injective f) (hζ : (primitiveRoots n R).Nonempty) :
     (rootsOfUnity n R) ≃* rootsOfUnity n S :=
   (Subgroup.equivMapOfInjective _ (Units.map f) (Units.map_injective hf)).trans
     (MulEquiv.subgroupCongr <|
       ((mem_primitiveRoots <| NeZero.pos n).mp hζ.choose_spec).map_rootsOfUnity hf)
 
-lemma _root_.rootsOfUnityEquivOfPrimitiveRoots_symm_apply
-    {S F} [CommRing S] [IsDomain S] [FunLike F R S] [MonoidHomClass F R S] {n : ℕ} [NeZero n]
-    {f : F} (hf : Function.Injective f) (hζ : (primitiveRoots n R).Nonempty) (η) :
+lemma _root_.rootsOfUnityEquivOfPrimitiveRoots_symm_apply {S} [CommRing S] [IsDomain S] {n : ℕ}
+    [NeZero n] {f : R →* S} (hf : Function.Injective f) (hζ : (primitiveRoots n R).Nonempty) (η) :
     f ((rootsOfUnityEquivOfPrimitiveRoots hf hζ).symm η : Rˣ) = (η : Sˣ) := by
   obtain ⟨ε, rfl⟩ := (rootsOfUnityEquivOfPrimitiveRoots hf hζ).surjective η
   rw [MulEquiv.symm_apply_apply, val_rootsOfUnityEquivOfPrimitiveRoots_apply_coe]
@@ -788,9 +786,9 @@ noncomputable def autToPow [NeZero n] : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
     refine Eq.trans ?_ hμ.eq_orderOf.symm -- `rw [hμ.eq_orderOf]` gives "motive not type correct"
     rw [← hμ.val_toRootsOfUnity_coe, orderOf_units, Subgroup.orderOf_coe]
   MonoidHom.toHomUnits
-    { toFun := fun σ ↦ (map_rootsOfUnity_eq_pow_self σ.toAlgHom μ').choose
+    { toFun := fun σ ↦ (map_rootsOfUnity_eq_pow_self σ μ').choose
       map_one' := by
-        generalize_proofs h1
+        generalize_proofs _ h1
         have h := h1.choose_spec
         replace h : μ' = μ' ^ h1.choose :=
           rootsOfUnity.coe_injective (by simpa only [rootsOfUnity.coe_pow] using! h)
@@ -799,7 +797,7 @@ noncomputable def autToPow [NeZero n] : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
         exact Nat.cast_one.symm
       map_mul' := by
         intro x y
-        generalize_proofs hxy' hx' hy'
+        generalize_proofs _ hxy' hx' hy'
         have hxy := hxy'.choose_spec
         replace hxy : x (((μ' : Sˣ) : S) ^ hy'.choose) = ((μ' : Sˣ) : S) ^ hxy'.choose :=
           hy'.choose_spec ▸ hxy
@@ -821,7 +819,7 @@ theorem coe_autToPow_apply [NeZero n] (f : S ≃ₐ[R] S) :
 @[simp]
 theorem autToPow_spec [NeZero n] (f : S ≃ₐ[R] S) : μ ^ (hμ.autToPow R f : ZMod n).val = f μ := by
   rw [IsPrimitiveRoot.coe_autToPow_apply]
-  generalize_proofs h
+  generalize_proofs _ h
   refine (?_ : ((hμ.toRootsOfUnity : Sˣ) : S) ^ _ = _).trans h.choose_spec.symm
   rw [← rootsOfUnity.coe_pow, ← rootsOfUnity.coe_pow]
   congr 2

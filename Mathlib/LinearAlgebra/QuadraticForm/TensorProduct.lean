@@ -47,7 +47,8 @@ Note this is heterobasic; the quadratic map on the left can take values in a mod
 ring than the one on the right. -/
 def tensorDistrib :
     QuadraticMap A M₁ N₁ ⊗[R] QuadraticMap R M₂ N₂ →ₗ[A] QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂) :=
-  letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
+  letI : Invertible (2 : A) :=
+    (Invertible.map (algebraMap R A : R →* A) 2).copy 2 (map_natCast (algebraMap R A) 2).symm
   -- while `letI`s would produce a better term than `let`, they would make this already-slow
   -- definition even slower.
   let toQ := BilinMap.toQuadraticMapLinearMap A A (M₁ ⊗[R] M₂)
@@ -60,7 +61,8 @@ def tensorDistrib :
 @[simp]
 theorem tensorDistrib_tmul (Q₁ : QuadraticMap A M₁ N₁) (Q₂ : QuadraticMap R M₂ N₂) (m₁ : M₁)
     (m₂ : M₂) : tensorDistrib R A (Q₁ ⊗ₜ Q₂) (m₁ ⊗ₜ m₂) = Q₁ m₁ ⊗ₜ Q₂ m₂ :=
-  letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
+  letI : Invertible (2 : A) :=
+    (Invertible.map (algebraMap R A : R →* A) 2).copy 2 (map_natCast (algebraMap R A) 2).symm
   (BilinMap.tensorDistrib_tmul _ _ _ _ _ _).trans <| congr_arg₂ _
     (associated_eq_self_apply _ _ _) (associated_eq_self_apply _ _ _)
 
@@ -72,7 +74,8 @@ protected abbrev tmul (Q₁ : QuadraticMap A M₁ N₁)
 theorem associated_tmul [Invertible (2 : A)]
     (Q₁ : QuadraticMap A M₁ N₁) (Q₂ : QuadraticMap R M₂ N₂) :
     (Q₁.tmul Q₂).associated = Q₁.associated.tmul Q₂.associated := by
-  let : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
+  let : Invertible (2 : A) :=
+    (Invertible.map (algebraMap R A : R →* A) 2).copy 2 (map_natCast (algebraMap R A) 2).symm
   rw [QuadraticMap.tmul, BilinMap.tmul]
   have : Subsingleton (Invertible (2 : A)) := inferInstance
   convert!
@@ -98,7 +101,8 @@ def tensorDistrib :
 @[simp]
 theorem tensorDistrib_tmul (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) (m₁ : M₁) (m₂ : M₂) :
     tensorDistrib R A (Q₁ ⊗ₜ Q₂) (m₁ ⊗ₜ m₂) = Q₂ m₂ • Q₁ m₁ :=
-  letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
+  letI : Invertible (2 : A) :=
+    (Invertible.map (algebraMap R A : R →* A) 2).copy 2 (map_natCast (algebraMap R A) 2).symm
   (LinearMap.BilinForm.tensorDistrib_tmul _ _ _ _ _ _ _ _).trans <| congr_arg₂ _
     (associated_eq_self_apply _ _ _) (associated_eq_self_apply _ _ _)
 

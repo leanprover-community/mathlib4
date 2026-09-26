@@ -91,9 +91,9 @@ theorem lift_unique (F : AlgHom k (SkewMonoidAlgebra k G) A)
 /-- If `f : G → H` is a multiplicative homomorphism between two monoids, then
 `mapDomain f` is an algebra homomorphism between their monoid algebras. -/
 @[simps!]
-def mapDomainAlgHom (k A : Type*) [CommSemiring k] [Semiring A] [Algebra k A] {H F : Type*}
-    [Monoid H] [FunLike F G H] [MonoidHomClass F G H] [MulSemiringAction G A]
-    [MulSemiringAction H A] [SMulCommClass G k A] [SMulCommClass H k A] {f : F}
+def mapDomainAlgHom (k A : Type*) [CommSemiring k] [Semiring A] [Algebra k A] {H : Type*}
+    [Monoid H] [MulSemiringAction G A]
+    [MulSemiringAction H A] [SMulCommClass G k A] [SMulCommClass H k A] {f : G →* H}
     (hf : ∀ (a : G) (x : A), a • x = (f a) • x) :
     SkewMonoidAlgebra A G →ₐ[k] SkewMonoidAlgebra A H where
   __ := mapDomainRingHom hf
@@ -179,7 +179,7 @@ def domCongrAlg {e : G ≃* H} (he : ∀ (a : G) (x : A), a • x = (e a) • x)
         congr_arg₂ _ (equivMapDomain_eq_mapDomain _ _).symm (equivMapDomain_eq_mapDomain _ _).symm)
 
 theorem domCongrAlg_toAlgHom {e : G ≃* H} (he : ∀ (a : G) (x : A), a • x = (e a) • x) :
-    (domCongrAlg k A he).toAlgHom = mapDomainAlgHom k A he :=
+    (domCongrAlg k A he).toAlgHom = mapDomainAlgHom (f := e) k A he :=
   AlgHom.ext <| fun _ ↦ equivMapDomain_eq_mapDomain _ _
 
 @[simp] theorem domCongrAlg_apply {e : G ≃* H} (he : ∀ (a : G) (x : A), a • x = (e a) • x)

@@ -94,7 +94,7 @@ lemma Algebra.trace_quotient_eq_of_isDedekindDomain (x) [IsDedekindDomain R] [Is
   let Sₚ := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
   have e : Algebra.algebraMapSubmonoid S p.primeCompl ≤ S⁰ :=
     Submonoid.map_le_of_le_comap _ <| p.primeCompl_le_nonZeroDivisors.trans
-      (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _
+      (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective (algebraMap R S : R →*₀ S)
         (FaithfulSMul.algebraMap_injective _ _))
   have : IsIntegrallyClosed Sₚ := isIntegrallyClosed_of_isLocalization _ _ e
   apply (equivQuotMaximalIdeal p Rₚ).injective

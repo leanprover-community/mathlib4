@@ -328,7 +328,8 @@ theorem jacobson_bot_of_integral_localization
       RingHom.IsIntegral (IsLocalization.map Sₘ φ (Submonoid.powers x).le_comap_map : Rₘ →+* Sₘ)) :
     (⊥ : Ideal S).jacobson = (⊥ : Ideal S) := by
   have hM : ((Submonoid.powers x).map φ : Submonoid S) ≤ nonZeroDivisors S :=
-    map_le_nonZeroDivisors_of_injective φ hφ (powers_le_nonZeroDivisors_of_noZeroDivisors hx)
+    map_le_nonZeroDivisors_of_injective (φ : R →*₀ S) hφ
+      (powers_le_nonZeroDivisors_of_noZeroDivisors hx)
   let : IsDomain Sₘ := IsLocalization.isDomain_of_le_nonZeroDivisors _ hM
   let φ' : Rₘ →+* Sₘ := IsLocalization.map _ φ (Submonoid.powers x).le_comap_map
   suffices ∀ I : Ideal Sₘ, I.IsMaximal → (I.comap (algebraMap S Sₘ)).IsMaximal by
@@ -462,9 +463,7 @@ theorem isMaximal_comap_C_of_isMaximal [IsJacobsonRing R] [Nontrivial R]
       (IsLocalization.map_injective_of_injective M (Localization M) (Localization M')
         quotientMap_injective))]
     refine isMaximal_comap_of_isIntegral_of_isMaximal _ ?_ ⊥
-    have isloc : IsLocalization (Submonoid.map φ M) (Localization M') := by infer_instance
-    exact @isIntegral_isLocalization_polynomial_quotient R _
-      (Localization M) (Localization M') _ _ P m hmem_P _ _ _ isloc
+    exact isIntegral_isLocalization_polynomial_quotient P m hmem_P
   rw [(map_bot.symm :
     (⊥ : Ideal (Localization M')) = Ideal.map (algebraMap (R[X] ⧸ P) (Localization M')) ⊥)]
   let bot_maximal := (bot_quotient_isMaximal_iff _).mpr hP

@@ -145,6 +145,9 @@ theorem coe_toMonoidWithZeroHom (v : Valuation R Γ₀) : ⇑(v : R →*₀ Γ�
 @[deprecated (since := "2026-09-15")]
 alias toMonoidWithZeroHom_coe_eq_coe := coe_toMonoidWithZeroHom
 
+@[simp]
+theorem toMonoidHom_toMonoidWithZeroHom (v : Valuation R Γ₀) : ((v : R →*₀ Γ₀) : R →* Γ₀) = v := rfl
+
 @[ext]
 theorem ext {v₁ v₂ : Valuation R Γ₀} (h : ∀ r, v₁ r = v₂ r) : v₁ = v₂ :=
   DFunLike.ext _ _ h
@@ -1389,21 +1392,22 @@ theorem ofAddValuation_apply (v : AddValuation R (Additive Γ₀)ᵒᵈ) (r : R)
   rfl
 
 /- TODO: Once `MonoidHom.mrange` is refactored from taking a `MonoidHomClass` argument to a
-`MonoidHom` (see the discussion at https://leanprover.zulipchat.com/#narrow/channel/
+`MonoidHom` and coercion unified to `.toMonoidHom`
+(see the discussion at https://leanprover.zulipchat.com/#narrow/channel/
 287929-mathlib4/topic/Mathlib.27s.20morphism.20hierarchy), this instance can be removed. -/
-instance (v : Valuation R Γ₀) : CommMonoidWithZero (MonoidHom.mrange v) :=
-  inferInstanceAs (CommMonoidWithZero (MonoidHom.mrange (v : R →*₀ Γ₀)))
+instance (v : Valuation R Γ₀) : CommMonoidWithZero v.mrange :=
+  inferInstanceAs <| CommMonoidWithZero ((v : R →*₀ Γ₀) : R →* Γ₀).mrange
 
 @[simp]
 lemma val_mrange_zero (v : Valuation R Γ₀) :
-    ((0 : MonoidHom.mrange v) : Γ₀) = 0 :=
+    ((0 : v.mrange) : Γ₀) = 0 :=
   rfl
 
 /- TODO: Once `MonoidHom.mrange` is refactored from taking a `MonoidHomClass` argument to a
 `MonoidHom` (see the discussion at https://leanprover.zulipchat.com/#narrow/channel/
 287929-mathlib4/topic/Mathlib.27s.20morphism.20hierarchy), this instance can be removed. -/
 instance {Γ₀} [LinearOrderedCommGroupWithZero Γ₀] [DivisionRing K] (v : Valuation K Γ₀) :
-    CommGroupWithZero (MonoidHom.mrange v) :=
-  inferInstanceAs (CommGroupWithZero (MonoidHom.mrange (v : K →*₀ Γ₀)))
+    CommGroupWithZero v.mrange :=
+  inferInstanceAs (CommGroupWithZero (((v : K →*₀ Γ₀) : K →* Γ₀).mrange))
 
 end Valuation

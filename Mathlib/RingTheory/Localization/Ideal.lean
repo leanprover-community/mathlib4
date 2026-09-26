@@ -356,7 +356,7 @@ lemma _root_.Module.IsTorsionFree.of_isLocalization [IsDomain R] [IsDomain S] {R
     [Module.IsTorsionFree R S] : Module.IsTorsionFree Rₚ Sₚ := by
   have e : Algebra.algebraMapSubmonoid S M ≤ S⁰ :=
     Submonoid.map_le_of_le_comap _ <| hM.trans
-      (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _
+      (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective (algebraMap R S : R →*₀ S)
         (FaithfulSMul.algebraMap_injective _ _))
   have : IsDomain Sₚ := IsLocalization.isDomain_of_le_nonZeroDivisors _ e
   have : algebraMap Rₚ Sₚ = IsLocalization.map (T := Algebra.algebraMapSubmonoid S M) Sₚ
@@ -370,23 +370,26 @@ lemma _root_.Module.IsTorsionFree.of_isLocalization [IsDomain R] [IsDomain S] {R
   simp only [IsLocalization.map_mk', IsLocalization.mk'_eq_zero_iff,
     Subtype.exists, exists_prop, this] at hx ⊢
   obtain ⟨_, ⟨a, ha, rfl⟩, H⟩ := hx
-  simp only [← map_mul,
+  simp only [MonoidHom.coe_ofClass, ← map_mul,
     (injective_iff_map_eq_zero' _).mp (FaithfulSMul.algebraMap_injective R S)] at H
   exact ⟨a, ha, H⟩
 
 lemma of_surjective {R' S' : Type*} [CommRing R'] [CommRing S'] [Algebra R' S']
     (f : R →+* R') (hf : Function.Surjective f) (g : S →+* S') (hg : Function.Surjective g)
     (H : g.comp (algebraMap R S) = (algebraMap _ _).comp f)
-    (H' : RingHom.ker g ≤ (RingHom.ker f).map (algebraMap R S)) : IsLocalization (M.map f) S' where
+    (H' : RingHom.ker g ≤ (RingHom.ker f).map (algebraMap R S)) :
+      IsLocalization (M.map (f : R →* R')) S' where
   map_units := by
     rintro ⟨_, y, hy, rfl⟩
-    simpa only [← RingHom.comp_apply, H] using (IsLocalization.map_units S ⟨y, hy⟩).map g
+    simpa only [RingHom.toMonoidHom_eq_coe, MonoidHom.coe_ofClass, ← RingHom.comp_apply, ← H]
+      using (IsLocalization.map_units S ⟨y, hy⟩).map g
   surj := by
     intro z
     obtain ⟨z, rfl⟩ := hg z
     obtain ⟨⟨r, s⟩, e⟩ := IsLocalization.surj M z
     refine ⟨⟨f r, _, s.1, s.2, rfl⟩, ?_⟩
-    simpa only [map_mul, ← RingHom.comp_apply, H] using congr(g $e)
+    simpa only [RingHom.toMonoidHom_eq_coe, MonoidHom.coe_ofClass, map_mul, ← RingHom.comp_apply, H]
+      using congr(g $e)
   exists_of_eq := by
     intro x y e
     obtain ⟨x, rfl⟩ := hf x
@@ -404,7 +407,7 @@ instance (I : Ideal R) :
 open Algebra in
 instance {P : Ideal R} [P.IsPrime] [IsDomain R] [IsDomain S] [FaithfulSMul R S] :
     IsDomain (Localization (algebraMapSubmonoid S P.primeCompl)) :=
-  isDomain_localization (map_le_nonZeroDivisors_of_injective _
+  isDomain_localization (map_le_nonZeroDivisors_of_injective (algebraMap R S : R →*₀ S)
     (FaithfulSMul.algebraMap_injective R S) P.primeCompl_le_nonZeroDivisors)
 
 end CommRing

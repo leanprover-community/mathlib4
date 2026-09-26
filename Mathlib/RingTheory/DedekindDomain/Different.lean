@@ -446,7 +446,8 @@ theorem dual_eq_dual_mul_dual :
         (dual A K (1 : FractionalIdeal B⁰ L)).extendedHom M C := by
   have := IsIntegralClosure.isLocalization B L M C
   have h : B⁰ ≤ Submonoid.comap (algebraMap B C) C⁰ :=
-    nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ <| FaithfulSMul.algebraMap_injective _ _
+    nonZeroDivisors_le_comap_nonZeroDivisors_of_injective (algebraMap B C : B →*₀ C)
+      (FaithfulSMul.algebraMap_injective _ _)
   have h_alg {x : L} : algebraMap L M x = IsLocalization.map M (algebraMap B C) h x :=
     IsLocalization.algebraMap_apply_eq_map_map_submonoid B⁰ C L M x
   refine le_antisymm ?_ ?_

@@ -83,9 +83,11 @@ def toBaseChange (Q : QuadraticForm R V) :
     CliffordAlgebra (Q.baseChange A) →ₐ[A] A ⊗[R] CliffordAlgebra Q :=
   CliffordAlgebra.lift _ <| by
     refine ⟨TensorProduct.AlgebraTensorModule.map (LinearMap.id : A →ₗ[A] A) (ι Q), ?_⟩
-    let : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
+    let : Invertible (2 : A) :=
+      (Invertible.map (algebraMap R A : R →* A) 2).copy 2 (map_ofNat (algebraMap R A) _).symm
     let : Invertible (2 : A ⊗[R] CliffordAlgebra Q) :=
-      (Invertible.map (algebraMap R _) 2).copy 2 (map_ofNat _ _).symm
+      (Invertible.map (algebraMap R (A ⊗[R] CliffordAlgebra Q) : R →* _) 2).copy 2
+        (map_ofNat (algebraMap R _) _).symm
     suffices hpure_tensor : ∀ v w, (1 * 1) ⊗ₜ[R] (ι Q v * ι Q w) + (1 * 1) ⊗ₜ[R] (ι Q w * ι Q v) =
         QuadraticMap.polarBilin (Q.baseChange A) (1 ⊗ₜ[R] v) (1 ⊗ₜ[R] w) ⊗ₜ[R] 1 by
       -- the crux is that by converting to a statement about linear maps instead of quadratic forms,

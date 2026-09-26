@@ -118,7 +118,7 @@ lemma isLocalization_away {U V : X.affineOpens}
   let := (X.presheaf.map (homOfLE (X := X.Opens) h).op).hom.toAlgebra
   have : IsLocalization.Away f Γ(X, U) := by
     subst hU; exact V.2.isLocalization_of_eq_basicOpen _ _ rfl
-  simp only [IsLocalization.Away, ← Submonoid.map_powers]
+  rw [IsLocalization.Away, ← MonoidHom.coe_ofClass, ← Submonoid.map_powers]
   refine IsLocalization.of_surjective _ _ _ Ideal.Quotient.mk_surjective _
     Ideal.Quotient.mk_surjective ?_ ?_
   · simp [RingHom.algebraMap_toAlgebra, Ideal.quotientMap_comp_mk]; rfl

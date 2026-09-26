@@ -22,7 +22,7 @@ open MvPolynomial
 
 noncomputable instance MvPolynomial.invertibleC (σ : Type*) {R : Type*} [CommSemiring R] (r : R)
     [Invertible r] : Invertible (C r : MvPolynomial σ R) :=
-  Invertible.map (C : R →+* MvPolynomial σ R) _
+  Invertible.map (C (R := R) (σ := σ) : R →* MvPolynomial σ R) _
 
 /-- A natural number that is invertible when coerced to a commutative semiring `R`
 is also invertible when coerced to any polynomial ring with rational coefficients.
