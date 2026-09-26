@@ -135,6 +135,14 @@ lemma ofCoconeObjIso_hom_naturality (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi₂ 
       (ofCoconeObjIso c i₁ (lt_of_le_of_lt hi hi₂)).hom ≫ F.map (homOfLE hi) := by
   rw [ofCocone_map c i₁ i₂ hi hi₂, assoc, assoc, Iso.inv_hom_id, comp_id]
 
+@[reassoc]
+lemma ofCoconeObjIso_inv_naturality (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi₂ : i₂ < j) :
+    (ofCoconeObjIso c i₁ (lt_of_le_of_lt hi hi₂)).inv ≫
+      (ofCocone c).map (homOfLE hi : (⟨i₁, Set.mem_Iic.mpr (hi.trans hi₂.le)⟩ : Set.Iic _) ⟶
+        ⟨i₂, Set.mem_Iic.mpr hi₂.le⟩) =
+      F.map (homOfLE hi) ≫ (ofCoconeObjIso c i₂ hi₂).inv := by
+ simp [Eq.comm, Iso.comp_inv_eq, Category.assoc, ofCoconeObjIso_hom_naturality]
+
 /-- The isomorphism expressing that `ofCocone c` extends the functor `F`
 when `c : Cocone F`. -/
 @[simps!]

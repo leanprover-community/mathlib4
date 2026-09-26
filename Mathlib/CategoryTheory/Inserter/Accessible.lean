@@ -108,6 +108,7 @@ structure PositetskiInductionDataUpTo
 private lemma grind_helper {X : K}
   {x y : CostructuredArrow (isCardinalPresentable K κ).ι X} (f : x ⟶ y) :
       f.left.hom ≫ y.hom = x.hom := by simpa using f.w
+
 /-- The structure of a partial induction for constructing the chain
 as in Positetski, 4.5.
 To realize the induction, we transform `j ↦ PositetskiInductionDataUpTo … j` into a
@@ -397,39 +398,40 @@ theorem surjective_trunc (hΛ : HasCardinalLT Λ κ) (E : Inserter F G) (i : Λ)
 
 section limit
 
-abbrev ISeg (E : Inserter F G) (j : Λ) :=
-    ((OrderHom.Subtype.val (· ∈ Set.Iio j)).monotone.functor.op ⋙
-        PositetskiInductionDataUpTo2.functor κ Λ E).sections
+@[implicit_reducible]
+def ISeg (E : Inserter F G) (j : Λ) : Type _ :=
+  ((OrderHom.Subtype.val (· ∈ Set.Iio j)).monotone.functor.op ⋙
+      PositetskiInductionDataUpTo2.functor κ Λ E).sections
 
 namespace ISeg
 
 variable {κ Λ} {E : Inserter F G} {j : Λ}
 
 @[implicit_reducible]
-def functorObj (S : ISeg κ Λ E j) (t : Set.Iio j) :
+def ξ (S : ISeg κ Λ E j) (t : Set.Iio j) :
     CostructuredArrow (isCardinalPresentable K κ).ι E.obj :=
   (S.val (Opposite.op t)).ξ.obj ⟨t.1, le_rfl⟩
 
-def functorObjIsoOfLe (S : ISeg κ Λ E j) (i k : Λ) (hi : i ≤ k) (hij : k < j) :
-    ISeg.functorObj S ⟨i, by grind⟩ ≅ (S.val (Opposite.op ⟨k, by grind⟩)).ξ.obj ⟨i, hi⟩ :=
+def ξObjIso (S : ISeg κ Λ E j) (i k : Λ) (hi : i ≤ k) (hij : k < j) :
+    S.ξ ⟨i, by grind⟩ ≅ (S.val (Opposite.op ⟨k, by grind⟩)).ξ.obj ⟨i, hi⟩ :=
   eqToIso <| congr($(S.2 (homOfLE hi : ⟨i, by grind⟩ ⟶ ⟨k, by grind⟩).op).ξ.obj ⟨i, le_rfl⟩).symm
 
 open Opposite in
 set_option backward.isDefEq.respectTransparency false in
 def functor (S : ISeg κ Λ E j) :
     Set.Iio j ⥤ CostructuredArrow (isCardinalPresentable K κ).ι E.obj where
-  obj := functorObj S
+  obj := S.ξ
   map {s t} f :=
-    (functorObjIsoOfLe S s.1 t.1 (leOfHom f) t.property).hom ≫
+    (S.ξObjIso s.1 t.1 (leOfHom f) t.property).hom ≫
       (S.val (Opposite.op t)).ξ.map (homOfLE (leOfHom f)) ≫
-      (functorObjIsoOfLe S t.1 t.1 le_rfl t.property).inv
+      (S.ξObjIso t.1 t.1 le_rfl t.property).inv
   map_id x := by simp
   map_comp {u v w} f g := by
     have := (S.val (Opposite.op w)).ξ.map_comp
       (homOfLE (leOfHom f : ⟨u, by simpa using (leOfHom (f ≫ g))⟩ ≤ ⟨v, by simpa using leOfHom g⟩))
       (homOfLE (leOfHom g : (⟨v, by simpa using (leOfHom g)⟩ : Set.Iic w.1) ≤ ⟨w, le_rfl⟩))
     simp at this
-    dsimp [functorObjIsoOfLe, functorObj]
+    dsimp [ξObjIso, ξ]
     simp only [Functor.op_obj, Monotone.functor_obj, homOfLE_leOfHom, Category.comp_id,
       Category.assoc, CostructuredArrow.hom_eq_iff, CostructuredArrow.comp_left,
       CostructuredArrow.eqToHom_left, this]
@@ -440,9 +442,60 @@ def functor (S : ISeg κ Λ E j) :
     simp [Functor.congr_hom this]
     rfl
 
+section
+open Opposite
+
+variable (S : ISeg κ Λ E j)
+
+def ψ (u v : Λ) (huv : u < v) (hv : v < j) :
+    F.obj (S.functor.obj ⟨u, huv.trans hv⟩).left.obj ⟶ G.obj (S.functor.obj ⟨v, hv⟩).left.obj :=
+  F.map (S.ξObjIso u v huv.le hv).hom.left.hom ≫
+    (S.val (op _)).ψ u v huv le_rfl ≫
+    G.map (S.ξObjIso v v le_rfl hv).inv.left.hom
+
+lemma sq₁ (k k' : Λ) (hk₁ : k < k') (hk₂ : k' < j) :
+    S.ψ k k' hk₁ hk₂ ≫ G.map (S.functor.obj ⟨k', Set.mem_Iio.mpr hk₂⟩).hom =
+    F.map (S.functor.obj ⟨k, Set.mem_Iio.mpr (hk₁.trans hk₂)⟩).hom ≫ E.hom := by
+  dsimp [ψ, functor, ξ]
+  simp only [Category.assoc, ← G.map_comp, grind_helper]
+  have ψ' : (S.1 (op ⟨k', hk₂⟩)).ψ k k' hk₁ _ ≫
+      G.map ((S.1 (op ⟨k', hk₂⟩)).ξ.obj ⟨k', _⟩).hom = _ :=
+    dsimp% (S.1 (Opposite.op ⟨k', hk₂⟩)).sq₁ k hk₁
+  simp [ψ', ← F.map_comp_assoc]
+
+set_option backward.isDefEq.respectTransparency false in
+lemma t₁ (k₁ k₂ k₃ : Λ) (h₁₂ : k₁ < k₂) (h₂₃ : k₂ < k₃) (h₃ : k₃ < j) :
+    S.ψ k₁ k₃ (by grind) h₃ =
+    F.map (S.functor.map (homOfLE h₁₂.le)).left.hom ≫ S.ψ k₂ k₃ h₂₃ (by grind) := by
+  dsimp [ψ, functor, ξ]
+  have :=
+    Functor.congr_hom
+      congr($(S.2 (homOfLE h₂₃.le : (⟨k₂, by grind⟩ : Set.Iio j) ⟶ ⟨k₃, by grind⟩).op).ξ).symm
+      (homOfLE h₁₂.le : (⟨k₁, h₁₂.le⟩) ⟶ ⟨k₂, le_rfl⟩)
+  simp [dsimp% (S.1 (Opposite.op ⟨k₃, h₃⟩)).t₁ k₁ k₂ k₃ h₁₂ h₂₃ le_rfl, this, ξObjIso, eqToIso,
+    trunc]
+
+lemma t₂ (k₁ k₂ k₃ : Λ) (h₁₂ : k₁ < k₂) (h₂₃ : k₂ < k₃) (h₃ : k₃ < j) :
+    S.ψ k₁ k₃ (by grind) h₃ =
+    S.ψ k₁ k₂ h₁₂ (by grind) ≫ G.map (S.functor.map (homOfLE h₂₃.le)).left.hom := by
+  have h' := dsimp% (S.1 (Opposite.op ⟨k₃, h₃⟩)).t₂ k₁ k₂ k₃ h₁₂ h₂₃ le_rfl
+  have :=
+    Functor.congr_hom
+      congr($(S.2 (homOfLE h₂₃.le : (⟨k₂, by grind⟩ : Set.Iio j) ⟶ ⟨k₃, by grind⟩).op).ξ).symm
+      (homOfLE h₁₂.le : (⟨k₁, h₁₂.le⟩) ⟶ ⟨k₂, le_rfl⟩)
+  sorry
+  /- simp only [h', Functor.op_obj, Monotone.functor_obj, Functor.comp_obj, homOfLE_leOfHom,
+    Category.assoc, Functor.map_comp]
+  simp_rw [← Category.assoc]
+  congr 2
+  simp
+  simp [this, ξObjIso, eqToIso, trunc] -/
+
+end
+
 open Opposite in
 set_option backward.isDefEq.respectTransparency false in
-def extend (E : Inserter F G) (j : Λ) (hj : Order.IsSuccLimit j)
+noncomputable def extend (E : Inserter F G) (j : Λ) (hj : Order.IsSuccLimit j)
       (S : ISeg κ Λ E j) (hΛ : HasCardinalLT Λ κ) :
       PositetskiInductionDataUpTo2 κ Λ E j :=
   let c : Limits.Cocone (ISeg.functor S) :=
@@ -457,48 +510,156 @@ def extend (E : Inserter F G) (j : Λ) (hj : Order.IsSuccLimit j)
     F.obj (ξ.obj ⟨j', (by grind)⟩).left.obj ⟶ G.obj (ξ.obj ⟨k, hk⟩).left.obj :=
     if hk' : k = j then
       F.map (SmallObject.SuccStruct.ofCoconeObjIso c _ (by grind)).hom.left.hom ≫
-      F.map (functorObjIsoOfLe S j' (Order.succ j') sorry (by sorry)).hom.left.hom ≫
-        (S.1 (op ⟨Order.succ j', (by sorry)⟩)).ψ j' (Order.succ j') (by sorry) le_rfl ≫
-        G.map (functorObjIsoOfLe S _ _ le_rfl (by sorry)).inv.left.hom ≫
+      S.ψ j' (Order.succ j') (sorry) (sorry) ≫
         G.map (c.ι.app ⟨Order.succ j', by sorry⟩).left.hom ≫
         G.map (SmallObject.SuccStruct.ofCoconeObjIsoPt c).inv.left.hom ≫
           eqToHom (by subst hk'; rfl)
         --G.map (SmallObject.SuccStruct.ofCoconeObjIsoPt c).inv.left.hom
     else
       F.map (SmallObject.SuccStruct.ofCoconeObjIso c _ (by grind)).hom.left.hom ≫
-      F.map (functorObjIsoOfLe S j' k sorry (by sorry)).hom.left.hom ≫
-        (S.1 (op ⟨k, (by sorry)⟩)).ψ j' k (by sorry) sorry ≫
-        G.map (functorObjIsoOfLe S _ _ le_rfl (by sorry)).inv.left.hom ≫
+      S.ψ j' k (hj') (by grind) ≫
         G.map (SmallObject.SuccStruct.ofCoconeObjIso c _ sorry).inv.left.hom
   { ξ
     ψ
     sq₁ i i' := by
       dsimp [ψ, ξ]
       split_ifs with hj
-      · simp
-        have := (S.1 (op ⟨Order.succ i, by sorry⟩)).sq₁ i (sorry)
-        simp at this
-        simp_rw [← G.map_comp]
-        simp only [grind_helper, functor]
-        erw [this]
-        simp [← Functor.map_comp_assoc]
+      · simp [← Functor.map_comp, grind_helper, S.sq₁ _ _, ← Functor.map_comp_assoc]
       · simp at hj
     t₁ i i' i'' hi hi' hi'' := by
       dsimp [ψ, ξ]
       split_ifs with h₀
-      · simp
-      · simp
-    t₂ := _  }
+      · subst h₀
+        simp
+        sorry
+      · have hh : i'' < j := by grind
+        have := S.t₁ i i' i'' (by grind) (by grind) (by grind)
+        rw [this]
+        simp_rw [← Category.assoc, ← F.map_comp]
+        congr 3
+        simp_rw [← ObjectProperty.FullSubcategory.comp_hom, ← CostructuredArrow.comp_left,
+          SmallObject.SuccStruct.ofCoconeObjIso_hom_naturality]
+    t₂ i i' i'' hi hi' hi'' := by
+      dsimp [ψ, ξ]
+      split_ifs with h₀ h₁ h₂
+      · subst h₀ h₁
+        simp
+      · subst h₀
+        have hh : i' < i'' := by grind
+        have := (SmallObject.SuccStruct.ofCoconeObjIso c (Order.succ i) sorry).inv ≫=
+          SmallObject.SuccStruct.ofCocone_map_to_top c (Order.succ i) sorry
+        simp only [homOfLE_leOfHom, Functor.const_obj_obj, Iso.inv_hom_id_assoc,
+          CostructuredArrow.hom_eq_iff, CostructuredArrow.comp_left] at this
+        simp_rw [Category.assoc, ← G.map_comp_assoc, ← G.map_comp,
+          ← ObjectProperty.FullSubcategory.comp_hom,
+          ← this]
+        simp only [homOfLE_leOfHom, ObjectProperty.FullSubcategory.comp_hom, Functor.map_comp,
+          eqToHom_refl, Category.comp_id]
+        by_cases hii : i' = Order.succ i
+        · subst hii
+          simp
+        have hii' : Order.succ i < i' := by sorry -- investigate why grind fails
+        have := S.t₂ i (Order.succ i) i' sorry (by grind) (by grind)
+        simp only [homOfLE_leOfHom, this, Category.assoc]
+        congr 2
+        simp_rw [← Functor.map_comp,
+          ← ObjectProperty.FullSubcategory.comp_hom, ← CostructuredArrow.comp_left]
+        congr 2
+        rw [SmallObject.SuccStruct.ofCocone_map_to_top]
+        · have := SmallObject.SuccStruct.ofCoconeObjIso_inv_naturality c (Order.succ i) i' sorry sorry
+          simp at this
+          simp only [Functor.const_obj_obj, Iso.inv_hom_id_assoc, CostructuredArrow.comp_left,
+            homOfLE_leOfHom, reassoc_of% this.symm]
+          simp_rw [← CostructuredArrow.comp_left, ← Functor.map_comp, homOfLE_comp]
+          rw [SmallObject.SuccStruct.ofCocone_map_to_top]
+          · simp
+          · sorry
+        · sorry
+        -- rw [SmallObject.SuccStruct.ofCoconeObjIso_inv_naturality]
+      · subst h₂
+        grind
+      · have hh : i'' < j := by grind
+        have := S.t₂ i i' i'' (by grind) (by grind) (by grind)
+        rw [this]
+        simp_rw [Category.assoc, ← Functor.map_comp, ← Category.assoc]
+        congr 2
+        have := congr($(SmallObject.SuccStruct.ofCoconeObjIso_inv_naturality c i' i'' sorry sorry).left.hom)
+        simp at this
+        rw [this] }
 
 open Opposite in
 theorem exists_extension (E : Inserter F G) (j : Λ) (hj : Order.IsSuccLimit j)
-      (S : ISeg κ Λ E j) :
+      (S : ISeg κ Λ E j) (hΛ : HasCardinalLT Λ κ) :
       ∃ (y : (PositetskiInductionDataUpTo2.functor ..).obj (op j)), ∀ (i : Λ) (hi : i < j),
         (PositetskiInductionDataUpTo2.functor κ Λ E).map (homOfLE hi.le).op y =
-          S.val (op ⟨i, hi⟩) :=
-    sorry
+          S.val (op ⟨i, hi⟩) := by
+    use S.extend E j hj hΛ
+    intro i hi
+    dsimp [extend]
+    ext
+    · sorry
+    · sorry
 
 end ISeg
+
+@[implicit_reducible]
+def Seg (E : Inserter F G) : Type _ := (PositetskiInductionDataUpTo2.functor κ Λ E).sections
+namespace Seg
+
+variable {κ Λ} {E : Inserter F G} {j : Λ}
+
+section
+
+variable (S : Seg κ Λ E)
+
+@[implicit_reducible]
+def ξ (i : Λ) :
+    CostructuredArrow (isCardinalPresentable K κ).ι E.obj :=
+  (S.val (Opposite.op i)).ξ.obj ⟨i, le_rfl⟩
+
+def ξObjIso (i k : Λ) (hi : i ≤ k) :
+    S.ξ i ≅ (S.val (Opposite.op k)).ξ.obj ⟨i, hi⟩ :=
+  eqToIso <| congr($(S.2 (homOfLE hi : i ⟶ k).op).ξ.obj ⟨i, le_rfl⟩).symm
+
+def ψ (u v : Λ) (huv : u < v) (hv : v < j) :
+    F.obj (S.functor.obj ⟨u, huv.trans hv⟩).left.obj ⟶ G.obj (S.functor.obj ⟨v, hv⟩).left.obj :=
+  F.map (S.ξObjIso u v huv.le hv).hom.left.hom ≫
+    (S.val (op _)).ψ u v huv le_rfl ≫
+    G.map (S.ξObjIso v v le_rfl hv).inv.left.hom
+
+lemma sq₁ (k k' : Λ) (hk₁ : k < k') (hk₂ : k' < j) :
+    S.ψ k k' hk₁ hk₂ ≫ G.map (S.functor.obj ⟨k', Set.mem_Iio.mpr hk₂⟩).hom =
+    F.map (S.functor.obj ⟨k, Set.mem_Iio.mpr (hk₁.trans hk₂)⟩).hom ≫ E.hom := by
+  dsimp [ψ, functor, ξ]
+  simp only [Category.assoc, ← G.map_comp, grind_helper]
+  have ψ' : (S.1 (op ⟨k', hk₂⟩)).ψ k k' hk₁ _ ≫
+      G.map ((S.1 (op ⟨k', hk₂⟩)).ξ.obj ⟨k', _⟩).hom = _ :=
+    dsimp% (S.1 (Opposite.op ⟨k', hk₂⟩)).sq₁ k hk₁
+  simp [ψ', ← F.map_comp_assoc]
+
+set_option backward.isDefEq.respectTransparency false in
+lemma t₁ (k₁ k₂ k₃ : Λ) (h₁₂ : k₁ < k₂) (h₂₃ : k₂ < k₃) (h₃ : k₃ < j) :
+    S.ψ k₁ k₃ (by grind) h₃ =
+    F.map (S.functor.map (homOfLE h₁₂.le)).left.hom ≫ S.ψ k₂ k₃ h₂₃ (by grind) := by
+  dsimp [ψ, functor, ξ]
+  have :=
+    Functor.congr_hom
+      congr($(S.2 (homOfLE h₂₃.le : (⟨k₂, by grind⟩ : Set.Iio j) ⟶ ⟨k₃, by grind⟩).op).ξ).symm
+      (homOfLE h₁₂.le : (⟨k₁, h₁₂.le⟩) ⟶ ⟨k₂, le_rfl⟩)
+  simp [dsimp% (S.1 (Opposite.op ⟨k₃, h₃⟩)).t₁ k₁ k₂ k₃ h₁₂ h₂₃ le_rfl, this, ξObjIso, eqToIso,
+    trunc]
+
+lemma t₂ (k₁ k₂ k₃ : Λ) (h₁₂ : k₁ < k₂) (h₂₃ : k₂ < k₃) (h₃ : k₃ < j) :
+    S.ψ k₁ k₃ (by grind) h₃ =
+    S.ψ k₁ k₂ h₁₂ (by grind) ≫ G.map (S.functor.map (homOfLE h₂₃.le)).left.hom := by
+  have h' := dsimp% (S.1 (Opposite.op ⟨k₃, h₃⟩)).t₂ k₁ k₂ k₃ h₁₂ h₂₃ le_rfl
+  have :=
+    Functor.congr_hom
+      congr($(S.2 (homOfLE h₂₃.le : (⟨k₂, by grind⟩ : Set.Iio j) ⟶ ⟨k₃, by grind⟩).op).ξ).symm
+      (homOfLE h₁₂.le : (⟨k₁, h₁₂.le⟩) ⟶ ⟨k₂, le_rfl⟩)
+  sorry
+end
+end Seg
 
 end limit
 
