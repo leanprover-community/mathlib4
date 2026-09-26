@@ -56,6 +56,14 @@ def ninePointCircle {n : ℕ} (s : Simplex ℝ P n) : Sphere P where
 theorem ninePointCircle_center {n : ℕ} (s : Simplex ℝ P n) : s.ninePointCircle.center =
     ((n + 1) / n : ℝ) • (s.centroid -ᵥ s.circumcenter) +ᵥ s.circumcenter := rfl
 
+theorem ninePointCircle_center_eq_lineMap_circumcenter_centroid {n : ℕ} (s : Simplex ℝ P n) :
+    s.ninePointCircle.center = AffineMap.lineMap s.circumcenter s.centroid ((n + 1) / n : ℝ) := by
+  rw [ninePointCircle_center, AffineMap.lineMap_apply]
+
+theorem ninePointCircle_center_eq_point (s : Simplex ℝ P 0) (i : Fin 1) :
+    s.ninePointCircle.center = s.points i := by
+  simp [ninePointCircle_center_eq_lineMap_circumcenter_centroid, s.circumcenter_eq_point i]
+
 theorem ninePointCircle_center_mem_affineSpan {n : ℕ} (s : Simplex ℝ P n) :
     s.ninePointCircle.center ∈ affineSpan ℝ (Set.range s.points) := by
   rw [ninePointCircle_center]
@@ -65,6 +73,11 @@ theorem ninePointCircle_center_mem_affineSpan {n : ℕ} (s : Simplex ℝ P n) :
 
 theorem ninePointCircle_radius {n : ℕ} (s : Simplex ℝ P n) :
     s.ninePointCircle.radius = s.circumradius / (n : ℝ) := rfl
+
+theorem ninePointCircle_radius_nonneg {n : ℕ} (s : Simplex ℝ P n) :
+    0 ≤ s.ninePointCircle.radius := by
+  rw [s.ninePointCircle_radius]
+  exact div_nonneg s.circumradius_nonneg (by simp)
 
 @[simp]
 theorem ninePointCircle_reindex {m n : ℕ} (s : Simplex ℝ P n) (e : Fin (n + 1) ≃ Fin (m + 1)) :
@@ -112,6 +125,18 @@ theorem ninePointCircle_eq_circumsphere_medial {n : ℕ} [NeZero n] (s : Simplex
   · simpa using s.ninePointCircle_center_mem_affineSpan
   · rw [Set.range_subset_iff]
     simpa [medial_points] using s.faceOppositeCentroid_mem_ninePointCircle
+
+theorem dist_ninePointCircle_center_sq {n : ℕ} (s : Simplex ℝ P n) (i : Fin (n + 1)) :
+    dist (s.points i) s.ninePointCircle.center ^ 2 =
+      (s.circumradius ^ 2 +
+        (n - 1) * ∑ j ∈ {i}ᶜ, dist (s.points i) (s.points j) ^ 2 -
+          (∑ j ∈ {i}ᶜ, ∑ k ∈ {i}ᶜ, dist (s.points j) (s.points k) ^ 2) / 2) / n ^ 2 := by
+  by_cases hn : n = 0
+  · rcases hn with rfl
+    simp [s.ninePointCircle_center_eq_point i]
+  rw [ninePointCircle_center_eq_lineMap_circumcenter_centroid,
+    dist_lineMap_circumcenter_centroid_sq]
+  field
 
 /-- Euler points are a set of points that the `ninePointCircle` passes through. They are defined as
 being $1/n$th of the way from the Monge point to a vertex. Specifically for triangles, these are
@@ -220,6 +245,20 @@ theorem altitudeFoot_mem_ninePointCircle (s : Triangle ℝ P) (i : Fin 3) :
     ← orthocenter_eq_mongePoint, direction_affineSpan, Simplex.range_faceOpposite_points]
   refine Set.mem_of_mem_of_subset ?_ (s.vectorSpan_isOrtho_altitude_direction i).ge
   exact vsub_mem_direction (s.mem_altitude i) (s.orthocenter_mem_altitude)
+
+/-- In triangle $ABC$ with side length $a$, $b$, and $c$, nine-point circle center $N$ and
+circumradius $R$, we have $‖AN‖^2 = (R^2 + b^2 + c^2 - a^2) / 4$. -/
+theorem dist_ninePointCircle_center_sq (s : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3}
+    (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+    dist (s.points i₁) s.ninePointCircle.center ^ 2 =
+      (s.circumradius ^ 2 + dist (s.points i₁) (s.points i₂) ^ 2 +
+        dist (s.points i₁) (s.points i₃) ^ 2 - dist (s.points i₂) (s.points i₃) ^ 2) / 4 := by
+  have : ({i₁}ᶜ : Finset (Fin 3)) = {i₂, i₃} := by
+    ext i
+    fin_cases i <;> simp <;> grind
+  simp [Simplex.dist_ninePointCircle_center_sq, this, Finset.sum_pair h₂₃,
+    dist_comm (s.points i₃) (s.points i₂)]
+  ring
 
 end Affine.Triangle
 

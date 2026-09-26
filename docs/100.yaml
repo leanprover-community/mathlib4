@@ -125,6 +125,10 @@
   title  : Pascal’s Hexagon Theorem
 29:
   title  : Feuerbach’s Theorem
+  decls  :
+    - Affine.Triangle.isExtTangent_exsphere_ninePointCircle
+    - Affine.Triangle.isIntTangent_insphere_ninePointCircle
+  authors: Weiyi Wang
 30:
   title  : The Ballot Problem
   authors: Bhavik Mehta and Kexing Ying
@@ -231,7 +235,7 @@
   title  : The Hermite-Lindemann Transcendence Theorem
 57:
   title  : Heron’s Formula
-  decl   : Theorems100.heron
+  decl   : Affine.Triangle.volume_eq_sqrt_mul_sub_mul_sub_mul_sub
   authors: Matt Kempster
 58:
   title  : Formula for the Number of Combinations
