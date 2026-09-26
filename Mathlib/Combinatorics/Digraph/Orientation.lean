@@ -28,6 +28,8 @@ the edge orientations of `Digraph`.
 - Define more ways to orient a `SimpleGraph`.
 - Provide lemmas on how `toSimpleGraphInclusive` and `toSimpleGraphStrict` relate to other lattice
   structures on `SimpleGraph`s and `Digraph`s.
+- Note that currently both definitions ignore the vertex set since
+  `SimpleGraph` doesn't have vertex sets yet.
 
 ## Tags
 
@@ -46,13 +48,15 @@ section toSimpleGraph
 
 /--
 Orientation-forgetting map from `Digraph` to `SimpleGraph` that gives an unoriented edge if
-either orientation is present.
+either orientation is present. Currently this definition ignores vertex sets since `SimpleGraph`
+doesn't have vertex sets yet.
 -/
 def toSimpleGraphInclusive (G : Digraph V) : SimpleGraph V := SimpleGraph.fromRel G.Adj
 
 /--
 Orientation-forgetting map from `Digraph` to `SimpleGraph` that gives an unoriented edge if
-both orientations are present.
+both orientations are present. Currently this definition ignores vertex sets since `SimpleGraph`
+doesn't have vertex sets yet.
 -/
 def toSimpleGraphStrict (G : Digraph V) : SimpleGraph V where
   Adj v w := v ≠ w ∧ G.Adj v w ∧ G.Adj w v
@@ -63,11 +67,11 @@ lemma toSimpleGraphStrict_subgraph_toSimpleGraphInclusive (G : Digraph V) :
 
 @[gcongr, mono]
 lemma toSimpleGraphInclusive_mono : Monotone (toSimpleGraphInclusive : _ → SimpleGraph V) :=
-  fun _ _ h₁ _ _ h₂ ↦ ⟨h₂.1, h₂.2.imp (@h₁ _ _) (@h₁ _ _)⟩
+  fun _ _ h₁ _ _ h₂ ↦ ⟨h₂.1, h₂.2.imp (@h₁.2 _ _) (@h₁.2 _ _)⟩
 
 @[gcongr, mono]
 lemma toSimpleGraphStrict_mono : Monotone (toSimpleGraphStrict : _ → SimpleGraph V) :=
-  fun _ _ h₁ _ _ h₂ ↦ ⟨h₂.1, h₁ h₂.2.1, h₁ h₂.2.2⟩
+  fun _ _ h₁ _ _ h₂ ↦ ⟨h₂.1, h₁.2 h₂.2.1, h₁.2 h₂.2.2⟩
 
 @[simp]
 lemma toSimpleGraphInclusive_top : (⊤ : Digraph V).toSimpleGraphInclusive = ⊤ := by
