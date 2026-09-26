@@ -113,19 +113,28 @@ variable {M₁ M₂ M₃ M₄ : Ab.{u}}
 @[simp] lemma associator_hom_apply (x : M₁) (y : M₂) (z : M₃) :
     (α_ M₁ M₂ M₃).hom ((x ⊗ₜ y) ⊗ₜ z) = x ⊗ₜ (y ⊗ₜ z) := rfl
 
+@[simp] lemma associator_inv_apply (x : M₁) (y : M₂) (z : M₃) :
+    (α_ M₁ M₂ M₃).inv (x ⊗ₜ (y ⊗ₜ z)) = ((x ⊗ₜ y) ⊗ₜ z) := rfl
+
 @[simp] lemma leftUnitor_hom_apply (a : ULift.{u} ℤ) (x : M₁) :
     (λ_ M₁).hom (a ⊗ₜ x) = a.down • x := rfl
+
+lemma leftUnitor_inv_apply_smul (x : M₁) :
+    (λ_ M₁).inv x = ((⟨1⟩ : ULift.{u} ℤ) ⊗ₜ x) := rfl
 
 @[simp] lemma rightUnitor_hom_apply (x : M₁) (a : ULift.{u} ℤ) :
     (ρ_ M₁).hom (x ⊗ₜ a) = a.down • x := rfl
 
-@[simp] lemma brading_hom_apply (x : M₁) (y : M₂) :
+lemma rightUnitor_inv_apply (x : M₁) :
+    (ρ_ M₁).inv x = x ⊗ₜ (⟨1⟩ : ULift.{u} ℤ) := rfl
+
+@[simp] lemma braiding_hom_apply (x : M₁) (y : M₂) :
     (β_ M₁ M₂).hom (x ⊗ₜ y) = y ⊗ₜ x := rfl
 
 @[simp] lemma braiding_inv_apply (x : M₁) (y : M₂) :
     (β_ M₁ M₂).inv (y ⊗ₜ x) = x ⊗ₜ y := rfl
 
-@[simp] lemma ihom_obj (M N : Ab.{u}) : (ihom M).obj N = of (M →+ N) := by
+@[simp, defeq] lemma ihom_obj (M N : Ab.{u}) : (ihom M).obj N = of (M →+ N) := by
   with_implicit rfl
 
 end AddCommGrpCat
