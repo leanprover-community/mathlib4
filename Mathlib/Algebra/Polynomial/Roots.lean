@@ -137,9 +137,7 @@ theorem roots_eq_zero_iff_eq_zero_or_isRoot_eq_bot : p.roots = 0 ↔ p = 0 ∨ p
   simp [roots_eq_zero_iff_isRoot_eq_bot hp0, hp0]
 
 theorem roots_ne_zero_iff_ne_zero_and_exists_isRoot : p.roots ≠ 0 ↔ p ≠ 0 ∧ ∃ x, p.IsRoot x := by
-  rw [← not_iff_not]
-  push Not
-  rw [roots_eq_zero_iff_eq_zero_or_not_isRoot]
+  grind [roots_eq_zero_iff_eq_zero_or_not_isRoot]
 
 theorem roots_ne_zero_iff_exists_isRoot (hp0 : p ≠ 0) : p.roots ≠ 0 ↔ ∃ x, p.IsRoot x := by
   grind [roots_ne_zero_iff_ne_zero_and_exists_isRoot]
