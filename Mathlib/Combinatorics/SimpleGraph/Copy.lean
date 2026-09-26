@@ -13,28 +13,28 @@ public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
 This file introduces the concept of one simple graph containing a copy of another.
 
-For two simple graphs `G` and `H`, a *copy* of `G` in `H` is a (not necessarily induced) subgraph of
-`H` isomorphic to `G`.
+For two simple graphs `H` and `G`, a *copy* of `H` in `G` is a (not necessarily induced) subgraph of
+`G` isomorphic to `H`.
 
-If there exists a copy of `G` in `H`, we say that `H` *contains* `G`. This is equivalent to saying
-that there is an injective graph homomorphism `G → H` between them (this is **not** the same as a
+If there exists a copy of `H` in `G`, we say that `G` *contains* `H`. This is equivalent to saying
+that there is an injective graph homomorphism `H → G` between them (this is **not** the same as a
 graph embedding, as we do not require the subgraph to be induced).
 
-If there exists an induced copy of `G` in `H`, we say that `H` *inducingly contains* `G`. This is
-equivalent to saying that there is a graph embedding `G ↪ H`.
+If there exists an induced copy of `H` in `G`, we say that `G` *inducingly contains* `H`. This is
+equivalent to saying that there is a graph embedding `H ↪ G`.
 
 ## Main declarations
 
 Containment:
-* `SimpleGraph.Copy G H` is the type of copies of `G` in `H`, implemented as the subtype of
+* `SimpleGraph.Copy H G` is the type of copies of `H` in `G`, implemented as the subtype of
   *injective* homomorphisms.
-* `SimpleGraph.IsContained G H`, `G ⊑ H` is the relation that `H` contains a copy of `G`, that
-  is, the type of copies of `G` in `H` is nonempty. This is equivalent to the existence of an
-  isomorphism from `G` to a subgraph of `H`.
+* `SimpleGraph.IsContained H G`, `H ⊑ G` is the relation that `G` contains a copy of `H`, that
+  is, the type of copies of `H` in `G` is nonempty. This is equivalent to the existence of an
+  isomorphism from `H` to a subgraph of `G`.
   This is similar to `SimpleGraph.IsSubgraph` except that the simple graphs here need not have the
   same underlying vertex type.
-* `SimpleGraph.Free` is the predicate that `H` is `G`-free, that is, `H` does not contain a copy of
-  `G`. This is the negation of `SimpleGraph.IsContained` implemented for convenience.
+* `SimpleGraph.Free` is the predicate that `G` is `H`-free, that is, `G` does not contain a copy of
+  `H`. This is the negation of `SimpleGraph.IsContained` implemented for convenience.
 * `SimpleGraph.killCopies G H`: Subgraph of `G` that does not contain `H`. Obtained by arbitrarily
   removing an edge from each copy of `H` in `G`.
 * `SimpleGraph.copyCount G H`: Number of copies of `H` in `G`, i.e. number of subgraphs of `G`
@@ -43,18 +43,18 @@ Containment:
   graph embeddings from `H` to `G`.
 
 Induced containment:
-* Induced copies of `G` inside `H` are already defined as `G ↪g H`.
-* `SimpleGraph.IsIndContained G H` : `G` is contained as an induced subgraph in `H`.
+* Induced copies of `H` inside `G` are already defined as `H ↪g G`.
+* `SimpleGraph.IsIndContained H G` : `H` is contained as an induced subgraph in `G`.
 
 ## Notation
 
 The following notation is declared in scope `SimpleGraph`:
-* `G ⊑ H` for `SimpleGraph.IsContained G H`.
-* `G ⊴ H` for `SimpleGraph.IsIndContained G H`.
+* `H ⊑ G` for `SimpleGraph.IsContained H G`.
+* `H ⊴ G` for `SimpleGraph.IsIndContained H G`.
 
 ## TODO
 
-* Relate `⊥ ⊴ H` to there being an independent set in `H`.
+* Relate `⊥ ⊴ G` to there being an independent set in `G`.
 * Count induced copies of a graph inside another.
 * Make `copyCount`/`labelledCopyCount` computable (not necessarily efficiently).
 -/
@@ -72,8 +72,8 @@ variable {V W X : Type*} {G G₁ G₂ G₃ : SimpleGraph V} {H : SimpleGraph W} 
 
 #### Not necessarily induced copies
 
-A copy of a subgraph `G` inside a subgraph `H` is an embedding of the vertices of `G` into the
-vertices of `H`, such that adjacency in `G` implies adjacency in `H`.
+A copy of a subgraph `H` inside a subgraph `G` is an embedding of the vertices of `H` into the
+vertices of `G`, such that adjacency in `H` implies adjacency in `G`.
 
 We capture this concept by injective graph homomorphisms.
 -/
@@ -192,10 +192,10 @@ lemma toSubgraph_surjOn :
     Set.SurjOn (toSubgraph (H := H)) .univ {G' : G.Subgraph | Nonempty (H ≃g G'.coe)} :=
   fun H' hH' ↦ by simpa
 
-instance [Subsingleton (V → W)] : Subsingleton (G.Copy H) := DFunLike.coe_injective.subsingleton
+instance [Subsingleton (W → V)] : Subsingleton (H.Copy G) := DFunLike.coe_injective.subsingleton
 
-instance [Fintype {f : G →g H // Injective f}] : Fintype (G.Copy H) :=
-  .ofEquiv {f : G →g H // Injective f} {
+instance [Fintype {f : H →g G // Injective f}] : Fintype (H.Copy G) :=
+  .ofEquiv {f : H →g G // Injective f} {
     toFun f := ⟨f.1, f.2⟩
     invFun f := ⟨f.1, f.2⟩
   }
@@ -216,19 +216,19 @@ end Copy
 /-!
 #### Induced copies
 
-An induced copy of a graph `G` inside a graph `H` is an embedding from the vertices of
-`G` into the vertices of `H` which preserves the adjacency relation.
+An induced copy of a graph `H` inside a graph `G` is an embedding from the vertices of
+`H` into the vertices of `G` which preserves the adjacency relation.
 
-This is already captured by the notion of graph embeddings, defined as `G ↪g H`.
+This is already captured by the notion of graph embeddings, defined as `H ↪g G`.
 
 ### Containment
 
 #### Not necessarily induced containment
 
-A graph `H` *contains* a graph `G` if there is some copy `f : Copy G H` of `G` inside `H`. This
-amounts to `H` having a subgraph isomorphic to `G`.
+A graph `G` *contains* a graph `H` if there is some copy `f : Copy H G` of `H` inside `G`. This
+amounts to `G` having a subgraph isomorphic to `H`.
 
-We denote "`G` is contained in `H`" by `G ⊑ H` (`\squb`).
+We denote "`H` is contained in `G`" by `H ⊑ G` (`\squb`).
 -/
 
 section IsContained
@@ -313,44 +313,44 @@ theorem isContained_iff_exists_iso_subgraph :
 alias ⟨IsContained.exists_iso_subgraph, IsContained.of_exists_iso_subgraph⟩ :=
   isContained_iff_exists_iso_subgraph
 
-theorem Copy.degree_le (f : Copy G H) (v : V) [Fintype <| G.neighborSet v]
-    [Fintype <| H.neighborSet (f v)] : G.degree v ≤ H.degree (f v) := by
+theorem Copy.degree_le (f : Copy H G) (v : W) [Fintype <| H.neighborSet v]
+    [Fintype <| G.neighborSet (f v)] : H.degree v ≤ G.degree (f v) := by
   simpa [card_neighborSet_eq_degree] using
     Fintype.card_le_of_injective _ (f.mapNeighborSet v).injective
 
-theorem Copy.maxDegree_mono [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj]
-    (f : Copy G H) : G.maxDegree ≤ H.maxDegree := by
-  cases isEmpty_or_nonempty V
+theorem Copy.maxDegree_mono [Fintype W] [Fintype V] [DecidableRel H.Adj] [DecidableRel G.Adj]
+    (f : Copy H G) : H.maxDegree ≤ G.maxDegree := by
+  cases isEmpty_or_nonempty W
   · simp
-  obtain ⟨v, h⟩ := exists_maximal_degree_vertex G
-  grind [degree_le_maxDegree H (f v), f.degree_le v]
+  obtain ⟨v, h⟩ := exists_maximal_degree_vertex H
+  grind [degree_le_maxDegree G (f v), f.degree_le v]
 
 @[deprecated (since := "2026-05-20")] alias Copy.max_degree_le := Copy.maxDegree_mono
 
-theorem IsContained.maxDegree_mono [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj]
-    (h : G ⊑ H) : G.maxDegree ≤ H.maxDegree := by
+theorem IsContained.maxDegree_mono [Fintype W] [Fintype V] [DecidableRel H.Adj] [DecidableRel G.Adj]
+    (h : H ⊑ G) : H.maxDegree ≤ G.maxDegree := by
   have ⟨f⟩ := h
   exact f.maxDegree_mono
 
 @[deprecated (since := "2026-05-20")] alias IsContained.max_degree_le := IsContained.maxDegree_mono
 
 @[gcongr]
-lemma maxDegree_mono {H : SimpleGraph V} [Fintype V] [DecidableRel G.Adj] [DecidableRel H.Adj]
-    (hle : G ≤ H) : G.maxDegree ≤ H.maxDegree :=
+lemma maxDegree_mono {G' : SimpleGraph V} [Fintype V] [DecidableRel G.Adj] [DecidableRel G'.Adj]
+    (hle : G ≤ G') : G.maxDegree ≤ G'.maxDegree :=
   IsContained.of_le hle |>.maxDegree_mono
 
-theorem Copy.minDegree_mono [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj]
-    {f : Copy G H} (hf : Function.Surjective f) : G.minDegree ≤ H.minDegree := by
-  cases isEmpty_or_nonempty W
+theorem Copy.minDegree_mono [Fintype W] [Fintype V] [DecidableRel H.Adj] [DecidableRel G.Adj]
+    {f : Copy H G} (hf : Function.Surjective f) : H.minDegree ≤ G.minDegree := by
+  cases isEmpty_or_nonempty V
   · simp [Function.isEmpty f |>.subsingleton]
-  refine H.le_minDegree_of_forall_le_degree _ fun w ↦ ?_
-  obtain ⟨v, rfl⟩ := hf w
+  refine G.le_minDegree_of_forall_le_degree _ fun v ↦ ?_
+  obtain ⟨w, rfl⟩ := hf v
   grw [← f.degree_le, ← minDegree_le_degree]
 
 @[deprecated (since := "2026-05-20")] alias Copy.minDegree_le := Copy.minDegree_mono
 
-theorem Hom.minDegree_mono [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj]
-    {f : G →g H} (hf : Function.Bijective f) : G.minDegree ≤ H.minDegree :=
+theorem Hom.minDegree_mono [Fintype W] [Fintype V] [DecidableRel H.Adj] [DecidableRel G.Adj]
+    {f : H →g G} (hf : Function.Bijective f) : H.minDegree ≤ G.minDegree :=
   Copy.minDegree_mono (f := ⟨f, hf.injective⟩) hf.surjective
 
 @[deprecated (since := "2026-05-20")] alias Hom.minDegree_le := Hom.minDegree_mono
@@ -398,36 +398,36 @@ end Free
 /-!
 #### Induced containment
 
-A graph `H` *inducingly contains* a graph `G` if there is some graph embedding `G ↪ H`. This amounts
-to `H` having an induced subgraph isomorphic to `G`.
+A graph `G` *inducingly contains* a graph `H` if there is some graph embedding `H ↪ G`. This amounts
+to `G` having an induced subgraph isomorphic to `H`.
 
-We denote "`G` is inducingly contained in `H`" by `G ⊴ H` (`\trianglelefteq`).
+We denote "`H` is inducingly contained in `G`" by `H ⊴ G` (`\trianglelefteq`).
 -/
 
-/-- A simple graph `G` is inducingly contained in a simple graph `H` if there exists an induced
-subgraph of `H` isomorphic to `G`. This is denoted by `G ⊴ H`. -/
-def IsIndContained (G : SimpleGraph V) (H : SimpleGraph W) : Prop := Nonempty (G ↪g H)
+/-- A simple graph `H` is inducingly contained in a simple graph `G` if there exists an induced
+subgraph of `G` isomorphic to `H`. This is denoted by `H ⊴ G`. -/
+def IsIndContained (H : SimpleGraph W) (G : SimpleGraph V) : Prop := Nonempty (H ↪g G)
 
 @[inherit_doc] scoped infixl:50 " ⊴ " => SimpleGraph.IsIndContained
 
-protected lemma Copy.isContained (f : Copy G H) : G ⊑ H := ⟨f⟩
+protected lemma Copy.isContained (f : Copy H G) : H ⊑ G := ⟨f⟩
 
-protected lemma Embedding.isIndContained (f : G ↪g H) : G ⊴ H := ⟨f⟩
+protected lemma Embedding.isIndContained (f : H ↪g G) : H ⊴ G := ⟨f⟩
 
-protected lemma Embedding.isContained (f : G ↪g H) : G ⊑ H := f.toCopy.isContained
+protected lemma Embedding.isContained (f : H ↪g G) : H ⊑ G := f.toCopy.isContained
 
-protected lemma IsIndContained.isContained : G ⊴ H → G ⊑ H := fun ⟨f⟩ ↦ f.isContained
+protected lemma IsIndContained.isContained : H ⊴ G → H ⊑ G := fun ⟨f⟩ ↦ f.isContained
 
-/-- If `G` is isomorphic to `H`, then `G` is contained in `H`. -/
-protected lemma Iso.isContained (e : G ≃g H) : G ⊑ H := e.toCopy.isContained
+/-- If `H` is isomorphic to `G`, then `H` is contained in `G`. -/
+protected lemma Iso.isContained (e : H ≃g G) : H ⊑ G := e.toCopy.isContained
 
 /-- If `G` is isomorphic to `H`, then `H` is contained in `G`. -/
 protected lemma Iso.isContained' (e : G ≃g H) : H ⊑ G := e.symm.isContained
 
-/-- If `G` is isomorphic to `H`, then `G` is inducingly contained in `H`. -/
-protected lemma Iso.isIndContained (e : G ≃g H) : G ⊴ H := e.toEmbedding.isIndContained
+/-- If `H` is isomorphic to `G`, then `H` is inducingly contained in `G`. -/
+protected lemma Iso.isIndContained (e : H ≃g G) : H ⊴ G := e.toEmbedding.isIndContained
 
-/-- If `G` is isomorphic to `H`, then `H` is inducingly contained in `G`. -/
+/-- If `H` is isomorphic to `G`, then `G` is inducingly contained in `H`. -/
 protected lemma Iso.isIndContained' (e : G ≃g H) : H ⊴ G := e.symm.isIndContained
 
 protected lemma Subgraph.IsInduced.isIndContained {G' : G.Subgraph} (hG' : G'.IsInduced) :
@@ -435,7 +435,7 @@ protected lemma Subgraph.IsInduced.isIndContained {G' : G.Subgraph} (hG' : G'.Is
 
 @[refl] lemma IsIndContained.refl (G : SimpleGraph V) : G ⊴ G := ⟨Embedding.refl⟩
 lemma IsIndContained.rfl : G ⊴ G := .refl _
-@[trans] lemma IsIndContained.trans : G ⊴ H → H ⊴ I → G ⊴ I := fun ⟨f⟩ ⟨g⟩ ↦ ⟨g.comp f⟩
+@[trans] lemma IsIndContained.trans : H ⊴ G → G ⊴ I → H ⊴ I := fun ⟨f⟩ ⟨g⟩ ↦ ⟨g.comp f⟩
 
 instance : IsPreorder (SimpleGraph W) IsIndContained where
   refl := .refl
@@ -446,40 +446,40 @@ instance :
       IsIndContained IsIndContained IsIndContained where
   trans := .trans
 
-lemma IsIndContained.of_isEmpty [IsEmpty V] : G ⊴ H :=
+lemma IsIndContained.of_isEmpty [IsEmpty W] : H ⊴ G :=
   ⟨{ toFun := isEmptyElim
      inj' := isEmptyElim
      map_rel_iff' := fun {a} ↦ isEmptyElim a }⟩
 
 lemma isIndContained_iff_exists_iso_subgraph :
-    G ⊴ H ↔ ∃ (H' : H.Subgraph) (_e : G ≃g H'.coe), H'.IsInduced := by
+    H ⊴ G ↔ ∃ (G' : G.Subgraph) (_e : H ≃g G'.coe), G'.IsInduced := by
   constructor
   · rintro ⟨f⟩
     refine ⟨f.toCopy.toSubgraph, f.toCopy.isoToSubgraph, ?_⟩
     simp [Subgraph.IsInduced, Relation.map_apply_apply, f.injective]
-  · rintro ⟨H', e, hH'⟩
-    exact e.isIndContained.trans hH'.isIndContained
+  · rintro ⟨G', e, hG'⟩
+    exact e.isIndContained.trans hG'.isIndContained
 
 alias ⟨IsIndContained.exists_iso_subgraph, IsIndContained.of_exists_iso_subgraph⟩ :=
   isIndContained_iff_exists_iso_subgraph
 
-theorem isIndContained_iff_exists_iso_induce : G ⊴ H ↔ ∃ s, Nonempty (G ≃g H.induce s) :=
+theorem isIndContained_iff_exists_iso_induce : H ⊴ G ↔ ∃ s, Nonempty (H ≃g G.induce s) :=
   ⟨fun ⟨f⟩ ↦ ⟨Set.range f, ⟨f.isoInduceRange⟩⟩, fun ⟨s, ⟨f⟩⟩ ↦ ⟨.comp (.induce s) f⟩⟩
 
 @[simp] lemma top_isIndContained_iff_top_isContained :
-    (⊤ : SimpleGraph V) ⊴ H ↔ (⊤ : SimpleGraph V) ⊑ H :=
+    (⊤ : SimpleGraph W) ⊴ G ↔ (⊤ : SimpleGraph W) ⊑ G :=
   ⟨IsIndContained.isContained, fun ⟨f⟩ ↦ ⟨f.topEmbedding⟩⟩
 
-theorem isContained_top_iff {G : SimpleGraph V} : G ⊑ completeGraph W ↔ Nonempty (V ↪ W) :=
+theorem isContained_top_iff : H ⊑ completeGraph V ↔ Nonempty (W ↪ V) :=
   ⟨(⟨·.some.toEmbedding⟩), (.trans (.of_le le_top) ⟨Embedding.completeGraph ·.some |>.toCopy⟩)⟩
 
-theorem top_isIndContained_top_iff : completeGraph V ⊴ completeGraph W ↔ Nonempty (V ↪ W) :=
+theorem top_isIndContained_top_iff : completeGraph W ⊴ completeGraph V ↔ Nonempty (W ↪ V) :=
   ⟨(⟨·.some.toEmbedding⟩), (⟨.completeGraph ·.some⟩)⟩
 
-theorem eq_top_of_isIndContained_top (h : G ⊴ completeGraph W) : G = ⊤ :=
+theorem eq_top_of_isIndContained_top (h : H ⊴ completeGraph V) : H = ⊤ :=
   h.some.comap_eq ▸ comap_top h.some.injective
 
-@[simp] lemma compl_isIndContained_compl : Gᶜ ⊴ Hᶜ ↔ G ⊴ H :=
+@[simp] lemma compl_isIndContained_compl : Hᶜ ⊴ Gᶜ ↔ H ⊴ G :=
   Embedding.complEquiv.symm.nonempty_congr
 
 protected alias ⟨IsIndContained.of_compl, IsIndContained.compl⟩ := compl_isIndContained_compl
@@ -493,8 +493,8 @@ theorem isIndContained_iff_exists_comap_eq : H ⊴ G ↔ ∃ (f : W ↪ V), G.co
 /-!
 ### Counting the copies
 
-If `G` and `H` are finite graphs, we can count the number of unlabelled and labelled copies of `G`
-in `H`.
+If `G` and `H` are finite graphs, we can count the number of unlabelled and labelled copies of `H`
+in `G`.
 
 #### Not necessarily induced copies
 -/
@@ -579,8 +579,8 @@ TODO
 
 ### Killing a subgraph
 
-An important aspect of graph containment is that we can remove not too many edges from a graph `H`
-to get a graph `H'` that doesn't contain `G`.
+An important aspect of graph containment is that we can remove not too many edges from a graph `G`
+to get a graph `G'` that doesn't contain `H`.
 
 #### Killing not necessarily induced copies
 
@@ -665,8 +665,8 @@ variable [Fintype G.edgeSet]
 noncomputable instance killCopies.edgeSet.instFintype : Fintype (G.killCopies H).edgeSet :=
   .ofInjective (Set.inclusion <| edgeSet_mono killCopies_le_left) <| Set.inclusion_injective _
 
-/-- Removing an edge from `H` for each subgraph isomorphic to `G` means that the number of edges
-we've removed is at most the number of copies of `G` in `H`. -/
+/-- Removing an edge from `G` for each subgraph isomorphic to `H` means that the number of edges
+we've removed is at most the number of copies of `H` in `G`. -/
 lemma le_card_edgeFinset_killCopies [Fintype V] :
     #G.edgeFinset - G.copyCount H ≤ #(G.killCopies H).edgeFinset := by
   classical
@@ -686,8 +686,8 @@ lemma le_card_edgeFinset_killCopies [Fintype V] :
   induction e using Sym2.inductionOn with | hf v w
   simp [mem_edgeSet, killCopies_of_ne_bot hH, f, eq_comm]
 
-/-- Removing an edge from `H` for each subgraph isomorphic to `G` means that the number of edges
-we've removed is at most the number of copies of `G` in `H`. -/
+/-- Removing an edge from `G` for each subgraph isomorphic to `H` means that the number of edges
+we've removed is at most the number of copies of `H` in `G`. -/
 lemma le_card_edgeFinset_killCopies_add_copyCount [Fintype V] :
     #G.edgeFinset ≤ #(G.killCopies H).edgeFinset + G.copyCount H :=
   tsub_le_iff_right.1 le_card_edgeFinset_killCopies
