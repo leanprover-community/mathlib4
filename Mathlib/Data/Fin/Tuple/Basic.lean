@@ -1291,7 +1291,7 @@ theorem contractNth_apply_of_ne (j : Fin (n + 1)) (op : α → α → α) (g : F
   · rwa [j.succAbove_of_castSucc_lt, contractNth_apply_of_lt]
   · exact False.elim (hjk h.symm)
   · rwa [j.succAbove_of_le_castSucc, contractNth_apply_of_gt]
-    · exact Fin.le_iff_val_le_val.2 (le_of_lt h)
+    exact Fin.le_iff_val_le_val.2 (le_of_lt h)
 
 lemma comp_contractNth {β : Sort*} (opα : α → α → α) (opβ : β → β → β) {f : α → β}
     (hf : ∀ x y, f (opα x y) = opβ (f x) (f y)) (j : Fin (n + 1)) (g : Fin (n + 1) → α) :
