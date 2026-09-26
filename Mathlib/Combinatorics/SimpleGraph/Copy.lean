@@ -299,39 +299,35 @@ instance :
       IsContained IsContained IsContained where
   trans := .trans
 
-protected lemma Copy.isContained (f : Copy G H) : G ⊑ H := ⟨f⟩
+protected lemma Copy.isContained (f : Copy H G) : H ⊑ G := ⟨f⟩
 
-protected lemma Embedding.isContained (f : G ↪g H) : G ⊑ H := f.toCopy.isContained
+protected lemma Embedding.isContained (f : H ↪g G) : H ⊑ G := f.toCopy.isContained
 
-/-- If `G` is isomorphic to `H`, then `G` is contained in `H`. -/
-protected lemma Iso.isContained (e : G ≃g H) : G ⊑ H := e.toCopy.isContained
-
-/-- If `G` is isomorphic to `H`, then `H` is contained in `G`. -/
-protected lemma Iso.isContained' (e : G ≃g H) : H ⊑ G := e.symm.isContained
+protected lemma Iso.isContained (e : H ≃g G) : H ⊑ G := e.toCopy.isContained
 
 /-- A simple graph having no vertices is contained in any simple graph. -/
 lemma IsContained.of_isEmpty [IsEmpty W] : H ⊑ G :=
   ⟨⟨isEmptyElim, fun {a} ↦ isEmptyElim a⟩, isEmptyElim⟩
 
-theorem bot_isContained_iff {G : SimpleGraph V} : (⊥ : SimpleGraph W) ⊑ G ↔ Nonempty (W ↪ V) :=
+theorem bot_isContained_iff : (⊥ : SimpleGraph W) ⊑ G ↔ Nonempty (W ↪ V) :=
   ⟨Nonempty.intro ∘ Copy.toEmbedding ∘ Nonempty.some, Copy.isContained ∘ Copy.bot ∘ Nonempty.some⟩
+
+protected alias ⟨_, IsContained.bot⟩ := bot_isContained_iff
 
 /-- `⊥` is contained in any simple graph having sufficiently many vertices. -/
 lemma bot_isContained_iff_card_le [Fintype W] [Fintype V] :
-    (⊥ : SimpleGraph W) ⊑ G ↔ Fintype.card W ≤ Fintype.card V := by
+    (⊥ : SimpleGraph W) ⊑ G ↔ card W ≤ card V := by
   rw [bot_isContained_iff, Embedding.nonempty_iff_card_le]
 
-protected alias IsContained.bot := bot_isContained_iff_card_le
-
-theorem isContained_top_iff {H : SimpleGraph W} : H ⊑ (⊤ : SimpleGraph V) ↔ Nonempty (W ↪ V) :=
+theorem isContained_top_iff : H ⊑ (⊤ : SimpleGraph V) ↔ Nonempty (W ↪ V) :=
   ⟨Nonempty.intro ∘ Copy.toEmbedding ∘ Nonempty.some, Copy.isContained ∘ Copy.top ∘ Nonempty.some⟩
+
+protected alias ⟨_, IsContained.top⟩ := isContained_top_iff
 
 /-- `⊤` contains a simple graph if and only if it has sufficiently many vertices. -/
 lemma isContained_top_iff_card_le [Fintype V] [Fintype W] :
     H ⊑ (⊤ : SimpleGraph V) ↔ card W ≤ card V := by
   rw [isContained_top_iff, Embedding.nonempty_iff_card_le]
-
-protected alias IsContained.top := isContained_top_iff_card_le
 
 /-- A simple graph `G` contains all `Subgraph G` coercions. -/
 lemma Subgraph.coe_isContained (G' : G.Subgraph) : G'.coe ⊑ G := ⟨G'.coeCopy⟩
