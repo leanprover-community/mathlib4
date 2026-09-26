@@ -376,11 +376,11 @@ def mapRingHom [RingHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.co
       rintro ⟨x⟩ ⟨y⟩
       induction x using Localization.induction_on
       induction y using Localization.induction_on
-      · simp only [← ofFractionRing_add, Localization.add_mk, map_add, map_mul,
-          MonoidHom.toFun_eq_coe, map_apply_ofFractionRing_mk, Submonoid.coe_mul,
-          -- We have to specify `S[X]⁰` to `mk_mul_mk`, otherwise it will try to rewrite
-          -- the wrong occurrence.
-          Submonoid.mk_mul_mk S[X]⁰] }
+      simp only [← ofFractionRing_add, Localization.add_mk, map_add, map_mul,
+        MonoidHom.toFun_eq_coe, map_apply_ofFractionRing_mk, Submonoid.coe_mul,
+        -- We have to specify `S[X]⁰` to `mk_mul_mk`, otherwise it will try to rewrite
+        -- the wrong occurrence.
+        Submonoid.mk_mul_mk S[X]⁰] }
 
 theorem coe_mapRingHom_eq_coe_map [RingHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ) :
     (mapRingHom φ hφ : R⟮X⟯ → S⟮X⟯) = map φ hφ :=
