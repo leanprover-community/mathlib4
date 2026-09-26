@@ -992,7 +992,7 @@ lemma isUnramifiedAt_of_separable_minpoly' {P : Ideal B} [hP : P.IsPrime] (hPbot
         RingHom.comp (FractionRing.algEquiv B L).symm.toRingEquiv (algebraMap K L) := by
     apply IsLocalization.ringHom_ext A⁰
     ext
-    simp only [RingHom.coe_comp, RingHom.coe_coe, AlgEquiv.coe_ringEquiv, Function.comp_apply,
+    simp only [RingHom.coe_comp, RingHom.coe_coe, AlgEquiv.coe_toRingEquiv, Function.comp_apply,
       AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
     rw [IsScalarTower.algebraMap_apply A B L, AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
   have : Algebra.IsSeparable (FractionRing A) (FractionRing B) :=
@@ -1071,7 +1071,7 @@ lemma comap_map_eq_of_unramified [IsGalois K L] [Algebra.Unramified A B] {I : Id
   by_cases hIbot : I = ⊥
   · rw [hIbot, Ideal.comap_bot_of_injective _ hAB, Ideal.map_bot]
   have : Algebra.IsIntegral A B := IsIntegralClosure.isIntegral_algebra A L
-  have hIbot' : I.comap (algebraMap A B) ≠ ⊥ := mt Ideal.eq_bot_of_comap_eq_bot hIbot
+  have hIbot' : I.comap (algebraMap A B) ≠ ⊥ := mt Ideal.eq_bot_of_under_eq_bot hIbot
   have : ∀ p, (p.IsPrime ∧ I.comap (algebraMap A B) ≤ p) →
       ∃ P ≥ I, P ∈ Ideal.primesOver p B := by
     intro p ⟨hp₁, hp₂⟩
