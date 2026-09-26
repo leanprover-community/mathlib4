@@ -183,9 +183,7 @@ lemma continuous_convexCombPair :
       NNReal.toReal_le, coe_nndist]
     grw [dist_convexCombPair_convexCombPair_le, Prod.dist_eq]
     nth_grw 1 [le_max_left (dist x.1 y.1) (dist x.2 y.2)]
-    swap; · simpa using i.prop.left
     nth_grw 2 [le_max_right (dist x.1 y.1) (dist x.2 y.2)]
-    swap; · simpa using i.prop.right
     rw [← add_mul, add_sub_cancel, one_mul]
   · intro b
     refine LipschitzWith.continuous (K := nndist b.1 b.2) fun x y ↦ ?_
@@ -226,8 +224,7 @@ lemma continuous_convexCombPair_of_isBounded
       (add_sub_cancel ..) (x j) (y t)), dist_convexCombPair_convexCombPair_le]
     simp only [dist_self, mul_zero, zero_add, dist_convexCombPair_right]
     grw [sub_le_self _ (hf0 _), hj, hD, (le_abs_self _).trans hj'.le]
-    · field_simp; norm_num
-    · exact hf0 _
+    field_simp; norm_num
   · simp only [ContinuousAt, ht, sub_self, convexCombPair_one]
     rw [Metric.nhds_basis_ball.tendsto_right_iff]
     intro r hr
@@ -240,8 +237,7 @@ lemma continuous_convexCombPair_of_isBounded
     simp only [dist_self, mul_zero, add_zero, dist_convexCombPair_left]
     grw [abs_sub_comm, ← le_abs_self] at hj'
     grw [hj.le, hj'.le, hf1, hD]
-    · field_simp; norm_num
-    · exact hf0 _
+    field_simp; norm_num
 
 /-- When `X` is a bounded convex metric space, to check continuity of
 `t ↦ f(t) • x(t) + (1 - f(t)) • y(t)` it suffices to show that `f` is continuous,

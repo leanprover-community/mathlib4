@@ -69,9 +69,7 @@ lemma geom_sum_pos_and_lt_one (hx : x < 0) (hx' : 0 < x + 1) (hn : 1 < n) :
   clear hn
   intro n _ ihn
   rw [geom_sum_succ, add_lt_iff_neg_right, ← neg_lt_iff_pos_add', neg_mul_eq_neg_mul]
-  exact
-    ⟨by grw [ihn.2, mul_one, neg_le_iff_add_nonneg', hx']; exact neg_pos.2 hx,
-      mul_neg_of_neg_of_pos hx ihn.1⟩
+  exact ⟨by grw [ihn.2, mul_one, neg_le_iff_add_nonneg', hx'], mul_neg_of_neg_of_pos hx ihn.1⟩
 
 lemma geom_sum_alternating_of_lt_neg_one (hx : x + 1 < 0) (hn : 1 < n) :
     if Even n then ∑ i ∈ range n, x ^ i < 0 else 1 < ∑ i ∈ range n, x ^ i := by

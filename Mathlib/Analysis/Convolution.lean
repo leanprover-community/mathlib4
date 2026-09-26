@@ -479,7 +479,7 @@ theorem convolution_mono_right {f g g' : G → ℝ} (hfg : ConvolutionExistsAt f
   intro t
   dsimp
   gcongr
-  exacts [hf _, hg _]
+  exact hg _
 
 theorem convolution_mono_right_of_nonneg {f g g' : G → ℝ}
     (hfg' : ConvolutionExistsAt f g' x (lsmul ℝ ℝ) μ) (hf : ∀ x, 0 ≤ f x) (hg : ∀ x, g x ≤ g' x)

@@ -314,8 +314,7 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
       have := ENNReal.toReal_pos (hμ v v_open x₀_v).ne'
         ((measure_mono inter_subset_right).trans_lt hs.measure_lt_top).ne
       gcongr
-      · exact hnc _ hx.1
-      · exact ht x hx
+      exact ht x hx
     have N :
       Tendsto (fun n => (μ.real (v ∩ s))⁻¹ * (t / t') ^ n) atTop
         (𝓝 ((μ.real (v ∩ s))⁻¹ * 0)) := by

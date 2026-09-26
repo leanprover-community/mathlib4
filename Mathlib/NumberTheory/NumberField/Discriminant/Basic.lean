@@ -425,7 +425,6 @@ theorem finite_of_discr_bdd_of_isReal :
         rw [show max ↑(max (B : ℝ≥0) 1) (1 : ℝ) = max (B : ℝ) 1 by simp, val_eq_coe, NNReal.coe_mul,
           NNReal.coe_pow, NNReal.coe_max, NNReal.coe_one, NNReal.coe_natCast]
         gcongr
-        · exact le_max_right _ 1
         · exact rank_le_rankOfDiscrBdd hK₂
         · exact (Nat.choose_le_choose _ (rank_le_rankOfDiscrBdd hK₂)).trans
             (Nat.choose_le_middle _ _)
@@ -473,7 +472,6 @@ theorem finite_of_discr_bdd_of_isComplex :
         rw [val_eq_coe, NNReal.coe_mul, NNReal.coe_pow, NNReal.coe_max, NNReal.coe_one,
           Real.coe_sqrt, NNReal.coe_add 1, NNReal.coe_one, NNReal.coe_pow]
         gcongr
-        · exact le_max_right _ 1
         · exact rank_le_rankOfDiscrBdd hK₂
         · rw [NNReal.coe_natCast, Nat.cast_le]
           exact (Nat.choose_le_choose _ (rank_le_rankOfDiscrBdd hK₂)).trans
