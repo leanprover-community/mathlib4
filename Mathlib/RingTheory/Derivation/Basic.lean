@@ -265,9 +265,9 @@ theorem coe_sum_linearMap {ι : Type*} (t : Finset ι) (f : ι → Derivation R 
     ∑ i ∈ t, f i = ∑ i ∈ t, (f i : A →ₗ[R] M) :=
   _root_.map_sum coeAddMonoidHom f t
 
-instance : IsZeroApply (Derivation R A M) A M where
+instance : IsZeroApply (Derivation R A M) where
 
-instance : IsAddApply (Derivation R A M) A M where
+instance : IsAddApply (Derivation R A M) where
 
 end Scalar
 

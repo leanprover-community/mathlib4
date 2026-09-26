@@ -36,19 +36,19 @@ variable [AddCommMonoid M] [Module R M] [ConvexSpace R M] [IsModuleConvexSpace R
 
 instance : Zero (ConvexSpace.AffineMap R X M) := ⟨.const 0⟩
 
-instance : IsZeroApply (ConvexSpace.AffineMap R X M) X M where
+instance : IsZeroApply (ConvexSpace.AffineMap R X M) where
 
 instance : Add (ConvexSpace.AffineMap R X M) where
   add f g := ⟨f + g, f.isAffineMap.add g.isAffineMap⟩
 
-instance : IsAddApply (ConvexSpace.AffineMap R X M) X M where
+instance : IsAddApply (ConvexSpace.AffineMap R X M) where
 
 section SMul
 variable [Monoid S] [DistribMulAction S M] [SMulCommClass S R M]
 
 instance : SMul S (ConvexSpace.AffineMap R X M) where smul s f := ⟨s • f, by fun_prop⟩
 
-instance : IsSMulApply S (ConvexSpace.AffineMap R X M) X M where
+instance : IsSMulApply S (ConvexSpace.AffineMap R X M) where
 
 variable {T : Type*} [Monoid T] [DistribMulAction T M] [SMulCommClass T R M]
 
@@ -81,12 +81,12 @@ variable [AddCommGroup M] [Module R M] [ConvexSpace R M] [IsModuleConvexSpace R 
 instance : Neg (ConvexSpace.AffineMap R X M) where
   neg f := ⟨-f, f.isAffineMap.neg⟩
 
-instance : IsNegApply (ConvexSpace.AffineMap R X M) X M where
+instance : IsNegApply (ConvexSpace.AffineMap R X M) where
 
 instance : Sub (ConvexSpace.AffineMap R X M) where
   sub f g := ⟨f - g, f.isAffineMap.sub g.isAffineMap⟩
 
-instance : IsSubApply (ConvexSpace.AffineMap R X M) X M where
+instance : IsSubApply (ConvexSpace.AffineMap R X M) where
 
 instance : AddCommGroup (ConvexSpace.AffineMap R X M) :=
   fast_instance% FunLike.addCommGroup

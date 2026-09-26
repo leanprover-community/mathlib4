@@ -175,24 +175,24 @@ instance instAddCommGroup [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 :
   inferInstanceAs <| AddCommGroup (E →SL[σ] F)
 
 instance [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
-    IsNegApply (E →SLᵤ[σ, 𝔖] F) E F where
+    IsNegApply (E →SLᵤ[σ, 𝔖] F) where
 
 @[deprecated (since := "2026-06-10")] protected alias neg_apply := neg_apply
 
 instance [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
-    IsAddApply (E →SLᵤ[σ, 𝔖] F) E F where
+    IsAddApply (E →SLᵤ[σ, 𝔖] F) where
 
 @[deprecated (since := "2026-06-10")] protected alias add_apply := add_apply
 
 @[deprecated (since := "2026-06-10")] protected alias sum_apply := sum_apply
 
 instance [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
-    IsSubApply (E →SLᵤ[σ, 𝔖] F) E F where
+    IsSubApply (E →SLᵤ[σ, 𝔖] F) where
 
 @[deprecated (since := "2026-06-10")] protected alias sub_apply := sub_apply
 
 instance [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
-    IsZeroApply (E →SLᵤ[σ, 𝔖] F) E F where
+    IsZeroApply (E →SLᵤ[σ, 𝔖] F) where
 
 @[deprecated (since := "2026-06-10")] protected alias coe_zero := FunLike.coe_zero
 
@@ -231,7 +231,7 @@ instance instDistribMulAction (M : Type*) [Monoid M] [DistribMulAction M F] [SMu
 
 instance {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
     [TopologicalSpace F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
-    IsSMulApply M (E →SLᵤ[σ, 𝔖] F) E F where
+    IsSMulApply M (E →SLᵤ[σ, 𝔖] F) where
 
 @[deprecated (since := "2026-06-10")] protected alias smul_apply := smul_apply
 
