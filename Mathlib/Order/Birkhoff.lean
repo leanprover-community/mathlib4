@@ -172,7 +172,7 @@ noncomputable def birkhoffSet : α ↪o Set {a : α // SupIrred a} := by
   by_cases! h : IsEmpty α
   · exact OrderEmbedding.ofIsEmpty
   have := Fintype.toOrderBot α
-  exact OrderIso.lowerSetSupIrred.toOrderEmbedding.trans ⟨⟨_, SetLike.coe_injective⟩, Iff.rfl⟩
+  exact OrderIso.lowerSetSupIrred.toOrderEmbedding.trans ⟨⟨_, SetLike.coe_injective⟩, by simp⟩
 
 /-- **Birkhoff's Representation Theorem**. Any finite distributive lattice can be embedded in a
 powerset lattice. -/
