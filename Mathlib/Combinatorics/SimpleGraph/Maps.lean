@@ -446,9 +446,15 @@ theorem id_comp (f : G →g G') : .comp .id f = f := rfl
 theorem comp_comap_ofLE (f : H →g G) : .comp (.comap f G) (.ofLE f.le_comap) = f :=
   rfl
 
+/-- The graph homomorphism from `⊥` to any simple graph given by any function on vertices. -/
 protected def bot (f : W → V) : (⊥ : SimpleGraph W) →g G := ⟨f, False.elim⟩
 
+@[simp] theorem coe_bot (f : W → V) (G) : ⇑(Hom.bot f (G := G)) = f := rfl
+
+/-- The graph homomorphism from any simple graph to `⊤` given by any embedding of vertices. -/
 protected def top (f : W ↪ V) : H →g (⊤ : SimpleGraph V) := ⟨f, fun h ↦ f.injective.ne h.ne⟩
+
+@[simp] theorem coe_top (f : W ↪ V) (H) : ⇑(Hom.top f (H := H)) = f := rfl
 
 end Hom
 
@@ -506,13 +512,16 @@ noncomputable def isoInduceRange : G ≃g G'.induce (Set.range f) where
 
 /-- Given an injective function, there is an embedding from the comapped graph into the original
 graph. -/
--- Porting note: `@[simps]` does not work here since `f` is not a constructor application.
--- `@[simps toEmbedding]` could work, but Floris suggested writing `comap_apply` for now.
 protected def comap (f : V ↪ W) (G : SimpleGraph W) : G.comap f ↪g G where
   __ := f
   map_rel_iff' := by simp
 
-@[simp]
+@[simp] theorem coe_comap (f : V ↪ W) (G : SimpleGraph W) : ⇑(Embedding.comap f G) = f := rfl
+@[simp] theorem toHom_comap (f : V ↪ W) (G : SimpleGraph W) :
+    (Embedding.comap f G).toHom = Hom.comap f G := rfl
+@[simp] theorem toEmbedding_comap (f : V ↪ W) (G : SimpleGraph W) :
+    (Embedding.comap f G).toEmbedding = f := rfl
+
 theorem comap_apply (f : V ↪ W) (G : SimpleGraph W) (v : V) :
     SimpleGraph.Embedding.comap f G v = f v := rfl
 
@@ -521,13 +530,16 @@ theorem comap_eq (f : H ↪g G) : G.comap f = H := by
   exact f.map_adj_iff
 
 /-- Given an injective function, there is an embedding from a graph into the mapped graph. -/
--- Porting note: `@[simps]` does not work here since `f` is not a constructor application.
--- `@[simps toEmbedding]` could work, but Floris suggested writing `map_apply` for now.
 protected def map (f : V ↪ W) (G : SimpleGraph V) : G ↪g G.map f where
   __ := f
   map_rel_iff' := by simp
 
-@[simp]
+@[simp] theorem coe_map (f : V ↪ W) (G : SimpleGraph V) : ⇑(Embedding.map f G) = f := rfl
+@[simp] theorem toHom_map (f : V ↪ W) (G : SimpleGraph V) :
+    (Embedding.map f G).toHom = Hom.map f G fun h ↦ f.injective.ne h.ne := rfl
+@[simp] theorem toEmbedding_map (f : V ↪ W) (G : SimpleGraph V) :
+    (Embedding.map f G).toEmbedding = f := rfl
+
 theorem map_apply (f : V ↪ W) (G : SimpleGraph V) (v : V) : Embedding.map f G v = f v :=
   rfl
 

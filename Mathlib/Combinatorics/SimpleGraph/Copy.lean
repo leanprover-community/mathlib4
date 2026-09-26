@@ -162,14 +162,36 @@ def induce (G : SimpleGraph V) (s : Set V) : Copy (G.induce s) G := (Embedding.i
 /-- The copy of `⊥` in any simple graph that can embed its vertices. -/
 protected def bot (f : W ↪ V) : Copy (⊥ : SimpleGraph W) G := ⟨Hom.bot f, f.injective⟩
 
+@[simp] theorem coe_bot (f : W ↪ V) (G) : ⇑(Copy.bot f (G := G)) = f := rfl
+@[simp] theorem toHom_bot (f : W ↪ V) (G) : (Copy.bot f (G := G)).toHom = Hom.bot f (G := G) := rfl
+@[simp] theorem toEmbedding_bot (f : W ↪ V) (G) : (Copy.bot f (G := G)).toEmbedding = f := rfl
+
 /-- The copy of any simple graph in `⊤` that can embed its vertices. -/
 protected def top (f : W ↪ V) : Copy H (⊤ : SimpleGraph V) := ⟨Hom.top f, f.injective⟩
 
+@[simp] theorem coe_top (f : W ↪ V) (H) : ⇑(Copy.top f (H := H)) = f := rfl
+@[simp] theorem toHom_top (f : W ↪ V) (H) : (Copy.top f (H := H)).toHom = Hom.top f (H := H) := rfl
+@[simp] theorem toEmbedding_top (f : W ↪ V) (H) : (Copy.top f (H := H)).toEmbedding = f := rfl
+
 /-- The copy of `H` in `H.map ·`. -/
-protected abbrev map (f : W ↪ V) : Copy H (H.map f) := (Embedding.map f H).toCopy
+protected def map (f : W ↪ V) : Copy H (H.map f) := (Embedding.map f H).toCopy
+
+@[simp] theorem coe_map (f : W ↪ V) (H) : ⇑(Copy.map f (H := H)) = f := rfl
+@[simp] theorem toHom_map (f : W ↪ V) (H) :
+    (Copy.map f (H := H)).toHom = Hom.map f H fun h ↦ f.injective.ne h.ne := rfl
+@[simp] theorem toEmbedding_map (f : W ↪ V) (H) : (Copy.map f (H := H)).toEmbedding = f := rfl
+@[simp] theorem _root_.SimpleGraph.Embedding.toCopy_map (f : W ↪ V) (H) :
+    (Embedding.map f H).toCopy = Copy.map f := rfl
 
 /-- The copy of `G.comap ·` in `G`. -/
-protected abbrev comap (f : W ↪ V) : Copy (G.comap f) G := (Embedding.comap f G).toCopy
+protected def comap (f : W ↪ V) : Copy (G.comap f) G := (Embedding.comap f G).toCopy
+
+@[simp] theorem coe_comap (f : W ↪ V) (G) : ⇑(Copy.comap f (G := G)) = f := rfl
+@[simp] theorem toHom_comap (f : W ↪ V) (G) :
+    (Copy.comap f (G := G)).toHom = Hom.comap f G := rfl
+@[simp] theorem toEmbedding_comap (f : W ↪ V) (G) : (Copy.comap f (G := G)).toEmbedding = f := rfl
+@[simp] theorem _root_.SimpleGraph.Embedding.toCopy_comap (f : W ↪ V) (G) :
+    (Embedding.comap f G).toCopy = Copy.comap f := rfl
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
