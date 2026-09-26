@@ -124,18 +124,17 @@ abbrev coind.counit (ρ : Representation k G A) :
 
 /-- Given a monoid homomorphism `φ : G →* H` and an intertwining map `f : σ ⟶ ρ`, there is a
   natural intertwining map `coind φ σ ⟶ coind φ ρ` given by postcomposition by `f`. -/
-def coindMap (f : σ.IntertwiningMap ρ) : (coind φ σ).IntertwiningMap (coind φ ρ) :=
-  coind.lift φ ⟨f.toLinearMap ∘ₗ coindV.evalOne φ, fun g => by
-    ext x; simp [← f.isIntertwining, ← mem_coindV.mp x.2]⟩
+def coindMap (f : σ.IntertwiningMap ρ) : (coind φ σ).IntertwiningMap (coind φ ρ) where
+  toLinearMap := (f.toLinearMap.compLeft H).restrict fun x hx => mem_coindV.mpr <| by
+    simp [mem_coindV.mp hx, ← f.isIntertwining]
+  isIntertwining' _ := by ext; simp
 
 lemma coe_coindMap_apply (f : σ.IntertwiningMap ρ) (x : coindV φ σ) :
-    (coindMap φ f) x = (f.toLinearMap.compLeft H) x := by
-  ext; simp [coindMap]
+    (coindMap φ f) x = (f.toLinearMap.compLeft H) x := rfl
 
 @[simp]
 lemma coe_coindMap_apply_apply (f : σ.IntertwiningMap ρ) (x : coindV φ σ) (h : H) :
-    ((coindMap φ f) x) h = f (x h) := by
-  simp [coindMap]
+    ((coindMap φ f) x) h = f (x h) := rfl
 
 variable {k : Type*} [CommSemiring k] [Module k A] [Module k B]
 
@@ -318,7 +317,7 @@ def resCoindAdjunction : resFunctor.{max w t} φ ⊣ coindFunctor k φ :=
   Adjunction.mkOfHomEquiv {
     homEquiv X Y := (resCoindHomEquiv φ X Y).toEquiv
     homEquiv_naturality_left_symm := by intros; rfl
-    homEquiv_naturality_right _ _ := by simp only [coindFunctor_obj]; ext; simp}
+    homEquiv_naturality_right _ _ := by ext; rfl}
 
 @[simp]
 lemma resCoindAdjunction_homEquiv :
