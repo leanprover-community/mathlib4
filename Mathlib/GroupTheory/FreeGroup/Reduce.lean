@@ -403,6 +403,25 @@ theorem eq_of_of_pow_eq_of_pow {a b : α} (hab : a ≠ b) {n m : ℕ} (h : of a 
     n = 0 ∧ m = 0 := by
   simpa [← Int.natCast_eq_zero] using eq_of_of_zpow_eq_of_zpow hab h
 
+@[to_additive]
+theorem eq_of_commute_of_of {a b : α} (h : Commute (of a) (of b)) : a = b := by
+  classical
+  contrapose! h
+  simp [commute_iff_eq, ne_of_apply_ne toWord, toWord_mul, h]
+
+@[to_additive]
+private theorem subsingleton_of_isMulCommutative [IsMulCommutative (FreeGroup α)] :
+    Subsingleton α :=
+  ⟨fun _ _ ↦ eq_of_commute_of_of (mul_comm' _ _)⟩
+
+@[to_additive (attr := simp)]
+theorem isCyclic_iff_subsingleton : IsCyclic (FreeGroup α) ↔ Subsingleton α :=
+  ⟨fun _ ↦ subsingleton_of_isMulCommutative, fun _ ↦ inferInstance⟩
+
+@[to_additive (attr := simp)]
+theorem isMulCommutative_iff_subsingleton : IsMulCommutative (FreeGroup α) ↔ Subsingleton α :=
+  ⟨fun _ ↦ subsingleton_of_isMulCommutative, fun _ ↦ inferInstance⟩
+
 @[to_additive (attr := simp)]
 theorem one_ne_of (a : α) : 1 ≠ of a :=
   letI := Classical.decEq α; ne_of_apply_ne toWord <| by simp
