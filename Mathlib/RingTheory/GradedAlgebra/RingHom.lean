@@ -129,10 +129,10 @@ section
 variable (f : 𝒜 →+*ᵍ ℬ)
 
 protected theorem congr_fun {f g : 𝒜 →+*ᵍ ℬ} (h : f = g) (x : A) : f x = g x :=
-  DFunLike.congr_fun h x
+  congr($h x)
 
 protected theorem congr_arg (f : 𝒜 →+*ᵍ ℬ) {x y : A} (h : x = y) : f x = f y :=
-  DFunLike.congr_arg f h
+  congr(f $h)
 
 theorem coe_inj ⦃f g : 𝒜 →+*ᵍ ℬ⦄ (h : (f : A → B) = g) : f = g :=
   DFunLike.coe_injective h
@@ -145,8 +145,10 @@ theorem ext ⦃f g : 𝒜 →+*ᵍ ℬ⦄ : (∀ x, f x = g x) → f = g :=
 theorem mk_coe (f : 𝒜 →+*ᵍ ℬ) (h₁ h₂ h₃ h₄ h₅) : .mk ⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ h₅ = f :=
   ext fun _ => rfl
 
-theorem coe_ringHom_injective : (fun f : 𝒜 →+*ᵍ ℬ => (f : A →+* B)).Injective := fun _ _ h =>
+theorem toRingHom_injective : (fun f : 𝒜 →+*ᵍ ℬ => (f : A →+* B)).Injective := fun _ _ h =>
   ext <| DFunLike.congr_fun (F := A →+* B) h
+
+@[deprecated (since := "2026-05-05")] alias coe_ringHom_injective := toRingHom_injective
 
 /-- Graded ring homomorphisms map zero to zero. -/
 protected theorem map_zero (f : 𝒜 →+*ᵍ ℬ) : f 0 = 0 :=

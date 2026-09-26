@@ -137,10 +137,10 @@ def descAddMonoidHom : R F →+ t.1 :=
 
 lemma descAddMonoidHom_quotMk {j : J} (x : F.obj j) :
     descAddMonoidHom t (Quot.mk _ ⟨j, x⟩) = t.ι.app j x :=
-  ConcreteCategory.congr_hom ((forget AddCommMonCat).congr_map
+  congr($((forget AddCommMonCat).congr_map
     ((AddCommMonCat.FilteredColimits.colimitCoconeIsColimit.{v, u}
       (F ⋙ forget₂ SemiRingCat AddCommMonCat)).fac
-        ((forget₂ SemiRingCat AddCommMonCat).mapCocone t) j)) x
+        ((forget₂ SemiRingCat AddCommMonCat).mapCocone t) j)) x)
 
 /-- Auxiliary definition for `colimitCoconeIsColimit`. -/
 def descMonoidHom : R F →* t.1 :=
@@ -149,9 +149,8 @@ def descMonoidHom : R F →* t.1 :=
 
 lemma descMonoidHom_quotMk {j : J} (x : F.obj j) :
     descMonoidHom t (Quot.mk _ ⟨j, x⟩) = t.ι.app j x :=
-  ConcreteCategory.congr_hom ((forget MonCat).congr_map
-    ((MonCat.FilteredColimits.colimitCoconeIsColimit.{v, u}
-      (F ⋙ forget₂ _ _)).fac ((forget₂ _ _).mapCocone t) j)) x
+  congr($((forget MonCat).congr_map ((MonCat.FilteredColimits.colimitCoconeIsColimit.{v, u}
+      (F ⋙ forget₂ _ _)).fac ((forget₂ _ _).mapCocone t) j)) x)
 
 lemma descMonoidHom_apply_eq (x : R F) :
     descMonoidHom t x = descAddMonoidHom t x := by
@@ -173,7 +172,7 @@ def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F where
   fac t j := by ext x; exact descAddMonoidHom_quotMk t x
   uniq t m hm := by
     ext ⟨j, x⟩
-    exact (ConcreteCategory.congr_hom ((forget SemiRingCat).congr_map (hm j)) x).trans
+    exact congr($((forget SemiRingCat).congr_map (hm j)) x).trans
       (descAddMonoidHom_quotMk t x).symm
 
 instance forget₂Mon_preservesFilteredColimits :
@@ -218,7 +217,7 @@ def colimit : CommSemiRingCat.{max v u} :=
 def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
   ι :=
-    { app := fun X ↦ ofHom <| ((SemiRingCat.FilteredColimits.colimitCocone
+    { app := fun X ↦ ofHom ((SemiRingCat.FilteredColimits.colimitCocone
           (F ⋙ forget₂ CommSemiRingCat SemiRingCat.{max v u})).ι.app X).hom
       naturality _ _ f := by
         ext
@@ -276,7 +275,7 @@ def colimit : RingCat.{max v u} :=
 def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
   ι :=
-    { app := fun X ↦ ofHom <| ((SemiRingCat.FilteredColimits.colimitCocone
+    { app := fun X ↦ ofHom ((SemiRingCat.FilteredColimits.colimitCocone
           (F ⋙ forget₂ RingCat SemiRingCat.{max v u})).ι.app X).hom
       naturality _ _ f := by
         ext
@@ -339,7 +338,7 @@ def colimit : CommRingCat.{max v u} :=
 def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
   ι :=
-    { app := fun X ↦ ofHom <| ((RingCat.FilteredColimits.colimitCocone
+    { app := fun X ↦ ofHom ((RingCat.FilteredColimits.colimitCocone
           (F ⋙ forget₂ CommRingCat RingCat.{max v u})).ι.app X).hom
       naturality _ _ f := by
         ext

@@ -157,7 +157,7 @@ open Function
 
 /-- Any injective endomorphism of an Artinian module is surjective. -/
 theorem surjective_of_injective_endomorphism (f : M →ₗ[R] M) (s : Injective f) : Surjective f := by
-  have h := ‹IsArtinian R M›; contrapose! h
+  have h := ‹IsArtinian R M›; contrapose h
   rw [IsArtinian, WellFoundedLT]
   refine (RelEmbedding.natGT (LinearMap.range <| f ^ ·) ?_).not_wellFounded
   intro n
@@ -283,7 +283,7 @@ theorem IsArtinian.isSemisimpleModule_iff_jacobson [IsArtinian R M] :
     .of_injective f <| LinearMap.ker_eq_bot.mp <| le_bot_iff.mp fun x hx ↦ by
       rw [← h, Module.jacobson, Submodule.mem_sInf]
       exact fun m hm ↦ hs ⟨m, hm⟩ <| Submodule.mem_finsetInf.mpr fun i hi ↦
-        (Submodule.Quotient.mk_eq_zero i.1).mp <| congr_fun hx ⟨i, hi⟩⟩
+        (Submodule.Quotient.mk_eq_zero i.1).mp congr($hx ⟨i, hi⟩)⟩
 
 open Submodule Function
 

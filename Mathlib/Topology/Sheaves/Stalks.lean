@@ -469,7 +469,7 @@ theorem stalkFunctor_map_injective_of_app_injective {F G : Presheaf C X} {f : F 
   rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply, ← f.naturality, ← f.naturality,
     ConcreteCategory.comp_apply, ConcreteCategory.comp_apply] at heq
   replace heq := h W heq
-  convert! congr_arg (F.germ _ x hxW) heq using 1
+  convert! congr(F.germ _ x hxW $heq) using 1
   exacts [(F.germ_res_apply iWU₁ x hxW s).symm, (F.germ_res_apply iWU₂ x hxW t).symm]
 
 section IsBasis
@@ -495,7 +495,7 @@ lemma germ_eq_of_isBasis (F : X.Presheaf C) {U V : Opens X} (x : X) (mU : x ∈ 
   obtain ⟨_, ⟨W', hW', rfl⟩, hxW', hW'W⟩ := hB.exists_subset_of_mem_open hxW W.2
   refine ⟨W', hxW', hW', hW'W.trans hWU.le, hW'W.trans hWV.le, ?_⟩
   simpa only [← ConcreteCategory.comp_apply, ← F.map_comp] using!
-    DFunLike.congr_arg (ConcreteCategory.hom (F.map (homOfLE hW'W).op)) e
+    congr(ConcreteCategory.hom (F.map (homOfLE hW'W).op) $e)
 
 lemma stalkFunctor_map_injective_of_isBasis
     {F G : X.Presheaf C} {α : F ⟶ G} (hα : ∀ U ∈ B, Function.Injective (α.app (op U))) (x : X) :
@@ -574,7 +574,7 @@ theorem mono_of_stalk_mono {F G : Sheaf C X} (f : F ⟶ G) [∀ x, Mono <| (stal
       (ConcreteCategory.mono_iff_injective_of_preservesPullback _).mpr <|
         app_injective_of_stalkFunctor_map_injective f.1 U.unop fun _x _hx =>
           (ConcreteCategory.mono_iff_injective_of_preservesPullback
-            ((stalkFunctor C _).map f.hom)).mp <| inferInstance
+            ((stalkFunctor C _).map f.hom)).mp inferInstance
 
 include instCC in
 theorem mono_iff_stalk_mono {F G : Sheaf C X} (f : F ⟶ G) :

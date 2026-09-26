@@ -79,7 +79,7 @@ def SpecModulesToSheafFullyFaithful : (modulesSpecToSheaf (R := R)).FullyFaithfu
       .of_algebraMap_smul fun _ _ ↦ rfl
     exact (IsLocalization.linearMap_compatibleSMul (.powers (M := R) r)
       Γ(Spec R, basicOpen r) Γ(M, basicOpen r) Γ(N, basicOpen r)).map_smul
-      (f.hom.app _).hom _ _⟩, fun i ↦ by ext x; exact congr($(f.1.naturality i).hom x)⟩
+      (f.hom.app _).hom _ _⟩, fun i ↦ by ext x; congrm $(f.1.naturality i).hom x⟩
   map_preimage f := rfl
   preimage_map f := rfl
 
@@ -207,17 +207,16 @@ protected noncomputable def map {M N : ModuleCat R} (f : M ⟶ N) : tilde M ⟶ 
 @[simp, reassoc]
 protected lemma map_id {M : ModuleCat R} : tilde.map (𝟙 M) = 𝟙 _ := by
   ext p x
-  exact Subtype.ext (funext fun y ↦ DFunLike.congr_fun (LocalizedModule.map_id _) _)
+  exact Subtype.ext (funext fun y ↦ congr($(LocalizedModule.map_id _) _))
 
 @[simp, reassoc]
 protected lemma map_comp {M N P : ModuleCat R} (f : M ⟶ N) (g : N ⟶ P) :
     tilde.map (f ≫ g) = tilde.map f ≫ tilde.map g := by
   ext p x
-  exact Subtype.ext (funext
-    fun y ↦ DFunLike.congr_fun (IsLocalizedModule.map_comp' y.1.asIdeal.primeCompl
+  exact Subtype.ext (funext fun y ↦ congr($(IsLocalizedModule.map_comp' y.1.asIdeal.primeCompl
       (LocalizedModule.mkLinearMap y.1.asIdeal.primeCompl M)
       (LocalizedModule.mkLinearMap y.1.asIdeal.primeCompl N)
-      (LocalizedModule.mkLinearMap y.1.asIdeal.primeCompl P) _ _) _)
+      (LocalizedModule.mkLinearMap y.1.asIdeal.primeCompl P) _ _) _))
 
 @[reassoc (attr := simp)]
 lemma toOpen_map_app {M N : ModuleCat R} (f : M ⟶ N)
@@ -448,7 +447,7 @@ def presentationTilde (s : Set M) (hs : Submodule.span R s = ⊤)
     simp only [Category.assoc, Iso.hom_inv_id_assoc, Preadditive.IsIso.comp_left_eq_zero]
     rw [← tilde.map_comp, ← ModuleCat.ofHom_comp]
     convert! tilde.map_zero
-    exact congr(ModuleCat.ofHom $(H₁.linearMap_comp_eq_zero))) ?_
+    congrm ModuleCat.ofHom $H₁.linearMap_comp_eq_zero) ?_
   letI h₁ := ModuleCat.isColimitCokernelCofork _ _ H₁
     (by simp [← LinearMap.range_eq_top, Finsupp.range_linearCombination, hs])
   refine IsCokernel.ofIso _ (CokernelCofork.mapIsColimit _ h₁ (tilde.functor R)) _ (tildeFinsupp t)
@@ -619,7 +618,7 @@ lemma Scheme.Modules.exists_affineOpenCover_presentation {X : Scheme.{u}} (M : X
       ∀ i, Nonempty (M.restrict (𝒰.f i)).Presentation := by
   obtain ⟨ι, U, pres, hU, hU'⟩ := M.exists_isOpenCover_presentation
   refine ⟨Scheme.AffineOpenCover.ofIsOpenCover _ hU hU', fun i ↦ ⟨?_⟩⟩
-  exact SheafOfModules.Presentation.ofIsIso.{u, u, u} ((restrictFunctorComp _ _).app M).inv <|
+  exact SheafOfModules.Presentation.ofIsIso.{u, u, u} ((restrictFunctorComp _ _).app M).inv
     (presentationRestrict (hU' i).isoSpec.inv (pres i))
 
 namespace QuasicoherentTilde
@@ -748,7 +747,7 @@ private lemma Aux.of_eq_iSup_basicOpen {M : (Spec R).Modules} (V : (Spec R).Open
           ← homOfLE_comp (basicOpen_mul_le_right _ _) (hgle i), op_comp, M.presheaf.map_comp_apply,
           M.map_smul_Spec, ha, M.map_smul_Spec, pow_add, mul_smul, smul_comm, ht i]
     · intro i j
-      have : Function.Injective (M.presheaf.map (eqToHom <| (basicOpen_mul (g i) (g j))).op) :=
+      have : Function.Injective (M.presheaf.map (eqToHom (basicOpen_mul (g i) (g j))).op) :=
         ConcreteCategory.injective_of_mono_of_preservesPullback _
       apply this
       dsimp [Opens.infLELeft, Opens.infLERight]
@@ -869,7 +868,7 @@ theorem isQuasicoherent_iff_isIso_fromTildeΓ (M : (Spec R).Modules) :
     M.IsQuasicoherent ↔ IsIso M.fromTildeΓ := by
   refine ⟨fun h ↦ inferInstance, fun h ↦ ?_⟩
   exact (SheafOfModules.isQuasicoherent (Spec R).ringCatSheaf).prop_of_iso
-    (asIso <| M.fromTildeΓ) inferInstance
+    (asIso M.fromTildeΓ) inferInstance
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -880,7 +879,7 @@ lemma essImage_tilde : (tilde.functor R).essImage =
     exact (SheafOfModules.isQuasicoherent (Spec R).ringCatSheaf).prop_of_iso e
       (by dsimp; infer_instance)
   · intro M (h : M.IsQuasicoherent)
-    exact ⟨((modulesSpecToSheaf.obj M).presheaf.obj (.op ⊤)), ⟨asIso <| M.fromTildeΓ⟩⟩
+    exact ⟨((modulesSpecToSheaf.obj M).presheaf.obj (.op ⊤)), ⟨asIso M.fromTildeΓ⟩⟩
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

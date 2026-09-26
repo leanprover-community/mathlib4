@@ -92,7 +92,7 @@ theorem ext {f g : Π₀ i, β i} (h : ∀ i, f i = g i) : f = g :=
 lemma ne_iff {f g : Π₀ i, β i} : f ≠ g ↔ ∃ i, f i ≠ g i := DFunLike.ne_iff
 
 instance : Zero (Π₀ i, β i) :=
-  ⟨⟨0, Trunc.mk <| ⟨∅, fun _ => Or.inr rfl⟩⟩⟩
+  ⟨⟨0, Trunc.mk ⟨∅, fun _ => Or.inr rfl⟩⟩⟩
 
 instance : Inhabited (Π₀ i, β i) :=
   ⟨0⟩
@@ -200,11 +200,11 @@ instance addZeroClass [∀ i, AddZeroClass (β i)] : AddZeroClass (Π₀ i, β i
 
 instance instIsLeftCancelAdd [∀ i, AddZeroClass (β i)] [∀ i, IsLeftCancelAdd (β i)] :
     IsLeftCancelAdd (Π₀ i, β i) where
-  add_left_cancel _ _ _ h := ext fun x => add_left_cancel <| DFunLike.congr_fun h x
+  add_left_cancel _ _ _ h := ext fun x => add_left_cancel congr($h x)
 
 instance instIsRightCancelAdd [∀ i, AddZeroClass (β i)] [∀ i, IsRightCancelAdd (β i)] :
     IsRightCancelAdd (Π₀ i, β i) where
-  add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| DFunLike.congr_fun h x
+  add_right_cancel _ _ _ h := ext fun x => add_right_cancel congr($h x)
 
 instance instIsCancelAdd [∀ i, AddZeroClass (β i)] [∀ i, IsCancelAdd (β i)] :
     IsCancelAdd (Π₀ i, β i) where
@@ -1046,7 +1046,7 @@ noncomputable def comapDomain [∀ i, Zero (β i)] (h : κ → ι) (hh : Functio
   support' :=
     f.support'.map fun s =>
       ⟨(s.1.finite_toSet.preimage hh.injOn).toFinset.val, fun x =>
-        (s.prop (h x)).imp_left fun hx => (Set.Finite.mem_toFinset _).mpr <| hx⟩
+        (s.prop (h x)).imp_left fun hx => (Set.Finite.mem_toFinset _).mpr hx⟩
 
 @[simp]
 theorem comapDomain_apply [∀ i, Zero (β i)] (h : κ → ι) (hh : Function.Injective h) (f : Π₀ i, β i)

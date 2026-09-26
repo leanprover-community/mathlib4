@@ -188,11 +188,11 @@ theorem toMulEquiv_eq_coe : equiv.toMulEquiv = equiv := rfl
 theorem coe_toMulEquiv : ⇑(equiv : E ≃* E') = equiv := rfl
 
 @[to_additive (attr := simp)]
-theorem map_inl (n : N) : equiv (S.inl n) = S'.inl n := congrFun equiv.inl_comm n
+theorem map_inl (n : N) : equiv (S.inl n) = S'.inl n := congr($equiv.inl_comm n)
 
 @[to_additive (attr := simp)]
 theorem rightHom_map (e : E) : S'.rightHom (equiv e) = S.rightHom e :=
-  congrFun equiv.rightHom_comm e
+  congr($equiv.rightHom_comm e)
 
 /-- The inverse of an equivalence of group extensions is an equivalence. -/
 @[to_additive /-- The inverse of an equivalence of additive group extensions is an equivalence. -/]

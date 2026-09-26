@@ -123,7 +123,7 @@ lemma algebraTensorAlgEquiv_symm_comp_aeval :
 @[simp]
 lemma algebraTensorAlgEquiv_symm_map (x : MvPolynomial σ R) :
     (algebraTensorAlgEquiv R A).symm (map (algebraMap R A) x) = 1 ⊗ₜ x :=
-  DFunLike.congr_fun (algebraTensorAlgEquiv_symm_comp_aeval R A) x
+  congr($(algebraTensorAlgEquiv_symm_comp_aeval R A) x)
 
 lemma aeval_one_tmul (f : σ → S) (p : MvPolynomial σ R) :
     (aeval fun x ↦ (1 ⊗ₜ[R] f x : N ⊗[R] S)) p = 1 ⊗ₜ[R] (aeval f) p := by

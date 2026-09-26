@@ -126,17 +126,17 @@ noncomputable def riemannianMetricVectorSpace :
 noncomputable instance : RiemannianBundle (fun (x : F) ↦ TangentSpace% x) :=
   ⟨(riemannianMetricVectorSpace F).toRiemannianMetric⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma norm_tangentSpace_vectorSpace {x : F} {v : TangentSpace% x} :
-    ‖v‖ = ‖letI V : F := v; V‖ := by
+    ‖v‖ = ‖NormedSpace.fromTangentSpace _ v‖ := by
   rw [norm_eq_sqrt_real_inner, norm_eq_sqrt_real_inner]
+  rfl
 
 lemma nnnorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace% x} :
-    ‖v‖₊ = ‖letI V : F := v; V‖₊ := by
+    ‖v‖₊ = ‖NormedSpace.fromTangentSpace _  v‖₊ := by
   simp [nnnorm, norm_tangentSpace_vectorSpace]
 
 lemma enorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace% x} :
-    ‖v‖ₑ = ‖letI V : F := v; V‖ₑ := by
+    ‖v‖ₑ = ‖NormedSpace.fromTangentSpace _ v‖ₑ := by
   simp [enorm, nnnorm_tangentSpace_vectorSpace]
 
 open MeasureTheory
@@ -238,6 +238,7 @@ attribute [local instance] normedSpaceTangentSpaceVectorSpace
 
 variable (I)
 
+-- TODO: once mathlib has a notion vmfderiv, use mvfderiv here and vmfderiv in related lemmas below
 set_option backward.isDefEq.respectTransparency false in
 lemma eventually_norm_mfderiv_extChartAt_lt (x : M) :
     ∃ C > 0, ∀ᶠ y in 𝓝 x, ‖mfderiv% (extChartAt I x) y‖ < C := by

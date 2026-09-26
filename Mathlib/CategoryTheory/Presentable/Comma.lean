@@ -216,7 +216,7 @@ definitional properties.) -/
 private def π₁ : J κ f ⥤ J₁ κ f where
   obj g := g.fst
   map φ := CostructuredArrow.homMk (ObjectProperty.homMk (by exact φ.left.hom.left))
-    (by exact congr_arg CommaMorphism.left (CostructuredArrow.w φ))
+    (by congrm $(CostructuredArrow.w φ).left)
 
 /-- The second projection `J κ f ⥤ J₂ κ f`. (Note: this functor could be
 defined using `CostructuredArrow.map₂`, but it would not have the same
@@ -225,7 +225,7 @@ definitional properties.) -/
 private def π₂ : J κ f ⥤ J₂ κ f where
   obj g := g.snd
   map φ := CostructuredArrow.homMk (ObjectProperty.homMk (by exact φ.left.hom.right))
-    (by exact congr_arg CommaMorphism.right (CostructuredArrow.w φ))
+    (by congrm $(CostructuredArrow.w φ).right)
 
 variable {κ f}
 
@@ -486,6 +486,38 @@ end Comma
 
 namespace Arrow
 
+section
+
+variable (κ : Cardinal.{w}) [Fact κ.IsRegular]
+  [IsCardinalAccessibleCategory.{w} D κ]
+
+instance : IsCardinalAccessibleCategory.{w} (Arrow D) κ :=
+  Comma.isCardinalAccessibleCategory _ _ _
+
+instance : (Arrow.leftFunc : Arrow D ⥤ D).IsCardinalAccessible κ :=
+  inferInstanceAs (Functor.IsCardinalAccessible.{w} (Comma.fst _ _) κ)
+
+instance : (Arrow.rightFunc : Arrow D ⥤ D).IsCardinalAccessible κ :=
+  inferInstanceAs (Functor.IsCardinalAccessible.{w} (Comma.snd _ _) κ)
+
+instance : (Arrow.leftFunc : Arrow D ⥤ D).PreservesCardinalPresentable κ :=
+  inferInstanceAs ((Comma.fst _ _).PreservesCardinalPresentable κ)
+
+instance : (Arrow.rightFunc : Arrow D ⥤ D).PreservesCardinalPresentable κ :=
+  inferInstanceAs ((Comma.snd _ _).PreservesCardinalPresentable κ)
+
+instance (f : Arrow D) [IsCardinalPresentable f κ] :
+    IsCardinalPresentable f.left κ :=
+  inferInstanceAs (IsCardinalPresentable (Arrow.leftFunc.obj f) κ)
+
+instance (f : Arrow D) [IsCardinalPresentable f κ] :
+    IsCardinalPresentable f.right κ :=
+  inferInstanceAs (IsCardinalPresentable (Arrow.rightFunc.obj f) κ)
+
+end
+
+section
+
 variable [IsAccessibleCategory.{w} D]
 
 instance : IsAccessibleCategory.{w} (Arrow D) :=
@@ -496,6 +528,8 @@ instance : Functor.IsAccessible.{w} (Arrow.leftFunc : Arrow D ⥤ D) :=
 
 instance : Functor.IsAccessible.{w} (Arrow.rightFunc : Arrow D ⥤ D) :=
   inferInstanceAs (Functor.IsAccessible.{w} (Comma.snd _ _))
+
+end
 
 end Arrow
 

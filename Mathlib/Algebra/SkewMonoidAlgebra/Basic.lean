@@ -81,7 +81,7 @@ set_option backward.privateInPublic.warn false in
 instance {S : Type*} [SMulZeroClass S k] :
     SMulZeroClass S (SkewMonoidAlgebra k G) where
   smul s f := smul s f
-  smul_zero a := by exact congr_arg ofCoeff (smul_zero a)
+  smul_zero a := congr(ofCoeff $(smul_zero a))
 
 @[simp]
 theorem ofCoeff_zero : (⟨0⟩ : SkewMonoidAlgebra k G) = 0 := rfl
@@ -799,7 +799,7 @@ instance [Semiring S] [AddCommMonoid k] [Module S k] :
 instance instFaithfulSMul [AddMonoid k] [SMulZeroClass S k] [FaithfulSMul S k] [Nonempty G] :
     FaithfulSMul S (SkewMonoidAlgebra k G) where
   eq_of_smul_eq_smul {_s₁ _s₂} h := by
-    apply eq_of_smul_eq_smul fun a : G →₀ k ↦ congr_arg coeff _
+    apply eq_of_smul_eq_smul fun a : G →₀ k ↦ congr(coeff $(_))
     intro a
     simp_rw [ofCoeff_smul, h]
 
