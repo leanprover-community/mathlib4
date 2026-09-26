@@ -50,7 +50,7 @@ namespace mappingCone
 /-- The standard triangle `K ⟶ L ⟶ mappingCone φ ⟶ K⟦(1 : ℤ)⟧` in `CochainComplex C ℤ`
 attached to a morphism `φ : K ⟶ L`. It involves `φ`, `inr φ : L ⟶ mappingCone φ` and
 the morphism induced by the `1`-cocycle `-mappingCone.fst φ`. -/
-@[simps! obj₁ obj₂ obj₃ mor₁ mor₂]
+@[implicit_reducible, simps! obj₁ obj₂ obj₃ mor₁ mor₂]
 noncomputable def triangle : Triangle (CochainComplex C ℤ) :=
   Triangle.mk φ (inr φ) (Cocycle.homOf ((-fst φ).rightShift 1 0 (zero_add 1)))
 
