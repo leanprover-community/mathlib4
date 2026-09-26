@@ -141,16 +141,45 @@ theorem IsMultiplicative.prodPrimeFactors_one_add_of_squarefree [CommSemiring R]
   rw [isMultiplicative_zeta.natCast.prodPrimeFactors_add_of_squarefree h_mult hn,
     coe_zeta_mul_apply]
 
+theorem IsMultiplicative.prodPrimeFactors_one_sub [CommRing R]
+    (f : ArithmeticFunction R) (hf : f.IsMultiplicative) {n : ℕ} (hn : n ≠ 0) :
+    ∏ p ∈ n.primeFactors, (1 - f p) = ∑ d ∈ n.divisors, μ d * f d := by
+  set P := ∏ p ∈ n.primeFactors, p with hP
+  have hPsq : Squarefree P := by
+    refine Finset.squarefree_prod_of_pairwise_isCoprime ?_ fun p hp ↦
+      (Nat.mem_primeFactors.mp hp).1.prime.squarefree
+    intro p hp q hq hpq
+    exact Nat.coprime_iff_isRelPrime.mp
+      ((Nat.coprime_primes (Nat.mem_primeFactors.mp hp).1 (Nat.mem_primeFactors.mp hq).1).mpr hpq)
+  have hP0 : P ≠ 0 := hPsq.ne_zero
+  -- over the squarefree `P` this is `prodPrimeFactors_one_add_of_squarefree` applied to `μ * f`;
+  -- the divisors of `n` that are not divisors of `P` are not squarefree, so `μ` kills them
+  calc ∏ p ∈ n.primeFactors, (1 - f p)
+    _ = ∏ p ∈ P.primeFactors,
+          (1 + (ArithmeticFunction.pmul (μ : ArithmeticFunction R) f) p) := by
+      rw [hP, Nat.primeFactors_prod_primeFactors]
+      refine prod_congr rfl fun p hp ↦ ?_
+      rw [pmul_apply, intCoe_apply, ArithmeticFunction.moebius_apply_prime
+        (prime_of_mem_primeFactorsList (List.mem_toFinset.mp hp))]
+      ring
+    _ = ∑ d ∈ P.divisors, μ d * f d := by
+      rw [(isMultiplicative_moebius.intCast.pmul hf).prodPrimeFactors_one_add_of_squarefree hPsq]
+      simp_rw [pmul_apply, intCoe_apply]
+    _ = ∑ d ∈ n.divisors, μ d * f d := by
+      refine Finset.sum_subset (Nat.divisors_subset_of_dvd hn (Nat.prod_primeFactors_dvd n))
+        fun d hd hno ↦ ?_
+      suffices ¬ Squarefree d by simp [ArithmeticFunction.moebius_eq_zero_of_not_squarefree this]
+      -- a squarefree divisor of `n` divides `P`: it is the product of its own prime factors
+      refine fun hsq ↦ hno (Nat.mem_divisors.mpr ⟨?_, hP0⟩)
+      rw [← Nat.prod_primeFactors_of_squarefree hsq, Nat.prod_primeFactors_dvd_iff hP0, hP,
+        Nat.primeFactors_prod_primeFactors]
+      exact Nat.primeFactors_mono (Nat.mem_divisors.mp hd).1 hn
+
+@[deprecated IsMultiplicative.prodPrimeFactors_one_sub (since := "2026-09-14")]
 theorem IsMultiplicative.prodPrimeFactors_one_sub_of_squarefree [CommRing R]
     (f : ArithmeticFunction R) (hf : f.IsMultiplicative) {n : ℕ} (hn : Squarefree n) :
-    ∏ p ∈ n.primeFactors, (1 - f p) = ∑ d ∈ n.divisors, μ d * f d := by
-  trans (∏ p ∈ n.primeFactors, (1 + (ArithmeticFunction.pmul (μ : ArithmeticFunction R) f) p))
-  · apply prod_congr rfl; intro p hp
-    rw [pmul_apply, intCoe_apply, ArithmeticFunction.moebius_apply_prime
-        (prime_of_mem_primeFactorsList (List.mem_toFinset.mp hp))]
-    ring
-  · rw [(isMultiplicative_moebius.intCast.pmul hf).prodPrimeFactors_one_add_of_squarefree hn]
-    simp_rw [pmul_apply, intCoe_apply]
+    ∏ p ∈ n.primeFactors, (1 - f p) = ∑ d ∈ n.divisors, μ d * f d :=
+  hf.prodPrimeFactors_one_sub f hn.ne_zero
 
 @[simp]
 theorem moebius_mul_coe_zeta : (μ * ζ : ArithmeticFunction ℤ) = 1 := by
