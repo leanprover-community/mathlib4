@@ -490,18 +490,22 @@ theorem toMonoidHom_injective : Injective (fun f : α →+* β => (f : α →* �
 alias coe_monoidHom_injective := toMonoidHom_injective
 
 /-- Ring homomorphisms map zero to zero. -/
+@[simp high]
 protected theorem map_zero (f : α →+* β) : f 0 = 0 :=
   map_zero f
 
 /-- Ring homomorphisms map one to one. -/
+@[simp high]
 protected theorem map_one (f : α →+* β) : f 1 = 1 :=
   map_one f
 
 /-- Ring homomorphisms preserve addition. -/
+@[simp high]
 protected theorem map_add (f : α →+* β) : ∀ a b, f (a + b) = f a + f b :=
   map_add f
 
 /-- Ring homomorphisms preserve multiplication. -/
+@[simp high]
 protected theorem map_mul (f : α →+* β) : ∀ a b, f (a * b) = f a * f b :=
   map_mul f
 
