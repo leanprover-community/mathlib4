@@ -5,6 +5,7 @@ Authors: Michael Stoll
 -/
 module
 
+public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Data.Fintype.Parity
 public import Mathlib.NumberTheory.LegendreSymbol.ZModChar
 public import Mathlib.FieldTheory.Finite.Basic
@@ -238,6 +239,21 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
 /-- The sum over the values of the quadratic character is zero when the characteristic is odd. -/
 theorem quadraticChar_sum_zero (hF : ringChar F ≠ 2) : ∑ a : F, quadraticChar F a = 0 :=
   sum_eq_zero_of_ne_one (quadraticChar_ne_one hF)
+
+/-- The sum of the quadratic character over the values of an odd function is zero when
+`-1` is not a square. -/
+theorem quadraticChar_sum_comp_eq_zero_of_odd (hF : ¬IsSquare (-1 : F)) {f : F → F}
+    (hf : Function.Odd f) : ∑ x : F, quadraticChar F (f x) = 0 := by
+  have h : ∑ x : F, quadraticChar F (f x)
+      = quadraticChar F (-1) * ∑ x : F, quadraticChar F (f x) :=
+    calc ∑ x : F, quadraticChar F (f x)
+      _ = ∑ x : F, quadraticChar F (f (-x)) :=
+          (Fintype.sum_equiv (Equiv.neg F) _ _ fun _ => rfl).symm
+      _ = ∑ x : F, quadraticChar F (-1) * quadraticChar F (f x) :=
+          congr(∑ x, $(by rw [hf x, ← map_mul, neg_one_mul]))
+      _ = quadraticChar F (-1) * ∑ x : F, quadraticChar F (f x) := (Finset.mul_sum ..).symm
+  rw [quadraticChar_neg_one_iff_not_isSquare.mpr hF] at h
+  linarith
 
 end quadraticChar
 
