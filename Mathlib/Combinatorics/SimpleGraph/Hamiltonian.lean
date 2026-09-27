@@ -235,7 +235,7 @@ theorem isHamiltonianCycle_transfer [Finite α] {H : SimpleGraph α} {p : G.Walk
 
 alias ⟨_, IsHamiltonianCycle.transfer⟩ := isHamiltonianCycle_transfer
 
-lemma isHamiltonianCycle_cycleGraph {n : ℕ} : (cycleGraph.cycle n).IsHamiltonianCycle :=
+lemma IsHamiltonianCycle.cycleGraph_cycle (n : ℕ) : (cycleGraph.cycle n).IsHamiltonianCycle :=
   isHamiltonianCycle_iff_isCycle_and_length_eq.mpr ⟨cycleGraph.isCycle_cycle, by simp⟩
 
 end Walk
