@@ -244,7 +244,7 @@ theorem C_smul [Zero R] [SMulZeroClass S R] (s : S) (r : R) :
   QuadraticAlgebra.ext rfl (smul_zero _).symm
 
 instance [AddMonoid R] : AddMonoid (QuadraticAlgebra R a b) := fast_instance% by
-  refine (equivProd a b).injective.addMonoid _ rfl ?_ ?_ <;> intros <;> rfl
+  refine (equivProd a b).injective.addMonoid _ rfl ?_ ?_ ?_ <;> intros <;> rfl
 
 instance [Monoid S] [AddMonoid R] [DistribMulAction S R] :
     DistribMulAction S (QuadraticAlgebra R a b) where
@@ -252,14 +252,14 @@ instance [Monoid S] [AddMonoid R] [DistribMulAction S R] :
   smul_add _ _ _ := by ext <;> simp
 
 instance [AddCommMonoid R] : AddCommMonoid (QuadraticAlgebra R a b) := fast_instance% by
-  refine (equivProd a b).injective.addCommMonoid _ rfl ?_ ?_ <;> intros <;> rfl
+  refine (equivProd a b).injective.addCommMonoid _ rfl ?_ ?_ ?_ <;> intros <;> rfl
 
 instance [Semiring S] [AddCommMonoid R] [Module S R] : Module S (QuadraticAlgebra R a b) where
   add_smul r s x := by ext <;> simp [add_smul]
   zero_smul x := by ext <;> simp
 
 instance [AddGroup R] : AddGroup (QuadraticAlgebra R a b) := fast_instance% by
-  refine (equivProd a b).injective.addGroup _ rfl ?_ ?_ ?_ ?_ ?_ <;> intros <;> rfl
+  refine (equivProd a b).injective.addGroup _ rfl ?_ ?_ ?_ ?_ ?_ ?_ <;> intros <;> rfl
 
 instance [AddCommGroup R] : AddCommGroup (QuadraticAlgebra R a b) where
 

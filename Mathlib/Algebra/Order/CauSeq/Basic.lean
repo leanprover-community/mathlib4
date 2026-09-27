@@ -320,7 +320,7 @@ end SMul
 
 instance addGroup : AddGroup (CauSeq β abv) :=
   Function.Injective.addGroup Subtype.val Subtype.val_injective rfl coe_add coe_neg coe_sub
-    (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
+    (fun _ _ => coe_smul _ _) (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
 
 instance instNatCast : NatCast (CauSeq β abv) := ⟨fun n => const n⟩
 
@@ -329,6 +329,7 @@ instance instIntCast : IntCast (CauSeq β abv) := ⟨fun n => const n⟩
 instance addGroupWithOne : AddGroupWithOne (CauSeq β abv) :=
   Function.Injective.addGroupWithOne Subtype.val Subtype.val_injective rfl rfl
   coe_add coe_neg coe_sub
+  (by intros; rfl)
   (by intros; rfl)
   (by intros; rfl)
   (by intros; rfl)
@@ -349,9 +350,31 @@ theorem pow_apply (f : CauSeq β abv) (n i : ℕ) : (f ^ n) i = f i ^ n :=
 theorem const_pow (x : β) (n : ℕ) : const (x ^ n) = const x ^ n :=
   rfl
 
+instance : Pow (CauSeq β abv) ℕ+ :=
+  ⟨fun f n =>
+    (ofEq (ppowRec n f) fun i => f i ^ n) <| fun i ↦ by
+      refine Semigroup.ppow_induction (f i) n ?_ ?_ <;> simp +contextual [ppowRec]⟩
+
+@[simp, norm_cast]
+theorem coe_ppow (f : CauSeq β abv) (n : ℕ+) : ⇑(f ^ n) = (f : ℕ → β) ^ n :=
+  rfl
+
+@[simp, norm_cast]
+theorem ppow_apply (f : CauSeq β abv) (n : ℕ+) (i : ℕ) : (f ^ n) i = f i ^ n :=
+  rfl
+
+theorem const_ppow (x : β) (n : ℕ+) : const (x ^ n) = const x ^ n :=
+  rfl
+
+@[norm_cast]
+theorem npow_val_eq_ppow (f : CauSeq β abv) (n : ℕ+) : f ^ n.val = f ^ n := by
+  ext
+  simp [← _root_.npow_val_eq_ppow]
+
 instance ring : Ring (CauSeq β abv) :=
   Function.Injective.ring Subtype.val Subtype.val_injective rfl rfl coe_add coe_mul coe_neg coe_sub
-    (fun _ _ => coe_smul _ _) (fun _ _ => coe_smul _ _) coe_pow (fun _ => rfl) fun _ => rfl
+    (fun _ _ => coe_smul _ _) (fun _ _ => coe_smul _ _) (fun _ _ => coe_smul _ _) coe_ppow coe_pow
+    (fun _ => rfl) fun _ => rfl
 
 instance {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv] : CommRing (CauSeq β abv) :=
   { CauSeq.ring with
@@ -498,6 +521,9 @@ theorem pow_equiv_pow {f1 f2 : CauSeq β abv} (hf : f1 ≈ f2) (n : ℕ) : f1 ^ 
   induction n with
   | zero => simp only [pow_zero, Setoid.refl]
   | succ n ih => simpa only [pow_succ'] using mul_equiv_mul hf ih
+
+theorem ppow_equiv_ppow {f1 f2 : CauSeq β abv} (hf : f1 ≈ f2) (n : ℕ+) : f1 ^ n ≈ f2 ^ n := by
+  simp [← npow_val_eq_ppow, pow_equiv_pow hf n.val]
 
 end Ring
 
