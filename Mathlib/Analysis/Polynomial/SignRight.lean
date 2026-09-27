@@ -21,8 +21,7 @@ it vanishes only for `p = 0`, it is multiplicative, and it is computed by the re
 otherwise.
 
 This is the local invariant behind Sturm's theorem, where it determines the direction in which the
-sign of a Sturm sequence changes across a root; it will be used in subsequent files to define the
-Cauchy index of a rational function.
+sign of a Sturm sequence changes across a root.
 
 ## Main definitions
 
@@ -42,10 +41,12 @@ Cauchy index of a rational function.
 
 ## Implementation notes
 
-The definition and all results are stated over `ℝ`. Everything except the derivative rule
-`signRight_of_eval_eq_zero` holds over any conditionally complete, densely ordered field with the
-order topology; that rule is proved via the mean value theorem, which Mathlib states for `ℝ`.
-An algebraic proof, factoring the root out of `p`, would remove this restriction.
+The definition and all results are stated over `ℝ`, but they hold over any real closed field, and
+should eventually be generalised to `IsRealClosed`. Two ingredients stand in the way: the
+intermediate value theorem for polynomials over a real closed field, which Mathlib does not have
+yet and which is needed for `exists_eventually_sign_eq` (the proof here uses connectedness of
+intervals in `ℝ`), and the mean value theorem, used in `signRight_of_eval_eq_zero`, which can be
+replaced by an algebraic argument factoring the root out of `p`.
 -/
 
 open Polynomial Set Filter SignType Topology
