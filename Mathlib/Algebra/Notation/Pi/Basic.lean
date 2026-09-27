@@ -128,4 +128,14 @@ theorem uncurry_mulSingle_mulSingle (i : ι) (i' : ι') (b : M) :
     uncurry (Pi.mulSingle i (Pi.mulSingle i' b)) = Pi.mulSingle (i, i') b :=
   uncurry_update_update _ _ _ _
 
+@[to_additive (attr := simp)]
+theorem _root_.Function.Injective.extend_mulSingle {f : ι → ι'} (hf : Injective f) (i : ι) (a : M) :
+    extend f (mulSingle i a) 1 = mulSingle (f i) a := by
+  ext j
+  by_cases h : ∃ k, f k = j
+  · obtain ⟨k, rfl⟩ := h
+    simp [hf.extend_apply, Pi.mulSingle_apply, hf.eq_iff]
+  · rw [Function.extend_apply' _ _ _ h, one_apply]
+    grind
+
 end Pi
