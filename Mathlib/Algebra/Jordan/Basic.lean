@@ -69,7 +69,7 @@ Non-commutative Jordan algebras have connections to the Vidav-Palmer theorem
 
 -/
 
-@[expose] public section
+public section
 
 
 variable (A : Type*)

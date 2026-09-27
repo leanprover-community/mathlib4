@@ -31,7 +31,6 @@ open Opposite
 namespace CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
-variable {J : Type u₂} [Category.{v₂} J]
 
 instance hasEqualizers_opposite [HasCoequalizers C] : HasEqualizers Cᵒᵖ :=
   haveI : HasColimitsOfShape WalkingParallelPairᵒᵖ C :=
@@ -103,8 +102,8 @@ namespace Cofork
 
 /-- The obvious map `Cofork f g → Fork f.unop g.unop` -/
 def unop {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) : Fork f.unop g.unop :=
-   Cocone.unop ((Cocone.precompose (opParallelPairIso f.unop g.unop).hom).obj
-      (Cocone.whisker walkingParallelPairOpEquiv.inverse c))
+  Cocone.unop ((Cocone.precompose (opParallelPairIso f.unop g.unop).hom).obj
+    (Cocone.whisker walkingParallelPairOpEquiv.inverse c))
 
 lemma unop_π_app_one {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) :
     c.unop.π.app .one = Quiver.Hom.unop (c.ι.app .zero) := by
@@ -288,6 +287,7 @@ def isLimitEquivIsColimitUnop {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) :
     IsLimit c ≃ IsColimit c.unop :=
   (IsLimit.equivIsoLimit c.unopOpIso).symm.trans c.unop.isColimitEquivIsLimitOp.symm
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism between `(Fork.ofι ι w).op` and `Cofork.ofπ ι.op w'`. -/
 def ofιOpIsoOfπ {X Y P : C} {f g : X ⟶ Y} (ι ι' : P ⟶ X) (w : ι ≫ f = ι ≫ g)
     (w' : f.op ≫ ι'.op = g.op ≫ ι'.op) (h : ι = ι') :
@@ -320,10 +320,11 @@ end Fork
 
 namespace Cofork
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `Cofork.ofπ f pullback.condition` is a colimit cocone if and only if
 `Fork.ofι f.op pushout.condition` in the opposite category is a limit cone. -/
 def isColimitCoforkPushoutEquivIsColimitForkOpPullback
-    {X Y : C} {f : X ⟶ Y} [HasPullback f f] [HasPushout f.op f.op] :
+    {X Y : C} {f : X ⟶ Y} [HasPullback f f] :
     IsColimit (Cofork.ofπ f pullback.condition) ≃ IsLimit (Fork.ofι f.op pushout.condition) where
   toFun h := Fork.isLimitOfIsos _ (Cofork.isColimitOfπEquivIsLimitOp f f
     pullback.condition (by simp only [← op_comp, pullback.condition]) rfl h) _ (.refl _)
@@ -335,10 +336,11 @@ def isColimitCoforkPushoutEquivIsColimitForkOpPullback
   left_inv := by cat_disch
   right_inv := by cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `Cofork.ofπ f pullback.condition` is a colimit cocone in `Cᵒᵖ` if and only if
 `Fork.ofι f.unop pushout.condition` in `C` is a limit cone. -/
 def isColimitCoforkPushoutEquivIsColimitForkUnopPullback
-    {X Y : Cᵒᵖ} {f : X ⟶ Y} [HasPullback f f] [HasPushout f.unop f.unop] :
+    {X Y : Cᵒᵖ} {f : X ⟶ Y} [HasPullback f f] :
     IsColimit (Cofork.ofπ f pullback.condition) ≃ IsLimit (Fork.ofι f.unop pushout.condition) where
   toFun h := Fork.isLimitOfIsos _ (Cofork.isColimitOfπEquivIsLimitUnop f f pullback.condition
     (by simp only [← unop_comp, pullback.condition]) rfl h) _ (.refl _)
@@ -355,10 +357,11 @@ end Cofork
 
 namespace Fork
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `Fork.ofι f pushout.condition` is a limit cone if and only if
 `Cofork.ofπ f.op pullback.condition` in the opposite category is a colimit cocone. -/
 def isLimitForkPushoutEquivIsColimitForkOpPullback
-    {X Y : C} {f : X ⟶ Y} [HasPushout f f] [HasPullback f.op f.op] :
+    {X Y : C} {f : X ⟶ Y} [HasPushout f f] :
     IsLimit (Fork.ofι f pushout.condition) ≃ IsColimit (Cofork.ofπ f.op pullback.condition) where
   toFun h := Cofork.isColimitOfIsos _ (Fork.isLimitOfιEquivIsColimitOp f f
     pushout.condition (by simp only [← op_comp, pushout.condition]) rfl h) _
@@ -375,10 +378,11 @@ def isLimitForkPushoutEquivIsColimitForkOpPullback
   left_inv := by cat_disch
   right_inv := by cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `Fork.ofι f pushout.condition` is a limit cone in `Cᵒᵖ` if and only if
 `Cofork.ofπ f.op pullback.condition` in `C` is a colimit cocone. -/
 def isLimitForkPushoutEquivIsColimitForkUnopPullback
-    {X Y : Cᵒᵖ} {f : X ⟶ Y} [HasPushout f f] [HasPullback f.unop f.unop] :
+    {X Y : Cᵒᵖ} {f : X ⟶ Y} [HasPushout f f] :
     IsLimit (Fork.ofι f pushout.condition) ≃ IsColimit (Cofork.ofπ f.unop pullback.condition) where
   toFun h := Cofork.isColimitOfIsos _ (Fork.isLimitOfιEquivIsColimitUnop f f pushout.condition
     (by simp only [← unop_comp, pushout.condition]) rfl h) _

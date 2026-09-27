@@ -75,7 +75,7 @@ lemma indicator_biUnion_eq_sum_powerset (s : Finset ι) (S : ι → Set α) (f :
     intro t hts ht
     rw [Set.indicator_of_notMem]
     · simp
-    · contrapose! ha
+    · contrapose ha
       simp only [Set.mem_iInter] at ha
       rcases ht with ⟨i, hi⟩
       simp only [Set.mem_iUnion, exists_prop]
@@ -105,9 +105,10 @@ variable [DecidableEq α]
 
 lemma prod_indicator_biUnion_finset_sub_indicator (hs : s.Nonempty) (S : ι → Finset α) (a : α) :
     ∏ i ∈ s, (Set.indicator (s.biUnion S) 1 a - Set.indicator (S i) 1 a) = (0 : ℤ) := by
-  convert prod_indicator_biUnion_sub_indicator hs (fun i ↦ S i) a
+  convert! prod_indicator_biUnion_sub_indicator hs (fun i ↦ S i) a
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Inclusion-exclusion principle** for the sum of a function over a union.
 
 The sum of a function `f` over the union of the `S i` over `i ∈ s` is the alternating sum of the

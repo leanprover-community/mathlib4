@@ -19,7 +19,7 @@ certificate.
 
 ## TODO
 - Write a tactic that uses this theorem to generate Pratt primality certificates
-- Integrate Pratt primality certificates into the norm_num primality verifier
+- Integrate Pratt primality certificates into the `norm_num` primality verifier
 
 ## Implementation notes
 

@@ -5,7 +5,7 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.Topology.Algebra.Group.Quotient
 
 /-!
@@ -21,7 +21,7 @@ followed by an open quotient map `ψ` satisfying `φ.range = ψ.ker`.
 
 -/
 
-@[expose] public section
+public section
 
 open scoped Pointwise
 

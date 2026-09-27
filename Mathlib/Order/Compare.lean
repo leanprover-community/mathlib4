@@ -148,11 +148,11 @@ theorem cmp_ofDual [LT α] [DecidableLT α] (x y : αᵒᵈ) : cmp (ofDual x) (o
   rfl
 
 /-- Generate a linear order structure from a preorder and `cmp` function. -/
-@[implicit_reducible]
+@[instance_reducible]
 def linearOrderOfCompares [Preorder α] (cmp : α → α → Ordering)
     (h : ∀ a b, (cmp a b).Compares a b) : LinearOrder α :=
   let H : DecidableLE α := fun a b => decidable_of_iff _ (h a b).ne_gt
-  { inferInstanceAs (Preorder α) with
+  { (inferInstance : Preorder α) with
     le_antisymm := fun a b => (h a b).le_antisymm,
     le_total := fun a b => (h a b).le_total,
     toMin := minOfLe,

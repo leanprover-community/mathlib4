@@ -102,7 +102,7 @@ lemma Submonoid.closure_image_isMulIndecomposable_baseOf [Finite ι]
   have ⟨(hi₀ : 1 < f (v i)), (hi₁ : v i ∉ _)⟩ : i ∈ s := hi.prop
   have hi₂ (k : ι) (hk₀ : 1 < f (v k)) (hk₁ : f (v k) < f (v i)) : v k ∈ closure (v '' t) := by
     by_contra hk₂; exact not_le.mpr hk₁ <| hi.le_of_le ⟨hk₀, hk₂⟩ hk₁.le
-  have hi₃ : i ∉ t := by contrapose! hi₁; exact subset_closure <| mem_image_of_mem v hi₁
+  have hi₃ : i ∉ t := by contrapose hi₁; exact subset_closure <| mem_image_of_mem v hi₁
   obtain ⟨j, k, hj, hk, hjk⟩ : ∃ (j k : ι) (hj : 1 < f (v j)) (hk : 1 < f (v k)),
       v i = v j * v k := by
     grind [IsMulIndecomposable]
@@ -110,10 +110,6 @@ lemma Submonoid.closure_image_isMulIndecomposable_baseOf [Finite ι]
   have hk' : v k ∈ closure (v '' t) := hi₂ k hk <| by aesop
   replace hjk : v i ∈ closure (v '' t) := hjk ▸ mul_mem hj' hk'
   exact hi₁ hjk
-
-@[deprecated (since := "2025-12-30")]
-alias Submonoid.closure_image_one_lt_and_isMulIndecomposable :=
-  Submonoid.closure_image_isMulIndecomposable_baseOf
 
 @[to_additive]
 lemma Subgroup.closure_image_isMulIndecomposable_baseOf [Finite ι] [InvolutiveInv ι]
@@ -151,7 +147,7 @@ lemma pairwise_div_notMem_range [InvolutiveInv ι]
     s.Pairwise fun i j ↦ v i / v j ∉ range v := by
   have h_sub : s ⊆ t := hst.trans (IsMulIndecomposable.subset _ _)
   intro i hi j hj hne
-  by_contra! ⟨k, hk⟩
+  by_contra ⟨k, hk⟩
   rcases hv_t k with hk' | hk'
   · suffices ¬ IsMulIndecomposable v t i from this (hst hi)
     simp only [IsMulIndecomposable, hv_one, or_self, imp_false, not_and, not_forall, not_not]

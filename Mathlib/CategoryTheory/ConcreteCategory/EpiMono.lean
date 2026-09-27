@@ -38,6 +38,12 @@ namespace ConcreteCategory
 
 section
 
+instance [(forget C).PreservesMonomorphisms] {X Y : C} (f : X ⟶ Y) [Mono f] :
+    Mono (↾f) := Functor.map_mono (forget C) f
+
+instance [(forget C).PreservesEpimorphisms] {X Y : C} (f : X ⟶ Y) [Epi f] :
+    Epi (↾f) := Functor.map_epi (forget C) f
+
 /-- In any concrete category, injective morphisms are monomorphisms. -/
 theorem mono_of_injective {X Y : C} (f : X ⟶ Y) (i : Function.Injective f) :
     Mono f :=
@@ -172,14 +178,14 @@ theorem epi_iff_surjective_of_preservesPushout {X Y : C} (f : X ⟶ Y)
 
 theorem bijective_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
     Function.Bijective f := by
-  rw [← isIso_iff_bijective]
+  rw [bijective_iff_isIso_ofHom]
   infer_instance
 
 /-- If the forgetful functor of a concrete category reflects isomorphisms, being an isomorphism
 is equivalent to being bijective. -/
 theorem isIso_iff_bijective [(forget C).ReflectsIsomorphisms]
     {X Y : C} (f : X ⟶ Y) : IsIso f ↔ Function.Bijective f := by
-  rw [← CategoryTheory.isIso_iff_bijective]
+  rw [bijective_iff_isIso_ofHom]
   refine ⟨fun _ ↦ inferInstance, fun h ↦ ?_⟩
   have : IsIso ((forget C).map f) := h
   exact isIso_of_reflects_iso f (forget C)

@@ -15,10 +15,13 @@ public import Mathlib.Data.Fintype.Sum
 public import Mathlib.Data.Fintype.Vector
 
 /-!
+# Big operators over a fintype
+
 Results about "big operations" over a `Fintype`, and consequent
 results about cardinalities of certain types.
 
-## Implementation note
+## Implementation notes
+
 This content had previously been in `Data.Fintype.Basic`, but was moved here to avoid
 requiring `Algebra.BigOperators` (and hence many other imports) as a
 dependency of `Fintype`.
@@ -30,8 +33,6 @@ and should be moved at some point.
 public section
 
 assert_not_exists MulAction
-
-open Mathlib
 
 universe u v
 
@@ -235,7 +236,7 @@ theorem Finset.prod_fin_eq_prod_range [CommMonoid β] {n : ℕ} (c : Fin n → �
     ∏ i, c i = ∏ i ∈ Finset.range n, if h : i < n then c ⟨i, h⟩ else 1 := by
   rw [← Fin.prod_univ_eq_prod_range, Finset.prod_congr rfl]
   rintro ⟨i, hi⟩ _
-  simp only [hi, dif_pos]
+  simp only [hi, dite_eq_left]
 
 @[to_additive]
 theorem Finset.prod_toFinset_eq_subtype {M : Type*} [CommMonoid M] [Fintype α] (p : α → Prop)

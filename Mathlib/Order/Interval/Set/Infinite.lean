@@ -16,7 +16,7 @@ in orders that are unbounded on the appropriate side. We also prove that an unbo
 preorder is an infinite type.
 -/
 
-@[expose] public section
+public section
 
 
 variable {α : Type*} [Preorder α]

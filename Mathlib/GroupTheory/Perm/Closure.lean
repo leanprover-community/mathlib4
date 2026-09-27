@@ -25,7 +25,7 @@ public section
 
 open Equiv Function Finset
 
-variable {ι α β : Type*}
+variable {α β : Type*}
 
 namespace Equiv.Perm
 
@@ -53,14 +53,14 @@ theorem closure_cycle_adjacent_swap {σ : Perm α} (h1 : IsCycle σ) (h2 : σ.su
     induction n with
     | zero => exact subset_closure (Set.mem_insert_of_mem _ (Set.mem_singleton _))
     | succ n ih =>
-      convert H.mul_mem (H.mul_mem h3 ih) (H.inv_mem h3)
+      convert! H.mul_mem (H.mul_mem h3 ih) (H.inv_mem h3)
       simp_rw [mul_swap_eq_swap_mul, mul_inv_cancel_right, pow_succ', coe_mul, comp_apply]
   have step2 : ∀ n : ℕ, swap x ((σ ^ n) x) ∈ H := by
     intro n
     induction n with
     | zero =>
       simp only [pow_zero, coe_one, id_eq, swap_self]
-      convert H.one_mem
+      convert! H.one_mem
     | succ n ih =>
       by_cases h5 : x = (σ ^ n) x
       · rw [pow_succ', mul_apply, ← h5]
@@ -102,7 +102,7 @@ theorem closure_cycle_coprime_swap {n : ℕ} {σ : Perm α} (h0 : Nat.Coprime n 
   have h2' : (σ ^ n).support = univ := Eq.trans (support_pow_coprime h0) h2
   have h1' : IsCycle ((σ ^ n) ^ (m : ℤ)) := by rwa [← hm] at h1
   replace h1' : IsCycle (σ ^ n) :=
-    h1'.of_pow (le_trans (support_pow_le σ n) (ge_of_eq (congr_arg support hm)))
+    h1'.of_pow (le_trans (support_pow_le σ n) (ge_of_eq congr(support $hm)))
   rw [eq_top_iff, ← closure_cycle_adjacent_swap h1' h2' x, closure_le, Set.insert_subset_iff]
   exact
     ⟨Subgroup.pow_mem (closure _) (subset_closure (Set.mem_insert σ _)) n,

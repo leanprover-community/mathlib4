@@ -24,7 +24,7 @@ imports of `Mathlib/Algebra/CharP/Lemmas.lean`.
 As such, we can probably reorganize and find a better home for most of these lemmas.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset TwoSidedIdeal
 
@@ -92,9 +92,8 @@ it is not zero in `R`. -/
 lemma cast_ne_zero_of_ne_of_prime [Nontrivial R]
     {p q : ℕ} [CharP R p] (hq : q.Prime) (hneq : p ≠ q) : (q : R) ≠ 0 := fun h ↦ by
   rw [cast_eq_zero_iff R p q] at h
-  rcases hq.eq_one_or_self_of_dvd _ h with h | h
-  · subst h
-    exact false_of_nontrivial_of_char_one (R := R)
+  rcases hq.eq_one_or_self_of_dvd _ h with rfl | h
+  · exact false_of_nontrivial_of_char_one (R := R)
   · exact hneq h
 
 lemma ringChar_of_prime_eq_zero [Nontrivial R] {p : ℕ} (hprime : Nat.Prime p)
@@ -126,11 +125,10 @@ lemma Ring.neg_one_ne_one_of_char_ne_two {R : Type*} [NonAssocRing R] [Nontrivia
 
 /-- Characteristic `≠ 2` in a domain implies that `-a = a` iff `a = 0`. -/
 lemma Ring.eq_self_iff_eq_zero_of_char_ne_two {R : Type*} [NonAssocRing R] [Nontrivial R]
-    [NoZeroDivisors R] (hR : ringChar R ≠ 2) {a : R} : -a = a ↔ a = 0 :=
-  ⟨fun h =>
-    (mul_eq_zero.mp <| (two_mul a).trans <| neg_eq_iff_add_eq_zero.mp h).resolve_left
-      (Ring.two_ne_zero hR),
-    fun h => ((congr_arg (fun x => -x) h).trans neg_zero).trans h.symm⟩
+    [NoZeroDivisors R] (hR : ringChar R ≠ 2) {a : R} : -a = a ↔ a = 0 where
+  mp h := (mul_eq_zero.mp <| (two_mul a).trans <| neg_eq_iff_add_eq_zero.mp h).resolve_left
+    (Ring.two_ne_zero hR)
+  mpr h := by simp [h]
 
 end
 
@@ -146,13 +144,13 @@ instance Nat.lcm.charP [CharP S q] : CharP (R × S) (Nat.lcm p q) where
 /-- The characteristic of the product of two rings of the same characteristic
   is the same as the characteristic of the rings -/
 instance Prod.charP [CharP S p] : CharP (R × S) p := by
-  convert Nat.lcm.charP R S p p; simp
+  convert! Nat.lcm.charP R S p p; simp
 
 instance Prod.charZero_of_left [CharZero R] : CharZero (R × S) where
-  cast_injective _ _ h := CharZero.cast_injective congr(Prod.fst $h)
+  cast_injective _ _ h := CharZero.cast_injective congr($(h).fst)
 
 instance Prod.charZero_of_right [CharZero S] : CharZero (R × S) where
-  cast_injective _ _ h := CharZero.cast_injective congr(Prod.snd $h)
+  cast_injective _ _ h := CharZero.cast_injective congr($(h).snd)
 
 end Prod
 

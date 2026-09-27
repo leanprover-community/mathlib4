@@ -34,7 +34,7 @@ and minimal ones are nilpotent (TODO), hence Cartan subalgebras.
 
 @[expose] public section
 
-open LieAlgebra LieModule
+open LieAlgebra
 
 variable {R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
@@ -118,7 +118,7 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
   have aux₂ : ∀ n ∈ N, ⁅x, n⁆ ∈ N := fun n hn ↦ le_normalizer H (aux₁ _ hn)
   let dx : N →ₗ[R] N := (ad R L x).restrict aux₂
   obtain ⟨k, hk⟩ : ∃ a, ∀ b ≥ a, Codisjoint (LinearMap.ker (dx ^ b)) (LinearMap.range (dx ^ b)) :=
-    eventually_atTop.mp <| dx.eventually_codisjoint_ker_pow_range_pow
+    eventually_atTop.mp dx.eventually_codisjoint_ker_pow_range_pow
   specialize hk (k + 1) (Nat.le_add_right k 1)
   rw [← Submodule.map_subtype_top N.toSubmodule, Submodule.map_le_iff_le_comap]
   apply hk
@@ -143,6 +143,7 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
     apply aux₁
     simp only [Submodule.coe_subtype, SetLike.coe_mem]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A Lie subalgebra of a Noetherian Lie algebra is nilpotent
 if it is contained in the Engel subalgebra of all its elements. -/
 lemma isNilpotent_of_forall_le_engel [IsNoetherian R L]

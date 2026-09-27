@@ -34,7 +34,9 @@ open Equiv
 variable {n R : Type*} [DecidableEq n] (σ τ : Perm n)
 
 variable (R) in
-/-- the permutation matrix associated with an `Equiv.Perm` -/
+/-- the permutation matrix associated with an `Equiv.Perm`.
+
+This is available in a bundled form as `Matrix.permMatrixHom`. -/
 abbrev Equiv.Perm.permMatrix [Zero R] [One R] : Matrix n n R :=
   σ.toPEquiv.toMatrix
 
@@ -79,7 +81,7 @@ lemma permMatrix_mulVec {v : n → R} [CommRing R] :
 lemma vecMul_permMatrix {v : n → R} [CommRing R] :
     v ᵥ* σ.permMatrix R = v ∘ σ.symm := by
   ext j
-  simp [vecMul_eq_sum, Pi.single, Function.update, ← Equiv.symm_apply_eq]
+  simp [vecMul_eq_sum, Pi.single, Function.update, ← Equiv.symm_apply_eq σ]
 
 @[simp]
 lemma permMatrix_mul [NonAssocSemiring R] :
@@ -114,7 +116,7 @@ See `Matrix.permMatrix_l2_opNorm_le` for the inequality version of the empty cas
 theorem permMatrix_l2_opNorm_eq [Nonempty n] : ‖σ.permMatrix 𝕜‖ = 1 :=
   le_antisymm (permMatrix_l2_opNorm_le σ) <| by
     inhabit n
-    simpa [EuclideanSpace.norm_eq, permMatrix_mulVec, ← Equiv.eq_symm_apply, apply_ite] using
+    simpa [EuclideanSpace.norm_eq, permMatrix_mulVec, ← Equiv.eq_symm_apply σ, apply_ite] using
       (σ.permMatrix 𝕜).l2_opNorm_mulVec (WithLp.toLp _ (Pi.single default 1))
 
 end Matrix

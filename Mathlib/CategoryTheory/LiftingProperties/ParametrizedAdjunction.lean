@@ -26,7 +26,7 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-open Opposite Limits
+open Opposite
 
 variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃}
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃]
@@ -39,7 +39,7 @@ variable {F G} (adj₂ : F ⊣₂ G)
   {X₃ Y₃ : C₃} {f₃ : X₃ ⟶ Y₃}
   (sq₁₂ : F.PushoutObjObj f₁ f₂) (sq₁₃ : G.PullbackObjObj f₁ f₃)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a parametrized adjunction `F ⊣₂ G` between bifunctors, and structures
 `sq₁₂ : F.PushoutObjObj f₁ f₂` and `sq₁₃ : G.PullbackObjObj f₁ f₃`, there are
 as many commutative squares with left map `sq₁₂.ι` and right map `f₃`
@@ -110,7 +110,7 @@ lemma inr_arrowHomEquiv_symm_apply_left (β : Arrow.mk f₂ ⟶ Arrow.mk sq₁�
     adj₂.homEquiv.symm (β.right ≫ sq₁₃.fst) :=
   IsPushout.inr_desc _ _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a parametrized adjunction `F ⊣₂ G` between bifunctors, structures
 `sq₁₂ : F.PushoutObjObj f₁ f₂` and `sq₁₃ : G.PullbackObjObj f₁ f₃`,
 there are as many liftings for the commutative square given by a

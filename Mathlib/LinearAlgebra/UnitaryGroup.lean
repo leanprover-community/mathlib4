@@ -80,8 +80,8 @@ theorem mem_unitaryGroup_iff' : A ∈ Matrix.unitaryGroup n α ↔ star A * A = 
 theorem det_of_mem_unitary {A : Matrix n n α} (hA : A ∈ Matrix.unitaryGroup n α) :
     A.det ∈ unitary α := by
   constructor
-  · simpa [star, det_transpose] using congr_arg det hA.1
-  · simpa [star, det_transpose] using congr_arg det hA.2
+  · simpa [star, det_transpose] using congr(det $(hA.1))
+  · simpa [star, det_transpose] using congr(det $(hA.2))
 
 open scoped Kronecker in
 /-- The kronecker product of two unitary matrices is unitary.
@@ -105,6 +105,24 @@ theorem kronecker_mem_unitary {R m : Type*} [Semiring R] [StarRing R] [Fintype m
       ite_mul, zero_mul, Finset.sum_ite_irrel, ← Matrix.mul_apply, hU₁.2, Matrix.one_apply,
       Finset.sum_const_zero, ← ite_and, and_comm, Prod.eq_iff_fst_eq_snd_eq]
 
+section TensorProduct
+variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+  [StarRing A] [StarRing B] [StarRing R] [StarModule R A] [StarModule R B]
+
+open scoped TensorProduct Kronecker
+
+theorem _root_.Unitary.tmul_mem {U : A} {V : B} (hU : U ∈ unitary A) (hV : V ∈ unitary B) :
+    U ⊗ₜ[R] V ∈ unitary (A ⊗[R] B) := by
+  simp [Unitary.mem_iff, hU, hV, Algebra.TensorProduct.one_def]
+
+theorem kroneckerTMul_mem_unitary {m : Type*} [Fintype m] [DecidableEq m] {U : Matrix m m A}
+    {V : Matrix n n B} (hU : U ∈ unitary (Matrix m m A)) (hV : V ∈ unitary (Matrix n n B)) :
+    U ⊗ₖₜ[R] V ∈ unitary (Matrix (m × n) (m × n) (A ⊗[R] B)) := by
+  simp_rw [Unitary.mem_iff, star_eq_conjTranspose] at hU hV ⊢
+  simp [conjTranspose_kroneckerTMul, ← mul_kroneckerTMul_mul, hU, hV]
+
+end TensorProduct
+
 namespace UnitaryGroup
 
 instance coeMatrix : Coe (unitaryGroup n α) (Matrix n n α) :=
@@ -121,7 +139,7 @@ def toLin' (A : unitaryGroup n α) :=
   Matrix.toLin' A.1
 
 theorem ext_iff (A B : unitaryGroup n α) : A = B ↔ ∀ i j, A i j = B i j :=
-  Subtype.ext_iff.trans ⟨fun h i j => congr_fun (congr_fun h i) j, Matrix.ext⟩
+  Subtype.ext_iff.trans ⟨fun h i j => congr($h i j), Matrix.ext⟩
 
 @[ext]
 theorem ext (A B : unitaryGroup n α) : (∀ i j, A i j = B i j) → A = B :=
@@ -306,6 +324,7 @@ theorem mem_specialOrthogonalGroup_iff :
     A ∈ specialOrthogonalGroup n R ↔ A ∈ orthogonalGroup n R ∧ A.det = 1 :=
   Iff.rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma of_mem_specialOrthogonalGroup_fin_two_iff {a b c d : R} :
     !![a, b; c, d] ∈ Matrix.specialOrthogonalGroup (Fin 2) R ↔

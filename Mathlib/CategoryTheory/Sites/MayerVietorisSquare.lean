@@ -59,9 +59,9 @@ namespace CategoryTheory
 
 open Limits Opposite
 
-variable {C : Type u} [Category.{v} C]
-  {J : GrothendieckTopology C}
+variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma Sheaf.isPullback_square_op_map_yoneda_presheafToSheaf_yoneda_iff
     [HasWeakSheafify J (Type v)]
@@ -75,10 +75,7 @@ lemma Sheaf.isPullback_square_op_map_yoneda_presheafToSheaf_yoneda_iff
     (((sheafificationAdjunction J (Type v)).homEquiv _ _).trans yonedaEquiv) ?_ ?_ ?_ ?_
   all_goals
     ext x
-    dsimp
-    rw [yonedaEquiv_naturality]
-    erw [Adjunction.homEquiv_naturality_left]
-    rfl
+    simp [Adjunction.homEquiv, yonedaEquiv_naturality]
 
 namespace GrothendieckTopology
 
@@ -248,6 +245,7 @@ noncomputable def shortComplex :
   zero := (S.map (yoneda ⋙ (Functor.whiskeringRight _ _ _).obj AddCommGrpCat.free ⋙
       presheafToSheaf J _)).cokernelCofork.condition
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance : Mono S.shortComplex.f := by
   have : Mono (S.shortComplex.f ≫ biprod.snd) := by

@@ -5,9 +5,9 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
 public import Mathlib.Data.Fin.VecNotation
-public import Mathlib.Data.Real.Basic
 public import Mathlib.Tactic.FinCases
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.NormNum
@@ -27,7 +27,7 @@ implies small powers. See `Mathlib/Combinatorics/Additive/PluenneckeRuzsa.lean`.
 
 public section
 
-open Fin MulOpposite
+open Fin
 open List hiding tail
 open scoped Pointwise
 
@@ -150,11 +150,7 @@ lemma small_alternating_pow_of_small_tripling (hm : 3 ≤ m) (hA : #(A ^ 3) ≤ 
     succ_zero_eq_one, succ_one_eq_two, List.prod_cons, prod_nil, mul_one, ← mul_assoc]
   simp only [zero_le_one, abs_eq, Int.reduceNeg, forall_iff_succ, isValue, succ_zero_eq_one,
     succ_one_eq_two, IsEmpty.forall_iff, and_true] at hδ
-  have : K ≤ K ^ 3 := le_self_pow₀ hK₁ (by lia)
-  have : K ^ 2 ≤ K ^ 3 := by
-    gcongr
-    · exact hK₁
-    · simp
+  have : K ^ 2 ≤ K ^ 3 := by gcongr; simp
   obtain ⟨hδ₀ | hδ₀, hδ₁ | hδ₁, hδ₂ | hδ₂⟩ := hδ <;> simp [hδ₀, hδ₁, hδ₂]
   · simp [pow_succ] at hA
     nlinarith

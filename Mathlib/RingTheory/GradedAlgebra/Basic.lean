@@ -186,10 +186,10 @@ abbrev GradedAlgebra.ofAlgHom [SetLike.GradedMonoid 𝒜] (decompose : A →ₐ[
     ext i x : 2
     exact (decompose.congr_arg <| DirectSum.coeAlgHom_of _ _ _).trans (left_inv i x)
 
-variable [GradedAlgebra 𝒜]
-
 instance (R₀ : Type*) [CommSemiring R₀] [Algebra R₀ R] [Algebra R₀ A] [IsScalarTower R₀ R A]
     [i : GradedAlgebra 𝒜] : GradedAlgebra (𝒜 · |>.restrictScalars R₀) := { i with }
+
+variable [GradedAlgebra 𝒜]
 
 namespace DirectSum
 
@@ -227,7 +227,7 @@ open DirectSum
 
 /-- The projection maps of graded algebra -/
 def GradedAlgebra.proj (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜] (i : ι) : A →ₗ[R] A :=
-  (𝒜 i).subtype.comp <| (DFinsupp.lapply i).comp <| (decomposeAlgEquiv 𝒜).toAlgHom.toLinearMap
+  (𝒜 i).subtype.comp <| (DFinsupp.lapply i).comp (decomposeAlgEquiv 𝒜).toAlgHom.toLinearMap
 
 @[simp]
 theorem GradedAlgebra.proj_apply (i : ι) (r : A) :
@@ -351,6 +351,7 @@ variable {ι : Type*} [DecidableEq ι] [AddMonoid ι]
 variable {M : ι → Submodule R A} [SetLike.GradedMonoid M]
 
 -- The following lines were given on Zulip by Adam Topaz
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The canonical isomorphism of an internal direct sum with the ambient algebra -/
 noncomputable def coeAlgEquiv (hM : DirectSum.IsInternal M) :
     (DirectSum ι fun i => ↥(M i)) ≃ₐ[R] A :=
@@ -362,7 +363,7 @@ and satisfying `SetLike.GradedMonoid M` (essentially, is multiplicative)
 such that `DirectSum.IsInternal M` (`A` is the direct sum of the `M i`),
 we endow `A` with the structure of a graded algebra.
 The submodules are the *homogeneous* parts. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def gradedAlgebra (hM : DirectSum.IsInternal M) : GradedAlgebra M :=
   { (inferInstance : SetLike.GradedMonoid M) with
     decompose' := hM.coeAlgEquiv.symm

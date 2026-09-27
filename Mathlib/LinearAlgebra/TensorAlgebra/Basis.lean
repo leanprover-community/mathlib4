@@ -61,7 +61,7 @@ lemma equivFreeAlgebra_symm_ι (b : Basis κ R M) (i : κ) :
 @[simps! repr_apply]
 noncomputable def _root_.Module.Basis.tensorAlgebra (b : Basis κ R M) :
     Basis (FreeMonoid κ) R (TensorAlgebra R M) :=
-  (FreeAlgebra.basisFreeMonoid R κ).map <| (equivFreeAlgebra b).symm.toLinearEquiv
+  (FreeAlgebra.basisFreeMonoid R κ).map (equivFreeAlgebra b).symm.toLinearEquiv
 
 /-- `TensorAlgebra R M` is free when `M` is. -/
 instance instModuleFree [Module.Free R M] : Module.Free R (TensorAlgebra R M) :=
@@ -86,7 +86,6 @@ instance instIsDomain [IsDomain R] [Module.Free R M] : IsDomain (TensorAlgebra R
 
 attribute [pp_with_univ] Cardinal.lift
 
-set_option backward.isDefEq.respectTransparency false in
 open Cardinal in
 lemma rank_eq [Nontrivial R] [Module.Free R M] :
     Module.rank R (TensorAlgebra R M) = Cardinal.lift.{uR} (sum fun n ↦ Module.rank R M ^ n) := by

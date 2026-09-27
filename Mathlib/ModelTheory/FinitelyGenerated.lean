@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Set.Finite.Lemmas
 public import Mathlib.ModelTheory.Substructures
+public import Mathlib.Data.Set.Finite.Range
 
 /-!
 # Finitely Generated First-Order Structures
@@ -97,6 +98,7 @@ theorem FG.of_map_embedding {N : Type*} [L.Structure N] (f : M ↪[L] N) {s : L.
   rw [h] at h'
   exact Hom.map_le_range h'
 
+set_option backward.isDefEq.respectTransparency false in
 theorem FG.of_finite {s : L.Substructure M} [h : Finite s] : s.FG :=
   ⟨Set.Finite.toFinset h, by simp only [Finite.coe_toFinset, closure_eq]⟩
 
@@ -227,7 +229,7 @@ theorem FG.countable_hom (N : Type*) [L.Structure N] [Countable N] (h : FG L M) 
     intro f f' h
     apply Hom.eq_of_eqOn_dense closure_S
     intro x x_in_S
-    exact congr_fun h ⟨x, x_in_S⟩
+    congrm $h ⟨x, x_in_S⟩
   have : Finite ↑S := (S.finite_coe_iff).2 finite_S
   exact Function.Embedding.countable ⟨g, g_inj⟩
 
@@ -319,7 +321,7 @@ theorem Substructure.countable_fg_substructures_of_countable [Countable M] :
     intro S S' h
     apply Subtype.ext
     rw [(Exists.choose_spec S.prop).symm, (Exists.choose_spec S'.prop).symm]
-    exact congr_arg (closure L ∘ SetLike.coe) h
+    congrm closure L $h
   exact Function.Embedding.countable ⟨g, g_inj⟩
 
 instance Substructure.instCountable_fg_substructures_of_countable [Countable M] :

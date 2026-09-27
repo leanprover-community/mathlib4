@@ -11,7 +11,7 @@ public import Lean.Elab.Tactic.Basic
 public import Lean.Meta.Tactic.Assert
 public import Lean.Meta.Tactic.Clear
 
-/-! ## Additional utilities in `Lean.MVarId` -/
+/-! # Additional utilities in `Lean.MVarId` -/
 
 public section
 

@@ -93,8 +93,10 @@ theorem projIcc_eq_left (h : a < b) : projIcc a b h.le x = ⟨a, left_mem_Icc.mp
 theorem projIcc_eq_right (h : a < b) : projIcc a b h.le x = ⟨b, right_mem_Icc.2 h.le⟩ ↔ b ≤ x := by
   simp [projIcc, Subtype.ext_iff, max_min_distrib_left, h.le, h.not_ge]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem projIci_of_mem (hx : x ∈ Ici a) : projIci a x = ⟨x, hx⟩ := by simpa [projIci]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem projIic_of_mem (hx : x ∈ Iic b) : projIic b x = ⟨x, hx⟩ := by simpa [projIic]
 
 theorem projIcc_of_mem (hx : x ∈ Icc a b) : projIcc a b h x = ⟨x, hx⟩ := by
@@ -184,18 +186,18 @@ theorem IccExtend_range (f : Icc a b → β) : range (IccExtend h f) = range f :
   simp only [IccExtend, range_comp f, range_projIcc, image_univ]
 
 theorem IciExtend_of_le (f : Ici a → β) (hx : x ≤ a) : IciExtend f x = f ⟨a, le_rfl⟩ :=
-  congr_arg f <| projIci_of_le hx
+  congr(f $(projIci_of_le hx))
 
 theorem IicExtend_of_le (f : Iic b → β) (hx : b ≤ x) : IicExtend f x = f ⟨b, le_rfl⟩ :=
-  congr_arg f <| projIic_of_le hx
+  congr(f $(projIic_of_le hx))
 
 theorem IccExtend_of_le_left (f : Icc a b → β) (hx : x ≤ a) :
     IccExtend h f x = f ⟨a, left_mem_Icc.2 h⟩ :=
-  congr_arg f <| projIcc_of_le_left h hx
+  congr(f $(projIcc_of_le_left h hx))
 
 theorem IccExtend_of_right_le (f : Icc a b → β) (hx : b ≤ x) :
     IccExtend h f x = f ⟨b, right_mem_Icc.2 h⟩ :=
-  congr_arg f <| projIcc_of_right_le h hx
+  congr(f $(projIcc_of_right_le h hx))
 
 @[simp]
 theorem IciExtend_self (f : Ici a → β) : IciExtend f a = f ⟨a, le_rfl⟩ :=
@@ -214,25 +216,25 @@ theorem IccExtend_right (f : Icc a b → β) : IccExtend h f b = f ⟨b, right_m
   IccExtend_of_right_le h f le_rfl
 
 theorem IciExtend_of_mem (f : Ici a → β) (hx : x ∈ Ici a) : IciExtend f x = f ⟨x, hx⟩ :=
-  congr_arg f <| projIci_of_mem hx
+  congr(f $(projIci_of_mem hx))
 
 theorem IicExtend_of_mem (f : Iic b → β) (hx : x ∈ Iic b) : IicExtend f x = f ⟨x, hx⟩ :=
-  congr_arg f <| projIic_of_mem hx
+  congr(f $(projIic_of_mem hx))
 
 theorem IccExtend_of_mem (f : Icc a b → β) (hx : x ∈ Icc a b) : IccExtend h f x = f ⟨x, hx⟩ :=
-  congr_arg f <| projIcc_of_mem h hx
+  congr(f $(projIcc_of_mem h hx))
 
 @[simp]
 theorem IciExtend_coe (f : Ici a → β) (x : Ici a) : IciExtend f x = f x :=
-  congr_arg f <| projIci_coe x
+  congr(f $(projIci_coe x))
 
 @[simp]
 theorem IicExtend_coe (f : Iic b → β) (x : Iic b) : IicExtend f x = f x :=
-  congr_arg f <| projIic_coe x
+  congr(f $(projIic_coe x))
 
 @[simp]
 theorem IccExtend_val (f : Icc a b → β) (x : Icc a b) : IccExtend h f x = f x :=
-  congr_arg f <| projIcc_val h x
+  congr(f $(projIcc_val h x))
 
 /-- If `f : α → β` is a constant both on $(-∞, a]$ and on $[b, +∞)$, then the extension of this
 function from $[a, b]$ to the whole line is equal to the original function. -/
@@ -281,6 +283,9 @@ protected theorem Set.OrdConnected.IicExtend {s : Set (Iic b)} (hs : s.OrdConnec
     {x | IicExtend (· ∈ s) x}.OrdConnected :=
   ⟨fun _ hx _ hy _ hz => hs.out hx hy ⟨min_le_min le_rfl hz.1, min_le_min le_rfl hz.2⟩⟩
 
-protected theorem Set.OrdConnected.restrict (hs : s.OrdConnected) :
-    {x | restrict t (· ∈ s) x}.OrdConnected :=
+protected theorem Set.OrdConnected.domRestrict (hs : s.OrdConnected) :
+    {x | domRestrict t (· ∈ s) x}.OrdConnected :=
   ⟨fun _ hx _ hy _ hz => hs.out hx hy hz⟩
+
+@[deprecated (since := "2026-07-19")]
+alias Set.OrdConnected.restrict := Set.OrdConnected.domRestrict

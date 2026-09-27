@@ -67,7 +67,7 @@ variable {F α β γ δ : Type*}
 
 section AddMonoid
 
-/-- `α →+o β` is the type of monotone functions `α → β` that preserve the `OrderedAddCommMonoid`
+/-- `α →+o β` is the type of monotone functions `α → β` that preserve the ordered additive monoid
 structure.
 
 `OrderAddMonoidHom` is also used for ordered group homomorphisms.
@@ -83,7 +83,7 @@ structure OrderAddMonoidHom (α β : Type*) [Preorder α] [Preorder β] [AddZero
 /-- Infix notation for `OrderAddMonoidHom`. -/
 infixr:25 " →+o " => OrderAddMonoidHom
 
-/-- `α ≃+o β` is the type of monotone isomorphisms `α ≃ β` that preserve the `OrderedAddCommMonoid`
+/-- `α ≃+o β` is the type of isomorphisms `α ≃ β` that preserve the ordered additive monoid
 structure.
 
 `OrderAddMonoidIso` is also used for ordered group isomorphisms.
@@ -104,7 +104,7 @@ end AddMonoid
 
 section Monoid
 
-/-- `α →*o β` is the type of functions `α → β` that preserve the `OrderedCommMonoid` structure.
+/-- `α →*o β` is the type of functions `α → β` that preserve the ordered monoid structure.
 
 `OrderMonoidHom` is also used for ordered group homomorphisms.
 
@@ -139,7 +139,7 @@ def OrderMonoidHomClass.toOrderMonoidHom [OrderHomClass F α β] [MonoidHomClass
 instance [OrderHomClass F α β] [MonoidHomClass F α β] : CoeTC F (α →*o β) :=
   ⟨OrderMonoidHomClass.toOrderMonoidHom⟩
 
-/-- `α ≃*o β` is the type of isomorphisms `α ≃ β` that preserve the `OrderedCommMonoid` structure.
+/-- `α ≃*o β` is the type of isomorphisms `α ≃ β` that preserve the ordered monoid structure.
 
 `OrderMonoidIso` is also used for ordered group isomorphisms.
 
@@ -175,6 +175,30 @@ instance [EquivLike F α β] [OrderIsoClass F α β] [MulEquivClass F α β] : C
 
 end Monoid
 
+section MonoidHomClass
+
+variable [Group α] [Monoid β]
+variable {F : Type*} [FunLike F α β] [MonoidHomClass F α β]
+
+@[to_additive]
+theorem map_inv_le_map_inv_iff_map_le_map [LE β] [MulRightMono β] [MulLeftMono β]
+    {f g : F} {x : α} : f x⁻¹ ≤ g x⁻¹ ↔ g x ≤ f x := by
+  suffices h : ∀ (f g : F) (x), f x⁻¹ ≤ g x⁻¹ → g x ≤ f x from
+    ⟨h f g x, by simpa using h g f x⁻¹⟩
+  exact fun f g x hfg ↦ calc
+    _ = f x * (f x⁻¹ * g x) := by simp [← mul_assoc, ← map_mul]
+    _ ≤ f x * (g x⁻¹ * g x) := by gcongr
+    _ = f x                 := by simp [← map_mul]
+
+@[to_additive]
+theorem MonoidHomClass.ext_iff_le [PartialOrder β] [MulRightMono β] [MulLeftMono β] {f g : F} :
+    f = g ↔ ∀ x, f x ≤ g x where
+  mp := by simp +contextual
+  mpr h := DFunLike.ext f g
+    fun x ↦ le_antisymm (h x) (map_inv_le_map_inv_iff_map_le_map.mp <| h x⁻¹)
+
+end MonoidHomClass
+
 section OrderedZero
 
 variable [FunLike F α β]
@@ -208,15 +232,12 @@ theorem monotone_iff_map_nonneg [iamhc : AddMonoidHomClass F α β] :
 
 variable [iamhc : AddMonoidHomClass F α β]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem antitone_iff_map_nonpos : Antitone (f : α → β) ↔ ∀ a, 0 ≤ a → f a ≤ 0 :=
   monotone_toDual_comp_iff.symm.trans <| monotone_iff_map_nonneg (β := βᵒᵈ) (iamhc := iamhc) _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem monotone_iff_map_nonpos : Monotone (f : α → β) ↔ ∀ a ≤ 0, f a ≤ 0 :=
   antitone_comp_ofDual_iff.symm.trans <| antitone_iff_map_nonpos (α := αᵒᵈ) (iamhc := iamhc) _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem antitone_iff_map_nonneg : Antitone (f : α → β) ↔ ∀ a ≤ 0, 0 ≤ f a :=
   monotone_comp_ofDual_iff.symm.trans <| monotone_iff_map_nonneg (α := αᵒᵈ) (iamhc := iamhc) _
 
@@ -228,15 +249,12 @@ theorem strictMono_iff_map_pos :
   · rw [← sub_add_cancel b a, map_add f]
     exact lt_add_of_pos_left _ (h _ <| sub_pos.2 hl)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem strictAnti_iff_map_neg : StrictAnti (f : α → β) ↔ ∀ a, 0 < a → f a < 0 :=
   strictMono_toDual_comp_iff.symm.trans <| strictMono_iff_map_pos (β := βᵒᵈ) (iamhc := iamhc) _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem strictMono_iff_map_neg : StrictMono (f : α → β) ↔ ∀ a < 0, f a < 0 :=
   strictAnti_comp_ofDual_iff.symm.trans <| strictAnti_iff_map_neg (α := αᵒᵈ) (iamhc := iamhc) _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem strictAnti_iff_map_pos : StrictAnti (f : α → β) ↔ ∀ a < 0, 0 < f a :=
   strictMono_comp_ofDual_iff.symm.trans <| strictMono_iff_map_pos (α := αᵒᵈ) (iamhc := iamhc) _
 
@@ -249,10 +267,10 @@ section Preorder
 variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] [MulOneClass α] [MulOneClass β]
   [MulOneClass γ] [MulOneClass δ] {f g : α →*o β}
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance : FunLike (α →*o β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := f
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := g
     congr
@@ -293,8 +311,11 @@ def toOrderHom (f : α →*o β) : α →o β :=
   { f with }
 
 @[to_additive (attr := simp)]
-theorem coe_monoidHom (f : α →*o β) : ((f : α →* β) : α → β) = f :=
+theorem coe_toMonoidHom (f : α →*o β) : ((f : α →* β) : α → β) = f :=
   rfl
+
+@[to_additive (attr := deprecated (since := "2026-09-15"))]
+alias coe_monoidHom := coe_toMonoidHom
 
 @[to_additive (attr := simp)]
 theorem coe_orderHom (f : α →*o β) : ((f : α →o β) : α → β) = f :=
@@ -302,11 +323,11 @@ theorem coe_orderHom (f : α →*o β) : ((f : α →o β) : α → β) = f :=
 
 @[to_additive]
 theorem toMonoidHom_injective : Injective (toMonoidHom : _ → α →* β) := fun f g h =>
-  ext <| by convert DFunLike.ext_iff.1 h using 0
+  ext <| by convert! DFunLike.ext_iff.1 h using 0
 
 @[to_additive]
 theorem toOrderHom_injective : Injective (toOrderHom : _ → α →o β) := fun f g h =>
-  ext <| by convert DFunLike.ext_iff.1 h using 0
+  ext <| by convert! DFunLike.ext_iff.1 h using 0
 
 /-- Copy of an `OrderMonoidHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
@@ -354,9 +375,12 @@ theorem comp_apply (f : β →*o γ) (g : α →*o β) (a : α) : (f.comp g) a =
   rfl
 
 @[to_additive]
-theorem coe_comp_monoidHom (f : β →*o γ) (g : α →*o β) :
+theorem toMonoidHom_comp (f : β →*o γ) (g : α →*o β) :
     (f.comp g : α →* γ) = (f : β →* γ).comp g :=
   rfl
+
+@[to_additive (attr := deprecated (since := "2026-09-15"))]
+alias coe_comp_monoidHom := toMonoidHom_comp
 
 @[to_additive]
 theorem coe_comp_orderHom (f : β →*o γ) (g : α →*o β) :
@@ -478,7 +502,7 @@ section Preorder
 variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] [Mul α] [Mul β]
   [Mul γ] [Mul δ] {f g : α ≃*o β}
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance : EquivLike (α ≃*o β) α β where
   coe f := f.toFun
   inv f := f.invFun
@@ -530,11 +554,11 @@ theorem coe_orderIso (f : α ≃*o β) : ((f : α →o β) : α → β) = f :=
 
 @[to_additive]
 theorem toMulEquiv_injective : Injective (toMulEquiv : _ → α ≃* β) := fun f g h =>
-  ext <| by convert DFunLike.ext_iff.1 h using 0
+  ext <| by convert! DFunLike.ext_iff.1 h using 0
 
 @[to_additive]
 theorem toOrderIso_injective : Injective (toOrderIso : _ → α ≃o β) := fun f g h =>
-  ext <| by convert DFunLike.ext_iff.1 h using 0
+  ext <| by convert! DFunLike.ext_iff.1 h using 0
 
 variable (α)
 
@@ -669,16 +693,16 @@ theorem self_comp_symm (e : α ≃*o β) : e ∘ e.symm = id :=
   funext e.apply_symm_apply
 
 @[to_additive]
-theorem apply_eq_iff_symm_apply (e : α ≃*o β) {x : α} {y : β} : e x = y ↔ x = e.symm y :=
-  e.toEquiv.apply_eq_iff_eq_symm_apply
-
-@[to_additive]
 theorem symm_apply_eq (e : α ≃*o β) {x y} : e.symm x = y ↔ x = e y :=
   e.toEquiv.symm_apply_eq
 
 @[to_additive]
 theorem eq_symm_apply (e : α ≃*o β) {x y} : y = e.symm x ↔ e y = x :=
   e.toEquiv.eq_symm_apply
+
+@[to_additive (attr := deprecated eq_symm_apply +typeChanged (since := "2026-07-26"))]
+theorem apply_eq_iff_symm_apply (e : α ≃*o β) {x : α} {y : β} : e x = y ↔ x = e.symm y :=
+  e.eq_symm_apply.symm
 
 @[to_additive]
 theorem eq_comp_symm (e : α ≃*o β) (f : β → α) (g : α → α) :
@@ -718,7 +742,7 @@ protected lemma strictMono : StrictMono f :=
 protected lemma strictMono_symm : StrictMono f.symm :=
   strictMono_of_le_iff_le <| fun a b ↦ by
     rw [← map_le_map_iff f]
-    convert Iff.rfl <;>
+    convert! Iff.rfl <;>
     exact f.toEquiv.apply_symm_apply _
 
 end Preorder

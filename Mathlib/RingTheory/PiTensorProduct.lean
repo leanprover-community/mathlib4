@@ -5,7 +5,7 @@ Authors: Jujian Zhang
 -/
 module
 
-public import Mathlib.LinearAlgebra.PiTensorProduct
+public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 public import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.Data.Finset.NoncommProd
@@ -37,7 +37,7 @@ instance instOne : One (⨂[R] i, A i) where
 lemma one_def : 1 = tprod R (1 : Π i, A i) := rfl
 
 instance instAddCommMonoidWithOne : AddCommMonoidWithOne (⨂[R] i, A i) where
-  __ := inferInstanceAs (AddCommMonoid (⨂[R] i, A i))
+  __ := (inferInstance : AddCommMonoid (⨂[R] i, A i))
   __ := instOne
 
 end AddCommMonoidWithOne
@@ -82,7 +82,7 @@ lemma smul_tprod_mul_smul_tprod (r s : R) (x y : Π i, A i) :
 
 instance instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (⨂[R] i, A i) where
   __ := instMul
-  __ := inferInstanceAs (AddCommMonoid (⨂[R] i, A i))
+  __ := (inferInstance : AddCommMonoid (⨂[R] i, A i))
   left_distrib _ _ _ := (mul _).map_add _ _
   right_distrib _ _ _ := mul.map_add₂ _ _ _
   zero_mul _ := mul.map_zero₂ _
@@ -130,10 +130,10 @@ protected lemma mul_assoc (x y z : ⨂[R] i, A i) : mul (mul x y) z = mul x (mul
   suffices LinearMap.llcomp R _ _ _ mul ∘ₗ mul =
       (LinearMap.llcomp R _ _ _ LinearMap.lflip.toLinearMap <|
         LinearMap.llcomp R _ _ _ mul.flip ∘ₗ mul).flip by
-    exact DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this x) y) z
+    congrm $this x y z
   ext x y z
   dsimp [← mul_def]
-  simpa only [tprod_mul_tprod] using congr_arg (tprod R) (mul_assoc x y z)
+  simpa only [tprod_mul_tprod] using congr(tprod R $(mul_assoc x y z))
 
 instance instNonUnitalSemiring : NonUnitalSemiring (⨂[R] i, A i) where
   __ := instNonUnitalNonAssocSemiring
@@ -223,8 +223,8 @@ theorem algHom_ext {S : Type*} [Finite ι] [DecidableEq ι] [Semiring S] [Algebr
     f = g :=
   AlgHom.toLinearMap_injective <| PiTensorProduct.ext <| MultilinearMap.ext fun x =>
     suffices f.toMonoidHom.comp (tprodMonoidHom R) = g.toMonoidHom.comp (tprodMonoidHom R) from
-      DFunLike.congr_fun this x
-    MonoidHom.pi_ext fun i xi => DFunLike.congr_fun (h i) xi
+      congr($this x)
+    MonoidHom.pi_ext fun i xi => congr($(h i) xi)
 
 end Semiring
 
@@ -234,7 +234,7 @@ variable [CommRing R] [∀ i, Ring (A i)] [∀ i, Algebra R (A i)]
 
 instance instRing : Ring (⨂[R] i, A i) where
   __ := instSemiring
-  __ := inferInstanceAs <| AddCommGroup (⨂[R] i, A i)
+  __ := (inferInstance : AddCommGroup (⨂[R] i, A i))
 
 end Ring
 
@@ -244,14 +244,14 @@ variable [CommSemiring R] [∀ i, CommSemiring (A i)] [∀ i, Algebra R (A i)]
 
 protected lemma mul_comm (x y : ⨂[R] i, A i) : mul x y = mul y x := by
   suffices mul (R := R) (A := A) = mul.flip from
-    DFunLike.congr_fun (DFunLike.congr_fun this x) y
+    congr($this x y)
   ext x y
   dsimp
   simp only [mul_tprod_tprod, mul_tprod_tprod, mul_comm x y]
 
 instance instCommSemiring : CommSemiring (⨂[R] i, A i) where
   __ := instSemiring
-  __ := inferInstanceAs <| AddCommMonoid (⨂[R] i, A i)
+  __ := (inferInstance : AddCommMonoid (⨂[R] i, A i))
   mul_comm := PiTensorProduct.mul_comm
 
 @[simp] lemma tprod_prod {κ : Type*} (s : Finset κ) (x : κ → Π i, A i) :
@@ -276,9 +276,9 @@ noncomputable def constantBaseRingEquiv : (⨂[R] _ : ι, R) ≃ₐ[R] R :=
       ((lift.tprod _).trans Finset.prod_const_one)
       (by
         -- one of these is required, the other is a performance optimization
-        letI : IsScalarTower R (⨂[R] x : ι, R) (⨂[R] x : ι, R) :=
+        let : IsScalarTower R (⨂[R] x : ι, R) (⨂[R] x : ι, R) :=
           IsScalarTower.right (R := R) (A := ⨂[R] (x : ι), R)
-        letI : SMulCommClass R (⨂[R] x : ι, R) (⨂[R] x : ι, R) :=
+        let : SMulCommClass R (⨂[R] x : ι, R) (⨂[R] x : ι, R) :=
           Algebra.to_smulCommClass (R := R) (A := ⨂[R] x : ι, R)
         rw [LinearMap.map_mul_iff]
         ext
@@ -309,7 +309,7 @@ noncomputable section CommRing
 variable [CommRing R] [∀ i, CommRing (A i)] [∀ i, Algebra R (A i)]
 instance instCommRing : CommRing (⨂[R] i, A i) where
   __ := instCommSemiring
-  __ := inferInstanceAs <| AddCommGroup (⨂[R] i, A i)
+  __ := (inferInstance : AddCommGroup (⨂[R] i, A i))
 
 end CommRing
 

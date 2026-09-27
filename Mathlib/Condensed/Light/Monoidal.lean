@@ -7,10 +7,9 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 public import Mathlib.CategoryTheory.Monoidal.Braided.Reflection
-public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
 public import Mathlib.CategoryTheory.Sites.Monoidal
-public import Mathlib.Condensed.Light.CartesianClosed
 public import Mathlib.Condensed.Light.Module
+public import Mathlib.CategoryTheory.Sites.CartesianMonoidal
 
 /-!
 
@@ -21,7 +20,7 @@ monoidal structure on the presheaf category. By Day's reflection theorem, we obt
 structure.
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -60,7 +59,6 @@ instance : MonoidalClosed (LightCondMod.{u} R) :=
 instance : (presheafToSheaf (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R)).Monoidal :=
   inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (free R).Monoidal := inferInstanceAs (composeAndSheafify _ _).Monoidal
 
 end LightCondensed

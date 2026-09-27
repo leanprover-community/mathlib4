@@ -6,7 +6,7 @@ Authors: Xavier Généreux, María Inés de Frutos Fernández
 module
 
 public import Mathlib.Algebra.Polynomial.Bivariate
-public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.RingTheory.Adjoin.Polynomial.Transcendental
 
 /-!
 # Bivariate polynomials and adjoining transcendental elements
@@ -42,7 +42,7 @@ theorem Transcendental.algEquivAdjoin_apply (hx : Transcendental R x) (p : R[X][
 attribute [local instance] algebra in
 theorem Transcendental.algEquivAdjoin_swap_eq_aeval (hx : Transcendental R x) (p : R[X][Y]) :
     hx.algEquivAdjoin (swap p) = aeval (C ⟨x, self_mem_adjoin_singleton R x⟩) p := by
-  simp [algEquivAdjoin, Bivariate.aveal_eq_map_swap]
+  simp [algEquivAdjoin, Bivariate.aeval_eq_map_swap]
 
 end Ring
 
@@ -62,7 +62,6 @@ theorem aeval_aeval_eq_aeval_algEquivAdjoin {x : A} (y : B)
   | monomial n a =>
     simp_all [aeval_algebraMap_apply, Transcendental.algEquivAdjoin, Subalgebra.algebraMap_def]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.IsAlgebraic.adjoin_singleton {x : A} {y : B} (hx : Transcendental R x)
     (hy : Transcendental R y) (h : IsAlgebraic (adjoin R {x}) y) :
     IsAlgebraic (adjoin R {y}) (algebraMap A B x) := by

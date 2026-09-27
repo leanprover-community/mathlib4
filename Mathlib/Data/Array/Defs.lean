@@ -3,10 +3,9 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Floris van Doorn
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Init
-public import Mathlib.Tactic.Linter.DeprecatedModule
 
 /-!
 # Definitions on Arrays
@@ -36,8 +35,6 @@ where cyclicPermuteAux : Array α → List Nat → α → Nat → Array α
 | a, i :: is, x, i0 =>
   let (y, a) := a.swapAt! i x
   cyclicPermuteAux a is y i0
-
-set_option linter.deprecated false
 
 /-- Permute the array using a list of cycles. -/
 @[deprecated "This is now in `Mathlib.Tactic.Translate.Reorder.permute!`" (since := "2026-03-05")]

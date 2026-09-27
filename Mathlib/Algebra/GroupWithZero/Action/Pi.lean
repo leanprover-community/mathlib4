@@ -23,7 +23,7 @@ This file defines instances for `MulActionWithZero` and related structures on `P
 * `Algebra.GroupWithZero.Action.Units`
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Ring
 

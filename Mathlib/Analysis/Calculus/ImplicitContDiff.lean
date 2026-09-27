@@ -32,24 +32,24 @@ variable {𝕜 : Type*} [RCLike 𝕜]
   {E₂ : Type*} [NormedAddCommGroup E₂] [NormedSpace 𝕜 E₂] [CompleteSpace E₂]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
 
+open scoped Topology ContDiff
+
 namespace ImplicitFunctionData
 
 /-- The implicit function defined by a $C^n$ implicit equation is $C^n$. This applies to the general
 form of the implicit function theorem. -/
-theorem contDiffAt_implicitFunction {φ : ImplicitFunctionData 𝕜 E₁ E₂ F} {n : WithTop ℕ∞}
+theorem contDiffAt_implicitFunction {φ : ImplicitFunctionData 𝕜 E₁ E₂ F} {n : ℕ∞ω}
     (hl : ContDiffAt 𝕜 n φ.leftFun φ.pt) (hr : ContDiffAt 𝕜 n φ.rightFun φ.pt) (pn : n ≠ 0) :
     ContDiffAt 𝕜 n φ.implicitFunction.uncurry (φ.prodFun φ.pt) := by
   rw [implicitFunction_def, Function.uncurry_curry, ← HasStrictFDerivAt.localInverse_def]
   refine ContDiffAt.to_localInverse ?_ (φ.hasStrictFDerivAt.hasFDerivAt) pn
-  convert hl.prodMk hr <;> simp
+  convert! hl.prodMk hr <;> simp
 
 end ImplicitFunctionData
 
-open scoped Topology
-
 namespace ContDiffAt
 
-variable {u : E₁ × E₂} {f : E₁ × E₂ → F} {n : WithTop ℕ∞}
+variable {u : E₁ × E₂} {f : E₁ × E₂ → F} {n : ℕ∞ω}
 
 /-- Implicit function `ψ` defined by `f (x, ψ x) = f u`. -/
 noncomputable def implicitFunction
@@ -98,34 +98,5 @@ theorem contDiffAt_implicitFunction
   fun_prop
 
 end ContDiffAt
-
-/-- A predicate stating the sufficient conditions on an implicit equation `f : E₁ × E₂ → F` that
-will lead to a $C^n$ implicit function `ψ : E₁ → E₂`. -/
-@[deprecated "ContDiffAt.implicitFunction does not require this" (since := "2026-01-27")]
-structure IsContDiffImplicitAt (n : WithTop ℕ∞) (f : E₁ × E₂ → F) (f' : E₁ × E₂ →L[𝕜] F)
-    (u : E₁ × E₂) : Prop where
-  hasFDerivAt : HasFDerivAt f f' u
-  contDiffAt : ContDiffAt 𝕜 n f u
-  bijective : Function.Bijective (f'.comp (ContinuousLinearMap.inr 𝕜 E₁ E₂))
-  ne_zero : n ≠ 0
-
-namespace IsContDiffImplicitAt
-
-@[deprecated (since := "2026-01-27")]
-alias implicitFunction := ContDiffAt.implicitFunction
-
-@[deprecated (since := "2026-01-27")]
-alias implicitFunction_def := ContDiffAt.implicitFunction_def
-
-@[deprecated (since := "2026-01-27")]
-alias apply_implicitFunction := ContDiffAt.eventually_apply_implicitFunction
-
-@[deprecated (since := "2026-01-27")]
-alias eventually_implicitFunction_apply_eq := ContDiffAt.eventually_apply_eq_iff_implicitFunction
-
-@[deprecated (since := "2026-01-27")]
-alias contDiffAt_implicitFunction := ContDiffAt.contDiffAt_implicitFunction
-
-end IsContDiffImplicitAt
 
 end

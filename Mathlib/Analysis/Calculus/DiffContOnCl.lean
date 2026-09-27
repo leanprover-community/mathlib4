@@ -17,7 +17,7 @@ is continuous on its closure. In this file we define a predicate `DiffContOnCl` 
 this property and prove basic facts about this predicate.
 -/
 
-@[expose] public section
+public section
 
 
 open Set Filter Metric
@@ -67,7 +67,7 @@ theorem continuousOn_ball [NormedSpace ℝ E] {x : E} {r : ℝ} (h : DiffContOnC
 
 theorem mk_ball {x : E} {r : ℝ} (hd : DifferentiableOn 𝕜 f (ball x r))
     (hc : ContinuousOn f (closedBall x r)) : DiffContOnCl 𝕜 f (ball x r) :=
-  ⟨hd, hc.mono <| closure_ball_subset_closedBall⟩
+  ⟨hd, hc.mono closure_ball_subset_closedBall⟩
 
 protected theorem differentiableAt (h : DiffContOnCl 𝕜 f s) (hs : IsOpen s) (hx : x ∈ s) :
     DifferentiableAt 𝕜 f x :=
@@ -116,7 +116,7 @@ theorem smul_const {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebr
 
 theorem inv {f : E → 𝕜} (hf : DiffContOnCl 𝕜 f s) (h₀ : ∀ x ∈ closure s, f x ≠ 0) :
     DiffContOnCl 𝕜 f⁻¹ s :=
-  ⟨differentiableOn_inv.comp hf.1 fun _ hx => h₀ _ (subset_closure hx), hf.2.inv₀ h₀⟩
+  ⟨(differentiableOn_inv.comp hf.1 fun _ hx => h₀ _ (subset_closure hx) :), hf.2.inv₀ h₀⟩
 
 end DiffContOnCl
 

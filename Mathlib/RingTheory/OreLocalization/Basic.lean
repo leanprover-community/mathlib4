@@ -68,8 +68,8 @@ section CommMonoidWithZero
 variable {R : Type*} [CommMonoidWithZero R] {S : Submonoid R} [OreSet S]
 
 instance : CommMonoidWithZero R[S⁻¹] where
-  __ := inferInstanceAs (MonoidWithZero R[S⁻¹])
-  __ := inferInstanceAs (CommMonoid R[S⁻¹])
+  __ := (inferInstance : MonoidWithZero R[S⁻¹])
+  __ := (inferInstance : CommMonoid R[S⁻¹])
 
 end CommMonoidWithZero
 
@@ -269,8 +269,6 @@ variable {X : Type*} [AddGroup X] [DistribMulAction R X]
 @[irreducible]
 protected def neg : X[S⁻¹] → X[S⁻¹] :=
   liftExpand (fun (r : X) (s : S) => -r /ₒ s) fun r t s ht => by
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
-    beta_reduce
     rw [← smul_neg, ← OreLocalization.expand]
 
 instance instNegOreLocalization : Neg X[S⁻¹] :=
@@ -300,8 +298,8 @@ variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S]
 variable {X : Type*} [AddCommGroup X] [DistribMulAction R X]
 
 instance : AddCommGroup X[S⁻¹] where
-  __ := inferInstanceAs (AddGroup X[S⁻¹])
-  __ := inferInstanceAs (AddCommMonoid X[S⁻¹])
+  __ := (inferInstance : AddGroup X[S⁻¹])
+  __ := (inferInstance : AddCommMonoid X[S⁻¹])
 
 end AddCommGroup
 

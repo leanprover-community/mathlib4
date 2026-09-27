@@ -21,7 +21,8 @@ namespace Submonoid.IsLocalizationMap
 
 open Finset in
 /-- See also the analogous `IsLocalization.map_integerMultiple`. -/
-@[to_additive] theorem surj_pi_of_finite {M N F ι : Type*} [Finite ι]
+@[to_additive /-- See also the analogous `IsLocalization.map_integerMultiple`. -/]
+theorem surj_pi_of_finite {M N F ι : Type*} [Finite ι]
     [CommMonoid M] [CommMonoid N] [FunLike F M N] [MulHomClass F M N] {f : F}
     {S : Submonoid M} (hf : IsLocalizationMap S f) (n : ι → N) :
     ∃ (s : S) (x : ι → M), ∀ i, n i * f s = f (x i) := by

@@ -116,7 +116,7 @@ lemma isLittleO_self_div_log_id :
       calc
         _ = (fun (_ : ℕ) => ((1 : ℝ) ^ 2)) := by simp
         _ =o[atTop] (fun (n : ℕ) => (log n) ^ 2) :=
-          IsLittleO.pow (IsLittleO.natCast_atTop <| isLittleO_const_log_atTop) (by norm_num)
+          IsLittleO.pow (IsLittleO.natCast_atTop isLittleO_const_log_atTop) (by simp)
     _ = (fun (n : ℕ) => (n : ℝ)) := by ext; simp
 
 variable {α : Type*} [Fintype α] {T : ℕ → ℝ} {g : ℝ → ℝ} {a b : α → ℝ} {r : α → ℕ → ℕ}
@@ -357,8 +357,7 @@ lemma differentiableOn_one_add_smoothingFn : DifferentiableOn ℝ (fun z => 1 + 
 
 lemma deriv_smoothingFn {x : ℝ} : deriv ε x = -x⁻¹ / (log x ^ 2) := by
   unfold smoothingFn
-  simp_rw [one_div]
-  apply deriv_inv_log
+  simp
 
 lemma isLittleO_deriv_smoothingFn : deriv ε =o[atTop] fun x => x⁻¹ :=
   calc deriv ε
@@ -373,7 +372,7 @@ lemma isLittleO_deriv_smoothingFn : deriv ε =o[atTop] fun x => x⁻¹ :=
           (by rw [isBigO_neg_right]; aesop (add safe isBigO_refl)) ?_
         rw [isLittleO_one_left_iff]
         exact Tendsto.comp tendsto_norm_atTop_atTop
-          <| Tendsto.comp (tendsto_pow_atTop (by norm_num)) tendsto_log_atTop
+          <| Tendsto.comp (tendsto_pow_atTop (by simp)) tendsto_log_atTop
       · exact Filter.Eventually.of_forall (fun x hx => by rw [mul_one] at hx; simp [hx])
     _ = fun x => x⁻¹ := by simp
 
@@ -436,7 +435,7 @@ lemma strictAntiOn_smoothingFn : StrictAntiOn ε (Set.Ioi 1) := by
 lemma strictMonoOn_one_sub_smoothingFn :
     StrictMonoOn (fun (x : ℝ) => (1 : ℝ) - ε x) (Set.Ioi 1) := by
   simp_rw [sub_eq_add_neg]
-  exact StrictMonoOn.const_add (StrictAntiOn.neg <| strictAntiOn_smoothingFn) 1
+  exact StrictMonoOn.const_add (StrictAntiOn.neg strictAntiOn_smoothingFn) 1
 
 lemma strictAntiOn_one_add_smoothingFn : StrictAntiOn (fun (x : ℝ) => (1 : ℝ) + ε x) (Set.Ioi 1) :=
   StrictAntiOn.const_add strictAntiOn_smoothingFn 1
@@ -490,7 +489,7 @@ bound expression. -/
 
 @[continuity, fun_prop]
 lemma continuous_sumCoeffsExp : Continuous (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) := by
-  refine continuous_finset_sum Finset.univ fun i _ => Continuous.mul (by fun_prop) ?_
+  refine continuous_finsetSum Finset.univ fun i _ => Continuous.mul (by fun_prop) ?_
   exact Continuous.rpow continuous_const continuous_id (fun x => Or.inl (ne_of_gt (R.b_pos i)))
 
 lemma strictAnti_sumCoeffsExp : StrictAnti (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) := by
@@ -502,7 +501,7 @@ lemma strictAnti_sumCoeffsExp : StrictAnti (fun (p : ℝ) => ∑ i, a i * (b i) 
 lemma tendsto_zero_sumCoeffsExp : Tendsto (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) atTop (𝓝 0) := by
   have h₁ : Finset.univ.sum (fun _ : α => (0 : ℝ)) = 0 := by simp
   rw [← h₁]
-  refine tendsto_finset_sum (univ : Finset α) (fun i _ => ?_)
+  refine tendsto_finsetSum (univ : Finset α) (fun i _ => ?_)
   rw [← mul_zero (a i)]
   refine Tendsto.mul (by simp) <| tendsto_rpow_atTop_of_base_lt_one _ ?_ (R.b_lt_one i)
   have := R.b_pos i

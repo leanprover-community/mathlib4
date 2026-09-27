@@ -26,7 +26,7 @@ lemma Finset.univ_of_card_le_two (h : Fintype.card R ≤ 2) :
   rcases subsingleton_or_nontrivial R
   · exact le_antisymm (fun a _ ↦ by simp [Subsingleton.elim a 0]) (Finset.subset_univ _)
   · refine (eq_of_subset_of_card_le (subset_univ _) ?_).symm
-    convert h
+    convert! h
     simp
 
 lemma Finset.univ_of_card_le_three (h : Fintype.card R ≤ 3) :
@@ -48,7 +48,7 @@ lemma Finset.univ_of_card_le_three (h : Fintype.card R ≤ 3) :
       simp only [map_ofNat, map_zero] at H
       replace H : ((2 : ℕ) : ZMod 3) = 0 := H
       rw [natCast_eq_zero_iff] at H
-      norm_num at H
+      simp at H
     · simp
 
 end Ring

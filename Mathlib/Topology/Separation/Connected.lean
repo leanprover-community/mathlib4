@@ -12,7 +12,7 @@ public import Mathlib.Topology.Connected.TotallyDisconnected
 # Interaction of separation properties with connectedness properties
 -/
 
-@[expose] public section
+public section
 
 variable {X : Type*} [TopologicalSpace X]
 
@@ -22,7 +22,7 @@ open scoped Topology
 -- see Note [lower instance priority]
 instance (priority := 100) TotallyDisconnectedSpace.t1Space [h : TotallyDisconnectedSpace X] :
     T1Space X := by
-  rw [((t1Space_TFAE X).out 0 1 :)]
+  rw [((t1Space_TFAE X).out 1 2 :)]
   intro x
   rw [← totallyDisconnectedSpace_iff_connectedComponent_singleton.mp h x]
   exact isClosed_connectedComponent
@@ -36,7 +36,7 @@ theorem PreconnectedSpace.trivial_of_discrete [PreconnectedSpace X] [DiscreteTop
 theorem IsPreconnected.infinite_of_nontrivial [T1Space X] {s : Set X} (h : IsPreconnected s)
     (hs : s.Nontrivial) : s.Infinite := by
   refine mt (fun hf => (subsingleton_coe s).mp ?_) (not_subsingleton_iff.mpr hs)
-  haveI := @Finite.instDiscreteTopology s _ _ hf.to_subtype
+  have := @Finite.instDiscreteTopology s _ _ hf.to_subtype
   exact @PreconnectedSpace.trivial_of_discrete _ _ (Subtype.preconnectedSpace h) _
 
 theorem PreconnectedSpace.infinite [PreconnectedSpace X] [Nontrivial X] [T1Space X] : Infinite X :=

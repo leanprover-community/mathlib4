@@ -5,10 +5,8 @@ Authors: Bhavik Mehta, Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 
 /-!
 # Constructing equalizers from pullbacks and binary products.
@@ -47,21 +45,22 @@ abbrev pullbackFst (F : WalkingParallelPair ⥤ C) :
     constructEqualizer F ⟶ F.obj WalkingParallelPair.zero :=
   pullback.fst _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pullbackFst_eq_pullback_snd (F : WalkingParallelPair ⥤ C) :
     pullbackFst F = pullback.snd _ _ := by
-  convert (eq_whisker pullback.condition Limits.prod.fst :
+  convert!
+    (eq_whisker pullback.condition Limits.prod.fst :
       (_ : constructEqualizer F ⟶ F.obj WalkingParallelPair.zero) = _) <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Define the equalizing cone -/
 abbrev equalizerCone (F : WalkingParallelPair ⥤ C) : Cone F :=
   Cone.ofFork
     (Fork.ofι (pullbackFst F)
       (by
         conv_rhs => rw [pullbackFst_eq_pullback_snd]
-        convert (eq_whisker pullback.condition Limits.prod.snd :
-          (_ : constructEqualizer F ⟶ F.obj WalkingParallelPair.one) = _) using 1 <;> simp))
+        convert!
+          (eq_whisker pullback.condition Limits.prod.snd :
+            (_ : constructEqualizer F ⟶ F.obj WalkingParallelPair.one) = _) using
+          1 <;> simp))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Show the equalizing cone is a limit -/
@@ -90,6 +89,7 @@ theorem hasEqualizers_of_hasPullbacks_and_binary_products [HasBinaryProducts C] 
 
 attribute [local instance] hasPullback_of_preservesPullback
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A functor that preserves pullbacks and binary products also preserves equalizers. -/
 lemma preservesEqualizers_of_preservesPullbacks_and_binaryProducts
@@ -97,7 +97,7 @@ lemma preservesEqualizers_of_preservesPullbacks_and_binaryProducts
     [PreservesLimitsOfShape (Discrete WalkingPair) G] [PreservesLimitsOfShape WalkingCospan G] :
     PreservesLimitsOfShape WalkingParallelPair G :=
   ⟨fun {K} =>
-    preservesLimit_of_preserves_limit_cone (equalizerConeIsLimit K) <|
+    preservesLimit_of_preserves_limit_cone (equalizerConeIsLimit K)
       { lift := fun c => by
           refine pullback.lift ?_ ?_ ?_ ≫ (PreservesPullback.iso _ _ _ ).inv
           · exact c.π.app WalkingParallelPair.zero
@@ -141,21 +141,23 @@ abbrev pushoutInl (F : WalkingParallelPair ⥤ C) :
     F.obj WalkingParallelPair.one ⟶ constructCoequalizer F :=
   pushout.inl _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pushoutInl_eq_pushout_inr (F : WalkingParallelPair ⥤ C) :
     pushoutInl F = pushout.inr _ _ := by
-  convert (whisker_eq Limits.coprod.inl pushout.condition :
-    (_ : F.obj _ ⟶ constructCoequalizer _) = _) <;> simp
+  convert!
+      (whisker_eq Limits.coprod.inl pushout.condition : (_ : F.obj _ ⟶ constructCoequalizer _) = _)
+    <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Define the equalizing cocone -/
 abbrev coequalizerCocone (F : WalkingParallelPair ⥤ C) : Cocone F :=
   Cocone.ofCofork
     (Cofork.ofπ (pushoutInl F) (by
         conv_rhs => rw [pushoutInl_eq_pushout_inr]
-        convert (whisker_eq Limits.coprod.inr pushout.condition :
-          (_ : F.obj _ ⟶ constructCoequalizer _) = _) using 1 <;> simp))
+        convert!
+          (whisker_eq Limits.coprod.inr pushout.condition :
+            (_ : F.obj _ ⟶ constructCoequalizer _) = _) using
+          1 <;> simp))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Show the equalizing cocone is a colimit -/
 def coequalizerCoconeIsColimit (F : WalkingParallelPair ⥤ C) : IsColimit (coequalizerCocone F) where
@@ -187,13 +189,14 @@ theorem hasCoequalizers_of_hasPushouts_and_binary_coproducts [HasBinaryCoproduct
 
 attribute [local instance] hasPushout_of_preservesPushout
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A functor that preserves pushouts and binary coproducts also preserves coequalizers. -/
 lemma preservesCoequalizers_of_preservesPushouts_and_binaryCoproducts [HasBinaryCoproducts C]
     [HasPushouts C] [PreservesColimitsOfShape (Discrete WalkingPair) G]
     [PreservesColimitsOfShape WalkingSpan G] : PreservesColimitsOfShape WalkingParallelPair G :=
   ⟨fun {K} =>
-    preservesColimit_of_preserves_colimit_cocone (coequalizerCoconeIsColimit K) <|
+    preservesColimit_of_preserves_colimit_cocone (coequalizerCoconeIsColimit K)
       { desc := fun c => by
           refine (PreservesPushout.iso _ _ _).inv ≫ pushout.desc ?_ ?_ ?_
           · exact c.ι.app WalkingParallelPair.one

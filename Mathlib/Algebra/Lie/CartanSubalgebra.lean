@@ -106,7 +106,7 @@ instance (priority := 500) [Nontrivial L] (H : LieSubalgebra R L) [H.IsCartanSub
   refine (subsingleton_or_nontrivial H).elim (fun inst ↦ False.elim ?_) id
   apply ne_bot_of_isCartanSubalgebra H
   rw [eq_bot_iff]
-  exact fun x hx ↦ congr_arg Subtype.val (Subsingleton.elim (⟨x, hx⟩ : H) 0)
+  exact fun x hx ↦ congr($(Subsingleton.elim (⟨x, hx⟩ : H) 0).val)
 
 end LieSubalgebra
 
@@ -114,7 +114,7 @@ end LieSubalgebra
 theorem LieIdeal.normalizer_eq_top {R : Type u} {L : Type v} [CommRing R] [LieRing L]
     [LieAlgebra R L] (I : LieIdeal R L) : (I : LieSubalgebra R L).normalizer = ⊤ := by
   ext x
-  simpa only [LieSubalgebra.mem_normalizer_iff, LieSubalgebra.mem_top, iff_true] using
+  simpa only [LieSubalgebra.mem_normalizer_iff, LieSubalgebra.mem_top, iff_true] using!
     fun y hy => I.lie_mem hy
 
 open LieIdeal

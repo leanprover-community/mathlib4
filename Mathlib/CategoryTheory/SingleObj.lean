@@ -238,7 +238,7 @@ open CategoryTheory
 
 /-- The fully faithful functor from `MonCat` to `Cat`. -/
 def toCat : MonCat ⥤ Cat where
-  obj x := Cat.of (SingleObj x)
+  obj x := ↧(SingleObj x)
   map {x y} f := (SingleObj.mapHom x y f.hom).toCatHom
 
 instance toCat_full : toCat.Full where

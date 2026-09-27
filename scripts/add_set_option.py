@@ -17,18 +17,28 @@ from pathlib import Path
 from threading import Lock
 from typing import Callable
 
-from dag_traversal import (
-    DAG,
-    DAGTraverser,
-    Display,
-    TraversalResult,
-)
-from set_option_utils import (
-    DEFAULT_OPTIONS,
-    PROJECT_DIR,
-    lake_build_with_progress,
-    set_option_line,
-)
+try:
+    from dag_traversal import (
+        DAG,
+        DAGTraverser,
+        Display,
+        TraversalResult,
+    )
+    from set_option_utils import (
+        DEFAULT_OPTIONS,
+        PROJECT_DIR,
+        lake_build_with_progress,
+        set_option_line,
+    )
+except ImportError as _e:
+    raise SystemExit(
+        f"error: {_e}\n\n"
+        f"  This script depends on sibling Python files in {Path(__file__).parent}:\n"
+        "    - dag_traversal.py\n"
+        "    - set_option_utils.py\n"
+        "  These are mathlib scripts, not pip packages.  Copy them into your\n"
+        "  `scripts/` directory alongside this script."
+    )
 
 
 @dataclass
@@ -193,6 +203,7 @@ def make_process_module(
     options: list[str],
     timeout: int,
     traverser: DAGTraverser,
+    value: str = "false",
 ) -> Callable:
     """Create the per-module action callback."""
 
@@ -220,7 +231,7 @@ def make_process_module(
         while idx < len(lines):
             found = False
             for opt in options:
-                needle = set_option_line(opt).strip()
+                needle = set_option_line(opt, value).strip()
                 if needle in lines[idx]:
                     present.add(opt)
                     found = True
@@ -270,44 +281,51 @@ def make_process_module(
         traverser.inflight_register(filepath, original_text)
 
         try:
-            # Process errors first-to-last. After each insertion, line numbers
-            # shift, so we track the cumulative offset.
-            offset = 0
-            for error_line in error_lines:
-                adjusted_line = error_line + offset
-                decl_start = find_declaration_start(lines, adjusted_line)
+            # Process errors iteratively. After each fix, re-discover errors
+            # from the latest build output (fixing one error can reveal new
+            # ones as more of the file compiles).
+            while True:
+                ok, build_output = traverser.lake_build(module_name, PROJECT_DIR, timeout)
+                if ok:
+                    break
+
+                error_lines = parse_errors_in_file(build_output, rel_path)
+                if not error_lines:
+                    break
+
+                # Try to fix the first error
+                error_line = error_lines[0]
+                decl_start = find_declaration_start(lines, error_line)
 
                 # Check which options are already present
                 present = options_present_at(lines, decl_start)
                 missing = [opt for opt in options if opt not in present]
                 if not missing:
                     already_present += 1
-                    continue
+                    raise UnfixableError(
+                        f"all options already present at line {error_line}",
+                        build_output,
+                    )
 
                 # Try each candidate combination of missing options
                 succeeded = False
-                last_output = output
                 for combo in candidates(missing):
-                    insert = [set_option_line(opt) for opt in combo]
+                    insert = [set_option_line(opt, value) for opt in combo]
                     new_lines = lines[:decl_start] + insert + lines[decl_start:]
                     filepath.write_text("".join(new_lines))
-                    ok, build_output = traverser.lake_build(module_name, PROJECT_DIR, timeout)
-                    last_output = build_output
+                    ok, try_output = traverser.lake_build(module_name, PROJECT_DIR, timeout)
 
                     if ok:
                         lines = new_lines
-                        offset += len(combo)
                         fixed += 1
                         _set_last(combo)
-                        succeeded = True
                         return FileResult(fixed=fixed, already_present=already_present)
 
-                    # Check if this specific error is gone
-                    new_errors = parse_errors_in_file(build_output, rel_path)
-                    shifted = adjusted_line + len(combo)
+                    # Check if this specific error is gone (line shifted by insertion)
+                    new_errors = parse_errors_in_file(try_output, rel_path)
+                    shifted = error_line + len(combo)
                     if shifted not in new_errors:
                         lines = new_lines
-                        offset += len(combo)
                         fixed += 1
                         _set_last(combo)
                         succeeded = True
@@ -319,7 +337,7 @@ def make_process_module(
                 if not succeeded:
                     raise UnfixableError(
                         f"no option combination fixed error at line {error_line}",
-                        last_output,
+                        build_output,
                     )
 
         except UnfixableError:
@@ -386,11 +404,20 @@ def print_summary(
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Add set_option ... false in before failing declarations."
+        description="Add `set_option ... false in` before failing declarations.\n\n"
+                    "To use outside mathlib, copy `add_set_option.py`, `dag_traversal.py` and "
+                    "`set_option_utils.py` to a subdirectory of your project named `scripts/` "
+                    "and then run from the project root with `scripts/add_set_option.py`.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
         "--option",
         help="Only use this specific option (default: try all known options)",
+    )
+    parser.add_argument(
+        "--value",
+        default="false",
+        help="Value to set the option to (default: false)",
     )
     parser.add_argument(
         "--max-workers",
@@ -410,6 +437,12 @@ def main():
         help="Only process these files (paths relative to project root)",
     )
     parser.add_argument(
+        "--directories",
+        nargs="+",
+        default=None,
+        help="Directories to scan when building the import DAG (default: '.')",
+    )
+    parser.add_argument(
         "--no-initial",
         action="store_true",
         help="Skip the initial build (build every module individually)",
@@ -427,7 +460,7 @@ def main():
 
     # Build DAG
     print("Building import DAG...", flush=True)
-    dag = DAG.from_directories(PROJECT_DIR)
+    dag = DAG.from_directories(PROJECT_DIR, args.directories)
     print(f"  {len(dag.modules)} modules parsed")
 
     # Filter to requested files
@@ -465,7 +498,7 @@ def main():
     # Traverse forward
     traverser = DAGTraverser()
     display = _AddDisplay(dag, open_on_failure=args.open)
-    action = make_process_module(options, args.timeout, traverser)
+    action = make_process_module(options, args.timeout, traverser, value=args.value)
 
     display.start(len(dag.modules))
     try:

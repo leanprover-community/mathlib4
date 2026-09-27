@@ -21,7 +21,6 @@ noncomputable section
 
 universe u v
 
-set_option backward.isDefEq.respectTransparency false in
 open Cardinal in
 theorem MvRatFunc.rank_eq_max_lift
     {σ : Type u} {F : Type v} [Field F] [Nonempty σ] :
