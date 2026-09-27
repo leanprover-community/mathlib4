@@ -567,6 +567,7 @@ public import Mathlib.Algebra.GroupWithZero.ULift
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Algebra.GroupWithZero.Units.Equiv
 public import Mathlib.Algebra.GroupWithZero.Units.Fintype
+public import Mathlib.Algebra.GroupWithZero.Units.Hom
 public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 public import Mathlib.Algebra.GroupWithZero.WithZero
 public import Mathlib.Algebra.HierarchyDesign

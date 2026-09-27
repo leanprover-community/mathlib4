@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.Units.Hom
 public import Mathlib.Algebra.GroupWithZero.Commute
 public import Mathlib.Algebra.GroupWithZero.Hom
+public import Mathlib.Algebra.GroupWithZero.Units.Hom
 
 /-!
 # Further lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.
@@ -118,25 +119,6 @@ theorem map_div₀ : f (a / b) = f a / f b :=
   map_div' f (map_inv₀ f) a b
 
 end GroupWithZero
-
-/-- We define the inverse as a `MonoidWithZeroHom` by extending the inverse map by zero
-on non-units. -/
-noncomputable def MonoidWithZero.inverse {M : Type*} [CommMonoidWithZero M] :
-    M →*₀ M where
-  toFun := Ring.inverse
-  map_zero' := Ring.inverse_zero _
-  map_one' := Ring.inverse_one _
-  map_mul' x y := (Ring.mul_inverse_rev x y).trans (mul_comm _ _)
-
-@[simp]
-theorem MonoidWithZero.coe_inverse {M : Type*} [CommMonoidWithZero M] :
-    (MonoidWithZero.inverse : M → M) = Ring.inverse :=
-  rfl
-
-@[simp]
-theorem MonoidWithZero.inverse_apply {M : Type*} [CommMonoidWithZero M] (a : M) :
-    MonoidWithZero.inverse a = a⁻¹ʳ :=
-  rfl
 
 /-- Inversion on a commutative group with zero, considered as a monoid with zero homomorphism. -/
 def invMonoidWithZeroHom {G₀ : Type*} [CommGroupWithZero G₀] : G₀ →*₀ G₀ :=
