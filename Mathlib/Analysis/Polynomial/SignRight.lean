@@ -33,7 +33,7 @@ sign of a Sturm sequence changes across a root.
   `sign (p.eval y) = signRight x p` for all `y` in some interval `(x, x + ε)`.
 * `Polynomial.signRight_eq_zero_iff`: `signRight x p = 0` if and only if `p = 0`.
 * `Polynomial.signRight_mul`, `Polynomial.signRight_neg`, `Polynomial.signRight_C`:
-  `signRight x` is multiplicative.
+  `signRight x` is multiplicative and compatible with negation and constants.
 * `Polynomial.signRight_of_eval_ne_zero`: away from the roots of `p`, `signRight x p` is the sign of
   `p.eval x`.
 * `Polynomial.signRight_of_eval_eq_zero`: at a root of `p`, `signRight x p` is `signRight x` of the
@@ -73,6 +73,8 @@ theorem exists_eventually_sign_eq (x : ℝ) (p : ℝ[X]) :
 noncomputable def signRight (x : ℝ) (p : ℝ[X]) : SignType :=
   limUnder (𝓝[>] x) fun y => sign (eval y p)
 
+/-- The equation `sign (eval y p) = signRight x p` holds for all `y` in some interval
+`(x, x + ε)`. -/
 theorem eventually_sign_eq_signRight (x : ℝ) (p : ℝ[X]) :
     ∀ᶠ y in 𝓝[>] x, sign (eval y p) = signRight x p := by
   obtain ⟨s, hs⟩ := exists_eventually_sign_eq x p
@@ -86,6 +88,8 @@ theorem signRight_eq_of_eventually {x : ℝ} {p : ℝ[X]} {s : SignType}
   obtain ⟨y, hy1, hy2⟩ := ((eventually_sign_eq_signRight x p).and h).exists
   rw [← hy1, hy2]
 
+/-- `signRight x p` is the unique sign `s` such that `sign (eval y p) = s` for all `y` in some
+interval `(x, x + ε)`. -/
 theorem signRight_eq_iff {x : ℝ} {p : ℝ[X]} {s : SignType} :
     signRight x p = s ↔ ∀ᶠ y in 𝓝[>] x, sign (eval y p) = s :=
   ⟨fun h => h ▸ eventually_sign_eq_signRight x p, signRight_eq_of_eventually⟩
@@ -101,20 +105,24 @@ theorem signRight_ne_zero {x : ℝ} {p : ℝ[X]} (hp : p ≠ 0) : signRight x p 
   rw [← hy1]
   exact sign_ne_zero.mpr hy2
 
+/-- `signRight x p` can only be `0` if `p` is `0`. -/
 @[simp]
 theorem signRight_eq_zero_iff {x : ℝ} {p : ℝ[X]} : signRight x p = 0 ↔ p = 0 :=
   ⟨fun h => by_contra fun hp => signRight_ne_zero hp h, fun h => by rw [h, signRight_zero]⟩
 
+/-- `signRight` is a multiplicative function. -/
 theorem signRight_mul (x : ℝ) (p q : ℝ[X]) :
     signRight x (p * q) = signRight x p * signRight x q :=
   signRight_eq_of_eventually <|
     ((eventually_sign_eq_signRight x p).and (eventually_sign_eq_signRight x q)).mono
       fun y ⟨h1, h2⟩ => by rw [eval_mul, sign_mul, h1, h2]
 
+/-- `signRight` commutes with negation. -/
 theorem signRight_neg (x : ℝ) (p : ℝ[X]) : signRight x (-p) = -signRight x p :=
   signRight_eq_of_eventually <|
     (eventually_sign_eq_signRight x p).mono fun y hy => by rw [eval_neg, Left.sign_neg, hy]
 
+/-- `signRight` of a constant equals the sign of the constant. -/
 @[simp]
 theorem signRight_C (x c : ℝ) : signRight x (C c) = sign c :=
   signRight_eq_of_eventually (Eventually.of_forall fun y => by rw [eval_C])
