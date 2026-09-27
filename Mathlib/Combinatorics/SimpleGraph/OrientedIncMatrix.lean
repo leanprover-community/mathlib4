@@ -13,62 +13,81 @@ public import Mathlib.Data.Sym.Sym2.Order
 # Oriented incidence matrix
 
 This file defines the oriented incidence matrix `G.orientedIncMatrix R` of a simple graph `G`
-over a linearly ordered vertex type, and proves the Gram factorization
-
-`G.orientedIncMatrix R * (G.orientedIncMatrix R)ᵀ = G.lapMatrix R`,
-
-the standard factorization of the graph Laplacian `D - A`. This complements the unoriented
-`G.incMatrix R`, whose Gram matrix is the signless Laplacian `D + A`
-(`incMatrix_mul_transpose_diag` ff.): the signs are what produce the Laplacian.
+on a linearly ordered vertex type, and proves that its Gram matrix is the Laplacian:
+`G.orientedIncMatrix R * (G.orientedIncMatrix R)ᵀ = G.lapMatrix R`.
 
 ## Main definitions
 
-* `SimpleGraph.orientedIncMatrix`: the `α × Sym2 α` matrix with, in the column of an edge
-  `e = s(u, w)` with `u < w`, entry `+1` at row `w` (the larger endpoint), `-1` at row `u`,
-  and `0` elsewhere; columns of non-edges are zero.
+* `SimpleGraph.orientedIncMatrix`: the `V × Sym2 V` matrix whose column at an edge `s(u, v)`
+  with `u < v` has `-1` at row `u`, `+1` at row `v` and `0` elsewhere; columns of non-edges are
+  zero.
 
 ## Main results
 
-* `SimpleGraph.orientedIncMatrix_mul_transpose`: `N * Nᵀ = D - A`.
+* `SimpleGraph.orientedIncMatrix_mul_transpose`: `N * Nᵀ = G.lapMatrix R`.
 
 ## Implementation notes
 
-The orientation (each edge points from its smaller to its larger endpoint) is induced by the
-linear order on the vertex type. Any orientation yields the same Gram matrix, since each edge
-contributes `(±1)²` to a diagonal entry and `(+1) * (-1)` to an off-diagonal one.
+Each edge is oriented from its smaller to its larger endpoint. Any orientation gives the same
+Gram matrix, since each edge contributes `(±1)²` to a diagonal entry and `1 * (-1)` to an
+off-diagonal one.
 -/
 
-@[expose] public section
+public section
 
 open Finset Matrix Sym2
 
 namespace SimpleGraph
 
-variable (R : Type*) {α : Type*} (G : SimpleGraph α)
+variable (R : Type*) {V : Type*} (G : SimpleGraph V)
 
 /-- The oriented incidence matrix: for an edge `e` incident to `v`, the entry is `+1` if `v` is
 the larger endpoint of `e` and `-1` if it is the smaller one; entries vanish off the incidence
 set. -/
-def orientedIncMatrix [Zero R] [One R] [Neg R] [LinearOrder α] [DecidableRel G.Adj] :
-    Matrix α (Sym2 α) R :=
+def orientedIncMatrix [Zero R] [One R] [Neg R] [LinearOrder V] [DecidableRel G.Adj] :
+    Matrix V (Sym2 V) R :=
   .of fun v e => if e ∈ G.incidenceSet v then (if v = e.sup then 1 else -1) else 0
 
 variable {R}
 
-section Ring
+section Basic
 
-variable [Ring R] [LinearOrder α] [DecidableRel G.Adj] {u v w : α} {e : Sym2 α}
+variable [Zero R] [One R] [Neg R] [LinearOrder V] [DecidableRel G.Adj] {u v w : V}
+  {e : Sym2 V}
 
 theorem orientedIncMatrix_apply :
-    G.orientedIncMatrix R v e
-      = if e ∈ G.incidenceSet v then (if v = e.sup then 1 else -1) else 0 := rfl
+    G.orientedIncMatrix R v e =
+      if e ∈ G.incidenceSet v then (if v = e.sup then 1 else -1) else 0 := by
+  rfl
 
 theorem orientedIncMatrix_of_notMem_incidenceSet (h : e ∉ G.incidenceSet v) :
     G.orientedIncMatrix R v e = 0 := by
   rw [orientedIncMatrix_apply, ite_eq_right h]
 
-/-- On its incidence set the oriented entry squares to `1`, so the square of any entry is the
-corresponding unoriented incidence entry. -/
+theorem orientedIncMatrix_apply_right (hadj : G.Adj u v) (h : u ≤ v) :
+    G.orientedIncMatrix R v s(u, v) = 1 := by
+  rw [orientedIncMatrix_apply, ite_eq_left (G.mk'_mem_incidenceSet_right_iff.2 hadj), sup_mk,
+    ite_eq_left (sup_eq_right.2 h).symm]
+
+theorem orientedIncMatrix_apply_left (hadj : G.Adj u v) (h : u ≤ v) :
+    G.orientedIncMatrix R u s(u, v) = -1 := by
+  rw [orientedIncMatrix_apply, ite_eq_left (G.mk'_mem_incidenceSet_left_iff.2 hadj), sup_mk,
+    sup_eq_right.2 h, ite_eq_right hadj.ne]
+
+end Basic
+
+section Ring
+
+variable [Ring R] [LinearOrder V] [DecidableRel G.Adj] {u v w : V} {e : Sym2 V}
+
+theorem orientedIncMatrix_apply_eq_zero_iff [Nontrivial R] :
+    G.orientedIncMatrix R v e = 0 ↔ e ∉ G.incidenceSet v := by
+  refine ⟨fun h he => ?_, G.orientedIncMatrix_of_notMem_incidenceSet⟩
+  rw [orientedIncMatrix_apply, ite_eq_left he] at h
+  split_ifs at h <;> simp_all
+
+/-- The square of an entry of the oriented incidence matrix is the corresponding entry of the
+unoriented incidence matrix. -/
 theorem orientedIncMatrix_mul_self :
     G.orientedIncMatrix R v e * G.orientedIncMatrix R v e = G.incMatrix R v e := by
   rw [orientedIncMatrix_apply, incMatrix_apply']
@@ -77,40 +96,26 @@ theorem orientedIncMatrix_mul_self :
     by_cases hs : v = e.sup <;> simp [hs]
   · simp [h]
 
-/-- The two endpoints of an edge carry opposite signs: the product of the oriented entries of
-`u ≠ w` at their common edge `s(u, w)` is `-1`. -/
+/-- The two endpoints of an edge carry opposite signs. -/
 theorem orientedIncMatrix_apply_mul_apply_of_adj (hadj : G.Adj u w) :
     G.orientedIncMatrix R u s(u, w) * G.orientedIncMatrix R w s(u, w) = -1 := by
-  have hne : u ≠ w := hadj.ne
-  have hu : s(u, w) ∈ G.incidenceSet u := G.mk'_mem_incidenceSet_left_iff.2 hadj
-  have hw : s(u, w) ∈ G.incidenceSet w := G.mk'_mem_incidenceSet_right_iff.2 hadj
-  rw [orientedIncMatrix_apply, orientedIncMatrix_apply, ite_eq_left hu, ite_eq_left hw, sup_mk]
-  rcases lt_or_gt_of_ne hne with hlt | hgt
-  · have hs : u ⊔ w = w := sup_eq_right.2 hlt.le
-    rw [ite_eq_right (fun h => hlt.ne (h.trans hs)), ite_eq_left hs.symm]
-    simp
-  · have hs : u ⊔ w = u := sup_eq_left.2 hgt.le
-    rw [ite_eq_left hs.symm, ite_eq_right (fun h => hgt.ne (h.trans hs))]
-    simp
+  rcases hadj.ne.lt_or_gt with h | h
+  · rw [G.orientedIncMatrix_apply_left hadj h.le, G.orientedIncMatrix_apply_right hadj h.le,
+      mul_one]
+  · rw [Sym2.eq_swap, G.orientedIncMatrix_apply_right hadj.symm h.le,
+      G.orientedIncMatrix_apply_left hadj.symm h.le, one_mul]
 
-/-- The two endpoints of an edge carry cancelling signs: the column of an edge sums to zero
-over its two endpoints. -/
+/-- The column of an edge sums to zero over its two endpoints. -/
 theorem orientedIncMatrix_apply_add_apply_of_adj (hadj : G.Adj u w) :
     G.orientedIncMatrix R u s(u, w) + G.orientedIncMatrix R w s(u, w) = 0 := by
-  have hne : u ≠ w := hadj.ne
-  have hu : s(u, w) ∈ G.incidenceSet u := G.mk'_mem_incidenceSet_left_iff.2 hadj
-  have hw : s(u, w) ∈ G.incidenceSet w := G.mk'_mem_incidenceSet_right_iff.2 hadj
-  rw [orientedIncMatrix_apply, orientedIncMatrix_apply, ite_eq_left hu, ite_eq_left hw, sup_mk]
-  rcases lt_or_gt_of_ne hne with hlt | hgt
-  · have hs : u ⊔ w = w := sup_eq_right.2 hlt.le
-    rw [ite_eq_right (fun h => hlt.ne (h.trans hs)), ite_eq_left hs.symm]
-    simp
-  · have hs : u ⊔ w = u := sup_eq_left.2 hgt.le
-    rw [ite_eq_left hs.symm, ite_eq_right (fun h => hgt.ne (h.trans hs))]
-    simp
+  rcases hadj.ne.lt_or_gt with h | h
+  · rw [G.orientedIncMatrix_apply_left hadj h.le, G.orientedIncMatrix_apply_right hadj h.le,
+      neg_add_cancel]
+  · rw [Sym2.eq_swap, G.orientedIncMatrix_apply_right hadj.symm h.le,
+      G.orientedIncMatrix_apply_left hadj.symm h.le, add_neg_cancel]
 
-/-- Distinct vertices see disjoint signed columns away from their common edge: the product of
-oriented entries vanishes at every `e ≠ s(u, w)`. -/
+/-- For distinct vertices `u` and `w`, the product of their entries vanishes at every
+`e ≠ s(u, w)`. -/
 theorem orientedIncMatrix_apply_mul_apply_of_ne (hne : u ≠ w) (he : e ≠ s(u, w)) :
     G.orientedIncMatrix R u e * G.orientedIncMatrix R w e = 0 := by
   by_cases hu : e ∈ G.incidenceSet u
@@ -123,26 +128,21 @@ end Ring
 
 section Lap
 
-variable [Ring R] [Fintype α] [LinearOrder α] [DecidableRel G.Adj]
+variable [Ring R] [Fintype V] [LinearOrder V] [DecidableRel G.Adj]
 
-/-- **Laplacian factorization.** The Gram matrix of the oriented incidence matrix is the graph
-Laplacian: `N * Nᵀ = D - A`. (The unoriented incidence matrix gives `D + A` instead; the signs
-are what make the Laplacian.) -/
+/-- The Gram matrix of the oriented incidence matrix is the Laplacian. -/
 theorem orientedIncMatrix_mul_transpose :
     G.orientedIncMatrix R * (G.orientedIncMatrix R)ᵀ = G.lapMatrix R := by
   ext u w
-  rw [mul_apply]
-  simp_rw [transpose_apply]
-  by_cases huw : u = w
-  · subst huw
-    simp_rw [G.orientedIncMatrix_mul_self]
+  simp_rw [mul_apply, transpose_apply]
+  rcases eq_or_ne u w with rfl | huw
+  · simp_rw [G.orientedIncMatrix_mul_self]
     rw [sum_incMatrix_apply, lapMatrix, Matrix.sub_apply, degMatrix, diagonal_apply_eq,
       adjMatrix_apply, ite_eq_right (G.irrefl), sub_zero]
   · rw [lapMatrix, Matrix.sub_apply, degMatrix, diagonal_apply_ne _ huw, adjMatrix_apply, zero_sub]
     by_cases hadj : G.Adj u w
     · rw [ite_eq_left hadj, Finset.sum_eq_single s(u, w)
-        (fun e _ he => G.orientedIncMatrix_apply_mul_apply_of_ne huw he)
-        (fun he => absurd (mem_univ _) he)]
+        (fun e _ he => G.orientedIncMatrix_apply_mul_apply_of_ne huw he) (absurd <| mem_univ _)]
       exact G.orientedIncMatrix_apply_mul_apply_of_adj hadj
     · rw [ite_eq_right hadj, neg_zero]
       refine Finset.sum_eq_zero fun e _ => ?_
