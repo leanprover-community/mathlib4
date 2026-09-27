@@ -154,12 +154,20 @@ lemma ind.evalOne_apply (f : (ind φ ρ).IntertwiningMap σ) (a : A) :
     ind.evalOne φ f a = f (IndV.mk φ ρ 1 a) := rfl
 
 /-- The canonical equivariant map from a representation to the restriction of its induction. -/
-noncomputable abbrev ind.unit (ρ : Representation k G A) :
+noncomputable def ind.unit (ρ : Representation k G A) :
     ρ.IntertwiningMap ((ind φ ρ).comp φ) := ind.evalOne φ (IntertwiningMap.id (ind φ ρ))
 
+@[simp]
+lemma ind.unit_apply (a : A) : ind.unit φ ρ a = IndV.mk φ ρ 1 a := by simp [ind.unit]
+
 /-- Evaluate the induction of a restricted representation using its original group action. -/
-noncomputable abbrev ind.counit (σ : Representation k H B) :
+noncomputable def ind.counit (σ : Representation k H B) :
     (ind φ (σ.comp φ)).IntertwiningMap σ := ind.lift φ (IntertwiningMap.id (σ.comp φ))
+
+@[simp]
+lemma ind.counit_apply_mk (σ : Representation k H B) (h : H) (b : B) :
+    ind.counit φ σ (IndV.mk φ (σ.comp φ) h b) = σ h⁻¹ b := by
+  simp [ind.counit]
 
 /-- An equivariant map from an induced representation is determined by the generators at `1`. -/
 @[ext]
