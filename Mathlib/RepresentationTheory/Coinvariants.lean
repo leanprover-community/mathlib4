@@ -479,7 +479,7 @@ variable (k : Type u) {G : Type v} [CommRing k] [Group G]
 
 /-- Given a normal subgroup `S ≤ G`, this is the functor sending a `G`-representation `A` to the
 `G ⧸ S`-representation it induces on `A_S`. -/
-@[simps! obj_V map_hom_toLinearMap]
+@[simps! obj_V map_hom]
 noncomputable def quotientToCoinvariantsFunctor (S : Subgroup G) [S.Normal] :
     Rep.{w} k G ⥤ Rep k (G ⧸ S) where
   obj X := X.quotientToCoinvariants S
@@ -487,13 +487,14 @@ noncomputable def quotientToCoinvariantsFunctor (S : Subgroup G) [S.Normal] :
   map_id X := by ext; simp
   map_comp f g := by ext; simp
 
+open MonoidalCategory in
 /-- Given a `k`-linear `G`-representation `(A, ρ)` and a type `α`, this is the linear equivalence
 `(A ⊗ (α →₀ k[G]))_G ≃ₗ[k] (α →₀ A)` sending
 `⟦a ⊗ single x (single g r)⟧ ↦ single x (r • ρ(g⁻¹)(a)).` -/
 noncomputable abbrev coinvariantsTensorFreeLEquiv
     {k G : Type u} [CommRing k] [Group G] (A : Rep.{u} k G) (α : Type u) :
-    Coinvariants (A.ρ.tprod (Representation.free k G α)) ≃ₗ[k] α →₀ A :=
-  Representation.coinvariantsTensorFreeLEquiv A.ρ α
+    Coinvariants ((A ⊗ free k G α).ρ) ≃ₗ[k] α →₀ A :=
+  A.ρ.coinvariantsTensorFreeLEquiv α
 
 end
 
