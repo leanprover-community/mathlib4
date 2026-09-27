@@ -366,7 +366,7 @@ theorem isTorsionBy_iff_torsionBy_eq_top : IsTorsionBy R M a ↔ torsionBy R M a
 theorem isTorsionBySet_iff_subseteq_ker_lsmul :
     IsTorsionBySet R M s ↔ s ⊆ LinearMap.ker (LinearMap.lsmul R M) where
   mp h r hr := LinearMap.mem_ker.mpr <| LinearMap.ext fun x => @h x ⟨r, hr⟩
-  mpr | h, x, ⟨_, hr⟩ => DFunLike.congr_fun (LinearMap.mem_ker.mp (h hr)) x
+  mpr | h, x, ⟨_, hr⟩ => congr($(LinearMap.mem_ker.mp (h hr)) x)
 
 theorem isTorsionBy_iff_mem_ker_lsmul :
     IsTorsionBy R M a ↔ a ∈ LinearMap.ker (LinearMap.lsmul R M) :=

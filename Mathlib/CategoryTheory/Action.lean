@@ -45,6 +45,7 @@ def actionAsFunctor : SingleObj M ⥤ Type u where
 /-- A multiplicative action M ↻ X induces a category structure on X, where a morphism
 from x to y is a scalar taking x to y. Due to implementation details, the object type
 of this category is not equal to X, but is in bijection with X. -/
+@[implicit_reducible]
 def ActionCategory :=
   (actionAsFunctor M X).Elements
 deriving Category

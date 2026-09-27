@@ -695,7 +695,7 @@ theorem lift_apply_of {x} : lift f (of x) = f x := by simp [of]
 @[to_additive]
 theorem lift_unique (g : FreeGroup α →* β) (hg : ∀ x, g (FreeGroup.of x) = f x) {x} :
     g x = FreeGroup.lift f x :=
-  DFunLike.congr_fun (lift.symm_apply_eq.mp (funext hg : g ∘ FreeGroup.of = f)) x
+  congr($(lift.symm_apply_eq.mp (funext hg : g ∘ FreeGroup.of = f)) x)
 
 @[to_additive]
 theorem lift_of_eq_id (α) : lift of = MonoidHom.id (FreeGroup α) :=
@@ -703,7 +703,7 @@ theorem lift_of_eq_id (α) : lift of = MonoidHom.id (FreeGroup α) :=
 
 @[to_additive]
 theorem lift_of_apply (x : FreeGroup α) : lift FreeGroup.of x = x :=
-  DFunLike.congr_fun (lift_of_eq_id α) x
+  congr($(lift_of_eq_id α) x)
 
 @[to_additive]
 theorem range_lift_le {s : Subgroup β} (H : Set.range f ⊆ s) : (lift f).range ≤ s := by

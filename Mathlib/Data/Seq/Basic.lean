@@ -322,7 +322,7 @@ theorem of_mem_append {s₁ s₂ : Seq α} {a : α} (h : a ∈ append s₁ s₂)
     simpa using m
   | cons c t₁ =>
     intro m e
-    have := congr_arg destruct e
+    have := congr(destruct $e)
     rcases show a = c ∨ a ∈ append t₁ s₂ by simpa using m with e' | m
     · rw [e']
       exact Or.inl (mem_cons _ _)
@@ -499,7 +499,7 @@ theorem drop_get? {n m : ℕ} {s : Seq α} : (s.drop n).get? m = s.get? (n + m) 
 
 theorem dropn_add (s : Seq α) (m) : ∀ n, drop s (m + n) = drop (drop s m) n
   | 0 => rfl
-  | n + 1 => congr_arg tail (dropn_add s _ n)
+  | n + 1 => congr(tail $(dropn_add s _ n))
 
 theorem dropn_tail (s : Seq α) (n) : drop (tail s) n = drop s (n + 1) := by
   rw [Nat.add_comm]; symm; apply dropn_add
