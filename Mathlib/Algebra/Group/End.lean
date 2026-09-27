@@ -680,7 +680,7 @@ theorem inv_def (e₁ : MulAut M) : e₁⁻¹ = e₁.symm :=
 theorem inv_symm (e : MulAut M) : e⁻¹.symm = e := rfl
 
 @[to_additive (attr := simp) symm_inv]
-theorem symm_inv (e : MulAut M) : (e.symm)⁻¹ = e := rfl
+theorem symm_inv (e : MulAut M) : (by exact e.symm : MulAut M)⁻¹ = e := rfl
 
 @[to_additive (attr := simp) inv_apply]
 theorem inv_apply (e : MulAut M) (m : M) : e⁻¹ m = e.symm m := by
@@ -719,7 +719,7 @@ def conj [Group G] (g : G) : MulAut G where
 
 /-- Group conjugation, `AddAut.addConjHom g h = g + h + -g`, as an additive homomorphism
 mapping addition in `G` into addition in the additive automorphism group `AddAut G`. -/
-def _root_.AddAut.addConjHom [AddGroup G] : G →+ Additive (AddAut G) where
+@[simps] def _root_.AddAut.addConjHom [AddGroup G] : G →+ Additive (AddAut G) where
   toFun := .ofMul ∘ AddAut.addConj
   map_add' _ _ := by ext; simp [AddAut.addConj, add_assoc]
   map_zero' := by ext; simp [AddAut.addConj]
@@ -728,7 +728,7 @@ def _root_.AddAut.addConjHom [AddGroup G] : G →+ Additive (AddAut G) where
 mapping multiplication in `G` into multiplication in the automorphism group `MulAut G`.
 See also the type `ConjAct G` for any group `G`, which has a `MulAction (ConjAct G) G` instance
 where `conj G` acts on `G` by conjugation. -/
-def conjHom [Group G] : G →* MulAut G where
+@[simps] def conjHom [Group G] : G →* MulAut G where
   toFun := conj
   map_mul' _ _ := by ext; simp [conj, mul_assoc]
   map_one' := by ext; simp [conj]
