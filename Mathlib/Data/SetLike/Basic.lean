@@ -220,7 +220,7 @@ class IsConcreteLE (A : Type*) {B : Type*} [Membership B A] [LE A] where
   /-- The order corresponds to set inclusion. -/
   le_iff {S T : A} : S ≤ T ↔ ∀ ⦃x⦄, x ∈ S → x ∈ T
 
-instance (α : Type*) : IsConcreteLE (Set α) α where
+instance (α : Type*) : IsConcreteLE (Set α) where
   le_iff := .rfl
 
 section default
