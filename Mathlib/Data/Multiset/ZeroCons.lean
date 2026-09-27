@@ -199,9 +199,8 @@ theorem eq_zero_iff_forall_notMem {s : Multiset α} : s = 0 ↔ ∀ a, a ∉ s :
   ⟨fun h => h.symm ▸ fun _ => notMem_zero _, eq_zero_of_forall_notMem⟩
 
 theorem ne_zero_iff_exists_mem {s : Multiset α} : s ≠ 0 ↔ ∃ a, a ∈ s := by
-  rw [← not_iff_not]
-  push Not
-  rw [eq_zero_iff_forall_notMem]
+  contrapose!
+  exact eq_zero_iff_forall_notMem
 
 alias ⟨exists_mem_of_ne_zero, _⟩ := ne_zero_iff_exists_mem
 
