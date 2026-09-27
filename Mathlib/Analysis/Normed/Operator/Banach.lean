@@ -382,7 +382,7 @@ variable {E F : Type*}
 `f` is anti-Lipschitz. -/
 lemma antilipschitz_of_injective_of_isClosed_range (f : E →L[𝕜] F)
     (hf : Injective f) (hf' : IsClosed (Set.range f)) : ∃ K, AntilipschitzWith K f :=
-  ⟨_, .comp (.subtype_coe (Set.range f)) (f.equivRange hf hf').antilipschitz⟩
+  ⟨_, .comp (.subtype_coe (Set.range f)) (f.equivRange hf hf').antilipschitzWith⟩
 
 /-- A choice of anti-Lipschitz constant for `f : E →L[𝕜] F` injective with closed range
 (assuming `E` and `F` are Banach spaces). -/
@@ -629,7 +629,7 @@ lemma bijective_iff_dense_range_and_antilipschitz (f : E →SL[σ] F) :
   refine ⟨fun h ↦ ⟨?eq_top, ?anti⟩, fun ⟨hd, c, hf⟩ ↦ ⟨hf.injective, ?surj⟩⟩
   case eq_top => simpa [SetLike.ext'_iff] using! h.2.denseRange.closure_eq
   case anti =>
-    refine ⟨_, ContinuousLinearEquiv.ofBijective f ?_ ?_ |>.antilipschitz⟩ <;>
+    refine ⟨_, ContinuousLinearEquiv.ofBijective f ?_ ?_ |>.antilipschitzWith⟩ <;>
     simp only [LinearMap.range_eq_top, LinearMap.ker_eq_bot, f.coe_coe, h.1, h.2]
   case surj => rwa [← f.coe_coe, ← LinearMap.range_eq_top, ← closed_range_of_antilipschitz hf]
 

@@ -313,7 +313,7 @@ protected theorem antilipschitz (hf : ApproximatesLinearOn f (f' : E →L[𝕜] 
     (hc : Subsingleton E ∨ c < N⁻¹) : AntilipschitzWith (N⁻¹ - c)⁻¹ (s.domRestrict f) := by
   rcases hc with hE | hc
   · exact AntilipschitzWith.of_subsingleton
-  convert! (f'.antilipschitz.domRestrict s).add_lipschitzWith hf.lipschitz_sub hc
+  convert! (f'.antilipschitzWith.domRestrict s).add_lipschitzWith hf.lipschitz_sub hc
   simp [domRestrict]
 
 protected theorem injective (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
@@ -368,7 +368,7 @@ theorem to_inv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c) (hc : Sub
   rw [← Af x', ← Af y', A.left_inv x's, A.left_inv y's]
   calc
     ‖x' - y' - f'.symm (A x' - A y')‖ ≤ N * ‖f' (x' - y' - f'.symm (A x' - A y'))‖ :=
-      (f' : E →L[𝕜] F).bound_of_antilipschitz f'.antilipschitz _
+      (f' : E →L[𝕜] F).bound_of_antilipschitz f'.antilipschitzWith _
     _ = N * ‖A y' - A x' - f' (y' - x')‖ := by
       congr 2
       simp only [ContinuousLinearEquiv.apply_symm_apply, map_sub]
