@@ -83,25 +83,11 @@ scoped[NormedField] attribute [instance] NormedField.toValuativeRel
 
 end NormedField
 
-namespace IsValuativeTopology
-
-variable (R : Type*) [Ring R] [ValuativeRel R] [UniformSpace R] [IsUniformAddGroup R]
-  [IsValuativeTopology R]
-
-theorem hasBasis_uniformity :
-    (𝓤 R).HasBasis (fun _ ↦ True)
-      fun γ : (ValueGroupWithZero R)ˣ ↦ { p : R × R | valuation R (p.2 - p.1) < γ } := by
-  rw [uniformity_eq_comap_nhds_zero]
-  exact (hasBasis_nhds_zero R).comap _
-
-end IsValuativeTopology
-
 namespace ValuativeRel
 
 variable {L : Type*} [Field L] [ValuativeRel L] [IsRankLeOne L] {x y : L}
 
-/-- The real absolute value on a field `L` with a valuative relation, determined by an embedding
-`e` of the value group of `L` into `ℝ≥0`. -/
+/-- The real absolute value on a field `L`, induced by a valuative relation. -/
 def absoluteValue : AbsoluteValue L ℝ :=
   (valuation L).absoluteValue
 
@@ -157,7 +143,7 @@ variable [UniformSpace L] [IsUniformAddGroup L] [IsValuativeTopology L]
 theorem hasBasis_uniformity : (𝓤 L).HasBasis (fun ε : ℝ ↦ 0 < ε)
     fun ε ↦ { p : L × L | absoluteValue (p.1 - p.2) < ε } := by
   refine (valuation L).hasBasis_uniformity.to_hasBasis (fun γ _ ↦ ?_) fun ε hε ↦ ?_
-  · refine ⟨RankLeOne.hom' (valuation L) γ, by simp [← NNReal.coe_zero], fun p hp ↦ ?_⟩
+  · refine ⟨RankLeOne.hom' (valuation L) γ, by simp, fun p hp ↦ ?_⟩
     simpa [(valuation L).restrict.map_sub_swap, absoluteValue_apply, norm_def] using hp
   · obtain ⟨γ, hγ⟩ := Real.exists_forall_lt_of_strictMono
       (RankLeOne.strictMono' (v := valuation L)) hε
