@@ -45,6 +45,7 @@ get confused since there are too many possibilities for composition. -/
 -- instead, which is not supported yet: see https://github.com/leanprover-community/mathlib4/issues/40183.
 attribute [local push ←] Function.comp_def
 
+@[to_fun]
 theorem HasFDerivAtFilter.comp {g : F → G} {g' : F →L[𝕜] G} {L' : Filter (F × F)}
     (hg : HasFDerivAtFilter g g' L') (hf : HasFDerivAtFilter f f' L)
     (hL : Tendsto (Prod.map f f) L L') :
@@ -71,49 +72,51 @@ protected theorem HasStrictFDerivAt.comp {g : F → G} {g' : F →L[𝕜] G}
     HasStrictFDerivAt (fun x => g (f x)) (g'.comp f') x :=
   HasFDerivAtFilter.comp hg hf <| hf.continuousAt.tendsto.prodMap_nhds hf.continuousAt.tendsto
 
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem HasFDerivWithinAt.comp (hg : HasFDerivWithinAt g g' t (f x))
     (hf : HasFDerivWithinAt f f' s x) (hst : MapsTo f s t) :
     HasFDerivWithinAt (g ∘ f) (g'.comp f') s x :=
   HasFDerivAtFilter.comp hg hf <| .prodMap (hf.continuousWithinAt.tendsto_nhdsWithin hst) <|
     tendsto_pure_pure ..
 
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem HasFDerivAt.comp_hasFDerivWithinAt {g : F → G} {g' : F →L[𝕜] G}
     (hg : HasFDerivAt g g' (f x)) (hf : HasFDerivWithinAt f f' s x) :
     HasFDerivWithinAt (g ∘ f) (g'.comp f') s x :=
   hg.hasFDerivWithinAt.comp x hf (mapsTo_univ _ _)
 
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem HasFDerivWithinAt.comp_of_tendsto
     (hg : HasFDerivWithinAt g g' t (f x)) (hf : HasFDerivWithinAt f f' s x)
     (hst : Tendsto f (𝓝[s] x) (𝓝[t] f x)) : HasFDerivWithinAt (g ∘ f) (g'.comp f') s x :=
   HasFDerivAtFilter.comp hg hf <| hst.prodMap <| tendsto_pure_pure ..
 
+@[to_fun]
 theorem HasFDerivWithinAt.comp_hasFDerivAt
     (hg : HasFDerivWithinAt g g' t (f x)) (hf : HasFDerivAt f f' x)
     (ht : ∀ᶠ x' in 𝓝 x, f x' ∈ t) : HasFDerivAt (g ∘ f) (g' ∘L f') x :=
   HasFDerivAtFilter.comp hg hf <| .prodMap (tendsto_nhdsWithin_iff.mpr ⟨hf.continuousAt, ht⟩) <|
     tendsto_pure_pure ..
 
+@[to_fun]
 theorem HasFDerivWithinAt.comp_hasFDerivAt_of_eq (hg : HasFDerivWithinAt g g' t y)
     (hf : HasFDerivAt f f' x) (ht : ∀ᶠ x' in 𝓝 x, f x' ∈ t) (hy : y = f x) :
     HasFDerivAt (g ∘ f) (g' ∘L f') x := by
   subst y; exact hg.comp_hasFDerivAt x hf ht
 
 /-- The chain rule. -/
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem HasFDerivAt.comp (hg : HasFDerivAt g g' (f x))
     (hf : HasFDerivAt f f' x) : HasFDerivAt (g ∘ f) (g'.comp f') x :=
   HasFDerivAtFilter.comp hg hf <| hf.continuousAt.tendsto.prodMap <| tendsto_pure_pure ..
 
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem DifferentiableWithinAt.comp (hg : DifferentiableWithinAt 𝕜 g t (f x))
     (hf : DifferentiableWithinAt 𝕜 f s x) (h : MapsTo f s t) :
     DifferentiableWithinAt 𝕜 (g ∘ f) s x :=
   (hg.hasFDerivWithinAt.comp x hf.hasFDerivWithinAt h).differentiableWithinAt
 
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem DifferentiableWithinAt.comp' (hg : DifferentiableWithinAt 𝕜 g t (f x))
     (hf : DifferentiableWithinAt 𝕜 f s x) :
     DifferentiableWithinAt 𝕜 (g ∘ f) (s ∩ f ⁻¹' t) x :=
@@ -127,7 +130,7 @@ theorem DifferentiableAt.comp {g : F → G} (hg : DifferentiableAt 𝕜 g (f x))
 @[deprecated (since := "2026-09-26")]
 alias DifferentiableAt.fun_comp' := DifferentiableAt.fun_comp
 
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem DifferentiableAt.comp_differentiableWithinAt {g : F → G} (hg : DifferentiableAt 𝕜 g (f x))
     (hf : DifferentiableWithinAt 𝕜 f s x) : DifferentiableWithinAt 𝕜 (g ∘ f) s x :=
   hg.differentiableWithinAt.comp x hf (mapsTo_univ _ _)
@@ -142,7 +145,7 @@ theorem Differentiable.comp {g : F → G} (hg : Differentiable 𝕜 g) (hf : Dif
     Differentiable 𝕜 (g ∘ f) :=
   fun x => DifferentiableAt.comp x (hg (f x)) (hf x)
 
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem Differentiable.comp_differentiableOn {g : F → G} (hg : Differentiable 𝕜 g)
     (hf : DifferentiableOn 𝕜 f s) : DifferentiableOn 𝕜 (g ∘ f) s :=
   hg.differentiableOn.comp hf (mapsTo_univ _ _)
