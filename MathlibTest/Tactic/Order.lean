@@ -61,6 +61,12 @@ example [Preorder α] (a b c d : α) (h1 : a ≤ b) (h2 : b ≤ c) (h3 : ¬(a < 
     c ≤ d := by
   order
 
+-- The `push Not` step in the implementation of the tactic does nothing here:
+-- test that no warning is printed.
+example {α : Type*} [Preorder α] {a b c d : α}
+    (hab : a < b) (hbc : b < c) (hbd : b < d) (hdc : d < c) : a < d := by
+  order
+
 example [Preorder α] (a b : α) (h1 : a < b) : b > a := by
   order
 
