@@ -80,7 +80,6 @@ public import Archive.Wiedijk100Theorems.BirthdayProblem
 public import Archive.Wiedijk100Theorems.BuffonsNeedle
 public import Archive.Wiedijk100Theorems.CubingACube
 public import Archive.Wiedijk100Theorems.FriendshipGraphs
-public import Archive.Wiedijk100Theorems.HeronsFormula
 public import Archive.Wiedijk100Theorems.InverseTriangleSum
 public import Archive.Wiedijk100Theorems.Konigsberg
 public import Archive.Wiedijk100Theorems.PerfectNumbers
