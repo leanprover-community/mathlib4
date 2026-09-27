@@ -445,14 +445,6 @@ theorem untrop_div [Sub R] (x y : MinTropical R) : untrop (x / y) = untrop x - u
   rfl
 
 @[to_dual]
-instance [AddSemigroup R] : Semigroup (MinTropical R) where
-  mul_assoc _ _ _ := untrop_injective (add_assoc _ _ _)
-
-@[to_dual]
-instance [AddCommSemigroup R] : CommSemigroup (MinTropical R) where
-  mul_comm := fun _ _ => untrop_injective (add_comm _ _)
-
-@[to_dual]
 instance {α : Type*} [SMul α R] : Pow (MinTropical R) α where pow x n := trop <| n • untrop x
 
 @[to_dual (attr := simp)]
@@ -468,6 +460,17 @@ theorem trop_smul {α : Type*} [SMul α R] (x : R) (n : α) : trop (n • x) = t
 instance [AddZeroClass R] : MulOneClass (MinTropical R) where
   one_mul _ := untrop_injective <| zero_add _
   mul_one _ := untrop_injective <| add_zero _
+
+@[to_dual]
+instance [AddSemigroup R] : Semigroup (MinTropical R) where
+  ppow := fun n x => x ^ n
+  ppow_one := fun _ => untrop_injective <| one_psmul _
+  ppow_succ := fun _ _ => untrop_injective <| succ_psmul _ _
+  mul_assoc _ _ _ := untrop_injective (add_assoc _ _ _)
+
+@[to_dual]
+instance [AddCommSemigroup R] : CommSemigroup (MinTropical R) where
+  mul_comm := fun _ _ => untrop_injective (add_comm _ _)
 
 @[to_dual]
 instance [AddMonoid R] : Monoid (MinTropical R) where

@@ -107,8 +107,8 @@ instance instNNRatSMul : SMul ℚ≥0 (Nonneg α) where
 
 instance divisionSemiring : DivisionSemiring (Nonneg α) :=
   Subtype.coe_injective.divisionSemiring _ Nonneg.coe_zero Nonneg.coe_one Nonneg.coe_add
-    Nonneg.coe_mul Nonneg.coe_inv Nonneg.coe_div (fun _ _ => rfl) coe_nnqsmul Nonneg.coe_pow
-    Nonneg.coe_zpow Nonneg.coe_natCast coe_nnratCast
+    Nonneg.coe_mul Nonneg.coe_inv Nonneg.coe_div (fun _ _ => rfl) (fun _ _ => rfl) coe_nnqsmul
+    Nonneg.coe_ppow Nonneg.coe_pow Nonneg.coe_zpow Nonneg.coe_natCast coe_nnratCast
 
 end LinearOrderedDivisionSemiring
 

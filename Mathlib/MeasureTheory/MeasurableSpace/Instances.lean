@@ -27,6 +27,8 @@ instance Bool.instMeasurableSpace : MeasurableSpace Bool := ⊤
 
 instance Prop.instMeasurableSpace : MeasurableSpace Prop := ⊤
 
+instance PNat.instMeasurableSpace : MeasurableSpace ℕ+ := ⊤
+
 instance Nat.instMeasurableSpace : MeasurableSpace ℕ := ⊤
 
 instance ENat.instMeasurableSpace : MeasurableSpace ℕ∞ := ⊤

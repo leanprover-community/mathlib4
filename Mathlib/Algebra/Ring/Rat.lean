@@ -21,7 +21,7 @@ See note [foundational algebra order theory].
 
 public section
 
-assert_not_exists IsOrderedMonoid Field PNat Nat.gcd_greatest
+assert_not_exists IsOrderedMonoid Field Nat.gcd_greatest
 
 namespace Rat
 
