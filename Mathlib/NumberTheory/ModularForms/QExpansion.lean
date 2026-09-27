@@ -43,7 +43,16 @@ and bounded at infinity.
   determined.
 * There are also more specialized versions of some of these lemmas in the `ModularFormClass`
   namespace.
+
+## See also
+
+* Lemmas relating q-expansion coefficents to Fourier series, such as
+  `UpperHalfPlane.qExpansion_coeff_eq_exp_mul_fourierCoeffOn`, are placed in `Bounds.lean`, since
+  the present file does not import Fourier theory.
+
 -/
+
+assert_not_exists fourierCoeffOn -- guard against import creep
 
 @[expose] public noncomputable section
 
@@ -135,7 +144,7 @@ open SlashInvariantFormClass
 
 namespace ModularFormClass
 
-@[deprecated ModularFormClass.bdd_at_infty (since := "2026-04-19")]
+@[deprecated ModularFormClass.bdd_at_infty +typeChanged (since := "2026-04-19")]
 theorem bounded_at_infty_comp_ofComplex [ModularFormClass F Γ k] (hi : IsCusp OnePoint.infty Γ) :
     BoundedAtFilter I∞ (f ∘ ofComplex) :=
   (OnePoint.isBoundedAt_infty_iff.mp (bdd_at_cusps f hi)).comp_tendsto tendsto_comap_im_ofComplex
@@ -778,7 +787,7 @@ lemma qExpansion_coeff_unique {c : ℕ → ℂ} (hh : 0 < h)
     c m = (qExpansion h f).coeff m := by
   have h1 := (hasFPowerSeriesOnBall_cuspFunction hh hfanalytic hf).hasFPowerSeriesAt
   have h2 := (hasFPowerSeries_cuspFunction f hh hfanalytic hf).hasFPowerSeriesAt
-  simpa using congr_arg (FormalMultilinearSeries.coeff · m) (h1.eq_formalMultilinearSeries h2)
+  simpa using congr(FormalMultilinearSeries.coeff $(h1.eq_formalMultilinearSeries h2) m)
 
 end UpperHalfPlane
 

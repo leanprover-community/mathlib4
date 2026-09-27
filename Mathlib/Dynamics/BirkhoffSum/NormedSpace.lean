@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Dynamics.BirkhoffSum.Average
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Order.Filter.AtTopBot.Archimedean
 
 /-!
@@ -98,6 +99,24 @@ theorem tendsto_birkhoffAverage_apply_sub_birkhoffAverage' {g : α → E}
     (h : Bornology.IsBounded (range g)) (f : α → α) (x : α) :
     Tendsto (fun n ↦ birkhoffAverage 𝕜 f g n (f x) - birkhoffAverage 𝕜 f g n x) atTop (𝓝 0) :=
   tendsto_birkhoffAverage_apply_sub_birkhoffAverage _ <| h.subset <| range_comp_subset_range _ _
+
+section
+variable [MeasurableSpace α] [NormedSpace ℝ E]
+
+open MeasureTheory
+
+theorem integral_birkhoffSum_measure (f : α → α) (g : α → E) (x : α) (μ : α → Measure α)
+    {n : ℕ} (hg : ∀ k ∈ Finset.range n, Integrable g (μ (f^[k] x))) :
+    ∫ y, g y ∂(birkhoffSum f μ n x) = birkhoffSum f (fun z ↦ ∫ y, g y ∂(μ z)) n x :=
+  integral_finsetSum_measure hg
+
+theorem integral_birkhoffAverage_measure (f : α → α) (g : α → E) (x : α) (μ : α → Measure α)
+    {n : ℕ} (hg : ∀ k ∈ Finset.range n, Integrable g (μ (f^[k] x))) :
+    ∫ y, g y ∂(birkhoffAverage NNReal f μ n x) =
+      birkhoffAverage NNReal f (fun z ↦ ∫ y, g y ∂(μ z)) n x := by
+  simp [birkhoffAverage, integral_birkhoffSum_measure f g x μ hg]
+
+end
 
 end
 

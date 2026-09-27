@@ -76,8 +76,7 @@ lemma isArtinianObject_iff_not_strictAnti :
     IsArtinianObject X ↔ ∀ (f : ℕ → Subobject X), ¬ StrictAnti f := by
   refine ⟨fun _ ↦ not_strictAnti_of_wellFoundedLT, fun h ↦ ?_⟩
   dsimp only [IsArtinianObject]
-  rw [ObjectProperty.is_iff, isArtinianObject, WellFoundedLT,
-    isWellFounded_iff, RelEmbedding.wellFounded_iff_isEmpty]
+  rw [ObjectProperty.is_iff, isArtinianObject, WellFoundedLT, RelEmbedding.wellFounded_iff_isEmpty]
   exact ⟨fun f ↦ h f.toFun (fun a b h ↦ f.map_rel_iff.2 h)⟩
 
 variable {X} in

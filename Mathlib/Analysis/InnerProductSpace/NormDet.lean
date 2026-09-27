@@ -158,7 +158,7 @@ private noncomputable def orthonormalBasis_range {ι : Type*} [Fintype ι] {f : 
     (hf : f.ker = ⊥) (b : OrthonormalBasis ι 𝕜 U) : OrthonormalBasis ι 𝕜 f.range :=
   let h : Nonempty (OrthonormalBasis (Fin (finrank 𝕜 U)) 𝕜 f.range) :=
     (f.normDet_ne_zero_tfae.out 2 4).mp hf
-  h.some.reindex (Fintype.equivFinOfCardEq <| (Module.finrank_eq_card_basis b.toBasis).symm).symm
+  h.some.reindex (Fintype.equivFinOfCardEq (Module.finrank_eq_card_basis b.toBasis).symm).symm
 
 theorem normDet_eq_zero_tfae (f : U →ₗ[𝕜] V) :
     List.TFAE [f.normDet = 0,

@@ -327,7 +327,6 @@ The `simp` annotation on this lemma was removed because it would be redundant no
 lemma ι_b_ι (c : Cell i d) : c.ιSigmaStdSimplex ≫ b i d ≫ Subcomplex.ι _ = c.map := by
   simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma b_app_ι_app_objEquiv_symm_val (c : Cell i d) {n : SimplexCategory} (f : n ⟶ ⦋d⦌) :
     dsimp% ((b i d).app _ (c.ιSigmaStdSimplex.app _ (stdSimplex.objEquiv.symm f))).val =
@@ -337,7 +336,6 @@ lemma b_app_ι_app_objEquiv_symm_val (c : Cell i d) {n : SimplexCategory} (f : n
 
 end Cell
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma isPullback : IsPullback (t i d) (l i d) (r i d) (b i d) where
   w := w i d
@@ -346,8 +344,7 @@ lemma isPullback : IsPullback (t i d) (l i d) (r i d) (b i d) where
       (IsPullback.isLimit ?_)
     dsimp
     rw [Types.isPullback_iff]
-    refine ⟨NatTrans.congr_app (w i d) _,
-      fun x₁ x₂ ⟨_, h⟩ ↦ injective_of_mono ((l i d).app (op ⦋n⦌)) h,
+    refine ⟨congr($(w i d).app _), fun x₁ x₂ ⟨_, h⟩ ↦ injective_of_mono ((l i d).app (op ⦋n⦌)) h,
       fun ⟨x, hx⟩ y h ↦ ?_⟩
     rw [Subtype.ext_iff] at h
     dsimp at h
@@ -357,8 +354,8 @@ lemma isPullback : IsPullback (t i d) (l i d) (r i d) (b i d) where
     · rw [dsimp% congr($(c.ι_b_ι).app (op ⦋n⦌) y)] at hx
       rwa [← c.preimage_map, Subcomplex.preimage_obj, Set.mem_preimage]
     · rw [Subtype.ext_iff]
-      exact congr($(c.ι_t_ι_eq_ι_l_b_ι).app _ ⟨y, _⟩)
-    · exact congr($(c.ι_l).app _ ⟨y, _⟩))⟩
+      congrm $(c.ι_t_ι_eq_ι_l_b_ι).app _ ⟨y, _⟩
+    · congrm $(c.ι_l).app _ ⟨y, _⟩)⟩
 
 set_option backward.defeqAttrib.useBackward true in
 lemma sup_range_r_range_b :

@@ -112,7 +112,7 @@ theorem le_perfectClosure (L : IntermediateField F E) [h : IsPurelyInseparable F
   rw [isPurelyInseparable_iff_pow_mem F (ringExpChar F)] at h
   intro x hx
   obtain ⟨n, y, hy⟩ := h ⟨x, hx⟩
-  exact ⟨n, y, congr_arg (algebraMap L E) hy⟩
+  exact ⟨n, y, congr(algebraMap L E $hy)⟩
 
 /-- An intermediate field of `E / F` is contained in the relative perfect closure of `F` in `E`
 if and only if it is purely inseparable over `F`. -/
@@ -140,7 +140,7 @@ theorem map_mem_perfectClosure_iff (i : E →ₐ[F] K) {x : E} :
   refine ⟨fun ⟨n, y, h⟩ ↦ ⟨n, y, ?_⟩, fun ⟨n, y, h⟩ ↦ ⟨n, y, ?_⟩⟩
   · apply_fun i using i.injective
     rwa [AlgHom.commutes, map_pow]
-  simpa only [AlgHom.commutes, map_pow] using congr_arg i h
+  simpa only [AlgHom.commutes, map_pow] using congr(i $h)
 
 /-- If `i` is an `F`-algebra homomorphism from `E` to `K`, then the preimage of `perfectClosure F K`
 under the map `i` is equal to `perfectClosure F E`. -/

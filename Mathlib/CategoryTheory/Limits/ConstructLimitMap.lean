@@ -116,9 +116,8 @@ lemma Limits.exists_eq_isColimitMap_of_preservesColimit_coyoneda
     exact preservesColimit_of_iso_diagram _ iso.symm
   obtain ⟨J, _, _, G, G', _, _, g, hg⟩ :=
     exists_eq_isLimitMap_of_preservesColimit_yoneda hc'.op hc.op f.op
-  have := NatTrans.leftOp g
   refine ⟨Jᵒᵖ, inferInstance, inferInstance, G'.leftOp, G.leftOp, inferInstance, inferInstance,
-    NatTrans.leftOp g, ?_⟩
+    (Functor.leftOpCompOp G' D).inv ≫ NatTrans.leftOp g ≫ (Functor.leftOpCompOp G D').hom, ?_⟩
   refine Quiver.Hom.op_inj ?_
   rw [hg]
   refine ((Functor.Initial.isLimitWhiskerEquiv G' c.op).symm hc.op).hom_ext fun k ↦ ?_

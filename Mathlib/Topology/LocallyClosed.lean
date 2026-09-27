@@ -270,7 +270,7 @@ lemma isLocallyClosedAt_iff_coborder_mem_nhds {x : X} : IsLocallyClosedAt s x �
 lemma IsLocallyClosedAt.congr {x : X} (hs : IsLocallyClosedAt s x) (h : s =ᶠ[𝓝 x] t) :
     IsLocallyClosedAt t x := by
   rw [isLocallyClosedAt_iff_exists_isClosed_eventuallyEqSet] at *
-  exact hs.imp fun _ ↦ And.imp_right <| h.symm.trans
+  exact hs.imp fun _ ↦ And.imp_right h.symm.trans
 
 lemma isLocallyClosedAt_congr {x : X} (h : s =ᶠ[𝓝 x] t) :
     IsLocallyClosedAt s x ↔ IsLocallyClosedAt t x :=
