@@ -339,7 +339,7 @@ lemma Ideal.height_le_iff_exists_minimalPrimes (p : Ideal R) [p.IsPrime]
 spanned by `p.height` elements. -/
 lemma Ideal.exists_finset_card_eq_height_of_isNoetherianRing (p : Ideal R) [p.IsPrime] :
     ∃ s : Finset R, p ∈ (span s).minimalPrimes ∧ s.card = p.height := by
-  obtain ⟨I, hI, hr⟩ := (p.height_le_iff_exists_minimalPrimes <| p.height).mp le_rfl
+  obtain ⟨I, hI, hr⟩ := (p.height_le_iff_exists_minimalPrimes p.height).mp le_rfl
   have hs : I.generators.Finite := (IsNoetherian.noetherian I).finite_generators
   refine ⟨hs.toFinset, by rwa [hs.coe_toFinset, span, I.span_generators], ?_⟩
   rw [← Set.ncard_eq_toFinset_card (hs := hs), (IsNoetherian.noetherian I).generators_ncard]

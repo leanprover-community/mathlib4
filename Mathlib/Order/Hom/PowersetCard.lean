@@ -75,7 +75,7 @@ def permOfDisjoint {m n : ℕ}
   letI e₂ : Fin m ⊕ Fin n ≃ s.val ⊕ t.val := (orderIsoOfFin s).sumCongr (orderIsoOfFin t)
   letI e₃ : s.val ⊕ t.val ≃ disjUnion h := Equiv.Finset.disjUnionEquiv _ _ h
   letI e₄ : disjUnion h ≃o Fin (m + n) := (orderIsoOfFin (disjUnion h)).symm
-  e₁.trans <| e₂.trans <| e₃.trans <| e₄
+  e₁.trans <| e₂.trans <| e₃.trans e₄
 
 /-- A subset `s` of a linearly-ordered finite type `I`, determines a permutation of `I` by moving
 all these terms of `s` to the front. This is the sign of that permutation. -/

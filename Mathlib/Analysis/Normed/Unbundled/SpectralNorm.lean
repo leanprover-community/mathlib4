@@ -848,7 +848,7 @@ def nontriviallyNormedField : NontriviallyNormedField L where
   __ := spectralNorm.normedField K L
   non_trivial :=
     let ⟨x, hx⟩ := NontriviallyNormedField.non_trivial (α := K)
-    ⟨algebraMap K L x, hx.trans_eq <| (spectralNorm_extends _).symm⟩
+    ⟨algebraMap K L x, hx.trans_eq (spectralNorm_extends _).symm⟩
 
 /-- `L` with the spectral norm is a `SeminormedRing`. -/
 @[instance_reducible]
@@ -898,7 +898,7 @@ def normedAlgebra' (E L : Type*) [Field L] [Algebra K L] [Algebra.IsAlgebraic K 
       apply le_of_eq
       simp only [Algebra.smul_def, norm_mul, mul_eq_mul_right_iff, _root_.norm_eq_zero]
       simp only [NormedAlgebra.norm_eq_spectralNorm K]
-      exact Or.inl <| (spectralNorm.eq_of_tower _).symm }
+      exact Or.inl (spectralNorm.eq_of_tower _).symm }
 
 /-- The metric space structure on `L` induced by the spectral norm. -/
 @[instance_reducible]

@@ -47,7 +47,6 @@ instance instZero : Zero (OuterMeasure α) :=
       iUnion_nat _ _ := zero_le }⟩
 
 instance : IsZeroApply (OuterMeasure α) (Set α) ℝ≥0∞ where
-  zero_apply _ := rfl
 
 @[deprecated (since := "2026-06-23")] alias coe_zero := FunLike.coe_zero
 
@@ -66,7 +65,6 @@ instance instAdd : Add (OuterMeasure α) :=
           _ = _ := ENNReal.tsum_add.symm }⟩
 
 instance : IsAddApply (OuterMeasure α) (Set α) ℝ≥0∞ where
-  add_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-23")] alias coe_add := FunLike.coe_add
 
@@ -89,7 +87,6 @@ instance instSMul : SMul R (OuterMeasure α) :=
         exact mul_right_mono (measure_iUnion_le _) }⟩
 
 instance : IsSMulApply R (OuterMeasure α) (Set α) ℝ≥0∞ where
-  smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-23")] alias coe_smul := FunLike.coe_smul
 
@@ -311,7 +308,7 @@ theorem restrict_iSup {ι} (s : Set α) (m : ι → OuterMeasure α) :
     restrict s (⨆ i, m i) = ⨆ i, restrict s (m i) := by simp [restrict]
 
 theorem map_comap {β} (f : α → β) (m : OuterMeasure β) : map f (comap f m) = restrict (range f) m :=
-  ext fun s => congr_arg m <| by simp only [image_preimage_eq_inter_range, Subtype.range_coe]
+  ext fun s => congr(m $(by simp only [image_preimage_eq_inter_range, Subtype.range_coe]))
 
 theorem map_comap_le {β} (f : α → β) (m : OuterMeasure β) : map f (comap f m) ≤ m := fun _ =>
   m.mono <| image_preimage_subset _ _

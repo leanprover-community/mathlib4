@@ -65,7 +65,7 @@ theorem FractionalIdeal.adjoinIntegral_eq_one_of_isUnit (x : K)
     apply coeToSubmodule_injective
     simp only [coe_mul, adjoinIntegral_coe, I]
     rw [(Algebra.adjoin A {x}).isIdempotentElem_toSubmodule]
-  convert! congr_arg (· * I⁻¹) mul_self <;>
+  convert! congr($mul_self * I⁻¹) <;>
     simp only [(mul_inv_cancel_iff_isUnit K).mpr hI, mul_assoc, mul_one]
 
 theorem FractionalIdeal.one_mem_inv_coe_ideal [IsDomain A] {I : Ideal A} (hI : I ≠ ⊥) :
@@ -427,6 +427,11 @@ instance : WfDvdMonoid (Ideal A) := by
   unfold WfDvdMonoid
   eta_expand; simp_rw [Ideal.dvdNotUnit_iff_lt]
   infer_instance
+
+/-- In a Dedekind domain, the multiplicity of a proper ideal in a nonzero ideal is finite. -/
+theorem Ideal.finiteMultiplicity {I J : Ideal A} (hI : I ≠ ⊤) (hJ : J ≠ ⊥) :
+    FiniteMultiplicity I J :=
+  FiniteMultiplicity.of_not_isUnit (by rwa [Ideal.isUnit_iff]) hJ
 
 instance Ideal.uniqueFactorizationMonoid : UniqueFactorizationMonoid (Ideal A) :=
   { irreducible_iff_prime := by

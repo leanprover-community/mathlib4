@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 /-! # Type classes for the Fourier transform
 

@@ -23,13 +23,11 @@ define the space of modular forms, cusp forms and prove that the product of two 
 modular form.
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 open Complex UpperHalfPlane Matrix.SpecialLinearGroup
 
 open scoped Topology Manifold MatrixGroups ComplexConjugate
-
-noncomputable section
 
 section ModularForm
 
@@ -202,7 +200,6 @@ instance add : Add (ModularForm Γ k) where add f g :=
     bdd_at_cusps' hc := by simpa using (f.bdd_at_cusps' hc).add (g.bdd_at_cusps' hc) }
 
 instance : IsAddApply (ModularForm Γ k) ℍ ℂ where
-  add_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_add := FunLike.coe_add
 
@@ -214,7 +211,6 @@ instance instZero : Zero (ModularForm Γ k) :=
       bdd_at_cusps' hc g hg := by simpa using zero_form_isBoundedAtImInfty } ⟩
 
 instance : IsZeroApply (ModularForm Γ k) ℍ ℂ where
-  zero_apply _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_zero := FunLike.coe_zero
 
@@ -229,7 +225,7 @@ lemma eq_zero_of_neg_one_mem [Γ.HasDetOne] (h_neg_one : -1 ∈ Γ) (hk : Odd k)
   have hf := slash_action_eqn'' f h_neg_one z
   rw [neg_smul, one_smul, denom_neg, denom_one, hk.neg_one_zpow] at hf
   have h2 : (2 : ℂ) * f z = 0 := by linear_combination hf
-  exact (mul_eq_zero.mp h2).resolve_left (by norm_num)
+  exact (mul_eq_zero.mp h2).resolve_left (by simp)
 
 section
 -- scalar multiplication by real types (no assumption on `Γ`)
@@ -249,7 +245,6 @@ instance instSMulℝ : SMul α (ModularForm Γ k) where
         using (f.bdd_at_cusps' hc g hg).const_smul_left _ }
 
 instance instIsSMulApplyℝ : IsSMulApply α (ModularForm Γ k) ℍ ℂ where
-  smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_smul := FunLike.coe_smul
 
@@ -271,7 +266,6 @@ instance instSMulℂ : SMul α (ModularForm Γ k) where
       exact (f.bdd_at_cusps' hc g hg).const_smul_left (σ g (c • (1 : ℂ))) }
 
 instance instIsSMulApplyℂ : IsSMulApply α (ModularForm Γ k) ℍ ℂ where
-  smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias IsGLPos.coe_smul := FunLike.coe_smul
 
@@ -286,7 +280,6 @@ instance instNeg : Neg (ModularForm Γ k) :=
       bdd_at_cusps' hc g hg := by simpa using! (f.bdd_at_cusps' hc g hg).neg }⟩
 
 instance : IsNegApply (ModularForm Γ k) ℍ ℂ where
-  neg_apply _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_neg := FunLike.coe_neg
 
@@ -296,7 +289,6 @@ instance instSub : Sub (ModularForm Γ k) :=
   ⟨fun f g => f + -g⟩
 
 instance : IsSubApply (ModularForm Γ k) ℍ ℂ where
-  sub_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_sub := FunLike.coe_sub
 
@@ -387,7 +379,6 @@ instance hasAdd : Add (CuspForm Γ k) :=
       zero_at_cusps' A := by simpa using (f.zero_at_cusps' A).add (g.zero_at_cusps' A) }⟩
 
 instance : IsAddApply (CuspForm Γ k) ℍ ℂ where
-  add_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_add := FunLike.coe_add
 
@@ -399,7 +390,6 @@ instance instZero : Zero (CuspForm Γ k) :=
       zero_at_cusps' hc g hg := by simpa using! Filter.zero_zeroAtFilter _ } ⟩
 
 instance : IsZeroApply (CuspForm Γ k) ℍ ℂ where
-  zero_apply _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_zero := FunLike.coe_zero
 
@@ -422,7 +412,6 @@ instance instSMul : SMul α (CuspForm Γ k) where smul c f :=
       exact (f.zero_at_cusps' hc g hg).smul _ }
 
 instance instSMulApply : IsSMulApply α (CuspForm Γ k) ℍ ℂ where
-  smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_smul := FunLike.coe_smul
 
@@ -445,7 +434,6 @@ instance IsGLPos.instSMul : SMul α (CuspForm Γ k) where smul c f :=
       exact (f.zero_at_cusps' hc g hg).smul _ }
 
 instance IsGLPos.instSMulApply : IsSMulApply α (CuspForm Γ k) ℍ ℂ where
-  smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias IsGLPos.coe_smul := FunLike.coe_smul
 
@@ -460,7 +448,6 @@ instance instNeg : Neg (CuspForm Γ k) :=
       zero_at_cusps' hc g hg := by simpa using! (f.zero_at_cusps' hc g hg).neg }⟩
 
 instance : IsNegApply (CuspForm Γ k) ℍ ℂ where
-  neg_apply _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_neg := FunLike.coe_neg
 
@@ -470,7 +457,6 @@ instance instSub : Sub (CuspForm Γ k) :=
   ⟨fun f g => f + -g⟩
 
 instance : IsSubApply (CuspForm Γ k) ℍ ℂ where
-  sub_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-07-10")] alias coe_sub := FunLike.coe_sub
 
@@ -648,48 +634,6 @@ end GradedRing
 
 end ModularForm
 
-section translate
-
-open ModularForm OnePoint
-
-variable {k : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)} {F : Type*} [FunLike F ℍ ℂ] (f : F)
-
-open ConjAct Pointwise in
-/-- Translating a `ModularForm` by `GL(2, ℝ)`, to obtain a new `ModularForm`. -/
-noncomputable def ModularForm.translate [ModularFormClass F Γ k] (g : GL (Fin 2) ℝ) :
-    ModularForm (toConjAct g⁻¹ • Γ) k where
-  __ := SlashInvariantForm.translate f g
-  bdd_at_cusps' {c} hc γ hγ := by
-    rw [SlashInvariantForm.toFun_eq_coe, SlashInvariantForm.coe_translate,
-      ← SlashAction.slash_mul, ← isBoundedAt_infty_iff, ← OnePoint.IsBoundedAt.smul_iff]
-    apply ModularFormClass.bdd_at_cusps f
-    simpa [mul_smul, hγ] using hc.smul g
-  holo' := (ModularFormClass.holo f).slash k g
-
-@[simp]
-lemma ModularForm.coe_translate [ModularFormClass F Γ k] (g : GL (Fin 2) ℝ) :
-    translate f g = ⇑f ∣[k] g :=
-  rfl
-
-open ConjAct Pointwise in
-/-- Translating a `CuspForm` by `SL(2, ℤ)`, to obtain a new `CuspForm`. -/
-noncomputable def CuspForm.translate [CuspFormClass F Γ k] (g : GL (Fin 2) ℝ) :
-    CuspForm (toConjAct g⁻¹ • Γ) k where
-  __ := ModularForm.translate f g
-  zero_at_cusps' {c} hc γ hγ := by
-    rw [SlashInvariantForm.toFun_eq_coe, ModularForm.toSlashInvariantForm_coe,
-      ModularForm.coe_translate, ← SlashAction.slash_mul, ← isZeroAt_infty_iff,
-      ← OnePoint.IsZeroAt.smul_iff]
-    apply CuspFormClass.zero_at_cusps f
-    simpa [mul_smul, hγ] using hc.smul g
-
-@[simp]
-lemma CuspForm.coe_translate [CuspFormClass F Γ k] (g : SL(2, ℤ)) :
-    translate f g = ⇑f ∣[k] g :=
-  rfl
-
-end translate
-
 section SL2Z
 
 open ModularForm OnePoint
@@ -725,3 +669,5 @@ lemma CuspFormClass.zero_at_infty_slash [CuspFormClass F Γ k] :
   exact ⟨g, by simp [mapGL]⟩
 
 end SL2Z
+
+end

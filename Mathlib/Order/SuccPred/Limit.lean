@@ -403,7 +403,7 @@ theorem mem_range_succ_of_not_isSuccPrelimit (h : ¬ IsSuccPrelimit a) :
 
 @[to_dual]
 theorem mem_range_succ_or_isSuccPrelimit (a) : a ∈ range (succ : α → α) ∨ IsSuccPrelimit a :=
-  or_iff_not_imp_right.2 <| mem_range_succ_of_not_isSuccPrelimit
+  or_iff_not_imp_right.2 mem_range_succ_of_not_isSuccPrelimit
 
 @[to_dual]
 theorem isMin_or_mem_range_succ_or_isSuccLimit (a) :
@@ -481,7 +481,7 @@ alias isPredPrelimit_iff := isPredPrelimit_iff_isMax
 
 @[to_dual (attr := simp)]
 theorem not_isSuccLimit_of_isSuccArchimedean : ¬ IsSuccLimit a :=
-  fun h ↦ h.not_isMin <| h.isSuccPrelimit.isMin
+  fun h ↦ h.not_isMin h.isSuccPrelimit.isMin
 
 @[deprecated (since := "2026-04-19")]
 alias not_isSuccLimit := not_isSuccLimit_of_isSuccArchimedean
@@ -616,7 +616,7 @@ open scoped Classical in
 noncomputable def isSuccPrelimitRecOn : motive b :=
   if hb : IsSuccPrelimit b then isSuccPrelimit b hb else
     haveI H := Classical.choose_spec (not_isSuccPrelimit_iff_succ_eq.1 hb)
-    cast (congr_arg motive H.2) (succ _ H.1)
+    cast congr(motive $(H.2)) (succ _ H.1)
 
 @[to_dual]
 theorem isSuccPrelimitRecOn_of_isSuccPrelimit (hb : IsSuccPrelimit b) :
@@ -724,7 +724,7 @@ noncomputable def prelimitRecOn : motive b :=
   wellFounded_lt.fix
     (fun a IH ↦ if h : IsSuccPrelimit a then isSuccPrelimit a h IH else
       haveI H := Classical.choose_spec (not_isSuccPrelimit_iff_succ_eq.1 h)
-      cast (congr_arg motive H.2) (succ _ H.1 <| IH _ <| H.2.subst <| lt_succ_of_not_isMax H.1))
+      cast congr(motive $(H.2)) (succ _ H.1 <| IH _ <| H.2.subst <| lt_succ_of_not_isMax H.1))
     b
 
 @[to_dual (attr := simp)]
@@ -749,7 +749,7 @@ theorem prelimitRecOn_succ_of_not_isMax (hb : ¬IsMax b) :
   have H := Classical.choose_spec (not_isSuccPrelimit_iff_succ_eq.1 h)
   rw [prelimitRecOn, WellFounded.fix_eq, dite_eq_right h]
   have {a c : α} {ha hc} {x : ∀ a, motive a} (h : a = c) :
-    cast (congr_arg (motive ∘ Order.succ) h) (succ a ha (x a)) = succ c hc (x c) := by subst h; rfl
+    cast congr(motive <| Order.succ $h) (succ a ha (x a)) = succ c hc (x c) := by subst h; rfl
   exact this <| (succ_eq_succ_iff_of_not_isMax H.1 hb).1 H.2
 
 @[to_dual (attr := simp)]

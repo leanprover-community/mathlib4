@@ -30,7 +30,7 @@ and various extensionality and simp lemmas. The order induced by set inclusion i
 called `PartialOrder.ofSetlike`: this is not an instance for flexibility in choosing orders.
 The class `IsMemLE` abstractly states the order is equal to that induced by set inclusion;
 an instance is automatically available when defining a `PartialOrder` as
-`.ofSetLike (MySubobject X) X`.
+`.ofSetLike (MySubobject X)`.
 
 A typical subobject should be declared as:
 ```
@@ -45,7 +45,7 @@ variable {X : Type*} [ObjectTypeclass X] {x : X}
 instance : SetLike (MySubobject X) X :=
   ⟨MySubobject.carrier, fun p q h => by cases p; cases q; congr!⟩
 
-instance : PartialOrder (MySubobject X) := .ofSetLike (MySubobject X) X
+instance : PartialOrder (MySubobject X) := .ofSetLike (MySubobject X)
 
 @[simp] lemma mem_carrier {p : MySubobject X} : x ∈ p.carrier ↔ x ∈ (p : Set X) := Iff.rfl
 
@@ -230,9 +230,12 @@ export IsMemLE (le_iff_mem_imp_mem)
 @[gcongr low] -- lower priority than `Set.mem_of_subset_of_mem`
 alias ⟨mem_of_le_of_mem, _⟩ := le_iff_mem_imp_mem
 
+instance (α : Type*) : IsConcreteLE (Set α) α where
+  le_iff := .rfl
+
 section default
 
-variable (A B : Type*)
+variable (A : Type*) {B : Type*}
 
 /-- The order induced from a `Membership` instance by inclusion.
 
@@ -243,15 +246,15 @@ An order defined this way automatically makes available an instance of `IsMemLE`
 
 @[deprecated (since := "2026-09-01")] alias LE.ofSetLike := LE.ofMembership
 
-instance [Membership B A] : letI := LE.ofMembership A B; IsMemLE A B :=
-  letI := LE.ofMembership A B; { le_iff_mem_imp_mem := .rfl }
+instance [Membership B A] : letI := LE.ofMembership A; IsMemLE A B :=
+  letI := LE.ofMembership A; { le_iff_mem_imp_mem := .rfl }
 
 /-- The preorder induced from a `Membership` instance by inclusion.
 
 A preorder defined this way automatically makes available an instance of `IsMemLE`.
 -/
 @[reducible] def Preorder.ofMembership [Membership B A] : Preorder A where
-  __ := LE.ofMembership A B
+  __ := LE.ofMembership A
   le_refl _ _ h := h
   le_trans _ _ _ h₁ h₂ _ h₃ := h₂ (h₁ h₃)
 
@@ -259,7 +262,7 @@ A preorder defined this way automatically makes available an instance of `IsMemL
 A partial order defined this way automatically makes available an instance of `IsMemLE`.
 -/
 @[reducible] def PartialOrder.ofSetLike [SetLike A B] : PartialOrder A where
-  __ := Preorder.ofMembership A B
+  __ := Preorder.ofMembership A
   __ := PartialOrder.lift (SetLike.coe : A → Set B) SetLike.coe_injective
 
 end default

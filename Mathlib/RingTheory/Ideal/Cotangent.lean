@@ -150,7 +150,7 @@ noncomputable def cotangentEquivIdeal : I.Cotangent ≃ₗ[R] I.cotangentIdeal :
       fun x => by rw [← range_cotangentToQuotientSquare]; exact LinearMap.mem_range_self _ _,
     Equiv.ofBijective _ ⟨?_, ?_⟩ with }
   · rintro x y e
-    replace e := congr_arg Subtype.val e
+    replace e := congr($(e).val)
     obtain ⟨x, rfl⟩ := I.toCotangent_surjective x
     obtain ⟨y, rfl⟩ := I.toCotangent_surjective y
     rw [I.toCotangent_eq]

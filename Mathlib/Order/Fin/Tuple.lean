@@ -106,7 +106,7 @@ lemma Fin.strictMono_cons {f : Fin n → α} {a : α} :
     -- Import restrictions prevent us using `StrictMono.eq_id`: hence this manual proof.
     refine funext fun x ↦ le_antisymm ?_ (hg.id_le x)
     simpa using ((Fin.rev_strictAnti.comp_strictMono hg).comp Fin.rev_strictAnti).id_le (Fin.rev x)
-  simpa using congrFun (key _ h) i.succ
+  simpa using congr($(key _ h) i.succ)
 
 variable {f : Fin (n + 1) → α} {a : α}
 

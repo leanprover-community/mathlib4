@@ -271,7 +271,7 @@ theorem IsLocalRing.eq_of_eval_eq_zero_of_not_isUnit_sub {R : Type*} [CommRing R
   suffices (c * (b - a) + eval a (derivative f)) ∉ maximalIdeal R by
     rw [notMem_maximalIdeal, isUnit_iff_exists] at this
     grind
-  by_contra!
+  by_contra
   replace this := (maximalIdeal R).add_mem this ((maximalIdeal R).mul_mem_left c h)
   ring_nf at this
   contradiction

@@ -55,7 +55,7 @@ instance : SetLike (LieSubmodule R L M) M where
   coe s := s.carrier
   coe_injective N O h := by cases N; cases O; congr; exact SetLike.coe_injective h
 
-instance : PartialOrder (LieSubmodule R L M) := .ofSetLike (LieSubmodule R L M) M
+instance : PartialOrder (LieSubmodule R L M) := .ofSetLike (LieSubmodule R L M)
 
 instance : AddSubgroupClass (LieSubmodule R L M) M where
   add_mem {N} _ _ := N.add_mem'
@@ -703,7 +703,8 @@ lemma sSup_image_lieSpan_singleton : sSup ((fun x ↦ lieSpan R L {x}) '' N) = N
 
 instance instIsCompactlyGenerated : IsCompactlyGenerated (LieSubmodule R L M) :=
   ⟨fun N ↦ ⟨(fun x ↦ lieSpan R L {x}) '' N, fun _ ⟨m, _, hm⟩ ↦
-    hm ▸ isCompactElement_lieSpan_singleton R L m, N.sSup_image_lieSpan_singleton⟩⟩
+    hm ▸ isCompactElement_lieSpan_singleton R L m,
+    isLUB_iff_sSup_eq.mpr N.sSup_image_lieSpan_singleton⟩⟩
 
 end LieSpan
 

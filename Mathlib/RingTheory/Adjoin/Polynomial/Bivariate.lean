@@ -6,7 +6,7 @@ Authors: Xavier Généreux, María Inés de Frutos Fernández
 module
 
 public import Mathlib.Algebra.Polynomial.Bivariate
-public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.RingTheory.Adjoin.Polynomial.Transcendental
 
 /-!
 # Bivariate polynomials and adjoining transcendental elements
@@ -42,7 +42,7 @@ theorem Transcendental.algEquivAdjoin_apply (hx : Transcendental R x) (p : R[X][
 attribute [local instance] algebra in
 theorem Transcendental.algEquivAdjoin_swap_eq_aeval (hx : Transcendental R x) (p : R[X][Y]) :
     hx.algEquivAdjoin (swap p) = aeval (C ⟨x, self_mem_adjoin_singleton R x⟩) p := by
-  simp [algEquivAdjoin, Bivariate.aveal_eq_map_swap]
+  simp [algEquivAdjoin, Bivariate.aeval_eq_map_swap]
 
 end Ring
 

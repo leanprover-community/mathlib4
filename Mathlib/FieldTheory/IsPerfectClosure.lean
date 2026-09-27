@@ -261,7 +261,7 @@ theorem injective_comp_of_pNilradical_eq_bot [IsPRadical i p] (h : pNilradical M
   ext x
   obtain ⟨n, y, hx⟩ := IsPRadical.pow_mem i p x
   apply_fun _ using pow_expChar_pow_inj_of_pNilradical_eq_bot M p h n
-  simpa only [← map_pow, ← hx] using! congr($(heq) y)
+  simpa only [← map_pow, ← hx] using! congr($heq y)
 
 variable (M)
 
@@ -294,7 +294,7 @@ theorem liftAux_apply (x : L) (n : ℕ) (y : K) (h : i y = x ^ p ^ n) :
   rw [liftAux]
   have h' := Classical.choose_spec (lift_aux i p x)
   set n' := (Classical.choose (lift_aux i p x)).1
-  replace h := congr($(h.symm) ^ p ^ n')
+  replace h := congr($h.symm ^ p ^ n')
   rw [← pow_mul, mul_comm, pow_mul, ← h', ← map_pow, ← map_pow, ← sub_eq_zero, ← map_sub,
     ← RingHom.mem_ker] at h
   obtain ⟨m, h⟩ := mem_pNilradical.1 (IsPRadical.ker_le i p h)
