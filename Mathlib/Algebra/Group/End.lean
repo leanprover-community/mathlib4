@@ -717,12 +717,12 @@ def conj [Group G] (g : G) : MulAut G where
   right_inv _ := by simp [mul_assoc]
   map_mul' := by simp [mul_assoc]
 
-/-- Group conjugation, `AddAut.addConjHom g h = g + h + -g`, as an additive homomorphism
-mapping addition in `G` into addition in the additive automorphism group `AddAut G`. -/
-@[simps] def _root_.AddAut.addConjHom [AddGroup G] : G →+ Additive (AddAut G) where
-  toFun := .ofMul ∘ AddAut.addConj
-  map_add' _ _ := by ext; simp [AddAut.addConj, add_assoc]
-  map_zero' := by ext; simp [AddAut.addConj]
+/-- Group conjugation, `AddAut.addConjHom (.ofAdd g) h = g + h + -g`, as an homomorphism
+mapping addition in `G` into multiplication in the additive automorphism group `AddAut G`. -/
+@[simps] def _root_.AddAut.addConjHom [AddGroup G] : Multiplicative G →* AddAut G where
+  toFun := AddAut.addConj ∘ Multiplicative.toAdd
+  map_mul' _ _ := by ext; simp [AddAut.addConj, add_assoc]
+  map_one' := by ext; simp [AddAut.addConj]
 
 /-- Group conjugation, `MulAut.conjHom g h = g * h * g⁻¹`, as a monoid homomorphism
 mapping multiplication in `G` into multiplication in the automorphism group `MulAut G`.
@@ -734,14 +734,14 @@ where `conj G` acts on `G` by conjugation. -/
   map_one' := by ext; simp [conj]
 
 theorem _root_.AddAut.addConj_zero [AddGroup G] : AddAut.addConj (0 : G) = 1 :=
-  AddAut.addConjHom.map_zero ..
+  AddAut.addConjHom.map_one ..
 
 @[to_additive existing (attr := simp)] theorem conj_one [Group G] : conj (1 : G) = 1 :=
   conjHom.map_one ..
 
 theorem _root_.AddAut.addConj_add [AddGroup G] (g h : G) :
     AddAut.addConj (g + h) = AddAut.addConj g * AddAut.addConj h :=
-  AddAut.addConjHom.map_add ..
+  AddAut.addConjHom.map_mul ..
 
 @[to_additive existing (attr := simp)]
 theorem conj_mul [Group G] (g h : G) : conj (g * h) = conj g * conj h :=
@@ -749,7 +749,7 @@ theorem conj_mul [Group G] (g h : G) : conj (g * h) = conj g * conj h :=
 
 theorem _root_.AddAut.addConj_neg [AddGroup G] (g : G) :
     AddAut.addConj (-g) = (AddAut.addConj g)⁻¹ :=
-  AddAut.addConjHom.map_neg _
+  AddAut.addConjHom.map_inv (Multiplicative.ofAdd g)
 
 @[to_additive existing (attr := simp)] theorem conj_inv [Group G] (g : G) : conj g⁻¹ = (conj g)⁻¹ :=
   conjHom.map_inv _
