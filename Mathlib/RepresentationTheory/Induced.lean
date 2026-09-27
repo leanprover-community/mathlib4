@@ -358,27 +358,23 @@ noncomputable abbrev coinvariantsTensorIndInv :
     ((coinvariantsTensor k G).obj A).obj (res φ B) ⟶
       ((coinvariantsTensor k H).obj (ind φ A)).obj B := (coinvariantsTensorIndIso φ A B).inv
 
-set_option linter.deprecated false in
 variable {A B} in
-@[deprecated Representation.coinvariantsTensorIndHom_apply_mk (since := "2026-09-28")]
+@[deprecated "use `Representation.coinvariantsTensorIndHom_apply_mk`" (since := "2026-09-28")]
 lemma coinvariantsTensorIndHom_mk_tmul_indVMk (h : H) (x : A) (y : B) :
     Rep.coinvariantsTensorIndHom φ A B (coinvariantsTensorMk _ _ (IndV.mk φ _ h x) y) =
       coinvariantsTensorMk _ _ x (B.ρ h y) := by
   simp
 
-set_option linter.deprecated false in
 variable {A B} in
-@[deprecated Representation.coinvariantsTensorIndInv_apply_mk (since := "2026-09-28")]
+@[deprecated "use `Representation.coinvariantsTensorIndInv_apply_mk`" (since := "2026-09-28")]
 lemma coinvariantsTensorIndInv_mk_tmul_indMk (x : A) (y : B) :
     Rep.coinvariantsTensorIndInv φ A B (Coinvariants.mk (A.ρ.tprod (Rep.ρ (res φ B))) (x ⊗ₜ y)) =
       coinvariantsTensorMk _ _ (IndV.mk φ _ 1 x) y := rfl
 
-set_option linter.deprecated false in
 @[deprecated "Use `coinvariantsTensorIndIso_hom_hom` instead." (since := "2026-09-28")]
 lemma coinvariantsTensorIndIso_hom :
     (coinvariantsTensorIndIso φ A B).hom = Rep.coinvariantsTensorIndHom φ A B := rfl
 
-set_option linter.deprecated false in
 @[deprecated "Use `coinvariantsTensorIndIso_inv_hom` instead." (since := "2026-09-28")]
 lemma coinvariantsTensorIndIso_inv :
     (coinvariantsTensorIndIso φ A B).inv = Rep.coinvariantsTensorIndInv φ A B := rfl
