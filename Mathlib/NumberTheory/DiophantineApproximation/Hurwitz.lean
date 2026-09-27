@@ -206,24 +206,11 @@ private theorem of_mediant_lt {p q r s : ℤ} (h : IsFarey ξ p q r s)
 
 /-! ### Key step: one of three consecutive Farey endpoints is good -/
 
-private theorem abs_sub_left_lt {p q r s : ℤ} (h : IsFarey ξ p q r s) :
-    |ξ - (p : ℝ) / q| < 1 / ((q : ℝ) * s) := by
-  have hpos : ξ - (p : ℝ) / q > 0 := sub_pos.mpr h.left
-  rw [abs_of_pos hpos, ← sub_eq_one_div_mul h.q_pos h.s_pos h.det]
-  linarith [h.right]
-
-private theorem abs_sub_right_lt {p q r s : ℤ} (h : IsFarey ξ p q r s) :
-    |ξ - (r : ℝ) / s| < 1 / ((q : ℝ) * s) := by
-  have hneg : ξ - (r : ℝ) / s < 0 := sub_neg.mpr h.right
-  rw [abs_of_neg hneg, ← sub_eq_one_div_mul h.q_pos h.s_pos h.det]
-  linarith [h.left]
-
-private theorem abs_sub_mediant_lt {p q r s : ℤ} (h : IsFarey ξ p q r s) :
-    |ξ - ((p + r : ℤ) : ℝ) / ((q + s : ℤ) : ℝ)| < 1 / ((q : ℝ) * s) := by
+private theorem abs_sub_lt_of_mem {p q r s : ℤ} (h : IsFarey ξ p q r s) {z : ℝ}
+    (hl : (p : ℝ) / q ≤ z) (hr : z ≤ (r : ℝ) / s) :
+    |ξ - z| < 1 / ((q : ℝ) * s) := by
   rw [abs_sub_lt_iff, ← sub_eq_one_div_mul h.q_pos h.s_pos h.det]
-  constructor
-  · linarith [h.right, left_lt_mediant h.q_pos h.s_pos h.det]
-  · linarith [h.left, mediant_lt_right h.q_pos h.s_pos h.det]
+  exact ⟨by linarith [h.right], by linarith [h.left]⟩
 
 /-- If `IsFarey ξ p q r s`, then at least one of `p/q`, `r/s`, and the mediant
 `(p + r)/(q + s)` satisfies the Hurwitz bound. -/
@@ -267,10 +254,12 @@ theorem isGoodApprox_or (hξ : Irrational ξ) {p q r s : ℤ} (h : IsFarey ξ p 
 the bracket. -/
 theorem exists_isGoodApprox (hξ : Irrational ξ) {p q r s : ℤ} (h : IsFarey ξ p q r s) :
     ∃ x y : ℤ, IsGoodApprox ξ x y ∧ |ξ - (x : ℝ) / y| < 1 / ((q : ℝ) * s) := by
+  have hpr := (h.left.trans h.right).le
   rcases h.isGoodApprox_or hξ with hg | hg | hg
-  · exact ⟨p, q, hg, h.abs_sub_left_lt⟩
-  · exact ⟨r, s, hg, h.abs_sub_right_lt⟩
-  · exact ⟨p + r, q + s, hg, h.abs_sub_mediant_lt⟩
+  · exact ⟨p, q, hg, h.abs_sub_lt_of_mem le_rfl hpr⟩
+  · exact ⟨r, s, hg, h.abs_sub_lt_of_mem hpr le_rfl⟩
+  · exact ⟨p + r, q + s, hg, h.abs_sub_lt_of_mem
+      (left_lt_mediant h.q_pos h.s_pos h.det).le (mediant_lt_right h.q_pos h.s_pos h.det).le⟩
 
 private theorem exists_next (hξ : Irrational ξ) {p q r s : ℤ} (h : IsFarey ξ p q r s) :
     ∃ p' q' r' s' : ℤ, IsFarey ξ p' q' r' s' ∧ q + s < q' + s' := by
@@ -321,23 +310,11 @@ private lemma isGoodApprox_div_bound {x y : ℤ} (hg : IsGoodApprox ξ x y) :
 private lemma isGoodApprox_bound_rat {x y : ℤ} (hg : IsGoodApprox ξ x y) :
     |ξ - (((x : ℚ) / y : ℚ) : ℝ)| < 1 / (√5 * (((x : ℚ) / y : ℚ).den : ℝ) ^ 2) := by
   have ⟨hy_pos, _⟩ := hg
-  set q : ℚ := (x : ℚ) / y with hq
-  have hden_dvd : (q.den : ℤ) ∣ y := by
-    rw [hq]
-    norm_cast
-    exact Rat.den_dvd x y
-  have hden_le : (q.den : ℝ) ≤ (y : ℝ) := mod_cast (Int.le_of_dvd hy_pos hden_dvd)
-  have hden_pos : 0 < (q.den : ℝ) := mod_cast q.pos
-  have hcast : q = (x : ℝ) / y := by
-    rw [hq]
-    norm_cast
-  rw [hcast]
+  have hden_le : ((((x : ℚ) / y : ℚ).den : ℝ)) ≤ (y : ℝ) :=
+    mod_cast Int.le_of_dvd hy_pos (Rat.den_dvd x y)
+  push_cast
   refine lt_of_lt_of_le (isGoodApprox_div_bound hg) ?_
-  apply one_div_le_one_div_of_le (by positivity)
-  have hsq : (q.den : ℝ) ^ 2 ≤ (y : ℝ) ^ 2 := by
-    apply pow_le_pow_left₀ hden_pos.le hden_le
-  have h5 : (0 : ℝ) < √5 := by positivity
-  nlinarith
+  gcongr
 
 private lemma add_le_two_mul_mul {q s : ℤ} (hq : 0 < q) (hs : 0 < s) :
     q + s ≤ 2 * (q * s) := by nlinarith
@@ -352,13 +329,11 @@ theorem exists_rat_isGoodApprox_and_lt (hξ : Irrational ξ) (t : ℚ) :
   obtain ⟨x, y, hgood, hbound⟩ := hF.exists_isGoodApprox hξ
   refine ⟨(x : ℚ) / (y : ℚ), isGoodApprox_bound_rat hgood, ?_⟩
   have hqs_ge : (q : ℝ) + s ≤ 2 * ((q : ℝ) * s) := mod_cast (add_le_two_mul_mul hF.q_pos hF.s_pos)
-  have hcast : (n : ℝ) ≤ (q : ℝ) + s := mod_cast hqs
   have hn' : (2 : ℝ) < ((q : ℝ) + s) * |ξ - (t : ℝ)| := by
-    have hn'' := hn.trans_le hcast
+    have hn'' := hn.trans_le (mod_cast hqs : (n : ℝ) ≤ (q : ℝ) + s)
     rw [div_lt_iff₀ hpos] at hn''
     linarith
-  have hcast' : ((((x : ℚ) / (y : ℚ)) : ℚ) : ℝ) = (x : ℝ) / (y : ℝ) := by norm_cast
-  rw [hcast']
+  push_cast
   have hqsR : 0 < (q : ℝ) * s := mod_cast (mul_pos hF.q_pos hF.s_pos)
   have hfinal : 1 / ((q : ℝ) * s) < |ξ - (t : ℝ)| := by
     rw [div_lt_iff₀ hqsR]
