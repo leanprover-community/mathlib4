@@ -206,7 +206,9 @@ end MulDistribMulAction
 section MulDistribMulAction
 variable [Monoid M] [Group A] [MulDistribMulAction M A]
 
-@[to_additive (dont_translate := M) (attr := simp) smul_neg']
+-- remove this when MulDistribSMul is added
+set_option linter.existingAttributeWarning false in
+@[simp, to_additive (dont_translate := M) smul_neg']
 lemma smul_inv' (r : M) (x : A) : r • x⁻¹ = (r • x)⁻¹ :=
   (MulDistribMulAction.toMonoidHom A r).map_inv x
 
