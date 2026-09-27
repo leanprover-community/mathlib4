@@ -768,13 +768,21 @@ theorem conj_inv_apply [Group G] (g h : G) : (conj g)⁻¹ h = g⁻¹ * h * g :=
 
 /-- Isomorphic groups have isomorphic automorphism groups. -/
 @[to_additive (attr := simps) /-- Isomorphic groups have isomorphic automorphism groups. -/]
-def congr [Group G] {H : Type*} [Group H] (ϕ : G ≃* H) :
+def congr [Mul G] {H : Type*} [Mul H] (ϕ : G ≃* H) :
     MulAut G ≃* MulAut H where
   toFun f := ϕ.symm.trans (f.trans ϕ)
   invFun f := ϕ.trans (f.trans ϕ.symm)
   left_inv _ := by simp [DFunLike.ext_iff]
   right_inv _ := by simp [DFunLike.ext_iff]
   map_mul' := by simp [DFunLike.ext_iff]
+
+/-- The group isomorphism Aut(G) ≅ End(G)ˣ for a monoid G. -/
+@[to_additive AddAut.equivUnitsEnd
+/-- The group isomorphism Aut(G) ≅ End(G)ˣ for an additive monoid G. -/]
+def equivUnitsEnd [MulOneClass G] : MulAut G ≃* (Monoid.End G)ˣ where
+  toFun f := ⟨(f : G →* G), (f.symm : G →* G), MonoidHom.ext f.right_inv, MonoidHom.ext f.left_inv⟩
+  map_mul' _ _ := rfl
+  invFun f := ⟨⟨f, (f⁻¹ : _ˣ), (congr($f.inv_mul ·)), (congr($f.mul_inv ·))⟩, fun _ _ ↦ by simp⟩
 
 end MulAut
 
