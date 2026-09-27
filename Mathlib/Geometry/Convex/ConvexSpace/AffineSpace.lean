@@ -206,6 +206,6 @@ lemma AffineMap.isAffineMap (f : P₁ →ᵃ[R] P₂) : IsAffineMap R f  where
   map_sConvexComb s := by
      rw [sConvexComb_eq_affineCombination,
        Finset.map_affineCombination s.weights.support _root_.id s.weights s.total,
-       ←iConvexComb_eq_affineCombination, Function.comp_id, iConvexComb]
+       ← iConvexComb_eq_affineCombination, Function.comp_id, iConvexComb]
 
 end
