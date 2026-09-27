@@ -156,6 +156,13 @@ theorem smul_fst (s : S) (a : 𝓜(𝕜, A)) : (s • a).fst = s • a.fst :=
 theorem smul_snd (s : S) (a : 𝓜(𝕜, A)) : (s • a).snd = s • a.snd :=
   rfl
 
+instance instPSMul : SMul ℕ+ 𝓜(𝕜, A) where
+  smul s a :=
+    { toProd := s • a.toProd
+      central := fun x y =>
+        show (s • a.snd) x * y = x * (s • a.fst) y by
+          simp only [smul_apply, mul_smul_comm, smul_mul_assoc, central] }
+
 variable {T : Type*} [Monoid T] [DistribMulAction T A] [SMulCommClass 𝕜 T A]
   [ContinuousConstSMul T A] [IsScalarTower T A A] [SMulCommClass T A A]
 
@@ -193,6 +200,16 @@ instance instIntCast : IntCast 𝓜(𝕜, A) where
       rw [Prod.snd_intCast, Prod.fst_intCast]
       simp only [← Int.smul_one_eq_cast, smul_apply, one_apply_eq_self, mul_smul_comm,
         smul_mul_assoc]⟩
+
+instance instPPow : Pow 𝓜(𝕜, A) ℕ+ where
+  pow a n :=
+    ⟨a.toProd ^ n, fun x y => by
+      induction n using Semigroup.ppow_induction a.toProd generalizing x y with
+      | h1 => exact a.central _ _
+      | hsucc n IH =>
+        rw [Prod.pow_snd, Prod.pow_fst] at IH
+        rw [Prod.snd_mul, mul_apply_eq_comp, Prod.pow_snd, IH, a.central, ← mul_apply_eq_comp,
+          Commute.ppow_self, Prod.fst_mul, Prod.pow_fst]⟩
 
 instance instPow : Pow 𝓜(𝕜, A) ℕ where
   pow a n :=
@@ -288,6 +305,12 @@ theorem intCast_fst (n : ℤ) : (n : 𝓜(𝕜, A)).fst = n :=
 theorem intCast_snd (n : ℤ) : (n : 𝓜(𝕜, A)).snd = n :=
   rfl
 
+theorem ppow_fst (n : ℕ+) (a : 𝓜(𝕜, A)) : (a ^ n).fst = a.fst ^ n :=
+  rfl
+
+theorem ppow_snd (n : ℕ+) (a : 𝓜(𝕜, A)) : (a ^ n).snd = a.snd ^ n :=
+  rfl
+
 theorem pow_fst (n : ℕ) (a : 𝓜(𝕜, A)) : (a ^ n).fst = a.fst ^ n :=
   rfl
 
@@ -317,8 +340,10 @@ theorem range_toProdMulOpposite :
 `DoubleCentralizer.toProdMulOpposite : 𝓜(𝕜, A) → (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ` -/
 instance instRing : Ring 𝓜(𝕜, A) :=
   toProdMulOpposite_injective.ring _ rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _x _n => Prod.ext rfl <| MulOpposite.op_smul _ _)
+    (fun _ _ => rfl) (fun n _ => Prod.ext rfl <| MulOpposite.op_smul n _)
     (fun _x _n => Prod.ext rfl <| MulOpposite.op_smul _ _)
+    (fun _x _n => Prod.ext rfl <| MulOpposite.op_smul _ _)
+    (fun _x _n => Prod.ext rfl <| MulOpposite.op_ppow _ _)
     (fun _x _n => Prod.ext rfl <| MulOpposite.op_pow _ _) (fun _ => rfl) fun _ => rfl
 
 /-- The canonical map `DoubleCentralizer.toProd` as an additive group homomorphism. -/

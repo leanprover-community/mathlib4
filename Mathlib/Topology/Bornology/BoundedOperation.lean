@@ -101,24 +101,31 @@ lemma isBounded_mul [Bornology R] [Mul R] [BoundedMul R] {s t : Set R}
     Bornology.IsBounded (s * t) := BoundedMul.isBounded_mul hs ht
 
 @[to_additive]
-lemma isBounded_pow {R : Type*} [Bornology R] [Monoid R] [BoundedMul R] {s : Set R}
-    (s_bdd : Bornology.IsBounded s) (n : ℕ) :
+lemma isBounded_ppow {R : Type*} [Bornology R] [Semigroup R] [BoundedMul R] {s : Set R}
+    (s_bdd : Bornology.IsBounded s) (n : ℕ+) :
     Bornology.IsBounded ((fun x ↦ x ^ n) '' s) := by
-  induction n with
-  | zero =>
-    by_cases s_empty : s = ∅
-    · simp [s_empty]
-    simp_rw [← nonempty_iff_ne_empty] at s_empty
-    simp [s_empty]
-  | succ n hn =>
-    have obs : ((fun x ↦ x ^ (n + 1)) '' s) ⊆ ((fun x ↦ x ^ n) '' s) * s := by
+  induction n using Semigroup.ppow_induction s with
+  | h1 => simp [s_bdd]
+  | hsucc n IH =>
+    have obs : (fun x ↦ x ^ (n + 1)) '' s ⊆ (fun x ↦ x ^ n) '' s * s := by
       intro x hx
       simp only [mem_image] at hx
       obtain ⟨y, y_in_s, ypow_eq_x⟩ := hx
-      rw [← ypow_eq_x, pow_succ y n]
+      rw [← ypow_eq_x, ppow_succ y]
       apply Set.mul_mem_mul _ y_in_s
       use y
-    exact (isBounded_mul hn s_bdd).subset obs
+    exact (isBounded_mul IH s_bdd).subset obs
+
+@[to_additive]
+lemma isBounded_pow {R : Type*} [Bornology R] [Monoid R] [BoundedMul R] {s : Set R}
+    (s_bdd : Bornology.IsBounded s) (n : ℕ) :
+    Bornology.IsBounded ((fun x ↦ x ^ n) '' s) := by
+  rcases n.zero_le.eq_or_lt with rfl | hn
+  · rcases s.eq_empty_or_nonempty with rfl | hs
+    · simp [s_bdd]
+    · simp [hs]
+  · lift n to ℕ+ using hn
+    simpa [npow_val_eq_ppow] using isBounded_ppow s_bdd n
 
 @[to_additive]
 lemma mul_bounded_of_bounded_of_bounded {X : Type*} [PseudoMetricSpace R] [Mul R] [BoundedMul R]

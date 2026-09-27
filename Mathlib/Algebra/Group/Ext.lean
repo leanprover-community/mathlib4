@@ -35,19 +35,58 @@ open Function
 
 universe u
 
+variable {M : Type*} [Monoid M]
+
+@[to_additive (attr := ext)]
+theorem Semigroup.ext {M : Type u} ⦃m₁ m₂ : Semigroup M⦄ (h_mul : m₁.mul = m₂.mul) : m₁ = m₂ := by
+  have : m₁.ppow = m₂.ppow := by
+    ext n x
+    rw [@ppow_eq_pow _ m₁, @ppow_eq_pow _ m₂]
+    induction n using PNat.strongInductionOn with
+    | _ n ih =>
+      induction n
+      · rw [m₁.ppow_one, m₂.ppow_one]
+      · rw [m₁.ppow_succ, m₂.ppow_succ, ih _ (Nat.lt_succ_self _)]
+        exact congr_fun (congr_fun h_mul _) _
+  rcases m₁ with @⟨@⟨_⟩, @⟨_⟩⟩
+  rcases m₂ with @⟨@⟨_⟩, @⟨_⟩⟩
+  congr
+
+@[to_additive]
+theorem CommSemigroup.toSemigroup_injective {M : Type u} :
+    Function.Injective (@CommSemigroup.toSemigroup M) := by
+  rintro ⟨⟩ ⟨⟩ h
+  congr
+
+
+@[to_additive (attr := ext)]
+theorem CommSemigroup.ext {M : Type _} ⦃m₁ m₂ : CommSemigroup M⦄ (h_mul : m₁.mul = m₂.mul) :
+    m₁ = m₂ :=
+  CommSemigroup.toSemigroup_injective <| Semigroup.ext h_mul
+
 @[to_additive (attr := ext)]
 theorem Monoid.ext {M : Type u} ⦃m₁ m₂ : Monoid M⦄
     (h_mul : (letI := m₁; HMul.hMul : M → M → M) = (letI := m₂; HMul.hMul : M → M → M)) :
     m₁ = m₂ := by
   have : m₁.toMulOneClass = m₂.toMulOneClass := MulOneClass.ext h_mul
-  have h₁ : m₁.one = m₂.one := congr_arg (·.one) this
+  have h₁ : m₁.one = m₂.one := congr_arg (·.one) (this)
+  have h₂ : m₁.toSemigroup = m₂.toSemigroup := Semigroup.ext h_mul
   let f : @MonoidHom M M m₁.toMulOne m₂.toMulOne :=
     @MonoidHom.mk _ _ (_) _ (@OneHom.mk _ _ (_) _ id h₁)
       (fun x y => congr_fun (congr_fun h_mul x) y)
+  have h_toOne : m₁.toOne = m₂.toOne := congrArg (fun s : MulOneClass M => s.toOne) (this)
+  have h_toMul : m₁.toMul = m₂.toMul := congrArg (fun s : MulOneClass M => s.toMul) (this)
+  have h_toPPow : @Semigroup.toPPow M m₁.toSemigroup = @Semigroup.toPPow M m₂.toSemigroup :=
+    congrArg (fun s : Semigroup M => @Semigroup.toPPow M s) h₂
   have : m₁.npow = m₂.npow := by
     ext n x
     exact @MonoidHom.map_pow M M m₁ m₂ f x n
-  rcases m₁ with @⟨⟨_⟩, ⟨_⟩, _, _, _, ⟨_⟩⟩
+  have npow_ext : ∀ {n₁ n₂ : NPow M}, n₁.npow = n₂.npow → n₁ = n₂ := by
+    rintro ⟨_⟩ ⟨_⟩ h
+    congr
+  have h_toNPow : m₁.toNPow = m₂.toNPow := npow_ext (this)
+  cases m₁
+  cases m₂
   congr
 
 @[to_additive]
