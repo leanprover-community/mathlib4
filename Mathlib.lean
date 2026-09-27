@@ -1557,6 +1557,7 @@ public import Mathlib.AlgebraicTopology.ModelCategory.Transport
 public import Mathlib.AlgebraicTopology.MooreComplex
 public import Mathlib.AlgebraicTopology.Quasicategory.Basic
 public import Mathlib.AlgebraicTopology.Quasicategory.InnerFibration
+public import Mathlib.AlgebraicTopology.Quasicategory.InternalHom
 public import Mathlib.AlgebraicTopology.Quasicategory.Nerve
 public import Mathlib.AlgebraicTopology.Quasicategory.StrictBicategory
 public import Mathlib.AlgebraicTopology.Quasicategory.StrictSegal
