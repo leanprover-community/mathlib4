@@ -149,6 +149,7 @@ section RpowLimits
 /-!
 ## Continuity for real powers
 -/
+
 namespace Real
 
 theorem continuousAt_const_rpow {a b : ℝ} (h : a ≠ 0 := by positivity) :
