@@ -228,7 +228,8 @@ instance : HasFiniteCoproducts Scheme.{u} where
   out := inferInstance
 
 instance : MonoCoprod Scheme.{u} :=
-  .mk' fun X Y ↦ ⟨.mk coprod.inl coprod.inr, coprodIsCoprod X Y, inferInstanceAs <| Mono coprod.inl⟩
+  .mk' fun X Y ↦
+    ⟨.mk coprod.inl coprod.inr, coprodIsCoprod X Y, inferInstanceAs <| Mono coprod.inl⟩
 
 /-- The cover of `∐ X` by the `Xᵢ`. -/
 @[simps!]
@@ -608,7 +609,7 @@ instance (i) (R : ι → Type _) [∀ i, CommRing (R i)] :
     · intro x y
       constructor
       · intro e; ext j; by_cases h : j = i <;> aesop
-      · intro e; simpa using! congr_fun e i
+      · intro e; simpa using! congr($e i)
     · exact Function.surjective_eval _
   exact IsOpenImmersion.of_isLocalization (Function.update 0 i 1)
 

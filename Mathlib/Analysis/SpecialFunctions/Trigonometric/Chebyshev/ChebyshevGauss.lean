@@ -88,7 +88,7 @@ theorem sumZeroes_T_of_not_dvd {n : ℕ} {k : ℤ} (hk : ¬ (2 * n : ℤ) ∣ k)
   · simp [sumZeroes]
   suffices ∑ i ∈ range n, 2 * cos (k * ((2 * i + 1) / (2 * n) * π)) = 0 by
     rw [sumZeroes, mul_eq_zero_iff_left (by aesop)]
-    rw [← mul_sum, mul_eq_zero_iff_left (by norm_num)] at this
+    rw [← mul_sum, mul_eq_zero_iff_left (by simp)] at this
     simpa [T_real_cos]
   suffices (∑ i ∈ range n, 2 * cos (k * ((2 * i + 1) / (2 * n) * π)) : ℂ) = 0 by norm_cast at this ⊢
   suffices ∑ i ∈ range n, 2 * Complex.cos (k * ((2 * i + 1) / (2 * n) * π)) = 0 by aesop

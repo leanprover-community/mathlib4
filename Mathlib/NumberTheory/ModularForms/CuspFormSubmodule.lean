@@ -63,7 +63,7 @@ lemma toModularFormₗ_eq_coe [Γ.HasDetOne] (f : CuspForm Γ k) :
 
 lemma toModularFormₗ_injective [Γ.HasDetOne] :
     Function.Injective (toModularFormₗ : CuspForm Γ k → ModularForm Γ k) :=
-  fun _ _ h ↦ DFunLike.ext _ _ fun z ↦ DFunLike.congr_fun h z
+  fun _ _ h ↦ DFunLike.ext _ _ fun z ↦ congr($h z)
 
 end CuspForm
 

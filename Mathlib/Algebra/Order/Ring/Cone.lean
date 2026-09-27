@@ -61,7 +61,7 @@ instance RingCone.instSetLike (R : Type*) [Ring R] : SetLike (RingCone R) R wher
 
 set_option linter.deprecated false in
 @[deprecated "no replacement" (since := "2026-03-28")]
-instance (R : Type*) [Ring R] : PartialOrder (RingCone R) := .ofSetLike (RingCone R) R
+instance (R : Type*) [Ring R] : PartialOrder (RingCone R) := .ofSetLike (RingCone R)
 
 set_option linter.deprecated false in
 @[deprecated "no replacement" (since := "2026-03-28")]

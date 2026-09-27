@@ -129,7 +129,6 @@ instance {S T : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) (i : S ⟶ T) [IsSeparat
   MorphismProperty.of_isPullback (pullback_map_diagonal_isPullback f g i)
     inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `f : X ⟶ Y` and `g : Y ⟶ Z` such that `g` is separated, the induced map
 `X ⟶ X ×[Z] Y` is a closed immersion. -/
 instance [IsSeparated g] :
@@ -305,7 +304,7 @@ lemma ext_of_isDominant_of_isSeparated [IsReduced X] {f g : X ⟶ Y}
     surjective_of_isDominant_of_isClosed_range _ (Scheme.Hom.isClosedEmbedding _).isClosed_range
   have := isIso_of_isClosedImmersion_of_surjective (Y := X) (equalizer.ι f' g').left
   rw [← cancel_epi (equalizer.ι f' g').left]
-  exact congr($(equalizer.condition f' g').left)
+  congrm $(equalizer.condition f' g').left
 
 lemma ext_of_fromSpecResidueField_eq (f g : X ⟶ Y) (i : Y ⟶ Z) [IsSeparated i] [IsReduced X]
     (S : Set X) (hS' : Dense S)

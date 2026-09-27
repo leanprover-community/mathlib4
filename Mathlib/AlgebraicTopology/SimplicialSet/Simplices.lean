@@ -64,7 +64,7 @@ def map {Y : SSet.{u}} (f : X ⟶ Y) (s : X.S) : Y.S :=
 
 lemma dim_eq_of_eq {s t : X.S} (h : s = t) :
     s.dim = t.dim :=
-  congr_arg dim h
+  congr(dim $h)
 
 lemma dim_eq_of_mk_eq {n m : ℕ} {x : X _⦋n⦌} {y : X _⦋m⦌}
     (h : S.mk x = S.mk y) : n = m :=

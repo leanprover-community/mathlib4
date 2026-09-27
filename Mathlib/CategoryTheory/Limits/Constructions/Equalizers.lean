@@ -97,7 +97,7 @@ lemma preservesEqualizers_of_preservesPullbacks_and_binaryProducts
     [PreservesLimitsOfShape (Discrete WalkingPair) G] [PreservesLimitsOfShape WalkingCospan G] :
     PreservesLimitsOfShape WalkingParallelPair G :=
   ⟨fun {K} =>
-    preservesLimit_of_preserves_limit_cone (equalizerConeIsLimit K) <|
+    preservesLimit_of_preserves_limit_cone (equalizerConeIsLimit K)
       { lift := fun c => by
           refine pullback.lift ?_ ?_ ?_ ≫ (PreservesPullback.iso _ _ _ ).inv
           · exact c.π.app WalkingParallelPair.zero
@@ -196,7 +196,7 @@ lemma preservesCoequalizers_of_preservesPushouts_and_binaryCoproducts [HasBinary
     [HasPushouts C] [PreservesColimitsOfShape (Discrete WalkingPair) G]
     [PreservesColimitsOfShape WalkingSpan G] : PreservesColimitsOfShape WalkingParallelPair G :=
   ⟨fun {K} =>
-    preservesColimit_of_preserves_colimit_cocone (coequalizerCoconeIsColimit K) <|
+    preservesColimit_of_preserves_colimit_cocone (coequalizerCoconeIsColimit K)
       { desc := fun c => by
           refine (PreservesPushout.iso _ _ _).inv ≫ pushout.desc ?_ ?_ ?_
           · exact c.ι.app WalkingParallelPair.one

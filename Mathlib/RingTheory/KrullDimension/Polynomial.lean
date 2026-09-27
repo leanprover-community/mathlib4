@@ -98,7 +98,7 @@ lemma height_eq_height_add_one (p : Ideal R)
     rw [height_map_of_disjoint p.primeCompl]
     exact Disjoint.symm <| Set.disjoint_left.mpr fun _ a b ↦ b a
   have eq2 : P.height = P'.height := by
-    rw [height_map_of_disjoint (Submonoid.map C <| p.primeCompl) _ disj]
+    rw [height_map_of_disjoint (Submonoid.map C p.primeCompl) _ disj]
   rw [eq1, eq2]
   apply height_eq_height_add_one_of_isMaximal p' P'
 

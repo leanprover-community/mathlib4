@@ -177,7 +177,7 @@ theorem cfcₙHom_comp [UniqueHom R A] (f : C(σₙ R a, R)₀)
       map_zero' := rfl
       map_star' := fun _ ↦ rfl }
   let φ : C(σₙ R (cfcₙHom ha f), R)₀ →⋆ₙₐ[R] A := (cfcₙHom ha).comp ψ
-  suffices cfcₙHom (cfcₙHom_predicate ha f) = φ from DFunLike.congr_fun this.symm g
+  suffices cfcₙHom (cfcₙHom_predicate ha f) = φ from congr($this.symm g)
   refine cfcₙHom_eq_of_continuous_of_map_id (cfcₙHom_predicate ha f) φ ?_ ?_
   · refine (cfcₙHom_continuous ha).comp <| continuous_induced_rng.mpr ?_
     exact f'.toContinuousMap.continuous_precomp.comp continuous_induced_dom
@@ -343,11 +343,13 @@ lemma cfcₙ_congr {f g : R → R} {a : A} (hfg : (σₙ R a).EqOn f g) :
     · rw [cfcₙ_apply_of_not_map_zero a h0, cfcₙ_apply_of_not_map_zero]
       exact fun hf ↦ h0 (hfg (quasispectrum.zero_mem R a) ▸ hf)
 
-/-- A version of `cfcₙ_congr` suitable for `@[congr]`. -/
+/-- A version of `cfcₙ_congr` suitable for `@[congr]`. The `a = b` argument is necessary to ensure
+that `norm_cast` visits both the function and the element. -/
 @[congr]
-lemma cfcₙ_congr' {f g : R → R} {a : A} (hfg : ∀ x ∈ σₙ R a, f x = g x) :
-    cfcₙ f a = cfcₙ g a :=
-  cfcₙ_congr hfg
+lemma cfcₙ_congr' {f g : R → R} {a b : A} (hab : a = b) (hfg : ∀ x ∈ σₙ R b, f x = g x) :
+    cfcₙ f a = cfcₙ g b := by
+  subst hab
+  exact cfcₙ_congr hfg
 
 lemma eqOn_of_cfcₙ_eq_cfcₙ {f g : R → R} {a : A} (h : cfcₙ f a = cfcₙ g a) (ha : p a := by cfc_tac)
     (hf : ContinuousOn f (σₙ R a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
@@ -444,7 +446,7 @@ lemma cfcₙ_star : cfcₙ (fun x ↦ star (f x)) a = star (cfcₙ f a) := by
     · rw [cfcₙ_apply_of_not_continuousOn a hf, cfcₙ_apply_of_not_continuousOn, star_zero]
       exact fun hf_star ↦ hf <| by simpa using hf_star.star
     · rw [cfcₙ_apply_of_not_map_zero a h0, cfcₙ_apply_of_not_map_zero, star_zero]
-      exact fun hf0 ↦ h0 <| by simpa using congr(star $(hf0))
+      exact fun hf0 ↦ h0 <| by simpa using congr(star $hf0)
 
 lemma cfcₙ_smul_id {S : Type*} [SMulZeroClass S R] [ContinuousConstSMul S R]
     [SMulZeroClass S A] [IsScalarTower S R A] [IsScalarTower S R (R → R)]
@@ -747,7 +749,7 @@ noncomputable def cfcₙHomSuperset {a : A} (ha : p a) {s : Set R} (hs : σₙ R
     haveI : Fact (0 ∈ s) := ⟨hs (quasispectrum.zero_mem R a)⟩
     C(s, R)₀ →⋆ₙₐ[R] A :=
   have : Fact (0 ∈ s) := ⟨hs (quasispectrum.zero_mem R a)⟩
-  cfcₙHom ha (R := R) |>.comp <| ContinuousMapZero.nonUnitalStarAlgHom_precomp R <|
+  cfcₙHom ha (R := R) |>.comp <| ContinuousMapZero.nonUnitalStarAlgHom_precomp R
     ⟨⟨_, continuous_id.subtype_map hs⟩, rfl⟩
 
 lemma cfcₙHomSuperset_continuous {a : A} (ha : p a) {s : Set R} (hs : σₙ R a ⊆ s) :
@@ -782,7 +784,7 @@ lemma cfcₙHom_isClosedEmbedding {R A : Type*} {p : A → Prop} [CommSemiring R
     [StarRing A] [TopologicalSpace A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
     [instCFC : NonUnitalClosedEmbeddingContinuousFunctionalCalculus R A p]
     {a : A} (ha : p a) :
-    IsClosedEmbedding <| (cfcₙHom ha : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) :=
+    IsClosedEmbedding (cfcₙHom ha : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) :=
   NonUnitalClosedEmbeddingContinuousFunctionalCalculus.isClosedEmbedding a ha
 
 end IsClosedEmbedding
@@ -855,7 +857,7 @@ lemma isClosedEmbedding_cfcₙHom_of_cfcHom [ClosedEmbeddingContinuousFunctional
     IsClosedEmbedding (cfcₙHom_of_cfcHom R ha) := by
   let f : C(spectrum R a, σₙ R a) :=
     ⟨_, continuous_inclusion <| spectrum_subset_quasispectrum R a⟩
-  refine (cfcHom_isClosedEmbedding ha).comp <|
+  refine (cfcHom_isClosedEmbedding ha).comp
     (IsUniformInducing.isUniformEmbedding ⟨?_⟩).isClosedEmbedding
   have := uniformSpace_eq_inf_precomp_of_cover (β := R) f (0 : C(Unit, σₙ R a))
     (map_continuous f).isProperMap (map_continuous 0).isProperMap <| by

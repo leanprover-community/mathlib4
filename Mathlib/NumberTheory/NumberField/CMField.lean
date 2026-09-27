@@ -278,7 +278,7 @@ theorem unitsComplexConj_eq_self_iff [Algebra.IsIntegral ℚ K] (u : (𝓞 K)ˣ)
     unitsComplexConj K u = u ↔ u ∈ realUnits K := by
   simp_rw [Units.ext_iff, mem_realUnits_iff, RingOfIntegers.ext_iff, Units.coe_mapEquiv,
     RingEquiv.coe_toMulEquiv, RingOfIntegers.mapRingEquiv_apply,
-    AlgEquiv.coe_ringEquiv, Units.complexConj_eq_self_iff,
+    AlgEquiv.coe_toRingEquiv, Units.complexConj_eq_self_iff,
     IsScalarTower.algebraMap_apply (𝓞 K⁺) (𝓞 K) K]
 
 variable [NumberField K]
@@ -329,7 +329,7 @@ The action of `unitsMulComplexConjInv` of the torsion is the same as the 2-power
 theorem map_unitsMulComplexConjInv_torsion :
     Subgroup.map (unitsMulComplexConjInv K) (torsion K) = (powMonoidHom 2).range := by
   rw [← MonoidHom.domRestrict_range]
-  exact congr_arg (MonoidHom.range ·) (MonoidHom.ext fun ζ ↦ by simp)
+  congrm MonoidHom.range $(MonoidHom.ext fun ζ ↦ by simp)
 
 /--
 The kernel of `unitsMulComplexConjInv` is the subgroup of real units.
@@ -457,13 +457,13 @@ variable (F K : Type*) [Field F] [IsTotallyReal F] [Field K] [CharZero K] [Algeb
 theorem eq_maximalRealSubfield (E : Subfield K) [IsTotallyReal E] [IsQuadraticExtension E K] :
     E = maximalRealSubfield K := by
   refine le_antisymm (IsTotallyReal.le_maximalRealSubfield E) ?_
-  by_contra! h
+  by_contra h
   have h' : E ⊔ (maximalRealSubfield K) = ⊤ := by
     let L : IntermediateField E K := (E ⊔ (maximalRealSubfield K)).toIntermediateField
       (fun x ↦ (le_sup_left (a := E)) x.prop)
     have := ((IntermediateField.isSimpleOrder_of_finrank_prime E K
       (IsQuadraticExtension.finrank_eq_two E K ▸ Nat.prime_two)).eq_bot_or_eq_top L).resolve_left ?_
-    · simpa [L] using congr_arg IntermediateField.toSubfield this
+    · simpa [L] using congr(IntermediateField.toSubfield $this)
     · contrapose h
       rw [← SetLike.coe_set_eq, Subfield.coe_toIntermediateField] at h
       rw [← sup_eq_left, ← SetLike.coe_set_eq, h, IntermediateField.coe_bot]

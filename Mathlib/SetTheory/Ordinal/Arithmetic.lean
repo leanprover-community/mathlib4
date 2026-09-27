@@ -68,7 +68,7 @@ theorem lift_add (a b : Ordinal.{v}) : lift.{u} (a + b) = lift.{u} a + lift.{u} 
 theorem lift_add_one (a : Ordinal.{v}) : lift.{u} (a + 1) = lift.{u} a + 1 := by
   simp
 
-@[deprecated lift_add_one (since := "2026-06-17")]
+@[deprecated lift_add_one +typeChanged (since := "2026-06-17")]
 theorem lift_succ (a : Ordinal.{v}) : lift.{u} (succ a) = succ (lift.{u} a) :=
   lift_add_one a
 
@@ -166,7 +166,7 @@ theorem limitRecOn_add_one {motive} (o H₁ H₂ H₃) :
     @limitRecOn motive (o + 1) H₁ H₂ H₃ = H₂ o (@limitRecOn motive o H₁ H₂ H₃) :=
   SuccOrder.limitRecOn_succ ..
 
-@[deprecated limitRecOn_add_one (since := "2026-05-21")]
+@[deprecated limitRecOn_add_one +typeChanged (since := "2026-05-21")]
 theorem limitRecOn_succ {motive} (o H₁ H₂ H₃) :
     @limitRecOn motive (succ o) H₁ H₂ H₃ = H₂ o (@limitRecOn motive o H₁ H₂ H₃) :=
   limitRecOn_add_one ..
@@ -184,7 +184,7 @@ theorem enum_succ_eq_top {o : Ordinal} :
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
-@[deprecated isSuccPrelimit_type_lt_iff (since := "2026-04-12")]
+@[deprecated isSuccPrelimit_type_lt_iff +typeChanged (since := "2026-04-12")]
 theorem has_succ_of_type_succ_lt {α} {r : α → α → Prop} [wo : IsWellOrder α r]
     (h : ∀ a < type r, succ a < type r) (x : α) : ∃ y, r x y := by
   use enum r ⟨succ (typein r x), h _ (typein_lt_type r x)⟩
@@ -192,7 +192,7 @@ theorem has_succ_of_type_succ_lt {α} {r : α → α → Prop} [wo : IsWellOrder
   · rw [enum_typein]
   · rw [Subtype.mk_lt_mk, lt_succ_iff]
 
-@[deprecated isSuccPrelimit_type_lt_iff (since := "2026-04-12")]
+@[deprecated isSuccPrelimit_type_lt_iff +typeChanged (since := "2026-04-12")]
 theorem toType_noMax_of_succ_lt {o : Ordinal} (ho : ∀ a < o, succ a < o) : NoMaxOrder o.ToType :=
   ⟨has_succ_of_type_succ_lt (type_toType _ ▸ ho)⟩
 
@@ -216,7 +216,7 @@ def pred (o : Ordinal) : Ordinal :=
 theorem pred_add_one (o) : pred (o + 1) = o :=
   isSuccPrelimitRecOn_succ ..
 
-@[deprecated pred_add_one (since := "2026-05-25")]
+@[deprecated pred_add_one +typeChanged (since := "2026-05-25")]
 theorem pred_succ (o) : pred (succ o) = o :=
   pred_add_one o
 
@@ -546,7 +546,7 @@ theorem add_mul_add_one {a b : Ordinal} (c) (ba : b + a = a) :
   | add_one c IH => rw [mul_add_one, IH, ← add_assoc, add_assoc _ b, ba, ← mul_add_one]
   | limit c l IH => rw [mul_add_one, add_mul_limit_aux ba l IH, mul_add_one, add_assoc]
 
-@[deprecated add_mul_add_one (since := "2026-06-17")]
+@[deprecated add_mul_add_one +typeChanged (since := "2026-06-17")]
 theorem add_mul_succ {a b : Ordinal} (c) (ba : b + a = a) : (a + b) * succ c = a * succ c + b :=
   add_mul_add_one c ba
 
@@ -817,11 +817,11 @@ instance instCharZero : CharZero Ordinal := by
   refine ⟨fun a b h ↦ ?_⟩
   rwa [← Cardinal.ord_natCast, ← Cardinal.ord_natCast, Cardinal.ord_inj, Nat.cast_inj] at h
 
-@[deprecated Nat.cast_add_one_comm (since := "2026-05-10")]
+@[deprecated Nat.cast_add_one_comm +typeChanged (since := "2026-05-10")]
 theorem one_add_natCast (m : ℕ) : 1 + (m : Ordinal) = succ m :=
   m.cast_add_one_comm.symm
 
-@[deprecated Nat.cast_add_one_comm (since := "2026-05-10")]
+@[deprecated Nat.cast_add_one_comm +typeChanged (since := "2026-05-10")]
 theorem one_add_ofNat (m : ℕ) [m.AtLeastTwo] :
     1 + (ofNat(m) : Ordinal) = Order.succ (OfNat.ofNat m : Ordinal) :=
   m.cast_add_one_comm.symm

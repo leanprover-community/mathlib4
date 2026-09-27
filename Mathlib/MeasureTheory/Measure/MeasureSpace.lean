@@ -3,12 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-module
+module -- shake: keep-all
 
-public import Mathlib.Algebra.Order.Module.Field
-public import Mathlib.Data.EReal.Inv
-public import Mathlib.Tactic.Measurability
-public import Mathlib.Topology.Algebra.InfiniteSum.Order
-public import Mathlib.Topology.MetricSpace.Bounded
+public import Mathlib.MeasureTheory.Measure.Basic
+public import Mathlib.MeasureTheory.Measure.CompleteLattice
+public import Mathlib.MeasureTheory.Measure.Continuity
+public import Mathlib.MeasureTheory.Measure.Filter
+public import Mathlib.MeasureTheory.Measure.Interval
+public import Mathlib.MeasureTheory.Measure.Module
+public import Mathlib.MeasureTheory.Measure.OuterMeasure
+public import Mathlib.MeasureTheory.Measure.Sum
 
 deprecated_module (since := "2026-08-19")

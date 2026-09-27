@@ -197,7 +197,7 @@ lemma eq_unconditional_of_finite {β} [Finite β]
     rw [(isTop_iff_eq_top.mpr rfl).atTop_eq (a := Finset.univ), ← Finset.top_eq_univ,
       Ici_top, principal_singleton]
   have hL := L.le_atTop
-  have hL' : ∅ ∉ L.filter := empty_mem_iff_bot.not.mpr <| NeBot.ne_bot.ne'
+  have hL' : ∅ ∉ L.filter := empty_mem_iff_bot.not.mpr NeBot.ne_bot.ne'
   cases L with | mk F =>
   simp only [unconditional, hAtTop] at *
   congr 1

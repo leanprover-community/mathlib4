@@ -44,8 +44,8 @@ instance (K : Type*) [NormedField K] : Inhabited (AlgebraNorm K K) :=
 
 /-- `AlgebraNormClass F R S` states that `F` is a type of `R`-algebra norms on the ring `S`.
 You should extend this class when you extend `AlgebraNorm`. -/
-class AlgebraNormClass (F : Type*) (R : outParam <| Type*) [SeminormedCommRing R]
-    (S : outParam <| Type*) [Ring S] [Algebra R S] [FunLike F S ℝ] : Prop
+class AlgebraNormClass (F : Type*) (R : outParam Type*) [SeminormedCommRing R]
+    (S : outParam Type*) [Ring S] [Algebra R S] [FunLike F S ℝ] : Prop
     extends RingNormClass F S ℝ, SeminormClass F R S
 
 namespace AlgebraNorm
@@ -144,13 +144,13 @@ instance (K : Type*) [NormedField K] : Inhabited (MulAlgebraNorm K K) :=
 
 /-- `MulAlgebraNormClass F R S` states that `F` is a type of multiplicative `R`-algebra norms on
 the ring `S`. You should extend this class when you extend `MulAlgebraNorm`. -/
-class MulAlgebraNormClass (F : Type*) (R : outParam <| Type*) [SeminormedCommRing R]
-    (S : outParam <| Type*) [Ring S] [Algebra R S] [FunLike F S ℝ] : Prop
+class MulAlgebraNormClass (F : Type*) (R : outParam Type*) [SeminormedCommRing R]
+    (S : outParam Type*) [Ring S] [Algebra R S] [FunLike F S ℝ] : Prop
     extends MulRingNormClass F S ℝ, SeminormClass F R S
 
 namespace MulAlgebraNorm
 
-variable {R S : outParam <| Type*} [SeminormedCommRing R] [Ring S] [Algebra R S]
+variable {R S : outParam Type*} [SeminormedCommRing R] [Ring S] [Algebra R S]
   {f : AlgebraNorm R S}
 
 @[macro_inline]

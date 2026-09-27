@@ -105,7 +105,7 @@ instance GroupCone.instSetLike (G : Type*) [CommGroup G] : SetLike (GroupCone G)
 
 set_option linter.deprecated false in
 @[to_additive (attr := deprecated "no replacement" (since := "2026-03-28"))]
-instance (G : Type*) [CommGroup G] : PartialOrder (GroupCone G) := .ofSetLike (GroupCone G) G
+instance (G : Type*) [CommGroup G] : PartialOrder (GroupCone G) := .ofSetLike (GroupCone G)
 
 set_option linter.deprecated false in
 @[to_additive (attr := deprecated "no replacement" (since := "2026-03-28"))]

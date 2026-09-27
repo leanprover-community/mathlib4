@@ -461,6 +461,12 @@ theorem logCounting_eventually_nonneg {f : 𝕜 → E} {e : WithTop E} :
 ## Elementary Properties of the Logarithmic Counting Function
 -/
 
+/-- The logCounting function at top is invariant under scaling. -/
+@[to_fun (attr := simp) logCounting_fun_const_smul_top]
+theorem logCounting_const_smul_top {f : 𝕜 → E} {s : 𝕜} (hs : s ≠ 0) :
+    ValueDistribution.logCounting (s • f) ⊤ = ValueDistribution.logCounting f ⊤ := by
+  simp_all [logCounting_top]
+
 /--
 If two functions differ only on a discrete set, then their logarithmic counting
 functions agree.
