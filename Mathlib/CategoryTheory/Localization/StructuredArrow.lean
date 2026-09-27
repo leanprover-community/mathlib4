@@ -39,7 +39,6 @@ section
 variable (W : MorphismProperty C) (L : C ⥤ D) (L' : C ⥤ D')
   [L.IsLocalization W] [L'.IsLocalization W] {X : C}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `StructuredArrow (L.obj X) L ≃ StructuredArrow (L'.obj X) L'`
 when `L` and `L'` are two localization functors for the same class of morphisms. -/
 @[simps]
@@ -93,7 +92,6 @@ variable (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W] {X : C}
   (P : StructuredArrow (L.obj X) L → Prop)
 
 
-set_option backward.isDefEq.respectTransparency false in
 @[elab_as_elim]
 lemma induction_structuredArrow
     (hP₀ : P (StructuredArrow.mk (𝟙 (L.obj X))))

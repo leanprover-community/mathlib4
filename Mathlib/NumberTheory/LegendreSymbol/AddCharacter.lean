@@ -83,7 +83,7 @@ theorem to_mulShift_inj_of_isPrimitive {ψ : AddChar R R'} (hψ : IsPrimitive ψ
 /-- When `R` is a field `F`, then a nontrivial additive character is primitive -/
 theorem IsPrimitive.of_ne_one {F : Type u} [Field F] {ψ : AddChar F R'} (hψ : ψ ≠ 1) :
     IsPrimitive ψ :=
-  fun a ha h ↦ hψ <| by simpa [mulShift_mulShift, ha] using! congr_arg (mulShift · a⁻¹) h
+  fun a ha h ↦ hψ <| by simpa [mulShift_mulShift, ha] using! congr(mulShift $h a⁻¹)
 
 /-- If `r` is not a unit, then `e.mulShift r` is not primitive. -/
 lemma not_isPrimitive_mulShift [Finite R] (e : AddChar R R') {r : R}
@@ -279,7 +279,7 @@ character. -/
 lemma starComp_eq_inv (hR : 0 < ringChar R) {φ : AddChar R ℂ} :
     (starRingEnd ℂ).compAddChar φ = φ⁻¹ := by
   ext1 a
-  simp only [RingHom.toMonoidHom_eq_coe, MonoidHom.coe_compAddChar, MonoidHom.coe_coe,
+  simp only [RingHom.toMonoidHom_eq_coe, MonoidHom.coe_compAddChar, MonoidHom.coe_ofClass,
     Function.comp_apply, inv_apply']
   have H := Complex.norm_eq_one_of_mem_rootsOfUnity <| φ.val_mem_rootsOfUnity a hR
   exact (Complex.inv_eq_conj H).symm

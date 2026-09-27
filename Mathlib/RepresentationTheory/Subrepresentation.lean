@@ -27,6 +27,7 @@ variable [Semiring A] [Monoid G] [AddCommMonoid W] [Module A W]
 /-- A subrepresentation of `G` of the `A`-module `W` is a submodule of `W`
 which is stable under the `G`-action.
 -/
+@[ext]
 structure Subrepresentation where
   /-- A subrepresentation is a submodule. -/
   toSubmodule : Submodule A W
@@ -48,13 +49,23 @@ instance : SetLike (Subrepresentation ρ) W where
   coe ρ' := ρ'.toSubmodule
   coe_injective := SetLike.coe_injective.comp toSubmodule_injective
 
-instance : PartialOrder (Subrepresentation ρ) := .ofSetLike (Subrepresentation ρ) W
+instance : PartialOrder (Subrepresentation ρ) := .ofSetLike (Subrepresentation ρ)
 
 /-- A subrepresentation is a representation. -/
 def toRepresentation (ρ' : Subrepresentation ρ) : Representation A G ρ'.toSubmodule where
   toFun g := (ρ g).restrict (ρ'.apply_mem_toSubmodule g)
   map_one' := by ext; simp
   map_mul' x y := by ext; simp
+
+@[simp]
+lemma toRepresentation_apply_mk {ρ' : Subrepresentation ρ} {g : G} {v w : W} {hv : v ∈ ρ'}
+    {hw : w ∈ ρ'} :
+    ρ'.toRepresentation g ⟨v, hv⟩ = ⟨w, hw⟩ ↔ ρ g v = w := by
+  rw [Subtype.ext_iff]; rfl
+
+lemma toRepresentation_apply_coe {ρ' : Subrepresentation ρ} {g : G} {v w : ρ'.toSubmodule} :
+    ρ'.toRepresentation g v = w ↔ ρ g v.1 = w.1 := by
+  rw [Subtype.ext_iff]; rfl
 
 instance : Max (Subrepresentation ρ) where
   max ρ₁ ρ₂ := .mk (ρ₁.toSubmodule ⊔ ρ₂.toSubmodule) <| by
@@ -95,6 +106,22 @@ instance : BoundedOrder (Subrepresentation ρ) where
   bot_le _ := bot_le (α := Submodule A W)
 
 end non_comm
+
+section quotient
+
+variable {A G W : Type*} [Ring A] [Monoid G] [AddCommGroup W] [Module A W]
+
+/-- The quotient representation associated to a subrepresentation. -/
+def quotient {ρ : Representation A G W} (ρ' : Subrepresentation ρ) :
+    Representation A G (W ⧸ ρ'.toSubmodule) :=
+  ρ.quotient ρ'.toSubmodule (fun g _ hw => ρ'.apply_mem_toSubmodule g hw)
+
+lemma quotient_apply_mk {ρ : Representation A G W} (ρ' : Subrepresentation ρ)
+    (g : G) (w : W) :
+    ρ'.quotient g ⟦w⟧ = ⟦ρ g w⟧ := by
+  rfl
+
+end quotient
 
 variable [CommSemiring A] [Monoid G] [AddCommMonoid W] [Module A W]
   {ρ : Representation A G W} [AddCommMonoid M] [Module A[G] M]
@@ -153,7 +180,7 @@ def ofSubmodule' (N : Submodule A[G] ρ.asModule) : Subrepresentation ρ where
   toSubmodule := { N with
     smul_mem' a w hw := by simpa using! (N.smul_mem (algebraMap A A[G] a) hw) }
   apply_mem_toSubmodule g w hw := by
-    letI _ : Module A[G] W := ρ.instModuleMonoidAlgebraAsModule
+    let _ : Module A[G] W := ρ.instModuleMonoidAlgebraAsModule
     have h : (MonoidAlgebra.single g (1 : A)) • w ∈ N :=
       Submodule.smul_of_tower_mem N _ hw
     rw [Representation.single_smul, one_smul] at h

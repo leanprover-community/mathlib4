@@ -45,14 +45,13 @@ variable {M' N' : Type*} [AddCommGroup M'] [Module R M'] [AddCommGroup N'] [Modu
 
 include hi hj hij
 
-set_option backward.privateInPublic true in
 private lemma restrict_aux : Bijective (p.compl₁₂ i j) := by
   refine ⟨LinearMap.ker_eq_bot.mp <| eq_bot_iff.mpr fun m hm ↦ ?_, fun f ↦ ?_⟩
   · replace hm : i m ∈ j.range.dualAnnihilator.map (p.toPerfPair.symm : Dual R N →ₗ[R] M) := by
       simp only [Submodule.mem_map, Submodule.mem_dualAnnihilator]
       refine ⟨p.toPerfPair (i m), ?_, LinearEquiv.symm_apply_apply _ _⟩
       rintro - ⟨n, rfl⟩
-      simpa using LinearMap.congr_fun hm n
+      simpa using congr($hm n)
     suffices i m ∈ (⊥ : Submodule R M) by simpa [hi] using this
     simpa only [← hij.isCompl_left.inf_eq_bot, Submodule.mem_inf]
       using ⟨LinearMap.mem_range_self i m, hm⟩
@@ -67,7 +66,7 @@ private lemma restrict_aux : Bijective (p.compl₁₂ i j) := by
       obtain ⟨g, hg, rfl⟩ := hy
       simpa using hg _ (LinearMap.mem_range_self j n)
     rw [hm, ← LinearEquiv.symm_apply_eq, map_add, LinearEquiv.symm_symm] at hm'
-    simpa [← hF, ← LinearMap.congr_fun hm' (j n)]
+    simpa [← hF, ← congr($hm' (j n))]
 
 /-- The restriction of a perfect pairing to submodules is a perfect pairing. -/
 lemma IsPerfPair.restrict : (p.compl₁₂ i j).IsPerfPair where
@@ -84,7 +83,7 @@ variable {S M' N' : Type*}
   [AddCommGroup M'] [Module S M'] [AddCommGroup N'] [Module S N']
   (i : M' →ₗ[S] M) (j : N' →ₗ[S] N)
 
-set_option backward.privateInPublic true in
+set_option backward.isDefEq.respectTransparency false in
 private lemma restrictScalars_injective_aux
     (hi : Injective i)
     (hN : span R (LinearMap.range j : Set N) = ⊤)
@@ -100,7 +99,7 @@ private lemma restrictScalars_injective_aux
     induction hn using Submodule.span_induction with
     | mem z hz =>
       obtain ⟨n', rfl⟩ := hz
-      simpa [f] using LinearMap.congr_fun hx n'
+      simpa [f] using congr($hx n')
     | zero => simp
     | add => rw [map_add]; aesop
     | smul => rw [map_smul]; aesop
@@ -108,7 +107,7 @@ private lemma restrictScalars_injective_aux
   ext n
   simpa using hx n
 
-set_option backward.privateInPublic true in
+set_option backward.isDefEq.respectTransparency false in
 private lemma restrictScalars_surjective_aux
     (h : ∀ g : Module.Dual S N', ∃ m,
       (p.toPerfPair (i m)).restrictScalars S ∘ₗ j = Algebra.linearMap S R ∘ₗ g)
@@ -122,7 +121,7 @@ private lemma restrictScalars_surjective_aux
   ext n
   apply FaithfulSMul.algebraMap_injective S R
   change Algebra.linearMap S R _ = _
-  simpa using LinearMap.congr_fun hm n
+  simpa using congr($hm n)
 
 /-- Restricting a perfect pairing to a subring of the scalars results in a perfect pairing. -/
 lemma IsPerfPair.restrictScalars (hi : Injective i) (hj : Injective j)
@@ -165,7 +164,7 @@ lemma exists_basis_basis_of_span_eq_top_of_mem_algebraMap
   have : IsReflexive L N := .of_isPerfPair p.flip
   obtain ⟨v, hv₁, hv₂, hv₃⟩ := exists_linearIndependent L (M' : Set M)
   rw [hM] at hv₂
-  let b : Basis _ L M := Basis.mk hv₃ <| by rw [← hv₂, Subtype.range_coe_subtype, Set.setOf_mem_eq]
+  let b : Basis _ L M := Basis.mk hv₃ <| by rw [← hv₂, Subtype.range_coe_subtype, Set.ofPred_mem_eq]
   have : Fintype v := Set.Finite.fintype <| Module.Finite.finite_basis b
   set v' : v → M' := fun i ↦ ⟨i, hv₁ (Subtype.coe_prop i)⟩
   have hv' : LinearIndependent K v' := by
@@ -185,7 +184,8 @@ lemma exists_basis_basis_of_span_eq_top_of_mem_algebraMap
   refine le_antisymm (Submodule.span_le.mpr hv₁) fun m hm ↦ ?_
   obtain ⟨w, hw₁, hw₂, hw₃⟩ := exists_linearIndependent L (N' : Set N)
   rw [hN] at hw₂
-  let bN : Basis _ L N := Basis.mk hw₃ <| by rw [← hw₂, Subtype.range_coe_subtype, Set.setOf_mem_eq]
+  let bN : Basis _ L N := Basis.mk hw₃ <| by
+    rw [← hw₂, Subtype.range_coe_subtype, Set.ofPred_mem_eq]
   have : Fintype w := Set.Finite.fintype <| Module.Finite.finite_basis bN
   have e : v ≃ w := Fintype.equivOfCardEq <| by rw [← Module.finrank_eq_card_basis b,
     ← Module.finrank_eq_card_basis bN, Module.finrank_of_isPerfPair p]

@@ -74,7 +74,6 @@ lemma exists_lift_trans_eq {i j : 𝒰.I₀} (x : (pullback (𝒰.f i) (𝒰.f j
       pullback.lift (𝒰.trans hki) (𝒰.trans hkj) (by simp) y = x :=
   LocallyDirected.directed x
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_of_f_eq_f {i j : 𝒰.I₀} (xi : 𝒰.X i) (xj : 𝒰.X j) (h : 𝒰.f i xi = 𝒰.f j xj) :
     ∃ (k : 𝒰.I₀) (fi : k ⟶ i) (fj : k ⟶ j) (xk : 𝒰.X k),
       𝒰.trans fi xk = xi ∧ 𝒰.trans fj xk = xj := by
@@ -228,6 +227,7 @@ lemma map_glueMorphismsOfLocallyDirected {Y : Scheme.{u}} (g : ∀ i, 𝒰.X i �
     𝒰.f i ≫ 𝒰.glueMorphismsOfLocallyDirected g h = g i := by
   simp [glueMorphismsOfLocallyDirected]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `𝒰` is an open cover of `X` that is locally directed, `X` is
 the colimit of the components of `𝒰`. -/
@@ -258,9 +258,10 @@ lemma map_glueMorphismsOverOfLocallyDirected_left {S : Scheme.{u}} {X : Over S}
 
 end OpenCover
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `𝒰` is an open cover such that the images of the components form a basis of the topology
 of `X`, `𝒰` is directed by the ordering of subset inclusion of the images. -/
-@[implicit_reducible]
+@[instance_reducible]
 def Cover.LocallyDirected.ofIsBasisOpensRange {𝒰 : X.OpenCover} [Preorder 𝒰.I₀]
     (hle : ∀ {i j : 𝒰.I₀}, i ≤ j ↔ (𝒰.f i).opensRange ≤ (𝒰.f j).opensRange)
     (H : TopologicalSpace.Opens.IsBasis (Set.range <| fun i ↦ (𝒰.f i).opensRange)) :
@@ -317,6 +318,7 @@ def directedAffineCover : X.OpenCover where
 
 instance : Preorder X.directedAffineCover.I₀ := inferInstanceAs <| Preorder X.affineOpens
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance : Scheme.Cover.LocallyDirected X.directedAffineCover :=
   .ofIsBasisOpensRange (by intros; simp; rfl) <| by

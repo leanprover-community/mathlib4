@@ -29,7 +29,7 @@ assert_not_exists RelIso IsOrderedMonoid Field
 
 open Additive Function Multiplicative Nat
 
-variable {F ι α β : Type*}
+variable {F α β : Type*}
 
 namespace Int
 
@@ -81,7 +81,7 @@ variable [NonAssocRing α]
 
 variable (α) in
 /-- `coe : ℤ → α` as a `RingHom`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def castRingHom : ℤ →+* α where
   toFun := Int.cast
   map_zero' := cast_zero
@@ -233,10 +233,10 @@ theorem ext_mint {f g : Multiplicative ℤ →* M} (h1 : f (ofAdd 1) = g (ofAdd 
 theorem ext_int {f g : ℤ →* M} (h_neg_one : f (-1) = g (-1))
     (h_nat : f.comp Int.ofNatHom.toMonoidHom = g.comp Int.ofNatHom.toMonoidHom) : f = g := by
   ext (x | x)
-  · exact (DFunLike.congr_fun h_nat x :)
+  · exact (congr($h_nat x) :)
   · rw [Int.negSucc_eq, ← neg_one_mul, f.map_mul, g.map_mul]
     congr 1
-    exact mod_cast (DFunLike.congr_fun h_nat (x + 1) :)
+    exact mod_cast (congr($h_nat (x + 1)) :)
 
 end MonoidHom
 
@@ -259,10 +259,8 @@ theorem ext_int' [MonoidWithZero α] [FunLike F ℤ α] [MonoidWithZeroHomClass 
     (h_neg_one : f (-1) = g (-1)) (h_pos : ∀ n : ℕ, 0 < n → f n = g n) : f = g :=
   (DFunLike.ext _ _) fun n =>
     haveI :=
-      DFunLike.congr_fun
-        (@MonoidWithZeroHom.ext_int _ _ (.ofClass f) (.ofClass g) h_neg_one <|
-          MonoidWithZeroHom.ext_nat (h_pos _))
-        n
+      congr($(@MonoidWithZeroHom.ext_int _ _ (.ofClass f) (.ofClass g) h_neg_one <|
+          MonoidWithZeroHom.ext_nat (h_pos _)) n)
     this
 
 section Group
@@ -281,7 +279,7 @@ def zmultiplesHom : β ≃ (ℤ →+ β) where
 /-- Monoid homomorphisms from `Multiplicative ℤ` are defined by the image
 of `Multiplicative.ofAdd 1`. -/
 def zpowersHom : α ≃ (Multiplicative ℤ →* α) :=
-  ofMul.trans <| (zmultiplesHom _).trans <| AddMonoidHom.toMultiplicativeLeft
+  ofMul.trans <| (zmultiplesHom _).trans AddMonoidHom.toMultiplicativeLeft
 
 @[simp] lemma zmultiplesHom_apply (x : β) (n : ℤ) : zmultiplesHom β x n = n • x := rfl
 
@@ -346,7 +344,7 @@ theorem eq_intCast' (f : ℤ →+* α) : f = Int.castRingHom α :=
   RingHom.ext <| eq_intCast f
 
 theorem ext_int {R : Type*} [NonAssocSemiring R] (f g : ℤ →+* R) : f = g :=
-  coe_addMonoidHom_injective <| AddMonoidHom.ext_int <| f.map_one.trans g.map_one.symm
+  toAddMonoidHom_injective <| AddMonoidHom.ext_int <| f.map_one.trans g.map_one.symm
 
 instance Int.subsingleton_ringHom {R : Type*} [NonAssocSemiring R] : Subsingleton (ℤ →+* R) :=
   ⟨RingHom.ext_int⟩

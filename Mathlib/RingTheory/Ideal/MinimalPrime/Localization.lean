@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
+import Mathlib.Algebra.GroupWithZero.Action.Regular
 
 /-!
 
@@ -40,9 +41,8 @@ variable {R S : Type*} [CommSemiring R] [CommSemiring S] {I J : Ideal R}
 
 theorem Ideal.iUnion_minimalPrimes :
     ⋃ p ∈ I.minimalPrimes, p = { x | ∃ y ∉ I.radical, x * y ∈ I.radical } := by
-  classical
   ext x
-  simp only [Set.mem_iUnion, SetLike.mem_coe, exists_prop, Set.mem_setOf_eq]
+  simp only [Set.mem_iUnion, SetLike.mem_coe, exists_prop, Set.mem_ofPred_eq]
   constructor
   · rintro ⟨p, ⟨⟨hp₁, hp₂⟩, hp₃⟩, hxp⟩
     have : p.map (algebraMap R (Localization.AtPrime p)) ≤ (I.map (algebraMap _ _)).radical := by

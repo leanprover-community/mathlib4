@@ -55,7 +55,12 @@ local notation "ε " σ:arg => ((sign σ : ℤ) : R)
 def detRowAlternating : (n → R) [⋀^n]→ₗ[R] R :=
   MultilinearMap.alternatization ((MultilinearMap.mkPiAlgebra R n R).compLinearMap LinearMap.proj)
 
-/-- The determinant of a matrix given by the Leibniz formula. -/
+/-- The determinant of a matrix given by the Leibniz formula.
+
+This is available in bundled forms as:
+* `Matrix.detMonoidHom`
+* `Matrix.detRowAlternating`
+-/
 @[wikidata Q178546]
 def det (M : Matrix n n R) : R :=
   detRowAlternating M
@@ -70,7 +75,7 @@ theorem det_apply' (M : Matrix n n R) : M.det = ∑ σ : Perm n, ε σ * ∏ i, 
 theorem det_eq_detp_sub_detp (M : Matrix n n R) : M.det = M.detp 1 - M.detp (-1) := by
   rw [det_apply, ← Equiv.sum_comp (Equiv.inv (Perm n)), ← ofSign_disjUnion, sum_disjUnion]
   simp_rw [inv_apply, sign_inv, sub_eq_add_neg, detp, ← sum_neg_distrib]
-  refine congr_arg₂ (· + ·) (sum_congr rfl fun σ hσ ↦ ?_) (sum_congr rfl fun σ hσ ↦ ?_) <;>
+  congrm $(sum_congr rfl fun σ hσ ↦ ?_) + $(sum_congr rfl fun σ hσ ↦ ?_) <;>
     rw [mem_ofSign.mp hσ, ← Equiv.prod_comp σ] <;> simp
 
 @[simp]
@@ -81,7 +86,7 @@ theorem det_diagonal {d : n → R} : det (diagonal d) = ∏ i, d i := by
     obtain ⟨x, h3⟩ := not_forall.1 (mt Equiv.ext h2)
     convert! mul_zero (ε σ)
     apply Finset.prod_eq_zero (mem_univ x)
-    exact if_neg h3
+    exact ite_eq_right h3
   · simp
   · simp
 
@@ -296,9 +301,9 @@ theorem det_mul_row (v : n → R) (A : Matrix n n R) :
     det (of fun i j => v j * A i j) = (∏ i, v i) * det A :=
   calc
     det (of fun i j => v j * A i j) = det (A * diagonal v) :=
-      congr_arg det <| by
+      congr(det $(by
         ext
-        simp [mul_comm]
+        simp [mul_comm]))
     _ = (∏ i, v i) * det A := by rw [det_mul, det_diagonal, mul_comm]
 
 /-- Multiplying each column by a fixed `v j` multiplies the determinant by
@@ -345,7 +350,7 @@ end HomMap
 
 @[simp]
 theorem det_conjTranspose [StarRing R] (M : Matrix m m R) : det Mᴴ = star (det M) :=
-  ((starRingEnd R).map_det _).symm.trans <| congr_arg star M.det_transpose
+  ((starRingEnd R).map_det _).symm.trans congr(star $M.det_transpose)
 
 section DetZero
 
@@ -666,9 +671,10 @@ theorem det_blockDiagonal {o : Type*} [Fintype o] [DecidableEq o] (M : o → Mat
     rw [blockDiagonal_apply_ne]
     exact hkx
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The determinant of a 2×2 block matrix with the lower-left block equal to zero is the product of
 the determinants of the diagonal blocks. For the generalization to any number of blocks, see
-`Matrix.det_of_upperTriangular`. -/
+`Matrix.det_of_isUpperTriangular`. -/
 @[simp]
 theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Matrix n n R) :
     (Matrix.fromBlocks A B 0 D).det = A.det * D.det := by
@@ -719,7 +725,7 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
 
 /-- The determinant of a 2×2 block matrix with the upper-right block equal to zero is the product of
 the determinants of the diagonal blocks. For the generalization to any number of blocks, see
-`Matrix.det_of_lowerTriangular`. -/
+`Matrix.det_of_isLowerTriangular`. -/
 @[simp]
 theorem det_fromBlocks_zero₁₂ (A : Matrix m m R) (C : Matrix n m R) (D : Matrix n n R) :
     (Matrix.fromBlocks A 0 C D).det = A.det * D.det := by
@@ -734,7 +740,7 @@ theorem det_succ_column_zero {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) 
   refine Finset.sum_congr rfl fun i _ => Fin.cases ?_ (fun i => ?_) i
   · simp only [Fin.prod_univ_succ, Matrix.det_apply, Finset.mul_sum,
       Equiv.Perm.decomposeFin_symm_apply_zero, Fin.val_zero, one_mul,
-      Equiv.Perm.decomposeFin.symm_sign, Equiv.swap_self, if_true, id,
+      Equiv.Perm.decomposeFin.symm_sign, Equiv.swap_self, ite_true, id,
       Equiv.Perm.decomposeFin_symm_apply_succ, Fin.succAbove_zero, Equiv.coe_refl, pow_zero,
       mul_smul_comm, of_apply]
   -- `univ_perm_fin_succ` gives a different embedding of `Perm (Fin n)` into
@@ -745,7 +751,7 @@ theorem det_succ_column_zero {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) 
     ← det_permute, Matrix.det_apply, Finset.mul_sum, Finset.mul_sum]
   -- now we just need to move the corresponding parts to the same place
   refine Finset.sum_congr rfl fun σ _ => ?_
-  rw [Equiv.Perm.decomposeFin.symm_sign, if_neg (Fin.succ_ne_zero i)]
+  rw [Equiv.Perm.decomposeFin.symm_sign, ite_eq_right (Fin.succ_ne_zero i)]
   calc
     ((-1 * Perm.sign σ : ℤ) • ∏ i', A (Perm.decomposeFin.symm (Fin.succ i, σ) i') i') =
         (-1 * Perm.sign σ : ℤ) • (A (Fin.succ i) 0 *

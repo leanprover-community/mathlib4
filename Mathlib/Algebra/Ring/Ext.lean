@@ -141,7 +141,7 @@ defined in `Mathlib/Algebra/GroupWithZero/Defs.lean` as well. -/
     congrArg (fun inst => (inst.toMulZeroClass).toZero.zero) h
   have h_one' : (inst₁.toMulZeroOneClass).toMulOneClass.toOne
                 = (inst₂.toMulZeroOneClass).toMulOneClass.toOne := by
-    congr 2; ext : 1; exact h_mul
+    congr 1; ext : 1; exact h_mul
   have h_one : (inst₁.toMulZeroOneClass).toMulOneClass.toOne.one
                = (inst₂.toMulZeroOneClass).toMulOneClass.toOne.one :=
     congrArg (@One.one R) h_one'
@@ -201,10 +201,13 @@ theorem toNonUnitalSemiring_injective :
   · exact congrArg (·.toAdd.add x y) h
   · exact congrArg (·.toMul.mul x y) h
 
-theorem toNonUnitalNonAssocring_injective :
+theorem toNonUnitalNonAssocRing_injective :
     Function.Injective (@toNonUnitalNonAssocRing R) := by
   intro _ _ _
   ext <;> congr
+
+@[deprecated (since := "2026-09-17")]
+alias toNonUnitalNonAssocring_injective := toNonUnitalNonAssocRing_injective
 
 end NonUnitalRing
 
@@ -265,10 +268,13 @@ theorem toNonAssocSemiring_injective :
   · exact congrArg (·.toAdd.add x y) h
   · exact congrArg (·.toMul.mul x y) h
 
-theorem toNonUnitalNonAssocring_injective :
+theorem toNonUnitalNonAssocRing_injective :
     Function.Injective (@toNonUnitalNonAssocRing R) := by
   intro _ _ _
   ext <;> congr
+
+@[deprecated (since := "2026-09-17")]
+alias toNonUnitalNonAssocring_injective := toNonUnitalNonAssocRing_injective
 
 end NonAssocRing
 

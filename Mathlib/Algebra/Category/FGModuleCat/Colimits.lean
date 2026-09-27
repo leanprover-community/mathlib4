@@ -47,7 +47,7 @@ instance (F : J ⥤ FGModuleCat k) :
     ((ModuleCat.epi_iff_surjective _).1 inferInstance)
 
 /-- The forgetful functor from `FGModuleCat k` to `ModuleCat k` creates all finite colimits. -/
-@[implicit_reducible]
+@[instance_reducible]
 def forget₂CreatesColimit (F : J ⥤ FGModuleCat k) :
     CreatesColimit F (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) :=
   createsColimitOfFullyFaithfulOfIso

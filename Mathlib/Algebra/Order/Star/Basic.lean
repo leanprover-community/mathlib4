@@ -295,7 +295,7 @@ lemma star_le_iff {x y : R} : star x ≤ y ↔ x ≤ star y := by rw [← star_l
 
 lemma star_lt_iff {x y : R} : star x < y ↔ x < star y := by rw [← star_lt_star_iff, star_star]
 
-@[simp]
+@[simp, grind =]
 lemma star_nonneg_iff {x : R} : 0 ≤ star x ↔ 0 ≤ x := by
   simpa using star_le_star_iff (x := 0) (y := x)
 
@@ -303,7 +303,7 @@ lemma star_nonneg_iff {x : R} : 0 ≤ star x ↔ 0 ≤ x := by
 lemma star_nonpos_iff {x : R} : star x ≤ 0 ↔ x ≤ 0 := by
   simpa using star_le_star_iff (x := x) (y := 0)
 
-@[simp]
+@[simp, grind =]
 lemma star_pos_iff {x : R} : 0 < star x ↔ 0 < x := by
   simpa using star_lt_star_iff (x := 0) (y := x)
 
@@ -459,20 +459,20 @@ lemma NonUnitalStarRingHom.map_le_map_of_map_star (f : R →⋆ₙ+* S) {x y : R
 
 instance (priority := 100) StarRingHomClass.instOrderHomClass [FunLike F R S]
     [NonUnitalRingHomClass F R S] [NonUnitalStarRingHomClass F R S] : OrderHomClass F R S where
-  map_rel f := (f : R →⋆ₙ+* S).map_le_map_of_map_star
+  map_rel f := (NonUnitalStarRingHom.ofClass f).map_le_map_of_map_star
 
 instance (priority := 100) StarRingEquivClass.instOrderIsoClass [EquivLike F R S]
     [StarRingEquivClass F R S] : OrderIsoClass F R S where
   map_le_map_iff f x y := by
     refine ⟨fun h ↦ ?_, map_rel f⟩
-    let f_inv : S →⋆ₙ+* R := (f : R ≃⋆+* S).symm
+    let f_inv : S →⋆ₙ+* R := (StarRingEquiv.ofClass f).symm
     have f_inv_f (r : R) : f_inv (f r) = r := EquivLike.inv_apply_apply f r
     rw [← f_inv_f x, ← f_inv_f y]
     exact NonUnitalStarRingHom.map_le_map_of_map_star f_inv h
 
 /-- While `IsSelfAdjoint.map` assumes the map is star-preserving, this lemma instead assumes the
 map is an order-preserving additive map from a space where self-adjoint elements can be expressed as
-differences of nonnegative elemens, and whose codomain is a star-ordered ring. When such maps are
+differences of nonnegative elements, and whose codomain is a star-ordered ring. When such maps are
 linear over `ℂ`, they are also star-preserving, and this lemma is used to establish that one by
 splitting into real and imaginary parts. -/
 @[aesop safe apply (rule_sets := [CStarAlgebra])]

@@ -89,7 +89,7 @@ def isLimitPullbackConeMapOfIsLimit [PreservesLimit (cospan f g) G]
 /-- The property of reflecting pullbacks expressed in terms of binary fans. -/
 def isLimitOfIsLimitPullbackConeMap [ReflectsLimit (cospan f g) G]
     (l : IsLimit (PullbackCone.mk (G.map h) (G.map k) (show G.map h ≫ G.map f = G.map k ≫ G.map g
-    from by simp only [← G.map_comp, comm]))) : IsLimit (PullbackCone.mk h k comm) :=
+    by simp only [← G.map_comp, comm]))) : IsLimit (PullbackCone.mk h k comm) :=
   isLimitOfReflects G
     ((PullbackCone.isLimitMapConeEquiv (PullbackCone.mk _ _ comm) G).2 l)
 
@@ -134,25 +134,21 @@ def PreservesPullback.iso : G.obj (pullback f g) ≅ pullback (G.map f) (G.map g
 theorem PreservesPullback.iso_hom : (PreservesPullback.iso G f g).hom = pullbackComparison G f g :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem PreservesPullback.iso_hom_fst :
     (PreservesPullback.iso G f g).hom ≫ pullback.fst _ _ = G.map (pullback.fst f g) := by
   simp [PreservesPullback.iso]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem PreservesPullback.iso_hom_snd :
     (PreservesPullback.iso G f g).hom ≫ pullback.snd _ _ = G.map (pullback.snd f g) := by
   simp [PreservesPullback.iso]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem PreservesPullback.iso_inv_fst :
     (PreservesPullback.iso G f g).inv ≫ G.map (pullback.fst f g) = pullback.fst _ _ := by
   simp [PreservesPullback.iso, Iso.inv_comp_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem PreservesPullback.iso_inv_snd :
     (PreservesPullback.iso G f g).inv ≫ G.map (pullback.snd f g) = pullback.snd _ _ := by
@@ -222,7 +218,7 @@ def isColimitPushoutCoconeMapOfIsColimit [PreservesColimit (span f g) G]
 /-- The property of reflecting pushouts expressed in terms of binary cofans. -/
 def isColimitOfIsColimitPushoutCoconeMap [ReflectsColimit (span f g) G]
     (l : IsColimit (PushoutCocone.mk (G.map h) (G.map k) (show G.map f ≫ G.map h =
-      G.map g ≫ G.map k from by simp only [← G.map_comp, comm]))) :
+      G.map g ≫ G.map k by simp only [← G.map_comp, comm]))) :
     IsColimit (PushoutCocone.mk h k comm) :=
   isColimitOfReflects G ((isColimitMapCoconePushoutCoconeEquiv G comm).symm l)
 
@@ -232,11 +228,10 @@ variable (f g) [PreservesColimit (span f g) G]
 morphisms of the pushout cocone is a colimit. -/
 def isColimitOfHasPushoutOfPreservesColimit [i : HasPushout f g] :
     IsColimit (PushoutCocone.mk (G.map (pushout.inl _ _)) (G.map (@pushout.inr _ _ _ _ _ f g i))
-    (show G.map f ≫ G.map (pushout.inl _ _) = G.map g ≫ G.map (pushout.inr _ _) from by
+    (show G.map f ≫ G.map (pushout.inl _ _) = G.map g ≫ G.map (pushout.inr _ _) by
       simp only [← G.map_comp, pushout.condition])) :=
   isColimitPushoutCoconeMapOfIsColimit G _ (pushoutIsPushout f g)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `F` preserves the pushout of `f, g`, it also preserves the pushout of `g, f`. -/
 lemma preservesPushout_symmetry : PreservesColimit (span g f) G where
   preserves {c} hc := ⟨by
@@ -273,13 +268,11 @@ theorem PreservesPushout.inr_iso_hom :
     pushout.inr _ _ ≫ (PreservesPushout.iso G f g).hom = G.map (pushout.inr _ _) := by
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem PreservesPushout.inl_iso_inv :
     G.map (pushout.inl _ _) ≫ (PreservesPushout.iso G f g).inv = pushout.inl _ _ := by
   simp [PreservesPushout.iso, Iso.comp_inv_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem PreservesPushout.inr_iso_inv :
     G.map (pushout.inr _ _) ≫ (PreservesPushout.iso G f g).inv = pushout.inr _ _ := by

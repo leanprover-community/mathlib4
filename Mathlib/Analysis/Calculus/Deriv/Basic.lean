@@ -153,10 +153,10 @@ If the derivative exists (i.e., `∃ f', HasDerivAt f f' x`), then
 def deriv (f : 𝕜 → F) (x : 𝕜) :=
   fderiv 𝕜 f x 1
 
-variable {f f₀ f₁ : 𝕜 → F}
-variable {f' f₀' f₁' g' : F}
+variable {f : 𝕜 → F}
+variable {f' f₁' : F}
 variable {x : 𝕜}
-variable {s t : Set 𝕜}
+variable {s : Set 𝕜}
 variable {L : Filter (𝕜 × 𝕜)}
 
 section
@@ -226,17 +226,6 @@ theorem differentiableWithinAt_of_derivWithin_ne_zero (h : derivWithin f s x ≠
     DifferentiableWithinAt 𝕜 f s x :=
   not_imp_comm.1 derivWithin_zero_of_not_differentiableWithinAt h
 
-end TVS
-
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
-variable {f f₀ f₁ : 𝕜 → F}
-variable {f' f₀' f₁' g' : F}
-variable {x : 𝕜}
-variable {s t : Set 𝕜}
-variable {L L₁ L₂ : Filter (𝕜 × 𝕜)}
-
 theorem derivWithin_zero_of_not_accPt (h : ¬AccPt x (𝓟 s)) : derivWithin f s x = 0 := by
   rw [derivWithin, fderivWithin_zero_of_not_accPt h, zero_apply]
 
@@ -255,9 +244,22 @@ theorem deriv_zero_of_not_differentiableAt (h : ¬DifferentiableAt 𝕜 f x) : d
 theorem differentiableAt_of_deriv_ne_zero (h : deriv f x ≠ 0) : DifferentiableAt 𝕜 f x :=
   not_imp_comm.1 deriv_zero_of_not_differentiableAt h
 
+variable [ContinuousAdd F] [ContinuousSMul 𝕜 F] [T2Space F]
+
 theorem UniqueDiffWithinAt.eq_deriv (s : Set 𝕜) (H : UniqueDiffWithinAt 𝕜 s x)
     (h : HasDerivWithinAt f f' s x) (h₁ : HasDerivWithinAt f f₁' s x) : f' = f₁' :=
   toSpanSingleton_inj.mp <| UniqueDiffWithinAt.eq H h h₁
+
+end TVS
+
+variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
+variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+
+variable {f f₀ f₁ : 𝕜 → F}
+variable {f' f₀' f₁' g' : F}
+variable {x : 𝕜}
+variable {s t : Set 𝕜}
+variable {L L₁ L₂ : Filter (𝕜 × 𝕜)}
 
 theorem hasDerivAtFilter_iff_isLittleO :
     HasDerivAtFilter f f' L ↔
@@ -315,11 +317,6 @@ theorem HasDerivAtFilter.isEquivalent_sub (hf : HasDerivAtFilter f f' L) (hf' : 
 theorem HasDerivAtFilter.isTheta_sub (hf : HasDerivAtFilter f f' L) (hf' : f' ≠ 0) :
     (fun p ↦ f p.1 - f p.2) =Θ[L] (fun p ↦ p.1 - p.2) :=
   HasFDerivAtFilter.isTheta_sub hf <| isInducing_toSpanSingleton hf'
-
-@[deprecated HasDerivAtFilter.isTheta_sub (since := "2026-02-04")]
-theorem HasDerivAtFilter.isBigO_sub_rev (hf : HasDerivAtFilter f f' L) (hf' : f' ≠ 0) :
-    (fun p => p.1 - p.2) =O[L] fun p => f p.1 - f p.2 :=
-  hf.isTheta_sub hf' |>.isBigO_symm
 
 theorem HasStrictDerivAt.hasDerivAt (h : HasStrictDerivAt f f' x) : HasDerivAt f f' x :=
   h.hasStrictFDerivAt.hasFDerivAt
@@ -451,14 +448,10 @@ theorem fderivWithin_derivWithin : (fderivWithin 𝕜 f s x : 𝕜 → F) 1 = de
 theorem toSpanSingleton_derivWithin :
     toSpanSingleton 𝕜 (derivWithin f s x) = fderivWithin 𝕜 f s x := by simp [derivWithin]
 
-@[deprecated (since := "2025-12-18")] alias derivWithin_fderivWithin := toSpanSingleton_derivWithin
-
 theorem norm_derivWithin_eq_norm_fderivWithin : ‖derivWithin f s x‖ = ‖fderivWithin 𝕜 f s x‖ := by
   simp [← toSpanSingleton_derivWithin]
 
 theorem fderiv_apply_one_eq_deriv : (fderiv 𝕜 f x : 𝕜 → F) 1 = deriv f x := rfl
-
-@[deprecated (since := "2025-12-18")] alias fderiv_deriv := fderiv_apply_one_eq_deriv
 
 @[simp]
 theorem fderiv_eq_smul_deriv (y : 𝕜) : (fderiv 𝕜 f x : 𝕜 → F) y = y • deriv f x := by
@@ -467,8 +460,6 @@ theorem fderiv_eq_smul_deriv (y : 𝕜) : (fderiv 𝕜 f x : 𝕜 → F) y = y �
 
 theorem toSpanSingleton_deriv : toSpanSingleton 𝕜 (deriv f x) = fderiv 𝕜 f x := by
   simp only [deriv, ContinuousLinearMap.toSpanSingleton_apply_map_one]
-
-@[deprecated (since := "2025-12-18")] alias deriv_fderiv := toSpanSingleton_deriv
 
 lemma fderiv_eq_deriv_mul {f : 𝕜 → 𝕜} {x y : 𝕜} : (fderiv 𝕜 f x : 𝕜 → 𝕜) y = (deriv f x) * y := by
   simp [mul_comm]
@@ -663,6 +654,46 @@ theorem Filter.EventuallyEq.nhdsNE_deriv (h : f₁ =ᶠ[𝓝[≠] x] f) : deriv 
   rw [Filter.EventuallyEq, ← eventually_nhdsNE_eventually_nhds_iff] at *
   filter_upwards [h] with y hy
   apply Filter.EventuallyEq.deriv hy
+
+/--
+If two functions agree on a codiscrete subset of `s`, then so do their derivatives within any
+subset `t` of `s`.
+-/
+theorem Filter.EventuallyEq.codiscreteWithin_derivWithin'
+    (h : f₁ =ᶠ[codiscreteWithin s] f) (ht : t ⊆ s) :
+    derivWithin f₁ t =ᶠ[codiscreteWithin s] derivWithin f t := by
+  filter_upwards [h.codiscreteWithin_fderivWithin' (𝕜 := 𝕜) ht] with y hy
+  simp [derivWithin, hy]
+
+/--
+If two functions agree on a codiscrete subset of `s`, then so do their derivatives within `s`.
+-/
+theorem Filter.EventuallyEq.codiscreteWithin_derivWithin
+    (h : f₁ =ᶠ[codiscreteWithin s] f) :
+    derivWithin f₁ s =ᶠ[codiscreteWithin s] derivWithin f s :=
+  h.codiscreteWithin_derivWithin' Subset.rfl
+
+/--
+If two functions agree on a codiscrete subset of an open set `s`, then so do their derivatives.
+-/
+theorem Filter.EventuallyEq.codiscreteWithin_deriv (h : f₁ =ᶠ[codiscreteWithin s] f)
+    (hs : IsOpen s) :
+    deriv f₁ =ᶠ[codiscreteWithin s] deriv f := by
+  filter_upwards [h.codiscreteWithin_fderiv (𝕜 := 𝕜) hs] with y hy
+  simp_rw [deriv, hy]
+
+/-- If two functions agree on a codiscrete subset of `𝕜`, then so do their derivatives within
+any subset `s` of `𝕜`. -/
+theorem Filter.EventuallyEq.codiscrete_derivWithin
+    (h : f₁ =ᶠ[codiscrete 𝕜] f) :
+    derivWithin f₁ s =ᶠ[codiscrete 𝕜] derivWithin f s :=
+  h.codiscreteWithin_derivWithin' <| subset_univ _
+
+/-- If two functions agree on a codiscrete subset of `𝕜`, then so do their derivatives. -/
+theorem Filter.EventuallyEq.codiscrete_deriv
+    (h : f₁ =ᶠ[codiscrete 𝕜] f) :
+    deriv f₁ =ᶠ[codiscrete 𝕜] deriv f :=
+  h.codiscreteWithin_deriv isOpen_univ
 
 end congr
 
@@ -918,6 +949,7 @@ variable {σ σ' : RingHom 𝕜 𝕜} [RingHomIsometric σ] [RingHomInvPair σ �
 
 variable (σ')
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `L` is a `σ`-semilinear map, and `f` has Fréchet derivative `f'` at `x`, then `L ∘ f ∘ σ⁻¹`
 has Fréchet derivative `L ∘ f'` at `σ x`. -/
 lemma HasDerivAt.comp_semilinear (hf : HasDerivAt f f' x) :

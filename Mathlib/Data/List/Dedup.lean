@@ -90,6 +90,15 @@ theorem tail_dedup [Inhabited α] (l : List α) :
 theorem dedup_eq_self {l : List α} : dedup l = l ↔ Nodup l :=
   pwFilter_eq_self
 
+theorem nodup_iff_sublist_dedup {l : List α} : l.Nodup ↔ l <+ l.dedup :=
+  dedup_eq_self.symm.trans ⟨(·.symm ▸ .refl l), l.dedup_sublist.antisymm⟩
+
+theorem nodup_iff_length_dedup_eq {l : List α} : l.Nodup ↔ l.dedup.length = l.length := by
+  rw [← dedup_eq_self, l.dedup_sublist.length_eq]
+
+theorem nodup_iff_le_length_dedup {l : List α} : l.Nodup ↔ l.length ≤ l.dedup.length :=
+  nodup_iff_length_dedup_eq.trans ⟨Nat.le_of_eq ∘ symm, antisymm l.dedup_sublist.length_le⟩
+
 theorem dedup_eq_cons (l : List α) (a : α) (l' : List α) :
     l.dedup = a :: l' ↔ a ∈ l ∧ a ∉ l' ∧ l.dedup.tail = l' := by
   refine ⟨fun h => ?_, fun h => ?_⟩

@@ -30,7 +30,7 @@ of `S` lying above `q`, there exists a prime `P ≤ Q` of `S` lying above `p`.
 
 -/
 
-@[expose] public section
+public section
 
 /--
 An `R`-algebra `S` satisfies `Algebra.HasGoingDown R S` if for every pair of

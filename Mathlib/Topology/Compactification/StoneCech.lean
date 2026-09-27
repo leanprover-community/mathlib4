@@ -64,7 +64,7 @@ theorem ultrafilterBasis_is_basis : TopologicalSpace.IsTopologicalBasis (ultrafi
     rintro _ ⟨a, rfl⟩ _ ⟨b, rfl⟩ u ⟨ua, ub⟩
     refine ⟨_, ⟨a ∩ b, rfl⟩, inter_mem ua ub, fun v hv ↦ ⟨?_, ?_⟩⟩ <;> apply mem_of_superset hv <;>
       simp [inter_subset_right],
-    eq_univ_of_univ_subset <| subset_sUnion_of_mem <| ⟨univ, eq_univ_of_forall fun _ ↦ univ_mem⟩,
+    eq_univ_of_univ_subset <| subset_sUnion_of_mem ⟨univ, eq_univ_of_forall fun _ ↦ univ_mem⟩,
     rfl⟩
 
 /-- The basic open sets for the topology on ultrafilters are open. -/
@@ -85,7 +85,7 @@ theorem ultrafilter_converges_iff {u : Ultrafilter (Ultrafilter α)} {x : Ultraf
   rw [eq_comm, ← Ultrafilter.coe_le_coe]
   change ↑u ≤ 𝓝 x ↔ ∀ s ∈ x, { v : Ultrafilter α | s ∈ v } ∈ u
   simp only [TopologicalSpace.nhds_generateFrom, le_iInf_iff, ultrafilterBasis, le_principal_iff,
-    mem_setOf_eq]
+    mem_ofPred_eq]
   constructor
   · intro h a ha
     exact h _ ⟨ha, a, rfl⟩
@@ -118,7 +118,7 @@ instance : TotallyDisconnectedSpace (Ultrafilter α) := by
   rw [Tendsto, ← coe_map, ultrafilter_converges_iff]
   ext s
   change s ∈ b ↔ {t | s ∈ t} ∈ map pure b
-  simp_rw [mem_map, preimage_setOf_eq, mem_pure, setOf_mem_eq]
+  simp_rw [mem_map, preimage_ofPred_eq, mem_pure, ofPred_mem_eq]
 
 theorem ultrafilter_comap_pure_nhds (b : Ultrafilter α) : comap pure (𝓝 b) ≤ b := by
   rw [TopologicalSpace.nhds_generateFrom]
@@ -178,13 +178,13 @@ variable [T2Space γ]
 
 @[simp]
 lemma ultrafilter_extend_extends (f : α → γ) : Ultrafilter.extend f ∘ pure = f := by
-  letI : TopologicalSpace α := ⊥
-  haveI : DiscreteTopology α := ⟨rfl⟩
+  let : TopologicalSpace α := ⊥
+  have : DiscreteTopology α := ⟨rfl⟩
   exact funext (isDenseInducing_pure.extend_eq continuous_of_discreteTopology)
 
 @[simp]
 lemma ultrafilter_extend_pure (f : α → γ) (a : α) : Ultrafilter.extend f (pure a) = f a :=
-  congr_fun (ultrafilter_extend_extends f) a
+  congr($(ultrafilter_extend_extends f) a)
 
 variable [CompactSpace γ]
 
@@ -245,6 +245,7 @@ instance [Inhabited α] : Inhabited (PreStoneCech α) :=
 def preStoneCechUnit (x : α) : PreStoneCech α :=
   Quot.mk _ (pure x : Ultrafilter α)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem continuous_preStoneCechUnit : Continuous (preStoneCechUnit : α → PreStoneCech α) :=
   continuous_iff_ultrafilter.mpr fun x g gx ↦ by
     have : (g.map pure).toFilter ≤ 𝓝 g := by
@@ -291,13 +292,13 @@ lemma preStoneCechExtend_extends : preStoneCechExtend hg ∘ preStoneCechUnit = 
 @[simp]
 lemma preStoneCechExtend_preStoneCechUnit (a : α) :
     preStoneCechExtend hg (preStoneCechUnit a) = g a :=
-  congr_fun (preStoneCechExtend_extends hg) a
+  congr($(preStoneCechExtend_extends hg) a)
 
 set_option backward.isDefEq.respectTransparency false in
 lemma eq_if_preStoneCechUnit_eq {a b : α} (h : preStoneCechUnit a = preStoneCechUnit b) :
     g a = g b := by
   have e := ultrafilter_extend_extends g
-  rw [← congrFun e a, ← congrFun e b, Function.comp_apply, Function.comp_apply]
+  rw [← congr($e a), ← congr($e b), Function.comp_apply, Function.comp_apply]
   rw [preStoneCechUnit, preStoneCechUnit, Quot.eq] at h
   generalize (pure a : Ultrafilter α) = F at h
   generalize (pure b : Ultrafilter α) = G at h
@@ -360,7 +361,7 @@ theorem stoneCech_hom_ext {g₁ g₂ : StoneCech α → β} (h₁ : Continuous g
     (h : g₁ ∘ stoneCechUnit = g₂ ∘ stoneCechUnit) : g₁ = g₂ := by
   apply h₁.ext_on denseRange_stoneCechUnit h₂
   rintro _ ⟨x, rfl⟩
-  exact congr_fun h x
+  congrm $h x
 
 variable [CompactSpace β]
 
@@ -370,6 +371,7 @@ variable [CompactSpace β]
 def stoneCechExtend : StoneCech α → β :=
   T2Quotient.lift (continuous_preStoneCechExtend hg)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma stoneCechExtend_extends : stoneCechExtend hg ∘ stoneCechUnit = g := by
   ext x
@@ -378,7 +380,7 @@ lemma stoneCechExtend_extends : stoneCechExtend hg ∘ stoneCechUnit = g := by
 
 @[simp]
 lemma stoneCechExtend_stoneCechUnit (a : α) : stoneCechExtend hg (stoneCechUnit a) = g a :=
-  congr_fun (stoneCechExtend_extends hg) a
+  congr($(stoneCechExtend_extends hg) a)
 
 theorem continuous_stoneCechExtend : Continuous (stoneCechExtend hg) :=
   continuous_coinduced_dom.mpr (continuous_preStoneCechExtend hg)

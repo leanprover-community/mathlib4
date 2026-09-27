@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Functor.Flat
 public import Mathlib.CategoryTheory.Sites.Continuous
 public import Mathlib.Tactic.ApplyFun
+public import Mathlib.CategoryTheory.Sites.Closed
 /-!
 # Cover-preserving functors between sites.
 
@@ -112,7 +113,6 @@ end
 open Limits.WalkingCospan
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
     (K : GrothendieckTopology D) (G : C ⥤ D) [RepresentablyFlat G] : CompatiblePreserving K G := by
   constructor
@@ -192,6 +192,7 @@ lemma Functor.isContinuous_iff_coverPreserving [RepresentablyFlat F] :
   refine ⟨fun h ↦ .of_isContinuous _ _ _, fun h ↦ ?_⟩
   apply Functor.isContinuous_of_coverPreserving (compatiblePreservingOfFlat _ _) h
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `C` has pullbacks and `F : C ⥤ D` preserves pullbacks, any cover preserving
 functor preserves all `1`-hypercovers. -/

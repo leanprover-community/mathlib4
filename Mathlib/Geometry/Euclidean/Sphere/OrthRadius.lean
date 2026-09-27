@@ -29,8 +29,9 @@ namespace EuclideanGeometry
 
 namespace Sphere
 
-open AffineSubspace Function RealInnerProductSpace
-open scoped Affine
+open AffineSubspace Function
+
+open scoped RealInnerProductSpace Affine
 
 variable {V P : Type*}
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
@@ -208,7 +209,7 @@ lemma inter_orthRadius_eq_singleton_iff {s : Sphere P} {p q : P} :
       simpa [-neg_vsub_eq_vsub_rev] using hq'
     have hqq := (h' _).1 hq''
     rw [eq_comm, eq_vadd_iff_vsub_eq, eq_neg_iff_add_eq_zero, ← two_smul ℝ,
-      smul_eq_zero_iff_right (by norm_num), vsub_eq_zero_iff_eq] at hqq
+      smul_eq_zero_iff_right (by simp), vsub_eq_zero_iff_eq] at hqq
     refine ⟨hqq, ?_⟩
     subst hqq
     exact hq.1

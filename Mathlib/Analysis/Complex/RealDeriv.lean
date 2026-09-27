@@ -109,4 +109,36 @@ theorem HasDerivWithinAt.ofReal_comp {f : ℝ → ℝ} {s : Set ℝ} {u : ℝ}
   simpa only [Function.comp_apply, ofRealCLM_apply] using!
     ofRealCLM.hasFDerivAt.comp_hasDerivWithinAt z hf
 
+@[fun_prop]
+lemma Complex.differentiable_re : Differentiable ℝ Complex.re := reCLM.differentiable
+
+@[fun_prop]
+lemma Complex.differentiable_im : Differentiable ℝ Complex.im := imCLM.differentiable
+
+@[fun_prop]
+lemma Complex.differentiable_ofReal : Differentiable ℝ Complex.ofReal := ofRealCLM.differentiable
+
+open ComplexConjugate in
+@[fun_prop]
+lemma Complex.differentiable_conj : Differentiable ℝ (conj : ℂ → ℂ) := conjCLE.differentiable
+
+variable {f : ℂ → E} {s : Set ℂ} {z : ℂ}
+
+@[fun_prop]
+lemma Differentiable.real_of_complex (hf : Differentiable ℂ f) : Differentiable ℝ f :=
+  hf.restrictScalars (𝕜 := ℝ)
+
+@[fun_prop]
+lemma DifferentiableAt.real_of_complex (hf : DifferentiableAt ℂ f z) : DifferentiableAt ℝ f z :=
+  hf.restrictScalars (𝕜 := ℝ)
+
+@[fun_prop]
+lemma DifferentiableWithinAt.real_of_complex (hf : DifferentiableWithinAt ℂ f s z) :
+    DifferentiableWithinAt ℝ f s z :=
+  hf.restrictScalars (𝕜 := ℝ)
+
+@[fun_prop]
+lemma DifferentiableOn.real_of_complex (hf : DifferentiableOn ℂ f s) : DifferentiableOn ℝ f s :=
+  hf.restrictScalars (𝕜 := ℝ)
+
 end RealDerivOfComplex

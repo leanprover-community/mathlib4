@@ -71,7 +71,7 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
   obtain ⟨y, hy⟩ : ∃ y, LinearIndependent ℝ ![x, y] :=
     exists_linearIndependent_pair_of_one_lt_rank h x_ne_zero
   have A : Set.Countable {t : ℝ | ([c + x -[ℝ] c + t • y] ∩ s).Nonempty} := by
-    apply countable_setOf_nonempty_of_disjoint _ (fun t ↦ inter_subset_right) hs
+    apply countable_ofPred_nonempty_of_disjoint _ (fun t ↦ inter_subset_right) hs
     intro t t' htt'
     apply disjoint_iff_inter_eq_empty.2
     have N : {c + x} ∩ s = ∅ := by
@@ -81,7 +81,7 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
     apply Eq.subset
     apply segment_inter_eq_endpoint_of_linearIndependent_of_ne hy htt'.symm
   have B : Set.Countable {t : ℝ | ([c - x -[ℝ] c + t • y] ∩ s).Nonempty} := by
-    apply countable_setOf_nonempty_of_disjoint _ (fun t ↦ inter_subset_right) hs
+    apply countable_ofPred_nonempty_of_disjoint _ (fun t ↦ inter_subset_right) hs
     intro t t' htt'
     apply disjoint_iff_inter_eq_empty.2
     have N : {c - x} ∩ s = ∅ := by
@@ -96,7 +96,7 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
   obtain ⟨t, ht⟩ : Set.Nonempty ({t : ℝ | ([c + x -[ℝ] c + t • y] ∩ s).Nonempty}
       ∪ {t : ℝ | ([c - x -[ℝ] c + t • y] ∩ s).Nonempty})ᶜ := ((A.union B).dense_compl ℝ).nonempty
   let z := c + t • y
-  simp only [compl_union, mem_inter_iff, mem_compl_iff, mem_setOf_eq, not_nonempty_iff_eq_empty]
+  simp only [compl_union, mem_inter_iff, mem_compl_iff, mem_ofPred_eq, not_nonempty_iff_eq_empty]
     at ht
   have JA : JoinedIn sᶜ a z := by
     apply JoinedIn.of_segment_subset
@@ -140,15 +140,9 @@ theorem contractibleSpace_ball {x : E} {r : ℝ} (hr : 0 < r) :
     ContractibleSpace (ball x r) :=
   (convex_ball _ _).contractibleSpace (by simpa)
 
-@[deprecated (since := "2026-02-02")]
-alias ball_contractible := contractibleSpace_ball
-
 theorem contractibleSpace_eball {x : E} {r : ℝ≥0∞} (hr : 0 < r) :
     ContractibleSpace (eball x r) :=
   (convex_eball _ _).contractibleSpace ⟨x, by simpa⟩
-
-@[deprecated (since := "2026-02-02")]
-alias eball_contractible := contractibleSpace_eball
 
 theorem contractibleSpace_closedBall {x : E} {r : ℝ} (hr : 0 ≤ r) :
     ContractibleSpace (closedBall x r) :=

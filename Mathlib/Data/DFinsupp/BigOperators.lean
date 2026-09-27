@@ -26,7 +26,7 @@ The support is internally represented (in the primed `DFinsupp.support'`) as a `
 represents a superset of the true support of the function, quotiented by the always-true relation so
 that this does not impact equality. This approach has computational benefits over storing a
 `Finset`; it allows us to add together two finitely-supported functions without
-having to evaluate the resulting function to recompute its support (which would required
+having to evaluate the resulting function to recompute its support (which would require
 decidability of `b = 0` for `b : β i`).
 
 The true support of the function can still be recovered with `DFinsupp.support`; but these
@@ -285,6 +285,7 @@ theorem sumZeroHom_single [∀ i, Zero (β i)] [AddCommMonoid γ] (φ : ∀ i, Z
   dsimp [sumZeroHom, single, Trunc.lift_mk]
   rw [Multiset.toFinset_singleton, Finset.sum_singleton, Pi.single_eq_same]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sumZeroHom_piSingle [∀ i, Zero (β i)] [AddCommMonoid γ] (i) (φ : ZeroHom (β i) γ) :
     sumZeroHom (Pi.single i φ) = φ.comp { toFun := (· i), map_zero' := rfl } := by
@@ -308,6 +309,7 @@ theorem sumZeroHom_apply [∀ i, AddZeroClass (β i)] [∀ (i) (x : β i), Decid
   · rfl
   · rw [not_not.mp h, map_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 When summing over an `AddMonoidHom`, the decidability assumption is not needed, and the result is
 also an `AddMonoidHom`.
@@ -384,7 +386,7 @@ def liftAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] :
 /-- The `DFinsupp` version of `Finsupp.liftAddHom_singleAddHom` -/
 theorem liftAddHom_singleAddHom [∀ i, AddCommMonoid (β i)] :
     liftAddHom (singleAddHom β) = AddMonoidHom.id (Π₀ i, β i) :=
-  liftAddHom.toEquiv.apply_eq_iff_eq_symm_apply.2 rfl
+  liftAddHom.toEquiv.eq_symm_apply.1 rfl
 
 /-- The `DFinsupp` version of `Finsupp.liftAddHom_apply_single` -/
 theorem liftAddHom_apply_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (f : ∀ i, β i →+ γ)
@@ -455,7 +457,7 @@ theorem prod_sum_index {ι₁ : Type u₁} [DecidableEq ι₁] {β₁ : ι₁ �
 @[simp]
 theorem sum_single [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] {f : Π₀ i, β i} :
     f.sum single = f := by
-  have := DFunLike.congr_fun (liftAddHom_singleAddHom (β := β)) f
+  have := congr($(liftAddHom_singleAddHom (β := β)) f)
   rw [liftAddHom_apply, sumAddHom_apply] at this
   exact this
 
@@ -527,7 +529,7 @@ open DFinsupp
 theorem map_dfinsuppSumAddHom [AddCommMonoid R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
     (h : R →+ S) (f : Π₀ i, β i) (g : ∀ i, β i →+ R) :
     h (sumAddHom g f) = sumAddHom (fun i => h.comp (g i)) f :=
-  DFunLike.congr_fun (comp_liftAddHom h g) f
+  congr($(comp_liftAddHom h g) f)
 
 theorem dfinsuppSumAddHom_apply [AddZeroClass R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
     (f : Π₀ i, β i) (g : ∀ i, β i →+ R →+ S) (r : R) :
@@ -552,7 +554,7 @@ open DFinsupp
 theorem map_dfinsuppSumAddHom [NonAssocSemiring R] [NonAssocSemiring S] [∀ i, AddZeroClass (β i)]
     (h : R →+* S) (f : Π₀ i, β i) (g : ∀ i, β i →+ R) :
     h (sumAddHom g f) = sumAddHom (fun i => h.toAddMonoidHom.comp (g i)) f :=
-  DFunLike.congr_fun (comp_liftAddHom h.toAddMonoidHom g) f
+  congr($(comp_liftAddHom h.toAddMonoidHom g) f)
 
 end RingHom
 
@@ -566,7 +568,7 @@ open DFinsupp
 theorem map_dfinsuppSumAddHom [AddCommMonoid R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
     (h : R ≃+ S) (f : Π₀ i, β i) (g : ∀ i, β i →+ R) :
     h (sumAddHom g f) = sumAddHom (fun i => h.toAddMonoidHom.comp (g i)) f :=
-  DFunLike.congr_fun (comp_liftAddHom h.toAddMonoidHom g) f
+  congr($(comp_liftAddHom h.toAddMonoidHom g) f)
 
 end AddEquiv
 

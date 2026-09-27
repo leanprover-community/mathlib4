@@ -19,7 +19,7 @@ open Function Set Filter Topology TopologicalSpace
 
 universe u v
 
-variable {X : Type*} {Y : Type*} [TopologicalSpace X]
+variable {X : Type*} [TopologicalSpace X]
 
 section Profinite
 
@@ -50,15 +50,15 @@ theorem nhds_basis_clopen (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∈ s 
       let N := { s // IsClopen s ∧ x ∈ s }
       rsuffices ⟨⟨s, hs, hs'⟩, hs''⟩ : ∃ s : N, s.val ⊆ U
       · exact ⟨s, ⟨hs', hs⟩, hs''⟩
-      haveI : Nonempty N := ⟨⟨univ, isClopen_univ, mem_univ x⟩⟩
+      have : Nonempty N := ⟨⟨univ, isClopen_univ, mem_univ x⟩⟩
       have hNcl : ∀ s : N, IsClosed s.val := fun s => s.property.1.1
-      have hdir : Directed Superset fun s : N => s.val := by
+      have hdir : Directed GE.ge fun s : N => s.val := by
         rintro ⟨s, hs, hxs⟩ ⟨t, ht, hxt⟩
         exact ⟨⟨s ∩ t, hs.inter ht, ⟨hxs, hxt⟩⟩, inter_subset_left, inter_subset_right⟩
       have h_nhds : ∀ y ∈ ⋂ s : N, s.val, U ∈ 𝓝 y := fun y y_in => by
         rw [hx, mem_singleton_iff] at y_in
         rwa [y_in]
-      exact exists_subset_nhds_of_compactSpace hdir hNcl h_nhds
+      exact exists_subset_nhds_of_compactSpace hdir hNcl (mem_nhdsSet_iff_forall.mpr h_nhds)
     · rintro ⟨V, ⟨hxV, -, V_op⟩, hUV : V ⊆ U⟩
       rw [mem_nhds_iff]
       exact ⟨V, hUV, V_op, hxV⟩⟩
@@ -91,7 +91,7 @@ theorem loc_compact_Haus_tot_disc_of_zero_dim [TotallyDisconnectedSpace H] :
   let u : Set s := ((↑) : s → H) ⁻¹' interior s
   have u_open_in_s : IsOpen u := isOpen_interior.preimage continuous_subtype_val
   lift x to s using interior_subset xs
-  haveI : CompactSpace s := isCompact_iff_compactSpace.1 comp
+  have : CompactSpace s := isCompact_iff_compactSpace.1 comp
   obtain ⟨V : Set s, VisClopen, Vx, V_sub⟩ := compact_exists_isClopen_in_isOpen u_open_in_s xs
   have VisClopen' : IsClopen (((↑) : s → H) '' V) := by
     refine ⟨comp.isClosed.isClosedEmbedding_subtypeVal.isClosed_iff_image_isClosed.1 VisClopen.1,

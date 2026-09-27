@@ -84,7 +84,7 @@ def restrict : S ⧸ Q →ₐ[R ⧸ Q.under R] S ⧸ Q where
   toRingHom := Ideal.quotientMap Q φ H.le_comap
   commutes' x := by
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-    exact DFunLike.congr_arg (Ideal.Quotient.mk Q) (φ.commutes x)
+    congrm Ideal.Quotient.mk Q $(φ.commutes x)
 
 lemma restrict_apply (x : S ⧸ Q) :
     H.restrict x = x ^ Nat.card (R ⧸ Q.under R) := by
@@ -128,6 +128,7 @@ lemma apply_of_pow_eq_one [IsDomain S] {ζ : S} {m : ℕ} (hζ : ζ ^ m = 1) (hk
   rw [one_mul, ← pow_add, tsub_add_cancel_of_le (by linarith), pow_add, hζ.1, mul_one] at h₂
   rw [h₂, e]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A Frobenius element at `Q` restricts to an automorphism of `S_Q`. -/
 noncomputable
 def localize [Q.IsPrime] : Localization.AtPrime Q →ₐ[R] Localization.AtPrime Q where
@@ -143,6 +144,7 @@ lemma localize_algebraMap [Q.IsPrime] (x : S) :
 
 open IsLocalRing nonZeroDivisors
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma isArithFrobAt_localize [Q.IsPrime] : H.localize.IsArithFrobAt (maximalIdeal _) := by
   have h : Nat.card (R ⧸ (maximalIdeal _).comap (algebraMap R (Localization.AtPrime Q))) =
       Nat.card (R ⧸ Q.under R) := by
@@ -234,7 +236,7 @@ lemma exists_of_isInvariant [Q.IsPrime] [Finite (S ⧸ Q)] : ∃ σ : G, IsArith
   obtain ⟨σ, hσ⟩ := Ideal.Quotient.stabilizerHom_surjective G P Q l
   refine ⟨σ, fun x ↦ ?_⟩
   rw [← Ideal.Quotient.eq, Nat.card_eq_fintype_card, hk]
-  exact DFunLike.congr_fun hσ (Ideal.Quotient.mk Q x)
+  congrm $hσ (Ideal.Quotient.mk Q x)
 
 variable (S G) in
 lemma exists_primesOver_isConj (P : Ideal R)

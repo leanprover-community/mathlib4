@@ -278,7 +278,7 @@ theorem killCompl_comp_rename : (killCompl e).comp (rename e) = AlgHom.id R _ :=
 
 @[simp]
 theorem killCompl_rename_app (p : MvPowerSeries σ R) : killCompl e (rename e p) = p :=
-  AlgHom.congr_fun (killCompl_comp_rename) p
+  congr($killCompl_comp_rename p)
 
 theorem killCompl_map (φ : R →+* S) (p : MvPowerSeries τ R) :
     killCompl e (map φ p) = map φ (killCompl e p) := by
@@ -296,6 +296,7 @@ lemma HasSubst.X_comp : HasSubst (X ∘ f : σ → MvPowerSeries τ R) where
     (fun i _ ↦ TendstoCofinite.finite_preimage_singleton f i)) (fun x => by
       contrapose; intro _ _; classical simp_all [coeff_X])
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem rename_eq_subst : rename f p = p.subst (X ∘ f) := by
   classical
   ext n

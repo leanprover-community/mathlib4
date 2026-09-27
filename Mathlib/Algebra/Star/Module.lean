@@ -216,11 +216,12 @@ theorem skewAdjointPart_comp_subtype_skewAdjoint :
 
 variable (A)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The decomposition of elements of a star module into their self- and skew-adjoint parts,
 as a linear equivalence. -/
 @[simps!]
 def StarModule.decomposeProdAdjoint : A ≃ₗ[R] selfAdjoint A × skewAdjoint A := by
-  refine LinearEquiv.ofLinear ((selfAdjointPart R).prod (skewAdjointPart R))
+  refine LinearEquiv.ofLinearMap ((selfAdjointPart R).prod (skewAdjointPart R))
     (LinearMap.coprod ((selfAdjoint.submodule R A).subtype) (skewAdjoint.submodule R A).subtype)
     ?_ (LinearMap.ext <| StarModule.selfAdjointPart_add_skewAdjointPart R)
   -- Note: with https://github.com/leanprover-community/mathlib4/pull/6965 `Submodule.coe_subtype` doesn't fire in `dsimp` or `simp`
@@ -240,7 +241,7 @@ theorem algebraMap_star_comm (r : R) : algebraMap R A (star r) = star (algebraMa
 variable (A) in
 protected lemma IsSelfAdjoint.algebraMap {r : R} (hr : IsSelfAdjoint r) :
     IsSelfAdjoint (algebraMap R A r) := by
-  simpa using! congr(algebraMap R A $(hr.star_eq))
+  simpa using! congr(algebraMap R A $hr.star_eq)
 
 lemma isSelfAdjoint_algebraMap_iff {r : R} (h : Function.Injective (algebraMap R A)) :
     IsSelfAdjoint (algebraMap R A r) ↔ IsSelfAdjoint r :=

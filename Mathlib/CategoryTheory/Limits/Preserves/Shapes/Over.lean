@@ -35,6 +35,7 @@ instance PreservesLimitsOfShape.ofWidePullbacks {J : Type*}
     PreservesLimitsOfShape (WithTerminal <| Discrete J) F :=
   preservesLimitsOfShape_of_equiv WithTerminal.widePullbackShapeEquiv F
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 open WithTerminal in
 instance PreservesLimitsOfShape.overPost [PreservesLimitsOfShape (WithTerminal J) F] :
@@ -51,6 +52,7 @@ instance PreservesFiniteLimits.overPost [PreservesFiniteLimits F] :
 instance PreservesLimitsOfSize.overPost [PreservesLimitsOfSize.{w', w} F] :
     PreservesLimitsOfSize.{w', w} (Over.post F (X := X)) where
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 open WithInitial in
 instance PreservesColimitsOfShape.underPost [PreservesColimitsOfShape (WithInitial J) F] :

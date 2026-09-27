@@ -76,7 +76,7 @@ lemma isClosedEmbedding_cfcAux : IsClosedEmbedding hA.cfcAux := by
   have h2 :
       diagonal (RCLike.ofReal ∘ f ∘ fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalues_mem_spectrum_real i⟩)
         = (0 : Matrix n n 𝕜) := by
-    simp only [LinearMap.coe_coe, cfcAux_apply, conjStarAlgAut_apply] at hf
+    simp only [LinearMap.coe_ofClass, cfcAux_apply, conjStarAlgAut_apply] at hf
     replace hf := congr($hf * (hA.eigenvectorUnitary : Matrix n n 𝕜))
     simp only [mul_assoc, SetLike.coe_mem, Unitary.star_mul_self_of_mem, mul_one, zero_mul] at hf
     simpa [← mul_assoc] using congr((star hA.eigenvectorUnitary : Matrix n n 𝕜) * $hf)
@@ -144,8 +144,8 @@ lemma cfc_eq (f : ℝ → ℝ) : cfc f A = hA.cfc f := by
   have hA' : IsSelfAdjoint A := hA
   have := cfcHom_eq_of_continuous_of_map_id hA' hA.cfcAux hA.isClosedEmbedding_cfcAux.continuous
     hA.cfcAux_id
-  rw [cfc_apply f A hA' (by rw [continuousOn_iff_continuous_restrict]; fun_prop), this]
-  simp only [cfcAux_apply, ContinuousMap.coe_mk, Function.comp_def, Set.restrict_apply,
+  rw [cfc_apply f A hA' (by rw [continuousOn_iff_continuous_domRestrict]; fun_prop), this]
+  simp only [cfcAux_apply, ContinuousMap.coe_mk, Function.comp_def, Set.domRestrict_apply,
     IsHermitian.cfc]
 
 open Polynomial in

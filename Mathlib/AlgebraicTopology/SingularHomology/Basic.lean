@@ -46,9 +46,6 @@ instance [Limits.HasPullbacks C] {X : C} :
     ((singularChainComplexFunctor C).obj X).PreservesMonomorphisms where
   preserves f _ := by
     dsimp [singularChainComplexFunctor, SSet.chainComplexFunctor]
-    apply +allowSynthFailures Functor.map_mono
-    apply +allowSynthFailures Functor.map_mono
-    dsimp [SSet, SimplicialObject.whiskering, SimplicialObject]
     infer_instance
 
 /-- The `n`-th singular homology functor with coefficients in `C`. -/
@@ -68,6 +65,7 @@ def singularChainComplexFunctorAdjunction : (Functor.postcompose₂.obj (eval _ 
   ((SSet.chainComplexFunctorAdjunction C n).comp (sSetTopAdj.whiskerLeft _)).ofNatIsoRight
     ((evaluation TopCat C).mapIso (SSet.toTopSimplex.app _))
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma singularChainComplexFunctorAdjunction_unit_app (R : C) :
     (singularChainComplexFunctorAdjunction C n).unit.app R =
@@ -94,7 +92,7 @@ lemma ι_singularChainComplexFunctorAdjunction_counit_app_app (F : TopCat ⥤ C)
     simp
   · congr 1
     rw [← reassoc_of% sSetTopAdj_unit_app_app_down]
-    exact congr(($(sSetTopAdj.right_triangle_components X).app (.op ⦋n⦌) i).down)
+    congrm ($(sSetTopAdj.right_triangle_components X).app (.op ⦋n⦌) i).down
 
 end Adjunction
 

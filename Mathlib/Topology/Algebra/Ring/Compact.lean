@@ -116,6 +116,7 @@ end IsLocalRing
 
 section IsDedekindDomain
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma IsDedekindDomain.isOpen_of_ne_bot
     [IsDedekindDomain R] {I : Ideal R} (hI : I ≠ ⊥) :
     IsOpen (X := R) I := by

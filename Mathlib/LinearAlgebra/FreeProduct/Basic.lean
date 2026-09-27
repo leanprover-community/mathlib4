@@ -187,13 +187,14 @@ irreducible_def ι (i : I) : A i →ₐ[R] FreeProduct R A :=
 /-- The family of canonical injection maps, with `i` left implicit -/
 irreducible_def of {i : I} : A i →ₐ[R] FreeProduct R A := ι R A i
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Universal property of the free product of algebras:
 for every `R`-algebra `B`, every family of maps `maps : (i : I) → (A i →ₐ[R] B)` lifts
 to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`. -/
 @[simps] def lift : ({i : I} → A i →ₐ[R] B) ≃ (FreeProduct R A →ₐ[R] B) where
   toFun maps :=
     RingCon.liftₐ _
-      (TensorAlgebra.lift R <| DirectSum.toModule R I B <| (@maps · |>.toLinearMap))
+      (TensorAlgebra.lift R <| DirectSum.toModule R I B (@maps · |>.toLinearMap))
         <| RingCon.ringConGen_le.2 fun x y r ↦ by
           cases r with
           | id => simp
@@ -206,6 +207,7 @@ to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`.
     ext i a
     simp [ι, ← ι_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Universal property of the free product of algebras, property:
 for every `R`-algebra `B`, every family of maps `maps : (i : I) → (A i →ₐ[R] B)` lifts
 to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`. -/
@@ -216,6 +218,7 @@ to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`.
 @[simp↓] theorem lift_algebraMap (r : R) : lift R A maps (algebraMap R _ r) = algebraMap R _ r := by
   rw [lift_apply, AlgHom.commutes]
 
+set_option backward.isDefEq.respectTransparency false in
 @[aesop safe destruct] theorem lift_unique
     (f : FreeProduct R A →ₐ[R] B) (h : ∀ i, f ∘ₐ ι R A i = maps) :
     f = lift R A maps := by

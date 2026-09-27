@@ -85,7 +85,6 @@ variable {R : Type u} [CommRing R] [IsDedekindDomain R] {K : Type v} [Field K]
 
 namespace HeightOneSpectrum
 
-open Classical in
 /-- The multiplicative `v`-adic valuation on `Kˣ`. -/
 def valuationOfNeZeroToFun (x : Kˣ) : Multiplicative ℤ :=
   let hx := IsLocalization.sec R⁰ (x : K)
@@ -93,16 +92,17 @@ def valuationOfNeZeroToFun (x : Kˣ) : Multiplicative ℤ :=
     (-(Associates.mk v.asIdeal).count (Associates.mk <| Ideal.span {hx.fst}).factors : ℤ) -
       (-(Associates.mk v.asIdeal).count (Associates.mk <| Ideal.span {(hx.snd : R)}).factors : ℤ)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem valuationOfNeZeroToFun_eq (x : Kˣ) :
     (v.valuationOfNeZeroToFun x : ℤᵐ⁰) = v.valuation K x := by
   classical
-  rw [show v.valuation K x = _ * _ by rfl]
+  rw [show v.valuation K x = _ * _ by rw [valuation_def]; rfl]
   rw [Units.val_inv_eq_inv_val]
   change _ = ite _ _ _ * (ite _ _ _)⁻¹
   simp_rw [IsLocalization.toLocalizationMap_sec, SubmonoidClass.coe_subtype,
-    if_neg <| IsLocalization.sec_fst_ne_zero x.ne_zero,
-    if_neg (nonZeroDivisors.coe_ne_zero _),
+    ite_eq_right <| IsLocalization.sec_fst_ne_zero x.ne_zero,
+    ite_eq_right (nonZeroDivisors.coe_ne_zero _),
     ← exp_neg, ← exp_add, valuationOfNeZeroToFun, ← sub_eq_add_neg, exp]
 
 /-- The multiplicative `v`-adic valuation on `Kˣ`. -/
@@ -185,7 +185,7 @@ theorem valuation_ker_eq :
   constructor
   · intro hx' v _
     by_cases hv : v ∈ S
-    · exact congr_fun hx' ⟨v, hv⟩
+    · congrm $hx' ⟨v, hv⟩
     · exact hx v hv
   · exact fun hx' => funext fun v => hx' v <| Set.notMem_empty v
 
@@ -204,8 +204,8 @@ theorem fromUnit_ker [hn : Fact <| 0 < n] :
   constructor
   · intro hx
     rcases (QuotientGroup.eq_one_iff _).mp (Subtype.mk.inj hx) with ⟨⟨v, i, vi, iv⟩, hx⟩
-    have hv : ↑(_ ^ n : Kˣ) = algebraMap R K _ := congr_arg Units.val hx
-    have hi : ↑(_ ^ n : Kˣ)⁻¹ = algebraMap R K _ := congr_arg Units.inv hx
+    have hv : ↑(_ ^ n : Kˣ) = algebraMap R K _ := congr($(hx).val)
+    have hi : ↑(_ ^ n : Kˣ)⁻¹ = algebraMap R K _ := congr($(hx).inv)
     rw [Units.val_pow_eq_pow_val] at hv
     rw [← inv_pow, Units.inv_mk, Units.val_pow_eq_pow_val] at hi
     rcases IsIntegrallyClosed.exists_algebraMap_eq_of_isIntegral_pow (R := R) (x := v) hn.out

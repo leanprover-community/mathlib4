@@ -68,7 +68,6 @@ lemma extensiveTopology.surjective_of_isLocallySurjective_sheaf_of_types [Finita
   rw [mem_sieves_iff_contains_colimit_cofan] at h
   obtain ⟨α, _, Y, π, h, h'⟩ := h
   let y : (a : α) → (F.obj ⟨Y a⟩) := fun a ↦ (h' a).choose
-  let _ : Fintype α := Fintype.ofFinite _
   let ht := (Types.productLimitCone (fun a ↦ F.obj ⟨Y a⟩)).isLimit
   let ht' := (Functor.Initial.isLimitWhiskerEquiv (Discrete.opposite α).inverse
     (Cocone.op (Cofan.mk X π))).symm h.some.op
@@ -116,7 +115,6 @@ lemma regularTopology.isLocallySurjective_sheaf_of_types [Preregular C] [Finitar
     obtain ⟨α, _, Z, π, h, h'⟩ := h
     rw [mem_sieves_iff_hasEffectiveEpi]
     let x : (a : α) → (F.obj ⟨Z a⟩) := fun a ↦ (h' a).choose
-    let _ : Fintype α := Fintype.ofFinite _
     let i' : ((a : α) → (F.obj ⟨Z a⟩)) ≅ (F.obj ⟨∐ Z⟩) := (Types.productIso _).symm ≪≫
       (PreservesProduct.iso F _).symm ≪≫ F.mapIso (opCoproductIsoProduct _).symm
     refine ⟨∐ Z, Sigma.desc π, inferInstance, i'.hom x, ?_⟩
@@ -135,7 +133,7 @@ lemma regularTopology.isLocallySurjective_sheaf_of_types [Preregular C] [Finitar
       rw [← Iso.eq_inv_comp] at this
       simp only [types_comp_apply, Iso.inv_hom_id_apply]
       simp [← comp_apply]
-    · simp only [← Functor.map_comp_apply, ← op_comp, Sigma.ι_desc]
+    · simp only [← Functor.map_comp_apply, ← op_comp, Sigma.ι_comp_desc]
 
 lemma coherentTopology.presheafIsLocallySurjective_iff {F G : Cᵒᵖ ⥤ D} (f : F ⟶ G)
     [Preregular C] [FinitaryPreExtensive C] [PreservesFiniteProducts F] [PreservesFiniteProducts G]

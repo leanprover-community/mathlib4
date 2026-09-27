@@ -151,6 +151,12 @@ alias Dvd.dvd.antisymm := dvd_antisymm
 
 alias Dvd.dvd.antisymm' := dvd_antisymm'
 
+instance : IsPartialOrder α (· ∣ ·) where
+  antisymm _ _ := dvd_antisymm
+
+instance : IsPartialOrder α RightDvd where
+  antisymm _ _ := by simpa using dvd_antisymm
+
 theorem eq_of_forall_dvd (h : ∀ c, a ∣ c ↔ b ∣ c) : a = b :=
   ((h _).2 dvd_rfl).antisymm <| (h _).1 dvd_rfl
 
@@ -171,6 +177,15 @@ lemma pow_dvd_pow_iff (ha₀ : a ≠ 0) (ha : ¬IsUnit a) : a ^ n ∣ a ^ m ↔ 
     rwa [mul_dvd_mul_iff_left, ← isUnit_iff_dvd_one] at this
     apply pow_ne_zero m ha₀
   · apply pow_dvd_pow
+
+lemma mul_dvd_left_iff_isUnit (ha0 : a ≠ 0) : a * b ∣ a ↔ IsUnit b := by
+  nth_rw 2 [← mul_one a]
+  rw [mul_dvd_mul_iff_left ha0]
+  exact isUnit_iff_dvd_one.symm
+
+lemma mul_dvd_right_iff_isUnit (ha0 : a ≠ 0) : b * a ∣ a ↔ IsUnit b := by
+  rw [mul_comm]
+  exact mul_dvd_left_iff_isUnit ha0
 
 end CancelCommMonoidWithZero
 

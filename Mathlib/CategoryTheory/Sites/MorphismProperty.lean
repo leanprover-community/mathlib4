@@ -49,7 +49,7 @@ lemma ofArrows_mem_precoverage {X : C} {ι : Type*} {Y : ι → C} {f : ∀ i, Y
 @[simp, grind =]
 lemma singleton_mem_precoverage {X Y : C} (f : X ⟶ Y) :
     .singleton f ∈ precoverage P Y ↔ P f := by
-  simp [← Presieve.ofArrows_pUnit.{_, _, 0}]
+  simp [← Presieve.ofArrows_pUnit.{0}]
 
 instance [P.ContainsIdentities] [P.RespectsIso] : P.precoverage.HasIsos where
   mem_coverings_of_isIso f _ _ _ := fun ⟨⟩ ↦ P.of_isIso f

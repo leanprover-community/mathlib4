@@ -26,8 +26,8 @@ variable {R : Type*} [Ring R]
 variable {S : Type*} [Ring S]
 variable {A : Type*} [CommRing A]
 variable {M : Type*} [AddCommGroup M] [Module R M] [Module S M] (U U₁ U₂ : Submodule R M)
-variable {x x₁ x₂ y y₁ y₂ z z₁ z₂ : M}
-variable {N : Type*} [AddCommGroup N] [Module R N] (V V₁ V₂ : Submodule R N)
+variable {x x₁ x₂ y y₁ y₂ z : M}
+variable {N : Type*} [AddCommGroup N] [Module R N] (V : Submodule R N)
 
 /-- A predicate saying two elements of a module are equivalent modulo a submodule. -/
 def SModEq (x y : M) : Prop :=
@@ -69,9 +69,6 @@ protected theorem refl (x : M) : x ≡ x [SMOD U] :=
 protected theorem rfl : x ≡ x [SMOD U] :=
   SModEq.refl _
 
-instance : Std.Refl (SModEq U) :=
-  ⟨SModEq.refl⟩
-
 @[symm]
 nonrec theorem symm (hxy : x ≡ y [SMOD U]) : y ≡ x [SMOD U] :=
   hxy.symm
@@ -82,8 +79,10 @@ theorem comm : x ≡ y [SMOD U] ↔ y ≡ x [SMOD U] := ⟨symm, symm⟩
 nonrec theorem trans (hxy : x ≡ y [SMOD U]) (hyz : y ≡ z [SMOD U]) : x ≡ z [SMOD U] :=
   hxy.trans hyz
 
-instance instTrans : Trans (SModEq U) (SModEq U) (SModEq U) where
-  trans := trans
+instance : IsEquiv M (SModEq U) where
+  refl := .refl
+  symm _ _ := .symm
+  trans _ _ _ := .trans
 
 @[gcongr]
 theorem add (hxy₁ : x₁ ≡ y₁ [SMOD U]) (hxy₂ : x₂ ≡ y₂ [SMOD U]) : x₁ + x₂ ≡ y₁ + y₂ [SMOD U] := by
@@ -93,7 +92,6 @@ theorem add (hxy₁ : x₁ ≡ y₁ [SMOD U]) (hxy₂ : x₂ ≡ y₂ [SMOD U]) 
 @[gcongr]
 theorem sum {ι} {s : Finset ι} {x y : ι → M}
     (hxy : ∀ i ∈ s, x i ≡ y i [SMOD U]) : ∑ i ∈ s, x i ≡ ∑ i ∈ s, y i [SMOD U] := by
-  classical
   induction s using Finset.cons_induction with
   | empty => simp [SModEq.rfl]
   | cons i s _ ih =>
@@ -124,7 +122,6 @@ theorem mul {I : Ideal A} {x₁ x₂ y₁ y₂ : A} (hxy₁ : x₁ ≡ y₁ [SMO
 @[gcongr]
 theorem prod {I : Ideal A} {ι} {s : Finset ι} {x y : ι → A}
     (hxy : ∀ i ∈ s, x i ≡ y i [SMOD I]) : ∏ i ∈ s, x i ≡ ∏ i ∈ s, y i [SMOD I] := by
-  classical
   induction s using Finset.cons_induction with
   | empty => simp [SModEq.rfl]
   | cons i s _ ih =>

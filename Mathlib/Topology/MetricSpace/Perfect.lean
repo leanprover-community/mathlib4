@@ -53,7 +53,7 @@ private theorem Perfect.small_diam_aux (hC : Perfect C) (ε_pos : 0 < ε) {x : �
   rw [Metric.ediam_closure]
   apply le_trans (Metric.ediam_mono inter_subset_left)
   convert! Metric.ediam_eball_le (x := x)
-  rw [mul_comm, ENNReal.div_mul_cancel] <;> norm_num
+  rw [mul_comm, ENNReal.div_mul_cancel] <;> simp
 
 /-- A refinement of `Perfect.splitting` for metric spaces, where we also control
 the diameter of the new perfect sets. -/
@@ -135,7 +135,7 @@ from the Cantor space `ℕ → Bool`. -/
 theorem IsClosed.exists_nat_bool_injection_of_not_countable {α : Type*} [TopologicalSpace α]
     [PolishSpace α] {C : Set α} (hC : IsClosed C) (hunc : ¬C.Countable) :
     ∃ f : (ℕ → Bool) → α, range f ⊆ C ∧ Continuous f ∧ Function.Injective f := by
-  letI := TopologicalSpace.upgradeIsCompletelyMetrizable α
+  let := TopologicalSpace.upgradeIsCompletelyMetrizable α
   obtain ⟨D, hD, Dnonempty, hDC⟩ := exists_perfect_nonempty_of_isClosed_of_not_countable hC hunc
   obtain ⟨f, hfD, hf⟩ := hD.exists_nat_bool_injection Dnonempty
   exact ⟨f, hfD.trans hDC, hf⟩

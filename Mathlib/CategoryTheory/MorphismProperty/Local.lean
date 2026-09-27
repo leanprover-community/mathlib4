@@ -229,6 +229,7 @@ alias iff_of_zeroHypercover_source := IsLocalAtSource.iff_of_zeroHypercover
 
 end MorphismProperty
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /--
 Let `J` be a precoverage for which isomorphisms are local at the target. Let

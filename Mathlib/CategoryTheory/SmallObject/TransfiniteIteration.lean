@@ -36,6 +36,7 @@ variable {J} in
 this is the unique element in `Φ.Iteration j`. -/
 noncomputable def iter (j : J) : Φ.Iteration j := Classical.arbitrary _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given `Φ : SuccStruct C` and a well-ordered type `J`, this
 is the functor `J ⥤ C` which gives the iterations of `Φ` indexed by `J`. -/
 noncomputable def iterationFunctor : J ⥤ C where
@@ -65,6 +66,7 @@ lemma iterationFunctor_obj (i : J) {j : J} (iter : Φ.Iteration j) (hi : i ≤ j
     (Φ.iterationFunctor J).obj i = iter.F.obj ⟨i, hi⟩ :=
   Iteration.congr_obj (Φ.iter i) iter i (by simp) hi
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma arrowMk_iterationFunctor_map (i₁ i₂ : J) (h₁₂ : i₁ ≤ i₂)
     {j : J} (iter : Φ.Iteration j) (hj : i₂ ≤ j) :
     Arrow.mk ((Φ.iterationFunctor J).map (homOfLE h₁₂)) =
@@ -76,6 +78,7 @@ lemma arrowMk_iterationFunctor_map (i₁ i₂ : J) (h₁₂ : i₁ ≤ i₂)
 
 variable (J)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance : (Φ.iterationFunctor J).IsWellOrderContinuous where
   nonempty_isColimit i hi := ⟨by

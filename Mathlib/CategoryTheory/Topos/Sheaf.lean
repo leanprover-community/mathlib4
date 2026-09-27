@@ -73,6 +73,7 @@ def Presheaf.χ (m : F ⟶ G) : G ⟶ Functor.sieves C where
     use F.map g.op a
     simp [ha, NatTrans.naturality_apply]⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Presheaf.comp_χ_eq (m : F ⟶ G) : m ≫ Presheaf.χ m =
     (Functor.isTerminalConst _ Types.isTerminalPUnit).from F ≫ Presheaf.truth C := by
   ext
@@ -108,7 +109,7 @@ lemma Presheaf.χ_unique (m : F ⟶ G) (χ' : G ⟶ Functor.sieves C)
   simp only [χ_app, Opposite.op_unop]
   rw [Sieve.mem_iff_pullback_eq_top, ← Quiver.Hom.unop_op f]
   dsimp
-  have := ConcreteCategory.congr_hom (Functor.sieves_map C (f.op)) (χ'.app X x)
+  have := congr($(Functor.sieves_map C f.op) (χ'.app X x))
   rw [← dsimp% this, ← dsimp% NatTrans.naturality_apply χ' f.op x]
   constructor
   · intro h
@@ -135,6 +136,7 @@ end presheaf
 
 variable {J : GrothendieckTopology C}
 
+set_option backward.isDefEq.respectTransparency.types false in
 open Presheaf in
 lemma GrothendieckTopology.isClosed_χ_app_apply_of_isSheaf_of_isSeparated
     {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) [Mono m] (hF : Presieve.IsSheaf J F)
@@ -153,7 +155,7 @@ lemma GrothendieckTopology.isClosed_χ_app_apply_of_isSheaf_of_isSeparated
       op_comp, Functor.map_comp_apply]
 
 namespace Sheaf
-open Functor
+open CategoryTheory.Functor
 variable {F G : Sheaf J (Type max u v)}
 
 /-- The sheaf of closed sieves w/r/t `J`. See also `Functor.closedSieves` and `Sheaf.classifier` -/
@@ -164,6 +166,7 @@ def Ω (J : GrothendieckTopology C) : Sheaf J (Type max u v) where
     rw [CategoryTheory.isSheaf_iff_isSheaf_of_type]
     exact CategoryTheory.classifier_isSheaf J
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The morphism `t : 1 ⟶ Ω` which picks out the maximal sieve -/
 @[simps]
 def truth (J : GrothendieckTopology C) :
@@ -179,12 +182,12 @@ to the (closed) sieve on X where `f : Y → X` is in the sieve iff
 def χ (m : F ⟶ G) [Mono m] : G ⟶ Sheaf.Ω J where
   hom := (closedSieves J).lift (Presheaf.χ m.hom) (by
     intro X
-    simp only [Subfunctor.range_obj, closedSieves_obj, Set.le_iff_subset,
-      Set.range_subset_iff]
+    simp only [Subfunctor.range_obj, closedSieves_obj, Set.range_subset_iff]
     exact J.isClosed_χ_app_apply_of_isSheaf_of_isSeparated m.hom
       ((isSheaf_iff_isSheaf_of_type _ _).mp F.property)
       ((isSheaf_iff_isSheaf_of_type _ _).mp G.property).isSeparated _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma isPullback_χ_truth (m : F ⟶ G) [Mono m] :
     IsPullback m ((isTerminalTerminal J _).from F) (Sheaf.χ m) (Sheaf.truth J) := by
@@ -210,7 +213,7 @@ lemma χ_unique (m : F ⟶ G) [Mono m] (χ' : G ⟶ Sheaf.Ω J)
   apply Presheaf.χ_unique _
   have pb : IsPullback (𝟙 G.obj) χ'.hom (χ'.hom ≫ (closedSieves J).ι)
     (closedSieves J).ι := IsPullback.of_horiz_isIso_mono (by simp)
-  have : IsPullback m.hom ?_ χ'.hom <| (truth J).hom := by
+  have : IsPullback m.hom ?_ χ'.hom (truth J).hom := by
     simpa using hχ'.map (sheafToPresheaf J _)
   simpa using this.paste_horiz pb
 

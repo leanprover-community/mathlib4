@@ -107,6 +107,7 @@ lemma isImmersion_eq_inf : @IsImmersion = (@IsPreimmersion ⊓
 
 namespace IsImmersion
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : IsZariskiLocalAtTarget @IsImmersion := by
   suffices IsZariskiLocalAtTarget
       (topologically fun {X Y} _ _ f ↦ IsLocallyClosed (Set.range f)) from
@@ -141,6 +142,7 @@ instance : MorphismProperty.IsMultiplicative @IsImmersion where
     simp only [Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp]
     exact f.isLocallyClosed_range.image g.isEmbedding.isInducing g.isLocallyClosed_range
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion f]
     [IsImmersion g] : IsImmersion (f ≫ g) :=
   MorphismProperty.IsStableUnderComposition.comp_mem f g inferInstance inferInstance
@@ -155,7 +157,6 @@ lemma isImmersion_iff_exists : IsImmersion f ↔ ∃ (Z : Scheme) (g₁ : X ⟶ 
   ⟨fun _ ↦ ⟨_, f.liftCoborder, f.coborderRange.ι, inferInstance, inferInstance, f.liftCoborder_ι⟩,
     fun ⟨_, _, _, _, _, e⟩ ↦ e ▸ inferInstance⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsImmersion where
   of_isPullback := by
     intro X Y Y' S f g f' g' H hg
@@ -170,9 +171,11 @@ instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsI
       (by simpa using H.w.symm)]
     infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Z) (g : Y ⟶ Z) [IsImmersion g] : IsImmersion (Limits.pullback.fst f g) :=
   MorphismProperty.pullback_fst _ _ ‹_›
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Z) (g : Y ⟶ Z) [IsImmersion f] : IsImmersion (Limits.pullback.snd f g) :=
   MorphismProperty.pullback_snd _ _ ‹_›
 
@@ -187,6 +190,7 @@ instance (priority := 900) (f : X ⟶ Y) [IsImmersion f] : LocallyOfFiniteType f
   rw [← f.liftCoborder_ι]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 open Limits Scheme.Pullback in
 /-- The diagonal morphism is always an immersion. -/
 @[stacks 01KJ]

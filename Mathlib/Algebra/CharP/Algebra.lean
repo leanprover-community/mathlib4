@@ -97,16 +97,16 @@ lemma expChar_of_injective_ringHom
     [NonAssocSemiring R] [NonAssocSemiring A] {f : R →+* A} (h : Function.Injective f)
     (q : ℕ) [hR : ExpChar R q] : ExpChar A q := by
   rcases hR with _ | hprime
-  · haveI := charZero_of_injective_ringHom h; exact .zero
-  haveI := charP_of_injective_ringHom h q; exact .prime hprime
+  · have := charZero_of_injective_ringHom h; exact .zero
+  have := charP_of_injective_ringHom h q; exact .prime hprime
 
 /-- If `R →+* A` is injective, and `A` is of exponential characteristic `p`, then `R` is also of
 exponential characteristic `p`. Similar to `RingHom.charZero`. -/
 lemma RingHom.expChar [NonAssocSemiring R] [NonAssocSemiring A] (f : R →+* A)
     (H : Function.Injective f) (p : ℕ) [ExpChar A p] : ExpChar R p := by
   cases ‹ExpChar A p› with
-  | zero => haveI := f.charZero; exact .zero
-  | prime hp => haveI := f.charP H p; exact .prime hp
+  | zero => have := f.charZero; exact .zero
+  | prime hp => have := f.charP H p; exact .prime hp
 
 /-- If `R →+* A` is injective, then `R` is of exponential characteristic `p` if and only if `A` is
 also of exponential characteristic `p`. Similar to `RingHom.charZero_iff`. -/

@@ -13,9 +13,6 @@ public import Mathlib.Data.Finset.Sups
 public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.Positivity
 public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
-import Mathlib.Data.Rat.Defs
-public import Mathlib.Tactic.NormNum.Inv
-public import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # The Ahlswede-Zhang identity
@@ -66,17 +63,18 @@ private lemma binomial_sum_eq (h : n < m) :
   have h₂ := h₁.trans_lt h
   have h₃ := h₂.le
   have hi₄ : (i + 1 : ℚ) ≠ 0 := i.cast_add_one_ne_zero
-  have := congr_arg ((↑) : ℕ → ℚ) (choose_succ_right_eq m i)
+  have := congr(($(choose_succ_right_eq m i) : ℚ))
   push_cast at this
   dsimp [f, hf]
   rw [(eq_mul_inv_iff_mul_eq₀ hi₄).mpr this]
-  have := congr_arg ((↑) : ℕ → ℚ) (choose_succ_right_eq n i)
+  have := congr(($(choose_succ_right_eq n i) : ℚ))
   push_cast at this
   rw [(eq_mul_inv_iff_mul_eq₀ hi₄).mpr this]
   have : (m - i : ℚ) ≠ 0 := sub_ne_zero_of_ne (cast_lt.mpr h₂).ne'
   have : (m.choose i : ℚ) ≠ 0 := cast_ne_zero.2 (choose_pos h₂.le).ne'
   simp [field, *]
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma Fintype.sum_div_mul_card_choose_card :
     ∑ s : Finset α, (card α / ((card α - #s) * (card α).choose #s) : ℚ) =
       card α * ∑ k ∈ range (card α), (↑k)⁻¹ + 1 := by
@@ -130,9 +128,9 @@ def truncatedSup (s : Finset α) (a : α) : α :=
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 lemma truncatedSup_of_mem (h : a ∈ lowerClosure s) :
-    truncatedSup s a = {b ∈ s | a ≤ b}.sup' (sup_aux h) id := dif_pos h
+    truncatedSup s a = {b ∈ s | a ≤ b}.sup' (sup_aux h) id := dite_eq_left h
 
-lemma truncatedSup_of_notMem (h : a ∉ lowerClosure s) : truncatedSup s a = ⊤ := dif_neg h
+lemma truncatedSup_of_notMem (h : a ∉ lowerClosure s) : truncatedSup s a = ⊤ := dite_eq_right h
 
 @[simp] lemma truncatedSup_empty (a : α) : truncatedSup ∅ a = ⊤ := truncatedSup_of_notMem (by simp)
 
@@ -205,9 +203,9 @@ def truncatedInf (s : Finset α) (a : α) : α :=
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 lemma truncatedInf_of_mem (h : a ∈ upperClosure s) :
-    truncatedInf s a = {b ∈ s | b ≤ a}.inf' (inf_aux h) id := dif_pos h
+    truncatedInf s a = {b ∈ s | b ≤ a}.inf' (inf_aux h) id := dite_eq_left h
 
-lemma truncatedInf_of_notMem (h : a ∉ upperClosure s) : truncatedInf s a = ⊥ := dif_neg h
+lemma truncatedInf_of_notMem (h : a ∉ upperClosure s) : truncatedInf s a = ⊥ := dite_eq_right h
 
 lemma truncatedInf_le : truncatedInf s a ≤ a := by
   unfold truncatedInf
@@ -387,7 +385,7 @@ variable [Nonempty α]
     (card α - #(truncatedSup {s} t) : ℚ) / ((card α - #t) * (card α).choose #t) =
     if t ⊆ s then (card α - #s : ℚ) / ((card α - #t) * (card α).choose #t) else 0 := by
     rintro t
-    simp_rw [truncatedSup_singleton, le_iff_subset]
+    simp_rw [truncatedSup_singleton]
     split_ifs <;> simp
   simp_rw [← sub_eq_of_eq_add (Fintype.sum_div_mul_card_choose_card α), eq_sub_iff_add_eq,
     ← eq_sub_iff_add_eq', supSum, ← sum_sub_distrib, ← sub_div]

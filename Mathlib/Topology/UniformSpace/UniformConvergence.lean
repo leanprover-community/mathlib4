@@ -56,7 +56,9 @@ Uniform limit, uniform convergence, tends uniformly to
 
 noncomputable section
 
-open Topology Uniformity Filter Set Uniform
+open Filter Set Uniform
+
+open scoped Topology Uniformity
 
 variable {α β γ ι : Type*} [UniformSpace β]
 variable {F : ι → α → β} {f : α → β} {s s' : Set α} {x : α} {p : Filter ι} {p' : Filter α}
@@ -130,7 +132,7 @@ theorem tendstoUniformlyOn_iff_tendstoUniformly_comp_coe :
   forall₂_congr fun u _ => by simp
 
 lemma tendstoUniformlyOn_iff_restrict {K : Set α} : TendstoUniformlyOn F f p K ↔
-    TendstoUniformly (fun n : ι => K.restrict (F n)) (K.restrict f) p :=
+    TendstoUniformly (fun n : ι => K.domRestrict (F n)) (K.domRestrict f) p :=
   tendstoUniformlyOn_iff_tendstoUniformly_comp_coe
 
 /-- A sequence of functions `Fₙ` converges uniformly to a limiting function `f` w.r.t.
@@ -153,7 +155,7 @@ theorem TendstoUniformlyOnFilter.tendsto_at (h : TendstoUniformlyOnFilter F f p 
 theorem TendstoUniformlyOn.tendsto_at (h : TendstoUniformlyOn F f p s) (hx : x ∈ s) :
     Tendsto (fun n => F n x) p <| 𝓝 (f x) :=
   h.tendstoUniformlyOnFilter.tendsto_at
-    (le_principal_iff.mpr <| mem_principal.mpr <| singleton_subset_iff.mpr <| hx)
+    (le_principal_iff.mpr <| mem_principal.mpr <| singleton_subset_iff.mpr hx)
 
 /-- Uniform convergence implies pointwise convergence. -/
 theorem TendstoUniformly.tendsto_at (h : TendstoUniformly F f p) (x : α) :
@@ -205,7 +207,7 @@ lemma tendstoUniformly_congr_inseparable {F' : ι → α → β}
 
 lemma tendstoUniformly_congr {F' : ι → α → β} (hF : F =ᶠ[p] F') :
     TendstoUniformly F f p ↔ TendstoUniformly F' f p :=
-  tendstoUniformly_congr_inseparable (hF.mono fun _ hx y => .of_eq (congrFun hx y))
+  tendstoUniformly_congr_inseparable (hF.mono fun _ hx y => .of_eq congr($hx y))
 
 theorem TendstoUniformlyOn.congr_inseparable_right {g : α → β} (hf : TendstoUniformlyOn F f p s)
     (hfg : ∀ x ∈ s, Inseparable (f x) (g x)) : TendstoUniformlyOn F g p s := by
@@ -292,12 +294,12 @@ protected theorem TendstoUniformlyOn.prodMk {ι' β' : Type*} [UniformSpace β']
     (h' : TendstoUniformlyOn F' f' p' s) :
     TendstoUniformlyOn (fun (i : ι × ι') a => (F i.1 a, F' i.2 a)) (fun a => (f a, f' a)) (p ×ˢ p')
       s :=
-  (congr_arg _ s.inter_self).mp ((h.prodMap h').comp fun a => (a, a))
+  (congr_arg _ s.inter_self).mp ((h.prodMap h').comp Function.diag)
 
 theorem TendstoUniformly.prodMk {ι' β' : Type*} [UniformSpace β'] {F' : ι' → α → β'} {f' : α → β'}
     {p' : Filter ι'} (h : TendstoUniformly F f p) (h' : TendstoUniformly F' f' p') :
     TendstoUniformly (fun (i : ι × ι') a => (F i.1 a, F' i.2 a)) (fun a => (f a, f' a)) (p ×ˢ p') :=
-  (h.prodMap h').comp fun a => (a, a)
+  (h.prodMap h').comp Function.diag
 
 /-- Uniform convergence on a filter `p'` to a constant function is equivalent to convergence in
 `p ×ˢ p'`. -/
@@ -550,7 +552,7 @@ theorem UniformCauchySeqOn.prodMap {ι' α' β' : Type*} [UniformSpace β'] {F' 
 theorem UniformCauchySeqOn.prod {ι' β' : Type*} [UniformSpace β'] {F' : ι' → α → β'}
     {p' : Filter ι'} (h : UniformCauchySeqOn F p s) (h' : UniformCauchySeqOn F' p' s) :
     UniformCauchySeqOn (fun (i : ι × ι') a => (F i.fst a, F' i.snd a)) (p ×ˢ p') s :=
-  (congr_arg _ s.inter_self).mp ((h.prodMap h').comp fun a => (a, a))
+  (congr_arg _ s.inter_self).mp ((h.prodMap h').comp Function.diag)
 
 theorem UniformCauchySeqOn.prod' {β' : Type*} [UniformSpace β'] {F' : ι → α → β'}
     (h : UniformCauchySeqOn F p s) (h' : UniformCauchySeqOn F' p s) :

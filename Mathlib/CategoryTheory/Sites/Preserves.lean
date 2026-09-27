@@ -98,7 +98,6 @@ theorem piComparison_fac :
 variable [(ofArrows X c.inj).HasPairwisePullbacks]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 include hc in
 /--
 If `F` preserves a particular product, then it `IsSheafFor` the corresponding presieve of arrows.
@@ -120,7 +119,6 @@ theorem isSheafFor_of_preservesProduct [PreservesLimit (Discrete.functor (fun x 
 variable [HasInitial C] [∀ i, Mono (c.inj i)]
   (hd : Pairwise fun i j => IsPullback (initial.to _) (initial.to _) (c.inj i) (c.inj j))
 
-set_option backward.isDefEq.respectTransparency false in
 include hd hF hI in
 /--
 The two parallel maps in the equalizer diagram for the sheaf condition corresponding to the
@@ -141,7 +139,6 @@ theorem firstMap_eq_secondMap :
     ext ⟨i⟩
     exact i.elim
 
-set_option backward.isDefEq.respectTransparency false in
 include hc hd hF hI in
 /--
 If `F` is a presheaf which `IsSheafFor` a presieve of arrows and the empty presieve, then it
@@ -156,7 +153,7 @@ lemma preservesProduct_of_isSheafFor
   refine IsIso.comp_isIso' inferInstance ?_
   rw [isIso_iff_bijective, Function.bijective_iff_existsUnique]
   rw [Equalizer.Presieve.Arrows.sheaf_condition, Limits.Types.type_equalizer_iff_unique] at hF'
-  exact fun b ↦ hF' b (ConcreteCategory.congr_hom (firstMap_eq_secondMap F hF hI c hd) b)
+  exact fun b ↦ hF' b congr($(firstMap_eq_secondMap F hF hI c hd) b)
 
 include hc hd hF hI in
 theorem isSheafFor_iff_preservesProduct : (ofArrows X c.inj).IsSheafFor F ↔

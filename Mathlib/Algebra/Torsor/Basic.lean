@@ -33,6 +33,15 @@ namespace Set
 theorem singleton_sdiv_self (p : P) : ({p} : Set P) /ₛ {p} = {(1 : G)} := by
   rw [Set.singleton_sdiv_singleton, sdiv_self]
 
+@[to_additive (attr := simp)]
+theorem one_mem_sdiv_iff {s t : Set P} : (1 : G) ∈ s /ₛ t ↔ ¬Disjoint s t := by
+  simp [not_disjoint_iff_nonempty_inter, mem_sdiv, Set.Nonempty]
+
+@[to_additive]
+theorem Nonempty.one_mem_sdiv_self {s : Set P} (h : s.Nonempty) : (1 : G) ∈ s /ₛ s :=
+  let ⟨p, hp⟩ := h
+  ⟨p, hp, p, hp, sdiv_self _⟩
+
 end Set
 /-- If dividing two points by the same point produces equal results, those points are equal. -/
 @[to_additive /-- If the same point subtracted from two points produces equal
@@ -159,6 +168,17 @@ theorem mk_sdiv_mk (p₁ p₂ : P) (p₁' p₂' : P') :
   rfl
 
 end Prod
+
+namespace Set
+
+variable {G G' P P' : Type*} [Group G] [Group G'] [Torsor G P] [Torsor G' P']
+
+@[to_additive prod_vsub_prod_comm]
+theorem prod_sdiv_prod_comm (s₁ s₂ : Set P) (t₁ t₂ : Set P') :
+    (s₁ ×ˢ t₁) /ₛ (s₂ ×ˢ t₂) = (s₁ /ₛ s₂) ×ˢ (t₁ /ₛ t₂) := by
+  aesop (add norm simp [mem_sdiv, mem_prod])
+
+end Set
 
 namespace Pi
 

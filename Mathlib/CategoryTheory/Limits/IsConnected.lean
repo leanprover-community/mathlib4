@@ -68,7 +68,7 @@ noncomputable def isColimitPUnitCocone [IsConnected C] : IsColimit (pUnitCocone.
     refine constant_of_preserves_morphisms (α := s.pt)
       (fun (k : C) ↦ s.ι.app k PUnit.unit) ?_ Classical.ofNonempty j
     intro X Y f
-    exact ConcreteCategory.congr_hom (s.ι.naturality f).symm PUnit.unit
+    congrm $((s.ι.naturality f).symm) .unit
   uniq s m h := by
     ext ⟨⟩
     simp [← h Classical.ofNonempty]
@@ -149,7 +149,7 @@ variable (C : Type*) [Category* C]
 
 /-- Prove that a category is connected by supplying an explicit initial object. -/
 lemma isConnected_of_isInitial {x : C} (h : Limits.IsInitial x) : IsConnected C := by
-  letI : Nonempty C := ⟨x⟩
+  let : Nonempty C := ⟨x⟩
   apply isConnected_of_zigzag
   intro j₁ j₂
   use [x, j₂]
@@ -159,7 +159,7 @@ lemma isConnected_of_isInitial {x : C} (h : Limits.IsInitial x) : IsConnected C 
 
 /-- Prove that a category is connected by supplying an explicit terminal object. -/
 lemma isConnected_of_isTerminal {x : C} (h : Limits.IsTerminal x) : IsConnected C := by
-  letI : Nonempty C := ⟨x⟩
+  let : Nonempty C := ⟨x⟩
   apply isConnected_of_zigzag
   intro j₁ j₂
   use [x, j₂]

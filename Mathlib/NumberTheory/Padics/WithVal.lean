@@ -5,11 +5,12 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.NumberTheory.Padics.PadicIntegers
 public import Mathlib.Topology.Algebra.Valued.ValuedField
 public import Mathlib.Topology.Algebra.Valued.WithVal
 public import Mathlib.Topology.GDelta.MetrizableSpace
+public import Mathlib.Algebra.Order.BigOperators.Expect
+public import Mathlib.Analysis.Real.Sqrt
 
 /-!
 # Equivalence between `ℚ_[p]` and `(Rat.padicValuation p).Completion`
@@ -33,8 +34,45 @@ namespace Padic
 
 variable {p : ℕ} [Fact p.Prime]
 
-open NNReal WithZero UniformSpace
+open WithZero UniformSpace
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/14624:
+
+We had to use the `instanceSearchTypes` backward compatibility flag to make an instance search
+succeed. Concretely, the following instance cannot be synthesized:
+```
+MonoidWithZeroHomClass ((MonoidWithZeroHom.ofClass Valued.v).ValueGroup₀ →*₀
+  WithZero (Multiplicative ℤ)) (MonoidWithZeroHom.ofClass Valued.v).ValueGroup₀
+  (WithZero (Multiplicative ℤ))
+```
+It is needed in the second bullet below, whose final `simp_all` otherwise leaves the goal
+`1 ≤ padicValRat p (x.ofVal - y.ofVal) + (embedding ↑γ).log` unsolved.
+
+The failure happens while applying `@MonoidWithZeroHom.monoidWithZeroHomClass`: assigning one of its
+instance-implicit-argument metavariables is rejected because the metavariable's type and the type
+of the assigned value do not match at `.instances` transparency. The metavariable's expected type
+is `MulZeroOneClass (MonoidWithZeroHom.ofClass Valued.v).ValueGroup₀`, whereas the assigned value
+`instMulZeroOneClass` has type
+`MulZeroOneClass (WithZero ↥(MonoidWithZeroHom.ofClass Valued.v).valueGroup)`.
+Lean falls back to synthesize an instance of the correct type, which
+succeeds, but it returns a `instMulZeroOneClass` instance that is not defeq to the assigned one
+at `.implicit` transparency.
+
+Potential fix: make the following definitions implicit-reducible:
+
+```
+  Rat.padicValuation
+  Valuation.restrict
+  coe
+  exp
+```
+
+Then both backward compatibility options can go.
+-/
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 open MonoidWithZeroHom.ValueGroup₀ in
 lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).comp
     (WithVal.equiv (Rat.padicValuation p)).toRingHom) := by
@@ -44,7 +82,7 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
   have hp1 : (p : ℝ)⁻¹ < 1 := by simp [inv_lt_one_iff₀, Nat.Prime.one_lt Fact.out]
   rw [Filter.HasBasis.isUniformInducing_iff (Valued.hasBasis_uniformity _ _)
     (Metric.uniformity_basis_dist_le_pow hp0 hp1)]
-  simp only [Set.mem_setOf_eq, dist_eq_norm_sub, inv_pow, RingEquiv.toRingHom_eq_coe,
+  simp only [Set.mem_ofPred_eq, dist_eq_norm_sub, inv_pow, RingEquiv.toRingHom_eq_coe,
     RingHom.coe_comp, Rat.coe_castHom, RingHom.coe_coe, Function.comp_apply, ← Rat.cast_sub,
     ← map_sub, Padic.eq_padicNorm, true_and, forall_const]
   constructor
@@ -178,7 +216,7 @@ theorem withValUniformEquiv_norm_le_one_iff {p : ℕ} [Fact p.Prime]
   | hp =>
     rw [Set.ext fun _ ↦ Iff.comm]
     simp_rw [← Valuation.restrict_le_one_iff Valued.v]
-    apply withValUniformEquiv.toHomeomorph.isClosed_setOf_iff (q := fun x ↦ ‖x‖ ≤ 1)
+    apply withValUniformEquiv.toHomeomorph.isClosed_setOfPred_iff (q := fun x ↦ ‖x‖ ≤ 1)
       (Valued.isClopen_closedBall _ one_ne_zero)
     simpa [Metric.closedBall] using IsUltrametricDist.isClopen_closedBall (0 : ℚ_[p]) one_ne_zero
   | ih a =>

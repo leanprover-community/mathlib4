@@ -9,6 +9,7 @@ public import Mathlib.Control.Functor.Multivariate
 public import Mathlib.Data.PFunctor.Multivariate.Basic
 public import Mathlib.Data.PFunctor.Multivariate.M
 public import Mathlib.Data.QPF.Multivariate.Basic
+public import Lean.Elab.Tactic.RCases
 
 /-!
 # The final co-algebra of a multivariate qpf is again a qpf.
@@ -164,6 +165,7 @@ def Cofix.corec₁ {α : TypeVec n} {β : Type u}
     (g : ∀ {X}, (Cofix F α → X) → (β → X) → β → F (α ::: X)) (x : β) : Cofix F α :=
   Cofix.corec' (fun x => g Sum.inl Sum.inr x) x
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Cofix.dest_corec {α : TypeVec n} {β : Type u} (g : β → F (α.append1 β)) (x : β) :
     Cofix.dest (Cofix.corec g x) = appendFun id (Cofix.corec g) <$$> g x := by
   conv =>
@@ -192,6 +194,7 @@ A bisimulation relation `R` for values `x y : Cofix F α`:
 -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem Cofix.bisim_aux {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop) (h' : ∀ x, r x x)
     (h : ∀ x y, r x y →
       appendFun id (Quot.mk r) <$$> Cofix.dest x = appendFun id (Quot.mk r) <$$> Cofix.dest y) :
@@ -397,6 +400,7 @@ end LiftRMap
 
 variable {F : TypeVec (n + 1) → Type u} [q : MvQPF F]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Cofix.abs_repr {α} (x : Cofix F α) : Quot.mk _ (Cofix.repr x) = x := by
   let R := fun x y : Cofix F α => abs (repr y) = x
   refine Cofix.bisim₂ R ?_ _ _ rfl

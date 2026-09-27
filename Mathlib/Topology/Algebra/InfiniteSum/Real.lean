@@ -18,7 +18,9 @@ in the reals.
 
 public section
 
-open Filter Finset NNReal Topology
+open Filter Finset NNReal
+
+open scoped Topology
 
 variable {α β : Type*} [PseudoMetricSpace α] {f : ℕ → α} {a : α}
 

@@ -153,7 +153,7 @@ lemma isTightMeasureSet_of_forall_basis_tendsto (b : OrthonormalBasis ι 𝕜 E)
     _ ≤ ⨆ μ ∈ S, μ (⋃ i, {x : E | r / √(Fintype.card ι) < ‖⟪b i, x⟫_𝕜‖}) := by
       gcongr with μ hμS
       intro x hx
-      simp only [Set.mem_setOf_eq, Set.mem_iUnion] at hx ⊢
+      simp only [Set.mem_ofPred_eq, Set.mem_iUnion] at hx ⊢
       have hx' : r < √(Fintype.card ι) * ⨆ i, ‖⟪b i, x⟫_𝕜‖ :=
         hx.trans_le (b.norm_le_card_mul_iSup_norm_inner x)
       rw [← div_lt_iff₀' (by positivity)] at hx'
@@ -199,7 +199,7 @@ lemma isTightMeasureSet_iff_inner_tendsto :
   intro r
   have h_le (μ : Measure E) : μ {x | r < ‖⟪y, x⟫_𝕜‖} ≤ μ {x | r * ‖y‖⁻¹ < ‖x‖} := by
     refine measure_mono fun x hx ↦ ?_
-    simp only [Set.mem_setOf_eq] at hx ⊢
+    simp only [Set.mem_ofPred_eq] at hx ⊢
     rw [mul_inv_lt_iff₀]
     · rw [mul_comm]
       exact hx.trans_le (norm_inner_le_norm y x)

@@ -30,7 +30,7 @@ lemma unitsMap_comp {d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
     (unitsMap hm).comp (unitsMap hd) = unitsMap (dvd_trans hm hd) := by
   simp only [unitsMap_def]
   rw [← Units.map_comp]
-  exact congr_arg Units.map <| congr_arg RingHom.toMonoidHom <| castHom_comp hm hd
+  congrm Units.map (RingHom.toMonoidHom $(castHom_comp hm hd))
 
 @[simp]
 lemma unitsMap_self (n : ℕ) : unitsMap (dvd_refl n) = MonoidHom.id _ := by
@@ -107,7 +107,7 @@ lemma eq_unit_mul_divisor {N : ℕ} (a : ZMod N) :
     exact ⟨p, q, Int.eq_one_of_mul_eq_self_right (Nat.cast_ne_zero.mpr hd) hpq⟩
   -- Lift it arbitrarily to a unit mod `N`.
   obtain ⟨u, hu⟩ := (unitsMap_surjective (⟨d, mul_comm d N₀ ▸ hN₀⟩ : N₀ ∣ N)) hu₀.unit
-  rw [unitsMap_def, ← Units.val_inj, Units.coe_map, IsUnit.unit_spec, MonoidHom.coe_coe] at hu
+  rw [unitsMap_def, ← Units.val_inj, Units.coe_map, IsUnit.unit_spec, MonoidHom.coe_ofClass] at hu
   refine ⟨u.val, u.isUnit, ?_⟩
   rw [← natCast_zmod_val a, ← natCast_zmod_val u.1, ha₀, ← Nat.cast_mul,
     natCast_eq_natCast_iff, mul_comm _ d, Nat.ModEq]
@@ -119,7 +119,7 @@ theorem coe_int_mul_inv_eq_one {n : ℕ} {x : ℤ} (h : IsCoprime x n) :
   by_cases hn : n = 0
   · simp only [hn, Nat.cast_zero, isCoprime_zero_right] at h
     rcases Int.isUnit_eq_one_or h with h | h <;> simp [h]
-  haveI : NeZero n := ⟨hn⟩
+  have : NeZero n := ⟨hn⟩
   rw [← natCast_zmod_val x]
   apply coe_mul_inv_eq_one
   rwa [Int.isCoprime_iff_gcd_eq_one, ← Int.gcd_emod, ← val_intCast] at h

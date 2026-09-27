@@ -36,7 +36,7 @@ variable {G R : Type*} [Group G] [Semiring R]
 /-- The tautological action by the group of automorphism of a ring `R` on `R`. -/
 instance applyMulSemiringAction :
     MulSemiringAction (RingAut R) R where
-  smul := (· <| ·)
+  smul := (· ·)
   smul_zero := map_zero
   smul_add := map_add
   smul_one := map_one

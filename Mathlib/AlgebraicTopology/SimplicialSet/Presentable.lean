@@ -23,7 +23,9 @@ public section
 
 universe u
 
-open CategoryTheory Simplicial Limits Opposite
+open CategoryTheory Limits Opposite
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -33,7 +35,6 @@ instance (n : SimplexCategory) :
     IsFinitelyPresentable.{u} (stdSimplex.{u}.obj n) :=
   inferInstanceAs (IsFinitelyPresentable.{u} (uliftYoneda.obj n))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_epi_from_isCardinalPresentable (X : SSet.{u}) [X.Finite] :
     ∃ (Y : SSet.{u}) (_ : Y.Finite) (_ : IsFinitelyPresentable.{u} Y)
       (p : Y ⟶ X), Epi p := by

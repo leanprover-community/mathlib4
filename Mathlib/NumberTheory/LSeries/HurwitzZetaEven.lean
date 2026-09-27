@@ -50,7 +50,9 @@ multiples of `1 / s` and `1 / (1 - s)`.
 @[expose] public section
 noncomputable section
 
-open Complex Filter Topology Asymptotics Real Set MeasureTheory
+open Complex Filter Asymptotics Real Set MeasureTheory
+
+open scoped Topology
 
 namespace HurwitzZeta
 
@@ -183,7 +185,7 @@ lemma hasSum_int_cosKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
 lemma hasSum_int_evenKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
     HasSum (fun n : ℤ ↦ if n + a = 0 then 0 else rexp (-π * (n + a) ^ 2 * t))
     (evenKernel a t - if (a : UnitAddCircle) = 0 then 1 else 0) := by
-  haveI := Classical.propDecidable -- speed up instance search for `if / then / else`
+  have := Classical.propDecidable -- speed up instance search for `if / then / else`
   simp_rw [AddCircle.coe_eq_zero_iff, zsmul_one]
   split_ifs with h
   · obtain ⟨k, rfl⟩ := h
@@ -235,7 +237,7 @@ lemma isBigO_atTop_cosKernel_sub (a : UnitAddCircle) :
   obtain ⟨p, hp, hp'⟩ := HurwitzKernelBounds.isBigO_atTop_F_nat_zero_sub zero_le_one
   refine ⟨p, hp, (Eventually.isBigO ?_).trans (hp'.const_mul_left 2)⟩
   filter_upwards [eventually_gt_atTop 0] with t ht
-  simp only [eq_false_intro one_ne_zero, if_false, sub_zero,
+  simp only [eq_false_intro one_ne_zero, ite_false, sub_zero,
     ← (hasSum_nat_cosKernel₀ a ht).tsum_eq, HurwitzKernelBounds.F_nat]
   apply tsum_of_norm_bounded ((HurwitzKernelBounds.summable_f_nat 0 1 ht).hasSum.mul_left 2)
   intro n
@@ -538,7 +540,7 @@ lemma hasSum_int_completedHurwitzZetaEven (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   rw [show completedHurwitzZetaEven a s = mellin (fun t ↦ ((evenKernel (↑a) t : ℂ) -
         ↑(if (a : UnitAddCircle) = 0 then 1 else 0 : ℝ)) / 2) (s / 2) by
     simp_rw [mellin_div_const, apply_ite ofReal, ofReal_one, ofReal_zero]
-    refine congr_arg (· / 2) ((hurwitzEvenFEPair a).hasMellin (?_ : 1 / 2 < (s / 2).re)).2.symm
+    congrm $(((hurwitzEvenFEPair a).hasMellin (?_ : 1 / 2 < (s / 2).re)).2.symm) / 2
     rwa [div_ofNat_re, div_lt_div_iff_of_pos_right two_pos]]
   refine (hasSum_mellin_pi_mul_sq (zero_lt_one.trans hs) hF ?_).congr_fun fun n ↦ ?_
   · simp_rw [← mul_one_div ‖_‖]

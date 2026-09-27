@@ -90,12 +90,11 @@ theorem Submodule.exists_isInternal_prime_power_torsion_of_pid [Module.Finite R 
     (hM : Module.IsTorsion R M) :
     ∃ (ι : Type u) (_ : Fintype ι) (_ : DecidableEq ι) (p : ι → R) (_ : ∀ i, Irreducible <| p i)
         (e : ι → ℕ), DirectSum.IsInternal fun i => torsionBy R M <| p i ^ e i := by
-  classical
   refine ⟨_, ?_, _, _, ?_, _, Submodule.isInternal_prime_power_torsion_of_pid hM⟩
   · exact Finset.fintypeCoeSort _
   · rintro ⟨p, hp⟩
     have hP := prime_of_factor p (Multiset.mem_toFinset.mp hp)
-    haveI := Ideal.isPrime_of_prime hP
+    have := Ideal.isPrime_of_prime hP
     exact (IsPrincipal.prime_generator_of_isPrime p hP.ne_zero).irreducible
 
 namespace Module
@@ -141,7 +140,7 @@ theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ p
       rw [f.eq_symm_apply, ← Ideal.Quotient.mk_eq_mk, ← Quotient.mk_smul] at ha
       dsimp only [smul_eq_mul, LinearEquiv.trans_apply, Submodule.quotEquivOfEq_mk,
         quotTorsionOfEquivSpanSingleton_apply_mk] at ha
-      rw [smul_smul, mul_comm]; exact congr_arg ((↑) : _ → M) ha.symm
+      rw [smul_smul, mul_comm]; congrm $ha.symm
     · symm; convert! Ideal.torsionOf_eq_span_pow_pOrder hp hM y
       rw [← pow_add, Nat.sub_add_cancel hk]
   · use 0
@@ -164,8 +163,7 @@ theorem exists_smul_eq_zero_and_mk_eq {z : M} (hz : Module.IsTorsionBy R M (p ^ 
   rw [mk_sub, mk_smul, (Quotient.mk_eq_zero _).mpr <| Submodule.mem_span_singleton_self _,
     smul_zero, sub_zero, f1.choose_spec]
 
-open Finset Multiset
-
+set_option backward.isDefEq.respectTransparency.types false in
 omit dec in
 /-- A finitely generated `p ^ ∞`-torsion module over a PID is isomorphic to a direct sum of some
   `R ⧸ R ∙ (p ^ e i)` for some `e i`. -/
@@ -177,7 +175,7 @@ theorem torsion_by_prime_power_decomposition (hM : Module.IsTorsion' M (Submonoi
   | zero =>
     use finZeroElim
     rw [Set.range_eq_empty, Submodule.span_empty] at hs
-    haveI : Unique M :=
+    have : Unique M :=
       ⟨⟨0⟩, fun x => by dsimp; rw [← Submodule.mem_bot R, hs]; exact Submodule.mem_top⟩
     exact ⟨0⟩
   | succ d IH =>
@@ -219,7 +217,7 @@ theorem torsion_by_prime_power_decomposition (hM : Module.IsTorsion' M (Submonoi
             map_one (Ideal.Quotient.mk _), (this i).choose_spec.right]
     · exact (mk_surjective _).forall.mpr fun x =>
         ⟨(@hM x).choose, by rw [← Quotient.mk_smul, (@hM x).choose_spec, Quotient.mk_zero]⟩
-    · have hs' := congr_arg (Submodule.map <| mkQ <| R ∙ s j) hs
+    · have hs' := congr((Submodule.map <| mkQ <| R ∙ s j) $hs)
       rw [Submodule.map_span, Submodule.map_top, range_mkQ] at hs'; simp only [mkQ_apply] at hs'
       simp only [s']; rw [← Function.comp_assoc, Set.range_comp (_ ∘ s), Fin.range_succAbove]
       rw [← Set.range_comp, ← Set.insert_image_compl_eq_range _ j, Function.comp_apply,
@@ -242,7 +240,6 @@ theorem equiv_directSum_of_isTorsion [h' : Module.Finite R M] (hM : Module.IsTor
     exact fun i =>
       torsion_by_prime_power_decomposition.{u, v} (hp i)
         ((isTorsion'_powers_iff <| p i).mpr fun x => ⟨e i, smul_torsionBy _ _⟩)
-  classical
   refine
     ⟨Σ i, Fin (this i).choose, inferInstance, fun ⟨i, _⟩ => p i, fun ⟨i, _⟩ => hp i, fun ⟨i, j⟩ =>
       (this i).choose_spec.choose j,
@@ -270,7 +267,6 @@ theorem equiv_free_prod_directSum [h' : Module.Finite R M] :
           (h.prodCongr g).trans <| LinearEquiv.prodComm.{u, u} R _ (Fin n →₀ R) ⟩⟩
   rw [range_subtype, ker_mkQ]
 
-set_option backward.isDefEq.respectTransparency false in
 open LinearMap in
 theorem exists_ker_toSpanSingleton_eq_annihilator [Module.Finite R M] :
     ∃ x : M, ker (toSpanSingleton R _ x) = annihilator R M := by

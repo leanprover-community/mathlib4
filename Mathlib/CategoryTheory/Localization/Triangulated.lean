@@ -84,7 +84,6 @@ lemma rotate_essImageDistTriang [Preadditive D] [L.Additive]
       L.mapTriangleInvRotateIso.app T', inv_rot_of_distTriang T' hT'⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma complete_distinguished_essImageDistTriang_morphism
     (H : ∀ (T₁' T₂' : Triangle C) (_ : T₁' ∈ distTriang C) (_ : T₂' ∈ distTriang C)
       (a : L.obj (T₁'.obj₁) ⟶ L.obj (T₂'.obj₁)) (b : L.obj (T₁'.obj₂) ⟶ L.obj (T₂'.obj₂))
@@ -151,7 +150,6 @@ section
 variable [W.IsCompatibleWithTriangulation]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 include W in
 lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
     (hT₁ : T₁ ∈ L.essImageDistTriang) (hT₂ : T₂ ∈ L.essImageDistTriang)
@@ -195,7 +193,7 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
 variable [HasZeroObject D] [Preadditive D] [∀ (n : ℤ), (shiftFunctor D n).Additive] [L.Additive]
 
 /-- The pretriangulated structure on the localized category. -/
-@[implicit_reducible]
+@[instance_reducible]
 def pretriangulated : Pretriangulated D where
   distinguishedTriangles := L.essImageDistTriang
   isomorphic_distinguished _ hT₁ _ e := L.essImageDistTriang_mem_of_iso e hT₁

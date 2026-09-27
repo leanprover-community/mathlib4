@@ -141,6 +141,7 @@ theorem mem_cocycles₁_of_comp_eq_d₀₁
   have := congr($((mapShortComplexH1 (MonoidHom.id G) X.f).comm₂₃.symm) x)
   simp_all [shortComplexH1, LinearMap.compLeft]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem δ₀_apply
     -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.
     -- Let `z : X₃ᴳ` and `y : X₂` be such that `g(y) = z`.
@@ -156,8 +157,8 @@ theorem δ₀_apply
     (by ext; simp [← hy, cochainsIso₀]) ((cochainsIso₁ X.X₁).inv x) <| by
       ext g
       rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₀₁_comp_inv]
-      simpa [← hx] using! congr_fun (congr($((CommSq.vert_inv
-        ⟨cochainsMap_f_1_comp_cochainsIso₁ (MonoidHom.id G) X.f⟩).w) x)) g
+      simpa [← hx] using! congr($((CommSq.vert_inv
+        ⟨cochainsMap_f_1_comp_cochainsIso₁ (MonoidHom.id G) X.f⟩).w) x g)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Stated for readability of `δ₁_apply`. -/
@@ -183,8 +184,8 @@ theorem δ₁_apply
     ((cochainsIso₂ X.X₁).inv x) <| by
       ext g
       rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₁₂_comp_inv]
-      simpa [← hx] using! congr_fun (congr($((CommSq.vert_inv
-        ⟨cochainsMap_f_2_comp_cochainsIso₂ (MonoidHom.id G) X.f⟩).w) x)) g
+      simpa [← hx] using! congr($((CommSq.vert_inv
+        ⟨cochainsMap_f_2_comp_cochainsIso₂ (MonoidHom.id G) X.f⟩).w) x g)
 
 /-- `S.map (cochainsFunctor k G)` is short exact in each degree. -/
 lemma map_cochainsFunctor_eval_shortExact (n : ℕ) :

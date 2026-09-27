@@ -54,8 +54,6 @@ theorem measureReal_zero_apply (s : Set α) : (0 : Measure α).real s = 0 := rfl
 
 @[simp] theorem measureReal_empty : μ.real ∅ = 0 := by simp [Measure.real]
 
-@[deprecated (since := "2025-11-22")] alias measureReal_univ_eq_one := probReal_univ
-
 @[simp]
 theorem measureReal_univ_pos [IsFiniteMeasure μ] [NeZero μ] : 0 < μ.real Set.univ :=
   ENNReal.toReal_pos (NeZero.ne (μ Set.univ)) (by finiteness)
@@ -351,7 +349,7 @@ theorem le_measureReal_sdiff (h : μ s₂ ≠ ∞ := by finiteness) :
   simp only [tsub_le_iff_left]
   calc
     μ.real s₁ ≤ μ.real (s₂ ∪ s₁) := measureReal_le_measureReal_union_right h
-    _ = μ.real (s₂ ∪ s₁ \ s₂) := congr_arg μ.real union_sdiff_self.symm
+    _ = μ.real (s₂ ∪ s₁ \ s₂) := congr(μ.real $union_sdiff_self.symm)
     _ ≤ μ.real s₂ + μ.real (s₁ \ s₂) := measureReal_union_le _ _
 
 @[deprecated (since := "2026-06-03")] alias le_measureReal_diff := le_measureReal_sdiff

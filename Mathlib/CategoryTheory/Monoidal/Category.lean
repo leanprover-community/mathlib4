@@ -453,7 +453,7 @@ lemma whiskerRightIso_symm {X Y : C} (f : X ≅ Y) (W : C) :
     (whiskerRightIso f W).symm = whiskerRightIso f.symm W := rfl
 
 /-- The tensor product of two isomorphisms is an isomorphism. -/
-@[simps]
+@[implicit_reducible, simps]
 def tensorIso {X Y X' Y' : C} (f : X ≅ Y)
     (g : X' ≅ Y') : X ⊗ X' ≅ Y ⊗ Y' where
   hom := f.hom ⊗ₘ g.hom
@@ -510,13 +510,13 @@ theorem dite_tensor {P : Prop} [Decidable P] {W X Y Z : C} (f : W ⟶ X) (g : P 
 
 @[simp]
 theorem whiskerLeft_eqToHom (X : C) {Y Z : C} (f : Y = Z) :
-    X ◁ eqToHom f = eqToHom (congr_arg₂ tensorObj rfl f) := by
+    X ◁ eqToHom f = eqToHom congr(tensorObj _ $f) := by
   cases f
   simp only [whiskerLeft_id, eqToHom_refl]
 
 @[simp]
 theorem eqToHom_whiskerRight {X Y : C} (f : X = Y) (Z : C) :
-    eqToHom f ▷ Z = eqToHom (congr_arg₂ tensorObj f rfl) := by
+    eqToHom f ▷ Z = eqToHom congr(tensorObj $f _) := by
   cases f
   simp only [id_whiskerRight, eqToHom_refl]
 
@@ -786,7 +786,7 @@ variable (C)
 attribute [local simp] whisker_exchange
 
 /-- The tensor product expressed as a functor. -/
-@[simps]
+@[simps, implicit_reducible]
 def tensor : C × C ⥤ C where
   obj X := X.1 ⊗ X.2
   map {X Y : C × C} (f : X ⟶ Y) := f.1 ⊗ₘ f.2
@@ -820,7 +820,7 @@ theorem rightAssocTensor_map {X Y} (f : X ⟶ Y) :
   rfl
 
 /-- The tensor product bifunctor `C ⥤ C ⥤ C` of a monoidal category. -/
-@[simps]
+@[simps, implicit_reducible]
 def curriedTensor : C ⥤ C ⥤ C where
   obj X :=
     { obj := fun Y => X ⊗ Y
@@ -903,7 +903,7 @@ abbrev tensoringLeft : C ⥤ C ⥤ C := curriedTensor C
 instance : (tensoringLeft C).Faithful where
   map_injective {X} {Y} f g h := by
     injections h
-    replace h := congr_fun h (𝟙_ C)
+    replace h := congr($h (𝟙_ C))
     simpa using h
 
 /-- Tensoring on the right, as a functor from `C` into endofunctors of `C`.
@@ -916,7 +916,7 @@ set_option backward.defeqAttrib.useBackward true in
 instance : (tensoringRight C).Faithful where
   map_injective {X} {Y} f g h := by
     injections h
-    replace h := congr_fun h (𝟙_ C)
+    replace h := congr($h (𝟙_ C))
     simpa using h
 
 variable {C}
@@ -945,7 +945,7 @@ section
 
 universe v₁ v₂ u₁ u₂
 
-open Prod
+open CategoryTheory.Prod
 
 variable (C₁ : Type u₁) [Category.{v₁} C₁] [MonoidalCategory.{v₁} C₁]
 variable (C₂ : Type u₂) [Category.{v₂} C₂] [MonoidalCategory.{v₂} C₂]

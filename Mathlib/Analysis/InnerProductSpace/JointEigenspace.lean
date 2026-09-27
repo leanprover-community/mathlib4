@@ -47,7 +47,7 @@ namespace LinearMap
 
 namespace IsSymmetric
 
-variable {𝕜 E n m : Type*}
+variable {𝕜 E n : Type*}
 
 open Submodule
 
@@ -102,7 +102,7 @@ theorem iSup_iSup_eigenspace_inf_eigenspace_eq_top_of_commute (hA : A.IsSymmetri
     (hB : B.IsSymmetric) (hAB : Commute A B) :
     (⨆ α, ⨆ γ, eigenspace A α ⊓ eigenspace B γ) = ⊤ := by
   simpa [iSup_eigenspace_inf_eigenspace_of_commute hB hAB] using
-    Submodule.orthogonal_eq_bot_iff.mp <| hA.orthogonalComplement_iSup_eigenspaces_eq_bot
+    Submodule.orthogonal_eq_bot_iff.mp hA.orthogonalComplement_iSup_eigenspaces_eq_bot
 
 /-- Given a commuting pair of symmetric linear operators on a finite-dimensional inner product
 space, the space decomposes as an internal direct sum of simultaneous eigenspaces of these
@@ -140,6 +140,7 @@ theorem directSum_isInternal_of_pairwise_commute [DecidableEq (n → 𝕜)]
   · rw [iSup_iInf_eq_top_of_commute hT hC, top_orthogonal_eq_bot]
   · exact orthogonalFamily_iInf_eigenspaces hT
 
+set_option linter.dupNamespace false in
 @[deprecated (since := "2026-05-24")]
 alias LinearMap.IsSymmetric.directSum_isInternal_of_pairwise_commute :=
   directSum_isInternal_of_pairwise_commute

@@ -642,14 +642,14 @@ variable {a b}
 
 theorem modEq_iff_forall_notMem_Ioo_mod :
     a ≡ b [PMOD p] ↔ ∀ z : ℤ, b - z • p ∉ Set.Ioo a (a + p) :=
-  (tfae_modEq hp a b).out 0 1
+  (tfae_modEq hp a b).out 1 2
 
 theorem modEq_iff_toIcoMod_ne_toIocMod : a ≡ b [PMOD p] ↔ toIcoMod hp a b ≠ toIocMod hp a b :=
-  (tfae_modEq hp a b).out 0 2
+  (tfae_modEq hp a b).out 1 3
 
 theorem modEq_iff_toIcoMod_add_period_eq_toIocMod :
     a ≡ b [PMOD p] ↔ toIcoMod hp a b + p = toIocMod hp a b :=
-  (tfae_modEq hp a b).out 0 3
+  (tfae_modEq hp a b).out 1 4
 
 theorem not_modEq_iff_toIcoMod_eq_toIocMod : ¬a ≡ b [PMOD p] ↔ toIcoMod hp a b = toIocMod hp a b :=
   (modEq_iff_toIcoMod_ne_toIocMod _).not_left
@@ -678,7 +678,7 @@ alias ⟨_, AddCommGroup.ModEq.toIcoMod_eq_toIcoMod⟩ := toIcoMod_inj
 theorem Ico_eq_locus_Ioc_eq_iUnion_Ioo :
     { b | toIcoMod hp a b = toIocMod hp a b } = ⋃ z : ℤ, Set.Ioo (a + z • p) (a + p + z • p) := by
   ext1
-  simp_rw [Set.mem_setOf, Set.mem_iUnion, ← Set.sub_mem_Ioo_iff_left, ←
+  simp_rw [Set.mem_ofPred, Set.mem_iUnion, ← Set.sub_mem_Ioo_iff_left, ←
     not_modEq_iff_toIcoMod_eq_toIocMod, modEq_iff_forall_notMem_Ioo_mod hp, not_forall,
     Classical.not_not]
 
@@ -858,7 +858,7 @@ private theorem toIxxMod_total' (a b c : α) :
   /- an essential ingredient is the lemma saying {a-b} + {b-a} = period if a ≠ b (and = 0 if a = b).
     Thus if a ≠ b and b ≠ c then ({a-b} + {b-c}) + ({c-b} + {b-a}) = 2 * period, so one of
     `{a-b} + {b-c}` and `{c-b} + {b-a}` must be `≤ period` -/
-  have := congr_arg₂ (· + ·) (toIcoMod_add_toIocMod_zero hp a b) (toIcoMod_add_toIocMod_zero hp c b)
+  have := congr($(toIcoMod_add_toIocMod_zero hp a b) + $(toIcoMod_add_toIocMod_zero hp c b))
   simp only [add_add_add_comm] at this
   rw [_root_.add_comm (toIocMod _ _ _), add_add_add_comm, ← two_nsmul] at this
   replace := min_le_of_add_le_two_nsmul this.le

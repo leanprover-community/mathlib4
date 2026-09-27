@@ -7,10 +7,9 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
-public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
-public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.Tactic.NormNum
 
 /-!
 # The fixed submodule of a linear map
@@ -104,6 +103,7 @@ theorem map_eq_of_mem_fixingSubgroup (W : Submodule R V)
 
 variable {R V : Type*} [Ring R] [AddCommGroup V] [Module R V]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When `u : V ≃ₗ[R] V` maps a submodule `W` into itself,
 this is the induced linear equivalence of `V ⧸ W`, as a group homomorphism. -/
 def reduce (W : Submodule R V) : stabilizer (V ≃ₗ[R] V) W →* (V ⧸ W) ≃ₗ[R] (V ⧸ W) where

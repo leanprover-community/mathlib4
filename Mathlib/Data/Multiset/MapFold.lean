@@ -283,7 +283,7 @@ theorem coe_foldl (f : β → α → β) [RightCommutative f] (b : β) (l : List
 
 theorem coe_foldr_swap (f : α → β → β) [LeftCommutative f] (b : β) (l : List α) :
     foldr f b l = l.foldl (fun x y => f y x) b :=
-  (congr_arg (foldr f b) (coe_reverse l)).symm.trans foldr_reverse
+  congr(foldr f b $(coe_reverse l)).symm.trans foldr_reverse
 
 theorem foldr_swap (f : α → β → β) [LeftCommutative f] (b : β) (s : Multiset α) :
     foldr f b s = foldl (fun x y => f y x) b s :=
@@ -340,17 +340,18 @@ theorem attach_map_val' (s : Multiset α) (f : α → β) : (s.attach.map fun i 
 theorem attach_map_val (s : Multiset α) : s.attach.map Subtype.val = s :=
   (attach_map_val' _ _).trans s.map_id
 
+set_option backward.isDefEq.respectTransparency false in
 theorem attach_cons (a : α) (m : Multiset α) :
     (a ::ₘ m).attach =
       ⟨a, mem_cons_self a m⟩ ::ₘ m.attach.map fun p => ⟨p.1, mem_cons_of_mem p.2⟩ :=
   Quotient.inductionOn m fun l =>
     congr_arg _ <|
-      congr_arg (List.cons _) <| by
-        rw [List.map_pmap]; exact List.pmap_congr_left _ fun _ _ _ _ => Subtype.ext rfl
+      congr(List.cons _ $(by
+        rw [List.map_pmap]; exact List.pmap_congr_left _ fun _ _ _ _ => Subtype.ext rfl))
 
 section
 
-variable [DecidableEq α] {s t u : Multiset α}
+variable [DecidableEq α] {s : Multiset α}
 
 lemma erase_attach_map_val (s : Multiset α) (x : {x // x ∈ s}) :
     (s.attach.erase x).map (↑) = s.erase x := by
@@ -366,7 +367,7 @@ end
 /-! ### Subtraction -/
 
 section sub
-variable [DecidableEq α] {s t u : Multiset α} {a : α}
+variable [DecidableEq α] {s t : Multiset α}
 
 lemma sub_eq_fold_erase (s t : Multiset α) : s - t = foldl erase s t :=
   Quotient.inductionOn₂ s t fun l₁ l₂ => by

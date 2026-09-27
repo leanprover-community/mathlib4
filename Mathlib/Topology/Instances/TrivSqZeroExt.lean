@@ -104,7 +104,7 @@ instance [Mul R] [Add M] [SMul R M] [SMul Rᵐᵒᵖ M] [ContinuousMul R] [Conti
     [ContinuousSMul Rᵐᵒᵖ M] [ContinuousAdd M] : ContinuousMul (tsze R M) :=
   ⟨((continuous_fst.comp continuous_fst).mul (continuous_fst.comp continuous_snd)).prodMk <|
       ((continuous_fst.comp continuous_fst).smul (continuous_snd.comp continuous_snd)).add
-        ((MulOpposite.continuous_op.comp <| continuous_fst.comp <| continuous_snd).smul
+        ((MulOpposite.continuous_op.comp <| continuous_fst.comp continuous_snd).smul
           (continuous_snd.comp continuous_fst))⟩
 
 instance [Neg R] [Neg M] [ContinuousNeg R] [ContinuousNeg M] : ContinuousNeg (tsze R M) :=
@@ -162,7 +162,7 @@ instance [AddGroup R] [AddGroup M] [IsUniformAddGroup R] [IsUniformAddGroup M] :
     IsUniformAddGroup (tsze R M) :=
   inferInstanceAs <| IsUniformAddGroup (R × M)
 
-open Uniformity
+open scoped Uniformity
 
 theorem uniformity_def :
     𝓤 (tsze R M) =

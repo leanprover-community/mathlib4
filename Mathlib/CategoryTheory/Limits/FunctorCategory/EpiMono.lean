@@ -24,7 +24,7 @@ universe v v' v'' u u' u''
 
 namespace CategoryTheory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
 variable {K : Type u} [Category.{v} K] {C : Type u'} [Category.{v'} C]
   {D : Type u''} [Category.{v''} D] {F G : K ⥤ C} (f : F ⟶ G)

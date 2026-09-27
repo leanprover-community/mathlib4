@@ -56,6 +56,7 @@ theorem _root_.IsUnit.submonoid.coe_inv [Monoid M] (x : IsUnit.submonoid M) :
 
 @[deprecated (since := "2026-05-24")]
 alias _root_.AddSubmonoid.IsUnit.Submonoid.coe_neg := IsAddUnit.addSubmonoid.coe_neg
+set_option linter.dupNamespace false in
 @[to_additive existing, deprecated (since := "2026-05-24")]
 alias IsUnit.Submonoid.coe_inv := IsUnit.submonoid.coe_inv
 
@@ -139,6 +140,7 @@ noncomputable def fromCommLeftInv : S.leftInv →* S where
 
 variable (hS : S ≤ IsUnit.submonoid M)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The submonoid of pointwise inverse of `S` is `MulEquiv` to `S`. -/
 @[to_additive (attr := simps apply) /-- The additive submonoid of pointwise additive inverse of `S`
 is `AddEquiv` to `S`. -/]
