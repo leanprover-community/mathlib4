@@ -14,8 +14,12 @@ public import Mathlib.RingTheory.Trace.Basic
 # Artin-Schreier Extensions
 
 Let `K` be a field of prime characteristic `p`. Artin-Schreier theory classifies finite extensions
-of `K` whose Galois group is cyclic of order `p`: they are obtained by adjoining a single root of an
-Artin-Schreier polynomial (one of the form `X ^ p - X - C a` for some `a`).
+of `K` whose Galois group is cyclic of order `p`: they are obtained by adjoining a single root of a
+polynomial of the form `X ^ p - X - C a` for some `a` in `K`.
+
+## Naming convention
+
+* `artinSchreierPoly` refers to a term of the form `X ^ p - X - C a`.
 
 TODO: extend to finite extensions whose Galois group is cyclic of order `p^n` (Artin-Schreier-Witt
 theory).
