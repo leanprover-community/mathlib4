@@ -755,6 +755,10 @@ theorem Subfield.mem_bot_iff_pow_eq_self {x : F} : x ∈ (⊥ : Subfield F) ↔ 
       (splits_bot F p).roots_map (Subfield.subtype _) ▸ Multiset.mem_map (b := x)
   simpa [sub_eq_zero, iff_comm, FiniteField.X_pow_card_sub_X_ne_zero F (Fact.out : p.Prime).one_lt]
 
+theorem Polynomial.splits_X_pow_char_sub_X :
+    Splits ((X : F[X]) ^ p - X) := by
+  simpa using (Subfield.splits_bot F p).map (algebraMap _ F)
+
 end prime_subfield
 
 namespace FiniteField

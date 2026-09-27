@@ -723,25 +723,24 @@ protected theorem mem_normalizedFactors_iff [DecidableEq R] (hq : q ≠ 0) :
   · simpa [hp] using zero_notMem_normalizedFactors _
   · rw [mem_normalizedFactors_iff' hq, normalize_eq_self_iff_monic hp]
 
+open UniqueFactorizationMonoid in
+theorem natDegree_eq_sum_natDegree_normalizedFactors [DecidableEq R] (a : R[X]) :
+    a.natDegree = ((normalizedFactors a).map natDegree).sum := by
+  by_cases h0: a = 0
+  · simp [h0]
+  nth_rw 1 [← leadingCoeff_mul_prod_normalizedFactors a]
+  rw [Polynomial.natDegree_C_mul (by simp [h0]),
+      natDegree_multiset_prod _ (zero_notMem_normalizedFactors a)]
+
 /-- If every monic irreducible factor of a polynomial `f` has `natDegree` divisible by `n`,
   then so does `f` itself. -/
 lemma dvd_natDegree_of_monic_of_irreducible (f : R[X]) {n : ℕ}
     (h : ∀ d, Monic d → Irreducible d → d ∣ f → n ∣ d.natDegree) : n ∣ f.natDegree := by
-  open Multiset in
+  open Classical in
   by_cases h0 : f = 0
-  · simp_all
-  · have ⟨hi, hS⟩ := PrincipalIdealRing.factors_spec _ h0
-    rw [←natDegree_eq_of_degree_eq (degree_eq_degree_of_associated hS),
-      natDegree_multiset_prod _ (prod_eq_zero.mt (hS.symm.ne_zero_iff.mp h0))]
-    apply dvd_sum
-    intro x
-    rw [mem_map]
-    rintro ⟨d, he, rfl⟩
-    specialize hi d he
-    have h0 := hi.ne_zero
-    rw [←natDegree_mul_leadingCoeff_self_inv]
-    exact h _ (monic_mul_leadingCoeff_inv h0) (irreducible_mul_leadingCoeff_inv.mpr hi)
-      (((dvd_mul_leadingCoeff_inv h0).mp rfl.dvd).trans (hS.dvd_iff_dvd_right.mp (dvd_prod he)))
+  · simp [h0]
+  · rw [natDegree_eq_sum_natDegree_normalizedFactors]
+    grind [Multiset.dvd_sum, Multiset.mem_map, Polynomial.mem_normalizedFactors_iff]
 
 variable (p) in
 @[simp]
