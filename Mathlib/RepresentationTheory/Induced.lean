@@ -118,7 +118,9 @@ lemma IndV.lift_apply_mk (f : H → A →ₗ[k] B) (h : H) (a : A)
   rw [lift, mk, LinearMap.comp_apply, Coinvariants.lift_mk]
   simp
 
-/-- The induced `H`-action on `IndV φ ρ`, given by `h • ⟦t ⊗ a⟧ = ⟦th⁻¹ ⊗ a⟧`. -/
+/-- Given a group homomorphism `φ : G →* H` and a `G`-representation `A`, this is
+`(k[H] ⊗[k] A)_G` equipped with the `H`-representation defined by sending `h : H` and `⟦h₁ ⊗ₜ a⟧`
+to `⟦h₁h⁻¹ ⊗ₜ a⟧`. -/
 @[simps -isSimp]
 noncomputable def ind : Representation k H (IndV φ ρ) where
   toFun h := IndV.lift φ ρ (fun x => IndV.mk φ ρ (x * h⁻¹)) (by simp [mul_assoc])
@@ -169,14 +171,16 @@ lemma ind.counit_apply_mk (σ : Representation k H B) (h : H) (b : B) :
     ind.counit φ σ (IndV.mk φ (σ.comp φ) h b) = σ h⁻¹ b := by
   simp [ind.counit]
 
-/-- An equivariant map from an induced representation is determined by the generators at `1`. -/
+/-- An intertwining map from an induced representation is determined by the generators at `1`. -/
 @[ext]
 lemma ind.hom_ext {f g : (ind φ ρ).IntertwiningMap σ}
     (hfg : f.toLinearMap ∘ₗ IndV.mk φ ρ 1 = g.toLinearMap ∘ₗ IndV.mk φ ρ 1) : f = g := by
   ext h a
   simpa [← IntertwiningMap.isIntertwining] using congrArg (fun f => σ h⁻¹ (f a)) hfg
 
-/-- The universal property of induced representations. -/
+/-- Given a group homomorphism `φ : G →* H`, an `H`-representation `B`, and a `G`-representation
+`A`, there is a `k`-linear equivalence between the `H`-representation morphisms `ind φ A ⟶ B` and
+the `G`-representation morphisms `A ⟶ B`. -/
 @[simps]
 noncomputable def indResHomEquiv :
     (ind φ ρ).IntertwiningMap σ ≃ₗ[k] ρ.IntertwiningMap (σ.comp φ) where
@@ -187,18 +191,21 @@ noncomputable def indResHomEquiv :
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-/-- Given a monoid homomorphism `φ : G →* H` and an intertwining map `f : σ ⟶ ρ`, there is a
-  natural intertwining map `ind φ σ ⟶ ind φ ρ` given by composition by `f`. -/
+/-- Given a group homomorphism `φ : G →* H`, a morphism of `G`-representations `f : A ⟶ B` induces
+a morphism of `H`-representations `(k[H] ⊗[k] A)_G ⟶ (k[H] ⊗[k] B)_G`. -/
 noncomputable def indMap (f : IntertwiningMap ρ τ) : (ind φ ρ).IntertwiningMap (ind φ τ) :=
-  ind.lift φ ((ind.unit φ τ).comp f)
+  ⟨Coinvariants.map _ _ (f.lTensor _), fun g => by
+    ext h a; exact (congrArg _ (ind_apply_mk φ ρ g h a)).trans (ind_apply_mk φ τ g h (f a)).symm⟩
 
 @[simp]
 lemma indMap_apply_mk (f : ρ.IntertwiningMap τ) (h : H) (a : A) :
-    indMap φ f (IndV.mk φ ρ h a) = IndV.mk φ τ h (f a) := by simp [indMap]
+    indMap φ f (IndV.mk φ ρ h a) = IndV.mk φ τ h (f a) := rfl
 
 variable (ρ : Representation k G A) (σ : Representation k H B)
 
-/-- Move an induced generator across a tensor of coinvariants. -/
+/-- Given a group hom `φ : G →* H`, a `G`-representation `A` and an `H`-representation `B`, this is
+the `k`-linear map `(Ind(φ)(A) ⊗ B))_H ⟶ (A ⊗ Res(φ)(B))_G` sending `⟦h ⊗ₜ a⟧ ⊗ₜ b` to
+`⟦a ⊗ ρ(h)(b)⟧` for all `h : H`, `a : A`, and `b : B`. -/
 noncomputable def coinvariantsTensorIndHom :
     Coinvariants ((ind φ ρ).tprod σ) →ₗ[k] Coinvariants (ρ.tprod (σ.comp φ)) :=
   Coinvariants.lift ((ind φ ρ).tprod σ) (TensorProduct.lift <| IndV.lift φ ρ (fun h =>
@@ -212,7 +219,9 @@ lemma coinvariantsTensorIndHom_apply_mk (h : H) (x : A) (y : B) :
       (IndV.mk φ ρ h x ⊗ₜ[k] y)) = Coinvariants.mk (ρ.tprod (σ.comp φ)) (x ⊗ₜ[k] σ h y) := by
   simp [coinvariantsTensorIndHom]
 
-/-- Tensor the induction unit and pass to coinvariants. -/
+/-- Given a group hom `φ : G →* H`, a `G`-representation `A` and an `H`-representation `B`, this is
+the `k`-linear map `(A ⊗ Res(φ)(B))_G ⟶ (Ind(φ)(A) ⊗ B))_H` sending `⟦a ⊗ₜ b⟧` to `⟦1 ⊗ₜ a⟧ ⊗ₜ b`
+for all `a : A`, and `b : B`. -/
 noncomputable def coinvariantsTensorIndInv :
     Coinvariants (ρ.tprod (σ.comp φ)) →ₗ[k] Coinvariants ((ind φ ρ).tprod σ) :=
   let i := (ind.unit φ ρ).rTensor (σ.comp φ)
@@ -236,8 +245,9 @@ lemma coinvariantsTensorIndInv_hom (x : Coinvariants ((ind φ ρ).tprod σ)) :
   LinearMap.congr_fun (show (ρ.coinvariantsTensorIndInv φ σ ∘ₗ _ = LinearMap.id) by
     ext; simp [← Coinvariants.mk_inv_tmul]) x
 
-/-- Move induction across tensor coinvariants by restriction, sending `⟦h ⊗ a⟧ ⊗ b` to
-`⟦a ⊗ σ(h)b⟧`. The inverse sends `⟦a ⊗ b⟧` to `⟦1 ⊗ a⟧ ⊗ b`. -/
+/-- Given a group hom `φ : G →* H`, a `G`-representation `A` and an `H`-representation `B`, this is
+the `k`-linear isomorphism `(Ind(φ)(A) ⊗ B))_H ⟶ (A ⊗ Res(φ)(B))_G` sending `⟦h ⊗ₜ a⟧ ⊗ₜ b` to
+`⟦a ⊗ ρ(h)(b)⟧` for all `h : H`, `a : A`, and `b : B`. -/
 noncomputable abbrev coinvariantsTensorIndEquiv :
     Coinvariants ((ind φ ρ).tprod σ) ≃ₗ[k] Coinvariants (ρ.tprod (σ.comp φ)) :=
   LinearEquiv.ofLinearMap (coinvariantsTensorIndHom φ ρ σ) (coinvariantsTensorIndInv φ ρ σ)
@@ -253,10 +263,13 @@ open CategoryTheory
 variable {k : Type u} {G : Type v} {H : Type v'} [CommRing k] [Group G] [Group H] (φ : G →* H)
   (A : Rep.{w} k G)
 
-/-- `Representation.ind` as a bundled representation. -/
+/-- Given a group homomorphism `φ : G →* H` and a `G`-representation `A`, this is
+`(k[H] ⊗[k] A)_G` equipped with the `H`-representation defined by sending `h : H` and `⟦h₁ ⊗ₜ a⟧`
+to `⟦h₁h⁻¹ ⊗ₜ a⟧`. -/
 noncomputable abbrev ind : Rep k H := Rep.of (A.ρ.ind φ)
 
-/-- `Representation.indMap` as a morphism in `Rep`. -/
+/-- Given a group homomorphism `φ : G →* H`, a morphism of `G`-representations `f : A ⟶ B` induces
+a morphism of `H`-representations `(k[H] ⊗[k] A)_G ⟶ (k[H] ⊗[k] B)_G`. -/
 noncomputable abbrev indMap {A B : Rep k G} (f : A ⟶ B) :
     ind φ A ⟶ ind φ B := Rep.ofHom <| A.ρ.indMap φ f.hom
 
@@ -266,11 +279,12 @@ variable (k) in
 noncomputable def indFunctor : Rep.{w} k G ⥤ Rep k H where
   obj A := ind φ A
   map f := indMap φ f
-  map_id _ := by ext; simp
-  map_comp _ _ := by ext; simp
+  map_id _ := by ext; rfl
+  map_comp _ _ := by ext; rfl
 
-/-- The linear equivalence `(ind φ A ⟶ B) ≃ₗ[k] (A ⟶ res φ B)`,
-obtained by bundling `Representation.indResHomEquiv`. -/
+/-- Given a group homomorphism `φ : G →* H`, an `H`-representation `B`, and a `G`-representation
+`A`, there is a `k`-linear equivalence between the `H`-representation morphisms `ind φ A ⟶ B` and
+the `G`-representation morphisms `A ⟶ B`. -/
 noncomputable def indResHomEquiv (A : Rep.{max w v' u} k G) (B : Rep.{max w v' u} k H) :
     (ind φ A ⟶ B) ≃ₗ[k] (A ⟶ res φ B) :=
   (homLinearEquiv _ B).trans <| (A.ρ.indResHomEquiv φ).trans (homLinearEquiv A (res φ B)).symm
@@ -290,7 +304,7 @@ adjoint to the restriction functor along `φ`. -/
 noncomputable def indResAdjunction : indFunctor k φ ⊣ resFunctor.{max w v' u} φ :=
   Adjunction.mkOfHomEquiv
     { homEquiv A B := (indResHomEquiv.{w} φ A B).toEquiv
-      homEquiv_naturality_left_symm _ _ := by simp only [indFunctor_obj]; ext; simp
+      homEquiv_naturality_left_symm _ _ := by dsimp only [indFunctor_obj]; ext; simp
       homEquiv_naturality_right _ _ := rfl }
 
 @[simp]
@@ -314,7 +328,9 @@ instance : (resFunctor.{max u v' w} (k := k) φ).IsRightAdjoint :=
 
 variable {G H : Type u} [Group G] [Group H] (φ : G →* H) (A : Rep.{u} k G) (B : Rep.{u} k H)
 
-/-- `Representation.coinvariantsTensorIndEquiv` as an isomorphism in `ModuleCat`. -/
+/-- Given a group hom `φ : G →* H`, `A : Rep k G` and `B : Rep k H`, this is the `k`-linear
+isomorphism `(Ind(φ)(A) ⊗ B))_H ⟶ (A ⊗ Res(φ)(B))_G` sending `⟦h ⊗ₜ a⟧ ⊗ₜ b` to `⟦a ⊗ ρ(h)(b)⟧`
+for all `h : H`, `a : A`, and `b : B`. -/
 noncomputable abbrev coinvariantsTensorIndIso :
     ((coinvariantsTensor k H).obj (ind φ A)).obj B ≅
       ((coinvariantsTensor k G).obj A).obj (res φ B) :=
