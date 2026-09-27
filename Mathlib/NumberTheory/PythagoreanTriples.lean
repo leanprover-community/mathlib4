@@ -543,10 +543,10 @@ theorem coprime_classification :
         ring
       simpa using eq_or_eq_neg_of_sq_eq_sq _ _ this
   · delta PythagoreanTriple
-    rintro ⟨m, n, ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩, rfl | rfl, co, pp⟩ <;>
+    rintro ⟨m, n, ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩, rfl | rfl, co, pp⟩ <;> (refine ⟨by ring, ?_⟩) <;>
       first
-      | constructor; ring; exact coprime_sq_sub_mul co pp
-      | constructor; ring; rw [Int.gcd_comm]; exact coprime_sq_sub_mul co pp
+      | exact coprime_sq_sub_mul co pp
+      | rw [Int.gcd_comm]; exact coprime_sq_sub_mul co pp
 
 /-- By assuming `x` is odd and `z` is positive we get a slightly more precise classification of
 the Pythagorean triple `x ^ 2 + y ^ 2 = z ^ 2`. -/
