@@ -95,7 +95,7 @@ theorem HasStrictFDerivAt.hasStrictFDerivAt_norm_smul
     hasStrictFDerivAt_id (t • x) |>.const_smul t⁻¹
   have h2 : HasStrictFDerivAt (fun y ↦ |t| * ‖y‖) (|t| • f) x := h.const_smul |t|
   conv at h2 => enter [3]; rw [← one_smul ℝ x, ← inv_mul_cancel₀ ht, mul_smul]
-  convert! h2.fun_comp (t • x) h1 with y
+  convert h2.fun_comp (t • x) h1 with y
   · rw [norm_smul, ← mul_assoc, norm_eq_abs, ← abs_mul, mul_inv_cancel₀ ht, abs_one, one_mul]
   ext y
   simp only [smul_apply, smul_eq_mul, comp_smulₛₗ, map_inv₀, RingHom.id_apply, comp_id]
