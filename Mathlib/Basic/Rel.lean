@@ -172,6 +172,12 @@ lemma comp_assoc (R : SetRel α β) (S : SetRel β γ) (t : SetRel γ δ) :
 @[simp] lemma univ_comp (S : SetRel β γ) :
     (.univ : SetRel α β) ○ S = {(_b, c) : α × γ | c ∈ S.cod} := by grind
 
+lemma comp_union (R : SetRel α β) (S S' : SetRel β γ) : R ○ (S ∪ S') = (R ○ S) ∪ (R ○ S') := by
+  grind
+
+lemma union_comp (R R' : SetRel α β) (S : SetRel β γ) : (R ∪ R') ○ S = (R ○ S) ∪ (R' ○ S) := by
+  grind
+
 lemma comp_iUnion (R : SetRel α β) (S : ι → SetRel β γ) : R ○ ⋃ i, S i = ⋃ i, R ○ S i := by
   grind [Set.mem_iUnion]
 
