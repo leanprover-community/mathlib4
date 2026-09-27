@@ -456,12 +456,9 @@ section
 
 open EuclideanDomain
 
-lemma eval_mod (p q : R[X]) (x : R) (h : eval x q = 0) : (p % q).eval x = p.eval x := by
-  have : eval x (p % q) = eval x (p / q * q) + eval x (p % q) := by
-    simp only [eval_mul, right_eq_add, mul_eq_zero]
-    exact Or.inr h
-  rw [← eval_add, EuclideanDomain.div_add_mod'] at this
-  exact this
+lemma eval_mod_eq_self_of_root {p q : R[X]} {x : R} (hx : eval x q = 0) :
+    (p % q).eval x = p.eval x :=
+  eval₂_modByMonic_eq_self_of_root (by simp [hx])
 
 theorem gcd_map [Field k] [DecidableEq R] [DecidableEq k] (f : R →+* k) :
     gcd (p.map f) (q.map f) = (gcd p q).map f :=

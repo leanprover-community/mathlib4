@@ -13,14 +13,46 @@ public import Mathlib.Topology.Instances.Sign
 /-!
 # The sign of a polynomial immediately to the right of a point
 
-`signRight x p` is the sign that `p` takes on a small interval `(x, x + ε)`. It is `0` only for
-`p = 0`, it is multiplicative, and it is computed by the rule
-`signRight x p = if eval x p ≠ 0 then sign (eval x p) else signRight x (derivative p)`.
+A nonzero real polynomial has finitely many roots, so its sign is constant on a small interval
+`(x, x + ε)` to the right of any point `x`. This file defines that sign, `Polynomial.signRight x p`,
+as the limit of `sign (p.eval y)` as `y → x` from the right, and develops its basic properties:
+it vanishes only for `p = 0`, it is multiplicative, and it is computed by the recursion
+`signRight x p = sign (p.eval x)` if `p.eval x ≠ 0` and `signRight x p = signRight x (derivative p)`
+otherwise.
+
+This is the local invariant behind Sturm's theorem, where it determines the direction in which the
+sign of a Sturm sequence changes across a root; it will be used in subsequent files to define the
+Cauchy index of a rational function.
+
+## Main definitions
+
+* `Polynomial.signRight x p`: the sign of `p` immediately to the right of `x`.
+
+## Main results
+
+* `Polynomial.eventually_sign_eq_signRight`, `Polynomial.signRight_eq_iff`: the defining property,
+  `sign (p.eval y) = signRight x p` for all `y` in some interval `(x, x + ε)`.
+* `Polynomial.signRight_eq_zero_iff`: `signRight x p = 0` if and only if `p = 0`.
+* `Polynomial.signRight_mul`, `Polynomial.signRight_neg`, `Polynomial.signRight_C`:
+  `signRight x` is multiplicative.
+* `Polynomial.signRight_of_eval_ne_zero`: away from the roots of `p`, `signRight x p` is the sign of
+  `p.eval x`.
+* `Polynomial.signRight_of_eval_eq_zero`: at a root of `p`, `signRight x p` is `signRight x` of the
+  derivative of `p`.
+
+## Implementation notes
+
+The definition and all results are stated over `ℝ`. Everything except the derivative rule
+`signRight_of_eval_eq_zero` holds over any conditionally complete, densely ordered field with the
+order topology; that rule is proved via the mean value theorem, which Mathlib states for `ℝ`.
+An algebraic proof, factoring the root out of `p`, would remove this restriction.
 -/
 
 open Polynomial Set Filter SignType Topology
 
 public section
+
+namespace Polynomial
 
 /-- Immediately to the right of `x`, a polynomial has a constant sign. -/
 theorem exists_eventually_sign_eq (x : ℝ) (p : ℝ[X]) :
@@ -32,7 +64,7 @@ theorem exists_eventually_sign_eq (x : ℝ) (p : ℝ[X]) :
       ((nhdsGT_le_nhdsNE x).trans (nhdsNE_le_codiscrete x)))
   have hb : x < b := hb
   refine ⟨sign (eval ((x + b) / 2) p), mem_nhdsGT_iff_exists_Ioo_subset.mpr ⟨b, hb, fun y hy => ?_⟩⟩
-  exact sign_eq_of_continuousOn isPreconnected_Ioo p.continuousOn (fun z hz => hsub hz) hy
+  exact isPreconnected_Ioo.sign_eq_of_continuousOn p.continuousOn (fun z hz => hsub hz) hy
     ⟨by linarith, by linarith⟩
 
 /-- The sign of `p` immediately to the right of `x`: the eventual value of `sign (eval y p)` as
@@ -97,7 +129,7 @@ theorem signRight_X_sub_C_pow (a : ℝ) (n : ℕ) : signRight a ((X - C a) ^ n) 
 theorem signRight_mul_self {x : ℝ} {p : ℝ[X]} (hp : p ≠ 0) : signRight x (p * p) = 1 := by
   rw [signRight_mul]
   have := signRight_ne_zero (x := x) hp
-  cases h : signRight x p <;> simp_all
+  exact (mul_eq_one_iff_inv_eq₀ this).mpr rfl
 
 /-- Away from its roots, the sign of `p` to the right of `x` is the sign of `p x`. -/
 theorem signRight_of_eval_ne_zero {x : ℝ} {p : ℝ[X]} (h : eval x p ≠ 0) :
@@ -127,7 +159,7 @@ theorem signRight_derivative_mul {x : ℝ} {p : ℝ[X]} (hp : p ≠ 0) (hev : ev
     signRight x (derivative p * p) = 1 := by
   rw [signRight_mul, ← signRight_of_eval_eq_zero hev]
   have := signRight_ne_zero (x := x) hp
-  cases h : signRight x p <;> simp_all
+  exact (mul_eq_one_iff_inv_eq₀ this).mpr rfl
 
 theorem signRight_add {x : ℝ} {p q : ℝ[X]} (hp : eval x p = 0) (hq : eval x q ≠ 0) :
     signRight x (p + q) = signRight x q := by
@@ -136,5 +168,7 @@ theorem signRight_add {x : ℝ} {p q : ℝ[X]} (hp : eval x p = 0) (hq : eval x 
 
 theorem signRight_mod {x : ℝ} {p q : ℝ[X]} (hp : eval x p = 0) (hq : eval x q ≠ 0) :
     signRight x (q % p) = signRight x q := by
-  have h : eval x (q % p) ≠ 0 := by rw [eval_mod q p x hp]; exact hq
-  rw [signRight_of_eval_ne_zero h, signRight_of_eval_ne_zero hq, eval_mod q p x hp]
+  have h : eval x (q % p) ≠ 0 := by rw [eval_mod_eq_self_of_root hp]; exact hq
+  rw [signRight_of_eval_ne_zero h, signRight_of_eval_ne_zero hq, eval_mod_eq_self_of_root hp]
+
+end Polynomial
