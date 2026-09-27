@@ -207,16 +207,14 @@ def getManyGoals : InfoTree → Array (Syntax × Option (Nat × Nat × Nat))
   | _ => default
 
 @[inherit_doc Mathlib.Linter.linter.style.multiGoal]
-def multiGoalLinter : Linter where run := withSetOptionIn fun _stx ↦ do
+def multiGoalLinter : Linter where run := withSetOptionIn fun stx ↦ do
     unless getLinterValue linter.style.multiGoal (← getLinterOptions) do
       return
     if (← get).messages.hasErrors then
       return
-    let poss := getNonTerminalCdots _stx
+    let poss := getNonTerminalCdots stx
     let trees ← getInfoTrees
     for t in trees do
-      --dbg_trace "superfluous cdots: {poss}"
-      --dbg_trace "goals info is {getManyGoals poss t}"
       for (s, opt) in getManyGoals poss t do
         match opt with
         | none =>
