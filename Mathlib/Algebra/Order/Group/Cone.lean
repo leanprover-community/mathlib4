@@ -164,7 +164,7 @@ abbrev PartialOrder.mkOfGroupCone [GroupConeClass S G] : PartialOrder G where
     simpa [div_eq_one, eq_comm] using eq_one_of_mem_of_inv_mem nab (by simpa using nba)
 
 set_option linter.deprecated false in
-@[to_additive (deprecated PartialOrder.mkOfSubmonoid_le_iff (since := "2026-03-28"))]
+@[to_additive (attr := deprecated PartialOrder.mkOfSubmonoid_le_iff (since := "2026-03-28"))]
 lemma PartialOrder.mkOfGroupCone_le_iff {S G : Type*} [CommGroup G] [SetLike S G]
     [GroupConeClass S G] {C : S} {a b : G} :
     (mkOfGroupCone C).le a b ↔ b / a ∈ C := Iff.rfl
