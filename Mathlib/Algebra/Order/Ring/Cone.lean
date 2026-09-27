@@ -20,19 +20,19 @@ subsemirings `S` of `R` such that `S ∩ -S = 0`.
 
 variable (R : Type*) [Ring R]
 
-theorem Subsemiring.nonneg.isPointed [PartialOrder R] [IsOrderedRing R] :
+theorem Subsemiring.IsPointed.nonneg [PartialOrder R] [IsOrderedRing R] :
     (Subsemiring.nonneg R).IsPointed := AddSubmonoid.nonneg.isPointed R
 
-theorem Subsemiring.nonneg.isSpanning [LinearOrder R] [IsOrderedRing R] :
+theorem Subsemiring.IsSpanning.nonneg [LinearOrder R] [IsOrderedRing R] :
     (Subsemiring.nonneg R).IsSpanning := AddSubmonoid.nonneg.isSpanning R
 
 variable {R} {S : Subsemiring R} (hS : S.IsPointed)
 
-theorem IsOrderedRing.mkOfSubsemiring :
-    letI _ := PartialOrder.mkOfAddSubmonoid hS
+theorem IsOrderedRing.ofSubsemiring :
+    letI _ := PartialOrder.ofAddSubmonoid hS
     IsOrderedRing R :=
-  letI _ := PartialOrder.mkOfAddSubmonoid hS
-  haveI := IsOrderedAddMonoid.mkOfAddSubmonoid hS
+  letI _ := PartialOrder.ofAddSubmonoid hS
+  haveI := IsOrderedAddMonoid.ofAddSubmonoid hS
   haveI : ZeroLEOneClass R := ⟨by simp⟩
   .of_mul_nonneg fun x y xnn ynn ↦ show _ ∈ S by simpa using Subsemiring.mul_mem _ xnn ynn
 
@@ -90,7 +90,7 @@ variable {T : Type*} [Ring T] [PartialOrder T] [IsOrderedRing T] {a : T}
 set_option linter.deprecated false in
 variable (T) in
 /-- Construct a cone from the set of non-negative elements of a partially ordered ring. -/
-@[deprecated Subsemiring.nonneg.isPointed (since := "2026-03-28")]
+@[deprecated Subsemiring.IsPointed.nonneg (since := "2026-03-28")]
 def nonneg : RingCone T where
   __ := Subsemiring.nonneg T
   eq_zero_of_mem_of_neg_mem' {a} := by simpa using ge_antisymm
@@ -112,7 +112,7 @@ set_option linter.deprecated false in
 lemma coe_nonneg : nonneg T = {x : T | 0 ≤ x} := rfl
 
 set_option linter.deprecated false in
-@[deprecated Subsemiring.nonneg.isSpanning (since := "2026-03-28")]
+@[deprecated Subsemiring.IsSpanning.nonneg (since := "2026-03-28")]
 instance nonneg.hasMemOrNegMem {T : Type*} [Ring T] [LinearOrder T] [IsOrderedRing T] :
     HasMemOrNegMem (nonneg T) where
   mem_or_neg_mem := mem_or_neg_mem (AddGroupCone.nonneg T)
@@ -123,7 +123,7 @@ variable {S R : Type*} [Ring R] [SetLike S R] (C : S)
 
 set_option linter.deprecated false in
 /-- Construct a partially ordered ring by designating a cone in a ring. -/
-@[deprecated IsOrderedRing.mkOfSubsemiring (since := "2026-03-28")]
+@[deprecated IsOrderedRing.ofSubsemiring (since := "2026-03-28")]
 lemma IsOrderedRing.mkOfCone [RingConeClass S R] :
     letI _ : PartialOrder R := .mkOfAddGroupCone C
     IsOrderedRing R :=
