@@ -97,10 +97,6 @@ theorem log_stirlingSeq'_antitone : Antitone (Real.log ∘ stirlingSeq ∘ succ)
   antitone_nat_of_succ_le fun n =>
     sub_nonneg.mp <| (log_stirlingSeq_sdiff_hasSum n).nonneg fun m => by positivity
 
-set_option linter.deprecated.deprecatedTarget false in
-@[deprecated (since := "2026-06-03")]
-alias log_stirlingSeq_diff_le_geo_sum := log_stirlingSeq_sdiff_le_geo_sum
-
 /-- **Robbins' sharp stepwise bound** for the Stirling sequence:
 `log (stirlingSeq n) - log (stirlingSeq (n+1)) ≤ 1 / (12 n (n + 1))`. -/
 theorem log_stirlingSeq_sdiff_le (n : ℕ) :
@@ -118,6 +114,8 @@ theorem log_stirlingSeq_sdiff_le (n : ℕ) :
   grind [((hasSum_geometric_of_lt_one (by positivity) hr1).mul_right r).div_const 3]
 
 @[deprecated (since := "2026-06-03")] alias log_stirlingSeq_diff_le := log_stirlingSeq_sdiff_le
+@[deprecated (since := "2026-06-03")]
+alias log_stirlingSeq_diff_le_geo_sum := log_stirlingSeq_sdiff_le
 
 /-- For any `n`, we have `log_stirlingSeq 1 - log_stirlingSeq n ≤ 12⁻¹`. -/
 theorem log_stirlingSeq_bounded_aux (n : ℕ) :
