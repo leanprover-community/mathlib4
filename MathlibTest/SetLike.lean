@@ -52,8 +52,8 @@ example [Monoid M] (x y z : M) (S₁ S₂ : Submonoid M) (h : S₁ ≤ S₂) (hx
     x * y * z ∈ S₂ := by
   membership
 
--- TODO : make `membership` work here
-example [Monoid M] (x y z : M) (S₁ S₂ : Submonoid M) (hx : x ∈ S₁)
+-- TODO : make `membership` work here and remove `h`
+example [Monoid M] (x y z : M) (S₁ S₂ : Submonoid M) (h : S₁ ≤ S₂) (hx : x ∈ S₁)
     (hy : y ∈ S₁) (hz : z ∈ S₂) :
     x * y * z ∈ S₁ ⊔ S₂ := by
   aesop
