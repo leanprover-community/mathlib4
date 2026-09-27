@@ -30,12 +30,14 @@ This file proves the unsigned version of the Hahn decomposition theorem.
 Hahn decomposition
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MeasureTheory.Measure.rnDeriv
 assert_not_exists MeasureTheory.VectorMeasure
 
-open Set Filter Topology ENNReal
+open Set Filter ENNReal
+
+open scoped Topology
 
 namespace MeasureTheory
 
@@ -54,7 +56,7 @@ theorem hahn_decomposition (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMe
   have to_nnreal_ν : ∀ s, ((ν s).toNNReal : ℝ≥0∞) = ν s := fun s => ENNReal.coe_toNNReal <| hν _
   have d_split s t (ht : MeasurableSet t) : d s = d (s \ t) + d (s ∩ t) := by
     dsimp only [d]
-    rw [← measure_inter_add_diff s ht, ← measure_inter_add_diff s ht,
+    rw [← measure_inter_add_sdiff s ht, ← measure_inter_add_sdiff s ht,
       ENNReal.toNNReal_add (hμ _) (hμ _), ENNReal.toNNReal_add (hν _) (hν _), NNReal.coe_add,
       NNReal.coe_add]
     simp only [sub_eq_add_neg, neg_add]
@@ -117,7 +119,7 @@ theorem hahn_decomposition (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMe
         _ ≤ d (e (n + 1)) + d (f m n \ e (n + 1)) + d (f m (n + 1)) := by
           rw [f_succ _ _ hmn, d_split (f m n) (e (n + 1)) (he₁ _), add_assoc]
         _ = d (e (n + 1) ∪ f m n) + d (f m (n + 1)) := by
-          rw [d_split (e (n + 1) ∪ f m n) (e (n + 1)), union_diff_left, union_inter_cancel_left]
+          rw [d_split (e (n + 1) ∪ f m n) (e (n + 1)), union_sdiff_left, union_inter_cancel_left]
           · abel
           · exact he₁ _
         _ ≤ γ + d (f m (n + 1)) := by grw [d_le_γ _ <| (he₁ _).union (hf _ _)]
@@ -129,12 +131,12 @@ theorem hahn_decomposition (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMe
       exact
         tendsto_const_nhds.sub <|
           tendsto_const_nhds.mul <|
-            tendsto_pow_atTop_nhds_zero_of_lt_one (le_of_lt <| half_pos <| zero_lt_one)
+            tendsto_pow_atTop_nhds_zero_of_lt_one (le_of_lt <| half_pos zero_lt_one)
               (half_lt_self zero_lt_one)
     have hd : Tendsto (fun m => d (⋂ n, f m n)) atTop (𝓝 (d (⋃ m, ⋂ n, f m n))) := by
       refine d_Union _ ?_
       exact fun n m hnm =>
-        subset_iInter fun i => Subset.trans (iInter_subset (f n) i) <| f_subset_f hnm <| le_rfl
+        subset_iInter fun i => Subset.trans (iInter_subset (f n) i) <| f_subset_f hnm le_rfl
     refine le_of_tendsto_of_tendsto' hγ hd fun m => ?_
     have : Tendsto (fun n => d (f m n)) atTop (𝓝 (d (⋂ n, f m n))) := by
       refine d_Inter _ ?_ ?_
@@ -145,7 +147,7 @@ theorem hahn_decomposition (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMe
     refine ge_of_tendsto this (eventually_atTop.2 ⟨m, fun n hmn => ?_⟩)
     change γ - 2 * (1 / 2) ^ m ≤ d (f m n)
     refine le_trans ?_ (le_d_f _ _ hmn)
-    exact le_add_of_le_of_nonneg le_rfl (pow_nonneg (le_of_lt <| half_pos <| zero_lt_one) _)
+    exact le_add_of_le_of_nonneg le_rfl (pow_nonneg (le_of_lt <| half_pos zero_lt_one) _)
   have hs : MeasurableSet s := MeasurableSet.iUnion fun n => MeasurableSet.iInter fun m => hf _ _
   refine ⟨s, hs, ?_, ?_⟩
   · intro t ht hts
@@ -163,7 +165,7 @@ theorem hahn_decomposition (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMe
         calc
           γ + d t ≤ d s + d t := by gcongr
           _ = d (s ∪ t) := by
-            rw [d_split (s ∪ t) _ ht, union_diff_right, union_inter_cancel_right,
+            rw [d_split (s ∪ t) _ ht, union_sdiff_right, union_inter_cancel_right,
               (subset_compl_iff_disjoint_left.1 hts).sdiff_eq_left]
           _ ≤ γ + 0 := by rw [add_zero]; exact d_le_γ _ (hs.union ht)
     rw [← to_nnreal_μ, ← to_nnreal_ν, ENNReal.coe_le_coe, ← NNReal.coe_le_coe]

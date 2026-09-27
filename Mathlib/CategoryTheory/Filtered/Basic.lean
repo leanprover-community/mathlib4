@@ -32,6 +32,7 @@ easier to describe than general colimits (and more often preserved by functors).
 
 In this file we show that any functor from a finite category to a filtered category admits a cocone:
 * `cocone_nonempty [FinCategory J] [IsFiltered C] (F : J ⥤ C) : Nonempty (Cocone F)`
+
 More generally,
 for any finite collection of objects and morphisms between them in a filtered category
 (even if not closed under composition) there exists some object `Z` receiving maps from all of them,
@@ -120,8 +121,8 @@ example (α : Type u) [SemilatticeSup α] [OrderBot α] : IsFiltered α := by in
 example (α : Type u) [SemilatticeSup α] [OrderTop α] : IsFiltered α := by infer_instance
 
 instance : IsFiltered (Discrete PUnit) where
-  cocone_objs X Y := ⟨⟨PUnit.unit⟩, ⟨⟨by trivial⟩⟩, ⟨⟨by subsingleton⟩⟩, trivial⟩
-  cocone_maps X Y f g := ⟨⟨PUnit.unit⟩, ⟨⟨by trivial⟩⟩, by subsingleton⟩
+  cocone_objs X Y := ⟨⟨PUnit.unit⟩, ⟨by trivial⟩, ⟨by subsingleton⟩, trivial⟩
+  cocone_maps X Y f g := ⟨⟨PUnit.unit⟩, ⟨by trivial⟩, by subsingleton⟩
 
 namespace IsFiltered
 
@@ -284,6 +285,7 @@ theorem toSup_commutes {X Y : C} (mX : X ∈ O) (mY : Y ∈ O) {f : X ⟶ Y}
 
 variable {J : Type w} [SmallCategory J] [FinCategory J]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If we have `IsFiltered C`, then for any functor `F : J ⥤ C` with `FinCategory J`,
 there exists a cocone over `F`.
 -/
@@ -618,10 +620,8 @@ example (α : Type u) [SemilatticeInf α] [OrderBot α] : IsCofiltered α := by 
 example (α : Type u) [SemilatticeInf α] [OrderTop α] : IsCofiltered α := by infer_instance
 
 instance : IsCofiltered (Discrete PUnit) where
-  cone_objs _ Y := ⟨⟨PUnit.unit⟩, ⟨⟨by trivial⟩⟩, ⟨⟨by subsingleton⟩⟩, trivial⟩
-  cone_maps X Y f g := ⟨⟨PUnit.unit⟩, ⟨⟨by trivial⟩⟩, by
-    apply ULift.ext
-    subsingleton⟩
+  cone_objs _ Y := ⟨⟨PUnit.unit⟩, ⟨by trivial⟩, ⟨by subsingleton⟩, trivial⟩
+  cone_maps X Y f g := ⟨⟨PUnit.unit⟩, by trivial, by subsingleton⟩
 
 namespace IsCofiltered
 
@@ -684,7 +684,7 @@ theorem _root_.CategoryTheory.Functor.ranges_directed (F : C ⥤ Type*) (j : C) 
   let ⟨l, li, lk, e⟩ := cospan ij kj
   refine ⟨⟨l, lk ≫ kj⟩, e ▸ ?_, ?_⟩ <;>
     simp_rw [F.map_comp] <;>
-    convert Set.range_comp_subset_range _ _
+    convert! Set.range_comp_subset_range _ _
 
 /-- Given a "bowtie" of morphisms
 ```
@@ -815,6 +815,7 @@ theorem infTo_commutes {X Y : C} (mX : X ∈ O) (mY : Y ∈ O) {f : X ⟶ Y}
 
 variable {J : Type w} [SmallCategory J] [FinCategory J]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If we have `IsCofiltered C`, then for any functor `F : J ⥤ C` with `FinCategory J`,
 there exists a cone over `F`.
 -/

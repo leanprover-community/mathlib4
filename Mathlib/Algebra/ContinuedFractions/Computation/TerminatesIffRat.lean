@@ -36,7 +36,7 @@ namespace GenContFract
 
 open GenContFract (of)
 
-variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorRing K]
+variable {K : Type*} [Field K] [LinearOrder K] [FloorRing K]
 
 /-
 We will have to constantly coerce along our structures in the following proofs using their provided
@@ -150,7 +150,7 @@ the Computation first and then lift the results step-by-step.
 
 
 -- The lifting works for arbitrary linear ordered fields with a floor function.
-variable {v : K} {q : ℚ}
+variable [IsStrictOrderedRing K] {v : K} {q : ℚ}
 
 /-! First, we show the correspondence for the very basic functions in
 `GenContFract.IntFractPair`. -/
@@ -176,9 +176,7 @@ theorem coe_stream_nth_rat_eq (v_eq_q : v = (↑q : K)) (n : ℕ) :
       obtain ⟨b, fr⟩ := ifp_n
       rcases Decidable.em (fr = 0) with fr_zero | fr_ne_zero
       · simp [IntFractPair.stream, IH.symm, v_eq_q, stream_q_nth_eq, fr_zero]
-      · replace IH : some (IntFractPair.mk b (fr : K)) = IntFractPair.stream (↑q) n := by
-          rwa [stream_q_nth_eq] at IH
-        have : (fr : K)⁻¹ = ((fr⁻¹ : ℚ) : K) := by norm_cast
+      · have : (fr : K)⁻¹ = ((fr⁻¹ : ℚ) : K) := by norm_cast
         have coe_of_fr := coe_of_rat_eq this
         simpa [IntFractPair.stream, IH.symm, v_eq_q, stream_q_nth_eq, fr_ne_zero]
 
@@ -195,6 +193,7 @@ end IntFractPair
 theorem coe_of_h_rat_eq (v_eq_q : v = (↑q : K)) : (↑((of q).h : ℚ) : K) = (of v).h := by
   simp_all
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_of_s_get?_rat_eq (v_eq_q : v = (↑q : K)) (n : ℕ) :
     (((of q).s.get? n).map (Pair.map (↑)) : Option <| Pair K) = (of v).s.get? n := by
   simp only [of, IntFractPair.seq1, Stream'.Seq.map_get?, Stream'.Seq.get?_tail]
@@ -216,11 +215,8 @@ theorem coe_of_rat_eq (v_eq_q : v = (↑q : K)) :
 
 theorem of_terminates_iff_of_rat_terminates {v : K} {q : ℚ} (v_eq_q : v = (q : K)) :
     (of v).Terminates ↔ (of q).Terminates := by
-  constructor <;> intro h <;> obtain ⟨n, h⟩ := h <;> use n <;>
-    simp only [Stream'.Seq.TerminatedAt, (coe_of_s_get?_rat_eq v_eq_q n).symm] at h ⊢ <;>
-    cases h' : (of q).s.get? n <;>
-    simp only [h'] at h <;>
-    trivial
+  refine exists_congr fun n => ?_
+  rcases h : (of q).s.get? n <;> grind [Stream'.Seq.TerminatedAt, coe_of_s_get?_rat_eq v_eq_q n]
 
 end RatTranslation
 
@@ -264,7 +260,7 @@ theorem stream_succ_nth_fr_num_lt_nth_fr_num_rat {ifp_n ifp_succ_n : IntFractPai
   cases this
   rw [← IntFractPair.of_eq_ifp_succ_n]
   obtain ⟨zero_le_ifp_n_fract, _⟩ := nth_stream_fr_nonneg_lt_one stream_nth_eq
-  have : 0 < ifp_n.fr := lt_of_le_of_ne zero_le_ifp_n_fract <| ifp_n_fract_ne_zero.symm
+  have : 0 < ifp_n.fr := lt_of_le_of_ne zero_le_ifp_n_fract ifp_n_fract_ne_zero.symm
   exact of_inv_fr_num_lt_num_of_pos this
 
 theorem stream_nth_fr_num_le_fr_num_sub_n_rat :
@@ -313,10 +309,9 @@ theorem terminates_of_rat (q : ℚ) : (of q).Terminates :=
 end TerminatesOfRat
 
 /-- The continued fraction `GenContFract.of v` terminates if and only if `v ∈ ℚ`. -/
-theorem terminates_iff_rat (v : K) : (of v).Terminates ↔ ∃ q : ℚ, v = (q : K) :=
-  Iff.intro
-    (fun terminates_v : (of v).Terminates =>
-      show ∃ q : ℚ, v = (q : K) from exists_rat_eq_of_terminates terminates_v)
+theorem terminates_iff_rat [IsStrictOrderedRing K] (v : K) :
+    (of v).Terminates ↔ ∃ q : ℚ, v = (q : K) :=
+  Iff.intro exists_rat_eq_of_terminates
     fun exists_q_eq_v : ∃ q : ℚ, v = (↑q : K) =>
     Exists.elim exists_q_eq_v fun q => fun v_eq_q : v = ↑q =>
       have : (of q).Terminates := terminates_of_rat q

@@ -99,17 +99,17 @@ instance : Group (QuaternionGroup n) where
   one := one
   one_mul := by
     rintro (i | i)
-    · exact congr_arg a (zero_add i)
-    · exact congr_arg xa (sub_zero i)
+    · congrm a $(zero_add i)
+    · congrm xa $(sub_zero i)
   mul_one := by
     rintro (i | i)
-    · exact congr_arg a (add_zero i)
-    · exact congr_arg xa (add_zero i)
+    · congrm a $(add_zero i)
+    · congrm xa $(add_zero i)
   inv := inv
   inv_mul_cancel := by
     rintro (i | i)
-    · exact congr_arg a (neg_add_cancel i)
-    · exact congr_arg a (sub_self (n + i))
+    · congrm a $(neg_add_cancel i)
+    · congrm a $(sub_self (n + i))
 
 @[simp]
 theorem a_mul_a (i j : ZMod (2 * n)) : a i * a j = a (i + j) :=
@@ -168,7 +168,7 @@ instance [NeZero n] : Fintype (QuaternionGroup n) :=
   Fintype.ofEquiv _ fintypeHelper
 
 instance : Nontrivial (QuaternionGroup n) :=
-  ⟨⟨a 0, xa 0, by simp [- a_zero]⟩⟩
+  ⟨⟨a 0, xa 0, by simp [-a_zero]⟩⟩
 
 /-- If `0 < n`, then `QuaternionGroup n` has `4n` elements.
 -/
@@ -203,7 +203,7 @@ theorem xa_pow_four (i : ZMod (2 * n)) : xa i ^ 4 = 1 := by
 @[simp]
 theorem orderOf_xa [NeZero n] (i : ZMod (2 * n)) : orderOf (xa i) = 4 := by
   change _ = 2 ^ 2
-  haveI : Fact (Nat.Prime 2) := Fact.mk Nat.prime_two
+  have : Fact (Nat.Prime 2) := Fact.mk Nat.prime_two
   apply orderOf_eq_prime_pow
   · intro h
     simp only [pow_one, xa_sq] at h
@@ -229,7 +229,7 @@ theorem orderOf_a_one : orderOf (a 1 : QuaternionGroup n) = 2 * n := by
     intro n h
     rw [one_def, a_one_pow]
     apply mt a.inj
-    haveI : CharZero (ZMod (2 * 0)) := ZMod.charZero
+    have : CharZero (ZMod (2 * 0)) := ZMod.charZero
     simpa using h.ne'
   apply (Nat.le_of_dvd
     (NeZero.pos _) (orderOf_dvd_of_pow_eq_one (@a_one_pow_n n))).lt_or_eq.resolve_left
@@ -262,9 +262,9 @@ theorem exponent : Monoid.exponent (QuaternionGroup n) = 2 * lcm n 2 := by
     · rw [← orderOf_dvd_iff_pow_eq_one, orderOf_xa]
       exact dvd_lcm_right (2 * n) 4
   · apply lcm_dvd
-    · convert Monoid.order_dvd_exponent (a 1)
+    · convert! Monoid.order_dvd_exponent (a 1)
       exact orderOf_a_one.symm
-    · convert Monoid.order_dvd_exponent (xa (0 : ZMod (2 * n)))
+    · convert! Monoid.order_dvd_exponent (xa (0 : ZMod (2 * n)))
       exact (orderOf_xa 0).symm
 
 end QuaternionGroup

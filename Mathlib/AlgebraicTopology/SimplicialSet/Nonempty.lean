@@ -16,7 +16,9 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 
 universe u
 
-open Simplicial CategoryTheory Limits
+open CategoryTheory Limits
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -24,6 +26,10 @@ variable (X : SSet.{u})
 
 /-- A simplicial set is nonempty when the type of `0`-simplices is nonempty. -/
 protected abbrev Nonempty : Prop := _root_.Nonempty (X _⦋0⦌)
+
+variable {X} in
+lemma Nonempty.mk {n : SimplexCategoryᵒᵖ} (x : X.obj n) : X.Nonempty :=
+  ⟨X.map (SimplexCategory.const _ _ 0).op x⟩
 
 instance (n : SimplexCategoryᵒᵖ) [X.Nonempty] : Nonempty (X.obj n) :=
   ⟨X.map (SimplexCategory.const n.unop ⦋0⦌ 0).op (Classical.arbitrary _)⟩
@@ -57,7 +63,7 @@ def isInitialOfNotNonempty (hX : ¬ X.Nonempty) : IsInitial X := by
   have (n : SimplexCategoryᵒᵖ) : IsEmpty (X.obj n) :=
     Function.isEmpty (X.map (⦋0⦌.const n.unop 0).op)
   exact IsInitial.ofUniqueHom (fun _ ↦
-    { app _ := TypeCat.ofHom fun x ↦ isEmptyElim x
+    { app _ := ↾fun x ↦ isEmptyElim x
       naturality _ _ _  := by ext x; exact isEmptyElim x })
     (fun _ _ ↦ by ext _ x; exact isEmptyElim x)
 

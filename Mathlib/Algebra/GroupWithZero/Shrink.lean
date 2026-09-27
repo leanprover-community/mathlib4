@@ -13,7 +13,7 @@ public import Mathlib.Algebra.GroupWithZero.TransferInstance
 # Transfer group with zero structures from `α` to `Shrink α`
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -26,4 +26,4 @@ instance [MulZeroClass α] : MulZeroClass (Shrink α) := (equivShrink _).symm.mu
 instance [MulZeroOneClass α] : MulZeroOneClass (Shrink α) := (equivShrink _).symm.mulZeroOneClass
 
 instance [Monoid M] [AddCommMonoid α] [DistribMulAction M α] : DistribMulAction M (Shrink.{v} α) :=
-  (equivShrink α).symm.distribMulAction M
+  Shrink.addEquiv.distribMulAction M

@@ -10,7 +10,6 @@ public import Mathlib.Analysis.BoxIntegral.Integrability
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.Analysis.Calculus.FDeriv.Equiv
 public import Mathlib.MeasureTheory.Integral.Prod
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # Divergence theorem for Bochner integral
@@ -126,7 +125,7 @@ private theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₁ (I
       Hd _ ⟨hx.1, fun h => hx.2 ⟨h, hx.1⟩⟩
   rw [continuousOn_pi] at Hc
   refine (A.unique B).trans (sum_congr rfl fun i _ => ?_)
-  refine congr_arg₂ Sub.sub ?_ ?_
+  congrm ?_ - ?_
   · have := Box.continuousOn_face_Icc (Hc i) (Set.right_mem_Icc.2 (I.lower_le_upper i))
     have := (this.integrableOn_compact (μ := volume) (Box.isCompact_Icc _)).mono_set
       Box.coe_subset_Icc
@@ -182,7 +181,7 @@ private theorem integral_divergence_of_hasFDerivAt_off_countable_aux₂ (I : Box
       Tendsto (fun k => ∫ x in Box.Icc ((J k).face i), f (i.insertNth (c k) x) i) atTop
         (𝓝 <| ∫ x in Box.Icc (I.face i), f (i.insertNth d x) i) by
     rw [Box.Icc_eq_pi] at hJ_sub'
-    refine tendsto_finset_sum _ fun i _ => (this _ _ _ ?_ (hJu _)).sub (this _ _ _ ?_ (hJl _))
+    refine tendsto_finsetSum _ fun i _ => (this _ _ _ ?_ (hJu _)).sub (this _ _ _ ?_ (hJl _))
     exacts [fun k => hJ_sub' k (J k).upper_mem_Icc _ trivial, fun k =>
       hJ_sub' k (J k).lower_mem_Icc _ trivial]
   intro i c d hc hcd
@@ -455,8 +454,9 @@ theorem integral_divergence_prod_Icc_of_hasFDerivAt_off_countable_of_le (f g : �
           ((∫ x in Icc a.1 b.1, g (x, b.2)) - ∫ x in Icc a.1 b.1, g (x, a.2)) := by
       have : ∀ (a b : ℝ¹) (f : ℝ¹ → E),
           ∫ x in Icc a b, f x = ∫ x in Icc (a 0) (b 0), f fun _ => x := fun a b f ↦ by
-        convert (((volume_preserving_funUnique (Fin 1) ℝ).symm _).setIntegral_preimage_emb
-          (MeasurableEquiv.measurableEmbedding _) f _).symm
+        convert!
+          (((volume_preserving_funUnique (Fin 1) ℝ).symm _).setIntegral_preimage_emb
+              (MeasurableEquiv.measurableEmbedding _) f _).symm
         exact ((OrderIso.funUnique (Fin 1) ℝ).symm.preimage_Icc a b).symm
       simp only [Fin.sum_univ_two, this]
       rfl
@@ -489,7 +489,7 @@ theorem integral_divergence_prod_Icc_of_hasFDerivAt_of_le (f g : ℝ × ℝ → 
       (((∫ x in a.1..b.1, g (x, b.2)) - ∫ x in a.1..b.1, g (x, a.2)) +
           ∫ y in a.2..b.2, f (b.1, y)) - ∫ y in a.2..b.2, f (a.1, y) :=
   integral_divergence_prod_Icc_of_hasFDerivAt_off_countable_of_le f g f' g' a b hle ∅
-    (by simp) Hcf Hcg (by simpa only [diff_empty]) (by simpa only [diff_empty]) Hi
+    (by simp) Hcf Hcg (by simpa only [sdiff_empty]) (by simpa only [sdiff_empty]) Hi
 
 /-- **Divergence theorem** for functions on the plane. It is formulated in terms of two functions
 `f g : ℝ × ℝ → E` and iterated integral `∫ x in a₁..b₁, ∫ y in a₂..b₂, _`, where
@@ -516,12 +516,12 @@ theorem integral2_divergence_prod_of_hasFDerivAt_off_countable (f g : ℝ × ℝ
   · specialize this b₁ a₁
     rw [uIcc_comm b₁ a₁, min_comm b₁ a₁, max_comm b₁ a₁] at this
     simp only [intervalIntegral.integral_symm b₁ a₁]
-    refine (congr_arg Neg.neg (this Hcf Hcg Hdf Hdg Hi (le_of_not_ge h₁))).trans ?_; abel
+    refine congr(-$(this Hcf Hcg Hdf Hdg Hi (le_of_not_ge h₁))).trans ?_; abel
   wlog h₂ : a₂ ≤ b₂ generalizing a₂ b₂
   · specialize this b₂ a₂
     rw [uIcc_comm b₂ a₂, min_comm b₂ a₂, max_comm b₂ a₂] at this
     simp only [intervalIntegral.integral_symm b₂ a₂, intervalIntegral.integral_neg]
-    refine (congr_arg Neg.neg (this Hcf Hcg Hdf Hdg Hi (le_of_not_ge h₂))).trans ?_; abel
+    refine congr(-$(this Hcf Hcg Hdf Hdg Hi (le_of_not_ge h₂))).trans ?_; abel
   simp only [uIcc_of_le h₁, uIcc_of_le h₂, min_eq_left, max_eq_right, h₁, h₂] at Hcf Hcg Hdf Hdg Hi
   calc
     (∫ x in a₁..b₁, ∫ y in a₂..b₂, f' (x, y) (1, 0) + g' (x, y) (0, 1)) =

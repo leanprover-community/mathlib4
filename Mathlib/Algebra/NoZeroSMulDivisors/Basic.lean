@@ -15,7 +15,7 @@ This file proves more lemmas about the `NoZeroSMulDivisors` class, which is depr
 `Module.IsTorsionFree`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Multiset Set.indicator Pi.single_smul₀ Field
 

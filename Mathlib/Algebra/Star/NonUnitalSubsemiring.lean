@@ -25,7 +25,7 @@ This file is heavily inspired by `Mathlib/Algebra/Star/NonUnitalSubalgebra.lean`
 
 universe v w w'
 
-variable {A : Type v} {B : Type w} {C : Type w'}
+variable {A : Type v}
 
 /-- A sub star semigroup is a subset of a magma which is closed under the `star`. -/
 structure SubStarSemigroup (M : Type v) [Mul M] [Star M] : Type v
@@ -53,7 +53,7 @@ namespace NonUnitalStarSubsemiring
 instance instSetLike {R : Type v} [NonUnitalNonAssocSemiring R] [Star R] :
     SetLike (NonUnitalStarSubsemiring R) R where
   coe {s} := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
+  coe_injective p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
 initialize_simps_projections NonUnitalStarSubsemiring (carrier → coe, as_prefix coe)
 

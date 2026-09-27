@@ -29,7 +29,7 @@ open Set
 
 open Filter hiding Realizer
 
-open Topology
+open scoped Topology
 
 /-- A `Ctop α σ` is a realization of a topology (basis) on `α`,
   represented by a type `σ` together with operations for the top element and
@@ -80,7 +80,7 @@ theorem ofEquiv_val (E : σ ≃ τ) (F : Ctop α σ) (a : τ) : F.ofEquiv E a = 
 end
 
 /-- Every `Ctop` is a topological space. -/
-@[implicit_reducible]
+@[instance_reducible]
 def toTopsp (F : Ctop α σ) : TopologicalSpace α := TopologicalSpace.generateFrom (Set.range F.f)
 
 theorem toTopsp_isTopologicalBasis (F : Ctop α σ) :
@@ -94,7 +94,7 @@ theorem toTopsp_isTopologicalBasis (F : Ctop α σ) :
 theorem mem_nhds_toTopsp (F : Ctop α σ) {s : Set α} {a : α} :
     s ∈ @nhds _ F.toTopsp a ↔ ∃ b, a ∈ F b ∧ F b ⊆ s :=
   (@TopologicalSpace.IsTopologicalBasis.mem_nhds_iff _ F.toTopsp _ _ _
-        F.toTopsp_isTopologicalBasis).trans <|
+        F.toTopsp_isTopologicalBasis).trans
     ⟨fun ⟨_, ⟨x, rfl⟩, h⟩ ↦ ⟨x, h⟩, fun ⟨x, h⟩ ↦ ⟨_, ⟨x, rfl⟩, h⟩⟩
 
 end Ctop
@@ -135,7 +135,7 @@ theorem isClosed_iff [TopologicalSpace α] (F : Realizer α) {s : Set α} :
     F.isOpen_iff.trans <|
       forall_congr' fun a ↦
         show (a ∉ s → ∃ b : F.σ, a ∈ F.F b ∧ ∀ z ∈ F.F b, z ∉ s) ↔ _ by
-          haveI := Classical.propDecidable; rw [not_imp_comm]
+          have := Classical.propDecidable; rw [not_imp_comm]
           simp [not_exists, not_and, not_forall, and_comm]
 
 theorem mem_interior_iff [TopologicalSpace α] (F : Realizer α) {s : Set α} {a : α} :
@@ -174,7 +174,7 @@ protected def id : Realizer α :=
 def ofEquiv (F : Realizer α) (E : F.σ ≃ τ) : Realizer α :=
   ⟨τ, F.F.ofEquiv E,
     ext' fun a s ↦
-      F.mem_nhds.trans <|
+      F.mem_nhds.trans
         ⟨fun ⟨s, h⟩ ↦ ⟨E s, by simpa using h⟩, fun ⟨t, h⟩ ↦ ⟨E.symm t, by simpa using h⟩⟩⟩
 
 @[simp]

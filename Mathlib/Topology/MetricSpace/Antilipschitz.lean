@@ -118,21 +118,22 @@ theorem comp {Kg : ℝ≥0} {g : β → γ} (hg : AntilipschitzWith Kg g) {Kf : 
     _ ≤ Kf * (Kg * edist (g (f x)) (g (f y))) := mul_right_mono (hg _ _)
     _ = _ := by rw [ENNReal.coe_mul, mul_assoc]; rfl
 
-theorem restrict (hf : AntilipschitzWith K f) (s : Set α) : AntilipschitzWith K (s.restrict f) :=
-  fun x y => hf x y
+theorem domRestrict (hf : AntilipschitzWith K f) (s : Set α) :
+    AntilipschitzWith K (s.domRestrict f) := fun x y => hf x y
+
+@[deprecated (since := "2026-07-19")] alias restrict := domRestrict
 
 theorem codRestrict (hf : AntilipschitzWith K f) {s : Set β} (hs : ∀ x, f x ∈ s) :
     AntilipschitzWith K (s.codRestrict f hs) := fun x y => hf x y
 
-theorem to_rightInvOn' {s : Set α} (hf : AntilipschitzWith K (s.restrict f)) {g : β → α}
+theorem to_rightInvOn' {s : Set α} (hf : AntilipschitzWith K (s.domRestrict f)) {g : β → α}
     {t : Set β} (g_maps : MapsTo g t s) (g_inv : RightInvOn g f t) :
-    LipschitzWith K (t.restrict g) := fun x y => by
-  simpa only [restrict_apply, g_inv x.mem, g_inv y.mem, Subtype.edist_mk_mk]
-    using hf ⟨g x, g_maps x.mem⟩ ⟨g y, g_maps y.mem⟩
+    LipschitzWith K (t.domRestrict g) := fun x y => by
+  simpa only [domRestrict_apply, g_inv x.mem, g_inv y.mem, Subtype.edist_mk_mk]
+    using! hf ⟨g x, g_maps x.mem⟩ ⟨g y, g_maps y.mem⟩
 
 theorem to_rightInvOn (hf : AntilipschitzWith K f) {g : β → α} {t : Set β} (h : RightInvOn g f t) :
-    LipschitzWith K (t.restrict g) :=
-  (hf.restrict univ).to_rightInvOn' (mapsTo_univ g t) h
+    LipschitzWith K (t.domRestrict g) := (hf.domRestrict univ).to_rightInvOn' (mapsTo_univ g t) h
 
 theorem to_rightInverse (hf : AntilipschitzWith K f) {g : β → α} (hg : Function.RightInverse g f) :
     LipschitzWith K g := by
@@ -183,7 +184,7 @@ theorem isClosedEmbedding {α : Type*} {β : Type*} [EMetricSpace α] [EMetricSp
   { (hf.isUniformEmbedding hfc).isEmbedding with isClosed_range := hf.isClosed_range hfc }
 
 theorem subtype_coe (s : Set α) : AntilipschitzWith 1 ((↑) : s → α) :=
-  AntilipschitzWith.id.restrict s
+  AntilipschitzWith.id.domRestrict s
 
 @[nontriviality]
 theorem of_subsingleton [Subsingleton α] {K : ℝ≥0} : AntilipschitzWith K f := fun x y => by
@@ -227,7 +228,7 @@ protected theorem properSpace {α : Type*} [MetricSpace α] {K : ℝ≥0} {f : �
   have A : IsClosed K := isClosed_closedBall.preimage f_cont
   have B : IsBounded K := hK.isBounded_preimage isBounded_closedBall
   have : IsCompact K := isCompact_iff_isClosed_bounded.2 ⟨A, B⟩
-  convert this.image f_cont
+  convert! this.image f_cont
   exact (hf.image_preimage _).symm
 
 theorem isBounded_of_image2_left (f : α → β → γ) {K₁ : ℝ≥0}

@@ -36,7 +36,7 @@ that is, there is a positive probability of reaching any
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory
 
@@ -44,7 +44,7 @@ open scoped MeasureTheory ENNReal ProbabilityTheory
 
 namespace ProbabilityTheory
 
-variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+variable {α : Type*} {mα : MeasurableSpace α}
 
 namespace Kernel
 

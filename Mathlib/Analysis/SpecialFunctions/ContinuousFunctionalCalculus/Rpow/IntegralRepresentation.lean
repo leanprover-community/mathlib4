@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Integral
 public import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
-import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.RingInverseOrder
 
 /-!
 # Integral representations of `rpow`
@@ -75,6 +76,13 @@ lemma rpowIntegrand₀₁_zero_right : rpowIntegrand₀₁ p t 0 = 0 := by simp 
 
 lemma rpowIntegrand₀₁_zero_left (hp : 0 < p) : rpowIntegrand₀₁ p 0 x = 0 := by
   simp [rpowIntegrand₀₁, Real.zero_rpow hp.ne']
+
+lemma rpowIntegrand₀₁_eq_sub {p t : ℝ} (hp : p ≠ 1) (ht : 0 < t) :
+    rpowIntegrand₀₁ p t = fun x => t ^ (p - 1) - t ^ p * (t + x)⁻¹ := by
+  unfold rpowIntegrand₀₁
+  ext x
+  rw [mul_sub, ← rpow_neg_one, ← rpow_add' (by grind) (by grind)]
+  grind only
 
 lemma rpowIntegrand₀₁_nonneg (hp : 0 < p) (ht : 0 ≤ t) (hx : 0 ≤ x) :
     0 ≤ rpowIntegrand₀₁ p t x := by
@@ -455,13 +463,13 @@ lemma cfcₙ_rpowIntegrand₀₁_eq_cfcₙ_rpowIntegrand₀₁_one {p t : ℝ} (
     simp only [mem_Ici, smul_eq_mul] at hx ⊢
     positivity
   calc _ = cfcₙ (fun x => t ^ ((p : ℝ) - 1) * (rpowIntegrand₀₁ p 1 (t⁻¹ • x))) a := by
-          refine cfcₙ_congr ?_
-          refine Set.EqOn.mono hspec (rpowIntegrand₀₁_eqOn_mul_rpowIntegrand₀₁_one ht)
+          congr! 1 with x hx
+          exact rpowIntegrand₀₁_eqOn_mul_rpowIntegrand₀₁_one ht (hspec hx)
     _ = t ^ ((p : ℝ) - 1) • cfcₙ (fun x => rpowIntegrand₀₁ p 1 (t⁻¹ • x)) a := by
           refine cfcₙ_smul (R := ℝ) (t ^ ((p : ℝ) - 1)) _ a ?_
           refine ContinuousOn.mono ?_ hspec
           have := continuousOn_rpowIntegrand₀₁_Ici hp zero_lt_one
-          fun_prop (disch := assumption)
+          fun_prop
     _ = t ^ ((p : ℝ) - 1) • cfcₙ (rpowIntegrand₀₁ p 1) (t⁻¹ • a) := by
           congr! 1
           refine cfcₙ_comp_smul (R := ℝ) t⁻¹ (fun x => rpowIntegrand₀₁ p 1 x) a ?_
@@ -552,7 +560,7 @@ lemma exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₁₂ [CompleteSpac
         rw [CFC.nnrpow_def]
       _ = cfcₙ (fun r => ∫ t in Ioi 0, rpowIntegrand₁₂ p t r ∂μ) a := by
         rw [cfcₙ_nnreal_eq_real ..]
-        refine cfcₙ_congr fun r hr => ?_
+        congr! 1 with r hr
         have hr' : 0 ≤ r := by grind
         simp only [sup_of_le_left hr', NNReal.nnrpow_def, NNReal.coe_rpow, coe_toNNReal']
         exact (hμ r hr').2
@@ -561,6 +569,31 @@ lemma exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₁₂ [CompleteSpac
           hbound_finite_integral ha.isSelfAdjoint
 
 end NonUnitalCFC
+
+section UnitalCStarAlgebra
+
+variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+
+/-- `rpowIntegrand₀₁ p t` is operator concave for all `p ∈ Ioo 0 1` -/
+lemma concaveOn_cfc_rpowIntegrand₀₁ {p t : ℝ} (hp : p ∈ Ioo 0 1) (ht : 0 < t) :
+    ConcaveOn ℝ (Ici (0 : A)) (cfc (rpowIntegrand₀₁ p t)) := by
+  have h₁ : (Ici (0 : A)).EqOn (cfc (rpowIntegrand₀₁ p t))
+      (fun x : A =>
+        algebraMap ℝ A (t ^ (p - 1)) - t ^ p • Ring.inverse (algebraMap ℝ A t + x)) := by
+    intro x hx
+    rw [rpowIntegrand₀₁_eq_sub (by grind) ht]
+    have hg : ContinuousOn (fun z : ℝ => (t + z)⁻¹) (spectrum ℝ x) := by
+      fun_prop (disch := grind -abstractProof)
+    have hf : ContinuousOn (fun z : ℝ => (1 + z)) (spectrum ℝ x) := by fun_prop
+    have hspectrum :  ∀ r ∈ spectrum ℝ x, t + r ≠ 0 := by grind
+    have := cfc_sub (fun _ : ℝ => t ^ (p - 1)) (fun z : ℝ => t ^ p * (t + z)⁻¹) x
+    rw [this, cfc_const .., cfc_const_mul .., cfc_inv _ _ hspectrum .., cfc_const_add ..,
+        cfc_id' ..]
+  refine ConcaveOn.congr ?_ h₁.symm
+  refine ConcaveOn.sub (concaveOn_const _ (convex_Ici 0)) ?_
+  exact ConvexOn.smul (by positivity) <| CStarAlgebra.convexOn_ringInverse_algebraMap_add ht
+
+end UnitalCStarAlgebra
 
 section NonUnitalCStarAlgebra
 
@@ -582,6 +615,14 @@ lemma monotoneOn_cfcₙ_rpowIntegrand₀₁ {p : ℝ} {t : ℝ} (hp : p ∈ Ioo 
       all_goals positivity
     _ = cfcₙ (rpowIntegrand₀₁ p t) b := by
       rw [cfcₙ_rpowIntegrand₀₁_eq_cfcₙ_rpowIntegrand₀₁_one hp ht b hb]
+
+open CStarAlgebra in
+/-- `rpowIntegrand₀₁ p t` is operator concave for all `p ∈ Ioo 0 1` and all `0 < t`. -/
+lemma concaveOn_cfcₙ_rpowIntegrand₀₁ {p : ℝ} {t : ℝ} (hp : p ∈ Ioo 0 1) (ht : 0 < t) :
+    ConcaveOn ℝ (Ici (0 : A)) (cfcₙ (rpowIntegrand₀₁ p t)) := by
+  apply concaveOn_cfcₙ_of_concaveOn_cfc
+  refine ConcaveOn.subset (concaveOn_cfc_rpowIntegrand₀₁ hp ht) inr_map_Ici_zero ?_
+  exact Convex.linear_image (convex_Ici _) (Unitization.inrHom ℝ ℂ A)
 
 end NonUnitalCStarAlgebra
 

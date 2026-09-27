@@ -15,12 +15,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 rather than from the existence of a zero object.
 -/
 
-@[expose] public section
+public section
 
-
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 universe u
 
@@ -42,11 +39,16 @@ instance : HasZeroObject GrpCat :=
 @[to_additive]
 lemma subsingleton_of_isZero {G : GrpCat} (h : Limits.IsZero G) :
     Subsingleton G :=
-  (h.iso (isZero_of_subsingleton <| .of PUnit)).groupIsoToMulEquiv.subsingleton
+  (h.iso (isZero_of_subsingleton ↧PUnit)).groupIsoToMulEquiv.subsingleton
 
 @[to_additive]
 lemma isZero_iff_subsingleton {G : GrpCat} : Limits.IsZero G ↔ Subsingleton G :=
   ⟨fun h ↦ subsingleton_of_isZero h, fun _ ↦ isZero_of_subsingleton G⟩
+
+@[to_additive]
+lemma isZero_of_iff_subsingleton {G : Type*} [Group G] :
+    Limits.IsZero (GrpCat.of G) ↔ Subsingleton G :=
+  isZero_iff_subsingleton
 
 end GrpCat
 
@@ -68,10 +70,15 @@ instance : HasZeroObject CommGrpCat :=
 @[to_additive]
 lemma subsingleton_of_isZero {G : CommGrpCat} (h : Limits.IsZero G) :
     Subsingleton G :=
-  (h.iso (isZero_of_subsingleton <| .of PUnit)).commGroupIsoToMulEquiv.subsingleton
+  (h.iso (isZero_of_subsingleton ↧PUnit)).commGroupIsoToMulEquiv.subsingleton
 
 @[to_additive]
 lemma isZero_iff_subsingleton {G : CommGrpCat} : Limits.IsZero G ↔ Subsingleton G :=
   ⟨fun h ↦ subsingleton_of_isZero h, fun _ ↦ isZero_of_subsingleton G⟩
+
+@[to_additive]
+lemma isZero_of_iff_subsingleton {G : Type*} [CommGroup G] :
+    Limits.IsZero (CommGrpCat.of G) ↔ Subsingleton G :=
+  isZero_iff_subsingleton
 
 end CommGrpCat

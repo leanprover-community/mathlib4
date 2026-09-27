@@ -16,7 +16,7 @@ public import Mathlib.Algebra.Ring.Pi
 This file defines instances for module and related structures on Pi Types
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w
@@ -30,7 +30,7 @@ namespace Pi
 
 theorem _root_.IsSMulRegular.pi {α : Type*} [∀ i, SMul α <| f i] {k : α}
     (hk : ∀ i, IsSMulRegular (f i) k) : IsSMulRegular (∀ i, f i) k := fun _ _ h =>
-  funext fun i => hk i (congr_fun h i :)
+  funext fun i => hk i congr($h i)
 
 variable (I f)
 

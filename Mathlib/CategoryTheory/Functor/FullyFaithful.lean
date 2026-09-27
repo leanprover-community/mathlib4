@@ -60,7 +60,7 @@ variable {X Y : C}
 
 @[grind inj, to_dual self]
 theorem map_injective (F : C ⥤ D) [Faithful F] :
-    Function.Injective <| (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) :=
+    Function.Injective (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) :=
   Faithful.map_injective
 
 lemma map_injective_iff (F : C ⥤ D) [Faithful F] {X Y : C} (f g : X ⟶ Y) :
@@ -68,8 +68,8 @@ lemma map_injective_iff (F : C ⥤ D) [Faithful F] {X Y : C} (f g : X ⟶ Y) :
   ⟨fun h => F.map_injective h, fun h => by rw [h]⟩
 
 theorem mapIso_injective (F : C ⥤ D) [Faithful F] :
-    Function.Injective <| (F.mapIso : (X ≅ Y) → (F.obj X ≅ F.obj Y)) := fun _ _ h =>
-  Iso.ext (map_injective F (congr_arg Iso.hom h :))
+    Function.Injective (F.mapIso : (X ≅ Y) → (F.obj X ≅ F.obj Y)) := fun _ _ h =>
+  Iso.ext (map_injective F congr($(h).hom))
 
 theorem map_surjective (F : C ⥤ D) [Full F] :
     Function.Surjective (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) :=
@@ -79,6 +79,9 @@ theorem map_surjective (F : C ⥤ D) [Full F] :
 @[to_dual self]
 noncomputable def preimage (F : C ⥤ D) [Full F] (f : F.obj X ⟶ F.obj Y) : X ⟶ Y :=
   (F.map_surjective f).choose
+
+-- TODO: `to_dual` should deal with this automatically:
+attribute [to_dual self] preimage.congr_simp
 
 @[simp, to_dual self]
 theorem map_preimage (F : C ⥤ D) [Full F] {X Y : C} (f : F.obj X ⟶ F.obj Y) :
@@ -94,12 +97,12 @@ variable [Full F] [F.Faithful]
 theorem preimage_id : F.preimage (𝟙 (F.obj X)) = 𝟙 X :=
   F.map_injective (by simp)
 
-@[simp]
+@[simp, to_dual self]
 theorem preimage_comp (f : F.obj X ⟶ F.obj Y) (g : F.obj Y ⟶ F.obj Z) :
     F.preimage (f ≫ g) = F.preimage f ≫ F.preimage g :=
   F.map_injective (by simp)
 
-@[simp]
+@[simp, to_dual self]
 theorem preimage_map (f : X ⟶ Y) : F.preimage (F.map f) = f :=
   F.map_injective (by simp)
 
@@ -122,16 +125,17 @@ theorem preimageIso_mapIso (f : X ≅ Y) : F.preimageIso (F.mapIso f) = f := by
 end
 
 variable (F) in
-/-- Structure containing the data of inverse map `(F.obj X ⟶ F.obj Y) ⟶ (X ⟶ Y)` of `F.map`
+/-- Structure containing the data of inverse map `(F.obj X ⟶ F.obj Y) → (X ⟶ Y)` of `F.map`
 in order to express that `F` is a fully faithful functor. -/
 structure FullyFaithful where
-  /-- The inverse map `(F.obj X ⟶ F.obj Y) ⟶ (X ⟶ Y)` of `F.map`. -/
+  /-- The inverse map `(F.obj X ⟶ F.obj Y) → (X ⟶ Y)` of `F.map`. -/
   preimage {X Y : C} (f : F.obj X ⟶ F.obj Y) : X ⟶ Y
   map_preimage {X Y : C} (f : F.obj X ⟶ F.obj Y) : F.map (preimage f) = f := by cat_disch
   preimage_map {X Y : C} (f : X ⟶ Y) : preimage (F.map f) = f := by cat_disch
 
 namespace FullyFaithful
 
+attribute [to_dual self] preimage map_preimage preimage_map
 attribute [simp] map_preimage preimage_map
 
 variable (F) in
@@ -153,13 +157,14 @@ variable (hF : F.FullyFaithful)
 include hF
 
 /-- The equivalence `(X ⟶ Y) ≃ (F.obj X ⟶ F.obj Y)` given by `h : F.FullyFaithful`. -/
-@[simps]
+@[simps, to_dual self]
 def homEquiv {X Y : C} : (X ⟶ Y) ≃ (F.obj X ⟶ F.obj Y) where
   toFun := F.map
   invFun := hF.preimage
   left_inv _ := by simp
   right_inv _ := by simp
 
+@[to_dual self]
 lemma map_injective {X Y : C} {f g : X ⟶ Y} (h : F.map f = F.map g) : f = g :=
   hF.homEquiv.injective h
 
@@ -369,7 +374,7 @@ can 'cancel' it to give a natural iso between `F` and `G`.
 noncomputable def fullyFaithfulCancelRight {F G : C ⥤ D} (H : D ⥤ E) [Full H] [H.Faithful]
     (comp_iso : F ⋙ H ≅ G ⋙ H) : F ≅ G :=
   NatIso.ofComponents (fun X => H.preimageIso (comp_iso.app X)) fun f =>
-    H.map_injective (by simpa using comp_iso.hom.naturality f)
+    H.map_injective (by simpa using! comp_iso.hom.naturality f)
 
 @[simp]
 theorem fullyFaithfulCancelRight_hom_app {F G : C ⥤ D} {H : D ⥤ E} [Full H] [H.Faithful]

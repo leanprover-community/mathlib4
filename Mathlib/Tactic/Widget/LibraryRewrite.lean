@@ -6,9 +6,14 @@ Authors: Jovan Gerbscheid, Anand Rao
 module
 
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree
-public import Mathlib.Lean.Meta.RefinedDiscrTree
-public import Mathlib.Tactic.Widget.InteractiveUnfold
+public meta import Mathlib.Tactic.Widget.SelectPanelUtils
+public meta import Mathlib.Lean.GoalsLocation
+public meta import Mathlib.Lean.Meta.KAbstractPositions
+public import Mathlib.Tactic.NthRewrite
 public import ProofWidgets.Component.FilterDetails
+public import ProofWidgets.Component.OfRpcMethod
+public import Mathlib.Lean.Meta.RefinedDiscrTree
+public import Mathlib.Tactic.Widget.SelectPanelUtils
 
 /-!
 # Point & click library rewriting
@@ -253,7 +258,7 @@ def checkAndSortRewriteLemmas (e : Expr) (rewrites : Array RewriteLemma) :
     (compare a.1.extraGoals.size b.1.extraGoals.size).then <|
     (compare a.1.symm b.1.symm).then <|
     (compare a.2.toString.length b.2.toString.length).then <|
-    (compare a.1.stringLength b.1.stringLength).then <|
+    (compare a.1.stringLength b.1.stringLength).then
     (Name.cmp a.2 b.2)
   return rewrites.qsort lt
 
@@ -346,6 +351,23 @@ def filterRewrites {α} (e : Expr) (rewrites : Array α) (replacement : α → E
 
 /-! ### User interface -/
 
+
+/-- Return syntax for the rewrite tactic `rw [e]`. -/
+def mkRewrite (occ : Option Nat) (symm : Bool) (e : Term) (loc : Option Name) :
+    CoreM (TSyntax `tactic) := do
+  let loc ← loc.mapM fun h => `(Lean.Parser.Tactic.location| at $(mkIdent h):term)
+  let rule ← if symm then `(Parser.Tactic.rwRule| ← $e) else `(Parser.Tactic.rwRule| $e:term)
+  match occ with
+  | some n => `(tactic| nth_rw $(Syntax.mkNatLit n):num [$rule] $(loc)?)
+  | none => `(tactic| rw [$rule] $(loc)?)
+
+/-- Given tactic syntax `tac` that we want to paste into the editor, return it as a string.
+This function respects the 100 character limit for long lines. -/
+def tacticPasteString (tac : TSyntax `tactic) (range : Lsp.Range) : CoreM String := do
+  let column := range.start.character
+  let indent := column
+  return (← PrettyPrinter.ppTactic tac).pretty 100 indent column
+
 /-- Return the rewrite tactic that performs the rewrite. -/
 def tacticSyntax (rw : Rewrite) (occ : Option Nat) (loc : Option Name) :
     MetaM (TSyntax `tactic) := withoutModifyingMCtx do
@@ -437,13 +459,10 @@ def pattern {α} (type : Expr) (symm : Bool) (k : Expr → MetaM α) : MetaM α 
     k (if symm then rhs else lhs)
 
 /-- Render the given rewrite results. -/
-def renderRewrites (e : Expr) (results : Array (Array RewriteInterface × Kind)) (init : Option Html)
+def renderRewrites (e : Expr) (results : Array (Array RewriteInterface × Kind))
     (range : Lsp.Range) (doc : FileWorker.EditableDocument) (showNames : Bool) :
     MetaM Html := do
   let htmls ← results.filterMapM (renderSection showNames)
-  let htmls := match init with
-    | some html => #[html] ++ htmls
-    | none => htmls
   if htmls.isEmpty then
     return <p> No rewrites found for <InteractiveCode fmt={← ppExprTagged e}/> </p>
   else
@@ -503,16 +522,14 @@ def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
       let some (subExpr, occ) ← withReducible <| viewKAbstractSubExpr rootExpr loc.pos |
         return .text "rw??: expressions with bound variables are not yet supported"
       unless ← kabstractIsTypeCorrect rootExpr subExpr loc.pos do
-        return .text <| "rw??: the selected expression cannot be rewritten, \
+        return .text "rw??: the selected expression cannot be rewritten, \
           because the motive is not type correct. \
           This usually occurs when trying to rewrite a term that appears as a dependent argument."
       let location ← loc.fvarId?.mapM FVarId.getUserName
 
-      let unfoldsHtml ← InteractiveUnfold.renderUnfolds subExpr occ location props.replaceRange doc
-
       let (filtered, all) ← getRewriteInterfaces subExpr occ location loc.fvarId? props.replaceRange
-      let filtered ← renderRewrites subExpr filtered unfoldsHtml props.replaceRange doc false
-      let all      ← renderRewrites subExpr all      unfoldsHtml props.replaceRange doc true
+      let filtered ← renderRewrites subExpr filtered props.replaceRange doc false
+      let all      ← renderRewrites subExpr all      props.replaceRange doc true
       return <FilterDetails
         summary={.text "Rewrite suggestions:"}
         all={all}

@@ -147,7 +147,7 @@ def FinsubgraphHom.restrict {G' G'' : G.Finsubgraph} (h : G'' ≤ G') (f : G' �
 def finsubgraphHomFunctor (G : SimpleGraph V) (F : SimpleGraph W) :
     G.Finsubgraphᵒᵖ ⥤ Type (max u v) where
   obj G' := G'.unop →fg F
-  map g := TypeCat.ofHom (fun f ↦ f.restrict (CategoryTheory.leOfHom g.unop))
+  map g := ↾(fun f ↦ f.restrict (CategoryTheory.leOfHom g.unop))
 
 /-- If every finite subgraph of a graph `G` has a homomorphism to a finite graph `F`, then there is
 a homomorphism from the whole of `G` to `F`. -/
@@ -156,9 +156,9 @@ theorem nonempty_hom_of_forall_finite_subgraph_hom [Finite W]
   -- Obtain a `Fintype` instance for `W`.
   cases nonempty_fintype W
   -- Establish the required interface instances.
-  haveI : ∀ G' : G.Finsubgraphᵒᵖ, Nonempty ((finsubgraphHomFunctor G F).obj G') := fun G' =>
+  have : ∀ G' : G.Finsubgraphᵒᵖ, Nonempty ((finsubgraphHomFunctor G F).obj G') := fun G' =>
     ⟨h G'.unop G'.unop.property⟩
-  haveI : ∀ G' : G.Finsubgraphᵒᵖ, Fintype ((finsubgraphHomFunctor G F).obj G') := by
+  have : ∀ G' : G.Finsubgraphᵒᵖ, Fintype ((finsubgraphHomFunctor G F).obj G') := by
     intro G'
     haveI : Fintype (G'.unop.val.verts : Type u) := G'.unop.property.fintype
     haveI : Fintype (↥G'.unop.val.verts → W) := by classical exact Pi.instFintype

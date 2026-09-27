@@ -99,7 +99,7 @@ theorem jacobson_quotient_jacobson : jacobson R (M ⧸ jacobson R M) = ⊥ := by
 
 theorem jacobson_lt_top [Nontrivial M] [IsCoatomic (Submodule R M)] : jacobson R M < ⊤ := by
   obtain ⟨m, hm, -⟩ := (eq_top_or_exists_le_coatom (⊥ : Submodule R M)).resolve_left bot_ne_top
-  exact (sInf_le <| Set.mem_setOf.mpr hm).trans_lt hm.1.lt_top
+  exact (sInf_le <| Set.mem_ofPred.mpr hm).trans_lt hm.1.lt_top
 
 example [Nontrivial M] [Module.Finite R M] : jacobson R M < ⊤ := jacobson_lt_top R M
 
@@ -151,7 +151,6 @@ theorem map_jacobson_of_ker_le (le : RingHom.ker f ≤ jacobson R) :
     Submodule.map f.toSemilinearMap (jacobson R) = jacobson R₂ :=
   Module.map_jacobson_of_ker_le f.surjective le
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coe_jacobson_quotient (I : Ideal R) [I.IsTwoSided] :
     (jacobson (R ⧸ I) : Set (R ⧸ I)) = Module.jacobson R (R ⧸ I) := by
   let f : R ⧸ I →ₛₗ[Ideal.Quotient.mk I] R ⧸ I := ⟨AddHom.id _, fun _ _ ↦ rfl⟩
@@ -197,7 +196,7 @@ theorem FG.jacobson_smul_lt {N : Submodule R M} (ne_bot : N ≠ ⊥) (fg : N.FG)
     Ring.jacobson R • N < N := by
   rw [← Module.Finite.iff_fg] at fg
   rw [← nontrivial_iff_ne_bot] at ne_bot
-  convert map_strictMono_of_injective N.injective_subtype (jacobson_smul_lt_top ⊤)
+  convert! map_strictMono_of_injective N.injective_subtype (jacobson_smul_lt_top ⊤)
   on_goal 1 => rw [map_smul'']
   all_goals rw [Submodule.map_top, range_subtype]
 

@@ -85,7 +85,6 @@ lemma covarianceBilin_apply_eq_cov [CompleteSpace E] [IsFiniteMeasure μ]
   rw [covarianceBilin_eq_covarianceBilinDual, covarianceBilinDual_eq_covariance h]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma covarianceBilin_real {μ : Measure ℝ} [IsFiniteMeasure μ] (x y : ℝ) :
     covarianceBilin μ x y = x * y * Var[id; μ] := by
   by_cases h : MemLp id 2 μ
@@ -128,7 +127,7 @@ lemma covarianceBilin_map_const_add [CompleteSpace E] [IsProbabilityMeasure μ] 
     rw [covarianceBilin_apply h_Lp,
       covarianceBilin_apply h, integral_map (by fun_prop) (by fun_prop)]
     congr with z
-    rw [integral_map (by fun_prop) h_Lp.1]
+    rw [integral_map (by fun_prop) h_Lp.aestronglyMeasurable]
     simp only [id_eq]
     rw [integral_add (integrable_const _)]
     · simp
@@ -137,10 +136,9 @@ lemma covarianceBilin_map_const_add [CompleteSpace E] [IsProbabilityMeasure μ] 
     rw [covarianceBilin_of_not_memLp, covarianceBilin_of_not_memLp h]
     rw [(measurableEmbedding_addLeft _).memLp_map_measure_iff.not]
     contrapose h
-    convert (memLp_const (-c)).add h
+    convert! (memLp_const (-c)).add h
     ext; simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma covarianceBilin_apply_basisFun {ι Ω : Type*} [Fintype ι] {mΩ : MeasurableSpace Ω}
     {μ : Measure Ω} [IsFiniteMeasure μ] {X : ι → Ω → ℝ} (hX : ∀ i, MemLp (X i) 2 μ) (i j : ι) :
     covarianceBilin (μ.map (fun ω ↦ toLp 2 (X · ω)))
@@ -161,7 +159,6 @@ lemma covarianceBilin_apply_basisFun_self {ι Ω : Type*} [Fintype ι] {mΩ : Me
   have (i : ι) := (hX i).aemeasurable
   fun_prop
 
-set_option backward.isDefEq.respectTransparency false in
 lemma covarianceBilin_apply_pi {ι Ω : Type*} [Fintype ι] {mΩ : MeasurableSpace Ω}
     {μ : Measure Ω} [IsFiniteMeasure μ] {X : ι → Ω → ℝ}
     (hX : ∀ i, MemLp (X i) 2 μ) (x y : EuclideanSpace ℝ ι) :
@@ -217,7 +214,7 @@ lemma covarianceOperator_apply (hμ : MemLp id 2 μ) (x : E) :
   rw [real_inner_comm, ← integral_inner]
   · simp_rw [inner_smul_right, ← continuousLinearMapOfBilin_apply, ← covarianceOperator_inner hμ]
     rfl
-  exact memLp_one_iff_integrable.1 <| hμ.smul (hμ.const_inner x)
+  exact memLp_one_iff_integrable.1 <| (hμ.const_inner x).smul hμ
 
 lemma isPositive_covarianceOperator : (covarianceOperator μ).toLinearMap.IsPositive := by
   by_cases hμ : MemLp id 2 μ

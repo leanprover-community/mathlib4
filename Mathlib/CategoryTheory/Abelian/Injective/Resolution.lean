@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Homology.HomotopyCategory
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.CategoryTheory.Abelian.Exact
 public import Mathlib.CategoryTheory.Preadditive.Injective.Resolution
-public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Tactic.AdaptationNote
 
 /-!
@@ -97,6 +96,7 @@ def desc {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y) (J : InjectiveResol
   CochainComplex.mkHom _ _ (descFZero f _ _) (descFOne f _ _) (descFOne_zero_comm f I J).symm
     fun n ⟨g, g', w⟩ => ⟨(descFSucc I J n g g' w.symm).1, (descFSucc I J n g g' w.symm).2.symm⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The resolution maps intertwine the descent of a morphism and that morphism. -/
 @[reassoc (attr := simp)]
 theorem desc_commutes {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y)
@@ -108,13 +108,13 @@ theorem desc_commutes {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y)
 lemma desc_commutes_zero {Y Z : C} (f : Z ⟶ Y)
     (I : InjectiveResolution Y) (J : InjectiveResolution Z) :
     J.ι.f 0 ≫ (desc f I J).f 0 = f ≫ I.ι.f 0 :=
-  (HomologicalComplex.congr_hom (desc_commutes f I J) 0).trans (by simp)
+  congr($(desc_commutes f I J).f 0).trans (by simp)
 
 -- Now that we've checked this property of the descent, we can seal away the actual definition.
 /-- An auxiliary definition for `descHomotopyZero`. -/
 def descHomotopyZeroZero {Y Z : C} {I : InjectiveResolution Y} {J : InjectiveResolution Z}
     (f : I.cocomplex ⟶ J.cocomplex) (comm : I.ι ≫ f = 0) : I.cocomplex.X 1 ⟶ J.cocomplex.X 0 :=
-  I.exact₀.descToInjective (f.f 0) (congr_fun (congr_arg HomologicalComplex.Hom.f comm) 0)
+  I.exact₀.descToInjective (f.f 0) congr($(comm).f 0)
 
 @[reassoc (attr := simp)]
 lemma comp_descHomotopyZeroZero {Y Z : C} {I : InjectiveResolution Y} {J : InjectiveResolution Z}
@@ -296,6 +296,7 @@ variable [Abelian C] [EnoughInjectives C] (Z : C)
 -- The construction of the injective resolution `of` would be very, very slow
 -- if it were not broken into separate definitions and lemmas
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `InjectiveResolution.of`. -/
 def ofCocomplex : CochainComplex C ℕ :=
   CochainComplex.mk' (Injective.under Z) (Injective.syzygies (Injective.ι Z))
@@ -305,12 +306,12 @@ lemma ofCocomplex_d_0_1 :
     (ofCocomplex Z).d 0 1 = d (Injective.ι Z) := by
   simp [ofCocomplex]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma ofCocomplex_exactAt_succ (n : ℕ) :
     (ofCocomplex Z).ExactAt (n + 1) := by
   rw [HomologicalComplex.exactAt_iff' _ n (n + 1) (n + 1 + 1) (by simp) (by simp)]
-  dsimp [ofCocomplex, CochainComplex.mk', CochainComplex.mk, HomologicalComplex.sc',
-      HomologicalComplex.shortComplexFunctor']
-  simp only [CochainComplex.of_d]
+  simp only [HomologicalComplex.sc', HomologicalComplex.shortComplexFunctor', ofCocomplex,
+    CochainComplex.mk', CochainComplex.mk, CochainComplex.of_d]
   match n with
   | 0 => apply exact_f_d ((CochainComplex.mkAux _ _ _
       (d (Injective.ι Z)) (d (d (Injective.ι Z))) _ _ 0).f)

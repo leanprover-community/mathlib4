@@ -10,6 +10,7 @@ public import Mathlib.Data.Int.Interval
 public import Mathlib.Data.Int.SuccPred
 public import Mathlib.Order.Interval.Finset.Nat
 public meta import Mathlib.Tactic.ToAdditive
+public meta import Mathlib.Util.Qq
 public import Mathlib.Util.Qq
 
 /-!

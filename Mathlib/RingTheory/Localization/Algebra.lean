@@ -78,7 +78,7 @@ is localizing. In other words, localization commutes with taking kernels. -/
 lemma RingHom.toKerIsLocalization_isLocalizedModule (hT : Submonoid.map g M = T) :
     IsLocalizedModule M (toKerIsLocalization S Q g (hT.symm ▸ Submonoid.le_comap_map M)) := by
   let e := LinearEquiv.ofEq _ _ (IsLocalization.ker_map (S := S) Q g hT).symm
-  convert_to IsLocalizedModule M ((e.restrictScalars R).toLinearMap ∘ₗ
+  convert_to! IsLocalizedModule M ((e.restrictScalars R).toLinearMap ∘ₗ
     Algebra.idealMap S (RingHom.ker g))
   apply IsLocalizedModule.of_linearEquiv
 
@@ -148,7 +148,7 @@ lemma map_eq_toLinearMap_mapₐ (f : A →ₐ[R] B) :
       (IsScalarTower.toAlgHom R B Bₚ).toLinearMap f.toLinearMap =
       (IsLocalization.mapₐ M Rₚ Aₚ Bₚ f).toLinearMap := by
   ext x
-  exact DFunLike.congr_fun (mapExtendScalars_eq_toLinearMap_mapₐ M Rₚ Aₚ Bₚ f) x
+  congrm $(mapExtendScalars_eq_toLinearMap_mapₐ M Rₚ Aₚ Bₚ f) x
 
 lemma map_linearMap_eq_toLinearMap_mapₐ :
     IsLocalizedModule.map M (Algebra.linearMap R Rₚ) (IsScalarTower.toAlgHom R A Aₚ).toLinearMap

@@ -42,7 +42,7 @@ variable {R : Type*} [Semiring R] [DecidableEq R]
 
 /-- `ofFn n v` is the polynomial whose coefficients are the entries of the vector `v`. -/
 def ofFn (n : ℕ) : (Fin n → R) →ₗ[R] R[X] where
-  toFun v := ⟨(List.ofFn v).toFinsupp⟩
+  toFun v := ⟨.ofCoeff (List.ofFn v).toFinsupp⟩
   map_add' x y := by
     ext i
     by_cases h : i < n
@@ -89,7 +89,6 @@ theorem ofFn_degree_lt {n : ℕ} (v : Fin n → R) : (ofFn n v).degree < n := by
   · exact (natDegree_lt_iff_degree_lt h).mp
       <| ofFn_natDegree_lt (Nat.one_le_iff_ne_zero.mpr <| ne_zero_of_ofFn_ne_zero h) _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ofFn_eq_sum_monomial {n : ℕ} (v : Fin n → R) : ofFn n v =
     ∑ i : Fin n, monomial i (v i) := by
   by_cases h : n = 0
@@ -106,7 +105,7 @@ theorem injective_ofFn (n : ℕ) : Function.Injective (ofFn (R := R) n) :=
 
 omit [DecidableEq R] in
 theorem surjective_toFn (n : ℕ) : Function.Surjective (toFn (R := R) n) :=
-  open Classical in
+  open scoped Classical in
   Function.RightInverse.surjective <| toFn_comp_ofFn_eq_id n
 
 theorem ofFn_comp_toFn_eq_id_of_natDegree_lt {n : ℕ} {p : R[X]} (h_deg : p.natDegree < n) :

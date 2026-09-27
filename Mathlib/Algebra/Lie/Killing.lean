@@ -13,9 +13,9 @@ public import Mathlib.Algebra.Lie.TraceForm
 # Lie algebras with non-degenerate Killing forms.
 
 In characteristic zero, the following three conditions are equivalent:
- 1. The solvable radical of a Lie algebra is trivial
- 2. A Lie algebra is a direct sum of its simple ideals
- 3. A Lie algebra has non-degenerate Killing form
+1. The solvable radical of a Lie algebra is trivial
+2. A Lie algebra is a direct sum of its simple ideals
+3. A Lie algebra has non-degenerate Killing form
 
 In positive characteristic, it is still true that 3 implies 2, and that 2 implies 1, but there are
 counterexamples to the remaining implications. Thus condition 3 is the strongest assumption.
@@ -36,13 +36,9 @@ This file contains basic definitions and results for such Lie algebras.
 * `LieIdeal.isCompl_killingCompl`: if a Lie algebra has non-singular Killing form then for all
   ideals, an ideal and its Killing orthogonal complement are complements.
 
-## TODO
-
-* Prove that in characteristic zero, a semisimple Lie algebra has non-singular Killing form.
-
 -/
 
-@[expose] public section
+public section
 
 variable (R K L : Type*) [CommRing R] [Field K] [LieRing L] [LieAlgebra R L] [LieAlgebra K L]
 
@@ -86,7 +82,8 @@ instance instSemisimple [IsKilling K L] [Module.Finite K L] : IsSemisimple K L :
   · intro I h₁ h₂
     exact h₁.1 <| IsKilling.ideal_eq_bot_of_isLieAbelian I
 
-/-- The converse of this is true over a field of characteristic zero. There are counterexamples
+/-- The converse of this is true in characteristic zero; it is
+`LieAlgebra.HasTrivialRadical.instIsKilling`. There are counterexamples
 over fields with positive characteristic.
 
 Note that when the coefficients are a field this instance is redundant since we have

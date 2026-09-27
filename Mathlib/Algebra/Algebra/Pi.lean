@@ -36,7 +36,7 @@ variable (A : ι → Type*)
 variable [CommSemiring R] [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)]
 
 instance algebra : Algebra R (Π i, A i) where
-  algebraMap := Pi.ringHom fun i ↦ algebraMap R (A i)
+  algebraMap := RingHom.pi fun i ↦ algebraMap R (A i)
   commutes' := fun a f ↦ by ext; simp [Algebra.commutes]
   smul_def' := fun a f ↦ by ext; simp [Algebra.smul_def]
 
@@ -48,14 +48,40 @@ theorem algebraMap_def (a : R) : algebraMap R (Π i, A i) a = fun i ↦ algebraM
 theorem algebraMap_apply (a : R) (i : ι) : algebraMap R (Π i, A i) a i = algebraMap R (A i) a :=
   rfl
 
-variable {ι} (R)
+variable {ι}
 
-/-- A family of algebra homomorphisms `g i : B →ₐ[R] A i` defines a ring homomorphism
-`Pi.algHom g : B →ₐ[R] Π i, A i` given by `Pi.algHom g x i = g i x`. -/
+variable {A} in
+/-- A family of algebra homomorphisms `g i : B →ₐ[R] A i` defines an algebra homomorphism
+`AlgHom.pi g : B →ₐ[R] Π i, A i` given by `AlgHom.pi g x i = g i x`. -/
 @[simps!]
-def algHom {B : Type*} [Semiring B] [Algebra R B] (g : ∀ i, B →ₐ[R] A i) : B →ₐ[R] Π i, A i where
-  __ := Pi.ringHom fun i ↦ (g i).toRingHom
+def _root_.AlgHom.pi {B : Type*} [Semiring B] [Algebra R B] (g : Π i, B →ₐ[R] A i) :
+    B →ₐ[R] Π i, A i where
+  __ := RingHom.pi fun i ↦ (g i).toRingHom
   commutes' r := by ext; simp
+
+variable {A} in
+/-- `AlgHom.pi` commutes with composition. -/
+theorem _root_.AlgHom.pi_comp {B C : Type*} [Semiring B] [Algebra R B] [Semiring C] [Algebra R C]
+    (g : ∀ i, C →ₐ[R] A i) (h : B →ₐ[R] C) :
+    (AlgHom.pi g).comp h = AlgHom.pi (fun i ↦ (g i).comp h) := rfl
+
+variable (R)
+
+/-- Use `AlgHom.pi` instead. -/
+@[deprecated AlgHom.pi (since := "2026-05-30")]
+abbrev algHom {B : Type*} [Semiring B] [Algebra R B] (g : Π i, B →ₐ[R] A i) : B →ₐ[R] Π i, A i :=
+  .pi g
+
+/-- Use `AlgHom.pi_apply` instead. -/
+@[deprecated AlgHom.pi_apply (since := "2026-05-30")]
+theorem algHom_apply {B : Type*} [Semiring B] [Algebra R B]
+    (g : Π i, B →ₐ[R] A i) (x : B) (i : ι) : Pi.algHom R A g x i = g i x :=
+  AlgHom.pi_apply g x i
+
+@[deprecated AlgHom.pi_comp (since := "2026-05-30")]
+theorem algHom_comp {B C : Type*} [Semiring B] [Algebra R B] [Semiring C] [Algebra R C]
+    (g : ∀ i, C →ₐ[R] A i) (h : B →ₐ[R] C) :
+    (algHom R A g).comp h = algHom R A (fun i ↦ (g i).comp h) := rfl
 
 /-- `Function.eval` as an `AlgHom`. The name matches `Pi.evalRingHom`, `Pi.evalMonoidHom`,
 etc. -/
@@ -65,18 +91,19 @@ def evalAlgHom (i : ι) : (Π i, A i) →ₐ[R] A i :=
     toFun := fun f ↦ f i
     commutes' := fun _ ↦ rfl }
 
-@[simp]
-theorem algHom_evalAlgHom : algHom R A (evalAlgHom R A) = AlgHom.id R (Π i, A i) := rfl
+lemma coe_evalAlgHom (i : ι) : evalAlgHom R A i = evalRingHom A i := rfl
 
-/-- `Pi.algHom` commutes with composition. -/
-theorem algHom_comp {B C : Type*} [Semiring B] [Algebra R B] [Semiring C] [Algebra R C]
-    (g : ∀ i, C →ₐ[R] A i) (h : B →ₐ[R] C) :
-    (algHom R A g).comp h = algHom R A (fun i ↦ (g i).comp h) := rfl
+@[simp]
+theorem _root_.AlgHom.pi_evalAlgHom : AlgHom.pi (evalAlgHom R A) = AlgHom.id R (Π i, A i) :=
+  rfl
+
+@[deprecated (since := "2026-06-03")]
+alias algHom_evalAlgHom := _root_.AlgHom.pi_evalAlgHom
 
 variable (S : ι → Type*) [∀ i, CommSemiring (S i)]
 
 instance [∀ i, Algebra (S i) (A i)] : Algebra (Π i, S i) (Π i, A i) where
-  algebraMap := Pi.ringHom fun _ ↦ (algebraMap _ _).comp (Pi.evalRingHom S _)
+  algebraMap := RingHom.pi fun _ ↦ (algebraMap _ _).comp (Pi.evalRingHom S _)
   commutes' _ _ := funext fun _ ↦ Algebra.commutes _ _
   smul_def' _ _ := funext fun _ ↦ Algebra.smul_def _ _
 
@@ -250,8 +277,8 @@ end
 end AlgEquiv
 
 /-- Apply an algebra map component-wise along a vector. -/
-def Pi.algebraMap (ι R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] :
+protected def Pi.algebraMap (ι R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] :
     (ι → R) →ₗ[R] (ι → A) where
-  toFun v := _root_.algebraMap R A ∘ v
+  toFun v := algebraMap R A ∘ v
   map_add' v w := by simp
   map_smul' t v := by ext; simp [Algebra.smul_def]

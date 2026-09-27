@@ -26,11 +26,11 @@ semimodule, module, vector space
 
 assert_not_exists Field Invertible Multiset Pi.single_smul₀ Set.indicator
 
-open Function Set
+open Function
 
 universe u v
 
-variable {R S M M₂ : Type*}
+variable {R S M : Type*}
 
 section AddCommMonoid
 
@@ -69,6 +69,11 @@ end AddCommMonoid
 See note [reducible non-instances]. -/
 abbrev RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
   Module.compHom S f
+
+lemma RingHom.toModule_smul [Semiring R] [Semiring S] (f : R →+* S) (x : R) (y : S) :
+    letI := f.toModule
+    x • y = f x * y :=
+  rfl
 
 /-- If the module action of `R` on `S` is compatible with multiplication on `S`, then
 `fun x ↦ x • 1` is a ring homomorphism from `R` to `S`.

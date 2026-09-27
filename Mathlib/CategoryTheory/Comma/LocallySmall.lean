@@ -18,7 +18,7 @@ involved are locally small.
 
 -/
 
-@[expose] public section
+public section
 
 universe w v₁ v₂ v₃ u₁ u₂ u₃
 

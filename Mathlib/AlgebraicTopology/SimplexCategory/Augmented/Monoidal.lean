@@ -81,10 +81,10 @@ def tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory} (f₁ : x₁ ⟶ 
   match x₁, y₁, x₂, y₂, f₁, f₂ with
   | .of _, .of _, .of _, .of _, f₁, f₂ => tensorHomOf f₁ f₂
   | .of _, .of y₁, .star, .of y₂, f₁, _ =>
-    f₁ ≫ ((SimplexCategory.mkHom <| (Fin.castAddOrderEmb (y₂.len + 1)).toOrderHom) ≫
+    f₁ ≫ ((SimplexCategory.mkHom (Fin.castAddOrderEmb (y₂.len + 1)).toOrderHom) ≫
       eqToHom (congrArg _ (Nat.succ_add _ _)) : ⦋y₁.len⦌ ⟶ ⦋y₁.len + y₂.len + 1⦌)
   | .star, .of y₁, .of _, .of y₂, _, f₂ =>
-    f₂ ≫ ((SimplexCategory.mkHom <| (Fin.natAddOrderEmb (y₁.len + 1)).toOrderHom) ≫
+    f₂ ≫ ((SimplexCategory.mkHom (Fin.natAddOrderEmb (y₁.len + 1)).toOrderHom) ≫
       eqToHom (congrArg _ (Nat.succ_add _ _)) : ⦋y₂.len⦌ ⟶ ⦋y₁.len + y₂.len + 1⦌)
   | .star, .star, .of _, .of _, _, f₂ => f₂
   | .of _, .of _, .star, .star, f₁, _ => f₁
@@ -170,13 +170,14 @@ abbrev inl' (x y : SimplexCategory) : x ⟶ tensorObjOf x y := WithInitial.down 
 `SimplexCategory`. -/
 abbrev inr' (x y : SimplexCategory) : y ⟶ tensorObjOf x y := WithInitial.down <| inr (.of x) (.of y)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma inl'_eval (x y : SimplexCategory) (i : Fin (x.len + 1)) :
     (inl' x y).toOrderHom i = (i.castAdd _).cast (Nat.succ_add x.len (y.len + 1)) := by
-  dsimp [inl', inl, MonoidalCategoryStruct.rightUnitor, MonoidalCategoryStruct.whiskerLeft,
-    tensorHom, WithInitial.down, rightUnitor, tensorObj]
   ext
-  simp [OrderEmbedding.toOrderHom]
+  simp [inl', inl, MonoidalCategoryStruct.rightUnitor, MonoidalCategoryStruct.whiskerLeft,
+    MonoidalCategoryStruct.tensorUnit, MonoidalCategoryStruct.tensorObj,
+    tensorUnit, tensorHom, WithInitial.down, rightUnitor, tensorObj, CategoryStruct.id,
+    CategoryStruct.comp, WithInitial.comp, WithInitial.id,
+    OrderEmbedding.toOrderHom]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma inr'_eval (x y : SimplexCategory) (i : Fin (y.len + 1)) :
@@ -204,10 +205,10 @@ theorem tensorObj_hom_ext {x y z : AugmentedSimplexCategory} (f g : x ⊗ y ⟶ 
     cases j using Fin.addCases (m := x.len + 1) (n := y.len + 1) with
     | left j =>
       rw [SimplexCategory.Hom.ext_iff, OrderHom.ext_iff] at h₁
-      simpa [← inl'_eval, ConcreteCategory.hom, Fin.ext_iff] using congrFun h₁ j
+      simpa [← inl'_eval, ConcreteCategory.hom, Fin.ext_iff] using congr($h₁ j)
     | right j =>
       rw [SimplexCategory.Hom.ext_iff, OrderHom.ext_iff] at h₂
-      simpa [← inr'_eval, ConcreteCategory.hom, Fin.ext_iff] using congrFun h₂ j
+      simpa [← inr'_eval, ConcreteCategory.hom, Fin.ext_iff] using congr($h₂ j)
   | .of x, .star, .of z, f, g => by
       simp only [inl, Category.assoc, Iso.cancel_iso_inv_left, Limits.IsInitial.to_self,
         whiskerLeft_id_star] at h₁
@@ -219,6 +220,7 @@ theorem tensorObj_hom_ext {x y z : AugmentedSimplexCategory} (f g : x ⊗ y ⟶ 
   | .star, .star, .of z, f, g => rfl
   | .star, .star, .star, f, g => rfl
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma inl_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
     (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) : inl x₁ x₂ ≫ (f₁ ⊗ₘ f₂) = f₁ ≫ inl y₁ y₂ :=
@@ -244,6 +246,7 @@ lemma inl_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
   | _, _, .star, _, f₁, f₂ => by cat_disch
   | .star, _, _, _, _, _ => rfl
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma inr_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
     (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) : inr x₁ x₂ ≫ (f₁ ⊗ₘ f₂) = f₂ ≫ inr y₁ y₂ :=
@@ -270,6 +273,7 @@ lemma inr_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
   | .star, _, _, _, f₁, f₂ => by cat_disch
   | _, _, .star, _, _, _ => rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inr_comp_associator (x y z : AugmentedSimplexCategory) :
@@ -292,6 +296,7 @@ lemma inr_comp_associator (x y z : AugmentedSimplexCategory) :
   | _, .star, _ => by cat_disch
   | _, _, .star => by cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inl_comp_inl_comp_associator (x y z : AugmentedSimplexCategory) :
@@ -311,6 +316,7 @@ lemma inl_comp_inl_comp_associator (x y z : AugmentedSimplexCategory) :
   | _, .star, _ => by cat_disch
   | _, _, .star => by cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inr_comp_inl_comp_associator (x y z : AugmentedSimplexCategory) :

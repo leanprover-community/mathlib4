@@ -68,12 +68,12 @@ namespace CategoryTheory.Linear
 variable {C : Type u} [Category.{v} C] [Preadditive C]
 
 instance preadditiveNatLinear : Linear ℕ C where
-  smul_comp X _Y _Z r f g := by exact (Preadditive.rightComp X g).map_nsmul f r
-  comp_smul _X _Y Z f r g := by exact (Preadditive.leftComp Z f).map_nsmul g r
+  smul_comp X _Y _Z r f g := by exact (Preadditive.rightComp X g).map_nsmul r f
+  comp_smul _X _Y Z f r g := by exact (Preadditive.leftComp Z f).map_nsmul r g
 
 instance preadditiveIntLinear : Linear ℤ C where
-  smul_comp X _Y _Z r f g := by exact (Preadditive.rightComp X g).map_zsmul f r
-  comp_smul _X _Y Z f r g := by exact (Preadditive.leftComp Z f).map_zsmul g r
+  smul_comp X _Y _Z r f g := by exact (Preadditive.rightComp X g).map_zsmul r f
+  comp_smul _X _Y Z f r g := by exact (Preadditive.leftComp Z f).map_zsmul r g
 
 section End
 
@@ -98,7 +98,7 @@ universe u'
 variable {D : Type u'} (F : D → C)
 
 instance inducedCategory : Linear.{w, v} R (InducedCategory C F) where
-  homModule X Y := Equiv.module _ InducedCategory.homEquiv
+  homModule X Y := InducedCategory.homAddEquiv.module _
   smul_comp _ _ _ _ _ _ := by ext; apply smul_comp
   comp_smul _ _ _ _ _ _ := by ext; apply comp_smul
 
@@ -136,12 +136,12 @@ def rightComp (X : C) {Y Z : C} (g : Y ⟶ Z) : (X ⟶ Y) →ₗ[R] X ⟶ Z wher
 instance {X Y : C} (f : X ⟶ Y) [Epi f] (r : R) [Invertible r] : Epi (r • f) :=
   ⟨fun g g' H => by
     rw [smul_comp, smul_comp, ← comp_smul, ← comp_smul, cancel_epi] at H
-    simpa [smul_smul] using congr_arg (fun f => ⅟r • f) H⟩
+    simpa [smul_smul] using congr(⅟r • $H)⟩
 
 instance {X Y : C} (f : X ⟶ Y) [Mono f] (r : R) [Invertible r] : Mono (r • f) :=
   ⟨fun g g' H => by
     rw [comp_smul, comp_smul, ← smul_comp, ← smul_comp, cancel_mono] at H
-    simpa [smul_smul] using congr_arg (fun f => ⅟r • f) H⟩
+    simpa [smul_smul] using congr(⅟r • $H)⟩
 
 /-- Given isomorphic objects `X ≅ Y, W ≅ Z` in a `k`-linear category, we have a `k`-linear
 isomorphism between `Hom(X, W)` and `Hom(Y, Z).` -/

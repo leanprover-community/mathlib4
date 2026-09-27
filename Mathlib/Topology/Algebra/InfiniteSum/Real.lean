@@ -18,7 +18,9 @@ in the reals.
 
 public section
 
-open Filter Finset NNReal Topology
+open Filter Finset NNReal
+
+open scoped Topology
 
 variable {α β : Type*} [PseudoMetricSpace α] {f : ℕ → α} {a : α}
 
@@ -75,7 +77,7 @@ theorem summable_sigma_of_nonneg {α} {β : α → Type*} {f : (Σ x, β x) → 
 lemma summable_partition {α β : Type*} {f : β → ℝ} (hf : 0 ≤ f) {s : α → Set β}
     (hs : ∀ i, ∃! j, i ∈ s j) : Summable f ↔
       (∀ j, Summable fun i : s j ↦ f i) ∧ Summable fun j ↦ ∑' i : s j, f i := by
-  simpa only [← (Set.sigmaEquiv s hs).summable_iff] using summable_sigma_of_nonneg (fun _ ↦ hf _)
+  simpa only [← (Set.sigmaEquiv s hs).summable_iff] using! summable_sigma_of_nonneg (fun _ ↦ hf _)
 
 theorem summable_prod_of_nonneg {α β} {f : (α × β) → ℝ} (hf : 0 ≤ f) :
     Summable f ↔ (∀ x, Summable fun y ↦ f (x, y)) ∧ Summable fun x ↦ ∑' y, f (x, y) :=

@@ -194,6 +194,8 @@ info: Try this:
 -/
 #guard_msgs in
 variable? [VectorSpace k V] [Algebra k V]
+
+set_option linter.overlappingInstances false
 example : Field k := inferInstance
 example : AddCommGroup V := inferInstance
 example : Module k V := inferInstance

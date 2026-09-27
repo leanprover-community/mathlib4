@@ -50,7 +50,6 @@ def zeroProdIso (X : C) : (0 : C) ⨯ X ≅ X :=
 theorem zeroProdIso_hom (X : C) : (zeroProdIso X).hom = prod.snd :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem zeroProdIso_inv_snd (X : C) : (zeroProdIso X).inv ≫ prod.snd = 𝟙 X := by
   dsimp [zeroProdIso, binaryFanZeroLeft]
@@ -76,7 +75,6 @@ def prodZeroIso (X : C) : X ⨯ (0 : C) ≅ X :=
 theorem prodZeroIso_hom (X : C) : (prodZeroIso X).hom = prod.fst :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem prodZeroIso_iso_inv_snd (X : C) : (prodZeroIso X).inv ≫ prod.fst = 𝟙 X := by
   dsimp [prodZeroIso, binaryFanZeroRight]
@@ -98,7 +96,6 @@ instance hasBinaryCoproduct_zero_left (X : C) : HasBinaryCoproduct (0 : C) X :=
 def zeroCoprodIso (X : C) : (0 : C) ⨿ X ≅ X :=
   colimit.isoColimitCocone ⟨_, binaryCofanZeroLeftIsColimit X⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem inr_zeroCoprodIso_hom (X : C) : coprod.inr ≫ (zeroCoprodIso X).hom = 𝟙 X := by
   dsimp [zeroCoprodIso, binaryCofanZeroLeft]
@@ -124,7 +121,6 @@ instance hasBinaryCoproduct_zero_right (X : C) : HasBinaryCoproduct X (0 : C) :=
 def coprodZeroIso (X : C) : X ⨿ (0 : C) ≅ X :=
   colimit.isoColimitCocone ⟨_, binaryCofanZeroRightIsColimit X⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem inr_coprodZeroIso_hom (X : C) : coprod.inl ≫ (coprodZeroIso X).hom = 𝟙 X := by
   dsimp [coprodZeroIso, binaryCofanZeroRight]
@@ -145,14 +141,12 @@ def pullbackZeroZeroIso (X Y : C) [HasBinaryProduct X Y] :
   limit.isoLimitCone
     ⟨_, isPullbackOfIsTerminalIsProduct _ _ _ _ HasZeroObject.zeroIsTerminal (prodIsProd X Y)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem pullbackZeroZeroIso_inv_fst (X Y : C) [HasBinaryProduct X Y] :
     (pullbackZeroZeroIso X Y).inv ≫ pullback.fst 0 0 = prod.fst := by
   dsimp [pullbackZeroZeroIso]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem pullbackZeroZeroIso_inv_snd (X Y : C) [HasBinaryProduct X Y] :
     (pullbackZeroZeroIso X Y).inv ≫ pullback.snd 0 0 = prod.snd := by
@@ -178,14 +172,12 @@ def pushoutZeroZeroIso (X Y : C) [HasBinaryCoproduct X Y] :
   colimit.isoColimitCocone
     ⟨_, isPushoutOfIsInitialIsCoproduct _ _ _ _ HasZeroObject.zeroIsInitial (coprodIsCoprod X Y)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem inl_pushoutZeroZeroIso_hom (X Y : C) [HasBinaryCoproduct X Y] :
     pushout.inl _ _ ≫ (pushoutZeroZeroIso X Y).hom = coprod.inl := by
   dsimp [pushoutZeroZeroIso]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem inr_pushoutZeroZeroIso_hom (X Y : C) [HasBinaryCoproduct X Y] :
     pushout.inr _ _ ≫ (pushoutZeroZeroIso X Y).hom = coprod.inr := by

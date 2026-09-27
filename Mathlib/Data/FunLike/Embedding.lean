@@ -25,9 +25,10 @@ namespace MyEmbedding
 
 variable (A B : Type*) [MyClass A] [MyClass B]
 
+@[macro_inline]
 instance : FunLike (MyEmbedding A B) A B where
   coe := MyEmbedding.toFun
-  coe_injective' := fun f g h ↦ by cases f; cases g; congr
+  coe_injective := fun f g h ↦ by cases f; cases g; congr
 
 -- This instance is optional if you follow the "Embedding class" design below:
 instance : EmbeddingLike (MyEmbedding A B) A B where
@@ -102,9 +103,10 @@ lemma map_cool {F A B : Type*} [CoolClass A] [CoolClass B]
 
 variable {A B : Type*} [CoolClass A] [CoolClass B]
 
+@[macro_inline]
 instance : FunLike (CoolerEmbedding A B) A B where
   coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; congr; apply DFunLike.coe_injective; congr
+  coe_injective f g h := by cases f; cases g; congr; apply DFunLike.coe_injective; congr
 
 instance : CoolerEmbeddingClass (CoolerEmbedding A B) A B where
   injective' f := f.injective'
@@ -126,7 +128,7 @@ and defining `CoolerEmbeddingClass` only takes a constant amount of effort,
 instead of linearly increasing the work per `MyEmbedding`-related declaration.
 -/
 
-@[expose] public section
+public section
 
 
 /-- The class `EmbeddingLike F α β` expresses that terms of type `F` have an

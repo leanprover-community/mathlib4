@@ -62,6 +62,7 @@ def equivApp (g : G) (X : FDRep k G) : X.V ≅ X.V where
     ext x
     simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (k G) in
 /-- The group homomorphism `G →* Aut (forget k G)` shown to be an isomorphism. -/
 @[simps]
@@ -124,7 +125,7 @@ def mulRepHom : rightFDRep (k := k) (G := G) ⊗ rightFDRep ⟶ rightFDRep where
   comm := by
     intro
     ext u
-    refine TensorProduct.induction_on u rfl (fun _ _ ↦ rfl) (fun _ _ hx hy ↦ ?_)
+    refine TensorProduct.inductionOn u (fun _ _ ↦ rfl) (fun _ _ hx hy ↦ ?_)
     simp only [map_add, hx, hy]
 
 /-- The `rightFDRep` component of `η : Aut (forget k G)` preserves multiplication -/
@@ -135,7 +136,7 @@ lemma map_mul_toRightFDRepComp (η : Aut (forget k G)) (f g : G → k) :
   have tensor (X Y) : η.hom.hom.app (X ⊗ Y) = (η.hom.hom.app X ⊗ₘ η.hom.hom.app Y) :=
     η.hom.isMonoidal.tensor X Y
   rw [tensor] at nat
-  exact ConcreteCategory.congr_hom ((CategoryTheory.forget _).congr_map nat) (f ⊗ₜ[k] g)
+  congrm $((CategoryTheory.forget _).congr_map nat) (f ⊗ₜ[k] g)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The `rightFDRep` component of `η : Aut (forget k G)` gives rise to
@@ -174,7 +175,7 @@ def ofRightFDRep [Fintype G] (X : FDRep k G) (v : X) : rightFDRep ⟶ X where
     ext f
     let φ_term (X : FDRep k G) (f : G → k) v s := (f s) • (X.ρ s⁻¹ v)
     have := sum_map univ (mulRightEmbedding t⁻¹) (φ_term X (rightRegular t f) v)
-    simpa [φ_term] using this
+    simpa [φ_term] using! this
 
 set_option backward.isDefEq.respectTransparency false in
 lemma toRightFDRepComp_injective {η₁ η₂ : Aut (forget k G)}
@@ -208,10 +209,10 @@ lemma toRightFDRepComp_in_rightRegular [IsDomain k] (η : Aut (forget k G)) :
   calc
     _ = leftRegular t⁻¹ ((η.hom.hom.app rightFDRep).hom (single u 1)) 1 := by simp
     _ = (η.hom.hom.app rightFDRep).hom (leftRegular t⁻¹ (single u 1)) 1 :=
-      congrFun congr(($nat.symm).hom (single u 1)) 1
+      congr(($nat.symm).hom (single u 1) 1)
     _ = evalAlgHom _ _ s (leftRegular t⁻¹ (single u 1)) :=
       congr($hs (leftRegular t⁻¹ (single u 1)))
-    _ = _ := by by_cases u = t * s <;> simp_all [single_apply]
+    _ = _ := by by_cases u = t * s <;> simp_all
 
 lemma equivHom_surjective [IsDomain k] : Function.Surjective (equivHom k G) := by
   intro η

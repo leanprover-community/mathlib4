@@ -233,7 +233,7 @@ def cyclotomic (n : ℕ) (R : Type*) [Ring R] : R[X] :=
 
 theorem int_cyclotomic_rw {n : ℕ} (h : n ≠ 0) :
     cyclotomic n ℤ = (int_coeff_of_cyclotomic' (Complex.isPrimitiveRoot_exp n h)).choose := by
-  simp only [cyclotomic, h, dif_neg, not_false_iff]
+  simp only [cyclotomic, h, dite_eq_right, not_false_iff]
   ext i
   simp only [coeff_map, Int.cast_id, eq_intCast]
 
@@ -241,14 +241,14 @@ theorem int_cyclotomic_rw {n : ℕ} (h : n ≠ 0) :
 theorem map_cyclotomic_int (n : ℕ) (R : Type*) [Ring R] :
     map (Int.castRingHom R) (cyclotomic n ℤ) = cyclotomic n R := by
   by_cases hzero : n = 0
-  · simp only [hzero, cyclotomic, dif_pos, Polynomial.map_one]
+  · simp only [hzero, cyclotomic, dite_eq_left, Polynomial.map_one]
   simp [cyclotomic, hzero]
 
 theorem int_cyclotomic_spec (n : ℕ) :
     map (Int.castRingHom ℂ) (cyclotomic n ℤ) = cyclotomic' n ℂ ∧
       (cyclotomic n ℤ).degree = (cyclotomic' n ℂ).degree ∧ (cyclotomic n ℤ).Monic := by
   by_cases hzero : n = 0
-  · simp only [hzero, cyclotomic, degree_one, monic_one, cyclotomic'_zero, dif_pos,
+  · simp only [hzero, cyclotomic, degree_one, monic_one, cyclotomic'_zero, dite_eq_left,
       Polynomial.map_one, and_self_iff]
   rw [int_cyclotomic_rw hzero]
   exact (int_coeff_of_cyclotomic' (Complex.isPrimitiveRoot_exp n hzero)).choose_spec
@@ -277,7 +277,7 @@ theorem cyclotomic.eval_apply {R S : Type*} (q : R) (n : ℕ) [Ring R] [Ring S] 
 /-- The zeroth cyclotomic polynomial is `1`. -/
 @[simp]
 theorem cyclotomic_zero (R : Type*) [Ring R] : cyclotomic 0 R = 1 := by
-  simp only [cyclotomic, dif_pos]
+  simp only [cyclotomic, dite_eq_left]
 
 /-- The first cyclotomic polynomial is `X - 1`. -/
 @[simp]
@@ -307,7 +307,7 @@ theorem degree_cyclotomic (n : ℕ) (R : Type*) [Ring R] [Nontrivial R] :
   rw [← map_cyclotomic_int]
   rw [degree_map_eq_of_leadingCoeff_ne_zero (Int.castRingHom R) _]
   · rcases n with - | k
-    · simp only [cyclotomic, degree_one, dif_pos, Nat.totient_zero, CharP.cast_eq_zero]
+    · simp only [cyclotomic, degree_one, dite_eq_left, Nat.totient_zero, CharP.cast_eq_zero]
     rw [← degree_cyclotomic' (Complex.isPrimitiveRoot_exp k.succ (Nat.succ_ne_zero k))]
     exact (int_cyclotomic_spec k.succ).2.1
   simp only [(int_cyclotomic_spec n).right.right, eq_intCast, Monic.leadingCoeff, Int.cast_one,
@@ -343,7 +343,7 @@ theorem prod_cyclotomic_eq_X_pow_sub_one {n : ℕ} (hpos : 0 < n) (R : Type*) [C
       Polynomial.map_one, Polynomial.map_sub]
     exact prod_cyclotomic'_eq_X_pow_sub_one hpos (Complex.isPrimitiveRoot_exp n hpos.ne')
   simpa only [Polynomial.map_prod, map_cyclotomic_int, Polynomial.map_sub, Polynomial.map_one,
-    Polynomial.map_pow, Polynomial.map_X] using congr_arg (map (Int.castRingHom R)) integer
+    Polynomial.map_pow, Polynomial.map_X] using congr(map (Int.castRingHom R) $integer)
 
 theorem cyclotomic.dvd_X_pow_sub_one (n : ℕ) (R : Type*) [Ring R] :
     cyclotomic n R ∣ X ^ n - 1 := by
@@ -359,7 +359,7 @@ theorem prod_cyclotomic_eq_geom_sum {n : ℕ} (h : 0 < n) (R) [CommRing R] :
     ∏ i ∈ n.divisors.erase 1, cyclotomic i R = ∑ i ∈ Finset.range n, X ^ i := by
   suffices (∏ i ∈ n.divisors.erase 1, cyclotomic i ℤ) = ∑ i ∈ Finset.range n, X ^ i by
     simpa only [Polynomial.map_prod, map_cyclotomic_int, Polynomial.map_sum, Polynomial.map_pow,
-      Polynomial.map_X] using congr_arg (map (Int.castRingHom R)) this
+      Polynomial.map_X] using congr(map (Int.castRingHom R) $this)
   rw [← mul_left_inj' (cyclotomic_ne_zero 1 ℤ), prod_erase_mul _ _ (Nat.one_mem_divisors.2 h.ne'),
     cyclotomic_one, geom_sum_mul, prod_cyclotomic_eq_X_pow_sub_one h]
 
@@ -368,7 +368,7 @@ theorem cyclotomic_prime (R : Type*) [Ring R] (p : ℕ) [hp : Fact p.Prime] :
     cyclotomic p R = ∑ i ∈ Finset.range p, X ^ i := by
   suffices cyclotomic p ℤ = ∑ i ∈ range p, X ^ i by
     simpa only [map_cyclotomic_int, Polynomial.map_sum, Polynomial.map_pow, Polynomial.map_X] using
-      congr_arg (map (Int.castRingHom R)) this
+      congr(map (Int.castRingHom R) $this)
   rw [← prod_cyclotomic_eq_geom_sum hp.out.pos, hp.out.divisors,
     erase_insert (mem_singleton.not.2 hp.out.ne_one.symm), prod_singleton]
 
@@ -517,7 +517,7 @@ theorem cyclotomic_prime_pow_eq_geom_sum {R : Type*} [CommRing R] {p n : ℕ} (h
     rw [eq_comm] at this
     rw [this, Nat.prod_properDivisors_prime_pow hp]
   induction n with
-  | zero => haveI := Fact.mk hp; simp [cyclotomic_prime]
+  | zero => have := Fact.mk hp; simp [cyclotomic_prime]
   | succ n_n n_ih =>
     rw [← (eq_cyclotomic_iff (pow_pos hp.pos (n_n + 1 + 1)) _).mpr ?_]
     rw [Nat.prod_properDivisors_prime_pow hp, Finset.prod_range_succ, n_ih]
@@ -616,9 +616,9 @@ private theorem _root_.IsPrimitiveRoot.pow_sub_pow_eq_prod_sub_mul_field {K : Ty
   · simp only [hy, zero_pow (Nat.ne_zero_of_lt hpos), sub_zero, mul_zero, prod_const]
     congr
     rw [h.card_nthRootsFinset]
-  convert congr_arg (eval (x / y) · * y ^ card (nthRootsFinset n (1 : K)))
-    <| X_pow_sub_one_eq_prod hpos h
-    using 1
+  convert!
+    congr_arg (eval (x / y) · * y ^ card (nthRootsFinset n (1 : K))) <|
+      X_pow_sub_one_eq_prod hpos h using 1
   · simp [sub_mul, div_pow, hy, h.card_nthRootsFinset]
   · simp [eval_prod, prod_mul_pow_card, sub_mul, hy]
 
@@ -656,7 +656,7 @@ theorem separable_cyclotomic (n : ℕ) (K : Type*) [Field K] [NeZero (n : K)] :
 
 theorem squarefree_cyclotomic (n : ℕ) (K : Type*) [Field K] [NeZero (n : K)] :
     Squarefree (cyclotomic n K) :=
- (separable_cyclotomic n K).squarefree
+  (separable_cyclotomic n K).squarefree
 
 end miscellaneous
 

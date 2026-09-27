@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
 public import Mathlib.RepresentationTheory.Coinduced
-public import Mathlib.RepresentationTheory.Induced
 
 /-!
 # Shapiro's lemma for group cohomology
@@ -36,10 +35,11 @@ universe u
 
 namespace groupCohomology
 
-open CategoryTheory Finsupp TensorProduct Rep
+open CategoryTheory Rep
 
 variable {k G : Type u} [CommRing k] [Group G] {S : Subgroup G} (A : Rep k S)
 
+set_option backward.defeqAttrib.useBackward true in
 -- Note: this proof breaks if `resCoindHomEquiv.{u}` is replaced with `resCoindHomEquiv`.
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a projective resolution `P` of `k` as a `k`-linear `G`-representation, a subgroup

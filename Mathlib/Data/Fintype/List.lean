@@ -34,7 +34,6 @@ namespace Multiset
 /-- Given a `m : Multiset α`, we form the `Multiset` of `l : List α` with the property `⟦l⟧ = m`. -/
 def lists : Multiset α → Multiset (List α) := fun s =>
   Quotient.liftOn s (fun l => l.permutations) fun l l' (h : l ~ l') => by
-    simp only
     refine coe_eq_coe.mpr ?_
     exact Perm.permutations h
 
@@ -67,18 +66,14 @@ instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := b
     constructor
     · simp only [Finset.coe_toList]
       rfl
-    · convert Finset.nodup_toList (Finset.univ.powerset : Finset (Finset α))
-      ext l
-      unfold Nodup
-      refine Pairwise.iff ?_
-      intro m n
+    · -- Unfold `List.Nodup` in the type of the proof term to make it match with the goal.
+      convert dsimp% [List.Nodup] Finset.nodup_toList (Finset.univ.powerset : Finset (Finset α))
+        with m n
       simp only [_root_.Disjoint]
       rw [← m.coe_toList, ← n.coe_toList, Multiset.lists_coe, Multiset.lists_coe]
       have := Multiset.coe_disjoint m.toList.permutations n.toList.permutations
       rw [_root_.Disjoint] at this
-      rw [this]
-      simp only [ne_eq]
-      rw [List.disjoint_iff_ne]
+      rw [this, List.disjoint_iff_ne]
       constructor
       · intro h
         by_contra hc
@@ -99,7 +94,7 @@ instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := b
     constructor
     · intro h
       rcases h with ⟨f, hf⟩
-      convert f.nodup
+      convert! f.nodup
       rw [hf]
       rfl
     · intro h

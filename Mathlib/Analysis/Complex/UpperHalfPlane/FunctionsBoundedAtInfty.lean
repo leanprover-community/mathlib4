@@ -75,6 +75,7 @@ theorem IsZeroAtImInfty.isBoundedAtImInfty {α : Type*} [SeminormedAddGroup α] 
     (hf : IsZeroAtImInfty f) : IsBoundedAtImInfty f :=
   hf.boundedAtFilter
 
+set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_comap_im_ofComplex :
     Tendsto ofComplex (comap Complex.im atTop) atImInfty := by
   simp only [atImInfty, tendsto_comap_iff, Function.comp_def]

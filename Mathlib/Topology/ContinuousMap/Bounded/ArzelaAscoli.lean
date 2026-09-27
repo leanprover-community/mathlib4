@@ -77,7 +77,7 @@ theorem arzela_ascoli₁ [CompactSpace β] (A : Set (α →ᵇ β)) (closed : Is
       · exact (hU x').2.2 _ hx' _ (hU x').1 hf
       · exact (hU x').2.2 _ hx' _ (hU x').1 hg
       · have F_f_g : F (f x') = F (g x') :=
-          (congr_arg (fun f : tα → tβ => (f ⟨x', x'tα⟩ : β)) f_eq_g :)
+          congr($f_eq_g ⟨x', x'tα⟩)
         calc
           dist (f x') (g x') ≤ dist (f x') (F (f x')) + dist (g x') (F (f x')) :=
             dist_triangle_right _ _ _
@@ -96,7 +96,7 @@ theorem arzela_ascoli₂ (s : Set β) (hs : IsCompact s) (A : Set (α →ᵇ β)
   let F : (α →ᵇ s) → α →ᵇ β := comp (↑) M
   refine IsCompact.of_isClosed_subset ((?_ : IsCompact (F ⁻¹' A)).image (continuous_comp M)) closed
       fun f hf => ?_
-  · haveI : CompactSpace s := isCompact_iff_compactSpace.1 hs
+  · have : CompactSpace s := isCompact_iff_compactSpace.1 hs
     refine arzela_ascoli₁ _ (continuous_iff_isClosed.1 (continuous_comp M) _ closed) ?_
     rw [isUniformEmbedding_subtype_val.isUniformInducing.equicontinuous_iff]
     exact H.comp (A.restrictPreimage F)

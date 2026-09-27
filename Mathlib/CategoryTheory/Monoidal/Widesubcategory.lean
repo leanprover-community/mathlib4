@@ -6,9 +6,10 @@ Authors: Gaëtan Serré
 
 module
 
-public import Mathlib.CategoryTheory.CopyDiscardCategory.Basic
 public import Mathlib.CategoryTheory.Localization.Monoidal.Basic
 public import Mathlib.CategoryTheory.Widesubcategory
+public import Mathlib.CategoryTheory.Monoidal.Mon
+public import Mathlib.CategoryTheory.Monoidal.Transport
 
 /-!
 # Monoidal structures on wide subcategories
@@ -23,7 +24,7 @@ them to construct monoidal, braided, and symmetric structures on
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

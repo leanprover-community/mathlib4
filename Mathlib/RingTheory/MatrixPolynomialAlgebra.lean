@@ -87,7 +87,7 @@ theorem matPolyEquiv_coeff_apply_aux_2 (i j : n) (p : R[X]) (k : ℕ) :
   refine Polynomial.induction_on' p ?_ ?_
   · intro p q hp hq
     ext
-    simp [hp, hq, coeff_add, add_apply, single_add]
+    simp [hp, hq, coeff_add, Matrix.add_apply, single_add]
   · intro k x
     simp only [matPolyEquiv_coeff_apply_aux_1, coeff_monomial]
     split_ifs <;>
@@ -118,8 +118,9 @@ theorem matPolyEquiv_symm_apply_coeff (p : (Matrix n n R)[X]) (i j : n) (k : ℕ
 theorem matPolyEquiv_smul_one (p : R[X]) :
     matPolyEquiv (p • (1 : Matrix n n R[X])) = p.map (algebraMap R (Matrix n n R)) := by
   ext m i j
-  simp only [matPolyEquiv_coeff_apply, smul_apply, one_apply, smul_eq_mul, mul_ite, mul_one,
-    mul_zero, coeff_map, algebraMap_matrix_apply, Algebra.algebraMap_self, RingHom.id_apply]
+  simp only [matPolyEquiv_coeff_apply, Matrix.smul_apply, Matrix.one_apply, smul_eq_mul, mul_ite,
+    mul_one, mul_zero, coeff_map, algebraMap_matrix_apply, Algebra.algebraMap_self,
+    RingHom.id_apply]
   split_ifs <;> simp
 
 @[simp]
@@ -132,7 +133,7 @@ theorem matPolyEquiv_symm_map_eval (M : (Matrix n n R)[X]) (r : R) :
   suffices ((aeval r).mapMatrix.comp matPolyEquiv.symm.toAlgHom : (Matrix n n R)[X] →ₐ[R] _) =
       (eval₂AlgHom (AlgHom.id R _) (scalar n r)
         fun x => (scalar_commute _ (Commute.all _) _).symm) from
-    DFunLike.congr_fun this M
+    congr($this M)
   ext : 1
   · ext M : 1
     simp [Function.comp_def]
@@ -153,12 +154,12 @@ theorem support_subset_support_matPolyEquiv (m : Matrix n n R[X]) (i j : n) :
   contrapose
   simp only [notMem_support_iff]
   intro hk
-  rw [← matPolyEquiv_coeff_apply, hk, zero_apply]
+  rw [← matPolyEquiv_coeff_apply, hk, Matrix.zero_apply]
 
 theorem eval_det {R : Type*} [CommRing R] (M : Matrix n n R[X]) (r : R) :
     Polynomial.eval r M.det = (Polynomial.eval (scalar n r) (matPolyEquiv M)).det := by
   rw [Polynomial.eval, ← coe_eval₂RingHom, RingHom.map_det]
-  exact congr_arg det <| ext fun _ _ ↦ matPolyEquiv_eval _ _ _ _ |>.symm
+  congrm det $(ext fun _ _ ↦ matPolyEquiv_eval _ _ _ _ |>.symm)
 
 lemma eval_det_add_X_smul {R : Type*} [CommRing R] (A : Matrix n n R[X]) (M : Matrix n n R) :
     (det (A + (X : R[X]) • M.map C)).eval 0 = (det A).eval 0 := by

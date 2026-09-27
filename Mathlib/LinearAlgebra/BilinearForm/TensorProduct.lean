@@ -6,6 +6,7 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.LinearAlgebra.BilinearForm.Hom
+public import Mathlib.LinearAlgebra.Contraction
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.TensorProduct.Finite
@@ -129,7 +130,7 @@ lemma _root_.LinearMap.IsSymm.tmul {B₁ : BilinForm A M₁} {B₂ : BilinForm R
     (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) : (B₁.tmul B₂).IsSymm := by
   rw [LinearMap.isSymm_iff_eq_flip]
   ext x₁ x₂ y₁ y₂
-  exact congr_arg₂ (HSMul.hSMul) (hB₂.eq x₂ y₂) (hB₁.eq x₁ y₁)
+  congrm $(hB₂.eq x₂ y₂) • $(hB₁.eq x₁ y₁)
 
 variable (A) in
 /-- The base change of a bilinear form. -/
@@ -141,6 +142,14 @@ theorem baseChange_tmul (B₂ : BilinForm R M₂) (a : A) (m₂ : M₂)
     (a' : A) (m₂' : M₂) :
     B₂.baseChange A (a ⊗ₜ m₂) (a' ⊗ₜ m₂') = (B₂ m₂ m₂') • (a * a') :=
   rfl
+
+@[simp] lemma baseChange_zero : (0 : BilinForm R M₂).baseChange A = 0 := by ext; simp
+
+@[simp] lemma baseChange_eq_zero_iff [FaithfulSMul R A]
+    (B : BilinForm R M₂) : B.baseChange A = 0 ↔ B = 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
+  ext m m'
+  simpa [← Algebra.algebraMap_eq_smul_one] using congr($h (1 ⊗ₜ[R] m) (1 ⊗ₜ[R] m'))
 
 variable (A) in
 /-- The base change of a symmetric bilinear form is symmetric. -/
@@ -156,8 +165,8 @@ section CommRing
 variable [CommRing R]
 variable [AddCommGroup M₁] [AddCommGroup M₂]
 variable [Module R M₁] [Module R M₂]
-variable [Module.Free R M₁] [Module.Finite R M₁]
-variable [Module.Free R M₂] [Module.Finite R M₂]
+variable [Module.Projective R M₁] [Module.Finite R M₁]
+variable [Module.Projective R M₂] [Module.Finite R M₂]
 
 namespace BilinForm
 
@@ -177,22 +186,18 @@ noncomputable def tensorDistribEquiv :
 theorem tensorDistribEquiv_tmul (B₁ : BilinForm R M₁) (B₂ : BilinForm R M₂) (m₁ : M₁) (m₂ : M₂)
     (m₁' : M₁) (m₂' : M₂) :
     tensorDistribEquiv R (M₁ := M₁) (M₂ := M₂) (B₁ ⊗ₜ[R] B₂) (m₁ ⊗ₜ m₂) (m₁' ⊗ₜ m₂')
-      = B₁ m₁ m₁' * B₂ m₂ m₂' :=
+      = B₂ m₂ m₂' * B₁ m₁ m₁' :=
   rfl
 
 variable (R M₁ M₂) in
--- TODO: make this `rfl`
 @[simp]
 theorem tensorDistribEquiv_toLinearMap :
-    (tensorDistribEquiv R (M₁ := M₁) (M₂ := M₂)).toLinearMap = tensorDistrib R R := by
-  ext B₁ B₂ : 3
-  ext
-  exact mul_comm _ _
+    (tensorDistribEquiv R (M₁ := M₁) (M₂ := M₂)).toLinearMap = tensorDistrib R R := rfl
 
 @[simp]
 theorem tensorDistribEquiv_apply (B : BilinForm R M₁ ⊗ BilinForm R M₂) :
     tensorDistribEquiv R (M₁ := M₁) (M₂ := M₂) B = tensorDistrib R R B :=
-  DFunLike.congr_fun (tensorDistribEquiv_toLinearMap R M₁ M₂) B
+  congr($(tensorDistribEquiv_toLinearMap R M₁ M₂) B)
 
 end BilinForm
 

@@ -17,7 +17,7 @@ public import Mathlib.Data.DFinsupp.Small
 
 /-! # Smallness properties of modules and algebras -/
 
-@[expose] public section
+public section
 
 universe u
 

@@ -44,7 +44,7 @@ Artinian, artinian, Artinian ring, artinian ring
 
 -/
 
-@[expose] public section
+public section
 
 open Set Submodule IsArtinian
 

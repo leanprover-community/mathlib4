@@ -106,7 +106,7 @@ theorem involute_eq_id :
 /-- The clifford algebra over a 0-dimensional vector space is isomorphic to its scalars. -/
 protected def equiv : CliffordAlgebra (0 : QuadraticForm R Unit) ≃ₐ[R] R :=
   AlgEquiv.ofAlgHom
-    (CliffordAlgebra.lift (0 : QuadraticForm R Unit) <|
+    (CliffordAlgebra.lift (0 : QuadraticForm R Unit)
       ⟨0, fun _ : Unit => (zero_mul (0 : R)).trans (algebraMap R _).map_zero.symm⟩)
     (Algebra.ofId R _) (by ext)
     (by ext : 1; rw [ι_eq_zero, LinearMap.comp_zero, LinearMap.comp_zero])
@@ -128,7 +128,6 @@ def Q : QuadraticForm ℝ ℝ :=
 theorem Q_apply (r : ℝ) : Q r = -(r * r) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Intermediate result for `CliffordAlgebraComplex.equiv`: clifford algebras over
 `CliffordAlgebraComplex.Q` above can be converted to `ℂ`. -/
 def toComplex : CliffordAlgebra Q →ₐ[ℝ] ℂ :=
@@ -149,7 +148,7 @@ theorem toComplex_involute (c : CliffordAlgebra Q) :
   have : toComplex (involute (ι Q 1)) = conj (toComplex (ι Q 1)) := by
     simp only [involute_ι, toComplex_ι, map_neg, one_smul, Complex.conj_I]
   suffices toComplex.comp involute = Complex.conjAe.toAlgHom.comp toComplex by
-    exact AlgHom.congr_fun this c
+    congrm $this c
   ext : 2
   exact this
 
@@ -164,7 +163,6 @@ def ofComplex : ℂ →ₐ[ℝ] CliffordAlgebra Q :=
 theorem ofComplex_I : ofComplex Complex.I = ι Q 1 :=
   Complex.liftAux_apply_I _ (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toComplex_comp_ofComplex : toComplex.comp ofComplex = AlgHom.id ℝ ℂ := by
   ext1
@@ -173,7 +171,7 @@ theorem toComplex_comp_ofComplex : toComplex.comp ofComplex = AlgHom.id ℝ ℂ 
 
 @[simp]
 theorem toComplex_ofComplex (c : ℂ) : toComplex (ofComplex c) = c :=
-  AlgHom.congr_fun toComplex_comp_ofComplex c
+  congr($toComplex_comp_ofComplex c)
 
 @[simp]
 theorem ofComplex_comp_toComplex : ofComplex.comp toComplex = AlgHom.id ℝ (CliffordAlgebra Q) := by
@@ -184,7 +182,7 @@ theorem ofComplex_comp_toComplex : ofComplex.comp toComplex = AlgHom.id ℝ (Cli
 
 @[simp]
 theorem ofComplex_toComplex (c : CliffordAlgebra Q) : ofComplex (toComplex c) = c :=
-  AlgHom.congr_fun ofComplex_comp_toComplex c
+  congr($ofComplex_comp_toComplex c)
 
 /-- The clifford algebras over `CliffordAlgebraComplex.Q` is isomorphic as an `ℝ`-algebra to `ℂ`. -/
 @[simps!]
@@ -303,7 +301,7 @@ theorem ofQuaternion_comp_toQuaternion :
 @[simp]
 theorem ofQuaternion_toQuaternion (c : CliffordAlgebra (Q c₁ c₂)) :
     ofQuaternion (toQuaternion c) = c :=
-  AlgHom.congr_fun ofQuaternion_comp_toQuaternion c
+  congr($ofQuaternion_comp_toQuaternion c)
 
 @[simp]
 theorem toQuaternion_comp_ofQuaternion :
@@ -312,7 +310,7 @@ theorem toQuaternion_comp_ofQuaternion :
 
 @[simp]
 theorem toQuaternion_ofQuaternion (q : ℍ[R,c₁,0,c₂]) : toQuaternion (ofQuaternion q) = q :=
-  AlgHom.congr_fun toQuaternion_comp_ofQuaternion q
+  congr($toQuaternion_comp_ofQuaternion q)
 
 /-- The clifford algebra over `CliffordAlgebraQuaternion.Q c₁ c₂` is isomorphic as an `R`-algebra
 to `ℍ[R,c₁,c₂]`. -/
@@ -343,8 +341,9 @@ variable {R : Type*} [CommRing R]
 
 theorem ι_mul_ι (r₁ r₂) : ι (0 : QuadraticForm R R) r₁ * ι (0 : QuadraticForm R R) r₂ = 0 := by
   rw [← mul_one r₁, ← mul_one r₂, ← smul_eq_mul r₁, ← smul_eq_mul r₂, map_smul, map_smul,
-    smul_mul_smul_comm, ι_sq_scalar, QuadraticMap.zero_apply, map_zero, smul_zero]
+    smul_mul_smul_comm, ι_sq_scalar, zero_apply, map_zero, smul_zero]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The clifford algebra over a 1-dimensional vector space with 0 quadratic form is isomorphic to
 the dual numbers. -/
 protected def equiv : CliffordAlgebra (0 : QuadraticForm R R) ≃ₐ[R] R[ε] :=
@@ -354,28 +353,19 @@ protected def equiv : CliffordAlgebra (0 : QuadraticForm R R) ≃ₐ[R] R[ε] :=
       (Algebra.ofId _ _, ι (R := R) _ 1),
       ι_mul_ι (1 : R) 1,
       fun _ => (Algebra.commutes _ _).symm⟩)
-    (by
-      ext : 1
-      -- This used to be a single `simp` before https://github.com/leanprover/lean4/pull/2644
-      simp only [QuadraticMap.zero_apply, AlgHom.coe_comp, Function.comp_apply, lift_apply_eps,
-        AlgHom.coe_id, id_eq]
-      erw [lift_ι_apply]
-      simp)
-    -- This used to be a single `simp` before https://github.com/leanprover/lean4/pull/2644
-    (by
-      ext : 2
-      simp only [QuadraticMap.zero_apply, AlgHom.comp_toLinearMap, LinearMap.coe_comp,
-        Function.comp_apply, AlgHom.toLinearMap_apply, AlgHom.toLinearMap_id, LinearMap.id_comp]
-      erw [lift_ι_apply]
-      simp)
+    (by ext : 1; simp) (by ext : 2; simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
-theorem equiv_ι (r : R) : CliffordAlgebraDualNumber.equiv (ι (R := R) _ r) = r • ε :=
-  (lift_ι_apply _ _ r).trans (inr_eq_smul_eps _)
+theorem equiv_ι (r : R) : CliffordAlgebraDualNumber.equiv (ι (R := R) _ r) = r • ε := by
+  dsimp [CliffordAlgebraDualNumber.equiv, AlgEquiv.ofAlgHom]
+  exact (lift_ι_apply _ _ r).trans (inr_eq_smul_eps _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem equiv_symm_eps :
-    CliffordAlgebraDualNumber.equiv.symm (eps : R[ε]) = ι (0 : QuadraticForm R R) 1 :=
-  DualNumber.lift_apply_eps _
+    CliffordAlgebraDualNumber.equiv.symm (eps : R[ε]) = ι (0 : QuadraticForm R R) 1 := by
+  dsimp [CliffordAlgebraDualNumber.equiv, AlgEquiv.ofAlgHom]
+  exact DualNumber.lift_apply_eps _
 
 end CliffordAlgebraDualNumber

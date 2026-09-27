@@ -42,7 +42,7 @@ variable {n : Type*} [Fintype n] [DecidableEq n]
 theorem det_le {A : Matrix n n R} {abv : AbsoluteValue R S} {x : S} (hx : ∀ i j, abv (A i j) ≤ x) :
     abv A.det ≤ (Fintype.card n)! • x ^ Fintype.card n :=
   calc
-    abv A.det = abv (∑ σ : Perm n, Perm.sign σ • ∏ i, A (σ i) i) := congr_arg abv (det_apply _)
+    abv A.det = abv (∑ σ : Perm n, Perm.sign σ • ∏ i, A (σ i) i) := congr(abv $(det_apply _))
     _ ≤ ∑ σ : Perm n, abv (Perm.sign σ • ∏ i, A (σ i) i) := abv.sum_le _ _
     _ = ∑ σ : Perm n, ∏ i, abv (A (σ i) i) :=
       sum_congr rfl fun σ _ => by rw [abv.map_units_int_smul, abv.map_prod]
@@ -64,7 +64,7 @@ theorem det_sum_smul_le {ι : Type*} (s : Finset ι) {c : ι → R} {A : ι → 
     (hy : ∀ k, abv (c k) ≤ y) :
     abv (det (∑ k ∈ s, c k • A k)) ≤
       Nat.factorial (Fintype.card n) • (#s • y * x) ^ Fintype.card n := by
-  simpa only [smul_mul_assoc] using
+  simpa only [smul_mul_assoc] using!
     det_sum_le s fun k i j =>
       calc
         abv (c k * A k i j) = abv (c k) * abv (A k i j) := abv.map_mul _ _

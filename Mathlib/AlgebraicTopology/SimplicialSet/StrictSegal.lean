@@ -29,7 +29,9 @@ in `Mathlib/AlgebraicTopology/SimplicialSet/Coskeletal.lean`.
 
 universe v u
 
-open CategoryTheory Simplicial SimplexCategory
+open CategoryTheory SimplexCategory
+
+open scoped Simplicial
 
 namespace SSet
 namespace Truncated
@@ -56,8 +58,6 @@ class IsStrictSegal (X : SSet.Truncated.{u} (n + 1)) : Prop where
   spine_bijective (X) (m : ℕ) (h : m ≤ n + 1 := by grind) : Function.Bijective (X.spine m)
 
 export IsStrictSegal (spine_bijective)
-
-@[deprecated (since := "2025-11-04")] alias IsStrictSegal.segal := spine_bijective
 
 lemma spine_injective (X : SSet.Truncated.{u} (n + 1)) [X.IsStrictSegal]
     {m : ℕ} {h : m ≤ n + 1} :
@@ -111,12 +111,12 @@ section spineToSimplex
 @[simp]
 lemma spine_spineToSimplex_apply (m : ℕ) (h : m ≤ n + 1) (f : Path X m) :
     X.spine m h (sx.spineToSimplex m h f) = f :=
-  congr_fun (sx.spine_spineToSimplex m h) f
+  congr($(sx.spine_spineToSimplex m h) f)
 
 @[simp]
 lemma spineToSimplex_spine_apply (m : ℕ) (h : m ≤ n + 1) (Δ : X _⦋m⦌ₙ₊₁) :
     sx.spineToSimplex m h (X.spine m h Δ) = Δ :=
-  congr_fun (sx.spineToSimplex_spine m h) Δ
+  congr($(sx.spineToSimplex_spine m h) Δ)
 
 section autoParam
 
@@ -168,7 +168,7 @@ theorem spineToSimplex_interval (f : Path X m) (j l : ℕ) (hjl : j + l ≤ m) :
   apply sx.spineInjective l
   dsimp only [spineEquiv, Equiv.coe_fn_mk]
   rw [spine_spineToSimplex_apply]
-  convert spine_map_subinterval X m h j l hjl <| sx.spineToSimplex m h f
+  convert! spine_map_subinterval X m h j l hjl <| sx.spineToSimplex m h f
   exact sx.spine_spineToSimplex_apply m h f |>.symm
 
 theorem spineToSimplex_edge (f : Path X m) (j l : ℕ) (hjl : j + l ≤ m) :
@@ -197,6 +197,7 @@ section spine_δ
 variable (m : ℕ) (h : m ≤ n) (f : Path X (m + 1))
 variable {i : Fin (m + 1)} {j : Fin (m + 2)}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
 the common vertices will agree with those of the original path `f`. In particular,
 a vertex `i` with `i < j` can be identified with the same vertex in `f`. -/
@@ -209,6 +210,7 @@ lemma spine_δ_vertex_lt (hij : i.castSucc < j) :
     Fin.succAboveOrderEmb_apply, OrderEmbedding.toOrderHom_coe]
   rw [Fin.succAbove_of_castSucc_lt j i hij]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
 a vertex `i` with `j ≤ i` can be identified with vertex `i + 1` in the original
 path. -/
@@ -301,12 +303,12 @@ instance [X.IsStrictSegal] (n : ℕ) :
 @[simp]
 lemma spine_spineToSimplex_apply {n : ℕ} (f : Path X n) :
     X.spine n (sx.spineToSimplex f) = f :=
-  congr_fun (sx.spine_spineToSimplex n) f
+  congr($(sx.spine_spineToSimplex n) f)
 
 @[simp]
 lemma spineToSimplex_spine_apply {n : ℕ} (Δ : X _⦋n⦌) :
     sx.spineToSimplex (X.spine n Δ) = Δ :=
-  congr_fun (sx.spineToSimplex_spine n) Δ
+  congr($(sx.spineToSimplex_spine n) Δ)
 
 /-- The fields of `StrictSegal` define an equivalence between `X _⦋n⦌`
 and `Path X n`. -/
@@ -526,8 +528,7 @@ def strictSegal : StrictSegal (nerve C) :=
       δ₀_concat f s h := rfl
       injective {f g} h h₀ :=
         ComposableArrows.ext_succ (Functor.congr_obj h 0) h₀
-          ((Arrow.mk_eq_mk_iff _ _).1
-            (DFunLike.congr_arg ComposableArrows.arrowEquiv h)).2.2 })
+          ((Arrow.mk_eq_mk_iff _ _).1 congr(ComposableArrows.arrowEquiv $h)).2.2 })
 
 instance isStrictSegal : IsStrictSegal (nerve C) :=
   strictSegal C |>.isStrictSegal

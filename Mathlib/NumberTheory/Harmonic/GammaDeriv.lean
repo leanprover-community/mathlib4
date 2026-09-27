@@ -93,6 +93,16 @@ lemma eulerMascheroniConstant_eq_neg_deriv : γ = -deriv Gamma 1 := by
   rw [show (1 : ℝ) = ↑(0 : ℕ) + 1 by simp, deriv_Gamma_nat 0]
   simp
 
+/-- The Euler–Mascheroni constant as an integral: `γ = -∫₀^∞ log t · e^{-t} dt`. -/
+lemma eulerMascheroniConstant_eq_neg_integral_log :
+    γ = -∫ t in Ioi 0, log t * exp (-t) := by
+  rw [eulerMascheroniConstant_eq_neg_deriv, deriv_Gamma_one_eq_integral_log]
+
+/-- An integral representation of the Euler–Mascheroni constant, valid for any `s > 1`. -/
+lemma eulerMascheroniConstant_eq_neg_integral_log_log {s : ℝ} (hs : 1 < s) :
+    γ = -log (s - 1) + -((s - 1) * ∫ (t : ℝ) in Ioi 1, log (log t) * t ^ (-s)) := by
+  rw [eulerMascheroniConstant_eq_neg_deriv, deriv_Gamma_one_eq_integral_log_log hs, neg_add_rev]
+
 lemma hasDerivAt_Gamma_one : HasDerivAt Gamma (-γ) 1 := by
   simpa only [factorial_zero, cast_one, harmonic_zero, Rat.cast_zero, add_zero, mul_neg, one_mul,
     cast_zero, zero_add] using hasDerivAt_Gamma_nat 0
@@ -130,10 +140,8 @@ lemma hasDerivAt_Gamma_one_half : HasDerivAt Gamma (-√π * (γ + 2 * log 2)) (
   _ = √π * (-2 * γ + deriv (fun s : ℝ ↦ 2 ^ (1 - 2 * s)) (1 / 2) + γ) := by
     congr 3
     change deriv (Gamma ∘ fun s ↦ 2 * s) _ = _
-    rw [deriv_comp, deriv_const_mul, mul_one_div, div_self two_ne_zero, deriv_id''] <;>
-    dsimp only
-    · rw [mul_one, mul_comm, hasDerivAt_Gamma_one.deriv, mul_neg, neg_mul]
-    · fun_prop
+    rw [deriv_comp, deriv_const_mul_id, mul_one_div, div_self two_ne_zero]
+    · rw [mul_comm, hasDerivAt_Gamma_one.deriv, mul_neg, neg_mul]
     · apply h_diff; simp -- s = 1
     · fun_prop
   _ = √π * (-2 * γ + -(2 * log 2) + γ) := by
@@ -201,7 +209,6 @@ lemma hasDerivAt_Gammaℂ_one : HasDerivAt Gammaℂ (-(γ + log (2 * π)) / π) 
     rw [mul_neg_one, mul_neg, cpow_neg_one, ← div_eq_inv_mul, ← mul_div_assoc,
       mul_div_mul_left _ _ two_ne_zero, neg_div]
   have := this.mul hasDerivAt_Gamma_one
-  simp only at this
   rwa [Gamma_one, mul_one, cpow_neg_one, ← div_eq_mul_inv, ← div_div, div_self two_ne_zero,
     mul_comm (1 / _), mul_one_div, ← _root_.add_div, ← neg_add, add_comm] at this
 

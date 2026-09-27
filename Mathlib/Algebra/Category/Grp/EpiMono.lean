@@ -13,6 +13,7 @@ public import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-!
 # Monomorphisms and epimorphisms in `Group`
+
 In this file, we prove monomorphisms in the category of groups are injective homomorphisms and
 epimorphisms are surjective homomorphisms.
 -/
@@ -38,7 +39,7 @@ variable [Group A] [Group B]
 
 @[to_additive]
 theorem ker_eq_bot_of_cancel {f : A →* B} (h : ∀ u v : f.ker →* A, f.comp u = f.comp v → u = v) :
-    f.ker = ⊥ := by simpa using congr_arg range (h f.ker.subtype 1 (by cat_disch))
+    f.ker = ⊥ := by simpa using congr(range $(h f.ker.subtype 1 (by cat_disch)))
 
 end
 
@@ -134,6 +135,7 @@ theorem fromCoset_eq_of_mem_range {b : B} (hb : b ∈ f.hom.range) :
 
 example (G : Type) [Group G] (S : Subgroup G) : Set G := S
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem fromCoset_ne_of_nin_range {b : B} (hb : b ∉ f.hom.range) :
     fromCoset ⟨b • ↑f.hom.range, b, rfl⟩ ≠ fromCoset ⟨f.hom.range, 1, one_leftCoset _⟩ := by
   intro r
@@ -224,7 +226,7 @@ theorem h_apply_infinity (x : B) (hx : x ∈ f.hom.range) : (h x) ∞ = ∞ := b
   change ((τ).symm.trans (g x)).trans τ _ = _
   simp only [Equiv.coe_trans, Function.comp_apply]
   rw [τ_symm_apply_infinity, g_apply_fromCoset]
-  simpa only using τ_apply_fromCoset' f x hx
+  exact τ_apply_fromCoset' f x hx
 
 theorem h_apply_fromCoset (x : B) :
     (h x) (fromCoset ⟨f.hom.range, 1, one_leftCoset _⟩) =
@@ -245,7 +247,7 @@ theorem h_apply_fromCoset_nin_range (x : B) (hx : x ∈ f.hom.range) (b : B) (hb
       (fromCoset ⟨b • ↑f.hom.range, b, rfl⟩) (fromCoset_ne_of_nin_range _ hb) (by simp)]
   simp only [g_apply_fromCoset, leftCoset_assoc]
   refine Equiv.swap_apply_of_ne_of_ne (fromCoset_ne_of_nin_range _ fun r => hb ?_) (by simp)
-  convert Subgroup.mul_mem _ (Subgroup.inv_mem _ hx) r
+  convert! Subgroup.mul_mem _ (Subgroup.inv_mem _ hx) r
   rw [← mul_assoc, inv_mul_cancel, one_mul]
 
 theorem agree : f.hom.range = { x | h x = g x } := by
@@ -279,11 +281,12 @@ theorem comp_eq : (f ≫ ofHom g) = f ≫ ofHom h := by
     use a
   rw [this]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem g_ne_h (x : B) (hx : x ∉ f.hom.range) : g ≠ h := by
   intro r
   apply fromCoset_ne_of_nin_range _ hx
   replace r :=
-    DFunLike.congr_fun (DFunLike.congr_fun r x) (fromCoset ⟨f.hom.range, ⟨1, one_leftCoset _⟩⟩)
+    congr($r x (fromCoset ⟨f.hom.range, ⟨1, one_leftCoset _⟩⟩))
   simpa [g_apply_fromCoset, «h», tau, g_apply_infinity] using r
 
 end SurjectiveOfEpiAuxs
@@ -293,7 +296,7 @@ theorem surjective_of_epi [Epi f] : Function.Surjective f := by
   by_contra! ⟨b, hb⟩
   exact
     SurjectiveOfEpiAuxs.g_ne_h f b (fun ⟨c, hc⟩ => hb _ hc)
-      (congr_arg GrpCat.Hom.hom ((cancel_epi f).1 (SurjectiveOfEpiAuxs.comp_eq f)))
+      congr($((cancel_epi f).1 (SurjectiveOfEpiAuxs.comp_eq f)).hom)
 
 theorem epi_iff_surjective : Epi f ↔ Function.Surjective f :=
   ⟨fun _ => surjective_of_epi f, ConcreteCategory.epi_of_surjective f⟩

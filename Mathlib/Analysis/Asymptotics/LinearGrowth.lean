@@ -79,15 +79,15 @@ lemma linearGrowthInf_eventually_monotone (h : u ≤ᶠ[atTop] v) :
     linearGrowthInf u ≤ linearGrowthInf v :=
   liminf_le_liminf (h.mono fun n u_v ↦ EReal.monotone_div_right_of_nonneg n.cast_nonneg' u_v)
 
-lemma linearGrowthInf_monotone (h : u ≤ v) : linearGrowthInf u ≤ linearGrowthInf v :=
-  linearGrowthInf_eventually_monotone (Eventually.of_forall h)
+lemma linearGrowthInf_monotone : Monotone (linearGrowthInf (R := EReal)) :=
+  fun _ _ h ↦ linearGrowthInf_eventually_monotone (Eventually.of_forall h)
 
 lemma linearGrowthSup_eventually_monotone (h : u ≤ᶠ[atTop] v) :
     linearGrowthSup u ≤ linearGrowthSup v :=
   limsup_le_limsup (h.mono fun n u_v ↦ monotone_div_right_of_nonneg n.cast_nonneg' u_v)
 
-lemma linearGrowthSup_monotone (h : u ≤ v) : linearGrowthSup u ≤ linearGrowthSup v :=
-  linearGrowthSup_eventually_monotone (Eventually.of_forall h)
+lemma linearGrowthSup_monotone : Monotone (linearGrowthSup (R := EReal)) :=
+  fun _ _ h ↦ linearGrowthSup_eventually_monotone (Eventually.of_forall h)
 
 lemma linearGrowthInf_le_linearGrowthSup_of_frequently_le (h : ∃ᶠ n in atTop, u n ≤ v n) :
     linearGrowthInf u ≤ linearGrowthSup v :=
@@ -347,8 +347,7 @@ lemma Real.eventually_atTop_exists_nat_between {a b : ℝ} (h : a < b) (hb : 0 �
     with x x_0 ⟨m, m_a, m_b⟩
   refine ⟨m.toNat, m_a.trans (Int.cast_le.2 m.self_le_toNat), ?_⟩
   apply le_of_eq_of_le _ (max_le m_b (mul_nonneg hb x_0))
-  norm_cast
-  exact Int.toNat_eq_max m
+  exact_mod_cast Int.toNat_eq_max m
 
 lemma EReal.eventually_atTop_exists_nat_between {a b : EReal} (h : a < b) (hb : 0 ≤ b) :
     ∀ᶠ n : ℕ in atTop, ∃ m : ℕ, a * n ≤ m ∧ m ≤ b * n :=

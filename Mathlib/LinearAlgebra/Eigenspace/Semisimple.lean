@@ -19,6 +19,8 @@ endomorphisms.
 
 * `Module.End.IsFinitelySemisimple.genEigenspace_eq_eigenspace`: for a semisimple endomorphism,
   a generalized eigenspace is an eigenspace.
+* `Module.End.IsSemisimple.iSup_maxGenEigenspace_eq_top_iff`: a semisimple endomorphism is
+  triangularizable if and only if it is diagonalizable.
 * `Module.End.IsSemisimple.iSup_eigenspace_eq_top`: over an algebraically closed field,
   the eigenspaces of a semisimple endomorphism span the whole space.
 * `Module.End.IsSemisimple.eq_zero_iff_forall_eigenvalue`: a semisimple endomorphism over
@@ -28,12 +30,13 @@ endomorphisms.
 
 public section
 
-open Function Set
+open Set
 
 namespace Module.End
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {f g : End R M}
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma apply_eq_of_mem_of_comm_of_isFinitelySemisimple_of_isNil
     {μ : R} {k : ℕ∞} {m : M} (hm : m ∈ f.genEigenspace μ k)
     (hfg : Commute f g) (hss : g.IsFinitelySemisimple) (hnil : IsNilpotent (f - g)) :
@@ -54,7 +57,7 @@ lemma apply_eq_of_mem_of_comm_of_isFinitelySemisimple_of_isNil
   suffices IsNilpotent ((g - algebraMap R (End R M) μ).restrict h₂) by
     replace this : g.restrict h₁ - algebraMap R (End R p) μ = 0 :=
       eq_zero_of_isNilpotent_of_isFinitelySemisimple this (by simpa using hss.restrict _)
-    simpa [LinearMap.restrict_apply, sub_eq_zero] using LinearMap.congr_fun this ⟨m, hm⟩
+    simpa [LinearMap.restrict_apply, sub_eq_zero] using congr($this ⟨m, hm⟩)
   simpa [LinearMap.restrict_sub h₄ h₃] using (LinearMap.restrict_commute hfg h₄ h₃).isNilpotent_sub
     (f.isNilpotent_restrict_sub_algebraMap μ l) (Module.End.isNilpotent.restrict h₃ hnil)
 
@@ -70,6 +73,16 @@ lemma IsFinitelySemisimple.maxGenEigenspace_eq_eigenspace
     (hf : f.IsFinitelySemisimple) (μ : R) :
     f.maxGenEigenspace μ = f.eigenspace μ :=
   hf.genEigenspace_eq_eigenspace μ ENat.top_pos
+
+/-- A finitely-semisimple endomorphism is triangularizable if and only if it is diagonalizable. -/
+lemma IsFinitelySemisimple.iSup_maxGenEigenspace_eq_top_iff (hf : f.IsFinitelySemisimple) :
+    (⨆ μ : R, f.maxGenEigenspace μ) = ⊤ ↔ (⨆ μ : R, f.eigenspace μ) = ⊤ := by
+  simp [hf.maxGenEigenspace_eq_eigenspace]
+
+/-- A semisimple endomorphism is triangularizable if and only if it is diagonalizable. -/
+lemma IsSemisimple.iSup_maxGenEigenspace_eq_top_iff (hf : f.IsSemisimple) :
+    (⨆ μ : R, f.maxGenEigenspace μ) = ⊤ ↔ (⨆ μ : R, f.eigenspace μ) = ⊤ :=
+  hf.isFinitelySemisimple.iSup_maxGenEigenspace_eq_top_iff
 
 section AlgClosed
 
