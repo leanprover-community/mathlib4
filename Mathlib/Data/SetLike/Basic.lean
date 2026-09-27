@@ -230,8 +230,8 @@ export IsMemLE (le_iff_mem_imp_mem)
 @[gcongr low] -- lower priority than `Set.mem_of_subset_of_mem`
 alias ⟨mem_of_le_of_mem, _⟩ := le_iff_mem_imp_mem
 
-instance (α : Type*) : IsConcreteLE (Set α) α where
-  le_iff := .rfl
+instance (α : Type*) : IsMemLE (Set α) α where
+  le_iff_mem_imp_mem := .rfl
 
 section default
 
