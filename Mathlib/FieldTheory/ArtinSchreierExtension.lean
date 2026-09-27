@@ -182,14 +182,15 @@ theorem isCyclic_charP_tfae [Fact p.Prime] (hrank : Module.finrank F K = p) :
     [IsGalois F K,
     ∃ a : F, Irreducible (X ^ p - X - C a) ∧ IsSplittingField F K (X ^ p - X - C a),
     ∃ α : K, α ^ p - α ∈ Set.range ⇑(algebraMap F K) ∧ F⟮α⟯ = ⊤,
-    ∃ a : F, ∃ α : K, minpoly F α = X ^ p - X - C a].TFAE := by
-  open Field FiniteDimensional IsGalois in
+    ∃ a : F, ∃ α : K, minpoly F α = X ^ p - X - C a,
+    ∃ a : F, Nonempty (IsAdjoinRootMonic K (X ^ p - X - C a))].TFAE := by
+  open Field FiniteDimensional IsGalois minpoly in
   have hp : p.Prime := fact_iff.mp inferInstance
   let := of_finrank_pos (hp.pos.trans_eq hrank.symm)
   tfae_have 1 → 4 := fun _ ↦ cyclic_charP_as_param hrank
   tfae_have 4 → 3 := by
     refine fun ⟨a, z, hz⟩ ↦ ⟨z, ⟨a, (sub_eq_zero.mp ?_).symm⟩, ?_⟩
-    · have := minpoly.aeval F z
+    · have := aeval F z
       simp_all only [aeval_sub, map_pow, aeval_X, aeval_C]
     · apply (primitive_element_iff_minpoly_natDegree_eq F z).mpr
       rw [hz, hrank]
@@ -197,6 +198,35 @@ theorem isCyclic_charP_tfae [Fact p.Prime] (hrank : Module.finrank F K = p) :
   tfae_have 3 → 2 := fun h ↦ cyclic_charP_splitting hrank h
   tfae_have 2 → 1 := fun ⟨a, h1, _⟩ ↦ of_separable_splitting_field
     ((separable_iff_derivative_ne_zero h1).mpr (by simp [@derivative_X_pow]))
+  tfae_have 3 → 5 := by
+    refine fun ⟨α, ⟨⟨a, h1⟩, h2⟩⟩ ↦ ⟨a, ?_⟩
+    have hmon := artinSchreierPoly_isMonicOfDegree a hp.one_lt
+    have heval : (aeval α) (X ^ p - X - C a) = 0 := by simp_all
+    refine Nonempty.intro ⟨⟨aeval α, fun z ↦ ?_, ?_⟩, hmon.2⟩
+    · have h : z ∈ (⊤ : Subalgebra F K) := Algebra.mem_top
+      rw [←IntermediateField.adjoin_eq_top_iff.mp h2] at h
+      exact Algebra.adjoin_mem_exists_aeval F α h
+    · ext x
+      have hmin : X ^ p - X - C a = minpoly F α := by
+        refine unique_of_degree_le_degree_minpoly F α hmon.2 heval ?_
+        rw [(primitive_element_iff_minpoly_degree_eq F α).mp h2, hrank,
+            degree_eq_natDegree hmon.2.ne_zero, hmon.1]
+      rw [RingHom.mem_ker, Ideal.mem_span_singleton, hmin]
+      exact dvd_iff.symm
+  tfae_have 5 → 4 := by
+    refine fun ⟨a, ⟨⟨h_map, map_surjective, ker_map⟩, hmon⟩⟩ ↦ ?_
+    let α := h_map X
+    simp only [Ideal.ext_iff, RingHom.mem_ker] at ker_map
+    refine ⟨a, α, (unique F α hmon ?_ (fun q hq1 hq2 ↦ ?_)).symm⟩
+    · specialize ker_map (X ^ p - X - C a)
+      simp only [map_sub, map_pow, Submodule.mem_span_singleton_self, iff_true,
+        aeval_X, aeval_C] at ker_map ⊢
+      rw [eval_unique h_map (C a), eval₂_C] at ker_map
+      exact ker_map
+    · rw [aeval_algHom_apply, aeval_X_left_apply] at hq2
+      specialize ker_map q
+      simp only [hq2, true_iff, Ideal.mem_span_singleton] at ker_map
+      exact degree_le_of_dvd ker_map hq1.ne_zero
   tfae_finish
 
 lemma irreducible_artinSchreierPoly_tower [Fact p.Prime] (hrank : Module.finrank F K = p)
