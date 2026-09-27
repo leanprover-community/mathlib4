@@ -103,7 +103,7 @@ syntax bracketedOption := "(" attrOption <|> reorderOption <|>
   translation heuristics, or because the value/proof is genuinely different.
 
 - `self` indicates that the declaration translates to itself, up to some reordering of arguments.
-  If no arguments are reordered then the attribute is redundant, which the `translateRedundant`
+  If no arguments are reordered then the attribute is redundant, which the `translate.redundant`
   linter will warn about.
 
 - `none` indicates that the translated declaration should not get a user-facing name,
@@ -159,6 +159,12 @@ register_option linter.translate.relevantArg : Bool := {
 
 /-- Linter used by translate attributes that checks if the attribute was already applied -/
 register_option linter.translate.overwrite : Bool := {
+  defValue := true
+  descr := "Linter used by translate attributes that checks if the attribute was already applied" }
+
+/-- Linter used by translate attributes that checks if the attribute was already applied -/
+@[deprecated linter.translate.overwrite (since := "2026-09-27")]
+register_option linter.translateOverwrite : Bool := {
   defValue := true
   descr := "Linter used by translate attributes that checks if the attribute was already applied" }
 

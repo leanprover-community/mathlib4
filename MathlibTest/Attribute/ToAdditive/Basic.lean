@@ -546,7 +546,7 @@ end Test
 insert_to_additive_translation localize add_localize
 
 @[to_additive] def localize.r := Nat
-set_option linter.translateOverwrite false in
+set_option linter.translate.overwrite false in
 @[to_additive add_localize] def localize := Nat
 @[to_additive] def localize.s := Nat
 
@@ -901,7 +901,7 @@ def monoidAlgebraFoo₁ {k G : Type} [Inhabited k] : MonoidAlgebra k G × Nat :=
 warning: `to_additive` determined that `(relevant_arg := 2)` is the right option for `monoidAlgebraFoo₂`, rather than `(relevant_arg := 1)`.
 You may remove the option.
 
-Note: This linter can be disabled with `set_option linter.translateRelevantArg false`
+Note: This linter can be disabled with `set_option linter.translate.relevantArg false`
 ---
 warning: @[to_additive] failed to add a translation from `monoidAlgebraFoo₂.eq_1` to any of `[addMonoidAlgebraFoo₂.eq_1]`.
 Please silence this warning and add a translation manually. Errors:
