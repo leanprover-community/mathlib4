@@ -329,7 +329,7 @@ theorem hasDerivAt_circleAverage_herglotzRieszKernel_smul (hg : CircleIntegrable
   -- Uniform bound for the differentiated integrand near `w`
   case bound =>
     filter_upwards with θ _ x hx
-    have h₁ : ‖(2 : ℂ)‖ = 2 := by norm_num
+    have h₁ : ‖(2 : ℂ)‖ = 2 := by simp
     rw [norm_smul, norm_div, norm_mul, norm_circleMap_zero, norm_pow, div_eq_mul_inv, h₁]
     gcongr
     exact hdist x hx θ

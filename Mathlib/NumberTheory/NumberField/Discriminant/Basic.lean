@@ -267,7 +267,7 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
           convert! (mul_le_mul h_m this (by positivity) (by positivity)) using 1
           field
       refine le_trans (le_of_eq (by simp [field]; norm_num)) (one_add_mul_le_pow ?_ (2 * m))
-      exact le_trans (by norm_num : (-2 : ℝ) ≤ 0) (by positivity)
+      exact le_trans (by simp : (-2 : ℝ) ≤ 0) (by positivity)
 
 /-- **Hermite-Minkowski Theorem**. A nontrivial number field has discriminant greater than `2`. -/
 theorem abs_discr_gt_two (h : 1 < finrank ℚ K) : 2 < |discr K| := by
@@ -322,7 +322,7 @@ theorem finite_of_finite_generating_set {p : IntermediateField ℚ A → Prop}
   refine Set.finite_coe_iff.mp <| Finite.of_injective
     (fun ⟨F, hF⟩ ↦ (⟨(h F hF).choose, (h F hF).choose_spec.1⟩ : T)) (fun _ _ h_eq ↦ ?_)
   rw [Subtype.ext_iff, Subtype.ext_iff]
-  convert! congr_arg (ℚ⟮·⟯) (Subtype.mk_eq_mk.mp h_eq)
+  convert! congr(ℚ⟮$(Subtype.mk_eq_mk.mp h_eq)⟯)
   all_goals exact (h _ (Subtype.mem _)).choose_spec.2
 
 variable (N : ℕ)

@@ -207,7 +207,7 @@ lemma pow_toEnd_f_ne_zero_of_eq_nat [CharZero R] [IsDomain R] [IsTorsionFree R M
   · exact P.ne_zero (by simpa using H)
   · next i IH =>
     have : ((i + 1) * (n - i) : ℤ) • (toEnd R L M f ^ i) m = 0 := by
-      have := congr_arg (⁅e, ·⁆) H
+      have := congr(⁅e, $H⁆)
       simpa [← Int.cast_smul_eq_zsmul R, P.lie_e_pow_succ_toEnd_f, hn] using this
     rw [← Int.cast_smul_eq_zsmul R, smul_eq_zero, Int.cast_eq_zero, mul_eq_zero, sub_eq_zero,
       Nat.cast_inj, ← @Nat.cast_one ℤ, ← Nat.cast_add, Nat.cast_eq_zero] at this

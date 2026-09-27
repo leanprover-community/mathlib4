@@ -573,7 +573,6 @@ section Smooth
 
 variable {X S Y : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [QuasiCompact f] [QuasiSeparated f]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The comparison lemma between the normalization of the pullback to the pullback of the
 normalization. This is an isomorphism when `g` is smooth. -/
 noncomputable def normalizationPullback :
@@ -587,7 +586,6 @@ lemma normalizationPullback_snd :
     f.normalizationPullback g ≫ pullback.snd _ _ = (pullback.snd f g).fromNormalization :=
   (pullback.snd f g).normalizationDesc_comp ..
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma toNormalization_normalizationPullback_fst :
     (pullback.snd f g).toNormalization ≫ f.normalizationPullback g ≫ pullback.fst _ _ =
@@ -680,7 +678,7 @@ instance [Smooth g] : IsIso (f.normalizationPullback g) := by
     simp only [← Functor.map_inv, inv_eqToHom, Scheme.Hom.appLE_map, ← Scheme.Hom.app_eq_appLE,
       Scheme.Hom.fromNormalization_app _ hV, IsIso.Iso.inv_inv, Category.assoc, Iso.inv_hom_id,
       Category.comp_id]
-    exact congr(CommRingCat.ofHom $(ψ.comp_algebraMap.symm))
+    congrm CommRingCat.ofHom $ψ.comp_algebraMap.symm
 
 end Smooth
 

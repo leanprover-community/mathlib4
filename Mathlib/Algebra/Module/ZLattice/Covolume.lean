@@ -85,7 +85,7 @@ theorem covolume_eq_measure_fundamentalDomain {F : Set E} (h : IsAddFundamentalD
     covolume L μ = μ.real F := by
   have : MeasurableVAdd L E := (inferInstance : MeasurableVAdd L.toAddSubgroup E)
   have : VAddInvariantMeasure L E μ := (inferInstance : VAddInvariantMeasure L.toAddSubgroup E μ)
-  exact congr_arg ENNReal.toReal (h.covolume_eq_volume μ)
+  congrm $(h.covolume_eq_volume μ).toReal
 
 set_option backward.privateInPublic true in
 theorem covolume_ne_zero : covolume L μ ≠ 0 := by
@@ -236,7 +236,7 @@ theorem tendsto_card_div_pow'' [FiniteDimensional ℝ E] [MeasurableSpace E] [Bo
     (tendsto_card_div_pow_atTop_volume ((b.ofZLatticeBasis ℝ).equivFun '' s) ?_ ?_ hs₃)
   · filter_upwards [eventually_gt_atTop 0] with n hn
     congr
-    refine Nat.card_congr <| ((b.ofZLatticeBasis ℝ).equivFun.toEquiv.subtypeEquiv fun x ↦ ?_).symm
+    refine Nat.card_congr ((b.ofZLatticeBasis ℝ).equivFun.toEquiv.subtypeEquiv fun x ↦ ?_).symm
     simp_rw [Set.mem_inter_iff, ← b.ofZLatticeBasis_span ℝ, LinearEquiv.coe_toEquiv,
       Basis.equivFun_apply, Set.mem_image, DFunLike.coe_fn_eq, EmbeddingLike.apply_eq_iff_eq,
       exists_eq_right, and_congr_right_iff, Set.mem_inv_smul_set_iff₀

@@ -76,7 +76,7 @@ and `Algebra.lmul`.
 -/
 def mul : R →+ R →+ R where
   toFun := mulLeft
-  map_zero' := ext <| zero_mul
+  map_zero' := ext zero_mul
   map_add' a b := ext <| add_mul a b
 
 lemma mul_apply (x y : R) : mul x y = x * y := rfl

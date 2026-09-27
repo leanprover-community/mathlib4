@@ -123,7 +123,7 @@ lemma contDiffOn_comp {n : WithTop ℕ∞}
 lemma continuousOn_comp
     (hf : ContinuousOn (uncurry f) (s ×ˢ u)) (hα : ContinuousOn α s) (hmem : MapsTo α s u) :
     ContinuousOn (fun t ↦ f t (α t)) s :=
-  contDiffOn_zero.mp <| (contDiffOn_comp (contDiffOn_zero.mpr hf) (contDiffOn_zero.mpr hα) hmem)
+  contDiffOn_zero.mp (contDiffOn_comp (contDiffOn_zero.mpr hf) (contDiffOn_zero.mpr hα) hmem)
 
 end
 

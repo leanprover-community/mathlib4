@@ -178,7 +178,7 @@ theorem isClique_map_finset_iff_of_nontrivial (ht : t.Nontrivial) :
   constructor
   · rw [isClique_map_iff_of_nontrivial (by simpa)]
     rintro ⟨s, hs, hst⟩
-    obtain ⟨s, rfl⟩ := Set.Finite.exists_finset_coe <|
+    obtain ⟨s, rfl⟩ := Set.Finite.exists_finset_coe
       (show s.Finite from Set.Finite.of_finite_image (by simp [hst]) f.injective.injOn)
     exact ⟨s,hs, Finset.coe_inj.1 (by simpa)⟩
   rintro ⟨s, hs, rfl⟩
