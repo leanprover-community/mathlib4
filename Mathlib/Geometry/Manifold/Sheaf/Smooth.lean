@@ -383,7 +383,7 @@ set_option backward.isDefEq.respectTransparency false in
   change (colimit.ι _ U) ≫ _ = colimit.ι ((OpenNhds.inclusion x).op ⋙ _) U ≫ _
   rw [smoothSheafCommRing.ι_forgetStalk_inv_assoc, smoothSheaf.ι_evalHom]
   ext x
-  exact CategoryTheory.congr_fun (smoothSheafCommRing.ι_evalHom ..) x
+  congrm $(smoothSheafCommRing.ι_evalHom ..) x
 
 @[simp, reassoc, elementwise] lemma smoothSheafCommRing.forgetStalk_hom_comp_evalHom
     (x : TopCat.of M) :

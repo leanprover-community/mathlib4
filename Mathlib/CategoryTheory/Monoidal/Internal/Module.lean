@@ -49,13 +49,13 @@ def MonObj.toRing (A : ModuleCat.{u} R) [MonObj A] : Ring A :=
     one := η[A] (1 : R)
     mul := fun x y => μ[A] (x ⊗ₜ y)
     one_mul := fun x => by
-      convert! LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (one_mul A)) ((1 : R) ⊗ₜ x)
+      convert! congr($(ModuleCat.hom_ext_iff.mp (one_mul A)) ((1 : R) ⊗ₜ x))
       rw [MonoidalCategory.leftUnitor_hom_apply, one_smul]
     mul_one := fun x => by
-      convert! LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (mul_one A)) (x ⊗ₜ (1 : R))
+      convert! congr($(ModuleCat.hom_ext_iff.mp (mul_one A)) (x ⊗ₜ (1 : R)))
       rw [MonoidalCategory.rightUnitor_hom_apply, one_smul]
     mul_assoc := fun x y z => by
-      convert! LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (mul_assoc A)) (x ⊗ₜ y ⊗ₜ z)
+      convert! congr($(ModuleCat.hom_ext_iff.mp (mul_assoc A)) (x ⊗ₜ y ⊗ₜ z))
     left_distrib := fun x y z => by
       convert! μ[A].hom.map_add (x ⊗ₜ y) (x ⊗ₜ z)
       rw [← TensorProduct.tmul_add]
@@ -80,15 +80,15 @@ scoped instance Algebra_of_Mon_ (A : ModuleCat.{u} R) [MonObj A] : Algebra R A w
     map_zero' := η[A].hom.map_zero
     map_one' := rfl
     map_mul' := fun x y => by
-      have h := LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (one_mul A).symm) (x ⊗ₜ η[A] y)
+      have h := congr($(ModuleCat.hom_ext_iff.mp (one_mul A).symm) (x ⊗ₜ η[A] y))
       rwa [MonoidalCategory.leftUnitor_hom_apply, ← η[A].hom.map_smul] at h }
   commutes' := fun r a => by
     dsimp
-    have h₁ := LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (one_mul A)) (r ⊗ₜ a)
-    have h₂ := LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (mul_one A)) (a ⊗ₜ r)
+    have h₁ := congr($(ModuleCat.hom_ext_iff.mp (one_mul A)) (r ⊗ₜ a))
+    have h₂ := congr($(ModuleCat.hom_ext_iff.mp (mul_one A)) (a ⊗ₜ r))
     exact h₁.trans h₂.symm
   smul_def' := fun r a =>
-    (LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (one_mul A)) (r ⊗ₜ a)).symm
+    congr($(ModuleCat.hom_ext_iff.mp (one_mul A)) (r ⊗ₜ a)).symm
 
 @[simp]
 theorem algebraMap (A : ModuleCat.{u} R) [MonObj A] (r : R) : algebraMap R A r = η[A] r :=
@@ -102,11 +102,11 @@ def functor : Mon (ModuleCat.{u} R) ⥤ AlgCat R where
   map {_ _} f := AlgCat.ofHom
     { f.hom.hom.toAddMonoidHom with
       toFun := f.hom
-      map_one' := LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (IsMonHom.one_hom f.hom)) (1 : R)
+      map_one' := congr($(ModuleCat.hom_ext_iff.mp (IsMonHom.one_hom f.hom)) ((1 : R)))
       map_mul' := fun x y =>
-        LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (IsMonHom.mul_hom f.hom)) (x ⊗ₜ y)
+        congr($(ModuleCat.hom_ext_iff.mp (IsMonHom.mul_hom f.hom)) (x ⊗ₜ y))
       commutes' := fun r =>
-        LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (IsMonHom.one_hom f.hom)) r }
+        congr($(ModuleCat.hom_ext_iff.mp (IsMonHom.one_hom f.hom)) r) }
 
 /-- Converting a bundled algebra to a monoid object in `ModuleCat R`.
 -/

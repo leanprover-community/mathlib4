@@ -388,7 +388,7 @@ theorem length_eq_zero_of_head_eq_head_of_last_eq_last_of_length_eq_zero
     {s₁ s₂ : CompositionSeries X} (hb : s₁.head = s₂.head)
     (ht : s₁.last = s₂.last) (hs₁ : s₁.length = 0) : s₂.length = 0 := by
   have : Fin.last s₂.length = (0 : Fin s₂.length.succ) :=
-    s₂.injective (hb.symm.trans ((congr_arg s₁ (Fin.ext (by simp [hs₁]))).trans ht)).symm
+    s₂.injective (hb.symm.trans (congr(s₁ $(Fin.ext (by simp [hs₁]))).trans ht)).symm
   simpa [Fin.ext_iff]
 
 theorem length_pos_of_head_eq_head_of_last_eq_last_of_length_pos {s₁ s₂ : CompositionSeries X}

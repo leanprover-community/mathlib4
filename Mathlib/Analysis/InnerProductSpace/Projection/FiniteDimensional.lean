@@ -161,7 +161,7 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
       rwa [le_zero_iff, finrank_eq_zero, orthogonal_eq_bot_iff] at hn
     symm
     ext x
-    have := LinearMap.congr_fun (LinearMap.ker_eq_top.mp this) x
+    have := congr($(LinearMap.ker_eq_top.mp this) x)
     simpa only [sub_eq_zero, ContinuousLinearMap.toLinearMap_sub, LinearMap.sub_apply,
       LinearMap.zero_apply] using! this
   | succ n IH =>
@@ -285,7 +285,7 @@ theorem OrthogonalFamily.sum_projection_of_mem_iSup [Fintype ι] {V : ι → Sub
     simp_rw [map_zero, Finset.sum_const_zero]
   | add x y _ _ hx hy =>
     simp_rw [map_add, Finset.sum_add_distrib]
-    exact congr_arg₂ (· + ·) hx hy
+    congrm $hx + $hy
 
 /-- If a family of submodules is orthogonal, then the `orthogonalProjection` on a direct sum
 is just the coefficient of that direct sum. -/
@@ -305,7 +305,7 @@ theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι
       exact hV.isOrtho hij.symm x.prop
   | add x y hx hy =>
     simp_rw [map_add]
-    exact congr_arg₂ (· + ·) hx hy
+    congrm $hx + $hy
 
 /-- If a family of submodules is orthogonal and they span the whole space, then the orthogonal
 projection provides a means to decompose the space into its submodules.

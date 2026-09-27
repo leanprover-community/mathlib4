@@ -140,7 +140,7 @@ lemma isNilpotent_e :
 lemma isNilpotent_f :
     IsNilpotent (f i) := by
   obtain ⟨n, hn⟩ := isNilpotent_e i
-  suffices (ω b) * (f i ^ n) = 0 from ⟨n, by simpa [← mul_assoc] using congr_arg (ω b * ·) this⟩
+  suffices (ω b) * (f i ^ n) = 0 from ⟨n, by simpa [← mul_assoc] using congr(ω b * $this)⟩
   suffices (ω b) * (f i ^ n) = (e i ^ n) * (ω b) by simp [this, hn]
   clear hn
   induction n with
@@ -219,7 +219,7 @@ private lemma instIsIrreducible_aux₀ {U : LieSubmodule K H (b.support ⊕ ι �
       replace hw₀ : genWeightSpace (b.support ⊕ ι → K) χ ≠ ⊥ := by
         contrapose hw₀; rw [LieSubmodule.eq_bot_iff] at hw₀; exact hw₀ _ hw
       let χ' : H →ₗ[K] K := (Weight.mk χ hw₀).toLinear
-      replace hχ : χ' ≠ 0 := by contrapose hχ; ext x; simpa using! LinearMap.congr_fun hχ x
+      replace hχ : χ' ≠ 0 := by contrapose hχ; ext x; simpa using! congr($hχ x)
       contrapose! hχ
       apply LinearMap.ext_on (span_range_h'_eq_top b)
       rintro - ⟨l, rfl⟩
@@ -230,7 +230,7 @@ private lemma instIsIrreducible_aux₀ {U : LieSubmodule K H (b.support ⊕ ι �
     replace hw := genWeightSpace_le_genWeightSpaceOf (b.support ⊕ ι → K) (h' l) χ hw
     rw [aux (Sum.elim 0 (P.pairingIn ℤ · l)) (h' l) (h_eq_diagonal l)] at hw
     obtain ⟨k, hk⟩ := hw
-    simpa [mulVec_eq_sum, diagonal_apply, hl] using! congr_fun hk (Sum.inl i)
+    simpa [mulVec_eq_sum, diagonal_apply, hl] using! congr($hk (Sum.inl i))
   refine ⟨i, (w (Sum.inr i))⁻¹, ?_⟩
   suffices ∃ d : ι → K, (∀ i, d i ≠ 0) ∧ Pairwise ((· ≠ ·) on d) ∧
       diagonal (Sum.elim 0 d) ∈ cartanSubalgebra b by
@@ -240,15 +240,15 @@ private lemma instIsIrreducible_aux₀ {U : LieSubmodule K H (b.support ⊕ ι �
     rw [aux (Sum.elim 0 d) x rfl] at hw
     obtain ⟨k, hk⟩ := hw
     obtain ⟨hχx, hk₀⟩ : d i = χ x ∧ k ≠ 0 := by
-      simpa [hi, mulVec_eq_sum, diagonal_apply, sub_eq_zero] using! congr_fun hk (Sum.inr i)
+      simpa [hi, mulVec_eq_sum, diagonal_apply, sub_eq_zero] using! congr($hk (Sum.inr i))
     ext (j | j)
     · have : χ x ≠ 0 := hχx ▸ hd₀ i
-      simpa [hi, mulVec_eq_sum, diagonal_apply, hk₀, this] using! congr_fun hk (Sum.inl j)
+      simpa [hi, mulVec_eq_sum, diagonal_apply, hk₀, this] using! congr($hk (Sum.inl j))
     · rcases eq_or_ne i j with rfl | hij
       · simp [hi]
       · suffices d j ≠ χ x by
           simpa [mulVec_eq_sum, diagonal_apply, sub_eq_zero, this, hij, hi] using!
-            congr_fun hk (Sum.inr j)
+            congr($hk (Sum.inr j))
         rw [← hχx]
         exact hd₁ <| by simp [hij.symm]
   simp_rw [cartanSubalgebra, LieSubalgebra.mem_mk_iff', diagonal_elim_mem_span_h_iff]
@@ -346,7 +346,7 @@ lemma coe_genWeightSpace_zero_eq_span_range_u :
       exact ⟨⟨j, hj⟩, hj₀⟩
     obtain ⟨k, hk⟩ := hw (h j) (h_mem_lieAlgebra j) (h_mem_cartanSubalgebra' j _)
     simpa [h_eq_diagonal, ← toLin'_pow, fromBlocks_diagonal_pow, diagonal_pow,
-      mulVec_eq_sum, diagonal_apply, hj] using congr_fun hk (Sum.inr i)
+      mulVec_eq_sum, diagonal_apply, hj] using congr($hk (Sum.inr i))
   · rw [span_le]
     rintro - ⟨i, rfl⟩
     simp only [SetLike.mem_coe, LieSubmodule.mem_toSubmodule, mem_genWeightSpace]

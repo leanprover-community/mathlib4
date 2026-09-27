@@ -67,7 +67,7 @@ disagree on a finite set. -/
 @[to_additive /-- See `summable_congr_cofinite` for a version allowing the functions to
 disagree on a finite set. -/]
 theorem multipliable_congr (hfg : ∀ b, f b = g b) : Multipliable f L ↔ Multipliable g L :=
-  iff_of_eq (congr_arg (Multipliable · L) <| funext hfg)
+  iff_of_eq congr(Multipliable $(funext hfg) L)
 
 /-- See `Multipliable.congr_cofinite` for a version allowing the functions to
 disagree on a finite set. -/
@@ -471,7 +471,7 @@ theorem tprod_empty [IsEmpty β] : ∏'[L] b, f b = 1 := by
 @[to_additive]
 theorem tprod_congr {f g : β → α}
     (hfg : ∀ b, f b = g b) : ∏'[L] b, f b = ∏'[L] b, g b :=
-  congr_arg (tprod · L) (funext hfg)
+  congr(tprod $(funext hfg) L)
 
 @[to_additive]
 theorem tprod_congr₂ {f g : β → γ → α} {M : SummationFilter γ}
