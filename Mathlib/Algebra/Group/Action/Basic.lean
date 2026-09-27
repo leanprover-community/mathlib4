@@ -180,7 +180,8 @@ protected abbrev Function.Surjective.mulDistribMulAction [Monoid B] [SMul M B] (
 
 variable (A) in
 /-- Scalar multiplication by `r` as a `MonoidHom`. -/
-@[simps] def MulDistribMulAction.toMonoidHom (r : M) : A →* A where
+@[to_additive (dont_translate := M) (attr := simps) DistribMulAction.toMonoidHom]
+def MulDistribMulAction.toMonoidHom (r : M) : A →* A where
   toFun := (r • ·)
   map_one' := smul_one r
   map_mul' := smul_mul' r
@@ -190,7 +191,7 @@ variable (A) in
 
 variable (M A) in
 /-- Each element of the monoid defines a monoid homomorphism. -/
-@[simps]
+@[to_additive (dont_translate := M) (attr := simps) DistribMulAction.toMonoidEnd]
 def MulDistribMulAction.toMonoidEnd : M →* Monoid.End A where
   toFun := MulDistribMulAction.toMonoidHom A
   map_one' := MonoidHom.ext <| one_smul M
@@ -201,12 +202,15 @@ end MulDistribMulAction
 section MulDistribMulAction
 variable [Monoid M] [Group A] [MulDistribMulAction M A]
 
-@[simp] lemma smul_inv' (r : M) (x : A) : r • x⁻¹ = (r • x)⁻¹ :=
+@[to_additive (dont_translate := M) (attr := simp) smul_neg']
+lemma smul_inv' (r : M) (x : A) : r • x⁻¹ = (r • x)⁻¹ :=
   (MulDistribMulAction.toMonoidHom A r).map_inv x
 
+@[to_additive (dont_translate := M) smul_sub']
 lemma smul_div' (r : M) (x y : A) : r • (x / y) = r • x / r • y :=
   map_div (MulDistribMulAction.toMonoidHom A r) x y
 
+@[to_additive (dont_translate := M) smul_zsmul']
 lemma smul_zpow' (r : M) (x : A) (z : ℤ) : r • (x ^ z) = (r • x) ^ z :=
   map_zpow (MulDistribMulAction.toMonoidHom A r) x z
 
