@@ -342,7 +342,7 @@ theorem trans_domCongr_domCongr (e : M ≃* N) (f : N ≃* O) :
   simp
 
 /-- `MonoidAlgebra.domCongr` as a `MonoidHom` from `MulAut`. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps) /-- `AddMonoidAlgebra.domCongr` as an `MonoidHom` from `AddAut`. -/]
 def domCongrAut : MulAut M →* A[M] ≃ₐ[R] A[M] where
   toFun := MonoidAlgebra.domCongr R A
   map_one' := by rw [MulAut.one_def, AlgEquiv.aut_one, domCongr_refl]
