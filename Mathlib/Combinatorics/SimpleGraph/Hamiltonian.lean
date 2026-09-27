@@ -5,7 +5,6 @@ Authors: Bhavik Mehta, Rishi Mehta, Linus Sommer, Yue Sun
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Combinatorics.SimpleGraph.CycleGraph
 
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.EdgeConnectivity
