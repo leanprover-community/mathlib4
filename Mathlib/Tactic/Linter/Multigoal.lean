@@ -154,7 +154,7 @@ abbrev ignoreBranch : Std.HashSet SyntaxNodeKind := .ofArray #[
 
 /--
 `getNonTerminalCdots stx` extracts the position of the syntax nodes contained in `stx`
-whose `SyntaxNodeKind` is `cdot` and that are not preceded by a `cdot`s.
+whose `SyntaxNodeKind` is `cdot` and that are not preceded by a `cdot`.
 These are candidates for unnecessary uses of `cdot`:
 if there is only one active goal before placing `·`, then they will be flagged.
 -/
@@ -164,14 +164,14 @@ def getNonTerminalCdots : Syntax → Array String.Pos.Raw
     Id.run do
     let mut nonCDotFollowers := #[]
     let mut wasCDot? := false
-    for i in [:args.size] do
+    for h : i in [:args.size] do
       if i % 2 == 1 then continue
-      let argi := args[i]!
+      let argi := args[i]
       if (!wasCDot?) && argi.isOfKind ``cdot then
         nonCDotFollowers := nonCDotFollowers.push (argi.getPos?.getD default)
       wasCDot? := argi.isOfKind ``cdot
     return nonCDotFollowers ++ (args.map getNonTerminalCdots).flatten
-  | _ => default
+  | _ => #[]
 
 variable (unCDots : Array String.Pos.Raw) in
 /-- `getManyGoals t` returns the syntax nodes of the `InfoTree` `t` corresponding to tactic calls
