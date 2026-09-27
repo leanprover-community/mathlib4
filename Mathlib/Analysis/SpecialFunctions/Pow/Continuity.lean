@@ -57,7 +57,6 @@ theorem cpow_eq_nhds' {p : ℂ × ℂ} (hp_fst : p.fst ≠ 0) :
   exact isClosed_eq continuous_fst continuous_const
 
 -- Continuity of `fun x => a ^ x`: union of these two lemmas is optimal.
-@[fun_prop]
 theorem continuousAt_const_cpow {a b : ℂ} (ha : a ≠ 0) : ContinuousAt (fun x : ℂ => a ^ x) b := by
   have cpow_eq : (fun x : ℂ => a ^ x) = fun x => exp (log a * x) := by
     ext1 b
@@ -78,11 +77,8 @@ works for `z = 0` but assumes `0 < re w`. -/
 theorem continuousAt_cpow {p : ℂ × ℂ} (hp_fst : p.fst ∈ slitPlane) :
     ContinuousAt (fun x : ℂ × ℂ => x.1 ^ x.2) p := by
   rw [continuousAt_congr (cpow_eq_nhds' <| slitPlane_ne_zero hp_fst)]
-  refine continuous_exp.continuousAt.comp ?_
-  exact
-    ContinuousAt.mul
-      (ContinuousAt.comp (continuousAt_clog hp_fst) continuous_fst.continuousAt)
-      continuous_snd.continuousAt
+  have := continuousAt_clog hp_fst
+  fun_prop
 
 theorem continuousAt_cpow_const {a b : ℂ} (ha : a ∈ slitPlane) :
     ContinuousAt (· ^ b) a :=
@@ -138,6 +134,11 @@ theorem ContinuousOn.cpow_const {b : ℂ} (hf : ContinuousOn f s)
   hf.cpow continuousOn_const h
 
 @[fun_prop]
+theorem continuous_const_cpow' {a : ℂ} (ha : a ≠ 0) : Continuous (fun x : ℂ => a ^ x) := by
+  rw [continuous_iff_continuousAt]
+  intro b; exact continuousAt_const_cpow ha
+
+@[fun_prop]
 lemma continuous_const_cpow (z : ℂ) [NeZero z] : Continuous fun s : ℂ ↦ z ^ s :=
   continuous_id.const_cpow (.inl <| NeZero.ne z)
 
@@ -148,8 +149,6 @@ section RpowLimits
 /-!
 ## Continuity for real powers
 -/
-
-
 namespace Real
 
 theorem continuousAt_const_rpow {a b : ℝ} (h : a ≠ 0 := by positivity) :
