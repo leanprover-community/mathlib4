@@ -602,9 +602,9 @@ def mkCLM [RingHomIsometric σ] (A : 𝓢(D, E) → F → G)
     𝓢(D, E) →SL[σ] 𝓢(F, G) where
   cont := by
     change Continuous (mkLM A hadd hsmul hsmooth hbound : 𝓢(D, E) →ₛₗ[σ] 𝓢(F, G))
-    refine
-      WithSeminorms.continuous_of_isBounded (schwartz_withSeminorms 𝕜 D E)
+    apply WithSeminorms.continuous_of_isBoundedBy (schwartz_withSeminorms 𝕜 D E)
         (schwartz_withSeminorms 𝕜' F G) _ fun n => ?_
+    -- Todo: use `SeminormFamily.isBoundedBy_iff_exists_real` and remove assumption that `0 ≤ C`
     rcases hbound n with ⟨s, C, hC, h⟩
     refine ⟨s, ⟨C, hC⟩, fun f => ?_⟩
     exact (mkLM A hadd hsmul hsmooth hbound f).seminorm_le_bound 𝕜' n.1 n.2 (by positivity) (h f)
@@ -623,10 +623,10 @@ def mkCLMtoNormedSpace [RingHomIsometric σ] (A : 𝓢(D, E) → G)
       map_smul' := hsmul }
   { toLinearMap := f
     cont := by
-      change Continuous (LinearMap.mk _ _)
-      apply WithSeminorms.continuous_normedSpace_rng G (schwartz_withSeminorms 𝕜 D E)
+      apply WithSeminorms.continuous_of_isBoundedBy (schwartz_withSeminorms 𝕜 D E)
+        (norm_withSeminorms _ _)
       rcases hbound with ⟨s, C, hC, h⟩
-      exact ⟨s, ⟨C, hC⟩, h⟩ }
+      exact fun _ ↦ ⟨s, ⟨C, hC⟩, h⟩ }
 
 end CLM
 

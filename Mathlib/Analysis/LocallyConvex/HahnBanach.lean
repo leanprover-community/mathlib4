@@ -83,8 +83,9 @@ theorem Module.Dual.exists_continuous_extension_of_le_seminorm (S : Submodule �
     {p : Seminorm 𝕜 E} (hp_cont : Continuous p) (hp : ∀ x, ‖f x‖ ≤ p x) :
     ∃ g : StrongDual 𝕜 E, (∀ x : S, g x = f x) ∧ ∀ x, ‖g x‖ ≤ p x := by
   obtain ⟨g, hg, hle⟩ := Dual.exists_extension_of_le_seminorm S f hp
-  refine ⟨⟨g, (PolynormableSpace.withSeminorms 𝕜 E).continuous_normedSpace_rng 𝕜 g ?_⟩, hg, hle⟩
-  exact ⟨{⟨p, hp_cont⟩}, 1, by simpa⟩
+  refine ⟨⟨g, (PolynormableSpace.withSeminorms 𝕜 E).continuous_of_isBoundedBy
+    (norm_withSeminorms _ _) g ?_⟩, hg, hle⟩
+  simpa using ⟨{⟨p, hp_cont⟩}, 1, by simpa⟩
 
 /-- **Hahn-Banach theorem** for continuous linear functionals on polynormable spaces over a field
 satisfying `IsRCLikeNormedField`. -/

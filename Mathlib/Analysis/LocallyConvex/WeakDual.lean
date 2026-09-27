@@ -162,8 +162,7 @@ theorem mem_span_iff_continuous {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[
 
 theorem mem_span_iff_bound {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[𝕜] 𝕜) :
     φ ∈ Submodule.span 𝕜 (Set.range f) ↔
-    ∃ s : Finset ι, ∃ c : ℝ≥0, φ.toSeminorm ≤
-      c • (s.sup fun i ↦ (f i).toSeminorm) := by
+    ∃ s : Finset ι, φ.toSeminorm.IsBoundedBy (s.sup fun i ↦ (f i).toSeminorm) := by
   let t𝕜 : TopologicalSpace 𝕜 := inferInstance
   let t := ⨅ i, induced (f i) t𝕜
   have : IsTopologicalAddGroup E := isTopologicalAddGroup_iInf fun _ ↦
@@ -177,7 +176,8 @@ theorem mem_span_iff_bound {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[𝕜]
   · rw [WithSeminorms.continuous_iff_continuous_comp (norm_withSeminorms 𝕜 𝕜), forall_const] at H
     rcases Seminorm.bound_of_continuous this _ H with ⟨s, C, -, hC⟩
     exact ⟨s, C, hC⟩
-  · exact WithSeminorms.continuous_normedSpace_rng _ this _ H
+  · apply this.continuous_of_isBoundedBy (norm_withSeminorms 𝕜 𝕜)
+    simpa [SeminormFamily.IsBoundedBy]
 
 variable [AddCommGroup F] [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
