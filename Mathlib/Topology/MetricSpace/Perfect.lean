@@ -53,7 +53,7 @@ private theorem Perfect.small_diam_aux (hC : Perfect C) (ε_pos : 0 < ε) {x : �
   rw [Metric.ediam_closure]
   apply le_trans (Metric.ediam_mono inter_subset_left)
   convert! Metric.ediam_eball_le (x := x)
-  rw [mul_comm, ENNReal.div_mul_cancel] <;> norm_num
+  rw [mul_comm, ENNReal.div_mul_cancel] <;> simp
 
 /-- A refinement of `Perfect.splitting` for metric spaces, where we also control
 the diameter of the new perfect sets. -/

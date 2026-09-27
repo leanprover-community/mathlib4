@@ -179,7 +179,7 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
     _ = norm K (Q.coeff 0 • B.gen ^ n) := ?_
     _ = norm K (p • (z * B.gen ^ n) -
           ∑ x ∈ (range (Q.natDegree + 1)).erase 0, p • Q.coeff x • f (x + n)) :=
-        (congr_arg (norm K) (eq_sub_of_add_eq ?_))
+        congr(norm K $(eq_sub_of_add_eq ?_))
     _ = _ := ?_
   · simp only [Algebra.smul_def, algebraMap_apply R K L, Algebra.norm_algebraMap, map_mul,
       map_pow, finrank_K_L, PowerBasis.norm_gen_eq_coeff_zero_minpoly,
@@ -321,13 +321,13 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
       sum_congr rfl hg, add_comm] at hQ
     -- We multiply this equality by `B.gen ^ (P.natDegree-(j+2))`, so we can use `hf₁` on the terms
     -- we didn't know were multiples of `p`, and we take the norm on both sides.
-    replace hQ := congr_arg (fun x => x * B.gen ^ (P.natDegree - (j + 2))) hQ
+    replace hQ := congr($hQ * B.gen ^ (P.natDegree - (j + 2)))
     simp_rw [sum_map, addLeftEmbedding_apply, add_mul, sum_mul, mul_assoc] at hQ
     rw [← insert_erase
       (mem_range.2 (tsub_pos_iff_lt.2 <| Nat.lt_of_succ_lt_succ <| mem_range.1 hj)),
       sum_insert (notMem_erase 0 _), add_zero, sum_congr rfl hf₁, ← mul_sum, ← mul_sum, add_assoc,
       ← mul_add, smul_mul_assoc, ← pow_add, Algebra.smul_def] at hQ
-    replace hQ := congr_arg (norm K) (eq_sub_of_add_eq hQ)
+    replace hQ := congr(norm K $(eq_sub_of_add_eq hQ))
     -- We obtain an equality of elements of `K`, but everything is integral, so we can move to `R`
     -- and simplify `hQ`.
     have hintsum : IsIntegral R (z * B.gen ^ (P.natDegree - (j + 2)) -
@@ -349,8 +349,10 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
       Algebra.norm_algebraMap, map_mul, algebraMap_apply R K L, Algebra.norm_algebraMap,
       finrank B, ← hr, PowerBasis.norm_gen_eq_coeff_zero_minpoly,
       minpoly.isIntegrallyClosed_eq_field_fractions' K hBint, coeff_map,
-      show (-1 : K) = algebraMap R K (-1) by simp, ← map_pow, ← map_pow, ← map_mul, ←
-      map_pow, ← map_mul, ← map_pow, ← map_mul] at hQ
+      show (-1 : K) = algebraMap R K (-1) by simp,
+      ← map_pow (algebraMap R K), ← map_pow (algebraMap R K), ← map_mul (algebraMap R K),
+      ← map_pow (algebraMap R K), ← map_mul (algebraMap R K), ← map_pow (algebraMap R K),
+      ← map_mul (algebraMap R K)] at hQ
     -- We can now finish the proof.
     have hppdiv : p ^ B.dim ∣ p ^ B.dim * r := dvd_mul_of_dvd_left dvd_rfl _
     rwa [← IsFractionRing.injective R K hQ, mul_comm, ← Units.coe_neg_one, mul_pow, ←

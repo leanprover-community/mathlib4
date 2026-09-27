@@ -71,12 +71,12 @@ noncomputable def rTensorAlgEquiv : S ⊗[R] MvPolynomial σ N ≃ₐ[S] MvPolyn
 
 @[simp]
 lemma coeff_rTensorAlgEquiv_tmul (s : S) (p : MvPolynomial σ N) (d : σ →₀ ℕ) :
-    coeff d (rTensorAlgEquiv (s ⊗ₜ[R] p)) = s ⊗ₜ[R] coeff d p := by
-  simp [rTensorAlgEquiv, coeff, MvPolynomial, ← tmul_eq_smul_one_tmul]
+    (rTensorAlgEquiv (s ⊗ₜ[R] p)).coeff d = s ⊗ₜ[R] p.coeff d := by
+  simp [rTensorAlgEquiv, ← tmul_eq_smul_one_tmul]
 
 lemma coeff_rTensorAlgEquiv_monomial_tmul [DecidableEq σ] (e : σ →₀ ℕ) (s : S) (n : N)
     (d : σ →₀ ℕ) :
-    coeff d (rTensorAlgEquiv (s ⊗ₜ[R] monomial e n)) = if e = d then s ⊗ₜ[R] n else 0 := by
+    (rTensorAlgEquiv (s ⊗ₜ[R] monomial e n)).coeff d = if e = d then s ⊗ₜ[R] n else 0 := by
   simp [tmul_ite]
 
 @[deprecated "Now a syntactic tautology" (since := "2026-06-18")]
@@ -123,7 +123,7 @@ lemma algebraTensorAlgEquiv_symm_comp_aeval :
 @[simp]
 lemma algebraTensorAlgEquiv_symm_map (x : MvPolynomial σ R) :
     (algebraTensorAlgEquiv R A).symm (map (algebraMap R A) x) = 1 ⊗ₜ x :=
-  DFunLike.congr_fun (algebraTensorAlgEquiv_symm_comp_aeval R A) x
+  congr($(algebraTensorAlgEquiv_symm_comp_aeval R A) x)
 
 lemma aeval_one_tmul (f : σ → S) (p : MvPolynomial σ R) :
     (aeval fun x ↦ (1 ⊗ₜ[R] f x : N ⊗[R] S)) p = 1 ⊗ₜ[R] (aeval f) p := by

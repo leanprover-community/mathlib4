@@ -152,8 +152,7 @@ theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
   rw [map_mul, (IsSelfAdjoint.star_mul_self a).spectralRadius_eq_nnnorm, gelfandTransform_map_star,
     (IsSelfAdjoint.star_mul_self (gelfandTransform ℂ A a)).spectralRadius_eq_nnnorm] at this
   simp only [ENNReal.coe_inj, CStarRing.nnnorm_star_mul_self, ← sq] at this
-  simpa only [Function.comp_apply, NNReal.sqrt_sq] using!
-    congr_arg (((↑) : ℝ≥0 → ℝ) ∘ ⇑NNReal.sqrt) this
+  simpa only [NNReal.sqrt_sq] using! congr((NNReal.sqrt $this : ℝ))
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The Gelfand transform is bijective when the algebra is a C⋆-algebra over `ℂ`. -/
@@ -246,11 +245,8 @@ lemma norm_add_eq_max (ha : IsStarNormal a) (hb : IsStarNormal b)
   commutative, and the conclusion follows from the corresponding result for
   commutative C⋆-algebras. -/
   let S : NonUnitalStarSubalgebra ℂ A := (adjoin ℂ {a, b}).topologicalClosure
-  have hS : IsClosed (S : Set A) := (adjoin ℂ {a, b}).isClosed_topologicalClosure
-  have hcomm₁ := ha.commute_star_left hcomm
-  have hcomm₂ := hb.commute_star_right hcomm
-  have : IsMulCommutative (adjoin ℂ {a, b}) :=
-    isMulCommutative_adjoin ℂ (by grind) (by grind [commute_star_comm])
+  have := (adjoin ℂ {a, b}).isClosed_topologicalClosure
+  have := CStarAlgebra.isMulCommutative_nonUnital_adjoin_pair hcomm ha hb
   refine CommCStarAlgebra.norm_add_eq_max (A := S) (a := ⟨a, ?_⟩) (b := ⟨b, ?_⟩) (by ext; simpa)
   all_goals apply le_topologicalClosure; aesop
 
@@ -375,8 +371,8 @@ B  --- η B ---> C(characterSpace ℂ B, ℂ)
 -/
 theorem gelfandStarTransform_naturality {A B : Type*} [CommCStarAlgebra A] [CommCStarAlgebra B]
     (φ : A →⋆ₐ[ℂ] B) :
-    (gelfandStarTransform B : _ →⋆ₐ[ℂ] _).comp φ =
-      (compContinuousMap φ |>.compStarAlgHom' ℂ ℂ).comp (gelfandStarTransform A : _ →⋆ₐ[ℂ] _) := by
+    (gelfandStarTransform B).toStarAlgHom.comp φ =
+      (compContinuousMap φ |>.compStarAlgHom' ℂ ℂ).comp (gelfandStarTransform A).toStarAlgHom := by
   rfl
 
 /--

@@ -30,7 +30,7 @@ namespace AlgCat
 /-- The functor sending an `R`-module `M` to its tensor algebra over `R`. -/
 @[simps]
 def tensorAlgebra (R : Type u) [CommRing R] : ModuleCat.{w} R ⥤ AlgCat.{max u w} R where
-  obj M := AlgCat.of R (TensorAlgebra R M)
+  obj M := ↧(TensorAlgebra R M)
   map f := AlgCat.ofHom (TensorAlgebra.lift _ (TensorAlgebra.ι _ ∘ₗ f.hom))
 
 variable (R : Type u) [CommRing R]

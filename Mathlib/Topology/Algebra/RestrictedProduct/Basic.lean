@@ -96,6 +96,7 @@ open scoped RestrictedProduct
 
 variable {𝓕 𝓖 : Filter ι}
 
+@[macro_inline]
 instance : DFunLike (Πʳ i, [R i, A i]_[𝓕]) ι R where
   coe x i := x.1 i
   coe_injective _ _ := Subtype.ext

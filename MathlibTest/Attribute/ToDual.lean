@@ -123,8 +123,8 @@ theorem le_imp_le'' : a ≤ b → a ≤ b := id
 
 -- We can even overwrite it with the empty `reorder`:
 /--
-warning: `to_dual self` is redundant when none of the arguments are reordered.
-Please remove the attribute, or provide an explicit `(reorder := ...)` argument.
+warning: `to_dual self` is redundant when none of the arguments are reordered and no `(relevant_arg := ...)` is provided.
+Please remove the attribute, or provide an explicit `(reorder := ...)` or `(relevant_arg := ...)` argument.
 If you need to give a hint to `to_dual` to translate expressions involving `le_imp_le'''`,
 use `to_dual_do_translate` instead
 
@@ -148,8 +148,8 @@ theorem refl₂ (b c a e d : Nat) : a + b + c + d + e = a + b + c + d + e := rfl
 
 -- Test that we do not translate numerals like we do in `@[to_additive]`
 /--
-warning: `to_dual self` is redundant when none of the arguments are reordered.
-Please remove the attribute, or provide an explicit `(reorder := ...)` argument.
+warning: `to_dual self` is redundant when none of the arguments are reordered and no `(relevant_arg := ...)` is provided.
+Please remove the attribute, or provide an explicit `(reorder := ...)` or `(relevant_arg := ...)` argument.
 If you need to give a hint to `to_dual` to translate expressions involving `one_le_one`,
 use `to_dual_do_translate` instead
 
@@ -336,13 +336,10 @@ inductive WithBot.LE : WithBot α → WithBot α → Prop where
   | bot_le (x : WithBot α) : WithBot.LE .bot x
   | coe_le_coe {a b : α} : a ≤ b → WithBot.LE (.coe a) (.coe b)
 
-set_option linter.translate.warnInvalid false in
 @[to_dual existing (reorder := 3 4)]
 inductive WithTop.LE : WithTop α → WithTop α → Prop where
   | le_top (x : WithTop α) : WithTop.LE x .top
   | coe_le_coe {a b : α} : a ≤ b → WithTop.LE (.coe a) (.coe b)
-
-attribute [to_dual existing bot_le] WithTop.LE.le_top
 
 @[to_dual]
 instance WithBot.instLE : _root_.LE (WithBot α) := ⟨WithBot.LE⟩
@@ -375,7 +372,9 @@ info: renameTest' {α : Type} [Bot α] [Top α] (y : α) {P : α → Prop} (Pbot
 #check renameTest'
 
 -- Test translation of binder names starting with `h`: `hmax` turns into `hmin`.
-@[to_dual]
+/-- trace: [translate] Adding `eq_of_min_of_max` ↔ `eq_of_max_of_min` (relevant_arg := 1) -/
+#guard_msgs in
+@[to_dual?]
 theorem eq_of_min_of_max (hmax : ∀ x, x ≤ a) (hmin : ∀ x, a ≤ x) : a = b :=
   le_antisymm (hmin b) (hmax b)
 
@@ -399,7 +398,8 @@ def universeTest1'.{v,w,u} (α : Type u) (β : Type v) (γ : Type w) := α × β
 -- Due to the reordering of arguments, the equation theorem of the dual has a different shape,
 -- so we get this warning.
 /--
-warning: @[to_dual] failed to add a translation from `universeTest1''.eq_1` to `universeTest1''._to_dual_1.eq_1`. Please silence this warning and add a translation manually. Error:
+warning: @[to_dual] failed to add a translation from `universeTest1''.eq_1` to any of `[universeTest1''._to_dual_1.eq_1]`.
+Please silence this warning and add a translation manually. Errors:
 
 `to_dual` validation failed: expected
   universeTest1''._to_dual_1 = fun α β γ => universeTest1' β γ α
@@ -472,3 +472,24 @@ fun {α} [PartialOrder α] x1 x2 => Eq.refl (x1 ≤ x2)
 -/
 #guard_msgs in
 #print MyLE_le
+
+class SomeClass (α : Type) where
+  instLE : LE α
+  x : ∀ a b : α, a ≤ b
+
+structure SomeStructure (α : Type) where
+  instLE : LE α
+  x : ∀ a b : α, a ≤ b
+
+-- `SomeClass` is translated to itself with `(relevant_arg := 0)`, while `SomeStructure` is not.
+attribute [to_dual self] SomeClass.x SomeStructure.x
+
+run_meta
+  let some { relevantArg := .arg 0, .. } := findTranslation? (← getEnv) data ``SomeClass | failure
+  guard <| findTranslation? (← getEnv) data ``SomeStructure |>.isNone
+
+run_meta
+  -- `GE.ge` gets `(relevant_arg := α)` because `α` appears in `LE`
+  let some { relevantArg := .arg 0, .. } := findTranslation? (← getEnv) data ``GE.ge | failure
+  -- `WithBot` gets `(relevant_arg := α)` because `WithBot` is a type
+  let some { relevantArg := .arg 0, .. } := findTranslation? (← getEnv) data ``WithBot | failure

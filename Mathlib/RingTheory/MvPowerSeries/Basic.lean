@@ -358,7 +358,7 @@ theorem coeff_C_of_ne_zero {n : σ →₀ ℕ} (h : n ≠ 0) (a : R) : coeff n (
 @[simp]
 theorem coeff_add_single_C {m : ℕ} [NeZero m] {n : σ →₀ ℕ} (a : R) (i : σ) :
     coeff (n + single i m) (C a) = 0 :=
-  coeff_C_of_ne_zero (fun H ↦ by simpa [NeZero.ne] using congr($(H) i)) a
+  coeff_C_of_ne_zero (fun H ↦ by simpa [NeZero.ne] using congr($H i)) a
 
 @[grind inj]
 theorem C_injective : Function.Injective (C : R → MvPowerSeries σ R) := by
@@ -490,7 +490,7 @@ theorem X_inj [Nontrivial R] {s t : σ} : (X s : MvPowerSeries σ R) = X t ↔ s
   ⟨by
     classical
     intro h
-    replace h := congr_arg (coeff (single s 1)) h
+    replace h := congr(coeff (single s 1) $h)
     rw [coeff_X, ite_eq_left rfl, coeff_X] at h
     split_ifs at h with H
     · rw [Finsupp.single_eq_single_iff] at H
@@ -621,7 +621,7 @@ theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
     by_cases H : m - single s n + single s n = m
     · rw [coeff_mul, Finset.sum_eq_single (single s n, m - single s n)]
       · rw [coeff_X_pow, ite_eq_left rfl, one_mul]
-        simpa using! congr_arg (fun m : σ →₀ ℕ => coeff m φ) H.symm
+        simpa using! congr(coeff $H.symm φ)
       · rintro ⟨i, j⟩ hij hne
         rw [mem_antidiagonal] at hij
         rw [coeff_X_pow]
@@ -703,7 +703,7 @@ theorem coeff_prod [DecidableEq ι] [DecidableEq σ]
         Prod.forall, Prod.mk.injEq]
       rintro u v rfl u' v' huv h k - l - hkl
       obtain rfl : u' = u := by
-        simpa only [Finsupp.coe_update, Function.update_self] using DFunLike.congr_fun hkl a
+        simpa only [Finsupp.coe_update, Function.update_self] using congr($hkl a)
       simp only [add_right_inj] at huv
       exact h rfl huv.symm
 
@@ -797,7 +797,8 @@ def mapAlgHom (φ : A →ₐ[R] B) :
   toRingHom := MvPowerSeries.map φ
   commutes' r := by
     simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
-      MonoidHom.coe_coe, MvPowerSeries.algebraMap_apply, map_C, RingHom.coe_coe, AlgHom.commutes]
+      MonoidHom.coe_ofClass, MvPowerSeries.algebraMap_apply, map_C, RingHom.coe_coe,
+      AlgHom.commutes]
 
 theorem mapAlgHom_apply (φ : A →ₐ[R] B) (f : MvPowerSeries σ A) :
     mapAlgHom (σ := σ) φ f = MvPowerSeries.map φ f := rfl
@@ -828,17 +829,17 @@ variable {σ : Type*} {R : Type*} [CommSemiring R] (φ ψ : MvPolynomial σ R)
 /-- The natural inclusion from multivariate polynomials into multivariate formal power series. -/
 @[coe]
 def toMvPowerSeries : MvPolynomial σ R → MvPowerSeries σ R :=
-  fun φ n => coeff n φ
+  fun φ n => φ.coeff n
 
 /-- The natural inclusion from multivariate polynomials into multivariate formal power series. -/
 instance coeToMvPowerSeries : Coe (MvPolynomial σ R) (MvPowerSeries σ R) :=
   ⟨toMvPowerSeries⟩
 
-theorem coe_def : (φ : MvPowerSeries σ R) = fun n => coeff n φ :=
+theorem coe_def : (φ : MvPowerSeries σ R) = fun n => φ.coeff n :=
   rfl
 
-@[simp, norm_cast]
-theorem coeff_coe (n : σ →₀ ℕ) : MvPowerSeries.coeff n ↑φ = coeff n φ :=
+@[simp]
+theorem coeff_coe (n : σ →₀ ℕ) : MvPowerSeries.coeff n ↑φ = φ.coeff n :=
   rfl
 
 @[simp, norm_cast]
@@ -846,8 +847,7 @@ theorem coe_monomial (n : σ →₀ ℕ) (a : R) :
     (monomial n a : MvPowerSeries σ R) = MvPowerSeries.monomial n a :=
   MvPowerSeries.ext fun m => by
     classical
-    rw [coeff_coe, coeff_monomial, MvPowerSeries.coeff_monomial]
-    split_ifs with h₁ h₂ <;> first | rfl | subst m; contradiction
+    simp [coeff_coe, coeff_monomial, MvPowerSeries.coeff_monomial, eq_comm]
 
 @[simp, norm_cast]
 theorem coe_zero : ((0 : MvPolynomial σ R) : MvPowerSeries σ R) = 0 :=

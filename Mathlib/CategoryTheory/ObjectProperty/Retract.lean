@@ -55,7 +55,7 @@ instance : P.IsClosedUnderIsomorphisms where
 instance (priority := 100) [HasZeroObject C] [P.Nonempty] : P.ContainsZero where
   exists_zero := ⟨0, isZero_zero _, of_retract ((isZero_zero _).retract _) P.prop_arbitrary⟩
 
-@[deprecated instContainsZeroOfHasZeroObjectOfNonempty (since := "2026-04-03")]
+@[deprecated instContainsZeroOfHasZeroObjectOfNonempty +typeChanged (since := "2026-04-03")]
 lemma containsZero [HasZeroObject C] {X : C} (h : P X) : P.ContainsZero where
   exists_zero := ⟨0, isZero_zero _, of_retract ((isZero_zero _).retract X) h⟩
 
@@ -155,7 +155,7 @@ instance [ObjectProperty.EssentiallySmall.{w} P] [LocallySmall.{w} C] :
     obtain ⟨a, h₁, h₂⟩ : ∃ (a : Subtype R) (h₁ : Q (X a)), g (h a) h₁ = g r hx := by
       obtain ⟨_, hr⟩ := hX ⟨⟨⟨_, hx⟩, r.r ≫ r.i, by simp⟩, ⟨_, _, r, hx, rfl⟩⟩
       exact ⟨_, _, hr⟩
-    obtain rfl : x = X a := Subtype.ext_iff.1 (congr_arg Sigma.fst h₂.symm)
+    obtain rfl : x = X a := Subtype.ext_iff.1 congr($(h₂.symm).fst)
     have hri : (h a).r ≫ (h a).i = r.r ≫ r.i := by
       rw [Sigma.ext_iff, heq_eq_eq] at h₂
       exact Subtype.ext_iff.1 h₂.2

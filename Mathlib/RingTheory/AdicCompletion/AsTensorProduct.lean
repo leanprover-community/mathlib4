@@ -287,7 +287,7 @@ lemma ofTensorProduct_bijective_of_map_from_fin [Finite ι] [IsNoetherianRing R]
     (lTensorf I M f)
     (0 : AdicCompletion I R ⊗[R] M →ₗ[AdicCompletion I R] Unit)
     (0 : _ →ₗ[AdicCompletion I R] Unit)
-    (map I <| (LinearMap.ker f).subtype)
+    (map I (LinearMap.ker f).subtype)
     (map I f)
     (0 : _ →ₗ[AdicCompletion I R] Unit)
     (0 : _ →ₗ[AdicCompletion I R] Unit)
@@ -296,7 +296,7 @@ lemma ofTensorProduct_bijective_of_map_from_fin [Finite ι] [IsNoetherianRing R]
     (ofTensorProduct I M)
     0
     0
-    (ofTensorProduct_naturality I <| (LinearMap.ker f).subtype)
+    (ofTensorProduct_naturality I (LinearMap.ker f).subtype)
     (ofTensorProduct_naturality I f)
     rfl
     rfl

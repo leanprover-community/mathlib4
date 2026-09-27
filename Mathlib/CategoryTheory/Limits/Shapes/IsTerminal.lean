@@ -137,16 +137,12 @@ theorem IsTerminal.isSplitMono_from {X Y : C} (t : IsTerminal X) (f : X ⟶ Y) :
 theorem IsTerminal.mono_from {X Y : C} (t : IsTerminal X) (f : X ⟶ Y) : Mono f := by
   have := t.isSplitMono_from f; infer_instance
 
-set_option linter.translate.warnInvalid false in
 /-- If `T` and `T'` are terminal, they are isomorphic. -/
 @[to_dual (attr := simps)
 /-- If `I` and `I'` are initial, they are isomorphic. -/]
 def IsTerminal.uniqueUpToIso {T T' : C} (hT : IsTerminal T) (hT' : IsTerminal T') : T ≅ T' where
   hom := hT'.from _
   inv := hT.from _
-
-attribute [to_dual existing uniqueUpToIso_inv] IsTerminal.uniqueUpToIso_hom
-attribute [to_dual existing uniqueUpToIso_hom] IsTerminal.uniqueUpToIso_inv
 
 variable (C)
 

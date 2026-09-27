@@ -35,6 +35,11 @@ initialize_simps_projections CompleteLat (carrier → coe, -str)
 
 namespace CompleteLat
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `CompleteLat.of X` as `↧X`. -/
+@[app_delab CompleteLat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 instance : CoeSort CompleteLat (Type _) :=
   ⟨CompleteLat.carrier⟩
 
@@ -56,7 +61,7 @@ instance : ConcreteCategory CompleteLat (CompleteLatticeHom · ·) where
   ofHom f := f
 
 instance hasForgetToBddLat : HasForget₂ CompleteLat BddLat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := BddLat.ofHom (CompleteLatticeHom.toBoundedLatticeHom f)
 
 /-- Constructs an isomorphism of complete lattices from an order isomorphism between them. -/

@@ -69,7 +69,7 @@ protected def setoid (M : Type*) [Monoid M] :
 theorem map {M N : Type*} [Monoid M] [Monoid N] {F : Type*} [FunLike F M N] [MonoidHomClass F M N]
     (f : F) {x y : M} (ha : Associated x y) : Associated (f x) (f y) := by
   obtain ⟨u, ha⟩ := ha
-  exact ⟨Units.map f u, by rw [← ha, map_mul, Units.coe_map, MonoidHom.coe_coe]⟩
+  exact ⟨Units.map f u, by rw [← ha, map_mul, Units.coe_map, MonoidHom.coe_ofClass]⟩
 
 end Associated
 
@@ -402,7 +402,8 @@ end UniqueUnits₀
 /-- The quotient of a monoid by the `Associated` relation. Two elements `x` and `y`
   are associated iff there is a unit `u` such that `x * u = y`. There is a natural
   monoid structure on `Associates M`. -/
-abbrev Associates (M : Type*) [Monoid M] : Type _ :=
+@[implicit_reducible]
+def Associates (M : Type*) [Monoid M] : Type _ :=
   Quotient (Associated.setoid M)
 
 namespace Associates
@@ -410,25 +411,32 @@ namespace Associates
 open Associated
 
 /-- The canonical quotient map from a monoid `M` into the `Associates` of `M` -/
-protected abbrev mk {M : Type*} [Monoid M] (a : M) : Associates M :=
+@[implicit_reducible]
+protected def mk {M : Type*} [Monoid M] (a : M) : Associates M :=
   ⟦a⟧
 
 instance [Monoid M] : Inhabited (Associates M) :=
   ⟨⟦1⟧⟩
 
+@[simp]
 theorem mk_eq_mk_iff_associated [Monoid M] {a b : M} : Associates.mk a = Associates.mk b ↔ a ~ᵤ b :=
   Iff.intro Quotient.exact Quot.sound
 
+@[simp]
 theorem quotient_mk_eq_mk [Monoid M] (a : M) : ⟦a⟧ = Associates.mk a :=
   rfl
 
+@[simp]
 theorem quot_mk_eq_mk [Monoid M] (a : M) : Quot.mk Setoid.r a = Associates.mk a :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem quot_out [Monoid M] (a : Associates M) : Associates.mk (Quot.out a) = a := by
-  rw [← quot_mk_eq_mk, Quot.out_eq]
+theorem quotient_out [Monoid M] (a : Associates M) : Associates.mk (Quotient.out a) = a :=
+  Quotient.out_eq a
+
+@[simp]
+theorem quot_out [Monoid M] (a : Associates M) : Associates.mk (Quot.out a) = a :=
+  Quot.out_eq a
 
 theorem mk_quot_out [Monoid M] (a : M) : Quot.out (Associates.mk a) ~ᵤ a := by
   rw [← Associates.mk_eq_mk_iff_associated, Associates.quot_out]
@@ -550,7 +558,7 @@ instance : IsBotOneClass (Associates M) where
 instance instOrderBot : OrderBot (Associates M) where
   bot_le _ := one_le
 
-@[deprecated _root_.one_le (since := "2026-05-07")]
+@[deprecated _root_.one_le +typeChanged (since := "2026-05-07")]
 protected theorem one_le {a : Associates M} : 1 ≤ a :=
   one_le
 

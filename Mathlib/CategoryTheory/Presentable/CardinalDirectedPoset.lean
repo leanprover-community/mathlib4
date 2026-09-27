@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Limits.Preorder
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 public import Mathlib.Order.Category.PartOrdEmb
+public import Mathlib.Order.Hom.WithTopBot
 
 /-!
 # The κ-accessible category of κ-directed posets
@@ -71,7 +72,7 @@ lemma isCardinalFiltered_pt (hF : ∀ j, IsCardinalFiltered (F.obj j) κ) :
   let j := IsCardinalFiltered.max j₀ hK
   let x₁ (k : K) : F.obj j := F.map (IsCardinalFiltered.toMax j₀ hK k) (x₀ k)
   have hx₁ (k : K) : c.ι.app j (x₁ k) = c.ι.app (j₀ k) (x₀ k) :=
-    ConcreteCategory.congr_hom (c.w (IsCardinalFiltered.toMax j₀ hK k)) _
+    congr($(c.w (IsCardinalFiltered.toMax j₀ hK k)) _)
   refine ⟨(cocone hc).ι.app j (IsCardinalFiltered.max x₁ hK),
     fun k ↦ ?_⟩
   rw [← hx₀, ← hx₁]
@@ -117,6 +118,11 @@ abbrev of (J : PartOrdEmb.{u}) [IsCardinalFiltered J κ] : CardinalDirectedPoset
   obj := J
   property := inferInstance
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `CategoryTheory.CardinalDirectedPoset.of X` as `↧X`. -/
+@[app_delab CategoryTheory.CardinalDirectedPoset.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 lemma Hom.injective {J₁ J₂ : CardinalDirectedPoset κ} (f : J₁ ⟶ J₂) :
     Function.Injective f := f.hom.injective
 
@@ -149,7 +155,7 @@ instance (J : CardinalDirectedPoset κ) (κ' : Cardinal.{u}) [Fact κ'.IsRegular
 /-- The map `CardinalDirectedPoset κ → CardinalDirectedPoset κ` which sends
 a partially ordered `κ`-filtered type `J` to `WithTop J`. -/
 abbrev withTop (J : CardinalDirectedPoset κ) : CardinalDirectedPoset κ :=
-  .of (.of (WithTop J.obj))
+  ↧↧(WithTop J.obj)
 
 section
 
@@ -202,7 +208,7 @@ instance : ObjectProperty.EssentiallySmall.{u} (hasCardinalLTWithTerminal κ) wh
       ULift.{u} (PLift (IsCardinalFiltered S κ))
     let (a : α) : PartialOrder a.1 := a.2.1
     let ι (a : α) : CardinalDirectedPoset κ :=
-      { obj := .of a.1
+      { obj := ↧a.1
         property := a.2.2.down.down }
     refine ⟨.ofObj ι, inferInstance, fun J ⟨hJ, _⟩ ↦ ?_⟩
     obtain ⟨f⟩ : Cardinal.mk J.obj ≤ Cardinal.mk X := by
@@ -341,7 +347,7 @@ protected lemma isCardinalPresentable_iff (h : κ ≤ κ') :
       (ObjectProperty.homMk (PartOrdEmb.ofHom WithTop.coeOrderHom))
   replace hf : OrderEmbedding.subtype (· ∈ X.1) ∘ f = WithTop.coeOrderHom := by
     ext x
-    exact ConcreteCategory.congr_hom hf x
+    congrm $hf x
   refine X.2.1.of_injective f (Function.Injective.of_comp
     (f := OrderEmbedding.subtype (· ∈ X.1)) ?_)
   dsimp at hf ⊢
@@ -461,7 +467,7 @@ instance : IsCardinalFiltered (SetCardinalLT κ X) κ :=
 partially ordered type of subsets of `X` of cardinality `< κ`,
 as an object of the category `CardinalDirectedPoset κ`. -/
 abbrev setCardinalLT : CardinalDirectedPoset κ :=
-  .of (PartOrdEmb.of (SetCardinalLT κ X))
+  ↧↧(SetCardinalLT κ X)
 
 end CardinalDirectedPoset
 

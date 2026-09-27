@@ -111,7 +111,8 @@ instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulActio
   unique_lift := by
     intro X _ f
     let f' : IsFreeGroup.Generators G → (A → X) ⋊[mulAutArrow] G := fun e =>
-      ⟨fun b => @f ⟨(), _⟩ ⟨(), b⟩ ⟨e, smul_inv_smul _ b⟩, IsFreeGroup.of e⟩
+      ⟨fun b ↦ (@f (Functor.elementsMk _ () _) (Functor.elementsMk _ () b) ⟨e, smul_inv_smul _ b⟩),
+        IsFreeGroup.of e⟩
     rcases IsFreeGroup.unique_lift f' with ⟨F', hF', uF'⟩
     refine ⟨uncurry F' ?_, ?_, ?_⟩
     · suffices SemidirectProduct.rightHom.comp F' = MonoidHom.id _ by
@@ -119,7 +120,12 @@ instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulActio
       apply IsFreeGroup.ext_hom (fun x ↦ ?_)
       rw [MonoidHom.comp_apply, hF']
       rfl
-    · rintro ⟨⟨⟩, a : A⟩ ⟨⟨⟩, b⟩ ⟨e, h : IsFreeGroup.of e • a = b⟩
+    · intro a b e
+      induction a with | mk a
+      induction b with | mk b
+      induction e with | mk e h
+      change A at a b
+      change IsFreeGroup.of e • a = b at h
       change (F' (IsFreeGroup.of _)).left _ = _
       rw [hF']
       cases inv_smul_eq_iff.mpr h.symm
@@ -137,7 +143,7 @@ instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulActio
         apply Unit.ext
       · refine ActionCategory.cases ?_
         intros
-        simp only [← this, uncurry_map, curry_apply_left, coe_back, homOfPair.val]
+        simp only [← this, uncurry_map, curry_apply_left, coe_back, homOfPair_hom]
         rfl
 
 namespace SpanningTree

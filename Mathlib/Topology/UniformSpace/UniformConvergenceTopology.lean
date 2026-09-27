@@ -386,7 +386,7 @@ protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
     (hf : IsUniformEmbedding f) :
     IsUniformEmbedding (ofFun ∘ (f ∘ ·) ∘ toFun : (α →ᵤ γ) → α →ᵤ β) where
   toIsUniformInducing := UniformFun.postcomp_isUniformInducing hf.isUniformInducing
-  injective _ _ H := funext fun _ ↦ hf.injective (congrFun H _)
+  injective _ _ H := funext fun _ ↦ hf.injective congr($H _)
 
 /-- If `u` is a uniform structures on `β` and `f : γ → β`, then
 `𝒰(α, γ, comap f u) = comap (fun g ↦ f ∘ g) 𝒰(α, γ, u₁)`. -/
@@ -704,7 +704,7 @@ protected theorem hasAntitoneBasis_uniformity {ι : Type*} [Preorder ι] [IsDire
     ht hmono.directed_le hex hb.1).to_hasBasis ?_ fun i _ ↦ ⟨(i, i), trivial, Subset.rfl⟩, ?_⟩
   · rintro ⟨k, l⟩ -
     rcases directed_of (· ≤ ·) k l with ⟨n, hkn, hln⟩
-    exact ⟨n, trivial, UniformOnFun.gen_mono (hmono hkn) (hb.2 <| hln)⟩
+    exact ⟨n, trivial, UniformOnFun.gen_mono (hmono hkn) (hb.2 hln)⟩
   · exact fun k l h ↦ UniformOnFun.gen_mono (hmono h) (hb.2 h)
 
 protected theorem isCountablyGenerated_uniformity [IsCountablyGenerated (𝓤 β)] {t : ℕ → Set α}
@@ -937,7 +937,7 @@ More precisely, if `f : γ → β` is a uniform embedding, then
 protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
     (hf : IsUniformEmbedding f) : IsUniformEmbedding (ofFun 𝔖 ∘ (f ∘ ·) ∘ toFun 𝔖) where
   toIsUniformInducing := UniformOnFun.postcomp_isUniformInducing hf.isUniformInducing
-  injective _ _ H := funext fun _ ↦ hf.injective (congrFun H _)
+  injective _ _ H := funext fun _ ↦ hf.injective congr($H _)
 
 /-- Turn a uniform isomorphism `γ ≃ᵤ β` into a uniform isomorphism `(α →ᵤ[𝔖] γ) ≃ᵤ (α →ᵤ[𝔖] β)`
 by post-composing. -/

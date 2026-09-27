@@ -133,7 +133,8 @@ variable {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
   simp [IndepSet]
 
 lemma iIndepSets_congr (h : κ =ᵐ[μ] η) : iIndepSets π κ μ ↔ iIndepSets π η μ := by
-  peel 3
+  unfold iIndepSets
+  congr! 3
   refine ⟨fun h' ↦ ?_, fun h' ↦ ?_⟩ <;>
   · filter_upwards [h, h'] with a ha h'a
     simpa [ha] using h'a
@@ -141,7 +142,8 @@ lemma iIndepSets_congr (h : κ =ᵐ[μ] η) : iIndepSets π κ μ ↔ iIndepSets
 alias ⟨iIndepSets.congr, _⟩ := iIndepSets_congr
 
 lemma indepSets_congr (h : κ =ᵐ[μ] η) : IndepSets s1 s2 κ μ ↔ IndepSets s1 s2 η μ := by
-  peel 4
+  unfold IndepSets
+  congr! 4
   refine ⟨fun h' ↦ ?_, fun h' ↦ ?_⟩ <;>
   · filter_upwards [h, h'] with a ha h'a
     simpa [ha] using h'a

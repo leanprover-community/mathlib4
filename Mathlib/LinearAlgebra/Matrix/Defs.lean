@@ -84,6 +84,10 @@ which performs elementwise multiplication, vs `Matrix.mul`).
 If you are defining a matrix, in terms of its entries, use `of (fun i j ↦ _)`. The
 purpose of this approach is to ensure that terms of the form `(fun i j ↦ _) * (fun i j ↦ _)` do not
 appear, as the type of `*` can be misleading.
+
+This is available in bundled forms as:
+* `Matrix.ofAddEquiv`
+* `Matrix.ofLinearEquiv`
 -/
 def of : (m → n → α) ≃ Matrix m n α :=
   Equiv.refl _
@@ -123,6 +127,7 @@ lemma ofArray_eq_of_getD [Zero R] {m n : ℕ} (A : Array R) (hA : A.size = m * n
 This is available in bundled forms as:
 * `AddMonoidHom.mapMatrix`
 * `LinearMap.mapMatrix`
+* `LinearMap.mapMatrixLinear`
 * `RingHom.mapMatrix`
 * `AlgHom.mapMatrix`
 * `Equiv.mapMatrix`
@@ -522,7 +527,14 @@ theorem submatrix_map (f : α → β) (e₁ : l → m) (e₂ : o → n) (A : Mat
   rfl
 
 /-- The natural map that reindexes a matrix's rows and columns with equivalent types is an
-equivalence. -/
+equivalence.
+
+This is available in bundled forms as:
+* `Matrix.reindexAddEquiv`
+* `Matrix.reindexLinearEquiv`
+* `Matrix.reindexRingEquiv`
+* `Matrix.reindexAlgEquiv`
+-/
 def reindex (eₘ : m ≃ l) (eₙ : n ≃ o) : Matrix m n α ≃ Matrix l o α where
   toFun M := M.submatrix eₘ.symm eₙ.symm
   invFun M := M.submatrix eₘ eₙ
@@ -638,12 +650,12 @@ section
 /-- Two matrices agree if their rows agree. -/
 @[local ext]
 lemma ext_row {A B : Matrix m n α} (h : ∀ i, A.row i = B.row i) : A = B :=
-  ext fun i j => congr_fun (h i) j
+  ext fun i j => congr($(h i) j)
 
 /-- Two matrices agree if their columns agree. -/
 @[local ext]
 lemma ext_col {A B : Matrix m n α} (h : ∀ j, A.col j = B.col j) : A = B :=
-  ext fun i j => congr_fun (h j) i
+  ext fun i j => congr($(h j) i)
 
 end
 

@@ -80,6 +80,7 @@ section NonUnitalRing
 
 variable [NonUnitalRing R]
 
+@[macro_inline]
 instance funLike : FunLike (RingSeminorm R) R ℝ where
   coe f := f.toFun
   coe_injective f g h := by
@@ -87,7 +88,7 @@ instance funLike : FunLike (RingSeminorm R) R ℝ where
     cases g
     congr
     ext x
-    exact congr_fun h x
+    congrm $h x
 
 instance ringSeminormClass : RingSeminormClass (RingSeminorm R) R ℝ where
   map_zero f := f.map_zero'
@@ -224,6 +225,7 @@ section NonUnitalRing
 
 variable [NonUnitalRing R]
 
+@[macro_inline]
 instance funLike : FunLike (RingNorm R) R ℝ where
   coe f := f.toFun
   coe_injective f g h := by
@@ -231,7 +233,7 @@ instance funLike : FunLike (RingNorm R) R ℝ where
     cases g
     congr
     ext x
-    exact congr_fun h x
+    congrm $h x
 
 instance ringNormClass : RingNormClass (RingNorm R) R ℝ where
   map_zero f := f.map_zero'
@@ -279,6 +281,7 @@ namespace MulRingSeminorm
 
 variable [NonAssocRing R]
 
+@[macro_inline]
 instance funLike : FunLike (MulRingSeminorm R) R ℝ where
   coe f := f.toFun
   coe_injective f g h := by
@@ -286,7 +289,7 @@ instance funLike : FunLike (MulRingSeminorm R) R ℝ where
     cases g
     congr
     ext x
-    exact congr_fun h x
+    congrm $h x
 
 instance mulRingSeminormClass : MulRingSeminormClass (MulRingSeminorm R) R ℝ where
   map_zero f := f.map_zero'
@@ -330,6 +333,7 @@ namespace MulRingNorm
 
 variable [NonAssocRing R]
 
+@[macro_inline]
 instance funLike : FunLike (MulRingNorm R) R ℝ where
   coe f := f.toFun
   coe_injective f g h := by
@@ -337,7 +341,7 @@ instance funLike : FunLike (MulRingNorm R) R ℝ where
     cases g
     congr
     ext x
-    exact congr_fun h x
+    congrm $h x
 
 instance mulRingNormClass : MulRingNormClass (MulRingNorm R) R ℝ where
   map_zero f := f.map_zero'

@@ -716,7 +716,7 @@ def maxNilpotentSubmodule :=
 
 instance instMaxNilpotentSubmoduleIsNilpotent [IsNoetherian R M] :
     IsNilpotent L (maxNilpotentSubmodule R L M) := by
-  have hwf := CompleteLattice.WellFoundedGT.isSupClosedCompact (LieSubmodule R L M) inferInstance
+  have hwf := WellFoundedGT.isSupClosedCompact (α := LieSubmodule R L M) inferInstance
   refine hwf { N : LieSubmodule R L M | IsNilpotent L N } ⟨⊥, ?_⟩ fun N₁ h₁ N₂ h₂ => ?_ <;>
   simp_all only [Set.mem_ofPred] <;> infer_instance
 
@@ -806,7 +806,7 @@ theorem LieAlgebra.nilpotent_of_nilpotent_quotient {I : LieIdeal R L} (h₁ : I 
   suffices LieModule.IsNilpotent L (L ⧸ I) by
     exact LieModule.nilpotentOfNilpotentQuotient R L L h₁ this
   simp only [LieRing.IsNilpotent, LieModule.isNilpotent_iff R] at h₂ ⊢
-  peel h₂ with k hk
+  gconvert h₂ with k hk
   simp [← LieSubmodule.toSubmodule_inj, coe_lowerCentralSeries_ideal_quot_eq, hk]
 
 theorem LieAlgebra.non_trivial_center_of_isNilpotent [Nontrivial L] [IsNilpotent L] :
@@ -833,14 +833,14 @@ theorem LieIdeal.lowerCentralSeries_map_eq (k : ℕ) {f : L →ₗ⁅R⁆ L'} (h
 theorem Function.Injective.lieAlgebra_isNilpotent [h₁ : IsNilpotent L'] {f : L →ₗ⁅R⁆ L'}
     (h₂ : Function.Injective f) : IsNilpotent L := by
   rw [LieRing.IsNilpotent, LieModule.isNilpotent_iff R] at h₁ ⊢
-  peel h₁ with k hk
+  gconvert h₁ with k hk
   apply LieIdeal.bot_of_map_eq_bot h₂; rw [eq_bot_iff, ← hk]
   apply LieIdeal.map_lowerCentralSeries_le
 
 theorem Function.Surjective.lieAlgebra_isNilpotent [h₁ : IsNilpotent L] {f : L →ₗ⁅R⁆ L'}
     (h₂ : Function.Surjective f) : IsNilpotent L' := by
   rw [LieRing.IsNilpotent, LieModule.isNilpotent_iff R] at h₁ ⊢
-  peel h₁ with k hk
+  gconvert h₁ with k hk
   rw [← LieIdeal.lowerCentralSeries_map_eq k h₂, hk]
   simp only [LieIdeal.map_eq_bot_iff, bot_le]
 

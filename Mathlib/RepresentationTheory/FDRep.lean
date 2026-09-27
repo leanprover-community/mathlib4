@@ -91,12 +91,12 @@ def ρ (V : FDRep R G) : G →* V →ₗ[R] V :=
 
 @[simp]
 lemma endRingEquiv_symm_comp_ρ (V : FDRep R G) :
-    (MonoidHomClass.toMonoidHom (ModuleCat.endRingEquiv V.V.obj).symm).comp (ρ V) =
+    (MonoidHom.ofClass (ModuleCat.endRingEquiv V.V.obj).symm).comp (ρ V) =
       InducedCategory.endEquiv.toMonoidHom.comp (Action.ρ V) :=
   rfl
 
 lemma endRingEquiv_comp_ρ (V : FDRep R G) :
-    (MonoidHomClass.toMonoidHom (ModuleCat.endRingEquiv V.V.obj)).comp
+    (MonoidHom.ofClass (ModuleCat.endRingEquiv V.V.obj)).comp
       (InducedCategory.endEquiv.toMonoidHom.comp (Action.ρ V)) = ρ V :=
   rfl
 
@@ -107,7 +107,6 @@ lemma hom_hom_action_ρ (V : FDRep R G) (g : G) : (Action.ρ V g).hom.hom = (ρ 
 def isoToLinearEquiv {V W : FDRep R G} (i : V ≅ W) : V ≃ₗ[R] W :=
   FGModuleCat.isoToLinearEquiv ((Action.forget (FGModuleCat R) G).mapIso i)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem Iso.conj_ρ {V W : FDRep R G} (i : V ≅ W) (g : G) :
     W.ρ g = (FDRep.isoToLinearEquiv i).conj (V.ρ g) := by
@@ -121,8 +120,8 @@ theorem Iso.conj_ρ {V W : FDRep R G} (i : V ≅ W) (g : G) :
 @[simps ρ]
 abbrev of {V : Type u} [AddCommGroup V] [Module R V] [Module.Finite R V]
     (ρ : Representation R G V) : FDRep R G :=
-  ⟨FGModuleCat.of R V, (MulEquiv.toMonoidHom (MulEquiv.symm InducedCategory.endEquiv)).comp
-    ((ModuleCat.endRingEquiv (ModuleCat.of R V)).symm.toMonoidHom.comp ρ)⟩
+  ⟨↧V, (MulEquiv.toMonoidHom (MulEquiv.symm InducedCategory.endEquiv)).comp
+    ((ModuleCat.endRingEquiv ↧V).symm.toMonoidHom.comp ρ)⟩
 
 /-- This lemma is about `FDRep.ρ`, instead of `Action.ρ` for `of_ρ`. -/
 @[simp]
@@ -165,7 +164,7 @@ theorem finrank_hom_simple_simple [IsAlgClosed k] (V W : FDRep k G) [Simple V] [
 def forget₂HomLinearEquiv (X Y : FDRep R G) :
     ((forget₂ (FDRep R G) (Rep R G)).obj X ⟶
       (forget₂ (FDRep R G) (Rep R G)).obj Y) ≃ₗ[R] X ⟶ Y where
-  toFun f := ⟨InducedCategory.homMk (ModuleCat.ofHom <| f.hom.toLinearMap), fun g ↦ by
+  toFun f := ⟨InducedCategory.homMk (ModuleCat.ofHom f.hom.toLinearMap), fun g ↦ by
     ext1
     simp only [FGModuleCat.obj_carrier]
     exact f.hom.2 g⟩
@@ -173,7 +172,7 @@ def forget₂HomLinearEquiv (X Y : FDRep R G) :
   map_smul' _ _ := rfl
   invFun f := Rep.ofHom ⟨((forget₂ (FGModuleCat R) (ModuleCat R)).map f.hom).hom, fun g ↦ by
     ext x
-    exact ConcreteCategory.congr_hom ((forget (FGModuleCat R)).congr_map (f.comm g)) x⟩
+    congrm $((forget (FGModuleCat R)).congr_map (f.comm g)) x⟩
 
 instance : (forget₂ (FDRep R G) (Rep R G)).Full := by
   dsimp [forget₂, HasForget₂.forget₂]

@@ -218,7 +218,7 @@ theorem centralizer_le_alternating_iff :
     Subgroup.centralizer {g} ≤ alternatingGroup α ↔
       (∀ c ∈ g.cycleType, Odd c) ∧ Fintype.card α ≤ g.cycleType.sum + 1 ∧
         ∀ i, g.cycleType.count i ≤ 1 := by
-  rw [SetLike.le_def]
+  rw [IsConcreteLE.le_iff]
   constructor
   · intro h
     exact ⟨odd_of_centralizer_le_alternatingGroup h,
@@ -289,7 +289,7 @@ theorem commutator_alternatingGroup_eq_top (h5 : 5 ≤ Nat.card α) :
 theorem commutator_alternatingGroup_eq_self (h5 : 5 ≤ Nat.card α) :
     ⁅alternatingGroup α, alternatingGroup α⁆ = alternatingGroup α := by
   rw [← Subgroup.map_subtype_commutator, commutator_alternatingGroup_eq_top h5,
-    ← MonoidHom.range_eq_map, Subgroup.range_subtype]
+    Subgroup.map_top, Subgroup.range_subtype]
 
 /-- The commutator subgroup of the permutation group is the alternating group -/
 theorem alternatingGroup.commutator_perm_eq (h5 : 5 ≤ Nat.card α) :

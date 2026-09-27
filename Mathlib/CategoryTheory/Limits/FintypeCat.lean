@@ -45,7 +45,7 @@ noncomputable instance finiteLimitOfFiniteDiagram {J : Type} [SmallCategory J] [
 noncomputable instance inclusionCreatesFiniteLimits {J : Type} [SmallCategory J] [FinCategory J] :
     CreatesLimitsOfShape J FintypeCat.incl.{u} where
   CreatesLimit {K} := createsLimitOfFullyFaithfulOfIso
-    (FintypeCat.of <| limit <| K ⋙ FintypeCat.incl) (Iso.refl _)
+    ↧(limit <| K ⋙ FintypeCat.incl) (Iso.refl _)
 
 /-- Help typeclass inference to infer creation of finite limits for the forgetful functor. -/
 noncomputable instance {J : Type} [SmallCategory J] [FinCategory J] :
@@ -119,7 +119,7 @@ noncomputable instance finiteColimitOfFiniteDiagram {J : Type} [SmallCategory J]
 noncomputable instance inclusionCreatesFiniteColimits {J : Type} [SmallCategory J] [FinCategory J] :
     CreatesColimitsOfShape J FintypeCat.incl.{u} where
   CreatesColimit {K} := createsColimitOfFullyFaithfulOfIso
-    (FintypeCat.of <| colimit <| K ⋙ FintypeCat.incl) (Iso.refl _)
+    ↧(colimit <| K ⋙ FintypeCat.incl) (Iso.refl _)
 
 /-- Help typeclass inference to infer creation of finite colimits for the forgetful functor. -/
 noncomputable instance {J : Type} [SmallCategory J] [FinCategory J] :

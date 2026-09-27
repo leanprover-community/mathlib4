@@ -90,6 +90,17 @@ lemma finite_primesOver [QuasiFinite R S] (I : Ideal R) : (I.primesOver S).Finit
     obtain ⟨J, h₁, ⟨rfl⟩⟩ := this
     exact h inferInstance
 
+open Ideal in
+instance (p : Ideal R) (q : Ideal S) [q.LiesOver p] [q.IsPrime] [QuasiFinite R S] :
+    IsArtinianRing (Localization.AtPrime q ⧸ p.map (algebraMap R (Localization.AtPrime q))) := by
+  have : p.IsPrime := isPrime_of_liesOver q p
+  let Sq := Localization.AtPrime q
+  let r := PrimeSpectrum.primesOverOrderIsoFiber R S p (primesOver.mk p q)
+  have : q = r.1.comap Algebra.TensorProduct.includeRight := by
+    rw [← PrimeSpectrum.coe_primesOverOrderIsoFiber_symm_apply, OrderIso.symm_apply_apply]
+  let := Localization.AtPrime.algebraOfLiesOver p (r.1.comap Algebra.TensorProduct.includeRight)
+  convert (Fiber.localizationAlgEquivQuotient p r.1).toRingEquiv.isArtinianRing
+
 lemma finite_comap_preimage [QuasiFinite R S] {s : Set (PrimeSpectrum R)} (hs : s.Finite) :
     (PrimeSpectrum.comap (algebraMap R S) ⁻¹' s).Finite :=
   hs.preimage' fun _ _ ↦ finite_comap_preimage_singleton _
@@ -277,7 +288,7 @@ lemma eq_of_le_of_under_eq [QuasiFinite R S] (P Q : Ideal S) [P.IsPrime] [Q.IsPr
 
 instance [QuasiFinite R S] (P : Ideal R) [P.IsPrime] (Q : Ideal S) [Q.IsPrime] [Q.LiesOver P]
     [Algebra (Localization.AtPrime P) (Localization.AtPrime Q)]
-    [Localization.AtPrime.IsLiesOverAlgebra P Q] :
+    [IsScalarTower R (Localization.AtPrime P) (Localization.AtPrime Q)] :
     Module.Finite P.ResidueField Q.ResidueField :=
   have : QuasiFinite P.ResidueField Q.ResidueField := .of_restrictScalars R _ _
   .of_quasiFinite
@@ -368,7 +379,7 @@ lemma QuasiFiniteAt.baseChange (p : Ideal S) [p.IsPrime] [QuasiFiniteAt R p]
   let g : A ⊗[R] S →ₐ[A] A ⊗[R] Localization.AtPrime p :=
     Algebra.TensorProduct.map (.id _ _) (IsScalarTower.toAlgHom _ _ _)
   have : f.comp g = IsScalarTower.toAlgHom _ _ _ := by ext; simp [f, g]
-  replace this (x : _) : f (g x) = algebraMap _ _ x := DFunLike.congr_fun this x
+  replace this (x : _) : f (g x) = algebraMap _ _ x := congr($this x)
   refine .of_forall_exists_mul_mem_range f fun x ↦ ?_
   obtain ⟨x, ⟨s, hs⟩, rfl⟩ := IsLocalization.exists_mk'_eq q.primeCompl x
   refine ⟨g s, this s ▸ IsLocalization.map_units _ ⟨s, hs⟩, ?_⟩
@@ -425,7 +436,7 @@ lemma QuasiFiniteAt.eq_of_le_of_under_eq {P Q : Ideal S} [P.IsPrime] [Q.IsPrime]
 
 instance (p : Ideal R) [p.IsPrime] (P : Ideal S) [P.IsPrime] [P.LiesOver p] [QuasiFiniteAt R P]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime P)]
-    [Localization.AtPrime.IsLiesOverAlgebra p P] :
+    [IsScalarTower R (Localization.AtPrime p) (Localization.AtPrime P)] :
     Module.Finite p.ResidueField P.ResidueField := by
   let m := IsLocalRing.maximalIdeal (Localization.AtPrime P)
   let : m.LiesOver p := .trans _ P _
@@ -535,8 +546,8 @@ lemma _root_.Ideal.exists_not_mem_forall_mem_of_ne_of_liesOver
     · simpa using this
     · simpa [IsScalarTower.algebraMap_apply R S q.ResidueField, q.over_def p] using hs
   refine ⟨x, this, fun q' _ hq' _ ↦ not_not.mp fun hxq' ↦ hq' ?_⟩
-  refine congr($(e.injective (a₁ := ⟨⟨q', ‹_›⟩, PrimeSpectrum.ext (q'.over_def p).symm⟩)
-    (a₂ := ⟨⟨q, ‹_›⟩, PrimeSpectrum.ext (q.over_def p).symm⟩) (hrq.le ?_)).1.1)
+  congrm $(e.injective (a₁ := ⟨⟨q', ‹_›⟩, PrimeSpectrum.ext (q'.over_def p).symm⟩)
+   (a₂ := ⟨⟨q, ‹_›⟩, PrimeSpectrum.ext (q.over_def p).symm⟩) (hrq.le ?_)).1.1
   simp only [PrimeSpectrum.basicOpen_eq_zeroLocus_compl, PrimeSpectrum.preimageHomeomorphFiber,
     PrimeSpectrum.preimageOrderIsoFiber, Homeomorph.homeomorph_mk_coe, Set.mem_compl_iff,
     PrimeSpectrum.mem_zeroLocus, Set.singleton_subset_iff, SetLike.mem_coe, e]
@@ -548,7 +559,7 @@ lemma _root_.Ideal.exists_not_mem_forall_mem_of_ne_of_liesOver
 lemma _root_.Ideal.Fiber.lift_residueField_surjective [Algebra.FiniteType R S]
     (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p] [Algebra.QuasiFiniteAt R q]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
-    [Localization.AtPrime.IsLiesOverAlgebra p q] :
+    [IsScalarTower R (Localization.AtPrime p) (Localization.AtPrime q)] :
     Function.Surjective (Algebra.TensorProduct.lift (Algebra.ofId _ _)
       (IsScalarTower.toAlgHom _ _ _) fun _ _ ↦ .all _ _ :
       p.Fiber S →ₐ[p.ResidueField] q.ResidueField) := by

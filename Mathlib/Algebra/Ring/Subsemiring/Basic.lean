@@ -753,7 +753,7 @@ theorem rangeS_codRestrict {f : R →+* S} {s : σS} {h : ∀ x, f x ∈ s} :
 
 theorem surjective_codRestrict {f : R →+* S} {s : σS} {h : ∀ x, f x ∈ s} :
     Function.Surjective (codRestrict f s h) ↔ f.rangeS = ofClass s :=
-  (Set.surjective_codRestrict h).trans <| .symm <| SetLike.coe_set_eq.symm
+  (Set.surjective_codRestrict h).trans <| .symm SetLike.coe_set_eq.symm
 
 /-- The ring homomorphism from the preimage of `s` to `s`. -/
 def restrict (f : R →+* S) (s' : σR) (s : σS) (h : ∀ x ∈ s', f x ∈ s) : s' →+* s :=
@@ -844,11 +844,11 @@ theorem rangeS_subtype (s : Subsemiring R) : s.subtype.rangeS = s :=
 
 @[simp]
 theorem range_fst : (fst R S).rangeS = ⊤ :=
-  (fst R S).rangeS_top_of_surjective <| Prod.fst_surjective
+  (fst R S).rangeS_top_of_surjective Prod.fst_surjective
 
 @[simp]
 theorem range_snd : (snd R S).rangeS = ⊤ :=
-  (snd R S).rangeS_top_of_surjective <| Prod.snd_surjective
+  (snd R S).rangeS_top_of_surjective Prod.snd_surjective
 
 @[simp]
 theorem prod_bot_sup_bot_prod (s : Subsemiring R) (t : Subsemiring S) :
@@ -1033,7 +1033,7 @@ lemma closure_le_centralizer_centralizer (s : Set R') :
   closure_le.mpr Set.subset_centralizer_centralizer
 
 /-- If all the elements of a set `s` commute, then `closure s` is a commutative semiring. -/
-theorem isMulCommutative_closure {s : Set R'} (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) :
+theorem isMulCommutative_closure {s : Set R'} (hcomm : s.Pairwise Commute) :
     IsMulCommutative (closure s) :=
   have := closure_le_centralizer_centralizer s
   .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
@@ -1041,15 +1041,15 @@ theorem isMulCommutative_closure {s : Set R'} (hcomm : ∀ x ∈ s, ∀ y ∈ s,
 
 open scoped IsMulCommutative in
 /-- If all the elements of a set `s` commute, then `closure s` is a commutative semiring. -/
-@[deprecated isMulCommutative_closure (since := "2026-03-11")]
-abbrev closureCommSemiringOfComm {s : Set R'} (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) :
+@[deprecated isMulCommutative_closure +typeChanged (since := "2026-03-11")]
+abbrev closureCommSemiringOfComm {s : Set R'} (hcomm : s.Pairwise Commute) :
     CommSemiring (closure s) :=
   have := isMulCommutative_closure hcomm
   inferInstance
 
 instance instIsMulCommutative_closure {S : Type*} [SetLike S R'] [MulMemClass S R'] (s : S)
     [IsMulCommutative s] : IsMulCommutative (closure (s : Set R')) :=
-  isMulCommutative_closure fun _ h₁ _ h₂ => setLike_mul_comm h₁ h₂
+  isMulCommutative_closure fun _ h₁ _ h₂ _ => setLike_mul_comm h₁ h₂
 
 end Subsemiring
 

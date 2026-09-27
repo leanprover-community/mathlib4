@@ -348,7 +348,7 @@ theorem sum_geometric_two_le (n : ℕ) : (∑ i ∈ range n, (1 / (2 : ℝ)) ^ i
   have : ∀ i, 0 ≤ (1 / (2 : ℝ)) ^ i := by
     intro i
     apply pow_nonneg
-    norm_num
+    simp
   convert! summable_geometric_two.sum_le_tsum (range n) (fun i _ ↦ this i)
   exact tsum_geometric_two.symm
 
@@ -554,7 +554,7 @@ include hu₂
 
 /-- If `dist (f n) (f (n+1))` is bounded by `(C / 2) / 2^n`, then `f` is a Cauchy sequence. -/
 theorem cauchySeq_of_le_geometric_two : CauchySeq f :=
-  cauchySeq_of_dist_le_of_summable _ hu₂ <| ⟨_, hasSum_geometric_two' C⟩
+  cauchySeq_of_dist_le_of_summable _ hu₂ ⟨_, hasSum_geometric_two' C⟩
 
 /-- If `dist (f n) (f (n+1))` is bounded by `(C / 2) / 2^n`, then the distance from
 `f 0` to the limit of `f` is bounded above by `C`. -/
@@ -688,7 +688,7 @@ theorem tendsto_factorial_div_pow_self_atTop :
         Finset.prod_range_succ']
       simp only [one_mul, Nat.cast_add, zero_add, Nat.cast_one]
       refine
-            mul_le_of_le_one_left (inv_nonneg.mpr <| mod_cast hn.le) (prod_le_one ?_ ?_) <;>
+            mul_le_of_le_one_left (inv_nonneg.mpr <| mod_cast hn.le) (prod_le_one₀ ?_ ?_) <;>
           intro x hx <;>
         rw [Finset.mem_range] at hx
       · positivity

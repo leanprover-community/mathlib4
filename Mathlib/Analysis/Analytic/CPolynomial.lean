@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Analytic.Composition
 public import Mathlib.Analysis.Analytic.Constructions
 public import Mathlib.Analysis.Analytic.CPolynomialDef
 public import Mathlib.Analysis.Normed.Module.Alternating.Basic
+public import Mathlib.Topology.Algebra.Module.Equiv.Prod
 
 /-! # Properties of continuously polynomial functions
 
@@ -364,7 +365,7 @@ lemma cpolynomialOn_uncurry_of_linear :
     CPolynomialOn 𝕜 (fun (p : (Π i, Em i) × G) ↦ f p.1 p.2) s :=
   fun _ _ ↦ f.cpolynomialAt_uncurry_of_linear
 
-@[deprecated (since := "2026-09-02")]
+@[deprecated (since := "2026-09-17")]
 alias cpolyomialOn_uncurry_of_linear := cpolynomialOn_uncurry_of_linear
 
 lemma analyticOnNhd_uncurry_of_linear :

@@ -57,12 +57,14 @@ namespace BooleanRing
 
 variable [BooleanRing α] (a b : α)
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 lemma mul_self : a * a = a := IsIdempotentElem.eq (isIdempotentElem a)
 
 instance : Std.IdempotentOp (α := α) (· * ·) :=
   ⟨BooleanRing.mul_self⟩
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem add_self : a + a = 0 := by
   have : a + a = a + a + (a + a) :=
@@ -72,6 +74,7 @@ theorem add_self : a + a = 0 := by
       _ = a + a + (a + a) := by rw [mul_self]
   rwa [right_eq_add] at this
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem neg_eq : -a = a :=
   calc
@@ -94,6 +97,7 @@ theorem mul_add_mul : a * b + b * a = 0 := by
       _ = a + b + (a * b + b * a) := by abel
   rwa [left_eq_add] at this
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem sub_eq_add : a - b = a + b := by rw [sub_eq_add_neg, add_right_inj, neg_eq]
 
@@ -148,6 +152,11 @@ theorem toBoolAlg_inj {a b : α} : toBoolAlg a = toBoolAlg b ↔ a = b :=
 
 theorem ofBoolAlg_inj {a b : AsBoolAlg α} : ofBoolAlg a = ofBoolAlg b ↔ a = b :=
   Iff.rfl
+
+/-- A recursor for `AsBoolAlg`. Use as `induction x`. -/
+@[elab_as_elim, induction_eliminator, cases_eliminator]
+protected def AsBoolAlg.rec {motive : AsBoolAlg α → Sort*} (toBoolAlg : ∀ a, motive (toBoolAlg a)) :
+    ∀ a, motive a := fun a ↦ toBoolAlg (ofBoolAlg a)
 
 instance [Inhabited α] : Inhabited (AsBoolAlg α) :=
   ‹Inhabited α›
@@ -362,6 +371,12 @@ theorem toBoolRing_inj {a b : α} : toBoolRing a = toBoolRing b ↔ a = b :=
 theorem ofBoolRing_inj {a b : AsBoolRing α} : ofBoolRing a = ofBoolRing b ↔ a = b :=
   Iff.rfl
 
+/-- A recursor for `AsBoolRing`. Use as `induction x`. -/
+@[elab_as_elim, induction_eliminator, cases_eliminator]
+protected def AsBoolRing.rec {motive : AsBoolRing α → Sort*}
+    (toBoolRing : ∀ a, motive (toBoolRing a)) : ∀ a, motive a :=
+  fun a ↦ toBoolRing (ofBoolRing a)
+
 instance [Inhabited α] : Inhabited (AsBoolRing α) :=
   ⟨default (α := α)⟩
 
@@ -465,6 +480,19 @@ theorem toBoolRing_inf (a b : α) : toBoolRing (a ⊓ b) = toBoolRing a * toBool
 @[simp]
 theorem toBoolRing_symmDiff (a b : α) : toBoolRing (a ∆ b) = toBoolRing a + toBoolRing b :=
   rfl
+
+@[simp]
+theorem toBoolRing_compl (a : α) : toBoolRing aᶜ = 1 + toBoolRing a := by
+  rw [← hnot_eq_compl, ← top_symmDiff, toBoolRing_symmDiff, toBoolRing_top]
+
+@[simp]
+theorem toBoolRing_sup (a b : α) :
+    toBoolRing (a ⊔ b) = toBoolRing a + toBoolRing b + toBoolRing a * toBoolRing b := by
+  rw [← symmDiff_symmDiff_inf, toBoolRing_symmDiff, toBoolRing_symmDiff, toBoolRing_inf]
+
+@[simp]
+theorem toBoolRing_sdiff (a b : α) : toBoolRing (a \ b) = toBoolRing a * (1 + toBoolRing b) := by
+  simp [sdiff_eq]
 
 /-- Turn a bounded lattice homomorphism from Boolean algebras `α` to `β` into a ring homomorphism
 from `α` to `β` considered as Boolean rings. -/

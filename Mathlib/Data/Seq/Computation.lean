@@ -9,7 +9,6 @@ public import Mathlib.Data.Nat.Find
 public import Mathlib.Data.Stream.Init
 public import Mathlib.Logic.Relator
 public import Mathlib.Tactic.Common
-public import Batteries.Tactic.Lint.Simp
 
 /-!
 # Coinductive formalization of unbounded computations.
@@ -265,8 +264,7 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
       · constructor <;> dsimp at h
         · rw [h]
         · rw [h] at r
-          rw [tail_pure, tail_pure, h]
-          assumption
+          rwa [tail_pure, tail_pure, h]
       · rw [destruct_pure, destruct_think] at h
         exact False.elim h
       · rw [destruct_pure, destruct_think] at h
@@ -696,7 +694,7 @@ theorem of_results_bind {s : Computation α} {f : α → Computation β} {b k} :
   induction s using recOn with intro h | pure a | think s'
   · simp only [ret_bind] at h
     exact ⟨_, _, _, results_pure _, h, rfl⟩
-  · have := congr_arg head (eq_thinkN h)
+  · have := congr(head $(eq_thinkN h))
     contradiction
   · simp only [ret_bind] at h
     exact ⟨_, _, n + 1, results_pure _, h, rfl⟩

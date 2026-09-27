@@ -56,11 +56,12 @@ end Prod
 
 variable (M₀) in
 @[simp]
-lemma WithZero.ofClass_withZeroUnitsEquiv [GroupWithZero M₀]
-    [DecidablePred fun x : M₀ ↦ x = 0] :
-    .ofClass WithZero.withZeroUnitsEquiv =
-      WithZero.lift' (Units.coeHom M₀) :=
+lemma WithZero.coe_withZeroUnitsEquiv [GroupWithZero M₀] [DecidablePred fun x : M₀ ↦ x = 0] :
+    WithZero.withZeroUnitsEquiv (G := M₀) = WithZero.lift' (Units.coeHom M₀) :=
   rfl
+
+@[deprecated (since := "2026-09-15")]
+alias WithZero.ofClass_withZeroUnitsEquiv := WithZero.coe_withZeroUnitsEquiv
 
 /-! ### Multiplication and division as homomorphisms -/
 

@@ -95,12 +95,11 @@ noncomputable instance Forget₂.createsLimit :
       have : Small.{u} (Functor.sections (F ⋙ forget GrpCat)) := inferInstanceAs <| Small.{u}
         (Functor.sections ((F ⋙ forget₂ GrpCat MonCat) ⋙ forget MonCat))
       { liftedCone :=
-          { pt := GrpCat.of (Types.Small.limitCone (F ⋙ forget GrpCat)).pt
+          { pt := ↧(Types.Small.limitCone (F ⋙ forget GrpCat)).pt
             π :=
               { app j := ofHom <| MonCat.limitπMonoidHom (F ⋙ forget₂ GrpCat MonCat) j
-                naturality i j h := hom_ext <| congr_arg MonCat.Hom.hom <|
-                  (MonCat.HasLimits.limitCone
-                        (F ⋙ forget₂ GrpCat MonCat.{u})).π.naturality h } }
+                naturality i j h := hom_ext congr($((MonCat.HasLimits.limitCone
+                        (F ⋙ forget₂ GrpCat MonCat.{u})).π.naturality h).hom) } }
         validLift := by apply IsLimit.uniqueUpToIso (MonCat.HasLimits.limitConeIsLimit.{v, u} _) t
         makesLimit :=
          IsLimit.ofFaithful (forget₂ GrpCat MonCat.{u}) (MonCat.HasLimits.limitConeIsLimit _)
@@ -255,7 +254,7 @@ noncomputable instance Forget₂.createsLimit :
     have : Small.{u} ((F ⋙ forget₂ CommGrpCat GrpCat) ⋙ forget GrpCat).sections := this
     exact
       { liftedCone :=
-          { pt := CommGrpCat.of (Types.Small.limitCone.{v, u} (F ⋙ forget CommGrpCat)).pt
+          { pt := ↧(Types.Small.limitCone.{v, u} (F ⋙ forget CommGrpCat)).pt
             π :=
               { app j := ofHom <| MonCat.limitπMonoidHom
                   (F ⋙ forget₂ CommGrpCat GrpCat.{u} ⋙ forget₂ GrpCat MonCat.{u}) j
@@ -406,11 +405,7 @@ types.) -/]
 instance forget_preservesLimitsOfSize :
     PreservesLimitsOfSize.{w, v} (forget CommGrpCat.{u}) := inferInstance
 
-noncomputable instance _root_.AddCommGrpCat.forget_preservesLimits :
-    PreservesLimits (forget AddCommGrpCat.{u}) :=
-  AddCommGrpCat.forget_preservesLimitsOfSize.{u, u}
-
-@[to_additive existing]
+@[to_additive]
 noncomputable instance forget_preservesLimits : PreservesLimits (forget CommGrpCat.{u}) :=
   CommGrpCat.forget_preservesLimitsOfSize.{u, u}
 
@@ -444,9 +439,9 @@ namespace AddCommGrpCat
 agrees with the usual group-theoretical kernel.
 -/
 def kernelIsoKer {G H : AddCommGrpCat.{u}} (f : G ⟶ H) :
-    kernel f ≅ AddCommGrpCat.of f.hom.ker where
+    kernel f ≅ ↧f.hom.ker where
   hom := ofHom
-    { toFun := fun g => ⟨kernel.ι f g, ConcreteCategory.congr_hom (kernel.condition f) g⟩
+    { toFun := fun g => ⟨kernel.ι f g, congr($(kernel.condition f) g)⟩
       map_zero' := by
         refine Subtype.ext ?_
         simp only [map_zero, ZeroMemClass.coe_zero]
@@ -479,7 +474,7 @@ theorem kernelIsoKer_inv_comp_ι {G H : AddCommGrpCat.{u}} (f : G ⟶ H) :
 agrees with the `AddSubgroup.subtype` map.
 -/
 def kernelIsoKerOver {G H : AddCommGrpCat.{u}} (f : G ⟶ H) :
-    Over.mk (kernel.ι f) ≅ @Over.mk _ _ G (AddCommGrpCat.of f.hom.ker)
+    Over.mk (kernel.ι f) ≅ @Over.mk _ _ G ↧f.hom.ker
       (ofHom (AddSubgroup.subtype f.hom.ker)) :=
   Over.isoMk (kernelIsoKer f)
 

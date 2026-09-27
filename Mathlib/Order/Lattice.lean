@@ -833,7 +833,7 @@ end Antitone
 
 theorem exists_le_and_iff_exists [SemilatticeInf α] {P : α → Prop} {x₀ : α} (hP : Antitone P) :
     (∃ x, x ≤ x₀ ∧ P x) ↔ ∃ x, P x :=
-  exists_ge_and_iff_exists <| hP.dual_left
+  exists_ge_and_iff_exists hP.dual_left
 
 theorem exists_and_iff_of_antitone [SemilatticeInf α] {P Q : α → Prop}
     (hP : Antitone P) (hQ : Antitone Q) : ((∃ x, P x) ∧ ∃ x, Q x) ↔ (∃ x, P x ∧ Q x) :=

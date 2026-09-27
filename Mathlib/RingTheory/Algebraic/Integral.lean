@@ -611,7 +611,7 @@ instance Algebra.IsAlgebraic.tensorProduct : Algebra.IsAlgebraic R' (R' ⊗[R] S
   isAlgebraic p :=
     have := IsAlgebraic.nontrivial R S
     have := (FaithfulSMul.algebraMap_injective R R').nontrivial
-    p.induction_on isAlgebraic_zero (fun _ s ↦ .tmul _ <| alg.1 s) (fun _ _ ↦ .add)
+    p.inductionOn (fun _ s ↦ .tmul _ <| alg.1 s) (fun _ _ ↦ .add)
 
 variable (S' : Type*) [CommRing S'] [Algebra R S'] [Algebra S S'] [Algebra R' S']
   [IsScalarTower R R' S'] [IsScalarTower R S S']
