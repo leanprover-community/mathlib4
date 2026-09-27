@@ -118,6 +118,10 @@ instance [CategoryWithHomology C] : (quasiIso C).IsStableUnderRetracts := by
   dsimp [quasiIso]
   infer_instance
 
+@[implicit_reducible, simps! obj_obj map]
+noncomputable def singleFunctor [HasZeroObject C] (n : ℤ) : C ⥤ CochainComplex.Plus C :=
+  ObjectProperty.lift _ (HomologicalComplex.single C (.up ℤ) n) (fun _ ↦ ⟨n, inferInstance⟩)
+
 end
 
 instance [Preadditive C] : (CochainComplex.plus C).IsStableUnderShift ℤ where
@@ -167,6 +171,22 @@ def mapCochainComplexPlusCompι :
     F.mapCochainComplexPlus ⋙ CochainComplex.Plus.ι D ≅
       CochainComplex.Plus.ι C ⋙ F.mapHomologicalComplex _ := Iso.refl _
 
+section
+
+variable [HasZeroObject C] [HasZeroObject D]
+
+open HomologicalComplex in
+@[simps! hom_app_hom inv_app_hom]
+noncomputable def singleMapCochainComplexPlus (n : ℤ) :
+    CochainComplex.Plus.singleFunctor C n ⋙ F.mapCochainComplexPlus ≅
+      F ⋙ CochainComplex.Plus.singleFunctor D n :=
+  NatIso.ofComponents (fun X ↦ ObjectProperty.isoMk _
+    ((singleMapHomologicalComplex F _ _).app X)) (fun f ↦ by
+      ext : 1
+      apply (singleMapHomologicalComplex F (.up ℤ) n).hom.naturality)
+
+end
+
 end
 
 section
@@ -200,6 +220,16 @@ induced by a natural transformation `F₁ ⟶ F₂`. -/
 def mapCochainComplexPlus (τ : F₁ ⟶ F₂) :
     F₁.mapCochainComplexPlus ⟶ F₂.mapCochainComplexPlus where
   app K := ObjectProperty.homMk ((NatTrans.mapHomologicalComplex τ _).app _)
+
+@[reassoc]
+lemma mapCochainComplexPlus_app_singleFunctor_obj
+    [HasZeroObject C] [HasZeroObject D] (τ : F₁ ⟶ F₂) (X : C) (n : ℤ) :
+    τ.mapCochainComplexPlus.app ((CochainComplex.Plus.singleFunctor C n).obj X) =
+      (F₁.singleMapCochainComplexPlus n).hom.app X ≫
+        (CochainComplex.Plus.singleFunctor D n).map (τ.app X) ≫
+        (F₂.singleMapCochainComplexPlus n).inv.app X := by
+  ext : 1
+  apply HomologicalComplex.natTransMapHomologicalComplex_app_single_obj
 
 @[simp]
 lemma mapCochainComplexPlus_add (τ τ' : F₁ ⟶ F₂) :

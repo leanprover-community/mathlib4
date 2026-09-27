@@ -98,7 +98,7 @@ instance faithful_ι : P.ι.Faithful := P.fullyFaithfulι.faithful
 
 /-- Constructor for isomorphisms in `P.FullSubcategory` when
 `P : ObjectProperty C`. -/
-@[simps]
+@[simps, implicit_reducible]
 def isoMk {X Y : P.FullSubcategory} (e : X.obj ≅ Y.obj) : X ≅ Y where
   hom := homMk e.hom
   inv := homMk e.inv

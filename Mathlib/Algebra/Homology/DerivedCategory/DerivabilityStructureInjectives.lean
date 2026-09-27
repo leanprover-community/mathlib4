@@ -115,6 +115,20 @@ instance (K : Plus (InjectiveObject C)) (n : ℤ) :
     Injective (K.obj.X n).obj :=
   (K.obj.X n).property
 
+lemma mem_essImage_mapCochainComplexPlus_injectiveObjectι_iff (K : Plus C) :
+    (InjectiveObject.ι C).mapCochainComplexPlus.essImage K ↔
+      ∀ (n : ℤ), Injective (K.obj.X n) := by
+  refine ⟨?_, fun _ ↦ ?_⟩
+  · rintro ⟨L, ⟨e⟩⟩
+    intro n
+    apply Injective.of_iso ((ObjectProperty.ι _ ⋙ HomologicalComplex.eval _ _ n).mapIso e)
+    dsimp
+    infer_instance
+  · refine ⟨⟨HomologicalComplex.liftObjectProperty _ K.obj (by assumption), ?_⟩, ⟨Iso.refl _⟩⟩
+    obtain ⟨n, hn⟩ := K.property
+    exact ⟨n, ⟨fun i hi ↦ IsZero.of_full_of_faithful_of_isZero
+      (ObjectProperty.ι _) _ (hn.isZero i hi)⟩⟩
+
 variable [EnoughInjectives C]
 
 open modelCategoryQuillen
