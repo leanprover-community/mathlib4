@@ -605,7 +605,7 @@ theorem isMulCommutative_closure {R} [Ring R] {s : Set R}
 
 open scoped IsMulCommutative in
 /-- If all elements of `s : Set R` commute pairwise, then `closure s` is a commutative ring. -/
-@[deprecated isMulCommutative_closure (since := "2026-03-11")]
+@[deprecated isMulCommutative_closure +typeChanged (since := "2026-03-11")]
 abbrev closureCommRingOfComm {R} [Ring R] {s : Set R} (hcomm : s.Pairwise Commute) :
     CommRing (closure s) :=
   have := isMulCommutative_closure hcomm
@@ -927,10 +927,10 @@ theorem range_subtype (s : Subring R) : s.subtype.range = s :=
   SetLike.coe_injective <| (coe_rangeS _).trans Subtype.range_coe
 
 theorem range_fst : (fst R S).rangeS = ⊤ :=
-  (fst R S).rangeS_top_of_surjective <| Prod.fst_surjective
+  (fst R S).rangeS_top_of_surjective Prod.fst_surjective
 
 theorem range_snd : (snd R S).rangeS = ⊤ :=
-  (snd R S).rangeS_top_of_surjective <| Prod.snd_surjective
+  (snd R S).rangeS_top_of_surjective Prod.snd_surjective
 
 @[simp]
 theorem prod_bot_sup_bot_prod (s : Subring R) (t : Subring S) : s.prod ⊥ ⊔ prod ⊥ t = s.prod t :=

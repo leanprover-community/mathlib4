@@ -211,7 +211,7 @@ protected lemma IsPath.cons {p : Walk G v w} (hp : p.IsPath) (hu : u ∉ p.suppo
 theorem isPath_iff_nil {u : V} {p : G.Walk u u} : p.IsPath ↔ p.Nil := by
   cases p <;> simp [IsPath.nil]
 
-@[deprecated isPath_iff_nil (since := "2026-06-01")]
+@[deprecated isPath_iff_nil +typeChanged (since := "2026-06-01")]
 theorem isPath_iff_eq_nil {u : V} {p : G.Walk u u} : p.IsPath ↔ p = nil := by
   simp
 
@@ -936,7 +936,7 @@ lemma length_le_bypass_length_iff (p : G.Walk u v) :
 alias bypass_eq_self_of_length_le_length_bypass := length_le_bypass_length_iff
 
 @[deprecated (since := "2026-05-25")]
-alias bypass_eq_self_of_length_le := bypass_eq_self_of_length_le_length_bypass
+alias bypass_eq_self_of_length_le := length_le_bypass_length_iff
 
 @[simp]
 lemma bypass_cons_nil (hadj : G.Adj u v) : (cons hadj nil).bypass = cons hadj nil := by

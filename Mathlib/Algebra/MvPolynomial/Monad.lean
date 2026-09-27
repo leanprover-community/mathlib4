@@ -199,7 +199,7 @@ theorem bind₂_comp_bind₂ (f : R →+* MvPolynomial σ S) (g : S →+* MvPoly
 
 theorem bind₂_bind₂ (f : R →+* MvPolynomial σ S) (g : S →+* MvPolynomial σ T)
     (φ : MvPolynomial σ R) : (bind₂ g) (bind₂ f φ) = bind₂ ((bind₂ g).comp f) φ :=
-  RingHom.congr_fun (bind₂_comp_bind₂ f g) φ
+  congr($(bind₂_comp_bind₂ f g) φ)
 
 theorem rename_comp_bind₁ {υ : Type*} (f : σ → MvPolynomial τ R) (g : τ → υ) :
     (rename g).comp (bind₁ f) = bind₁ fun i => rename g <| f i := by
@@ -208,7 +208,7 @@ theorem rename_comp_bind₁ {υ : Type*} (f : σ → MvPolynomial τ R) (g : τ 
 
 theorem rename_bind₁ {υ : Type*} (f : σ → MvPolynomial τ R) (g : τ → υ) (φ : MvPolynomial σ R) :
     rename g (bind₁ f φ) = bind₁ (fun i => rename g <| f i) φ :=
-  AlgHom.congr_fun (rename_comp_bind₁ f g) φ
+  congr($(rename_comp_bind₁ f g) φ)
 
 theorem map_bind₂ (f : R →+* MvPolynomial σ S) (g : S →+* T) (φ : MvPolynomial σ R) :
     map g (bind₂ f φ) = bind₂ ((map g).comp f) φ := by
@@ -223,7 +223,7 @@ theorem bind₁_comp_rename {υ : Type*} (f : τ → MvPolynomial υ R) (g : σ 
 
 theorem bind₁_rename {υ : Type*} (f : τ → MvPolynomial υ R) (g : σ → τ) (φ : MvPolynomial σ R) :
     bind₁ f (rename g φ) = bind₁ (f ∘ g) φ :=
-  AlgHom.congr_fun (bind₁_comp_rename f g) φ
+  congr($(bind₁_comp_rename f g) φ)
 
 theorem bind₂_map (f : S →+* MvPolynomial σ T) (g : R →+* S) (φ : MvPolynomial σ R) :
     bind₂ f (map g φ) = bind₂ (f.comp g) φ := by simp [bind₂]
@@ -266,7 +266,7 @@ theorem eval₂Hom_comp_bind₂ (f : S →+* T) (g : σ → T) (h : R →+* MvPo
 
 theorem eval₂Hom_bind₂ (f : S →+* T) (g : σ → T) (h : R →+* MvPolynomial σ S)
     (φ : MvPolynomial σ R) : eval₂Hom f g (bind₂ h φ) = eval₂Hom ((eval₂Hom f g).comp h) g φ :=
-  RingHom.congr_fun (eval₂Hom_comp_bind₂ f g h) φ
+  congr($(eval₂Hom_comp_bind₂ f g h) φ)
 
 theorem aeval_bind₂ [Algebra S T] (f : σ → T) (g : R →+* MvPolynomial σ S) (φ : MvPolynomial σ R) :
     aeval f (bind₂ g φ) = eval₂Hom ((↑(aeval f : _ →ₐ[S] _) : _ →+* _).comp g) f φ :=

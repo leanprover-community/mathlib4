@@ -195,16 +195,16 @@ theorem isAcyclic_iff_subsingleton_path : G.IsAcyclic ↔ ∀ u v, Subsingleton 
 
 alias ⟨IsAcyclic.subsingleton_path, _⟩ := isAcyclic_iff_subsingleton_path
 
-@[deprecated IsAcyclic.subsingleton_path (since := "2026-06-30")]
+@[deprecated IsAcyclic.subsingleton_path +typeChanged (since := "2026-06-30")]
 theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p q : G.Path v w) :
     p = q :=
   h.subsingleton_path v w |>.elim p q
 
-@[deprecated isAcyclic_iff_subsingleton_path (since := "2026-06-30")]
+@[deprecated isAcyclic_iff_subsingleton_path +typeChanged (since := "2026-06-30")]
 theorem isAcyclic_of_path_unique (h : ∀ (v w : V) (p q : G.Path v w), p = q) : G.IsAcyclic :=
   isAcyclic_iff_subsingleton_path.mpr (⟨h · ·⟩)
 
-@[deprecated isAcyclic_iff_subsingleton_path (since := "2026-06-30")]
+@[deprecated isAcyclic_iff_subsingleton_path +typeChanged (since := "2026-06-30")]
 theorem isAcyclic_iff_path_unique : G.IsAcyclic ↔ ∀ ⦃v w : V⦄ (p q : G.Path v w), p = q :=
   isAcyclic_iff_subsingleton_path.trans <| forall₂_congr fun _ _ ↦ subsingleton_iff
 

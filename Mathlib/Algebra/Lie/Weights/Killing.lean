@@ -546,7 +546,7 @@ lemma traceForm_eq_zero_of_mem_ker_of_mem_span_coroot {α : Weight K H L} {x y :
       rwa [hyp]
     have : α.ker = β.ker := by
       rw [← orthogonal_span_coroot_eq_ker α, hyp, orthogonal_span_coroot_eq_ker]
-    suffices (α : H →ₗ[K] K) = β by ext x; simpa using LinearMap.congr_fun this x
+    suffices (α : H →ₗ[K] K) = β by ext x; simpa using congr($this x)
     apply Module.Dual.eq_of_ker_eq_of_apply_eq (coroot α) this
     · rw [Weight.toLinear_apply, root_apply_coroot hα, hyp, Weight.toLinear_apply,
         root_apply_coroot hβ]
@@ -592,7 +592,7 @@ lemma _root_.IsSl2Triple.h_eq_coroot {α : Weight K H L} (hα : α.IsNonZero)
     exact smul_left_injective K ht.e_ne_zero this.symm
   suffices ∃ s : K, s • h = coroot α by
     obtain ⟨s, hs⟩ := this
-    replace this : s = 1 := by simpa [root_apply_coroot hα, key] using congr_arg α hs
+    replace this : s = 1 := by simpa [root_apply_coroot hα, key] using congr(α $hs)
     rwa [this, one_smul] at hs
   set α' := (cartanEquivDual H).symm α with hα'
   have h_eq : h = killingForm K L e f • α' := by

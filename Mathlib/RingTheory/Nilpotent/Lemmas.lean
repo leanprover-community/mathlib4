@@ -68,7 +68,7 @@ theorem nilradical_eq_zero (R : Type*) [CommSemiring R] [IsReduced R] : nilradic
   Ideal.ext fun _ => isNilpotent_iff_eq_zero
 
 theorem nilradical_eq_bot_iff : nilradical R = ⊥ ↔ IsReduced R := by
-  simp_rw [eq_bot_iff, SetLike.le_def, Submodule.mem_bot, mem_nilradical, isReduced_iff]
+  simp_rw [eq_bot_iff, IsConcreteLE.le_iff, Submodule.mem_bot, mem_nilradical, isReduced_iff]
 
 open UniqueFactorizationMonoid in
 lemma Ideal.radical_span_singleton_eq_span_radical [UniqueFactorizationMonoid R]
@@ -134,11 +134,11 @@ lemma isNilpotent_restrict_of_le {f : End R M} {p q : Submodule R M}
   obtain ⟨n, hn⟩ := hf
   use n
   ext ⟨x, hx⟩
-  replace hn := DFunLike.congr_fun hn ⟨x, h hx⟩
+  replace hn := congr($hn ⟨x, h hx⟩)
   simp_rw [LinearMap.zero_apply, ZeroMemClass.coe_zero, ZeroMemClass.coe_eq_zero] at hn ⊢
   rw [Module.End.pow_restrict, LinearMap.restrict_apply] at hn ⊢
   ext
-  exact (congr_arg Subtype.val hn :)
+  congrm $(hn).val
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isNilpotent.restrict

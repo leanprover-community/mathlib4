@@ -75,7 +75,7 @@ noncomputable def IsRepresentedBy.uliftYonedaIso (h : F.IsRepresentedBy x) :
 noncomputable def IsRepresentedBy.representableBy (h : F.IsRepresentedBy x) :
     F.RepresentableBy X :=
   Functor.representableByUliftFunctorEquiv.{v}
-    ((RepresentableBy.equivUliftYonedaIso _ _).symm <| h.uliftYonedaIso)
+    ((RepresentableBy.equivUliftYonedaIso _ _).symm h.uliftYonedaIso)
 
 @[simp]
 lemma IsRepresentedBy.representableBy_homEquiv_apply (h : F.IsRepresentedBy x)

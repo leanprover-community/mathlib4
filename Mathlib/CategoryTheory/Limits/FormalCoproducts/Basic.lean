@@ -189,7 +189,7 @@ maps from each component, which is the universal property of coproducts. -/
 /-- `cofan 𝒜 f` is a coproduct of `f`. -/
 @[simps!] def isColimitCofan : IsColimit (cofan 𝒜 f) :=
   Cofan.IsColimit.mk (cofan 𝒜 f) (fun t ↦ (cofanHomEquiv _ _ _).symm t.inj)
-    (fun t i ↦ congrFun ((cofanHomEquiv _ _ _).right_inv t.inj) i)
+    (fun t i ↦ congr($((cofanHomEquiv ..).right_inv t.inj) i))
     (fun _ _ h ↦ (Equiv.eq_symm_apply _).2 (funext h))
 
 instance : HasCoproducts.{w} (FormalCoproduct.{w} C) :=
@@ -320,7 +320,7 @@ universal property of pullbacks. -/
 @[simps!] def homPullbackEquiv : (T ⟶ (pullbackCone f g pb).pt) ≃
     { p : (T ⟶ X) × (T ⟶ Y) // p.1 ≫ f = p.2 ≫ g } where
   toFun m := ⟨⟨m ≫ (pullbackCone f g pb).fst, m ≫ (pullbackCone f g pb).snd⟩, by simp⟩
-  invFun s := ⟨fun i ↦ ⟨(s.1.1.f i, s.1.2.f i), congrFun (congrArg Hom.f s.2) i⟩,
+  invFun s := ⟨fun i ↦ ⟨(s.1.1.f i, s.1.2.f i), congr($(s.2).f i)⟩,
     fun i ↦ (hpb _).lift (PullbackCone.mk (s.1.1.φ i) (s.1.2.φ i)
       (by simpa using ((hom_ext_iff _ _).1 s.2).2 i))⟩
   left_inv m := hom_ext rfl (fun i ↦ by

@@ -188,11 +188,11 @@ theorem toMulEquiv_eq_coe : equiv.toMulEquiv = equiv := rfl
 theorem coe_toMulEquiv : ⇑(equiv : E ≃* E') = equiv := rfl
 
 @[to_additive (attr := simp)]
-theorem map_inl (n : N) : equiv (S.inl n) = S'.inl n := congrFun equiv.inl_comm n
+theorem map_inl (n : N) : equiv (S.inl n) = S'.inl n := congr($equiv.inl_comm n)
 
 @[to_additive (attr := simp)]
 theorem rightHom_map (e : E) : S'.rightHom (equiv e) = S.rightHom e :=
-  congrFun equiv.rightHom_comm e
+  congr($equiv.rightHom_comm e)
 
 /-- The inverse of an equivalence of group extensions is an equivalence. -/
 @[to_additive /-- The inverse of an equivalence of additive group extensions is an equivalence. -/]
@@ -294,8 +294,11 @@ variable {S}
 theorem coe_mk (s : G →* E) (hs : Function.RightInverse s S.rightHom) : (mk s hs : G → E) = s := rfl
 
 @[to_additive (attr := simp)]
-theorem coe_monoidHom_mk (s : G →* E) (hs : Function.RightInverse s S.rightHom) :
+theorem toMonoidHom_mk (s : G →* E) (hs : Function.RightInverse s S.rightHom) :
     (mk s hs : G →* E) = s := rfl
+
+@[to_additive (attr := deprecated (since := "2026-09-15"))]
+alias coe_monoidHom_mk := toMonoidHom_mk
 
 variable (s : S.Splitting)
 
@@ -305,7 +308,7 @@ theorem rightHom_splitting (g : G) : S.rightHom (s g) = g := s.rightInverse_righ
 @[to_additive (attr := simp)]
 theorem rightHom_comp_splitting : S.rightHom.comp s = MonoidHom.id G := by
   ext g
-  simp only [MonoidHom.comp_apply, MonoidHom.id_apply, MonoidHom.coe_coe, rightHom_splitting]
+  simp only [MonoidHom.comp_apply, MonoidHom.id_apply, MonoidHom.coe_ofClass, rightHom_splitting]
 
 end Splitting
 

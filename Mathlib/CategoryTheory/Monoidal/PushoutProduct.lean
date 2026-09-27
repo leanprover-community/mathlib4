@@ -107,7 +107,6 @@ section Monoidal
 
 variable [MonoidalCategory C] (X₁ X₂ X₃ : Arrow C) {W : C}
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Left-whiskering the pushout-product of `X₁` and `X₂` with `W : C` is isomorphic to the
   pushout-product of `W ◁ X₁` and `X₂`. -/
@@ -127,7 +126,6 @@ def whiskerLeftIso
         (by simp [← whiskerLeft_comp_assoc]) (by simp [← whiskerLeft_comp_assoc]))
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Right-whiskering the pushout-product of `X₁` and `X₂` with `W : C` is isomorphic to the
   pushout-product of `X₁` and `X₂ ▷ W`. -/
 @[simps!]
@@ -193,7 +191,6 @@ def associator
       · simp [← MonoidalCategory.comp_whiskerRight_assoc]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The pushout-product is commutative: `X₁ □ X₂ ≅ X₂ □ X₁`. -/
 @[simps!]
 noncomputable
@@ -222,7 +219,7 @@ def isInitialIso (X : Arrow C) {I : C} (i : IsInitial I) {W : C} :
   haveI : IsPushout (X.hom ▷ I) (_ ◁ i.to W) ((i.ofIso (zeroMul i).symm).to _) (𝟙 _) :=
     .of_horiz_isIso (sq := ⟨(i.ofIso (zeroMul i).symm).hom_ext ..⟩)
   Arrow.isoMk' _ _ this.isoPushout.symm (Iso.refl _)
-    (pushout.hom_ext ((i.ofIso (zeroMul i).symm).hom_ext ..) (by simp [pushout.inr_desc]))
+    (pushout.hom_ext ((i.ofIso (zeroMul i).symm).hom_ext ..) (by simp))
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The arrow isomorphism `(∅ ⟶ W) □ X ≅ W ◁ X` in a braided CCC with pushouts and
@@ -235,7 +232,7 @@ def isInitialIso' [BraidedCategory C] (X : Arrow C) {I : C} (i : IsInitial I) {W
   haveI : IsPushout (i.to W ▷ _) (I ◁ X.hom) (𝟙 _) ((i.ofIso (mulZero i).symm).to _) :=
     .of_vert_isIso (sq := ⟨(i.ofIso (mulZero i).symm).hom_ext ..⟩)
   Arrow.isoMk' _ _ this.isoPushout.symm (Iso.refl _)
-    (pushout.hom_ext (by simp [pushout.inl_desc]) ((i.ofIso (mulZero i).symm).hom_ext _ _))
+    (pushout.hom_ext (by simp) ((i.ofIso (mulZero i).symm).hom_ext _ _))
 
 /-- The arrow isomorphism `X □ (∅ ⟶ ⋆) ≅ X` in a CCC with pushouts, an initial object, and a
 terminal object. -/
@@ -262,7 +259,6 @@ end
 variable [HasInitial C]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If `C` is a CCC with pushouts and an initial object, then `X □ (⊥_ C ⟶ 𝟙_ C) ≅ X`. -/
 @[simp]
 noncomputable

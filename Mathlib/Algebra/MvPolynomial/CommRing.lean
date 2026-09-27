@@ -109,7 +109,7 @@ theorem support_sub_monomial_sub_monomial_subset [DecidableEq σ] (d d' : σ →
   rw [support_monomial] at h2
   split_ifs at h2
   · exact absurd h2 (Finset.notMem_empty _)
-  exact Finset.mem_union_right _ (by rwa [Finset.mem_singleton] at h2 ⊢)
+  exact Finset.mem_union_right _ (by rw [Finset.mem_singleton] at h2 ⊢; assumption)
 
 section Degrees
 

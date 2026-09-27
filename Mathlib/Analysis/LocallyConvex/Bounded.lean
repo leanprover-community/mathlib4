@@ -61,6 +61,7 @@ variable [SeminormedRing 𝕜] [SMul 𝕜 E] [Zero E]
 variable [TopologicalSpace E]
 
 /-- A set `s` is von Neumann bounded if every neighborhood of 0 absorbs `s`. -/
+@[wikidata Q17003677]
 def IsVonNBounded (s : Set E) : Prop :=
   ∀ ⦃V⦄, V ∈ 𝓝 (0 : E) → Absorbs 𝕜 V s
 
@@ -522,7 +523,7 @@ theorem isBounded_iff_subset_smul_closedBall {s : Set E} :
     Bornology.IsBounded s ↔ ∃ a : 𝕜, s ⊆ a • Metric.closedBall (0 : E) 1 := by
   constructor
   · rw [isBounded_iff_subset_smul_ball 𝕜]
-    exact Exists.imp fun a ha => ha.trans <| Set.smul_set_mono <| Metric.ball_subset_closedBall
+    exact Exists.imp fun a ha => ha.trans <| Set.smul_set_mono Metric.ball_subset_closedBall
   · rw [← isVonNBounded_iff 𝕜]
     rintro ⟨a, ha⟩
     exact ((isVonNBounded_closedBall 𝕜 E 1).image (a • (1 : E →L[𝕜] E))).subset ha

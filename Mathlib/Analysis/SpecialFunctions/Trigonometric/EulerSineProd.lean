@@ -138,7 +138,7 @@ theorem integral_cos_mul_cos_pow (hn : 2 ≤ n) (hz : z ≠ 0) :
   have := integral_cos_mul_cos_pow_aux hn hz
   rw [integral_sin_mul_sin_mul_cos_pow_eq hn hz, sub_eq_neg_add, mul_add, ← sub_eq_iff_eq_add]
     at this
-  convert! congr_arg (fun u : ℂ => -u * (2 * z) ^ 2 / n ^ 2) this using 1 <;> field
+  convert! congr(-$this * (2 * z) ^ 2 / n ^ 2) using 1 <;> field
 
 /-- Note this also holds for `z = 0`, but we do not need this case for `sin_pi_mul_eq`. -/
 theorem integral_cos_mul_cos_pow_even (n : ℕ) (hz : z ≠ 0) :
@@ -277,7 +277,7 @@ theorem _root_.Complex.tendsto_euler_sin_prod (z : ℂ) :
         ((π * z * ∏ j ∈ Finset.range n, ((1 : ℂ) - z ^ 2 / ((j : ℂ) + 1) ^ 2)) *
             ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ (2 * n)) /
           (∫ x in (0 : ℝ)..π / 2, cos x ^ (2 * n) : ℝ))
-      atTop (𝓝 <| _) :=
+      atTop (𝓝 _) :=
     Tendsto.congr (fun n => sin_pi_mul_eq z n) tendsto_const_nhds
   have : 𝓝 (Complex.sin (π * z)) = 𝓝 (Complex.sin (π * z) * 1) := by rw [mul_one]
   simp_rw [this, mul_div_assoc] at A

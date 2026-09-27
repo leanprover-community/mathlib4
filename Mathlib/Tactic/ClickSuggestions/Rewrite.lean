@@ -64,7 +64,7 @@ instance : Ord RwKey where
     (compare a.1 b.1).then <|
     (compare a.2 b.2).then <|
     (compare a.3 b.3).then <|
-    (compare a.4 b.4).then <|
+    (compare a.4 b.4).then
     (compare a.5 b.5)
 
 /-- Whether the two suggestions are duplicates of each other. -/

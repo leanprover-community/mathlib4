@@ -161,7 +161,7 @@ noncomputable def skyscraperPresheafCoconeIsColimitOfSpecializes {y : X} (h : p�
   desc c := eqToHom (ite_eq_left trivial).symm ≫ c.ι.app (op ⊤)
   fac c U := by
     dsimp
-    rw [← c.w (homOfLE <| (le_top : unop U ≤ _)).op]
+    rw [← c.w (homOfLE (le_top : unop U ≤ _)).op]
     change _ ≫ _ ≫ dite _ _ _ ≫ _ = _
     rw [dite_eq_left]
     · simp only [eqToHom_trans_assoc,
@@ -230,11 +230,12 @@ noncomputable def skyscraperPresheafStalkOfNotSpecializes [HasColimits C] {y : X
 -/
 def skyscraperPresheafStalkOfNotSpecializesIsTerminal [HasColimits C] {y : X} (h : ¬p₀ ⤳ y) :
     IsTerminal ((skyscraperPresheaf p₀ A).stalk y) :=
-  IsTerminal.ofIso terminalIsTerminal <| (skyscraperPresheafStalkOfNotSpecializes _ _ h).symm
+  IsTerminal.ofIso terminalIsTerminal (skyscraperPresheafStalkOfNotSpecializes _ _ h).symm
 
 theorem skyscraperPresheaf_isSheaf : (skyscraperPresheaf p₀ A).IsSheaf := by
-  classical exact
-    (Presheaf.isSheaf_iso_iff (eqToIso <| skyscraperPresheaf_eq_pushforward p₀ A)).mpr <|
+  classical
+  exact
+    (Presheaf.isSheaf_iso_iff (eqToIso <| skyscraperPresheaf_eq_pushforward p₀ A)).mpr
       (Sheaf.pushforward_sheaf_of_sheaf _
         (Presheaf.isSheaf_on_punit_of_isTerminal _ (by
           dsimp [skyscraperPresheaf]
@@ -293,7 +294,7 @@ set_option backward.isDefEq.respectTransparency false in
 -/
 def fromStalk {𝓕 : Presheaf C X} {c : C} (f : 𝓕 ⟶ skyscraperPresheaf p₀ c) : 𝓕.stalk p₀ ⟶ c :=
   let χ : Cocone ((OpenNhds.inclusion p₀).op ⋙ 𝓕) :=
-    Cocone.mk c <|
+    Cocone.mk c
       { app := fun U => f.app ((OpenNhds.inclusion p₀).op.obj U) ≫ eqToHom (ite_eq_left U.unop.2)
         naturality := fun U V inc => by
           dsimp only [Functor.const_obj_map, Functor.const_obj_obj, Functor.comp_map,

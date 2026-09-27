@@ -245,6 +245,11 @@ theorem toProd_neg [Neg R] [Neg A] (x : Unitization R A) : (-x).toProd = -x.toPr
   rfl
 
 @[simp]
+theorem toProd_sub [Sub R] [Sub A] (x₁ x₂ : Unitization R A) :
+    (x₁ - x₂).toProd = x₁.toProd - x₂.toProd :=
+  rfl
+
+@[simp]
 theorem toProd_smul [SMul S R] [SMul S A] (s : S) (x : Unitization R A) :
     (s • x).toProd = s • x.toProd :=
   rfl
