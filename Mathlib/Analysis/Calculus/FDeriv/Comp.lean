@@ -41,6 +41,9 @@ variable (x : E) {s : Set E} {y : F} {t : Set F} {L : Filter (E × E)}
 For composition lemmas, we put `x` explicit to help the elaborator, as otherwise Lean tends to
 get confused since there are too many possibilities for composition. -/
 
+-- Allow `to_fun` to eta-expand `g ∘ f`. Ideally, `Function.comp_def` would be a global pull lemma
+-- instead, which is not supported yet: see https://github.com/leanprover-community/mathlib4/issues/40183.
+attribute [local push ←] Function.comp_def
 
 theorem HasFDerivAtFilter.comp {g : F → G} {g' : F →L[𝕜] G} {L' : Filter (F × F)}
     (hg : HasFDerivAtFilter g g' L') (hf : HasFDerivAtFilter f f' L)
@@ -116,38 +119,25 @@ theorem DifferentiableWithinAt.comp' (hg : DifferentiableWithinAt 𝕜 g t (f x)
     DifferentiableWithinAt 𝕜 (g ∘ f) (s ∩ f ⁻¹' t) x :=
   hg.comp x (hf.mono inter_subset_left) inter_subset_right
 
-@[fun_prop]
-theorem DifferentiableAt.fun_comp' (hg : DifferentiableAt 𝕜 g (f x)) (hf : DifferentiableAt 𝕜 f x) :
-    DifferentiableAt 𝕜 (fun x ↦ g (f x)) x :=
-  (hg.hasFDerivAt.comp x hf.hasFDerivAt).differentiableAt
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem DifferentiableAt.comp {g : F → G} (hg : DifferentiableAt 𝕜 g (f x))
     (hf : DifferentiableAt 𝕜 f x) : DifferentiableAt 𝕜 (g ∘ f) x :=
   (hg.hasFDerivAt.comp x hf.hasFDerivAt).differentiableAt
+
+@[deprecated (since := "2026-09-26")]
+alias DifferentiableAt.fun_comp' := DifferentiableAt.fun_comp
 
 @[fun_prop]
 theorem DifferentiableAt.comp_differentiableWithinAt {g : F → G} (hg : DifferentiableAt 𝕜 g (f x))
     (hf : DifferentiableWithinAt 𝕜 f s x) : DifferentiableWithinAt 𝕜 (g ∘ f) s x :=
   hg.differentiableWithinAt.comp x hf (mapsTo_univ _ _)
 
-@[fun_prop]
-theorem DifferentiableOn.fun_comp {g : F → G} {t : Set F} (hg : DifferentiableOn 𝕜 g t)
-    (hf : DifferentiableOn 𝕜 f s) (st : MapsTo f s t) :
-    DifferentiableOn 𝕜 (fun x ↦ g (f x)) s :=
-  fun x hx => DifferentiableWithinAt.comp x (hg (f x) (st hx)) (hf x hx) st
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem DifferentiableOn.comp {g : F → G} {t : Set F} (hg : DifferentiableOn 𝕜 g t)
     (hf : DifferentiableOn 𝕜 f s) (st : MapsTo f s t) : DifferentiableOn 𝕜 (g ∘ f) s :=
   fun x hx => DifferentiableWithinAt.comp x (hg (f x) (st hx)) (hf x hx) st
 
-@[fun_prop]
-theorem Differentiable.fun_comp {g : F → G} (hg : Differentiable 𝕜 g) (hf : Differentiable 𝕜 f) :
-    Differentiable 𝕜 (fun x ↦ g (f x)) :=
-  fun x => DifferentiableAt.comp x (hg (f x)) (hf x)
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem Differentiable.comp {g : F → G} (hg : Differentiable 𝕜 g) (hf : Differentiable 𝕜 f) :
     Differentiable 𝕜 (g ∘ f) :=
   fun x => DifferentiableAt.comp x (hg (f x)) (hf x)
@@ -156,10 +146,6 @@ theorem Differentiable.comp {g : F → G} (hg : Differentiable 𝕜 g) (hf : Dif
 theorem Differentiable.comp_differentiableOn {g : F → G} (hg : Differentiable 𝕜 g)
     (hf : DifferentiableOn 𝕜 f s) : DifferentiableOn 𝕜 (g ∘ f) s :=
   hg.differentiableOn.comp hf (mapsTo_univ _ _)
-
--- Allow `to_fun` to eta-expand `g ∘ f`. Ideally, `Function.comp_def` would be a global pull lemma
--- instead, which is not supported yet: see https://github.com/leanprover-community/mathlib4/issues/40183.
-attribute [local push ←] Function.comp_def
 
 @[to_fun fderivWithin_fun_comp]
 theorem fderivWithin_comp (hg : DifferentiableWithinAt 𝕜 g t (f x))
