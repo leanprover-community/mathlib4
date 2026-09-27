@@ -1,6 +1,9 @@
 module
 import Mathlib.Tactic.ENatToNat
 
+-- This file deliberately exercises the deprecated `enat_to_nat`.
+set_option linter.deprecated false
+
 example (a b : ENat) (h : a = b) : a - b = b - a := by
   enat_to_nat
   lia
