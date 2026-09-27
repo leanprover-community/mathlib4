@@ -384,15 +384,6 @@ theorem isMulCommutative_closure {R : Type*} [NonUnitalSemiring R] {s : Set R}
   .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
     Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂)
 
-open scoped IsMulCommutative in
-/-- If all the elements of a set `s` commute, then `closure s` is a non-unital commutative
-semiring. -/
-@[deprecated isMulCommutative_closure +typeChanged (since := "2026-03-11")]
-abbrev closureNonUnitalCommSemiringOfComm {R : Type*} [NonUnitalSemiring R] {s : Set R}
-    (hcomm : s.Pairwise Commute) : NonUnitalCommSemiring (closure s) :=
-  have := isMulCommutative_closure hcomm
-  inferInstance
-
 instance instIsMulCommutative_closure {S R : Type*} [NonUnitalSemiring R]
     [SetLike S R] [MulMemClass S R] (s : S) [IsMulCommutative s] :
     IsMulCommutative (closure (s : Set R)) :=

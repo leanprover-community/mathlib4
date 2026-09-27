@@ -764,17 +764,6 @@ instance isMulCommutative_adjoin_singleton (x : A) :
     IsMulCommutative (adjoin R ({x} : Set A)) :=
   isMulCommutative_adjoin R (by simp)
 
-open scoped IsMulCommutative in
-/-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a non-unital commutative
-semiring.
-
-See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_adjoin +typeChanged (since := "2026-03-11")]
-abbrev adjoinCommSemiringOfComm {s : Set A} (hcomm : s.Pairwise Commute) :
-    CommSemiring (adjoin R s) :=
-  have := isMulCommutative_adjoin R hcomm
-  inferInstance
-
 instance instIsMulCommutative_adjoin {S : Type*} [SetLike S A] [MulMemClass S A] (s : S)
     [IsMulCommutative s] : IsMulCommutative (adjoin R (s : Set A)) :=
   isMulCommutative_adjoin R fun _ h₁ _ h₂ _ => setLike_mul_comm h₁ h₂
@@ -843,17 +832,6 @@ theorem adjoin_eq_ring_closure (s : Set A) :
 theorem mem_adjoin_iff {s : Set A} {x : A} :
     x ∈ adjoin R s ↔ x ∈ Subring.closure (Set.range (algebraMap R A) ∪ s) := by
   rw [← Subalgebra.mem_toSubring, adjoin_eq_ring_closure]
-
-variable (R)
-
-open scoped IsMulCommutative in
-/-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a commutative
-ring. -/
-@[deprecated isMulCommutative_adjoin +typeChanged (since := "2026-03-11")]
-abbrev adjoinCommRingOfComm {s : Set A} (hcomm : s.Pairwise Commute) :
-    CommRing (adjoin R s) :=
-  have := isMulCommutative_adjoin R hcomm
-  inferInstance
 
 end Ring
 

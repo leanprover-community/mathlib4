@@ -59,16 +59,6 @@ instance cartesianMonoidalCategory : CartesianMonoidalCategory (J ⥤ C) where
     congr
     subsingleton
 
-@[deprecated (since := "2026-03-07")] alias chosenTerminal := MonoidalCategory.tensorUnit
-@[deprecated (since := "2026-03-07")] alias chosenTerminalIsTerminal :=
-  CartesianMonoidalCategory.isTerminalTensorUnit
-
-@[deprecated (since := "2026-03-07")] alias chosenProd := MonoidalCategory.tensorObj
-@[deprecated (since := "2026-03-07")] alias chosenProd.fst := CartesianMonoidalCategory.fst
-@[deprecated (since := "2026-03-07")] alias chosenProd.snd := CartesianMonoidalCategory.snd
-@[deprecated (since := "2026-03-07")] alias chosenProd.isLimit :=
-  CartesianMonoidalCategory.tensorProductIsBinaryProduct
-
 namespace Monoidal
 
 open CartesianMonoidalCategory

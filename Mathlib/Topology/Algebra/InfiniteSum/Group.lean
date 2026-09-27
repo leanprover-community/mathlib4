@@ -376,14 +376,6 @@ theorem Multipliable.hasFiniteMulSupport_of_discreteTopology
   haveI : IsTopologicalGroup α := ⟨⟩
   h.tendsto_cofinite_one (discreteTopology_iff_singleton_mem_nhds.mp ‹_› 1)
 
-@[deprecated (since := "2026-03-03")] alias
-  Multipliable.finite_mulSupport_of_discreteTopology :=
-    Multipliable.hasFiniteMulSupport_of_discreteTopology
-
-@[deprecated (since := "2026-03-03")] alias
-  Summable.finite_support_of_discreteTopology :=
-    Summable.hasFiniteSupport_of_discreteTopology
-
 @[to_additive]
 theorem Multipliable.countable_mulSupport [FirstCountableTopology G] [T1Space G]
     (hf : Multipliable f) : f.mulSupport.Countable := by

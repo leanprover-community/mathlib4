@@ -746,18 +746,11 @@ def fromRelOrderIso : { r : α → α → Prop // Std.Symm r } ≃o Set (Sym2 α
   right_inv s := by simp [fromRel_toRel]
   map_rel_iff' {r₁ r₂} := by simpa using! fromRel_mono_iff ..
 
-/-- `fromRel` induces an order embedding from symmetric relations to `Sym2` sets. -/
-@[deprecated fromRelOrderIso +typeChanged (since := "2026-03-11")]
-def fromRelOrderEmbedding : { r : α → α → Prop // Std.Symm r } ↪o Set (Sym2 α) :=
-  fromRelOrderIso α |>.toOrderEmbedding
-
 @[simp]
 theorem fromRel_eq_fromRel_iff_eq {r₁ r₂ : α → α → Prop} (sym₁ : Std.Symm r₁) (sym₂ : Std.Symm r₂) :
     fromRel sym₁ = fromRel sym₂ ↔ r₁ = r₂ := by
   rw [← Subtype.mk.injEq r₁ sym₁ r₂ sym₂, ← fromRelOrderIso α |>.eq_iff_eq]
   rfl
-
-@[deprecated (since := "2026-03-11")] alias fromRel_eq_fromRell_iff_eq := fromRel_eq_fromRel_iff_eq
 
 end Relations
 

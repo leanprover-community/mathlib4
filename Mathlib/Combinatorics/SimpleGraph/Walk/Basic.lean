@@ -157,10 +157,6 @@ theorem getLast_support {G : SimpleGraph V} {a b : V} (p : G.Walk a b) :
 lemma cons_tail_support (p : G.Walk u v) : u :: p.support.tail = p.support := by
   cases p <;> simp
 
-@[deprecated cons_tail_support +typeChanged (since := "2026-03-16")]
-theorem support_eq_cons {u v : V} (p : G.Walk u v) : p.support = u :: p.support.tail := by
-  cases p <;> simp
-
 @[simp]
 theorem start_mem_support {u v : V} (p : G.Walk u v) : u ∈ p.support := by cases p <;> simp
 

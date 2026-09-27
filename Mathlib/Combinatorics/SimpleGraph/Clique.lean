@@ -401,8 +401,6 @@ noncomputable def topEmbeddingOfNotCliqueFree {n : ℕ} (h : ¬G.CliqueFree n) :
 theorem not_cliqueFree_iff_top_isContained (n : ℕ) : ¬G.CliqueFree n ↔ completeGraph (Fin n) ⊑ G :=
   ⟨(topEmbeddingOfNotCliqueFree · |>.isContained), IsContained.not_cliqueFree⟩
 
-@[deprecated (since := "2026-03-23")] alias not_cliqueFree_iff := not_cliqueFree_iff_top_isContained
-
 theorem cliqueFree_iff_free_top_fin : G.CliqueFree n ↔ (completeGraph (Fin n)).Free G :=
   not_cliqueFree_iff_top_isContained n |>.not_right
 

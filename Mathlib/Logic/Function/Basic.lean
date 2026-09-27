@@ -412,13 +412,9 @@ theorem IsPartialInv.surjective_getD {α β} {f : α → β} {g} (H : IsPartialI
     Function.Surjective (g · |>.getD x) :=
   fun y => ⟨f y, by simp [H.eq]⟩
 
-@[deprecated (since := "2026-03-11")] alias isPartialInv_left := IsPartialInv.eq
-
 theorem IsPartialInv.injective {α β} {f : α → β} {g} (H : IsPartialInv f g) :
     Injective f := fun _ _ h ↦
   Option.some.inj <| ((H _ _).2 h).symm.trans ((H _ _).2 rfl)
-
-@[deprecated (since := "2026-03-11")] alias injective_of_isPartialInv := IsPartialInv.injective
 
 theorem injective_of_isPartialInv_right {α β} {f : α → β} {g} (H : IsPartialInv f g) (x y b)
     (h₁ : b ∈ g x) (h₂ : b ∈ g y) : x = y :=
@@ -508,8 +504,6 @@ theorem Injective.isPartialInv {α β} {f : α → β} (I : Injective f) : IsPar
     else by rw [hpi, dite_eq_right h'] at h; contradiction,
   fun e => e ▸ have h : ∃ a', f a' = f a := ⟨_, rfl⟩
               (dite_eq_left h).trans (congr_arg _ (I <| Classical.choose_spec h))⟩
-
-@[deprecated (since := "2026-03-11")] alias partialInv_of_injective := Injective.isPartialInv
 
 theorem partialInv_left {α β} {f : α → β} (I : Injective f) : ∀ x, partialInv f (f x) = some x :=
   I.isPartialInv.eq

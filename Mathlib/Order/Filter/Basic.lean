@@ -1378,8 +1378,6 @@ lemma LE.le.eventuallySubset {α} {l : Filter α} {s t : Set α} (h : s ⊆ t) :
 lemma LE.le.eventuallyLE {α β : Type*} [LE β] {l : Filter α} {f g : α → β} (h : f ≤ g) :
     f ≤ᶠ[l] g := .of_forall h
 
-@[deprecated (since := "2026-03-16")] alias HasSubset.Subset.eventuallyLE := LE.le.eventuallySubset
-
 alias Filter.EventuallySubset.of_subset := LE.le.eventuallySubset
 alias Filter.EventuallyLE.of_le := LE.le.eventuallyLE
 

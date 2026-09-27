@@ -426,8 +426,6 @@ theorem Integrable.add [ContinuousAdd ε']
     Integrable (f + g) μ :=
   ⟨hf.aestronglyMeasurable.add hg.aestronglyMeasurable, hf.add' hg⟩
 
-@[deprecated (since := "2026-03-19")] alias Integrable.add'' := Integrable.fun_add
-
 @[simp]
 lemma Integrable.of_subsingleton_codomain [Subsingleton ε'] {f : α → ε'} :
     Integrable f μ :=
@@ -460,8 +458,6 @@ end ESeminormedAddCommMonoid
 @[to_fun (attr := fun_prop)]
 theorem Integrable.neg {f : α → β} (hf : Integrable f μ) : Integrable (-f) μ :=
   ⟨hf.aestronglyMeasurable.neg, by fun_prop⟩
-
-@[deprecated (since := "2026-03-19")] alias Integrable.neg' := Integrable.fun_neg
 
 @[simp]
 theorem integrable_neg_iff {f : α → β} : Integrable (-f) μ ↔ Integrable f μ :=

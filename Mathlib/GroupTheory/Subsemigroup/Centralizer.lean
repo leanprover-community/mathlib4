@@ -87,16 +87,6 @@ theorem isMulCommutative_closure {s : Set M} (hcomm : s.Pairwise Commute) :
   .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
     Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂)
 
-open scoped IsMulCommutative in
-/-- If all the elements of a set `s` commute, then `closure s` is a commutative semigroup. -/
-@[to_additive (attr := deprecated isMulCommutative_closure +typeChanged (since := "2026-03-09"))
-/-- If all the elements of a set `s` commute, then `closure s` forms an additive
-commutative semigroup. -/]
-abbrev closureCommSemigroupOfComm {s : Set M} (hcomm : s.Pairwise Commute) :
-    CommSemigroup (closure s) :=
-  haveI := isMulCommutative_closure M hcomm
-  inferInstance
-
 @[to_additive]
 instance instIsMulCommutative_closure {S : Type*} [SetLike S M] [MulMemClass S M] (s : S)
     [IsMulCommutative s] : IsMulCommutative (closure (s : Set M)) :=

@@ -181,8 +181,6 @@ lemma yonedaEquiv_map {n m : SimplexCategory} (f : n ⟶ m) :
     yonedaEquiv.{u} (stdSimplex.map f) = stdSimplex.objEquiv.symm f :=
   yonedaEquiv.symm.injective rfl
 
-@[deprecated (since := "2026-03-21")] alias stdSimplex.yonedaEquiv_map := yonedaEquiv_map
-
 @[simp]
 lemma yonedaEquiv_symm_app {S : SSet} {n m : SimplexCategory} (x : S.obj (op n))
     (α : (stdSimplex.obj n).obj (op m)) :

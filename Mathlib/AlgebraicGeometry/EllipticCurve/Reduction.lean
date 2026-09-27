@@ -325,8 +325,6 @@ the valuation of its discriminant is 1. -/
 class HasGoodReduction (W : WeierstrassCurve K) : Prop extends IsMinimal R W where
   goodReduction : valuation K (maximalIdeal R) W.Δ = 1
 
-@[deprecated (since := "2026-03-04")] alias IsGoodReduction := HasGoodReduction
-
 lemma hasGoodReduction_iff_isElliptic_reduction {W : WeierstrassCurve K} [hW : IsMinimal R W] :
     HasGoodReduction R W ↔ (W.reduction R).IsElliptic := by
   refine Iff.trans ?_ (W.reduction R).isElliptic_iff.symm
@@ -337,9 +335,6 @@ lemma hasGoodReduction_iff_isElliptic_reduction {W : WeierstrassCurve K} [hW : I
     not_iff_not.mpr <| valuation_lt_one_iff_mem _ _
   refine ((integralModel_Δ_eq R W ▸ hasGoodReduction_iff _ _).trans ?_).trans h
   simpa [hW] using (valuation_le_one (R := R) (K := K) _ _).ge_iff_eq.symm
-
-@[deprecated (since := "2026-03-04")] alias isGoodReduction_iff_isElliptic_reduction :=
-  hasGoodReduction_iff_isElliptic_reduction
 
 /-- A minimal Weierstrass equation has multiplicative reduction if and only if
 the valuation of its discriminant is less than 1 and the valuation of `a₄` equals 1. -/

@@ -121,8 +121,6 @@ theorem hasFiniteMulSupport {I : Ideal R} (hI : I ≠ 0) :
     exact hv hv'
   Finite.subset (Filter.eventually_cofinite.mp (Associates.finite_factors hI)) h_subset
 
-@[deprecated (since := "2026-03-03")] alias finite_mulSupport := hasFiniteMulSupport
-
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that
 `v^(val_v(I))`, regarded as a fractional ideal, is not `(1)`. -/
 @[fun_prop]
@@ -133,8 +131,6 @@ theorem hasFiniteMulSupport_coe {I : Ideal R} (hI : I ≠ 0) :
   simp_rw [Ne, zpow_natCast, ← FractionalIdeal.coeIdeal_pow, FractionalIdeal.coeIdeal_eq_one]
   exact hasFiniteMulSupport hI
 
-@[deprecated (since := "2026-03-03")] alias finite_mulSupport_coe := hasFiniteMulSupport_coe
-
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that
 `v^-(val_v(I))` is not the unit ideal. -/
 @[fun_prop]
@@ -144,8 +140,6 @@ theorem hasFiniteMulSupport_inv {I : Ideal R} (hI : I ≠ 0) :
   rw [HasFiniteMulSupport, mulSupport]
   simp_rw [zpow_neg, Ne, inv_eq_one]
   exact hasFiniteMulSupport_coe hI
-
-@[deprecated (since := "2026-03-03")] alias finite_mulSupport_inv := hasFiniteMulSupport_inv
 
 /-- For every nonzero ideal `I` of `v`, `v^(val_v(I) + 1)` does not divide `∏_v v^(val_v(I))`. -/
 theorem finprod_not_dvd (I : Ideal R) (hI : I ≠ 0) :

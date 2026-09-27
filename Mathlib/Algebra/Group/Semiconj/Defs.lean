@@ -97,8 +97,6 @@ additive monoid (or, more generally, on an `AddZeroClass` type) is reflexive. -/
 protected theorem refl : Std.Refl fun a b : M ↦ ∃ c, SemiconjBy c a b where
   refl a := ⟨1, one_left a⟩
 
-@[deprecated (since := "2026-03-27")] protected alias reflexive := SemiconjBy.refl
-
 end MulOneClass
 
 section Monoid

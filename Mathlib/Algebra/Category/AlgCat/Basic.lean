@@ -147,11 +147,6 @@ instance : Inhabited (AlgCat R) :=
 
 lemma forget_obj {A : AlgCat.{v} R} : (forget (AlgCat.{v} R)).obj A = A := rfl
 
-@[deprecated ConcreteCategory.forget_map_eq_ofHom +typeChanged (since := "2026-03-03")]
-lemma forget_map {A B : AlgCat.{v} R} (f : A ⟶ B) :
-    (forget (AlgCat.{v} R)).map f = (f : _ → _) :=
-  rfl
-
 instance {S : AlgCat.{v} R} : Ring ((forget (AlgCat R)).obj S) :=
   inferInstanceAs <| Ring S.carrier
 

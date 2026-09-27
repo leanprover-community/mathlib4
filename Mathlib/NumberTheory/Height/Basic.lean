@@ -90,9 +90,6 @@ class AdmissibleAbsValues (K : Type*) [Field K] where
 
 open AdmissibleAbsValues Real Function
 
-@[deprecated (since := "2026-03-03")] alias
-  AdmissibleAbsValues.mulSupport_finite := AdmissibleAbsValues.hasFiniteMulSupport
-
 attribute [fun_prop] hasFiniteMulSupport
 
 variable (K : Type*) [Field K] [AdmissibleAbsValues K]

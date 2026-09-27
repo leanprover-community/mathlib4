@@ -460,8 +460,6 @@ theorem hasFiniteSupport (A : ι → S) (x : DirectSum ι fun i => A i) :
   classical
   exact (DFinsupp.support x).finite_toSet.subset (DirectSum.support_subset _ x)
 
-@[deprecated (since := "2026-03-03")] alias finite_support := hasFiniteSupport
-
 section map
 
 variable {ι : Type*} {α : ι → Type*} {β : ι → Type*} [∀ i, AddCommMonoid (α i)]

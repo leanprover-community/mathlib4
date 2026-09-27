@@ -91,9 +91,6 @@ theorem IsSemitopologicalSemiring.continuousNeg_of_mul [TopologicalSpace R] [Non
     [SeparatelyContinuousMul R] : ContinuousNeg R where
   continuous_neg := by simpa using continuous_id.const_mul (-1 : R)
 
-@[deprecated (since := "2026-03-13")] alias IsTopologicalSemiring.continuousNeg_of_mul :=
-  IsSemitopologicalSemiring.continuousNeg_of_mul
-
 /-- If `R` is a ring which is a semitopological semiring, then it is automatically a
 semitopological ring. This exists so that one can place a topological ring structure on `R` without
 explicitly proving `continuous_neg`. -/

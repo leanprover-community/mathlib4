@@ -253,47 +253,6 @@ elab (name := pushStx) "push" cfg:optConfig disch?:(discharger)? head:(ppSpace c
   push (← elabPushConfig cfg) disch? (← elabHead head) loc
 
 /--
-`push_neg` rewrites the goal by pushing negations deeper into an expression.
-For instance, the goal `¬ ∀ x, ∃ y, x ≤ y` will be transformed by `push_neg` into
-`∃ x, ∀ y, y < x`. Binder names are preserved (contrary to what would happen with `simp`
-using the relevant lemmas). `push_neg` works as both a tactic and a conv tactic.
-
-`push_neg` is a special case of the more general `push` tactic, namely `push Not`.
-The `push` tactic can be extended using the `@[push]` attribute. `push` has special-casing
-built in for `push Not`.
-
-Tactics that introduce a negation usually have a version that automatically calls `push_neg` on
-that negation. These include `by_cases!`, `contrapose!` and `by_contra!`.
-
-* `push_neg at l1 l2 ...` rewrites at the given locations.
-* `push_neg at *` rewrites at each hypothesis and the goal.
-* `push_neg +distrib` rewrites `¬ (p ∧ q)` into `¬ p ∨ ¬ q` (by default, the tactic rewrites it
-  into `p → ¬ q` instead).
-
-Example:
-
-```lean
-example (h : ¬ ∀ ε > 0, ∃ δ > 0, ∀ x, |x - x₀| ≤ δ → |f x - y₀| ≤ ε) :
-    ∃ ε > 0, ∀ δ > 0, ∃ x, |x - x₀| ≤ δ ∧ ε < |f x - y₀| := by
-  push_neg at h
-  -- Now we have the hypothesis `h : ∃ ε > 0, ∀ δ > 0, ∃ x, |x - x₀| ≤ δ ∧ ε < |f x - y₀|`
-  exact h
-```
--/
-elab (name := push_neg) "push_neg" cfg:optConfig loc:(location)? : tactic => do
-  -- (since := "2026-03-29")
-  logWarning "`push_neg` has been deprecated. Prefer using `push Not` instead.
-If you'd rather continue using `push_neg` in your project, you can implement it as follows:
-```
-open Lean.Parser.Tactic in
-macro \"push_neg\" cfg:optConfig loc:(location)? : tactic =>
-  `(tactic| push $cfg:optConfig Not $[$loc]?)
-```
-"
-  let loc := (loc.map expandLocation).getD (.targets #[] true)
-  push (← elabPushConfig cfg) none (.const ``Not) loc
-
-/--
 `pull c` rewrites the goal by pulling the constant `c` closer to the head of the expression.
 For instance, `pull _ ∈ _` rewrites `x ∈ y ∨ ¬ x ∈ z` into `x ∈ y ∪ zᶜ`.
 More precisely, the `pull` tactic repeatedly rewrites an expression by applying lemmas
@@ -345,18 +304,6 @@ elab "push" cfg:optConfig disch?:(discharger)? head:(ppSpace colGt term) : conv 
   -- TODO: this doesn't throw an error when it does nothing.
   -- Note that conv-mode `simp` has the same problem.
   Conv.applySimpResult (← pushCore head cfg disch? (← instantiateMVars (← Conv.getLhs)))
-
-@[inherit_doc push_neg]
-elab "push_neg" cfg:optConfig : conv => do
-  -- (since := "2026-03-29")
-  logWarning "`push_neg` has been deprecated. Prefer using `push Not` instead.
-If you'd rather continue using `push_neg` in your project, you can implement it as follows:
-```
-open Lean.Parser.Tactic in
-macro \"push_neg\" cfg:optConfig : conv => `(conv| push $cfg:optConfig Not)
-```
-"
-  evalTactic (← `(conv| push $cfg Not))
 
 /--
 `#push head e`, where `head` is a constant and `e` is an expression,

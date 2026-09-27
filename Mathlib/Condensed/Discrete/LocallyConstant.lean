@@ -238,9 +238,6 @@ def functor :
     rw [Presheaf.isSheaf_of_iso_iff (functorToPresheavesIso P hs X)]
     exact ((TopCat.discrete.obj X).toSheafCompHausLike P hs).property)
 
-@[deprecated (since := "2026-03-20")] alias functor_obj_obj := functor_obj_obj_obj
-@[deprecated (since := "2026-03-20")] alias functor_map_hom := functor_map_hom_app
-
 /--
 `CompHausLike.LocallyConstant.functor` is naturally isomorphic to the restriction of
 `topCatToSheafCompHausLike` to discrete topological spaces.

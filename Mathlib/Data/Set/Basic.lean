@@ -291,10 +291,6 @@ theorem not_subset : ¬s ⊆ t ↔ ∃ a ∈ s, a ∉ t := by
 theorem not_univ_subset : ¬univ ⊆ s ↔ ∃ a, a ∉ s := by
   simp [not_subset]
 
-@[deprecated not_univ_subset +typeChanged (since := "2026-03-12")]
-theorem not_top_subset : ¬⊤ ⊆ s ↔ ∃ a, a ∉ s :=
-  not_univ_subset
-
 lemma eq_of_forall_subset_iff (h : ∀ u, s ⊆ u ↔ t ⊆ u) : s = t := eq_of_forall_ge_iff h
 
 /-! ### Definition of strict subsets `s ⊂ t` and basic properties. -/

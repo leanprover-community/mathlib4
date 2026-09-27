@@ -82,9 +82,6 @@ variable [Fintype α]
 lemma IsHamiltonian.toFinset_support (hp : p.IsHamiltonian) : p.support.toFinset = Finset.univ := by
   simp [eq_univ_iff_forall, hp]
 
-@[deprecated (since := "2026-03-11")]
-alias IsHamiltonian.support_toFinset := IsHamiltonian.toFinset_support
-
 omit [Fintype α] in
 theorem IsHamiltonian.setOfPred_support (hp : p.IsHamiltonian) : {v | v ∈ p.support} = Set.univ :=
   Set.eq_univ_iff_forall.mpr hp.mem_support
