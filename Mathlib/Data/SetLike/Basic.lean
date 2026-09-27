@@ -259,6 +259,7 @@ A preorder defined this way automatically makes available an instance of `IsMemL
   le_trans _ _ _ h₁ h₂ _ h₃ := h₂ (h₁ h₃)
 
 /-- The partial order induced from a `SetLike` instance by inclusion.
+
 A partial order defined this way automatically makes available an instance of `IsMemLE`.
 -/
 @[reducible] def PartialOrder.ofSetLike [SetLike A B] : PartialOrder A where
