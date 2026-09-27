@@ -35,7 +35,8 @@ variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
 
 /-- If `C` is monoidal and skeletal, it is a monoid.
 See note [reducible non-instances]. -/
-abbrev monoidOfSkeletalMonoidal (hC : Skeletal C) : Monoid C where
+@[reducible]
+def monoidOfSkeletalMonoidal (hC : Skeletal C) : Monoid C where
   mul X Y := X ⊗ Y
   one := 𝟙_ C
   one_mul X := hC ⟨λ_ X⟩
@@ -43,7 +44,8 @@ abbrev monoidOfSkeletalMonoidal (hC : Skeletal C) : Monoid C where
   mul_assoc X Y Z := hC ⟨α_ X Y Z⟩
 
 /-- If `C` is braided and skeletal, it is a commutative monoid. -/
-abbrev commMonoidOfSkeletalBraided [BraidedCategory C] (hC : Skeletal C) : CommMonoid C :=
+@[reducible]
+def commMonoidOfSkeletalBraided [BraidedCategory C] (hC : Skeletal C) : CommMonoid C :=
   { monoidOfSkeletalMonoidal hC with mul_comm := fun X Y => hC ⟨β_ X Y⟩ }
 
 namespace Skeleton

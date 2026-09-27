@@ -28,12 +28,14 @@ We prove that `FintypeCat.Skeleton` is a skeleton of `FintypeCat` in `FintypeCat
 open CategoryTheory
 
 /-- The category of finite types. -/
-abbrev FintypeCat := ObjectProperty.FullSubcategory (C := Type*) Finite
+@[reducible]
+def FintypeCat := ObjectProperty.FullSubcategory (C := Type*) Finite
 
 namespace FintypeCat
 
 /-- Construct a term of `FintypeCat` from a type endowed with a `Finite` instance. -/
-abbrev of (X : Type*) [Finite X] : FintypeCat :=
+@[reducible]
+def of (X : Type*) [Finite X] : FintypeCat :=
   ⟨X, inferInstance⟩
 
 open Lean.PrettyPrinter.Delaborator in
@@ -57,8 +59,8 @@ noncomputable def fintype {X : FintypeCat} : Fintype X :=
   Fintype.ofFinite X.obj
 
 /-- The fully faithful embedding of `FintypeCat` into the category of types. -/
-@[simps!]
-abbrev incl : FintypeCat ⥤ Type* := ObjectProperty.ι _
+@[reducible, simps!]
+def incl : FintypeCat ⥤ Type* := ObjectProperty.ι _
 
 instance : incl.Full := ObjectProperty.full_ι _
 instance : incl.Faithful := ObjectProperty.faithful_ι _

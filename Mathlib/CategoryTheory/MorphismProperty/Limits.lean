@@ -696,10 +696,12 @@ section Products
 variable (W : MorphismProperty C)
 
 /-- The property that a morphism property `W` is stable under products indexed by a type `J`. -/
-abbrev IsStableUnderProductsOfShape (J : Type*) := W.IsStableUnderLimitsOfShape (Discrete J)
+@[reducible]
+def IsStableUnderProductsOfShape (J : Type*) := W.IsStableUnderLimitsOfShape (Discrete J)
 
 /-- The property that a morphism property `W` is stable under coproducts indexed by a type `J`. -/
-abbrev IsStableUnderCoproductsOfShape (J : Type*) := W.IsStableUnderColimitsOfShape (Discrete J)
+@[reducible]
+def IsStableUnderCoproductsOfShape (J : Type*) := W.IsStableUnderColimitsOfShape (Discrete J)
 
 lemma IsStableUnderProductsOfShape.mk (J : Type*) [W.RespectsIso]
     (hW : ∀ (X₁ X₂ : J → C) [HasProduct X₁] [HasProduct X₂]

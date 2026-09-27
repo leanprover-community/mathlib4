@@ -393,12 +393,14 @@ instance : IsIso (coimageImageComparison f) := by
 
 /-- There is a canonical isomorphism between the abelian coimage and the abelian image of a
     morphism. -/
-abbrev coimageIsoImage : Abelian.coimage f ≅ Abelian.image f :=
+@[reducible]
+def coimageIsoImage : Abelian.coimage f ≅ Abelian.image f :=
   asIso (coimageImageComparison f)
 
 /-- There is a canonical isomorphism between the abelian coimage and the categorical image of a
     morphism. -/
-abbrev coimageIsoImage' : Abelian.coimage f ≅ image f :=
+@[reducible]
+def coimageIsoImage' : Abelian.coimage f ≅ image f :=
   IsImage.isoExt (coimageStrongEpiMonoFactorisation f).toMonoIsImage (Image.isImage f)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -445,7 +447,8 @@ def coimIsoIm : coim (C := C) ≅ im :=
 
 /-- There is a canonical isomorphism between the abelian image and the categorical image of a
     morphism. -/
-abbrev imageIsoImage : Abelian.image f ≅ image f :=
+@[reducible]
+def imageIsoImage : Abelian.image f ≅ image f :=
   IsImage.isoExt (imageStrongEpiMonoFactorisation f).toMonoIsImage (Image.isImage f)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -583,14 +586,16 @@ variable [Limits.HasPullbacks C] {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
 
 
 /-- The canonical map `pullback f g ⟶ X ⊞ Y` -/
-abbrev pullbackToBiproduct : pullback f g ⟶ X ⊞ Y :=
+@[reducible]
+def pullbackToBiproduct : pullback f g ⟶ X ⊞ Y :=
   biprod.lift (pullback.fst f g) (pullback.snd f g)
 
 /-- The canonical map `pullback f g ⟶ X ⊞ Y` induces a kernel cone on the map
     `biproduct X Y ⟶ Z` induced by `f` and `g`. A slightly more intuitive way to think of
     this may be that it induces an equalizer fork on the maps induced by `(f, 0)` and
     `(0, g)`. -/
-abbrev pullbackToBiproductFork : KernelFork (biprod.desc f (-g)) :=
+@[reducible]
+def pullbackToBiproductFork : KernelFork (biprod.desc f (-g)) :=
   KernelFork.ofι (pullbackToBiproduct f g) <| by
     rw [biprod.lift_desc, comp_neg, pullback.condition, add_neg_cancel]
 
@@ -616,12 +621,14 @@ namespace BiproductToPushoutIsCokernel
 variable [Limits.HasPushouts C] {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
 
 /-- The canonical map `Y ⊞ Z ⟶ pushout f g` -/
-abbrev biproductToPushout : Y ⊞ Z ⟶ pushout f g :=
+@[reducible]
+def biproductToPushout : Y ⊞ Z ⟶ pushout f g :=
   biprod.desc (pushout.inl _ _) (pushout.inr _ _)
 
 /-- The canonical map `Y ⊞ Z ⟶ pushout f g` induces a cokernel cofork on the map
     `X ⟶ Y ⊞ Z` induced by `f` and `-g`. -/
-abbrev biproductToPushoutCofork : CokernelCofork (biprod.lift f (-g)) :=
+@[reducible]
+def biproductToPushoutCofork : CokernelCofork (biprod.lift f (-g)) :=
   CokernelCofork.ofπ (biproductToPushout f g) <| by
     rw [biprod.lift_desc, neg_comp, pushout.condition, add_neg_cancel]
 

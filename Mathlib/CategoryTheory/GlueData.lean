@@ -379,7 +379,8 @@ variable {C}
 
 open scoped Classical in
 /-- (Implementation detail) the constructed `GlueData.f` from a `GlueData'`. -/
-abbrev GlueData'.f' (D : GlueData' C) (i j : D.J) :
+@[reducible]
+def GlueData'.f' (D : GlueData' C) (i j : D.J) :
     (if h : i = j then D.U i else D.V i j h) ⟶ D.U i :=
   if h : i = j then eqToHom (dite_eq_left h) else eqToHom (dite_eq_right h) ≫ D.f i j h
 

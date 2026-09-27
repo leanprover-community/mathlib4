@@ -125,11 +125,13 @@ example (X Y : Type*) (f : Fun X Y) (x : X) : f x = (f : X → Y) x := by
 namespace TypeCat
 
 /-- Turn a morphism in `Type` back into a function. -/
-abbrev Hom.hom {X Y : Type u} (f : Hom X Y) : Fun X Y :=
+@[reducible]
+def Hom.hom {X Y : Type u} (f : Hom X Y) : Fun X Y :=
   ConcreteCategory.hom (C := Type u) f
 
 /-- Typecheck a function as a morphism in `Type`. -/
-abbrev ofHom {X Y : Type u} (f : X → Y) : X ⟶ Y :=
+@[reducible]
+def ofHom {X Y : Type u} (f : X → Y) : X ⟶ Y :=
   ConcreteCategory.ofHom (Fun.mk f)
 
 end TypeCat

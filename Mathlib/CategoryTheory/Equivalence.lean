@@ -116,8 +116,9 @@ theorem counitIso_functor_comp (e : C ≌ D) (X : C) :
 
 /-- `Equivalence.mk'` is the dual of `Equivalence.mk`, which we need for `to_dual`.
 Please avoid using this directly. -/
-@[to_dual existing mk']
-abbrev mk''
+@[reducible,
+to_dual existing mk']
+def mk''
     {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
     (functor : C ⥤ D) (inverse : D ⥤ C)
     (unitIso : 𝟭 C ≅ functor ⋙ inverse) (counitIso : inverse ⋙ functor ≅ 𝟭 D)
@@ -131,13 +132,15 @@ abbrev mk''
 
 
 /-- The unit of an equivalence of categories. -/
-@[to_dual unitInv /-- The inverse of the unit of an equivalence of categories. -/]
-abbrev unit (e : C ≌ D) : 𝟭 C ⟶ e.functor ⋙ e.inverse :=
+@[to_dual (attr := reducible) unitInv
+/-- The inverse of the unit of an equivalence of categories. -/]
+def unit (e : C ≌ D) : 𝟭 C ⟶ e.functor ⋙ e.inverse :=
   e.unitIso.hom
 
 /-- The counit of an equivalence of categories. -/
-@[to_dual counitInv /-- The inverse of the counit of an equivalence of categories. -/]
-abbrev counit (e : C ≌ D) : e.inverse ⋙ e.functor ⟶ 𝟭 D :=
+@[to_dual (attr := reducible) counitInv
+/-- The inverse of the counit of an equivalence of categories. -/]
+def counit (e : C ≌ D) : e.inverse ⋙ e.functor ⟶ 𝟭 D :=
   e.counitIso.hom
 
 @[reassoc +to_dual]

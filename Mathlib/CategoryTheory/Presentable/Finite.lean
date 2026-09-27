@@ -35,7 +35,8 @@ attribute [local instance] fact_isRegular_aleph0
 /-- A functor `F : C ⥤ D` is finitely accessible if it is `ℵ₀`-accessible.
 Equivalently, it preserves all filtered colimits.
 See `CategoryTheory.Functor.IsFinitelyAccessible_iff_preservesFilteredColimits`. -/
-abbrev Functor.IsFinitelyAccessible (F : C ⥤ D) : Prop := IsCardinalAccessible.{w} F ℵ₀
+@[reducible]
+def Functor.IsFinitelyAccessible (F : C ⥤ D) : Prop := IsCardinalAccessible.{w} F ℵ₀
 
 lemma Functor.IsFinitelyAccessible_iff_preservesFilteredColimitsOfSize {F : C ⥤ D} :
     IsFinitelyAccessible.{w} F ↔ PreservesFilteredColimitsOfSize.{w, w} F := by
@@ -48,7 +49,8 @@ lemma Functor.isFinitelyAccessible_iff_preservesFilteredColimits {F : C ⥤ D} :
   IsFinitelyAccessible_iff_preservesFilteredColimitsOfSize
 
 /-- An object `X` is finitely presentable if `Hom(X, -)` preserves all filtered colimits. -/
-abbrev IsFinitelyPresentable (X : C) : Prop :=
+@[reducible]
+def IsFinitelyPresentable (X : C) : Prop :=
   IsCardinalPresentable.{w} X ℵ₀
 
 variable (C) in

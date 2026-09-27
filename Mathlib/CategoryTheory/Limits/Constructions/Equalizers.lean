@@ -36,12 +36,14 @@ namespace HasEqualizersOfHasPullbacksAndBinaryProducts
 variable [HasBinaryProducts C] [HasPullbacks C]
 
 /-- Define the equalizing object -/
-abbrev constructEqualizer (F : WalkingParallelPair ⥤ C) : C :=
+@[reducible]
+def constructEqualizer (F : WalkingParallelPair ⥤ C) : C :=
   pullback (prod.lift (𝟙 _) (F.map WalkingParallelPairHom.left))
     (prod.lift (𝟙 _) (F.map WalkingParallelPairHom.right))
 
 /-- Define the equalizing morphism -/
-abbrev pullbackFst (F : WalkingParallelPair ⥤ C) :
+@[reducible]
+def pullbackFst (F : WalkingParallelPair ⥤ C) :
     constructEqualizer F ⟶ F.obj WalkingParallelPair.zero :=
   pullback.fst _ _
 
@@ -52,7 +54,8 @@ theorem pullbackFst_eq_pullback_snd (F : WalkingParallelPair ⥤ C) :
       (_ : constructEqualizer F ⟶ F.obj WalkingParallelPair.zero) = _) <;> simp
 
 /-- Define the equalizing cone -/
-abbrev equalizerCone (F : WalkingParallelPair ⥤ C) : Cone F :=
+@[reducible]
+def equalizerCone (F : WalkingParallelPair ⥤ C) : Cone F :=
   Cone.ofFork
     (Fork.ofι (pullbackFst F)
       (by
@@ -132,12 +135,14 @@ namespace HasCoequalizersOfHasPushoutsAndBinaryCoproducts
 variable [HasBinaryCoproducts C] [HasPushouts C]
 
 /-- Define the equalizing object -/
-abbrev constructCoequalizer (F : WalkingParallelPair ⥤ C) : C :=
+@[reducible]
+def constructCoequalizer (F : WalkingParallelPair ⥤ C) : C :=
   pushout (coprod.desc (𝟙 _) (F.map WalkingParallelPairHom.left))
     (coprod.desc (𝟙 _) (F.map WalkingParallelPairHom.right))
 
 /-- Define the equalizing morphism -/
-abbrev pushoutInl (F : WalkingParallelPair ⥤ C) :
+@[reducible]
+def pushoutInl (F : WalkingParallelPair ⥤ C) :
     F.obj WalkingParallelPair.one ⟶ constructCoequalizer F :=
   pushout.inl _ _
 
@@ -148,7 +153,8 @@ theorem pushoutInl_eq_pushout_inr (F : WalkingParallelPair ⥤ C) :
     <;> simp
 
 /-- Define the equalizing cocone -/
-abbrev coequalizerCocone (F : WalkingParallelPair ⥤ C) : Cocone F :=
+@[reducible]
+def coequalizerCocone (F : WalkingParallelPair ⥤ C) : Cocone F :=
   Cocone.ofCofork
     (Cofork.ofπ (pushoutInl F) (by
         conv_rhs => rw [pushoutInl_eq_pushout_inr]

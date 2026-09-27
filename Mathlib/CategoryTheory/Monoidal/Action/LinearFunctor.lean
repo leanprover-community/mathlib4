@@ -175,7 +175,8 @@ attribute [reassoc (attr := simp)] μₗ_comp_δₗ
 attribute [reassoc (attr := simp)] δₗ_comp_μₗ
 
 /-- A shorthand to bundle the μₗ as an isomorphism -/
-abbrev μₗIso (c : C) (d : D) : c ⊙ₗ F.obj d ≅ F.obj (c ⊙ₗ d) where
+@[reducible]
+def μₗIso (c : C) (d : D) : c ⊙ₗ F.obj d ≅ F.obj (c ⊙ₗ d) where
   hom := LaxLeftLinear.μₗ F c d
   inv := OplaxLeftLinear.δₗ F c d
 
@@ -337,7 +338,8 @@ attribute [reassoc (attr := simp)] μᵣ_comp_δᵣ
 attribute [reassoc (attr := simp)] δᵣ_comp_μᵣ
 
 /-- A shorthand to bundle the μᵣ as an isomorphism -/
-abbrev μᵣIso (d : D) (c : C) : F.obj d ⊙ᵣ c ≅ F.obj (d ⊙ᵣ c) where
+@[reducible]
+def μᵣIso (d : D) (c : C) : F.obj d ⊙ᵣ c ≅ F.obj (d ⊙ᵣ c) where
   hom := LaxRightLinear.μᵣ F d c
   inv := OplaxRightLinear.δᵣ F d c
 

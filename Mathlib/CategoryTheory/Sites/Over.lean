@@ -228,7 +228,8 @@ lemma overEquiv_functorPushforward_post {D : Type*} [Category* D] (F : C ⥤ D) 
 end Sieve
 
 /-- The precoverage on `Over X` for any `X : C` that is induced by a precoverage on `C`. -/
-abbrev Precoverage.over (X : C) (J : Precoverage C) : Precoverage (Over X) :=
+@[reducible]
+def Precoverage.over (X : C) (J : Precoverage C) : Precoverage (Over X) :=
   J.comap (Over.forget X)
 
 variable (J : GrothendieckTopology C)
@@ -276,7 +277,8 @@ instance (X : C) : (Over.forget X).IsContinuous (J.over X) J :=
     (over_forget_coverPreserving J X)
 
 /-- The pullback functor `Sheaf J A ⥤ Sheaf (J.over X) A` -/
-abbrev overPullback (A : Type u') [Category.{v'} A] (X : C) :
+@[reducible]
+def overPullback (A : Type u') [Category.{v'} A] (X : C) :
     Sheaf J A ⥤ Sheaf (J.over X) A :=
   (Over.forget X).sheafPushforwardContinuous _ _ _
 
@@ -413,7 +415,8 @@ variable (A : Type u') [Category.{v'} A]
 
 /-- The pullback functor `Sheaf (J.over Y) A ⥤ Sheaf (J.over X) A` induced
 by a morphism `f : X ⟶ Y`. -/
-abbrev overMapPullback {X Y : C} (f : X ⟶ Y) :
+@[reducible]
+def overMapPullback {X Y : C} (f : X ⟶ Y) :
     Sheaf (J.over Y) A ⥤ Sheaf (J.over X) A :=
   (Over.map f).sheafPushforwardContinuous _ _ _
 
@@ -498,7 +501,8 @@ end GrothendieckTopology
 variable {J}
 
 /-- Given `F : Sheaf J A` and `X : C`, this is the pullback of `F` on `J.over X`. -/
-abbrev Sheaf.over {A : Type u'} [Category.{v'} A] (F : Sheaf J A) (X : C) :
+@[reducible]
+def Sheaf.over {A : Type u'} [Category.{v'} A] (F : Sheaf J A) (X : C) :
     Sheaf (J.over X) A := (J.overPullback A X).obj F
 
 variable {A : Type u'} [Category.{v'} A]

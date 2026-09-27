@@ -41,17 +41,20 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 
 variable (C) in
 /-- A preradical on an abelian category `C` is a monomorphism in `C ⥤ C` with codomain `𝟭 C`. -/
-abbrev Preradical := MonoOver (𝟭 C)
+@[expose, reducible]
+def Preradical := MonoOver (𝟭 C)
 
 namespace Preradical
 
 variable (Φ : Preradical C)
 
 /-- The underlying endofunctor `r : C ⥤ C` of a preradical `Φ`. -/
-abbrev r : C ⥤ C := Φ.obj.left
+@[expose, reducible]
+def r : C ⥤ C := Φ.obj.left
 
 /-- The structure morphism `Φ.r ⟶ 𝟭 C` of a preradical `Φ`. -/
-abbrev ι : Φ.r ⟶ 𝟭 C := Φ.obj.hom
+@[expose, reducible]
+def ι : Φ.r ⟶ 𝟭 C := Φ.obj.hom
 
 @[simp]
 lemma r_map_ι_app (X : C) : Φ.r.map (Φ.ι.app X) = Φ.ι.app (Φ.r.obj X) := by

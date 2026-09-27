@@ -495,7 +495,8 @@ instance to_isReflexivePair {F : WalkingReflexivePair ⥤ C} :
 end reflexivePair
 
 /-- A `ReflexiveCofork` is a cocone over a `WalkingReflexivePair`-shaped diagram. -/
-abbrev ReflexiveCofork (F : WalkingReflexivePair ⥤ C) := Cocone F
+@[reducible]
+def ReflexiveCofork (F : WalkingReflexivePair ⥤ C) := Cocone F
 
 namespace ReflexiveCofork
 
@@ -504,7 +505,8 @@ open WalkingReflexivePair WalkingReflexivePair.Hom
 variable {F : WalkingReflexivePair ⥤ C}
 
 /-- The tail morphism of a reflexive cofork. -/
-abbrev π (G : ReflexiveCofork F) : F.obj zero ⟶ G.pt := G.ι.app zero
+@[reducible]
+def π (G : ReflexiveCofork F) : F.obj zero ⟶ G.pt := G.ι.app zero
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Constructor for `ReflexiveCofork` -/
@@ -525,7 +527,8 @@ lemma condition (G : ReflexiveCofork F) : F.map left ≫ G.π = F.map right ≫ 
 lemma app_one_eq_π (G : ReflexiveCofork F) : G.ι.app zero = G.π := rfl
 
 /-- The underlying `Cofork` of a `ReflexiveCofork`. -/
-abbrev toCofork (G : ReflexiveCofork F) : Cofork (F.map left) (F.map right) :=
+@[reducible]
+def toCofork (G : ReflexiveCofork F) : Cofork (F.map left) (F.map right) :=
   Cofork.ofπ G.π (by simp)
 
 end ReflexiveCofork

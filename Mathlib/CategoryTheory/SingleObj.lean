@@ -49,7 +49,8 @@ namespace CategoryTheory
 
 /-- Abbreviation that allows writing `CategoryTheory.SingleObj` rather than `Quiver.SingleObj`.
 -/
-abbrev SingleObj :=
+@[reducible]
+def SingleObj :=
   Quiver.SingleObj
 
 namespace SingleObj
@@ -93,7 +94,8 @@ theorem inv_as_inv {x y : SingleObj G} (f : x ⟶ y) : inv f = f⁻¹ := by
 /-- Abbreviation that allows writing `CategoryTheory.SingleObj.star` rather than
 `Quiver.SingleObj.star`.
 -/
-abbrev star : SingleObj M :=
+@[reducible]
+def star : SingleObj M :=
   Quiver.SingleObj.star M
 
 /-- The endomorphisms monoid of the only object in `SingleObj M` is equivalent to the original
@@ -175,7 +177,8 @@ variable {M : Type u} {N : Type v} [Monoid M] [Monoid N]
 
 /-- Reinterpret a monoid homomorphism `f : M → N` as a functor `(single_obj M) ⥤ (single_obj N)`.
 See also `CategoryTheory.SingleObj.mapHom` for an equivalence between these types. -/
-abbrev toFunctor (f : M →* N) : SingleObj M ⥤ SingleObj N :=
+@[reducible]
+def toFunctor (f : M →* N) : SingleObj M ⥤ SingleObj N :=
   SingleObj.mapHom M N f
 
 @[simp]

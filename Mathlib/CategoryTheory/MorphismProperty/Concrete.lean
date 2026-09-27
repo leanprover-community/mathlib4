@@ -97,17 +97,20 @@ namespace ConcreteCategory
 
 /-- The property that any morphism in a concrete category can be factored as a surjective
 map followed by an injective map. -/
-abbrev HasSurjectiveInjectiveFactorization :=
+@[reducible]
+def HasSurjectiveInjectiveFactorization :=
     (MorphismProperty.surjective C).HasFactorization (MorphismProperty.injective C)
 
 /-- The property that any morphism in a concrete category can be functorially
 factored as a surjective map followed by an injective map. -/
-abbrev HasFunctorialSurjectiveInjectiveFactorization :=
+@[reducible]
+def HasFunctorialSurjectiveInjectiveFactorization :=
   (MorphismProperty.surjective C).HasFunctorialFactorization (MorphismProperty.injective C)
 
 /-- The structure containing the data of a functorial factorization of morphisms as
 a surjective map followed by an injective map in a concrete category. -/
-abbrev FunctorialSurjectiveInjectiveFactorizationData :=
+@[reducible]
+def FunctorialSurjectiveInjectiveFactorizationData :=
   (MorphismProperty.surjective C).FunctorialFactorizationData (MorphismProperty.injective C)
 
 end ConcreteCategory

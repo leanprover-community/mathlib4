@@ -54,9 +54,9 @@ def GrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ GrpCat.{w}) (α : (F ⋙ forget _)
     simp
 
 /-- If `G` is a group object, then `Hom(X, G)` has a group structure. -/
-@[to_additive
+@[to_additive (attr := reducible)
 /-- If `G` is an additive group object, then `Hom(X, G)` has an additive group structure. -/]
-abbrev Hom.group : Group (X ⟶ G) where
+def Hom.group : Group (X ⟶ G) where
   inv f := f ≫ ι
   inv_mul_cancel f := calc
     lift (f ≫ ι) f ≫ μ
@@ -305,10 +305,10 @@ instance [IsCommMonObj G.X] (f : G ⟶ H) : IsMonHom f where
 end Grp
 
 /-- If `G` is a commutative group object, then `Hom(X, G)` has a commutative group structure. -/
-@[to_additive
+@[to_additive (attr := reducible)
 /-- If `G` is a commutative additive group object, then `Hom(X, G)` has a commutative
 additive group structure. -/]
-abbrev Hom.commGroup [IsCommMonObj G] : CommGroup (X ⟶ G) where
+def Hom.commGroup [IsCommMonObj G] : CommGroup (X ⟶ G) where
 
 scoped[CategoryTheory.MonObj] attribute [instance] Hom.commGroup
 scoped[CategoryTheory.AddMonObj] attribute [instance] Hom.addCommGroup

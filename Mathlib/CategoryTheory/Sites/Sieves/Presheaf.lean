@@ -104,7 +104,8 @@ instance functorInclusion_top_isIso : IsIso (⊤ : Sieve X).functorInclusion :=
   ⟨⟨{ app := fun _ => ↾fun a => ⟨a, ⟨⟩⟩ }, rfl, rfl⟩⟩
 
 /-- A variant of `Sieve.functor` with universe lifting. -/
-abbrev uliftFunctor (S : Sieve X) : Cᵒᵖ ⥤ Type (max w v₁) :=
+@[reducible]
+def uliftFunctor (S : Sieve X) : Cᵒᵖ ⥤ Type (max w v₁) :=
   S.functor ⋙ CategoryTheory.uliftFunctor
 
 /-- A variant of `Sieve.natTransOfLe` with universe lifting. -/

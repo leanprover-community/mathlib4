@@ -78,7 +78,8 @@ lemma mem_fromOverSubfunctor_iff {U : Over X} (u : F.obj U.left) :
 this is the functor `Over X ⥤ Type w` which sends an object of `Over X`
 corresponding to a morphism `f : Y ⟶ X` to the subtype of `F.obj Y`
 consisting of those elements `y : F.obj Y` such that `F.map f y = x`. -/
-abbrev fromOverFunctor : Over X ⥤ Type w := (fromOverSubfunctor F x).toFunctor
+@[expose, reducible]
+def fromOverFunctor : Over X ⥤ Type w := (fromOverSubfunctor F x).toFunctor
 
 open Functor.Elements in
 /-- Given a functor `F : C ⥤ Type w`, an object `X : C` and `x : F.obj X`,

@@ -87,7 +87,8 @@ class PreservesLimitsOfSize (F : C ⥤ D) : Prop where
 
 /-- We say that `F` preserves (small) limits if it sends small
 limit cones over any diagram to limit cones. -/
-abbrev PreservesLimits (F : C ⥤ D) :=
+@[reducible]
+def PreservesLimits (F : C ⥤ D) :=
   PreservesLimitsOfSize.{v₂, v₂} F
 
 -- This should be used with explicit universe variables.
@@ -100,7 +101,8 @@ class PreservesColimitsOfSize (F : C ⥤ D) : Prop where
 
 /-- We say that `F` preserves (small) limits if it sends small
 limit cones over any diagram to limit cones. -/
-abbrev PreservesColimits (F : C ⥤ D) :=
+@[reducible]
+def PreservesColimits (F : C ⥤ D) :=
   PreservesColimitsOfSize.{v₂, v₂} F
 
 -- see Note [lower instance priority]
@@ -425,7 +427,8 @@ whenever the image of a cone over some `K : J ⥤ C` under `F` is a limit cone i
 the cone was already a limit cone in `C`.
 Note that we do not assume a priori that `D` actually has any limits.
 -/
-abbrev ReflectsLimits (F : C ⥤ D) :=
+@[reducible]
+def ReflectsLimits (F : C ⥤ D) :=
   ReflectsLimitsOfSize.{v₂, v₂} F
 
 -- This should be used with explicit universe variables.
@@ -444,7 +447,8 @@ whenever the image of a cocone over some `K : J ⥤ C` under `F` is a colimit co
 the cocone was already a colimit cocone in `C`.
 Note that we do not assume a priori that `D` actually has any colimits.
 -/
-abbrev ReflectsColimits (F : C ⥤ D) :=
+@[reducible]
+def ReflectsColimits (F : C ⥤ D) :=
   ReflectsColimitsOfSize.{v₂, v₂} F
 
 /-- A convenience function for `ReflectsLimit`, which takes the functor as an explicit argument to

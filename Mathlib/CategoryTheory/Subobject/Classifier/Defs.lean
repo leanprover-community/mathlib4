@@ -168,19 +168,22 @@ noncomputable section
 variable (C)
 
 /-- Notation for the `Ω₀` in an arbitrary choice of a subobject classifier -/
-abbrev Ω₀ : C := HasSubobjectClassifier.exists_classifier.some.Ω₀
+@[reducible]
+def Ω₀ : C := HasSubobjectClassifier.exists_classifier.some.Ω₀
 
 @[deprecated (since := "2026-03-06")]
 alias _root_.CategoryTheory.HasClassifier.Ω₀ := Ω₀
 
 /-- Notation for the `Ω` in an arbitrary choice of a subobject classifier -/
-abbrev Ω : C := HasSubobjectClassifier.exists_classifier.some.Ω
+@[reducible]
+def Ω : C := HasSubobjectClassifier.exists_classifier.some.Ω
 
 @[deprecated (since := "2026-03-06")]
 alias _root_.CategoryTheory.HasClassifier.Ω := Ω
 
 /-- Notation for the "truth arrow" in an arbitrary choice of a subobject classifier -/
-abbrev truth : Ω₀ C ⟶ Ω C := HasSubobjectClassifier.exists_classifier.some.truth
+@[reducible]
+def truth : Ω₀ C ⟶ Ω C := HasSubobjectClassifier.exists_classifier.some.truth
 
 @[deprecated (since := "2026-03-06")]
 alias _root_.CategoryTheory.HasClassifier.truth := truth
@@ -312,7 +315,8 @@ section RepresentableBy
 variable {C : Type u} [Category.{v} C] [HasPullbacks C] (𝒞 : Classifier C)
 
 /-- The subobject of `𝒞.Ω` corresponding to the `truth` morphism. -/
-abbrev truth_as_subobject : Subobject 𝒞.Ω :=
+@[reducible]
+def truth_as_subobject : Subobject 𝒞.Ω :=
   Subobject.mk 𝒞.truth
 
 @[deprecated (since := "2026-03-06")]
@@ -379,7 +383,8 @@ variable {C : Type u} [Category.{v} C] [HasPullbacks C] (Ω : C)
 
 /-- Abbreviation to enable dot notation on the hypothesis `h` stating that the subobjects presheaf
 is representable by some object `Ω`. -/
-abbrev SubobjectRepresentableBy := (Subobject.presheaf C).RepresentableBy Ω
+@[reducible]
+def SubobjectRepresentableBy := (Subobject.presheaf C).RepresentableBy Ω
 
 @[deprecated (since := "2026-03-06")]
 alias Classifier.SubobjectRepresentableBy := SubobjectRepresentableBy

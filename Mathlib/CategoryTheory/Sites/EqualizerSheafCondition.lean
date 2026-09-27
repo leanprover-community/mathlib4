@@ -52,8 +52,8 @@ noncomputable section
 The middle object of the fork diagram given in Equation (3) of [MM92], as well as the fork diagram
 of the Stacks entry.
 -/
-@[stacks 00VM "This is the middle object of the fork diagram there."]
-abbrev FirstObj : Type (max v u) :=
+@[reducible, stacks 00VM "This is the middle object of the fork diagram there."]
+def FirstObj : Type (max v u) :=
   ∏ᶜ fun f : Σ Y, { f : Y ⟶ X // R f } => P.obj (op f.1)
 
 variable {P R}
@@ -101,7 +101,8 @@ namespace Sieve
 /-- The rightmost object of the fork diagram of Equation (3) [MM92], which contains the data used
 to check a family is compatible.
 -/
-abbrev SecondObj : Type (max v u) :=
+@[reducible]
+def SecondObj : Type (max v u) :=
   ∏ᶜ fun f : Σ (Y Z : _) (_ : Z ⟶ Y), { f' : Y ⟶ X // S f' } => P.obj (op f.2.1)
 
 variable {P S}
@@ -272,8 +273,8 @@ The middle object of the fork diagram of the Stacks entry.
 The difference between this and `Equalizer.FirstObj P (ofArrows X π)` arises if the family of
 arrows `π` contains duplicates. The `Presieve.ofArrows` doesn't see those.
 -/
-@[stacks 00VM "The middle object of the fork diagram there."]
-abbrev FirstObj : Type w := ∏ᶜ (fun i ↦ P.obj (op (X i)))
+@[reducible, stacks 00VM "The middle object of the fork diagram there."]
+def FirstObj : Type w := ∏ᶜ (fun i ↦ P.obj (op (X i)))
 
 @[ext]
 lemma FirstObj.ext (z₁ z₂ : FirstObj P X) (h : ∀ i, (Pi.π _ i : FirstObj P X ⟶ _) z₁ =
@@ -287,8 +288,8 @@ The rightmost object of the fork diagram of the Stacks entry.
 The difference between this and `Equalizer.Presieve.SecondObj P (ofArrows X π)` arises if the
 family of arrows `π` contains duplicates. The `Presieve.ofArrows` doesn't see those.
 -/
-@[stacks 00VM "The rightmost object of the fork diagram there."]
-abbrev SecondObj : Type w :=
+@[reducible, stacks 00VM "The rightmost object of the fork diagram there."]
+def SecondObj : Type w :=
   ∏ᶜ (fun (ij : I × I) ↦ P.obj (op (pullback (π ij.1) (π ij.2))))
 
 @[ext]

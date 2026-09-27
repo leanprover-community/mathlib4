@@ -36,10 +36,12 @@ section
 variable {R S : 𝒮} (a : F.obj ⟨op S⟩) (f : R ⟶ S)
 
 /-- The domain of the Cartesian lift of `f`. -/
-abbrev domainCartesianLift : ∫ᶜ F := ⟨R, (F.map f.op.toLoc).toFunctor.obj a⟩
+@[reducible]
+def domainCartesianLift : ∫ᶜ F := ⟨R, (F.map f.op.toLoc).toFunctor.obj a⟩
 
 /-- The Cartesian lift of `f`. -/
-abbrev cartesianLift : domainCartesianLift a f ⟶ ⟨S, a⟩ := ⟨f, 𝟙 _⟩
+@[reducible]
+def cartesianLift : domainCartesianLift a f ⟶ ⟨S, a⟩ := ⟨f, 𝟙 _⟩
 
 instance isHomLift_cartesianLift : IsHomLift (forget F) f (cartesianLift a f) :=
   IsHomLift.map (forget F) (cartesianLift a f)
@@ -49,7 +51,8 @@ set_option backward.defeqAttrib.useBackward true in
 variable {a} in
 /-- Given some lift `φ'` of `g ≫ f`, the canonical map from the domain of `φ'` to the domain of
 the Cartesian lift of `f`. -/
-abbrev homCartesianLift {a' : ∫ᶜ F} (g : a'.1 ⟶ R) (φ' : a' ⟶ ⟨S, a⟩)
+@[reducible]
+def homCartesianLift {a' : ∫ᶜ F} (g : a'.1 ⟶ R) (φ' : a' ⟶ ⟨S, a⟩)
     [IsHomLift (forget F) (g ≫ f) φ'] : a' ⟶ domainCartesianLift a f where
   base := g
   fiber :=

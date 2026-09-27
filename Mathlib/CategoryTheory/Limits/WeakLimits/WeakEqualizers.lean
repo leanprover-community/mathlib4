@@ -31,7 +31,8 @@ variable {X Y : C} (f g : X ⟶ Y)
 
 /-- Two parallel morphisms `f` and `g` have a weak equalizer if the diagram `parallelPair f g`
 has a weak limit. -/
-abbrev HasWeakEqualizer :=
+@[reducible]
+def HasWeakEqualizer :=
   HasWeakLimit (parallelPair f g)
 
 variable [HasWeakEqualizer f g]
@@ -92,7 +93,8 @@ variable (C)
 
 /-- A category `HasWeakEqualizers` if it has all weak limits of shape `WalkingParallelPair`,
 i.e. if it has a weak equalizer for every parallel pair of morphisms. -/
-abbrev HasWeakEqualizers :=
+@[reducible]
+def HasWeakEqualizers :=
   HasWeakLimitsOfShape WalkingParallelPair C
 
 /-- A category with equalizers has weak equalizers. -/

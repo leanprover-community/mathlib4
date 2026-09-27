@@ -65,8 +65,8 @@ variable {X : Type u} [Preorder X]
 def homOfLE {x y : X} (h : x ≤ y) : x ⟶ y :=
   ULift.up (PLift.up h)
 
-@[inherit_doc homOfLE, to_dual self]
-abbrev _root_.LE.le.hom := @homOfLE
+@[reducible, inherit_doc homOfLE, to_dual self]
+def _root_.LE.le.hom := @homOfLE
 
 @[simp]
 theorem homOfLE_refl {x : X} (h : x ≤ x) : h.hom = 𝟙 x :=
@@ -198,7 +198,8 @@ namespace OrderHom
 open CategoryTheory
 
 /-- An `OrderHom` as a functor `X ⥤ Y` between preorder categories. -/
-abbrev toFunctor (f : X →o Y) : X ⥤ Y := f.monotone.functor
+@[reducible]
+def toFunctor (f : X →o Y) : X ⥤ Y := f.monotone.functor
 
 /-- The equivalence between `X →o Y` and the type of functors `X ⥤ Y` between preorder categories
 `X` and `Y`. -/

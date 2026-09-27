@@ -118,13 +118,15 @@ end
 variable [Limits.HasPullbacks C] (f g : E.Hom F)
 
 /-- (Implementation): The covering object of `cylinder f g`. -/
+@[reducible]
 noncomputable
-abbrev cylinderX {i : E.I₀} (k : F.I₁ (f.s₀ i) (g.s₀ i)) : C :=
+def cylinderX {i : E.I₀} (k : F.I₁ (f.s₀ i) (g.s₀ i)) : C :=
   pullback (pullback.lift (f.h₀ i) (g.h₀ i) (by simp)) (F.toPullback k)
 
 /-- (Implementation): The structure morphisms of the covering objects of `cylinder f g`. -/
+@[reducible]
 noncomputable
-abbrev cylinderf {i : E.I₀} (k : F.I₁ (f.s₀ i) (g.s₀ i)) : cylinderX f g k ⟶ S :=
+def cylinderf {i : E.I₀} (k : F.I₁ (f.s₀ i) (g.s₀ i)) : cylinderX f g k ⟶ S :=
   pullback.fst _ _ ≫ E.f _
 
 /-- Given two refinement morphisms `f, g : E ⟶ F`, this is a (pre-)`1`-hypercover `W` that
@@ -286,10 +288,12 @@ def OneHypercover.homotopicRel : HomRel (J.OneHypercover S) :=
   fun _ _ f g ↦ Nonempty (PreOneHypercover.Homotopy f g)
 
 /-- The category of `1`-hypercovers with refinement morphisms up to homotopy. -/
-abbrev HOneHypercover (S : C) := Quotient (OneHypercover.homotopicRel J S)
+@[reducible]
+def HOneHypercover (S : C) := Quotient (OneHypercover.homotopicRel J S)
 
 /-- The canonical projection from `1`-hypercovers to `1`-hypercovers up to homotopy. -/
-abbrev OneHypercover.toHOneHypercover (S : C) : J.OneHypercover S ⥤ J.HOneHypercover S :=
+@[reducible]
+def OneHypercover.toHOneHypercover (S : C) : J.OneHypercover S ⥤ J.HOneHypercover S :=
   Quotient.functor _
 
 lemma _root_.CategoryTheory.PreOneHypercover.Homotopy.map_eq_map {S : C} {E F : J.OneHypercover S}

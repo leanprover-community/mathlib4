@@ -50,7 +50,8 @@ class Projective (P : C) : Prop where
 
 variable (C) in
 /-- The `ObjectProperty C` corresponding to the notion of projective objects in `C`. -/
-abbrev isProjective : ObjectProperty C := Projective
+@[reducible]
+def isProjective : ObjectProperty C := Projective
 
 lemma Limits.IsZero.projective {X : C} (h : IsZero X) : Projective X where
   factors _ _ _ := ⟨h.to_ _, h.eq_of_src _ _⟩
@@ -186,7 +187,8 @@ instance : Projective (syzygies f) := inferInstanceAs (Projective (over _))
 
 (When `C` is abelian, we have `exact (projective.d f) f`.)
 -/
-abbrev d : syzygies f ⟶ X :=
+@[reducible]
+def d : syzygies f ⟶ X :=
   π (kernel f) ≫ kernel.ι f
 
 end

@@ -90,7 +90,8 @@ lemma limitsClosure_isoClosure :
 
 /-- The closure of a property of objects of a category under limits of
 shape `J` for a category `J`. -/
-abbrev limitClosure (J : Type*) [Category* J] : ObjectProperty C :=
+@[reducible]
+def limitClosure (J : Type*) [Category* J] : ObjectProperty C :=
   P.limitsClosure (fun (_ : Unit) ↦ J)
 
 instance (J : Type*) [Category* J] : (P.limitClosure J).IsClosedUnderLimitsOfShape J :=
@@ -123,7 +124,8 @@ variable {β : Type w'} [LinearOrder β] [OrderBot β] [SuccOrder β] [WellFound
 
 /-- Given `P : ObjectProperty C`, a family of categories `J a`, this
 is the transfinite iteration of `Q ↦ Q.strictLimitsClosureStep J`. -/
-abbrev strictLimitsClosureIter (b : β) : ObjectProperty C :=
+@[reducible]
+def strictLimitsClosureIter (b : β) : ObjectProperty C :=
   transfiniteIterate (φ := fun Q ↦ Q.strictLimitsClosureStep J) b P
 
 lemma le_strictLimitsClosureIter (b : β) :

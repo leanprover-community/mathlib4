@@ -49,9 +49,9 @@ variable {C : Type u} [Category.{v} C]
 -- or `(Co)span`, since we already have `Discrete.functor`.
 
 /-- A fan over `f : β → C` consists of a collection of maps from an object `P` to every `f b`. -/
-@[to_dual
+@[to_dual (attr := reducible)
 /-- A cofan over `f : β → C` consists of a collection of maps from every `f b` to an object `P`. -/]
-abbrev Fan (f : β → C) :=
+def Fan (f : β → C) :=
   Cone (Discrete.functor f)
 
 /-- A fan over `f : β → C` consists of a collection of maps from an object `P` to every `f b`. -/
@@ -74,8 +74,9 @@ theorem fan_mk_proj {f : β → C} (P : C) (p : ∀ b, P ⟶ f b) : (Fan.mk P p)
   rfl
 
 /-- An abbreviation for `HasLimit (Discrete.functor f)`. -/
-@[to_dual /-- An abbreviation for `HasColimit (Discrete.functor f)`. -/]
-abbrev HasProduct (f : β → C) :=
+@[to_dual (attr := reducible)
+/-- An abbreviation for `HasColimit (Discrete.functor f)`. -/]
+def HasProduct (f : β → C) :=
   HasLimit (Discrete.functor f)
 
 @[to_dual]
@@ -130,18 +131,20 @@ alias mkCofanColimit := Cofan.IsColimit.mk
 
 variable (C) in
 /-- An abbreviation for `HasLimitsOfShape (Discrete f)`. -/
-@[to_dual /-- An abbreviation for `HasColimitsOfShape (Discrete f)`. -/]
-abbrev HasProductsOfShape (β : Type v) :=
+@[to_dual (attr := reducible)
+/-- An abbreviation for `HasColimitsOfShape (Discrete f)`. -/]
+def HasProductsOfShape (β : Type v) :=
   HasLimitsOfShape.{v} (Discrete β)
 
 /-- `piObj f` computes the product of a family of elements `f`.
 (It is defined as an abbreviation for `limit (Discrete.functor f)`,
 so for most facts about `piObj f`, you will just use general facts about limits.) -/
-@[to_dual sigmaObj
+@[to_dual (attr := reducible)
+sigmaObj
 /-- `sigmaObj f` computes the coproduct of a family of elements `f`.
 (It is defined as an abbreviation for `colimit (Discrete.functor f)`,
 so for most facts about `sigmaObj f`, you will just use general facts about colimits.) -/]
-abbrev piObj (f : β → C) [HasProduct f] :=
+def piObj (f : β → C) [HasProduct f] :=
   limit (Discrete.functor f)
 
 /-- notation for categorical products. We need `ᶜ` to avoid conflict with `Finset.prod`. -/
@@ -153,9 +156,10 @@ notation "∐ " f:60 => sigmaObj f
 insert_to_dual_translation CategoryTheory.Limits.Pi CategoryTheory.Limits.Sigma
 
 /-- The `b`-th projection from the pi object over `f` has the form `∏ᶜ f ⟶ f b`. -/
-@[to_dual ι
+@[to_dual (attr := reducible)
+ι
 /-- The `b`-th inclusion into the sigma object over `f` has the form `f b ⟶ ∐ f`. -/]
-abbrev Pi.π (f : β → C) [HasProduct f] (b : β) : ∏ᶜ f ⟶ f b :=
+def Pi.π (f : β → C) [HasProduct f] (b : β) : ∏ᶜ f ⟶ f b :=
   limit.π (Discrete.functor f) (Discrete.mk b)
 
 /-- Without this lemma, `limit.hom_ext` would be applied, but the goal would involve terms
@@ -187,8 +191,9 @@ theorem Pi.π_comp_eqToHom {J : Type*} (f : J → C) [HasProduct f] {j j' : J} (
 attribute [simp] Sigma.eqToHom_comp_ι Sigma.eqToHom_comp_ι_assoc
 
 /-- A collection of morphisms `P ⟶ f b` induces a morphism `P ⟶ ∏ᶜ f`. -/
-@[to_dual desc /-- A collection of morphisms `f b ⟶ P` induces a morphism `∐ f ⟶ P`. -/]
-abbrev Pi.lift {f : β → C} [HasProduct f] {P : C} (p : ∀ b, P ⟶ f b) : P ⟶ ∏ᶜ f :=
+@[to_dual (attr := reducible)
+desc /-- A collection of morphisms `f b ⟶ P` induces a morphism `∐ f ⟶ P`. -/]
+def Pi.lift {f : β → C} [HasProduct f] {P : C} (p : ∀ b, P ⟶ f b) : P ⟶ ∏ᶜ f :=
   limit.lift _ (Fan.mk P p)
 
 @[to_dual (attr := simp) desc_ι]
@@ -471,8 +476,9 @@ end Comparison
 
 variable (C) in
 /-- An abbreviation for `Π J, HasLimitsOfShape (Discrete J) C` -/
-@[to_dual /-- An abbreviation for `Π J, HasColimitsOfShape (Discrete J) C` -/]
-abbrev HasProducts :=
+@[to_dual (attr := reducible)
+/-- An abbreviation for `Π J, HasColimitsOfShape (Discrete J) C` -/]
+def HasProducts :=
   ∀ J : Type w, HasLimitsOfShape (Discrete J) C
 
 @[to_dual]

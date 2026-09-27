@@ -46,9 +46,9 @@ def asEmptyCone (X : C) : Cone (Functor.empty.{0} C) :=
     { app := by cat_disch } }
 
 /-- `X` is terminal if the cone it induces on the empty diagram is limiting. -/
-@[to_dual
+@[to_dual (attr := reducible)
 /-- `X` is initial if the cocone it induces on the empty diagram is colimiting. -/]
-abbrev IsTerminal (X : C) :=
+def IsTerminal (X : C) :=
   IsLimit (asEmptyCone X)
 
 /-- An object `Y` is terminal iff for every `X` there is a unique morphism `X ⟶ Y`. -/

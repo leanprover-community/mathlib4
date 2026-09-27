@@ -89,8 +89,9 @@ theorem Discrete.Hom.eq' {α : Type u₁} {a b : α} (self : Discrete.Hom a b) :
 
 /-- `Discrete.Hom.mk'` is the dual of `Discrete.Hom.mk`, which is needed for `to_dual`.
 Please avoid using this directly. -/
-@[to_dual existing mk]
-abbrev Discrete.Hom.mk' {α : Type u₁} {a b : α} (eq : b = a) : Discrete.Hom a b := ⟨eq.symm⟩
+@[reducible,
+to_dual existing mk]
+def Discrete.Hom.mk' {α : Type u₁} {a b : α} (eq : b = a) : Discrete.Hom a b := ⟨eq.symm⟩
 
 /-- The "Discrete" category on a type, whose morphisms are equalities.
 
@@ -165,13 +166,13 @@ protected abbrev eqToIso {X Y : Discrete α} (h : X.as = Y.as) : X ≅ Y :=
   eqToIso (by cat_disch)
 
 /-- A variant of `eqToHom` that lifts terms to the discrete category. -/
-@[to_dual none]
-abbrev eqToHom' {a b : α} (h : a = b) : Discrete.mk a ⟶ Discrete.mk b :=
+@[reducible, to_dual none]
+def eqToHom' {a b : α} (h : a = b) : Discrete.mk a ⟶ Discrete.mk b :=
   Discrete.eqToHom h
 
 /-- A variant of `eqToIso` that lifts terms to the discrete category. -/
-@[to_dual none]
-abbrev eqToIso' {a b : α} (h : a = b) : Discrete.mk a ≅ Discrete.mk b :=
+@[reducible, to_dual none]
+def eqToIso' {a b : α} (h : a = b) : Discrete.mk a ≅ Discrete.mk b :=
   Discrete.eqToIso h
 
 @[simp]

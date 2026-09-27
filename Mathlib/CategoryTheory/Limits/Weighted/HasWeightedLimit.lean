@@ -35,13 +35,15 @@ variable {J : Type u} [Category.{v} J] {C : Type u'} [Category.{v'} C]
 
 /-- Given `W : J ⥤ Type w` and `F : J ⥤ C`, this is the type of cones for
 the functor `CategoryOfElements.π W ⋙ F : W.Elements ⥤ C`. -/
-abbrev WeightedCone (W : J ⥤ Type w) (F : J ⥤ C) :=
+@[reducible]
+def WeightedCone (W : J ⥤ Type w) (F : J ⥤ C) :=
   Cone (Functor.Elements.π W ⋙ F)
 
 /-- Given a weight `W : J ⥤ Type w` and `F : J ⥤ C`, we say that
 the `W`-weighted limit of `F` exists if the functor
 `CategoryOfElements.π W ⋙ F : W.Elements ⥤ C` has a limit. -/
-abbrev HasWeightedLimit (W : J ⥤ Type w) (F : J ⥤ C) : Prop :=
+@[reducible]
+def HasWeightedLimit (W : J ⥤ Type w) (F : J ⥤ C) : Prop :=
   HasLimit (Functor.Elements.π W ⋙ F)
 
 namespace WeightedCone
@@ -262,7 +264,8 @@ variable (C) in
 exist for functors `F : J ⥤ C`. Under this condition, we define a weighted limit functor
 `W.weightedLimObj : (J ⥤ C) ⥤ C`. (See also `HasWeightedLimFlipObj` for the "flipped"
 property for `F : J ⥤ C`.) -/
-abbrev HasWeightedLimObj : Prop :=
+@[reducible]
+def HasWeightedLimObj : Prop :=
   ∀ (F : J ⥤ C), HasWeightedLimit W F
 
 variable [W.HasWeightedLimObj C]
@@ -285,7 +288,8 @@ variable {J : Type u} [Category.{v} J] {C : Type u'} [Category.{v'} C]
 
 /-- Given a functor `F : J ⥤ C`, this is the property satisfied by weights `W : J ⥤ Type w`
 such that the `W`-weighted limit of `F` exists. -/
-abbrev hasWeightedLimit : ObjectProperty (J ⥤ Type w) :=
+@[reducible]
+def hasWeightedLimit : ObjectProperty (J ⥤ Type w) :=
   fun W ↦ HasWeightedLimit W F
 
 instance (W : (hasWeightedLimit.{w} F).FullSubcategory) :
@@ -303,7 +307,8 @@ noncomputable def weightedLimFlipObj' : (hasWeightedLimit.{w} F).FullSubcategory
 weights `W : J ⥤ Type w`. Under this condition, we define a weighted limit functor
 `F.weightedLimFlipObj : (J ⥤ Type w)ᵒᵖ ⥤ C`. (See also `HasWeightedLimObj` for
 the "flipped" property for `W : J ⥤ Type w`.) -/
-abbrev HasWeightedLimFlipObj : Prop :=
+@[reducible]
+def HasWeightedLimFlipObj : Prop :=
   ∀ (W : J ⥤ Type w), HasWeightedLimit W F
 
 variable [HasWeightedLimFlipObj.{w} F]

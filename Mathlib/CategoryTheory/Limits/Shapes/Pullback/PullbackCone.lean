@@ -85,7 +85,8 @@ variable {C : Type u} [Category.{v} C] {W X Y Z : C}
 
 /-- A pullback cone is just a cone on the cospan formed by two morphisms `f : X ⟶ Z` and
 `g : Y ⟶ Z`. -/
-abbrev PullbackCone (f : X ⟶ Z) (g : Y ⟶ Z) :=
+@[reducible]
+def PullbackCone (f : X ⟶ Z) (g : Y ⟶ Z) :=
   Cone (cospan f g)
 
 namespace PullbackCone
@@ -93,11 +94,13 @@ namespace PullbackCone
 variable {f : X ⟶ Z} {g : Y ⟶ Z}
 
 /-- The first projection of a pullback cone. -/
-abbrev fst (t : PullbackCone f g) : t.pt ⟶ X :=
+@[reducible]
+def fst (t : PullbackCone f g) : t.pt ⟶ X :=
   t.π.app WalkingCospan.left
 
 /-- The second projection of a pullback cone. -/
-abbrev snd (t : PullbackCone f g) : t.pt ⟶ Y :=
+@[reducible]
+def snd (t : PullbackCone f g) : t.pt ⟶ Y :=
   t.π.app WalkingCospan.right
 
 theorem π_app_left (c : PullbackCone f g) : c.π.app WalkingCospan.left = c.fst := rfl
@@ -303,7 +306,8 @@ def PullbackCone.isoMk {F : WalkingCospan ⥤ C} (t : Cone F) :
 
 /-- A pushout cocone is just a cocone on the span formed by two morphisms `f : X ⟶ Y` and
 `g : X ⟶ Z`. -/
-abbrev PushoutCocone (f : X ⟶ Y) (g : X ⟶ Z) :=
+@[reducible]
+def PushoutCocone (f : X ⟶ Y) (g : X ⟶ Z) :=
   Cocone (span f g)
 
 namespace PushoutCocone
@@ -311,11 +315,13 @@ namespace PushoutCocone
 variable {f : X ⟶ Y} {g : X ⟶ Z}
 
 /-- The first inclusion of a pushout cocone. -/
-abbrev inl (t : PushoutCocone f g) : Y ⟶ t.pt :=
+@[reducible]
+def inl (t : PushoutCocone f g) : Y ⟶ t.pt :=
   t.ι.app WalkingSpan.left
 
 /-- The second inclusion of a pushout cocone. -/
-abbrev inr (t : PushoutCocone f g) : Z ⟶ t.pt :=
+@[reducible]
+def inr (t : PushoutCocone f g) : Z ⟶ t.pt :=
   t.ι.app WalkingSpan.right
 
 -- This cannot be `@[simp]` because `c.inl` is reducibly defeq to the LHS.
