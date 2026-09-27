@@ -133,20 +133,20 @@ def toEmbedding (f : Copy H G) : W ↪ V := ⟨f, f.injective⟩
 @[simp, norm_cast] lemma coe_id : ⇑(id G) = _root_.id := rfl
 
 /-- The composition of copies is a copy. -/
-def comp (g : Copy G I) (f : Copy H G) : Copy H I := by
+def comp (g : Copy H G) (f : Copy I H) : Copy I G := by
   use g.toHom.comp f.toHom
   rw [Hom.coe_comp]
   exact g.injective.comp f.injective
 
 @[simp]
-theorem comp_apply (g : Copy G I) (f : Copy H G) (a : W) : g.comp f a = g (f a) :=
+theorem comp_apply (g : Copy H G) (f : Copy I H) (a : X) : g.comp f a = g (f a) :=
   RelHom.comp_apply g.toHom f.toHom a
 
 /-- The copy from a subgraph to the supergraph. -/
 def ofLE (G₁ G₂ : SimpleGraph V) (h : G₁ ≤ G₂) : Copy G₁ G₂ := ⟨Hom.ofLE h, Function.injective_id⟩
 
 @[simp, norm_cast]
-theorem coe_comp (g : Copy G I) (f : Copy H G) : ⇑(g.comp f) = g ∘ f := by ext; simp
+theorem coe_comp (g : Copy H G) (f : Copy I H) : ⇑(g.comp f) = g ∘ f := by ext; simp
 
 @[simp, norm_cast] lemma coe_ofLE (h : G₁ ≤ G₂) : ⇑(ofLE G₁ G₂ h) = _root_.id := rfl
 
@@ -248,11 +248,11 @@ protected theorem IsContained.rfl : G ⊑ G := IsContained.refl G
 /-- A simple graph contains its subgraphs. -/
 theorem IsContained.of_le (h : G₁ ≤ G₂) : G₁ ⊑ G₂ := ⟨.ofLE G₁ G₂ h⟩
 
-/-- If `G` contains `H` and `I` contains `G`, then `I` contains `H`. -/
-theorem IsContained.trans : H ⊑ G → G ⊑ I → H ⊑ I := fun ⟨f⟩ ⟨g⟩ ↦ ⟨g.comp f⟩
+/-- If `H` contains `I` and `G` contains `H`, then `G` contains `I`. -/
+theorem IsContained.trans : I ⊑ H → H ⊑ G → I ⊑ G := fun ⟨f⟩ ⟨g⟩ ↦ ⟨g.comp f⟩
 
-/-- If `I` contains `G` and `G` contains `H`, then `I` contains `H`. -/
-theorem IsContained.trans' : G ⊑ I → H ⊑ G → H ⊑ I := flip IsContained.trans
+/-- If `G` contains `H` and `H` contains `I`, then `G` contains `I`. -/
+theorem IsContained.trans' : H ⊑ G → I ⊑ H → I ⊑ G := flip IsContained.trans
 
 @[gcongr]
 lemma IsContained.mono_right {G' : SimpleGraph V} (h_isub : H ⊑ G) (h_sub : G ≤ G') : H ⊑ G' :=
@@ -272,11 +272,11 @@ theorem isContained_congr {V' W' : Type*} {G' : SimpleGraph V'} {H' : SimpleGrap
     (e₁ : H ≃g H') (e₂ : G ≃g G') : H ⊑ G ↔ H' ⊑ G' :=
   ⟨.trans' ⟨e₂.toCopy⟩ ∘ .trans ⟨e₁.symm.toCopy⟩, .trans' ⟨e₂.symm.toCopy⟩ ∘ .trans ⟨e₁.toCopy⟩⟩
 
-lemma isContained_congr_left (e₁ : H ≃g G) : H ⊑ I ↔ G ⊑ I := isContained_congr e₁ .refl
+lemma isContained_congr_left (e₁ : I ≃g H) : I ⊑ G ↔ H ⊑ G := isContained_congr e₁ .refl
 
 alias ⟨_, IsContained.congr_left⟩ := isContained_congr_left
 
-lemma isContained_congr_right (e₂ : G ≃g I) : H ⊑ G ↔ H ⊑ I := isContained_congr .refl e₂
+lemma isContained_congr_right (e₂ : H ≃g G) : I ⊑ H ↔ I ⊑ G := isContained_congr .refl e₂
 
 alias ⟨_, IsContained.congr_right⟩ := isContained_congr_right
 
@@ -285,7 +285,7 @@ instance : IsPreorder (SimpleGraph W) IsContained where
   trans _ _ _ := .trans
 
 instance :
-    Trans (α := SimpleGraph W) (β := SimpleGraph V) (γ := SimpleGraph X)
+    Trans (α := SimpleGraph X) (β := SimpleGraph W) (γ := SimpleGraph V)
       IsContained IsContained IsContained where
   trans := .trans
 
@@ -378,11 +378,11 @@ theorem free_congr {V' W' : Type*} {G' : SimpleGraph V'} {H' : SimpleGraph W'}
     (e₁ : H ≃g H') (e₂ : G ≃g G') : H.Free G ↔ H'.Free G' :=
   (isContained_congr e₁ e₂).not
 
-lemma free_congr_left (e₁ : H ≃g G) : H.Free I ↔ G.Free I := free_congr e₁ .refl
+lemma free_congr_left (e₁ : I ≃g H) : I.Free G ↔ H.Free G := free_congr e₁ .refl
 
 alias ⟨_, Free.congr_left⟩ := free_congr_left
 
-lemma free_congr_right (e₂ : G ≃g I) : H.Free G ↔ H.Free I := free_congr .refl e₂
+lemma free_congr_right (e₂ : H ≃g G) : I.Free H ↔ I.Free G := free_congr .refl e₂
 
 alias ⟨_, Free.congr_right⟩ := free_congr_right
 
@@ -435,14 +435,14 @@ protected lemma Subgraph.IsInduced.isIndContained {G' : G.Subgraph} (hG' : G'.Is
 
 @[refl] lemma IsIndContained.refl (G : SimpleGraph V) : G ⊴ G := ⟨Embedding.refl⟩
 lemma IsIndContained.rfl : G ⊴ G := .refl _
-@[trans] lemma IsIndContained.trans : H ⊴ G → G ⊴ I → H ⊴ I := fun ⟨f⟩ ⟨g⟩ ↦ ⟨g.comp f⟩
+@[trans] lemma IsIndContained.trans : I ⊴ H → H ⊴ G → I ⊴ G := fun ⟨f⟩ ⟨g⟩ ↦ ⟨g.comp f⟩
 
 instance : IsPreorder (SimpleGraph W) IsIndContained where
   refl := .refl
   trans _ _ _ := .trans
 
 instance :
-    Trans (α := SimpleGraph W) (β := SimpleGraph V) (γ := SimpleGraph X)
+    Trans (α := SimpleGraph X) (β := SimpleGraph W) (γ := SimpleGraph V)
       IsIndContained IsIndContained IsIndContained where
   trans := .trans
 
