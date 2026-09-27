@@ -286,8 +286,6 @@ def inclusionWalkingReflexivePair : WalkingParallelPair ⥤ WalkingReflexivePair
   map_comp := by
     intro _ _ _ f g; cases f <;> cases g <;> rfl
 
-variable {C : Type u} [Category.{v} C]
-
 instance (X : WalkingReflexivePair) :
     Nonempty (StructuredArrow X inclusionWalkingReflexivePair) := by
   cases X with
@@ -612,7 +610,6 @@ lemma ι_reflexiveCoequalizerIsoCoequalizer_hom :
   IsColimit.comp_coconePointUniqueUpToIso_hom
     ((ReflexiveCofork.isColimitEquiv F _).symm _) _ WalkingParallelPair.one
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π_reflexiveCoequalizerIsoCoequalizer_inv :
     coequalizer.π _ _ ≫ (reflexiveCoequalizerIsoCoequalizer F).inv = colimit.ι F _ := by

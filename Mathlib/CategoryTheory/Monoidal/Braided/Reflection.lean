@@ -73,7 +73,6 @@ private lemma adjRetraction_is_retraction (c : C) (d : D)
 attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /--
 Day's reflection theorem.
 
@@ -211,12 +210,11 @@ instance (d d' : D) : IsIso (L.map ((adj.unit.app d) ⊗ₘ (adj.unit.app d'))) 
 
 instance (c : C) (d : D) : IsIso (adj.unit.app ((ihom d).obj (R.obj c))) := by
   revert c d
-  rw [((isIso_tfae adj).out 0 3 :)]
+  rw [((isIso_tfae adj).out 1 4 :)]
   intro d d'
   infer_instance
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `monoidalClosed`. -/
 @[instance_reducible]
 noncomputable def closed (c : C) : Closed c where

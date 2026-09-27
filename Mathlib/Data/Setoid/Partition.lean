@@ -410,7 +410,7 @@ theorem proj_some_index (x : α) : hs.proj (hs.some (hs.index x)) = hs.proj x :=
 /-- The obvious equivalence between the quotient associated to an indexed partition and
 the indexing type. -/
 def equivQuotient : ι ≃ hs.Quotient :=
-  (Setoid.quotientKerEquivOfRightInverse hs.index hs.some <| hs.index_some).symm
+  (Setoid.quotientKerEquivOfRightInverse hs.index hs.some hs.index_some).symm
 
 @[simp]
 theorem equivQuotient_index_apply (x : α) : hs.equivQuotient (hs.index x) = hs.proj x :=

@@ -179,7 +179,7 @@ end Semiring
 
 section Ring
 
-variable {R : Type*} [Ring R] (p q : R[X])
+variable {R : Type*} [Ring R] (p : R[X])
 
 theorem mirror_neg : (-p).mirror = -p.mirror := by
   rw [mirror, mirror, reverse_neg, natTrailingDegree_neg, neg_mul_eq_neg_mul]

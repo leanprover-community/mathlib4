@@ -266,8 +266,8 @@ private theorem signAux_swap_zero_one {n : ℕ} (hn : 2 ≤ n) :
     signAux (swap (⟨0, lt_of_lt_of_le (by decide) hn⟩ : Fin n) ⟨1, lt_of_lt_of_le (by decide) hn⟩) =
       -1 := by
   rcases n with (_ | _ | n)
-  · norm_num at hn
-  · norm_num at hn
+  · simp at hn
+  · simp at hn
   · exact signAux_swap_zero_one' n
 
 theorem signAux_swap : ∀ {n : ℕ} {x y : Fin n} (_hxy : x ≠ y), signAux (swap x y) = -1
@@ -288,7 +288,6 @@ def signAux2 : List α → Perm α → ℤˣ
   | [], _ => 1
   | x::l, f => if x = f x then signAux2 l f else -signAux2 l (swap x (f x) * f)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem signAux_eq_signAux2 {n : ℕ} :
     ∀ (l : List α) (f : Perm α) (e : α ≃ Fin n) (_h : ∀ x, f x ≠ x → x ∈ l),
       signAux ((e.symm.trans f).trans e) = signAux2 l f

@@ -17,7 +17,7 @@ These were split from `Mathlib.Data.Nat.Factorization.Basic` to reduce transitiv
 
 public section
 
-open Finset List Finsupp
+open Finset Finsupp
 
 namespace Nat
 

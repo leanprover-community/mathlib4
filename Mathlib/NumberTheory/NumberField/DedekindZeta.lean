@@ -34,7 +34,9 @@ variable (K : Type*) [Field K] [NumberField K]
 
 noncomputable section
 
-open Filter Ideal NumberField.InfinitePlace NumberField.Units Topology nonZeroDivisors
+open Filter Ideal NumberField.InfinitePlace NumberField.Units nonZeroDivisors
+
+open scoped Topology
 
 namespace NumberField
 

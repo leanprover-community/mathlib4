@@ -321,7 +321,7 @@ variable [Module R 𝕜] [IsScalarTower R 𝕜 E]
 theorem Convex.lift [SMulPosMono R 𝕜] {s : Set E} (hs : Convex 𝕜 s) : Convex R s := by
   intro x hx y hy a b ha hb hab
   suffices (a • (1 : 𝕜)) • x + (b • (1 : 𝕜)) • y ∈ s by simpa using this
-  refine hs hx hy ?_ ?_ (by simpa [add_smul] using congr($(hab) • (1 : 𝕜)))
+  refine hs hx hy ?_ ?_ (by simpa [add_smul] using congr($hab • (1 : 𝕜)))
   all_goals exact zero_smul R (1 : 𝕜) ▸ smul_le_smul_of_nonneg_right ‹_› zero_le_one
 
 end IsScalarTower
@@ -375,14 +375,14 @@ theorem AntitoneOn.convex_gt (hf : AntitoneOn f s) (hs : Convex 𝕜 s) (r : β)
 theorem Monotone.convex_le (hf : Monotone f) (r : β) : Convex 𝕜 { x | f x ≤ r } :=
   Set.sep_univ.subst ((hf.monotoneOn univ).convex_le convex_univ r)
 
-theorem Monotone.convex_lt (hf : Monotone f) (r : β) : Convex 𝕜 { x | f x ≤ r } :=
-  Set.sep_univ.subst ((hf.monotoneOn univ).convex_le convex_univ r)
+theorem Monotone.convex_lt (hf : Monotone f) (r : β) : Convex 𝕜 { x | f x < r } :=
+  Set.sep_univ.subst ((hf.monotoneOn univ).convex_lt convex_univ r)
 
 theorem Monotone.convex_ge (hf : Monotone f) (r : β) : Convex 𝕜 { x | r ≤ f x } :=
   Set.sep_univ.subst ((hf.monotoneOn univ).convex_ge convex_univ r)
 
-theorem Monotone.convex_gt (hf : Monotone f) (r : β) : Convex 𝕜 { x | f x ≤ r } :=
-  Set.sep_univ.subst ((hf.monotoneOn univ).convex_le convex_univ r)
+theorem Monotone.convex_gt (hf : Monotone f) (r : β) : Convex 𝕜 { x | r < f x } :=
+  Set.sep_univ.subst ((hf.monotoneOn univ).convex_gt convex_univ r)
 
 theorem Antitone.convex_le (hf : Antitone f) (r : β) : Convex 𝕜 { x | f x ≤ r } :=
   Set.sep_univ.subst ((hf.antitoneOn univ).convex_le convex_univ r)
@@ -479,12 +479,10 @@ theorem Convex.smul_mem_of_zero_mem (hs : Convex 𝕜 s) {x : E} (zero_mem : (0 
     {t : 𝕜} (ht : t ∈ Icc (0 : 𝕜) 1) : t • x ∈ s := by
   simpa using hs.add_smul_mem zero_mem (by simpa using hx) ht
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Convex.mapsTo_lineMap (h : Convex 𝕜 s) {x y : E} (hx : x ∈ s) (hy : y ∈ s) :
     MapsTo (AffineMap.lineMap x y) (Icc (0 : 𝕜) 1) s := by
   simpa only [mapsTo_iff_image_subset, segment_eq_image_lineMap] using h.segment_subset hx hy
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Convex.lineMap_mem (h : Convex 𝕜 s) {x y : E} (hx : x ∈ s) (hy : y ∈ s) {t : 𝕜}
     (ht : t ∈ Icc 0 1) : AffineMap.lineMap x y t ∈ s :=
   h.mapsTo_lineMap hx hy ht
@@ -575,7 +573,7 @@ protected theorem Convex.add_smul (h_conv : Convex 𝕜 s) {p q : 𝕜} (hp : 0 
   exact h_conv.exists_mem_add_smul_eq h₁ h₂ hp hq
 
 theorem Convex.add_half_self_eq_self (h_conv : Convex 𝕜 s) : (2 : 𝕜)⁻¹ • s + (2 : 𝕜)⁻¹ • s = s := by
-  rw [← h_conv.add_smul (by norm_num) (by norm_num)]
+  rw [← h_conv.add_smul (by simp) (by simp)]
   ring_nf
   rw [one_smul]
 

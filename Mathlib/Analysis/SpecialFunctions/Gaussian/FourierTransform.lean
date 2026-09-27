@@ -32,7 +32,7 @@ We also give versions of these formulas in finite-dimensional inner product spac
 ## Fourier integral of Gaussian functions
 -/
 
-open Real Set MeasureTheory Filter Asymptotics intervalIntegral
+open Real Set MeasureTheory Filter intervalIntegral
 
 open scoped Real Topology FourierTransform RealInnerProductSpace
 

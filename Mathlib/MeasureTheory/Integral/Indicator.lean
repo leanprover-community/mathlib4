@@ -34,7 +34,9 @@ namespace MeasureTheory
 
 section TendstoIndicator
 
-open Set Filter ENNReal Topology
+open Set Filter ENNReal
+
+open scoped Topology
 
 variable {α : Type*} [MeasurableSpace α] {A : Set α}
 variable {ι : Type*} (L : Filter ι) [IsCountablyGenerated L] {As : ι → Set α}

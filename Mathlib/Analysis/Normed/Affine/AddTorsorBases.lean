@@ -77,7 +77,6 @@ variable {V P : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P
 
 open AffineMap
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a set `s` of affine-independent points belonging to an open set `u`, we may extend `s` to
 an affine basis, all of whose elements belong to `u`. -/
 theorem IsOpen.exists_between_affineIndependent_span_eq_top {s u : Set P} (hu : IsOpen u)
@@ -138,7 +137,7 @@ theorem interior_convexHull_nonempty_iff_affineSpan_eq_top [FiniteDimensional �
   suffices (interior (convexHull ℝ (range b))).Nonempty by
     rw [hb, Subtype.range_coe_subtype, ofPred_mem_eq] at this
     refine this.mono (by gcongr)
-  lift t to Finset V using b.finite_set
+  lift t to Finset V using b.setFinite
   exact ⟨_, b.centroid_mem_interior_convexHull⟩
 
 theorem Convex.interior_nonempty_iff_affineSpan_eq_top [FiniteDimensional ℝ V] {s : Set V}

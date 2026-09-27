@@ -13,7 +13,6 @@ public import Mathlib.Order.Notation
 public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.Push.Attr
 
-import Mathlib.Tactic.Attr.Register
 import Aesop.BuiltinRules
 import Aesop.Frontend.Tactic
 import Aesop.Main

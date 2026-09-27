@@ -19,9 +19,11 @@ powers and the logarithm.
 
 public section
 
-open Interval MeasureTheory Real Set
+open MeasureTheory Real Set
 
-variable {a b c d : ℝ} (n : ℕ) {f : ℝ → ℝ} {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
+open scoped Interval
+
+variable {a b c : ℝ} (n : ℕ) {f : ℝ → ℝ} {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
 
 namespace intervalIntegral
 
@@ -241,7 +243,7 @@ theorem intervalIntegrable_log' : IntervalIntegrable log volume a b := by
     apply intervalIntegrable_deriv_of_nonneg (g := fun x ↦ -(x * log x - x))
     · exact (continuous_mul_log.continuousOn.sub continuous_id.continuousOn).neg
     · intro s ⟨hs, _⟩
-      norm_num at *
+      simp at *
       simpa using! (hasDerivAt_id s).sub (hasDerivAt_mul_log hs.ne.symm)
     · intro s ⟨hs₁, hs₂⟩
       grind [Pi.neg_apply, log_nonpos_iff]

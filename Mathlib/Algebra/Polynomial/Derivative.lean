@@ -34,7 +34,7 @@ namespace Polynomial
 
 universe u v w y z
 
-variable {R : Type u} {S : Type v} {T : Type w} {ι : Type y} {A : Type z} {a b : R} {n : ℕ}
+variable {R : Type u} {S : Type v} {T : Type w} {ι : Type y} {a b : R} {n : ℕ}
 
 section Derivative
 
@@ -450,13 +450,13 @@ lemma derivative_ne_zero : p.derivative ≠ 0 ↔ p.natDegree ≠ 0 := derivativ
   norm_cast
   congr <;> lia
 
-@[deprecated (since := "2026-06-03")]
+@[deprecated derivative_eq_zero +typeChanged (since := "2026-06-03")]
 alias ⟨natDegree_eq_zero_of_derivative_eq_zero, _⟩ := derivative_eq_zero
 
 lemma eq_C_of_derivative_eq_zero (h : derivative p = 0) : p = C (p.coeff 0) :=
   eq_C_of_natDegree_eq_zero <| derivative_eq_zero.1 h
 
-@[deprecated degree_derivative (since := "2026-06-03")]
+@[deprecated degree_derivative +typeChanged (since := "2026-06-03")]
 lemma degree_derivative_eq (p : R[X]) (hp : 0 < natDegree p) :
     degree (derivative p) = (natDegree p - 1 : ℕ) :=
   degree_derivative (by lia)

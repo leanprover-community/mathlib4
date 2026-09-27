@@ -74,7 +74,7 @@ variable (G) in
 @[to_additive (attr := simps)
 /-- If `G` is an additive group object, then `Hom(-, G)` is a presheaf of additive groups. -/]
 def yonedaGrpObj : Cᵒᵖ ⥤ GrpCat.{v} where
-  obj X := GrpCat.of (unop X ⟶ G)
+  obj X := ↧(unop X ⟶ G)
   map φ := GrpCat.ofHom ((yonedaMonObj G).map φ).hom
 
 variable (G) in
@@ -134,8 +134,8 @@ def yonedaGrpFullyFaithful : yonedaGrp (C := C).FullyFaithful where
     Grp.homMk' (yonedaMonFullyFaithful.preimage ((Functor.whiskerRight α (forget₂ GrpCat MonCat))))
   map_preimage {G H} α := by
     ext X : 3
-    exact congr(($(yonedaMonFullyFaithful.map_preimage (X := G.toMon) (Y := H.toMon)
-      (Functor.whiskerRight α (forget₂ GrpCat MonCat))).app X).hom)
+    congrm ($(yonedaMonFullyFaithful.map_preimage (X := G.toMon) (Y := H.toMon)
+     (Functor.whiskerRight α (forget₂ GrpCat MonCat))).app X).hom
   preimage_map f := by
     ext
     congr

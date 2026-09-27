@@ -37,7 +37,7 @@ open scoped Pointwise
 
 section CommRing
 
-variable {S : Type*} [CommRing S] {f : R →+* S} {I J : Ideal S}
+variable {S : Type*} [CommRing S] {f : R →+* S}
 
 variable {p : Ideal R} {P : Ideal S}
 
@@ -155,12 +155,12 @@ theorem LiesOver.of_eq_comap [Q.LiesOver p] {F : Type*} [FunLike F B C]
     rw [h]
     exact (over_def Q p).trans <|
       congrFun (congrFun (congrArg
-        comap ((AlgHomClass.toAlgHom f : B →ₐ[A] C).comp_algebraMap.symm)) _) Q
+        comap ((AlgHom.ofClass f).comp_algebraMap.symm)) _) Q
 
 theorem LiesOver.of_eq_map_equiv [P.LiesOver p] {E : Type*} [EquivLike E B C]
     [AlgEquivClass E A B C] (σ : E) (h : Q = P.map σ) : Q.LiesOver p := by
   rw [← show _ = P.map σ from comap_symm (RingEquivClass.toRingEquiv σ)] at h
-  exact of_eq_comap p (AlgEquivClass.toAlgEquiv σ : B ≃ₐ[A] C).symm h
+  exact of_eq_comap p (AlgEquiv.ofClass σ).symm h
 
 variable {p} in
 instance LiesOver.smul [SMulCommClass G A B] [h : P.LiesOver p] : (g • P).LiesOver p :=
@@ -216,7 +216,7 @@ theorem map_under_le_under_map {C D : Type*} [CommSemiring C] [Semiring D] [Alge
   apply le_comap_of_map_le
   rw [map_map, ← IsScalarTower.algebraMap_eq, map_le_iff_le_comap,
     IsScalarTower.algebraMap_eq A B D, ← comap_comap]
-  exact comap_mono <| le_comap_map
+  exact comap_mono le_comap_map
 
 /--
 Consider the following commutative diagram of ring maps

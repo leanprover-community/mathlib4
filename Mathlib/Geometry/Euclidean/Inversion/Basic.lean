@@ -28,7 +28,7 @@ Currently, we prove only a few basic lemmas needed to prove Ptolemy's inequality
 
 noncomputable section
 
-open Metric Function AffineMap Set AffineSubspace
+open Metric Function AffineMap Set
 open scoped Topology
 
 variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
@@ -56,7 +56,6 @@ sphere `Metric.sphere c R`. We also prove that the distance to the center of the
 this inversion is given by `R ^ 2 / dist x c`.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 theorem inversion_eq_lineMap (c : P) (R : ℝ) (x : P) :
     inversion c R x = lineMap c x ((R / dist x c) ^ 2) :=
   rfl

@@ -8,6 +8,7 @@ module
 public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 public import Mathlib.MeasureTheory.Measure.Tight
+public import Mathlib.MeasureTheory.Function.ConvergenceInDistribution
 
 import Mathlib.MeasureTheory.Measure.CharacteristicFunction.TaylorExpansion
 import Mathlib.MeasureTheory.Measure.IntegralCharFun
@@ -219,5 +220,41 @@ theorem ProbabilityMeasure.tendsto_iff_tendsto_charFun :
   rw [ProbabilityMeasure.tendsto_iff_forall_integral_rclike_tendsto ℂ] at h
   simp_rw [charFun_eq_integral_innerProbChar]
   exact h (innerProbChar t)
+
+variable {Ω' : Type*} {Ω : ℕ → Type*} {m : ∀ n, MeasurableSpace (Ω n)}
+  {P : (n : ℕ) → Measure (Ω n)} [∀ n, IsProbabilityMeasure (P n)]
+  {m' : MeasurableSpace Ω'} {P' : Measure Ω'} [IsProbabilityMeasure P']
+  {X : (n : ℕ) → Ω n → E} {X' : Ω' → E}
+
+/-- If the characteristic functions of a sequence of pushforward measures converge pointwise to the
+characteristic function of a pushforward measure, then the random variables converge in
+distribution. -/
+lemma TendstoInDistribution.of_tendsto_charFun
+    (hX : ∀ n, AEMeasurable (X n) (P n)) (hX' : AEMeasurable X' P')
+    (h : ∀ t : E, Tendsto (fun n ↦ charFun ((P n).map (X n)) t) atTop (𝓝 (charFun (P'.map X') t))) :
+    TendstoInDistribution X atTop X' P P' where
+  forall_aemeasurable := hX
+  aemeasurable_limit := hX'
+  tendsto := by
+    apply ProbabilityMeasure.tendsto_of_tendsto_charFun
+    simpa
+
+/-- If a sequence of random variables converges in distribution to a random variable, then the
+characteristic functions of the sequence of pushforward measures under the sequence of random
+variables converge pointwise to the characteristic function of the pushforward measure under the
+random variable. -/
+lemma TendstoInDistribution.tendsto_charFun (h : TendstoInDistribution X atTop X' P P') (t : E) :
+    Tendsto (fun n ↦ charFun ((P n).map (X n)) t) atTop (𝓝 (charFun (P'.map X') t)) := by
+  simpa only [ProbabilityMeasure.coe_mk] using
+      ProbabilityMeasure.tendsto_iff_tendsto_charFun.mp h.tendsto t
+
+/-- The convergence in distribution of random variables is equivalent to the pointwise convergence
+of the characteristic functions of their pushforwards. -/
+lemma tendstoInDistribution_iff_tendsto_charFun
+    (hX : ∀ n, AEMeasurable (X n) (P n)) (hX' : AEMeasurable X' P') :
+    TendstoInDistribution X atTop X' P P' ↔
+    (∀ t : E, Tendsto (fun n ↦ charFun ((P n).map (X n)) t) atTop (𝓝 (charFun (P'.map X') t))) where
+  mp := TendstoInDistribution.tendsto_charFun
+  mpr := TendstoInDistribution.of_tendsto_charFun hX hX'
 
 end MeasureTheory

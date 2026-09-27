@@ -96,13 +96,22 @@ theorem Pairwise.imp (h : s.Pairwise r) (hpq : ∀ ⦃a b : α⦄, r a b → p a
 protected theorem Pairwise.eq (hs : s.Pairwise r) (ha : a ∈ s) (hb : b ∈ s) (h : ¬r a b) : a = b :=
   of_not_not fun hab => h <| hs ha hb hab
 
-theorem _root_.Std.Refl.set_pairwise_iff [Std.Refl r] :
+theorem pairwise_iff_of_refl [Std.Refl r] :
     s.Pairwise r ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → r a b :=
-  forall₄_congr fun a _ _ _ => or_iff_not_imp_left.symm.trans <| or_iff_right_of_imp <| Eq.ndrec <|
-    refl a
+  forall₄_congr fun _ _ _ _ => or_iff_not_imp_left.symm.trans <| or_iff_right_of_imp of_eq
 
+alias ⟨Pairwise.forall₂, _⟩ := pairwise_iff_of_refl
+
+theorem Pairwise.of_forall₂ (h : ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → r a b) :
+    s.Pairwise r :=
+  fun _ h₁ _ h₂ _ ↦ h h₁ h₂
+
+@[deprecated (since := "2026-08-14")] alias Pairwise.of_refl := Pairwise.forall₂
+
+@[deprecated (since := "2026-08-14")]
+alias _root_.Std.Refl.set_pairwise_iff := pairwise_iff_of_refl
 @[deprecated (since := "2026-03-27")]
-alias _root_.Reflexive.set_pairwise_iff := Std.Refl.set_pairwise_iff
+alias _root_.Reflexive.set_pairwise_iff := pairwise_iff_of_refl
 
 theorem Pairwise.on_injective (hs : s.Pairwise r) (hf : Function.Injective f) (hfs : ∀ x, f x ∈ s) :
     Pairwise (r on f) := fun i j hij => hs (hfs i) (hfs j) (hf.ne hij)

@@ -9,7 +9,7 @@ public import Mathlib.Order.Category.Frm
 public import Mathlib.Topology.Category.CompHaus.Basic
 public import Mathlib.Topology.Sets.Opens
 
-/-! The forgetful functor from `TopCatᵒᵖ` to `Frm`. -/
+/-! # The forgetful functor from `TopCatᵒᵖ` to `Frm` -/
 
 @[expose] public section
 
@@ -20,8 +20,8 @@ open TopologicalSpace Opposite CategoryTheory
 /-- The forgetful functor from `TopCatᵒᵖ` to `Frm`. -/
 @[simps]
 def topCatOpToFrm : TopCatᵒᵖ ⥤ Frm where
-  obj X := Frm.of (Opens (unop X : TopCat))
-  map f := Frm.ofHom <| Opens.comap <| (Quiver.Hom.unop f).hom
+  obj X := ↧(Opens (unop X : TopCat))
+  map f := Frm.ofHom <| Opens.comap (Quiver.Hom.unop f).hom
 
 -- Note, `CompHaus` is too strong. We only need `T0Space`.
 instance CompHausOpToFrame.faithful : (compHausToTop.op ⋙ topCatOpToFrm.{u}).Faithful :=

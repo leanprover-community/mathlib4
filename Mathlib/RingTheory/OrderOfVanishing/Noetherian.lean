@@ -31,7 +31,6 @@ section NoetherianDimLEOne
 
 variable {R : Type*} [CommRing R]
 variable [IsNoetherianRing R] [Ring.KrullDimLE 1 R]
-variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 
 open scoped nonZeroDivisors
 /--
@@ -39,7 +38,7 @@ Order of vanishing function as a monoid homomorphism
 -/
 noncomputable
 def ordMonoidHom : R⁰ →* Multiplicative ℕ where
-  toFun x := .ofAdd <| (Ring.ord R x).toNat
+  toFun x := .ofAdd (Ring.ord R x).toNat
   map_one' := by simp [OneMemClass.coe_one, isUnit_one, ord_of_isUnit]
   map_mul' x y := by simp [ord_mul, ENat.toNat_add (ord_ne_top x.2) (ord_ne_top y.2)]
 
@@ -191,7 +190,7 @@ lemma ordFrac_irreducible
     IsDiscreteValuationRing.intValuation_maximalIdeal,
     IsDiscreteValuationRing.addVal_uniformizer hϖ, ← WithZero.exp_eq_coe_ofAdd]
 
-open IsDedekindDomain HeightOneSpectrum
+open IsDedekindDomain
 
 lemma isUnit_iff_ordFrac_one_of_isDiscreteValuationRing {x : R} :
     IsUnit x ↔ ordFrac R (algebraMap R K x) = 1 := by

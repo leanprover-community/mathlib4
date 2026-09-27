@@ -9,9 +9,13 @@ public import Mathlib.Init
 public import Lean.Meta.Tactic.Util
 public import Lean.SubExpr
 
-/-! This file defines some functions for dealing with `SubExpr.GoalsLocation`. -/
+/-!
+# Utilities for `SubExpr.GoalsLocation`
 
-@[expose] public section
+This file defines some functions for dealing with `SubExpr.GoalsLocation`.
+-/
+
+public section
 
 namespace Lean.SubExpr.GoalsLocation
 /-- The root expression of the position specified by the `GoalsLocation`. -/

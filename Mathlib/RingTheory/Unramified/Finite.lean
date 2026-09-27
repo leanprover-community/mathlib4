@@ -185,9 +185,8 @@ lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
       not_not] at hj
     simp only [Finsupp.sum]
     trans b.repr (f.support.sum (fun _ ↦ 0))
-    · refine congr_arg b.repr (Finset.sum_congr rfl ?_)
-      simp only [Finsupp.mem_support_iff]
-      intro i hi
+    · congr! with i hi
+      rw [Finsupp.mem_support_iff] at hi
       rw [hj i hi, zero_smul]
     · simp only [Finset.sum_const_zero, map_zero]
   -- And `G` such that `∑ₛ aᵢⱼfᵢ = ∑ Gᵢⱼbⱼ`, where `aᵢⱼ` are the coefficients `bᵢx = ∑ aᵢⱼbⱼ`.
@@ -219,7 +218,7 @@ lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
   have : ∀ j, x * f j = f.sum fun i y ↦ a i j • y := by
     intro j
     apply b.repr.injective
-    exact DFunLike.congr_fun this j
+    congrm $this j
   -- Since `∑ₛ fⱼbⱼ = 1`, `x = ∑ₛ aᵢⱼfᵢbⱼ` is indeed in the span of `{ fᵢbⱼ | i, j ∈ s }`.
   rw [← mul_one x, ← @lmul_elem R, hf, map_finsuppSum, Finsupp.sum, Finset.mul_sum]
   simp only [TensorProduct.lmul'_apply_tmul, Finset.coe_image₂, ← mul_assoc, this,
@@ -244,15 +243,13 @@ def sec :
       LinearMap.flip_apply, TensorProduct.AlgebraTensorModule.mapBilinear_apply, RingHom.id_apply]
     trans (TensorProduct.AlgebraTensorModule.map (LinearMap.id (R := S) (M := S))
       ((LinearMap.flip (AlgHom.toLinearMap (lsmul R R M))) m)) ((1 ⊗ₜ r) * elem R S)
-    · induction elem R S using TensorProduct.induction_on
-      · simp
+    · induction elem R S using TensorProduct.inductionOn
       · simp [smul_comm r]
       · simp only [map_add, mul_add, *]
     · have := one_tmul_sub_tmul_one_mul_elem (R := R) r
       rw [sub_mul, sub_eq_zero] at this
       rw [this]
-      induction elem R S using TensorProduct.induction_on
-      · simp
+      induction elem R S using TensorProduct.inductionOn
       · simp [TensorProduct.smul_tmul']
       · simp only [map_add, smul_add, mul_add, *]
 
@@ -265,8 +262,7 @@ lemma comp_sec :
     Function.comp_apply, LinearMap.flip_apply, TensorProduct.AlgebraTensorModule.mapBilinear_apply,
     TensorProduct.AlgebraTensorModule.lift_apply, LinearMap.id_coe, id_eq]
   trans (TensorProduct.lmul' R (elem R S)) • x
-  · induction elem R S using TensorProduct.induction_on with
-    | zero => simp
+  · induction elem R S using TensorProduct.inductionOn with
     | tmul r s => simp [mul_smul, smul_comm r s]
     | add y z hy hz => simp [hy, hz, add_smul]
   · rw [lmul_elem, one_smul]

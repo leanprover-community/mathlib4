@@ -20,19 +20,17 @@ AB4\*.
 
 public section
 
-universe u
+universe u v w
 
 open CategoryTheory Limits
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance {J C : Type*} [Category* J] [Category* C] [HasColimitsOfShape J C] [Preadditive C] :
     (colim (J := J) (C := C)).Additive where
 
 variable {J : Type u} [SmallCategory J] [IsFiltered J]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance :
     (colim (J := J) (C := AddCommGrpCat.{u})).PreservesHomology :=
   Functor.preservesHomology_of_map_exact _ (fun S hS ↦ by
@@ -61,6 +59,18 @@ instance : HasFilteredColimits (AddCommGrpCat.{u}) where
 noncomputable instance : AB5 (AddCommGrpCat.{u}) where
   ofShape _ := { preservesFiniteLimits := inferInstance }
 
+section UnivLE
+
+variable [UnivLE.{u, v}] [UnivLE.{u, w}] [UnivLE.{v, w}]
+
+instance Ab.hasFilteredColimitsOfSize : HasFilteredColimitsOfSize.{u, v} Ab.{w} :=
+  hasFilteredColimitsOfSize_of_univLE.{u, v, w}
+
+instance Ab.ab5OfSize : AB5OfSize.{u, v} Ab.{w} :=
+  AB5OfSize_of_univLE.{u, v, w, w} Ab.{w}
+
+end UnivLE
+
 attribute [local instance] Abelian.hasFiniteBiproducts
 
 instance : AB4 AddCommGrpCat.{u} := AB4.of_AB5 _
@@ -70,9 +80,9 @@ instance : HasExactLimitsOfShape (Discrete J) (AddCommGrpCat.{u}) := by
   apply +allowSynthFailures hasExactLimitsOfShape_of_preservesEpi
   exact {
     preserves {X Y} f hf := by
-      let iX : limit X ≅ AddCommGrpCat.of ((i : J) → X.obj ⟨i⟩) := (Pi.isoLimit X).symm ≪≫
+      let iX : limit X ≅ ↧((i : J) → X.obj ⟨i⟩) := (Pi.isoLimit X).symm ≪≫
         (limit.isLimit _).conePointUniqueUpToIso (AddCommGrpCat.HasLimit.productLimitCone _).isLimit
-      let iY : limit Y ≅ AddCommGrpCat.of ((i : J) → Y.obj ⟨i⟩) := (Pi.isoLimit Y).symm ≪≫
+      let iY : limit Y ≅ ↧((i : J) → Y.obj ⟨i⟩) := (Pi.isoLimit Y).symm ≪≫
         (limit.isLimit _).conePointUniqueUpToIso (AddCommGrpCat.HasLimit.productLimitCone _).isLimit
       have : Pi.map (fun i ↦ f.app ⟨i⟩) = iX.inv ≫ lim.map f ≫ iY.hom := by
         simp only [Discrete.functor_obj_eq_as, Discrete.mk_as, Pi.isoLimit,
@@ -100,7 +110,7 @@ instance : AB4Star AddCommGrpCat.{u} where
 
 instance : HasSeparator AddCommGrpCat.{u} where
   hasSeparator := by
-    use AddCommGrpCat.of (ULift ℤ)
+    use ↧(ULift ℤ)
     intro A B f g h; simp_all only [ObjectProperty.singleton_iff, AddCommGrpCat.ext_iff,
       AddCommGrpCat.hom_comp, AddMonoidHom.coe_comp, Function.comp_apply, forall_eq', ULift.forall]
     (intro x; specialize h (AddCommGrpCat.ofHom

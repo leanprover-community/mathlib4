@@ -44,7 +44,7 @@ open CategoryTheory.Preadditive CategoryTheory.Category CategoryTheory.Idempoten
 
 open Opposite
 
-open Simplicial
+open scoped Simplicial
 
 noncomputable section
 
@@ -94,8 +94,8 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
   · -- φ : S → Sᶜ is injective
     rintro ⟨i, j⟩ hij ⟨i', j'⟩ hij' h
     rw [Prod.mk_inj]
-    exact ⟨by simpa [φ] using! congr_arg Prod.snd h,
-      by simpa [φ, Fin.castSucc_castLT] using! congr_arg Fin.castSucc (congr_arg Prod.fst h)⟩
+    exact ⟨by simpa [φ] using! congr($(h).snd),
+      by simpa [φ, Fin.castSucc_castLT] using! congr(Fin.castSucc $(h).fst)⟩
   · -- φ : S → Sᶜ is surjective
     rintro ⟨i', j'⟩ hij'
     simp_rw [S, Finset.compl_filter, Finset.mem_filter_univ, not_le] at hij'
@@ -190,7 +190,6 @@ def alternatingFaceMapComplexCompMapHomologicalComplexIso
     (fun X ↦ HomologicalComplex.Hom.isoOfComponents (fun _ ↦ Iso.refl _))
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem map_alternatingFaceMapComplex {D : Type*} [Category* D] [Preadditive D] (F : C ⥤ D)
     [F.Additive] :
     alternatingFaceMapComplex C ⋙ F.mapHomologicalComplex _ =
@@ -215,7 +214,6 @@ theorem karoubi_alternatingFaceMapComplex_d (P : Karoubi (SimplicialObject C)) (
 namespace AlternatingFaceMapComplex
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation which gives the augmentation of the alternating face map
 complex attached to an augmented simplicial object. -/
 def ε [Limits.HasZeroObject C] :

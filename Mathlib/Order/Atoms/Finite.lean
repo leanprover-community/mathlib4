@@ -24,7 +24,7 @@ This module contains some results on atoms and simple lattices in the finite con
 public section
 
 
-variable {α β : Type*}
+variable {α : Type*}
 
 namespace IsSimpleOrder
 
@@ -75,8 +75,6 @@ instance : IsSimpleOrder Bool :=
 end Bool
 
 section Fintype
-
-open Finset
 
 -- see Note [lower instance priority]
 instance (priority := 100) Finite.to_isCoatomic [PartialOrder α] [OrderTop α] [Finite α] :

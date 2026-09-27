@@ -3,9 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Fintype.Perm
-import Mathlib.Dynamics.FixedPoints.Basic
+module
+
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.Fintype.Perm
+public import Mathlib.Dynamics.FixedPoints.Basic
 
 /-!
 # Formalization of IMO 1987, Q1
@@ -21,6 +23,8 @@ The original problem assumes `n ≥ 1`. It turns out that a version with `n * (n
 holds true for `n = 0` as well, so we first prove it, then deduce the original version in the case
 `n ≥ 1`. -/
 
+@[expose] public section
+
 variable (α : Type*) [Fintype α] [DecidableEq α]
 
 open scoped Nat
@@ -31,7 +35,6 @@ open Finset (range sum_const)
 
 namespace Imo1987Q1
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The set of pairs `(x : α, σ : Perm α)` such that `σ x = x` is equivalent to the set of pairs
 `(x : α, σ : Perm {x}ᶜ)`. -/
 def fixedPointsEquiv : { σx : α × Perm α // σx.2 σx.1 = σx.1 } ≃ Σ x : α, Perm ({x}ᶜ : Set α) :=
@@ -42,7 +45,6 @@ def fixedPointsEquiv : { σx : α × Perm α // σx.2 σx.1 = σx.1 } ≃ Σ x :
       sigmaCongrRight fun x => Equiv.subtypeEquivRight (by simp)
     _ ≃ Σ x : α, Perm ({x}ᶜ : Set α) := sigmaCongrRight fun x => by apply Equiv.Set.compl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem card_fixed_points :
     card { σx : α × Perm α // σx.2 σx.1 = σx.1 } = card α * (card α - 1)! := by
   simp only [card_congr (fixedPointsEquiv α), card_sigma, card_perm]

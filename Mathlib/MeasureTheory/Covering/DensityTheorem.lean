@@ -32,7 +32,7 @@ form of Lebesgue's density theorem.
 
 noncomputable section
 
-open Set Filter Metric MeasureTheory TopologicalSpace
+open Set Filter Metric MeasureTheory
 
 open scoped NNReal Topology
 

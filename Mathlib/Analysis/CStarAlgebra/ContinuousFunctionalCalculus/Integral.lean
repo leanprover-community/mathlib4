@@ -41,7 +41,7 @@ with the API developed in `Mathlib.MeasureTheory.SpecificCodomains.ContinuousMap
 
 public section
 
-open MeasureTheory Topology
+open MeasureTheory
 open scoped ContinuousMapZero
 
 section unital

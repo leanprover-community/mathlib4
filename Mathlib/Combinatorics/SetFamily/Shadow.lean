@@ -64,7 +64,7 @@ def shadow (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
 
 @[inherit_doc] scoped[FinsetFamily] notation:max "∂" => Finset.shadow
 
-open FinsetFamily
+open scoped FinsetFamily
 
 /-- The shadow of the empty set is empty. -/
 @[simp]
@@ -175,7 +175,7 @@ lemma exists_subset_of_mem_shadow (hs : t ∈ ∂ 𝒜) : ∃ s ∈ 𝒜, t ⊆ 
 
 end Shadow
 
-open FinsetFamily
+open scoped FinsetFamily
 
 section UpShadow
 

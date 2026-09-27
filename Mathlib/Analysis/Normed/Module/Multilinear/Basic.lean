@@ -263,7 +263,7 @@ theorem norm_image_sub_le_of_bound (f : MultilinearMap 𝕜 E G)
         rcases eq_or_ne j i with rfl | h
         · simp only [ite_true, Function.update_self]
           exact norm_le_pi_norm (m₁ - m₂) _
-        · simp [h, -le_sup_iff, -sup_le_iff, sup_le_sup, norm_le_pi_norm]
+        · simp [h, -le_max_iff, -sup_le_iff, sup_le_sup, norm_le_pi_norm]
       _ = ‖m₁ - m₂‖ * max ‖m₁‖ ‖m₂‖ ^ (Fintype.card ι - 1) := by
         rw [prod_update_of_mem (Finset.mem_univ _)]
         simp [card_univ_sdiff]
@@ -541,7 +541,7 @@ theorem opNNNorm_prod (f : ContinuousMultilinearMap 𝕜 E G) (g : ContinuousMul
 
 theorem opNorm_prod (f : ContinuousMultilinearMap 𝕜 E G) (g : ContinuousMultilinearMap 𝕜 E G') :
     ‖f.prod g‖ = max ‖f‖ ‖g‖ :=
-  congr_arg NNReal.toReal (opNNNorm_prod f g)
+  congr($(opNNNorm_prod f g).toReal)
 
 theorem opNNNorm_pi
     [∀ i', SeminormedAddCommGroup (E' i')] [∀ i', NormedSpace 𝕜 (E' i')]
@@ -552,7 +552,7 @@ theorem opNorm_pi {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'}
     [∀ i', SeminormedAddCommGroup (E' i')] [∀ i', NormedSpace 𝕜 (E' i')]
     (f : ∀ i', ContinuousMultilinearMap 𝕜 E (E' i')) :
     ‖pi f‖ = ‖f‖ :=
-  congr_arg NNReal.toReal (opNNNorm_pi f)
+  congr($(opNNNorm_pi f).toReal)
 
 section
 
@@ -794,7 +794,7 @@ theorem nnnorm_smulRight (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
 @[simp]
 theorem norm_smulRight (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
     ‖f.smulRight z‖ = ‖f‖ * ‖z‖ :=
-  congr_arg NNReal.toReal (nnnorm_smulRight f z)
+  congr($(nnnorm_smulRight f z).toReal)
 
 @[simp]
 theorem norm_mkPiRing (z : G) : ‖ContinuousMultilinearMap.mkPiRing 𝕜 ι z‖ = ‖z‖ := by
@@ -924,7 +924,6 @@ theorem norm_compContinuousMultilinearMap_le (g : G →L[𝕜] G') (f : Continuo
       ‖g (f m)‖ ≤ ‖g‖ * (‖f‖ * ∏ i, ‖m i‖) := g.le_opNorm_of_le <| f.le_opNorm _
       _ = _ := (mul_assoc _ _ _).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Flip arguments in `f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G'` to get
 `ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')` -/
 @[simps! apply_apply]

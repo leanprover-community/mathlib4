@@ -122,7 +122,7 @@ lemma isAcyclic_sSup_of_isAcyclic_directedOn (Hs : Set <| SimpleGraph V)
   · simp
   · intro u p hp
     obtain ⟨H, hH, hpH⟩ := p.exists_mem_contains_edges_of_directed Hs hnemp h_dir
-    exact h_acyc H hH (p.transfer H hpH) <| Walk.IsCycle.transfer hp hpH
+    exact h_acyc H hH (p.transfer H hpH) <| hp.transfer hpH
 
 /-- Every acyclic subgraph `H ≤ G` is contained in a maximal such subgraph. -/
 theorem exists_maximal_isAcyclic_of_le_isAcyclic
@@ -151,7 +151,7 @@ lemma IsAcyclic.of_subsingleton [Subsingleton V] {G : SimpleGraph V} : G.IsAcycl
   .of_card_le_two <| ENat.card_le_one.trans one_le_two
 
 lemma Subgraph.isAcyclic_coe_bot (G : SimpleGraph V) : (⊥ : G.Subgraph).coe.IsAcyclic :=
-  @IsAcyclic.of_subsingleton _ (Set.isEmpty_coe_sort.mpr rfl).instSubsingleton _
+  @.of_subsingleton _ (by simp) _
 
 lemma IsTree.of_subsingleton [Nonempty V] [Subsingleton V] {G : SimpleGraph V} : G.IsTree :=
   ⟨.of_subsingleton, .of_subsingleton⟩
@@ -195,16 +195,16 @@ theorem isAcyclic_iff_subsingleton_path : G.IsAcyclic ↔ ∀ u v, Subsingleton 
 
 alias ⟨IsAcyclic.subsingleton_path, _⟩ := isAcyclic_iff_subsingleton_path
 
-@[deprecated IsAcyclic.subsingleton_path (since := "2026-06-30")]
+@[deprecated IsAcyclic.subsingleton_path +typeChanged (since := "2026-06-30")]
 theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p q : G.Path v w) :
     p = q :=
   h.subsingleton_path v w |>.elim p q
 
-@[deprecated isAcyclic_iff_subsingleton_path (since := "2026-06-30")]
+@[deprecated isAcyclic_iff_subsingleton_path +typeChanged (since := "2026-06-30")]
 theorem isAcyclic_of_path_unique (h : ∀ (v w : V) (p q : G.Path v w), p = q) : G.IsAcyclic :=
   isAcyclic_iff_subsingleton_path.mpr (⟨h · ·⟩)
 
-@[deprecated isAcyclic_iff_subsingleton_path (since := "2026-06-30")]
+@[deprecated isAcyclic_iff_subsingleton_path +typeChanged (since := "2026-06-30")]
 theorem isAcyclic_iff_path_unique : G.IsAcyclic ↔ ∀ ⦃v w : V⦄ (p q : G.Path v w), p = q :=
   isAcyclic_iff_subsingleton_path.trans <| forall₂_congr fun _ _ ↦ subsingleton_iff
 
@@ -350,9 +350,8 @@ lemma isTree_of_minimal_connected (h : Minimal Connected G) : IsTree G := by
   rw [isTree_iff, and_iff_right h.prop, isAcyclic_iff_forall_adj_isBridge]
   exact fun _ _ _ ↦ by_contra fun hbr ↦ h.not_prop_of_lt
     (by simpa [deleteEdges, ← edgeSet_ssubset_edgeSet])
-    <| h.prop.connected_delete_edge_of_not_isBridge hbr
+    <| h.prop.preconnected.connected_deleteEdges_of_not_isBridge hbr
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isTree_iff_minimal_connected : IsTree G ↔ Minimal Connected G := by
   refine ⟨fun htree ↦ ⟨htree.connected, fun G' h' hle u v hadj ↦ ?_⟩, isTree_of_minimal_connected⟩
   have ⟨p, hp⟩ := h'.exists_isPath u v
@@ -487,8 +486,8 @@ lemma isTree_iff_connected_and_card [Finite V] :
   refine ⟨fun h ↦ ⟨h.connected, by simpa [edgeFinset] using h.card_edgeFinset⟩,
     fun ⟨h₁, h₂⟩ ↦ ⟨h₁, ?_⟩⟩
   simp_rw [isAcyclic_iff_forall_adj_isBridge]
-  refine fun x y h ↦ by_contra fun hbr ↦
-    (h₁.connected_delete_edge_of_not_isBridge hbr).card_vert_le_card_edgeSet_add_one.not_gt ?_
+  refine fun x y h ↦ by_contra (h₁.preconnected.connected_deleteEdges_of_not_isBridge ·
+    |>.card_vert_le_card_edgeSet_add_one.not_gt ?_)
   rw [Nat.card_eq_fintype_card, ← edgeFinset_card, ← h₂, Nat.card_eq_fintype_card,
     ← edgeFinset_card, add_lt_add_iff_right]
   exact Finset.card_lt_card <| by simpa [deleteEdges, edgeFinset]

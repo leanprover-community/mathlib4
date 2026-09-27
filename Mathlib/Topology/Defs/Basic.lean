@@ -12,7 +12,7 @@ public import Mathlib.Tactic.FunProp
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Data.Nat.Notation
 
-public meta import Mathlib.Util.DelabNonCanonical
+public import Mathlib.Util.DelabNonCanonical
 
 /-!
 # Basic definitions about topological spaces
@@ -199,6 +199,9 @@ scoped notation (name := IsOpen_of) "IsOpen[" t "]" => @IsOpen _ t
 /-- Notation for `IsClosed` with respect to a non-standard topology. -/
 scoped notation (name := IsClosed_of) "IsClosed[" t "]" => @IsClosed _ t
 
+/-- Notation for `IsClopen` with respect to a non-standard topology. -/
+scoped notation (name := IsClopen_of) "IsClopen[" t "]" => @IsClopen _ t
+
 /-- Notation for `closure` with respect to a non-standard topology. -/
 scoped notation (name := closure_of) "closure[" t "]" => @closure _ t
 
@@ -206,7 +209,7 @@ scoped notation (name := closure_of) "closure[" t "]" => @closure _ t
 scoped notation (name := Continuous_of) "Continuous[" t₁ ", " t₂ "]" =>
   @Continuous _ _ t₁ t₂
 
-open Topology Lean.PrettyPrinter.Delaborator Delab.Noncanonical
+open Lean.PrettyPrinter.Delaborator Delab.Noncanonical
 
 /-- Delaborator for `IsOpen[_]`. -/
 @[scoped app_delab IsOpen] meta def delabIsOpen : Delab := delabUnary 2 1 fun x ↦ `(IsOpen[$x])
@@ -214,6 +217,10 @@ open Topology Lean.PrettyPrinter.Delaborator Delab.Noncanonical
 /-- Delaborator for `IsClosed[_]`. -/
 @[scoped app_delab IsClosed]
 meta def delabIsClosed : Delab := delabUnary 2 1 fun x ↦ `(IsClosed[$x])
+
+/-- Delaborator for `IsClopen[_]`. -/
+@[scoped app_delab IsClopen]
+meta def delabIsClopen : Delab := delabUnary 2 1 fun x ↦ `(IsClopen[$x])
 
 /-- Delaborator for `closure[_]`. -/
 @[scoped app_delab closure] meta def delabClosure : Delab := delabUnary 2 1 fun x ↦ `(closure[$x])

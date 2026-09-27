@@ -76,7 +76,6 @@ nonrec theorem _root_.Commute.tprod {a₁ a₂ : Π i, A i} (ha : Commute a₁ a
     Commute (tprod R a₁) (tprod R a₂) :=
   ha.tprod
 
-set_option backward.isDefEq.respectTransparency false in
 lemma smul_tprod_mul_smul_tprod (r s : R) (x y : Π i, A i) :
     (r • tprod R x) * (s • tprod R y) = (r * s) • tprod R (x * y) := by
   simp only [mul_def, map_smul, LinearMap.smul_apply, mul_tprod_tprod, mul_comm r s, mul_smul]
@@ -131,10 +130,10 @@ protected lemma mul_assoc (x y z : ⨂[R] i, A i) : mul (mul x y) z = mul x (mul
   suffices LinearMap.llcomp R _ _ _ mul ∘ₗ mul =
       (LinearMap.llcomp R _ _ _ LinearMap.lflip.toLinearMap <|
         LinearMap.llcomp R _ _ _ mul.flip ∘ₗ mul).flip by
-    exact DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this x) y) z
+    congrm $this x y z
   ext x y z
   dsimp [← mul_def]
-  simpa only [tprod_mul_tprod] using congr_arg (tprod R) (mul_assoc x y z)
+  simpa only [tprod_mul_tprod] using congr(tprod R $(mul_assoc x y z))
 
 instance instNonUnitalSemiring : NonUnitalSemiring (⨂[R] i, A i) where
   __ := instNonUnitalNonAssocSemiring
@@ -224,8 +223,8 @@ theorem algHom_ext {S : Type*} [Finite ι] [DecidableEq ι] [Semiring S] [Algebr
     f = g :=
   AlgHom.toLinearMap_injective <| PiTensorProduct.ext <| MultilinearMap.ext fun x =>
     suffices f.toMonoidHom.comp (tprodMonoidHom R) = g.toMonoidHom.comp (tprodMonoidHom R) from
-      DFunLike.congr_fun this x
-    MonoidHom.pi_ext fun i xi => DFunLike.congr_fun (h i) xi
+      congr($this x)
+    MonoidHom.pi_ext fun i xi => congr($(h i) xi)
 
 end Semiring
 
@@ -245,7 +244,7 @@ variable [CommSemiring R] [∀ i, CommSemiring (A i)] [∀ i, Algebra R (A i)]
 
 protected lemma mul_comm (x y : ⨂[R] i, A i) : mul x y = mul y x := by
   suffices mul (R := R) (A := A) = mul.flip from
-    DFunLike.congr_fun (DFunLike.congr_fun this x) y
+    congr($this x y)
   ext x y
   dsimp
   simp only [mul_tprod_tprod, mul_tprod_tprod, mul_comm x y]

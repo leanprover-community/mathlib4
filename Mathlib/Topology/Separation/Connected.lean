@@ -22,7 +22,7 @@ open scoped Topology
 -- see Note [lower instance priority]
 instance (priority := 100) TotallyDisconnectedSpace.t1Space [h : TotallyDisconnectedSpace X] :
     T1Space X := by
-  rw [((t1Space_TFAE X).out 0 1 :)]
+  rw [((t1Space_TFAE X).out 1 2 :)]
   intro x
   rw [← totallyDisconnectedSpace_iff_connectedComponent_singleton.mp h x]
   exact isClosed_connectedComponent
@@ -41,10 +41,6 @@ theorem IsPreconnected.infinite_of_nontrivial [T1Space X] {s : Set X} (h : IsPre
 
 theorem PreconnectedSpace.infinite [PreconnectedSpace X] [Nontrivial X] [T1Space X] : Infinite X :=
   infinite_univ_iff.mp <| isPreconnected_univ.infinite_of_nontrivial nontrivial_univ
-
-theorem subsingleton_iff_discrete_and_indiscrete :
-    Subsingleton X ↔ DiscreteTopology X ∧ IndiscreteTopology X :=
-  ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ PreconnectedSpace.trivial_of_discrete⟩
 
 /-- A non-trivial connected T1 space has no isolated points. -/
 instance (priority := 100) ConnectedSpace.neBot_nhdsWithin_compl_of_nontrivial_of_t1space

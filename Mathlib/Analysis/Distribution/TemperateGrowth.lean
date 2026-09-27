@@ -104,7 +104,7 @@ lemma HasTemperateGrowth.of_fderiv {f : E → F}
   · exact ⟨k, C, fun x ↦ by simpa using h x⟩
   · rcases h'f.2 m with ⟨k', C', h'⟩
     refine ⟨k', C', ?_⟩
-    simpa [iteratedFDeriv_succ_eq_comp_right] using h'
+    simpa only [← norm_iteratedFDeriv_fderiv] using h'
 
 @[fun_prop]
 lemma HasTemperateGrowth.zero :
@@ -302,15 +302,6 @@ lemma _root_.ContinuousLinearEquiv.hasTemperateGrowth (f : E ≃L[ℝ] F) :
     Function.HasTemperateGrowth f :=
   f.toContinuousLinearMap.hasTemperateGrowth
 
-@[fun_prop]
-theorem Complex.hasTemperateGrowth_ofReal : Complex.ofReal.HasTemperateGrowth :=
-  (Complex.ofRealCLM).hasTemperateGrowth
-
-variable (𝕜) in
-@[fun_prop]
-theorem RCLike.hasTemperateGrowth_ofReal [RCLike 𝕜] : (RCLike.ofReal (K := 𝕜)).HasTemperateGrowth :=
-  (RCLike.ofRealCLM (K := 𝕜)).hasTemperateGrowth
-
 variable [NormedAddCommGroup H] [InnerProductSpace ℝ H]
 
 @[fun_prop]
@@ -412,6 +403,72 @@ theorem hasTemperateGrowth_one_add_norm_sq_rpow (r : ℝ) :
 
 end Function
 
+section Real
+
+@[fun_prop]
+theorem Real.hasTemperateGrowth_sin :
+    Real.sin.HasTemperateGrowth := by
+  refine ⟨Real.contDiff_sin, fun n ↦ ⟨0, 1, fun x ↦ ?_⟩⟩
+  simpa [norm_iteratedFDeriv_eq_norm_iteratedDeriv] using Real.abs_iteratedDeriv_sin_le_one n x
+
+@[fun_prop]
+theorem Real.hasTemperateGrowth_cos :
+    Real.cos.HasTemperateGrowth := by
+  refine ⟨Real.contDiff_cos, fun n ↦ ⟨0, 1, fun x ↦ ?_⟩⟩
+  simpa [norm_iteratedFDeriv_eq_norm_iteratedDeriv] using Real.abs_iteratedDeriv_cos_le_one n x
+
+end Real
+
+section Complex
+
+@[fun_prop]
+theorem Complex.hasTemperateGrowth_ofReal : Complex.ofReal.HasTemperateGrowth :=
+  Complex.ofRealCLM.hasTemperateGrowth
+
+@[deprecated (since := "2026-08-18")] alias Function.Complex.hasTemperateGrowth_ofReal :=
+  Complex.hasTemperateGrowth_ofReal
+
+@[fun_prop]
+theorem Complex.hasTemperateGrowth_re : Complex.re.HasTemperateGrowth :=
+  Complex.reCLM.hasTemperateGrowth
+
+@[fun_prop]
+theorem Complex.hasTemperateGrowth_im : Complex.im.HasTemperateGrowth :=
+  Complex.imCLM.hasTemperateGrowth
+
+/-- The function `x ↦ exp (x * I)` has temperate growth. -/
+@[fun_prop]
+theorem Complex.hasTemperateGrowth_exp_mul_I :
+    (fun x : ℝ ↦ Complex.exp (x * Complex.I)).HasTemperateGrowth := by
+  simp only [Complex.exp_ofReal_mul_I]
+  fun_prop
+
+end Complex
+
+section RCLike
+
+variable [RCLike 𝕜]
+
+variable (𝕜) in
+@[fun_prop]
+theorem RCLike.hasTemperateGrowth_ofReal : (RCLike.ofReal (K := 𝕜)).HasTemperateGrowth :=
+  (RCLike.ofRealCLM (K := 𝕜)).hasTemperateGrowth
+
+@[deprecated (since := "2026-08-18")] alias Function.RCLike.hasTemperateGrowth_ofReal :=
+  RCLike.hasTemperateGrowth_ofReal
+
+variable (𝕜) in
+@[fun_prop]
+theorem RCLike.hasTemperateGrowth_re : (RCLike.re : 𝕜 → ℝ).HasTemperateGrowth :=
+  (RCLike.reCLM (K := 𝕜)).hasTemperateGrowth
+
+variable (𝕜) in
+@[fun_prop]
+theorem RCLike.hasTemperateGrowth_im : (RCLike.im : 𝕜 → ℝ).HasTemperateGrowth :=
+  (RCLike.imCLM (K := 𝕜)).hasTemperateGrowth
+
+end RCLike
+
 namespace MeasureTheory.Measure
 
 variable [NormedAddCommGroup E] [MeasurableSpace E]
@@ -507,14 +564,22 @@ lemma _root_.integral_pow_mul_le_of_le_of_pow_mul_le
 
 /-- For any `HasTemperateGrowth` measure and `p`, there exists an integer power `k` such that
 `(1 + ‖x‖) ^ (-k)` is in `L^p`. -/
-theorem HasTemperateGrowth.exists_eLpNorm_lt_top (p : ℝ≥0∞)
+theorem HasTemperateGrowth.exists_eLpNorm_lt_top [OpensMeasurableSpace E] (p : ℝ≥0∞)
     {μ : Measure E} (hμ : μ.HasTemperateGrowth) :
     ∃ k : ℕ, eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ < ⊤ := by
+  have hmeas (k : ℕ) : AEStronglyMeasurable (fun x : E ↦ (1 + ‖x‖) ^ (-k : ℝ)) μ :=
+    (Continuous.rpow_const (by fun_prop) (fun x ↦ Or.inl (by positivity))).aestronglyMeasurable
   cases p with
-  | top => exact ⟨0, eLpNormEssSup_lt_top_of_ae_bound (C := 1) (by simp)⟩
+  | top =>
+      refine ⟨0, ?_⟩
+      rw [eLpNorm_exponent_top (hmeas 0)]
+      exact eLpNormEssSup_lt_top_of_ae_bound (C := 1) (by simp)
   | coe p =>
     cases eq_or_ne (p : ℝ≥0∞) 0 with
-    | inl hp => exact ⟨0, by simp [hp]⟩
+    | inl hp =>
+        refine ⟨0, ?_⟩
+        rw [hp, eLpNorm_exponent_zero (hmeas 0)]
+        exact bot_lt_top
     | inr hp =>
       have h_one_add (x : E) : 0 < 1 + ‖x‖ := lt_add_of_pos_of_le zero_lt_one (norm_nonneg x)
       have hp_pos : 0 < (p : ℝ) := by simpa [zero_lt_iff] using hp
@@ -524,7 +589,7 @@ theorem HasTemperateGrowth.exists_eLpNorm_lt_top (p : ℝ≥0∞)
       use k
       suffices HasFiniteIntegral (fun x ↦ ((1 + ‖x‖) ^ (-(k * p) : ℝ))) μ by
         rw [hasFiniteIntegral_iff_enorm] at this
-        rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top hp ENNReal.coe_ne_top]
+        rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top hp ENNReal.coe_ne_top (hmeas k)]
         simp only [ENNReal.coe_toReal]
         refine Eq.subst (motive := (∫⁻ x, · x ∂μ < ⊤)) (funext fun x ↦ ?_) this
         rw [← neg_mul, Real.rpow_mul (h_one_add x).le]

@@ -64,7 +64,6 @@ theorem card_support_mul_le : #(p * q).support ≤ #p.support * #q.support := by
       grw [AddMonoidAlgebra.support_coeff_mul_subset]
     _ ≤ #p.support * #q.support := Finset.card_image₂_le ..
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `Polynomial.sum` as a linear map. -/
 @[simps]
 def lsum {R A M : Type*} [Semiring R] [Semiring A] [AddCommMonoid M] [Module R A] [Module R M]
@@ -138,7 +137,7 @@ lemma constantCoeff_surjective : Function.Surjective (constantCoeff (R := R)) :=
   fun x ↦ ⟨C x, by simp⟩
 
 theorem isUnit_C {x : R} : IsUnit (C x) ↔ IsUnit x :=
-  ⟨fun h => (congr_arg IsUnit coeff_C_zero).mp (h.map <| @constantCoeff R _), fun h => h.map C⟩
+  ⟨fun h => congr(IsUnit $coeff_C_zero).mp (h.map <| @constantCoeff R _), fun h => h.map C⟩
 
 theorem coeff_mul_X_zero (p : R[X]) : coeff (p * X) 0 = 0 := by simp
 

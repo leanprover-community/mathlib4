@@ -145,8 +145,6 @@ theorem le_weight (w : σ → ℕ) {s : σ} (hs : w s ≠ 0) (f : σ →₀ ℕ)
     apply zero_le
 
 variable [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M] (w : σ → M)
-  {R : Type*} [CommSemiring R] [PartialOrder R] [IsOrderedRing R]
-  [CanonicallyOrderedAdd R] [NoZeroDivisors R] [Module R M]
 
 variable {w} in
 theorem le_weight_of_ne_zero (hw : ∀ s, 0 ≤ w s) {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) :

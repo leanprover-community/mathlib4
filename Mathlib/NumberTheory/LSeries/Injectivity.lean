@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Normed.Group.Tannery
 public import Mathlib.NumberTheory.LSeries.Convergence
 public import Mathlib.NumberTheory.LSeries.Linearity
+public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 
 /-!
 # A converging L-series determines its coefficients
@@ -50,7 +51,6 @@ lemma cpow_mul_div_cpow_eq_div_div_cpow (m n : ℕ) (z : ℂ) (x : ℝ) :
   rw [← cpow_neg, show (-x : ℂ) = (-1 : ℝ) * x by simp, cpow_mul_ofReal_nonneg Hn,
     Real.rpow_neg_one, inv_inv]
 
-set_option backward.isDefEq.respectTransparency false in
 open Filter Real in
 /-- If the coefficients `f m` of an L-series are zero for `m ≤ n` and the L-series converges
 at some point, then `f (n+1)` is the limit of `(n+1)^x * LSeries f x` as `x → ∞`. -/
@@ -233,7 +233,7 @@ lemma LSeries_eq_iff_of_abscissaOfAbsConv_lt_top {f g : ℕ → ℂ} (hf : absci
     LSeries f = LSeries g ↔ ∀ n ≠ 0, f n = g n := by
   refine ⟨fun H n hn ↦ ?_, fun H ↦ funext (LSeries_congr fun {n} ↦ H n)⟩
   refine eq_of_LSeries_eventually_eq hf hg ?_ hn
-  exact Filter.Eventually.of_forall fun x ↦ congr_fun H x
+  exact Filter.Eventually.of_forall fun x ↦ congr($H x)
 
 /-- The map `f ↦ LSeries f` is injective on functions `f` such that `f 0 = 0` and the L-series
 of `f` converges somewhere. -/

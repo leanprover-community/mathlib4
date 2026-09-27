@@ -147,7 +147,7 @@ theorem floor_eq_self_of_mem (m : E) (h : m ∈ span ℤ (Set.range b)) : (floor
   intro i
   obtain ⟨z, hz⟩ := (b.mem_span_iff_repr_mem ℤ _).mp h i
   rw [← hz]
-  exact congr_arg (Int.cast : ℤ → K) (Int.floor_intCast z)
+  congrm $(Int.floor_intCast z)
 
 @[simp]
 theorem ceil_eq_self_of_mem (m : E) (h : m ∈ span ℤ (Set.range b)) : (ceil b m : E) = m := by
@@ -156,7 +156,7 @@ theorem ceil_eq_self_of_mem (m : E) (h : m ∈ span ℤ (Set.range b)) : (ceil b
   intro i
   obtain ⟨z, hz⟩ := (b.mem_span_iff_repr_mem ℤ _).mp h i
   rw [← hz]
-  exact congr_arg (Int.cast : ℤ → K) (Int.ceil_intCast z)
+  congrm $(Int.ceil_intCast z)
 
 /-- The map that sends a vector `E` to the `fundamentalDomain` of the lattice,
 see `ZSpan.fract_mem_fundamentalDomain`, and `fractRestrict` for the map with the codomain
@@ -317,7 +317,8 @@ theorem fundamentalDomain_subset_parallelepiped [Fintype ι] :
 instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)) := by
   have h : Set.MapsTo b.equivFun (span ℤ (Set.range b)) (span ℤ (Set.range (Pi.basisFun ℝ ι))) := by
     intro _ hx
-    rwa [SetLike.mem_coe, Basis.mem_span_iff_repr_mem] at hx ⊢
+    rw [SetLike.mem_coe, Basis.mem_span_iff_repr_mem] at hx ⊢
+    assumption
   convert! DiscreteTopology.of_continuous_injective ((continuous_equivFun_basis b).restrict h) ?_
   · exact discreteTopology_pi_basisFun
   · refine Subtype.map_injective _ (Basis.equivFun b).injective
@@ -330,7 +331,7 @@ theorem setFinite_inter [ProperSpace E] [Finite ι] {s : Set E} (hs : Bornology.
   have : DiscreteTopology (span ℤ (Set.range b)) := inferInstance
   refine Metric.finite_isBounded_inter_isClosed DiscreteTopology.isDiscrete hs ?_
   rw [← coe_toAddSubgroup]
-  exact AddSubgroup.isClosed_of_discrete
+  exact AddSubgroup.isClosed_of_discreteTopology
 
 @[measurability]
 theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpace E] [Finite ι] :
@@ -625,7 +626,7 @@ theorem ofZLatticeBasis_repr_apply (x : L) (i : ι) :
     (b.ofZLatticeBasis K L).repr x i = b.repr x i := by
   suffices ((b.ofZLatticeBasis K L).repr.toLinearMap.restrictScalars ℤ) ∘ₗ L.subtype
       = Finsupp.mapRange.linearMap (Algebra.linearMap ℤ K) ∘ₗ b.repr.toLinearMap by
-    exact DFunLike.congr_fun (LinearMap.congr_fun this x) i
+    congrm $this x i
   refine Basis.ext b fun i ↦ ?_
   simp_rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_restrictScalars,
     LinearEquiv.coe_coe, coe_subtype, ← b.ofZLatticeBasis_apply K, repr_self,
@@ -740,7 +741,7 @@ def ZLattice.comap_equiv (e : F ≃ₗ[K] E) :
   LinearEquiv.ofBijective
     ((e.symm.toLinearMap.restrictScalars ℤ).restrict
       (fun _ h ↦ by simpa [← SetLike.mem_coe] using h))
-    ⟨fun _ _ h ↦ Subtype.ext_iff.mpr (e.symm.injective (congr_arg Subtype.val h)),
+    ⟨fun _ _ h ↦ Subtype.ext_iff.mpr (e.symm.injective congr($(h).val)),
     fun ⟨x, hx⟩ ↦ ⟨⟨e x, by rwa [← SetLike.mem_coe, ZLattice.coe_comap] at hx⟩,
       by simp [Subtype.ext_iff]⟩⟩
 

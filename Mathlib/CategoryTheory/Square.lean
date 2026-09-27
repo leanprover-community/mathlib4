@@ -178,7 +178,6 @@ def flipEquivalence : Square C ≌ Square C where
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The functor `Square C ⥤ Arrow (Arrow C)` which sends a
 commutative square `sq` to the obvious arrow from the left morphism of `sq`
@@ -217,7 +216,6 @@ def arrowArrowEquivalence : Square C ≌ Arrow (Arrow C) where
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The functor `Square C ⥤ Arrow (Arrow C)` which sends a
 commutative square `sq` to the obvious arrow from the top morphism of `sq`
@@ -381,7 +379,6 @@ def NatTrans.mapSquare {F G : C ⥤ D} (τ : F ⟶ G) :
       τ₃ := τ.app _
       τ₄ := τ.app _ }
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor `(C ⥤ D) ⥤ Square C ⥤ Square D`. -/
 @[simps]
 def Square.mapFunctor : (C ⥤ D) ⥤ Square C ⥤ Square D where

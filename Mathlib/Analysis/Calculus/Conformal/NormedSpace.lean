@@ -52,7 +52,7 @@ variable {X Y Z : Type*} [NormedAddCommGroup X] [NormedAddCommGroup Y] [NormedAd
 
 section LocConformality
 
-open LinearIsometry ContinuousLinearMap
+open ContinuousLinearMap
 
 /-- A map `f` is said to be conformal if it has a conformal differential `f'`. -/
 def ConformalAt (f : X → Y) (x : X) :=

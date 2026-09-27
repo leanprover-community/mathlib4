@@ -27,14 +27,14 @@ variable {R : Type*}
 
 open WithZero
 
-lemma nonempty_orderIso_withZeroMul_int_iff [Semiring R] [ValuativeRel R] :
+lemma ValueGroupWithZero.nonempty_orderMonoidIso_withZeroMulInt_iff [Semiring R] [ValuativeRel R] :
     Nonempty (ValueGroupWithZero R ≃*o ℤᵐ⁰) ↔
       IsDiscrete R ∧ IsNontrivial R ∧ MulArchimedean (ValueGroupWithZero R) := by
   constructor
   · rintro ⟨e⟩
     let x := e.symm (exp (-1))
     have hx0 : x ≠ 0 := by simp [x]
-    have hx1 : x < 1 := by simp [-exp_neg, x, ← lt_map_inv_iff, ← exp_zero]
+    have hx1 : x < 1 := by simp [x, ← lt_map_inv_iff, ← exp_zero]
     refine ⟨⟨x, hx1, fun y hy ↦ ?_⟩, ⟨x, hx0, hx1.ne⟩, .comap e.toMonoidHom e.strictMono⟩
     rcases eq_or_ne y 0 with rfl | hy0
     · simp
@@ -51,6 +51,9 @@ lemma nonempty_orderIso_withZeroMul_int_iff [Semiring R] [ValuativeRel R] :
     obtain ⟨y, hy, hy'⟩ := exists_between hx
     exact hy.not_ge (hx' y hy')
 
+@[deprecated (since := "2026-09-08")] alias nonempty_orderIso_withZeroMul_int_iff :=
+  ValueGroupWithZero.nonempty_orderMonoidIso_withZeroMulInt_iff
+
 lemma IsDiscrete.of_compatible_withZeroMulInt [Ring R] [ValuativeRel R]
     (v : Valuation R ℤᵐ⁰) [v.Compatible] : IsDiscrete R := by
   have : IsRankLeOne R := .of_compatible_mulArchimedean v
@@ -64,7 +67,7 @@ lemma IsDiscrete.of_compatible_withZeroMulInt [Ring R] [ValuativeRel R]
       exact (ValueGroupWithZero.embed_strictMono v).denselyOrdered_range
     · rw [isNontrivial_iff_nontrivial_units] at h
       rw [← LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered] at H
-      rw [nonempty_orderIso_withZeroMul_int_iff] at H
+      rw [ValueGroupWithZero.nonempty_orderMonoidIso_withZeroMulInt_iff] at H
       exact H.left
   · rw [isNontrivial_iff_nontrivial_units] at h; push Not at h
     refine ⟨⟨0, zero_lt_one, fun y hy ↦ ?_⟩⟩

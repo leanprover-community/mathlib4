@@ -26,7 +26,7 @@ In this file we prove that the polynomial ring over a regular ring is regular.
 
 -/
 
-@[expose] public section
+public section
 
 variable (R : Type*) [CommRing R]
 

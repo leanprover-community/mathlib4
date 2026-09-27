@@ -131,7 +131,6 @@ theorem mapGen_apply_apply_of_surjective
   refine ⟨fun ⟨a, b, h₁, h₂, h₃⟩ ↦ ?_, by grind⟩
   exact c.trans (h h₂.symm) <| c.trans h₁ <| h h₃
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a ring congruence relation `c` on a semiring `M`, the order-preserving
 bijection between the set of ring congruence relations containing `c` and the
 ring congruence relations on the quotient of `M` by `c`. -/
@@ -191,7 +190,7 @@ theorem lift_apply_mk' (f : c.Quotient →+* P) :
 equal if they are equal on elements that are coercions from the ring. -/
 @[ext high] -- This should have higher priority than `RingHom.ext`
 theorem Quotient.hom_ext {f g : c.Quotient →+* P} (h : f.comp c.mk' = g.comp c.mk') : f = g :=
-  DFunLike.ext _ _ <| c.mk'_surjective.forall.mpr fun x ↦ by exact congr($h x)
+  DFunLike.ext _ _ <| c.mk'_surjective.forall.mpr fun x ↦ by congrm $h x
 
 /-- The uniqueness part of the universal property for quotients of rings. -/
 theorem lift_unique (H : c ≤ ker f) (g : c.Quotient →+* P) (Hg : g.comp c.mk' = f) :
@@ -510,7 +509,7 @@ equal if they are equal on elements that are coercions from the ring. -/
 @[ext 1100]
 theorem Quotient.hom_extₐ {f g : c.Quotient →ₐ[R] P}
     (h : f.comp (c.mkₐ R) = g.comp (c.mkₐ R)) : f = g :=
-  DFunLike.ext _ _ <| c.mk'_surjective.forall.mpr fun x ↦ by exact congr($h x)
+  DFunLike.ext _ _ <| c.mk'_surjective.forall.mpr fun x ↦ by congrm $h x
 
 /-- `liftₐ` as an equivalence. -/
 @[simps]

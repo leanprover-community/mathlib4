@@ -272,7 +272,6 @@ theorem totalSpaceMk_isClosedEmbedding [T1Space B] (x : B) :
     rw [TotalSpace.range_mk]
     exact isClosed_singleton.preimage <| continuous_proj F E⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An arbitrary homeomorphism between any fiber and the model fiber.
 This is useful to transfer topological properties of the model fiber. -/
 noncomputable def homeomorphAt (b : B) : E b ≃ₜ F :=
@@ -304,8 +303,6 @@ theorem trivializationAt_proj_fst {x : TotalSpace F E} :
   Trivialization.coe_fst' _ <| mem_baseSet_trivializationAt F E x.proj
 
 variable (F)
-
-open Trivialization
 
 /-- Characterization of continuous functions (at a point, within a set) into a fiber bundle. -/
 theorem continuousWithinAt_totalSpace (f : X → TotalSpace F E) {s : Set X} {x₀ : X} :
@@ -804,7 +801,7 @@ def trivializationOfMemPretrivializationAtlas (he : e ∈ a.pretrivializationAtl
       refine isOpen_iSup_iff.mpr fun he' => ?_
       rw [isOpen_coinduced, isOpen_induced_iff]
       obtain ⟨u, hu1, hu2⟩ := continuousOn_iff'.mp (a.continuous_trivChange _ he _ he') s hs
-      have hu3 := congr_arg (fun s => (fun x : e'.target => (x : B × F)) ⁻¹' s) hu2
+      have hu3 := congr((fun x : e'.target => (x : B × F)) ⁻¹' $hu2)
       simp only [Subtype.coe_preimage_self, preimage_inter, univ_inter] at hu3
       refine ⟨u ∩ e'.toPartialEquiv.target ∩ e'.toPartialEquiv.symm ⁻¹' e.source, ?_, by
         simp only [preimage_inter, inter_univ, Subtype.coe_preimage_self, hu3.symm]; rfl⟩

@@ -55,7 +55,7 @@ assert_not_exists TwoSidedIdeal
 
 namespace CoxeterSystem
 
-open List Matrix Function
+open List Function
 
 variable {B W : Type*} [Group W]
 variable {M : CoxeterMatrix B} (cs : CoxeterSystem M W)
@@ -128,11 +128,11 @@ theorem length_le_length_mul_add_left (w₁ w₂ : W) : ℓ w₂ ≤ ℓ (w₁ *
 theorem length_le_length_mul_add_right (w₁ w₂ : W) : ℓ w₁ ≤ ℓ (w₁ * w₂) + ℓ w₂ := by
   simpa using cs.length_mul_le (w₁ * w₂) w₂⁻¹
 
-@[deprecated length_le_length_mul_add_right (since := "2026-03-25")]
+@[deprecated length_le_length_mul_add_right +typeChanged (since := "2026-03-25")]
 theorem length_mul_ge_length_sub_length (w₁ w₂ : W) : ℓ w₁ - ℓ w₂ ≤ ℓ (w₁ * w₂) := by
   rw [Nat.sub_le_iff_le_add]; exact length_le_length_mul_add_right ..
 
-@[deprecated length_le_length_mul_add_left (since := "2026-03-25")]
+@[deprecated length_le_length_mul_add_left +typeChanged (since := "2026-03-25")]
 theorem length_mul_ge_length_sub_length' (w₁ w₂ : W) : ℓ w₂ - ℓ w₁ ≤ ℓ (w₁ * w₂) := by
   rw [Nat.sub_le_iff_le_add]; exact length_le_length_mul_add_left ..
 

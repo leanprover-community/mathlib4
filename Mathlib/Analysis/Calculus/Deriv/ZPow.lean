@@ -26,7 +26,7 @@ public section
 
 universe u v w
 
-open Topology Filter Asymptotics Set
+open Set
 open scoped Nat
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
@@ -108,7 +108,7 @@ theorem iter_deriv_zpow' (m : ℤ) (k : ℕ) :
 
 theorem iter_deriv_zpow (m : ℤ) (x : 𝕜) (k : ℕ) :
     deriv^[k] (fun y => y ^ m) x = (∏ i ∈ Finset.range k, ((m : 𝕜) - i)) * x ^ (m - k) :=
-  congr_fun (iter_deriv_zpow' m k) x
+  congr($(iter_deriv_zpow' m k) x)
 
 theorem iter_deriv_pow (n : ℕ) (x : 𝕜) (k : ℕ) :
     deriv^[k] (fun x : 𝕜 => x ^ n) x = (∏ i ∈ Finset.range k, ((n : 𝕜) - i)) * x ^ (n - k) := by

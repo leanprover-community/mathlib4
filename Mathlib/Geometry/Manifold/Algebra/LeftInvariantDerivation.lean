@@ -35,7 +35,7 @@ noncomputable section
 
 open scoped LieGroup Manifold Derivation ContDiff
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω} {E : Type*} [NormedAddCommGroup E]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) (G : Type*)
   [TopologicalSpace G] [ChartedSpace H G] [Monoid G] [ContMDiffMul I ∞ G] (g h : G)
 
@@ -62,6 +62,7 @@ theorem toDerivation_injective :
     Function.Injective (toDerivation : LeftInvariantDerivation I G → _) :=
   fun X Y h => by cases X; cases Y; congr
 
+@[macro_inline]
 instance : FunLike (LeftInvariantDerivation I G) C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯ where
   coe f := f.toDerivation
   coe_injective _ _ h := toDerivation_injective <| DFunLike.ext' h
@@ -101,7 +102,6 @@ protected theorem map_neg : X (-f) = -X f := by simp
 
 protected theorem map_sub : X (f - f') = X f - X f' := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem map_smul : X (r • f) = r • X f := by simp
 
 @[simp]
@@ -220,8 +220,8 @@ instance : Bracket (LeftInvariantDerivation I G) (LeftInvariantDerivation I G) w
   bracket X Y :=
     ⟨⁅(X : Derivation 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯), Y⁆, fun g => by
       ext f
-      have hX := Derivation.congr_fun (left_invariant' g X) (Y f)
-      have hY := Derivation.congr_fun (left_invariant' g Y) (X f)
+      have hX := congr($(left_invariant' g X) (Y f))
+      have hY := congr($(left_invariant' g Y) (X f))
       rw [hfdifferential_apply, fdifferential_apply, Derivation.evalAt_apply] at hX hY ⊢
       rw [comp_L] at hX hY
       rw [Derivation.commutator_apply, ContMDiffMap.coe_sub, Pi.sub_apply, coe_derivation]
@@ -254,7 +254,6 @@ instance : LieRing (LeftInvariantDerivation I G) where
     simp only [commutator_apply, coe_add, map_sub, Pi.add_apply]
     ring
 
-set_option backward.isDefEq.respectTransparency false in
 instance : LieAlgebra 𝕜 (LeftInvariantDerivation I G) where
   lie_smul r Y Z := by
     ext1

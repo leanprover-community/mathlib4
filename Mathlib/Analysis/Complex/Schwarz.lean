@@ -55,7 +55,7 @@ we state it for maps between any two normed spaces.
 Schwarz lemma
 -/
 
-open Metric Set Function Filter TopologicalSpace
+open Metric Set Function Filter
 
 open scoped Topology ComplexConjugate
 
@@ -133,7 +133,6 @@ variable {E F : Type*}
   [NormedAddCommGroup E] [NormedSpace ℂ E] [NormedAddCommGroup F] [NormedSpace ℂ F]
   {R R₁ R₂ : ℝ} {f : E → F} {c z : E}
 
-set_option backward.isDefEq.respectTransparency.types false in
 open AffineMap in
 /-- Let `f : E → F` be a complex analytic map
 sending an open ball of radius `R₁` to a closed ball of radius `R₂`.
@@ -165,7 +164,7 @@ theorem dist_le_mul_div_pow_of_mapsTo_ball_of_isLittleO {f : E → F} {c z : E} 
     simpa [lt_div_iff₀, hne, dist_comm c] using hw
   have hmaps : MapsTo h (ball 0 (R₁ / dist z c)) (closedBall (h 0) R₂) := by
     refine MapsTo.comp ?_ (h_maps.comp hmaps_line)
-    simpa [hg, h] using g.lipschitz.mapsTo_closedBall (f c) R₂
+    simpa [hg, h] using g.lipschitzWith.mapsTo_closedBall (f c) R₂
   have hdiff : DifferentiableOn ℂ h (ball 0 (R₁ / dist z c)) :=
     g.differentiable.comp_differentiableOn <| hd.comp (lineMap c z).differentiableOn hmaps_line
   -- This map also satisfies `h(w) - h(0) = o(w ^ n)`, thus we can apply the auxiliary lemma above.

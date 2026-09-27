@@ -463,8 +463,6 @@ lemma LowerHemicontinuousAt.exists_subseq_tendsto {ι : Type*} {l : Filter ι} [
   obtain ⟨y, hy_mem, hy_lim⟩ := hf.exists_seq_tendsto (hx.comp hu) hy₀
   exact ⟨u, y, hu, hy_mem, hy_lim⟩
 
-
-
 end facts
 
 /-! ### Open lower sections -/

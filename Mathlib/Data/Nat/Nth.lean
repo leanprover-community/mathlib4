@@ -230,7 +230,7 @@ theorem nth_eq_sInf (p : ℕ → Prop) (n : ℕ) : nth p n = sInf {x | p x ∧ �
   · exact (isLeast_nth hn).csInf_eq.symm
   · rcases hn with ⟨hf, hn⟩
     rw [nth_of_card_le _ hn]
-    refine ((congr_arg sInf <| Set.eq_empty_of_forall_notMem fun k hk => ?_).trans sInf_empty).symm
+    refine (congr(sInf $(Set.eq_empty_of_forall_notMem fun k hk => ?_)).trans sInf_empty).symm
     rcases exists_lt_card_nth_eq hk.1 with ⟨k, hlt, rfl⟩
     exact (hk.2 _ ((hlt hf).trans_le hn)).false
 
@@ -239,7 +239,6 @@ theorem nth_zero : nth p 0 = sInf (Set.ofPred p) := by rw [nth_eq_sInf]; simp
 @[simp]
 theorem nth_zero_of_zero (h : p 0) : nth p 0 = 0 := by simp [nth_zero, h]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem nth_zero_of_exists [DecidablePred p] (h : ∃ n, p n) : nth p 0 = Nat.find h := by
   rw [nth_zero]; convert! Nat.sInf_def h
 
@@ -474,7 +473,7 @@ protected theorem count_eq_zero (h : ∃ n, p n) {n : ℕ} : count p n = 0 ↔ n
 
 variable (p) in
 theorem nth_count_eq_sInf (n : ℕ) : nth p (count p n) = sInf {i : ℕ | p i ∧ n ≤ i} := by
-  refine (nth_eq_sInf _ _).trans (congr_arg sInf ?_)
+  refine (nth_eq_sInf _ _).trans congr(sInf $(?_))
   refine Set.ext fun a => and_congr_right fun hpa => ?_
   refine ⟨fun h => not_lt.1 fun ha => ?_, fun hn k hk => lt_of_lt_of_le (nth_lt_of_lt_count hk) hn⟩
   have hn : nth p (count p a) < a := h _ (count_strict_mono hpa ha)
@@ -503,6 +502,14 @@ theorem count_le_iff_le_nth (hp : (Set.ofPred p).Infinite) {a b : ℕ} :
 theorem lt_nth_iff_count_lt (hp : (Set.ofPred p).Infinite) {a b : ℕ} :
     a < count p b ↔ nth p a < b :=
   (gc_count_nth hp).lt_iff_lt
+
+omit [DecidablePred p] in
+/-- `nth p (n + 1)` is the least value of `p` exceeding `nth p n`: for any `q` satisfying `p`, it is
+`≤ q` exactly when `nth p n < q`. -/
+theorem nth_add_one_le_iff (hp : (Set.ofPred p).Infinite) {n q : ℕ} (hq : p q) :
+    nth p (n + 1) ≤ q ↔ nth p n < q := by
+  classical
+  rw [← nth_count hq, nth_le_nth hp, nth_lt_nth hp, add_one_le_iff]
 
 end Count
 

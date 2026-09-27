@@ -19,7 +19,7 @@ assert_not_exists Algebra LinearMap orderOf
 
 open Finset
 
-variable {R S : Type*}
+variable {R : Type*}
 
 namespace Commute
 

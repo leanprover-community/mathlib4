@@ -11,6 +11,7 @@ public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.Polynomial.Pochhammer
+public import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-!
 # Vandermonde matrix

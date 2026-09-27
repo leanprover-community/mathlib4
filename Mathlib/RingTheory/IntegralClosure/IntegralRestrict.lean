@@ -6,10 +6,11 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
-public import Mathlib.RingTheory.RingHom.Finite
 public import Mathlib.RingTheory.Localization.LocalizationLocalization
 public import Mathlib.RingTheory.Localization.NormTrace
 public import Mathlib.RingTheory.Norm.Transitivity
+public import Mathlib.CategoryTheory.Category.Init
+public import Mathlib.RingTheory.Localization.Finiteness
 
 /-!
 # Restriction of various maps between fields to integrally closed subrings.
@@ -120,7 +121,7 @@ theorem galLift_comp [Algebra.IsAlgebraic K L₂] (σ : B →ₐ[A] B₂) (σ' :
     galLift K L L₃ (σ'.comp σ) = (galLift K L₂ L₃ σ').comp (galLift K L L₂ σ) :=
   have := (IsFractionRing.injective A K).isDomain
   have := IsIntegralClosure.isLocalization A K L B
-  AlgHom.coe_ringHom_injective <| IsLocalization.ringHom_ext (Algebra.algebraMapSubmonoid B A⁰)
+  AlgHom.toRingHom_injective <| IsLocalization.ringHom_ext (Algebra.algebraMapSubmonoid B A⁰)
     <| RingHom.ext fun x ↦ by simp
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -129,7 +130,7 @@ theorem galLift_galRestrict' (σ : L →ₐ[K] L₂) :
     galLift K L L₂ (galRestrict' A B B₂ σ) = σ :=
   have := (IsFractionRing.injective A K).isDomain
   have := IsIntegralClosure.isLocalization A K L B
-  AlgHom.coe_ringHom_injective <| IsLocalization.ringHom_ext (Algebra.algebraMapSubmonoid B A⁰)
+  AlgHom.toRingHom_injective <| IsLocalization.ringHom_ext (Algebra.algebraMapSubmonoid B A⁰)
     <| RingHom.ext fun x ↦ by simp [galRestrict', Subalgebra.algebraMap_eq, galLift]
 
 @[simp]
@@ -553,8 +554,7 @@ theorem Algebra.dvd_algebraMap_intNorm_self (x : B) : x ∣ algebraMap A B (intN
     · refine IsIntegral.mul (IsIntegral.pow ?_ _)
         (IsIntegral.pow (IsIntegral.multiset_prod (fun a ha ↦ ⟨minpoly A x, minpoly.monic
           (IsIntegral.isIntegral x), ?_⟩)) _)
-      · exact (isIntegral_algebraMap_iff (isTorsionFree_iff_algebraMap_injective.1 this)).mpr
-          (IsIntegral.isIntegral x)
+      · exact isIntegral_algebraMap_iff.mpr (IsIntegral.isIntegral x)
       · replace ha := Multiset.erase_subset _ _ ha
         suffices (aeval a) ((minpoly A x).map (algebraMap A K)) = 0 by simpa
         rw [← minpoly.isIntegrallyClosed_eq_field_fractions K L (IsIntegral.isIntegral x)]

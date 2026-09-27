@@ -14,7 +14,6 @@ public import Mathlib.NumberTheory.Primorial
 public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
 
 import Mathlib.Algebra.GCDMonoid.FinsetLemmas
-import Mathlib.Data.Nat.Prime.Factorial
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Log.InvLog
 import Mathlib.Data.Nat.Prime.Int
@@ -352,10 +351,10 @@ theorem sum_PrimePow_eq_sum_sum' {R : Type*} [AddCommMonoid R] (f : ℕ → R) {
       rintro b _ hbx ⟨p, k, hp, hk₀, rfl⟩
       rw [cast_pow] at hbx
       refine ⟨k, hk₀, (le_floor ?_).trans hN, p, hp.nat_prime.pos, ?_, hp.nat_prime, ?_, rfl⟩
-      · rw [le_div_iff₀ (log_pos (by norm_num)), ← Real.log_pow]
+      · rw [le_div_iff₀ (log_pos (by simp)), ← Real.log_pow]
         gcongr
         apply (LE.le.trans ?_ hbx)
-        exact pow_le_pow_left₀ (by norm_num) (mod_cast hp.nat_prime.two_le) _
+        exact pow_le_pow_left₀ (by simp) (mod_cast hp.nat_prime.two_le) _
       · exact (le_self_pow₀ (mod_cast hp.nat_prime.one_le) hk₀.ne').trans hbx
       · simp_all [le_rpow_inv_iff_of_pos]
     · simp
@@ -528,7 +527,7 @@ private theorem b_antitone (hx : 0 ≤ x) : AntitoneOn (b x) (.Ici 1) := by
   · repeat rw [theta_eq_zero_of_le_one (rpow_le_one hx h (by positivity))]
   apply theta_mono (monotone_rpow_of_base_ge_one h.le _)
   field_simp
-  norm_num [hnm]
+  simp [hnm]
 
 private theorem psi_pow_eq_sum_b (hx : 0 ≤ x) : ∃ M, ∀ N ≥ M,
     ψ (x ^ (n : ℝ)⁻¹) = ∑ k ∈ Icc 1 N, b x (n * k) := by
@@ -600,8 +599,8 @@ theorem psi_sub_theta_le_mul_sqrt : ∃ C, ∀ x, ψ x - θ x ≤ C * x.sqrt := 
   · rw [theta_eq_zero_of_le_one h, psi_eq_zero_of_le_one h, sub_self]; positivity
   have (n : ℕ) (hn : 2 ≤ n) : ψ (x ^ (1 / (n : ℝ))) ≤ (log 4 + 4) * x.sqrt := by
     grw [psi_le_const_mul_self (by positivity), sqrt_eq_rpow x]; gcongr; norm_cast
-  linarith [psi_sub_theta_le_psi_add_psi_add_psi x, this 2 (le_refl _), this 3 (by norm_num),
-    this 5 (by norm_num)]
+  linarith [psi_sub_theta_le_psi_add_psi_add_psi x, this 2 (le_refl _), this 3 (by simp),
+    this 5 (by simp)]
 
 open Asymptotics Filter in
 theorem isBigO_psi_sub_theta_sqrt : IsBigO atTop (ψ - θ) sqrt := by
@@ -626,13 +625,12 @@ open Asymptotics Filter MeasureTheory
 theorem integrableOn_theta_div_id_mul_log_sq (x : ℝ) :
     IntegrableOn (fun t ↦ θ t / (t * log t ^ 2)) (Set.Icc 2 x) volume := by
   conv => arg 1; ext; rw [theta, div_eq_mul_one_div, mul_comm, sum_filter]
-  refine integrableOn_mul_sum_Icc _ (by norm_num) <| ContinuousOn.integrableOn_Icc fun x hx ↦
+  refine integrableOn_mul_sum_Icc _ (by simp) <| ContinuousOn.integrableOn_Icc fun x hx ↦
     ContinuousAt.continuousWithinAt ?_
   have : x ≠ 0 := by linarith [hx.1]
   have : x * log x ^ 2 ≠ 0 := mul_ne_zero this <| by simp; grind
   fun_prop
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Expresses the prime counting function `π` in terms of `θ` by using Abel summation. -/
 theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     π ⌊x⌋₊ = θ x / log x + ∫ t in 2..x, θ t / (t * log t ^ 2) := by
@@ -670,7 +668,6 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
       refine pow_ne_zero 2 <| log_ne_zero_of_pos_of_ne_one ?_ ?_ <;> linarith
     exact ContinuousAt.continuousWithinAt <| by fun_prop
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Expresses the Chebyshev theta function `ϑ` in terms of `π` by using Abel summation. -/
 theorem theta_eq_primeCounting_mul_log_sub_integral {x : ℝ} (hx : 2 ≤ x) :
     θ x = π ⌊x⌋₊ * log x - ∫ t in 2..x, π ⌊t⌋₊ / t := by
@@ -735,7 +732,7 @@ private theorem sqrt_isLittleO :
   · conv => arg 2; ext; rw [mul_comm]
     apply isLittleO_mul_iff_isLittleO_div _ |>.mpr
     · simp_rw [div_sqrt, sqrt_eq_rpow, ← rpow_two]
-      apply isLittleO_log_rpow_rpow_atTop _ (by norm_num)
+      apply isLittleO_log_rpow_rpow_atTop _ (by simp)
     filter_upwards [eventually_gt_atTop 0] with x hx using sqrt_ne_zero'.mpr hx
   filter_upwards [eventually_gt_atTop 1] with x _
   apply pow_ne_zero _ <| log_ne_zero.mpr ⟨_, _, _⟩ <;> linarith
@@ -859,7 +856,7 @@ end Chebyshev
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: the first Chebyshev function is nonnegative. -/
 @[positivity Chebyshev.theta _]

@@ -29,7 +29,7 @@ the indicator function of `closedBall 0 1` with a function as above with `s = ba
 
 noncomputable section
 
-open Set Metric TopologicalSpace Function Asymptotics MeasureTheory Module
+open Set Metric TopologicalSpace Function MeasureTheory Module
   ContinuousLinearMap Filter MeasureTheory.Measure Bornology
 
 open scoped Pointwise Topology NNReal Convolution ContDiff
@@ -516,7 +516,7 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
         have C : (R - 1) / (R + 1) < 1 := by apply (div_lt_one _).2 <;> linarith
         simp only [hR, ite_true, support_comp_inv_smul₀ A.ne', y_support _ (IR R hR) C,
           _root_.smul_ball A.ne', Real.norm_of_nonneg A.le, smul_zero]
-        refine congr (congr_arg ball (Eq.refl 0)) ?_
+        refine congr congr(ball $(Eq.refl 0)) ?_
         field }
 
 end ExistsContDiffBumpBase

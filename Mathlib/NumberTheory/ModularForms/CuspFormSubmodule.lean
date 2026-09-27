@@ -7,7 +7,11 @@ module
 
 public import Mathlib.NumberTheory.ModularForms.QExpansion
 public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
-public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.QExpansion
+public import Mathlib.Analysis.CStarAlgebra.Classes
+public import Mathlib.Analysis.SpecialFunctions.Bernstein
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
+public import Mathlib.Data.Nat.Choose.Multinomial
+public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
 
 /-!
 # Cusp form submodule and IsCuspForm predicate
@@ -36,7 +40,9 @@ q-expansion coefficient (for `𝒮ℒ`).
 @[expose] public noncomputable section
 
 open UpperHalfPlane ModularForm Complex SlashInvariantForm SlashInvariantFormClass
-  ModularFormClass MatrixGroups OnePoint Filter Topology
+ ModularFormClass OnePoint Filter
+
+open scoped MatrixGroups
 
 variable {Γ : Subgroup (GL (Fin 2) ℝ)} {k : ℤ}
 
@@ -57,7 +63,7 @@ lemma toModularFormₗ_eq_coe [Γ.HasDetOne] (f : CuspForm Γ k) :
 
 lemma toModularFormₗ_injective [Γ.HasDetOne] :
     Function.Injective (toModularFormₗ : CuspForm Γ k → ModularForm Γ k) :=
-  fun _ _ h ↦ DFunLike.ext _ _ fun z ↦ DFunLike.congr_fun h z
+  fun _ _ h ↦ DFunLike.ext _ _ fun z ↦ congr($h z)
 
 end CuspForm
 

@@ -25,7 +25,9 @@ uniform space, uniform continuity, compact space
 
 public section
 
-open Uniformity Topology Filter UniformSpace Set
+open Filter UniformSpace Set
+
+open scoped Uniformity Topology
 
 variable {α β γ : Type*} [UniformSpace α] [UniformSpace β]
 

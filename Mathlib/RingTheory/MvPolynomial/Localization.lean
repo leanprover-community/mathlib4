@@ -6,7 +6,6 @@ Authors: Christian Merten
 module
 
 public import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
-public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Localization.Away.Basic
 public import Mathlib.RingTheory.Localization.BaseChange
@@ -119,9 +118,9 @@ noncomputable def mvPolynomialQuotientEquiv :
   toFun := auxHom S r
   invFun := auxInv S r
   left_inv x := by
-    simpa using congrFun (congrArg DFunLike.coe <| auxInv_auxHom S r) x
+    simpa using congr($(auxInv_auxHom S r) x)
   right_inv s := by
-    simpa using congrFun (congrArg DFunLike.coe <| auxHom_auxInv S r) s
+    simpa using congr($(auxHom_auxInv S r) s)
   map_mul' := by simp
   map_add' := by simp
   commutes' := by simp

@@ -5,9 +5,14 @@ Authors: P. Michael Kielstra
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.Field
+public import Mathlib.Analysis.Calculus.Deriv.Pow
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+public import Mathlib.Analysis.Calculus.MeanValue
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
+public import Mathlib.MeasureTheory.Covering.Besicovitch
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 
 /-!
 # The trapezoidal rule
@@ -25,7 +30,9 @@ bound.
 
 @[expose] public section
 
-open MeasureTheory intervalIntegral Interval Finset HasDerivWithinAt Set
+open MeasureTheory intervalIntegral Finset HasDerivWithinAt Set
+
+open scoped Interval
 
 /-- Integration of `f` from `a` to `b` using the trapezoidal rule with `N+1` total evaluations of
 `f`.  (Note the off-by-one problem here: `N` counts the number of trapezoids, not the number of

@@ -126,7 +126,7 @@ theorem GameAdd.recursion_eq {C : α → β → Sort*} (hα : WellFounded rα) (
 
 /-- Induction on the well-founded `Prod.GameAdd` relation.
   Note that it's strictly more general to induct on the lexicographic order instead. -/
-@[deprecated GameAdd.recursion (since := "2026-03-13")]
+@[deprecated GameAdd.recursion +typeChanged (since := "2026-03-13")]
 theorem GameAdd.induction {C : α → β → Prop} :
     WellFounded rα →
       WellFounded rβ →
@@ -163,7 +163,7 @@ theorem gameAdd_mk'_iff {a₁ a₂ b₁ b₂ : α} :
 
 theorem _root_.Prod.GameAdd.to_sym2 {a₁ a₂ b₁ b₂ : α} (h : Prod.GameAdd rα rα (a₁, b₁) (a₂, b₂)) :
     Sym2.GameAdd rα s(a₁, b₁) s(a₂, b₂) :=
-  gameAdd_iff.2 <| Or.inl <| h
+  gameAdd_iff.2 <| Or.inl h
 
 theorem GameAdd.fst {a₁ a₂ b : α} (h : rα a₁ a₂) : GameAdd rα s(a₁, b) s(a₂, b) :=
   (Prod.GameAdd.fst h).to_sym2
@@ -225,7 +225,7 @@ theorem GameAdd.recursion_eq {C : α → α → Sort*} (hr : WellFounded rα)
 @[deprecated (since := "2026-03-13")] alias GameAdd.fix_eq := GameAdd.recursion_eq
 
 /-- Induction on the well-founded `Sym2.GameAdd` relation. -/
-@[deprecated GameAdd.recursion (since := "2026-03-13")]
+@[deprecated GameAdd.recursion +typeChanged (since := "2026-03-13")]
 theorem GameAdd.induction {C : α → α → Prop} :
     WellFounded rα →
       (∀ a₁ b₁, (∀ a₂ b₂, Sym2.GameAdd rα s(a₂, b₂) s(a₁, b₁) → C a₂ b₂) → C a₁ b₁) →

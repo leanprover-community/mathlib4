@@ -96,7 +96,7 @@ lemma zariskisMainProperty_iff' {p : Ideal S} :
 lemma zariskisMainProperty_iff_exists_saturation_eq_top {p : Ideal S} :
     ZariskisMainProperty R p ↔ ∃ r ∉ p, ∃ h : IsIntegral R r,
       (integralClosure R S).saturation (.powers r) (by simpa [Submonoid.powers_le]) = ⊤ := by
-  simp [zariskisMainProperty_iff, ← top_le_iff, SetLike.le_def,
+  simp [zariskisMainProperty_iff, ← top_le_iff, IsConcreteLE.le_iff,
     Submonoid.mem_powers_iff, mem_integralClosure_iff]
 
 lemma ZariskisMainProperty.restrictScalars [Algebra S T] [IsScalarTower R S T]
@@ -139,7 +139,6 @@ section IsStronglyTranscendental
 
 variable (φ : R[X] →ₐ[R] S) (t : S) (p r : R[X])
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a map `φ : R[X] →ₐ[R] S`. Suppose `t = φ r / φ p` is integral over `R[X]` where
 `p` is monic with `deg p > deg r`, then `t` is also integral over `R`. -/
 lemma isIntegral_of_isIntegralElem_of_monic_of_natDegree_lt
@@ -477,7 +476,7 @@ private lemma ZariskisMainProperty.of_adjoin_eq_top
     exact Algebra.adjoin_mono (by simp)
   have H₀ : Function.Surjective (aeval (R := R) x) := by
     rwa [← AlgHom.range_eq_top, ← Algebra.adjoin_singleton_eq_range_aeval]
-  have ⟨f, (hf : aeval x f = 0), hfp⟩ := SetLike.not_le_iff_exists.mp
+  have ⟨f, (hf : aeval x f = 0), hfp⟩ := IsConcreteLE.not_le_iff_exists.mp
     (Polynomial.not_ker_le_map_C_of_surjective_of_weaklyQuasiFiniteAt _ H₀ p)
   obtain ⟨n, hfn⟩ : ∃ x, algebraMap R S (f.coeff x) ∉ p := by simpa [Ideal.mem_map_C_iff] using! hfp
   clear hfp
@@ -535,7 +534,7 @@ private lemma ZariskisMainProperty.of_algHom_polynomial
     convert! (RingHom.Finite.of_surjective _ (Ideal.Quotient.mk_surjective (I := J))).comp hf
       using 1
     ext <;> simp [show ∀ x, f (C x) = algebraMap _ _ x from f.commutes, J]
-  obtain ⟨x, hx, hxp⟩ := SetLike.not_le_iff_exists.mp hf
+  obtain ⟨x, hx, hxp⟩ := IsConcreteLE.not_le_iff_exists.mp hf
   replace hx (a : _) : x * a ∈ f.range := by simpa [← AlgHom.map_adjoin_singleton f] using hx a
   refine ZariskisMainProperty.trans (S := f.range) _ ?_ ?_
   · have : Algebra.WeaklyQuasiFiniteAt R (p.under f.range) := by
@@ -610,8 +609,7 @@ private lemma ZariskisMainProperty.of_algHom_mvPolynomial
           simp +contextual only [Subalgebra.range_val, Algebra.adjoin_le_iff, Subalgebra.coe_map,
             Subalgebra.coe_val, Set.subset_def, SetLike.mem_coe, Algebra.mem_adjoin_of_mem,
             Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right, R']
-          simpa [R', mem_integralClosure_iff,
-            ← isIntegral_algebraMap_iff (FaithfulSMul.algebraMap_injective R' S),
+          simpa [R', mem_integralClosure_iff, ← isIntegral_algebraMap_iff (A := R') (B := S),
             forall_and, hr, or_imp, Finset.mem_smul_finset]
         refine ⟨fun i ↦ ?_, fun a has ↦ ?_⟩
         · convert! isIntegral_algebraMap (x := MvPolynomial.X i)
@@ -624,7 +622,7 @@ private lemma ZariskisMainProperty.of_algHom_mvPolynomial
         exact ⟨(Subalgebra.fg_top _).mpr ⟨_, rfl⟩⟩
     refine this.trans _ ⟨⟨r, hrR'⟩, hrp, ?_⟩
     suffices ⊤ ≤ R'.saturation (.powers r) (by simpa [Submonoid.powers_le]) by
-      simpa [SetLike.le_def, Subalgebra.smul_def, Submonoid.mem_powers_iff,
+      simpa [IsConcreteLE.le_iff, Subalgebra.smul_def, Submonoid.mem_powers_iff,
         SetLike.ext_iff, Algebra.mem_bot] using this
     rw [← hs, Algebra.adjoin_le_iff]
     intro x hx

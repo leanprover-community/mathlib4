@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Group.Units.Equiv
 public import Mathlib.Algebra.Order.Group.End
 public import Mathlib.Logic.Function.Conjugate
 public import Mathlib.Order.Bounds.OrderIso
-public import Mathlib.Order.OrdContinuous
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Semiconjugate by `sSup`

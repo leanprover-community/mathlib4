@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Abelian.Preradical.Basic
 public import Mathlib.CategoryTheory.Abelian.FunctorCategory
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Square
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
 # The colon construction on preradicals
@@ -155,7 +155,6 @@ via `Φ.ι : Φ.r X ⟶ 𝟭 C` and the zero morphism `Φ.r ⟶  Φ.quotient ⋙
 noncomputable def toColon : Φ ⟶ Φ.colon Ψ :=
   MonoOver.homMk ((isPullback_colon Φ Ψ).lift Φ.ι 0 (by simp))
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma toColon_hom_left_colonπ :
     (toColon Φ Ψ).hom.left ≫ colonπ Φ Ψ = 0 := by
@@ -164,14 +163,13 @@ lemma toColon_hom_left_colonπ :
 @[reassoc (attr := simp)]
 lemma toColon_hom_left_app_colonπ_app (X : C) :
     (toColon Φ Ψ).hom.left.app X ≫ (colonπ Φ Ψ).app X = 0 :=
-  NatTrans.congr_app (toColon_hom_left_colonπ Φ Ψ) X
+  congr($(toColon_hom_left_colonπ Φ Ψ).app X)
 
 @[reassoc (attr := simp)]
 lemma toColon_hom_left_app_colon_ι_app (X : C) :
     (Φ.toColon Ψ).hom.left.app X ≫ (Φ.colon Ψ).ι.app X = Φ.ι.app X := by
   rw [← NatTrans.comp_app, Over.w]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For `X : C`, the morphism `(toColon Φ Ψ)` is an isomorphism if and only if
 `(Ψ.r.obj (Φ.quotient.obj X))` is the zero object. -/
 theorem isIso_toColon_hom_left_app_iff {Φ Ψ : Preradical C} {X : C} :

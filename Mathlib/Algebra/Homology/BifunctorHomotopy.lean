@@ -182,7 +182,6 @@ noncomputable def mapBifunctorMapHomotopy₁ :
   comm := comm₁ h₁ f₂ F c
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 variable (f₁) {f₂ f₂'} in
 open mapBifunctorMapHomotopy in
 /-- The homotopy between `mapBifunctorMap f₁ f₂ F c` and `mapBifunctorMap f₁ f₂' F c` that

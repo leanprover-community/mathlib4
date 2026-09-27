@@ -281,11 +281,9 @@ theorem applyId_injective [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup 
   · rw [← applyId_mem_iff h₀ h₁] at hx hy
     rw [h] at hx
     contradiction
-  · rwa [List.applyId_eq_self, List.applyId_eq_self] at h <;> assumption
+  · rwa [List.applyId_eq_self, List.applyId_eq_self] at h
 
 open TotalFunction (List.toFinmap')
-
-open SampleableExt
 
 /-- Remove a slice of length `m` at index `n` in a list and a permutation, maintaining the property
 that it is a permutation.
