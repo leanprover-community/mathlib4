@@ -96,12 +96,12 @@ lemma artinSchreierPoly_irreducible_or_splits (a : F) :
 section Lemmas
 
 private
-lemma cyclic_charP_as_param [IsGalois F K] (hp : p.Prime) (hrank : Module.finrank F K = p) :
+lemma cyclic_charP_as_param [IsGalois F K] [Fact p.Prime] (hrank : Module.finrank F K = p) :
     ∃ a : F, ∃ z : K, minpoly F z = X ^ p - X - C a := by
   open Algebra FiniteDimensional Finset IsGalois MulAction Subgroup Nat minpoly in
+  have hp : p.Prime := fact_iff.mp inferInstance
   have := of_finrank_pos (hrank.trans_gt hp.pos)
   have h_ord := (card_aut_eq_finrank F K).trans hrank
-  have := Fact.mk hp
   have ⟨g, h_gen⟩ := isCyclic_iff_exists_zpowers_eq_top.mp (isCyclic_of_prime_card h_ord)
   have h_ordg := (orderOf_eq_card_of_zpowers_eq_top h_gen).trans h_ord
   let rp := Finset.range p
@@ -149,10 +149,11 @@ lemma cyclic_charP_as_param [IsGalois F K] (hp : p.Prime) (hrank : Module.finran
   refine ⟨a, z, (eq_of_monic_of_dvd_of_natDegree_le (monic h_int) hd.2 ?_ h.le).symm⟩
   exact (dvd _ _ (by aesop))
 
-lemma cyclic_charP_splitting (hp : p.Prime) (hrank : Module.finrank F K = p)
+lemma cyclic_charP_splitting [Fact p.Prime] (hrank : Module.finrank F K = p)
     (h : ∃ α : K, α ^ p - α ∈ Set.range ⇑(algebraMap F K) ∧ F⟮α⟯ = ⊤) :
     ∃ a : F, Irreducible (X ^ p - X - C a) ∧ IsSplittingField F K (X ^ p - X - C a) := by
   open Field FiniteDimensional minpoly in
+  have hp : p.Prime := fact_iff.mp inferInstance
   obtain ⟨z, ⟨a, h1⟩, h2⟩ := h
   set f := X ^ p - X - C a with hf
   have := of_finrank_pos (hp.pos.trans_eq hrank.symm)
@@ -177,15 +178,15 @@ lemma cyclic_charP_splitting (hp : p.Prime) (hrank : Module.finrank F K = p)
 
 end Lemmas
 
-theorem isCyclic_charP_tfae (hp : p.Prime) (hrank : Module.finrank F K = p) :
+theorem isCyclic_charP_tfae [Fact p.Prime] (hrank : Module.finrank F K = p) :
     [IsGalois F K,
     ∃ a : F, Irreducible (X ^ p - X - C a) ∧ IsSplittingField F K (X ^ p - X - C a),
     ∃ α : K, α ^ p - α ∈ Set.range ⇑(algebraMap F K) ∧ F⟮α⟯ = ⊤,
     ∃ a : F, ∃ α : K, minpoly F α = X ^ p - X - C a].TFAE := by
   open Field FiniteDimensional IsGalois in
-  have := Fact.mk hp
+  have hp : p.Prime := fact_iff.mp inferInstance
   let := of_finrank_pos (hp.pos.trans_eq hrank.symm)
-  tfae_have 1 → 4 := fun _ ↦ cyclic_charP_as_param hp hrank
+  tfae_have 1 → 4 := fun _ ↦ cyclic_charP_as_param hrank
   tfae_have 4 → 3 := by
     refine fun ⟨a, z, hz⟩ ↦ ⟨z, ⟨a, (sub_eq_zero.mp ?_).symm⟩, ?_⟩
     · have := minpoly.aeval F z
@@ -193,15 +194,16 @@ theorem isCyclic_charP_tfae (hp : p.Prime) (hrank : Module.finrank F K = p) :
     · apply (primitive_element_iff_minpoly_natDegree_eq F z).mpr
       rw [hz, hrank]
       exact (artinSchreierPoly_isMonicOfDegree a hp.one_lt).1
-  tfae_have 3 → 2 := fun h ↦ cyclic_charP_splitting hp hrank h
+  tfae_have 3 → 2 := fun h ↦ cyclic_charP_splitting hrank h
   tfae_have 2 → 1 := fun ⟨a, h1, _⟩ ↦ of_separable_splitting_field
     ((separable_iff_derivative_ne_zero h1).mpr (by simp [@derivative_X_pow]))
   tfae_finish
 
-lemma irreducible_artinSchreierPoly_tower (hp : p.Prime) (hrank : Module.finrank F K = p)
+lemma irreducible_artinSchreierPoly_tower [Fact p.Prime] (hrank : Module.finrank F K = p)
     {a : F} {x : K} (hx : minpoly F x = X ^ p - X - C a) :
     Irreducible (X ^ p - X - C ((algebraMap F K) a * x ^ (p-1))) := by
   open Field FiniteDimensional minpoly in
+  have hp : p.Prime := fact_iff.mp inferInstance
   have hp1 := hp.one_lt
   let := (Algebra.charP_iff F K p).mp ‹CharP F p›
   by_contra h
