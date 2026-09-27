@@ -77,7 +77,7 @@ lemma irreducible_artinSchreierPoly {a : F} (hr : (X ^ p - X - C a).roots = 0) :
       rw [show f.map i = X ^ p - X - C (i a) by simp [hf]] at hm0 hdiv hc
       simp only [IsRoot.def, eval_sub, eval_pow, eval_X, eval_C] at hc
       have := (Algebra.charP_iff F (AdjoinRoot c) p).mp ‹CharP F p›
-      rw [←(AdjoinRoot.isAdjoinRootMonic _ hc0).finrank]
+      rw [← (AdjoinRoot.isAdjoinRootMonic _ hc0).finrank]
       exact hb2.natDegree_dvd_finrank ((splits_artinSchreierPoly hc).of_dvd hm0 hdiv)
     have h3 := (((Nat.dvd_prime hp).mp (h2.trans hmon.1.dvd)).resolve_left h1).symm
     exact (associated_of_dvd_of_natDegree_le hb3 h0 (hmon.1.trans h3).le).irreducible hb2
@@ -114,7 +114,7 @@ lemma cyclic_charP_as_param [IsGalois F K] [Fact p.Prime] (hrank : Module.finran
     calc
     _ = ∑ i : rp, f (i+1) := by simp [f]
     _ = ∑ i ∈ rp, f (i+1) := (sum_subtype rp (fun _ ↦ Iff.of_eq rfl) (fun i ↦ f (i+1))).symm
-    _ = ∑ i ∈ rp, f i := by subst rp f; rw [←hp1, sum_range_succ, sum_range_succ']; simp [hp1]
+    _ = ∑ i ∈ rp, f i := by subst rp f; rw [← hp1, sum_range_succ, sum_range_succ']; simp [hp1]
     _ = _ := sum_subtype rp (fun _ ↦ Iff.of_eq rfl) f
   have hz2 : ∑ i : rp, (g^(i+1:ℕ)) y = ∑ σ : Gal(K/F), σ y := by
     let f := fun (i : rp) ↦ g ^ (i+1:ℕ)
@@ -123,7 +123,7 @@ lemma cyclic_charP_as_param [IsGalois F K] [Fact p.Prime] (hrank : Module.finran
     · classical
       intro b
       have h := mem_top (g ^ (-1:ℤ) * b)
-      rw [←h_gen] at h
+      rw [← h_gen] at h
       have h := (isOfFinOrder_of_finite g).mem_zpowers_iff_mem_range_orderOf.mp h
       rw [h_ordg, mem_image] at h
       have ⟨i, h1, h2⟩ := h
@@ -133,13 +133,13 @@ lemma cyclic_charP_as_param [IsGalois F K] [Fact p.Prime] (hrank : Module.finran
     _ = ∑ i : rp, g ((g^(i:ℕ)) y * i) := map_finsetSum _ _
     _ = ∑ i : rp, (g^(i+1:ℕ)) y * i := by simp [pow_succ' g]
     _ = ∑ i : rp, ((g^(i+1:ℕ)) y * (i+1) - (g^(i+1:ℕ)) y) := by grind only
-    _ = _ := by rw [sum_sub_distrib, hz1, hz2, ←trace_eq_sum_automorphisms, hy, map_one]
+    _ = _ := by rw [sum_sub_distrib, hz1, hz2, ← trace_eq_sum_automorphisms, hy, map_one]
   have h_int : IsIntegral F z := IsIntegral.isIntegral z
   have ⟨a, _⟩ : z ^ p - z ∈ (⊥ : IntermediateField F K) := by
     apply (mem_bot_iff_fixed (z ^ p - z)).mpr
     intro γ
     obtain ⟨n, rfl⟩ := mem_zpowers_iff.mp ((Subgroup.ext_iff.mp h_gen.symm γ).mp (mem_top _))
-    rw [←AlgEquiv.smul_def, ←mem_stabilizerSubmonoid_iff]
+    rw [← AlgEquiv.smul_def, ← mem_stabilizerSubmonoid_iff]
     apply fixedBy_subset_fixedBy_zpow
     simp [hgz, sub_pow_char]
   have hd := artinSchreierPoly_isMonicOfDegree a hp.one_lt
@@ -163,7 +163,7 @@ lemma cyclic_charP_splitting [Fact p.Prime] (hrank : Module.finrank F K = p)
   have h := ((primitive_element_iff_minpoly_natDegree_eq F z).mp h2).trans hrank
   have h_int : IsIntegral F z := Algebra.IsIntegral.isIntegral z
   have hpol := eq_of_monic_of_dvd_of_natDegree_le (monic h_int) hd.2 h_div (by simp [hd.1, h])
-  refine ⟨a, ⟨(by rw [←hf, hpol]; exact irreducible h_int), ?_⟩⟩
+  refine ⟨a, ⟨(by rw [← hf, hpol]; exact irreducible h_int), ?_⟩⟩
   have adjoin : adjoin F (f.rootSet K) = ⊤ := by
     have := adjoin_simple_le_iff.mpr (mem_adjoin_of_mem F (hd.2.mem_rootSet.mpr h_eval))
     rw [h2] at this
@@ -231,7 +231,7 @@ lemma irreducible_artinSchreierPoly_tower [Fact p.Prime] (hrank : Module.finrank
   have h_a1 := h_a (algebraMap F K a * x ^ (p-1))
   have hs := (degree_eq_iff_natDegree_eq h_a1.ne_zero).mp.mt (h_a1.1.trans_ne hp.ne_zero)
   have h_d := (h_a a).1
-  rw [←h_d, ←hx] at hp1
+  rw [← h_d, ← hx] at hp1
   have := of_finrank_pos (hp.pos.trans_eq hrank.symm)
   have ht := (primitive_element_iff_minpoly_natDegree_eq F x).mpr (by rw [hx, hrank]; exact h_d)
   obtain ⟨y, hy⟩ : ∃ y : F⟮x⟯, y = rootOfSplits h hs := CanLift.prf _ (by rw [ht]; exact mem_top)
@@ -248,7 +248,7 @@ lemma irreducible_artinSchreierPoly_tower [Fact p.Prime] (hrank : Module.finrank
           have := aeval F x
           grind [aeval_sub, aeval_X, aeval_C]
         rw [taylor_apply, aeval_sub, aeval_comp, _root_.map_add, _root_.map_add, aeval_X, aeval_C,
-            aeval_monomial, ←he, ←expand_aeval, ←map_expand, map_frobenius_expand, map_pow]
+            aeval_monomial, ← he, ← expand_aeval, ← map_expand, map_frobenius_expand, map_pow]
         have hy := eval_rootOfSplits h hs
         simp only [eval_sub, eval_pow, eval_X, eval_C] at hy
         grind
@@ -257,11 +257,11 @@ lemma irreducible_artinSchreierPoly_tower [Fact p.Prime] (hrank : Module.finrank
     have h1 : (m.taylor a).coeff (p-1) = (f.coeff (p-1)) ^ p := by
       have h2 := (natDegree_taylor m a).trans hd
       by_cases h0 : f.natDegree = p-1
-      · rw [←h0, ←leadingCoeff, ←h2, ←leadingCoeff, leadingCoeff_taylor, leadingCoeff_map]
+      · rw [← h0, ← leadingCoeff, ← h2, ← leadingCoeff, leadingCoeff_taylor, leadingCoeff_map]
         rfl
       · simp only [adjoin.powerBasis_dim, hx, h_d] at h_pb
         repeat rw [coeff_eq_zero_of_natDegree_lt]
         repeat grind only [zero_pow]
-    rw [←h1, sub_eq_zero.mp h, coeff_add, coeff_monomial_same]
+    rw [← h1, sub_eq_zero.mp h, coeff_add, coeff_monomial_same]
   absurd (irreducible h_int).not_isRoot_of_natDegree_ne_one hp1.ne' (x := f.coeff (p-1))
   simp_all
