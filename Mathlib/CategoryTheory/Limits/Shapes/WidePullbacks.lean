@@ -214,9 +214,7 @@ attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] evalCasesBas
 
 instance subsingleton_hom : Quiver.IsThin (WidePushoutShape J) := fun _ _ => by
   constructor
-  intro a b
-  casesm* WidePushoutShape _, (_ : WidePushoutShape _) ⟶ (_ : WidePushoutShape _)
-  repeat rfl
+  rintro (_ | _) (_ | _) <;> rfl
 
 instance category : SmallCategory (WidePushoutShape J) :=
   thin_category
@@ -246,7 +244,7 @@ def wideSpan (B : C) (objs : J → C) (arrows : ∀ j : J, B ⟶ objs j) : WideP
 /-- Every diagram is naturally isomorphic (actually, equal) to a `wideSpan` -/
 def diagramIsoWideSpan (F : WidePushoutShape J ⥤ C) :
     F ≅ wideSpan (F.obj none) (fun j => F.obj (some j)) fun j => F.map (Hom.init j) :=
-  NatIso.ofComponents fun j => eqToIso <| by cases j; repeat rfl
+  NatIso.ofComponents fun j => eqToIso <| by cases j <;> rfl
 
 /-- Construct a cocone over a wide span. -/
 @[simps]
@@ -265,8 +263,8 @@ def mkCocone {F : WidePushoutShape J ⥤ C} {X : C} (f : F.obj none ⟶ X) (ι :
 def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') : WidePushoutShape J ≌ WidePushoutShape J' where
   functor := wideSpan none (fun j => some (h j)) fun j => Hom.init (h j)
   inverse := wideSpan none (fun j => some (h.invFun j)) fun j => Hom.init (h.invFun j)
-  unitIso := NatIso.ofComponents (fun j => by cases j <;> exact eqToIso (by simp))
-  counitIso := NatIso.ofComponents (fun j => by cases j <;> exact eqToIso (by simp))
+  unitIso := NatIso.ofComponents (fun j => eqToIso <| by cases j <;> simp)
+  counitIso := NatIso.ofComponents (fun j => eqToIso <| by cases j <;> simp)
 
 attribute [local instance] uliftCategory in
 /-- Lifting universe and morphism levels preserves wide pushout diagrams. -/

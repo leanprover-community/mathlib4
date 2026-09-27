@@ -27,8 +27,13 @@ example : True := by
   exact .intro
   exact .intro
 
-#guard_msgs(drop warning) in
 /--
+warning: The following tactic starts with 2 goals and ends with 2 goals, 1 of which is not operated on.
+  rw [← Nat.add_zero 0]
+Please focus on the current goal, for instance using `·` (typed as "\.").
+
+Note: This linter can be disabled with `set_option linter.style.multiGoal false`
+---
 warning: The following tactic starts with 2 goals and ends with 1 goal, 1 of which is not operated on.
   assumption
 Please focus on the current goal, for instance using `·` (typed as "\.").
@@ -42,13 +47,13 @@ example {n : Nat} (hn : n = 0) : n + 0 = 0 := by
     rw [← Nat.add_zero 0]
   conv_lhs =>
     congr
-    rw [← Nat.add_zero n]
-    rfl
+    · rw [← Nat.add_zero n]
+    · rfl
   conv_rhs =>
     rw [← Nat.add_zero 0]
     congr
-    rfl
-    rfl
+    · rfl
+    · rfl
   by_cases 0 = 0
   assumption
   assumption
@@ -249,7 +254,7 @@ example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x ≤ 1 := by
 example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x ≤ 1 := by
   grind =>
     cases #484a
-    repeat finish
+    repeat · finish
 
 example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x ≤ 1 := by
   grind =>
