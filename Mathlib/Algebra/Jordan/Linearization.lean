@@ -44,6 +44,8 @@ section OperatorLinearization
 
 variable {A : Type*} [NonUnitalNonAssocCommRing A]
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 /-!
 The endomorphisms on an additive monoid `AddMonoid.End` form a `Ring`, and this may be equipped
 with a Lie Bracket via `Ring.bracket`.
@@ -54,7 +56,7 @@ theorem two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add [IsCommJordan A] (a b :
     2 • (⁅L a, L (a * b)⁆ + ⁅L b, L (b * a)⁆) = ⁅L (a * a), L b⁆ + ⁅L (b * b), L a⁆ := by
   suffices 2 • ⁅L a, L (a * b)⁆ + 2 • ⁅L b, L (b * a)⁆ + ⁅L b, L (a * a)⁆ + ⁅L a, L (b * b)⁆ = 0 by
     rwa [← sub_eq_zero, ← sub_sub, sub_eq_add_neg, sub_eq_add_neg, lie_skew, lie_skew, nsmul_add]
-  convert (commute_lmul_lmul_sq (a + b)).lie_eq using 1
+  convert (commute_lmul_lmul_sq (a + b)).lie_eq
   simp only [add_mul, mul_add, map_add, lie_add, add_lie, mul_comm b a,
     (commute_lmul_lmul_sq a).lie_eq, (commute_lmul_lmul_sq b).lie_eq, zero_add, add_zero, two_smul]
   abel
@@ -145,8 +147,8 @@ theorem four_nsmul_associator_mul_add (a b c : A) :
 /-- A simplified form of the first linearization of the commutative Jordan
 identity for 2-torsion-free rings -/
 theorem associator_mul_add (hreg : IsSMulRegular A 2) (a b c : A) :
-    2 • associator a b (a * c) + associator c b (a * a) = 0 :=
-  hreg.right_eq_zero_of_smul <| by
-    simpa [smul_smul] using four_nsmul_associator_mul_add a b c
+    2 • associator a b (a * c) + associator c b (a * a) = 0 := by
+  apply hreg
+  · simpa [smul_smul] using four_nsmul_associator_mul_add a b c
 
 end IsCommJordan
