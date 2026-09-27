@@ -325,7 +325,7 @@ noncomputable abbrev coinvariantsTensorIndIso :
 @[simps (rhsMd := .default) hom_app inv_app]
 noncomputable def coinvariantsTensorIndNatIso :
     (coinvariantsTensor k H).obj (ind φ A) ≅ resFunctor φ ⋙ (coinvariantsTensor k G).obj A :=
-  (NatIso.ofComponents (fun B => (coinvariantsTensorIndIso φ A B).symm) fun {X Y} f => by
-    dsimp only [Functor.comp_obj]; ext; rfl).symm
+  NatIso.ofComponents' (coinvariantsTensorIndIso φ A) fun {X Y} f => by
+    dsimp only [Functor.comp_obj]; ext; rfl
 
 end Rep
