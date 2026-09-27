@@ -484,6 +484,18 @@ theorem degree_gcd_le_right (p) {q : R[X]} (hq : q ≠ 0) : (gcd p q).degree ≤
   rw [gcd_comm]
   exact degree_gcd_le_left hq p
 
+/-- Powers of a primitive polynomial are primitive. -/
+theorem IsPrimitive.pow {q : R[X]} (hq : q.IsPrimitive) (n : ℕ) :
+    (q ^ n).IsPrimitive := by
+  induction n with
+  | zero => rw [pow_zero]; exact isPrimitive_one
+  | succ k ih => rw [pow_succ]; exact ih.mul hq
+
+/-- Finite products of primitive polynomials are primitive. -/
+theorem isPrimitive_prod {ι : Type*} (t : Finset ι) (f : ι → R[X])
+    (h : ∀ i ∈ t, (f i).IsPrimitive) : (∏ i ∈ t, f i).IsPrimitive :=
+  Finset.prod_induction f IsPrimitive (fun _ _ ha hb => ha.mul hb) isPrimitive_one h
+
 end NormalizedGCDMonoid
 
 noncomputable instance [StrongNormalizedGCDMonoid R] : StrongNormalizedGCDMonoid R[X] where
