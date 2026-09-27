@@ -6,7 +6,6 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.Kernel.Basic
-public import Mathlib.Tactic.Peel
 public import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
