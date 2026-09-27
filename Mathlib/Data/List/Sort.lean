@@ -8,6 +8,7 @@ module
 public import Batteries.Data.List.Perm
 public import Mathlib.Data.List.OfFn
 public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.List.Perm.Basic
 public import Mathlib.Order.Fin.Basic
 
 /-!
@@ -57,6 +58,10 @@ theorem orderedInsert_cons_of_le {a b : α} (l : List α) (h : a ≼ b) :
 theorem orderedInsert_of_not_le {a b : α} (l : List α) (h : ¬ a ≼ b) :
     orderedInsert r a (b :: l) = b :: orderedInsert r a l := dite_eq_right h
 
+theorem orderedInsert_eq_cons_of_forall_rel {a : α} {l : List α} (h : ∀ b ∈ l, a ≼ b) :
+    l.orderedInsert r a = a :: l := by
+  cases l <;> grind
+
 /-- `insertionSort l` returns `l` sorted using the insertion sort algorithm. -/
 def insertionSort : List α → List α := foldr (orderedInsert r) []
 
@@ -105,6 +110,22 @@ theorem perm_orderedInsert (a) : ∀ l : List α, orderedInsert r a l ~ a :: l
     · simp [h]
     · simpa [h] using ((perm_orderedInsert a l).cons _).trans (Perm.swap _ _ _)
 
+@[simp]
+theorem orderedInsert_perm_orderedInsert_iff {l₁ l₂ : List α} (x : α) :
+    l₁.orderedInsert r x ~ l₂.orderedInsert r x ↔ l₁ ~ l₂ := by
+  rw [(perm_orderedInsert r x l₁).congr_left, (perm_orderedInsert r x l₂).congr_right, perm_cons]
+
+@[simp]
+theorem orderedInsert_perm_orderedInsert_iff_right {l : List α} {x y : α} :
+    l.orderedInsert r x ~ l.orderedInsert r y ↔ x = y := by
+  rw [(perm_orderedInsert r x l).congr_left, (perm_orderedInsert r y l).congr_right,
+    perm_cons_right_iff]
+
+theorem orderedInsert_subperm_orderedInsert_iff {l₁ l₂ : List α} (x : α) :
+    l₁.orderedInsert r x <+~ l₂.orderedInsert r x ↔ l₁ <+~ l₂ := by
+  rw [(perm_orderedInsert r x l₁).subperm_right, (perm_orderedInsert r x l₂).subperm_left,
+    subperm_cons]
+
 theorem orderedInsert_count [DecidableEq α] (L : List α) (a b : α) :
     count a (L.orderedInsert r b) = count a L + if b = a then 1 else 0 := by
   rw [(L.perm_orderedInsert r b).count_eq, count_cons]
@@ -122,15 +143,8 @@ theorem length_insertionSort (l : List α) : (insertionSort r l).length = l.leng
   (perm_insertionSort r _).length_eq
 
 theorem insertionSort_cons_of_forall_rel {a : α} {l : List α} (h : ∀ b ∈ l, r a b) :
-    insertionSort r (a :: l) = a :: insertionSort r l := by
-  rw [insertionSort_cons]
-  cases hi : insertionSort r l with
-  | nil => rfl
-  | cons b m =>
-    rw [orderedInsert_cons_of_le]
-    apply h b <| (mem_insertionSort r).1 _
-    rw [hi]
-    exact mem_cons_self
+    insertionSort r (a :: l) = a :: insertionSort r l :=
+  orderedInsert_eq_cons_of_forall_rel r fun b hb => h b <| (mem_insertionSort r).1 hb
 
 theorem map_insertionSort (f : α → β) (l : List α) (hl : ∀ a ∈ l, ∀ b ∈ l, a ≼ b ↔ f a ≼ f b) :
     (l.insertionSort r).map f = (l.map f).insertionSort s := by
@@ -195,6 +209,27 @@ theorem Sublist.orderedInsert_sublist [IsTrans α r] {as bs} (x) (hs : as <+ bs)
         exact .cons _ ih
       · simp_all
       · exact .cons_cons _ <| orderedInsert_sublist x ‹as <+ bs› hb.of_cons
+
+theorem orderedInsert_sublist_orderedInsert_iff [IsTrans α r] [Std.Refl r]
+    {l₁ l₂ : List α} (hl₂ : Pairwise r l₂) (x : α) :
+    l₁.orderedInsert r x <+ l₂.orderedInsert r x ↔ l₁ <+ l₂ :=
+  ⟨fun h => by classical simpa [erase_orderedInsert] using h.erase x,
+    fun h => h.orderedInsert_sublist x hl₂⟩
+
+theorem orderedInsert_sublist_orderedInsert_iff_of_notMem [IsTrans α r]
+    {l₁ l₂ : List α} (hl₂ : Pairwise r l₂) {x : α} (hx₁ : x ∉ l₁) (hx₂ : x ∉ l₂) :
+    l₁.orderedInsert r x <+ l₂.orderedInsert r x ↔ l₁ <+ l₂ :=
+  ⟨fun h => by classical simpa [erase_orderedInsert_of_notMem, hx₁, hx₂] using h.erase x,
+    fun h => h.orderedInsert_sublist x hl₂⟩
+
+theorem erase_sublist_iff_sublist_orderedInsert_of_notMem
+    [DecidableEq α] [IsTrans α r] [Std.Antisymm r]
+    {l₁ l₂ : List α} (h₁ : Pairwise r l₁) (h₂ : Pairwise r l₂) {x : α} (hx₂ : x ∉ l₂) :
+    l₁.erase x <+ l₂ ↔ l₁ <+ l₂.orderedInsert r x := by
+  refine ⟨fun h => ?_, fun h => by simpa [erase_orderedInsert_of_notMem hx₂] using h.erase x⟩
+  by_cases hx₁ : x ∈ l₁
+  · simpa [orderedInsert_erase _ _ hx₁ h₁] using h.orderedInsert_sublist x h₂
+  · exact (erase_of_not_mem hx₁ ▸ h).trans (sublist_orderedInsert x l₂)
 
 section TotalAndTransitive
 
