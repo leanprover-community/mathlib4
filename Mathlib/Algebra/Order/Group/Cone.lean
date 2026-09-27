@@ -58,11 +58,11 @@ a maximal submonoid with zero support in an abelian group. -/
 @[to_additive (attr := implicit_reducible)
 /-- Construct a linear order by designating
 a maximal submonoid with zero support in an abelian group. -/]
-def LinearOrder.ofSubmonoid (hMs : M.IsMulSpanning) [DecidablePred (· ∈ M)] :
+def LinearOrder.ofSubmonoid (hMs : M.IsMulSpanning) [dec : DecidablePred (· ∈ M)] :
     LinearOrder G where
   __ := PartialOrder.ofSubmonoid hM
   le_total a b := by simpa using hMs.mem_or_inv_mem (b / a)
-  toDecidableLE _ := _
+  toDecidableLE a b := dec (b / a)
 
 /-- `AddGroupConeClass S G` says that `S` is a type of cones in `G`. -/
 @[deprecated "Unbundled to `AddSubmonoid.IsPointed`" (since := "2026-09-27")]
