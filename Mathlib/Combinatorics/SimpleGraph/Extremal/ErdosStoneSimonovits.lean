@@ -155,12 +155,15 @@ theorem filter.pi.exists_le_card_fiber (hr_pos : 0 < r) (ht'_pos : 0 < t')
     (ht_lt_t' : t < t') (hδ : G.minDegree ≥ (1 - 1 / r + ε) * n)
     (hN : (t'.choose t ^ r * t + r * t') * (t' - t) ≤ n * (r * t' * ε - t)) :
     ∃ y : K.parts.pi (·.powersetCard t), t ≤ #{ w | filter.pi K w = y } := by
-  have : Nonempty (K.parts.pi (·.powersetCard t)) :=
-    nonempty_coe_sort.mpr <| pi_nonempty.mpr fun p hp ↦
-      powersetCard_nonempty.mpr <| ht_lt_t'.le.trans_eq (K.card_mem_parts hp).symm
+  have : Nonempty (K.parts.pi (·.powersetCard t)) := by
+    simp_rw [nonempty_coe_sort, pi_nonempty, powersetCard_nonempty]
+    intro p hp
+    rw [K.card_mem_parts hp]
+    exact ht_lt_t'.le
   have hcard : #(K.parts.pi (·.powersetCard t)) = t'.choose t ^ r := by
-    rw [Finset.card_pi, prod_eq_pow_card fun p hp ↦ by rw [card_powersetCard, K.card_mem_parts hp],
-      K.card_parts.resolve_right ht'_pos.ne']
+    rw [Finset.card_pi, prod_eq_pow_card, K.card_parts.resolve_right ht'_pos.ne']
+    intro p hp
+    rw [card_powersetCard, K.card_mem_parts hp]
   apply exists_le_card_fiber_of_mul_le_card
   simp_rw [card_coe, hcard]
   exact_mod_cast le_of_mul_le_mul_right (mul_le_card_filter_mul K hr_pos ht'_pos hδ (mod_cast hN))
@@ -200,8 +203,9 @@ public theorem eventually_completeEquipartiteGraph_isContained_of_minDegree
     -- satisfy the pigeonhole principle
     let N := max (max 1 N') ⌈(t'.choose t ^ r * t + r * t') * (t' - t) / (r * t' * ε - t)⌉₊
     refine eventually_atTop.mpr ⟨N, fun n hn {G} _ hδ ↦ ?_⟩
-    have : Nonempty (Fin n) := Fin.pos_iff_nonempty.mp <|
-      hn.trans_lt' <| lt_max_of_lt_left <| lt_max_of_lt_left zero_lt_one
+    have : Nonempty (Fin n) := by
+      rw [← Fin.pos_iff_nonempty]
+      exact hn.trans_lt' (lt_max_of_lt_left (lt_max_of_lt_left zero_lt_one))
     -- `r` is less than `1 / ε` otherwise `G.minDegree = n`
     have hrε_lt_1 : r * ε < 1 := by
       have hδ_lt_card : (G.minDegree : ℝ) < n :=
