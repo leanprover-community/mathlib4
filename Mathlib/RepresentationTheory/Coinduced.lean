@@ -344,7 +344,7 @@ def resCoindAdjunction : resFunctor.{max w t} φ ⊣ coindFunctor k φ :=
   Adjunction.mkOfHomEquiv {
     homEquiv X Y := (resCoindHomEquiv φ X Y).toEquiv
     homEquiv_naturality_left_symm := by intros; rfl
-    homEquiv_naturality_right _ _ := by ext; rfl}
+    homEquiv_naturality_right := by intros; ext; rfl}
 
 @[simp]
 lemma resCoindAdjunction_homEquiv :
