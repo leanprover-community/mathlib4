@@ -169,8 +169,7 @@ nonzero `r`. -/
 protected def Coloring.turanGraph (n r : ℕ) [NeZero r] : (turanGraph n r).Coloring (Fin r) :=
   ⟨(.ofNat r ·), (Fin.ne_of_val_ne ·)⟩
 
-protected theorem Colorable.completeEquipartiteGraph (n r : ℕ) [NeZero r] :
-    (turanGraph n r).Colorable r :=
+protected theorem Colorable.turanGraph (n r : ℕ) [NeZero r] : (turanGraph n r).Colorable r :=
   ⟨.turanGraph n r⟩
 
 open Walk
