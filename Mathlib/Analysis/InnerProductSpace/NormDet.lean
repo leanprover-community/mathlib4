@@ -438,3 +438,32 @@ theorem euclideanHausdorffMeasure_image_eq_normDet_mul_volume [MeasurableSpace U
 end Real
 
 end LinearMap
+
+namespace AffineMap
+
+open MeasureTheory Measure
+
+variable {U V P Q : Type*} [NormedAddCommGroup U] [InnerProductSpace ℝ U]
+  [FiniteDimensional ℝ U] [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+  [MetricSpace P] [NormedAddTorsor U P] [MetricSpace Q] [NormedAddTorsor V Q]
+  [MeasurableSpace P] [BorelSpace P] [MeasurableSpace Q] [BorelSpace Q]
+
+theorem hausdorffMeasure_image (f : P →ᵃ[ℝ] Q) (s : Set P) :
+    μH[finrank ℝ U] (f '' s) = ENNReal.ofReal f.linear.normDet * μH[finrank ℝ U] s := by
+  borelize U V
+  have : f = AffineIsometryEquiv.vaddConst ℝ (f (Classical.arbitrary P)) ∘ f.linear ∘
+      (AffineIsometryEquiv.vaddConst ℝ (Classical.arbitrary P)).symm := by
+    ext x
+    simp
+  rw [this, Set.image_comp, Set.image_comp,
+    (AffineIsometryEquiv.isometry _).hausdorffMeasure_image (by simp),
+    LinearMap.hausdorffMeasure_image,
+    (AffineIsometryEquiv.isometry _).hausdorffMeasure_image (by simp)]
+
+theorem euclideanHausdorffMeasure_image (f : P →ᵃ[ℝ] Q) (s : Set P) :
+    μHE[finrank ℝ U] (f '' s) = ENNReal.ofReal f.linear.normDet * μHE[finrank ℝ U] s := by
+  simp_rw [euclideanHausdorffMeasure_def, Measure.smul_apply, nnreal_smul_coe_apply,
+    hausdorffMeasure_image]
+  exact mul_left_comm _ _ _
+
+end AffineMap
