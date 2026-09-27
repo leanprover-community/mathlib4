@@ -123,8 +123,8 @@ theorem X_pow_sub_C_irreducible_of_odd
       (X_pow_sub_C_irreducible_of_prime hp (ha p hp (dvd_mul_right _ _)))
     intro E _ _ x hx
     have : IsIntegral K x := not_not.mp fun h ↦ by
-      simpa only [degree_zero, degree_X_pow_sub_C hp.pos,
-        WithBot.natCast_ne_bot] using congr_arg degree (hx.symm.trans (dite_eq_right h))
+      simpa only [degree_zero, degree_X_pow_sub_C hp.pos, WithBot.natCast_ne_bot]
+        using congr(degree $(hx.symm.trans (dite_eq_right h)))
     apply IH (Nat.odd_mul.mp hn).2
     intro q hq hqn b hb
     apply ha q hq (dvd_mul_of_dvd_right hqn p) (Algebra.norm _ b)

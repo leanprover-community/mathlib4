@@ -225,11 +225,11 @@ theorem HasFiniteIntegral.add_measure {f : α → ε} (hμ : HasFiniteIntegral f
 
 theorem HasFiniteIntegral.left_of_add_measure {f : α → ε} (h : HasFiniteIntegral f (μ + ν)) :
     HasFiniteIntegral f μ :=
-  h.mono_measure <| Measure.le_add_right <| le_rfl
+  h.mono_measure <| Measure.le_add_right le_rfl
 
 theorem HasFiniteIntegral.right_of_add_measure {f : α → ε} (h : HasFiniteIntegral f (μ + ν)) :
     HasFiniteIntegral f ν :=
-  h.mono_measure <| Measure.le_add_left <| le_rfl
+  h.mono_measure <| Measure.le_add_left le_rfl
 
 @[simp]
 theorem hasFiniteIntegral_add_measure {f : α → ε} :

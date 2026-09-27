@@ -281,7 +281,7 @@ lemma mem_interior_range_of_mem_interior_range_of_mem_atlas (hn : n ≠ 0)
     exact e.extend_preimage_mem_nhds hex <| e'.open_source.mem_nhds hex'
   rw [← ContinuousLinearMap.coe_restrictScalars' (R := ℝ),
     (hφ.differentiableOn hn _ (by simp [φ, hex, hex'])).restrictScalars_fderivWithin (𝕜 := ℝ)
-      (uniqueDiffWithinAt_of_mem_nhds hφx), fderivWithin_of_mem_nhds <| hφx] at hφx'
+      (uniqueDiffWithinAt_of_mem_nhds hφx), fderivWithin_of_mem_nhds hφx] at hφx'
   rw [show e'.extend I x = φ (e.extend I x) by simp [φ, hex]]
   replace hφ := ((hφ.restrict_scalars ℝ).differentiableOn hn).differentiableAt hφx
   exact hφ.mem_interior_convex_of_surjective_fderiv hφx I.convex_range I.isClosed_range

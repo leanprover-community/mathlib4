@@ -331,7 +331,7 @@ lemma le_iff_norm_sqrt_mul_rpow (a b : A) (ha : 0 ≤ a := by cfc_tac)
   · calc
       a = (sqrt ↑b * ↑b ^ (-(1 / 2) : ℝ)) * a * (↑b ^ (-(1 / 2) : ℝ) * sqrt ↑b) := by
         simp only [CFC.sqrt_eq_rpow .., ← CFC.rpow_add b.isUnit]
-        norm_num
+        simp
         simp [CFC.rpow_zero (b : A)]
       _ = sqrt ↑b * (↑b ^ (-(1 / 2) : ℝ) * a * ↑b ^ (-(1 / 2) : ℝ)) * sqrt ↑b := by
         simp only [mul_assoc]
@@ -533,7 +533,7 @@ lemma isBounded_of_bddAbove_of_bddBelow {s : Set A} (hbd : BddAbove s) (hbd' : B
 lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by
   suffices IsClosed {a : A⁺¹ | 0 ≤ a} by
     rw [Unitization.isometry_inr (𝕜 := ℂ) |>.isClosedEmbedding.isClosed_iff_image_isClosed]
-    convert! this.inter <| (Unitization.isometry_inr (𝕜 := ℂ)).isClosedEmbedding.isClosed_range
+    convert! this.inter (Unitization.isometry_inr (𝕜 := ℂ)).isClosedEmbedding.isClosed_range
     ext a
     simp only [Set.mem_image, Set.mem_ofPred_eq, Set.mem_inter_iff, Set.mem_range,
       ← exists_and_left]

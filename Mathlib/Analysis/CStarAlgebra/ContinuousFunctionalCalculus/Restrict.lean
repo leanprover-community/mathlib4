@@ -255,7 +255,7 @@ lemma nonUnitalStarAlgHom_injective {a : A} {φ : C(σₙ S a, S)₀ →⋆ₙ�
     Function.Injective (h.nonUnitalStarAlgHom φ) :=
   have : h.homeomorph.symm 0 = 0 := Subtype.ext (map_zero <| algebraMap _ _)
   hφ.comp <|
-    (postcomp_injective ⟨⟨(StarAlgHom.ofId R S), (algebraMapCLM R S).continuous⟩, _⟩ halg).comp <|
+    (postcomp_injective ⟨⟨(StarAlgHom.ofId R S), (algebraMapCLM R S).continuous⟩, _⟩ halg).comp
     (UniformEquiv.arrowCongrLeft₀ h.homeomorph.symm this |>.injective)
 
 variable [TopologicalSpace A]

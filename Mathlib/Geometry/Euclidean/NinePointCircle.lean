@@ -181,7 +181,7 @@ theorem midpoint_faceOppositeCentroid_eulerPoint {n : ℕ} [hn : NeZero n] (s : 
       (((n + 1) / n : ℝ)) • (s.centroid -ᵥ s.circumcenter) := by
     rw [add_comm (n : ℝ) 1, add_div, div_self (by simpa using hn.out), add_smul, one_smul, one_div]
   rw [this, ← two_smul ℝ, smul_smul]
-  norm_num
+  simp
 
 theorem isDiameter_ninePointCircle {n : ℕ} [NeZero n] (s : Simplex ℝ P n)
     (i : Fin (n + 1)) :

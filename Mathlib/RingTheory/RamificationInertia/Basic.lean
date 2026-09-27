@@ -59,7 +59,7 @@ theorem sum_ramification_inertia_eq_finrank_fiber
   let κp := p.ResidueField
   let κr := r.ResidueField
   let A := Sr ⧸ p.map (algebraMap R Sr)
-  suffices length Sr A * finrank κp κr = finrank κp Sq by simpa using congr_arg ENat.toNat this
+  suffices length Sr A * finrank κp κr = finrank κp Sq by simpa using congr($(this).toNat)
   calc length Sr A * finrank κp κr = length Sr A * length κp κr := by rw [length_eq_finrank]
     _ = length Rp A := (length_restrictScalars Rp Sr A).symm
     _ = length Rp Sq := (Fiber.localizationAlgEquivQuotient p q.1).toLinearEquiv.length_eq.symm

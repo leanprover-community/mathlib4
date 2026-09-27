@@ -549,7 +549,7 @@ theorem isBigO_iff_div_isBoundedUnder {α : Type*} {l : Filter α} {f g : α →
 theorem isBigO_of_div_tendsto_nhds {α : Type*} {l : Filter α} {f g : α → 𝕜}
     (hgf : ∀ᶠ x in l, g x = 0 → f x = 0) (c : 𝕜) (H : Filter.Tendsto (f / g) l (𝓝 c)) :
     f =O[l] g :=
-  (isBigO_iff_div_isBoundedUnder hgf).2 <| H.norm.isBoundedUnder_le
+  (isBigO_iff_div_isBoundedUnder hgf).2 H.norm.isBoundedUnder_le
 
 theorem IsLittleO.tendsto_zero_of_tendsto {u : α → E'} {v : α → 𝕜} {l : Filter α} {y : 𝕜}
     (huv : u =o[l] v) (hv : Tendsto v l (𝓝 y)) :
@@ -826,8 +826,8 @@ theorem isBigOWith_congr (e : OpenPartialHomeomorph α β) {b : β} (hb : b ∈ 
       rwa [ContinuousAt, e.rightInvOn hb] at this,
     fun h =>
     (h.comp_tendsto (e.continuousAt_symm hb)).congr' rfl
-      ((e.eventually_right_inverse hb).mono fun _ hx => congr_arg f hx)
-      ((e.eventually_right_inverse hb).mono fun _ hx => congr_arg g hx)⟩
+      ((e.eventually_right_inverse hb).mono fun _ hx => congr(f $hx))
+      ((e.eventually_right_inverse hb).mono fun _ hx => congr(g $hx))⟩
 
 /-- Transfer `IsBigO` over an `OpenPartialHomeomorph`. -/
 theorem isBigO_congr (e : OpenPartialHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E}

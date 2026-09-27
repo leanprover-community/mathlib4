@@ -46,7 +46,7 @@ theorem card_dvd_exponent_pow_rank : Nat.card G ∣ Monoid.exponent G ^ Group.ra
   have hf : Function.Surjective f := by
     rw [← MonoidHom.range_eq_top, eq_top_iff, ← hS2, closure_le]
     exact fun g hg => ⟨Pi.mulSingle ⟨g, hg⟩ ⟨g, mem_zpowers g⟩, noncommPiCoprod_mulSingle _ _⟩
-  replace hf := card_dvd_of_surjective f hf
+  replace hf := card_dvd_of_surjective hf
   rw [Nat.card_pi] at hf
   refine hf.trans (Finset.prod_dvd_prod_of_dvd _ _ fun g _ => ?_)
   rw [Nat.card_zpowers]
@@ -152,7 +152,7 @@ theorem exists_finset_card_le_mul [FiniteIndex H] {S : Finset G} (hS : closure (
   calc
     _ ≤ #(R * S) := Finset.card_image_le
     _ ≤ #R * #S := Finset.card_mul_le
-    _ = H.index * S.card := congr_arg (· * S.card) ?_
+    _ = H.index * S.card := congr($(?_) * S.card)
   calc
     #R = Fintype.card R := (Fintype.card_coe R).symm
     _ = _ := (Fintype.card_congr hR.rightQuotientEquiv).symm
@@ -176,7 +176,7 @@ theorem rank_le_index_mul_rank [hG : Group.FG G] [FiniteIndex H] :
   calc
     Group.rank H ≤ #T := Group.rank_le hT
     _ ≤ H.index * #S := hT₀
-    _ = H.index * Group.rank G := congr_arg (H.index * ·) hS₀
+    _ = H.index * Group.rank G := congr(H.index * $hS₀)
 
 variable (G)
 

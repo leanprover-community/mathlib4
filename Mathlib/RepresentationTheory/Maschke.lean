@@ -154,7 +154,7 @@ theorem exists_leftInverse_of_injective (f : V →ₗ[k[G]] W) (hf : LinearMap.k
     simp [hf]
   have _ : Fintype G := Fintype.ofFinite G
   refine ⟨φ.equivariantProjection G, LinearMap.ext ?_⟩
-  exact φ.equivariantProjection_condition G _ (.mk0 _ <| NeZero.ne _) <| hφ
+  exact φ.equivariantProjection_condition G _ (.mk0 _ <| NeZero.ne _) hφ
 
 namespace Submodule
 

@@ -103,7 +103,7 @@ theorem comp_diagonal_diagonal [DecidableEq I] [DecidableEq J] [Zero R] (d : I �
 @[simp]
 theorem comp_symm_diagonal [DecidableEq I] [DecidableEq J] [Zero R] (d : I × J → R) :
     (comp I I J J R).symm (diagonal d) = diagonal fun i => diagonal fun j => d (i, j) :=
-  (comp I I J J R).symm_apply_eq.2 <| (comp_diagonal_diagonal fun i j => d (i, j)).symm
+  (comp I I J J R).symm_apply_eq.2 (comp_diagonal_diagonal fun i j => d (i, j)).symm
 
 theorem comp_transpose (M : Matrix I J (Matrix K L R)) :
     comp J I K L R Mᵀ = (comp _ _ _ _ R <| M.map (·ᵀ))ᵀ := rfl

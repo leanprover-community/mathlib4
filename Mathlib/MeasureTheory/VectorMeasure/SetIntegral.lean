@@ -179,9 +179,9 @@ theorem integral_indicator (hs : MeasurableSet s) :
     _ = ∫ᵛ x in s, f x ∂[B; μ] + ∫ᵛ x in sᶜ, 0 ∂[B; μ] := by
       apply congr_arg₂ (· + ·) (integral_congr_ae ?_) (integral_congr_ae ?_)
       · rw [variation_restrict hs]
-        exact indicator_ae_eq_restrict hs
+        exact indicator_ae_eq_restrict hs.nullMeasurableSet
       · rw [variation_restrict hs.compl]
-        exact indicator_ae_eq_restrict_compl hs
+        exact indicator_ae_eq_restrict_compl hs.nullMeasurableSet
     _ = ∫ᵛ x in s, f x ∂[B; μ] := by simp
 
 theorem setIntegral_indicator (hs : MeasurableSet s) (ht : MeasurableSet t) :
@@ -234,7 +234,7 @@ theorem setIntegral_eq_zero_of_forall_eq_zero (ht_eq : ∀ x ∈ t, f x = 0) :
 theorem frequently_ae_ne_zero_of_setIntegral_ne_zero (hU : ∫ᵛ x in t, f x ∂[B; μ] ≠ 0) :
     ∃ᶠ x in ae (μ.variation.restrict t), f x ≠ 0 := by
   have ht : MeasurableSet t := by
-    contrapose! hU
+    contrapose hU
     simp [setIntegral_eq_zero_of_not_measurableSet hU]
   rw [← variation_restrict ht]
   exact frequently_ae_ne_zero_of_integral_ne_zero hU

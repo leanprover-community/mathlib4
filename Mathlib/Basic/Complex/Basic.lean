@@ -486,14 +486,14 @@ theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (ofNat(n) : ℂ) = ofNat(n) :
 theorem conj_neg_I : conj (-I) = I := by simp
 
 theorem conj_eq_iff_real {z : ℂ} : conj z = z ↔ ∃ r : ℝ, z = r :=
-  ⟨fun h => ⟨z.re, ext rfl <| eq_zero_of_neg_eq (congr_arg im h)⟩, fun ⟨h, e⟩ => by
+  ⟨fun h => ⟨z.re, ext rfl <| eq_zero_of_neg_eq congr(im $h)⟩, fun ⟨h, e⟩ => by
     rw [e, conj_ofReal]⟩
 
 theorem conj_eq_iff_re {z : ℂ} : conj z = z ↔ (z.re : ℂ) = z :=
   conj_eq_iff_real.trans ⟨by rintro ⟨r, rfl⟩; simp [ofReal], fun h => ⟨_, h.symm⟩⟩
 
 theorem conj_eq_iff_im {z : ℂ} : conj z = z ↔ z.im = 0 :=
-  ⟨fun h => add_self_eq_zero.mp (neg_eq_iff_add_eq_zero.mp (congr_arg im h)), fun h =>
+  ⟨fun h => add_self_eq_zero.mp (neg_eq_iff_add_eq_zero.mp congr(im $h)), fun h =>
     ext rfl (neg_eq_iff_add_eq_zero.mpr (add_self_eq_zero.mpr h))⟩
 
 @[simp]

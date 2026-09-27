@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.Action.Prod
 public import Mathlib.Algebra.Group.Subgroup.Map
 public import Mathlib.Algebra.Module.Torsion.Free
+public import Mathlib.Algebra.Order.Group.Action
 public import Mathlib.Basic.Finite.Sigma
 public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Data.Setoid.Basic
@@ -246,6 +247,17 @@ lemma _root_.IsCancelSMul.stabilizer_eq_bot [IsCancelSMul G α] (a : α) :
 lemma _root_.isCancelSMul_iff_stabilizer_eq_bot :
     IsCancelSMul G α ↔ (∀ a : α, stabilizer G a = ⊥) := by
   simp [isCancelSMul_iff_eq_one_of_smul_eq, Subgroup.eq_bot_iff_forall, forall_comm (α := G)]
+
+section Order
+variable [PartialOrder α] [CovariantClass G α HSMul.hSMul LE.le]
+
+@[simp]
+lemma stabilizer_bot [OrderBot α] : stabilizer G (⊥ : α) = ⊤ := by ext; simp
+
+@[simp]
+lemma stabilizer_top [OrderTop α] : stabilizer G (⊤ : α) = ⊤ := by ext; simp
+
+end Order
 
 /-- If the stabilizer of `a` is `S`, then the stabilizer of `g • a` is `gSg⁻¹`. -/
 @[to_additive /-- If the stabilizer of `a` is `S`, then the stabilizer of `g +ᵥ a` is `g+S-g`. -/]
