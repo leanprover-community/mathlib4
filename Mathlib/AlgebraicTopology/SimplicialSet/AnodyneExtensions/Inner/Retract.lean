@@ -5,13 +5,19 @@ Authors: Jack McKoen
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Inner.Basic
+public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
 public import Mathlib.AlgebraicTopology.SimplicialSet.ProdStdSimplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.PushoutProduct
 public import Mathlib.CategoryTheory.Subfunctor.Retract
 
 /-!
 # Inner horn inclusions as retracts of pushout-products
+
+Any inner horn inclusion `Λ[n, i].ι` is a retract of the pushout-product `Λ[2, 1].ι □ Λ[n, i].ι`.
+
+## References
+
+* [Charles Rezk, *Introduction to Quasicategories*, proof of Lemma 78.4][Rezk2022]
 
 -/
 
@@ -23,19 +29,23 @@ namespace SSet
 
 open CategoryTheory Simplicial MonoidalCategory CartesianMonoidalCategory Functor
 
-def s₀ {n : ℕ} (i : Fin (n + 1)) : Fin (n + 1) →o Fin 3 where
+private def innerHornRetract.s₀ {n : ℕ} (i : Fin (n + 1)) : Fin (n + 1) →o Fin 3 where
   toFun j := if j < i then 0 else if j = i then 1 else 2
   monotone' _ _ _ := by grind
 
-def r₀ {n : ℕ} (i : Fin (n + 1)) : Fin 3 × Fin (n + 1) →o Fin (n + 1) where
+private def innerHornRetract.r₀ {n : ℕ} (i : Fin (n + 1)) :
+    Fin 3 × Fin (n + 1) →o Fin (n + 1) where
   toFun := fun ⟨k, j⟩ ↦ if (j < i ∧ k = 0) ∨ (i < j ∧ k = 2) then j else i
   monotone' := by
     rintro ⟨k, j⟩ ⟨k', j'⟩ ⟨hk, hj⟩
     grind
 
+open innerHornRetract in
 set_option backward.isDefEq.respectTransparency false in
 /-- An inner horn inclusion is a retract of its pushout-product with `Λ[2, 1].ι`. -/
-noncomputable def hornRetract {n : ℕ} (i : Fin (n + 1)) (h0 : 0 < i) (hn : i < Fin.last n) :
+@[no_expose]
+noncomputable def innerHornRetract {n : ℕ} (i : Fin (n + 1))
+    (h0 : 0 < i) (hn : i < Fin.last n) :
     RetractArrow Λ[n, i].ι
       (PushoutObjObj.ofHasPushout (curriedTensor SSet.{u}) Λ[2, 1].ι Λ[n, i].ι).ι := by
   let s : Δ[n] ⟶ Δ[2] ⊗ Δ[n] := lift (stdSimplex.map (SimplexCategory.Hom.mk (s₀ i))) (𝟙 _)

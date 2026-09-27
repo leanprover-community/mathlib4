@@ -9,9 +9,9 @@ public import Mathlib.CategoryTheory.Retract
 public import Mathlib.CategoryTheory.Subfunctor.Image
 
 /-!
-# Restricting retractions to subfunctors
+# Retracts of subfunctors
 
-A retraction of type-valued functors that preserves two subfunctors induces a retraction
+A retract of type-valued functors that preserves two subfunctors induces a retraction
 of their inclusion morphisms.
 -/
 
