@@ -83,7 +83,7 @@ class HypergraphLike (ν ι ε : outParam Type*) (Gr : Type*) where
   verts (G : Gr) : Set ν
   /-- The set of edges present in a graph-like structure. -/
   edges (G : Gr) : Set ε
-  /-- The set of incidence used by a graph-like structure. -/
+  /-- The set of incidences used by a graph-like structure. -/
   incs (G : Gr) : Set ι
   /-- Each incidence is assigned an edge. -/
   edgeMap' (G : Gr) (i : incs G) : edges G
