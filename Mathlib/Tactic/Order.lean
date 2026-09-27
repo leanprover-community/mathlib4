@@ -315,8 +315,8 @@ This tactic fails if it cannot prove the main goal.
 -/
 macro "order" args:orderArgs : tactic => `(tactic|
   · intros
-    -- If the push_neg step does nothing, there should be no warning: hence, manually write it
-    -- instead of using `by_contra!` (which prints a warning).
+    -- If the `push Not` step does nothing, there should be no warning: hence, manually write it
+    -- instead of using `by_contra!` (which prints a warning if `push Not` makes no progress).
     by_contra _order_neg_goal
     try push Not at _order_neg_goal
     order_core $args _order_neg_goal
