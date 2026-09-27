@@ -5,7 +5,8 @@ Authors: Neil Strickland
 -/
 module
 
-public import Mathlib.Tactic.Ring
+import Mathlib.Algebra.Order.Sub.Basic
+public import Mathlib.Tactic.Ring.RingNF
 public import Mathlib.Data.PNat.Prime
 
 /-!

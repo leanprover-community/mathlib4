@@ -83,6 +83,9 @@ theorem map_neg {X Y : C} {f : X ⟶ Y} : F.map (-f) = -F.map f :=
 theorem map_sub {X Y : C} {f g : X ⟶ Y} : F.map (f - g) = F.map f - F.map g :=
   (F.mapAddHom : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y)).map_sub _ _
 
+theorem map_psmul {X Y : C} {f : X ⟶ Y} {n : ℕ+} : F.map (n • f) = n • F.map f :=
+  (F.mapAddHom : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y)).map_psmul _ _
+
 theorem map_nsmul {X Y : C} {f : X ⟶ Y} {n : ℕ} : F.map (n • f) = n • F.map f :=
   (F.mapAddHom : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y)).map_nsmul _ _
 

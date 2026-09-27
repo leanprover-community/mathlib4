@@ -700,6 +700,14 @@ variable [DecidableEq α] [DecidableEq β]
 @[to_additive (attr := instance_reducible)
 /-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Finset`. See
 note [pointwise nat action]. -/]
+protected def ppow [Mul α] : Pow (Finset α) ℕ+ :=
+  ⟨fun s n => ppowRec n s⟩
+
+/-- Repeated pointwise multiplication (not the same as pointwise repeated multiplication!) of a
+`Finset`. See note [pointwise nat action]. -/
+@[to_additive (attr := instance_reducible)
+/-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Finset`. See
+note [pointwise nat action]. -/]
 protected def npow [One α] [Mul α] : Pow (Finset α) ℕ :=
   ⟨fun s n => npowRec n s⟩
 
@@ -711,13 +719,21 @@ addition/subtraction!) of a `Finset`. See note [pointwise nat action]. -/]
 protected def zpow [One α] [Mul α] [Inv α] : Pow (Finset α) ℤ :=
   ⟨fun s n => zpowRec npowRec n s⟩
 
-scoped[Pointwise] attribute [instance] Finset.nsmul Finset.npow Finset.zsmul Finset.zpow
+scoped[Pointwise] attribute [instance] Finset.psmul Finset.ppow Finset.nsmul Finset.npow
+  Finset.zsmul Finset.zpow
+
+@[to_additive (attr := simp, norm_cast)]
+theorem coe_ppow [Semigroup α] (s : Finset α) (n : ℕ+) : ↑(s ^ n) = (s : Set α) ^ n := by
+  change ↑(ppowRec _ s) = (s : Set α) ^ _
+  induction n using Semigroup.ppow_induction (s : Set α)
+  · rfl
+  · simp_all [ppowRec]
 
 /-- `Finset α` is a `Semigroup` under pointwise operations if `α` is. -/
 @[to_additive (attr := instance_reducible)
   /-- `Finset α` is an `AddSemigroup` under pointwise operations if `α` is. -/]
 protected def semigroup [Semigroup α] : Semigroup (Finset α) :=
-  coe_injective.semigroup _ coe_mul
+  coe_injective.semigroup _ coe_mul coe_ppow
 
 section CommSemigroup
 
@@ -727,7 +743,7 @@ variable [CommSemigroup α] {s t : Finset α}
 @[to_additive (attr := instance_reducible)
   /-- `Finset α` is an `AddCommSemigroup` under pointwise operations if `α` is. -/]
 protected def commSemigroup : CommSemigroup (Finset α) :=
-  coe_injective.commSemigroup _ coe_mul
+  coe_injective.commSemigroup _ coe_mul coe_ppow
 
 @[to_additive]
 theorem inter_mul_union_subset : s ∩ t * (s ∪ t) ⊆ s * t :=
@@ -811,7 +827,7 @@ theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s : Set α) ^ n := by
 @[to_additive (attr := instance_reducible)
   /-- `Finset α` is an `AddMonoid` under pointwise operations if `α` is. -/]
 protected def monoid : Monoid (Finset α) :=
-  coe_injective.monoid _ coe_one coe_mul coe_pow
+  coe_injective.monoid _ coe_one coe_mul coe_ppow coe_pow
 
 scoped[Pointwise] attribute [instance] Finset.monoid Finset.addMonoid
 
@@ -937,7 +953,7 @@ variable [CommMonoid α]
 @[to_additive (attr := instance_reducible)
   /-- `Finset α` is an `AddCommMonoid` under pointwise operations if `α` is. -/]
 protected def commMonoid : CommMonoid (Finset α) :=
-  coe_injective.commMonoid _ coe_one coe_mul coe_pow
+  coe_injective.commMonoid _ coe_one coe_mul coe_ppow coe_pow
 
 scoped[Pointwise] attribute [instance] Finset.commMonoid Finset.addCommMonoid
 
@@ -962,7 +978,7 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} �
 @[to_additive (attr := instance_reducible)
   /-- `Finset α` is a subtraction monoid under pointwise operations if `α` is. -/]
 protected def divisionMonoid : DivisionMonoid (Finset α) :=
-  coe_injective.divisionMonoid _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
+  coe_injective.divisionMonoid _ coe_one coe_mul coe_inv coe_div coe_ppow coe_pow coe_zpow
 
 scoped[Pointwise] attribute [instance] Finset.divisionMonoid Finset.subtractionMonoid
 
@@ -1017,7 +1033,7 @@ end DivisionMonoid
   /-- `Finset α` is a commutative subtraction monoid under pointwise operations if `α` is. -/]
 protected def divisionCommMonoid [DivisionCommMonoid α] :
     DivisionCommMonoid (Finset α) :=
-  coe_injective.divisionCommMonoid _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
+  coe_injective.divisionCommMonoid _ coe_one coe_mul coe_inv coe_div coe_ppow coe_pow coe_zpow
 
 scoped[Pointwise] attribute [instance] Finset.divisionCommMonoid Finset.subtractionCommMonoid
 section Group

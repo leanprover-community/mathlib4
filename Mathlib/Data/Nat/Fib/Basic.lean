@@ -5,6 +5,7 @@ Authors: Kevin Kappelmann, Kyle Miller, Mario Carneiro
 -/
 module
 
+import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Data.Finset.NatAntidiagonal
 public import Mathlib.Data.Nat.GCD.Basic
 public import Mathlib.Data.Nat.BinaryRec

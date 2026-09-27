@@ -186,7 +186,7 @@ theorem toLp_smul (c : R) (f : H^{s, p}(E, F)) : (c • f).toLp = c • f.toLp :
 
 instance : AddCommGroup H^{s, p}(E, F) :=
   fast_instance% (injective_toLp E F s p).addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 variable (E F s p) in
 /-- Coercion to tempered distributions as an additive homomorphism. -/
