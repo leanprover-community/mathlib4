@@ -535,7 +535,7 @@ theorem choice_cmem (h : ∅ ∉ x) (y : ZFSet.{u}) (yx : y ∈ x) : choice x �
   rw [@map_fval x y _ (Classical.allZFSetDefinable _) yx, ZFClass.coe_cmem, SetLike.mem_coe]
   exact choice_mem_aux x h y yx
 
-private theorem coe_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
+private lemma coe_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
     (mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink s).symm x).1.out) = s := by
   ext x
   rw [SetLike.mem_coe, ← mk_out x, mk_mem_iff, mk_out]
