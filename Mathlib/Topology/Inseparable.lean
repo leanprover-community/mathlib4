@@ -616,6 +616,15 @@ theorem subsingleton_iff [TopologicalSpace α] :
     Subsingleton (SeparationQuotient α) ↔ IndiscreteTopology α :=
   Quotient.subsingleton_iff.trans inseparableSetoid_eq_top_iff
 
+/-- A space is indiscrete iff its only open sets are the empty set and the whole space. -/
+theorem _root_.indiscreteTopology_iff' [TopologicalSpace α] :
+    IndiscreteTopology α ↔ ∀ s : Set α, IsOpen s → s = ∅ ∨ s = univ := by
+  refine ⟨fun _ s hs ↦ (IndiscreteTopology.isOpen_iff s).mp hs, fun h ↦ ?_⟩
+  apply IndiscreteTopology.of_forall_inseparable fun x y ↦ ?_
+  rw [inseparable_iff_forall_isOpen]
+  intro s hs
+  rcases h s hs with rfl | rfl <;> simp
+
 instance [TopologicalSpace α] [IndiscreteTopology α] : Subsingleton (SeparationQuotient α) :=
   subsingleton_iff.2 ‹_›
 
