@@ -16,7 +16,7 @@ import hierarchy. This is intended to assist with splitting files.
 # TODO
 
 This functionality does not behave well with the module system, and should be upgraded to use new
-module-system-aware `#find_home` internals (and/or upstreamed to `ImportGraph`).
+`#find_home` internals (and/or upstreamed to `ImportGraph`).
 -/
 
 meta section
