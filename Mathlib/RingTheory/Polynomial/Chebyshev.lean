@@ -512,8 +512,7 @@ theorem U_mem_span_T (n : ℕ) : U R n ∈ Submodule.span ℕ ((fun m : ℕ => T
   | more n h₀ _ =>
     push_cast; rw [U_eq_two_mul_T_add_U, ← smul_eq_mul]; norm_cast
     refine Submodule.add_mem _ ?_ ((Submodule.span_mono (by grind)) h₀)
-    · exact Submodule.smul_of_tower_mem _ 2
-        (Submodule.mem_span_of_mem ⟨n + 2, by simp⟩)
+    exact Submodule.smul_of_tower_mem _ 2 (Submodule.mem_span_of_mem ⟨n + 2, by simp⟩)
 
 /-- `C n` is the `n`th rescaled Chebyshev polynomial of the first kind (also known as a Vieta–Lucas
 polynomial), given by $C_n(2x) = 2T_n(x)$. See `Polynomial.Chebyshev.C_comp_two_mul_X`. -/

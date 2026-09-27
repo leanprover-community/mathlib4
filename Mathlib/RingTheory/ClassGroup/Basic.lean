@@ -473,14 +473,14 @@ theorem FractionalIdeal.map_ringEquivOfRingEquiv_toPrincipalIdeal {S L : Type*} 
     rw [FractionalIdeal.ringEquivOfRingEquiv_spanSingleton]
   · use Units.mapEquiv (FractionalIdeal.ringEquivOfRingEquiv _ _ f).symm.toMulEquiv I
     refine ⟨?_, by simp [← Units.val_inj]⟩
-    · use Units.map (IsFractionRing.ringEquivOfRingEquiv f (K := K)
-        (L := L)).symm.toRingHom u
-      simp only [IsFractionRing.ringEquivOfRingEquiv_symm, RingEquiv.toRingHom_eq_coe,
-        Units.coe_map, MonoidHom.coe_ofClass, RingHom.coe_coe, RingEquiv.toMulEquiv_eq_coe,
-        RingEquiv.coe_toMulEquiv_symm, Units.coe_mapEquiv]
-      rw [← FractionalIdeal.ringEquivOfRingEquiv_spanSingleton,
-        ← FractionalIdeal.ringEquivOfRingEquiv_symm_eq, hu]
-      rfl
+    use Units.map (IsFractionRing.ringEquivOfRingEquiv f (K := K)
+      (L := L)).symm.toRingHom u
+    simp only [IsFractionRing.ringEquivOfRingEquiv_symm, RingEquiv.toRingHom_eq_coe,
+      Units.coe_map, MonoidHom.coe_ofClass, RingHom.coe_coe, RingEquiv.toMulEquiv_eq_coe,
+      RingEquiv.coe_toMulEquiv_symm, Units.coe_mapEquiv]
+    rw [← FractionalIdeal.ringEquivOfRingEquiv_spanSingleton,
+      ← FractionalIdeal.ringEquivOfRingEquiv_symm_eq, hu]
+    rfl
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/

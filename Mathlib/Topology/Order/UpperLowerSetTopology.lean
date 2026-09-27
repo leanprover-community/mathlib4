@@ -250,9 +250,9 @@ lemma isClosed_iff_isLower : IsClosed s ↔ IsLowerSet s := by
 lemma closure_eq_lowerClosure {s : Set α} : closure s = lowerClosure s := by
   rw [subset_antisymm_iff]
   refine ⟨?_, lowerClosure_min subset_closure (isClosed_iff_isLower.1 isClosed_closure)⟩
-  · apply closure_minimal subset_lowerClosure _
-    rw [isClosed_iff_isLower]
-    exact LowerSet.lower (lowerClosure s)
+  apply closure_minimal subset_lowerClosure _
+  rw [isClosed_iff_isLower]
+  exact LowerSet.lower (lowerClosure s)
 
 /--
 The closure of a singleton `{a}` in the upper set topology is the right-closed left-infinite

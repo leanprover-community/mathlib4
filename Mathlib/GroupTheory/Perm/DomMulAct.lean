@@ -137,11 +137,11 @@ theorem stabilizer_card' :
       intro a
       rw [refl_apply, ← Subtype.coe_inj]
       simp only [φ, Set.val_codRestrict_apply]
-  · intro g
-    simp only [funext_iff]
-    apply forall_congr'
-    intro a
-    simp only [Function.comp_apply, φ, ← Subtype.coe_inj, Set.val_codRestrict_apply]
+  intro g
+  simp only [funext_iff]
+  apply forall_congr'
+  intro a
+  simp only [Function.comp_apply, φ, ← Subtype.coe_inj, Set.val_codRestrict_apply]
 
 end Fintype
 

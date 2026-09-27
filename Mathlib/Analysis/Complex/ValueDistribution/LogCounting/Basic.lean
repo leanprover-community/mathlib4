@@ -188,8 +188,8 @@ lemma logCounting_mono [ProperSpace E] {D : locallyFinsupp E ℤ} (hD : 0 ≤ D)
       have : z ∈ closedBall 0 |a| := mem_of_indicator_ne_zero h₁
       rw [toClosedBall_eval_within _ this] at h₁
       rwa [toClosedBall_eval_within]
-      · simp_all only [abs_of_pos ha, mem_closedBall, dist_zero_right, abs_of_pos hb]
-        linarith
+      simp_all only [abs_of_pos ha, mem_closedBall, dist_zero_right, abs_of_pos hb]
+      linarith
   · exact Int.cast_nonneg (hD 0)
 
 /--

@@ -164,8 +164,8 @@ theorem subsingleton_iff [Subsingleton B] :
     obtain ⟨ζ, hζ⟩ := hprim hs hs'
     exact mod_cast hζ.unique (IsPrimitiveRoot.of_subsingleton ζ)
   · refine ⟨fun {s} hs hs' ↦ ?_, fun x ↦ by convert! (mem_top (R := A) : x ∈ ⊤)⟩
-    · have : s = 1 := (subset_pair_iff.mp hS s hs).resolve_left hs'
-      exact ⟨0, this ▸ IsPrimitiveRoot.of_subsingleton 0⟩
+    have : s = 1 := (subset_pair_iff.mp hS s hs).resolve_left hs'
+    exact ⟨0, this ▸ IsPrimitiveRoot.of_subsingleton 0⟩
 
 /-- If `B` is a cyclotomic extension of `A` given by roots of unity of order in `S ∪ T`, then `B`
 is a cyclotomic extension of `adjoin A { b : B | ∃ a : ℕ, a ∈ S ∧ a ≠ 0 ∧ b ^ a = 1 }` given by

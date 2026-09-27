@@ -237,13 +237,13 @@ theorem map_frobenius_expand {f : MvPowerSeries σ R} :
   intro n
   use (p • n)
   refine ⟨le_self_nsmul zero_le hp, ?_⟩
-  · have : (((trunc' R (p • n) f).expand p).map (frobenius R p)).toMvPowerSeries =
-      MvPowerSeries.map (frobenius R p) ((trunc' R (p • n) f).expand p) := by
-      simp only [MvPolynomial.map_expand, ← expand_eq_expand p hp, map_expand]
-      congr
-    rw [trunc'_map, trunc'_expand, ← trunc'_trunc'_pow (Nat.one_le_iff_ne_zero.mpr
-      (expChar_ne_zero R p)), ← MvPolynomial.coe_pow p, ← MvPolynomial.map_frobenius_expand, this,
-        trunc'_map, trunc'_expand_trunc' p hp (le_self_nsmul zero_le hp)]
+  have : (((trunc' R (p • n) f).expand p).map (frobenius R p)).toMvPowerSeries =
+    MvPowerSeries.map (frobenius R p) ((trunc' R (p • n) f).expand p) := by
+    simp only [MvPolynomial.map_expand, ← expand_eq_expand p hp, map_expand]
+    congr
+  rw [trunc'_map, trunc'_expand, ← trunc'_trunc'_pow (Nat.one_le_iff_ne_zero.mpr
+    (expChar_ne_zero R p)), ← MvPolynomial.coe_pow p, ← MvPolynomial.map_frobenius_expand, this,
+      trunc'_map, trunc'_expand_trunc' p hp (le_self_nsmul zero_le hp)]
 
 theorem map_iterateFrobenius_expand (f : MvPowerSeries σ R) (n : ℕ) :
     map (iterateFrobenius R p n) (expand (p ^ n) (pow_ne_zero n hp) f) = f ^ p ^ n := by

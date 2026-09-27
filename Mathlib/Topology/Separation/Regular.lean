@@ -789,24 +789,24 @@ theorem connectedComponent_eq_iInter_isClopen [T2Space X] [CompactSpace X] (x : 
   -- So, we get a disjoint decomposition `s = s ∩ u ∪ s ∩ v` of clopen sets. The intersection of all
   -- clopen neighbourhoods will then lie in whichever of u or v x lies in and hence will be a subset
   -- of either a or b.
-  · have H1 := isClopen_inter_of_disjoint_cover_clopen H.1 H.2.2 hu hv huv
-    rw [union_comm] at H
-    have H2 := isClopen_inter_of_disjoint_cover_clopen H.1 H.2.2 hv hu huv.symm
-    by_cases hxu : x ∈ u <;> [left; right]
-    -- The x ∈ u case.
-    · suffices ⋂ s : { s : Set X // IsClopen s ∧ x ∈ s }, ↑s ⊆ u
-        from Disjoint.left_le_of_le_sup_right hab (huv.mono this hbv)
-      · apply Subset.trans _ s.inter_subset_right
-        exact iInter_subset (fun s : { s : Set X // IsClopen s ∧ x ∈ s } => s.1)
-          ⟨s ∩ u, H1, mem_inter H.2.1 hxu⟩
-    -- If x ∉ u, we get x ∈ v since x ∈ u ∪ v. The rest is then like the x ∈ u case.
-    · have h1 : x ∈ v :=
-        (hab.trans (union_subset_union hau hbv) (mem_iInter.2 fun i => i.2.2)).resolve_left hxu
-      suffices ⋂ s : { s : Set X // IsClopen s ∧ x ∈ s }, ↑s ⊆ v
-        from (huv.symm.mono this hau).left_le_of_le_sup_left hab
-      · refine Subset.trans ?_ s.inter_subset_right
-        exact iInter_subset (fun s : { s : Set X // IsClopen s ∧ x ∈ s } => s.1)
-          ⟨s ∩ v, H2, mem_inter H.2.1 h1⟩
+  have H1 := isClopen_inter_of_disjoint_cover_clopen H.1 H.2.2 hu hv huv
+  rw [union_comm] at H
+  have H2 := isClopen_inter_of_disjoint_cover_clopen H.1 H.2.2 hv hu huv.symm
+  by_cases hxu : x ∈ u <;> [left; right]
+  -- The x ∈ u case.
+  · suffices ⋂ s : { s : Set X // IsClopen s ∧ x ∈ s }, ↑s ⊆ u
+      from Disjoint.left_le_of_le_sup_right hab (huv.mono this hbv)
+    apply Subset.trans _ s.inter_subset_right
+    exact iInter_subset (fun s : { s : Set X // IsClopen s ∧ x ∈ s } => s.1)
+      ⟨s ∩ u, H1, mem_inter H.2.1 hxu⟩
+  -- If x ∉ u, we get x ∈ v since x ∈ u ∪ v. The rest is then like the x ∈ u case.
+  · have h1 : x ∈ v :=
+      (hab.trans (union_subset_union hau hbv) (mem_iInter.2 fun i => i.2.2)).resolve_left hxu
+    suffices ⋂ s : { s : Set X // IsClopen s ∧ x ∈ s }, ↑s ⊆ v
+      from (huv.symm.mono this hau).left_le_of_le_sup_left hab
+    refine Subset.trans ?_ s.inter_subset_right
+    exact iInter_subset (fun s : { s : Set X // IsClopen s ∧ x ∈ s } => s.1)
+      ⟨s ∩ v, H2, mem_inter H.2.1 h1⟩
 
 /-- `ConnectedComponents X` is Hausdorff when `X` is Hausdorff and compact -/
 @[stacks 0900 "The Stacks entry proves profiniteness."]

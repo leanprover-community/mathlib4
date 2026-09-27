@@ -298,26 +298,26 @@ lemma condExp_generateFrom_singleton (hs : MeasurableSet s) {f : Ω → F} (hf :
   refine ae_eq_trans (condExp_restrict_ae_eq_restrict
     (generateFrom_singleton_le hs)
     (measurableSet_generateFrom rfl) hf).symm ?_
-  · refine (ae_eq_condExp_of_forall_setIntegral_eq (generateFrom_singleton_le hs) hf.restrict ?_ ?_
-      stronglyMeasurable_const.aestronglyMeasurable).symm
-    · rintro t - -
-      rw [integrableOn_const_iff]
-      exact Or.inr <| measure_lt_top (μ.restrict s) t
-    · rintro t ht -
-      obtain (h | h | h | h) := measurableSet_generateFrom_singleton_iff.1 ht
-      · simp [h]
-      · simp only [h, cond, integral_smul_measure, ENNReal.toReal_inv, integral_const,
-        MeasurableSet.univ, measureReal_restrict_apply, univ_inter, measureReal_restrict_apply_self,
-        ← measureReal_def]
-        rw [smul_inv_smul₀, Measure.restrict_restrict hs, inter_self]
-        exact ENNReal.toReal_ne_zero.2 ⟨hμs, measure_ne_top _ _⟩
-      · rw [h, integral_const, measureReal_restrict_apply .univ, univ_inter,
-          measureReal_restrict_apply hs.compl, μ.restrict_restrict hs.compl, compl_inter_self,
-          measureReal_empty, zero_smul, setIntegral_empty]
-      · simp only [h, Measure.restrict_univ, cond, integral_smul_measure, ENNReal.toReal_inv, ←
-        measureReal_def, integral_const, MeasurableSet.univ, measureReal_restrict_apply, univ_inter]
-        rw [smul_inv_smul₀]
-        exact (measureReal_ne_zero_iff (by finiteness)).2 hμs
+  refine (ae_eq_condExp_of_forall_setIntegral_eq (generateFrom_singleton_le hs) hf.restrict ?_ ?_
+    stronglyMeasurable_const.aestronglyMeasurable).symm
+  · rintro t - -
+    rw [integrableOn_const_iff]
+    exact Or.inr <| measure_lt_top (μ.restrict s) t
+  · rintro t ht -
+    obtain (h | h | h | h) := measurableSet_generateFrom_singleton_iff.1 ht
+    · simp [h]
+    · simp only [h, cond, integral_smul_measure, ENNReal.toReal_inv, integral_const,
+      MeasurableSet.univ, measureReal_restrict_apply, univ_inter, measureReal_restrict_apply_self,
+      ← measureReal_def]
+      rw [smul_inv_smul₀, Measure.restrict_restrict hs, inter_self]
+      exact ENNReal.toReal_ne_zero.2 ⟨hμs, measure_ne_top _ _⟩
+    · rw [h, integral_const, measureReal_restrict_apply .univ, univ_inter,
+        measureReal_restrict_apply hs.compl, μ.restrict_restrict hs.compl, compl_inter_self,
+        measureReal_empty, zero_smul, setIntegral_empty]
+    · simp only [h, Measure.restrict_univ, cond, integral_smul_measure, ENNReal.toReal_inv, ←
+      measureReal_def, integral_const, MeasurableSet.univ, measureReal_restrict_apply, univ_inter]
+      rw [smul_inv_smul₀]
+      exact (measureReal_ne_zero_iff (by finiteness)).2 hμs
 
 lemma condExp_set_generateFrom_singleton (hs : MeasurableSet s) (ht : MeasurableSet t) :
     μ⟦t | generateFrom {s}⟧ =ᵐ[μ.restrict s] fun _ ↦ μ[|s].real t := by

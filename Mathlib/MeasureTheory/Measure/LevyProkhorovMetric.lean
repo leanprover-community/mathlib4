@@ -465,8 +465,8 @@ lemma LevyProkhorov.continuous_toMeasure_probabilityMeasure :
     have ε_of_room' : Tendsto (fun n ↦ dist (μs n) ν + εs n) atTop (𝓝[>] 0) := by
       rw [tendsto_nhdsWithin_iff]
       refine ⟨by simpa using ε_of_room, Eventually.of_forall fun n ↦ ?_⟩
-      · rw [mem_Ioi]
-        linarith [εs_pos n, dist_nonneg (x := μs n) (y := ν)]
+      rw [mem_Ioi]
+      linarith [εs_pos n, dist_nonneg (x := μs n) (y := ν)]
     rw [add_zero] at ε_of_room
     have key := (tendsto_integral_meas_thickening_le f (A := Ioc 0 ‖f‖) (by simp) P).comp ε_of_room'
     have aux : ∀ (z : ℝ), Iio (z + δ / 2) ∈ 𝓝 z := fun z ↦ Iio_mem_nhds (by linarith)

@@ -934,18 +934,18 @@ theorem not_dvd_differentIdeal_iff
   let := Localization.AtPrime.algebraOfLiesOver (P.under A) P
   constructor
   · intro H
-    · rw [Algebra.isUnramifiedAt_iff_map_eq (p := P.under A)]
-      constructor
-      · suffices Algebra.IsSeparable (A ⧸ P.under A) (B ⧸ P) by infer_instance
-        contrapose H
-        exact dvd_differentIdeal_of_not_isSeparable A hp P H
-      · rw [← Ideal.IsDedekindDomain.ramificationIdx'_eq_one_iff hPbot Ideal.map_comap_le]
-        apply Ideal.ramificationIdx'_spec
-        · simp [Ideal.map_le_iff_le_comap]
-        · contrapose H
-          rw [← pow_one P, show 1 = 2 - 1 by simp]
-          apply pow_sub_one_dvd_differentIdeal _ _ _ hp
-          simpa [Ideal.dvd_iff_le] using H
+    rw [Algebra.isUnramifiedAt_iff_map_eq (p := P.under A)]
+    constructor
+    · suffices Algebra.IsSeparable (A ⧸ P.under A) (B ⧸ P) by infer_instance
+      contrapose H
+      exact dvd_differentIdeal_of_not_isSeparable A hp P H
+    · rw [← Ideal.IsDedekindDomain.ramificationIdx'_eq_one_iff hPbot Ideal.map_comap_le]
+      apply Ideal.ramificationIdx'_spec
+      · simp [Ideal.map_le_iff_le_comap]
+      · contrapose H
+        rw [← pow_one P, show 1 = 2 - 1 by simp]
+        apply pow_sub_one_dvd_differentIdeal _ _ _ hp
+        simpa [Ideal.dvd_iff_le] using H
   · intro H
     obtain ⟨Q, h₁, h₂⟩ := Ideal.eq_prime_pow_mul_coprime hp' P
     rw [← Ideal.IsDedekindDomain.ramificationIdx_eq_normalizedFactors_count _ _ hp',

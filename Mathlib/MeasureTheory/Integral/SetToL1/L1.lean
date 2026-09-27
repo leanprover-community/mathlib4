@@ -55,7 +55,7 @@ theorem setToL1'_eq_setToL1SCLM (hT : DominatedFinMeasAdditive μ T C)
     (h_smul : ∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x) (f : α →₁ₛ[μ] E) :
     setToL1' 𝕜 hT h_smul f = setToL1SCLM α E μ hT f := by
   apply ContinuousLinearMap.extend_eq _ _ simpleFunc.isUniformInducing
-  · exact simpleFunc.denseRange one_ne_top
+  exact simpleFunc.denseRange one_ne_top
 
 @[simp]
 theorem setToL1'_apply_coeToLp (hT : DominatedFinMeasAdditive μ T C)

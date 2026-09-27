@@ -307,8 +307,8 @@ theorem exists_norm_multiset_prod_le (s : Multiset ι) [Nonempty ι] {f : ι →
       obtain ⟨M, hMs, hM⟩ := hM
       by_cases! hMa : ‖f M‖ ≤ ‖f a‖
       · refine ⟨a, by simp, ?_⟩
-        · rw [Multiset.map_cons, Multiset.prod_cons]
-          exact le_trans (norm_mul_le_max _ _) (max_le (le_refl _) (le_trans hM hMa))
+        rw [Multiset.map_cons, Multiset.prod_cons]
+        exact le_trans (norm_mul_le_max _ _) (max_le (le_refl _) (le_trans hM hMa))
       · rcases eq_or_ne t 0 with rfl | ht
         · exact ⟨a, by simp, by simp⟩
         · refine ⟨M, ?_, ?_⟩

@@ -151,7 +151,7 @@ def seminormFromConst : RingSeminorm R where
       apply (tendsto_seminormFromConst_seq_atTop hc hpm (x * y)).comp
         (tendsto_atTop_atTop_of_monotone (fun _ _ hnm ↦ by
           simp only [mul_le_mul_iff_right₀, Nat.succ_pos', hnm]) _)
-      · rintro n; use n; lia
+      rintro n; use n; lia
     refine le_of_tendsto_of_tendsto' hlim ((tendsto_seminormFromConst_seq_atTop hc hpm x).mul
       (tendsto_seminormFromConst_seq_atTop hc hpm y)) (fun n ↦ ?_)
     simp only [seminormFromConst_seq]

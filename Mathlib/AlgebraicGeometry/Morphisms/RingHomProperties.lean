@@ -223,10 +223,10 @@ lemma exists_basicOpen_le_appLE_of_appLE_of_isAffine
     congr
     apply X.presheaf.map_comp
   refine ⟨r, s, hBx, ers, ?_⟩
-  · rw [f.appLE_congr _ hBrr' hBss' (fun f => P f.hom), heq]
-    apply hPa _ s' _
-    rw [U₂.2.appLE_eq_away_map f V₂.2]
-    exact hPl _ _ _ _ h₂
+  rw [f.appLE_congr _ hBrr' hBss' (fun f => P f.hom), heq]
+  apply hPa _ s' _
+  rw [U₂.2.appLE_eq_away_map f V₂.2]
+  exact hPl _ _ _ _ h₂
 
 /-- If `P` holds for `f` over affine opens `U₂` of `Y` and `V₂` of `X` and `U₁` (resp. `V₁`) are
 open neighborhoods of `x` (resp. `f.base x`), then `P` also holds for `f` over some affine open

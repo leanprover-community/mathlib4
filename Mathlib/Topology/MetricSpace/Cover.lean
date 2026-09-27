@@ -109,10 +109,10 @@ lemma exists_finite_isCover_of_totallyBounded (hε : ε ≠ 0) (hs : TotallyBoun
   obtain ⟨N, hNA, hN_finite, hN⟩ := hs ε (by positivity)
   simp only [isCover_iff_subset_iUnion_closedEBall]
   refine ⟨N, by simpa, by simpa, ?_⟩
-  · refine hN.trans fun x hx ↦ ?_
-    simp only [Set.mem_iUnion, Metric.mem_eball, exists_prop, Metric.mem_closedEBall] at hx ⊢
-    obtain ⟨y, hyN, hy⟩ := hx
-    exact ⟨y, hyN, hy.le⟩
+  refine hN.trans fun x hx ↦ ?_
+  simp only [Set.mem_iUnion, Metric.mem_eball, exists_prop, Metric.mem_closedEBall] at hx ⊢
+  obtain ⟨y, hyN, hy⟩ := hx
+  exact ⟨y, hyN, hy.le⟩
 
 /-- A relatively compact set admits a finite cover. -/
 lemma exists_finite_isCover_of_isCompact_closure (hε : ε ≠ 0) (hs : IsCompact (closure s)) :

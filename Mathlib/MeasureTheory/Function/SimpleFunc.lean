@@ -1331,10 +1331,10 @@ protected theorem induction' {α γ} [MeasurableSpace α] [Nonempty γ] {P : Sim
         exact preimage_const_of_mem (mem_singleton _)
       · rwa [Finset.mem_coe]
     convert! pcw mx.compl Pg (const x)
-    · ext1 y
-      by_cases hy : y ∈ f ⁻¹' {x}
-      · simpa [g, hy]
-      · simp [g, hy]
+    ext1 y
+    by_cases hy : y ∈ f ⁻¹' {x}
+    · simpa [g, hy]
+    · simp [g, hy]
 
 /-- In a topological vector space, the addition of a measurable function and a simple function is
 measurable. -/
