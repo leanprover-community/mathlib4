@@ -76,8 +76,7 @@ lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I :
       Ext.mk₀_comp_mk₀] at hf'
     use (Ext.addEquiv₀ f').hom.comp (Shrink.linearEquiv R R).symm.toLinearMap
     intro x hx
-    have := ConcreteCategory.congr_hom ((Ext.mk₀_bijective _ _).1 hf')
-      ((Shrink.linearEquiv R I).symm ⟨x, hx⟩)
+    have := congr($((Ext.mk₀_bijective _ _).1 hf') ((Shrink.linearEquiv R I).symm ⟨x, hx⟩))
     simpa [S]
   · -- Conversely, extend the map represented by `e` and turn the extension back into `Ext⁰`.
     obtain ⟨g', hg'⟩ := h

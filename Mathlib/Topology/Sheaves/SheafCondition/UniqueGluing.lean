@@ -98,10 +98,10 @@ def IsCompatible.sectionPairwise {sf} (h : IsCompatible F U sf) :
   refine ⟨objPairwiseOfFamily sf, ?_⟩
   let G := (Pairwise.diagram U).op ⋙ F
   rintro (i | ⟨i, j⟩) (i' | ⟨i', j'⟩) (_ | _ | _ | _)
-  · exact ConcreteCategory.congr_hom (G.map_id <| op <| Pairwise.single i) _
+  · congrm $(G.map_id <| op <| Pairwise.single i) _
   · rfl
   · exact (h i' i).symm
-  · exact ConcreteCategory.congr_hom (G.map_id <| op <| Pairwise.pair i j) _
+  · congrm $(G.map_id <| op <| Pairwise.pair i j) _
 
 theorem isGluing_iff_pairwise {sf s} : IsGluing F U sf s ↔
     ∀ i, (F.mapCone (Pairwise.cocone U).op).π.app i s = objPairwiseOfFamily sf i := by
@@ -226,7 +226,7 @@ theorem eq_of_locally_eq' (V : Opens X) (iUV : ∀ i : ι, U i ⟶ V) (hcover : 
     s = t := by
   have V_eq_supr_U : V = iSup U := le_antisymm hcover (iSup_le fun i => (iUV i).le)
   suffices F.1.map (eqToHom V_eq_supr_U.symm).op s = F.1.map (eqToHom V_eq_supr_U.symm).op t by
-    convert! congr_arg (F.1.map (eqToHom V_eq_supr_U).op) this <;>
+    convert! congr(F.1.map (eqToHom V_eq_supr_U).op $this) <;>
     rw [← ConcreteCategory.comp_apply, ← F.1.map_comp, eqToHom_op, eqToHom_op, eqToHom_trans,
       eqToHom_refl, F.1.map_id, ConcreteCategory.id_apply]
   apply eq_of_locally_eq

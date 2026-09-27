@@ -272,7 +272,7 @@ theorem cfcHom_comp [UniqueHom R A] (f : C(spectrum R a, R))
     cfcHom ha (g.comp f') = cfcHom (cfcHom_predicate ha f) g := by
   let φ : C(spectrum R (cfcHom ha f), R) →⋆ₐ[R] A :=
     (cfcHom ha).comp <| ContinuousMap.compStarAlgHom' R R f'
-  suffices cfcHom (cfcHom_predicate ha f) = φ from DFunLike.congr_fun this.symm g
+  suffices cfcHom (cfcHom_predicate ha f) = φ from congr($this.symm g)
   refine cfcHom_eq_of_continuous_of_map_id (cfcHom_predicate ha f) φ ?_ ?_
   · exact cfcHom_continuous ha |>.comp f'.continuous_precomp
   · simp only [φ, StarAlgHom.comp_apply, ContinuousMap.compStarAlgHom'_apply]
@@ -424,11 +424,13 @@ lemma cfc_congr {f g : R → R} {a : A} (hfg : (spectrum R a).EqOn f g) :
     · rw [cfc_apply_of_not_continuousOn a hg, cfc_apply_of_not_continuousOn]
       exact fun hf ↦ hg (hf.congr hfg.symm)
 
-/-- A version of `cfc_congr` suitable for `@[congr]`. -/
+/-- A version of `cfc_congr` suitable for `@[congr]`. The `a = b` argument is necessary to ensure
+that `norm_cast` visits both the function and the element. -/
 @[congr]
-lemma cfc_congr' {f g : R → R} {a : A} (hfg : ∀ x ∈ spectrum R a, f x = g x) :
-    cfc f a = cfc g a :=
-  cfc_congr hfg
+lemma cfc_congr' {f g : R → R} {a b : A} (hab : a = b) (hfg : ∀ x ∈ spectrum R b, f x = g x) :
+    cfc f a = cfc g b := by
+  subst hab
+  exact cfc_congr hfg
 
 lemma eqOn_of_cfc_eq_cfc {f g : R → R} {a : A} (h : cfc f a = cfc g a)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
