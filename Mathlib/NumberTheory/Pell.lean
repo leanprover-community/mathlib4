@@ -509,7 +509,7 @@ theorem zpow_y_lt_iff_lt {a : Solution₁ d} (h : IsFundamental a) (m n : ℤ) :
 /-- The `n`th power of a fundamental solution is trivial if and only if `n = 0`. -/
 theorem zpow_eq_one_iff {a : Solution₁ d} (h : IsFundamental a) (n : ℤ) : a ^ n = 1 ↔ n = 0 := by
   rw [← zpow_zero a]
-  exact ⟨fun H => h.y_strictMono.injective (congr_arg Solution₁.y H), fun H => H ▸ rfl⟩
+  exact ⟨fun H => h.y_strictMono.injective congr(Solution₁.y $H), fun H => H ▸ rfl⟩
 
 /-- A power of a fundamental solution is never equal to the negative of a power of this
 fundamental solution. -/
@@ -648,7 +648,7 @@ theorem existsUnique_pos_generator (h₀ : 0 < d) (hd : ¬IsSquare d) :
       exact False.elim (ha₁.zpow_ne_neg_zpow hn₁)
   · rw [x_neg, lt_neg] at Hx
     have := (x_zpow_pos (zero_lt_one.trans ha₁.1) n₂).trans Hx
-    norm_num at this
+    simp at this
 
 /-- A positive solution is a generator (up to sign) of the group of all solutions to the
 Pell equation `x^2 - d*y^2 = 1` if and only if it is a fundamental solution. -/

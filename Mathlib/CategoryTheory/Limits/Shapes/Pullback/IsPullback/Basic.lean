@@ -406,7 +406,6 @@ lemma paste_twist_right {X Y Z S : C} {f : X ⟶ S} {g : Y ⟶ S} {i : Z ⟶ S}
   rw [← hrw, ht₁]
   exact .paste_horiz hsndfgr hfg
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This is a `HasPullback` variant of `CategoryTheory.IsPullback.paste_twist_right` -/
 lemma map_fst_comp_fst_snd_comp_fst {X Y Z U S : C} (f : X ⟶ S) (g : Y ⟶ S) (i : Z ⟶ S)
     [HasPullback i g] (h : U ⟶ pullback i g) [HasPullback f g] [HasPullback (pullback.snd f g)
@@ -937,6 +936,46 @@ lemma IsPushout.iff_app [HasPushouts D] {F₁ F₂ F₃ F₄ : C ⥤ D}
     IsPushout f₁ f₂ f₃ f₄ ↔ ∀ (X : C), IsPushout (f₁.app X) (f₂.app X) (f₃.app X) (f₄.app X) :=
   ⟨.app, .of_forall_isPushout_app⟩
 
+/-- Consider a pushout square in a category of functors `J ⥤ C`, where `C` has pushouts:
+```
+   t
+F₁ → F₂
+l|    |r
+ v    v
+F₃ → F₄
+   b
+```
+Assume that we have cocones `c₁`, `c₂`, `c₃`, and `c₄` for these functors,
+and that `c₁`, `c₂`, `c₃` are colimit. If the induced square involving the
+points `c₁.pt`, `c₂.pt`, `c₃.pt` and `c₄.pt` is a pushout square, then
+`c₄` is a colimit cocone. (In other words, pushouts commute with colimits.) -/
+@[no_expose]
+noncomputable def IsPushout.isColimitOfIsColimitOfIsPushout
+    {J : Type*} [Category* J] {F₁ F₂ F₃ F₄ : J ⥤ C} [HasPushouts C]
+    {t : F₁ ⟶ F₂} {l : F₁ ⟶ F₃} {r : F₂ ⟶ F₄} {b : F₃ ⟶ F₄} (sq : IsPushout t l r b)
+    (c₁ : Cocone F₁) (c₂ : Cocone F₂) (c₃ : Cocone F₃) (c₄ : Cocone F₄)
+    (hc₁ : IsColimit c₁) (hc₂ : IsColimit c₂) (hc₃ : IsColimit c₃)
+    {t' : c₁.pt ⟶ c₂.pt} {l' : c₁.pt ⟶ c₃.pt} {r' : c₂.pt ⟶ c₄.pt} {b' : c₃.pt ⟶ c₄.pt}
+    (sq' : IsPushout t' l' r' b')
+    (ht' : ∀ j, c₁.ι.app j ≫ t' = t.app j ≫ c₂.ι.app j := by cat_disch)
+    (hl' : ∀ j, c₁.ι.app j ≫ l' = l.app j ≫ c₃.ι.app j := by cat_disch)
+    (hr' : ∀ j, c₂.ι.app j ≫ r' = r.app j ≫ c₄.ι.app j := by cat_disch)
+    (hb' : ∀ j, c₃.ι.app j ≫ b' = b.app j ≫ c₄.ι.app j := by cat_disch) :
+    IsColimit c₄ :=
+  let desc (s : Cocone F₄) : c₄.pt ⟶ s.pt :=
+    sq'.desc (hc₂.desc (Cocone.mk _ (r ≫ s.ι)))
+      (hc₃.desc (Cocone.mk _ (b ≫ s.ι)))
+        (hc₁.hom_ext (fun j ↦ by
+          simp [reassoc_of% ht', reassoc_of% hl', reassoc_of% dsimp% congr($(sq.w).app j)]))
+  have fac (s : Cocone F₄) (j : J) : c₄.ι.app j ≫ desc s = s.ι.app j :=
+    (sq.app j).hom_ext (by simp [desc, ← reassoc_of% hr']) (by simp [desc, ← reassoc_of% hb'])
+  { desc := desc
+    fac := fac
+    uniq s m hm :=
+      sq'.hom_ext
+        (hc₂.hom_ext (fun j ↦ by simp [reassoc_of% hr', fac, hm]))
+        (hc₃.hom_ext (fun j ↦ by simp [reassoc_of% hb', fac, hm])) }
+
 end Functor
 
 section Thin
@@ -1041,7 +1080,7 @@ namespace Limits
 instance {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) {X' : C} (i : X' ⟶ X) [IsIso i] [HasPullback f g] :
     HasPullback (i ≫ f) g :=
   IsPullback.paste_vert
-    (IsPullback.of_vert_isIso_mono (fst := pullback.fst _ _ ≫ inv i) (snd := 𝟙 (pullback f g)) <|
+    (IsPullback.of_vert_isIso_mono (fst := pullback.fst _ _ ≫ inv i) (snd := 𝟙 (pullback f g))
       ⟨by simp⟩) (.of_hasPullback f g) |>.hasPullback
 
 @[simp]
@@ -1064,7 +1103,7 @@ lemma HasPullback.comp_left_right_iff_of_isIso
 instance {X Y Z : C} (f : Z ⟶ X) (g : Z ⟶ Y) {X' : C} (i : X ⟶ X') [IsIso i] [HasPushout f g] :
     HasPushout (f ≫ i) g :=
   IsPushout.paste_horiz (.of_hasPushout f g)
-    (IsPushout.of_horiz_isIso_epi (inl := inv i ≫ pushout.inl _ _) (inr := 𝟙 (pushout f g)) <|
+    (IsPushout.of_horiz_isIso_epi (inl := inv i ≫ pushout.inl _ _) (inr := 𝟙 (pushout f g))
       ⟨by simp⟩) |>.hasPushout
 
 @[simp]

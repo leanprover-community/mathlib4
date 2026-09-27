@@ -101,7 +101,7 @@ theorem constantCoeff_invOfUnit (φ : R⟦X⟧) (u : Rˣ) :
 @[simp]
 theorem mul_invOfUnit (φ : R⟦X⟧) (u : Rˣ) (h : constantCoeff φ = u) :
     φ * invOfUnit φ u = 1 :=
-  MvPowerSeries.mul_invOfUnit φ u <| h
+  MvPowerSeries.mul_invOfUnit φ u h
 
 @[simp]
 theorem invOfUnit_mul (φ : R⟦X⟧) (u : Rˣ) (h : constantCoeff φ = u) :

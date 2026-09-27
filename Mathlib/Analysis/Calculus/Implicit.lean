@@ -156,7 +156,7 @@ at `a`, their derivatives `f'`, `g'` are surjective, and the kernels of these de
 complementary subspaces of `E`, then `implicitFunction` is the unique (germ of a) map
 `φ : F → G → E` such that `f (φ y z) = y` and `g (φ y z) = z`. -/
 def implicitFunction : F → G → E :=
-  Function.curry <| φ.toOpenPartialHomeomorph.symm
+  Function.curry φ.toOpenPartialHomeomorph.symm
 
 theorem implicitFunction_def :
     implicitFunction φ = Function.curry (φ.hasStrictFDerivAt.toOpenPartialHomeomorph _).symm := by
@@ -179,7 +179,7 @@ theorem pt_mem_toOpenPartialHomeomorph_source : φ.pt ∈ φ.toOpenPartialHomeom
 
 theorem map_pt_mem_toOpenPartialHomeomorph_target :
     (φ.leftFun φ.pt, φ.rightFun φ.pt) ∈ φ.toOpenPartialHomeomorph.target :=
-  φ.toOpenPartialHomeomorph.map_source <| φ.pt_mem_toOpenPartialHomeomorph_source
+  φ.toOpenPartialHomeomorph.map_source φ.pt_mem_toOpenPartialHomeomorph_source
 
 theorem prodFun_implicitFunction :
     ∀ᶠ p : F × G in 𝓝 (φ.prodFun φ.pt), φ.prodFun (φ.implicitFunction p.1 p.2) = p :=
@@ -390,7 +390,7 @@ theorem map_implicitFunctionOfComplemented_eq (hf : HasStrictFDerivAt f f' a) (h
       f (hf.implicitFunctionOfComplemented f f' hf' hker p.1 p.2) = p.1 :=
   ((hf.implicitToOpenPartialHomeomorphOfComplemented f f' hf' hker).eventually_right_inverse <|
         hf.mem_implicitToOpenPartialHomeomorphOfComplemented_target hf' hker).mono
-    fun ⟨_, _⟩ h => congr_arg Prod.fst h
+    fun ⟨_, _⟩ h => congr($(h).fst)
 
 /-- Any point in some neighborhood of `a` can be represented as
 `HasStrictFDerivAt.implicitFunctionOfComplemented` of some point. -/
@@ -462,7 +462,7 @@ def implicitToOpenPartialHomeomorph (hf : HasStrictFDerivAt f f' a) (hf' : f'.ra
 
 /-- Implicit function `g` defined by `f (g z y) = z`. -/
 def implicitFunction (hf : HasStrictFDerivAt f f' a) (hf' : f'.range = ⊤) : F → f'.ker → E :=
-  Function.curry <| (hf.implicitToOpenPartialHomeomorph f f' hf').symm
+  Function.curry (hf.implicitToOpenPartialHomeomorph f f' hf').symm
 
 variable {f f'}
 

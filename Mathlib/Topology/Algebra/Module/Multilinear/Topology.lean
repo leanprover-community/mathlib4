@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.Algebra.Module.Multilinear.Bounded
 public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 public import Mathlib.Topology.Algebra.Module.UniformConvergence
@@ -384,7 +384,7 @@ def compContinuousMultilinearMapL :
     cont := by
       apply continuous_of_tendsto_nhds_zero aux
       rw [ContinuousLinearMap.hasBasis_nhds_zero.tendsto_iff <|
-        ContinuousLinearMap.hasBasis_nhds_zero_of_basis <|
+        ContinuousLinearMap.hasBasis_nhds_zero_of_basis
         ContinuousMultilinearMap.hasBasis_nhds_zero]
       rintro ⟨U, V, W⟩ ⟨hU, hV, hW⟩
       refine ⟨(.image2 (fun f v ↦ f v) U V, W), ⟨?_, hW⟩, ?_⟩

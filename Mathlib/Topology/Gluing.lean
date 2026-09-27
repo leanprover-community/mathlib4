@@ -141,7 +141,7 @@ theorem rel_equiv : Equivalence D.Rel :=
       apply @Epi.left_cancellation _ _ _ _ (D.t' k j i)
       rw [𝖣.cocycle_assoc, 𝖣.t_fac_assoc, 𝖣.t_inv_assoc]
       exact pullback.condition.symm
-    exact ⟨CategoryTheory.congr_fun h₁ z, CategoryTheory.congr_fun h₂ z⟩⟩
+    exact ⟨congr($h₁ z), congr($h₂ z)⟩⟩
 
 open CategoryTheory.Limits.WalkingParallelPair
 
@@ -163,11 +163,8 @@ theorem eqvGen_of_π_eq
   have :
     (colimit.ι diagram _ ≫ colim.map _ ≫ (colimit.isoColimitCocone _).hom) _ =
       (colimit.ι diagram _ ≫ colim.map _ ≫ (colimit.isoColimitCocone _).hom) _ :=
-    (congr_arg
-        (colim.map (diagramIsoParallelPair diagram).hom ≫
-          (colimit.isoColimitCocone (Types.coequalizerColimit _ _)).hom)
-        this :
-      _)
+    (congr((colim.map (diagramIsoParallelPair diagram).hom ≫
+          (colimit.isoColimitCocone (Types.coequalizerColimit ..)).hom) $this) : _)
   simp only [eqToHom_refl, colimit.ι_map_assoc, diagramIsoParallelPair_hom_app,
     colimit.isoColimitCocone_ι_hom, Category.id_comp] at this
   exact Quot.eq.1 this
@@ -179,10 +176,8 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
   · delta GlueData.ι
     simp_rw [← Multicoequalizer.ι_sigmaπ]
     intro h
-    rw [←
-      show _ = Sigma.mk i x from ConcreteCategory.congr_hom (sigmaIsoSigma.{_, u} D.U).inv_hom_id _]
-    rw [←
-      show _ = Sigma.mk j y from ConcreteCategory.congr_hom (sigmaIsoSigma.{_, u} D.U).inv_hom_id _]
+    rw [← show _ = Sigma.mk i x from congr($((sigmaIsoSigma.{_, u} D.U).inv_hom_id) _)]
+    rw [← show _ = Sigma.mk j y from congr($((sigmaIsoSigma.{_, u} D.U).inv_hom_id) _)]
     change InvImage D.Rel (sigmaIsoSigma.{_, u} D.U).hom _ _
     rw [← (InvImage.equivalence _ _ D.rel_equiv).eqvGen_iff]
     refine Relation.EqvGen.mono ?_ _ _ (D.eqvGen_of_π_eq h :)
@@ -348,7 +343,7 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
     dsimp only [Opens.coe_inclusion', hom_comp, hom_ofHom, ContinuousMap.comp_assoc,
       ContinuousMap.comp_apply, ContinuousMap.coe_mk, hom_id, ContinuousMap.id_apply]
     rw [Subtype.mk_eq_mk, Prod.mk_inj, Subtype.mk_eq_mk, Subtype.ext_iff, and_self_iff]
-    convert! congr_arg Subtype.val (h.t_inv k i ⟨x, hx'⟩) using 3
+    convert! congr($(h.t_inv k i ⟨x, hx'⟩).val) using 3
     refine Subtype.ext ?_
     exact h.cocycle i j k ⟨x, hx⟩ hx'
   f_mono _ _ := (TopCat.mono_iff_injective _).mpr fun _ _ h => Subtype.ext h

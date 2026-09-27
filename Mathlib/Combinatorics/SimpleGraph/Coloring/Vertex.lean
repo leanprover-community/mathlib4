@@ -144,7 +144,7 @@ instance [Nonempty <| G.Coloring α] [Nontrivial α] [Nonempty V] : Nontrivial <
   have ⟨v⟩ := ‹Nonempty V›
   have ⟨c, hc⟩ := nontrivial_iff_exists_ne (C v) |>.mp inferInstance
   refine ⟨(Iso.completeGraph <| Equiv.swap (C v) c).toHom.comp C, C, fun h ↦ hc ?_⟩
-  have := congrFun (congrArg RelHom.toFun h) v
+  have := congr($h v)
   dsimp [Iso.completeGraph] at this
   grind
 
@@ -154,7 +154,7 @@ instance [Nonempty <| G.Coloring α] [Infinite α] [Nonempty V] : Infinite <| G.
   have ⟨v⟩ := ‹Nonempty V›
   let f c := (Iso.completeGraph <| Equiv.swap (C v) c).toHom.comp C
   refine Infinite.of_injective f fun a b h ↦ ?_
-  have := congrFun (congrArg RelHom.toFun h) v
+  have := congr($h v)
   dsimp [f, Iso.completeGraph] at this
   grind
 
@@ -265,7 +265,7 @@ variable (G) in
 `β` has at least as large a cardinality as `α`. -/
 noncomputable def recolorOfCardLE {α β : Type*} [Fintype α] [Fintype β]
     (hn : Fintype.card α ≤ Fintype.card β) : G.Coloring α ↪ G.Coloring β :=
-  G.recolorOfEmbedding <| (Function.Embedding.nonempty_of_card_le hn).some
+  G.recolorOfEmbedding (Function.Embedding.nonempty_of_card_le hn).some
 
 variable (G) in
 @[simp] lemma coe_recolorOfCardLE [Fintype α] [Fintype β] (hαβ : card α ≤ card β) :
@@ -416,7 +416,7 @@ lemma card_le_chromaticNumber_iff_forall_surjective [Fintype α] :
   · rw [C.colorable.chromaticNumber_eq_sInf, Nat.cast_le] at h
     intro i
     by_contra! hi
-    let D : G.Coloring {a // a ≠ i} := ⟨fun v ↦ ⟨C v, hi v⟩, (C.valid · <| congr_arg Subtype.val ·)⟩
+    let D : G.Coloring {a // a ≠ i} := ⟨fun v ↦ ⟨C v, hi v⟩, (C.valid · congr($(·).val))⟩
     classical
     exact Nat.notMem_of_lt_sInf ((Nat.sub_one_lt_of_lt <| card_pos_iff.2 ⟨i⟩).trans_le h)
       ⟨G.recolorOfEquiv (equivOfCardEq <| by simp) D⟩
@@ -619,7 +619,7 @@ variable {W : Type*} {H : SimpleGraph W}
 
 /-- If `H` is not `n`-colorable and `G` is `n`-colorable, then `G` is `H.Free`. -/
 theorem free_of_colorable (nhc : ¬H.Colorable n) (hc : G.Colorable n) : H.Free G := by
-  contrapose! nhc with hc'
+  contrapose nhc with hc'
   exact hc.of_hom hc'.some.toHom
 
 /-! ### Isomorphisms -/

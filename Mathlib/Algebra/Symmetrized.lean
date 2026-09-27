@@ -135,7 +135,7 @@ instance [Add α] [Mul α] [One α] [OfNat α 2] [Invertible (2 : α)] : Mul α�
   mul a b := sym (⅟2 * (unsym a * unsym b + unsym b * unsym a))
 
 @[to_additive]
-instance [Inv α] : Inv αˢʸᵐ where inv a := sym <| (unsym a)⁻¹
+instance [Inv α] : Inv αˢʸᵐ where inv a := sym (unsym a)⁻¹
 
 instance (R : Type*) [SMul R α] : SMul R αˢʸᵐ where smul r a := sym (r • unsym a)
 

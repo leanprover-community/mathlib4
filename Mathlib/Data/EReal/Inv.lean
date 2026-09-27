@@ -344,6 +344,14 @@ lemma div_zero {a : EReal} : a / 0 = 0 := by
 @[simp]
 lemma zero_div {a : EReal} : 0 / a = 0 := zero_mul a⁻¹
 
+lemma div_eq_top_iff {a b : EReal} :
+    a / b = ⊤ ↔ (a = ⊥ ∧ b < 0 ∧ b ≠ ⊥) ∨ (a = ⊤ ∧ 0 < b ∧ b ≠ ⊤) := by
+  have hpos : 0 < b⁻¹ ↔ 0 < b ∧ b ≠ ⊤ := by
+    grind [inv_nonpos_of_nonpos, inv_top, inv_pos_of_pos_ne_top]
+  have hneg : b⁻¹ < 0 ↔ b < 0 ∧ b ≠ ⊥ := by
+    grind [inv_nonneg_of_nonneg, inv_bot, inv_neg_of_neg_ne_bot]
+  simp [div_eq_mul_inv, mul_eq_top, hpos, hneg, (bot_lt_inv b).ne', (inv_lt_top b).ne]
+
 lemma top_div_of_pos_ne_top {a : EReal} (h : 0 < a) (h' : a ≠ ⊤) : ⊤ / a = ⊤ :=
   top_mul_of_pos (inv_pos_of_pos_ne_top h h')
 

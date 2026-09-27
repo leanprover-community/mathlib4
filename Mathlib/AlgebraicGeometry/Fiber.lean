@@ -61,7 +61,6 @@ lemma Scheme.Hom.fiberToSpecResidueField_apply (f : X ⟶ Y) (y : Y) (x : f.fibe
     f.fiberToSpecResidueField y x = IsLocalRing.closedPoint (Y.residueField y) :=
   Subsingleton.elim (α := PrimeSpectrum _) _ _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isPullback_fiberToSpecResidueField_of_isPullback {P X Y Z : Scheme.{u}} {fst : P ⟶ X}
     {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z} (h : IsPullback fst snd f g) (y : Y) :
     IsPullback (pullback.map _ _ _ _ fst (Spec.map (g.residueFieldMap y)) g h.w.symm (by simp))
@@ -85,7 +84,7 @@ noncomputable def Spec.fiberToSpecResidueFieldIso (R S : Type u) [CommRing R] [C
     (pullbackSymmetry _ _ ≪≫ ?_ ≪≫ pullbackSpecIso R p.asIdeal.ResidueField S) ?_ ?_
   · refine pullback.congrHom
       (Scheme.Spec.map_residueFieldIso_inv_eq_fromSpecResidueField (.of R) p).symm rfl ≪≫ ?_
-    refine asIso <| pullback.map _ _ _ _ (Spec.map <| (Scheme.Spec.residueFieldIso (.of R) _).inv)
+    refine asIso <| pullback.map _ _ _ _ (Spec.map (Scheme.Spec.residueFieldIso (.of R) _).inv)
       (𝟙 _) (𝟙 _) (by simp) (by simp)
   · exact Scheme.Spec.mapIso (Scheme.Spec.residueFieldIso (.of R) _).symm.op
   · cat_disch

@@ -143,7 +143,6 @@ def SpecTensorTo : Spec T.tensor ⟶ pullback f g :=
     (Spec.map T.tensorInr ≫ Y.fromSpecResidueField T.y)
     (SpecMap_tensorInl_fromSpecResidueField _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma fst_SpecTensorTo_apply (p : Spec T.tensor) :
     pullback.fst f g (T.SpecTensorTo p) = T.x := by
@@ -151,7 +150,6 @@ lemma fst_SpecTensorTo_apply (p : Spec T.tensor) :
   rw [← Scheme.Hom.comp_apply]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma snd_SpecTensorTo_apply (p : Spec T.tensor) :
     pullback.snd f g (T.SpecTensorTo p) = T.y := by
@@ -349,7 +347,6 @@ lemma range_snd_comp :
     Set.range (pullback.snd f g ≫ g) = Set.range f ∩ Set.range g := by
   rw [← pullback.condition, range_fst_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma range_map {X' Y' S' : Scheme.{u}} (f' : X' ⟶ S') (g' : Y' ⟶ S') (i₁ : X ⟶ X')
     (i₂ : Y ⟶ Y') (i₃ : S ⟶ S') (e₁ : f ≫ i₃ = i₁ ≫ f')
     (e₂ : g ≫ i₃ = i₂ ≫ g') [Mono i₃] :

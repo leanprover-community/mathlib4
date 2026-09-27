@@ -9,11 +9,10 @@ public import Mathlib.Analysis.LocallyConvex.Bounded
 public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Topology.Hom.ContinuousEvalConst
 public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
-import Mathlib.Topology.Algebra.Module.Equiv
 import Mathlib.Topology.Algebra.SeparationQuotient.Section
 import Mathlib.Topology.Algebra.Module.UniformConvergence
-public import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
 # Topologies of uniform convergence on the space of continuous linear maps
@@ -177,13 +176,11 @@ instance instAddCommGroup [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 :
 
 instance [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
     IsNegApply (E →SLᵤ[σ, 𝔖] F) E F where
-  neg_apply _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] protected alias neg_apply := neg_apply
 
 instance [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
     IsAddApply (E →SLᵤ[σ, 𝔖] F) E F where
-  add_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] protected alias add_apply := add_apply
 
@@ -191,13 +188,11 @@ instance [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
 
 instance [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
     IsSubApply (E →SLᵤ[σ, 𝔖] F) E F where
-  sub_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] protected alias sub_apply := sub_apply
 
 instance [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
     IsZeroApply (E →SLᵤ[σ, 𝔖] F) E F where
-  zero_apply _ := rfl
 
 @[deprecated (since := "2026-06-10")] protected alias coe_zero := FunLike.coe_zero
 
@@ -237,7 +232,6 @@ instance instDistribMulAction (M : Type*) [Monoid M] [DistribMulAction M F] [SMu
 instance {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
     [TopologicalSpace F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
     IsSMulApply M (E →SLᵤ[σ, 𝔖] F) E F where
-  smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] protected alias smul_apply := smul_apply
 

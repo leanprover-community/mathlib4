@@ -48,4 +48,4 @@ theorem isReduced_zmod {n : ℕ} : IsReduced (ZMod n) ↔ Squarefree n ∨ n = 0
       Int.squarefree_natCast, Nat.cast_eq_zero]
 
 instance {n : ℕ} [Fact <| Squarefree n] : IsReduced (ZMod n) :=
-  isReduced_zmod.2 <| Or.inl <| Fact.out
+  isReduced_zmod.2 <| Or.inl Fact.out

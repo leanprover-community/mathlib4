@@ -258,7 +258,7 @@ theorem IsIntegral.isMaximal_of_isMaximal_under (I : Ideal A) [I.IsPrime]
 theorem IsIntegral.mem_minimalPrimes_map_under (I : Ideal A) [I.IsPrime] :
     I ∈ ((I.under R).map (algebraMap R A)).minimalPrimes := by
   refine ⟨⟨inferInstance, map_comap_le⟩, fun r ⟨hr, hpr⟩ hrq ↦ ?_⟩
-  contrapose! hpr
+  contrapose hpr
   exact mt map_le_iff_le_comap.mp (not_le_of_gt (IsIntegral.under_lt_under (hrq.lt_of_not_ge hpr)))
 
 variable [IsDomain A]
@@ -339,10 +339,10 @@ theorem exists_ideal_over_prime_of_isIntegral_of_isPrime
         bot_le)
   refine ⟨Q'.under S, le_trans (le_of_eq mk_ker.symm) (ker_le_comap _), ⟨inferInstance, ?_⟩⟩
   rw [under_under]
-  refine _root_.trans ?_ (_root_.trans (congr_arg (comap (Ideal.Quotient.mk
-    (comap (algebraMap R S) I))) hQ') ?_)
+  refine _root_.trans ?_ (_root_.trans congr(comap (Ideal.Quotient.mk
+    (comap (algebraMap R S) I)) $hQ') ?_)
   · rw [comap_comap]
-    exact congr_arg (comap · Q') (RingHom.ext fun r => rfl)
+    congrm comap $(RingHom.ext fun r => rfl) Q'
   · refine _root_.trans (comap_map_of_surjective _ Quotient.mk_surjective _) (sup_eq_left.2 ?_)
     simpa [← RingHom.ker_eq_comap_bot] using hIP
 
@@ -436,7 +436,7 @@ theorem IsMaximal.of_isMaximal_liesOver [P.IsMaximal] : p.IsMaximal := by
 variable (A) in
 theorem eq_bot_of_liesOver_bot [Nontrivial A] [IsDomain B] [h : P.LiesOver (⊥ : Ideal A)] :
     P = ⊥ :=
-  eq_bot_of_under_eq_bot <| ((liesOver_iff _ _).mp h).symm
+  eq_bot_of_under_eq_bot ((liesOver_iff _ _).mp h).symm
 
 variable (A) {P} in
 theorem under_ne_bot [Nontrivial A] [IsDomain B] (hP : P ≠ ⊥) : under A P ≠ ⊥ :=

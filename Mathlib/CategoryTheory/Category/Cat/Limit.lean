@@ -106,7 +106,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition: the universal morphism to the proposed limit cone. -/
 @[simps! toFunctor]
 def limitConeLift (F : J ⥤ Cat.{v, v}) (s : Cone F) : s.pt ⟶ limitConeX F :=
-  Functor.toCatHom <| {
+  Functor.toCatHom {
     obj :=
       limit.lift (F ⋙ Cat.objects)
         { pt := s.pt
@@ -131,7 +131,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 theorem limit_π_homDiagram_eqToHom {F : J ⥤ Cat.{v, v}} (X Y : limit (F ⋙ Cat.objects.{v, v}))
     (j : J) (h : X = Y) :
     limit.π (homDiagram X Y) j (eqToHom h) =
-      eqToHom (ConcreteCategory.congr_arg (limit.π (F ⋙ Cat.objects.{v, v}) j) h) := by
+      eqToHom congr(limit.π (F ⋙ Cat.objects.{v, v}) j $h) := by
   subst h
   simp [-homDiagram_obj]
 
