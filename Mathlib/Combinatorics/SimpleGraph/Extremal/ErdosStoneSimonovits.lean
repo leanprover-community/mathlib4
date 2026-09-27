@@ -413,10 +413,8 @@ lemma exists_induce_minDegree_ge_and_card_sq_ge {V : Type*} [Fintype V]
     exact_mod_cast card_edgeFinset_le_card_choose_two
   nlinarith [hcard_edges, pow_le_pow_left₀ (card G.support).cast_nonneg hcard_verts 2]
 
-/-- If `G` has at least `(1 - 1 / r + o(1)) * n ^ 2 / 2` many edges, then `G` contains a
-copy of a `completeEquipartiteGraph (r + 1) t`.
-
-This is the **Erdős-Stone theorem**. -/
+/-- **Erdős-Stone theorem**. If `G` has at least `(1 - 1 / r + o(1)) * n ^ 2 / 2` many edges,
+then `G` contains a copy of a `completeEquipartiteGraph (r + 1) t`. -/
 theorem eventually_completeEquipartiteGraph_isContained_of_card_edgeFinset
     {ε : ℝ} (hε_pos : 0 < ε) (r t : ℕ) :
     ∀ᶠ n in atTop, ∀ {G : SimpleGraph (Fin n)} [DecidableRel G.Adj],
@@ -474,10 +472,8 @@ theorem eventually_completeEquipartiteGraph_isContained_of_card_edgeFinset
     _ ≥ N' ^ 2 := le_add_of_nonneg_right (by positivity)
 
 omit [Fintype W] in
-/-- If `G` has at least `(1 - 1 / r + o(1)) * n ^ 2 / 2` many edges, then `G` contains a
-copy of any `r + 1`-colorable graph.
-
-This is a corollary of the **Erdős-Stone theorem**. -/
+/-- Corollary of the **Erdős-Stone theorem**. If `G` has at least `(1 - 1 / r + o(1)) * n ^ 2 / 2`
+many edges, then `G` contains a copy of any `r + 1`-colorable graph. -/
 theorem eventually_isContained_of_card_edgeFinset_of_colorable [Finite W]
     {r : ℕ} (hc : H.Colorable (r + 1)) {ε : ℝ} (hε_pos : 0 < ε) :
     ∀ᶠ n in atTop, ∀ {G : SimpleGraph (Fin n)} [DecidableRel G.Adj],
