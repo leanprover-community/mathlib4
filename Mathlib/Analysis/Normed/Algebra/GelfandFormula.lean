@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.Analysis.Normed.Operator.Mul
+
 import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.Analysis.Analytic.RadiusLiminf
 

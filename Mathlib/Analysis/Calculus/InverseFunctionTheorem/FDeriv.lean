@@ -6,6 +6,7 @@ Authors: Yury Kudryashov, Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
+
 import Mathlib.Analysis.Calculus.FDeriv.OfCompLeft
 public import Mathlib.Algebra.Order.Field.Power
 public import Mathlib.Analysis.Calculus.FDeriv.Congr

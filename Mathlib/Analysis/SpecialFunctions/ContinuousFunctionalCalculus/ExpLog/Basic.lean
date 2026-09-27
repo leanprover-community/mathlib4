@@ -10,6 +10,7 @@ public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
 public import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Continuity
 
 /-!

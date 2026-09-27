@@ -8,6 +8,7 @@ module
 public import Mathlib.Topology.Algebra.Module.FiniteDimensionBilinear
 public import Mathlib.Topology.Algebra.Module.TransferInstance
 public import Mathlib.Topology.VectorBundle.FiniteDimensional
+
 import Mathlib.Geometry.Manifold.Notation
 import Mathlib.Geometry.Manifold.VectorBundle.LocalFrame
 public import Mathlib.Geometry.Manifold.MFDeriv.Defs
