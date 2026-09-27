@@ -77,7 +77,7 @@ theorem hasStrictFDerivAt_toLp (f : ∀ i, E i) :
 nonrec theorem hasStrictFDerivAt_apply (f : PiLp p E) (i : ι) :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun f : PiLp p E => f i) (proj p E i) f :=
   have := Fintype.ofFinite ι
-  (hasStrictFDerivAt_apply i f).comp f (hasStrictFDerivAt_ofLp (𝕜 := 𝕜) p f)
+  (hasStrictFDerivAt_apply i f).fun_comp f (hasStrictFDerivAt_ofLp (𝕜 := 𝕜) p f)
 
 theorem hasFDerivAt_ofLp (f : PiLp p E) :
     HasFDerivAt ofLp (continuousLinearEquiv p 𝕜 _).toContinuousLinearMap f :=

@@ -131,7 +131,7 @@ theorem ContinuousLinearMap.hasStrictFDerivAt_of_bilinear
     {g' : G' →L[𝕜] F} {x : G'} (hf : HasStrictFDerivAt f f' x) (hg : HasStrictFDerivAt g g' x) :
     HasStrictFDerivAt (fun y => B (f y) (g y))
       (B.precompR G' (f x) g' + B.precompL G' f' (g x)) x :=
-  (B.isBoundedBilinearMap.hasStrictFDerivAt (f x, g x)).comp x (hf.prodMk hg)
+  (B.isBoundedBilinearMap.hasStrictFDerivAt (f x, g x)).fun_comp x (hf.prodMk hg)
 
 theorem ContinuousLinearMap.fderivWithin_of_bilinear {f : G' → E} {g : G' → F} {x : G'} {s : Set G'}
     (hf : DifferentiableWithinAt 𝕜 f s x) (hg : DifferentiableWithinAt 𝕜 g s x)

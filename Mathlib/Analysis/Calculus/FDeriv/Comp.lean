@@ -66,10 +66,10 @@ theorem HasFDerivAtFilter.comp {g : F → G} {g' : F →L[𝕜] G} {L' : Filter 
     _ =o[𝕜; L] (fun p ↦ p.1 - p.2) := hf.isLittleOTVS
 
 /-- The chain rule for derivatives in the sense of strict differentiability. -/
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 protected theorem HasStrictFDerivAt.comp {g : F → G} {g' : F →L[𝕜] G}
     (hg : HasStrictFDerivAt g g' (f x)) (hf : HasStrictFDerivAt f f' x) :
-    HasStrictFDerivAt (fun x => g (f x)) (g'.comp f') x :=
+    HasStrictFDerivAt (g ∘ f) (g'.comp f') x :=
   HasFDerivAtFilter.comp hg hf <| hf.continuousAt.tendsto.prodMap_nhds hf.continuousAt.tendsto
 
 @[to_fun (attr := fun_prop)]

@@ -93,7 +93,7 @@ theorem HasFDerivWithinAt.inner (hf : HasFDerivWithinAt f f' s x)
 theorem HasStrictFDerivAt.inner (hf : HasStrictFDerivAt f f' x) (hg : HasStrictFDerivAt g g' x) :
     HasStrictFDerivAt (fun t => ⟪f t, g t⟫) ((fderivInnerCLM 𝕜 (f x, g x)).comp <| f'.prod g') x :=
   isBoundedBilinearMap_inner (𝕜 := 𝕜) (E := E)
-    |>.hasStrictFDerivAt (f x, g x) |>.comp x (hf.prodMk hg)
+    |>.hasStrictFDerivAt (f x, g x) |>.fun_comp x (hf.prodMk hg)
 
 theorem HasFDerivAt.inner (hf : HasFDerivAt f f' x) (hg : HasFDerivAt g g' x) :
     HasFDerivAt (fun t => ⟪f t, g t⟫) ((fderivInnerCLM 𝕜 (f x, g x)).comp <| f'.prod g') x := by

@@ -74,7 +74,7 @@ theorem HasStrictFDerivAt.continuousMultilinearMapCompContinuousLinearMap
       (compContinuousLinearMapL (g · x) ∘L f' +
         (f x).fderivCompContinuousLinearMap (g · x) ∘L .pi g') x :=
   hasStrictFDerivAt_compContinuousLinearMap (f x, (g · x))
-    |>.comp x (hf.prodMk (hasStrictFDerivAt_pi.2 hg))
+    |>.fun_comp x (hf.prodMk (hasStrictFDerivAt_pi.2 hg))
 
 theorem HasFDerivAt.continuousMultilinearMapCompContinuousLinearMap
     (hf : HasFDerivAt f f' x) (hg : ∀ i, HasFDerivAt (g i) (g' i) x) :
