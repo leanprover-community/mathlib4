@@ -469,7 +469,7 @@ theorem isLittleO_const_log_atTop {c : ℝ} : (fun _ => c) =o[atTop] log := by
   open_source := isOpen_univ
   open_target := isOpen_Ioi
   continuousOn_toFun := continuousOn_exp
-  continuousOn_invFun x hx := (continuousAt_log (ne_of_gt hx)).continuousWithinAt
+  continuousOn_invFun x hx := (continuousAt_log hx.ne').continuousWithinAt
 
 @[simp]
 theorem image_log_Ioi {a : ℝ} (ha : 0 < a) : log '' Ioi a = Ioi (log a) :=
