@@ -645,14 +645,15 @@ lemma Pi.mem_span_range_single_inl_iff
 
 section Extend
 
-variable (R) {η : Type*} [Semiring R] (s : ι → η)
+variable (R) {η : Type*} [Semiring R] (M : Type*) [AddCommMonoid M] [Module R M] (s : ι → η)
 
 /-- `Function.extend s f 0` as a bundled linear map. -/
 @[simps]
-noncomputable def Function.ExtendByZero.linearMap : (ι → R) →ₗ[R] η → R :=
-  { Function.ExtendByZero.hom R s with
-    toFun := fun f => Function.extend s f 0
-    map_smul' := fun r f => by simpa using Function.extend_smul r s f 0 }
+noncomputable def Function.ExtendByZero.linearMap : (ι → M) →ₗ[R] η → M where
+  __ := ExtendByZero.hom M s
+  map_smul' r f := by
+    ext i
+    simpa using congr($(Function.extend_smul r s f 0) i)
 
 end Extend
 
