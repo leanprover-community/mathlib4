@@ -18,9 +18,10 @@ D. Hankerson, A. Menezes, S. Vanstone, Guide to Elliptic Curve Cryptography, Spr
 abbrev curve : Affine (ZMod 29) := ⟨0, 0, 0, 4, 20⟩
 
 def basepoint : curve.Point :=
-  .some (x := 1) (y := 5) <| by
-    rw [nonsingular_iff, equation_iff]
-    decide
+  .some (x := 1) (y := 5) <|
+    (equation_iff_nonsingular_of_isUnit_Δ <| isUnit_iff_ne_zero.mpr <| by decide).mp <| by
+      rw [equation_iff]
+      decide
 
 theorem addOrderOf_basepoint : addOrderOf basepoint = 37 := by
   apply addOrderOf_eq_prime
