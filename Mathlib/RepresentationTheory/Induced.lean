@@ -338,7 +338,7 @@ noncomputable abbrev coinvariantsTensorIndIso :
 
 /-- Given a group hom `φ : G →* H` and `A : Rep k G`, the functor `Rep k H ⥤ ModuleCat k` sending
 `B ↦ (Ind(φ)(A) ⊗ B))_H` is naturally isomorphic to the one sending `B ↦ (A ⊗ Res(φ)(B))_G`. -/
-@[simps (rhsMd := .default) hom_app inv_app]
+@[simps! hom_app_hom inv_app_hom]
 noncomputable def coinvariantsTensorIndNatIso :
     (coinvariantsTensor k H).obj (ind φ A) ≅ resFunctor φ ⋙ (coinvariantsTensor k G).obj A :=
   NatIso.ofComponents' (coinvariantsTensorIndIso φ A) fun {X Y} f => by
