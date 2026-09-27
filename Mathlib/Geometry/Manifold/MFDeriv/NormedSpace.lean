@@ -274,6 +274,36 @@ open NormedSpace ContinuousLinearMap
 variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
 variable {f : M → 𝕜} {g : M → V}
 
+/-- Given maps `f`, `g` from a manifold into a field `𝕜` and `𝕜`-vector space `V`, respectively, if
+at some point `x`, `f` has differential `f' : TangentSpace I x →L[𝕜] 𝕜` and `g` has differential
+`g' : TangentSpace I x →L[𝕜] V` within `s` (both phrased using the predicate `HasMFDerivWithinAt`),
+it follows that their scalar multiplication `f • g` has differential
+`f x • g' + toSpanSingleton 𝕜 (g x) ∘L f'`.
+
+In fact, the statement above is not literally true, because, for example, the differential of `g`
+really takes values in the tangent space to `V` at `g x`, rather than in `V` itself. Of course, this
+tangent space can be canonically identified with `V`.
+
+This lemma phrases the formula using the equiv `NormedSpace.fromTangentSpace`, which provides this
+canonical identification. (It would also be possible to phrase the formula without this equiv,
+instead using casting and definitional abuse.) -/
+lemma HasMFDerivWithinAt.smul
+    {f' : TangentSpace I x →L[𝕜] 𝕜}
+    (hs : HasMFDerivAt[s] f x ((fromTangentSpace (f x)).symm.toContinuousLinearMap ∘L f'))
+    {g' : TangentSpace I x →L[𝕜] V}
+    (hg : HasMFDerivAt[s] g x ((fromTangentSpace (g x)).symm.toContinuousLinearMap ∘L g')) :
+    -- canonically identify `g'` with a linear map into the tangent space at `(f • g) x`
+    letI g'_ : TangentSpace I x →L[𝕜] TangentSpace 𝓘(𝕜, V) ((f • g) x) :=
+      (fromTangentSpace _).symm.toContinuousLinearMap ∘L g'
+    -- canonically identify `g x` with a linear map into a tangent space at `(f • g) x`
+    letI gx : 𝕜 →L[𝕜] TangentSpace 𝓘(𝕜, V) ((f • g) x) :=
+      toSpanSingleton 𝕜 ((fromTangentSpace _).symm (g x))
+    -- now the main statement typechecks
+    HasMFDerivAt[s] (f • g) x (f x • g'_ + gx ∘L f') := by
+  constructor
+  · exact hs.1.smul hg.1
+  · simpa using! hs.2.smul hg.2
+
 -- TODO: investigate inlining this proof entirely!
 /-- Given maps `f`, `g` from a manifold into a field `𝕜` and `𝕜`-vector space `V`, respectively, if
 at some point `x`, `f` has differential `f' : TangentSpace I x →L[𝕜] 𝕜` and `g` has differential
