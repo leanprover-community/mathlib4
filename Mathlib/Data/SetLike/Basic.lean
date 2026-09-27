@@ -237,7 +237,7 @@ An order defined this way automatically makes available an instance of `IsConcre
 @[deprecated (since := "2026-09-01")] alias LE.ofSetLike := LE.ofMembership
 
 instance [Membership B A] : letI := LE.ofMembership A; IsConcreteLE A :=
-  letI := LE.ofMembership A B; { le_iff := .rfl }
+  letI := LE.ofMembership A; { le_iff := .rfl }
 
 /-- The preorder induced from a `Membership` instance by inclusion.
 
