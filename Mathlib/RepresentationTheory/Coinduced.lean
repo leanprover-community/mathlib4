@@ -113,13 +113,19 @@ def coind.evalOne (f : τ.IntertwiningMap (coind φ ρ)) :
 lemma coind.evalOne_apply (f : τ.IntertwiningMap (coind φ ρ)) (a : A) :
     coind.evalOne φ f a = f a 1 := rfl
 
-/-- The canonical equivariant map from a representation to the coinduction of its restriction. -/
-abbrev coind.unit (σ : Representation k H B) :
+/-- The canonical map into the coinduction of a restriction. -/
+def coind.unit (σ : Representation k H A) :
     IntertwiningMap σ (coind φ (σ.comp φ)) := coind.lift φ (IntertwiningMap.id (σ.comp φ))
 
-/-- Evaluate the coinduction of a restricted representation using its original group action. -/
-abbrev coind.counit (ρ : Representation k G A) :
+@[simp]
+lemma coind.coe_unit_apply (a : A) (h : H) : coind.unit φ τ a h = τ h a := by simp [coind.unit]
+
+/-- Evaluation at one, as an equivariant map from restricted coinduction. -/
+def coind.counit (ρ : Representation k G A) :
     IntertwiningMap ((coind φ ρ).comp φ) ρ := coind.evalOne φ (IntertwiningMap.id (coind φ ρ))
+
+@[simp]
+lemma coind.counit_apply (f : coindV φ ρ) : coind.counit φ ρ f = f 1 := by simp [coind.counit]
 
 /-- Given a monoid homomorphism `φ : G →* H` and an intertwining map `f : σ ⟶ ρ`, there is a
   natural intertwining map `coind φ σ ⟶ coind φ ρ` given by postcomposition by `f`. -/
@@ -323,11 +329,11 @@ lemma resCoindAdjunction_homEquiv :
   Adjunction.mkOfHomEquiv_homEquiv _
 
 @[simp]
-lemma resCoindAdjunction_unit_app_hom (B : Rep.{max w t} k H) :
+lemma resCoindAdjunction_unit_app_hom_toLinearMap (B : Rep.{max w t} k H) :
     ((resCoindAdjunction k φ).unit.app B).hom.toLinearMap = (coind.unit φ B.ρ).toLinearMap := rfl
 
 @[simp]
-lemma resCoindAdjunction_counit_app_hom (A : Rep.{max w t} k G) :
+lemma resCoindAdjunction_counit_app_hom_toLinearMap (A : Rep.{max w t} k G) :
     ((resCoindAdjunction k φ).counit.app A).hom.toLinearMap = (coind.counit φ _).toLinearMap := rfl
 
 instance : (coindFunctor.{max w t} k φ).IsRightAdjoint :=
