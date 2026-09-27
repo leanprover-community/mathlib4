@@ -5,7 +5,6 @@ Authors: Christopher Hoskin
 -/
 module
 
-public import Mathlib.Basic.Logic.Lemmas
 public import Mathlib.Topology.AlexandrovDiscrete
 public import Mathlib.Topology.ContinuousMap.Basic
 public import Mathlib.Topology.Order.LowerUpperTopology

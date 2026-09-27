@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Squarefree.Basic
 public import Mathlib.RingTheory.ChainOfDivisors
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
 public import Mathlib.RingTheory.Spectrum.Maximal.Localization
+public import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
 /-!
 # Dedekind domains and ideals
