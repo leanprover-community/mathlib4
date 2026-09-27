@@ -360,18 +360,6 @@ protected abbrev Function.Surjective.distribMulAction [AddMonoid B] [SMul M B] (
     (hf : Surjective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribMulAction M B :=
   { hf.distribSMul f smul, hf.mulAction f smul with }
 
-variable (A)
-
-variable (M)
-
-/-- Each element of the monoid defines an additive monoid homomorphism. -/
-@[simps]
-def DistribMulAction.toAddMonoidEnd :
-    M →* AddMonoid.End A where
-  toFun := DistribSMul.toAddMonoidHom A
-  map_one' := AddMonoidHom.ext <| one_smul M
-  map_mul' x y := AddMonoidHom.ext <| mul_smul x y
-
 end
 
 section
