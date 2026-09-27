@@ -306,7 +306,7 @@ end SpecΓ
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The stalk map of `Spec M⁻¹R ⟶ Spec R` is an iso for each `p : Spec M⁻¹R`. -/
-theorem isIso_SpecMap_stakMap_localization (R : CommRingCat.{u}) (M : Submonoid R)
+theorem isIso_specMap_stalkMap_localization (R : CommRingCat.{u}) (M : Submonoid R)
     (x : PrimeSpectrum (Localization M)) :
     IsIso
       ((Spec.toPresheafedSpace.map
@@ -321,6 +321,9 @@ theorem isIso_SpecMap_stakMap_localization (R : CommRingCat.{u}) (M : Submonoid 
         x.asIdeal).toRingEquiv.toCommRingCatIso.hom by
     rwa [ConcreteCategory.isIso_iff_bijective] at this
   infer_instance
+
+@[deprecated (since := "2026-09-17")]
+alias isIso_SpecMap_stakMap_localization := isIso_specMap_stalkMap_localization
 
 namespace StructureSheaf
 

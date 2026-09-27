@@ -32,9 +32,9 @@ def kernelCone : KernelFork f :=
 def kernelIsLimit : IsLimit <| kernelCone f :=
   Fork.IsLimit.mk _
     (fun s => ofHom <| s.ι.hom.codRestrict _ fun c => mem_ker.mpr <|
-      ConcreteCategory.congr_hom s.condition c)
+      congr($s.condition c))
     (fun _ => by rfl)
-    (fun _ _ h => ext fun x => Subtype.ext_iff.mpr <| ConcreteCategory.congr_hom h x)
+    (fun _ _ h => ext fun x => Subtype.ext_iff.mpr congr($h x))
 
 /-- The cokernel cocone induced by the projection onto the quotient. -/
 def cokernelCocone : CokernelCofork f :=
@@ -45,7 +45,7 @@ def cokernelCocone : CokernelCofork f :=
 def cokernelIsColimit : IsColimit <| cokernelCocone f :=
   Cofork.IsColimit.mk _
     (fun s => ofHom <| lift _ _ <| (range_le_ker_iff _ _).mpr <|
-      congr_arg Hom.hom (CokernelCofork.condition s))
+      congr($(CokernelCofork.condition s).hom))
     (fun _ => rfl)
     (fun _ _ h => have : Epi (cokernelCocone f).π := (epi_iff_surjective _).mpr <| mk'_surjective _
       (cancel_epi (cokernelCocone f).π).mp <| by simpa only [parallelPair_obj_one] using! h)

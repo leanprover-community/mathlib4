@@ -59,7 +59,7 @@ arbitrary well-order to serve as a tiebreak between two elements of same rank.
 @[instance_reducible]
 noncomputable def wellOrderExtension : LinearOrder α :=
   @LinearOrder.lift' α (Ordinal ×ₗ Cardinal) _ (fun a : α => (rank r a, embeddingToCardinal a))
-    fun _ _ h => embeddingToCardinal.injective <| congr_arg Prod.snd h
+    fun _ _ h => embeddingToCardinal.injective congr($(h).snd)
 
 instance wellOrderExtension.wellFounded_lt : WellFounded (wellOrderExtension r).lt :=
   InvImage.wf (fun a : α => (rank r a, embeddingToCardinal a)) <|
