@@ -7,11 +7,23 @@ Authors: Brian Nugent
 module
 
 public import Mathlib.Topology.Sheaves.Abelian
+public import Mathlib.CategoryTheory.Sites.SheafCohomology.ExactSequences
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.EnoughInjectives
 
 /-!
 # Sheaves of abelian groups.
 
 Results for sheaves of abelian groups on topological spaces.
+
+## Main definitions
+
+* `TopCat.Sheaf.H`: The cohomology of a sheaf of abelian groups in degree `n`
+
+* `TopCat.Sheaf.H.map`: Given a morphism `𝓕 ⟶ 𝓖`, we get an induced morphism on cohomology
+  `H 𝓕 n ⟶ H 𝓖 n`
+
+* `TopCat.Sheaf.H.equiv₀`: The equivalence between `H F 0` and the global sections of `F`. This is
+  shown to be natural in `TopCat.Sheaf.H.equiv₀_comp`.
 
 -/
 
@@ -35,7 +47,7 @@ theorem Presheaf.sections_exact_of_exact
   exact (ShortComplex.ab_exact_iff (S.map F)).mp (((Functor.exact_tfae F).out 2 4 rfl rfl).mpr
     ⟨inferInstance, inferInstance⟩ S hS) _ h
 
-lemma Sheaf.sections_exact_of_left_exact {S : ShortComplex (TopCat.Sheaf AddCommGrpCat X)}
+lemma Sheaf.sections_exact_of_left_exact {S : ShortComplex (TopCat.Sheaf AddCommGrpCat.{u} X)}
     (hS : S.Exact) (hf : Mono S.f) (s : S.X₂.obj.obj (Opposite.op U))
     (h : S.g.hom.app (Opposite.op U) s = 0) :
     ∃ (t : S.X₁.obj.obj (Opposite.op U)), S.f.hom.app (Opposite.op U) t = s :=
@@ -48,4 +60,29 @@ lemma Presheaf.restrict_sum {V : Opens X} {F : Presheaf AddCommGrpCat X} (h : V 
   delta Presheaf.restrictOpen Presheaf.restrict
   cat_disch
 
-end TopCat
+namespace Sheaf
+
+noncomputable section
+
+/-- The documention for `HasExt` says to be very careful about making instances of it so we only
+make this instance for `AddCommGrpCat`. -/
+instance : HasExt.{u} (CategoryTheory.Sheaf (Opens.grothendieckTopology X) AddCommGrpCat.{u}) :=
+  hasExt_of_enoughInjectives _
+
+/-- The cohomology of a sheaf of abelian groups in degree `n`. -/
+abbrev H (F : (Sheaf AddCommGrpCat.{u} X)) (n : ℕ) : Type u := CategoryTheory.Sheaf.H F n
+
+/-- Given a morphism `𝓕 ⟶ 𝓖`, we get an induced morphism on cohomology `H 𝓕 n ⟶ H 𝓖 n` -/
+abbrev H.map {F G : Sheaf AddCommGrpCat X} (f : F ⟶ G) (n : ℕ) : H F n →+ H G n :=
+    CategoryTheory.Sheaf.H.map f n
+
+instance (F : Sheaf AddCommGrpCat X) {n : ℕ} [Injective F] : Subsingleton (H F (n + 1)) :=
+  inferInstanceAs <| Subsingleton (CategoryTheory.Sheaf.H F (n + 1))
+
+/-- `H F 0` is equivalent to taking global sections. -/
+abbrev H.equiv₀ (F : (Sheaf AddCommGrpCat X)) : H F 0 ≃+ F.obj.obj (op ⊤) :=
+    CategoryTheory.Sheaf.H.equiv₀ F Limits.isTerminalTop
+
+end
+
+end TopCat.Sheaf
