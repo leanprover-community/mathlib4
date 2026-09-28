@@ -535,7 +535,7 @@ For more information, see this mathoverflow answer: https://mathoverflow.net/a/3
 TODO: Generalize this definition to semigroups once we have the `PNat` action. -/
 @[to_additive, mk_iff]
 class IsMulTorsionFree (M : Type*) [Monoid M] where
-  protected pow_left_injective_of_commute ⦃n : ℕ⦄ (hn : n ≠ 0) ⦃a b : M⦄ (hab : a * b = b * a)
+  protected eq_of_pow_eq_pow_of_commute ⦃n : ℕ⦄ (hn : n ≠ 0) ⦃a b : M⦄ (hab : a * b = b * a)
     (hn : a ^ n = b ^ n) : a = b
 
 attribute [to_additive existing] isMulTorsionFree_iff
@@ -562,7 +562,7 @@ attribute [to_additive existing] hasUniqueRoots_iff
 /-- `HasUniqueRoots` implies `IsMulTorsionFree`. -/
 @[to_additive /-- `HasUniqueDiv` implies `IsAddTorsionFree`. -/]
 instance (M : Type*) [Monoid M] [HasUniqueRoots M] : IsMulTorsionFree M where
-  pow_left_injective_of_commute _ hn _ _ _ hab := HasUniqueRoots.pow_left_injective hn hab
+  eq_of_pow_eq_pow_of_commute _ hn _ _ _ hab := HasUniqueRoots.pow_left_injective hn hab
 
 /-- An additive commutative monoid is an additive monoid with commutative `(+)`. -/
 class AddCommMonoid (M : Type*) extends AddMonoid M, AddCommSemigroup M
