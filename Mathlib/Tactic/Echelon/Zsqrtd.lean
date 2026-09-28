@@ -14,7 +14,7 @@ public meta import Mathlib.NumberTheory.Zsqrtd.Basic
 
 The computable model of the quadratic extensions `ℤ√d`. The elimination runs on `Expr` representing
 `⟨a, b⟩` literals with raw integer components. Accepted entries are `⟨a, b⟩` literals, `√d`, or
-numerals.
+integers evaluated from `norm_num`.
 -/
 
 public meta section
@@ -65,8 +65,7 @@ def zsqrtdOfRawLit? (d : ℤ) (e : Expr) : Option (ℤ√d) :=
   | Zsqrtd.mk _ re im => do return ⟨← intOfRawLit? re, ← intOfRawLit? im⟩
   | _ => none
 
-/-- The literal `⟨re, im⟩ : ℤ√d` of a value, with raw integer components. `d` is the value of
-the integer literal `dQ`. -/
+/-- The literal that `zsqrtdOfRawLit?` reads back as v. -/
 def mkZsqrtdRawLit (dQ : Q(ℤ)) {d : ℤ} (v : ℤ√d) : Q(Zsqrtd $dQ) :=
   q(⟨$(Meta.NormNum.mkRawIntLit v.re), $(Meta.NormNum.mkRawIntLit v.im)⟩)
 
