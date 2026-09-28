@@ -128,7 +128,7 @@ theorem continuousWithinAt_leftLim_Iic [TopologicalSpace α] [OrderTopology α] 
     {f : α → β} {a : α} (h : Tendsto f (𝓝[<] a) (𝓝 (f.leftLim a))) :
     ContinuousWithinAt f.leftLim (Iic a) a := by
   have : 𝓝[≤] a = 𝓝[<] a ⊔ pure a := by
-    rw [← Iio_union_Icc_eq_Iic le_rfl, nhdsWithin_union]
+    rw [← Iio_union_right, nhdsWithin_union]
     simp
   rw [ContinuousWithinAt, this, tendsto_sup]
   simp only [tendsto_pure_nhds, and_true]
