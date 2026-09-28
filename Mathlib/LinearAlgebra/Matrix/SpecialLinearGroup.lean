@@ -247,6 +247,18 @@ lemma coe_sumInl (A : SpecialLinearGroup n R) :
     (sumInl p A : Matrix (n ⊕ p) (n ⊕ p) R) = fromBlocks A 0 0 1 :=
   rfl
 
+lemma mem_range_sumInl_iff {A : SpecialLinearGroup (n ⊕ p) R} :
+    A ∈ (sumInl p).range ↔ (A : Matrix (n ⊕ p) (n ⊕ p) R).IsTwoBlockDiagonal ∧
+      toBlocks₂₂ (A : Matrix (n ⊕ p) (n ⊕ p) R) = 1 := by
+  refine ⟨?_, fun ⟨⟨h₁₂, h₂₁⟩, h₂₂⟩ ↦ ?_⟩
+  · rintro ⟨A, rfl⟩
+    simp [IsTwoBlockDiagonal]
+  · have hA : (A : Matrix (n ⊕ p) (n ⊕ p) R) = fromBlocks (toBlocks₁₁ ↑A) 0 0 1 :=
+      (fromBlocks_toBlocks _).symm.trans (by rw [h₁₂, h₂₁, h₂₂])
+    have hdet := A.det_coe
+    rw [hA, det_fromBlocks_zero₂₁, det_one, mul_one] at hdet
+    exact ⟨⟨_, hdet⟩, Subtype.ext hA.symm⟩
+
 end SumInl
 
 section center
@@ -615,6 +627,13 @@ lemma toSpecialLinearGroup_mk {i j : ι} (hij : i ≠ j) (c : F) :
 lemma map_toSpecialLinearGroup (t : TransvectionStruct ι F) :
     SpecialLinearGroup.map f t.toSpecialLinearGroup = (t.map f).toSpecialLinearGroup :=
   SpecialLinearGroup.map_transvection f t.hij t.c
+
+@[simp]
+lemma reindexMulEquiv_toSpecialLinearGroup {κ : Type*} [DecidableEq κ] [Fintype κ] (e : ι ≃ κ)
+    (t : TransvectionStruct ι F) :
+    SpecialLinearGroup.reindexMulEquiv F e t.toSpecialLinearGroup =
+      (t.reindexEquiv e).toSpecialLinearGroup :=
+  Subtype.ext (toMatrix_reindexEquiv e t).symm
 
 /-- If `f` is surjective, every transvection in `SL(ι, S)` is the image under
 `SpecialLinearGroup.map f` of a transvection in `SL(ι, F)`. -/
