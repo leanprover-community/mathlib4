@@ -59,13 +59,13 @@ public instance : TotallySeparatedSpace (CompleteType T α) := by
   intro p q hpq
   simp only [ne_eq, SetLike.ext_iff, not_forall, not_iff] at hpq
   obtain ⟨φ, hφ⟩ := hpq
-  cases mem_or_notMem p φ with
+  cases mem_or_not_mem p φ with
   | inl h =>
     refine ⟨T.typesWith φ, isClopen_typesWith _, h, ?_⟩
     rwa [mem_compl_iff, mem_typesWith_iff, ← hφ, not_not]
   | inr h =>
     refine ⟨T.typesWith ∼φ, isClopen_typesWith _, h, ?_⟩
-    rwa [mem_compl_iff, mem_typesWith_iff, notMem_iff, ← hφ, not_not, ← notMem_iff]
+    rwa [mem_compl_iff, mem_typesWith_iff, not_mem_iff, ← hφ, not_not, ← not_mem_iff]
 
 instance : CompactSpace (T.CompleteType α) := by
   constructor

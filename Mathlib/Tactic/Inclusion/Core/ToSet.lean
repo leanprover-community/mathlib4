@@ -133,11 +133,9 @@ def IntervalBool.not : IntervalBool → IntervalBool
   | .false => .true
   | .undetermined => .undetermined
 
-theorem IntervalBool.notMem {p : Prop} {a : IntervalBool}
+theorem IntervalBool.not_mem {p : Prop} {a : IntervalBool}
     (hp : p ∈ a) : (¬p) ∈ a.not := by
   cases a <;> by_cases hp' : p <;> simp_all [IntervalBool.not]
-
-@[deprecated (since := "2026-09-28")] alias IntervalBool.not_mem := IntervalBool.notMem
 
 /-- Conjunction of two `IntervalBool` values. -/
 @[macro_inline]

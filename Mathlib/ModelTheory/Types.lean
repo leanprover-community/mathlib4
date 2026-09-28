@@ -88,25 +88,21 @@ theorem isMaximal (p : T.CompleteType α) : IsMaximal (p : L[[α]].Theory) :=
 theorem subset (p : T.CompleteType α) : (L.lhomWithConstants α).onTheory T ⊆ (p : L[[α]].Theory) :=
   p.subset'
 
-theorem mem_or_notMem (p : T.CompleteType α) (φ : L[[α]].Sentence) : φ ∈ p ∨ φ.not ∈ p :=
-  p.isMaximal.mem_or_notMem φ
+theorem mem_or_not_mem (p : T.CompleteType α) (φ : L[[α]].Sentence) : φ ∈ p ∨ φ.not ∈ p :=
+  p.isMaximal.mem_or_not_mem φ
 
-@[deprecated (since := "2026-09-28")] alias mem_or_not_mem := mem_or_notMem
-
-lemma false_of_mem_of_notMem (hT : T.IsSatisfiable) {φ : L.Sentence} (hφ : φ ∈ T) (hφ' : ∼φ ∈ T) :
+lemma false_of_mem_of_not_mem (hT : T.IsSatisfiable) {φ : L.Sentence} (hφ : φ ∈ T) (hφ' : ∼φ ∈ T) :
     False :=
   have ⟨M⟩ := hT
   (M.is_model.realize_of_mem _ hφ') (M.is_model.realize_of_mem _ hφ)
 
-@[deprecated (since := "2026-09-28")] alias false_of_mem_of_not_mem := false_of_mem_of_notMem
-
 theorem mem_of_models (p : T.CompleteType α) {φ : L[[α]].Sentence}
     (h : (L.lhomWithConstants α).onTheory T ⊨ᵇ φ) : φ ∈ p :=
-  (p.mem_or_notMem φ).resolve_right fun con =>
+  (p.mem_or_not_mem φ).resolve_right fun con =>
     ((models_iff_not_satisfiable _).1 h)
       (p.isMaximal.1.mono (union_subset p.subset (singleton_subset_iff.2 con)))
 
-theorem notMem_iff (p : T.CompleteType α) (φ : L[[α]].Sentence) : φ.not ∈ p ↔ φ ∉ p :=
+theorem not_mem_iff (p : T.CompleteType α) (φ : L[[α]].Sentence) : φ.not ∈ p ↔ φ ∉ p :=
   ⟨fun hf ht => by
     have h : ¬IsSatisfiable ({φ, φ.not} : L[[α]].Theory) := by
       rintro ⟨@⟨_, _, h, _⟩⟩
@@ -114,14 +110,12 @@ theorem notMem_iff (p : T.CompleteType α) (φ : L[[α]].Sentence) : φ.not ∈ 
       exact h.2 h.1
     refine h (p.isMaximal.1.mono ?_)
     rw [insert_subset_iff, singleton_subset_iff]
-    exact ⟨ht, hf⟩, (p.mem_or_notMem φ).resolve_left⟩
-
-@[deprecated (since := "2026-09-28")] alias not_mem_iff := notMem_iff
+    exact ⟨ht, hf⟩, (p.mem_or_not_mem φ).resolve_left⟩
 
 @[simp]
 theorem compl_setOfPred_mem {φ : L[[α]].Sentence} :
     { p : T.CompleteType α | φ ∈ p }ᶜ = { p : T.CompleteType α | φ.not ∈ p } :=
-  ext fun _ => (notMem_iff _ _).symm
+  ext fun _ => (not_mem_iff _ _).symm
 
 @[deprecated (since := "2026-07-09")] alias compl_setOf_mem := compl_setOfPred_mem
 
