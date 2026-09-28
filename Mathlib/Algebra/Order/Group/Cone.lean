@@ -22,12 +22,12 @@ submonoids `M` of `G` such that `M ∩ -M = 0`.
 variable (G : Type*) [CommGroup G]
 
 @[to_additive]
-theorem Submonoid.IsMulPointed.oneLE [PartialOrder G] [IsOrderedMonoid G] :
-    (oneLE G).IsMulPointed := by aesop (add simp ge_antisymm_iff)
+protected theorem Submonoid.IsMulPointed.oneLE [PartialOrder G] [IsOrderedMonoid G] :
+    (oneLE G).IsMulPointed := by simp
 
 @[to_additive]
-theorem Submonoid.IsMulSpanning.oneLE [LinearOrder G] [IsOrderedMonoid G] :
-    (oneLE G).IsMulSpanning := by aesop (add safe le_total)
+protected theorem Submonoid.IsMulSpanning.oneLE [LinearOrder G] [IsOrderedMonoid G] :
+    (oneLE G).IsMulSpanning := by simp
 
 variable {G} {M : Submonoid G} (hM : M.IsMulPointed)
 
