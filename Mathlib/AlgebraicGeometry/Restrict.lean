@@ -140,7 +140,7 @@ lemma nonempty_iff : Nonempty U.toScheme ↔ (U : Set X).Nonempty := by
   simp only [toScheme_carrier, SetLike.coe_sort_coe, nonempty_subtype]
   rfl
 
-instance [Nonempty X] : Nonempty (⊤ : X.Opens).toScheme :=
+instance [Nonempty X] : Nonempty (⊤ : X.Opens) :=
   (nonempty_iff ⊤).mpr <| by simp
 
 attribute [-simp] eqToHom_op in
