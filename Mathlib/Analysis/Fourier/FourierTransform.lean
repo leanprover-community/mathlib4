@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.AddChar
 public import Mathlib.Analysis.Complex.Circle
 public import Mathlib.Analysis.Fourier.Notation
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.MeasureTheory.Group.Integral
 public import Mathlib.MeasureTheory.Integral.Prod
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
@@ -456,6 +457,21 @@ lemma fourier_comp_linearIsometry (A : W ≃ₗᵢ[ℝ] V) (f : V → E) (w : W)
     𝓕 (f ∘ A) w = (𝓕 f) (A w) := by
   simp only [fourier_eq, ← A.inner_map_map, Function.comp_apply,
     ← MeasurePreserving.integral_comp A.measurePreserving A.toHomeomorph.measurableEmbedding]
+
+/-- Precomposing with a linear automorphism `A` rescales the Fourier transform by `|det A|⁻¹` and
+precomposes it with the adjoint of `A⁻¹`. -/
+theorem fourier_comp_linearEquiv (A : V ≃ₗ[ℝ] V) (f : V → E) (w : V) :
+    𝓕 (f ∘ A) w = |A.toLinearMap.det|⁻¹ • 𝓕 f (A.symm.adjoint w) := by
+  have hemb : MeasurableEmbedding A := A.toContinuousLinearEquiv.toHomeomorph.measurableEmbedding
+  repeat rw [fourier_eq']
+  set g : V → E := fun v ↦
+    Complex.exp ((-2 * π * ⟪v, A.symm.adjoint w⟫ : ℝ) * Complex.I) • f v with hg
+  have hcomp (x : V) : Complex.exp ((-2 * π * ⟪x, w⟫ : ℝ) * Complex.I) • (f ∘ A) x = g (A x) := by
+    simp [hg, LinearMap.adjoint_inner_right]
+  simp only [hcomp]
+  rw [← hemb.integral_map g, ← LinearEquiv.coe_coe,
+    Measure.map_linearMap_addHaar_eq_smul_addHaar volume A.isUnit_det'.ne_zero,
+    integral_smul_measure, ENNReal.toReal_ofReal (abs_nonneg _), abs_inv]
 
 lemma fourierInv_eq_fourier_neg (f : V → E) (w : V) :
     𝓕⁻ f w = 𝓕 f (-w) := by
