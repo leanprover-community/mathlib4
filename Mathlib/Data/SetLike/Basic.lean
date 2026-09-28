@@ -220,6 +220,9 @@ class IsConcreteLE (A : Type*) (B : outParam Type*) [Membership B A] [LE A] wher
   /-- The order corresponds to set inclusion. -/
   le_iff {S T : A} : S ≤ T ↔ ∀ ⦃x⦄, x ∈ S → x ∈ T
 
+instance (α : Type*) : IsConcreteLE (Set α) α where
+  le_iff := .rfl
+
 section default
 
 variable (A : Type*) {B : Type*}
@@ -262,8 +265,7 @@ section LE
 
 variable [LE A] [IsConcreteLE A B] {p q : A}
 
-@[gcongr low] -- lower priority than `Set.mem_of_subset_of_mem`
-alias ⟨_root_.mem_of_le_of_mem, _⟩ := le_iff
+@[gcongr] alias ⟨_root_.mem_of_le_of_mem, _⟩ := le_iff
 
 theorem not_le_iff_exists : ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q := by
   simp [le_iff]
