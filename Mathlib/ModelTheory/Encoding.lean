@@ -6,7 +6,7 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.Computability.Encoding
-public import Mathlib.Logic.Small.List
+import Mathlib.Logic.Small.List
 public import Mathlib.ModelTheory.Syntax
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 

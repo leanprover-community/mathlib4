@@ -5,12 +5,12 @@ Authors: Madison Crim, Aaron Liu, Justus Springer, Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.Module.PID
-public import Mathlib.Algebra.MvPolynomial.Funext
-public import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.Algebra.Module.PID
+import Mathlib.Algebra.MvPolynomial.Funext
+import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.FieldTheory.Galois.Basic
-public import Mathlib.LinearAlgebra.AnnihilatingPolynomial
-public import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.LinearAlgebra.AnnihilatingPolynomial
+import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # The normal basis theorem

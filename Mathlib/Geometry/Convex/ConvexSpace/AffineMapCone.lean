@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Geometry.Convex.ConvexSpace.AffineMap
-public import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.FinCases
 
 /-!
 # The cone of an affine map from the standard simplex

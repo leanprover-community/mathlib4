@@ -8,7 +8,6 @@ module
 public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 public import Mathlib.Topology.Algebra.WithZeroTopology
 public import Mathlib.Topology.Algebra.UniformField
-public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 public import Mathlib.Topology.Algebra.ValuativeRel.Completion
 
 /-!
