@@ -333,6 +333,8 @@ def duplicateImportsCheck (imports : Array ImportRef) : CommandElabM Unit := do
 
 section HeaderParser
 
+open Lean.ParseImports
+
 /-! We extend the import parser to also parse Verso `set_option` commands that need to go before
 the module doc-string. We only use the parser for determining whether a given string matches
 and ignore the other bits of the state.
