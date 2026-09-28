@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.Convex.Extreme
 public import Mathlib.Dynamics.Ergodic.Function
-public import Mathlib.Dynamics.Ergodic.RadonNikodym
-public import Mathlib.Probability.ConditionalProbability
+import Mathlib.Dynamics.Ergodic.RadonNikodym
+import Mathlib.Probability.ConditionalProbability
 
 /-!
 # Ergodic measures as extreme points
@@ -35,7 +35,7 @@ theorem of_mem_extremePoints_measure_univ_eq {c : ℝ≥0∞} (hc : c ≠ ∞)
   rcases eq_or_ne c 0 with rfl | hc₀
   · convert! zero_measure hf.measurable
     rw [← measure_univ_eq_zero, h.1.2]
-  · refine ⟨hf, ⟨?_⟩⟩
+  · refine ⟨hf, .of_preimage_eq hf.quasiMeasurePreserving ?_⟩
     have : IsFiniteMeasure μ := by
       constructor
       rwa [h.1.2, lt_top_iff_ne_top]

@@ -5,9 +5,9 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
-public import Mathlib.Data.Rat.Lemmas
+import Mathlib.Data.Rat.Lemmas
 public import Mathlib.Data.Int.Sqrt
 
 /-!

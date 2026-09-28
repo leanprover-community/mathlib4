@@ -11,8 +11,7 @@ public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Tactic.SimpRw
 public import Mathlib.Order.Defs.Prop
 public import Mathlib.Order.Defs.Unbundled
-public import Batteries.Logic
-public import Batteries.Tactic.Trans
+import Batteries.Logic
 
 /-!
 # Relation closures
@@ -686,7 +685,7 @@ instance : Trans (ReflTransGen r) (TransGen r) (TransGen r) :=
 
 @[grind =]
 theorem transGen_eq_self [IsTrans α r] : TransGen r = r :=
-  funext₂ fun a b ↦ propext <|
+  funext₂ fun a b ↦ propext
     ⟨fun h ↦ by
       induction h with
       | single hc => exact hc
@@ -1021,6 +1020,6 @@ theorem Equivalence.eqvGen_iff (h : Equivalence r) : EqvGen r a b ↔ r a b :=
   ⟨fun h ↦ by induction h <;> grind [Equivalence], .rel a b⟩
 
 theorem Equivalence.eqvGen_eq (h : Equivalence r) : EqvGen r = r :=
-  funext fun _ ↦ funext fun _ ↦ propext <| h.eqvGen_iff
+  funext fun _ ↦ funext fun _ ↦ propext h.eqvGen_iff
 
 end EqvGen
