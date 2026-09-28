@@ -5,9 +5,9 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.RingTheory.Invariant.Basic
-public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 public import Mathlib.RingTheory.Unramified.Locus
 
 /-!

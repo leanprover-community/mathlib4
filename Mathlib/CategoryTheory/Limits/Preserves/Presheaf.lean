@@ -6,7 +6,7 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
-public import Mathlib.CategoryTheory.Limits.Elements
+import Mathlib.CategoryTheory.Limits.Elements
 
 /-!
 # Finite-limit-preserving presheaves

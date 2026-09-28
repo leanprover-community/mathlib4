@@ -8,7 +8,6 @@ module
 public import Mathlib.MeasureTheory.Function.L1Space.HasFiniteIntegral
 public import Mathlib.MeasureTheory.Function.LpOrder
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Integrable functions

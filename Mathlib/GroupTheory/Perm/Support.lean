@@ -5,7 +5,7 @@ Authors: Chris Hughes, Aaron Anderson, Yakov Pechersky
 -/
 module
 
-public import Mathlib.Algebra.Group.Commute.Basic
+import Mathlib.Algebra.Group.Commute.Basic
 public import Mathlib.Algebra.Group.End
 public import Mathlib.Data.Finset.NoncommProd
 public import Mathlib.Data.Fintype.Card

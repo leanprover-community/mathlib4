@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Localization.Monoidal.Braided
-public import Mathlib.CategoryTheory.Sites.Equivalence
 public import Mathlib.CategoryTheory.Sites.SheafHom
 
 /-!
