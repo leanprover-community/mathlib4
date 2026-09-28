@@ -107,8 +107,7 @@ def certifyLowerTriangularDiagList {u : Level} {α : Q(Type u)} (zα : Q(Zero $�
     let rest ← certifyLowerTriangularDiagList zα certifier (k + 1) c k₁Q c₁Q rowsTl
     let hd : Q($entry ≠ 0) ← certifier q($entry ≠ 0)
     -- The kernel evaluates the `drop` and the `replicate` once, here.
-    have hdrop : Q(List.drop $kQ $row = $entry :: List.replicate $c₁Q (0 : $α)) :=
-      (q(Eq.refl (List.drop $kQ $row)) : Expr)
+    have hdrop : List.drop $kQ $row =Q $entry :: List.replicate $c₁Q (0 : $α) := ⟨⟩
     have : $rows =Q $row :: $rowsTl := ⟨⟩
     have : $cQ =Q $c₁Q + 1 := ⟨⟩
     have : $k₁Q =Q $kQ + 1 := ⟨⟩
@@ -132,8 +131,7 @@ def certifyPivotedList {u : Level} {n : Nat} {α : Q(Type u)} (zα : Q(Zero $α)
   match pivots with
   | [] => do
     -- The kernel evaluates the `map` over the zero rows once, here.
-    have hz : Q($rows = ($rows).map fun _ ↦ List.replicate $n (0 : $α)) :=
-      (q(Eq.refl $rows) : Expr)
+    have hz : $rows =Q ($rows).map fun _ ↦ List.replicate $n (0 : $α) := ⟨⟩
     have : $cols =Q ([] : List (Fin $n)) := ⟨⟩
     return q(IsPivotedList.nil $hz)
   | k :: ks => do
@@ -153,8 +151,7 @@ def certifyPivotedList {u : Level} {n : Nat} {α : Q(Type u)} (zα : Q(Zero $α)
     let hd : Q($entry ≠ 0) ← certifier q($entry ≠ 0)
     -- The kernel evaluates the split and the `replicate` once, here.
     have hsplit :
-        Q(splitRevAt $row $col [] = (List.replicate ($col : Nat) 0, $entry :: $suffix)) :=
-      (q(Eq.refl (splitRevAt $row $col [])) : Expr)
+        splitRevAt $row $col [] =Q (List.replicate ($col : Nat) 0, $entry :: $suffix) := ⟨⟩
     have : $cols =Q $col :: $colsTl := ⟨⟩
     have : $rows =Q $row :: $rowsTl := ⟨⟩
     return q(IsPivotedList.cons $hsplit $hd $rest)
@@ -197,8 +194,8 @@ def certifyProductEq {u : Level} {m n : Nat} {α : Q(Type u)} (cα : Q(AddCommMo
     | none =>
       -- Returns a proof with RHS being `mulEq.expr` without a bridge to
       -- `U.lit`. A model passes `none` when equality of its literals is settled by kernel
-      -- evaluation, so the kernel establishes the defeq itself at the closing hint entry-wise
-      -- under `ofLists`.
+      -- evaluation, so the kernel establishes the defeq itself at the closing hint at
+      -- `ofLists_mul`.
       pure mulEq.proof
     | some certifier => do
       let ⟨_, _, hrows⟩ ← certifyRowsEq certifier mulEq.rows U.entries
