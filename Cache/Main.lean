@@ -185,8 +185,8 @@ def main (args : List String) : IO Unit := do
       Process.exit 1
     | some cs => cacheFromOverride.set (some cs)
 
-  -- Parse `--container=NAME`. Validation is unconditional; `put` enforces that
-  -- the flag is set (via `uploadLocation`).
+  -- Parse `--container=NAME`. Validation is unconditional; `put` requires the
+  -- flag where the backend needs it (`uploadLocation`).
   let container? ← match containerStr? with
     | none => pure none
     | some s => match Container.parse? s with

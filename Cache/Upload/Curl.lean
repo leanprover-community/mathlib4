@@ -10,8 +10,8 @@ public import Cache.Requests
 /-!
 # The curl upload tool
 
-The built-in transfer tool: parallel curl PUTs against the resolved
-location (`Location`). Each backend module
+The built-in transfer tool: parallel curl PUTs to the resolved location
+(`Location`). Each backend module
 (`Cache/Upload/Azure.lean`, `Cache/Upload/S3.lean`) calls the tool's entry
 point, `putStagedViaCurl`, with its own per-request signing arguments.
 -/
@@ -35,17 +35,16 @@ def uploadPutArgs (signArgs : Array String) (overwrite : Bool) : Array String :=
   if overwrite then signArgs else signArgs ++ #["-H", "If-None-Match: *"]
 
 /-- Formats the curl config file that lists the files to upload: each staged
-file goes to its `Location.fileURL`, and `uploadLocation` resolves the
-location once. The response body goes to the null device: stdout must carry
-only the per-transfer JSON reports that `monitorCurl` parses. -/
+file goes to `dest.fileURL`. The response body goes to the null device: stdout
+must carry only the per-transfer JSON reports that `monitorCurl` parses. -/
 def mkPutConfigContent (dest : Location) (files : Array FilePath) : String :=
   let l := files.toList.map fun file : FilePath =>
     s!"-T {file.toString}\nurl = {dest.fileURL file.fileName.get!}\n\
       -o {IO.nullDevice}"
   "\n".intercalate l
 
-/-- Calls `curl` to send a set of files to the already-resolved location
-(see `uploadLocation`), signed per request with `signArgs`. Exits with
+/-- Calls `curl` to send a set of files to `dest`, the resolved upload location
+(`uploadLocation`), signed per request with `signArgs`. Exits with
 code 1 when any file fails to upload. -/
 def putFilesViaCurl
     (dest : Location) (files : Array FilePath) (tempConfigFilePath : FilePath)

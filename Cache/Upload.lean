@@ -10,14 +10,14 @@ public import Cache.Upload.Defs
 /-!
 # The upload operation
 
-`runPut` implements the complete `put` from the command inputs. The routing
-is the backend: the shared arbitration resolves the location
-(`uploadLocation`), and the selected backend resolves its credentials and
+`runPut` implements the complete `put` from the command inputs.
+`uploadLocation` resolves the location, and the selected backend resolves its
+credentials and
 transfer tool and runs the transfer (`azurePutStaged` in
 `Cache/Upload/Azure.lean`, `s3PutStaged` in `Cache/Upload/S3.lean`).
 
 The whole upload path is internal to mathlib CI: the commands, the backends,
-and their credential and destination variables follow the CI storage layout.
+and their credential and location variables follow the CI storage layout.
 An external cache should not build on it: its operator publishes a staged
 artifact set (`stage`) with any storage client and serves readers through
 `MATHLIB_CACHE_GET_URL`, one flat location.

@@ -16,17 +16,16 @@ The backend-neutral layer over the backend modules:
 
 * the backend selection (`UploadBackend`). The backends implement the upload
   in `Cache/Upload/Azure.lean` and `Cache/Upload/S3.lean`: credentials,
-  destination, transfer tool, and the transfer;
-* the one location resolution every upload addresses (`uploadLocation`): the
-  flat `MATHLIB_CACHE_PUT_URL` override, or the selected backend's own
-  location. The location type itself (`Location`) lives in
-  `Cache/Location.lean`, shared with the reads.
+  location, transfer tool, and the transfer;
+* the location resolution that every upload uses (`uploadLocation`): the
+  `MATHLIB_CACHE_PUT_URL` endpoint, or the location of the selected backend.
+  `Location` lives in `Cache/Location.lean`, and the reads use it too.
 
 `Cache/Upload.lean` runs the complete `put`, dispatching to the selected
 backend. The marker path contract and write mechanics live in
 `Cache/Marker.lean`. The reads resolve their locations with the same
 resolvers (`Container.location`, `Location.ofEndpoint`), so every upload
-addresses the URLs the readers probe.
+writes to the URLs that the reads probe.
 -/
 
 public section
@@ -37,7 +36,7 @@ open System (FilePath)
 
 /-- The storage backend an upload targets, selected with `--backend=NAME`.
 Each backend implements the complete upload in its own module: credential
-resolution, destination, transfer tool, and the transfer. `runPut` dispatches
+resolution, location, transfer tool, and the transfer. `runPut` dispatches
 on this type. -/
 inductive UploadBackend where
   /-- Azure Blob Storage (`Cache/Upload/Azure.lean`); the default. -/
@@ -72,7 +71,7 @@ Pure core of `uploadLocation`: resolve where a staged set uploads.
 `MATHLIB_CACHE_PUT_URL` (`putUrl?`) wins on every backend: a flat endpoint
 with the container policy off, while the selected backend signs the requests.
 Any set value counts here, an empty one included: a misconfigured endpoint
-fails the upload and does not divert it to the backend's destination. The
+fails the upload and does not divert it to the backend's location. The
 read variables take the opposite rule, where an empty value means unset.
 
 Without it, the backend resolves its own location (`azureUploadLocationFrom`,
@@ -85,7 +84,6 @@ def uploadLocationFrom (backend : UploadBackend) (putUrl? putBase? : Option Stri
     (container? : Option Container) (repo : String) (scope? : Option String) :
     Except String Location := do
   let dest ← if let some url := putUrl? then
-      -- A user-supplied URL carries no container policy (`Location.ofEndpoint`).
       pure (.ofEndpoint url "(env override)" repo scope?)
     else
       let putBase? := normalizeBaseURL putBase?
@@ -97,10 +95,10 @@ def uploadLocationFrom (backend : UploadBackend) (putUrl? putBase? : Option Stri
   return dest
 
 /--
-`uploadLocationFrom` on the endpoint variables in the environment. `scope?`
-is the caller's resolved scope (`getRepoScope`); the location carries it to
-the marker write, so one resolution serves the whole upload. The artifact puts
-and the marker put, on every tool, address the location's URLs.
+`uploadLocationFrom` on the environment variables `MATHLIB_CACHE_PUT_URL` and
+`MATHLIB_CACHE_PUT_BASE_URL`. `scope?` is the caller's resolved scope
+(`getRepoScope`). The location carries it to the marker write, so the file
+puts and the marker put of every tool use one resolution.
 -/
 def uploadLocation (backend : UploadBackend) (container? : Option Container)
     (repo : String) (scope? : Option String) : IO Location := do

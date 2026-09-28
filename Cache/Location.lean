@@ -10,18 +10,19 @@ public import Cache.Marker
 /-!
 # Cache locations
 
-A location is where a set of cache files lives: a root URL, and the
-directories of the files and of the per-SHA markers under it. Every read and
-every upload builds its URLs from a location (`Location.fileURL`,
-`Location.markerURL`), so the two sides share one path contract.
+A location is where a set of cache files and their per-SHA markers live: a
+root URL, and the directories of the files and of the markers under it. Every
+read and every upload builds its URLs from a location (`Location.fileURL`,
+`Location.markerURL`), so reads and uploads share one path contract.
 
-A location knows nothing of containers. A known container is a shorthand
-that resolves to a location (`Container.location`): its layout
-(`fileDirPath`) under its root. A user-supplied URL
-(`MATHLIB_CACHE_GET_URL`, `MATHLIB_CACHE_PUT_URL`) resolves through
-`Location.ofEndpoint`. A read resolves a trust-ordered list of locations and
-downloads through it (`readLocations`); an upload resolves one location and
-writes to it (`uploadLocation`).
+Two resolvers build a location:
+* `Container.location`, for a known container. The root is the container's
+  URL (`Container.urlUnder`), and the files follow the container's layout.
+* `Location.ofEndpoint`, for a user-supplied URL (`MATHLIB_CACHE_GET_URL`,
+  `MATHLIB_CACHE_PUT_URL`). The files follow the repo.
+
+A read tries a trust-ordered list of locations (`readLocations`). An upload
+writes to one location (`uploadLocation`).
 -/
 
 public section
@@ -29,12 +30,13 @@ public section
 namespace Cache.Requests
 
 /--
-Where a set of cache files lives. `root` is the URL that holds the `f/` and
-`m/` trees, with no trailing slash: a container's URL on a read host, a
-container on an upload base, or a user-supplied endpoint. `filesDir` and
-`markerDir` are relative to it and carry no trailing slash. `scope?` is the
-per-SHA scope of the files, if any; an upload writes its marker after the
-files when it is set. `label` names the location in messages.
+Where a set of cache files and their per-SHA markers live. `root` is the URL
+that holds the `f/` and `m/` trees, without a trailing slash: a container's URL
+on a read host or on an upload base, or a user-supplied endpoint. `filesDir`
+and `markerDir` are relative to `root`, without a trailing slash. `scope?` is
+the per-SHA scope, if any. The resolvers pass it to the file layout
+(`fileDirPath`), and an upload writes the marker of that SHA after the files.
+`label` names the location in messages.
 -/
 structure Location where
   root : String
@@ -54,9 +56,9 @@ def fileURL (l : Location) (fileName : String) : String :=
 def markerURL (l : Location) (sha : String) : String :=
   s!"{l.root}/{l.markerDir}/{sha}"
 
-/-- The location of a user-supplied endpoint `url` for `repo` at the per-SHA
-scope `scope?`. No container policy applies: the files are flat for
-`MATHLIBREPO` and repo-namespaced otherwise (`fileDirPath none`). -/
+/-- The location of the user-supplied endpoint `url` for `repo` at the per-SHA
+scope `scope?`. The files are flat for `MATHLIBREPO` and repo-namespaced
+otherwise (`fileDirPath none`). -/
 def ofEndpoint (url label : String) (repo : String) (scope? : Option String) : Location :=
   { root := url, label, scope?,
     filesDir := fileDirPath none repo scope?, markerDir := markerDirPath repo }
@@ -64,9 +66,10 @@ def ofEndpoint (url label : String) (repo : String) (scope? : Option String) : L
 end Location
 
 /--
-The location container `c` stands for at `root`, the container's URL on a
-read host or an upload base (`Container.urlUnder`), for `repo` at the per-SHA
-scope `scope?`. The files follow the container's layout (`fileDirPath`).
+The location of container `c` at `root`, for `repo` at the per-SHA scope
+`scope?`. `root` is the container's URL on a read host or on an upload base
+(`Container.urlUnder`). The files follow the container's layout
+(`fileDirPath`).
 -/
 def Container.location (c : Container) (root : String) (repo : String)
     (scope? : Option String) : Location :=

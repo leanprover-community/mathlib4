@@ -548,11 +548,10 @@ end RoundTrip
 
 section Marker
 
-/-- URL shape for the per-SHA marker blob `cache put` writes
-(`Location.markerURL`, on the location `uploadLocationFrom` resolves) and
-`cache query` probes with a HEAD request. The marker lives at
-`/m/{repo}/{sha}` under the base; a 200 HEAD response signals that all
-artifacts for the commit were uploaded. -/
+/-- URL shape of the per-SHA marker that `cache put` writes and `cache query`
+probes with a HEAD request (`Location.markerURL`). The marker lives at
+`/m/{repo}/{sha}` under the location's root. A 200 HEAD response signals that
+all artifacts for the commit were uploaded. -/
 def test_markerURL : IO Unit := do
   IO.println "Location.markerURL:"
   let dest (backend : UploadBackend) (container? : Option Container)
@@ -566,8 +565,8 @@ def test_markerURL : IO Unit := do
   assertEq "marker is under /m/, keyed by repo"
     "m/leanprover-community/mathlib4/deadbeef"
     (markerPath MATHLIBREPO "deadbeef")
-  -- A put base rebases the marker with the artifacts it marks: the same
-  -- `{base}/{container}` resolution feeds both (see `uploadLocationFrom`).
+  -- A put base rebases the marker with the artifacts it marks: both use one
+  -- location, rooted at `{base}/{container}` (`uploadLocationFrom`).
   assertEq "marker URL follows a rebased upload destination"
     "https://bucket.example.org/mirror/mathlib4-forks/m/alice/mathlib4/abc123"
     (dest .s3 (some .forks) (some "https://bucket.example.org/mirror"))
@@ -577,8 +576,8 @@ def test_markerURL : IO Unit := do
     "m/alice/mathlib4/abc123"
     (markerPath "Alice/Mathlib4" "abc123")
 
-/-- Marker probes read through the container's read base (`markerProbeURL`);
-marker writes follow the resolved upload location (`Location.markerURL`). -/
+/-- Marker probes use the container's read base (`markerProbeURL`). Marker
+writes use the upload location (`Location.markerURL`). -/
 def test_markerProbeURL : IO Unit := do
   IO.println "markerProbeURL:"
   let base ← getBaseURL .forks
@@ -1234,7 +1233,7 @@ def test_isValidScope : IO Unit := do
     assertTrue "getRepoScope passes a hex scope through"
       ((← withSuppressedOutput getRepoScope) == some "deadbeef")
 
-/-- `fileDirPath` is the one path policy behind every `Location`: bare `f` for
+/-- `fileDirPath` is the file layout of every `Location`: bare `f` for
 a flat container, repo-namespaced otherwise, with the per-SHA scope appended
 when given, and the repo lowercased. -/
 def test_fileDirPath : IO Unit := do
@@ -1252,12 +1251,12 @@ def test_fileDirPath : IO Unit := do
   assertEq "the repo is lowercased"
     "f/alice/mathlib4" (fileDirPath (some .forks) "Alice/Mathlib4" none)
 
-/-- `uploadLocationFrom` resolves the upload location per backend: each
-backend writes the container layout under the base MATHLIB_CACHE_PUT_BASE_URL
-names. The azure backend defaults to the Azure account; the s3 backend has no
-default. MATHLIB_CACHE_PUT_URL overrides both with one flat endpoint. Each
-case pins what an upload addresses: the URL of a file, the URL of the marker,
-and the label. -/
+/-- `uploadLocationFrom` resolves the upload location per backend. Each
+backend writes the container layout under the base that
+`MATHLIB_CACHE_PUT_BASE_URL` names. The azure backend defaults to the Azure
+account, and the s3 backend has no default. `MATHLIB_CACHE_PUT_URL` overrides
+both with one endpoint (`Location.ofEndpoint`). Each case pins the URL of a
+file, the URL of the marker, and the label. -/
 def test_uploadLocationFrom : IO Unit := do
   IO.println "uploadLocationFrom:"
   let urls (r : Except String Location) : Option (String × String × String) :=
@@ -1293,8 +1292,8 @@ def test_uploadLocationFrom : IO Unit := do
     (urls (uploadLocationFrom .azure none none (some .forks) "alice/mathlib4" (some "sha1")) ==
       some (s!"{azureAccountURL}/mathlib4-forks/f/alice/mathlib4/sha1/x.ltar",
         s!"{azureAccountURL}/mathlib4-forks/m/alice/mathlib4/sha1", "forks"))
-  -- Each backend rejects a location that contradicts it, instead of
-  -- resolving one the operator did not select.
+  -- Each backend errors when the configuration is incomplete for it: a
+  -- missing container, or a missing s3 base.
   assertTrue "azure: no container errors"
     (uploadLocationFrom .azure none none none "alice/mathlib4" none
       matches .error _)

@@ -75,9 +75,9 @@ def headIsAncestorOfMaster (cwd : FilePath := ".") : IO Bool := do
   catch _ =>
     pure false
 
-/-- The URL a probe reads the per-SHA marker of `sha` from: the marker of the
-container's location on its read base (`Container.getURL`). Marker writes
-address the upload location instead (`uploadLocation`). -/
+/-- URL of the per-SHA marker of `sha` in `container` on the container's read
+base (`Container.getURL`). Marker writes use the upload location
+(`uploadLocation`). -/
 def markerProbeURL (container : Container) (repo sha : String) : IO String := do
   return (container.location (← container.getURL) repo none).markerURL sha
 

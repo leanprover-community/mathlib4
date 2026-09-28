@@ -131,8 +131,9 @@ def s3UploadLocationFrom (putBase? : Option String) (container? : Option Contain
     (repo : String) (scope? : Option String) : Except String Location :=
   match putBase?, container? with
   | some base, some c => do
-    -- The base names the bucket; validate it before the container's segment
-    -- joins it, which would otherwise pass for a bucket name.
+    -- Validate the base before the container's segment joins it. Otherwise a
+    -- base without a bucket, such as `https://host`, passes the check with the
+    -- segment as the bucket name.
     discard (s3EndpointSplit base)
     return c.location (c.urlUnder base) repo scope?
   | some _, none => .error

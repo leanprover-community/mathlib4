@@ -455,12 +455,12 @@ def isCacheMissStatus (httpCode : Nat) : Bool :=
   httpCode == 404
 
 /--
-Whether an HTTP status is the one a store returns for an object that already
-exists, which a non-overwrite `put` (`If-None-Match: *`) hits when it declines
-to overwrite: 409 (what the stores return in practice) or 412 (the
-conditional-header spec's code for an unmet `If-None-Match`), so we accept
-both. Whether that's benign is the caller's call:
-the upload path skips it, reads don't.
+Whether an HTTP status means that the object already exists. A non-overwrite
+`put` (`If-None-Match: *`) gets this status when the store declines to
+overwrite. Both codes count: 409 is what the stores return in practice, and
+412 is the conditional-header spec's code for an unmet `If-None-Match`. The
+caller decides whether the status is benign: the upload path skips the file,
+and reads treat the status as a failure.
 -/
 def isAlreadyPresentStatus (httpCode : Nat) : Bool :=
   httpCode == 409 || httpCode == 412
@@ -821,7 +821,7 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
 /-- Run one location's download pass for the given hash map. Returns the
 `TransferState` from `monitorCurl` (synthesized in serial mode, where it
 carries only the transfer-failure count) and the set of hashes it fetched, so
-the caller can carry the rest to the next container. `decompState` is the
+the caller can carry the rest to the next location. `decompState` is the
 previous round's decompression pipeline state; the returned state's `decomp`
 continues it. Serial mode never pipelines and passes it through untouched.
 Side effect: fetched files are written to `CACHEDIR` with their final names. -/
@@ -890,9 +890,10 @@ def expandDownloadRounds (containerURLs : List (Option Container × String))
       else
         [(c, url, none)]
 
-/-- The location of a download round `(container?, url, scope?)` for `repo`:
-the location the container stands for at its read URL, or a user-supplied
-endpoint. -/
+/-- The location of the download round `(container?, url, scope?)` for `repo`:
+the container's location at `url` (`Container.location`), or the
+`MATHLIB_CACHE_GET_URL` endpoint for a round without a container
+(`Location.ofEndpoint`). -/
 def roundLocation (repo : String) : Option Container × String × Option String → Location
   | (some c, url, scope?) => c.location url repo scope?
   | (none, url, scope?) => .ofEndpoint url "MATHLIB_CACHE_GET_URL" repo scope?
@@ -921,10 +922,11 @@ def readLocations (repo : String) (unsafeScopes : List String := []) : IO (List 
 Return the number of files which failed to download.
 If `decompress` is true, decompresses files as they're downloaded (pipelined).
 
-The rounds walk `locations` in order (see `readLocations`). After each round,
-files that were successfully fetched are filtered out so the next location
-only retries genuine misses. `unsafeMode` reports which scoped rounds served
-files, for `cache get --unsafe`. `repo` names the read in messages. -/
+The download tries `locations` in order, one round per location (see
+`readLocations`). After each round, it drops the files that the round fetched,
+so the next location retries only genuine misses. With `unsafeMode` set, the
+download reports how many files each scoped round served (`cache get
+--unsafe`). `repo` names the read in messages. -/
 def downloadFiles
     (repo : String) (locations : List Location) (hashMap : IO.ModuleHashMap)
     (forceDownload : Bool) (parallel : Bool) (warnOnMissing : Bool)
@@ -972,7 +974,7 @@ def downloadFiles
       decompConfig decompState
     -- Carry the decompression pipeline into the next round and the drain
     -- below: files left behind here are never decompressed. Drop the files
-    -- this round served so the next container only retries genuine misses,
+    -- this round served so the next location only retries genuine misses,
     -- regardless of what is already on disk.
     decompState := s.decomp
     downloadFailed := downloadFailed + s.failed

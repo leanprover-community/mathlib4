@@ -10,8 +10,8 @@ public import Cache.Env
 /-!
 # Cache backend infrastructure
 
-The multi-container model — trust-classified storage containers and the
-per-repo lookup chain — together with the GitHub repo names the cache tool dispatches on.
+The multi-container model: the trust-classified storage containers, the
+per-repo lookup chain, and the GitHub repo names that the cache tool dispatches on.
 
 This lives apart from `Cache.Requests` so the container model and trust ordering
 stand on their own, independent of the HTTP/curl machinery that consumes them.
@@ -48,10 +48,11 @@ def normalizeRepo (repo : String) : String := repo.toLower
 /--
 Trust-classified storage containers for the Mathlib cache.
 
-A container is a namespace in the URL contract `/{container}/{key}`, which
-every cache host serves; it resolves to a `Location` (`Container.location`). A
-CI job at a given trust level may write only to its corresponding container,
-and `cache get` always tries the most trusted container first.
+A container is a namespace in the URL contract `/{container}/{key}` that
+every cache host serves. `Container.location` resolves a container to a
+`Location`. A CI job at a given trust level may write only to its
+corresponding container, and `cache get` tries the most trusted container
+first.
 -/
 inductive Container where
   /-- Most-trusted container (`mathlib4-master`); only master CI writes here. -/
@@ -90,17 +91,17 @@ def parse? (s : String) : Option Container :=
   | _                    => none
 
 /--
-The container's segment in the URL contract: read URLs are
-`{base}/{pathSegment}/{key}`, and a bucket backend uses the same string as its
-key prefix (`Container.urlUnder`).
+The container's segment in the URL contract `{base}/{pathSegment}/{key}`
+(`Container.urlUnder`). A bucket backend uses the same string as its key
+prefix.
 
 Every container follows the `mathlib4-{name}` convention.
 -/
 def pathSegment (c : Container) : String :=
   s!"mathlib4-{c.name}"
 
-/-- The container's URL under `base`, a host or an upload base that serves the
-`/{container}/{key}` namespace: `{base}/{pathSegment}`. -/
+/-- The container's URL under `base`: `{base}/{pathSegment}`. `base` is a host
+or an upload base that serves the `/{container}/{key}` namespace. -/
 def urlUnder (c : Container) (base : String) : String :=
   s!"{base}/{c.pathSegment}"
 
@@ -136,9 +137,10 @@ Blob path of the directory that holds the cache artifacts, per the container's
 layout policy (`Container.flatPath`): `f` for a flat container, `f/{repo}` for
 a repo-namespaced one, `f/{repo}/{scope}` when a per-SHA scope applies. `repo`
 is lowercased via `normalizeRepo`. A file lives at
-`{fileDirPath container repo scope}/{fileName}`; every `Location` builds on
-this, so reads and uploads share one path contract. Like `markerDirPath`
-(`Cache/Marker.lean`), the path carries no trailing slash.
+`{fileDirPath container repo scope}/{fileName}`. Every `Location` builds its
+files directory with this function, so reads and uploads share one path
+contract. Like `markerDirPath` (`Cache/Marker.lean`), the path has no trailing
+slash.
 -/
 def fileDirPath (container : Option Container) (repo : String)
     (repoScope : Option String) : String :=
@@ -190,8 +192,8 @@ lookup chain. `MATHLIB_CACHE_BASE_URL` serves internal consumers, that is,
 CI and contributors to the mathlib4 repository. It keeps the lookup chain and
 rebases each container read under the given host.
 
-Only reads follow this base. Uploads and marker writes resolve their own
-location per the selected backend (`uploadLocation`).
+Only reads follow this base. Uploads and marker writes use the location of
+the selected backend (`uploadLocation`).
 -/
 def getBaseURLFrom (c : Container) (envValue? : Option String) (useLegacy : Bool) : String :=
   (normalizeBaseURL envValue?).getD (defaultGetBaseURL c useLegacy)

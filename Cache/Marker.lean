@@ -17,8 +17,8 @@ cheap HEAD request instead of a blob listing.
 
 This module holds everything about the marker except the transfer itself: the
 path contract (`markerDirPath`, `markerPath`) and the write mechanics and
-failure policy the upload tools share (`uploadMarkerWith`). A marker's URL is
-`Location.markerURL`, on reads and on uploads alike.
+failure policy that the upload tools share (`uploadMarkerWith`). Reads and
+uploads get a marker's URL from `Location.markerURL`.
 -/
 
 public section
