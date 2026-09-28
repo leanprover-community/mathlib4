@@ -35,8 +35,6 @@ variable {G : Type*} [AddCommGroup G] [TopologicalSpace G] [Module 𝕜 G] [Cont
   [ContinuousSMul 𝕜 G]
 variable {f g : E → F} {f' g' : E →L[𝕜] F} {x : E} {s : Set E} {L : Filter (E × E)}
 
-section Composition
-
 /-!
 ### Derivative of the composition of two functions
 
@@ -205,9 +203,6 @@ theorem Differentiable.comp {g : F → G} (hg : Differentiable 𝕜 g) (hf : Dif
 theorem Differentiable.comp_differentiableOn {g : F → G} (hg : Differentiable 𝕜 g)
     (hf : DifferentiableOn 𝕜 f s) : DifferentiableOn 𝕜 (g ∘ f) s :=
   hg.differentiableOn.comp hf (mapsTo_univ _ _)
-
-
-end Composition
 
 end binary
 
