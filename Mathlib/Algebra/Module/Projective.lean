@@ -5,10 +5,10 @@ Authors: Kevin Buzzard, Antoine Labelle
 -/
 module
 
-public import Mathlib.LinearAlgebra.PiTensorProduct.Generators
-public import Mathlib.LinearAlgebra.TensorAlgebra.ToTensorPower
 public import Mathlib.LinearAlgebra.TensorProduct.Basis
-public import Mathlib.SetTheory.Cardinal.NatCard
+import Mathlib.LinearAlgebra.PiTensorProduct.Generators
+import Mathlib.LinearAlgebra.TensorAlgebra.ToTensorPower
+import Mathlib.SetTheory.Cardinal.NatCard
 
 /-!
 
