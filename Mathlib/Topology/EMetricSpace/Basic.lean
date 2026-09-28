@@ -282,7 +282,7 @@ namespace EMetric
 /-- A compact set in an emetric space is separable, i.e., it is the closure of a countable set. -/
 theorem countable_closure_of_compact {s : Set γ} (hs : IsCompact s) :
     ∃ t, t ⊆ s ∧ t.Countable ∧ s = closure t := by
-  rcases IsCompact.exists_countable_dense_subset hs with ⟨t, hts, htc, hsub⟩
+  rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, hsub⟩
   exact ⟨t, hts, htc, hsub.antisymm (closure_minimal hts hs.isClosed)⟩
 
 end EMetric
