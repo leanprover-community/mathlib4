@@ -192,8 +192,8 @@ def certifyProductEq {u : Level} {m n : Nat} {α : Q(Type u)} (cα : Q(AddCommMo
     MetaM Q((ofLists $m $m $(mulEq.A)) * ofLists $m $n $(mulEq.B) = $(U.matrix)) := do
   let hmul : Q(ListMatrix.mul $m $m $n $(mulEq.A) $(mulEq.B) = $(U.lit)) ← match certifier? with
     | none =>
-      -- Returns a proof with RHS being `mulEq.expr` without a bridge to
-      -- `U.lit`. A model passes `none` when equality of its literals is settled by kernel
+      -- Returns a proof with RHS being `mulEq.expr` without a bridge to `U.lit`.
+      -- A model passes `none` when equality of its literals is settled by kernel
       -- evaluation, so the kernel establishes the defeq itself at `ofLists_mul`.
       pure mulEq.proof
     | some certifier => do
@@ -204,36 +204,17 @@ def certifyProductEq {u : Level} {m n : Nat} {α : Q(Type u)} (cα : Q(AddCommMo
   return mkExpectedPropHint q(ofLists_mul $hmul)
     q((ofLists $m $m $(mulEq.A)) * ofLists $m $n $(mulEq.B) = $(U.matrix))
 
-/-- The certificates of a decomposition with the terms they are stated on. It keeps the echelon
-form `U` and the product equation stated on it, which `Echelon.Decomposition` transports away, so
-a downstream tactic can read `U` without rebuilding the certificate. -/
+/-- An `Echelon.Decomposition` certificate with the echelon form `U` and the product equation
+stated on it, which the decomposition transports away, so a downstream tactic can read `U`
+without rebuilding the certificate. -/
 structure DecompositionCert {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRing $α))
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) where
-  /-- The transformation matrix. -/
-  L : Q(Matrix (Fin $m) (Fin $m) $α)
-  /-- The row permutation. -/
-  σ : Q(Equiv.Perm (Fin $m))
-  /-- The pivot function of the echelon form. -/
-  pivot : Q(Fin $m → WithTop (Fin $n))
+  /-- The decomposition. -/
+  decomp : Q(Echelon.Decomposition $A)
   /-- The echelon form. -/
   U : Q(Matrix (Fin $m) (Fin $n) $α)
   /-- The product equation. -/
-  mul_eq : Q($L * ($A).submatrix $σ id = $U)
-  /-- The pivot condition of the echelon form. -/
-  isPivotedBy : Q(($U).IsPivotedBy $pivot)
-  /-- Lower triangularity of the transformation matrix. -/
-  L_lowerTriangular : Q(($L).IsLowerTriangular)
-  /-- The nonzero diagonal of the transformation matrix. -/
-  L_diag_ne_zero : Q(∀ i, ($L).diag i ≠ 0)
-
-/-- The `Echelon.Decomposition` certificate assembled from the parts. -/
-def DecompositionCert.toDecomposition {u : Level} {m n : Nat} {α : Q(Type u)}
-    {rα : Q(CommRing $α)}
-    {A : Q(Matrix (Fin $m) (Fin $n) $α)} (cert : DecompositionCert rα A) :
-    Q(Echelon.Decomposition $A) :=
-  -- the fields as locals: Qq identifies a spliced term only by its variable
-  let ⟨L, σ, pivot, _U, mul_eq, isPivotedBy, L_lowerTriangular, L_diag_ne_zero⟩ := cert
-  q(⟨$L, $σ, $pivot, $mul_eq ▸ $isPivotedBy, $L_lowerTriangular, $L_diag_ne_zero⟩)
+  mul_eq : Q(($decomp).L * ($A).submatrix ($decomp).σ id = $U)
 
 /-- Build the `DecompositionCert` of `A` from the decomposition data and the parsed entries
 of `A`. -/
@@ -253,7 +234,7 @@ def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommR
   have U := mkMatrixViews zα m n data.U
   let σ ← mkPerm m data.swaps
   let cols : Q(List (Fin $n)) ← mkPivotList n data.pivot
-  let pivot : Q(Fin $m → WithTop (Fin $n)) := q(fun i : Fin $m ↦ pivotOfList $cols i)
+  have pivot : Q(Fin $m → WithTop (Fin $n)) := q(fun i : Fin $m ↦ pivotOfList $cols i)
   have Lm := L.matrix
   let Aσm : Q(Matrix (Fin $m) (Fin $n) $α) := q(ofLists $m $n $(mulEq.B))
   have Um := U.matrix
@@ -265,7 +246,10 @@ def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommR
   let ⟨hlower, hdiag⟩ ← certifyLowerTriangularDiag zα L certifier
   have hlower : Q(($Lm).IsLowerTriangular) := hlower
   have hdiag : Q(∀ i, ($Lm).diag i ≠ 0) := hdiag
-  return { L := Lm, σ, pivot, U := Um, mul_eq := hU, isPivotedBy := hpivot,
-           L_lowerTriangular := hlower, L_diag_ne_zero := hdiag }
+  -- `hU` is stated with the instances synthesized above, the decomposition with those of `rα`.
+  assertInstancesCommute
+  let decomp : Q(Echelon.Decomposition $A) :=
+    q(⟨$Lm, $σ, $pivot, $hU ▸ $hpivot, $hlower, $hdiag⟩)
+  return { decomp, U := Um, mul_eq := hU }
 
 end Mathlib.Tactic.Echelon
