@@ -17,7 +17,7 @@ set operation described by a `Membership` instance.
 
 ## Main definitions
 
-* `IsMemInf` : infinimum agrees with intersection
+* `IsMemInf` : infimum agrees with intersection
 * `IsMemSup` : supremum agrees with union
 
 -/
