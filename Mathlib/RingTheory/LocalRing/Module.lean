@@ -203,7 +203,7 @@ lemma exists_basis_of_basis_baseChange [Module.FinitePresentation R M]
     · apply Module.Flat.lTensor_preserves_injective_linearMap
       exact Subtype.val_injective
     · apply hi'.injective
-      rw [LinearMap.baseChange_eq_ltensor]
+      rw [LinearMap.baseChange_eq_lTensor]
       erw [← LinearMap.comp_apply (i.lTensor k), ← LinearMap.lTensor_comp]
       rw [(LinearMap.exact_subtype_ker_map i).linearMap_comp_eq_zero]
       simp only [LinearMap.lTensor_zero, LinearMap.zero_apply, map_zero]

@@ -140,7 +140,7 @@ theorem LinearMap.lTensor_range :
 /-- If `g` is surjective, then `g.baseChange A` is surjective. -/
 theorem LinearMap.baseChange_surjective (A : Type*) [Semiring A] [Algebra R A]
     (hg : Function.Surjective g) : Function.Surjective (g.baseChange A) := by
-  rw [LinearMap.baseChange_eq_ltensor]
+  rw [LinearMap.baseChange_eq_lTensor]
   exact lTensor_surjective _ hg
 
 /-- If `g` is surjective, then `rTensor Q g` is surjective -/
