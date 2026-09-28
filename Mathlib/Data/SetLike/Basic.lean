@@ -295,54 +295,6 @@ alias IsMemLE.lt_iff_le_and_exists := lt_iff_le_and_exists_mem_notMem
 @[deprecated (since := "2026-09-18")]
 alias IsMemLE.exists_of_lt := exists_mem_notMem_of_lt
 
-section SemilatticeSup
-
-variable [SemilatticeSup A] [IsMemLE A B] {p q : A}
-
-lemma mem_sup_left {x : B} (h : x ∈ p) : x ∈ p ⊔ q :=
-  mem_of_le_of_mem le_sup_left h
-
-lemma mem_sup_right {x : B} (h : x ∈ q) : x ∈ p ⊔ q :=
-  mem_of_le_of_mem le_sup_right h
-
-lemma mem_sup_of_mem_or_mem {x : B} (h : x ∈ p ∨ x ∈ q) : x ∈ p ⊔ q :=
-  h.elim (mem_sup_left ·) (mem_sup_right ·)
-
-end SemilatticeSup
-
-section OrderBot
-
-variable [LE A] [OrderBot A] [IsMemLE A B] {p q : A}
-
-lemma mem_of_mem_bot {x : B} (h : x ∈ (⊥ : A)) : x ∈ p :=
-  mem_of_le_of_mem bot_le h
-
-end OrderBot
-
-section SemilatticeInf
-
-variable [SemilatticeInf A] [IsMemLE A B] {p q : A}
-
-lemma mem_of_mem_inf_left {x : B} (h : x ∈ p ⊓ q) : x ∈ p :=
-  mem_of_le_of_mem inf_le_left h
-
-lemma mem_of_mem_inf_right {x : B} (h : x ∈ p ⊓ q) : x ∈ q :=
-  mem_of_le_of_mem inf_le_right h
-
-lemma mem_and_mem_of_mem_inf {x : B} (h : x ∈ p ⊓ q) : x ∈ p ∧ x ∈ q :=
-  ⟨mem_of_mem_inf_left h, mem_of_mem_inf_right h⟩
-
-end SemilatticeInf
-
-section OrderTop
-
-variable [LE A] [OrderTop A] [IsMemLE A B] {p q : A}
-
-lemma mem_top_of_mem {x : B} (h : x ∈ p) : x ∈ (⊤ : A) :=
-  mem_of_le_of_mem le_top h
-
-end OrderTop
-
 end Membership
 
 namespace SetLike
@@ -402,18 +354,3 @@ end
 end PartialOrder
 
 end SetLike
-
-/-
-section CompleteLattice
-
-variable [CompleteLattice A] [IsMemLE A B] {s : Set A}
-
-lemma mem_sSup_of_mem {x : B} {p : A} (hp : p ∈ s) (hx : x ∈ p) : x ∈ sSup s :=
-  mem_of_le_of_mem (le_sSup hp) hx
-
-lemma mem_sSup_of_exists {x : B} (h : ∃ p ∈ s, x ∈ p) : x ∈ sSup s := by
-  rcases h with ⟨_, hp, hx⟩
-  exact mem_sSup_of_mem hp hx
-
-end CompleteLattice
--/
