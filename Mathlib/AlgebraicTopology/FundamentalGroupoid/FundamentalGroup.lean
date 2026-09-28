@@ -7,10 +7,6 @@ module
 
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
 public import Mathlib.CategoryTheory.Conj
-public import Mathlib.CategoryTheory.Groupoid
-public import Mathlib.Topology.Category.TopCat.Basic
-public import Mathlib.Topology.Connected.PathConnected
-public import Mathlib.Topology.Homotopy.Path
 
 /-!
 # Fundamental group of a space
@@ -84,7 +80,7 @@ variable (f : C(X, Y)) {x : X} {y : Y} (h : f x = y)
 
 /-- The homomorphism from π₁(X, x) to π₁(Y, y) induced by a continuous map `f` with `f x = y`. -/
 def mapOfEq : FundamentalGroup X x →* FundamentalGroup Y y :=
-  (eqToIso <| congr_arg FundamentalGroupoid.mk h).conj.toMonoidHom.comp (map f x)
+  (eqToIso <| congr(FundamentalGroupoid.mk $h)).conj.toMonoidHom.comp (map f x)
 
 theorem mapOfEq_apply (p : FundamentalGroup X x) :
     mapOfEq f h p = (Path.Homotopic.Quotient.map p f).cast h.symm h.symm :=

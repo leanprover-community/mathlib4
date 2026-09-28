@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.Polynomial.Basic
 public import Mathlib.RingTheory.Polynomial.Content
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Finite
 public import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 
