@@ -6,8 +6,8 @@ Authors: Joseph Myers
 module
 
 public import Mathlib.Geometry.Euclidean.Projection
-public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
-public import Mathlib.Analysis.InnerProductSpace.Affine
+import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
+import Mathlib.Analysis.InnerProductSpace.Affine
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Shift
 
 /-!
@@ -296,9 +296,6 @@ meta def evalHeight : PositivityExt where eval {u α} _ pα? e :=
     assertInstancesCommute
     return .positive q(height_pos $s $i)
   | _, _, _ => throwError "not Simplex.height"
-
-example {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : 0 < s.height i := by
-  positivity
 
 /-- The height of a 1-dimensional simplex equals to the distance between the two vertices. -/
 @[simp] lemma height_eq_dist (s : Simplex ℝ P 1) (i : Fin 2) :

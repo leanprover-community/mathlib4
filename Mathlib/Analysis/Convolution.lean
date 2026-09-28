@@ -5,11 +5,9 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Prod
-public import Mathlib.MeasureTheory.Function.Holder
-public import Mathlib.MeasureTheory.Function.LocallyIntegrable
-public import Mathlib.MeasureTheory.Group.Integral
-public import Mathlib.MeasureTheory.Group.Prod
+import Mathlib.MeasureTheory.Integral.Prod
+import Mathlib.MeasureTheory.Function.Holder
+import Mathlib.MeasureTheory.Group.Integral
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
@@ -238,7 +236,7 @@ theorem AEStronglyMeasurable.convolution_integrand_snd (hf : AEStronglyMeasurabl
     (hg : AEStronglyMeasurable g μ) (x : G) :
     AEStronglyMeasurable (fun t => L (f t) (g (x - t))) μ :=
   hf.convolution_integrand_snd' L <|
-    hg.mono_ac <| (quasiMeasurePreserving_sub_left_of_right_invariant μ x).absolutelyContinuous
+    hg.mono_ac (quasiMeasurePreserving_sub_left_of_right_invariant μ x).absolutelyContinuous
 
 theorem AEStronglyMeasurable.convolution_integrand_swap_snd
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) (x : G) :

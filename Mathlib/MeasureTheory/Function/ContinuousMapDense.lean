@@ -5,7 +5,7 @@ Authors: Heather Macbeth
 -/
 module
 
-public import Mathlib.Topology.UrysohnsLemma
+import Mathlib.Topology.UrysohnsLemma
 public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
@@ -335,7 +335,7 @@ theorem boundedContinuousFunction_dense [SecondCountableTopologyEither α E] [Fa
 theorem boundedContinuousFunction_topologicalClosure [SecondCountableTopologyEither α E]
     [Fact (1 ≤ p)] (hp : p ≠ ∞) [μ.WeaklyRegular] :
     (boundedContinuousFunction E p μ).topologicalClosure = ⊤ :=
-  SetLike.ext' <| (boundedContinuousFunction_dense E μ hp).closure_eq
+  SetLike.ext' (boundedContinuousFunction_dense E μ hp).closure_eq
 
 end Lp
 
