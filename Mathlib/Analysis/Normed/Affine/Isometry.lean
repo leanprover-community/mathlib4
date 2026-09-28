@@ -241,16 +241,11 @@ theorem id_comp : (id : P₂ →ᵃⁱ[𝕜] P₂).comp f = f :=
 theorem comp_id : f.comp id = f :=
   ext fun _ => rfl
 
-section assoc
-
-variable {V₄ P₄ : Type*} [SeminormedAddCommGroup V₄] [NormedSpace 𝕜 V₄] [PseudoMetricSpace P₄]
-  [NormedAddTorsor V₄ P₄]
-
-theorem comp_assoc (f : P₃ →ᵃⁱ[𝕜] P₄) (g : P₂ →ᵃⁱ[𝕜] P₃) (h : P →ᵃⁱ[𝕜] P₂) :
+theorem comp_assoc {V₄ P₄ : Type*} [SeminormedAddCommGroup V₄] [NormedSpace 𝕜 V₄]
+    [PseudoMetricSpace P₄] [NormedAddTorsor V₄ P₄]
+    (f : P₃ →ᵃⁱ[𝕜] P₄) (g : P₂ →ᵃⁱ[𝕜] P₃) (h : P →ᵃⁱ[𝕜] P₂) :
     (f.comp g).comp h = f.comp (g.comp h) :=
   rfl
-
-end assoc
 
 instance : Monoid (P →ᵃⁱ[𝕜] P) where
   one := id
@@ -590,16 +585,11 @@ theorem coe_symm_trans (e₁ : P ≃ᵃⁱ[𝕜] P₂) (e₂ : P₂ ≃ᵃⁱ[�
     ⇑(e₁.trans e₂).symm = e₁.symm ∘ e₂.symm :=
   rfl
 
-section assoc
-
-variable {V₄ P₄ : Type*} [SeminormedAddCommGroup V₄] [NormedSpace 𝕜 V₄] [PseudoMetricSpace P₄]
-  [NormedAddTorsor V₄ P₄]
-
-theorem trans_assoc (ePP₂ : P ≃ᵃⁱ[𝕜] P₂) (eP₂G : P₂ ≃ᵃⁱ[𝕜] P₃) (eGG' : P₃ ≃ᵃⁱ[𝕜] P₄) :
+theorem trans_assoc {V₄ P₄ : Type*} [SeminormedAddCommGroup V₄] [NormedSpace 𝕜 V₄]
+    [PseudoMetricSpace P₄] [NormedAddTorsor V₄ P₄]
+    (ePP₂ : P ≃ᵃⁱ[𝕜] P₂) (eP₂G : P₂ ≃ᵃⁱ[𝕜] P₃) (eGG' : P₃ ≃ᵃⁱ[𝕜] P₄) :
     ePP₂.trans (eP₂G.trans eGG') = (ePP₂.trans eP₂G).trans eGG' :=
   rfl
-
-end assoc
 
 /-- The group of affine isometries of a `NormedAddTorsor`, `P`. -/
 instance instGroup : Group (P ≃ᵃⁱ[𝕜] P) where
