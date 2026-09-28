@@ -36,7 +36,7 @@ noncomputable
 def divisor [IsIntegral X] [IsLocallyNoetherian X] (f : X.functionField) :
     AlgebraicCycle X ℤ where
   toFun z := ord f z
-  supportWithinDomain' := by simp
+  supportWithinDomain' := subset_univ _
   supportLocallyFiniteWithinDomain' z _ := by
     by_cases hf : f = 0
     · exact ⟨⊤, by simp, by simp [hf]⟩
