@@ -365,6 +365,7 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("isRegular", "IsAddRegular"),
   ("isLeftRegular", "IsAddLeftRegular"),
   ("isRightRegular", "IsAddRightRegular"),
+  ("hasUniqueDiv", "hasUniqueRoots"),
   ("hasFundamentalDomain", "HasAddFundamentalDomain"),
   ("quotientMeasure", "AddQuotientMeasure"),
   ("negFun", "InvFun"),
