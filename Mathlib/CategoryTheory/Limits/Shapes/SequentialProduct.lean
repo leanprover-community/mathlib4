@@ -61,7 +61,7 @@ noncomputable def functorMap : ∀ n,
   intro n
   refine Limits.Pi.map fun m ↦ if h : m < n then eqToHom ?_ else
     if h' : m < n + 1 then eqToHom ?_ ≫ f m ≫ eqToHom ?_ else eqToHom ?_
-  all_goals split_ifs; try rfl; try lia
+  all_goals lia
 
 set_option backward.isDefEq.respectTransparency false in
 lemma functorMap_commSq_succ (n : ℕ) :

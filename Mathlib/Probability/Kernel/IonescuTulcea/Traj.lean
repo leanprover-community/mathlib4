@@ -584,9 +584,9 @@ theorem traj_eq_prod (a : ℕ) :
     traj κ a = (Kernel.id ×ₖ (traj κ a).map (Set.Ioi a).domRestrict).map (IicProdIoi a) := by
   refine (eq_traj' _ (a + 1) _ fun b hb ↦ ?_).symm
   rw [← map_comp_right]
-  conv_lhs => enter [2]; change (IicProdIoc a b) ∘
-    (Prod.map id (fun x i ↦ x ⟨i.1, Set.mem_Ioi.2 (mem_Ioc.1 i.2).1⟩))
-  · rw [map_comp_right, ← map_prod_map, ← map_comp_right]
+  · conv_lhs => enter [2]; change (IicProdIoc a b) ∘
+      (Prod.map id (fun x i ↦ x ⟨i.1, Set.mem_Ioi.2 (mem_Ioc.1 i.2).1⟩))
+    rw [map_comp_right, ← map_prod_map, ← map_comp_right]
     · conv_lhs => enter [1, 2, 2]; change (Ioc a b).restrict
       rw [← restrict₂_comp_restrict Ioc_subset_Iic_self, ← frestrictLe, map_comp_right,
         traj_map_frestrictLe, map_id, ← partialTraj_eq_prod]

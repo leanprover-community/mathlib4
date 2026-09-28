@@ -94,3 +94,4 @@ elab_rules : conv
   | `(conv| apply_congr$[ $t?]?) => do
     let e? ← t?.mapM (fun t => elabTerm t.raw none)
     applyCongr e?
+    remarkAsConvGoal
