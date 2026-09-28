@@ -156,10 +156,10 @@ theorem exists_elementaryExtension_card_eq_with_full_unary_realizations
       simp only [Fin.toNat_eq_val, valOn] at hval
       exact Subtype.ext_iff.mp <| (sφi φ).equivFin.injective <|
         Fin.ext <| (hrs φ).natEmbedding.injective (Subtype.ext hval)
-    letI : Inhabited M := Classical.inhabited_of_nonempty inferInstance
+    let : Inhabited M := Classical.inhabited_of_nonempty inferInstance
     let val : F × I → M := Function.extend ((↑) : s → F × I) valOn default
     have hval (v : s) : val v = valOn v := by simp [val]
-    letI : (constantsOn (F × I)).Structure M := constantsOn.structure val
+    let : (constantsOn (F × I)).Structure M := constantsOn.structure val
     have hcon (p : F × I) : (L[[M]].con p : M) = val p := rfl
     have hT₁ : M ⊨ T₁ :=
       (LHom.onTheory_model fL (L.elementaryDiagram ↑M)).mpr model_completeTheory
@@ -180,7 +180,7 @@ theorem exists_elementaryExtension_card_eq_with_full_unary_realizations
         Term.realize_constants, hcon]
       contrapose! hij
       exact hdistinct φ i j hi hj (by simpa [← hval] using hij)
-    haveI : M ⊨ Γ s := (hT₁.union hT₂).union hT₃
+    have : M ⊨ Γ s := (hT₁.union hT₂).union hT₃
     exact Model.isSatisfiable M
   /-
   The finite theories are directed by inclusion, and their union is the theory containing every
@@ -216,9 +216,9 @@ theorem exists_elementaryExtension_card_eq_with_full_unary_realizations
     simp [hT₂, hT₃]
   /- Compactness for directed unions now supplies a model of all the requirements at once. -/
   obtain ⟨P⟩ := Sigma_eq_iUnion ▸ (isSatisfiable_directed_union_iff hΓ').mpr hΓ
-  letI : L[[M]].Structure P := fL.reduct P
-  letI : L.Structure P := (L.lhomWithConstants M).reduct P
-  haveI : P ⊨ L.elementaryDiagram M := (LHom.onTheory_model fL _).mp <|
+  let : L[[M]].Structure P := fL.reduct P
+  let : L.Structure P := (L.lhomWithConstants M).reduct P
+  have : P ⊨ L.elementaryDiagram M := (LHom.onTheory_model fL _).mp <|
     Theory.Model.mono P.is_model fun _ hψ ↦ Or.inl (Or.inl hψ)
   let eP : M ↪ₑ[L] P := ElementaryEmbedding.ofModelsElementaryDiagram L M P
   have hPcard : Cardinal.lift.{max u v w} κ ≤ Cardinal.lift.{w} #P :=
@@ -229,20 +229,20 @@ theorem exists_elementaryExtension_card_eq_with_full_unary_realizations
   -/
   obtain ⟨N, ⟨e'⟩, hNcard⟩ :=
     L'.exists_elementaryEmbedding_card_eq_of_le P κ hκ hL'card hPcard
-  letI : L[[M]].Structure N := fL.reduct N
-  letI : L.Structure N := (L.lhomWithConstants M).reduct N
+  let : L[[M]].Structure N := fL.reduct N
+  let : L.Structure N := (L.lhomWithConstants M).reduct N
   have hNSigma : N ⊨ Sigma := (e'.theory_model_iff Sigma).mpr P.is_model
   have hNT₂ : N ⊨ T₂ univ :=
     Theory.Model.mono hNSigma fun _ hψ ↦ Or.inl (Or.inr hψ)
   have hNT₃ : N ⊨ T₃ univ := Theory.Model.mono hNSigma fun _ hψ ↦ Or.inr hψ
-  haveI : N ⊨ L.elementaryDiagram M := (LHom.onTheory_model fL _).mp <|
+  have : N ⊨ L.elementaryDiagram M := (LHom.onTheory_model fL _).mp <|
     Theory.Model.mono hNSigma fun _ hψ ↦ Or.inl (Or.inl hψ)
   let eN : M ↪ₑ[L] N := ElementaryEmbedding.ofModelsElementaryDiagram L M N
-  haveI : N ⊨ T := (eN.theory_model_iff T).mp (ModelType.is_model M)
-  haveI : Nonempty N := by
+  have : N ⊨ T := (eN.theory_model_iff T).mp (ModelType.is_model M)
+  have : Nonempty N := by
     simpa [← Cardinal.mk_ne_zero_iff, hNcard, ← Cardinal.one_le_iff_ne_zero] using
       one_le_aleph0.trans hκ
-  haveI : (L.lhomWithConstantsMap ⇑eN).IsExpansionOn ↑N :=
+  have : (L.lhomWithConstantsMap ⇑eN).IsExpansionOn ↑N :=
     LHom.lhomWithConstantsMap_isExpansionOn_of_eq _ fun _ ↦ rfl
   refine ⟨ModelType.of T N, eN, by simpa, ?_⟩
   intro β ψ b hψb
@@ -328,13 +328,13 @@ theorem exists_model_of_card_definably_full
   let stage : ℕ → Stage :=
     fun n ↦ Nat.rec ⟨M₀, hM₀card⟩ (fun _ s ↦ next s) n
   let M : ℕ → Type w := fun n ↦ (stage n).1
-  letI chainStruct : ∀ n, L.Structure (M n) :=
+  let chainStruct : ∀ n, L.Structure (M n) :=
     fun n ↦ (stage n).1.struc
   let f : ∀ n, M n ↪ₑ[L] M (n + 1) := fun n ↦ by
     simpa [M, stage, chainStruct] using nextEmb (stage n)
   let C := ElementaryChain.ofNatSucc M f
-  haveI : Nonempty C.Limit := Nonempty.map (C.toLimit 0) M₀.instNonempty
-  haveI : C.Limit ⊨ T := C.limit_models T ⟨0, M₀.is_model⟩
+  have : Nonempty C.Limit := Nonempty.map (C.toLimit 0) M₀.instNonempty
+  have : C.Limit ⊨ T := C.limit_models T ⟨0, M₀.is_model⟩
   /- The limit has cardinality `κ`, since all stages do and `κ` is infinite. -/
   have hCκ : #C.Limit = κ := by
     apply C.mk_limit_eq_of_forall_lift_mk_eq κ (le_of_eq_of_le rfl hκ)
@@ -346,7 +346,7 @@ theorem exists_model_of_card_definably_full
       exact (next (Nat.rec ⟨M₀, hM₀card⟩ (fun _ s ↦ next s) n)).2
   refine ⟨ModelType.of T C.Limit, hCκ, ?_⟩
   change L.DefinablyFull C.Limit
-  letI : Infinite C.Limit := infinite_iff.mpr <| hκ.trans_eq hCκ.symm
+  let : Infinite C.Limit := infinite_iff.mpr <| hκ.trans_eq hCκ.symm
   apply definablyFull_of_unary
   unfold UnaryDefinablyFull
   intro A X hAX hXI
