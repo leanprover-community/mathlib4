@@ -8,8 +8,6 @@ module
 public import Mathlib.RepresentationTheory.Intertwining
 
 /-!
-# Constructions of equivalences of representations
-
 ## Main purpose
 
 This file is a preliminary file for the `Iso`s in `Rep`, we build all the isomorphisms from
