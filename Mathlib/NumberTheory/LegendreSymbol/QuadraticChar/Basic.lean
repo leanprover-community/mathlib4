@@ -6,7 +6,6 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.Algebra.Group.EvenFunction
-public import Mathlib.Data.Fintype.Parity
 public import Mathlib.NumberTheory.LegendreSymbol.ZModChar
 public import Mathlib.FieldTheory.Finite.Basic
 
