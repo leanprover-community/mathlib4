@@ -8,8 +8,9 @@ module
 public import Mathlib.Analysis.Analytic.CPolynomialDef
 public import Mathlib.Analysis.Normed.Module.Alternating.Basic
 public import Mathlib.Topology.Algebra.Module.Equiv.Prod
-import Mathlib.Analysis.Analytic.Composition
+
 import Mathlib.Analysis.Analytic.Constructions
+import Mathlib.Analysis.Normed.Operator.Mul
 
 /-! # Properties of continuously polynomial functions
 
