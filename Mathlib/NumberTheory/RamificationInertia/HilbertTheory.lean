@@ -54,10 +54,6 @@ decomposition (resp. inertia) group of `P`, and the associated ring is its integ
 `Ideal.IsDecompositionRing.of_isFractionRing` and `Ideal.IsInertiaRing.of_isFractionRing`, and the
 degrees of the fields follow from those of the rings via `IsFractionRing.finrank_eq`.
 
-The field-level predicates `IsDecompositionField` and `IsInertiaField` defined below will be
-deprecated in favor of the ring-level predicates `Ideal.IsDecompositionRing` and
-`Ideal.IsInertiaRing`.
-
 -/
 
 @[expose] public section
@@ -352,42 +348,42 @@ end of_isGaloisGroup
 variable (D' : Type*) [Field D'] [Algebra D' L] (E' : Type*) [Field E'] [Algebra E' L]
 
 /-- Two decomposition fields are isomorphic. Superseded by
-`Ideal.IsDecompositionRing.ringEquiv`. -/
-@[deprecated "Use the ring-level `Ideal.IsDecompositionRing.ringEquiv`." (since := "2026-07-10")]
+`IsGaloisGroup.ringEquiv`. -/
+@[deprecated "Use the ring-level `IsGaloisGroup.ringEquiv`." (since := "2026-07-10")]
 noncomputable def IsDecompositionField.ringEquiv [IsDecompositionField K L P D]
     [IsDecompositionField K L P D'] :
     D ≃+* D' :=
   IsGaloisGroup.ringEquiv (stabilizer Gal(L/K) P) D D' L
 
 @[deprecated "Use the ring-level \
-`Ideal.IsDecompositionRing.algebraMap_ringEquiv_apply`." (since := "2026-07-10")]
+`IsGaloisGroup.algebraMap_ringEquiv_apply`." (since := "2026-07-10")]
 theorem IsDecompositionField.algebraMap_ringEquiv_apply [IsDecompositionField K L P D]
     [IsDecompositionField K L P D'] (x : D) :
     algebraMap D' L (IsDecompositionField.ringEquiv K L P D D' x) = algebraMap D L x := by
   simp [IsDecompositionField.ringEquiv, IsGaloisGroup.ringEquiv]
 
 @[deprecated "Use the ring-level \
-`Ideal.IsDecompositionRing.algebraMap_ringEquiv_symm_apply`." (since := "2026-07-10")]
+`IsGaloisGroup.algebraMap_ringEquiv_symm_apply`." (since := "2026-07-10")]
 theorem IsDecompositionField.algebraMap_ringEquiv_symm_apply [IsDecompositionField K L P D]
     [IsDecompositionField K L P D'] (x : D') :
     algebraMap D L ((IsDecompositionField.ringEquiv K L P D D').symm x) = algebraMap D' L x := by
   simp [IsDecompositionField.ringEquiv, IsGaloisGroup.ringEquiv]
 
-/-- Two inertia fields are isomorphic. Superseded by `Ideal.IsInertiaRing.ringEquiv`. -/
-@[deprecated "Use the ring-level `Ideal.IsInertiaRing.ringEquiv`." (since := "2026-07-10")]
+/-- Two inertia fields are isomorphic. Superseded by `IsGaloisGroup.ringEquiv`. -/
+@[deprecated "Use the ring-level `IsGaloisGroup.ringEquiv`." (since := "2026-07-10")]
 noncomputable def IsInertiaField.ringEquiv [IsInertiaField K L P E] [IsInertiaField K L P E'] :
     E ≃+* E' :=
   IsGaloisGroup.ringEquiv (inertia Gal(L/K) P) E E' L
 
 @[deprecated "Use the ring-level \
-`Ideal.IsInertiaRing.algebraMap_ringEquiv_apply`." (since := "2026-07-10")]
+`IsGaloisGroup.algebraMap_ringEquiv_apply`." (since := "2026-07-10")]
 theorem IsInertiaField.algebraMap_ringEquiv_apply [IsInertiaField K L P E]
     [IsInertiaField K L P E'] (x : E) :
     algebraMap E' L (IsInertiaField.ringEquiv K L P E E' x) = algebraMap E L x := by
   simp [IsInertiaField.ringEquiv, IsGaloisGroup.ringEquiv]
 
 @[deprecated "Use the ring-level \
-`Ideal.IsInertiaRing.algebraMap_ringEquiv_symm_apply`." (since := "2026-07-10")]
+`IsGaloisGroup.algebraMap_ringEquiv_symm_apply`." (since := "2026-07-10")]
 theorem IsInertiaField.algebraMap_ringEquiv_symm_apply [IsInertiaField K L P E]
     [IsInertiaField K L P E'] (x : E') :
     algebraMap E L ((IsInertiaField.ringEquiv K L P E E').symm x) = algebraMap E' L x := by
@@ -411,7 +407,7 @@ include K P
 The degree `[L : D]` of `L` over the decomposition field `D` equals the product of the
 ramification index and the inertia degree of `p` in `B`.
 -/
-@[deprecated "Use the ring-level `Ideal.IsDecompositionRing.rank_left`." (since := "2026-07-10")]
+@[deprecated "Use the ring-level `Ideal.IsDecompositionRing.finrank_top`." (since := "2026-07-10")]
 theorem IsDecompositionField.rank_left [IsDecompositionField K L P D] :
     Module.finrank D L = p.ramificationIdxIn B * p.inertiaDegIn B := by
   rw [← IsGaloisGroup.card_eq_finrank (stabilizer Gal(L/K) P) D L, card_stabilizer_eq p]
@@ -420,7 +416,7 @@ theorem IsDecompositionField.rank_left [IsDecompositionField K L P D] :
 The degree `[D : K]` of the decomposition field `D` over `K` equals the number of prime ideals
 of `B` lying over `p`.
 -/
-@[deprecated "Use the ring-level `Ideal.IsDecompositionRing.rank_right`." (since := "2026-07-10")]
+@[deprecated "Use the ring-level `Ideal.IsDecompositionRing.finrank_bot`." (since := "2026-07-10")]
 theorem IsDecompositionField.rank_right [IsDecompositionField K L P D] [IsGalois K L]
     [Algebra K D] [IsScalarTower K D L] :
     Module.finrank K D = (p.primesOver B).ncard := by
@@ -436,7 +432,7 @@ variable (E : Type*) [Field E] [Algebra E L]
 /--
 The degree `[L : E]` of `L` over the inertia field `E` equals the ramification index of `p` in `B`.
 -/
-@[deprecated "Use the ring-level `Ideal.IsInertiaRing.rank_left`." (since := "2026-07-10")]
+@[deprecated "Use the ring-level `Ideal.IsInertiaRing.finrank_top`." (since := "2026-07-10")]
 theorem IsInertiaField.rank_left [IsInertiaField K L P E] :
     Module.finrank E L = p.ramificationIdxIn B := by
   rw [← IsGaloisGroup.card_eq_finrank (inertia Gal(L/K) P) E L, card_inertia_eq_ramificationIdxIn p]
@@ -445,7 +441,7 @@ theorem IsInertiaField.rank_left [IsInertiaField K L P E] :
 The degree `[E : K]` of the inertia field `E` over `K` equals the product of the number of
 prime ideals of `B` lying over `p` and the inertia degree of `p` in `B`.
 -/
-@[deprecated "Use the ring-level `Ideal.IsInertiaRing.rank_right`." (since := "2026-07-10")]
+@[deprecated "Use the ring-level `Ideal.IsInertiaRing.finrank_bot`." (since := "2026-07-10")]
 theorem IsInertiaField.rank_right [IsInertiaField K L P E] [IsGalois K L] [Algebra K E]
     [IsScalarTower K E L] :
     Module.finrank K E = (p.primesOver B).ncard * p.inertiaDegIn B := by
@@ -461,7 +457,7 @@ The degree `[E : D]` of the inertia field `E` over the decomposition field `D` e
 inertia degree of `p` in `B`.
 -/
 @[deprecated "Use the ring-level \
-`Ideal.IsInertiaRing.rank_decompositionRing`." (since := "2026-07-10")]
+`Ideal.IsInertiaRing.finrank_decompositionRing`." (since := "2026-07-10")]
 theorem IsInertiaField.rank_decompositionField [IsDecompositionField K L P D]
     [IsInertiaField K L P E] [IsGalois K L] [Algebra K D] [Algebra K E]
     [Algebra D E] [IsScalarTower K D E] [IsScalarTower K E L] [IsScalarTower K D L] :
@@ -567,7 +563,7 @@ Let `D` be the decomposition field of `P` in `L/K`. Let `𝓟D` be a prime ideal
 then `𝓟D` is unramified over `K`.
 -/
 @[deprecated "Use the ring-level \
-`Ideal.IsDecompositionRing.ramificationIdx_eq`." (since := "2026-07-10")]
+`Ideal.IsDecompositionRing.ramificationIdx_eq_one`." (since := "2026-07-10")]
 theorem ramificationIdx_eq [IsDecompositionField K L P D] :
     𝓟D.ramificationIdx A = 1 := by
   obtain ⟨_, _, _, _, _⟩ := instances A K L P D 𝓞D
@@ -582,7 +578,7 @@ Let `D` be the decomposition field of `P` in `L/K`. Let `𝓟D` be a prime ideal
 then the inertia degree of `𝓟D` over `K` is equal to `1`.
 -/
 @[deprecated "Use the ring-level \
-`Ideal.IsDecompositionRing.inertiaDeg_eq`." (since := "2026-07-10")]
+`Ideal.IsDecompositionRing.inertiaDeg_eq_one`." (since := "2026-07-10")]
 theorem inertiaDeg_eq [IsDecompositionField K L P D] :
     𝓟D.inertiaDeg A = 1 := by
   obtain ⟨_, _, _, _, _⟩ := instances A K L P D 𝓞D
