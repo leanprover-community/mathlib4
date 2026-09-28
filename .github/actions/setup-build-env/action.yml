@@ -148,6 +148,22 @@ runs:
         source_dir: ${{ github.event.pull_request.head.repo.fork != true && 'pr-branch' || '' }}
         github_token: ${{ github.token }}
 
+    # Resolve the sysroot of the toolchain pinned by `tools-branch` (`master` for
+    # fork PRs). The `cache` steps put its `bin/` first on PATH, so the `lean` and
+    # `leantar` that `cache` invokes come from this toolchain rather than the one
+    # the PR's `lean-toolchain` selects. Fails if the sysroot can't be resolved.
+    - name: resolve trusted toolchain
+      shell: bash
+      run: |
+        set -euo pipefail
+        prefix="$(cd tools-branch && lean --print-prefix)"
+        if [ -z "${prefix}" ]; then
+          echo "::error::could not resolve the trusted toolchain sysroot from tools-branch"
+          exit 1
+        fi
+        echo "Trusted toolchain sysroot: ${prefix}"
+        echo "TRUSTED_LEAN_PREFIX=${prefix}" >> "$GITHUB_ENV"
+
     - name: download dependencies
       # We need network access to download dependencies. We run this inside
       # landrun, but restrict disk access:
