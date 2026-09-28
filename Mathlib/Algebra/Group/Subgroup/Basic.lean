@@ -215,7 +215,7 @@ end Pi
 @[to_additive]
 instance instIsMulTorsionFree [IsMulTorsionFree G] : IsMulTorsionFree H where
   eq_of_pow_eq_pow_of_commute n hn a b h hab := by
-    rw [Subtype.ext_iff] at *
+    rw [commute_iff_eq, Subtype.ext_iff] at *
     exact IsMulTorsionFree.eq_of_pow_eq_pow_of_commute hn h hab
 
 end Subgroup
