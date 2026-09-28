@@ -20,7 +20,7 @@ A submonoid `C` is *spanning* if the subgroup it generates is `G` itself.
 The names for these concepts are taken from the theory of convex cones.
 
 The equivalence with ordered groups and rings can be found in
-`Mathlib.Algebra.Group.Cone` and `Mathlib.Algebra.Ring.Cone`, respectively.
+`Mathlib/Algebra/Order/Group/Cone.lean` and `Mathlib/Algebra/Order/Ring/Cone.lean`, respectively.
 
 ## Main definitions
 
