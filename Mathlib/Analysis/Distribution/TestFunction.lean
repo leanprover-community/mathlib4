@@ -177,7 +177,6 @@ instance : Zero 𝓓^{n}(Ω, F) where
   zero := ⟨0, contDiff_zero_fun, .zero, by simp only [tsupport_zero, empty_subset]⟩
 
 instance : IsZeroApply 𝓓^{n}(Ω, F) E F where
-  zero_apply _ := rfl
 
 @[deprecated (since := "2026-06-15")] alias coe_zero := FunLike.coe_zero
 
@@ -186,7 +185,6 @@ instance : Add 𝓓^{n}(Ω, F) where
     tsupport_add f g |>.trans <| union_subset f.tsupport_subset g.tsupport_subset⟩
 
 instance : IsAddApply 𝓓^{n}(Ω, F) E F where
-  add_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-15")] alias coe_add := FunLike.coe_add
 
@@ -194,7 +192,6 @@ instance : Neg 𝓓^{n}(Ω, F) where
   neg f := ⟨-f, f.contDiff.neg, f.hasCompactSupport.neg, tsupport_neg f ▸ f.tsupport_subset⟩
 
 instance : IsNegApply 𝓓^{n}(Ω, F) E F where
-  neg_apply _ _ := rfl
 
 @[deprecated (since := "2026-06-15")] alias coe_neg := FunLike.coe_neg
 
@@ -203,7 +200,6 @@ instance : Sub 𝓓^{n}(Ω, F) where
     tsupport_sub f g |>.trans <| union_subset f.tsupport_subset g.tsupport_subset⟩
 
 instance : IsSubApply 𝓓^{n}(Ω, F) E F where
-  sub_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-15")] alias coe_sub := FunLike.coe_sub
 

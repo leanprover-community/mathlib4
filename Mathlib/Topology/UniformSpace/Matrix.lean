@@ -5,9 +5,7 @@ Authors: Eric Wieser, Heather Macbeth
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Defs
 public import Mathlib.Topology.Instances.Matrix
-public import Mathlib.Topology.UniformSpace.Pi
 public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 
 /-!

@@ -6,12 +6,10 @@ Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 module
 
 public import Mathlib.Algebra.Module.BigOperators
-public import Mathlib.Algebra.Module.Submodule.Map
 public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.Algebra.MonoidAlgebra.MapDomain
 public import Mathlib.Algebra.MonoidAlgebra.Lift
 public import Mathlib.LinearAlgebra.Basis.Defs
-public import Mathlib.LinearAlgebra.Finsupp.Supported
 
 import Mathlib.LinearAlgebra.Span.Basic
 
@@ -277,7 +275,7 @@ theorem liftNC_smul (f : S →+* R) (g : M →* R) (c : S) (φ : S[M]) :
     liftNC (f : S →+ R) g (c • φ) = f c * liftNC (f : S →+ R) g φ := by
   suffices (liftNC (↑f) g).comp (smulAddHom S S[M] c) =
       (AddMonoidHom.mulLeft (f c)).comp (liftNC (↑f) g) from
-    DFunLike.congr_fun this φ
+    congr($this φ)
   ext
   simp [mul_assoc]
 
@@ -357,7 +355,7 @@ lemma mem_closure_of_mem_span_closure [AddMonoid M] [Nontrivial R] {m : M} {s : 
 lemma liftNC_smul [AddZeroClass M] (f : S →+* R) (g : Multiplicative M →* R) (c : S) (φ : S[M]) :
     liftNC (f : S →+ R) g (c • φ) = f c * liftNC (f : S →+ R) g φ := by
   suffices (liftNC (↑f) g).comp (smulAddHom S S[M] c) =
-      (AddMonoidHom.mulLeft (f c)).comp (liftNC f g) from DFunLike.congr_fun this φ
+      (AddMonoidHom.mulLeft (f c)).comp (liftNC f g) from congr($this φ)
   ext
   simp [mul_assoc]
 

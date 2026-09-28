@@ -5,7 +5,7 @@ Authors: Kevin Buzzard
 -/
 module
 
-public import Mathlib.Basic.ENNReal.Inv
+import Mathlib.Basic.ENNReal.Inv
 public import Mathlib.Basic.Sign.Basic
 public import Mathlib.Data.EReal.Operations
 public import Mathlib.Data.Nat.Cast.Order.Field

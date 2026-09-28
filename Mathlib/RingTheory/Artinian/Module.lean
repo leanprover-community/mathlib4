@@ -6,16 +6,11 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Algebra.Group.Units.Opposite
-public import Mathlib.Algebra.Regular.Opposite
 public import Mathlib.Data.SetLike.Fintype
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 public import Mathlib.Order.Filter.EventuallyConst
 public import Mathlib.RingTheory.Artinian.Defs
-public import Mathlib.RingTheory.Ideal.Prod
-public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Jacobson.Semiprimary
-public import Mathlib.RingTheory.Nilpotent.Lemmas
-public import Mathlib.RingTheory.Noetherian.Defs
 public import Mathlib.RingTheory.Spectrum.Maximal.Basic
 public import Mathlib.RingTheory.Spectrum.Prime.Basic
 
@@ -283,7 +278,7 @@ theorem IsArtinian.isSemisimpleModule_iff_jacobson [IsArtinian R M] :
     .of_injective f <| LinearMap.ker_eq_bot.mp <| le_bot_iff.mp fun x hx ↦ by
       rw [← h, Module.jacobson, Submodule.mem_sInf]
       exact fun m hm ↦ hs ⟨m, hm⟩ <| Submodule.mem_finsetInf.mpr fun i hi ↦
-        (Submodule.Quotient.mk_eq_zero i.1).mp <| congr_fun hx ⟨i, hi⟩⟩
+        (Submodule.Quotient.mk_eq_zero i.1).mp congr($hx ⟨i, hi⟩)⟩
 
 open Submodule Function
 
