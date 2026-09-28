@@ -197,9 +197,11 @@ def sumSq : Subsemiring T where
 @[simp] theorem sumSq_toNonUnitalSubsemiring :
     (sumSq T).toNonUnitalSubsemiring = .sumSq T := rfl
 
-@[simp]
-theorem mem_sumSq {s : T} : s ∈ sumSq T ↔ IsSumSq s := by
+@[simp] theorem mem_sumSq {s : T} : s ∈ sumSq T ↔ IsSumSq s := by
   simp [← Subsemiring.mem_toNonUnitalSubsemiring]
+
+@[simp] theorem sumSq_toAddSubmonoid :
+    (Subsemiring.sumSq T).toAddSubmonoid = .sumSq T := by ext; simp
 
 @[simp, norm_cast] theorem coe_sumSq : sumSq T = {s : T | IsSumSq s} := by ext; simp
 
