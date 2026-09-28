@@ -54,6 +54,12 @@ jobs:
   build:
     name: Build
     runs-on: ${{ inputs.runs_on }}
+    # This job builds (potentially fork) PR code, so it must not inherit any
+    # write-capable token. `actions: read` lets get-tools and get-cache download
+    # artifacts from master's runs.
+    permissions:
+      contents: read
+      actions: read
     outputs:
       build-outcome: ${{ steps.build.outcome }}
       archive-outcome: ${{ steps.archive.outcome }}
@@ -88,6 +94,7 @@ jobs:
           fetch-depth: 1
           sparse-checkout: .github/actions
           path: workflow-actions
+          persist-credentials: false # no later step needs git credentials
 
       # Shared self-hosted setup (toolchain prune, jq, cache-trust dispatch,
       # PR-branch checkout, elan + toolchain/LEAN_SRC_PATH env, CI tools, dependency
@@ -405,6 +412,11 @@ jobs:
     # match: `test` only on a clean build, `lint` on success-or-failure.
     if: ${{ always() && (needs.build.result == 'success' || needs.build.result == 'failure') }}
     runs-on: ${{ inputs.runs_on }}
+    # Same as `build`: this job runs (potentially fork) PR code, so it must not
+    # inherit any write-capable token.
+    permissions:
+      contents: read
+      actions: read
     outputs:
       lint-outcome: ${{ steps.lint.outcome }}
       test-outcome: ${{ steps.test.outcome }}
@@ -419,6 +431,7 @@ jobs:
           fetch-depth: 1
           sparse-checkout: .github/actions
           path: workflow-actions
+          persist-credentials: false # no later step needs git credentials
 
       # Shared self-hosted setup (see the action).
       - name: Set up build environment
@@ -624,6 +637,7 @@ jobs:
         with:
           ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.event.pull_request.head.repo.fork && 'master' || inputs.pr_branch_ref) }}
           fetch-depth: 1
+          persist-credentials: false # no later step needs git credentials
 
       # Same trust dispatch as in the `build` and `post_steps` jobs. Loaded from
       # the tools-branch checkout above (the branch under test, a trusted in-repo
@@ -781,6 +795,7 @@ jobs:
             .github/actions
             Cache
           path: workflow-actions
+          persist-credentials: false # no later step needs git credentials
 
       # Sets MATHLIB_CACHE_FROM in env so the `cache get` calls below pick
       # up the trust-class-appropriate read fallback automatically. Replaces
@@ -889,6 +904,7 @@ jobs:
           fetch-depth: 1
           sparse-checkout: .github/actions
           path: workflow-actions
+          persist-credentials: false # no later step needs git credentials
 
       - name: Get mathlib-ci
         uses: ./workflow-actions/.github/actions/get-mathlib-ci
