@@ -530,6 +530,10 @@ theorem Nat.rel_of_forall_rel_succ_of_le (r : β → β → Prop) [Std.Refl r] [
 theorem monotone_nat_of_le_succ {f : ℕ → α} (hf : ∀ n, f n ≤ f (n + 1)) : Monotone f :=
   Nat.rel_of_forall_rel_succ_of_le (· ≤ ·) hf
 
+theorem monotone_nat_iff {α : Type*} [Preorder α] {f : ℕ → α} :
+    Monotone f ↔ ∀ n, f n ≤ f (n + 1) :=
+  ⟨fun h n ↦ h (Nat.le_succ n), monotone_nat_of_le_succ⟩
+
 theorem monotone_add_nat_of_le_succ {f : ℕ → α} {k : ℕ} (hf : ∀ n ≥ k, f n ≤ f (n + 1)) :
     Monotone (fun n ↦ f (n + k)) :=
   fun _ _ hle ↦ Nat.rel_of_forall_rel_succ_of_le_of_le (· ≤ ·) hf
@@ -553,6 +557,10 @@ theorem monotone_add_nat_iff_monotoneOn_nat_Ici {f : ℕ → α} {k : ℕ} :
 theorem antitone_nat_of_succ_le {f : ℕ → α} (hf : ∀ n, f (n + 1) ≤ f n) : Antitone f :=
   @monotone_nat_of_le_succ αᵒᵈ _ _ hf
 
+theorem antitone_nat_iff {α : Type*} [Preorder α] {f : ℕ → α} :
+    Antitone f ↔ ∀ n, f (n + 1) ≤ f n :=
+  ⟨fun h n ↦ h (Nat.le_succ n), antitone_nat_of_succ_le⟩
+
 theorem antitone_add_nat_of_succ_le {f : ℕ → α} {k : ℕ} (hf : ∀ n ≥ k, f (n + 1) ≤ f n) :
     Antitone (fun n ↦ f (n + k)) :=
   @monotone_add_nat_of_le_succ αᵒᵈ _ f k hf
@@ -572,6 +580,14 @@ theorem strictMono_nat_of_lt_succ {f : ℕ → α} (hf : ∀ n, f n < f (n + 1))
 
 theorem strictAnti_nat_of_succ_lt {f : ℕ → α} (hf : ∀ n, f (n + 1) < f n) : StrictAnti f :=
   @strictMono_nat_of_lt_succ αᵒᵈ _ f hf
+
+theorem strictMono_nat_iff {α : Type*} [Preorder α] {f : ℕ → α} :
+    StrictMono f ↔ ∀ n, f n < f (n + 1) :=
+  ⟨fun h n ↦ h (Nat.lt_succ_self n), strictMono_nat_of_lt_succ⟩
+
+theorem strictAnti_nat_iff {α : Type*} [Preorder α] {f : ℕ → α} :
+    StrictAnti f ↔ ∀ n, f (n + 1) < f n :=
+  ⟨fun h n ↦ h (Nat.lt_succ_self n), strictAnti_nat_of_succ_lt⟩
 
 namespace Nat
 
