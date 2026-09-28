@@ -277,7 +277,7 @@ theorem functor_comp_forget {α : F ⟶ G} :
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-theorem map_id_eq : map (𝟙 F) = Functor.id (Grothendieck <| F) := by
+theorem map_id_eq : map (𝟙 F) = Functor.id (Grothendieck F) := by
   fapply Functor.ext
   · intro X
     rfl
@@ -287,7 +287,7 @@ theorem map_id_eq : map (𝟙 F) = Functor.id (Grothendieck <| F) := by
 
 /-- Making the equality of functors into an isomorphism. Note: we should avoid equality of functors
 if possible, and we should prefer `mapIdIso` to `map_id_eq` whenever we can. -/
-def mapIdIso : (map (𝟙 F)).toCatHom ≅ 𝟙 (Cat.of <| Grothendieck <| F) :=
+def mapIdIso : (map (𝟙 F)).toCatHom ≅ 𝟙 (Cat.of <| Grothendieck F) :=
   eqToIso congr(($map_id_eq).toCatHom)
 
 variable {H : C ⥤ Cat}
@@ -377,7 +377,7 @@ end
 /-- The Grothendieck construction as a functor from the functor category `E ⥤ Cat` to the
 over category `Over E`. -/
 def functor {E : Cat.{v, u}} : (E ⥤ Cat.{v, u}) ⥤ Over (T := Cat.{v, u}) E where
-  obj F := Over.mk (X := E) (Y := Cat.of (Grothendieck F)) (Grothendieck.forget F).toCatHom
+  obj F := Over.mk (X := E) (Y := ↧(Grothendieck F)) (Grothendieck.forget F).toCatHom
   map {_ _} α := Over.homMk (X := E) (Grothendieck.map α).toCatHom
     congr($(Grothendieck.functor_comp_forget).toCatHom)
   map_id F := by

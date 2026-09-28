@@ -5,12 +5,12 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.DerivedCategory.TStructure
+import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 public import Mathlib.Algebra.Homology.Factorizations.CM5b
-public import Mathlib.Algebra.Homology.HomologicalComplexLimitsEventuallyConstant
-public import Mathlib.Algebra.Homology.SingleHomology
-public import Mathlib.CategoryTheory.Category.Factorisation
-public import Mathlib.CategoryTheory.Functor.OfSequence
+import Mathlib.Algebra.Homology.HomologicalComplexLimitsEventuallyConstant
+import Mathlib.Algebra.Homology.SingleHomology
+import Mathlib.CategoryTheory.Category.Factorisation
+import Mathlib.CategoryTheory.Functor.OfSequence
 
 /-!
 # Factorization lemma

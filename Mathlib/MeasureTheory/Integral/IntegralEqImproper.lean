@@ -571,7 +571,7 @@ where `b i` tends to ∞, and
 then `f` is integrable on the interval (a, ∞) -/
 theorem integrableOn_Ioi_of_intervalIntegral_norm_tendsto (I a : ℝ)
     (hfi : ∀ i, IntegrableOn f (Ioc a (b i)) μ) (hb : Tendsto b l atTop)
-    (h : Tendsto (fun i => ∫ x in a..b i, ‖f x‖ ∂μ) l (𝓝 <| I)) : IntegrableOn f (Ioi a) μ :=
+    (h : Tendsto (fun i => ∫ x in a..b i, ‖f x‖ ∂μ) l (𝓝 I)) : IntegrableOn f (Ioi a) μ :=
   let ⟨I', hI'⟩ := h.isBoundedUnder_le
   integrableOn_Ioi_of_intervalIntegral_norm_bounded I' a hfi hb hI'
 
@@ -621,7 +621,7 @@ theorem intervalIntegral_tendsto_integral_Iic (b : ℝ) (hfi : IntegrableOn f (I
   let φ i := Ioi (a i)
   have hφ : AECover (μ.restrict <| Iic b) l φ := aecover_Ioi ha
   refine (hφ.integral_tendsto_of_countably_generated hfi).congr' ?_
-  filter_upwards [ha.eventually (eventually_le_atBot <| b)] with i hai
+  filter_upwards [ha.eventually (eventually_le_atBot b)] with i hai
   rw [intervalIntegral.integral_of_le hai, Measure.restrict_restrict (hφ.measurableSet i)]
   rfl
 
@@ -661,7 +661,7 @@ theorem intervalIntegral_tendsto_integral_Ioi (a : ℝ) (hfi : IntegrableOn f (I
   let φ i := Iic (b i)
   have hφ : AECover (μ.restrict <| Ioi a) l φ := aecover_Iic hb
   refine (hφ.integral_tendsto_of_countably_generated hfi).congr' ?_
-  filter_upwards [hb.eventually (eventually_ge_atTop <| a)] with i hbi
+  filter_upwards [hb.eventually (eventually_ge_atTop a)] with i hbi
   rw [intervalIntegral.integral_of_le hbi, Measure.restrict_restrict (hφ.measurableSet i),
     inter_comm]
   rfl
@@ -791,11 +791,10 @@ theorem integral_Ioi_of_hasDerivAt_of_tendsto (hcont : ContinuousWithinAt f (Ici
     rcases hx.out.eq_or_lt with rfl | hx
     · exact hcont
     · exact (hderiv x hx).continuousAt.continuousWithinAt
-  refine tendsto_nhds_unique (intervalIntegral_tendsto_integral_Ioi a f'int tendsto_id) ?_
-  apply Tendsto.congr' _ (hf.sub_const _)
+  refine tendsto_nhds_unique_of_eventuallyEq
+    (intervalIntegral_tendsto_integral_Ioi a f'int tendsto_id) (hf.sub_const _) ?_
   filter_upwards [Ioi_mem_atTop a] with x hx
   have h'x : a ≤ id x := le_of_lt hx
-  symm
   apply
     intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le h'x (hcont.mono Icc_subset_Ici_self)
       fun y hy => hderiv y hy.1
@@ -988,10 +987,9 @@ theorem integral_Iic_of_hasDerivAt_of_tendsto (hcont : ContinuousWithinAt f (Iic
     rcases hx.out.eq_or_lt with rfl | hx
     · exact hcont
     · exact (hderiv x hx).continuousAt.continuousWithinAt
-  refine tendsto_nhds_unique (intervalIntegral_tendsto_integral_Iic a f'int tendsto_id) ?_
-  apply Tendsto.congr' _ (hf.const_sub _)
+  refine tendsto_nhds_unique_of_eventuallyEq
+    (intervalIntegral_tendsto_integral_Iic a f'int tendsto_id) (hf.const_sub _) ?_
   filter_upwards [Iic_mem_atBot a] with x hx
-  symm
   apply intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le hx
     (hcont.mono Icc_subset_Iic_self) fun y hy => hderiv y hy.2
   rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hx]
@@ -1111,7 +1109,7 @@ theorem integral_deriv_smul_comp_Ioi {f f' : ℝ → ℝ} {g : ℝ → E} {a : �
       IsPreconnected.intermediate_value_Ici isPreconnected_Ici self_mem_Ici
         (le_principal_iff.mpr <| Ici_mem_atTop _) hf hft
   have t1 := (intervalIntegral_tendsto_integral_Ioi _ (hg1.mono_set this) tendsto_id).comp hft
-  exact tendsto_nhds_unique (Tendsto.congr' (eventuallyEq_of_mem (Ioi_mem_atTop a) eq) t2) t1
+  exact tendsto_nhds_unique_of_eventuallyEq t2 t1 (eventuallyEq_of_mem (Ioi_mem_atTop a) eq)
 
 @[deprecated (since := "2026-03-19")]
 alias integral_comp_smul_deriv_Ioi := integral_deriv_smul_comp_Ioi

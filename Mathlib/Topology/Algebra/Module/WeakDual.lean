@@ -1,8 +1,5 @@
-module
+module -- shake: keep-all
 
-public import Mathlib.Algebra.Order.AbsoluteValue.Basic
-public import Mathlib.Data.Finset.Attr
-public import Mathlib.Data.Rat.Floor
-public import Mathlib.Tactic.Continuity
+public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 
 deprecated_module (since := "2026-04-05")

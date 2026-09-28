@@ -5,10 +5,8 @@ Authors: Joël Riou, Jujian Zhang
 -/
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-public import Mathlib.Algebra.Homology.ShortComplex.Abelian
-public import Mathlib.CategoryTheory.Preadditive.LeftExact
+import Mathlib.CategoryTheory.Preadditive.LeftExact
 public import Mathlib.CategoryTheory.Abelian.Exact
 
 /-!
@@ -103,7 +101,6 @@ lemma preservesMonomorphisms_of_preserves_shortExact_left
     F.PreservesMonomorphisms where
   preserves f := h _ { exact := exact_cokernel f } |>.2
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 For an additive functor `F : C ⥤ D` between abelian categories, the following are equivalent:
 - `F` preserves short exact sequences on the left-hand side, i.e. if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is exact
@@ -163,7 +160,6 @@ lemma preservesEpimorphisms_of_preserves_shortExact_right
     F.PreservesEpimorphisms where
   preserves f := h _ { exact := exact_kernel f } |>.2
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 For an additive functor `F : C ⥤ D` between abelian categories, the following are equivalent:
 - `F` preserves short exact sequences on the right-hand side, i.e. if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is
@@ -208,7 +204,6 @@ lemma preservesFiniteColimits_tfae : List.TFAE
     ⟨CokernelCofork.mapIsColimit _ hS.gIsCokernel F⟩
   tfae_finish
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 For an additive functor `F : C ⥤ D` between abelian categories, the following are equivalent:
 - `F` preserves short exact sequences, i.e. if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is exact then

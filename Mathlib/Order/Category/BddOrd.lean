@@ -42,6 +42,11 @@ instance : CoeSort BddOrd Type* :=
 abbrev of (X : Type*) [PartialOrder X] [BoundedOrder X] : BddOrd where
   carrier := X
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `BddOrd.of X` as `↧X`. -/
+@[app_delab BddOrd.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 /-- The type of morphisms in `BddOrd R`. -/
 @[ext]
 structure Hom (X Y : BddOrd.{u}) where

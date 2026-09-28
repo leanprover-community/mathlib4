@@ -73,6 +73,11 @@ typeclasses. This is the preferred way to construct a term of `SemimoduleCat R`.
 abbrev of (X : Type v) [AddCommMonoid X] [Module R X] : SemimoduleCat.{v} R :=
   ⟨X⟩
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `SemimoduleCat.of R X` as `↧X`. -/
+@[app_delab SemimoduleCat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 lemma coe_of (X : Type v) [Semiring X] [Module R X] : (of R X : Type v) = X :=
   rfl
 
@@ -195,16 +200,16 @@ lemma forget_obj {M : SemimoduleCat.{v} R} : ((forget (SemimoduleCat.{v} R)).obj
 
 instance hasForgetToAddCommMonoid : HasForget₂ (SemimoduleCat R) AddCommMonCat where
   forget₂ :=
-    { obj := fun M => .of M
+    { obj := fun M => ↧M
       map := fun f => AddCommMonCat.ofHom f.hom.toAddMonoidHom }
 
 @[simp]
 theorem forget₂_obj (X : SemimoduleCat R) :
-    (forget₂ (SemimoduleCat R) AddCommMonCat).obj X = .of X :=
+    (forget₂ (SemimoduleCat R) AddCommMonCat).obj X = ↧X :=
   rfl
 
 theorem forget₂_obj_moduleCat_of (X : Type v) [AddCommMonoid X] [Module R X] :
-    (forget₂ (SemimoduleCat R) AddCommMonCat).obj (of R X) = .of X :=
+    (forget₂ (SemimoduleCat R) AddCommMonCat).obj (of R X) = ↧X :=
   rfl
 
 @[simp]

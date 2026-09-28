@@ -60,6 +60,11 @@ This is the preferred way to construct a term of `ModelWithCorners.MfldCat I n`.
 abbrev of (X : Type u) [TopologicalSpace X] [ChartedSpace H X] [IsManifold I n X] :
     MfldCat I n := ⟨X⟩
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `ModelWithCorners.MfldCat.of X` as `↧X`. -/
+@[app_delab ModelWithCorners.MfldCat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 variable (X I) in
 lemma coe_of : (of (I := I) (n := n) X : Type u) = X := rfl
 
@@ -120,11 +125,11 @@ lemma hom_inv_apply (e : M ≅ N) (x : N) : e.hom (e.inv x) = x := by simp
 instance inhabited : Inhabited (MfldCat I n) := ⟨of H⟩
 
 instance hasForgetToTopCat : HasForget₂ (MfldCat I n) TopCat.{u} where
-  forget₂.obj M := .of M
+  forget₂.obj M := ↧M
   forget₂.map f := TopCat.ofHom ⟨f.hom, f.hom.contMDiff.continuous⟩
 
 @[simp] lemma forget₂_topCat_obj (M : MfldCat I n) :
-    (forget₂ (MfldCat I n) TopCat).obj M = .of M := rfl
+    (forget₂ (MfldCat I n) TopCat).obj M = ↧M := rfl
 
 @[simp] lemma forget₂_topCat_map (f : M ⟶ N) :
     (forget₂ (MfldCat I n) TopCat).map f = TopCat.ofHom ⟨f.hom, f.hom.contMDiff.continuous⟩ := rfl

@@ -55,8 +55,8 @@ namespace CompHaus
 instance (X : CompHaus.{u}) [Projective X] : ExtremallyDisconnected X := by
   apply CompactT2.Projective.extremallyDisconnected
   intro A B _ _ _ _ _ _ f g hf hg hsurj
-  let A' : CompHaus := CompHaus.of A
-  let B' : CompHaus := CompHaus.of B
+  let A' : CompHaus := ↧A
+  let B' : CompHaus := ↧B
   let f' : X ⟶ B' := CompHausLike.ofHom _ ⟨f, hf⟩
   let g' : A' ⟶ B' := CompHausLike.ofHom _ ⟨g,hg⟩
   have : Epi g' := by rwa [CompHaus.epi_iff_surjective]
@@ -95,7 +95,12 @@ instance (X : Type*) [TopologicalSpace X]
 compact, Hausdorff and extremally disconnected topological space.
 -/
 abbrev of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
-    [ExtremallyDisconnected X] : Stonean := CompHausLike.of _ X
+    [ExtremallyDisconnected X] : Stonean := ↧X
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `Stonean.of X` as `↧X`. -/
+@[app_delab Stonean.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 instance (X : Stonean.{u}) : ExtremallyDisconnected X := X.prop
 
@@ -159,7 +164,7 @@ instance instProjectiveCompHausCompHaus (X : Stonean) : Projective (toCompHaus.o
       hf
     use ofHom _ ⟨f', h.left⟩
     ext
-    exact congr_fun h.right _
+    congrm $h.right _
 
 /-- Every Stonean space is projective in `Profinite` -/
 instance (X : Stonean) : Projective (toProfinite.obj X) where
@@ -172,7 +177,7 @@ instance (X : Stonean) : Projective (toProfinite.obj X) where
       hf
     use ofHom _ ⟨f', h.left⟩
     ext
-    exact congr_fun h.right _
+    congrm $h.right _
 
 /-- Every Stonean space is projective in `Stonean`. -/
 instance (X : Stonean) : Projective X where
@@ -185,7 +190,7 @@ instance (X : Stonean) : Projective X where
       hf
     use ofHom _ ⟨f', h.left⟩
     ext
-    exact congr_fun h.right _
+    congrm $h.right _
 
 end Stonean
 
