@@ -270,7 +270,7 @@ theorem ramificationIdx_eq :
     𝓟.ramificationIdx A = 1 := by
   have := ramificationIdx_tower (R := A) 𝓟 P
   rwa [← ramificationIdxIn_eq_ramificationIdx 𝓟 P (stabilizer G P), ramificationIdxIn_eq G P R p 𝓟,
-    ramificationIdxIn_eq_ramificationIdx p P G, right_eq_mul₀ (ramificationIdx_pos P A).ne'] at this
+    ramificationIdxIn_eq_ramificationIdx p P G, right_eq_mul₀ (ramificationIdx_pos A P).ne'] at this
 
 include G P p in
 /-- The inertia degree of `𝓟` over `A` equals `1`. -/
