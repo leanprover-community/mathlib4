@@ -663,8 +663,8 @@ theorem card_algHom_adjoin_integral (h : IsIntegral F α) (h_sep : IsSeparable F
   exact h_sep
 
 theorem _root_.Polynomial.irreducible_comp_iff {f g : K[X]} :
-    Irreducible (f.comp g) ↔ Irreducible f ∧
-      Irreducible (g.map (AdjoinRoot.of f) - C (AdjoinRoot.root f)) := by
+    Irreducible (f.comp g) ↔
+      Irreducible f ∧ Irreducible (g.map (AdjoinRoot.of f) - C (AdjoinRoot.root f)) := by
   suffices h : Irreducible (f.comp g) → Irreducible f by
     rw [← and_iff_right_of_imp h, and_congr_right_iff]
     intro hf
