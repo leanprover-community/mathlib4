@@ -5,10 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.EMetricSpace.Paracompact
-public import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Topology.EMetricSpace.Paracompact
 public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
-public import Mathlib.Topology.ShrinkingLemma
+import Mathlib.Topology.ShrinkingLemma
 
 /-!
 # Shrinking lemma in a proper metric space
@@ -45,7 +44,7 @@ theorem exists_subset_iUnion_ball_radius_lt {r : ι → ℝ} (hs : IsClosed s)
     ⟨v, hsv, hvc, hcv⟩
   have := fun i => exists_lt_subset_ball (hvc i) (hcv i)
   choose r' hlt hsub using this
-  exact ⟨r', hsv.trans <| iUnion_mono <| hsub, hlt⟩
+  exact ⟨r', hsv.trans <| iUnion_mono hsub, hlt⟩
 
 /-- Shrinking lemma for coverings by open balls in a proper metric space. A point-finite open cover
 of a proper metric space by open balls can be shrunk to a new cover by open balls so that each of

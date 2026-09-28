@@ -286,7 +286,7 @@ theorem withDensity_apply_eq_zero' {f : α → ℝ≥0∞} {s : Set α} (hf : AE
 
 theorem withDensity_apply_eq_zero {f : α → ℝ≥0∞} {s : Set α} (hf : Measurable f) :
     μ.withDensity f s = 0 ↔ μ ({ x | f x ≠ 0 } ∩ s) = 0 :=
-  withDensity_apply_eq_zero' <| hf.aemeasurable
+  withDensity_apply_eq_zero' hf.aemeasurable
 
 theorem ae_withDensity_iff' {p : α → Prop} {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) :
     (∀ᵐ x ∂μ.withDensity f, p x) ↔ ∀ᵐ x ∂μ, f x ≠ 0 → p x := by
@@ -297,7 +297,7 @@ theorem ae_withDensity_iff' {p : α → Prop} {f : α → ℝ≥0∞} (hf : AEMe
 
 theorem ae_withDensity_iff {p : α → Prop} {f : α → ℝ≥0∞} (hf : Measurable f) :
     (∀ᵐ x ∂μ.withDensity f, p x) ↔ ∀ᵐ x ∂μ, f x ≠ 0 → p x :=
-  ae_withDensity_iff' <| hf.aemeasurable
+  ae_withDensity_iff' hf.aemeasurable
 
 theorem ae_withDensity_iff_ae_restrict' {p : α → Prop} {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) :
@@ -317,7 +317,7 @@ theorem ae_withDensity_iff_ae_restrict' {p : α → Prop} {f : α → ℝ≥0∞
 
 theorem ae_withDensity_iff_ae_restrict {p : α → Prop} {f : α → ℝ≥0∞} (hf : Measurable f) :
     (∀ᵐ x ∂μ.withDensity f, p x) ↔ ∀ᵐ x ∂μ.restrict { x | f x ≠ 0 }, p x :=
-  ae_withDensity_iff_ae_restrict' <| hf.aemeasurable
+  ae_withDensity_iff_ae_restrict' hf.aemeasurable
 
 theorem aemeasurable_withDensity_ennreal_iff' {f : α → ℝ≥0}
     (hf : AEMeasurable f μ) {g : α → ℝ≥0∞} :
@@ -352,7 +352,7 @@ theorem aemeasurable_withDensity_ennreal_iff' {f : α → ℝ≥0}
 theorem aemeasurable_withDensity_ennreal_iff {f : α → ℝ≥0} (hf : Measurable f) {g : α → ℝ≥0∞} :
     AEMeasurable g (μ.withDensity fun x => (f x : ℝ≥0∞)) ↔
       AEMeasurable (fun x => (f x : ℝ≥0∞) * g x) μ :=
-  aemeasurable_withDensity_ennreal_iff' <| hf.aemeasurable
+  aemeasurable_withDensity_ennreal_iff' hf.aemeasurable
 
 theorem dirac_withDensity' {f : α → ℝ≥0∞} (hf : Measurable f) (a : α) :
     (dirac a).withDensity f = f a • dirac a := by

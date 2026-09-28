@@ -6,10 +6,8 @@ Authors: Adam Topaz
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-public import Mathlib.CategoryTheory.Comma.Arrow
-public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
-public import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.ApplyFun
 
 /-!
 
@@ -50,7 +48,6 @@ namespace CategoryTheory.Arrow
 variable (f : Arrow C)
 variable [∀ n : ℕ, HasWidePullback.{0} f.right (fun _ : Fin (n + 1) => f.left) fun _ => f.hom]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Čech nerve associated to an arrow. -/
 @[simps, implicit_reducible]
 def cechNerve : SimplicialObject C where
@@ -70,8 +67,6 @@ def mapCechNerve {f g : Arrow C}
     WidePullback.lift (WidePullback.base _ ≫ F.right) (fun i => WidePullback.π _ i ≫ F.left)
       fun j => by simp
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The augmented Čech nerve associated to an arrow. -/
 @[simps]
 def augmentedCechNerve : SimplicialObject.Augmented C where

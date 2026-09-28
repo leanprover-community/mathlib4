@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Finset.Sum
 public import Mathlib.Data.Sum.Order
 public import Mathlib.Order.Interval.Finset.Defs
 
@@ -149,7 +148,7 @@ lemma mem_sumLexLift :
     · exact fun h ↦ (notMem_empty _ h).elim
     · rw [sumLexLift, mem_map]
       rintro ⟨c, hc, rfl⟩
-      exact Or.inr (Or.inr <| Or.inr <| ⟨a, b, c, rfl, rfl, rfl, hc⟩)
+      exact Or.inr (Or.inr <| Or.inr ⟨a, b, c, rfl, rfl, rfl, hc⟩)
   · rintro (⟨a, b, c, rfl, rfl, rfl, hc⟩ | ⟨a, b, c, rfl, rfl, rfl, hc⟩ |
       ⟨a, b, c, rfl, rfl, rfl, hc⟩ | ⟨a, b, c, rfl, rfl, rfl, hc⟩)
     · exact mem_map_of_mem _ hc

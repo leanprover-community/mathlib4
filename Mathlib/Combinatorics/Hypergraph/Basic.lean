@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Evan Spotte-Smith, Bhavik Mehta
 -/
 module
-public import Mathlib.Data.Set.Basic
 public import Mathlib.Data.Set.Card
 
 /-!
@@ -228,7 +227,6 @@ lemma eq_bot_or_isNonempty : H = ⊥ ∨ H.IsNonempty := by
     apply Hypergraph.ext empty.1 empty.2
   )
   | inr nonempty => (
-    right
     grind [IsNonempty]
   )
 
