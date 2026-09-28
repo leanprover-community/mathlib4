@@ -6,7 +6,7 @@ Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 module
 
 public import Mathlib.ModelTheory.Syntax
-import Mathlib.Data.Set.Card
+public import Mathlib.Data.Set.Card
 
 /-!
 # Basics on First-Order Semantics
@@ -966,7 +966,7 @@ extended cardinality at least `n`. -/
 theorem realize_iExsAtLeast [Finite β] (φ : L.Formula (α ⊕ β)) (v : α → M) (n : ℕ) :
     (φ.iExsAtLeast β n).Realize v ↔
       (n : ℕ∞) ≤ {x : β → M | φ.Realize (Sum.elim v x)}.encard := by
-  simp only [realize_iExsAtLeast_iff_exists_injective, Set.le_encard_iff_exists_injection_fin,
+  simp only [realize_iExsAtLeast_iff_exists_injective, Set.le_encard_iff_exists_fin_injective,
     Set.mem_ofPred_eq]
 
 /-- The formula `iExsAtMost β n φ` is realized exactly when the realization set of `φ` has
