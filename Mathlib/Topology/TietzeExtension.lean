@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Interval.Set.IsoIoo
+import Mathlib.Order.Interval.Set.IsoIoo
 public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 public import Mathlib.Topology.UrysohnsBounded
 

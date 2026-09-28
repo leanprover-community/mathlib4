@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
 
 /-!
 # Relation between mono/epi and pullback/pushout squares

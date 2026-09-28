@@ -5,7 +5,7 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.RingTheory.RamificationInertia.Inertia
 public import Mathlib.RingTheory.RamificationInertia.Ramification
 

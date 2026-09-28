@@ -5,7 +5,7 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.Data.Int.AbsoluteValue
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 

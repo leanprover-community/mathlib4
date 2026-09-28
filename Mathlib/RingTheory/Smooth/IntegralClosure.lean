@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Smooth.Flat
 public import Mathlib.RingTheory.Unramified.LocalStructure
 
 /-!
