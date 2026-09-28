@@ -47,35 +47,35 @@ variable [FunLike F α β] [Zero F] [One F] [Mul F] [Pow F ℕ]
 /-- A `FunLike` type with `(f * g) x = f x * g x` is a `MulZeroClass` if `β` is a `MulZeroClass`. -/
 protected abbrev mulZeroClass [MulZeroClass β] [IsZeroApply F α β] [IsMulApply F α β] :
     MulZeroClass F :=
-  DFunLike.coe_injective.mulZeroClass (fun (f : F) ↦ (f : α → β)) coe_zero coe_mul
+  DFunLike.coe_injective.mulZeroClass _ coe_zero coe_mul
 
 /-- A `FunLike` type with `(f * g) x = f x * g x` is a `MulZeroOneClass` if `β` is a
 `MulZeroOneClass`. -/
 protected abbrev mulZeroOneClass [MulZeroOneClass β] [IsZeroApply F α β] [IsMulApply F α β]
     [IsOneApply F α β] :
     MulZeroOneClass F :=
-  DFunLike.coe_injective.mulZeroOneClass (fun (f : F) ↦ (f : α → β)) coe_zero coe_one coe_mul
+  DFunLike.coe_injective.mulZeroOneClass _ coe_zero coe_one coe_mul
 
 /-- A `FunLike` type with `(f * g) x = f x * g x` is a `MonoidWithZero` if `β` is a
 `MonoidWithZero`. -/
 protected abbrev monoidWithZero [MonoidWithZero β] [IsZeroApply F α β] [IsMulApply F α β]
     [IsOneApply F α β] [IsPowApply ℕ F α β] :
     MonoidWithZero F :=
-  DFunLike.coe_injective.monoidWithZero (fun (f : F) ↦ (f : α → β)) coe_zero coe_one coe_mul coe_pow
+  DFunLike.coe_injective.monoidWithZero _ coe_zero coe_one coe_mul coe_pow
 
 /-- A `FunLike` type with `(f * g) x = f x * g x` is a `CommMonoidWithZero` if `β` is a
 `CommMonoidWithZero`. -/
 protected abbrev commMonoidWithZero [CommMonoidWithZero β] [IsZeroApply F α β] [IsMulApply F α β]
     [IsOneApply F α β] [IsPowApply ℕ F α β] :
     CommMonoidWithZero F :=
-  DFunLike.coe_injective.commMonoidWithZero (fun (f : F) ↦ (f : α → β)) coe_zero coe_one coe_mul
+  DFunLike.coe_injective.commMonoidWithZero _ coe_zero coe_one coe_mul
     coe_pow
 
 /-- A `FunLike` type with `(f * g) x = f x * g x` is a `SemigroupWithZero` if `β` is a
 `SemigroupWithZero`. -/
 protected abbrev semigroupWithZero [SemigroupWithZero β] [IsZeroApply F α β] [IsMulApply F α β] :
     SemigroupWithZero F :=
-  DFunLike.coe_injective.semigroupWithZero (fun (f : F) ↦ (f : α → β)) coe_zero coe_mul
+  DFunLike.coe_injective.semigroupWithZero _ coe_zero coe_mul
 
 end PointwiseMul
 

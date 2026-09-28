@@ -24,16 +24,20 @@ the identity and multiplication acting as composition.
 The algebraic `FunLike` typeclasses provide a `simp` lemma of the form `add_apply` and a `norm_cast`
 lemma `coe_add`.
 
-The following `Is*Apply` typeclasses are available:
+The following pointwise `Is*Apply` typeclasses are available:
 * `IsZeroApply`, `IsOneApply`: `0 x = 0` and `1 x = 1`, respectively
-* `IsOneApplyEqSelf`: `1 x = x`
 * `IsAddApply`, `IsMulApply`: `(f + g) x = f x + g x` and `(f * g) x = f x * g x`, respectively
-* `IsMulApplyEqComp`: `(f * g) x = f (g x)`
 * `IsSubApply`, `IsDivApply`: `(f - g) x = f x - g x` and `(f / g) x = f x / g x`, respectively
 * `IsNegApply`, `IsInvApply`: `(-f) x = -(f x)` and `(f⁻¹) x = (f x)⁻¹`, respectively
 * `IsVAddApply`, `IsSMulApply` `IsPowApply`: `(n +ᵥ f) x = n +ᵥ f x`, `(n • f) x = n • f x`, and
   `(f ^ n) x = (f x) ^ n`, respectively
-* `IsNatCastApply`, `IsIntCastApply`: `(n : F) x = n • x` for `n : ℕ` and `n : ℤ`, respectively
+* `IsNatCastApply`, `IsIntCastApply`: `(n : F) x = n` for `n : ℕ` and `n : ℤ`, respectively
+
+For endomorphism-like objects, we have additionally:
+* `IsOneApplyEqSelf`: `1 x = x`
+* `IsMulApplyEqComp`: `(f * g) x = f (g x)`
+* `IsNatCastApplyEqSMul`, `IsIntCastApplyEqSMul`: `(n : F) x = n • x` for `n : ℕ` and `n : ℤ`,
+  respectively
 
 For every type that declares a `FunLike` instance and an `Add` instance, there should be generally
 an `IsAddApply` instance with the proof usually being solved automatically using `rfl`.
