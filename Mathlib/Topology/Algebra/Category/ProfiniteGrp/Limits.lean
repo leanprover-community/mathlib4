@@ -5,7 +5,7 @@ Authors: Nailin Guan, Youle Fang, Jujian Zhang, Yuyang Zhao
 -/
 module
 
-public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
 public import Mathlib.Topology.Algebra.ClopenNhdofOne
 

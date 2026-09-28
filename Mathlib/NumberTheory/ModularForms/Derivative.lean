@@ -5,9 +5,9 @@ Authors: Seewoo Lee
 -/
 module
 
-public import Mathlib.Analysis.Complex.Liouville
+import Mathlib.Analysis.Complex.Liouville
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.MDifferentiable
-public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
 
 /-!
 # Derivatives of modular forms

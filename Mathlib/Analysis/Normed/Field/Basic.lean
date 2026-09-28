@@ -6,7 +6,7 @@ Authors: Patrick Massot, Johannes Hölzl
 module
 
 public import Mathlib.Algebra.Field.Subfield.Defs
-public import Mathlib.Algebra.Order.Group.Pointwise.Interval
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
 public import Mathlib.Analysis.Normed.Ring.Basic
 
 /-!

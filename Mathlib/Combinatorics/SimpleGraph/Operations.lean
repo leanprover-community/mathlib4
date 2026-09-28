@@ -5,8 +5,6 @@ Authors: Jeremy Tan
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Finite
-public import Mathlib.Combinatorics.SimpleGraph.Maps
 public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
 /-!

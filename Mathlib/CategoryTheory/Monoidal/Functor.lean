@@ -1167,7 +1167,6 @@ noncomputable def inverseMonoidal [e.functor.Monoidal] : e.inverse.Monoidal := b
 adjunction satisfies certain compatibilities with respect to the monoidal functor data. -/
 abbrev IsMonoidal [e.functor.Monoidal] [e.inverse.Monoidal] : Prop := e.toAdjunction.IsMonoidal
 
-set_option backward.isDefEq.respectTransparency false in
 example [e.functor.Monoidal] : letI := e.inverseMonoidal; e.IsMonoidal := inferInstance
 
 variable [e.functor.Monoidal] [e.inverse.Monoidal] [e.IsMonoidal]

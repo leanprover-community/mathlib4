@@ -5,13 +5,12 @@ Authors: Kevin Buzzard, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Ring.CharZero
+import Mathlib.Algebra.Ring.CharZero
 public import Mathlib.Algebra.Ring.Torsion
 public import Mathlib.Algebra.Star.Basic
 public import Mathlib.Basic.Real.Basic
 public import Mathlib.Order.Interval.Set.UnorderedInterval
 public import Mathlib.Tactic.Ring
-public import Mathlib.Util.Qq
 
 /-!
 # The complex numbers

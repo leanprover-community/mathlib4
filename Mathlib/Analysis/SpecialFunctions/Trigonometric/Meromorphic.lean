@@ -5,9 +5,8 @@ Authors: Xuanji Li
 -/
 module
 
-public import Mathlib.Analysis.Meromorphic.Basic
 public import Mathlib.Analysis.Meromorphic.NormalForm
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
 
 /-!
