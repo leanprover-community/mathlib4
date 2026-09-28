@@ -962,33 +962,41 @@ lemma measurableSet_mem (a : α) : MeasurableSet {s : Set α | a ∈ s} :=
 lemma measurableSet_notMem (a : α) : MeasurableSet {s : Set α | a ∉ s} :=
   measurableSet_setOfPred.2 <| measurable_set_notMem _
 
-lemma measurable_compl : Measurable ((·ᶜ) : Set α → Set α) :=
-  measurable_set_iff.2 fun _ ↦ measurable_set_notMem _
-
 @[fun_prop]
 lemma Measurable.inter (hf : Measurable f) (hg : Measurable g) :
     Measurable fun a ↦ f a ∩ g a :=
   .of_eval fun _ ↦ hf.eval.and hg.eval
+
+lemma measurable_inter : Measurable (fun p : (Set α) × (Set α) ↦ p.1 ∩ p.2) := by fun_prop
 
 @[fun_prop]
 lemma Measurable.union (hf : Measurable f) (hg : Measurable g) :
     Measurable fun a ↦ f a ∪ g a :=
   .of_eval fun _ ↦ hf.eval.or hg.eval
 
+lemma measurable_union : Measurable (fun p : (Set α) × (Set α) ↦ p.1 ∪ p.2) := by fun_prop
+
 @[fun_prop]
 lemma Measurable.compl (hf : Measurable f) : Measurable fun a ↦ (f a)ᶜ :=
   .of_eval fun _ ↦ hf.eval.not
+
+lemma measurable_compl : Measurable ((·ᶜ) : Set α → Set α) := by fun_prop
 
 @[fun_prop]
 lemma Measurable.sdiff (hf : Measurable f) (hg : Measurable g) :
     Measurable fun a ↦ f a \ g a :=
   hf.inter hg.compl
 
+lemma measurable_sdiff : Measurable (fun p : (Set α) × (Set α) ↦ p.1 \ p.2) := by fun_prop
+
 open scoped symmDiff in
 @[fun_prop]
 lemma Measurable.symmDiff (hf : Measurable f) (hg : Measurable g) :
     Measurable fun a ↦ f a ∆ g a :=
   (hf.sdiff hg).union (hg.sdiff hf)
+
+open scoped symmDiff in
+lemma measurable_symmDiff : Measurable (fun p : (Set α) × (Set α) ↦ p.1 ∆ p.2) := by fun_prop
 
 variable [Countable α]
 

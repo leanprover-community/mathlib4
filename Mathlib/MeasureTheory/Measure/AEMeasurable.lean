@@ -515,34 +515,28 @@ alias ⟨_, AEMeasurable.of_mem⟩ := aemeasurable_set_iff
 
 @[fun_prop]
 lemma AEMeasurable.inter (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
-    AEMeasurable (fun a ↦ f a ∩ g a) μ := by
-  refine ⟨fun a ↦ hf.mk f a ∩ hg.mk g a, hf.measurable_mk.inter hg.measurable_mk, ?_⟩
-  filter_upwards [hf.ae_eq_mk, hg.ae_eq_mk] with a h1 h2
-  simp_all
+    AEMeasurable (fun a ↦ f a ∩ g a) μ :=
+  measurable_inter.comp_aemeasurable (hf.prodMk hg)
 
 @[fun_prop]
 lemma AEMeasurable.union (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
-    AEMeasurable (fun a ↦ f a ∪ g a) μ := by
-  refine ⟨fun a ↦ hf.mk f a ∪ hg.mk g a, hf.measurable_mk.union hg.measurable_mk, ?_⟩
-  filter_upwards [hf.ae_eq_mk, hg.ae_eq_mk] with a h1 h2
-  simp_all
+    AEMeasurable (fun a ↦ f a ∪ g a) μ :=
+  measurable_union.comp_aemeasurable (hf.prodMk hg)
 
 @[fun_prop]
-lemma AEMeasurable.compl (hf : AEMeasurable f μ) : AEMeasurable (fun a ↦ (f a)ᶜ) μ := by
-  refine ⟨fun a ↦ (hf.mk f a)ᶜ, hf.measurable_mk.compl, ?_⟩
-  filter_upwards [hf.ae_eq_mk] with a h
-  simp_all
+lemma AEMeasurable.compl (hf : AEMeasurable f μ) : AEMeasurable (fun a ↦ (f a)ᶜ) μ :=
+  measurable_compl.comp_aemeasurable hf
 
 @[fun_prop]
 lemma AEMeasurable.sdiff (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (fun a ↦ f a \ g a) μ :=
-  hf.inter hg.compl
+  measurable_sdiff.comp_aemeasurable (hf.prodMk hg)
 
 open scoped symmDiff in
 @[fun_prop]
 lemma AEMeasurable.symmDiff (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (fun a ↦ f a ∆ g a) μ :=
-  (hf.sdiff hg).union (hg.sdiff hf)
+  measurable_symmDiff.comp_aemeasurable (hf.prodMk hg)
 
 @[fun_prop]
 protected lemma AEMeasurable.subset [Countable β] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
