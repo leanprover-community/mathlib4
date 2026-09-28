@@ -134,7 +134,7 @@ lemma linearMap_eq_iff_of_span_eq_top (f g : M →ₗ[R] N)
     rfl
   · intro h
     ext x
-    exact DFunLike.congr_fun h ⟨x, by simp⟩
+    congrm $h ⟨x, by simp⟩
 
 lemma linearMap_eq_zero_iff_of_span_eq_top (f : M →ₗ[R] N)
     {S : Set M} (hM : span R S = ⊤) :
@@ -366,13 +366,12 @@ theorem finite_span_isCompactElement (S : Set M) (h : S.Finite) :
     IsCompactElement (span R S : Submodule R M) :=
   Finite.coe_toFinset h ▸ finset_span_isCompactElement h.toFinset
 
-instance : IsCompactlyGenerated (Submodule R M) :=
-  ⟨fun s =>
-    ⟨(fun x => span R {x}) '' s,
-      ⟨fun t ht => by
-        rcases (Set.mem_image _ _ _).1 ht with ⟨x, _, rfl⟩
-        apply singleton_span_isCompactElement, by
-        rw [sSup_eq_iSup, iSup_image, ← span_eq_iSup_of_singleton_spans, span_eq]⟩⟩⟩
+instance : IsCompactlyGenerated (Submodule R M) where
+  exists_isLUB s := by
+    refine ⟨(span R {·}) '' s, ?_, ?_⟩
+    · rintro _ ⟨x, _, rfl⟩
+      apply singleton_span_isCompactElement
+    · rw [isLUB_iff_sSup_eq, sSup_eq_iSup, iSup_image, ← span_eq_iSup_of_singleton_spans, span_eq]
 
 variable {M' : Type*} [AddCommMonoid M'] [Module R M'] (q₁ q₁' : Submodule R M')
 

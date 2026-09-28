@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 public import Mathlib.AlgebraicGeometry.Noetherian
 public import Mathlib.AlgebraicGeometry.Stalk
 public import Mathlib.AlgebraicGeometry.Properties
@@ -259,7 +258,7 @@ lemma exists_lift_of_germInjective_aux {U : X.Opens} {x : X} (hxU)
   let := (φRX ≫ X.presheaf.germ U x hxU).hom.toAlgebra
   let := (φRX ≫ X.presheaf.map (homOfLE (inf_le_right (a := s.inf W))).op).hom.toAlgebra
   let φ' : A →ₐ[R] X.presheaf.stalk x :=
-    { φ.hom with commutes' := DFunLike.congr_fun (congr_arg CommRingCat.Hom.hom e) }
+    { φ.hom with commutes' := DFunLike.congr_fun congr($(e).hom) }
   let ψ : Γ(X, s.inf W ⊓ U) →ₐ[R] X.presheaf.stalk x :=
     { (X.presheaf.germ _ x H).hom with commutes' := fun x ↦ X.presheaf.germ_res_apply _ _ _ _ }
   change AlgHom.range φ' ≤ AlgHom.range ψ
