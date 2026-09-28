@@ -63,15 +63,15 @@ structure MatrixViews (u : Level) (m n : Nat) (α : Q(Type u)) where
   entries : List (List Q($α))
 
 /-- The `MatrixViews` of a matrix given as its list literal `lit` and its entries. -/
-def MatrixViews.ofLit {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) (m n : Nat)
+def MatrixViews.ofLit {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (m n : Nat)
     (lit : Q(List (List $α))) (entries : List (List Q($α))) : MatrixViews u m n α :=
   { matrix := q(ofLists $m $n $lit), lit, entries }
 
 /-- Build the `MatrixViews` of the row-major entries `rows`. -/
-def mkMatrixViews {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) (m n : Nat)
+def mkMatrixViews {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (m n : Nat)
     (rows : Array (Array Q($α))) : MatrixViews u m n α :=
   let entries := rows.toList.map Array.toList
-  .ofLit rα m n (mkListLitQ (α := q(List $α)) (entries.map mkListLitQ)) entries
+  .ofLit zα m n (mkListLitQ (α := q(List $α)) (entries.map mkListLitQ)) entries
 
 /-- Build the list of pivot columns `[c₀, c₁, …]`, each with its bound. -/
 def mkPivotList (n : Nat) (pivots : Array Nat) : MetaM Q(List (Fin $n)) := do
@@ -87,7 +87,7 @@ def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Q(Equiv.Perm (Fin $m))
 
 /-- The proof of `IsLowerTriangularDiagList k c rows` on the literal `rows` by rolling
 `IsLowerTriangularDiagList.cons` per row (`kQ` and `cQ` are the literals of `k` and `c`). -/
-def certifyLowerTriangularDiagList {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α))
+def certifyLowerTriangularDiagList {u : Level} {α : Q(Type u)} (zα : Q(Zero $α))
     (certifier : EntryCertifier) (k c : Nat) (kQ cQ : Q(Nat)) (rows : Q(List (List $α))) :
     MetaM Q(IsLowerTriangularDiagList $kQ $cQ $rows) :=
   match c with
@@ -104,7 +104,7 @@ def certifyLowerTriangularDiagList {u : Level} {α : Q(Type u)} (rα : Q(CommRin
     have entry : Q($α) := entry
     have k₁Q : Q(Nat) := mkNatLitQ (k + 1)
     have c₁Q : Q(Nat) := mkNatLitQ c
-    let rest ← certifyLowerTriangularDiagList rα certifier (k + 1) c k₁Q c₁Q rowsTl
+    let rest ← certifyLowerTriangularDiagList zα certifier (k + 1) c k₁Q c₁Q rowsTl
     let hd : Q($entry ≠ 0) ← certifier q($entry ≠ 0)
     -- The kernel evaluates the `drop` and the `replicate` once, here.
     have hdrop : Q(List.drop $kQ $row = $entry :: List.replicate $c₁Q (0 : $α)) :=
@@ -116,17 +116,17 @@ def certifyLowerTriangularDiagList {u : Level} {α : Q(Type u)} (rα : Q(CommRin
 
 /-- Prove `L.IsLowerTriangular` and `∀ i, L.diag i ≠ 0` from the rows of `L`, with `certifier`
 proving the diagonal entries nonzero. -/
-def certifyLowerTriangularDiag {u : Level} {m : Nat} {α : Q(Type u)} (rα : Q(CommRing $α))
+def certifyLowerTriangularDiag {u : Level} {m : Nat} {α : Q(Type u)} (zα : Q(Zero $α))
     (L : MatrixViews u m m α) (certifier : EntryCertifier) :
     MetaM (Q(($(L.matrix)).IsLowerTriangular) × Q(∀ i, ($(L.matrix)).diag i ≠ 0)) := do
-  let h ← certifyLowerTriangularDiagList rα certifier 0 m q(0) q($m) L.lit
+  let h ← certifyLowerTriangularDiagList zα certifier 0 m q(0) q($m) L.lit
   return (mkExpectedPropHint q(isLowerTriangular_ofLists $h) q(($(L.matrix)).IsLowerTriangular),
     mkExpectedPropHint q(diag_ofLists_ne_zero $h) q(∀ i, ($(L.matrix)).diag i ≠ 0))
 
 /-- The proof of `IsPivotedList cols rows` on the literals, one `IsPivotedList.cons` per pivot. The
 literals are peeled along with the pivots so that the base case holds the suffix of `rows` itself,
 which the kernel matches by pointer. -/
-def certifyPivotedList {u : Level} {n : Nat} {α : Q(Type u)} (rα : Q(CommRing $α))
+def certifyPivotedList {u : Level} {n : Nat} {α : Q(Type u)} (zα : Q(Zero $α))
     (certifier : EntryCertifier) (pivots : List Nat) (cols : Q(List (Fin $n)))
     (rows : Q(List (List $α))) : MetaM Q(IsPivotedList $cols $rows) :=
   match pivots with
@@ -149,7 +149,7 @@ def certifyPivotedList {u : Level} {n : Nat} {α : Q(Type u)} (rα : Q(CommRing 
       throwError "certifyPivotedList: {row} has no entry at {k}"
     have entry : Q($α) := entry
     have suffix : Q(List $α) := suffix
-    let rest ← certifyPivotedList rα certifier ks colsTl rowsTl
+    let rest ← certifyPivotedList zα certifier ks colsTl rowsTl
     let hd : Q($entry ≠ 0) ← certifier q($entry ≠ 0)
     -- The kernel evaluates the split and the `replicate` once, here.
     have hsplit :
@@ -160,12 +160,12 @@ def certifyPivotedList {u : Level} {n : Nat} {α : Q(Type u)} (rα : Q(CommRing 
     return q(IsPivotedList.cons $hsplit $hd $rest)
 
 /-- Prove `U.IsPivotedBy pivot` from the rows of `U` and the pivot list. -/
-def certifyPivotedBy {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRing $α))
+def certifyPivotedBy {u : Level} {m n : Nat} {α : Q(Type u)} (zα : Q(Zero $α))
     (U : MatrixViews u m n α) (pivots : Array Nat) (cols : Q(List (Fin $n)))
     (certifier : EntryCertifier) :
     MetaM Q(($(U.matrix)).IsPivotedBy fun i : Fin $m ↦ pivotOfList $cols i) := do
   let hsorted ← mkDecideProofQ q(($cols).SortedLT)
-  let h ← certifyPivotedList rα certifier pivots.toList cols U.lit
+  let h ← certifyPivotedList zα certifier pivots.toList cols U.lit
   return mkExpectedPropHint q(isPivotedBy_ofLists (m := $m) $hsorted $h)
     q(($(U.matrix)).IsPivotedBy fun i : Fin $m ↦ pivotOfList $cols i)
 
@@ -249,23 +249,22 @@ def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommR
   let mα : Q(Mul $α) ← synthInstanceQ q(Mul $α)
   let lRows : List (List Q($α)) := data.L.toList.map Array.toList
   let aRows : List (List Q($α)) := (data.rowOrder.map (entries[·]!)).toList.map Array.toList
-  -- `proveMul` first, so that the views of `L` and `Aσ` are stated on the literals it built
+  -- `proveMul` first, so that the views of `L` are stated on the literals it built
   let mulEq := proveMul zα aα mα m m n lRows aRows
-  have L := MatrixViews.ofLit rα m m mulEq.A lRows
-  have Aσ := MatrixViews.ofLit rα m n mulEq.B aRows
-  have U := mkMatrixViews rα m n data.U
+  have L := MatrixViews.ofLit zα m m mulEq.A lRows
+  have U := mkMatrixViews zα m n data.U
   let σ ← mkPerm m data.swaps
   let cols : Q(List (Fin $n)) ← mkPivotList n data.pivot
   let pivot : Q(Fin $m → WithTop (Fin $n)) := q(fun i : Fin $m ↦ pivotOfList $cols i)
   have Lm := L.matrix
-  have Aσm := Aσ.matrix
+  let Aσm : Q(Matrix (Fin $m) (Fin $n) $α) := q(ofLists $m $n $(mulEq.B))
   have Um := U.matrix
   have hperm : Q(($A).submatrix $σ id = $Aσm) := certifyPermEq A Aσm σ
   let hprod : Q($Lm * $Aσm = $Um) ← certifyProductEq rα mulEq U certifier?
   let hU : Q($Lm * ($A).submatrix $σ id = $Um) := q($hperm ▸ $hprod)
   let certifier := certifier?.getD mkDecideProofQ
-  let hpivot : Q(($Um).IsPivotedBy $pivot) ← certifyPivotedBy rα U data.pivot cols certifier
-  let ⟨hlower, hdiag⟩ ← certifyLowerTriangularDiag rα L certifier
+  let hpivot : Q(($Um).IsPivotedBy $pivot) ← certifyPivotedBy zα U data.pivot cols certifier
+  let ⟨hlower, hdiag⟩ ← certifyLowerTriangularDiag zα L certifier
   have hlower : Q(($Lm).IsLowerTriangular) := hlower
   have hdiag : Q(∀ i, ($Lm).diag i ≠ 0) := hdiag
   return { L := Lm, σ, pivot, U := Um, mul_eq := hU, isPivotedBy := hpivot,
