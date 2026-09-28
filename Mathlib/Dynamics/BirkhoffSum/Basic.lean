@@ -94,13 +94,21 @@ theorem map_comp_birkhoffSum {F N : Type*} [AddCommMonoid N] [FunLike F M N]
     ⇑g' ∘ birkhoffSum f g n = birkhoffSum f (g' ∘ g) n :=
   funext <| map_birkhoffSum g' f g n
 
+theorem birkhoffSum_comp_apply (f : α → α) (g : α → M) (n : ℕ) (x : α) :
+    birkhoffSum f (g ∘ f) n x = birkhoffSum f g n (f x) := by
+  exact Finset.sum_congr rfl fun k _ => congrArg g (Function.Commute.iterate_self f k x).symm
+
+theorem birkhoffSum_comp (f : α → α) (g : α → M) (n : ℕ) :
+    birkhoffSum f (g ∘ f) n = (birkhoffSum f g n) ∘ f :=
+  funext <| birkhoffSum_comp_apply f g n
+
 /-- If a function `φ` is invariant under a function `f` (i.e., `φ ∘ f = φ`), then the Birkhoff sum
 of `φ` over `f` for `n` iterations is equal to `n • φ x` at every point `x`. -/
 theorem birkhoffSum_apply_of_comp_eq {f : α → α} {φ : α → M} (h : φ ∘ f = φ) (n : ℕ) (x : α) :
     birkhoffSum f φ n x = n • φ x := by
   suffices ∀ k, φ (f^[k] x) = φ x by simp [birkhoffSum, this]
   intro k
-  exact congrFun (iterate_invariant h k) x
+  congrm $(iterate_invariant h k) x
 
 /-- If a function `φ` is invariant under a function `f` (i.e., `φ ∘ f = φ`), then the Birkhoff sum
 of `φ` over `f` for `n` iterations is equal to `n • φ`. -/

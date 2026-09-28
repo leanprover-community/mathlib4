@@ -5,10 +5,9 @@ Authors: Jeremy Avigad, Wrenna Robson
 -/
 module
 
-public import Batteries.Data.List.Perm
+import Batteries.Data.List.Perm
 public import Mathlib.Data.List.OfFn
 public import Mathlib.Data.List.Nodup
-public import Mathlib.Order.Fin.Basic
 
 /-!
 # Sorting algorithms on lists
@@ -377,7 +376,7 @@ These predicates are equivalent to `Monotone l.get`, but they are also equivalen
 API has deliberately not been provided for decomposed lists to avoid unneeded API replication.
 The provided API should be used to move to and from `IsChain`,
 `Pairwise` or `Monotone` as needed.
---/
+-/
 
 /-- `l.SortedLE` means that the list is monotonic. -/
 def SortedLE (l : List α) := Monotone l.get

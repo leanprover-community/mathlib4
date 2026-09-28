@@ -5,12 +5,12 @@ Authors: Chris Hughes, Junyan Xu
 -/
 module
 
-public import Mathlib.Data.Finsupp.Fintype
+import Mathlib.Data.Finsupp.Fintype
 
 import Mathlib.Algebra.MonoidAlgebra.Cardinal
 public import Mathlib.Algebra.MvPolynomial.Basic
 public import Mathlib.SetTheory.Cardinal.Order
-public import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.NormNum
 
 /-!
 # Cardinality of Multivariate Polynomial Ring

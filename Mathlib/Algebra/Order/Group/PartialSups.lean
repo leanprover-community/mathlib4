@@ -5,7 +5,7 @@ Authors: Lua Viana Reis
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.OrderIso
+import Mathlib.Algebra.Order.Group.OrderIso
 public import Mathlib.Order.PartialSups
 
 /-!

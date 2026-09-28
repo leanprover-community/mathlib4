@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 public import Mathlib.Algebra.Category.Grp.EpiMono
-public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+import Mathlib.Algebra.Category.ModuleCat.EpiMono
 
 /-!
 # Projective objects

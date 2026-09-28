@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
-public import Mathlib.Tactic.FunProp
 
 /-!
 # Measurable embeddings and equivalences
@@ -193,6 +192,7 @@ theorem toEquiv_injective : Injective (toEquiv : α ≃ᵐ β → α ≃ β) := 
   rintro ⟨e₁, _, _⟩ ⟨e₂, _, _⟩ (rfl : e₁ = e₂)
   rfl
 
+@[macro_inline]
 instance instEquivLike : EquivLike (α ≃ᵐ β) α β where
   coe e := e.toEquiv
   inv e := e.toEquiv.symm

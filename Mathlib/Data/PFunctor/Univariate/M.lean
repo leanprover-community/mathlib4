@@ -557,7 +557,6 @@ variable {P : PFunctor.{uA, uB}} {α : Type*}
 theorem dest_corec (g : α → P α) (x : α) : M.dest (M.corec g x) = P.map (M.corec g) (g x) := by
   rw [corec_def, dest_mk]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem bisim (R : M P → M P → Prop)
     (h : ∀ x y, R x y → ∃ a f f',
       M.dest x = (.mk a f) ∧ M.dest y = (.mk a f') ∧ ∀ i, R (f i) (f' i)) :
@@ -566,8 +565,8 @@ theorem bisim (R : M P → M P → Prop)
   have := Inhabited.mk x.head
   apply eq_of_bisim R _ _ _ h'; clear h' x y
   constructor <;> introv ih <;> rcases h _ _ ih with ⟨a'', g, g', h₀, h₁, h₂⟩ <;> clear h
-  · replace h₀ := congr_arg Obj.fst h₀
-    replace h₁ := congr_arg Obj.fst h₁
+  · replace h₀ := congr($(h₀).fst)
+    replace h₁ := congr($(h₁).fst)
     simp only [dest_mk, Obj.fst_mk] at h₀ h₁
     rw [h₀, h₁]
   · simp only [dest_mk] at h₀ h₁
