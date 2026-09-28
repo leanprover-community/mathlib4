@@ -44,10 +44,11 @@ kernel checks the sweep as one term in one pass over the rows. -/
 
 /-- `c` rows starting at row `k`, each with a nonzero entry at its diagonal position and zeros
 after it to the end of the row. -/
-def IsLowerTriangularDiagList [Zero α] : (k c : ℕ) → (rows : List (List α)) → Prop
-  | _, 0, _ => True
-  | _, _ + 1, [] => False
-  | k, c + 1, row :: rows =>
+def IsLowerTriangularDiagList [Zero α] (k c : ℕ) (rows : List (List α)) : Prop :=
+  match c, rows with
+  | 0, _ => True
+  | _ + 1, [] => False
+  | c + 1, row :: rows =>
     match row.drop k with
     | [] => False
     | d :: zs => d ≠ 0 ∧ zs = List.replicate c 0 ∧ IsLowerTriangularDiagList (k + 1) c rows
@@ -104,9 +105,10 @@ theorem diag_ofLists_ne_zero [Zero α] {m : ℕ} {rows : List (List α)}
 variable {n : ℕ}
 
 /-- `l` split at `k`, with the prefix reversed, in one traversal. -/
-def splitRevAt : List α → ℕ → List α → List α × List α
-  | x :: xs, k + 1, acc => splitRevAt xs k (x :: acc)
-  | xs, _, acc => (acc, xs)
+def splitRevAt (l : List α) (k : ℕ) (acc : List α) : List α × List α :=
+  match l, k with
+  | x :: xs, k + 1 => splitRevAt xs k (x :: acc)
+  | xs, _ => (acc, xs)
 
 theorem splitRevAt_eq (l : List α) (k : ℕ) (acc : List α) :
     splitRevAt l k acc = ((l.take k).reverse ++ acc, l.drop k) := by
@@ -116,7 +118,8 @@ theorem splitRevAt_eq (l : List α) (k : ℕ) (acc : List α) :
 
 /-- The rows with a nonzero entry at their pivot columns and zeros before it, then the rows
 beyond the pivot list (all 0). -/
-def IsPivotedList [Zero α] : (cols : List (Fin n)) → (rows : List (List α)) → Prop
+def IsPivotedList [Zero α] (cols : List (Fin n)) (rows : List (List α)) : Prop :=
+  match cols, rows with
   | [], rows => rows = rows.map fun _ ↦ List.replicate n 0 -- one traversal of `rows` only
   | _ :: _, [] => False
   | k :: ks, row :: rows =>

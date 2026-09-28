@@ -30,8 +30,8 @@ namespace Mathlib.Tactic.Echelon
 /-- Check whether `decide` reduces the nonzero-ness of a numeral of `α` to a verdict, the shape
 of the entry conditions the certificate closes by `decide`. ℝ has a classical `DecidableEq`
 instance, so instance synthesis alone does not settle this.
-The probe checks 2 instead of 1 against 0 because some models might have decidable comparison
-facts for 0/1 but not general entries. -/
+The probe checks 2 instead of 1 against 0 because some models might have decidable equality
+facts between 0 and 1, but not for general entries against 0. -/
 def checkDecideEq {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) : MetaM Bool := do
   let two : Q($α) ← mkIntNumeral α 2
   -- `Decidable` of the single disequality rather than `DecidableEq`: a ring where equality

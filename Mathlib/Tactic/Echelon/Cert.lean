@@ -106,7 +106,6 @@ def certifyLowerTriangularDiagList {u : Level} {α : Q(Type u)} (zα : Q(Zero $�
     have c₁Q : Q(Nat) := mkNatLitQ c
     let rest ← certifyLowerTriangularDiagList zα certifier (k + 1) c k₁Q c₁Q rowsTl
     let hd : Q($entry ≠ 0) ← certifier q($entry ≠ 0)
-    -- The kernel evaluates the `drop` and the `replicate` once, here.
     have hdrop : List.drop $kQ $row =Q $entry :: List.replicate $c₁Q (0 : $α) := ⟨⟩
     have : $rows =Q $row :: $rowsTl := ⟨⟩
     have : $cQ =Q $c₁Q + 1 := ⟨⟩
@@ -130,7 +129,6 @@ def certifyPivotedList {u : Level} {n : Nat} {α : Q(Type u)} (zα : Q(Zero $α)
     (rows : Q(List (List $α))) : MetaM Q(IsPivotedList $cols $rows) :=
   match pivots with
   | [] => do
-    -- The kernel evaluates the `map` over the zero rows once, here.
     have hz : $rows =Q ($rows).map fun _ ↦ List.replicate $n (0 : $α) := ⟨⟩
     have : $cols =Q ([] : List (Fin $n)) := ⟨⟩
     return q(IsPivotedList.nil $hz)
@@ -149,7 +147,6 @@ def certifyPivotedList {u : Level} {n : Nat} {α : Q(Type u)} (zα : Q(Zero $α)
     have suffix : Q(List $α) := suffix
     let rest ← certifyPivotedList zα certifier ks colsTl rowsTl
     let hd : Q($entry ≠ 0) ← certifier q($entry ≠ 0)
-    -- The kernel evaluates the split and the `replicate` once, here.
     have hsplit :
         splitRevAt $row $col [] =Q (List.replicate ($col : Nat) 0, $entry :: $suffix) := ⟨⟩
     have : $cols =Q $col :: $colsTl := ⟨⟩
