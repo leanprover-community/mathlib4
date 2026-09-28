@@ -114,7 +114,7 @@ theorem expand_comp_aeval (p : ℕ) (f : σ → MvPolynomial τ R) :
     (expand p).comp (aeval f) = aeval fun i ↦ expand p (f i) := by
   ext; simp
 
-@[deprecated expand_comp_aeval (since := "2026-09-02")]
+@[deprecated expand_comp_aeval +typeChanged (since := "2026-09-02")]
 theorem expand_comp_bind₁ (p : ℕ) (f : σ → MvPolynomial τ R) :
     (expand p).comp (bind₁ f) = bind₁ fun i ↦ expand p (f i) :=
   expand_comp_aeval p f
@@ -123,7 +123,7 @@ theorem expand_aeval (f : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
     expand p (aeval f φ) = aeval (fun i ↦ expand p (f i)) φ :=
   AlgHom.congr_fun (expand_comp_aeval p f) φ
 
-@[deprecated expand_aeval (since := "2026-09-02")]
+@[deprecated expand_aeval +typeChanged (since := "2026-09-02")]
 theorem expand_bind₁ (f : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
     expand p (bind₁ f φ) = bind₁ (fun i ↦ expand p (f i)) φ := by
   rw [← AlgHom.comp_apply, expand_comp_bind₁]

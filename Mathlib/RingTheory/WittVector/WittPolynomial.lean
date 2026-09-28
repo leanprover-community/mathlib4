@@ -264,7 +264,7 @@ theorem aeval_xInTermsOfW_wittPolynomial [Invertible (p : R)] (k : ℕ) :
     xInTermsOfW_aux]
   simp
 
-@[deprecated aeval_xInTermsOfW_wittPolynomial (since := "2026-09-02")]
+@[deprecated aeval_xInTermsOfW_wittPolynomial +typeChanged (since := "2026-09-02")]
 theorem bind₁_xInTermsOfW_wittPolynomial [Invertible (p : R)] (k : ℕ) :
     bind₁ (xInTermsOfW p R) (W_ R k) = X k :=
   aeval_xInTermsOfW_wittPolynomial p R k
@@ -284,7 +284,7 @@ theorem aeval_wittPolynomial_xInTermsOfW [Invertible (p : R)] (n : ℕ) :
   rw [mem_range] at h
   rw [map_mul, map_pow (aeval _), algHom_C, H i h, algebraMap_eq]
 
-@[deprecated aeval_wittPolynomial_xInTermsOfW (since := "2026-09-02")]
+@[deprecated aeval_wittPolynomial_xInTermsOfW +typeChanged (since := "2026-09-02")]
 theorem bind₁_wittPolynomial_xInTermsOfW [Invertible (p : R)] (n : ℕ) :
     bind₁ (W_ R) (xInTermsOfW p R n) = X n :=
   aeval_wittPolynomial_xInTermsOfW p R n

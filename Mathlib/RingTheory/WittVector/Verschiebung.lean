@@ -182,7 +182,7 @@ theorem aeval_verschiebungPoly_wittPolynomial (n : ℕ) :
        exact eval₂Hom_congr (RingHom.ext_int _ _) rfl rfl
       _ = _ := by rw [ghostComponent_verschiebung]; rfl
 
-@[deprecated aeval_verschiebungPoly_wittPolynomial (since := "2026-09-09")]
+@[deprecated aeval_verschiebungPoly_wittPolynomial +typeChanged (since := "2026-09-09")]
 theorem bind₁_verschiebungPoly_wittPolynomial (n : ℕ) :
     bind₁ verschiebungPoly (wittPolynomial p ℤ n) =
       if n = 0 then 0 else p * wittPolynomial p ℤ (n - 1) :=

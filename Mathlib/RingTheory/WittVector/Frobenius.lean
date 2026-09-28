@@ -71,7 +71,7 @@ theorem aeval_frobeniusPolyRat_wittPolynomial (n : ℕ) :
   delta frobeniusPolyRat
   rw [← comp_aeval_apply, aeval_xInTermsOfW_wittPolynomial, aeval_X, Function.comp_apply]
 
-@[deprecated aeval_frobeniusPolyRat_wittPolynomial (since := "2026-09-09")]
+@[deprecated aeval_frobeniusPolyRat_wittPolynomial +typeChanged (since := "2026-09-09")]
 theorem bind₁_frobeniusPolyRat_wittPolynomial (n : ℕ) :
     bind₁ (frobeniusPolyRat p) (wittPolynomial p ℚ n) = wittPolynomial p ℚ (n + 1) :=
   aeval_frobeniusPolyRat_wittPolynomial p n
@@ -188,7 +188,7 @@ theorem aeval_frobeniusPoly_wittPolynomial (n : ℕ) :
   simp only [map_aeval_eq_aeval_map_map, map_frobeniusPoly, aeval_frobeniusPolyRat_wittPolynomial,
     map_wittPolynomial]
 
-@[deprecated aeval_frobeniusPoly_wittPolynomial (since := "2026-09-09")]
+@[deprecated aeval_frobeniusPoly_wittPolynomial +typeChanged (since := "2026-09-09")]
 theorem bind₁_frobeniusPoly_wittPolynomial (n : ℕ) :
     bind₁ (frobeniusPoly p) (wittPolynomial p ℤ n) = wittPolynomial p ℤ (n + 1) :=
   aeval_frobeniusPoly_wittPolynomial p n

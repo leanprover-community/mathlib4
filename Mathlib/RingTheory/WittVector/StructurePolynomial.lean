@@ -224,7 +224,7 @@ theorem aeval_rename_expand_wittPolynomial (Φ : MvPolynomial idx ℤ) (n : ℕ)
   rw [wittPolynomial_vars, Finset.mem_range] at hi
   simp only [IH i hi]
 
-@[deprecated aeval_rename_expand_wittPolynomial (since := "2026-09-02")]
+@[deprecated aeval_rename_expand_wittPolynomial +typeChanged (since := "2026-09-02")]
 theorem bind₁_rename_expand_wittPolynomial (Φ : MvPolynomial idx ℤ) (n : ℕ)
     (IH :
       ∀ m : ℕ,
@@ -272,7 +272,7 @@ theorem C_p_pow_dvd_aeval_rename_wittPolynomial_sub_sum (Φ : MvPolynomial idx �
   rw [← C_eq_coe_nat, C_dvd_iff_zmod, map_sub, sub_eq_zero, map_expand, map_pow,
     MvPolynomial.expand_zmod]
 
-@[deprecated C_p_pow_dvd_aeval_rename_wittPolynomial_sub_sum (since := "2026-09-02")]
+@[deprecated C_p_pow_dvd_aeval_rename_wittPolynomial_sub_sum +typeChanged (since := "2026-09-02")]
 theorem C_p_pow_dvd_bind₁_rename_wittPolynomial_sub_sum (Φ : MvPolynomial idx ℤ) (n : ℕ)
     (IH :
       ∀ m : ℕ,

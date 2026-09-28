@@ -123,7 +123,7 @@ theorem poly_eq_of_wittPolynomial_aeval_eq' [Fact p.Prime] (f g : ℕ → MvPoly
   simpa only [Function.comp_def, map_aeval_eq_aeval_map_map, map_wittPolynomial, ← comp_aeval_apply,
     aeval_wittPolynomial_xInTermsOfW, aeval_X] using h
 
-@[deprecated poly_eq_of_wittPolynomial_aeval_eq' (since := "2026-09-09")]
+@[deprecated poly_eq_of_wittPolynomial_aeval_eq' +typeChanged (since := "2026-09-09")]
 theorem poly_eq_of_wittPolynomial_bind_eq' [Fact p.Prime] (f g : ℕ → MvPolynomial (idx × ℕ) ℤ)
     (h : ∀ n, bind₁ f (wittPolynomial p _ n) = bind₁ g (wittPolynomial p _ n)) : f = g :=
   poly_eq_of_wittPolynomial_aeval_eq' p f g h
@@ -138,7 +138,7 @@ theorem poly_eq_of_wittPolynomial_aeval_eq [Fact p.Prime] (f g : ℕ → MvPolyn
   simpa only [Function.comp_def, map_aeval_eq_aeval_map_map, map_wittPolynomial, ← comp_aeval_apply,
     aeval_wittPolynomial_xInTermsOfW, aeval_X] using h
 
-@[deprecated poly_eq_of_wittPolynomial_aeval_eq (since := "2026-09-09")]
+@[deprecated poly_eq_of_wittPolynomial_aeval_eq +typeChanged (since := "2026-09-09")]
 theorem poly_eq_of_wittPolynomial_bind_eq [Fact p.Prime] (f g : ℕ → MvPolynomial ℕ ℤ)
     (h : ∀ n, bind₁ f (wittPolynomial p _ n) = bind₁ g (wittPolynomial p _ n)) : f = g :=
   poly_eq_of_wittPolynomial_aeval_eq p f g h
@@ -286,7 +286,7 @@ theorem aeval_zero_wittPolynomial [Fact p.Prime] (n : ℕ) :
     aeval (0 : ℕ → MvPolynomial ℕ R) (wittPolynomial p R n) = 0 := by
   simp
 
-@[deprecated aeval_zero_wittPolynomial (since := "2026-09-09")]
+@[deprecated aeval_zero_wittPolynomial +typeChanged (since := "2026-09-09")]
 theorem bind₁_zero_wittPolynomial [Fact p.Prime] (n : ℕ) :
     bind₁ (0 : ℕ → MvPolynomial ℕ R) (wittPolynomial p R n) = 0 :=
   aeval_zero_wittPolynomial n
@@ -305,7 +305,7 @@ theorem aeval_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
       aeval_X, map_mul]
   · simp
 
-@[deprecated aeval_onePoly_wittPolynomial (since := "2026-09-09")]
+@[deprecated aeval_onePoly_wittPolynomial +typeChanged (since := "2026-09-09")]
 theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
     bind₁ onePoly (wittPolynomial p ℤ n) = 1 :=
   aeval_onePoly_wittPolynomial n

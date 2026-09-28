@@ -76,7 +76,7 @@ theorem aeval_wittMulN_wittPolynomial (n k : ℕ) :
     simp only [ih, Function.uncurry, Function.comp_def, aeval_X_left, AlgHom.id_apply,
       Matrix.cons_val_zero, Matrix.cons_val_one]
 
-@[deprecated aeval_wittMulN_wittPolynomial (since := "2026-09-09")]
+@[deprecated aeval_wittMulN_wittPolynomial +typeChanged (since := "2026-09-09")]
 theorem bind₁_wittMulN_wittPolynomial (n k : ℕ) :
     bind₁ (wittMulN p n) (wittPolynomial p ℤ k) = n * wittPolynomial p ℤ k :=
   aeval_wittMulN_wittPolynomial p n k
