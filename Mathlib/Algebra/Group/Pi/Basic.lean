@@ -163,6 +163,12 @@ section Extend
 theorem extend_one [One γ] (f : α → β) : Function.extend f (1 : α → γ) (1 : β → γ) = 1 :=
   funext fun _ => by apply ite_self
 
+@[to_additive (attr := simp)]
+theorem Injective.extend_mulSingle [DecidableEq α] [DecidableEq β] [One γ] {f : α → β}
+    (hf : Injective f) (i : α) (a : γ) :
+    extend f (Pi.mulSingle i a) 1 = Pi.mulSingle (f i) a := by
+  simp [Pi.mulSingle, hf.extend_update, extend_one]
+
 @[to_additive]
 theorem extend_mul [Mul γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ : β → γ) :
     Function.extend f (g₁ * g₂) (e₁ * e₂) = Function.extend f g₁ e₁ * Function.extend f g₂ e₂ := by
