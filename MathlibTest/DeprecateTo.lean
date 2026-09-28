@@ -22,7 +22,7 @@ Try this:
   alias add_easy_deprecated := new_name_add
 -/
 #guard_msgs (whitespace := exact) in
-deprecate to new_name_mul new_name_add "YYYY-MM-DD"
+#deprecate to new_name_mul new_name_add "YYYY-MM-DD"
 /-- I also have a doc-string -/
 @[to_additive /-- With its additive doc-string -/]
 theorem mul_easy_deprecated : True := .intro
@@ -57,7 +57,7 @@ Try this:
   alias add_odd_theorem := add_even_theorem
 -/
 #guard_msgs (whitespace := exact) in
-deprecate to add_even_theorem "YYYY-MM-DD"
+#deprecate to add_even_theorem "YYYY-MM-DD"
 theorem add_odd_theorem {n m : Nat} (hn : ∃ k, n = k + k) (hm : ∃ k, m = k + k) :
     ∃ k, n + m = k + k := by
   obtain ⟨n, rfl /- have a comment here (to test preserving whitespace) -/⟩ := hn;
@@ -92,7 +92,7 @@ Try this:
     a_very_long_replacement_theorem_name_to_make_sure_the_original_whitespace_is_preserved
 -/
 #guard_msgs (whitespace := exact) in
-deprecate to a_very_long_replacement_theorem_name_to_make_sure_the_original_whitespace_is_preserved
+#deprecate to a_very_long_replacement_theorem_name_to_make_sure_the_original_whitespace_is_preserved
   "YYYY-MM-DD"
 theorem originally_a_short_name.{has, some, univ, parameters} :
     ∀ (u : Type has) (v : Type some) (w : Type univ) (x : Type parameters),
