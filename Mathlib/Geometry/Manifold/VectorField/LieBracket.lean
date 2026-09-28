@@ -5,10 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.VectorField
 public import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
-public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
-public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Geometry.Manifold.VectorField.Pullback
 
 /-!
@@ -146,6 +143,11 @@ lemma mlieBracketWithin_eq_zero_of_eq_zero (hV : V x = 0) (hW : W x = 0) :
     have : (extChartAt I x).symm ((extChartAt I x) x) = x := by simp
     rw [this, hW]
     simp +instances
+
+lemma mlieBracket_eq_zero_of_eq_zero (hV : V x = 0) (hW : W x = 0) :
+    mlieBracket I V W x = 0 := by
+  rw [← mlieBracketWithin_univ]
+  exact mlieBracketWithin_eq_zero_of_eq_zero hV hW
 
 set_option backward.isDefEq.respectTransparency false in
 lemma mlieBracketWithin_swap_apply :
