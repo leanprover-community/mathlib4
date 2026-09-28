@@ -689,8 +689,7 @@ theorem _root_.Polynomial.irreducible_comp_iff {f g : K[X]} :
     · rw [isUnit_iff] at ha
       obtain ⟨r, hr, ha⟩ := ha
       have hga := congrArg Polynomial.natDegree ha.symm
-      rw [natDegree_C, natDegree_comp, Nat.mul_eq_zero,
-        or_iff_left hg0, natDegree_eq_zero] at hga
+      rw [natDegree_C, natDegree_comp, Nat.mul_eq_zero, or_iff_left hg0, natDegree_eq_zero] at hga
       obtain ⟨x, rfl⟩ := hga
       rw [C_comp, C_inj] at ha
       rw [← ha, isUnit_C]
@@ -698,8 +697,7 @@ theorem _root_.Polynomial.irreducible_comp_iff {f g : K[X]} :
     · rw [isUnit_iff] at hb
       obtain ⟨r, hr, hb⟩ := hb
       have hgb := congrArg Polynomial.natDegree hb.symm
-      rw [natDegree_C, natDegree_comp, Nat.mul_eq_zero,
-        or_iff_left hg0, natDegree_eq_zero] at hgb
+      rw [natDegree_C, natDegree_comp, Nat.mul_eq_zero, or_iff_left hg0, natDegree_eq_zero] at hgb
       obtain ⟨x, rfl⟩ := hgb
       rw [C_comp, C_inj] at hb
       rw [← hb, isUnit_C]
