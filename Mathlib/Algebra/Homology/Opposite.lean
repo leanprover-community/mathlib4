@@ -101,6 +101,10 @@ protected def unopSymm (X : HomologicalComplex Vᵒᵖ c.symm) : HomologicalComp
   shape i j hij := by rw [X.shape j i hij, unop_zero]
   d_comp_d' _ _ _ _ _ := by rw [← unop_comp, X.d_comp_d, unop_zero]
 
+@[simp] lemma op_unop (K : HomologicalComplex Vᵒᵖ c) : K.unop.op = K := rfl
+
+@[simp] lemma unop_op (K : HomologicalComplex V c) : K.op.unop = K := rfl
+
 variable (V c)
 
 /-- Auxiliary definition for `opEquivalence`. -/
