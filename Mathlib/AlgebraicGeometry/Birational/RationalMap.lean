@@ -251,6 +251,7 @@ lemma fromSpecStalkOfMem_toPartialMap (f : X ⟶ Y) (x) :
 
 /-- Two partial maps are equivalent if they are equal on a dense open subscheme. -/
 protected noncomputable
+@[stacks 01RS "(1)"]
 def equiv (f g : X.PartialMap Y) : Prop :=
   ∃ (W : X.Opens) (hW : Dense (W : Set X)) (hWl : W ≤ f.domain) (hWr : W ≤ g.domain),
     (f.restrict W hW hWl).hom = (g.restrict W hW hWr).hom
@@ -371,6 +372,7 @@ end PartialMap
 
 /-- A rational map from `X` to `Y` (`X ⤏ Y`) is an equivalence class of partial maps,
 where two partial maps are equivalent if they are equal on a dense open subscheme. -/
+@[stacks 01RS "(2)"]
 def RationalMap (X Y : Scheme.{u}) : Type u :=
   @Quotient (X.PartialMap Y) inferInstance
 
@@ -389,6 +391,7 @@ abbrev RationalMap.id : X ⤏ X := (PartialMap.id X).toRationalMap
 
 variable (S) in
 /-- A rational map is an `S`-map if some partial map in the equivalence class is an `S`-map. -/
+@[stacks 01RS "(3)"]
 class RationalMap.IsOver [X.Over S] [Y.Over S] (f : X ⤏ Y) : Prop where
   exists_partialMap_over : ∃ g : X.PartialMap Y, g.IsOver S ∧ g.toRationalMap = f
 
