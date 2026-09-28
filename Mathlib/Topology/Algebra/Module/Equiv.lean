@@ -1,14 +1,11 @@
-/-
-Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Frédéric Dupuis,
-  Heather Macbeth
--/
-module
+module -- shake: keep-all
 
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Restrict
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
+public import Mathlib.Topology.Algebra.Module.Equiv.Pi
+public import Mathlib.Topology.Algebra.Module.Equiv.Prod
+public import Mathlib.Topology.Algebra.Module.Equiv.Submodule
 
+<<<<<<< HEAD
 /-!
 # Continuous linear equivalences
 
@@ -1266,3 +1263,6 @@ lemma toLinearEquiv_zpow (f : V ≃L[R] V) (n : ℤ) :
   map_zpow ContinuousLinearEquiv.toLinearEquivMonoidHom f n
 
 end ContinuousLinearEquiv
+=======
+deprecated_module (since := "2026-08-16")
+>>>>>>> master
