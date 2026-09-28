@@ -18,12 +18,12 @@ Let `A` be a smooth `R`-algebra. In this file we show that then `A` is `R`-flat.
 The proof proceeds in two steps:
 
 1. If `R` is Noetherian, let `R[X₁, ..., Xₙ] →ₐ[R] A` be surjective with kernel `I`. By
-  formal smoothness we construct a section `A →ₐ[R] AdicCompletion I R[X₁, ..., Xₙ]`
-  of the canonical map `AdicCompletion I R[X₁, ..., Xₙ] →ₐ[R] R[X₁, ..., Xₙ] ⧸ I ≃ₐ[R] A`.
-  Since `R` is Noetherian, `AdicCompletion I R` is `R`-flat so `A` is a retract
-  of a flat `R`-module and hence flat.
+   formal smoothness we construct a section `A →ₐ[R] AdicCompletion I R[X₁, ..., Xₙ]`
+   of the canonical map `AdicCompletion I R[X₁, ..., Xₙ] →ₐ[R] R[X₁, ..., Xₙ] ⧸ I ≃ₐ[R] A`.
+   Since `R` is Noetherian, `AdicCompletion I R` is `R`-flat so `A` is a retract
+   of a flat `R`-module and hence flat.
 2. In the general case, we choose a model of `A` over a finitely generated
-  `ℤ`-subalgebra of `R` and apply 1.
+   `ℤ`-subalgebra of `R` and apply 1.
 
 
 ## References

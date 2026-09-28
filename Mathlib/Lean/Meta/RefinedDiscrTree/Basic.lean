@@ -253,7 +253,7 @@ A `Trie` will normally have exactly one of the following
 - nonempty `values`
 - nonempty `stars`, `labelledStars` and/or `children`
 - nonempty `pending`
-But defining it as a structure that can have all at the same time turns out to be easier.
+  But defining it as a structure that can have all at the same time turns out to be easier.
 -/
 structure Trie (α : Type) where
   node ::

@@ -18,7 +18,7 @@ in `Mathlib/Tactic/Widget/StringDiagram.lean`, as well as `monoidal` and `bicate
 
 We say that the 2-morphism `η` in a bicategory is in normal form if
 1. `η` is of the form `α₀ ≫ η₀ ≫ α₁ ≫ η₁ ≫ ... αₘ ≫ ηₘ ≫ αₘ₊₁` where each `αᵢ` is a
-  structural 2-morphism (consisting of associators and unitors),
+   structural 2-morphism (consisting of associators and unitors),
 2. each `ηᵢ` is a non-structural 2-morphism of the form `f₁ ◁ ... ◁ fₙ ◁ θ`, and
 3. `θ` is of the form `ι₁ ◫ ... ◫ ιₗ`, and
 4. each `ιᵢ` is of the form `κ ▷ g₁ ▷ ... ▷ gₖ`.
