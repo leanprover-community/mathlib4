@@ -199,7 +199,7 @@ protected theorem mul_inv_cancel (h : Commute a b) : a * b * a⁻¹ = b := by
 theorem mul_inv_cancel_assoc (h : Commute a b) : a * (b * a⁻¹) = b := by
   rw [← mul_assoc, h.mul_inv_cancel]
 
-@[to_additive]
+@[to_additive nsmul_sub]
 lemma div_pow (h : Commute a b) : ∀ n, (a / b) ^ n = a ^ n / b ^ n
   | 0 => by rw [pow_zero, pow_zero, pow_zero, div_self']
   | n + 1 => by
@@ -207,6 +207,14 @@ lemma div_pow (h : Commute a b) : ∀ n, (a / b) ^ n = a ^ n / b ^ n
     simp only [div_eq_mul_inv, mul_assoc, mul_right_inj]
     apply mul_right_injective b
     simp [← mul_assoc, ← (h.pow_left n).eq]
+
+@[to_additive zsmul_sub]
+lemma div_zpow (h : Commute a b) : ∀ n : ℤ, (a / b) ^ n = a ^ n / b ^ n
+  | (n : ℕ) => by simpa using h.div_pow n
+  | .negSucc n => by
+    rw [zpow_negSucc, h.div_pow]
+    apply inv_eq_of_mul_eq_one_left
+    simp [div_eq_mul_inv, ← (h.pow_pow (n + 1) (n + 1)).mul_mul_mul_comm]
 
 end Group
 
