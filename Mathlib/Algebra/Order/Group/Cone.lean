@@ -65,7 +65,7 @@ def LinearOrder.ofSubmonoid (hMs : M.IsMulSpanning) [dec : DecidablePred (· ∈
   toDecidableLE a b := dec (b / a)
 
 /-- `AddGroupConeClass S G` says that `S` is a type of cones in `G`. -/
-@[ "Unbundled to `AddSubmonoid.IsPointed`" (since := "2026-09-27")]
+@[deprecated "Unbundled to `AddSubmonoid.IsPointed`" (since := "2026-09-27")]
 class AddGroupConeClass (S : Type*) (G : outParam Type*) [AddCommGroup G] [SetLike S G] : Prop
     extends AddSubmonoidClass S G where
   eq_zero_of_mem_of_neg_mem {C : S} {a : G} : a ∈ C → -a ∈ C → a = 0
