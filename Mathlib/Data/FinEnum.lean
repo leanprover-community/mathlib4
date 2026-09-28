@@ -230,9 +230,9 @@ lemma succMany?_succ [inst : FinEnum α] (n : Nat) (x : α) :
   simp [succMany?]
   split_ifs <;> simp [succMany?] <;> grind only
 
-lemma succMany?_bind_flatten [inst : FinEnum α] (n m o : Nat) (x : α) :
-  (succMany? n x).bind (fun a => (succMany? m a).bind (succMany? o)) =
-    ((succMany? n x).bind (succMany? m)).bind (succMany? o) := by
+lemma succMany?_bind_flatten [inst : FinEnum α] (n m k : Nat) (x : α) :
+  (succMany? n x).bind (fun a => (succMany? m a).bind (succMany? k)) =
+    ((succMany? n x).bind (succMany? m)).bind (succMany? k) := by
   grind
 
 @[grind =]
