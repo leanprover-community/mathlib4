@@ -195,7 +195,7 @@ def IsSwap (f : Perm α) : Prop :=
 @[simp]
 theorem ofSubtype_swap_eq {p : α → Prop} [DecidablePred p] (x y : Subtype p) :
     ofSubtype (Equiv.swap x y) = Equiv.swap ↑x ↑y := by
-  grind [ofSubtype_apply_of_mem, ofSubtype_apply_of_not_mem]
+  grind [ofSubtype_apply_of_mem, ofSubtype_apply_of_notMem]
 
 theorem IsSwap.of_subtype_isSwap {p : α → Prop} [DecidablePred p] {f : Perm (Subtype p)}
     (h : f.IsSwap) : (ofSubtype f).IsSwap :=
@@ -329,7 +329,7 @@ lemma ofSubtype_eq_iff {g c : Equiv.Perm α} {s : Finset α}
     constructor
     · intro a ha
       by_contra ha'
-      rw [mem_support, ← h a, ofSubtype_apply_of_not_mem (p := (· ∈ s)) _ ha'] at ha
+      rw [mem_support, ← h a, ofSubtype_apply_of_notMem (p := (· ∈ s)) _ ha'] at ha
       exact ha rfl
     · intro _ a ha
       rw [← h a, ofSubtype_apply_of_mem (p := (· ∈ s)) _ ha, subtypePerm_apply]
@@ -337,7 +337,7 @@ lemma ofSubtype_eq_iff {g c : Equiv.Perm α} {s : Finset α}
     specialize h (isInvariant_of_support_le hc)
     by_cases ha : a ∈ s
     · rw [h a ha, ofSubtype_apply_of_mem (p := (· ∈ s)) _ ha, subtypePerm_apply]
-    · rw [ofSubtype_apply_of_not_mem (p := (· ∈ s)) _ ha, eq_comm, ← notMem_support]
+    · rw [ofSubtype_apply_of_notMem (p := (· ∈ s)) _ ha, eq_comm, ← notMem_support]
       exact Finset.notMem_mono hc ha
 
 theorem support_ofSubtype {p : α → Prop} [DecidablePred p] (u : Perm (Subtype p)) :
@@ -347,7 +347,7 @@ theorem support_ofSubtype {p : α → Prop} [DecidablePred p] (u : Perm (Subtype
     exists_and_right, exists_eq_right, not_iff_comm, not_exists, not_not]
   by_cases hx : p x
   · simp only [forall_prop_of_true hx, ofSubtype_apply_of_mem u hx, ← Subtype.coe_inj]
-  · simp only [forall_prop_of_false hx, ofSubtype_apply_of_not_mem u hx]
+  · simp only [forall_prop_of_false hx, ofSubtype_apply_of_notMem u hx]
 
 theorem mem_support_ofSubtype {p : α → Prop} [DecidablePred p] (x : α) (u : Perm (Subtype p)) :
     x ∈ (ofSubtype u).support ↔ ∃ (hx : p x), ⟨x, hx⟩ ∈ u.support := by

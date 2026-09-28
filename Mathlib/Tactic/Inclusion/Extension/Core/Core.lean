@@ -20,7 +20,7 @@ open Lean Meta
 
 namespace Inclusion
 
-attribute [inclusion_op core] IntervalBool.not_mem IntervalBool.and_mem IntervalBool.or_mem
+attribute [inclusion_op core] IntervalBool.notMem IntervalBool.and_mem IntervalBool.or_mem
 attribute [hypothesis_op core] ToSet.mem_of_eq_of_mem ToSet.mem_of_mem_of_eq
 
 /-- `HypothesisExt` for direct `ToSet` instance membership hypotheses. -/

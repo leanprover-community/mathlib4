@@ -143,15 +143,20 @@ theorem extendSubtype_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : p x) :
     q (e.extendSubtype x) :=
   (e.extendSubtype_apply_of_mem _ hx).symm ▸ (e ⟨x, hx⟩).2
 
-theorem extendSubtype_apply_of_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
+theorem extendSubtype_apply_of_notMem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
     e.extendSubtype x = e.toCompl ⟨x, hx⟩ := by
   simp only [extendSubtype, subtypeCongr, Equiv.trans_apply,
     sumCompl_symm_apply_of_neg hx]
   rfl
 
-theorem extendSubtype_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
+@[deprecated (since := "2026-09-28")]
+alias extendSubtype_apply_of_not_mem := extendSubtype_apply_of_notMem
+
+theorem extendSubtype_notMem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
     ¬q (e.extendSubtype x) :=
-  e.extendSubtype_apply_of_not_mem _ hx ▸ (e.toCompl ⟨x, hx⟩).2
+  e.extendSubtype_apply_of_notMem _ hx ▸ (e.toCompl ⟨x, hx⟩).2
+
+@[deprecated (since := "2026-09-28")] alias extendSubtype_not_mem := extendSubtype_notMem
 
 /-- Given two injective functions `f` and `g` from a finite type `α` to any type `β`,
 there exists a permutation of `β` that maps `f` to `g`. -/

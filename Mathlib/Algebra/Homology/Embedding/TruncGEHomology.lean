@@ -39,7 +39,7 @@ variable (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hi hk in
-lemma hasHomology_sc'_of_not_mem_boundary (hj : ¬ e.BoundaryGE j) :
+lemma hasHomology_sc'_of_notMem_boundary (hj : ¬ e.BoundaryGE j) :
     ((K.truncGE' e).sc' i j k).HasHomology := by
   have : (K.restriction e).HasHomology j :=
     restriction.hasHomology K e i j k hi hk rfl rfl rfl
@@ -51,9 +51,15 @@ lemma hasHomology_sc'_of_not_mem_boundary (hj : ¬ e.BoundaryGE j) :
   have : IsIso φ.τ₃ := K.isIso_restrictionToTruncGE' e k (e.not_boundaryGE_next' hj hk)
   exact ShortComplex.hasHomology_of_epi_of_isIso_of_mono φ
 
-lemma hasHomology_of_not_mem_boundary (hj : ¬ e.BoundaryGE j) :
+@[deprecated (since := "2026-09-28")]
+alias hasHomology_sc'_of_not_mem_boundary := hasHomology_sc'_of_notMem_boundary
+
+lemma hasHomology_of_notMem_boundary (hj : ¬ e.BoundaryGE j) :
     (K.truncGE' e).HasHomology j :=
-  hasHomology_sc'_of_not_mem_boundary K e _ j _ rfl rfl hj
+  hasHomology_sc'_of_notMem_boundary K e _ j _ rfl rfl hj
+
+@[deprecated (since := "2026-09-28")]
+alias hasHomology_of_not_mem_boundary := hasHomology_of_notMem_boundary
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -117,7 +123,7 @@ end
 instance truncGE'_hasHomology (i : ι) : (K.truncGE' e).HasHomology i := by
   by_cases hi : e.BoundaryGE i
   · exact ShortComplex.HasHomology.mk' (homologyData K e _ _ _ rfl rfl hi)
-  · exact hasHomology_of_not_mem_boundary K e i hi
+  · exact hasHomology_of_notMem_boundary K e i hi
 
 end truncGE'
 
