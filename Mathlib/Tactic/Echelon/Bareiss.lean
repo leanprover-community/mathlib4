@@ -51,7 +51,7 @@ def modelFor {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) :
       return model
   trace[Tactic.evalRank] "no registered model handles the element type; using the rational \
     model for{indentExpr α}"
-  ratModel α rα
+  return ⟨.int, ← ratModel α rα⟩
 
 /-- The result of producer evaluation and certificate construction, together with the carrier
 model. -/

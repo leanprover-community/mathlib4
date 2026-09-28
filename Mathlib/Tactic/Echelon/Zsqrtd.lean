@@ -72,17 +72,15 @@ def mkZsqrtdRawLit (dQ : Q(ℤ)) {d : ℤ} (v : ℤ√d) : Q(Zsqrtd $dQ) :=
 
 /-- The `ℤ√d` model. The elimination runs on literals with raw integer components, computed
 with the arithmetic of `ℤ√d`. `d` is the value of the integer literal `dQ`. -/
-def zsqrtdModel (dQ : Q(ℤ)) (d : ℤ) : (c : Carrier) × Model c.type :=
-  let ops := (zsqrtdOps d).lift (zsqrtdOfRawLit? d) (mkZsqrtdRawLit dQ)
-  ⟨.expr, {
-    ops
-    evalEntry := fun e => return (mkZsqrtdRawLit dQ (← evalZsqrtdEntry d e), none)
-    -- The entries are rebuilt in the numeral form instead of returned as the carrier's shape
-    -- since the raw literals display as `Int.ofNat 3`, and `simp` does not normalise them.
-    mkEntry := fun e => do
-      let some v := zsqrtdOfRawLit? d e
-        | throwError "expected a `ℤ√d` literal with raw integer components{indentExpr e}"
-      return q((⟨$(mkIntLitQ v.re), $(mkIntLitQ v.im)⟩ : Zsqrtd $dQ)) }⟩
+def zsqrtdModel (dQ : Q(ℤ)) (d : ℤ) : Model Expr where
+  ops := (zsqrtdOps d).lift (zsqrtdOfRawLit? d) (mkZsqrtdRawLit dQ)
+  evalEntry e := return (mkZsqrtdRawLit dQ (← evalZsqrtdEntry d e), none)
+  -- The entries are rebuilt in the numeral form instead of returned as the carrier's shape
+  -- since the raw literals display as `Int.ofNat 3`, and `simp` does not normalise them.
+  mkEntry e := do
+    let some v := zsqrtdOfRawLit? d e
+      | throwError "expected a `ℤ√d` literal with raw integer components{indentExpr e}"
+    return q((⟨$(mkIntLitQ v.re), $(mkIntLitQ v.im)⟩ : Zsqrtd $dQ))
 
 /-- The `ℤ√d` model registration: handles `Zsqrtd d` for an integer literal `d`. -/
 @[bareiss_ext] def zsqrtdExt : BareissExt where
@@ -92,6 +90,6 @@ def zsqrtdModel (dQ : Q(ℤ)) (d : ℤ) : (c : Carrier) × Model c.type :=
     let_expr Zsqrtd dE := R | return none
     let some d ← getIntValue? dE | return none
     have dQ : Q(ℤ) := dE
-    return some (zsqrtdModel dQ d)
+    return some ⟨.expr, zsqrtdModel dQ d⟩
 
 end Mathlib.Tactic.Echelon
