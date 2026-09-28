@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Order.Category.PartOrd
-public import Mathlib.Data.Finset.Empty
 public import Mathlib.Data.Finset.Image
 
 /-!
@@ -90,5 +89,5 @@ open PartialOrder in
 to `NonemptyFiniteChains X`. -/
 @[simps]
 noncomputable def PartOrd.nonemptyFiniteChainsFunctor : PartOrd.{u} ⥤ PartOrd.{u} where
-  obj X := .of (NonemptyFiniteChains X)
+  obj X := ↧(NonemptyFiniteChains X)
   map f := PartOrd.ofHom (NonemptyFiniteChains.orderHomMap f.hom)

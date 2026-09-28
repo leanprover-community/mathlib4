@@ -5,9 +5,11 @@ Authors: David Wärn, Kim Morrison, Matteo Cipollina, Runtian Zhou
 -/
 module
 
-public import Mathlib.Combinatorics.Quiver.Prefunctor
-public import Mathlib.Logic.Lemmas
 public import Batteries.Data.List.Basic
+public import Mathlib.Basic.Logic.Lemmas
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Combinatorics.Quiver.Prefunctor
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Paths in quivers
@@ -171,7 +173,7 @@ lemma eq_toPath_comp_of_length_eq_succ (p : Path a b) {n : ℕ}
 
 section Decomposition
 
-variable {V R : Type*} [Quiver V] {a b : V} (p : Path a b)
+variable {V : Type*} [Quiver V] {a b : V} (p : Path a b)
 
 lemma length_ne_zero_iff_eq_comp (p : Path a b) :
     p.length ≠ 0 ↔ ∃ (c : V) (e : a ⟶ c) (p' : Path c b),
@@ -284,7 +286,7 @@ def decidableEqBddPathsOfDecidableEq (n : ℕ) (h₁ : DecidableEq V)
               rw [h, show p' = q' from Subtype.mk.inj h'']
           else
             isFalse fun h =>
-              h'' <| Subtype.ext <| eq_of_heq <| (Quiver.Path.cons.inj <| Subtype.mk.inj h).2.1
+              h'' <| Subtype.ext <| eq_of_heq (Quiver.Path.cons.inj <| Subtype.mk.inj h).2.1
         else
           isFalse fun h' =>
             h <| eq_of_heq (Quiver.Path.cons.inj <| Subtype.mk.inj h').2.2

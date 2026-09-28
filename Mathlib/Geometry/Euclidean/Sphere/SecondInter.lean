@@ -6,7 +6,7 @@ Authors: Joseph Myers
 module
 
 public import Mathlib.Analysis.Convex.Side
-public import Mathlib.Analysis.Convex.StrictCombination
+import Mathlib.Analysis.Convex.StrictCombination
 public import Mathlib.Geometry.Euclidean.Sphere.Basic
 
 /-!
@@ -27,7 +27,7 @@ through a point on that sphere.
 
 noncomputable section
 
-open RealInnerProductSpace
+open scoped RealInnerProductSpace
 
 namespace EuclideanGeometry
 

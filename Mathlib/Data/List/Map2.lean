@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.List.Defs
 public import Mathlib.Tactic.Common
-public import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Attr.Core
 
 /-!
 # Map₂ Lemmas
@@ -37,7 +37,7 @@ namespace List
 
 universe u v w
 
-variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : List α}
+variable {α : Type u} {β : Type v} {γ : Type w}
 
 /-! ### map₂Left' -/
 

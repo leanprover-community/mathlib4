@@ -6,11 +6,9 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Group.Submonoid.Membership
-public import Mathlib.Algebra.GroupWithZero.Regular
 public import Mathlib.Algebra.Order.Module.Defs
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Algebra.Order.Group.Opposite
-public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.Algebra.Star.StarRingHom
 public import Mathlib.Tactic.ContinuousFunctionalCalculus
 public import Mathlib.Algebra.Star.StarProjection
@@ -459,13 +457,13 @@ lemma NonUnitalStarRingHom.map_le_map_of_map_star (f : R →⋆ₙ+* S) {x y : R
 
 instance (priority := 100) StarRingHomClass.instOrderHomClass [FunLike F R S]
     [NonUnitalRingHomClass F R S] [NonUnitalStarRingHomClass F R S] : OrderHomClass F R S where
-  map_rel f := (f : R →⋆ₙ+* S).map_le_map_of_map_star
+  map_rel f := (NonUnitalStarRingHom.ofClass f).map_le_map_of_map_star
 
 instance (priority := 100) StarRingEquivClass.instOrderIsoClass [EquivLike F R S]
     [StarRingEquivClass F R S] : OrderIsoClass F R S where
   map_le_map_iff f x y := by
     refine ⟨fun h ↦ ?_, map_rel f⟩
-    let f_inv : S →⋆ₙ+* R := (f : R ≃⋆+* S).symm
+    let f_inv : S →⋆ₙ+* R := (StarRingEquiv.ofClass f).symm
     have f_inv_f (r : R) : f_inv (f r) = r := EquivLike.inv_apply_apply f r
     rw [← f_inv_f x, ← f_inv_f y]
     exact NonUnitalStarRingHom.map_le_map_of_map_star f_inv h

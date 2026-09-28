@@ -5,10 +5,8 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
 
 import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
-import Mathlib.Probability.Notation
 public import Mathlib.Probability.Notation
 
 /-! # Conditional Lebesgue expectation
@@ -53,7 +51,9 @@ is just used to show existence. However for (potential) convenience the actual d
 
 public section
 
-open MeasureTheory ProbabilityTheory Measure
+open MeasureTheory Measure
+
+open scoped ProbabilityTheory
 
 open scoped ENNReal
 

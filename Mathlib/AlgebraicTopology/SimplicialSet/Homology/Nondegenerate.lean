@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Homology.QuasiIso
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.Splitting
-public import Mathlib.AlgebraicTopology.SimplicialSet.Dimension
 public import Mathlib.AlgebraicTopology.DoldKan.SplitSimplicialObject
 public import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
 
@@ -28,8 +27,10 @@ when `X` has dimension `< d`.
 
 universe w v u
 
-open CategoryTheory Limits HomologicalComplex Simplicial
+open CategoryTheory Limits HomologicalComplex
   AlgebraicTopology.DoldKan
+
+open scoped Simplicial
 
 namespace SSet
 

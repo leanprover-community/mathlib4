@@ -37,7 +37,7 @@ section
 open Complex
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
-  {f g : E → ℂ} {z : ℂ} {x : E} {s : Set E}
+  {f : E → ℂ} {z : ℂ} {x : E} {s : Set E}
 
 /-- The function `Complex.exp` is complex analytic. -/
 @[fun_prop]
@@ -166,7 +166,7 @@ theorem HasFDerivWithinAt.cexp (hf : HasFDerivWithinAt f f' s x) :
 
 theorem HasFDerivAt.cexp (hf : HasFDerivAt f f' x) :
     HasFDerivAt (fun x => Complex.exp (f x)) (Complex.exp (f x) • f') x :=
-  hasFDerivWithinAt_univ.1 <| hf.hasFDerivWithinAt.cexp
+  hasFDerivWithinAt_univ.1 hf.hasFDerivWithinAt.cexp
 
 theorem DifferentiableWithinAt.cexp (hf : DifferentiableWithinAt 𝕜 f s x) :
     DifferentiableWithinAt 𝕜 (fun x => Complex.exp (f x)) s x :=
