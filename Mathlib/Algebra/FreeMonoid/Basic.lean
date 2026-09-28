@@ -424,7 +424,7 @@ theorem map_apply_map_symm_eq {x : FreeMonoid β} (e : α ≃ β) :
 @[to_additive]
 instance uniqueUnits : Unique (FreeMonoid α)ˣ where
   uniq u := Units.ext <| toList.injective <|
-    have : toList u.val ++ toList u.inv = [] := DFunLike.congr_arg toList u.val_inv
+    have : toList u.val ++ toList u.inv = [] := congr(toList $u.val_inv)
     (List.append_eq_nil_iff.mp this).1
 
 @[to_additive (attr := simp)]
@@ -434,12 +434,12 @@ theorem map_surjective {f : α → β} : Function.Surjective (map f) ↔ Functio
     rcases fs (FreeMonoid.of d) with ⟨b, hb⟩
     induction b using FreeMonoid.inductionOn' with
     | one =>
-      have H := congr_arg length hb
+      have H := congr(length $hb)
       simp only [length_one, length_of, Nat.zero_ne_one, map_one] at H
     | of_mul head _ _ =>
       simp only [map_mul, map_of] at hb
       use head
-      have H := congr_arg length hb
+      have H := congr(length $hb)
       simp only [length_mul, length_of, add_eq_left, length_eq_zero] at H
       rw [H, mul_one] at hb
       exact FreeMonoid.of_injective hb

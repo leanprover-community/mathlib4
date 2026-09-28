@@ -78,7 +78,7 @@ theorem re_C : (.C r : QuadraticAlgebra R a b).re = r := rfl
 theorem im_C : (.C r : QuadraticAlgebra R a b).im = 0 := rfl
 
 theorem C_injective : Function.Injective (.C : R → QuadraticAlgebra R a b) :=
-  fun _ _ h => congr_arg re h
+  fun _ _ h => congr(re $h)
 
 @[simp]
 theorem C_inj {x y : R} : (.C x : QuadraticAlgebra R a b) = .C y ↔ x = y :=

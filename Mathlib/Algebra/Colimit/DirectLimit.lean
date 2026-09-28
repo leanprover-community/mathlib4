@@ -695,7 +695,7 @@ theorem hom_ext {g₁ g₂ : DirectLimit G f →ₗ[R] P}
     (h : ∀ i, g₁ ∘ₗ of R ι G f i = g₂ ∘ₗ of R ι G f i) : g₁ = g₂ := by
   ext x
   induction x using DirectLimit.induction with | _ i x
-  exact congr($(h i) x)
+  congrm $(h i) x
 
 end Module
 
@@ -741,7 +741,7 @@ theorem hom_ext {g₁ g₂ : DirectLimit G f →ₙ+* P} (h : ∀ i, g₁.comp (
     g₁ = g₂ := by
   ext x
   induction x using DirectLimit.induction with | _ i x
-  exact congr($(h i) x)
+  congrm $(h i) x
 
 end NonUnitalRing
 
@@ -785,7 +785,7 @@ theorem hom_ext {g₁ g₂ : DirectLimit G f →+* P} (h : ∀ i, g₁.comp (of 
     g₁ = g₂ := by
   ext x
   induction x using DirectLimit.induction with | _ i x
-  exact congr($(h i) x)
+  congrm $(h i) x
 
 end Ring
 
@@ -832,7 +832,7 @@ theorem hom_ext {g₁ g₂ : DirectLimit G f →⋆ₙ+* P}
     g₁ = g₂ := by
   ext x
   induction x using DirectLimit.induction with | _ i x
-  exact congr($(h i) x)
+  congrm $(h i) x
 
 end NonUnitalStarRing
 
@@ -882,7 +882,7 @@ theorem hom_ext {g₁ g₂ : DirectLimit G f →ₐ[R] P}
     g₁ = g₂ := by
   ext x
   induction x using DirectLimit.induction with | _ i x
-  exact congr($(h i) x)
+  congrm $(h i) x
 
 end Algebra
 
@@ -929,7 +929,7 @@ theorem hom_ext {g₁ g₂ : DirectLimit G f →ₙₐ[R] P}
     g₁ = g₂ := by
   ext x
   induction x using DirectLimit.induction with | _ i x
-  exact congr($(h i) x)
+  congrm $(h i) x
 
 end NonUnitalAlgebra
 

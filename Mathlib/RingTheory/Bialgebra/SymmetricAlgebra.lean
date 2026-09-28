@@ -53,7 +53,7 @@ instance instIsCocomm : Coalgebra.IsCocomm R (SymmetricAlgebra R M) where
       ext x
       simp
       abel
-    exact congr(($h).toLinearMap)
+    congrm ($h).toLinearMap
 
 @[simp]
 theorem counitAlgHom_eq :

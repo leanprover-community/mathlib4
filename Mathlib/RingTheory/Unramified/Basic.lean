@@ -108,7 +108,7 @@ theorem iff_comp_injective_of_small [Small.{w} A] :
       exact Ideal.cotangentIdeal_square _
     · ext x
       apply RingHom.kerLift_injective (TensorProduct.lmul' R (S := A)).kerSquareLift.toRingHom
-      simpa using DFunLike.congr_fun (f₁.2.trans f₂.2.symm) x
+      simpa using congr($(f₁.2.trans f₂.2.symm) x)
 
 /-- A version without stray universes that is more easy to rewrite with. -/
 theorem iff_comp_injective :
@@ -130,7 +130,7 @@ theorem lift_unique
     apply h₁
     apply h₂
     ext x
-    replace e := AlgHom.congr_fun e x
+    replace e := congr($e x)
     dsimp only [AlgHom.comp_apply, Ideal.Quotient.mkₐ_eq_mk] at e ⊢
     rwa [Ideal.Quotient.eq, ← map_sub, Ideal.mem_quotient_iff_mem hIJ, ← Ideal.Quotient.eq]
 
@@ -144,7 +144,7 @@ theorem lift_unique_of_ringHom [FormallyUnramified R A] {C : Type*} [Ring C]
   FormallyUnramified.lift_unique _ hf _ _
     (by
       ext x
-      have := RingHom.congr_fun h x
+      have := congr($h x)
       simpa only [Ideal.Quotient.eq, Function.comp_apply, AlgHom.coe_comp, Ideal.Quotient.mkₐ_eq_mk,
         RingHom.mem_ker, map_sub, sub_eq_zero])
 
@@ -180,7 +180,7 @@ theorem ext_of_iInf [FormallyUnramified R A] (hI : ⨅ i, I ^ i = ⊥) {g₁ g�
   rw [← sub_eq_zero, ← Ideal.mem_bot, ← hI, Ideal.mem_iInf]
   intro i
   rw [← Ideal.Quotient.eq_zero_iff_mem, map_sub, sub_eq_zero]
-  exact DFunLike.congr_fun (this i) x
+  congrm $(this i) x
 
 end
 
@@ -234,7 +234,7 @@ theorem of_restrictScalars [FormallyUnramified R B] : FormallyUnramified A B := 
   refine AlgHom.restrictScalars_injective R ?_
   refine FormallyUnramified.ext I ⟨2, e⟩ ?_
   intro x
-  exact AlgHom.congr_fun e' x
+  congrm $e' x
 
 end Comp
 
@@ -253,7 +253,7 @@ theorem of_surjective [FormallyUnramified R A] (f : A →ₐ[R] B) (H : Function
   rw [← AlgHom.comp_apply, ← AlgHom.comp_apply]
   congr 1
   apply FormallyUnramified.comp_injective I hI
-  ext x; exact DFunLike.congr_fun e (f x)
+  ext x; congrm $e (f x)
 
 instance quotient {A} [CommRing A] [Algebra R A] [FormallyUnramified R A] (I : Ideal A) :
     FormallyUnramified R (A ⧸ I) :=
@@ -278,7 +278,7 @@ instance base_change [FormallyUnramified R A] :
   let := ((algebraMap B C).comp (algebraMap R B)).toAlgebra
   have : IsScalarTower R B C := IsScalarTower.of_algebraMap_eq' rfl
   ext : 1
-  exact FormallyUnramified.ext I ⟨2, hI⟩ fun x => AlgHom.congr_fun e (1 ⊗ₜ x)
+  exact FormallyUnramified.ext I ⟨2, hI⟩ fun x => congr($e (1 ⊗ₜ x))
 
 instance quotient_map [FormallyUnramified R B] (p : Ideal R) :
     FormallyUnramified (R ⧸ p) (B ⧸ p.map (algebraMap R B)) :=

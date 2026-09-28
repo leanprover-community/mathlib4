@@ -78,7 +78,7 @@ theorem ContinuousMap.exists_extension (he : IsClosedEmbedding e) (f : C(X₁, Y
     ∃ (g : C(X, Y)), g.comp ⟨e, he.continuous⟩ = f := by
   let e' : X₁ ≃ₜ Set.range e := he.isEmbedding.toHomeomorph
   obtain ⟨g, hg⟩ := (f.comp e'.symm).exists_restrict_eq he.isClosed_range
-  exact ⟨g, by ext x; simpa using! congr($(hg) ⟨e' x, x, rfl⟩)⟩
+  exact ⟨g, by ext x; simpa using! congr($hg ⟨e' x, x, rfl⟩)⟩
 
 /-- **Tietze extension theorem** for `TietzeExtension` spaces. Let `e` be a closed embedding of a
 nonempty topological space `X₁` into a normal topological space `X`. Let `f` be a continuous
@@ -144,7 +144,7 @@ theorem TietzeExtension.of_retract {Y : Type v} {Z : Type w} [TopologicalSpace Y
     obtain ⟨g, hg⟩ := (ι.comp f).exists_restrict_eq hs
     use r.comp g
     ext1 x
-    have := congr(r.comp $(hg))
+    have := congr(r.comp $hg)
     rw [← r.comp_assoc ι, h, f.id_comp] at this
     congrm($this x)
 
@@ -307,7 +307,7 @@ theorem exists_extension_forall_mem_Icc_of_isClosedEmbedding (f : X →ᵇ ℝ) 
     refine (norm_le <| div_nonneg (sub_nonneg.2 hle) zero_le_two).2 fun x => ?_
     simpa only [Real.Icc_eq_closedBall] using! hf x
   · ext x
-    have : g (e x) = f x - (a + b) / 2 := congr_fun hge x
+    have : g (e x) = f x - (a + b) / 2 := congr($hge x)
     simp [this]
 
 /-- **Tietze extension theorem** for real-valued bounded continuous maps, a version for a closed
@@ -353,7 +353,7 @@ theorem exists_extension_forall_exists_le_ge_of_isClosedEmbedding [Nonempty X] (
       refine disjoint_union_left.2 ⟨?_, Disjoint.preimage _ ?_⟩
       · rw [Set.disjoint_left]
         rintro _ ⟨x, rfl⟩ (rfl : g (e x) = a)
-        exact ha' ⟨x, (congr_fun hgf x).symm⟩
+        exact ha' ⟨x, congr($hgf x).symm⟩
       · exact Set.disjoint_singleton_right.2 hac.not_ge
     rcases exists_bounded_mem_Icc_of_closed_of_le
         (he.isClosed_range.union <| isClosed_Ici.preimage g.continuous)
@@ -386,7 +386,7 @@ theorem exists_extension_forall_exists_le_ge_of_isClosedEmbedding [Nonempty X] (
     refine disjoint_union_left.2 ⟨?_, Disjoint.preimage _ ?_⟩
     · rw [Set.disjoint_left]
       rintro _ ⟨x, rfl⟩ (rfl : g (e x) = b)
-      exact hb' ⟨x, (congr_fun hgf x).symm⟩
+      exact hb' ⟨x, congr($hgf x).symm⟩
     · exact Set.disjoint_singleton_right.2 hcb.not_ge
   rcases exists_bounded_mem_Icc_of_closed_of_le
       (he.isClosed_range.union <| isClosed_Iic.preimage g.continuous)
@@ -495,7 +495,7 @@ theorem exists_extension_forall_mem_of_isClosedEmbedding (f : C(X, ℝ)) {t : Se
     convert! ha
     exact hgG.2 hay.symm
   · ext x
-    exact hgG.2 (congr_fun hGF _)
+    exact hgG.2 congr($hGF _)
 
 /-- **Tietze extension theorem** for real-valued continuous maps, a version for a closed set. Let
 `s` be a closed set in a normal topological space `Y`. Let `f` be a continuous real-valued function

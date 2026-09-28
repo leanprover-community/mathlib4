@@ -159,7 +159,7 @@ theorem imJ_coe : (x : ℍ[R,c₁,c₂,c₃]).imJ = 0 := rfl
 @[simp, norm_cast]
 theorem imK_coe : (x : ℍ[R,c₁,c₂,c₃]).imK = 0 := rfl
 
-theorem coe_injective : Function.Injective (coe : R → ℍ[R,c₁,c₂,c₃]) := fun _ _ h => congr_arg re h
+theorem coe_injective : Function.Injective (coe : R → ℍ[R,c₁,c₂,c₃]) := fun _ _ h => congr(re $h)
 
 @[simp]
 theorem coe_inj {x y : R} : (x : ℍ[R,c₁,c₂,c₃]) = y ↔ x = y :=
@@ -361,7 +361,7 @@ instance : AddCommGroupWithOne ℍ[R,c₁,c₂,c₃] where
   natCast_zero := by simp
   natCast_succ := by simp
   intCast n := ((n : R) : ℍ[R,c₁,c₂,c₃])
-  intCast_ofNat _ := congr_arg coe (Int.cast_natCast _)
+  intCast_ofNat _ := congr(coe $(Int.cast_natCast _))
   intCast_negSucc n := by
     change coe _ = -coe _
     rw [Int.cast_negSucc, coe_neg]

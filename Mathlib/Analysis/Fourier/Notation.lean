@@ -5,7 +5,7 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 /-! # Type classes for the Fourier transform
 

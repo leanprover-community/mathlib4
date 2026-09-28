@@ -206,31 +206,32 @@ private theorem calc_deriv_dist {z z' z1 : ℤ_[p]} (hz' : z' = z - z1)
     _ < ‖F.derivative.aeval a‖ := (mul_lt_iff_lt_one_right (deriv_norm_pos hnorm)).2
       (T_pow' hnorm _)
 
-
 set_option backward.isDefEq.respectTransparency false in
 private def calc_eval_z' {z z' z1 : ℤ_[p]} (hz' : z' = z - z1) {n} (hz : ih n z)
-    (h1 : ‖(↑(F.aeval z) : ℚ_[p]) / ↑(F.derivative.aeval z)‖ ≤ 1) (hzeq : z1 = ⟨_, h1⟩) :
+    (h1 : ‖(↑(F.aeval z) : ℚ_[p]) / ↑(F.derivative.aeval z)‖ ≤ 1) (hzeq : z1 = Padic.lift _ h1) :
     { q : ℤ_[p] // F.aeval z' = q * z1 ^ 2 } := by
   have hdzne : F.derivative.aeval z ≠ 0 :=
     mt norm_eq_zero.2 (by rw [hz.1]; apply deriv_norm_ne_zero; assumption)
   have hdzne' : (↑(F.derivative.aeval z) : ℚ_[p]) ≠ 0 := fun h => hdzne (Subtype.ext_iff.2 h)
   obtain ⟨q, hq⟩ := (F.map (algebraMap R ℤ_[p])).binomExpansion z (-z1)
   have : ‖(↑(F.derivative.aeval z) * (↑(F.aeval z) / ↑(F.derivative.aeval z)) : ℚ_[p])‖ ≤ 1 := by
-    rw [norm_mul, PadicInt.padic_norm_e_of_padicInt]; bound
+    rw [norm_mul, PadicInt.norm_coe]; bound
   have : F.derivative.aeval z * -z1 = -F.aeval z := by
     calc
       F.derivative.aeval z * -z1 =
-          F.derivative.aeval z * -⟨↑(F.aeval z) / ↑(F.derivative.aeval z), h1⟩ := by rw [hzeq]
-      _ = -(F.derivative.aeval z * ⟨↑(F.aeval z) / ↑(F.derivative.aeval z), h1⟩) := mul_neg _ _
-      _ = -⟨F.derivative.aeval z * (F.aeval z / (F.derivative.aeval z : ℤ_[p]) : ℚ_[p]), this⟩ :=
-        (Subtype.ext <| by simp only [PadicInt.coe_neg, PadicInt.coe_mul])
-      _ = -F.aeval z := by simp only [mul_div_cancel₀ _ hdzne', Subtype.coe_eta]
+          F.derivative.aeval z * -((F.aeval z) / (F.derivative.aeval z) : ℚ_[p]).lift h1 := by
+        rw [hzeq]
+      _ = -(F.derivative.aeval z * ((F.aeval z) / (F.derivative.aeval z) : ℚ_[p]).lift h1) :=
+        mul_neg _ _
+      _ = -(F.derivative.aeval z * (F.aeval z / (F.derivative.aeval z) : ℚ_[p])).lift this :=
+        PadicInt.ext <| by simp
+      _ = -F.aeval z := by simp [mul_div_cancel₀ _ hdzne']
   exact ⟨q, by simpa [sub_eq_add_neg, neg_mul_eq_mul_neg, this, hz'] using hq⟩
 
 omit hnorm in
 private theorem calc_eval_z'_norm {z z' z1 : ℤ_[p]} {n} (hz : ih n z) {q}
     (heq : F.aeval z' = q * z1 ^ 2)
-    (h1 : ‖(↑(F.aeval z) : ℚ_[p]) / ↑(F.derivative.aeval z)‖ ≤ 1) (hzeq : z1 = ⟨_, h1⟩) :
+    (h1 : ‖(↑(F.aeval z) : ℚ_[p]) / ↑(F.derivative.aeval z)‖ ≤ 1) (hzeq : z1 = Padic.lift _ h1) :
     ‖F.aeval z'‖ ≤ ‖F.derivative.aeval a‖ ^ 2 * T ^ 2 ^ (n + 1) := by
   calc
     ‖F.aeval z'‖ = ‖q‖ * ‖z1‖ ^ 2 := by simp [heq]
@@ -249,7 +250,7 @@ private theorem calc_eval_z'_norm {z z' z1 : ℤ_[p]} {n} (hz : ih n z) {q}
 the hypothesis `ih n z`, since otherwise `z'` is not necessarily an integer. -/
 private def ih_n {n : ℕ} {z : ℤ_[p]} (hz : ih n z) : { z' : ℤ_[p] // ih (n + 1) z' } :=
   have h1 : ‖(↑(F.aeval z) : ℚ_[p]) / ↑(F.derivative.aeval z)‖ ≤ 1 := calc_norm_le_one hnorm hz
-  let z1 : ℤ_[p] := ⟨_, h1⟩
+  let z1 : ℤ_[p] := Padic.lift _ h1
   let z' : ℤ_[p] := z - z1
   ⟨z',
     have hdist : ‖F.derivative.aeval z' - F.derivative.aeval z‖ < ‖F.derivative.aeval a‖ :=
@@ -396,7 +397,7 @@ private theorem newton_seq_succ_dist_weak (n : ℕ) :
       (mul_lt_mul_of_pos_left (pow_lt_pow_right_of_lt_one₀ (T_pos hnorm hnsol)
         (T_lt_one hnorm) (by simp)) (deriv_norm_pos hnorm))
     _ = ‖F.aeval a‖ / ‖F.derivative.aeval a‖ := by
-      rw [T_gen, sq, pow_one, norm_div, ← mul_div_assoc, PadicInt.padic_norm_e_of_padicInt,
+      rw [T_gen, sq, pow_one, norm_div, ← mul_div_assoc, PadicInt.norm_coe,
         PadicInt.coe_mul, norm_mul]
       apply mul_div_mul_left
       apply deriv_norm_ne_zero; assumption

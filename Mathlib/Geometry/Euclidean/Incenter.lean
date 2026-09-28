@@ -440,13 +440,13 @@ def inradius : ℝ :=
 
 @[simp] lemma inradius_map (f : P →ᵃⁱ[ℝ] P₂) :
     (s.map f.toAffineMap f.injective).inradius = s.inradius :=
-  congr_fun (s.exradius_map f) _
+  congr($(s.exradius_map f) _)
 
 @[simp] lemma inradius_restrict (S : AffineSubspace ℝ P)
     (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).inradius = s.inradius :=
-  congr_fun (s.exradius_restrict S hS) _
+  congr($(s.exradius_restrict S hS) _)
 
 @[simp] lemma exsphere_center (signs : Finset (Fin (n + 1))) :
     (s.exsphere signs).center = s.excenter signs :=

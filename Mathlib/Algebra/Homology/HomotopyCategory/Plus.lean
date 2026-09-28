@@ -92,7 +92,7 @@ lemma plus_quotient_obj_iff (K : CochainComplex C ℤ) :
   refine ⟨?_, fun h ↦ ⟨_, h⟩⟩
   simp only [plus, ObjectProperty.strictMap_iff]
   rintro ⟨L, h, hL⟩
-  obtain rfl : L = K := congr_arg Quotient.as hL
+  obtain rfl : L = K := congr(Quotient.as $hL)
   exact h
 
 instance [HasZeroObject C] : (plus C).ContainsZero where

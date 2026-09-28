@@ -19,7 +19,6 @@ public import Lean.Parser.Module
 
 This file contain linters about stylistic aspects: these are only about coding style,
 but do not affect correctness nor global coherence of mathlib.
-Historically, some of these were ported from the `lint-style.py` Python script.
 
 This file defines the following linters:
 - the `setOption` linter checks for the presence of `set_option` commands activating

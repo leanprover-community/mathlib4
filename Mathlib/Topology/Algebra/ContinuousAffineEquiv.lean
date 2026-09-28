@@ -5,7 +5,7 @@ Authors: Michael Rothgang
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.Algebra.ContinuousAffineMap
 
 /-!

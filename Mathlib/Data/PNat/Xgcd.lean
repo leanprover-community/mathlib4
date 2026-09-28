@@ -421,8 +421,8 @@ theorem gcd_props :
   let hv : Prod.mk (w * d + x * ur.b : ℕ) (y * d + z * ur.b : ℕ) = ⟨a, b⟩ :=
     u.reduce_v.trans (XgcdType.start_v a b)
   rw [← hb, ← add_mul, ← add_mul, ← ha', ← hb'] at hv
-  have ha'' : (a : ℕ) = a' * d := (congr_arg Prod.fst hv).symm
-  have hb'' : (b : ℕ) = b' * d := (congr_arg Prod.snd hv).symm
+  have ha'' : (a : ℕ) = a' * d := congr($(hv).fst).symm
+  have hb'' : (b : ℕ) = b' * d := congr($(hv).snd).symm
   constructor
   · exact eq ha''
   constructor

@@ -512,7 +512,7 @@ lemma fromSpec_toSpec {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) (x :
 lemma toSpec_injective {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     Function.Injective (toSpec 𝒜 f) := by
   intro x₁ x₂ h
-  have := congr_arg (FromSpec.toFun f_deg hm) h
+  have := congr(FromSpec.toFun f_deg hm $h)
   rwa [fromSpec_toSpec, fromSpec_toSpec] at this
 
 lemma toSpec_surjective {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
@@ -667,9 +667,9 @@ lemma toSpec_base_apply_eq_comap {f} (x : Proj| pbo f) :
   change PrimeSpectrum.comap (awayToΓ 𝒜 f ≫ (Proj| pbo f).presheaf.Γgerm x).hom
         (IsLocalRing.closedPoint ((Proj| pbo f).presheaf.stalk x)) = _
   rw [awayToΓ_ΓToStalk, CommRingCat.hom_comp, PrimeSpectrum.comap_comp]
-  exact congr(PrimeSpectrum.comap _ $(@IsLocalRing.comap_closedPoint
-    (HomogeneousLocalization.AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) _ _
-    ((Proj| pbo f).presheaf.stalk x) _ _ _ (isLocalHom_of_isIso _)))
+  congrm PrimeSpectrum.comap _ $(@IsLocalRing.comap_closedPoint
+   (HomogeneousLocalization.AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) _ _
+   ((Proj| pbo f).presheaf.stalk x) _ _ _ (isLocalHom_of_isIso _))
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma toSpec_base_apply_eq {f} (x : Proj| pbo f) :

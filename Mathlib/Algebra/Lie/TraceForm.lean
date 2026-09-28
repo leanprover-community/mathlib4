@@ -144,7 +144,7 @@ lemma traceForm_genWeightSpace_eq [Module.Free R M]
   have h₂ : χ x • d • χ y = d • (χ x * χ y) := by
     simpa [nsmul_eq_mul, smul_eq_mul] using mul_left_comm (χ x) d (χ y)
   have := traceForm_eq_zero_of_isNilpotent R L (shiftedGenWeightSpace R L M χ)
-  replace this := LinearMap.congr_fun (LinearMap.congr_fun this x) y
+  replace this := congr($this x y)
   rwa [LinearMap.zero_apply, LinearMap.zero_apply, traceForm_apply_apply,
     shiftedGenWeightSpace.toEnd_eq, shiftedGenWeightSpace.toEnd_eq,
     ← LinearEquiv.conj_comp, LinearMap.trace_conj', LinearMap.comp_sub, LinearMap.sub_comp,

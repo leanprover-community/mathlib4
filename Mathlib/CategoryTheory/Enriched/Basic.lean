@@ -161,9 +161,9 @@ def categoryOfEnrichedCategoryType (C : Type u₁) [𝒞 : EnrichedCategory (Typ
   Hom X Y := 𝒞.Hom X Y
   id X := eId (Type v) X PUnit.unit
   comp f g := eComp (Type v) _ _ _ ⟨f, g⟩
-  id_comp f := ConcreteCategory.congr_hom (e_id_comp (Type v) _ _) f
-  comp_id f := ConcreteCategory.congr_hom (e_comp_id (Type v) _ _) f
-  assoc f g h := ConcreteCategory.congr_hom (e_assoc (Type v) _ _ _ _) ⟨f, g, h⟩
+  id_comp f := congr($(e_id_comp (Type v) _ _) f)
+  comp_id f := congr($(e_comp_id (Type v) _ _) f)
+  assoc f g h := congr($(e_assoc (Type v) _ _ _ _) ⟨f, g, h⟩)
 
 attribute [local simp] types_tensorObj_def in
 /-- Construct a `Type v`-enriched category from an honest category.
@@ -515,8 +515,8 @@ def enrichedFunctorTypeEquivFunctor {C : Type u₁} [𝒞 : EnrichedCategory (Ty
   toFun F :=
     { obj := fun X => F.obj X
       map := fun f => F.map _ _ f
-      map_id := fun X => ConcreteCategory.congr_hom (F.map_id X) PUnit.unit
-      map_comp := fun f g => ConcreteCategory.congr_hom (F.map_comp _ _ _) ⟨f, g⟩ }
+      map_id := fun X => congr($(F.map_id X) PUnit.unit)
+      map_comp := fun f g => congr($(F.map_comp _ _ _) ⟨f, g⟩) }
   invFun F :=
     { obj := fun X => F.obj X
       map := fun _ _ => ↾fun f => F.map f
@@ -536,7 +536,7 @@ def enrichedNatTransYonedaTypeIsoYonedaNatTrans {C : Type v} [EnrichedCategory (
     (fun α =>
       { hom := ↾fun σ ↦ ↾fun x =>
           { app X := σ.app X x
-            naturality X Y f := ConcreteCategory.congr_hom (σ.naturality X Y) ⟨x, f⟩ }
+            naturality X Y f := congr($(σ.naturality X Y) ⟨x, f⟩) }
         inv := ↾fun σ ↦
           { app X := ↾fun x => (σ.hom x).app X
             naturality X Y := by ext ⟨x, f⟩; exact (σ.hom x).naturality f } })

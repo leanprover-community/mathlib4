@@ -143,7 +143,7 @@ theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.car
   · simp only [List.length_drop, List.length_take]
     omega
   · intro h
-    have hlen' := congr_arg List.length h
+    have hlen' := congr($(h).length)
     simp only [List.length_drop, List.length, List.length_take] at hlen'
     omega
   have hq : M.evalFrom (M.evalFrom s ((x.take m).take n)) ((x.take m).drop n) =

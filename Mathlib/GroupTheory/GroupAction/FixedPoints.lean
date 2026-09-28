@@ -293,6 +293,6 @@ lemma map_mem_fixedPoints {G A B : Type*} [Monoid G] [MulAction G A] [MulAction 
 lemma map_mem_fixedBy {G A B : Type*} [Monoid G] [MulAction G A] [MulAction G B]
     (f : A →[G] B) {g : G} {a : A} (ha : a ∈ MulAction.fixedBy A g) :
     f a ∈ MulAction.fixedBy B g := by
-  simpa using congr_arg f ha
+  simpa using congr(f $ha)
 
 end MulActionHom

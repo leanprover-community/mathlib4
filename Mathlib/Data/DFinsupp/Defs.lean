@@ -199,11 +199,11 @@ instance addZeroClass [∀ i, AddZeroClass (β i)] : AddZeroClass (Π₀ i, β i
 
 instance instIsLeftCancelAdd [∀ i, AddZeroClass (β i)] [∀ i, IsLeftCancelAdd (β i)] :
     IsLeftCancelAdd (Π₀ i, β i) where
-  add_left_cancel _ _ _ h := ext fun x => add_left_cancel <| DFunLike.congr_fun h x
+  add_left_cancel _ _ _ h := ext fun x => add_left_cancel congr($h x)
 
 instance instIsRightCancelAdd [∀ i, AddZeroClass (β i)] [∀ i, IsRightCancelAdd (β i)] :
     IsRightCancelAdd (Π₀ i, β i) where
-  add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| DFunLike.congr_fun h x
+  add_right_cancel _ _ _ h := ext fun x => add_right_cancel congr($h x)
 
 instance instIsCancelAdd [∀ i, AddZeroClass (β i)] [∀ i, IsCancelAdd (β i)] :
     IsCancelAdd (Π₀ i, β i) where
