@@ -139,13 +139,13 @@ section nonZeroDivisors
 open scoped nonZeroDivisors
 
 theorem Monic.mem_nonZeroDivisors {p : R[X]} (h : p.Monic) : p ∈ R[X]⁰ :=
-  mem_nonzeroDivisors_of_coeff_mem _ (h.coeff_natDegree ▸ one_mem R⁰)
+  mem_nonZeroDivisors_of_coeff_mem _ (h.coeff_natDegree ▸ one_mem R⁰)
 
 theorem mem_nonZeroDivisors_of_leadingCoeff {p : R[X]} (h : p.leadingCoeff ∈ R⁰) : p ∈ R[X]⁰ :=
-  mem_nonzeroDivisors_of_coeff_mem _ h
+  mem_nonZeroDivisors_of_coeff_mem _ h
 
 theorem mem_nonZeroDivisors_of_trailingCoeff {p : R[X]} (h : p.trailingCoeff ∈ R⁰) : p ∈ R[X]⁰ :=
-  mem_nonzeroDivisors_of_coeff_mem _ h
+  mem_nonZeroDivisors_of_coeff_mem _ h
 
 end nonZeroDivisors
 
