@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-public import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Data.Int.Cast.Basic
 public import Mathlib.Data.Int.Cast.Pi
 public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Order.Filter.Tendsto

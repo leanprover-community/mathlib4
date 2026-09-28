@@ -10,7 +10,7 @@ public import Mathlib.Geometry.Euclidean.Altitude
 public import Mathlib.Geometry.Euclidean.SignedDist
 public import Mathlib.Geometry.Euclidean.Sphere.Tangent
 public import Mathlib.Tactic.Positivity.Finset
-public import Mathlib.Topology.Instances.Sign
+import Mathlib.Topology.Instances.Sign
 
 /-!
 # Incenters and excenters of simplices.

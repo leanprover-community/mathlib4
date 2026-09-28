@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RingTheory.WittVector.Frobenius
 public import Mathlib.RingTheory.WittVector.Verschiebung
-public import Mathlib.RingTheory.WittVector.MulP
+import Mathlib.RingTheory.WittVector.MulP
 
 /-!
 ## Identities between operations on the ring of Witt vectors
