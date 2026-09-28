@@ -261,7 +261,7 @@ lemma coe_mapEquiv (e : R ≃+* S) (A : SpecialLinearGroup n R) :
 
 section Reindex
 
-variable (R) {m o : Type u} [DecidableEq m] [Fintype m] [DecidableEq o] [Fintype o]
+variable (R) {m o : Type*} [DecidableEq m] [Fintype m] [DecidableEq o] [Fintype o]
 
 /-- The `MulEquiv` induced by the equivalence over the index -/
 @[simps! apply]
