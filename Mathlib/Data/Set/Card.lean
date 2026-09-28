@@ -1243,8 +1243,7 @@ lemma _root_.Finset.exists_notMem_of_card_lt_enatCard {s : Finset α} (hs : s.ca
   contrapose! hs
   simp [← Set.encard_coe_eq_coe_finsetCard, Set.eq_univ_of_forall (α := α) (s := s) hs]
 
-@[deprecated (since :=
-  "2026-09-28")]
+@[deprecated (since := "2026-09-28")]
 alias _root_.Finset.exists_not_mem_of_card_lt_enatCard :=
   _root_.Finset.exists_notMem_of_card_lt_enatCard
 
