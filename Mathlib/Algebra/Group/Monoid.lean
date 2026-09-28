@@ -519,7 +519,7 @@ For more information, see this mathoverflow answer: https://mathoverflow.net/a/3
 TODO: Generalize this definition to additive semigroups once we have the `PNat` action. -/
 @[mk_iff]
 class IsAddTorsionFree (M : Type*) [AddMonoid M] where
-  protected nsmul_right_injective ⦃n : ℕ⦄ (hn : n ≠ 0) ⦃a b : M⦄ (hab : a + b = b + a)
+  protected nsmul_right_injective ⦃n : ℕ⦄ (hn : n ≠ 0) ⦃a b : M⦄ (hab : AddCommute a b)
     (hn : n • a = n • b) : a = b
 
 /-- A monoid is torsion-free if exponentiation by every non-zero element `n : ℕ` is
@@ -535,7 +535,7 @@ For more information, see this mathoverflow answer: https://mathoverflow.net/a/3
 TODO: Generalize this definition to semigroups once we have the `PNat` action. -/
 @[to_additive, mk_iff]
 class IsMulTorsionFree (M : Type*) [Monoid M] where
-  protected eq_of_pow_eq_pow_of_commute ⦃n : ℕ⦄ (hn : n ≠ 0) ⦃a b : M⦄ (hab : a * b = b * a)
+  protected eq_of_pow_eq_pow_of_commute ⦃n : ℕ⦄ (hn : n ≠ 0) ⦃a b : M⦄ (hab : Commute a b)
     (hn : a ^ n = b ^ n) : a = b
 
 attribute [to_additive existing] isMulTorsionFree_iff

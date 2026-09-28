@@ -34,11 +34,6 @@ assert_not_exists MonoidWithZero DenselyOrdered
 
 variable {S M G : Type*}
 
-/-- `x` is semiconjugate to `y` by `a`, if `a * x = y * a`. -/
-@[to_additive /-- `x` is additive semiconjugate to `y` by `a` if `a + x = y + a` -/]
-def SemiconjBy [Mul M] (a x y : M) : Prop :=
-  a * x = y * a
-
 namespace SemiconjBy
 
 /-- Equality behind `SemiconjBy a x y`; useful for rewriting. -/

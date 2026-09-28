@@ -194,6 +194,16 @@ with commutative subobjects in a noncommutative algebraic structure. -/ ]
 lemma mul_comm' {M : Type*} [Mul M] [IsMulCommutative M] (a b : M) : a * b = b * a :=
   IsMulCommutative.is_comm.comm ..
 
+/-- `x` is semiconjugate to `y` by `a`, if `a * x = y * a`. -/
+@[to_additive /-- `x` is additive semiconjugate to `y` by `a` if `a + x = y + a` -/]
+def SemiconjBy {M : Type*} [Mul M] (a x y : M) : Prop :=
+  a * x = y * a
+
+/-- Two elements commute if `a * b = b * a`. -/
+@[to_additive /-- Two elements additively commute if `a + b = b + a` -/]
+def Commute {M : Type*} [Mul M] (a b : M) : Prop :=
+  SemiconjBy a b b
+
 end IsCommutative
 
 /-- A commutative additive magma is a type with an addition which commutes. -/
