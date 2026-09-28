@@ -168,21 +168,19 @@ variable {F : Type*} [Field F] (A : ValuationSubring F) [IsDiscreteValuationRing
 
 section IsRankOneDiscrete
 
-theorem maximalIdeal_valuation_isEquiv :
+theorem IsDiscreteValuationRing.maximalIdeal_valuation_isEquiv :
     ((IsDiscreteValuationRing.maximalIdeal A).valuation F).IsEquiv A.valuation := by
-  rw [Valuation.isEquiv_iff_valuationSubring ((IsDiscreteValuationRing.maximalIdeal A).valuation F)
-      A.valuation]
+  rw [Valuation.isEquiv_iff_valuationSubring]
   apply ValuationSubring.toSubring_injective
   ext
   simp [← IsDiscreteValuationRing.map_algebraMap_eq_valuationSubring]
 
 /-- The valuation of a DVR valuation subring is rank-one discrete. -/
-instance ValuationSubring.valuation_isRankOneDiscrete :
+instance ValuationSubring.isRankOneDiscrete_valuation :
     A.valuation.IsRankOneDiscrete :=
-  Valuation.isRankOneDiscrete_of_isEquiv (maximalIdeal_valuation_isEquiv A)
+  .of_isEquiv (IsDiscreteValuationRing.maximalIdeal_valuation_isEquiv A)
 
 end IsRankOneDiscrete
-
 
 end ValuationSubring
 

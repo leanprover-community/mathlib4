@@ -457,9 +457,9 @@ section IsEquiv
 variable {R Γ' : Type*} [Ring R] [LinearOrderedCommGroupWithZero Γ'] {v : Valuation R Γ}
   {w : Valuation R Γ'}
 
-theorem isRankOneDiscrete_of_isEquiv (h : v.IsEquiv w) [hv : IsRankOneDiscrete v] :
+theorem IsRankOneDiscrete.of_isEquiv (h : v.IsEquiv w) [hv : IsRankOneDiscrete v] :
     IsRankOneDiscrete w := by
-  have : w.IsNontrivial := (IsEquiv.isNontrivial_iff h).mp (by infer_instance)
+  have : w.IsNontrivial := (IsEquiv.isNontrivial_iff h).mp inferInstance
   have : IsCyclic (valueGroup (w : R →*₀ Γ')) := by
     rw [← MulEquiv.isCyclic h.orderMonoidIso'.toMulEquiv]
     infer_instance
@@ -467,7 +467,7 @@ theorem isRankOneDiscrete_of_isEquiv (h : v.IsEquiv w) [hv : IsRankOneDiscrete v
 
 theorem IsEquiv.isRankOneDiscrete_iff (h : v.IsEquiv w) :
     v.IsRankOneDiscrete ↔ w.IsRankOneDiscrete :=
-  ⟨fun _ ↦ isRankOneDiscrete_of_isEquiv h, fun _ ↦ isRankOneDiscrete_of_isEquiv h.symm⟩
+  ⟨fun _ ↦ .of_isEquiv h, fun _ ↦ .of_isEquiv h.symm⟩
 
 end IsEquiv
 
