@@ -5,11 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Geometry.Manifold.Algebra.Structures
+import Mathlib.Geometry.Manifold.Algebra.Structures
 public import Mathlib.Geometry.Manifold.BumpFunction
 public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 public import Mathlib.Topology.MetricSpace.PartitionOfUnity
-public import Mathlib.Topology.ShrinkingLemma
+import Mathlib.Topology.ShrinkingLemma
 
 /-!
 # Smooth partition of unity
@@ -137,6 +137,7 @@ namespace SmoothPartitionOfUnity
 
 variable {s : Set M} (f : SmoothPartitionOfUnity ι I M s) {n : ℕ∞}
 
+@[macro_inline]
 instance {s : Set M} : FunLike (SmoothPartitionOfUnity ι I M s) ι C^∞⟮I, M; 𝓘(ℝ), ℝ⟯ where
   coe := toFun
   coe_injective f g h := by cases f; cases g; congr

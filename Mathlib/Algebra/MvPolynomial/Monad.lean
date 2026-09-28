@@ -5,7 +5,6 @@ Authors: Johan Commelin, Robert Y. Lewis
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Rename
 public import Mathlib.Algebra.MvPolynomial.Variables
 
 /-!
@@ -209,7 +208,7 @@ theorem bind₂_comp_bind₂ (f : R →+* MvPolynomial σ S) (g : S →+* MvPoly
 @[deprecated map_eval₂Hom (since := "2026-09-02")]
 theorem bind₂_bind₂ (f : R →+* MvPolynomial σ S) (g : S →+* MvPolynomial σ T)
     (φ : MvPolynomial σ R) : (bind₂ g) (bind₂ f φ) = bind₂ ((bind₂ g).comp f) φ :=
-  RingHom.congr_fun (bind₂_comp_bind₂ f g) φ
+  congr($(bind₂_comp_bind₂ f g) φ)
 
 theorem rename_comp_aeval {υ : Type*} (f : σ → MvPolynomial τ R) (g : τ → υ) :
     (rename g).comp (aeval f) = aeval fun i => rename g <| f i := by
@@ -228,7 +227,7 @@ theorem rename_aeval {υ : Type*} (f : σ → MvPolynomial τ R) (g : τ → υ)
 @[deprecated rename_aeval (since := "2026-09-02")]
 theorem rename_bind₁ {υ : Type*} (f : σ → MvPolynomial τ R) (g : τ → υ) (φ : MvPolynomial σ R) :
     rename g (bind₁ f φ) = bind₁ (fun i => rename g <| f i) φ :=
-  AlgHom.congr_fun (rename_comp_bind₁ f g) φ
+  congr($(rename_comp_bind₁ f g) φ)
 
 @[deprecated map_eval₂Hom (since := "2026-09-02")]
 theorem map_bind₂ (f : R →+* MvPolynomial σ S) (g : S →+* T) (φ : MvPolynomial σ R) :
@@ -245,7 +244,7 @@ theorem bind₁_comp_rename {υ : Type*} (f : τ → MvPolynomial υ R) (g : σ 
 @[deprecated aeval_rename (since := "2026-09-02")]
 theorem bind₁_rename {υ : Type*} (f : τ → MvPolynomial υ R) (g : σ → τ) (φ : MvPolynomial σ R) :
     bind₁ f (rename g φ) = bind₁ (f ∘ g) φ :=
-  AlgHom.congr_fun (bind₁_comp_rename f g) φ
+  congr($(bind₁_comp_rename f g) φ)
 
 @[deprecated eval₂Hom_map_hom (since := "2026-09-02")]
 theorem bind₂_map (f : S →+* MvPolynomial σ T) (g : R →+* S) (φ : MvPolynomial σ R) :
@@ -297,7 +296,7 @@ theorem eval₂Hom_comp_bind₂ (f : S →+* T) (g : σ → T) (h : R →+* MvPo
 @[deprecated map_eval₂Hom (since := "2026-09-02")]
 theorem eval₂Hom_bind₂ (f : S →+* T) (g : σ → T) (h : R →+* MvPolynomial σ S)
     (φ : MvPolynomial σ R) : eval₂Hom f g (bind₂ h φ) = eval₂Hom ((eval₂Hom f g).comp h) g φ :=
-  RingHom.congr_fun (eval₂Hom_comp_bind₂ f g h) φ
+  congr($(eval₂Hom_comp_bind₂ f g h) φ)
 
 @[deprecated map_eval₂Hom (since := "2026-09-02")]
 theorem aeval_bind₂ [Algebra S T] (f : σ → T) (g : R →+* MvPolynomial σ S) (φ : MvPolynomial σ R) :

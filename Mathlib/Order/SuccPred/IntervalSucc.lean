@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Set.Lattice.Bounded
+import Mathlib.Data.Set.Lattice.Bounded
 public import Mathlib.Order.SuccPred.Archimedean
 
 /-!

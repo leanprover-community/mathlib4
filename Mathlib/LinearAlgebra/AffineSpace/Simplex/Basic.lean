@@ -71,7 +71,7 @@ instance [Inhabited P] : Inhabited (Simplex k P 0) :=
   ⟨mkOfPoint k default⟩
 
 instance nonempty : Nonempty (Simplex k P 0) :=
-  ⟨mkOfPoint k <| AddTorsor.nonempty.some⟩
+  ⟨mkOfPoint k AddTorsor.nonempty.some⟩
 
 -- Although `simp` can prove this, it is still useful as a `simp` lemma, since the `simp`-generated
 -- proof uses `range_eq_singleton_iff`, which does not apply when the LHS of this lemma appears
@@ -562,7 +562,6 @@ lemma affineCombination_mem_setInterior_face_iff_mem (I : Set k) {n : ℕ} (s : 
     convert! hw'01
     convert! Finset.univ.affineCombination_map (fs.orderEmbOfFin h).toEmbedding w s.points using 1
     simp only [map_orderEmbOfFin_univ, Finset.affineCombination_indicator_subset _ _ fs.subset_univ]
-    congr
     grind [Set.indicator_eq_self, mem_support]
 
 lemma affineCombination_mem_interior_face_iff_mem_Ioo {n : ℕ} (s : Simplex k P n)
@@ -656,7 +655,7 @@ theorem disjoint_interior_closedInterior_face {n : ℕ}
     Disjoint s.interior (s.face h).closedInterior := by
   refine Set.disjoint_left.mpr fun p hleft hright ↦ ?_
   have hp : p ∈ affineSpan k (Set.range s.points) :=
-    Set.mem_of_mem_of_subset hleft <| s.interior_subset_closedInterior.trans <|
+    Set.mem_of_mem_of_subset hleft <| s.interior_subset_closedInterior.trans
       s.closedInterior_subset_affineSpan
   grind [affineCombination_mem_interior_iff, affineCombination_mem_closedInterior_face_iff_mem_Icc,
     eq_affineCombination_of_mem_affineSpan_of_fintype]

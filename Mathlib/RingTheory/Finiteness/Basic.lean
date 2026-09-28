@@ -6,7 +6,6 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Module.Shrink
-public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.LinearAlgebra.Quotient.Defs
@@ -265,7 +264,7 @@ instance quotient (R) {A M} [Semiring R] [AddCommGroup M] [Ring A] [Module A M] 
 
 /-- The range of a linear map from a finite module is finite. -/
 instance range [Module.Finite R M] (f : M →ₗ[R] N) : Module.Finite R f.range :=
-  of_surjective (SemilinearMapClass.semilinearMap f).rangeRestrict
+  of_surjective f.rangeRestrict
     fun ⟨_, y, hy⟩ => ⟨y, Subtype.ext hy⟩
 
 /-- Pushforwards of finite submodules are finite. -/
@@ -385,7 +384,7 @@ lemma of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommSemiring A₁] [CommSemi
   let e : B₁ ≃ₐ[A₂] B₂ :=
     { e₂ with
       commutes' := fun r ↦ by
-        simpa [RingHom.algebraMap_toAlgebra] using DFunLike.congr_fun he.symm (e₁.symm r) }
+        simpa [RingHom.algebraMap_toAlgebra] using congr($he.symm (e₁.symm r)) }
   have := of_restrictScalars_finite A₁ A₂ B₁
   exact equiv e.toLinearEquiv
 

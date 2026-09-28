@@ -6,7 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Module.Defs
-public import Mathlib.Algebra.Order.Pi
+import Mathlib.Algebra.Order.Pi
 public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Data.DFinsupp.Module
 
@@ -200,7 +200,7 @@ instance [∀ i, IsBotZeroClass (α i)] : IsBotZeroClass (Π₀ i, α i) where
 
 variable {α}
 
-@[deprecated _root_.bot_eq_zero (since := "2026-05-07")]
+@[deprecated _root_.bot_eq_zero +typeChanged (since := "2026-05-07")]
 protected theorem bot_eq_zero [∀ i, IsBotZeroClass (α i)] : (⊥ : Π₀ i, α i) = 0 :=
   rfl
 

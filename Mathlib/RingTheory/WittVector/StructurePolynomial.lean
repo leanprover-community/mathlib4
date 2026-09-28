@@ -6,7 +6,7 @@ Authors: Johan Commelin, Robert Y. Lewis
 module
 
 public import Mathlib.FieldTheory.Finite.Polynomial
-public import Mathlib.NumberTheory.Basic
+import Mathlib.NumberTheory.Basic
 public import Mathlib.RingTheory.WittVector.WittPolynomial
 
 /-!

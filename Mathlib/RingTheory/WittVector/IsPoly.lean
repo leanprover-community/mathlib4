@@ -6,7 +6,6 @@ Authors: Johan Commelin, Robert Y. Lewis
 module
 
 public import Mathlib.Algebra.MvPolynomial.Funext
-public import Mathlib.Algebra.Ring.ULift
 public import Mathlib.RingTheory.WittVector.Basic
 public meta import Mathlib.Lean.Elab.Tactic.Basic
 /-!
@@ -120,7 +119,7 @@ theorem poly_eq_of_wittPolynomial_aeval_eq' [Fact p.Prime] (f g : ℕ → MvPoly
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
   rw [← funext_iff] at h
   replace h :=
-    congr_arg (fun fam => aeval (MvPolynomial.map (Int.castRingHom ℚ) ∘ fam) (xInTermsOfW p ℚ n)) h
+    congr(aeval (MvPolynomial.map (Int.castRingHom ℚ) ∘ $h) (xInTermsOfW p ℚ n))
   simpa only [Function.comp_def, map_aeval_eq_aeval_map_map, map_wittPolynomial, ← comp_aeval_apply,
     aeval_wittPolynomial_xInTermsOfW, aeval_X] using h
 
@@ -135,7 +134,7 @@ theorem poly_eq_of_wittPolynomial_aeval_eq [Fact p.Prime] (f g : ℕ → MvPolyn
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
   rw [← funext_iff] at h
   replace h :=
-    congr_arg (fun fam => aeval (MvPolynomial.map (Int.castRingHom ℚ) ∘ fam) (xInTermsOfW p ℚ n)) h
+    congr(aeval (MvPolynomial.map (Int.castRingHom ℚ) ∘ $h) (xInTermsOfW p ℚ n))
   simpa only [Function.comp_def, map_aeval_eq_aeval_map_map, map_wittPolynomial, ← comp_aeval_apply,
     aeval_wittPolynomial_xInTermsOfW, aeval_X] using h
 
