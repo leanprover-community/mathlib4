@@ -7,11 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Limits.ConeCategory
 public import Mathlib.CategoryTheory.Limits.FinallySmall
-public import Mathlib.CategoryTheory.Filtered.Small
-public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtYoneda
-public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
-public import Mathlib.CategoryTheory.Limits.Preserves.Finite
-public import Mathlib.CategoryTheory.Limits.Preserves.Presheaf
+import Mathlib.CategoryTheory.Filtered.Small
+import Mathlib.CategoryTheory.Limits.Preserves.Presheaf
 
 /-!
 # Ind-objects

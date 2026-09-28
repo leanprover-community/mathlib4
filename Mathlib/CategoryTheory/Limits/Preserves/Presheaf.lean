@@ -6,9 +6,7 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
-public import Mathlib.CategoryTheory.Limits.Elements
-public import Mathlib.CategoryTheory.Limits.Opposites
-public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtYoneda
+import Mathlib.CategoryTheory.Limits.Elements
 
 /-!
 # Finite-limit-preserving presheaves

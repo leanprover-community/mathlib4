@@ -6,7 +6,7 @@ Authors: Kim Morrison, Bhavik Mehta, Johan Commelin, Reid Barton, Robert Y. Lewi
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
-public import Mathlib.CategoryTheory.Functor.EpiMono
+import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!
 

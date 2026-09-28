@@ -55,13 +55,17 @@ lemma le_flip_dualSubmodule {N₁ N₂ : Submodule R M} :
 /-- The natural paring of `B.dualSubmodule N` and `N`.
 This is bundled as a bilinear map in `BilinForm.dualSubmoduleToDual`. -/
 noncomputable
-def dualSubmoduleParing {N : Submodule R M} (x : B.dualSubmodule N) (y : N) : R :=
+def dualSubmodulePairing {N : Submodule R M} (x : B.dualSubmodule N) (y : N) : R :=
   (Submodule.mem_one.mp <| x.prop y y.prop).choose
 
+@[deprecated (since := "2026-09-17")] alias dualSubmoduleParing := dualSubmodulePairing
+
 @[simp]
-lemma dualSubmoduleParing_spec {N : Submodule R M} (x : B.dualSubmodule N) (y : N) :
-    algebraMap R S (B.dualSubmoduleParing x y) = B x y :=
+lemma dualSubmodulePairing_spec {N : Submodule R M} (x : B.dualSubmodule N) (y : N) :
+    algebraMap R S (B.dualSubmodulePairing x y) = B x y :=
   (Submodule.mem_one.mp <| x.prop y y.prop).choose_spec
+
+@[deprecated (since := "2026-09-17")] alias dualSubmoduleParing_spec := dualSubmodulePairing_spec
 
 /-- The natural paring of `B.dualSubmodule N` and `N`. -/
 -- TODO: Show that this is perfect when `N` is a lattice and `B` is nondegenerate.
@@ -70,7 +74,7 @@ noncomputable
 def dualSubmoduleToDual [IsDomain R] [IsTorsionFree R S] (N : Submodule R M) :
     B.dualSubmodule N →ₗ[R] Module.Dual R N :=
   { toFun := fun x ↦
-    { toFun := B.dualSubmoduleParing x
+    { toFun := B.dualSubmodulePairing x
       map_add' := fun x y ↦ FaithfulSMul.algebraMap_injective R S (by simp)
       map_smul' := fun r m ↦ FaithfulSMul.algebraMap_injective R S
         (by simp [← Algebra.smul_def]) }
