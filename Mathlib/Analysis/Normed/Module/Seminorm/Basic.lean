@@ -5,11 +5,9 @@ Authors: Jean Lo, Yaël Dillies, Moritz Doll
 -/
 module
 
-public import Mathlib.Algebra.Order.AddTorsor
-public import Mathlib.Algebra.Order.Pi
+import Mathlib.Algebra.Order.Pi
 public import Mathlib.Analysis.Convex.Function
 public import Mathlib.Analysis.LocallyConvex.Basic
-public import Mathlib.Basic.Real.Pointwise
 
 /-!
 # Seminorms
@@ -212,7 +210,7 @@ instance instSup : Max (Seminorm 𝕜 E) where
     { p.toAddGroupSeminorm ⊔ q.toAddGroupSeminorm with
       toFun := p ⊔ q
       smul' := fun x v =>
-        (congr_arg₂ max (map_smul_eq_mul p x v) (map_smul_eq_mul q x v)).trans
+        congr(max $(map_smul_eq_mul p x v) $(map_smul_eq_mul q x v)).trans
           (mul_max_of_nonneg _ _ <| norm_nonneg x).symm }
 
 @[simp]
@@ -363,7 +361,7 @@ theorem finset_sup_smul (p : ι → Seminorm 𝕜 E) (s : Finset ι) (C : ℝ≥
   ext x
   rw [smul_apply, finset_sup_apply, finset_sup_apply]
   symm
-  exact congr_arg ((↑) : ℝ≥0 → ℝ) (NNReal.mul_finset_sup C s (fun i ↦ ⟨p i x, apply_nonneg _ _⟩))
+  congrm $(NNReal.mul_finset_sup C s fun i ↦ ⟨p i x, apply_nonneg _ _⟩)
 
 theorem finset_sup_le_sum (p : ι → Seminorm 𝕜 E) (s : Finset ι) : s.sup p ≤ ∑ i ∈ s, p i := by
   classical

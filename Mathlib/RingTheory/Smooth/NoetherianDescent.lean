@@ -6,7 +6,7 @@ Authors: Judith Ludwig, Christian Merten
 module
 
 public import Mathlib.RingTheory.Extension.Presentation.Core
-public import Mathlib.RingTheory.MvPolynomial.Homogeneous
+import Mathlib.RingTheory.MvPolynomial.Homogeneous
 public import Mathlib.RingTheory.Smooth.StandardSmoothOfFree
 
 /-!
@@ -227,7 +227,7 @@ public theorem exists_subalgebra_fg [Smooth A B] :
   have (j : _) : Ideal.Quotient.mk (RingHom.ker f ^ 2) (aeval h (P.relation j)) = 0 := by
     suffices ho : σ (aeval P.val (P.relation j)) = 0 by
       convert! ho
-      exact congr($hdiag _)
+      congrm $hdiag _
     simp
   simp_rw [Ideal.Quotient.eq_zero_iff_mem, hkerf,
     Ideal.mem_span_pow_iff_exists_isHomogeneous] at this

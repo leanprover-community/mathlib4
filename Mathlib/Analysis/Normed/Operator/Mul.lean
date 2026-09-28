@@ -5,7 +5,6 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
 
 /-!

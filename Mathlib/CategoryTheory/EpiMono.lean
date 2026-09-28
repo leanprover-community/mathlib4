@@ -278,4 +278,14 @@ theorem CommSq.cube_lemma_of_mono (h0xx : CommSq f0x0 f00x f01x f0x1)
 
 end cubeLemma
 
+variable (C) in
+/-- The class of morphisms consisting of split monomorphisms. -/
+abbrev MorphismProperty.splitMonomorphisms : MorphismProperty C :=
+  fun _ _ f ↦ IsSplitMono f
+
+variable (C) in
+/-- The class of morphisms consisting of split epimorphisms. -/
+abbrev MorphismProperty.splitEpimorphisms : MorphismProperty C :=
+  fun _ _ f ↦ IsSplitEpi f
+
 end CategoryTheory

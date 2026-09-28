@@ -7,15 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.Filtered.Connected
 public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
-public import Mathlib.CategoryTheory.Limits.ConeCategory
-public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
+import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 public import Mathlib.CategoryTheory.Limits.Bicones
-public import Mathlib.CategoryTheory.Limits.Comma
-public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
-public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 /-!
 # Representably flat functors
 
@@ -403,7 +399,7 @@ instance (X : E) [RepresentablyFlat F] [IsCofiltered (StructuredArrow X G)] :
       StructuredArrow.homMk (IsCofiltered.eqHom f' g').right ?_, ?_⟩
     · simp [← Functor.map_comp, A', T]
     · ext
-      exact congr($(IsCofiltered.eq_condition f' g').right)
+      congrm $(IsCofiltered.eq_condition f' g').right
 
 instance (X : E) [RepresentablyCoflat F] [h : IsFiltered (CostructuredArrow G X)] :
     IsFiltered (CostructuredArrow (F ⋙ G) X) := by
