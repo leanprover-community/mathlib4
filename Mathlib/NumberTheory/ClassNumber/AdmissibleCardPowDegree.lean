@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Polynomial.Degree.CardPowDegree
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
-public import Mathlib.RingTheory.LocalRing.Basic
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Admissible absolute values on polynomials

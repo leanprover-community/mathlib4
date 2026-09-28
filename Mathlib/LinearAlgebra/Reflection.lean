@@ -5,16 +5,11 @@ Authors: Oliver Nash, Deepro Choudhury, Mitchell Lee, Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.EuclideanDomain.Basic
-public import Mathlib.Algebra.EuclideanDomain.Int
-public import Mathlib.Algebra.Module.LinearMap.Basic
-public import Mathlib.Algebra.Module.Submodule.Invariant
+import Mathlib.Algebra.EuclideanDomain.Basic
+import Mathlib.Algebra.EuclideanDomain.Int
 public import Mathlib.Algebra.Module.Torsion.Basic
-public import Mathlib.GroupTheory.OrderOfElement
-public import Mathlib.LinearAlgebra.Dual.Defs
-public import Mathlib.LinearAlgebra.FiniteSpan
+import Mathlib.LinearAlgebra.FiniteSpan
 public import Mathlib.RingTheory.Polynomial.Chebyshev
-public import Mathlib.Tactic.Module
 
 /-!
 # Reflections in linear algebra
