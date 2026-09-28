@@ -12,6 +12,7 @@ public import Mathlib.Data.Finset.Piecewise
 public import Mathlib.Order.Filter.Cofinite
 public import Mathlib.Order.Filter.Curry
 public import Mathlib.Topology.Constructions.SumProd
+
 import Mathlib.Topology.WithTopology
 
 /-!

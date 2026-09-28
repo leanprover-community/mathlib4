@@ -5,11 +5,10 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Data.Fintype.Pi
 public import Mathlib.Data.Fintype.Prod
-public import Mathlib.Data.Set.NAry
-
+public import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.ULift
+public import Mathlib.Data.Set.NAry
 
 /-!
 # Finiteness of products

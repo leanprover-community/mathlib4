@@ -5,11 +5,10 @@ Authors: Jake Levinson
 -/
 module
 
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Data.Finset.Preimage
 public import Mathlib.Data.Finset.Prod
 public import Mathlib.Order.UpperLower.Basic
-
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Young diagrams

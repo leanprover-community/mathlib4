@@ -5,10 +5,9 @@ Authors: Chris Hughes, Yakov Pechersky
 -/
 module
 
+import Mathlib.Data.List.Nodup
 public import Mathlib.Data.List.Infix
 public import Mathlib.Data.Quot
-
-import Mathlib.Data.List.Nodup
 
 /-!
 # List rotation

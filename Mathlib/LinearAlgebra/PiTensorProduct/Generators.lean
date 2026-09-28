@@ -6,11 +6,10 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Data.SubtypeNeLift
-public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
-public import Mathlib.LinearAlgebra.TensorProduct.Map
-
 import Mathlib.Data.Set.Card
+public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Map
 import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
