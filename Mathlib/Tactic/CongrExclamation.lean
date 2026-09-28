@@ -609,11 +609,11 @@ where
       return mvarId
   loop (mvarId : MVarId) : CongrMetaM (List MVarId) :=
     mvarId.withContext do
-      let ty ← withReducible <| mvarId.getType'
+      let ty ← withReducible mvarId.getType'
       if ty.isForall then
         let mvarId := (← heqImpOfEqImp mvarId).getD mvarId
         let mvarId := (← eqImpOfIffImp mvarId).getD mvarId
-        let ty ← withReducible <| mvarId.getType'
+        let ty ← withReducible mvarId.getType'
         if ty.isArrow then
           if ← (isTrivialType ty.bindingDomain!
                 <||> (← getLCtx).anyM (fun decl => do
@@ -669,7 +669,7 @@ def Lean.MVarId.congrCore! (config : Congr!.Config) (mvarId : MVarId) :
   let s ← saveState
   /- We do `liftReflToEq` here rather than in `preCongr!` since we don't want to commit to it
      if there are no relevant congr lemmas. -/
-  let mvarId ← liftReflToEq mvarId
+  let mvarId ← Mathlib.Tactic.liftReflToEq mvarId
   for (passName, pass) in congrPasses! do
     try
       if let some mvarIds ← pass config mvarId then
@@ -710,7 +710,7 @@ def Lean.MVarId.congrN! (mvarId : MVarId)
     (depth? : Option Nat := none) (config : Congr!.Config := {})
     (patterns : List (TSyntax `rintroPat) := []) :
     MetaM (List MVarId) := do
-  let ty ← withReducible <| mvarId.getType'
+  let ty ← withReducible mvarId.getType'
   -- A reasonably large yet practically bounded default recursion depth.
   let defaultDepth := min 1000000 (8 * (1 + ty.approxDepth.toNat))
   let depth := depth?.getD defaultDepth

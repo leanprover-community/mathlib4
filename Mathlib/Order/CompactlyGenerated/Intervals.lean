@@ -5,7 +5,6 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Order.CompleteLatticeIntervals
 public import Mathlib.Order.CompactlyGenerated.Basic
 
 /-!
@@ -36,7 +35,7 @@ instance instIsCompactlyGenerated [IsCompactlyGenerated α] {a : α} :
   refine ⟨range f, ?_, ?_⟩
   · rintro - ⟨⟨y, hy⟩, hy', rfl⟩
     exact isCompactElement (hs _ hy)
-  · rw [Subtype.ext_iff]
+  · rw [isLUB_iff_sSup_eq, Subtype.ext_iff]
     change sSup (((↑) : Iic a → α) '' (range f)) = sSup s
     congr
     ext b

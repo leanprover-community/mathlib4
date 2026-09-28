@@ -94,7 +94,7 @@ theorem isMulCoboundary₁_of_isMulCocycle₁_of_aut_to_units
 /- Then the equality follows from the hypothesis that `f` is a 1-cocycle. -/
   simp only [IsMulCocycle₁, AlgEquiv.smul_units_def,
     map_inv, div_inv_eq_mul, inv_mul_eq_iff_eq_mul, Units.ext_iff, this,
-    Units.val_mul, Units.coe_map, Units.val_mk0, MonoidHom.coe_coe] at hf ⊢
+    Units.val_mul, Units.coe_map, Units.val_mk0, MonoidHom.coe_ofClass] at hf ⊢
   simp_rw [map_sum, map_mul, Finset.sum_mul, mul_assoc, mul_comm _ (f _ : L), ← mul_assoc, ← hf g]
   exact eq_comm.1 (Fintype.sum_bijective (fun i => g * i)
     (Group.mulLeft_bijective g) _ _ (fun i => rfl))
@@ -189,7 +189,7 @@ lemma exists_mul_galRestrict_of_norm_eq_one (hg : ∀ x, x ∈ Subgroup.zpowers 
     exact zero_ne_one hη
   · replace hε := hε.symm
     rw [← h, eq_div_iff_mul_eq] at hε
-    · replace hε := congr_arg (t • ·) hε
+    · replace hε := congr(t • $hε)
       rw [Algebra.smul_def, mul_left_comm, ← Algebra.smul_def t, ← g.toAlgHom_apply,
         ← AlgHom.map_smul_of_tower, this] at hε
       apply IsIntegralClosure.algebraMap_injective B A L
