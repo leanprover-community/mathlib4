@@ -9,9 +9,7 @@ public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Operator.LinearIsometry
-public import Mathlib.LinearAlgebra.AffineSpace.Restrict
 public import Mathlib.Topology.Algebra.AffineSubspace
-public import Mathlib.Topology.Algebra.ContinuousAffineEquiv
 
 /-!
 # Affine isometries

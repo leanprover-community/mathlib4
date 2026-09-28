@@ -5,8 +5,7 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Range
-public import Mathlib.GroupTheory.ArchimedeanDensely
+import Mathlib.GroupTheory.ArchimedeanDensely
 public import Mathlib.RingTheory.Valuation.RankOne
 
 /-!

@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 module
 
 public import Mathlib.Basic.ENNReal.Holder
-public import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # Real conjugate exponents

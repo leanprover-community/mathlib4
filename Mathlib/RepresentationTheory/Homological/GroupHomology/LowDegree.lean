@@ -5,8 +5,6 @@ Authors: Amelia Livingston
 -/
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-public import Mathlib.GroupTheory.Abelianization.Defs
 public import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
 public import Mathlib.RepresentationTheory.Invariants
 

@@ -5,7 +5,6 @@ Authors: Chris Hughes, Anne Baanen
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.ToNat
 public import Mathlib.LinearAlgebra.Dimension.Basic
 
 /-!
