@@ -230,8 +230,7 @@ variable (γ) in
 instance (priority := 90) secondCountable_of_sigmaCompact [SigmaCompactSpace γ] :
     SecondCountableTopology γ := by
   suffices SeparableSpace γ by exact UniformSpace.secondCountable_of_separable γ
-  choose T _ hTc hsubT using fun n =>
-    IsCompact.exists_countable_dense_subset (isCompact_compactCovering γ n)
+  choose T _ hTc hsubT using fun n ↦ (isCompact_compactCovering γ n).exists_countable_dense_subset
   refine ⟨⟨⋃ n, T n, countable_iUnion hTc, fun x => ?_⟩⟩
   rcases iUnion_eq_univ_iff.1 (iUnion_compactCovering γ) x with ⟨n, hn⟩
   exact closure_mono (subset_iUnion _ n) (hsubT _ hn)
