@@ -5,9 +5,8 @@ Authors: Leonardo de Moura, Jeremy Avigad
 -/
 module
 
-public import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Finset.Basic
 public import Mathlib.Data.Finset.Image
-public import Mathlib.Data.Finset.Lattice.Lemmas
 
 /-!
 # Cardinality of a finite set
@@ -194,7 +193,7 @@ theorem Multiset.toFinset_card_le : #m.toFinset ≤ Multiset.card m :=
 
 theorem Multiset.toFinset_card_of_nodup {m : Multiset α} (h : m.Nodup) :
     #m.toFinset = Multiset.card m :=
-  congr_arg card <| Multiset.dedup_eq_self.mpr h
+  congr(card $(Multiset.dedup_eq_self.mpr h))
 
 theorem Multiset.dedup_card_eq_card_iff_nodup {m : Multiset α} :
     card m.dedup = card m ↔ m.Nodup :=

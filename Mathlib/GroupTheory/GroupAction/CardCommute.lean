@@ -6,7 +6,7 @@ Authors: Chris Hughes, Thomas Browning
 module
 
 public import Mathlib.Algebra.Group.ConjFinite
-public import Mathlib.GroupTheory.Coset.Card
+import Mathlib.GroupTheory.Coset.Card
 public import Mathlib.GroupTheory.GroupAction.Quotient
 
 /-!
