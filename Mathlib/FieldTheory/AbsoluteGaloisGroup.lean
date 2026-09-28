@@ -51,7 +51,7 @@ section
 
 variable [Algebra K L] [Algebra (AlgebraicClosure K) (AlgebraicClosure L)]
   [IsScalarTower K (AlgebraicClosure K) (AlgebraicClosure L)]
--- set_option pp.rawOnError true
+
 open IntermediateField in
 /-- A commuting square of two fields and their algebraic closures induces a continuous homomorphism
 of their absolute Galois groups. -/
