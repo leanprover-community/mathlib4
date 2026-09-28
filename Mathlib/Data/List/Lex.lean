@@ -21,9 +21,9 @@ The lexicographic order on `List α` is defined by `L < M` iff
 
 Related files are:
 * `Mathlib/Combinatorics/Colex.lean`: Colexicographic order on finite sets.
-* `Mathlib/Order/PSigma/Order.lean`: Lexicographic order on `Σ' i, α i`.
+* `Mathlib/Order/PSigma.lean`: Lexicographic order on `Σ' i, α i`.
 * `Mathlib/Order/PiLex.lean`: Lexicographic order on `Πₗ i, α i`.
-* `Mathlib/Order/Sigma/Order.lean`: Lexicographic order on `Σ i, α i`.
+* `Mathlib/Order/Sigma.lean`: Lexicographic order on `Σ i, α i`.
 * `Mathlib/Order/Prod/Lex/Basic.lean`: Lexicographic order on `α × β`.
 -/
 

@@ -29,8 +29,8 @@ This file defines the lexicographic and colexicographic orders for Pi types.
 Related files are:
 * `Data.Finset.Colex`: Colexicographic order on finite sets.
 * `Data.List.Lex`: Lexicographic order on lists.
-* `Order.Sigma.Order`: Lexicographic order on `Σₗ i, α i`.
-* `Order.PSigma.Order`: Lexicographic order on `Σₗ' i, α i`.
+* `Order.Sigma`: Lexicographic order on `Σₗ i, α i`.
+* `Order.PSigma`: Lexicographic order on `Σₗ' i, α i`.
 * `Order.Prod.Lex.Basic`: Lexicographic order on `α × β`.
 -/
 

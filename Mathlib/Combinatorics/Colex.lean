@@ -42,8 +42,8 @@ fixed size. For example, for size 3, the colex order on ℕ starts
 Related files are:
 * `Data.List.Lex`: Lexicographic order on lists.
 * `Data.Pi.Lex`: Lexicographic order on `Πₗ i, α i`.
-* `Order.PSigma.Order`: Lexicographic order on `Σ' i, α i`.
-* `Order.Sigma.Order`: Lexicographic order on `Σ i, α i`.
+* `Order.PSigma`: Lexicographic order on `Σ' i, α i`.
+* `Order.Sigma`: Lexicographic order on `Σ i, α i`.
 * `Order.Prod.Lex.Basic`: Lexicographic order on `α × β`.
 
 ## TODO

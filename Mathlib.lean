@@ -6381,7 +6381,7 @@ public import Mathlib.Order.OrdContinuous
 public import Mathlib.Order.OrderDual
 public import Mathlib.Order.OrderIsoNat
 public import Mathlib.Order.PFilter
-public import Mathlib.Order.PSigma.Order
+public import Mathlib.Order.PSigma
 public import Mathlib.Order.Part
 public import Mathlib.Order.PartialSups
 public import Mathlib.Order.Partition.Basic
@@ -6419,8 +6419,8 @@ public import Mathlib.Order.Setoid.Basic
 public import Mathlib.Order.Setoid.Partition
 public import Mathlib.Order.Setoid.Partition.Card
 public import Mathlib.Order.Shrink
+public import Mathlib.Order.Sigma
 public import Mathlib.Order.Sigma.Lex
-public import Mathlib.Order.Sigma.Order
 public import Mathlib.Order.Std
 public import Mathlib.Order.Sublattice
 public import Mathlib.Order.Sublocale
