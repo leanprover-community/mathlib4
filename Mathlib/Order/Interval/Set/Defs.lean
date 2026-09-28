@@ -33,21 +33,21 @@ namespace Set
 variable {α : Type*} [Preorder α] {a b x : α}
 
 /-- `Iio b` is the left-infinite right-open interval $(-∞, b)$. -/
-@[to_dual /-- `Ioi a` is the left-open right-infinite interval $(a, ∞)$. -/]
+@[implicit_reducible, to_dual /-- `Ioi a` is the left-open right-infinite interval $(a, ∞)$. -/]
 def Iio (b : α) := { x | x < b }
 
 @[to_dual (attr := simp, grind =, push)] theorem mem_Iio : x ∈ Iio b ↔ x < b := .rfl
 @[to_dual] theorem Iio_def (a : α) : { x | x < a } = Iio a := rfl
 
 /-- `Iic b` is the left-infinite right-closed interval $(-∞, b]$. -/
-@[to_dual /-- `Ici a` is the left-closed right-infinite interval $[a, ∞)$. -/]
+@[implicit_reducible, to_dual /-- `Ici a` is the left-closed right-infinite interval $[a, ∞)$. -/]
 def Iic (b : α) := { x | x ≤ b }
 
 @[to_dual (attr := simp, grind =, push)] theorem mem_Iic : x ∈ Iic b ↔ x ≤ b := .rfl
 @[to_dual] theorem Iic_def (b : α) : { x | x ≤ b } = Iic b := rfl
 
 /-- `Ioo a b` is the left-open right-open interval $(a, b)$. -/
-@[to_dual self (reorder := a b)]
+@[implicit_reducible, to_dual self (reorder := a b)]
 def Ioo (a b : α) := { x | a < x ∧ x < b }
 
 to_dual_insert_cast Ioo := by simp only [and_comm]
@@ -56,10 +56,11 @@ to_dual_insert_cast Ioo := by simp only [and_comm]
 @[to_dual none] theorem Ioo_def (a b : α) : { x | a < x ∧ x < b } = Ioo a b := rfl
 
 /-- `Ico a b` is the left-closed right-open interval $[a, b)$. -/
+@[implicit_reducible]
 def Ico (a b : α) := { x | a ≤ x ∧ x < b }
 
 /-- `Ioc a b` is the left-open right-closed interval $(a, b]$. -/
-@[to_dual existing (reorder := a b)]
+@[implicit_reducible, to_dual existing (reorder := a b)]
 def Ioc (a b : α) := { x | a < x ∧ x ≤ b }
 
 to_dual_insert_cast Ico := by simp only [and_comm]
@@ -72,7 +73,7 @@ to_dual_insert_cast Ioc := by simp only [and_comm]
 @[to_dual none] theorem Ioc_def (a b : α) : { x | a < x ∧ x ≤ b } = Ioc a b := rfl
 
 /-- `Icc a b` is the left-closed right-closed interval $[a, b]$. -/
-@[to_dual self (reorder := a b)]
+@[implicit_reducible, to_dual self (reorder := a b)]
 def Icc (a b : α) := { x | a ≤ x ∧ x ≤ b }
 
 to_dual_insert_cast Icc := by simp only [and_comm]
