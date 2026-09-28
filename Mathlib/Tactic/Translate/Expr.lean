@@ -1,8 +1,7 @@
 /-
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster, Bryan Gin-ge Chen,
-Jovan Gerbscheid
+Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Bryan Gin-ge Chen, Jovan Gerbscheid
 -/
 module
 
@@ -186,12 +185,12 @@ partial def shouldTranslate (t : TranslateData) (e : Expr) :
     if t.doTranslateAttr.find? env n == false then
       trace[translate_detail] "`{f}` is a fixed constant."
       return false
-    let relevantArg? := match findTranslation? env t n with
+    let arg? := match findTranslation? env t n with
       | some { relevantArg := .noArg, .. } => none
       | some { relevantArg := .arg n, .. } => args[n]?
       | none => args[0]?
-    if let some e := relevantArg? then
-      shouldTranslate t e
+    if let some arg := arg? then
+      shouldTranslate t arg
     else
       trace[translate_detail] "`{f}` is not a fixed constant."
       return true
