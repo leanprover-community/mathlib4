@@ -40,7 +40,7 @@ variable [Monoid M] {p a b : M}
 
 We explicitly avoid stating that `p` is non-zero, this would require a semiring. Assuming only a
 monoid allows us to reuse irreducible for associated elements. -/
-@[to_additive (attr := wikidata Q2989575)]
+@[to_additive (attr := wikidata Q2989575, lmfdb ring.irreducible)]
 structure Irreducible (p : M) : Prop where
   /-- An irreducible element is not a unit. -/
   not_isUnit : ¬IsUnit p

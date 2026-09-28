@@ -61,6 +61,7 @@ noncomputable instance instFintypeClassGroup : Fintype (ClassGroup (𝓞 K)) :=
 end RingOfIntegers
 
 /-- The class number of a number field is the (finite) cardinality of the class group. -/
+@[lmfdb nf.class_number]
 noncomputable def classNumber : ℕ :=
   Fintype.card (ClassGroup (𝓞 K))
 

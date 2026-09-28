@@ -213,6 +213,7 @@ theorem isIntegral_natCast (a : ℕ) : IsIntegral R (a : B) := by
 variable (R A)
 
 /-- The integral closure of `R` in an `R`-algebra `A`. -/
+@[lmfdb ring.integral]
 def integralClosure : Subalgebra R A where
   carrier := { r | IsIntegral R r }
   zero_mem' := isIntegral_zero

@@ -229,6 +229,7 @@ variable (H)
 
 /-- A subgroup is characteristic if it is fixed by all automorphisms.
   Several equivalent conditions are provided by lemmas of the form `Characteristic.iff...` -/
+@[lmfdb group.characteristic_subgroup]
 structure Characteristic : Prop where
   /-- `H` is fixed by all automorphisms -/
   fixed : ∀ ϕ : G ≃* G, H.comap ϕ.toMonoidHom = H
