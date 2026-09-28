@@ -6,7 +6,6 @@ Authors: Kenny Lau, Ken Lee, Chris Hughes
 module
 
 public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Data.Fintype.Basic
 public import Mathlib.Data.Int.GCD
 public import Mathlib.RingTheory.Coprime.Basic
 

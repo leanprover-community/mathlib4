@@ -5,15 +5,9 @@ Authors: Mario Carneiro, Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Defs
-public import Mathlib.Algebra.Polynomial.FieldDivision
-public import Mathlib.FieldTheory.Minpoly.Basic
-public import Mathlib.RingTheory.Adjoin.Basic
 public import Mathlib.RingTheory.FinitePresentation
-public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
 public import Mathlib.RingTheory.PowerBasis
-public import Mathlib.RingTheory.PrincipalIdealDomain
 public import Mathlib.RingTheory.Polynomial.Quotient
 
 /-!
@@ -187,7 +181,7 @@ lemma ringHom_ext {f g : AdjoinRoot p →+* T} (hAlg : f.comp (of p) = g.comp (o
     (hRoot : f (root p) = g (root p)) : f = g := by
   apply Ideal.Quotient.ringHom_ext
   ext x
-  · simpa using! congr($(hAlg) x)
+  · simpa using! congr($hAlg x)
   · simpa
 
 @[ext high] -- This should have higher precedence than `AlgHom.ext`.

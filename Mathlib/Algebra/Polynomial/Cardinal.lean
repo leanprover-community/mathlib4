@@ -5,7 +5,7 @@ Authors: Chris Hughes, Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.MonoidAlgebra.Cardinal
+import Mathlib.Algebra.MonoidAlgebra.Cardinal
 public import Mathlib.Algebra.Polynomial.Basic
 public import Mathlib.SetTheory.Cardinal.Finsupp
 
