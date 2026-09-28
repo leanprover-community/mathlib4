@@ -22,7 +22,7 @@ This file introduces convex polytopes as V-polytopes and proves basic facts abou
 ## Implementation notes
 
 * The term "polytope" usually refers to the object defined via the V-representation (convex hull
-of finitely many vertices), whereas the object defined via the H-representation (intersection of
+of finitely many points), whereas the object defined via the H-representation (intersection of
 finitely many halfspaces) is referred to as "polyhedron".
 * We decided to not implement bundled polytope until a clear usecase comes up.
 
