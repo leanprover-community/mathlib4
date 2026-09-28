@@ -685,7 +685,7 @@ theorem _root_.Polynomial.irreducible_comp_iff {f g : K[X]} :
     exact hr
   · intro a b hf
     have hg : f.comp g = a.comp g * b.comp g := by simp [hf]
-    refine (hfg.isUnit_or_isUnit hg).imp (fun ha => ?_) (fun hb => ?_)
+    refine (hfg.isUnit_or_isUnit hg).imp (fun ha => ?_) (fun ha => ?_) <;>
     · rw [isUnit_iff] at ha
       obtain ⟨r, hr, ha⟩ := ha
       have hga := congrArg Polynomial.natDegree ha.symm
