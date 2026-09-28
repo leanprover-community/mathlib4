@@ -336,7 +336,7 @@ theorem HigherFacesVanish.on_Γ₀_summand_id (K : ChainComplex C ℕ) (n : ℕ)
   have eq := Γ₀.Obj.mapMono_on_summand_id K (SimplexCategory.δ j.succ)
   rw [Γ₀.Obj.Termwise.mapMono_eq_zero K, zero_comp] at eq; rotate_left
   · intro h
-    exact (Nat.succ_ne_self n) (congr_arg SimplexCategory.len h)
+    exact (Nat.succ_ne_self n) congr($(h).len)
   · exact fun h => Fin.succ_ne_zero j (by simpa only [Isδ₀.iff] using h)
   exact eq
 

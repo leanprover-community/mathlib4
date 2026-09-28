@@ -482,7 +482,7 @@ theorem findMax'_dual (t) (x : α) : findMax' x (dual t) = findMin' t x := by
 
 theorem findMin_dual : ∀ t : Ordnode α, findMin (dual t) = findMax t
   | nil => rfl
-  | node _ _ _ _ => congr_arg some <| findMin'_dual _ _
+  | node _ _ _ _ => congr(some $(findMin'_dual ..))
 
 theorem findMax_dual (t : Ordnode α) : findMax (dual t) = findMin t := by
   rw [← findMin_dual, dual_dual]

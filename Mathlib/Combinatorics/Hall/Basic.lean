@@ -5,9 +5,8 @@ Authors: Alena Gusakov, Bhavik Mehta, Kyle Miller
 -/
 module
 
-public import Mathlib.Basic.Rel
 public import Mathlib.CategoryTheory.CofilteredSystem
-public import Mathlib.Combinatorics.Hall.Finite
+import Mathlib.Combinatorics.Hall.Finite
 
 /-!
 # Hall's Marriage Theorem
