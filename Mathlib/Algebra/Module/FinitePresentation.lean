@@ -6,7 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.LinearAlgebra.LeftExact
-public import Mathlib.LinearAlgebra.TensorProduct.Pi
+import Mathlib.LinearAlgebra.TensorProduct.Pi
 public import Mathlib.RingTheory.Finiteness.Projective
 public import Mathlib.RingTheory.Flat.IsBaseChange
 public import Mathlib.RingTheory.Localization.BaseChange

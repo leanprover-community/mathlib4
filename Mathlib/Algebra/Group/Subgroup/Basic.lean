@@ -6,9 +6,7 @@ Authors: Kexing Ying
 module
 
 public import Mathlib.Algebra.Group.Conj
-public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.Group.Subgroup.Ker
-public import Mathlib.Algebra.Group.Torsion
 
 /-!
 # Basic results on subgroups
@@ -1203,5 +1201,15 @@ variable {G} in
 @[simp]
 lemma inertia_map_subtype (H : Subgroup G) : (I.inertia H).map H.subtype = I.inertia G ⊓ H := by
   rw [← AddSubgroup.subgroupOf_inertia, Subgroup.subgroupOf_map_subtype]
+
+variable (M) in
+@[simp]
+lemma inertia_bot [FaithfulSMul G M] : (⊥ : AddSubgroup M).inertia G = ⊥ := by
+  simpa [Subgroup.eq_bot_iff_forall, sub_eq_zero] using faithfulSMul_iff.mp ‹_›
+
+variable (M) in
+@[simp]
+lemma inertia_top : (⊤ : AddSubgroup M).inertia G = ⊤ := by
+  simp [Subgroup.eq_top_iff']
 
 end AddSubgroup

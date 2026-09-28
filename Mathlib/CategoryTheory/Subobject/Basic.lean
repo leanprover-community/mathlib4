@@ -7,13 +7,10 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Skeleton
 public import Mathlib.CategoryTheory.Subobject.MonoOver
-public import Mathlib.CategoryTheory.Skeletal
-public import Mathlib.CategoryTheory.ConcreteCategory.Basic
-public import Mathlib.Tactic.ApplyFun
-public import Mathlib.Tactic.CategoryTheory.Elementwise
-public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+import Mathlib.Tactic.ApplyFun
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.Category.GaloisConnection
+public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
 /-!
 # Subobjects
@@ -203,7 +200,7 @@ instance arrow_mono {X : C} (Y : Subobject X) : Mono Y.arrow :=
 
 @[simp]
 theorem arrow_congr {A : C} (X Y : Subobject A) (h : X = Y) :
-    eqToHom (congr_arg (fun X : Subobject A => (X : C)) h) ≫ Y.arrow = X.arrow := by
+    eqToHom congr(($h : C)) ≫ Y.arrow = X.arrow := by
   induction h
   simp
 
