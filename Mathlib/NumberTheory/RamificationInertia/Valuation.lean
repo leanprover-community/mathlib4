@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.RamificationInertia.Ramification
 public import Mathlib.RingTheory.Valuation.Discrete.RankOne
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
-public import Mathlib.RingTheory.Valuation.Discrete.RankOne
 public import Mathlib.RingTheory.Valuation.Extension
 
 /-!
@@ -132,7 +131,7 @@ theorem algebraMap_adicCompletion_coe (k : K) :
 -- remove
 open WithZeroTopology in
 theorem valued_liesOver (x : v.adicCompletion K) :
-    Valued.v x ^ v.asIdeal.ramificationIdx' w.asIdeal =
+    Valued.v x ^ w.asIdeal.ramificationIdx A =
       Valued.v (algebraMap _ (w.adicCompletion L) x) := by
   induction x using adicCompletion.induction_on with
   | hp =>
@@ -140,12 +139,12 @@ theorem valued_liesOver (x : v.adicCompletion K) :
     · exact (Valued.continuous_valuation_of_surjective (v.valuedAdicCompletion_surjective K)).pow _
     · exact (Valued.continuous_valuation_of_surjective (w.valuedAdicCompletion_surjective L)).comp
         (continuous_algebraMap _ _)
-  | ih k => simpa [algebraMap_adicCompletion_coe] using valuation_liesOver L v w _
+  | ih k => simpa [algebraMap_adicCompletion_coe] using valuation_liesOver L v w k
 
 
 open WithZeroTopology in
 theorem adicCompletion_valuation_liesOver (x : v.adicCompletion K) :
-    adicCompletion.valuation K v x ^ v.asIdeal.ramificationIdx' w.asIdeal =
+    adicCompletion.valuation K v x ^ w.asIdeal.ramificationIdx A =
       adicCompletion.valuation L w (algebraMap _ (w.adicCompletion L) x) := by
   induction x using adicCompletion.induction_on with
   | hp =>
@@ -155,14 +154,14 @@ theorem adicCompletion_valuation_liesOver (x : v.adicCompletion K) :
         (continuous_algebraMap _ _)
   | ih k => simpa [algebraMap_adicCompletion_coe] using valuation_liesOver L v w _
 
--- remove
-instance : (Valued.v : Valuation (v.adicCompletion K) _).HasExtension
-      (Valued.v : Valuation (w.adicCompletion L) _) where
-  val_isEquiv_comap := by
-    simp only [Valuation.isEquiv_iff_val_eq_one, Valuation.comap_apply, ← valued_liesOver]
-    intro x
-    exact ⟨by simp_all, fun h ↦ by
-      grind [pow_eq_one_iff, ramificationIdx'_ne_zero_of_liesOver w.asIdeal v.ne_bot]⟩
+-- -- remove
+-- instance : (Valued.v : Valuation (v.adicCompletion K) _).HasExtension
+--       (Valued.v : Valuation (w.adicCompletion L) _) where
+--   val_isEquiv_comap := by
+--     simp only [Valuation.isEquiv_iff_val_eq_one, Valuation.comap_apply, ← valued_liesOver]
+--     intro x
+--     exact ⟨by simp_all, fun h ↦ by
+--       grind [pow_eq_one_iff, ramificationIdx'_ne_zero_of_liesOver w.asIdeal v.ne_bot]⟩
 
 
 instance : (adicCompletion.valuation K v).HasExtension (adicCompletion.valuation L w) where
@@ -171,7 +170,7 @@ instance : (adicCompletion.valuation K v).HasExtension (adicCompletion.valuation
       ← adicCompletion_valuation_liesOver]
     intro x
     exact ⟨by simp_all, fun h ↦ by
-      grind [pow_eq_one_iff, ramificationIdx'_ne_zero_of_liesOver w.asIdeal v.ne_bot]⟩
+      grind [pow_eq_one_iff, Ideal.ramificationIdx_pos_of_isDedekindDomain' w.asIdeal v.ne_bot]⟩
 
 noncomputable instance : Algebra (v.adicCompletionIntegers K) (w.adicCompletionIntegers L) :=
   Valuation.HasExtension.instAlgebra_valuationSubring _ _
@@ -191,75 +190,75 @@ variable [Algebra (v.adicCompletion K) (w.adicCompletion L)]
     [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]
     [IsScalarTower K (v.adicCompletion K) (w.adicCompletion L)]
 
-omit [Algebra A B]
-  [Module.IsTorsionFree A B]
-  [Algebra A L]
-  [IsScalarTower A K L]
-  [IsScalarTower A B L]
-  [w.asIdeal.LiesOver v.asIdeal]
-  [ContinuousSMul (adicCompletion K v) (adicCompletion L w)] in
-theorem algebraMap_adicCompletion_coe (k : K) :
-    algebraMap (v.adicCompletion K) (w.adicCompletion L) k = algebraMap K L k := by
-  simpa [algebraMap_adicCompletion] using
-    (IsScalarTower.algebraMap_apply K (v.adicCompletion K) (w.adicCompletion L) _).symm
+-- omit [Algebra A B]
+--   [Module.IsTorsionFree A B]
+--   [Algebra A L]
+--   [IsScalarTower A K L]
+--   [IsScalarTower A B L]
+--   [w.asIdeal.LiesOver v.asIdeal]
+--   [ContinuousSMul (adicCompletion K v) (adicCompletion L w)] in
+-- theorem algebraMap_adicCompletion_coe (k : K) :
+--     algebraMap (v.adicCompletion K) (w.adicCompletion L) k = algebraMap K L k := by
+--   simpa [algebraMap_adicCompletion] using
+--     (IsScalarTower.algebraMap_apply K (v.adicCompletion K) (w.adicCompletion L) _).symm
 
--- remove
-open WithZeroTopology in
-theorem valued_liesOver (x : v.adicCompletion K) :
-    Valued.v x ^ v.asIdeal.ramificationIdx' w.asIdeal =
-      Valued.v (algebraMap _ (w.adicCompletion L) x) := by
-  induction x using adicCompletion.induction_on with
-  | hp =>
-    refine isClosed_eq ?_ ?_
-    · exact (Valued.continuous_valuation_of_surjective (v.valuedAdicCompletion_surjective K)).pow _
-    · exact (Valued.continuous_valuation_of_surjective (w.valuedAdicCompletion_surjective L)).comp
-        (continuous_algebraMap _ _)
-  | ih k => simpa [algebraMap_adicCompletion_coe] using valuation_liesOver L v w _
-
-
-open WithZeroTopology in
-theorem adicCompletion_valuation_liesOver (x : v.adicCompletion K) :
-    adicCompletion.valuation K v x ^ v.asIdeal.ramificationIdx' w.asIdeal =
-      adicCompletion.valuation L w (algebraMap _ (w.adicCompletion L) x) := by
-  induction x using adicCompletion.induction_on with
-  | hp =>
-    refine isClosed_eq ?_ ?_
-    · exact (Valued.continuous_valuation_of_surjective (v.valuedAdicCompletion_surjective K)).pow _
-    · exact (Valued.continuous_valuation_of_surjective (w.valuedAdicCompletion_surjective L)).comp
-        (continuous_algebraMap _ _)
-  | ih k => simpa [algebraMap_adicCompletion_coe] using valuation_liesOver L v w _
-
--- remove
-instance : (Valued.v : Valuation (v.adicCompletion K) _).HasExtension
-      (Valued.v : Valuation (w.adicCompletion L) _) where
-  val_isEquiv_comap := by
-    simp only [Valuation.isEquiv_iff_val_eq_one, Valuation.comap_apply, ← valued_liesOver]
-    intro x
-    exact ⟨by simp_all, fun h ↦ by
-      grind [pow_eq_one_iff, ramificationIdx'_ne_zero_of_liesOver w.asIdeal v.ne_bot]⟩
+-- -- remove
+-- open WithZeroTopology in
+-- theorem valued_liesOver (x : v.adicCompletion K) :
+--     Valued.v x ^ v.asIdeal.ramificationIdx' w.asIdeal =
+--       Valued.v (algebraMap _ (w.adicCompletion L) x) := by
+--   induction x using adicCompletion.induction_on with
+--   | hp =>
+--     refine isClosed_eq ?_ ?_
+--     · exact (Valued.continuous_valuation_of_surjective (v.valuedAdicCompletion_surjective K)).pow _
+--     · exact (Valued.continuous_valuation_of_surjective (w.valuedAdicCompletion_surjective L)).comp
+--         (continuous_algebraMap _ _)
+--   | ih k => simpa [algebraMap_adicCompletion_coe] using valuation_liesOver L v w _
 
 
-instance : (adicCompletion.valuation K v).HasExtension (adicCompletion.valuation L w) where
-  val_isEquiv_comap := by
-    simp only [Valuation.isEquiv_iff_val_eq_one, Valuation.comap_apply,
-      ← adicCompletion_valuation_liesOver]
-    intro x
-    exact ⟨by simp_all, fun h ↦ by
-      grind [pow_eq_one_iff, ramificationIdx'_ne_zero_of_liesOver w.asIdeal v.ne_bot]⟩
+-- open WithZeroTopology in
+-- theorem adicCompletion_valuation_liesOver (x : v.adicCompletion K) :
+--     adicCompletion.valuation K v x ^ v.asIdeal.ramificationIdx' w.asIdeal =
+--       adicCompletion.valuation L w (algebraMap _ (w.adicCompletion L) x) := by
+--   induction x using adicCompletion.induction_on with
+--   | hp =>
+--     refine isClosed_eq ?_ ?_
+--     · exact (Valued.continuous_valuation_of_surjective (v.valuedAdicCompletion_surjective K)).pow _
+--     · exact (Valued.continuous_valuation_of_surjective (w.valuedAdicCompletion_surjective L)).comp
+--         (continuous_algebraMap _ _)
+--   | ih k => simpa [algebraMap_adicCompletion_coe] using valuation_liesOver L v w _
 
-noncomputable instance : Algebra (v.adicCompletionIntegers K) (w.adicCompletionIntegers L) :=
-  Valuation.HasExtension.instAlgebra_valuationSubring _ _
+-- -- remove
+-- instance : (Valued.v : Valuation (v.adicCompletion K) _).HasExtension
+--       (Valued.v : Valuation (w.adicCompletion L) _) where
+--   val_isEquiv_comap := by
+--     simp only [Valuation.isEquiv_iff_val_eq_one, Valuation.comap_apply, ← valued_liesOver]
+--     intro x
+--     exact ⟨by simp_all, fun h ↦ by
+--       grind [pow_eq_one_iff, ramificationIdx'_ne_zero_of_liesOver w.asIdeal v.ne_bot]⟩
 
-instance : IsLocalHom (algebraMap (v.adicCompletionIntegers K) (w.adicCompletionIntegers L)) :=
-  Valuation.HasExtension.instIsLocalHomValuationSubring _ _
 
-instance :
-    IsScalarTower (v.adicCompletionIntegers K) (w.adicCompletionIntegers L) (w.adicCompletion L) :=
-  Valuation.HasExtension.instIsScalarTower_valuationSubring' _ _
+-- instance : (adicCompletion.valuation K v).HasExtension (adicCompletion.valuation L w) where
+--   val_isEquiv_comap := by
+--     simp only [Valuation.isEquiv_iff_val_eq_one, Valuation.comap_apply,
+--       ← adicCompletion_valuation_liesOver]
+--     intro x
+--     exact ⟨by simp_all, fun h ↦ by
+--       grind [pow_eq_one_iff, ramificationIdx'_ne_zero_of_liesOver w.asIdeal v.ne_bot]⟩
 
-instance :
-    IsScalarTower (v.adicCompletionIntegers K) (v.adicCompletion K) (w.adicCompletion L) :=
-  Valuation.HasExtension.instIsScalarTower_valuationSubring _
+-- noncomputable instance : Algebra (v.adicCompletionIntegers K) (w.adicCompletionIntegers L) :=
+--   Valuation.HasExtension.instAlgebra_valuationSubring _ _
+
+-- instance : IsLocalHom (algebraMap (v.adicCompletionIntegers K) (w.adicCompletionIntegers L)) :=
+--   Valuation.HasExtension.instIsLocalHomValuationSubring _ _
+
+-- instance :
+--     IsScalarTower (v.adicCompletionIntegers K) (w.adicCompletionIntegers L) (w.adicCompletion L) :=
+--   Valuation.HasExtension.instIsScalarTower_valuationSubring' _ _
+
+-- instance :
+--     IsScalarTower (v.adicCompletionIntegers K) (v.adicCompletion K) (w.adicCompletion L) :=
+--   Valuation.HasExtension.instIsScalarTower_valuationSubring _
 
 end AKLB
 
