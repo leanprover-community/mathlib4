@@ -66,9 +66,15 @@ namespace IsMulPointed
 
 variable {M}
 
+@[to_additive (attr := deprecated "Trivially true" (since := "2026-09-28"))]
+theorem mk (h : ∀ x ∈ M, x⁻¹ ∈ M → x = 1) : M.IsMulPointed := h
+
 @[to_additive]
 theorem eq_one_of_mem_of_inv_mem (hM : M.IsMulPointed)
     {x : G} (hx₁ : x ∈ M) (hx₂ : x⁻¹ ∈ M) : x = 1 := hM _ hx₁ hx₂
+
+@[to_additive (attr := deprecated (since := "2026-09-28"))]
+alias eq_one_of_mem_of_inv_mem₂ := eq_one_of_mem_of_inv_mem
 
 @[to_additive]
 theorem _root_.isMulPointed_iff_mulSupport_eq_bot : M.IsMulPointed ↔ M.mulSupport = ⊥ where
@@ -92,6 +98,10 @@ def IsMulSpanning := ∀ a : G, a ∈ M ∨ a⁻¹ ∈ M
 namespace IsMulSpanning
 
 variable {M}
+
+
+@[to_additive (attr := deprecated "Trivially true" (since := "2026-09-28"))]
+theorem mk (h : ∀ a : G, a ∈ M ∨ a⁻¹ ∈ M) : M.IsMulSpanning := h
 
 @[to_additive]
 theorem mem_or_inv_mem (hM : M.IsMulSpanning) (a : G) : a ∈ M ∨ a⁻¹ ∈ M := by
