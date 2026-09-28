@@ -5,12 +5,12 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Algebra.Group.Pointwise.Set.Card
+import Mathlib.Algebra.Group.Pointwise.Set.Card
 public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
 public import Mathlib.GroupTheory.GroupAction.Transitive
 public import Mathlib.GroupTheory.GroupAction.Primitive
-public import Mathlib.Tactic.Group
+import Mathlib.Tactic.Group
 
 /-!
 # SubMulActions on complements of invariant subsets

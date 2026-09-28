@@ -10,7 +10,7 @@ public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqu
 public import Mathlib.CategoryTheory.Limits.FintypeCat
 public import Mathlib.CategoryTheory.Limits.MonoCoprod
 public import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
-public import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
+import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 public import Mathlib.CategoryTheory.Limits.Types.Equalizers
 public import Mathlib.CategoryTheory.SingleObj
 public import Mathlib.SetTheory.Cardinal.NatCard
@@ -324,7 +324,7 @@ epimorphism. -/
 lemma epi_of_nonempty_of_isConnected {X A : C} [IsConnected A] [h : Nonempty (F.obj X)]
     (f : X ⟶ A) : Epi f := Epi.mk <| fun {Z} u v huv ↦ by
   apply evaluation_injective_of_isConnected F A Z (F.map f (Classical.arbitrary _))
-  simpa using ConcreteCategory.congr_hom (F.congr_map huv) _
+  simpa using congr($(F.congr_map huv) _)
 
 /-- An epimorphism induces a surjective map on fibers. -/
 lemma surjective_on_fiber_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] : Function.Surjective (F.map f) :=

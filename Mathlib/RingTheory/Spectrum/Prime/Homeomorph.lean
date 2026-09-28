@@ -6,7 +6,7 @@ Authors: Christian Merten, Junyan Xu
 module
 
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
-public import Mathlib.RingTheory.Flat.Basic
+import Mathlib.RingTheory.Flat.Basic
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
