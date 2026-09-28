@@ -167,7 +167,6 @@ variable {Y : TopCat.{w}} [T2Space Y] [LocallyCompactSpace Y] {f : X ⟶ Y}
 /-- The pushforward of a Ksheaf by a proper map as a Ksheaf -/
 def pushforwardObj (F : KSheaf A X) : (KSheaf A Y) := ⟨_, F.pushforwardObj_isKSheaf pf⟩
 
-
 /-- The pushforward of a KSheaf as a functor -/
 def pushforward : KSheaf A X ⥤ KSheaf A Y :=
   ObjectProperty.lift _
