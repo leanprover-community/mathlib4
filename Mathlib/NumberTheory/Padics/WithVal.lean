@@ -36,43 +36,6 @@ variable {p : ℕ} [Fact p.Prime]
 
 open WithZero UniformSpace
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/14624:
-
-We had to use the `instanceSearchTypes` backward compatibility flag to make an instance search
-succeed. Concretely, the following instance cannot be synthesized:
-```
-MonoidWithZeroHomClass ((MonoidWithZeroHom.ofClass Valued.v).ValueGroup₀ →*₀
-  WithZero (Multiplicative ℤ)) (MonoidWithZeroHom.ofClass Valued.v).ValueGroup₀
-  (WithZero (Multiplicative ℤ))
-```
-It is needed in the second bullet below, whose final `simp_all` otherwise leaves the goal
-`1 ≤ padicValRat p (x.ofVal - y.ofVal) + (embedding ↑γ).log` unsolved.
-
-The failure happens while applying `@MonoidWithZeroHom.monoidWithZeroHomClass`: assigning one of its
-instance-implicit-argument metavariables is rejected because the metavariable's type and the type
-of the assigned value do not match at `.instances` transparency. The metavariable's expected type
-is `MulZeroOneClass (MonoidWithZeroHom.ofClass Valued.v).ValueGroup₀`, whereas the assigned value
-`instMulZeroOneClass` has type
-`MulZeroOneClass (WithZero ↥(MonoidWithZeroHom.ofClass Valued.v).valueGroup)`.
-Lean falls back to synthesize an instance of the correct type, which
-succeeds, but it returns a `instMulZeroOneClass` instance that is not defeq to the assigned one
-at `.implicit` transparency.
-
-Potential fix: make the following definitions implicit-reducible:
-
-```
-  Rat.padicValuation
-  Valuation.restrict
-  coe
-  exp
-```
-
-Then both backward compatibility options can go.
--/
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 open MonoidWithZeroHom.ValueGroup₀ in
 lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).comp
     (WithVal.equiv (Rat.padicValuation p)).toRingHom) := by
@@ -117,8 +80,8 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
     change Rat.padicValuation p (x' - y') < embedding γ.1
     rw [← Nat.cast_pow, ← Rat.cast_natCast, ← Rat.cast_inv_of_ne_zero, Rat.cast_le] at h
     · change padicNorm p (x' - y') ≤ _ at h
-      simp only [Rat.padicValuation, Valuation.coe_mk, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
-        padicNorm, zpow_neg, Nat.cast_pow] at h ⊢
+      unfold Rat.padicValuation at *
+      simp only [Valuation.coe_mk, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk] at h ⊢
       split_ifs with H
       · simp only [exp_neg]
         exact embedding_unit_pos _
