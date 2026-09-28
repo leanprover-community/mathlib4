@@ -6,10 +6,9 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Analysis.CStarAlgebra.Unitization
-public import Mathlib.Analysis.Complex.Convex
+import Mathlib.Analysis.Complex.Convex
 public import Mathlib.Analysis.Normed.Algebra.GelfandFormula
 public import Mathlib.Analysis.SpecialFunctions.Exponential
-public import Mathlib.Algebra.Star.StarAlgHom
 
 /-! # Spectral properties in C⋆-algebras
 
@@ -305,7 +304,7 @@ lemma nnnorm_map (φ : F) (a : A) : ‖φ a‖₊ = ‖a‖₊ :=
       (symm (ofClass φ : A ≃⋆ₐ[ℂ] B)) ((ofClass φ : A ≃⋆ₐ[ℂ] B) a)
 
 lemma norm_map (φ : F) (a : A) : ‖φ a‖ = ‖a‖ :=
-  congr_arg NNReal.toReal (nnnorm_map φ a)
+  congr($(nnnorm_map φ a).toReal)
 
 lemma isometry (φ : F) : Isometry φ :=
   AddMonoidHomClass.isometry_of_norm φ (norm_map φ)

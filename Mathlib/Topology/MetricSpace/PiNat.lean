@@ -6,9 +6,9 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Normed.Group.FunctionSeries
-public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
+import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 public import Mathlib.Topology.MetricSpace.HausdorffDistance
-public import Mathlib.Topology.Order.ProjIcc
+import Mathlib.Topology.Order.ProjIcc
 public import Mathlib.Topology.UnitInterval
 
 /-!

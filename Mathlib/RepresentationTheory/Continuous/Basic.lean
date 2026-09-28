@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.Topology.ContinuousMap.Algebra
-public import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Category.Init
 public import Mathlib.Topology.Algebra.Module.Equiv.Submodule
 
 /-!
@@ -124,7 +124,7 @@ lemma toIntertwiningMap_injective {π₁ : ContRepresentation R G V}
 
 lemma toFun_injective {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W} :
     Function.Injective fun f : π₁ →ⁱL π₂ ↦ f.toFun := fun f g h ↦ by
-  ext x; exact congr_fun h x
+  ext x; congrm $h x
 
 @[macro_inline]
 instance {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W} :

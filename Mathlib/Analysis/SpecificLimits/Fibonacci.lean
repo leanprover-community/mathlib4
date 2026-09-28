@@ -5,7 +5,7 @@ Authors: Snir Broshi
 -/
 module
 
-public import Mathlib.Analysis.SpecificLimits.Normed
+import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.NumberTheory.Real.GoldenRatio
 
 /-!

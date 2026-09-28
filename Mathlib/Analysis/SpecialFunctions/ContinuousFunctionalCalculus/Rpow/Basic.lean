@@ -7,12 +7,9 @@ module
 
 public import Mathlib.Algebra.Order.Star.Prod
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Pi
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Pi
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
-public import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 
 /-!
 # Real powers defined via the continuous functional calculus
@@ -170,8 +167,8 @@ lemma nnrpow_inv_nnrpow (a : A) {x : ℝ≥0} (hx : x ≠ 0) (ha : 0 ≤ a := by
 
 lemma nnrpow_inv_eq (a b : A) {x : ℝ≥0} (hx : x ≠ 0) (ha : 0 ≤ a := by cfc_tac)
     (hb : 0 ≤ b := by cfc_tac) : a ^ x⁻¹ = b ↔ b ^ x = a :=
-  ⟨fun h ↦ nnrpow_inv_nnrpow a hx ▸ congr($(h) ^ x).symm,
-    fun h ↦ nnrpow_nnrpow_inv b hx ▸ congr($(h) ^ x⁻¹).symm⟩
+  ⟨fun h ↦ nnrpow_inv_nnrpow a hx ▸ congr($h ^ x).symm,
+    fun h ↦ nnrpow_nnrpow_inv b hx ▸ congr($h ^ x⁻¹).symm⟩
 
 section prod
 
