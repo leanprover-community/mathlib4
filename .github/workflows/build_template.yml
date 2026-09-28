@@ -235,6 +235,8 @@ jobs:
       - name: fetch archive, counterexamples and wanted cache
         shell: bash
         run: |
+          # Use the trusted toolchain's `lean`/`leantar` (see setup-build-env).
+          export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
           ../tools-branch/.lake/build/bin/cache get Archive.lean
           ../tools-branch/.lake/build/bin/cache get Counterexamples.lean
@@ -292,31 +294,41 @@ jobs:
 
       - name: stage Mathlib cache files
         if: ${{ always() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure' || steps.build.outcome == 'cancelled') }}
-        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX -- bash -euxo pipefail {0}
         run: |
+          # Run `cache` directly, as the get/clean steps do, rather than via `lake env`:
+          # it reads its context from LEAN_SRC_PATH (forwarded above). Use the trusted
+          # toolchain's `lean`/`leantar` (see setup-build-env).
+          export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
-          lake env ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage
+          ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage
 
       - name: stage Archive cache files
         if: ${{ steps.archive.outcome == 'success' }}
-        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX -- bash -euxo pipefail {0}
         run: |
+          # No `lake env`, trusted toolchain: see "stage Mathlib cache files".
+          export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
-          lake env ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage Archive.lean
+          ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage Archive.lean
 
       - name: stage Counterexamples cache files
         if: ${{ steps.counterexamples.outcome == 'success' }}
-        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX -- bash -euxo pipefail {0}
         run: |
+          # No `lake env`, trusted toolchain: see "stage Mathlib cache files".
+          export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
-          lake env ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage Counterexamples.lean
+          ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage Counterexamples.lean
 
       - name: stage Wanted cache files
         if: ${{ steps.wanted.outcome == 'success' }}
-        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX -- bash -euxo pipefail {0}
         run: |
+          # No `lake env`, trusted toolchain: see "stage Mathlib cache files".
+          export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
-          lake env ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage Wanted.lean
+          ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage Wanted.lean
 
       - name: check cache staging contents
         id: cache_staging_check
@@ -345,6 +357,8 @@ jobs:
         continue-on-error: true # best-effort; never fail the build
         shell: bash # runs the trusted tools-branch `cache` binary, so no landrun needed
         run: |
+          # Use the trusted toolchain's `lean`/`leantar` (see setup-build-env).
+          export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
           ../tools-branch/.lake/build/bin/cache clean
 

@@ -102,6 +102,8 @@ runs:
         CACHE_REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
       run: |
         set -eo pipefail
+        # Use the trusted toolchain's `lean`/`leantar` (see setup-build-env).
+        export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
         cd "${WORKDIR}"
         rm -rf .lake/build/lib/lean/Mathlib
         log="${RUNNER_TEMP:-/tmp}/cache-get.log"
