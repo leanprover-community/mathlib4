@@ -39,7 +39,7 @@ def divisor [IsIntegral X] [IsLocallyNoetherian X] (f : X.functionField) :
   supportWithinDomain' := subset_univ _
   supportLocallyFiniteWithinDomain' z _ := by
     by_cases hf : f = 0
-    · exact ⟨⊤, by simp, by simp [hf]⟩
+    · exact ⟨⊤, Filter.univ_mem, by simp [hf]⟩
     obtain ⟨U, hU, g, hUne, hgf, hg⟩ := exists_isUnit_germ_eq X f hf
     obtain ⟨W, hW, hfin⟩ := exists_mem_nhds_finite_coheight_one_of_closure_ne_univ
       (Z := U.carrierᶜ) (by
