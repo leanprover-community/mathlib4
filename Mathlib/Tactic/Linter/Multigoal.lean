@@ -100,11 +100,6 @@ abbrev exclusions : Std.HashSet SyntaxNodeKind := .ofArray #[
     ``Lean.Parser.Tactic.Grind.first,
     ``Lean.Parser.Tactic.Grind.failIfSuccess,
     ``Lean.Parser.Tactic.Grind.grindRepeat_,
-    -- conv mode
-    ``Lean.Parser.Tactic.Conv.«conv·_»,
-    ``Lean.Parser.Tactic.Conv.nestedConv,
-    ``Lean.Parser.Tactic.Conv.paren,
-    ``Lean.Parser.Tactic.Conv.skip,
     -- re-ordering goals
     `Batteries.Tactic.tacticSwap,
     ``Lean.Parser.Tactic.rotateLeft,
@@ -151,6 +146,10 @@ partial
 def getManyGoals (trees : PersistentArray InfoTree) : Array (Syntax × Nat × Nat × Nat) :=
   trees.foldl (init := #[]) <| InfoTree.foldInfo fun _ info ranges => Id.run do
     let .ofTacticInfo info := info | return ranges
+    let some mainGoal := info.goalsBefore[0]? | return ranges
+    -- Don't consider `conv` goals.
+    if (isLHSGoal? (info.mctxBefore.getDecl mainGoal).type).isSome then
+      return ranges
     -- Ideal case: one goal, and it might or might not be closed.
     if info.goalsBefore.length == 1 && info.goalsAfter.length ≤ 1 then
       return ranges
