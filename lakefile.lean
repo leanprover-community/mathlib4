@@ -158,7 +158,7 @@ lean_exe «lint-style» where
 
 /-- `lake exe check-title-labels` checks if a PR title obeys some basic formatting requirements.
 Currently, these checks are quite lenient, but could be made stricter in the future. -/
-lean_exe «check_title_labels» where
+lean_exe «check-title-labels» where
   srcDir := "scripts"
 
 /-- `lake exe nightly-testing-checklist` reports nightly-testing branch status. -/

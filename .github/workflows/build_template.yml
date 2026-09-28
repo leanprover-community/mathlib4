@@ -936,7 +936,7 @@ jobs:
           # Executing this also runs the export and writes a (gitignored) `crossrefs.json`,
           # which doubles as a smoke test of the `export_crossrefs.yml` workflow.
           lake env lean scripts/export_crossrefs.lean
-          lake exe check_title_labels --labels "t-algebra" "feat: dummy PR for testing"
+          lake exe check-title-labels --labels "t-algebra" "feat: dummy PR for testing"
 
       - name: build everything
         # make sure everything is available for test/import_all.lean
