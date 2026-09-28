@@ -6,7 +6,6 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Algebra.Group.Action.Pi
-public import Mathlib.Basic.SetLike.Basic
 public import Mathlib.Data.Finset.Prod
 public import Mathlib.Data.Sym.Basic
 public import Mathlib.Data.Sym.Sym2.Init

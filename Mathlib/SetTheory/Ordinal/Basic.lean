@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Order.SuccPred
 public import Mathlib.Order.IsNormal
 public import Mathlib.Order.Shrink
-public import Mathlib.Order.Sum.Order
 public import Mathlib.SetTheory.Cardinal.Basic
 
 /-!

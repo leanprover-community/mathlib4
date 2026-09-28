@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.GroupTheory.Congruence.Hom
-public import Mathlib.Order.Setoid.Basic
 
 /-!
 # Congruence relations

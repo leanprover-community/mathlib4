@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 module
 
 public import Mathlib.Algebra.Group.TypeTags.Basic
-public import Mathlib.Basic.SetLike.Basic
 public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Data.Finset.Piecewise
 public import Mathlib.Order.Filter.Cofinite
