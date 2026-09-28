@@ -6,7 +6,7 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-public import Mathlib.Dynamics.FixedPoints.Basic
+import Mathlib.Dynamics.FixedPoints.Basic
 
 /-!
 # Results about pointwise operations on sets with iteration.

@@ -6,9 +6,8 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Module.Projective
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
-public import Mathlib.Topology.Maps.OpenQuotient
 
 /-!
 # Algebraic operations on `SeparationQuotient`
@@ -36,7 +35,7 @@ theorem exists_out_continuousLinearMap :
     ∃ f : SeparationQuotient E →L[K] E, mkCLM K E ∘L f = .id K (SeparationQuotient E) := by
   rcases (mkCLM K E).toLinearMap.exists_rightInverse_of_surjective
     (LinearMap.range_eq_top.mpr surjective_mk) with ⟨f, hf⟩
-  replace hf : mk ∘ f = id := congr_arg DFunLike.coe hf
+  replace hf : mk ∘ f = id := congr($hf)
   exact ⟨⟨f, isInducing_mk.continuous_iff.2 (by continuity)⟩, DFunLike.ext' hf⟩
 
 /-- A continuous `K`-linear map from `SeparationQuotient E` to `E`
@@ -51,7 +50,7 @@ theorem mkCLM_comp_outCLM : mkCLM K E ∘L outCLM K E = .id K (SeparationQuotien
 variable {E} in
 @[simp]
 theorem mk_outCLM (x : SeparationQuotient E) : mk (outCLM K E x) = x :=
-  DFunLike.congr_fun (mkCLM_comp_outCLM K E) x
+  congr($(mkCLM_comp_outCLM K E) x)
 
 @[simp]
 theorem mk_comp_outCLM : mk ∘ outCLM K E = id := funext (mk_outCLM K)

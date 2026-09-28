@@ -5,7 +5,7 @@ Authors: Chris Birkbeck
 -/
 module
 
-public import Mathlib.Algebra.CharP.Defs
+import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Data.Int.Interval
 

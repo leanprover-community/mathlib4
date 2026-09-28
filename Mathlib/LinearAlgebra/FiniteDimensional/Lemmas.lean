@@ -285,7 +285,7 @@ lemma coe_basisOfLinearIndependentOfCardEqFinrank' [FiniteDimensional K V] (b : 
 noncomputable def basisOfLinearIndependentOfCardEqFinrank [Nonempty ι]
     {b : ι → V} (lin_ind : LinearIndependent K b) (card_eq : Fintype.card ι = finrank K V) :
     Basis ι K V :=
-  Basis.mk lin_ind <| (lin_ind.span_eq_top_of_card_eq_finrank card_eq).ge
+  Basis.mk lin_ind (lin_ind.span_eq_top_of_card_eq_finrank card_eq).ge
 
 @[simp]
 theorem coe_basisOfLinearIndependentOfCardEqFinrank [Nonempty ι]

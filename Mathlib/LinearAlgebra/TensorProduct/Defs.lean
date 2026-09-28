@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.Submodule.Bilinear
 public import Mathlib.GroupTheory.Congruence.Hom
-public import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.NormNum.Basic
 
 /-!
 # Tensor product of modules over commutative semirings
