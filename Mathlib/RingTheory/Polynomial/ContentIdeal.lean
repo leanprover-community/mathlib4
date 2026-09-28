@@ -5,7 +5,7 @@ Authors: Fabrizio Barroero
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.Quotient.Operations
+import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Polynomial.Content
 
 /-!

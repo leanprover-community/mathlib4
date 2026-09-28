@@ -7,7 +7,6 @@ module
 
 public import Archive.Examples.IfNormalization.Statement
 public import Mathlib.Data.List.AList
-public import Mathlib.Tactic.Recall
 
 /-!
 # A solution to the if normalization challenge in Lean.
