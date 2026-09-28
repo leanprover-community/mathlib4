@@ -805,6 +805,20 @@ lemma exists_subgroup_le_card_le {k p : ℕ} (hp : p.Prime) (h : IsPGroup p G) {
   refine ⟨H', H'H, ?_⟩
   simpa only [pow_succ', H'card] using And.intro hmk hkm
 
+-- TODO : order embedding version using `exists_orderEmbedding`
+/-- A corollary of **Sylow's first theorem**. If `H` is a subgroup of order `p ^ n`, then
+there is a subgroup `H' ≤ H` of order `p ^ m` for any `m ≤ n`. -/
+theorem exists_subgroup_le_card_pow_prime_of_le_pow {m n p : ℕ} (hp : Nat.Prime p)
+    {H : Subgroup G} (hH : Nat.card H = p ^ n) (hm : m ≤ n) :
+    ∃ H' ≤ H, Nat.card H' = p ^ m := by
+  have : p ^ m ≤ Nat.card H := by
+    rw [hH]
+    gcongr
+    exact hp.pos
+  rcases exists_subgroup_card_pow_prime_of_le_card hp (IsPGroup.of_card hH) this with ⟨H', hH'⟩
+  refine ⟨H'.map H.subtype, Subgroup.map_subtype_le .., ?_⟩
+  rwa [Subgroup.card_map_of_injective (H.subtype_injective)]
+
 theorem pow_dvd_card_of_pow_dvd_card [Finite G] {p n : ℕ} [hp : Fact p.Prime] (P : Sylow p G)
     (hdvd : p ^ n ∣ Nat.card G) : p ^ n ∣ Nat.card P := by
   rw [← index_mul_card P.1] at hdvd
