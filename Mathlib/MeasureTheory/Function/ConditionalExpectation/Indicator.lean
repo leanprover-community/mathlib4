@@ -97,7 +97,7 @@ theorem condExp_indicator (hf_int : Integrable f μ) (hs : MeasurableSet[m] s) :
       refine Filter.EventuallyEq.rfl.add ?_
       have : sᶜ.indicator (μ[sᶜ.indicator f | m]) =ᵐ[μ] μ[sᶜ.indicator f | m] := by
         refine (condExp_indicator_aux hs.compl ?_).symm.trans ?_
-        · exact indicator_ae_eq_restrict_compl (hm _ hs.compl)
+        · exact indicator_ae_eq_restrict_compl (hm _ hs.compl).nullMeasurableSet
         · rw [Set.indicator_indicator, Set.inter_self]
       filter_upwards [this] with x hx
       by_cases hxs : x ∈ s
@@ -107,7 +107,7 @@ theorem condExp_indicator (hf_int : Integrable f μ) (hs : MeasurableSet[m] s) :
       rw [Set.indicator_indicator, Set.inter_compl_self, Set.indicator_empty', add_zero]
     _ =ᵐ[μ] μ[s.indicator f | m] := by
       refine (condExp_indicator_aux hs ?_).symm.trans ?_
-      · exact indicator_ae_eq_restrict_compl (hm _ hs)
+      · exact indicator_ae_eq_restrict_compl (hm _ hs).nullMeasurableSet
       · rw [Set.indicator_indicator, Set.inter_self]
 
 theorem condExp_restrict_ae_eq_restrict (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
@@ -155,7 +155,8 @@ theorem condExp_ae_eq_restrict_of_measurableSpace_eq_on {m m₂ m0 : MeasurableS
   swap
   · have : StronglyMeasurable[m] (μ[s.indicator f | m]) := stronglyMeasurable_condExp
     refine this.aestronglyMeasurable.of_measurableSpace_le_on hm hs_m (fun t => (hs t).mp) ?_
-    exact condExp_ae_eq_restrict_zero hs_m.compl (indicator_ae_eq_restrict_compl (hm _ hs_m))
+    apply condExp_ae_eq_restrict_zero hs_m.compl
+    exact indicator_ae_eq_restrict_compl (hm _ hs_m).nullMeasurableSet
   intro t ht _
   have : ∫ x in t, (μ[s.indicator f | m]) x ∂μ = ∫ x in s ∩ t, (μ[s.indicator f | m]) x ∂μ := by
     rw [← integral_add_compl (hm _ hs_m) integrable_condExp.integrableOn]
@@ -171,7 +172,7 @@ theorem condExp_ae_eq_restrict_of_measurableSpace_eq_on {m m₂ m0 : MeasurableS
           filter_upwards [this] with x hx _ using hx
         _ = 0 := integral_zero _ _
     refine condExp_ae_eq_restrict_zero hs_m.compl ?_
-    exact indicator_ae_eq_restrict_compl (hm _ hs_m)
+    exact indicator_ae_eq_restrict_compl (hm _ hs_m).nullMeasurableSet
   have hst_m : MeasurableSet[m] (s ∩ t) := (hs _).mpr (hs_m₂.inter ht)
   simp_rw [this, setIntegral_condExp hm₂ (hf_int.indicator (hm _ hs_m)) ht,
     setIntegral_condExp hm (hf_int.indicator (hm _ hs_m)) hst_m, integral_indicator (hm _ hs_m),

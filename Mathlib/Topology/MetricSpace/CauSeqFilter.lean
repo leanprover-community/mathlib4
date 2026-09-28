@@ -6,7 +6,7 @@ Authors: Robert Y. Lewis, Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Normed.Field.Basic
-public import Mathlib.Topology.MetricSpace.Cauchy
+import Mathlib.Topology.MetricSpace.Cauchy
 
 /-!
 # Completeness in terms of `Cauchy` filters vs `isCauSeq` sequences

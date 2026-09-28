@@ -54,7 +54,7 @@ instance instIsPretransitiveSMul [MulAction.IsPretransitive M X] :
 @[to_additive]
 instance instIsCentralScalar [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] :
     IsCentralScalar M (SeparationQuotient X) where
-  op_smul_eq_smul a := surjective_mk.forall.2 (congr_arg mk <| op_smul_eq_smul a ·)
+  op_smul_eq_smul a := surjective_mk.forall.2 (congr(mk $(op_smul_eq_smul a ·)))
 
 variable {N : Type*} [SMul N X]
 
@@ -66,7 +66,7 @@ instance instSMulCommClass [ContinuousConstSMul N X] [SMulCommClass M N X] :
 @[to_additive]
 instance instIsScalarTower [SMul M N] [ContinuousConstSMul N X] [IsScalarTower M N X] :
     IsScalarTower M N (SeparationQuotient X) where
-  smul_assoc a b := surjective_mk.forall.2 fun x ↦ congr_arg mk <| smul_assoc a b x
+  smul_assoc a b := surjective_mk.forall.2 fun x ↦ congr(mk $(smul_assoc a b x))
 
 end SMul
 
@@ -169,7 +169,7 @@ instance instInvolutiveInv [InvolutiveInv G] [ContinuousInv G] :
 @[to_additive]
 instance instInvOneClass [InvOneClass G] [ContinuousInv G] :
     InvOneClass (SeparationQuotient G) where
-  inv_one := congr_arg mk inv_one
+  inv_one := congr(mk $inv_one)
 
 @[to_additive]
 instance instDiv [Div G] [ContinuousDiv G] : Div (SeparationQuotient G) where

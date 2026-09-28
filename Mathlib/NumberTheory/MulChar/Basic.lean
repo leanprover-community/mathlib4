@@ -5,7 +5,7 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.CharP.Basic
 public import Mathlib.Algebra.CharP.Lemmas
 public import Mathlib.Algebra.Group.Submonoid.Units
 public import Mathlib.Algebra.GroupWithZero.Units.Fintype
@@ -75,7 +75,7 @@ structure MulChar extends MonoidHom R R' where
 @[macro_inline]
 instance MulChar.instFunLike : FunLike (MulChar R R') R R' :=
   ⟨fun χ => χ.toFun,
-    fun χ₀ χ₁ h => by cases χ₀; cases χ₁; congr; apply MonoidHom.ext (fun _ => congr_fun h _)⟩
+    fun χ₀ χ₁ h => by cases χ₀; cases χ₁; congr; apply MonoidHom.ext (fun _ => congr($h _))⟩
 
 /-- This is the corresponding extension of `MonoidHomClass`. -/
 class MulCharClass (F : Type*) (R R' : outParam Type*) [CommMonoid R]

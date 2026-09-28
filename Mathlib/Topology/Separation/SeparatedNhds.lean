@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Topology.Continuous
+import Mathlib.Topology.Continuous
 public import Mathlib.Topology.NhdsSet
 
 /-!

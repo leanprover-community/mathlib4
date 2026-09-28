@@ -237,7 +237,7 @@ def derive (e : Expr) : MetaM (ℕ × Expr) := do
   let ⟨u, tp, e⟩ ← inferTypeQ' eSimpNormNum.expr
   let stp : Q(Field $tp) ← synthInstanceQ q(Field $tp)
   try
-    have n' := (← mkOfNat tp q(inferInstance) <| mkRawNatLit <| n).1
+    have n' := (← mkOfNat tp q(inferInstance) <| mkRawNatLit n).1
     let r ← mkProdPrf tp stp n n' t e
     trace[CancelDenoms] "pf : {← inferType r.pf}"
     let pf' ←

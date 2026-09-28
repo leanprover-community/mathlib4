@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.Data.Nat.Prime.Defs
-public import Mathlib.Tactic.Zify
+import Mathlib.Tactic.Zify
 
 import Mathlib.Algebra.BigOperators.Associated
 

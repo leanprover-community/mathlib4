@@ -6,7 +6,7 @@ Authors: Alex J. Best
 module
 
 public import Mathlib.Analysis.Convex.Body
-public import Mathlib.Analysis.Convex.Measure
+import Mathlib.Analysis.Convex.Measure
 public import Mathlib.MeasureTheory.Group.FundamentalDomain
 
 /-!

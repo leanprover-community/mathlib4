@@ -150,13 +150,15 @@ section RpowLimits
 
 namespace Real
 
-theorem continuousAt_const_rpow {a b : ℝ} (h : a ≠ 0) : ContinuousAt (a ^ ·) b := by
+theorem continuousAt_const_rpow {a b : ℝ} (h : a ≠ 0 := by positivity) :
+    ContinuousAt (a ^ ·) b := by
   simp only [rpow_def]
   refine Complex.continuous_re.continuousAt.comp ?_
   refine (continuousAt_const_cpow ?_).comp Complex.continuous_ofReal.continuousAt
   norm_cast
 
-theorem continuousAt_const_rpow' {a b : ℝ} (h : b ≠ 0) : ContinuousAt (a ^ ·) b := by
+theorem continuousAt_const_rpow' {a b : ℝ} (h : b ≠ 0 := by positivity) :
+    ContinuousAt (a ^ ·) b := by
   simp only [rpow_def]
   refine Complex.continuous_re.continuousAt.comp ?_
   refine (continuousAt_const_cpow' ?_).comp Complex.continuous_ofReal.continuousAt
@@ -223,11 +225,12 @@ theorem continuousAt_rpow_const (x : ℝ) (q : ℝ) (h : x ≠ 0 ∨ 0 ≤ q) :
   · simp_rw [rpow_zero]; exact continuousAt_const
 
 @[fun_prop]
-theorem continuous_rpow_const {q : ℝ} (h : 0 ≤ q) : Continuous (fun x : ℝ => x ^ q) :=
+theorem continuous_rpow_const {q : ℝ} (h : 0 ≤ q := by positivity) :
+    Continuous (fun x : ℝ => x ^ q) :=
   continuous_iff_continuousAt.mpr fun x ↦ continuousAt_rpow_const x q (.inr h)
 
 @[fun_prop]
-lemma continuous_const_rpow {a : ℝ} (h : a ≠ 0) : Continuous (fun x : ℝ ↦ a ^ x) :=
+lemma continuous_const_rpow {a : ℝ} (h : a ≠ 0 := by positivity) : Continuous (fun x : ℝ ↦ a ^ x) :=
   continuous_iff_continuousAt.mpr fun _ ↦ continuousAt_const_rpow h
 
 end Real
@@ -422,7 +425,8 @@ theorem continuousAt_rpow_const {x : ℝ≥0} {y : ℝ} (h : x ≠ 0 ∨ 0 ≤ y
       tendsto_id.nnrpow tendsto_const_nhds (Or.inr h)
 
 @[fun_prop]
-theorem continuous_rpow_const {y : ℝ} (h : 0 ≤ y) : Continuous fun x : ℝ≥0 => x ^ y :=
+theorem continuous_rpow_const {y : ℝ} (h : 0 ≤ y := by positivity) :
+    Continuous fun x : ℝ≥0 => x ^ y :=
   continuous_iff_continuousAt.2 fun _ => continuousAt_rpow_const (Or.inr h)
 
 @[fun_prop]

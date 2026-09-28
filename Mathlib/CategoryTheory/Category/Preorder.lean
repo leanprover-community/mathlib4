@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.Order.Hom.Basic
-public import Mathlib.Data.ULift
+import Mathlib.Data.ULift
 
 /-!
 

@@ -571,7 +571,7 @@ theorem IsCycle.pow_eq_one_iff [Finite β] {f : Perm β} (hf : IsCycle f) {n : �
 -- TODO: Define a `Set`-valued support to get rid of the `Finite β` assumption
 theorem IsCycle.pow_eq_one_iff' [Finite β] {f : Perm β} (hf : IsCycle f) {n : ℕ} {x : β}
     (hx : f x ≠ x) : f ^ n = 1 ↔ (f ^ n) x = x :=
-  ⟨fun h => DFunLike.congr_fun h x, fun h => hf.pow_eq_one_iff.2 ⟨x, hx, h⟩⟩
+  ⟨fun h => congr($h x), fun h => hf.pow_eq_one_iff.2 ⟨x, hx, h⟩⟩
 
 -- TODO: Define a `Set`-valued support to get rid of the `Finite β` assumption
 theorem IsCycle.pow_eq_one_iff'' [Finite β] {f : Perm β} (hf : IsCycle f) {n : ℕ} :
@@ -1010,7 +1010,7 @@ theorem IsCycle.commute_iff' {g c : Perm α} (hc : c.IsCycle) :
         rw [hi' x hx, hi' (c x) (apply_mem_support.mpr hx)]
         simp only [← mul_apply, ← zpow_add_one, ← zpow_one_add, add_comm]
       intro x hx
-      have hix := Perm.congr_fun hi ⟨x, hx⟩
+      have hix := congr($hi ⟨x, hx⟩)
       simp only [← Subtype.coe_inj, subtypePermOfSupport, subtypePerm_apply,
         subtypePerm_apply_zpow_of_mem] at hix
       exact hix.symm
@@ -1044,7 +1044,7 @@ theorem zpow_eq_ofSubtype_subtypePerm_iff
   constructor
   · intro h
     ext ⟨x, hx⟩
-    simpa [Perm.congr_fun h _] using ofSubtype_subtypePerm_of_mem _ hx
+    simpa [congr($h _)] using ofSubtype_subtypePerm_of_mem _ hx
   · intro h; ext x
     rw [← h]
     by_cases hx : x ∈ s

@@ -27,7 +27,7 @@ theorem isLeftRegular_iff {a : ∀ i, R i} : IsLeftRegular a ↔ ∀ i, IsLeftRe
 
 @[to_additive (attr := simp)]
 theorem isRightRegular_iff {a : ∀ i, R i} : IsRightRegular a ↔ ∀ i, IsRightRegular (a i) :=
-  have (i : _) : Nonempty (R i) := ⟨a i⟩; .symm <| Pi.map_injective.symm
+  have (i : _) : Nonempty (R i) := ⟨a i⟩; .symm Pi.map_injective.symm
 
 @[to_additive (attr := simp)]
 theorem isRegular_iff {a : ∀ i, R i} : IsRegular a ↔ ∀ i, IsRegular (a i) := by

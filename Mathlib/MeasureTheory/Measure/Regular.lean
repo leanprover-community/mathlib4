@@ -465,7 +465,7 @@ lemma of_restrict [OpensMeasurableSpace α] {μ : Measure α} {s : ℕ → Set �
     μ (⋃ n, U n) ≤ ∑' n, μ (U n) := measure_iUnion_le _
     _ ≤ ∑' n, (μ (A n) + δ n) := ENNReal.tsum_le_tsum fun n => (hU n).le
     _ = ∑' n, μ (A n) + ∑' n, δ n := ENNReal.tsum_add
-    _ = μ (⋃ n, A n) + ∑' n, δ n := (congr_arg₂ (· + ·) (measure_iUnion hAd hAm).symm rfl)
+    _ = μ (⋃ n, A n) + ∑' n, δ n := congr($((measure_iUnion hAd hAm).symm) + _)
     _ < r := hδε
 
 /-- See also `IsCompact.measure_closure` for a version

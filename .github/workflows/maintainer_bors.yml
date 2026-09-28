@@ -63,9 +63,7 @@ jobs:
           printf $'%s' "${PR_NUMBER}" | hexdump -cC
 
           printf $'mOrD=%s\n' "${m_or_d}" >> "${GITHUB_OUTPUT}"
-          if [ "${AUTHOR}" == 'leanprover-community-mathlib4-bot' ] ||
-             [ "${AUTHOR}" == 'leanprover-community-bot-assistant' ] ||
-             [ "${AUTHOR}" == 'mathlib-bors[bot]' ] ||
+          if [ "${AUTHOR}" == 'mathlib-bors[bot]' ] ||
              [ "${AUTHOR}" == 'mathlib-triage[bot]' ]
           then
             printf $'bot=true\n'

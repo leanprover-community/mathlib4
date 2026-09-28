@@ -60,7 +60,7 @@ lemma toLinearMap_injective : Function.Injective fun f : IntertwiningMap ρ σ �
 lemma toFun_injective : Function.Injective fun f : IntertwiningMap ρ σ ↦ f.toLinearMap.toFun := by
   intro f g h
   ext x
-  exact congrFun h x
+  congrm $h x
 
 @[macro_inline]
 instance : FunLike (IntertwiningMap ρ σ) V W where
@@ -302,7 +302,7 @@ lemma range_inr : (inr A ρ σ).range = (fst A ρ σ).ker :=
   IntertwiningMap.ext <| LinearMap.snd_comp_inr ..
 
 @[simp] lemma coprod_inl_inr : (inl A ρ σ).comp (fst A ρ σ) + (inr A ρ σ).comp (snd A ρ σ) =
-    .id _ := IntertwiningMap.ext <| LinearMap.coprod_inl_inr
+    .id _ := IntertwiningMap.ext LinearMap.coprod_inl_inr
 
 end prod
 

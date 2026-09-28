@@ -5,11 +5,11 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.GroupTheory.ArchimedeanDensely
-public import Mathlib.GroupTheory.SpecificGroups.Cyclic
-public import Mathlib.Topology.Algebra.OpenSubgroup
+import Mathlib.GroupTheory.ArchimedeanDensely
+import Mathlib.GroupTheory.SpecificGroups.Cyclic
+import Mathlib.Topology.Algebra.OpenSubgroup
 public import Mathlib.Topology.Algebra.Order.Archimedean
-public import Mathlib.Topology.Order.DenselyOrdered
+import Mathlib.Topology.Order.DenselyOrdered
 
 /-!
 # Discreteness of subgroups in archimedean ordered groups

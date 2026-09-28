@@ -131,11 +131,11 @@ def quotientRightRelEquivQuotientLeftRel : Quotient (QuotientGroup.rightRel s) �
   toFun :=
     Quotient.map' (fun g => g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
-      exact fun h => (congr_arg (· ∈ s) (by simp)).mp (s.inv_mem h)
+      exact fun h => congr($(by simp) ∈ s).mp (s.inv_mem h)
   invFun :=
     Quotient.map' (fun g => g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
-      exact fun h => (congr_arg (· ∈ s) (by simp)).mp (s.inv_mem h)
+      exact fun h => congr($(by simp) ∈ s).mp (s.inv_mem h)
   left_inv g :=
     Quotient.inductionOn' g fun g =>
       Quotient.sound'
@@ -216,11 +216,19 @@ rather than the specific `h = -g + (mk g).out`. -/]
 theorem mk_out_eq_mul (g : α) : ∃ h : s, (mk g : α ⧸ s).out = g * h :=
   ⟨⟨g⁻¹ * (mk g).out, QuotientGroup.eq.mp (mk g).out_eq'.symm⟩, by rw [mul_inv_cancel_left]⟩
 
-variable {s} {a b : α}
+variable {s} {a b c : α}
 
 @[to_additive (attr := simp)]
 theorem mk_mul_of_mem (a : α) (hb : b ∈ s) : (mk (a * b) : α ⧸ s) = mk a := by
   rwa [QuotientGroup.eq, mul_inv_rev, inv_mul_cancel_right, s.inv_mem_iff]
+
+@[to_additive]
+theorem mk_mul_eq_iff : (mk (a * b) : α ⧸ s) = mk c ↔ (mk b : α ⧸ s) = mk (a⁻¹ * c) := by
+  simp [QuotientGroup.eq, mul_assoc]
+
+@[to_additive (attr := simp)]
+theorem mk_mul_left_cancel_iff : (mk (a * b) : α ⧸ s) = mk (a * c) ↔ (mk b : α ⧸ s) = mk c := by
+  simp [mk_mul_eq_iff]
 
 @[to_additive]
 theorem preimage_image_mk (N : Subgroup α) (s : Set α) :

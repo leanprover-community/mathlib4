@@ -5,10 +5,10 @@ Authors: Fox Thomson, Chris Wong, Rudy Peterson
 -/
 module
 
-public import Mathlib.Basic.Countable.Small
+import Mathlib.Basic.Countable.Small
 public import Mathlib.Computability.Language
-public import Mathlib.Data.Fintype.Pigeonhole
-public import Mathlib.Data.Fintype.Prod
+import Mathlib.Data.Fintype.Pigeonhole
+import Mathlib.Data.Fintype.Prod
 public import Mathlib.Tactic.NormNum
 
 /-!
@@ -143,7 +143,7 @@ theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.car
   · simp only [List.length_drop, List.length_take]
     omega
   · intro h
-    have hlen' := congr_arg List.length h
+    have hlen' := congr($(h).length)
     simp only [List.length_drop, List.length, List.length_take] at hlen'
     omega
   have hq : M.evalFrom (M.evalFrom s ((x.take m).take n)) ((x.take m).drop n) =

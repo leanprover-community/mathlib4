@@ -426,7 +426,7 @@ lemma coinvariantsTensorMk_apply {A B : Rep.{u} k G} (a : A) (b : B) :
 lemma coinvariantsTensor_hom_ext {A B : Rep.{u} k G} {M : ModuleCat k}
     {f g : ((coinvariantsTensor k G).obj A).obj B ⟶ M}
     (hfg : (coinvariantsTensorMk A B).compr₂ f.hom = (coinvariantsTensorMk A B).compr₂ g.hom) :
-    f = g := coinvariantsFunctor_hom_ext <| ModuleCat.hom_ext <| TensorProduct.ext <| hfg
+    f = g := coinvariantsFunctor_hom_ext <| ModuleCat.hom_ext <| TensorProduct.ext hfg
 
 instance (A : Rep.{u} k G) : ((coinvariantsTensor k G).obj A).Additive where
 

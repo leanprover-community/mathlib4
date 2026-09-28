@@ -218,7 +218,7 @@ def Periodic.lift [AddGroup α] (h : Periodic f c) (x : α ⧸ AddSubgroup.zmult
   Quotient.liftOn' x f fun a b h' => by
     rw [QuotientAddGroup.leftRel_apply] at h'
     obtain ⟨k, hk⟩ := h'
-    exact (h.zsmul k _).symm.trans (congr_arg f (add_eq_of_eq_neg_add hk))
+    exact (h.zsmul k _).symm.trans congr(f $(add_eq_of_eq_neg_add hk))
 
 @[simp]
 theorem Periodic.lift_coe [AddGroup α] (h : Periodic f c) (a : α) :

@@ -5,7 +5,6 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Regular
 public import Mathlib.Algebra.Polynomial.Coeff
 public import Mathlib.Algebra.Polynomial.Degree.Defs
 
@@ -639,7 +638,7 @@ theorem natDegree_X_pow_add_C {n : ℕ} {r : R} : (X ^ n + C r).natDegree = n :=
   simp
 
 theorem X_pow_add_C_ne_one {n : ℕ} (hn : 0 < n) (a : R) : (X : R[X]) ^ n + C a ≠ 1 := fun h =>
-  hn.ne' <| by simpa only [natDegree_X_pow_add_C, natDegree_one] using congr_arg natDegree h
+  hn.ne' <| by simpa only [natDegree_X_pow_add_C, natDegree_one] using congr(natDegree $h)
 
 theorem X_add_C_ne_one (r : R) : X + C r ≠ 1 :=
   pow_one (X : R[X]) ▸ X_pow_add_C_ne_one zero_lt_one r

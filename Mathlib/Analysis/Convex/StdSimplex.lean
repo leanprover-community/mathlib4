@@ -10,7 +10,7 @@ public import Mathlib.Geometry.Convex.ConvexSpace.Barycenter
 public import Mathlib.Geometry.Convex.ConvexSpace.CompactSpaceStdSimplex
 public import Mathlib.Geometry.Convex.ConvexSpace.PathConnectedSpaceStdSimplex
 public import Mathlib.Geometry.Convex.ConvexSpace.Module
-public import Mathlib.Analysis.Convex.PathConnected
+import Mathlib.Analysis.Convex.PathConnected
 public import Mathlib.Topology.Algebra.Monoid.FunOnFinite
 
 /-!
@@ -400,7 +400,7 @@ lemma continuous_map [TopologicalSpace S] [IsTopologicalSemiring S] (f : X → Y
 lemma vertex_injective [Nontrivial S] [DecidableEq X] :
     Function.Injective (vertex (S := S) (X := X)) := by
   intro x y h
-  replace h := DFunLike.congr_fun h x
+  replace h := congr($h x)
   by_contra!
   simp [Pi.single_eq_of_ne this] at h
 

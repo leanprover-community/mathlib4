@@ -202,6 +202,7 @@ theorem prod_add_one {f : ι → R} (s : Finset ι) :
   classical simp only [prod_add, prod_const_one, mul_one]
 
 /-- `∏ i, (f i + g i) = (∏ i, f i) + ∑ i, g i * (∏ j < i, f j + g j) * (∏ j > i, f j)`. -/
+@[to_dual prod_add_ordered']
 theorem prod_add_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → R) :
     ∏ i ∈ s, (f i + g i) =
       (∏ i ∈ s, f i) +
@@ -223,6 +224,7 @@ theorem prod_add_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → R) :
       prod_insert, mul_left_comm]
     exact mt (fun ha => (mem_filter.1 ha).1) ha'
 
+@[to_dual prod_one_add_ordered']
 theorem prod_one_add_ordered [LinearOrder ι] (s : Finset ι) (f : ι → R) :
     ∏ i ∈ s, (1 + f i) = 1 + ∑ i ∈ s, f i * ∏ j ∈ s with j < i, (1 + f j) := by
   rw [prod_add_ordered]
@@ -261,6 +263,7 @@ lemma prod_sub [DecidableEq ι] (f g : ι → R) (s : Finset ι) :
   simp [sub_eq_neg_add, prod_add, prod_neg, mul_right_comm]
 
 /-- `∏ i, (f i - g i) = (∏ i, f i) - ∑ i, g i * (∏ j < i, f j - g j) * (∏ j > i, f j)`. -/
+@[to_dual prod_sub_ordered']
 lemma prod_sub_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → R) :
     ∏ i ∈ s, (f i - g i) =
       (∏ i ∈ s, f i) -
@@ -271,6 +274,7 @@ lemma prod_sub_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → R) :
 
 /-- `∏ i, (1 - f i) = 1 - ∑ i, f i * (∏ j < i, 1 - f j)`. This formula is useful in construction of
 a partition of unity from a collection of “bump” functions. -/
+@[to_dual prod_one_sub_ordered']
 theorem prod_one_sub_ordered [LinearOrder ι] (s : Finset ι) (f : ι → R) :
     ∏ i ∈ s, (1 - f i) = 1 - ∑ i ∈ s, f i * ∏ j ∈ s with j < i, (1 - f j) := by
   rw [prod_sub_ordered]

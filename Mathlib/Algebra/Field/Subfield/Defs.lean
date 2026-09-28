@@ -147,7 +147,7 @@ instance : SetLike (Subfield K) K where
   coe s := s.carrier
   coe_injective p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
-instance : PartialOrder (Subfield K) := .ofSetLike (Subfield K) K
+instance : PartialOrder (Subfield K) := .ofSetLike (Subfield K)
 
 instance : SubfieldClass (Subfield K) K where
   add_mem {s} := s.add_mem'

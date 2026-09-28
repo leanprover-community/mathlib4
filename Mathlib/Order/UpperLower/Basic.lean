@@ -5,10 +5,10 @@ Authors: Yaël Dillies, Sara Rousta
 -/
 module
 
-public import Mathlib.Logic.Equiv.Set
+import Mathlib.Logic.Equiv.Set
 public import Mathlib.Order.Interval.Set.OrderEmbedding
 public import Mathlib.Order.SetNotation
-public import Mathlib.Order.WellFounded
+import Mathlib.Order.WellFounded
 
 /-!
 # Properties of unbundled upper/lower sets

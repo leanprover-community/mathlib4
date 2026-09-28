@@ -5,9 +5,9 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.Basic.Finite.Sum
+import Mathlib.Basic.Finite.Sum
 public import Mathlib.CategoryTheory.Galois.GaloisObjects
-public import Mathlib.CategoryTheory.Limits.Shapes.CombinedProducts
+import Mathlib.CategoryTheory.Limits.Shapes.CombinedProducts
 
 /-!
 # Decomposition of objects into connected components and applications
@@ -288,7 +288,7 @@ lemma exists_galois_representative (X : C) : ∃ (A : C) (a : F.obj A),
     change F.map (fi1.hom ≫ fi2.inv) x = y
     simp only [map_comp, FintypeCat.comp_apply]
     rw [hfi1, ← hfi2]
-    exact ConcreteCategory.congr_hom (F.mapIso fi2).hom_inv_id y
+    congrm $((F.mapIso fi2).hom_inv_id) y
   · refine ⟨evaluation_injective_of_isConnected F A X a, ?_⟩
     intro x
     use u ≫ Pi.π _ x

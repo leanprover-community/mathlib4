@@ -5,12 +5,12 @@ Authors: Sophie Morel
 -/
 module
 
-public import Mathlib.Algebra.Category.FGModuleCat.Abelian
-public import Mathlib.Algebra.Category.ModuleCat.Injective
+import Mathlib.Algebra.Category.FGModuleCat.Abelian
+import Mathlib.Algebra.Category.ModuleCat.Injective
 public import Mathlib.RepresentationTheory.Character
-public import Mathlib.RepresentationTheory.Maschke
-public import Mathlib.RingTheory.SimpleModule.InjectiveProjective
-public import Mathlib.RepresentationTheory.Rep.Iso
+import Mathlib.RepresentationTheory.Maschke
+import Mathlib.RingTheory.SimpleModule.InjectiveProjective
+import Mathlib.RepresentationTheory.Rep.Iso
 
 /-!
 # Applications of Maschke's theorem

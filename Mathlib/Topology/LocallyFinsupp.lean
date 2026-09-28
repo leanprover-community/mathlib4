@@ -10,9 +10,8 @@ public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.Algebra.Group.Support
 public import Mathlib.Algebra.Order.Group.PosPart
 public import Mathlib.Algebra.Order.Hom.Monoid
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-public import Mathlib.Algebra.Order.Pi
-public import Mathlib.Topology.DiscreteSubset
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+import Mathlib.Algebra.Order.Pi
 public import Mathlib.Topology.Separation.Hausdorff
 public import Mathlib.Tactic.Peel
 
@@ -145,6 +144,11 @@ lemma supportWithinDomain [Zero Y] (D : locallyFinsuppWithin U Y) :
 
 lemma supportLocallyFiniteWithinDomain [Zero Y] (D : locallyFinsuppWithin U Y) :
     ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ D.support) := D.supportLocallyFiniteWithinDomain'
+
+lemma _root_.Function.locallyFinsupp.finite_support
+    [Zero Y] [CompactSpace X] (f : locallyFinsupp X Y) : f.support.Finite := by
+  simpa using LocallyFiniteSupport.finite_inter_support_of_isCompact f.locallyFiniteSupport
+      CompactSpace.isCompact_univ
 
 @[ext]
 lemma ext [Zero Y] {D₁ D₂ : locallyFinsuppWithin U Y} (h : ∀ a, D₁ a = D₂ a) :

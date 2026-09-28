@@ -54,7 +54,6 @@ lemma comapIso_hom_fst (I : Y.IdealSheafData) (f : X ⟶ Y) :
     (I.comapIso f).hom ≫ pullback.fst _ _ = (I.comap f).subschemeι := by
   rw [← comapIso_inv_subschemeι, Iso.hom_inv_id_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma comap_comp (I : Z.IdealSheafData) (f : X ⟶ Y) (g : Y ⟶ Z) :
     I.comap (f ≫ g) = (I.comap g).comap f := by
@@ -83,7 +82,6 @@ lemma ker_fst_of_isClosedImmersion (i : Z ⟶ Y) (f : X ⟶ Y) [IsClosedImmersio
   rw [← Hom.ker_comp_of_isIso (pullback.map f i f i.imageι (𝟙 _) (i.toImage) (𝟙 _)
     (by simp) (by simp)), pullback.lift_fst, Category.comp_id]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- To show that the pullback of the closed immersion `iX` along `f` is the closed immersion
 `iY`, it suffices to check that the preimage of `ker iY` under `f` is `ker iX`. -/
 lemma _root_.AlgebraicGeometry.isPullback_of_isClosedImmersion

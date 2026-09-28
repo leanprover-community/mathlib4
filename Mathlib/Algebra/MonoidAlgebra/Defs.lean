@@ -453,7 +453,7 @@ lemma induction_linear {motive : R[M] → Prop} (x : R[M]) (zero : motive 0)
 lemma addSubmonoidClosure_single :
     AddSubmonoid.closure {x : R[M] | ∃ m r, x = single m r} = ⊤ :=
   top_unique fun x _hx => induction x (AddSubmonoid.zero_mem _) fun a b _f _ha _hb =>
-    AddSubmonoid.add_mem _ <| AddSubmonoid.subset_closure <| ⟨a, b, rfl⟩
+    AddSubmonoid.add_mem _ <| AddSubmonoid.subset_closure ⟨a, b, rfl⟩
 
 section One
 variable [One M]

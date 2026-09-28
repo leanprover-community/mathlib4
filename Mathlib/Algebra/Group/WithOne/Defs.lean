@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Johan Commelin
 module
 
 public import Mathlib.Algebra.Group.DivInvMonoid
-public import Mathlib.Basic.Nontrivial.Basic
+import Mathlib.Basic.Nontrivial.Basic
 public import Mathlib.Data.Option.Basic
 public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.Attr.Core
@@ -181,7 +181,7 @@ instance instMonoid [Semigroup α] : Monoid (WithOne α) where
 @[to_additive]
 instance instCommMonoid [CommSemigroup α] : CommMonoid (WithOne α) where
   mul_comm
-    | (a : α), (b : α) => congr_arg some (mul_comm a b)
+    | (a : α), (b : α) => congr(some $(mul_comm a b))
     | (_ : α), 1 => rfl
     | 1, (_ : α) => rfl
     | 1, 1 => rfl

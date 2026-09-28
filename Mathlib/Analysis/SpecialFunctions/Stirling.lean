@@ -6,7 +6,7 @@ Authors: Moritz Firsching, Fabian Kruse, Nikolas Kuhn
 module
 
 public import Mathlib.Analysis.Real.Pi.Wallis
-public import Mathlib.Tactic.AdaptationNote
+import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Stirling's formula

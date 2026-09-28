@@ -5,8 +5,8 @@ Authors: Mitchell Lee
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Finite
-public import Mathlib.Topology.Algebra.InfiniteSum.GroupCompletion
+import Mathlib.Algebra.Group.Subgroup.Finite
+import Mathlib.Topology.Algebra.InfiniteSum.GroupCompletion
 public import Mathlib.Topology.Algebra.InfiniteSum.Ring
 public import Mathlib.Topology.Algebra.Nonarchimedean.Completion
 

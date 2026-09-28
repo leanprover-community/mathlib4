@@ -6,8 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
-public import Mathlib.AlgebraicGeometry.PullbackCarrier
-public import Mathlib.Topology.LocalAtTarget
+import Mathlib.AlgebraicGeometry.PullbackCarrier
 
 /-!
 # Universally closed morphism

@@ -6,12 +6,8 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Group.Irreducible.Defs
-public import Mathlib.Algebra.Group.Subgroup.Lattice
 public import Mathlib.Algebra.Group.Subgroup.Pointwise
-public import Mathlib.Algebra.Group.Submonoid.Basic
-public import Mathlib.Algebra.Order.Group.Defs
-public import Mathlib.Algebra.Order.Monoid.Defs
-public import Mathlib.Order.Preorder.Finite
+import Mathlib.Algebra.Order.Group.Defs
 
 /-!
 # Indecomposable elements of monoids
@@ -147,7 +143,7 @@ lemma pairwise_div_notMem_range [InvolutiveInv ι]
     s.Pairwise fun i j ↦ v i / v j ∉ range v := by
   have h_sub : s ⊆ t := hst.trans (IsMulIndecomposable.subset _ _)
   intro i hi j hj hne
-  by_contra! ⟨k, hk⟩
+  by_contra ⟨k, hk⟩
   rcases hv_t k with hk' | hk'
   · suffices ¬ IsMulIndecomposable v t i from this (hst hi)
     simp only [IsMulIndecomposable, hv_one, or_self, imp_false, not_and, not_forall, not_not]

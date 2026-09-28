@@ -5,11 +5,7 @@ Authors: Anne Baanen, Kexing Ying, Moritz Doll
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Action.Opposite
-public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 public import Mathlib.LinearAlgebra.Matrix.Basis
-public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
-public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 public import Mathlib.LinearAlgebra.Basis.Bilinear

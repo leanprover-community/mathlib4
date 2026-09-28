@@ -6,9 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Topology.Compactness.Lindelof
-public import Mathlib.Topology.Separation.Hausdorff
 public import Mathlib.Topology.Connected.Clopen
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Regular, normal, T₃, T₄ and T₅ spaces
@@ -378,7 +376,7 @@ lemma IsCompact.closure_eq_nhdsKer [RegularSpace X] {s : Set X} (hs : IsCompact 
   · rw [nhdsKer, ← hs.lift'_closure_nhdsSet]
     simp +contextual [Filter.lift', Filter.lift, closure_mono, subset_of_mem_nhdsSet]
   · intro y hy
-    by_contra! hy'
+    by_contra hy'
     rw [← _root_.disjoint_nhdsSet_nhds, Filter.disjoint_iff] at hy'
     obtain ⟨t, hts, t', ht'y, H⟩ := hy'
     exact Set.disjoint_iff.mp H ⟨hy t hts, mem_of_mem_nhds ht'y⟩

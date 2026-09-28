@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 module
 
 public import Mathlib.Data.Set.Finite.Lemmas
-public import Mathlib.Order.Filter.Bases.Finite
+import Mathlib.Order.Filter.Bases.Finite
 public import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
@@ -129,7 +129,7 @@ theorem eventually_pow_lt_factorial_sub (c d : ℕ) : ∀ᶠ n in atTop, c ^ n <
     lia
   · congr 1
     lia
-  refine (lt_of_lt_of_le ?_ Nat.factorial_mul_pow_le_factorial).trans_le <|
+  refine (lt_of_lt_of_le ?_ Nat.factorial_mul_pow_le_factorial).trans_le
     (factorial_le (Nat.le_succ _))
   rw [← one_mul (_ ^ _ : ℕ)]
   apply Nat.mul_lt_mul_of_le_of_lt

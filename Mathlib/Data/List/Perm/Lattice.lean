@@ -5,10 +5,10 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.List.Forall2
+import Mathlib.Data.List.Forall2
 public import Mathlib.Data.List.TakeDrop
 public import Mathlib.Data.List.Lattice
-public import Mathlib.Data.List.Nodup
+import Mathlib.Data.List.Nodup
 
 /-!
 # List Permutations and list lattice operations.

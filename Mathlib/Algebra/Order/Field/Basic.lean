@@ -239,9 +239,11 @@ theorem le_iff_forall_one_lt_le_mul₀ {α : Type*}
   convert h (x / b) ((one_lt_div hb).mpr hbx)
   rw [mul_div_cancel₀ _ hb.ne']
 
-theorem div_nat_le_self_of_nonnneg (ha : 0 ≤ a) (n : ℕ) : a / n ≤ a :=
+theorem div_nat_le_self_of_nonneg (ha : 0 ≤ a) (n : ℕ) : a / n ≤ a :=
   if h : n = 0 then by simpa [h]
   else div_le_self ha (n.one_le_cast_iff_ne_zero.mpr h)
+
+@[deprecated (since := "2026-09-17")] alias div_nat_le_self_of_nonnneg := div_nat_le_self_of_nonneg
 
 theorem div_nat_lt_self_of_pos_of_two_le (ha : 0 < a) {n : ℕ} (hn : 2 ≤ n) : a / n < a :=
   div_lt_self ha (n.one_lt_cast.mpr hn)
@@ -679,7 +681,7 @@ theorem uniform_continuous_npow_on_bounded (B : α) {ε : α} (hε : 0 < ε) (n 
   · have ⟨δ, δ_pos, cont⟩ := this 1 zero_lt_one
     exact ⟨δ, δ_pos, fun q r hr ↦ cont q r (hr.trans (B_pos.trans zero_le_one))⟩
   have pos : 0 < 1 + ↑n * (B + 1) ^ (n - 1) := zero_lt_one.trans_le <| le_add_of_nonneg_right <|
-    mul_nonneg n.cast_nonneg <| (pow_pos (B_pos.trans <| lt_add_of_pos_right _ zero_lt_one) _).le
+    mul_nonneg n.cast_nonneg (pow_pos (B_pos.trans <| lt_add_of_pos_right _ zero_lt_one) _).le
   refine ⟨min 1 (ε / (1 + n * (B + 1) ^ (n - 1))), lt_min zero_lt_one (div_pos hε pos),
     fun q r hr hqr ↦ (abs_pow_sub_pow_le ..).trans_lt ?_⟩
   rw [le_inf_iff, le_div_iff₀ pos, mul_one_add, ← mul_assoc] at hqr

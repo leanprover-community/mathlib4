@@ -9,7 +9,7 @@ public import Mathlib.CategoryTheory.Sites.Canonical
 public import Mathlib.CategoryTheory.Sites.Continuous
 public import Mathlib.CategoryTheory.Sites.JointlySurjective
 public import Mathlib.CategoryTheory.Sites.MorphismProperty
-public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
+import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 public import Mathlib.Topology.Category.TopCat.ULift
 
 /-!
@@ -104,7 +104,7 @@ instance subcanonical_grothendieckTopology : grothendieckTopology.Subcanonical :
       have := hx i j _ (TopCat.pullbackCone (𝒰.f i) (𝒰.f j)).fst
         (TopCat.pullbackCone (𝒰.f i) (𝒰.f j)).snd (TopCat.pullbackCone (𝒰.f i) (𝒰.f j)).condition
       dsimp at this
-      simpa using! congr($(this) ⟨(xi, xj), hi ▸ hj.symm⟩)
+      simpa using! congr($this ⟨(xi, xj), hi ▸ hj.symm⟩)
     · intro x
       obtain ⟨i, hi⟩ := exists_mem_zeroHypercover_range 𝒰 x
       exact ⟨i, (isOpenEmbedding_f_zeroHypercover 𝒰 i).isOpen_range.mem_nhds hi⟩

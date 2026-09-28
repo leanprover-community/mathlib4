@@ -395,7 +395,7 @@ theorem quo_add_sum_rem_mul_pow_inverse_unique [FaithfulSMul R[X] K] {ι : Type*
     rw [hff, hff, (FaithfulSMul.algebraMap_injective R[X] K).eq_iff] at hf
     obtain ⟨hq, hr⟩ := quo_mul_prod_pow_add_sum_rem_mul_prod_pow_unique hg hgg
       (fun i hi j => hr₁ i hi j.rev) (fun i hi j => hr₂ i hi j.rev) hf
-    exact ⟨hq, fun i hi => funext fun j => j.rev_rev ▸ congrFun (hr i hi) j.rev⟩
+    exact ⟨hq, fun i hi => funext fun j => j.rev_rev ▸ congr($(hr i hi) j.rev)⟩
   intro q r
   simp_rw [add_mul, Finset.sum_mul, map_add, map_sum, map_mul, map_prod, map_pow]
   refine congrArg (_ + ·) (Finset.sum_congr rfl fun i hi => ?_)

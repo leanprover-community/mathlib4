@@ -513,7 +513,10 @@ partial def Mor₂OfExpr (e : Expr) : BicategoryM Mor₂ := do
 instance : BicategoryLike.MkMor₂ BicategoryM where
   ofExpr := Mor₂OfExpr
 
-instance : MonadCoherehnceHom BicategoryM where
+instance : MonadCoherenceHom BicategoryM where
   unfoldM α := Mor₂IsoOfExpr α.unfold
+
+@[deprecated (since := "2026-09-17")]
+alias instMonadCoherehnceHomBicategoryM := instMonadCoherenceHomBicategoryM
 
 end Mathlib.Tactic.Bicategory

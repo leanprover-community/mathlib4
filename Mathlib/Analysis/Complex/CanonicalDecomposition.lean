@@ -6,8 +6,8 @@ Authors: Stefan Kebekus
 module
 
 public import Mathlib.Analysis.Meromorphic.FactorizedRational
-public import Mathlib.Analysis.Meromorphic.RCLike
-public import Mathlib.Analysis.Normed.Module.Connected
+import Mathlib.Analysis.Meromorphic.RCLike
+import Mathlib.Analysis.Normed.Module.Connected
 
 /-!
 # Canonical Decomposition
@@ -516,7 +516,7 @@ private lemma mulSupport_pow_subset_support {α β : Type*} [DivInvMonoid α] (f
     (g : β → ℤ) : (fun x ↦ f x ^ g x).mulSupport ⊆ g.support := by
   simp only [mulSupport_subset_iff, ne_eq, mem_support]
   intro
-  contrapose!
+  contrapose
   simp +contextual
 
 /--

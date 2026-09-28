@@ -5,12 +5,8 @@ Authors: Oliver Nash, Jonathan Reich
 -/
 module
 
-public import Mathlib.Data.Fin.Basic
-public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.GroupTheory.Perm.Cycle.Concrete
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.PosDef
-public import Mathlib.LinearAlgebra.Matrix.Symmetric
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.NormDet
 

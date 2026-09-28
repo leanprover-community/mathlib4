@@ -586,7 +586,7 @@ protected theorem inv [DecidableEq n] {M : Matrix n n K} (hM : M.PosDef) : M⁻�
 theorem _root_.Matrix.posDef_inv_iff [DecidableEq n] {M : Matrix n n K} :
     M⁻¹.PosDef ↔ M.PosDef :=
   ⟨fun h =>
-    letI := (Matrix.isUnit_nonsing_inv_iff.1 <| h.isUnit).invertible
+    letI := (Matrix.isUnit_nonsing_inv_iff.1 h.isUnit).invertible
     Matrix.inv_inv_of_invertible M ▸ h.inv, (·.inv)⟩
 
 /-- A positive semi-definite matrix is positive definite if and only if it is invertible. -/

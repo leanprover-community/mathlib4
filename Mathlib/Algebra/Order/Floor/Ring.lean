@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Order.Floor.Semiring
 public import Mathlib.Tactic.Abel
 public import Mathlib.Tactic.Field
 public import Mathlib.Tactic.Linarith
-public import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Lemmas on `Int.floor`, `Int.ceil` and `Int.fract`
@@ -250,7 +249,7 @@ lemma floor_eq_self_iff_mem (a : R) : ⌊a⌋ = a ↔ a ∈ Set.range Int.cast :
   aesop
 
 theorem floor_lt_self_iff {a : R} : ⌊a⌋ < a ↔ a ∉ range Int.cast :=
-  (floor_le a).lt_iff_ne.trans <| (floor_eq_self_iff_mem _).not
+  (floor_le a).lt_iff_ne.trans (floor_eq_self_iff_mem _).not
 
 section LinearOrderedRing
 variable {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R] {a : R}

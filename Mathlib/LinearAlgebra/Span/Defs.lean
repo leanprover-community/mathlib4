@@ -271,7 +271,7 @@ theorem span_empty : span R (∅ : Set M) = ⊥ :=
 
 @[simp]
 theorem span_univ : span R (univ : Set M) = ⊤ :=
-  eq_top_iff.2 <| IsConcreteLE.le_iff.2 <| subset_span
+  eq_top_iff.2 <| IsConcreteLE.le_iff.2 subset_span
 
 @[simp]
 theorem span_inter (S S' : Submodule R M) : span R (S ∩ S') = S ⊓ S' :=

@@ -8,9 +8,7 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Stalk
 public import Mathlib.Algebra.Category.Ring.Limits
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
-public import Mathlib.Tactic.DepRewrite
 public import Mathlib.Topology.Sheaves.LocalPredicate
-public import Mathlib.Tactic.ModuleNF
 
 /-!
 # The structure sheaf on `PrimeSpectrum R`.
@@ -808,7 +806,7 @@ instance (x : PrimeSpectrum.Top R) : IsLocalizedModule x.asIdeal.primeCompl (toS
   have : TopCat.Presheaf.germ (moduleStructurePresheaf R M).presheaf ⊤ x (by simp) ≫ α.hom =
       (forget₂ _ _).map ((structurePresheafInModuleCat R M).germ ⊤ x (by simp)) :=
     Limits.colimit.isoColimitCocone_ι_hom (C := Ab) ..
-  exact congr($this _)
+  congrm $this _
 
 set_option backward.isDefEq.respectTransparency.types false in
 variable (R) in
@@ -1124,11 +1122,11 @@ This is a generalization of the fact that, for fixed `U`, the comap of the ident
 to OO_X(U) is the identity.
 -/
 theorem comap_id_eq_map (U V : Opens (PrimeSpectrum.Top R)) (iVU : V ⟶ U) :
-    (comap (RingHom.id R) U V fun _ hpV => leOfHom iVU <| hpV) =
+    (comap (RingHom.id R) U V fun _ hpV => leOfHom iVU hpV) =
       ((structureSheaf R).1.map iVU.op).hom :=
   RingHom.ext fun s => Subtype.ext <| funext fun p => by
     rw [comap_apply]
-    exact congr($(Localization.localRingHom_id ..) _)
+    congrm $(Localization.localRingHom_id ..) _
 
 /--
 The comap of the identity is the identity. In this variant of the lemma, two open subsets `U` and

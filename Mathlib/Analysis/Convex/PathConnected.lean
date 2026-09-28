@@ -6,7 +6,7 @@ Authors: Patrick Massot, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Convex.Basic
-public import Mathlib.LinearAlgebra.Projection
+import Mathlib.LinearAlgebra.Projection
 public import Mathlib.Topology.Connected.PathConnected
 
 /-!

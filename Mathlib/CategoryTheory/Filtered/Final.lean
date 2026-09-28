@@ -212,7 +212,6 @@ instance IsCofiltered.over [IsCofilteredOrEmpty C] (c : C) : IsCofiltered (Over 
   isCofiltered_costructuredArrow_of_isCofiltered_of_exists _ c ⟨c, ⟨𝟙 _⟩⟩
     (fun s s' => IsCofilteredOrEmpty.cone_maps s s')
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The forgetful functor of the under category on any filtered or empty category is final. -/
 instance Under.final_forget [IsFilteredOrEmpty C] (c : C) : Final (Under.forget c) :=

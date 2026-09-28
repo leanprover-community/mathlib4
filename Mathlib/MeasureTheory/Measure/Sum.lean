@@ -134,7 +134,7 @@ theorem sum_add_sum_compl (s : Set ι) (μ : ι → Measure α) :
   exact ENNReal.summable.tsum_add_tsum_compl (f := fun i => μ i t) ENNReal.summable
 
 theorem sum_congr {μ ν : ℕ → Measure α} (h : ∀ n, μ n = ν n) : sum μ = sum ν :=
-  congr_arg sum (funext h)
+  congr(sum $(funext h))
 
 theorem sum_add_sum (μ ν : ι → Measure α) : sum μ + sum ν = sum fun n => μ n + ν n := by
   ext1 s hs

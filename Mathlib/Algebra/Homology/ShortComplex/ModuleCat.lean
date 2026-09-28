@@ -92,7 +92,7 @@ lemma Exact.moduleCat_of_range_eq_ker {X₁ X₂ X₃ : ModuleCat.{v} R}
 
 /-- The canonical linear map `S.X₁ →ₗ[R] LinearMap.ker S.g` induced by `S.f`. -/
 abbrev moduleCatToCycles : S.X₁ →ₗ[R] LinearMap.ker S.g.hom :=
-  S.f.hom.codRestrict _ <| S.moduleCat_zero_apply
+  S.f.hom.codRestrict _ S.moduleCat_zero_apply
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The explicit left homology data of a short complex of modules that is
@@ -258,7 +258,7 @@ abbrev ModuleCat.shortComplexOfConj (eq0 : g ∘ₗ f = 0) :
   ModuleCat.shortComplexOfCompEqZero ((eN.symm.comp f).comp eM.toLinearMap)
     (eL.symm.comp (g.comp eN.toLinearMap)) (by
       ext x
-      simpa using LinearMap.congr_fun eq0 (eM x))
+      simpa using congr($eq0 (eM x)))
 
 private lemma exact_conj_of_exact (exact : Function.Exact f g) : Function.Exact
     ((eN.symm.comp f).comp eM.toLinearMap) (eL.symm.comp (g.comp eN.toLinearMap)) := by

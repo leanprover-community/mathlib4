@@ -5,8 +5,7 @@ Authors: Bjørn Kjos-Hanssen, Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.QuadraticDiscriminant
-public import Mathlib.LinearAlgebra.Matrix.Action
+import Mathlib.Algebra.QuadraticDiscriminant
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.FinTwo
 public import Mathlib.LinearAlgebra.Projectivization.Action
 public import Mathlib.Topology.Compactification.OnePoint.Basic
@@ -133,7 +132,7 @@ lemma equivProjectivization_smul {g : GL (Fin 2) K} (x : OnePoint K) :
 set_option backward.isDefEq.respectTransparency.types false in
 lemma smul_infty_def {g : GL (Fin 2) K} :
     g • ∞ = (equivProjectivization K).symm (.mk K ![g 0 0, g 1 0] (fun h ↦ by
-      simpa [det_fin_two, show g 0 0 = 0 from congr_fun h 0, show g 1 0 = 0 from congr_fun h 1]
+      simpa [det_fin_two, show g 0 0 = 0 from congr($h 0), show g 1 0 = 0 from congr($h 1)]
         using g.det_ne_zero)) := by
   simp [Equiv.smul_def, mulVec_eq_sum, Units.smul_def]
 

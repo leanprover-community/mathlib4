@@ -7,9 +7,8 @@ module
 
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
-public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.Nonempty
-public import Mathlib.CategoryTheory.Linear.Basic
+import Mathlib.CategoryTheory.Linear.Basic
 
 /-!
 # Simplicial homology

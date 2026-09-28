@@ -131,12 +131,12 @@ theorem hahn_decomposition (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMe
       exact
         tendsto_const_nhds.sub <|
           tendsto_const_nhds.mul <|
-            tendsto_pow_atTop_nhds_zero_of_lt_one (le_of_lt <| half_pos <| zero_lt_one)
+            tendsto_pow_atTop_nhds_zero_of_lt_one (le_of_lt <| half_pos zero_lt_one)
               (half_lt_self zero_lt_one)
     have hd : Tendsto (fun m => d (⋂ n, f m n)) atTop (𝓝 (d (⋃ m, ⋂ n, f m n))) := by
       refine d_Union _ ?_
       exact fun n m hnm =>
-        subset_iInter fun i => Subset.trans (iInter_subset (f n) i) <| f_subset_f hnm <| le_rfl
+        subset_iInter fun i => Subset.trans (iInter_subset (f n) i) <| f_subset_f hnm le_rfl
     refine le_of_tendsto_of_tendsto' hγ hd fun m => ?_
     have : Tendsto (fun n => d (f m n)) atTop (𝓝 (d (⋂ n, f m n))) := by
       refine d_Inter _ ?_ ?_
@@ -147,7 +147,7 @@ theorem hahn_decomposition (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMe
     refine ge_of_tendsto this (eventually_atTop.2 ⟨m, fun n hmn => ?_⟩)
     change γ - 2 * (1 / 2) ^ m ≤ d (f m n)
     refine le_trans ?_ (le_d_f _ _ hmn)
-    exact le_add_of_le_of_nonneg le_rfl (pow_nonneg (le_of_lt <| half_pos <| zero_lt_one) _)
+    exact le_add_of_le_of_nonneg le_rfl (pow_nonneg (le_of_lt <| half_pos zero_lt_one) _)
   have hs : MeasurableSet s := MeasurableSet.iUnion fun n => MeasurableSet.iInter fun m => hf _ _
   refine ⟨s, hs, ?_, ?_⟩
   · intro t ht hts

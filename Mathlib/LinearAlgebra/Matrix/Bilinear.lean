@@ -5,8 +5,6 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Module.LinearMap.End
-public import Mathlib.Data.Matrix.Mul
 public import Mathlib.Data.Matrix.Basis
 public import Mathlib.Algebra.Algebra.Bilinear
 
@@ -144,7 +142,7 @@ theorem mulLeftLinearMap_eq_zero_iff [Nonempty n] (a : Matrix l m A) :
   · inhabit n
     ext i j
     classical
-    replace h := DFunLike.congr_fun h (Matrix.single j (default : n) 1)
+    replace h := congr($h (Matrix.single j (default : n) 1))
     simpa using Matrix.ext_iff.2 h i default
   · rw [h]
     exact mulLeftLinearMap_zero_eq_zero _ _
@@ -177,7 +175,7 @@ theorem mulRightLinearMap_eq_zero_iff (a : Matrix m n A) [Nonempty l] :
   · inhabit l
     ext i j
     classical
-    replace h := DFunLike.congr_fun h (Matrix.single (default : l) i 1)
+    replace h := congr($h (Matrix.single (default : l) i 1))
     simpa using Matrix.ext_iff.2 h default j
   · rw [h]
     exact mulRightLinearMap_zero_eq_zero _ _

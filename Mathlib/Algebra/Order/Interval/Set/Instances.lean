@@ -8,10 +8,8 @@ module
 public import Mathlib.Algebra.GroupWithZero.InjSurj
 public import Mathlib.Algebra.GroupWithZero.Hom
 public import Mathlib.Algebra.Order.Ring.Defs
-public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.Order.Interval.Set.Basic
-public import Mathlib.Tactic.FastInstance
 
 /-!
 # Algebraic instances for unit intervals
@@ -297,9 +295,9 @@ instance instCancelMonoid {R : Type*} [Ring R] [PartialOrder R] [IsStrictOrdered
     [IsDomain R] : CancelMonoid (Ioc (0 : R) 1) :=
   { Set.Ioc.instMonoid with
     mul_left_cancel := fun a _ _ h =>
-      Subtype.ext <| mul_left_cancel₀ a.prop.1.ne' <| (congr_arg Subtype.val h :)
+      Subtype.ext <| mul_left_cancel₀ a.prop.1.ne' (congr_arg Subtype.val h :)
     mul_right_cancel := fun b _ _ h =>
-      Subtype.ext <| mul_right_cancel₀ b.prop.1.ne' <| (congr_arg Subtype.val h :) }
+      Subtype.ext <| mul_right_cancel₀ b.prop.1.ne' (congr_arg Subtype.val h :) }
 
 instance instCancelCommMonoid {R : Type*} [CommRing R] [PartialOrder R] [IsStrictOrderedRing R]
     [IsDomain R] :

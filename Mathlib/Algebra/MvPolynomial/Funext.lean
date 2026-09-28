@@ -5,9 +5,9 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.RingDivision
-public import Mathlib.Algebra.Polynomial.Roots
-public import Mathlib.Algebra.MvPolynomial.Polynomial
+import Mathlib.Algebra.Polynomial.RingDivision
+import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.Algebra.MvPolynomial.Polynomial
 public import Mathlib.Algebra.MvPolynomial.Rename
 
 /-!

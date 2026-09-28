@@ -6,6 +6,7 @@ Authors: Yuma Mizuno
 module
 
 public meta import Lean.Meta.Basic
+public meta import Batteries.Tactic.Alias
 public import Mathlib.Init
 
 /-!
@@ -166,9 +167,41 @@ inductive Mor₂Iso : Type where
   deriving Inhabited
 
 /-- A monad equipped with the ability to unfold `BicategoricalCoherence.iso`. -/
-class MonadCoherehnceHom (m : Type → Type) where
+class MonadCoherenceHom (m : Type → Type) where
   /-- Unfold a coherence isomorphism. -/
   unfoldM (α : CoherenceHom) : m Mor₂Iso
+
+@[deprecated (since := "2026-09-17")] alias MonadCoherehnceHom := MonadCoherenceHom
+
+@[deprecated (since := "2026-09-17")]
+alias MonadCoherehnceHom.unfoldM := MonadCoherenceHom.unfoldM
+
+-- The remaining declarations the compiler generates for the class, so that the rename leaves no
+-- name behind. `rec`, `recOn` and `noConfusion` have no executable code, hence `noncomputable`.
+
+@[deprecated (since := "2026-09-17")]
+alias MonadCoherehnceHom.casesOn := MonadCoherenceHom.casesOn
+
+@[deprecated (since := "2026-09-17")]
+alias MonadCoherehnceHom.ctorIdx := MonadCoherenceHom.ctorIdx
+
+@[deprecated (since := "2026-09-17")]
+alias MonadCoherehnceHom.mk := MonadCoherenceHom.mk
+
+@[deprecated (since := "2026-09-17")]
+alias MonadCoherehnceHom.mk.noConfusion := MonadCoherenceHom.mk.noConfusion
+
+@[deprecated (since := "2026-09-17")]
+alias MonadCoherehnceHom.noConfusionType := MonadCoherenceHom.noConfusionType
+
+@[deprecated (since := "2026-09-17")]
+noncomputable alias MonadCoherehnceHom.noConfusion := MonadCoherenceHom.noConfusion
+
+@[deprecated (since := "2026-09-17")]
+noncomputable alias MonadCoherehnceHom.rec := MonadCoherenceHom.rec
+
+@[deprecated (since := "2026-09-17")]
+noncomputable alias MonadCoherehnceHom.recOn := MonadCoherenceHom.recOn
 
 /-- The underlying lean expression of a 2-isomorphism. -/
 def StructuralAtom.e : StructuralAtom → Expr

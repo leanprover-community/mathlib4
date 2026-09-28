@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Data.ZMod.QuotientGroup
 

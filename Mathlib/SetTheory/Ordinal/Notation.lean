@@ -5,11 +5,11 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Ring.Divisibility.Basic
-public import Mathlib.Data.Ordering.Lemmas
+import Mathlib.Algebra.Ring.Divisibility.Basic
+import Mathlib.Data.Ordering.Lemmas
 public import Mathlib.Data.PNat.Basic
 public import Mathlib.SetTheory.Ordinal.Principal
-public import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.NormNum
 
 /-!
 # Ordinal notation
@@ -779,7 +779,7 @@ theorem repr_opow_aux₁ {e a} [Ne : NF e] [Na : NF a] {a' : Ordinal} (e0 : repr
   intro b l
   have := (No.below_of_lt (lt_succ _)).repr_lt
   rw [repr] at this
-  apply (opow_le_opow_left b <| this.le).trans
+  apply (opow_le_opow_left b this.le).trans
   rw [← opow_mul, ← opow_mul]
   rcases le_or_gt ω (repr e) with h | h
   · grw [le_succ b, show succ b = b + 1 by rw [succ_eq_add_one],
@@ -1116,7 +1116,7 @@ theorem fastGrowingε₀_one : fastGrowingε₀ 1 = 2 := by
   simp [fastGrowingε₀, show oadd 0 1 0 = 1 from rfl]
 
 theorem fastGrowingε₀_two : fastGrowingε₀ 2 = 2048 := by
-  norm_num [fastGrowingε₀, show oadd 0 1 0 = 1 from rfl, @fastGrowing_limit (oadd 1 1 0) _ rfl,
+  simp [fastGrowingε₀, show oadd 0 1 0 = 1 from rfl, @fastGrowing_limit (oadd 1 1 0) _ rfl,
     show oadd 0 (2 : Nat).succPNat 0 = 3 from rfl, @fastGrowing_succ 3 2 rfl]
 
 end ONote

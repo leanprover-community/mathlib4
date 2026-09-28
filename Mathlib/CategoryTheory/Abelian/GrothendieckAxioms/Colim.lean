@@ -5,8 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Filtered.Final
-public import Mathlib.CategoryTheory.Limits.Connected
+import Mathlib.CategoryTheory.Filtered.Final
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 
@@ -69,7 +68,6 @@ lemma colim.map_epi'
 attribute [local instance] IsFiltered.isConnected
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Assume that a functor `X : J ⥤ C` maps any morphism to a monomorphism,
 that `J` is filtered. Then the "inclusion" map `c.ι.app j₀` of a colimit cocone for `X`
 is a monomorphism if `colim : (Under j₀ ⥤ C) ⥤ C` preserves monomorphisms

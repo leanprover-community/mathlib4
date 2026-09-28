@@ -9,9 +9,8 @@ public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Algebra.GroupWithZero.Invertible
-public import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Data.Int.GCD
-public import Mathlib.Data.Nat.Cast.Commute
 
 /-!
 # Invertibility of elements given a characteristic
@@ -106,7 +105,7 @@ def invertibleOfCharPNotDvd {p : ℕ} [CharP K p] {t : ℕ} (not_dvd : ¬p ∣ t
 -- warning: this could potentially loop with `Invertible.ne_zero` - if there are weird type-class
 -- loops, watch out for that.
 instance invertibleOfPos [CharZero K] (n : ℕ) [NeZero n] : Invertible (n : K) :=
-  invertibleOfNonzero <| NeZero.out
+  invertibleOfNonzero NeZero.out
 
 end Semifield
 

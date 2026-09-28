@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
-public import Mathlib.MeasureTheory.Measure.ContinuousPreimage
+import Mathlib.MeasureTheory.Measure.ContinuousPreimage
 
 /-!
 # Continuity of `MeasureTheory.Lp.compMeasurePreserving`

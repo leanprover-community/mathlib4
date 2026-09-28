@@ -5,7 +5,6 @@ Authors: Joseph Tooby-Smith, Adam Topaz
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
@@ -839,7 +838,7 @@ def WithTerminal.opEquiv : (WithTerminal C)ᵒᵖ ≌ WithInitial Cᵒᵖ where
   inverse :=
     { obj := fun x ↦
       match x with
-        | .of x => op <| .of <| x.unop
+        | .of x => op <| .of x.unop
         | .star => op .star
       map := fun {x y} f ↦
         match x, y, f with
@@ -902,7 +901,7 @@ def WithInitial.opEquiv : (WithInitial C)ᵒᵖ ≌ WithTerminal Cᵒᵖ where
   inverse :=
     { obj := fun x ↦
         match x with
-        | .of x => op <| .of <| x.unop
+        | .of x => op <| .of x.unop
         | .star => op .star
       map := fun {x y} f ↦
         match x, y, f with

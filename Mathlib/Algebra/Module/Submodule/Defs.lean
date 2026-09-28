@@ -5,9 +5,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
-public import Mathlib.Algebra.Group.Submonoid.Basic
 
 /-!
 
@@ -55,7 +53,7 @@ instance setLike : SetLike (Submodule R M) M where
   coe s := s.carrier
   coe_injective p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
-instance : PartialOrder (Submodule R M) := .ofSetLike (Submodule R M) M
+instance : PartialOrder (Submodule R M) := .ofSetLike (Submodule R M)
 
 initialize_simps_projections Submodule (carrier → coe, as_prefix coe)
 

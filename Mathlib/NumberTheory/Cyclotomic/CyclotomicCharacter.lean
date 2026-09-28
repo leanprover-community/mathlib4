@@ -8,8 +8,8 @@ module
 public import Mathlib.FieldTheory.KrullTopology
 public import Mathlib.NumberTheory.Padics.RingHoms
 public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
-public import Mathlib.RingTheory.RootsOfUnity.Minpoly
-public import Mathlib.Topology.Algebra.Group.Units
+import Mathlib.RingTheory.RootsOfUnity.Minpoly
+import Mathlib.Topology.Algebra.Group.Units
 
 /-!
 
@@ -212,7 +212,7 @@ of unity. -/
 noncomputable def modularCyclotomicCharacter {n : ℕ} [NeZero n]
     (hn : Nat.card { x // x ∈ rootsOfUnity n L } = n) :
     (L ≃+* L) →* (ZMod n)ˣ :=
-  (Units.mapEquiv <| (ZMod.ringEquivCongr hn).toMulEquiv).toMonoidHom.comp
+  (Units.mapEquiv (ZMod.ringEquivCongr hn).toMulEquiv).toMonoidHom.comp
   (modularCyclotomicCharacter' L n)
 
 namespace modularCyclotomicCharacter
@@ -249,7 +249,7 @@ lemma IsPrimitiveRoot.autToPow_eq_modularCyclotomicCharacter (n : ℕ) [NeZero n
     MulEquiv.toMonoidHom_eq_coe, modularCyclotomicCharacter', MonoidHom.coe_comp,
     MonoidHom.coe_ofClass, Function.comp_apply, Units.coe_mapEquiv, MonoidHom.coe_toHomUnits,
     MonoidHom.coe_mk, OneHom.coe_mk, RingEquiv.coe_toMulEquiv, ZMod.ringEquivCongr_val,
-    AlgEquiv.coe_ringEquiv] using modularCyclotomicCharacter.toFun_spec'' g hμ
+    AlgEquiv.coe_toRingEquiv] using modularCyclotomicCharacter.toFun_spec'' g hμ
 
 /-
 

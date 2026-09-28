@@ -5,7 +5,7 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
+import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 public import Mathlib.Analysis.SpecificLimits.Normed
 
 /-!

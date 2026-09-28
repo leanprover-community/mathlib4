@@ -6,7 +6,7 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-public import Mathlib.Topology.Algebra.Order.Floor
+import Mathlib.Topology.Algebra.Order.Floor
 public import Mathlib.NumberTheory.Real.Irrational
 
 /-!

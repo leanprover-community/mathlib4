@@ -6,9 +6,6 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Basic.Denumerable
-public import Mathlib.Data.Set.Subsingleton
-public import Mathlib.Logic.Function.Iterate
-public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.Lattice.Nat
 
 /-!

@@ -5,10 +5,10 @@ Authors: Felix Pernegger
 -/
 module
 
-public import Mathlib.Data.Nat.Factorization.PrimePow
+import Mathlib.Data.Nat.Factorization.PrimePow
 public import Mathlib.NumberTheory.ArithmeticFunction.Carmichael
 public import Mathlib.NumberTheory.FermatPsp
-public import Mathlib.Tactic.Simproc.Factors
+import Mathlib.Tactic.Simproc.Factors
 
 /-!
 # Carmichael numbers

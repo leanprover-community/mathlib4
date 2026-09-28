@@ -183,7 +183,7 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
     replace hr : (f b) ^ 2 + (f a) ^ 2 + (f d) ^ 2 + (-f c) ^ 2 = ↑(m * r) := by
       rw [← natAbs_iff, natAbs_neg, ← hr]
       ac_rfl
-    have := congr_arg₂ (· * Nat.cast ·) hr habcd
+    have := congr($hr * $habcd)
     simp only [← _root_.euler_four_squares, Nat.cast_add, Nat.cast_pow] at this
     refine ⟨_, _, _, _, ?_, ?_, ?_, ?_, this⟩
     · simp [← ZMod.intCast_zmod_eq_zero_iff_dvd, hf_mod, mul_comm]

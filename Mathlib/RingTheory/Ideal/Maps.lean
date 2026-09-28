@@ -203,6 +203,10 @@ theorem map_comap_le : (K.comap f).map f ≤ K :=
   (gc_map_comap f).l_u_le _
 
 @[simp]
+theorem map_comap_bot : ((⊥ : Ideal S).comap f).map f = ⊥ :=
+  le_bot_iff.mp map_comap_le
+
+@[simp]
 theorem comap_top : (⊤ : Ideal S).comap f = ⊤ :=
   (gc_map_comap f).u_top
 
@@ -624,14 +628,14 @@ theorem comap_isMaximal_of_surjective (hf : Function.Surjective f) {K : Ideal S}
     IsMaximal (comap f K) := by
   refine ⟨⟨comap_ne_top _ H.1.1, fun J hJ => ?_⟩⟩
   suffices map f J = ⊤ by
-    have := congr_arg (comap f) this
+    have := congr(comap f $this)
     rw [comap_top, comap_map_of_surjective _ hf, eq_top_iff] at this
     rw [eq_top_iff]
     exact le_trans this (sup_le (le_of_eq rfl) (le_trans (comap_mono bot_le) (le_of_lt hJ)))
   refine
     H.1.2 (map f J)
       (lt_of_le_of_ne (le_map_of_comap_le_of_surjective _ hf (le_of_lt hJ)) fun h =>
-        ne_of_lt hJ (_root_.trans (congr_arg (comap f) h) ?_))
+        ne_of_lt hJ (_root_.trans congr(comap f $h) ?_))
   rw [comap_map_of_surjective _ hf, sup_eq_left]
   exact le_trans (comap_mono bot_le) (le_of_lt hJ)
 
@@ -689,7 +693,7 @@ theorem map_radical_le : map f (radical I) ≤ radical (map f I) :=
 theorem le_comap_mul : comap f K * comap f L ≤ comap f (K * L) :=
   map_le_iff_le_comap.1 <|
     (Ideal.map_mul f (comap f K) (comap f L)).symm ▸
-      mul_mono (map_le_iff_le_comap.2 <| le_rfl) (map_le_iff_le_comap.2 <| le_rfl)
+      mul_mono (map_le_iff_le_comap.2 le_rfl) (map_le_iff_le_comap.2 le_rfl)
 
 theorem le_comap_pow (n : ℕ) : K.comap f ^ n ≤ (K ^ n).comap f := by
   induction n with
@@ -724,7 +728,7 @@ its image in `S` is not equal to `⊤`.
 -/
 theorem comap_map_eq_self_of_isMaximal (f : R →+* S) {p : Ideal R} [hP' : p.IsMaximal]
     (hP : Ideal.map f p ≠ ⊤) : (map f p).comap f = p :=
-  (IsCoatom.le_iff_eq hP'.out (comap_ne_top _ hP)).mp <| le_comap_map
+  (IsCoatom.le_iff_eq hP'.out (comap_ne_top _ hP)).mp le_comap_map
 
 end CommRing
 
@@ -755,8 +759,12 @@ variable {f} in
 theorem ker_eq : (ker f : Set R) = Set.preimage f {0} :=
   rfl
 
-theorem ker_eq_comap_bot (f : F) : ker f = Ideal.comap f ⊥ :=
+theorem ker_eq_comap_bot : ker f = Ideal.comap f ⊥ :=
   rfl
+
+@[simp]
+theorem map_ker : (ker f).map f = ⊥ :=
+  Ideal.map_comap_bot
 
 theorem comap_ker (f : S →+* R) (g : T →+* S) : (ker f).comap g = ker (f.comp g) := by
   rw [RingHom.ker_eq_comap_bot, Ideal.comap_comap, RingHom.ker_eq_comap_bot]
@@ -925,14 +933,14 @@ theorem Module.annihilator_dfinsupp : annihilator R (Π₀ i, M i) = ⨅ i, anni
   ext r; simp only [mem_annihilator, Ideal.mem_iInf]
   constructor <;> intro h
   · intro i m
-    classical simpa using DFunLike.congr_fun (h (DFinsupp.single i m)) i
+    classical simpa using congr($(h (DFinsupp.single i m)) i)
   · intro m; ext i; exact h i _
 
 theorem Module.annihilator_pi : annihilator R (Π i, M i) = ⨅ i, annihilator R (M i) := by
   ext r; simp only [mem_annihilator, Ideal.mem_iInf]
   constructor <;> intro h
   · intro i m
-    classical simpa using congr_fun (h (Pi.single i m)) i
+    classical simpa using congr($(h (Pi.single i m)) i)
   · intro m; ext i; exact h i _
 
 end
@@ -1103,7 +1111,7 @@ theorem map_sInf {A : Set (Ideal R)} {f : F} (hf : Function.Surjective f) :
 theorem map_isPrime_of_surjective {f : F} (hf : Function.Surjective f) {I : Ideal R} [H : IsPrime I]
     (hk : RingHom.ker f ≤ I) : IsPrime (map f I) := by
   refine ⟨fun h => H.ne_top (eq_top_iff.2 ?_), fun {x y} => ?_⟩
-  · replace h := congr_arg (comap f) h
+  · replace h := congr(comap f $h)
     rw [comap_map_of_surjective _ hf, comap_top] at h
     exact h ▸ sup_le (le_of_eq rfl) hk
   · refine fun hxy => (hf x).recOn fun a ha => (hf y).recOn fun b hb => ?_
@@ -1119,7 +1127,7 @@ theorem map_isPrime_of_surjective {f : F} (hf : Function.Surjective f) {I : Idea
 lemma IsMaximal.map_of_surjective_of_ker_le {f : F} (hf : Function.Surjective f) {m : Ideal R}
     [m.IsMaximal] (hk : RingHom.ker f ≤ m) : (m.map f).IsMaximal := by
   refine m.map_eq_top_or_isMaximal_of_surjective f hf ‹_› |>.resolve_left fun h => ?_
-  apply congr_arg (comap f) at h
+  replace h := congr(comap f $h)
   rw [comap_map_of_surjective _ hf, comap_top, ← RingHom.ker_eq_comap_bot, sup_of_le_left hk] at h
   exact IsMaximal.ne_top ‹_› h
 

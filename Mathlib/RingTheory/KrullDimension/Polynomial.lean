@@ -5,11 +5,10 @@ Authors: Jingting Wang, Sihan Su, Yi Song, Christian Merten
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.RingTheory.KrullDimension.PID
-public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
-public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
-public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
+import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
+import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
+import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 
 /-!
 # Krull dimension of polynomial ring
@@ -98,7 +97,7 @@ lemma height_eq_height_add_one (p : Ideal R)
     rw [height_map_of_disjoint p.primeCompl]
     exact Disjoint.symm <| Set.disjoint_left.mpr fun _ a b ↦ b a
   have eq2 : P.height = P'.height := by
-    rw [height_map_of_disjoint (Submonoid.map C <| p.primeCompl) _ disj]
+    rw [height_map_of_disjoint (Submonoid.map C p.primeCompl) _ disj]
   rw [eq1, eq2]
   apply height_eq_height_add_one_of_isMaximal p' P'
 

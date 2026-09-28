@@ -8,7 +8,6 @@ module
 public import Mathlib.Order.Disjoint
 public import Mathlib.Order.RelIso.Basic
 public import Mathlib.Tactic.Monotonicity.Attr
-public import Mathlib.Tactic.PPWithUniv
 
 /-!
 # Order homomorphisms

@@ -697,7 +697,7 @@ theorem isTightMeasureSet_of_isCompact_closure (hcomp : IsCompact (closure S)) :
     _ ⊆ ⋃ i ≤ km (δ_inv + 1), closure (ball (D i) (u δ_inv)) := iInter_subset ..
     _ ⊆ ⋃ i ≤ km (δ_inv + 1), ball (D i) δ := by
         gcongr
-        exact closure_ball_subset_closedBall.trans <| closedBall_subset_ball <| hδ_inv
+        exact closure_ball_subset_closedBall.trans <| closedBall_subset_ball hδ_inv
   -- Closedness
   · simp_rw [bigK, ← Set.mem_Iic]
     exact isClosed_iInter fun n =>

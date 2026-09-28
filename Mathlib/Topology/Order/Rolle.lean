@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Topology.Order.ExtendFrom
 public import Mathlib.Topology.Order.Compact
-public import Mathlib.Topology.Order.T5
+import Mathlib.Topology.Order.T5
 
 /-!
 # Rolle's Theorem (topological part)

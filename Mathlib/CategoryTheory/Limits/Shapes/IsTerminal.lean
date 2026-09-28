@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.PEmpty
 public import Mathlib.CategoryTheory.Limits.IsLimit
-public import Mathlib.CategoryTheory.EpiMono
 public import Mathlib.CategoryTheory.Category.Preorder
 
 /-!

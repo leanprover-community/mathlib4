@@ -5,11 +5,9 @@ Authors: Andrew Yang, Christian Merten
 -/
 module
 
-public import Mathlib.Algebra.Category.Ring.Colimits
 public import Mathlib.Algebra.Category.Ring.Constructions
-public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Topology.Algebra.Ring.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # Topology on `Hom(R, S)`
@@ -87,7 +85,7 @@ lemma isEmbedding_precomp_of_surjective
     Topology.IsEmbedding ((f ≫ ·) : (B ⟶ R) → (A ⟶ R)) := by
   refine IsEmbedding.of_comp (continuous_precomp _) (IsInducing.induced _).continuous ?_
   suffices IsEmbedding ((· ∘ f.hom) : (B → R) → (A → R)) from
-    this.comp (.induced (fun f g e ↦ by ext a; exact congr($e a)))
+    this.comp (.induced (fun f g e ↦ by ext a; congrm $e a))
   exact Function.Surjective.isEmbedding_comp _ hf
 
 /-- `Hom(A/I, R)` is a closed subspace of `Hom(A, R)` if `R` is T1. -/

@@ -581,7 +581,7 @@ theorem card_bind (Q : ∀ i ∈ P.parts, Finpartition i) :
   exact
     (Q b hb).ne_bot hdb
       (eq_bot_iff.2 <|
-        (le_inf ((Q b hb).le hdb) <| (Q c hc).le hdc).trans <| (P.disjoint hb hc hbc).le_bot)
+        (le_inf ((Q b hb).le hdb) <| (Q c hc).le hdc).trans (P.disjoint hb hc hbc).le_bot)
 
 end Bind
 
@@ -790,7 +790,7 @@ lemma exists_enumeration : ∃ f : s ≃ Σ t : P.parts, Fin #t.1,
   simp [equivSigmaParts, Equiv.sigmaCongr, Equiv.sigmaCongrLeft]
 
 theorem sum_card_parts : ∑ i ∈ P.parts, #i = #s := by
-  convert! congr_arg Finset.card P.biUnion_parts
+  convert! congr($(P.biUnion_parts).card)
   rw [card_biUnion P.supIndep.pairwiseDisjoint]
   rfl
 

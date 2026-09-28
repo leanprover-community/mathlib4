@@ -182,7 +182,7 @@ theorem nonempty_algHom_of_exist_lifts_finset [alg : Algebra.IsAlgebraic F E]
     fun c hext hc ↦ (isEmpty_or_nonempty c).elim
       (fun _ ↦ ⟨⊥, this, fun ϕ hϕ ↦ isEmptyElim (⟨ϕ, hϕ⟩ : c)⟩)
       fun _ ↦ ⟨_, union_isExtendible c hc hext, le_union c hc⟩
-  suffices ϕ.carrier = ⊤ from ⟨ϕ.emb.comp <| ((equivOfEq this).trans topEquiv).symm⟩
+  suffices ϕ.carrier = ⊤ from ⟨ϕ.emb.comp ((equivOfEq this).trans topEquiv).symm⟩
   by_contra!
   obtain ⟨α, -, hα⟩ := IsConcreteLE.exists_of_lt this.lt_top
   let _ : Algebra ϕ.carrier K := ϕ.emb.toAlgebra
@@ -191,7 +191,7 @@ theorem nonempty_algHom_of_exist_lifts_finset [alg : Algebra.IsAlgebraic F E]
   let L (σ : Λ) : Lifts F E K := ⟨ϕ.carrier⟮α⟯.restrictScalars F, σ.restrictScalars F⟩
   have hL (σ : Λ) : ϕ < L σ := lt_iff.mpr
     ⟨by simpa only [L, restrictScalars_adjoin_eq_sup, left_lt_sup, adjoin_simple_le_iff],
-      AlgHom.coe_ringHom_injective σ.comp_algebraMap⟩
+      AlgHom.toRingHom_injective σ.comp_algebraMap⟩
   have ⟨(ϕ_ext : ϕ.IsExtendible), ϕ_max⟩ := maximal_iff_forall_gt.mp hϕ
   simp_rw [Set.mem_ofPred, IsExtendible] at ϕ_max; push Not at ϕ_max
   choose S hS using fun σ : Λ ↦ ϕ_max (hL σ)
@@ -264,7 +264,7 @@ theorem exists_algHom_adjoin_of_splits' :
       let y := (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L E)) x
       refine Eq.trans congr($hφ y) ?_
       simp only [AlgHom.coe_comp, Function.comp_apply, f']
-      exact congr_arg f (AlgEquiv.symm_apply_apply _ _)
+      congrm f $(AlgEquiv.symm_apply_apply ..)
   let : Algebra L L' := (AlgEquiv.ofInjectiveField _).toRingHom.toAlgebra
   have : IsScalarTower L L' E := IsScalarTower.of_algebraMap_eq' rfl
   refine ⟨(hK s hs).1.tower_top, (hK s hs).1.minpoly_splits_tower_top' ?_⟩
@@ -272,7 +272,7 @@ theorem exists_algHom_adjoin_of_splits' :
   ext
   simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
     AlgHom.coe_comp, Function.comp_apply, f']
-  exact congr_arg f (AlgEquiv.symm_apply_apply _ _)
+  congrm f $(AlgEquiv.symm_apply_apply ..)
 
 include hK in
 theorem exists_algHom_of_adjoin_splits' (hS : adjoin L S = ⊤) :
@@ -325,7 +325,7 @@ theorem exists_algHom_adjoin_of_splits_of_aeval : ∃ φ : adjoin F S →ₐ[F] 
   rw [isAlgebraic_iff_isIntegral, isIntegral_iff] at ix
   obtain ⟨φ, hφ⟩ := exists_algHom_adjoin_of_splits hK ((algHomAdjoinIntegralEquiv F ix).symm
     ⟨y, mem_aroots.mpr ⟨minpoly.ne_zero ix, hy⟩⟩) (adjoin_simple_le_iff.mpr hx)
-  exact ⟨φ, (DFunLike.congr_fun hφ <| AdjoinSimple.gen F x).trans <|
+  exact ⟨φ, congr($hφ (AdjoinSimple.gen F x)).trans <|
     algHomAdjoinIntegralEquiv_symm_apply_gen F ix _⟩
 
 include hS in

@@ -196,12 +196,12 @@ theorem monomial_smul_single (i : ℕ) (r : R) (j : ℕ) (m : M) :
   induction i generalizing r j m with
   | zero =>
     rw [Function.iterate_zero, zero_add]
-    exact congr(ofCoeff R $(Finsupp.smul_single r j m))
+    congrm ofCoeff R $(Finsupp.smul_single r j m)
   | succ n hn =>
     rw [Function.iterate_succ, Function.comp_apply, add_assoc, ← hn]
     congr 2
     rw [Nat.one_add]
-    exact congr(ofCoeff R $(Finsupp.mapDomain_single))
+    congrm ofCoeff R $Finsupp.mapDomain_single
 
 @[simp]
 theorem monomial_smul_lsingle (i : ℕ) (r : R) (j : ℕ) (m : M) :
@@ -291,7 +291,7 @@ theorem hom_ext {f g : PolynomialModule R M →ₗ[R] M'}
 
 /-- The image of a polynomial under a linear map. -/
 def map (f : M →ₗ[R] M') : PolynomialModule R M →ₗ[R] PolynomialModule R' M' :=
-  (coeffLinearEquiv ..).symm.toLinearMap.comp <| (Finsupp.mapRange.linearMap f).comp <|
+  (coeffLinearEquiv ..).symm.toLinearMap.comp <| (Finsupp.mapRange.linearMap f).comp
     (coeffLinearEquiv ..).toLinearMap
 
 @[simp]

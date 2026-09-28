@@ -241,7 +241,7 @@ theorem isBounded_range_of_tendsto_cofinite_uniformity {f : β → α}
 
 theorem isBounded_range_of_cauchy_map_cofinite {f : β → α} (hf : Cauchy (map f cofinite)) :
     IsBounded (range f) :=
-  isBounded_range_of_tendsto_cofinite_uniformity <| (cauchy_map_iff.1 hf).2
+  isBounded_range_of_tendsto_cofinite_uniformity (cauchy_map_iff.1 hf).2
 
 theorem _root_.CauchySeq.isBounded_range {f : ℕ → α} (hf : CauchySeq f) : IsBounded (range f) :=
   isBounded_range_of_cauchy_map_cofinite <| by rwa [Nat.cofinite_eq_atTop]

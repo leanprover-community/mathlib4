@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Sean Leather
 -/
 module
 
-public import Mathlib.Data.List.Pairwise
+import Mathlib.Data.List.Pairwise
 public import Mathlib.Data.List.Nodup
 public import Mathlib.Data.List.Lookmap
 public import Mathlib.Data.Sigma.Basic

@@ -155,7 +155,7 @@ theorem mem_support_notMem_vars_zero {f : MvPolynomial σ R} {x : σ →₀ ℕ}
 
 theorem support_subset_vars_of_mem_support {s : σ →₀ ℕ} (h : s ∈ p.support) :
     s.support ⊆ p.vars := fun i hi ↦ by
-  contrapose! hi
+  contrapose hi
   simp [mem_support_notMem_vars_zero h hi]
 
 theorem vars_eq_empty_iff_eq_C : p.vars = ∅ ↔ p = C (p.coeff 0) := by
@@ -240,7 +240,7 @@ theorem vars_sum_subset [DecidableEq σ] :
       (vars_add_subset _ _) (Finset.union_subset_union (Finset.Subset.refl _) ?_)
     assumption
 
-theorem vars_sum_of_disjoint [DecidableEq σ] (h : Pairwise <| (Disjoint on fun i => (φ i).vars)) :
+theorem vars_sum_of_disjoint [DecidableEq σ] (h : Pairwise (Disjoint on fun i => (φ i).vars)) :
     (∑ i ∈ t, φ i).vars = Finset.biUnion t fun i => (φ i).vars := by
   classical
   induction t using Finset.induction_on with
@@ -293,7 +293,7 @@ theorem eval₂Hom_congr' {f₁ f₂ : R →+* S} {g₁ g₂ : σ → S} {p₁ p
   rintro rfl h rfl
   obtain ⟨p, hp⟩ := exists_rename_coe_vars_eq p₁
   rw [← hp, eval₂Hom_rename, eval₂Hom_rename]
-  exact congr(eval₂Hom f₁ (fun x : p₁.vars => $(h x.1 x.2 x.2)) p)
+  congrm eval₂Hom f₁ (fun x : p₁.vars => $(h x.1 x.2 x.2)) p
 
 theorem eval₂Hom_eq_constantCoeff_of_vars (f : R →+* S) {g : σ → S} {p : MvPolynomial σ R}
     (hp : ∀ i ∈ p.vars, g i = 0) : eval₂Hom f g p = f (constantCoeff p) := by

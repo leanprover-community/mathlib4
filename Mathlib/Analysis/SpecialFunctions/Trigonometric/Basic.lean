@@ -220,7 +220,7 @@ theorem sin_pi : sin π = 0 := by
 @[simp]
 theorem cos_pi : cos π = -1 := by
   rw [← mul_div_cancel_left₀ π two_ne_zero, mul_div_assoc, cos_two_mul, cos_pi_div_two]
-  norm_num
+  simp
 
 @[simp]
 theorem sin_two_pi : sin (2 * π) = 0 := by simp [two_mul, sin_add]
@@ -874,7 +874,7 @@ theorem cos_pi_div_five : cos (π / 5) = (1 + √5) / 4 := by
   · simp [h]; linarith
   · absurd (show 0 ≤ c from cos_nonneg_of_mem_Icc <| by constructor <;> linarith [pi_pos.le])
     rw [not_le, h]
-    exact div_neg_of_neg_of_pos (by norm_num [lt_sqrt]) (by positivity)
+    exact div_neg_of_neg_of_pos (by simp [lt_sqrt]) (by positivity)
 
 end CosDivSq
 
@@ -1278,9 +1278,9 @@ theorem norm_exp_mul_exp_add_exp_neg_le_of_abs_im_le {a b : ℝ} (ha : a ≤ 0) 
   refine mul_le_mul_of_nonpos_left (mul_le_mul this ?_ ?_ ((Real.exp_pos _).le.trans this)) ha
   · exact
       Real.cos_le_cos_of_nonneg_of_le_pi (_root_.abs_nonneg _)
-        (hb.trans <| half_le_self <| Real.pi_pos.le) hz
+        (hb.trans <| half_le_self Real.pi_pos.le) hz
   · refine Real.cos_nonneg_of_mem_Icc ⟨?_, hb⟩
-    exact (neg_nonpos.2 <| Real.pi_div_two_pos.le).trans ((_root_.abs_nonneg _).trans hz)
+    exact (neg_nonpos.2 Real.pi_div_two_pos.le).trans ((_root_.abs_nonneg _).trans hz)
 
 theorem sinh_antiperiodic : Function.Antiperiodic sinh (π * I) := by
   simp [Complex.sinh_add, sinh_mul_I, cosh_mul_I]

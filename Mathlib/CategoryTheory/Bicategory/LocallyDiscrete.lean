@@ -95,8 +95,8 @@ variable [Category.{v} C]
 equalities between 1-morphisms.
 -/
 instance locallyDiscreteBicategory : Bicategory (LocallyDiscrete C) where
-  whiskerLeft _ _ _ η := eqToHom (congr_arg₂ (· ≫ ·) rfl (LocallyDiscrete.eq_of_hom η))
-  whiskerRight η _ := eqToHom (congr_arg₂ (· ≫ ·) (LocallyDiscrete.eq_of_hom η) rfl)
+  whiskerLeft _ _ _ η := eqToHom congr(_ ≫ $(LocallyDiscrete.eq_of_hom η))
+  whiskerRight η _ := eqToHom congr($(LocallyDiscrete.eq_of_hom η) ≫ _)
   associator f g h := eqToIso <| by apply Discrete.ext; simp
   leftUnitor f := eqToIso <| by apply Discrete.ext; simp
   rightUnitor f := eqToIso <| by apply Discrete.ext; simp

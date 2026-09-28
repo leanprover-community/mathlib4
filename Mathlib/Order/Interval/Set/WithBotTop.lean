@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Image
 public import Mathlib.Order.Interval.Set.Basic
 public import Mathlib.Order.WithBot
 

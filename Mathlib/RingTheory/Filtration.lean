@@ -6,7 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Polynomial.Module.Basic
-public import Mathlib.RingTheory.Finiteness.Nakayama
+import Mathlib.RingTheory.Finiteness.Nakayama
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 public import Mathlib.RingTheory.ReesAlgebra
 
@@ -152,11 +152,11 @@ theorem bot_N : (⊥ : I.Filtration M).N = ⊥ :=
 
 @[simp]
 theorem iSup_N {ι : Sort*} (f : ι → I.Filtration M) : (iSup f).N = ⨆ i, (f i).N :=
-  congr_arg sSup (Set.range_comp _ _).symm
+  congr(sSup $((Set.range_comp ..).symm))
 
 @[simp]
 theorem iInf_N {ι : Sort*} (f : ι → I.Filtration M) : (iInf f).N = ⨅ i, (f i).N :=
-  congr_arg sInf (Set.range_comp _ _).symm
+  congr(sInf $((Set.range_comp ..).symm))
 
 instance : PartialOrder (I.Filtration M) :=
   PartialOrder.lift _ fun _ _ ↦ Ideal.Filtration.ext

@@ -7,7 +7,7 @@ Authors: David Loeffler
 module
 
 public import Mathlib.GroupTheory.Commensurable
-public import Mathlib.GroupTheory.Complement
+import Mathlib.GroupTheory.Complement
 public import Mathlib.Topology.Algebra.ConstMulAction
 
 /-!

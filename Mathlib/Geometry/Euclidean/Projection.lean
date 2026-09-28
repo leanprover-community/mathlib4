@@ -240,6 +240,13 @@ lemma orthogonalProjection_eq_iff_mem {s : AffineSubspace 𝕜 P} [Nonempty s]
     orthogonalProjection s p = q ↔ p -ᵥ q ∈ s.directionᗮ := by
   simpa using coe_orthogonalProjection_eq_iff_mem (s := s) (p := p) (q := (q : P))
 
+/-- The orthogonal projection of `w +ᵥ p`, for `w` in the direction of the subspace, is `w +ᵥ` the
+orthogonal projection of `p`. -/
+theorem orthogonalProjection_vadd (s : AffineSubspace 𝕜 P) [Nonempty s]
+    [s.direction.HasOrthogonalProjection] (w : s.direction) (p : P) :
+    orthogonalProjection s ((w : V) +ᵥ p) = w +ᵥ orthogonalProjection s p := by
+  simp
+
 /-- A condition for two points to have the same orthogonal projection onto a given subspace. -/
 lemma orthogonalProjection_eq_orthogonalProjection_iff_vsub_mem {s : AffineSubspace 𝕜 P}
     [Nonempty s] [s.direction.HasOrthogonalProjection] {p q : P} :
@@ -649,3 +656,24 @@ lemma orthogonalProjectionSpan_map {n : ℕ} (s : Simplex 𝕜 P n) (f : P →�
 end Simplex
 
 end Affine
+
+namespace AffineSubspace
+
+open EuclideanGeometry
+
+variable {𝕜 : Type*} {V : Type*} {P : Type*} [RCLike 𝕜]
+variable [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
+variable [MetricSpace P] [NormedAddTorsor V P]
+
+/-- The preimage of `mk' p K` under the inclusion of an affine subspace `s`, for a submodule `K`
+containing `s.directionᗮ`, is `mk'` of the orthogonal projection of `p` and the preimage of `K`. -/
+theorem comap_subtype_mk' (s : AffineSubspace 𝕜 P) [Nonempty s]
+    [s.direction.HasOrthogonalProjection] (p : P) {K : Submodule 𝕜 V} (hK : s.directionᗮ ≤ K) :
+    (mk' p K).comap s.subtype = mk' (orthogonalProjection s p) (K.comap s.direction.subtype) := by
+  suffices (mk' p K).comap s.subtype =
+      (mk' (s.subtype (orthogonalProjection s p)) K).comap s.subtype by
+    simpa [comap_mk']
+  congrm comap _ ?_
+  simpa using hK <| vsub_orthogonalProjection_mem_direction_orthogonal s p
+
+end AffineSubspace

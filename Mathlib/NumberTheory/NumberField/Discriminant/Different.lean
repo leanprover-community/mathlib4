@@ -93,8 +93,7 @@ theorem natAbs_discr_eq_absNorm_differentIdeal_mul_natAbs_discr_pow (L 𝒪' : T
     [Module.Finite ℤ 𝒪'] [Module.Finite 𝒪 𝒪'] :
     (discr L).natAbs = Ideal.absNorm (differentIdeal 𝒪 𝒪') *
       (discr K).natAbs ^ Module.finrank K L := by
-  have := congr_arg Ideal.absNorm
-    (differentIdeal_eq_differentIdeal_mul_differentIdeal ℤ 𝒪 𝒪')
+  have := congr(Ideal.absNorm $(differentIdeal_eq_differentIdeal_mul_differentIdeal ℤ 𝒪 𝒪'))
   rwa [absNorm_differentIdeal L, map_mul, Ideal.absNorm_algebraMap,
     absNorm_differentIdeal K, ← IsFractionRing.finrank_eq 𝒪 K 𝒪' L] at this
 

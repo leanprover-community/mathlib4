@@ -6,15 +6,15 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 module
 
 public import Mathlib.Data.Nat.Factorial.Basic
-public import Mathlib.Data.List.Count
+import Mathlib.Data.List.Count
 public import Mathlib.Data.List.Duplicate
-public import Mathlib.Data.List.InsertIdx
-public import Mathlib.Data.List.Induction
-public import Batteries.Data.List.Perm
-public import Mathlib.Data.List.Perm.Basic
-public import Mathlib.Tactic.Finiteness.Attr
-public import Mathlib.Data.Int.Order.Basic
-public import Mathlib.Order.Basic
+import Mathlib.Data.List.InsertIdx
+import Mathlib.Data.List.Induction
+import Batteries.Data.List.Perm
+import Mathlib.Data.List.Perm.Basic
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Data.Int.Order.Basic
+import Mathlib.Order.Basic
 
 /-!
 # Permutations of a list
@@ -417,11 +417,11 @@ theorem get_permutations'Aux (s : List α) (x : α) (n : ℕ)
 
 -- Porting note: temporary theorem to solve diamond issue
 private theorem DecEq_eq [DecidableEq α] :
-    List.instBEq = @instBEqOfDecidableEq (List α) instDecidableEqList :=
-  congr_arg BEq.mk <| by
-    funext l₁ l₂
-    change (l₁ == l₂) = _
-    rw [Bool.eq_iff_iff, @beq_iff_eq _ (_), decide_eq_true_iff]
+    List.instBEq = @instBEqOfDecidableEq (List α) instDecidableEqList := by
+  congrm BEq.mk ?_
+  funext l₁ l₂
+  change (l₁ == l₂) = _
+  rw [Bool.eq_iff_iff, @beq_iff_eq _ (_), decide_eq_true_iff]
 
 theorem count_permutations'Aux_self [DecidableEq α] (l : List α) (x : α) :
     count (x :: l) (permutations'Aux x l) = length (takeWhile (x = ·) l) + 1 := by
@@ -447,7 +447,7 @@ theorem injective_permutations'Aux (x : α) : Function.Injective (permutations'A
   intro s t h
   apply insertIdx_injective s.length x
   dsimp
-  have hl : s.length = t.length := by simpa using congr_arg length h
+  have hl : s.length = t.length := by simpa using congr(length $h)
   rw [← get_permutations'Aux s x s.length (by simp),
     ← get_permutations'Aux t x s.length (by simp [hl])]
   simp only [get_eq_getElem, h, hl]

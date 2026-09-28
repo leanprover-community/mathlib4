@@ -7,8 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Localization
 public import Mathlib.CategoryTheory.Sites.CompatibleSheafification
-public import Mathlib.CategoryTheory.Sites.Whiskering
-public import Mathlib.CategoryTheory.Sites.Sheafification
 
 /-! # Functors which preserve sheafification
 
@@ -170,7 +168,7 @@ def sheafComposeNatTrans :
       ← adj₂.homEquiv_naturality_right_symm]
     congr 1
     ext X
-    have := NatTrans.congr_app (adj₁.unit.naturality f) X
+    have := congr($(adj₁.unit.naturality f).app X)
     dsimp at this ⊢
     grind
 

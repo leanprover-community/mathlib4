@@ -5,7 +5,6 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Module.Submodule.LinearMap
 public import Mathlib.Analysis.Normed.Group.Basic
 public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 

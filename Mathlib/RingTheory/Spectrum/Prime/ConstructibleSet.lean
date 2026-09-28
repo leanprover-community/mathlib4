@@ -5,7 +5,6 @@ Authors: Yaël Dillies, Andrew Yang
 -/
 module
 
-public import Mathlib.Order.SuccPred.WithBot
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!

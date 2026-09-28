@@ -136,7 +136,7 @@ lemma birkhoffAverage_neg_apply {f : α → α} {g : α → M} (n : ℕ) (x : α
 
 lemma birkhoffAverage_neg {f : α → α} {g : α → M} :
     birkhoffAverage R f (-g) = -birkhoffAverage R f g :=
-  funext₂ <| birkhoffAverage_neg_apply
+  funext₂ birkhoffAverage_neg_apply
 
 lemma birkhoffAverage_sub_apply {f : α → α} {g g' : α → M} (n : ℕ) (x : α) :
     birkhoffAverage R f (g - g') n x = birkhoffAverage R f g n x - birkhoffAverage R f g' n x := by
@@ -144,7 +144,7 @@ lemma birkhoffAverage_sub_apply {f : α → α} {g g' : α → M} (n : ℕ) (x :
 
 lemma birkhoffAverage_sub {f : α → α} {g g' : α → M} :
     birkhoffAverage R f (g - g') = birkhoffAverage R f g - birkhoffAverage R f g' :=
-  funext₂ <| birkhoffAverage_sub_apply
+  funext₂ birkhoffAverage_sub_apply
 
 /-- Birkhoff average is "almost invariant" under `f`:
 the difference between `birkhoffAverage R f g n (f x)` and `birkhoffAverage R f g n x`

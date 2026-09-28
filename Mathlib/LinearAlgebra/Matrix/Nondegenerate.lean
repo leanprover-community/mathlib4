@@ -5,8 +5,6 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Data.Matrix.Basic
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.Adjugate
 
 /-!
@@ -210,5 +208,5 @@ lemma LinearIndependent.sum_smul_of_nondegenerate
   simp_rw [← Finset.sum_smul] at hw
   replace hv : w ᵥ* A = 0 := funext <| hv _ hw
   replace hv (w' : ι → R) : w ⬝ᵥ A *ᵥ w' = 0 := by
-    simpa [Matrix.dotProduct_mulVec] using congr_arg (fun x ↦ dotProduct x w') hv
+    simpa [Matrix.dotProduct_mulVec] using congr(dotProduct $hv w')
   exact hA.eq_zero_of_ortho hv

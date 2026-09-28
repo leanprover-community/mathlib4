@@ -6,9 +6,7 @@ Amelia Livingston, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.Subsemigroup.Defs
-public import Mathlib.Tactic.FastInstance
 public import Mathlib.Data.Set.Insert
 
 /-!
@@ -146,7 +144,7 @@ instance : SetLike (Submonoid M) M where
   coe s := s.carrier
   coe_injective := SetLike.coe_injective.comp toSubsemigroup_injective
 
-@[to_additive] instance : PartialOrder (Submonoid M) := .ofSetLike (Submonoid M) M
+@[to_additive] instance : PartialOrder (Submonoid M) := .ofSetLike (Submonoid M)
 
 initialize_simps_projections Submonoid (carrier → coe, as_prefix coe)
 initialize_simps_projections AddSubmonoid (carrier → coe, as_prefix coe)

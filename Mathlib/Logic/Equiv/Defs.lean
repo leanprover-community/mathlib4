@@ -5,11 +5,9 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 module
 
-public import Mathlib.Basic.Unique
 public import Mathlib.Data.FunLike.Equiv
 public import Mathlib.Data.Quot
 public import Mathlib.Data.Subtype
-public import Mathlib.Tactic.Simps
 
 
 /-!
@@ -358,7 +356,7 @@ theorem extend_apply {f : α ≃ β} (g : α → γ) (e' : β → γ) (b : β) :
 is equivalent to the type of equivalences `β ≃ δ`. -/
 def equivCongr {δ : Sort*} (ab : α ≃ β) (cd : γ ≃ δ) : (α ≃ γ) ≃ (β ≃ δ) where
   toFun ac := (ab.symm.trans ac).trans cd
-  invFun bd := ab.trans <| bd.trans <| cd.symm
+  invFun bd := ab.trans <| bd.trans cd.symm
   left_inv ac := by grind
   right_inv ac := by grind
 

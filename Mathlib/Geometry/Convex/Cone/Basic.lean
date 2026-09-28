@@ -6,7 +6,6 @@ Authors: Yury Kudryashov, Frédéric Dupuis
 module
 
 public import Mathlib.Analysis.Convex.Hull
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Convex cones
@@ -79,7 +78,7 @@ instance : SetLike (ConvexCone R M) M where
   coe := carrier
   coe_injective C₁ C₂ h := by cases C₁; congr!
 
-instance : PartialOrder (ConvexCone R M) := .ofSetLike (ConvexCone R M) M
+instance : PartialOrder (ConvexCone R M) := .ofSetLike (ConvexCone R M)
 
 @[simp, norm_cast] lemma coe_mk (s : Set M) (h₁ h₂) : ↑(mk (R := R) s h₁ h₂) = s := rfl
 

@@ -5,8 +5,6 @@ Authors: Salvatore Mercuri
 -/
 module
 
-public import Mathlib.Analysis.Normed.Field.WithAbs
-public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
 
 /-!
@@ -83,6 +81,17 @@ structure Completion where
   ofCompletion ::
   /-- The underlying element of `v.1.Completion`. -/
   toCompletion : v.1.Completion
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- Prevents `ofCompletion v x` being printed as `{ toCompletion := x }`
+by `delabStructureInstance`. -/
+@[app_delab Completion.ofCompletion]
+meta def Completion.delabOfCompletion : Delab := delabApp
+
+end Notation
 
 namespace Completion
 

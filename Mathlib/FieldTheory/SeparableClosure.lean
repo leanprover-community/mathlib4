@@ -406,7 +406,7 @@ variable {F}
 @[simp]
 theorem finInsepDegree_bot' :
     finInsepDegree F (⊥ : IntermediateField E K) = finInsepDegree F E := by
-  simpa only [Cardinal.toNat_lift] using! congr_arg Cardinal.toNat (lift_insepDegree_bot' F E K)
+  simpa only [Cardinal.toNat_lift] using! congr($(lift_insepDegree_bot' F E K).toNat)
 
 @[simp]
 theorem sepDegree_top : sepDegree F (⊤ : IntermediateField E K) = sepDegree F K :=
@@ -477,4 +477,4 @@ theorem Algebra.IsSeparable.insepDegree_eq [Algebra.IsSeparable F E] : insepDegr
 
 /-- A separable extension has finite inseparable degree one. -/
 theorem Algebra.IsSeparable.finInsepDegree_eq [Algebra.IsSeparable F E] : finInsepDegree F E = 1 :=
-  Cardinal.one_toNat ▸ congr(Cardinal.toNat $(insepDegree_eq F E))
+  Cardinal.one_toNat ▸ congr($(insepDegree_eq F E).toNat)

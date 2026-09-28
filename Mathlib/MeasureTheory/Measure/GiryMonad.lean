@@ -50,7 +50,7 @@ instance instMeasurableSpace : MeasurableSpace (Measure α) :=
   ⨆ (s : Set α) (_ : MeasurableSet s), (borel ℝ≥0∞).comap fun μ => μ s
 
 theorem measurable_coe {s : Set α} (hs : MeasurableSet s) : Measurable fun μ : Measure α => μ s :=
-  Measurable.of_comap_le <| le_iSup_of_le s <| le_iSup_of_le hs <| le_rfl
+  Measurable.of_comap_le <| le_iSup_of_le s <| le_iSup_of_le hs le_rfl
 
 theorem measurable_of_measurable_coe (f : β → Measure α)
     (h : ∀ (s : Set α), MeasurableSet s → Measurable fun b => f b s) : Measurable f :=

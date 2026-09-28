@@ -340,7 +340,7 @@ def fullyFaithfulChangeProp :
   preimage f := ⟨f.toCommaMorphism, f.2, f.3⟩
 
 instance : (changeProp L R hP hQ hW).Faithful where
-  map_injective {X Y} f g h := by ext : 1; exact congr($(h).hom)
+  map_injective {X Y} f g h := by ext : 1; congrm $(h).hom
 
 instance : (changeProp (Q := Q) (W := W) L R hP le_rfl le_rfl).Full :=
   (fullyFaithfulChangeProp ..).full
@@ -661,7 +661,6 @@ lemma Over.Hom.ext {A B : P.Over Q X} {f g : A ⟶ B} (h : f.left = g.left) : f 
   · exact h
   · simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma Over.w {A B : P.Over Q X} (f : A ⟶ B) :
     f.left ≫ B.hom = A.hom := by

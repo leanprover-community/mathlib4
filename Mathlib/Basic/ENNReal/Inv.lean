@@ -567,7 +567,7 @@ protected theorem half_pos (h : a ≠ 0) : 0 < a / 2 :=
   ENNReal.div_pos h ofNat_ne_top
 
 protected theorem one_half_lt_one : (2⁻¹ : ℝ≥0∞) < 1 :=
-  ENNReal.inv_lt_one.2 <| one_lt_two
+  ENNReal.inv_lt_one.2 one_lt_two
 
 protected theorem half_lt_self (hz : a ≠ 0) (ht : a ≠ ∞) : a / 2 < a := by
   lift a to ℝ≥0 using ht
@@ -610,7 +610,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps! apply_coe]
 def orderIsoIicOneBirational : ℝ≥0∞ ≃o Iic (1 : ℝ≥0∞) := by
   refine StrictMono.orderIsoOfRightInverse
-    (fun x => ⟨(x⁻¹ + 1)⁻¹, ENNReal.inv_le_one.2 <| le_add_self⟩)
+    (fun x => ⟨(x⁻¹ + 1)⁻¹, ENNReal.inv_le_one.2 le_add_self⟩)
     (fun x y hxy => ?_) (fun x => (x.1⁻¹ - 1)⁻¹) fun x => Subtype.ext ?_
   · simpa only [Subtype.mk_lt_mk, ENNReal.inv_lt_inv, ENNReal.add_lt_add_iff_right one_ne_top]
   · have : (1 : ℝ≥0∞) ≤ x.1⁻¹ := ENNReal.one_le_inv.2 x.2
@@ -640,7 +640,7 @@ theorem orderIsoIicCoe_symm_apply_coe (a : ℝ≥0) (b : Iic a) :
 
 /-- An order isomorphism between the extended nonnegative real numbers and the unit interval. -/
 def orderIsoUnitIntervalBirational : ℝ≥0∞ ≃o Icc (0 : ℝ) 1 :=
-  orderIsoIicOneBirational.trans <| (orderIsoIicCoe 1).trans <| (NNReal.orderIsoIccZeroCoe 1).symm
+  orderIsoIicOneBirational.trans <| (orderIsoIicCoe 1).trans (NNReal.orderIsoIccZeroCoe 1).symm
 
 @[simp]
 theorem orderIsoUnitIntervalBirational_apply_coe (x : ℝ≥0∞) :

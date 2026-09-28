@@ -349,7 +349,7 @@ theorem le_measureReal_sdiff (h : μ s₂ ≠ ∞ := by finiteness) :
   simp only [tsub_le_iff_left]
   calc
     μ.real s₁ ≤ μ.real (s₂ ∪ s₁) := measureReal_le_measureReal_union_right h
-    _ = μ.real (s₂ ∪ s₁ \ s₂) := congr_arg μ.real union_sdiff_self.symm
+    _ = μ.real (s₂ ∪ s₁ \ s₂) := congr(μ.real $union_sdiff_self.symm)
     _ ≤ μ.real s₂ + μ.real (s₁ \ s₂) := measureReal_union_le _ _
 
 @[deprecated (since := "2026-06-03")] alias le_measureReal_diff := le_measureReal_sdiff

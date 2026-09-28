@@ -192,6 +192,6 @@ lemma PrespectralSpace.exists_isClosed_of_not_isPreirreducible [PrespectralSpace
   obtain ⟨W₂, hW₂⟩ := hU₂ x₂ hx₂.1
   refine ⟨W₁ᶜ, W₂ᶜ, by simpa using hW₁.1.1, by simpa using hW₂.1.1, by simp [hW₁.1.2],
     by simp [hW₂.1.2], fun z hz ↦ ?_, ⟨x₁, by grind⟩, ⟨x₂, by grind⟩⟩
-  · by_contra! hc
+  · by_contra hc
     simp only [Set.mem_union, Set.mem_compl_iff, not_or, not_not] at hc
     exact hU₁₂ ⟨hz, hW₁.2.2 hc.1, hW₂.2.2 hc.2⟩

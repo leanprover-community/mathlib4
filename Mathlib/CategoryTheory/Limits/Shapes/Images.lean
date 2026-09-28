@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
-public import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
 /-!
@@ -955,7 +954,6 @@ instance (priority := 100) hasImageMapsOfHasStrongEpiImages [HasStrongEpiImages 
                   factorThruImage f.hom ≫ image.ι f.hom ≫ st.right
                 by simp)).lift }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a category has images, equalizers and pullbacks, then images are automatically strong epi
 images. -/
 instance (priority := 100) hasStrongEpiImages_of_hasPullbacks_of_hasEqualizers [HasPullbacks C]
@@ -1024,7 +1022,6 @@ open CategoryTheory.Limits
 
 variable {C D : Type*} [Category* C] [Category* D]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hasStrongEpiMonoFactorisations_imp_of_isEquivalence (F : C ⥤ D) [IsEquivalence F]
     [h : HasStrongEpiMonoFactorisations C] : HasStrongEpiMonoFactorisations D :=
   ⟨fun {X} {Y} f => by

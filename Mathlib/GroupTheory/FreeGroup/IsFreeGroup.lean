@@ -98,8 +98,8 @@ instance instFunLike : FunLike (FreeGroupBasis ι G) ι G where
   coe_injective := by
     rintro ⟨b⟩ ⟨b'⟩ hbb'
     have H : (b.symm : FreeGroup ι →* G) = (b'.symm : FreeGroup ι →* G) := by
-      ext i; exact congr_fun hbb' i
-    have : b.symm = b'.symm := by ext x; exact DFunLike.congr_fun H x
+      ext i; congrm $hbb' i
+    have : b.symm = b'.symm := by ext x; congrm $H x
     rw [ofRepr.injEq, ← MulEquiv.symm_symm b, ← MulEquiv.symm_symm b', this]
 
 @[to_additive (attr := simp)]
@@ -212,7 +212,7 @@ def ofUniqueLift {G : Type u} [Group G] (X : Type u) (of : X → G)
       left_inv := fun f => funext (Classical.choose_spec (h f)).left
       right_inv := fun F => ((Classical.choose_spec (h (F ∘ of))).right F fun _ => rfl).symm }
   let lift_of {H : Type u} [Group H] (f : X → H) (a : X) : lift f (of a) = f a :=
-    congr_fun (lift.symm_apply_apply f) a
+    congr($(lift.symm_apply_apply f) a)
   ofLift X of @lift @lift_of
 
 end FreeGroupBasis
@@ -260,7 +260,7 @@ def lift : (Generators G → H) ≃ (G →* H) :=
 
 @[to_additive (attr := simp)]
 theorem lift_of (f : Generators G → H) (a : Generators G) : lift f (of a) = f a :=
-  congr_fun (lift.symm_apply_apply f) a
+  congr($(lift.symm_apply_apply f) a)
 
 @[to_additive (attr := simp)]
 theorem lift_symm_apply (f : G →* H) (a : Generators G) : (lift.symm f) a = f (of a) :=

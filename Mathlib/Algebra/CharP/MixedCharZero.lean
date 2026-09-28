@@ -99,8 +99,7 @@ lemma reduce_to_p_prime {P : Prop} :
     rcases Ideal.exists_le_maximal I hI_ne_top with ⟨M, hM_max, h_IM⟩
     let r := ringChar (R ⧸ M)
     have r_pos : r ≠ 0 := by
-      have q_zero :=
-        congr_arg (Ideal.Quotient.factor h_IM) (CharP.cast_eq_zero (R ⧸ I) q)
+      have q_zero := congr(Ideal.Quotient.factor h_IM $(CharP.cast_eq_zero (R ⧸ I) q))
       simp only [map_natCast, map_zero] at q_zero
       apply ne_zero_of_dvd_ne_zero (ne_of_gt q_pos)
       exact (CharP.cast_eq_zero_iff (R ⧸ M) r q).mp q_zero
@@ -129,7 +128,7 @@ lemma reduce_to_maximal_ideal {p : ℕ} (hp : Nat.Prime p) :
         convert! hr
         have r_dvd_p : r ∣ p := by
           rw [← CharP.cast_eq_zero_iff (R ⧸ M) r p]
-          convert! congr_arg (Ideal.Quotient.factor hM_ge) (CharP.cast_eq_zero (R ⧸ I) p)
+          convert! congr(Ideal.Quotient.factor hM_ge $(CharP.cast_eq_zero (R ⧸ I) p))
         symm
         apply (Nat.Prime.eq_one_or_self_of_dvd hp r r_dvd_p).resolve_left
         exact CharP.char_ne_one (R ⧸ M) r

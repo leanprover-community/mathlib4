@@ -6,11 +6,11 @@ Authors: Bolton Bailey
 module
 
 public import Mathlib.Order.UpperLower.Relative
-public import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Data.Finset.Image
 public import Mathlib.Order.BourbakiWitt
-public import Mathlib.Tactic.NormNum.Ineq
-public import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # Abstract Simplicial complexes

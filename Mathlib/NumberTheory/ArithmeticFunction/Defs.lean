@@ -6,7 +6,7 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.Algebra.Algebra.Defs
-public import Mathlib.Algebra.Module.BigOperators
+import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.Data.Nat.Factorization.Induction
 public import Mathlib.Data.Nat.GCD.BigOperators
 public import Mathlib.Data.Nat.Squarefree

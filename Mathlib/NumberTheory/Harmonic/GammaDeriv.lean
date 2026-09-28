@@ -5,9 +5,8 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.Convex.Deriv
+import Mathlib.Analysis.Convex.Deriv
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
-public import Mathlib.Data.Nat.Factorial.Basic
 public import Mathlib.NumberTheory.Harmonic.EulerMascheroni
 
 /-!
@@ -92,6 +91,16 @@ lemma hasDerivAt_Gamma_nat (n : ℕ) :
 lemma eulerMascheroniConstant_eq_neg_deriv : γ = -deriv Gamma 1 := by
   rw [show (1 : ℝ) = ↑(0 : ℕ) + 1 by simp, deriv_Gamma_nat 0]
   simp
+
+/-- The Euler–Mascheroni constant as an integral: `γ = -∫₀^∞ log t · e^{-t} dt`. -/
+lemma eulerMascheroniConstant_eq_neg_integral_log :
+    γ = -∫ t in Ioi 0, log t * exp (-t) := by
+  rw [eulerMascheroniConstant_eq_neg_deriv, deriv_Gamma_one_eq_integral_log]
+
+/-- An integral representation of the Euler–Mascheroni constant, valid for any `s > 1`. -/
+lemma eulerMascheroniConstant_eq_neg_integral_log_log {s : ℝ} (hs : 1 < s) :
+    γ = -log (s - 1) + -((s - 1) * ∫ (t : ℝ) in Ioi 1, log (log t) * t ^ (-s)) := by
+  rw [eulerMascheroniConstant_eq_neg_deriv, deriv_Gamma_one_eq_integral_log_log hs, neg_add_rev]
 
 lemma hasDerivAt_Gamma_one : HasDerivAt Gamma (-γ) 1 := by
   simpa only [factorial_zero, cast_one, harmonic_zero, Rat.cast_zero, add_zero, mul_neg, one_mul,

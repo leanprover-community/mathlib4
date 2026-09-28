@@ -214,8 +214,8 @@ lemma bijective_algebraMap_of_subsingleton_units_mrange (hv : Integers v O)
   refine ⟨hv.hom_inj, fun x ↦ hv.exists_of_le_one ?_⟩
   rcases eq_or_ne x 0 with rfl | hx
   · simp
-  · exact (congr_arg Units.val (Subsingleton.elim (α := (MonoidHom.mrange v)ˣ)
-      ((isUnit_iff_ne_zero.mpr hx).unit.map v.toMonoidHom.mrangeRestrict) 1)).le
+  · exact congr($(Subsingleton.elim (α := (MonoidHom.mrange v)ˣ)
+      ((isUnit_iff_ne_zero.mpr hx).unit.map v.toMonoidHom.mrangeRestrict) 1).val).le
 
 lemma isPrincipal_iff_exists_isGreatest (hv : Integers v O) {I : Ideal O} :
     I.IsPrincipal ↔ ∃ x, IsGreatest (v ∘ algebraMap O F '' I) x := by

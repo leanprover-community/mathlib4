@@ -5,8 +5,8 @@ Authors: Johan Commelin, Simon Hudon
 -/
 module
 
-public import Batteries.Tactic.Alias
-public import Mathlib.Init
+import Batteries.Tactic.Alias
+import Mathlib.Init
 
 /-!
 # The Following Are Equivalent

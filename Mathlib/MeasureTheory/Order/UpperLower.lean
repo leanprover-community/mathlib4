@@ -5,7 +5,7 @@ Authors: Yaël Dillies, Kexing Ying
 -/
 module
 
-public import Mathlib.Analysis.Normed.Order.UpperLower
+import Mathlib.Analysis.Normed.Order.UpperLower
 public import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
 
 /-!

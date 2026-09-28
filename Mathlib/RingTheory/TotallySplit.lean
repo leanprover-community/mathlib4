@@ -6,9 +6,9 @@ Authors: Christian Merten
 module
 
 public import Mathlib.RingTheory.Etale.Field
-public import Mathlib.RingTheory.Flat.Rank
+import Mathlib.RingTheory.Flat.Rank
 public import Mathlib.RingTheory.Smooth.Flat
-public import Mathlib.RingTheory.TensorProduct.Pi
+import Mathlib.RingTheory.TensorProduct.Pi
 
 /-!
 # Totally split algebras

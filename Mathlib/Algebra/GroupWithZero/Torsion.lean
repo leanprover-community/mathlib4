@@ -5,7 +5,7 @@ Authors: Kenny Lau, Xavier Roblot
 -/
 module
 
-public import Mathlib.Algebra.Regular.Basic
+import Mathlib.Algebra.Regular.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
 /-!

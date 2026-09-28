@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Int
-public import Mathlib.Order.Filter.AtTopBot.Group
+import Mathlib.Algebra.Order.Group.Int
+import Mathlib.Order.Filter.AtTopBot.Group
 public import Mathlib.Topology.Algebra.Group.Subgroup
 
 /-!

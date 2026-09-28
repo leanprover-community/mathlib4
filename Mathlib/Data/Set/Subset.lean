@@ -5,7 +5,6 @@ Authors: Miguel Marco
 -/
 module
 
-public import Mathlib.Data.Set.Function
 public import Mathlib.Data.Set.Functor
 
 /-!

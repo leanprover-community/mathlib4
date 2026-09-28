@@ -1,5 +1,5 @@
 import Mathlib.CategoryTheory.NatIso
-import Mathlib.CategoryTheory.Functor.CurryingThree
+import Mathlib.CategoryTheory.Functor.CurryingFour
 import Mathlib.CategoryTheory.Products.Associator
 
 /-!
@@ -192,3 +192,25 @@ elab_rules : command
 /-- info: `CategoryTheory.Functor.curry₃_map_app_app_app` is tagged with @[defeq] -/
 #guard_msgs in
 #ensure_defeq CategoryTheory.Functor.curry₃_map_app_app_app
+
+-- Keep the generated quadrifunctor currying lemmas usable by `dsimp` without compatibility options.
+
+/-- info: `CategoryTheory.Functor.curry₄_obj_map_app_app_app` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.Functor.curry₄_obj_map_app_app_app
+
+/-- info: `CategoryTheory.Functor.curry₄_obj_obj_map_app_app` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.Functor.curry₄_obj_obj_map_app_app
+
+/-- info: `CategoryTheory.Functor.curry₄_obj_obj_obj_map_app` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.Functor.curry₄_obj_obj_obj_map_app
+
+/-- info: `CategoryTheory.Functor.curry₄_obj_obj_obj_obj_map` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.Functor.curry₄_obj_obj_obj_obj_map
+
+/-- info: `CategoryTheory.Functor.curry₄_map_app_app_app_app` is tagged with @[defeq] -/
+#guard_msgs in
+#ensure_defeq CategoryTheory.Functor.curry₄_map_app_app_app_app

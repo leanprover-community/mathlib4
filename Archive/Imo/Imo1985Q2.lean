@@ -53,7 +53,7 @@ lemma C_mul_mod {n j : ℕ} (hn : 3 ≤ n) (hj : j ∈ Set.Ico 1 n) (cpj : Nat.C
   | base => rw [one_mul, Nat.mod_eq_of_lt hj.2]
   | succ k hk₁ ih =>
     have nej : (k + 1) * j % n ≠ j := by
-      by_contra! h; nth_rw 2 [← Nat.mod_eq_of_lt hj.2, ← one_mul j] at h
+      by_contra h; nth_rw 2 [← Nat.mod_eq_of_lt hj.2, ← one_mul j] at h
       replace h : (k + 1) % n = 1 % n := Nat.ModEq.cancel_right_of_coprime cpj h
       rw [Nat.mod_eq_of_lt hk.2, Nat.mod_eq_of_lt (by lia)] at h
       lia

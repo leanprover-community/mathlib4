@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Data.Rat.Cast.CharZero
+import Mathlib.Data.Rat.Cast.CharZero
 public import Mathlib.Data.Rat.Cast.Lemmas
 
 /-!

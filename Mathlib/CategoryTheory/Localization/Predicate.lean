@@ -169,7 +169,7 @@ lemma Construction.wIso_eq_isoOfHom {X Y : C} (f : X ⟶ Y) (hf : W f) :
 
 lemma Construction.wInv_eq_isoOfHom_inv {X Y : C} (f : X ⟶ Y) (hf : W f) :
     Construction.wInv f hf = (isoOfHom W.Q W f hf).inv :=
-  congr_arg Iso.inv (wIso_eq_isoOfHom f hf)
+  congr($(wIso_eq_isoOfHom f hf).inv)
 
 instance : (Localization.Construction.lift L (inverts L W)).IsEquivalence :=
   (inferInstance : L.IsLocalization W).isEquivalence

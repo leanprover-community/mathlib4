@@ -6,7 +6,6 @@ Authors: Joseph Myers
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
-public import Mathlib.Geometry.Euclidean.Projection
 public import Mathlib.Geometry.Euclidean.Sphere.Basic
 
 /-!
@@ -209,7 +208,7 @@ lemma inter_orthRadius_eq_singleton_iff {s : Sphere P} {p q : P} :
       simpa [-neg_vsub_eq_vsub_rev] using hq'
     have hqq := (h' _).1 hq''
     rw [eq_comm, eq_vadd_iff_vsub_eq, eq_neg_iff_add_eq_zero, ← two_smul ℝ,
-      smul_eq_zero_iff_right (by norm_num), vsub_eq_zero_iff_eq] at hqq
+      smul_eq_zero_iff_right (by simp), vsub_eq_zero_iff_eq] at hqq
     refine ⟨hqq, ?_⟩
     subst hqq
     exact hq.1

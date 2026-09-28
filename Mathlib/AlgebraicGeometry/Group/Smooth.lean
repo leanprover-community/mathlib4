@@ -8,7 +8,6 @@ module
 public import Mathlib.AlgebraicGeometry.AlgClosed.Basic
 public import Mathlib.AlgebraicGeometry.Morphisms.LocalFlatDescent
 public import Mathlib.AlgebraicGeometry.Geometrically.Reduced
-public import Mathlib.CategoryTheory.Monoidal.Grp
 
 /-!
 # Smoothness of group schemes

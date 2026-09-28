@@ -105,7 +105,7 @@ def inverse : (C ⥤ Mon D) ⥤ Mon (C ⥤ D) where
   obj := inverseObj
   map α := .mk'
     { app := fun X => (α.app X).hom
-      naturality := fun _ _ f => congr_arg Mon.Hom.hom (α.naturality f) }
+      naturality _ _ f := congr($(α.naturality f).hom) }
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
@@ -208,7 +208,7 @@ private def inverse : (C ⥤ Comon D) ⥤ Comon (C ⥤ D) where
   map α :=
     { hom :=
       { app := fun X => (α.app X).hom
-        naturality := fun _ _ f => congr_arg Comon.Hom.hom (α.naturality f) }
+        naturality _ _ f := congr($(α.naturality f).hom) }
       isComonHom_hom.hom_counit := by ext x; dsimp; rw [IsComonHom.hom_counit (α.app x).hom]
       isComonHom_hom.hom_comul := by ext x; dsimp; rw [IsComonHom.hom_comul (α.app x).hom] }
 

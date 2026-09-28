@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 module
 
 public import Mathlib.Topology.UniformSpace.Basic
-public import Mathlib.Topology.Compactness.Compact
+import Mathlib.Topology.Compactness.Compact
 
 /-!
 # Compact sets in uniform spaces

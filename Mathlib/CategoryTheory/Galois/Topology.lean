@@ -51,7 +51,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 lemma autEmbedding_injective : Function.Injective (autEmbedding F) := by
   intro σ τ h
   ext X x
-  have : σ.app X = τ.app X := congr_fun h X
+  have : σ.app X = τ.app X := congr($h X)
   rw [← Iso.app_hom, ← Iso.app_hom, this]
 
 /-- We put the discrete topology on `F.obj X`. -/
@@ -97,7 +97,7 @@ lemma autEmbedding_range :
   simp only [Set.mem_range, Set.mem_iInter, Set.mem_ofPred_eq]
   refine ⟨fun ⟨σ, h⟩ i ↦ by cat_disch, fun h ↦ ?_⟩
   exact ⟨NatIso.ofComponents a (fun {X Y} f ↦ by
-    ext; simpa using ConcreteCategory.congr_hom (h ⟨X, Y, f⟩) _), rfl⟩
+    ext; simpa using congr($(h ⟨X, Y, f⟩) _)), rfl⟩
 
 /-- The image of `Aut F` in `∀ X, Aut (F.obj X)` is closed. -/
 lemma autEmbedding_range_isClosed : IsClosed (Set.range (autEmbedding F)) := by

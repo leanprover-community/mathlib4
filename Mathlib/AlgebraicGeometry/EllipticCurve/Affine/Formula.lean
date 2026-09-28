@@ -431,12 +431,12 @@ lemma den_duplication_ne_zero_or_num_duplication_ne_zero {x y : F} (h : W.Nonsin
   by_cases H : 2 * y + W.a₁ * x + W.a₃ = 0
   · right
     replace h₂ : W.a₁ * y ≠ 3 * x ^ 2 + 2 * W.a₂ * x + W.a₄ := by grind
-    contrapose! h₂
+    contrapose h₂
     rw [b₄, b₆, b₈] at h₂
     grobner
   · left
     clear h₂
-    contrapose! H
+    contrapose H
     rw [b₂, b₄, b₆] at H
     grobner
 
@@ -497,8 +497,8 @@ lemma map_slope [DecidableEq F] [DecidableEq K] (f : F →+* K) (x₁ x₂ y₁ 
     (W.map f).slope (f x₁) (f x₂) (f y₁) (f y₂) = f (W.slope x₁ x₂ y₁ y₂) := by
   by_cases hx : x₁ = x₂
   · by_cases hy : y₁ = W.negY x₂ y₂
-    · rw [slope_of_Y_eq (congr_arg f hx) <| by rw [hy, map_negY], slope_of_Y_eq hx hy, map_zero]
-    · rw [slope_of_Y_ne (congr_arg f hx) <| map_negY f x₂ y₂ ▸ fun h => hy <| f.injective h,
+    · rw [slope_of_Y_eq congr(f $hx) <| by rw [hy, map_negY], slope_of_Y_eq hx hy, map_zero]
+    · rw [slope_of_Y_ne congr(f $hx) <| map_negY f x₂ y₂ ▸ fun h => hy <| f.injective h,
         map_negY, slope_of_Y_ne hx hy]
       map_simp
   · rw [slope_of_X_ne fun h => hx <| f.injective h, slope_of_X_ne hx]

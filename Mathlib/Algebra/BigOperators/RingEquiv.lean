@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Ring.Equiv
-public import Mathlib.Algebra.Ring.Opposite
+import Mathlib.Algebra.Ring.Opposite
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!

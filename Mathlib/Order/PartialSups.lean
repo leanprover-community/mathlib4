@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Order.SuccPred.Basic
 import Mathlib.Data.Finset.Max
@@ -98,7 +98,7 @@ lemma upperBounds_range_partialSups (f : ι → α) :
 @[simp]
 theorem bddAbove_range_partialSups {f : ι → α} :
     BddAbove (Set.range (partialSups f)) ↔ BddAbove (Set.range f) :=
-  .of_eq <| congr_arg Set.Nonempty <| upperBounds_range_partialSups f
+  .of_eq congr($(upperBounds_range_partialSups f).Nonempty)
 
 theorem Monotone.partialSups_eq {f : ι → α} (hf : Monotone f) :
     partialSups f = f :=

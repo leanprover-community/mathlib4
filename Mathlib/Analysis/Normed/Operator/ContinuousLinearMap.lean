@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Normed.Group.Uniform
 public import Mathlib.Analysis.Normed.MulAction
 public import Mathlib.LinearAlgebra.DFinsupp
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 /-! # Constructions of continuous linear maps between (semi-)normed spaces
 

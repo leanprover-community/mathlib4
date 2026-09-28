@@ -5,7 +5,7 @@ Authors: Richard M. Hill, Ralf Stephan
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Derivation
+import Mathlib.Algebra.Polynomial.Derivation
 public import Mathlib.RingTheory.MvPowerSeries.Derivative
 public import Mathlib.RingTheory.PowerSeries.Substitution
 

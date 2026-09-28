@@ -110,7 +110,7 @@ def piAntidiag (s : Finset ι) (n : μ) : Finset (ι → μ) := by
   · rw [Injective]
     rintro f g hfg
     ext i
-    simpa using congr_fun hfg (e.symm i)
+    simpa using congr($hfg (e.symm i))
   · ext f
     simp only [mem_map, mem_finAntidiagonal]
     refine Equiv.exists_congr ((e₁.symm.trans e₂).arrowCongr <| .refl _) fun g ↦ ?_
@@ -164,7 +164,7 @@ lemma pairwiseDisjoint_piAntidiag_map_addRightEmbedding (hi : i ∉ s) (n : μ) 
   simp only [ne_eq, HasAntidiagonal.antidiagonal_congr' hab hcd, disjoint_left, mem_map,
     mem_piAntidiag, addRightEmbedding_apply, not_exists, not_and, and_imp, forall_exists_index]
   rintro hfg _ f rfl - rfl g rfl - hgf
-  exact hfg <| by simpa [sum_add_distrib, hi] using congr_arg (∑ j ∈ s, · j) hgf.symm
+  exact hfg <| by simpa [sum_add_distrib, hi] using congr(∑ j ∈ s, $hgf.symm j)
 
 lemma piAntidiag_cons (hi : i ∉ s) (n : μ) :
     piAntidiag (cons i s hi) n = (antidiagonal n).disjiUnion (fun p : μ × μ ↦

@@ -5,9 +5,7 @@ Authors: Monica Omar
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.Algebra.Ring.Action.ConjAct
-public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 
 import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.Algebra.Module.Projective
@@ -54,7 +52,7 @@ public theorem AlgEquiv.eq_linearEquivConjAlgEquiv (f : End K V ≃ₐ[K] End K 
       apply f.injective <| LinearMap.ext fun z ↦ ?_
       obtain ⟨w, rfl⟩ := surj z
       simp_rw [← this, smulRightₗ_apply_apply, _root_.map_smul, hxy]
-    simpa [huv.isUnit.smul_left_cancel] using congr((fun f ↦ f u) $h_smul)
+    simpa [huv.isUnit.smul_left_cancel] using congr($h_smul u)
   exact ⟨.ofBijective T ⟨inj, surj⟩, fun A ↦ (LinearMap.ext <| this A).symm⟩
 
 variable (K V W) in

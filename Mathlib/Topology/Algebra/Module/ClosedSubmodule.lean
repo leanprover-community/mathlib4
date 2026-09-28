@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.Sets.Closeds
 
 /-!
@@ -53,7 +53,7 @@ instance : SetLike (ClosedSubmodule R M) M where
   coe s := s.1
   coe_injective _ _ h := toSubmodule_injective <| SetLike.coe_injective h
 
-instance : PartialOrder (ClosedSubmodule R M) := .ofSetLike (ClosedSubmodule R M) M
+instance : PartialOrder (ClosedSubmodule R M) := .ofSetLike (ClosedSubmodule R M)
 
 lemma toCloseds_injective : Injective (toCloseds : ClosedSubmodule R M → Closeds M) :=
   fun _s _t h ↦ SetLike.coe_injective congr(($h : Set M))

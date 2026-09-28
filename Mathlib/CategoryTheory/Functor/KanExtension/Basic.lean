@@ -98,7 +98,7 @@ lemma liftOfIsRightKanExtension_fac (G : D ⥤ H) (β : L ⋙ G ⟶ F) :
 @[reassoc (attr := simp)]
 lemma liftOfIsRightKanExtension_fac_app (G : D ⥤ H) (β : L ⋙ G ⟶ F) (X : C) :
     (F'.liftOfIsRightKanExtension α G β).app (L.obj X) ≫ α.app X = β.app X :=
-  NatTrans.congr_app (F'.liftOfIsRightKanExtension_fac α G β) X
+  congr($(F'.liftOfIsRightKanExtension_fac α G β).app X)
 
 lemma hom_ext_of_isRightKanExtension {G : D ⥤ H} (γ₁ γ₂ : G ⟶ F')
     (hγ : whiskerLeft L γ₁ ≫ α = whiskerLeft L γ₂ ≫ α) : γ₁ = γ₂ :=
@@ -191,7 +191,7 @@ lemma descOfIsLeftKanExtension_fac (G : D ⥤ H) (β : F ⟶ L ⋙ G) :
 @[reassoc (attr := simp)]
 lemma descOfIsLeftKanExtension_fac_app (G : D ⥤ H) (β : F ⟶ L ⋙ G) (X : C) :
     α.app X ≫ (F'.descOfIsLeftKanExtension α G β).app (L.obj X) = β.app X :=
-  NatTrans.congr_app (F'.descOfIsLeftKanExtension_fac α G β) X
+  congr($(F'.descOfIsLeftKanExtension_fac α G β).app X)
 
 lemma hom_ext_of_isLeftKanExtension {G : D ⥤ H} (γ₁ γ₂ : F' ⟶ G)
     (hγ : α ≫ whiskerLeft L γ₁ = α ≫ whiskerLeft L γ₂) : γ₁ = γ₂ :=
@@ -951,7 +951,6 @@ instance isLeftKanExtensionAlongEquivalence (α : F₀ ≅ L.functor ⋙ F₁) :
   ext x
   simpa using α.inv.app x ≫= congr_app m.w x
 
-set_option backward.isDefEq.respectTransparency false in
 instance isLeftKanExtensionAlongEquivalence' (L : C ⥤ D) (α : F₀ ⟶ L ⋙ F₁)
     [IsEquivalence L] [IsIso α] :
     F₁.IsLeftKanExtension α :=
@@ -969,7 +968,6 @@ instance isRightKanExtensionAlongEquivalence (α : L.functor ⋙ F₁ ≅ F₀) 
   ext x
   simpa using congr_app m.w x =≫ α.inv.app x
 
-set_option backward.isDefEq.respectTransparency false in
 instance isRightKanExtensionAlongEquivalence' (L : C ⥤ D) (α : L ⋙ F₁ ⟶ F₀)
     [IsEquivalence L] [IsIso α] :
     F₁.IsRightKanExtension α :=

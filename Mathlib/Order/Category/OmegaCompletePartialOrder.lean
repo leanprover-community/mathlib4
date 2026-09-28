@@ -6,10 +6,7 @@ Authors: Simon Hudon
 module
 
 public import Mathlib.Order.BourbakiWitt
-public import Mathlib.CategoryTheory.Limits.Shapes.Products
-public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
-public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 
 /-!
 # Category of types with an omega complete partial order

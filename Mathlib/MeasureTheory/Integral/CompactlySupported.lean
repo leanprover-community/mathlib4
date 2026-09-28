@@ -5,7 +5,7 @@ Authors: Yongxi Lin, Thomas Zhu
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.LocallyIntegrable
+import Mathlib.MeasureTheory.Function.LocallyIntegrable
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Topology.ContinuousMap.CompactlySupported
 

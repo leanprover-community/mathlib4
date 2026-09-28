@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Action.Continuous
-public import Mathlib.CategoryTheory.Galois.Examples
+import Mathlib.CategoryTheory.Galois.Examples
 public import Mathlib.CategoryTheory.Galois.FullSubcategory
 public import Mathlib.Topology.Algebra.OpenSubgroup
 public import Mathlib.Topology.Category.FinTopCat

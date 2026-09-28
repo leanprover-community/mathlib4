@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.GroupWithZero.Pi
 public import Mathlib.Algebra.Ring.CompTypeclasses
-public import Mathlib.Algebra.Ring.Hom.Defs
 
 /-!
 # Pi instances for ring

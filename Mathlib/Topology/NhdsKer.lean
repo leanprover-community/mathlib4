@@ -5,7 +5,6 @@ Authors: Yaël Dillies, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.NhdsSet
 public import Mathlib.Topology.Inseparable
 
 /-!

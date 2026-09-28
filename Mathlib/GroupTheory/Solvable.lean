@@ -5,12 +5,11 @@ Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 -/
 module
 
-public import Mathlib.Data.Fin.VecNotation
+import Mathlib.Data.Fin.VecNotation
 public import Mathlib.GroupTheory.Abelianization.Defs
 public import Mathlib.GroupTheory.Perm.ViaEmbedding
 public import Mathlib.GroupTheory.Subgroup.Simple
 public import Mathlib.SetTheory.Cardinal.Order
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Solvable Groups
@@ -275,7 +274,7 @@ theorem not_isSolvable_of_mem_derivedSeries {g : G} (h1 : g ≠ 1)
     (h2 : ∀ n : ℕ, g ∈ derivedSeries G n) : ¬Group.IsSolvable G :=
   mt (Group.isSolvable_def _).mp
     (not_exists_of_forall_not fun n h =>
-      h1 (Subgroup.mem_bot.mp ((congr_arg (g ∈ ·) h).mp (h2 n))))
+      h1 (Subgroup.mem_bot.mp (congr(g ∈ $h).mp (h2 n))))
 
 @[deprecated (since := "2026-07-16")]
 alias not_solvable_of_mem_derivedSeries := not_isSolvable_of_mem_derivedSeries

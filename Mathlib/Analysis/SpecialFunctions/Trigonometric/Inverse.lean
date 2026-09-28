@@ -6,7 +6,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-public import Mathlib.Topology.Order.ProjIcc
+import Mathlib.Topology.Order.ProjIcc
 
 /-!
 # Inverse trigonometric functions.

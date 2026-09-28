@@ -6,7 +6,7 @@ Authors: Manuel Candales, Benjamin Davidson
 module
 
 public import Mathlib.Geometry.Euclidean.Sphere.Power
-public import Mathlib.Geometry.Euclidean.Triangle
+import Mathlib.Geometry.Euclidean.Triangle
 
 /-!
 # Ptolemy's theorem

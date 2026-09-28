@@ -237,7 +237,7 @@ theorem opow_dvd_opow_iff {a b c : Ordinal} (a1 : 1 < a) : a ^ b ∣ a ^ c ↔ b
   ⟨fun h =>
     le_of_not_gt fun hn =>
       not_le_of_gt ((opow_lt_opow_iff_right a1).2 hn) <|
-        le_of_dvd (opow_ne_zero _ <| one_le_iff_ne_zero.1 <| a1.le) h,
+        le_of_dvd (opow_ne_zero _ <| one_le_iff_ne_zero.1 a1.le) h,
     opow_dvd_opow _⟩
 
 theorem opow_mul (a b c : Ordinal) : a ^ (b * c) = (a ^ b) ^ c := by
@@ -288,7 +288,7 @@ def log (b x : Ordinal) : Ordinal :=
 theorem log_of_left_le_one {b : Ordinal} (h : b ≤ 1) (x : Ordinal) : log b x = 0 := by
   obtain rfl | rfl := le_one_iff.1 h
   · apply (csSup_of_not_bddAbove _).trans csSup_empty
-    by_contra! hb
+    by_contra hb
     refine not_bddAbove_Ici 1 (hb.mono fun a ↦ ?_)
     simp +contextual [one_le_iff_ne_zero]
   · simp_rw [log, one_opow, preimage_const]

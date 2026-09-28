@@ -6,8 +6,8 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Data.List.Lattice
-public import Mathlib.Data.Bool.Basic
-public import Mathlib.Order.Lattice
+import Mathlib.Data.Bool.Basic
+import Mathlib.Order.Lattice
 
 /-!
 # Intervals in ℕ

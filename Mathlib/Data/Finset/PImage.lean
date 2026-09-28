@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Finset.Option
 public import Mathlib.Data.PFun
-public import Mathlib.Data.Part
 
 /-!
 # Image of a `Finset α` under a partially defined function

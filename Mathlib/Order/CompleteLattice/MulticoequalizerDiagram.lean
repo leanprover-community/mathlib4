@@ -5,13 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Order.CompleteLattice.Lemmas
-public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
-public import Mathlib.CategoryTheory.CommSq
-public import Mathlib.Data.Finset.Attr
-public import Mathlib.Tactic.Attr.Core
-public import Mathlib.Tactic.SetLike
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Multicoequalizer diagrams in complete lattices

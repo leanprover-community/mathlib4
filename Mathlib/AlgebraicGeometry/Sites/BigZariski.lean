@@ -8,7 +8,7 @@ module
 public import Mathlib.AlgebraicGeometry.Cover.Sigma
 public import Mathlib.AlgebraicGeometry.Sites.Pretopology
 public import Mathlib.CategoryTheory.Sites.CoproductSheafCondition
-public import Mathlib.CategoryTheory.Sites.Preserves
+import Mathlib.CategoryTheory.Sites.Preserves
 public import Mathlib.Topology.Category.TopCat.GrothendieckTopology
 
 /-!

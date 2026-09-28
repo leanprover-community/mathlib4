@@ -6,7 +6,7 @@ Authors: Kyle Miller, Pim Otte, Daniel Weber, Rida Hamadani
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Traversal
-public import Mathlib.Data.List.Zip
+import Mathlib.Data.List.Zip
 
 /-!
 # Operations on walks

@@ -78,7 +78,7 @@ theorem ax_grothendieck_of_locally_finite {ι K R : Type*} [Field K] [Finite K] 
     intro x y hxy
     ext i
     simp only [Subtype.ext_iff, funext_iff] at hxy
-    exact congr_fun (hinj x.2 y.2 (funext hxy)) i
+    congrm $(hinj x.2 y.2 (funext hxy)) i
   rcases hres_surj ⟨fun i => ⟨v i, hv i⟩, hvS⟩ with ⟨⟨w, hwS'⟩, hw⟩
   refine ⟨fun i => w i, hwS', ?_⟩
   simpa [Subtype.ext_iff, funext_iff] using hw
@@ -137,7 +137,7 @@ noncomputable def genericPolyMapSurjOnOfInjOn [Finite ι]
           (fun a => .var (Sum.inl (Sum.inl a)))
           (fun i => (termOfFreeCommRing (genericPolyMap mons i)).relabel
             (fun i => (Equiv.sumAssoc _ _ _).symm (Sum.inr i)))))
-  Formula.iAlls (α ⊕ Σ i : ι, mons i) ((mapsTo.imp <| injOn.imp <| surjOn).relabel Sum.inr)
+  Formula.iAlls (α ⊕ Σ i : ι, mons i) ((mapsTo.imp <| injOn.imp surjOn).relabel Sum.inr)
 
 theorem realize_genericPolyMapSurjOnOfInjOn
     [Finite ι] (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :

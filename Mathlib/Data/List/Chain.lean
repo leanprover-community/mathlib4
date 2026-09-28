@@ -8,7 +8,7 @@ module
 public import Mathlib.Data.List.Forall2
 public import Mathlib.Data.List.Induction
 public import Mathlib.Data.List.Lex
-public import Mathlib.Data.List.Pairwise
+import Mathlib.Data.List.Pairwise
 public import Mathlib.Logic.Function.Iterate
 
 /-!

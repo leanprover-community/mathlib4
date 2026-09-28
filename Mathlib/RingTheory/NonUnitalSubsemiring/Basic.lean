@@ -745,7 +745,7 @@ theorem range_fst : NonUnitalRingHom.srange (fst R S) = ⊤ :=
 
 @[simp]
 theorem range_snd : NonUnitalRingHom.srange (snd R S) = ⊤ :=
-  NonUnitalRingHom.srange_eq_top_of_surjective (snd R S) <| Prod.snd_surjective
+  NonUnitalRingHom.srange_eq_top_of_surjective (snd R S) Prod.snd_surjective
 
 end NonUnitalSubsemiring
 

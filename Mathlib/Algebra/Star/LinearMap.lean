@@ -5,13 +5,8 @@ Authors: Monica Omar
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Bilinear
-public import Mathlib.Algebra.WithConv
 public import Mathlib.Algebra.Star.Pi
-public import Mathlib.Algebra.Star.SelfAdjoint
-public import Mathlib.Algebra.Star.TensorProduct
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
-public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.RingTheory.Coalgebra.Convolution
 
 /-! # Intrinsic star operation on linear maps
@@ -43,8 +38,8 @@ namespace LinearMap
 /-- The intrinsic star operation on linear maps `E →ₗ F` defined by
 `(star f) x = star (f (star x))`. -/
 instance intrinsicStar : Star (WithConv (E →ₗ[R] F)) where
-  star f := toConv <|
-  { toFun x := star (f (star x))
+  star f := toConv {
+    toFun x := star (f (star x))
     map_add' := by simp
     map_smul' := by simp }
 

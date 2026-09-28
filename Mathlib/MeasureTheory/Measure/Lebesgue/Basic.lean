@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Sébastien Gouëzel, Yury Kudryashov
 module
 
 public import Mathlib.LinearAlgebra.Matrix.Diagonal
-public import Mathlib.MeasureTheory.Group.LIntegral
+import Mathlib.MeasureTheory.Group.LIntegral
 public import Mathlib.MeasureTheory.Integral.Marginal
 public import Mathlib.MeasureTheory.Measure.Stieltjes
 public import Mathlib.MeasureTheory.Measure.Haar.OfBasis

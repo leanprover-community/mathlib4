@@ -5,9 +5,7 @@ Authors: Yaël Dillies, Patrick Luo
 -/
 module
 
-public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.SelfInv
-public import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Torsion-free monoids and groups

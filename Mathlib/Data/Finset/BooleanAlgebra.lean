@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Finset.Basic
 public import Mathlib.Data.Finset.Image
-public import Mathlib.Data.Fintype.Defs
 
 /-!
 # `Finset`s are a Boolean algebra

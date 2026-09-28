@@ -5,8 +5,7 @@ Authors: James Sundstrom
 -/
 module
 
-public import Mathlib.Basic.ENNReal.Real
-public import Mathlib.Order.WellFoundedSet
+import Mathlib.Order.WellFoundedSet
 public import Mathlib.Topology.EMetricSpace.Diam
 
 /-!

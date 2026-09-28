@@ -5,13 +5,13 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Torsion
+import Mathlib.Algebra.GroupWithZero.Torsion
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.CategoryTheory.Category.Init
-public import Mathlib.Data.Nat.Totient
-public import Mathlib.Data.Rat.Floor
-public import Mathlib.RingTheory.Nakayama
-public import Mathlib.Tactic.Continuity
+import Mathlib.Data.Nat.Totient
+import Mathlib.Data.Rat.Floor
+import Mathlib.RingTheory.Nakayama
+import Mathlib.Tactic.Continuity
 
 /-!
 # Ramification index
@@ -157,7 +157,7 @@ theorem le_comap_pow_ramificationIdx' : p ≤ comap f (P ^ ramificationIdx' p P)
   le_comap_pow_ramificationIdx'
 
 theorem le_comap_of_ramificationIdx'_ne_zero (h : ramificationIdx' p P ≠ 0) : p ≤ comap f P :=
-  Ideal.map_le_iff_le_comap.mp <| le_pow_ramificationIdx'.trans <| Ideal.pow_le_self <| h
+  Ideal.map_le_iff_le_comap.mp <| le_pow_ramificationIdx'.trans <| Ideal.pow_le_self h
 
 @[deprecated (since := "2026-07-01")] alias le_comap_of_ramificationIdx_ne_zero :=
   le_comap_of_ramificationIdx'_ne_zero

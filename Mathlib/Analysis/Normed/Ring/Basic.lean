@@ -772,6 +772,16 @@ protected theorem List.norm_prod (l : List α) : ‖l.prod‖ = (l.map norm).pro
 protected theorem List.nnnorm_prod (l : List α) : ‖l.prod‖₊ = (l.map nnnorm).prod :=
   map_list_prod (nnnormHom.toMonoidHom : α →* ℝ≥0) _
 
+@[simp]
+theorem List.norm_prod_map (l : List β) (f : β → α) :
+    ‖(l.map f).prod‖ = (l.map (‖f ·‖)).prod := by
+  aesop (add simp List.norm_prod)
+
+@[simp]
+theorem List.nnnorm_prod_map (l : List β) (f : β → α) :
+    ‖(l.map f).prod‖₊ = (l.map (‖f ·‖₊)).prod := by
+  aesop (add simp List.nnnorm_prod)
+
 end SeminormedRing
 
 section SeminormedCommRing
@@ -785,6 +795,22 @@ theorem norm_prod (s : Finset β) (f : β → α) : ‖∏ b ∈ s, f b‖ = ∏
 @[simp]
 theorem nnnorm_prod (s : Finset β) (f : β → α) : ‖∏ b ∈ s, f b‖₊ = ∏ b ∈ s, ‖f b‖₊ :=
   map_prod nnnormHom.toMonoidHom f s
+
+protected theorem Multiset.norm_prod (s : Multiset α) : ‖s.prod‖ = (s.map norm).prod :=
+  map_multiset_prod (normHom.toMonoidHom : α →* ℝ) _
+
+protected theorem Multiset.nnnorm_prod (s : Multiset α) : ‖s.prod‖₊ = (s.map nnnorm).prod :=
+  map_multiset_prod (nnnormHom.toMonoidHom : α →* ℝ≥0) _
+
+@[simp]
+theorem Multiset.norm_prod_map (s : Multiset β) (f : β → α) :
+    ‖(s.map f).prod‖ = (s.map (‖f ·‖)).prod := by
+  simp [Multiset.norm_prod]
+
+@[simp]
+theorem Multiset.nnnorm_prod_map (s : Multiset β) (f : β → α) :
+    ‖(s.map f).prod‖₊ = (s.map (‖f ·‖₊)).prod := by
+  simp [Multiset.nnnorm_prod]
 
 end SeminormedCommRing
 
@@ -895,7 +921,7 @@ theorem NormOneClass.induced {F : Type*} (R S : Type*) [Ring R] [SeminormedRing 
     [NormOneClass S] [FunLike F R S] [RingHomClass F R S] (f : F) :
     @NormOneClass R (SeminormedRing.induced R S f).toNorm _ :=
   let _ : SeminormedRing R := SeminormedRing.induced R S f
-  { norm_one := (congr_arg norm (map_one f)).trans norm_one }
+  { norm_one := congr(norm $(map_one f)).trans norm_one }
 
 /-- A ring homomorphism from a `Ring R` to a `SeminormedRing S` which induces the norm structure
 `SeminormedRing.induced` makes `R` satisfy `‖(1 : R)‖ = 1` whenever `‖(1 : S)‖ = 1`. -/
@@ -903,7 +929,7 @@ theorem NormMulClass.induced {F : Type*} (R S : Type*) [Ring R] [SeminormedRing 
     [NormMulClass S] [FunLike F R S] [RingHomClass F R S] (f : F) :
     @NormMulClass R (SeminormedRing.induced R S f).toNorm _ :=
   let _ : SeminormedRing R := SeminormedRing.induced R S f
-  { norm_mul x y := (congr_arg norm (map_mul f x y)).trans <| norm_mul _ _ }
+  { norm_mul x y := congr(norm $(map_mul f x y)).trans <| norm_mul _ _ }
 
 end Induced
 

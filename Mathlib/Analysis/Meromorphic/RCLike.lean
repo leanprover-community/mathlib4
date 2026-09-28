@@ -6,7 +6,6 @@ Authors: Stefan Kebekus
 module
 
 public import Mathlib.Analysis.Meromorphic.Order
-public import Mathlib.Analysis.RCLike.Basic
 
 /-!
 # Meromorphic Functions over the Real and Complex Numbers

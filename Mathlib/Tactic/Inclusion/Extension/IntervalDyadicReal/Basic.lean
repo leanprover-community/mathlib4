@@ -58,6 +58,11 @@ theorem neg_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) : -x ∈ I.neg :=
   Interval.neg_mem Dyadic.toRealAddMonoidHom hx
 
 @[inclusion_op interval_dyadic_real]
+theorem abs_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) : |x| ∈ I.abs :=
+  Interval.abs_mem Dyadic.toRealOrderEmbedding (map_zero Dyadic.toRealAddMonoidHom)
+    (map_neg Dyadic.toRealAddMonoidHom) hx
+
+@[inclusion_op interval_dyadic_real]
 theorem sub_mem {x y : ℝ} {I J : Interval Dyadic} (hx : x ∈ I) (hy : y ∈ J) : x - y ∈ I.sub J :=
   Interval.sub_mem Dyadic.toRealAddMonoidHom hx hy
 

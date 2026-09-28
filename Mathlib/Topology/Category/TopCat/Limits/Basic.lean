@@ -8,7 +8,6 @@ module
 public import Mathlib.Topology.Category.TopCat.Adjunctions
 public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 public import Mathlib.CategoryTheory.Adjunction.Limits
 
 /-!

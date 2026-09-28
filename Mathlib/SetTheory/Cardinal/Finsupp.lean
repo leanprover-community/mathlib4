@@ -6,7 +6,6 @@ Authors: Violeta Hernández Palacios, Junyan Xu
 module
 
 public import Mathlib.SetTheory.Cardinal.Arithmetic
-public import Mathlib.Data.Finsupp.Basic
 public import Mathlib.Data.Finsupp.Multiset
 
 /-! # Results on the cardinality of finitely supported functions and multisets. -/

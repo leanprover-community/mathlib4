@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.TrivSqZeroExt.Basic
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
-public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
+import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 
 /-!
@@ -104,7 +104,7 @@ instance [Mul R] [Add M] [SMul R M] [SMul Rᵐᵒᵖ M] [ContinuousMul R] [Conti
     [ContinuousSMul Rᵐᵒᵖ M] [ContinuousAdd M] : ContinuousMul (tsze R M) :=
   ⟨((continuous_fst.comp continuous_fst).mul (continuous_fst.comp continuous_snd)).prodMk <|
       ((continuous_fst.comp continuous_fst).smul (continuous_snd.comp continuous_snd)).add
-        ((MulOpposite.continuous_op.comp <| continuous_fst.comp <| continuous_snd).smul
+        ((MulOpposite.continuous_op.comp <| continuous_fst.comp continuous_snd).smul
           (continuous_snd.comp continuous_fst))⟩
 
 instance [Neg R] [Neg M] [ContinuousNeg R] [ContinuousNeg M] : ContinuousNeg (tsze R M) :=

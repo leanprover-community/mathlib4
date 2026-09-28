@@ -121,7 +121,7 @@ lemma truncLE'Map_f_eq {i : ι} (hi : ¬ e.BoundaryLE i) {i' : ι'} (h : e.f i =
 variable (K) in
 @[simp]
 lemma truncLE'Map_id : truncLE'Map (𝟙 K) e = 𝟙 _ :=
-  (unopFunctor C c.symm).congr_map (congr_arg Quiver.Hom.op (K.op.truncGE'Map_id e.op))
+  (unopFunctor C c.symm).congr_map congr($(K.op.truncGE'Map_id e.op).op)
 
 @[reassoc, simp]
 lemma truncLE'Map_comp : truncLE'Map (φ ≫ φ') e = truncLE'Map φ e ≫ truncLE'Map φ' e :=
@@ -137,7 +137,7 @@ noncomputable def truncLEMap : K.truncLE e ⟶ L.truncLE e :=
 variable (K) in
 @[simp]
 lemma truncLEMap_id : truncLEMap (𝟙 K) e = 𝟙 _ :=
-  (unopFunctor C c'.symm).congr_map (congr_arg Quiver.Hom.op (K.op.truncGEMap_id e.op))
+  (unopFunctor C c'.symm).congr_map congr($(K.op.truncGEMap_id e.op).op)
 
 @[reassoc, simp]
 lemma truncLEMap_comp : truncLEMap (φ ≫ φ') e = truncLEMap φ e ≫ truncLEMap φ' e :=

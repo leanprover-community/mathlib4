@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.BigOperators
+import Mathlib.Algebra.Group.Submonoid.BigOperators
 public import Mathlib.Algebra.Group.Submonoid.Membership
 public import Mathlib.Data.DFinsupp.BigOperators
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic

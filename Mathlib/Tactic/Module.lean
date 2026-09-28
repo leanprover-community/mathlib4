@@ -8,7 +8,6 @@ module
 public meta import Lean.Meta.Tactic.NormCast
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Tactic.Ring
-public import Mathlib.Util.AtomM
 public meta import Mathlib.Algebra.Algebra.Defs
 
 /-! # A tactic for normalization over modules
@@ -30,7 +29,7 @@ semirings which appear in the expression: for any two semirings `R` and `S` whic
 either `Algebra R S` or `Algebra S R`.
 -/
 
-public meta section
+public section
 
 open Lean hiding Module
 open Meta Elab Qq Mathlib.Tactic List
@@ -238,7 +237,7 @@ theorem eval_algebraMap [CommSemiring S] [Semiring R] [Algebra S R] [AddMonoid M
 end NF
 end
 
-public meta section
+meta section
 variable {u v : Level}
 
 /-! ### Lists of expressions representing scalars and vectors, and operations on such lists -/

@@ -5,10 +5,10 @@ Authors: Colin Jones
 -/
 module
 
-public import Mathlib.Algebra.Order.Field.Basic
-public import Mathlib.Algebra.Ring.GeomSum
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.NumberTheory.Divisors
-public import Mathlib.Tactic.NormNum.Prime
+import Mathlib.Tactic.NormNum.Prime
 public import Mathlib.Tactic.NormNum
 
 /-!

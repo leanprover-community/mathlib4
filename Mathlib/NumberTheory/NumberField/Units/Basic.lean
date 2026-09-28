@@ -7,7 +7,6 @@ module
 
 public import Mathlib.GroupTheory.Torsion
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
-public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 public import Mathlib.RingTheory.RootsOfUnity.Complex
 
 /-!
@@ -138,7 +137,7 @@ variable {K} in
 theorem sum_mult_mul_log [NumberField K] (x : (𝓞 K)ˣ) :
     ∑ w : InfinitePlace K, w.mult * Real.log (w x) = 0 := by
   simpa [Units.norm, Real.log_prod, Real.log_pow] using
-    congr_arg Real.log (prod_eq_abs_norm (x : K))
+    congr(Real.log $(prod_eq_abs_norm (x : K)))
 
 section torsion
 
