@@ -8,9 +8,11 @@ module
 import Mathlib.Algebra.Order.Field.Pi
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Analysis.Normed.Field.Basic
-public import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Topology.Algebra.Order.UpperLower
 import Mathlib.Topology.MetricSpace.Sequences
+
+public import Mathlib.Analysis.Normed.Group.Pointwise
+public import Mathlib.Analysis.Normed.Order.Lattice
 
 /-!
 # Upper/lower/order-connected sets in normed groups
@@ -21,13 +23,6 @@ set).
 
 We also prove lemmas specific to `ℝⁿ`. Those are helpful to prove that order-connected sets in `ℝⁿ`
 are measurable.
-
-## TODO
-
-Is there a way to generalise `IsClosed.upperClosure_pi`/`IsClosed.lowerClosure_pi` so that they also
-apply to `ℝ`, `ℝ × ℝ`, `EuclideanSpace ι ℝ`? `_pi` has been appended to their names to disambiguate
-from the other possible lemmas, but we will want there to be a single set of lemmas for all
-situations.
 -/
 
 public section
