@@ -109,10 +109,9 @@ theorem isNat_fib : {x nx z : ℕ} → IsNat x nx → Nat.fib nx = z → IsNat (
 /-- Evaluates the `Nat.fib` function.
 
 This simproc is registered in `simp` and `seval`, so `simp` and `grind` can evaluate `Nat.fib`
-on numerals. Its underlying `norm_num` extension is `evalNatFib.normNumExt`.
-`proveNatFib` uses fast doubling, with logarithmically many big-integer
-multiplications. Their cost grows with the output size, so large inputs can still be expensive,
-as can normalizing the operand before evaluating `Nat.fib`. -/
+on numerals. It uses fast doubling, with logarithmically many big-integer multiplications. Their
+cost grows with the output size, so large inputs may still be expensive, as might normalizing the
+argument before evaluating `Nat.fib`. -/
 norm_num_simproc [simp, seval] evalNatFib (Nat.fib _) where
   eval {_ _} e := do
     let .app _ (x : Q(ℕ)) ← Meta.whnfR e | failure

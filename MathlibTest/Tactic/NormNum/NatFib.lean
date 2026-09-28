@@ -41,4 +41,16 @@ example : Nat.fib 12 = 144 := by
   fail_if_success simp only [evalFibNoPost]
   norm_num
 
+-- `pre` cannot be honoured by a `post` simproc, so it is rejected rather than ignored.
+/-- error: `norm_num_simproc` generates a `post` simproc, so the `pre` field has no effect on it. Declare the extension with `@[norm_num]` and write the simproc separately if you need one in `simp`'s pre phase. -/
+#guard_msgs in
+norm_num_simproc [simp] fibBadPre (Nat.fib _) where
+  pre := false
+  eval {_ _} e := failure
+
+-- The same applies to the anonymous-constructor form.
+/-- error: `norm_num_simproc` generates a `post` simproc, so the `pre` field has no effect on it. Declare the extension with `@[norm_num]` and write the simproc separately if you need one in `simp`'s pre phase. -/
+#guard_msgs in
+norm_num_simproc [simp] fibBadPre' (Nat.fib _) := { pre := false, eval := fun _ => failure }
+
 end phases

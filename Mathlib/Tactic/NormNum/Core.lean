@@ -263,7 +263,9 @@ sets.
 
 All `norm_num_simproc`s are registered as ordinary `post` simprocs, since numerical evaluation
 wants its operands already normalized. An extension declaring `post := false` therefore produces a
-simproc that never fires, while `pre` only affects `norm_num`'s own traversal.
+simproc that never fires. Setting `pre` is an error: there is no phase for it to select here, so
+declare the extension with `@[norm_num]` and write the simproc separately if you need one in
+`simp`'s pre phase.
 
 Both declarations are generated as `public meta`, so the command does not need to be used inside a
 `public meta section`. -/
@@ -273,6 +275,13 @@ syntax (docComment)? Parser.Term.attrKind "norm_num_simproc" (" [" ident,* "]")?
 macro_rules
   | `($[$doc?:docComment]? $kind:attrKind norm_num_simproc%$tk
       $[[$sets:ident,*]]? $name:ident ($pat:term) $val:declVal) => withRef tk do
+    -- The generated simproc is always a `post` simproc, so there is no phase for `pre` to select.
+    -- Rather than silently ignore it, refuse it.
+    if let some fld := val.raw.find? fun s =>
+        s.isOfKind ``Parser.Term.structInstField && s[0][0].getId.eraseMacroScopes == `pre then
+      Macro.throwErrorAt fld "`norm_num_simproc` generates a `post` simproc, so the `pre` field \
+        has no effect on it. Declare the extension with `@[norm_num]` and write the simproc \
+        separately if you need one in `simp`'s pre phase."
     let extName := mkIdentFrom name (name.getId ++ `normNumExt)
     let sets := sets.elim #[mkIdentFrom tk `simp] (·.getElems)
     -- The following is patterned off of the private `mkAttributeCmds` in `Init.Simproc`.
