@@ -195,20 +195,16 @@ theorem Sublist.orderedInsert_sublist [IsTrans α r] {as bs} (x) (hs : as <+ bs)
       · simp_all
       · exact .cons_cons _ <| orderedInsert_sublist x ‹as <+ bs› hb.of_cons
 
-omit s in -- `s` has type `β → β → Prop`, but we need `α → α → Prop`
 omit [DecidableRel r] in
-/-- If a list `l` satisfies a pairwise relation `r`, then `List.orderedInsert l s a` will preserve
-that relation if `s` satisfies `∀ x y : α, (s y x → s x y) → r x y`. -/
+/-- If a list `l` satisfies a pairwise relation `r`, then `l.orderedInsert s a` will preserve that
+relation if `s` satisfies `∀ x y : α, (s y x → s x y) → r x y`. -/
 theorem Pairwise.orderedInsert'
     {s : α → α → Prop}
     [DecidableRel s] [IsTrans α r]
     {l : List α} {a : α}
     (h : ∀ x y : α, (s y x → s x y) → r x y) :
     Pairwise r l ↔ Pairwise r (l.orderedInsert s a) := by
-  constructor
-  · intro h'
-    cases h' <;> grind [IsTrans, cons, mem_orderedInsert s, orderedInsert' h]
-  · exact sublist (sublist_orderedInsert a l)
+  induction l <;> grind [mem_orderedInsert s, pairwise_cons]
 
 section TotalAndTransitive
 
@@ -631,11 +627,11 @@ section OrderedInsert
 
 variable [DecidableLT α] [@Std.Total α LE.le]
 
-theorem sortedLE_orderedInsert_LT {a : α} :
+theorem sortedLE_orderedInsert_lt {a : α} :
     SortedLE l ↔ SortedLE (l.orderedInsert (· < ·) a) := by
   grind [Pairwise.orderedInsert', lt_iff_le_not_ge, Std.Total]
 
-theorem sortedGE_orderedInsert_GT {a : α} :
+theorem sortedGE_orderedInsert_gt {a : α} :
     SortedGE l ↔ SortedGE (l.orderedInsert (· > ·) a) := by
   grind [Pairwise.orderedInsert', lt_iff_le_not_ge, Std.Total]
 
