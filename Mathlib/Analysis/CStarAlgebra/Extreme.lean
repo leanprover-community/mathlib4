@@ -25,7 +25,7 @@ This file contains results on the extreme points of the closed unit ball in (uni
 * `isStarProjection_iff_mem_extremePoints_setOfPred_nonneg_inter_unitClosedBall`: the star
   projections in a C⋆-algebra are exactly the extreme points of the nonnegative closed unit ball.
 
-## To Do
+## TODO
 
 + Prove that the conclusion of `eq_zero_of_mem_extremePoints_unitClosedBall` is in fact also
   sufficient to conclude that `x` is an extreme point of the closed unit ball. Consequently,
@@ -161,7 +161,7 @@ private theorem CStarAlgebra.right_identity_of_forall_eq_zero ⦃x : A⦄
 
 /-- When `x` is an extreme point of the closed unit ball in an a priori non-unital C⋆-algebra,
 then `star x * x + x * star x - x * star x * star x * x` is a right identity.
-(See also `CStarAlgebra.partial_isometry_mul` for the left identity.) -/
+(See also `CStarAlgebra.left_identity_of_mem_extremePoints` for the left identity.) -/
 theorem CStarAlgebra.right_identity_of_mem_extremePoints {x : A}
     (hx : x ∈ extremePoints ℝ (closedBall 0 1)) (a : A) :
     a * (star x * x + x * star x - x * star x * (star x * x)) = a :=
@@ -170,7 +170,7 @@ theorem CStarAlgebra.right_identity_of_mem_extremePoints {x : A}
 
 /-- When `x` is an extreme point of the closed unit ball in an a priori non-unital C⋆-algebra,
 then `star x * x + x * star x - x * star x * star x * x` is a left identity.
-(See also `CStarAlgebra.mul_partial_isometry` for the right identity.) -/
+(See also `CStarAlgebra.right_identity_of_mem_extremePoints` for the right identity.) -/
 theorem CStarAlgebra.left_identity_of_mem_extremePoints {x : A}
     (hx : x ∈ extremePoints ℝ (closedBall 0 1)) (a : A) :
     (star x * x + x * star x - x * star x * (star x * x)) * a = a := by
@@ -230,7 +230,7 @@ lemma CStarAlgebra.one_mem_extremePoints_unitClosedBall (A : Type*) [CStarAlgebr
   rw [← norm_eq_zero, ← sq_eq_zero_iff, ← IsSelfAdjoint.norm_mul_self (ℑ x).2, ← sq, norm_eq_zero]
   exact le_antisymm (by simpa using hx) (ℑ x).2.sq_nonneg
 
-lemma Unitary.coe_mem_extremePoints_unitClosedBall {A : Type*} [CStarAlgebra A] {u : A}
+lemma unitary_mem_extremePoints_unitClosedBall {A : Type*} [CStarAlgebra A] {u : A}
     (hu : u ∈ unitary A) : u ∈ extremePoints ℝ (closedBall 0 1) := by
   rw [← map_zero (mulLeft ℝ A ⟨u, hu⟩), ← LinearIsometryEquiv.image_closedBall,
     ← image_extremePoints]
