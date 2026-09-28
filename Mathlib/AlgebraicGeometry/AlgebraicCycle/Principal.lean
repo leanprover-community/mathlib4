@@ -42,7 +42,7 @@ def divisor [IsIntegral X] [IsLocallyNoetherian X] (f : X.functionField) :
     · exact ⟨⊤, Filter.univ_mem, by simp [hf]⟩
     obtain ⟨U, hU, g, hUne, hgf, hg⟩ := exists_isUnit_germ_eq X f hf
     obtain ⟨W, hW, hfin⟩ := exists_mem_nhds_finite_coheight_one_of_closure_ne_univ
-      (Z := U.carrierᶜ) (by
+      (by
         rw [U.2.isClosed_compl.closure_eq]
         exact compl_ne_univ.mpr ((Scheme.Opens.nonempty_iff _).mp hUne)) z
     refine ⟨W, hW, hfin.subset (fun x ⟨hxW, hxsup⟩ ↦ ⟨hxW, fun a ↦ hxsup ?_, ?_⟩)⟩
