@@ -175,7 +175,7 @@ theorem IsMultiplicative.prodPrimeFactors_one_sub [CommRing R]
         Nat.primeFactors_prod_primeFactors]
       exact Nat.primeFactors_mono (Nat.mem_divisors.mp hd).1 hn
 
-@[deprecated IsMultiplicative.prodPrimeFactors_one_sub (since := "2026-09-14")]
+@[deprecated IsMultiplicative.prodPrimeFactors_one_sub +typeChanged (since := "2026-09-14")]
 theorem IsMultiplicative.prodPrimeFactors_one_sub_of_squarefree [CommRing R]
     (f : ArithmeticFunction R) (hf : f.IsMultiplicative) {n : ℕ} (hn : Squarefree n) :
     ∏ p ∈ n.primeFactors, (1 - f p) = ∑ d ∈ n.divisors, μ d * f d :=
