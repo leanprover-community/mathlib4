@@ -80,6 +80,16 @@ section Group
 
 variable [Group G] [IsMulTorsionFree G] {n : ℤ} {a b : G}
 
+@[to_additive]
+lemma Commute.eq_of_zpow_eq_zpow (hab : Commute a b) (hn : n ≠ 0) (habn : a ^ n = b ^ n) : a = b := by
+  cases n
+  · exact hab.eq_of_pow_eq_pow (by simpa using hn) (by simpa using habn)
+  · exact hab.eq_of_pow_eq_pow (Nat.add_one_ne_zero _) (by simpa using habn)
+
+@[to_additive AddCommute.zsmul_right_inj]
+lemma Commute.zpow_left_inj (hab : Commute a b) (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
+  ⟨hab.eq_of_zpow_eq_zpow hn, congrArg (· ^ n)⟩
+
 @[to_additive IsAddTorsionFree.zsmul_eq_zero_iff_right]
 lemma IsMulTorsionFree.zpow_eq_one_iff_left (hn : n ≠ 0) : a ^ n = 1 ↔ a = 1 := by
   cases n <;> simp_all
@@ -106,13 +116,12 @@ section CommGroup
 variable [CommGroup G] [IsMulTorsionFree G] {n : ℤ} {a b : G}
 
 @[to_additive zsmul_right_injective]
-lemma zpow_left_injective : ∀ {n : ℤ}, n ≠ 0 → Injective fun a : G ↦ a ^ n
-  | (n + 1 : ℕ), _ => by
-    simpa [← Int.natCast_one, ← Int.natCast_add] using! pow_left_injective n.succ_ne_zero
-  | .negSucc n, _ => by simpa using! inv_injective.comp (pow_left_injective n.succ_ne_zero)
+lemma zpow_left_injective (hn : n ≠ 0) : Injective fun a : G ↦ a ^ n :=
+  fun a b ↦ (Commute.all a b).eq_of_zpow_eq_zpow hn
 
 @[to_additive zsmul_right_inj]
-lemma zpow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (zpow_left_injective hn).eq_iff
+lemma zpow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
+  (zpow_left_injective hn).eq_iff
 
 /-- Alias of `zpow_left_inj`, for ease of discovery alongside `zsmul_le_zsmul_iff'` and
 `zsmul_lt_zsmul_iff'`. -/
