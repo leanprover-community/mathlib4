@@ -5,7 +5,6 @@ Authors: Amelia Livingston, Bryan Gin-ge Chen
 -/
 module
 
-public import Mathlib.Logic.Relation
 public import Mathlib.Order.CompleteLattice.Basic
 public import Mathlib.Order.GaloisConnection.Basic
 
