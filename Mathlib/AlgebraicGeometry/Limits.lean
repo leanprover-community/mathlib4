@@ -5,12 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 public import Mathlib.AlgebraicGeometry.Pullbacks
-public import Mathlib.AlgebraicGeometry.AffineScheme
-public import Mathlib.CategoryTheory.Limits.MonoCoprod
-public import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
-public import Mathlib.Tactic.SuppressCompilation
 public import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects -- shake: keep
 -- This import adds an instance which, despite failing to trigger,
 -- is necessary for some typeclass syntheses in this file to succeed.
@@ -228,7 +223,8 @@ instance : HasFiniteCoproducts Scheme.{u} where
   out := inferInstance
 
 instance : MonoCoprod Scheme.{u} :=
-  .mk' fun X Y ↦ ⟨.mk coprod.inl coprod.inr, coprodIsCoprod X Y, inferInstanceAs <| Mono coprod.inl⟩
+  .mk' fun X Y ↦
+    ⟨.mk coprod.inl coprod.inr, coprodIsCoprod X Y, inferInstanceAs <| Mono coprod.inl⟩
 
 /-- The cover of `∐ X` by the `Xᵢ`. -/
 @[simps!]
@@ -608,7 +604,7 @@ instance (i) (R : ι → Type _) [∀ i, CommRing (R i)] :
     · intro x y
       constructor
       · intro e; ext j; by_cases h : j = i <;> aesop
-      · intro e; simpa using! congr_fun e i
+      · intro e; simpa using! congr($e i)
     · exact Function.surjective_eval _
   exact IsOpenImmersion.of_isLocalization (Function.update 0 i 1)
 

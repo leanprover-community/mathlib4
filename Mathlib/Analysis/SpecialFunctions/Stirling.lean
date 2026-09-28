@@ -6,7 +6,7 @@ Authors: Moritz Firsching, Fabian Kruse, Nikolas Kuhn
 module
 
 public import Mathlib.Analysis.Real.Pi.Wallis
-public import Mathlib.Tactic.AdaptationNote
+import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Stirling's formula
@@ -117,6 +117,7 @@ theorem log_stirlingSeq_sdiff_le_geo_sum (n : ℕ) :
     exact inv_le_one_of_one_le₀ (le_add_of_nonneg_left <| by positivity)
   exact hasSum_le hab (log_stirlingSeq_sdiff_hasSum n) g
 
+set_option linter.deprecated.deprecatedTarget false in
 @[deprecated (since := "2026-06-03")]
 alias log_stirlingSeq_diff_le_geo_sum := log_stirlingSeq_sdiff_le_geo_sum
 

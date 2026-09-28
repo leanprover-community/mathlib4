@@ -100,7 +100,9 @@ end CommSimproc
 
 /-- An identity function with its main argument implicit. This will be printed as `hidden` even
 if it is applied to a large term, so it can be used for elision,
-as done in the `elide` and `unelide` tactics. -/
+as was done in the mathlib3 tactics `elide` and `unelide`. -/
+@[deprecated "use the builtin pretty-printer elision (`⋯`, see `pp.deepTerms`) instead"
+  (since := "2026-09-13")]
 abbrev hidden {α : Sort*} {a : α} := a
 
 variable {α : Sort*}
@@ -310,6 +312,12 @@ theorem xor_comm (a b : Prop) : Xor a b = Xor b a := by grind
 
 instance : Std.Commutative Xor := ⟨xor_comm⟩
 
+instance : Std.Symm Xor where
+  symm _ _ := .symm
+
+instance : Std.Irrefl Xor where
+  irrefl _ h := and_not_self <| h.elim id id
+
 @[simp] theorem xor_self (a : Prop) : Xor a a = False := by grind
 
 @[simp] theorem xor_not_left : Xor (¬a) b ↔ (a ↔ b) := by grind
@@ -328,6 +336,9 @@ protected alias Xor'.or := Xor.or
 alias Iff.and := and_congr
 alias ⟨And.rotate, _⟩ := and_rotate
 
+instance : Std.Symm And where
+  symm _ _ := .symm
+
 theorem and_symm_right {α : Sort*} (a b : α) (p : Prop) : p ∧ a = b ↔ p ∧ b = a := by simp [eq_comm]
 theorem and_symm_left {α : Sort*} (a b : α) (p : Prop) : a = b ∧ p ↔ b = a ∧ p := by simp [eq_comm]
 
@@ -335,6 +346,9 @@ theorem and_symm_left {α : Sort*} (a b : α) (p : Prop) : a = b ∧ p ↔ b = a
 
 alias Iff.or := or_congr
 alias ⟨Or.rotate, _⟩ := or_rotate
+
+instance : Std.Symm Or where
+  symm _ _ := .symm
 
 theorem Or.elim3 {c d : Prop} (h : a ∨ b ∨ c) (ha : a → d) (hb : b → d) (hc : c → d) : d :=
   Or.elim h ha fun h₂ ↦ Or.elim h₂ hb hc
@@ -692,12 +706,16 @@ theorem Exists.fst {b : Prop} {p : b → Prop} : Exists p → b
 theorem Exists.snd {b : Prop} {p : b → Prop} : ∀ h : Exists p, p h.fst
   | ⟨_, h⟩ => h
 
-theorem Prop.exists_iff {p : Prop → Prop} : (∃ h, p h) ↔ p False ∨ p True :=
+theorem Prop.exists {p : Prop → Prop} : (∃ h, p h) ↔ p False ∨ p True :=
   ⟨fun ⟨h₁, h₂⟩ ↦ by_cases (fun H : h₁ ↦ .inr <| by simpa only [H] using h₂)
     (fun H ↦ .inl <| by simpa only [H] using h₂), fun h ↦ h.elim (.intro _) (.intro _)⟩
 
-theorem Prop.forall_iff {p : Prop → Prop} : (∀ h, p h) ↔ p False ∧ p True :=
+@[deprecated (since := "2026-09-02")] alias Prop.exists_iff := Prop.exists
+
+theorem Prop.forall {p : Prop → Prop} : (∀ h, p h) ↔ p False ∧ p True :=
   ⟨fun H ↦ ⟨H _, H _⟩, fun ⟨h₁, h₂⟩ h ↦ by by_cases H : h <;> simpa only [H]⟩
+
+@[deprecated (since := "2026-09-02")] alias Prop.forall_iff := Prop.forall
 
 theorem exists_iff_of_forall {p : Prop} {q : p → Prop} (h : ∀ h, q h) : (∃ h, q h) ↔ p :=
   ⟨Exists.fst, fun H ↦ ⟨H, h H⟩⟩

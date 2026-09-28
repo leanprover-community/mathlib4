@@ -5,8 +5,6 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-public import Mathlib.RingTheory.Ideal.Over
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 public import Mathlib.RingTheory.Localization.Basic
 public import Mathlib.RingTheory.Localization.Ideal
@@ -210,7 +208,7 @@ it is the unique maximal ideal given by the local ring structure `AtPrime.isLoca
 theorem AtPrime.map_eq_maximalIdeal :
     Ideal.map (algebraMap R (Localization.AtPrime I)) I =
       IsLocalRing.maximalIdeal (Localization I.primeCompl) := by
-  convert! congr_arg (Ideal.map _) AtPrime.under_maximalIdeal.symm
+  convert! congr(Ideal.map _ $AtPrime.under_maximalIdeal.symm)
   rw [map_under I.primeCompl]
 
 lemma AtPrime.eq_maximalIdeal_iff_under_eq {J : Ideal (Localization.AtPrime I)} :
@@ -530,7 +528,7 @@ theorem isPrime_map_of_liesOver [P.IsPrime] [P.LiesOver p] : (P.map (algebraMap 
   isPrime_of_isPrime_disjoint _ _ _ inferInstance (Ideal.disjoint_primeCompl_of_liesOver P p)
 
 theorem map_eq_maximalIdeal : p.map (algebraMap R Rₚ) = maximalIdeal Rₚ := by
-  convert! congr_arg (Ideal.map (algebraMap R Rₚ)) (under_maximalIdeal Rₚ p).symm
+  convert! congr(Ideal.map (algebraMap R Rₚ) $((under_maximalIdeal Rₚ p).symm))
   rw [map_under p.primeCompl]
 
 instance isMaximal_map : (p.map (algebraMap R Rₚ)).IsMaximal := by
@@ -568,7 +566,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 noncomputable
 def equivQuotMaximalIdealPow (n : ℕ) : (R ⧸ p ^ n) ≃ₐ[R] Rₚ ⧸ IsLocalRing.maximalIdeal Rₚ ^ n := by
   refine AlgEquiv.ofAlgHom (Ideal.Quotient.liftₐ _ (Algebra.ofId _ _) ?_) ?_ ?_ ?_
-  · simp_rw [ofId_apply, ← RingHom.mem_ker, ← SetLike.le_def]
+  · simp_rw [ofId_apply, ← RingHom.mem_ker, ← IsConcreteLE.le_iff]
     rw [← Quotient.mk_comp_algebraMap, ← RingHom.comap_ker, mk_ker, ← under_def,
       under_maximalIdeal_pow p]
   · refine Ideal.Quotient.liftₐ _
@@ -712,6 +710,6 @@ end isomorphisms
 lemma map_eq_top_of_not_le {I : Ideal R} {p : Ideal R} [p.IsPrime] [IsLocalization.AtPrime S p]
     (hle : ¬ I ≤ p) : Ideal.map (algebraMap R S) I = ⊤ := by
   apply IsLocalization.map_eq_top_of_not_subset p.primeCompl
-  simpa [SetLike.le_def, Set.not_subset_iff_exists_mem_notMem] using hle
+  simpa [IsConcreteLE.le_iff, Set.not_subset_iff_exists_mem_notMem] using hle
 
 end IsLocalization.AtPrime

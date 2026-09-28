@@ -6,7 +6,6 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Data.Finset.Powerset
-public import Mathlib.Data.Fintype.Defs
 public import Mathlib.Data.List.Permutation
 
 /-!
