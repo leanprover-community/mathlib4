@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Data.EReal.Operations
+import Mathlib.Data.EReal.Operations
 public import Mathlib.Topology.MetricSpace.Bounded
 public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 

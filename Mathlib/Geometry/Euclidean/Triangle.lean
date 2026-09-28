@@ -5,12 +5,10 @@ Authors: Joseph Myers, Manuel Candales
 -/
 module
 
-public import Mathlib.Analysis.Normed.Affine.AddTorsor
 public import Mathlib.Geometry.Euclidean.Altitude
 public import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
-public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
-public import Mathlib.Tactic.IntervalCases
 
+import Mathlib.Analysis.Normed.Affine.AddTorsor
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Projection
 
 /-!

@@ -5,7 +5,7 @@ Authors: Amelia Livingston, Bryan Gin-ge Chen, Patrick Massot, Wen Yang, Johan C
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Range
+import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Order.Partition.Finpartition
 
 /-!

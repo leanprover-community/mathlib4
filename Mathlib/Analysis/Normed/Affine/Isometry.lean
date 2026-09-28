@@ -9,9 +9,7 @@ public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Operator.LinearIsometry
-public import Mathlib.LinearAlgebra.AffineSpace.Restrict
 public import Mathlib.Topology.Algebra.AffineSubspace
-public import Mathlib.Topology.Algebra.ContinuousAffineEquiv
 
 /-!
 # Affine isometries
@@ -847,7 +845,7 @@ noncomputable def isometryEquivMap (φ : P₁' →ᵃⁱ[𝕜] P₂) (E : Affine
 @[simp]
 theorem isometryEquivMap.apply_symm_apply {E : AffineSubspace 𝕜 P₁'} [Nonempty E]
     {φ : P₁' →ᵃⁱ[𝕜] P₂} (x : E.map φ.toAffineMap) : φ ((E.isometryEquivMap φ).symm x) = x :=
-  congr_arg Subtype.val <| (E.isometryEquivMap φ).apply_symm_apply _
+  congr($((E.isometryEquivMap φ).apply_symm_apply _).val)
 
 @[simp]
 theorem isometryEquivMap.coe_apply (φ : P₁' →ᵃⁱ[𝕜] P₂) (E : AffineSubspace 𝕜 P₁') [Nonempty E]
