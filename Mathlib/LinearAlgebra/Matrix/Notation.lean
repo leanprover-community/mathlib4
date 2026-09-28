@@ -5,10 +5,7 @@ Authors: Anne Baanen, Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Group.Fin.Tuple
-public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.LinearAlgebra.Matrix.RowCol
-public import Mathlib.Tactic.FinCases
 public import Mathlib.Algebra.BigOperators.Fin
 public meta import Mathlib.LinearAlgebra.Matrix.Defs
 
@@ -415,7 +412,7 @@ theorem submatrix_cons_row (A : Matrix m' n' α) (i : m') (row : Fin m → m') (
 @[simp]
 theorem submatrix_updateRow_succAbove (A : Matrix (Fin m.succ) n' α) (v : n' → α) (f : o' → n')
     (i : Fin m.succ) : (A.updateRow i v).submatrix i.succAbove f = A.submatrix i.succAbove f :=
-  ext fun r s => (congr_fun (updateRow_ne (Fin.succAbove_ne i r) : _ = A _) (f s) :)
+  ext fun r s => congr($((updateRow_ne (Fin.succAbove_ne i r) : _ = A _)) (f s))
 
 /-- Updating a column then removing it is the same as removing it. -/
 @[simp]
