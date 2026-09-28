@@ -61,7 +61,7 @@ theorem iSup_lift_mk_le_mk
     (⨆ i, Cardinal.lift.{u} #(F i)) ≤ #(DirectLimit F (f · · ·)) := by
   refine ciSup_le' fun i ↦ ?_
   have := lift_mk_le_lift_mk_of_injective (h i)
-  simp [DirectLimit]
+  simp only [ge_iff_le]
   rwa [Cardinal.lift_umax, Cardinal.lift_id'.{v,u}] at this
 
 /-- If all canonical maps into a direct limit are injective and the supremum of the component
@@ -74,7 +74,7 @@ theorem mk_eq_iSup_lift_mk
   refine le_antisymm ?_ (iSup_lift_mk_le_mk f h)
   by_cases! hc : ℵ₀ ≤ ⨆ i, lift.{u, v} #(F i)
   · exact mk_le_of_aleph0_le f _ hc hι fun i ↦ le_ciSup Cardinal.bddAbove_of_small i
-  · haveI : Finite ι := mk_lt_aleph0_iff.mp (lift_lt_aleph0.mp (hι.trans_lt hc))
+  · have : Finite ι := mk_lt_aleph0_iff.mp (lift_lt_aleph0.mp (hι.trans_lt hc))
     cases isEmpty_or_nonempty ι with
     | inl hle =>
       simp
