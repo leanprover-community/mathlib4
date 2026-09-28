@@ -43,7 +43,7 @@ protected def prod :
 /-- The equivalence obtained by interchanging the two bases consumed by `LieAlgebra.Basis.prod`. -/
 def prodSymmEquiv : prod eι.symm b₂ b₁ ≃ₗ⁅R⁆ b₁.prod eι b₂ :=
   have : (prod eι.symm b₂ b₁).map (LieEquiv.prodComm R L₂ L₁) = b₁.prod eι b₂ := by
-    rw [prod, prod, map_lieSpan]; congr; ext; aesop
+    rw [prod, prod, map_lieSpan]; congr; ext; simp; grind
   (LieEquiv.lieSubalgebraMap (prod eι.symm b₂ b₁) (LieEquiv.prodComm _ _ _)).trans
     (LieEquiv.ofEq _ _ <| by simpa)
 
@@ -68,14 +68,16 @@ def prodCartan :
 open Finsupp in
 lemma prodCartanEquiv_aux :
     InjOn (LinearMap.fst R L₁ L₂) (span R {(b₁.h i, b₂.h (eι i)) | i : ι₁}) := by
-  suffices ∀ y, (∃ l : ι₁ →₀ R,
-      (l.linearCombination R fun i ↦ (b₁.h i, b₂.h (eι i))) = (0, y)) → y = 0 by
+  suffices ∀ y (l : ι₁ →₀ R),
+      (l.linearCombination R fun i ↦ (b₁.h i, b₂.h (eι i))) = (0, y) → y = 0 by
     have aux : {(b₁.h i, b₂.h (eι i)) | i : ι₁} = (fun i : ι₁ ↦ (b₁.h i, b₂.h (eι i))) '' univ := by
       ext; simp
     simp_rw [← LinearMap.disjoint_ker_iff_injOn, LinearMap.disjoint_ker, aux,
       mem_span_image_iff_linearCombination]
-    aesop
-  intro y ⟨f, hf⟩
+    rintro ⟨_, y⟩ ⟨a, _⟩ rfl
+    specialize this y a
+    simp [*]
+  intro y f hf
   suffices linearCombination R b₁.h f = 0 by
     rw [LinearMap.map_eq_zero_iff _ b₁.linInd] at this
     aesop (add simp Prod.ext_iff)
@@ -115,13 +117,13 @@ def prodCartanEquiv :
   e₀.trans <| e₁.trans <| e₂.trans <| e₃.trans <| e₄.trans e₅
 
 protected abbrev prodH (i : ι₁) : b₁.prod eι b₂ :=
-  ⟨(b₁.h i, b₂.h (eι i)), subset_lieSpan <| by aesop⟩
+  ⟨(b₁.h i, b₂.h (eι i)), subset_lieSpan <| by grind⟩
 
 protected abbrev prodE (i : ι₁) : b₁.prod eι b₂ :=
-  ⟨(b₁.e i, b₂.e (eι i)), subset_lieSpan <| by aesop⟩
+  ⟨(b₁.e i, b₂.e (eι i)), subset_lieSpan <| by grind⟩
 
 protected abbrev prodF (i : ι₁) : b₁.prod eι b₂ :=
-  ⟨(b₁.f i, b₂.f (eι i)), subset_lieSpan <| by aesop⟩
+  ⟨(b₁.f i, b₂.f (eι i)), subset_lieSpan <| by grind⟩
 
 lemma basisProd_aux :
     lieSpan R (prod eι b₁ b₂) (range (prodE eι b₁ b₂) ∪ range (prodF eι b₁ b₂)) = ⊤ := by
