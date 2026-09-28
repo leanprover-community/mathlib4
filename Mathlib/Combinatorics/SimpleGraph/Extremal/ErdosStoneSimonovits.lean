@@ -166,8 +166,10 @@ theorem filter.pi.exists_le_card_fiber (hr_pos : 0 < r) (ht'_pos : 0 < t')
     rw [card_powersetCard, K.card_mem_parts hp]
   apply exists_le_card_fiber_of_mul_le_card
   simp_rw [card_coe, hcard]
-  exact_mod_cast le_of_mul_le_mul_right (mul_le_card_filter_mul K hr_pos ht'_pos hδ (mod_cast hN))
-    (sub_pos.mpr (mod_cast ht_lt_t'))
+  refine Nat.le_of_mul_le_mul_right ?_ <| Nat.sub_pos_of_lt ht_lt_t'
+  rw [← Nat.cast_le (α := ℝ), Nat.cast_mul, Nat.cast_mul, Nat.cast_sub ht_lt_t'.le,
+    Nat.cast_mul, Nat.cast_sub ht_lt_t'.le]
+  exact_mod_cast mul_le_card_filter_mul K hr_pos ht'_pos hδ (mod_cast hN)
 
 end ErdosStone
 
@@ -226,8 +228,8 @@ public theorem eventually_completeEquipartiteGraph_isContained_of_minDegree
           card_prod, Fintype.card_fin, Fintype.card_fin, hr_eq_1, one_mul, Fintype.card_fin]
         apply hn.trans'
         exact_mod_cast calc (t' : ℝ)
-          _ ≤ t'.choose t ^ r * t + r * t' := le_add_of_nonneg_of_le (by positivity) <|
-              le_mul_of_one_le_left (by positivity) (mod_cast hr_pos)
+          _ ≤ r * t' := le_mul_of_one_le_left (by positivity) (mod_cast hr_pos)
+          _ ≤ t'.choose t ^ r * t + r * t' := le_add_of_nonneg_left (by positivity)
           _ ≤ (t'.choose t ^ r * t + r * t') * (t' - t) / (r * t' * ε - t) := by
             rw [mul_div_assoc, le_mul_iff_one_le_right (by positivity),
               one_le_div (sub_pos.mpr ht_lt_rt'ε), sub_le_sub_iff_right]
