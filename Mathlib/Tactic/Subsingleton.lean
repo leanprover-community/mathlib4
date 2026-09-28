@@ -38,7 +38,7 @@ def Lean.Meta.synthSubsingletonInst (ty : Expr)
     -- have universe parameters, which we need to let `synthInstance` assign to.
     let (insts', uss) ← Array.unzip <$> insts.mapM fun inst => do
       let us ← inst.2.paramNames.mapM fun _ => mkFreshLevelMVar
-      pure <| (inst.2.expr.instantiateLevelParamsArray inst.2.paramNames us, us)
+      pure (inst.2.expr.instantiateLevelParamsArray inst.2.paramNames us, us)
     withLocalDeclsD (insts'.map fun e => (`inst, fun _ => inferType e)) fun fvars => do
       withNewLocalInstances fvars 0 do
         let res ← instantiateMVars <| ← synthInstance <| ← mkSubsingleton ty

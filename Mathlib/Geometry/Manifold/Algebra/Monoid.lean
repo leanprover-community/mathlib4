@@ -6,7 +6,7 @@ Authors: Nicolò Cavalleri
 module
 
 public import Mathlib.Geometry.Manifold.ContMDiffMap
-public import Mathlib.Geometry.Manifold.MFDeriv.Basic
+import Mathlib.Geometry.Manifold.MFDeriv.Basic
 
 /-!
 # `C^n` monoid

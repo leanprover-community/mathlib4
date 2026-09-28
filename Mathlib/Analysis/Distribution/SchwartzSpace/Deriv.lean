@@ -6,10 +6,8 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
-public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
 public import Mathlib.Analysis.InnerProductSpace.Laplacian
-public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
 /-!
 # Derivatives of Schwartz functions

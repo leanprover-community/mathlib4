@@ -5,7 +5,6 @@ Authors: Christopher Hoskin
 -/
 module
 
-public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Algebra.Star.Basic
 
 /-!
@@ -370,7 +369,7 @@ nonrec def symm (e : A ≃⋆+* B) : B ≃⋆+* A :=
   { e.symm with
     map_star' := fun b => by
       simpa only [apply_inv_apply, inv_apply_apply] using!
-        congr_arg (inv e) (map_star e (inv e b)).symm }
+        congr(inv e $((map_star e (inv e b)).symm)) }
 
 @[simp]
 theorem toRingEquiv_symm (e : A ≃⋆+* B) :
