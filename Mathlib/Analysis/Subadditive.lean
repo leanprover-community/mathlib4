@@ -24,7 +24,9 @@ Define a bundled `SubadditiveHom`, use it.
 
 noncomputable section
 
-open Set Filter Topology
+open Set Filter
+
+open scoped Topology
 
 /-- A sequence is submultiplicative if it satisfies the inequality `u (m + n) ≤ u m * u n`
 for all `m, n`. -/
@@ -64,7 +66,7 @@ theorem eventually_rpow_lt_of_rpow_lt (hbdd : ∀ k, 0 ≤ u k) {L : ℝ} {n : �
   · replace hur (m : ℕ) (hrm : r ≤ m) : u m = 0 := by grind [le_antisymm, h r (m - r)]
     refine (eventually_ne_atTop 0).mono fun m hm ↦ ?_
     rw [hur n hrn.le, Real.zero_rpow (by simpa)] at hL
-    rwa [hur (n * m + r) (r.le_add_left (n * m)), Real.zero_rpow] at ⊢
+    rwa [hur (n * m + r) (r.le_add_left (n * m)), Real.zero_rpow]
     rw [ne_eq, inv_eq_zero, Nat.cast_eq_zero, Nat.add_eq_zero_iff, mul_eq_zero]
     grind
   have A : Tendsto (fun x : ℝ ↦ (u n * u r ^ x⁻¹) ^ (n + r / x)⁻¹) atTop _ :=

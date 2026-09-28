@@ -126,7 +126,7 @@ lemma bergelson [Infinite ι] {s : ι → Set α} (hs : ∀ i, MeasurableSet (s 
     (hr : ∀ i, r ≤ μ (s i)) :
     ∃ t : Set ι, t.Infinite ∧ ∀ ⦃u⦄, u ⊆ t → u.Finite → 0 < μ (⋂ i ∈ u, s i) := by
   obtain ⟨t, ht, h⟩ := bergelson' (fun n ↦ hs <| Infinite.natEmbedding _ n) hr₀ (fun n ↦ hr _)
-  refine ⟨_, ht.image <| (Infinite.natEmbedding _).injective.injOn, fun u hut hu ↦
+  refine ⟨_, ht.image (Infinite.natEmbedding _).injective.injOn, fun u hut hu ↦
     (h (preimage_subset_of_surjOn (Infinite.natEmbedding _).injective hut) <| hu.preimage
     (Embedding.injective _).injOn).trans_le <| measure_mono <| subset_iInter₂ fun i hi ↦ ?_⟩
   obtain ⟨n, -, rfl⟩ := hut hi

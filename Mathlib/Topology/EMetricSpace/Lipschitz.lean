@@ -6,7 +6,6 @@ Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudr
 module
 
 public import Mathlib.Algebra.Group.End
-public import Mathlib.Tactic.Finiteness
 public import Mathlib.Topology.EMetricSpace.Diam
 
 /-!
@@ -46,7 +45,9 @@ argument, and return `LipschitzWith (Real.toNNReal K) f`.
 
 universe u v w x
 
-open Filter Function Set Topology NNReal ENNReal
+open Filter Function Set NNReal ENNReal
+
+open scoped Topology
 
 variable {α : Type u} {β : Type v} {γ : Type w} {ι : Type x}
 

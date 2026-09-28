@@ -56,9 +56,8 @@ the domain is `WfDvdMonoid`. -/
 lemma WfDvdMonoid.of_setOfPred_isPrincipal_wellFoundedOn_gt [CommSemiring α] [IsDomain α]
     (h : {I : Ideal α | I.IsPrincipal}.WellFoundedOn (· > ·)) :
     WfDvdMonoid α := by
-  have : WellFounded (α := {I : Ideal α // I.IsPrincipal}) (· > ·) := h
-  constructor
-  convert! InvImage.wf (fun a => ⟨Ideal.span ({ a } : Set α), _, rfl⟩) this
+  have : WellFoundedGT {I : Ideal α // I.IsPrincipal} := h
+  convert! InvImage.wf (fun a => ⟨Ideal.span ({a} : Set α), _, rfl⟩) this
   ext
   exact Ideal.span_singleton_lt_span_singleton.symm
 

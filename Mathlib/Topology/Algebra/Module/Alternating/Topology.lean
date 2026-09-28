@@ -139,7 +139,7 @@ lemma isEmbedding_toContinuousMultilinearMap :
   isUniformEmbedding_toContinuousMultilinearMap.isEmbedding
 
 instance instIsTopologicalAddGroup : IsTopologicalAddGroup (E [⋀^ι]→L[𝕜] F) :=
-  isEmbedding_toContinuousMultilinearMap.topologicalAddGroup
+  isEmbedding_toContinuousMultilinearMap.isTopologicalAddGroup
     (toContinuousMultilinearMapLinear (R := ℕ))
 
 @[continuity, fun_prop]
@@ -382,7 +382,7 @@ generate a continuous linear equivalence between the spaces of continuous altern
 @[simps! apply]
 def continuousAlternatingMapCongr (e : E ≃L[𝕜] E') (e' : F ≃L[𝕜] G) :
     (E [⋀^ι]→L[𝕜] F) ≃L[𝕜] (E' [⋀^ι]→L[𝕜] G) :=
-  e.continuousAlternatingMapCongrLeft.trans <| e'.continuousAlternatingMapCongrRight
+  e.continuousAlternatingMapCongrLeft.trans e'.continuousAlternatingMapCongrRight
 
 lemma coe_continuousAlternatingMapCongr (e : E ≃L[𝕜] E') (e' : F ≃L[𝕜] G) :
     (e.continuousAlternatingMapCongr e' (ι := ι) : (E [⋀^ι]→L[𝕜] F) →L[𝕜] (E' [⋀^ι]→L[𝕜] G)) =

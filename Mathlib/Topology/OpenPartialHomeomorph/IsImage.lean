@@ -31,7 +31,9 @@ then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or
 
 @[expose] public section
 
-open Set Filter Topology
+open Set Filter
+
+open scoped Topology
 
 variable {X : Type*} {Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 

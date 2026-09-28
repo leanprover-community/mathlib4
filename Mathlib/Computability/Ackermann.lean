@@ -6,8 +6,8 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Computability.PartrecCode
-public import Mathlib.Tactic.Ring
-public import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.NormNum
 
 /-!
 # Ackermann function
@@ -97,7 +97,7 @@ theorem ack_three (n : ℕ) : ack 3 n = 2 ^ (n + 3) - 3 := by
         Nat.mul_sub_left_distrib, ← Nat.sub_add_comm, two_mul 3, Nat.add_sub_add_right]
     calc 2 * 3
       _ ≤ 2 * 2 ^ 3 := by simp
-      _ ≤ 2 * 2 ^ (n + 3) := by gcongr <;> lia
+      _ ≤ 2 * 2 ^ (n + 3) := by gcongr; lia
 
 theorem ack_pos : ∀ m n, 0 < ack m n
   | 0, n => by simp
