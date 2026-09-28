@@ -30,17 +30,18 @@ For an intermediate ring `R` of `B`, we introduce two characteristic predicates:
 
 ## Main results
 
-Writing `e`, `f` for the ramification index and inertia degree of `P` over `p` and `g` for the
-number of primes of `B` above `p`, the degrees in the tower `A ⊆ R ⊆ R' ⊆ B` are:
+Writing `e`, `f` for the ramification index and inertia degree of `P` over `p`, `g` for the number
+of primes of `B` above `p`, and `𝓟`, `𝓟'` for the primes of the decomposition ring `R` and the
+inertia ring `R'` below `P`:
 ```
-degree
-        B
-  e     |
-        R'
-  f     |
-        R
-  g     |
-        A
+degree            ramif. index   inertia deg.
+        B      P
+  e     |      |      e               1
+        R'     𝓟'
+  f     |      |      1               f
+        R      𝓟
+  g     |      |      1               1
+        A      p
 ```
 
 ## Relation to the classical field setting
