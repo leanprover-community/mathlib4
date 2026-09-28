@@ -7,10 +7,9 @@ module
 
 public import Mathlib.Probability.Distributions.Bernoulli
 public import Mathlib.Probability.ProductMeasure
-public import Mathlib.Probability.Independence.Process.Basic
 
 import Mathlib.MeasureTheory.MeasurableSpace.NCard
-import Mathlib.Probability.Independence.InfinitePi
+import Mathlib.Probability.Independence.Process.Basic
 
 /-!
 # Product of bernoulli distributions on a set

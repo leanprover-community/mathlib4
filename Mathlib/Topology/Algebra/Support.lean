@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Group.Submonoid.BigOperators
 public import Mathlib.Algebra.GroupWithZero.Indicator
 public import Mathlib.Algebra.Module.Basic
 public import Mathlib.Algebra.Order.Group.Unbundled.Abs
-public import Mathlib.Topology.Homeomorph.Defs
 public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
@@ -367,8 +366,8 @@ section Compact
 
 variable [CompactSpace α]
 
-/-- In a compact space `α`, any function has compact support. -/
-@[to_additive]
+/-- In a compact space `α`, any function has compact multiplicative support. -/
+@[to_additive /-- In a compact space `α`, any function has compact support. -/]
 theorem HasCompactMulSupport.of_compactSpace (f : α → γ) :
     HasCompactMulSupport f :=
   IsCompact.of_isClosed_subset isCompact_univ (isClosed_mulTSupport f)

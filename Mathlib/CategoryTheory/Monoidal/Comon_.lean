@@ -8,8 +8,6 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Mon
 public import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
 public import Mathlib.CategoryTheory.Monoidal.Transport
-public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # The category of comonoids in a monoidal category.
@@ -272,7 +270,7 @@ The contravariant functor turning comonoid objects into monoid objects in the op
 -/
 @[simps] def ComonToMonOpOp : Comon C ⥤ (Mon Cᵒᵖ)ᵒᵖ where
   obj A := op (ComonToMonOpOpObj A)
-  map := fun f => op <|
+  map := fun f => op
     { hom := f.hom.op
       isMonHom_hom.one_hom := by apply Quiver.Hom.unop_inj; simp
       isMonHom_hom.mul_hom := by apply Quiver.Hom.unop_inj; simp }

@@ -5,7 +5,6 @@ Authors: Etienne Marion, David Ledvinka
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Probability.HasLaw
 
 /-!

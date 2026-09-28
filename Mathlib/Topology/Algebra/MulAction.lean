@@ -7,11 +7,8 @@ module
 
 public import Mathlib.Algebra.Torsor.Defs
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
-public import Mathlib.Order.Filter.Pointwise
-public import Mathlib.Topology.Algebra.Constructions
 public import Mathlib.Topology.Algebra.ConstMulAction
 public import Mathlib.Topology.Algebra.Group.Defs
-public import Mathlib.Topology.Connected.Basic
 
 /-!
 # Continuous monoid action
@@ -248,7 +245,8 @@ instance Units.continuousSMul : ContinuousSMul Mˣ X :=
 
 /-- If an action is continuous, then composing this action with a continuous homomorphism gives
 again a continuous action. -/
-@[to_additive]
+@[to_additive /-- If an action is continuous, then composing this action with a continuous
+homomorphism gives again a continuous action. -/]
 theorem MulAction.continuousSMul_compHom
     {N : Type*} [TopologicalSpace N] [Monoid N] {f : N →* M} (hf : Continuous f) :
     letI : MulAction N X := MulAction.compHom _ f

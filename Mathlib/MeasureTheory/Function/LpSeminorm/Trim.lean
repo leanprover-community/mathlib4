@@ -52,19 +52,27 @@ theorem eLpNormEssSup_trim (hm : m ≤ m0) {f : α → ε} (hf : StronglyMeasura
 
 theorem eLpNorm_trim (hm : m ≤ m0) {f : α → ε} (hf : StronglyMeasurable[m] f) :
     eLpNorm f p (μ.trim hm) = eLpNorm f p μ := by
+  have hfμ : AEStronglyMeasurable f μ := (hf.mono hm).aestronglyMeasurable
   by_cases h0 : p = 0
-  · simp [h0]
+  · subst p
+    rw [eLpNorm_exponent_zero (hf.aestronglyMeasurable (μ := μ.trim hm)),
+      eLpNorm_exponent_zero hfμ]
   by_cases h_top : p = ∞
-  · simpa only [h_top, eLpNorm_exponent_top] using eLpNormEssSup_trim hm hf
-  simpa only [eLpNorm_eq_eLpNorm' h0 h_top] using eLpNorm'_trim hm hf
+  · simpa only [h_top, eLpNorm_exponent_top (hf.aestronglyMeasurable (μ := μ.trim hm)),
+      eLpNorm_exponent_top hfμ] using
+      eLpNormEssSup_trim hm hf
+  rw [eLpNorm_eq_eLpNorm' h0 h_top (hf.aestronglyMeasurable (μ := μ.trim hm)),
+    eLpNorm_eq_eLpNorm' h0 h_top hfμ]
+  exact eLpNorm'_trim hm hf
 
 theorem eLpNorm_trim_ae (hm : m ≤ m0) {f : α → ε} (hf : AEStronglyMeasurable[m] f (μ.trim hm)) :
     eLpNorm f p (μ.trim hm) = eLpNorm f p μ := by
-  rw [eLpNorm_congr_ae hf.ae_eq_mk, eLpNorm_congr_ae (ae_eq_of_ae_eq_trim hf.ae_eq_mk)]
+  have hfμ := aestronglyMeasurable_of_aestronglyMeasurable_trim hm hf
+  rw [eLpNorm_congr_ae hf.ae_eq_mk,
+    eLpNorm_congr_ae (ae_eq_of_ae_eq_trim hf.ae_eq_mk)]
   exact eLpNorm_trim hm hf.stronglyMeasurable_mk
 
 theorem memLp_of_memLp_trim (hm : m ≤ m0) {f : α → ε} (hf : MemLp f p (μ.trim hm)) : MemLp f p μ :=
-  ⟨aestronglyMeasurable_of_aestronglyMeasurable_trim hm hf.1,
-    (le_of_eq (eLpNorm_trim_ae hm hf.1).symm).trans_lt hf.2⟩
+  (le_of_eq (eLpNorm_trim_ae hm hf.aestronglyMeasurable).symm).trans_lt hf
 
 end MeasureTheory

@@ -125,7 +125,7 @@ def mulRepHom : rightFDRep (k := k) (G := G) ⊗ rightFDRep ⟶ rightFDRep where
   comm := by
     intro
     ext u
-    refine TensorProduct.induction_on u rfl (fun _ _ ↦ rfl) (fun _ _ hx hy ↦ ?_)
+    refine TensorProduct.inductionOn u (fun _ _ ↦ rfl) (fun _ _ hx hy ↦ ?_)
     simp only [map_add, hx, hy]
 
 /-- The `rightFDRep` component of `η : Aut (forget k G)` preserves multiplication -/
@@ -136,7 +136,7 @@ lemma map_mul_toRightFDRepComp (η : Aut (forget k G)) (f g : G → k) :
   have tensor (X Y) : η.hom.hom.app (X ⊗ Y) = (η.hom.hom.app X ⊗ₘ η.hom.hom.app Y) :=
     η.hom.isMonoidal.tensor X Y
   rw [tensor] at nat
-  exact ConcreteCategory.congr_hom ((CategoryTheory.forget _).congr_map nat) (f ⊗ₜ[k] g)
+  congrm $((CategoryTheory.forget _).congr_map nat) (f ⊗ₜ[k] g)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The `rightFDRep` component of `η : Aut (forget k G)` gives rise to
@@ -209,7 +209,7 @@ lemma toRightFDRepComp_in_rightRegular [IsDomain k] (η : Aut (forget k G)) :
   calc
     _ = leftRegular t⁻¹ ((η.hom.hom.app rightFDRep).hom (single u 1)) 1 := by simp
     _ = (η.hom.hom.app rightFDRep).hom (leftRegular t⁻¹ (single u 1)) 1 :=
-      congrFun congr(($nat.symm).hom (single u 1)) 1
+      congr(($nat.symm).hom (single u 1) 1)
     _ = evalAlgHom _ _ s (leftRegular t⁻¹ (single u 1)) :=
       congr($hs (leftRegular t⁻¹ (single u 1)))
     _ = _ := by by_cases u = t * s <;> simp_all
