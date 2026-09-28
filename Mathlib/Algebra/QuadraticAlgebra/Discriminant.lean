@@ -6,7 +6,7 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Algebra.QuadraticAlgebra.AlgHom
-public import Mathlib.Data.Nat.Prime.Int
+import Mathlib.Data.Nat.Prime.Int
 
 /-!
 # Discriminant of a quadratic algebra

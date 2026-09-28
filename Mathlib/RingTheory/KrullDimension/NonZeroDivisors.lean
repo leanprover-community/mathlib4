@@ -5,11 +5,11 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
+import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
 public import Mathlib.RingTheory.KrullDimension.Basic
-public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
+import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 public import Mathlib.RingTheory.PowerSeries.Basic
-public import Mathlib.RingTheory.Spectrum.Prime.RingHom
+import Mathlib.RingTheory.Spectrum.Prime.RingHom
 
 /-!
 

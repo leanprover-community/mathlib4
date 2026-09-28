@@ -6,7 +6,7 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Algebra.Algebra.Spectrum.Basic
-public import Mathlib.Algebra.Algebra.Tower
+import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Algebra.Unitization
 
 /-!

@@ -6,8 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Sites.Descent.IsStack
-public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
-public import Mathlib.CategoryTheory.Limits.Shapes.Connected
+import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
+import Mathlib.CategoryTheory.Limits.Shapes.Connected
 
 /-!
 # Characterization of (pre)stacks for a precoverage

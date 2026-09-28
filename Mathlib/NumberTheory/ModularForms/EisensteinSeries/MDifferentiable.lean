@@ -7,8 +7,8 @@ module
 
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
-public import Mathlib.Analysis.Complex.LocallyUniformLimit
-public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
+import Mathlib.Analysis.Complex.LocallyUniformLimit
+import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 
 /-!
 # Holomorphicity of Eisenstein series
