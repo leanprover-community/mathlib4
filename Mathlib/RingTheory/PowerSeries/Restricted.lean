@@ -13,7 +13,7 @@ public import Mathlib.Order.Filter.Cofinite
 # Univariate restricted power series
 
 `IsRestricted` : We say a univariate power series over a normed ring `R` is restricted for a
-real number `c` if `‖coeff t f‖ * c i ^ t i → 0` under the cofinite filter.
+real number `c` if `‖coeff t f‖ * c ^ t→ 0` under the cofinite filter.
 
 -/
 
@@ -64,14 +64,17 @@ lemma isRestricted_C (a : R) : IsRestricted c (C a) :=
   MvPowerSeries.isRestricted_C (fun _ ↦ c) a
 
 variable {f} in
+@[deprecated MvPowerSeries.IsRestricted.add (since := "2026-09-28")]
 lemma isRestricted.add {g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) :
     IsRestricted c (f + g) :=
   hf.add hg
 
 variable {f} in
+@[deprecated MvPowerSeries.IsRestricted.neg (since := "2026-09-28")]
 lemma isRestricted.neg (hf : IsRestricted c f) : IsRestricted c (-f) :=
   hf.neg
 
+@[deprecated MvPowerSeries.IsRestricted.mul (since := "2026-09-28")]
 lemma isRestricted.mul [IsUltrametricDist R] (c : ℝ) {f g : PowerSeries R}
     (hf : IsRestricted c f) (hg : IsRestricted c g) : IsRestricted c (f * g) :=
   hf.mul hg

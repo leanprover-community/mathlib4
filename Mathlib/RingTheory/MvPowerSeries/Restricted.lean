@@ -14,8 +14,22 @@ public import Mathlib.RingTheory.MvPowerSeries.Basic
 /-!
 # Multivariate restricted power series
 
-`IsRestricted` : We say a multivariate power series over a normed ring `R` is restricted for a
+In this file we introduce the theory of restricted multivariate power series (historically called
+Tate algebras when `c` = 1).
+
+Specifically we define the predicate:
+* `IsRestricted` : a multivariate power series over a normed ring `R` is restricted for a
 tuple `c` if `‖coeff t f‖ * ∏ i ∈ t.support, c i ^ t i → 0` under the cofinite filter.
+we say a multivariate power series over a normed ring `R`.
+
+And then promote it to a type:
+* `Restricted`: the set of restricted multivariate power series over a normed ring `R` for a tuple
+`c`.
+
+When `R` is an ultrametric (non-archimedean) normed ring we have the following key properties:
+* `MvPowerSeries.instRingRestricted`: `Restricted R c` is a ring
+* `MvPowerSeries.instModuleRestricted`: `Restricted R c` is an `R`-module
+* `MvPowerSeries.instAlgebraRestricted`: `Restricted R c` is an `R`-algebra
 
 -/
 
@@ -135,9 +149,6 @@ lemma sub {c : σ → ℝ} {f g : MvPowerSeries σ R} (hf : IsRestricted c f)
     (hg : IsRestricted c g) : IsRestricted c (f - g) :=
   mem_addSubgroup.mp (sub_mem hf hg)
 
-lemma sum_iff {c : σ → ℝ} {ι : Type*} {s : Finset ι} {f : ι → MvPowerSeries σ R} :
-    (∑ i ∈ s, f i) ∈ IsRestricted.addSubgroup c ↔ IsRestricted c (∑ i ∈ s, f i) := by rfl
-
 lemma sum (c : σ → ℝ) {ι : Type*} {s : Finset ι} {f : ι → MvPowerSeries σ R}
     (hf : ∀ i ∈ s, IsRestricted c (f i)) : IsRestricted c (∑ i ∈ s, f i) :=
   mem_addSubgroup.mp (sum_mem hf)
@@ -150,13 +161,13 @@ protected def subring (c : σ → ℝ) : Subring (MvPowerSeries σ R) where
   one_mem' := isRestricted_one c
   mul_mem' a b := a.mul b
 
-lemma pow_iff {c : σ → ℝ} {f : MvPowerSeries σ R} (n : ℕ) :
-    f ^ n ∈ IsRestricted.subring c ↔ IsRestricted c (f ^ n) := by
-  rfl
+@[simp]
+lemma mem_subring {c : σ → ℝ} {f : MvPowerSeries σ R} :
+    f ∈ IsRestricted.subring c ↔ IsRestricted c f := Iff.rfl
 
 lemma pow {c : σ → ℝ} {f : MvPowerSeries σ R}
-    (hf : IsRestricted c f) (n : ℕ) : IsRestricted c (f ^ n) := by
-  simpa [← pow_iff] using pow_mem hf n
+    (hf : IsRestricted c f) (n : ℕ) : IsRestricted c (f ^ n) :=
+  mem_subring.mp (pow_mem hf n)
 
 end IsRestricted
 
@@ -186,16 +197,15 @@ noncomputable
 instance (c : σ → ℝ) : Ring (Restricted R c) :=
   Subring.toRing (MvPowerSeries.IsRestricted.subring c)
 
-/-- Restricted power series as an `R`-submodule of `MvPowerSeries σ R`. -/
-protected
-def IsRestricted.submodule (c : σ → ℝ) : Submodule R (MvPowerSeries σ R) where
-  __ := (IsRestricted.addSubgroup c).toAddSubmonoid
-  smul_mem' r _ hf := hf.smul r
-
 /-- `R`-module structure on `Restricted R c`. -/
-noncomputable
-instance (c : σ → ℝ) : Module R (Restricted R c) :=
-  (IsRestricted.submodule c).module
+instance (c : σ → ℝ) : Module R (Restricted R c) where
+  smul r f := ⟨r • f.1, f.2.smul r⟩
+  one_smul f := Subtype.ext (one_smul R f.1)
+  mul_smul r s f := Subtype.ext (mul_smul r s f.1)
+  smul_zero r := Subtype.ext (smul_zero r)
+  smul_add r f g := Subtype.ext (smul_add r f.1 g.1)
+  add_smul r s f := Subtype.ext (add_smul r s f.1)
+  zero_smul f := Subtype.ext (zero_smul R f.1)
 
 section CommRing
 
@@ -212,6 +222,11 @@ noncomputable
 instance : Algebra S (Restricted S c) :=
   Algebra.ofModule (fun r f g ↦ Subtype.ext (smul_mul_assoc r f.1 g.1))
     fun r f g ↦ Subtype.ext (mul_smul_comm r f.1 g.1)
+
+/-- Check for diamond instances on algebra and module structures. -/
+example : (Algebra.toModule : Module S (Restricted S c)) =
+    (inferInstance : Module S (Restricted S c)) := by
+  with_implicit rfl
 
 end CommRing
 
@@ -301,15 +316,16 @@ lemma map_injective {φ : R →+* S} {K : ℝ} (hφ : ∀ x, ‖φ x‖ ≤ K * 
 
 /-- A version of `MvPowerSeries.Restricted.map` where we take `π` only being additive (not
 necessarily multiplicative), this gives an additive map between restricted power series. -/
-noncomputable def mapAdditive (π : S →+ R) {K : ℝ} (hC : ∀ x, ‖π x‖ ≤ K * ‖x‖) :
+noncomputable
+def mapAdditive (π : S →+ R) {K : ℝ} (hK : ∀ x, ‖π x‖ ≤ K * ‖x‖) :
     Restricted S c →+ Restricted R c where
-  toFun A := ⟨fun t ↦ π (coeff t A.1), isRestricted_map c π hC A.2⟩
+  toFun A := ⟨fun t ↦ π (coeff t A.1), isRestricted_map c π hK A.2⟩
   map_zero' := Restricted.ext (MvPowerSeries.ext fun t ↦ by aesop)
   map_add' A B := Restricted.ext (MvPowerSeries.ext fun t ↦ by aesop)
 
 @[simp]
-lemma coeff_val_mapAdditive (π : S →+ R) {K : ℝ} (hC : ∀ x, ‖π x‖ ≤ K * ‖x‖)
-    (A : Restricted S c) : (mapAdditive c π hC A).1 = fun t ↦ π (coeff t A.1) := rfl
+lemma coeff_val_mapAdditive (π : S →+ R) {K : ℝ} (hK : ∀ x, ‖π x‖ ≤ K * ‖x‖)
+    (A : Restricted S c) (t : σ →₀ ℕ) : coeff t (mapAdditive c π hK A).1 = π (coeff t A.1) := rfl
 
 end Restricted
 
