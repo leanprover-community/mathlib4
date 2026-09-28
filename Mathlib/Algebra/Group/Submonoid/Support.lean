@@ -57,14 +57,14 @@ theorem mulSupport_toSubmonoid : M.mulSupport.toSubmonoid = M ⊓ M⁻¹ := rfl
 theorem _root_.Subgroup.gc_toSubmonoid_mulSupport :
     GaloisConnection (α := Subgroup G) Subgroup.toSubmonoid mulSupport :=
   fun _ ↦ by grind [IsConcreteLE.le_iff, mem_mulSupport, Subgroup.mem_toSubmonoid, inv_mem_iff]
-variable {M}
 
-variable (M) in
 /-- A submonoid is pointed if it has zero support. -/
 @[to_additive /-- A submonoid is pointed if it has zero support. -/]
 def IsMulPointed := ∀ x ∈ M, x⁻¹ ∈ M → x = 1
 
 namespace IsMulPointed
+
+variable {M}
 
 @[to_additive]
 theorem eq_one_of_mem_of_inv_mem (hM : M.IsMulPointed)
@@ -84,13 +84,14 @@ alias ⟨mulSupport_eq_bot, _⟩ := isMulPointed_iff_mulSupport_eq_bot
 
 end IsMulPointed
 
-variable (M) in
 /-- A submonoid `M` of a group `G` is spanning if `M` generates `G` as a subgroup. -/
 @[to_additive
 /-- A submonoid `M` of a group `G` is spanning if `M` generates `G` as a subgroup. -/]
 def IsMulSpanning := ∀ a : G, a ∈ M ∨ a⁻¹ ∈ M
 
 namespace IsMulSpanning
+
+variable {M}
 
 @[to_additive]
 theorem mem_or_inv_mem (hM : M.IsMulSpanning) (a : G) : a ∈ M ∨ a⁻¹ ∈ M := by
