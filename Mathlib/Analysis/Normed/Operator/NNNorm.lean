@@ -63,7 +63,7 @@ theorem opNNNorm_le_of_unit_nnnorm [NormedAlgebra ℝ 𝕜] {f : E →SL[σ₁�
 
 theorem opNNNorm_le_of_lipschitzWith {f : E →SL[σ₁₂] F} {K : ℝ≥0} (hf : LipschitzWith K f) :
     ‖f‖₊ ≤ K :=
-  opNorm_le_of_lipschitz hf
+  opNorm_le_of_lipschitzWith hf
 
 @[deprecated (since := "2026-09-27")]
 alias opNNNorm_le_of_lipschitz := opNNNorm_le_of_lipschitzWith
