@@ -6,8 +6,22 @@ Authors: Anne Baanen
 
 import Mathlib.Tactic.Linter.Header
 
+set_option linter.style.header true
+
+set_option doc.verso.module true
+
+set_option doc.verso true
+
+set_option doc.verso false
+
+-- A comment
+
+set_option doc.verso true
+
+set_option doc.verso.suggestions true
+
 /- Test that the module header linter correctly complains about missing headers,
-even if we set `doc.verso` to `true`. -/
+even if we have a lot of `set_option`s above. -/
 
 /--
 warning: The module doc-string for a file should be the first command after the imports
