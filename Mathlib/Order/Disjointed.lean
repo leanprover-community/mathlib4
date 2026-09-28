@@ -8,8 +8,8 @@ module
 public import Mathlib.Order.PartialSups
 public import Mathlib.Order.Interval.Finset.Fin
 public import Mathlib.Order.SuccPred.LinearLocallyFinite
-public import Mathlib.Order.Interval.Finset.SuccPred
-public import Mathlib.Data.Finset.Lattice.Union
+import Mathlib.Order.Interval.Finset.SuccPred
+import Mathlib.Data.Finset.Lattice.Union
 
 /-!
 # Making a sequence disjoint

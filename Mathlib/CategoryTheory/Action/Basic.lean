@@ -7,12 +7,12 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Basic
 public import Mathlib.Algebra.Ring.PUnit
-public import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Conj
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.CategoryTheory.SingleObj
-public import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # `Action V G`, the category of actions of a monoid `G` inside some category `V`.
@@ -271,9 +271,9 @@ instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) 
     [ConcreteCategory V FV] : ConcreteCategory (Action V G) (HomSubtype V G) where
   hom f := ⟨ConcreteCategory.hom (C := V) f.1, fun g => by
     ext
-    simpa using CategoryTheory.congr_fun (f.2 g) _⟩
+    simpa using congr($(f.2 g) _)⟩
   ofHom f := ⟨ConcreteCategory.ofHom (C := V) f, fun g => ConcreteCategory.ext_apply fun x => by
-    simpa [ConcreteCategory.hom_ofHom] using congr_fun (f.2 g) x⟩
+    simpa [ConcreteCategory.hom_ofHom] using congr($(f.2 g) x)⟩
   hom_ofHom _ := by dsimp; ext; simp [ConcreteCategory.hom_ofHom]
   ofHom_hom _ := by ext; simp [ConcreteCategory.ofHom_hom]
   id_apply := ConcreteCategory.id_apply (C := V)

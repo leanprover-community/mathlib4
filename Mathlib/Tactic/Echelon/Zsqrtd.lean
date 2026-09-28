@@ -7,7 +7,6 @@ module
 
 public import Mathlib.NumberTheory.Zsqrtd.Basic
 public import Mathlib.Tactic.Echelon.Core
-public import Mathlib.Tactic.NormNum.Basic
 public meta import Mathlib.NumberTheory.Zsqrtd.Basic
 
 /-!
