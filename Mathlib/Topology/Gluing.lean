@@ -8,9 +8,8 @@ module
 public import Mathlib.CategoryTheory.GlueData
 public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 public import Mathlib.Topology.Category.TopCat.Opens
-public import Mathlib.CategoryTheory.Elementwise
 public import Mathlib.CategoryTheory.Limits.Types.Coequalizers
-public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 /-!
 # Gluing Topological spaces

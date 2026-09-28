@@ -5,12 +5,9 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Cover.Open
 public import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
-public import Mathlib.AlgebraicGeometry.Restrict
-public import Mathlib.CategoryTheory.Limits.Opposites
-public import Mathlib.RingTheory.Localization.InvSubmonoid
-public import Mathlib.RingTheory.LocalProperties.Basic
+import Mathlib.RingTheory.Localization.InvSubmonoid
+import Mathlib.RingTheory.LocalProperties.Basic
 public import Mathlib.Topology.Sheaves.CommRingCat
 public import Mathlib.CategoryTheory.Monad.Limits
 
