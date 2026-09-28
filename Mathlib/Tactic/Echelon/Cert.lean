@@ -189,7 +189,7 @@ def certifyRowsEq {u : Level} {α : Q(Type u)} (certifier : EntryCertifier)
 
 /-- Prove the product `L * Aσ = U` from the expansion `mulEq` of the product of the row lists of
 `L` and `Aσ`, whose literals are `mulEq.A` and `mulEq.B`. -/
-def certifyProductEq {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRing $α))
+def certifyProductEq {u : Level} {m n : Nat} {α : Q(Type u)} (cα : Q(AddCommMonoid $α))
     {zα : Q(Zero $α)} {aα : Q(Add $α)} {mα : Q(Mul $α)} (mulEq : MulEq zα aα mα m m n)
     (U : MatrixViews u m n α) (certifier? : Option EntryCertifier) :
     MetaM Q((ofLists $m $m $(mulEq.A)) * ofLists $m $n $(mulEq.B) = $(U.matrix)) := do
@@ -203,8 +203,9 @@ def certifyProductEq {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRing 
     | some certifier => do
       let ⟨_, _, hrows⟩ ← certifyRowsEq certifier mulEq.rows U.entries
       mkEqTrans mulEq.proof hrows
-  let pf ← mkAppM ``ofLists_mul #[hmul]
-  return mkExpectedPropHint pf
+  -- `hmul` is stated with the `Add` and `Zero` of `proveMul`, `ofLists_mul` with those of `cα`.
+  assertInstancesCommute
+  return mkExpectedPropHint q(ofLists_mul $hmul)
     q((ofLists $m $m $(mulEq.A)) * ofLists $m $n $(mulEq.B) = $(U.matrix))
 
 /-- The certificates of a decomposition with the terms they are stated on. It keeps the echelon
@@ -247,6 +248,7 @@ def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommR
   let zα : Q(Zero $α) ← synthInstanceQ q(Zero $α)
   let aα : Q(Add $α) ← synthInstanceQ q(Add $α)
   let mα : Q(Mul $α) ← synthInstanceQ q(Mul $α)
+  let cα : Q(AddCommMonoid $α) ← synthInstanceQ q(AddCommMonoid $α)
   let lRows : List (List Q($α)) := data.L.toList.map Array.toList
   let aRows : List (List Q($α)) := (data.rowOrder.map (entries[·]!)).toList.map Array.toList
   -- `proveMul` first, so that the views of `L` are stated on the literals it built
@@ -260,7 +262,7 @@ def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommR
   let Aσm : Q(Matrix (Fin $m) (Fin $n) $α) := q(ofLists $m $n $(mulEq.B))
   have Um := U.matrix
   have hperm : Q(($A).submatrix $σ id = $Aσm) := certifyPermEq A Aσm σ
-  let hprod : Q($Lm * $Aσm = $Um) ← certifyProductEq rα mulEq U certifier?
+  let hprod : Q($Lm * $Aσm = $Um) ← certifyProductEq cα mulEq U certifier?
   let hU : Q($Lm * ($A).submatrix $σ id = $Um) := q($hperm ▸ $hprod)
   let certifier := certifier?.getD mkDecideProofQ
   let hpivot : Q(($Um).IsPivotedBy $pivot) ← certifyPivotedBy zα U data.pivot cols certifier
