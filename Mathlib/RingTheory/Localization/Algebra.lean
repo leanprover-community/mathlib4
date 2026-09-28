@@ -5,10 +5,7 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
-public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Localization.BaseChange
-public import Mathlib.RingTheory.Localization.Basic
 public import Mathlib.RingTheory.Localization.Ideal
 public import Mathlib.RingTheory.PolynomialAlgebra
 
@@ -148,7 +145,7 @@ lemma map_eq_toLinearMap_mapₐ (f : A →ₐ[R] B) :
       (IsScalarTower.toAlgHom R B Bₚ).toLinearMap f.toLinearMap =
       (IsLocalization.mapₐ M Rₚ Aₚ Bₚ f).toLinearMap := by
   ext x
-  exact DFunLike.congr_fun (mapExtendScalars_eq_toLinearMap_mapₐ M Rₚ Aₚ Bₚ f) x
+  congrm $(mapExtendScalars_eq_toLinearMap_mapₐ M Rₚ Aₚ Bₚ f) x
 
 lemma map_linearMap_eq_toLinearMap_mapₐ :
     IsLocalizedModule.map M (Algebra.linearMap R Rₚ) (IsScalarTower.toAlgHom R A Aₚ).toLinearMap

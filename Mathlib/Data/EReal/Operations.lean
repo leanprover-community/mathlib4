@@ -206,7 +206,7 @@ protected def neg : EReal → EReal
 instance : Neg EReal := ⟨EReal.neg⟩
 
 instance : SubNegZeroMonoid EReal where
-  neg_zero := congr_arg Real.toEReal neg_zero
+  neg_zero := congr(Real.toEReal $neg_zero)
   zsmul := zsmulRec
 
 @[simp]
@@ -230,7 +230,7 @@ instance : InvolutiveNeg EReal where
     match a with
     | ⊥ => rfl
     | ⊤ => rfl
-    | (a : ℝ) => congr_arg Real.toEReal (neg_neg a)
+    | (a : ℝ) => congr($(neg_neg a).toEReal)
 
 @[simp]
 theorem toReal_neg_eq : ∀ {a : EReal}, toReal (-a) = -toReal a
@@ -327,6 +327,17 @@ theorem recENNReal_coe_ennreal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0
   have H₁ : 0 ≤ y := hy ▸ coe_ennreal_nonneg x
   obtain rfl : y.toENNReal = x := by simp [← hy]
   simp [recENNReal, H₁]
+
+@[simp]
+theorem recENNReal_neg_coe_ennreal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
+    (neg_coe : ∀ x : ℝ≥0∞, 0 < x → motive (-x)) {x : ℝ≥0∞} (hx : 0 < x) :
+    recENNReal coe neg_coe (-x) = neg_coe x hx := by
+  have H₁ : ¬0 ≤ -(x : EReal) := by simpa using hx
+  have H₂ : ∀ {c : ℝ≥0∞}, c = x → ∀ {b : EReal} (hb : -c = b) (p : 0 < c),
+      (hb ▸ neg_coe c) p ≍ neg_coe x hx := by rintro _ rfl _ rfl _; rfl
+  apply eq_of_heq
+  simp only [recENNReal, dite_eq_right H₁]
+  exact H₂ (by simp) _ _
 
 /-!
 ### Subtraction

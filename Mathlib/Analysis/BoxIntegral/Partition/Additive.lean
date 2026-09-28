@@ -98,7 +98,6 @@ instance : Inhabited (ι →ᵇᵃ[I₀] M) :=
   ⟨0⟩
 
 instance : IsZeroApply (ι →ᵇᵃ[I₀] M) (Box ι) M where
-  zero_apply _ := rfl
 
 instance : Add (ι →ᵇᵃ[I₀] M) :=
   ⟨fun f g =>
@@ -114,10 +113,8 @@ instance : AddCommMonoid (ι →ᵇᵃ[I₀] M) :=
   Function.Injective.addCommMonoid _ coe_injective rfl (fun _ _ => rfl) fun _ _ => rfl
 
 instance : IsAddApply (ι →ᵇᵃ[I₀] M) (Box ι) M where
-  add_apply _ _ _ := rfl
 
 instance {R} [Monoid R] [DistribMulAction R M] : IsSMulApply R (ι →ᵇᵃ[I₀] M) (Box ι) M where
-  smul_apply _ _ _ := rfl
 
 /-! ### Constructions and combinators -/
 
@@ -194,14 +191,12 @@ instance : Neg (ι →ᵇᵃ[I₀] M) where
     simp only [Pi.neg_apply, Finset.sum_neg_distrib, sum_partition_boxes _ hI hπ]⟩
 
 instance : IsNegApply (ι →ᵇᵃ[I₀] M) (Box ι) M where
-  neg_apply _ _ := rfl
 
 instance : Sub (ι →ᵇᵃ[I₀] M) where
   sub f g := ⟨(f : Box ι → M) - g, fun I hI π hπ ↦ by
     simp only [Pi.sub_apply, Finset.sum_sub_distrib, sum_partition_boxes _ hI hπ]⟩
 
 instance : IsSubApply (ι →ᵇᵃ[I₀] M) (Box ι) M where
-  sub_apply _ _ _ := rfl
 
 instance : AddCommGroup (ι →ᵇᵃ[I₀] M) := FunLike.addCommGroup
 
