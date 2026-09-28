@@ -5,17 +5,15 @@ Authors: Heather Macbeth
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Inv
+import Mathlib.Analysis.Calculus.Deriv.Inv
 public import Mathlib.Analysis.Complex.Circle
 public import Mathlib.Analysis.Normed.Module.Ball.Action
-public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-public import Mathlib.Analysis.InnerProductSpace.Calculus
-public import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+import Mathlib.Analysis.InnerProductSpace.Calculus
 public import Mathlib.Geometry.Manifold.Algebra.LieGroup
 public import Mathlib.Geometry.Manifold.Instances.Real
 public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
-public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
-public import Mathlib.Tactic.Module
+import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
 /-!
 # Manifold structure on the sphere
@@ -543,7 +541,7 @@ theorem injective_mvfderiv_subtypeVal_sphere {n : ℕ} [Fact (finrank ℝ E = n 
     -- Otherwise, the lemma `EmbeddingLike.map_eq_zero_iff` is not applied.
     set_option backward.isDefEq.respectTransparency false in
     simp
-  have := congr_arg DFunLike.coe (this.comp 0 U.symm.toContinuousLinearEquiv.hasFDerivAt).fderiv
+  have := congr(⇑$((this.comp 0 U.symm.toContinuousLinearEquiv.hasFDerivAt).fderiv))
   refine Eq.subst this.symm ?_
   rw [ContinuousLinearMap.coe_comp, ContinuousLinearEquiv.coe_coe]
   set_option backward.isDefEq.respectTransparency false in

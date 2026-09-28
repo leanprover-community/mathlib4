@@ -13,7 +13,6 @@ public import Mathlib.GroupTheory.Coset.Basic
 public import Mathlib.GroupTheory.GroupAction.Basic
 public import Mathlib.GroupTheory.GroupAction.ConjAct
 public import Mathlib.GroupTheory.GroupAction.Hom
-public import Mathlib.GroupTheory.Subgroup.Centralizer
 
 /-!
 # Properties of group actions involving quotient groups
@@ -84,8 +83,8 @@ instance quotient [QuotientAction X H] : MulAction X (G ⧸ H) where
   smul b :=
     Quotient.map' (b • ·) fun _ _ h =>
       leftRel_apply.mpr <| QuotientAction.inv_mul_mem b <| leftRel_apply.mp h
-  one_smul q := Quotient.inductionOn' q fun a => congr_arg Quotient.mk'' (one_smul X a)
-  mul_smul b b' q := Quotient.inductionOn' q fun a => congr_arg Quotient.mk'' (mul_smul b b' a)
+  one_smul q := Quotient.inductionOn' q fun a => congr(Quotient.mk'' $(one_smul X a))
+  mul_smul b b' q := Quotient.inductionOn' q fun a => congr(Quotient.mk'' $(mul_smul b b' a))
 
 variable {X}
 
@@ -170,7 +169,7 @@ theorem injective_ofQuotientStabilizer : Function.Injective (ofQuotientStabilize
 noncomputable def orbitEquivQuotientStabilizer (b : X) : orbit G b ≃ G ⧸ stabilizer G b :=
   Equiv.symm <|
     Equiv.ofBijective (fun g => ⟨ofQuotientStabilizer G b g, ofQuotientStabilizer_mem_orbit G b g⟩)
-      ⟨fun x y hxy => injective_ofQuotientStabilizer G b (by convert! congr_arg Subtype.val hxy),
+      ⟨fun x y hxy => injective_ofQuotientStabilizer G b (by convert! congr($(hxy).val)),
         fun ⟨_, ⟨g, hgb⟩⟩ => ⟨g, Subtype.ext hgb⟩⟩
 
 /-- Orbit-stabilizer theorem. -/

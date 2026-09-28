@@ -5,9 +5,9 @@ Authors: Miriam Philipp, Justus Springer, Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Basis
+import Mathlib.Algebra.Polynomial.Basis
 public import Mathlib.FieldTheory.RatFunc.IntermediateField
-public import Mathlib.FieldTheory.Relrank
+import Mathlib.FieldTheory.Relrank
 
 /-!
 # Lüroth's theorem
@@ -71,7 +71,7 @@ lemma exists_φ_coeff_not_mem (h : E ≠ ⊥) :
   refine transcendental_X ⟨f, ?_, ?_⟩
   · apply (Polynomial.map_ne_zero_iff (FaithfulSMul.algebraMap_injective K E)).mp
     exact hf ▸ φ_ne_zero h
-  · simpa using congr(aeval (X : K⟮X⟯) $(hf))
+  · simpa using congr(aeval (X : K⟮X⟯) $hf)
 
 /-- A choice of coefficient index `i` such that `φ.coeff i` is not in `K`. -/
 def generatorIndex (h : E ≠ ⊥) : ℕ :=
