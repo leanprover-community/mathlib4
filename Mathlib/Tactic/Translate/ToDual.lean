@@ -32,8 +32,13 @@ public meta section
 namespace Mathlib.Tactic.ToDual
 open Lean Meta Elab Command Std Translate UnfoldBoundary
 
-@[inherit_doc TranslateData.ignoreArgsAttr]
+/-- This attribute has been deprecated. -/
 syntax (name := to_dual_ignore_args) "to_dual_ignore_args" (ppSpace num)* : attr
+
+deprecated_syntax to_dual_ignore_args "This attribute is now redundant. \
+  to specify which argument is relevant, you can use `to_dual self (relevant_arg := ...)`"
+  (since := "2026-09-27")
+
 
 @[inherit_doc TranslateData.doTranslateAttr]
 syntax (name := to_dual_do_translate) "to_dual_do_translate" : attr
@@ -113,18 +118,6 @@ syntax (name := to_dual) "to_dual" "?"? attrArgs : attr
 
 @[inherit_doc to_dual]
 macro "to_dual?" rest:attrArgs : attr => `(attr| to_dual ? $rest)
-
-@[inherit_doc to_dual_ignore_args]
-initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
-  registerNameMapAttribute {
-    name  := `to_dual_ignore_args
-    descr :=
-      "Auxiliary attribute for `to_dual` stating that certain arguments are not dualized."
-    add := fun _ stx ↦ do
-      let ids ← match stx with
-        | `(attr| to_dual_ignore_args $[$ids:num]*) => pure <| ids.map (·.getNat - 1)
-        | _ => throwUnsupportedSyntax
-      return ids.toList }
 
 @[inherit_doc TranslateData.unfoldBoundaries?]
 initialize unfoldBoundaries : UnfoldBoundaryExt ← registerUnfoldBoundaryExt
@@ -292,7 +285,7 @@ initialize guessNameExt : GuessName.GuessNameExt ←
 
 /-- The bundle of environment extensions for `to_dual` -/
 def data : TranslateData where
-  ignoreArgsAttr; doTranslateAttr; translations
+  doTranslateAttr; translations
   unfoldBoundaries? := some unfoldBoundaries
   attrName := `to_dual
   changeNumeral := false
