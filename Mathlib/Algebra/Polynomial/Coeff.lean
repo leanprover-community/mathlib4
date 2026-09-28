@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-public import Mathlib.Algebra.MonoidAlgebra.Support
+import Mathlib.Algebra.MonoidAlgebra.Support
 public import Mathlib.Algebra.Polynomial.Basic
 public import Mathlib.Data.Nat.Choose.Sum
 
@@ -137,7 +137,7 @@ lemma constantCoeff_surjective : Function.Surjective (constantCoeff (R := R)) :=
   fun x ↦ ⟨C x, by simp⟩
 
 theorem isUnit_C {x : R} : IsUnit (C x) ↔ IsUnit x :=
-  ⟨fun h => (congr_arg IsUnit coeff_C_zero).mp (h.map <| @constantCoeff R _), fun h => h.map C⟩
+  ⟨fun h => congr(IsUnit $coeff_C_zero).mp (h.map <| @constantCoeff R _), fun h => h.map C⟩
 
 theorem coeff_mul_X_zero (p : R[X]) : coeff (p * X) 0 = 0 := by simp
 

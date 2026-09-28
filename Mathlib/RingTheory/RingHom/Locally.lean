@@ -6,7 +6,6 @@ Authors: Christian Merten
 module
 
 public import Mathlib.RingTheory.LocalProperties.Basic
-public import Mathlib.RingTheory.Localization.BaseChange
 public import Mathlib.RingTheory.Localization.Away.Lemmas
 
 /-!

@@ -7551,7 +7551,6 @@ public import Mathlib.Tactic.ENatToNat
 public import Mathlib.Tactic.Echelon.Bareiss
 public import Mathlib.Tactic.Echelon.Cert
 public import Mathlib.Tactic.Echelon.Core
-public import Mathlib.Tactic.Echelon.Parsing
 public import Mathlib.Tactic.Echelon.Rat
 public import Mathlib.Tactic.Echelon.Zsqrtd
 public import Mathlib.Tactic.Eqns
@@ -7680,6 +7679,10 @@ public import Mathlib.Tactic.Linter.UnusedTacticExtension
 public import Mathlib.Tactic.Linter.UpstreamableDecl
 public import Mathlib.Tactic.Linter.ValidatePRTitle
 public import Mathlib.Tactic.Linter.Whitespace
+public import Mathlib.Tactic.Matrix.ListMatrix
+public import Mathlib.Tactic.Matrix.MulExpand
+public import Mathlib.Tactic.Matrix.OfLists
+public import Mathlib.Tactic.Matrix.Parsing
 public import Mathlib.Tactic.Measurability
 public import Mathlib.Tactic.Measurability.Init
 public import Mathlib.Tactic.MinImports
@@ -7696,6 +7699,7 @@ public import Mathlib.Tactic.NoncommRing
 public import Mathlib.Tactic.Nontriviality
 public import Mathlib.Tactic.Nontriviality.Core
 public import Mathlib.Tactic.NormDet
+public import Mathlib.Tactic.NormMatMul
 public import Mathlib.Tactic.NormNum
 public import Mathlib.Tactic.NormNum.Abs
 public import Mathlib.Tactic.NormNum.Basic
@@ -7930,6 +7934,10 @@ public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.RestrictScalar
 public import Mathlib.Topology.Algebra.Module.Determinant
 public import Mathlib.Topology.Algebra.Module.EmbeddingOfLocal
 public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
+public import Mathlib.Topology.Algebra.Module.Equiv.Pi
+public import Mathlib.Topology.Algebra.Module.Equiv.Prod
+public import Mathlib.Topology.Algebra.Module.Equiv.Submodule
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.FiniteDimensionBilinear
 public import Mathlib.Topology.Algebra.Module.IsWeak
@@ -8008,10 +8016,12 @@ public import Mathlib.Topology.Algebra.StarSubalgebra
 public import Mathlib.Topology.Algebra.Support
 public import Mathlib.Topology.Algebra.TopologicallyNilpotent
 public import Mathlib.Topology.Algebra.UniformConvergence
+public import Mathlib.Topology.Algebra.UniformFaithfulSMul
 public import Mathlib.Topology.Algebra.UniformField
 public import Mathlib.Topology.Algebra.UniformFilterBasis
 public import Mathlib.Topology.Algebra.UniformMulAction
 public import Mathlib.Topology.Algebra.UniformRing
+public import Mathlib.Topology.Algebra.ValuativeRel.Completion
 public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 public import Mathlib.Topology.Algebra.Valued.LocallyCompact
 public import Mathlib.Topology.Algebra.Valued.NormedValued

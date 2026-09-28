@@ -5,8 +5,7 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Field
-public import Mathlib.Analysis.Normed.Ring.InfiniteSum
+import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.NumberTheory.LSeries.Convergence
 
