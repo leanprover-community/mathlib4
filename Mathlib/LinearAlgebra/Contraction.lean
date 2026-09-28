@@ -242,7 +242,7 @@ theorem dualTensorHom_bijective_of_comp_eq_id_right (f : N →ₗ[R] P) (g : P �
   right := .of_comp (g := g.lTensor _) <| by
     rw [← coe_comp, dualTensorHom_comp_lTensor, coe_comp]
     refine (surjective_of_comp_eq_id (f.compRight R) _ ?_).comp h.2
-    ext; exact congr($comp_eq_id _)
+    ext; congrm $comp_eq_id _
 
 theorem dualTensorHom_fun_bijective [Finite ι] (h : Function.Bijective (dualTensorHom R M N)) :
     Function.Bijective (dualTensorHom R M (ι → N)) :=
@@ -277,7 +277,7 @@ lemma dualTensorHom_bijective : Function.Bijective (dualTensorHom R M N) := by
       ← coe_dualTensorHomEquivOfBasis (Pi.basisFun ..)]
     refine (surjective_of_comp_eq_id (f.lcomp R N) _ ?_).comp (EquivLike.surjective _)
     ext φ x
-    exact congr(φ ($eq x))
+    congrm φ ($eq x)
 
 variable (R M N) in
 /-- If `M` is finite projective, the natural map $M^* ⊗ N → Hom(M, N)$ is an equivalence. -/
@@ -304,7 +304,7 @@ noncomputable def dualTensorHomEquiv : Dual R M ⊗[R] N ≃ₗ[R] M →ₗ[R] N
 
 end FiniteProjective
 
-@[deprecated dualTensorHomEquivOfBasis_eq_dualTensorHomEquiv (since := "2026-08-31")]
+@[deprecated dualTensorHomEquivOfBasis_eq_dualTensorHomEquiv +typeChanged (since := "2026-08-31")]
 theorem dualTensorHomEquiv_eq_dualTensorHomEquivOfBasis
     (b : Basis ι R M) [DecidableEq ι] [Fintype ι] :
     have := Module.Finite.of_basis b; have := Module.Free.of_basis b
@@ -427,19 +427,19 @@ end
 variable {ι κ : Type*} [Fintype ι] [Fintype κ] [DecidableEq ι] [DecidableEq κ]
 
 /-- An inverse to `TensorProduct.dualDistrib` given bases. -/
-@[deprecated dualDistribEquiv (since := "2026-09-01")]
+@[deprecated dualDistribEquiv +typeChanged (since := "2026-09-01")]
 noncomputable def dualDistribInvOfBasis (b : Basis ι R M) (c : Basis κ R N) :
     Dual R (M ⊗[R] N) →ₗ[R] Dual R M ⊗[R] Dual R N :=
   ∑ i, ∑ j,
     (ringLmapEquivSelf R ℕ _).symm (b.dualBasis i ⊗ₜ c.dualBasis j) ∘ₗ
       applyₗ (c j) ∘ₗ applyₗ (b i) ∘ₗ lcurry (.id R) M N R
 
-@[deprecated dualDistribEquiv (since := "2026-09-01")]
+@[deprecated dualDistribEquiv +typeChanged (since := "2026-09-01")]
 theorem dualDistribInvOfBasis_apply (b : Basis ι R M) (c : Basis κ R N) (f : Dual R (M ⊗[R] N)) :
     dualDistribInvOfBasis b c f = ∑ i, ∑ j, f (b i ⊗ₜ c j) • b.dualBasis i ⊗ₜ c.dualBasis j := by
   simp [dualDistribInvOfBasis]
 
-@[deprecated dualDistribEquiv (since := "2026-09-01")]
+@[deprecated dualDistribEquiv +typeChanged (since := "2026-09-01")]
 lemma dualDistrib_dualDistribInvOfBasis_left_inverse (b : Basis ι R M) (c : Basis κ R N) :
     (dualDistrib R M N).comp (dualDistribInvOfBasis b c) = LinearMap.id := by
   apply (b.tensorProduct c).dualBasis.ext
@@ -455,7 +455,7 @@ lemma dualDistrib_dualDistribInvOfBasis_left_inverse (b : Basis ι R M) (c : Bas
   · simpa using mul_comm _ _
   all_goals { intros; simp [*] at * }
 
-@[deprecated dualDistribEquiv (since := "2026-09-01")]
+@[deprecated dualDistribEquiv +typeChanged (since := "2026-09-01")]
 theorem dualDistrib_dualDistribInvOfBasis_right_inverse (b : Basis ι R M) (c : Basis κ R N) :
     (dualDistribInvOfBasis b c).comp (dualDistrib R M N) = LinearMap.id := by
   apply (b.dualBasis.tensorProduct c.dualBasis).ext
@@ -470,8 +470,8 @@ theorem dualDistrib_dualDistribInvOfBasis_right_inverse (b : Basis ι R M) (c : 
 /-- A linear equivalence between `Dual M ⊗ Dual N` and `Dual (M ⊗ N)` given bases for `M` and `N`.
 It sends `f ⊗ g` to the composition of `TensorProduct.map f g` with the natural
 isomorphism `R ⊗ R ≃ R`. -/
-@[simps! (attr := deprecated dualDistribEquiv (since := "2026-09-01")),
-  deprecated dualDistribEquiv (since := "2026-09-01")]
+@[simps! (attr := deprecated dualDistribEquiv +typeChanged (since := "2026-09-01")),
+  deprecated dualDistribEquiv +typeChanged (since := "2026-09-01")]
 noncomputable def dualDistribEquivOfBasis (b : Basis ι R M) (c : Basis κ R N) :
     Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) := by
   refine LinearEquiv.ofLinearMap (dualDistrib R M N) (dualDistribInvOfBasis b c) ?_ ?_

@@ -108,6 +108,40 @@ lemma pushforward_obj_map_apply (M : PresheafOfModules.{v} R) {X Y : Cᵒᵖ} (f
     (m : (ModuleCat.restrictScalars (φ.app X).hom).obj (M.obj (Opposite.op (F.obj X.unop)))) :
       (((pushforward φ).obj M).map f).hom m = M.map (F.map f.unop).op m := rfl
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/14624:
+
+We had to use the `instanceSearchTypes` backward compatibility flag to make an instance search
+succeed. Concretely, the following instance cannot be synthesized, writing `P Z` for
+`(ModuleCat.restrictScalars (RingCat.Hom.hom (φ.app Z))).obj (((pushforward₀ F R).obj M).obj Z)`:
+```
+DFunLike (↑(P X) →ₗ[↑(S.obj X)]
+    ↑((ModuleCat.restrictScalars (RingCat.Hom.hom (S.map f))).obj (P Y))) _ _
+```
+It is needed to elaborate the `DFunLike.coe` in the statement below, whose `F` annotation spells
+domain and codomain on the `restrictScalars` side.
+
+The failure happens while applying `@LinearMap.instFunLike`: assigning one of its
+instance-implicit-argument metavariables is rejected because the metavariable's type and the type
+of the assigned value do not match at `.instances` transparency. The metavariable's expected type
+is `Module ↑(S.obj X) ↑(P X)`, whereas the assigned value `(((pushforward φ).obj M).obj X).isModule`
+has type `Module ↑(S.obj X) ↑(((pushforward φ).obj M).obj X)`. The comparison bottoms out at
+`(ModuleCat.restrictScalars (RingCat.Hom.hom (φ.app X))).1 =?= ((pushforward φ).obj M).1`, the same
+module written once through `pushforward` and once through `restrictScalars`. Lean falls back to
+synthesize an instance of the correct type, which succeeds, but it returns
+```
+((ModuleCat.restrictScalars (RingCat.Hom.hom (φ.app X))).obj (((pushforward₀ F R).obj M).obj
+X)).isModule
+```
+This again not defeq to the assigned value, stalling in the same way. That second comparison runs at
+`.implicit`, but `pushforward` does not unfold there either.
+
+Potential fix: Mark `pushforward`, `PresheafOfModules.restrictScalars` and
+`PresheafOfModules.restrictScalarsObj` implicit-reducible; then both backward compatibility options
+can go.
+-/
+set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 set_option backward.isDefEq.respectTransparency.types false in
 /-- `@[simp]`-normal form of `pushforward_obj_map_apply`. -/
 @[simp]
@@ -122,6 +156,29 @@ lemma pushforward_map_app_apply {M N : PresheafOfModules.{v} R} (α : M ⟶ N) (
     (m : (ModuleCat.restrictScalars (φ.app X).hom).obj (M.obj (Opposite.op (F.obj X.unop)))) :
     (((pushforward φ).map α).app X).hom m = α.app (Opposite.op (F.obj X.unop)) m := rfl
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/14624:
+
+We had to use the `instanceSearchTypes` backward compatibility flag to make an instance search
+succeed. Concretely, the following instance cannot be synthesized, writing `P Z` for
+`(ModuleCat.restrictScalars (RingCat.Hom.hom (φ.app Z))).obj (((pushforward₀ F R).obj M).obj Z)`:
+`DFunLike (↑(P X) →ₗ[↑(S.obj X)] ↑((ModuleCat.restrictScalars (RingCat.Hom.hom (φ.app X))).obj
+  (((pushforward₀ F R).obj N).obj X))) _ _`
+It is needed to elaborate the `DFunLike.coe` in the statement below.
+
+This is the same failure as for `pushforward_obj_map_apply'` above, again while applying
+`@LinearMap.instFunLike`: the metavariable's expected type is `Module ↑(S.obj X) ↑(P X)`, the
+assigned value is `(((pushforward φ).obj M).obj X).isModule` of type
+`Module ↑(S.obj X) ↑(((pushforward φ).obj M).obj X)`, and both the direct `.instances` check and the
+comparison against the re-synthesized instance bottom out at
+`(ModuleCat.restrictScalars (RingCat.Hom.hom (φ.app X))).1 =?= ((pushforward φ).obj M).1`.
+
+Potential fix: Mark `pushforward`, `PresheafOfModules.restrictScalars` and
+`PresheafOfModules.restrictScalarsObj` implicit-reducible; then both backward compatibility options
+can go.
+-/
+set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
 set_option backward.isDefEq.respectTransparency.types false in
 /-- `@[simp]`-normal form of `pushforward_map_app_apply`. -/
 @[simp]

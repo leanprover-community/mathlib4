@@ -97,7 +97,7 @@ theorem Metric.instTietzeExtensionClosedBall (𝕜 : Type v) [RCLike 𝕜] {E : 
 
 instance unitInterval.instTietzeExtension : TietzeExtension unitInterval := by
   rw [unitInterval.eq_closedBall]
-  exact Metric.instTietzeExtensionClosedBall ℝ _ (by norm_num)
+  exact Metric.instTietzeExtensionClosedBall ℝ _ (by simp)
 
 variable {X : Type u} [TopologicalSpace X] [NormalSpace X] {s : Set X} (hs : IsClosed s)
 variable (𝕜 : Type v) [RCLike 𝕜]
@@ -121,7 +121,7 @@ theorem exists_norm_eq_domRestrict_eq (f : s →ᵇ E) :
   refine ⟨g', ?_, by ext x; congrm($(hg) x)⟩
   apply le_antisymm ((g'.norm_le <| by positivity).mpr hg_mem)
   refine (f.norm_le <| by positivity).mpr fun x ↦ ?_
-  have hx : f x = g' x := by simpa using! congr($(hg) x).symm
+  have hx : f x = g' x := by simpa using! congr($hg x).symm
   rw [hx]
   exact g'.norm_le (norm_nonneg g') |>.mp le_rfl x
 

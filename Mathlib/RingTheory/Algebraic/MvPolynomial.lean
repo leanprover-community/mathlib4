@@ -89,7 +89,7 @@ theorem transcendental_supported_polynomial_aeval_X_iff
   · rw [← transcendental_polynomial_aeval_X_iff R i]
     refine h.restrictScalars fun _ _ heq ↦ MvPolynomial.C_injective σ R ?_
     simp_rw [← MvPolynomial.algebraMap_eq]
-    exact congr($(heq).1)
+    congrm $(heq).1
 
 theorem transcendental_supported_X {i : σ} {s : Set σ} (h : i ∉ s) :
     Transcendental (supported R s) (X i : MvPolynomial σ R) := by

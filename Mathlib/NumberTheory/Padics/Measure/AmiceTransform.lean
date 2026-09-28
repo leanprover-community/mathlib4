@@ -5,10 +5,11 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.NumberTheory.Padics.AddChar
 public import Mathlib.NumberTheory.Padics.Measure.Basic
 public import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
+public import Mathlib.Algebra.Order.Field.Power
+public import Mathlib.NumberTheory.Padics.MahlerBasis
 
 /-!
 # The Amice transform

@@ -191,8 +191,8 @@ variable [AddMonoid ι] [GMul A] [GOne A]
 /-- A default implementation of power on a graded monoid, like `npowRec`.
 `GMonoid.gnpow` should be used instead. -/
 def gnpowRec : ∀ (n : ℕ) {i}, A i → A (n • i)
-  | 0, i, _ => cast (congr_arg A (zero_nsmul i).symm) GOne.one
-  | n + 1, i, a => cast (congr_arg A (succ_nsmul i n).symm) (GMul.mul (gnpowRec _ a) a)
+  | 0, i, _ => cast congr(A $((zero_nsmul i).symm)) GOne.one
+  | n + 1, i, a => cast congr(A $((succ_nsmul i n).symm)) (GMul.mul (gnpowRec _ a) a)
 
 @[simp]
 theorem gnpowRec_zero (a : GradedMonoid A) : GradedMonoid.mk _ (gnpowRec 0 a.snd) = 1 :=
@@ -306,6 +306,7 @@ variable {A}
 theorem mk_zero_smul {i} (a : A 0) (b : A i) : mk _ (a • b) = mk _ a * mk _ b :=
   Sigma.ext (zero_add _).symm <| eqRec_heq _ _
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem GradeZero.smul_eq_mul (a b : A 0) : a • b = a * b :=
   rfl

@@ -214,7 +214,7 @@ nonrec lemma Ideal.height_le_spanRank_toENat_of_mem_minimalPrimes
         exact ⟨x, _, fun e ↦ (Finset.mem_erase.mp e).1 rfl, (Finset.insert_erase hxt).symm, hxq⟩
       have : maximalIdeal R ≤ (q ⊔ span {x}).radical := by
         rw [radical_eq_sInf, le_sInf_iff]
-        exact fun J ⟨hJ, hJ'⟩ ↦ by_contra fun h ↦ hq' J hJ' ((SetLike.lt_iff_le_and_exists.mpr
+        exact fun J ⟨hJ, hJ'⟩ ↦ by_contra fun h ↦ hq' J hJ' ((IsConcreteLE.lt_iff_le_and_exists.mpr
           ⟨le_sup_left, x, mem_sup_right (mem_span_singleton_self _), hxq⟩).trans_le hJ)
           ((le_maximalIdeal hJ'.ne_top).lt_of_not_ge h)
       have h : (s' : Set R) ⊆ (q ⊔ span {x}).radical := by
@@ -339,7 +339,7 @@ lemma Ideal.height_le_iff_exists_minimalPrimes (p : Ideal R) [p.IsPrime]
 spanned by `p.height` elements. -/
 lemma Ideal.exists_finset_card_eq_height_of_isNoetherianRing (p : Ideal R) [p.IsPrime] :
     ∃ s : Finset R, p ∈ (span s).minimalPrimes ∧ s.card = p.height := by
-  obtain ⟨I, hI, hr⟩ := (p.height_le_iff_exists_minimalPrimes <| p.height).mp le_rfl
+  obtain ⟨I, hI, hr⟩ := (p.height_le_iff_exists_minimalPrimes p.height).mp le_rfl
   have hs : I.generators.Finite := (IsNoetherian.noetherian I).finite_generators
   refine ⟨hs.toFinset, by rwa [hs.coe_toFinset, span, I.span_generators], ?_⟩
   rw [← Set.ncard_eq_toFinset_card (hs := hs), (IsNoetherian.noetherian I).generators_ncard]

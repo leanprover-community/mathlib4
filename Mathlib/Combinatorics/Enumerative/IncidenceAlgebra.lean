@@ -88,6 +88,7 @@ namespace IncidenceAlgebra
 section Zero
 variable [Zero 𝕜] [LE α] {a b : α}
 
+@[macro_inline]
 instance instFunLike : FunLike (IncidenceAlgebra 𝕜 α) α (α → 𝕜) where
   coe := toFun
   coe_injective f g h := by cases f; cases g; congr

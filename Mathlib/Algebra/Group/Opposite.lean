@@ -302,6 +302,6 @@ instance instCommGroup [CommGroup α] : CommGroup αᵃᵒᵖ :=
 
 @[to_additive]
 instance instMulTorsionFree [Monoid α] [IsMulTorsionFree α] : IsMulTorsionFree αᵐᵒᵖ :=
-  ⟨fun _ h ↦ op_injective.comp <| (pow_left_injective h).comp <| unop_injective⟩
+  ⟨fun _ h ↦ op_injective.comp <| (pow_left_injective h).comp unop_injective⟩
 
 end AddOpposite

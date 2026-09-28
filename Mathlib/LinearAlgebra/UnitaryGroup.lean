@@ -80,8 +80,8 @@ theorem mem_unitaryGroup_iff' : A ∈ Matrix.unitaryGroup n α ↔ star A * A = 
 theorem det_of_mem_unitary {A : Matrix n n α} (hA : A ∈ Matrix.unitaryGroup n α) :
     A.det ∈ unitary α := by
   constructor
-  · simpa [star, det_transpose] using congr_arg det hA.1
-  · simpa [star, det_transpose] using congr_arg det hA.2
+  · simpa [star, det_transpose] using congr(det $(hA.1))
+  · simpa [star, det_transpose] using congr(det $(hA.2))
 
 open scoped Kronecker in
 /-- The kronecker product of two unitary matrices is unitary.
@@ -139,7 +139,7 @@ def toLin' (A : unitaryGroup n α) :=
   Matrix.toLin' A.1
 
 theorem ext_iff (A B : unitaryGroup n α) : A = B ↔ ∀ i j, A i j = B i j :=
-  Subtype.ext_iff.trans ⟨fun h i j => congr_fun (congr_fun h i) j, Matrix.ext⟩
+  Subtype.ext_iff.trans ⟨fun h i j => congr($h i j), Matrix.ext⟩
 
 @[ext]
 theorem ext (A B : unitaryGroup n α) : (∀ i j, A i j = B i j) → A = B :=

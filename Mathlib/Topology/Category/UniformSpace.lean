@@ -56,6 +56,7 @@ instance : LargeCategory.{u} UniformSpaceCat.{u} where
   comp_id := by intros; apply Hom.ext; simp
   assoc := by intros; apply Hom.ext; ext; simp
 
+@[macro_inline]
 instance instFunLike (X Y : UniformSpaceCat) :
     FunLike { f : X → Y // UniformContinuous f } X Y where
   coe := Subtype.val
@@ -164,6 +165,7 @@ instance : Inhabited CpltSepUniformSpace :=
 instance category : LargeCategory CpltSepUniformSpace :=
   inferInstanceAs <| Category (InducedCategory _ toUniformSpace)
 
+@[macro_inline]
 instance instFunLike (X Y : CpltSepUniformSpace) :
     FunLike { f : X → Y // UniformContinuous f } X Y where
   coe := Subtype.val
@@ -235,7 +237,7 @@ theorem extension_comp_hom {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
     (f : toUniformSpace ↧(Completion X) ⟶ toUniformSpace Y) :
     (extensionHom (completionHom X ≫ f)).hom = f := by
   ext x
-  exact congr_fun (Completion.extension_comp_coe f.hom.property) x
+  congrm $(Completion.extension_comp_coe f.hom.property) x
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The completion functor is left adjoint to the forgetful functor. -/

@@ -136,7 +136,7 @@ lemma Hom.app_smul (φ : M ⟶ N) (r : Γ(X, U)) (x : Γ(M, U)) :
 lemma hom_ext (f g : M ⟶ N) (H : ∀ U, f.app U = g.app U) : f = g := by
   apply SheafOfModules.hom_ext
   ext U x
-  exact congr($(H U.unop) x)
+  congrm $(H U.unop) x
 
 lemma isSheaf (M : X.Modules) : M.presheaf.IsSheaf := SheafOfModules.isSheaf M
 
@@ -458,7 +458,7 @@ lemma restrict_map (M : Y.Modules) (f : X ⟶ Y) [IsOpenImmersion f] {U V} (i : 
 
 /-- `Scheme.Modules.restrict` along an open immersion `X ⟶ Y` sends `𝒪_Y` to `𝒪_X`. -/
 def restrictUnitIso (f : X ⟶ Y) [IsOpenImmersion f] :
-    restrict (.unit <| Y.ringCatSheaf) f ≅ .unit X.ringCatSheaf := by
+    restrict (.unit Y.ringCatSheaf) f ≅ .unit X.ringCatSheaf := by
   refine (fullyFaithfulForget _).preimageIso <| PresheafOfModules.isoMk (fun U ↦ ?_) ?_
   · refine ModuleCat.isoMk
       ((forget₂ CommRingCat RingCat ⋙ forget₂ _ Ab).mapIso (f.appIso U.unop)) ?_
@@ -471,7 +471,7 @@ def restrictUnitIso (f : X ⟶ Y) [IsOpenImmersion f] :
         (f.appIso _).hom = (f.appIso U.unop).hom ≫ X.presheaf.map g := by
       simp [Hom.appIso_hom']
     ext x
-    exact congr($(this) x)
+    congrm $this x
 
 /-- The restriction of a module along an open immersion. -/
 def restrictFunctorAdjCounitIso : pushforward f ⋙ restrictFunctor f ≅ 𝟭 _ :=
@@ -485,15 +485,15 @@ def restrictFunctorAdjCounitIso : pushforward f ⋙ restrictFunctor f ≅ 𝟭 _
 /-- Restriction is right adjoint to pushforward. -/
 def restrictAdjunction : restrictFunctor f ⊣ pushforward f := by
   refine pushforwardPushforwardAdj (by exact f.isOpenEmbedding.isOpenMap.adjunction) _ _ ?_ ?_
-  · ext U x; exact congr($((f.app_appIso_inv _).symm).hom x)
+  · ext U x; congrm $((f.app_appIso_inv _).symm).hom x
   · ext U x
     have : (f.appIso U.unop).inv ≫ f.app _ ≫
       X.presheaf.map (eqToHom (f.preimage_image_eq U.unop).symm).op = 𝟙 _ := by
       rw [Scheme.Hom.appIso_inv_app_assoc, ← Functor.map_comp, ← X.presheaf.map_id]; rfl
-    exact congr($this x)
+    congrm $this x
 
 instance : IsIso (restrictAdjunction f).counit :=
-  inferInstanceAs (IsIso <| (restrictFunctorAdjCounitIso f).hom)
+  inferInstanceAs (IsIso (restrictFunctorAdjCounitIso f).hom)
 
 instance : (restrictFunctor f).IsLeftAdjoint := (restrictAdjunction f).isLeftAdjoint
 instance : (pushforward f).Full := (restrictAdjunction f).fullyFaithfulROfIsIsoCounit.full

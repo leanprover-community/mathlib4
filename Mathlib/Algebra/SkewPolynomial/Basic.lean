@@ -671,11 +671,11 @@ lemma erase_zero (n : ℕ) : (0 : SkewPolynomial R).erase n = 0 := by
 lemma erase_monomial {n : ℕ} {a : R} : erase n (monomial n a) = 0 := by
   simp [erase, monomial_def, zero_def]
 
-@[deprecated coeff_erase (since := "2026-07-06")]
+@[deprecated coeff_erase +typeChanged (since := "2026-07-06")]
 lemma erase_same (p : SkewPolynomial R) (n : ℕ) : coeff (p.erase n) n = 0 := by
     simp [coeff_erase]
 
-@[deprecated coeff_erase (since := "2026-07-06")]
+@[deprecated coeff_erase +typeChanged (since := "2026-07-06")]
 lemma erase_ne (p : SkewPolynomial R) {n i : ℕ} (h : i ≠ n) :
     coeff (p.erase n) i = coeff p i := by
   simp [coeff_erase, h]
@@ -700,16 +700,16 @@ lemma coeff_update (p : SkewPolynomial R) (n : ℕ) (a : R) :
     (p.update n a).coeff = Function.update p.coeff n a := by
   ext; simp [coeff, update]; rfl
 
-@[deprecated coeff_update (since := "2026-07-06")]
+@[deprecated coeff_update +typeChanged (since := "2026-07-06")]
 lemma coeff_update_apply (p : SkewPolynomial R) (n : ℕ) (a : R) (i : ℕ) :
     (p.update n a).coeff i = if i = n then a else p.coeff i :=
   SkewMonoidAlgebra.coeff_update_apply _ _ _ _
 
-@[deprecated coeff_update (since := "2026-07-06")]
+@[deprecated coeff_update +typeChanged (since := "2026-07-06")]
 lemma coeff_update_same (p : SkewPolynomial R) (n : ℕ) (a : R) : (p.update n a).coeff n = a := by
   rw [p.coeff_update_apply, ite_eq_left rfl]
 
-@[deprecated coeff_update (since := "2026-07-06")]
+@[deprecated coeff_update +typeChanged (since := "2026-07-06")]
 lemma coeff_update_ne (p : SkewPolynomial R) {n i : ℕ} (a : R) (h : i ≠ n) :
     (p.update n a).coeff i = p.coeff i := by rw [p.coeff_update_apply, ite_eq_right h]
 

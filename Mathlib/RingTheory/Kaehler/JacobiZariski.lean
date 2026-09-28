@@ -174,7 +174,7 @@ lemma CotangentSpace.compEquiv_symm_inr :
 lemma CotangentSpace.compEquiv_symm_zero (x) :
     (compEquiv Q P).symm (0, x) =
         (Extension.CotangentSpace.map (Q.toComp P).toExtensionHom).liftBaseChange T x :=
-  DFunLike.congr_fun (compEquiv_symm_inr Q P) x
+  congr($(compEquiv_symm_inr Q P) x)
 
 lemma CotangentSpace.fst_compEquiv :
     LinearMap.fst T Q.toExtension.CotangentSpace (T ⊗[S] P.toExtension.CotangentSpace) ∘ₗ
@@ -195,7 +195,7 @@ lemma CotangentSpace.fst_compEquiv :
 
 lemma CotangentSpace.fst_compEquiv_apply (x) :
     (compEquiv Q P x).1 = Extension.CotangentSpace.map (Q.ofComp P).toExtensionHom x :=
-  DFunLike.congr_fun (fst_compEquiv Q P) x
+  congr($(fst_compEquiv Q P) x)
 
 lemma CotangentSpace.map_toComp_injective :
     Function.Injective
@@ -485,7 +485,6 @@ private lemma auxMemKer (z : T ⊗[S] P.toExtension.H1Cotangent) :
       ((LinearMap.lTensor T Extension.h1Cotangentι) z) ∈
         (Q.comp P).toExtension.cotangentComplex.ker := by
   induction z with
-  | zero => simp
   | tmul x y => simp [← Extension.CotangentSpace.map_cotangentComplex]
   | add x y hx hy => simpa using Submodule.add_mem _ hx hy
 
@@ -510,7 +509,6 @@ theorem exact_liftBaseChange_map_of_flat [Module.Flat S T] :
       P.toExtension.exact_hCotangentι_cotangentComplex).linearMap_ker_eq] at x_in
   rcases x_in with ⟨x, rfl⟩
   use x; induction x with
-  | zero => ext; simp
   | tmul x y => ext; simp
   | add x y hx hy => ext; simp [hx (auxMemKer Q P x), hy (auxMemKer Q P y)]
 
