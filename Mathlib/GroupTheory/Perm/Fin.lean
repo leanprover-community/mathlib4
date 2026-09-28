@@ -583,10 +583,10 @@ lemma decomposeFin'Symm_uncurry_bijective :
     Function.Bijective (decomposeFin'Symm (n := n)).uncurry := by
   rw [Nat.bijective_iff_injective_and_card]
   refine ⟨fun ⟨i, σ⟩ ⟨i', σ'⟩ h ↦ ?_, ?_⟩
-  · obtain rfl : i = i' := by simpa using DFunLike.congr_fun h 0
+  · obtain rfl : i = i' := by simpa using congr($h 0)
     obtain rfl : σ = σ' := by
       ext j : 1
-      simpa using DFunLike.congr_fun h j.succ
+      simpa using congr($h j.succ)
     rfl
   · rw [Nat.card_prod, Nat.card_perm, Nat.card_perm, Nat.card_eq_fintype_card,
       Nat.card_eq_fintype_card, Fintype.card_fin, Fintype.card_fin,

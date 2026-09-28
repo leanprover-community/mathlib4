@@ -6,9 +6,9 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Etale.StandardEtale
-public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
+import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 public import Mathlib.RingTheory.RingHom.StandardSmooth
-public import Mathlib.RingTheory.Unramified.LocalRing
+import Mathlib.RingTheory.Unramified.LocalRing
 public import Mathlib.RingTheory.ZariskisMainTheorem
 
 /-!
@@ -288,9 +288,9 @@ lemma exists_primesOver_under_adjoin_eq_singleton_and_residueField_bijective
   let := Localization.AtPrime.algebraOfLiesOver (Q.under R[t]) Q
   refine ⟨t, ?_, RingHom.injective _, ?_⟩
   · refine Set.ext fun Q' ↦ ⟨fun ⟨_, _⟩ ↦ ?_, fun e ↦ by exact ⟨e ▸ inferInstance, ⟨e ▸ rfl⟩⟩⟩
-    by_contra! H
+    by_contra H
     have : Q'.LiesOver p := .trans _ (Q.under (R[t])) _
-    exact htQ (SetLike.le_def.mp (Q'.over_def (Q.under (R[t]))).ge
+    exact htQ (mem_of_le_of_mem (Q'.over_def (Q.under (R[t]))).ge
       (x := ⟨t, self_mem_adjoin_singleton _ _⟩) (htQ' Q' ⟨‹_›, ‹_›⟩ H))
   · have h : IsScalarTower (Localization.AtPrime p) (Localization.AtPrime (Q.under R[t]))
       (Localization.AtPrime Q) := inferInstance

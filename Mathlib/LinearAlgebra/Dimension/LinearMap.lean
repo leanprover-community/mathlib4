@@ -5,9 +5,9 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.Module.Projective
-public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.Algebra.Module.Projective
+import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.LinearAlgebra.Dimension.RankNullity
 
 /-!
@@ -119,7 +119,7 @@ theorem le_rank_iff_exists_linearIndependent {c : Cardinal} {f : V →ₗ[K] V'}
     refine ⟨g '' s, Cardinal.mk_image_eq_lift _ _ fg.injective, ?_⟩
     replace fg : ∀ x, f (g x) = x := by
       intro x
-      convert! congr_arg Subtype.val (fg x)
+      convert! congr($(fg x).val)
     replace si : LinearIndepOn K (fun x => f (g x)) s := by
       simpa only [fg] using! si.map' _ (ker_subtype _)
     exact si.image_of_comp
