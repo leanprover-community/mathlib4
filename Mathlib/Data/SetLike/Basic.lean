@@ -222,7 +222,7 @@ class IsMemLE (A : Type*) (B : outParam Type*) [Membership B A] [LE A] where
 
 export IsMemLE (le_iff_mem_imp_mem)
 
-@[deprecated (since := "2026-09-18")] alias IsConcreteLE := IsMemLE
+@[deprecated (since := "2026-09-18")] alias  := IsMemLE
 
 @[deprecated (since := "2026-09-01")] alias SetLike.le_def := le_iff_mem_imp_mem
 @[deprecated (since := "2026-09-18")] alias IsMemLE.le_iff := le_iff_mem_imp_mem
@@ -258,7 +258,7 @@ A preorder defined this way automatically makes available an instance of `IsMemL
   le_refl _ _ h := h
   le_trans _ _ _ h₁ h₂ _ h₃ := h₂ (h₁ h₃)
 
-instance [Membership B A] : letI := LE.ofMembership A; IsConcreteLE A B :=
+instance [Membership B A] : letI := LE.ofMembership A; IsMemLE A B :=
   letI := LE.ofMembership A; { le_iff := .rfl }
 
 /-- The preorder induced from a `Membership` instance by inclusion.
