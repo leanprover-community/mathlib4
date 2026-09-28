@@ -124,30 +124,41 @@ section Group
 variable {G H : Type*} [Group G] [Group H] (f : G →* H) (M N : Submonoid G) (M' : Submonoid H)
          {s : Set (Submonoid G)}
 
-variable {M N} in
-@[to_additive]
-theorem mulSupport_mono (h : M ≤ N) : M.mulSupport ≤ N.mulSupport := fun _ ↦ by aesop
+@[to_additive (attr := simp)]
+theorem mulSupport_bot : (⊥ : Submonoid G).mulSupport = ⊥ := by ext; simp
 
 @[to_additive (attr := simp)]
-theorem mulSupport_inf : (M ⊓ N).mulSupport = M.mulSupport ⊓ N.mulSupport := by aesop
+theorem mulSupport_top : (⊤ : Submonoid G).mulSupport = ⊤ := by ext; simp
+
+variable {M N} in
+@[to_additive]
+theorem mulSupport_mono (h : M ≤ N) : M.mulSupport ≤ N.mulSupport := fun _ ↦ by
+  have := mem_of_le_of_mem h
+  grind [mem_mulSupport]
+
+@[to_additive (attr := simp)]
+theorem mulSupport_inf : (M ⊓ N).mulSupport = M.mulSupport ⊓ N.mulSupport := by
+  ext
+  grind [mem_mulSupport, Subgroup.mem_inf]
 
 @[to_additive (attr := simp)]
 theorem mulSupport_sInf (s : Set (Submonoid G)) :
-    (sInf s).mulSupport = InfSet.sInf (mulSupport '' s) := by aesop
+    (sInf s).mulSupport = InfSet.sInf (mulSupport '' s) := by ext; simp; grind
 
 variable {M'} in
-@[to_additive (attr := aesop 90%)]
-theorem IsMulSpanning.comap (hM' : M'.IsMulSpanning) : (M'.comap f).IsMulSpanning := by aesop
+@[to_additive]
+theorem IsMulSpanning.comap (hM' : M'.IsMulSpanning) : (M'.comap f).IsMulSpanning := by
+  grind [IsMulSpanning, mem_comap]
 
 @[to_additive (attr := simp)]
-theorem comap_mulSupport : (M'.comap f).mulSupport = (M'.mulSupport).comap f := by aesop
+theorem comap_mulSupport : (M'.comap f).mulSupport = (M'.mulSupport).comap f := by ext; simp
 
 variable {f M} in
 @[to_additive]
 theorem IsMulSpanning.map (hM : M.IsMulSpanning) (hf : Function.Surjective f) :
     (M.map f).IsMulSpanning := fun x ↦ by
   obtain ⟨x', rfl⟩ := hf x
-  aesop
+  grind [IsMulSpanning, mem_map]
 
 end Group
 
@@ -160,9 +171,10 @@ variable {f M} in
 theorem map_mulSupport (hsupp : f.ker ≤ M.mulSupport) :
     (M.map f).mulSupport = (M.mulSupport).map f := by
   ext
-  refine ⟨fun ⟨⟨a, ⟨ha₁, ha₂⟩⟩, ⟨b, ⟨hb₁, hb₂⟩⟩⟩ => ?_, by aesop⟩
-  have : (a * b)⁻¹ * b ∈ M := by exact mul_mem (hsupp (show f (a * b) = 1 by simp_all)).2 hb₁
-  aesop
+  refine ⟨fun ⟨⟨a, ⟨ha₁, ha₂⟩⟩, ⟨b, ⟨hb₁, hb₂⟩⟩⟩ => ?_,
+    by grind [Subgroup.mem_map, mem_map, mem_mulSupport]⟩
+  have : (a * b)⁻¹ * b ∈ M := mul_mem (hsupp (show f (a * b) = 1 by simp_all)).2 hb₁
+  grind [mem_mulSupport, SetLike.mem_coe, mul_inv_rev, inv_mul_cancel_comm, Subgroup.mem_map]
 
 end CommGroup
 
