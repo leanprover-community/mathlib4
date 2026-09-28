@@ -8,10 +8,8 @@ module
 public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Basic.Rel
 public import Mathlib.Combinatorics.SimpleGraph.Init
-public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Data.Sym.Sym2
 public import Mathlib.Order.CompleteBooleanAlgebra
-public import Mathlib.Tactic.CrossRefAttribute
 
 import Mathlib.Data.Set.Lattice.Disjoint
 
@@ -112,7 +110,7 @@ def SimpleGraph.mk' {V : Type u} :
     simp only [mk.injEq, Subtype.mk.injEq]
     intro h
     funext v w
-    simpa [Bool.coe_iff_coe] using congr_fun₂ h v w
+    simpa [Bool.coe_iff_coe] using congr($h v w)
 
 /-- We can enumerate simple graphs by enumerating all functions `V → V → Bool`
 and filtering on whether they are symmetric and irreflexive. -/
@@ -438,7 +436,7 @@ theorem support_top_of_nontrivial [Nontrivial V] : (⊤ : SimpleGraph V).support
 /-- The support of the empty graph is empty. -/
 @[simp]
 theorem support_bot : (⊥ : SimpleGraph V).support = ∅ :=
-  SetRel.dom_eq_empty_iff.mpr <| Set.empty_def.symm
+  SetRel.dom_eq_empty_iff.mpr Set.empty_def.symm
 
 /-- Only the empty graph has empty support. -/
 @[simp]
@@ -788,7 +786,7 @@ theorem incidenceSet_inter_incidenceSet_subset (h : a ≠ b) :
 
 theorem incidenceSet_inter_incidenceSet_of_adj (h : G.Adj a b) :
     G.incidenceSet a ∩ G.incidenceSet b = {s(a, b)} := by
-  refine (G.incidenceSet_inter_incidenceSet_subset <| h.ne).antisymm ?_
+  refine (G.incidenceSet_inter_incidenceSet_subset h.ne).antisymm ?_
   rintro _ (rfl : _ = s(a, b))
   exact ⟨G.mk'_mem_incidenceSet_left_iff.2 h, G.mk'_mem_incidenceSet_right_iff.2 h⟩
 

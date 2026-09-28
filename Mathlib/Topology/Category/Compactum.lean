@@ -6,11 +6,7 @@ Authors: Adam Topaz
 module
 
 public import Mathlib.CategoryTheory.Monad.Types
-public import Mathlib.CategoryTheory.Monad.Limits
-public import Mathlib.CategoryTheory.Equivalence
-public import Mathlib.Topology.Category.CompHaus.Basic
 public import Mathlib.Topology.Category.Profinite.Basic
-public import Mathlib.Data.Set.Constructions
 
 /-!
 
@@ -445,7 +441,7 @@ instance faithful : compactumToCompHaus.Faithful where
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` gets confused by coercion using forget.
     apply Monad.Algebra.Hom.ext
     ext
-    simpa using! ConcreteCategory.congr_hom h _
+    simpa using! congr($h _)
 
 /-- This definition is used to prove essential surjectivity of `compactumToCompHaus`. -/
 noncomputable def isoOfTopologicalSpace {D : CompHaus} :

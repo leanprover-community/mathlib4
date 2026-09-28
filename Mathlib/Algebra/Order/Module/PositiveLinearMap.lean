@@ -151,7 +151,6 @@ lemma toLinearMap_zero : (0 : E₁ →ₚ[R] E₂).toLinearMap = 0 :=
   rfl
 
 instance : IsZeroApply (E₁ →ₚ[R] E₂) E₁ E₂ where
-  zero_apply _ := rfl
 
 @[deprecated zero_apply +typeChanged (since := "2026-07-29")]
 protected lemma zero_apply (x : E₁) : (0 : E₁ →ₚ[R] E₂) x = 0 := rfl
@@ -171,7 +170,6 @@ lemma toLinearMap_add (f g : E₁ →ₚ[R] E₂) :
   rfl
 
 instance : IsAddApply (E₁ →ₚ[R] E₂) E₁ E₂ where
-  add_apply _ _ _ := rfl
 
 @[deprecated add_apply +typeChanged (since := "2026-07-29")]
 protected lemma add_apply (f g : E₁ →ₚ[R] E₂) (x : E₁) : (f + g) x = f x + g x := rfl
@@ -188,7 +186,6 @@ lemma toLinearMap_nsmul (f : E₁ →ₚ[R] E₂) (n : ℕ) :
   rfl
 
 instance : IsSMulApply ℕ (E₁ →ₚ[R] E₂) E₁ E₂ where
-  smul_apply _ _ _ := rfl
 
 @[deprecated smul_apply +typeChanged (since := "2026-07-29")]
 protected lemma nsmul_apply (f : E₁ →ₚ[R] E₂) (n : ℕ) (x : E₁) : (n • f) x = n • f x := rfl
