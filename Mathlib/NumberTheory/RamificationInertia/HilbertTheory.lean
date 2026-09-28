@@ -52,8 +52,11 @@ closure of `A` in `L`. The decomposition (resp. inertia) *field* is the subfield
 decomposition (resp. inertia) group of `P`, and the associated ring is its integral closure over
 `A`. Decomposition and inertia rings arising this way are provided by
 `Ideal.IsDecompositionRing.of_isFractionRing` and `Ideal.IsInertiaRing.of_isFractionRing`, and the
-degrees of the fields follow from those of the rings via
-`IsFractionRing.finrank_eq`.
+degrees of the fields follow from those of the rings via `IsFractionRing.finrank_eq`.
+
+The field-level predicates `IsDecompositionField` and `IsInertiaField` defined below will be
+deprecated in favor of the ring-level predicates `Ideal.IsDecompositionRing` and
+`Ideal.IsInertiaRing`.
 
 -/
 
@@ -90,67 +93,28 @@ class IsInertiaRing extends IsGaloisGroup (inertia G P) R B
 
 instance [IsGaloisGroup (inertia G P) R B] : IsInertiaRing G P R where
 
-variable (R' : Type*) [CommRing R'] [Algebra R' B]
-
-/-- Two decomposition rings are isomorphic. -/
-noncomputable def IsDecompositionRing.ringEquiv [IsDecompositionRing G P R]
-    [IsDecompositionRing G P R'] [FaithfulSMul R B] [FaithfulSMul R' B] :
-    R ≃+* R' :=
-  IsGaloisGroup.ringEquiv (stabilizer G P) R R' B
-
-@[simp]
-theorem IsDecompositionRing.algebraMap_ringEquiv_apply [IsDecompositionRing G P R]
-    [IsDecompositionRing G P R'] [FaithfulSMul R B] [FaithfulSMul R' B] (x : R) :
-    algebraMap R' B (IsDecompositionRing.ringEquiv G P R R' x) = algebraMap R B x := by
-  simp [IsDecompositionRing.ringEquiv, IsGaloisGroup.ringEquiv]
-
-@[simp]
-theorem IsDecompositionRing.algebraMap_ringEquiv_symm_apply [IsDecompositionRing G P R]
-    [IsDecompositionRing G P R'] [FaithfulSMul R B] [FaithfulSMul R' B] (x : R') :
-    algebraMap R B ((IsDecompositionRing.ringEquiv G P R R').symm x) = algebraMap R' B x := by
-  simp [IsDecompositionRing.ringEquiv, IsGaloisGroup.ringEquiv]
-
-/-- Two inertia rings are isomorphic. -/
-noncomputable def IsInertiaRing.ringEquiv [IsInertiaRing G P R]
-    [IsInertiaRing G P R'] [FaithfulSMul R B] [FaithfulSMul R' B] :
-    R ≃+* R' :=
-  IsGaloisGroup.ringEquiv (inertia G P) R R' B
-
-@[simp]
-theorem IsInertiaRing.algebraMap_ringEquiv_apply [IsInertiaRing G P R]
-    [IsInertiaRing G P R'] [FaithfulSMul R B] [FaithfulSMul R' B] (x : R) :
-    algebraMap R' B (IsInertiaRing.ringEquiv G P R R' x) = algebraMap R B x := by
-  simp [IsInertiaRing.ringEquiv, IsGaloisGroup.ringEquiv]
-
-@[simp]
-theorem IsInertiaRing.algebraMap_ringEquiv_symm_apply [IsInertiaRing G P R]
-    [IsInertiaRing G P R'] [FaithfulSMul R B] [FaithfulSMul R' B] (x : R') :
-    algebraMap R B ((IsInertiaRing.ringEquiv G P R R').symm x) = algebraMap R' B x := by
-  simp [IsInertiaRing.ringEquiv, IsGaloisGroup.ringEquiv]
-
-variable (A L : Type*) [CommRing A] [Field L] [Algebra B L] [IsFractionRing B L]
-  [Algebra A B] [Algebra A L] [IsScalarTower A B L]
+variable (L : Type*) [Field L] [Algebra B L] [IsFractionRing B L]
   [MulSemiringAction G L] [SMulDistribClass G B L]
 
 /-- If `L` is Galois over the field `D` with the decomposition group of `P` (so `D` is the
 decomposition field of `P`), and `R` is an integrally closed subring of `D` with fraction field `D`
 such that `B` is integral over `R`, then `R` is a decomposition ring of `P`. -/
-theorem IsDecompositionRing.of_isFractionRing (R D : Type*) [CommRing R] [Algebra R B] [Field D]
+theorem IsDecompositionRing.of_isFractionRing (D : Type*) [Field D]
     [Algebra R D] [Algebra R L] [Algebra D L] [IsScalarTower R D L] [IsScalarTower R B L]
     [IsFractionRing R D] [IsIntegrallyClosed R] [Algebra.IsIntegral R B]
     [IsGaloisGroup (stabilizer G P) D L] :
     IsDecompositionRing G P R :=
-  {toIsGaloisGroup := .of_isFractionRing (stabilizer G P) R B D L}
+  { toIsGaloisGroup := .of_isFractionRing (stabilizer G P) R B D L }
 
 /-- If `L` is Galois over the field `E` with the inertia group of `P` (so `E` is the inertia field
 of `P`), and `R` is an integrally closed subring of `E` with fraction field `E` such that `B` is
 integral over `R`, then `R` is an inertia ring of `P`. -/
-theorem IsInertiaRing.of_isFractionRing (R E : Type*) [CommRing R] [Algebra R B] [Field E]
+theorem IsInertiaRing.of_isFractionRing (E : Type*) [Field E]
     [Algebra R E] [Algebra R L] [Algebra E L] [IsScalarTower R E L] [IsScalarTower R B L]
     [IsFractionRing R E] [IsIntegrallyClosed R] [Algebra.IsIntegral R B]
     [IsGaloisGroup (inertia G P) E L] :
     IsInertiaRing G P R :=
-  {toIsGaloisGroup := .of_isFractionRing (inertia G P) R B E L}
+  { toIsGaloisGroup := .of_isFractionRing (inertia G P) R B E L }
 
 end basic
 
@@ -232,11 +196,12 @@ theorem primesOver_eq_singleton [P.IsPrime] [Finite (stabilizer G P)] :
 
 variable [Finite G] [IsGaloisGroup G A B] [IsDomain A] [IsDomain B] [FaithfulSMul R B]
   [Module.Finite A B] [Module.Flat A B] [Module.Flat R B] [p.IsPrime]
-  [Algebra.HasSeparableResidueFieldsAt A B p] [𝓟.IsPrime] [P.IsPrime]
+  [Algebra.HasSeparableResidueFieldsAt A B p] [P.IsPrime]
 
 include G P in
 private lemma ramificationIdxIn_eq_and_inertiaDegIn_eq :
     ramificationIdxIn 𝓟 B = p.ramificationIdxIn B ∧ inertiaDegIn 𝓟 B = p.inertiaDegIn B := by
+  have : 𝓟.IsPrime := isPrime_of_liesOver P 𝓟
   have : IsDomain R := (FaithfulSMul.algebraMap_injective R B).isDomain
   have : Module.Finite R B := Module.Finite.right A R B
   refine eq_and_eq_of_pos_of_le_of_mul_le_mul ?_ ?_ ?_ ?_ ?_
@@ -265,8 +230,8 @@ theorem inertiaDegIn_eq :
   (ramificationIdxIn_eq_and_inertiaDegIn_eq G P R p 𝓟).2
 
 include G P p in
-/-- `𝓟` is unramified over `A`. -/
-theorem ramificationIdx_eq :
+/-- The ramification index of `𝓟` over `A` equals `1`. -/
+theorem ramificationIdx_eq_one :
     𝓟.ramificationIdx A = 1 := by
   have := ramificationIdx_tower (R := A) 𝓟 P
   rwa [← ramificationIdxIn_eq_ramificationIdx 𝓟 P (stabilizer G P), ramificationIdxIn_eq G P R p 𝓟,
@@ -274,8 +239,9 @@ theorem ramificationIdx_eq :
 
 include G P p in
 /-- The inertia degree of `𝓟` over `A` equals `1`. -/
-theorem inertiaDeg_eq :
+theorem inertiaDeg_eq_one :
     𝓟.inertiaDeg A = 1 := by
+  have : 𝓟.IsPrime := isPrime_of_liesOver P 𝓟
   have : Module.Finite R B := Module.Finite.right A R B
   have := inertiaDeg_tower (R := A) 𝓟 P
   rwa [← inertiaDegIn_eq_inertiaDeg p P G, ← inertiaDegIn_eq G P R p 𝓟,
