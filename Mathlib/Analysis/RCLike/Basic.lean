@@ -10,6 +10,7 @@ public import Mathlib.Algebra.BigOperators.Balance
 public import Mathlib.Algebra.Order.BigOperators.Expect
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Analysis.CStarAlgebra.Basic
+public import Mathlib.Analysis.Normed.Group.RadialFunction
 public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 public import Mathlib.Analysis.Normed.Ring.Finite
 public import Mathlib.Analysis.Real.Sqrt
@@ -1383,3 +1384,10 @@ theorem trans_smul (α : unitary 𝕜) (e : V ≃ₗᵢ[𝕜] G) (f : G ≃ₗ�
     e.trans (α • f) = α • (e.trans f) := by ext; simp
 
 end LinearIsometryEquiv
+
+namespace Function
+
+lemma isRadial_normSq {𝕜 : Type*} [RCLike 𝕜] : IsRadial (RCLike.normSq (K := 𝕜)) := by
+  simp [isRadial_def, RCLike.normSq_eq_def']
+
+end Function
