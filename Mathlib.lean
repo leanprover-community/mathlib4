@@ -1035,10 +1035,12 @@ public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
 public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
 public import Mathlib.Algebra.Order.GroupWithZero.WithZero
 public import Mathlib.Algebra.Order.Hom.Basic
+public import Mathlib.Algebra.Order.Hom.GroupNorm
 public import Mathlib.Algebra.Order.Hom.Lattice
 public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Algebra.Order.Hom.MonoidWithZero
 public import Mathlib.Algebra.Order.Hom.Ring
+public import Mathlib.Algebra.Order.Hom.RingNorm
 public import Mathlib.Algebra.Order.Hom.Submonoid
 public import Mathlib.Algebra.Order.Hom.TypeTags
 public import Mathlib.Algebra.Order.Hom.Units
@@ -1212,6 +1214,7 @@ public import Mathlib.Algebra.Polynomial.Sequence
 public import Mathlib.Algebra.Polynomial.Smeval
 public import Mathlib.Algebra.Polynomial.SpecificDegree
 public import Mathlib.Algebra.Polynomial.Splits
+public import Mathlib.Algebra.Polynomial.Sturm.Sequence
 public import Mathlib.Algebra.Polynomial.SumIteratedDerivative
 public import Mathlib.Algebra.Polynomial.Taylor
 public import Mathlib.Algebra.Polynomial.UnitTrinomial
@@ -2427,6 +2430,7 @@ public import Mathlib.Analysis.SpecialFunctions.Log.Monotone
 public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 public import Mathlib.Analysis.SpecialFunctions.Log.PosLog
 public import Mathlib.Analysis.SpecialFunctions.Log.RpowTendsto
+public import Mathlib.Analysis.SpecialFunctions.Log.Sum
 public import Mathlib.Analysis.SpecialFunctions.Log.Summable
 public import Mathlib.Analysis.SpecialFunctions.MulExpNegMulSq
 public import Mathlib.Analysis.SpecialFunctions.MulExpNegMulSqIntegral
@@ -2794,6 +2798,7 @@ public import Mathlib.CategoryTheory.Functor.Basic
 public import Mathlib.CategoryTheory.Functor.Category
 public import Mathlib.CategoryTheory.Functor.Const
 public import Mathlib.CategoryTheory.Functor.Currying
+public import Mathlib.CategoryTheory.Functor.CurryingFour
 public import Mathlib.CategoryTheory.Functor.CurryingThree
 public import Mathlib.CategoryTheory.Functor.Derived.Adjunction
 public import Mathlib.CategoryTheory.Functor.Derived.LeftDerived
@@ -2817,6 +2822,7 @@ public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAt
 public import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 public import Mathlib.CategoryTheory.Functor.KanExtension.Preserves
 public import Mathlib.CategoryTheory.Functor.OfSequence
+public import Mathlib.CategoryTheory.Functor.Quadrifunctor
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Exact
@@ -3149,6 +3155,7 @@ public import Mathlib.CategoryTheory.Localization.Pi
 public import Mathlib.CategoryTheory.Localization.Preadditive
 public import Mathlib.CategoryTheory.Localization.Predicate
 public import Mathlib.CategoryTheory.Localization.Prod
+public import Mathlib.CategoryTheory.Localization.Quadrifunctor
 public import Mathlib.CategoryTheory.Localization.Quotient
 public import Mathlib.CategoryTheory.Localization.Resolution
 public import Mathlib.CategoryTheory.Localization.SmallHom
@@ -7544,7 +7551,6 @@ public import Mathlib.Tactic.ENatToNat
 public import Mathlib.Tactic.Echelon.Bareiss
 public import Mathlib.Tactic.Echelon.Cert
 public import Mathlib.Tactic.Echelon.Core
-public import Mathlib.Tactic.Echelon.Parsing
 public import Mathlib.Tactic.Echelon.Rat
 public import Mathlib.Tactic.Echelon.Zsqrtd
 public import Mathlib.Tactic.Eqns
@@ -7673,6 +7679,10 @@ public import Mathlib.Tactic.Linter.UnusedTacticExtension
 public import Mathlib.Tactic.Linter.UpstreamableDecl
 public import Mathlib.Tactic.Linter.ValidatePRTitle
 public import Mathlib.Tactic.Linter.Whitespace
+public import Mathlib.Tactic.Matrix.ListMatrix
+public import Mathlib.Tactic.Matrix.MulExpand
+public import Mathlib.Tactic.Matrix.OfLists
+public import Mathlib.Tactic.Matrix.Parsing
 public import Mathlib.Tactic.Measurability
 public import Mathlib.Tactic.Measurability.Init
 public import Mathlib.Tactic.MinImports
@@ -7689,6 +7699,7 @@ public import Mathlib.Tactic.NoncommRing
 public import Mathlib.Tactic.Nontriviality
 public import Mathlib.Tactic.Nontriviality.Core
 public import Mathlib.Tactic.NormDet
+public import Mathlib.Tactic.NormMatMul
 public import Mathlib.Tactic.NormNum
 public import Mathlib.Tactic.NormNum.Abs
 public import Mathlib.Tactic.NormNum.Basic
@@ -7923,6 +7934,10 @@ public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.RestrictScalar
 public import Mathlib.Topology.Algebra.Module.Determinant
 public import Mathlib.Topology.Algebra.Module.EmbeddingOfLocal
 public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
+public import Mathlib.Topology.Algebra.Module.Equiv.Pi
+public import Mathlib.Topology.Algebra.Module.Equiv.Prod
+public import Mathlib.Topology.Algebra.Module.Equiv.Submodule
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.FiniteDimensionBilinear
 public import Mathlib.Topology.Algebra.Module.IsWeak
@@ -8001,10 +8016,12 @@ public import Mathlib.Topology.Algebra.StarSubalgebra
 public import Mathlib.Topology.Algebra.Support
 public import Mathlib.Topology.Algebra.TopologicallyNilpotent
 public import Mathlib.Topology.Algebra.UniformConvergence
+public import Mathlib.Topology.Algebra.UniformFaithfulSMul
 public import Mathlib.Topology.Algebra.UniformField
 public import Mathlib.Topology.Algebra.UniformFilterBasis
 public import Mathlib.Topology.Algebra.UniformMulAction
 public import Mathlib.Topology.Algebra.UniformRing
+public import Mathlib.Topology.Algebra.ValuativeRel.Completion
 public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 public import Mathlib.Topology.Algebra.Valued.LocallyCompact
 public import Mathlib.Topology.Algebra.Valued.NormedValued

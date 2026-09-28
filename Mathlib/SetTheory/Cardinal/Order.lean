@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Order.Ring.Canonical
 public import Mathlib.Data.Fintype.Option
 public import Mathlib.Order.InitialSeg
-public import Mathlib.Order.Nat
+import Mathlib.Order.Nat
 public import Mathlib.Order.SuccPred.CompleteLinearOrder
 public import Mathlib.SetTheory.Cardinal.Defs
 public import Mathlib.SetTheory.Cardinal.SchroederBernstein
@@ -592,7 +592,7 @@ theorem sum_lt_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i < g i) : sum f 
         rw [← mk_out (f i), ← mk_out (g i)]
         exact ⟨Embedding.ofSurjective _ h⟩
     let ⟨⟨i, a⟩, h⟩ := sG C
-    exact hc i a (congr_fun h _)
+    exact hc i a congr($h _)
 
 theorem prod_le_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i ≤ g i) : prod f ≤ prod g :=
   ⟨Embedding.piCongrRight fun i =>

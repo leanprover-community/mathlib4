@@ -7,7 +7,6 @@ module
 
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 public import Mathlib.SetTheory.Ordinal.Principal
-public import Mathlib.SetTheory.Ordinal.Univ
 
 /-!
 # Ordinal arithmetic with cardinals

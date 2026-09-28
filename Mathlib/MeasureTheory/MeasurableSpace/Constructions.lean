@@ -689,13 +689,13 @@ theorem Finset.measurable_restrict₂_apply {s t : Finset α} (hst : s ⊆ t)
     Measurable (restrict₂ (π := fun _ ↦ γ) hst f) := hf.comp (measurable_inclusion hst)
 
 variable (X) in
-theorem measurable_eq_mp {i i' : δ} (h : i = i') : Measurable (congr_arg X h).mp := by
+theorem measurable_eq_mp {i i' : δ} (h : i = i') : Measurable congr(X $h).mp := by
   cases h
   exact measurable_id
 
 variable (X) in
 theorem Measurable.eq_mp {β} [MeasurableSpace β] {i i' : δ} (h : i = i') {f : β → X i}
-    (hf : Measurable f) : Measurable fun x => (congr_arg X h).mp (f x) :=
+    (hf : Measurable f) : Measurable fun x => congr(X $h).mp (f x) :=
   (measurable_eq_mp X h).comp hf
 
 @[fun_prop]
@@ -826,8 +826,8 @@ theorem measurableSet_sum_iff {s : Set (α ⊕ β)} :
 theorem measurable_fun_sum {_ : MeasurableSpace γ} {f : α ⊕ β → γ} (hl : Measurable (f ∘ Sum.inl))
     (hr : Measurable (f ∘ Sum.inr)) : Measurable f :=
   Measurable.of_comap_le <|
-    le_inf (MeasurableSpace.comap_le_iff_le_map.2 <| hl)
-      (MeasurableSpace.comap_le_iff_le_map.2 <| hr)
+    le_inf (MeasurableSpace.comap_le_iff_le_map.2 hl)
+      (MeasurableSpace.comap_le_iff_le_map.2 hr)
 
 @[fun_prop]
 theorem Measurable.sumElim {_ : MeasurableSpace γ} {f : α → γ} {g : β → γ} (hf : Measurable f)
