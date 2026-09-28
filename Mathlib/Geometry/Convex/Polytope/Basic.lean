@@ -85,7 +85,6 @@ lemma of_subsingleton (hP : P.Subsingleton) : IsPolytope R P := by
   obtain rfl | ⟨x, rfl⟩ := hP.eq_empty_or_singleton <;> simp
 
 variable (R) in
-variable (R) in
 lemma convexHull_of_finite {v : Set X} (hv : v.Finite) :
     IsPolytope R (convexHull R v) := ⟨hv.toFinset, by simp⟩
 
