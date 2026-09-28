@@ -55,8 +55,8 @@ protected lemma IsSeparated.singleton : IsSeparated ε {x} := pairwise_singleton
 
 alias _root_.Set.Subsingleton.isSeparated := IsSeparated.of_subsingleton
 
-lemma IsSeparated.anti (hεδ : ε ≤ δ) : IsSeparated δ s → IsSeparated ε s := by
-  unfold IsSeparated at *; gcongr
+nonrec lemma IsSeparated.anti (hεδ : ε ≤ δ) (hs : IsSeparated δ s) : IsSeparated ε s := by
+  unfold IsSeparated at *; gconvert hs
 
 lemma IsSeparated.subset (hst : s ⊆ t) (hs : IsSeparated ε t) : IsSeparated ε s := hs.mono hst
 
