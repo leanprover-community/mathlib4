@@ -103,8 +103,8 @@ instance instIsMulTorsionFree [Monoid M] [Monoid N] [IsMulTorsionFree M] [IsMulT
     IsMulTorsionFree (M × N) where
   pow_left_injective n hn a b h hab := by
     rw [Prod.ext_iff] at *
-    exact ⟨IsMulTorsionFree.pow_left_injective hn h.1 hab.1,
-      IsMulTorsionFree.pow_left_injective hn h.2 hab.2⟩
+    exact ⟨IsMulTorsionFree.pow_left_injective_of_commute hn h.1 hab.1,
+      IsMulTorsionFree.pow_left_injective_of_commute hn h.2 hab.2⟩
 
 @[to_additive Prod.subNegMonoid]
 instance [DivInvMonoid G] [DivInvMonoid H] : DivInvMonoid (G × H) where

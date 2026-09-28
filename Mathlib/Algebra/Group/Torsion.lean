@@ -28,7 +28,7 @@ variable [IsMulTorsionFree M] {n : ℕ} {a b : M}
 
 @[to_additive nsmul_right_injective]
 lemma pow_left_injective (hn : n ≠ 0) : Injective fun a : M ↦ a ^ n :=
-  fun a b ↦ IsMulTorsionFree.pow_left_injective hn (mul_comm a b)
+  fun a b ↦ IsMulTorsionFree.pow_left_injective_of_commute hn (mul_comm a b)
 
 @[to_additive nsmul_right_inj]
 lemma pow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (pow_left_injective hn).eq_iff
@@ -50,7 +50,7 @@ variable [IsMulTorsionFree M] {n : ℕ} {a b : M}
 
 @[to_additive nsmul_eq_zero_iff_right]
 lemma pow_eq_one_iff_left (hn : n ≠ 0) : a ^ n = 1 ↔ a = 1 := by
-  simpa +contextual [iff_def] using IsMulTorsionFree.pow_left_injective (b := (1 : M)) hn (by simp)
+  simpa +contextual [iff_def] using IsMulTorsionFree.pow_left_injective_of_commute (b := (1 : M)) hn (by simp)
 
 -- We want to use `IsAddTorsion.nsmul_eq_zero_iff` earlier than `smul_eq_zero`.
 @[to_additive (attr := simp high)]
