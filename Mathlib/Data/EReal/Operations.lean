@@ -872,22 +872,22 @@ lemma nsmul_eq_mul (n : ℕ) (x : EReal) : n • x = n * x := by
 @[norm_cast]
 lemma coe_csSup {s : Set ℝ} (hs : s.Nonempty) (hs' : BddAbove s) :
     (↑(sSup s) : EReal) = sSup ((↑) '' s) :=
-  WithBotTop.leftOrdContinuous_coe.map_csSup hs hs'
+  WithBotTop.coe_csSup hs hs'
 
 @[norm_cast]
 lemma coe_csInf {s : Set ℝ} (hs : s.Nonempty) (hs' : BddBelow s) :
     (↑(sInf s) : EReal) = sInf ((↑) '' s) :=
-  WithBotTop.rightOrdContinuous_coe.map_csInf hs hs'
+  WithBotTop.coe_csInf hs hs'
 
 @[norm_cast]
 lemma coe_ciSup {ι : Type*} [Nonempty ι] {f : ι -> ℝ} (hf : BddAbove (Set.range f)) :
     (↑(⨆ x, f x) : EReal) = ⨆ x, ↑(f x) :=
-  WithBotTop.leftOrdContinuous_coe.map_ciSup hf
+  WithBotTop.coe_ciSup hf
 
 @[norm_cast]
 lemma coe_ciInf {ι : Type*} [Nonempty ι] {f : ι -> ℝ} (hf : BddBelow (Set.range f)):
     (↑(⨅ x, f x) : EReal) = ⨅ x, ↑(f x) :=
-  WithBotTop.rightOrdContinuous_coe.map_ciInf hf
+  WithBotTop.coe_ciInf hf
 
 end EReal
 

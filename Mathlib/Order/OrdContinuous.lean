@@ -200,6 +200,22 @@ theorem map_ciSup (hf : LeftOrdContinuous f) {g : ι → α} (hg : BddAbove (ran
   simp only [iSup, hf.map_csSup (range_nonempty _) hg, ← range_comp]
   rfl
 
+theorem _root_.WithBotTop.coe_csSup {s : Set α} (hs : s.Nonempty) (hs' : BddAbove s) :
+    (↑(sSup s) : WithBotTop α) = sSup ((↑) '' s) :=
+  WithBotTop.leftOrdContinuous_coe.map_csSup hs hs'
+
+theorem _root_.WithBotTop.coe_csInf {s : Set α} (hs : s.Nonempty) (hs' : BddBelow s) :
+    (↑(sInf s) : WithBotTop α) = sInf ((↑) '' s) :=
+  WithBotTop.rightOrdContinuous_coe.map_csInf hs hs'
+
+theorem _root_.WithBotTop.coe_ciSup {ι : Type*} [Nonempty ι] {f : ι -> α}
+    (hf : BddAbove (Set.range f)) : (↑(⨆ x, f x) : WithBotTop α) = ⨆ x, ↑(f x) :=
+  WithBotTop.leftOrdContinuous_coe.map_ciSup hf
+
+theorem _root_.WithBotTop.coe_ciInf {ι : Type*} [Nonempty ι] {f : ι -> α}
+    (hf : BddBelow (Set.range f)) : (↑(⨅ x, f x) : WithBotTop α) = ⨅ x, ↑(f x) :=
+  WithBotTop.rightOrdContinuous_coe.map_ciInf hf
+
 end ConditionallyCompleteLattice
 
 end LeftOrdContinuous
