@@ -213,7 +213,9 @@ instance (priority := 100) DiscreteTopology.metrizableSpace [DiscreteTopology X]
 a countable set. -/
 theorem _root_.IsCompact.exists_countable_dense_subset {X : Type*} [TopologicalSpace X]
     [TopologicalSpace.PseudoMetrizableSpace X] {s : Set X} (hs : IsCompact s) :
-    ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t :=
-  hs.isSeparable.exists_countable_dense_subset
+    ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
+  let := TopologicalSpace.pseudoMetrizableSpaceUniformity X
+  have := TopologicalSpace.pseudoMetrizableSpaceUniformity_countably_generated X
+  exact hs.totallyBounded.isSeparable.exists_countable_dense_subset
 
 end TopologicalSpace
