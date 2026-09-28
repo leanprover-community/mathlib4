@@ -648,13 +648,12 @@ section Extend
 variable (R) {η : Type*} [Semiring R] (M : Type*) [AddCommMonoid M] [Module R M] (s : ι → η)
 
 /-- `Function.extend s f 0` as a bundled linear map. -/
-@[simps]
+@[simps!]
 noncomputable def Function.ExtendByZero.linearMap : (ι → M) →ₗ[R] η → M where
-  toFun f := Function.extend s f 0
-  __ := ExtendByZero.hom M s
+  __ := hom M s
   map_smul' r f := by
     ext i
-    simpa using congr($(Function.extend_smul r s f 0) i)
+    simpa using congr($(extend_smul r s f 0) i)
 
 end Extend
 
