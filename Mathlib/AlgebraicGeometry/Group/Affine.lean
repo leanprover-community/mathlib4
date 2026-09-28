@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Category.CommHopfAlgCat
 public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.CommGrp_
-public import Mathlib.RingTheory.Bialgebra.TensorProduct
 
 /-!
 # The equivalence between Hopf algebras and affine group schemes

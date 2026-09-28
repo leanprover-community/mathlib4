@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.Prod
+import Mathlib.CategoryTheory.Localization.Prod
 public import Mathlib.CategoryTheory.Localization.Equivalence
 public import Mathlib.Data.Fintype.Option
 
