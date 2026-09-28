@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Order.Filter.Ultrafilter.Defs
 public import Mathlib.Order.Filter.Cofinite
-public import Mathlib.Order.ZornAtoms
 
 /-!
 # Ultrafilters
@@ -57,6 +56,9 @@ theorem eq_pure_of_finite_mem (h : s.Finite) (h' : s ∈ f) : ∃ x ∈ s, f = p
 
 theorem eq_pure_of_finite [Finite α] (f : Ultrafilter α) : ∃ a, f = pure a :=
   (eq_pure_of_finite_mem finite_univ univ_mem).imp fun _ ⟨_, ha⟩ => ha
+
+theorem pure_surjective [Finite α] : Function.Surjective (pure : α → Ultrafilter α) :=
+  fun f ↦ (eq_pure_of_finite f).imp fun _ ↦ .symm
 
 theorem le_cofinite_or_eq_pure (f : Ultrafilter α) : (f : Filter α) ≤ cofinite ∨ ∃ a, f = pure a :=
   or_iff_not_imp_left.2 fun h =>

@@ -6,7 +6,6 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Algebra.Module.ZLattice.Basic
-public import Mathlib.Analysis.InnerProductSpace.ProdL2
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
 public import Mathlib.NumberTheory.NumberField.FractionalIdeal
 public import Mathlib.NumberTheory.NumberField.Units.Basic
@@ -168,7 +167,7 @@ theorem integralBasis_repr_apply [NumberField K] (x : K) (i : Free.ChooseBasisIn
   let f := (canonicalEmbedding K).toRatAlgHom.toLinearMap.codRestrict _
     (fun x ↦ mem_rat_span_latticeBasis K x)
   suffices ((latticeBasis K).restrictScalars ℚ).repr.toLinearMap ∘ₗ f =
-    (integralBasis K).repr.toLinearMap from DFunLike.congr_fun (LinearMap.congr_fun this x) i
+    (integralBasis K).repr.toLinearMap from congr($this x i)
   refine Basis.ext (integralBasis K) (fun i ↦ ?_)
   have : f (integralBasis K i) = ((latticeBasis K).restrictScalars ℚ) i := by
     apply Subtype.val_injective
@@ -242,7 +241,6 @@ instance : NullSingletonClass (volume : Measure (mixedSpace K)) := by
       pi_nullSingletonClass ⟨w, not_isReal_iff_isComplex.mp hw⟩
     exact prod.instNullSingletonClass_snd
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable {K} in
 open scoped Classical in
 /-- The set of points in the mixedSpace that are equal to `0` at a fixed (real) place has
@@ -476,7 +474,9 @@ end norm
 
 noncomputable section stdBasis
 
-open Complex MeasureTheory MeasureTheory.Measure ZSpan Matrix ComplexConjugate
+open Complex MeasureTheory MeasureTheory.Measure ZSpan Matrix
+
+open scoped ComplexConjugate
 
 variable [NumberField K]
 
@@ -705,7 +705,7 @@ theorem latticeBasis_repr_apply (x : K) (i : ChooseBasisIndex ℤ (𝓞 K)) :
   let f := (mixedEmbedding K).toRatAlgHom.toLinearMap.codRestrict _
     (fun x ↦ mem_rat_span_latticeBasis K x)
   suffices ((latticeBasis K).restrictScalars ℚ).repr.toLinearMap ∘ₗ f =
-    (integralBasis K).repr.toLinearMap from DFunLike.congr_fun (LinearMap.congr_fun this x) i
+    (integralBasis K).repr.toLinearMap from congr($this x i)
   refine Basis.ext (integralBasis K) (fun i ↦ ?_)
   have : f (integralBasis K i) = ((latticeBasis K).restrictScalars ℚ) i := by
     apply Subtype.val_injective
@@ -774,7 +774,7 @@ theorem mem_span_fractionalIdealLatticeBasis {x : (mixedSpace K)} :
   rw [show Set.range (fractionalIdealLatticeBasis K I) =
         (mixedEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (basisOfFractionalIdeal K I)) by
       rw [← Set.range_comp]
-      exact congr_arg Set.range (funext (fun i ↦ fractionalIdealLatticeBasis_apply K I i))]
+      congrm Set.range $(funext (fun i ↦ fractionalIdealLatticeBasis_apply K I i))]
   rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
   rw [show Submodule.span ℤ (Set.range (basisOfFractionalIdeal K I)) = (I : Set K) by
         ext; simp [mem_span_basisOfFractionalIdeal]]
@@ -1106,7 +1106,6 @@ abbrev realSpace := InfinitePlace K → ℝ
 
 variable {K}
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The set of points in the `realSpace` that are equal to `0` at a fixed place has volume zero. -/
 theorem realSpace.volume_eq_zero [NumberField K] (w : InfinitePlace K) :
     volume ({x : realSpace K | x w = 0}) = 0 := by
@@ -1217,9 +1216,9 @@ theorem normAtAllPlaces_eq_of_normAtComplexPlaces_eq {x y : mixedSpace K}
   ext w
   obtain hw | hw := isReal_or_isComplex w
   · simpa [normAtAllPlaces_apply, normAtPlace_apply_of_isReal hw,
-      normAtComplexPlaces_apply_isReal ⟨w, hw⟩] using congr_arg (|·|) (congr_fun h w)
+      normAtComplexPlaces_apply_isReal ⟨w, hw⟩] using congr(|$h w|)
   · simpa [normAtAllPlaces_apply, normAtPlace_apply_of_isComplex hw,
-      normAtComplexPlaces_apply_isComplex ⟨w, hw⟩] using congr_fun h w
+      normAtComplexPlaces_apply_isComplex ⟨w, hw⟩] using congr($h w)
 
 theorem normAtAllPlaces_image_preimage_of_nonneg {s : Set (realSpace K)}
     (hs : ∀ x ∈ s, ∀ w, 0 ≤ x w) :

@@ -41,7 +41,7 @@ topological space, frame, locale, Stone duality, adjunction, points
 
 @[expose] public section
 
-open CategoryTheory Order Set Topology TopologicalSpace
+open CategoryTheory Order Set TopologicalSpace
 
 namespace Locale
 
@@ -61,7 +61,7 @@ def openOfElementHom : FrameHom L (Set (PT L)) where
   toFun u := {x | x u}
   map_inf' a b := by simp [Set.ofPred_and]
   map_top' := by simp
-  map_sSup' S := by ext; simp [Prop.exists_iff]
+  map_sSup' S := by ext; simp [Prop.exists]
 
 namespace PT
 
@@ -85,7 +85,7 @@ topological spaces, which sends a locale `L` to the topological space `PT L` of 
 from `L` to `Prop` and a locale homomorphism `f` to a continuous function between the spaces
 of points. -/
 def pt : Locale ⥤ TopCat where
-  obj L := .of (PT L.unop)
+  obj L := ↧(PT L.unop)
   map f := TopCat.ofHom ⟨fun p ↦ p.comp f.unop.hom,
     continuous_def.2 <| by rintro s ⟨u, rfl⟩; use f.unop u; rfl⟩
 
@@ -102,7 +102,7 @@ def localePointOfSpacePoint (x : X) : PT (Opens X) where
   toFun := (x ∈ ·)
   map_inf' _ _ := rfl
   map_top' := rfl
-  map_sSup' S := by simp [Prop.exists_iff]
+  map_sSup' S := by simp [Prop.exists]
 
 /-- The counit is a frame homomorphism. -/
 def counitAppCont : FrameHom L (Opens <| PT L) where

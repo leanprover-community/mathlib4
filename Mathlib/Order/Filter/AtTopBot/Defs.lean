@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
 module
 
-public import Mathlib.Data.Set.Piecewise
+import Mathlib.Data.Set.Piecewise
 public import Mathlib.Order.Filter.Basic
 
 /-!
@@ -21,7 +21,7 @@ In this file we define the filters
 
 assert_not_exists Finset
 
-variable {ι ι' α β γ : Type*}
+variable {ι α β : Type*}
 
 open Set
 

@@ -6,7 +6,6 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
 /-!
@@ -21,11 +20,11 @@ of the ring.
 
 -/
 
-@[expose] public section
+public section
 
 universe v u u'
 
-variable {R : Type u} [CommRing R] {R' : Type u'} [CommRing R']
+variable {R : Type u} [Ring R] {R' : Type u'} [Ring R']
 
 open CategoryTheory
 
@@ -39,12 +38,12 @@ lemma ModuleCat.restrictScalars_map_exact (S : ShortComplex (ModuleCat.{v} R')) 
   exact h
 
 instance : Limits.PreservesFiniteLimits (ModuleCat.restrictScalars.{v} f) := by
-  have := ((CategoryTheory.Functor.exact_tfae (ModuleCat.restrictScalars.{v} f)).out 1 3).mp
+  have := ((CategoryTheory.Functor.exact_tfae (ModuleCat.restrictScalars.{v} f)).out 2 4).mp
     (ModuleCat.restrictScalars_map_exact f)
   exact this.1
 
 instance : Limits.PreservesFiniteColimits (ModuleCat.restrictScalars.{v} f) := by
-  have := ((CategoryTheory.Functor.exact_tfae (ModuleCat.restrictScalars.{v} f)).out 1 3).mp
+  have := ((CategoryTheory.Functor.exact_tfae (ModuleCat.restrictScalars.{v} f)).out 2 4).mp
     (ModuleCat.restrictScalars_map_exact f)
   exact this.2
 

@@ -5,7 +5,6 @@ Authors: Jakob von Raumer
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 public import Mathlib.CategoryTheory.Grothendieck
 
 /-!
@@ -27,7 +26,6 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 namespace StructuredArrow
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The structured arrow category `StructuredArrow d T` depends on the chosen domain `d : D` in a
 functorial way, inducing a functor `Dᵒᵖ ⥤ Cat`. -/
 @[simps]
@@ -45,7 +43,6 @@ end StructuredArrow
 
 namespace CostructuredArrow
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The costructured arrow category `CostructuredArrow T d` depends on the chosen codomain `d : D`
 in a functorial way, inducing a functor `D ⥤ Cat`. -/
 @[simps]

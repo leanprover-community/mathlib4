@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Data.EReal.Operations
+import Mathlib.Data.EReal.Operations
 public import Mathlib.Topology.MetricSpace.Bounded
 public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 
@@ -39,7 +39,7 @@ composition of partial equivs with `≫`.
 
 noncomputable section
 
-open TopologicalSpace Topology
+open TopologicalSpace
 
 variable {H : Type*}
 
@@ -51,7 +51,9 @@ the arrow. -/
 
 @[inherit_doc] scoped[Manifold] infixr:100 " ≫ " => PartialEquiv.trans
 
-open Set OpenPartialHomeomorph Manifold
+open Set OpenPartialHomeomorph
+
+open scoped Manifold
 
 /-! ### Structure groupoids -/
 

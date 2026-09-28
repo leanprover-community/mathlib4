@@ -5,8 +5,7 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Data.List.Rotate
+import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.GroupTheory.Perm.Support
 
 /-!
@@ -34,7 +33,7 @@ nontrivial permutation that is noncyclic.
 
 namespace List
 
-variable {α β : Type*}
+variable {α : Type*}
 
 section FormPerm
 
@@ -281,7 +280,7 @@ theorem formPerm_ext_iff {x y x' y' : α} {l l' : List α} (hd : Nodup (x :: y :
   obtain ⟨⟨n, hn⟩, hx'⟩ := get_of_mem hx
   have hl : (x :: y :: l).length = (x' :: y' :: l').length := by
     rw [← dedup_eq_self.mpr hd, ← dedup_eq_self.mpr hd', ← card_toFinset, ← card_toFinset]
-    refine congr_arg Finset.card ?_
+    congrm Finset.card ?_
     rw [← Finset.coe_inj, ← support_formPerm_of_nodup' _ hd (by simp), ←
       support_formPerm_of_nodup' _ hd' (by simp)]
     simp only [h]

@@ -6,6 +6,7 @@ Authors: Monica Omar
 module
 
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
+public import Mathlib.LinearAlgebra.Projection
 
 /-!
 # Idempotent continuous linear maps
@@ -29,7 +30,7 @@ we show that idempotent elements of `M →L[R] M` are precisely the projections 
 topological complement submodules.
 -/
 
-@[expose] public section
+public section
 
 namespace ContinuousLinearMap
 

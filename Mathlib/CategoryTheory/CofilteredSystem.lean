@@ -231,7 +231,7 @@ theorem isMittagLeffler_of_exists_finite_range
     (h : ∀ j : J, ∃ (i : _) (f : i ⟶ j), (range <| F.map f).Finite) : F.IsMittagLeffler := by
   intro j
   obtain ⟨i, hi, hf⟩ := h j
-  obtain ⟨m, ⟨i, f, hm⟩, hmin⟩ := Finset.wellFoundedLT.wf.has_min
+  obtain ⟨m, ⟨i, f, hm⟩, hmin⟩ := Finset.wellFoundedLT.has_min
     { s : Finset (F.obj j) | ∃ (i : _) (f : i ⟶ j), ↑s = range (F.map f) }
     ⟨_, i, hi, hf.coe_toFinset⟩
   refine ⟨i, f, fun k g =>
@@ -279,7 +279,7 @@ theorem thin_diagram_of_surjective
   apply ConcreteCategory.ext
   have := congrArg F.map hφ
   simp only [map_comp, ConcreteCategory.ext_iff, DFunLike.ext_iff, comp_apply, ← funext_iff] at this
-  simpa using (Fsur φ).injective_comp_right <| this
+  simpa using (Fsur φ).injective_comp_right this
 
 theorem toPreimages_nonempty_of_surjective [hFn : ∀ j : J, Nonempty (F.obj j)]
     (Fsur : ∀ ⦃i j : J⦄ (f : i ⟶ j), Function.Surjective (F.map f)) (hs : s.Nonempty) (j) :

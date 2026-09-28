@@ -44,7 +44,7 @@ This file defines the space of complete types over a first-order theory.
 
 universe u v w w'
 
-open Cardinal Set FirstOrder
+open Set FirstOrder
 
 namespace FirstOrder
 
@@ -80,7 +80,7 @@ instance Sentence.instSetLike : SetLike (T.CompleteType α) L[[α]].Sentence :=
     cases q
     congr ⟩
 
-instance : PartialOrder (T.CompleteType α) := .ofSetLike (T.CompleteType α) (L[[α]].Sentence)
+instance : PartialOrder (T.CompleteType α) := .ofSetLike (T.CompleteType α)
 
 theorem isMaximal (p : T.CompleteType α) : IsMaximal (p : L[[α]].Theory) :=
   p.isMaximal'
@@ -245,8 +245,7 @@ theorem exists_modelType_is_realized_in (p : T.CompleteType α) :
   refine SetLike.ext fun φ => ?_
   simp only [CompleteType.mem_typeOf]
   refine
-    (@Formula.realize_equivSentence_symm_con _
-      ((M.subtheoryModel p.subset).reduct (L.lhomWithConstants α)) _ _ M.struc _ φ).trans
+    (Formula.realize_equivSentence_symm_con M φ).trans
       (_root_.trans (_root_.trans ?_ (p.isMaximal.isComplete.realize_sentence_iff φ M))
         (p.isMaximal.mem_iff_models φ).symm)
   rfl

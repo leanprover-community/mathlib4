@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.Combinatorics.Enumerative.Bell
-public import Mathlib.Data.Nat.Choose.Multinomial
 public import Mathlib.RingTheory.Ideal.Maps
 
 /-! # Divided powers
@@ -159,7 +158,7 @@ theorem DividedPowers.ext (hI : DividedPowers I) (hI' : DividedPowers I)
 theorem DividedPowers.coe_injective :
     Function.Injective (fun (h : DividedPowers I) ↦ (h : ℕ → A → A)) := fun hI hI' h ↦ by
   ext n x
-  exact congr_fun (congr_fun h n) x
+  congrm $h n x
 
 end DividedPowersDefinition
 

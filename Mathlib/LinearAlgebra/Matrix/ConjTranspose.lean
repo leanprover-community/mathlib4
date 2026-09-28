@@ -26,13 +26,20 @@ The scope `Matrix` gives the following notation:
 
 universe u u' v w
 
-variable {l m n o : Type*} {m' : o → Type*} {n' : o → Type*}
-variable {R : Type*} {S : Type*} {α : Type v} {β : Type w} {γ : Type*}
+variable {l m n o : Type*}
+variable {R : Type*} {α : Type v} {β : Type w}
 
 namespace Matrix
 
 
-/-- The conjugate transpose of a matrix defined in term of `star`. -/
+/-- The conjugate transpose of a matrix defined in term of `star`.
+
+This is available in bundled forms as:
+* `Matrix.conjTransposeAddEquiv`
+* `Matrix.conjTransposeLinearEquiv`
+* `Matrix.conjTransposeRingEquiv`
+* `Matrix.conjTransposeAlgEquiv`
+-/
 def conjTranspose [Star α] (M : Matrix m n α) : Matrix n m α :=
   M.transpose.map star
 

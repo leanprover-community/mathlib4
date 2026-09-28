@@ -6,7 +6,6 @@ Authors: Kexing Ying, Rémy Degenne
 module
 
 public import Mathlib.Probability.Process.Filtration
-public import Mathlib.Topology.Instances.Discrete
 
 /-!
 # Adapted and progressively measurable processes
@@ -41,7 +40,7 @@ adapted, progressively measurable
 
 @[expose] public section
 
-open Filter Order TopologicalSpace
+open Filter TopologicalSpace
 
 open scoped MeasureTheory NNReal ENNReal Topology
 

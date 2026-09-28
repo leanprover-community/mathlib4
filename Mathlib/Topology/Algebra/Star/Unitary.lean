@@ -6,7 +6,6 @@ Authors: Jireh Loreaux, Bhavik Mehta
 module
 
 public import Mathlib.Algebra.Star.Unitary
-public import Mathlib.Topology.Algebra.Group.Defs
 public import Mathlib.Topology.Algebra.Star
 public import Mathlib.Topology.Algebra.Monoid
 

@@ -10,14 +10,13 @@ public meta import Mathlib.Data.Int.Range
 public meta import Mathlib.Data.List.Sigma
 public meta import Plausible.Functions
 public import Batteries.Data.MLList.Basic
-public import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Algebra.Order.ZeroLEOne
+import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Data.DFinsupp.Defs
 public import Mathlib.Data.Finsupp.Defs
 public import Mathlib.Data.Int.Range
 public import Mathlib.Data.List.Sigma
 public import Mathlib.Data.PNat.Notation
-public import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Bound.Init
 
 /-!
 ## `Plausible`: generators for functions
@@ -281,11 +280,9 @@ theorem applyId_injective [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup 
   · rw [← applyId_mem_iff h₀ h₁] at hx hy
     rw [h] at hx
     contradiction
-  · rwa [List.applyId_eq_self, List.applyId_eq_self] at h <;> assumption
+  · rwa [List.applyId_eq_self, List.applyId_eq_self] at h
 
 open TotalFunction (List.toFinmap')
-
-open SampleableExt
 
 /-- Remove a slice of length `m` at index `n` in a list and a permutation, maintaining the property
 that it is a permutation.

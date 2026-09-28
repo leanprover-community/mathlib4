@@ -13,9 +13,6 @@ public import Mathlib.Algebra.CharP.Frobenius
 
 public section
 
-
-open Finset
-
 section
 
 variable (R : Type*) [CommRing R] [IsReduced R] (p n : ℕ) [ExpChar R p]

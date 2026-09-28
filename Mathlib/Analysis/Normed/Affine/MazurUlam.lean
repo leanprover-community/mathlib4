@@ -35,7 +35,7 @@ variable {E PE F PF : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MetricS
   [NormedAddTorsor E PE] [NormedAddCommGroup F] [NormedSpace ℝ F] [MetricSpace PF]
   [NormedAddTorsor F PF]
 
-open Set AffineMap AffineIsometryEquiv
+open Set AffineIsometryEquiv
 
 noncomputable section
 
@@ -87,7 +87,7 @@ theorem midpoint_fixed {x y : PE} :
 /-- A bijective isometry sends midpoints to midpoints. -/
 theorem map_midpoint (f : PE ≃ᵢ PF) (x y : PE) : f (midpoint ℝ x y) = midpoint ℝ (f x) (f y) := by
   set e : PE ≃ᵢ PE :=
-    ((f.trans <| (pointReflection ℝ <| midpoint ℝ (f x) (f y)).toIsometryEquiv).trans f.symm).trans
+    ((f.trans (pointReflection ℝ <| midpoint ℝ (f x) (f y)).toIsometryEquiv).trans f.symm).trans
       (pointReflection ℝ <| midpoint ℝ x y).toIsometryEquiv
   have hx : e x = x := by simp [e]
   have hy : e y = y := by simp [e]

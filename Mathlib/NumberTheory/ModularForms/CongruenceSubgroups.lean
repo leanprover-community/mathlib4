@@ -5,7 +5,7 @@ Authors: Chris Birkbeck
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Integer
+import Mathlib.LinearAlgebra.Matrix.Integer
 public import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
 
 /-!
@@ -250,7 +250,7 @@ theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
     rw [← Matrix.map_one Int.cast (by simp) (by simp), ← sub_eq_zero,
       ← Matrix.map_sub _ (by simp)] at hy'
     simpa only [Matrix.zero_apply, Matrix.map_apply, ZMod.intCast_zmod_eq_zero_iff_dvd,
-      Nat.cast_mul] using! congr_fun₂ hy' i j
+      Nat.cast_mul] using! congr($hy' i j)
   -- use this `k` to cook up a new integer matrix, which we will show comes from `SL(2, ℤ)`
   let z := 1 + M • (A₁.num * k * A₂.num)
   have hz_coe : z.map Int.cast = A₁ * (y.map Int.cast) * A₂ := by
@@ -264,7 +264,7 @@ theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
       inv_mul_cancel_left₀ (mod_cast A₂.den_ne_zero),
       mul_inv_cancel_right₀ (mod_cast A₁.den_ne_zero), Nat.cast_smul_eq_nsmul]
   have hz_det : z.det = 1 := by
-    have := congr_arg Matrix.det hz_coe
+    have := congr($(hz_coe).det)
     simp_rw [Matrix.det_mul, ← Int.cast_det] at this
     rwa [mul_right_comm, ← Matrix.det_mul, hA₁₂, Matrix.det_one, one_mul, hy, Int.cast_inj] at this
   refine ⟨⟨z, hz_det⟩, ?_, by simpa only [Subtype.ext_iff, Subgroup.coe_mul, Units.ext_iff,
@@ -287,7 +287,7 @@ theorem exists_Gamma_le_conj' (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
   obtain ⟨z, hz, hz'⟩ := h x hx
   use z, hz
   simpa only [Subtype.ext_iff, Units.ext_iff, map_mul] using!
-    congr_arg (GeneralLinearGroup.map (Rat.castHom ℝ)) hz'
+    congr(GeneralLinearGroup.map (Rat.castHom ℝ) $hz')
 
 open Subgroup in
 /-- If `Γ` has finite index in `SL(2, ℤ)`, then so does `g⁻¹ Γ g ∩ SL(2, ℤ)` for any
@@ -296,9 +296,9 @@ lemma finiteIndex_conjGL (g : GL (Fin 2) ℚ) : (conjGL ⊤ (g.map <| Rat.castHo
   constructor
   let t := (toConjAct <| g.map <| Rat.castHom ℝ)⁻¹
   suffices (t • 𝒮ℒ ⊓ 𝒮ℒ).relIndex 𝒮ℒ ≠ 0 by
-    rwa [conjGL, index_comap, ← inf_relIndex_right, ← MonoidHom.range_eq_map]
+    rwa [conjGL, index_comap, ← inf_relIndex_right, Subgroup.map_top]
   obtain ⟨N, hN, hN'⟩ := exists_Gamma_le_conj' g 1
-  rw [Gamma_one_top, ← MonoidHom.range_eq_map] at hN'
+  rw [Gamma_one_top, Subgroup.map_top] at hN'
   suffices Γ(N) ≤ (t • 𝒮ℒ ⊓ 𝒮ℒ).comap (mapGL ℝ) by
     have _ : NeZero N := ⟨hN⟩
     simpa only [index_comap] using! (finiteIndex_of_le this).index_ne_zero
@@ -310,6 +310,7 @@ lemma finiteIndex_conjGL (g : GL (Fin 2) ℚ) : (conjGL ⊤ (g.map <| Rat.castHo
 lemma isArithmetic_conj_SL2Z (g : GL (Fin 2) ℚ) :
     (toConjAct (g.map (Rat.castHom ℝ)) • 𝒮ℒ).IsArithmetic := by
   constructor
+  simp_rw [Subgroup.Commensurable, Subgroup.isFiniteRelIndex_iff_relIndex_ne_zero]
   rw [MonoidHom.range_eq_map]
   constructor
   · rw [← Subgroup.relIndex_comap, Subgroup.relIndex_top_right]
@@ -322,7 +323,7 @@ lemma isArithmetic_conj_SL2Z (g : GL (Fin 2) ℚ) :
 lemma _root_.Subgroup.IsArithmetic.conj (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsArithmetic]
     (g : GL (Fin 2) ℚ) :
     (toConjAct (g.map (Rat.castHom ℝ)) • 𝒢).IsArithmetic :=
-  ⟨(Subgroup.IsArithmetic.is_commensurable.conj _).trans
+  ⟨(Subgroup.IsArithmetic.is_commensurable.smul _).trans
     (isArithmetic_conj_SL2Z g).is_commensurable⟩
 
 /-- If `Γ` is a congruence subgroup, then so is `g⁻¹ Γ g ∩ SL(2, ℤ)` for any `g ∈ GL(2, ℚ)`. -/

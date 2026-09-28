@@ -5,7 +5,7 @@ Authors: Alex Kontorovich, Heather Macbeth
 -/
 module
 
-public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
+import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 public import Mathlib.Algebra.Module.ULift
 public import Mathlib.GroupTheory.GroupAction.Defs
@@ -206,6 +206,30 @@ theorem smul_closure_orbit_subset (c : M) (x : α) :
   (smul_closure_subset c _).trans <| closure_mono <| MulAction.smul_orbit_subset _ _
 
 end Monoid
+
+section Homeomorph
+
+variable {X : Type*} [TopologicalSpace X]
+
+/-- The tautological action by `X ≃ₜ X` on `X`.
+
+This generalizes `Equiv.Perm.applyMulAction`. -/
+instance Homeomorph.applyMulAction : MulAction (X ≃ₜ X) X where
+  smul f x := f x
+  one_smul _ := rfl
+  mul_smul _ _ _ := rfl
+
+@[simp]
+protected theorem Homeomorph.smul_def (f : X ≃ₜ X) (x : X) : f • x = f x := rfl
+
+/-- `Homeomorph.applyMulAction` is faithful. -/
+instance Homeomorph.applyFaithfulSMul : FaithfulSMul (X ≃ₜ X) X := ⟨Homeomorph.ext⟩
+
+/-- `Homeomorph.applyMulAction` is continuous in the second variable. -/
+instance Homeomorph.continuousConstSMul : ContinuousConstSMul (X ≃ₜ X) X :=
+  ⟨fun h ↦ h.continuous⟩
+
+end Homeomorph
 
 section Group
 

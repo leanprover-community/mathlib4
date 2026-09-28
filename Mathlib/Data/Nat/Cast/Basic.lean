@@ -30,8 +30,6 @@ assert_not_exists IsOrderedMonoid Commute.zero_right Commute.add_right abs_eq_ma
 -- TODO: `MulOpposite.op_natCast` was not intended to be imported
 -- assert_not_exists MulOpposite.op_natCast
 
-open Additive Multiplicative
-
 variable {α β : Type*}
 
 namespace Nat

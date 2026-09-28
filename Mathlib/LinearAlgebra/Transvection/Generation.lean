@@ -6,7 +6,7 @@ Authors: Antoine Chambert-Loir
 
 module
 
-public import Mathlib.LinearAlgebra.Center
+import Mathlib.LinearAlgebra.Center
 public import Mathlib.LinearAlgebra.Transvection.Basic
 
 /-!
@@ -55,7 +55,7 @@ Let `K` be a division ring and `V` be a `K`-module.
 
 -/
 
-@[expose] public section
+public section
 
 namespace LinearEquiv
 

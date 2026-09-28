@@ -7,8 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
 public import Mathlib.CategoryTheory.Functor.Derived.PointwiseRightDerived
-public import Mathlib.CategoryTheory.GuitartExact.KanExtension
-public import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.GuitartExact.KanExtension
 
 /-!
 # Existence of pointwise right derived functors via derivability structures
@@ -38,7 +37,7 @@ universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
 namespace CategoryTheory
 
-open Limits Category CategoryTheory.Functor
+open CategoryTheory.Functor
 
 variable {C₁ : Type u₁} {C₂ : Type u₂} {H : Type u₃}
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} H]

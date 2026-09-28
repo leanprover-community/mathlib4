@@ -346,7 +346,7 @@
   decls  :
     - Nat.primeFactorsList_unique
     - Int.euclideanDomain
-    - EuclideanDomain.to_principal_ideal_domain
+    - EuclideanDomain.instIsPrincipalIdealRing
     - UniqueFactorizationMonoid
     - UniqueFactorizationMonoid.factors_unique
   authors: Chris Hughes

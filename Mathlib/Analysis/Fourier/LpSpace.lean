@@ -6,7 +6,6 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Analysis.Distribution.TemperedDistribution
-public import Mathlib.Analysis.Normed.Operator.Extend
 
 /-!
 
@@ -38,7 +37,9 @@ variable {E F : Type*}
   [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
   [NormedAddCommGroup F] [InnerProductSpace ℂ F] [CompleteSpace F]
 
-open SchwartzMap MeasureTheory FourierTransform ComplexInnerProductSpace
+open SchwartzMap MeasureTheory FourierTransform
+
+open scoped ComplexInnerProductSpace
 
 variable [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
 

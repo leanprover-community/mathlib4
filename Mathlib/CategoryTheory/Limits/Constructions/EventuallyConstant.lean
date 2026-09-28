@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Filtered.Basic
-public import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # Limits of eventually constant functors
@@ -118,7 +117,6 @@ noncomputable def cone : Cone F where
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency.types false in
 /-- When `h : F.IsEventuallyConstantTo i₀`, the limit of `F` exists and is `F.obj i₀`. -/
 noncomputable def isLimitCone : IsLimit h.cone where
   lift s := s.π.app i₀
@@ -132,7 +130,6 @@ lemma hasLimit : HasLimit F := ⟨_, h.isLimitCone⟩
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency.types false in
 lemma isIso_π_of_isLimit {c : Cone F} (hc : IsLimit c) :
     IsIso (c.π.app i₀) := by
   simp only [← IsLimit.conePointUniqueUpToIso_hom_comp hc h.isLimitCone i₀,

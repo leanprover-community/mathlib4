@@ -5,7 +5,6 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
 public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
 public import Mathlib.Condensed.Basic
 public import Mathlib.Topology.Category.TopCat.Yoneda
@@ -44,7 +43,7 @@ theorem factorsThrough_of_pullbackCondition {Z B : C} {π : Z ⟶ B} [HasPullbac
   intro x y hxy
   let xy : G.obj (pullback π π) := (PreservesPullback.iso G π π).inv <|
     (TopCat.pullbackIsoProdSubtype (G.map π) (G.map π)).inv ⟨(x, y), hxy⟩
-  have ha' := congr_fun ha xy
+  have ha' := congr($ha xy)
   dsimp at ha'
   have h₁ : ∀ y, G.map (pullback.fst _ _) ((PreservesPullback.iso G π π).inv y) =
       pullback.fst (G.map π) (G.map π) y := by
@@ -76,7 +75,7 @@ theorem equalizerCondition_yonedaPresheaf
     ext x
     obtain ⟨y, hy⟩ := (hq Z B π).surjective x
     rw [← hy]
-    exact congr_fun h y
+    congrm $h y
   · simp only [yonedaPresheaf, comp, Quiver.Hom.unop_op, ConcreteCategory.hom_ofHom,
       TypeCat.Fun.coe_mk, mk.injEq, Set.mem_ofPred_eq] at ha
     simp only [yonedaPresheaf, comp, Quiver.Hom.unop_op, TypeCat.Fun.coe_mk,
@@ -138,10 +137,10 @@ Associate to a `(u + 1)`-small topological space the corresponding condensed set
 `yonedaPresheaf`.
 -/
 noncomputable abbrev TopCat.toCondensedSet (X : TopCat.{u + 1}) : CondensedSet.{u} :=
-  toSheafCompHausLike.{u + 1} _ X (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
+  toSheafCompHausLike.{u + 1} _ X (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 1 3).mp)
 
 /--
 `TopCat.toCondensedSet` yields a functor from `TopCat.{u + 1}` to `CondensedSet.{u}`.
 -/
 noncomputable abbrev topCatToCondensedSet : TopCat.{u + 1} ⥤ CondensedSet.{u} :=
-  topCatToSheafCompHausLike.{u + 1} _ (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
+  topCatToSheafCompHausLike.{u + 1} _ (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 1 3).mp)

@@ -5,7 +5,7 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.Algebra.Algebra.ZMod
+import Mathlib.Algebra.Algebra.ZMod
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 
 /-!

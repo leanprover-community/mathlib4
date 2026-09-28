@@ -5,8 +5,6 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.RingTheory.Kaehler.TensorProduct
-public import Mathlib.RingTheory.Regular.RegularSequence
 public import Mathlib.RingTheory.RingHom.Flat
 public import Mathlib.RingTheory.RingHom.Smooth
 
@@ -20,8 +18,6 @@ In this file, we formalize the result [Stacks 031L] : For flat ring homomorphism
 -/
 
 public section
-
-open IsLocalRing
 
 variable {R : Type*} [CommRing R]
 

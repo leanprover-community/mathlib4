@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Finprod
 public import Mathlib.Algebra.Group.ConjFinite
-public import Mathlib.Algebra.Group.Subgroup.Finite
+import Mathlib.Algebra.Group.Subgroup.Finite
 public import Mathlib.Data.Set.Card
 public import Mathlib.GroupTheory.Subgroup.Center
 
@@ -26,7 +26,7 @@ This file establishes the class equation for finite groups.
 
 public section
 
-open MulAction ConjClasses
+open ConjClasses
 
 variable (G : Type*) [Group G]
 

@@ -8,6 +8,7 @@ module
 public import Mathlib.MeasureTheory.PiSystem
 public import Mathlib.Order.Partition.Finpartition
 public import Mathlib.Order.SupClosed
+public import Mathlib.Order.SetAccumulate
 
 /-! # Semirings and rings of sets
 
@@ -506,7 +507,6 @@ protected lemma Ioc [LinearOrder α] [Nonempty α] :
     rw [show Set.Ioc u v \ Set.Ioc u' v' = Set.Ioc u u' ∪ Set.Ioc v' v by grind]
     refine ⟨{Set.Ioc u u', Set.Ioc v' v}, by grind, ?_, by simp⟩
     intro a ha b hb hab
-    simp [Function.onFun]
     grind
 
 end IsSetSemiring

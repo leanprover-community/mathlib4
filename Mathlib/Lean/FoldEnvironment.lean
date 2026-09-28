@@ -5,7 +5,7 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Lean.Meta.Basic
+import Lean.Meta.Basic
 public import Mathlib.Init
 
 /-!
@@ -20,7 +20,7 @@ without any parallelism.
 
 variable {α : Type}
 
-open Lean Meta
+open Lean
 
 namespace Lean.Meta
 

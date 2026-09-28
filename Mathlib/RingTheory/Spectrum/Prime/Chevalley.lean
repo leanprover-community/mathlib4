@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.FiniteStability
+import Mathlib.RingTheory.FiniteStability
 public import Mathlib.RingTheory.Ideal.GoingDown
 public import Mathlib.RingTheory.Spectrum.Prime.ChevalleyComplexity
 
@@ -20,7 +20,7 @@ public section
 
 variable {R S : Type*} [CommRing R] [CommRing S]
 
-open Function Localization MvPolynomial Polynomial TensorProduct PrimeSpectrum Topology
+open Function Localization Polynomial TensorProduct PrimeSpectrum Topology
 open scoped Pointwise
 
 namespace PrimeSpectrum

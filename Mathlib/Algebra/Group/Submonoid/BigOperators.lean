@@ -29,7 +29,7 @@ public section
 -- We don't need ordered structures to establish basic membership facts for submonoids
 assert_not_exists IsOrderedRing
 
-variable {M A B : Type*}
+variable {M B : Type*}
 
 section SubmonoidClass
 variable [Monoid M] [SetLike B M] [SubmonoidClass B M] {x : M} {S : B}

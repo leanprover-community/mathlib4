@@ -6,7 +6,7 @@ Authors: David Wärn
 module
 
 public import Mathlib.Order.Ideal
-public import Mathlib.Data.Finset.Max
+import Mathlib.Data.Finset.Max
 
 /-!
 # The back and forth method and countable dense linear orders

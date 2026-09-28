@@ -6,7 +6,6 @@ Authors: Sophie Morel
 module
 
 public import Mathlib.CategoryTheory.Limits.WeakLimits.WeakEqualizers
-public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 public import Mathlib.CategoryTheory.Preadditive.Basic
 
 /-!
@@ -31,7 +30,7 @@ variable {C : Type*} [Category* C]
 
 namespace CategoryTheory.Limits
 
-variable [HasZeroMorphisms C] {X Y : C} (f g : X ⟶ Y)
+variable [HasZeroMorphisms C] {X Y : C} (f : X ⟶ Y)
 
 /-- A morphism `f` has a weak kernel if the functor `ParallelPair f 0` has a weak limit. -/
 abbrev HasWeakKernel : Prop :=

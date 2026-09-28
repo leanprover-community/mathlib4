@@ -6,7 +6,6 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Topology.UniformSpace.Completion
-public import Mathlib.Topology.UniformSpace.Ultra.Basic
 public import Mathlib.Topology.UniformSpace.Ultra.Constructions
 
 /-!
@@ -23,7 +22,7 @@ public section
 
 variable {X Y : Type*} [UniformSpace X] [UniformSpace Y]
 
-open Filter Set Topology Uniformity
+open Filter Set
 
 lemma IsUniformInducing.isUltraUniformity [IsUltraUniformity Y] {f : X → Y}
     (hf : IsUniformInducing f) : IsUltraUniformity X :=

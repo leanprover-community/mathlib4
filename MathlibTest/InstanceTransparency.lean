@@ -1,5 +1,5 @@
 module
-import Mathlib.Data.Real.Basic
+import Mathlib.Basic.Real.Basic
 
 /-! # Test transparency level of `Div` field in `DivInvMonoid`
 

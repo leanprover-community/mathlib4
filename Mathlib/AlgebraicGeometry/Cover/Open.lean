@@ -206,7 +206,7 @@ noncomputable
 def affineOpenCoverOfSpanRangeEqTop {R : CommRingCat} {ι : Type*} (s : ι → R)
     (hs : Ideal.span (Set.range s) = ⊤) : (Spec R).AffineOpenCover where
   I₀ := ι
-  X i := .of (Localization.Away (s i))
+  X i := ↧(Localization.Away (s i))
   f i := Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away (s i))))
   idx x := by
     have : ∃ i, s i ∉ x.asIdeal := by
@@ -283,7 +283,7 @@ def affineBasisCover (X : Scheme.{u}) : OpenCover X :=
 
 /-- The coordinate ring of a component in the `affine_basis_cover`. -/
 def affineBasisCoverRing (X : Scheme.{u}) (i : X.affineBasisCover.I₀) : CommRingCat :=
-  CommRingCat.of <| @Localization.Away (X.local_affine i.1).choose_spec.choose _ i.2
+  ↧(@Localization.Away (X.local_affine i.1).choose_spec.choose _ i.2)
 
 theorem affineBasisCover_obj (X : Scheme.{u}) (i : X.affineBasisCover.I₀) :
     X.affineBasisCover.X i = Spec (X.affineBasisCoverRing i) :=

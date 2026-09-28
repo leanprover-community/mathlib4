@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Probability.CondVar
 public import Mathlib.Probability.Distributions.Binomial
 
 open MeasureTheory

@@ -5,8 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.Shift
-public import Mathlib.CategoryTheory.Triangulated.Subcategory
 public import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLEGT
 
 /-!
@@ -47,7 +45,6 @@ class HasInducedTStructure [P.IsTriangulated] : Prop where
 variable [P.IsTriangulated] [h : P.HasInducedTStructure t]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The t-structure induced on a full subcategory. -/
 noncomputable def tStructure : TStructure P.FullSubcategory where
   le n X := t.le n X.obj

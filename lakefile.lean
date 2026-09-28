@@ -32,7 +32,6 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.style.header, true⟩,
   ⟨`linter.checkInitImports, true⟩,
   ⟨`linter.allScriptsDocumented, true⟩,
-  ⟨`linter.pythonStyle, true⟩,
   ⟨`linter.style.longFile, .ofNat 1500⟩,
   -- ⟨`linter.nightlyRegressionSet, true⟩,
   -- `latest_import.yml` uses this comment: if you edit it, make sure that the workflow still works
@@ -57,6 +56,8 @@ package mathlib where
   testDriver := "MathlibTest"
   lintDriver := "batteries/runLinter"
   lintDriverArgs := #["Mathlib"]
+  -- Run the builtin linting steps in addition to the `lintDriver` set above.
+  builtinLint := true
   -- A version of Mathlib only supports the toolchain it is built with.
   fixedToolchain := true
   -- Mathlib oleans are built on Linux CI and used across platforms.

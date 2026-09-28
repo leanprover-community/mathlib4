@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Preadditive.Opposite
 public import Mathlib.Algebra.Category.ModuleCat.Basic
-public import Mathlib.Algebra.Category.Grp.Preadditive
 public import Mathlib.Algebra.Category.Grp.Yoneda
 
 /-!
@@ -43,7 +42,7 @@ object `X` to the `End Y`-module of morphisms `X ⟶ Y`.
 -/
 @[simps]
 def preadditiveYonedaObj (Y : C) : Cᵒᵖ ⥤ ModuleCat.{v} (End Y) where
-  obj X := ModuleCat.of _ (X.unop ⟶ Y)
+  obj X := ↧(X.unop ⟶ Y)
   map f := ModuleCat.ofHom
     { toFun := fun g => f.unop ≫ g
       map_add' := fun _ _ => comp_add _ _ _ _ _ _
@@ -70,7 +69,7 @@ object `Y` to the `End X`-module of morphisms `X ⟶ Y`.
 -/
 @[simps]
 def preadditiveCoyonedaObj (X : C) : C ⥤ ModuleCat.{v} (End X)ᵐᵒᵖ where
-  obj Y := ModuleCat.of _ (X ⟶ Y)
+  obj Y := ↧(X ⟶ Y)
   map f := ModuleCat.ofHom
     { toFun := fun g => g ≫ f
       map_add' := fun _ _ => add_comp _ _ _ _ _ _
@@ -99,7 +98,6 @@ instance additive_yonedaObj' (X : C) : Functor.Additive (preadditiveYoneda.obj X
 
 instance additive_coyonedaObj (X : C) : Functor.Additive (preadditiveCoyonedaObj X) where
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance additive_coyonedaObj' (X : Cᵒᵖ) : Functor.Additive (preadditiveCoyoneda.obj X) where
 
@@ -113,7 +111,6 @@ theorem whiskering_preadditiveYoneda :
       yoneda :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Composing the preadditive yoneda embedding with the forgetful functor yields the regular
 Yoneda embedding.
 -/
@@ -131,7 +128,6 @@ instance full_preadditiveYoneda : (preadditiveYoneda : C ⥤ Cᵒᵖ ⥤ AddComm
   Functor.Full.of_comp_faithful preadditiveYoneda
     ((whiskeringRight Cᵒᵖ AddCommGrpCat (Type v)).obj (forget AddCommGrpCat))
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance full_preadditiveCoyoneda : (preadditiveCoyoneda : Cᵒᵖ ⥤ C ⥤ AddCommGrpCat).Full :=
   let _ : Functor.Full (preadditiveCoyoneda ⋙
       (whiskeringRight C AddCommGrpCat (Type v)).obj (forget AddCommGrpCat)) :=
@@ -161,7 +157,6 @@ def preadditiveYonedaMap (X : C) :
 
 end
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The preadditive coyoneda functor for the category `AddCommGrpCat` agrees with
 `AddCommGrpCat.coyoneda`. -/
 def _root_.AddCommGrpCat.preadditiveCoyonedaIso : preadditiveCoyoneda ≅ AddCommGrpCat.coyoneda :=

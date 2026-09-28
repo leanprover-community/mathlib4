@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Definitions and basic properties of normal monomorphisms and epimorphisms.
@@ -54,7 +53,6 @@ attribute [inherit_doc NormalMono] NormalMono.Z NormalMono.g NormalMono.w Normal
 
 section
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `F` is an equivalence and `F.map f` is a normal mono, then `f` is a normal mono. -/
 @[instance_reducible]
@@ -121,7 +119,6 @@ def normalOfIsPullbackFstOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h :
   normalOfIsPullbackSndOfNormal comm.symm (PullbackCone.flipIsLimit t)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Transport a `NormalMono` structure via an isomorphism of arrows. -/
 @[instance_reducible]
 def NormalMono.ofArrowIso {X Y : C} {f : X ⟶ Y}
@@ -179,7 +176,6 @@ attribute [inherit_doc NormalEpi] NormalEpi.W NormalEpi.g NormalEpi.w NormalEpi.
 
 section
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `F` is an equivalence and `F.map f` is a normal epi, then `f` is a normal epi. -/
 @[instance_reducible]
@@ -189,7 +185,7 @@ def equivalenceReflectsNormalEpi {D : Type u₂} [Category.{v₁} D] [HasZeroMor
   g := F.preimage ((F.objObjPreimageIso hf.W).hom ≫ hf.g)
   w := F.map_injective <| by simp [hf.w]
   isColimit := isColimitOfReflects F <|
-    IsColimit.ofCoconeEquiv (Cocone.precomposeEquivalence (compNatIso F)) <|
+    IsColimit.ofCoconeEquiv (Cocone.precomposeEquivalence (compNatIso F))
       (IsColimit.ofIsoColimit
         (IsCokernel.ofIsoComp _ _ (F.objObjPreimageIso hf.W).symm (by simp) hf.isColimit)
           (Cofork.ext (Iso.refl _) (by simp [compNatIso, Cofork.π])))
@@ -228,7 +224,7 @@ def normalOfIsPushoutSndOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h : 
     rw [Category.assoc, comm, reassoc', zero_comp]
   isColimit := by
     letI hn := regularOfIsPushoutSndOfRegular gn.regularEpi comm t
-    have q := (@zero_comp _ _ _ gn.W _ _ f).symm
+    have q : 0 = (0 : gn.W ⟶ P) ≫ f := zero_comp.symm
     convert! hn.isColimit
 
 /-- The first leg of a pushout cocone is a normal epimorphism if the left component is too.
@@ -249,7 +245,6 @@ open Opposite
 variable [HasZeroMorphisms C]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Transport a `NormalEpi` structure via an isomorphism of arrows. -/
 @[instance_reducible]
 def NormalEpi.ofArrowIso {X Y : C} {f : X ⟶ Y}

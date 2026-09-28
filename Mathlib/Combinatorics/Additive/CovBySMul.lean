@@ -5,11 +5,11 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
-public import Mathlib.Data.Real.Basic
-public import Mathlib.Tactic.Positivity.Basic
-public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Basic.Real.Basic
+import Mathlib.Tactic.Positivity.Basic
 
 /-!
 # Relation of covering by cosets

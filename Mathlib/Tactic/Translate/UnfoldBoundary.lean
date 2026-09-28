@@ -6,7 +6,7 @@ Authors: Jovan Gerbscheid
 module
 
 public meta import Lean.Meta.Tactic.Delta
-public import Mathlib.Init
+import Mathlib.Init
 public import Lean.Meta.Tactic.Simp
 
 /-!

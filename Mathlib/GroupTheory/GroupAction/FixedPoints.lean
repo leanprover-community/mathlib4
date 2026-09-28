@@ -6,7 +6,7 @@ Authors: Emilie Burgun
 module
 
 public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-public import Mathlib.Algebra.Group.Commute.Basic
+import Mathlib.Algebra.Group.Commute.Basic
 public import Mathlib.Dynamics.PeriodicPts.Defs
 public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.GroupTheory.GroupAction.Hom
@@ -293,6 +293,6 @@ lemma map_mem_fixedPoints {G A B : Type*} [Monoid G] [MulAction G A] [MulAction 
 lemma map_mem_fixedBy {G A B : Type*} [Monoid G] [MulAction G A] [MulAction G B]
     (f : A →[G] B) {g : G} {a : A} (ha : a ∈ MulAction.fixedBy A g) :
     f a ∈ MulAction.fixedBy B g := by
-  simpa using congr_arg f ha
+  simpa using congr(f $ha)
 
 end MulActionHom

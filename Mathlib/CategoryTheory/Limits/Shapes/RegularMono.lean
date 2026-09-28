@@ -72,7 +72,6 @@ attribute [reassoc] RegularMono.w
 lemma RegularMono.mono {f : X ⟶ Y} (h : RegularMono f) : Mono f :=
   mono_of_isLimit_fork h.isLimit
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Every isomorphism is a regular monomorphism. -/
 def RegularMono.ofIso (e : X ≅ Y) : RegularMono e.hom where
   Z := Y
@@ -80,7 +79,6 @@ def RegularMono.ofIso (e : X ≅ Y) : RegularMono e.hom where
   right := 𝟙 Y
   isLimit := Fork.IsLimit.mk _ (fun s ↦ s.ι ≫ e.inv) (by simp) fun s m w ↦ by simp [← w]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Regular monomorphisms are preserved by isomorphisms in the arrow category. -/
 def RegularMono.ofArrowIso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
     (e : Arrow.mk f ≅ Arrow.mk g) (h : RegularMono f) :
@@ -180,7 +178,6 @@ lemma IsRegularMono.uniq {W : C} (f : X ⟶ Y) [IsRegularMono f] (k : W ⟶ Y)
 
 end IsRegularMono
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The chosen equalizer of a parallel pair is a regular monomorphism. -/
 def RegularMono.equalizer (g h : X ⟶ Y) [HasLimit (parallelPair g h)] :
     RegularMono (equalizer.ι g h) where
@@ -323,7 +320,6 @@ attribute [reassoc] RegularEpi.w
 lemma RegularEpi.epi (f : X ⟶ Y) (h : RegularEpi f) : Epi f :=
   epi_of_isColimit_cofork h.isColimit
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Every isomorphism is a regular epimorphism. -/
 def RegularEpi.ofIso (e : X ≅ Y) : RegularEpi e.hom where
   W := X
@@ -332,7 +328,6 @@ def RegularEpi.ofIso (e : X ≅ Y) : RegularEpi e.hom where
   isColimit := Cofork.IsColimit.mk _ (fun s ↦ e.inv ≫ s.π) (by simp) fun s m w ↦ by
     simp [← w]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Regular epimorphisms are preserved by isomorphisms in the arrow category. -/
 def RegularEpi.ofArrowIso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
     (e : Arrow.mk f ≅ Arrow.mk g) (h : RegularEpi f) :
@@ -436,7 +431,6 @@ lemma IsRegularEpi.uniq {Z : C} (f : X ⟶ Y) [IsRegularEpi f] (k : X ⟶ Z)
 
 end IsRegularEpi
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The chosen coequalizer of a parallel pair is a regular epimorphism. -/
 def coequalizerRegular (g h : X ⟶ Y) [HasColimit (parallelPair g h)] :
     RegularEpi (coequalizer.π g h) where
@@ -462,7 +456,6 @@ def regularEpiOfKernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
   w := pullback.condition
   isColimit := hc
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsRegularEpi.of_epi_of_exists {X B : C} {f : X ⟶ B} [HasPullback f f] [Epi f]
     (h : ∀ ⦃Z : C⦄ ⦃g : X ⟶ Z⦄, pullback.fst f f ≫ g = pullback.snd f f ≫ g →
       ∃ (u : B ⟶ Z), f ≫ u = g) :
@@ -491,7 +484,6 @@ theorem effectiveEpi_of_kernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
     (hc : IsColimit (Cofork.ofπ f pullback.condition)) : EffectiveEpi f :=
   RegularEpi.effectiveEpi <| regularEpiOfKernelPair f hc
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given a kernel pair of an effective epimorphism `f : X ⟶ B`, the induced cofork is a coequalizer.
 -/
@@ -560,7 +552,6 @@ def RegularEpi.desc' {W : C} {f : X ⟶ Y} (hf : RegularEpi f) (k : X ⟶ W)
     { l : Y ⟶ W // f ≫ l = k } :=
   Cofork.IsColimit.desc' hf.isColimit _ h
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The second leg of a pushout cocone is a regular epimorphism if the right component is too.
 

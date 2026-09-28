@@ -5,10 +5,8 @@ Authors: Markus Himmel, Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Group.Ext
 public import Mathlib.CategoryTheory.Simple
 public import Mathlib.CategoryTheory.Linear.Basic
-public import Mathlib.CategoryTheory.Endomorphism
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 
 /-!
@@ -98,7 +96,6 @@ end
 variable (𝕜 : Type*) [Field 𝕜]
 variable [IsAlgClosed 𝕜] [Linear 𝕜 C]
 
-set_option backward.isDefEq.respectTransparency false in
 -- We prove this with the explicit `isIso_iff_nonzero` assumption,
 -- rather than just `[Simple X]`, as this form is useful for
 -- Müger's formulation of semisimplicity.

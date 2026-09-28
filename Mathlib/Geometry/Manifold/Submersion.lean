@@ -7,10 +7,10 @@ module
 
 public import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
 public import Mathlib.Analysis.Normed.Module.Shrink
-public import Mathlib.Topology.Algebra.Module.TransferInstance
-public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
+import Mathlib.Topology.Algebra.Module.TransferInstance
+import Mathlib.Geometry.Manifold.ContMDiff.Atlas
 public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
-public import Mathlib.Geometry.Manifold.Notation
+import Mathlib.Geometry.Manifold.Notation
 
 /-! # Smooth submersions
 

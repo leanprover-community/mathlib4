@@ -6,7 +6,6 @@ Authors: Joël Riou, Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
-public import Mathlib.CategoryTheory.CommSq
 
 /-!
 # Pseudofunctors from strict bicategory
@@ -183,7 +182,7 @@ end associativity
 
 section CommSq
 
-variable {X₁ X₂ Y₁ Y₂ Z₁ Z₂ : B}
+variable {X₁ X₂ Y₁ Y₂ : B}
 
 section
 

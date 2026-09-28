@@ -31,7 +31,6 @@ variable {C : Type u} [Category.{v} C] [LocallySmall.{w} C]
 namespace GrothendieckTopology
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If `X` is an object of `C`, this is the point of the site `(C, ⊥)` (whose
 sheaves are presheaves, see `sheafBotEquivalence`) corresponding to `X`. -/
 @[simps]

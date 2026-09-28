@@ -5,7 +5,6 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Module.SpanRank
 public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.RingTheory.LocalRing.Module
 
@@ -14,7 +13,7 @@ public import Mathlib.RingTheory.LocalRing.Module
 
 In this file we show how operations on submodules interact with `Submodule.spanRank`.
 
-# Main Results
+## Main results
 
 * `Submodule.spanRank_baseChange_le`: Base change doesn't increase the span rank.
 

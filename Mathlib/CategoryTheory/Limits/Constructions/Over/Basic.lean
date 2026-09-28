@@ -5,11 +5,9 @@ Authors: Johan Commelin, Reid Barton, Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Connected
-public import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
+import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
 public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
-public import Mathlib.CategoryTheory.Limits.Constructions.Equalizers
 
 /-!
 # Limits in the over category
@@ -27,7 +25,6 @@ universe w v u
 open CategoryTheory CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C]
-variable {X : C}
 
 namespace CategoryTheory.Over
 

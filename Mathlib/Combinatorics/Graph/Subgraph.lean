@@ -45,8 +45,8 @@ graphs, subgraph, induced subgraph, spanning subgraph, closed subgraph
 
 public section
 
-variable {α β : Type*} {x y z u v w : α} {e f : β} {G G₁ G₂ H H₁ H₂ K : Graph α β} {F F₁ F₂ : Set β}
-  {X Y : Set α}
+variable {α β : Type*} {x y u v : α} {e : β} {G G₁ G₂ H H₁ H₂ K : Graph α β} {F₁ F₂ : Set β}
+  {X : Set α}
 
 open Set
 
@@ -105,6 +105,9 @@ lemma IsSubgraph.isLink_eqOn (hHG : H ≤ G) : EqOn H.IsLink G.IsLink E(H) := by
   rintro e he
   ext x y
   exact isLink_iff hHG he
+
+lemma IsSubgraph.isLink_iff' (hHG : H ≤ G) : H.IsLink e x y ↔ G.IsLink e x y ∧ e ∈ E(H) := by
+  grind [hHG.isLink_iff, IsLink.edge_mem]
 
 /-- Two subgraphs of the same graph are compatible. -/
 lemma Compatible.of_le_le (hH₁G : H₁ ≤ G) (hH₂G : H₂ ≤ G) : H₁.Compatible H₂ :=

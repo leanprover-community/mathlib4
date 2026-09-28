@@ -6,8 +6,9 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Algebra.Group.Nat.Defs
-public import Mathlib.Tactic.Common
+import Mathlib.Tactic.Common
 public import Mathlib.Data.Set.Insert
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Set enumeration
@@ -22,8 +23,6 @@ The definition does not assume `sel` actually is a choice function, i.e. `sel s 
 assert_not_exists RelIso
 
 noncomputable section
-
-open Function
 
 namespace Set
 

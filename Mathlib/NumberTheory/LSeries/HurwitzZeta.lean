@@ -7,7 +7,6 @@ module
 
 public import Mathlib.NumberTheory.LSeries.HurwitzZetaEven
 public import Mathlib.NumberTheory.LSeries.HurwitzZetaOdd
-public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 
 /-!
 # The Hurwitz zeta function
@@ -38,7 +37,9 @@ This file gives the definition and properties of the following two functions:
 
 @[expose] public section
 
-open Set Real Complex Filter Topology
+open Set Real Complex Filter
+
+open scoped Topology
 
 namespace HurwitzZeta
 

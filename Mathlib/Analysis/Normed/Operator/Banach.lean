@@ -6,10 +6,9 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Algebra.Algebra.Spectrum.Basic
-public import Mathlib.Topology.Baire.Lemmas
 public import Mathlib.Topology.Baire.CompleteMetrizable
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
-public import Mathlib.Analysis.Normed.Group.InfiniteSum
+import Mathlib.Analysis.Normed.Group.InfiniteSum
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 
 /-!
@@ -534,7 +533,7 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace 
 
 /-- The **closed graph theorem** : a linear map between two Banach spaces whose graph is closed
 is continuous. -/
-theorem LinearMap.continuous_of_isClosed_graph (hg : IsClosed (g.graph : Set <| E × F)) :
+protected theorem LinearMap.continuous_of_isClosed_graph (hg : IsClosed (g.graph : Set <| E × F)) :
     Continuous g := by
   let : CompleteSpace g.graph := completeSpace_coe_iff_isComplete.mpr hg.isComplete
   let φ₀ : E →ₗ[𝕜] E × F := LinearMap.id.prod g
@@ -613,7 +612,7 @@ variable [CompleteSpace E]
 
 lemma closed_range_of_antilipschitz {f : E →SL[σ] F} {c : ℝ≥0} (hf : AntilipschitzWith c f) :
     f.range.topologicalClosure = f.range :=
-  SetLike.ext'_iff.mpr <| (hf.isClosed_range f.uniformContinuous).closure_eq
+  SetLike.ext'_iff.mpr (hf.isClosed_range f.uniformContinuous).closure_eq
 
 variable [CompleteSpace F]
 

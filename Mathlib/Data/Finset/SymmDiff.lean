@@ -6,7 +6,6 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 module
 
 public import Mathlib.Data.Finset.Image
-public import Mathlib.Data.Set.SymmDiff
 
 /-!
 # Symmetric difference of finite sets
@@ -25,11 +24,11 @@ public section
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
 assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice Monoid
 
-open Multiset Subtype Function
+open Function
 
 universe u
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α : Type*} {β : Type*}
 
 namespace Finset
 
@@ -39,7 +38,7 @@ section SymmDiff
 
 open scoped symmDiff
 
-variable [DecidableEq α] {s t : Finset α} {a b : α}
+variable [DecidableEq α] {s t : Finset α} {a : α}
 
 theorem mem_symmDiff : a ∈ s ∆ t ↔ a ∈ s ∧ a ∉ t ∨ a ∈ t ∧ a ∉ s := by
   simp_rw [symmDiff, sup_eq_union, mem_union, mem_sdiff]

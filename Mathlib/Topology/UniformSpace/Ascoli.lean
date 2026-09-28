@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Topology.UniformSpace.CompactConvergence
 public import Mathlib.Topology.UniformSpace.Equicontinuity
-public import Mathlib.Topology.UniformSpace.Equiv
 
 /-!
 # Ascoli Theorem
@@ -72,7 +71,9 @@ equicontinuity, uniform convergence, ascoli
 
 public section
 
-open Set Filter Uniformity Topology Function UniformConvergence
+open Set Filter Topology Function
+
+open scoped UniformConvergence
 
 variable {ι X α : Type*} [TopologicalSpace X] [UniformSpace α] {F : ι → X → α}
 

@@ -47,8 +47,9 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 
 @[expose] public section
 
-open Affine Module Set
-open scoped Pointwise
+open Module Set
+
+open scoped Affine Pointwise
 
 section Coordinates
 
@@ -104,6 +105,7 @@ variable [Ring k] [Module k V] (b : AffineBasis ι k P) {s : Finset ι} {i j : �
 instance : Inhabited (AffineBasis PUnit k PUnit) :=
   ⟨⟨id, affineIndependent_of_subsingleton k id, by simp⟩⟩
 
+@[macro_inline]
 instance instFunLike : FunLike (AffineBasis ι k P) ι P where
   coe := AffineBasis.toFun
   coe_injective f g h := by cases f; cases g; congr

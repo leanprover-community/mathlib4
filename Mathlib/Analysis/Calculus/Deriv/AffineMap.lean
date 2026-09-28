@@ -5,9 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Add
+import Mathlib.Analysis.Calculus.Deriv.Add
 public import Mathlib.Analysis.Calculus.Deriv.Linear
-public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 /-!
 # Derivatives of affine maps
 
@@ -62,15 +61,12 @@ In this section we specialize some lemmas to `AffineMap.lineMap` because this ma
 deduce higher-dimensional lemmas from one-dimensional versions.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hasStrictDerivAt_lineMap : HasStrictDerivAt (lineMap a b) (b - a) x := by
   simpa using (lineMap a b : 𝕜 →ᵃ[𝕜] E).hasStrictDerivAt
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hasDerivAt_lineMap : HasDerivAt (lineMap a b) (b - a) x :=
   hasStrictDerivAt_lineMap.hasDerivAt
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hasDerivWithinAt_lineMap : HasDerivWithinAt (lineMap a b) (b - a) s x :=
   hasDerivAt_lineMap.hasDerivWithinAt
 

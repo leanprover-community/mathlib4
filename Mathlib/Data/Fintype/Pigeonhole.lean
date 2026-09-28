@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Finset.Union
+import Mathlib.Data.Finset.Union
 public import Mathlib.Data.Fintype.EquivFin
 
 /-!
@@ -32,7 +32,7 @@ open Function
 
 universe u v
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 open Finset
 

@@ -64,7 +64,6 @@ theorem preservesLimitIso_inv_π (j) :
     (preservesLimitIso G F).inv ≫ G.map (limit.π F j) = limit.π _ j :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ j
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem lift_comp_preservesLimitIso_hom (t : Cone F) :
     G.map (limit.lift _ t) ≫ (preservesLimitIso G F).hom =
@@ -109,7 +108,6 @@ section
 
 variable [PreservesColimit F G]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem preserves_desc_mapCocone (c₁ c₂ : Cocone F) (t : IsColimit c₁) :
     (isColimitOfPreserves G t).desc (G.mapCocone _) = G.map (t.desc c₂) :=
@@ -134,7 +132,6 @@ theorem ι_preservesColimitIso_hom (j : J) :
     G.map (colimit.ι F j) ≫ (preservesColimitIso G F).hom = colimit.ι (F ⋙ G) j :=
   (isColimitOfPreserves G (colimit.isColimit _)).comp_coconePointUniqueUpToIso_hom _ j
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem preservesColimitIso_inv_comp_desc (t : Cocone F) :
     (preservesColimitIso G F).inv ≫ G.map (colimit.desc _ t) =

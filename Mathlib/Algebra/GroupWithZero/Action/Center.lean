@@ -25,7 +25,7 @@ def Subgroup.centerUnitsEquivUnitsCenter (G₀ : Type*) [GroupWithZero G₀] :
         refine ⟨(u : G₀ˣ), Submonoid.mem_center_iff.mpr fun r ↦ ?_⟩
         obtain rfl | hr := eq_or_ne r 0
         · rw [mul_zero, zero_mul]
-        · exact congrArg Units.val <| (u.2.comm <| Units.mk0 r hr).symm
+        · exact congrArg Units.val (u.2.comm <| Units.mk0 r hr).symm
       map_one' := rfl
       map_mul' _ _ := rfl }
   invFun u := unitsCenterToCenterUnits G₀ u

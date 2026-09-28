@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 public import Mathlib.Algebra.GroupWithZero.Action.Basic
-public import Mathlib.Algebra.GroupWithZero.Action.Units
+import Mathlib.Algebra.GroupWithZero.Action.Units
 public import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
 
 /-!
@@ -25,7 +25,6 @@ pointwise subtraction
 
 assert_not_exists IsOrderedMonoid Ring
 
-open Function
 open scoped Pointwise
 
 variable {α β : Type*}

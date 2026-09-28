@@ -133,7 +133,6 @@ theorem mapHom_comp (f : M →* N) {P : Type w} [Monoid P] (g : N →* P) :
 
 variable {C : Type v} [Category.{w} C]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a function `f : C → G` from a category to a group, we get a functor
 `C ⥤ G` sending any morphism `x ⟶ y` to `f y * (f x)⁻¹`. -/
 @[simps]
@@ -239,7 +238,7 @@ open CategoryTheory
 
 /-- The fully faithful functor from `MonCat` to `Cat`. -/
 def toCat : MonCat ⥤ Cat where
-  obj x := Cat.of (SingleObj x)
+  obj x := ↧(SingleObj x)
   map {x y} f := (SingleObj.mapHom x y f.hom).toCatHom
 
 instance toCat_full : toCat.Full where

@@ -61,7 +61,7 @@ Foelner, Følner filter, amenability, amenable group
 
 @[expose] public section
 
-open MeasureTheory Filter Set Tendsto
+open MeasureTheory Filter Set
 open scoped ENNReal Pointwise symmDiff Topology Filter
 
 variable {G X : Type*} [MeasurableSpace X] {μ : Measure X} [Group G] [MulAction G X]

@@ -3,9 +3,9 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Floris van Doorn
 -/
-module
+module -- shake: keep-all
 
-public import Mathlib.Init
+import Mathlib.Init
 
 /-!
 # Definitions on Arrays

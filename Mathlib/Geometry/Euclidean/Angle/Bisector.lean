@@ -96,9 +96,9 @@ lemma dist_orthogonalProjection_eq_iff_angle_eq {p p' : P} {s₁ s₂ : AffineSu
         rintro rfl
         exact h'.1 hp'₁
       have hpd : 0 < dist p p' := dist_pos.2 hp
-      rw [Real.arcsin_inj (le_trans (by norm_num : (-1 : ℝ) ≤ 0) (by positivity))
+      rw [Real.arcsin_inj (le_trans (by simp : (-1 : ℝ) ≤ 0) (by positivity))
         ((div_le_one hpd).2 ?_)
-        (le_trans (by norm_num : (-1 : ℝ) ≤ 0) (by positivity)) ((div_le_one hpd).2 ?_)] at h
+        (le_trans (by simp : (-1 : ℝ) ≤ 0) (by positivity)) ((div_le_one hpd).2 ?_)] at h
       · rwa [div_left_inj' hpd.ne'] at h
       · rw [dist_orthogonalProjection_eq_infDist]
         exact Metric.infDist_le_dist_of_mem (SetLike.mem_coe.1 hp'₁)
@@ -160,7 +160,7 @@ lemma oangle_eq_of_dist_orthogonalProjection_eq {p p' : P} {s₁ s₂ : AffineSu
       hc.mem_affineSpan_of_mem_of_ne (by grind) (by grind) (by grind) (by grind)
     have h₁' : (orthogonalProjection s₁ p : P) ∈ s₁ ⊓ s₂ :=
       ⟨orthogonalProjection_mem _,
-        SetLike.le_def.1 (affineSpan_pair_le_of_mem_of_mem hp'₂ (orthogonalProjection_mem _)) h₁⟩
+        mem_of_le_of_mem (affineSpan_pair_le_of_mem_of_mem hp'₂ (orthogonalProjection_mem _)) h₁⟩
     have h₁'' : (orthogonalProjection s₁ p : P) = (orthogonalProjection (s₁ ⊓ s₂) p : P) := by
       rw [← orthogonalProjection_orthogonalProjection_of_le inf_le_left, eq_comm,
         orthogonalProjection_eq_self_iff]
@@ -168,7 +168,7 @@ lemma oangle_eq_of_dist_orthogonalProjection_eq {p p' : P} {s₁ s₂ : AffineSu
     have h₂ : (orthogonalProjection s₂ p : P) ∈ line[ℝ, p', (orthogonalProjection s₁ p : P)] :=
       hc.mem_affineSpan_of_mem_of_ne (by grind) (by grind) (by grind) (by grind)
     have h₂' : (orthogonalProjection s₂ p : P) ∈ s₁ ⊓ s₂ :=
-      ⟨SetLike.le_def.1 (affineSpan_pair_le_of_mem_of_mem hp'₁ (orthogonalProjection_mem _)) h₂,
+      ⟨mem_of_le_of_mem (affineSpan_pair_le_of_mem_of_mem hp'₁ (orthogonalProjection_mem _)) h₂,
         orthogonalProjection_mem _⟩
     have h₂'' : (orthogonalProjection s₂ p : P) = (orthogonalProjection (s₁ ⊓ s₂) p : P) := by
       rw [← orthogonalProjection_orthogonalProjection_of_le inf_le_right, eq_comm,
@@ -201,7 +201,7 @@ lemma dist_orthogonalProjection_eq_iff_oangle_eq {p p' : P} {s₁ s₂ : AffineS
     (dist p (orthogonalProjection s₁ p) = dist p (orthogonalProjection s₂ p) ↔
       ∡ (orthogonalProjection s₁ p : P) p' p = ∡ p p' (orthogonalProjection s₂ p)) :=
   fun hne hp₁ hp₂ ↦ ⟨oangle_eq_of_dist_orthogonalProjection_eq hp'₁ hp'₂ hne,
-   dist_orthogonalProjection_eq_of_oangle_eq hp'₁ hp'₂ hp₁ hp₂⟩
+    dist_orthogonalProjection_eq_of_oangle_eq hp'₁ hp'₂ hp₁ hp₂⟩
 
 /-- A point `p` is equidistant to two affine subspaces (typically lines, for this version of the
 lemma) if twice the oriented angles at a point `p'` in their intersection between `p` and its
@@ -294,8 +294,8 @@ lemma two_zsmul_oangle_eq_of_dist_orthogonalProjection_line_eq {p p₁ p₂ p₃
     have hs := orthogonalProjection_sup_of_orthogonalProjection_eq ho
     have hinf : line[ℝ, p₁, p₂] ⊓ line[ℝ, p₁, p₃] = affineSpan ℝ {p₁} := by
       convert! (ha.inf_affineSpan_eq_affineSpan_inter {0, 1} {0, 2})
-      · simp [Set.image_insert_eq]
-      · simp [Set.image_insert_eq]
+      · simp
+      · simp
       · suffices {p₁} = ![p₁, p₂, p₃] '' {0} by grind
         simp
     have hsup : line[ℝ, p₁, p₂] ⊔ line[ℝ, p₁, p₃] = ⊤ := by

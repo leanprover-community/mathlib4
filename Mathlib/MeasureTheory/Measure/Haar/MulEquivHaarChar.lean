@@ -56,7 +56,7 @@ lemma mulEquivHaarChar_eq (μ : Measure G) [IsHaarMeasure μ]
   conv =>
     enter [1, 2, 2]
     rw [smul]
-  simp_rw [MeasureTheory.Measure.map_smul]
+  rw! [MeasureTheory.Measure.map_smul _ (by fun_prop)]
   exact haarScalarFactor_smul_smul _ _ (haarScalarFactor_pos_of_isHaarMeasure haar μ).ne'
 
 @[to_additive addEquivAddHaarChar_smul_map]
@@ -106,7 +106,7 @@ lemma mulEquivHaarChar_smul_preimage
     mulEquivHaarChar φ • μ (φ ⁻¹' X) = μ X := by
   nth_rw 2 [← mulEquivHaarChar_smul_map μ φ]
   simp only [Measure.smul_apply, nnreal_smul_coe_apply]
-  exact congr_arg _ <| (MeasurableEquiv.map_apply φ.toMeasurableEquiv X).symm
+  exact congr_arg _ (MeasurableEquiv.map_apply φ.toMeasurableEquiv X).symm
 
 @[to_additive (attr := simp)]
 lemma mulEquivHaarChar_refl :

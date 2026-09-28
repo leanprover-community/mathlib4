@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Divisibility
 public import Mathlib.Data.Int.Order.Units
 public import Mathlib.Data.ZMod.Basic
 
@@ -16,7 +15,7 @@ See also the related `negOnePow`.
 
 ## TODO
 
-* Generalize this to `Pow G (Zmod n)` where `orderOf g = n`.
+* Generalize this to `Pow G (ZMod n)` where `orderOf g = n`.
 
 ## Implementation notes
 
@@ -25,7 +24,7 @@ by using `Module R (Additive M)` in its place, especially since this already has
 `R = ℕ` and `R = ℤ`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Ideal TwoSidedIdeal
 
@@ -71,7 +70,6 @@ example : Int.instUnitsPow = ZPow.toPow := by with_implicit rfl
 
 @[simp] lemma toMul_uzpow (u : Additive ℤˣ) (r : R) : (r • u).toMul = u.toMul ^ r := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[norm_cast] lemma uzpow_natCast (u : ℤˣ) (n : ℕ) : u ^ (n : R) = u ^ n := by
   change ((n : R) • Additive.ofMul u).toMul = _
   rw [Nat.cast_smul_eq_nsmul, toMul_nsmul, toMul_ofMul]
@@ -109,7 +107,6 @@ lemma uzpow_sub (s : ℤˣ) (x y : R) : s ^ (x - y) = s ^ x / s ^ y :=
 lemma uzpow_neg (s : ℤˣ) (x : R) : s ^ (-x) = (s ^ x)⁻¹ :=
   Additive.ofMul.injective <| neg_smul x (Additive.ofMul s)
 
-set_option backward.isDefEq.respectTransparency false in
 @[norm_cast] lemma uzpow_intCast (u : ℤˣ) (z : ℤ) : u ^ (z : R) = u ^ z := by
   change ((z : R) • Additive.ofMul u).toMul = _
   rw [Int.cast_smul_eq_zsmul, toMul_zsmul, toMul_ofMul]

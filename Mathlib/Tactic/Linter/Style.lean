@@ -6,20 +6,19 @@ Authors: Michael Rothgang
 module
 
 public meta import Lean.Elab.Command
-public meta import Lean.Server.InfoUtils
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
-public import Lean.Parser.Command
+import Lean.Parser.Command
 public import Mathlib.Tactic.DeclarationNames
 public import Batteries.Tactic.Lint.Basic
+public import Lean.Parser.Module
 
 /-!
 ## Style linters
 
 This file contain linters about stylistic aspects: these are only about coding style,
 but do not affect correctness nor global coherence of mathlib.
-Historically, some of these were ported from the `lint-style.py` Python script.
 
 This file defines the following linters:
 - the `setOption` linter checks for the presence of `set_option` commands activating

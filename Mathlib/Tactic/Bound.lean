@@ -5,7 +5,6 @@ Authors: Geoffrey Irving
 -/
 module
 
-public import Aesop
 public meta import Mathlib.Tactic.Bound.Attribute
 public meta import Mathlib.Tactic.NormNum.Core
 public import Mathlib.Tactic.Bound.Attribute
@@ -89,7 +88,7 @@ We close numerical goals with `norm_num` and `linarith`.
 
 public meta section
 
-open Lean Elab Meta Term Mathlib.Tactic Syntax
+open Lean Mathlib.Tactic
 open Lean.Elab.Tactic (liftMetaTactic liftMetaTactic' TacticM getMainGoal)
 
 namespace Mathlib.Tactic.Bound

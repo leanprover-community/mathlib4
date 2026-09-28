@@ -5,7 +5,7 @@ Authors: Yongshun Ye
 -/
 module
 
-public import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Data.Nat.GCD.Basic
 public import Mathlib.Data.Nat.Prime.Defs
 
 /-!

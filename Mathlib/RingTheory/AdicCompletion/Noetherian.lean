@@ -6,7 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.AdicCompletion.Basic
-public import Mathlib.RingTheory.Filtration
+import Mathlib.RingTheory.Filtration
 public import Mathlib.RingTheory.HopkinsLevitzki
 
 /-!

@@ -6,7 +6,6 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
-public import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
 public import Mathlib.CategoryTheory.Monad.Coequalizer
 public import Mathlib.CategoryTheory.Monad.Limits
 
@@ -66,7 +65,7 @@ instance main_pair_reflexive (A : adj.toMonad.Algebra) :
     IsReflexivePair (F.map A.a) (adj.counit.app (F.obj A.A)) := by
   apply IsReflexivePair.mk' (F.map (adj.unit.app _)) _ _
   · rw [← F.map_comp, ← F.map_id]
-    exact congr_arg F.map A.unit
+    congrm F.map $A.unit
   · dsimp
     rw [adj.left_triangle_components]
 
@@ -145,7 +144,7 @@ theorem comparisonAdjunction_unit_f_aux
     ((comparisonAdjunction adj).unit.app A).f =
       adj.homEquiv A.A _
         (coequalizer.π (F.map A.a) (adj.counit.app (F.obj A.A))) :=
-  congr_arg (adj.homEquiv _ _) (Category.comp_id _)
+  congr((adj.homEquiv ..) $(Category.comp_id _))
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- This is a cofork which is helpful for establishing monadicity: the morphism from the Beck
@@ -158,7 +157,6 @@ def unitCofork (A : adj.toMonad.Algebra)
   Cofork.ofπ (G.map (coequalizer.π (F.map A.a) (adj.counit.app (F.obj A.A))))
     (by rw [← G.map_comp, coequalizer.condition, G.map_comp])
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem unitCofork_π (A : adj.toMonad.Algebra)
     [HasCoequalizer (F.map A.a) (adj.counit.app (F.obj A.A))] :
@@ -189,7 +187,6 @@ def counitCofork (B : D) :
       (adj.counit.app (F.obj (G.obj B))) :=
   Cofork.ofπ (adj.counit.app B) (adj.counit_naturality _)
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable {adj} in
 /-- The unit cofork is a colimit provided `G` preserves it. -/
 def unitColimitOfPreservesCoequalizer (A : adj.toMonad.Algebra)
@@ -295,7 +292,6 @@ instance [ReflectsColimitOfIsSplitPair G] : ∀ (A : Algebra adj.toMonad),
       (NatTrans.app adj.counit (F.obj A.A))) G :=
   fun _ => ReflectsColimitOfIsSplitPair.out _ _
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- To show `G` is a monadic right adjoint, we can show it preserves and reflects `G`-split
 coequalizers, and `D` has them.
 -/

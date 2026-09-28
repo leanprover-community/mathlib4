@@ -6,7 +6,6 @@ Authors: Joseph Myers, Manuel Candales
 module
 
 public import Mathlib.Analysis.Convex.Between
-public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
 public import Mathlib.Analysis.Normed.Affine.Isometry
 
@@ -26,7 +25,7 @@ This file defines unoriented angles in Euclidean affine spaces.
 
 noncomputable section
 
-open Real RealInnerProductSpace
+open Real
 
 namespace EuclideanGeometry
 
@@ -417,7 +416,7 @@ lemma angle_pointReflection_right {p₁ p₂ p₃ : P} :
     field
   rw [eq_sub_iff_add_eq]
   apply EuclideanGeometry.angle_add_angle_eq_pi_of_angle_eq_pi
-  exact Sbtw.angle₁₂₃_eq_pi <| (sbtw_pointReflection_of_ne ℝ h₃₂.symm).symm
+  exact Sbtw.angle₁₂₃_eq_pi (sbtw_pointReflection_of_ne ℝ h₃₂.symm).symm
 
 /-- Three points are collinear if and only if the first or third point equals the second or the
 angle between them is 0 or π. -/

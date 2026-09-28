@@ -27,7 +27,7 @@ assert_not_exists MulAction
 open scoped Pointwise
 
 namespace Finset
-variable {α β : Type*}
+variable {α : Type*}
 
 /-- `Finset α` has distributive negation if `α` has. -/
 @[instance_reducible]

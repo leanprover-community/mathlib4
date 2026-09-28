@@ -7,7 +7,6 @@ module
 public import Mathlib.Data.List.Find
 public import Mathlib.Data.Multiset.AddSub
 public import Mathlib.Data.Multiset.Basic
-public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Finding subsingleton elements within multisets

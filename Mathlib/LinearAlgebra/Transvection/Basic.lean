@@ -6,7 +6,6 @@ Authors: Antoine Chambert-Loir
 
 module
 
-public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 public import Mathlib.LinearAlgebra.Dual.BaseChange
 public import Mathlib.LinearAlgebra.Dual.Lemmas
@@ -61,7 +60,7 @@ def transvection (f : Dual R V) (v : V) : V →ₗ[R] V where
 
 namespace transvection
 
-open Submodule LinearMap
+open LinearMap
 
 theorem apply (f : Dual R V) (v x : V) :
     transvection f v x = x + f x • v :=
@@ -511,7 +510,6 @@ theorem IsBaseChange.transvection (f : Dual R V) (v : V) :
     ibc.endHom (transvection f v) = transvection (ibc.toDual f) (ε v) := by
   ext w
   induction w using ibc.inductionOn with
-  | zero => simp
   | add x y hx hy => simp [hx, hy]
   | smul a w hw => simp [hw]
   | tmul x => simp [LinearMap.transvection.apply, endHom_comp_apply, toDual_comp_apply]
@@ -547,7 +545,7 @@ section determinant
 
 namespace LinearMap.transvection
 
-open Polynomial Module
+open Module
 
 open scoped TensorProduct
 

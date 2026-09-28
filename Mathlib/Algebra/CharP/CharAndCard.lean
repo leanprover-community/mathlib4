@@ -5,10 +5,10 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Algebra.CharP.Basic
-public import Mathlib.Algebra.CharP.Lemmas
+import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.CharP.Lemmas
 public import Mathlib.GroupTheory.Perm.Cycle.Type
-public import Mathlib.RingTheory.Coprime.Lemmas
+import Mathlib.RingTheory.Coprime.Lemmas
 
 /-!
 # Characteristic and cardinality

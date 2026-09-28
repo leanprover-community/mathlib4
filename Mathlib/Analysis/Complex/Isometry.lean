@@ -39,7 +39,7 @@ open Complex
 
 open CharZero
 
-open ComplexConjugate
+open scoped ComplexConjugate
 
 local notation "|" x "|" => Complex.abs x
 
@@ -69,8 +69,8 @@ theorem rotation_trans (a b : Circle) : (rotation a).trans (rotation b) = rotati
 
 theorem rotation_ne_conjLIE (a : Circle) : rotation a ≠ conjLIE := by
   intro h
-  have h1 : rotation a 1 = conj 1 := LinearIsometryEquiv.congr_fun h 1
-  have hI : rotation a I = conj I := LinearIsometryEquiv.congr_fun h I
+  have h1 : rotation a 1 = conj 1 := congr($h 1)
+  have hI : rotation a I = conj I := congr($h I)
   rw [rotation_apply, map_one, mul_one] at h1
   rw [rotation_apply, conj_I, ← neg_one_mul, mul_left_inj' I_ne_zero, h1, eq_neg_self_iff] at hI
   exact one_ne_zero hI
@@ -81,7 +81,6 @@ unit circle. -/
 def rotationOf (e : ℂ ≃ₗᵢ[ℝ] ℂ) : Circle :=
   ⟨e 1 / ‖e 1‖, by simp [Submonoid.unitSphere]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem rotationOf_rotation (a : Circle) : rotationOf (rotation a) = a :=
   Subtype.ext <| by simp

@@ -5,7 +5,7 @@ Authors: Gabriel Ebner
 -/
 module
 
-public import Mathlib.Tactic.Eqns
+import Mathlib.Tactic.Eqns
 public import Mathlib.Util.TermReduce
 
 /-!

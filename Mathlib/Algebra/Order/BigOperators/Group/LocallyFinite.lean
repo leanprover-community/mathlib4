@@ -9,7 +9,6 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
 public import Mathlib.Data.Nat.SuccPred
 public import Mathlib.Order.Disjointed
-public import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Big operators indexed by intervals
@@ -18,8 +17,6 @@ This file proves lemmas about `∏ x ∈ Ixx a b, f x` and `∑ x ∈ Ixx a b, f
 -/
 
 public section
-
-open Order
 
 variable {α M : Type*} [CommMonoid M] {f : α → M} {a b : α}
 

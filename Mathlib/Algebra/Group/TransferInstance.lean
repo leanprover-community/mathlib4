@@ -205,6 +205,6 @@ lemma exists_type_univ_nonempty_mulEquiv.{u, v} (G : Type u) [Group G] [Finite G
   let f : Fin n ≃ ULift (Fin n) := Equiv.ulift.symm
   let e : G ≃ ULift (Fin n) := e.trans f
   let groupH : Group (ULift (Fin n)) := e.symm.group
-  exact ⟨ULift (Fin n), groupH, inferInstance, ⟨MulEquiv.symm <| e.symm.mulEquiv⟩⟩
+  exact ⟨ULift (Fin n), groupH, inferInstance, ⟨MulEquiv.symm e.symm.mulEquiv⟩⟩
 
 end Finite

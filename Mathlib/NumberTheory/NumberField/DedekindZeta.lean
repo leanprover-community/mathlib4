@@ -5,7 +5,7 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Ring.Nat
+import Mathlib.Algebra.BigOperators.Ring.Nat
 public import Mathlib.NumberTheory.LSeries.SumCoeff
 public import Mathlib.NumberTheory.NumberField.Ideal.Asymptotics
 
@@ -34,7 +34,9 @@ variable (K : Type*) [Field K] [NumberField K]
 
 noncomputable section
 
-open Filter Ideal NumberField.InfinitePlace NumberField.Units Topology nonZeroDivisors
+open Filter Ideal NumberField.InfinitePlace NumberField.Units nonZeroDivisors
+
+open scoped Topology
 
 namespace NumberField
 

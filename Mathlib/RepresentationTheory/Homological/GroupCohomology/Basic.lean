@@ -5,10 +5,8 @@ Authors: Amelia Livingston
 -/
 module
 
-public import Mathlib.Algebra.Homology.Opposite
 public import Mathlib.Algebra.Homology.ConcreteCategory
 public import Mathlib.RepresentationTheory.Homological.Resolution
-public import Mathlib.Tactic.CategoryTheory.Slice
 
 /-!
 # The group cohomology of a `k`-linear `G`-representation
@@ -121,7 +119,7 @@ set_option backward.isDefEq.respectTransparency false in
 $$0 \to \mathrm{Fun}(G^0, A) \to \mathrm{Fun}(G^1, A) \to \mathrm{Fun}(G^2, A) \to \dots$$
 which calculates the group cohomology of `A`. -/
 noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
-  CochainComplex.of (fun n => ModuleCat.of k ((Fin n → G) → A))
+  CochainComplex.of (fun n => ↧((Fin n → G) → A))
     (fun n => inhomogeneousCochains.d A n) fun n => by
     rw [d_eq, d_eq]
     slice_lhs 3 4 => rw [Iso.hom_inv_id]

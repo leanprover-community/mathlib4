@@ -579,6 +579,30 @@ theorem angle_eq_abs_oangle_toReal {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
   · rw [h, eq_comm, Real.Angle.abs_toReal_neg_coe_eq_self_iff]
     exact ⟨h0, hpi⟩
 
+/-- If the unoriented angle between two nonzero vectors is at most `π / 2`, twice that angle is
+the absolute value of twice the oriented angle, converted to a real. -/
+theorem two_mul_angle_eq_abs_two_zsmul_oangle_toReal {x y : V} (hx : x ≠ 0) (hy : y ≠ 0)
+    (h : InnerProductGeometry.angle x y ≤ π / 2) :
+    2 * InnerProductGeometry.angle x y = |((2 : ℤ) • o.oangle x y).toReal| := by
+  have h_double_angle : 2 * InnerProductGeometry.angle x y =
+      |((2 * InnerProductGeometry.angle x y : ℝ) : Real.Angle).toReal| := by
+    rw [eq_comm, Real.Angle.abs_toReal_coe_eq_self_iff]
+    exact ⟨mul_nonneg zero_le_two (InnerProductGeometry.angle_nonneg x y), by linarith⟩
+  rcases o.oangle_eq_angle_or_eq_neg_angle hx hy with he | he
+  all_goals
+    simpa only [he, smul_neg, two_zsmul, ← Real.Angle.coe_add, ← two_mul, ← neg_add,
+      Real.Angle.abs_toReal_neg] using h_double_angle
+
+/-- If the unoriented angle between two nonzero vectors is at least `π / 2`, twice that angle is
+`2 * π` minus the absolute value of twice the oriented angle, converted to a real. -/
+theorem two_mul_angle_eq_two_pi_sub_abs_two_zsmul_oangle_toReal {x y : V} (hx : x ≠ 0) (hy : y ≠ 0)
+    (h : π / 2 ≤ InnerProductGeometry.angle x y) :
+    2 * InnerProductGeometry.angle x y = 2 * π - |((2 : ℤ) • o.oangle x y).toReal| := by
+  have key := o.two_mul_angle_eq_abs_two_zsmul_oangle_toReal hx (neg_ne_zero.2 hy)
+    (by rw [InnerProductGeometry.angle_neg_right]; linarith)
+  rw [InnerProductGeometry.angle_neg_right, o.two_zsmul_oangle_neg_right] at key
+  linarith
+
 /-- If the sign of the oriented angle between two vectors is zero, either one of the vectors is
 zero or the unoriented angle is 0 or π. -/
 theorem eq_zero_or_angle_eq_zero_or_pi_of_sign_oangle_eq_zero {x y : V}
@@ -588,7 +612,7 @@ theorem eq_zero_or_angle_eq_zero_or_pi_of_sign_oangle_eq_zero {x y : V}
   by_cases hy : y = 0; · simp [hy]
   rw [o.angle_eq_abs_oangle_toReal hx hy]
   rw [Real.Angle.sign_eq_zero_iff] at h
-  rcases h with (h | h) <;> simp [h, Real.pi_pos.le]
+  rcases h with (h | h) <;> simp [h]
 
 /-- If two unoriented angles are equal, and the signs of the corresponding oriented angles are
 equal, then the oriented angles are equal (even in degenerate cases). -/
@@ -700,8 +724,7 @@ theorem oangle_eq_pi_iff_angle_eq_pi {x y : V} :
   · simp [hy, Real.Angle.pi_ne_zero.symm, div_eq_mul_inv,
       Real.pi_ne_zero]
   refine ⟨fun h => ?_, fun h => ?_⟩
-  · rw [o.angle_eq_abs_oangle_toReal hx hy, h]
-    simp [Real.pi_pos.le]
+  · simp [o.angle_eq_abs_oangle_toReal hx hy, h]
   · have ha := o.oangle_eq_angle_or_eq_neg_angle hx hy
     rw [h] at ha
     simpa using ha

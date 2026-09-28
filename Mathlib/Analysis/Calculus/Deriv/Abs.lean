@@ -5,7 +5,7 @@ Authors: Etienne Marion
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Add
+import Mathlib.Analysis.Calculus.Deriv.Add
 public import Mathlib.Analysis.InnerProductSpace.Calculus
 
 /-!
@@ -22,7 +22,7 @@ absolute value, derivative
 
 public section
 
-open Filter Real Set
+open Real Set
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable {n : ℕ∞} {f : E → ℝ} {f' : StrongDual ℝ E} {s : Set E} {x : E}

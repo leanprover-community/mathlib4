@@ -6,8 +6,6 @@ Authors: Eric Wieser, Frédéric Dupuis
 module
 
 public import Mathlib.Algebra.Star.SelfAdjoint
-public import Mathlib.Algebra.Module.Basic
-public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Algebra.Module.LinearMap.Star
 public import Mathlib.Algebra.Module.Rat
 public import Mathlib.LinearAlgebra.Prod
@@ -241,7 +239,7 @@ theorem algebraMap_star_comm (r : R) : algebraMap R A (star r) = star (algebraMa
 variable (A) in
 protected lemma IsSelfAdjoint.algebraMap {r : R} (hr : IsSelfAdjoint r) :
     IsSelfAdjoint (algebraMap R A r) := by
-  simpa using! congr(algebraMap R A $(hr.star_eq))
+  simpa using! congr(algebraMap R A $hr.star_eq)
 
 lemma isSelfAdjoint_algebraMap_iff {r : R} (h : Function.Injective (algebraMap R A)) :
     IsSelfAdjoint (algebraMap R A r) ↔ IsSelfAdjoint r :=

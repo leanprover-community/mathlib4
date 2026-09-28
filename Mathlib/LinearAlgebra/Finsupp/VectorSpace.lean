@@ -6,9 +6,7 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
-public import Mathlib.Algebra.MonoidAlgebra.Defs
 public import Mathlib.Algebra.Polynomial.Basic
-public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.LinearAlgebra.Finsupp.Span
@@ -236,7 +234,7 @@ instance : Module.Free R S[M] := .of_equiv (coeffLinearEquiv _).symm
 end MonoidAlgebra
 
 namespace Polynomial
-variable {R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]
+variable {R : Type*} [Semiring R]
 
 instance : Module.Free R R[X] := .of_equiv (Polynomial.toFinsuppIsoLinear _).symm
 

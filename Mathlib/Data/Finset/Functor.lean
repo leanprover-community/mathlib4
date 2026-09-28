@@ -5,8 +5,7 @@ Authors: Yaël Dillies, Kim Morrison
 -/
 module
 
-public import Batteries.Control.AlternativeMonad
-public import Mathlib.Data.Finset.Lattice.Union
+import Mathlib.Data.Finset.Lattice.Union
 public import Mathlib.Data.Finset.NAry
 public import Mathlib.Data.Multiset.Functor
 
@@ -213,7 +212,7 @@ open scoped Classical in
 @[simp]
 theorem map_comp_coe_apply (h : α → β) (s : Multiset α) :
     s.toFinset.image h = (h <$> s).toFinset :=
-  congrFun (map_comp_coe h) s
+  congr($(map_comp_coe h) s)
 
 open scoped Classical in
 theorem map_traverse (g : α → G β) (h : β → γ) (s : Finset α) :

@@ -6,7 +6,7 @@ Authors: Kexing Ying, Rémy Degenne
 module
 
 public import Mathlib.Probability.Process.Stopping
-public import Mathlib.Tactic.AdaptationNote
+import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Hitting times
@@ -35,7 +35,7 @@ we have only proved it for the discrete case so far).
 @[expose] public section
 
 
-open Filter Order TopologicalSpace
+open TopologicalSpace
 
 open scoped MeasureTheory NNReal ENNReal Topology
 

@@ -5,7 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.Order.LeftRight
 public import Mathlib.Topology.Order.Monotone
 public import Mathlib.Topology.Separation.Regular
 
@@ -38,7 +37,7 @@ Prove corresponding stronger results for `StrictMono` and `StrictAnti` functions
 
 open Set Filter
 
-open Topology
+open scoped Topology
 
 section
 

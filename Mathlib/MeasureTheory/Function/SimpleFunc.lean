@@ -33,7 +33,9 @@ open Filter ENNReal
 
 open Function (support)
 
-open Topology NNReal ENNReal MeasureTheory
+open NNReal ENNReal MeasureTheory
+
+open scoped Topology
 
 namespace MeasureTheory
 
@@ -56,6 +58,7 @@ section Measurable
 
 variable [MeasurableSpace α]
 
+@[macro_inline]
 instance instFunLike : FunLike (α →ₛ β) α β where
   coe := toFun
   coe_injective | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
@@ -1198,7 +1201,7 @@ theorem map_iff {g : β → γ} (hg : ∀ {b}, g b = 0 ↔ b = 0) :
 protected theorem pair {g : α →ₛ γ} (hf : f.FinMeasSupp μ) (hg : g.FinMeasSupp μ) :
     (pair f g).FinMeasSupp μ :=
   calc
-    μ (support <| pair f g) = μ (support f ∪ support g) := congr_arg μ <| support_prodMk f g
+    μ (support <| pair f g) = μ (support f ∪ support g) := congr(μ $(support_prodMk f g))
     _ ≤ μ (support f) + μ (support g) := measure_union_le _ _
     _ < _ := add_lt_top.2 ⟨hf, hg⟩
 

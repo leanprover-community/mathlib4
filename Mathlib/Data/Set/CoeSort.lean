@@ -25,7 +25,7 @@ namespace Set
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {γ : Type w}
+variable {α : Type u}
 
 /-- Given the set `s`, `Elem s` is the `Type` of element of `s`.
 

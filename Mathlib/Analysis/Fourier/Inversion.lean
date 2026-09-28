@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.PeakFunction
+import Mathlib.MeasureTheory.Integral.PeakFunction
 public import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
 
 /-!
@@ -41,7 +41,7 @@ rely on the explicit computation of the Fourier transform of Gaussians.
 
 public section
 
-open Filter MeasureTheory Complex Module Metric Real Bornology
+open Filter MeasureTheory Complex Module Real Bornology
 
 open scoped Topology FourierTransform RealInnerProductSpace Complex
 

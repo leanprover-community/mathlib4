@@ -8,9 +8,7 @@ module
 public import Mathlib.Probability.Distributions.Poisson.Basic
 public import Mathlib.Probability.Distributions.Binomial
 
-import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Analysis.SpecialFunctions.Choose
-import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 
 /-!
 # Poisson limit of binomial probabilities
@@ -40,7 +38,9 @@ namespace ProbabilityTheory
 
 open scoped NNReal
 
-open Filter Topology ENNReal
+open Filter ENNReal
+
+open scoped Topology
 
 variable {p : ℕ → ℝ} {r : ℝ} (k : ℕ)
 
@@ -73,7 +73,7 @@ theorem tendsto_choose_mul_pow_of_tendsto_mul_atTop (hr : Tendsto (fun n => n * 
   rw [mul_div_assoc, mul_comm]
   refine (tendsto_choose_mul_pow_atTop k hr).mul ?_
   have hp_lt_half : ∀ᶠ n in atTop, p n < 1 / 2 :=
-    (tendsto_zero_of_tendsto_mul_atTop hr).eventually (Iio_mem_nhds (by norm_num))
+    (tendsto_zero_of_tendsto_mul_atTop hr).eventually (Iio_mem_nhds (by simp))
   have hEq : (fun n => (1 - p n) ^ (n - k)) =ᶠ[atTop]
       (fun n => (1 - p n) ^ n * ((1 - p n) ^ k)⁻¹) := by
     filter_upwards [eventually_ge_atTop k, hp_lt_half] with n hn hne
@@ -90,7 +90,7 @@ theorem tendsto_choose_mul_pow_of_tendsto_mul_atTop (hr : Tendsto (fun n => n * 
 Another version of Poisson Limit Theorem: convergence of `PMF.binomial` to `poissonPMF` in `ℝ≥0∞`
 under the natural hypotheses (`∀ n, p n ≤ 1` and `r ≥ 0`).
 -/
-@[deprecated tendsto_choose_mul_pow_of_tendsto_mul_atTop (since := "2026-03-08")]
+@[deprecated tendsto_choose_mul_pow_of_tendsto_mul_atTop +typeChanged (since := "2026-03-08")]
 lemma binomial_tendsto_poissonPMFReal_atTop {r : ℝ≥0} {p : ℕ → unitInterval}
     (hr : Tendsto (fun n => n * (p n : ℝ)) atTop (𝓝 r)) :
     Tendsto (fun n ↦ Bin(n, p n) {k}) atTop (𝓝 (poissonMeasure r {k})) := by

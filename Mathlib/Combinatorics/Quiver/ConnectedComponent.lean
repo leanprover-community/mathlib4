@@ -6,7 +6,6 @@ Authors: David Wärn, Matteo Cipollina
 module
 
 public import Mathlib.Combinatorics.Quiver.Subquiver
-public import Mathlib.Combinatorics.Quiver.Path
 public import Mathlib.Combinatorics.Quiver.Symmetric
 
 /-!

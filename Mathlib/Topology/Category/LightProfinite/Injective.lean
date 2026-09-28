@@ -7,10 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 public import Mathlib.Topology.Category.LightProfinite.AsLimit
-public import Mathlib.Topology.Category.CompHausLike.Limits
-public import Mathlib.CategoryTheory.Functor.OfSequence
-public import Mathlib.CategoryTheory.EpiMono
-public import Mathlib.Order.RelClasses
+import Mathlib.Topology.Category.CompHausLike.Limits
+import Mathlib.CategoryTheory.Functor.OfSequence
 
 /-!
 
@@ -86,7 +84,7 @@ lemma exists_lift_of_finite_of_injective_of_surjective {X Y S T : Type*}
     intro z hz
     rw [mem_preimage, mem_singleton_iff]
     obtain ⟨x, _, _⟩ := (mem_image _ _ _).mp hz
-    have h_comm' : g' (f x) = f' (g x) := congr_fun h_comm x
+    have h_comm' : g' (f x) = f' (g x) := congr($h_comm x)
     simp_all
   -- obtain a clopen partition `C` of `Y` such that `Z i ⊆ C i ⊆ D i`.
   obtain ⟨C, C_clopen, Z_subset_C, C_subset_D, C_cover_D, C_disj⟩ :=

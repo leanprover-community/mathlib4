@@ -5,10 +5,10 @@ Authors: Robert Y. Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn, S
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-public import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Algebra.Order.Ring.Pow
-public import Mathlib.Algebra.Ring.CharZero
+import Mathlib.Algebra.Ring.CharZero
 public import Mathlib.Tactic.Positivity.Core
 
 /-!

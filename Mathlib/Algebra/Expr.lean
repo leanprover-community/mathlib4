@@ -5,9 +5,9 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Init
+import Mathlib.Init
 public import Qq
-public import Qq.Typ
+import Qq.Typ
 
 /-! # Helpers to invoke functions involving algebra at tactic time
 

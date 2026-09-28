@@ -5,9 +5,7 @@ Authors: Jujian Zhang, Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Finsupp
-public import Mathlib.Order.Filter.AtTopBot.Defs
-public import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.Algebra.Group.Submonoid.Finsupp
 public import Mathlib.RingTheory.GradedAlgebra.FiniteType
 public import Mathlib.RingTheory.GradedAlgebra.RingHom
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
@@ -77,7 +75,7 @@ circumvent this, we quotient `NumDenSameDeg 𝒜 x` by the kernel of `c ↦ c.nu
 
 noncomputable section
 
-open DirectSum Pointwise
+open DirectSum
 
 open DirectSum SetLike
 
@@ -102,7 +100,7 @@ end
 
 namespace NumDenSameDeg
 
-open SetLike.GradedMonoid Submodule
+open SetLike.GradedMonoid
 
 @[ext]
 theorem ext {𝒜 : ι → σ} (x : Submonoid A)
@@ -368,7 +366,7 @@ instance : Neg (HomogeneousLocalization 𝒜 x) where
   neg := Quotient.map' Neg.neg fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
     change Localization.mk _ _ = Localization.mk _ _
     simp only [num_neg, den_neg, ← Localization.neg_mk]
-    exact congr_arg Neg.neg h
+    congrm -$h
 
 @[simp] lemma mk_neg (i : NumDenSameDeg 𝒜 x) : mk (-i) = -mk i := rfl
 
@@ -399,7 +397,7 @@ instance : Add (HomogeneousLocalization 𝒜 x) where
         (h' : Localization.mk _ _ = Localization.mk _ _) => by
       change Localization.mk _ _ = Localization.mk _ _
       simp only [num_add, den_add]
-      convert! congr_arg₂ (· + ·) h h' <;> rw [Localization.add_mk] <;> rfl
+      convert! congr($h + $h') <;> rw [Localization.add_mk] <;> rfl
 
 @[simp] lemma mk_add (i j : NumDenSameDeg 𝒜 x) : mk (i + j) = mk i + mk j := rfl
 
@@ -412,7 +410,7 @@ instance : Mul (HomogeneousLocalization 𝒜 x) where
         (h' : Localization.mk _ _ = Localization.mk _ _) => by
       change Localization.mk _ _ = Localization.mk _ _
       simp only [num_mul, den_mul]
-      convert! congr_arg₂ (· * ·) h h' <;> rw [Localization.mk_mul] <;> rfl
+      convert! congr($h * $h') <;> rw [Localization.mk_mul] <;> rfl
 
 @[simp] lemma mk_mul (i j : NumDenSameDeg 𝒜 x) : mk (i * j) = mk i * mk j := rfl
 
@@ -547,7 +545,7 @@ theorem den_mem_deg (f : HomogeneousLocalization 𝒜 x) : f.den ∈ 𝒜 f.deg 
 
 theorem eq_num_div_den (f : HomogeneousLocalization 𝒜 x) :
     f.val = Localization.mk f.num ⟨f.den, f.den_mem⟩ :=
-  congr_arg HomogeneousLocalization.val (Quotient.out_eq' f).symm
+  congr(HomogeneousLocalization.val $((Quotient.out_eq' f).symm))
 
 theorem den_smul_val (f : HomogeneousLocalization 𝒜 x) :
     f.den • f.val = algebraMap _ _ f.num := by
@@ -696,7 +694,6 @@ abbrev mapId {P Q : Submonoid A} (h : P ≤ Q) :
     HomogeneousLocalization 𝒜 P →+* HomogeneousLocalization 𝒜 Q :=
   map (.id _) h
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma map_mk (g : 𝒜 →+*ᵍ ℬ) (comap_le : P ≤ Q.comap g) (x) :
     map g comap_le (mk x) = mk ⟨x.1, ⟨_, map_mem g x.2.2⟩, ⟨_, map_mem g x.3.2⟩, comap_le x.4⟩ :=
   rfl
@@ -919,7 +916,7 @@ theorem Away.isLocalization_mul (hd : d ≠ 0) :
   · intro a b e
     obtain ⟨n, a, ha, rfl⟩ := Away.mk_surjective 𝒜 hf a
     obtain ⟨m, b, hb, rfl⟩ := Away.mk_surjective 𝒜 hf b
-    replace e := congr_arg val e
+    replace e := congr(val $e)
     simp only [RingHom.algebraMap_toAlgebra, awayMap_mk, val_mk,
       Localization.mk_eq_mk_iff, Localization.r_iff_exists] at e
     obtain ⟨⟨_, k, rfl⟩, hc⟩ := e

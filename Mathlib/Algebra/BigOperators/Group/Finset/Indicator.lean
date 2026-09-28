@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.Group.Indicator
+import Mathlib.Data.Set.Lattice.Disjoint
 public import Mathlib.Order.CompleteLattice.Finset
 
 /-!

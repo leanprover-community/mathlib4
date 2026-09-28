@@ -5,10 +5,10 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Closed
+import Mathlib.CategoryTheory.Sites.Closed
 public import Mathlib.CategoryTheory.Sites.Coverage
-public import Mathlib.CategoryTheory.Sites.Precoverage.Subsheaf
-public import Mathlib.Logic.Small.Set
+import Mathlib.CategoryTheory.Sites.Precoverage.Subsheaf
+import Mathlib.Logic.Small.Set
 
 /-!
 # Generators of a Grothendieck topology
@@ -27,7 +27,7 @@ presheafs `Cᵒᵖ ⥤ Type max u v`. We then show that this implies that the co
 for all presheafs `Cᵒᵖ ⥤ Type w`.
 -/
 
-@[expose] public section
+public section
 
 universe t t' w v u
 

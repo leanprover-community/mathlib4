@@ -5,11 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Eval.SMul
-public import Mathlib.LinearAlgebra.Matrix.Adjugate
+import Mathlib.Algebra.Polynomial.Eval.SMul
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.RingTheory.MatrixPolynomialAlgebra
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Characteristic polynomials and the Cayley-Hamilton theorem
@@ -292,7 +290,6 @@ theorem charpoly_units_conj' (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
     (M.val⁻¹ * N * M.val).charpoly = N.charpoly := by
   simpa using charpoly_units_conj M⁻¹ N
 
-set_option backward.isDefEq.respectTransparency false in
 theorem charpoly_sub_scalar (M : Matrix n n R) (μ : R) :
     (M - scalar n μ).charpoly = M.charpoly.comp (X + C μ) := by
   simp_rw [charpoly, det_apply, Polynomial.sum_comp, Polynomial.smul_comp, Polynomial.prod_comp]
@@ -301,3 +298,13 @@ theorem charpoly_sub_scalar (M : Matrix n n R) (μ : R) :
   ring
 
 end Matrix
+
+open Matrix Polynomial in
+/-- Cayley–Hamilton: an algebra element is a root of the characteristic polynomial of its
+matrix of left multiplication in any basis. -/
+theorem Algebra.aeval_charpoly_leftMulMatrix {R S : Type*} [CommRing R] [Semiring S] [Algebra R S]
+    {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Module.Basis ι R S) (a : S) :
+    aeval a (leftMulMatrix b a).charpoly = 0 := by
+  apply leftMulMatrix_injective b
+  rw [map_zero, ← aeval_algHom_apply]
+  exact aeval_self_charpoly _

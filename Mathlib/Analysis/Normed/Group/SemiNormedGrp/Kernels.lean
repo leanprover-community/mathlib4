@@ -49,7 +49,6 @@ def cokernelCocone {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) : Cofork f 0 :=
         f.hom.1.mem_range]
       use x)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `HasCokernels SemiNormedGrp₁`. -/
 def cokernelLift {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) (s : CokernelCofork f) :
     (cokernelCocone f).pt ⟶ s.pt := by
@@ -62,7 +61,6 @@ def cokernelLift {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) (s : CokernelCofork 
   -- The lift has norm at most one:
   exact NormedAddGroupHom.lift_normNoninc _ _ _ s.π.2
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance : HasCokernels SemiNormedGrp₁.{u} where
   has_colimit f :=
     HasColimit.mk
@@ -77,8 +75,7 @@ instance : HasCokernels SemiNormedGrp₁.{u} where
               simp)
             fun _ _ w =>
             SemiNormedGrp₁.hom_ext <| Subtype.ext
-              (NormedAddGroupHom.lift_unique f.1.range _ _ _
-                (congr_arg Subtype.val (congr_arg Hom.hom w))) }
+              (NormedAddGroupHom.lift_unique f.1.range _ _ _ congr($(w).hom.val)) }
 
 -- Sanity check
 example : HasCokernels SemiNormedGrp₁ := by infer_instance
@@ -113,7 +110,7 @@ instance hasLimit_parallelPair {V W : SemiNormedGrp.{u}} (f g : V ⟶ W) :
           have := fun (c : Fork f g) =>
             show NormedAddGroupHom.compHom (f - g).hom c.ι.hom = 0 by
               rw [hom_sub, map_sub, AddMonoidHom.sub_apply, sub_eq_zero]
-              exact congr_arg Hom.hom c.condition
+              congrm $(c.condition).hom
           Fork.IsLimit.mk _
             (fun c => ofHom <|
               NormedAddGroupHom.ker.lift (Fork.ι c).hom _ <| this c)
@@ -133,7 +130,7 @@ section Cokernel
 /-- Auxiliary definition for `HasCokernels SemiNormedGrp`. -/
 noncomputable
 def cokernelCocone {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) : Cofork f 0 :=
-  Cofork.ofπ (P := SemiNormedGrp.of (Y ⧸ NormedAddGroupHom.range f.hom))
+  Cofork.ofπ (P := ↧(Y ⧸ NormedAddGroupHom.range f.hom))
     (ofHom f.hom.range.normedMk)
     (by aesop)
 
@@ -159,7 +156,7 @@ def isColimitCokernelCocone {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) :
       change (f ≫ s.π) b = 0
       simp)
     fun _ _ w => SemiNormedGrp.hom_ext <| NormedAddGroupHom.lift_unique f.hom.range _ _ _ <|
-      congr_arg Hom.hom w
+      congr($(w).hom)
 
 instance : HasCokernels SemiNormedGrp.{u} where
   has_colimit f :=

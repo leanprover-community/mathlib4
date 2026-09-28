@@ -23,7 +23,7 @@ This file contains the usual formulas (and existence assertions) for the derivat
 public section
 
 
-open Asymptotics ContinuousLinearMap Topology
+open ContinuousLinearMap
 
 section
 

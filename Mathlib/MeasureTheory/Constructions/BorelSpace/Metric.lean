@@ -33,7 +33,7 @@ open scoped Topology NNReal ENNReal MeasureTheory
 
 universe u v w x y
 
-variable {α β γ δ : Type*} {ι : Sort y} {s t u : Set α}
+variable {α β : Type*} {s : Set α}
 
 section PseudoMetricSpace
 

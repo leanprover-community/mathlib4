@@ -61,7 +61,7 @@ lemma derivWithin_sqrt {z : ℂ} (hz : z ∈ slitPlane) :
 /-- `Complex.sqrt` is continuous at `z` provided `0 ≤ z.re` or `z.im ≠ 0`. This is weaker than
 requiring `z ∈ slitPlane`, as it additionally includes the imaginary axis and `0`. -/
 lemma continuousAt_sqrt {z : ℂ} (hz : 0 ≤ z.re ∨ z.im ≠ 0) : ContinuousAt sqrt z :=
-  continuousAt_cpow_const_of_re_pos hz (by norm_num)
+  continuousAt_cpow_const_of_re_pos hz (by simp)
 
 lemma continuousOn_sqrt : ContinuousOn sqrt slitPlane :=
   fun _ hz => (continuousAt_sqrt (hz.imp le_of_lt id)).continuousWithinAt

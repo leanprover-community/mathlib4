@@ -5,9 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Sets.OpenCover
-public import Mathlib.Topology.LocallyClosed
 public import Mathlib.Topology.Maps.Proper.Basic
 
 /-!
@@ -257,7 +255,7 @@ theorem isEmbedding_of_iSup_eq_top_of_preimage_subset_range
     have hU'' : (⨆ i, (U i).comap ⟨Subtype.val, continuous_subtype_val⟩ :
         Opens (Set.range f)) = ⊤ := by
       rw [← top_le_iff]
-      simpa [Set.range_subset_iff, SetLike.le_def] using hU
+      simpa [Set.range_subset_iff, IsConcreteLE.le_iff] using hU
     refine this _ ?_ _ ?_ V iV hiV ?_ ?_ hU''
     · fun_prop
     · rw [hU'']; simp

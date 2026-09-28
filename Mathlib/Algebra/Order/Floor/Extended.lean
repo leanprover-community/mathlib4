@@ -5,11 +5,11 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Basic.NNReal.Basic
+public import Mathlib.Basic.Real.ENatENNReal
 public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Data.NNReal.Basic
-public import Mathlib.Data.Real.ENatENNReal
 
-import Mathlib.Data.ENNReal.Operations
+import Mathlib.Basic.ENNReal.Operations
 
 /-!
 # Extended floor and ceil

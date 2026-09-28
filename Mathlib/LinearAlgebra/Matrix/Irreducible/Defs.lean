@@ -6,7 +6,7 @@ Authors: Matteo Cipollina
 module
 
 public import Mathlib.Combinatorics.Quiver.ConnectedComponent
-public import Mathlib.Combinatorics.Quiver.Path.Vertices
+import Mathlib.Combinatorics.Quiver.Path.Vertices
 public import Mathlib.Data.Matrix.Mul
 
 /-!

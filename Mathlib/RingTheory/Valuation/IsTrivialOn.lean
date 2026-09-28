@@ -27,7 +27,7 @@ In what follows, we consider a `A`-algebra `B` and a valuation `v` over `B` whic
   maximal ideal of `v.valuationSubring` is transcendental over `A`.
 -/
 
-@[expose] public section
+public section
 
 variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ]
 
@@ -79,7 +79,7 @@ theorem Valuation.transcendental_of_ne_one (y : K) (h0 : y ≠ 0) (hy : v y ≠ 
     rw [← val_lt_one_iff _ h0]
     exact lt_of_le_of_ne hlt hy
   simp_all only [ne_eq, Transcendental]
-  by_contra!
+  by_contra
   replace ⟨p, hpnt, hp⟩ : IsAlgebraic A y := .algebraMap this
   suffices v y ^ p.natDegree = 0 by simp_all
   rw [← valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X _ hlt] <;> simp_all

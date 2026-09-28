@@ -57,8 +57,8 @@ variable (R : Type*) [CommRing R]
 def submoduleZ : Submodule R (R × R) where
   carrier := {zz | zz.1 = zz.2}
   zero_mem' := rfl
-  add_mem' := @fun _ _ ha hb => congr_arg₂ (· + ·) ha hb
-  smul_mem' a _ hb := congr_arg (a * ·) hb
+  add_mem' ha hb := congr($ha + $hb)
+  smul_mem' a _ hb := congr(a * $hb)
 
 instance [Fintype R] [DecidableEq R] : Fintype (submoduleZ R) :=
   inferInstanceAs (Fintype {zz : R × R // zz.1 = zz.2})

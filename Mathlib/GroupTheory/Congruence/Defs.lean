@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Group.InjSurj
 public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Data.Setoid.Basic
-public import Mathlib.Tactic.FastInstance
 import Mathlib.Order.GaloisConnection.Basic
 
 /-!
@@ -121,7 +120,7 @@ instance : Inhabited (Con M) :=
   toSetoid_injective.eq_iff
 
 /-- A coercion from a congruence relation to its underlying binary relation. -/
-@[to_additive
+@[to_additive (attr := macro_inline)
 /-- A coercion from an additive congruence relation to its underlying binary relation. -/]
 instance : FunLike (Con M) M (M → Prop) where
   coe c := c.r

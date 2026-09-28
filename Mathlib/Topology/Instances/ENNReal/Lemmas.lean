@@ -5,14 +5,13 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Intervals
-public import Mathlib.Data.ENNReal.BigOperators
-public import Mathlib.Topology.Order.LiminfLimsup
-public import Mathlib.Topology.EMetricSpace.Lipschitz
+public import Mathlib.Basic.ENNReal.Action
+public import Mathlib.Basic.ENNReal.BigOperators
 public import Mathlib.Topology.Instances.NNReal.Lemmas
-public import Mathlib.Topology.MetricSpace.Pseudo.Real
 public import Mathlib.Topology.MetricSpace.ProperSpace.Real
+public import Mathlib.Topology.MetricSpace.Pseudo.Real
 public import Mathlib.Topology.Metrizable.Uniformity
+public import Mathlib.Topology.Order.LiminfLimsup
 
 /-!
 # Topology on extended non-negative reals
@@ -390,6 +389,9 @@ protected theorem continuousAt_mul_const {a b : ℝ≥0∞} (h : a ≠ ∞ ∨ b
 @[fun_prop]
 protected theorem continuous_const_mul {a : ℝ≥0∞} (ha : a ≠ ∞) : Continuous (a * ·) :=
   continuous_iff_continuousAt.2 fun _ => ENNReal.continuousAt_const_mul (Or.inl ha)
+
+instance : ContinuousConstSMul ℝ≥0 ℝ≥0∞ where
+  continuous_const_smul t := ENNReal.continuous_const_mul (by simp)
 
 @[fun_prop]
 protected theorem continuous_mul_const {a : ℝ≥0∞} (ha : a ≠ ∞) : Continuous fun x => x * a :=

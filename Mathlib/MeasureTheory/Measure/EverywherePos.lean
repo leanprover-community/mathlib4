@@ -6,8 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.MeasureTheory.Group.Measure
-public import Mathlib.Tactic.Group
-public import Mathlib.Topology.UrysohnsLemma
+import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # Everywhere positive sets in measure spaces
@@ -147,8 +146,8 @@ lemma isEverywherePos_everywherePosSubset
   have A : 0 < μ (u ∩ s) := by
     have : u ∩ s ∈ 𝓝[s] x := by rw [inter_comm]; exact inter_mem_nhdsWithin s u_mem
     exact hx.2 _ this
-  have B : (u ∩ μ.everywherePosSubset s : Set α) =ᵐ[μ] (u ∩ s : Set α) :=
-    ae_eq_set_inter (ae_eq_refl _) (everywherePosSubset_ae_eq hs)
+  have B : u ∩ μ.everywherePosSubset s =ᵐ[μ] u ∩ s :=
+    .inter .rfl (everywherePosSubset_ae_eq hs)
   rw [← B.measure_eq] at A
   exact A.trans_le (measure_mono hu)
 
@@ -165,8 +164,8 @@ lemma isEverywherePos_everywherePosSubset_of_measure_ne_top
   have A : 0 < μ (u ∩ s) := by
     have : u ∩ s ∈ 𝓝[s] x := by rw [inter_comm]; exact inter_mem_nhdsWithin s u_mem
     exact hx.2 _ this
-  have B : (u ∩ μ.everywherePosSubset s : Set α) =ᵐ[μ] (u ∩ s : Set α) :=
-    ae_eq_set_inter (ae_eq_refl _) (everywherePosSubset_ae_eq_of_measure_ne_top hs h's)
+  have B : u ∩ μ.everywherePosSubset s =ᵐ[μ] u ∩ s :=
+    .inter .rfl (everywherePosSubset_ae_eq_of_measure_ne_top hs h's)
   rw [← B.measure_eq] at A
   exact A.trans_le (measure_mono hu)
 

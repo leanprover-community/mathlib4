@@ -7,8 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.Embedding.ExtendHomology
 public import Mathlib.Algebra.Homology.Embedding.TruncGE
-public import Mathlib.Algebra.Homology.Embedding.RestrictionHomology
-public import Mathlib.Algebra.Homology.QuasiIso
+import Mathlib.Algebra.Homology.Embedding.RestrictionHomology
 
 /-! # The homology of a canonical truncation
 
@@ -80,7 +79,6 @@ lemma homologyι_truncGE'XIsoOpcycles_inv_d :
     homologyι_comp_fromOpcycles_assoc, zero_comp]
   · rw [shape _ _ _ hjk, comp_zero]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `truncGE'.homologyData`. -/
 noncomputable def isLimitKernelFork :

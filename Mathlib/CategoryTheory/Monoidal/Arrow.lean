@@ -6,7 +6,7 @@ Authors: Jack McKoen
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Closed.Braided
-public import Mathlib.CategoryTheory.Monoidal.Limits.HasLimits
+import Mathlib.CategoryTheory.Monoidal.Limits.HasLimits
 public import Mathlib.CategoryTheory.Monoidal.PushoutProduct
 
 /-!
@@ -151,7 +151,6 @@ scoped instance braidedCategory : BraidedCategory (Arrow C) where
   hexagon_reverse := hexagon_reverse
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] braidedCategory_braiding in
 /-- The symmetric category instance induced by the pushout-product. -/
 @[simps! -isSimp]

@@ -5,7 +5,7 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.LinearAlgebra.Dimension.Finite
 
 /-!
@@ -21,7 +21,7 @@ We provide some instances for finite and free modules involving matrices.
   is finite.
 -/
 
-@[expose] public section
+public section
 
 
 universe u u' v w

@@ -5,13 +5,13 @@ Authors: Leonardo de Moura
 -/
 module
 
-public import Mathlib.Init
+import Mathlib.Init
 public import Batteries.Control.AlternativeMonad
 /-!
 # Monad instances for `List`
 -/
 
-@[expose] public section
+public section
 
 universe u
 

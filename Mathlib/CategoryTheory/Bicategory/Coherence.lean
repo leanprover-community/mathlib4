@@ -6,7 +6,6 @@ Authors: Yuma Mizuno, Junyan Xu
 module
 
 public import Mathlib.CategoryTheory.PathCategory.Basic
-public import Mathlib.CategoryTheory.Functor.FullyFaithful
 public import Mathlib.CategoryTheory.Bicategory.Free
 public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 
@@ -87,7 +86,6 @@ def preinclusion (B : Type u) [Quiver.{v} B] :
 theorem preinclusion_obj (a : B) : (preinclusion B).obj ⟨a⟩ = a :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem preinclusion_map₂ {a b : B} (f g : Discrete (Path.{v} a b)) (η : f ⟶ g) :
     (preinclusion B).map₂ η = eqToHom (congr_arg _ (Discrete.ext (Discrete.eq_of_hom η))) :=
@@ -147,14 +145,12 @@ def normalizeIso {a : B} :
 @[simp] theorem normalizeAux_id {a : B} {b : FreeBicategory B} (p : Path a b) :
     normalizeAux p (𝟙 b) = p := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] theorem normalizeIso_comp {a : B} {b c d : FreeBicategory B}
     (p : Path a b) (f : b ⟶ c) (g : c ⟶ d) :
     normalizeIso p (f ≫ g) =
       (α_ _ _ _).symm ≪≫ whiskerRightIso (normalizeIso p f) g ≪≫
         normalizeIso (normalizeAux p f) g := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] theorem normalizeIso_id {a : B} {b : FreeBicategory B} (p : Path a b) :
     normalizeIso p (𝟙 b) = ρ_ _ := rfl
 
@@ -172,7 +168,7 @@ theorem normalizeAux_congr {a b c : B} (p : Path a b) {f g : Hom b c} (η : f �
   induction η' with
   | vcomp _ _ _ _ => apply Eq.trans <;> assumption
   | whisker_left _ _ ih => funext; apply congr_fun ih
-  | whisker_right _ _ ih => funext; apply congr_arg₂ _ (congr_fun ih _) rfl
+  | whisker_right _ _ ih => funext; apply congr_arg₂ _ congr($ih _) rfl
   | _ => funext; rfl
 
 set_option backward.defeqAttrib.useBackward true in
@@ -219,7 +215,6 @@ def normalize (B : Type u) [Quiver.{v} B] :
   mapId _ := eqToIso <| Discrete.ext rfl
   mapComp f g := eqToIso <| Discrete.ext <| normalizeAux_nil_comp f g
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `normalizeEquiv`. -/
 def normalizeUnitIso (a b : FreeBicategory B) :
     𝟭 (a ⟶ b) ≅ (normalize B).mapFunctor a b ⋙ @inclusionPath B _ a b :=
@@ -230,7 +225,6 @@ def normalizeUnitIso (a b : FreeBicategory B) :
       congr 1
       exact normalize_naturality nil η)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Normalization as an equivalence of categories. -/
 def normalizeEquiv (a b : B) : Hom a b ≌ Discrete (Path.{v} a b) :=
   Equivalence.mk ((normalize _).mapFunctor a b) (inclusionPath a b) (normalizeUnitIso a b)
@@ -250,7 +244,6 @@ instance locally_thin {a b : FreeBicategory B} : Quiver.IsThin (a ⟶ b) := fun 
   ⟨fun _ _ =>
     (@normalizeEquiv B _ a b).functor.map_injective (Subsingleton.elim _ _)⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `inclusion`. -/
 def inclusionMapCompAux {a b : B} :
     ∀ {c : B} (f : Path a b) (g : Path b c),
@@ -258,7 +251,6 @@ def inclusionMapCompAux {a b : B} :
   | _, f, nil => (ρ_ ((preinclusion _).map ⟨f⟩)).symm
   | _, f, cons g₁ g₂ => whiskerRightIso (inclusionMapCompAux f g₁) (Hom.of g₂) ≪≫ α_ _ _ _
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The inclusion pseudofunctor from the locally discrete bicategory on the path category into the
 free bicategory.
 -/

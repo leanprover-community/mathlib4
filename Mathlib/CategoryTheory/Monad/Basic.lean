@@ -211,8 +211,7 @@ def ComonadIso.mk {M N : Comonad C} (f : (M : C ⥤ C) ≅ N)
       app_δ := fun X => by
         rw [← NatIso.cancel_natIso_hom_left f]
         simp only [reassoc_of% (f_δ X), Iso.hom_inv_id_app_assoc, NatTrans.naturality_assoc]
-        rw [← Functor.map_comp, Iso.hom_inv_id_app, Functor.map_id]
-        apply (comp_id _).symm }
+        simp }
 
 variable (C)
 
@@ -312,7 +311,7 @@ def transport {F : C ⥤ C} (T : Monad C) (i : (T : C ⥤ C) ≅ F) : Monad C wh
   left_unit X := by
     simp only [Functor.id_obj, NatTrans.comp_app, comp_obj, NatTrans.hcomp_app, Category.assoc,
       hom_inv_id_app_assoc]
-    slice_lhs 1 2 => rw [← T.η.naturality (i.inv.app X), ]
+    slice_lhs 1 2 => rw [← T.η.naturality (i.inv.app X)]
     simp
   right_unit X := by
     simp only [NatTrans.comp_app, Functor.map_comp, comp_obj, NatTrans.hcomp_app,

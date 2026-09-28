@@ -5,9 +5,7 @@ Authors: Bhavik Mehta, Olivia Röhrig
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Maps
 public import Mathlib.Combinatorics.SimpleGraph.Finite
-public import Mathlib.Data.Fintype.BigOperators
 
 /-!
 # Edge labelings
@@ -140,9 +138,7 @@ def labelGraph (C : EdgeLabeling G K) (k : K) : SimpleGraph V :=
 
 theorem labelGraph_adj {C : EdgeLabeling G K} {k : K} (x y : V) :
     (C.labelGraph k).Adj x y ↔ ∃ H : G.Adj x y, C ⟨s(x, y), H⟩ = k := by
-  rw [EdgeLabeling.labelGraph]
-  simp only [mem_edgeSet, fromEdgeSet_adj, Set.mem_ofPred_eq, Ne.eq_def]
-  grind [Adj.ne]
+  grind [EdgeLabeling.labelGraph, mem_edgeSet, fromEdgeSet_adj]
 
 instance [DecidableRel G.Adj] [DecidableEq K] (k : K) {C : EdgeLabeling G K} :
     DecidableRel (C.labelGraph k).Adj := fun _ _ =>
@@ -208,6 +204,6 @@ theorem toTopEdgeLabeling_labelGraph_compl (G : SimpleGraph V) [DecidableRel G.A
 theorem TopEdgeLabeling.labelGraph_toTopEdgeLabeling [DecidableEq V]
     (C : TopEdgeLabeling V (Fin 2)) : (C.labelGraph 1).toTopEdgeLabeling = C := by
   refine EdgeLabeling.ext_get ?_
-  grind [toTopEdgeLabeling_get, TopEdgeLabeling.labelGraph_adj, Adj.ne]
+  grind [toTopEdgeLabeling_get, TopEdgeLabeling.labelGraph_adj]
 
 end SimpleGraph

@@ -5,7 +5,7 @@ Authors: Jack McKoen
 -/
 module
 
-public import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
+import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
 public import Mathlib.CategoryTheory.Monoidal.PushoutProduct
 
 /-!

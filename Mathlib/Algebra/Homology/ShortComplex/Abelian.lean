@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.Homology
 public import Mathlib.Algebra.Homology.ShortComplex.Limits
 public import Mathlib.Algebra.Homology.ShortComplex.Preadditive
 public import Mathlib.CategoryTheory.Abelian.Basic
@@ -42,7 +41,6 @@ namespace CategoryTheory
 open Category Limits
 
 variable {C : Type u} [Category.{v} C] [Abelian C] (S : ShortComplex C)
-  {D : Type u'} [Category.{v'} D] [HasZeroMorphisms D]
 
 namespace ShortComplex
 
@@ -268,14 +266,12 @@ lemma isoHomology_hom_comp_ι :
   simp [← cancel_epi S.homologyπ, ← cancel_epi (S.isoCyclesOfIsLimit hkf).hom,
     ← π_comp_isoHomology_hom_assoc S hkf hcc fac, ← fac]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma f'_eq :
     hkf.lift (KernelFork.ofι S.f S.zero) =
       S.toCycles ≫ (S.isoCyclesOfIsLimit hkf).inv := by
   have := Fork.IsLimit.mono hkf
   simp [← cancel_mono kf.ι]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma g'_eq : hcc.desc (CokernelCofork.ofπ S.g S.zero) =
     (S.isoOpcyclesOfIsColimit hcc).hom ≫ S.fromOpcycles := by
   have := Cofork.IsColimit.epi hcc

@@ -5,7 +5,7 @@ Authors: Yiming Fu
 -/
 module
 
-public import Mathlib.RingTheory.DedekindDomain.PID
+import Mathlib.RingTheory.DedekindDomain.PID
 public import Mathlib.RingTheory.KrullDimension.PID
 
 /-!

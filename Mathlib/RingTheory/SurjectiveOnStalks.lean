@@ -62,7 +62,7 @@ lemma surjective_localRingHom_iff (P : Ideal S) [P.IsPrime] :
         IsLocalization.mk'_eq_iff_eq, IsLocalization.eq_iff_exists P.primeCompl]
       refine ⟨⟨yc, hyc⟩ * ⟨yt, hyt⟩, ?_⟩
       simp only [Submonoid.coe_mul]
-      convert! congr($(ey.symm) * $(et)) using 1 <;> ring
+      convert! congr($ey.symm * $et) using 1 <;> ring
 
 lemma surjectiveOnStalks_iff_forall_ideal :
     f.SurjectiveOnStalks ↔
@@ -137,9 +137,6 @@ lemma SurjectiveOnStalks.exists_mul_eq_tmul
     ∃ (t : T) (r : R) (a : S), (r • t ∉ J) ∧
       (1 : S) ⊗ₜ[R] (r • t) * x = a ⊗ₜ[R] t := by
   induction x with
-  | zero =>
-    exact ⟨1, 1, 0, by rw [one_smul]; exact J.primeCompl.one_mem,
-      by rw [mul_zero, TensorProduct.zero_tmul]⟩
   | tmul x₁ x₂ =>
     obtain ⟨y, s, c, hs, hc, e⟩ := (surjective_localRingHom_iff _).mp (hf₂ J hJ) x₂
     simp_rw [Algebra.smul_def]

@@ -5,8 +5,8 @@ Authors: Chris Birkbeck
 -/
 module
 
-public import Mathlib.Analysis.Complex.AbsMax
-public import Mathlib.LinearAlgebra.Matrix.FixedDetMatrices
+import Mathlib.Analysis.Complex.AbsMax
+import Mathlib.LinearAlgebra.Matrix.FixedDetMatrices
 public import Mathlib.NumberTheory.Modular
 public import Mathlib.NumberTheory.ModularForms.QExpansion
 /-!
@@ -22,7 +22,9 @@ Finite-dimensionality of these spaces is proved in a later file
 public section
 
 open UpperHalfPlane ModularGroup SlashInvariantForm ModularForm Complex
-  CongruenceSubgroup Real Function SlashInvariantFormClass ModularFormClass Periodic MatrixGroups
+  CongruenceSubgroup Real Function SlashInvariantFormClass ModularFormClass Periodic
+
+open scoped MatrixGroups
 
 local notation "𝕢" => qParam
 

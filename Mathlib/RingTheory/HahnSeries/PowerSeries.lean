@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RingTheory.HahnSeries.Multiplication
 public import Mathlib.RingTheory.PowerSeries.Basic
-public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
+import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 public import Mathlib.Data.Finsupp.PWO
 
 /-!
@@ -38,7 +38,7 @@ we get the more familiar semiring of formal power series with coefficients in `R
 @[expose] public section
 
 
-open Finset Function Pointwise Polynomial
+open Finset Function Polynomial
 
 noncomputable section
 

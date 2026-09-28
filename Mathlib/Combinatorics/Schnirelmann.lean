@@ -6,11 +6,10 @@ Authors: Yaël Dillies, Bhavik Mehta, Doga Can Sertbas
 module
 
 public import Mathlib.Algebra.Order.Archimedean.Real.Basic
-public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Order.Interval.Finset.Nat
-public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 import Mathlib.Tactic.Rify
 
@@ -226,7 +225,6 @@ lemma schnirelmannDensity_setOfPred_prime : schnirelmannDensity (Set.ofPred Nat.
 @[deprecated (since := "2026-07-09")]
 alias schnirelmannDensity_setOf_prime := schnirelmannDensity_setOfPred_prime
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The Schnirelmann density of the set of naturals which are `1 mod m` is `m⁻¹`, for any `m ≠ 1`.
 

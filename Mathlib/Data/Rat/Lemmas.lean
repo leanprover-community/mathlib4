@@ -28,7 +28,7 @@ theorem num_dvd (a) {b : ℤ} (b0 : b ≠ 0) : (a /. b).num ∣ a := by
   rw [Rat.mk_eq_divInt, divInt_eq_divInt_iff b0 (mod_cast h)] at e
   refine Int.natAbs_dvd.1 <| Int.dvd_natAbs.1 <| Int.natCast_dvd_natCast.2 <|
     c.dvd_of_dvd_mul_right ?_
-  have := congr_arg Int.natAbs e
+  have := congr($(e).natAbs)
   simp only [Int.natAbs_mul, Int.natAbs_natCast] at this; simp [this]
 
 theorem den_dvd (a b : ℤ) : ((a /. b).den : ℤ) ∣ b := by
@@ -220,10 +220,12 @@ theorem add_num_den' (q r : ℚ) :
   apply Rat.eq_iff_mul_eq_mul.mp
   rw [← divInt_eq_div]
 
-theorem substr_num_den' (q r : ℚ) :
+theorem sub_num_den' (q r : ℚ) :
     (q - r).num * q.den * r.den = (q.num * r.den - r.num * q.den) * (q - r).den := by
   rw [sub_eq_add_neg, sub_eq_add_neg, ← neg_mul, ← num_neg_eq_neg_num, ← den_neg_eq_den r,
     add_num_den' q (-r)]
+
+@[deprecated (since := "2026-09-17")] alias substr_num_den' := sub_num_den'
 
 end Casts
 

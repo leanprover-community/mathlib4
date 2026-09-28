@@ -7,9 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.TStructure
 public import Mathlib.Algebra.Homology.DerivedCategory.KInjective
-public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexCohomology
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexSingle
-public import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
 public import Mathlib.CategoryTheory.Abelian.Injective.Extend
 
 /-!
@@ -43,7 +41,6 @@ noncomputable def extEquivCohomologyClass :
       (by rw [HomologicalComplex.mem_quasiIso_iff]; infer_instance)).trans
     CochainComplex.HomComplex.CohomologyClass.equivOfIsKInjective.{w}.symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma extEquivCohomologyClass_symm_mk_hom [HasDerivedCategory C]
     (x : Cocycle ((singleFunctor C 0).obj X) R.cochainComplex n) :
     (R.extEquivCohomologyClass.symm (.mk x)).hom =

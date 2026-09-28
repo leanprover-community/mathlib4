@@ -27,7 +27,7 @@ the interval integral and with stronger requirements on the integrand.
 public section
 
 
-open MeasureTheory MeasureTheory.Measure Metric Filter Set Module Asymptotics
+open MeasureTheory MeasureTheory.Measure Filter Set Module
   TopologicalSpace ContinuousLinearMap
 
 open scoped NNReal ENNReal Topology Pointwise

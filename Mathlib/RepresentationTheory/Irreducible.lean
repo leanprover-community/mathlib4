@@ -5,7 +5,6 @@ Authors: Stepan Nesterov
 -/
 module
 
-public import Mathlib.RepresentationTheory.Subrepresentation
 public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.RepresentationTheory.AlgebraRepresentation.Basic
 
@@ -40,9 +39,6 @@ theorem isSimpleModule_iff_irreducible_ofModule (M : Type*) [AddCommGroup M] [Mo
     IsSimpleModule k[G] M ↔ IsIrreducible (ofModule (k := k) (G := G) M) := by
   rw [isSimpleModule_iff]
   exact OrderIso.isSimpleOrder_iff Subrepresentation.submoduleSubrepresentationOrderIso
-
-@[deprecated (since := "2026-02-09")]
-alias is_simple_module_iff_irreducible_ofModule := isSimpleModule_iff_irreducible_ofModule
 
 namespace IsIrreducible
 

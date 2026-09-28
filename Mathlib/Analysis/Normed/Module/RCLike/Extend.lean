@@ -103,12 +103,3 @@ lemma toContinuousLinearEquiv_extendRCLikeₗᵢ :
   rfl
 
 end StrongDual
-
-namespace ContinuousLinearMap
-open StrongDual
-
-@[deprecated (since := "2026-02-24")] alias norm_extendTo𝕜'_bound := norm_extendRCLike_bound
-@[deprecated (since := "2026-02-24")] alias norm_extendTo𝕜' := norm_extendRCLike
-@[deprecated (since := "2026-02-24")] alias norm_extendTo𝕜 := norm_extendRCLike
-
-end ContinuousLinearMap

@@ -47,7 +47,7 @@ theorem isTheta_ofReal_left {f : α → ℝ} {g : α → E} : (f · : α → ℂ
 theorem isTheta_ofReal_right {f : α → E} {g : α → ℝ} : f =Θ[l] (g · : α → ℂ) ↔ f =Θ[l] g :=
   (isTheta_ofReal g l).isTheta_congr_right
 
-open Topology
+open scoped Topology
 
 lemma isBigO_comp_ofReal_nhds {f g : ℂ → ℂ} {x : ℝ} (h : f =O[𝓝 (x : ℂ)] g) :
     (fun y : ℝ ↦ f y) =O[𝓝 x] (fun y : ℝ ↦ g y) :=

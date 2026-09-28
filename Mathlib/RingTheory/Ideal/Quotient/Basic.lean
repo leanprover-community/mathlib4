@@ -6,11 +6,10 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Anne Baanen
 module
 
 public import Mathlib.GroupTheory.QuotientGroup.Finite
-public import Mathlib.LinearAlgebra.Quotient.Basic
-public import Mathlib.RingTheory.Congruence.Basic
+import Mathlib.LinearAlgebra.Quotient.Basic
+import Mathlib.RingTheory.Congruence.Basic
 public import Mathlib.RingTheory.Ideal.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
-public import Mathlib.Tactic.FinCases
 
 /-!
 # Ideal quotients
@@ -30,7 +29,7 @@ See `RingCon.Quotient` for quotients of (possibly non-commutative) semirings.
 
 open Set
 
-variable {ι ι' R S : Type*} [Ring R] (I J : Ideal R) {a b : R}
+variable {ι ι' R : Type*} [Ring R] (I J : Ideal R) {a b : R}
 
 namespace Ideal.Quotient
 
@@ -201,7 +200,6 @@ noncomputable def piQuotEquiv [I.IsTwoSided] : ((ι → R) ⧸ pi fun _ ↦ I) �
     exact Ideal.Quotient.eq.2 fun i ↦ Ideal.Quotient.eq.1 (Quotient.out_eq' _)
   right_inv x := funext fun i ↦ Quotient.out_eq' (x i)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f : R^n → R^m` is an `R`-linear map and `I ⊆ R` is an ideal, then the image of `I^n` is
     contained in `I^m`. -/
 theorem map_pi [I.IsTwoSided] [Finite ι] (x : ι → R) (hi : ∀ i, x i ∈ I)

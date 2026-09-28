@@ -5,11 +5,8 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.Fourier.AddCircle
-public import Mathlib.Analysis.Fourier.FourierTransform
-public import Mathlib.Analysis.PSeries
+import Mathlib.Analysis.PSeries
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 public import Mathlib.Topology.ContinuousMap.Periodic
 
 /-!
@@ -46,7 +43,6 @@ open scoped Real Filter FourierTransform
 
 open ContinuousMap
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The key lemma for Poisson summation: the `m`-th Fourier coefficient of the periodic function
 `∑' n : ℤ, f (x + n)` is the value at `m` of the Fourier transform of `f`. -/
 theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}

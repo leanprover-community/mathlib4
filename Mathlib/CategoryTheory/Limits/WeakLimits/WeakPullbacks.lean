@@ -23,7 +23,7 @@ universe u v w
 
 noncomputable section
 
-open CategoryTheory Category Limits
+open CategoryTheory
 
 variable {C : Type*} [Category* C]
 
@@ -62,7 +62,6 @@ abbrev weakPullback.lift {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasWeakPullb
     (k : W ⟶ Y) (w : h ≫ f = k ≫ g := by cat_disch) : W ⟶ weakPullback f g :=
   weakLimit.lift _ (PullbackCone.mk h k w)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma weakPullback.exists_lift {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasWeakPullback f g]
     (h : W ⟶ X) (k : W ⟶ Y) (w : h ≫ f = k ≫ g := by cat_disch) :
     ∃ (l : W ⟶ weakPullback f g),
@@ -221,7 +220,6 @@ instance (priority := 100) HasWeakPullbacksOfHasPullbacks [HasPullbacks C] :
 
 variable (f : X ⟶ Z) (g : Y ⟶ Z)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the product `X ⨯ Y` and the weak equalizer of `π₁ ≫ f` and `π₂ ≫ g` exist, then the
 weak pullback of `f` and `g` exists: it is given by composing the equalizer with the projections. -/
 theorem hasWeakLimit_cospan_of_hasLimit_pair_of_hasWeakLimit_parallelPair [HasLimit (pair X Y)]

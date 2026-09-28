@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Sym
+import Mathlib.Algebra.BigOperators.Sym
 public import Mathlib.Data.Finsupp.Pointwise
 public import Mathlib.Data.Sym.Sym2.Finsupp
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic
@@ -91,7 +91,6 @@ theorem toBilin_apply (Q : QuadraticMap R M N) (bm : Basis ι R M) (i j : ι) :
       if i = j then Q (bm i) else if i < j then polar Q (bm i) (bm j) else 0 := by
   simp [toBilin]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toQuadraticMap_toBilin (Q : QuadraticMap R M N) (bm : Basis ι R M) :
     (Q.toBilin bm).toQuadraticMap = Q := by
   ext x

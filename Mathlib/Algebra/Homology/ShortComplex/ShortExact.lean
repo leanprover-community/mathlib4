@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.Exact
-public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 
 /-!
 # Short exact short complexes
@@ -220,6 +219,15 @@ end ShortExact
 
 end Preadditive
 
+/-- `ShortComplex.ShortExact` as an object property. -/
+abbrev shortExact (C : Type*) [Category* C] [Limits.HasZeroMorphisms C] :
+    ObjectProperty (ShortComplex C) :=
+  ShortComplex.ShortExact
+
 end ShortComplex
+
+/-- The category of short exact sequences. -/
+abbrev ShortExactSequence (C : Type*) [Category* C] [Limits.HasZeroMorphisms C] :=
+  (ShortComplex.shortExact C).FullSubcategory
 
 end CategoryTheory

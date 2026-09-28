@@ -29,7 +29,7 @@ public section
 
 variable {α β : Type*} {x y : α} {e : β} {G H : Graph α β} {F F₀ : Set β} {X : Set α}
 
-open Set Function
+open Set
 
 namespace Graph
 

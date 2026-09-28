@@ -5,7 +5,7 @@ Authors: Riccardo Brasca, Emilie Uthaiwat
 -/
 module
 
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
+import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Ideal
 
 /-!

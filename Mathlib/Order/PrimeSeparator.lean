@@ -5,8 +5,9 @@ Authors: Sam van Gool
 -/
 module
 
+import Mathlib.Data.Set.Lattice.Disjoint
 public import Mathlib.Order.PrimeIdeal
-public import Mathlib.Order.Zorn
+import Mathlib.Order.Zorn
 
 /-!
 # Separating prime filters and ideals

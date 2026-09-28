@@ -69,9 +69,35 @@ initialize CACHEDIR : FilePath ← do
       | some path => return path / ".cache" / "mathlib"
       | none => pure ⟨".cache"⟩
 
-/-- Target file path for `curl` configurations -/
+/--
+A tag unique to this `cache` process, mixed into the names of every temporary file it writes into
+`CACHEDIR`.
+
+`CACHEDIR` is shared by design: it defaults to one directory per user
+(`~/.cache/mathlib`), so every checkout, worktree, and CI job on a machine pools its
+downloads there. Two `cache` runs can therefore be in flight in it at once, and until
+they were tagged they wrote each other's files — one run's `curl.cfg` overwritten by the
+other's before curl read it (so it fetched the wrong list, then reported the files it was
+actually asked for as missing and rebuilt them), and, worse, two curls writing one
+`<hash>.ltar.part` and renaming the interleaved result into place, leaving a corrupt
+`.ltar` that every later run would find, trust, and fail to decompress.
+-/
+initialize PROCTAG : String ← toString <$> IO.Process.getPID
+
+/-- The curl configuration file this process writes under `dir`; see `PROCTAG`. -/
+def curlConfigIn (dir : FilePath) : FilePath :=
+  dir / s!"curl-{PROCTAG}.cfg"
+
+/-- This process's curl configuration file in the local cache directory (`curlConfigIn`). -/
 def CURLCFG :=
-  IO.CACHEDIR / "curl.cfg"
+  curlConfigIn IO.CACHEDIR
+
+/--
+Suffix for a download still in flight, before it is renamed to `<hash>.ltar`. One per process; see
+`PROCTAG`.
+-/
+def PARTSUFFIX :=
+  s!".{PROCTAG}.part"
 
 /-- curl version at https://github.com/leanprover-community/static-curl -/
 def CURLVERSION :=
@@ -203,47 +229,60 @@ where
       loop h (← processLine a line)
 
 /-- Runs a terminal command and retrieves its output -/
-def runCmd (cmd : String) (args : Array String) (throwFailure stderrAsErr := true) : IO String := do
+def runCmd (cmd : String) (args : Array String)
+    (throwFailure stderrAsErr showArgsOnError := true) : IO String := do
   let out ← IO.Process.output { cmd := cmd, args := args }
   if (out.exitCode != 0 || stderrAsErr && !out.stderr.isEmpty) && throwFailure then
-    throw <| IO.userError s!"failure in {cmd} {args}:\n{out.stderr}"
+    let invocation := if showArgsOnError then s!"{cmd} {args}" else cmd
+    throw <| IO.userError s!"failure in {invocation}:\n{out.stderr}"
   else if !out.stderr.isEmpty then
     IO.eprintln out.stderr
   return out.stdout
 
-def runCurl (args : Array String) (throwFailure stderrAsErr := true) : IO String := do
-  runCmd (← getCurl) (#["--no-progress-meter"] ++ args) throwFailure stderrAsErr
+def runCurl (args : Array String) (throwFailure stderrAsErr showArgsOnError := true) :
+    IO String := do
+  runCmd (← getCurl) (#["--no-progress-meter"] ++ args) throwFailure stderrAsErr showArgsOnError
 
-def validateCurl : IO Bool := do
-  if (← CURLBIN.pathExists) then return true
-  match (← runCmd "curl" #["--version"]).splitOn " " with
+/-- The major and minor version of the curl binary `curl`, read from `curl --version`. -/
+def curlVersion (curl : String) : IO (Nat × Nat) := do
+  match (← runCmd curl #["--version"]).splitOn " " with
   | "curl" :: v :: _ => match v.splitOn "." with
     | maj :: min :: _ =>
       let some majN := String.toNat? maj | throw <| IO.userError "Invalidly formatted version of `curl`"
       let some minN := String.toNat? min | throw <| IO.userError "Invalidly formatted version of `curl`"
-      let version := (majN, minN)
-      let _ := @lexOrd
-      let _ := @leOfOrd
-      if version >= (7, 81) then return true
-      -- TODO: support more platforms if the need arises
-      let arch ← (·.trimAscii.copy) <$> runCmd "uname" #["-m"] false
-      let kernel ← (·.trimAscii.copy) <$> runCmd "uname" #["-s"] false
-      if kernel == "Linux" && arch ∈ ["x86_64", "aarch64"] then
-        IO.println s!"curl is too old; downloading more recent version"
-        IO.FS.createDirAll IO.CACHEDIR
-        let _ ← runCmd "curl" (stderrAsErr := false) #[
-          s!"https://github.com/leanprover-community/static-curl/releases/download/v{CURLVERSION}/curl-{arch}-linux-static",
-          "-L", "-o", CURLBIN.toString]
-        let _ ← runCmd "chmod" #["u+x", CURLBIN.toString]
-        return true
-      if version >= (7, 70) then
-        IO.println s!"Warning: recommended `curl` version ≥7.81. Found {v}"
-        return true
-      else
-        IO.println s!"Warning: recommended `curl` version ≥7.70. Found {v}. Can't use `--parallel`."
-        return false
+      return (majN, minN)
     | _ => throw <| IO.userError "Invalidly formatted version of `curl`"
   | _ => throw <| IO.userError "Invalidly formatted response from `curl --version`"
+
+def validateCurl : IO Bool := do
+  if (← CURLBIN.pathExists) then return true
+  let version ← curlVersion "curl"
+  let found := s!"{version.1}.{version.2}"
+  let _ := @lexOrd
+  let _ := @leOfOrd
+  -- The get path's write-out reads response headers with `%header{…}` (curl 7.84).
+  if version >= (7, 84) then return true
+  -- TODO: support more platforms if the need arises
+  let arch ← (·.trimAscii.copy) <$> runCmd "uname" #["-m"] false
+  let kernel ← (·.trimAscii.copy) <$> runCmd "uname" #["-s"] false
+  if kernel == "Linux" && arch ∈ ["x86_64", "aarch64"] then
+    IO.println s!"curl is too old; downloading more recent version"
+    IO.FS.createDirAll IO.CACHEDIR
+    let _ ← runCmd "curl" (stderrAsErr := false) #[
+      s!"https://github.com/leanprover-community/static-curl/releases/download/v{CURLVERSION}/curl-{arch}-linux-static",
+      "-L", "-o", CURLBIN.toString]
+    let _ ← runCmd "chmod" #["u+x", CURLBIN.toString]
+    return true
+  -- The parallel transfer paths pass `--retry-all-errors` (curl 7.71)
+  -- and read the `exitcode` and `errormsg` fields of the per-transfer
+  -- JSON report (curl 7.75); an older curl rejects the flag or omits
+  -- the fields.
+  if version >= (7, 75) then
+    IO.println s!"Warning: recommended `curl` version ≥7.84. Found {found}"
+    return true
+  else
+    IO.println s!"Warning: recommended `curl` version ≥7.75. Found {found}. Can't use `--parallel`."
+    return false
 
 /-- Recursively gets all files from a directory with a certain extension -/
 partial def getFilesWithExtension

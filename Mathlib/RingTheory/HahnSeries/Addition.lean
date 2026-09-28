@@ -5,14 +5,9 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-public import Mathlib.Algebra.Group.Pi.Lemmas
-public import Mathlib.Algebra.Group.Support
-public import Mathlib.Algebra.Module.Basic
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Data.Finsupp.SMul
 public import Mathlib.RingTheory.HahnSeries.Basic
-public import Mathlib.Tactic.FastInstance
 
 /-!
 # Additive properties of Hahn series
@@ -158,7 +153,6 @@ lemma addOppositeEquiv_symm_support (x : R⟦Γ⟧ᵃᵒᵖ) :
     (addOppositeEquiv.symm x).support = x.unop.support := by
   rw [← addOppositeEquiv_support, AddEquiv.apply_symm_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma addOppositeEquiv_orderTop (x : Rᵃᵒᵖ⟦Γ⟧) :
     (addOppositeEquiv x).unop.orderTop = x.orderTop := by
@@ -174,7 +168,6 @@ lemma addOppositeEquiv_symm_orderTop (x : R⟦Γ⟧ᵃᵒᵖ) :
     (addOppositeEquiv.symm x).orderTop = x.unop.orderTop := by
   rw [← addOppositeEquiv_orderTop, AddEquiv.apply_symm_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma addOppositeEquiv_leadingCoeff (x : Rᵃᵒᵖ⟦Γ⟧) :
     (addOppositeEquiv x).unop.leadingCoeff = x.leadingCoeff.unop := by

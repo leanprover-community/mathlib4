@@ -79,7 +79,7 @@ private lemma reduce_aux {A : Δ m} (h : (A.1 1 0) ≠ 0) :
     rw [this, abs_eq_self.mpr (Int.emod_nonneg (A.1 0 0) h)]
     exact Int.emod_lt_abs (A.1 0 0) h
   simp_rw [Int.emod_def, sub_eq_add_neg, reduceStep, smul_coe, coe_T_zpow, S]
-  norm_num [vecMul, vecHead, vecTail, mul_comm]
+  simp [vecMul, vecHead, vecTail, mul_comm]
 
 /-- Reduction lemma for integral FixedDetMatrices. -/
 @[elab_as_elim]

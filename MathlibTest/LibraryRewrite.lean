@@ -1,7 +1,6 @@
 import Mathlib.Tactic.Widget.LibraryRewrite
 import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Data.Subtype
-import Batteries.Data.Nat.Gcd
 
 -- set_option trace.profiler true
 -- set_option trace.rw?? true

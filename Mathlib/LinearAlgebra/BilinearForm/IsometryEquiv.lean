@@ -23,7 +23,7 @@ corresponding file for quadratic maps, namely
 -/
 @[expose] public section
 
-variable {R M M₁ M₂ M₃ M₄ N : Type*}
+variable {R M M₁ M₂ M₃ : Type*}
 
 namespace LinearMap
 
@@ -31,9 +31,8 @@ namespace BilinForm
 
 variable [CommSemiring R]
 variable [AddCommMonoid M]
-variable [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
-variable [AddCommMonoid N]
-variable [Module R M] [Module R M₁] [Module R M₂] [Module R M₃] [Module R M₄] [Module R N]
+variable [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [Module R M] [Module R M₁] [Module R M₂] [Module R M₃]
 
 /-- An isometric equivalence between two bilinear spaces `M₁, B₁` and `M₂, B₂` over a ring `R`,
 is a linear equivalence between `M₁` and `M₂` that commutes with the bilinear forms. -/
@@ -53,6 +52,7 @@ namespace IsometryEquiv
 variable {B₁ : LinearMap.BilinForm R M₁} {B₂ : LinearMap.BilinForm R M₂}
   {B₃ : LinearMap.BilinForm R M₃}
 
+@[macro_inline]
 instance : EquivLike (B₁.IsometryEquiv B₂) M₁ M₂ where
   coe f := f.toLinearEquiv
   inv f := f.toLinearEquiv.symm

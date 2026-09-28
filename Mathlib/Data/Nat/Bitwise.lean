@@ -5,16 +5,13 @@ Authors: Markus Himmel, Alex Keizer
 -/
 module
 
-public import Mathlib.Algebra.NeZero
-public import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Data.Bool.Basic
-public import Mathlib.Data.List.GetD
+import Mathlib.Data.List.GetD
 public import Mathlib.Data.Nat.Bits
-public import Mathlib.Order.Basic
-public import Mathlib.Tactic.AdaptationNote
-public import Mathlib.Tactic.Common
-public import Batteries.Data.Nat.Bitwise
+import Mathlib.Order.Basic
+import Mathlib.Tactic.AdaptationNote
+import Batteries.Data.Nat.Bitwise
 import all Init.Data.Nat.Bitwise.Basic  -- for unfolding `bitwise`
 
 /-!
@@ -29,7 +26,7 @@ bitwise properties. In the second half of this file, we show properties of the b
 * `exists_most_significant_bit`: if `n ≠ 0`, then there is some position `i` that contains the most
   significant `1`-bit of `n`.
 * `lt_of_testBit`: if `n` and `m` are numbers and `i` is a position such that the `i`-th bit of
-  of `n` is zero, the `i`-th bit of `m` is one, and all more significant bits are equal, then
+  `n` is zero, the `i`-th bit of `m` is one, and all more significant bits are equal, then
   `n < m`.
 
 ## Future work
@@ -253,7 +250,7 @@ lemma two_pow_and (n i : ℕ) : 2 ^ i &&& n = 2 ^ i * (n.testBit i).toNat := by
 
 /-- Proving associativity of bitwise operations in general essentially boils down to a huge case
     distinction, so it is shorter to use this tactic instead of proving it in the general case. -/
-macro "bitwise_assoc_tac" : tactic => set_option hygiene false in `(tactic| (
+local macro "bitwise_assoc_tac" : tactic => set_option hygiene false in `(tactic| (
   induction n using Nat.binaryRec generalizing m k with | zero => simp | bit b n hn => ?_
   induction m using Nat.binaryRec with | zero => simp | bit b' m hm => ?_
   induction k using Nat.binaryRec <;>

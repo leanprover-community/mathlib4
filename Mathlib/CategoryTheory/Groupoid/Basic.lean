@@ -6,9 +6,10 @@ Authors: Rémi Bottinelli
 module
 
 public import Mathlib.CategoryTheory.Groupoid
-public import Mathlib.Combinatorics.Quiver.Basic
 
 /-!
+# Basic properties of groupoids
+
 This file defines a few basic properties of groupoids.
 -/
 

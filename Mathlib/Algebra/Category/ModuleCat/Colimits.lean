@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Category.Grp.Colimits
-public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 public import Mathlib.LinearAlgebra.DFinsupp
 
 /-!
@@ -41,7 +40,6 @@ namespace HasColimit
 variable [HasColimit (F ⋙ forget₂ _ AddCommGrpCat)]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The induced scalar multiplication on
 `colimit (F ⋙ forget₂ _ AddCommGrpCat)`. -/
 @[simps]
@@ -166,7 +164,7 @@ variable (R : Type w) [CommRing R] (M ι : Type u) [AddCommGroup M] [Module R M]
 /-- The coproduct cone induced by the concrete coproduct. -/
 noncomputable
 def finsuppCocone : Cofan fun _ : ι ↦ ModuleCat.of R M :=
-  Cofan.mk (ModuleCat.of R (ι →₀ M)) fun i ↦
+  Cofan.mk ↧(ι →₀ M) fun i ↦
     ModuleCat.ofHom (Finsupp.lsingle i (R := R) (M := ModuleCat.of R M))
 
 set_option backward.defeqAttrib.useBackward true in

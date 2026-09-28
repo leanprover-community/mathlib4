@@ -6,7 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Subobject.Basic
-public import Mathlib.CategoryTheory.EssentiallySmall
 
 /-!
 # Well-powered categories

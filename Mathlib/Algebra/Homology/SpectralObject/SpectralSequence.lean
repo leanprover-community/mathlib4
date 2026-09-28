@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Homology.SpectralObject.Homology
 public import Mathlib.Algebra.Homology.SpectralObject.HasSpectralSequence
 public import Mathlib.Algebra.Homology.SpectralSequence.Basic
-public import Mathlib.Order.WithBotTop
 
 /-!
 # The spectral sequence of a spectral object
@@ -437,7 +436,6 @@ end HomologyData
 
 variable [X.HasSpectralSequence data]
 
-set_option backward.isDefEq.respectTransparency false in
 open HomologyData in
 /-- The homology data for the short complex given by differentials on the
 `r`th page of the spectral sequence which shows that the homology identifies

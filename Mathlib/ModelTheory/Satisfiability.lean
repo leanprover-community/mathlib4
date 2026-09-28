@@ -5,10 +5,10 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.ModelTheory.Ultraproducts
+import Mathlib.ModelTheory.Ultraproducts
 public import Mathlib.ModelTheory.Bundled
-public import Mathlib.ModelTheory.Skolem
-public import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.ModelTheory.Skolem
+import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
 # First-Order Satisfiability
@@ -523,8 +523,8 @@ theorem Categorical.isComplete (h : κ.Categorical T) (h1 : ℵ₀ ≤ κ)
       ((MNT.realize_sentence φ).trans
         ((StrongHomClass.realize_sentence TF φ).trans (MNF.realize_sentence φ).symm)).1 hMT⟩
 
-theorem empty_theory_categorical (T : Language.empty.Theory) : κ.Categorical T := fun M N hM hN =>
-  by rw [empty.nonempty_equiv_iff, hM, hN]
+theorem empty_theory_categorical (T : Language.empty.Theory) : κ.Categorical T := fun M N hM hN ↦ by
+  rw [empty.nonempty_equiv_iff, hM, hN]
 
 theorem empty_infinite_Theory_isComplete : Language.empty.infiniteTheory.IsComplete :=
   (empty_theory_categorical.{0} ℵ₀ _).isComplete ℵ₀ _ le_rfl (by simp)

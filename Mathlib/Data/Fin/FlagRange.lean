@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Fin.Basic
+import Mathlib.Order.Fin.Basic
 public import Mathlib.Order.Preorder.Chain
 
 /-!

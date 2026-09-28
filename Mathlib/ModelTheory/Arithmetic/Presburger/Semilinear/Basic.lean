@@ -209,7 +209,6 @@ public theorem Nat.isLinearSet_iff_exists_matrix {s : Set (ι → ℕ)} :
   refine exists₂_congr fun v n => ⟨fun ⟨f, hf⟩ => ⟨f.toNatLinearMap.toMatrix', ?_⟩, fun ⟨A, hA⟩ =>
     ⟨A.mulVecLin, ?_⟩⟩ <;> ext <;> simp [*, mem_vadd_set]
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma Nat.isSemilinearSet_preimage_of_isLinearSet [Finite ι] {F : Type*}
     [FunLike F (ι → ℕ) M] [AddMonoidHomClass F (ι → ℕ) M] {s : Set M} (hs : IsLinearSet s) (f : F) :
     IsSemilinearSet (f ⁻¹' s) := by
@@ -239,7 +238,7 @@ public theorem IsSemilinearSet.preimage [AddMonoid.FG M] {F : Type*} [FunLike F 
   rw [AddMonoidHom.mrange_eq_top] at hg
   rw [← image_preimage_eq (f ⁻¹' s) hg]
   apply image
-  rw [← preimage_comp, ← AddMonoidHom.coe_coe, ← AddMonoidHom.coe_comp]
+  rw [← preimage_comp, ← AddMonoidHom.coe_ofClass, ← AddMonoidHom.coe_comp]
   exact Nat.isSemilinearSet_preimage hs _
 
 /-! ### Semilinear sets are included in finitely generated submonoids -/
@@ -360,7 +359,7 @@ private def toRatVec : (ι → ℕ) →+ (ι → ℚ) :=
 private theorem toRatVec_inj (x y : ι → ℕ) : toRatVec x = toRatVec y ↔ x = y := by
   refine ⟨fun h => ?_, congr_arg toRatVec⟩
   ext i
-  simpa [toRatVec] using congr_fun h i
+  simpa [toRatVec] using congr($h i)
 
 private theorem toRatVec_mono (x y : ι → ℕ) : toRatVec x ≤ toRatVec y ↔ x ≤ y := by
   apply forall_congr'
@@ -558,7 +557,6 @@ private theorem fract_add_of_mem_closure {x y} (hy : y ∈ closure hs.basisSet) 
   rw [map_add, ← sub_add_eq_add_sub]
   simp [-nsmul_eq_mul, ← hs.basis_apply, Finsupp.single_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem fract_mem_fundamentalDomain (x) : hs.fract x ∈ hs.fundamentalDomain := by
   classical
   intro i
@@ -618,7 +616,7 @@ private theorem isSemilinearSet_setOfFractNe : IsSemilinearSet hs.setOfFractNe :
       · exact sum_mem fun i _ => nsmul_mem (mem_closure_of_mem i.2) _
       · exact hs.add_floor_neg_toNat_sum_eq x
     · rintro ⟨u, ⟨hu, hu'⟩, y, hy, y', hy', heq⟩
-      apply congr_arg hs.fract at heq
+      replace heq := congr(hs.fract $heq)
       rw [hs.fract_add_of_mem_closure hy', hs.fract_add_of_mem_closure hy,
         hs.fract_eq_self_of_mem_fundamentalDomain hu] at heq
       rwa [heq]
@@ -767,7 +765,7 @@ private lemma Nat.isSemilinearSet_compl_of_isProperLinearSet [Finite ι] {s : Se
     (hs : IsProperLinearSet s) : IsSemilinearSet sᶜ := by
   convert!
     hs.isSemilinearSet_setOfFractNe.union <|
-      hs.isSemilinearSet_setOfFloorNeg.union <| hs.isSemilinearSet_setOfFloorPos using 1
+      hs.isSemilinearSet_setOfFloorNeg.union hs.isSemilinearSet_setOfFloorPos using 1
   ext
   simp only [mem_compl_iff, hs.mem_iff_fract_eq_and_floor_nonneg, IsProperLinearSet.setOfFractNe,
     IsProperLinearSet.setOfFloorNeg, IsProperLinearSet.setOfFloorPos, mem_union, mem_ofPred_eq]

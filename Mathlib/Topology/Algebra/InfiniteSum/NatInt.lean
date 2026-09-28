@@ -6,8 +6,9 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Algebra.Group.EvenFunction
+import Mathlib.Algebra.Order.Group.Abs
 public import Mathlib.Logic.Encodable.Lattice
-public import Mathlib.Order.Filter.AtTopBot.Finset
+import Mathlib.Order.Filter.AtTopBot.Finset
 public import Mathlib.Topology.Algebra.InfiniteSum.Group
 
 /-!

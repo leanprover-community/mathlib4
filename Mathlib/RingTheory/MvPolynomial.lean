@@ -5,9 +5,7 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.LinearAlgebra.Dimension.Finite
-public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.RingTheory.MvPolynomial.Basic
 
@@ -24,7 +22,7 @@ public section
 
 noncomputable section
 
-open Set LinearMap Submodule
+open Submodule
 
 universe u v
 

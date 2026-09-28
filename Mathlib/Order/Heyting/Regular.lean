@@ -184,7 +184,7 @@ theorem toRegular_coe (a : Regular α) : toRegular (a : α) = a :=
 def gi : GaloisInsertion toRegular ((↑) : Regular α → α) where
   choice a ha := ⟨a, ha.antisymm le_compl_compl⟩
   gc _ b :=
-    coe_le_coe.symm.trans <|
+    coe_le_coe.symm.trans
       ⟨le_compl_compl.trans, fun h => (compl_anti <| compl_anti h).trans_eq b.2⟩
   le_l_u _ := le_compl_compl
   choice_eq _ ha := coe_injective <| le_compl_compl.antisymm ha
@@ -233,6 +233,6 @@ theorem isRegular_of_boolean : ∀ a : α, IsRegular a :=
 
 /-- A decidable proposition is intuitionistically Heyting-regular. -/
 theorem isRegular_of_decidable (p : Prop) [Decidable p] : IsRegular p :=
-  propext <| Decidable.not_not
+  propext Decidable.not_not
 
 end Heyting

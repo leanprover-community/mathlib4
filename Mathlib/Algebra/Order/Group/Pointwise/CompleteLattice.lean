@@ -21,7 +21,7 @@ In this file we prove a few facts like “The infimum of `-s` is `-` the supremu
 
 public section
 
-open Function Set
+open Set
 open scoped Pointwise
 
 variable {M : Type*}

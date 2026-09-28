@@ -22,7 +22,7 @@ assert_not_exists LinearMap
 
 section
 
-variable {R M : Type*} [Semiring R] [AddCommMonoid M]
+variable {R : Type*} [Semiring R]
 
 -- see Note [lower instance priority]
 /-- Like `Semiring.toModule`, but multiplies on the right. -/

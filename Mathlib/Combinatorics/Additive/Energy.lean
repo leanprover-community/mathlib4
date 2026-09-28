@@ -6,8 +6,6 @@ Authors: Yaël Dillies, Ella Yu
 module
 
 public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-public import Mathlib.Data.Finset.Prod
-public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!

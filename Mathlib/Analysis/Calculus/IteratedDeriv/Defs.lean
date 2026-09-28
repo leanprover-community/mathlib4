@@ -46,7 +46,7 @@ iterated Fréchet derivative.
 noncomputable section
 
 open scoped Topology ContDiff
-open Filter Asymptotics Set
+open Filter Set
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]

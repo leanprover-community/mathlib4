@@ -23,7 +23,7 @@ universe u
 
 namespace CategoryTheory.Codiscrete
 
-open Simplicial
+open scoped Simplicial
 
 variable {X : Type u} {n : ℕ}
 

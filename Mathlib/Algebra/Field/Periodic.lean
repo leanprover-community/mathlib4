@@ -6,7 +6,6 @@ Authors: Benjamin Davidson
 module
 
 public import Mathlib.Algebra.Field.Opposite
-public import Mathlib.Algebra.Module.Opposite
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Algebra.Ring.Periodic
 
@@ -34,7 +33,7 @@ public section
 
 assert_not_exists TwoSidedIdeal
 
-variable {α β γ : Type*} {f g : α → β} {c c₁ c₂ x : α}
+variable {α β γ : Type*} {f : α → β} {c x : α}
 
 open Set
 

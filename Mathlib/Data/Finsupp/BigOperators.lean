@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.Group.Finsupp
-public import Mathlib.Data.Finset.Pairwise
+import Mathlib.Data.Finset.Pairwise
 
 /-!
 # Sums of collections of Finsupp, and their support

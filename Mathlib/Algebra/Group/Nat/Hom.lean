@@ -23,7 +23,7 @@ variable {M : Type*}
 
 section AddMonoidHomClass
 
-variable {A B F : Type*} [FunLike F ℕ A]
+variable {A F : Type*} [FunLike F ℕ A]
 
 lemma ext_nat' [AddZeroClass A] [AddMonoidHomClass F ℕ A] (f g : F) (h : f 1 = g 1) : f = g :=
   DFunLike.ext f g <| by
@@ -69,7 +69,7 @@ variable (M) in
 /-- Monoid homomorphisms from `Multiplicative ℕ` are defined by the image
 of `Multiplicative.ofAdd 1`. -/
 def powersHom : M ≃ (Multiplicative ℕ →* M) :=
-  Additive.ofMul.trans <| (multiplesHom _).trans <| AddMonoidHom.toMultiplicativeLeft
+  Additive.ofMul.trans <| (multiplesHom _).trans AddMonoidHom.toMultiplicativeLeft
 
 @[simp] lemma powersHom_apply (x : M) (n : Multiplicative ℕ) :
     powersHom M x n = x ^ n.toAdd := rfl

@@ -222,7 +222,7 @@ from `P` to `N` induced by `f` is left inverse to the hom from `N` to `P` induce
 from `P` to `N` induced by `f` is left inverse to the hom from `N` to `P` induced by `k`. -/]
 theorem lift_left_inverse {k : LocalizationMap S P} (z : N) :
     k.lift f.map_units (f.lift k.map_units z) = z :=
-  (DFunLike.congr_fun (lift_comp_lift_eq f k f.map_units) z).trans (lift_id f z)
+  congr($(lift_comp_lift_eq f k f.map_units) z).trans (lift_id f z)
 
 @[to_additive]
 theorem lift_surjective_iff :
@@ -282,7 +282,6 @@ theorem map_eq (x) : f.map hy k (f x) = k (g x) :=
 theorem map_comp : (f.map hy k).comp f.toMonoidHom = k.toMonoidHom.comp g :=
   f.lift_comp fun y ↦ k.map_units ⟨g y, hy y⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem map_mk' (x) (y : S) : f.map hy k (f.mk' x y) = k.mk' (g x) ⟨g y, hy y⟩ := by
   rw [map, lift_mk', mul_inv_left]
@@ -330,7 +329,6 @@ theorem map_mul_left (z) : k (g (f.sec z).2) * f.map hy k z = k (g (f.sec z).1) 
 theorem map_id (z : N) : f.map (fun y ↦ show MonoidHom.id M y ∈ S from y.2) f z = z :=
   f.lift_id z
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `CommMonoid` homs `g : M →* P, l : P →* A` induce maps of localizations, the composition
 of the induced maps equals the map of localizations induced by `l ∘ g`. -/
 @[to_additive
@@ -522,12 +520,12 @@ def ofMulEquivOfDom {k : P ≃* M} (H : T.map k.toMonoidHom = S) : LocalizationM
       let ⟨v, hv⟩ := k.surjective x.1
       let ⟨w, hw⟩ := k.surjective x.2
       ⟨(v, ⟨w, H' ▸ show k w ∈ S from hw.symm ▸ x.2.2⟩), by
-        simp_rw [MonoidHom.comp_apply, MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_coe, hv, hw]
+        simp_rw [MonoidHom.comp_apply, MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_ofClass, hv, hw]
         dsimp
         rw [hx]⟩)
     fun x y ↦ by
       rw [MonoidHom.comp_apply, MonoidHom.comp_apply, MulEquiv.toMonoidHom_eq_coe,
-        MonoidHom.coe_coe, toMonoidHom_apply, toMonoidHom_apply, f.eq_iff_exists]
+        MonoidHom.coe_ofClass, toMonoidHom_apply, toMonoidHom_apply, f.eq_iff_exists]
       rintro ⟨c, hc⟩
       let ⟨d, hd⟩ := k.surjective c
       refine ⟨⟨d, H' ▸ show k d ∈ S from hd.symm ▸ c.2⟩, ?_⟩
@@ -544,11 +542,11 @@ theorem ofMulEquivOfDom_eq {k : P ≃* M} (H : T.map k.toMonoidHom = S) :
 @[to_additive]
 theorem ofMulEquivOfDom_comp_symm {k : P ≃* M} (H : T.map k.toMonoidHom = S) (x) :
     f.ofMulEquivOfDom H (k.symm x) = f x :=
-  congr_arg f <| k.apply_symm_apply x
+  congr(f $(k.apply_symm_apply x))
 
 @[to_additive]
 theorem ofMulEquivOfDom_comp {k : M ≃* P} (H : T.map k.symm.toMonoidHom = S) (x) :
-    f.ofMulEquivOfDom H (k x) = f x := congr_arg f <| k.symm_apply_apply x
+    f.ofMulEquivOfDom H (k x) = f x := congr(f $(k.symm_apply_apply x))
 
 /-- A special case of `f ∘ id = f`, `f` a Localization map. -/
 @[to_additive (attr := simp) /-- A special case of `f ∘ id = f`, `f` a Localization map. -/]

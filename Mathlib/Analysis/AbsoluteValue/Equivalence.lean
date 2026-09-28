@@ -291,7 +291,7 @@ theorem IsEquiv.log_div_log_pos (h : v.IsEquiv w) {a : F} (ha₀ : a ≠ 0) (ha�
   rcases ha₁.lt_or_gt with hwa | hwa
   · simpa using div_pos (neg_pos_of_neg <| log_neg (w.pos ha₀) (hwa))
       (neg_pos_of_neg <| log_neg (v.pos ha₀) (h.lt_one_iff.2 hwa))
-  · exact div_pos (log_pos <| hwa) (log_pos (h.one_lt_iff.2 hwa))
+  · exact div_pos (log_pos hwa) (log_pos (h.one_lt_iff.2 hwa))
 
 /--
 If $v$ and $w$ are two real absolute values on a field $F$, equivalent in the sense that

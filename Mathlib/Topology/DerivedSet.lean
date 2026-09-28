@@ -18,7 +18,7 @@ and proves some properties of it.
 
 @[expose] public section
 
-open Filter Topology
+open Filter
 
 variable {X : Type*} [TopologicalSpace X]
 
@@ -73,7 +73,7 @@ lemma isClosed_iff_derivedSet_subset (A : Set X) : IsClosed A ↔ derivedSet A �
   mpr h := by
     rw [isClosed_iff_clusterPt]
     intro a ha
-    by_contra! nh
+    by_contra nh
     have : A = A \ {a} := by simp [nh]
     rw [this, ← accPt_principal_iff_clusterPt] at ha
     exact nh (h ha)
@@ -95,8 +95,7 @@ but `derivedSet Set.univ = Set.univ`. -/
 lemma derivedSet_closure [T1Space X] (A : Set X) : derivedSet (closure A) = derivedSet A := by
   refine le_antisymm (fun x hx => ?_) (derivedSet_mono _ _ subset_closure)
   rw [mem_derivedSet, AccPt, (nhdsWithin_basis_open x {x}ᶜ).inf_principal_neBot_iff] at hx ⊢
-  peel hx with u hu _
-  obtain ⟨-, hu_open⟩ := hu
+  gconvert hx using 2 with u ⟨-, hu_open⟩
   exact mem_closure_iff.mp this.some_mem.2 (u ∩ {x}ᶜ) (hu_open.inter isOpen_compl_singleton)
     this.some_mem.1
 

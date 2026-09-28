@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.MorphismProperty.Basic
-public import Mathlib.Logic.Small.Basic
+import Mathlib.Logic.Small.Basic
 
 /-!
 # Small classes of morphisms

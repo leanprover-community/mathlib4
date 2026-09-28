@@ -24,8 +24,6 @@ universe v u
 
 namespace CategoryTheory
 
-open Category
-
 variable (C : Type u) [Category.{v} C]
 
 /-- The center of a category `C` is the type `End (𝟭 C)` of the endomorphisms

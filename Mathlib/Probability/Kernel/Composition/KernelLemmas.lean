@@ -30,7 +30,7 @@ open scoped ENNReal
 
 variable {X Y Z T : Type*} {mX : MeasurableSpace X} {mY : MeasurableSpace Y}
   {mZ : MeasurableSpace Z} {mT : MeasurableSpace T}
-  {μ : Measure X} {ν : Measure Y} {κ : Kernel X Y} {η : Kernel Z T}
+  {κ : Kernel X Y} {η : Kernel Z T}
 
 namespace ProbabilityTheory.Kernel
 

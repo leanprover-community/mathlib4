@@ -19,7 +19,7 @@ setting the correct order on their shared indexing type.
 
 open Function Set
 
-variable {ι ι' α β γ : Type*}
+variable {ι α β : Type*}
 
 section
 variable [LinearOrder α] [LinearOrder β] (f : ι → α) (g : ι → β) {s : Set ι}

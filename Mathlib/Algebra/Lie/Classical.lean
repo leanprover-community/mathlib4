@@ -5,9 +5,7 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Data.Matrix.Basis
 public import Mathlib.Algebra.Lie.Abelian
-public import Mathlib.LinearAlgebra.Matrix.Trace
 public import Mathlib.Algebra.Lie.SkewAdjoint
 public import Mathlib.LinearAlgebra.SymplecticGroup
 
@@ -82,7 +80,7 @@ theorem matrix_trace_commutator_zero [Fintype n] (X Y : Matrix n n R) : Matrix.t
   calc
     _ = Matrix.trace (X * Y) - Matrix.trace (Y * X) := trace_sub _ _
     _ = Matrix.trace (X * Y) - Matrix.trace (X * Y) :=
-      (congr_arg (fun x => _ - x) (Matrix.trace_mul_comm Y X))
+      congr(_ - $(Matrix.trace_mul_comm Y X))
     _ = 0 := sub_self _
 
 variable [DecidableEq n]
@@ -148,7 +146,7 @@ theorem sl_non_abelian [Fintype n] [Nontrivial R] (h : 1 < Fintype.card n) :
   intro c
   have c' : A.val * B.val = B.val * A.val := by
     rw [← sub_eq_zero, ← sl_bracket, c.trivial, ZeroMemClass.coe_zero]
-  simpa [A, B, Matrix.single, Matrix.mul_apply, hij.symm] using congr_fun (congr_fun c' i) i
+  simpa [A, B, Matrix.single, Matrix.mul_apply, hij.symm] using congr($c' i i)
 
 end SpecialLinear
 

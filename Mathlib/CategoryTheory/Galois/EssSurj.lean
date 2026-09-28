@@ -83,7 +83,7 @@ lemma has_decomp_quotients (X : Action FintypeCat G)
     let q' (p : G × (f i).V) : (f i).V := ((f i).ρ p.1).hom p.2
     have heq : q ∘ r'' = r.hom ∘ q' := by
       ext (p : G × (f i).V)
-      exact (ConcreteCategory.congr_hom (r.comm p.1) p.2).symm
+      exact congr($(r.comm p.1) p.2).symm
     have hrinj : Function.Injective r.hom :=
       (ConcreteCategory.mono_iff_injective_of_preservesPullback r).mp <| mono_comp _ _
     let t₁ : TopologicalSpace (G × (f i).V) := inferInstance
@@ -228,7 +228,7 @@ lemma exists_lift_of_quotient_openSubgroup (V : OpenSubgroup (Aut F)) :
   obtain ⟨I, hf, hc, hi⟩ := exists_set_ker_evaluation_subset_of_isOpen F (one_mem V) V.isOpen'
   have (X : I) : IsConnected X.val := hc X X.property
   have (X : I) : Nonempty (F.obj X.val) := nonempty_fiber_of_isConnected F X
-  have hn : Nonempty (F.obj <| (∏ᶜ fun X : I => X)) := nonempty_fiber_pi_of_nonempty_of_finite F _
+  have hn : Nonempty (F.obj (∏ᶜ fun X : I => X)) := nonempty_fiber_pi_of_nonempty_of_finite F _
   obtain ⟨A, f, hgal⟩ := exists_hom_from_galois_of_fiber_nonempty F (∏ᶜ fun X : I => X) hn
   obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
   let U : OpenSubgroup (Aut F) := ⟨MulAction.stabilizer (Aut F) a, stabilizer_isOpen (Aut F) a⟩

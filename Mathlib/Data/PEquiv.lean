@@ -6,9 +6,8 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Data.Option.Basic
-public import Batteries.Tactic.Congr
+import Batteries.Tactic.Congr
 public import Mathlib.Data.Set.Basic
-public import Mathlib.Tactic.Contrapose
 
 /-!
 
@@ -70,6 +69,7 @@ variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type x}
 
 open Function Option
 
+@[macro_inline]
 instance : FunLike (α ≃. β) α (Option β) :=
   { coe := toFun
     coe_injective := by

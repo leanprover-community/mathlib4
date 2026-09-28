@@ -17,7 +17,7 @@ make the equivalence a homeomorphism between the original space and the transpor
 
 @[expose] public section
 
-variable {R α β : Type*}
+variable {α β : Type*}
 
 namespace Equiv
 

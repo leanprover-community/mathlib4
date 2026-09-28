@@ -6,7 +6,6 @@ Authors: Anne Baanen, Junyan Xu
 module
 
 public import Mathlib.LinearAlgebra.Dimension.Finite
-public import Mathlib.RingTheory.Noetherian.Orzech
 
 /-! # Bases of modules and the Orzech property
 

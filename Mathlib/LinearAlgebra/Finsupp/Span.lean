@@ -24,10 +24,8 @@ open Set LinearMap Submodule
 
 namespace Finsupp
 
-variable {α : Type*} {M : Type*} {N : Type*} {P : Type*} {R : Type*} {S : Type*}
+variable {α : Type*} {M : Type*} {R : Type*} {S : Type*}
 variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M]
-variable [AddCommMonoid N] [Module R N]
-variable [AddCommMonoid P] [Module R P]
 
 @[simp]
 theorem ker_lsingle (a : α) : ker (lsingle a : M →ₗ[R] α →₀ M) = ⊥ :=
@@ -37,17 +35,17 @@ theorem lsingle_range_le_ker_lapply (s t : Set α) (h : Disjoint s t) :
     ⨆ a ∈ s, LinearMap.range (lsingle a : M →ₗ[R] α →₀ M) ≤
       ⨅ a ∈ t, ker (lapply a : (α →₀ M) →ₗ[R] M) := by
   refine iSup_le fun a₁ => iSup_le fun h₁ => range_le_iff_comap.2 ?_
-  simp only [(ker_comp _ _).symm, eq_top_iff, SetLike.le_def, mem_ker, comap_iInf, mem_iInf]
+  simp only [(ker_comp _ _).symm, eq_top_iff, IsConcreteLE.le_iff, mem_ker, comap_iInf, mem_iInf]
   intro b _ a₂ h₂
   have : a₂ ≠ a₁ := fun eq => h.le_bot ⟨h₁, eq.symm ▸ h₂⟩
   exact single_eq_of_ne this
 
 theorem iInf_ker_lapply_le_bot : ⨅ a, ker (lapply a : (α →₀ M) →ₗ[R] M) ≤ ⊥ := by
-  simp only [SetLike.le_def, mem_iInf, mem_ker, mem_bot, lapply_apply]
+  simp only [IsConcreteLE.le_iff, mem_iInf, mem_ker, mem_bot, lapply_apply]
   exact fun a h => Finsupp.ext h
 
 theorem iSup_lsingle_range : ⨆ a, LinearMap.range (lsingle a : M →ₗ[R] α →₀ M) = ⊤ := by
-  refine eq_top_iff.2 <| SetLike.le_def.2 fun f _ => ?_
+  refine eq_top_iff.2 <| IsConcreteLE.le_iff.2 fun f _ => ?_
   rw [← sum_single f]
   exact sum_mem fun a _ => Submodule.mem_iSup_of_mem a ⟨_, rfl⟩
 
@@ -103,14 +101,12 @@ namespace Submodule
 
 section Semiring
 
-variable {R : Type*} {M : Type*} {N : Type*}
-variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+variable {R : Type*} {M : Type*}
+variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 theorem exists_finset_of_mem_iSup {ι : Sort _} (p : ι → Submodule R M) {m : M}
     (hm : m ∈ ⨆ i, p i) : ∃ s : Finset ι, m ∈ ⨆ i ∈ s, p i := by
-  have :=
-    CompleteLattice.IsCompactElement.exists_finset_of_le_iSup (Submodule R M)
-      (Submodule.singleton_span_isCompactElement m) p
+  have := (Submodule.singleton_span_isCompactElement m).exists_finset_of_le_iSup p
   simp only [Submodule.span_singleton_le_iff_mem] at this
   exact this hm
 

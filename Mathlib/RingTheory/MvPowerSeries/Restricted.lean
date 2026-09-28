@@ -5,8 +5,8 @@ Authors: William Coram
 -/
 module
 
-public import Mathlib.Algebra.Order.Antidiag.Tendsto
-public import Mathlib.Algebra.Order.GroupWithZero.Finset
+import Mathlib.Algebra.Order.Antidiag.Tendsto
+import Mathlib.Algebra.Order.GroupWithZero.Finset
 public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Analysis.Normed.Group.Ultra
 public import Mathlib.RingTheory.MvPowerSeries.Basic

@@ -59,7 +59,7 @@ def map [Nontrivial S] (f : R →+* S) (s : LocalSubring R) : LocalSubring S :=
 /-- The range of a ring homomorphism from a local ring as a `LocalSubring`. -/
 @[simps! toSubring]
 def range [IsLocalRing R] [Nontrivial S] (f : R →+* S) : LocalSubring S :=
-  .copy (map f (mk ⊤)) f.range (by ext x; exact congr(x ∈ $(Set.image_univ.symm)))
+  .copy (map f (mk ⊤)) f.range (by ext x; congrm x ∈ $Set.image_univ.symm)
 
 /--
 The domination order on local subrings.
@@ -83,7 +83,6 @@ section ofPrime
 
 variable (A : Subring K) (P : Ideal A) [P.IsPrime]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The localization of a subring at a prime, as a local subring.
 Also see `Localization.subalgebra.ofField` -/
 noncomputable

@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.RCLike.Lemmas
+import Mathlib.Analysis.RCLike.Lemmas
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 
 /-!
@@ -17,8 +17,6 @@ public section
 
 
 noncomputable section
-
-open NNReal ENNReal
 
 namespace RCLike
 

@@ -6,7 +6,7 @@ Authors: Kalle Kytölä
 module
 
 public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
-public import Mathlib.MeasureTheory.Integral.IntegrableOn
+import Mathlib.MeasureTheory.Integral.IntegrableOn
 public import Mathlib.Topology.MetricSpace.ThickenedIndicator
 
 /-!
@@ -39,7 +39,7 @@ convergence in distribution for random variables behave somewhat well in spaces 
 
 @[expose] public section
 
-open BoundedContinuousFunction MeasureTheory Topology Metric Filter Set ENNReal NNReal
+open BoundedContinuousFunction MeasureTheory Filter Set ENNReal NNReal
 open scoped Topology ENNReal NNReal BoundedContinuousFunction
 
 section auxiliary

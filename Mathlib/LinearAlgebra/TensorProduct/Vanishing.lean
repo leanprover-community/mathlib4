@@ -5,9 +5,9 @@ Authors: Mitchell Lee, Junyan Xu
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
-public import Mathlib.LinearAlgebra.DirectSum.Finsupp
+import Mathlib.LinearAlgebra.DirectSum.Finsupp
 
 /-! # Vanishing of elements in a tensor product of two modules
 
@@ -62,7 +62,7 @@ variable (R : Type*) [CommRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M]
 variable {N : Type*} [AddCommGroup N] [Module R N]
 
-open DirectSum LinearMap Function Submodule Finsupp
+open LinearMap Function Submodule Finsupp
 
 namespace TensorProduct
 

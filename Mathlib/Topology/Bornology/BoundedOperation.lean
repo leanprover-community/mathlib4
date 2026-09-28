@@ -5,8 +5,6 @@ Authors: Kalle Kytölä
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Basic
-public import Mathlib.Topology.MetricSpace.ProperSpace.Real
 public import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-!
@@ -162,7 +160,7 @@ lemma SeminormedAddCommGroup.lipschitzWith_sub :
 
 instance : BoundedSub R := boundedSub_of_lipschitzWith_sub SeminormedAddCommGroup.lipschitzWith_sub
 
-open Filter Pointwise Bornology
+open Filter Bornology
 
 /-
 TODO:

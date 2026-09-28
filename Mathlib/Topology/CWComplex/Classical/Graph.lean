@@ -5,8 +5,8 @@ Authors: Jun Kwon
 -/
 module
 
-public import Mathlib.Topology.CWComplex.Classical.Finite
 public import Mathlib.Combinatorics.Graph.Basic
+public import Mathlib.Topology.CWComplex.Classical.Basic
 
 /-!
 # 1-skeletons of CW complexes as graphs
@@ -20,7 +20,7 @@ In this file we define the 1-skeleton of a CW complex as a graph.
 
 public section
 
-open Metric Set Graph
+open Set Graph
 
 namespace Topology
 

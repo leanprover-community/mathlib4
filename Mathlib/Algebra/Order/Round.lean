@@ -184,7 +184,7 @@ theorem round_eq_iff {x : α} {n : ℤ} : round x = n ↔ x ∈ Ico (n - 1 / 2 :
 theorem round_two_inv : round (2⁻¹ : α) = 1 := by norm_num [round_eq_iff]
 
 @[simp]
-theorem round_neg_two_inv : round (-2⁻¹ : α) = 0 := by norm_num [round_eq_iff]
+theorem round_neg_two_inv : round (-2⁻¹ : α) = 0 := by simp [round_eq_iff]
 
 @[simp]
 theorem round_eq_zero_iff {x : α} : round x = 0 ↔ x ∈ Ico (-(1 / 2)) ((1 : α) / 2) := by
@@ -223,7 +223,7 @@ namespace Int
 
 variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]
   [Field β] [LinearOrder β] [IsStrictOrderedRing β] [FloorRing α] [FloorRing β]
-variable [FunLike F α β] [RingHomClass F α β] {a : α} {b : β}
+variable [FunLike F α β] [RingHomClass F α β] {a : α}
 
 theorem map_round (f : F) (hf : StrictMono f) (a : α) : round (f a) = round a := by
   simp_rw [round_eq, ← map_floor _ hf, map_add, one_div, map_inv₀, map_ofNat]

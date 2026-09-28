@@ -303,7 +303,6 @@ variable {S : C}
 
 instance : Nonempty (J.HOneHypercover S) := ⟨⟨Nonempty.some inferInstance⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `C` has pullbacks, the category of `1`-hypercovers up to homotopy is cofiltered. -/
 instance isCofiltered_of_hasPullbacks [HasPullbacks C] : IsCofiltered (J.HOneHypercover S) where
   cone_objs {E F} :=

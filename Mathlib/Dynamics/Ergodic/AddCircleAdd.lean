@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Dynamics.Ergodic.Action.OfMinimal
-public import Mathlib.Topology.Instances.AddCircle.DenseSubgroup
+import Mathlib.Topology.Instances.AddCircle.DenseSubgroup
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 
 /-!
@@ -18,7 +18,7 @@ if and only if `a` has infinite order (in other words, if `a / p` is irrational)
 
 public section
 
-open Metric MeasureTheory AddSubgroup
+open MeasureTheory AddSubgroup
 open scoped Pointwise
 
 namespace AddCircle

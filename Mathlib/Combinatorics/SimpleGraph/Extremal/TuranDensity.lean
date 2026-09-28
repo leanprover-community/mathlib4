@@ -6,13 +6,11 @@ Authors: Mitchell Horner
 module
 
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-public import Mathlib.Combinatorics.Enumerative.DoubleCounting
-public import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
+import Mathlib.Combinatorics.Enumerative.DoubleCounting
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
-public import Mathlib.Data.Nat.Choose.Cast
+import Mathlib.Data.Nat.Choose.Cast
 
 import Mathlib.Tactic.Bound
-import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Instances.Real.Lemmas
 
 /-!
@@ -37,7 +35,9 @@ This file defines the **Turán density** of a simple graph.
 @[expose] public section
 
 
-open Asymptotics Filter Finset Fintype Topology
+open Asymptotics Filter Finset Fintype
+
+open scoped Topology
 
 namespace SimpleGraph
 

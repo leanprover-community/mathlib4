@@ -31,7 +31,7 @@ universe w v u
 variable {B : Type u} [Bicategory.{w, v} B]
 
 variable {a b c d : B}
-variable {f f' g g' h i j : a ⟶ b}
+variable {f f' g h i j : a ⟶ b}
 
 @[nolint synTaut]
 theorem evalComp_nil_nil (α : f ≅ g) (β : g ≅ h) :

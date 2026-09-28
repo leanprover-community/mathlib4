@@ -23,10 +23,12 @@ public section
 
 noncomputable section
 
-open RCLike Real Filter Topology ComplexConjugate Finsupp
+open RCLike Real Filter
 open LinearMap renaming BilinForm → BilinForm
 
-variable {𝕜 E F : Type*} [RCLike 𝕜]
+open scoped Topology
+
+variable {𝕜 E : Type*} [RCLike 𝕜]
 
 
 section Continuous
@@ -94,10 +96,10 @@ end Continuous
 
 open Submodule
 
-variable {E F ι : Type*}
+variable {E ι : Type*}
 variable (𝕜 : Type*) [RCLike 𝕜]
-variable [NormedAddCommGroup E] [NormedAddCommGroup F]
-variable [InnerProductSpace 𝕜 E] [InnerProductSpace ℝ F]
+variable [NormedAddCommGroup E]
+variable [InnerProductSpace 𝕜 E]
 variable {x y : E} {S : Set E} {f : ι → E}
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
@@ -108,7 +110,7 @@ theorem Dense.eq_zero_of_inner_left (hS : Dense S) (h : ∀ v ∈ S, ⟪x, v⟫ 
   have : (⟪x, ·⟫) = 0 := (continuous_const.inner continuous_id).ext_on
     hK continuous_const fun v ↦ Submodule.span_induction h (by simp)
       (by simp +contextual [inner_add_right]) (by simp +contextual [inner_smul_right])
-  simpa using congr_fun this x
+  simpa using congr($this x)
 
 theorem Dense.eq_zero_of_inner_right (hS : Dense S) (h : ∀ v ∈ S, ⟪v, x⟫ = 0) : x = 0 :=
   hS.eq_zero_of_inner_left 𝕜 fun v hv ↦ by rw! [← inner_conj_symm]; simp [-inner_conj_symm, h, hv]

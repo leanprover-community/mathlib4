@@ -158,7 +158,7 @@ partial def expandLinearCombo (ty : Option Expr) (stx : Syntax.Term) :
 def elabLinearCombination (tk : Syntax)
     (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term) :
     Tactic.TacticM Unit := Tactic.withMainContext <| Tactic.focus do
-  let eType ← withReducible <| (← Tactic.getMainGoal).getType'
+  let eType ← withReducible (← Tactic.getMainGoal).getType'
   let (goalRel, ty, _) ← eType.ineq?
   -- build the specified linear combination of the hypotheses
   let (hypRel, p) ← match input with

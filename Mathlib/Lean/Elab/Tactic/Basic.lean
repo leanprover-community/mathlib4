@@ -5,12 +5,12 @@ Authors: Floris van Doorn, Jon Eugster
 -/
 module
 
-public import Mathlib.Lean.Meta
+public meta import Mathlib.Lean.Meta
 /-!
 # Additions to `Lean.Elab.Tactic.Basic`
 -/
 
-@[expose] public section
+public meta section
 
 open Lean Elab Tactic
 
@@ -21,5 +21,19 @@ Remark: note that `MVarId.getType'` uses `whnf` instead of `cleanupAnnotations`,
 `MVarId.getType''` also uses `cleanupAnnotations` -/
 def getMainTarget'' : TacticM Expr := do
   (← getMainGoal).getType''
+
+/-- Runs `x`, and if `x` throws an exception, rewinds the tactic state *except* for the `InfoState`
+and `Messages`. This means that hovers and error messages created within `x` are preserved.
+
+Note: `x` is run under `withSaveInfoContext` in order to propagate hovers and messages correctly.
+This means that pre-existing infotrees are not accessible from within `x`. -/
+def commitIfNoExPreservingInfoAndMessages {α} (x : TacticM α) : TacticM α := do
+  let saved ← saveState
+  Tactic.tryCatch (withSaveInfoContext x) fun ex => do
+    let saved := { saved with
+      term.meta.core.infoState := ← getInfoState
+      term.meta.core.messages := (← getThe Core.State).messages }
+    restoreState saved
+    throw ex
 
 end Lean.Elab.Tactic

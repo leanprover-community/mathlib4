@@ -138,7 +138,6 @@ section
 
 variable (C)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Our normalization procedure works by first defining a functor `F C ⥤ (N C ⥤ N C)` (which turns
 out to be very easy), and then obtain a functor `F C ⥤ N C` by plugging in the normal object
 `𝟙_ C`. -/
@@ -172,7 +171,7 @@ theorem tensorFunc_obj_map (Z : F C) {n n' : N C} (f : n ⟶ n') :
     ((tensorFunc C).obj Z).map f = inclusion.map f ▷ Z := by
   cases n
   cases n'
-  rcases f with ⟨⟨h⟩⟩
+  rcases f with ⟨h⟩
   dsimp at h
   subst h
   simp
@@ -231,7 +230,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 def normalizeIsoAux (X : F C) : (tensorFunc C).obj X ≅ (normalize' C).obj X :=
   NatIso.ofComponents (normalizeIsoApp C X)
     (by
-      rintro ⟨X⟩ ⟨Y⟩ ⟨⟨f⟩⟩
+      rintro ⟨X⟩ ⟨Y⟩ ⟨f⟩
       dsimp at f
       subst f
       dsimp
@@ -250,10 +249,10 @@ theorem normalizeObj_congr (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶ Y
   induction f' with
   | comp _ _ _ _ => apply Eq.trans <;> assumption
   | whiskerLeft _ _ ih => funext; apply congr_fun ih
-  | whiskerRight _ _ ih => funext; apply congr_arg₂ _ rfl (congr_fun ih _)
+  | whiskerRight _ _ ih => funext; apply congr_arg₂ _ rfl congr($ih _)
   | @tensor W X Y Z _ _ ih₁ ih₂ =>
       funext n
-      simp [congr_fun ih₁ n, congr_fun ih₂ (normalizeObj Y n)]
+      simp [congr($ih₁ n), congr($ih₂ (normalizeObj Y n))]
   | _ => funext; rfl
 
 set_option backward.isDefEq.respectTransparency.types false in

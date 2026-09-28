@@ -5,7 +5,6 @@ Authors: Amelia Livingston
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
 public import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
 public import Mathlib.RepresentationTheory.Coinduced
 public import Mathlib.RepresentationTheory.Induced
@@ -43,7 +42,7 @@ universe u
 
 namespace groupHomology
 
-open CategoryTheory Finsupp TensorProduct Rep Representation
+open CategoryTheory Rep
 
 variable {k G : Type u} [CommRing k] [Group G] (S : Subgroup G) (A : Rep k S)
 

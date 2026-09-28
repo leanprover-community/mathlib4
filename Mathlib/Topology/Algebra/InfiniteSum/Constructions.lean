@@ -90,8 +90,10 @@ lemma HasProd.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [Continu
     simp
   simpa [Tendsto, ← Filter.map_map] using! this
 
+/-- For the statement that `tprod` commutes with `Finset.prod`,
+see `Multipliable.tprod_finsetProd`. -/
 @[to_additive /-- For the statement that `tsum` commutes with `Finset.sum`,
-  see `Summable.tsum_finsetSum`. -/]
+see `Summable.tsum_finsetSum`. -/]
 protected lemma Multipliable.tprod_sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M]
     [ContinuousMul M] [T2Space M] {f : α ⊕ β → M} (h₁ : Multipliable (f ∘ .inl))
     (h₂ : Multipliable (f ∘ .inr)) : ∏' i, f i = (∏' i, f (.inl i)) * (∏' i, f (.inr i)) :=
@@ -270,18 +272,21 @@ section Pi
 variable {ι : Type*} {X : α → Type*} [∀ x, CommMonoid (X x)] [∀ x, TopologicalSpace (X x)]
   {L : SummationFilter ι}
 
-@[to_additive]
+/-- See also `hasProd_apply` for `FunLike` types. -/
+@[to_additive /-- See also `hasSum_apply` for `FunLike` types. -/]
 theorem Pi.hasProd {f : ι → ∀ x, X x} {g : ∀ x, X x} :
     HasProd f g L ↔ ∀ x, HasProd (fun i ↦ f i x) (g x) L := by
   simp only [HasProd, tendsto_pi_nhds, Finset.prod_apply]
 
-@[to_additive]
+/-- See also `multipliable_apply` for `FunLike` types. -/
+@[to_additive /-- See also `summable_apply` for `FunLike` types. -/]
 theorem Pi.multipliable {f : ι → ∀ x, X x} :
     Multipliable f L ↔ ∀ x, Multipliable (fun i ↦ f i x) L := by
   simp only [Multipliable, Pi.hasProd, Classical.skolem]
 
-@[to_additive]
-theorem tprod_apply [L.NeBot] [∀ x, T2Space (X x)] {f : ι → ∀ x, X x} {x : α}
+/-- See also `tprod_apply` for `FunLike` types. -/
+@[to_additive /-- See also `tsum_apply` for `FunLike` types. -/]
+theorem Pi.tprod_apply [L.NeBot] [∀ x, T2Space (X x)] {f : ι → ∀ x, X x} {x : α}
     (hf : Multipliable f L) : (∏'[L] i, f i) x = ∏'[L] i, f i x :=
   (Pi.hasProd.mp hf.hasProd x).tprod_eq.symm
 

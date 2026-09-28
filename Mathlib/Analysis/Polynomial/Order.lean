@@ -6,7 +6,7 @@ Authors: Yuval Filmus
 module
 
 public import Mathlib.Analysis.Polynomial.Basic
-public import Mathlib.Topology.Algebra.Polynomial
+import Mathlib.Topology.Algebra.Polynomial
 
 /-!
 # Eventual sign of polynomials

@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel, Felix Weilacher
 module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
-public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.MetricSpace.Perfect
 public import Mathlib.Topology.Separation.CountableSeparatingOn
 
@@ -64,7 +63,9 @@ We use this to prove several versions of the Borel isomorphism theorem.
 @[expose] public section
 
 
-open Set Function PolishSpace PiNat TopologicalSpace Bornology Metric Filter Topology MeasureTheory
+open Set Function PolishSpace PiNat TopologicalSpace Bornology Metric Filter MeasureTheory
+
+open scoped Topology
 
 /-! ### Standard Borel Spaces -/
 
@@ -748,7 +749,7 @@ theorem MeasureTheory.measurableSet_range_of_continuous_injective {β : Type*} [
     have I : ∀ m n, ((s m).1 ∩ (s n).1).Nonempty := by
       intro m n
       rw [← not_disjoint_iff_nonempty_inter]
-      by_contra! h
+      by_contra h
       have A : x ∈ q ⟨(s m, s n), h⟩ \ q ⟨(s n, s m), h.symm⟩ :=
         haveI := mem_iInter.1 (hxs m).2 (s n)
         (mem_iInter.1 this h :)

@@ -5,11 +5,10 @@ Authors: Alexander Bentkamp
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Roots
-public import Mathlib.Algebra.Module.Torsion.Field
+import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.FieldTheory.Minpoly.Basic
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
-public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
+import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 
 /-!
 # Eigenvalues are the roots of the minimal polynomial.
@@ -97,7 +96,6 @@ theorem hasEigenvalue_iff_isRoot : f.HasEigenvalue μ ↔ (minpoly R f).IsRoot �
 
 variable (f)
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma finite_hasEigenvalue : Set.Finite {μ | f.HasEigenvalue μ} := by
   have h : minpoly R f ≠ 0 := minpoly.ne_zero (Algebra.IsIntegral.isIntegral (R := R) f)
   refine ((minpoly R f).rootSet_finite R).subset ?_
@@ -135,7 +133,6 @@ end Module
 
 section FiniteSpectrum
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- An endomorphism of a finite-dimensional vector space has a finite spectrum. -/
 theorem Module.End.finite_spectrum {K : Type v} {V : Type w} [Field K] [AddCommGroup V]
     [Module K V] [FiniteDimensional K V] (f : Module.End K V) :

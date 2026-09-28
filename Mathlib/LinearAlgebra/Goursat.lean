@@ -6,7 +6,6 @@ Authors: David Loeffler
 module
 
 public import Mathlib.GroupTheory.Goursat
-public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-!
@@ -24,7 +23,7 @@ respectively.
 
 @[expose] public section
 
-open Function Set LinearMap
+open Function LinearMap
 
 namespace Submodule
 variable {R M N : Type*} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
