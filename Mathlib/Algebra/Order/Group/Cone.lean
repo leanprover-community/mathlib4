@@ -48,9 +48,9 @@ theorem PartialOrder.ofSubmonoid_le_iff {a b : G} :
 
 @[to_additive]
 theorem IsOrderedMonoid.ofSubmonoid :
-    letI _ := PartialOrder.ofSubmonoid hM
+    letI := PartialOrder.ofSubmonoid hM
     IsOrderedMonoid G :=
-  letI _ := PartialOrder.ofSubmonoid hM
+  letI := PartialOrder.ofSubmonoid hM
   { mul_le_mul_left := fun a b nab c ↦ by simpa [· ≤ ·] using nab }
 
 /-- Construct a linear order by designating
