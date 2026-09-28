@@ -8,7 +8,7 @@ module
 public import Mathlib.Data.FunLike.GroupWithZero
 public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Algebra.Ring.Pi
-public import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Finiteness.Attr
 
 /-! # Ring instances for `FunLike` types
 In this file we define various instances related to ring for `FunLike` types.

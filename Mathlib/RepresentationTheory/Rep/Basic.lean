@@ -46,7 +46,9 @@ variable {k : Type u} {G : Type v} [Semiring k] [Monoid G] {X Y : Type w} [AddCo
   [AddCommGroup Y] [Module k X] [Module k Y] {ρ : Representation k G X} {σ : Representation k G Y}
   (A B C : Rep.{w} k G)
 
-attribute [instance] hV1 hV2
+attribute [instance] hV1
+
+attribute [instance 1100] hV2
 
 initialize_simps_projections Rep (-hV1, -hV2)
 
