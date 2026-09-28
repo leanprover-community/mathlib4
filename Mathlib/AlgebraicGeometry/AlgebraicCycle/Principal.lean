@@ -45,9 +45,7 @@ def divisor [IsIntegral X] [IsLocallyNoetherian X] (f : X.functionField) :
       (Z := U.carrierᶜ) (by
         rw [U.2.isClosed_compl.closure_eq]
         exact compl_ne_univ.mpr ((Scheme.Opens.nonempty_iff _).mp hUne)) z
-    refine ⟨W, hW, hfin.subset ?_⟩
-    rintro x ⟨hxW, hxsup⟩
-    refine ⟨hxW, fun a ↦ hxsup ?_, ?_⟩
+    refine ⟨W, hW, hfin.subset (fun x ⟨hxW, hxsup⟩ ↦ ⟨hxW, fun a ↦ hxsup ?_, ?_⟩)⟩
     · rw [← hgf]; exact ord_of_isUnit hg a
     · by_contra h; exact hxsup (ord_eq_zero_of_coheight_neq_one h f)
 
