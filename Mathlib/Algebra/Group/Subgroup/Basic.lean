@@ -6,9 +6,7 @@ Authors: Kexing Ying
 module
 
 public import Mathlib.Algebra.Group.Conj
-public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.Group.Subgroup.Ker
-public import Mathlib.Algebra.Group.Torsion
 
 /-!
 # Basic results on subgroups
@@ -55,12 +53,12 @@ assert_not_exists IsOrderedMonoid Multiset Ring
 open Function
 open scoped Int
 
-variable {G G' G'' : Type*} [Group G] [Group G'] [Group G'']
+variable {G G' : Type*} [Group G] [Group G']
 variable {A : Type*} [AddGroup A]
 
 section SubgroupClass
 
-variable {M S : Type*} [DivInvMonoid M] [SetLike S M] [hSM : SubgroupClass S M] {H K : S}
+variable {S : Type*} {H : S}
 
 variable [SetLike S G] [SubgroupClass S G]
 
@@ -78,11 +76,9 @@ variable (H K : Subgroup G)
 protected theorem div_mem_comm_iff {a b : G} : a / b ∈ H ↔ b / a ∈ H :=
   div_mem_comm_iff
 
-variable {k : Set G}
-
 open Set
 
-variable {N : Type*} [Group N] {P : Type*} [Group P]
+variable {N : Type*} [Group N]
 
 /-- Given `Subgroup`s `H`, `K` of groups `G`, `N` respectively, `H × K` as a subgroup of `G × N`. -/
 @[to_additive prod
@@ -227,7 +223,7 @@ end Subgroup
 
 namespace Subgroup
 
-variable {H K : Subgroup G}
+variable {H : Subgroup G}
 
 variable (H)
 
@@ -285,13 +281,13 @@ theorem characteristic_iff_comap_eq : H.Characteristic ↔ ∀ ϕ : G ≃* G, H.
 theorem characteristic_iff_comap_le : H.Characteristic ↔ ∀ ϕ : G ≃* G, H.comap ϕ.toMonoidHom ≤ H :=
   characteristic_iff_comap_eq.trans
     ⟨fun h ϕ => le_of_eq (h ϕ), fun h ϕ =>
-      le_antisymm (h ϕ) fun g hg => h ϕ.symm ((congr_arg (· ∈ H) (ϕ.symm_apply_apply g)).mpr hg)⟩
+      le_antisymm (h ϕ) fun g hg => h ϕ.symm (congr($(ϕ.symm_apply_apply g) ∈ H).mpr hg)⟩
 
 @[to_additive]
 theorem characteristic_iff_le_comap : H.Characteristic ↔ ∀ ϕ : G ≃* G, H ≤ H.comap ϕ.toMonoidHom :=
   characteristic_iff_comap_eq.trans
     ⟨fun h ϕ => ge_of_eq (h ϕ), fun h ϕ =>
-      le_antisymm (fun g hg => (congr_arg (· ∈ H) (ϕ.symm_apply_apply g)).mp (h ϕ.symm hg)) (h ϕ)⟩
+      le_antisymm (fun g hg => congr($(ϕ.symm_apply_apply g) ∈ H).mp (h ϕ.symm hg)) (h ϕ)⟩
 
 @[to_additive]
 theorem characteristic_iff_map_eq : H.Characteristic ↔ ∀ ϕ : G ≃* G, H.map ϕ.toMonoidHom = H := by
@@ -316,6 +312,46 @@ instance botCharacteristic : Characteristic (⊥ : Subgroup G) :=
 instance topCharacteristic : Characteristic (⊤ : Subgroup G) :=
   characteristic_iff_map_le.mpr fun _ϕ => le_top
 
+@[to_additive]
+instance characteristic_sup [H.Characteristic] [K.Characteristic] :
+    (H ⊔ K).Characteristic := by
+  simp_all [characteristic_iff_map_eq, map_sup]
+
+@[to_additive]
+instance characteristic_iSup {ι : Sort*} {H : ι → Subgroup G} [∀ i, (H i).Characteristic] :
+    (⨆ i, H i).Characteristic := by
+  simp_all [characteristic_iff_map_eq, map_iSup]
+
+@[to_additive]
+theorem characteristic_biSup {ι : Type*} {s : Set ι} {H : ι → Subgroup G}
+    (h : ∀ i ∈ s, (H i).Characteristic) : (⨆ i ∈ s, H i).Characteristic := by
+  simp [← iSup_subtype'', characteristic_iSup, h]
+
+@[to_additive]
+theorem characteristic_sSup {Hs : Set (Subgroup G)} (h : ∀ H ∈ Hs, H.Characteristic) :
+    (sSup Hs).Characteristic := by
+  simp [sSup_eq_iSup', characteristic_iSup, h]
+
+@[to_additive]
+instance characteristic_inf [H.Characteristic] [K.Characteristic] :
+    (H ⊓ K).Characteristic := by
+  simp_all [characteristic_iff_comap_eq, comap_inf]
+
+@[to_additive]
+instance characteristic_iInf {ι : Sort*} {H : ι → Subgroup G} [∀ i, (H i).Characteristic] :
+    (⨅ i, H i).Characteristic := by
+  simp_all [characteristic_iff_comap_eq, comap_iInf]
+
+@[to_additive]
+theorem characteristic_biInf {ι : Type*} {s : Set ι} {H : ι → Subgroup G}
+    (h : ∀ i ∈ s, (H i).Characteristic) : (⨅ i ∈ s, H i).Characteristic := by
+  simp [← iInf_subtype'', characteristic_iInf, h]
+
+@[to_additive]
+theorem characteristic_sInf {Hs : Set (Subgroup G)} (h : ∀ H ∈ Hs, H.Characteristic) :
+    (sInf Hs).Characteristic := by
+  simp [sInf_eq_iInf', characteristic_iInf, h]
+
 /-- If `H` is a characteristic subgroup of `G`, then every automorphism of `G` induces an
 automorphism of `H`. -/
 @[to_additive (attr := simps!)
@@ -339,7 +375,7 @@ def _root_.MulAut.characteristic (H : Subgroup G) [H.Characteristic] : MulAut G 
 instance characteristic_of_characteristic_of_characteristic [H.Characteristic]
     {K : Subgroup H} [hK : K.Characteristic] : (K.map H.subtype).Characteristic := by
   refine characteristic_iff_map_eq.2 fun φ ↦ ?_
-  have := congr_arg (map H.subtype) <| characteristic_iff_map_eq.1 hK (MulAut.characteristic H φ)
+  have := congr(map H.subtype $(characteristic_iff_map_eq.1 hK (MulAut.characteristic H φ)))
   simpa [Subgroup.map_map, MulAut.characteristic]
 
 variable (H)
@@ -376,7 +412,7 @@ alias _root_.AddSubgroup.mem_normalizer_iff_conj_image_eq :=
 theorem normalizer_le_normalizer_closure (s : Set G) : normalizer s ≤ normalizer (closure s) := by
   intro g hg
   rw [mem_normalizer_iff_conj_image_eq] at hg
-  rw [mem_normalizer_iff_map_conj_eq, MonoidHom.map_closure, MonoidHom.coe_coe, hg]
+  rw [mem_normalizer_iff_map_conj_eq, MonoidHom.map_closure, MonoidHom.coe_ofClass, hg]
 
 variable {H}
 
@@ -484,6 +520,19 @@ theorem subset_normalizer_of_normal {S : Set G} [hH : H.Normal] : S ⊆ normaliz
 theorem le_normalizer_of_normal [H.Normal] : K ≤ normalizer H := subset_normalizer_of_normal
 
 @[to_additive]
+lemma inf_normalizer_le_normalizer_sup (H K : Subgroup G) :
+    normalizer H ⊓ normalizer K ≤ normalizer ((H ⊔ K : Subgroup G) : Set G) := by
+  intro g hg
+  simp_rw [mem_inf, mem_normalizer_iff_map_conj_eq, map_sup, hg.1, hg.2] at hg ⊢
+
+@[deprecated (since := "2026-08-27")] alias normalizer_inf_normalizer_le_normalizer_sup :=
+  inf_normalizer_le_normalizer_sup
+
+@[deprecated (since := "2026-08-27")]
+alias _root_.AddSubgroup.normalizer_inf_normalizer_le_normalizer_sup :=
+  AddSubgroup.inf_normalizer_le_normalizer_sup
+
+@[to_additive]
 theorem inf_normalizer_le_normalizer_inf :
     normalizer H ⊓ normalizer K ≤ normalizer ((H ⊓ K :) : Set G) :=
   fun _ h g ↦ and_congr (h.1 g) (h.2 g)
@@ -495,11 +544,15 @@ theorem iInf_normalizer_le_normalizer_iInf {ι : Sort*} (H : ι → Subgroup G) 
 
 variable (G) in
 /-- Every proper subgroup `H` of `G` is a proper normal subgroup of the normalizer of `H` in `G`. -/
+@[to_additive AddNormalizerCondition /-- Every proper additive subgroup `H` of `G` is a proper
+normal additive subgroup of the normalizer of `H` in `G`. -/]
 def _root_.NormalizerCondition :=
   ∀ H : Subgroup G, H < ⊤ → H < normalizer H
 
 /-- Alternative phrasing of the normalizer condition: Only the full group is self-normalizing.
 This may be easier to work with, as it avoids inequalities and negations. -/
+@[to_additive /-- Alternative phrasing of the normalizer condition: Only the full additive group is
+self-normalizing. This may be easier to work with, as it avoids inequalities and negations. -/]
 theorem _root_.normalizerCondition_iff_only_full_group_self_normalizing :
     NormalizerCondition G ↔ ∀ H : Subgroup G, normalizer H = H → H = ⊤ := by
   apply forall_congr'; intro H
@@ -665,8 +718,8 @@ subgroup of `G` contained in `H`, as shown by `AddSubgroup.normalCore_eq_iSup`. 
 def normalCore (H : Subgroup G) : Subgroup G where
   carrier := { a : G | ∀ b : G, b * a * b⁻¹ ∈ H }
   one_mem' a := by rw [mul_one, mul_inv_cancel]; exact H.one_mem
-  inv_mem' {_} h b := (congr_arg (· ∈ H) conj_inv).mp (H.inv_mem (h b))
-  mul_mem' {_ _} ha hb c := (congr_arg (· ∈ H) conj_mul).mp (H.mul_mem (ha c) (hb c))
+  inv_mem' {_} h b := congr($conj_inv ∈ H).mp (H.inv_mem (h b))
+  mul_mem' {_ _} ha hb c := congr($conj_mul ∈ H).mp (H.mul_mem (ha c) (hb c))
 
 @[to_additive]
 theorem normalCore_le (H : Subgroup G) : H.normalCore ≤ H := fun a h => by
@@ -727,13 +780,11 @@ end Subgroup
 
 namespace MonoidHom
 
-variable {N : Type*} {P : Type*} [Group N] [Group P] (K : Subgroup G)
+variable {N : Type*} [Group N]
 
 open Subgroup
 
 section Ker
-
-variable {M : Type*} [MulOneClass M]
 
 @[to_additive prodMap_comap_prod]
 theorem prodMap_comap_prod {G' : Type*} {N' : Type*} [Group G'] [Group N'] (f : G →* N)
@@ -1118,7 +1169,7 @@ end ConjClasses
 
 namespace AddSubgroup
 
-variable {M : Type*} [AddGroup M] (I : AddSubgroup M) (G : Type*)
+variable {M : Type*} [AddGroup M] (I J : AddSubgroup M) (G : Type*)
     [Group G] [MulAction G M]
 
 /-- Suppose `G` acts on `M` and `I` is a subgroup of `M`.
@@ -1141,9 +1192,24 @@ lemma subgroupOf_inertia (H : Subgroup G) : (I.inertia G).subgroupOf H = I.inert
 variable {I G} in
 lemma coe_mem_inertia {H : Subgroup G} {σ : H} : ↑σ ∈ I.inertia G ↔ σ ∈ I.inertia H := .rfl
 
+variable {I J} in
+@[gcongr]
+lemma inertia_mono (h : I ≤ J) : I.inertia G ≤ J.inertia G :=
+  fun _ hx x ↦ h (hx x)
+
 variable {G} in
 @[simp]
 lemma inertia_map_subtype (H : Subgroup G) : (I.inertia H).map H.subtype = I.inertia G ⊓ H := by
   rw [← AddSubgroup.subgroupOf_inertia, Subgroup.subgroupOf_map_subtype]
+
+variable (M) in
+@[simp]
+lemma inertia_bot [FaithfulSMul G M] : (⊥ : AddSubgroup M).inertia G = ⊥ := by
+  simpa [Subgroup.eq_bot_iff_forall, sub_eq_zero] using faithfulSMul_iff.mp ‹_›
+
+variable (M) in
+@[simp]
+lemma inertia_top : (⊤ : AddSubgroup M).inertia G = ⊤ := by
+  simp [Subgroup.eq_top_iff']
 
 end AddSubgroup

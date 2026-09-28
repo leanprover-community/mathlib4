@@ -23,8 +23,8 @@ in `F` are also in `F`.
 ## Implementation notes
 
 * We do not use `IsExtreme` as a definition because this is an affine notion and does not allow the
-  flexibility necessary to deal wth cones over general rings. E.g. the cone of positive integers has
-  no proper subset that are extreme. We prove that every face is an extreme set of its cone.
+  flexibility necessary to deal with cones over general rings. E.g. the cone of positive integers
+  has no proper subset that are extreme. We prove that every face is an extreme set of its cone.
 * Most results proven over a division ring hold more generally over an Archimedean ring. In
   particular, `iff_mem_of_add_mem_left` holds whenever for every `x ∈ R` there is a `y ∈ R` with
   `1 ≤ x * y`.

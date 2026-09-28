@@ -6,10 +6,8 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Ring.Divisibility.Lemmas
-public import Mathlib.Algebra.Lie.Nilpotent
 public import Mathlib.Algebra.Lie.Engel
 public import Mathlib.LinearAlgebra.Eigenspace.Pi
-public import Mathlib.RingTheory.Artinian.Module
 public import Mathlib.LinearAlgebra.Trace
 public import Mathlib.LinearAlgebra.FreeModule.PID
 
@@ -87,8 +85,7 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
   -- Set up some notation.
   let F : Module.End R M₃ := toEnd R L M₃ x - (χ₁ + χ₂) • ↑1
   -- The goal is linear in `t` so use induction to reduce to the case that `t` is a pure tensor.
-  refine t.induction_on ?_ ?_ ?_
-  · use 0; simp only [map_zero]
+  refine t.inductionOn ?_ ?_
   swap
   · rintro t₁ t₂ ⟨k₁, hk₁⟩ ⟨k₂, hk₂⟩; use max k₁ k₂
     simp only [map_add, Module.End.pow_map_zero_of_le (le_max_left k₁ k₂) hk₁,
@@ -212,6 +209,7 @@ structure Weight where
 
 namespace Weight
 
+@[macro_inline]
 instance instFunLike : FunLike (Weight R L M) L R where
   coe χ := χ.1
   coe_injective χ₁ χ₂ h := by cases χ₁; cases χ₂; simp_all
@@ -238,10 +236,11 @@ instance [Subsingleton M] : IsEmpty (Weight R L M) :=
 instance [Nontrivial (genWeightSpace M (0 : L → R))] : Zero (Weight R L M) :=
   ⟨0, fun e ↦ not_nontrivial (⊥ : LieSubmodule R L M) (e ▸ ‹_›)⟩
 
-@[simp]
-lemma coe_zero [Nontrivial (genWeightSpace M (0 : L → R))] : ((0 : Weight R L M) : L → R) = 0 := rfl
+instance [Nontrivial (genWeightSpace M (0 : L → R))] : IsZeroApply (Weight R L M) L R where
 
-lemma zero_apply [Nontrivial (genWeightSpace M (0 : L → R))] (x) : (0 : Weight R L M) x = 0 := rfl
+@[deprecated (since := "2026-07-27")] alias coe_zero := FunLike.coe_zero
+
+@[deprecated (since := "2026-07-27")] protected alias zero_apply := zero_apply
 
 /-- The proposition that a weight of a Lie module is zero.
 
@@ -266,7 +265,6 @@ lemma isNonZero_iff_ne_zero [Nontrivial (genWeightSpace M (0 : L → R))] {χ : 
 
 noncomputable instance : DecidablePred (IsNonZero (R := R) (L := L) (M := M)) := Classical.decPred _
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable (R L M) in
 /-- The set of weights is equivalent to a subtype. -/
 def equivSetOfPred : Weight R L M ≃ {χ : L → R | genWeightSpace M χ ≠ ⊥} where
@@ -478,8 +476,8 @@ lemma posFittingComp_le_iInf_lowerCentralSeries :
   suffices (toEnd R L (M ⧸ F) x ^ k) (LieSubmodule.Quotient.mk (N := F) m) =
     LieSubmodule.Quotient.mk (N := F) ((toEnd R L M x ^ k) m)
       by simpa [Submodule.Quotient.quot_mk_eq_mk, this]
-  have := LinearMap.congr_fun (Module.End.commute_pow_left_of_commute
-    (LieSubmodule.Quotient.toEnd_comp_mk' F x) k) m
+  have := congr($(Module.End.commute_pow_left_of_commute
+    (LieSubmodule.Quotient.toEnd_comp_mk' F x) k) m)
   simpa using this
 
 @[simp] lemma posFittingComp_eq_bot_of_isNilpotent
@@ -515,7 +513,7 @@ lemma map_genWeightSpace_le :
     ext; simp
   obtain ⟨k, h⟩ := (mem_genWeightSpace _ _ _).mp hm x
   refine ⟨k, ?_⟩
-  simpa [h] using LinearMap.congr_fun (Module.End.commute_pow_left_of_commute this k) m
+  simpa [h] using congr($(Module.End.commute_pow_left_of_commute this k) m)
 
 variable {f}
 
@@ -531,7 +529,7 @@ lemma comap_genWeightSpace_eq_of_injective (hf : Injective f) :
     use k
     suffices f (((toEnd R L M x - χ x • ↑1) ^ k) m) = 0 by
       rw [← map_zero f] at this; exact hf this
-    simpa [hk] using (LinearMap.congr_fun (Module.End.commute_pow_left_of_commute h k) m).symm
+    simpa [hk] using congr($(Module.End.commute_pow_left_of_commute h k) m).symm
   · rw [← LieSubmodule.map_le_iff_le_comap]
     exact map_genWeightSpace_le f
 

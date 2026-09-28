@@ -5,14 +5,13 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Ker
-public import Mathlib.Algebra.Order.Group.Units
+import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.Algebra.Order.Hom.MonoidWithZero
 public import Mathlib.Algebra.Order.Hom.TypeTags
 public import Mathlib.Algebra.Order.Ring.Int
 public import Mathlib.Data.Nat.Cast.Order.Ring
-public import Mathlib.Tactic.Abel
-public import Mathlib.Algebra.Group.Embedding
+import Mathlib.Tactic.Abel
+import Mathlib.Algebra.Group.Embedding
 public import Mathlib.Order.Interval.Finset.Basic
 
 /-!
@@ -164,7 +163,6 @@ def LocallyFiniteOrder.orderAddMonoidEquiv [Nontrivial G] :
 lemma LocallyFiniteOrder.orderAddMonoidEquiv_apply [Nontrivial G] (x : G) :
     orderAddMonoidEquiv G x = addMonoidHom G x := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any linearly ordered abelian group that is locally finite embeds to `Multiplicative ℤ`. -/
 noncomputable
 def LocallyFiniteOrder.orderMonoidEquiv (G : Type*) [CommGroup G] [LinearOrder G]
@@ -173,7 +171,6 @@ def LocallyFiniteOrder.orderMonoidEquiv (G : Type*) [CommGroup G] [LinearOrder G
   have : LocallyFiniteOrder (Additive G) := ‹LocallyFiniteOrder G›
   (orderAddMonoidEquiv (Additive G)).toMultiplicative
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any linearly ordered abelian group that is locally finite embeds into `Multiplicative ℤ`. -/
 noncomputable
 def LocallyFiniteOrder.orderMonoidHom (G : Type*) [CommGroup G] [LinearOrder G]
@@ -182,7 +179,6 @@ def LocallyFiniteOrder.orderMonoidHom (G : Type*) [CommGroup G] [LinearOrder G]
   have : LocallyFiniteOrder (Additive G) := ‹LocallyFiniteOrder G›
   ⟨(orderAddMonoidHom (Additive G)).toMultiplicative, (orderAddMonoidHom (Additive G)).2⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma LocallyFiniteOrder.orderMonoidHom_strictMono {G : Type*} [CommGroup G] [LinearOrder G]
     [IsOrderedMonoid G] [LocallyFiniteOrder G] :
     StrictMono (orderMonoidHom G) :=

@@ -20,7 +20,6 @@ public section
 open Set Function
 open Submodule (span)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A linear equivalence which preserves a finite spanning set must have finite order. -/
 lemma LinearEquiv.isOfFinOrder_of_finite_of_span_eq_top_of_mapsTo
     {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
@@ -38,5 +37,5 @@ lemma LinearEquiv.isOfFinOrder_of_finite_of_span_eq_top_of_mapsTo
     (fun x y _ _ hx hy ↦ by simp [map_add, hx, hy]) (fun t x _ hx ↦ by simp [hx]) hm
   rw [LinearEquiv.pow_apply, ← he.1.coe_iterate_restrict ⟨x, hx⟩ k]
   replace hk : (e') ^ k = 1 := by simpa [IsPeriodicPt, IsFixedPt] using hk
-  replace hk := Equiv.congr_fun hk ⟨x, hx⟩
+  replace hk := congr($hk ⟨x, hx⟩)
   rwa [Equiv.Perm.coe_one, id_eq, Subtype.ext_iff, Equiv.Perm.coe_pow] at hk

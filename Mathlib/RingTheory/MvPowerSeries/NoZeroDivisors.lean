@@ -5,8 +5,8 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Data.Finsupp.WellFounded
-public import Mathlib.RingTheory.MvPowerSeries.LexOrder
+import Mathlib.Data.Finsupp.WellFounded
+import Mathlib.RingTheory.MvPowerSeries.LexOrder
 public import Mathlib.RingTheory.MvPowerSeries.Order
 
 /-! # ZeroDivisors in a MvPowerSeries ring
@@ -105,11 +105,11 @@ lemma monomial_mem_nonzeroDivisorsLeft {n : σ →₀ ℕ} {r} :
   constructor
   · intro H s hrs
     have := H (C s) (by rw [← monomial_zero_eq_C, monomial_mul_monomial]; ext; simp [hrs])
-    simpa using congr(coeff 0 $(this))
+    simpa using congr(coeff 0 $this)
   · intro H p hrp
     ext i
     have := congr(coeff (i + n) $hrp)
-    rw [coeff_monomial_mul, if_pos le_add_self, add_tsub_cancel_right] at this
+    rw [coeff_monomial_mul, ite_eq_left le_add_self, add_tsub_cancel_right] at this
     simpa using H _ this
 
 -- TODO: reduce duplication
@@ -118,11 +118,11 @@ lemma monomial_mem_nonzeroDivisorsRight {n : σ →₀ ℕ} {r} :
   constructor
   · intro H s hrs
     have := H (C s) (by rw [← monomial_zero_eq_C, monomial_mul_monomial]; ext; simp [hrs])
-    simpa using congr(coeff 0 $(this))
+    simpa using congr(coeff 0 $this)
   · intro H p hrp
     ext i
     have := congr(coeff (i + n) $hrp)
-    rw [coeff_mul_monomial, if_pos le_add_self, add_tsub_cancel_right] at this
+    rw [coeff_mul_monomial, ite_eq_left le_add_self, add_tsub_cancel_right] at this
     simpa using H _ this
 
 lemma monomial_mem_nonzeroDivisors {n : σ →₀ ℕ} {r} :

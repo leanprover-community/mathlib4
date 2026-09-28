@@ -55,7 +55,7 @@ lemma decomposition_erase_inf {N : Submodule R M}
     refine (IH _ hJ ?_).imp
       fun t ↦ And.imp_left (fun ht ↦ ht.trans (Finset.erase_subset _ _))
     rw [← Finset.insert_erase hJ] at hs
-    simp [← hs, hJ']
+    simp [-Finset.insert_erase_eq_insert, ← hs, hJ']
 
 open scoped Function -- required for scoped `on` notation
 
@@ -137,7 +137,7 @@ lemma image_radical_eq_associated_primes
   ext p
   constructor
   · rintro ⟨q, hqt, rfl⟩
-    obtain ⟨x, hxt, hxq⟩ := SetLike.not_le_iff_exists.mp (ht.minimal hqt)
+    obtain ⟨x, hxt, hxq⟩ := IsConcreteLE.not_le_iff_exists.mp (ht.minimal hqt)
     use (ht.primary hqt).isPrime_radical_colon, x
     rw [h, ← Finset.insert_erase (Finset.mem_filter.mpr ⟨hqt, hxq⟩), Finset.inf_insert,
       eq_comm, inf_eq_left, Finset.le_inf_iff]
@@ -147,9 +147,6 @@ lemma image_radical_eq_associated_primes
     rw [h] at hp ⊢
     obtain ⟨q, hq1, hq2⟩ := eq_inf_of_isPrime_inf hp
     exact ⟨q, Finset.mem_of_mem_filter q hq1, hq2⟩
-
-@[deprecated (since := "2026-01-19")]
-alias mem_image_radical_colon_iff := image_radical_eq_associated_primes
 
 lemma mem_associatedPrimes {N : Submodule R M} {t : Finset (Submodule R M)}
     (ht : IsMinimalPrimaryDecomposition N t) {q : Submodule R M} (hq : q ∈ t) :
@@ -235,27 +232,6 @@ lemma Ideal.IsMinimalPrimaryDecomposition.minimalPrimes_subset_image_radical
   exact ⟨q, hqt, le_antisymm hqp (hp.2 ⟨isPrime_radical (ht.primary hqt),
     ht.inf_eq.symm.trans_le ((Finset.inf_le hqt).trans le_radical)⟩ hqp)⟩
 
-@[deprecated (since := "2026-01-19")]
-alias Ideal.decomposition_erase_inf := Submodule.decomposition_erase_inf
-
-@[deprecated (since := "2026-01-19")]
-alias Ideal.isPrimary_decomposition_pairwise_ne_radical :=
-  Submodule.isPrimary_decomposition_pairwise_ne_radical
-
-@[deprecated (since := "2026-01-19")]
-alias Ideal.exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition :=
-  Submodule.exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition
-
-@[deprecated (since := "2026-01-19")]
-alias Ideal.IsMinimalPrimaryDecomposition := Submodule.IsMinimalPrimaryDecomposition
-
-@[deprecated (since := "2026-01-19")]
-alias Ideal.IsLasker.exists_isMinimalPrimaryDecomposition :=
-  Submodule.IsLasker.exists_isMinimalPrimaryDecomposition
-
-@[deprecated (since := "2026-01-19")]
-alias Ideal.IsLasker.minimal := Submodule.IsLasker.exists_isMinimalPrimaryDecomposition
-
 end IsLasker
 
 namespace Submodule
@@ -283,7 +259,7 @@ lemma _root_.InfIrred.isPrimary {N : Submodule R M} (h : InfIrred N) : N.IsPrima
   · refine le_antisymm (fun r ⟨h1, h2⟩ ↦ ?_) (le_inf (fun x ↦ N.smul_mem (a ^ n)) (by simp))
     simp only [add_eq_sup, SetLike.mem_coe, mem_sup, mem_smul_pointwise_iff_exists] at h2
     obtain ⟨x, hx, -, ⟨y, -, rfl⟩, rfl⟩ := h2
-    have h : (a ^ n • y ∈ N) = (a ^ (n + n) • y ∈ N) := congr_arg (y ∈ ·) (hn (n + n) le_add_self)
+    have h : (a ^ n • y ∈ N) = (a ^ (n + n) • y ∈ N) := congr(y ∈ $(hn (n + n) le_add_self))
     rw [pow_add, mul_smul] at h
     rwa [N.add_mem_iff_right hx, h, ← N.add_mem_iff_right (N.smul_mem (a ^ n) hx), ← smul_add]
   rw [add_eq_sup, sup_eq_left] at h
@@ -302,6 +278,3 @@ lemma isLasker : IsLasker R M := fun I ↦
 end Noetherian
 
 end Submodule
-
-@[deprecated (since := "2026-01-19")]
-alias Ideal.isLasker := Submodule.isLasker

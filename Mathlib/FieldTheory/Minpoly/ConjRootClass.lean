@@ -16,8 +16,8 @@ the relation `IsConjRoot K`.
 
 @[expose] public section
 
-variable (K L S : Type*) [Field K] [Field L] [Field S]
-variable [Algebra K L] [Algebra K S] [Algebra L S] [IsScalarTower K L S]
+variable (K L : Type*) [Field K] [Field L]
+variable [Algebra K L]
 
 /-- `ConjRootClass K L` is the quotient of `L` by the relation `IsConjRoot K`. -/
 def ConjRootClass := Quotient (α := L) (IsConjRoot.setoid K L)

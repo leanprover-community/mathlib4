@@ -6,15 +6,15 @@ Authors: Heather Macbeth, Yury Kudryashov, Frédéric Dupuis
 module
 
 public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 /-! # Infinite sums in topological vector spaces -/
 
 @[expose] public section
 
-variable {α β γ δ : Type*}
+variable {α β γ : Type*}
 
-open Filter Finset Function
+open Function
 
 section ConstSMul
 
@@ -165,7 +165,7 @@ theorem ContinuousLinearEquiv.tsum_eq_iff [T2Space M] [T2Space M₂]
     refine ⟨?_, fun H ↦ ?_⟩
     · rintro rfl
       simp
-    · simpa using congr_arg (fun z ↦ e z) H
+    · simpa using congr(e $H)
 
 protected theorem ContinuousLinearEquiv.map_tsum [T2Space M] [T2Space M₂]
     {f : ι → M} (e : M ≃SL[σ] M₂) : e (∑'[L] z, f z) = ∑'[L] z, e (f z) := by

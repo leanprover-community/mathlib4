@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.MvPowerSeries.Evaluation
 public import Mathlib.RingTheory.PowerSeries.PiTopology
-public import Mathlib.Algebra.MvPolynomial.Equiv
 
 /-! # Evaluation of power series
 
@@ -115,7 +114,6 @@ def hasEvalIdeal : Ideal S where
   zero_mem' := HasEval.zero
   smul_mem' := HasEval.mul_left
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mem_hasEvalIdeal_iff {a : S} :
     a ∈ hasEvalIdeal ↔ HasEval a := by
   simp [hasEvalIdeal]
