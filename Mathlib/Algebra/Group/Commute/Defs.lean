@@ -32,22 +32,11 @@ assert_not_exists MonoidWithZero DenselyOrdered
 
 variable {G M S : Type*}
 
-/--
-Two elements `a` and `b` commute if `a * b = b * a`.
--/
-@[to_additive]
-theorem commute_iff_eq [Mul S] (a b : S) : Commute a b ↔ a * b = b * a := Iff.rfl
-
 namespace Commute
 
 section Mul
 
 variable [Mul S]
-
-/-- Equality behind `Commute a b`; useful for rewriting. -/
-@[to_additive (attr := grind →) /-- Equality behind `AddCommute a b`; useful for rewriting. -/]
-protected theorem eq {a b : S} (h : Commute a b) : a * b = b * a :=
-  h
 
 /-- Any element commutes with itself. -/
 @[to_additive (attr := refl, simp) /-- Any element commutes with itself. -/]

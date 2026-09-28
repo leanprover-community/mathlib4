@@ -36,11 +36,6 @@ variable {S M G : Type*}
 
 namespace SemiconjBy
 
-/-- Equality behind `SemiconjBy a x y`; useful for rewriting. -/
-@[to_additive /-- Equality behind `AddSemiconjBy a x y`; useful for rewriting. -/]
-protected theorem eq [Mul S] {a x y : S} (h : SemiconjBy a x y) : a * x = y * a :=
-  h
-
 section Semigroup
 
 variable [Semigroup S] {a b x y z x' y' : S}
