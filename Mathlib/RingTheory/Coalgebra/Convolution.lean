@@ -5,10 +5,7 @@ Authors: Yaël Dillies, Michał Mrugała, Yunzhou Xie
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.Algebra.WithConv
-public import Mathlib.LinearAlgebra.TensorProduct.Tower
-public import Mathlib.RingTheory.Coalgebra.Hom
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
 public import Mathlib.RingTheory.TensorProduct.Basic
 public import Mathlib.Tactic.SuppressCompilation
@@ -37,7 +34,7 @@ which is mathematically distinct from this product, we provide this instance on
 `WithConv (C →ₗ[R] A)`.
 -/
 
-@[expose] public section
+public section
 
 suppress_compilation
 

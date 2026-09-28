@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Lie.Abelian
 
 /-!
 # Lie algebra cohomology in low degree
+
 This file defines low degree cochains of Lie algebras with coefficients given by a module. They are
 useful in the construction of central extensions, so we treat these easier cases separately from the
 general theory of Lie algebra cohomology.
@@ -52,11 +53,12 @@ section
 
 variable {R L M}
 
+@[macro_inline]
 instance : FunLike (twoCochain R L M) L (L →ₗ[R] M) where
   coe := fun a x ↦ a.1 x
   coe_injective _ _ h := by
     ext
-    exact congrFun (congrArg DFunLike.coe (congrFun h _)) _
+    congrm $h _ _
 
 instance : LinearMapClass (twoCochain R L M) R L (L →ₗ[R] M) where
   map_add a := a.1.map_add
@@ -145,7 +147,7 @@ lemma d₂₃_comp_d₁₂ : (d₂₃ R L M) ∘ₗ (d₁₂ R L M) = 0 := by
     d₁₂_apply_coe_apply_apply R L M, lie_sub, lie_lie]
   rw [leibniz_lie y x, leibniz_lie z x, leibniz_lie z y]
   have : a ⁅y, ⁅z, x⁆⁆ = a ⁅x, ⁅z, y⁆⁆ + a ⁅z, ⁅y, x⁆⁆ := by
-    rw [congr_arg a (leibniz_lie y z x), ← lie_skew, ← lie_skew z y, lie_neg, map_add]
+    rw [congr(a $(leibniz_lie y z x)), ← lie_skew, ← lie_skew z y, lie_neg, map_add]
   simp only [lie_lie, sub_add_cancel, map_sub, ← lie_skew x y, ← lie_skew x z, ← lie_skew y z,
     lie_neg, map_neg, this]
   abel

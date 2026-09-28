@@ -6,6 +6,7 @@ Authors: Jovan Gerbscheid
 module
 
 public import Mathlib.Tactic.ClickSuggestions.FindPremises
+meta import Mathlib.Tactic.ClickSuggestions.FindPremises
 
 /-!
 # generating lemma suggestions, given the the shortlist of candidate lemmas
@@ -36,8 +37,7 @@ open Meta.RefinedDiscrTree in
 of sections of candidates, where each section corresponds to one kind of match with the
 discrimination tree. -/
 @[specialize]
-def getCandidatesAux (rootExpr subExpr : Expr) (gpos : Array GrwPos) (rwKind : RwKind)
-    (rflTarget? : Option Expr) (reportProgress : String → BaseIO Unit)
+def getCandidatesAux (rwInfo : RwInfo) (gpos : Array GrwPos) (reportProgress : String → BaseIO Unit)
     (rw : Expr → MetaM (MatchResult RwLemma)) (grw : Expr → MetaM (MatchResult GrwLemma))
     (app : Expr → MetaM (MatchResult ApplyLemma)) (appAt : Expr → MetaM (MatchResult ApplyAtLemma))
     : ClickSuggestionsM (Array Candidates) := do
@@ -47,46 +47,41 @@ def getCandidatesAux (rootExpr subExpr : Expr) (gpos : Array GrwPos) (rwKind : R
   We choose the order `grw` => `rw` => `apply(at)`. -/
   if !gpos.isEmpty then
     reportProgress "grw"
-    cands := cands ++ (← grw subExpr).elts.map fun _ ↦ (·.map <|
-      .grw { rootExpr, subExpr, rwKind, gpos, rflTarget? })
+    let grwInfo := { rwInfo with gpos }
+    cands := cands ++ (← grw rwInfo.subExpr).elts.map fun _ ↦ (·.map (.grw grwInfo))
   reportProgress "rw"
-  let mut rwExpr := subExpr
-  let mut rwPos := (← read).pos
+  let mut rwInfo := rwInfo
   repeat
     /- TODO: we are passing the same `rwKind` to each of these nested applications, but it is
     certainly possible that the correct `rwKind` is not the same for all of these.
     Though this edge case is probably very rare. -/
-    cands := cands ++ (← rw rwExpr).elts.map fun _ ↦ (·.map (.rw <|
-      { rootExpr, subExpr := rwExpr, pos := rwPos, rwKind, rflTarget? }))
-    match rwExpr with
-    | .app f _ =>
-      rwExpr := f
-      rwPos := rwPos.pushAppFn
-    | _ => break
+    cands := cands ++ (← rw rwInfo.subExpr).elts.map fun _ ↦ (·.map (.rw rwInfo))
+    let .app f _ := rwInfo.subExpr | break
+    rwInfo := { rwInfo with subExpr := f, pos := rwInfo.pos.pushAppFn }
   if (← read).pos == .root then
     if (← read).hyp?.isSome then
       reportProgress "apply at"
-      cands := cands ++ (← appAt rootExpr).elts.map fun _ ↦ (·.map .appAt)
+      cands := cands ++ (← appAt rwInfo.rootExpr).elts.map fun _ ↦ (·.map .appAt)
     else
       reportProgress "apply"
-      cands := cands ++ (← app rootExpr).elts.map fun _ ↦ (·.map .app)
+      cands := cands ++ (← app rwInfo.rootExpr).elts.map fun _ ↦ (·.map .app)
   return cands.foldr (init := #[]) fun _ val acc ↦ acc ++ val
 
 /-- Get the candidate theorems from imported files. -/
 @[specialize]
-def getImportCandidates (rootExpr subExpr : Expr) (gpos : Array GrwPos) (rwKind : RwKind)
-    (rflTarget? : Option Expr) (reportProgress : String → BaseIO Unit) :
+def getImportCandidates (rwInfo : RwInfo) (gpos : Array GrwPos)
+    (reportProgress : String → BaseIO Unit) :
     ClickSuggestionsM (Array Candidates) :=
-  getCandidatesAux rootExpr subExpr gpos rwKind rflTarget? reportProgress
+  getCandidatesAux rwInfo gpos reportProgress
     (getImportMatches rwRef) (getImportMatches grwRef)
     (getImportMatches appRef) (getImportMatches appAtRef)
 
 /-- Get the candidate theorems from `pres`.
 Used for current file declarations and local hypotheses -/
-def getCandidates (rootExpr subExpr : Expr) (gpos : Array GrwPos)
-    (rwKind : RwKind) (rflTarget? : Option Expr) (pres : PreDiscrTrees) :
+def getCandidates (rwInfo : RwInfo) (gpos : Array GrwPos)
+    (pres : PreDiscrTrees) :
     ClickSuggestionsM (Array Candidates) :=
-  getCandidatesAux rootExpr subExpr gpos rwKind rflTarget? (fun _ ↦ pure ())
+  getCandidatesAux rwInfo gpos (fun _ ↦ pure ())
     (getMatches pres.rw.toRefinedDiscrTree) (getMatches pres.grw.toRefinedDiscrTree)
     (getMatches pres.app.toRefinedDiscrTree) (getMatches pres.appAt.toRefinedDiscrTree)
 
@@ -111,11 +106,12 @@ private partial def foldTasksM {α β} (tasks : Array (Task β)) (init : α) (f 
 
 /-- Spawn tasks for the given candidate premises and
 return an HTML that shows the incoming results -/
-def runSuggestions (kind : SectionKind) : Candidates → ClickSuggestionsM Html
-  | .rw info arr => go "rw" (·.isDuplicate ·) arr (·.name) (·.try info)
-  | .grw info arr => go "grw" (·.isDuplicate ·) arr (·.name) (·.try info)
-  | .app arr => go "apply" (·.isDuplicate ·) arr (·.name) (·.try)
-  | .appAt arr => go "apply at" (·.isDuplicate ·) arr (·.name) (·.try)
+def runSuggestions (kind : SectionKind) (assignableMVars : Array Expr) :
+    Candidates → ClickSuggestionsM Html
+  | .rw info arr => go "rw" (·.isDuplicate ·) arr (·.name) (·.try info assignableMVars)
+  | .grw info arr => go "grw" (·.isDuplicate ·) arr (·.name) (·.try info assignableMVars)
+  | .app arr => go "apply" (·.isDuplicate ·) arr (·.name) (·.try assignableMVars)
+  | .appAt arr => go "apply at" (·.isDuplicate ·) arr (·.name) (·.try assignableMVars)
 where
   @[specialize]
   go {α β} [Ord α] [Inhabited α] (tactic : String) (isDup : α → α → MetaM Bool)
@@ -157,7 +153,7 @@ def findRflTarget? (root subExpr : Expr) (rwKind : RwKind) : ClickSuggestionsM (
   catch _ =>
     return none
 
-/-- Compute the library rearch suggestions. This uses `token` to incrementally udpate the output. -/
+/-- Compute the library rearch suggestions. This uses `token` to incrementally update the output. -/
 public def librarySearchSuggestions (rootExpr subExpr : Expr) (lctx : LocalContext)
     (rwKind : RwKind) (parentDecl? : Option Name)
     (token : RefreshToken) : ClickSuggestionsM Unit := do
@@ -168,6 +164,9 @@ public def librarySearchSuggestions (rootExpr subExpr : Expr) (lctx : LocalConte
   let fvarId? := (← read).hyp?
   let gpos ← getGrwPos? rootExpr subExpr pos fvarId?.isSome
   let rflTarget? ← Meta.withLCtx lctx {} <| findRflTarget? rootExpr subExpr rwKind
+  let rwInfo := { rootExpr, subExpr, rflTarget?, pos, rwKind }
+  let assignableMVars := Array.map Expr.mvar <| ←
+    (subExpr.collectMVars {}).result.filterM (not <$> ·.isReadOnlyOrSyntheticOpaque)
   let choice : Choice := {
     rw := true
     grw := !gpos.isEmpty
@@ -179,8 +178,8 @@ public def librarySearchSuggestions (rootExpr subExpr : Expr) (lctx : LocalConte
   token.update <div> loading local hypotheses ⏳️ </div>
   let pres ← computeLCtxDiscrTrees choice lctx fvarId?
   Core.checkInterrupted
-  for cand in ← getCandidates rootExpr subExpr gpos rwKind rflTarget? pres do
-    sections := sections.push (← runSuggestions .hyp cand)
+  for cand in ← getCandidates rwInfo gpos pres do
+    sections := sections.push (← runSuggestions .hyp assignableMVars cand)
 
   Core.checkInterrupted
   token.update <div>
@@ -189,8 +188,8 @@ public def librarySearchSuggestions (rootExpr subExpr : Expr) (lctx : LocalConte
     </div>
   let pres ← computeModuleDiscrTrees choice parentDecl?
   Core.checkInterrupted
-  for cand in ← getCandidates rootExpr subExpr gpos rwKind rflTarget? pres do
-    sections := sections.push (← runSuggestions .currFile cand)
+  for cand in ← getCandidates rwInfo gpos pres do
+    sections := sections.push (← runSuggestions .currFile assignableMVars cand)
 
   Core.checkInterrupted
   token.update <div>
@@ -204,8 +203,8 @@ public def librarySearchSuggestions (rootExpr subExpr : Expr) (lctx : LocalConte
       {.element "div" #[] sections}
       <div> {.text s!"loading imported `{tac}` theorems ⏳️"} </div>
       </div>
-  for cand in ← getImportCandidates rootExpr subExpr gpos rwKind rflTarget? reportProgress do
-    sections := sections.push (← runSuggestions .imported cand)
+  for cand in ← getImportCandidates rwInfo gpos reportProgress do
+    sections := sections.push (← runSuggestions .imported assignableMVars cand)
 
   token.update <| .element "div" #[] sections
   unless sections.isEmpty do

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Ring.Semiconj
 public import Mathlib.Algebra.Ring.Units
-public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Data.Bracket
 
 /-!
@@ -22,14 +21,12 @@ For the definitions of semirings and rings see `Mathlib/Algebra/Ring/Defs.lean`.
 
 -/
 
-@[expose] public section
+public section
 
 
 universe u
 
 variable {R : Type u}
-
-open Function
 
 namespace Commute
 

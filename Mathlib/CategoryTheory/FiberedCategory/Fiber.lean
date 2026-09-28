@@ -6,7 +6,6 @@ Authors: Calle Sönne, Paul Lezeau
 module
 
 public import Mathlib.CategoryTheory.FiberedCategory.HomLift
-public import Mathlib.CategoryTheory.Functor.Const
 
 /-!
 
@@ -63,6 +62,7 @@ instance : (fiberInclusion : Fiber p S ⥤ _).Faithful where
 lemma fiberInclusion_obj_inj : (fiberInclusion : Fiber p S ⥤ _).obj.Injective :=
   fun _ _ f ↦ Subtype.val_inj.1 f
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- For fixed `S : 𝒮` this is the natural isomorphism between `fiberInclusion ⋙ p` and the constant
 function valued at `S`. -/

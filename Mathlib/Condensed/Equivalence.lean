@@ -58,11 +58,11 @@ namespace StoneanProfinite
 
 instance : Stonean.toProfinite.PreservesEffectiveEpis where
   preserves f h :=
-    ((Profinite.effectiveEpi_tfae _).out 0 2).mpr (((Stonean.effectiveEpi_tfae _).out 0 2).mp h)
+    ((Profinite.effectiveEpi_tfae _).out 1 3).mpr (((Stonean.effectiveEpi_tfae _).out 1 3).mp h)
 
 instance : Stonean.toProfinite.ReflectsEffectiveEpis where
   reflects f h :=
-    ((Stonean.effectiveEpi_tfae f).out 0 2).mpr (((Profinite.effectiveEpi_tfae _).out 0 2).mp h)
+    ((Stonean.effectiveEpi_tfae f).out 1 3).mpr (((Profinite.effectiveEpi_tfae _).out 1 3).mp h)
 
 /--
 An effective presentation of an `X : Profinite` with respect to the inclusion functor from `Stonean`
@@ -71,7 +71,7 @@ noncomputable def stoneanToProfiniteEffectivePresentation (X : Profinite) :
     Stonean.toProfinite.EffectivePresentation X where
   p := X.presentation
   f := Profinite.presentation.π X
-  effectiveEpi := ((Profinite.effectiveEpi_tfae _).out 0 1).mpr (inferInstance : Epi _)
+  effectiveEpi := ((Profinite.effectiveEpi_tfae _).out 1 2).mpr (inferInstance : Epi _)
 
 instance : Stonean.toProfinite.EffectivelyEnough where
   presentation X := ⟨stoneanToProfiniteEffectivePresentation X⟩

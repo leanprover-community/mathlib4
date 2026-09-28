@@ -5,7 +5,6 @@ Authors: Miguel Marco
 -/
 module
 
-public import Mathlib.Data.Set.Function
 public import Mathlib.Data.Set.Functor
 
 /-!
@@ -91,7 +90,7 @@ lemma image_val_sdiff : (↑(D \ E) : Set α) = ↑D \ ↑E := image_sdiff Subty
 
 @[simp]
 lemma image_val_compl : ↑(Dᶜ) = A \ ↑D := by
-  rw [compl_eq_univ_sdiff, image_val_sdiff, image_univ, Subtype.range_coe_subtype, setOf_mem_eq]
+  rw [compl_eq_univ_sdiff, image_val_sdiff, image_univ, Subtype.range_coe_subtype, ofPred_mem_eq]
 
 @[simp]
 lemma image_val_sUnion : ↑(⋃₀ T) = ⋃₀ { (B : Set α) | B ∈ T} := by

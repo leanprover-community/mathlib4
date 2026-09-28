@@ -33,14 +33,13 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
   {K L : CochainComplex C ℤ} {n : ℤ}
   [HasSmallLocalizedShiftedHom.{w} (HomologicalComplex.quasiIso C (.up ℤ)) ℤ K L]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `x : CohomologyClass K L n`, this is the element in the type
 `SmallShiftedHom` relatively to quasi-isomorphisms that is associated
 to the `x`. -/
 noncomputable def toSmallShiftedHom (x : CohomologyClass K L n) :
     SmallShiftedHom.{w} (HomologicalComplex.quasiIso C (.up ℤ)) K L n :=
   Quotient.lift (fun y ↦ SmallShiftedHom.mk _ (Cocycle.equivHomShift.symm y)) (by
-    letI := HasDerivedCategory.standard C
+    let := HasDerivedCategory.standard C
     intro y₁ y₂ h
     refine (SmallShiftedHom.equiv _ DerivedCategory.Q).injective ?_
     simp only [SmallShiftedHom.equiv_mk, ShiftedHom.map]

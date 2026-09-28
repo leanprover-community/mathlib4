@@ -39,6 +39,7 @@ def reflectionLinearEquiv : E ≃ₗ[𝕜] E :=
     (2 • (K.starProjection.toLinearMap) - LinearMap.id) fun x => by
     simp [two_smul, starProjection_eq_self_iff.mpr]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Reflection in a complete subspace of an inner product space.  The word "reflection" is
 sometimes understood to mean specifically reflection in a codimension-one subspace, and sometimes
 more generally to cover operations such as reflection in a point.  The definition here, of
@@ -159,7 +160,7 @@ theorem reflection_sub {v w : F} (h : ‖v‖ = ‖w‖) : reflection (ℝ ∙ (
     rw [Submodule.mem_orthogonal_singleton_iff_inner_left]
     rw [real_inner_add_sub_eq_zero_iff]
     exact h
-  convert! congr_arg₂ (· + ·) h₂ h₁ using 1
+  convert! congr($h₂ + $h₁) using 1
   · simp
   · abel
 

@@ -37,7 +37,7 @@ variable {X : Type u} [TopologicalSpace X] {ι : Sort v} {x : X} {s s₁ s₂ t 
 section Interior
 
 theorem mem_interior : x ∈ interior s ↔ ∃ t ⊆ s, IsOpen t ∧ x ∈ t := by
-  simp only [interior, mem_sUnion, mem_setOf_eq, and_assoc, and_left_comm]
+  simp only [interior, mem_sUnion, mem_ofPred_eq, and_assoc, and_left_comm]
 
 @[simp]
 theorem isOpen_interior : IsOpen (interior s) :=
@@ -186,7 +186,7 @@ end Interior
 
 section Closure
 
-@[simp]
+@[simp, closedness ., grind .]
 theorem isClosed_closure : IsClosed (closure s) :=
   isClosed_sInter fun _ => And.left
 
@@ -199,6 +199,21 @@ theorem notMem_of_notMem_closure {P : X} (hP : P ∉ closure s) : P ∉ s := fun
 theorem closure_minimal (h₁ : s ⊆ t) (h₂ : IsClosed t) : closure s ⊆ t :=
   sInter_subset_of_mem ⟨h₂, h₁⟩
 
+variable (X) in
+/-- `closure`, bundled as a `ClosureOperator` on `Set X`; its closed elements are the closed sets.
+-/
+@[expose]
+def Topology.closureOperator : ClosureOperator (Set X) :=
+  .ofPred closure IsClosed (fun _ ↦ subset_closure) (fun _ ↦ isClosed_closure)
+    fun _ _ h hy ↦ closure_minimal h hy
+
+@[simp]
+theorem Topology.closureOperator_apply : Topology.closureOperator X s = closure s := rfl
+
+@[simp]
+theorem Topology.isClosed_closureOperator :
+    (Topology.closureOperator X).IsClosed s ↔ IsClosed s := Iff.rfl
+
 theorem Disjoint.closure_left (hd : Disjoint s t) (ht : IsOpen t) :
     Disjoint (closure s) t :=
   disjoint_compl_left.mono_left <| closure_minimal hd.subset_compl_right ht.isClosed_compl
@@ -207,7 +222,8 @@ theorem Disjoint.closure_right (hd : Disjoint s t) (hs : IsOpen s) :
     Disjoint s (closure t) :=
   (hd.symm.closure_left hs).symm
 
-@[simp] theorem IsClosed.closure_eq (h : IsClosed s) : closure s = s :=
+@[simp, closedness =]
+theorem IsClosed.closure_eq (h : IsClosed s) : closure s = s :=
   Subset.antisymm (closure_minimal (Subset.refl s) h) subset_closure
 
 theorem forall_isClosed_iff {p : Set X → Prop} :
@@ -276,7 +292,7 @@ theorem closure_closure : closure (closure s) = closure s :=
   isClosed_closure.closure_eq
 
 theorem closure_eq_compl_interior_compl : closure s = (interior sᶜ)ᶜ := by
-  rw [interior, closure, compl_sUnion, compl_image_set_of]
+  rw [interior, closure, compl_sUnion, compl_image_ofPred]
   simp only [compl_subset_compl, isOpen_compl_iff]
 
 @[simp]
@@ -543,6 +559,19 @@ theorem frontier_inter_subset (s t : Set X) :
 theorem frontier_union_subset (s t : Set X) :
     frontier (s ∪ t) ⊆ frontier s ∩ closure tᶜ ∪ closure sᶜ ∩ frontier t := by
   simpa only [frontier_compl, ← compl_union] using frontier_inter_subset sᶜ tᶜ
+
+lemma Finset.frontier_biUnion_subset {ι : Type*} (I : Finset ι) (s : ι → Set X) :
+    frontier (⋃ i ∈ I, s i) ⊆ ⋃ i ∈ I, frontier (s i) := by
+  classical
+  induction I using Finset.induction_on with
+  | empty => simp
+  | insert i I hi ih =>
+    simp only [Finset.mem_insert, iUnion_iUnion_eq_or_left]
+    grind [frontier_union_subset]
+
+lemma Set.Finite.frontier_biUnion_subset {ι : Type*} {I : Set ι} (hI : I.Finite) (s : ι → Set X) :
+    frontier (⋃ i ∈ I, s i) ⊆ ⋃ i ∈ I, frontier (s i) := by
+  simpa only [hI.mem_toFinset] using hI.toFinset.frontier_biUnion_subset s
 
 theorem IsClosed.frontier_eq (hs : IsClosed s) : frontier s = s \ interior s := by
   rw [frontier, hs.closure_eq]

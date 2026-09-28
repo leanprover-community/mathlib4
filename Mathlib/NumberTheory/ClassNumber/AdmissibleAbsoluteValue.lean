@@ -5,12 +5,13 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Data.Real.Basic
-public import Mathlib.Combinatorics.Pigeonhole
 public import Mathlib.Algebra.Order.AbsoluteValue.Euclidean
+public import Mathlib.Basic.Real.Basic
+public import Mathlib.Combinatorics.Pigeonhole
 
 /-!
 # Admissible absolute values
+
 This file defines a structure `AbsoluteValue.IsAdmissible` which we use to show the class number
 of the ring of integers of a global field is finite.
 
@@ -71,7 +72,7 @@ whose remainders are close together, pointwise. -/
 theorem exists_approx_aux (n : ℕ) (h : abv.IsAdmissible) :
     ∀ {ε : ℝ} (_hε : 0 < ε) {b : R} (_hb : b ≠ 0) (A : Fin (h.card ε ^ n).succ → Fin n → R),
       ∃ i₀ i₁, i₀ ≠ i₁ ∧ ∀ k, (abv (A i₁ k % b - A i₀ k % b) : ℝ) < abv b • ε := by
-  haveI := Classical.decEq R
+  have := Classical.decEq R
   induction n with
   | zero =>
     intro ε _hε b _hb A

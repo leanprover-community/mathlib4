@@ -6,6 +6,7 @@ Authors: Monica Omar
 module
 
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
+public import Mathlib.LinearAlgebra.Projection
 
 /-!
 # Idempotent continuous linear maps
@@ -29,7 +30,7 @@ we show that idempotent elements of `M →L[R] M` are precisely the projections 
 topological complement submodules.
 -/
 
-@[expose] public section
+public section
 
 namespace ContinuousLinearMap
 
@@ -96,11 +97,6 @@ theorem commute_iff_of_isUnit {f T : M →L[R] M} (hT : IsUnit T)
   lift T to (M →L[R] M)ˣ using hT
   simpa [Commute, SemiconjBy, Module.End.mul_eq_comp, ← toLinearMap_comp] using!
     LinearMap.IsIdempotentElem.commute_iff_of_isUnit this hf.toLinearMap
-
-@[deprecated (since := "2025-12-27")] alias range_eq_ker :=
-  LinearMap.IsIdempotentElem.range_eq_ker
-@[deprecated (since := "2025-12-27")] alias ker_eq_range :=
-  LinearMap.IsIdempotentElem.ker_eq_range
 
 theorem isClosed_range [T1Space M] {p : M →L[R] M}
     (hp : IsIdempotentElem p) : IsClosed (p.range : Set M) :=

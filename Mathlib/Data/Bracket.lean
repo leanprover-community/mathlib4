@@ -5,10 +5,11 @@ Authors: Patrick Lutz, Oliver Nash
 -/
 module
 
-public import Mathlib.Init
+import Mathlib.Init
 
 /-!
 # Bracket Notation
+
 This file provides notation which can be used for the Lie bracket, for the commutator of two
 subgroups, and for other similar operations.
 
