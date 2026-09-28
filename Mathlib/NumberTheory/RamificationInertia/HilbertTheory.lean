@@ -196,11 +196,12 @@ theorem primesOver_eq_singleton [P.IsPrime] [Finite (stabilizer G P)] :
 
 variable [Finite G] [IsGaloisGroup G A B] [IsDomain A] [IsDomain B] [FaithfulSMul R B]
   [Module.Finite A B] [Module.Flat A B] [Module.Flat R B] [p.IsPrime]
-  [Algebra.HasSeparableResidueFieldsAt A B p] [𝓟.IsPrime] [P.IsPrime]
+  [Algebra.HasSeparableResidueFieldsAt A B p] [P.IsPrime]
 
 include G P in
 private lemma ramificationIdxIn_eq_and_inertiaDegIn_eq :
     ramificationIdxIn 𝓟 B = p.ramificationIdxIn B ∧ inertiaDegIn 𝓟 B = p.inertiaDegIn B := by
+  have : 𝓟.IsPrime := isPrime_of_liesOver P 𝓟
   have : IsDomain R := (FaithfulSMul.algebraMap_injective R B).isDomain
   have : Module.Finite R B := Module.Finite.right A R B
   refine eq_and_eq_of_pos_of_le_of_mul_le_mul ?_ ?_ ?_ ?_ ?_
@@ -229,8 +230,8 @@ theorem inertiaDegIn_eq :
   (ramificationIdxIn_eq_and_inertiaDegIn_eq G P R p 𝓟).2
 
 include G P p in
-/-- `𝓟` is unramified over `A`. -/
-theorem ramificationIdx_eq :
+/-- The ramification index of `𝓟` over `A` equals `1`. -/
+theorem ramificationIdx_eq_one :
     𝓟.ramificationIdx A = 1 := by
   have := ramificationIdx_tower (R := A) 𝓟 P
   rwa [← ramificationIdxIn_eq_ramificationIdx 𝓟 P (stabilizer G P), ramificationIdxIn_eq G P R p 𝓟,
@@ -238,8 +239,9 @@ theorem ramificationIdx_eq :
 
 include G P p in
 /-- The inertia degree of `𝓟` over `A` equals `1`. -/
-theorem inertiaDeg_eq :
+theorem inertiaDeg_eq_one :
     𝓟.inertiaDeg A = 1 := by
+  have : 𝓟.IsPrime := isPrime_of_liesOver P 𝓟
   have : Module.Finite R B := Module.Finite.right A R B
   have := inertiaDeg_tower (R := A) 𝓟 P
   rwa [← inertiaDegIn_eq_inertiaDeg p P G, ← inertiaDegIn_eq G P R p 𝓟,
