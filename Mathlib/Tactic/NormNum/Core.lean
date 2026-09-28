@@ -222,12 +222,17 @@ section simprocs
 /-- Expose a `norm_num` extension as a simproc.
 
 Note that the resulting simproc will recursively normalize subexpressions using `norm_num`
-extensions before returning, since the wrapped `NormNumExt.eval` calls `derive?` on subexpressions.
+extensions before returning, since the wrapped `NormNumExt.eval` calls `derive` on subexpressions.
 (As such, it returns `.done` on success.)
 
 This safely reverts the `MetaM` state if the `norm_num` extension fails, in which case the
-simproc returns `.continue`. -/
-def NormNumExt.toSimproc (ext : NormNumExt) : Simp.Simproc := fun e => do
+simproc returns `.continue`.
+
+`post` says which of `simp`'s phases the resulting simproc will be registered in, and the
+extension's corresponding `pre`/`post` field is honoured: an extension that opts out of that phase
+yields a simproc that always returns `.continue`. -/
+def NormNumExt.toSimproc (ext : NormNumExt) (post := true) : Simp.Simproc := fun e => do
+  unless (if post then ext.post else ext.pre) do return .continue
   let eval : MetaM (Option Simp.Result) := observing? do
     let ⟨_, _, e⟩ ← inferTypeQ' e
     let r ← withReducibleAndInstances <| ext.eval e
@@ -256,7 +261,9 @@ in any simproc set. Note that the `norm_num` extension will be activated in `nor
 A `local` or `scoped` modifier applies to both the `norm_num` registration and the selected simproc
 sets.
 
-All `norm_num_simproc`s are registered as ordinary `post` simprocs.
+All `norm_num_simproc`s are registered as ordinary `post` simprocs, since numerical evaluation
+wants its operands already normalized. An extension declaring `post := false` therefore produces a
+simproc that never fires, while `pre` only affects `norm_num`'s own traversal.
 
 Both declarations are generated as `public meta`, so the command does not need to be used inside a
 `public meta section`. -/
