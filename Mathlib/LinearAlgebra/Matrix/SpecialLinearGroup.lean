@@ -628,13 +628,6 @@ lemma map_toSpecialLinearGroup (t : TransvectionStruct ι F) :
     SpecialLinearGroup.map f t.toSpecialLinearGroup = (t.map f).toSpecialLinearGroup :=
   SpecialLinearGroup.map_transvection f t.hij t.c
 
-@[simp]
-lemma reindexMulEquiv_toSpecialLinearGroup {κ : Type*} [DecidableEq κ] [Fintype κ] (e : ι ≃ κ)
-    (t : TransvectionStruct ι F) :
-    SpecialLinearGroup.reindexMulEquiv F e t.toSpecialLinearGroup =
-      (t.reindexEquiv e).toSpecialLinearGroup :=
-  Subtype.ext (toMatrix_reindexEquiv e t).symm
-
 /-- If `f` is surjective, every transvection in `SL(ι, S)` is the image under
 `SpecialLinearGroup.map f` of a transvection in `SL(ι, F)`. -/
 lemma toSpecialLinearGroup_mem_range_map (hf : Function.Surjective f) (t : TransvectionStruct ι S) :
