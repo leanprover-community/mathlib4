@@ -79,7 +79,7 @@ equalizer of `(f,g)`.
 -/
 lemma PreservesEqualizer.of_iso_comparison [i : IsIso (equalizerComparison f g G)] :
     PreservesLimit (parallelPair f g) G := by
-  apply preservesLimit_of_preserves_limit_cone (equalizerIsEqualizer f g)
+  apply preservesLimit_of_preservesLimit_cone (equalizerIsEqualizer f g)
   apply (isLimitMapConeForkEquiv _ _).symm _
   exact @IsLimit.ofPointIso _ _ _ _ _ _ _ (limit.isLimit (parallelPair (G.map f) (G.map g))) i
 
@@ -162,7 +162,7 @@ coequalizer of `(f,g)`.
 -/
 lemma of_iso_comparison [i : IsIso (coequalizerComparison f g G)] :
     PreservesColimit (parallelPair f g) G := by
-  apply preservesColimit_of_preserves_colimit_cocone (coequalizerIsCoequalizer f g)
+  apply preservesColimit_of_preservesColimit_cocone (coequalizerIsCoequalizer f g)
   apply (isColimitMapCoconeCoforkEquiv _ _).symm _
   exact
     @IsColimit.ofPointIso _ _ _ _ _ _ _ (colimit.isColimit (parallelPair (G.map f) (G.map g))) i
@@ -231,7 +231,7 @@ theorem map_π_preserves_coequalizer_inv_colimMap_desc {X' Y' : D} (f' g' : X' �
 instance (priority := 1) preservesSplitCoequalizers (f g : X ⟶ Y) [HasSplitCoequalizer f g] :
     PreservesColimit (parallelPair f g) G := by
   apply
-    preservesColimit_of_preserves_colimit_cocone
+    preservesColimit_of_preservesColimit_cocone
       (HasSplitCoequalizer.isSplitCoequalizer f g).isCoequalizer
   apply
     (isColimitMapCoconeCoforkEquiv G _).symm
@@ -240,7 +240,7 @@ instance (priority := 1) preservesSplitCoequalizers (f g : X ⟶ Y) [HasSplitCoe
 instance (priority := 1) preservesSplitEqualizers (f g : X ⟶ Y) [HasSplitEqualizer f g] :
     PreservesLimit (parallelPair f g) G := by
   apply
-    preservesLimit_of_preserves_limit_cone
+    preservesLimit_of_preservesLimit_cone
       (HasSplitEqualizer.isSplitEqualizer f g).isEqualizer
   apply
     (isLimitMapConeForkEquiv G _).symm

@@ -37,7 +37,7 @@ def evaluation (X : SSet.{u}) (j : SimplexCategoryᵒᵖ) :
 instance {J : Type*} [Category* J] {X : SSet.{u}} [IsFilteredOrEmpty J] :
     PreservesColimitsOfShape J (Subcomplex.toSSetFunctor (X := X)) where
   preservesColimit {F} :=
-    preservesColimit_of_preserves_colimit_cocone
+    preservesColimit_of_preservesColimit_cocone
       (Preorder.colimitCoconeOfIsLUB F isLUB_iSup).isColimit
         (evaluationJointlyReflectsColimits _ (fun j ↦ IsColimit.ofIsoColimit
           (isColimitOfPreserves Set.functorToTypes

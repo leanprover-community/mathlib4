@@ -161,7 +161,7 @@ lemma preservesLimit_of_preservesEqualizers_and_product :
     let t : P ⟶ Q := Pi.lift fun f => limit.π (Discrete.functor K.obj) ⟨f.1.2⟩
     let I := equalizer s t
     let i : I ⟶ P := equalizer.ι s t
-    apply preservesLimit_of_preserves_limit_cone
+    apply preservesLimit_of_preservesLimit_cone
         (buildIsLimit s t (by simp [P, s]) (by simp [P, t]) (limit.isLimit _)
           (limit.isLimit _) (limit.isLimit _))
     apply IsLimit.ofIsoLimit (buildIsLimit _ _ _ _ _ _ _) _
@@ -432,7 +432,7 @@ lemma preservesColimit_of_preservesCoequalizers_and_coproduct :
     let t : Q ⟶ P := Sigma.desc fun f => colimit.ι (Discrete.functor K.obj) ⟨f.1.1⟩
     let I := coequalizer s t
     let i : P ⟶ I := coequalizer.π s t
-    apply preservesColimit_of_preserves_colimit_cocone
+    apply preservesColimit_of_preservesColimit_cocone
         (buildIsColimit s t (by simp [P, s]) (by simp [P, t]) (colimit.isColimit _)
           (colimit.isColimit _) (colimit.isColimit _))
     apply IsColimit.ofIsoColimit (buildIsColimit _ _ _ _ _ _ _) _

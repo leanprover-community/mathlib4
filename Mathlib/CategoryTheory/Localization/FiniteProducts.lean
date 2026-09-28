@@ -104,7 +104,7 @@ then any localization functor for `W` preserves finite products indexed by `J`. 
 lemma preservesProductsOfShape (J : Type) [Finite J]
     [HasProductsOfShape J C] [W.IsStableUnderProductsOfShape J] :
     PreservesLimitsOfShape (Discrete J) L where
-  preservesLimit {F} := preservesLimit_of_preserves_limit_cone (limit.isLimit F)
+  preservesLimit {F} := preservesLimit_of_preservesLimit_cone (limit.isLimit F)
     (HasProductsOfShapeAux.isLimitMapCone L W J F)
 
 variable [HasFiniteProducts C] [W.IsStableUnderFiniteProducts]

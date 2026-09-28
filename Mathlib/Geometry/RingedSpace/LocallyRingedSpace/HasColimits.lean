@@ -111,7 +111,7 @@ instance : HasColimitsOfShape (Discrete ι) LocallyRingedSpace.{u} :=
 
 noncomputable instance : PreservesColimitsOfShape (Discrete.{v} ι) forgetToSheafedSpace.{u} :=
   ⟨fun {G} =>
-    preservesColimit_of_preserves_colimit_cocone (coproductCofanIsColimit G)
+    preservesColimit_of_preservesColimit_cocone (coproductCofanIsColimit G)
       ((colimit.isColimit (C := SheafedSpace.{u+1, u, u} CommRingCat.{u}) _).ofIsoColimit
         (Cocone.ext (Iso.refl _) fun _ => Category.comp_id _))⟩
 
@@ -313,7 +313,7 @@ noncomputable instance preservesCoequalizer :
     suffices PreservesColimit (parallelPair (F.map WalkingParallelPairHom.left)
         (F.map WalkingParallelPairHom.right)) forgetToSheafedSpace from
       preservesColimit_of_iso_diagram _ (diagramIsoParallelPair F).symm
-    apply preservesColimit_of_preserves_colimit_cocone (coequalizerCoforkIsColimit _ _)
+    apply preservesColimit_of_preservesColimit_cocone (coequalizerCoforkIsColimit _ _)
     apply (isColimitMapCoconeCoforkEquiv _ _).symm _
     dsimp only [forgetToSheafedSpace]
     exact coequalizerIsCoequalizer _ _⟩

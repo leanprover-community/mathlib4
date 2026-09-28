@@ -367,7 +367,7 @@ instance : Limits.HasLimit F where
 @[to_additive]
 instance : Limits.PreservesLimits (forget₂ ProfiniteGrp Profinite) where
   preservesLimitsOfShape := {
-    preservesLimit := fun {F} ↦ CategoryTheory.Limits.preservesLimit_of_preserves_limit_cone
+    preservesLimit := fun {F} ↦ CategoryTheory.Limits.preservesLimit_of_preservesLimit_cone
       (limitConeIsLimit F) (Profinite.limitConeIsLimit (F ⋙ (forget₂ ProfiniteGrp Profinite))) }
 
 @[to_additive]

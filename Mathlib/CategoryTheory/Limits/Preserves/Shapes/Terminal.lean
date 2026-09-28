@@ -95,7 +95,7 @@ variable [HasTerminal D]
 -/
 lemma PreservesTerminal.of_iso_comparison [i : IsIso (terminalComparison G)] :
     PreservesLimit (Functor.empty.{0} C) G := by
-  apply preservesLimit_of_preserves_limit_cone terminalIsTerminal
+  apply preservesLimit_of_preservesLimit_cone terminalIsTerminal
   apply (isLimitMapConeEmptyConeEquiv _ _).symm _
   exact @IsLimit.ofPointIso _ _ _ _ _ _ _ (limit.isLimit (Functor.empty.{0} D)) i
 
@@ -187,7 +187,7 @@ variable [HasInitial D]
 -/
 lemma PreservesInitial.of_iso_comparison [i : IsIso (initialComparison G)] :
     PreservesColimit (Functor.empty.{0} C) G := by
-  apply preservesColimit_of_preserves_colimit_cocone initialIsInitial
+  apply preservesColimit_of_preservesColimit_cocone initialIsInitial
   apply (isColimitMapCoconeEmptyCoconeEquiv _ _).symm _
   exact @IsColimit.ofPointIso _ _ _ _ _ _ _ (colimit.isColimit (Functor.empty.{0} D)) i
 

@@ -131,7 +131,7 @@ lemma preservesFiniteLimits_tfae : List.TFAE
     exact (exact_iff_of_epi_of_isIso_of_mono φ).1 (hF T ⟨(S.exact_iff_exact_coimage_π).1 hS⟩).1
   tfae_have 2 → 3
   | hF, X, Y, f => by
-    refine preservesLimit_of_preserves_limit_cone (kernelIsKernel f) ?_
+    refine preservesLimit_of_preservesLimit_cone (kernelIsKernel f) ?_
     apply (KernelFork.isLimitMapConeEquiv _ F).2
     let S := ShortComplex.mk _ _ (kernel.condition f)
     let hS := hF S ⟨exact_kernel f, inferInstance⟩
@@ -190,7 +190,7 @@ lemma preservesFiniteColimits_tfae : List.TFAE
     exact (exact_iff_of_epi_of_isIso_of_mono φ).2 (hF T ⟨(S.exact_iff_exact_image_ι).1 hS⟩).1
   tfae_have 2 → 3
   | hF, X, Y, f => by
-    refine preservesColimit_of_preserves_colimit_cocone (cokernelIsCokernel f) ?_
+    refine preservesColimit_of_preservesColimit_cocone (cokernelIsCokernel f) ?_
     apply (CokernelCofork.isColimitMapCoconeEquiv _ F).2
     let S := ShortComplex.mk _ _ (cokernel.condition f)
     let hS := hF S ⟨exact_cokernel f, inferInstance⟩

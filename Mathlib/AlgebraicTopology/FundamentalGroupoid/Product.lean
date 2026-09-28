@@ -112,7 +112,7 @@ instance : IsIso (piTopToPiCone X) :=
 
 /-- The fundamental groupoid functor preserves products -/
 lemma preservesProduct : Limits.PreservesLimit (Discrete.functor X) π := by
-  apply Limits.preservesLimit_of_preserves_limit_cone (TopCat.piFanIsLimit X)
+  apply Limits.preservesLimit_of_preservesLimit_cone (TopCat.piFanIsLimit X)
   apply (Limits.IsLimit.ofConeEquiv (coneDiscreteComp X)).toFun
   simp only [coneDiscreteComp_obj_mapCone]
   apply Limits.IsLimit.ofIsoLimit _ (asIso (piTopToPiCone X)).symm

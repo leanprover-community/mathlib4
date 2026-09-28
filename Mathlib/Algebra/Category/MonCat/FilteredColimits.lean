@@ -271,7 +271,7 @@ noncomputable def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) wh
 instance forget_preservesFilteredColimits :
     PreservesFilteredColimits (forget MonCat.{u}) where
   preserves_filtered_colimits _ _ _ :=
-    ⟨fun {F} => preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
+    ⟨fun {F} => preservesColimit_of_preservesColimit_cocone (colimitCoconeIsColimit.{u, u} F)
       (Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget MonCat.{u}))⟩
 end
 
@@ -338,7 +338,7 @@ noncomputable def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) :=
 noncomputable instance forget₂Mon_preservesFilteredColimits :
     PreservesFilteredColimits (forget₂ CommMonCat MonCat.{u}) where
   preserves_filtered_colimits _ _ _ :=
-    ⟨fun {F} => preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
+    ⟨fun {F} => preservesColimit_of_preservesColimit_cocone (colimitCoconeIsColimit.{u, u} F)
       (MonCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ CommMonCat MonCat.{u}))⟩
 
 @[to_additive]

@@ -80,7 +80,7 @@ pair of `(X,Y)`.
 -/
 lemma PreservesLimitPair.of_iso_prod_comparison [i : IsIso (prodComparison G X Y)] :
     PreservesLimit (pair X Y) G := by
-  apply preservesLimit_of_preserves_limit_cone (prodIsProd X Y)
+  apply preservesLimit_of_preservesLimit_cone (prodIsProd X Y)
   apply (isLimitMapConeBinaryFanEquiv _ _ _).symm _
   refine @IsLimit.ofPointIso _ _ _ _ _ _ _ (limit.isLimit (pair (G.obj X) (G.obj Y))) ?_
   apply i
@@ -172,7 +172,7 @@ pair of `(X,Y)`.
 -/
 lemma PreservesColimitPair.of_iso_coprod_comparison [i : IsIso (coprodComparison G X Y)] :
     PreservesColimit (pair X Y) G := by
-  apply preservesColimit_of_preserves_colimit_cocone (coprodIsCoprod X Y)
+  apply preservesColimit_of_preservesColimit_cocone (coprodIsCoprod X Y)
   apply (isColimitMapCoconeBinaryCofanEquiv _ _ _).symm _
   refine @IsColimit.ofPointIso _ _ _ _ _ _ _ (colimit.isColimit (pair (G.obj X) (G.obj Y))) ?_
   apply i

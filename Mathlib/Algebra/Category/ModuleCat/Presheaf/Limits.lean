@@ -113,11 +113,11 @@ instance hasLimit : HasLimit F := ⟨_, isLimitLimitCone F⟩
 
 noncomputable instance evaluation_preservesLimit (X : Cᵒᵖ) :
     PreservesLimit F (evaluation R X) :=
-  preservesLimit_of_preserves_limit_cone (isLimitLimitCone F) (limit.isLimit _)
+  preservesLimit_of_preservesLimit_cone (isLimitLimitCone F) (limit.isLimit _)
 
 noncomputable instance toPresheaf_preservesLimit :
     PreservesLimit F (toPresheaf R) :=
-  preservesLimit_of_preserves_limit_cone (isLimitLimitCone F)
+  preservesLimit_of_preservesLimit_cone (isLimitLimitCone F)
     (Limits.evaluationJointlyReflectsLimits _
       (fun X => isLimitOfPreserves (evaluation R X ⋙ forget₂ _ AddCommGrpCat)
         (isLimitLimitCone F)))

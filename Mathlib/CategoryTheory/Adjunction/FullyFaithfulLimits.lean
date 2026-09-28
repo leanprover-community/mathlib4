@@ -43,7 +43,7 @@ lemma preservesColimitsOfShape_iff (J : Type u) [Category.{v} J]
   refine ⟨fun _ ↦ inferInstance, fun _ ↦ ⟨fun {K} ↦ ?_⟩⟩
   let iso : (K ⋙ G) ⋙ F ≅ K :=
     Functor.associator _ _ _ ≪≫ Functor.isoWhiskerLeft _ (asIso adj.counit) ≪≫ K.rightUnitor
-  refine preservesColimit_of_preserves_colimit_cocone
+  refine preservesColimit_of_preservesColimit_cocone
     ((IsColimit.precomposeInvEquiv iso _).symm
       (isColimitOfPreserves F (colimit.isColimit (K ⋙ G)))) ?_
   exact IsColimit.ofIsoColimit

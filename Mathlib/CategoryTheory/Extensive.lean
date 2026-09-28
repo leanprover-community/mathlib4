@@ -392,7 +392,7 @@ instance finitaryExtensive_functor [HasPullbacks C] [FinitaryExtensive C] :
 instance {C} [Category* C] {D} [Category* D] (F : C ⥤ D)
     {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [IsIso f] : PreservesLimit (cospan f g) F :=
   have := hasPullback_of_left_iso f g
-  preservesLimit_of_preserves_limit_cone (IsPullback.of_hasPullback f g).isLimit
+  preservesLimit_of_preservesLimit_cone (IsPullback.of_hasPullback f g).isLimit
     ((isLimitMapConePullbackConeEquiv _ pullback.condition).symm
       (IsPullback.of_vert_isIso ⟨by simp only [← F.map_comp, pullback.condition]⟩).isLimit)
 

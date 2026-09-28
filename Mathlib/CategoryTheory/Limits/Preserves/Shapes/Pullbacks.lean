@@ -293,7 +293,7 @@ variable [HasPullback f g] [HasPullback (G.map f) (G.map g)]
 pullback of `(f,g)`. -/
 lemma PreservesPullback.of_iso_comparison [i : IsIso (pullbackComparison G f g)] :
     PreservesLimit (cospan f g) G := by
-  apply preservesLimit_of_preserves_limit_cone (pullbackIsPullback f g)
+  apply preservesLimit_of_preservesLimit_cone (pullbackIsPullback f g)
   apply (isLimitMapConePullbackConeEquiv _ _).symm _
   exact @IsLimit.ofPointIso _ _ _ _ _ _ _ (limit.isLimit (cospan (G.map f) (G.map g))) i
 
@@ -314,7 +314,7 @@ variable [HasPushout f g] [HasPushout (G.map f) (G.map g)]
 pushout of `(f,g)`. -/
 lemma PreservesPushout.of_iso_comparison [i : IsIso (pushoutComparison G f g)] :
     PreservesColimit (span f g) G := by
-  apply preservesColimit_of_preserves_colimit_cocone (pushoutIsPushout f g)
+  apply preservesColimit_of_preservesColimit_cocone (pushoutIsPushout f g)
   apply (isColimitMapCoconePushoutCoconeEquiv _ _).symm _
   exact IsColimit.ofPointIso _ (i := i)
 

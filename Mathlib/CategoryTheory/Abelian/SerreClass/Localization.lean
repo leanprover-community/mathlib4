@@ -284,7 +284,7 @@ lemma preservesKernel {X Y : C} (f : X ⟶ Y) :
   have := Localization.essSurj L P.isoModSerre
   suffices ∀ (W : D) (z : W ⟶ L.obj X) (hz : z ≫ L.map f = 0),
       ∃ (l : W ⟶ L.obj (kernel f)), l ≫ L.map (kernel.ι f) = z from
-    preservesLimit_of_preserves_limit_cone (kernelIsKernel f)
+    preservesLimit_of_preservesLimit_cone (kernelIsKernel f)
       ((KernelFork.isLimitMapConeEquiv _ L).2
         (Fork.IsLimit.ofExistsUnique
           (fun s ↦ existsUnique_of_exists_of_unique
@@ -314,7 +314,7 @@ lemma preservesCokernel {X Y : C} (f : X ⟶ Y) :
   have := Localization.essSurj L P.isoModSerre
   suffices ∀ (W : D) (z : L.obj Y ⟶ W) (hz : L.map f ≫ z = 0),
       ∃ (l : L.obj (cokernel f) ⟶ W), L.map (cokernel.π f) ≫ l = z from
-    preservesColimit_of_preserves_colimit_cocone (cokernelIsCokernel f)
+    preservesColimit_of_preservesColimit_cocone (cokernelIsCokernel f)
       ((CokernelCofork.isColimitMapCoconeEquiv _ L).2
         (Cofork.IsColimit.ofExistsUnique
           (fun s ↦ existsUnique_of_exists_of_unique
@@ -459,7 +459,7 @@ lemma preservesFiniteLimits_comp_iff :
   obtain ⟨f', ⟨iso⟩⟩ :=
     (Localization.essSurj_mapArrow L P.isoModSerre).mem_essImage (Arrow.mk f)
   have : PreservesLimit (parallelPair (L.map f'.hom) 0) G :=
-    preservesLimit_of_preserves_limit_cone
+    preservesLimit_of_preservesLimit_cone
       (KernelFork.isLimitMapConeEquiv _ _
         (isLimitOfPreserves L (kernelIsKernel f'.hom)))
           ((KernelFork.isLimitMapConeEquiv _ G).symm
@@ -481,7 +481,7 @@ lemma preservesFiniteColimits_comp_iff :
   obtain ⟨f', ⟨iso⟩⟩ :=
     (Localization.essSurj_mapArrow L P.isoModSerre).mem_essImage (Arrow.mk f)
   have : PreservesColimit (parallelPair (L.map f'.hom) 0) G :=
-    preservesColimit_of_preserves_colimit_cocone
+    preservesColimit_of_preservesColimit_cocone
       (CokernelCofork.isColimitMapCoconeEquiv _ _
         (isColimitOfPreserves L (cokernelIsCokernel f'.hom)))
           ((CokernelCofork.isColimitMapCoconeEquiv _ G).symm

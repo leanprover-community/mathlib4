@@ -130,7 +130,7 @@ instance hasLimits : HasLimits MonCat.{u} :=
 of shape `J`. -/]
 noncomputable instance forget_preservesLimitsOfShape [Small.{u} J] :
     PreservesLimitsOfShape J (forget MonCat.{u}) where
-  preservesLimit {F} := preservesLimit_of_preserves_limit_cone (limitConeIsLimit F)
+  preservesLimit {F} := preservesLimit_of_preservesLimit_cone (limitConeIsLimit F)
     (Types.Small.limitConeIsLimit (F ⋙ forget _))
 
 /-- The forgetful functor from monoids to types preserves all limits.
@@ -307,7 +307,7 @@ shape `J`. -/
 preserves limits of shape `J`. -/]
 instance forget_preservesLimitsOfShape [Small.{u} J] :
     PreservesLimitsOfShape J (forget CommMonCat.{u}) where
-  preservesLimit {F} := preservesLimit_of_preserves_limit_cone (limitConeIsLimit F)
+  preservesLimit {F} := preservesLimit_of_preservesLimit_cone (limitConeIsLimit F)
     (Types.Small.limitConeIsLimit (F ⋙ forget _))
 
 /-- The forgetful functor from commutative monoids to types preserves all limits.

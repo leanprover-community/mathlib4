@@ -469,7 +469,7 @@ instance pullbackToBaseIsOpenImmersion [IsOpenImmersion g] :
   infer_instance
 
 instance forget_preservesLimitsOfLeft : PreservesLimit (cospan f g) (forget C) :=
-  preservesLimit_of_preserves_limit_cone (pullbackConeOfLeftIsLimit f g)
+  preservesLimit_of_preservesLimit_cone (pullbackConeOfLeftIsLimit f g)
     (by
       apply (IsLimit.postcomposeHomEquiv (diagramIsoCospan _) _).toFun
       refine (IsLimit.equivIsoLimit ?_).toFun (limit.isLimit (cospan f.base g.base))
@@ -1065,7 +1065,7 @@ instance pullback_to_base_isOpenImmersion [LocallyRingedSpace.IsOpenImmersion g]
 
 instance forget_preservesPullbackOfLeft :
     PreservesLimit (cospan f g) LocallyRingedSpace.forgetToSheafedSpace :=
-  preservesLimit_of_preserves_limit_cone (pullbackConeOfLeftIsLimit f g) <| by
+  preservesLimit_of_preservesLimit_cone (pullbackConeOfLeftIsLimit f g) <| by
     apply (isLimitMapConePullbackConeEquiv _ _).symm.toFun
     apply isLimitOfIsLimitPullbackConeMap SheafedSpace.forgetToPresheafedSpace
     exact PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftIsLimit f.1 g.1
@@ -1073,7 +1073,7 @@ instance forget_preservesPullbackOfLeft :
 instance forgetToPresheafedSpace_preservesPullback_of_left :
     PreservesLimit (cospan f g)
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace) :=
-  preservesLimit_of_preserves_limit_cone (pullbackConeOfLeftIsLimit f g) <| by
+  preservesLimit_of_preservesLimit_cone (pullbackConeOfLeftIsLimit f g) <| by
     apply (isLimitMapConePullbackConeEquiv _ _).symm.toFun
     exact PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftIsLimit f.1 g.1
 

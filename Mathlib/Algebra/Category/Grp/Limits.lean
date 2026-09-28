@@ -175,7 +175,7 @@ instance forget₂Mon_preservesLimits : PreservesLimits (forget₂ GrpCat.{u} Mo
 of shape `J`. -/]
 instance forget_preservesLimitsOfShape [Small.{u} J] :
     PreservesLimitsOfShape J (forget GrpCat.{u}) where
-  preservesLimit {F} := preservesLimit_of_preserves_limit_cone (limitConeIsLimit F)
+  preservesLimit {F} := preservesLimit_of_preservesLimit_cone (limitConeIsLimit F)
     (Types.Small.limitConeIsLimit (F ⋙ forget _))
 
 /-- The forgetful functor from groups to types preserves all limits.
@@ -370,7 +370,7 @@ preserves limits of shape `J`. -/
 to `AddCommMonCat.{u}` preserves limits of shape `J`. -/]
 instance forget₂CommMon_preservesLimitsOfShape [Small.{u} J] :
     PreservesLimitsOfShape J (forget₂ CommGrpCat.{u} CommMonCat.{u}) where
-  preservesLimit {F} := preservesLimit_of_preserves_limit_cone (limitConeIsLimit.{v, u} F)
+  preservesLimit {F} := preservesLimit_of_preservesLimit_cone (limitConeIsLimit.{v, u} F)
       (forget₂CommMon_preservesLimitsAux.{v, u} F)
 
 /-- The forgetful functor from commutative groups to commutative monoids preserves all limits.
@@ -391,7 +391,7 @@ shape `J`. -/
 preserves limits of shape `J`. -/]
 instance forget_preservesLimitsOfShape [Small.{u} J] :
     PreservesLimitsOfShape J (forget CommGrpCat.{u}) where
-  preservesLimit {F} := preservesLimit_of_preserves_limit_cone (limitConeIsLimit F)
+  preservesLimit {F} := preservesLimit_of_preservesLimit_cone (limitConeIsLimit F)
     (Types.Small.limitConeIsLimit (F ⋙ forget _))
 
 /-- The forgetful functor from commutative groups to types preserves all limits. (That is, the

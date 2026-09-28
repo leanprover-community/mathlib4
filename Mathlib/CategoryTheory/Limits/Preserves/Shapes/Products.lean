@@ -75,7 +75,7 @@ variable [HasProduct fun j : J => G.obj (f j)]
 /-- If `pi_comparison G f` is an isomorphism, then `G` preserves the limit of `f`. -/
 lemma PreservesProduct.of_iso_comparison [i : IsIso (piComparison G f)] :
     PreservesLimit (Discrete.functor f) G := by
-  apply preservesLimit_of_preserves_limit_cone (productIsProduct f)
+  apply preservesLimit_of_preservesLimit_cone (productIsProduct f)
   apply (isLimitMapConeFanMkEquiv _ _ _).symm _
   exact @IsLimit.ofPointIso _ _ _ _ _ _ _
     (limit.isLimit (Discrete.functor fun j : J => G.obj (f j))) i
@@ -150,7 +150,7 @@ variable [HasCoproduct fun j : J => G.obj (f j)]
 /-- If `sigma_comparison G f` is an isomorphism, then `G` preserves the colimit of `f`. -/
 lemma PreservesCoproduct.of_iso_comparison [i : IsIso (sigmaComparison G f)] :
     PreservesColimit (Discrete.functor f) G := by
-  apply preservesColimit_of_preserves_colimit_cocone (coproductIsCoproduct f)
+  apply preservesColimit_of_preservesColimit_cocone (coproductIsCoproduct f)
   apply (isColimitMapCoconeCofanMkEquiv _ _ _).symm _
   exact @IsColimit.ofPointIso _ _ _ _ _ _ _
     (colimit.isColimit (Discrete.functor fun j : J => G.obj (f j))) i

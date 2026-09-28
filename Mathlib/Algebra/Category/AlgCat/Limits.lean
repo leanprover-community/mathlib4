@@ -153,7 +153,7 @@ instance forget₂Ring_preservesLimitsOfSize [UnivLE.{v, w}] :
     PreservesLimitsOfSize.{t, v} (forget₂ (AlgCat.{w} R) RingCat.{w}) where
   preservesLimitsOfShape :=
     { preservesLimit := fun {K} ↦
-        preservesLimit_of_preserves_limit_cone (limitConeIsLimit K)
+        preservesLimit_of_preservesLimit_cone (limitConeIsLimit K)
           (RingCat.limitConeIsLimit.{v, w}
             (_ ⋙ forget₂ (AlgCat.{w} R) RingCat.{w})) }
 
@@ -166,7 +166,7 @@ instance forget₂Module_preservesLimitsOfSize [UnivLE.{v, w}] : PreservesLimits
     (forget₂ (AlgCat.{w} R) (ModuleCat.{w} R)) where
   preservesLimitsOfShape :=
     { preservesLimit := fun {K} ↦
-        preservesLimit_of_preserves_limit_cone (limitConeIsLimit K)
+        preservesLimit_of_preservesLimit_cone (limitConeIsLimit K)
           (ModuleCat.HasLimits.limitConeIsLimit
             (K ⋙ forget₂ (AlgCat.{w} R) (ModuleCat.{w} R))) }
 
@@ -180,7 +180,7 @@ instance forget_preservesLimitsOfSize [UnivLE.{v, w}] :
     PreservesLimitsOfSize.{t, v} (forget (AlgCat.{w} R)) where
   preservesLimitsOfShape :=
     { preservesLimit := fun {K} ↦
-       preservesLimit_of_preserves_limit_cone (limitConeIsLimit K)
+       preservesLimit_of_preservesLimit_cone (limitConeIsLimit K)
           (Types.Small.limitConeIsLimit.{v} (K ⋙ forget _)) }
 
 instance forget_preservesLimits : PreservesLimits (forget (AlgCat.{w} R)) :=

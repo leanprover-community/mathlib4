@@ -214,13 +214,16 @@ end
 
 /-- If F preserves one limit cone for the diagram K,
   then it preserves any limit cone for K. -/
-lemma preservesLimit_of_preserves_limit_cone {F : C ⥤ D} {t : Cone K} (h : IsLimit t)
+lemma preservesLimit_of_preservesLimit_cone {F : C ⥤ D} {t : Cone K} (h : IsLimit t)
     (hF : IsLimit (F.mapCone t)) : PreservesLimit K F where
   preserves h' := ⟨IsLimit.ofIsoLimit hF (Functor.mapIso _ (IsLimit.uniqueUpToIso h h'))⟩
 
+@[deprecated (since := "2026-09-28")]
+alias preservesLimit_of_preserves_limit_cone := preservesLimit_of_preservesLimit_cone
+
 lemma preservesLimit_iff_isLimit_mapCone {F : C ⥤ D} {t : Cone K} (h : IsLimit t) :
     PreservesLimit K F ↔ Nonempty (IsLimit (F.mapCone t)) :=
-  ⟨fun _ ↦ ⟨isLimitOfPreserves _ h⟩, fun h' ↦ preservesLimit_of_preserves_limit_cone h h'.some⟩
+  ⟨fun _ ↦ ⟨isLimitOfPreserves _ h⟩, fun h' ↦ preservesLimit_of_preservesLimit_cone h h'.some⟩
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Transfer preservation of limits along a natural isomorphism in the diagram. -/
@@ -294,14 +297,17 @@ lemma preservesSmallestLimits_of_preservesLimits (F : C ⥤ D) [PreservesLimitsO
 
 /-- If F preserves one colimit cocone for the diagram K,
   then it preserves any colimit cocone for K. -/
-lemma preservesColimit_of_preserves_colimit_cocone {F : C ⥤ D} {t : Cocone K} (h : IsColimit t)
+lemma preservesColimit_of_preservesColimit_cocone {F : C ⥤ D} {t : Cocone K} (h : IsColimit t)
     (hF : IsColimit (F.mapCocone t)) : PreservesColimit K F :=
   ⟨fun h' => ⟨IsColimit.ofIsoColimit hF (Functor.mapIso _ (IsColimit.uniqueUpToIso h h'))⟩⟩
+
+@[deprecated (since := "2026-09-28")]
+alias preservesColimit_of_preserves_colimit_cocone := preservesColimit_of_preservesColimit_cocone
 
 lemma preservesColimit_iff_isColimit_mapCocone {F : C ⥤ D} {t : Cocone K} (h : IsColimit t) :
     PreservesColimit K F ↔ Nonempty (IsColimit (F.mapCocone t)) :=
   ⟨fun _ ↦ ⟨isColimitOfPreserves _ h⟩,
-    fun h' ↦ preservesColimit_of_preserves_colimit_cocone h h'.some⟩
+    fun h' ↦ preservesColimit_of_preservesColimit_cocone h h'.some⟩
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Transfer preservation of colimits along a natural isomorphism in the shape. -/

@@ -133,7 +133,7 @@ lemma preservesFinOfPreservesBinaryAndTerminal :
     have := preservesFinOfPreservesBinaryAndTerminal n
     intro f
     apply
-      preservesLimit_of_preserves_limit_cone
+      preservesLimit_of_preservesLimit_cone
         (extendFanIsLimit f (limit.isLimit _) (limit.isLimit _)) _
     apply (isLimitMapConeFanMkEquiv _ _ _).symm _
     let :=
@@ -258,7 +258,7 @@ lemma preserves_fin_of_preserves_binary_and_initial :
     have := preserves_fin_of_preserves_binary_and_initial n
     intro f
     apply
-      preservesColimit_of_preserves_colimit_cocone
+      preservesColimit_of_preservesColimit_cocone
         (extendCofanIsColimit f (colimit.isColimit _) (colimit.isColimit _)) _
     apply (isColimitMapCoconeCofanMkEquiv _ _ _).symm _
     let :=

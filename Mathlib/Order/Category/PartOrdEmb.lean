@@ -335,7 +335,7 @@ instance : HasColimit F where
   exists_colimit := ⟨_, isColimitCocone (colimit.isColimit (F ⋙ forget _))⟩
 
 instance : PreservesColimit F (forget _) :=
-  preservesColimit_of_preserves_colimit_cocone
+  preservesColimit_of_preservesColimit_cocone
     (isColimitCocone (colimit.isColimit (F ⋙ forget _)))
     (colimit.isColimit (F ⋙ forget _))
 

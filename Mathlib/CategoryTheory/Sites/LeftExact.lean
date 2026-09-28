@@ -92,7 +92,7 @@ instance preservesLimit_diagramFunctor
     (X : C) (K : Type s) [SmallCategory K] [HasLimitsOfShape K D] (F : K ⥤ Cᵒᵖ ⥤ D) :
     PreservesLimit F (J.diagramFunctor D X) :=
   preservesLimit_of_evaluation _ _ fun W =>
-    preservesLimit_of_preserves_limit_cone (limit.isLimit _)
+    preservesLimit_of_preservesLimit_cone (limit.isLimit _)
       { lift := fun E => liftToDiagramLimitObj.{_, t, w, v, u} F E
         fac := by
           intro E k
@@ -194,7 +194,7 @@ instance preservesLimitsOfShape_plusFunctor
     [PreservesLimitsOfShape K (forget D)] [ReflectsLimitsOfShape K (forget D)] :
     PreservesLimitsOfShape K (J.plusFunctor D) := by
   constructor; intro F; apply preservesLimit_of_evaluation; intro X
-  apply preservesLimit_of_preserves_limit_cone (limit.isLimit F)
+  apply preservesLimit_of_preservesLimit_cone (limit.isLimit F)
   refine ⟨fun S => liftToPlusObjLimitObj F X.unop S, ?_, ?_⟩
   · intro S k
     apply liftToPlusObjLimitObj_fac

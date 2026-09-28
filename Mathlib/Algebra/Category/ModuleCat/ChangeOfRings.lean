@@ -937,7 +937,7 @@ instance preservesColimit_restrictScalars {R S : Type*} [Ring R] [Ring S]
     PreservesColimit F (ModuleCat.restrictScalars.{v} f) := by
   have : HasColimit ((F ⋙ restrictScalars f) ⋙ forget₂ (ModuleCat R) AddCommGrpCat) :=
     inferInstanceAs (HasColimit (F ⋙ forget₂ _ AddCommGrpCat))
-  apply preservesColimit_of_preserves_colimit_cocone (HasColimit.isColimitColimitCocone F)
+  apply preservesColimit_of_preservesColimit_cocone (HasColimit.isColimitColimitCocone F)
   apply isColimitOfReflects (forget₂ (ModuleCat.{v} R) AddCommGrpCat)
   apply isColimitOfPreserves (forget₂ (ModuleCat.{v} S) AddCommGrpCat.{v})
   exact HasColimit.isColimitColimitCocone F

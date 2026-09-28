@@ -85,7 +85,7 @@ noncomputable def isLimitConeOfHasLimitEval : IsLimit (coneOfHasLimitEval F) :=
 instance : HasLimit F := ⟨⟨⟨_, isLimitConeOfHasLimitEval F⟩⟩⟩
 
 noncomputable instance (n : ι) : PreservesLimit F (eval C c n) :=
-  preservesLimit_of_preserves_limit_cone (isLimitConeOfHasLimitEval F) (limit.isLimit _)
+  preservesLimit_of_preservesLimit_cone (isLimitConeOfHasLimitEval F) (limit.isLimit _)
 
 end
 
@@ -164,7 +164,7 @@ noncomputable def isColimitCoconeOfHasColimitEval : IsColimit (coconeOfHasColimi
 instance : HasColimit F := ⟨⟨⟨_, isColimitCoconeOfHasColimitEval F⟩⟩⟩
 
 noncomputable instance (n : ι) : PreservesColimit F (eval C c n) :=
-  preservesColimit_of_preserves_colimit_cocone (isColimitCoconeOfHasColimitEval F)
+  preservesColimit_of_preservesColimit_cocone (isColimitCoconeOfHasColimitEval F)
     (colimit.isColimit _)
 
 end

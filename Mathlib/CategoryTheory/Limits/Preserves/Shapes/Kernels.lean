@@ -120,7 +120,7 @@ kernel of `f`.
 -/
 lemma PreservesKernel.of_iso_comparison [i : IsIso (kernelComparison f G)] :
     PreservesLimit (parallelPair f 0) G := by
-  apply preservesLimit_of_preserves_limit_cone (kernelIsKernel f)
+  apply preservesLimit_of_preservesLimit_cone (kernelIsKernel f)
   apply (isLimitMapConeForkEquiv' G (kernel.condition f)).symm _
   exact @IsLimit.ofPointIso _ _ _ _ _ _ _ (kernelIsKernel (G.map f)) i
 
@@ -249,7 +249,7 @@ cokernel of `f`.
 -/
 lemma PreservesCokernel.of_iso_comparison [i : IsIso (cokernelComparison f G)] :
     PreservesColimit (parallelPair f 0) G := by
-  apply preservesColimit_of_preserves_colimit_cocone (cokernelIsCokernel f)
+  apply preservesColimit_of_preservesColimit_cocone (cokernelIsCokernel f)
   apply (isColimitMapCoconeCoforkEquiv' G (cokernel.condition f)).symm _
   exact @IsColimit.ofPointIso _ _ _ _ _ _ _ (cokernelIsCokernel (G.map f)) i
 

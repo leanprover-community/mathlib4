@@ -334,7 +334,7 @@ instance {J : Type*} [Category* J] {F : J ⥤ TopModuleCat.{v} R}
     [HasLimit (F ⋙ forget₂ _ (ModuleCat.{v} R))]
     [PreservesLimit (F ⋙ forget₂ _ (ModuleCat.{v} R)) (forget _)] :
     PreservesLimit F (forget₂ _ TopCat) :=
-  preservesLimit_of_preserves_limit_cone (isLimit (limit.isLimit _))
+  preservesLimit_of_preservesLimit_cone (isLimit (limit.isLimit _))
     (TopCat.isLimitConeOfForget (F := F ⋙ forget₂ _ TopCat)
       ((forget _).mapCone (getLimitCone (F ⋙ forget₂ _ (ModuleCat.{v} R))).1 :)
       (isLimitOfPreserves (forget (ModuleCat R)) (limit.isLimit _)))

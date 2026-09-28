@@ -514,7 +514,7 @@ instance {X Y : TopCat.{u}} (f : X ⟶ Y) (hf : Topology.IsOpenEmbedding f) {ι 
     PreservesLimitsOfShape (Discrete ι) hf.functor := by
   apply +allowSynthFailures preservesLimitsOfShape_of_discrete
   intro g
-  refine preservesLimit_of_preserves_limit_cone (Preorder.isLimitIInf g) ?_
+  refine preservesLimit_of_preservesLimit_cone (Preorder.isLimitIInf g) ?_
   refine (Limits.Fan.isLimitMapConeEquiv _ _ _).symm (Preorder.isLimitOfIsGLB _ _ ?_)
   simp only [Discrete.range_functor, homOfLE_leOfHom, Fan.mk_pt, hf.functor_obj_iInf]
   apply isGLB_iInf

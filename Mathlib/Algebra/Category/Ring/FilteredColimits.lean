@@ -180,7 +180,7 @@ instance forget₂Mon_preservesFilteredColimits :
   preserves_filtered_colimits {J hJ1 _} :=
     letI : Category J := hJ1
     { preservesColimit := fun {F} =>
-        preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
+        preservesColimit_of_preservesColimit_cocone (colimitCoconeIsColimit.{u, u} F)
           (MonCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ SemiRingCat MonCat.{u})) }
 
 instance forget_preservesFilteredColimits : PreservesFilteredColimits (forget SemiRingCat.{u}) :=
@@ -235,7 +235,7 @@ instance forget₂SemiRing_preservesFilteredColimits :
   preserves_filtered_colimits {J hJ1 _} :=
     letI : Category J := hJ1
     { preservesColimit := fun {F} =>
-        preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
+        preservesColimit_of_preservesColimit_cocone (colimitCoconeIsColimit.{u, u} F)
           (SemiRingCat.FilteredColimits.colimitCoconeIsColimit
             (F ⋙ forget₂ CommSemiRingCat SemiRingCat.{u})) }
 
@@ -292,14 +292,14 @@ instance forget₂SemiRing_preservesFilteredColimits :
   preserves_filtered_colimits {J hJ1 _} :=
     letI : Category J := hJ1
     { preservesColimit := fun {F} =>
-        preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
+        preservesColimit_of_preservesColimit_cocone (colimitCoconeIsColimit.{u, u} F)
           (SemiRingCat.FilteredColimits.colimitCoconeIsColimit
             (F ⋙ forget₂ RingCat SemiRingCat.{u})) }
 
 instance : Limits.PreservesFilteredColimits (forget₂ RingCat AddCommGrpCat.{u}) where
   preserves_filtered_colimits _ :=
     { preservesColimit := fun {F} =>
-        Limits.preservesColimit_of_preserves_colimit_cocone
+        Limits.preservesColimit_of_preservesColimit_cocone
           (RingCat.FilteredColimits.colimitCoconeIsColimit.{u, u} F)
           (AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit
             (F ⋙ forget₂ RingCat AddCommGrpCat.{u})) }
@@ -355,7 +355,7 @@ instance forget₂Ring_preservesFilteredColimits :
   preserves_filtered_colimits {J hJ1 _} :=
     letI : Category J := hJ1
     { preservesColimit := fun {F} =>
-        preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
+        preservesColimit_of_preservesColimit_cocone (colimitCoconeIsColimit.{u, u} F)
           (RingCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ CommRingCat RingCat.{u})) }
 
 instance forget_preservesFilteredColimits : PreservesFilteredColimits (forget CommRingCat.{u}) :=

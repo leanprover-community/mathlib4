@@ -280,7 +280,7 @@ theorem isSheaf_iff_isSheafPairwiseIntersections : F.IsSheaf ↔ F.IsSheafPairwi
 variable {F} in
 theorem IsSheaf.isSheafPreservesLimitPairwiseIntersections (h : F.IsSheaf) :
     PreservesLimit (Pairwise.diagram U).op F :=
-  preservesLimit_of_preserves_limit_cone (Pairwise.coconeIsColimit U).op
+  preservesLimit_of_preservesLimit_cone (Pairwise.coconeIsColimit U).op
     (h.isSheafPairwiseIntersections U).some
 
 /-- The sheaf condition in terms of an equalizer diagram is equivalent

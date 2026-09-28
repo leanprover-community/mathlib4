@@ -93,7 +93,7 @@ instance (J : Type u) [Finite J] (f : J → Under R) :
     PreservesLimit (Discrete.functor f) (tensorProd R S) :=
   let c : Fan _ := Under.piFan f
   have hc : IsLimit c := Under.piFanIsLimit f
-  preservesLimit_of_preserves_limit_cone hc (piFanTensorProductIsLimit f)
+  preservesLimit_of_preservesLimit_cone hc (piFanTensorProductIsLimit f)
 
 instance : PreservesFiniteProducts (tensorProd R S) where
   preserves n :=
@@ -185,7 +185,7 @@ instance [Module.Flat R S] {A B : Under R} (f g : A ⟶ B) :
   let hc : IsLimit c := Under.equalizerForkIsLimit f g
   let hc' : IsLimit ((tensorProd R S).mapCone c) :=
     tensorProdMapEqualizerForkIsLimit f g
-  preservesLimit_of_preserves_limit_cone hc hc'
+  preservesLimit_of_preservesLimit_cone hc hc'
 
 instance [Module.Flat R S] : PreservesLimitsOfShape WalkingParallelPair (tensorProd R S) where
   preservesLimit {K} :=

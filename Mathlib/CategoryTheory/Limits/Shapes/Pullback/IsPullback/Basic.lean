@@ -858,7 +858,7 @@ lemma IsPullback.preservesLimit_cospan_iff {P X Y Z : C} {fst : P ⟶ X}
     {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z} (h : IsPullback fst snd f g) :
     PreservesLimit (cospan f g) F ↔ IsPullback (F.map fst) (F.map snd) (F.map f) (F.map g) := by
   refine ⟨fun _ ↦ h.map _, fun hF ↦ ?_⟩
-  apply preservesLimit_of_preserves_limit_cone h.isLimit
+  apply preservesLimit_of_preservesLimit_cone h.isLimit
   exact (PullbackCone.isLimitMapConeEquiv _ _).symm hF.isLimit
 
 variable {F} in
@@ -866,7 +866,7 @@ lemma IsPushout.preservesColimit_span_iff {P X Y Z : C} {inl : X ⟶ P}
     {inr : Y ⟶ P} {f : Z ⟶ X} {g : Z ⟶ Y} (h : IsPushout f g inl inr) :
     PreservesColimit (span f g) F ↔ IsPushout (F.map f) (F.map g) (F.map inl) (F.map inr) := by
   refine ⟨fun _ ↦ h.map _, fun hF ↦ ?_⟩
-  apply preservesColimit_of_preserves_colimit_cocone h.isColimit
+  apply preservesColimit_of_preservesColimit_cocone h.isColimit
   exact (PushoutCocone.isColimitMapCoconeEquiv _ _).symm hF.isColimit
 
 variable {F} in

@@ -210,7 +210,7 @@ instance evaluation_preservesLimit (F : J ⥤ K ⥤ C) [∀ k, HasLimit (F.flip.
     PreservesLimit F ((evaluation K C).obj k) :=
   -- Porting note: added a let because X was not inferred
   let X : (k : K) → LimitCone (F.flip.obj k) := fun k => getLimitCone (F.flip.obj k)
-  preservesLimit_of_preserves_limit_cone (combinedIsLimit _ X) <|
+  preservesLimit_of_preservesLimit_cone (combinedIsLimit _ X) <|
     IsLimit.ofIsoLimit (limit.isLimit _) (evaluateCombinedCones F X k).symm
 
 instance evaluation_preservesLimitsOfShape [HasLimitsOfShape J C] (k : K) :
@@ -297,7 +297,7 @@ instance evaluation_preservesColimit (F : J ⥤ K ⥤ C) [∀ k, HasColimit (F.f
     PreservesColimit F ((evaluation K C).obj k) :=
   -- Porting note: added a let because X was not inferred
   let X : (k : K) → ColimitCocone (F.flip.obj k) := fun k => getColimitCocone (F.flip.obj k)
-  preservesColimit_of_preserves_colimit_cocone (combinedIsColimit _ X) <|
+  preservesColimit_of_preservesColimit_cocone (combinedIsColimit _ X) <|
     IsColimit.ofIsoColimit (colimit.isColimit _) (evaluateCombinedCocones F X k).symm
 
 instance evaluation_preservesColimitsOfShape [HasColimitsOfShape J C] (k : K) :

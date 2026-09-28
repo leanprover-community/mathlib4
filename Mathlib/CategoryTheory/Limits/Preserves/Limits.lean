@@ -98,7 +98,7 @@ variable [HasLimit F] [HasLimit (F ⋙ G)]
 /-- If the comparison morphism `G.obj (limit F) ⟶ limit (F ⋙ G)` is an isomorphism, then `G`
 preserves limits of `F`. -/
 lemma preservesLimit_of_isIso_post [IsIso (limit.post F G)] : PreservesLimit F G :=
-  preservesLimit_of_preserves_limit_cone (limit.isLimit F) (by
+  preservesLimit_of_preservesLimit_cone (limit.isLimit F) (by
     convert! IsLimit.ofPointIso (limit.isLimit (F ⋙ G))
     assumption)
 
@@ -169,7 +169,7 @@ variable [HasColimit F] [HasColimit (F ⋙ G)]
 /-- If the comparison morphism `colimit (F ⋙ G) ⟶ G.obj (colimit F)` is an isomorphism, then `G`
 preserves colimits of `F`. -/
 lemma preservesColimit_of_isIso_post [IsIso (colimit.post F G)] : PreservesColimit F G :=
-  preservesColimit_of_preserves_colimit_cocone (colimit.isColimit F) (by
+  preservesColimit_of_preservesColimit_cocone (colimit.isColimit F) (by
     convert! IsColimit.ofPointIso (colimit.isColimit (F ⋙ G))
     assumption)
 

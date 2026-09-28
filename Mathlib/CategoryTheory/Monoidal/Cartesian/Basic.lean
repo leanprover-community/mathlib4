@@ -529,7 +529,7 @@ open Limits
 /-- If `terminalComparison F` is an Iso, then `F` preserves terminal objects. -/
 lemma preservesLimit_empty_of_isIso_terminalComparison [IsIso (terminalComparison F)] :
     PreservesLimit (Functor.empty.{0} C) F := by
-  apply preservesLimit_of_preserves_limit_cone isTerminalTensorUnit
+  apply preservesLimit_of_preservesLimit_cone isTerminalTensorUnit
   apply isLimitChangeEmptyCone D isTerminalTensorUnit
   exact asIso (terminalComparison F) |>.symm
 
@@ -768,7 +768,7 @@ section ProdComparisonIso
 lemma preservesLimit_pair_of_isIso_prodComparison (A B : C)
     [IsIso (prodComparison F A B)] :
     PreservesLimit (pair A B) F := by
-  apply preservesLimit_of_preserves_limit_cone (tensorProductIsBinaryProduct A B)
+  apply preservesLimit_of_preservesLimit_cone (tensorProductIsBinaryProduct A B)
   refine IsLimit.equivOfNatIsoOfIso (pairComp A B F) _
     ((BinaryFan.mk (fst (F.obj A) (F.obj B)) (snd _ _)).extend (prodComparison F A B))
       (BinaryFan.ext (by exact Iso.refl _) ?_ ?_) |>.invFun

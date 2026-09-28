@@ -277,7 +277,7 @@ instance : HasColimitsOfShape J (PresheafedSpace.{_, _, v} C) where
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance : PreservesColimitsOfShape J (PresheafedSpace.forget.{v, u, v} C) :=
-  ⟨fun {F} => preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit F) <| by
+  ⟨fun {F} => preservesColimit_of_preservesColimit_cocone (colimitCoconeIsColimit F) <| by
     apply IsColimit.ofIsoColimit (colimit.isColimit _)
     fapply Cocone.ext
     · rfl
@@ -294,7 +294,7 @@ the colimit of the underlying topological spaces.
 instance forget_preservesColimits [HasLimits C] :
     PreservesColimits (PresheafedSpace.forget.{_, _, v} C) where
   preservesColimitsOfShape {J 𝒥} :=
-    { preservesColimit := fun {F} => preservesColimit_of_preserves_colimit_cocone
+    { preservesColimit := fun {F} => preservesColimit_of_preservesColimit_cocone
           (colimitCoconeIsColimit F)
           (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocone.ext (Iso.refl _))) }
 

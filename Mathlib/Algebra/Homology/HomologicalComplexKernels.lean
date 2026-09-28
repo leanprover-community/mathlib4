@@ -38,7 +38,7 @@ lemma eval_preservesLimit_of_hasKernel_f [∀ i, HasKernel (f.f i)] (i : ι) :
   have (i : ι) : HasLimit (parallelPair f 0 ⋙ eval C c i) :=
     hasLimit_of_iso (F := (parallelPair (f.f i) 0))
       (parallelPair.ext (Iso.refl _) (Iso.refl _))
-  preservesLimit_of_preserves_limit_cone
+  preservesLimit_of_preservesLimit_cone
     (isLimitConeOfHasLimitEval _) (limit.isLimit _)
 
 lemma eval_preservesColimit_of_hasCokernel_f [∀ i, HasCokernel (f.f i)] (i : ι) :
@@ -46,7 +46,7 @@ lemma eval_preservesColimit_of_hasCokernel_f [∀ i, HasCokernel (f.f i)] (i : �
   have (i : ι) : HasColimit (parallelPair f 0 ⋙ eval C c i) :=
     hasColimit_of_iso (F := (parallelPair (f.f i) 0))
       (parallelPair.ext (Iso.refl _) (Iso.refl _))
-  preservesColimit_of_preserves_colimit_cocone
+  preservesColimit_of_preservesColimit_cocone
     (isColimitCoconeOfHasColimitEval _) (colimit.isColimit _)
 
 end HomologicalComplex

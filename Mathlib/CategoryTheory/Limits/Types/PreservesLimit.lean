@@ -99,7 +99,7 @@ lemma preservesLimit_eq_isLocal_single :
   ext P
   rw [← nonempty_isLimit_mapCone_iff c hc' P]
   exact ⟨fun _ ↦ ⟨isLimitOfPreserves P hc⟩,
-    fun ⟨h⟩ ↦ preservesLimit_of_preserves_limit_cone hc h⟩
+    fun ⟨h⟩ ↦ preservesLimit_of_preservesLimit_cone hc h⟩
 
 variable (F) [Small.{w} J]
 

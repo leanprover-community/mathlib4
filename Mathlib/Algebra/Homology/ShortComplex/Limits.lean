@@ -100,13 +100,13 @@ noncomputable def isLimitLimitCone : IsLimit (limitCone F) :=
 instance hasLimit_of_hasLimitπ : HasLimit F := ⟨⟨⟨_, isLimitLimitCone _⟩⟩⟩
 
 noncomputable instance : PreservesLimit F π₁ :=
-  preservesLimit_of_preserves_limit_cone (isLimitLimitCone F) (isLimitπ₁MapConeLimitCone F)
+  preservesLimit_of_preservesLimit_cone (isLimitLimitCone F) (isLimitπ₁MapConeLimitCone F)
 
 noncomputable instance : PreservesLimit F π₂ :=
-  preservesLimit_of_preserves_limit_cone (isLimitLimitCone F) (isLimitπ₂MapConeLimitCone F)
+  preservesLimit_of_preservesLimit_cone (isLimitLimitCone F) (isLimitπ₂MapConeLimitCone F)
 
 noncomputable instance : PreservesLimit F π₃ :=
-  preservesLimit_of_preserves_limit_cone (isLimitLimitCone F) (isLimitπ₃MapConeLimitCone F)
+  preservesLimit_of_preservesLimit_cone (isLimitLimitCone F) (isLimitπ₃MapConeLimitCone F)
 
 end
 
@@ -243,15 +243,15 @@ noncomputable def isColimitColimitCocone : IsColimit (colimitCocone F) :=
 instance hasColimit_of_hasColimitπ : HasColimit F := ⟨⟨⟨_, isColimitColimitCocone _⟩⟩⟩
 
 noncomputable instance : PreservesColimit F π₁ :=
-  preservesColimit_of_preserves_colimit_cocone (isColimitColimitCocone F)
+  preservesColimit_of_preservesColimit_cocone (isColimitColimitCocone F)
     (isColimitπ₁MapCoconeColimitCocone F)
 
 noncomputable instance : PreservesColimit F π₂ :=
-  preservesColimit_of_preserves_colimit_cocone (isColimitColimitCocone F)
+  preservesColimit_of_preservesColimit_cocone (isColimitColimitCocone F)
     (isColimitπ₂MapCoconeColimitCocone F)
 
 noncomputable instance : PreservesColimit F π₃ :=
-  preservesColimit_of_preserves_colimit_cocone (isColimitColimitCocone F)
+  preservesColimit_of_preservesColimit_cocone (isColimitColimitCocone F)
     (isColimitπ₃MapCoconeColimitCocone F)
 
 end

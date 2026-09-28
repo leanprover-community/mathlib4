@@ -143,7 +143,7 @@ noncomputable instance forget₂Mon_preservesFilteredColimits :
     PreservesFilteredColimits.{u} (forget₂ GrpCat.{u} MonCat.{u}) where
       preserves_filtered_colimits x hx1 _ :=
       letI : Category.{u, u} x := hx1
-      ⟨fun {F} => preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
+      ⟨fun {F} => preservesColimit_of_preservesColimit_cocone (colimitCoconeIsColimit.{u, u} F)
           (MonCat.FilteredColimits.colimitCoconeIsColimit.{u, u} _)⟩
 
 @[to_additive]
@@ -205,7 +205,7 @@ noncomputable instance forget₂Group_preservesFilteredColimits :
   preserves_filtered_colimits J hJ1 _ :=
     letI : Category J := hJ1
     { preservesColimit := fun {F} =>
-        preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
+        preservesColimit_of_preservesColimit_cocone (colimitCoconeIsColimit.{u, u} F)
           (GrpCat.FilteredColimits.colimitCoconeIsColimit.{u, u}
             (F ⋙ forget₂ CommGrpCat GrpCat.{u})) }
 

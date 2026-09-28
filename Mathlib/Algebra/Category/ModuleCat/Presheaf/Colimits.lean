@@ -117,14 +117,14 @@ instance hasColimit : HasColimit F := ⟨_, isColimitColimitCocone F⟩
 
 instance evaluation_preservesColimit (X : Cᵒᵖ) :
     PreservesColimit F (evaluation R X) :=
-  preservesColimit_of_preserves_colimit_cocone (isColimitColimitCocone F) (colimit.isColimit _)
+  preservesColimit_of_preservesColimit_cocone (isColimitColimitCocone F) (colimit.isColimit _)
 
 variable [∀ X, PreservesColimit F
   (evaluation R X ⋙ forget₂ (ModuleCat (R.obj X)) AddCommGrpCat)]
 
 instance toPresheaf_preservesColimit :
     PreservesColimit F (toPresheaf R) :=
-  preservesColimit_of_preserves_colimit_cocone (isColimitColimitCocone F)
+  preservesColimit_of_preservesColimit_cocone (isColimitColimitCocone F)
     (Limits.evaluationJointlyReflectsColimits _
       (fun X => isColimitOfPreserves (evaluation R X ⋙ forget₂ _ AddCommGrpCat)
         (isColimitColimitCocone F)))

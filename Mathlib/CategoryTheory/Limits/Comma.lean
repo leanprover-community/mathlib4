@@ -198,14 +198,14 @@ instance hasFiniteColimits [HasFiniteColimits A] [HasFiniteColimits B]
 instance preservesColimitsOfShape_fst [HasColimitsOfShape J A] [HasColimitsOfShape J B]
     [PreservesColimitsOfShape J L] : PreservesColimitsOfShape J (Comma.fst L R) where
   preservesColimit :=
-    preservesColimit_of_preserves_colimit_cocone
+    preservesColimit_of_preservesColimit_cocone
       (coconeOfPreservesIsColimit _ (colimit.isColimit _) (colimit.isColimit _))
       (colimit.isColimit _)
 
 instance preservesColimitsOfShape_snd [HasColimitsOfShape J A] [HasColimitsOfShape J B]
     [PreservesColimitsOfShape J L] : PreservesColimitsOfShape J (Comma.snd L R) where
   preservesColimit :=
-    preservesColimit_of_preserves_colimit_cocone
+    preservesColimit_of_preservesColimit_cocone
       (coconeOfPreservesIsColimit _ (colimit.isColimit _) (colimit.isColimit _))
       (colimit.isColimit _)
 

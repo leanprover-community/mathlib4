@@ -31,7 +31,7 @@ open CompleteLattice in
 instance {J : Type w} [Category.{w'} J] {X : Type u} [IsFilteredOrEmpty J] :
     PreservesColimitsOfShape J (functorToTypes (X := X)) where
   preservesColimit {F} := by
-    apply preservesColimit_of_preserves_colimit_cocone (colimitCocone F).isColimit
+    apply preservesColimit_of_preservesColimit_cocone (colimitCocone F).isColimit
     apply Types.FilteredColimit.isColimitOf
     · rintro ⟨x, hx⟩
       simp only [colimitCocone_cocone_pt, iSup_eq_iUnion, mem_iUnion] at hx

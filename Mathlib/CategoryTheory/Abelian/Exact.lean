@@ -260,7 +260,7 @@ set_option backward.defeqAttrib.useBackward true in
 lemma preservesHomology_of_map_exact : L.PreservesHomology where
   preservesCokernels X Y f := by
     have := preservesEpimorphisms_of_map_exact _ hL
-    apply preservesColimit_of_preserves_colimit_cocone (cokernelIsCokernel f)
+    apply preservesColimit_of_preservesColimit_cocone (cokernelIsCokernel f)
     apply (CokernelCofork.isColimitMapCoconeEquiv _ L).2
     have : Epi ((ShortComplex.mk _ _ (cokernel.condition f)).map L).g := by
       dsimp
@@ -269,7 +269,7 @@ lemma preservesHomology_of_map_exact : L.PreservesHomology where
       (ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel f))).gIsCokernel
   preservesKernels X Y f := by
     have := preservesMonomorphisms_of_map_exact _ hL
-    apply preservesLimit_of_preserves_limit_cone (kernelIsKernel f)
+    apply preservesLimit_of_preservesLimit_cone (kernelIsKernel f)
     apply (KernelFork.isLimitMapConeEquiv _ L).2
     have : Mono ((ShortComplex.mk _ _ (kernel.condition f)).map L).f := by
       dsimp

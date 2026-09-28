@@ -194,7 +194,7 @@ instance forget₂AddCommGroup_preservesFilteredColimits :
     PreservesFilteredColimits (forget₂ (ModuleCat.{u} R) AddCommGrpCat.{u}) where
   preserves_filtered_colimits _ _ _ :=
   { preservesColimit := fun {F} =>
-      preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit F)
+      preservesColimit_of_preservesColimit_cocone (colimitCoconeIsColimit F)
         (AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit
           (F ⋙ forget₂ (ModuleCat.{u} R) AddCommGrpCat.{u})) }
 

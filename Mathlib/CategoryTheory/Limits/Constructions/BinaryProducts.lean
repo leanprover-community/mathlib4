@@ -96,7 +96,7 @@ lemma preservesBinaryProducts_of_preservesTerminal_and_pullbacks [HasTerminal C]
     [HasPullbacks C] [PreservesLimitsOfShape (Discrete.{0} PEmpty) F]
     [PreservesLimitsOfShape WalkingCospan F] : PreservesLimitsOfShape (Discrete WalkingPair) F :=
   ⟨fun {K} =>
-    preservesLimit_of_preserves_limit_cone (limitConeOfTerminalAndPullbacks K).2
+    preservesLimit_of_preservesLimit_cone (limitConeOfTerminalAndPullbacks K).2
       (by
         apply
           isBinaryProductOfIsTerminalIsPullback _ _ (isLimitOfHasTerminalOfPreservesLimit F)
@@ -200,7 +200,7 @@ lemma preservesBinaryCoproducts_of_preservesInitial_and_pushouts [HasInitial C]
     [HasPushouts C] [PreservesColimitsOfShape (Discrete.{0} PEmpty) F]
     [PreservesColimitsOfShape WalkingSpan F] : PreservesColimitsOfShape (Discrete WalkingPair) F :=
   ⟨fun {K} =>
-    preservesColimit_of_preserves_colimit_cocone (colimitCoconeOfInitialAndPushouts K).2 (by
+    preservesColimit_of_preservesColimit_cocone (colimitCoconeOfInitialAndPushouts K).2 (by
       apply
         isBinaryCoproductOfIsInitialIsPushout _ _
           (isColimitOfHasInitialOfPreservesColimit F)

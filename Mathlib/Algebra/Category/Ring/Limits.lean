@@ -140,7 +140,7 @@ instance forget₂AddCommMon_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget₂ SemiRingCat AddCommMonCat.{u}) where
   preservesLimitsOfShape {_ _} :=
     { preservesLimit := fun {F} =>
-        preservesLimit_of_preserves_limit_cone (limitConeIsLimit.{v, u} F)
+        preservesLimit_of_preservesLimit_cone (limitConeIsLimit.{v, u} F)
           (forget₂AddCommMonPreservesLimitsAux F) }
 
 instance forget₂AddCommMon_preservesLimits :
@@ -161,7 +161,7 @@ instance forget₂Mon_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget₂ SemiRingCat MonCat.{u}) where
   preservesLimitsOfShape {_ _} :=
     { preservesLimit := fun {F} =>
-        preservesLimit_of_preserves_limit_cone (limitConeIsLimit F)
+        preservesLimit_of_preservesLimit_cone (limitConeIsLimit F)
           (forget₂MonPreservesLimitsAux.{v, u} F) }
 
 instance forget₂Mon_preservesLimits : PreservesLimits (forget₂ SemiRingCat MonCat.{u}) :=
@@ -173,7 +173,7 @@ instance forget_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget SemiRingCat.{u}) where
   preservesLimitsOfShape {_ _} :=
     { preservesLimit := fun {F} =>
-        preservesLimit_of_preserves_limit_cone (limitConeIsLimit F)
+        preservesLimit_of_preservesLimit_cone (limitConeIsLimit F)
           (Types.Small.limitConeIsLimit.{v, u} (F ⋙ forget _)) }
 
 instance forget_preservesLimits : PreservesLimits (forget SemiRingCat.{u}) :=
@@ -258,7 +258,7 @@ instance forget₂SemiRing_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget₂ CommSemiRingCat SemiRingCat.{u}) where
   preservesLimitsOfShape {_ _} :=
     { preservesLimit := fun {F} =>
-        preservesLimit_of_preserves_limit_cone (limitConeIsLimit.{v, u} F)
+        preservesLimit_of_preservesLimit_cone (limitConeIsLimit.{v, u} F)
           (SemiRingCat.HasLimits.limitConeIsLimit (F ⋙ forget₂ _ SemiRingCat)) }
 
 instance forget₂SemiRing_preservesLimits :
@@ -272,7 +272,7 @@ instance forget_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget CommSemiRingCat.{u}) where
   preservesLimitsOfShape {_ _} :=
     { preservesLimit := fun {F} =>
-        preservesLimit_of_preserves_limit_cone (limitConeIsLimit.{v, u} F)
+        preservesLimit_of_preservesLimit_cone (limitConeIsLimit.{v, u} F)
           (Types.Small.limitConeIsLimit.{v, u} _) }
 
 instance forget_preservesLimits : PreservesLimits (forget CommSemiRingCat.{u}) :=
@@ -363,7 +363,7 @@ instance forget₂SemiRing_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget₂ RingCat SemiRingCat.{u}) where
   preservesLimitsOfShape {_ _} :=
       { preservesLimit := fun {F} =>
-          preservesLimit_of_preserves_limit_cone (limitConeIsLimit.{v, u} F)
+          preservesLimit_of_preservesLimit_cone (limitConeIsLimit.{v, u} F)
             (SemiRingCat.HasLimits.limitConeIsLimit.{v, u} _) }
 
 instance forget₂SemiRing_preservesLimits : PreservesLimits (forget₂ RingCat SemiRingCat.{u}) :=
@@ -383,7 +383,7 @@ instance forget₂AddCommGroup_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{v, v} (forget₂ RingCat.{u} AddCommGrpCat.{u}) where
   preservesLimitsOfShape {_ _} :=
     { preservesLimit := fun {F} =>
-        preservesLimit_of_preserves_limit_cone (limitConeIsLimit.{v, u} F)
+        preservesLimit_of_preservesLimit_cone (limitConeIsLimit.{v, u} F)
           (forget₂AddCommGroupPreservesLimitsAux F) }
 
 instance forget₂AddCommGroup_preservesLimits :
@@ -397,7 +397,7 @@ instance forget_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{v, v} (forget RingCat.{u}) where
   preservesLimitsOfShape {_ _} :=
     { preservesLimit := fun {F} =>
-        preservesLimit_of_preserves_limit_cone (limitConeIsLimit.{v, u} F)
+        preservesLimit_of_preservesLimit_cone (limitConeIsLimit.{v, u} F)
           (Types.Small.limitConeIsLimit.{v, u} _) }
 
 instance forget_preservesLimits : PreservesLimits (forget RingCat.{u}) :=
@@ -493,7 +493,7 @@ instance forget₂Ring_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget₂ CommRingCat RingCat.{u}) where
   preservesLimitsOfShape {_ _} :=
     { preservesLimit := fun {F} =>
-        preservesLimit_of_preserves_limit_cone.{w, v} (limitConeIsLimit.{v, u} F)
+        preservesLimit_of_preservesLimit_cone.{w, v} (limitConeIsLimit.{v, u} F)
           (RingCat.limitConeIsLimit.{v, u} _) }
 
 instance forget₂Ring_preservesLimits : PreservesLimits (forget₂ CommRingCat RingCat.{u}) :=
@@ -515,7 +515,7 @@ instance forget₂CommSemiRing_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget₂ CommRingCat CommSemiRingCat.{u}) where
   preservesLimitsOfShape {_ _} :=
     { preservesLimit := fun {F} =>
-        preservesLimit_of_preserves_limit_cone (limitConeIsLimit.{v, u} F)
+        preservesLimit_of_preservesLimit_cone (limitConeIsLimit.{v, u} F)
           (forget₂CommSemiRingPreservesLimitsAux.{v, u} F) }
 
 instance forget₂CommSemiRing_preservesLimits :
@@ -529,7 +529,7 @@ instance forget_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget CommRingCat.{u}) where
   preservesLimitsOfShape {_ _} :=
     { preservesLimit := fun {F} =>
-        preservesLimit_of_preserves_limit_cone.{w, v} (limitConeIsLimit.{v, u} F)
+        preservesLimit_of_preservesLimit_cone.{w, v} (limitConeIsLimit.{v, u} F)
           (Types.Small.limitConeIsLimit.{v, u} _) }
 
 instance forget_preservesLimits : PreservesLimits (forget CommRingCat.{u}) :=

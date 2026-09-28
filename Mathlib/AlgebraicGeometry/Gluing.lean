@@ -800,7 +800,7 @@ def isColimitForgetToLocallyRingedSpace :
 instance : HasColimit F := ⟨_, isColimit F⟩
 
 instance : PreservesColimit F Scheme.forgetToLocallyRingedSpace :=
-  preservesColimit_of_preserves_colimit_cocone (isColimit F) (isColimitForgetToLocallyRingedSpace F)
+  preservesColimit_of_preservesColimit_cocone (isColimit F) (isColimitForgetToLocallyRingedSpace F)
 
 instance : CreatesColimit F Scheme.forgetToLocallyRingedSpace :=
   CategoryTheory.createsColimitOfReflectsIsomorphismsOfPreserves
