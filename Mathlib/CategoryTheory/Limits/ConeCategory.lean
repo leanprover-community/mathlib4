@@ -146,8 +146,7 @@ def Cone.fromCostructuredArrow (F : J ⥤ C) : CostructuredArrow (const J) F ⥤
   obj c := ⟨c.left, c.hom⟩
   map f :=
     { hom := f.left
-      w := fun j => by
-        convert! congr_fun (congr_arg NatTrans.app f.w) j }
+      w j := congr($(f.w).app j) }
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
