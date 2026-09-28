@@ -301,6 +301,36 @@ def piEquiv : SpecialLinearGroup n (Π i, R i) ≃* Π i, SpecialLinearGroup n (
   map_mul' A B := by ext; simp
 
 end Pi
+section SumInl
+
+variable (p : Type*) [DecidableEq p] [Fintype p]
+
+/-- The embedding `SL(n, R) →* SL(n ⊕ p, R)` sending `A` to the block matrix `!![A, 0; 0, 1]`. -/
+def sumInl : SpecialLinearGroup n R →* SpecialLinearGroup (n ⊕ p) R where
+  toFun A := ⟨fromBlocks A 0 0 1, by simp [det_fromBlocks_zero₂₁]⟩
+  map_one' := Subtype.ext fromBlocks_one
+  map_mul' A B := Subtype.ext ((fromBlocks_multiply ..).trans (by simp)).symm
+
+variable {p}
+
+@[simp]
+lemma coe_sumInl (A : SpecialLinearGroup n R) :
+    (sumInl p A : Matrix (n ⊕ p) (n ⊕ p) R) = fromBlocks A 0 0 1 :=
+  rfl
+
+lemma mem_range_sumInl_iff {A : SpecialLinearGroup (n ⊕ p) R} :
+    A ∈ (sumInl p).range ↔ (A : Matrix (n ⊕ p) (n ⊕ p) R).IsTwoBlockDiagonal ∧
+      toBlocks₂₂ (A : Matrix (n ⊕ p) (n ⊕ p) R) = 1 := by
+  refine ⟨?_, fun ⟨⟨h₁₂, h₂₁⟩, h₂₂⟩ ↦ ?_⟩
+  · rintro ⟨A, rfl⟩
+    simp [IsTwoBlockDiagonal]
+  · have hA : (A : Matrix (n ⊕ p) (n ⊕ p) R) = fromBlocks (toBlocks₁₁ ↑A) 0 0 1 :=
+      (fromBlocks_toBlocks _).symm.trans (by rw [h₁₂, h₂₁, h₂₂])
+    have hdet := A.det_coe
+    rw [hA, det_fromBlocks_zero₂₁, det_one, mul_one] at hdet
+    exact ⟨⟨_, hdet⟩, Subtype.ext hA.symm⟩
+
+end SumInl
 
 section center
 
@@ -563,7 +593,8 @@ end Action
 
 section transvection
 
-variable {ι F : Type*} [DecidableEq ι] [Fintype ι] [CommRing F]
+variable {ι F S : Type*} [DecidableEq ι] [Fintype ι] [CommRing F] [CommRing S]
+variable (f : F →+* S)
 
 /-- The transvection `1 + b · E_{i,j}` (the identity plus `b` in position `(i, j)`)
 as an element of `SL ι F`, when `i ≠ j`. -/
@@ -628,6 +659,20 @@ lemma transvection_mem_center_iff {i j : ι} (hij : i ≠ j) (b : F) :
       add_zero, diagonal_eq_one]
     exact ⟨1, one_pow _, rfl⟩
 
+open scoped commutatorElement in
+/-- The commutator of `transvection hij a` and `transvection hjk b` is
+`transvection hik (a * b)`. -/
+lemma commutatorElement_transvection {i j k : ι} (hij : i ≠ j) (hik : i ≠ k) (hjk : j ≠ k)
+     (a b : F) : ⁅transvection hij a, transvection hjk b⁆ = transvection hik (a * b) := by
+  simp only [commutatorElement_def, transvection_inv]
+  exact Subtype.ext
+    (transvection_mul_transvection_mul_transvection_neg_mul_transvection_neg i j hij hik hjk a b)
+
+@[simp]
+lemma map_transvection {i j : ι} (hij : i ≠ j) (b : F) :
+    map f (transvection hij b) = transvection hij (f b) :=
+  Subtype.ext (Matrix.map_transvection i j f b)
+
 end SpecialLinearGroup
 
 namespace TransvectionStruct
@@ -648,6 +693,36 @@ lemma toSpecialLinearGroup_coe (t : TransvectionStruct ι F) :
 lemma toSpecialLinearGroup_mk {i j : ι} (hij : i ≠ j) (c : F) :
     (TransvectionStruct.mk i j hij c).toSpecialLinearGroup =
       SpecialLinearGroup.transvection hij c := rfl
+
+@[simp]
+lemma map_toSpecialLinearGroup (t : TransvectionStruct ι F) :
+    SpecialLinearGroup.map f t.toSpecialLinearGroup = (t.map f).toSpecialLinearGroup :=
+  SpecialLinearGroup.map_transvection f t.hij t.c
+
+@[simp]
+lemma reindexMulEquiv_toSpecialLinearGroup {κ : Type*} [DecidableEq κ] [Fintype κ] (e : ι ≃ κ)
+    (t : TransvectionStruct ι F) :
+    SpecialLinearGroup.reindexMulEquiv F e t.toSpecialLinearGroup =
+      (t.reindexEquiv e).toSpecialLinearGroup :=
+  Subtype.ext (toMatrix_reindexEquiv e t).symm
+
+/-- If `f` is surjective, every transvection in `SL(ι, S)` is the image under
+`SpecialLinearGroup.map f` of a transvection in `SL(ι, F)`. -/
+lemma toSpecialLinearGroup_mem_range_map (hf : Function.Surjective f) (t : TransvectionStruct ι S) :
+    t.toSpecialLinearGroup ∈ (SpecialLinearGroup.map f).range := by
+  obtain ⟨t', rfl⟩ := map_surjective f hf t
+  exact ⟨t'.toSpecialLinearGroup, map_toSpecialLinearGroup f t'⟩
+
+@[simp]
+lemma sumInl_toSpecialLinearGroup (p : Type*) [DecidableEq p] [Fintype p]
+    (t : TransvectionStruct ι F) :
+    SpecialLinearGroup.sumInl p t.toSpecialLinearGroup = (t.sumInl p).toSpecialLinearGroup :=
+  Subtype.ext (toMatrix_sumInl p t).symm
+
+@[simp]
+lemma coe_list_prod_toSpecialLinearGroup (L : List (TransvectionStruct ι F)) :
+    ((L.map toSpecialLinearGroup).prod : Matrix ι ι F) = (L.map toMatrix).prod := by
+  induction L <;> simp_all
 
 end TransvectionStruct
 
