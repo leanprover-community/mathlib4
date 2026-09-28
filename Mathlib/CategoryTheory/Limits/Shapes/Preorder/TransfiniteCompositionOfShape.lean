@@ -64,7 +64,6 @@ attribute [instance] isWellOrderContinuous
 
 variable {J f} [SuccOrder J] [WellFoundedLT J] (c : TransfiniteCompositionOfShape J f)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` and `f'` are two isomorphic morphisms, and `f` is a transfinite composition
 of shape `J`, then `f'` also is. -/
 @[simps]

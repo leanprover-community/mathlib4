@@ -446,7 +446,6 @@ lemma limitsOfShape_monotone {W₁ W₂ : MorphismProperty C} (h : W₁ ≤ W₂
   rintro _ _ _ ⟨_, _, _, _, h₁, _, f, hf⟩
   exact ⟨_, _, _, _, h₁, _, f, fun j ↦ h _ (hf j)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (W.limitsOfShape J).RespectsIso :=
   RespectsIso.of_respects_arrow_iso _ (by
     rintro ⟨_, _, f⟩ ⟨Y₁, Y₂, g⟩ e ⟨X₁, X₂, c₁, c₂, h₁, h₂, f, hf⟩
@@ -548,7 +547,6 @@ lemma colimitsOfShape_eq_of_equivalence {J' : Type*} [Category* J'] (e : J ≌ J
   le_antisymm (W.colimitsOfShape_le_of_final e.inverse)
     (W.colimitsOfShape_le_of_final e.functor)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (W.colimitsOfShape J).RespectsIso :=
   RespectsIso.of_respects_arrow_iso _ (by
     rintro ⟨_, _, f⟩ ⟨Y₁, Y₂, g⟩ e ⟨X₁, X₂, c₁, c₂, h₁, h₂, f, hf⟩

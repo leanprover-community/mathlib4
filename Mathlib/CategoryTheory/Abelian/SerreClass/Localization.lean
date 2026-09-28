@@ -337,7 +337,6 @@ lemma preservesCokernel {X Y : C} (f : X ⟶ Y) :
   have := Localization.inverts L P.isoModSerre t ht
   exact ⟨L.map (cokernel.desc _ _ fac) ≫ inv (L.map t), by simp [← L.map_comp_assoc]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasKernels : HasKernels D where
   has_limit f := by
     obtain ⟨g, ⟨e⟩⟩ :=
@@ -349,7 +348,6 @@ lemma hasKernels : HasKernels D where
     exact hasLimit_of_iso (show parallelPair (L.map g.hom) 0 ≅ _ from
       parallelPair.ext (Arrow.leftFunc.mapIso e) (Arrow.rightFunc.mapIso e))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasCokernels : HasCokernels D where
   has_colimit f := by
     obtain ⟨g, ⟨e⟩⟩ :=
@@ -450,7 +448,6 @@ lemma inverseImage_isomorphisms :
 
 variable (G : D ⥤ E)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma preservesFiniteLimits_comp_iff :
     PreservesFiniteLimits (L ⋙ G) ↔ PreservesFiniteLimits G := by
   let := abelian L P
@@ -472,7 +469,6 @@ lemma preservesFiniteLimits_comp_iff :
     (show parallelPair (L.map f'.hom) 0 ≅ parallelPair f 0 from
       parallelPair.ext (Arrow.leftFunc.mapIso iso) (Arrow.rightFunc.mapIso iso))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma preservesFiniteColimits_comp_iff :
     PreservesFiniteColimits (L ⋙ G) ↔ PreservesFiniteColimits G := by
   let := abelian L P
