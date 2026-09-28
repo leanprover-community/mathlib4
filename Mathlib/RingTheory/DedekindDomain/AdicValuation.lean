@@ -703,8 +703,7 @@ noncomputable def valueGroupOrderMonoidIso :
     | .coe a, .coe b => simp [← Subtype.coe_le_coe]
 
 @[simp] theorem valueGroupOrderMonoidIso_coe (a : (valuation K v).valueGroup) :
-    valueGroupOrderMonoidIso K v (a : ValueGroup₀ _) =
-      (valueGroupMulEquiv K v a : ValueGroup₀ _) := by
+    valueGroupOrderMonoidIso K v a = (valueGroupMulEquiv K v a : ValueGroup₀ _) := by
   simp [valueGroupOrderMonoidIso]
 
 theorem embedding_valueGroupOrderMonoidIso (g : (valuation K v).ValueGroup₀) :
@@ -731,26 +730,11 @@ theorem valueGroupOrderMonoidIso_restrict (x : v.adicCompletion K) :
 instance : ValuativeRel (v.adicCompletion K) := .ofValuation (valuation K v)
 instance : (valuation K v).Compatible := .ofValuation (valuation K v)
 
-open ValuativeRel Filter in
 instance : IsValuativeTopology (v.adicCompletion K) := by
-  let w := Valuation.extension (WithVal.valuation (v.valuation K))
-  refine .of_mem_nhds_zero_iff_vle (valuation K v) ?_
-  intro s
-  rw [(isUniformInducing_toCompletion K v).isInducing.nhds_eq_comap 0, toCompletion_zero, mem_comap]
-  refine ⟨fun ⟨t, ht, hts⟩ ↦ ?_, fun ⟨γ, hγ⟩ ↦ ?_⟩
-  · obtain ⟨δ, hδ⟩ := (IsValuativeTopology.mem_nhds_zero_iff t).1 ht
-    let δ' := Units.mapEquiv (ValueGroupWithZero.orderMonoidIso w).toMulEquiv δ
-    refine ⟨.mapEquiv (valueGroupOrderMonoidIso K v).symm.toMulEquiv δ', fun x hx ↦ hts (hδ ?_)⟩
-    simpa [← map_lt_map_iff (valueGroupOrderMonoidIso K v), valueGroupOrderMonoidIso_restrict,
-      δ', w] using hx
-  · refine ⟨{y | w.restrict y < (Units.mapEquiv (valueGroupOrderMonoidIso K v).toMulEquiv γ)}, ?_,
-      fun x hx ↦ hγ ?_⟩
-    · rw [IsValuativeTopology.mem_nhds_zero_iff]
-      let γ' := Units.mapEquiv (valueGroupOrderMonoidIso K v).toMulEquiv γ
-      exact ⟨.mapEquiv (ValueGroupWithZero.orderMonoidIso w).symm.toMulEquiv γ', by simp [γ']⟩
-    · rw [Set.mem_ofPred_eq, ← map_lt_map_iff (valueGroupOrderMonoidIso K v),
-        valueGroupOrderMonoidIso_restrict]
-      simpa using hx
+  refine .of_isInducing (f := equiv K v) (isUniformInducing_toCompletion K v).isInducing
+    fun a b ↦ ?_
+  rw [vle_iff_le (valuation K v)]
+  exact vle_iff_le _
 
 noncomputable instance : Valued (adicCompletion K v) ℤᵐ⁰ where
   v := valuation K v
@@ -789,7 +773,6 @@ theorem valuedAdicCompletion_def {x : adicCompletion K v} :
 
 @[simp] theorem valued_ofCompletion (y : (v.valuation K).Completion) :
     Valued.v (ofCompletion y : adicCompletion K v) = Valued.v y := extension_apply_eq_valued K v y
-
 
 theorem valued_coe (k : K) :
     Valued.v (↑k : adicCompletion K v) = v.valuation K k := by
