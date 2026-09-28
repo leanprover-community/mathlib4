@@ -28,3 +28,4 @@ instance DivisionRing.continuousConstSMul_rat {A} [DivisionRing A] [TopologicalS
   ⟨fun r => by simpa only [Algebra.smul_def] using! continuous_id.const_mul _⟩
 
 end DivisionRing
+-- ci-dev test only: force a rebuild of this module

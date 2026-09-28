@@ -34,3 +34,4 @@ theorem imo1963_q5 : cos (π / 7) - cos (2 * π / 7) + cos (3 * π / 7) = 1 / 2 
   ring_nf
   rw [← sin_pi_sub (π * (3 / 7)), sin_pi_mul_neg_div 2 7, sin_pi_mul_neg_div 1 7]
   ring_nf
+-- ci-dev test only: force a rebuild of this module
