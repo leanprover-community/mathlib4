@@ -50,7 +50,8 @@ variable [IsMulTorsionFree M] {n : ℕ} {a b : M}
 
 @[to_additive nsmul_eq_zero_iff_right]
 lemma pow_eq_one_iff_left (hn : n ≠ 0) : a ^ n = 1 ↔ a = 1 := by
-  simpa +contextual [iff_def] using IsMulTorsionFree.pow_left_injective_of_commute (b := (1 : M)) hn (by simp)
+  simpa +contextual [iff_def] using
+    IsMulTorsionFree.pow_left_injective_of_commute (b := (1 : M)) hn (by simp)
 
 -- We want to use `IsAddTorsion.nsmul_eq_zero_iff` earlier than `smul_eq_zero`.
 @[to_additive (attr := simp high)]

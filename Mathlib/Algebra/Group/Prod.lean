@@ -101,7 +101,7 @@ instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
 @[to_additive]
 instance instIsMulTorsionFree [Monoid M] [Monoid N] [IsMulTorsionFree M] [IsMulTorsionFree N] :
     IsMulTorsionFree (M × N) where
-  pow_left_injective n hn a b h hab := by
+  pow_left_injective_of_commute n hn a b h hab := by
     rw [Prod.ext_iff] at *
     exact ⟨IsMulTorsionFree.pow_left_injective_of_commute hn h.1 hab.1,
       IsMulTorsionFree.pow_left_injective_of_commute hn h.2 hab.2⟩
