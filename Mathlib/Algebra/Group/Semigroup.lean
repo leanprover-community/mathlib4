@@ -195,12 +195,12 @@ lemma mul_comm' {M : Type*} [Mul M] [IsMulCommutative M] (a b : M) : a * b = b *
   IsMulCommutative.is_comm.comm ..
 
 /-- `x` is semiconjugate to `y` by `a`, if `a * x = y * a`. -/
-@[to_additive /-- `x` is additive semiconjugate to `y` by `a` if `a + x = y + a` -/]
+@[to_additive /-- `x` is additive semiconjugate to `y` by `a` if `a + x = y + a` -/, expose]
 def SemiconjBy {M : Type*} [Mul M] (a x y : M) : Prop :=
   a * x = y * a
 
 /-- Two elements commute if `a * b = b * a`. -/
-@[to_additive /-- Two elements additively commute if `a + b = b + a` -/]
+@[to_additive /-- Two elements additively commute if `a + b = b + a` -/, expose]
 def Commute {M : Type*} [Mul M] (a b : M) : Prop :=
   SemiconjBy a b b
 
