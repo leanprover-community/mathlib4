@@ -141,7 +141,7 @@ def toEndHom [N.Normal] : G →* End (G ⧸ₐ N) where
       apply (QuotientGroup.leftRel_apply).mpr
       -- We avoid `group` here to minimize imports while low in the hierarchy;
       -- typically it would be better to invoke the tactic.
-      simpa [mul_assoc] using Subgroup.Normal.conj_mem ‹_› _ (QuotientGroup.leftRel_apply.mp h) _)
+      simpa [mul_assoc] using Subgroup.Normal.conj_mem _ (QuotientGroup.leftRel_apply.mp h) _)
     comm := fun (g : G) ↦ by
       ext (x : G ⧸ N)
       induction x using Quotient.inductionOn with | h x
