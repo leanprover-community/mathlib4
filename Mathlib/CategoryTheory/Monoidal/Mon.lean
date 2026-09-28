@@ -612,7 +612,7 @@ instance {M N : Mon C} {f : M ⟶ N} [IsIso f] : IsIso f.hom :=
 
 /-- Construct an isomorphism of monoid objects by giving a monoid isomorphism between the underlying
 objects. -/
-@[to_additive (attr := simps)
+@[to_additive (attr := simps, implicit_reducible)
 /-- Construct an isomorphism of additive monoid objects by giving a additive monoid
 isomorphism between the underlying objects. -/]
 def mkIso' {M N : C} [MonObj M] [MonObj N] (e : M ≅ N) [IsMonHom e.hom] : mk M ≅ mk N where

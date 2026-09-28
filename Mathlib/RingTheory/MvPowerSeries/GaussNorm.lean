@@ -202,7 +202,7 @@ lemma Finset.Nonempty.map_sum_le_sup'_map
       simp only [Finset.sum_cons, Finset.mem_cons, exists_eq_or_imp]
       refine (le_total (g (∑ i ∈ s, f i)) (g (f j))).imp ?_ ?_ <;> intro h
       · exact (na _ _).trans (max_eq_left h).le
-      · exact ⟨_, IH.choose_spec.left, (na _ _).trans <|
+      · exact ⟨_, IH.choose_spec.left, (na _ _).trans
           ((max_eq_right h).le.trans IH.choose_spec.right)⟩
 
 variable [DecidableEq σ] (f g : MvPowerSeries σ R)

@@ -65,7 +65,7 @@ end RestrictScalars
 theorem _root_.Module.End.isUnit_iff [Module R M] (f : Module.End R M) :
     IsUnit f ↔ Function.Bijective f :=
   ⟨fun h ↦
-    Function.bijective_iff_has_inverse.mpr <|
+    Function.bijective_iff_has_inverse.mpr
       ⟨h.unit.inv,
         ⟨Module.End.isUnit_inv_apply_apply_of_isUnit h,
         Module.End.isUnit_apply_inv_apply_of_isUnit h⟩⟩,
@@ -84,7 +84,7 @@ instance automorphismGroup : Group (M ≃ₗ[R] M) where
   mul_assoc _ _ _ := rfl
   mul_one _ := ext fun _ ↦ rfl
   one_mul _ := ext fun _ ↦ rfl
-  inv_mul_cancel f := ext <| f.left_inv
+  inv_mul_cancel f := ext f.left_inv
 
 lemma one_eq_refl : (1 : M ≃ₗ[R] M) = refl R M := rfl
 lemma mul_eq_trans (f g : M ≃ₗ[R] M) : f * g = g.trans f := rfl
@@ -104,7 +104,7 @@ lemma coe_toLinearMap_mul {e₁ e₂ : M ≃ₗ[R] M} :
 
 theorem coe_pow (e : M ≃ₗ[R] M) (n : ℕ) : ⇑(e ^ n) = e^[n] := hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
 
-theorem pow_apply (e : M ≃ₗ[R] M) (n : ℕ) (m : M) : (e ^ n) m = e^[n] m := congr_fun (coe_pow e n) m
+theorem pow_apply (e : M ≃ₗ[R] M) (n : ℕ) (m : M) : (e ^ n) m = e^[n] m := congr($(coe_pow e n) m)
 
 @[simp] lemma mul_apply (f : M ≃ₗ[R] M) (g : M ≃ₗ[R] M) (x : M) : (f * g) x = f (g x) := rfl
 
@@ -120,7 +120,7 @@ def automorphismGroup.toLinearMapMonoidHom : (M ≃ₗ[R] M) →* M →ₗ[R] M 
 
 This generalizes `Function.End.applyMulAction`. -/
 instance applyDistribMulAction : DistribMulAction (M ≃ₗ[R] M) M where
-  smul := (· <| ·)
+  smul := (· ·)
   smul_zero := map_zero
   smul_add := map_add
   one_smul _ := rfl
@@ -279,7 +279,7 @@ equivalence between ℤ-modules -/
 def toIntLinearEquiv : M ≃ₗ[ℤ] M₂ := by
   refine e.toLinearEquiv fun c a ↦ ?_
   convert! e.toAddMonoidHom.map_zsmul c a using 1
-  · exact congr(e $(int_smul_eq_zsmul ..))
+  · congrm e $(int_smul_eq_zsmul ..)
   · exact int_smul_eq_zsmul ..
 
 @[simp]

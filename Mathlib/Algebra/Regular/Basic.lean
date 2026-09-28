@@ -36,12 +36,12 @@ variable [Mul R]
 
 @[to_additive] theorem IsLeftRegular.right_of_commute {a : R}
     (ca : ∀ b, Commute a b) (h : IsLeftRegular a) : IsRightRegular a :=
-  fun x y xy => h <| (ca x).trans <| xy.trans <| (ca y).symm
+  fun x y xy => h <| (ca x).trans <| xy.trans (ca y).symm
 
 @[to_additive] theorem IsRightRegular.left_of_commute {a : R}
     (ca : ∀ b, Commute a b) (h : IsRightRegular a) : IsLeftRegular a := by
   simp only [@Commute.symm_iff R _ a] at ca
-  exact fun x y xy => h <| (ca x).trans <| xy.trans <| (ca y).symm
+  exact fun x y xy => h <| (ca x).trans <| xy.trans (ca y).symm
 
 @[to_additive] theorem Commute.isRightRegular_iff {a : R} (ca : ∀ b, Commute a b) :
     IsRightRegular a ↔ IsLeftRegular a :=

@@ -159,7 +159,7 @@ theorem imJ_coe : (x : ℍ[R,c₁,c₂,c₃]).imJ = 0 := rfl
 @[simp, norm_cast]
 theorem imK_coe : (x : ℍ[R,c₁,c₂,c₃]).imK = 0 := rfl
 
-theorem coe_injective : Function.Injective (coe : R → ℍ[R,c₁,c₂,c₃]) := fun _ _ h => congr_arg re h
+theorem coe_injective : Function.Injective (coe : R → ℍ[R,c₁,c₂,c₃]) := fun _ _ h => congr(re $h)
 
 @[simp]
 theorem coe_inj {x y : R} : (x : ℍ[R,c₁,c₂,c₃]) = y ↔ x = y :=
@@ -361,7 +361,7 @@ instance : AddCommGroupWithOne ℍ[R,c₁,c₂,c₃] where
   natCast_zero := by simp
   natCast_succ := by simp
   intCast n := ((n : R) : ℍ[R,c₁,c₂,c₃])
-  intCast_ofNat _ := congr_arg coe (Int.cast_natCast _)
+  intCast_ofNat _ := congr(coe $(Int.cast_natCast _))
   intCast_negSucc n := by
     change coe _ = -coe _
     rw [Int.cast_negSucc, coe_neg]
@@ -528,7 +528,7 @@ instance : Module.Free R ℍ[R,c₁,c₂,c₃] := .of_basis (basisOneIJK c₁ c�
 
 theorem rank_eq_four [StrongRankCondition R] : Module.rank R ℍ[R,c₁,c₂,c₃] = 4 := by
   rw [rank_eq_card_basis (basisOneIJK c₁ c₂ c₃), Fintype.card_fin]
-  norm_num
+  simp
 
 theorem finrank_eq_four [StrongRankCondition R] : Module.finrank R ℍ[R,c₁,c₂,c₃] = 4 := by
   rw [Module.finrank, rank_eq_four, Cardinal.toNat_ofNat]

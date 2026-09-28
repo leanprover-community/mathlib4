@@ -297,7 +297,7 @@ theorem pseudo_surjective_of_epi {P Q : C} (f : P ⟶ Q) [Epi f] : Function.Surj
   fun qbar =>
   Quotient.inductionOn qbar fun q =>
     ⟨(pullback.fst f q.hom : Over P),
-      Quotient.sound <|
+      Quotient.sound
         ⟨pullback f q.hom, 𝟙 (pullback f q.hom), pullback.snd _ _, inferInstance, inferInstance, by
           rw [Category.id_comp, ← pullback.condition, app_hom, Over.coe_hom]⟩⟩
 

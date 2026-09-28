@@ -494,7 +494,6 @@ lemma equivHeightOneSpectrum_symm_apply_algebraMap
   simp_rw [NumberField.FinitePlace.equivHeightOneSpectrum_symm_apply,
     FinitePlace.norm_embedding, HeightOneSpectrum.adicAbv_def]
   rw [← IsDedekindDomain.HeightOneSpectrum.valuation_liesOver L v, map_pow,
-    Ideal.ramificationIdx'_eq_ramificationIdx v.1 w.1 v.ne_bot,
     WithZeroMulInt.toNNReal_neg_apply _ (by simpa), WithZeroMulInt.toNNReal_neg_apply _ (by simpa),
     ← Ideal.absNorm_pow_inertiaDeg v.1 w.1]
   simp only [Nat.cast_pow, NNReal.coe_zpow, ← zpow_natCast, ← zpow_mul]
