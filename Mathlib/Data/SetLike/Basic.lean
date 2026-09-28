@@ -258,7 +258,10 @@ A preorder defined this way automatically makes available an instance of `IsMemL
   le_refl _ _ h := h
   le_trans _ _ _ h₁ h₂ _ h₃ := h₂ (h₁ h₃)
 
-/-- The partial order induced from a `SetLike` instance by inclusion.
+instance [Membership B A] : letI := LE.ofMembership A; IsConcreteLE A B :=
+  letI := LE.ofMembership A; { le_iff := .rfl }
+
+/-- The preorder induced from a `Membership` instance by inclusion.
 
 A partial order defined this way automatically makes available an instance of `IsMemLE`.
 -/
