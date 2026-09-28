@@ -67,7 +67,7 @@ lemma map_quotientMk (f : A →+* B) (hf : Function.Injective f)
 
 @[simp]
 theorem map_id (x : ClassGroup A) : map (RingHom.id A) Function.injective_id x = x := by
-  induction x using QuotientGroup.induction_on with | H α => ?_
+  induction x using QuotientGroup.induction_on with | H α
   rw [map_quotientMk]
   congr 1
   ext : 1
@@ -84,7 +84,7 @@ theorem map_id (x : ClassGroup A) : map (RingHom.id A) Function.injective_id x =
 theorem map_map (f : A →+* B) (hf : Function.Injective f) (g : B →+* C)
     (hg : Function.Injective g) (x : ClassGroup A) :
     map g hg (map f hf x) = map (g.comp f) (hg.comp hf) x := by
-  induction x using QuotientGroup.induction_on with | H α => ?_
+  induction x using QuotientGroup.induction_on with | H α
   simp only [map_quotientMk]
   congr 1
   ext : 1
