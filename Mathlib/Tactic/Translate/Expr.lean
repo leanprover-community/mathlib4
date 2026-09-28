@@ -58,6 +58,8 @@ public structure TranslationInfo where
   reorder : Reorder := {}
   /-- The argument used to determine whether this constant should be translated. -/
   relevantArg : RelevantArg := .arg 0
+  /-- Whether `translation` should be unfolded. This is used by `to_dual_for`. -/
+  unfold : Bool := false
 
 /-- `TranslateData` is a structure that holds all data required for a translation attribute. -/
 public structure TranslateData where
@@ -289,7 +291,7 @@ where
               expression to 0. However, we will still recurse into all the non-numeral arguments."
             let args := args.set 1 (mkRawNatLit 0)
             return mkAppN f (← args.mapM visit)
-      let some { translation := n₁, reorder, relevantArg } ← findPrefixTranslation? n₀ t |
+      let some { translation := n₁, reorder, relevantArg, unfold } ← findPrefixTranslation? n₀ t |
         return mkAppN f (← args.mapM visit)
       -- Use `relevantArg` to test if the head should be translated.
       if let .arg relevantArg := relevantArg then
@@ -316,7 +318,11 @@ where
       for (arg, argReorder) in reorder.argReorders do
         args ← args.modifyM arg (reorderLambda argReorder ·)
       args := reorder.permute! args
-      return mkAppN f' (← args.mapM visit)
+      let result := mkAppN f' (← args.mapM visit)
+      if unfold then
+        unfoldDefinition result
+      else
+        return result
     | .lam .. => return mkAppN (← visitLambda f args.toList) (← args.mapM visit)
     | _ => return mkAppN (← visit f) (← args.mapM visit)
   /- In `visitLambda`, `visitForall` and `visitLet`,
