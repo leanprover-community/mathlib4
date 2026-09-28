@@ -37,6 +37,10 @@ decomposition (resp. inertia) group of `P`, and the associated ring is its integ
 `A`. Decomposition and inertia rings arising this way are provided by
 `Ideal.IsDecompositionRing.of_isFractionRing` and `Ideal.IsInertiaRing.of_isFractionRing`.
 
+The field-level predicates `IsDecompositionField` and `IsInertiaField` defined below will be
+deprecated in favor of the ring-level predicates `Ideal.IsDecompositionRing` and
+`Ideal.IsInertiaRing`.
+
 -/
 
 @[expose] public section
