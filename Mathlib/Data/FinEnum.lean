@@ -197,6 +197,80 @@ instance (priority := 100) [FinEnum α] : Fintype α where
   elems := univ.map equiv.symm.toEmbedding
   complete := by intros; simp
 
+def succMany? [inst : FinEnum α] (n : Nat) (x : α) : Option α :=
+  let next := inst.equiv x + n
+  if fits : next < card α
+  then inst.equiv.symm { val := next, isLt := fits }
+  else none
+
+@[grind =]
+lemma succMany?_eq_some_iff [inst : FinEnum α] {n : Nat} {a b : α} :
+  succMany? n a = some b ↔ (inst.equiv a + n = inst.equiv b ∧ inst.equiv a + n < card α) := by
+  simp only [succMany?]
+  constructor
+  · intro h
+    constructor
+    · split_ifs at h with hs
+      · injection h with h
+        rewrite [← h]
+        simp
+    · simp only [Option.dite_none_right_eq_some, Option.some.injEq] at h
+      exact h.1
+  · intro ⟨h, anLt⟩
+    simp only [Option.dite_none_right_eq_some, Option.some.injEq]
+    constructor
+    · apply equiv.injective
+      simp only [Equiv.apply_symm_apply]
+      congr
+    · assumption
+
+@[grind =]
+lemma succMany?_succ [inst : FinEnum α] (n : Nat) (a : α) :
+  (succMany? n a).bind (succMany? 1) = succMany? (n + 1) a := by
+  simp [succMany?]
+  split_ifs <;> simp [succMany?] <;> grind only
+
+lemma succMany?_bind_flatten [inst : FinEnum α] (n m o : Nat) (a : α) :
+  (succMany? n a).bind (fun a => (succMany? m a).bind (succMany? o)) =
+    ((succMany? n a).bind (succMany? m)).bind (succMany? o) := by
+  grind
+
+@[grind =]
+lemma succMany?_bind [inst : FinEnum α] {n m : Nat} {a : α} :
+  (succMany? n a).bind (succMany? m) = succMany? (n + m) a := by
+  induction m with
+  | zero =>
+    simp [succMany?]
+    split_ifs <;> simp [succMany?]
+  | succ m ih =>
+    conv =>
+      lhs
+      rhs
+      intro x
+      rewrite [← @succMany?_succ _ inst m x]
+    rewrite [succMany?_bind_flatten, ih]
+    apply succMany?_succ
+
+instance instUpwardEnumerable [inst : FinEnum α] : Std.PRange.UpwardEnumerable α where
+  succ? := succMany? 1
+  succMany? := succMany?
+
+instance [inst : FinEnum α] : Std.PRange.LawfulUpwardEnumerable α where
+  -- It is not the case that a and b are the same, because if it were, the equivalence with
+  -- `Fin k` would have mapped `m` and `m + n + 1` to the same object, and hence would not be
+  -- injective.
+  ne_of_lt a b h := by
+    rcases h with ⟨n, h⟩
+    have ⟨h, _⟩ := succMany?_eq_some_iff.mp h
+    grind only
+
+  succMany?_zero a := by simp [Std.PRange.UpwardEnumerable.succMany?, succMany?]
+
+  succMany?_add_one n a := by
+    simp only [Std.PRange.UpwardEnumerable.succMany?, Std.PRange.UpwardEnumerable.succ?]
+    symm
+    apply succMany?_bind
+
 /-- The enumeration merely adds an ordering, leaving the cardinality as is. -/
 theorem card_eq_fintypeCard {α : Type u} [FinEnum α] [Fintype α] : card α = Fintype.card α :=
   Fintype.truncEquivFin α |>.inductionOn (fun h ↦ Fin.equiv_iff_eq.mp ⟨equiv.symm.trans h⟩)
