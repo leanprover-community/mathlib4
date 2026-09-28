@@ -333,11 +333,11 @@ def duplicateImportsCheck (imports : Array ImportRef) : CommandElabM Unit := do
 
 section HeaderParser
 
-/-! We extend the import parser to also parse `set_option` commands that need to go before
+/-! We extend the import parser to also parse Verso `set_option` commands that need to go before
 the module doc-string. We only use the parser for determining whether a given string matches
-and ignore the other bits of the state. -/
+and ignore the other bits of the state.
 
-open ParseImports
+This approach may be unneeded in the future when using stateful linters. -/
 
 /-- Allow zero or more repetitions of the parser before the parser errors.
 
@@ -345,8 +345,7 @@ Backtracks to the start of parse at any failure.
 -/
 @[specialize] partial def many (p : Parser) : Parser := fun input s =>
   let newS := p input s
-  if newS.error? matches some ..
-  then
+  if newS.error?.isSome then
     s
   else
     many p input newS
@@ -355,26 +354,25 @@ Backtracks to the start of parse at any failure.
 def anyOf (ps : List Parser) : Parser := fun input s => Id.run do
   for p in ps do
     let newS := p input s
-    if newS.error? matches some .. then
+    if newS.error?.isSome then
       continue
     else
       return newS
   return {s with error? := some "no alternative matches"}
 
 /-- Accepts either the keyword "false" or the keyword "true". -/
-def bool : Parser := keywordCore "false" skip skip >> keywordCore "true" skip skip
+@[inline] def boolLit : Parser := anyOf [keyword "false", keyword "true"]
 
 /-- Parser for all the module header code allowed before the module docs. -/
 partial def allowedHeaderParser : Parser :=
   ParseImports.main >>
-  -- We allow specific `set_option` commands for controlling the module docs.
   many (keyword "set_option" >> anyOf [
-    keyword "doc.verso",
+    keyword "doc.verso.suggestions",
     keyword "doc.verso.module",
-    keyword "doc.verso.suggestions"
-  ] >> bool)
-  -- TODO: set_option also allows natLit and strLit here in addition to bool.
-  -- Currently this is not needed but would be good for future-proofing.
+    -- check last, otherwise it prevents hitting the ones it is a prefix of
+    keyword "doc.verso",
+    keyword "linter.style.header" -- for testing and downstream
+  ] >> boolLit)
 
 end HeaderParser
 
