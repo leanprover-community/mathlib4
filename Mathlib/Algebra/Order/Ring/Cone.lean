@@ -20,10 +20,10 @@ subsemirings `S` of `R` such that `S ∩ -S = 0`.
 
 variable (R : Type*) [Ring R]
 
-theorem Subsemiring.IsPointed.nonneg [PartialOrder R] [IsOrderedRing R] :
+protected theorem Subsemiring.IsPointed.nonneg [PartialOrder R] [IsOrderedRing R] :
     (Subsemiring.nonneg R).IsPointed := AddSubmonoid.IsPointed.nonneg R
 
-theorem Subsemiring.IsSpanning.nonneg [LinearOrder R] [IsOrderedRing R] :
+protected theorem Subsemiring.IsSpanning.nonneg [LinearOrder R] [IsOrderedRing R] :
     (Subsemiring.nonneg R).IsSpanning := AddSubmonoid.IsSpanning.nonneg R
 
 variable {R} {S : Subsemiring R} (hS : S.IsPointed)
