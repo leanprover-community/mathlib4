@@ -6,8 +6,8 @@ Authors: Mitchell Lee, Óscar Álvarez
 module
 
 public import Mathlib.GroupTheory.Coxeter.Length
-public import Mathlib.Data.List.GetD
-public import Mathlib.Tactic.Group
+import Mathlib.Data.List.GetD
+import Mathlib.Tactic.Group
 
 /-!
 # Reflections, inversions, and inversion sequences

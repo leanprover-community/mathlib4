@@ -6,8 +6,8 @@ Authors: Joseph Myers
 module
 
 public import Mathlib.Geometry.Euclidean.Projection
-public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
-public import Mathlib.Analysis.InnerProductSpace.Affine
+import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
+import Mathlib.Analysis.InnerProductSpace.Affine
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Shift
 
 /-!

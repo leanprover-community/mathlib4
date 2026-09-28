@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Conj
 public import Mathlib.Algebra.Group.Subgroup.Lattice
-public import Mathlib.Algebra.Group.Submonoid.BigOperators
+import Mathlib.Algebra.Group.Submonoid.BigOperators
 public import Mathlib.Data.Finset.Fin
 public import Mathlib.Data.Finset.Sort
 public import Mathlib.Data.Fintype.Perm

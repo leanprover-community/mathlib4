@@ -73,7 +73,6 @@ lemma norm_ascPochhammer_le (k : ℕ) (x : ℤ_[p]) :
 instance : IsAddTorsionFree ℤ_[p] where
   nsmul_right_injective _ := smul_right_injective ℤ_[p]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The p-adic integers are a binomial ring, i.e. a ring where binomial coefficients make sense. -/
 noncomputable instance instBinomialRing : BinomialRing ℤ_[p] where
   -- We define `multichoose` as a fraction in `ℚ_[p]` together with a proof that its norm is `≤ 1`.
