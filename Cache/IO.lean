@@ -3,9 +3,13 @@ Copyright (c) 2023 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Jon Eugster
 -/
-import Cache.Lean
-import Lake.Load.Toml
-import Batteries.Tactic.OpenPrivate
+module
+
+public import Cache.Lean
+public import Lake.Load.Toml
+public import Batteries.Tactic.OpenPrivate
+
+public section
 
 variable {α : Type}
 

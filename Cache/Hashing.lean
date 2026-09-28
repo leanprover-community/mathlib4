@@ -3,9 +3,12 @@ Copyright (c) 2023 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Jon Eugster
 -/
+module
 
-import Cache.IO
-import Lean.Elab.ParseImportsFast
+public import Cache.IO
+public import Lean.Elab.ParseImportsFast
+
+public section
 
 namespace Cache.Hashing
 
