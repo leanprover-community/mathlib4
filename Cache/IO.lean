@@ -7,7 +7,8 @@ module
 
 public import Cache.Lean
 public import Lake.Load.Toml
-public import Batteries.Tactic.OpenPrivate
+
+import Batteries.Tactic.OpenPrivate
 
 public section
 
