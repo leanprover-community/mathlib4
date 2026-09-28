@@ -81,7 +81,8 @@ section Group
 variable [Group G] [IsMulTorsionFree G] {n : ℤ} {a b : G}
 
 @[to_additive]
-lemma Commute.eq_of_zpow_eq_zpow (hab : Commute a b) (hn : n ≠ 0) (habn : a ^ n = b ^ n) : a = b := by
+lemma Commute.eq_of_zpow_eq_zpow (hab : Commute a b) (hn : n ≠ 0) (habn : a ^ n = b ^ n) :
+    a = b := by
   cases n
   · exact hab.eq_of_pow_eq_pow (by simpa using hn) (by simpa using habn)
   · exact hab.eq_of_pow_eq_pow (Nat.add_one_ne_zero _) (by simpa using habn)
