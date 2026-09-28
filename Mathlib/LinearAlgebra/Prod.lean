@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Algebra.Prod
 public import Mathlib.Algebra.Group.Graph
 public import Mathlib.LinearAlgebra.Span.Basic
 
-/-! ### Products of modules
+/-! # Products of modules
 
 This file defines constructors for linear maps whose domains or codomains are products.
 
