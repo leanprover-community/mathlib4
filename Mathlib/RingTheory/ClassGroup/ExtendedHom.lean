@@ -65,8 +65,8 @@ lemma map_quotientMk (f : A →+* B) (hf : Function.Injective f)
         (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective f hf)).toMonoidHom α) := by
   rfl
 
-theorem map_id (hf : Function.Injective (RingHom.id A)) (x : ClassGroup A) :
-    map (RingHom.id A) hf x = x := by
+@[simp]
+theorem map_id (x : ClassGroup A) : map (RingHom.id A) Function.injective_id x = x := by
   induction x using QuotientGroup.induction_on with | H α => ?_
   rw [map_quotientMk]
   congr 1
@@ -75,7 +75,7 @@ theorem map_id (hf : Function.Injective (RingHom.id A)) (x : ClassGroup A) :
     FractionalIdeal.extendedHom'_apply]
   rw [← FractionalIdeal.coeToSubmodule_inj, FractionalIdeal.coe_extended_eq_span]
   have : ⇑(IsLocalization.map (FractionRing A) (RingHom.id A)
-      (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ hf) :
+      (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ Function.injective_id) :
         FractionRing A →+* FractionRing A) = id :=
     funext fun z ↦ IsLocalization.map_id z _
   rw [this, Set.image_id]
@@ -101,22 +101,13 @@ theorem map_mk0 {A B : Type*} [CommRing A] [CommRing B] [IsDedekindDomain A]
   exact FractionalIdeal.extended_coeIdeal_eq_map _ _ _
 
 /-- A ring isomorphism `A ≃+* B` induces an isomorphism on their class groups. -/
+@[expose, simps]
 noncomputable def mulEquiv (g : A ≃+* B) : ClassGroup A ≃* ClassGroup B where
   toFun := map g g.injective
   invFun := map g.symm g.symm.injective
-  left_inv x := (map_map _ _ _ _ x).trans (by convert map_id Function.injective_id x; ext; simp)
-  right_inv x := (map_map _ _ _ _ x).trans (by convert map_id Function.injective_id x; ext; simp)
+  left_inv x := (map_map _ _ _ _ x).trans (by convert map_id x; ext; simp)
+  right_inv x := (map_map _ _ _ _ x).trans (by convert map_id x; ext; simp)
   map_mul' := map_mul _
-
-@[simp]
-theorem mulEquiv_apply (g : A ≃+* B) (x : ClassGroup A) :
-    mulEquiv g x = map g g.injective x := by
-  rfl
-
-@[simp]
-theorem mulEquiv_symm_apply (g : A ≃+* B) (x : ClassGroup B) :
-    (mulEquiv g).symm x = map g.symm g.symm.injective x := by
-  rfl
 
 theorem mulEquiv_mk0 {A B : Type*} [CommRing A] [CommRing B] [IsDedekindDomain A]
     [IsDedekindDomain B] (g : A ≃+* B) (I : (Ideal A)⁰) :
