@@ -110,6 +110,11 @@ theorem congr_sets (h : { x | x ∈ s ↔ x ∈ t } ∈ f) : s ∈ f ↔ t ∈ f
   ⟨fun hs => mp_mem hs (mem_of_superset h fun _ => Iff.mp), fun hs =>
     mp_mem hs (mem_of_superset h fun _ => Iff.mpr)⟩
 
+theorem sets_injective : Injective (Filter.sets : Filter α → Set (Set α)) := by
+  intro f g h
+  ext s
+  rw [← Filter.mem_sets, ← Filter.mem_sets, h]
+
 lemma copy_eq {S} (hmem : ∀ s, s ∈ S ↔ s ∈ f) : f.copy S hmem = f := Filter.ext hmem
 
 /-- Weaker version of `Filter.biInter_mem` that assumes `Subsingleton β` rather than `Finite β`. -/
@@ -172,7 +177,7 @@ lemma mem_generate_of_mem {s : Set <| Set α} {U : Set α} (h : U ∈ s) :
     U ∈ generate s := GenerateSets.basic h
 
 theorem le_generate_iff {s : Set (Set α)} {f : Filter α} : f ≤ generate s ↔ s ⊆ f.sets :=
-  Iff.intro (fun h _ hu => h <| GenerateSets.basic <| hu) fun h _ hu =>
+  Iff.intro (fun h _ hu => h <| GenerateSets.basic hu) fun h _ hu =>
     hu.recOn (fun h' => h h') univ_mem (fun _ hxy ↦ by gcongr) fun _ _ hx hy =>
       inter_mem hx hy
 
@@ -198,7 +203,7 @@ def giGenerate (α : Type*) :
     @GaloisInsertion (Set (Set α)) (Filter α)ᵒᵈ _ _ Filter.generate Filter.sets where
   gc _ _ := le_generate_iff
   le_l_u _ _ h := GenerateSets.basic h
-  choice s hs := Filter.mkOfClosure s (le_antisymm hs <| le_generate_iff.1 <| le_rfl)
+  choice s hs := Filter.mkOfClosure s (le_antisymm hs <| le_generate_iff.1 le_rfl)
   choice_eq _ _ := mkOfClosure_sets
 
 theorem mem_inf_iff {f g : Filter α} {s : Set α} : s ∈ f ⊓ g ↔ ∃ t₁ ∈ f, ∃ t₂ ∈ g, s = t₁ ∩ t₂ :=
@@ -373,6 +378,9 @@ theorem monotone_principal : Monotone (𝓟 : Set α → Filter α) := fun _ _ =
 
 @[simp] theorem principal_eq_iff_eq {s t : Set α} : 𝓟 s = 𝓟 t ↔ s = t := by
   simp only [le_antisymm_iff, le_principal_iff, mem_principal]
+
+theorem principal_injective : Injective (𝓟 : Set α → Filter α) :=
+  fun _ _ => principal_eq_iff_eq.mp
 
 @[simp] theorem join_principal_eq_sSup {s : Set (Filter α)} : join (𝓟 s) = sSup s := rfl
 

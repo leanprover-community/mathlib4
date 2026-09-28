@@ -5,18 +5,18 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.RingDivision
-public import Mathlib.Algebra.Polynomial.Roots
-public import Mathlib.Algebra.MvPolynomial.Polynomial
+import Mathlib.Algebra.Polynomial.RingDivision
+import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.Algebra.MvPolynomial.Polynomial
 public import Mathlib.Algebra.MvPolynomial.Rename
 
 /-!
-## Function extensionality for multivariate polynomials
+# Function extensionality for multivariate polynomials
 
 In this file we show that two multivariate polynomials over an infinite integral domain are equal
 if they are equal upon evaluating them on an arbitrary assignment of the variables.
 
-# Main declaration
+## Main declaration
 
 * `MvPolynomial.funext`: two polynomials `φ ψ : MvPolynomial σ R`
   over an infinite integral domain `R` are equal if `eval x φ = eval x ψ` for all `x : σ → R`.

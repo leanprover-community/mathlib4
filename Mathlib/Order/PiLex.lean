@@ -70,7 +70,7 @@ theorem lex_iff_of_unique [Unique ι] [∀ i, LT (β i)] {r} [Std.Irrefl r] {x y
     Pi.Lex r (· < ·) x y ↔ x default < y default := by
   simp [Pi.Lex, Unique.forall_iff, Unique.exists_iff, irrefl]
 
-theorem trichotomous_lex [∀ i, Std.Trichotomous (α := β i) s] (wf : WellFounded r) :
+theorem trichotomous_lex [∀ i, Std.Trichotomous (α := β i) s] [wf : WellFounded r] :
     Std.Trichotomous (Pi.Lex r @s) :=
   { trichotomous a b hab hba := by
       by_contra! h
@@ -134,7 +134,7 @@ instance [LinearOrder ι] [∀ a, PartialOrder (β a)] : PartialOrder (Colex (�
 noncomputable instance Lex.linearOrder [LinearOrder ι] [WellFoundedLT ι]
     [∀ a, LinearOrder (β a)] : LinearOrder (Lex (∀ i, β i)) :=
   @linearOrderOfSTO (Πₗ i, β i) (· < ·)
-    { trichotomous := (trichotomous_lex _ _ IsWellFounded.wf).1 } (Classical.decRel _)
+    { trichotomous := (trichotomous_lex _ _).1 } (Classical.decRel _)
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- `Colex (∀ i, α i)` is a linear order if the original order has well-founded `>`. -/
@@ -164,14 +164,14 @@ variable [WellFoundedLT ι]
 
 theorem toLex_monotone : Monotone (@toLex (∀ i, β i)) := fun a b h =>
   or_iff_not_imp_left.2 fun hne =>
-    let ⟨i, hi, hl⟩ := IsWellFounded.wf.has_min (r := (· < ·)) { i | a i ≠ b i }
+    let ⟨i, hi, hl⟩ := WellFounded.has_min inferInstance (r := (· < ·)) { i | a i ≠ b i }
       (Function.ne_iff.1 hne)
     ⟨i, fun j hj => by
       contrapose! hl
       exact ⟨j, hl, hj⟩, (h i).lt_of_ne hi⟩
 
 theorem toLex_strictMono : StrictMono (@toLex (∀ i, β i)) := fun a b h =>
-  let ⟨i, hi, hl⟩ := IsWellFounded.wf.has_min (r := (· < ·)) { i | a i ≠ b i }
+  let ⟨i, hi, hl⟩ := WellFounded.has_min inferInstance (r := (· < ·)) { i | a i ≠ b i }
     (Function.ne_iff.1 h.ne)
   ⟨i, fun j hj => by
     contrapose! hl
@@ -357,7 +357,7 @@ instance [LinearOrder ι] [WellFoundedGT ι] [Nonempty ι] [∀ i, PartialOrder 
 smaller than the original function. -/
 theorem lex_desc {α} [Preorder ι] [DecidableEq ι] [LT α] {f : ι → α} {i j : ι} (h₁ : i ≤ j)
     (h₂ : f j < f i) : toLex (f ∘ Equiv.swap i j) < toLex f :=
-  ⟨i, fun _ hik => congr_arg f (Equiv.swap_apply_of_ne_of_ne hik.ne (hik.trans_le h₁).ne), by
+  ⟨i, fun _ hik => congr(f $(Equiv.swap_apply_of_ne_of_ne hik.ne (hik.trans_le h₁).ne)), by
     simpa only [Pi.toLex_apply, Function.comp_apply, Equiv.swap_apply_left] using h₂⟩
 
 /-- If we swap two strictly increasing values in a function, then the result is colexicographically

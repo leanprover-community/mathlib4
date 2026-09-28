@@ -148,7 +148,7 @@ theorem mulHeight_linearMap_apply_le [Nonempty ι] (A : ι' × ι → K) (x : ι
     exact v.iSup_abv_linearMap_apply_le A x
   · -- nonarchimedean part: reduce to "local" statement `linearMap_apply_bound_of_isNonarchimedean`
     rw [← finprod_mul_distrib (by fun_prop) (by fun_prop)]
-    refine finprod_le_finprod (by fun_prop)
+    refine finprod_le_finprod₀ (by fun_prop)
       (fun v ↦ Real.iSup_nonneg_of_nonnegHomClass v.val _) (by fun_prop) fun v ↦ ?_
     exact (isNonarchimedean _ v.prop).iSup_abv_linearMap_apply_le A x
 
@@ -278,7 +278,7 @@ private lemma mulHeight_constantCoeff_le_mulHeightBound {p : ι' → MvPolynomia
     exact prod_map_le_prod_map₀ _ _ (fun v _ ↦ Real.iSup_nonneg_of_nonnegHomClass ..)
       fun v _ ↦ Finite.ciSup_mono (H v)
   · have := (Function.ne_iff.mp h).nonempty
-    refine finprod_le_finprod (by fun_prop)
+    refine finprod_le_finprod₀ (by fun_prop)
       (fun v ↦ Real.iSup_nonneg_of_nonnegHomClass ..) (by fun_prop) ?_
     refine fun v ↦ Finite.ciSup_mono fun j ↦ ?_
     rw [show constantCoeff (p j) = (p j).coeff 0 from rfl]
@@ -337,7 +337,7 @@ theorem mulHeight_eval_le {N : ℕ} {p : ι' → MvPolynomial ι K} (hp : ∀ i,
     have := (Function.ne_iff.mp h₀).nonempty
     have F := hasFiniteMulSupport_iSup_nonarchAbsVal hx
     rw [finprod_pow F, ← finprod_mul_distrib (by fun_prop) (by fun_prop)]
-    refine finprod_le_finprod (by fun_prop)
+    refine finprod_le_finprod₀ (by fun_prop)
       (fun _ ↦ Real.iSup_nonneg_of_nonnegHomClass ..) (by fun_prop) fun v ↦ Real.iSup_le
       (fun j ↦ ?_) ?_
     · grw [(isNonarchimedean _ v.prop).eval_mvPolynomial_le (hp j) x]
@@ -420,7 +420,7 @@ private lemma mulHeight_eval_ge_aux {M N : ℕ} {q : ι × ι' → MvPolynomial 
     x = 0 := by
   ext i
   simp only [Finset.univ_eq_empty, Finset.sum_empty] at h
-  exact eq_zero_of_pow_eq_zero <| (h i).symm
+  exact eq_zero_of_pow_eq_zero (h i).symm
 
 variable [AdmissibleAbsValues K] [Finite ι]
 
@@ -558,14 +558,14 @@ lemma mulHeight_sym2_le :
   simp only [pow_one] at hC
   refine ⟨max C 1, by grind, fun a b c d ↦ ?_⟩
   by_cases hab : ![a, b] = 0
-  · rw [hab, mulHeight_zero, mul_one, show a = 0 from congrFun hab 0,
-      show b = 0 from congrFun hab 1,
+  · rw [hab, mulHeight_zero, mul_one, show a = 0 from congr($hab 0),
+      show b = 0 from congr($hab 1),
       show ![0 * c, 0 * d + 0 * c, 0 * d] = 0 by ext i; fin_cases i <;> simp, mulHeight_zero]
     grw [← one_le_mulHeight]
     grind
   by_cases hcd : ![c, d] = 0
-  · rw [hcd, mulHeight_zero, mul_one, show c = 0 from congrFun hcd 0,
-      show d = 0 from congrFun hcd 1,
+  · rw [hcd, mulHeight_zero, mul_one, show c = 0 from congr($hcd 0),
+      show d = 0 from congr($hcd 1),
       show ![a * 0, a * 0 + b * 0, b * 0] = 0 by ext i; fin_cases i <;> simp, mulHeight_zero]
     grw [← one_le_mulHeight]
     grind

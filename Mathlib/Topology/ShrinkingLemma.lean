@@ -355,7 +355,7 @@ theorem exists_subset_iUnion_closure_subset_t2space (hs : IsCompact s) (uo : ∀
   · intro i
     exact v.pred_of_mem (this i)
   · intro i
-    by_contra! hi
+    by_contra hi
     rcases exists_gt_t2space v hs i hi with ⟨v', hlt, _⟩
     exact hv.not_lt hlt
 
