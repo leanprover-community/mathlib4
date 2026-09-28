@@ -118,14 +118,15 @@ theorem prodComparison_inv_natural (f : A ⟶ A') (g : B ⟶ B') [IsIso (prodCom
 /-- The natural isomorphism `F(A ⨯ -) ≅ FA ⨯ F-`, provided each `prodComparison F A B` is an
 isomorphism (as `B` changes).
 -/
-@[to_dual (attr := simps!)
+@[to_dual (attr := simps)
 /-- The natural isomorphism `FA ⨿ F- ≅ F(A ⨿ -)`, provided each `coprodComparison F A B` is an
 isomorphism (as `B` changes).
 -/]
 def prodComparisonNatIso [HasBinaryProducts C] [HasBinaryProducts D] (A : C)
     [∀ B, IsIso (prodComparison F A B)] :
     prod.functor.obj A ⋙ F ≅ F ⋙ prod.functor.obj (F.obj A) :=
-  @asIso _ _ _ _ (delta% prodComparisonNatTrans F A) (NatIso.isIso_of_isIso_app _)
+  delta% @asIso _ _ _ _ (prodComparisonNatTrans F A)
+    (by unfold prodComparisonNatTrans; apply NatIso.isIso_of_isIso_app)
 
 theorem prodComparison_comp :
     prodComparison (F ⋙ G) A B =

@@ -344,8 +344,6 @@ theorem prod.leftUnitor_inv_naturality [HasBinaryProducts C] (f : X ⟶ Y) :
 
 @[deprecated (since := "2026-09-26")]
 alias coprod.leftUnitor_naturality := coprod.leftUnitor_hom_naturality
-@[deprecated (since := "2026-09-26")]
-alias coprod.leftUnitor_naturality_assoc := coprod.leftUnitor_hom_naturality_assoc
 
 @[to_dual (attr := reassoc) rightUnitor_inv_naturality]
 theorem prod.rightUnitor_hom_naturality [HasBinaryProducts C] (f : X ⟶ Y) :
@@ -359,8 +357,6 @@ theorem prod.rightUnitor_inv_naturality [HasBinaryProducts C] (f : X ⟶ Y) :
 
 @[deprecated (since := "2026-09-26")]
 alias coprod.rightUnitor_naturality := coprod.rightUnitor_hom_naturality
-@[deprecated (since := "2026-09-26")]
-alias coprod.rightUnitor_naturality_assoc := coprod.rightUnitor_hom_naturality_assoc
 
 @[deprecated (since := "2026-09-26")]
 alias prod_rightUnitor_inv_naturality := prod.rightUnitor_inv_naturality
