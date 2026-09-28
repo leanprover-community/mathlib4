@@ -6,6 +6,7 @@ Authors: Sidharth Hariharan
 module
 
 -- public import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
+-- public import Mathlib.Analysis.Normed.Group.RadialFunction
 public import Mathlib
 
 /-!
@@ -60,6 +61,8 @@ open Function
 
 lemma RCLike.isRadial_normSq {K : Type*} [RCLike K] : IsRadial (RCLike.normSq (K := K)) := by
   simp [isRadial_def, RCLike.normSq_eq_def']
+
+#find_home RCLike.isRadial_normSq
 
 variable [Norm E]
 
