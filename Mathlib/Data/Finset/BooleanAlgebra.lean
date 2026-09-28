@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Finset.Basic
 public import Mathlib.Data.Finset.Image
-public import Mathlib.Data.Fintype.Defs
 
 /-!
 # `Finset`s are a Boolean algebra
@@ -29,7 +28,7 @@ open Function
 
 universe u v
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 namespace Finset
 

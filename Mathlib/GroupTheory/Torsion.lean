@@ -117,7 +117,7 @@ theorem IsMulTorsion.extension_closed {f : G →* H} (hN : N = f.ker) (tH : IsMu
   have hmem := MonoidHom.mem_ker.mpr ((f.map_pow g ngn).trans hngn)
   lift g ^ ngn to N using hN.symm ▸ hmem with gn h
   obtain ⟨nn, nnpos, hnn⟩ := (tN gn).exists_pow_eq_one
-  exact isOfFinOrder_iff_pow_eq_one.mpr <| ⟨ngn * nn, mul_pos ngnpos nnpos, by
+  exact isOfFinOrder_iff_pow_eq_one.mpr ⟨ngn * nn, mul_pos ngnpos nnpos, by
     rw [pow_mul, ← h, ← Subgroup.coe_pow, hnn, Subgroup.coe_one]⟩
 
 @[deprecated (since := "2026-06-30")] alias IsTorsion.extension_closed :=
@@ -393,7 +393,7 @@ lemma torsion_eq_top_iff : torsion G = ⊤ ↔ IsMulTorsion G :=
 
 @[to_additive]
 lemma isMulTorsionFree_iff_torsion_eq_bot : IsMulTorsionFree G ↔ CommGroup.torsion G = ⊥ := by
-  rw [isMulTorsionFree_iff_not_isOfFinOrder, eq_bot_iff, SetLike.le_def]
+  rw [isMulTorsionFree_iff_not_isOfFinOrder, eq_bot_iff, IsConcreteLE.le_iff]
   simp [not_imp_not, CommGroup.mem_torsion]
 
 @[to_additive]

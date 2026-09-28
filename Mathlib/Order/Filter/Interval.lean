@@ -7,8 +7,7 @@ module
 
 public import Mathlib.Order.Interval.Set.OrdConnected
 public import Mathlib.Order.Filter.SmallSets
-public import Mathlib.Order.Filter.AtTopBot.Basic
-public import Mathlib.Order.Filter.Bases.Finite
+import Mathlib.Order.Filter.Bases.Finite
 
 /-!
 # Convergence of intervals
@@ -240,7 +239,7 @@ end PartialOrder
 
 section LinearOrder
 
-open Interval
+open scoped Interval
 
 variable [LinearOrder α]
 

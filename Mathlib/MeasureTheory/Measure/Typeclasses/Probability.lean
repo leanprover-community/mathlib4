@@ -121,23 +121,27 @@ lemma isProbabilityMeasure_iff_real {μ : Measure α} :
     IsProbabilityMeasure μ ↔ μ.real univ = 1 := by
   refine ⟨fun h ↦ probReal_univ, fun h ↦ ⟨(ENNReal.toReal_eq_one_iff (μ univ)).mp h⟩⟩
 
-theorem Measure.isProbabilityMeasure_map {f : α → β} (hf : AEMeasurable f μ) :
-    IsProbabilityMeasure (map f μ) :=
-  ⟨by simp [map_apply_of_aemeasurable, hf]⟩
-
-theorem Measure.isProbabilityMeasure_of_map {μ : Measure α} (f : α → β)
-    [IsProbabilityMeasure (μ.map f)] : IsProbabilityMeasure μ where
+instance {f : α → β} : IsProbabilityMeasure (map f μ) where
   measure_univ := by
-    have hf : AEMeasurable f μ := AEMeasurable.of_map_ne_zero (IsProbabilityMeasure.ne_zero _)
+    rw [Measure.map]
+    split_ifs with hf hμ
+    · simp [mapₗ_mk_apply_of_aemeasurable, hf]
+    · have := measure_univ (μ := μ)
+      simp [hμ] at this
+    · exact dirac_apply_of_mem <| mem_univ _
+
+theorem Measure.isProbabilityMeasure_of_map {μ : Measure α} {f : α → β}
+    [IsProbabilityMeasure (μ.map f)] (hf : AEMeasurable f μ) : IsProbabilityMeasure μ where
+  measure_univ := by
     rw [← Set.preimage_univ (f := f), ← map_apply_of_aemeasurable hf .univ]
     exact IsProbabilityMeasure.measure_univ
 
 theorem Measure.isProbabilityMeasure_map_iff {μ : Measure α} {f : α → β}
     (hf : AEMeasurable f μ) : IsProbabilityMeasure (μ.map f) ↔ IsProbabilityMeasure μ :=
-  ⟨fun _ ↦ isProbabilityMeasure_of_map f, fun _ ↦ isProbabilityMeasure_map hf⟩
+  ⟨fun _ ↦ isProbabilityMeasure_of_map hf, fun _ ↦ inferInstance⟩
 
 instance IsProbabilityMeasure_comap_equiv (f : β ≃ᵐ α) : IsProbabilityMeasure (μ.comap f) := by
-  rw [← MeasurableEquiv.map_symm]; exact isProbabilityMeasure_map f.symm.measurable.aemeasurable
+  rw [← MeasurableEquiv.map_symm]; infer_instance
 
 /-- Note that this is not quite as useful as it looks because the measure takes values in `ℝ≥0∞`.
 Thus the subtraction appearing is the truncated subtraction of `ℝ≥0∞`, rather than the
@@ -184,9 +188,6 @@ protected lemma _root_.MeasurableEmbedding.isProbabilityMeasure_comap (hf : Meas
     (hf' : ∀ᵐ a ∂μ, a ∈ range f) : IsProbabilityMeasure (μ.comap f) :=
   isProbabilityMeasure_comap hf.injective hf' hf.measurableSet_image'
 
-instance isProbabilityMeasure_map_up :
-    IsProbabilityMeasure (μ.map ULift.up) := isProbabilityMeasure_map measurable_up.aemeasurable
-
 instance isProbabilityMeasure_comap_down : IsProbabilityMeasure (μ.comap ULift.down) :=
   MeasurableEquiv.ulift.measurableEmbedding.isProbabilityMeasure_comap <| ae_of_all _ <| by
     simp [Function.Surjective.range_eq <| EquivLike.surjective _]
@@ -217,9 +218,10 @@ lemma eq_zero_or_isProbabilityMeasure : μ = 0 ∨ IsProbabilityMeasure μ := by
   · exact Or.inr ⟨h⟩
 
 instance {f : α → β} : IsZeroOrProbabilityMeasure (map f μ) := by
-  by_cases hf : AEMeasurable f μ
-  · simpa [isZeroOrProbabilityMeasure_iff, hf] using IsZeroOrProbabilityMeasure.measure_univ
-  · simp [isZeroOrProbabilityMeasure_iff, hf]
+  obtain rfl | _ := eq_zero_or_isProbabilityMeasure (μ := μ)
+  · rw [Measure.map_zero]
+    infer_instance
+  · infer_instance
 
 lemma prob_compl_lt_one_sub_of_lt_prob {p : ℝ≥0∞} (hμs : p < μ s) (s_mble : MeasurableSet s) :
     μ sᶜ < 1 - p := by

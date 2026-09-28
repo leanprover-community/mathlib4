@@ -6,7 +6,7 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.Topology.MetricSpace.Gluing
-public import Mathlib.Topology.Metrizable.Uniformity
+import Mathlib.Topology.Metrizable.Uniformity
 
 /-!
 # Completely (pseudo)metrizable spaces
@@ -55,9 +55,13 @@ class IsCompletelyPseudoMetrizableSpace (X : Type*) [t : TopologicalSpace X] : P
   complete : ∃ m : PseudoMetricSpace X, m.toUniformSpace.toTopologicalSpace = t ∧
     @CompleteSpace X m.toUniformSpace
 
-instance (priority := 100) _root_.PseudoMetricSpace.toIsCompletelPseudoMetrizableSpace
+instance (priority := 100) _root_.PseudoMetricSpace.toIsCompletelyPseudoMetrizableSpace
     [PseudoMetricSpace X] [CompleteSpace X] : IsCompletelyPseudoMetrizableSpace X :=
   ⟨⟨‹_›, rfl, ‹_›⟩⟩
+
+@[deprecated (since := "2026-09-17")]
+alias _root_.PseudoMetricSpace.toIsCompletelPseudoMetrizableSpace :=
+  _root_.PseudoMetricSpace.toIsCompletelyPseudoMetrizableSpace
 
 /-- A convenience class, for a completely pseudometrizable space endowed with a complete
 pseudometric. No instance of this class should be registered: It should be used as
@@ -100,7 +104,7 @@ namespace IsCompletelyPseudoMetrizableSpace
 /-- Note: the priority is set to 90 to ensure that this instance is only applied after
 `PseudoEMetricSpace.pseudoMetrizableSpace`. This prevents unnecessary attempts to infer
 completeness. -/
-instance (priority := 90) PseudoMetrizableSpace [TopologicalSpace X]
+instance (priority := 90) [TopologicalSpace X]
     [IsCompletelyPseudoMetrizableSpace X] : PseudoMetrizableSpace X := by
   let := upgradeIsCompletelyPseudoMetrizable X
   infer_instance
@@ -211,7 +215,7 @@ namespace IsCompletelyMetrizableSpace
 
 /-- Note: the priority is set to 90 to ensure that this instance is only applied after
 `EMetricSpace.metrizableSpace`. This prevents unnecessary attempts to infer completeness. -/
-instance (priority := 90) MetrizableSpace [TopologicalSpace X] [IsCompletelyMetrizableSpace X] :
+instance (priority := 90) [TopologicalSpace X] [IsCompletelyMetrizableSpace X] :
     MetrizableSpace X := by
   let := upgradeIsCompletelyMetrizable X
   infer_instance

@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.DoldKan.Decomposition
-public import Mathlib.Tactic.FinCases
 public import Mathlib.Tactic.Linarith
 
 /-!
@@ -32,7 +31,9 @@ public section
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
-  CategoryTheory.Preadditive Simplicial
+  CategoryTheory.Preadditive
+
+open scoped Simplicial
 
 namespace AlgebraicTopology
 

@@ -7,8 +7,7 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Exp
 public import Mathlib.Data.Nat.Factorization.Defs
-public import Mathlib.Analysis.Normed.Module.RCLike.Real
-public import Mathlib.Data.Rat.Cast.CharZero
+import Mathlib.Analysis.Normed.Module.RCLike.Real
 
 /-!
 # Real logarithm
@@ -28,7 +27,7 @@ logarithm, continuity
 
 open Set Filter Function
 
-open Topology
+open scoped Topology
 
 noncomputable section
 

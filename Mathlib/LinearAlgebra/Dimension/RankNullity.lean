@@ -5,10 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.LinearAlgebra.Dimension.Constructions
 public import Mathlib.LinearAlgebra.Dimension.Finite
-public import Mathlib.LinearAlgebra.Isomorphisms
-public import Mathlib.Logic.Equiv.Fin.Rotate
 
 /-!
 
@@ -34,9 +31,9 @@ universe u v
 
 open Function Set Cardinal Module Submodule LinearMap
 
-variable {R} {M M₁ M₂ M₃ : Type u} {M' : Type v} [Ring R]
-variable [AddCommGroup M] [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃] [AddCommGroup M']
-variable [Module R M] [Module R M₁] [Module R M₂] [Module R M₃] [Module R M']
+variable {R} {M M₁ : Type u} {M' : Type v} [Ring R]
+variable [AddCommGroup M] [AddCommGroup M₁] [AddCommGroup M']
+variable [Module R M] [Module R M₁] [Module R M']
 
 /--
 `HasRankNullity.{u}` is a class of rings satisfying

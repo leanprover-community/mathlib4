@@ -24,7 +24,7 @@ open Set
 
 universe u v w
 
-variable {F : Type*} {α : Type u} {β : Type v} {γ : Type w}
+variable {α : Type u} {β : Type v}
 
 namespace BoundedContinuousFunction
 

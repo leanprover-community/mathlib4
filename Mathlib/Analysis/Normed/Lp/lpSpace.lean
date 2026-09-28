@@ -6,10 +6,8 @@ Authors: Heather Macbeth, Jireh Loreaux
 module
 
 public import Mathlib.Analysis.MeanInequalities
-public import Mathlib.Analysis.MeanInequalitiesPow
+import Mathlib.Analysis.MeanInequalitiesPow
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-public import Mathlib.Data.Set.Image
-public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Algebra.Order.Group.Pointwise.Bounds
 
 /-!
@@ -348,7 +346,7 @@ namespace PreLp
 
 -- The `SMul` instance exists to avoid a zsmul diamond.
 variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] in
-deriving instance SMul 𝕜, AddCommGroup for PreLp E
+deriving instance SMul 𝕜, AddCommMonoid, AddCommGroup for PreLp E
 
 @[simp] lemma add_apply {x y : PreLp E} {i : α} : (x + y) i = x i + y i := rfl
 @[simp] lemma zero_apply {i : α} : (0 : PreLp E) i = 0 := rfl
@@ -490,8 +488,7 @@ theorem norm_nonneg' (f : lp E p) : 0 ≤ ‖f‖ := by
   rcases p.trichotomy with (rfl | rfl | hp)
   · simp [lp.norm_eq_card_dsupport f]
   · rcases isEmpty_or_nonempty α with _i | _i
-    · rw [lp.norm_eq_ciSup]
-      simp [Real.iSup_of_isEmpty]
+    · simp [lp.norm_eq_ciSup]
     inhabit α
     exact (norm_nonneg (f default)).trans ((lp.isLUB_norm f).1 ⟨default, rfl⟩)
   · rw [lp.norm_eq_tsum_rpow hp f]
@@ -526,7 +523,7 @@ theorem norm_eq_zero_iff {f : lp E p} : ‖f‖ = 0 ↔ f = 0 := by
     rw [hasSum_zero_iff_of_nonneg this] at hf
     ext i
     have : f i = 0 ∧ p.toReal ≠ 0 := by
-      simpa [Real.rpow_eq_zero_iff_of_nonneg (norm_nonneg (f i))] using! congr_fun hf i
+      simpa [Real.rpow_eq_zero_iff_of_nonneg (norm_nonneg (f i))] using! congr($hf i)
     exact this.1
 
 theorem eq_zero_iff_coeFn_eq_zero {f : lp E p} : f = 0 ↔ ⇑f = 0 := by
@@ -732,7 +729,7 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
     apply nnnorm_smul_le
 
 instance [Fact (1 ≤ p)] : IsBoundedSMul 𝕜 (lp E p) :=
-  IsBoundedSMul.of_norm_smul_le <| norm_const_smul_le (zero_lt_one.trans_le <| Fact.out).ne'
+  IsBoundedSMul.of_norm_smul_le <| norm_const_smul_le (zero_lt_one.trans_le Fact.out).ne'
 
 end IsBoundedSMul
 
@@ -1207,7 +1204,7 @@ theorem ext_continuousAddMonoidHom
   have := lp.hasSum_single hp x
   rw [← (this.map f f.continuous).tsum_eq, ← (this.map g g.continuous).tsum_eq]
   congr! 2 with i
-  exact DFunLike.congr_fun (h i) (x i)
+  congrm $(h i) (x i)
 
 /-- Two continuous linear maps from `lp E p` agree if they agree on `lp.single`.
 
@@ -1254,7 +1251,7 @@ end OfLE
 
 section Eval
 
-variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)] {p q r : ℝ≥0∞}
+variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)] {p : ℝ≥0∞}
 
 variable (E p) in
 /-- Evaluation at a single coordinate, as a linear map on `lp E p`. -/

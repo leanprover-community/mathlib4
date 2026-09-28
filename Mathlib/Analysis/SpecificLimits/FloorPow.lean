@@ -5,8 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Algebra.Order.Field.GeomSum
-public import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Algebra.Order.Field.GeomSum
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
@@ -24,7 +23,7 @@ public section
 
 open Filter Finset
 
-open Topology
+open scoped Topology
 
 /-- If a monotone sequence `u` is such that `u n / n` tends to a limit `l` along subsequences with
 exponential growth rate arbitrarily close to `1`, then `u n / n` tends to `l`. -/

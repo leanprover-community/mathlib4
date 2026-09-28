@@ -6,11 +6,10 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Anne Baanen
 module
 
 public import Mathlib.GroupTheory.QuotientGroup.Finite
-public import Mathlib.LinearAlgebra.Quotient.Basic
-public import Mathlib.RingTheory.Congruence.Basic
+import Mathlib.LinearAlgebra.Quotient.Basic
+import Mathlib.RingTheory.Congruence.Basic
 public import Mathlib.RingTheory.Ideal.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
-public import Mathlib.Tactic.FinCases
 
 /-!
 # Ideal quotients
@@ -30,7 +29,7 @@ See `RingCon.Quotient` for quotients of (possibly non-commutative) semirings.
 
 open Set
 
-variable {ι ι' R S : Type*} [Ring R] (I J : Ideal R) {a b : R}
+variable {ι ι' R : Type*} [Ring R] (I J : Ideal R) {a b : R}
 
 namespace Ideal.Quotient
 

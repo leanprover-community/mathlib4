@@ -5,7 +5,7 @@ Authors: Chris Hughes, Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.MonoidAlgebra.Cardinal
+import Mathlib.Algebra.MonoidAlgebra.Cardinal
 public import Mathlib.Algebra.Polynomial.Basic
 public import Mathlib.SetTheory.Cardinal.Finsupp
 
@@ -21,7 +21,7 @@ public section
 open Cardinal
 
 universe u v
-variable {R : Type u} {M : Type v} [Semiring R]
+variable {R : Type u} [Semiring R]
 
 namespace Polynomial
 

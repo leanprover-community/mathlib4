@@ -6,11 +6,8 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Limits.EssentiallySmall
-public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Equalizers
+import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Equalizers
 public import Mathlib.CategoryTheory.Subobject.Lattice
-public import Mathlib.CategoryTheory.ObjectProperty.Small
-public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
-public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 
 /-!
@@ -192,7 +189,6 @@ lemma IsSeparating.strictMap_leftAdjoint
       simpa [adj.homEquiv_counit] using
         h _ (.mk X hX) (F.map a ≫ adj.counit.app Y))))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsCoseparating.strictMap_rightAdjoint
     (hP : P.IsCoseparating) {F : C ⥤ D} {G : D ⥤ C} [G.Faithful]
     (adj : G ⊣ F) :
@@ -530,7 +526,7 @@ variable (S : D) (T : C ⥤ D)
 theorem isCoseparating_inverseImage_proj {P : ObjectProperty C} (hP : P.IsCoseparating) :
     (P.inverseImage (proj S T)).IsCoseparating := by
   refine fun X Y f g hfg => ext _ _ (hP _ _ fun G hG h => ?_)
-  exact congr_arg CommaMorphism.right (hfg (mk (Y.hom ≫ T.map h)) hG (homMk h rfl))
+  congrm $(hfg (mk (Y.hom ≫ T.map h)) hG (homMk h rfl)).right
 
 end StructuredArrow
 
@@ -541,7 +537,7 @@ variable (S : C ⥤ D) (T : D)
 theorem isSeparating_inverseImage_proj {P : ObjectProperty C} (hP : P.IsSeparating) :
     (P.inverseImage (proj S T)).IsSeparating := by
   refine fun X Y f g hfg => ext _ _ (hP _ _ fun G hG h => ?_)
-  exact congr_arg CommaMorphism.left (hfg (mk (S.map h ≫ X.hom)) hG (homMk h rfl))
+  congrm $(hfg (mk (S.map h ≫ X.hom)) hG (homMk h rfl)).left
 
 end CostructuredArrow
 
