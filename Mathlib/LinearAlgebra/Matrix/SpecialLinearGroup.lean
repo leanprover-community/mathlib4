@@ -630,8 +630,8 @@ lemma map_toSpecialLinearGroup (t : TransvectionStruct ι F) :
 
 /-- If `f` is surjective, every transvection in `SL(ι, S)` is the image under
 `SpecialLinearGroup.map f` of a transvection in `SL(ι, F)`. -/
-lemma toSpecialLinearGroup_mem_range_map (hf : Function.Surjective f) (t : TransvectionStruct ι S) :
-    t.toSpecialLinearGroup ∈ (SpecialLinearGroup.map f).range := by
+lemma toSpecialLinearGroup_mem_range_map {f : F →+* S} (hf : Function.Surjective f)
+   (t : TransvectionStruct ι S) : t.toSpecialLinearGroup ∈ (SpecialLinearGroup.map f).range := by
   obtain ⟨t', rfl⟩ := map_surjective f hf t
   exact ⟨t'.toSpecialLinearGroup, map_toSpecialLinearGroup f t'⟩
 
