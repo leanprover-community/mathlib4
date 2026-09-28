@@ -10,8 +10,6 @@ public import Mathlib.Data.Fin.Basic
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Data.PNat.Equiv
 public import Mathlib.Logic.Equiv.Nat
-public import Mathlib.Order.Directed
-public import Mathlib.Order.RelIso.Basic
 
 /-!
 # Encodable types
@@ -98,7 +96,7 @@ def ofLeftInjection [Encodable α] (f : β → α) (finv : α → Option β)
 @[instance_reducible]
 def ofLeftInverse [Encodable α] (f : β → α) (finv : α → β) (linv : ∀ b, finv (f b) = b) :
     Encodable β :=
-  ofLeftInjection f (some ∘ finv) fun b => congr_arg some (linv b)
+  ofLeftInjection f (some ∘ finv) fun b => congr(some $(linv b))
 
 /-- Encodability is preserved by equivalence. -/
 @[instance_reducible]

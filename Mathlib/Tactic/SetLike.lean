@@ -7,7 +7,7 @@ module
 
 public meta import Aesop.Frontend
 public meta import Batteries.Util.LibraryNote
-public import Mathlib.Init
+import Mathlib.Init
 public meta import Aesop.Frontend.Basic
 public import Batteries.Util.LibraryNote
 

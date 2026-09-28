@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Order.Group.Pointwise.Interval
 public import Mathlib.Algebra.Order.Module.Defs
 public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.Pi
-public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.Tactic.Abel
 public import Mathlib.Algebra.Torsor.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.Defs
@@ -807,7 +806,7 @@ note [partially-applied ext lemmas]. Analogous to `LinearMap.pi_ext'` -/
 theorem pi_ext_nonempty' [Nonempty ι] (h : ∀ i, f.comp (LinearMap.single _ _ i).toAffineMap =
     g.comp (LinearMap.single _ _ i).toAffineMap) : f = g := by
   refine pi_ext_nonempty fun i x => ?_
-  convert! AffineMap.congr_fun (h i) x
+  convert! congr($(h i) x)
 
 end Ext
 

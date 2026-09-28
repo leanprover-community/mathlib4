@@ -5,7 +5,7 @@ Authors: Peter Nelson
 -/
 module
 
-public import Mathlib.Init
+import Mathlib.Init
 public meta import Aesop
 
 /-!

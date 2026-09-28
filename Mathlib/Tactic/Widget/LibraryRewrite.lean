@@ -9,9 +9,9 @@ public meta import Mathlib.Lean.Meta.RefinedDiscrTree
 public meta import Mathlib.Tactic.Widget.SelectPanelUtils
 public meta import Mathlib.Lean.GoalsLocation
 public meta import Mathlib.Lean.Meta.KAbstractPositions
-public import Mathlib.Tactic.NthRewrite
+import Mathlib.Tactic.NthRewrite
 public meta import ProofWidgets.Component.FilterDetails
-public meta import ProofWidgets.Component.OfRpcMethod
+meta import ProofWidgets.Component.OfRpcMethod
 public import Mathlib.Tactic.Widget.SelectPanelUtils
 
 /-!

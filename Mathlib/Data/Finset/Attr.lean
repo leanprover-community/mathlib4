@@ -5,9 +5,9 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Init
+import Mathlib.Init
 public meta import Aesop.Frontend
-public meta import Aesop.Frontend.Basic
+meta import Aesop.Frontend.Basic
 
 /-!
 # Aesop rule set for finsets

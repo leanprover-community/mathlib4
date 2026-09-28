@@ -6,8 +6,8 @@ Authors: Jovan Gerbscheid
 module
 
 public import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
+import Lean.Meta.CompletionName
 public import Lean.Linter.Deprecated
-public import Lean.Meta.CompletionName
 
 /-!
 # Constructing a RefinedDiscrTree

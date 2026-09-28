@@ -6,7 +6,7 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
-public import Mathlib.Tactic.SuppressCompilation
+import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Symmetric tensor power of a semimodule over a commutative semiring
