@@ -14,7 +14,7 @@ public meta import Mathlib.NumberTheory.Zsqrtd.Basic
 
 The computable model of the quadratic extensions `ℤ√d`. The elimination runs on `Expr` representing
 `⟨a, b⟩` literals with raw integer components. Accepted entries are `⟨a, b⟩` literals, `√d`, or
-numerals.
+integers evaluated from `norm_num`.
 -/
 
 public meta section
@@ -65,24 +65,21 @@ def zsqrtdOfRawLit? (d : ℤ) (e : Expr) : Option (ℤ√d) :=
   | Zsqrtd.mk _ re im => do return ⟨← intOfRawLit? re, ← intOfRawLit? im⟩
   | _ => none
 
-/-- The literal `⟨re, im⟩ : ℤ√d` of a value, with raw integer components. `d` is the value of
-the integer literal `dQ`. -/
+/-- The literal that `zsqrtdOfRawLit?` reads back as v. -/
 def mkZsqrtdRawLit (dQ : Q(ℤ)) {d : ℤ} (v : ℤ√d) : Q(Zsqrtd $dQ) :=
   q(⟨$(Meta.NormNum.mkRawIntLit v.re), $(Meta.NormNum.mkRawIntLit v.im)⟩)
 
 /-- The `ℤ√d` model. The elimination runs on literals with raw integer components, computed
 with the arithmetic of `ℤ√d`. `d` is the value of the integer literal `dQ`. -/
-def zsqrtdModel (dQ : Q(ℤ)) (d : ℤ) : (c : Carrier) × Model c.type :=
-  let ops := (zsqrtdOps d).lift (zsqrtdOfRawLit? d) (mkZsqrtdRawLit dQ)
-  ⟨.expr, {
-    ops
-    evalEntry := fun e => return (mkZsqrtdRawLit dQ (← evalZsqrtdEntry d e), none)
-    -- The entries are rebuilt in the numeral form instead of returned as the carrier's shape
-    -- since the raw literals display as `Int.ofNat 3`, and `simp` does not normalise them.
-    mkEntry := fun e => do
-      let some v := zsqrtdOfRawLit? d e
-        | throwError "expected a `ℤ√d` literal with raw integer components{indentExpr e}"
-      return q((⟨$(mkIntLitQ v.re), $(mkIntLitQ v.im)⟩ : Zsqrtd $dQ)) }⟩
+def zsqrtdModel (dQ : Q(ℤ)) (d : ℤ) : Model Expr where
+  ops := (zsqrtdOps d).lift (zsqrtdOfRawLit? d) (mkZsqrtdRawLit dQ)
+  evalEntry e := return (mkZsqrtdRawLit dQ (← evalZsqrtdEntry d e), none)
+  -- The entries are rebuilt in the numeral form instead of returned as the carrier's shape
+  -- since the raw literals display as `Int.ofNat 3`, and `simp` does not normalise them.
+  mkEntry e := do
+    let some v := zsqrtdOfRawLit? d e
+      | throwError "expected a `ℤ√d` literal with raw integer components{indentExpr e}"
+    return q((⟨$(mkIntLitQ v.re), $(mkIntLitQ v.im)⟩ : Zsqrtd $dQ))
 
 /-- The `ℤ√d` model registration: handles `Zsqrtd d` for an integer literal `d`.
 Equality in `ℤ√d` is settled by `decide`, so the model has no entry certifier. -/
@@ -93,6 +90,6 @@ Equality in `ℤ√d` is settled by `decide`, so the model has no entry certifie
     let_expr Zsqrtd dE := R | return none
     let some d ← getIntValue? dE | return none
     have dQ : Q(ℤ) := dE
-    return some (zsqrtdModel dQ d)
+    return some ⟨.expr, zsqrtdModel dQ d⟩
 
 end Mathlib.Tactic.Echelon

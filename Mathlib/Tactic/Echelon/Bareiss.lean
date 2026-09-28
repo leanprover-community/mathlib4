@@ -71,10 +71,10 @@ def modelFor {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) :
       trace[Tactic.evalRank] "`decide` cannot settle equality in the element type; \
         using the `norm_num` entry certifier{indentExpr α}"
       pure (some normNumCertifier)
-  let ⟨carrier, model⟩ ← ratModel α rα
-  return ⟨carrier, { model with entryCertifier? := certifier? }⟩
+  let model ← ratModel α rα
+  return ⟨.int, { model with entryCertifier? := certifier? }⟩
 
-/-- The result of producer evaluation and certificate construction, together with the carrier
+/-- The result of producer evaluation and certificate construction, together with the computation
 model. -/
 structure BareissResult {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRing $α))
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) where

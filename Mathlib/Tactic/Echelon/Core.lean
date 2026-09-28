@@ -44,7 +44,7 @@ open Lean Meta
 
 namespace Mathlib.Tactic.Echelon
 
-/-- Arithmetic of a model's carrier. -/
+/-- Arithmetics on values of `V`. -/
 structure RingOps (V : Type) where
   /-- The zero value. -/
   zero : V

@@ -45,7 +45,7 @@ def mkIntNumeral {u : Level} (α : Q(Type u)) (i : Int) : MetaM Q($α) := do
 
 /-- The rational model. -/
 def ratModel {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) :
-    MetaM ((c : Carrier) × Model c.type) := do
+    MetaM (Model Int) := do
   -- the characteristic determines the zero test
   let pQ : Q(ℕ) ← mkFreshExprMVarQ q(ℕ)
   let .some _ ← trySynthInstanceQ q(CharP $α $pQ)
@@ -61,12 +61,12 @@ def ratModel {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) :
     sub := (· - ·)
     divExact := (· / ·)
     isZero := if p == 0 then (· == 0) else fun v => v % p == 0 }
-  return ⟨.int, {
+  return {
     ops
     evalEntry := fun e => do
       let v ← evalRatEntry (p == 0) e
       return (v.num, if v.den == 1 then none else some (v.den : Int))
     commonMultiple := fun a b => (Int.lcm a b : Int)
-    mkEntry := mkIntNumeral α }⟩
+    mkEntry := mkIntNumeral α }
 
 end Mathlib.Tactic.Echelon
