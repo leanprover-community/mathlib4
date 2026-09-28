@@ -5,7 +5,7 @@ Authors: Edison Xie, David Kurniadi Angdinata
 -/
 module
 
-public import Mathlib.FieldTheory.IsSepClosed
+import Mathlib.FieldTheory.IsSepClosed
 public import Mathlib.FieldTheory.AbsoluteGaloisGroup
 public import Mathlib.RepresentationTheory.Homological.ContCohomology.Functoriality
 

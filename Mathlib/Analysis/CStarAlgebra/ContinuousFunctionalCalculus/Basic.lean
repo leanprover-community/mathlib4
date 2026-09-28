@@ -5,10 +5,8 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
 public import Mathlib.Analysis.CStarAlgebra.GelfandDuality
-public import Mathlib.Analysis.CStarAlgebra.Unitization
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
 
 /-! # Continuous functional calculus
@@ -148,7 +146,7 @@ theorem IsStarNormal.instContinuousFunctionalCalculus :
         (continuousFunctionalCalculus a).toStarAlgHom) :=
       isometry_subtype_coe.comp <| StarAlgEquiv.isometry (continuousFunctionalCalculus a)
     refine ⟨_, this.continuous, this.injective, ?hom_id, ?hom_map_spectrum, ?predicate_hom⟩
-    case hom_id => exact congr_arg Subtype.val <| continuousFunctionalCalculus_map_id a
+    case hom_id => congrm $(continuousFunctionalCalculus_map_id a).val
     case hom_map_spectrum =>
       intro f
       simp only [StarAlgHom.comp_apply, StarSubalgebra.coe_subtype,

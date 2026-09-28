@@ -29,7 +29,7 @@ theorem jacobson_bot_polynomial_le_sInf_map_maximal :
   refine Trans.trans (jacobson_mono bot_le) (le_of_eq ?_ : J.jacobson ≤ J)
   suffices t : (⊥ : Ideal (Polynomial (R ⧸ j))).jacobson = ⊥ by
     rw [← hj.2, jacobson_eq_iff_jacobson_quotient_eq_bot]
-    replace t := congr_arg (map (polynomialQuotientEquivQuotientPolynomial j).toRingHom) t
+    replace t := congr(map (polynomialQuotientEquivQuotientPolynomial j).toRingHom $t)
     rwa [map_jacobson_of_bijective _, map_bot] at t
     exact RingEquiv.bijective (polynomialQuotientEquivQuotientPolynomial j)
   refine eq_bot_iff.2 fun f hf => ?_

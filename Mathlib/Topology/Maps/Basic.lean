@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 module
 
 public import Mathlib.Topology.Order
-public import Mathlib.Topology.NhdsSet
+import Mathlib.Topology.NhdsSet
 
 /-!
 # Specific classes of maps between topological spaces
