@@ -6,7 +6,6 @@ Authors: Adam Topaz
 module
 
 public import Mathlib.CategoryTheory.EqToHom
-
 import Mathlib.Data.ULift
 
 /-!
