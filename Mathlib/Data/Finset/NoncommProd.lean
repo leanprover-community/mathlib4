@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.Group.Commute.Hom
 public import Mathlib.Algebra.Group.Pi.Lemmas
-public import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fintype.Basic
 
 /-!
 # Products (respectively, sums) over a finset or a multiset.
@@ -189,7 +189,7 @@ theorem noncommProd_eq_pow_card (s : Multiset α) (comm) (m : α) (h : ∀ x ∈
     s.noncommProd comm = m ^ Multiset.card s := by
   induction s using Quotient.inductionOn
   simp only [quot_mk_to_coe, noncommProd_coe, coe_card, mem_coe] at *
-  exact List.prod_eq_pow_card _ m h
+  exact List.prod_eq_pow_length _ m h
 
 @[to_additive]
 theorem noncommProd_eq_prod {α : Type*} [CommMonoid α] (s : Multiset α) :

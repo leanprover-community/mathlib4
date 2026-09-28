@@ -7,8 +7,8 @@ module
 
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
-public import Mathlib.Analysis.Complex.LocallyUniformLimit
-public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
+import Mathlib.Analysis.Complex.LocallyUniformLimit
+import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 
 /-!
 # Holomorphicity of Eisenstein series
@@ -62,8 +62,5 @@ theorem eisensteinSeriesSIF_mdifferentiable {k : ℤ} {N : ℕ} (hk : 3 ≤ k) (
   exact (eisensteinSeries_tendstoLocallyUniformlyOn hk a).differentiableOn
     (Eventually.of_forall fun s ↦ DifferentiableOn.fun_sum
     fun _ _ ↦ eisSummand_extension_differentiableOn _ _) isOpen_upperHalfPlaneSet
-
-@[deprecated (since := "2026-02-09")]
-alias eisensteinSeries_SIF_MDifferentiable := eisensteinSeriesSIF_mdifferentiable
 
 end EisensteinSeries

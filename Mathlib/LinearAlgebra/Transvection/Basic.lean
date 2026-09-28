@@ -510,7 +510,6 @@ theorem IsBaseChange.transvection (f : Dual R V) (v : V) :
     ibc.endHom (transvection f v) = transvection (ibc.toDual f) (ε v) := by
   ext w
   induction w using ibc.inductionOn with
-  | zero => simp
   | add x y hx hy => simp [hx, hy]
   | smul a w hw => simp [hw]
   | tmul x => simp [LinearMap.transvection.apply, endHom_comp_apply, toDual_comp_apply]

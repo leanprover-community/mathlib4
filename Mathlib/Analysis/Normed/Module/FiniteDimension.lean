@@ -8,13 +8,10 @@ module
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Analysis.Normed.Group.Lemmas
 public import Mathlib.Analysis.Normed.Affine.Isometry
-public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.Analysis.Normed.Module.RieszLemma
-public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
-public import Mathlib.Analysis.SpecificLimits.Normed
-public import Mathlib.Topology.Algebra.AffineSubspace
+import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
-public import Mathlib.Topology.Algebra.InfiniteSum.Module
+import Mathlib.Topology.Algebra.InfiniteSum.Module
 public import Mathlib.Topology.Instances.Matrix
 public import Mathlib.LinearAlgebra.Dimension.LinearMap
 
@@ -162,7 +159,7 @@ theorem AffineEquiv.coe_toHomeomorphOfFiniteDimensional_symm (f : PE ≃ᵃ[𝕜
     ⇑f.toHomeomorphOfFiniteDimensional.symm = f.symm :=
   rfl
 
-attribute [deprecated AffineEquiv.toContinuousAffineEquiv (since := "2026-05-11")]
+attribute [deprecated AffineEquiv.toContinuousAffineEquiv +typeChanged (since := "2026-05-11")]
   AffineEquiv.toHomeomorphOfFiniteDimensional
 
 /-- An affine map from a finite-dimensional space is automatically Lipschitz. -/
@@ -699,16 +696,10 @@ theorem Asymptotics.IsEquivalent.summable_iff {ι E : Type*} [NormedAddCommGroup
     Summable f ↔ Summable g :=
   h.isTheta.summable_iff
 
-@[deprecated (since := "2026-02-07")]
-alias IsEquivalent.summable_iff := Asymptotics.IsEquivalent.summable_iff
-
 theorem Asymptotics.IsEquivalent.summable_iff_nat {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] {f : ℕ → E} {g : ℕ → E} (h : f ~[atTop] g) :
     Summable f ↔ Summable g :=
   h.isTheta.summable_iff_nat
-
-@[deprecated (since := "2026-02-07")]
-alias IsEquivalent.summable_iff_nat := Asymptotics.IsEquivalent.summable_iff_nat
 
 namespace Module.Basis
 
