@@ -60,6 +60,8 @@ def LieIdeal.toLieSubalgebra (I : LieIdeal R L) : LieSubalgebra R L :=
     x ∈ I.toLieSubalgebra ↔ x ∈ I :=
   Iff.rfl
 
+attribute [coe] LieIdeal.toLieSubalgebra
+
 instance : Coe (LieIdeal R L) (LieSubalgebra R L) :=
   ⟨LieIdeal.toLieSubalgebra R L⟩
 
@@ -71,6 +73,8 @@ theorem LieIdeal.coe_toLieSubalgebra (I : LieIdeal R L) : ((I : LieSubalgebra R 
 theorem LieIdeal.toLieSubalgebra_toSubmodule (I : LieIdeal R L) :
     ((I : LieSubalgebra R L) : Submodule R L) = LieSubmodule.toSubmodule I :=
   rfl
+
+attribute [norm_cast] LieIdeal.toLieSubalgebra_toSubmodule
 
 instance LieIdeal.bracket {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
     (I : LieIdeal R L) [Bracket L M] : Bracket I M where
