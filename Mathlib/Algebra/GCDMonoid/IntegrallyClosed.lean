@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.GCDMonoid.Basic
 public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 public import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
 
@@ -48,6 +47,6 @@ instance (priority := 100) GCDMonoid.toIsIntegrallyClosed
     rw [map_mul]
     have coe_map_inv :=
       Units.coe_map_inv ((algebraMap R (FractionRing R) : R →* FractionRing R)) this.unit
-    simp only [MonoidHom.coe_coe] at coe_map_inv
+    simp only [MonoidHom.coe_ofClass] at coe_map_inv
     rw [← coe_map_inv, eq_comm, Units.eq_mul_inv_iff_mul_eq]
     exact he

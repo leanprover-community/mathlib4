@@ -82,6 +82,7 @@ theorem toAffineMap_injective : Injective (toAffineMap : (P₁ ≃ᵃ[k] P₂) �
 theorem toAffineMap_inj {e e' : P₁ ≃ᵃ[k] P₂} : e.toAffineMap = e'.toAffineMap ↔ e = e' :=
   toAffineMap_injective.eq_iff
 
+@[macro_inline]
 instance equivLike : EquivLike (P₁ ≃ᵃ[k] P₂) P₁ P₂ where
   coe f := f.toFun
   inv f := f.invFun
@@ -226,7 +227,7 @@ theorem symm_apply_eq (e : P₁ ≃ᵃ[k] P₂) {p₁ p₂} : e.symm p₁ = p₂
 theorem eq_symm_apply (e : P₁ ≃ᵃ[k] P₂) {p₁ p₂} : p₂ = e.symm p₁ ↔ e p₂ = p₁ :=
   e.toEquiv.eq_symm_apply
 
-@[deprecated eq_symm_apply (since := "2026-07-26")]
+@[deprecated eq_symm_apply +typeChanged (since := "2026-07-26")]
 theorem apply_eq_iff_eq_symm_apply (e : P₁ ≃ᵃ[k] P₂) {p₁ p₂} : e p₁ = p₂ ↔ p₁ = e.symm p₂ :=
   e.eq_symm_apply.symm
 
@@ -361,8 +362,8 @@ This is the affine version of `LinearMap.GeneralLinearGroup.generalLinearEquiv`.
 def equivUnitsAffineMap : (P₁ ≃ᵃ[k] P₁) ≃* (P₁ →ᵃ[k] P₁)ˣ where
   toFun e :=
     { val := e, inv := e.symm,
-      val_inv := congr_arg toAffineMap e.symm_trans_self
-      inv_val := congr_arg toAffineMap e.self_trans_symm }
+      val_inv := congr(toAffineMap $e.symm_trans_self)
+      inv_val := congr(toAffineMap $e.self_trans_symm) }
   invFun u :=
     { toFun := (u : P₁ →ᵃ[k] P₁)
       invFun := (↑u⁻¹ : P₁ →ᵃ[k] P₁)

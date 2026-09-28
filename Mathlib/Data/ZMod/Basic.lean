@@ -262,11 +262,11 @@ variable {R}
 
 @[simp]
 theorem natCast_val [NeZero n] (i : ZMod n) : (i.val : R) = cast i :=
-  congr_fun (natCast_comp_val R) i
+  congr($(natCast_comp_val R) i)
 
 @[simp]
 theorem intCast_cast (i : ZMod n) : ((cast i : ℤ) : R) = cast i :=
-  congr_fun (intCast_comp_cast R) i
+  congr($(intCast_comp_cast R) i)
 
 theorem cast_add_eq_ite {n : ℕ} (a b : ZMod n) :
     (cast (a + b) : ℤ) =
@@ -519,6 +519,10 @@ theorem intCast_eq_intCast_iff_dvd_sub (a b : ℤ) (c : ℕ) : (a : ZMod c) = �
 theorem natCast_eq_zero_iff (a b : ℕ) : (a : ZMod b) = 0 ↔ b ∣ a := by
   rw [← Nat.cast_zero, ZMod.natCast_eq_natCast_iff, Nat.modEq_zero_iff_dvd]
 
+lemma neg_one_eq_one_iff {n : ℕ} : (-1 : ZMod n) = 1 ↔ n = 1 ∨ n = 2 := by
+  rw [neg_eq_iff_add_eq_zero, one_add_one_eq_two, ← Nat.cast_ofNat, natCast_eq_zero_iff,
+    Nat.dvd_prime Nat.prime_two]
+
 set_option backward.isDefEq.respectTransparency false in
 theorem coe_intCast (a : ℤ) : cast (a : ZMod n) = a % n := by
   cases n
@@ -696,7 +700,7 @@ instance nontrivial (n : ℕ) [Fact (1 < n)] : Nontrivial (ZMod n) :=
       zero_ne_one <|
         calc
           0 = (0 : ZMod n).val := by rw [val_zero]
-          _ = (1 : ZMod n).val := congr_arg ZMod.val h
+          _ = (1 : ZMod n).val := congr($(h).val)
           _ = 1 := val_one n
           ⟩⟩
 
@@ -838,7 +842,7 @@ theorem prime_natCast_not_isUnit_pow {p d : ℕ} (hp : p.Prime) (hd : 0 < d) :
 
 @[simp]
 theorem inv_coe_unit {n : ℕ} (u : (ZMod n)ˣ) : (u : ZMod n)⁻¹ = (u⁻¹ : (ZMod n)ˣ) := by
-  have := congr_arg ((↑) : ℕ → ZMod n) (val_coe_unit_coprime u)
+  have := congr(($(val_coe_unit_coprime u) : ZMod n))
   rw [← mul_inv_eq_gcd, Nat.cast_one] at this
   exact (Units.inv_eq_of_mul_eq_one_right this).symm
 
@@ -1110,7 +1114,7 @@ instance subsingleton_ringHom [Semiring R] : Subsingleton (ZMod n →+* R) :=
 
 instance subsingleton_ringEquiv [Semiring R] : Subsingleton (ZMod n ≃+* R) :=
   ⟨fun f g => by
-    rw [RingEquiv.coe_ringHom_inj_iff]
+    rw [RingEquiv.toRingHom_inj_iff]
     apply RingHom.ext_zmod _ _⟩
 
 set_option backward.isDefEq.respectTransparency false in
@@ -1175,7 +1179,7 @@ theorem lift_comp_castAddHom : (ZMod.lift n f).comp (Int.castAddHom (ZMod n)) = 
 
 lemma lift_injective {f : {f : ℤ →+ A // f n = 0}} :
     Injective (lift n f) ↔ ∀ m, f.1 m = 0 → (m : ZMod n) = 0 := by
-  simp only [← AddMonoidHom.ker_eq_bot_iff, eq_bot_iff, SetLike.le_def,
+  simp only [← AddMonoidHom.ker_eq_bot_iff, eq_bot_iff, IsConcreteLE.le_iff,
     ZMod.intCast_surjective.forall, ZMod.lift_coe, AddMonoidHom.mem_ker, AddSubgroup.mem_bot]
 
 end lift
@@ -1286,7 +1290,7 @@ lemma Nat.range_mul_add (m k : ℕ) :
   simp only [Set.mem_range, Set.mem_ofPred_eq]
   conv => enter [1, 1, y]; rw [add_comm, eq_comm]
   refine ⟨fun ⟨a, ha⟩ ↦ ⟨?_, le_iff_exists_add.mpr ⟨_, ha⟩⟩, fun ⟨H₁, H₂⟩ ↦ ?_⟩
-  · simpa using congr_arg ((↑) : ℕ → ZMod m) ha
+  · simpa using congr(($ha : ZMod m))
   · obtain ⟨a, ha⟩ := le_iff_exists_add.mp H₂
     simp only [ha, Nat.cast_add, add_eq_left, ZMod.natCast_eq_zero_iff] at H₁
     obtain ⟨b, rfl⟩ := H₁
