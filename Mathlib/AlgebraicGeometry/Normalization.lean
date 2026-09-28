@@ -6,7 +6,6 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Sites.SmallAffineZariski
-public import Mathlib.Tactic.DepRewrite
 public import Mathlib.AlgebraicGeometry.Morphisms.Integral
 public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 public import Mathlib.RingTheory.Smooth.IntegralClosure
@@ -678,7 +677,7 @@ instance [Smooth g] : IsIso (f.normalizationPullback g) := by
     simp only [← Functor.map_inv, inv_eqToHom, Scheme.Hom.appLE_map, ← Scheme.Hom.app_eq_appLE,
       Scheme.Hom.fromNormalization_app _ hV, IsIso.Iso.inv_inv, Category.assoc, Iso.inv_hom_id,
       Category.comp_id]
-    exact congr(CommRingCat.ofHom $(ψ.comp_algebraMap.symm))
+    congrm CommRingCat.ofHom $ψ.comp_algebraMap.symm
 
 end Smooth
 

@@ -309,15 +309,15 @@ variable [Zero β]
 
 theorem aemeasurable_indicator_iff {s} (hs : MeasurableSet s) :
     AEMeasurable (indicator s f) μ ↔ AEMeasurable f (μ.restrict s) := by
-  constructor
-  · intro h
-    exact (h.mono_measure Measure.restrict_le_self).congr (indicator_ae_eq_restrict hs)
-  · intro h
-    refine ⟨indicator s (h.mk f), h.measurable_mk.indicator hs, ?_⟩
+  constructor <;> intro h
+  · exact h.restrict.congr (indicator_ae_eq_restrict hs.nullMeasurableSet)
+  · refine ⟨indicator s (h.mk f), h.measurable_mk.indicator hs, ?_⟩
     have A : s.indicator f =ᵐ[μ.restrict s] s.indicator (AEMeasurable.mk f h) :=
-      (indicator_ae_eq_restrict hs).trans (h.ae_eq_mk.trans (indicator_ae_eq_restrict hs).symm)
+      (indicator_ae_eq_restrict hs.nullMeasurableSet).trans
+        (h.ae_eq_mk.trans (indicator_ae_eq_restrict hs.nullMeasurableSet).symm)
     have B : s.indicator f =ᵐ[μ.restrict sᶜ] s.indicator (AEMeasurable.mk f h) :=
-      (indicator_ae_eq_restrict_compl hs).trans (indicator_ae_eq_restrict_compl hs).symm
+      (indicator_ae_eq_restrict_compl hs.nullMeasurableSet).trans
+        (indicator_ae_eq_restrict_compl hs.nullMeasurableSet).symm
     exact ae_of_ae_restrict_of_ae_restrict_compl _ A B
 
 theorem aemeasurable_indicator_iff₀ {s} (hs : NullMeasurableSet s μ) :

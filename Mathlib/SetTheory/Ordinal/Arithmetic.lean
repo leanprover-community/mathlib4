@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Divisibility
 public import Mathlib.Data.Nat.SuccPred
-public import Mathlib.Order.SuccPred.InitialSeg
 public import Mathlib.SetTheory.Ordinal.Basic
 
 /-!

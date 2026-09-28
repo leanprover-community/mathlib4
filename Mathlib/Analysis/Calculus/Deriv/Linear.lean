@@ -6,7 +6,7 @@ Authors: Gabriel Ebner, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Basic
-public import Mathlib.Analysis.Calculus.FDeriv.Linear
+import Mathlib.Analysis.Calculus.FDeriv.Linear
 
 /-!
 # Derivatives of continuous linear maps from the base field
