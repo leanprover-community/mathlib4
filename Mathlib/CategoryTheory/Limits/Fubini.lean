@@ -6,9 +6,8 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Limits.HasLimits
-public import Mathlib.CategoryTheory.Products.Basic
 public import Mathlib.CategoryTheory.Functor.Currying
-public import Mathlib.CategoryTheory.Products.Bifunctor
+import Mathlib.CategoryTheory.Products.Bifunctor
 
 /-!
 # A Fubini theorem for categorical (co)limits
@@ -582,7 +581,7 @@ theorem colimitFlipCompColimIsoColimitCompColim_ι_ι_hom (j) (k) :
         (colimit.ι _ k ≫ colimit.ι (F ⋙ colim) j : _ ⟶ colimit (F ⋙ colim)) := by
   dsimp [colimitFlipCompColimIsoColimitCompColim]
   conv_lhs => slice 1 3
-  simp [Equivalence.unit]
+  simp
 
 set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]

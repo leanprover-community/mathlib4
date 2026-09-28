@@ -5,7 +5,6 @@ Authors: Andrew Yang, Fangming Li
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
 
 /-!
@@ -218,9 +217,6 @@ lemma Spec.fromSpecStalk_eq :
 /-- A variant of `Spec.fromSpecStalk_eq` that breaks abstraction boundaries. -/
 lemma Spec.fromSpecStalk_eq' : (Spec R).fromSpecStalk x = Spec.map (StructureSheaf.toStalk R _) :=
   Spec.fromSpecStalk_eq _ _
-
-@[deprecated (since := "2026-02-05")] alias Scheme.Spec_fromSpecStalk := Spec.fromSpecStalk_eq
-@[deprecated (since := "2026-02-05")] alias Scheme.Spec_fromSpecStalk' := Spec.fromSpecStalk_eq'
 
 end Spec
 

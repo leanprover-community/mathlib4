@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Finset.Fold
 public import Mathlib.Data.Finset.Sum
 public import Mathlib.Data.Multiset.Lattice
 public import Mathlib.Data.Set.BooleanAlgebra
@@ -624,7 +623,7 @@ theorem apply_sup'_eq_sup'_comp [SemilatticeSup γ] {s : Finset β} (H : s.Nonem
 alias comp_sup'_eq_sup'_comp := apply_sup'_eq_sup'_comp
 
 @[deprecated (since := "2026-05-29")]
-alias comp_inf'_eq_inf'_comp := apply_sup'_eq_sup'_comp
+alias comp_inf'_eq_inf'_comp := apply_inf'_eq_inf'_comp
 
 @[to_dual (attr := simp)]
 theorem _root_.map_finset_sup' [SemilatticeSup β] [FunLike F α β] [SupHomClass F α β]
