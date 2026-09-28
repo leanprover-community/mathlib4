@@ -250,8 +250,8 @@ lemma fromSpecStalkOfMem_toPartialMap (f : X ⟶ Y) (x) :
   simp [fromSpecStalkOfMem]
 
 /-- Two partial maps are equivalent if they are equal on a dense open subscheme. -/
-protected noncomputable
 @[stacks 01RS "(1)"]
+protected noncomputable
 def equiv (f g : X.PartialMap Y) : Prop :=
   ∃ (W : X.Opens) (hW : Dense (W : Set X)) (hWl : W ≤ f.domain) (hWr : W ≤ g.domain),
     (f.restrict W hW hWl).hom = (g.restrict W hW hWr).hom
