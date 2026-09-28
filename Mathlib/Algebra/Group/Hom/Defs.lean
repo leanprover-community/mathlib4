@@ -516,7 +516,7 @@ theorem Function.Injective.isMulTorsionFree [Monoid M] [Monoid N] [IsMulTorsionF
     (f : M →* N) (hf : Function.Injective f) : IsMulTorsionFree M where
   eq_of_pow_eq_pow_of_commute n hn x y h hxy :=
     hf <| IsMulTorsionFree.eq_of_pow_eq_pow_of_commute hn
-      (by simpa using congrArg f h) (by simpa using congrArg f hxy)
+      (by simpa [Commute, SemiconjBy] using congrArg f h) (by simpa using congrArg f hxy)
 
 -- completely uninteresting lemmas about coercion to function, that all homs need
 section Coes

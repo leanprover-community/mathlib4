@@ -179,7 +179,7 @@ variable [Monoid α]
 instance instMulTorsionFree [IsMulTorsionFree α] : IsMulTorsionFree αᵐᵒᵖ where
   eq_of_pow_eq_pow_of_commute n hn a b h hab :=
     unop_injective <| IsMulTorsionFree.eq_of_pow_eq_pow_of_commute hn
-      (by simpa using congrArg unop h.symm) (by simpa using congrArg unop hab)
+      (by simpa [Commute, SemiconjBy] using congrArg unop h.symm) (by simpa using congrArg unop hab)
 
 end Monoid
 
