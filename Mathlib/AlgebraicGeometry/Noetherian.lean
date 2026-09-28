@@ -6,6 +6,7 @@ Authors: Geno Racklin Asher
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
+import Mathlib.AlgebraicGeometry.Properties
 
 /-!
 # Noetherian and Locally Noetherian Schemes

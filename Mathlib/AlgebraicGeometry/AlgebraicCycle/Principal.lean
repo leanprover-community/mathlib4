@@ -67,20 +67,21 @@ theorem isWeilDivisor_divisor [IsIntegral X] [IsLocallyNoetherian X] {f : X.func
   contrapose hz
   simp_all
 
+/-- The principal divisor of a unit on `U` vanishes on `U`. -/
 @[simp]
-theorem divisor_eq_zero_of_isUnit [IsIntegral X] [IsLocallyNoetherian X] {U : X.Opens} [Nonempty U]
-    {g : Γ(X, U)} (hg : IsUnit g) : (divisor (X.germToFunctionField U g)).filter U = 0 := by
+theorem filter_divisor_germToFunctionField_eq_zero_of_isUnit [IsIntegral X] [IsLocallyNoetherian X]
+    {U : X.Opens} [Nonempty U] {g : Γ(X, U)} (hg : IsUnit g) :
+    (divisor (X.germToFunctionField U g)).filter U = 0 := by
   ext z
   by_cases hz : z ∈ (U : Set X)
   · simp [hz, ord_of_isUnit hg hz]
   · simp [hz]
 
+/-- The principal divisor of a global unit is zero. -/
 @[simp]
-lemma divisor_eq_zero_of_isUnit_top
-    [IsIntegral X] [IsLocallyNoetherian X] {g : Γ(X, ⊤)} (hg : IsUnit g) :
-    divisor (X.germToFunctionField ⊤ g) = 0 := by
-  ext z
-  simp [hg]
+lemma divisor_germToFunctionField_top_eq_zero_of_isUnit [IsIntegral X] [IsLocallyNoetherian X]
+    {g : Γ(X, ⊤)} (hg : IsUnit g) : divisor (X.germToFunctionField ⊤ g) = 0 := by
+  simpa using filter_divisor_germToFunctionField_eq_zero_of_isUnit hg
 
 @[simp]
 theorem divisor_neg [IsIntegral X] [IsLocallyNoetherian X] (f : X.functionField) :
