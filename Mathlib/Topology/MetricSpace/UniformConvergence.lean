@@ -6,10 +6,7 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Order.CompleteLattice.Group
-public import Mathlib.Topology.ContinuousMap.Bounded.Basic
 public import Mathlib.Topology.ContinuousMap.Compact
-public import Mathlib.Topology.MetricSpace.Lipschitz
-public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
 /-! # Metric structure on `α →ᵤ β` and `α →ᵤ[𝔖] β` for finite `𝔖`
 
@@ -44,8 +41,9 @@ There are a few advantages of equipping this space with this metric structure.
 public section
 
 variable {α β γ : Type*} [PseudoEMetricSpace γ]
-open scoped UniformConvergence NNReal ENNReal
-open Filter Topology Uniformity
+open Filter
+
+open scoped UniformConvergence NNReal ENNReal Topology Uniformity
 
 namespace UniformFun
 

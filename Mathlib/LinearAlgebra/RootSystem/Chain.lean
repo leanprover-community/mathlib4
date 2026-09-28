@@ -31,7 +31,7 @@ length, `p + q` is at most 3.
 
 noncomputable section
 
-open FaithfulSMul Function Set Submodule
+open FaithfulSMul Function Set
 
 variable {ι R M N : Type*} [Finite ι] [CommRing R] [CharZero R] [IsDomain R]
   [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]

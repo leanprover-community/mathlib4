@@ -6,7 +6,7 @@ Authors: Gaëtan Serré
 
 module
 
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
+import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 public import Mathlib.MeasureTheory.Measure.Typeclasses.ZeroOne
 public import Mathlib.Probability.Kernel.Composition.Prod
 
@@ -46,7 +46,7 @@ composition is deterministic, the equation fails.
 * [Moss and Perrone, *A category-theoretic proof of the ergodic decomposition theorem*][moss2023]
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory ProbabilityTheory Set
 
@@ -183,7 +183,7 @@ instance (κ : Kernel α β) [IsDeterministic κ] : IsSFiniteKernel κ := by
     by_contra! h
     let : IsFiniteKernel κ := ⟨⟨0, by simp, h⟩⟩
     exact hκ inferInstance
-  have h := DFunLike.congr_fun (DFunLike.congr_fun κ.parallelComp_self_comp_copy a) (univ ×ˢ univ)
+  have h := congr($(κ.parallelComp_self_comp_copy) a (univ ×ˢ univ))
   simp only [parallelComp_of_not_isSFiniteKernel_left κ hκ, zero_comp, zero_apply,
     copy_comp_apply_prod κ a .univ .univ, inter_self] at h
   exact ha.ne h

@@ -5,9 +5,6 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Algebra.Module.Equiv.Defs
-public import Mathlib.Data.Fin.Tuple.Basic
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 public import Mathlib.Analysis.InnerProductSpace.CanonicalTensor
 
 /-! # Type classes for derivatives and the Laplacian
@@ -20,16 +17,13 @@ We also define the iterated line derivative and prove elementary properties.
 We define a Laplacian based on the sum of second derivatives formula and prove that the Laplacian
 thus defined is independent of the choice of basis.
 
-Currently, this type class is only used by Schwartz functions. Future uses include derivatives on
-test functions, distributions, tempered distributions, and Sobolev spaces (and other generalized
-function spaces).
 -/
 
 @[expose] public noncomputable section
 
 universe u' u v w
 
-variable {ι ι' 𝕜 R V E F V₁ V₂ V₃ : Type*}
+variable {ι R V E F V₁ V₂ V₃ : Type*}
 
 /-! ## Line derivative -/
 
@@ -291,7 +285,7 @@ variable [CommRing R] [AddCommGroup E] [Module R E]
   [LineDerivAdd E V₂ V₃] [LineDerivAdd E V₁ V₂]
   [LineDerivSMul R E V₂ V₃] [LineDerivLeftSMul R E V₁ V₂] [LineDerivLeftSMul R E V₂ V₃]
 
-open InnerProductSpace TensorProduct
+open TensorProduct
 
 variable (R) in
 /-- The second derivative in terms `lineDerivOp` as a bilinear map.

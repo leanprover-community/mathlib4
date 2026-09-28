@@ -6,7 +6,7 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.Computability.Encoding
-public import Mathlib.Logic.Small.List
+import Mathlib.Logic.Small.List
 public import Mathlib.ModelTheory.Syntax
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 
@@ -48,7 +48,7 @@ variable {α : Type u'}
 
 open FirstOrder Cardinal
 
-open Computability List Structure Fin
+open Computability List Fin
 
 namespace Term
 
@@ -321,7 +321,7 @@ instance : Countable (Σ n, L.BoundedFormula α n) := by
 
 instance : Countable (L.Formula α) :=
   (Function.Injective.countable
-    (f := fun φ => (⟨0, φ⟩ : Σ n, L.BoundedFormula α n))) <| sigma_mk_injective
+    (f := fun φ => (⟨0, φ⟩ : Σ n, L.BoundedFormula α n))) sigma_mk_injective
 
 end Countable
 

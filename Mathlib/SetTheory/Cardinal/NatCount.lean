@@ -18,7 +18,7 @@ public section
 
 
 namespace Nat
-open Nat Count
+open Nat
 
 variable {p : ℕ → Prop} [DecidablePred p] (n : ℕ)
 

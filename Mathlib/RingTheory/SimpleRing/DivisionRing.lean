@@ -6,7 +6,6 @@ Authors: Edison Xie
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Simple
-public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 
@@ -29,7 +28,7 @@ Noncommutative algebra, simple module, division ring
 
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

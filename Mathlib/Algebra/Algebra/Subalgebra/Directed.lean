@@ -6,7 +6,6 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-public import Mathlib.Data.Set.UnionLift
 
 /-!
 # Subalgebras and directed Unions of sets
@@ -88,7 +87,6 @@ noncomputable def iSupLift (dir : Directed (· ≤ ·) K) (f : ∀ i, K i →ₐ
   exact liftSup.comp (inclusion hT)
 
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem iSupLift_inclusion {dir : Directed (· ≤ ·) K} {f : ∀ i, K i →ₐ[R] B}
     {hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h)}
@@ -104,7 +102,6 @@ theorem iSupLift_comp_inclusion {dir : Directed (· ≤ ·) K} {f : ∀ i, K i �
     {T : Subalgebra R A} {hT : T ≤ iSup K} {i : ι} (h : K i ≤ T) :
     (iSupLift K dir f hf T hT).comp (inclusion h) = f i := by ext; simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem iSupLift_mk {dir : Directed (· ≤ ·) K} {f : ∀ i, K i →ₐ[R] B}
     {hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h)}
@@ -113,7 +110,6 @@ theorem iSupLift_mk {dir : Directed (· ≤ ·) K} {f : ∀ i, K i →ₐ[R] B}
   dsimp [iSupLift, inclusion]
   rw [Set.iUnionLift_mk]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iSupLift_of_mem {dir : Directed (· ≤ ·) K} {f : ∀ i, K i →ₐ[R] B}
     {hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h)}
     {T : Subalgebra R A} {hT : T ≤ iSup K} {i : ι} (x : T) (hx : (x : A) ∈ K i) :

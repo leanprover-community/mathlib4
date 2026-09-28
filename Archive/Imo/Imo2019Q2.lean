@@ -3,8 +3,10 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Geometry.Euclidean.Angle.Sphere
-import Mathlib.Geometry.Euclidean.Sphere.SecondInter
+module
+
+public import Mathlib.Geometry.Euclidean.Angle.Sphere
+public import Mathlib.Geometry.Euclidean.Sphere.SecondInter
 
 /-!
 # IMO 2019 Q2
@@ -68,7 +70,7 @@ variable [NormedAddTorsor V Pt]
 
 namespace Imo2019Q2
 
-noncomputable section
+@[expose] public noncomputable section
 
 /-- A configuration satisfying the conditions of the problem. We define this structure to avoid
 passing many hypotheses around as we build up information about the configuration; the final
@@ -92,11 +94,6 @@ structure Imo2019q2Cfg where
   angle_CQ₁Q_eq_angle_CBA : ∠ C Q₁ Q = ∠ C B A
   -- A hypothesis implicit in the first named angle.
   C_ne_Q₁ : C ≠ Q₁
-
-/-- A default choice of orientation, for lemmas that need to pick one. -/
-@[instance_reducible]
-def someOrientation [hd2 : Fact (finrank ℝ V = 2)] : Module.Oriented ℝ V (Fin 2) :=
-  ⟨Basis.orientation (finBasisOfFinrankEq _ _ hd2.out)⟩
 
 variable {V Pt}
 
@@ -263,6 +260,8 @@ end Oriented
 
 /-! ### More obvious configuration properties -/
 
+open scoped Module.Oriented.Arbitrary
+
 section
 
 variable [hd2 : Fact (finrank ℝ V = 2)]
@@ -275,7 +274,6 @@ theorem A₁_ne_B : cfg.A₁ ≠ cfg.B := by
     rw [AffineSubspace.eq_iff_direction_eq_of_mem (left_mem_affineSpan_pair _ _ _)
       hwbtw.mem_affineSpan]
     exact cfg.PQ_parallel_AB.direction_eq
-  have := someOrientation V
   have haQ : (2 : ℤ) • ∡ cfg.C cfg.B cfg.Q = (2 : ℤ) • ∡ cfg.C cfg.B cfg.A := by
     rw [Collinear.two_zsmul_oangle_eq_right _ cfg.A_ne_B cfg.Q_ne_B]
     rw [Set.pair_comm, Set.insert_comm]
@@ -389,7 +387,6 @@ end Oriented
 
 
 theorem not_collinear_QPA₂ : ¬Collinear ℝ ({cfg.Q, cfg.P, cfg.A₂} : Set Pt) := by
-  have := someOrientation V
   rw [collinear_iff_of_two_zsmul_oangle_eq cfg.two_zsmul_oangle_QPA₂_eq_two_zsmul_oangle_BAA₂, ←
     affineIndependent_iff_not_collinear_set]
   have h : Cospherical ({cfg.B, cfg.A, cfg.A₂} : Set Pt) := by
@@ -464,7 +461,6 @@ end Oriented
 
 
 theorem cospherical_QPB₂A₂ : Cospherical ({cfg.Q, cfg.P, cfg.B₂, cfg.A₂} : Set Pt) :=
-  haveI := someOrientation V
   cospherical_of_two_zsmul_oangle_eq_of_not_collinear
     cfg.two_zsmul_oangle_QPA₂_eq_two_zsmul_oangle_QB₂A₂ cfg.not_collinear_QPA₂
 
@@ -515,13 +511,11 @@ end Oriented
 
 
 theorem not_collinear_CA₂A₁ : ¬Collinear ℝ ({cfg.C, cfg.A₂, cfg.A₁} : Set Pt) := by
-  have := someOrientation V
   rw [collinear_iff_of_two_zsmul_oangle_eq cfg.two_zsmul_oangle_CA₂A₁_eq_two_zsmul_oangle_CBA,
     Set.pair_comm, Set.insert_comm, Set.pair_comm]
   exact cfg.not_collinear_ABC
 
 theorem cospherical_A₁Q₁CA₂ : Cospherical ({cfg.A₁, cfg.Q₁, cfg.C, cfg.A₂} : Set Pt) := by
-  have := someOrientation V
   rw [Set.insert_comm cfg.Q₁, Set.insert_comm cfg.A₁, Set.pair_comm, Set.insert_comm cfg.A₁,
     Set.pair_comm]
   exact cospherical_of_two_zsmul_oangle_eq_of_not_collinear
@@ -555,7 +549,6 @@ end Oriented
 
 
 theorem Q₁_mem_ω : cfg.Q₁ ∈ cfg.ω :=
-  haveI := someOrientation V
   Affine.Triangle.mem_circumsphere_of_two_zsmul_oangle_eq (by decide : (0 : Fin 3) ≠ 1)
     (by decide : (0 : Fin 3) ≠ 2) (by decide) cfg.two_zsmul_oangle_QQ₁A₂_eq_two_zsmul_oangle_QPA₂
 

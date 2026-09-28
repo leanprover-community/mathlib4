@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Analytic.Composition
-public import Mathlib.Analysis.Analytic.Linear
+import Mathlib.Analysis.Analytic.Linear
 public import Mathlib.Tactic.Positivity
 
 /-!
@@ -563,7 +563,7 @@ end FormalMultilinearSeries
 ### The inverse of an analytic open partial homeomorphism is analytic
 -/
 
-open FormalMultilinearSeries List
+open FormalMultilinearSeries
 
 lemma HasFPowerSeriesAt.tendsto_partialSum_prod_of_comp
     {f : E → G} {q : FormalMultilinearSeries 𝕜 F G}

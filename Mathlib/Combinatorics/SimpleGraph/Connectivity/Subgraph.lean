@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Chord
-public import Mathlib.Data.Set.Card
 
 /-!
 # Connectivity of subgraphs and induced graphs
@@ -242,7 +241,6 @@ theorem toSubgraph_rotate [DecidableEq V] (c : G.Walk v v) (h : u ∈ c.support)
 theorem toSubgraph_map (f : G →g G') (p : G.Walk u v) :
     (p.map f).toSubgraph = p.toSubgraph.map f := by induction p <;> simp [*, Subgraph.map_sup]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma adj_toSubgraph_mapLe {G' : SimpleGraph V} {w x : V} {p : G.Walk u v} (h : G ≤ G') :
     (p.mapLe h).toSubgraph.Adj w x ↔ p.toSubgraph.Adj w x := by
   simp

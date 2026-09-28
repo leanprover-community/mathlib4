@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
 public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
 public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
-public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 
 /-!
 # The left lifting property is stable under transfinite composition
@@ -103,7 +102,6 @@ attribute [reassoc (attr := simp)] w₁ w₂
 
 variable {c p f g} {j : J} (sq' : SqStruct c p f g j)
 
-set_option backward.isDefEq.respectTransparency false in
 include sq' in
 @[reassoc]
 lemma w : f ≫ p = c.ι.app ⊥ ≫ g := by
@@ -160,7 +158,7 @@ noncomputable def liftHom : F.obj j ⟶ X :=
     (Cocone.mk _
       { app := fun i ↦ (s.1 ⟨i⟩).f'
         naturality i i' g := by
-          have := congr_arg SqStruct.f' (s.2 g.op)
+          have := congr(SqStruct.f' $(s.2 g.op))
           dsimp at this ⊢
           rw [this, comp_id] })
 
@@ -186,7 +184,6 @@ noncomputable def lift : (sqFunctor c p f g).obj (Opposite.op j) where
     dsimp at this ⊢
     rw [liftHom_fac_assoc _ _ _ hij, this, Cocone.w_assoc])
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma map_lift {i : J} (hij : i < j) :
     (lift hj s).map (homOfLE hij.le) = s.1 ⟨⟨i, hij⟩⟩ := by
   ext
@@ -228,11 +225,11 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma hasLift : sq.HasLift := by
   obtain ⟨s, hs⟩ := (wellOrderInductionData c f g hF).surjective { w₂ := sq.w, .. }
-  replace hs := congr_arg SqStruct.f' hs
+  replace hs := congr(SqStruct.f' $hs)
   dsimp at hs
   let t : Cocone F := Cocone.mk X
     { app j := (s.1 ⟨j⟩).f'
-      naturality j j' g := by simpa using congr_arg SqStruct.f' (s.2 g.op) }
+      naturality j j' g := by simpa using congr(SqStruct.f' $(s.2 g.op)) }
   let l := hc.desc t
   have hl (j : J) : c.ι.app j ≫ l = (s.1 ⟨j⟩).f' := hc.fac t j
   exact ⟨⟨{
@@ -261,7 +258,6 @@ namespace MorphismProperty
 variable (W : MorphismProperty C)
   (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
 
-set_option backward.isDefEq.respectTransparency false in
 instance isStableUnderTransfiniteCompositionOfShape_llp :
     W.llp.IsStableUnderTransfiniteCompositionOfShape J := by
   rw [isStableUnderTransfiniteCompositionOfShape_iff]

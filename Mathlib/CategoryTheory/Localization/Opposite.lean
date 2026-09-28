@@ -37,11 +37,11 @@ def StrictUniversalPropertyFixedTarget.op {E : Type*} [Category* E]
   inverts := h.inverts.op
   lift F hF := (h.lift F.rightOp hF.rightOp).leftOp
   fac F hF := by
-    convert! congr_arg Functor.leftOp (h.fac F.rightOp hF.rightOp)
+    convert! congr($(h.fac F.rightOp hF.rightOp).leftOp)
   uniq F₁ F₂ eq := by
     suffices F₁.rightOp = F₂.rightOp by
       rw [← F₁.rightOp_leftOp_eq, ← F₂.rightOp_leftOp_eq, this]
-    have eq' := congr_arg Functor.rightOp eq
+    have eq' := congr($(eq).rightOp)
     exact h.uniq _ _ eq'
 
 instance isLocalization_op : W.Q.op.IsLocalization W.op :=
@@ -87,7 +87,7 @@ lemma isoOfHom_unop {X Y : Cᵒᵖ} (w : X ⟶ Y) (hw : W.op w) :
 
 lemma isoOfHom_op_inv {X Y : Cᵒᵖ} (w : X ⟶ Y) (hw : W.op w) :
     (isoOfHom L.op W.op w hw).inv = (isoOfHom L W w.unop hw).inv.op :=
-  congr_arg Quiver.Hom.op (congr_arg Iso.inv (isoOfHom_unop L W w hw))
+  congr($(isoOfHom_unop L W w hw).inv.op)
 
 end Localization
 

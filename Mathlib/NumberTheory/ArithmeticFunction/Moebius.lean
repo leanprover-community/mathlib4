@@ -5,7 +5,7 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 /-!
 # The Möbius function and Möbius inversion
@@ -151,8 +151,6 @@ theorem IsMultiplicative.prodPrimeFactors_one_sub_of_squarefree [CommRing R]
     ring
   · rw [(isMultiplicative_moebius.intCast.pmul hf).prodPrimeFactors_one_add_of_squarefree hn]
     simp_rw [pmul_apply, intCoe_apply]
-
-open UniqueFactorizationMonoid
 
 @[simp]
 theorem moebius_mul_coe_zeta : (μ * ζ : ArithmeticFunction ℤ) = 1 := by

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Tactic.Contrapose
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Equivalence between product types
@@ -441,6 +442,13 @@ end
 section
 
 open Subtype
+
+/-- A subtype of a `Sigma`-type defined by componentwise conditions
+is equivalent to a `Sigma`-type of subtypes. -/
+def subtypeSigmaEquivSigma {α} {β : α → Type*} {p : α → Prop} {q : (i : α) → β i → Prop} :
+    { c : Σ i : α, β i // p c.1 ∧ q c.1 c.2 } ≃ Σ i : { a // p a }, { b // q i b } where
+  toFun := fun x => ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
+  invFun := fun x => ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
 
 /-- A subtype of a product defined by componentwise conditions
 is equivalent to a product of subtypes. -/

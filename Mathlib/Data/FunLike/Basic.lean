@@ -6,9 +6,8 @@ Authors: Anne Baanen
 module
 
 public meta import Lean.Meta.CoeAttr
-public import Mathlib.Logic.Function.Basic
-public import Mathlib.Logic.Unique
-public import Mathlib.Util.CompileInductive
+
+public import Mathlib.Basic.Unique
 public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.SplitIfs
 
@@ -31,6 +30,7 @@ namespace MyHom
 
 variable (A B : Type*) [MyClass A] [MyClass B]
 
+@[macro_inline]
 instance : FunLike (MyHom A B) A B where
   coe := MyHom.toFun
   coe_injective := fun f g h => by cases f; cases g; congr
@@ -98,6 +98,7 @@ class CoolerHomClass (F : Type*) (A B : outParam Type*) [CoolClass A] [CoolClass
 
 variable {A B : Type*} [CoolClass A] [CoolClass B]
 
+@[macro_inline]
 instance : FunLike (CoolerHom A B) A B where
   coe f := f.toFun
   coe_injective := fun f g h ↦ by cases f; cases g; congr; apply DFunLike.coe_injective; congr
@@ -131,7 +132,7 @@ does **not** have a `FunLike` instance by checking the discrimination tree once 
 the entire `extends` hierarchy.
 -/
 
-@[expose] public section
+public section
 
 /-- The class `DFunLike F α β` expresses that terms of type `F` have an
 injective coercion to (dependent) functions from `α` to `β`.

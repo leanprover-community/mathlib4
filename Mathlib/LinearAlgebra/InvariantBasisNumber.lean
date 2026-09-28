@@ -7,9 +7,7 @@ module
 
 public import Mathlib.RingTheory.Ideal.Quotient.Basic
 public import Mathlib.RingTheory.Noetherian.Orzech
-public import Mathlib.RingTheory.OrzechProperty
 public import Mathlib.RingTheory.PrincipalIdealDomain
-public import Mathlib.LinearAlgebra.Finsupp.Pi
 
 /-!
 # Invariant basis number property
@@ -103,7 +101,7 @@ free module, rank, Orzech property, (strong) rank condition, invariant basis num
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -146,7 +144,7 @@ instance (priority := 100) strongRankCondition_of_orzechProperty
     apply OrzechProperty.injective_of_surjective_of_injective i (.funLeft ..) hi
       (Fin.castSucc_injective _).surjective_comp_right
     ext; simp
-  simpa using congr_fun h (Fin.last n)
+  simpa using congr($h (Fin.last n))
 
 theorem card_le_of_injective [StrongRankCondition R] {α β : Type*} [Fintype α] [Fintype β]
     (f : (α → R) →ₗ[R] β → R) (i : Injective f) : Fintype.card α ≤ Fintype.card β := by

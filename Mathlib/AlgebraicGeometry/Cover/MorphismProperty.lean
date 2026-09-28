@@ -6,7 +6,6 @@ Authors: Christian Merten, Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
-public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Covers of schemes
@@ -30,7 +29,7 @@ immersions can be used to deduce these assumptions in the general case.
 
 noncomputable section
 
-open TopologicalSpace CategoryTheory Opposite CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Limits
 
 universe v v₁ v₂ u
 

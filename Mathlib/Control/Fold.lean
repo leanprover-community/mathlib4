@@ -5,14 +5,13 @@ Authors: Simon Hudon, Sean Leather
 -/
 module
 
-public import Mathlib.Algebra.Group.Opposite
 public import Mathlib.Algebra.FreeMonoid.Basic
 public import Mathlib.CategoryTheory.Category.KleisliCat
 public import Mathlib.CategoryTheory.Endomorphism
 public import Mathlib.CategoryTheory.Types.Basic
-public import Mathlib.Control.Traversable.Instances
+import Mathlib.Control.Traversable.Instances
 public import Mathlib.Control.Traversable.Lemmas
-public import Mathlib.Tactic.AdaptationNote
+import Mathlib.Tactic.AdaptationNote
 
 /-!
 
@@ -304,7 +303,6 @@ theorem foldrm.ofFreeMonoid_comp_of {m} [Monad m] [LawfulMonad m] (f : β → α
   ext
   simp [(· ∘ ·), foldrM.ofFreeMonoid, foldrM.mk, Function.flip_def]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toList_spec (xs : t α) : toList xs = FreeMonoid.toList (foldMap FreeMonoid.of xs) :=
   Eq.symm <|
     calc
