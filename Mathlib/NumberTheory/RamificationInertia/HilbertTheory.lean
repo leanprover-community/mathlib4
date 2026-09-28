@@ -28,6 +28,21 @@ For an intermediate ring `R` of `B`, we introduce two characteristic predicates:
 * `Ideal.IsInertiaRing G P R`: `B` is Galois over `R` with Galois group the *inertia group* of `P`,
   that is the subgroup of `G` acting trivially modulo `P`.
 
+## Main results
+
+Writing `e`, `f` for the ramification index and inertia degree of `P` over `p` and `g` for the
+number of primes of `B` above `p`, the degrees in the tower `A ⊆ R ⊆ R' ⊆ B` are:
+```
+degree
+        B
+  e     |
+        R'
+  f     |
+        R
+  g     |
+        A
+```
+
 ## Relation to the classical field setting
 
 In the classical setting `L/K` is a Galois extension of fields with `G = Gal(L/K)`, and `A`, `B` are
@@ -35,7 +50,8 @@ subrings of `K`, `L` with `K` the fraction field of `A`, `L` that of `B`, and `B
 closure of `A` in `L`. The decomposition (resp. inertia) *field* is the subfield of `L` fixed by the
 decomposition (resp. inertia) group of `P`, and the associated ring is its integral closure over
 `A`. Decomposition and inertia rings arising this way are provided by
-`Ideal.IsDecompositionRing.of_isFractionRing` and `Ideal.IsInertiaRing.of_isFractionRing`.
+`Ideal.IsDecompositionRing.of_isFractionRing` and `Ideal.IsInertiaRing.of_isFractionRing`, and the
+degrees of the fields follow from those of the rings via `IsFractionRing.finrank_eq`.
 
 The field-level predicates `IsDecompositionField` and `IsInertiaField` defined below will be
 deprecated in favor of the ring-level predicates `Ideal.IsDecompositionRing` and
