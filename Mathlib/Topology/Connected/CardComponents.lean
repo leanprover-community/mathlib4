@@ -6,7 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.Data.Set.Card.Arithmetic
-public import Mathlib.Topology.LocalAtTarget
+import Mathlib.Topology.LocalAtTarget
 public import Mathlib.Topology.Separation.Connected
 
 /-!

@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Homology.SpectralObject.Homology
 public import Mathlib.Algebra.Homology.SpectralObject.HasSpectralSequence
 public import Mathlib.Algebra.Homology.SpectralSequence.Basic
-public import Mathlib.Order.WithBotTop
 
 /-!
 # The spectral sequence of a spectral object
