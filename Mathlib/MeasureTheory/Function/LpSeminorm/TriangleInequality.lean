@@ -87,6 +87,37 @@ theorem eLpNorm_add_le' (p : ℝ≥0∞) :
     · simpa using ENNReal.toReal_mono ENNReal.one_ne_top h'p.le
   · simpa [LpAddConst_of_one_le h'p] using eLpNorm_add_le h'p
 
+theorem inhmgELpNorm_add_le :
+    inhmgELpNorm (f + g) p μ ≤ inhmgELpNorm f p μ + inhmgELpNorm g p μ := by
+  by_cases! hf : ¬ AEStronglyMeasurable f μ
+  · simp [inhmgELpNorm_of_not_aestronglyMeasurable hf]
+  by_cases! hg : ¬ AEStronglyMeasurable g μ
+  · simp [inhmgELpNorm_of_not_aestronglyMeasurable hg]
+  rcases eq_or_ne p 0 with rfl | hp
+  · rw [inhmgELpNorm_exponent_zero hf, inhmgELpNorm_exponent_zero hg,
+      inhmgELpNorm_exponent_zero (by fun_prop)]
+    refine (measure_mono ?_).trans (measure_union_le (Function.support fun x ↦ ‖f x‖ₑ)
+      (Function.support fun x ↦ ‖g x‖ₑ))
+    intro x hx
+    simp only [Function.mem_support, Set.mem_union, Pi.add_apply] at *
+    contrapose! hx
+    refine le_antisymm ?_ zero_le
+    nth_rw 1 [← add_zero 0, ← hx.1, ← hx.2]
+    exact enorm_add_le (f x) (g x)
+  by_cases! hp' : p ≤ 1
+  · rw [inhmgELpNorm_eq_lintegral hp' hp hf, inhmgELpNorm_eq_lintegral hp' hp hg,
+      inhmgELpNorm_eq_lintegral hp' hp (hf.add hg)]
+    rw [← MeasureTheory.lintegral_add_left' (by fun_prop)]
+    gcongr
+    trans (‖f x‖ₑ + ‖g x‖ₑ) ^ p.toReal
+    · gcongr
+      exact enorm_add_le (f x) (g x)
+    · apply rpow_add_le_add_rpow ‖f x‖ₑ ‖g x‖ₑ toReal_nonneg
+      exact toReal_le_of_le_ofReal zero_le_one (by simp [hp'])
+  · rw [inhmgELpNorm_eq_eLpNorm hp'.le, inhmgELpNorm_eq_eLpNorm hp'.le,
+      inhmgELpNorm_eq_eLpNorm hp'.le]
+    exact eLpNorm_add_le hp'.le
+
 variable (μ ε) in
 /-- Technical lemma to control the addition of functions in `L^p` even for `p < 1`: Given `δ > 0`,
 there exists `η` such that two functions bounded by `η` in `L^p` have a sum bounded by `δ`. One
