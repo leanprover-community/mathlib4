@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Positive
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 public import Mathlib.MeasureTheory.SpecificCodomains.WithLp
-public import Mathlib.Probability.Moments.Basic
+import Mathlib.Probability.Moments.Basic
 public import Mathlib.Probability.Moments.CovarianceBilinDual
 
 /-!
