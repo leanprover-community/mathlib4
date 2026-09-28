@@ -25,7 +25,7 @@ namespace Pi
 @[to_additive]
 instance instIsMulTorsionFree [∀ i, Monoid (M i)] [∀ i, IsMulTorsionFree (M i)] :
     IsMulTorsionFree (∀ i, M i) where
-  pow_left_injective n hn a b hab h := by
+  pow_left_injective_of_commute n hn a b hab h := by
     ext i
     exact IsMulTorsionFree.pow_left_injective_of_commute hn (congr_fun hab i) (congrFun h i)
 
