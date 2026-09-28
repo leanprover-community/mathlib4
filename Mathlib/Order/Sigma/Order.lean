@@ -10,7 +10,6 @@ public import Mathlib.Order.BoundedOrder.Basic
 public import Mathlib.Order.Lattice
 public import Mathlib.Order.Lex
 public import Mathlib.Order.Sigma.Lex
-public import Mathlib.Util.Notation3
 
 /-!
 # Orders on a sigma type

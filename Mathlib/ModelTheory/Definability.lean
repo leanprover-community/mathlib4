@@ -6,9 +6,7 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.Basic.Rel
-public import Mathlib.Basic.SetLike.Basic
 public import Mathlib.ModelTheory.Semantics
-public import Mathlib.Tactic.FunProp
 
 /-!
 # Definable Sets
@@ -68,10 +66,8 @@ theorem Definable.map_expansion {L' : FirstOrder.Language} [L'.Structure M] (h :
 theorem definable_iff_exists_formula_sum :
     A.Definable L s ↔ ∃ φ : L.Formula (A ⊕ α), s = {v | φ.Realize (Sum.elim (↑) v)} := by
   rw [Definable, Equiv.exists_congr_left (BoundedFormula.constantsVarsEquiv)]
-  refine exists_congr (fun φ => iff_iff_eq.2 (congr_arg (s = ·) ?_))
-  ext
-  simp only [BoundedFormula.constantsVarsEquiv, constantsOn,
-    mem_ofPred_eq, Formula.Realize]
+  congr! with φ x
+  simp only [BoundedFormula.constantsVarsEquiv, constantsOn, Formula.Realize]
   refine BoundedFormula.realize_mapTermRel_id ?_ (fun _ _ _ => rfl)
   intros
   simp only [Term.constantsVarsEquivLeft_symm_apply, Term.realize_varsToConstants,

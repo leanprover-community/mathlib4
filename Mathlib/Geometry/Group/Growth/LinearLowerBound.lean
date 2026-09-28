@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.Action.Pointwise.Finset
 public import Mathlib.Algebra.Group.Subgroup.Pointwise
-public import Mathlib.Order.SuccPred.Nat
+
+import Mathlib.Order.SuccPred.Nat
 
 /-!
 # Linear lower bound on the growth of a generating set

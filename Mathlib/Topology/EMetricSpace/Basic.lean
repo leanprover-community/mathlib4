@@ -7,12 +7,12 @@ module
 
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
-public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Order.SuccPred.Nat
 public import Mathlib.Topology.EMetricSpace.Defs
-public import Mathlib.Topology.UniformSpace.Compact
 public import Mathlib.Topology.UniformSpace.LocallyUniformConvergence
 public import Mathlib.Topology.UniformSpace.UniformEmbedding
+
+import Mathlib.Topology.UniformSpace.Compact
 
 /-!
 # Extended metric spaces

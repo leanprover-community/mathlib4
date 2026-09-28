@@ -10,9 +10,9 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.Group.IsApply
-public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Algebra.Ring.Pi
-public import Mathlib.Data.Fintype.Basic
+
+import Mathlib.Data.Fintype.Basic
 
 /-!
 # Big operators for Pi Types

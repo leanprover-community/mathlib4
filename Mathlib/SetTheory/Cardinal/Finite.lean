@@ -6,9 +6,7 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.Data.ENat.Pow
-public import Mathlib.Data.ULift
 public import Mathlib.Data.ZMod.Defs
-public import Mathlib.SetTheory.Cardinal.ENat
 public import Mathlib.SetTheory.Cardinal.ToNat
 
 /-!

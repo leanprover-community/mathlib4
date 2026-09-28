@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.GroupWithZero.Associated
-public import Mathlib.Algebra.Ring.Divisibility.Basic
-public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Order.SuccPred.ENat
+
+import Mathlib.Algebra.Ring.Divisibility.Basic
+import Mathlib.Algebra.Ring.Int.Defs
 
 /-!
 # Multiplicity of a divisor

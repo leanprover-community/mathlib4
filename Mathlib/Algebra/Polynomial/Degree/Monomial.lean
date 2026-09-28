@@ -6,8 +6,8 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 module
 
 public import Mathlib.Algebra.Polynomial.Degree.Defs
-public import Mathlib.Algebra.Polynomial.Monomial
-public import Mathlib.Order.SuccPred.Nat
+
+import Mathlib.Algebra.Polynomial.Monomial
 
 /-!
 # Degree of univariate monomials

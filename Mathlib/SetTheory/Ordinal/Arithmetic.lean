@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 module
 
 public import Mathlib.Algebra.GroupWithZero.Divisibility
-public import Mathlib.Order.SuccPred.InitialSeg
 public import Mathlib.Order.SuccPred.Nat
 public import Mathlib.SetTheory.Ordinal.Basic
 

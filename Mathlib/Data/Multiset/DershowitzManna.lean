@@ -6,7 +6,8 @@ Authors: Haitian Wang, Malvin Gattinger
 module
 
 public import Mathlib.Algebra.Order.Monoid.Multiset
-public import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+
+import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 
 /-!
 # Dershowitz-Manna ordering

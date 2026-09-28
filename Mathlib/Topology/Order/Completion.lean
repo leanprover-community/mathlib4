@@ -5,7 +5,7 @@ Authors: Violeta Hernández Palacios, Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Algebra.Field.Rat
+import Mathlib.Algebra.Field.Rat
 public import Mathlib.Algebra.Order.Ring.Rat
 public import Mathlib.Order.Completion
 public import Mathlib.Order.Prod.Lex.Basic

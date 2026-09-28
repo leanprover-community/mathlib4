@@ -5,11 +5,9 @@ Authors: Ziyan Wei, Anatole Dedecker
 -/
 module
 
-public import Mathlib.Order.Setoid.Basic
-public import Mathlib.Topology.Constructions
-public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Homeomorph.Quotient
-public import Mathlib.Topology.Maps.Basic
+
+import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Bourbaki Strict Maps

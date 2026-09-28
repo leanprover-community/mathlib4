@@ -6,10 +6,8 @@ Authors: Leonardo de Moura, Mario Carneiro
 module
 
 public import Mathlib.Basic.FunLike.Equiv
-public import Mathlib.Basic.Unique
 public import Mathlib.Data.Quot
 public import Mathlib.Data.Subtype
-public import Mathlib.Tactic.Simps
 
 
 /-!

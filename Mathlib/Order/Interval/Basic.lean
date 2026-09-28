@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Basic.SetLike.Basic
 public import Mathlib.Data.Set.Lattice.Image
-public import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Order intervals

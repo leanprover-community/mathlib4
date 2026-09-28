@@ -5,7 +5,6 @@ Authors: Daniel Weber
 -/
 module
 
-public import Mathlib.Basic.SetLike.Basic
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.SuccPred.Archimedean

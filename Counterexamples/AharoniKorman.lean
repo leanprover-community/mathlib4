@@ -750,7 +750,7 @@ lemma apply_eq_of_line_eq_step (f : SpinalMap C) {n xl yl xh yh : ℕ}
       · rintro _ _ c a b hab rfl rfl rfl h
         have : (x + 1, y + 1) ≤ (a, b) := (Finset.mem_Icc.1 (chainBetween_subset hab)).1
         rw [← embed_apply, ← embed_apply] at h
-        exact f.not_lt_of_eq congr(toHollom $(h.symm)) (embed_strictMono (this.trans_lt' (by simp)))
+        exact f.not_lt_of_eq congr(toHollom $h.symm) (embed_strictMono (this.trans_lt' (by simp)))
   -- Therefore the image of both points is in `I \ B.image f`,
   replace hleft : f h(x + 1, y, n) ∈ I \ B.image f := by simpa [mem_sdiff, hleft, I] using this.1
   replace hright : f h(x, y + 1, n) ∈ I \ B.image f := by simpa [mem_sdiff, hright, I] using this.2

@@ -5,7 +5,6 @@ Authors: Peter Nelson
 -/
 module
 
-public import Mathlib.Basic.SetLike.Basic
 public import Mathlib.Order.SupIndep
 
 /-!

@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.End
 public import Mathlib.Data.Finset.Sort
-public import Mathlib.Data.Fintype.Fin
-public import Mathlib.Order.Interval.Finset.Fin
 public import Mathlib.Order.Prod.Lex.Basic
+
+import Mathlib.Data.Fintype.Fin
+import Mathlib.Order.Interval.Finset.Fin
 
 /-!
 
@@ -153,7 +154,7 @@ theorem eq_sort_iff' : σ = sort f ↔ StrictMono (σ.trans <| graphEquiv₁ f) 
     exact (graphEquiv₂ f).strictMono
   · have := Subsingleton.elim (graphEquiv₂ f) (h.orderIsoOfSurjective _ <| Equiv.surjective _)
     ext1 x
-    exact (graphEquiv₁ f).eq_symm_apply.2 (DFunLike.congr_fun this x).symm
+    exact (graphEquiv₁ f).eq_symm_apply.2 congr($this x).symm
 
 /-- A permutation `σ` equals `sort f` if and only if `f ∘ σ` is monotone and whenever `i < j`
 and `f (σ i) = f (σ j)`, then `σ i < σ j`. This means that `sort f` is the lexicographically

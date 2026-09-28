@@ -8,7 +8,8 @@ module
 public import Mathlib.Order.Setoid.Partition
 public import Mathlib.Topology.Connected.TotallyDisconnected
 public import Mathlib.Topology.LocallyConstant.Basic
-public import Mathlib.Topology.Separation.Regular
+
+import Mathlib.Topology.Separation.Regular
 
 /-!
 

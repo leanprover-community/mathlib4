@@ -1018,9 +1018,11 @@ lemma exists_equiv_range_eq_graphOn_univ {f : α → β × γ} (hf₁ : Surjecti
 
 Let `s : Set (β × γ)` be a set in a product. Assume that `s` maps bijectively to the first factor.
 Then `s` is the graph of some function `f : β → γ`. -/
-lemma exists_eq_mgraphOn_univ {s : Set (β × γ)}
+lemma exists_eq_graphOn_univ {s : Set (β × γ)}
     (hs₁ : Bijective (Prod.fst ∘ (Subtype.val : s → β × γ))) : ∃ f : β → γ, s = univ.graphOn f := by
   simpa using exists_range_eq_graphOn_univ hs₁.surjective
     fun a b h ↦ congr_arg (Prod.snd ∘ (Subtype.val : s → β × γ)) (hs₁.injective h)
+
+@[deprecated (since := "2026-09-17")] alias exists_eq_mgraphOn_univ := exists_eq_graphOn_univ
 
 end Set
