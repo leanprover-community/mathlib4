@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Subcategory
-public import Mathlib.CategoryTheory.Triangulated.Opposite.Triangulated
+import Mathlib.CategoryTheory.Triangulated.Opposite.Triangulated
 
 /-!
 # Localizing subcategories

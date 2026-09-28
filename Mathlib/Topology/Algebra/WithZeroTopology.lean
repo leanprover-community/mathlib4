@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
 public import Mathlib.Topology.Algebra.GroupWithZero
-public import Mathlib.Topology.Order.OrderClosed
-public import Mathlib.Topology.Separation.Regular
 
 /-!
 # The topology on linearly ordered commutative groups with zero
@@ -35,7 +33,9 @@ a linearly ordered commutative group with zero. You can locally activate this to
 
 public section
 
-open Topology Filter TopologicalSpace Filter Set Function
+open Filter TopologicalSpace Filter Set Function
+
+open scoped Topology
 
 namespace WithZeroTopology
 

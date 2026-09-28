@@ -5,8 +5,8 @@ Authors: Kim Morrison, Markus Himmel, Bhavik Mehta
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.WalkingPair
 public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 
 /-!
 # Cospan & Span

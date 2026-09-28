@@ -98,7 +98,9 @@ uniform space, separated space, Hausdorff space, separation quotient
 
 @[expose] public section
 
-open Filter Set Function Topology Uniformity UniformSpace
+open Filter Set Function UniformSpace
+
+open scoped Topology Uniformity
 
 noncomputable section
 
@@ -323,7 +325,7 @@ theorem map_unique {f : α → β} (hf : UniformContinuous f)
   ext ⟨a⟩
   calc
     map f ⟦a⟧ = ⟦f a⟧ := map_mk hf a
-    _ = g ⟦a⟧ := congr_fun comm a
+    _ = g ⟦a⟧ := congr($comm a)
 
 @[simp]
 theorem map_id : map (@id α) = id := map_unique uniformContinuous_id rfl

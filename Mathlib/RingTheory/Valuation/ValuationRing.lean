@@ -145,13 +145,12 @@ protected theorem le_total (a b : ValueGroup A K) : a ≤ b ∨ b ≤ a := by
     field_simp
     simp only [← map_mul]; congr 1; linear_combination h
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance linearOrder : LinearOrder (ValueGroup A K) where
   le_refl := by rintro ⟨⟩; use 1; rw [one_smul]
   le_trans := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ⟨e, rfl⟩ ⟨f, rfl⟩; use e * f; rw [mul_smul]
   le_antisymm := by
     rintro ⟨a⟩ ⟨b⟩ ⟨e, rfl⟩ ⟨f, hf⟩
-    by_cases hb : b = 0; · simp [hb]
+    by_cases hb : b = 0; · rw [hb, smul_zero]
     have : IsUnit e := by
       apply isUnit_of_dvd_one
       use f
@@ -257,6 +256,11 @@ theorem coe_equivInteger_apply (a : A) : (equivInteger A K a : K) = algebraMap A
 
 theorem range_algebraMap_eq : (valuation A K).integer = (algebraMap A K).range := by
   ext; exact mem_integer_iff _ _ _
+
+theorem integers : (valuation A K).Integers A where
+  hom_inj := IsFractionRing.injective A K
+  map_le_one a := (mem_integer_iff _ _ _).mpr ⟨a, rfl⟩
+  exists_of_le_one _ h := (mem_integer_iff _ _ _).mp h
 
 end
 
@@ -421,7 +425,7 @@ theorem _root_.Function.Surjective.preValuationRing {R S : Type*} [Mul R] [PreVa
   ⟨fun a b => by
     obtain ⟨⟨a, rfl⟩, ⟨b, rfl⟩⟩ := hf a, hf b
     obtain ⟨c, rfl | rfl⟩ := PreValuationRing.cond a b
-    exacts [⟨f c, Or.inl <| (map_mul _ _ _).symm⟩, ⟨f c, Or.inr <| (map_mul _ _ _).symm⟩]⟩
+    exacts [⟨f c, Or.inl (map_mul _ _ _).symm⟩, ⟨f c, Or.inr (map_mul _ _ _).symm⟩]⟩
 
 theorem _root_.Function.Surjective.valuationRing {R S : Type*} [NonAssocSemiring R]
     [PreValuationRing R] [CommRing S] [IsDomain S] (f : R →+* S) (hf : Function.Surjective f) :

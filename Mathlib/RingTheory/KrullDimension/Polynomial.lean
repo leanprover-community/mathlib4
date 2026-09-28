@@ -5,11 +5,10 @@ Authors: Jingting Wang, Sihan Su, Yi Song, Christian Merten
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.RingTheory.KrullDimension.PID
-public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
-public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
-public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
+import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
+import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
+import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 
 /-!
 # Krull dimension of polynomial ring
@@ -98,7 +97,7 @@ lemma height_eq_height_add_one (p : Ideal R)
     rw [height_map_of_disjoint p.primeCompl]
     exact Disjoint.symm <| Set.disjoint_left.mpr fun _ a b ↦ b a
   have eq2 : P.height = P'.height := by
-    rw [height_map_of_disjoint (Submonoid.map C <| p.primeCompl) _ disj]
+    rw [height_map_of_disjoint (Submonoid.map C p.primeCompl) _ disj]
   rw [eq1, eq2]
   apply height_eq_height_add_one_of_isMaximal p' P'
 
@@ -117,7 +116,7 @@ end Polynomial
 
 /-- If `R` is Noetherian, `dim R[X₁, ..., Xₙ] = dim R + n`. -/
 @[simp]
-lemma MvPolynomial.ringKrullDim_of_isNoetherianRing {ι : Type*} [Finite ι] :
+lemma MvPolynomial.ringKrullDim_of_isNoetherianRing_of_finite {ι : Type*} [Finite ι] :
     ringKrullDim (MvPolynomial ι R) = ringKrullDim R + Nat.card ι := by
   induction ι using Finite.induction_empty_option with
   | of_equiv e H =>
@@ -130,3 +129,11 @@ lemma MvPolynomial.ringKrullDim_of_isNoetherianRing {ι : Type*} [Finite ι] :
       ← add_assoc] at IH ⊢
     rw [ringKrullDim_eq_of_ringEquiv (MvPolynomial.optionEquivLeft _ _).toRingEquiv,
       Polynomial.ringKrullDim_of_isNoetherianRing, IH]
+
+/-- If `R` is Noetherian, `dim R[Xₛ] = dim R + card(Xₛ)`. -/
+lemma MvPolynomial.ringKrullDim_of_isNoetherianRing {ι : Type*} :
+    ringKrullDim (MvPolynomial ι R) = ringKrullDim R + ENat.card ι := by
+  nontriviality R
+  by_cases! Finite ι
+  · simp [ringKrullDim_of_isNoetherianRing_of_finite, ENat.card_eq_coe_natCard]
+  · simp [WithBot.coe_bot_le.mp ringKrullDim_nonneg_of_nontrivial]
