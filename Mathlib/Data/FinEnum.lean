@@ -204,8 +204,8 @@ def succMany? [inst : FinEnum α] (n : Nat) (x : α) : Option α :=
   else none
 
 @[grind =]
-lemma succMany?_eq_some_iff [inst : FinEnum α] {n : Nat} {a b : α} :
-  succMany? n a = some b ↔ (inst.equiv a + n = inst.equiv b ∧ inst.equiv a + n < card α) := by
+lemma succMany?_eq_some_iff [inst : FinEnum α] {n : Nat} {x y : α} :
+  succMany? n x = some y ↔ (inst.equiv x + n = inst.equiv y ∧ inst.equiv x + n < card α) := by
   simp only [succMany?]
   constructor
   · intro h
@@ -225,19 +225,19 @@ lemma succMany?_eq_some_iff [inst : FinEnum α] {n : Nat} {a b : α} :
     · assumption
 
 @[grind =]
-lemma succMany?_succ [inst : FinEnum α] (n : Nat) (a : α) :
-  (succMany? n a).bind (succMany? 1) = succMany? (n + 1) a := by
+lemma succMany?_succ [inst : FinEnum α] (n : Nat) (x : α) :
+  (succMany? n x).bind (succMany? 1) = succMany? (n + 1) x := by
   simp [succMany?]
   split_ifs <;> simp [succMany?] <;> grind only
 
-lemma succMany?_bind_flatten [inst : FinEnum α] (n m o : Nat) (a : α) :
-  (succMany? n a).bind (fun a => (succMany? m a).bind (succMany? o)) =
-    ((succMany? n a).bind (succMany? m)).bind (succMany? o) := by
+lemma succMany?_bind_flatten [inst : FinEnum α] (n m o : Nat) (x : α) :
+  (succMany? n x).bind (fun a => (succMany? m a).bind (succMany? o)) =
+    ((succMany? n x).bind (succMany? m)).bind (succMany? o) := by
   grind
 
 @[grind =]
-lemma succMany?_bind [inst : FinEnum α] {n m : Nat} {a : α} :
-  (succMany? n a).bind (succMany? m) = succMany? (n + m) a := by
+lemma succMany?_bind [inst : FinEnum α] {n m : Nat} {x : α} :
+  (succMany? n x).bind (succMany? m) = succMany? (n + m) x := by
   induction m with
   | zero =>
     simp [succMany?]
@@ -259,14 +259,14 @@ instance [inst : FinEnum α] : Std.PRange.LawfulUpwardEnumerable α where
   -- It is not the case that a and b are the same, because if it were, the equivalence with
   -- `Fin k` would have mapped `m` and `m + n + 1` to the same object, and hence would not be
   -- injective.
-  ne_of_lt a b h := by
+  ne_of_lt x y h := by
     rcases h with ⟨n, h⟩
     have ⟨h, _⟩ := succMany?_eq_some_iff.mp h
     grind only
 
-  succMany?_zero a := by simp [Std.PRange.UpwardEnumerable.succMany?, succMany?]
+  succMany?_zero x := by simp [Std.PRange.UpwardEnumerable.succMany?, succMany?]
 
-  succMany?_add_one n a := by
+  succMany?_add_one n x := by
     simp only [Std.PRange.UpwardEnumerable.succMany?, Std.PRange.UpwardEnumerable.succ?]
     symm
     apply succMany?_bind
