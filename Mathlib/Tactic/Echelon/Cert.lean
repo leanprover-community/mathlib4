@@ -194,8 +194,7 @@ def certifyProductEq {u : Level} {m n : Nat} {α : Q(Type u)} (cα : Q(AddCommMo
     | none =>
       -- Returns a proof with RHS being `mulEq.expr` without a bridge to
       -- `U.lit`. A model passes `none` when equality of its literals is settled by kernel
-      -- evaluation, so the kernel establishes the defeq itself at the closing hint at
-      -- `ofLists_mul`.
+      -- evaluation, so the kernel establishes the defeq itself at `ofLists_mul`.
       pure mulEq.proof
     | some certifier => do
       let ⟨_, _, hrows⟩ ← certifyRowsEq certifier mulEq.rows U.entries
