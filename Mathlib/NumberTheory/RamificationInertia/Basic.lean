@@ -5,11 +5,8 @@ Authors: Anne Baanen
 -/
 module -- shake: keep-all
 
-public import Mathlib.LinearAlgebra.Dimension.DivisionRing
 public import Mathlib.NumberTheory.RamificationInertia.Inertia
 public import Mathlib.NumberTheory.RamificationInertia.Ramification
-public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
-public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Ramification index and inertia degree
@@ -169,10 +166,10 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
       _ = Matrix.det (-1 : Matrix (Fin n) (Fin n) (R ⧸ p)) := ?_
       _ = (-1 : R ⧸ p) ^ n := by rw [Matrix.det_neg, Fintype.card_fin, Matrix.det_one, mul_one]
       _ ≠ 0 := IsUnit.ne_zero (isUnit_one.neg.pow _)
-    · refine congr_arg Matrix.det (Matrix.ext fun i j => ?_)
+    · congrm $(Matrix.ext fun i j => ?_).det
       rw [map_sub, RingHom.mapMatrix_apply, map_one]
       simp
-    · refine congr_arg Matrix.det (Matrix.ext fun i j => ?_)
+    · congrm $(Matrix.ext fun i j => ?_).det
       rw [Ideal.Quotient.eq_zero_iff_mem.mpr (hA'p i j), zero_sub, Matrix.neg_apply]
   -- And we conclude `L = span L {det A} ≤ span K b`, so `span K b` spans everything.
   · intro x hx
@@ -362,7 +359,7 @@ noncomputable def quotientToQuotientRangePowQuotSucc
     induction x, y using Quotient.inductionOn₂' with | _ x y
     simp only [Submodule.Quotient.mk''_eq_mk, RingHom.id_apply,
       quotientToQuotientRangePowQuotSuccAux_mk]
-    refine congr_arg Submodule.Quotient.mk ?_
+    congrm Submodule.Quotient.mk ?_
     ext
     simp only [map_mul, Quotient.mk_eq_mk, Submodule.coe_smul_of_tower,
       Algebra.smul_def, Quotient.algebraMap_quotient_pow_ramificationIdx]

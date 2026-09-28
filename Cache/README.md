@@ -92,23 +92,23 @@ When arguments are provided, only the specified files and their transitive impor
 | `--unsafe-window=N` | Number of cached fork commits `--unsafe` will try (default `1`). Implies `--unsafe`. |
 | `--staging-dir=DIR` | For `stage`/`stage!`/`unstage`/`unstage!`: the staging directory. |
 
-Container names (for `--cache-from`): `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`, `legacy`.
+Container names (for `--cache-from`): `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`.
 
 ## Trust-ordered containers
 
 The cache is split across multiple containers, logical namespaces in the URL
 contract `/{container}/{key}`. Container names accepted by `--cache-from=LIST`:
-`master`, `forks`, `nightly-testing`, `pr-toolchain-tests`, `legacy`.
+`master`, `forks`, `nightly-testing`, `pr-toolchain-tests`.
 
 `cache get` resolves a file by trying a default chain of containers in
 order, depending on the repo:
 
 | GitHub repo                                     | Container order tried       |
 |-------------------------------------------------|-----------------------------|
-| `leanprover-community/mathlib4`                 | `master`, `legacy`          |
-| `leanprover-community/mathlib4-nightly-testing` | `nightly-testing`, `legacy` |
-| any fork (PRs)                                  | `master`, `forks`, `legacy` |
-| downstream with mathlib as a dependency         | `master`, `legacy`          |
+| `leanprover-community/mathlib4`                 | `master`                    |
+| `leanprover-community/mathlib4-nightly-testing` | `nightly-testing`, `forks`  |
+| any fork (PRs)                                  | `master`, `forks`           |
+| downstream with mathlib as a dependency         | `master`                    |
 
 Override the read chain with `--cache-from=LIST`:
 

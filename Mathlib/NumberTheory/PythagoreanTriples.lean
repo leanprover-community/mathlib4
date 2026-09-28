@@ -5,7 +5,7 @@ Authors: Paul van Wamelen
 -/
 module
 
-public import Mathlib.Data.Int.NatPrime
+import Mathlib.Data.Int.NatPrime
 public import Mathlib.Data.ZMod.Basic
 public import Mathlib.RingTheory.Int.Basic
 public import Mathlib.Tactic.Field
@@ -435,7 +435,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
   let q := (circleEquivGen hQ).symm ⟨⟨v, w⟩, hp⟩
   have ht4 : v = 2 * q / (1 + q ^ 2) ∧ w = (1 - q ^ 2) / (1 + q ^ 2) := by
     apply Prod.mk.inj
-    exact congr_arg Subtype.val ((circleEquivGen hQ).apply_symm_apply ⟨⟨v, w⟩, hp⟩).symm
+    congrm $(((circleEquivGen hQ).apply_symm_apply ⟨⟨v, w⟩, hp⟩).symm).val
   let m := (q.den : ℤ)
   let n := q.num
   have hm0 : m ≠ 0 := by

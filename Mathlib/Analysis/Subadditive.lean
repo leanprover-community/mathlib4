@@ -5,7 +5,12 @@ Authors: Sébastien Gouëzel
 -/
 module
 
+<<<<<<< HEAD
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+=======
+import Mathlib.Order.Filter.AtTopBot.Archimedean
+public import Mathlib.Topology.Algebra.Ring.Real
+>>>>>>> master
 
 /-!
 # Convergence of subadditive sequences

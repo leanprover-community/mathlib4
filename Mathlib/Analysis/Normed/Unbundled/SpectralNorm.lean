@@ -7,11 +7,20 @@ module
 
 public import Mathlib.Analysis.Normed.Algebra.SpectralNorm
 public import Mathlib.Analysis.Normed.Unbundled.InvariantExtension
+<<<<<<< HEAD
 public import Mathlib.Analysis.Normed.Unbundled.IsPowMulUnique
 public import Mathlib.Analysis.Normed.Unbundled.SeminormFromConst
 public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 public import Mathlib.FieldTheory.Normal.Closure
 public import Mathlib.RingTheory.Polynomial.Vieta
+=======
+import Mathlib.Analysis.Normed.Unbundled.IsPowMulFaithful
+import Mathlib.Analysis.Normed.Unbundled.SeminormFromConst
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.FieldTheory.Normal.Closure
+import Mathlib.RingTheory.Polynomial.Vieta
+import Mathlib.Topology.Algebra.Module.FiniteDimension
+>>>>>>> master
 
 /-!
 # The spectral norm and the norm extension theorem
