@@ -6,7 +6,6 @@ Authors: Apurva Nakade
 module
 
 public import Mathlib.Algebra.Group.Submonoid.Support
-public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Algebra.Order.Monoid.Submonoid
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.Geometry.Convex.Cone.Basic
@@ -229,7 +228,7 @@ lemma mem_hull_singleton {x y : E} :
 
 theorem le_hull_singleton_iff {C : PointedCone R E} {x : E} :
     C ≤ R ∙₊ x ↔ ∀ y ∈ C, ∃ r : R, 0 ≤ r ∧ r • x = y := by
-  simp_rw [SetLike.le_def, mem_hull_singleton]
+  simp_rw [IsConcreteLE.le_iff, mem_hull_singleton]
 
 end Definitions
 
