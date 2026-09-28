@@ -76,15 +76,12 @@ lemma isConvexSet (hP : IsPolytope R P) : IsConvexSet R P := by
 @[simp] protected lemma empty : IsPolytope R (∅ : Set X) := by
   use ∅; simp
 
-variable (R) in
 @[simp] protected lemma singleton (x : X) : IsPolytope R {x} := by
   use {x}; simp
 
-variable (R) in
 lemma of_subsingleton (hP : P.Subsingleton) : IsPolytope R P := by
   obtain rfl | ⟨x, rfl⟩ := hP.eq_empty_or_singleton <;> simp
 
-variable (R) in
 lemma convexHull_of_finite {v : Set X} (hv : v.Finite) :
     IsPolytope R (convexHull R v) := ⟨hv.toFinset, by simp⟩
 
