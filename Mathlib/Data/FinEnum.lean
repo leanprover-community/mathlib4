@@ -205,7 +205,7 @@ def succMany? [inst : FinEnum α] (n : Nat) (x : α) : Option α :=
 
 @[grind =]
 lemma succMany?_eq_some_iff [inst : FinEnum α] {n : Nat} {x y : α} :
-  succMany? n x = some y ↔ (inst.equiv x + n = inst.equiv y ∧ inst.equiv x + n < card α) := by
+    succMany? n x = some y ↔ (inst.equiv x + n = inst.equiv y ∧ inst.equiv x + n < card α) := by
   simp only [succMany?]
   constructor
   · intro h
@@ -226,18 +226,18 @@ lemma succMany?_eq_some_iff [inst : FinEnum α] {n : Nat} {x y : α} :
 
 @[grind =]
 lemma succMany?_succ [inst : FinEnum α] (n : Nat) (x : α) :
-  (succMany? n x).bind (succMany? 1) = succMany? (n + 1) x := by
+    (succMany? n x).bind (succMany? 1) = succMany? (n + 1) x := by
   simp [succMany?]
   split_ifs <;> simp [succMany?] <;> grind only
 
 lemma succMany?_bind_flatten [inst : FinEnum α] (n m k : Nat) (x : α) :
-  (succMany? n x).bind (fun a => (succMany? m a).bind (succMany? k)) =
-    ((succMany? n x).bind (succMany? m)).bind (succMany? k) := by
+    (succMany? n x).bind (fun a => (succMany? m a).bind (succMany? k)) =
+      ((succMany? n x).bind (succMany? m)).bind (succMany? k) := by
   grind
 
 @[grind =]
 lemma succMany?_bind [inst : FinEnum α] {n m : Nat} {x : α} :
-  (succMany? n x).bind (succMany? m) = succMany? (n + m) x := by
+    (succMany? n x).bind (succMany? m) = succMany? (n + m) x := by
   induction m with
   | zero =>
     simp [succMany?]
