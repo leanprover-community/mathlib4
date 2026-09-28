@@ -85,7 +85,7 @@ instance : CStarModule A A where
   star_inner x y := by simp
   norm_eq_sqrt_norm_inner_self {x} := by
     rw [← sq_eq_sq₀ (norm_nonneg _) (by positivity)]
-    simpa [sq] using Eq.symm <| CStarRing.norm_self_mul_star
+    simpa [sq] using Eq.symm CStarRing.norm_self_mul_star
 
 open scoped InnerProductSpace in
 lemma inner_def (x y : A) : ⟪x, y⟫_A = y * star x := rfl

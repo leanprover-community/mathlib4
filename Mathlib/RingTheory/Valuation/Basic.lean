@@ -471,7 +471,7 @@ open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
 /-- The restriction of a valuation so that it takes values in its `valueGroup₀`. -/
 @[implicit_reducible]
-def restrict : Valuation R (ValueGroup₀ (v : R →*₀ Γ₀)) where
+def restrict : Valuation R v.ValueGroup₀ where
   __ := restrict₀ (v : R →*₀ Γ₀)
   map_add_le_max' x y := by
     by_cases H : v x ≠ 0 ∨ v y ≠ 0
@@ -1358,7 +1358,7 @@ def toAddValuation : Valuation R Γ₀ ≃ AddValuation R (Additive Γ₀)ᵒᵈ
 /-- The `Valuation` associated to a `AddValuation`.
 -/
 def ofAddValuation : AddValuation R (Additive Γ₀)ᵒᵈ ≃ Valuation R Γ₀ :=
-  AddValuation.toValuation.trans <| congr <|
+  AddValuation.toValuation.trans <| congr
     { toFun := fun x ↦ x.toAdd.ofDual.ofDual.toMul
       invFun := fun x ↦ .ofAdd <| .toDual <| .toDual <| .ofMul x
       map_mul' := fun _x _y ↦ rfl

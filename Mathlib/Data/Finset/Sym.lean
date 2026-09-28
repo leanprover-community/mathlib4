@@ -145,7 +145,7 @@ section Sym2
 @[simp]
 theorem diag_mem_sym2_mem_iff : (∀ b, b ∈ Sym2.diag a → b ∈ s) ↔ a ∈ s := by
   rw [← mem_sym2_iff]
-  exact mk_mem_sym2_iff.trans <| and_self_iff
+  exact mk_mem_sym2_iff.trans and_self_iff
 
 theorem diag_mem_sym2_iff : Sym2.diag a ∈ s.sym2 ↔ a ∈ s := by simp [diag_mem_sym2_mem_iff]
 

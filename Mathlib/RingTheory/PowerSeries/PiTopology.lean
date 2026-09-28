@@ -235,7 +235,7 @@ theorem multipliable_one_sub_X_pow : Multipliable fun n ↦ (1 : R⟦X⟧) - X ^
 
 theorem tprod_one_sub_X_pow_ne_zero [T2Space R] [Nontrivial R] :
     ∏' i, (1 - X ^ (i + 1)) ≠ (0 : R⟦X⟧) := by
-  by_contra! h
+  by_contra h
   obtain h := PowerSeries.ext_iff.mp h 0
   simp [coeff_zero_eq_constantCoeff, (multipliable_one_sub_X_pow R).map_tprod _
     (continuous_constantCoeff R)] at h

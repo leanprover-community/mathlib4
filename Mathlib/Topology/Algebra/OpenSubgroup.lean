@@ -76,7 +76,7 @@ instance : SetLike (OpenSubgroup G) G where
   coe U := U.1
   coe_injective _ _ h := toSubgroup_injective <| SetLike.ext' h
 
-@[to_additive] instance : PartialOrder (OpenSubgroup G) := .ofSetLike (OpenSubgroup G) G
+@[to_additive] instance : PartialOrder (OpenSubgroup G) := .ofSetLike (OpenSubgroup G)
 
 @[to_additive]
 instance : SubgroupClass (OpenSubgroup G) G where
@@ -495,7 +495,7 @@ instance : SetLike (OpenNormalSubgroup G) G where
   coe U := U.1
   coe_injective _ _ h := toSubgroup_injective <| SetLike.ext' h
 
-@[to_additive] instance : PartialOrder (OpenNormalSubgroup G) := .ofSetLike (OpenNormalSubgroup G) G
+@[to_additive] instance : PartialOrder (OpenNormalSubgroup G) := .ofSetLike (OpenNormalSubgroup G)
 
 @[to_additive]
 instance : SubgroupClass (OpenNormalSubgroup G) G where
@@ -582,7 +582,7 @@ lemma exist_mul_closure_nhds {W : Set G} (WClopen : IsClopen W) : ∃ T ∈ 𝓝
         (mul_subset_mul_left inter_subset_right |>.trans mem2) ⟩
   intro x memW
   have : (x, 1) ∈ (fun p ↦ p.1 * p.2) ⁻¹' W := by simp [memW]
-  rcases isOpen_prod_iff.mp (continuous_mul.isOpen_preimage W <| WClopen.2) x 1 this with
+  rcases isOpen_prod_iff.mp (continuous_mul.isOpen_preimage W WClopen.2) x 1 this with
     ⟨U, V, Uopen, Vopen, xmemU, onememV, prodsub⟩
   have h6 : U * V ⊆ W := mul_subset_iff.mpr (fun _ hx _ hy ↦ prodsub (mk_mem_prod hx hy))
   exact ⟨U ∩ W, ⟨U, Uopen.mem_nhds xmemU, W, fun _ a ↦ a, rfl⟩,

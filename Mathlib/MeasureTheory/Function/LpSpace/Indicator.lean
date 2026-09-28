@@ -101,7 +101,7 @@ variable {s : Set α} {hs : MeasurableSet s} {hμs : μ s ≠ ∞} {c : E}
 
 /-- Indicator of a set as an element of `Lp`. -/
 def indicatorConstLp (p : ℝ≥0∞) (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) : Lp E p μ :=
-  MemLp.toLp (s.indicator fun _ => c) (memLp_indicator_const p hs c (Or.inr hμs))
+  MemLp.toLp (s.indicator fun _ => c) (memLp_indicator_const p hs.nullMeasurableSet c (.inr hμs))
 
 /-- A version of `Set.indicator_add` for `MeasureTheory.indicatorConstLp` -/
 theorem indicatorConstLp_add {c' : E} :
@@ -118,7 +118,7 @@ theorem indicatorConstLp_sub {c' : E} :
   rfl
 
 theorem indicatorConstLp_coeFn : ⇑(indicatorConstLp p hs hμs c) =ᵐ[μ] s.indicator fun _ => c :=
-  MemLp.coeFn_toLp (memLp_indicator_const p hs c (Or.inr hμs))
+  MemLp.coeFn_toLp (memLp_indicator_const p hs.nullMeasurableSet c (Or.inr hμs))
 
 theorem indicatorConstLp_coeFn_mem : ∀ᵐ x : α ∂μ, x ∈ s → indicatorConstLp p hs hμs c x = c :=
   indicatorConstLp_coeFn.mono fun _x hx hxs => hx.trans (Set.indicator_of_mem hxs _)
@@ -210,12 +210,16 @@ theorem indicatorConstLp_inj {s t : Set α} (hs : MeasurableSet s) (hsμ : μ s 
   simp_rw [← indicator_const_eventuallyEq hc, indicatorConstLp, MemLp.toLp_eq_toLp_iff]
 
 theorem memLp_add_of_disjoint {f g : α → E} (h : Disjoint (support f) (support g))
-    (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
+    (hf : AEStronglyMeasurable f μ) :
     MemLp (f + g) p μ ↔ MemLp f p μ ∧ MemLp g p μ := by
   borelize E
   refine ⟨fun hfg => ⟨?_, ?_⟩, fun h => h.1.add h.2⟩
-  · rw [← Set.indicator_add_eq_left h]; exact hfg.indicator (measurableSet_support hf.measurable)
-  · rw [← Set.indicator_add_eq_right h]; exact hfg.indicator (measurableSet_support hg.measurable)
+  · rw [← Set.indicator_add_eq_left h]; exact hfg.indicator hf.nullMeasurableSet_support
+  · have hg : AEStronglyMeasurable g μ := by
+      rw [← add_sub_cancel_left f g]
+      exact hfg.aestronglyMeasurable.sub hf
+    rw [← Set.indicator_add_eq_right h]
+    exact hfg.indicator hg.nullMeasurableSet_support
 
 /-- The indicator of a disjoint union of two sets is the sum of the indicators of the sets. -/
 theorem indicatorConstLp_disjoint_union {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)

@@ -68,7 +68,7 @@ public meta section
 namespace Mathlib.Tactic
 
 open Lean Meta Elab
-open CategoryTheory
+open _root_.CategoryTheory
 
 open BicategoryLike
 
