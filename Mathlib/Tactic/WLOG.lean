@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Johan Commelin, Reid Barton, Thomas Mu
 module
 
 public meta import Lean.Meta.Tactic.Cases
-import all Lean.MetavarContext
+import all Lean.MetavarContext -- for `mkAuxMVarType`
 public import Mathlib.Tactic.Core
 public import Mathlib.Tactic.Push
 
@@ -16,7 +16,7 @@ public import Mathlib.Tactic.Push
 
 The tactic `wlog h : P` will add an assumption `h : P` to the main goal,
 and add a new goal that requires showing that the case `h : ¬ P` can be reduced to the case
-where `P` holds (typically by symmetry). `wlog! h : P` is a variant that will also call `push_neg`
+where `P` holds (typically by symmetry). `wlog! h : P` is a variant that will also call `push Not`
 at `h : ¬ P`.
 
 The new goal will be placed at the top of the goal stack.
@@ -105,8 +105,8 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
   let (hFVar, hGoal) ← if inaccessible then hGoal.intro1 else hGoal.intro1P
   /- Split the reduction goal by cases on `h`. Keep the one with `¬h` as the reduction goal,
   and prove the easy goal by applying `H` to all its premises, which are fvars in the context. -/
-  let (⟨easyGoal, hyp⟩, ⟨reductionGoal, negHyp⟩) ←
-    reductionGoal.byCases P <| if inaccessible then `_ else h
+  let h ← if inaccessible then reductionGoal.withContext (mkFreshBinderNameForTactic h) else pure h
+  let (⟨easyGoal, hyp⟩, ⟨reductionGoal, negHyp⟩) ← reductionGoal.byCases P h
   easyGoal.withContext do
     -- Exclude ldecls from the `mkAppN` arguments
     let HArgFVarIds ← revertedFVars.filterM (notM ·.isLetVar)
@@ -133,7 +133,7 @@ def wlogCore (h : TSyntax ``binderIdent) (P : Term) (xs : Option (TSyntaxArray `
     reductionGoal.withContext do
       let negHygName := mkIdent <| ← reductionFVarIds.2.getUserName
       Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[(negHygName)] false)
-          (failIfUnchanged := false)
+        (ifUnchanged := .error)
 
 /-- `wlog h : P` adds an assumption `h : P` to the main goal, and adds a side goal that
 requires showing that the case `h : ¬ P` can be reduced to the case where `P` holds
@@ -147,9 +147,9 @@ there will be two additional assumptions:
 * `wlog h : P generalizing x y ...` reverts certain parts of the context before creating the new
   goal. In this way, the wlog-claim `this` can be applied to `x` and `y` in different orders
   (exploiting symmetry, which is the typical use case).
-* `wlog! h : P` also calls `push_neg` at the generated hypothesis `h`.
+* `wlog! h : P` also calls `push Not` at the generated hypothesis `h`.
   `wlog! h : P ∧ Q` will transform `¬ (P ∧ Q)` to `P → ¬ Q`
-* `wlog! +distrib h : P` also calls `push_neg +distrib` at the generated hypothesis `h`.
+* `wlog! +distrib h : P` also calls `push +distrib Not` at the generated hypothesis `h`.
   `wlog! +distrib h : P ∧ Q` will transform `¬ (P ∧ Q)` to `¬P ∨ ¬Q`.
 -/
 syntax (name := wlog) "wlog " binderIdent " : " term

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Birkbeck, Gauss AI (Math Inc)
+Authors: Chris Birkbeck
 -/
 
 module
@@ -16,10 +16,12 @@ function `ℍ → ℂ`). The proof uses the relation between `E2` and the logari
 the Dedekind eta function.
 -/
 
-@[expose] public section
+public section
 
 open UpperHalfPlane hiding I
-open Real Complex EisensteinSeries ModularForm Manifold
+open Real Complex EisensteinSeries ModularForm
+
+open scoped Manifold
 
 
 --This proof was provided by Gauss to the sphere packing project.

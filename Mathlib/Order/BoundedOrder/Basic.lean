@@ -9,6 +9,7 @@ public import Mathlib.Order.Max
 public import Mathlib.Order.ULift
 public import Mathlib.Tactic.ByCases
 public import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 # ⊤ and ⊥, bounded lattices and variants
@@ -79,7 +80,7 @@ section LE
 
 variable [LE α] [OrderTop α] {a : α}
 
-@[to_dual (attr := simp) bot_le]
+@[to_dual (attr := simp) bot_le, basify_simp]
 theorem le_top : a ≤ ⊤ :=
   OrderTop.le_top a
 
@@ -94,10 +95,9 @@ Prefer `IsTop.eq_top` if `α` already has a top element. -/
 @[to_dual (attr := elab_as_elim) /-- A bottom element can be replaced with `⊥`.
 
 Prefer `IsBot.eq_bot` if `α` already has a bottom element. -/]
-protected def IsTop.rec [LE α] {P : (x : α) → IsTop x → Sort*}
-    (h : ∀ [OrderTop α], P ⊤ isTop_top) (x : α) (hx : IsTop x) : P x hx := by
-  letI : OrderTop α := { top := x, le_top := hx }
-  apply h
+protected def IsTop.rec [LE α] {motive : (x : α) → IsTop x → Sort*}
+    (top : ∀ [OrderTop α], motive ⊤ isTop_top) (x : α) (hx : IsTop x) : motive x hx :=
+  @top { top := x, le_top a := hx a }
 
 section Preorder
 
@@ -107,9 +107,13 @@ variable [Preorder α] [OrderTop α] {a b : α}
 theorem isMax_top : IsMax (⊤ : α) :=
   isTop_top.isMax
 
-@[to_dual (attr := simp) not_lt_bot]
+@[to_dual (attr := simp, basify_simp) not_lt_bot, basify_simp]
 theorem not_top_lt : ¬⊤ < a :=
   isMax_top.not_lt
+
+@[to_dual (attr := simp) not_covBy_bot]
+theorem not_top_covBy : ¬⊤ ⋖ a :=
+  fun h ↦ not_top_lt h.1
 
 @[to_dual ne_bot_of_gt]
 theorem ne_top_of_lt (h : a < b) : a ≠ ⊤ :=
@@ -121,6 +125,15 @@ theorem ne_top_of_lt (h : a < b) : a ≠ ⊤ :=
   lt_of_lt_of_le h le_top
 
 @[to_dual bot_lt] alias LT.lt.lt_top := lt_top_of_lt
+
+@[to_dual bot_lt_iff_not_le_bot]
+theorem lt_top_iff_not_top_le : a < ⊤ ↔ ¬ ⊤ ≤ a := by
+  simp [lt_iff_le_not_ge]
+
+@[to_dual not_isMin_iff_bot_lt]
+theorem not_isMax_iff_lt_top : ¬ IsMax a ↔ a < ⊤ := by
+  rw [not_isMax_iff]
+  exact ⟨fun ⟨b, hb⟩ ↦ hb.trans_le le_top, fun h ↦ ⟨⊤, h⟩⟩
 
 attribute [aesop (rule_sets := [finiteness]) unsafe 20%] ne_top_of_lt
 -- would have been better to implement this as a "safe" "forward" rule, why doesn't this work?
@@ -152,7 +165,7 @@ alias ⟨IsMax.eq_top, _⟩ := isMax_iff_eq_top
 @[to_dual]
 alias ⟨IsTop.eq_top, _⟩ := isTop_iff_eq_top
 
-@[to_dual (attr := simp) le_bot_iff]
+@[to_dual (attr := simp) le_bot_iff, basify_simp]
 theorem top_le_iff : ⊤ ≤ a ↔ a = ⊤ :=
   le_top.ge_iff_eq
 
@@ -169,7 +182,7 @@ theorem eq_top_iff : a = ⊤ ↔ ⊤ ≤ a :=
 theorem eq_top_mono (h : a ≤ b) (h₂ : a = ⊤) : b = ⊤ :=
   top_unique <| h₂ ▸ h
 
-@[to_dual bot_lt_iff_ne_bot]
+@[to_dual bot_lt_iff_ne_bot, basify_simp]
 theorem lt_top_iff_ne_top : a < ⊤ ↔ a ≠ ⊤ :=
   le_top.lt_iff_ne
 
@@ -234,16 +247,6 @@ instance [LE α] [h : OrderBot α] : OrderTop αᵒᵈ where
 
 end OrderDual
 
-section OrderBot
-
-variable [PartialOrder α] [OrderBot α] [Preorder β] {a b : α}
-
-@[deprecated not_bot_lt_iff (since := "2025-12-03")]
-theorem eq_bot_of_minimal (h : ∀ b, ¬b < a) : a = ⊥ :=
-  (eq_bot_or_bot_lt a).resolve_right (h ⊥)
-
-end OrderBot
-
 
 /-! ### Bounded order -/
 
@@ -303,6 +306,14 @@ instance instBoundedOrder [∀ i, LE (α' i)] [∀ i, BoundedOrder (α' i)] :
 end Pi
 
 section Subsingleton
+
+/-- A type with a single element is a bounded order. -/
+@[implicit_reducible]
+def BoundedOrder.ofUnique (α : Type*) [Preorder α] [Unique α] : BoundedOrder α where
+  bot := default
+  top := default
+  le_top := by simp
+  bot_le := by simp
 
 variable [PartialOrder α] [BoundedOrder α]
 

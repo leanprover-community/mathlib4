@@ -33,7 +33,7 @@ Approximation*][MR3156076] for a detailed discussion.
 
 @[expose] public section
 
-open Filter Metric Real Set
+open Filter Real Set
 
 namespace ValueDistribution
 
@@ -55,6 +55,20 @@ noncomputable def characteristic : ℝ → ℝ := proximity f a + logCounting f 
 /-!
 ## Elementary Properties
 -/
+
+/--
+The characteristic function of a constant function `c` for the value `⊤` is the constant function
+`log⁺ ‖c‖`.
+-/
+@[simp] theorem characteristic_const {c : ℂ} :
+    characteristic (fun _ ↦ c) ⊤ = fun _ ↦ log⁺ ‖c‖ := by
+  simp [characteristic]
+
+/-- The characteristic function of the zero function for the value `⊤` vanishes identically. -/
+@[simp] theorem characteristic_zero :
+    characteristic (0 : ℂ → ℂ) ⊤ = fun _ ↦ 0 := by
+  convert characteristic_const (c := 0)
+  simp
 
 /--
 If two functions differ only on a discrete set, then their characteristic functions agree, except
@@ -98,34 +112,16 @@ theorem characteristic_eventually_nonneg :
 -/
 
 /--
-For `1 ≤ r`, the characteristic function of `f + g` at `⊤` is less than or equal to the sum of the
-characteristic functions of `f` and `g`, respectively, plus `log 2` (where `2` is the number of
-summands).
+Multiplying a meromorphic function by a nonzero constant changes the characteristic function at `⊤`
+only by a bounded function.
 -/
-theorem characteristic_add_top_le {f₁ f₂ : ℂ → E} {r : ℝ} (h₁f₁ : Meromorphic f₁)
-    (h₁f₂ : Meromorphic f₂) (hr : 1 ≤ r) :
-    characteristic (f₁ + f₂) ⊤ r ≤ characteristic f₁ ⊤ r + characteristic f₂ ⊤ r + log 2 := by
-  simp only [characteristic]
-  calc proximity (f₁ + f₂) ⊤ r + logCounting (f₁ + f₂) ⊤ r
-    _ ≤ (proximity f₁ ⊤ r + proximity f₂ ⊤ r + log 2)
-      + (logCounting f₁ ⊤ r + logCounting f₂ ⊤ r) := by
-      gcongr
-      · apply proximity_add_top_le h₁f₁ h₁f₂
-      · exact logCounting_add_top_le h₁f₁ h₁f₂ hr
-    _ = proximity f₁ ⊤ r + logCounting f₁ ⊤ r + (proximity f₂ ⊤ r + logCounting f₂ ⊤ r)
-      + log 2 := by
-      ring
-
-/--
-Asymptotically, the characteristic function of `f + g` at `⊤` is less than or equal to the sum of
-the characteristic functions of `f` and `g`, respectively.
--/
-theorem characteristic_add_top_eventuallyLE {f₁ f₂ : ℂ → E} (h₁f₁ : Meromorphic f₁)
-    (h₁f₂ : Meromorphic f₂) :
-    characteristic (f₁ + f₂) ⊤
-      ≤ᶠ[Filter.atTop] characteristic f₁ ⊤ + characteristic f₂ ⊤ + fun _ ↦ log 2 := by
-  filter_upwards [Filter.eventually_ge_atTop 1] with r hr
-    using characteristic_add_top_le h₁f₁ h₁f₂ hr
+theorem isBigO_characteristic_sub_characteristic_const_mul {f : ℂ → ℂ} {s : ℂ}
+    (hf : Meromorphic f) (hs : s ≠ 0) :
+    (characteristic f ⊤ - characteristic (s • f) ⊤) =O[atTop] (1 : ℝ → ℝ) := by
+  unfold characteristic
+  rw [logCounting_const_smul_top hs]
+  ring_nf
+  apply isBigO_proximity_top_sub_proximity_const_smul_top hf hs
 
 /--
 For `1 ≤ r`, the characteristic function of a sum `∑ a, f a` at `⊤` is less than or equal to the sum
@@ -157,6 +153,29 @@ theorem characteristic_sum_top_eventuallyLE {α : Type*} (s : Finset α) (f : α
     using fun _ hr ↦ characteristic_sum_top_le s f hf hr
 
 /--
+For `1 ≤ r`, the characteristic function of `f + g` at `⊤` is less than or equal to the sum of the
+characteristic functions of `f` and `g`, respectively, plus `log 2` (where `2` is the number of
+summands).
+-/
+theorem characteristic_add_top_le {f₁ f₂ : ℂ → E} {r : ℝ} (h₁f₁ : Meromorphic f₁)
+    (h₁f₂ : Meromorphic f₂) (hr : 1 ≤ r) :
+    characteristic (f₁ + f₂) ⊤ r ≤ characteristic f₁ ⊤ r + characteristic f₂ ⊤ r + log 2 := by
+  have h_meromorphic : ∀ a ∈ Finset.univ, Meromorphic (![f₁, f₂] a) := by
+    simpa using ⟨h₁f₁, h₁f₂⟩
+  simpa using characteristic_sum_top_le Finset.univ ![f₁, f₂] h_meromorphic hr
+
+/--
+Asymptotically, the characteristic function of `f + g` at `⊤` is less than or equal to the sum of
+the characteristic functions of `f` and `g`, respectively.
+-/
+theorem characteristic_add_top_eventuallyLE {f₁ f₂ : ℂ → E} (h₁f₁ : Meromorphic f₁)
+    (h₁f₂ : Meromorphic f₂) :
+    characteristic (f₁ + f₂) ⊤
+      ≤ᶠ[Filter.atTop] characteristic f₁ ⊤ + characteristic f₂ ⊤ + fun _ ↦ log 2 := by
+  filter_upwards [Filter.eventually_ge_atTop 1] with r hr
+    using characteristic_add_top_le h₁f₁ h₁f₂ hr
+
+/--
 For `1 ≤ r`, the characteristic function for the zeros of `f * g` is less than or equal to the sum
 of the characteristic functions for the zeros of `f` and `g`, respectively.
 -/
@@ -169,8 +188,6 @@ theorem characteristic_mul_zero_le {f₁ f₂ : ℂ → ℂ} {r : ℝ} (hr : 1 �
   apply add_le_add (proximity_mul_zero_le h₁f₁ h₁f₂ r)
     (logCounting_mul_zero_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂)
 
-@[deprecated (since := "2025-12-11")] alias characteristic_zero_mul_le := characteristic_mul_zero_le
-
 /--
 Asymptotically, the characteristic function for the zeros of `f * g` is less than or equal to the
 sum of the characteristic functions for the zeros of `f` and `g`, respectively.
@@ -181,9 +198,6 @@ theorem characteristic_mul_zero_eventuallyLE {f₁ f₂ : ℂ → ℂ}
     characteristic (f₁ * f₂) 0 ≤ᶠ[Filter.atTop] characteristic f₁ 0 + characteristic f₂ 0 := by
   filter_upwards [Filter.eventually_ge_atTop 1]
     using fun _ hr ↦ characteristic_mul_zero_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂
-
-@[deprecated (since := "2025-12-11")]
-alias characteristic_zero_mul_eventually_le := characteristic_mul_zero_eventuallyLE
 
 /--
 For `1 ≤ r`, the characteristic function for the poles of `f * g` is less than or equal to the sum
@@ -198,8 +212,6 @@ theorem characteristic_mul_top_le {f₁ f₂ : ℂ → ℂ} {r : ℝ} (hr : 1 �
   apply add_le_add (proximity_mul_top_le h₁f₁ h₁f₂ r)
     (logCounting_mul_top_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂)
 
-@[deprecated (since := "2025-12-11")] alias characteristic_top_mul_le := characteristic_mul_top_le
-
 /--
 Asymptotically, the characteristic function for the poles of `f * g` is less than or equal to the
 sum of the characteristic functions for the poles of `f` and `g`, respectively.
@@ -210,9 +222,6 @@ theorem characteristic_mul_top_eventuallyLE {f₁ f₂ : ℂ → ℂ}
     characteristic (f₁ * f₂) ⊤ ≤ᶠ[Filter.atTop] characteristic f₁ ⊤ + characteristic f₂ ⊤ := by
   filter_upwards [Filter.eventually_ge_atTop 1]
     using fun _ hr ↦ characteristic_mul_top_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂
-
-@[deprecated (since := "2025-12-11")]
-alias characteristic_top_mul_eventually_le := characteristic_mul_top_eventuallyLE
 
 /--
 For natural numbers `n`, the characteristic function for the zeros of `f ^ n` equals `n` times the

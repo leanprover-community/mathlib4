@@ -6,7 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
-public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
+import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 
 /-!
 # The jointly surjective precoverage
@@ -48,8 +48,8 @@ lemma singleton_mem_jointlySurjectivePrecoverage_iff {X Y : Type u} {f : X ⟶ Y
   exact hx
 
 @[simp]
-lemma ofArrows_mem_jointlySurjectivePrecoverage_iff {X : Type u} {ι : Type*} {Y : ι → Type u}
-    {f : ∀ i, Y i ⟶ X} :
+lemma ofArrows_mem_jointlySurjectivePrecoverage_iff {X : Type u} {ι : Type*}
+    {Y : ι → Type u} {f : ∀ i, Y i ⟶ X} :
     Presieve.ofArrows Y f ∈ jointlySurjectivePrecoverage X ↔
       ∀ x, ∃ (i : ι), x ∈ Set.range (f i) := by
   refine ⟨fun h x ↦ ?_, fun h x ↦ ?_⟩

@@ -6,9 +6,8 @@ Authors: Yury Kudryashov, Malo Jaffré
 module
 
 public import Mathlib.Analysis.Convex.Function
-public import Mathlib.Tactic.AdaptationNote
-public import Mathlib.Tactic.FieldSimp
-public import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.AdaptationNote
+import Mathlib.Tactic.Linarith
 
 /-!
 # Slopes of convex functions
@@ -206,8 +205,8 @@ theorem ConvexOn.secant_mono (hf : ConvexOn 𝕜 s f) {a x y : 𝕜} (ha : a ∈
   · simp
   rcases lt_or_gt_of_ne hxa with hxa | hxa
   · rcases lt_or_gt_of_ne hya with hya | hya
-    · convert hf.secant_mono_aux3 hx ha hxy hya using 1 <;> rw [← neg_div_neg_eq] <;> simp
-    · convert hf.slope_mono_adjacent hx hy hxa hya using 1
+    · convert! hf.secant_mono_aux3 hx ha hxy hya using 1 <;> rw [← neg_div_neg_eq] <;> simp
+    · convert! hf.slope_mono_adjacent hx hy hxa hya using 1
       rw [← neg_div_neg_eq]; simp
   · exact hf.secant_mono_aux2 ha hy hxa hxy
 
@@ -246,9 +245,9 @@ theorem StrictConvexOn.secant_strict_mono (hf : StrictConvexOn 𝕜 s f) {a x y 
     (f x - f a) / (x - a) < (f y - f a) / (y - a) := by
   rcases lt_or_gt_of_ne hxa with hxa | hxa
   · rcases lt_or_gt_of_ne hya with hya | hya
-    · convert hf.secant_strict_mono_aux3 hx ha hxy hya using 1 <;> rw [← neg_div_neg_eq] <;>
+    · convert! hf.secant_strict_mono_aux3 hx ha hxy hya using 1 <;> rw [← neg_div_neg_eq] <;>
         simp
-    · convert hf.slope_strict_mono_adjacent hx hy hxa hya using 1
+    · convert! hf.slope_strict_mono_adjacent hx hy hxa hya using 1
       rw [← neg_div_neg_eq]; simp
   · exact hf.secant_strict_mono_aux2 ha hy hxa hxy
 
@@ -279,8 +278,6 @@ theorem ConvexOn.strictMonoOn (hf : ConvexOn 𝕜 s f) {x y : 𝕜} (hx : x ∈ 
       exact ⟨hxy.le, hu.2⟩
     · rw [openSegment_eq_Ioo (hu2.trans huv)]
       exact ⟨hu2, huv⟩
-
-@[deprecated (since := "2025-11-11")] alias ConvexOn.strict_mono_of_lt := ConvexOn.strictMonoOn
 
 /-- If `f` is convex on a set `s` in a linearly ordered field, and `f y < f x` for two points
 `x < y` in `s`, then `f` is strictly antitone on `s ∩ (∞, x]`. -/

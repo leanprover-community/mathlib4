@@ -5,11 +5,10 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.FunctorCategory
-public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Types
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.FunctorCategory
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Types
 public import Mathlib.CategoryTheory.Abelian.Indization
-public import Mathlib.CategoryTheory.Limits.Indization.Category
-public import Mathlib.CategoryTheory.Generator.Indization
+import Mathlib.CategoryTheory.Generator.Indization
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 
 /-!
@@ -19,7 +18,7 @@ We show that `Ind C` satisfies Grothendieck's axiom AB5 if `C` has finite limits
 `Ind C` is Grothendieck abelian if `C` is small and abelian.
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

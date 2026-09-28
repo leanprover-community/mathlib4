@@ -6,7 +6,6 @@ Authors: Anne Baanen, Yury Kudryashov, Joseph Myers, Heather Macbeth, Kim Morris
 module
 
 public import Mathlib.Algebra.Module.Torsion.Free
-public import Mathlib.Tactic.Contrapose
 
 /-!
 # `NoZeroSMulDivisors`
@@ -20,7 +19,7 @@ Note that `NoZeroSMulDivisors` is deprecated in favor of `Module.IsTorsionFree`,
 mathematically correct generalisation to semimodules.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists RelIso Multiset Set.indicator Pi.single_smul₀
 

@@ -5,7 +5,7 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.LinearAlgebra.Prod
+import Mathlib.LinearAlgebra.Prod
 public import Mathlib.RingTheory.Finiteness.Defs
 
 /-!
@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.Finiteness.Defs
 
 -/
 
-@[expose] public section
+public section
 
 open Function (Surjective)
 

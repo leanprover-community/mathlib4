@@ -23,7 +23,9 @@ This file defines the `Majorized` predicate, along with a few basic lemmas.
 
 namespace Tactic.ComputeAsymptotics
 
-open Topology Filter Asymptotics
+open Filter Asymptotics
+
+open scoped Topology
 
 /-- `Majorized f g exp` for real functions `f` and `g` means that for any `exp' > exp`,
 `f =o[atTop] g ^ exp'`. This is used to define the `MultiseriesExpansion.Approximates` predicate.
@@ -119,7 +121,7 @@ theorem mul_bounded {f g basis_hd : ℝ → ℝ} {exp : ℝ} (hf : Majorized f b
     (hg : g =O[atTop] (fun _ ↦ (1 : ℝ))) :
     Majorized (f * g) basis_hd exp := by
   intro exp h_exp
-  convert IsLittleO.mul_isBigO (hf _ h_exp) hg using 1
+  convert! IsLittleO.mul_isBigO (hf _ h_exp) hg using 1
   simp
   rfl
 

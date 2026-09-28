@@ -5,10 +5,10 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Algebra.Order.Group.Abs
 public import Mathlib.Algebra.Order.Monoid.Submonoid
-public import Mathlib.Algebra.Order.Ring.Basic
-public import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Algebra.Order.Ring.Basic
+import Mathlib.Algebra.Order.Ring.Int
 public import Mathlib.Algebra.Order.Star.Basic
 
 /-!
@@ -17,7 +17,7 @@ public import Mathlib.Algebra.Order.Star.Basic
 This file shows that `ℤ` is a `StarOrderedRing`.
 -/
 
-@[expose] public section
+public section
 
 open AddSubmonoid Set
 

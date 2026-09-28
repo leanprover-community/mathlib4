@@ -6,7 +6,6 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Analysis.Normed.Group.Uniform
-public import Mathlib.Topology.Algebra.GroupCompletion
 public import Mathlib.Topology.MetricSpace.Completion
 
 /-!
@@ -19,7 +18,7 @@ In this file we prove that the completion of a (semi)normed group is a normed gr
 normed group, completion
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

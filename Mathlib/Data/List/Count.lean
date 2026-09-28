@@ -5,9 +5,10 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 -/
 module
 
-public import Batteries.Data.List.Perm
+import Batteries.Data.List.Perm
 public import Mathlib.Tactic.Common
-public import Batteries.Data.List
+public import Batteries.Data.List.Lemmas
+import Mathlib.Tactic.Attr.Core
 
 /-!
 # Counting in lists

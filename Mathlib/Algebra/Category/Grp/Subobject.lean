@@ -5,14 +5,14 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
+import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
 public import Mathlib.Algebra.Category.ModuleCat.Subobject
 
 /-!
 # The category of abelian groups is well-powered
 -/
 
-@[expose] public section
+public section
 
 
 open CategoryTheory

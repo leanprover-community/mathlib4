@@ -5,15 +5,16 @@ Authors: Damien Thomine
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
+import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
 public import Mathlib.Algebra.Order.Archimedean.Basic
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Group.Indicator
 public import Mathlib.Order.LiminfLimsup
 public import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Cardinality and limit of sum of indicators
+
 This file contains results relating the cardinality of subsets of ℕ and limits,
 limsups of sums of indicators.
 
@@ -63,7 +64,7 @@ lemma infinite_iff_tendsto_sum_indicator_atTop {R : Type*}
   · contrapose!
     intro hs
     rw [tendsto_congr' (sum_indicator_eventually_eq_card r hs), tendsto_atTop_atTop]
-    push_neg
+    push Not
     obtain ⟨m, hm⟩ := exists_lt_nsmul h (Nat.card s • r)
     exact ⟨m • r, fun n ↦ ⟨n, le_refl n, not_le_of_gt hm⟩⟩
 
@@ -74,7 +75,7 @@ lemma limsup_eq_tendsto_sum_indicator_atTop {α R : Type*}
       (fun n ↦ ∑ k ∈ Finset.range n, (s k).indicator (fun _ ↦ r) ω) atTop } := by
   nth_rw 1 [← Nat.cofinite_eq_atTop, cofinite.limsup_set_eq]
   ext ω
-  rw [mem_setOf_eq, mem_setOf_eq, infinite_iff_tendsto_sum_indicator_atTop h, iff_eq_eq]
+  rw [mem_ofPred_eq, mem_ofPred_eq, infinite_iff_tendsto_sum_indicator_atTop h, iff_eq_eq]
   congr
 
 end Set

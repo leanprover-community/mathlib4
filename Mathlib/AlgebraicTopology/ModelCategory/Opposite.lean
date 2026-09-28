@@ -12,7 +12,7 @@ public import Mathlib.AlgebraicTopology.ModelCategory.Basic
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
@@ -49,7 +49,7 @@ instance [(trivialCofibrations C).HasFactorization (fibrations C)] :
 
 instance [(cofibrations C).HasFactorization (trivialFibrations C)] :
     (trivialCofibrations Cᵒᵖ).HasFactorization (fibrations Cᵒᵖ) := by
-  rw [trivialCofibrations_op, fibrations_op, ]
+  rw [trivialCofibrations_op, fibrations_op]
   infer_instance
 
 instance : ModelCategory Cᵒᵖ where

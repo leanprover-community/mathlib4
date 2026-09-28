@@ -96,9 +96,6 @@ lemma nat_card_ofStabilizer_add_one_eq [Finite α] (a : α) :
     Nat.card_eq_fintype_card]
   simp [mem_ofStabilizer_iff]
 
-@[deprecated (since := "2025-10-03")]
-alias nat_card_ofStabilizer_eq_add_one := nat_card_ofStabilizer_add_one_eq
-
 @[to_additive]
 lemma nat_card_ofStabilizer_eq [Finite α] (a : α) :
     Nat.card (ofStabilizer G a) = Nat.card α - 1 :=
@@ -106,20 +103,11 @@ lemma nat_card_ofStabilizer_eq [Finite α] (a : α) :
 
 variable {G}
 
-/-- Conjugation induces an equivariant map between the SubAddAction of
-the stabilizer of a point and that of its translate. -/
-def _root_.SubAddAction.ofStabilizer.conjMap {G : Type*} [AddGroup G] {α : Type*} [AddAction G α]
-    {g : G} {a b : α} (hg : b = g +ᵥ a) :
-    AddActionHom (AddAction.stabilizerEquivStabilizer hg)
-      (SubAddAction.ofStabilizer G a) (SubAddAction.ofStabilizer G b) where
-  toFun x := ⟨g +ᵥ x.val, fun hy ↦ x.prop (by simpa [hg] using hy)⟩
-  map_vadd' := fun ⟨k, hk⟩ x ↦ by
-    simp [← SetLike.coe_eq_coe, AddAction.addSubgroup_vadd_def,
-      AddAction.stabilizerEquivStabilizer_apply, ← vadd_assoc]
-
 /-- Conjugation induces an equivariant map between the SubMulAction of
 the stabilizer of a point and that of its translate. -/
-@[to_additive existing SubAddAction.ofStabilizer.conjMap]
+@[to_additive SubAddAction.ofStabilizer.conjMap
+/-- Conjugation induces an equivariant map between the SubAddAction of
+the stabilizer of a point and that of its translate. -/]
 def ofStabilizer.conjMap {g : G} {a b : α} (hg : b = g • a) :
     MulActionHom (stabilizerEquivStabilizer hg) (ofStabilizer G a) (ofStabilizer G b) where
   toFun x := ⟨g • x.val, fun hy ↦ x.prop (by simpa [hg] using hy)⟩
@@ -134,18 +122,8 @@ theorem ofStabilizer.conjMap_apply (x : ofStabilizer G a) :
     (conjMap hg x : α) = g • x := rfl
 
 set_option backward.isDefEq.respectTransparency false in
-theorem _root_.AddAction.stabilizerEquivStabilizer_compTriple
-    {G : Type*} [AddGroup G] {α : Type*} [AddAction G α]
-    {g h k : G} {a b c : α} {hg : b = g +ᵥ a} {hh : c = h +ᵥ b} {hk : c = k +ᵥ a} (H : k = h + g) :
-    CompTriple (AddAction.stabilizerEquivStabilizer hg)
-      (AddAction.stabilizerEquivStabilizer hh) (AddAction.stabilizerEquivStabilizer hk) where
-  comp_eq := by
-    ext
-    simp [AddAction.stabilizerEquivStabilizer, H, AddAut.conj, ← add_assoc]
-
-set_option backward.isDefEq.respectTransparency false in
 variable {hg hh hk} in
-@[to_additive existing]
+@[to_additive]
 theorem _root_.MulAction.stabilizerEquivStabilizer_compTriple (H : k = h * g) :
     CompTriple (stabilizerEquivStabilizer hg)
       (stabilizerEquivStabilizer hh) (stabilizerEquivStabilizer hk) where
@@ -218,7 +196,7 @@ lemma exists_smul_of_last_eq [IsPretransitive G α] {n : ℕ} (a : α) (x : Fin 
   use g, (Fin.Embedding.init (g • x)).codRestrict (ofStabilizer G a) H
   ext i
   rcases Fin.eq_castSucc_or_eq_last i with ⟨i, rfl⟩ | ⟨rfl⟩
-  · simpa [ofStabilizer.snoc] using
+  · simpa [ofStabilizer.snoc] using!
       Subtype.ext_iff.mp <| Function.Embedding.codRestrict_apply _ _ H i
   · simpa only [smul_apply, ofStabilizer.snoc, Fin.Embedding.snoc_last]
 
@@ -235,7 +213,7 @@ variable (G : Type*) [Group G] (α : Type*) [MulAction G α]
 instance _root_.SMul.ofStabilizer (s : Set α) :
     SMul (stabilizer G s) s where
   smul g x := ⟨g • ↑x, by
-    convert Set.smul_mem_smul_set x.prop
+    convert! Set.smul_mem_smul_set x.prop
     exact (mem_stabilizer_iff.mp g.prop).symm⟩
 
 @[simp]
@@ -249,8 +227,7 @@ instance (s : Set α) : MulAction (stabilizer G s) s where
   one_smul x := by
     simp only [← Subtype.coe_inj, SMul.smul_stabilizer_def, OneMemClass.coe_one, one_smul]
   mul_smul g k x := by
-    simp only [← Subtype.coe_inj, SMul.smul_stabilizer_def, Subgroup.coe_mul,
-      SemigroupAction.mul_smul]
+    simp only [← Subtype.coe_inj, SMul.smul_stabilizer_def, Subgroup.coe_mul, mul_smul]
 
 theorem stabilizer_empty_eq_top :
     stabilizer G (∅ : Set α) = ⊤ := by

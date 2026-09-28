@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Jeremy Avigad
 -/
 module
 
-public import Mathlib.Order.Filter.Basic
 public import Mathlib.Order.Filter.Map
 
 /-!
@@ -63,6 +62,10 @@ theorem Tendsto.frequently_map {l₁ : Filter α} {l₂ : Filter β} {p : α →
 
 @[simp]
 theorem tendsto_bot {f : α → β} {l : Filter β} : Tendsto f ⊥ l := by simp [Tendsto]
+
+@[simp]
+theorem tendsto_bot_right_iff {f : α → β} {l : Filter α} : Tendsto f l ⊥ ↔ l = ⊥  := by
+  simp [Tendsto]
 
 theorem Tendsto.of_neBot_imp {f : α → β} {la : Filter α} {lb : Filter β}
     (h : NeBot la → Tendsto f la lb) : Tendsto f la lb := by
@@ -253,7 +256,7 @@ theorem tendsto_pure_left {f : α → β} {a : α} {l : Filter β} :
 @[simp]
 theorem map_inf_principal_preimage {f : α → β} {s : Set β} {l : Filter α} :
     map f (l ⊓ 𝓟 (f ⁻¹' s)) = map f l ⊓ 𝓟 s :=
-  Filter.ext fun t => by simp only [mem_map', mem_inf_principal, mem_setOf_eq, mem_preimage]
+  Filter.ext fun t => by simp only [mem_map', mem_inf_principal, mem_ofPred_eq, mem_preimage]
 
 /-- If two filters are disjoint, then a function cannot tend to both of them along a non-trivial
 filter. -/

@@ -6,8 +6,7 @@ Authors: A. M. Berns
 module
 
 public import Mathlib.Analysis.Convex.Between
-public import Mathlib.Algebra.Ring.Defs
-public import Mathlib.Tactic.Continuity
+import Mathlib.Tactic.Continuity
 
 /-!
 # Polygons
@@ -84,7 +83,6 @@ theorem HasNondegenerateVertices.hasNondegenerateEdges [NeZero n] [Nontrivial R]
     (h : poly.HasNondegenerateVertices R) : poly.HasNondegenerateEdges := by
   obtain ⟨m, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (NeZero.ne n)
   intro i
-  simp only [finRotate_succ_apply]
   simpa using (h i).injective.ne (by decide : (0 : Fin 3) ≠ 1)
 
 theorem HasNondegenerateVertices.three_le [NeZero n] [Nontrivial R] {poly : Polygon P n}

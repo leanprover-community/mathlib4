@@ -5,8 +5,7 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.LinearAlgebra.SModEq.Basic
-public import Mathlib.LinearAlgebra.SModEq.Pow
+import Mathlib.LinearAlgebra.SModEq.Pow
 public import Mathlib.RingTheory.AdicCompletion.Basic
 public import Mathlib.RingTheory.Perfection
 
@@ -30,7 +29,7 @@ namespace Perfection
 power of an arbitrary lift in `R` of the `n`-th component from the perfection of `R ⧸ I`. -/
 noncomputable def teichmullerAux (x : Perfection (R ⧸ I) p) : ℕ → R
   | 0 => 1
-  | n+1 => (coeff _ p n x).out ^ p ^ n
+  | n + 1 => (coeff _ p n x).out ^ p ^ n
 
 theorem teichmullerAux_sModEq (x : Perfection (R ⧸ I) p) (m : ℕ) :
     teichmullerAux x m ≡ teichmullerAux x (m + 1) [SMOD I ^ m] := by
@@ -179,8 +178,7 @@ theorem mk_comp_teichmuller :
 
 variable (p I) in
 theorem mk_comp_teichmuller₀ :
-    (Ideal.Quotient.mk I : _ →*₀ _).comp (teichmuller₀ p I) =
-      (coeff (R ⧸ I) p 0 : Perfection (R ⧸ I) p →*₀ R ⧸ I) :=
+    ((Ideal.Quotient.mk I) : _ →*₀ _).comp (teichmuller₀ p I) = (coeff (R ⧸ I) p 0 : _ →*₀ R ⧸ I) :=
   MonoidWithZeroHom.ext mk_teichmuller
 
 variable (p I) in
@@ -188,7 +186,6 @@ theorem mk_comp_teichmuller' :
     Ideal.Quotient.mk I ∘ (teichmuller p I) = coeff (R ⧸ I) p 0 :=
   funext mk_teichmuller
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `R` is `I`-adically complete and `R ⧸ I` has characteristic `p`, then
 `Perfection R p` and `Perfection (R ⧸ I) p` are isomorphic as monoids.
 
@@ -205,7 +202,6 @@ noncomputable def quotientMulEquiv (p : ℕ) [Fact p.Prime]
 @[simp] theorem coeff_quotientMulEquiv (x : Perfection R p) (n : ℕ) :
     coeff (R ⧸ I) p n (quotientMulEquiv p I x) = Ideal.Quotient.mk I (coeffMonoidHom R p n x) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem coeff_zero_symm_quotientMulEquiv (x : Perfection (R ⧸ I) p) :
     coeffMonoidHom R p 0 (quotientMulEquiv p I |>.symm x) = teichmuller₀ p I x := by
   simp [quotientMulEquiv]

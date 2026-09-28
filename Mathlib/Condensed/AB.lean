@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.AB
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
-public import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveColimits
+import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveColimits
 public import Mathlib.Condensed.Equivalence
 public import Mathlib.Condensed.Limits
 /-!
@@ -15,10 +15,10 @@ public import Mathlib.Condensed.Limits
 # AB axioms in condensed modules
 
 This file proves that the category of condensed modules over a ring satisfies Grothendieck's axioms
-AB5, AB4, and AB4*.
+AB5, AB4, and AB4`*`.
 -/
 
-@[expose] public section
+public section
 
 universe u
 

@@ -8,12 +8,10 @@ module
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
-public import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 public import Mathlib.Algebra.Order.SuccPred
-public import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Fin.Basic
 public import Mathlib.Order.Nat
-public import Mathlib.Order.SuccPred.Archimedean
-public import Mathlib.Order.SuccPred.WithBot
 
 /-!
 # Successors and predecessors of naturals
@@ -21,7 +19,7 @@ public import Mathlib.Order.SuccPred.WithBot
 In this file, we show that `ℕ` is both an archimedean `succOrder` and an archimedean `predOrder`.
 -/
 
-@[expose] public section
+public section
 
 
 open Function Order
@@ -29,16 +27,11 @@ open Function Order
 namespace Nat
 variable {m n : ℕ}
 
--- so that Lean reads `Nat.succ` through `succ_order.succ`
 instance instSuccOrder : SuccOrder ℕ :=
   SuccOrder.ofSuccLeIff succ Nat.succ_le_iff
 
 instance instSuccAddOrder : SuccAddOrder ℕ := ⟨fun _ => rfl⟩
 
-#adaptation_note /-- Before https://github.com/leanprover/lean4/pull/12263
-this was `abbrev`, which is no longer allowed.
-The comment said "so that Lean reads `Nat.pred` through `pred_order.pred`"
--/
 instance instPredOrder : PredOrder ℕ where
   pred := pred
   pred_le := pred_le
@@ -89,9 +82,6 @@ end Nat
 
 @[simp] theorem Fin.covBy_iff {n : ℕ} {a b : Fin n} : a ⋖ b ↔ (a : ℕ) ⋖ b :=
   and_congr_right' ⟨fun h c ha hb ↦ @h ⟨c, hb.trans b.prop⟩ ha hb, fun h _c hc ↦ h hc⟩
-
-@[deprecated Fin.covBy_iff "use Fin.covBy_iff.symm instead" (since := "2026-02-13")]
-theorem Fin.coe_covBy_iff {n : ℕ} {a b : Fin n} : (a : ℕ) ⋖ b ↔ a ⋖ b := Fin.covBy_iff.symm
 
 alias ⟨CovBy.coe_fin, _⟩ := Fin.covBy_iff
 

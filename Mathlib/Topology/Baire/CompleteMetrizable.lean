@@ -5,8 +5,7 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.Tactic.Finiteness
+import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.Topology.Metrizable.CompletelyMetrizable
 
 /-!
@@ -15,7 +14,7 @@ public import Mathlib.Topology.Metrizable.CompletelyMetrizable
 In this file we prove that a completely pseudometrizable topological space is a Baire space.
 -/
 
-@[expose] public section
+public section
 
 open Filter Metric Set TopologicalSpace
 open scoped Uniformity ENNReal

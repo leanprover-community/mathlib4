@@ -21,7 +21,7 @@ results in the file `Mathlib/CategoryTheory/ObjectProperty/LimitsClosure.lean`.)
 
 -/
 
-@[expose] public section
+public section
 
 universe w w' t v' u' v u
 
@@ -43,6 +43,9 @@ inductive colimitsClosure : ObjectProperty C
 @[simp]
 lemma le_colimitsClosure : P ≤ P.colimitsClosure J :=
   fun X hX ↦ .of_mem X hX
+
+instance [P.Nonempty] : (P.colimitsClosure J).Nonempty :=
+  .mono (P.le_colimitsClosure J)
 
 instance : (P.colimitsClosure J).IsClosedUnderIsomorphisms where
   of_iso e hX := .of_isoClosure e hX

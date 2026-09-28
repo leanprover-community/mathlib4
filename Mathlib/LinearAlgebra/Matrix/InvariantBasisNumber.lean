@@ -5,7 +5,6 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Module.Projective
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.LinearAlgebra.Matrix.SemiringInverse
 public import Mathlib.LinearAlgebra.InvariantBasisNumber
@@ -14,7 +13,7 @@ public import Mathlib.LinearAlgebra.InvariantBasisNumber
 # Invertible matrices over a ring with invariant basis number are square.
 -/
 
-@[expose] public section
+public section
 
 section
 

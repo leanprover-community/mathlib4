@@ -5,13 +5,11 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Lattice
 public import Mathlib.Algebra.Group.Submonoid.Membership
 public import Mathlib.Algebra.Group.Submonoid.BigOperators
 public import Mathlib.Algebra.Module.Submodule.Defs
 public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Algebra.Module.PUnit
-public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
@@ -184,14 +182,6 @@ instance : InfSet (Submodule R M) :=
       add_mem' := by simp +contextual [add_mem]
       smul_mem' := by simp +contextual [smul_mem] }⟩
 
-set_option backward.privateInPublic true in
-private theorem sInf_le' {S : Set (Submodule R M)} {p} : p ∈ S → sInf S ≤ p :=
-  Set.biInter_subset_of_mem
-
-set_option backward.privateInPublic true in
-private theorem le_sInf' {S : Set (Submodule R M)} {p} : (∀ q ∈ S, p ≤ q) → p ≤ sInf S :=
-  Set.subset_iInter₂
-
 protected theorem isGLB_sInf {S : Set (Submodule R M)} : IsGLB S (sInf S) :=
   .of_image SetLike.coe_subset_coe isGLB_biInf
 
@@ -202,22 +192,18 @@ instance : Min (Submodule R M) :=
       add_mem' := by simp +contextual [add_mem]
       smul_mem' := by simp +contextual [smul_mem] }⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance completeLattice : CompleteLattice (Submodule R M) :=
-  { (inferInstance : OrderTop (Submodule R M)),
-    (inferInstance : OrderBot (Submodule R M)) with
-    sup := fun a b ↦ sInf { x | a ≤ x ∧ b ≤ x }
-    le_sup_left := fun _ _ ↦ le_sInf' fun _ ⟨h, _⟩ ↦ h
-    le_sup_right := fun _ _ ↦ le_sInf' fun _ ⟨_, h⟩ ↦ h
-    sup_le := fun _ _ _ h₁ h₂ ↦ sInf_le' ⟨h₁, h₂⟩
-    inf := (· ⊓ ·)
-    le_inf := fun _ _ _ ↦ Set.subset_inter
-    inf_le_left := fun _ _ ↦ Set.inter_subset_left
-    inf_le_right := fun _ _ ↦ Set.inter_subset_right
-    sSup S := sInf {sm | ∀ s ∈ S, s ≤ sm}
-    isLUB_sSup _ := isGLB_upperBounds.mp Submodule.isGLB_sInf
-    isGLB_sInf _ := Submodule.isGLB_sInf }
+instance completeLattice : CompleteLattice (Submodule R M) where
+  sup a b := sInf { x | a ≤ x ∧ b ≤ x }
+  le_sup_left _ _ := Set.subset_iInter₂ fun _ ⟨h, _⟩ ↦ h
+  le_sup_right _ _ := Set.subset_iInter₂ fun _ ⟨_, h⟩ ↦ h
+  sup_le _ _ _ h₁ h₂ := Set.biInter_subset_of_mem ⟨h₁, h₂⟩
+  inf := (· ⊓ ·)
+  le_inf _ _ _ := Set.subset_inter
+  inf_le_left _ _ := Set.inter_subset_left
+  inf_le_right _ _ := Set.inter_subset_right
+  sSup S := sInf {sm | ∀ s ∈ S, s ≤ sm}
+  isLUB_sSup _ := isGLB_upperBounds.mp Submodule.isGLB_sInf
+  isGLB_sInf _ := Submodule.isGLB_sInf
 
 @[simp]
 theorem coe_inf : ↑(p ⊓ q) = (p ∩ q : Set M) :=
@@ -234,7 +220,7 @@ theorem coe_sInf (P : Set (Submodule R M)) : (↑(sInf P) : Set M) = ⋂ p ∈ P
 @[simp]
 theorem coe_finsetInf {ι} (s : Finset ι) (p : ι → Submodule R M) :
     (↑(s.inf p) : Set M) = ⋂ i ∈ s, ↑(p i) := by
-  letI := Classical.decEq ι
+  let := Classical.decEq ι
   refine s.induction_on ?_ fun i s _ ih ↦ ?_
   · simp
   · rw [Finset.inf_insert, coe_inf, ih]

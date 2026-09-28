@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.ComposableArrows
+import Mathlib.CategoryTheory.Localization.CalculusOfFractions.ComposableArrows
 public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditive
 public import Mathlib.CategoryTheory.Triangulated.Functor
 public import Mathlib.CategoryTheory.Shift.Localization
@@ -64,6 +64,7 @@ lemma essImageDistTriang_mem_of_iso {T₁ T₂ : Triangle D} (e : T₂ ≅ T₁)
   obtain ⟨T', e', hT'⟩ := h
   exact ⟨T', e ≪≫ e', hT'⟩
 
+set_option backward.defeqAttrib.useBackward true in
 lemma contractible_mem_essImageDistTriang [EssSurj L] [HasZeroObject D]
     [HasZeroMorphisms D] [L.PreservesZeroMorphisms] (X : D) :
     contractibleTriangle X ∈ L.essImageDistTriang := by
@@ -82,7 +83,7 @@ lemma rotate_essImageDistTriang [Preadditive D] [L.Additive]
     exact ⟨T'.invRotate, (triangleRotation D).unitIso.app T ≪≫ (invRotate D).mapIso e' ≪≫
       L.mapTriangleInvRotateIso.app T', inv_rot_of_distTriang T' hT'⟩
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 lemma complete_distinguished_essImageDistTriang_morphism
     (H : ∀ (T₁' T₂' : Triangle C) (_ : T₁' ∈ distTriang C) (_ : T₂' ∈ distTriang C)
       (a : L.obj (T₁'.obj₁) ⟶ L.obj (T₂'.obj₁)) (b : L.obj (T₁'.obj₂) ⟶ L.obj (T₂'.obj₂))
@@ -127,7 +128,7 @@ namespace Localization
 variable (W : MorphismProperty C) [L.IsLocalization W]
   [W.HasLeftCalculusOfFractions]
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 include W in
 lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
     ∃ (Z : D) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧),
@@ -147,7 +148,7 @@ lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
 section
 variable [W.IsCompatibleWithTriangulation]
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 include W in
 lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
     (hT₁ : T₁ ∈ L.essImageDistTriang) (hT₂ : T₂ ∈ L.essImageDistTriang)
@@ -159,8 +160,6 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
   obtain ⟨α, hα⟩ := exists_leftFraction L W a
   obtain ⟨β, hβ⟩ := (MorphismProperty.RightFraction.mk α.s α.hs T₂.mor₁).exists_leftFraction
   obtain ⟨γ, hγ⟩ := exists_leftFraction L W (b ≫ L.map β.s)
-  have := inverts L W β.s β.hs
-  have := inverts L W γ.s γ.hs
   dsimp at hβ
   obtain ⟨Z₂, σ, hσ, fac⟩ := (MorphismProperty.map_eq_iff_postcomp L W
     (α.f ≫ β.f ≫ γ.s) (T₁.mor₁ ≫ γ.f)).1 (by
@@ -193,7 +192,7 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
 variable [HasZeroObject D] [Preadditive D] [∀ (n : ℤ), (shiftFunctor D n).Additive] [L.Additive]
 
 /-- The pretriangulated structure on the localized category. -/
-@[implicit_reducible]
+@[instance_reducible]
 def pretriangulated : Pretriangulated D where
   distinguishedTriangles := L.essImageDistTriang
   isomorphic_distinguished _ hT₁ _ e := L.essImageDistTriang_mem_of_iso e hT₁

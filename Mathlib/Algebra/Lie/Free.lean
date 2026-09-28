@@ -88,7 +88,6 @@ variable {R X}
 theorem Rel.addLeft (a : lib R X) {b c : lib R X} (h : Rel R X b c) : Rel R X (a + b) (a + c) := by
   rw [add_comm _ b, add_comm _ c]; exact h.add_right _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Rel.neg {a b : lib R X} (h : Rel R X a b) : Rel R X (-a) (-b) := by
   simpa only [neg_one_smul] using h.smul (-1)
 
@@ -131,7 +130,7 @@ instance {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] :
 
 instance {S : Type*} [Monoid S] [DistribMulAction S R] [DistribMulAction Sᵐᵒᵖ R]
     [IsScalarTower S R R] [IsCentralScalar S R] : IsCentralScalar S (FreeLieAlgebra R X) where
-  op_smul_eq_smul t := Quot.ind fun a => congr_arg (Quot.mk _) (op_smul_eq_smul t a)
+  op_smul_eq_smul t := Quot.ind fun a => congr(Quot.mk _ $(op_smul_eq_smul t a))
 
 instance : Zero (FreeLieAlgebra R X) where zero := Quot.mk _ 0
 
@@ -233,7 +232,7 @@ def lift : (X → L) ≃ (FreeLieAlgebra R X →ₗ⁅R⁆ L) where
   right_inv F := by
     ext ⟨a⟩
     let F' := F.toNonUnitalAlgHom.comp (mk R)
-    exact NonUnitalAlgHom.congr_fun (lib.lift_comp_of R F') a
+    congrm $(lib.lift_comp_of R F') a
 
 @[simp]
 theorem lift_symm_apply (F : FreeLieAlgebra R X →ₗ⁅R⁆ L) : (lift R).symm F = F ∘ of R := rfl
@@ -262,6 +261,7 @@ theorem hom_ext {F₁ F₂ : FreeLieAlgebra R X →ₗ⁅R⁆ L} (h : ∀ x, F�
   (lift R).symm.injective h'
 
 variable (R X)
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- The universal enveloping algebra of the free Lie algebra is just the free unital associative
 algebra. -/

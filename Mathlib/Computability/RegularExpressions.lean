@@ -6,18 +6,18 @@ Authors: Fox Thomson
 module
 
 public import Mathlib.Computability.Language
-public import Mathlib.Tactic.AdaptationNote
+import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Regular Expressions
 
 This file contains the formal definition for regular expressions and basic lemmas. Note these are
-regular expressions in terms of formal language theory. Note this is different to regex's used in
+regular expressions in terms of formal language theory. Note this is different to regexes used in
 computer science such as the POSIX standard.
 
 ## TODO
 
-Currently, we don't show that regular expressions and DFA/NFA's are equivalent.
+Currently, we do not show that regular expressions and DFAs/NFAs are equivalent.
 Multiple competing PRs towards that goal are in review.
 See https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Regular.20languages.3A.20the.20review.20queue
 -/
@@ -26,7 +26,7 @@ See https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Regul
 
 open List Set
 
-open Computability
+open scoped Computability
 
 universe u
 
@@ -35,13 +35,13 @@ variable {α β γ : Type*}
 -- Disable generation of unneeded lemmas which the simpNF linter would complain about.
 set_option genSizeOfSpec false in
 set_option genInjectivity false in
-/-- This is the definition of regular expressions. The names used here is to mirror the definition
-of a Kleene algebra (https://en.wikipedia.org/wiki/Kleene_algebra).
+/-- This is the definition of regular expressions. The names used here are meant to mirror the
+[definition of a Kleene algebra](https://en.wikipedia.org/wiki/Kleene_algebra).
 * `0` (`zero`) matches nothing
 * `1` (`epsilon`) matches only the empty string
 * `char a` matches only the string 'a'
-* `star P` matches any finite concatenation of strings which match `P`
-* `P + Q` (`plus P Q`) matches anything which match `P` or `Q`
+* `star P` matches any finite concatenation of strings that match `P`
+* `P + Q` (`plus P Q`) matches anything that matches `P` or `Q`
 * `P * Q` (`comp P Q`) matches `x ++ y` if `x` matches `P` and `y` matches `Q`
 -/
 inductive RegularExpression (α : Type u) : Type u
@@ -122,8 +122,7 @@ theorem matches'_mul (P Q : RegularExpression α) : (P * Q).matches' = P.matches
 theorem matches'_pow (P : RegularExpression α) : ∀ n : ℕ, (P ^ n).matches' = P.matches' ^ n
   | 0 => matches'_epsilon
   | n + 1 => (matches'_mul _ _).trans <| Eq.trans
-      (congrFun (congrArg HMul.hMul (matches'_pow P n)) (matches' P))
-      (pow_succ _ n).symm
+      congr($(matches'_pow P n) * (matches' P)) (pow_succ _ n).symm
 
 theorem matches'_star (P : RegularExpression α) : P.star.matches' = P.matches'∗ :=
   rfl
@@ -160,11 +159,11 @@ theorem deriv_one (a : α) : deriv 1 a = 0 :=
 
 @[simp]
 theorem deriv_char_self (a : α) : deriv (char a) a = 1 :=
-  if_pos rfl
+  ite_eq_left rfl
 
 @[simp]
 theorem deriv_char_of_ne (h : a ≠ b) : deriv (char a) b = 0 :=
-  if_neg h
+  ite_eq_right h
 
 @[simp]
 theorem deriv_add (P Q : RegularExpression α) (a : α) : deriv (P + Q) a = deriv P a + deriv Q a :=
@@ -238,7 +237,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
           rw [List.cons_append, List.cons_eq_cons] at h
           refine ⟨t, u, h.2, ?_, hQ⟩
           rw [rmatch] at hP
-          convert hP
+          convert! hP
           exact h.1
     · rw [ih]
       constructor <;> rintro ⟨t, u, h, hP, hQ⟩
@@ -248,7 +247,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
         · rw [List.cons_append, List.cons_eq_cons] at h
           refine ⟨t, u, h.2, ?_, hQ⟩
           rw [rmatch] at hP
-          convert hP
+          convert! hP
           exact h.1
 
 theorem star_rmatch_iff (P : RegularExpression α) :
@@ -290,7 +289,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
           refine ⟨t, U.flatten, hsum.2, ?_, ?_⟩
           · specialize helem (b :: t) (by simp)
             rw [rmatch] at helem
-            convert helem.2
+            convert! helem.2
             exact hsum.1
           · grind
   termination_by t => (P, t.length)
@@ -335,7 +334,7 @@ def map (f : α → β) : RegularExpression α → RegularExpression β
 protected theorem map_pow (f : α → β) (P : RegularExpression α) :
     ∀ n : ℕ, map f (P ^ n) = map f P ^ n
   | 0 => by unfold map; rfl
-  | n + 1 => (congr_arg (· * map f P) (RegularExpression.map_pow f P n) :)
+  | n + 1 => congr($(RegularExpression.map_pow f P n) * map f P)
 
 @[simp]
 theorem map_id : ∀ P : RegularExpression α, P.map id = P

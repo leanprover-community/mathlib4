@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
-public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
+import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 
 /-!
 # Stability properties of epimorphisms in `Type`
@@ -16,7 +16,7 @@ are stable under base change.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

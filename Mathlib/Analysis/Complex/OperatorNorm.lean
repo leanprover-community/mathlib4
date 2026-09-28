@@ -81,6 +81,6 @@ theorem ofRealCLM_enorm : ‖ofRealCLM‖ₑ = 1 := by simp [← ofReal_norm]
 
 @[simp]
 theorem ofRealCLM_nnnorm : ‖ofRealCLM‖₊ = 1 :=
-  Subtype.ext <| ofRealCLM_norm
+  Subtype.ext ofRealCLM_norm
 
 end Complex

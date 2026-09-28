@@ -6,7 +6,6 @@ Authors: Judith Ludwig, Christian Merten
 module
 
 public import Mathlib.RingTheory.AdicCompletion.AsTensorProduct
-public import Mathlib.RingTheory.Flat.Stability
 public import Mathlib.RingTheory.Smooth.AdicCompletion
 public import Mathlib.RingTheory.Smooth.NoetherianDescent
 public import Mathlib.RingTheory.RingHom.Flat
@@ -32,7 +31,7 @@ The proof proceeds in two steps:
 - [Conde-Lago, A short proof of smooth implies flat][condelago2016shortproofsmoothimplies]
 -/
 
-@[expose] public section
+public section
 
 namespace Algebra
 
@@ -48,7 +47,6 @@ lemma FormallySmooth.flat_of_algHom_of_isNoetherianRing (f : S →ₐ[R] A) (hf 
 
 variable (R A)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `A` is `R`-smooth and `R` is Noetherian, then `A` is `R`-flat. -/
 theorem Smooth.flat_of_isNoetherianRing [IsNoetherianRing R] [Smooth R A] :
     Module.Flat R A := by

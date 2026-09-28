@@ -20,7 +20,9 @@ be satisfied by itself and all stricter types.
 
 * `sSupHom`: Maps which preserve `⨆`.
 * `sInfHom`: Maps which preserve `⨅`.
-* `FrameHom`: Frame homomorphisms. Maps which preserve `⨆`, `⊓` and `⊤`.
+* `FrameHom`: Frame homomorphisms. Maps which preserve `⨆`, `⊓` and `⊤`. Note that while a frame
+  is a Heyting algebra, frame homs need not preserve `⇨`. For instance,
+  `TopologicalSpace.Opens.frameHom` does not in general preserve complementation.
 * `CompleteLatticeHom`: Complete lattice homomorphisms. Maps which preserve `⨆` and `⨅`.
 
 ## Typeclasses
@@ -33,10 +35,6 @@ be satisfied by itself and all stricter types.
 ## Concrete homs
 
 * `CompleteLatticeHom.setPreimage`: `Set.preimage` as a complete lattice homomorphism.
-
-## TODO
-
-Frame homs are Heyting homs.
 -/
 
 @[expose] public section
@@ -138,7 +136,7 @@ instance (priority := 100) sSupHomClass.toSupBotHomClass [CompleteLattice α]
   { ‹sSupHomClass F α β› with
     map_sup := fun f a b => by
       rw [← sSup_pair, map_sSup]
-      simp only [Set.image_pair, sSup_insert, sSup_singleton]
+      simp
     map_bot := fun f => by
       rw [← sSup_empty, map_sSup, Set.image_empty, sSup_empty] }
 
@@ -171,11 +169,10 @@ variable [EquivLike F α β]
 -- See note [lower instance priority]
 @[to_dual]
 instance (priority := 100) OrderIsoClass.tosSupHomClass [CompleteLattice α]
-    [CompleteLattice β] [OrderIsoClass F α β] : sSupHomClass F α β :=
-  { show OrderHomClass F α β from inferInstance with
-    map_sSup := fun f s =>
-      eq_of_forall_ge_iff fun c => by
-        simp only [← le_map_inv_iff, sSup_le_iff, Set.forall_mem_image] }
+    [CompleteLattice β] [OrderIsoClass F α β] : sSupHomClass F α β where
+  map_sSup := fun f s =>
+    eq_of_forall_ge_iff fun c => by
+      simp only [← le_map_inv_iff, sSup_le_iff, Set.forall_mem_image]
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toCompleteLatticeHomClass [CompleteLattice α]
@@ -185,13 +182,6 @@ instance (priority := 100) OrderIsoClass.toCompleteLatticeHomClass [CompleteLatt
 end Equiv
 
 variable [FunLike F α β]
-
-/-- Reinterpret an order isomorphism as a morphism of complete lattices. -/
-@[simps] def OrderIso.toCompleteLatticeHom [CompleteLattice α] [CompleteLattice β]
-    (f : OrderIso α β) : CompleteLatticeHom α β where
-  toFun := f
-  map_sInf' := sInfHomClass.map_sInf f
-  map_sSup' := sSupHomClass.map_sSup f
 
 @[to_dual]
 instance [SupSet α] [SupSet β] [sSupHomClass F α β] : CoeTC F (sSupHom α β) :=
@@ -215,10 +205,10 @@ section SupSet
 
 variable [SupSet β] [SupSet γ] [SupSet δ]
 
-@[to_dual]
+@[to_dual (attr := macro_inline)]
 instance : FunLike (sSupHom α β) α β where
   coe := sSupHom.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 @[to_dual]
 instance : sSupHomClass (sSupHom α β) α β where
@@ -345,9 +335,10 @@ namespace FrameHom
 
 variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] [CompleteLattice δ]
 
+@[macro_inline]
 instance : FunLike (FrameHom α β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g
     congr
@@ -449,14 +440,20 @@ namespace CompleteLatticeHom
 
 variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] [CompleteLattice δ]
 
+@[macro_inline]
 instance : FunLike (CompleteLatticeHom α β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
+  coe_injective f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
 
 instance : CompleteLatticeHomClass (CompleteLatticeHom α β) α β where
   map_sSup f := f.map_sSup'
   map_sInf f := f.map_sInf'
 
+/-- Reinterpret an order isomorphism as a morphism of complete lattices. -/
+@[simps] def OrderIso.toCompleteLatticeHom (f : OrderIso α β) : CompleteLatticeHom α β where
+  toFun := f
+  map_sInf' := sInfHomClass.map_sInf f
+  map_sSup' := sSupHomClass.map_sSup f
 
 /-- Reinterpret a `CompleteLatticeHom` as a `BoundedLatticeHom`. -/
 def toBoundedLatticeHom (f : CompleteLatticeHom α β) : BoundedLatticeHom α β :=

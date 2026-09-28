@@ -6,10 +6,7 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Algebra.Group.Action.Faithful
-public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.TransferInstance
-public import Mathlib.Algebra.Group.InjSurj
-public import Mathlib.Data.Fintype.Basic
 
 /-!
 # Transfer algebraic structures across `Equiv`s
@@ -17,7 +14,7 @@ public import Mathlib.Data.Fintype.Basic
 This continues the pattern set in `Mathlib/Algebra/Group/TransferInstance.lean`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 
@@ -25,7 +22,6 @@ namespace Equiv
 variable {M N O α β : Type*}
 
 variable (M) [Monoid M] in
-set_option backward.proofsInPublic true in
 /-- Transfer `MulAction` across an `Equiv` -/
 @[to_additive /-- Transfer `AddAction` across an `Equiv` -/]
 protected abbrev mulAction (e : α ≃ β) [MulAction M β] : MulAction M α where

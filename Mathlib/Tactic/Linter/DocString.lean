@@ -5,8 +5,12 @@ Authors: Michael Rothgang, Damiano Testa
 -/
 module
 
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
+public meta import Std.Data.Iterators.Combinators.Zip
 public import Lean.Parser.Command
+meta import Std.Data.Iterators.Producers.Range
 
 /-!
 # The "DocString" style linter
@@ -65,7 +69,16 @@ def deindentString (currIndent : Nat) (docString : String) : String :=
   let indent : String := String.ofList ('\n' :: List.replicate currIndent ' ')
   docString.replace indent " "
 
-open Parser in
+/--
+Replace every non-whitespace character of `s` by `replacement`, preserving the byte length of `s`.
+`replacement` should be an ASCII character.
+Whitespace is kept so that line breaks, and hence line and column numbers, are unchanged.
+-/
+def blankOut (replacement : Char) (s : String) : String :=
+  s.foldl (init := "") fun acc original =>
+    if original.isWhitespace then acc.push original else acc.pushn replacement original.utf8Size
+
+open Command Parser in
 /--
 Try to parse `docComment` as a Verso docstring, and report any parse errors.
 
@@ -75,8 +88,8 @@ elaborated).
 This is a copy of the first half of `versoDocStringFromString`, which also does elaboration
 (but here we only report parse errors).
 -/
-def checkVersoSyntax (fileName : Option String := none) (docComment : String) :
-    Elab.TermElabM (Array (String.Pos.Raw × SyntaxStack × Error)) := do
+def checkVersoSyntax (docComment : String) (fileName : Option String := none) :
+    CommandElabM (Array (String.Pos.Raw × SyntaxStack × Error)) := do
   let fileName := fileName.getD (← getFileName)
   let env ← getEnv
   let ictx : InputContext := .mk docComment fileName
@@ -90,6 +103,64 @@ def checkVersoSyntax (fileName : Option String := none) (docComment : String) :
   let s := mkParserState docComment
   let s := Doc.Parser.document.run ictx pmctx (getTokenTable env) s
   return s.allErrors
+
+/--
+Determines if a given Verso parse error should be silenced in the Verso syntax linter.
+This happens when it is valid Markdown syntax that we will migrate all at once.
+-/
+def isSilencedVersoWarning (err : Parser.Error) : Bool :=
+  -- Ignore Markdown link/reference syntax (this should be fixed automatically and all at once).
+  "link target '(url)' or '[ref]' (use '\\[' for a literal '[')" ∈ err.expected
+
+open Command Parser in
+/--
+Try to parse `docComment` as a Verso docstring, and report any parse errors,
+ignoring those that should be silenced by linters.
+
+`fileName` is the file where this docstring is defined (default: the file currently being
+elaborated).
+-/
+def lintVersoSyntax (docComment : String) (fileName : Option String := none) :
+    CommandElabM (Array (String.Pos.Raw × SyntaxStack × Error)) := do
+  -- The replacements below preserve the byte length of the docstring, so that the positions of
+  -- the parse errors are positions in `docComment`.
+  -- Drop anything that looks like an autolink: this is not supported by Verso. Adding full links
+  -- everywhere would be very noisy.
+  let trimmedStr := Std.Iter.fold (· ++ ·) "" <|
+    docComment.splitInclusive Char.isWhitespace |>.map fun str =>
+      if (str.contains "http://" || str.contains "https://") && !str.contains "(http" then
+        blankOut 'U' str.toString
+      else str.toString
+  -- Drop anything between LaTeX `$$`s.
+  -- We keep single `$`s, since those also occur in `backquoted` code snippets (e.g. as `· <$> ·`),
+  -- and so we'd need to build an actual parser to figure out if they are in a snippet or not.
+  let trimmedStr := Std.Iter.fold (· ++ ·) "" <|
+    trimmedStr.split "$$"
+      |>.zip (0...*).iter
+      |>.map fun (str, i) =>
+        -- Each `LL` stands in for a `$$` delimiter that `split` removed.
+        let str := if i % 2 == 0 then str.toString else "".pushn 'L' str.utf8ByteSize
+        if i == 0 then str else "LL" ++ str
+  let errs ← checkVersoSyntax trimmedStr fileName
+  return errs.filter fun (_, _, err) => !isSilencedVersoWarning err
+
+open Command Parser in
+/--
+Log the Verso parse errors `errs` found in the text of the doc-string `docStx` (a `docComment` or
+`moduleDoc` node), at their positions in the file.
+
+The positions in `errs` are relative to the text of the doc-string, which starts at the second
+child of `docStx`. If that child has no position, the errors are logged at offset 0,
+the default position for errors without associated syntax.
+-/
+def logVersoErrors (docStx : Syntax) (errs : Array (String.Pos.Raw × SyntaxStack × Error)) :
+    CommandElabM Unit := do
+  let start? := docStx[1].getPos?
+  for (pos, _, err) in errs do
+    let pos := match start? with
+      | some start => pos.offsetBy start
+      | none => 0
+    Linter.logLint linter.style.docStringVerso (.ofRange ⟨pos, pos⟩) m!"{err}"
 
 namespace Style
 
@@ -111,6 +182,8 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let currIndent := fm.toPosition pos |>.column
 
     if docStx.isMissing then continue -- this is probably superfluous, thanks to `some pos` above.
+    -- ignore antiquotations from syntax patterns like `$(_)?`
+    unless docStx.getKind == ``Parser.Command.docComment do continue
     -- `docString` contains e.g. trailing spaces before the `-/`, but does not contain
     -- any leading whitespace before the actual string starts.
     let docString ← try getDocStringText ⟨docStx⟩ catch _ => continue
@@ -145,9 +218,7 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- If Verso is already enabled for docstrings, then this check would be superfluous.
     if !doc.verso.get (← getOptions) &&
         getLinterValue linter.style.docStringVerso (← getLinterOptions) then do
-      let errs ← Command.liftTermElabM (checkVersoSyntax (docComment := docString))
-      for (pos, stxStack, err) in errs do
-        Linter.logLint linter.style.docStringVerso stxStack.back m!"{err}"
+      logVersoErrors docStx (← lintVersoSyntax docString)
 
 initialize addLinter docStringLinter
 
@@ -168,9 +239,7 @@ def moduleDocVersoLinter : Linter where run := withSetOptionIn fun stx ↦ do
   | _ => none) | return
   try
     let docString ← getDocStringText ⟨moduleDoc⟩
-    let errs ← Command.liftTermElabM (checkVersoSyntax (docComment := docString))
-    for (pos, stxStack, err) in errs do
-      Linter.logLint linter.style.docStringVerso stxStack.back m!"{err}"
+    logVersoErrors moduleDoc (← lintVersoSyntax docString)
   catch _ => return
 
 initialize addLinter moduleDocVersoLinter

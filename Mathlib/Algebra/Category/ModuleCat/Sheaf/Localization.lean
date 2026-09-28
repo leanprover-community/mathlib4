@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafification
-public import Mathlib.CategoryTheory.Sites.Localization
 
 /-!
 # The category of sheaves of modules as a localization of presheaves of modules
@@ -20,7 +19,7 @@ is a localization functor.
 
 -/
 
-@[expose] public section
+public section
 
 universe v u v' u'
 

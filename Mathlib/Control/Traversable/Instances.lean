@@ -5,10 +5,11 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Control.Applicative
+import Mathlib.Control.Applicative
 public import Mathlib.Control.Traversable.Basic
 public import Mathlib.Data.List.Forall2
 public import Mathlib.Data.Set.Functor
+import Mathlib.Data.List.Basic
 
 /-!
 # LawfulTraversable instances
@@ -17,7 +18,7 @@ This file provides instances of `LawfulTraversable` for types from the core libr
 `List` and `Sum`.
 -/
 
-@[expose] public section
+public section
 
 
 universe u v

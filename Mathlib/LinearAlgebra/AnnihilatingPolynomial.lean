@@ -6,7 +6,6 @@ Authors: Justin Thomas
 module
 
 public import Mathlib.FieldTheory.Minpoly.Field
-public import Mathlib.RingTheory.PrincipalIdealDomain
 public import Mathlib.Algebra.Polynomial.Module.AEval
 
 /-!
@@ -109,7 +108,7 @@ theorem annIdealGenerator_mem (a : A) : annIdealGenerator 𝕜 a ∈ annIdeal �
 
 theorem mem_iff_eq_smul_annIdealGenerator {p : 𝕜[X]} (a : A) :
     p ∈ annIdeal 𝕜 a ↔ ∃ s : 𝕜[X], p = s • annIdealGenerator 𝕜 a := by
-  simp_rw [@eq_comm _ p, ← mem_span_singleton, ← span_singleton_annIdealGenerator 𝕜 a, Ideal.span]
+  simp_rw [@eq_comm _ p, ← mem_span_singleton, ← span_singleton_annIdealGenerator 𝕜 a]
 
 /-- The generator we chose for the annihilating ideal is monic when the ideal is non-zero. -/
 theorem monic_annIdealGenerator (a : A) (hg : annIdealGenerator 𝕜 a ≠ 0) :

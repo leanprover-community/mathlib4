@@ -6,7 +6,6 @@ Authors: Robin Carlier
 module
 
 public import Mathlib.CategoryTheory.WithTerminal.Basic
-public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 
 /-!
@@ -54,6 +53,9 @@ def equivAugmentedCosimplicialObject :
     (AugmentedSimplexCategory ⥤ C) ≌ CosimplicialObject.Augmented C :=
   WithInitial.equivComma
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Through the equivalence `(AugmentedSimplexCategory ⥤ C) ≌ CosimplicialObject.Augmented C`,
 dropping the augmentation corresponds to precomposition with
 `inclusion : SimplexCategory ⥤ AugmentedSimplexCategory`. -/
@@ -63,6 +65,9 @@ def equivAugmentedCosimplicialObjectFunctorCompDropIso :
     (Functor.whiskeringLeft _ _ C).obj inclusion :=
   .refl _
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Through the equivalence `(AugmentedSimplexCategory ⥤ C) ≌ CosimplicialObject.Augmented C`,
 taking the point of the augmentation corresponds to evaluation at the initial object. -/
 @[simps!]
@@ -81,6 +86,9 @@ def equivAugmentedCosimplicialObjectFunctorCompToArrowIso :
       (evaluation _ _ |>.obj <| .mk <| WithInitial.homTo <| .mk 0) :=
   .refl _
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The equivalence between functors out of `AugmentedSimplexCategory` and augmented simplicial
 objects. -/
 @[simps!]

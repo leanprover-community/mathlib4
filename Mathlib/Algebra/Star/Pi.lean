@@ -6,7 +6,6 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.Star.Basic
-public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Algebra.Ring.Pi
 
 /-!
@@ -16,7 +15,7 @@ This file provides basic results about the star on product types defined in
 `Mathlib/Algebra/Notation/Pi/Defs.lean`.
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w

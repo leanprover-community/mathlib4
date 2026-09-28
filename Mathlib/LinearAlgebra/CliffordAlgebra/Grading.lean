@@ -78,7 +78,6 @@ nonrec theorem GradedAlgebra.ι_sq_scalar (m : M) :
   rw [GradedAlgebra.ι_apply Q, DirectSum.of_mul_of, DirectSum.algebraMap_apply]
   exact DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext rfl <| ι_sq_scalar _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
     lift Q ⟨GradedAlgebra.ι Q, GradedAlgebra.ι_sq_scalar Q⟩ x' =
       DirectSum.of (fun i => evenOdd Q i) i' x' := by
@@ -108,7 +107,6 @@ theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
   | add x y hx hy ihx ihy =>
     rw [map_add, ihx, ihy, ← map_add]; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The clifford algebra is graded by the even and odd parts. -/
 instance gradedAlgebra : GradedAlgebra (evenOdd Q) :=
   GradedAlgebra.ofAlgHom (evenOdd Q)
@@ -137,7 +135,7 @@ theorem iSup_ι_range_eq_top : ⨆ i : ℕ, LinearMap.range (ι Q) ^ i = ⊤ := 
 theorem evenOdd_isCompl : IsCompl (evenOdd Q 0) (evenOdd Q 1) :=
   (DirectSum.Decomposition.isInternal (evenOdd Q)).isCompl zero_ne_one <| by
     have : (Finset.univ : Finset (ZMod 2)) = {0, 1} := rfl
-    simpa using congr_arg ((↑) : Finset (ZMod 2) → Set (ZMod 2)) this
+    simpa using congr(($this : Set (ZMod 2)))
 
 /-- To show a property is true on the even or odd part, it suffices to show it is true on the
 scalars or vectors (respectively), closed under addition, and under left-multiplication by a pair

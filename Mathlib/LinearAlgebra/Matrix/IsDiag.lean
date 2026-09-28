@@ -32,7 +32,9 @@ variable {α β R n m : Type*}
 
 open Function
 
-open Matrix Kronecker
+open Matrix
+
+open scoped Kronecker
 
 /-- `A.IsDiag` means square matrix `A` is a diagonal matrix. -/
 def IsDiag [Zero α] (A : Matrix n n α) : Prop :=
@@ -116,7 +118,7 @@ theorem IsDiag.conjTranspose [NonUnitalNonAssocSemiring α] [StarRing α] {A : M
 theorem isDiag_conjTranspose_iff [NonUnitalNonAssocSemiring α] [StarRing α] {A : Matrix n n α} :
     Aᴴ.IsDiag ↔ A.IsDiag :=
   ⟨fun ha => by
-    convert ha.conjTranspose
+    convert! ha.conjTranspose
     simp, IsDiag.conjTranspose⟩
 
 theorem IsDiag.submatrix [Zero α] {A : Matrix n n α} (ha : A.IsDiag) {f : m → n}
@@ -156,7 +158,7 @@ theorem isDiag_fromBlocks_iff [Zero α] {A : Matrix m m α} {B : Matrix m n α} 
     · exact h Sum.inr_ne_inl
     · exact h (Sum.inr_injective.ne hij)
   · rintro ⟨ha, hb, hc, hd⟩
-    convert IsDiag.fromBlocks ha hd
+    convert! IsDiag.fromBlocks ha hd
 
 /-- A symmetric block matrix `A.fromBlocks B C D` is diagonal
 if `A` and `D` are diagonal and `B` is `0`. -/

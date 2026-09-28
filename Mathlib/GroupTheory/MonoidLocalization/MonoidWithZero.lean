@@ -5,11 +5,9 @@ Authors: Amelia Livingston
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Hom
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.GroupTheory.MonoidLocalization.Maps
-public import Mathlib.RingTheory.OreLocalization.Basic
+import Mathlib.RingTheory.OreLocalization.Basic
 
 /-!
 # Localizations of commutative monoids with zeroes
@@ -17,8 +15,6 @@ public import Mathlib.RingTheory.OreLocalization.Basic
 -/
 
 @[expose] public section
-
-open Function
 
 section CommMonoidWithZero
 
@@ -102,7 +98,7 @@ lemma lift₀_def (f : LocalizationMap S N) (g : M →*₀ P) (hg : ∀ y : S, I
     ⇑(f.lift₀ g hg) = f.lift (g := g) hg := rfl
 
 lemma lift₀_apply (f : LocalizationMap S N) (g : M →*₀ P) (hg : ∀ y : S, IsUnit (g y)) (x) :
-    f.lift₀ g hg x = g (f.sec x).1 * (IsUnit.liftRight (g.restrict S) hg (f.sec x).2)⁻¹ := rfl
+    f.lift₀ g hg x = g (f.sec x).1 * (IsUnit.liftRight (g.domRestrict S) hg (f.sec x).2)⁻¹ := rfl
 
 /-- Given a Localization map `f : M →*₀ N` for a Submonoid `S ⊆ M`,
 if `M` is a cancellative monoid with zero, and all elements of `S` are

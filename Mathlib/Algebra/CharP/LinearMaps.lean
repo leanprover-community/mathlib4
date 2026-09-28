@@ -5,7 +5,7 @@ Authors: Wanyi He, Huanyu Zheng
 -/
 module
 
-public import Mathlib.Algebra.CharP.Algebra
+import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.Algebra.Module.Torsion.Basic
 
 /-!
@@ -33,7 +33,7 @@ One can also deduce similar result via `charP_of_injective_ringHom` and
 
 -/
 
-@[expose] public section
+public section
 
 namespace Module
 

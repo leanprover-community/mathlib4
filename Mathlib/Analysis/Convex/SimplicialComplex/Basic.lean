@@ -8,7 +8,6 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialComplex.Basic
 public import Mathlib.Analysis.Convex.Hull
 public import Mathlib.LinearAlgebra.AffineSpace.Independent
-public import Mathlib.Order.UpperLower.Relative
 
 /-!
 # Simplicial complexes
@@ -82,7 +81,7 @@ theorem mem_space_iff : x ∈ K.space ↔ ∃ s ∈ K.faces, x ∈ convexHull �
   simp [space]
 
 theorem convexHull_subset_space (hs : s ∈ K.faces) : convexHull 𝕜 s ⊆ K.space := by
-  convert subset_biUnion_of_mem hs
+  convert! subset_biUnion_of_mem hs
   rfl
 
 protected theorem subset_space (hs : s ∈ K.faces) : (s : Set E) ⊆ K.space :=
@@ -183,7 +182,7 @@ theorem facets_subset : K.facets ⊆ K.faces := fun _ hs => hs.1
 
 theorem not_facet_iff_subface (hs : s ∈ K.faces) : s ∉ K.facets ↔ ∃ t, t ∈ K.faces ∧ s ⊂ t := by
   refine ⟨fun hs' : ¬(_ ∧ _) => ?_, ?_⟩
-  · push_neg at hs'
+  · push Not at hs'
     obtain ⟨t, ht⟩ := hs' hs
     exact ⟨t, ht.1, ⟨ht.2.1, fun hts => ht.2.2 (Subset.antisymm ht.2.1 hts)⟩⟩
   · rintro ⟨t, ht⟩ ⟨hs, hs'⟩

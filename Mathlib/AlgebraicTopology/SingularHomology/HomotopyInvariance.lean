@@ -1,57 +1,64 @@
 /-
-Copyright (c) 2025 Fabian Odermatt. All rights reserved.
+Copyright (c) 2026 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Fabian Odermatt
+Authors: Joël Riou, Fabian Odermatt
 -/
 module
 
+public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.HomotopyInvariance
 public import Mathlib.AlgebraicTopology.SingularHomology.Basic
-public import Mathlib.AlgebraicTopology.SimplicialObject.Homotopy
-public import Mathlib.AlgebraicTopology.SimplicialObject.ChainHomotopy
+public import Mathlib.Topology.Homotopy.TopCat.ToSSet
 
 /-!
-# Homotopy invariance of singular homology (simplicial step)
+# Homotopy invariance of singular homology
 
-This file proves that simplicially homotopic morphisms of simplicial sets induce the same maps
-on singular homology (with coefficients in an object of a preadditive category with coproducts).
+In this file, we show that for any homotopy `H : TopCat.Homotopy f g`
+between two morphisms `f : X ⟶ Y` and `g : X ⟶ Y` in `TopCat`,
+the corresponding morphisms on the singular chain complexes
+are homotopic, and in particular the induced morphisms
+on singular homology are equal.
+
+The proof proceeds by observing that this result is a particular
+case of the homotopy invariance of the homology of simplicial sets
+(see the file `Mathlib/AlgebraicTopology/SingularHomology/HomotopyInvariance.lean`),
+applied to the morphisms `TopCat.toSSet.map f` and `TopCat.toSSet.map g`
+between the singular simplicial sets of `X` and `Y`. That the homotopy `H`
+induces a homotopy between these morphisms of simplicial sets
+is the definition `TopCat.Homotopy.toSSet` which appeared in the file
+`Mathlib/Topology/Homotopy/TopCat/ToSSet.lean`.
+
+This result was first formalized in Lean 3 in 2022 by
+Brendan Seamus Murphy (with a different proof).
+
 -/
 
 @[expose] public section
 
-universe v u
+universe v u w
 
-open CategoryTheory SimplicialObject Homotopy
-open AlgebraicTopology.SSet
+open AlgebraicTopology CategoryTheory Limits
 
-variable (C : Type u) [Category.{v} C]
-variable [CategoryTheory.Preadditive C] [CategoryTheory.Limits.HasCoproducts C]
-variable {C}
-variable (R : C)
-variable {X Y : SSet} (f g : X ⟶ Y)
+namespace TopCat.Homotopy
 
-/--
-If `f` and `g` are simplicially homotopic maps of simplicial sets, then they induce chain-homotopic
-maps on the singular chain complexes with coefficients in `R`.
--/
-noncomputable def singularChainComplexFunctor_mapHomotopy_of_simplicialHomotopy
-    (H : Homotopy f g) :
-    Homotopy
-      (((singularChainComplexFunctor C).obj R).map f)
-      (((singularChainComplexFunctor C).obj R).map g) := by
-  simpa using
-    toChainHomotopy (H.whiskerRight (_ : Type _ ⥤ C))
+variable {C : Type u} [Category.{v} C] [Preadditive C] [HasCoproducts.{w} C]
+  {X Y : TopCat.{w}} {f g : X ⟶ Y}
 
-/--
-Simplicially homotopic maps of simplicial sets induce the same map on homology of the singular
-chain complex (with coefficients in `R`).
--/
-theorem singularChainComplexFunctor_map_homology_eq_of_simplicialHomotopy
-    [CategoryWithHomology C]
-    (H : Homotopy f g) (n : ℕ) :
-    (HomologicalComplex.homologyFunctor C _ n).map
-        (((singularChainComplexFunctor C).obj R).map f) =
-      (HomologicalComplex.homologyFunctor C _ n).map
-        (((singularChainComplexFunctor C).obj R).map g) := by
-  simpa using
-    (singularChainComplexFunctor_mapHomotopy_of_simplicialHomotopy
-        (C := C) (R := R) (f := f) (g := g) H).homologyMap_eq n
+/-- Two homotopic morphisms in `TopCat` induce homotopic morphisms on the
+singular chain complexes with coefficients in `R` (e.g. `R := ℤ` considered as
+an object of the category of abelian groups). -/
+noncomputable def singularChainComplexFunctorObjMap (H : TopCat.Homotopy f g) (R : C) :
+    _root_.Homotopy (((singularChainComplexFunctor C).obj R).map f)
+      (((singularChainComplexFunctor C).obj R).map g) :=
+  H.toSSet.chainComplexMap R
+
+open HomologicalComplex in
+/-- Two homotopic morphisms in `TopCat` induce equal morphisms on the
+singular homology with coefficients in `R` (e.g. `R := ℤ` considered as
+an object of the category of abelian groups). -/
+lemma congr_homologyMap_singularChainComplexFunctor [CategoryWithHomology C]
+    (H : TopCat.Homotopy f g) (R : C) (n : ℕ) :
+    homologyMap (((singularChainComplexFunctor C).obj R).map f) n =
+    homologyMap (((singularChainComplexFunctor C).obj R).map g) n :=
+  (H.singularChainComplexFunctorObjMap R).homologyMap_eq n
+
+end TopCat.Homotopy

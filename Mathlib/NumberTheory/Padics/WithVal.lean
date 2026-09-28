@@ -5,11 +5,11 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.NumberTheory.Padics.PadicIntegers
-public import Mathlib.Topology.Algebra.Valued.ValuedField
 public import Mathlib.Topology.Algebra.Valued.WithVal
 public import Mathlib.Topology.GDelta.MetrizableSpace
+public import Mathlib.Algebra.Order.BigOperators.Expect
+public import Mathlib.Analysis.Real.Sqrt
 
 /-!
 # Equivalence between `ℚ_[p]` and `(Rat.padicValuation p).Completion`
@@ -33,7 +33,7 @@ namespace Padic
 
 variable {p : ℕ} [Fact p.Prime]
 
-open NNReal WithZero UniformSpace
+open WithZero UniformSpace
 
 open MonoidWithZeroHom.ValueGroup₀ in
 lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).comp
@@ -44,17 +44,17 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
   have hp1 : (p : ℝ)⁻¹ < 1 := by simp [inv_lt_one_iff₀, Nat.Prime.one_lt Fact.out]
   rw [Filter.HasBasis.isUniformInducing_iff (Valued.hasBasis_uniformity _ _)
     (Metric.uniformity_basis_dist_le_pow hp0 hp1)]
-  simp only [Set.mem_setOf_eq, dist_eq_norm_sub, inv_pow, RingEquiv.toRingHom_eq_coe,
+  simp only [Set.mem_ofPred_eq, dist_eq_norm_sub, inv_pow, RingEquiv.toRingHom_eq_coe,
     RingHom.coe_comp, Rat.coe_castHom, RingHom.coe_coe, Function.comp_apply, ← Rat.cast_sub,
     ← map_sub, Padic.eq_padicNorm, true_and, forall_const]
   constructor
   · intro n
-    have hn :  Valued.v (R := (WithVal (Rat.padicValuation p))) (p ^ n) =
+    have hn : Valued.v (R := (WithVal (Rat.padicValuation p))) (p ^ n) =
       exp (-n : ℤ) := by
       simp only [← WithVal.val_apply_equiv, map_pow, map_natCast, Rat.padicValuation_self,
         Int.reduceNeg, exp_neg, inv_pow, ← exp_nsmul, nsmul_eq_mul, mul_one]
     use Units.mk0 (Valued.v.restrict (p ^ n)) (by
-      rw [ne_eq, Valuation.restrict_def, restrict₀_eq_zero_iff, hn]; simp)
+      simp [Valuation.restrict_def, Nat.Prime.ne_zero Fact.out])
     intro x y h
     set x' := (WithVal.equiv (Rat.padicValuation p)) x with hx
     set y' := (WithVal.equiv (Rat.padicValuation p)) y with hy
@@ -79,8 +79,8 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
     change Rat.padicValuation p (x' - y') < embedding γ.1
     rw [← Nat.cast_pow, ← Rat.cast_natCast, ← Rat.cast_inv_of_ne_zero, Rat.cast_le] at h
     · change padicNorm p (x' - y') ≤ _ at h
-      simp only [Rat.padicValuation, Valuation.coe_mk, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
-        padicNorm, zpow_neg, Nat.cast_pow] at h ⊢
+      unfold Rat.padicValuation at *
+      simp only [Valuation.coe_mk, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk] at h ⊢
       split_ifs with H
       · simp only [exp_neg]
         exact embedding_unit_pos _
@@ -96,7 +96,6 @@ lemma isDenseInducing_cast_withVal : IsDenseInducing ((Rat.castHom ℚ_[p]).comp
   -- nhds_discrete causes timeouts on TC search
   simpa [-nhds_discrete] using Padic.denseRange_ratCast p _
 
-set_option backward.isDefEq.respectTransparency false in
 open Completion in
 open scoped Valued in
 /-- The `p`-adic numbers are isomorphic as a field to the completion of the rationals at
@@ -162,7 +161,7 @@ open UniformSpace.Completion in
 @[simp]
 theorem withValUniformEquiv_cast_apply (x : WithVal (Rat.padicValuation p)) :
     Padic.withValUniformEquiv (p := p) x = WithVal.equiv (Rat.padicValuation p) x := by
-  simpa [Equiv.toUniformEquivOfIsUniformInducing] using
+  simpa [Equiv.toUniformEquivOfIsUniformInducing] using!
     extension_coe (Padic.isUniformInducing_cast_withVal (p := p)).uniformContinuous _
 
 open PadicInt in
@@ -179,7 +178,7 @@ theorem withValUniformEquiv_norm_le_one_iff {p : ℕ} [Fact p.Prime]
   | hp =>
     rw [Set.ext fun _ ↦ Iff.comm]
     simp_rw [← Valuation.restrict_le_one_iff Valued.v]
-    apply withValUniformEquiv.toHomeomorph.isClosed_setOf_iff (q := fun x ↦ ‖x‖ ≤ 1)
+    apply withValUniformEquiv.toHomeomorph.isClosed_setOfPred_iff (q := fun x ↦ ‖x‖ ≤ 1)
       (Valued.isClopen_closedBall _ one_ne_zero)
     simpa [Metric.closedBall] using IsUltrametricDist.isClopen_closedBall (0 : ℚ_[p]) one_ne_zero
   | ih a =>

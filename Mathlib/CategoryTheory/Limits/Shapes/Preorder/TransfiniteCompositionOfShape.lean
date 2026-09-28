@@ -6,10 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.ComposableArrows.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Fin
-public import Mathlib.CategoryTheory.Limits.Final
-public import Mathlib.CategoryTheory.Filtered.Final
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Preorder
 public import Mathlib.Data.Fin.SuccPredOrder
 public import Mathlib.Order.LatticeIntervals
@@ -57,6 +54,9 @@ structure TransfiniteCompositionOfShape [SuccOrder J] [WellFoundedLT J] where
   isColimit : IsColimit (Cocone.mk Y incl)
   fac : isoBot.inv ≫ incl.app ⊥ = f := by cat_disch
 
+
+initialize_simps_projections TransfiniteCompositionOfShape (-isColimit)
+
 namespace TransfiniteCompositionOfShape
 
 attribute [reassoc (attr := simp)] fac
@@ -64,7 +64,6 @@ attribute [instance] isWellOrderContinuous
 
 variable {J f} [SuccOrder J] [WellFoundedLT J] (c : TransfiniteCompositionOfShape J f)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` and `f'` are two isomorphic morphisms, and `f` is a transfinite composition
 of shape `J`, then `f'` also is. -/
 @[simps]
@@ -87,7 +86,7 @@ def ofComposableArrows {n : ℕ} (G : ComposableArrows C n) :
   isColimit := colimitOfDiagramTerminal (Fin.isTerminalLast n) G
   fac := Category.id_comp _
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- If `f` is a transfinite composition of shape `J`, then it is
 also a transfinite composition of shape `J'` if `J' ≃o J`. -/
 @[simps]
@@ -99,7 +98,6 @@ def ofOrderIso {J' : Type w'} [LinearOrder J'] [OrderBot J']
   incl := Functor.whiskerLeft e.equivalence.functor c.incl
   isColimit := IsColimit.whiskerEquivalence (c.isColimit) e.equivalence
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a transfinite composition of shape `J`, then `F.map f` also is
 provided `F` preserves suitable colimits. -/
 @[simps]
@@ -114,6 +112,7 @@ noncomputable def map (F : C ⥤ D) [PreservesWellOrderContinuousOfShape J F]
       (Cocone.ext (Iso.refl _))
   fac := by simp [← Functor.map_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A transfinite composition of shape `J` induces a transfinite composition
 of shape `Set.Iic j` for any `j : J`. -/
 @[simps]
@@ -129,6 +128,7 @@ noncomputable def iic (j : J) :
         rfl }
   isColimit := colimitOfDiagramTerminal isTerminalTop _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A transfinite composition of shape `J` induces a transfinite composition
 of shape `Set.Ici j` for any `j : J`. -/
 @[simps]
