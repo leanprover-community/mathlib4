@@ -10,7 +10,6 @@ import Mathlib.GroupTheory.IsPerfect
 public import Mathlib.LinearAlgebra.Projectivization.PSL.Stabilizer
 
 /-!
-# Simplicity of `PSL(2, F)`
 -/
 
 public section
