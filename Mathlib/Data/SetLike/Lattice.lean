@@ -50,9 +50,6 @@ theorem mem_of_mem_inf_left {x : B} (h : x ∈ p ⊓ q) : x ∈ p :=
 theorem mem_of_mem_inf_right {x : B} (h : x ∈ p ⊓ q) : x ∈ q :=
   mem_of_le_of_mem inf_le_right h
 
-theorem mem_and_mem_of_mem_inf {x : B} (h : x ∈ p ⊓ q) : x ∈ p ∧ x ∈ q :=
-  ⟨mem_of_mem_inf_left h, mem_of_mem_inf_right h⟩
-
 end SemilatticeInf
 
 section OrderTop
