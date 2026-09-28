@@ -210,10 +210,12 @@ lemma succMany?_eq_some_iff [inst : FinEnum α] {n : Nat} {x y : α} :
   constructor
   · intro h
     constructor
-    · split_ifs at h with hs
+    · split_ifs at h
       · injection h with h
-        rewrite [← h]
-        simp
+        have := congrArg equiv h
+        simp only [equiv.apply_symm_apply] at this
+        have := congrArg Fin.val this
+        assumption
     · simp only [Option.dite_none_right_eq_some, Option.some.injEq] at h
       exact h.1
   · intro ⟨h, anLt⟩
