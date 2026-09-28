@@ -184,7 +184,7 @@ theorem totient_prime_pow_succ {p : ℕ} (hp : p.Prime) (n : ℕ) : φ (p ^ (n +
     _ = #(range (p ^ (n + 1)) \ (range (p ^ n)).image (· * p)) := by
       congr
       rw [sdiff_eq_filter]
-      apply filter_congr rfl
+      apply filter_congr
       simp only [mem_range, coprime_pow_left_iff n.succ_pos, mem_image, not_exists,
         hp.coprime_iff_not_dvd]
       intro a ha
