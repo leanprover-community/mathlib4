@@ -6,7 +6,6 @@ Authors: FLT Project
 module
 
 public import Mathlib.RepresentationTheory.Basic
-public import Mathlib.LinearAlgebra.Span.Defs
 
 /-!
 # Subrepresentations
@@ -49,7 +48,7 @@ instance : SetLike (Subrepresentation ρ) W where
   coe ρ' := ρ'.toSubmodule
   coe_injective := SetLike.coe_injective.comp toSubmodule_injective
 
-instance : PartialOrder (Subrepresentation ρ) := .ofSetLike (Subrepresentation ρ) W
+instance : PartialOrder (Subrepresentation ρ) := .ofSetLike (Subrepresentation ρ)
 
 /-- A subrepresentation is a representation. -/
 def toRepresentation (ρ' : Subrepresentation ρ) : Representation A G ρ'.toSubmodule where

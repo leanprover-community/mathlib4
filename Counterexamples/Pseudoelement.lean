@@ -78,13 +78,13 @@ theorem x_not_pseudo_eq : ¬PseudoEqual _ x y := by
   rw [← ModuleCat.id_apply _ (φ (1 : ℚ)), ← biprod.total, ← LinearMap.comp_apply,
     ← ModuleCat.hom_comp, Preadditive.comp_add] at ha
   let π₁ := (biprod.fst : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _)
-  have ha₁ := congr_arg π₁ ha
+  have ha₁ := congr(π₁ $ha)
   rw [← ModuleCat.comp_apply, ← ModuleCat.comp_apply] at ha₁
   simp only [π₁, φ, biprod.lift_fst, biprod.lift_fst_assoc, Category.id_comp,
     biprod.lift_snd_assoc, Linear.smul_comp, Preadditive.add_comp, BinaryBicone.inl_fst,
     BinaryBicone.inr_fst, smul_zero, add_zero] at ha₁
   let π₂ := (biprod.snd : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _)
-  have ha₂ := congr_arg π₂ ha
+  have ha₂ := congr(π₂ $ha)
   rw [← ModuleCat.comp_apply, ← ModuleCat.comp_apply] at ha₂
   simp_all [π₂, φ]
 
