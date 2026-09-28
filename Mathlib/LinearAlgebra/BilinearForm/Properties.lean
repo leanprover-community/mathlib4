@@ -100,17 +100,17 @@ namespace IsSymm
 theorem isRefl (H : B.IsSymm) : B.IsRefl := fun x y H1 => H.eq x y ▸ H1
 
 protected theorem add {B₁ B₂ : BilinForm R M} (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) :
-    (B₁ + B₂).IsSymm := ⟨fun x y => (congr_arg₂ (· + ·) (hB₁.eq x y) (hB₂.eq x y) :)⟩
+    (B₁ + B₂).IsSymm := ⟨fun x y => congr($(hB₁.eq x y) + $(hB₂.eq x y))⟩
 
 protected theorem sub {B₁ B₂ : BilinForm R₁ M₁} (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) :
-    (B₁ - B₂).IsSymm := ⟨fun x y => (congr_arg₂ Sub.sub (hB₁.eq x y) (hB₂.eq x y) :)⟩
+    (B₁ - B₂).IsSymm := ⟨fun x y => congr(Sub.sub $(hB₁.eq x y) $(hB₂.eq x y))⟩
 
 protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsSymm) : (-B).IsSymm := ⟨fun x y =>
-  congr_arg Neg.neg (hB.eq x y)⟩
+  congr(-$(hB.eq x y))⟩
 
 protected theorem smul {α} [Monoid α] [DistribMulAction α R] [SMulCommClass R α R] (a : α)
     {B : BilinForm R M} (hB : B.IsSymm) : (a • B).IsSymm := ⟨fun x y =>
-  congr_arg (a • ·) (hB.eq x y)⟩
+  congr(a • $(hB.eq x y))⟩
 
 /-- The restriction of a symmetric bilinear form on a submodule is also symmetric. -/
 theorem restrict {B : BilinForm R M} (b : B.IsSymm) (W : Submodule R M) :
@@ -247,17 +247,17 @@ theorem eq_of_add_add_eq_zero [IsCancelAdd R] {a b c : M} (H : B.IsAlt) (hAdd : 
     B a b = B b c := LinearMap.IsAlt.eq_of_add_add_eq_zero H hAdd
 
 protected theorem add {B₁ B₂ : BilinForm R M} (hB₁ : B₁.IsAlt) (hB₂ : B₂.IsAlt) : (B₁ + B₂).IsAlt :=
-  fun x => (congr_arg₂ (· + ·) (hB₁ x) (hB₂ x) :).trans <| add_zero _
+  fun x => congr($(hB₁ x) + $(hB₂ x)).trans <| add_zero _
 
 protected theorem sub {B₁ B₂ : BilinForm R₁ M₁} (hB₁ : B₁.IsAlt) (hB₂ : B₂.IsAlt) :
-    (B₁ - B₂).IsAlt := fun x => (congr_arg₂ Sub.sub (hB₁ x) (hB₂ x)).trans <| sub_zero _
+    (B₁ - B₂).IsAlt := fun x => congr(Sub.sub $(hB₁ x) $(hB₂ x)).trans <| sub_zero _
 
 protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsAlt) : (-B).IsAlt := fun x =>
   neg_eq_zero.mpr <| hB x
 
 protected theorem smul {α} [Monoid α] [DistribMulAction α R] [SMulCommClass R α R] (a : α)
     {B : BilinForm R M} (hB : B.IsAlt) : (a • B).IsAlt := fun x =>
-  (congr_arg (a • ·) (hB x)).trans <| smul_zero _
+  congr(a • $(hB x)).trans <| smul_zero _
 
 end IsAlt
 

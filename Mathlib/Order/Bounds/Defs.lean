@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Set.Defs
 public import Mathlib.Tactic.CrossRefAttribute
-public import Mathlib.Tactic.ToDual
 
 /-!
 # Definitions about upper/lower bounds
