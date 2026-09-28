@@ -341,7 +341,6 @@ def associatorInv (X : C) (Y : Fᵒᵖ) :
     (types_congr_hom (chosenCoend.condition (F := P.compDiagram Q X e) f) (p, q))
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] Types.chosenCoend_def chosenCoend.map_apply in
 /-- The objectwise components of the associator isomorphism
 `(P.comp Q).comp R ≅ P.comp (Q.comp R)`. -/

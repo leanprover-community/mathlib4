@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Combinatorics.SetFamily.FourFunctions
+import Mathlib.Combinatorics.SetFamily.FourFunctions
 public import Mathlib.Data.Nat.Squarefree
 
 /-!

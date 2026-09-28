@@ -70,6 +70,12 @@ namespace IsSimpleGroup
 instance {C : Type*} [CommGroup C] [IsSimpleGroup C] : IsSimpleOrder (Subgroup C) :=
   ⟨fun H => H.normal_of_isMulCommutative.eq_bot_or_eq_top⟩
 
+/-- A group whose subgroups are only `⊥` and `⊤` is simple. -/
+@[to_additive /-- An additive group whose subgroups are only `⊥` and `⊤` is simple. -/]
+theorem of_isSimpleOrder [hG : IsSimpleOrder (Subgroup G)] : IsSimpleGroup G where
+  exists_pair_ne := (Subgroup.nontrivial_iff.mp hG.toNontrivial).exists_pair_ne
+  eq_bot_or_eq_top_of_normal H _ := eq_bot_or_eq_top H
+
 open Subgroup
 
 @[to_additive]
