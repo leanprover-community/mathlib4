@@ -481,12 +481,12 @@ theorem exists_subset_encard_eq {k : ℕ∞} (hk : k ≤ s.encard) : ∃ t, t �
 
 /-- An injection from `Fin n` into a set is equivalent to a lower bound of `n` on its extended
 cardinality. -/
-theorem le_encard_iff_exists_injection_fin (s : Set α) (n : ℕ) :
+theorem le_encard_iff_exists_fin_injective (s : Set α) (n : ℕ) :
     (n : ℕ∞) ≤ s.encard ↔ ∃ f : Fin n → α, (∀ i, f i ∈ s) ∧ Function.Injective f := by
   constructor
   · intro h
     obtain ⟨t, hts, hte⟩ := exists_subset_encard_eq h
-    letI := (finite_of_encard_eq_coe hte).fintype
+    let := (finite_of_encard_eq_coe hte).fintype
     let e := Fintype.equivFinOfCardEq <| ENat.natCast_inj.mp <| (coe_fintypeCard t).trans hte
     exact ⟨Subtype.val ∘ e.symm, fun i ↦ hts (e.symm i).2,
       (Equiv.injective_comp e.symm Subtype.val).mpr Subtype.val_injective⟩
