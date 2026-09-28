@@ -126,9 +126,10 @@ noncomputable def mapOfOpenClosure (P : KSheaf A X) (K : Compacts X) {G : (K.ope
 
 @[ext]
 lemma hom_ext_of_compacts (P : KSheaf A X) {K : Compacts X} {W : A} {f f' : P.obj.obj (op K) ⟶ W}
-    (w : ∀ V, (P.obj.coconeOfClosureOfOpens K).ι.app V ≫ f =
+    (w : ∀ V, dsimp% (P.obj.coconeOfClosureOfOpens K).ι.app V ≫ f =
     (P.obj.coconeOfClosureOfOpens K).ι.app V ≫ f') : f = f' :=
-  ((Functor.Final.isColimitWhiskerEquiv _ _).symm (P.isColimit K)).hom_ext w
+  ((Functor.Final.isColimitWhiskerEquiv K.openRcNhdsToCompactNhds_mono.functor.op _).symm
+    (P.isColimit K)).hom_ext w
 
 end KSheaf
 
