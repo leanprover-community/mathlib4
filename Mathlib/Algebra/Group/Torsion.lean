@@ -76,27 +76,6 @@ lemma pow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
 
 end CommMonoid
 
-section CommGroup
-
-variable [CommGroup G] [IsMulTorsionFree G] {n : ℤ} {a b : G}
-
-@[to_additive zsmul_right_injective]
-lemma zpow_left_injective : ∀ {n : ℤ}, n ≠ 0 → Injective fun a : G ↦ a ^ n
-  | (n + 1 : ℕ), _ => by
-    simpa [← Int.natCast_one, ← Int.natCast_add] using! pow_left_injective n.succ_ne_zero
-  | .negSucc n, _ => by simpa using! inv_injective.comp (pow_left_injective n.succ_ne_zero)
-
-@[to_additive zsmul_right_inj]
-lemma zpow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (zpow_left_injective hn).eq_iff
-
-/-- Alias of `zpow_left_inj`, for ease of discovery alongside `zsmul_le_zsmul_iff'` and
-`zsmul_lt_zsmul_iff'`. -/
-@[to_additive /-- Alias of `zsmul_right_inj`, for ease of discovery alongside `zsmul_le_zsmul_iff'`
-and `zsmul_lt_zsmul_iff'`. -/]
-lemma zpow_eq_zpow_iff' (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := zpow_left_inj hn
-
-end CommGroup
-
 section Group
 
 variable [Group G] [IsMulTorsionFree G] {n : ℤ} {a b : G}
@@ -121,3 +100,24 @@ lemma IsMulTorsionFree.zpow_eq_one_iff_right (ha : a ≠ 1) : a ^ n = 1 ↔ n = 
 @[to_additive] lemma isSelfInv_iff_eq_one : IsSelfInv a ↔ a = 1 := inv_eq_self
 
 end Group
+
+section CommGroup
+
+variable [CommGroup G] [IsMulTorsionFree G] {n : ℤ} {a b : G}
+
+@[to_additive zsmul_right_injective]
+lemma zpow_left_injective : ∀ {n : ℤ}, n ≠ 0 → Injective fun a : G ↦ a ^ n
+  | (n + 1 : ℕ), _ => by
+    simpa [← Int.natCast_one, ← Int.natCast_add] using! pow_left_injective n.succ_ne_zero
+  | .negSucc n, _ => by simpa using! inv_injective.comp (pow_left_injective n.succ_ne_zero)
+
+@[to_additive zsmul_right_inj]
+lemma zpow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (zpow_left_injective hn).eq_iff
+
+/-- Alias of `zpow_left_inj`, for ease of discovery alongside `zsmul_le_zsmul_iff'` and
+`zsmul_lt_zsmul_iff'`. -/
+@[to_additive /-- Alias of `zsmul_right_inj`, for ease of discovery alongside `zsmul_le_zsmul_iff'`
+and `zsmul_lt_zsmul_iff'`. -/]
+lemma zpow_eq_zpow_iff' (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := zpow_left_inj hn
+
+end CommGroup
