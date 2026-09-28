@@ -160,7 +160,7 @@ lemma pushforwardObj_isKSheaf : (F.obj.pushforwardObj pf).IsKSheaf where
     Nonempty.intro <|
     (Functor.Final.isColimitWhiskerEquiv ((baseChangeCompactNhdsOfProperMap_mono pf K).functor.op)
       _ ).invFun
-    (Classical.choice (F.property.nonempty_isColimit_coconeOfCompacts (properPreimage pf K)))
+      (F.isColimit (properPreimage pf K))
 
 variable {Y : TopCat.{w}} [T2Space Y] [LocallyCompactSpace Y] {f : X ⟶ Y}
     (pf : IsProperMap f.hom')
@@ -169,22 +169,19 @@ variable {Y : TopCat.{w}} [T2Space Y] [LocallyCompactSpace Y] {f : X ⟶ Y}
 def pushforwardObj (F : KSheaf A X) : (KSheaf A Y) := ⟨_, F.pushforwardObj_isKSheaf pf⟩
 
 /-- The pushforward of a KSheaf as a functor -/
+@[simps!, implicit_reducible]
 def pushforward : KSheaf A X ⥤ KSheaf A Y :=
   ObjectProperty.lift _
   (ObjectProperty.ι KPresheaf.IsKSheaf ⋙ (KPresheaf.pushforward pf))
   (fun F ↦ F.pushforwardObj_isKSheaf pf)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pushforward_id [LocallyCompactSpace X] :
-    pushforward (f := 𝟙 X) (isProperMap_id) = Functor.id (KSheaf A X) := CategoryTheory.Functor.ext
-  (fun _ => rfl) (fun _ _ _ => by ext;simp;rfl)
+    pushforward (f := 𝟙 X) (isProperMap_id) = Functor.id (KSheaf A X) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pushforward_comp {Z : TopCat.{w}} [T2Space Z] [LocallyCompactSpace Z] {g : Y ⟶ Z}
     (pg : IsProperMap g.hom') :
     pushforward (A := A) pf ⋙ pushforward pg =
-    pushforward (f := f ≫ g ) (IsProperMap.comp (f := f) (g := g) pg pf) :=
-  CategoryTheory.Functor.ext (fun _ => rfl) (fun _ _ _ => by ext;simp;rfl)
+    pushforward (f := f ≫ g ) (IsProperMap.comp (f := f) (g := g) pg pf) := rfl
 end KSheaf
 
 end TopCat
