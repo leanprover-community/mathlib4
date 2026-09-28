@@ -100,7 +100,7 @@ theorem mem_nonZeroDivisors_of_constantCoeff {φ : MvPowerSeries σ R}
     φ ∈ (MvPowerSeries σ R)⁰ :=
   ⟨mem_nonZeroDivisorsLeft_of_constantCoeff hφ.1, mem_nonZeroDivisorsRight_of_constantCoeff hφ.2⟩
 
-lemma monomial_mem_nonzeroDivisorsLeft {n : σ →₀ ℕ} {r} :
+lemma monomial_mem_nonZeroDivisorsLeft {n : σ →₀ ℕ} {r} :
     monomial n r ∈ nonZeroDivisorsLeft (MvPowerSeries σ R) ↔ r ∈ nonZeroDivisorsLeft R := by
   constructor
   · intro H s hrs
@@ -112,8 +112,11 @@ lemma monomial_mem_nonzeroDivisorsLeft {n : σ →₀ ℕ} {r} :
     rw [coeff_monomial_mul, ite_eq_left le_add_self, add_tsub_cancel_right] at this
     simpa using H _ this
 
+@[deprecated (since := "2026-09-28")]
+alias monomial_mem_nonzeroDivisorsLeft := monomial_mem_nonZeroDivisorsLeft
+
 -- TODO: reduce duplication
-lemma monomial_mem_nonzeroDivisorsRight {n : σ →₀ ℕ} {r} :
+lemma monomial_mem_nonZeroDivisorsRight {n : σ →₀ ℕ} {r} :
     monomial n r ∈ nonZeroDivisorsRight (MvPowerSeries σ R) ↔ r ∈ nonZeroDivisorsRight R := by
   constructor
   · intro H s hrs
@@ -125,14 +128,22 @@ lemma monomial_mem_nonzeroDivisorsRight {n : σ →₀ ℕ} {r} :
     rw [coeff_mul_monomial, ite_eq_left le_add_self, add_tsub_cancel_right] at this
     simpa using H _ this
 
-lemma monomial_mem_nonzeroDivisors {n : σ →₀ ℕ} {r} :
-    monomial n r ∈ (MvPowerSeries σ R)⁰ ↔ r ∈ R⁰ :=
-  monomial_mem_nonzeroDivisorsLeft.and monomial_mem_nonzeroDivisorsRight
+@[deprecated (since := "2026-09-28")]
+alias monomial_mem_nonzeroDivisorsRight := monomial_mem_nonZeroDivisorsRight
 
-lemma X_mem_nonzeroDivisors {i : σ} :
+lemma monomial_mem_nonZeroDivisors {n : σ →₀ ℕ} {r} :
+    monomial n r ∈ (MvPowerSeries σ R)⁰ ↔ r ∈ R⁰ :=
+  monomial_mem_nonZeroDivisorsLeft.and monomial_mem_nonZeroDivisorsRight
+
+@[deprecated (since := "2026-09-28")]
+alias monomial_mem_nonzeroDivisors := monomial_mem_nonZeroDivisors
+
+lemma X_mem_nonZeroDivisors {i : σ} :
     X i ∈ (MvPowerSeries σ R)⁰ := by
-  rw [X, monomial_mem_nonzeroDivisors]
+  rw [X, monomial_mem_nonZeroDivisors]
   exact Submonoid.one_mem R⁰
+
+@[deprecated (since := "2026-09-28")] alias X_mem_nonzeroDivisors := X_mem_nonZeroDivisors
 
 end Semiring
 
