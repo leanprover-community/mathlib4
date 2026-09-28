@@ -6,7 +6,6 @@ Authors: Hang Lu Su
 module
 
 public import Mathlib.GroupTheory.Finiteness
-public import Mathlib.GroupTheory.FreeGroup.Basic
 
 /-!
 # Group generators as data
@@ -132,7 +131,8 @@ end Group.Generators
 theorem Group.fg_iff_nonempty_finite_generators :
     Group.FG G ↔ ∃ n : ℕ, Nonempty (Group.Generators G (Fin n)) := by
   constructor
-  · rintro ⟨S, hS⟩
+  · rw [Group.FG, isMulFG_iff]
+    rintro ⟨S, hS⟩
     exact ⟨S.card, ⟨(Group.Generators.ofSet hS).reindex S.equivFin.symm.surjective⟩⟩
   · rintro ⟨n, ⟨P⟩⟩
     exact P.fg

@@ -5,7 +5,7 @@ Authors: Monica Omar
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Finite
+import Mathlib.Algebra.Group.Submonoid.Finite
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Algebra.Star.Pi
 

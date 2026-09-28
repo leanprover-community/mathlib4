@@ -154,7 +154,7 @@ theorem ae_bdd_abs_condExp_of_ae_bdd_abs {R : E} {f : α → E} (hbdd : ∀ᵐ x
 
 /-- If the real-valued function `f` is bounded almost everywhere by `R`, then so is its conditional
 expectation. -/
-@[deprecated ae_bdd_abs_condExp_of_ae_bdd_abs (since := "2026-05-05")]
+@[deprecated ae_bdd_abs_condExp_of_ae_bdd_abs +typeChanged (since := "2026-05-05")]
 theorem ae_bdd_condExp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x ∂μ, |f x| ≤ R) :
     ∀ᵐ x ∂μ, |(μ[f | m]) x| ≤ R := by
   by_cases hnm : m ≤ m0
@@ -293,7 +293,7 @@ theorem eLpNorm_condExp_le_eLpNorm (f : α → E) {p : ℝ≥0∞} (hp : 1 ≤ p
   · simp only [MemLp, not_lt, top_le_iff] at hf
     simp [hf]
 
-@[deprecated eLpNorm_condExp_le_eLpNorm (since := "2026-07-01")]
+@[deprecated eLpNorm_condExp_le_eLpNorm +typeChanged (since := "2026-07-01")]
 theorem eLpNorm_one_condExp_le_eLpNorm (f : α → E) : eLpNorm (μ[f | m]) 1 μ ≤ eLpNorm f 1 μ :=
     eLpNorm_condExp_le_eLpNorm f (refl 1)
 
@@ -320,7 +320,7 @@ theorem Integrable.uniformIntegrable_condExp {ι : Type*} [IsFiniteMeasure μ] {
   rcases eq_top_or_lt_top δ with rfl | hδ_top
   · refine ⟨0, fun i ↦ ?_⟩
     specialize h .univ
-    simp only [zero_le, Set.ofPred_true, Set.indicator_univ, MeasurableSet.univ, le_top,
+    simp only [zero_le, Set.ofPred_true, Set.indicator_univ, nullMeasurableSet_univ, le_top,
       forall_const] at h ⊢
     exact (eLpNorm_condExp_le_eLpNorm g le_rfl).trans h
   set C : ℝ≥0 := δ⁻¹.toNNReal * (eLpNorm g 1 μ).toNNReal with hC
@@ -343,7 +343,8 @@ theorem Integrable.uniformIntegrable_condExp {ι : Type*} [IsFiniteMeasure μ] {
       hC, ← toNNReal_mul, coe_toNNReal (mul_ne_top (inv_ne_top.2 hδ.ne') hg.ne),
       ← mul_assoc, ENNReal.mul_inv_cancel hδ.ne' hδ_top.ne, one_mul, rpow_one]
     exact eLpNorm_condExp_le_eLpNorm g (le_refl 1)
-  refine ⟨C, fun n => le_trans ?_ (h {x : α | C ≤ ‖(μ[g|ℱ n]) x‖₊} (hmeas n C) (this n))⟩
+  refine ⟨C,
+    fun n ↦ (h {x : α | C ≤ ‖(μ[g|ℱ n]) x‖₊} (hmeas n C).nullMeasurableSet (this n)).trans' ?_⟩
   have hmeasℱ : MeasurableSet[ℱ n] {x : α | C ≤ ‖(μ[g|ℱ n]) x‖₊} :=
     @measurableSet_le _ _ _ _ _ (ℱ n) _ _ _ _ _ measurable_const
       (@Measurable.nnnorm _ _ _ _ _ (ℱ n) _ stronglyMeasurable_condExp.measurable)

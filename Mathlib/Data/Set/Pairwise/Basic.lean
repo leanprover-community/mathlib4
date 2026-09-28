@@ -6,8 +6,6 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Data.Set.Function
-public import Mathlib.Logic.Pairwise
-public import Mathlib.Logic.Relation
 
 /-!
 # Relations holding pairwise
@@ -256,6 +254,11 @@ in order to allow dot notation on `Set.PairwiseDisjoint`, even though the former
 nicely. -/
 def PairwiseDisjoint (s : Set ι) (f : ι → α) : Prop :=
   s.Pairwise (Disjoint on f)
+
+@[grind .]
+theorem PairwiseDisjoint.disjoint_of_ne (h : s.PairwiseDisjoint f) {i j : ι}
+    (hi : i ∈ s) (hj : j ∈ s) (hij : i ≠ j) : Disjoint (f i) (f j) :=
+  h hi hj hij
 
 theorem PairwiseDisjoint.subset (ht : t.PairwiseDisjoint f) (h : s ⊆ t) : s.PairwiseDisjoint f :=
   Pairwise.mono h ht

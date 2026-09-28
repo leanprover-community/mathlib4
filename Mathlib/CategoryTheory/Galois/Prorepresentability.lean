@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Category.Grp.Limits
 public import Mathlib.CategoryTheory.CofilteredSystem
 public import Mathlib.CategoryTheory.Galois.Decomposition
 public import Mathlib.CategoryTheory.Limits.IndYoneda
-public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
 /-!
 # Pro-Representability of fiber functors
@@ -391,11 +390,11 @@ noncomputable def autMulEquivAutGalois : Aut F ≃* (AutGalois F)ᵐᵒᵖ where
   toFun := MonoidHom.comp (endMulEquivAutGalois F) (Aut.toEnd F)
   invFun t := asIso ((endMulEquivAutGalois F).symm t)
   left_inv t := by
-    simp only [MonoidHom.coe_comp, MonoidHom.coe_coe, Function.comp_apply,
+    simp only [MonoidHom.coe_comp, MonoidHom.coe_ofClass, Function.comp_apply,
       MulEquiv.symm_apply_apply]
     exact Aut.ext rfl
   right_inv t := by
-    simp only [MonoidHom.coe_comp, MonoidHom.coe_coe]
+    simp only [MonoidHom.coe_comp, MonoidHom.coe_ofClass]
     exact (MulEquiv.eq_symm_apply (endMulEquivAutGalois F)).mp rfl
   map_mul' := by simp [map_mul]
 
