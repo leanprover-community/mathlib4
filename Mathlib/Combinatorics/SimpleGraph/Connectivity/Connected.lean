@@ -9,6 +9,8 @@ public import Mathlib.Combinatorics.SimpleGraph.Paths
 public import Mathlib.Combinatorics.SimpleGraph.Operations
 
 /-!
+# Connectivity of simple graphs
+
 ## Main definitions
 
 * `SimpleGraph.Reachable` for the relation of whether there exists

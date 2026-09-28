@@ -10,7 +10,7 @@ public import Mathlib.Tactic.Translate.ToDual
 
 
 /-!
-## `@[to_dual]` attributes for basic types
+# `@[to_dual]` attributes for basic types
 -/
 
 public meta section

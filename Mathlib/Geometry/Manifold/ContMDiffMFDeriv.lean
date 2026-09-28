@@ -9,7 +9,7 @@ import Mathlib.Geometry.Manifold.MFDeriv.Tangent
 public import Mathlib.Geometry.Manifold.VectorBundle.Hom
 
 /-!
-### Interactions between differentiability, smoothness and manifold derivatives
+# Interactions between differentiability, smoothness and manifold derivatives
 
 We give the relation between `MDifferentiable`, `ContMDiff`, `mfderiv`, `tangentMap`
 and related notions.
