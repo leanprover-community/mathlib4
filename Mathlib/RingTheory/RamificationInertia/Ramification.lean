@@ -82,6 +82,7 @@ theorem ramificationIdx_eq_one [q.IsPrime] [Algebra.EssFiniteType R S]
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx'_eq_one := ramificationIdx_eq_one
 
+/-- The ramification index of the zero ideal is `1`. -/
 @[simp]
 theorem ramificationIdx_bot_eq_one [IsDomain S] : (⊥ : Ideal S).ramificationIdx R = 1 := by
   let Sq := Localization.AtPrime (⊥ : Ideal S)

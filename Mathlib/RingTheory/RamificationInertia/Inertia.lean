@@ -84,6 +84,8 @@ theorem inertiaDeg_eq [q.LiesOver p] [q.IsPrime] [p.IsPrime]
 
 @[deprecated (since := "2026-07-03")] alias inertiaDeg'_eq := inertiaDeg_eq
 
+/-- The inertia degree of the zero ideal is the degree of the extension. -/
+@[simp]
 theorem inertiaDeg_bot_eq_finrank [IsDomain S] [FaithfulSMul R S] :
     (⊥ : Ideal S).inertiaDeg R = Module.finrank R S := by
   have : IsDomain R := IsDomain.of_faithfulSMul R S
