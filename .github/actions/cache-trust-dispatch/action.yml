@@ -54,14 +54,15 @@ runs:
     - name: Compute trust dispatch
       id: dispatch
       shell: bash
-      run: |
-        REPO="${{ inputs.repo }}"
-        BRANCH="${{ inputs.branch }}"
-        HEAD_SHA="${{ inputs.head-sha }}"
+      env:
+        REPO: ${{ inputs.repo }}
+        BRANCH: ${{ inputs.branch }}
+        HEAD_SHA: ${{ inputs.head-sha }}
         # Whether `branch` names a branch or a tag. Read from the run context
         # rather than an input: unlike `repo`/`branch`, the value does not
         # depend on which event shape (PR vs push) the caller handles.
-        REF_TYPE="${{ github.ref_type }}"
+        REF_TYPE: ${{ github.ref_type }}
+      run: |
         PRIMARY=""
         READ_CHAIN=""
         REPO_SCOPE=""
