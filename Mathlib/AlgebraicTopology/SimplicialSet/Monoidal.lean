@@ -5,10 +5,9 @@ Authors: Joël Riou, Jack McKoen
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialSet.Op
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexColimits
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexOp
 
@@ -28,8 +27,10 @@ category structure on `SSet`.
 
 universe u
 
-open Simplicial CategoryTheory MonoidalCategory CartesianMonoidalCategory
+open CategoryTheory MonoidalCategory CartesianMonoidalCategory
   Limits SimplicialObject.Truncated
+
+open scoped Simplicial
 
 namespace SSet
 

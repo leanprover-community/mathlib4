@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Analytic.Composition
 public import Mathlib.Analysis.Analytic.Linear
-public import Mathlib.Analysis.Normed.Operator.Mul
+import Mathlib.Analysis.Normed.Operator.Mul
 public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Analysis.Analytic.OfScalars
 
@@ -53,6 +53,10 @@ theorem hasFPowerSeriesAt_const {c : F} {e : E} :
 @[fun_prop]
 theorem analyticAt_const {v : F} {x : E} : AnalyticAt 𝕜 (fun _ => v) x :=
   ⟨constFormalMultilinearSeries 𝕜 E v, hasFPowerSeriesAt_const⟩
+
+/-- Special case of `analyticAt_const`, required for `fun_prop` to work. -/
+@[fun_prop] theorem analyticAt_zero {x : E} :
+    AnalyticAt 𝕜 (0 : E → F) x := analyticAt_const
 
 @[fun_prop]
 theorem analyticOnNhd_const {v : F} {s : Set E} : AnalyticOnNhd 𝕜 (fun _ => v) s :=

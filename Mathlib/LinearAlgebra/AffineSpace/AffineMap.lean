@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Order.Group.Pointwise.Interval
 public import Mathlib.Algebra.Order.Module.Defs
 public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.Pi
-public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.Tactic.Abel
 public import Mathlib.Algebra.Torsor.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.Defs
@@ -47,7 +46,9 @@ topology are defined elsewhere; see `Analysis.Normed.Affine.AddTorsor` and
 
 @[expose] public section
 
-open Affine Module
+open Module
+
+open scoped Affine
 
 /-- An `AffineMap k P1 P2` (notation: `P1 →ᵃ[k] P2`) is a map from `P1` to `P2` that
 induces a corresponding linear map from `V1` to `V2`. -/
@@ -65,6 +66,7 @@ structure AffineMap (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Typ
 induces a corresponding linear map from `V1` to `V2`. -/
 notation:25 P1 " →ᵃ[" k:25 "] " P2:0 => AffineMap k P1 P2
 
+@[macro_inline]
 instance AffineMap.instFunLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*)
     [Ring k] [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
     [AffineSpace V2 P2] : FunLike (P1 →ᵃ[k] P2) P1 P2 where
@@ -804,7 +806,7 @@ note [partially-applied ext lemmas]. Analogous to `LinearMap.pi_ext'` -/
 theorem pi_ext_nonempty' [Nonempty ι] (h : ∀ i, f.comp (LinearMap.single _ _ i).toAffineMap =
     g.comp (LinearMap.single _ _ i).toAffineMap) : f = g := by
   refine pi_ext_nonempty fun i x => ?_
-  convert! AffineMap.congr_fun (h i) x
+  convert! congr($(h i) x)
 
 end Ext
 
