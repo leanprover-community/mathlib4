@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Patrick Luo
 -/
 module
 
+public import Mathlib.Algebra.Group.Commute.Basic
 public import Mathlib.Algebra.Group.SelfInv
 
 /-!
@@ -20,21 +21,6 @@ open Function
 
 variable {M G : Type*}
 
-section CommMonoid
-
-variable [CommMonoid M]
-
-variable [IsMulTorsionFree M] {n : ℕ} {a b : M}
-
-@[to_additive nsmul_right_injective]
-lemma pow_left_injective (hn : n ≠ 0) : Injective fun a : M ↦ a ^ n :=
-  fun a b ↦ IsMulTorsionFree.eq_of_pow_eq_pow_of_commute hn (mul_comm a b)
-
-@[to_additive nsmul_right_inj]
-lemma pow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (pow_left_injective hn).eq_iff
-
-end CommMonoid
-
 section Monoid
 
 instance [AddCommMonoid M] [IsAddTorsionFree M] : Lean.Grind.NoNatZeroDivisors M where
@@ -48,10 +34,17 @@ instance [Subsingleton M] : HasUniqueRoots M where
 
 variable [IsMulTorsionFree M] {n : ℕ} {a b : M}
 
+@[to_additive]
+lemma Commute.eq_of_pow_eq_pow (hab : Commute a b) (hn : n ≠ 0) (habn : a ^ n = b ^ n) : a = b :=
+  IsMulTorsionFree.eq_of_pow_eq_pow_of_commute hn hab habn
+
+@[to_additive AddCommute.nsmul_right_inj]
+lemma Commute.pow_left_inj (hab : Commute a b) (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
+  ⟨hab.eq_of_pow_eq_pow hn, congrArg (· ^ n)⟩
+
 @[to_additive nsmul_eq_zero_iff_right]
 lemma pow_eq_one_iff_left (hn : n ≠ 0) : a ^ n = 1 ↔ a = 1 := by
-  simpa +contextual [iff_def] using
-    IsMulTorsionFree.eq_of_pow_eq_pow_of_commute (b := (1 : M)) hn (by simp)
+  simpa using (Commute.one_right a).pow_left_inj hn
 
 -- We want to use `IsAddTorsion.nsmul_eq_zero_iff` earlier than `smul_eq_zero`.
 @[to_additive (attr := simp high)]
@@ -66,6 +59,22 @@ lemma pow_eq_one_iff_right (ha : a ≠ 1) : a ^ n = 1 ↔ n = 0 := by simp [*]
 lemma sq_eq_one : a ^ 2 = 1 ↔ a = 1 := pow_eq_one_iff_left (by lia)
 
 end Monoid
+
+section CommMonoid
+
+variable [CommMonoid M]
+
+variable [IsMulTorsionFree M] {n : ℕ} {a b : M}
+
+@[to_additive nsmul_right_injective]
+lemma pow_left_injective (hn : n ≠ 0) : Injective fun a : M ↦ a ^ n :=
+  fun a b ↦ (Commute.all a b).eq_of_pow_eq_pow hn
+
+@[to_additive nsmul_right_inj]
+lemma pow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
+  (pow_left_injective hn).eq_iff
+
+end CommMonoid
 
 section CommGroup
 
