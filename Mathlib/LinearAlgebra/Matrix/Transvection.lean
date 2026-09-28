@@ -522,11 +522,23 @@ theorem isTwoBlockDiagonal_listTransvecCol_mul_mul_listTransvecRow
   · ext; simp [toBlocks₁₂, listTransvecCol_mul_mul_listTransvecRow_last_row M hM]
   · ext; simp [toBlocks₂₁, listTransvecCol_mul_mul_listTransvecRow_last_col M hM]
 
+/-- Multiplying by all the matrices in `listTransvecCol M` and `listTransvecRow M` does not change
+the last diagonal coefficient. -/
+theorem listTransvecCol_mul_mul_listTransvecRow_last_diag :
+    ((listTransvecCol M).prod * M * (listTransvecRow M).prod) (inr unit) (inr unit) =
+      M (inr unit) (inr unit) := by
+  have : listTransvecRow M = listTransvecRow ((listTransvecCol M).prod * M) := by
+    simp [listTransvecRow, listTransvecCol_mul_last_row]
+  rw [this, mul_listTransvecRow_last_col, listTransvecCol_mul_last_row]
+
 /-- There exist two lists of `TransvectionStruct` such that multiplying by them on the left and
-on the right makes a matrix block-diagonal, when the last coefficient is a unit. -/
-theorem exists_isTwoBlockDiagonal_of_isUnit (hM : IsUnit (M (inr unit) (inr unit))) :
+on the right makes a matrix block-diagonal without changing its last diagonal coefficient, when
+this coefficient is a unit. -/
+theorem exists_isTwoBlockDiagonal_and_last_eq_of_isUnit (hM : IsUnit (M (inr unit) (inr unit))) :
     ∃ L L' : List (TransvectionStruct (Fin r ⊕ Unit) R),
-      IsTwoBlockDiagonal ((L.map toMatrix).prod * M * (L'.map toMatrix).prod) := by
+      IsTwoBlockDiagonal ((L.map toMatrix).prod * M * (L'.map toMatrix).prod) ∧
+        ((L.map toMatrix).prod * M * (L'.map toMatrix).prod) (inr unit) (inr unit) =
+          M (inr unit) (inr unit) := by
   let L : List (TransvectionStruct (Fin r ⊕ Unit) R) :=
     List.ofFn fun i : Fin r =>
       ⟨inl i, inr unit, by simp, -M (inl i) (inr unit) * Ring.inverse (M (inr unit) (inr unit))⟩
@@ -536,7 +548,16 @@ theorem exists_isTwoBlockDiagonal_of_isUnit (hM : IsUnit (M (inr unit) (inr unit
   refine ⟨L, L', ?_⟩
   have A : L.map toMatrix = listTransvecCol M := by simp [L, listTransvecCol, Function.comp_def]
   have B : L'.map toMatrix = listTransvecRow M := by simp [L', listTransvecRow, Function.comp_def]
-  exact A ▸ B ▸ isTwoBlockDiagonal_listTransvecCol_mul_mul_listTransvecRow M hM
+  exact A ▸ B ▸ ⟨isTwoBlockDiagonal_listTransvecCol_mul_mul_listTransvecRow M hM,
+    listTransvecCol_mul_mul_listTransvecRow_last_diag M⟩
+
+/-- There exist two lists of `TransvectionStruct` such that multiplying by them on the left and
+on the right makes a matrix block-diagonal, when the last coefficient is a unit. -/
+theorem exists_isTwoBlockDiagonal_of_isUnit (hM : IsUnit (M (inr unit) (inr unit))) :
+    ∃ L L' : List (TransvectionStruct (Fin r ⊕ Unit) R),
+      IsTwoBlockDiagonal ((L.map toMatrix).prod * M * (L'.map toMatrix).prod) :=
+  let ⟨L, L', h, _⟩ := exists_isTwoBlockDiagonal_and_last_eq_of_isUnit M hM
+  ⟨L, L', h⟩
 
 variable {n p} [Fintype n] [Fintype p]
 
