@@ -537,7 +537,7 @@ scoped notation "ε₀" => ε_ 0
 recommended_spelling "epsilon_zero" for "ε₀" in [«termε₀»]
 
 theorem epsilon_eq_deriv (o : Ordinal) : ε_ o = deriv (fun a ↦ ω ^ a) o := by
-  simpa [epsilon] using congrFun (veblen_add_one 0) o
+  simpa [epsilon] using congr($(veblen_add_one 0) o)
 
 theorem epsilon_zero_eq_nfp : ε₀ = nfp (fun a ↦ ω ^ a) 0 := by
   rw [epsilon_eq_deriv, deriv_zero_right]
