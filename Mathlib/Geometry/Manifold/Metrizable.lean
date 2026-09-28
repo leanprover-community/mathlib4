@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
 public import Mathlib.Geometry.Manifold.IsManifold.Basic
-public import Mathlib.Topology.Compactness.Paracompact
-public import Mathlib.Topology.Metrizable.Urysohn
+import Mathlib.Topology.Compactness.Paracompact
+import Mathlib.Topology.Metrizable.Urysohn
 
 /-!
 # Metrizability of a σ-compact manifold
