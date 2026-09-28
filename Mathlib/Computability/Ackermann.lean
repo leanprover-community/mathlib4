@@ -6,8 +6,8 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Computability.PartrecCode
-public import Mathlib.Tactic.Ring
-public import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.NormNum
 
 /-!
 # Ackermann function
