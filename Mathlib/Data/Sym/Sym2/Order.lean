@@ -6,7 +6,6 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Data.Sym.Sym2
-public import Mathlib.Order.Lattice
 
 /-!
 # Sorting the elements of `Sym2`

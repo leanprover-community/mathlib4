@@ -288,7 +288,7 @@ def log (b x : Ordinal) : Ordinal :=
 theorem log_of_left_le_one {b : Ordinal} (h : b ≤ 1) (x : Ordinal) : log b x = 0 := by
   obtain rfl | rfl := le_one_iff.1 h
   · apply (csSup_of_not_bddAbove _).trans csSup_empty
-    by_contra! hb
+    by_contra hb
     refine not_bddAbove_Ici 1 (hb.mono fun a ↦ ?_)
     simp +contextual [one_le_iff_ne_zero]
   · simp_rw [log, one_opow, preimage_const]
