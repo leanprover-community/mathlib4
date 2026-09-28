@@ -5,7 +5,6 @@ Authors: Kexing Ying, Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.QuadraticForm.Basic
 public import Mathlib.LinearAlgebra.QuadraticForm.Isometry
 
 /-!
@@ -51,6 +50,7 @@ namespace IsometryEquiv
 
 variable {Q₁ : QuadraticMap R M₁ N} {Q₂ : QuadraticMap R M₂ N} {Q₃ : QuadraticMap R M₃ N}
 
+@[macro_inline]
 instance : EquivLike (Q₁.IsometryEquiv Q₂) M₁ M₂ where
   coe f := f.toLinearEquiv
   inv f := f.toLinearEquiv.symm

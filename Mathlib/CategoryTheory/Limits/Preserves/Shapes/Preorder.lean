@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
-public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Preservation of well order continuous functors

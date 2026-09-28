@@ -5,11 +5,11 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.GroupTheory.ArchimedeanDensely
-public import Mathlib.GroupTheory.SpecificGroups.Cyclic
-public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+import Mathlib.GroupTheory.ArchimedeanDensely
+import Mathlib.GroupTheory.SpecificGroups.Cyclic
+import Mathlib.Topology.Algebra.OpenSubgroup
 public import Mathlib.Topology.Algebra.Order.Archimedean
-public import Mathlib.Topology.Order.DenselyOrdered
+import Mathlib.Topology.Order.DenselyOrdered
 
 /-!
 # Discreteness of subgroups in archimedean ordered groups
@@ -113,7 +113,7 @@ lemma isCyclic_iff_discreteTopology {H : Subgroup G} : IsCyclic H ↔ DiscreteTo
     infer_instance
   · -- remains to show a contradiction assuming `H` is both dense and discrete
     obtain rfl : H = ⊤ := by
-      rw [← coe_eq_univ, ← (dense_iff_closure_eq.mp h), H.isClosed_of_discrete.closure_eq]
+      rw [← coe_eq_univ, ← (dense_iff_closure_eq.mp h), H.isClosed_of_discreteTopology.closure_eq]
     have : DiscreteTopology G := by rwa [← (Homeomorph.Set.univ G).discreteTopology_iff]
     infer_instance
 
