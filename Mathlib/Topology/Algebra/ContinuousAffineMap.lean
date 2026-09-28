@@ -54,6 +54,7 @@ theorem toAffineMap_injective {f g : P →ᴬ[R] Q} (h : (f : P →ᵃ[R] Q) = (
   cases g
   congr
 
+@[macro_inline]
 instance : FunLike (P →ᴬ[R] Q) P Q where
   coe f := f.toAffineMap
   coe_injective _ _ h := toAffineMap_injective <| DFunLike.coe_injective h
@@ -71,7 +72,7 @@ theorem ext {f g : P →ᴬ[R] Q} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
 
 theorem congr_fun {f g : P →ᴬ[R] Q} (h : f = g) (x : P) : f x = g x :=
-  DFunLike.congr_fun h _
+  congr($h _)
 
 /-- Forgetting its algebraic properties, a continuous affine map is a continuous map. -/
 def toContinuousMap (f : P →ᴬ[R] Q) : C(P, Q) :=
@@ -92,7 +93,7 @@ theorem coe_to_continuousMap (f : P →ᴬ[R] Q) : ((f : C(P, Q)) : P → Q) = f
 theorem to_continuousMap_injective {f g : P →ᴬ[R] Q} (h : (f : C(P, Q)) = (g : C(P, Q))) :
     f = g := by
   ext a
-  exact ContinuousMap.congr_fun h a
+  congrm $h a
 
 @[norm_cast]
 theorem coe_toAffineMap_mk (f : P →ᵃ[R] Q) (h) : ((⟨f, h⟩ : P →ᴬ[R] Q) : P →ᵃ[R] Q) = f := rfl

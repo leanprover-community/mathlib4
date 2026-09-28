@@ -48,13 +48,13 @@ section
 variable (J)
 
 /-- The obvious cone of a constant functor. -/
-@[simps]
+@[simps, implicit_reducible]
 def constCone : Cone ((Functor.const J).obj X) where
   pt := X
   π := 𝟙 _
 
 /-- The obvious cocone of a constant functor. -/
-@[simps]
+@[simps, implicit_reducible]
 def constCocone : Cocone ((Functor.const J).obj X) where
   pt := X
   ι := 𝟙 _
@@ -175,9 +175,6 @@ instance widePushoutShape_connected (J : Type v₁) : IsConnected (WidePushoutSh
     cases j
     · exact hp
     · rwa [← t (WidePushoutShape.Hom.init _)]
-
-instance parallelPairInhabited : Inhabited WalkingParallelPair :=
-  ⟨WalkingParallelPair.one⟩
 
 instance parallel_pair_connected : IsConnected WalkingParallelPair := by
   apply IsConnected.of_induct

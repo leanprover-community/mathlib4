@@ -105,7 +105,7 @@ lemma toPartialEquiv_injective [Nonempty F] :
     Injective (toPartialEquiv : Pretrivialization F proj → PartialEquiv Z (B × F)) := by
   refine fun e e' h ↦ ext' _ _ h ?_
   simpa only [fst_image_prod, univ_nonempty, target_eq]
-    using congr_arg (Prod.fst '' PartialEquiv.target ·) h
+    using congr(Prod.fst '' PartialEquiv.target $h)
 
 @[simp, mfld_simps]
 theorem coe_coe : ⇑e.toPartialEquiv = e :=
@@ -946,8 +946,8 @@ noncomputable def disjointUnion (e e' : Trivialization F proj) (H : Disjoint e.b
         exact H.le_bot ⟨hx.1.1, hx.2.1⟩)
   baseSet := e.baseSet ∪ e'.baseSet
   open_baseSet := IsOpen.union e.open_baseSet e'.open_baseSet
-  source_eq := congr_arg₂ (· ∪ ·) e.source_eq e'.source_eq
-  target_eq := (congr_arg₂ (· ∪ ·) e.target_eq e'.target_eq).trans union_prod.symm
+  source_eq := congr($e.source_eq ∪ $e'.source_eq)
+  target_eq := congr($e.target_eq ∪ $e'.target_eq).trans union_prod.symm
   proj_toFun := by
     rintro p (hp | hp')
     · change (e.source.piecewise e e' p).1 = proj p
@@ -991,7 +991,7 @@ def clift (T : Trivialization F proj) [LocallyCompactPair ι T.baseSet] :
     C(T.source × C(ι, T.baseSet), C(ι, T.source)) := by
   let Ψ : C((T.source × C(ι, T.baseSet)) × ι, C(ι, T.baseSet) × ι) :=
     ⟨fun eγt => (eγt.1.2, eγt.2), by fun_prop⟩
-  refine ContinuousMap.curry <| T.liftCM.comp <| ⟨fun eγt => ⟨eγt.1.1, eγt.1.2 eγt.2⟩, ?_⟩
+  refine ContinuousMap.curry <| T.liftCM.comp ⟨fun eγt => ⟨eγt.1.1, eγt.1.2 eγt.2⟩, ?_⟩
   simpa using ⟨by fun_prop, ContinuousEval.continuous_eval.comp Ψ.continuous⟩
 
 @[simp]

@@ -100,7 +100,7 @@ lemma coversTop_iff {ι : Type*} (U : ι → Opens T) :
     (grothendieckTopology T).CoversTop U ↔ IsOpenCover U := by
   rw [GrothendieckTopology.coversTop_iff_of_isTerminal _ ⊤ isTerminalTop]
   dsimp [Opens.grothendieckTopology]
-  simp only [IsOpenCover, eq_top_iff, SetLike.le_def, exists_and_right, Opens.mem_top,
+  simp only [IsOpenCover, eq_top_iff, IsConcreteLE.le_iff, exists_and_right, Opens.mem_top,
     Opens.mem_iSup, forall_const]
   refine ⟨fun h x ↦ ?_, fun hU x hx ↦ ?_⟩
   · obtain ⟨V, ⟨u, ⟨i, ⟨hi⟩⟩⟩, hx⟩ := h x trivial

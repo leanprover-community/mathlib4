@@ -101,7 +101,7 @@ variable (C) in
 /-- The localizer morphism (relative to quasi-isomorphisms) that is
 given by the "inclusion functor"
 `CochainComplex.Plus (InjectiveObject C) ⥤ CochainComplex.Plus C`. -/
-@[simps]
+@[implicit_reducible, simps]
 def localizerMorphism :
     LocalizerMorphism ((quasiIso C).inverseImage (InjectiveObject.ι C).mapCochainComplexPlus)
       (quasiIso C) where
@@ -196,7 +196,6 @@ abbrev localizerMorphism : LocalizerMorphism
     infer_instance
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma isIso_quotient_map_iff
     {K L : CochainComplex.Plus (InjectiveObject C)} (f : K ⟶ L) :
     IsIso ((quotient _).map f) ↔
@@ -209,7 +208,6 @@ lemma isIso_quotient_map_iff
   rfl
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 open HomologicalComplex in
 lemma inverseImage_quasiIso_mapCochainComplexPlus_injectiveObjectι :
     (CochainComplex.Plus.quasiIso C).inverseImage (InjectiveObject.ι C).mapCochainComplexPlus =
@@ -227,24 +225,6 @@ instance :
       (InjectiveObject.ι C).mapCochainComplexPlus) := by
   rw [inverseImage_quasiIso_mapCochainComplexPlus_injectiveObjectι]
   infer_instance
-
-open HomologicalComplex in
-instance (L : Plus C ⥤ H) [L.IsLocalization (quasiIso C)] :
-    (quotient C ⋙ L).IsLocalization (CochainComplex.Plus.quasiIso C) := by
-  refine Functor.IsLocalization.comp _ _
-    ((homotopyEquivalences C (.up ℤ)).inverseImage (CochainComplex.Plus.ι C))
-    (quasiIso C) _ ?_ ?_ ?_
-  · intro _ _ f hf
-    refine Localization.inverts L (quasiIso C) _ ?_
-    simpa [quasiIso, quotient_map_mem_quasiIso_iff]
-  · intro K L f hf
-    exact homotopyEquivalences_le_quasiIso _ _ _ hf
-  · rintro K L f hf
-    obtain ⟨K, rfl⟩ := Plus.quotient_obj_surjective K
-    obtain ⟨L, rfl⟩ := Plus.quotient_obj_surjective L
-    obtain ⟨f, rfl⟩ := (Plus.quotient C).map_surjective f
-    apply MorphismProperty.map_mem_map
-    simpa [quasiIso, quotient_map_mem_quasiIso_iff] using! hf
 
 namespace isRightDerivabilityStructure
 

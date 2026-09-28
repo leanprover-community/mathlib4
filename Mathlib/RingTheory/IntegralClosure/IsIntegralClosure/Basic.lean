@@ -578,7 +578,7 @@ theorem RingHom.IsIntegral.quotient {I : Ideal S} (hf : f.IsIntegral) :
   rintro ⟨x⟩
   obtain ⟨p, p_monic, hpx⟩ := hf x
   refine ⟨p.map (Ideal.Quotient.mk _), p_monic.map _, ?_⟩
-  simpa only [hom_eval₂, eval₂_map] using! congr_arg (Ideal.Quotient.mk I) hpx
+  simpa only [hom_eval₂, eval₂_map] using! congr(Ideal.Quotient.mk I $hpx)
 
 instance {I : Ideal A} [Algebra.IsIntegral R A] : Algebra.IsIntegral R (A ⧸ I) :=
   Algebra.IsIntegral.trans A
@@ -661,6 +661,6 @@ instance : IsDomain (integralClosure R S) :=
 
 theorem roots_mem_integralClosure {f : R[X]} (hf : f.Monic) {a : S}
     (ha : a ∈ f.aroots S) : a ∈ integralClosure R S :=
-  ⟨f, hf, (eval₂_eq_eval_map _).trans <| (mem_roots <| (hf.map _).ne_zero).1 ha⟩
+  ⟨f, hf, (eval₂_eq_eval_map _).trans <| (mem_roots (hf.map _).ne_zero).1 ha⟩
 
 end IsDomain

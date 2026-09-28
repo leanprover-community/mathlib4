@@ -162,7 +162,7 @@ theorem AffineEquiv.coe_toHomeomorphOfFiniteDimensional_symm (f : PE ≃ᵃ[𝕜
     ⇑f.toHomeomorphOfFiniteDimensional.symm = f.symm :=
   rfl
 
-attribute [deprecated AffineEquiv.toContinuousAffineEquiv (since := "2026-05-11")]
+attribute [deprecated AffineEquiv.toContinuousAffineEquiv +typeChanged (since := "2026-05-11")]
   AffineEquiv.toHomeomorphOfFiniteDimensional
 
 /-- An affine map from a finite-dimensional space is automatically Lipschitz. -/

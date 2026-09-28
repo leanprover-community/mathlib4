@@ -67,7 +67,7 @@ disagree on a finite set. -/
 @[to_additive /-- See `summable_congr_cofinite` for a version allowing the functions to
 disagree on a finite set. -/]
 theorem multipliable_congr (hfg : ∀ b, f b = g b) : Multipliable f L ↔ Multipliable g L :=
-  iff_of_eq (congr_arg (Multipliable · L) <| funext hfg)
+  iff_of_eq congr(Multipliable $(funext hfg) L)
 
 /-- See `Multipliable.congr_cofinite` for a version allowing the functions to
 disagree on a finite set. -/
@@ -272,7 +272,7 @@ lemma Topology.IsClosedEmbedding.map_tprod {ι α α' G : Type*}
       use a
       simp [hge.tendsto_nhds_iff, Function.comp_def, ha, hb]
   · simpa [tprod_bot hL] using
-      (MonoidHomClass.toMonoidHom g).map_finprod_of_injective hge.injective _
+      (MonoidHom.ofClass g).map_finprod_of_injective hge.injective _
 
 /-- Special case of `Topology.IsClosedEmbedding.map_tprod`, logically weaker but possibly easier
 to apply in practice. -/
@@ -315,7 +315,7 @@ protected theorem Multipliable.map_iff_of_equiv [CommMonoid γ] [TopologicalSpac
 theorem Function.Surjective.multipliable_iff_of_hasProd_iff {α' : Type*} [CommMonoid α']
     [TopologicalSpace α'] {e : α' → α} (hes : Function.Surjective e) {f : β → α} {g : γ → α'}
     (he : ∀ {a}, HasProd f (e a) ↔ HasProd g a) : Multipliable f ↔ Multipliable g :=
-  hes.exists.trans <| exists_congr <| @he
+  hes.exists.trans <| exists_congr @he
 
 variable [ContinuousMul α]
 
@@ -471,7 +471,7 @@ theorem tprod_empty [IsEmpty β] : ∏'[L] b, f b = 1 := by
 @[to_additive]
 theorem tprod_congr {f g : β → α}
     (hfg : ∀ b, f b = g b) : ∏'[L] b, f b = ∏'[L] b, g b :=
-  congr_arg (tprod · L) (funext hfg)
+  congr(tprod $(funext hfg) L)
 
 @[to_additive]
 theorem tprod_congr₂ {f g : β → γ → α} {M : SummationFilter γ}

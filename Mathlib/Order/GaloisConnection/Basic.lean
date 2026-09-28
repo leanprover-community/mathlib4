@@ -45,8 +45,7 @@ open Function OrderDual Set
 
 universe u v w x
 
-variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x} {κ : ι → Sort*} {a₁ a₂ : α}
-  {b₁ b₂ : β}
+variable {α β γ δ : Type*} {ι : Sort*} {κ : ι → Sort*} {a₁ a₂ : α} {b₁ b₂ : β}
 
 namespace GaloisConnection
 
@@ -338,8 +337,8 @@ variable [PartialOrder β]
 abbrev liftSemilatticeSup [SemilatticeSup α] (gi : GaloisInsertion l u) : SemilatticeSup β :=
   { ‹PartialOrder β› with
     sup := fun a b => l (u a ⊔ u b)
-    le_sup_left := fun a _ => (gi.le_l_u a).trans <| gi.gc.monotone_l <| le_sup_left
-    le_sup_right := fun _ b => (gi.le_l_u b).trans <| gi.gc.monotone_l <| le_sup_right
+    le_sup_left := fun a _ => (gi.le_l_u a).trans <| gi.gc.monotone_l le_sup_left
+    le_sup_right := fun _ b => (gi.le_l_u b).trans <| gi.gc.monotone_l le_sup_right
     sup_le := fun _ _ _ hac hbc =>
       gi.gc.l_le <| sup_le (gi.gc.monotone_u hac) (gi.gc.monotone_u hbc) }
 
@@ -350,8 +349,8 @@ abbrev liftSemilatticeInf [SemilatticeInf α] (gi : GaloisInsertion l u) : Semil
   { ‹PartialOrder β› with
     inf := fun a b =>
       gi.choice (u a ⊓ u b) <|
-        le_inf (gi.gc.monotone_u <| gi.gc.l_le <| inf_le_left)
-          (gi.gc.monotone_u <| gi.gc.l_le <| inf_le_right)
+        le_inf (gi.gc.monotone_u <| gi.gc.l_le inf_le_left)
+          (gi.gc.monotone_u <| gi.gc.l_le inf_le_right)
     inf_le_left := by simp only [gi.choice_eq]; exact fun a b => gi.gc.l_le inf_le_left
     inf_le_right := by simp only [gi.choice_eq]; exact fun a b => gi.gc.l_le inf_le_right
     le_inf := by
@@ -376,7 +375,7 @@ abbrev _root_.GaloisCoinsertion.liftLattice [Lattice α] (gi : GaloisCoinsertion
 @[to_dual /-- Lift the bot along a Galois coinsertion -/]
 abbrev liftOrderTop [Preorder α] [OrderTop α] (gi : GaloisInsertion l u) :
     OrderTop β where
-  top := gi.choice ⊤ <| le_top
+  top := gi.choice ⊤ le_top
   le_top := by
     simp only [gi.choice_eq]; exact fun b => (gi.le_l_u b).trans (gi.gc.monotone_l le_top)
 
@@ -449,3 +448,33 @@ def WithBot.giUnbotDBot [Preorder α] [OrderBot α] :
   le_l_u _ := le_rfl
   choice o _ := o.unbotD ⊥
   choice_eq _ _ := rfl
+
+/-- For function `f` and `g`, `Relation.Map · f g` and `·.bicompl f g` form a Galois connection. -/
+theorem gc_map_bicompl (f : α → γ) (g : β → δ) :
+    GaloisConnection (Relation.Map · f g) (·.bicompl f g) :=
+  fun _ _ ↦ Relation.map_le_iff_le_bicompl
+
+/-- For a function `f`, `Relation.Map · f f` and `· on f` form a Galois connection. -/
+theorem gc_map_onFun (f : α → β) : GaloisConnection (Relation.Map · f f) (· on f) :=
+  gc_map_bicompl f f
+
+/-- For injective functions `f` and `g`, `Relation.Map · f g` and `·.bicompl f g` form a Galois
+coinsertion. -/
+def gciMapBicompl {f : α → γ} {g : β → δ} (hf : f.Injective) (hg : g.Injective) :
+    GaloisCoinsertion (Relation.Map · f g) (·.bicompl f g) :=
+  gc_map_bicompl f g |>.toGaloisCoinsertion (Relation.bicompl_map_eq_of_injective · hf hg |>.le)
+
+/-- For an injective function `f`, `Relation.Map · f f` and `· on f` form a Galois coinsertion. -/
+def gciMapOnFun {f : α → β} (hf : f.Injective) :
+    GaloisCoinsertion (Relation.Map · f f) (· on f) :=
+  gciMapBicompl hf hf
+
+/-- For surjective functions `f` and `g`, `Relation.Map · f g` and `·bicompl f g` form a Galois
+insertion. -/
+def giMapBicompl {f : α → γ} {g : β → δ} (hf : f.Surjective) (hg : g.Surjective) :
+    GaloisInsertion (Relation.Map · f g) (·.bicompl f g) :=
+  gc_map_bicompl f g |>.toGaloisInsertion (Relation.map_bicompl_eq_of_surjective · hf hg |>.symm.le)
+
+/-- For a surjective function `f`, `Relation.Map · f f` and `· on f` form a Galois insertion. -/
+def giMapOnFun {f : α → β} (hf : f.Surjective) : GaloisInsertion (Relation.Map · f f) (· on f) :=
+  giMapBicompl hf hf

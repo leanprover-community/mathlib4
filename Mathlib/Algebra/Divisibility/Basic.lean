@@ -145,7 +145,7 @@ theorem RightDvd.mul_const (a : α) (h : b ∣ᵣ c) : b * a ∣ᵣ c * a := by
 theorem IsRightRegular.rightDvd_cancel_right (h : IsRightRegular a) :
     b * a ∣ᵣ c * a ↔ b ∣ᵣ c :=
   ⟨fun dvd ↦ have ⟨d, eq⟩ := dvd
-    ⟨d, h (eq.trans <| (mul_assoc ..).symm)⟩, RightDvd.mul_const a⟩
+    ⟨d, h (eq.trans (mul_assoc ..).symm)⟩, RightDvd.mul_const a⟩
 
 theorem rightDvd_iff_op_dvd_op : a ∣ᵣ b ↔ MulOpposite.op a ∣ MulOpposite.op b :=
   ⟨fun ⟨c, hc⟩ => ⟨MulOpposite.op c, by simp [hc]⟩,
@@ -172,8 +172,8 @@ theorem dvd_refl (a : α) : a ∣ a :=
 
 theorem dvd_rfl : ∀ {a : α}, a ∣ a := fun {a} => dvd_refl a
 
-instance : @Std.Refl α (· ∣ ·) :=
-  ⟨dvd_refl⟩
+instance : IsPreorder α (· ∣ ·) where
+  refl := dvd_refl
 
 theorem one_dvd (a : α) : 1 ∣ a :=
   Dvd.intro a (one_mul a)

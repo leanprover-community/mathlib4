@@ -63,7 +63,7 @@ theorem isTopologicalBasis_Iic_principal :
   { exists_subset_inter := by
       rintro _ ⟨s, rfl⟩ _ ⟨t, rfl⟩ l hl
       exact ⟨Iic (𝓟 s) ∩ Iic (𝓟 t), ⟨s ∩ t, by simp⟩, hl, Subset.rfl⟩
-    sUnion_eq := sUnion_eq_univ_iff.2 fun _ => ⟨Iic ⊤, ⟨univ, congr_arg Iic principal_univ⟩,
+    sUnion_eq := sUnion_eq_univ_iff.2 fun _ => ⟨Iic ⊤, ⟨univ, congr(Iic $principal_univ)⟩,
       mem_Iic.2 le_top⟩
     eq_generateFrom := rfl }
 
@@ -96,7 +96,7 @@ protected theorem tendsto_pure_self (l : Filter X) :
 /-- Neighborhoods of a countably generated filter is a countably generated filter. -/
 instance {l : Filter α} [IsCountablyGenerated l] : IsCountablyGenerated (𝓝 l) :=
   let ⟨_b, hb⟩ := l.exists_antitone_basis
-  HasCountableBasis.isCountablyGenerated <| ⟨hb.nhds, Set.to_countable _⟩
+  HasCountableBasis.isCountablyGenerated ⟨hb.nhds, Set.to_countable _⟩
 
 theorem HasBasis.nhds' {l : Filter α} {p : ι → Prop} {s : ι → Set α} (h : HasBasis l p s) :
     HasBasis (𝓝 l) p fun i => { l' | s i ∈ l' } := by simpa only [Iic_principal] using h.nhds

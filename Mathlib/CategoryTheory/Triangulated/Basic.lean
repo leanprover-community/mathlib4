@@ -115,7 +115,7 @@ structure TriangleMorphism (T₁ : Triangle C) (T₂ : Triangle C) where
   /-- the third commutative square of a triangle morphism -/
   comm₃ : T₁.mor₃ ≫ hom₁⟦1⟧' = hom₃ ≫ T₂.mor₃ := by cat_disch
 
-attribute [reassoc (attr := simp)] TriangleMorphism.comm₁ TriangleMorphism.comm₂
+attribute [map (attr := reassoc (attr := simp))] TriangleMorphism.comm₁ TriangleMorphism.comm₂
   TriangleMorphism.comm₃
 
 /-- The identity triangle morphism.
@@ -496,9 +496,9 @@ def functorHomMk (A B : J ⥤ Triangle C) (hom₁ : A ⋙ π₁ ⟶ B ⋙ π₁)
     { hom₁ := hom₁.app j
       hom₂ := hom₂.app j
       hom₃ := hom₃.app j
-      comm₁ := NatTrans.congr_app comm₁ j
-      comm₂ := NatTrans.congr_app comm₂ j
-      comm₃ := NatTrans.congr_app comm₃ j }
+      comm₁ := congr($(comm₁).app j)
+      comm₂ := congr($(comm₂).app j)
+      comm₃ := congr($(comm₃).app j) }
   naturality _ _ φ := by
     ext
     · exact hom₁.naturality φ

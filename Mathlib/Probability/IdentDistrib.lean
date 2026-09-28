@@ -200,16 +200,22 @@ theorem integral_eq [NormedAddCommGroup γ] [NormedSpace ℝ γ] [BorelSpace γ]
     rw [h.aestronglyMeasurable_iff] at hf
     rw [integral_non_aestronglyMeasurable hf]
 
-theorem eLpNorm_eq [NormedAddCommGroup γ] [OpensMeasurableSpace γ] (h : IdentDistrib f g μ ν)
+theorem eLpNorm_eq [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib f g μ ν)
     (p : ℝ≥0∞) : eLpNorm f p μ = eLpNorm g p ν := by
+  by_cases hf : AEStronglyMeasurable f μ
+  swap
+  · have hg : ¬ AEStronglyMeasurable g ν := by simpa [h.aestronglyMeasurable_iff] using hf
+    simp [eLpNorm, hf, hg]
+  have hg : AEStronglyMeasurable g ν := h.aestronglyMeasurable_iff.mp hf
   by_cases h0 : p = 0
-  · simp [h0]
+  · simp [h0, hf, hg]
   by_cases h_top : p = ∞
-  · simp only [h_top, eLpNorm, eLpNormEssSup, ENNReal.top_ne_zero, ite_true,
-      ite_false]
+  · simp only [h_top, eLpNorm_exponent_top hf, eLpNorm_exponent_top hg,
+      eLpNormEssSup]
     apply essSup_eq
     exact h.comp (measurable_coe_nnreal_ennreal.comp measurable_nnnorm)
-  simp only [eLpNorm_eq_eLpNorm' h0 h_top, eLpNorm', one_div]
+  simp only [eLpNorm_eq_eLpNorm' h0 h_top hf, eLpNorm_eq_eLpNorm' h0 h_top hg,
+    eLpNorm', one_div]
   congr 1
   apply lintegral_eq
   exact h.comp (Measurable.pow_const (measurable_coe_nnreal_ennreal.comp measurable_nnnorm)
@@ -217,9 +223,9 @@ theorem eLpNorm_eq [NormedAddCommGroup γ] [OpensMeasurableSpace γ] (h : IdentD
 
 theorem memLp_snd [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν)
     (hf : MemLp f p μ) : MemLp g p ν := by
-  refine ⟨h.aestronglyMeasurable_snd hf.aestronglyMeasurable, ?_⟩
+  rw [memLp_iff]
   rw [← h.eLpNorm_eq]
-  exact hf.2
+  exact hf
 
 theorem memLp_iff [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν) :
     MemLp f p μ ↔ MemLp g p ν :=
@@ -295,20 +301,21 @@ section UniformIntegrable
 variable {E : Type*} [MeasurableSpace E] [NormedAddCommGroup E] [BorelSpace E]
   {μ : Measure α} [IsFiniteMeasure μ]
 
-/-- This lemma is superseded by `MemLp.uniformIntegrable_of_identDistrib` which only requires
-`AEStronglyMeasurable`. -/
-theorem MemLp.uniformIntegrable_of_identDistrib_aux {ι : Type*} {f : ι → α → E} {j : ι} {p : ℝ≥0∞}
-    (hp : 1 ≤ p) (hp' : p ≠ ∞) (hℒp : MemLp (f j) p μ) (hfmeas : ∀ i, StronglyMeasurable (f i))
-    (hf : ∀ i, IdentDistrib (f i) (f j) μ μ) : UniformIntegrable f p μ := by
-  refine uniformIntegrable_of' hp hp' hfmeas fun ε hε => ?_
-  by_cases hι : Nonempty ι
-  swap; · exact ⟨0, fun i => False.elim (hι <| Nonempty.intro i)⟩
-  obtain ⟨C, -, hC₂⟩ := hℒp.eLpNorm_indicator_norm_ge_pos_le (hfmeas _) hε
-  refine ⟨C.toNNReal, fun i ↦ le_trans (le_of_eq ?_) hC₂⟩
+/-- A sequence of identically distributed Lᵖ functions is p-uniformly integrable. -/
+theorem MemLp.uniformIntegrable_of_identDistrib {ι : Type*} {f : ι → α → E} {j : ι} {p : ℝ≥0∞}
+    (hp : 1 ≤ p) (hp' : p ≠ ∞) (hℒp : MemLp (f j) p μ) (hf : ∀ i, IdentDistrib (f i) (f j) μ μ) :
+    UniformIntegrable f p μ := by
+  have hmeas := fun i ↦ (hf i).symm.aestronglyMeasurable_snd hℒp.aestronglyMeasurable
+  refine uniformIntegrable_of hp hp' hmeas fun ε hε ↦ ?_
+  obtain ⟨C, -, hC₂⟩ := hℒp.eLpNorm_indicator_norm_ge_pos_le hε
+  refine ⟨C.toNNReal, fun i ↦ hC₂.trans_eq' ?_⟩
   have : {x | C.toNNReal ≤ ‖f i x‖₊} = {x | C ≤ ‖f i x‖} := by
     ext x
     simp_rw [Set.mem_ofPred_eq, Real.toNNReal_le_iff_le_coe, coe_nnnorm]
-  rw [this, ← eLpNorm_norm, ← eLpNorm_norm (Set.indicator _ _)]
+  rw [this, ← eLpNorm_norm _ <| (hmeas i).indicator₀
+      (nullMeasurableSet_le aemeasurable_const (hmeas i).norm.aemeasurable),
+    ← eLpNorm_norm (Set.indicator _ _) <| (hmeas j).indicator₀
+      (nullMeasurableSet_le aemeasurable_const (hmeas j).nnnorm.aemeasurable.coe_nnreal_real)]
   simp_rw [norm_indicator_eq_indicator_norm, coe_nnnorm]
   let F : E → ℝ := (fun x : E ↦ if C.toNNReal ≤ ‖x‖₊ then ‖x‖ else 0)
   have F_meas : Measurable F := by
@@ -321,20 +328,12 @@ theorem MemLp.uniformIntegrable_of_identDistrib_aux {ι : Type*} {f : ι → α 
   rw [this, this, ← eLpNorm_map_measure F_meas.aestronglyMeasurable (hf i).aemeasurable_fst,
     (hf i).map_eq, eLpNorm_map_measure F_meas.aestronglyMeasurable (hf j).aemeasurable_fst]
 
-/-- A sequence of identically distributed Lᵖ functions is p-uniformly integrable. -/
-theorem MemLp.uniformIntegrable_of_identDistrib {ι : Type*} {f : ι → α → E} {j : ι} {p : ℝ≥0∞}
-    (hp : 1 ≤ p) (hp' : p ≠ ∞) (hℒp : MemLp (f j) p μ) (hf : ∀ i, IdentDistrib (f i) (f j) μ μ) :
-    UniformIntegrable f p μ := by
-  have hfmeas : ∀ i, AEStronglyMeasurable (f i) μ := fun i =>
-    (hf i).aestronglyMeasurable_iff.2 hℒp.1
-  set g : ι → α → E := fun i => (hfmeas i).choose
-  have hgmeas : ∀ i, StronglyMeasurable (g i) := fun i => (Exists.choose_spec <| hfmeas i).1
-  have hgeq : ∀ i, g i =ᵐ[μ] f i := fun i => (Exists.choose_spec <| hfmeas i).2.symm
-  have hgℒp : MemLp (g j) p μ := hℒp.ae_eq (hgeq j).symm
-  exact UniformIntegrable.ae_eq
-    (MemLp.uniformIntegrable_of_identDistrib_aux hp hp' hgℒp hgmeas fun i =>
-      (IdentDistrib.of_ae_eq (hgmeas i).aemeasurable (hgeq i)).trans
-        ((hf i).trans <| IdentDistrib.of_ae_eq (hfmeas j).aemeasurable (hgeq j).symm)) hgeq
+@[deprecated "This lemma is superseded by `MemLp.uniformIntegrable_of_identDistrib`."
+(since := "2026-08-19")]
+theorem MemLp.uniformIntegrable_of_identDistrib_aux {ι : Type*} {f : ι → α → E} {j : ι} {p : ℝ≥0∞}
+    (hp : 1 ≤ p) (hp' : p ≠ ∞) (hℒp : MemLp (f j) p μ) (_hfmeas : ∀ i, StronglyMeasurable (f i))
+    (hf : ∀ i, IdentDistrib (f i) (f j) μ μ) : UniformIntegrable f p μ :=
+  MemLp.uniformIntegrable_of_identDistrib hp hp' hℒp hf
 
 end UniformIntegrable
 
@@ -346,8 +345,8 @@ lemma indepFun_of_identDistrib_pair
     (h_ident : IdentDistrib (fun ω ↦ (X ω, Y ω)) (fun ω ↦ (X' ω, Y' ω)) μ μ') :
     X' ⟂ᵢ[μ'] Y' := by
   rw [indepFun_iff_map_prod_eq_prod_map_map, ← h_ident.map_eq, h_indep.map_prod_eq_prod_map_map]
-  · exact congr (congrArg Measure.prod <| (h_ident.comp measurable_fst).map_eq)
-      (h_ident.comp measurable_snd).map_eq
+  · congrm Measure.prod $((h_ident.comp measurable_fst).map_eq)
+     $((h_ident.comp measurable_snd).map_eq)
   · exact measurable_fst.aemeasurable.comp_aemeasurable h_ident.aemeasurable_fst
   · exact measurable_snd.aemeasurable.comp_aemeasurable h_ident.aemeasurable_fst
   · exact measurable_fst.aemeasurable.comp_aemeasurable h_ident.aemeasurable_snd

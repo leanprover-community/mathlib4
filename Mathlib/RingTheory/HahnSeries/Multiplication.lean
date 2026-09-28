@@ -103,7 +103,7 @@ theorem leadingCoeff_one [MulZeroOneClass R] : (1 : R⟦Γ⟧).leadingCoeff = 1 
 @[simp]
 protected lemma map_one [MonoidWithZero R] [MonoidWithZero S] (f : R →*₀ S) :
     (1 : R⟦Γ⟧).map f = (1 : S⟦Γ⟧) :=
-  HahnSeries.map_single (a := (0 : Γ)) f.toZeroHom |>.trans <| congrArg _ <| f.map_one
+  HahnSeries.map_single (a := (0 : Γ)) f.toZeroHom |>.trans <| congrArg _ f.map_one
 
 instance [AddCommMonoidWithOne R] : AddCommMonoidWithOne R⟦Γ⟧ where
   natCast_zero := by simp [← single_zero_natCast]
@@ -580,7 +580,6 @@ section Ring
 
 variable [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
 
-set_option backward.privateInPublic true in
 private theorem mul_assoc' [NonUnitalSemiring R] (x y z : R⟦Γ⟧) : x * y * z = x * (y * z) := by
   ext b
   rw [coeff_mul_left' (x.isPWO_support.add y.isPWO_support) support_mul_subset,
@@ -590,10 +589,8 @@ private theorem mul_assoc' [NonUnitalSemiring R] (x y z : R⟦Γ⟧) : x * y * z
     (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i + k, l), (i, k)⟩) <;>
     aesop (add safe Set.add_mem_add) (add simp [add_assoc, mul_assoc])
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance [NonUnitalSemiring R] : NonUnitalSemiring R⟦Γ⟧ where
-  mul_assoc := mul_assoc'
+  mul_assoc := private mul_assoc'
 
 instance [NonAssocSemiring R] : NonAssocSemiring R⟦Γ⟧ where
   one_mul x := by
@@ -700,7 +697,6 @@ namespace HahnModule
 variable [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
 variable [PartialOrder Γ'] [AddAction Γ Γ'] [IsOrderedCancelVAdd Γ Γ'] [AddCommMonoid V]
 
-set_option backward.privateInPublic true in
 private theorem mul_smul' [Semiring R] [Module R V] (x y : R⟦Γ⟧)
     (z : HahnModule Γ' R V) : (x * y) • z = x • (y • z) := by
   ext b
@@ -715,12 +711,10 @@ private theorem mul_smul' [Semiring R] [Module R V] (x y : R⟦Γ⟧)
 instance instBaseModule [Semiring R] [Module R V] : Module R (HahnModule Γ' R V) :=
   inferInstanceAs <| Module R V⟦Γ'⟧
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance instModule [Semiring R] [Module R V] : Module R⟦Γ⟧
     (HahnModule Γ' R V) := {
   (inferInstance : DistribSMul R⟦Γ⟧ (HahnModule Γ' R V)) with
-  mul_smul := mul_smul'
+  mul_smul := private mul_smul'
   one_smul := fun _ => one_smul'
   add_smul := fun _ _ _ => add_smul Module.add_smul
   zero_smul := fun _ => zero_smul' }

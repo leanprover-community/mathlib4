@@ -53,7 +53,7 @@ theorem self_mem_ordConnectedComponent : x ∈ ordConnectedComponent s x ↔ x �
 
 @[simp]
 theorem nonempty_ordConnectedComponent : (ordConnectedComponent s x).Nonempty ↔ x ∈ s :=
-  ⟨fun ⟨_, hy⟩ => hy <| left_mem_uIcc, fun h => ⟨x, self_mem_ordConnectedComponent.2 h⟩⟩
+  ⟨fun ⟨_, hy⟩ => hy left_mem_uIcc, fun h => ⟨x, self_mem_ordConnectedComponent.2 h⟩⟩
 
 @[simp]
 theorem ordConnectedComponent_eq_empty : ordConnectedComponent s x = ∅ ↔ x ∉ s := by
@@ -158,7 +158,7 @@ theorem ordSeparatingSet_comm (s t : Set α) : ordSeparatingSet s t = ordSeparat
 theorem disjoint_left_ordSeparatingSet : Disjoint s (ordSeparatingSet s t) :=
   Disjoint.inter_right' _ <|
     disjoint_iUnion₂_right.2 fun _ _ =>
-      disjoint_compl_right.mono_right <| ordConnectedComponent_subset
+      disjoint_compl_right.mono_right ordConnectedComponent_subset
 
 theorem disjoint_right_ordSeparatingSet : Disjoint t (ordSeparatingSet s t) :=
   ordSeparatingSet_comm t s ▸ disjoint_left_ordSeparatingSet

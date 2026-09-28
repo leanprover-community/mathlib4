@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
+public import Mathlib.Basic.Rel
 public import Mathlib.Topology.Compactness.SigmaCompact
 public import Mathlib.Topology.Irreducible
 public import Mathlib.Topology.Separation.Basic
@@ -504,6 +505,10 @@ theorem isOpen_ne_fun [T2Space X] {f g : Y → X} (hf : Continuous f) (hg : Cont
     IsOpen { y : Y | f y ≠ g y } :=
   isOpen_compl_iff.mpr <| isClosed_eq hf hg
 
+/-- The graph of a continuous function into a Hausdorff space is closed. -/
+theorem Continuous.isClosed_graph [T2Space X] {f : Y → X} (hf : Continuous f) : IsClosed f.graph :=
+  isClosed_eq (hf.comp continuous_fst) continuous_snd
+
 /-- If two continuous maps are equal on `s`, then they are equal on the closure of `s`. See also
 `Set.EqOn.of_subset_closure` for a more general version. -/
 protected theorem Set.EqOn.closure [T2Space X] {s : Set Y} {f g : Y → X} (h : EqOn f g s)
@@ -630,7 +635,7 @@ theorem CompactExhaustion.isClosed [T2Space X] (K : CompactExhaustion X) (n : �
 @[compactness .]
 theorem IsCompact.inter [T2Space X] {s t : Set X} (hs : IsCompact s) (ht : IsCompact t) :
     IsCompact (s ∩ t) :=
-  hs.inter_right <| ht.isClosed
+  hs.inter_right ht.isClosed
 
 theorem image_closure_of_isCompact [T2Space Y] {s : Set X} (hs : IsCompact (closure s)) {f : X → Y}
     (hf : ContinuousOn f (closure s)) : f '' closure s = closure (f '' s) :=

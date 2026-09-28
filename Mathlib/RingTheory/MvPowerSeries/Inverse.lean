@@ -116,7 +116,7 @@ theorem mul_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff φ 
         Finset.sum_insert (Finset.notMem_erase _ _), coeff_zero_eq_constantCoeff_apply, h,
         coeff_invOfUnit, ite_eq_right H, neg_mul, mul_neg, Units.mul_inv_cancel_left, ←
         Finset.insert_erase this, Finset.sum_insert (Finset.notMem_erase _ _),
-        Finset.insert_erase this, ite_eq_right (not_lt_of_ge <| le_rfl), zero_add, add_comm, ←
+        Finset.insert_erase this, ite_eq_right (not_lt_of_ge le_rfl), zero_add, add_comm, ←
         sub_eq_add_neg, sub_eq_zero, Finset.sum_congr rfl]
       rintro ⟨i, j⟩ hij
       rw [Finset.mem_erase, mem_antidiagonal] at hij
@@ -172,7 +172,7 @@ induced by a local ring hom `A → B` is local -/
 theorem map.isLocalHom : IsLocalHom (map (σ := σ) f) :=
   ⟨by
     rintro φ ⟨ψ, h⟩
-    replace h := congr_arg constantCoeff h
+    replace h := congr(constantCoeff $h)
     rw [constantCoeff_map] at h
     have : IsUnit (constantCoeff ψ.val) := isUnit_constantCoeff _ ψ.isUnit
     rw [h] at this
@@ -209,7 +209,7 @@ theorem constantCoeff_inv (φ : MvPowerSeries σ k) :
   rw [← coeff_zero_eq_constantCoeff_apply, coeff_inv, ite_eq_left rfl]
 
 protected theorem inv_eq_zero {φ : MvPowerSeries σ k} : φ⁻¹ = 0 ↔ constantCoeff φ = 0 :=
-  ⟨fun h => by simpa using congr_arg constantCoeff h, fun h =>
+  ⟨fun h => by simpa using congr(constantCoeff $h), fun h =>
     ext fun n => by
       classical
       rw [coeff_inv]
@@ -271,6 +271,11 @@ instance : InvOneClass (MvPowerSeries σ k) :=
     inv_one := by
       rw [MvPowerSeries.inv_eq_iff_mul_eq_one, mul_one]
       simp }
+
+@[simp]
+protected theorem inv_pow (φ : MvPowerSeries σ k) : ∀ n : ℕ, φ⁻¹ ^ n = (φ ^ n)⁻¹
+  | 0 => by rw [pow_zero, pow_zero, inv_one]
+  | n + 1 => by rw [pow_succ', pow_succ, MvPowerSeries.inv_pow, MvPowerSeries.mul_inv_rev]
 
 @[simp]
 theorem C_inv (r : k) : (C (σ := σ) r)⁻¹ = C r⁻¹ := by
