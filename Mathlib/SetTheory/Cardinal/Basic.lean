@@ -166,7 +166,7 @@ theorem bddAbove_iff_small {s : Set Cardinal.{u}} : BddAbove s ↔ Small.{u} s :
 theorem bddAbove_of_small {s : Set Cardinal.{u}} [h : Small.{u} s] : BddAbove s :=
   bddAbove_iff_small.2 h
 
-@[deprecated bddAbove_of_small (since := "2026-04-04")]
+@[deprecated bddAbove_of_small +typeChanged (since := "2026-04-04")]
 theorem bddAbove_range {ι : Type*} [Small.{u} ι] (f : ι → Cardinal.{u}) : BddAbove (Set.range f) :=
   bddAbove_of_small
 
@@ -273,7 +273,7 @@ lemma succ_natCast (n : ℕ) : Order.succ (n : Cardinal) = n + 1 := by
   rw [← Nat.cast_succ]
   exact Nat.cast_lt.2 (Nat.lt_succ_self _)
 
-@[deprecated succ_natCast (since := "2026-03-21")]
+@[deprecated succ_natCast +typeChanged (since := "2026-03-21")]
 theorem nat_succ (n : ℕ) : (n.succ : Cardinal) = succ ↑n := by
   simp
 
@@ -405,7 +405,7 @@ theorem isStrongLimit_aleph0 : IsStrongLimit ℵ₀ := by
 theorem IsStrongLimit.aleph0_le {c} (H : IsStrongLimit c) : ℵ₀ ≤ c :=
   aleph0_le_of_isSuccLimit H.isSuccLimit
 
-@[deprecated exists_eq_ciSup_of_not_isSuccLimit (since := "2026-04-13")]
+@[deprecated exists_eq_ciSup_of_not_isSuccLimit +typeChanged (since := "2026-04-13")]
 lemma exists_eq_natCast_of_iSup_eq {ι : Type u} [Nonempty ι] (f : ι → Cardinal.{v})
     (hf : BddAbove (range f)) (n : ℕ) (h : ⨆ i, f i = n) : ∃ i, f i = n := by
   rw [← h]

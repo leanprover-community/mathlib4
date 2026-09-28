@@ -7,7 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.Dynamics.Ergodic.MeasurePreserving
-public import Mathlib.Combinatorics.Pigeonhole
+import Mathlib.Combinatorics.Pigeonhole
 
 /-!
 # Conservative systems

@@ -8,7 +8,7 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Algebra.Divisibility.Units
-public import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Nat.Basic
 
 /-!
 # Divisibility in groups with zero.
@@ -150,6 +150,12 @@ theorem dvd_antisymm' : a ∣ b → b ∣ a → b = a :=
 alias Dvd.dvd.antisymm := dvd_antisymm
 
 alias Dvd.dvd.antisymm' := dvd_antisymm'
+
+instance : IsPartialOrder α (· ∣ ·) where
+  antisymm _ _ := dvd_antisymm
+
+instance : IsPartialOrder α RightDvd where
+  antisymm _ _ := by simpa using dvd_antisymm
 
 theorem eq_of_forall_dvd (h : ∀ c, a ∣ c ↔ b ∣ c) : a = b :=
   ((h _).2 dvd_rfl).antisymm <| (h _).1 dvd_rfl
