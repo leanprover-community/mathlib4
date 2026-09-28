@@ -3,8 +3,9 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
+module
 
-import Cli.Basic
+public import Cli.Basic
 import Mathlib.Tactic.Linter.ValidatePRTitle
 
 /-!
@@ -19,7 +20,7 @@ Currently, we only verify very basic checks: this could be made stricter in the 
 open Cli in
 /-- Implementation of the `check-title-labels` command line program.
 The exit code is the number of violations found. -/
-def checkTitleLabelsCLI (args : Parsed) : IO UInt32 := do
+public def checkTitleLabelsCLI (args : Parsed) : IO UInt32 := do
   let title := (args.positionalArg! "title").value
   let labels : List String := match args.flag? "labels" with
   | some f => (f.as! String).splitOn "\n"
