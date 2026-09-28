@@ -528,7 +528,7 @@ theorem toAddSubgroup'_closure {A : Type*} [AddGroup A] (S : Set (Multiplicative
 
 theorem _root_.AddSubgroup.toSubgroup'_closure (S : Set (Additive G)) :
     (AddSubgroup.closure S).toSubgroup' = Subgroup.closure (Additive.ofMul ⁻¹' S) :=
-  congr_arg AddSubgroup.toSubgroup' (toAddSubgroup'_closure _).symm
+  congr($((toAddSubgroup'_closure _).symm).toSubgroup')
 
 @[to_additive]
 theorem mem_biSup_of_directedOn {ι} {p : ι → Prop} {K : ι → Subgroup G} {i : ι} (hp : p i)
