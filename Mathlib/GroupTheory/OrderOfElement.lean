@@ -915,7 +915,7 @@ theorem IsOfFinOrder.mul (hx : IsOfFinOrder x) (hy : IsOfFinOrder y) : IsOfFinOr
 end CommMonoid
 
 section CommGroup
-variable [CommGroup G]
+variable [Group G] [IsMulCommutative G]
 
 @[to_additive]
 lemma isMulTorsionFree_iff_not_isOfFinOrder :

@@ -22,7 +22,7 @@ public import Mathlib.Data.Nat.Cast.Order.Ring
 variable {α : Type*}
 
 section LinearOrderedAddCommGroup
-variable [CommGroup α] [LinearOrder α] [IsOrderedMonoid α]
+variable [Group α] [IsMulCommutative α] [LinearOrder α] [IsOrderedMonoid α]
 
 @[to_additive] lemma mabs_zpow (n : ℤ) (a : α) : |a ^ n|ₘ = |a|ₘ ^ |n| := by
   obtain n0 | n0 := le_total 0 n

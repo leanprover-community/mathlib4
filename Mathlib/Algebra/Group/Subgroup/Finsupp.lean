@@ -16,7 +16,7 @@ assert_not_exists Field
 
 namespace Subgroup
 
-variable {M : Type*} [CommGroup M] {ι : Type*} (f : ι → M) (x : M)
+variable {M : Type*} [Group M] [IsMulCommutative M] {ι : Type*} (f : ι → M) (x : M)
 
 @[to_additive]
 theorem exists_finsupp_of_mem_closure_range (hx : x ∈ closure (Set.range f)) :

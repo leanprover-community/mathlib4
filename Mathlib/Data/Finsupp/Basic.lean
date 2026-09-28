@@ -716,7 +716,7 @@ theorem prod_filter_mul_prod_filter_not [CommMonoid N] (g : α → M → N) :
   simp_rw [prod_filter_index, support_filter, Finset.prod_filter_mul_prod_filter_not, Finsupp.prod]
 
 @[to_additive (attr := simp)]
-theorem prod_div_prod_filter [CommGroup G] (g : α → M → G) :
+theorem prod_div_prod_filter [Group G] [IsMulCommutative G] (g : α → M → G) :
     f.prod g / (f.filter p).prod g = (f.filter fun a => ¬p a).prod g :=
   div_eq_of_eq_mul' (prod_filter_mul_prod_filter_not _ _ _).symm
 

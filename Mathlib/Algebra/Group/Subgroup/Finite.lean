@@ -55,7 +55,8 @@ protected theorem list_prod_mem {l : List G} : (∀ x ∈ l, x ∈ K) → l.prod
 /-- Product of a multiset of elements in a subgroup of a `CommGroup` is in the subgroup. -/
 @[to_additive /-- Sum of a multiset of elements in an `AddSubgroup` of an `AddCommGroup` is in
 the `AddSubgroup`. -/]
-protected theorem multiset_prod_mem {G} [CommGroup G] (K : Subgroup G) (g : Multiset G) :
+protected theorem multiset_prod_mem {G} [Group G] [IsMulCommutative G] (K : Subgroup G)
+    (g : Multiset G) :
     (∀ a ∈ g, a ∈ K) → g.prod ∈ K :=
   multiset_prod_mem g
 
@@ -68,7 +69,8 @@ theorem multiset_noncommProd_mem (K : Subgroup G) (g : Multiset G) (comm) :
     subgroup. -/
 @[to_additive /-- Sum of elements in an `AddSubgroup` of an `AddCommGroup` indexed by a `Finset`
 is in the `AddSubgroup`. -/]
-protected theorem prod_mem {G : Type*} [CommGroup G] (K : Subgroup G) {ι : Type*} {t : Finset ι}
+protected theorem prod_mem {G : Type*} [Group G] [IsMulCommutative G]
+    (K : Subgroup G) {ι : Type*} {t : Finset ι}
     {f : ι → G} (h : ∀ c ∈ t, f c ∈ K) : (∏ c ∈ t, f c) ∈ K :=
   prod_mem h
 
@@ -82,12 +84,13 @@ theorem val_list_prod (l : List H) : (l.prod : G) = (l.map Subtype.val).prod :=
   SubmonoidClass.coe_list_prod l
 
 @[to_additive (attr := simp 1100, norm_cast)]
-theorem val_multiset_prod {G} [CommGroup G] (H : Subgroup G) (m : Multiset H) :
+theorem val_multiset_prod {G} [Group G] [IsMulCommutative G] (H : Subgroup G) (m : Multiset H) :
     (m.prod : G) = (m.map Subtype.val).prod :=
   SubmonoidClass.coe_multiset_prod m
 
 @[to_additive (attr := simp 1100, norm_cast)]
-theorem val_finsetProd {ι G} [CommGroup G] (H : Subgroup G) (f : ι → H) (s : Finset ι) :
+theorem val_finsetProd {ι G} [Group G] [IsMulCommutative G] (H : Subgroup G) (f : ι → H)
+    (s : Finset ι) :
     ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : G) :=
   SubmonoidClass.coe_finsetProd f s
 

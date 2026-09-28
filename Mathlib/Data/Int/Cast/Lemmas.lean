@@ -300,7 +300,7 @@ lemma AddMonoidHom.apply_int (f : ℤ →+ β) (n : ℤ) : f n = n • f 1 := by
 end Group
 
 section CommGroup
-variable (α) [CommGroup α] (β) [AddCommGroup β]
+variable (α) [Group α] [IsMulCommutative α] (β) [AddCommGroup β]
 
 /-- If `α` is commutative, `zmultiplesHom` is an additive equivalence. -/
 def zmultiplesAddHom : β ≃+ (ℤ →+ β) :=

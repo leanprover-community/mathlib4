@@ -121,7 +121,7 @@ subobjects in a noncommutative ambient type. As such this is only available insi
 commutativity.
 
 See note [commutative subobjects]. -/ ]
-scoped instance (priority := 50) {G : Type*} [Group G] [IsMulCommutative G] :
+instance (priority := 50) {G : Type*} [Group G] [IsMulCommutative G] :
     CommGroup G where
 
 end IsMulCommutative

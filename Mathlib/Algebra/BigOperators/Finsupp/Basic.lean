@@ -328,7 +328,7 @@ theorem prod_mul [Zero M] [CommMonoid N] {f : α →₀ M} {h₁ h₂ : α → M
   Finset.prod_mul_distrib
 
 @[to_additive (attr := simp)]
-theorem prod_inv [Zero M] [CommGroup G] {f : α →₀ M} {h : α → M → G} :
+theorem prod_inv [Zero M] [Group G] [IsMulCommutative G] {f : α →₀ M} {h : α → M → G} :
     (f.prod fun a b => (h a b)⁻¹) = (f.prod h)⁻¹ :=
   (map_prod (MonoidHom.id G)⁻¹ _ _).symm
 
