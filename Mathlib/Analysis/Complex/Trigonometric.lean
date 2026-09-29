@@ -990,8 +990,12 @@ theorem norm_exp_eq_iff_re_eq {x y : ℂ} : ‖exp x‖ = ‖exp y‖ ↔ x.re =
 theorem norm_exp_mul_I (x : ℂ) : ‖exp (x * I)‖ = Real.exp (-x.im) := by
   rw [norm_exp, mul_I_re]
 
-theorem one_sub_rexp_re_le_norm_one_sub_cexp (x : ℂ) : 1 - Real.exp x.re ≤ ‖1 - exp x‖ := by
+theorem one_sub_rexp_re_le (x : ℂ) : 1 - Real.exp x.re ≤ ‖1 - exp x‖ := by
   rw [← norm_exp]
   exact_mod_cast norm_sub_norm_le (1 : ℂ) (exp x)
+
+theorem abs_one_sub_rexp_re_le (x : ℂ) : |1 - Real.exp x.re| ≤ ‖1 - exp x‖ := by
+  rw [← norm_exp]
+  exact_mod_cast abs_norm_sub_norm_le (1 : ℂ) (exp x)
 
 end Complex
