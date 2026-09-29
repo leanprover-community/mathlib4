@@ -412,6 +412,139 @@ lemma MeasureTheory.NullMeasurable.aemeasurable_of_aerange {f : α → β} {t : 
     replace hf'm : NullMeasurable f' μ := hf'm.measurable'.subtype_mk
     exact (measurable_subtype_coe.comp_aemeasurable hf'm.aemeasurable).congr hff'.symm
 
+section prop
+
+theorem aemeasurable_to_countable [Countable β]
+    (h : ∀ y, NullMeasurableSet (f ⁻¹' {f y}) μ) : AEMeasurable f μ :=
+  NullMeasurable.aemeasurable fun s _ => by
+  rw [← biUnion_preimage_singleton]
+  refine MeasurableSet.iUnion fun y => MeasurableSet.iUnion fun hy => ?_
+  by_cases hyf : y ∈ range f
+  · rcases hyf with ⟨y, rfl⟩
+    apply h
+  · rw [preimage_singleton_eq_empty.2 hyf]
+    exact .empty
+
+theorem aemeasurable_to_countable' [Countable β]
+    (h : ∀ x, NullMeasurableSet (f ⁻¹' {x}) μ) : AEMeasurable f μ :=
+  aemeasurable_to_countable fun y => h (f y)
+
+theorem aemeasurable_to_prop {f : α → Prop} (h : NullMeasurableSet (f ⁻¹' {True}) μ) :
+    AEMeasurable f μ := by
+  refine aemeasurable_to_countable' fun x => ?_
+  by_cases hx : x
+  · simpa [hx] using h
+  · simpa only [hx, ← preimage_compl, Prop.compl_singleton, not_true, preimage_singleton_false]
+      using h.compl
+
+variable {p q : α → Prop} {s : Set α}
+
+@[simp] theorem nullMeasurableSet_setOfPred : NullMeasurableSet {a | p a} μ ↔ AEMeasurable p μ :=
+  ⟨fun h ↦ aemeasurable_to_prop <| by simpa only [preimage_singleton_true], fun h => by
+    simpa using h.nullMeasurable (measurableSet_singleton True)⟩
+
+@[simp] theorem aemeasurable_mem : AEMeasurable (· ∈ s) μ ↔ NullMeasurableSet s μ :=
+  nullMeasurableSet_setOfPred.symm
+
+alias ⟨_, AEMeasurable.setOf⟩ := nullMeasurableSet_setOfPred
+
+@[fun_prop]
+alias ⟨_, MeasureTheory.NullMeasurableSet.mem⟩ := aemeasurable_mem
+
+@[fun_prop]
+lemma AEMeasurable.not (hp : AEMeasurable p μ) : AEMeasurable (¬ p ·) μ :=
+  nullMeasurableSet_setOfPred.1 hp.setOf.compl
+
+@[fun_prop]
+lemma AEMeasurable.and (hp : AEMeasurable p μ) (hq : AEMeasurable q μ) :
+    AEMeasurable (fun a ↦ p a ∧ q a) μ :=
+  nullMeasurableSet_setOfPred.1 <| hp.setOf.inter hq.setOf
+
+@[fun_prop]
+lemma AEMeasurable.or (hp : AEMeasurable p μ) (hq : AEMeasurable q μ) :
+    AEMeasurable (fun a ↦ p a ∨ q a) μ :=
+  nullMeasurableSet_setOfPred.1 <| hp.setOf.union hq.setOf
+
+@[fun_prop]
+lemma AEMeasurable.imp (hp : AEMeasurable p μ) (hq : AEMeasurable q μ) :
+    AEMeasurable (fun a ↦ p a → q a) μ :=
+  nullMeasurableSet_setOfPred.1 <| hp.setOf.himp hq.setOf
+
+@[fun_prop]
+lemma AEMeasurable.iff (hp : AEMeasurable p μ) (hq : AEMeasurable q μ) :
+    AEMeasurable (fun a ↦ p a ↔ q a) μ :=
+  nullMeasurableSet_setOfPred.1 <| by
+    simp_rw [iff_iff_implies_and_implies]; exact hq.setOf.bihimp hp.setOf
+
+@[fun_prop]
+lemma AEMeasurable.forall [Countable ι] {p : ι → α → Prop} (hp : ∀ i, AEMeasurable (p i) μ) :
+    AEMeasurable (fun a ↦ ∀ i, p i a) μ :=
+  nullMeasurableSet_setOfPred.1 <| by
+    rw [ofPred_forall]; exact MeasurableSet.iInter fun i ↦ (hp i).setOf
+
+@[fun_prop]
+lemma AEMeasurable.exists [Countable ι] {p : ι → α → Prop} (hp : ∀ i, AEMeasurable (p i) μ) :
+    AEMeasurable (fun a ↦ ∃ i, p i a) μ :=
+  nullMeasurableSet_setOfPred.1 <| by
+    rw [ofPred_exists]; exact MeasurableSet.iUnion fun i ↦ (hp i).setOf
+
+end prop
+
+@[fun_prop]
+lemma AEMeasurable.eq_const [MeasurableSingletonClass β] (hf : AEMeasurable f μ) (a : β) :
+    AEMeasurable (fun x => f x = a) μ :=
+  nullMeasurableSet_setOfPred.mp (hf.nullMeasurable measurableSet_eq)
+
+@[fun_prop]
+lemma AEMeasurable.const_eq [MeasurableSingletonClass β] (hf : AEMeasurable f μ) (a : β) :
+    AEMeasurable (fun x => a = f x) μ := by
+  conv => enter [1, x]; rw [eq_comm]
+  exact .eq_const hf a
+
+section Set
+
+variable {β : Type*} {f g : α → Set β}
+
+lemma AEMeasurable.mem (hf : AEMeasurable f μ) (b : β) : AEMeasurable (b ∈ f ·) μ :=
+    hf.eval b
+
+lemma aemeasurable_set_iff [Countable β] : AEMeasurable f μ ↔ ∀ b, AEMeasurable (b ∈ f ·) μ :=
+  aemeasurable_pi_iff
+
+alias ⟨_, AEMeasurable.of_mem⟩ := aemeasurable_set_iff
+
+@[fun_prop]
+lemma AEMeasurable.inter (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+    AEMeasurable (fun a ↦ f a ∩ g a) μ :=
+  measurable_inter.comp_aemeasurable (hf.prodMk hg)
+
+@[fun_prop]
+lemma AEMeasurable.union (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+    AEMeasurable (fun a ↦ f a ∪ g a) μ :=
+  measurable_union.comp_aemeasurable (hf.prodMk hg)
+
+@[fun_prop]
+lemma AEMeasurable.compl (hf : AEMeasurable f μ) : AEMeasurable (fun a ↦ (f a)ᶜ) μ :=
+  measurable_compl.comp_aemeasurable hf
+
+@[fun_prop]
+lemma AEMeasurable.sdiff (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+    AEMeasurable (fun a ↦ f a \ g a) μ :=
+  measurable_sdiff.comp_aemeasurable (hf.prodMk hg)
+
+open scoped symmDiff in
+@[fun_prop]
+lemma AEMeasurable.symmDiff (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+    AEMeasurable (fun a ↦ f a ∆ g a) μ :=
+  measurable_symmDiff.comp_aemeasurable (hf.prodMk hg)
+
+@[fun_prop]
+protected lemma AEMeasurable.subset [Countable β] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+    AEMeasurable (fun a ↦ f a ⊆ g a) μ :=
+  .forall fun i ↦ .imp (by fun_prop) (by fun_prop)
+
+end Set
+
 namespace MeasureTheory
 namespace Measure
 
