@@ -5,11 +5,9 @@ Authors: Kevin H. Wilson
 -/
 module
 
-public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.Topology.Algebra.Module.LocallyConvex
 public import Mathlib.Topology.PartitionOfUnity
 import Mathlib.Analysis.LocallyConvex.AbsConvex
-import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.Topology.Semicontinuity.Hemicontinuity
 
 /-!
