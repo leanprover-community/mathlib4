@@ -42,7 +42,7 @@ def normRankCore : Simp.Simproc := fun e => do
   let u ← getDecLevel R
   have α : Q(Type u) := R
   have A : Q(Matrix (Fin $m) (Fin $n) $α) := A
-  match ← checkBareissApplicable α with
+  match ← inferBareissRing α with
   | .ok rα => return .done (← normalizeRank rα e A entries)
   | .error err =>
     trace[Tactic.evalRank] "{err}{indentExpr A}"

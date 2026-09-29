@@ -27,28 +27,8 @@ initialize registerTraceClass `Tactic.evalRank
 
 namespace Mathlib.Tactic.Echelon
 
-/-- Check whether `decide` reduces the nonzero-ness of a numeral of `α` to a verdict, the shape
-of the entry conditions the certificate closes by `decide`. ℝ has a classical `DecidableEq`
-instance, so instance synthesis alone does not settle this.
-The probe checks 2 instead of 1 against 0 because some models might have decidable equality
-facts between 0 and 1, but not for general entries against 0. -/
-def checkDecideEq {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) : MetaM Bool := do
-  let two : Q($α) ← mkIntNumeral α 2
-  -- `Decidable` of the single disequality rather than `DecidableEq`: a ring where equality
-  -- is only decidable against zero should pass
-  let some _inst ← synthInstanceQ? q(Decidable ($two ≠ 0)) | return false
-  let dec := q(decide ($two ≠ 0))
-  return (Kernel.whnf (← getEnv) (← getLCtx) dec).toOption.any fun r =>
-    r.isConstOf ``Bool.true || r.isConstOf ``Bool.false
-
-/-- `norm_num`'s core as an entry certifier. -/
-def normNumCertifier : EntryCertifier := fun p => do
-  let ⟨b, prf⟩ ← Mathlib.Meta.NormNum.deriveBool p
-  unless b do throwError "norm_num refutes{indentExpr p}"
-  return prf
-
 /-- The applicability check of the Bareiss method, which requires a commutative domain. -/
-def checkBareissApplicable {u : Level} (α : Q(Type u)) :
+def inferBareissRing {u : Level} (α : Q(Type u)) :
     MetaM (Except MessageData Q(CommRing $α)) := do
   let .some rα ← trySynthInstanceQ q(CommRing $α)
     | return .error m!"expected the element type to be a commutative ring"
@@ -57,8 +37,7 @@ def checkBareissApplicable {u : Level} (α : Q(Type u)) :
   return .ok rα
 
 /-- Select the first registered computation model for the element type `α`, or the default
-rational model. The rational model serves many rings, so its entry certifier is probed here
-(`none` where `decide` settles equality, `norm_num` otherwise). -/
+rational model. -/
 def modelFor {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) :
     MetaM ((c : Carrier) × Model c.type) := do
   for (name, ext) in bareissExt.getState (← getEnv) do
@@ -67,20 +46,13 @@ def modelFor {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) :
       return model
   trace[Tactic.evalRank] "no registered model handles the element type; using the rational \
     model for{indentExpr α}"
-  let certifier? ← do
-    if ← checkDecideEq α rα then pure none
-    else
-      trace[Tactic.evalRank] "`decide` cannot settle equality in the element type; \
-        using the `norm_num` entry certifier{indentExpr α}"
-      pure (some normNumCertifier)
-  let model ← ratModel α rα
-  return ⟨.int, { model with entryCertifier? := certifier? }⟩
+  return ⟨.int, ← ratModel α rα⟩
 
 /-- The result of producer evaluation and certificate construction, together with the computation
 model. -/
 structure BareissResult {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRing $α))
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) where
-  /-- The certificate of the decomposition. -/
+  /-- The decomposition certificate with its reusable intermediate certificates. -/
   cert : DecompositionCert rα A
   /-- The carrier of the computation model. -/
   carrier : Carrier
@@ -89,10 +61,9 @@ structure BareissResult {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRi
   /-- The decomposition data underlying the certificate, on the model's carrier. -/
   data : BareissData carrier.type
 
-/-- Produce the decomposition of the matrix literal `A` and elaborate its certificate with the
-terms and proofs it is assembled from. -/
+/-- Produce the decomposition of the matrix literal `A` and elaborate its certificates. -/
 def mkBareissDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRing $α))
-    (A : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Expr)) :
+    (A : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Q($α))) :
     MetaM (BareissResult rα A) := do
   let ⟨carrier, model⟩ ← modelFor α rα
   let fractions ← entries.mapM fun row => row.mapM model.evalEntry

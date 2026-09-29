@@ -43,9 +43,35 @@ def mkIntNumeral {u : Level} (α : Q(Type u)) (i : Int) : MetaM Q($α) := do
   else
     return n
 
+/-- Check whether `decide` reduces the nonzero-ness of a numeral of `α` to a verdict, the shape
+of the entry conditions the certificate closes by `decide`. ℝ has a classical `DecidableEq`
+instance, so instance synthesis alone does not settle this.
+The probe checks 2 instead of 1 against 0 because some models might have decidable equality
+facts between 0 and 1, but not for general entries against 0. -/
+def checkDecideEq {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) : MetaM Bool := do
+  let two : Q($α) ← mkIntNumeral α 2
+  -- `Decidable` of the single disequality rather than `DecidableEq`: a ring where equality
+  -- is only decidable against zero should pass
+  let some _inst ← synthInstanceQ? q(Decidable ($two ≠ 0)) | return false
+  let dec := q(decide ($two ≠ 0))
+  return (Kernel.whnf (← getEnv) (← getLCtx) dec).toOption.any fun r =>
+    r.isConstOf ``Bool.true || r.isConstOf ``Bool.false
+
+/-- `norm_num`'s core as an entry certifier. -/
+def normNumCertifier : EntryCertifier := fun p => do
+  let ⟨b, prf⟩ ← Mathlib.Meta.NormNum.deriveBool p
+  unless b do throwError "norm_num refutes{indentExpr p}"
+  return prf
+
 /-- The rational model. -/
 def ratModel {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) :
     MetaM (Model Int) := do
+  let entryCertifier? ← do
+    if ← checkDecideEq α rα then pure none
+    else
+      trace[Tactic.evalRank] "`decide` cannot settle equality in the element type; \
+        using the `norm_num` entry certifier{indentExpr α}"
+      pure (some normNumCertifier)
   -- the characteristic determines the zero test
   let pQ : Q(ℕ) ← mkFreshExprMVarQ q(ℕ)
   let .some _ ← trySynthInstanceQ q(CharP $α $pQ)
@@ -67,6 +93,7 @@ def ratModel {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) :
       let v ← evalRatEntry (p == 0) e
       return (v.num, if v.den == 1 then none else some (v.den : Int))
     commonMultiple := fun a b => (Int.lcm a b : Int)
-    mkEntry := mkIntNumeral α }
+    mkEntry := mkIntNumeral α
+    entryCertifier? }
 
 end Mathlib.Tactic.Echelon

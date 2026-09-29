@@ -70,7 +70,8 @@ def mkZsqrtdRawLit (dQ : Q(ℤ)) {d : ℤ} (v : ℤ√d) : Q(Zsqrtd $dQ) :=
   q(⟨$(Meta.NormNum.mkRawIntLit v.re), $(Meta.NormNum.mkRawIntLit v.im)⟩)
 
 /-- The `ℤ√d` model. The elimination runs on literals with raw integer components, computed
-with the arithmetic of `ℤ√d`. `d` is the value of the integer literal `dQ`. -/
+with the arithmetic of `ℤ√d`. `d` is the value of the integer literal `dQ`. Equality in `ℤ√d`
+is settled by `decide`, so the model has no entry certifier. -/
 def zsqrtdModel (dQ : Q(ℤ)) (d : ℤ) : Model Expr where
   ops := (zsqrtdOps d).lift (zsqrtdOfRawLit? d) (mkZsqrtdRawLit dQ)
   evalEntry e := return (mkZsqrtdRawLit dQ (← evalZsqrtdEntry d e), none)
@@ -81,8 +82,7 @@ def zsqrtdModel (dQ : Q(ℤ)) (d : ℤ) : Model Expr where
       | throwError "expected a `ℤ√d` literal with raw integer components{indentExpr e}"
     return q((⟨$(mkIntLitQ v.re), $(mkIntLitQ v.im)⟩ : Zsqrtd $dQ))
 
-/-- The `ℤ√d` model registration: handles `Zsqrtd d` for an integer literal `d`.
-Equality in `ℤ√d` is settled by `decide`, so the model has no entry certifier. -/
+/-- The `ℤ√d` model registration: handles `Zsqrtd d` for an integer literal `d`. -/
 @[bareiss_ext] def zsqrtdExt : BareissExt where
   model? R := do
     -- unfold reducible aliases such as `GaussianInt` before matching

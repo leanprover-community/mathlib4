@@ -278,7 +278,7 @@ example : Matrix.rank (R := ZMod 4) !![1, 2; 3, 4] = 2 := by eval_rank
 
 Rejected today; extensions of the tactic could support these inputs. -/
 
--- Needs a model evaluating polynomial entries, with an entry certifier for their identities.
+-- Needs a model evaluating polynomial entries.
 open Polynomial in
 /--
 error: `eval_rank` made no progress.
