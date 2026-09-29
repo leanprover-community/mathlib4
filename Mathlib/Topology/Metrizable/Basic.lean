@@ -217,9 +217,8 @@ instance (priority := 100) DiscreteTopology.metrizableSpace [DiscreteTopology X]
 
 /-- A compact set in a pseudo metrizable space is separable, i.e., it is a subset of the closure of
 a countable set. -/
-theorem _root_.IsCompact.exists_countable_dense_subset {X : Type*} [TopologicalSpace X]
-    [TopologicalSpace.PseudoMetrizableSpace X] {s : Set X} (hs : IsCompact s) :
-    ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t :=
+theorem _root_.IsCompact.exists_countable_dense_subset [PseudoMetrizableSpace X] {s : Set X}
+    (hs : IsCompact s) : ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t :=
   hs.isSeparable.exists_countable_dense_subset
 
 end TopologicalSpace
