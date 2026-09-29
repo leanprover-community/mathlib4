@@ -35,7 +35,7 @@ open MeasureTheory Measure unitInterval
 open scoped ENNReal Finset
 
 namespace ProbabilityTheory
-variable {ι Ω : Type*} {m : MeasurableSpace Ω} {X Y : Ω → Set ι} {s u : Set ι} {i : ι} {p : I}
+variable {ι Ω : Type*} {m : MeasurableSpace Ω} {X Y : Ω → Set ι} {s t u : Set ι} {i : ι} {p : I}
   {P : Measure Ω}
 
 variable (u p) in
@@ -216,69 +216,47 @@ lemma setBernoulli_empty : setBer((∅ : Set ι), p) = Measure.dirac ∅ := by
 
 end Countable
 
-@[fun_prop]
-lemma _root_.Measurable.inter {α β : Type*} [MeasurableSpace α]
-    {f g : α → Set β} (hf : Measurable f) (hg : Measurable g) :
-    Measurable fun a ↦ f a ∩ g a :=
-  .of_eval fun _ ↦ hf.eval.and hg.eval
-
-@[fun_prop]
-lemma _root_.AEMeasurable.inter {α β : Type*} {mα : MeasurableSpace α} {μ : Measure α}
-    {f g : α → Set β} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
-    AEMeasurable (fun a ↦ f a ∩ g a) μ := by
-  refine ⟨fun a ↦ hf.mk f a ∩ hg.mk g a, hf.measurable_mk.inter hg.measurable_mk, ?_⟩
-  filter_upwards [hf.ae_eq_mk, hg.ae_eq_mk] with a h1 h2
-  simp_all
-
-lemma HasLaw.inter {S : Ω → Set ι} (hS : HasLaw S setBer(s, p) P) :
-    HasLaw (fun ω ↦ (S ω) ∩ u) setBer(s ∩ u, p) P where
+/-- If `X` is a product of independent Bernoulli random variables over a set `s`,
+then `X ∩ u` is a product of independent Bernoulli random variables over `s ∩ u`. -/
+lemma HasLaw.setBernoulli_inter (hX : HasLaw X setBer(s, p) P) :
+    HasLaw (fun ω ↦ (X ω) ∩ u) setBer(s ∩ u, p) P where
   map_eq := by
-    change map ((· ∩ u) ∘ S) P = _
+    change map ((· ∩ u) ∘ X) P = _
     have h1 : (fun x ↦ x ∩ u) ∘ (fun p : ι → Prop ↦ {i | p i}) =
         (fun p ↦ {i | p i}) ∘ (fun p i ↦ p i ∧ i ∈ u) := by ext; simp
-    rw [← AEMeasurable.map_map_of_aemeasurable, hS.map_eq, setBernoulli_eq_map,
+    rw [← AEMeasurable.map_map_of_aemeasurable, hX.map_eq, setBernoulli_eq_map,
       setBernoulli_eq_map, map_map, h1, ← map_map,
       infinitePi_map_pi (f := fun i p ↦ p ∧ i ∈ u) (μ := fun i ↦ Ber(i ∈ s, False, p))]
     · congrm map _ (infinitePi fun i ↦ ?_)
       apply eq_bernoulliMeasure <;> simp +contextual
     all_goals fun_prop
 
-lemma indepFun_inter {t : Set ι} {S : Ω → Set ι} (hS : HasLaw S setBer(s, p) P)
-    (htu : Disjoint t u) [Countable ι] :
-    (S · ∩ t) ⟂ᵢ[P] (S · ∩ u) := by
-  have := hS.isProbabilityMeasure
-  have h1 : (S · ∩ t) =
-      (fun p ↦ {i | ∃ (h : i ∈ t), p ⟨i, h⟩}) ∘ (fun ω (i : t) ↦ i.1 ∈ (S ω)) := by
-    ext; grind
-  have h2 : (S · ∩ u) =
-      (fun p ↦ {i | ∃ (h : i ∈ u), p ⟨i, h⟩}) ∘ (fun ω (i : u) ↦ i.1 ∈ (S ω)) := by
-    ext; grind
-  rw [h1, h2]
+/-- If `X` is a product of independent Bernoulli random variables over a set `s` and `t` and `u`
+are disjoint sets, then `X ∩ t` and `X ∩ u` are independent. -/
+lemma HasLaw.indepFun_setBernoulli_inter [Countable ι]
+    (hX : HasLaw X setBer(s, p) P) (htu : Disjoint t u) :
+    (X · ∩ t) ⟂ᵢ[P] (X · ∩ u) := by
+  have := hX.isProbabilityMeasure
+  have h1 v : (X · ∩ v) =
+      (fun p ↦ {i | ∃ (h : i ∈ v), p ⟨i, h⟩}) ∘ (fun ω (i : v) ↦ i.1 ∈ (X ω)) := by ext; grind
+  simp_rw [h1]
   apply IndepFun.comp₀
-  · apply iIndepFun.indepFun_set₀ (X := fun i ω ↦ i ∈ (S ω))
-    · exact htu
-    · rw [iIndepFun_iff_map_fun_eq_infinitePi_map₀]
-      · have h1 : (fun ω i ↦ i ∈ (S ω)) = (fun s i ↦ i ∈ s) ∘ S := by
-          ext; grind
-        have h2 i : (fun ω ↦ i ∈ (S ω)) = (fun s ↦ i ∈ s) ∘ S := by
-          ext; grind
-        have h3 : ((fun (s : Set ι) i ↦ i ∈ s) ∘ fun p ↦ {i | p i}) = id := by ext; simp
-        have h4 i : ((fun (s : Set ι) ↦ i ∈ s) ∘ fun (p : ι → Prop) ↦ {i | p i}) = fun p ↦ p i := by
-          ext; simp
-        rw [h1, ← AEMeasurable.map_map_of_aemeasurable, hS.map_eq, setBernoulli_eq_map,
-          map_map, h3, map_id]
-        · congrm infinitePi fun i ↦ ?_
-          rw [h2, ← AEMeasurable.map_map_of_aemeasurable, hS.map_eq, setBernoulli_eq_map,
-            map_map, h4, infinitePi_map_eval]
-          any_goals fun_prop
-        any_goals fun_prop
-      fun_prop
-    · fun_prop
   any_goals fun_prop
-  · apply Measurable.aemeasurable
-    fun_prop
-  · apply Measurable.aemeasurable
-    fun_prop
+  any_goals exact Measurable.aemeasurable (by fun_prop)
+  refine iIndepFun.indepFun_set₀ (X := fun i ω ↦ i ∈ (X ω)) htu ?_ (by fun_prop)
+  rw [iIndepFun_iff_map_fun_eq_infinitePi_map₀ (by fun_prop)]
+  have h1 : (fun ω i ↦ i ∈ (X ω)) = (fun s i ↦ i ∈ s) ∘ X := by ext; grind
+  have h2 i : (fun ω ↦ i ∈ (X ω)) = (fun s ↦ i ∈ s) ∘ X := by ext; grind
+  have h3 : ((fun (s : Set ι) i ↦ i ∈ s) ∘ fun p ↦ {i | p i}) = id := by ext; simp
+  have h4 i : ((fun (s : Set ι) ↦ i ∈ s) ∘ fun (p : ι → Prop) ↦ {i | p i}) = fun p ↦ p i := by
+    ext; simp
+  rw [h1, ← AEMeasurable.map_map_of_aemeasurable, hX.map_eq, setBernoulli_eq_map, map_map, h3,
+    map_id]
+  · congrm infinitePi fun i ↦ ?_
+    rw [h2, ← AEMeasurable.map_map_of_aemeasurable, hX.map_eq, setBernoulli_eq_map, map_map, h4,
+      infinitePi_map_eval]
+    all_goals fun_prop
+  all_goals fun_prop
 
 lemma HasLaw.hasLaw_indicator_infinitePi_ite_of_setBernoulli [DecidablePred (· ∈ u)]
     {M : Type*} [MeasurableSpace M] [MeasurableSingletonClass M] [Zero M] (c : M)
