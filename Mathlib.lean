@@ -6269,6 +6269,7 @@ public import Mathlib.Order.Filter.NAry
 public import Mathlib.Order.Filter.Partial
 public import Mathlib.Order.Filter.Pi
 public import Mathlib.Order.Filter.Pointwise
+public import Mathlib.Order.Filter.Polynomial
 public import Mathlib.Order.Filter.Prod
 public import Mathlib.Order.Filter.Ring
 public import Mathlib.Order.Filter.SmallSets
