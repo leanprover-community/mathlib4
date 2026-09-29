@@ -710,7 +710,7 @@ theorem LinearIndependent.neg (hv : LinearIndependent R v) : LinearIndependent R
   intro f g h
   simp only [Finsupp.linearCombination_apply, Pi.neg_apply, smul_neg, Finsupp.sum_neg, neg_inj] at h
   ext m
-  exact DFunLike.congr_fun (hv h) m
+  congrm $(hv h) m
 
 @[simp] theorem linearIndependent_neg_iff :
     LinearIndependent R (-v) ↔ LinearIndependent R v := by
