@@ -1015,4 +1015,18 @@ theorem Monic.roots_map_of_card_eq_natDegree [IsDomain A] [IsDomain B] {p : A[X]
 
 end
 
+section Order
+
+open Filter
+
+variable [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] {p : R[X]}
+
+theorem eventually_atTop_not_isRoot (hp : p ≠ 0) : ∀ᶠ x in atTop, ¬p.IsRoot x :=
+  atTop_le_cofinite (finite_setOfPred_isRoot hp).compl_mem_cofinite
+
+theorem eventually_atBot_not_isRoot (hp : p ≠ 0) : ∀ᶠ x in atBot, ¬p.IsRoot x :=
+  atBot_le_cofinite (finite_setOfPred_isRoot hp).compl_mem_cofinite
+
+end Order
+
 end Polynomial
