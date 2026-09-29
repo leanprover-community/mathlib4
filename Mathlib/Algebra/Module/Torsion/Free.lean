@@ -141,7 +141,7 @@ lemma Module.isTorsionFree_nat_iff_hasUniqueDiv : IsTorsionFree ℕ M ↔ HasUni
   mp _ := .of_isTorsionFree ℕ _
   mpr _ := inferInstance
 
-@[deprecated (since := "2026-09-29")] alias Module.isTorsionFree_nat_iff_isMulTorsionFree :=
+@[deprecated (since := "2026-09-29")] alias Module.isTorsionFree_nat_iff_isAddTorsionFree :=
   Module.isTorsionFree_nat_iff_hasUniqueDiv
 
 end AddCommMonoid

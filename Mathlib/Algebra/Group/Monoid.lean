@@ -526,6 +526,9 @@ class IsAddTorsionFree (M : Type*) [AddMonoid M] where
 
 export IsAddTorsionFree (eq_of_nsmul_eq_nsmul_of_addCommute)
 
+@[deprecated (since := "2026-09-29")]
+alias IsAddTorsionFree.pow_left_injective := eq_of_nsmul_eq_nsmul_of_addCommute
+
 /-- A monoid is torsion-free if exponentiation by every non-zero element `n : ℕ` is
 injective on commuting elements (i.e., `a * b = b * a → a ^ n = b ^ n → a = b`).
 
@@ -546,6 +549,9 @@ class IsMulTorsionFree (M : Type*) [Monoid M] where
 
 attribute [to_additive existing] isMulTorsionFree_iff
 export IsMulTorsionFree (eq_of_pow_eq_pow_of_commute)
+
+@[deprecated (since := "2026-09-29")]
+alias IsMulTorsionFree.pow_left_injective := eq_of_pow_eq_pow_of_commute
 
 /-- An additive monoid has unique divisibility if scalar multiplication by every non-zero element
 `n : ℕ` is injective. This is the uniqueness counterpart to `DivisibleBy` which asserts existence.
