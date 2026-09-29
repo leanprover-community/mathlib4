@@ -5,7 +5,6 @@ Authors: Sébastien Gouëzel, Sophie Morel, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Logic.Embedding.Basic
 public import Mathlib.Data.Fintype.CardEmbedding
 public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 public import Mathlib.Topology.Algebra.Module.Multilinear.Topology
@@ -541,7 +540,7 @@ theorem opNNNorm_prod (f : ContinuousMultilinearMap 𝕜 E G) (g : ContinuousMul
 
 theorem opNorm_prod (f : ContinuousMultilinearMap 𝕜 E G) (g : ContinuousMultilinearMap 𝕜 E G') :
     ‖f.prod g‖ = max ‖f‖ ‖g‖ :=
-  congr_arg NNReal.toReal (opNNNorm_prod f g)
+  congr($(opNNNorm_prod f g).toReal)
 
 theorem opNNNorm_pi
     [∀ i', SeminormedAddCommGroup (E' i')] [∀ i', NormedSpace 𝕜 (E' i')]
@@ -552,7 +551,7 @@ theorem opNorm_pi {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'}
     [∀ i', SeminormedAddCommGroup (E' i')] [∀ i', NormedSpace 𝕜 (E' i')]
     (f : ∀ i', ContinuousMultilinearMap 𝕜 E (E' i')) :
     ‖pi f‖ = ‖f‖ :=
-  congr_arg NNReal.toReal (opNNNorm_pi f)
+  congr($(opNNNorm_pi f).toReal)
 
 section
 
@@ -794,7 +793,7 @@ theorem nnnorm_smulRight (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
 @[simp]
 theorem norm_smulRight (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
     ‖f.smulRight z‖ = ‖f‖ * ‖z‖ :=
-  congr_arg NNReal.toReal (nnnorm_smulRight f z)
+  congr($(nnnorm_smulRight f z).toReal)
 
 @[simp]
 theorem norm_mkPiRing (z : G) : ‖ContinuousMultilinearMap.mkPiRing 𝕜 ι z‖ = ‖z‖ := by

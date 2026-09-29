@@ -217,7 +217,7 @@ noncomputable def factors (a : Associates α) : FactorSet α := by
   · have : a ~ᵤ 0 ↔ b ~ᵤ 0 := Iff.intro (fun ha0 => hab.symm.trans ha0) fun hb0 => hab.trans hb0
     simp only [associated_zero_iff_eq_zero] at this
     simp only [quotient_mk_eq_mk, this, mk_eq_zero]
-  exact fun ha hb _ => heq_of_eq <| congr_arg some <| factors'_cong hab
+  exact fun ha hb _ => heq_of_eq congr(some $(factors'_cong hab))
 
 @[simp]
 theorem factors_zero : (0 : Associates α).factors = ⊤ :=

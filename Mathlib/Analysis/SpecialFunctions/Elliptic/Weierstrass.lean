@@ -6,14 +6,13 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Module.ZLattice.Summable
-public import Mathlib.Analysis.Analytic.Binomial
-public import Mathlib.Analysis.Complex.Liouville
-public import Mathlib.Analysis.Complex.LocallyUniformLimit
+import Mathlib.Analysis.Analytic.Binomial
+import Mathlib.Analysis.Complex.Liouville
+import Mathlib.Analysis.Complex.LocallyUniformLimit
 public import Mathlib.Analysis.Meromorphic.Order
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
-public import Mathlib.Tactic.NormNum.NatFactorial
 public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
-public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
+import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 
 /-!
 
@@ -494,7 +493,7 @@ lemma weierstrassP_add_coe (z : ℂ) (l : L.lattice) : ℘[L] (z + l) = ℘[L] z
       exact L.weierstrassP_add_coe_aux _ ⟨_, L.ω₁_mem_lattice⟩ L.ω₁_div_two_notMem_lattice
     · ext i
       exact L.weierstrassP_add_coe_aux _ ⟨_, L.ω₂_mem_lattice⟩ L.ω₂_div_two_notMem_lattice
-  exact congr_fun (this l.2) _
+  congrm $(this l.2) _
 
 lemma periodic_weierstrassP (l : L.lattice) : ℘[L].Periodic l :=
   (L.weierstrassP_add_coe · l)

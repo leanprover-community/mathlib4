@@ -5,11 +5,6 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Data.Finsupp.Lex
-public import Mathlib.Data.Finsupp.MonomialOrder
-public import Mathlib.Data.Finsupp.WellFounded
-public import Mathlib.Data.List.TFAE
-public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 
 /-! # Division algorithm with respect to monomial orders

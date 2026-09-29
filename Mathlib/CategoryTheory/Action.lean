@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Elements
 public import Mathlib.CategoryTheory.IsConnected
 public import Mathlib.CategoryTheory.SingleObj
-public import Mathlib.GroupTheory.GroupAction.Quotient
 public import Mathlib.GroupTheory.SemidirectProduct
 
 /-!
@@ -98,7 +97,6 @@ instance [Nonempty X] : Nonempty (ActionCategory M X) :=
 
 variable {X} (x : X)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The stabilizer of a point is isomorphic to the endomorphism monoid at the
   corresponding point. In fact they are definitionally equivalent. -/
 def stabilizerIsoEnd : stabilizerSubmonoid M x ≃* @End (ActionCategory M X) _ x where
@@ -111,7 +109,6 @@ theorem stabilizerIsoEnd_apply (f : stabilizerSubmonoid M x) :
     ((stabilizerIsoEnd M x) f).hom = f :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp 1100]
 theorem stabilizerIsoEnd_symm_apply (f : End _) :
     (stabilizerIsoEnd M x).symm f = ⟨f.hom, f.map_val⟩ :=
@@ -145,7 +142,6 @@ variable {G : Type*} [Group G] [MulAction G X]
 instance : Groupoid (ActionCategory G X) :=
   Functor.Elements.groupoid _
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Any subgroup of `G` is a vertex group in its action groupoid. -/
 def endMulEquivSubgroup (H : Subgroup G) : End (objEquiv G (G ⧸ H) ↑(1 : G)) ≃* H :=
   MulEquiv.trans (stabilizerIsoEnd G ((1 : G) : G ⧸ H)).symm
@@ -196,7 +192,6 @@ def curry (F : ActionCategory G X ⥤ SingleObj H) : G →* (X → H) ⋊[mulAut
       · exact F_map_eq.symm.trans (F.map_comp (homOfPair (g⁻¹ • b) h) (homOfPair b g))
       rfl }
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Given `G` acting on `X`, a group homomorphism `φ : G →* (X → H) ⋊ G` can be uncurried to
 a functor from the action groupoid to `H`, provided that `φ g = (_, g)` for all `g`. -/
 @[simps]
