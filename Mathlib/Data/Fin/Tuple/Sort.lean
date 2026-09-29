@@ -84,11 +84,6 @@ same `f`-value keep their original order. This property is independent of the so
 def IsStable {ι κ : Type*} [Preorder ι] [Preorder κ] (f : ι → α) (σ : κ → ι) : Prop :=
   ∀ ⦃i j⦄, i < j → f (σ i) = f (σ j) → σ i < σ j
 
-/-- `σ` is a *stable sort* of `f` if `f ∘ σ` is monotone and `σ` is stable (`IsStable`). This is
-the property characterising `sort f` among all permutations, see `eq_sort_iff`. -/
-def StableSort (f : Fin n → α) (σ : Equiv.Perm (Fin n)) :=
-  Monotone (f ∘ σ) ∧ IsStable f σ
-
 /-- `sort f` is the permutation that orders `Fin n` according to the order of the outputs of `f`. -/
 def sort (f : Fin n → α) : Equiv.Perm (Fin n) :=
   (graphEquiv₂ f).toEquiv.trans (graphEquiv₁ f).symm
@@ -188,7 +183,7 @@ theorem eq_sort_iff' : σ = sort f ↔ StrictMono (σ.trans <| graphEquiv₁ f) 
 /-- A permutation `σ` equals `sort f` if and only if `f ∘ σ` is monotone and whenever `i < j`
 and `f (σ i) = f (σ j)`, then `σ i < σ j`. This means that `sort f` is the lexicographically
 smallest permutation `σ` such that `f ∘ σ` is monotone. -/
-theorem eq_sort_iff : σ = sort f ↔ StableSort f σ := by
+theorem eq_sort_iff : σ = sort f ↔ Monotone (f ∘ σ) ∧ IsStable f σ := by
   rw [eq_sort_iff']
   refine ⟨fun h => ⟨(monotone_proj f).comp h.monotone, fun i j hij hfij => ?_⟩, fun h i j hij => ?_⟩
   · exact ((Prod.Lex.toLex_lt_toLex.1 <| h hij).resolve_left hfij.not_lt).2
@@ -197,7 +192,7 @@ theorem eq_sort_iff : σ = sort f ↔ StableSort f σ := by
 
 /-- The permutation that sorts `f` is the identity if and only if `f` is monotone. -/
 theorem sort_eq_refl_iff_monotone : sort f = Equiv.refl _ ↔ Monotone f := by
-  rw [eq_comm, eq_sort_iff, StableSort, Equiv.coe_refl, Function.comp_id]
+  rw [eq_comm, eq_sort_iff, Equiv.coe_refl, Function.comp_id]
   simp only [and_iff_left_iff_imp]
   exact fun _ _ _ hij _ => hij
 
@@ -253,17 +248,11 @@ theorem sort_perm (σ : Equiv.Perm (Fin n)) :
   · intro _ _ hij h
     exact (hij.ne (by simpa using h)).elim
 
-theorem stableSort_sort (f : Fin n → α) : StableSort f (sort f) :=
-  eq_sort_iff.mp rfl
-
 theorem isStable_sort (f : Fin n → α) : IsStable f (sort f) :=
-  (stableSort_sort f).2
-
-theorem stableSort_sortDesc (f : Fin n → α) : StableSort (OrderDual.toDual ∘ f) (sortDesc f) :=
-  stableSort_sort (OrderDual.toDual ∘ f)
+  (eq_sort_iff.mp rfl).2
 
 theorem isStable_sortDesc (f : Fin n → α) : IsStable f (sortDesc f) :=
-  (stableSort_sortDesc f).2
+  (eq_sort_iff (f := OrderDual.toDual ∘ f) (σ := sortDesc f)).mp rfl |>.2
 
 /-- `sort f ∘ Fin.rev` is a stable sort exactly when `f` is injective: on tied values it orders
 them by *decreasing* index, the opposite of the stable `sortDesc f`. -/
