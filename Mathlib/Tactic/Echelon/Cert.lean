@@ -57,16 +57,12 @@ structure MatrixViews (u : Level) (m n : Nat) (α : Q(Type u)) where
   /-- The entries of `lit`. -/
   entries : List (List Q($α))
 
-/-- The `MatrixViews` of a matrix given as its list literal `lit` and its entries. -/
-def MatrixViews.ofLit {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (m n : Nat)
-    (lit : Q(List (List $α))) (entries : List (List Q($α))) : MatrixViews u m n α :=
-  { matrix := q(ofLists $m $n $lit), lit, entries }
-
-/-- Build the `MatrixViews` of the row-major entries `rows`. -/
-def mkMatrixViews {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (m n : Nat)
+/-- The `MatrixViews` of the matrix with rows `rows`. -/
+def MatrixViews.ofArray {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (m n : Nat)
     (rows : Array (Array Q($α))) : MatrixViews u m n α :=
   let entries := rows.toList.map Array.toList
-  .ofLit zα m n (mkListLitQ (α := q(List $α)) (entries.map mkListLitQ)) entries
+  have lit : Q(List (List $α)) := mkListLitQ (α := q(List $α)) (entries.map mkListLitQ)
+  { matrix := q(ofLists $m $n $lit), lit, entries }
 
 /-- Build the list of pivot columns `[c₀, c₁, …]`. -/
 def mkPivotList (n : Nat) (pivots : Array Nat) : MetaM Q(List (Fin $n)) := do
@@ -107,14 +103,13 @@ def certifyLowerTriangularDiagList {u : Level} {α : Q(Type u)} (zα : Q(Zero $�
     have : $k₁Q =Q $kQ + 1 := ⟨⟩
     return q(IsLowerTriangularDiagList.cons $hdrop $hd $rest)
 
-/-- Prove `L.IsLowerTriangular` and `∀ i, L.diag i ≠ 0` from the rows of `L`, with `certifier`
-proving the diagonal entries nonzero. -/
-def certifyLowerTriangularDiag {u : Level} {m : Nat} {α : Q(Type u)} (zα : Q(Zero $α))
-    (L : MatrixViews u m m α) (certifier : EntryCertifier) :
-    MetaM (Q(($(L.matrix)).IsLowerTriangular) × Q(∀ i, ($(L.matrix)).diag i ≠ 0)) := do
-  let h ← certifyLowerTriangularDiagList zα certifier 0 m q(0) q($m) L.lit
-  return (mkExpectedPropHint q(isLowerTriangular_ofLists $h) q(($(L.matrix)).IsLowerTriangular),
-    mkExpectedPropHint q(diag_ofLists_ne_zero $h) q(∀ i, ($(L.matrix)).diag i ≠ 0))
+/-- Prove that `ofLists m m rows` is lower triangular with a nonzero diagonal. -/
+def certifyLowerTriangularDiag {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (m : Nat)
+    (rows : Q(List (List $α))) (certifier : EntryCertifier) :
+    MetaM (Q((ofLists $m $m $rows).IsLowerTriangular) ×
+      Q(∀ i, (ofLists $m $m $rows).diag i ≠ 0)) := do
+  let h ← certifyLowerTriangularDiagList zα certifier 0 m q(0) q($m) rows
+  return (q(isLowerTriangular_ofLists $h), q(diag_ofLists_ne_zero $h))
 
 /-- The proof of `IsPivotedList cols rows` on the literals, one `IsPivotedList.cons` per pivot. -/
 def certifyPivotedList {u : Level} {n : Nat} {α : Q(Type u)} (zα : Q(Zero $α))
@@ -218,16 +213,15 @@ def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommR
   let aα : Q(Add $α) ← synthInstanceQ q(Add $α)
   let mα : Q(Mul $α) ← synthInstanceQ q(Mul $α)
   let cα : Q(AddCommMonoid $α) ← synthInstanceQ q(AddCommMonoid $α)
-  let lRows : List (List Q($α)) := data.L.toList.map Array.toList
-  let aRows : List (List Q($α)) := (data.rowOrder.map (entries[·]!)).toList.map Array.toList
-  -- `proveMul` first, so that the views of `L` are stated on the literals it built
-  let mulEq := proveMul zα aα mα m m n lRows aRows
-  have L := MatrixViews.ofLit zα m m mulEq.A lRows
-  have U := mkMatrixViews zα m n data.U
+  have U := MatrixViews.ofArray zα m n data.U
   let σ ← mkPerm m data.swaps
   let cols : Q(List (Fin $n)) ← mkPivotList n data.pivot
   have pivot : Q(Fin $m → WithTop (Fin $n)) := q(fun i : Fin $m ↦ pivotOfList $cols i)
-  have Lm := L.matrix
+  let lRows : List (List Q($α)) := data.L.toList.map Array.toList
+  let aRows : List (List Q($α)) := (data.rowOrder.map (entries[·]!)).toList.map Array.toList
+  let mulEq := proveMul zα aα mα m m n lRows aRows
+  -- `L` and `Aσ` reuse the literals `proveMul` built
+  have Lm : Q(Matrix (Fin $m) (Fin $m) $α) := q(ofLists $m $m $(mulEq.A))
   let Aσm : Q(Matrix (Fin $m) (Fin $n) $α) := q(ofLists $m $n $(mulEq.B))
   have Um := U.matrix
   have hperm : Q(($A).submatrix $σ id = $Aσm) := certifyPermEq A Aσm σ
@@ -235,7 +229,7 @@ def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommR
   let hU : Q($Lm * ($A).submatrix $σ id = $Um) := q($hperm ▸ $hprod)
   let certifier := certifier?.getD mkDecideProofQ
   let hpivot : Q(($Um).IsPivotedBy $pivot) ← certifyPivotedBy zα U data.pivot cols certifier
-  let ⟨hlower, hdiag⟩ ← certifyLowerTriangularDiag zα L certifier
+  let ⟨hlower, hdiag⟩ ← certifyLowerTriangularDiag zα m mulEq.A certifier
   have hlower : Q(($Lm).IsLowerTriangular) := hlower
   have hdiag : Q(∀ i, ($Lm).diag i ≠ 0) := hdiag
   assertInstancesCommute
