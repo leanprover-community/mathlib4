@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 public import Mathlib.NumberTheory.Transcendental.Liouville.Basic
-public import Mathlib.Topology.Instances.Irrational
+import Mathlib.Topology.Instances.Irrational
 
 /-!
 # Liouville numbers with a given exponent
