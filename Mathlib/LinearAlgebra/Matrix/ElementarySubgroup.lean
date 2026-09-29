@@ -98,8 +98,9 @@ theorem map_surjective_of_elementary_eq_top {f : R →+* S} (hf : Function.Surje
 lemma map_reindexMulEquiv_elementary (e : n ≃ m) :
     (elementary n R).map (reindexMulEquiv R e : SpecialLinearGroup n R →* SpecialLinearGroup m R) =
       elementary m R := by
-  have h : reindexMulEquiv R e ∘ toSpecialLinearGroup = toSpecialLinearGroup ∘ reindexEquiv e :=
-    funext (reindexMulEquiv_toSpecialLinearGroup e)
+  have h : reindexMulEquiv R e ∘ toSpecialLinearGroup = toSpecialLinearGroup ∘ reindexEquiv e := by
+    funext _
+    exact Subtype.ext (toMatrix_reindexEquiv e _).symm
   simp [elementary, MonoidHom.map_closure, ← Set.range_comp, h,
     (reindexEquiv_surjective e).range_comp]
 
