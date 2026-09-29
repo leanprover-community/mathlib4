@@ -218,7 +218,7 @@ end Countable
 
 /-- If `X` is a product of independent Bernoulli random variables over a set `s`,
 then `X ∩ u` is a product of independent Bernoulli random variables over `s ∩ u`. -/
-lemma HasLaw.setBernoulli_inter (hX : HasLaw X setBer(s, p) P) :
+lemma HasLaw.setBernoulli_inter (hX : HasLaw X setBer(s, p) P) (u : Set ι) :
     HasLaw (fun ω ↦ (X ω) ∩ u) setBer(s ∩ u, p) P where
   map_eq := by
     change map ((· ∩ u) ∘ X) P = _
