@@ -518,6 +518,15 @@ theorem Function.Injective.isMulTorsionFree [Monoid M] [Monoid N] [IsMulTorsionF
     hf <| IsMulTorsionFree.eq_of_pow_eq_pow_of_commute hn
       (by simpa [commute_iff_eq] using congrArg f h) (by simpa using congrArg f hxy)
 
+/-- If the codomain of an injective monoid homomorphism is torsion free,
+then so is the domain. -/
+@[to_additive /-- If the codomain of an injective additive monoid homomorphism is torsion free,
+then so is the domain. -/]
+theorem Function.Injective.hasUniqueRoots [Monoid M] [Monoid N] [HasUniqueRoots N]
+    (f : M →* N) (hf : Function.Injective f) : HasUniqueRoots M where
+  pow_left_injective n hn x y hxy := hf <| HasUniqueRoots.pow_left_injective hn <| by
+    simpa using congrArg f hxy
+
 -- completely uninteresting lemmas about coercion to function, that all homs need
 section Coes
 

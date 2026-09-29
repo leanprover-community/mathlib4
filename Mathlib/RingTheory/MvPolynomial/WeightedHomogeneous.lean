@@ -564,7 +564,7 @@ variable [AddCommMonoid M] [PartialOrder M]
 /-- If `M` is canonically ordered, then the `weightedHomogeneousComponent` of weighted degree `0`
 of a polynomial is its constant coefficient. -/
 @[simp]
-theorem weightedHomogeneousComponent_zero [CanonicallyOrderedAdd M] [IsAddTorsionFree M]
+theorem weightedHomogeneousComponent_zero [CanonicallyOrderedAdd M] [HasUniqueDiv M]
     (hw : ∀ i : σ, w i ≠ 0) :
     weightedHomogeneousComponent w 0 φ = C (φ.coeff 0) := by
   classical
@@ -584,7 +584,7 @@ def NonTorsionWeight (w : σ → M) :=
   ∀ n x, n • w x = (0 : M) → n = 0
 
 omit [PartialOrder M] in
-theorem nonTorsionWeight_of [IsAddTorsionFree M] (hw : ∀ i : σ, w i ≠ 0) :
+theorem nonTorsionWeight_of [HasUniqueDiv M] (hw : ∀ i : σ, w i ≠ 0) :
     NonTorsionWeight w :=
   fun _ x hnx => (smul_eq_zero_iff_left (hw x)).mp hnx
 
