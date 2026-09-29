@@ -197,27 +197,28 @@ instance (priority := 100) [FinEnum α] : Fintype α where
   elems := univ.map equiv.symm.toEmbedding
   complete := by intros; simp
 
-@[grind =]
 def succMany? [inst : FinEnum α] (n : Nat) (x : α) : Option α :=
   let next := inst.equiv x + n
   if fits : next < card α
   then inst.equiv.symm { val := next, isLt := fits }
   else none
 
-@[grind =]
+@[simp, grind =]
+lemma succMany?_eq_none_iff [inst : FinEnum α] {n : Nat} {x : α} :
+    succMany? n x = none ↔ card α ≤ inst.equiv x + n := by
+  grind [succMany?]
+
+@[simp, grind =]
 lemma succMany?_eq_some_iff [inst : FinEnum α] {n : Nat} {x y : α} :
     succMany? n x = some y ↔ (inst.equiv x + n = inst.equiv y ∧ inst.equiv x + n < card α) := by
   constructor
-  case mp => grind
-  case mpr => grind [Equiv.symm_apply_apply]
+  case mp => grind [succMany?]
+  case mpr => grind [succMany?, Equiv.symm_apply_apply]
 
 @[grind =]
 lemma succMany?_succ [inst : FinEnum α] (n : Nat) (x : α) :
-    (succMany? n x).bind (succMany? 1) = succMany? (n + 1) x := by grind
-
-lemma succMany?_bind_flatten [inst : FinEnum α] (n m k : Nat) (x : α) :
-    (succMany? n x).bind (fun a => (succMany? m a).bind (succMany? k)) =
-      ((succMany? n x).bind (succMany? m)).bind (succMany? k) := by grind
+    (succMany? n x).bind (succMany? 1) = succMany? (n + 1) x := by
+  grind [succMany?]
 
 @[grind =]
 lemma succMany?_bind [inst : FinEnum α] {n m : Nat} {x : α} :
@@ -231,7 +232,7 @@ lemma succMany?_bind [inst : FinEnum α] {n m : Nat} {x : α} :
       rhs
       intro x
       rewrite [← @succMany?_succ _ inst m x]
-    rewrite [succMany?_bind_flatten, ih]
+    rewrite [← Option.bind_assoc, ih]
     apply succMany?_succ
 
 instance instUpwardEnumerable [inst : FinEnum α] : Std.PRange.UpwardEnumerable α where
@@ -247,7 +248,9 @@ instance [inst : FinEnum α] : Std.PRange.LawfulUpwardEnumerable α where
     have ⟨h, _⟩ := succMany?_eq_some_iff.mp h
     grind only
 
-  succMany?_zero x := by simp [Std.PRange.UpwardEnumerable.succMany?, succMany?]
+  succMany?_zero x := by
+    apply succMany?_eq_some_iff.mpr
+    grind
 
   succMany?_add_one n x := by
     simp only [Std.PRange.UpwardEnumerable.succMany?, Std.PRange.UpwardEnumerable.succ?]
