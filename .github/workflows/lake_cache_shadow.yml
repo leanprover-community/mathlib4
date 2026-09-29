@@ -171,7 +171,6 @@ jobs:
           # errors out if the path is missing. Runs that skip legacy hydration
           # reach the first landrun step with it absent.
           mkdir -p "$HOME/.cache/mathlib/"
-          mkdir -p _work
 
       - name: install elan
         shell: bash -euo pipefail {0}
@@ -183,8 +182,8 @@ jobs:
 
       # `elan which` below does not auto-install non-pinned toolchains. The
       # uninstall forces a fresh download: pr-release tags are republished in
-      # place, and elan skips toolchains it already has, so a persistent
-      # runner would otherwise keep running a stale binary under that name.
+      # place, elan skips toolchains it already has, and the runner's `~/.elan`
+      # can already hold an older build under that name.
       - name: Install override toolchain
         if: ${{ env.TOOLCHAIN_OVERRIDE != '' }}
         shell: bash -euo pipefail {0}
