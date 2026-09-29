@@ -311,7 +311,7 @@ end Order
 section Coef
 
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {p : FormalMultilinearSeries 𝕜 𝕜 E} {f : 𝕜 → E} {n : ℕ} {z : 𝕜} {y : Fin n → 𝕜}
+  {p : FormalMultilinearSeries 𝕜 𝕜 E} {n : ℕ} {z : 𝕜} {y : Fin n → 𝕜}
 
 /-- The `n`th coefficient of `p` when seen as a power series. -/
 def coeff (p : FormalMultilinearSeries 𝕜 𝕜 E) (n : ℕ) : E :=

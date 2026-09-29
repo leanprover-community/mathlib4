@@ -6,11 +6,8 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Limits.EssentiallySmall
-public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Equalizers
+import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Equalizers
 public import Mathlib.CategoryTheory.Subobject.Lattice
-public import Mathlib.CategoryTheory.ObjectProperty.Small
-public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
-public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 
 /-!
@@ -180,6 +177,28 @@ theorem isCodetecting_unop_iff (P : ObjectProperty Cᵒᵖ) : IsCodetecting P.un
 end Dual
 
 variable {P}
+
+section Adjunction
+
+lemma IsSeparating.strictMap_leftAdjoint
+    (hP : P.IsSeparating) {F : C ⥤ D} {G : D ⥤ C} [G.Faithful]
+    (adj : F ⊣ G) :
+    (P.strictMap F).IsSeparating :=
+  fun Y Z f g h ↦ G.map_injective (hP _ _
+    (fun X hX a ↦ (adj.homEquiv _ _).symm.injective (by
+      simpa [adj.homEquiv_counit] using
+        h _ (.mk X hX) (F.map a ≫ adj.counit.app Y))))
+
+lemma IsCoseparating.strictMap_rightAdjoint
+    (hP : P.IsCoseparating) {F : C ⥤ D} {G : D ⥤ C} [G.Faithful]
+    (adj : G ⊣ F) :
+    (P.strictMap F).IsCoseparating :=
+  fun Y Z f g h ↦ G.map_injective (hP _ _
+    (fun X hX a ↦ (adj.homEquiv _ _).injective (by
+      simpa [adj.homEquiv_unit] using
+        h _ (.mk X hX) (adj.unit.app Z ≫ F.map a))))
+
+end Adjunction
 
 theorem IsDetecting.isSeparating [HasEqualizers C] (hP : IsDetecting P) :
     IsSeparating P := fun _ _ f g hfg =>
@@ -507,7 +526,7 @@ variable (S : D) (T : C ⥤ D)
 theorem isCoseparating_inverseImage_proj {P : ObjectProperty C} (hP : P.IsCoseparating) :
     (P.inverseImage (proj S T)).IsCoseparating := by
   refine fun X Y f g hfg => ext _ _ (hP _ _ fun G hG h => ?_)
-  exact congr_arg CommaMorphism.right (hfg (mk (Y.hom ≫ T.map h)) hG (homMk h rfl))
+  congrm $(hfg (mk (Y.hom ≫ T.map h)) hG (homMk h rfl)).right
 
 end StructuredArrow
 
@@ -518,7 +537,7 @@ variable (S : C ⥤ D) (T : D)
 theorem isSeparating_inverseImage_proj {P : ObjectProperty C} (hP : P.IsSeparating) :
     (P.inverseImage (proj S T)).IsSeparating := by
   refine fun X Y f g hfg => ext _ _ (hP _ _ fun G hG h => ?_)
-  exact congr_arg CommaMorphism.left (hfg (mk (S.map h ≫ X.hom)) hG (homMk h rfl))
+  congrm $(hfg (mk (S.map h ≫ X.hom)) hG (homMk h rfl)).left
 
 end CostructuredArrow
 
@@ -549,6 +568,20 @@ theorem IsCoseparator.of_equivalence {G : C} (h : IsCoseparator G) (α : C ≌ D
   simpa using! ObjectProperty.IsCoseparating.of_equivalence h α
 
 end Equivalence
+
+section Adjunction
+
+lemma IsSeparator.leftAdjoint_obj {X : C} (hX : IsSeparator X)
+    {F : C ⥤ D} {G : D ⥤ C} [G.Faithful] (adj : F ⊣ G) :
+    IsSeparator (F.obj X) := by
+  simpa using! hX.strictMap_leftAdjoint adj
+
+lemma IsCoseparator.rightAdjoint_obj {X : C} (hX : IsCoseparator X)
+    {F : C ⥤ D} {G : D ⥤ C} [G.Faithful] (adj : G ⊣ F) :
+    IsCoseparator (F.obj X) := by
+  simpa using! hX.strictMap_rightAdjoint adj
+
+end Adjunction
 
 section Dual
 
@@ -973,6 +1006,18 @@ theorem HasCodetector.hasDetector_of_hasCodetector_op [HasCodetector Cᵒᵖ] :
     HasDetector C := by simp_all
 
 end Dual
+
+section Adjunction
+
+theorem HasSeparator.of_adjunction [HasSeparator C] {F : C ⥤ D} {G : D ⥤ C}
+    [G.Faithful] (adj : F ⊣ G) : HasSeparator D :=
+  ⟨_, (isSeparator_separator C).leftAdjoint_obj adj⟩
+
+theorem HasCoseparator.of_adjunction [HasCoseparator C] {F : C ⥤ D} {G : D ⥤ C}
+    [G.Faithful] (adj : G ⊣ F) : HasCoseparator D :=
+  ⟨_, (isCoseparator_coseparator C).rightAdjoint_obj adj⟩
+
+end Adjunction
 
 end HasGenerator
 

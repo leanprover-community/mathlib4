@@ -6,8 +6,6 @@ Authors: Nicolò Cavalleri
 module
 
 public import Mathlib.Data.Set.UnionLift
-public import Mathlib.Topology.ContinuousMap.Defs
-public import Mathlib.Topology.Homeomorph.Defs
 public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
@@ -155,7 +153,7 @@ theorem cancel_left {f : C(β, γ)} {g₁ g₂ : C(α, β)} (hf : Injective f) :
 
 instance [Nonempty α] [Nontrivial β] : Nontrivial C(α, β) :=
   ⟨let ⟨b₁, b₂, hb⟩ := exists_pair_ne β
-  ⟨const _ b₁, const _ b₂, fun h => hb <| DFunLike.congr_fun h <| Classical.arbitrary α⟩⟩
+  ⟨const _ b₁, const _ b₂, fun h => hb congr($h (Classical.arbitrary α))⟩⟩
 
 /-- The bijection `C(X₁, Y₁) ≃ C(X₂, Y₂)` induced by homeomorphisms
 `e : X₁ ≃ₜ X₂` and `e' : Y₁ ≃ₜ Y₂`. -/
@@ -298,7 +296,7 @@ theorem restrict_apply_mk (f : C(α, β)) (s : Set α) (x : α) (hx : x ∈ s) :
 theorem injective_restrict [T2Space β] {s : Set α} (hs : Dense s) :
     Injective (restrict s : C(α, β) → C(s, β)) := fun f g h ↦
   DFunLike.ext' <| (map_continuous f).ext_on hs (map_continuous g) <|
-    Set.domRestrict_eq_domRestrict_iff.1 <| congr_arg DFunLike.coe h
+    Set.domRestrict_eq_domRestrict_iff.1 congr($h)
 
 /-- The restriction of a continuous map to the preimage of a set. -/
 @[simps]
@@ -409,10 +407,27 @@ theorem liftCover_restrict' {s : Set α} {hs : s ∈ A} :
 
 end Gluing
 
+/-- `Subtype.val` as a bundled continuous map. -/
+@[simps!]
+def subtypeVal (s : Set α) : C(s, α) where
+  toFun := Subtype.val
+  continuous_toFun := continuous_subtype_val
+
 /-- `Set.inclusion` as a bundled continuous map. -/
+@[simps!]
 def inclusion {s t : Set α} (h : s ⊆ t) : C(s, t) where
   toFun := Set.inclusion h
   continuous_toFun := continuous_inclusion h
+
+@[simp]
+theorem inclusion_comp_inclusion {r s t : Set α} (hst : s ⊆ t) (hrs : r ⊆ s) :
+    (inclusion hst).comp (inclusion hrs) = inclusion (hrs.trans hst) :=
+  rfl
+
+@[simp]
+theorem subtypeVal_comp_inclusion {s t : Set α} (h : s ⊆ t) :
+    (subtypeVal t).comp (inclusion h) = subtypeVal s :=
+  rfl
 
 end ContinuousMap
 

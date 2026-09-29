@@ -29,7 +29,7 @@ A finite set is defined to be a set whose coercion to a type has a `Finite` inst
 
 There are two components to finiteness constructions. The first is `Fintype` instances for each
 construction. This gives a way to actually compute a `Finset` that represents the set, and these
-may be accessed using `set.toFinset`. This gets the `Finset` in the correct form, since otherwise
+may be accessed using `Set.toFinset`. This gets the `Finset` in the correct form, since otherwise
 `Finset.univ : Finset s` is a `Finset` for the subtype for `s`. The second component is
 "constructors" for `Set.Finite` that give proofs that `Fintype` instances exist classically given
 other `Set.Finite` proofs. Unlike the `Fintype` instances, these *do not* use any decidability
@@ -49,7 +49,7 @@ open scoped symmDiff
 
 universe u v w x
 
-variable {α : Type u} {β : Type v} {ι : Sort w} {γ : Type x}
+variable {α : Type u} {β : Type v} {γ : Type x}
 
 namespace Set
 
@@ -373,10 +373,16 @@ lemma «forall» {p : Finset α → Prop} :
   mp h s hs := h _
   mpr h s := by simpa using h s s.finite_toSet
 
+theorem forall_toSet {p : Set α → Prop} : (∀ s : Finset α, p s) ↔ ∀ s : Set α, s.Finite → p s := by
+  simp [Finset.forall]
+
 lemma «exists» {p : Finset α → Prop} :
     (∃ s, p s) ↔ ∃ (s : Set α) (hs : s.Finite), p hs.toFinset where
   mp := fun ⟨s, hs⟩ ↦ ⟨s, s.finite_toSet, by simpa⟩
   mpr := fun ⟨s, hs, hs'⟩ ↦ ⟨hs.toFinset, hs'⟩
+
+theorem exists_toSet {p : Set α → Prop} : (∃ s : Finset α, p s) ↔ ∃ s : Set α, s.Finite ∧ p s := by
+  simp [Finset.exists, and_comm]
 
 lemma mem_range_coe_iff {s : Set α} : s ∈ Set.range ((↑) : Finset α → Set α) ↔ s.Finite where
   mp := by

@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Abelian.Preradical.Basic
 public import Mathlib.CategoryTheory.Abelian.FunctorCategory
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Square
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
 # The colon construction on preradicals
@@ -163,7 +163,7 @@ lemma toColon_hom_left_colonπ :
 @[reassoc (attr := simp)]
 lemma toColon_hom_left_app_colonπ_app (X : C) :
     (toColon Φ Ψ).hom.left.app X ≫ (colonπ Φ Ψ).app X = 0 :=
-  NatTrans.congr_app (toColon_hom_left_colonπ Φ Ψ) X
+  congr($(toColon_hom_left_colonπ Φ Ψ).app X)
 
 @[reassoc (attr := simp)]
 lemma toColon_hom_left_app_colon_ι_app (X : C) :

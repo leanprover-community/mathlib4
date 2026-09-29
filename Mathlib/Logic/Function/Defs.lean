@@ -19,7 +19,7 @@ universe u₁ u₂ u₃ u₄ u₅
 
 namespace Function
 
-variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ : Sort u₅}
+variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄}
 
 lemma flip_def {f : α → β → φ} : flip f = fun b a => f a b := rfl
 
@@ -206,7 +206,7 @@ end Function
 
 namespace Function
 
-variable {α : Type u₁} {β : Type u₂}
+variable {α : Type u₁}
 
 /- ### Fixed points of functions -/
 

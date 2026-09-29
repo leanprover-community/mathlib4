@@ -70,7 +70,7 @@ attribute [local instance] endofunctorMonoidalCategory
 
 @[simp] theorem endofunctorMonoidalCategory_tensorMap_app
     {F G H K : C ⥤ C} {α : F ⟶ G} {β : H ⟶ K} (X : C) :
-    (α ⊗ₘ β).app X = β.app (F.obj X) ≫ K.map (α.app X) := rfl
+    (α ⊗ₘ β).app X = β.app (F.obj X) ≫ K.map (α.app X) := NatTrans.hcomp_app _ _ _
 
 @[simp] theorem endofunctorMonoidalCategory_whiskerLeft_app
     {F H K : C ⥤ C} {β : H ⟶ K} (X : C) :
@@ -102,7 +102,6 @@ namespace MonoidalCategory
 
 variable [MonoidalCategory C]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Tensoring on the right gives a monoidal functor from `C` into endofunctors of `C`.
 -/

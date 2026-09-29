@@ -10,8 +10,7 @@ public import Mathlib.GroupTheory.Coprod.Basic
 public import Mathlib.GroupTheory.Complement
 
 /-!
-
-## Pushouts of Monoids and Groups
+# Pushouts of Monoids and Groups
 
 This file defines wide pushouts of monoids and groups and proves some properties
 of the amalgamated product of groups (i.e. the special case where all the maps
@@ -566,7 +565,7 @@ theorem prod_injective {ι : Type*} {G : ι → Type*} [(i : ι) → Group (G i)
   exact equiv.symm.injective
 
 instance : FaithfulSMul (PushoutI φ) (NormalWord d) :=
-  ⟨fun h => by simpa using congr_arg prod (h empty)⟩
+  ⟨fun h => by simpa using congr(prod $(h empty))⟩
 
 instance (i : ι) : FaithfulSMul (G i) (NormalWord d) :=
   ⟨by simp [summand_smul_def']⟩

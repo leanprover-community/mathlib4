@@ -5,13 +5,11 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.Data.List.Chain
 public import Mathlib.Algebra.Group.Int.Defs
-public import Mathlib.Algebra.BigOperators.Group.List.Basic
 public import Mathlib.Algebra.Group.Nat.Defs
-public import Mathlib.Tactic.CrossRefAttribute
+public import Mathlib.Algebra.BigOperators.Group.List.Defs
 
 /-!
 # Free groups
@@ -216,7 +214,7 @@ theorem cons_cons_iff (p) : Red (p :: L₁) (p :: L₂) ↔ Red L₁ L₂ :=
       | refl =>
         subst_vars
         cases eq₂
-        constructor
+        rfl
       | head h₁₂ h ih =>
         subst_vars
         obtain ⟨a, b⟩ := p
@@ -473,7 +471,7 @@ def FreeGroup (α : Type u) : Type u :=
 
 namespace FreeGroup
 
-variable {L L₁ L₂ L₃ L₄ : List (α × Bool)}
+variable {L L₁ L₂ L₃ : List (α × Bool)}
 
 /-- The canonical map from `List (α × Bool)` to the free group on `α`. -/
 @[to_additive /-- The canonical map from `List (α × Bool)` to the free additive group on `α`. -/]
@@ -623,10 +621,10 @@ def of (x : α) : FreeGroup α :=
   mk [(x, true)]
 
 @[to_additive (attr := elab_as_elim, induction_eliminator)]
-protected lemma induction_on {C : FreeGroup α → Prop} (z : FreeGroup α) (C1 : C 1)
-    (of : ∀ x, C <| of x) (inv_of : ∀ x, C (.of x) → C (.of x)⁻¹)
-    (mul : ∀ x y, C x → C y → C (x * y)) : C z :=
-  Quot.inductionOn z fun L ↦ L.recOn C1 fun ⟨x, b⟩ _tl ih ↦
+protected lemma induction_on {motive : FreeGroup α → Prop} (z : FreeGroup α) (one : motive 1)
+    (of : ∀ x, motive <| of x) (inv_of : ∀ x, motive (.of x) → motive (.of x)⁻¹)
+    (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive z :=
+  Quot.inductionOn z fun L ↦ L.recOn one fun ⟨x, b⟩ _tl ih ↦
     b.recOn (mul _ _ (inv_of _ <| of x) ih) (mul _ _ (of x) ih)
 
 /-- Two homomorphisms out of a free group are equal if they are equal on generators.
@@ -657,7 +655,7 @@ theorem of_injective : Function.Injective (@of α) := fun _ _ H => by
 
 section lift
 
-variable {β : Type v} [Group β] (f : α → β) {x y : FreeGroup α}
+variable {β : Type v} [Group β] (f : α → β) {x : FreeGroup α}
 
 /-- Given `f : α → β` with `β` a group, the canonical map `List (α × Bool) → β` -/
 @[to_additive /-- Given `f : α → β` with `β` an additive group, the canonical map
@@ -695,7 +693,7 @@ theorem lift_apply_of {x} : lift f (of x) = f x := by simp [of]
 @[to_additive]
 theorem lift_unique (g : FreeGroup α →* β) (hg : ∀ x, g (FreeGroup.of x) = f x) {x} :
     g x = FreeGroup.lift f x :=
-  DFunLike.congr_fun (lift.symm_apply_eq.mp (funext hg : g ∘ FreeGroup.of = f)) x
+  congr($(lift.symm_apply_eq.mp (funext hg : g ∘ FreeGroup.of = f)) x)
 
 @[to_additive]
 theorem lift_of_eq_id (α) : lift of = MonoidHom.id (FreeGroup α) :=
@@ -703,7 +701,7 @@ theorem lift_of_eq_id (α) : lift of = MonoidHom.id (FreeGroup α) :=
 
 @[to_additive]
 theorem lift_of_apply (x : FreeGroup α) : lift FreeGroup.of x = x :=
-  DFunLike.congr_fun (lift_of_eq_id α) x
+  congr($(lift_of_eq_id α) x)
 
 @[to_additive]
 theorem range_lift_le {s : Subgroup β} (H : Set.range f ⊆ s) : (lift f).range ≤ s := by
@@ -856,7 +854,7 @@ end Map
 
 section Prod
 
-variable [Group α] (x y : FreeGroup α)
+variable [Group α] (x : FreeGroup α)
 
 /-- If `α` is a group, then any function from `α` to `α` extends uniquely to a homomorphism from the
 free group over `α` to `α`. This is the multiplicative version of `FreeGroup.sum`. -/
@@ -924,16 +922,6 @@ theorem sum.map_inv : sum x⁻¹ = -sum x :=
 
 end Sum
 
-/-- The bijection between the free group on the empty type, and a type with one element. -/
-@[to_additive
-  (attr := deprecated "Use `Equiv.ofUnique (FreeGroup Empty) Unit` instead,
-or `MulEquiv.ofUnique (FreeGroup Empty) Unit` for the multiplicative version instead."
-(since := "2026-02-11"))
-  /-- The bijection between the additive free group on the empty type,
-  and a type with one element. -/]
-abbrev freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit :=
-  Equiv.ofUnique (FreeGroup Empty) Unit
-
 /-- The bijection between the free group on a singleton, and the integers. -/
 def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where
   toFun x := sum (by
@@ -963,7 +951,7 @@ def equivIntOfUnique [Unique α] : FreeGroup α ≃ ℤ where
   invFun x := of default ^ x
   left_inv x := by
     induction x with
-    | C1 => simp
+    | one => simp
     | of x => simp [Unique.default_eq x]
     | inv_of x hx => simp [Unique.default_eq x]
     | mul x y hx hy => simp [zpow_add, hx, hy]
@@ -991,7 +979,7 @@ def _root_.FreeAddGroup.addEquivIntOfUnique [Unique α] : FreeAddGroup α ≃+ �
   invFun x := x • FreeAddGroup.of default
   left_inv x := by
     induction x with
-    | C1 => simp
+    | zero => simp
     | of x => simp [Unique.default_eq x]
     | neg_of x hx => simp [Unique.default_eq x]
     | add x y hx hy => simp [add_zsmul, hx, hy]

@@ -6,17 +6,12 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 module
 
 public import Mathlib.Algebra.Group.AddChar
-public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.Algebra.MonoidAlgebra.Module
 public import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
-public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 public import Mathlib.Algebra.Ring.Action.Rat
 public import Mathlib.Data.Finset.Sort
-public import Mathlib.Tactic.FastInstance
-public import Mathlib.LinearAlgebra.Finsupp.LSum
 public import Mathlib.Algebra.Order.Group.Nat
 
-import Mathlib.Data.Finsupp.SMul
 
 /-!
 # Theory of univariate polynomials
@@ -135,7 +130,7 @@ instance instNSMul : SMul ℕ R[X] where
 
 instance smulZeroClass {S : Type*} [SMulZeroClass S R] : SMulZeroClass S R[X] where
   smul r p := ⟨r • p.toFinsupp⟩
-  smul_zero a := congr_arg ofFinsupp (smul_zero a)
+  smul_zero a := congr(ofFinsupp $(smul_zero a))
 
 -- to avoid a bug in the `ring` tactic
 instance (priority := 1) pow : Pow R[X] ℕ where pow p n := npowRec n p
@@ -560,13 +555,13 @@ theorem X_pow_mul_monomial (k n : ℕ) (r : R) : X ^ k * monomial n r = monomial
   rw [X_pow_mul, monomial_mul_X_pow]
 
 /-- `coeff p n` (often denoted `p.coeff n`) is the coefficient of `X^n` in `p`. -/
-def coeff : R[X] → ℕ → R
+def coeff : R[X] → ℕ →₀ R
   | ⟨p⟩ => p.coeff
 
 @[simp]
 theorem coeff_ofFinsupp (p) : coeff (⟨p⟩ : R[X]) = p.coeff := by rw [coeff]
 
-theorem coeff_injective : Injective (coeff : R[X] → ℕ → R) := by rintro ⟨p⟩ ⟨q⟩; simp [coeff]
+theorem coeff_injective : Injective (coeff : R[X] → ℕ →₀ R) := by rintro ⟨p⟩ ⟨q⟩; simp [coeff]
 
 @[simp]
 theorem coeff_inj : p.coeff = q.coeff ↔ p = q :=

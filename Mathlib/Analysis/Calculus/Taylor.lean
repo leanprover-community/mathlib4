@@ -6,12 +6,12 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Algebra.Polynomial.Module.Basic
-public import Mathlib.Analysis.Calculus.ContDiff.Operations
-public import Mathlib.Analysis.Calculus.Deriv.MeanValue
-public import Mathlib.Analysis.Calculus.Deriv.Pow
+import Mathlib.Analysis.Calculus.ContDiff.Operations
+import Mathlib.Analysis.Calculus.Deriv.MeanValue
+import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.AbsolutelyContinuousFun
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
 /-!
 # Taylor's theorem
@@ -55,7 +55,7 @@ open scoped Interval Topology Nat
 
 open Set
 
-variable {𝕜 E F : Type*}
+variable {E F : Type*}
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- The `k`th coefficient of the Taylor polynomial. -/
