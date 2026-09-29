@@ -7,7 +7,7 @@ module
 
 public import Mathlib.ModelTheory.Syntax
 public import Mathlib.Data.List.ProdSigma
-public import Mathlib.Data.Rel master
+public import Mathlib.Basic.Rel
 
 /-!
 # Basics on First-Order Semantics
