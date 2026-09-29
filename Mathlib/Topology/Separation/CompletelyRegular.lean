@@ -5,13 +5,12 @@ Authors: Matias Heikkilä
 -/
 module
 
-public import Mathlib.Topology.UrysohnsLemma
-public import Mathlib.Topology.Compactification.StoneCech
-import Mathlib.Topology.Order.Lattice
-public import Mathlib.Topology.SmallInductiveDimension
 public import Mathlib.Analysis.Real.Cardinality
+public import Mathlib.Topology.Compactification.StoneCech
 
 import Mathlib.Topology.Algebra.Indicator
+import Mathlib.Topology.Order.Lattice
+import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # Completely regular topological spaces.
@@ -201,7 +200,7 @@ instance [ZeroDimensionalSpace X] : CompletelyRegularSpace X where
     · simpa
     · rw [indicator_of_mem (subset_compl_comm.mp hUK hy)]
 
-@[deprecated instCompletelyRegularSpaceOfZeroDimensionalSpace (since := "2026-08-28")]
+@[deprecated instCompletelyRegularSpaceOfZeroDimensionalSpace +typeChanged (since := "2026-08-28")]
 theorem CompletelyRegularSpace.of_isTopologicalBasis_clopens
     (h : TopologicalSpace.IsTopologicalBasis {s : Set X | IsClopen s}) :
     CompletelyRegularSpace X := by
@@ -227,7 +226,7 @@ theorem CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum
     contrapose; intro hxs
     simpa [hf₁ hxs] using le_one'
 
-@[deprecated CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum
+@[deprecated CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum +typeChanged
 (since := "2026-08-28")]
 theorem CompletelyRegularSpace.isTopologicalBasis_clopens_of_cardinalMk_lt_continuum
     [CompletelyRegularSpace X] (hX : .mk X < 𝔠) :
@@ -304,14 +303,14 @@ lemma t35Space_iff_isEmbedding_stoneCechUnit :
   mp _ := isEmbedding_stoneCechUnit
   mpr hs := hs.t35Space
 
-@[deprecated CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum
+@[deprecated CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum +typeChanged
 (since := "2026-08-28")]
 theorem totallySeparatedSpace_of_cardinalMk_lt_continuum [T35Space X] (h : .mk X < 𝔠) :
     TotallySeparatedSpace X :=
   have := CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum h
   inferInstance
 
-@[deprecated Set.Countable.zeroDimensionalSpace (since := "2026-08-28")]
+@[deprecated Set.Countable.zeroDimensionalSpace +typeChanged (since := "2026-08-28")]
 protected lemma _root_.Set.Countable.totallySeparatedSpace [T35Space X]
     {s : Set X} (h : s.Countable) : TotallySeparatedSpace s :=
   have := h.zeroDimensionalSpace

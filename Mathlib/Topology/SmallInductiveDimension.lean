@@ -7,12 +7,11 @@ module
 
 public import Mathlib.Data.ENat.Basic
 public import Mathlib.Topology.Bases
-import Mathlib.Topology.Clopen
 
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Fintype.Option
 import Mathlib.Data.Nat.Cast.Order.Basic
-import Mathlib.Topology.Algebra.Indicator
+import Mathlib.Topology.Clopen
 import Mathlib.Topology.Compactness.Compact
 
 /-!
@@ -145,7 +144,7 @@ theorem nhds_basis_isClopen [ZeroDimensionalSpace X] (x : X) :
     (𝓝 x).HasBasis (fun s : Set X ↦ IsClopen s ∧ x ∈ s) id :=
   (isTopologicalBasis_isClopen (X := X)).nhds_hasBasis
 
-@[deprecated nhds_basis_isClopen (since := "2026-08-28")]
+@[deprecated nhds_basis_isClopen +typeChanged (since := "2026-08-28")]
 theorem nhds_basis_clopen [ZeroDimensionalSpace X] (x : X) :
     (𝓝 x).HasBasis (fun s : Set X ↦ x ∈ s ∧ IsClopen s) id := by
   simp_rw [and_comm]; exact nhds_basis_isClopen x

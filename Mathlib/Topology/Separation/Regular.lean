@@ -7,10 +7,8 @@ module
 
 public import Mathlib.Topology.Compactness.Lindelof
 public import Mathlib.Topology.Connected.Clopen
-
 public import Mathlib.Topology.Connected.TotallyDisconnected
 public import Mathlib.Topology.Separation.Hausdorff
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Regular, normal, T₃, T₄ and T₅ spaces
@@ -887,7 +885,7 @@ instance [T2Space X] [TotallyDisconnectedSpace X] [WeaklyLocallyCompactSpace X] 
   use (↑) '' V, VisClopen', by simp [Vx], Subset.trans (by simp) sU
 
 @[deprecated instZeroDimensionalSpaceOfT2SpaceOfTotallyDisconnectedSpaceOfWeaklyLocallyCompactSpace
-(since := "2026-08-28")]
++typeChanged (since := "2026-08-28")]
 theorem loc_compact_Haus_tot_disc_of_zero_dim [T2Space X] [TotallyDisconnectedSpace X]
     [WeaklyLocallyCompactSpace X] : IsTopologicalBasis {s : Set X | IsClopen s} := by
   rw [← zeroDimensionalSpace_iff_isTopologicalBasis_isClopen]

@@ -7,10 +7,11 @@ module
 
 public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Order.Disjointed
 public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.Sets.Closeds
 public import Mathlib.Topology.Sets.OpenCover
+
+import Mathlib.Order.Disjointed
 
 /-!
 # Disjoint covers of profinite spaces
