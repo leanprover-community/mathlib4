@@ -6,6 +6,7 @@ Authors: Michael Rothgang
 module
 
 public import Mathlib.Topology.MetricSpace.Basic
+public import Mathlib.Topology.Homeomorph.TransferInstance
 
 /-!
 # Transfer metric space structures across `Equiv`s
@@ -28,10 +29,14 @@ protected abbrev dist (e : α ≃ β) [Dist β] : Dist α := ⟨fun x y ↦ dist
 
 /-- Transfer a `PseudoMetricSpace` across an `Equiv` -/
 protected abbrev pseudometricSpace [PseudoMetricSpace β] (e : α ≃ β) : PseudoMetricSpace α :=
-  .induced e.toFun ‹_›
+  letI := e.topologicalSpace
+  (PseudoMetricSpace.induced e.toFun ‹_›).replaceTopology
+    (by exact congrFun e.coinduced_symm inferInstance)
 
 /-- Transfer a `MetricSpace` across an `Equiv` -/
 protected abbrev metricSpace [MetricSpace β] (e : α ≃ β) : MetricSpace α :=
-  .induced e.toFun e.injective ‹_›
+  letI := e.topologicalSpace
+  (MetricSpace.induced e.toFun e.injective ‹_›).replaceTopology
+    (by exact congrFun e.coinduced_symm inferInstance)
 
 end Equiv
