@@ -30,7 +30,7 @@ public section
 
 assert_not_exists MulAction IsOrderedMonoid
 
-variable {F ι α β : Type*}
+variable {F α β : Type*}
 
 namespace NNRat
 variable [DivisionSemiring α] {q r : ℚ≥0}
@@ -58,7 +58,7 @@ set_option backward.isDefEq.respectTransparency false in
   lift n to ℕ using hn
   have hd : (d : α) ≠ 0 := by
     refine fun hd ↦ hb ?_
-    have : Rat.divInt a b = _ := congr_arg NNRat.cast e
+    have : Rat.divInt a b = _ := congr(NNRat.cast $e)
     obtain ⟨k, rfl⟩ : d ∣ b := by simpa [Int.natCast_dvd_natCast, this] using Rat.den_dvd a b
     simp [*]
   have hb' : b ≠ 0 := by rintro rfl; exact hb Nat.cast_zero
@@ -154,8 +154,7 @@ lemma cast_divInt_of_ne_zero (a : ℤ) {b : ℤ} (b0 : (b : α) ≠ 0) : (a /. b
     rw [d0, zero_mul] at this
     contradiction
   rw [mk_eq_divInt] at e
-  have := congr_arg ((↑) : ℤ → α)
-    ((divInt_eq_divInt_iff b0' <| ne_of_gt <| Int.natCast_pos.2 h.bot_lt).1 e)
+  have := congr(($((divInt_eq_divInt_iff b0' <| ne_of_gt <| Int.natCast_pos.2 h.bot_lt).1 e) : α))
   rw [Int.cast_mul, Int.cast_mul, Int.cast_natCast] at this
   rw [eq_comm, cast_def, div_eq_mul_inv, eq_div_iff_mul_eq d0, mul_assoc, (d.commute_cast _).eq,
     ← mul_assoc, this, mul_assoc, mul_inv_cancel₀ b0, mul_one]
@@ -176,7 +175,6 @@ lemma cast_add_of_ne_zero {q r : ℚ} (hq : (q.den : α) ≠ 0) (hr : (r.den : �
 
 @[simp, norm_cast] lemma cast_neg (q : ℚ) : ↑(-q) = (-q : α) := by simp [cast_def, neg_div]
 
-set_option backward.isDefEq.respectTransparency false in
 @[norm_cast] lemma cast_sub_of_ne_zero (hp : (p.den : α) ≠ 0) (hq : (q.den : α) ≠ 0) :
     ↑(p - q) = (p - q : α) := by simp [sub_eq_add_neg, cast_add_of_ne_zero, hp, hq]
 
@@ -239,16 +237,16 @@ lemma ext_nnrat' (h : ∀ n : ℕ, f n = g n) : f = g :=
 
 See note [partially-applied ext lemmas] for why `comp` is used here. -/
 @[ext]
-lemma ext_nnrat {f g : ℚ≥0 →*₀ M₀} (h : f.comp (.ofClass (Nat.castRingHom ℚ≥0)) =
-    g.comp (.ofClass (Nat.castRingHom ℚ≥0))) : f = g :=
+lemma ext_nnrat {f g : ℚ≥0 →*₀ M₀} (h : f.comp (Nat.castRingHom ℚ≥0) =
+    g.comp (Nat.castRingHom ℚ≥0 : ℕ →*₀ ℚ≥0)) : f = g :=
   ext_nnrat' <| DFunLike.congr_fun h
 
 /-- If monoid with zero homs `f` and `g` from `ℚ≥0` agree on the positive naturals then they are
 equal. -/
 lemma ext_nnrat_on_pnat (same_on_pnat : ∀ n : ℕ, 0 < n → f n = g n) : f = g :=
   ext_nnrat' <| DFunLike.congr_fun <| ext_nat''
-    ((.ofClass f : ℚ≥0 →*₀ M₀).comp (.ofClass (Nat.castRingHom ℚ≥0)))
-    ((.ofClass g : ℚ≥0 →*₀ M₀).comp (.ofClass (Nat.castRingHom ℚ≥0))) (by simpa)
+    ((.ofClass f : ℚ≥0 →*₀ M₀).comp (Nat.castRingHom ℚ≥0))
+    ((.ofClass g : ℚ≥0 →*₀ M₀).comp (Nat.castRingHom ℚ≥0)) (by simpa)
 
 end NNRat
 
@@ -267,7 +265,7 @@ theorem ext_rat' (h : ∀ m : ℤ, f m = g m) : f = g :=
 See note [partially-applied ext lemmas] for why `comp` is used here. -/
 @[ext]
 theorem ext_rat {f g : ℚ →*₀ M₀}
-    (h : f.comp (.ofClass (Int.castRingHom ℚ)) = g.comp (.ofClass (Int.castRingHom ℚ))) : f = g :=
+    (h : f.comp (Int.castRingHom ℚ) = g.comp (Int.castRingHom ℚ : ℤ →*₀ ℚ)) : f = g :=
   ext_rat' <| DFunLike.congr_fun h
 
 /-- If monoid with zero homs `f` and `g` from `ℚ` agree on the positive naturals and `-1` then
@@ -277,8 +275,8 @@ theorem ext_rat_on_pnat (same_on_neg_one : f (-1) = g (-1))
   ext_rat' <|
     DFunLike.congr_fun <|
       show
-        (.ofClass f : ℚ →*₀ M₀).comp (.ofClass (Int.castRingHom ℚ)) =
-          (.ofClass g : ℚ →*₀ M₀).comp (.ofClass (Int.castRingHom ℚ))
+        (.ofClass f : ℚ →*₀ M₀).comp (Int.castRingHom ℚ) =
+          (.ofClass g : ℚ →*₀ M₀).comp (Int.castRingHom ℚ)
         from ext_int' (by simpa) (by simpa)
 
 end Rat

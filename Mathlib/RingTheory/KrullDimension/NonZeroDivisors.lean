@@ -5,12 +5,11 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
+import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
 public import Mathlib.RingTheory.KrullDimension.Basic
-public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
+import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 public import Mathlib.RingTheory.PowerSeries.Basic
-public import Mathlib.RingTheory.Spectrum.Prime.RingHom
-public import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.RingTheory.Spectrum.Prime.RingHom
 
 /-!
 
@@ -69,7 +68,7 @@ open Polynomial in
 lemma ringKrullDim_succ_le_ringKrullDim_polynomial :
     ringKrullDim R + 1 ≤ ringKrullDim R[X] :=
   ringKrullDim_succ_le_of_surjective constantCoeff (⟨C ·, coeff_C_zero⟩)
-    X_mem_nonzeroDivisors coeff_X_zero
+    X_mem_nonZeroDivisors coeff_X_zero
 
 open MvPolynomial in
 @[simp]
@@ -115,8 +114,16 @@ lemma ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial (σ : Type*) :
       simp
     · exact WithBot.le_add_self Order.bot_lt_krullDim.ne' _
 
+/-- If `R` is non-trivial, a polynomial ring in an infinite number of variables has infinite height,
+i.e. `dim R[X₁, ...] = ∞`. -/
+@[simp]
+lemma ringKrullDim_mvPolynomial_of_infinite [Nontrivial R] {σ : Type*} [Infinite σ] :
+    ringKrullDim (MvPolynomial σ R) = ⊤ := by
+  have := ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial (R := R) σ
+  simpa [WithBot.coe_bot_le.mp ringKrullDim_nonneg_of_nontrivial]
+
 open PowerSeries in
 lemma ringKrullDim_succ_le_ringKrullDim_powerseries :
     ringKrullDim R + 1 ≤ ringKrullDim (PowerSeries R) :=
   ringKrullDim_succ_le_of_surjective constantCoeff (⟨C ·, rfl⟩)
-    MvPowerSeries.X_mem_nonzeroDivisors constantCoeff_X
+    MvPowerSeries.X_mem_nonZeroDivisors constantCoeff_X

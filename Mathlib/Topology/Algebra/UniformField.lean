@@ -5,7 +5,6 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.RingTheory.SimpleRing.Basic
 public import Mathlib.Topology.Algebra.Field
 public import Mathlib.Topology.Algebra.UniformRing
 
@@ -110,10 +109,7 @@ variable [CompletableTopField K]
 @[norm_cast]
 theorem coe_inv (x : K) : (x : hat K)⁻¹ = ((x⁻¹ : K) : hat K) := by
   by_cases h : x = 0
-  · rw [h, inv_zero]
-    dsimp [Inv.inv]
-    norm_cast
-    simp
+  · simp [h, inv_zero, Inv.inv]
   · conv_lhs => dsimp [Inv.inv]
     rw [ite_eq_right]
     · exact hatInv_extends h

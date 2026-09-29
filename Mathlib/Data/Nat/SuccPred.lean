@@ -8,12 +8,10 @@ module
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
-public import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 public import Mathlib.Algebra.Order.SuccPred
-public import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Fin.Basic
 public import Mathlib.Order.Nat
-public import Mathlib.Order.SuccPred.Archimedean
-public import Mathlib.Order.SuccPred.WithBot
 
 /-!
 # Successors and predecessors of naturals
@@ -84,9 +82,6 @@ end Nat
 
 @[simp] theorem Fin.covBy_iff {n : ℕ} {a b : Fin n} : a ⋖ b ↔ (a : ℕ) ⋖ b :=
   and_congr_right' ⟨fun h c ha hb ↦ @h ⟨c, hb.trans b.prop⟩ ha hb, fun h _c hc ↦ h hc⟩
-
-@[deprecated Fin.covBy_iff "use Fin.covBy_iff.symm instead" (since := "2026-02-13")]
-theorem Fin.coe_covBy_iff {n : ℕ} {a b : Fin n} : (a : ℕ) ⋖ b ↔ a ⋖ b := Fin.covBy_iff.symm
 
 alias ⟨CovBy.coe_fin, _⟩ := Fin.covBy_iff
 

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.MvPolynomial.Monad
 public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
-public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Univ
 public import Mathlib.RingTheory.TensorProduct.Finite
 public import Mathlib.RingTheory.TensorProduct.Free
@@ -133,7 +132,7 @@ lemma toMvPolynomial_mul (M : Matrix m n R) (N : Matrix n o R) (i : m) :
   simp only [toMvPolynomial, mul_apply, map_sum, Finset.sum_comm (γ := o), bind₁, aeval,
     AlgHom.coe_mk, coe_eval₂Hom, eval₂_monomial, algebraMap_apply, Algebra.algebraMap_self,
     RingHom.id_apply, C_apply, pow_zero, Finsupp.prod_single_index, pow_one, Finset.mul_sum,
-    monomial_mul, zero_add]
+    monomial_mul_monomial, zero_add]
 
 end Matrix
 

@@ -5,12 +5,11 @@ Authors: Fabrizio Barroero
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.Ring.Multiset
-public import Mathlib.Algebra.Polynomial.OfFn
-public import Mathlib.Analysis.CStarAlgebra.Classes
+import Mathlib.Algebra.Polynomial.OfFn
+import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.Analysis.Polynomial.MahlerMeasure
-public import Mathlib.Data.Pi.Interval
-public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
+import Mathlib.Data.Pi.Interval
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 public import Mathlib.RingTheory.SimpleRing.Principal
 
@@ -67,9 +66,6 @@ theorem ncard_boxPoly : (boxPoly n B₁ B₂).ncard = ∏ i, (⌊B₂ i⌋ - ⌈
     · grind [toFn_comp_ofFn_eq_id]
   · norm_cast
     grind [Pi.card_Icc, card_Icc]
-
-@[deprecated (since := "2026-02-02")]
-alias card_eq_of_natDegree_le_of_coeff_le := ncard_boxPoly
 
 open NNReal
 
