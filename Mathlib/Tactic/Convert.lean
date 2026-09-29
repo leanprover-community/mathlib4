@@ -226,8 +226,8 @@ syntax (name := convert!) "convert!" Lean.Parser.Tactic.optConfig " ←"? ppSpac
   (" using " num)? (" with" (ppSpace colGt rintroPat)*)? : tactic
 
 macro_rules
-| `(tactic| convert! $cfg $[←%$l]? $t $[using $n]? $[with $[$w]*]?) =>
-    `(tactic| convert ! $cfg $[←%$l]? $t:term $[using $n]? $[with $[$w]*]?)
+| `(tactic| convert!%$tk $cfg $[←%$l]? $t $[using $n]? $[with $[$w]*]?) =>
+    `(tactic| convert%$tk ! $cfg $[←%$l]? $t:term $[using $n]? $[with $[$w]*]?)
 
 /--
 Elaborates `term` ensuring the expected type, allowing stuck metavariables.
@@ -275,8 +275,9 @@ elab_rules : tactic
               g₂.withContext <| withReducible <| isDefEq (← g₁.getType) (← g₂.getType)
             catch _ => pure false
           if sameGoals then
-            let tac ← `(tactic| convert%$tk $cfg $[←%$sym]? $term $[using $n]? $[with $ps?*]?)
-            TryThis.addSuggestion tk { suggestion := tac } (origSpan? := ← getRef)
+            /- Note that via macro expansion, `tk` now carries the position info for the token
+            `convert!`. -/
+            TryThis.addSuggestion tk "convert"
         return defaultGoals ++ gs
     else
       liftMetaTactic fun g ↦
@@ -318,8 +319,8 @@ syntax (name := convert_to!) "convert_to!" Lean.Parser.Tactic.optConfig " ←"? 
   (" using " num)? (" with" (ppSpace colGt rintroPat)*)? (Parser.Tactic.location)? : tactic
 
 macro_rules
-| `(tactic| convert_to! $cfg $[←%$l]? $t $[using $n]? $[with $w]? $[$loc]?) =>
-    `(tactic| convert_to ! $cfg $[←%$l]? $t:term $[using $n]? $[with $w]? $[$loc]?)
+| `(tactic| convert_to!%$tk $cfg $[←%$l]? $t $[using $n]? $[with $w]? $[$loc]?) =>
+    `(tactic| convert_to%$tk ! $cfg $[←%$l]? $t:term $[using $n]? $[with $w]? $[$loc]?)
 
 elab_rules : tactic
 | `(tactic| convert_to $[!%$expensive]? $cfg $[←%$sym]? $newType $[using $n]?
@@ -371,9 +372,9 @@ syntax (name := acChange) "ac_change " term (" using " num)? : tactic
 syntax (name := acChange!) "ac_change! " term (" using " num)? : tactic
 
 macro_rules
-| `(tactic| ac_change $t $[using $n]?) =>
-    `(tactic| convert_to $t:term $[using $n]? <;> try ac_rfl)
-| `(tactic| ac_change! $t $[using $n]?) =>
-    `(tactic| convert_to! $t:term $[using $n]? <;> try ac_rfl)
+| `(tactic| ac_change%$tk $t $[using $n]?) =>
+    `(tactic| convert_to%$tk $t:term $[using $n]? <;> try ac_rfl)
+| `(tactic| ac_change!%$tk $t $[using $n]?) =>
+    `(tactic| convert_to!%$tk $t:term $[using $n]? <;> try ac_rfl)
 
 end Mathlib.Tactic
