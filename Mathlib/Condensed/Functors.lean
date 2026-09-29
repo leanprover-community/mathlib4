@@ -5,7 +5,7 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.PreservesLimits
+import Mathlib.CategoryTheory.Sites.PreservesLimits
 public import Mathlib.Condensed.Explicit
 
 /-!

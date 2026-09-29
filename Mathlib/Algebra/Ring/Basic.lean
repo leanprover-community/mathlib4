@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Hom.Instances
 public import Mathlib.Algebra.Group.SelfInv
-public import Mathlib.Algebra.GroupWithZero.NeZero
+import Mathlib.Algebra.GroupWithZero.NeZero
 public import Mathlib.Algebra.Opposites
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Tactic.TFAE
@@ -76,7 +76,7 @@ and `Algebra.lmul`.
 -/
 def mul : R →+ R →+ R where
   toFun := mulLeft
-  map_zero' := ext <| zero_mul
+  map_zero' := ext zero_mul
   map_add' a b := ext <| add_mul a b
 
 lemma mul_apply (x y : R) : mul x y = x * y := rfl

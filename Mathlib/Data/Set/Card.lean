@@ -6,7 +6,7 @@ Authors: Peter Nelson
 module
 
 public import Mathlib.SetTheory.Cardinal.Finite
-public import Mathlib.Data.Set.Finite.Powerset
+import Mathlib.Data.Set.Finite.Powerset
 
 /-!
 # Noncomputable Set Cardinality
@@ -793,7 +793,7 @@ theorem pred_ncard_le_ncard_sdiff_singleton (s : Set α) (a : α) :
 alias pred_ncard_le_ncard_diff_singleton := pred_ncard_le_ncard_sdiff_singleton
 
 theorem ncard_exchange {a b : α} (ha : a ∉ s) (hb : b ∈ s) : (insert a (s \ {b})).ncard = s.ncard :=
-  congr_arg ENat.toNat <| encard_exchange ha hb
+  congr($(encard_exchange ha hb).toNat)
 
 theorem ncard_exchange' {a b : α} (ha : a ∉ s) (hb : b ∈ s) :
     (insert a s \ {b}).ncard = s.ncard := by
@@ -817,7 +817,7 @@ theorem ncard_image_le (hs : s.Finite := by toFinite_tac) : (f '' s).ncard ≤ s
   to_encard_tac; rw [hs.cast_ncard_eq, (hs.image _).cast_ncard_eq]; apply encard_image_le
 
 theorem InjOn.ncard_image (H : Set.InjOn f s) : (f '' s).ncard = s.ncard :=
-  congr_arg ENat.toNat <| H.encard_image
+  congr($(H.encard_image).toNat)
 
 theorem injOn_of_ncard_image_eq (h : (f '' s).ncard = s.ncard) (hs : s.Finite := by toFinite_tac) :
     Set.InjOn f s := by
@@ -1243,10 +1243,14 @@ theorem exists_subset_or_subset_of_two_mul_lt_ncard {n : ℕ} (hst : 2 * n < (s 
   obtain ⟨r', hnr', hr'⟩ := Finset.exists_subset_or_subset_of_two_mul_lt_card hst
   exact ⟨r', by simpa, by simpa using hr'⟩
 
-lemma _root_.Finset.exists_not_mem_of_card_lt_enatCard {s : Finset α} (hs : s.card < ENat.card α) :
+lemma _root_.Finset.exists_notMem_of_card_lt_enatCard {s : Finset α} (hs : s.card < ENat.card α) :
     ∃ a, a ∉ s := by
   contrapose! hs
   simp [← Set.encard_coe_eq_coe_finsetCard, Set.eq_univ_of_forall (α := α) (s := s) hs]
+
+@[deprecated (since := "2026-09-28")]
+alias _root_.Finset.exists_not_mem_of_card_lt_enatCard :=
+  _root_.Finset.exists_notMem_of_card_lt_enatCard
 
 /-! ### Explicit description of a set from its cardinality -/
 
