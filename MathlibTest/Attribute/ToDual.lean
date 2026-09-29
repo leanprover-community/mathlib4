@@ -114,7 +114,7 @@ theorem le_imp_le_of_forall (_ : ∀ x y : α, x ≤ y) (_ : ∀ x y : α, x ≤
 /--
 error: `to_dual` validation failed: expected
   ∀ {α : Type} (a : α) [inst : PartialOrder α] (b : α), b ≤ a → b ≤ a
-but 'le_imp_le''' has type
+but `le_imp_le''` has type
   ∀ {α : Type} [inst : PartialOrder α] (a b : α), a ≤ b → a ≤ b
 -/
 #guard_msgs in
@@ -132,7 +132,7 @@ Note: This linter can be disabled with `set_option linter.translateRedundant fal
 ---
 error: `to_dual` validation failed: expected
   ∀ {α : Type} [inst : PartialOrder α] (a b : α), b ≤ a → b ≤ a
-but 'le_imp_le'''' has type
+but `le_imp_le'''` has type
   ∀ {α : Type} [inst : PartialOrder α] (a b : α), a ≤ b → a ≤ b
 -/
 #guard_msgs in
@@ -403,7 +403,7 @@ Please silence this warning and add a translation manually. Errors:
 
 `to_dual` validation failed: expected
   universeTest1''._to_dual_1 = fun α β γ => universeTest1' β γ α
-but 'universeTest1''._to_dual_1.eq_1' has type
+but `universeTest1''._to_dual_1.eq_1` has type
   ∀ (α : Type u) (β : Type v) (γ : Type w), universeTest1''._to_dual_1 α β γ = universeTest1' β γ α
 
 Note: This linter can be disabled with `set_option linter.translate.warnInvalid false`
