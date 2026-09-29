@@ -24,9 +24,7 @@ and the unitality conditions are equalities of natural transformations between f
 
 @[expose] public section
 
-namespace CategoryTheory
-
-namespace MonoidalCategory
+namespace CategoryTheory.MonoidalCategory
 
 open CategoryTheory.Functor
 
@@ -149,22 +147,9 @@ def ofBifunctor {C : Type*} [Category* C] (tensor : C ⥤ C ⥤ C) (unit : C)
   leftUnitor X := leftUnitor.app X
   rightUnitor X := rightUnitor.app X
   associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃} f₁ f₂ f₃ := by
-    have h₁ : (tensor.map ((tensor.map f₁).app X₂)).app X₃ ≫
-          ((associator.hom.app Y₁).app X₂).app X₃ =
-        ((associator.hom.app X₁).app X₂).app X₃ ≫
-          (tensor.map f₁).app ((tensor.obj X₂).obj X₃) :=
-      NatTrans.congr_app (NatTrans.congr_app (associator.hom.naturality f₁) X₂) X₃
-    have h₃ : (tensor.obj ((tensor.obj Y₁).obj Y₂)).map f₃ ≫
-          ((associator.hom.app Y₁).app Y₂).app Y₃ =
-        ((associator.hom.app Y₁).app Y₂).app X₃ ≫
-          (tensor.obj Y₁).map ((tensor.obj Y₂).map f₃) :=
-      ((associator.hom.app Y₁).app Y₂).naturality f₃
-    have h₂ : (tensor.map ((tensor.obj Y₁).map f₂)).app X₃ ≫
-          ((associator.hom.app Y₁).app Y₂).app X₃ =
-        ((associator.hom.app Y₁).app X₂).app X₃ ≫
-          (tensor.obj Y₁).map ((tensor.map f₂).app X₃) :=
-      NatTrans.congr_app ((associator.hom.app Y₁).naturality f₂) X₃
-    simp [h₃, reassoc_of% h₂, reassoc_of% h₁]
+    simp [reassoc_of% dsimp% NatTrans.congr_app ((associator.hom.app Y₁).naturality f₂) X₃,
+      reassoc_of% dsimp% NatTrans.congr_app (NatTrans.congr_app
+        (associator.hom.naturality f₁) X₂) X₃]
   rightUnitor_naturality f := rightUnitor.hom.naturality f
   pentagon W X Y Z :=
     NatTrans.congr_app (NatTrans.congr_app (NatTrans.congr_app
