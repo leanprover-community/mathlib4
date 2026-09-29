@@ -225,7 +225,7 @@ lemma succMany?_eq_some_iff [inst : FinEnum α] {n : Nat} {x y : α} :
 @[grind =]
 lemma succMany?_succ [inst : FinEnum α] (n : Nat) (x : α) :
     (succMany? n x).bind (succMany? 1) = succMany? (n + 1) x := by
-  simp [succMany?]
+  simp only [succMany?]
   split_ifs <;> simp [succMany?] <;> grind only
 
 lemma succMany?_bind_flatten [inst : FinEnum α] (n m k : Nat) (x : α) :
@@ -238,7 +238,7 @@ lemma succMany?_bind [inst : FinEnum α] {n m : Nat} {x : α} :
     (succMany? n x).bind (succMany? m) = succMany? (n + m) x := by
   induction m with
   | zero =>
-    simp [succMany?]
+    simp only [succMany?]
     split_ifs <;> simp [succMany?]
   | succ m ih =>
     conv =>
