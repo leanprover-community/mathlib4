@@ -33,7 +33,7 @@ theorem degree_degLexDegree : (degLex.degree f).degree = f.totalDegree := by
   · simp [hf]
   apply le_antisymm
   · exact le_totalDegree (degLex.degree_mem_support hf)
-  · unfold MvPolynomial.totalDegree
+  · rw [MvPolynomial.totalDegree_def]
     apply Finset.sup_le
     intro b hb
     exact DegLex.monotone_degree (degLex.le_degree hb)
