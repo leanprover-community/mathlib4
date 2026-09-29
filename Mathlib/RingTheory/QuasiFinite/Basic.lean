@@ -555,8 +555,7 @@ lemma _root_.Ideal.exists_notMem_forall_mem_of_ne_of_liesOver
   · simpa
   · simpa [IsScalarTower.algebraMap_apply R S q'.ResidueField, ← Ideal.mem_comap, ← q'.over_def p]
 
-@[deprecated (since :=
-  "2026-09-28")]
+@[deprecated (since := "2026-09-28")]
 alias _root_.Ideal.exists_not_mem_forall_mem_of_ne_of_liesOver :=
   _root_.Ideal.exists_notMem_forall_mem_of_ne_of_liesOver
 

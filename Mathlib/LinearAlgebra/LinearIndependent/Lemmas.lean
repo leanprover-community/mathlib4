@@ -731,8 +731,7 @@ theorem LinearIndependent.finSnoc_of_notMem_span_over
   rw [(eq_inv_smul_iff₀ hc').mpr (eq_neg_of_add_eq_zero_left heq), smul_neg]
   exact Submodule.neg_mem _ (Submodule.smul_mem _ _ (Submodule.span_subset_span R K _ hcy))
 
-@[deprecated (since :=
-  "2026-09-28")]
+@[deprecated (since := "2026-09-28")]
 alias LinearIndependent.finSnoc_of_not_mem_span_over :=
   LinearIndependent.finSnoc_of_notMem_span_over
 

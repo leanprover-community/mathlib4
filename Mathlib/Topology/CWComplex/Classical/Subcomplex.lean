@@ -74,8 +74,7 @@ lemma RelCWComplex.Subcomplex.disjoint_openCell_subcomplex_of_notMem [RelCWCompl
   simp_rw [← union, disjoint_union_right, disjoint_iUnion_right]
   exact ⟨disjointBase n i , fun _ _ ↦ disjoint_openCell_of_ne (by lia)⟩
 
-@[deprecated (since :=
-  "2026-09-28")]
+@[deprecated (since := "2026-09-28")]
 alias RelCWComplex.Subcomplex.disjoint_openCell_subcomplex_of_not_mem :=
   RelCWComplex.Subcomplex.disjoint_openCell_subcomplex_of_notMem
 

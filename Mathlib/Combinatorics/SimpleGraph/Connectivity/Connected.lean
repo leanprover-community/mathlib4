@@ -973,8 +973,7 @@ lemma IsTrail.notMem_support_of_subsingleton_neighborSet (hw : w.IsTrail) (hxu :
       simpa using p.reverse.adj_snd (not_nil_of_ne ‹_›)
     exact hy₂ <| hx hx₂ hxy
 
-@[deprecated (since :=
-  "2026-09-28")]
+@[deprecated (since := "2026-09-28")]
 alias IsTrail.not_mem_support_of_subsingleton_neighborSet :=
   IsTrail.notMem_support_of_subsingleton_neighborSet
 
