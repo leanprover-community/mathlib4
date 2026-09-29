@@ -31,7 +31,7 @@ theorem summable_norm_of_tsum_eLpNorm_ne_top {ι : Type*} [Countable ι]
     {p : ℝ≥0∞} (hp : 1 ≤ p) {f : ι → X → E} (h'f : ∑' n, eLpNorm (f n) p μ ≠ ∞) :
     ∀ᵐ a ∂μ, Summable (fun n ↦ ‖f n a‖) := by
   have hf n : AEStronglyMeasurable (f n) μ := by
-    contrapose! h'f
+    contrapose h'f
     apply top_le_iff.1
     have : eLpNorm (f n) p μ = ∞ := eLpNorm_of_not_aestronglyMeasurable h'f
     rw [← this]
