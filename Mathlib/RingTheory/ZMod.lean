@@ -5,11 +5,10 @@ Authors: Alex J. Best
 -/
 module
 
-public import Mathlib.Algebra.Squarefree.Basic
-public import Mathlib.Algebra.EuclideanDomain.Int
+import Mathlib.Algebra.EuclideanDomain.Int
 public import Mathlib.Data.ZMod.Basic
 public import Mathlib.RingTheory.Nilpotent.Lemmas
-public import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Ring-theoretic facts about `ZMod n`
@@ -48,4 +47,4 @@ theorem isReduced_zmod {n : ℕ} : IsReduced (ZMod n) ↔ Squarefree n ∨ n = 0
       Int.squarefree_natCast, Nat.cast_eq_zero]
 
 instance {n : ℕ} [Fact <| Squarefree n] : IsReduced (ZMod n) :=
-  isReduced_zmod.2 <| Or.inl <| Fact.out
+  isReduced_zmod.2 <| Or.inl Fact.out
