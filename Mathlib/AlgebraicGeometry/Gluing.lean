@@ -82,7 +82,7 @@ such that
 6. `f i i` is an isomorphism.
 7. `t i i` is the identity.
 8. `V i j ×[U i] V i k ⟶ V i j ⟶ V j i` factors through `V j k ×[U j] V j i ⟶ V j i` via some
-    `t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
+   `t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
 9. `t' i j k ≫ t' j k i ≫ t' k i j = 𝟙 _`.
 
 We can then glue the schemes `U i` together by identifying `V i j` with `V j i`, such

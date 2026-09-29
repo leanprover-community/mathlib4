@@ -28,10 +28,9 @@ of the formal group law `F(X,Y)`.
 * Additive formal group laws `𝔾ₐ` and multiplicative formal group laws `𝔾ₘ`.
 
 * `F.Point σ` taking values in the formal power series ring `MvPowerSeries σ R` with the property
-that constant coefficient is nilpotent. We have the following typeclass:
-- `AddMonoid (F.Point σ)`
-when `F` is a commutative formal group law
-- `AddCommMonoid (F.Point σ)`
+  that constant coefficient is nilpotent. We have the following typeclasses:
+  - `AddMonoid (F.Point σ)`
+  - `AddCommMonoid (F.Point σ)`, when `F` is a commutative formal group law
 
 ## References
 * [Hazewinkel, Michiel. Formal Groups and Applications][hazewinkel1978]

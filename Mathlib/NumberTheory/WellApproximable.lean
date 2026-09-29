@@ -205,6 +205,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
       1. `A p` is almost invariant under the ergodic map `y ↦ p • y`
       2. `B p` is almost invariant under the ergodic map `y ↦ p • y + 1/p`
       3. `C p` is invariant under the map `y ↦ y + 1/p`
+
     To prove 1 and 2 we need the key result `blimsup_thickening_mul_ae_eq` but 3 is elementary.
 
     It follows from `AddCircle.ergodic_nsmul_add` and `Ergodic.ae_empty_or_univ_of_image_ae_le` that
