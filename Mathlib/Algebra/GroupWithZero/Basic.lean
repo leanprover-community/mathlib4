@@ -5,7 +5,6 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.PPow.Defs
 public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Algebra.GroupWithZero.NeZero

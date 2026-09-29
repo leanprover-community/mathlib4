@@ -130,7 +130,7 @@ instance {S : Type*} [SMulZeroClass S R] [IsScalarTower S R R] :
 
 instance {S : Type*} [SMulZeroClass S R] [SMulZeroClass Sᵐᵒᵖ R]
     [IsScalarTower S R R] [IsCentralScalar S R] : IsCentralScalar S (FreeLieAlgebra R X) where
-  op_smul_eq_smul t := Quot.ind fun a => congr_arg (Quot.mk _) (op_smul_eq_smul t a)
+  op_smul_eq_smul t := Quot.ind fun a => congr(Quot.mk _ $(op_smul_eq_smul t a))
 
 instance : Zero (FreeLieAlgebra R X) where zero := Quot.mk _ 0
 
@@ -233,7 +233,7 @@ def lift : (X → L) ≃ (FreeLieAlgebra R X →ₗ⁅R⁆ L) where
   right_inv F := by
     ext ⟨a⟩
     let F' := F.toNonUnitalAlgHom.comp (mk R)
-    exact NonUnitalAlgHom.congr_fun (lib.lift_comp_of R F') a
+    congrm $(lib.lift_comp_of R F') a
 
 @[simp]
 theorem lift_symm_apply (F : FreeLieAlgebra R X →ₗ⁅R⁆ L) : (lift R).symm F = F ∘ of R := rfl

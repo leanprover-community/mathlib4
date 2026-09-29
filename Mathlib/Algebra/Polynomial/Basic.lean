@@ -6,14 +6,10 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 module
 
 public import Mathlib.Algebra.Group.AddChar
-public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.Algebra.MonoidAlgebra.Module
 public import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
-public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 public import Mathlib.Algebra.Ring.Action.Rat
 public import Mathlib.Data.Finset.Sort
-public import Mathlib.Tactic.FastInstance
-public import Mathlib.LinearAlgebra.Finsupp.LSum
 public import Mathlib.Algebra.Order.Group.Nat
 
 
@@ -134,7 +130,7 @@ instance instNSMul : SMul ℕ R[X] where
 
 instance smulZeroClass {S : Type*} [SMulZeroClass S R] : SMulZeroClass S R[X] where
   smul r p := ⟨r • p.toFinsupp⟩
-  smul_zero a := congr_arg ofFinsupp (smul_zero a)
+  smul_zero a := congr(ofFinsupp $(smul_zero a))
 
 -- to avoid a bug in the `ring` tactic
 instance (priority := 1) pow : Pow R[X] ℕ where pow p n := npowRec n p

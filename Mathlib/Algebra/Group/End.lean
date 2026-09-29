@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Group.Units.Equiv
 public import Mathlib.Data.Set.Basic
 public import Mathlib.Tactic.Common
-public import Mathlib.Tactic.Attr.Register
 
 /-!
 # Monoids of endomorphisms, groups of automorphisms
@@ -220,8 +219,8 @@ theorem sumCongrHom_injective {α β : Type*} : Function.Injective (sumCongrHom 
   rintro ⟨⟩ ⟨⟩ h
   rw [Prod.mk_inj]
   constructor <;> ext i
-  · simpa using Equiv.congr_fun h (Sum.inl i)
-  · simpa using Equiv.congr_fun h (Sum.inr i)
+  · simpa using congr($h (Sum.inl i))
+  · simpa using congr($h (Sum.inr i))
 
 @[simp]
 theorem sumCongr_swap_one {α β : Type*} [DecidableEq α] [DecidableEq β] (i j : α) :
@@ -265,7 +264,7 @@ theorem sigmaCongrRightHom_injective {α : Type*} {β : α → Type*} :
     Function.Injective (sigmaCongrRightHom β) := by
   intro x y h
   ext a b
-  simpa using Equiv.congr_fun h ⟨a, b⟩
+  simpa using congr($h ⟨a, b⟩)
 
 /-- `Equiv.Perm.subtypeCongr` as a `MonoidHom`. -/
 @[simps]
@@ -279,7 +278,7 @@ theorem subtypeCongrHom_injective (p : α → Prop) [DecidablePred p] :
     Function.Injective (subtypeCongrHom p) := by
   rintro ⟨⟩ ⟨⟩ h
   rw [Prod.mk_inj]
-  constructor <;> ext i <;> simpa using Equiv.congr_fun h i
+  constructor <;> ext i <;> simpa using congr($h i)
 
 /-- If `e` is also a permutation, we can write `permCongr`
 completely in terms of the group structure. -/

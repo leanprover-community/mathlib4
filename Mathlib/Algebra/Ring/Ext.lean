@@ -5,9 +5,10 @@ Authors: Raghuram Sundararajan
 -/
 module
 
-public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Algebra.Group.Ext
+public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Tactic.CongrM
+import Mathlib.Algebra.Group.Ext
 
 /-!
 # Extensionality lemmas for rings and similar structures

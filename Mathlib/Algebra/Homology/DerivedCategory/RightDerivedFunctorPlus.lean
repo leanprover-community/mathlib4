@@ -6,8 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.DerivabilityStructureInjectives
-public import Mathlib.CategoryTheory.Functor.Derived.RightDerivedCommShift
-public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesTriangulated
+import Mathlib.CategoryTheory.Functor.Derived.RightDerivedCommShift
+import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesTriangulated
 
 /-!
 # The right derived functor on the bounded below derived category

@@ -5,10 +5,6 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.LinearAlgebra.Determinant
-public import Mathlib.LinearAlgebra.Dual.Basis
-public import Mathlib.LinearAlgebra.Matrix.Dual
-public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 
 /-!

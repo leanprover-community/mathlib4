@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel, Yaël Dillies
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Bounded
+import Mathlib.Analysis.Normed.Group.Bounded
 public import Mathlib.Analysis.Normed.Group.Uniform
 public import Mathlib.Topology.MetricSpace.Thickening
 

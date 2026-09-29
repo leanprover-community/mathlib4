@@ -6,8 +6,8 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Analysis.BoxIntegral.UnitPartition
-public import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
-public import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
+import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
+import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 
 /-!
 # Covolume of ℤ-lattices
@@ -85,7 +85,7 @@ theorem covolume_eq_measure_fundamentalDomain {F : Set E} (h : IsAddFundamentalD
     covolume L μ = μ.real F := by
   have : MeasurableVAdd L E := (inferInstance : MeasurableVAdd L.toAddSubgroup E)
   have : VAddInvariantMeasure L E μ := (inferInstance : VAddInvariantMeasure L.toAddSubgroup E μ)
-  exact congr_arg ENNReal.toReal (h.covolume_eq_volume μ)
+  congrm $(h.covolume_eq_volume μ).toReal
 
 set_option backward.privateInPublic true in
 theorem covolume_ne_zero : covolume L μ ≠ 0 := by
