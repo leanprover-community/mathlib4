@@ -529,7 +529,7 @@ variable [FunLike F α β]
 `Filter α →* Filter β` induced by `map φ`. -/
 @[to_additive /-- If `φ : α →+ β` then `mapAddMonoidHom φ` is the monoid homomorphism
 `Filter α →+ Filter β` induced by `map φ`. -/]
-def mapMonoidHom [MonoidHomClass F α β] (φ : F) : Filter α →* Filter β where
+def mapMonoidHom (φ : α →* β) : Filter α →* Filter β where
   toFun := map φ
   map_one' := Filter.map_one φ
   map_mul' _ _ := Filter.map_mul φ

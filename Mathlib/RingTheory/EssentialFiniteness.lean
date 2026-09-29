@@ -39,7 +39,8 @@ See `IntermediateField.fg_top_iff`.
 -/
 class EssFiniteType : Prop where
   cond : ∃ s : Finset S,
-    IsLocalization ((IsUnit.submonoid S).comap (algebraMap (adjoin R (s : Set S)) S)) S
+    IsLocalization ((IsUnit.submonoid S).comap
+      (algebraMap (adjoin R (s : Set S)) S : adjoin R (s : Set S) →* S)) S
 
 /-- Let `S` be an `R`-algebra essentially of finite type, this is a choice of a finset `s ⊆ S`
 such that `S` is the localization of `R[s]`. -/
@@ -70,7 +71,8 @@ instance EssFiniteType.isLocalization [h : EssFiniteType R S] :
   h.cond.choose_spec
 
 lemma essFiniteType_cond_iff (σ : Finset S) :
-    IsLocalization ((IsUnit.submonoid S).comap (algebraMap (adjoin R (σ : Set S)) S)) S ↔
+    IsLocalization ((IsUnit.submonoid S).comap
+      (algebraMap (adjoin R (σ : Set S)) S : adjoin R (σ : Set S) →* S)) S ↔
     (∀ s : S, ∃ t ∈ Algebra.adjoin R (σ : Set S),
       IsUnit t ∧ s * t ∈ Algebra.adjoin R (σ : Set S)) := by
   constructor <;> intro hσ

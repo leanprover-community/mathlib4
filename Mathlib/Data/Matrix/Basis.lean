@@ -415,7 +415,7 @@ theorem center_eq_scalar_image :
   exact ⟨x, by simpa using fun r ↦ congr($(hx (single i i r)) i i)⟩
 
 theorem submonoidCenter_eq_scalar_map :
-    Submonoid.center (Matrix n n α) = (Submonoid.center α).map (scalar n) :=
+    Submonoid.center (Matrix n n α) = (Submonoid.center α).map (scalar n).toMonoidHom :=
   SetLike.coe_injective center_eq_scalar_image
 
 theorem subsemigroupCenter_eq_scalar_map :

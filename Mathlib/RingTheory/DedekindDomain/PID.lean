@@ -187,8 +187,8 @@ theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [IsDomain S]
     {P : Ideal Sₚ} (hP : IsPrime P) (hP0 : P ≠ ⊥) :
     P ∈ normalizedFactors (Ideal.map (algebraMap R Sₚ) p) := by
   have non_zero_div : Algebra.algebraMapSubmonoid S p.primeCompl ≤ S⁰ :=
-    map_le_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective _ _)
-      p.primeCompl_le_nonZeroDivisors
+    map_le_nonZeroDivisors_of_injective (algebraMap R S : R →*₀ S)
+      (FaithfulSMul.algebraMap_injective _ _) p.primeCompl_le_nonZeroDivisors
   let : Algebra (Localization.AtPrime p) Sₚ := localizationAlgebra p.primeCompl S
   have : IsScalarTower R (Localization.AtPrime p) Sₚ :=
     IsScalarTower.of_algebraMap_eq fun x => by

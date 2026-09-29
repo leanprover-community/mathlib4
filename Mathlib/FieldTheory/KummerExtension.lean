@@ -281,8 +281,9 @@ def autAdjoinRootXPowSubCEquiv [NeZero n] :
     apply AlgEquiv.coe_toAlgHom_injective
     apply AdjoinRoot.algHom_ext
     simp only [AdjoinRootXPowSubCEquivToRootsOfUnity, AdjoinRoot.algebraMap_eq, OneHom.toFun_eq_coe,
-      MonoidHom.toOneHom_coe, AlgEquiv.coe_toAlgHom, autAdjoinRootXPowSubC_root, Algebra.smul_def]
-    rw [rootsOfUnityEquivOfPrimitiveRoots_symm_apply, rootsOfUnity.val_mkOfPowEq_coe]
+      MonoidHom.toOneHom_coe, AlgEquiv.coe_toAlgHom, autAdjoinRootXPowSubC_root, Algebra.smul_def,
+      ← (of (X ^ n - C a)).coe_toMonoidHom, rootsOfUnityEquivOfPrimitiveRoots_symm_apply,
+      rootsOfUnity.val_mkOfPowEq_coe]
     split_ifs with h
     · obtain rfl := not_imp_not.mp (fun hn ↦ ne_zero_of_irreducible_X_pow_sub_C' hn H) h
       rw [(pow_one _).symm.trans (root_X_pow_sub_C_pow 1 a), one_mul,
@@ -298,9 +299,9 @@ lemma autAdjoinRootXPowSubCEquiv_symm_smul [NeZero n] (σ) :
   have := Fact.mk H
   simp only [autAdjoinRootXPowSubCEquiv, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
     MulEquiv.symm_mk, MulEquiv.coe_mk, Equiv.coe_fn_symm_mk, AdjoinRootXPowSubCEquivToRootsOfUnity,
-    AdjoinRoot.algebraMap_eq, rootsOfUnity.mkOfPowEq, Units.smul_def, Algebra.smul_def,
+    AdjoinRoot.algebraMap_eq, rootsOfUnity.mkOfPowEq, ← root_X_pow_sub_C_eq_zero_iff H,
+    Units.smul_def, Algebra.smul_def, ← (of (X ^ n - C a)).coe_toMonoidHom,
     rootsOfUnityEquivOfPrimitiveRoots_symm_apply, Units.val_ofPowEqOne, ite_mul, one_mul]
-  simp_rw [← root_X_pow_sub_C_eq_zero_iff H]
   split_ifs with h
   · rw [h, map_zero]
   · rw [div_mul_cancel₀ _ h]

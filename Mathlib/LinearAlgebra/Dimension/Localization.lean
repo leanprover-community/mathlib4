@@ -248,7 +248,7 @@ theorem lift_rank_eq :
     ← IsLocalizedModule.lift_rank_eq T⁰ g le_rfl, lift_lift, ← lift_lift.{uM},
     ← IsLocalization.rank_eq FT T⁰ le_rfl,
     lift_rank_eq_of_le_nonZeroDivisors FR (LocalizedModule.mkLinearMap R⁰ M) le_rfl
-      (map_le_nonZeroDivisors_of_injective _ inj le_rfl) this, lift_lift]
+      (map_le_nonZeroDivisors_of_injective (algebraMap R FT : R →*₀ FT) inj le_rfl) this, lift_lift]
 
 theorem finrank_eq : finrank T P = finrank R M := by simpa using! congr(toNat $bc.lift_rank_eq)
 

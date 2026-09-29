@@ -510,7 +510,8 @@ variable (R S) (R' S' : Type*) [CommRing S'] [FaithfulSMul R S] [alg : Algebra.I
 instance : IsLocalization (algebraMapSubmonoid S R⁰) S' :=
   have := (FaithfulSMul.algebraMap_injective R S).noZeroDivisors _ (map_zero _) (map_mul _)
   (IsLocalization.iff_of_le_of_exists_dvd _ S⁰
-    (map_le_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective ..) le_rfl)
+    (map_le_nonZeroDivisors_of_injective (algebraMap R S)
+      (FaithfulSMul.algebraMap_injective ..) le_rfl)
     fun s hs ↦ have ⟨r, ne, eq⟩ := (alg.1 s).exists_nonzero_dvd hs
     ⟨_, ⟨r, mem_nonZeroDivisors_of_ne_zero ne, rfl⟩, eq⟩).mpr inferInstance
 

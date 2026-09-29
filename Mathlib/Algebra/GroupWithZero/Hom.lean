@@ -179,6 +179,9 @@ def comp (hnp : β →*₀ γ) (hmn : α →*₀ β) : α →*₀ γ where
 
 @[simp] lemma coe_comp (g : β →*₀ γ) (f : α →*₀ β) : ↑(g.comp f) = g ∘ f := rfl
 
+@[simp] lemma toMonoidHom_comp (g : β →*₀ γ) (f : α →*₀ β) :
+    (g.comp f : α →* γ) = (g : β →* γ).comp f := rfl
+
 lemma comp_apply (g : β →*₀ γ) (f : α →*₀ β) (x : α) : g.comp f x = g (f x) := rfl
 
 lemma comp_assoc (f : α →*₀ β) (g : β →*₀ γ) (h : γ →*₀ δ) :

@@ -63,8 +63,9 @@ This is available as an instance in the `Pointwise` locale. -/
 protected def pointwiseMulAction : MulAction M (AddSubmonoid A) where
   smul a S := S.map (DistribMulAction.toAddMonoidEnd _ A a)
   one_smul S :=
-    congr(S.map $(map_one _)).trans S.map_id
-  mul_smul _ _ S := congr(S.map $(map_mul ..)).trans (S.map_map _ _).symm
+    congr((fun f : AddMonoid.End A ↦ S.map f) $(map_one _)).trans S.map_id
+  mul_smul _ _ S :=
+    congr((fun f : AddMonoid.End A ↦ S.map f) $(map_mul ..)).trans (S.map_map _ _).symm
 
 scoped[Pointwise] attribute [instance] AddSubmonoid.pointwiseMulAction
 

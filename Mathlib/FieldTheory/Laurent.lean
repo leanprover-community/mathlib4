@@ -66,8 +66,7 @@ variable [IsDomain R]
 theorem laurentAux_div :
     laurentAux r (algebraMap _ _ p / algebraMap _ _ q) =
       algebraMap _ _ (taylor r p) / algebraMap _ _ (taylor r q) :=
-  -- Porting note: added `by exact taylor_mem_nonZeroDivisors r`
-  map_apply_div _ (by exact taylor_mem_nonZeroDivisors r) _ _
+  map_apply_div (taylorAlgHom r : R[X] →*₀ R[X]) (taylor_mem_nonZeroDivisors r) _ _
 
 @[simp]
 theorem laurentAux_algebraMap : laurentAux r (algebraMap _ _ p) = algebraMap _ _ (taylor r p) := by

@@ -227,7 +227,7 @@ theorem extendedHom'_comp {C W : Type*} [CommRing C] [CommRing W] [Algebra C W]
     (extendedHom' (A := B) (K := L) W hg).comp
       (extendedHom' (A := A) (K := K) L hf) =
         extendedHom' (A := A) (B := C) (f := g.comp f) (K := K) W
-          (hf.trans (Submonoid.monotone_comap (f := f) hg)) := by
+          (hf.trans (Submonoid.monotone_comap (f := (f : A →* B)) hg)) := by
   apply RingHom.ext
   intro I
   exact extended_extended (A := A) (B := B) (f := f) (K := K) (M := M) (L := L)
@@ -249,7 +249,8 @@ an extension of domains `A ⊆ B`.
 -/
 abbrev extendedHom : FractionalIdeal A⁰ K →+* FractionalIdeal B⁰ L :=
   extendedHom' L <|
-    nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective _ _)
+    nonZeroDivisors_le_comap_nonZeroDivisors_of_injective (algebraMap A B : A →*₀ B)
+      (FaithfulSMul.algebraMap_injective _ _)
 
 @[deprecated (since := "2026-04-16")] alias extendedHomₐ := extendedHom
 

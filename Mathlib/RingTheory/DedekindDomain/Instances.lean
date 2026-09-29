@@ -47,7 +47,8 @@ section
 theorem algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul {A : Type*} (B : Type*)
     [CommSemiring A] [CommSemiring B] [Algebra A B] [NoZeroDivisors B] [FaithfulSMul A B]
     {S : Submonoid A} (hS : S ≤ A⁰) : algebraMapSubmonoid B S ≤ B⁰ :=
-  map_le_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective A B) hS
+  map_le_nonZeroDivisors_of_injective (algebraMap A B : A →*₀ B)
+    (FaithfulSMul.algebraMap_injective A B) hS
 
 variable (Rₘ Sₘ : Type*) [CommRing Rₘ] [CommRing Sₘ] [Algebra R Rₘ] [IsTorsionFree R S]
     [Algebra.IsSeparable (FractionRing R) (FractionRing S)] {M : Submonoid R} [IsLocalization M Rₘ]
