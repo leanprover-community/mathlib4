@@ -3,8 +3,9 @@ Copyright (c) 2026 Marcelo Lynch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
+module
 
-import Cache.Marker
+public import Cache.Marker
 
 /-!
 # The upload destination contract
@@ -17,6 +18,8 @@ resolves its own destination on top of these (`azureUploadDestFrom` in
 `markerDirPath` (`Cache/Infra.lean`, `Cache/Marker.lean`), the same policies
 the reads use, so every upload path follows the read-side path contract.
 -/
+
+public section
 
 namespace Cache.Requests
 
