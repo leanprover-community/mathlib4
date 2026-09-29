@@ -7,7 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexColimits
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
 # Horns as colimits
@@ -26,7 +26,9 @@ universe u
 
 namespace SSet
 
-open CategoryTheory Simplicial Opposite Limits
+open CategoryTheory Opposite Limits
+
+open scoped Simplicial
 
 namespace horn₂₀
 

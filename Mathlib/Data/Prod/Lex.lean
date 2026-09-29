@@ -10,7 +10,6 @@ public import Mathlib.Order.BoundedOrder.Basic
 public import Mathlib.Order.Lattice
 public import Mathlib.Order.Lex
 public import Mathlib.Tactic.Tauto
-public import Mathlib.Tactic.FastInstance
 
 /-!
 # Lexicographic order
@@ -34,7 +33,7 @@ Related files are:
 * `Data.PSigma.Order`: Lexicographic order on `Σ' i, α i`.
 * `Data.Sigma.Order`: Lexicographic order on `Σ i, α i`.
 
-# TODO
+## TODO
 
 Some lemmas could be automatically generated with `to_dual`.
 See [https://github.com/leanprover-community/mathlib4/pull/37939#discussion_r3367855484]
@@ -84,10 +83,10 @@ lemma lt_iff [LT α] [LT β] {x y : α ×ₗ β} :
   toLex_lt_toLex
 
 instance [LT α] [LT β] [WellFoundedLT α] [WellFoundedLT β] : WellFoundedLT (α ×ₗ β) :=
-  instIsWellFounded
+  instWellFounded
 
 instance [LT α] [LT β] [WellFoundedLT α] [WellFoundedLT β] : WellFoundedRelation (α ×ₗ β) :=
-  ⟨(· < ·), wellFounded_lt⟩
+  WellFoundedLT.toWellFoundedRelation
 
 /-- Dictionary / lexicographic preorder for pairs. -/
 instance instPreorder (α β : Type*) [Preorder α] [Preorder β] : Preorder (α ×ₗ β) where

@@ -5,15 +5,14 @@ Authors: Johan Commelin, Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 public import Mathlib.LinearAlgebra.Dual.Lemmas
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Diagonal
 public import Mathlib.LinearAlgebra.Matrix.DotProduct
 public import Mathlib.LinearAlgebra.Matrix.Dual
-public import Mathlib.LinearAlgebra.Matrix.Transvection
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 
 /-!
 # Rank of matrices
@@ -175,7 +174,7 @@ theorem rank_le_card_width [CommSemiring R] [StrongRankCondition R] (A : Matrix 
 
 theorem rank_le_width [CommSemiring R] [StrongRankCondition R] {m n : ℕ}
     (A : Matrix (Fin m) (Fin n) R) : A.rank ≤ n :=
-  A.rank_le_card_width.trans <| (Fintype.card_fin n).le
+  A.rank_le_card_width.trans (Fintype.card_fin n).le
 
 theorem rank_mul_le_left [CommSemiring R] [StrongRankCondition R] (A : Matrix m n R)
     (B : Matrix n o R) : (A * B).rank ≤ A.rank := by
@@ -336,7 +335,7 @@ theorem cRank_reindex {m₀ : Type um} {n : Type un} [Semiring R] (A : Matrix m 
 @[simp]
 theorem eRank_submatrix {n : Type un} [Semiring R] (A : Matrix m n R) (em : m₀ ≃ m) (en : n₀ ≃ n) :
     eRank (A.submatrix em en) = eRank A := by
-  simpa [-lift_cRank_submatrix] using! congr_arg Cardinal.toENat <| A.lift_cRank_submatrix em en
+  simpa [-lift_cRank_submatrix] using! congr(Cardinal.toENat $(A.lift_cRank_submatrix em en))
 
 theorem eRank_reindex {m₀ : Type um} {n : Type un} [Semiring R] (A : Matrix m n R) (em : m ≃ m₀)
     (en : n ≃ n₀) : eRank (A.reindex em en) = eRank A :=
@@ -533,7 +532,7 @@ theorem ker_mulVecLin_transpose_mul_self (A : Matrix m n R) :
   simp only [LinearMap.mem_ker, mulVecLin_apply, ← mulVec_mulVec]
   constructor
   · intro h
-    replace h := congr_arg (dotProduct x) h
+    replace h := congr(dotProduct x $h)
     rwa [dotProduct_mulVec, dotProduct_zero, vecMul_transpose, dotProduct_self_eq_zero] at h
   · intro h
     rw [h, mulVec_zero]

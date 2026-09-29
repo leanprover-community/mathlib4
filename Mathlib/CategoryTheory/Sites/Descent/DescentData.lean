@@ -155,9 +155,9 @@ def isoMk {D₁ D₂ : F.DescentData f} (e : ∀ (i : ι), D₁.obj i ≅ D₂.o
     { hom i := (e i).inv
       comm Y q i₁ i₂ f₁ f₂ hf₁ hf₂ := by
         rw [← cancel_mono ((F.map f₂.op.toLoc).toFunctor.map (e i₂).hom), Category.assoc,
-          Category.assoc, Iso.map_inv_hom_id, Category.comp_id,
+          Category.assoc, Iso.inv_hom_id_map, Category.comp_id,
           ← cancel_epi ((F.map f₁.op.toLoc).toFunctor.map (e i₁).hom),
-          Iso.map_hom_inv_id_assoc, comm q f₁ f₂ hf₁ hf₂] }
+          Iso.hom_inv_id_map_assoc, comm q f₁ f₂ hf₁ hf₂] }
 
 end DescentData
 
@@ -547,7 +547,7 @@ lemma bijective_toDescentData_map_iff (M N : F.obj (.mk (op S))) :
     Function.Bijective ((F.toDescentData f).map : (M ⟶ N) → _) ↔
   Presieve.IsSheafFor (F.presheafHom M N) (X := Over.mk (𝟙 S))
     (Presieve.ofArrows (Y := fun i ↦ Over.mk (f i)) (fun i ↦ Over.homMk (f i))) := by
-  rw [Presieve.isSheafFor_ofArrows_iff_bijective_toCompabible,
+  rw [Presieve.isSheafFor_ofArrows_iff_bijective_toCompatible,
     ← (DescentData.subtypeCompatibleHomEquiv F f).bijective.of_comp_iff',
     ← Function.Bijective.of_comp_iff _ (presheafHomObjHomEquiv F).bijective]
   convert! Iff.rfl

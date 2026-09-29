@@ -1,7 +1,7 @@
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Linter.DocString
 
-/-! Tests for the `docstring` linter -/
+/-! # Tests for the `docstring` linter -/
 
 set_option linter.style.docString true
 
@@ -145,7 +145,7 @@ def extractAttrs (stx : TSyntax ``Command.declModifiers) :
 end
 
 
-/-! # Tests for Verso-compatible docstrings -/
+/-! ## Tests for Verso-compatible docstrings -/
 
 set_option linter.style.docStringVerso true
 

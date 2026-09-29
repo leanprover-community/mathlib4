@@ -55,7 +55,7 @@ theorem LinearMap.tendsto_birkhoffAverage_of_ker_subset_closure [NormedSpace �
   /- For a fixed point, the theorem is trivial,
   so it suffices to prove it for `y ∈ LinearMap.ker g`. -/
   suffices Tendsto (birkhoffAverage 𝕜 f _root_.id · y) atTop (𝓝 0) by
-    have hgz : g z = z := congr_arg Subtype.val (hg_proj ⟨z, hz⟩)
+    have hgz : g z = z := congr($(hg_proj ⟨z, hz⟩).val)
     simpa [hy, hgz, birkhoffAverage, birkhoffSum, Finset.sum_add_distrib, smul_add]
       using this.add (hz.tendsto_birkhoffAverage 𝕜 _root_.id)
   /- By continuity, it suffices to prove the theorem on a dense subset of `LinearMap.ker g`.
@@ -93,7 +93,7 @@ theorem ContinuousLinearMap.tendsto_birkhoffAverage_orthogonalProjection (f : E 
   /- Due to the previous theorem, it suffices to verify
   that the range of `f - 1` is dense in the orthogonal complement
   to the submodule of fixed points of `f`. -/
-  apply (f : E →ₗ[𝕜] E).tendsto_birkhoffAverage_of_ker_subset_closure (f.lipschitz.weaken hf)
+  apply (f : E →ₗ[𝕜] E).tendsto_birkhoffAverage_of_ker_subset_closure (f.lipschitzWith.weaken hf)
   · exact (f.eqLocus (1 : E →L[𝕜] E)).orthogonalProjectionOnto_mem_subspace_eq_self
   · clear x
     /- In other words, we need to verify that any vector that is orthogonal to the range of `f - 1`

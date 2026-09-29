@@ -264,8 +264,7 @@ def invertibleToMatrix [DecidableEq ι] [Fintype ι] (b b' : Basis ι R₂ M₂)
 theorem toMatrix_reindex (b : Basis ι R M) (v : ι' → M) (e : ι ≃ ι') :
     (b.reindex e).toMatrix v = (b.toMatrix v).submatrix e.symm _root_.id := by
   ext
-  simp only [toMatrix_apply, repr_reindex, Matrix.submatrix_apply, _root_.id,
-    Finsupp.mapDomain_equiv_apply]
+  simp [toMatrix_apply]
 
 @[simp]
 theorem toMatrix_map (b : Basis ι R M) (f : M ≃ₗ[R] N) (v : ι → N) :

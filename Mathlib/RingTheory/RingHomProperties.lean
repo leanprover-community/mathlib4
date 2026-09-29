@@ -6,11 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Category.Ring.Constructions
-public import Mathlib.Algebra.Category.Ring.Colimits
-public import Mathlib.CategoryTheory.Iso
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
-public import Mathlib.RingTheory.Localization.Away.Basic
-public import Mathlib.RingTheory.IsTensorProduct
 
 /-!
 # Properties of ring homomorphisms
@@ -163,7 +159,6 @@ lemma IsStableUnderBaseChange.tensorProduct (hP : RingHom.IsStableUnderBaseChang
   -- This only works because the `Algebra.TensorProduct.rightAlgebra` instance is present here.
   hP _ _ _ _ h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsStableUnderBaseChange.pushout_inl (hP : RingHom.IsStableUnderBaseChange @P)
     (hP' : RingHom.RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S) (g : R ⟶ T) (H : P g.hom) :
     P (pushout.inl _ _ : S ⟶ pushout f g).hom := by

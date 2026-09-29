@@ -108,7 +108,6 @@ lemma contractible_distinguished (X : Cᵒᵖ) :
     ⟨contractibleTriangleIso X⟩⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Isomorphism expressing a compatibility of the equivalence `triangleOpEquivalence C`
 with the rotation of triangles. -/
 noncomputable def rotateTriangleOpEquivalenceInverseObjRotateUnopIso (T : Triangle Cᵒᵖ) :

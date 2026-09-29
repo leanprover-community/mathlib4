@@ -6,7 +6,7 @@ Authors: Patrick Massot, Johannes Hölzl
 module
 
 public import Mathlib.Algebra.Field.Subfield.Defs
-public import Mathlib.Algebra.Order.Group.Pointwise.Interval
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
 public import Mathlib.Analysis.Normed.Ring.Basic
 
 /-!
@@ -30,7 +30,7 @@ assert_not_exists AddChar comap_norm_atTop DilationEquiv Finset.sup_mul_le_mul_s
   IsOfFinOrder Isometry.norm_map_of_map_one NNReal.isOpen_Ico_zero Rat.norm_cast_real
   RestrictScalars
 
-variable {G α β ι : Type*}
+variable {α β : Type*}
 
 open Filter
 open scoped Topology NNReal ENNReal
