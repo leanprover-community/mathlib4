@@ -76,6 +76,7 @@ structure Chain (α : Type u) [Preorder α] extends ℕ →o α
 namespace Chain
 variable [Preorder α] [Preorder β] [Preorder γ]
 
+@[macro_inline]
 instance : FunLike (Chain α) ℕ α where
   coe c := c.toOrderHom
   coe_injective := by rintro ⟨f, hf⟩; congr!
@@ -493,6 +494,7 @@ attribute [nolint docBlame] ContinuousHom.toOrderHom
 
 @[inherit_doc] infixr:25 " →𝒄 " => ContinuousHom -- Input: \r\MIc
 
+@[macro_inline]
 instance : FunLike (α →𝒄 β) α β where
   coe f := f.toFun
   coe_injective := by rintro ⟨⟩ ⟨⟩ h; congr; exact DFunLike.ext' h

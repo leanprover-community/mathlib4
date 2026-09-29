@@ -311,7 +311,7 @@ def ext {c c' : Cone F} (φ : c.pt ≅ c'.pt)
 
 /-- To give an isomorphism between cones, it suffices to give an
 isomorphism between their vertices which commutes with the cone maps. -/
-@[to_dual (attr := simps!) ext
+@[to_dual (attr := reducible, simps! -isSimp) ext
 /-- To give an isomorphism between cocones, it suffices to give an
 isomorphism between their vertices which commutes with the cocone maps. -/]
 def extInv {c c' : Cone F} (φ : c.pt ≅ c'.pt)

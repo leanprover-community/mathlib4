@@ -267,7 +267,7 @@ section Preorder
 variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] [MulOneClass α] [MulOneClass β]
   [MulOneClass γ] [MulOneClass δ] {f g : α →*o β}
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance : FunLike (α →*o β) α β where
   coe f := f.toFun
   coe_injective f g h := by
@@ -496,7 +496,7 @@ section Preorder
 variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] [Mul α] [Mul β]
   [Mul γ] [Mul δ] {f g : α ≃*o β}
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance : EquivLike (α ≃*o β) α β where
   coe f := f.toFun
   inv f := f.invFun

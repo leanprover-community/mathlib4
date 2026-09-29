@@ -315,7 +315,7 @@ namespace stdSimplex
 variable {S : Type*} [Semiring S] [PartialOrder S]
   {X Y Z : Type*} [Fintype X] [Fintype Y] [Fintype Z]
 
-@[deprecated "no replacement" (since := "2026-08-29")]
+@[deprecated "no replacement" (since := "2026-08-29"), macro_inline]
 instance : FunLike (stdSimplex S X) X S where
   coe s := s.val
   coe_injective := by aesop

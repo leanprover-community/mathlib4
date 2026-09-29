@@ -268,7 +268,7 @@ private lemma norm_normalizedDerivOfComplex_le {F : ℍ → ℂ} (hF : MDiff F) 
       ((UpperHalfPlane.mdifferentiable_iff.mp hF).diffContOnCl_ball
         fun w hw ↦ h2.trans_le (him w hw)) hbd
   calc ‖D F z‖ = (2 * π)⁻¹ * ‖deriv (F ∘ ofComplex) (z : ℂ)‖ := by
-        simp [normalizedDerivOfComplex, Real.pi_pos.le]
+        simp [normalizedDerivOfComplex]
     _ ≤ (2 * π)⁻¹ * (M / (z.im / 2)) := by gcongr
     _ = M / (π * z.im) := by ring
 

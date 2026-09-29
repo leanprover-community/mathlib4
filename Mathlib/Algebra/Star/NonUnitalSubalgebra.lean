@@ -449,31 +449,27 @@ protected def range (φ : A →⋆ₙₐ[R] B) : NonUnitalStarSubalgebra R B whe
 
 @[simp]
 theorem mem_range (φ : A →⋆ₙₐ[R] B) {y : B} :
-    y ∈ (NonUnitalStarAlgHom.range φ : NonUnitalStarSubalgebra R B) ↔ ∃ x : A, φ x = y :=
+    y ∈ φ.range ↔ ∃ x : A, φ x = y :=
   NonUnitalRingHom.mem_srange
 
-theorem mem_range_self (φ : A →⋆ₙₐ[R] B) (x : A) :
-    φ x ∈ (NonUnitalStarAlgHom.range φ : NonUnitalStarSubalgebra R B) :=
-  (NonUnitalAlgHom.mem_range φ).2 ⟨x, rfl⟩
+theorem mem_range_self (φ : A →⋆ₙₐ[R] B) (x : A) : φ x ∈ φ.range := (φ.mem_range).2 ⟨x, rfl⟩
 
 @[simp, norm_cast]
-theorem coe_range (φ : A →⋆ₙₐ[R] B) :
-    ((NonUnitalStarAlgHom.range φ : NonUnitalStarSubalgebra R B) : Set B) =
-    Set.range (φ : A → B) := by
+theorem coe_range (φ : A →⋆ₙₐ[R] B) : (φ.range : Set B) = Set.range (φ : A → B) := by
   rfl
 
 theorem range_comp (f : A →⋆ₙₐ[R] B) (g : B →⋆ₙₐ[R] C) :
-    NonUnitalStarAlgHom.range (g.comp f) = (NonUnitalStarAlgHom.range f).map g :=
+    (g.comp f).range = f.range.map g :=
   SetLike.coe_injective (Set.range_comp g f)
 
 theorem range_comp_le_range (f : A →⋆ₙₐ[R] B) (g : B →⋆ₙₐ[R] C) :
-    NonUnitalStarAlgHom.range (g.comp f) ≤ NonUnitalStarAlgHom.range g :=
+    (g.comp f).range ≤ g.range :=
   SetLike.coe_mono (Set.range_comp_subset_range f g)
 
 /-- Restrict the codomain of a non-unital star algebra homomorphism. -/
-def codRestrict
-    (f : A →⋆ₙₐ[R] B) (S : NonUnitalStarSubalgebra R B) (hf : ∀ x, f x ∈ S) : A →⋆ₙₐ[R] S where
-  toNonUnitalAlgHom := NonUnitalAlgHom.codRestrict f S.toNonUnitalSubalgebra hf
+def codRestrict (f : A →⋆ₙₐ[R] B) (S : NonUnitalStarSubalgebra R B) (hf : ∀ x, f x ∈ S) :
+    A →⋆ₙₐ[R] S where
+  toNonUnitalAlgHom := NonUnitalAlgHom.codRestrict f.toNonUnitalAlgHom S.toNonUnitalSubalgebra hf
   map_star' := fun a => Subtype.ext <| map_star f a
 
 @[simp]
@@ -503,7 +499,7 @@ abbrev rangeRestrict (f : A →⋆ₙₐ[R] B) :
 
 /-- The equalizer of two non-unital star `R`-algebra homomorphisms -/
 def equalizer (ϕ ψ : A →⋆ₙₐ[R] B) : NonUnitalStarSubalgebra R A where
-  toNonUnitalSubalgebra := NonUnitalAlgHom.equalizer ϕ ψ
+  toNonUnitalSubalgebra := NonUnitalAlgHom.equalizer ϕ.toNonUnitalAlgHom ψ.toNonUnitalAlgHom
   star_mem' := @fun x (hx : ϕ x = ψ x) => by simp [map_star, hx]
 
 @[simp]

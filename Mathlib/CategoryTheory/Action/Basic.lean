@@ -260,6 +260,7 @@ abbrev HomSubtype {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike 
   { f : FV M.V N.V // ∀ g : G,
       f ∘ ConcreteCategory.hom (M.ρ g) = ConcreteCategory.hom (N.ρ g) ∘ f }
 
+@[macro_inline]
 instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
     [ConcreteCategory V FV] (M N : Action V G) :
     FunLike (HomSubtype V G M N) (CV M.V) (CV N.V) where

@@ -115,6 +115,7 @@ theorem toEquiv_inj {e₁ e₂ : A ≃ₐc[R] B} : e₁.toEquiv = e₂.toEquiv �
 theorem toBialgHom_injective : Function.Injective (toBialgHom : (A ≃ₐc[R] B) → A →ₐc[R] B) :=
   fun _ _ H => toEquiv_injective <| Equiv.ext <| BialgHom.congr_fun H
 
+@[macro_inline]
 instance : EquivLike (A ≃ₐc[R] B) A B where
   coe f := f.toFun
   inv := fun f => f.invFun
@@ -122,6 +123,7 @@ instance : EquivLike (A ≃ₐc[R] B) A B where
   left_inv := fun f => f.left_inv
   right_inv := fun f => f.right_inv
 
+@[macro_inline]
 instance : FunLike (A ≃ₐc[R] B) A B where
   coe := DFunLike.coe
   coe_injective := DFunLike.coe_injective

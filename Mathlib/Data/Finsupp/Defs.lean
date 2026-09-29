@@ -106,6 +106,7 @@ section Basic
 
 variable [Zero M]
 
+@[macro_inline]
 instance instFunLike : FunLike (α →₀ M) α M :=
   ⟨toFun, by
     rintro ⟨s, f, hf⟩ ⟨t, g, hg⟩ (rfl : f = g)

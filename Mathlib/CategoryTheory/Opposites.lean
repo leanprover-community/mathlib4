@@ -633,8 +633,6 @@ isomorphism between the original functors `F ≅ G`. -/
 protected def op (α : F ≅ G) : G.op ≅ F.op where
   hom := NatTrans.op α.hom
   inv := NatTrans.op α.inv
-  hom_inv_id := by ext; dsimp; rw [← op_comp]; rw [α.inv_hom_id_app]; rfl
-  inv_hom_id := by ext; dsimp; rw [← op_comp]; rw [α.hom_inv_id_app]; rfl
 
 @[simp]
 theorem op_refl : NatIso.op (Iso.refl F) = Iso.refl F.op := rfl

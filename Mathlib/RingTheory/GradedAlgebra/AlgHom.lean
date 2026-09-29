@@ -57,6 +57,7 @@ def ofClass (f : F) : 𝒜 →ₐᵍ[R] ℬ :=
 
 end ofClass
 
+@[macro_inline]
 instance : FunLike (𝒜 →ₐᵍ[R] ℬ) A B where
   coe f := f.toFun
   coe_injective f g h := by

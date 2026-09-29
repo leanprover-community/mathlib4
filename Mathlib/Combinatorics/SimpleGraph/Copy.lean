@@ -97,6 +97,7 @@ abbrev Iso.toCopy (f : H ≃g G) : Copy H G := f.toEmbedding.toCopy
 
 namespace Copy
 
+@[macro_inline]
 instance : FunLike (Copy H G) W V where
   coe f := DFunLike.coe f.toHom
   coe_injective f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; congr!

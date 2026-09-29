@@ -356,6 +356,7 @@ namespace FinitePlace
 
 variable [NumberField K] [NumberField L]
 
+@[macro_inline]
 instance : FunLike (FinitePlace K) K ℝ where
   coe w x := w.1 x
   coe_injective _ _ h := Subtype.ext (AbsoluteValue.ext <| congr_fun h)
