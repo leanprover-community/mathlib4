@@ -8,11 +8,9 @@ module
 public import Mathlib.Algebra.Group.TypeTags.Basic
 public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Data.Finset.Piecewise
-public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.Filter.Cofinite
 public import Mathlib.Order.Filter.Curry
 public import Mathlib.Topology.Constructions.SumProd
-public import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.WithTopology
 
 /-!
@@ -773,6 +771,7 @@ theorem continuous_pi_iff : Continuous f ↔ ∀ i, Continuous fun a => f a i :=
 theorem continuous_pi (h : ∀ i, Continuous fun a => f a i) : Continuous f :=
   continuous_pi_iff.2 h
 
+/-- The projection maps out of the product topology are continuous. -/
 @[continuity, fun_prop]
 theorem continuous_apply (i : ι) : Continuous fun p : ∀ i, A i => p i :=
   continuous_iInf_dom continuous_induced_dom

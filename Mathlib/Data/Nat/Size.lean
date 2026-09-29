@@ -7,13 +7,13 @@ module
 
 public import Mathlib.Data.Nat.Bits
 
-/-! Lemmas about `size`. -/
+/-! # Lemmas about `Nat.size` and `Nat.shiftLeft` -/
 
 public section
 
 namespace Nat
 
-/-! ### `shiftLeft` and `shiftRight` -/
+/-! ### `shiftLeft` -/
 
 theorem shiftLeft_eq_mul_pow (m) : ∀ n, m <<< n = m * 2 ^ n := shiftLeft_eq _
 

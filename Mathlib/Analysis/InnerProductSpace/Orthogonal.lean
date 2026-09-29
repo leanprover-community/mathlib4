@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Subspace
 public import Mathlib.LinearAlgebra.SesquilinearForm.Orthogonal
-public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 
 /-!
 # Orthogonal complements of submodules
@@ -148,6 +147,15 @@ lemma map_orthogonal_equiv (f : E ≃ₗᵢ[𝕜] F) :
   have : f.toLinearIsometry.range = ⊤ := f.range
   rw [this, inf_top_eq]
   rfl
+
+lemma comap_orthogonal (f : F →ₗᵢ[𝕜] E) :
+    (K ⊓ f.range)ᗮ.comap f.toLinearMap = (K.comap f.toLinearMap)ᗮ := by
+  ext; simp [mem_orthogonal]; grind [LinearIsometry.inner_map_map]
+
+variable {K} in
+lemma comap_orthogonal_of_le {f : F →ₗᵢ[𝕜] E} (h : K ≤ f.range) :
+    Kᗮ.comap f.toLinearMap = (K.comap f.toLinearMap)ᗮ := by
+  simpa [inf_eq_left.mpr h] using comap_orthogonal K f
 
 variable (𝕜 E)
 

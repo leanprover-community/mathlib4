@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.ENat.Basic
 public import Mathlib.Topology.Bases
-public import Mathlib.Topology.Clopen
+import Mathlib.Topology.Clopen
 
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Fintype.Option

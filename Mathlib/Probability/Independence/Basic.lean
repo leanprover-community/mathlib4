@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Probability.Independence.Kernel.IndepFun
 public import Mathlib.MeasureTheory.Constructions.Pi
-public import Mathlib.MeasureTheory.Group.Convolution
 
 /-!
 # Independence of sets of sets and measure spaces (σ-algebras)
@@ -849,8 +848,7 @@ theorem iIndepFun.map_fun_eq_pi_map [Fintype ι] {β : ι → Type*}
     constructor
     · congr with x
       rw [Measure.map_apply_of_aemeasurable (hf x) (hm x)]
-    · rw [Measure.map_apply_of_aemeasurable (aemeasurable_pi_lambda _ fun x ↦ hf x)
-        (.univ_pi hm)]
+    · rw [Measure.map_apply_of_aemeasurable (.of_eval fun x ↦ hf x) (.univ_pi hm)]
       congr with x
       simp
   refine (Measure.pi_eq fun h' hm ↦ ?_).symm
@@ -870,8 +868,7 @@ theorem iIndepFun_iff_map_fun_eq_pi_map [Fintype ι] {β : ι → Type*}
     constructor
     · congr with x
       rw [Measure.map_apply_of_aemeasurable (hf x) (hm x)]
-    · rw [Measure.map_apply_of_aemeasurable (aemeasurable_pi_lambda _ fun x ↦ hf x)
-        (.univ_pi hm)]
+    · rw [Measure.map_apply_of_aemeasurable (.of_eval fun x ↦ hf x) (.univ_pi hm)]
       congr with x
       simp
   intro h S s hs

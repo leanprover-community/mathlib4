@@ -8,7 +8,7 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.RankNat
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.RelativeCellComplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.CategoryWithFibrations
-public import Mathlib.AlgebraicTopology.SimplicialSet.Presentable
+import Mathlib.AlgebraicTopology.SimplicialSet.Presentable
 public import Mathlib.CategoryTheory.SmallObject.Basic
 
 /-!

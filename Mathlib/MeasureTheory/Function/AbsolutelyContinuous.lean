@@ -6,7 +6,7 @@ Authors: Yizheng Zhu
 module
 
 public import Mathlib.Analysis.BoundedVariation
-public import Mathlib.Order.SuccPred.IntervalSucc
+import Mathlib.Order.SuccPred.IntervalSucc
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.Analysis.Calculus.ContDiff.RCLike
 
@@ -255,9 +255,6 @@ theorem uniformContinuousOn (hf : AbsolutelyContinuousOnInterval f a b) :
       forall_eq, mem_ofPred_eq, mem_prod]
     simp
   · simp [totalLengthFilter, comap_comap, Function.comp_def]
-
-@[deprecated (since := "2026-02-03")] alias uniformlyContinuousOn :=
-  uniformContinuousOn
 
 /-- If `f` is absolutely continuous on `uIcc a b`, then `f` is continuous on `uIcc a b`. -/
 theorem continuousOn (hf : AbsolutelyContinuousOnInterval f a b) :

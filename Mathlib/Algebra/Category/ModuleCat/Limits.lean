@@ -48,7 +48,7 @@ def sectionsSubmodule : Submodule R (∀ j, F.obj j) :=
           forget₂ AddCommGrpCat AddGrpCat.{w}) with
     carrier := (F ⋙ forget (ModuleCat R)).sections
     smul_mem' := fun r s sh j j' f => by
-      simpa [Functor.sections] using congr_arg (r • ·) (sh f) }
+      simpa [Functor.sections] using congr(r • $(sh f)) }
 
 instance : AddCommMonoid (F ⋙ forget (ModuleCat R)).sections :=
   inferInstanceAs <| AddCommMonoid (sectionsSubmodule F)
@@ -96,7 +96,7 @@ namespace HasLimits
 (Internal use only; use the limits API.)
 -/
 def limitCone : Cone F where
-  pt := ModuleCat.of R (Types.Small.limitCone.{v, w} (F ⋙ forget _)).pt
+  pt := ↧(Types.Small.limitCone.{v, w} (F ⋙ forget _)).pt
   π :=
     { app j := ofHom (limitπLinearMap F j)
       naturality _ _ f := by
@@ -210,7 +210,7 @@ variable (f : ∀ i j, i ≤ j → G i →ₗ[R] G j) [DirectedSystem G fun i j 
 /-- The diagram (in the sense of `CategoryTheory`) of an unbundled `directLimit` of modules. -/
 @[simps]
 def directLimitDiagram : ι ⥤ ModuleCat R where
-  obj i := ModuleCat.of R (G i)
+  obj i := ↧(G i)
   map hij := ofHom (f _ _ hij.le)
   map_id i := by
     ext

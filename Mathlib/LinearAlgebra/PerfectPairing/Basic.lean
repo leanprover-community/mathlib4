@@ -40,6 +40,16 @@ class IsPerfPair (p : M →ₗ[R] N →ₗ[R] R) where
   bijective_left (p) : Bijective p
   bijective_right (p) : Bijective p.flip
 
+@[nontriviality]
+lemma isPerfPair_of_subsingleton [Subsingleton R] (p : M →ₗ[R] N →ₗ[R] R) :
+    p.IsPerfPair where
+  bijective_left := by
+    have : Subsingleton M := Module.subsingleton R _
+    exact bijective_of_subsingleton' _
+  bijective_right := by
+    have : Subsingleton N := Module.subsingleton R _
+    exact bijective_of_subsingleton' _
+
 /-- Given a perfect pairing between `M` and `N`, we may interchange the roles of `M` and `N`. -/
 protected lemma IsPerfPair.flip (hp : p.IsPerfPair) : p.flip.IsPerfPair where
   bijective_left := IsPerfPair.bijective_right p
@@ -104,6 +114,16 @@ lemma IsPerfPair.of_bijective (p : M →ₗ[R] N →ₗ[R] R) [IsReflexive R N] 
   inferInstanceAs ((LinearMap.id (R := R) (M := Dual R N)).compl₁₂
     (LinearEquiv.ofBijective p h : M →ₗ[R] N →ₗ[R] R)
     (LinearEquiv.refl R N : N →ₗ[R] N)).IsPerfPair
+
+lemma IsPerfPair.separatingLeft {p : M →ₗ[R] N →ₗ[R] R} (hp : p.IsPerfPair) :
+    p.SeparatingLeft :=
+  separatingLeft_iff_ker_eq_bot.mpr (ker_eq_bot_of_injective hp.bijective_left.injective)
+
+lemma IsPerfPair.separatingRight {p : M →ₗ[R] N →ₗ[R] R} (hp : p.IsPerfPair) :
+    p.SeparatingRight := hp.flip.separatingLeft
+
+lemma IsPerfPair.nondegenerate {p : M →ₗ[R] N →ₗ[R] R} (hp : p.IsPerfPair) :
+    p.Nondegenerate := ⟨hp.separatingLeft, hp.separatingRight⟩
 
 end CommSemiring
 
