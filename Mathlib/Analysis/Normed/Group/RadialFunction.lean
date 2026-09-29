@@ -20,15 +20,9 @@ norm of that point, that is, if it factors through the norm. This file introduce
 * `Function.radialPart`: a choice of function `ℝ → F` through which `f : E → F` factors; it
   satisfies `f = f.radialPart ∘ (‖·‖)` precisely when `f` is radial.
 
-## Main statements
-
-* `Function.IsRadial.even`: a radial function on a seminormed additive group is even.
-* `Function.IsRadial.comp_isometry`: a radial function is invariant under precomposition with an
-  isometry fixing the origin.
-
 ## Tags
 
-radial function, radially symmetric, norm
+radial function, radially symmetric
 -/
 
 @[expose] public section
