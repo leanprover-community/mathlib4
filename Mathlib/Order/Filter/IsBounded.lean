@@ -143,8 +143,8 @@ theorem not_isBoundedUnder_of_tendsto_atTop [Preorder β] [NoMaxOrder β] {f : �
   rw [eventually_map] at hb
   obtain ⟨b', h⟩ := exists_gt b
   have hb' := (tendsto_atTop.mp hf) b'
-  have : { x : α | f x ≤ b } ∩ { x : α | b' ≤ f x } = ∅ :=
-    eq_empty_of_subset_empty fun x hx => (not_le_of_gt h) (le_trans hx.2 hx.1)
+  have : { x : α | f x ≤ b } ∩ { x : α | b' ≤ f x } = ∅ := by
+    grw [h]; grind
   exact (nonempty_of_mem (hb.and hb')).ne_empty this
 
 @[to_dual]

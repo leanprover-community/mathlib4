@@ -12,7 +12,7 @@ public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Order.SetNotation
 public import Mathlib.Tactic.ToAdditive
 
-import Mathlib.Data.Set.Lattice.Indexed
+public import Mathlib.Data.Set.Lattice.Indexed
 
 /-!
 # Cofinal sets
@@ -111,9 +111,8 @@ theorem isCofinal_iff_iUnion_Iic_eq_univ {s : Set α} :
 theorem isCofinal_iff_iUnion_Iio_eq_univ [NoMaxOrder α] {s : Set α} :
     IsCofinal s ↔ ⋃ i ∈ s, Iio i = univ where
   mpr hs := by
-    rw [isCofinal_iff_iUnion_Iic_eq_univ, ← univ_subset_iff, ← hs]
-    gcongr
-    exact Iio_subset_Iic_self
+    grw [isCofinal_iff_iUnion_Iic_eq_univ, ← Iio_subset_Iic_self]
+    exact hs
   mp hs := by
     simp_rw [eq_univ_iff_forall, mem_iUnion, exists_prop]
     intro x

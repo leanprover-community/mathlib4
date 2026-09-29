@@ -723,8 +723,7 @@ instance (priority := 100) PathConnectedSpace.connectedSpace [PathConnectedSpace
   rw [connectedSpace_iff_connectedComponent]
   rcases isPathConnected_iff_eq.mp (pathConnectedSpace_iff_univ.mp ‹_›) with ⟨x, _x_in, hx⟩
   use x
-  rw [← univ_subset_iff]
-  exact (by simpa using hx : pathComponent x = univ) ▸ pathComponent_subset_component x
+  grw [← pathComponent_subset_component, ← hx, pathComponentIn_univ]
 
 /-- A path-connected set is connected.
 

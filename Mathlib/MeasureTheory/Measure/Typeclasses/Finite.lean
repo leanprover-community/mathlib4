@@ -597,11 +597,9 @@ noncomputable def MeasureTheory.Measure.finiteSpanningSetsInOpen
     ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose_spec.2.1
   finite n :=
     ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose_spec.2.2
-  spanning :=
-    eq_univ_of_subset
-      (iUnion_mono fun n =>
-        ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose_spec.1)
-      (iUnion_compactCovering α)
+  spanning := by
+    gconvert iUnion_compactCovering α
+    exact ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose_spec.1
 
 open TopologicalSpace
 

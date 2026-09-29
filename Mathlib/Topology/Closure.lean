@@ -94,7 +94,7 @@ theorem interior_univ : interior (univ : Set X) = univ :=
 
 @[simp]
 theorem interior_eq_univ : interior s = univ ↔ s = univ :=
-  ⟨fun h => univ_subset_iff.mp <| h.symm.trans_le interior_subset, fun h => h.symm ▸ interior_univ⟩
+  ⟨by grw [interior_subset]; exact id, fun h => h.symm ▸ interior_univ⟩
 
 @[simp]
 theorem interior_interior : interior (interior s) = interior s :=

@@ -94,7 +94,7 @@ lemma exists_lift_of_finite_of_injective_of_surjective {X Y S T : Type*}
     simp only [mem_iUnion]
     obtain ⟨s, hs⟩ := f'_surj (g' y)
     grind
-  have C_cover_univ : ⋃ i, C i = univ := univ_subset_iff.mp (subset_trans D_cover_univ C_cover_D)
+  have C_cover_univ : ⋃ i, C i = univ := by grw [← C_cover_D, ← D_cover_univ]
   -- define k to be the unique map sending C i to ψ i
   have h_glue (i j : S) (x : Y) (hxi : x ∈ C i) (hxj : x ∈ C j) : i = j := by
     rw [Set.pairwiseDisjoint_iff] at C_disj

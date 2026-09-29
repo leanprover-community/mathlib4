@@ -490,10 +490,9 @@ end OrderClass
 
 instance Nat.instStarOrderedRing : StarOrderedRing ℕ where
   le_iff a b := by
-    have : AddSubmonoid.closure (range fun x : ℕ ↦ x * x) = ⊤ :=
-      eq_top_mono
-        (AddSubmonoid.closure_mono <| singleton_subset_iff.2 <| mem_range.2 ⟨1, one_mul _⟩)
-        Nat.addSubmonoidClosure_one
+    have : AddSubmonoid.closure (range fun x : ℕ ↦ x * x) = ⊤ := by
+      grw [← singleton_subset_iff.2 <| mem_range.2 (by use 1)]
+      exact Nat.addSubmonoidClosure_one
     simp [this, le_iff_exists_add]
 
 namespace IsStarProjection

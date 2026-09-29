@@ -644,8 +644,8 @@ theorem ball_zero' (x : E) (hr : 0 < r) : ball (0 : Seminorm 𝕜 E) x r = Set.u
   simp [hr]
 
 @[simp]
-theorem closedBall_zero' (x : E) (hr : 0 < r) : closedBall (0 : Seminorm 𝕜 E) x r = Set.univ :=
-  eq_univ_of_subset (ball_subset_closedBall _ _ _) (ball_zero' x hr)
+theorem closedBall_zero' (x : E) (hr : 0 < r) : closedBall (0 : Seminorm 𝕜 E) x r = Set.univ := by
+  grw [← ball_subset_closedBall, ball_zero' x hr]
 
 theorem ball_smul (p : Seminorm 𝕜 E) {c : NNReal} (hc : 0 < c) (r : ℝ) (x : E) :
     (c • p).ball x r = p.ball x (r / c) := by

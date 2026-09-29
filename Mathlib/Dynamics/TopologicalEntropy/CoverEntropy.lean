@@ -356,8 +356,9 @@ lemma coverEntropyEntourage_empty : coverEntropyEntourage T ∅ U = ⊥ := by
   rw [ENat.toENNReal_zero, ← Pi.zero_def, expGrowthSup_zero]
 
 @[simp]
-lemma coverEntropyInfEntourage_empty : coverEntropyInfEntourage T ∅ U = ⊥ :=
-  eq_bot_mono (coverEntropyInfEntourage_le_coverEntropyEntourage T ∅ U) coverEntropyEntourage_empty
+lemma coverEntropyInfEntourage_empty : coverEntropyInfEntourage T ∅ U = ⊥ := by
+  grw [coverEntropyInfEntourage_le_coverEntropyEntourage]
+  exact coverEntropyEntourage_empty
 
 lemma coverEntropyInfEntourage_nonneg (T : X → X) (h : F.Nonempty) (U : SetRel X X) :
     0 ≤ coverEntropyInfEntourage T F U := by
