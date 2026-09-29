@@ -110,7 +110,7 @@ theorem pi_proj : pi proj = LinearMap.id (R := R) (M := ∀ i, φ i) := rfl
 theorem pi_proj_comp (f : M₂ →ₗ[R] ∀ i, φ i) : pi (proj · ∘ₗ f) = f := rfl
 
 @[simp]
-theorem proj_comp_funLeft {ι' : Type*} (f : ι' → ι) (i : ι') :
+theorem proj_comp_funLeft (f : ι' → ι) (i : ι') :
     proj i ∘ₗ funLeft R M₂ f = proj (f i) :=
   rfl
 
