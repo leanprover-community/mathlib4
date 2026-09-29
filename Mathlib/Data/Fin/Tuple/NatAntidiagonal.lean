@@ -154,9 +154,7 @@ theorem antidiagonalTuple_pairwise_pi_lex :
     | zero =>
       rw [antidiagonal_zero]
       exact List.pairwise_singleton _ _
-    | succ n n_ih =>
-      simp
-      grind
+    | succ => grind [antidiagonal_succ, List.pairwise_cons]
 
 end List.Nat
 
