@@ -713,15 +713,17 @@ lemma _root_.Valuation.Compatible.ofValuation
   letI := ValuativeRel.ofValuation v
   ⟨fun _ _ ↦ Iff.rfl⟩
 
-lemma isEquiv {Γ₁ Γ₂ : Type*}
-    [LinearOrderedCommMonoidWithZero Γ₁]
-    [LinearOrderedCommMonoidWithZero Γ₂]
-    (v₁ : Valuation R Γ₁)
-    (v₂ : Valuation R Γ₂)
-    [v₁.Compatible] [v₂.Compatible] :
-    v₁.IsEquiv v₂ := by
+variable {Γ₁ Γ₂ : Type*} [LinearOrderedCommMonoidWithZero Γ₁] [LinearOrderedCommMonoidWithZero Γ₂]
+  (v₁ : Valuation R Γ₁) (v₂ : Valuation R Γ₂) [v₁.Compatible]
+
+lemma isEquiv [v₂.Compatible] : v₁.IsEquiv v₂ := by
   intro x y
   simp_rw [← Valuation.Compatible.vle_iff_le]
+
+variable {v₁ v₂} in
+lemma _root_.Valuation.IsEquiv.compatible (h : v₁.IsEquiv v₂) : v₂.Compatible where
+  vle_iff_le x y := by
+    rw [Valuation.Compatible.vle_iff_le (v := v₁), h]
 
 end Valuation
 
@@ -756,6 +758,12 @@ lemma apply_posSubmonoid_ne_zero (x : posSubmonoid R) : v (x : R) ≠ 0 := by
 @[simp]
 lemma apply_posSubmonoid_pos (x : posSubmonoid R) : 0 < v x :=
   zero_lt_iff.mpr <| v.apply_posSubmonoid_ne_zero x
+
+variable {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation R Γ₀) [v.Compatible]
+
+/-- The restriction of a compatible valuation to its image group is compatible. -/
+instance restrict_compatible : v.restrict.Compatible where
+  vle_iff_le x y := by rw [v.vle_iff_le, restrict_le_iff]
 
 end Valuation
 
