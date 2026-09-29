@@ -93,8 +93,8 @@ instance (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ where
   toDecidableLE := inferInstance
   toDecidableLT := inferInstance
   toDecidableEq := inferInstance
-  compare_eq_compareOfLessAndEq a b := by
-    simp only [compare, LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq, eq_comm]
+  compare_eq_cmpLE a b := by
+    simp only [compare, LinearOrder.compare_eq_cmpLE]
     rfl
 
 set_option linter.style.setOption false in

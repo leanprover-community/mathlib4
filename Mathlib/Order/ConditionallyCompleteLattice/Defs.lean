@@ -76,10 +76,10 @@ class ConditionallyCompleteLinearOrder (α : Type*)
   csSup_of_not_bddAbove : ∀ s, ¬BddAbove s → sSup s = sSup (∅ : Set α)
   /-- If a set is not bounded below, its infimum is by convention `sInf ∅`. -/
   csInf_of_not_bddBelow : ∀ s, ¬BddBelow s → sInf s = sInf (∅ : Set α)
-  compare a b := compareOfLessAndEq a b
+  compare a b := cmpLE a b
   /-- Comparison via `compare` is equal to the canonical comparison given decidable `<` and `=`. -/
-  compare_eq_compareOfLessAndEq : ∀ a b, compare a b = compareOfLessAndEq a b := by
-    compareOfLessAndEq_rfl
+  compare_eq_cmpLE : ∀ a b, compare a b = cmpLE a b := by
+    cmpLE_rfl
 
 attribute [to_dual existing] ConditionallyCompleteLinearOrder.csSup_of_not_bddAbove
 
