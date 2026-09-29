@@ -230,25 +230,17 @@ lemma succMany?_succ [inst : FinEnum α] (n : Nat) (x : α) :
 lemma succMany?_inj_nat [inst : FinEnum α]
     (n m : Nat) (x : α) (hn : equiv x + n < card α) (heq : succMany? n x = succMany? m x) :
     n = m := by
-  simp [succMany?] at heq
+  simp only [hn, succMany?] at heq
   split_ifs at heq <;> simpa using heq
 
 @[grind →]
 lemma succMany?_inj_elem [inst : FinEnum α]
     (n : Nat) (x y : α) (hn : equiv x + n < card α) (heq : succMany? n x = succMany? n y) :
     x = y := by
-  simp only [succMany?] at heq
-  split_ifs at heq
-  · injection heq with heq
-    simp at heq
-    apply inst.equiv.injective
-    apply Fin.ext
-    assumption
-  · injection heq with heq
-    simp at heq
-    apply inst.equiv.injective
-    apply Fin.ext
-    assumption
+  apply inst.equiv.injective
+  apply Fin.ext
+  simp only [hn, succMany?] at heq
+  split_ifs at heq <;> simpa using heq
 
 @[grind =]
 lemma succMany?_bind [inst : FinEnum α] {n m : Nat} {x : α} :
