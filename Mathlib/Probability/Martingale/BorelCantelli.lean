@@ -5,9 +5,9 @@ Authors: Kexing Ying
 -/
 module
 
-public import Mathlib.Algebra.Order.Archimedean.IndicatorCard
+import Mathlib.Algebra.Order.Archimedean.IndicatorCard
 public import Mathlib.Probability.Martingale.Centering
-public import Mathlib.Probability.Martingale.Convergence
+import Mathlib.Probability.Martingale.Convergence
 public import Mathlib.Probability.Martingale.OptionalStopping
 
 /-!

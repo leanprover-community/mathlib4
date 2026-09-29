@@ -6,7 +6,7 @@ Authors: Wenrong Zou
 module
 
 public import Mathlib.NumberTheory.LocalField.Basic
-public import Mathlib.NumberTheory.Padics.ProperSpace
+import Mathlib.NumberTheory.Padics.ProperSpace
 public import Mathlib.NumberTheory.Padics.ValuativeRel
 
 /-!

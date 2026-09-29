@@ -3,10 +3,13 @@ Copyright (c) 2023 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Marcelo Lynch
 -/
+module
 
-import Cache.Hashing
-import Cache.Infra
+public import Cache.Hashing
+public import Cache.Infra
 import Lake.Load.Manifest
+
+public section
 
 namespace Cache.Requests
 
@@ -643,6 +646,8 @@ in-flight leantar batch, then decompress the pending files. Returns the final
 `(decompressed, decompFailed)` counters. -/
 def finalizeDecomp (state : DecompState) (config : DecompConfig) : IO (Nat × Nat) := do
   let mut {pending, currentTask, lastBatchSize, decompressed, decompFailed} := state
+  if currentTask.isSome || !pending.isEmpty then
+    IO.eprintln "Still decompressing downloaded files..."
   if let some task := currentTask then
     let (d, f, err?) := harvestDecompTask task lastBatchSize decompressed decompFailed
     decompressed := d
@@ -720,11 +725,6 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
         s!", {s.speed / 1000} KB/s"
       else ""
     let mut msg := s!"\r{caption}: {s.success} file(s) [attempted {s.done}/{size} = {100*s.done/size}%{speedStr}]"
-    -- Add decompression progress if enabled
-    if decompConfig.isSome then
-      msg := msg ++ s!", Decompressed: {s.decomp.decompressed}"
-      if s.decomp.decompFailed != 0 then
-        msg := msg ++ s!" ({s.decomp.decompFailed} failed)"
     if s.failed != 0 then
       msg := msg ++ s!", {s.failed} {dir} failed"
     -- Clear to end of line to avoid remnants from longer previous messages
