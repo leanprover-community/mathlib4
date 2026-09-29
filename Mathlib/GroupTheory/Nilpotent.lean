@@ -1180,7 +1180,7 @@ instance (priority := 100) IsNilpotent.to_isSolvable [h : IsNilpotent G] : Group
 /-- A simple nilpotent group is commutative. -/
 @[to_additive /-- A simple nilpotent additive group is commutative. -/]
 instance [IsSimpleGroup G] [IsNilpotent G] : CommGroup G :=
-  Group.commGroupOfCenterEqTop <|
+  fast_instance% Group.commGroupOfCenterEqTop <|
     (IsSimpleGroup.eq_bot_or_eq_top_of_normal (center G)).resolve_left
       (Group.IsNilpotent.center_ne_bot G)
 
