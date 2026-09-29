@@ -954,7 +954,7 @@ theorem _root_.MonoidHom.measurePreserving
     {μ : Measure G} [IsHaarMeasure μ] {ν : Measure H} [IsHaarMeasure ν]
     {f : G →* H} (hcont : Continuous f) (hsurj : Surjective f) (huniv : μ univ = ν univ) :
     MeasurePreserving f μ ν where
-  measurable := hcont.measurable
+  aemeasurable := hcont.measurable.aemeasurable
   map_eq := by
     have : IsFiniteMeasure μ := ⟨by rw [huniv]; apply measure_lt_top⟩
     have : (μ.map f).IsHaarMeasure := isHaarMeasure_map_of_isFiniteMeasure μ f hcont hsurj

@@ -387,7 +387,7 @@ theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionS
     translation, and therefore preserves Lebesgue. -/
   have ht : Measurable (toLin' t.toMatrix) :=
     (toLin' t.toMatrix).continuous_of_finiteDimensional.measurable
-  refine ⟨ht, ?_⟩
+  refine ⟨ht.aemeasurable, ?_⟩
   refine (pi_eq fun s hs ↦ ?_).symm
   have h2s : MeasurableSet (univ.pi s) := .pi countable_univ fun i _ ↦ hs i
   simp_rw [← pi_pi, ← lintegral_indicator_one h2s]

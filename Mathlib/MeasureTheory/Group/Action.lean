@@ -175,7 +175,7 @@ variable {m : MeasurableSpace α} [SMul M α] [MeasurableConstSMul M α] (c : M)
 
 @[to_additive (attr := simp)]
 theorem measurePreserving_smul : MeasurePreserving (c • ·) μ μ :=
-  { measurable := measurable_const_smul c
+  { aemeasurable := (measurable_const_smul c).aemeasurable
     map_eq := by
       ext1 s hs
       rw [map_apply (measurable_const_smul c) hs]
@@ -263,7 +263,7 @@ theorem smulInvariantMeasure_tfae :
         ∀ c : G, MeasurePreserving (c • ·) μ μ] := by
   tfae_have 1 ↔ 2 := ⟨fun h => h.1, fun h => ⟨h⟩⟩
   tfae_have 1 → 6 := fun h c => (measurePreserving_smul c μ).map_eq
-  tfae_have 6 → 7 := fun H c => ⟨measurable_const_smul c, H c⟩
+  tfae_have 6 → 7 := fun H c => ⟨(measurable_const_smul c).aemeasurable, H c⟩
   tfae_have 7 → 4 := fun H c => (H c).measure_preimage_emb (measurableEmbedding_const_smul c)
   tfae_have 4 → 5
   | H, c, s => by

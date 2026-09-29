@@ -369,8 +369,8 @@ theorem pi_eval_preimage_null {i : ι} {s : Set (α i)} (hs : μ i s = 0) :
 
 theorem quasiMeasurePreserving_eval (i : ι) :
     QuasiMeasurePreserving (Function.eval i) (Measure.pi μ) (μ i) := by
-  refine ⟨by fun_prop, AbsolutelyContinuous.mk fun s hs h2s => ?_⟩
-  rw [map_apply (by fun_prop) hs, pi_eval_preimage_null μ h2s]
+  refine ⟨(measurable_pi_apply i).aemeasurable, AbsolutelyContinuous.mk fun s hs h2s => ?_⟩
+  rw [map_apply (measurable_pi_apply i) hs, pi_eval_preimage_null μ h2s]
 
 lemma pi_map_eval [DecidableEq ι] (i : ι) :
      (Measure.pi μ).map (Function.eval i) = (∏ j ∈ Finset.univ.erase i, μ j Set.univ) • (μ i) := by
@@ -400,7 +400,7 @@ lemma pi_map_pi {X Y : ι → Type*} {mX : ∀ i, MeasurableSpace (X i)} {μ : (
 omit [∀ i, SigmaFinite (μ i)] in
 lemma _root_.MeasureTheory.measurePreserving_eval [∀ i, IsProbabilityMeasure (μ i)] (i : ι) :
     MeasurePreserving (Function.eval i) (Measure.pi μ) (μ i) := by
-  refine ⟨measurable_pi_apply i, ?_⟩
+  refine ⟨(measurable_pi_apply i).aemeasurable, ?_⟩
   classical
   rw [Measure.pi_map_eval, Finset.prod_eq_one, one_smul]
   exact fun _ _ ↦ measure_univ
@@ -716,7 +716,7 @@ theorem measurePreserving_piEquivPiSubtypeProd (p : ι → Prop) [DecidablePred 
       ((Measure.pi fun i : Subtype p => μ i).prod (Measure.pi fun i => μ i)) := by
   set e := (MeasurableEquiv.piEquivPiSubtypeProd α p).symm
   refine MeasurePreserving.symm e ?_
-  refine ⟨e.measurable, (pi_eq fun s _ => ?_).symm⟩
+  refine ⟨e.measurable.aemeasurable, (pi_eq fun s _ => ?_).symm⟩
   have : e ⁻¹' pi univ s =
       (pi univ fun i : { i // p i } => s i) ×ˢ pi univ fun i : { i // ¬p i } => s i :=
     Equiv.preimage_piEquivPiSubtypeProd_symm_pi p s
@@ -731,7 +731,7 @@ theorem volume_preserving_piEquivPiSubtypeProd (α : ι → Type*)
 theorem measurePreserving_piCongrLeft (f : ι' ≃ ι) :
     MeasurePreserving (MeasurableEquiv.piCongrLeft α f)
       (Measure.pi fun i' => μ (f i')) (Measure.pi μ) where
-  measurable := (MeasurableEquiv.piCongrLeft α f).measurable
+  aemeasurable := (MeasurableEquiv.piCongrLeft α f).measurable.aemeasurable
   map_eq := by
     refine (pi_eq fun s _ => ?_).symm
     rw [MeasurableEquiv.map_apply, MeasurableEquiv.coe_piCongrLeft f,
@@ -754,7 +754,7 @@ theorem measurePreserving_arrowProdEquivProdArrow (α β γ : Type*) [Measurable
     MeasurePreserving (MeasurableEquiv.arrowProdEquivProdArrow α β γ)
       (.pi fun i ↦ (μ i).prod (ν i))
         ((Measure.pi fun i ↦ μ i).prod (Measure.pi fun i ↦ ν i)) where
-  measurable := (MeasurableEquiv.arrowProdEquivProdArrow α β γ).measurable
+  aemeasurable := (MeasurableEquiv.arrowProdEquivProdArrow α β γ).measurable.aemeasurable
   map_eq := by
     refine (FiniteSpanningSetsIn.ext ?_ (isPiSystem_pi.prod isPiSystem_pi)
       ((FiniteSpanningSetsIn.pi fun i ↦ (μ i).toFiniteSpanningSetsIn).prod
@@ -780,7 +780,7 @@ theorem measurePreserving_sumPiEquivProdPi_symm {X : ι ⊕ ι' → Type*}
     {m : ∀ i, MeasurableSpace (X i)} (μ : ∀ i, Measure (X i)) [∀ i, SigmaFinite (μ i)] :
     MeasurePreserving (MeasurableEquiv.sumPiEquivProdPi X).symm
       ((Measure.pi fun i => μ (.inl i)).prod (Measure.pi fun i => μ (.inr i))) (Measure.pi μ) where
-  measurable := (MeasurableEquiv.sumPiEquivProdPi X).symm.measurable
+  aemeasurable := (MeasurableEquiv.sumPiEquivProdPi X).symm.measurable.aemeasurable
   map_eq := by
     refine (pi_eq fun s _ => ?_).symm
     simp_rw [MeasurableEquiv.map_apply, MeasurableEquiv.coe_sumPiEquivProdPi_symm,
@@ -810,7 +810,7 @@ theorem measurePreserving_piFinSuccAbove {n : ℕ} {α : Fin (n + 1) → Type u}
       ((μ i).prod <| Measure.pi fun j => μ (i.succAbove j)) := by
   set e := (MeasurableEquiv.piFinSuccAbove α i).symm
   refine MeasurePreserving.symm e ?_
-  refine ⟨e.measurable, (pi_eq fun s _ => ?_).symm⟩
+  refine ⟨e.measurable.aemeasurable, (pi_eq fun s _ => ?_).symm⟩
   rw [e.map_apply, i.prod_univ_succAbove _, ← pi_pi, ← prod_prod]
   congr 1 with ⟨x, f⟩
   simp [e, i.forall_iff_succAbove]
@@ -823,7 +823,7 @@ theorem volume_preserving_piFinSuccAbove {n : ℕ} (α : Fin (n + 1) → Type u)
 theorem measurePreserving_piUnique {X : ι → Type*} [Unique ι] {m : ∀ i, MeasurableSpace (X i)}
     (μ : ∀ i, Measure (X i)) :
     MeasurePreserving (MeasurableEquiv.piUnique X) (Measure.pi μ) (μ default) where
-  measurable := (MeasurableEquiv.piUnique X).measurable
+  aemeasurable := (MeasurableEquiv.piUnique X).measurable.aemeasurable
   map_eq := by
     set e := MeasurableEquiv.piUnique X
     have : (piPremeasure fun i => (μ i).toOuterMeasure) = Measure.map e.symm (μ default) := by
@@ -849,7 +849,7 @@ theorem volume_preserving_funUnique (α : Type u) (β : Type v) [Unique α] [Mea
 theorem measurePreserving_piFinTwo {α : Fin 2 → Type u} {m : ∀ i, MeasurableSpace (α i)}
     (μ : ∀ i, Measure (α i)) [∀ i, SigmaFinite (μ i)] :
     MeasurePreserving (MeasurableEquiv.piFinTwo α) (Measure.pi μ) ((μ 0).prod (μ 1)) := by
-  refine ⟨MeasurableEquiv.measurable _, (Measure.prod_eq fun s t _ _ => ?_).symm⟩
+  refine ⟨(MeasurableEquiv.measurable _).aemeasurable, (Measure.prod_eq fun s t _ _ => ?_).symm⟩
   rw [MeasurableEquiv.map_apply, MeasurableEquiv.piFinTwo_apply, Fin.preimage_apply_01_prod,
     Measure.pi_pi, Fin.prod_univ_two]
   rfl
@@ -881,7 +881,7 @@ theorem measurePreserving_pi_empty {ι : Type u} {α : ι → Type v} [Fintype �
     MeasurePreserving (MeasurableEquiv.ofUniqueOfUnique (∀ i, α i) Unit) (Measure.pi μ)
       (Measure.dirac ()) := by
   set e := MeasurableEquiv.ofUniqueOfUnique (∀ i, α i) Unit
-  refine ⟨e.measurable, ?_⟩
+  refine ⟨e.measurable.aemeasurable, ?_⟩
   rw [Measure.pi_of_empty, Measure.map_dirac' e.measurable]
 
 theorem volume_preserving_pi_empty {ι : Type u} (α : ι → Type v) [Fintype ι] [IsEmpty ι]
@@ -910,8 +910,10 @@ theorem measurePreserving_pi {ι : Type*} [Fintype ι] {α : ι → Type v} {β 
     {f : (i : ι) → (α i) → (β i)} [hν : ∀ i, SigmaFinite (ν i)]
     (hf : ∀ i, MeasurePreserving (f i) (μ i) (ν i)) :
     MeasurePreserving (fun a i ↦ f i (a i)) (Measure.pi μ) (Measure.pi ν) where
-  measurable :=
-    measurable_pi_iff.mpr <| fun i ↦ (hf i).measurable.comp (measurable_pi_apply i)
+  aemeasurable := by
+    have (i : ι) : SigmaFinite (μ i) := (hf i).sigmaFinite
+    exact .of_eval fun i ↦ (hf i).aemeasurable.comp_quasiMeasurePreserving
+      (Measure.quasiMeasurePreserving_eval μ i)
   map_eq := by
     have (i : ι) : SigmaFinite ((μ i).map (f i)) := (hf i).map_eq ▸ hν i
     rw [pi_map_pi (fun i ↦ (hf i).aemeasurable)]
