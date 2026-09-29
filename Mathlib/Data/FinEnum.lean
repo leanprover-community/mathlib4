@@ -214,8 +214,7 @@ attribute [local grind! .] Equiv.injective
 
 @[simp, grind =]
 lemma succMany?_eq_none_iff {n : Nat} {x : α} :
-    succMany? n x = none ↔ card α ≤ inst.equiv x + n := by
-  grind [succMany?]
+    succMany? n x = none ↔ card α ≤ inst.equiv x + n := by grind [succMany?]
 
 @[simp, grind =]
 lemma succMany?_eq_some_iff {n : Nat} {x y : α} :
@@ -252,14 +251,11 @@ lemma succMany?_eq_iff {m n : Nat} {x y : α} :
         simp [hx, hy]
 
 @[simp, grind =]
-lemma succMany?_zero (x : α) :
-    succMany? 0 x = x := by
-  grind only [succMany?_eq_some_iff]
+lemma succMany?_zero (x : α) : succMany? 0 x = x := by grind only [succMany?_eq_some_iff]
 
 @[simp, grind =]
 lemma succMany?_succ (n : Nat) (x : α) :
-    (succMany? n x).bind (succMany? 1) = succMany? (n + 1) x := by
-  grind [succMany?]
+    (succMany? n x).bind (succMany? 1) = succMany? (n + 1) x := by grind [succMany?]
 
 @[grind →]
 lemma succMany?_inj_nat
@@ -268,7 +264,7 @@ lemma succMany?_inj_nat
 
 @[grind →]
 lemma succMany?_inj_elem
-(n : Nat) (x y : α) (hn : equiv x + n < card α) (heq : succMany? n x = succMany? n y) :
+    (n : Nat) (x y : α) (hn : equiv x + n < card α) (heq : succMany? n x = succMany? n y) :
     x = y := by grind
 
 @[grind =]
@@ -287,7 +283,7 @@ lemma succMany?_bind {n m : Nat} {x : α} :
 
 lemma succMany?_comm {n m : Nat} {x : α} :
     (succMany? n x).bind (succMany? m) = (succMany? m x).bind (succMany? n) := by
-    grind only [succMany?_bind]
+  grind only [succMany?_bind]
 
 instance instUpwardEnumerable : Std.PRange.UpwardEnumerable α where
   succ? := succMany? 1
