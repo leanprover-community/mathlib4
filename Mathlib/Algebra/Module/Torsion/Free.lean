@@ -62,8 +62,11 @@ lemma Module.IsTorsionFree.comap [IsTorsionFree S M] (f : R → S)
     IsTorsionFree R M where
   isSMulRegular r hr := (isRegular _ hr).isSMulRegular.of_map f (smul r)
 
-instance IsAddTorsionFree.to_isTorsionFree_nat [HasUniqueDiv M] : IsTorsionFree ℕ M where
+instance HasUniqueDiv.to_isTorsionFree_nat [HasUniqueDiv M] : IsTorsionFree ℕ M where
   isSMulRegular n hn := nsmul_right_injective (by simpa [isRegular_iff_ne_zero] using hn)
+
+@[deprecated (since := "2026-09-29")] alias IsAddTorsionFree.to_isTorsionFree_nat :=
+  HasUniqueDiv.to_isTorsionFree_nat
 
 instance Subsingleton.to_moduleIsTorsionFree [Subsingleton M] : IsTorsionFree R M where
   isSMulRegular _ _ := Function.injective_of_subsingleton _
