@@ -25,12 +25,7 @@ individual entries supplied by an entry certifier.
 The elimination records its echelon form `U`, making the product `L * A_σ = U` a certificate
 obligation of its own.
 
-The product is proved on the row lists of the literals. `ListMatrix.mul` on them is expanded
-to the sums of products of the entries, each proved equal to the recorded entry of `U` by the
-entry certifier or by kernel evaluation, and the equation of the matrix literals follows by a
-single definitional hint.
-Stated entrywise on the matrices, every entry would carry indexed reads, which the kernel
-evaluates by walking the literal.
+The product is proved on the list representation which the kernel checks more cheaply.
 -/
 
 public meta section
@@ -39,7 +34,7 @@ open Lean Meta Qq Mathlib.Tactic.Matrix
 
 namespace Mathlib.Tactic.Echelon
 
-/-- Build the literal `⟨i, _⟩ : Fin n` with its bound decided. -/
+/-- Build the literal `⟨i, _⟩ : Fin n`. -/
 def mkFinLitQ (n : Nat) (i : Nat) : MetaM Q(Fin $n) := do
   have iQ : Q(Nat) := mkNatLitQ i
   let hi : Q($iQ < $n) ← mkDecideProofQ q($iQ < $n)
