@@ -3,8 +3,9 @@ Copyright (c) 2026 Marcelo Lynch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
+module
 
-import Cache.Marker
+public import Cache.Marker
 
 /-!
 # The `cache query` subcommand
@@ -14,6 +15,8 @@ build, by walking git history back to the merge base with `master` and probing
 each commit's per-SHA marker. Diagnostic only: it prints a SHA for the user to
 pass to `cache get --scope=`, and never reads or writes artifacts itself.
 -/
+
+public section
 
 namespace Cache.Requests
 
