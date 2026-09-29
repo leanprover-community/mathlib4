@@ -171,7 +171,7 @@ end Submodule
 
 namespace Function
 
-variable {D E F : Type*}
+variable {E F : Type*}
 
 lemma iff_comp_linearIsometryEquiv [NormedAddCommGroup E] [InnerProductSpace ℝ E]
     (f : E → F) : f.IsRadial ↔ ∀ g : E ≃ₗᵢ[ℝ] E, f ∘ g = f := by
