@@ -59,6 +59,16 @@ theorem diagonal_mem_unitary {d : n → R} :
   simp_rw [Unitary.mem_iff, star_eq_conjTranspose, diagonal_conjTranspose,
     diagonal_mul_diagonal, diagonal_eq_one, Pi.star_def, Pi.mul_def]
 
+@[simp]
+theorem natCast_mem_unitary [Nonempty n] {k : ℕ} :
+    ↑k ∈ unitary (Matrix n n R) ↔ ↑k ∈ unitary R :=
+  diagonal_mem_unitary.trans Pi.const_mem_unitary_iff
+
+@[simp]
+theorem ofNat_mem_unitary [Nonempty n] {k : ℕ} [k.AtLeastTwo] :
+    ofNat(k) ∈ unitary (Matrix n n R) ↔ ofNat(k) ∈ unitary R :=
+  natCast_mem_unitary
+
 /-- A reindexed unitary matrix is unitary. -/
 @[simp]
 theorem submatrix_equiv_mem_unitary {A : Matrix m m R} {e₁ e₂ : n ≃ m} :
@@ -118,7 +128,6 @@ theorem det_of_mem_unitary {A : Matrix n n α} (hA : A ∈ Matrix.unitaryGroup n
   constructor
   · simpa [star, det_transpose] using congr(det $(hA.1))
   · simpa [star, det_transpose] using congr(det $(hA.2))
-
 
 section TensorProduct
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
