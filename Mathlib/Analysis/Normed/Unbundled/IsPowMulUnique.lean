@@ -23,23 +23,6 @@ In this file, we prove uniqueness of power-multiplicative norms over complete no
 
 section foo
 
-theorem one_le_map_one {F α β : Type*}
-    [Ring α] [Nontrivial α] [Semiring β] [LinearOrder β] [IsStrictOrderedRing β]
-    [FunLike F α β] [RingNormClass F α β] (f : F) :
-    1 ≤ f 1 := by
-  simpa [map_pos_of_ne_zero f one_ne_zero] using map_mul_le_mul f 1 1
-
-@[to_additive]
-theorem Finset.map_prod_le_prod {F α β ι : Type*} [CommMonoid α] [CommMonoid β] [Preorder β]
-    [IsOrderedMonoid β]
-    [FunLike F α β]
-    [SubmultiplicativeHomClass F α β] [OneHomClass F α β] (f : F) (s : Finset ι) (c : ι → α) :
-    f (∏ i ∈ s, c i) ≤ ∏ i ∈ s, f (c i) := by
-  classical
-  induction s using Finset.induction_on with
-  | empty => simp
-  | insert i s his ih => grw [Finset.prod_insert his, Finset.prod_insert his, map_mul_le_mul, ih]
-
 variable {A B : Type*} [SeminormedCommRing A] [Ring B] [Algebra A B]
 
 /-- A power-multiplicative norm on an algebraic extension of a trivially normed field is trivial. -/
