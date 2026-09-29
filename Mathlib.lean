@@ -1186,6 +1186,7 @@ public import Mathlib.Algebra.Polynomial.Eval.Coeff
 public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.Algebra.Polynomial.Eval.Degree
 public import Mathlib.Algebra.Polynomial.Eval.Irreducible
+public import Mathlib.Algebra.Polynomial.Eval.Order
 public import Mathlib.Algebra.Polynomial.Eval.SMul
 public import Mathlib.Algebra.Polynomial.Eval.Subring
 public import Mathlib.Algebra.Polynomial.Expand
