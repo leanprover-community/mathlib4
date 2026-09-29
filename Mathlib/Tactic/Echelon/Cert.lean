@@ -34,11 +34,10 @@ open Lean Meta Qq Mathlib.Tactic.Matrix
 
 namespace Mathlib.Tactic.Echelon
 
-/-- Build the literal `⟨i, _⟩ : Fin n`. -/
+/-- Build the numeral `i : Fin n`. -/
 def mkFinLitQ (n : Nat) (i : Nat) : MetaM Q(Fin $n) := do
-  have iQ : Q(Nat) := mkNatLitQ i
-  let hi : Q($iQ < $n) ← mkDecideProofQ q($iQ < $n)
-  return q((⟨$iQ, $hi⟩ : Fin $n))
+  if h : i < n then return toExpr (⟨i, h⟩ : Fin n)
+  throwError "mkFinLitQ: {i} is out of range for `Fin {n}`"
 
 /-- `List.drop k` on the list literal `l`. -/
 def dropListLitQ {u : Level} {α : Q(Type u)} (l : Q(List $α)) (k : Nat) : Q(List $α) :=
@@ -48,7 +47,8 @@ def dropListLitQ {u : Level} {α : Q(Type u)} (l : Q(List $α)) (k : Nat) : Q(Li
     | List.cons _ _ tl => dropListLitQ (α := α) tl k
     | _ => l
 
-/-- Three views of one matrix literal. -/
+/-- Three views of one matrix literal. Cert construction functions often need to take
+several representations as arguments to avoid redundant literal construction or `Expr` parsing. -/
 structure MatrixViews (u : Level) (m n : Nat) (α : Q(Type u)) where
   /-- The matrix, the `ofLists` term on `lit`. -/
   matrix : Q(Matrix (Fin $m) (Fin $n) $α)
@@ -68,7 +68,7 @@ def mkMatrixViews {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (m n : Nat)
   let entries := rows.toList.map Array.toList
   .ofLit zα m n (mkListLitQ (α := q(List $α)) (entries.map mkListLitQ)) entries
 
-/-- Build the list of pivot columns `[c₀, c₁, …]`, each with its bound. -/
+/-- Build the list of pivot columns `[c₀, c₁, …]`. -/
 def mkPivotList (n : Nat) (pivots : Array Nat) : MetaM Q(List (Fin $n)) := do
   let cols ← pivots.toList.mapM (mkFinLitQ n)
   return mkListLitQ (u := .zero) (α := q(Fin $n)) cols
