@@ -245,15 +245,22 @@ def elabTermForConvert (term : Syntax) (expectedType? : Option Expr) :
       Term.synthesizeSyntheticMVars (postpone := .no) (ignoreStuckTC := true)
       return t
 
+/-- Check that `convert!` can be replaced with `convert`. -/
+register_option linter.convertExclamation : Bool := {
+  defValue := true
+  descr := "enable the `convert!` to `convert` replacement linter"
+}
+
 elab_rules : tactic
-| `(tactic| convert%$tk $[!%$semireducible]? $cfg $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
+| `(tactic| convert%$tk $[!%$expensive]? $cfg $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
   withMainContext do
-    let config := { ← Convert.elabConfig semireducible.isSome cfg with }
+    let config := { ← Convert.elabConfig expensive.isSome cfg with }
     let redConfig := { ← Convert.elabConfig false cfg with }
     let patterns := (ps?.getD #[]).toList
     let expectedType ← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))
     let (e, gs) ← elabTermForConvert term expectedType
-    if semireducible.isSome then
+    if Linter.getLinterValue linter.convertExclamation (← Linter.getLinterOptions)
+        && expensive.isSome then
       liftMetaTactic fun g ↦ do
         -- Suggest `convert` instead of `convert!` if that gives us the same goals.
         let redGoals ← g.convert e sym.isSome (n.map (·.getNat)) redConfig patterns
