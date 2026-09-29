@@ -6,7 +6,6 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Topology.Algebra.Constructions
-public import Mathlib.Topology.ContinuousMap.Defs
 public import Mathlib.Algebra.Star.Basic
 public import Mathlib.Algebra.Star.Pi
 
@@ -120,7 +119,7 @@ instance {C : ι → Type*} [∀ i, TopologicalSpace (C i)] [∀ i, Star (C i)]
   continuous_star := continuous_pi fun i => Continuous.star (continuous_apply i)
 
 instance [Star R] [TopologicalSpace R] [ContinuousStar R] : ContinuousStar Rᵐᵒᵖ :=
-  ⟨MulOpposite.continuous_op.comp <| MulOpposite.continuous_unop.star⟩
+  ⟨MulOpposite.continuous_op.comp MulOpposite.continuous_unop.star⟩
 
 instance [Monoid R] [StarMul R] [TopologicalSpace R] [ContinuousStar R] :
     ContinuousStar Rˣ :=
