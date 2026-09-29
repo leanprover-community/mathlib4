@@ -111,13 +111,13 @@ theorem arg_cos_add_sin_mul_I {θ : ℝ} (hθ : θ ∈ Set.Ioc (-π) π) : arg (
   rw [← one_mul (_ + _), ← ofReal_one, arg_mul_cos_add_sin_mul_I zero_lt_one hθ]
 
 theorem arg_exp (z : ℂ) : arg (exp z) = toIocMod Real.two_pi_pos (-π) z.im := by
-  convert!
-    arg_mul_cos_add_sin_mul_I (Real.exp_pos z.re) (θ := toIocMod Real.two_pi_pos (-π) z.im) _
-    using 1
+  convert
+    arg_mul_cos_add_sin_mul_I (Real.exp_pos z.re) (θ := toIocMod Real.two_pi_pos (-π) z.im) _ using
+    1
   · rw [← exp_mul_I, ofReal_exp, toIocMod]
     push_cast
     rw [exp_mul_I_periodic.sub_zsmul_eq, ← exp_add, re_add_im]
-  · convert! toIocMod_mem_Ioc ..
+  · convert toIocMod_mem_Ioc ..
     ring
 
 lemma arg_exp_mul_I (θ : ℝ) :
@@ -336,7 +336,7 @@ lemma norm_eq_one_iff' : ‖x‖ = 1 ↔ ∃ θ ∈ Set.Ioc (-π) π, exp (θ * 
   constructor
   · rintro ⟨θ, rfl⟩
     refine ⟨toIocMod (mul_pos two_pos Real.pi_pos) (-π) θ, ?_, ?_⟩
-    · convert! toIocMod_mem_Ioc _ _ _
+    · convert toIocMod_mem_Ioc _ _ _
       ring
     · rw [eq_sub_of_add_eq <| toIocMod_add_toIocDiv_zsmul _ _ θ, ofReal_sub,
       ofReal_zsmul, ofReal_mul, ofReal_ofNat, exp_mul_I_periodic.sub_zsmul_eq]
@@ -487,9 +487,10 @@ theorem arg_cos_add_sin_mul_I_coe_angle (θ : Real.Angle) :
 
 theorem arg_mul_coe_angle {x y : ℂ} (hx : x ≠ 0) (hy : y ≠ 0) :
     (arg (x * y) : Real.Angle) = arg x + arg y := by
-  convert!
+  convert
     arg_mul_cos_add_sin_mul_I_coe_angle (mul_pos (norm_pos_iff.mpr hx) (norm_pos_iff.mpr hy))
-      (arg x + arg y : Real.Angle) using 3
+      (arg x + arg y : Real.Angle) using
+    3
   simp_rw [← Real.Angle.coe_add, Real.Angle.sin_coe, Real.Angle.cos_coe, ofReal_cos, ofReal_sin,
     cos_add_sin_I, ofReal_add, add_mul, exp_add, ofReal_mul]
   rw [mul_assoc, mul_comm (exp _), ← mul_assoc (‖y‖ : ℂ), norm_mul_exp_arg_mul_I, mul_comm y, ←

@@ -150,7 +150,8 @@ variable (M α) in
 @[to_additive
 /-- Embedding of `α` into functions `M → α` induced by an additive action of `M` on `α`. -/]
 def toFun : α ↪ M → α :=
-  ⟨fun y x ↦ x • y, fun y₁ y₂ H ↦ one_smul M y₁ ▸ one_smul M y₂ ▸ by convert! congr_fun H 1⟩
+  ⟨fun y x ↦ x • y, fun y₁ y₂ H ↦ one_smul M y₁ ▸ one_smul M y₂ ▸ by convert
+    congr_fun H 1⟩
 
 @[to_additive (attr := simp)]
 lemma toFun_apply (x : M) (y : α) : MulAction.toFun M α y x = x • y := rfl

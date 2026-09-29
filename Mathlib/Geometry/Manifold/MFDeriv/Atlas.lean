@@ -309,8 +309,8 @@ lemma mfderivWithin_extend_symm_comp_mfderiv_extend'
     {y : M} (he : e ∈ maximalAtlas I 1 M) (hy : y ∈ e.source) :
     (mfderiv[range I] (e.extend I).symm (e.extend I y)) ∘L (mfderiv% (e.extend I) y)
       = ContinuousLinearMap.id _ _ := by
-  convert! mfderivWithin_extend_symm_comp_mfderiv_extend he
-    ((e.extend I).map_source (by simpa using hy))
+  convert
+    mfderivWithin_extend_symm_comp_mfderiv_extend he ((e.extend I).map_source (by simpa using hy))
   rw [(e.extend I).left_inv (by simpa using hy)]
 
 lemma isInvertible_mfderivWithin_extend_symm
@@ -393,7 +393,7 @@ lemma mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt'
     (mfderiv[range I] (extChartAt I x).symm (extChartAt I x y)) ∘L (mfderiv% (extChartAt I x) y)
       = ContinuousLinearMap.id _ _ := by
   have : y = (extChartAt I x).symm (extChartAt I x y) := ((extChartAt I x).left_inv hy).symm
-  convert! mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt ((extChartAt I x).map_source hy)
+  convert mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt ((extChartAt I x).map_source hy)
   rw [(extChartAt I x).left_inv (by simpa using hy)]
 
 lemma isInvertible_mfderivWithin_extChartAt_symm {y : E} (hy : y ∈ (extChartAt I x).target) :
