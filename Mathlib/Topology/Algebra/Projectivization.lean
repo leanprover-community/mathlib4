@@ -25,6 +25,8 @@ by units of `K` is continuous on `V`.
   continuously on `V`.
 * `Projectivization.continuous_iff`: a map out of `ℙ K V` is continuous iff its composite with
   `mk' K` is.
+* `Projectivization.continuous_mk`, `Projectivization.continuous_map`: `Projectivization.mk`
+  and `Projectivization.map` are continuous.
 -/
 
 @[expose] public section
@@ -35,22 +37,6 @@ open scoped LinearAlgebra.Projectivization
 namespace Projectivization
 
 variable {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V]
-
-/-- Two nonzero vectors have the same image in `ℙ K V` iff one is a unit multiple of the other,
-for the action of `Kˣ` on `{v : V // v ≠ 0}`. -/
-theorem mk'_eq_mk'_iff (v w : {v : V // v ≠ 0}) :
-    mk' K v = mk' K w ↔ ∃ a : Kˣ, a • w = v := by
-  rw [mk'_eq_mk, mk'_eq_mk, mk_eq_mk_iff]
-  simp only [Subtype.ext_iff, Units.smul_coe]
-
-/-- The saturation of a set of nonzero vectors under `mk'` is the union of its translates by the
-units of `K`. -/
-theorem preimage_image_mk' (U : Set {v : V // v ≠ 0}) :
-    mk' K ⁻¹' (mk' K '' U) = ⋃ a : Kˣ, (a • ·) '' U := by
-  ext v
-  simp only [mem_preimage, mem_image, mk'_eq_mk'_iff, mem_iUnion]
-  exact ⟨fun ⟨w, hw, a, h⟩ ↦ ⟨a⁻¹, w, hw, by rw [← h, inv_smul_smul]⟩,
-    fun ⟨a, w, hw, h⟩ ↦ ⟨w, hw, a⁻¹, by rw [← h, inv_smul_smul]⟩⟩
 
 variable [TopologicalSpace V]
 
@@ -69,6 +55,24 @@ variable {α : Type*} [TopologicalSpace α]
 
 theorem continuous_iff {f : ℙ K V → α} : Continuous f ↔ Continuous (f ∘ mk' K) :=
   isQuotientMap_mk'.continuous_iff
+
+/-- `Projectivization.mk` is continuous in the vector, as long as the vector stays nonzero. -/
+@[continuity, fun_prop]
+theorem continuous_mk {f : α → V} (hf : Continuous f) (hf₀ : ∀ x, f x ≠ 0) :
+    Continuous fun x ↦ mk K (f x) (hf₀ x) :=
+  continuous_mk'.comp (hf.subtype_mk hf₀)
+
+section Map
+
+variable {L W : Type*} [DivisionRing L] [AddCommGroup W] [Module L W] [TopologicalSpace W]
+
+/-- An injective continuous semilinear map induces a continuous map on projective spaces. -/
+theorem continuous_map {σ : K →+* L} {f : V →ₛₗ[σ] W} (hf : Function.Injective f)
+    (hfc : Continuous f) : Continuous (map f hf) :=
+  continuous_iff.2 <| continuous_mk (hfc.comp continuous_subtype_val) fun v ↦
+    map_zero f ▸ hf.ne v.2
+
+end Map
 
 variable [ContinuousConstSMul Kˣ V]
 
