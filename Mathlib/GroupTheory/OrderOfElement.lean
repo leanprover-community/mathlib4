@@ -943,17 +943,11 @@ lemma IsMulTorsionFree.orderOf_le_one [IsMulTorsionFree G] (g : G) :
   · rw [ne_eq, ← isOfFinOrder_iff_eq_one, ← orderOf_eq_zero_iff] at ha
     simp [ha]
 
-end Group
-
-section CommGroup
-
-variable [CommGroup G]
-
 @[to_additive (attr := simp)]
-lemma zpowers_mabs [LinearOrder G] [IsOrderedMonoid G] (g : G) : zpowers |g|ₘ = zpowers g := by
-  rcases mabs_cases g with h | h <;> simp only [h, zpowers_inv]
+lemma zpowers_mabs [LinearOrder G] (g : G) : zpowers |g|ₘ = zpowers g :=
+  mabs_by_cases (fun h ↦ zpowers h = zpowers g) rfl zpowers_inv
 
-end CommGroup
+end Group
 
 section FiniteMonoid
 
