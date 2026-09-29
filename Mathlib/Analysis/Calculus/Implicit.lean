@@ -326,7 +326,7 @@ def implicitFunctionDataOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : f'
   pt := a
   hasStrictFDerivAt_leftFun := hf
   hasStrictFDerivAt_rightFun :=
-    (Classical.choose hker).hasStrictFDerivAt.comp a ((hasStrictFDerivAt_id a).sub_const a)
+    (Classical.choose hker).comp_hasStrictFDerivAt ((hasStrictFDerivAt_id a).sub_const a)
   range_leftDeriv := hf'
   range_rightDeriv := LinearMap.range_eq_of_proj (Classical.choose_spec hker)
   isCompl_ker := LinearMap.isCompl_of_proj (Classical.choose_spec hker)
