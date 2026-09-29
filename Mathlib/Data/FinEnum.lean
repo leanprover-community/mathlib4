@@ -204,6 +204,8 @@ def succMany? [inst : FinEnum α] (n : Nat) (x : α) : Option α :=
   then inst.equiv.symm { val := next, isLt := fits }
   else none
 
+-- Note: the "simp/grind normal form" to which we reduce `succMany?` is (in)equalities over ℕ.
+
 @[simp, grind =]
 lemma succMany?_eq_none_iff [inst : FinEnum α] {n : Nat} {x : α} :
     succMany? n x = none ↔ card α ≤ inst.equiv x + n := by
@@ -215,6 +217,33 @@ lemma succMany?_eq_some_iff [inst : FinEnum α] {n : Nat} {x y : α} :
   constructor
   case mp => grind [succMany?]
   case mpr => grind [succMany?, Equiv.symm_apply_apply]
+
+@[simp, grind =]
+lemma succMany?_eq_iff [inst : FinEnum α] {m n : Nat} {x y : α} :
+    succMany? m x = succMany? n y ↔
+      (inst.equiv x + m < card α ∧
+        inst.equiv x + m = inst.equiv y + n) ∨
+      (inst.equiv x + m ≥ card α ∧ inst.equiv y + n ≥ card α) := by
+    constructor
+    case mp =>
+      intro heq
+      unfold succMany? at heq
+      by_cases inst.equiv x + m < card α <;>
+        by_cases inst.equiv y + n < card α <;>
+        simp_all
+    case mpr =>
+      intro h
+      apply h.elim
+      case left =>
+        intro ⟨hlt, heq⟩
+        unfold succMany?
+        rw [heq]
+      case right =>
+        intro ⟨hx, hy⟩
+        apply not_lt_of_ge at hx
+        apply not_lt_of_ge at hy
+        unfold succMany?
+        simp [hx, hy]
 
 @[simp, grind =]
 lemma succMany?_zero [inst : FinEnum α] (x : α) :
@@ -229,18 +258,12 @@ lemma succMany?_succ [inst : FinEnum α] (n : Nat) (x : α) :
 @[grind →]
 lemma succMany?_inj_nat [inst : FinEnum α]
     (n m : Nat) (x : α) (hn : equiv x + n < card α) (heq : succMany? n x = succMany? m x) :
-    n = m := by
-  simp only [hn, succMany?] at heq
-  split_ifs at heq <;> simpa using heq
+    n = m := by grind
 
 @[grind →]
 lemma succMany?_inj_elem [inst : FinEnum α]
     (n : Nat) (x y : α) (hn : equiv x + n < card α) (heq : succMany? n x = succMany? n y) :
-    x = y := by
-  apply inst.equiv.injective
-  apply Fin.ext
-  simp only [hn, succMany?] at heq
-  split_ifs at heq <;> simpa using heq
+    x = y := by grind [inst.equiv.injective]
 
 @[grind =]
 lemma succMany?_bind [inst : FinEnum α] {n m : Nat} {x : α} :
