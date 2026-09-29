@@ -23,8 +23,6 @@ public meta section
 
 open Lean Meta Qq
 
-initialize registerTraceClass `Tactic.evalRank
-
 namespace Mathlib.Tactic.Echelon
 
 /-- The applicability check of the Bareiss method, which requires a commutative domain. -/

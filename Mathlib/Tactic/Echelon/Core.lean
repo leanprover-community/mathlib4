@@ -42,6 +42,8 @@ public meta section
 
 open Lean Meta
 
+initialize registerTraceClass `Tactic.evalRank
+
 namespace Mathlib.Tactic.Echelon
 
 /-- Arithmetics on values of `V`. -/
