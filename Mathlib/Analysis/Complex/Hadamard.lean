@@ -514,13 +514,11 @@ lemma norm_le_interp_of_mem_verticalClosedStrip₀₁' (f : ℂ → E) {z : ℂ}
     · use ‖(f 0)‖, 0
       simp
   · apply Real.rpow_le_rpow (sSupNormIm_nonneg f _) _ hz.1
-    · rw [sSupNormIm]
-      apply csSup_le _
-      · simpa [comp_apply, mem_image, forall_exists_index,
-          and_imp, forall_apply_eq_imp_iff₂] using hb
-      · use ‖(f 1)‖, 1
-        simp only [mem_preimage, one_re, mem_singleton_iff, comp_apply,
-          and_self]
+    rw [sSupNormIm]
+    apply csSup_le _
+    · simpa [comp_apply, mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂] using hb
+    · use ‖(f 1)‖, 1
+      simp
 
 /-- The transformation on ℂ that is used for `scale` maps the strip ``re ⁻¹' (l, u)``
   to the strip ``re ⁻¹' (0, 1)``. -/
