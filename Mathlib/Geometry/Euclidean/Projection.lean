@@ -593,9 +593,12 @@ theorem le_perpBisector_reflection_self (s : AffineSubspace ℝ P) [Nonempty s]
     s ≤ perpBisector (reflection s a) a :=
   perpBisector_comm (reflection s a) a ▸ le_perpBisector_self_reflection s a
 
+instance (a b : P) : (perpBisector a b).direction.HasOrthogonalProjection := by
+  rw [direction_perpBisector]
+  infer_instance
+
 @[simp]
-theorem reflection_perpBisector_left (a b : P)
-    [(perpBisector a b).direction.HasOrthogonalProjection] :
+theorem reflection_perpBisector_left (a b : P) :
     reflection (perpBisector a b) a = b := by
   rw [reflection_apply_of_mem _ _ (midpoint_mem_perpBisector a b)]
   simp_rw [direction_perpBisector]
@@ -604,11 +607,8 @@ theorem reflection_perpBisector_left (a b : P)
   simp
 
 @[simp]
-theorem reflection_perpBisector_right (a b : P)
-    [(perpBisector b a).direction.HasOrthogonalProjection] :
+theorem reflection_perpBisector_right (a b : P) :
     reflection (perpBisector b a) a = b := by
-  have : (perpBisector a b).direction.HasOrthogonalProjection :=
-    perpBisector_comm a b ▸ ‹(perpBisector b a).direction.HasOrthogonalProjection›
   simpa [perpBisector_comm a b] using reflection_perpBisector_left a b
 
 end perpBisector
