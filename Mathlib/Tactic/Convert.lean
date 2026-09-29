@@ -246,14 +246,34 @@ def elabTermForConvert (term : Syntax) (expectedType? : Option Expr) :
       return t
 
 elab_rules : tactic
-| `(tactic| convert $[!%$expensive]? $cfg $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
+| `(tactic| convert%$tk $[!%$semireducible]? $cfg $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
   withMainContext do
-    let config ← Convert.elabConfig expensive.isSome cfg
+    let config := { ← Convert.elabConfig semireducible.isSome cfg with }
+    let redConfig := { ← Convert.elabConfig false cfg with }
     let patterns := (ps?.getD #[]).toList
     let expectedType ← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))
     let (e, gs) ← elabTermForConvert term expectedType
-    liftMetaTactic fun g ↦
-      return (← g.convert e sym.isSome (n.map (·.getNat)) config patterns) ++ gs
+    if semireducible.isSome then
+      liftMetaTactic fun g ↦ do
+        -- Suggest `convert` instead of `convert!` if that gives us the same goals.
+        let redGoals ← g.convert e sym.isSome (n.map (·.getNat)) redConfig patterns
+        let defaultGoals ← g.convert e sym.isSome (n.map (·.getNat)) config patterns
+        if redGoals.length == defaultGoals.length then
+          let sameGoals ← try
+            (redGoals.zip defaultGoals).allM fun (g₁, g₂) => do
+              -- Check that they agree on the set of free variables, otherwise we get errors.
+              -- We assume the context in the `convert` case is a subset of the `convert!` case
+              -- since `convert!` can more agressively unfold and introduce more variables.
+              if !(← g₁.getDecl).lctx.isSubPrefixOf (← g₂.getDecl).lctx then return false
+              g₂.withContext <| withReducible <| isDefEq (← g₁.getType) (← g₂.getType)
+            catch _ => pure false
+          if sameGoals then
+            let tac ← `(tactic| convert%$tk $cfg $[←%$sym]? $term $[using $n]? $[with $ps?*]?)
+            TryThis.addSuggestion tk { suggestion := tac } (origSpan? := ← getRef)
+        return defaultGoals ++ gs
+    else
+      liftMetaTactic fun g ↦
+        return (← g.convert e sym.isSome (n.map (·.getNat)) config patterns) ++ gs
 
 /--
 `convert_to t` on a goal `⊢ t'` changes the goal to `⊢ t` and adds new goals for proving the
