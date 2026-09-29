@@ -714,15 +714,14 @@ lemma t₁ (k₁ k₂ k₃ : Λ) (h₁₂ : k₁ ≤ k₂) (h₂₃ : k₂ < k�
   simp [dsimp% (S.1 (Opposite.op k₃)).t₁ k₁ k₂ k₃ h₁₂ h₂₃ le_rfl, this, ξObjIso, eqToIso,
     trunc]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma t₂ (k₁ k₂ k₃ : Λ) (h₁₂ : k₁ < k₂) (h₂₃ : k₂ ≤ k₃) :
     S.ψ k₁ k₃ (by valid) =
     S.ψ k₁ k₂ h₁₂ ≫ G.map (S.functor.map (homOfLE h₂₃)).left.hom := by
-  have h' := dsimp% (S.1 (op k₃)).t₂ k₁ k₂ k₃ h₁₂ h₂₃ le_rfl
-  have :=
-    Functor.congr_hom
-      congr($(S.2 (homOfLE h₂₃ : (⟨k₂, by valid⟩ : Set.Iic k₃) ⟶ ⟨k₃, by valid⟩).op).ξ).symm
-      (homOfLE h₁₂.le : (⟨k₁, h₁₂.le⟩) ⟶ ⟨k₂, le_rfl⟩)
-  sorry
+  have h' := dsimp% (S.1 <| op k₃).t₂ k₁ k₂ k₃ h₁₂ h₂₃ le_rfl
+  have := congr($(S.2 (homOfLE h₂₃ : k₂ ⟶ k₃).op)).symm
+  simp [h', ψ, Seg.ξ, congr_ψ _ _ this, trunc, ← Functor.map_comp,
+    ← Functor.map_comp_assoc, ξObjIso, functor]
 
 @[simps]
 def ψ_nat :
@@ -811,7 +810,6 @@ lemma positetski_4_5_attempt1 (E : Inserter F G) (S T : K)
   sorry
 
 end
-
 
 /-- Let `Λ < κ` be a pair of infinite cardinals, such that `κ` is regular. Assume that
 - `K` and `L` are `κ`-accessible categories with colimits of `Λ`-chains.
