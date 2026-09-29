@@ -204,9 +204,7 @@ theorem of_finiteDimensional_imp_finrank_eq_one
   .of_exists_root _ fun f f_monic f_irr ↦ by
     have := Fact.mk f_irr
     have := f_monic.finite_adjoinRoot
-    have := H (AdjoinRoot f)
-    rw [← Module.nonempty_algEquiv_iff_finrank_eq_one] at this
-    use this.some.symm (AdjoinRoot.root f)
+    use (Module.nonempty_algEquiv_iff_finrank_eq_one.mpr (H <| AdjoinRoot f)).some.symm (AdjoinRoot.root f)
     simp [← Polynomial.coe_aeval_eq_eval, Polynomial.aeval_algHom_apply]
 
 theorem of_ringEquiv (k' : Type u) [Field k'] (e : k ≃+* k')
