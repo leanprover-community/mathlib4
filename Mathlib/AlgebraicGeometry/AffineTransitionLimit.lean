@@ -474,7 +474,7 @@ lemma exists_index : ∃ (i' : I) (hii' : i' ⟶ A.i),
   use (A.c.π.app A.i ≫ A.a) s
   have H : A.c.π.app A.i ≫ A.a ≫ pullback.diagonal f =
       A.c.π.app A.i ≫ pullback.lift A.a A.b (A.ha.symm.trans A.hb) := by
-    ext <;> simp [hab, pullback.lift_fst, pullback.lift_snd]
+    ext <;> simp [hab]
   simp [← Scheme.Hom.comp_apply, -Scheme.Hom.comp_base, H]
 
 /-- (Implementation)
@@ -612,7 +612,7 @@ lemma exists_hom_comp_eq_comp_of_locallyOfFiniteType
     pullback.map _ _ _ _ (D.map <| hl1 hu)
       (𝟙 _) (𝟙 _) (by rw [Category.comp_id, ← D.map_comp, this o u]) rfl
   have hF : F ≫ pullback.fst (D.map (hki' _)) (A.𝒰D.f _) =
-      pullback.fst _ _ ≫ D.map (hl1 hu) := by simp [F, pullback.lift_fst]
+      pullback.fst _ _ ≫ D.map (hl1 hu) := by simp [F]
   dsimp only [Precoverage.ZeroHypercover.pullback₁, PreZeroHypercover.pullback₁] at heq ⊢
   simp only [Functor.map_comp, Category.assoc] at heq ⊢
   simp_rw [← D.map_comp_assoc, reassoc_of% this o u, D.map_comp_assoc]
