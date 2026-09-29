@@ -45,11 +45,9 @@ noncomputable def radialPart [Norm E] [hF : Nonempty F] (f : E → F) : ℝ → 
 
 namespace IsRadial
 
-lemma eq_radialPart_comp_norm [Norm E] [Nonempty F] {f : E → F} (hf : f.IsRadial) :
-    f = f.radialPart ∘ (‖·‖ : E → ℝ) := by
-  ext x
-  rw [radialPart]
-  exact (hf.extend_apply _ _).symm
+@[simp]
+lemma radialPart_norm [Norm E] [Nonempty F] {f : E → F} (hf : f.IsRadial) {x : E} :
+    f.radialPart ‖x‖ = f x := hf.extend_apply _ _
 
 lemma even [SeminormedAddGroup E] {f : E → F} (hf : f.IsRadial) : f.Even := fun x ↦ hf (norm_neg x)
 
