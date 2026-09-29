@@ -5,9 +5,10 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Tannery
+import Mathlib.Analysis.Normed.Group.Tannery
 public import Mathlib.NumberTheory.LSeries.Convergence
-public import Mathlib.NumberTheory.LSeries.Linearity
+import Mathlib.NumberTheory.LSeries.Linearity
+import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 
 /-!
 # A converging L-series determines its coefficients
@@ -50,7 +51,6 @@ lemma cpow_mul_div_cpow_eq_div_div_cpow (m n : ℕ) (z : ℂ) (x : ℝ) :
   rw [← cpow_neg, show (-x : ℂ) = (-1 : ℝ) * x by simp, cpow_mul_ofReal_nonneg Hn,
     Real.rpow_neg_one, inv_inv]
 
-set_option backward.isDefEq.respectTransparency false in
 open Filter Real in
 /-- If the coefficients `f m` of an L-series are zero for `m ≤ n` and the L-series converges
 at some point, then `f (n+1)` is the limit of `(n+1)^x * LSeries f x` as `x → ∞`. -/
@@ -125,7 +125,7 @@ lemma LSeries.tendsto_atTop {f : ℕ → ℂ} (ha : abscissaOfAbsConv f < ⊤) :
     Tendsto (fun x : ℝ ↦ LSeries f x) atTop (nhds (f 1)) := by
   let F (n : ℕ) : ℂ := if n = 0 then 0 else f n
   have hF₀ : F 0 = 0 := rfl
-  have hF {n : ℕ} (hn : n ≠ 0) : F n = f n := if_neg hn
+  have hF {n : ℕ} (hn : n ≠ 0) : F n = f n := ite_eq_right hn
   have ha' : abscissaOfAbsConv F < ⊤ := (abscissaOfAbsConv_congr hF).symm ▸ ha
   simp_rw [← LSeries_congr hF]
   convert! LSeries.tendsto_cpow_mul_atTop (n := 0) (fun _ hm ↦ Nat.le_zero.mp hm ▸ hF₀) ha' using 1
@@ -149,7 +149,7 @@ lemma LSeries_eventually_eq_zero_iff' {f : ℕ → ℂ} :
     refine ⟨fun H ↦ ?_, fun H ↦ Eventually.of_forall fun x ↦ ?_⟩
     · let F (n : ℕ) : ℂ := if n = 0 then 0 else f n
       have hF₀ : F 0 = 0 := rfl
-      have hF {n : ℕ} (hn : n ≠ 0) : F n = f n := if_neg hn
+      have hF {n : ℕ} (hn : n ≠ 0) : F n = f n := ite_eq_right hn
       suffices ∀ n, F n = 0 from fun n hn ↦ (hF hn).symm.trans (this n)
       have ha : ¬ abscissaOfAbsConv F = ⊤ := abscissaOfAbsConv_congr hF ▸ h
       have h' (x : ℝ) : LSeries F x = LSeries f x := LSeries_congr hF x
@@ -233,7 +233,7 @@ lemma LSeries_eq_iff_of_abscissaOfAbsConv_lt_top {f g : ℕ → ℂ} (hf : absci
     LSeries f = LSeries g ↔ ∀ n ≠ 0, f n = g n := by
   refine ⟨fun H n hn ↦ ?_, fun H ↦ funext (LSeries_congr fun {n} ↦ H n)⟩
   refine eq_of_LSeries_eventually_eq hf hg ?_ hn
-  exact Filter.Eventually.of_forall fun x ↦ congr_fun H x
+  exact Filter.Eventually.of_forall fun x ↦ congr($H x)
 
 /-- The map `f ↦ LSeries f` is injective on functions `f` such that `f 0 = 0` and the L-series
 of `f` converges somewhere. -/

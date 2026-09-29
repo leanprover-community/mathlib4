@@ -28,9 +28,9 @@ zmod, quotient ring, ideal quotient
 
 @[expose] public section
 
-open QuotientAddGroup Set ZMod
+open Set ZMod
 
-variable (n : ℕ) {A R : Type*} [AddGroup A] [Ring R]
+variable (n : ℕ) {R : Type*} [Ring R]
 
 namespace Int
 
@@ -89,8 +89,8 @@ open Finset Function in
 theorem ZMod.prodEquivPi_apply {ι : Type*} [Fintype ι] (a : ι → ℕ)
     (coprime : Pairwise (Nat.Coprime on a)) (b : ZMod (∏ i, a i)) (i : ι) :
     prodEquivPi a coprime b i = castHom (dvd_prod_of_mem a (mem_univ i)) _ b :=
-  RingHom.congr_fun (Subsingleton.elim ((Pi.evalRingHom (fun _ ↦ ZMod _) i).comp
-    (prodEquivPi a coprime).toRingHom) _) b
+  congr($(Subsingleton.elim ((Pi.evalRingHom (fun _ ↦ ZMod _) i).comp
+    (prodEquivPi a coprime).toRingHom) _) b)
 
 /-- The **Chinese remainder theorem**, version for `ZMod n`. -/
 def ZMod.equivPi (hn : n ≠ 0) :

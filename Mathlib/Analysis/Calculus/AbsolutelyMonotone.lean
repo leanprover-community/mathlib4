@@ -5,8 +5,8 @@ Authors: Michael R. Douglas
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ContDiff.Operations
-public import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
+import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 
 /-!
 # Absolutely monotone functions
@@ -45,7 +45,7 @@ iterated derivative within `s` nonnegative.
 
 public section
 
-open Set Filter
+open Set
 open scoped ContDiff
 
 /-- A function `f : ℝ → ℝ` is **absolutely monotone on a set `s`** if, heuristically, all

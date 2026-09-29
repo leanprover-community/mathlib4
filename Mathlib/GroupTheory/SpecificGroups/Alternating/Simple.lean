@@ -8,6 +8,7 @@ module
 
 public import Mathlib.GroupTheory.GroupAction.Iwasawa
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.Combination
+public import Mathlib.GroupTheory.Solvable
 public import Mathlib.GroupTheory.SpecificGroups.Alternating.KleinFour
 
 /-! # The alternating group is simple
@@ -94,7 +95,7 @@ theorem alternatingGroup_le_of_normal
     apply Set.powersetCard.isPreprimitive_perm <;> grind
   classical
   apply iwasawaStructure_two.commutator_le
-  exact fixedPoints_ne_univ_of_faithfulSMul (by norm_num) (by grind)
+  exact fixedPoints_ne_univ_of_faithfulSMul (by simp) (by grind)
 
 end Equiv.Perm
 
@@ -125,12 +126,12 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_six
   rw [or_iff_not_imp_left, ← ne_eq, ← Subgroup.nontrivial_iff_ne_bot]
   intro hN
   have : IsPreprimitive (alternatingGroup α) (Set.powersetCard α 3) := by
-    refine Set.powersetCard.isPreprimitive_alternatingGroup (by norm_num) ?_ ?_
-    · exact lt_of_lt_of_le (by norm_num) hα
+    refine Set.powersetCard.isPreprimitive_alternatingGroup (by simp) ?_ ?_
+    · exact lt_of_lt_of_le (by simp) hα
     · simpa using hα'
   rw [eq_top_iff, ← commutator_alternatingGroup_eq_top (by simpa using hα)]
   apply iwasawaStructure_three.commutator_le
-  exact fixedPoints_ne_univ_of_faithfulSMul (by norm_num) (by grind)
+  exact fixedPoints_ne_univ_of_faithfulSMul (by simp) (by grind)
 
 theorem mem_map_kleinFour_ofSubtype {s : Finset α} (hs : s.card = 4) (k : alternatingGroup α) :
     k ∈ (kleinFour s).map (ofSubtype s) ↔
@@ -142,7 +143,7 @@ theorem mem_map_kleinFour_ofSubtype {s : Finset α} (hs : s.card = 4) (k : alter
       ← SetLike.mem_coe, coe_kleinFour_of_card_eq_four hs]
     simp [cycleType_ofSubtype, coe_ofSubtype, map_eq_one_iff _ Perm.ofSubtype_injective]
   · simp_rw [hk, false_and, iff_false]
-    contrapose! hk
+    contrapose hk
     exact (mem_range_ofSubtype_iff s k).mp (Subgroup.map_le_range _ _ hk)
 
 theorem map_kleinFour_conj (s : Finset α) (hs : s.card = 4) (g : alternatingGroup α) :
@@ -182,10 +183,10 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_eight
   rw [or_iff_not_imp_left, ← ne_eq, ← Subgroup.nontrivial_iff_ne_bot]
   intro hN
   have : IsPreprimitive (alternatingGroup α) (Set.powersetCard α 4) := by
-    apply Set.powersetCard.isPreprimitive_alternatingGroup (by norm_num) <;> grind
+    apply Set.powersetCard.isPreprimitive_alternatingGroup (by simp) <;> grind
   rw [eq_top_iff, ← commutator_alternatingGroup_eq_top hα]
   apply (iwasawaStructure_four hα).commutator_le
-  exact fixedPoints_ne_univ_of_faithfulSMul (by norm_num) (by grind)
+  exact fixedPoints_ne_univ_of_faithfulSMul (by simp) (by grind)
 
 /- If `α` has at least 5 elements,
 then the only nontrivial normal subgroup of `alternatingGroup α`
@@ -199,13 +200,21 @@ theorem normal_subgroup_eq_bot_or_eq_top
   · apply normal_subgroup_eq_bot_or_eq_top_of_card_ne_six hα hα'
 
 /-- When `α` has at least 5 elements, then `alternatingGroup α` is a simple group. -/
-public theorem isSimpleGroup (hα : 5 ≤ Nat.card α) :
+theorem isSimpleGroup (hα : 5 ≤ Nat.card α) :
     IsSimpleGroup (alternatingGroup α) where
   exists_pair_ne := by
     rw [← _root_.nontrivial_iff]
     refine nontrivial_of_three_le_card ?_
-    simpa using le_trans (by norm_num) hα
+    simpa using le_trans (by simp) hα
   eq_bot_or_eq_top_of_normal H _ := normal_subgroup_eq_bot_or_eq_top hα
+
+theorem isSolvable (hα : Nat.card α ≤ 4) : Group.IsSolvable (alternatingGroup α) := by
+  rcases Nat.le_succ_iff.mp hα with hα | hα
+  · have := alternatingGroup.isMulCommutative_of_card_le_three hα
+    infer_instance
+  · rw [← Group.isSolvable_commutator_iff, ← kleinFour_eq_commutator hα]
+    have := (kleinFour_isKleinFour hα).isMulCommutative
+    infer_instance
 
 @[deprecated "Use `alternatingGroup.isSimpleGroup` instead." (since := "2026-04-28")]
 theorem _root_.Equiv.Perm.IsThreeCycle.alternating_normalClosure
@@ -234,3 +243,16 @@ instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
   isSimpleGroup (by simp)
 
 end alternatingGroup
+
+namespace Equiv.Perm
+
+theorem isSolvable {α : Type*} [Finite α] (hα : Nat.card α ≤ 4) :
+    Group.IsSolvable (Equiv.Perm α) := by
+  classical
+  cases nonempty_fintype α
+  have : Group.IsSolvable (alternatingGroup α) := alternatingGroup.isSolvable hα
+  have : IsMulCommutative (Equiv.Perm α ⧸ alternatingGroup α) :=
+    Subgroup.Normal.quotient_commutative_iff_commutator_le.mpr alternatingGroup.commutator_perm_le
+  exact Group.isSolvable_of_subgroup_quotient (alternatingGroup α)
+
+end Equiv.Perm

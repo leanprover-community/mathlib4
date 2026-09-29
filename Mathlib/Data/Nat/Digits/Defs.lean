@@ -5,11 +5,8 @@ Authors: Kim Morrison, Shing Tak Lam, Mario Carneiro
 -/
 module
 
-public import Mathlib.Tactic.NormNum
 public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Linarith
-public import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Algebra.Ring.Defs
 import all Init.Data.Repr  -- for exposing `toDigitsCore`
 
 /-!
@@ -499,9 +496,9 @@ lemma toDigitsCore_lens_eq_aux (b f : Nat) :
   | zero => assumption
   | succ f ih =>
     if hx : n / b = 0 then
-      simp only [hx, if_true, List.length, congrArg (fun l ↦ l + 1) hlen]
+      simp only [hx, ite_true, List.length, congrArg (fun l ↦ l + 1) hlen]
     else
-      simp only [hx, if_false]
+      simp only [hx, ite_false]
       specialize ih (n / b) (Nat.digitChar (n % b) :: l1) (Nat.digitChar (n % b) :: l2)
       simp only [List.length, congrArg (fun l ↦ l + 1) hlen] at ih
       exact ih trivial

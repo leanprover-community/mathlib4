@@ -5,9 +5,7 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.Analysis.Calculus.Deriv.Slope
-public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
@@ -372,7 +370,7 @@ variable [CompleteSpace F]
 /-- The set of differentiability points of a function taking values in a complete space is
 Borel-measurable. -/
 theorem measurableSet_of_differentiableAt : MeasurableSet { x | DifferentiableAt 𝕜 f x } := by
-  have : IsComplete (univ : Set (E →L[𝕜] F)) := complete_univ
+  have : IsComplete (univ : Set (E →L[𝕜] F)) := isComplete_univ
   convert! measurableSet_of_differentiableAt_of_isComplete 𝕜 f this
   simp
 
@@ -700,7 +698,7 @@ variable [CompleteSpace F]
 Borel-measurable. -/
 theorem measurableSet_of_differentiableWithinAt_Ici :
     MeasurableSet { x | DifferentiableWithinAt ℝ f (Ici x) x } := by
-  have : IsComplete (univ : Set F) := complete_univ
+  have : IsComplete (univ : Set F) := isComplete_univ
   convert! measurableSet_of_differentiableWithinAt_Ici_of_isComplete f this
   simp
 
@@ -787,8 +785,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {f : α → E → F}
 
 namespace FDerivMeasurableAux
-
-open Uniformity
 
 lemma isOpen_A_with_param {r s : ℝ} (hf : Continuous f.uncurry) (L : E →L[𝕜] F) :
     IsOpen {p : α × E | p.2 ∈ A (f p.1) L r s} := by
@@ -893,7 +889,7 @@ variable [CompleteSpace F]
 values in a complete space is Borel-measurable. -/
 theorem measurableSet_of_differentiableAt_with_param (hf : Continuous f.uncurry) :
     MeasurableSet {p : α × E | DifferentiableAt 𝕜 (f p.1) p.2} := by
-  have : IsComplete (univ : Set (E →L[𝕜] F)) := complete_univ
+  have : IsComplete (univ : Set (E →L[𝕜] F)) := isComplete_univ
   convert! measurableSet_of_differentiableAt_of_isComplete_with_param hf this
   simp
 

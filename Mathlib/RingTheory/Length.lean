@@ -5,9 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Exact.Basic
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
-public import Mathlib.Order.KrullDimension
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.RingTheory.FiniteLength
 public import Mathlib.LinearAlgebra.Dimension.Free
 
@@ -94,7 +92,7 @@ lemma Module.length_ne_top_iff_finiteDimensionalOrder :
 lemma Module.length_ne_top_iff : Module.length R M ≠ ⊤ ↔ IsFiniteLength R M := by
   refine ⟨fun h ↦ ?_, fun H ↦ ?_⟩
   · rw [length_ne_top_iff_finiteDimensionalOrder] at h
-    rw [isFiniteLength_iff_isNoetherian_isArtinian, isNoetherian_iff, isArtinian_iff]
+    rw [isFiniteLength_iff_isNoetherian_isArtinian, isNoetherian_iff]
     let R : SetRel (Submodule R M) (Submodule R M) :=
       {(N₁, N₂) : Submodule R M × Submodule R M | N₁ < N₂}
     change R.inv.IsWellFounded ∧ R.IsWellFounded
@@ -165,7 +163,6 @@ variable {N P : Type*} [AddCommGroup N] [AddCommGroup P] [Module R N] [Module R 
 variable (f : N →ₗ[R] M) (g : M →ₗ[R] P) (hf : Function.Injective f) (hg : Function.Surjective g)
 variable (H : Function.Exact f g)
 
-set_option backward.isDefEq.respectTransparency false in
 include hf hg H in
 /-- Length is additive in exact sequences. -/
 lemma Module.length_eq_add_of_exact :

@@ -9,7 +9,7 @@ public import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.Algebra.Field.ZMod
 public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.Data.ZMod.ValMinAbs
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 public import Mathlib.FieldTheory.Finiteness
 public import Mathlib.FieldTheory.Galois.Notation
 public import Mathlib.FieldTheory.Perfect
@@ -73,7 +73,7 @@ theorem card_image_polynomial_eval [DecidableEq R] [Fintype R] {p : R[X]} (hp : 
   Finset.card_le_mul_card_image _ _ (fun a _ =>
     calc
       _ = #(p - C a).roots.toFinset :=
-        congr_arg card (by simp [Finset.ext_iff, ← mem_roots_sub_C hp])
+        congr(card $(by simp [Finset.ext_iff, ← mem_roots_sub_C hp]))
       _ ≤ Multiset.card (p - C a).roots := Multiset.toFinset_card_le _
       _ ≤ _ := card_roots_sub_C' hp)
 
@@ -322,7 +322,7 @@ theorem sum_pow_lt_card_sub_one (i : ℕ) (h : i < q - 1) : ∑ x : K, x ^ i = 0
       ∑ x : K, x ^ i = ∑ x ∈ univ \ {(0 : K)}, x ^ i := by
         rw [← sum_sdiff ({0} : Finset K).subset_univ, sum_singleton, zero_pow hi, add_zero]
       _ = ∑ x : Kˣ, (x ^ i : K) := by simp [φ, ← this, univ.sum_map φ]
-      _ = 0 := by rw [sum_pow_units K i, if_neg]; exact hiq
+      _ = 0 := by rw [sum_pow_units K i, ite_eq_right]; exact hiq
 
 section frobenius
 
@@ -381,10 +381,10 @@ theorem orderOf_frobeniusAlgHom : orderOf (frobeniusAlgHom K L) = Module.finrank
         ← Module.card_eq_pow_finrank, pow_card]
     have := card_le_degree_of_subset_roots (R := L) (p := X ^ q ^ m - X) (Z := univ) fun x _ ↦ by
       simp_rw [mem_roots', IsRoot, eval_sub, eval_pow, eval_X]
-      have := DFunLike.congr_fun eq x
+      have := congr($eq x)
       rw [AlgHom.coe_pow, coe_frobeniusAlgHom, pow_iterate, AlgHom.one_apply, ← sub_eq_zero] at this
       refine ⟨fun h ↦ ?_, this⟩
-      simpa [Fintype.one_lt_card.ne, pos.ne, eqComm] using congr_arg (coeff · 1) h
+      simpa [Fintype.one_lt_card.ne, pos.ne, eqComm] using congr(coeff $h 1)
     refine this.not_gt (((natDegree_sub_le ..).trans_eq ?_).trans_lt <|
       (Nat.pow_lt_pow_right Fintype.one_lt_card lt).trans_eq Module.card_eq_pow_finrank.symm)
     simp [Nat.one_le_pow _ _ Fintype.card_pos]
@@ -480,13 +480,16 @@ theorem frobenius_pow {p : ℕ} [Fact p.Prime] [CharP K p] {n : ℕ} (hcard : q 
 
 open Polynomial
 
-theorem expand_card (f : K[X]) : expand K q f = f ^ q := by
+theorem Polynomial.expand_card (f : K[X]) : expand K q f = f ^ q := by
   obtain ⟨p, hp⟩ := CharP.exists K
   rcases FiniteField.card K p with ⟨⟨n, npos⟩, ⟨hp, hn⟩⟩
   have : Fact p.Prime := ⟨hp⟩
   dsimp at hn
   rw [hn, ← map_iterateFrobenius_expand, iterateFrobenius_eq_pow,
     frobenius_pow hn, RingHom.one_def, map_id]
+
+@[deprecated (since := "2026-05-11")]
+alias expand_card := Polynomial.expand_card
 
 end FiniteField
 
@@ -539,7 +542,7 @@ theorem sq_add_sq (R : Type*) [Ring R] [IsDomain R] (p : ℕ) [NeZero p] [CharP 
   have := char_is_prime_of_pos R p
   obtain ⟨a, b, hab⟩ := ZMod.sq_add_sq p x
   refine ⟨a.val, b.val, ?_⟩
-  simpa using congr_arg (ZMod.castHom dvd_rfl R) hab
+  simpa using congr(ZMod.castHom dvd_rfl R $hab)
 
 end CharP
 
@@ -626,7 +629,9 @@ theorem orderOf_dvd_card_sub_one {a : ZMod p} (ha : a ≠ 0) :
 open Polynomial
 
 theorem expand_card (f : Polynomial (ZMod p)) :
-    expand (ZMod p) p f = f ^ p := by have h := FiniteField.expand_card f; rwa [ZMod.card p] at h
+    expand (ZMod p) p f = f ^ p := by
+  have h := FiniteField.Polynomial.expand_card f
+  rwa [ZMod.card p] at h
 
 end ZMod
 

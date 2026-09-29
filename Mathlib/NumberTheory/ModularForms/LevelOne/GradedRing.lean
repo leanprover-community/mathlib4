@@ -23,7 +23,9 @@ level-1 modular forms, beyond those that fall out of the dimension formula direc
 
 public noncomputable section
 
-open UpperHalfPlane ModularForm ModularFormClass MatrixGroups EisensteinSeries
+open UpperHalfPlane ModularForm ModularFormClass EisensteinSeries
+
+open scoped MatrixGroups
 
 namespace ModularForm
 
@@ -38,7 +40,7 @@ private lemma E₄CubeSubE₆SqForm_apply (z : ℍ) :
 private lemma E₄CubeSubE₆SqForm_qExpansion_eq :
     qExpansion 1 E₄CubeSubE₆SqForm = qExpansion 1 E₄ * qExpansion 1 E₄ * qExpansion 1 E₄ -
       qExpansion 1 E₆ * qExpansion 1 E₆ := by
-  simp only [E₄CubeSubE₆SqForm, coe_sub, coe_mcast,
+  simp only [E₄CubeSubE₆SqForm, FunLike.coe_sub, coe_mcast,
     ModularForm.qExpansion_sub one_pos one_mem_strictPeriods_SL,
     ModularForm.qExpansion_pow one_pos one_mem_strictPeriods_SL]
   ring
@@ -67,10 +69,10 @@ theorem discriminant_eq_E₄_cube_sub_E₆_sq (z : ℍ) :
       CuspForm.discriminant
     rw [hcΔ, hgE] at hgΔ
     simpa [PowerSeries.coeff_smul, discriminant_qExpansion_coeff_one,
-      E₄CubeSubE₆SqForm_qExpansion_coeff_one] using (congr_arg (·.coeff 1) hgΔ).symm
+      E₄CubeSubE₆SqForm_qExpansion_coeff_one] using congr($(hgΔ).coeff 1).symm
   have h1728 : (1728 : ℂ) * discriminant z = E₄ z ^ 3 - E₆ z ^ 2 := by
     rw [← hc_eq, show c * discriminant z = (c • CuspForm.discriminant) z from rfl, hc,
-      congr_fun hgE z, E₄CubeSubE₆SqForm_apply]
+      congr($hgE z), E₄CubeSubE₆SqForm_apply]
   linear_combination h1728 / 1728
 
 /-- The modular discriminant equals `(E₄³ - E₆²) / 1728` in the graded ring

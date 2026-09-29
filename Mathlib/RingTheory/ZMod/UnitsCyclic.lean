@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Analysis.Normed.Ring.Lemmas
-public import Mathlib.Data.Nat.Choose.Dvd
+import Mathlib.Data.Nat.Choose.Dvd
 public import Mathlib.Data.ZMod.Units
 public import Mathlib.FieldTheory.Finite.Basic
 
@@ -196,7 +196,6 @@ theorem orderOf_one_add_prime {p : ℕ} (hp : p.Prime) (hp2 : p ≠ 2) (n : ℕ)
 /-- If `p` is an odd prime, then `(ZMod (p ^ n))ˣ` is cyclic for all n -/
 theorem isCyclic_units_of_prime_pow (p : ℕ) (hp : p.Prime) (hp2 : p ≠ 2) (n : ℕ) :
     IsCyclic (ZMod (p ^ n))ˣ := by
-  have _ : NeZero (p ^ n) := ⟨pow_ne_zero n hp.ne_zero⟩
   have := Fact.mk hp
   rcases n with _ | n
   · rw [pow_zero]; infer_instance

@@ -6,7 +6,6 @@ Authors: Fernando Chu
 module
 
 public import Mathlib.CategoryTheory.Adjunction.Limits
-public import Mathlib.CategoryTheory.Skeletal
 
 /-!
 # (Co)limits of the skeleton of a category
@@ -32,7 +31,6 @@ namespace CategoryTheory.Limits
 universe v₁ u₁ v₂ u₂ v₃ u₃ w w'
 
 variable {J : Type u₁} [Category.{v₁} J] {C : Type u₂} [Category.{v₂} C]
-  {D : Type u₃} [Category.{v₃} D]
 
 instance hasLimitsOfShape_skeleton [HasLimitsOfShape J C] : HasLimitsOfShape J (Skeleton C) :=
   hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape (fromSkeleton C)

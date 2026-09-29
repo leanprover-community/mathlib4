@@ -35,7 +35,7 @@ However, some lemmas also use `𝕜 : RCLike`:
 @[expose] public section
 
 
-open TopologicalSpace Filter ContinuousLinearMap
+open Filter ContinuousLinearMap
 
 open scoped ENNReal Topology MeasureTheory
 

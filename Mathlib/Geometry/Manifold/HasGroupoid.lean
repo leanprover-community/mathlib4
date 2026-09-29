@@ -21,7 +21,9 @@ universe u
 
 variable {H : Type u} {H' : Type*} {M : Type*} {M' : Type*} {M'' : Type*}
 
-open Set OpenPartialHomeomorph Manifold
+open Set OpenPartialHomeomorph
+
+open scoped Manifold
 
 section HasGroupoid
 
@@ -235,7 +237,9 @@ theorem singletonChartedSpace_mem_atlas_eq (h : e.source = Set.univ)
 whole space `α`, then the induced charted space structure on `α` is `HasGroupoid G` for any
 structure groupoid `G` which is closed under restrictions. -/
 theorem singleton_hasGroupoid (h : e.source = Set.univ) (G : StructureGroupoid H)
-    [ClosedUnderRestriction G] : @HasGroupoid _ _ _ _ (e.singletonChartedSpace h) G :=
+    [ClosedUnderRestriction G] :
+    letI := e.singletonChartedSpace h
+    HasGroupoid α G :=
   { __ := e.singletonChartedSpace h
     compatible := by
       intro e' e'' he' he''
@@ -446,7 +450,7 @@ theorem StructureGroupoid.restriction_mem_maximalAtlas_subtype
   have : Nonempty t := nonempty_coe_sort.mpr (e.mapsTo.nonempty (nonempty_coe_sort.mp hs))
   obtain ⟨x, hc'⟩ := Opens.chart_eq this hc'
   -- As H has only one chart, `chartAt H x` is the identity: i.e., `c'` is the inclusion.
-  rw [hc', (chartAt_self_eq)]
+  rw [hc', chartAt_self_eq]
   -- Our expression equals this chart, at least on its source.
   rw [OpenPartialHomeomorph.subtypeRestr_def, OpenPartialHomeomorph.trans_refl]
   let goal :=
