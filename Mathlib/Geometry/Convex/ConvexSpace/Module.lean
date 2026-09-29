@@ -11,6 +11,8 @@ public import Mathlib.Geometry.Convex.ConvexSpace.AffineMap
 public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Tactic.NormNum.Basic
 
+import Mathlib.LinearAlgebra.Prod
+
 /-!
 # Modules are convex spaces
 
@@ -142,16 +144,59 @@ instance {ι : Type*} {M : ι → Type*} [∀ i, AddCommMonoid (M i)] [∀ i, Mo
 instance {ι : Type*} : IsModuleConvexSpace R (ι →₀ M) where
   sConvexComb_eq_sum w := by ext; simp [Finsupp.sum]
 
-@[to_fun (attr := fun_prop)]
-lemma IsAffineMap.add (hf : IsAffineMap R f) (hg : IsAffineMap R g) : IsAffineMap R (f + g) where
+@[fun_prop]
+lemma IsAffineMap.linearMap (h : M →ₗ[R] N) : IsAffineMap R h where
   map_sConvexComb w := by
-    simp [hf.map_sum_weights, hg.map_sum_weights, Finsupp.sum_mapDomain_index, add_smul]
+    simp [sConvexComb_eq_sum, map_finsuppSum, Finsupp.sum_mapDomain_index, add_smul]
+
+@[fun_prop]
+lemma isAffineMap_add : IsAffineMap R fun p : N × N ↦ p.1 + p.2 :=
+  .linearMap (.fst R N N + .snd R N N)
+
+section ConvexSpaceDomain
+variable {X : Type*} [ConvexSpace R X] {f g : X → N}
+
+@[to_fun (attr := fun_prop)]
+lemma IsAffineMap.add (hf : IsAffineMap R f) (hg : IsAffineMap R g) : IsAffineMap R (f + g) :=
+  isAffineMap_add.comp (hf.prodMk hg)
+
+section SMul
+variable {M : Type*} [Monoid M] [DistribMulAction M N] [SMulCommClass M R N] {m : M}
+
+@[fun_prop]
+lemma isAffineMap_const_smul : IsAffineMap R fun x : N ↦ m • x where
+  map_sConvexComb w := by
+    rw [sConvexComb_eq_sum, sConvexComb_eq_sum, StdSimplex.weights_map,
+      Finsupp.sum_mapDomain_index (by simp) fun _ b₁ b₂ ↦ add_smul b₁ b₂ _, Finsupp.smul_sum]
+    simp [smul_comm]
+
+@[fun_prop]
+lemma IsAffineMap.const_smul (hf : IsAffineMap R f) : IsAffineMap R (m • f) :=
+  isAffineMap_const_smul.comp hf
+
+end SMul
+end ConvexSpaceDomain
 
 lemma IsStarConvexSet.add (hs : IsStarConvexSet R x s) (ht : IsStarConvexSet R y t) :
     IsStarConvexSet R (x + y) (s + t) := by
   rw [← Set.add_image_prod]; exact (hs.prod ht).image (by fun_prop)
 
 end IsModuleConvexSpace
+
+section IsConvexCombComm
+variable {S : Type*} [Semiring S] [PartialOrder S] [IsStrictOrderedRing S] [Module S M]
+  [ConvexSpace R M] [IsModuleConvexSpace R M] [ConvexSpace S M] [IsModuleConvexSpace S M]
+  [SMulCommClass R S M]
+
+/-- The convex space structures over `R` and over `S` on a module commute as soon as the `R` and `S`
+actions do. -/
+instance _root_.SMulCommClass.toIsConvexCombComm : IsConvexCombComm R S M where
+  iConvexComb_comm' f g := by
+    simp only [iConvexComb_eq_sum, Finsupp.sum, Finset.smul_sum]
+    rw [Finset.sum_comm]
+    simp only [smul_comm]
+
+end IsConvexCombComm
 
 variable (R I) in
 lemma StdSimplex.isAffineMap_weights : IsAffineMap R (weights (R := R) (X := I)) where
@@ -164,13 +209,30 @@ variable [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
   [ConvexSpace R M] [IsModuleConvexSpace R M] [ConvexSpace R N] [IsModuleConvexSpace R N]
   {x y : M} {s t : Set M} {f g : M → N}
 
-@[to_fun (attr := fun_prop)]
-lemma IsAffineMap.neg (hf : IsAffineMap R f) : IsAffineMap R (-f) where
-  map_sConvexComb w := by simp [hf.map_sum_weights, Finsupp.sum_mapDomain_index, add_smul]
+@[fun_prop]
+lemma isAffineMap_neg : IsAffineMap R fun x : N ↦ -x := .linearMap (-.id)
+
+@[fun_prop]
+lemma isAffineMap_sub : IsAffineMap R fun p : N × N ↦ p.1 - p.2 :=
+  .linearMap (LinearMap.fst R N N - .snd R N N)
+
+section ConvexSpaceDomain
+variable {X : Type*} [ConvexSpace R X] {f g : X → N}
 
 @[to_fun (attr := fun_prop)]
-lemma IsAffineMap.sub (hf : IsAffineMap R f) (hg : IsAffineMap R g) : IsAffineMap R (f - g) := by
-  simpa [sub_eq_add_neg] using hf.add hg.neg
+protected lemma IsAffineMap.neg (hf : IsAffineMap R f) : IsAffineMap R (-f) :=
+  isAffineMap_neg.comp hf
+
+@[to_fun (attr := fun_prop)]
+protected lemma IsAffineMap.sub (hf : IsAffineMap R f) (hg : IsAffineMap R g) :
+    IsAffineMap R (f - g) := isAffineMap_sub.comp (hf.prodMk hg)
+
+@[to_fun (attr := simp)]
+lemma isAffineMap_neg_iff : IsAffineMap R (-f) ↔ IsAffineMap R f where
+  mp hf := by simpa using hf.neg
+  mpr := .neg
+
+end ConvexSpaceDomain
 
 lemma IsStarConvexSet.neg (hs : IsStarConvexSet R x s) : IsStarConvexSet R (-x) (-s) := by
   rw [← Set.image_neg_eq_neg]; exact hs.image (by fun_prop)

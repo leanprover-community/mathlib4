@@ -6,7 +6,7 @@ Authors: Stefan Kebekus
 module
 
 public import Mathlib.Analysis.Complex.Harmonic.Poisson
-public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLogEqCircleAverage
+public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLog
 
 
 /-!
@@ -59,7 +59,6 @@ private lemma continuous_herglotzLogIntegrand_circle {w ρ : ℂ} {R r : ℝ} (h
   intro θ
   apply ContinuousAt.comp (continuousAt_herglotzLogIntegrand _ _) (by fun_prop)
   all_goals
-    by_contra h
     grind [norm_circleMap_zero, lt_of_le_of_lt (Complex.norm_nonneg w) hwr]
 
 open Complex in
