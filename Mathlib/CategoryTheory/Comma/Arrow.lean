@@ -349,7 +349,6 @@ def leftFunc : Arrow C ⥤ C where
   obj := Arrow.left
   map := Arrow.Hom.left
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation from `leftFunc` to `rightFunc`, given by the arrow itself. -/
 @[simps]

@@ -6,7 +6,6 @@ Authors: Jz Pan
 module
 
 public import Mathlib.FieldTheory.Galois.Basic
-public import Mathlib.FieldTheory.SeparableClosure
 
 /-!
 # Separably Closed Field
@@ -140,9 +139,11 @@ theorem exists_pow_nat_eq [IsSepClosed k] (x : k) (n : ℕ) [hn : NeZero (n : k)
     use z
     simpa [eval_C, eval_X, eval_pow, eval_sub, IsRoot.def, sub_eq_zero] using hz
 
-theorem exists_eq_mul_self [IsSepClosed k] (x : k) [h2 : NeZero (2 : k)] : ∃ z, x = z * z := by
+theorem isSquare [IsSepClosed k] (x : k) [h2 : NeZero (2 : k)] : IsSquare x := by
   rcases exists_pow_nat_eq x 2 with ⟨z, rfl⟩
   exact ⟨z, sq z⟩
+
+@[deprecated (since := "2026-09-28")] alias exists_eq_mul_self := isSquare
 
 theorem roots_eq_zero_iff [IsSepClosed k] {p : k[X]} (hsep : p.Separable) :
     p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) := by

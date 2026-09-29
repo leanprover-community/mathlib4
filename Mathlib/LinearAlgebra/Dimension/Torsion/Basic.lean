@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.LinearAlgebra.Dimension.Constructions
-public import Mathlib.LinearAlgebra.Dimension.Subsingleton
 
 /-!
 # Rank and torsion

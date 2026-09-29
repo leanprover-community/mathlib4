@@ -8,10 +8,8 @@ module
 public import Mathlib.Algebra.Polynomial.BigOperators
 public import Mathlib.Algebra.Polynomial.RingDivision
 public import Mathlib.Data.Set.Card
-public import Mathlib.Data.Set.Finite.Lemmas
 public import Mathlib.RingTheory.Coprime.Lemmas
 public import Mathlib.RingTheory.Localization.FractionRing
-public import Mathlib.SetTheory.Cardinal.Order
 public import Mathlib.Order.Filter.TendstoCofinite
 
 /-!
