@@ -7,14 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Fin.Tuple
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-public import Mathlib.Algebra.BigOperators.Pi
-public import Mathlib.Algebra.Module.Prod
-public import Mathlib.Algebra.Module.Submodule.Ker
-public import Mathlib.Algebra.Module.Submodule.Range
-public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.LinearAlgebra.Prod
-public import Mathlib.Data.Fintype.Option
+import Mathlib.Data.Fintype.Option
 
 /-!
 # Pi types of modules
@@ -226,8 +221,8 @@ theorem iSup_range_single [Finite ι] : ⨆ i, range (single R φ i) = ⊤ := by
 theorem disjoint_single_single (I J : Set ι) (h : Disjoint I J) :
     Disjoint (⨆ i ∈ I, range (single R φ i)) (⨆ i ∈ J, range (single R φ i)) := by
   refine
-    Disjoint.mono (iSup_range_single_le_iInf_ker_proj _ _ _ _ <| disjoint_compl_right)
-      (iSup_range_single_le_iInf_ker_proj _ _ _ _ <| disjoint_compl_right) ?_
+    Disjoint.mono (iSup_range_single_le_iInf_ker_proj _ _ _ _ disjoint_compl_right)
+      (iSup_range_single_le_iInf_ker_proj _ _ _ _ disjoint_compl_right) ?_
   simp only [disjoint_iff_inf_le, IsConcreteLE.le_iff, mem_iInf, mem_inf, mem_ker, mem_bot,
     proj_apply, funext_iff]
   rintro b ⟨hI, hJ⟩ i
@@ -288,7 +283,7 @@ note [partially-applied ext lemmas]. -/
 @[ext]
 theorem pi_ext' (h : ∀ i, f.comp (single R φ i) = g.comp (single R φ i)) : f = g := by
   refine pi_ext fun i x => ?_
-  convert! LinearMap.congr_fun (h i) x
+  convert! congr($(h i) x)
 
 end Ext
 
@@ -441,14 +436,14 @@ variable [Semiring R]
 lemma ker_compLeft [AddCommMonoid M] [AddCommMonoid M₂]
     [Module R M] [Module R M₂] (f : M →ₗ[R] M₂) (I : Type*) :
     LinearMap.ker (f.compLeft I) = Submodule.pi (Set.univ : Set I) (fun _ => LinearMap.ker f) :=
-  Submodule.ext fun _ => ⟨fun (hx : _ = _) i _ => congr_fun hx i,
+  Submodule.ext fun _ => ⟨fun (hx : _ = _) i _ => congr($hx i),
     fun hx => funext fun i => hx i trivial⟩
 
 lemma range_compLeft [AddCommMonoid M] [AddCommMonoid M₂]
     [Module R M] [Module R M₂] (f : M →ₗ[R] M₂) (I : Type*) :
     LinearMap.range (f.compLeft I) =
       Submodule.pi (Set.univ : Set I) (fun _ => LinearMap.range f) :=
-  Submodule.ext fun _ => ⟨fun ⟨y, hy⟩ i _ => ⟨y i, congr_fun hy i⟩, fun hx => by
+  Submodule.ext fun _ => ⟨fun ⟨y, hy⟩ i _ => ⟨y i, congr($hy i)⟩, fun hx => by
     choose y hy using hx
     exact ⟨fun i => y i trivial, funext fun i => hy i trivial⟩⟩
 

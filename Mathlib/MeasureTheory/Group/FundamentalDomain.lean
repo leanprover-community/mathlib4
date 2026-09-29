@@ -60,7 +60,7 @@ structure IsAddFundamentalDomain (G : Type*) {α : Type*} [Zero G] [VAdd G α] [
     (s : Set α) (μ : Measure α := by volume_tac) : Prop where
   protected nullMeasurableSet : NullMeasurableSet s μ
   protected ae_covers : ∀ᵐ x ∂μ, ∃ g : G, g +ᵥ x ∈ s
-  protected aedisjoint : Pairwise <| (AEDisjoint μ on fun g : G => g +ᵥ s)
+  protected aedisjoint : Pairwise (AEDisjoint μ on fun g : G => g +ᵥ s)
 
 /-- A measurable set `s` is a *fundamental domain* for an action of a group `G` on a measurable
 space `α` with respect to a measure `μ` if the sets `g • s`, `g : G`, are pairwise a.e. disjoint and
@@ -70,7 +70,7 @@ structure IsFundamentalDomain (G : Type*) {α : Type*} [One G] [SMul G α] [Meas
     (s : Set α) (μ : Measure α := by volume_tac) : Prop where
   protected nullMeasurableSet : NullMeasurableSet s μ
   protected ae_covers : ∀ᵐ x ∂μ, ∃ g : G, g • x ∈ s
-  protected aedisjoint : Pairwise <| (AEDisjoint μ on fun g : G => g • s)
+  protected aedisjoint : Pairwise (AEDisjoint μ on fun g : G => g • s)
 
 variable {G H α β E : Type*}
 
