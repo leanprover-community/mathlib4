@@ -9,6 +9,7 @@ public import Mathlib.Probability.Distributions.Bernoulli
 public import Mathlib.Probability.ProductMeasure
 
 import Mathlib.MeasureTheory.MeasurableSpace.NCard
+import Mathlib.Probability.Independence.InfinitePi
 import Mathlib.Probability.Independence.Process.Basic
 
 /-!
