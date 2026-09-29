@@ -382,7 +382,7 @@ theorem cthickening_closure : cthickening δ (closure s) = cthickening δ s := b
 
 lemma thickening_eq_empty_iff_of_pos (hε : 0 < ε) :
     thickening ε s = ∅ ↔ s = ∅ :=
-  ⟨by gcongr; exact self_subset_thickening hε, by simp +contextual⟩
+  ⟨by gcongr; apply self_subset_thickening hε, by simp +contextual⟩
 
 lemma thickening_nonempty_iff_of_pos (hε : 0 < ε) :
     (thickening ε s).Nonempty ↔ s.Nonempty := by
