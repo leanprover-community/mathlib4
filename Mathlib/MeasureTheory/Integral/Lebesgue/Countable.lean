@@ -170,7 +170,7 @@ that has the same Lebesgue integral over every set.
 
 For the integral over the whole space, the statement is true without extra assumptions,
 see `exists_measurable_le_lintegral_eq`.
-See also `MeasureTheory.Measure.restrict_toMeasurable_of_sFinite` for a similar result. -/
+See also `MeasureTheory.Measure.restrict_toMeasurable_of_sfinite` for a similar result. -/
 theorem exists_measurable_le_forall_setLIntegral_eq [SFinite μ] (f : α → ℝ≥0∞) :
     ∃ g : α → ℝ≥0∞, Measurable g ∧ g ≤ f ∧ ∀ s, ∫⁻ a in s, f a ∂μ = ∫⁻ a in s, g a ∂μ := by
   -- We only need to prove the `≤` inequality for the integrals, the other one follows from `g ≤ f`.
@@ -216,7 +216,7 @@ theorem exists_measurable_le_forall_setLIntegral_eq [SFinite μ] (f : α → ℝ
         IsFiniteMeasure.lintegral_lt_top_of_bounded_to_ennreal _ ⟨n, fun _ ↦ min_le_right ..⟩ |>.ne
       have hsm : MeasurableSet (toMeasurable μ s) := measurableSet_toMeasurable ..
       apply ENNReal.le_of_add_le_add_right this
-      rw [← μ.restrict_toMeasurable_of_sFinite, lintegral_add_compl _ hsm, hgint,
+      rw [← μ.restrict_toMeasurable_of_sfinite, lintegral_add_compl _ hsm, hgint,
         ← lintegral_add_compl _ hsm]
       gcongr with x
       exact le_min (hgf n x) (hgle n x)

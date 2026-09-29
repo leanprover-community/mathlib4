@@ -320,7 +320,7 @@ open scoped Classical in
 /-- A measurable set `t ⊇ s` such that `μ t = μ s`. It even satisfies `μ (t ∩ u) = μ (s ∩ u)` for
 any measurable set `u` if `μ s ≠ ∞`, see `measure_toMeasurable_inter`.
 This property holds without the assumption `μ s ≠ ∞` when the space is s-finite (for example
-σ-finite); see `measure_toMeasurable_inter_of_sFinite`.
+σ-finite); see `measure_toMeasurable_inter_of_sfinite`.
 If `s` is a null measurable set, then
 we also have `t =ᵐ[μ] s`, see `NullMeasurableSet.toMeasurable_ae_eq`.
 This notion is sometimes called a "measurable hull" in the literature. -/

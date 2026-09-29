@@ -137,7 +137,7 @@ theorem setLIntegral_condLExp (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.tri
   by_cases hX : Measurable[mΩ] X
   · simp [condLExp_eq_self hm _ hX]
   have h := AbsolutelyContinuous.trim (withDensity_absolutelyContinuous P X) hm
-  have : SFinite ((P.withDensity X).trim hm) := sFinite_of_absolutelyContinuous h
+  have : SFinite ((P.withDensity X).trim hm) := sfinite_of_absolutelyContinuous h
   rw [condLExp_of_not_sub_sigma_measurable hm _ hX, ← lintegral_indicator (hm s hs),
     ← lintegral_trim hm (by measurability), lintegral_indicator hs, setLIntegral_rnDeriv' h hs,
     trim_measurableSet_eq hm hs, withDensity_apply _ (hm s hs)]
