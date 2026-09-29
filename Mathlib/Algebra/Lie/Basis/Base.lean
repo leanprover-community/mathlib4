@@ -148,7 +148,7 @@ private lemma exists_mem_rootSpace_lie_ne_zero' [IsKilling K L]
   obtain ⟨a', ha', b, hb, hab⟩ := exists_mem_rootSpace_lie_ne_zero hα h_ne_bot
   obtain ⟨t, rfl⟩ : ∃ t : K, t • a = a' :=
     Submodule.mem_span_singleton.mp <| by rwa [← toSubmodule_rootSpace_eq_span α hα a ha₀ ha]
-  exact ⟨b, hb, by contrapose! hab; simp [hab]⟩
+  exact ⟨b, hb, by contrapose hab; simp [hab]⟩
 
 lemma lieSpan_range_union_eq_top_of_mem_rootSpace [IsKilling K L] (b : (rootSystem H).Base)
     (e f : b.support → L)
@@ -195,7 +195,7 @@ lemma lieSpan_range_union_eq_top_of_mem_rootSpace [IsKilling K L] (b : (rootSyst
         exact mapsTo_toEnd_genWeightSpace_add_of_mem_rootSpace K L H L _ _ (e_mem ⟨j, hj⟩) hx
       simpa [toSubmodule_rootSpace_eq_span _ (H.isNonZero_coe_root k) _ hlie hmem] using
         lie_mem S (e_mem_S ⟨j, hj⟩) (hip hx)
-    · replace hk : ⇑k.val = ⇑i.val + ⇑j.val := by ext x; simpa using DFunLike.congr_fun hk x
+    · replace hk : ⇑k.val = ⇑i.val + ⇑j.val := by ext x; simpa using congr($hk x)
       replace hk : (⇑(-i).val + ⇑(-j).val) = ⇑(-k).val := by simp [hk, -neg_add_rev, neg_add]
       have h_ne_bot : rootSpace H (⇑(-j).val + ⇑(-i).val) ≠ ⊥ := by
         rw [add_comm, hk]; exact (-k).val.genWeightSpace_ne_bot

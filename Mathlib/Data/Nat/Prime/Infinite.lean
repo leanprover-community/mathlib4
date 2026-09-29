@@ -5,12 +5,14 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Data.Nat.Factorial.Basic
 public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Order.Bounds.Basic
 
 /-!
-## Notable Theorems
+# Infinitude of the primes
+
+## Main statements
 
 - `Nat.exists_infinite_primes`: Euclid's theorem that there exist infinitely many prime numbers.
   This also appears as `Nat.not_bddAbove_setOfPred_prime` and `Nat.infinite_setOfPred_prime`

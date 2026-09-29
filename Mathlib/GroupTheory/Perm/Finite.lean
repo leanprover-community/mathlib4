@@ -156,7 +156,6 @@ theorem Disjoint.extendDomain {p : β → Prop} [DecidablePred p] (f : α ≃ Su
   · left
     rw [extendDomain_apply_not_subtype _ _ pb]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ π)
     (hc2 : IsConj τ ρ) (hd1 : Disjoint σ τ) (hd2 : Disjoint π ρ) : IsConj (σ * τ) (π * ρ) := by
   classical
@@ -169,13 +168,13 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
   have hd1'' := disjoint_coe.2 (disjoint_iff_disjoint_support.1 hd1)
   have hd2'' := disjoint_coe.2 (disjoint_iff_disjoint_support.1 hd2)
   refine isConj_of_support_equiv ?_ ?_
-  · refine ((Equiv.Set.congr hd1').trans (Equiv.Set.union hd1'')).trans <|
+  · refine ((Set.equivOfEq hd1').trans (Equiv.Set.union hd1'')).trans <|
       (Equiv.sumCongr (subtypeEquiv f fun a => ?_) <| subtypeEquiv g fun a => ?_).trans
-        ((Equiv.Set.congr hd2').trans (Equiv.Set.union hd2'')).symm <;>
+        ((Set.equivOfEq hd2').trans (Equiv.Set.union hd2'')).symm <;>
       simp only [Set.mem_image, toEmbedding_apply, exists_eq_right, support_conj, coe_map,
         apply_eq_iff_eq]
   intro x hx
-  simp only [trans_apply, symm_trans_apply, Equiv.Set.congr_apply, Equiv.Set.congr_symm_apply,
+  simp only [trans_apply, symm_trans_apply, Set.equivOfEq_apply, Set.equivOfEq_symm_apply,
     Equiv.sumCongr_apply]
   rw [hd1', Set.mem_union] at hx
   rcases hx with hxσ | hxτ
@@ -229,7 +228,7 @@ theorem support_pow_coprime {σ : Perm α} {n : ℕ} (h : Nat.Coprime n (orderOf
   obtain ⟨m, hm⟩ := exists_pow_eq_self_of_coprime h
   exact
     le_antisymm (support_pow_le σ n)
-      (le_trans (ge_of_eq (congr_arg support hm)) (support_pow_le (σ ^ n) m))
+      (le_trans (ge_of_eq congr(support $hm)) (support_pow_le (σ ^ n) m))
 
 lemma ofSubtype_support_disjoint {σ : Perm α} (x : Perm (Function.fixedPoints σ)) :
     _root_.Disjoint x.ofSubtype.support σ.support := by

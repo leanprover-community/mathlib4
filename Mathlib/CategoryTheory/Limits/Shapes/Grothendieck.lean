@@ -85,8 +85,6 @@ def fiberwiseColimit : C ⥤ H where
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
--- TODO: find a good way to fix the linter; simp cannot be combined with the subsequent apply
-set_option linter.flexible false in
 variable (H) (F) in
 /-- Similar to `colimit` and `colim`, taking fiberwise colimits is a functor
 `(Grothendieck F ⥤ H) ⥤ (C ⥤ H)` between functor categories. -/
@@ -96,8 +94,8 @@ def fiberwiseColim [∀ c, HasColimitsOfShape (F.obj c) H] : (Grothendieck F ⥤
   map α :=
     { app := fun c => colim.map (whiskerLeft _ α)
       naturality := fun c₁ c₂ f => by apply colimit.hom_ext; simp }
-  map_id G := by ext; simp; apply Functor.map_id colim
-  map_comp α β := by ext; simp; apply Functor.map_comp colim
+  map_id G := by ext; apply Functor.map_id colim
+  map_comp α β := by ext; simp only [whiskerLeft_comp]; apply Functor.map_comp colim
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -174,7 +172,7 @@ set_option backward.isDefEq.respectTransparency false in
 `coconeOfFiberwiseCocone G c` -/
 def isColimitCoconeOfFiberwiseCocone {c : Cocone (fiberwiseColimit G)} (hc : IsColimit c) :
     IsColimit (coconeOfCoconeFiberwiseColimit c) where
-  desc s := hc.desc <| Cocone.mk s.pt <|
+  desc s := hc.desc <| Cocone.mk s.pt
     { app := fun X => colimit.desc (Grothendieck.ι F X ⋙ G) (s.whisker _) }
   uniq s m hm := hc.hom_ext <| fun X => by
     simp only [fiberwiseColimit_obj, IsColimit.fac]
