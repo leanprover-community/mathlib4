@@ -9,6 +9,7 @@ public meta import Lean.Elab.Command
 public meta import Lean.Meta.CongrTheorems
 public meta import Lean.Meta.Tactic.Simp.SimpCongrTheorems
 public meta import Lean.Elab.InfoTree.Util
+public meta import Batteries.Lean.Position
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
@@ -117,8 +118,7 @@ def congrFixedArgsLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let declName := thm.theoremName
     if linted.contains declName || (env.getModuleIdxFor? declName).isSome then continue
     let some ranges ← findDeclarationRanges? declName | continue
-    let pos := (← getFileMap).ofPosition ranges.range.pos
-    if cmdRange.start ≤ pos && pos < cmdRange.stop then
+    if cmdRange.includes (ranges.range.toSyntaxRange (← getFileMap)) then
       linted := linted.insert declName
       lintCongrTheorem congrAttr thm
 
