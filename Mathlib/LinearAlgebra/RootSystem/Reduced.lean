@@ -116,14 +116,14 @@ lemma linearIndependent_of_add_mem_range_root' [CharZero R] [IsDomain R] [P.IsRe
     (h : P.root i + P.root j ∈ range P.root) :
     LinearIndependent R ![P.root i, P.root j] :=
   have : IsReflexive R M := .of_isPerfPair P.toLinearMap
-  have : IsAddTorsionFree M := .of_isTorsionFree R M
+  have : HasUniqueDiv M := .of_isTorsionFree R M
   P.linearIndependent_of_add_mem_range_root h
 
 lemma linearIndependent_of_sub_mem_range_root' [CharZero R] [IsDomain R] [P.IsReduced] {i j : ι}
     (h : P.root i - P.root j ∈ range P.root) :
     LinearIndependent R ![P.root i, P.root j] :=
   have : IsReflexive R M := .of_isPerfPair P.toLinearMap
-  have : IsAddTorsionFree M := .of_isTorsionFree R M
+  have : HasUniqueDiv M := .of_isTorsionFree R M
   P.linearIndependent_of_sub_mem_range_root h
 
 lemma infinite_of_linearIndependent_coxeterWeight_four [NeZero (2 : R)] [HasUniqueDiv M]
@@ -181,7 +181,7 @@ variable [CharZero R] [IsDomain R] [Module.IsTorsionFree R M]
 /-- See also `RootPairing.linearIndependent_iff_coxeterWeightIn_ne_four`. -/
 lemma linearIndependent_iff_coxeterWeight_ne_four :
     LinearIndependent R ![P.root i, P.root j] ↔ P.coxeterWeight i j ≠ 4 := by
-  have : IsAddTorsionFree M := .of_isTorsionFree R M
+  have : HasUniqueDiv M := .of_isTorsionFree R M
   refine ⟨coxeterWeight_ne_four_of_linearIndependent P, fun h ↦ ?_⟩
   contrapose h
   have h₁ := P.pairing_smul_root_eq_of_not_linearIndependent h
@@ -232,8 +232,8 @@ variable [Module.IsTorsionFree R N]
 
 lemma pairing_one_four_iff' (h2 : IsSMulRegular R (2 : R)) :
     P.pairing i j = 1 ∧ P.pairing j i = 4 ↔ P.root j = (2 : R) • P.root i := by
-  have : IsAddTorsionFree M := .of_isTorsionFree R M
-  have : IsAddTorsionFree N := .of_isTorsionFree R N
+  have : HasUniqueDiv M := .of_isTorsionFree R M
+  have : HasUniqueDiv N := .of_isTorsionFree R N
   refine ⟨fun ⟨h₁, h₂⟩ ↦ ?_, fun h ↦ ?_⟩
   · have : ¬ LinearIndependent R ![P.root i, P.root j] := by
       rw [← coxeterWeight_eq_four_iff_not_linearIndependent, coxeterWeight, h₁, h₂]; simp

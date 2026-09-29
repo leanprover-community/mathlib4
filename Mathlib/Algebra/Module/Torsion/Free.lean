@@ -133,7 +133,7 @@ lemma HasUniqueDiv.of_isTorsionFree : HasUniqueDiv M where
   HasUniqueDiv.of_isTorsionFree
 
 /-- A characteristic zero domain is torsion-free. -/
-instance (priority := 100) IsAddTorsionFree.of_isDomain_charZero : IsAddTorsionFree R :=
+instance (priority := 100) IsAddTorsionFree.of_isDomain_charZero : HasUniqueDiv R :=
   .of_isTorsionFree R R
 
 @[simp]

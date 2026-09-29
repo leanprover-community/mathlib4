@@ -18,7 +18,7 @@ public section
 
 /-- An affine monoid is a finitely generated cancellative torsion-free commutative monoid. -/
 class abbrev IsAffineAddMonoid (M : Type*) [AddCommMonoid M] : Prop :=
-  IsCancelAdd M, AddMonoid.FG M, IsAddTorsionFree M
+  IsCancelAdd M, AddMonoid.FG M, HasUniqueDiv M
 
 /-- An affine monoid is a finitely generated cancellative torsion-free commutative monoid. -/
 @[to_additive]

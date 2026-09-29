@@ -116,7 +116,7 @@ protected lemma ext [CharZero R] [IsDomain R]
     It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
     canonicalizer; a minimization would help. The original proof was: `grind` -/
     simp_all
-  have : IsAddTorsionFree M := .of_isTorsionFree R M
+  have : HasUniqueDiv M := .of_isTorsionFree R M
   ext i
   apply P₁.injOn_dualMap_subtype_span_root_coroot (mem_range_self i) (hc ▸ mem_range_self i)
   simp only [LinearMap.coe_comp, comp_apply]
@@ -158,7 +158,7 @@ private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [IsDomain R]
     rw [mul_comm (p (root i) (coroot j))]
     abel
   suffices p.flip (coroot k) = p.flip (coroot l) from p.flip.toPerfPair.injective this
-  have : IsAddTorsionFree M := .of_isTorsionFree R M
+  have : HasUniqueDiv M := .of_isTorsionFree R M
   have := injOn_dualMap_subtype_span_range_range (finite_range root)
     (c := p.flip ∘ coroot) hp hr
   apply this (mem_range_self k) (mem_range_self l)
