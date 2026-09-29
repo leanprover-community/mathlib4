@@ -427,11 +427,11 @@ lemma isIso_pushoutSection_of_iSup_eq
       · simp [f₁, f₂]
       · simpa [f₁, f₂] using c'.w (Quiver.Hom.op <| Pairwise.Hom.left i j)
   convert! e.isIso_hom using 1
-  · refine hc'.hom_ext fun i ↦ ?_
-    rw [hc'.fac]
-    ext1
-    · simp [αF, c, Under.liftCone, c', c₀]
-    · simp [αF, c, c']
+  refine hc'.hom_ext fun i ↦ ?_
+  rw [hc'.fac]
+  ext1
+  · simp [αF, c, Under.liftCone, c', c₀]
+  · simp [αF, c, c']
 
 lemma mono_pushoutSection_of_isCompact_of_flat_right [Flat f]
     (hUS : IsAffineOpen US) (hUT : IsAffineOpen UT) (hUX : IsCompact (X := X) UX) :

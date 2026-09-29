@@ -244,15 +244,15 @@ theorem ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p
           multiplicity (Q.map (Int.castRingHom (ZMod p)))
             ((minpoly ℤ θ).map (Int.castRingHom (ZMod p))) := by
   rw [ramificationIdx_eq_multiplicity (span {↑p}) _ (map_ne_bot_of_ne_bot (by simp [NeZero.ne p]))]
-  · apply multiplicity_eq_of_emultiplicity_eq
-    rw [← emultiplicity_map_eq (mapEquiv (Int.quotientSpanNatEquivZMod p).symm),
-      emultiplicity_factors_map_eq_emultiplicity inferInstance (by simp [NeZero.ne p])
-      (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral]
-    · simp only [primesOverSpanEquivMonicFactorsMod_symm_apply,
-        Equiv.apply_symm_apply (normalizedFactorsMapEquivNormalizedFactorsMinPolyMk _ _ _ _),
-        Polynomial.map_map, Int.quotientSpanNatEquivZMod_comp_castRingHom, mapEquiv_apply]
-    · rw [← mem_primesOver_iff_mem_normalizedFactors _ (by simp [NeZero.ne p])]
-      exact ((primesOverSpanEquivMonicFactorsMod hp).symm ⟨_, hQ⟩).coe_prop
+  apply multiplicity_eq_of_emultiplicity_eq
+  rw [← emultiplicity_map_eq (mapEquiv (Int.quotientSpanNatEquivZMod p).symm),
+    emultiplicity_factors_map_eq_emultiplicity inferInstance (by simp [NeZero.ne p])
+    (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral]
+  · simp only [primesOverSpanEquivMonicFactorsMod_symm_apply,
+      Equiv.apply_symm_apply (normalizedFactorsMapEquivNormalizedFactorsMinPolyMk _ _ _ _),
+      Polynomial.map_map, Int.quotientSpanNatEquivZMod_comp_castRingHom, mapEquiv_apply]
+  · rw [← mem_primesOver_iff_mem_normalizedFactors _ (by simp [NeZero.ne p])]
+    exact ((primesOverSpanEquivMonicFactorsMod hp).symm ⟨_, hQ⟩).coe_prop
 
 theorem ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply' (hp : ¬ p ∣ exponent θ)
     {Q : (ZMod p)[X]} (hQ : Q ∈ monicFactorsMod θ p) :

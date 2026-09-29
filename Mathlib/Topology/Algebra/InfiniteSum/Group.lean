@@ -367,7 +367,7 @@ theorem Multipliable.tendsto_cofinite_one (hf : Multipliable f) : Tendsto f cofi
   rw [Filter.mem_map]
   rcases hf.vanishing he with ⟨s, hs⟩
   refine s.eventually_cofinite_notMem.mono fun x hx ↦ ?_
-  · simpa using hs {x} (disjoint_singleton_left.2 hx)
+  simpa using hs {x} (disjoint_singleton_left.2 hx)
 
 @[to_additive]
 theorem Multipliable.hasFiniteMulSupport_of_discreteTopology
