@@ -79,7 +79,7 @@ def headIsAncestorOfMaster (cwd : FilePath := ".") : IO Bool := do
 container's location on its read base (`Container.getURL`). Marker writes
 address the upload location instead (`uploadLocation`). -/
 def markerProbeURL (container : Container) (repo sha : String) : IO String := do
-  return (container.location (← container.getURL) repo (some sha)).markerURL sha
+  return (container.location (← container.getURL) repo none).markerURL sha
 
 /--
 Probe a single container for the per-SHA marker blob.
