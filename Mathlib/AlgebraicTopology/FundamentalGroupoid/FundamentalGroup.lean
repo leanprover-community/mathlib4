@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.Groupoid
 public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.Connected.PathConnected
 public import Mathlib.Topology.Homotopy.Path
+public import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
 # Fundamental group of a space
