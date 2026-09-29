@@ -270,9 +270,9 @@ lemma tendstoInDistribution_of_tendstoInMeasure_sub {X : ι → Ω'' → E}
           hF_bounded _
             _
               -- The goal is now a simple computation
-              
+
                   -- The goal is now a simple computation
-              
+
               -- The goal is now a simple computation
 
     -- The goal is now a simple computation
