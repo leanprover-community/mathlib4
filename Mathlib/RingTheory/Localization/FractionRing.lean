@@ -9,10 +9,8 @@ public import Mathlib.Algebra.Field.Equiv
 public import Mathlib.Algebra.Field.Subfield.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Submonoid
 public import Mathlib.Algebra.Order.Ring.Int
-public import Mathlib.Algebra.Ring.CompTypeclasses
 public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 public import Mathlib.RingTheory.Localization.Basic
-public import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Fraction ring / fraction field Frac(R) as localization
@@ -363,7 +361,7 @@ theorem ringHom_ext {f1 f2 : K →+* L}
 
 theorem injective_comp_algebraMap :
     Function.Injective fun (f : K →+* L) => f.comp (algebraMap A K) :=
-  fun _ _ h => ringHom_ext (fun x => RingHom.congr_fun h x)
+  fun _ _ h => ringHom_ext (fun x => congr($h x))
 
 section liftAlgHom
 

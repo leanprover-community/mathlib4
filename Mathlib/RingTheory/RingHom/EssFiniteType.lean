@@ -5,8 +5,6 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.EssentialFiniteness
-public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.LocalProperties.Basic
 

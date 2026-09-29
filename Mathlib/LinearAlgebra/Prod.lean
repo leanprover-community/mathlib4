@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Algebra.Prod
 public import Mathlib.Algebra.Group.Graph
 public import Mathlib.LinearAlgebra.Span.Basic
 
-/-! ### Products of modules
+/-! # Products of modules
 
 This file defines constructors for linear maps whose domains or codomains are products.
 
@@ -950,7 +950,7 @@ first factor. Then `G` is the graph of some linear map `f : H →ₗ[R] I`. -/
 lemma Submodule.exists_eq_graph {G : Submodule S (H × I)} (hf₁ : Bijective (Prod.fst ∘ G.subtype)) :
     ∃ f : H →ₗ[S] I, G = LinearMap.graph f := by
   simpa only [range_subtype] using LinearMap.exists_range_eq_graph hf₁.surjective
-      (fun a b h ↦ congr_arg (Prod.snd ∘ G.subtype) (hf₁.injective h))
+      (fun a b h ↦ congr((Prod.snd ∘ G.subtype) $(hf₁.injective h)))
 
 /-- **Line test** for module isomorphisms.
 

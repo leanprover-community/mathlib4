@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-public import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Data.Int.Cast.Basic
 public import Mathlib.Data.Int.Cast.Pi
 public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Order.Filter.Tendsto
@@ -268,7 +268,7 @@ alias ⟨_, _root_.Filter.EventuallyEq.germ_eq⟩ := coe_eq
 
 /-- Lift a function `β → γ` to a function `Germ l β → Germ l γ`. -/
 def map (op : β → γ) : Germ l β → Germ l γ :=
-  map' (op ∘ ·) fun _ _ H => H.mono fun _ H => congr_arg op H
+  map' (op ∘ ·) fun _ _ H => H.mono fun _ H => congr(op $H)
 
 @[simp]
 theorem map_coe (op : β → γ) (f : α → β) : map op (f : Germ l β) = op ∘ f :=
@@ -564,7 +564,7 @@ instance instHasDistribNeg [Mul G] [HasDistribNeg G] : HasDistribNeg (Germ l G) 
 
 @[to_additive]
 instance instInvOneClass [InvOneClass G] : InvOneClass (Germ l G) :=
-  ⟨congr_arg ofFun inv_one⟩
+  ⟨congr(ofFun $inv_one)⟩
 
 @[to_additive subNegMonoid]
 instance instDivInvMonoid [DivInvMonoid G] : DivInvMonoid (Germ l G) where
@@ -580,7 +580,7 @@ instance instDivInvMonoid [DivInvMonoid G] : DivInvMonoid (Germ l G) where
 @[to_additive]
 instance instDivisionMonoid [DivisionMonoid G] : DivisionMonoid (Germ l G) where
   inv_inv := inv_inv
-  mul_inv_rev x y := inductionOn₂ x y fun _ _ ↦ congr_arg ofFun <| mul_inv_rev _ _
+  mul_inv_rev x y := inductionOn₂ x y fun _ _ ↦ congr(ofFun $(mul_inv_rev ..))
   inv_eq_of_mul x y := inductionOn₂ x y fun _ _ h ↦ coe_eq.2 <| (coe_eq.1 h).mono fun _ ↦
     DivisionMonoid.inv_eq_of_mul _ _
 

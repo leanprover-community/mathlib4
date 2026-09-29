@@ -6,7 +6,6 @@ Authors: David Ledvinka
 module
 
 public import Mathlib.Algebra.Order.Group.Abs
-public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Order.Hom.Basic
