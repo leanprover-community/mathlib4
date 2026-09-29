@@ -5,7 +5,7 @@ Since v4.35.0-rc2, Lean builds the symbol frequency index on the first query in 
 and with `import Mathlib` this test takes about 250 s.
 Re-enable it after the toolchain bump that includes the fix.
 See https://github.com/leanprover/lean4/issues/15392
-and https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/lean4.2315159.20causes.20significant.20regression.20in.20MathlibTests/with/627571608
+and https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/lean4.2315159.20causes.20significant.20regression.20in.20MathlibTests
 -/
 
 -- open Lean LibrarySuggestions
