@@ -570,6 +570,7 @@ end functionField
 section domain
 
 /-- The domain of definition of a rational map. -/
+@[stacks 0A1X]
 def RationalMap.domain (f : X ⤏ Y) : X.Opens :=
   sSup { PartialMap.domain g | (g) (_ : g.toRationalMap = f) }
 
@@ -601,6 +602,7 @@ def RationalMap.openCoverDomain (f : X ⤏ Y) : f.domain.toScheme.OpenCover wher
 set_option backward.isDefEq.respectTransparency false in
 /-- If `f : X ⤏ Y` is a rational map from a reduced scheme to a separated scheme,
 then `f` can be represented as a partial map on its domain of definition. -/
+@[stacks 0A1Y "first part"]
 noncomputable
 def RationalMap.toPartialMap [IsReduced X] [Y.IsSeparated] (f : X ⤏ Y) : X.PartialMap Y := by
   refine ⟨f.domain, f.dense_domain, f.openCoverDomain.glueMorphisms
@@ -642,6 +644,7 @@ lemma RationalMap.toRationalMap_toPartialMap [IsReduced X] [Y.IsSeparated]
   · congr 1
     exact PartialMap.ext _ f rfl (by simpa using f.toPartialMap_toRationalMap_restrict)
 
+@[stacks 0A1Y "last part"]
 instance [IsReduced X] [Y.IsSeparated] [S.IsSeparated] [X.Over S] [Y.Over S]
     (f : X ⤏ Y) [f.IsOver S] : f.toPartialMap.IsOver S := by
   rw [← PartialMap.isOver_toRationalMap_iff_of_isSeparated, f.toRationalMap_toPartialMap]
