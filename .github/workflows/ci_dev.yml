@@ -65,7 +65,7 @@ jobs:
           line="probe 1 (Get cache): ${verdict}: get-cache outcome=${{ steps.getcache.outcome }}, files written outside .lake/=${written}, sentinel=${sentinel}"
           echo "${line}"
           echo "${line}" >> "$GITHUB_STEP_SUMMARY"
-          find /tmp/probe -maxdepth 5 | head -20
+          find /tmp/probe -maxdepth 5 | head -20 || true
 
       # Probe 2: a symlinked `Archive` output directory before the archive fetch.
       - name: "probe 2: plant .lake/build/lib/lean/Archive -> /tmp/probe-archive (inside sandbox, as PR code)"
@@ -97,4 +97,4 @@ jobs:
           line="probe 2 (fetch archive): ${verdict}: step outcome=${{ steps.archive.outcome }}, files written outside .lake/=${written}"
           echo "${line}"
           echo "${line}" >> "$GITHUB_STEP_SUMMARY"
-          find /tmp/probe-archive -maxdepth 3 | head -20
+          find /tmp/probe-archive -maxdepth 3 | head -20 || true
