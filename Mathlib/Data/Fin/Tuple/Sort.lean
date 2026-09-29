@@ -81,8 +81,8 @@ def graphEquiv₂ (f : Fin n → α) : Fin n ≃o graph f :=
 
 /-- `σ` is *stable* for `f` if it breaks ties by increasing index: any two indices sharing the
 same `f`-value keep their original order. This property is independent of the sort direction. -/
-def IsStable (f : Fin n → α) (σ : Equiv.Perm (Fin n)) : Prop :=
-  ∀ i j, i < j → f (σ i) = f (σ j) → σ i < σ j
+def IsStable {ι κ : Type*} [Preorder ι] [Preorder κ] (f : ι → α) (σ : κ → ι) : Prop :=
+  ∀ ⦃i j⦄, i < j → f (σ i) = f (σ j) → σ i < σ j
 
 /-- `σ` is a *stable sort* of `f` if `f ∘ σ` is monotone and `σ` is stable (`IsStable`). This is
 the property characterising `sort f` among all permutations, see `eq_sort_iff`. -/
@@ -115,7 +115,7 @@ outputs of `f`, so that `f ∘ sortDesc f` is decreasing.
 Unlike `sort f ∘ Fin.revPerm`, which also arranges `f` in decreasing order, `sortDesc f` is a
 *stable* sort: among indices with equal `f`-value it keeps their original order
 (`isStable_sortDesc`), whereas `sort f ∘ Fin.revPerm` reverses it and so is stable only when `f`
-is injective (`isStable_sort_mul_revPerm_iff`), in which case the two coincide
+is injective (`isStable_sort_comp_rev_iff`), in which case the two coincide
 (`sort_comp_rev_eq_sortDesc_of_injective`). -/
 def sortDesc (f : Fin n → α) : Equiv.Perm (Fin n) :=
   sort (OrderDual.toDual ∘ f)
@@ -193,7 +193,7 @@ theorem eq_sort_iff : σ = sort f ↔ StableSort f σ := by
   refine ⟨fun h => ⟨(monotone_proj f).comp h.monotone, fun i j hij hfij => ?_⟩, fun h i j hij => ?_⟩
   · exact ((Prod.Lex.toLex_lt_toLex.1 <| h hij).resolve_left hfij.not_lt).2
   · obtain he | hl := (h.1 hij.le).eq_or_lt <;> apply Prod.Lex.toLex_lt_toLex.2
-    exacts [Or.inr ⟨he, h.2 i j hij he⟩, Or.inl hl]
+    exacts [Or.inr ⟨he, h.2 hij he⟩, Or.inl hl]
 
 /-- The permutation that sorts `f` is the identity if and only if `f` is monotone. -/
 theorem sort_eq_refl_iff_monotone : sort f = Equiv.refl _ ↔ Monotone f := by
@@ -265,29 +265,23 @@ theorem stableSort_sortDesc (f : Fin n → α) : StableSort (OrderDual.toDual �
 theorem isStable_sortDesc (f : Fin n → α) : IsStable f (sortDesc f) :=
   (stableSort_sortDesc f).2
 
-/-- `sort f ∘ Fin.revPerm` is a stable sort exactly when `f` is injective: on tied values it orders
+/-- `sort f ∘ Fin.rev` is a stable sort exactly when `f` is injective: on tied values it orders
 them by *decreasing* index, the opposite of the stable `sortDesc f`. -/
-theorem isStable_sort_mul_revPerm_iff :
-    IsStable f (sort f * Fin.revPerm) ↔ Function.Injective f := by
+theorem isStable_sort_comp_rev_iff :
+    IsStable f (⇑(sort f) ∘ Fin.rev) ↔ Function.Injective f := by
   refine ⟨fun hσ => ?_, fun inj => ?_⟩
   · -- `sort f` and its reversal order any tied `x, y` oppositely, so `f` can have no tie.
     have key : ∀ x y, f x = f y → (sort f).symm x < (sort f).symm y → False := by
       intro x y hxy hlt
-      have h1 : x < y := by simpa using isStable_sort f _ _ hlt (by simp [hxy])
-      have h2 : y < x := by
-        simpa [Equiv.Perm.mul_apply] using hσ (Fin.rev ((sort f).symm y))
-          (Fin.rev ((sort f).symm x)) (Fin.rev_strictAnti hlt) (by simp [Equiv.Perm.mul_apply, hxy])
+      have h1 : x < y := by simpa using isStable_sort f hlt (by simp [hxy])
+      have h2 : y < x := by simpa using hσ (Fin.rev_strictAnti hlt) (by simp [hxy])
       exact absurd h1 (asymm h2)
     intro a b hfab
     by_contra hab
     rcases lt_or_gt_of_ne (fun h => hab ((sort f).symm.injective h)) with hlt | hlt
     · exact key a b hfab hlt
     · exact key b a hfab.symm hlt
-  · have h : sort f * Fin.revPerm = sortDesc f :=
-      DFunLike.coe_injective (by
-        rw [Equiv.Perm.coe_mul]
-        exact sort_comp_rev_eq_sortDesc_of_injective inj)
-    rw [h]
+  · rw [sort_comp_rev_eq_sortDesc_of_injective inj]
     exact isStable_sortDesc f
 
 end Tuple
