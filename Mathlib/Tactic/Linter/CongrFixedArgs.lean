@@ -8,6 +8,7 @@ module
 public meta import Lean.Elab.Command
 public meta import Lean.Meta.CongrTheorems
 public meta import Lean.Meta.Tactic.Simp.SimpCongrTheorems
+public meta import Lean.Elab.InfoTree.Util
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
@@ -73,13 +74,23 @@ def isCongrAttr (stx : Syntax) : Bool :=
   stx.isOfKind ``Lean.Parser.Attr.simple && stx[0].getId == ``congr
 
 /-- The identifiers `foo bar` in the `attribute [congr] foo bar` commands occurring in `stx`. -/
-def congrAttributeTargets (stx : Syntax) : Array Syntax := Id.run do
+def congrAttributeTargets (stx : Syntax) : Array Ident := Id.run do
   let mut ids := #[]
   for s in stx.topDown do
-    -- `attribute [attrs,*] ids*`
-    if s.isOfKind ``Lean.Parser.Command.attribute && (s[2].find? isCongrAttr).isSome then
-      ids := ids ++ s[4].getArgs
+    if let `(attribute [$[$attrs],*] $targets*) := s then
+      if attrs.any (·.raw.find? isCongrAttr |>.isSome) then
+        ids := ids ++ targets
   return ids
+
+/-- look up the name of the identifier represented by `stx` using the info tree.
+This ensures that `open Foo in ...` is respected. -/
+def resolveNames (stx : Syntax) : CommandElabM (Array Name) := do
+  let trees ← getInfoTrees
+  return trees.foldl (init := #[]) fun names t ↦
+    t.foldInfo (init := names) fun _ i names ↦ match i with
+      | .ofTermInfo { stx := stx', expr := .const name _, .. } =>
+        if stx'.getRange? == stx.getRange? then names.push name else names
+      | _ => names
 
 @[inherit_doc Mathlib.Linter.linter.congrFixedArgs]
 def congrFixedArgsLinter : Linter where run := withSetOptionIn fun stx ↦ do
@@ -94,12 +105,12 @@ def congrFixedArgsLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let mut linted : NameSet := {}
   -- `attribute [congr] foo bar`: lint the named theorems.
   for id in congrAttributeTargets stx do
-    let declName ← try liftCoreM <| realizeGlobalConstNoOverload id catch _ => continue
-    -- This fails for `attribute [local congr] foo in ...`, whose attribute is already gone.
-    let some thm := congrThms.find? (·.theoremName == declName) | continue
-    unless linted.contains declName do
-      linted := linted.insert declName
-      lintCongrTheorem id thm
+    for declName in ← resolveNames id do
+      -- This fails for `attribute [local congr] foo in ...`, whose attribute is already gone.
+      let some thm := congrThms.find? (·.theoremName == declName) | continue
+      unless linted.contains declName do
+        linted := linted.insert declName
+        lintCongrTheorem id thm
   -- `@[congr] theorem foo ...`: lint the `@[congr]` theorems declared in this command.
   let some cmdRange := stx.getRange? | return
   for thm in congrThms do

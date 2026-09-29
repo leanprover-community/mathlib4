@@ -3,6 +3,8 @@ import Mathlib.Init
 
 set_option linter.congrFixedArgs true
 
+namespace Foo
+
 def myMap (f : Nat → Nat) (l' : List Nat) : List Nat := l'.map f
 
 /--
@@ -39,6 +41,19 @@ Note: This linter can be disabled with `set_option linter.congrFixedArgs false`
 -/
 #guard_msgs in
 attribute [congr] myMap_congr''
+
+end Foo
+
+/--
+warning: The `@[congr]` theorem `Foo.myMap_congr` does not allow the following explicit arguments of `Foo.myMap` to change:
+  `l : List Nat`
+This violates the recommendation in the documentation of `@[congr]`.
+
+Note: This linter can be disabled with `set_option linter.congrFixedArgs false`
+-/
+#guard_msgs in
+open Foo in
+attribute [congr] myMap_congr
 
 def myZipWith (f : Nat → Nat → Nat) (l₁ l₂ : List Nat) : List Nat := List.zipWith f l₁ l₂
 
