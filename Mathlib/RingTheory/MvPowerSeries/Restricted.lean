@@ -20,7 +20,6 @@ Tate algebras when `c` = 1).
 Specifically we define the predicate:
 * `IsRestricted` : a multivariate power series over a normed ring `R` is restricted for a
 tuple `c` if `‖coeff t f‖ * ∏ i ∈ t.support, c i ^ t i → 0` under the cofinite filter.
-we say a multivariate power series over a normed ring `R`.
 
 And then promote it to a type:
 * `Restricted`: the set of restricted multivariate power series over a normed ring `R` for a tuple
@@ -149,7 +148,7 @@ lemma sub {c : σ → ℝ} {f g : MvPowerSeries σ R} (hf : IsRestricted c f)
     (hg : IsRestricted c g) : IsRestricted c (f - g) :=
   mem_addSubgroup.mp (sub_mem hf hg)
 
-lemma sum (c : σ → ℝ) {ι : Type*} {s : Finset ι} {f : ι → MvPowerSeries σ R}
+lemma sum {c : σ → ℝ} {ι : Type*} {s : Finset ι} {f : ι → MvPowerSeries σ R}
     (hf : ∀ i ∈ s, IsRestricted c (f i)) : IsRestricted c (∑ i ∈ s, f i) :=
   mem_addSubgroup.mp (sum_mem hf)
 
