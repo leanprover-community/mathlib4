@@ -53,10 +53,10 @@ abbrev target : C ⥤ C ⥤ C ⥤ C ⥤ C :=
    (X₁ ⊗ X₂) ⊗ (X₃ ⊗ X₄)       X₁ ⊗ ((X₂ ⊗ X₃) ⊗ X₄)
               \                              |
                \                             v
-                ------> X₁ ⊗ (X₂ ⊗ (X₃ ⊗ X₄))
+                -----------------> X₁ ⊗ (X₂ ⊗ (X₃ ⊗ X₄))
 ```
 -/
-@[simps!, implicit_reducible]
+@[simps!]
 def firstMap
     (associator : bifunctorComp₁₂ tensor tensor ≅ bifunctorComp₂₃ tensor tensor) :
     source tensor ⟶ target tensor :=
@@ -66,7 +66,7 @@ def firstMap
 
 /-- The two-associator path along the left and bottom of the monoidal pentagon displayed in
 `Pentagon.firstMap`. -/
-@[simps!, implicit_reducible]
+@[simps!]
 def secondMap
     (associator : bifunctorComp₁₂ tensor tensor ≅ bifunctorComp₂₃ tensor tensor) :
     source tensor ⟶ target tensor :=
@@ -85,7 +85,7 @@ abbrev middle (unit : C) : C ⥤ C ⥤ C :=
   tensor ⋙ (Functor.whiskeringRight C C C).flip.obj (tensor.obj unit)
 
 /-- The associator edge of the monoidal triangle. -/
-@[implicit_reducible, simps!]
+@[simps!]
 def associatorMap (unit : C)
     (associator : bifunctorComp₁₂ tensor tensor ≅ bifunctorComp₂₃ tensor tensor) :
     source tensor unit ⟶ middle tensor unit where
@@ -93,7 +93,7 @@ def associatorMap (unit : C)
   naturality _ _ f := NatTrans.congr_app (associator.hom.naturality f) unit
 
 /-- The left-unitor edge of the monoidal triangle. -/
-@[implicit_reducible, simps!]
+@[simps!]
 def leftUnitorMap (unit : C) (leftUnitor : tensor.obj unit ≅ 𝟭 C) :
     middle tensor unit ⟶ tensor where
   app X := { app Y := (tensor.obj X).map (leftUnitor.hom.app Y) }
@@ -105,10 +105,10 @@ unitor.
 (X₁ ⊗ 𝟙) ⊗ X₂  ---->  X₁ ⊗ (𝟙 ⊗ X₂)
         \                       |
          \                      v
-          ----------> X₁ ⊗ X₂
+          -----------------> X₁ ⊗ X₂
 ```
 -/
-@[implicit_reducible, simps!]
+@[simps!]
 def firstMap (unit : C)
     (associator : bifunctorComp₁₂ tensor tensor ≅ bifunctorComp₂₃ tensor tensor)
     (leftUnitor : tensor.obj unit ≅ 𝟭 C) : source tensor unit ⟶ tensor :=
@@ -116,7 +116,7 @@ def firstMap (unit : C)
 
 /-- The diagonal path in the monoidal triangle displayed in `Triangle.firstMap`, given by the
 right unitor. -/
-@[implicit_reducible, simps!]
+@[simps!]
 def secondMap (unit : C) (rightUnitor : tensor.flip.obj unit ≅ 𝟭 C) :
     source tensor unit ⟶ tensor where
   app X := { app Y := (tensor.map (rightUnitor.hom.app X)).app Y }
@@ -140,36 +140,31 @@ def ofBifunctor {C : Type*} [Category* C] (tensor : C ⥤ C ⥤ C) (unit : C)
     (triangle : Triangle.firstMap tensor unit associator leftUnitor =
       Triangle.secondMap tensor unit rightUnitor) : MonoidalCategory C where
   tensorObj X Y := (tensor.obj X).obj Y
-  whiskerLeft := fun X {_ _} f ↦ (tensor.obj X).map f
-  whiskerRight := fun {_ _} f Y ↦ (tensor.map f).app Y
-  tensorHom := fun {X₁ Y₁ X₂ Y₂} f g ↦
+  whiskerLeft X {_ _} f := (tensor.obj X).map f
+  whiskerRight {_ _} f Y := (tensor.map f).app Y
+  tensorHom {X₁ Y₁ X₂ Y₂} f g :=
     (tensor.map f).app X₂ ≫ (tensor.obj Y₁).map g
   tensorUnit := unit
   associator X Y Z := ((associator.app X).app Y).app Z
   leftUnitor X := leftUnitor.app X
   rightUnitor X := rightUnitor.app X
   associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃} f₁ f₂ f₃ := by
-    dsimp
-    simp only [Functor.map_comp, NatTrans.comp_app, Category.assoc]
-    have h₃ : (tensor.obj ((tensor.obj Y₁).obj Y₂)).map f₃ ≫
-          ((associator.hom.app Y₁).app Y₂).app Y₃ =
-        ((associator.hom.app Y₁).app Y₂).app X₃ ≫
-          (tensor.obj Y₁).map ((tensor.obj Y₂).map f₃) :=
-      ((associator.hom.app Y₁).app Y₂).naturality f₃
-    slice_lhs 3 4 => rw [h₃]
-    have h₂ : (tensor.map ((tensor.obj Y₁).map f₂)).app X₃ ≫
-          ((associator.hom.app Y₁).app Y₂).app X₃ =
-        ((associator.hom.app Y₁).app X₂).app X₃ ≫
-          (tensor.obj Y₁).map ((tensor.map f₂).app X₃) :=
-      NatTrans.congr_app ((associator.hom.app Y₁).naturality f₂) X₃
-    slice_lhs 2 3 => rw [h₂]
     have h₁ : (tensor.map ((tensor.map f₁).app X₂)).app X₃ ≫
           ((associator.hom.app Y₁).app X₂).app X₃ =
         ((associator.hom.app X₁).app X₂).app X₃ ≫
           (tensor.map f₁).app ((tensor.obj X₂).obj X₃) :=
       NatTrans.congr_app (NatTrans.congr_app (associator.hom.naturality f₁) X₂) X₃
-    slice_lhs 1 2 => rw [h₁]
-    simp only [Category.assoc]
+    have h₃ : (tensor.obj ((tensor.obj Y₁).obj Y₂)).map f₃ ≫
+          ((associator.hom.app Y₁).app Y₂).app Y₃ =
+        ((associator.hom.app Y₁).app Y₂).app X₃ ≫
+          (tensor.obj Y₁).map ((tensor.obj Y₂).map f₃) :=
+      ((associator.hom.app Y₁).app Y₂).naturality f₃
+    have h₂ : (tensor.map ((tensor.obj Y₁).map f₂)).app X₃ ≫
+          ((associator.hom.app Y₁).app Y₂).app X₃ =
+        ((associator.hom.app Y₁).app X₂).app X₃ ≫
+          (tensor.obj Y₁).map ((tensor.map f₂).app X₃) :=
+      NatTrans.congr_app ((associator.hom.app Y₁).naturality f₂) X₃
+    simp [h₃, reassoc_of% h₂, reassoc_of% h₁]
   rightUnitor_naturality f := rightUnitor.hom.naturality f
   pentagon W X Y Z :=
     NatTrans.congr_app (NatTrans.congr_app (NatTrans.congr_app
