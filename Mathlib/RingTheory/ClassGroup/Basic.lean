@@ -6,7 +6,6 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # The ideal class group
@@ -175,7 +174,7 @@ theorem ClassGroup.induction {P : ClassGroup R → Prop}
     have : I = (Units.mapEquiv (canonicalEquiv R⁰ K (FractionRing R)).toMulEquiv)
       (Units.mapEquiv (canonicalEquiv R⁰ (FractionRing R) K).toMulEquiv I) := by
       simp [← Units.val_inj]
-    rw [congr_arg (QuotientGroup.mk (s := (toPrincipalIdeal R (FractionRing R)).range)) this]
+    rw [congr(QuotientGroup.mk (s := (toPrincipalIdeal R (FractionRing R)).range) $this)]
     exact h _
 
 /-- The definition of the class group does not depend on the choice of field of fractions. -/
@@ -420,7 +419,7 @@ theorem ClassGroup.mk0_eq_mk0_inv_iff [IsDedekindDomain R] {I J : (Ideal R)⁰} 
   rw [eq_inv_iff_mul_eq_one, ← map_mul, ClassGroup.mk0_eq_one_iff,
     Submodule.isPrincipal_iff, Submonoid.coe_mul]
   refine ⟨fun ⟨a, ha⟩ ↦ ⟨a, ?_, ha⟩, fun ⟨a, _, ha⟩ ↦ ⟨a, ha⟩⟩
-  by_contra!
+  by_contra
   rw [this, Submodule.span_zero_singleton] at ha
   exact nonZeroDivisors.coe_ne_zero _ <| J.prop.2 _ ha
 
@@ -481,19 +480,5 @@ theorem FractionalIdeal.map_ringEquivOfRingEquiv_toPrincipalIdeal {S L : Type*} 
       rw [← FractionalIdeal.ringEquivOfRingEquiv_spanSingleton,
         ← FractionalIdeal.ringEquivOfRingEquiv_symm_eq, hu]
       rfl
-
-#adaptation_note
-/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
-/-- A ring isomorphism `R ≃+* R'` induces an isomorphism on their class groups. -/
-@[simps!]
-noncomputable def ClassGroup.mulEquiv {R' : Type*} [CommRing R'] [IsDomain R'] (g : R ≃+* R') :
-    ClassGroup R ≃* ClassGroup R' :=
-  (ClassGroup.equiv (R := R) (FractionRing R)).trans
-    ((QuotientGroup.congr (toPrincipalIdeal R (FractionRing R)).range
-        (toPrincipalIdeal R' (FractionRing R')).range
-        (Units.mapEquiv (FractionalIdeal.ringEquivOfRingEquiv (FractionRing R) (FractionRing R') g))
-        (FractionalIdeal.map_ringEquivOfRingEquiv_toPrincipalIdeal g)).trans
-      (ClassGroup.equiv (FractionRing R')).symm)
 
 end MulEquiv

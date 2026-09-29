@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-public import Mathlib.Algebra.Regular.SMul
 
 /-!
 # Pointwise actions of finsets

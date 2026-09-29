@@ -7,9 +7,7 @@ module
 
 public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Logic.Embedding.Set
-public import Mathlib.Logic.Equiv.Option
 public import Mathlib.Data.Int.Init
-public import Batteries.Data.Fin.Lemmas
 
 /-!
 # Equivalences for `Fin n`
@@ -135,7 +133,7 @@ theorem finSuccEquiv_symm_none : (finSuccEquiv n).symm none = 0 :=
 
 @[simp]
 theorem finSuccEquiv_symm_some (m : Fin n) : (finSuccEquiv n).symm (some m) = m.succ :=
-  congr_fun Fin.succAbove_zero m
+  congr($Fin.succAbove_zero m)
 
 @[simp]
 theorem finSuccEquiv_eq_some {i : Fin (n + 1)} {j : Fin n} :
