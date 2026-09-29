@@ -54,6 +54,12 @@ jobs:
   build:
     name: Build
     runs-on: ${{ inputs.runs_on }}
+    # This job builds (potentially fork) PR code, so it must not inherit any
+    # write-capable token. `actions: read` lets get-tools and get-cache download
+    # artifacts from master's runs.
+    permissions:
+      contents: read
+      actions: read
     outputs:
       build-outcome: ${{ steps.build.outcome }}
       archive-outcome: ${{ steps.archive.outcome }}
@@ -88,6 +94,7 @@ jobs:
           fetch-depth: 1
           sparse-checkout: .github/actions
           path: workflow-actions
+          persist-credentials: false # no later step needs git credentials
 
       # Shared self-hosted setup (toolchain prune, jq, cache-trust dispatch,
       # PR-branch checkout, elan + toolchain/LEAN_SRC_PATH env, CI tools, dependency
@@ -235,6 +242,8 @@ jobs:
       - name: fetch archive, counterexamples and wanted cache
         shell: bash
         run: |
+          # Use the trusted toolchain's `lean`/`leantar` (see setup-build-env).
+          export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
           ../tools-branch/.lake/build/bin/cache get Archive.lean
           ../tools-branch/.lake/build/bin/cache get Counterexamples.lean
@@ -292,37 +301,54 @@ jobs:
 
       - name: stage Mathlib cache files
         if: ${{ always() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure' || steps.build.outcome == 'cancelled') }}
-        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX -- bash -euxo pipefail {0}
         run: |
+          # Run `cache` directly, as the get/clean steps do, rather than via `lake env`:
+          # it reads its context from LEAN_SRC_PATH (forwarded above). Use the trusted
+          # toolchain's `lean`/`leantar` (see setup-build-env).
+          export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
-          lake env ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage
+          ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage
 
       - name: stage Archive cache files
         if: ${{ steps.archive.outcome == 'success' }}
-        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX -- bash -euxo pipefail {0}
         run: |
+          # No `lake env`, trusted toolchain: see "stage Mathlib cache files".
+          export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
-          lake env ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage Archive.lean
+          ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage Archive.lean
 
       - name: stage Counterexamples cache files
         if: ${{ steps.counterexamples.outcome == 'success' }}
-        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX -- bash -euxo pipefail {0}
         run: |
+          # No `lake env`, trusted toolchain: see "stage Mathlib cache files".
+          export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
-          lake env ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage Counterexamples.lean
+          ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage Counterexamples.lean
 
       - name: stage Wanted cache files
         if: ${{ steps.wanted.outcome == 'success' }}
-        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX -- bash -euxo pipefail {0}
         run: |
+          # No `lake env`, trusted toolchain: see "stage Mathlib cache files".
+          export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
-          lake env ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage Wanted.lean
+          ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage Wanted.lean
 
       - name: check cache staging contents
         id: cache_staging_check
         if: ${{ always() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure' || steps.build.outcome == 'cancelled') }}
         shell: bash
         run: |
+          # The staging directory is uploaded as-is, so it must hold only regular files.
+          other=$(find cache-staging -mindepth 1 ! -type f ! -type d)
+          if [ -n "${other}" ]; then
+            echo "::error::cache-staging contains entries that are not regular files:"
+            echo "${other}"
+            exit 1
+          fi
           if find cache-staging -type f -name '*.ltar' -print -quit | grep -q .; then
             echo "has_files=true" >> "$GITHUB_OUTPUT"
           else
@@ -345,6 +371,8 @@ jobs:
         continue-on-error: true # best-effort; never fail the build
         shell: bash # runs the trusted tools-branch `cache` binary, so no landrun needed
         run: |
+          # Use the trusted toolchain's `lean`/`leantar` (see setup-build-env).
+          export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
           ../tools-branch/.lake/build/bin/cache clean
 
@@ -405,6 +433,11 @@ jobs:
     # match: `test` only on a clean build, `lint` on success-or-failure.
     if: ${{ always() && (needs.build.result == 'success' || needs.build.result == 'failure') }}
     runs-on: ${{ inputs.runs_on }}
+    # Same as `build`: this job runs (potentially fork) PR code, so it must not
+    # inherit any write-capable token.
+    permissions:
+      contents: read
+      actions: read
     outputs:
       lint-outcome: ${{ steps.lint.outcome }}
       test-outcome: ${{ steps.test.outcome }}
@@ -419,6 +452,7 @@ jobs:
           fetch-depth: 1
           sparse-checkout: .github/actions
           path: workflow-actions
+          persist-credentials: false # no later step needs git credentials
 
       # Shared self-hosted setup (see the action).
       - name: Set up build environment
@@ -624,6 +658,7 @@ jobs:
         with:
           ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.event.pull_request.head.repo.fork && 'master' || inputs.pr_branch_ref) }}
           fetch-depth: 1
+          persist-credentials: false # no later step needs git credentials
 
       # Same trust dispatch as in the `build` and `post_steps` jobs. Loaded from
       # the tools-branch checkout above (the branch under test, a trusted in-repo
@@ -781,6 +816,7 @@ jobs:
             .github/actions
             Cache
           path: workflow-actions
+          persist-credentials: false # no later step needs git credentials
 
       # Sets MATHLIB_CACHE_FROM in env so the `cache get` calls below pick
       # up the trust-class-appropriate read fallback automatically. Replaces
@@ -889,6 +925,7 @@ jobs:
           fetch-depth: 1
           sparse-checkout: .github/actions
           path: workflow-actions
+          persist-credentials: false # no later step needs git credentials
 
       - name: Get mathlib-ci
         uses: ./workflow-actions/.github/actions/get-mathlib-ci

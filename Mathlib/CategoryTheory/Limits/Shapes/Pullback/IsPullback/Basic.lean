@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
 
 /-!

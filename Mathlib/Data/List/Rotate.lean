@@ -5,7 +5,7 @@ Authors: Chris Hughes, Yakov Pechersky
 -/
 module
 
-public import Mathlib.Data.List.Nodup
+import Mathlib.Data.List.Nodup
 public import Mathlib.Data.List.Infix
 public import Mathlib.Data.Quot
 

@@ -6,8 +6,7 @@ Authors: Dennj Osele
 module
 
 public import Mathlib.LinearAlgebra.Matrix.Kronecker
-public import Mathlib.LinearAlgebra.Matrix.Adjugate
-public import Mathlib.Data.Matrix.Basic
+import Mathlib.LinearAlgebra.Matrix.Adjugate
 public import Mathlib.Algebra.Star.Unitary
 
 /-!
