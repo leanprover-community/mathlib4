@@ -637,7 +637,7 @@ instance toNonUnital : NonUnitalIsometricContinuousFunctionalCalculus 𝕜 A p w
     have : CompactSpace (σₙ 𝕜 a) := by
       have h_cpct : CompactSpace (spectrum 𝕜 a) := inferInstance
       simp only [← isCompact_iff_compactSpace, quasispectrum_eq_spectrum_union_zero] at h_cpct ⊢
-      exact h_cpct |>.union isCompact_singleton
+      exact h_cpct.union isCompact_singleton
     rw [cfcₙHom_eq_cfcₙHom_of_cfcHom, cfcₙHom_of_cfcHom]
     refine isometry_cfcHom a |>.comp ?_
     simp only [MulHom.coe_coe, NonUnitalStarAlgHom.coe_toNonUnitalAlgHom]

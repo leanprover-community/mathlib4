@@ -100,8 +100,7 @@ theorem adjoin_singleton_induction {M : R[x] → Prop}
   obtain ⟨p, hp⟩ := Algebra.adjoin_eq_exists_aeval _ x a
   grind
 
-instance instCommSemiringAdjoinSingleton :
-    CommSemiring <| R[x] where
+instance instCommSemiringAdjoinSingleton : CommSemiring R[x] where
   mul_comm := fun ⟨p, hp⟩ ⟨q, hq⟩ ↦ by
       obtain ⟨p', rfl⟩ := Algebra.adjoin_singleton_eq_range_aeval R x ▸ hp
       obtain ⟨q', rfl⟩ := Algebra.adjoin_singleton_eq_range_aeval R x ▸ hq

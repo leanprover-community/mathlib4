@@ -66,7 +66,7 @@ theorem exists_isMatching_of_forall_ncard_le (h₁ : G.IsBipartiteWith p₁ p₂
     have := h₂ (s.image Subtype.val) (by simp)
     rw [Set.ncard_coe_finset, Finset.card_image_of_injective _ Subtype.val_injective] at this
     simpa [← Set.ncard_coe_finset, neighborFinset_def]
-  have (x : p₁) : f x ∉ p₁ := h₁.disjoint |>.notMem_of_mem_right <|
+  have (x : p₁) : f x ∉ p₁ := h₁.disjoint.notMem_of_mem_right <|
     isBipartiteWith_neighborSet_subset h₁ x.2 <| Set.mem_toFinset.mp <| hf₂ x
   use hall_subgraph f this (fun v ↦ G.mem_neighborFinset _ _ |>.mp <| hf₂ v)
   refine ⟨by simp, fun v hv ↦ ?_⟩
@@ -97,9 +97,9 @@ lemma exists_bijective_of_forall_ncard_le (h₁ : G.IsBipartiteWith p₁ p₂)
       (fun x ↦ G.neighborFinset x) |>.mp fun s ↦ by
     have := h₂ s
     simpa [← Set.ncard_coe_finset, neighborFinset_def]
-  have (x : V) (h : x ∈ p₁) : f x ∉ p₁ := h₁.disjoint |>.notMem_of_mem_right <|
+  have (x : V) (h : x ∈ p₁) : f x ∉ p₁ := h₁.disjoint.notMem_of_mem_right <|
     isBipartiteWith_neighborSet_subset h₁ h <| Set.mem_toFinset.mp <| hf₂ x
-  have (x : V) (h : x ∈ p₂) : f x ∉ p₂ := h₁.disjoint |>.notMem_of_mem_left <|
+  have (x : V) (h : x ∈ p₂) : f x ∉ p₂ := h₁.disjoint.notMem_of_mem_left <|
     isBipartiteWith_neighborSet_subset h₁.symm h <| Set.mem_toFinset.mp <| hf₂ x
   have (x : V) : f x ∈ p₁ ∨ f x ∈ p₂ := by
     simp [union_eq_univ_of_forall_ncard_le h₁ h₂, p₁.mem_union (f x) p₂ |>.mp]

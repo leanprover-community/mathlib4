@@ -73,7 +73,7 @@ and so we may restrict it to `A` to get the necessary homomorphism for the non-u
 functional calculus.
 -/
 noncomputable def cfcₙAux : C(σₙ 𝕜 a, 𝕜)₀ →⋆ₙₐ[𝕜] A⁺¹ :=
-  (cfcHom (R := 𝕜) (hp₁.mpr ha)).toNonUnitalStarAlgHom |>.comp
+  (cfcHom (R := 𝕜) (hp₁.mpr ha)).toNonUnitalStarAlgHom.comp
       (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 <| .setCongr
         (quasispectrum_eq_spectrum_inr' 𝕜 𝕜 a).symm).toNonUnitalStarAlgHom
     |>.comp ContinuousMapZero.toContinuousMapHom
@@ -206,7 +206,7 @@ lemma isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts {a : A} :
 
 lemma IsSelfAdjoint.quasispectrumRestricts {a : A} (ha : IsSelfAdjoint a) :
     QuasispectrumRestricts a Complex.reCLM :=
-  isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts |>.mp ha |>.2
+  isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts.mp ha |>.2
 
 /-- A normal element whose `ℂ`-quasispectrum is contained in `ℝ` is selfadjoint. -/
 lemma QuasispectrumRestricts.isSelfAdjoint (a : A) (ha : QuasispectrumRestricts a Complex.reCLM)

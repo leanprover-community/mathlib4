@@ -52,7 +52,7 @@ def ElimApp.evalNames (elimInfo : ElimInfo) (alts : Array ElimApp.Alt) (withArg 
     (numEqs := 0) (generalized : Array FVarId := #[]) (toClear : Array FVarId := #[])
     (toTag : Array (Ident × FVarId) := #[]) :
     TermElabM (Array MVarId) := do
-  let mut names : List Syntax := withArg[1].getArgs |>.toList
+  let mut names : List Syntax := withArg[1].getArgs.toList
   let mut subgoals := #[]
   for { name := altName, mvarId := g, .. } in alts do
     let numFields ← getAltNumFields elimInfo altName

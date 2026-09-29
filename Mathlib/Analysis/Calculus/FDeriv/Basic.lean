@@ -636,7 +636,7 @@ theorem HasFDerivAtFilter.tendsto_nhds {L : Filter E} (hL : L ≤ 𝓝 x)
     (h : HasFDerivAtFilter f f' (L ×ˢ pure x)) :
     Tendsto f L (𝓝 (f x)) := by
   have : (f · - f x) =o[𝕜; L] (1 : E → 𝕜) := by
-    refine h.isBigOTVS_sub |>.comp_tendsto prod_pure.ge |>.trans_isLittleOTVS ?_
+    refine h.isBigOTVS_sub.comp_tendsto prod_pure.ge |>.trans_isLittleOTVS ?_
     rw [isLittleOTVS_one]
     simpa [sub_eq_add_neg] using! (tendsto_id'.mpr hL).add_const (-x)
   rw [isLittleOTVS_one] at this

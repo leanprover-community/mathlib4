@@ -131,7 +131,7 @@ lemma of_span_eq_top_target_of_isLocalizationAway {ι : Type*} (s : ι → S)
     Algebra.FinitePresentation R S := by
   apply of_span_eq_top_target _ hs
   rintro - ⟨i, rfl⟩
-  exact .equiv <| (IsLocalization.algEquiv (.powers <| s i) _ (T i)).symm |>.restrictScalars R
+  exact .equiv <| (IsLocalization.algEquiv (.powers <| s i) _ (T i)).symm.restrictScalars R
 
 instance pi {ι : Type*} [Finite ι] (S : ι → Type*) [∀ i, CommRing (S i)] [∀ i, Algebra R (S i)]
     [∀ i, Algebra.FinitePresentation R (S i)] :

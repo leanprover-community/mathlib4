@@ -297,7 +297,7 @@ macro_rules
 elab_rules : tactic
 | `(tactic| convert_to $[!%$expensive]? $cfg $[←%$sym]? $newType $[using $n]?
     $[with $ps?*]? $[$loc?:location]?) => do
-  let n : ℕ := n |>.map (·.getNat) |>.getD 1
+  let n : ℕ := n.map (·.getNat) |>.getD 1
   let config ← Convert.elabConfig expensive.isSome cfg
   let patterns := (ps?.getD #[]).toList
   withLocation (expandOptLocation (mkOptionalNode loc?))

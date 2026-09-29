@@ -340,7 +340,7 @@ theorem associator_naturality {F' G' H' : C ⥤ V}
       map (map f g) h ≫
         (associator F' G' H').hom =
       (associator F G H).hom ≫ map f (map g h) := by
-  apply (corepresentableBy₂' F G H) |>.homEquiv.injective
+  apply (corepresentableBy₂' F G H).homEquiv.injective
   dsimp
   ext
   simp only [externalProductBifunctor_obj_obj, Functor.comp_obj, Functor.prod_obj, tensor_obj,

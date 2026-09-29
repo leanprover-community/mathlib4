@@ -652,12 +652,12 @@ partial def mkCongrOfApp (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr)
               match kind with
               | .eq =>
                 let ares ← mkCongrOfAux (depth + 1) mvarCounterSaved lhs' rhs'
-                args := args |>.push ares.lhs |>.push ares.rhs |>.push (← ares.eq)
+                args := args.push ares.lhs |>.push ares.rhs |>.push (← ares.eq)
                 lhsArgs' := lhsArgs'.push ares.lhs
                 rhsArgs' := rhsArgs'.push ares.rhs
               | .heq =>
                 let ares ← mkCongrOfAux (depth + 1) mvarCounterSaved lhs' rhs'
-                args := args |>.push ares.lhs |>.push ares.rhs |>.push (← ares.heq)
+                args := args.push ares.lhs |>.push ares.rhs |>.push (← ares.heq)
                 lhsArgs' := lhsArgs'.push ares.lhs
                 rhsArgs' := rhsArgs'.push ares.rhs
               | .subsingletonInst =>
@@ -667,7 +667,7 @@ partial def mkCongrOfApp (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr)
                 -- congruence holes by unification.
                 let lhs' := removeCHoles lhs'
                 let rhs' := removeCHoles rhs'
-                args := args |>.push lhs' |>.push rhs'
+                args := args.push lhs' |>.push rhs'
                 lhsArgs' := lhsArgs'.push lhs'
                 rhsArgs' := rhsArgs'.push rhs'
               | _ => panic! "unexpected hcongr argument kind"

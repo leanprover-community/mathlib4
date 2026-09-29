@@ -203,12 +203,12 @@ theorem ClusterPt.limsSup {f : Filter α} [NeBot f]
   by_cases! hn : Nontrivial α
   · by_cases! htop : ∀ x, x ≤ f.limsSup
     · let : OrderTop α := { top := f.limsSup, le_top := htop }
-      exact nhds_top_basis.clusterPt_iff_frequently |>.mpr fun a => frequently_lt_of_lt_limsSup hc
+      exact nhds_top_basis.clusterPt_iff_frequently.mpr fun a => frequently_lt_of_lt_limsSup hc
     · by_cases! hbot : ∀ x, f.limsSup ≤ x
       · let : OrderBot α := { bot := f.limsSup, bot_le := hbot }
-        refine nhds_bot_basis.clusterPt_iff_frequently |>.mpr fun a h => ?_
+        refine nhds_bot_basis.clusterPt_iff_frequently.mpr fun a h => ?_
         exact lt_mem_sets_of_limsSup_lt hb h |>.frequently
-      · refine (nhds_basis_Ioo' hbot htop).clusterPt_iff_frequently |>.mpr fun a ⟨hl, hg⟩ => ?_
+      · refine (nhds_basis_Ioo' hbot htop).clusterPt_iff_frequently.mpr fun a ⟨hl, hg⟩ => ?_
         exact frequently_lt_of_lt_limsSup hc hl |>.and_eventually <| lt_mem_sets_of_limsSup_lt hb hg
   · simp_all [ClusterPt, Filter.eq_top_of_neBot]
 

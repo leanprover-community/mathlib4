@@ -428,7 +428,7 @@ partial def matchFoldl (lit x y : Name) (smatcher : Matcher) (sinit : Matcher) :
   s.withVar lit do
     let expr ← getExpr
     -- Clear x and y state before running smatcher so it can store new values
-    let s := {s with vars := s.vars |>.erase x |>.erase y}
+    let s := {s with vars := s.vars.erase x |>.erase y}
     let some s ← try some <$> smatcher s catch _ => pure none
       | -- We put this here rather than using a big try block to prevent backtracking.
         -- We have `smatcher` match greedily, and then require that `sinit` *must* succeed
@@ -448,7 +448,7 @@ Reminder: `( lit ","* => foldl (x y => scopedTerm) init)` -/
 partial def mkFoldlMatcher (lit x y : Name) (scopedTerm init : Term) (boundNames : Array Name) :
     OptionT TermElabM (List DelabKey × Term) := do
   -- Build the `scopedTerm` matcher with `x` and `y` as additional variables
-  let boundNames' := boundNames |>.push x |>.push y
+  let boundNames' := boundNames.push x |>.push y
   let (keys, smatcher) ← mkExprMatcher scopedTerm boundNames'
   let (keys', sinit) ← mkExprMatcher init boundNames
   return (keys ++ keys', ← ``(matchFoldl $(quote lit) $(quote x) $(quote y) $smatcher $sinit))
@@ -458,7 +458,7 @@ Reminder: `( lit ","* => foldr (x y => scopedTerm) init)` -/
 partial def mkFoldrMatcher (lit x y : Name) (scopedTerm init : Term) (boundNames : Array Name) :
     OptionT TermElabM (List DelabKey × Term) := do
   -- Build the `scopedTerm` matcher with `x` and `y` as additional variables
-  let boundNames' := boundNames |>.push x |>.push y
+  let boundNames' := boundNames.push x |>.push y
   let (keys, smatcher) ← mkExprMatcher scopedTerm boundNames'
   let (keys', sinit) ← mkExprMatcher init boundNames
   -- N.B. by swapping `x` and `y` we can just use the foldl matcher

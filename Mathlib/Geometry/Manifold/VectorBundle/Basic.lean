@@ -257,7 +257,7 @@ variable {s : ∀ x, E x} {u : Set B} {x : B}
 lemma contMDiffWithinAt_section_of_subsingleton [Subsingleton F] :
     ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) u x := by
   rw [contMDiffWithinAt_section]
-  apply contMDiffWithinAt_const |>.congr
+  apply contMDiffWithinAt_const.congr
   · intro y _
     apply Subsingleton.elim
   rfl
