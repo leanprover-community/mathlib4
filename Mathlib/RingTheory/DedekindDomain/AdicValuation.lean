@@ -743,7 +743,7 @@ instance : ValuativeRel (v.adicCompletion K) := .ofValuation (valuation K v)
 instance : (valuation K v).Compatible := .ofValuation (valuation K v)
 
 instance : IsValuativeTopology (v.adicCompletion K) := by
-  refine .of_isInducing (f := equiv K v) (isUniformInducing_toCompletion K v).isInducing
+  refine .of_isInducing (equiv K v).surjective (isUniformInducing_toCompletion K v).isInducing
     fun a b ↦ ?_
   rw [vle_iff_le (valuation K v)]
   exact vle_iff_le _

@@ -232,7 +232,10 @@ variable [TopologicalSpace R]
 variable {S : Type*} [Ring S] [ValuativeRel S] [TopologicalSpace S] [IsValuativeTopology S]
 
 open ValuativeRel Topology in
-theorem of_isInducing {f : R ≃+* S} (hf : IsInducing f) (hv : ∀ a b, f a ≤ᵥ f b ↔ a ≤ᵥ b) :
+/-- Transfer an `IsValuativeTopology` instance along a surjective and inducing ring homomorphism,
+which preserves the valuative ordering. -/
+theorem of_isInducing {F : Type*} [FunLike F R S] [RingHomClass F R S] {f : F}
+    (hsurj : Function.Surjective f) (hf : IsInducing f) (hv : ∀ a b, f a ≤ᵥ f b ↔ a ≤ᵥ b) :
     IsValuativeTopology R where
   mem_nhds_iff {s x} := by
     have hvlt (a b : R) : f a <ᵥ f b ↔ a <ᵥ b := by simp [← not_vle, hv]
@@ -242,8 +245,8 @@ theorem of_isInducing {f : R ≃+* S} (hf : IsInducing f) (hv : ∀ a b, f a ≤
     · obtain ⟨γ, hγ⟩ := IsValuativeTopology.mem_nhds_iff'.1 ht
       obtain ⟨⟨a, ha⟩, ⟨b, hb⟩, hab⟩ :=
         exists_valuation_posSubmonoid_div_valuation_posSubmonoid_eq γ
-      obtain ⟨a, rfl⟩ := f.surjective a
-      obtain ⟨b, rfl⟩ := f.surjective b
+      obtain ⟨a, rfl⟩ := hsurj a
+      obtain ⟨b, rfl⟩ := hsurj b
       refine ⟨.mk0 _ (div_ne_zero (valuation_posSubmonoid_ne_zero ⟨a, (hpos a).1 ha⟩)
         (valuation_posSubmonoid_ne_zero ⟨b, (hpos b).1 hb⟩)), fun _ ⟨z, hz, hz'⟩ ↦ hts (hγ ?_)⟩
       rw [Set.mem_ofPred_eq, ← hab, ← hz', map_add, add_sub_cancel_left, lt_div_iff_mul_vlt _ hb,
