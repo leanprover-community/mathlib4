@@ -72,7 +72,7 @@ lemma IsRadial.comp_norm (g : ℝ → F) : (g ∘ (‖·‖ : E → ℝ)).IsRadi
   simp [IsRadial.comp_right, isRadial_norm]
 
 variable (E) in
-lemma iRadial_norm_sq : IsRadial (‖·‖ ^ 2 : E → ℝ) := by grind [isRadial_def]
+lemma isRadial_norm_sq : IsRadial (‖·‖ ^ 2 : E → ℝ) := by grind [isRadial_def]
 
 end Norm
 
