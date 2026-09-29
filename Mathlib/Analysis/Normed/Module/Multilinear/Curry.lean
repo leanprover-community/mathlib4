@@ -55,6 +55,8 @@ We use the following type variables in this file:
 
 universe u v v' wE wE₁ wE' wEi wG wG'
 
+section
+
 variable {𝕜 : Type u} {ι : Type v} {ι' : Type v'} {n : ℕ} {E : ι → Type wE}
   {Ei : Fin n.succ → Type wEi} {G : Type wG} {G' : Type wG'} [Fintype ι]
   [Fintype ι'] [NontriviallyNormedField 𝕜] [∀ i, NormedAddCommGroup (E i)]
@@ -396,6 +398,8 @@ theorem ContinuousLinearMap.norm_uncurryMid (p : Fin (n + 1))
     ‖f.uncurryMid p‖ = ‖f‖ :=
   (ContinuousMultilinearMap.curryMidEquiv 𝕜 Ei G p).symm.norm_map f
 
+end
+
 /-!
 #### Currying with `0` variables
 
@@ -407,6 +411,13 @@ derivatives, we register this isomorphism. -/
 
 
 section
+
+variable {𝕜 G G' : Type*} [NontriviallyNormedField 𝕜]
+
+section TVS
+
+variable [AddCommMonoid G] [Module 𝕜 G] [TopologicalSpace G] [AddCommMonoid G'] [Module 𝕜 G']
+  [TopologicalSpace G']
 
 /-- Associating to a continuous multilinear map in `0` variables the unique value it takes. -/
 def ContinuousMultilinearMap.curry0 (f : ContinuousMultilinearMap 𝕜 (fun _ : Fin 0 => G) G') :
@@ -442,6 +453,12 @@ variable (𝕜 G) in
 theorem ContinuousMultilinearMap.curry0_uncurry0 (x : G') :
     (ContinuousMultilinearMap.uncurry0 𝕜 G x).curry0 = x :=
   rfl
+
+end TVS
+
+section NormedSpace
+
+variable [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
 
 variable (𝕜 G) in
 @[simp]
@@ -498,10 +515,17 @@ theorem continuousMultilinearCurryFin0_symm_apply_apply (x : G') (v : Fin 0 → 
     (continuousMultilinearCurryFin0 𝕜 G G').symm x v = x :=
   rfl
 
+end NormedSpace
+
 end
 
 /-! #### With 1 variable -/
 
+variable {𝕜 : Type u} {ι : Type v} {ι' : Type v'} {n : ℕ} {E : ι → Type wE}
+  {Ei : Fin n.succ → Type wEi} {G : Type wG} {G' : Type wG'} [Fintype ι]
+  [Fintype ι'] [NontriviallyNormedField 𝕜] [∀ i, NormedAddCommGroup (E i)]
+  [∀ i, NormedSpace 𝕜 (E i)] [∀ i, NormedAddCommGroup (Ei i)] [∀ i, NormedSpace 𝕜 (Ei i)]
+  [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
 
 variable (𝕜 G G')
 
