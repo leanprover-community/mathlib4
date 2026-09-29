@@ -5,10 +5,12 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Data.Rat.Cast.CharZero
+import Mathlib.Data.Rat.Cast.CharZero
 public import Mathlib.Data.Rat.Cast.Lemmas
 
 /-!
+# Scientific notation for characteristic-zero fields
+
 The `OfScientific` instance for any characteristic zero field
 is well-behaved with respect to the field operations.
 

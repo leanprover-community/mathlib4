@@ -5,9 +5,8 @@ Authors: Scott Carnahan
 -/
 module
 
-public import Mathlib.LinearAlgebra.BilinearForm.Basic
 public import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
-public import Mathlib.LinearAlgebra.Dimension.Localization
+import Mathlib.LinearAlgebra.Dimension.Localization
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic
 public import Mathlib.LinearAlgebra.RootSystem.BaseChange
 public import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
@@ -25,7 +24,8 @@ options for each pair.
 Another application is to the faithfulness of the Weyl group action on roots, and finiteness of the
 Weyl group.
 
-## Main results:
+## Main results
+
 * `RootPairing.IsAnisotropic`: We say a finite root pairing is anisotropic if there are no roots /
   coroots which have length zero w.r.t. the root / coroot forms.
 * `RootPairing.rootForm_pos_of_nonzero`: `RootForm` is strictly positive on non-zero linear
@@ -37,11 +37,13 @@ Weyl group.
 * `RootPairing.rootForm_restrict_nondegenerate_of_isAnisotropic`: the root form is
   non-degenerate if the coefficients are a field and the pairing is crystallographic.
 
-## References:
+## References
+
 * [N. Bourbaki, *Lie groups and Lie algebras. Chapters 4--6*][bourbaki1968]
 * [M. Demazure, *SGA III, Exposé XXI, Données Radicielles*][demazure1970]
 
-## Todo
+## TODO
+
 * Weyl-invariance of `RootForm` and `CorootForm`
 * Faithfulness of Weyl group perm action, and finiteness of Weyl group, over ordered rings.
 * Relation to Coxeter weight.
@@ -122,17 +124,15 @@ lemma smul_coroot_eq_of_root_add_root_eq [P.IsAnisotropic] [IsDomain R] [IsTorsi
         (m * (P.pairing j i * lsq i)) • P.coroot i +
         (n * (P.pairing j i * lsq j)) • P.coroot j := by
     rw [h₂, h₃] at h₁
-    replace h₁ := congr_arg (fun n ↦ P.pairing j i • n) h₁
+    replace h₁ := congr(P.pairing j i • $h₁)
     simp only [add_smul, smul_add, ← mul_smul, smul_eq_mul] at h₁
-    convert! h₁ using 1
-    · module
-    · ring_nf
+    module_nf at h₁ ⊢
+    exact h₁
   simp only [h₄] at h₁
   apply smul_right_injective _ (r := lsq j) (RootPairing.IsAnisotropic.rootForm_root_ne_zero j)
   simp only
-  convert! h₁ using 1
-  · module
-  · module
+  module_nf at h₁ ⊢
+  exact h₁
 
 section DomainAlg
 

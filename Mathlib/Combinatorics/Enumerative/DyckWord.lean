@@ -351,7 +351,7 @@ def outsidePart : DyckWord :=
 include h in
 @[simp]
 lemma insidePart_add : (p + q).insidePart = p.insidePart := by
-  simp_rw [insidePart, firstReturn_add, add_eq_zero', h, false_and, dite_false, ite_false,
+  simp_rw [insidePart, firstReturn_add, add_eq_zero, h, false_and, dite_false, ite_false,
     DyckWord.ext_iff, take]
   congr 3
   exact take_append_of_le_length (firstReturn_lt_length h)
@@ -359,7 +359,7 @@ lemma insidePart_add : (p + q).insidePart = p.insidePart := by
 include h in
 @[simp]
 lemma outsidePart_add : (p + q).outsidePart = p.outsidePart + q := by
-  simp_rw [outsidePart, firstReturn_add, add_eq_zero', h, false_and, dite_false, ite_false,
+  simp_rw [outsidePart, firstReturn_add, add_eq_zero, h, false_and, dite_false, ite_false,
     DyckWord.ext_iff, drop]
   exact drop_append_of_le_length (firstReturn_lt_length h)
 
@@ -470,7 +470,7 @@ lemma strictMono_semilength : StrictMono semilength := fun p q pq ↦ by
   obtain ⟨plq, pnq⟩ := lt_iff_le_and_ne.mp pq
   apply lt_of_le_of_ne (monotone_semilength plq)
   contrapose pnq
-  replace pnq := congr(2 * $(pnq))
+  replace pnq := congr(2 * $pnq)
   simp_rw [two_mul_semilength_eq_length] at pnq
   exact DyckWord.ext ((infix_of_le plq).eq_of_length pnq)
 

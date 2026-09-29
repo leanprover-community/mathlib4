@@ -311,6 +311,10 @@ instance [TopologicalSpace α] [IsUpper α] : IsScott α univ where
     rw [scott_eq_upper_of_completeLinearOrder]
     exact IsUpper.topology_eq α
 
+instance : IsScott Prop univ :=
+  let := Prop.completeLinearOrder
+  inferInstance
+
 end CompleteLinearOrder
 
 lemma isOpen_iff_scottContinuous_mem [Preorder α] {s : Set α} [TopologicalSpace α]

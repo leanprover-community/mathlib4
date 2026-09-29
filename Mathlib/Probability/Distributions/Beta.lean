@@ -111,7 +111,7 @@ lemma lintegral_betaPDF_eq_one {α β : ℝ} (hα : 0 < α) (hβ : 0 < β) :
   · simp_rw [mul_assoc, integral_const_mul]
     field_simp
     rw [div_eq_one_iff_eq (ne_of_gt (beta_pos hα hβ)), beta_eq_betaIntegralReal α β hα hβ,
-      betaIntegral, intervalIntegral.integral_of_le (by norm_num),
+      betaIntegral, intervalIntegral.integral_of_le (by simp),
       ← integral_Ioc_eq_integral_Ioo, ← RCLike.re_to_complex, ← integral_re]
     · refine setIntegral_congr_fun measurableSet_Ioc fun x ⟨hx1, hx₂⟩ ↦ ?_
       norm_cast

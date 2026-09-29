@@ -3,8 +3,9 @@ Copyright (c) 2026 Marcelo Lynch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
+module
 
-import Cache.Query
+public import Cache.Query
 
 /-!
 # Read-time advisories
@@ -18,6 +19,8 @@ Two stderr-only notices around a `cache get` read:
   misses — a naive fork read is pointed at `cache query` and the SHA-scoped
   workflow, every other read gets the generic divergence warning.
 -/
+
+public section
 
 namespace Cache.Requests
 

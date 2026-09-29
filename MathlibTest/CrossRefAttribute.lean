@@ -132,6 +132,51 @@ info:
 
 end LMFDB
 
+namespace Pibase
+
+@[pibase topology P000001 "A vacuous comment"]
+theorem p : True := .intro
+
+@[pibase topology S000023]
+theorem s : True := .intro
+
+@[pibase topology T000001]
+theorem t : True := .intro
+
+/--
+info: some ([π-Base (Topology) P000001](https://topology.pi-base.org/properties/P000001) (A vacuous comment))
+-/
+#guard_msgs in
+run_cmd
+  Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `Pibase.p}"
+
+/--
+info:
+[π-Base (Topology) P000001](https://topology.pi-base.org/properties/P000001) corresponds to declaration 'p'. (A vacuous comment)
+[π-Base (Topology) S000023](https://topology.pi-base.org/spaces/S000023) corresponds to declaration 's'.
+[π-Base (Topology) T000001](https://topology.pi-base.org/theorems/T000001) corresponds to declaration 't'.
+-/
+#guard_msgs in
+#pibase_tags topology
+
+-- The `topology` topic token is non-reserved: `topology` must remain usable as an identifier
+-- (it appears as one throughout Mathlib, e.g. `AlgebraicGeometry.ProEt.topology`).
+example (topology : Nat) : Nat := topology
+
+/-- error: <input>:1:3: π-Base ids must have exactly six digits after P/S/T. -/
+#guard_msgs in #parse Mathlib.CrossRef.pibaseIdFn => "P42"
+
+/-- error: <input>:1:7: π-Base ids must consist of P, S, or T followed by six digits. -/
+#guard_msgs in #parse Mathlib.CrossRef.pibaseIdFn => "P00001X"
+
+/-- error: <input>:1:7: π-Base ids must start with P, S, or T. -/
+#guard_msgs in #parse Mathlib.CrossRef.pibaseIdFn => "Q000001"
+
+/-- info: S000023 -/
+#guard_msgs in #parse Mathlib.CrossRef.pibaseIdFn => "S000023"
+
+end Pibase
+
 namespace DLMF
 
 @[dlmf 5.5.E1 "A vacuous comment"]
