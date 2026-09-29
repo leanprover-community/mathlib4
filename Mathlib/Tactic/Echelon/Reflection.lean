@@ -58,6 +58,7 @@ theorem IsLowerTriangularDiagList.cons [Zero α] {k c : ℕ} {row : List α} {ro
     IsLowerTriangularDiagList k (c + 1) (row :: rows) := by
   simp [IsLowerTriangularDiagList, hdrop, hd, h]
 
+/-- Lookup specification for `IsLowerTriangularDiagList`. -/
 theorem getD_of_isLowerTriangularDiagList [Zero α] {k c i : ℕ} {rows : List (List α)}
     (h : IsLowerTriangularDiagList k c rows) (hi : i < c) :
     (rows.getD i []).getD (k + i) 0 ≠ 0 ∧
@@ -76,10 +77,11 @@ theorem getD_of_isLowerTriangularDiagList [Zero α] {k c i : ℕ} {rows : List (
         cases i with
         | zero =>
           rw [List.getD_cons_zero]
-          have := List.getElem?_drop (xs := row) (i := k) (j := 0)
-          refine ⟨by grind, fun j hj ↦ ?_⟩
-          have := List.getElem?_drop (xs := row) (i := k) (j := j - k)
-          grind
+          refine ⟨?_, fun j hj ↦ ?_⟩
+          · have := List.getElem?_drop (xs := row) (i := k) (j := 0)
+            grind
+          · have := List.getElem?_drop (xs := row) (i := k) (j := j - k)
+            grind
         | succ i =>
           rw [List.getD_cons_succ, ← Nat.add_assoc, Nat.add_right_comm]
           exact ih hrest (by lia)
@@ -105,6 +107,7 @@ def splitRevAt (l : List α) (k : ℕ) (acc : List α) : List α × List α :=
   | x :: xs, k + 1 => splitRevAt xs k (x :: acc)
   | xs, _ => (acc, xs)
 
+/-- A bridge lemma between `splitRevAt` and the library spelling for the proofs later. -/
 theorem splitRevAt_eq (l : List α) (k : ℕ) (acc : List α) :
     splitRevAt l k acc = ((l.take k).reverse ++ acc, l.drop k) := by
   induction l generalizing k acc with
@@ -135,6 +138,7 @@ def pivotOfList (cols : List (Fin n)) (i : ℕ) : WithTop (Fin n) := cols[i]?
 theorem pivotOfList_eq_coe {cols : List (Fin n)} {i : ℕ} {c : Fin n} (hc : cols[i]? = some c) :
     pivotOfList cols i = ↑c := hc
 
+/-- Lookup specification for `IsPivotedList`. -/
 theorem getD_of_isPivotedList [Zero α] {cols : List (Fin n)} {rows : List (List α)}
     (h : IsPivotedList cols rows) (i : ℕ) :
     (∀ j : Fin n, ↑j < pivotOfList cols i → (rows.getD i []).getD j 0 = 0) ∧
@@ -150,12 +154,12 @@ theorem getD_of_isPivotedList [Zero α] {cols : List (Fin n)} {rows : List (List
       cases i with
       | zero =>
         rw [List.getD_cons_zero]
-        have := List.getElem?_drop (xs := row) (i := k) (j := 0)
         refine ⟨fun j hj ↦ ?_, fun c hc ↦ ?_⟩
         · have hjk : (j : ℕ) < k := Fin.lt_def.mp (WithTop.coe_lt_coe.mp hj)
           have := List.getElem?_take_of_lt (l := row) hjk
           grind [IsPivotedList, splitRevAt_eq, List.reverse_replicate]
         · rw [pivotOfList_eq_coe rfl, WithTop.coe_eq_coe] at hc; subst hc
+          have := List.getElem?_drop (xs := row) (i := k) (j := 0)
           grind [IsPivotedList, splitRevAt_eq]
       | succ i => exact ih (by grind [IsPivotedList, splitRevAt_eq]) i
 
