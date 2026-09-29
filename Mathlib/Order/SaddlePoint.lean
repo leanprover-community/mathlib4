@@ -6,7 +6,8 @@ Authors: Antoine Chambert-Loir, Anatole Dedecker
 module
 
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
-public import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.SetLike
 
 /-!
 # Saddle points of a map

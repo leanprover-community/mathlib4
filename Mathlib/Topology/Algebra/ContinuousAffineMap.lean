@@ -5,7 +5,6 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 public import Mathlib.Topology.Algebra.Affine
 
@@ -14,11 +13,11 @@ public import Mathlib.Topology.Algebra.Affine
 
 This file defines a type of bundled continuous affine maps.
 
-## Main definitions:
+## Main definitions
 
 * `ContinuousAffineMap`
 
-## Notation:
+## Notation
 
 We introduce the notation `P →ᴬ[R] Q` for `ContinuousAffineMap R P Q` (not to be confused with the
 notation `A →A[R] B` for `ContinuousAlgHom`). Note that this is parallel to the notation `E →L[R] F`
@@ -54,6 +53,7 @@ theorem toAffineMap_injective {f g : P →ᴬ[R] Q} (h : (f : P →ᵃ[R] Q) = (
   cases g
   congr
 
+@[macro_inline]
 instance : FunLike (P →ᴬ[R] Q) P Q where
   coe f := f.toAffineMap
   coe_injective _ _ h := toAffineMap_injective <| DFunLike.coe_injective h
@@ -71,7 +71,7 @@ theorem ext {f g : P →ᴬ[R] Q} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
 
 theorem congr_fun {f g : P →ᴬ[R] Q} (h : f = g) (x : P) : f x = g x :=
-  DFunLike.congr_fun h _
+  congr($h _)
 
 /-- Forgetting its algebraic properties, a continuous affine map is a continuous map. -/
 def toContinuousMap (f : P →ᴬ[R] Q) : C(P, Q) :=
@@ -92,7 +92,7 @@ theorem coe_to_continuousMap (f : P →ᴬ[R] Q) : ((f : C(P, Q)) : P → Q) = f
 theorem to_continuousMap_injective {f g : P →ᴬ[R] Q} (h : (f : C(P, Q)) = (g : C(P, Q))) :
     f = g := by
   ext a
-  exact ContinuousMap.congr_fun h a
+  congrm $h a
 
 @[norm_cast]
 theorem coe_toAffineMap_mk (f : P →ᵃ[R] Q) (h) : ((⟨f, h⟩ : P →ᴬ[R] Q) : P →ᵃ[R] Q) = f := rfl
@@ -129,7 +129,7 @@ def id : P →ᴬ[R] P := { AffineMap.id R P with cont := continuous_id }
 @[simp, norm_cast]
 theorem coe_id : ⇑(id R P) = _root_.id := rfl
 
-variable {R P} {W₂ Q₂ W₃ Q₃ : Type*}
+variable {R P} {W₂ Q₂ : Type*}
 variable [AddCommGroup W₂] [Module R W₂] [TopologicalSpace Q₂] [AddTorsor W₂ Q₂]
 
 /-- The composition of continuous affine maps as a continuous affine map -/
@@ -149,7 +149,6 @@ theorem comp_id (f : P →ᴬ[R] Q) : f.comp (id R P) = f :=
 theorem id_comp (f : P →ᴬ[R] Q) : (id R Q).comp f = f :=
   ext fun _ => rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Applying a `ContinuousAffineMap` commutes with `AffineMap.lineMap`. -/
 @[simp]
 theorem apply_lineMap (f : P →ᴬ[R] Q) (p₀ p₁ : P) (c : R) :
@@ -166,12 +165,10 @@ def lineMap (p₀ p₁ : P) [TopologicalSpace R] [TopologicalSpace V]
     [ContinuousSMul R V] [ContinuousVAdd V P] :
     (lineMap p₀ p₁).toAffineMap = AffineMap.lineMap (k := R) p₀ p₁ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coe_lineMap_eq (p₀ p₁ : P) [TopologicalSpace R] [TopologicalSpace V]
     [ContinuousSMul R V] [ContinuousVAdd V P] :
     ⇑(ContinuousAffineMap.lineMap p₀ p₁) = ⇑(AffineMap.lineMap (k := R) p₀ p₁) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Applying a `ContinuousAffineMap` commutes with `ContinuousAffineMap.lineMap`. -/
 @[simp]
 theorem apply_lineMap' [TopologicalSpace R] [TopologicalSpace V] [TopologicalSpace W]
@@ -370,7 +367,6 @@ instance : AddTorsor (P →ᴬ[R] W) (P →ᴬ[R] Q) where
     (f -ᵥ g).toAffineMap = f.toAffineMap -ᵥ g.toAffineMap :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Interpolating between `ContinuousAffineMap`s with `AffineMap.lineMap` commutes with
 evaluation. -/
 @[simp]
@@ -520,7 +516,6 @@ theorem decompEquiv_symm_apply (p : Q × (V →L[R] W)) (x : V) :
     (decompEquiv R V Q).symm p x = p.2 x +ᵥ p.1 :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem decompEquiv_symm_contLinear (p : Q × (V →L[R] W)) :
     ((decompEquiv R V Q).symm p).contLinear = p.2 := by
@@ -556,7 +551,6 @@ theorem decompLinearEquiv_symm_apply (p : W × (V →L[R] W)) (x : V) :
     (decompLinearEquiv R S V W).symm p x = p.2 x + p.1 :=
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem decompLinearEquiv_symm_contLinear (p : W × (V →L[R] W)) :
     ((decompLinearEquiv R S V W).symm p).contLinear = p.2 := by

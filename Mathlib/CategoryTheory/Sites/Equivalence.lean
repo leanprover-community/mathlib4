@@ -134,7 +134,6 @@ def sheafCongr.counitIso : inverse J K e A ⋙ functor J K e A ≅ 𝟭 (Sheaf _
   NatIso.ofComponents
     (fun F ↦ ObjectProperty.isoMk _ (isoWhiskerRight e.op.counitIso F.obj))
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of sheaf categories. -/
 @[simps]
@@ -244,7 +243,6 @@ variable [Functor.IsContinuous G K J] [(G.sheafPushforwardContinuous A K J).EssS
 
 open Localization
 
-set_option backward.isDefEq.respectTransparency false in
 lemma W_inverseImage_whiskeringLeft :
     K.W.inverseImage ((whiskeringLeft Dᵒᵖ Cᵒᵖ A).obj G.op) = J.W := by
   ext P Q f

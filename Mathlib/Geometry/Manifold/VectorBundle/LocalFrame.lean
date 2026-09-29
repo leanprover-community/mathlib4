@@ -5,10 +5,8 @@ Authors: Patrick Massot, Michael Rothgang
 -/
 module
 
-public import Mathlib.Geometry.Manifold.Algebra.Monoid
-public import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
-public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
+import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 
 /-!
 # Local frames in a vector bundle
@@ -96,7 +94,9 @@ vector bundle, local frame, smoothness
 -/
 
 @[expose] public section
-open Bundle Filter Function Topology Module
+open Bundle Filter Function Module
+
+open scoped Topology
 
 open scoped Bundle Manifold ContDiff
 
@@ -460,7 +460,6 @@ variable [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
   {ι : Type*} (b : Basis ι 𝕜 F) {s : Π x : M, V x} {t : Set M} {k : ℕ∞ω} {x x' : M}
   [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜] [ContMDiffVectorBundle k F V I]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `s` is `C^k` at `x`, so is its coefficient `b.localFrameCoeff e i` in the local frame
 near `x` induced by `e` and `b` -/
 lemma contMDiffAt_localFrameCoeff (hxe : x ∈ e.baseSet) (hs : CMDiffAt k (T% s) x) (i : ι) :
@@ -545,7 +544,6 @@ alias contMDiffOn_baseSet_iff_localFrame_coeff := contMDiffOn_baseSet_iff_localF
 -- Differentiability of a section can be checked in terms of its local frame coefficients
 section MDifferentiable
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `s` is differentiable at `x`, so is its coefficient `b.localFrameCoeff e i` in the local
 frame near `x` induced by `e` and `b` -/
 lemma mdifferentiableAt_localFrameCoeff

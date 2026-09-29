@@ -6,12 +6,11 @@ Authors: Scott Carnahan
 module
 
 public import Mathlib.Algebra.Algebra.Rat
-public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Algebra.Module.Rat
 public import Mathlib.Algebra.Order.Ring.NNRat
 public import Mathlib.Algebra.Polynomial.Smeval
 public import Mathlib.Algebra.Ring.NegOnePow
-public import Mathlib.GroupTheory.GroupAction.Ring
+import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.RingTheory.Polynomial.Pochhammer
 public import Mathlib.Tactic.Field
 public import Mathlib.Tactic.Module
@@ -67,7 +66,7 @@ Further results in Elliot's paper:
 
 @[expose] public section
 
-open Function Polynomial
+open Polynomial
 
 /-- A binomial ring is a ring for which ascending Pochhammer evaluations are uniquely divisible by
 suitable factorials. We define this notion as a mixin for additive commutative monoids with natural

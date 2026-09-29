@@ -3,8 +3,9 @@ Copyright (c) 2026 Marcelo Lynch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
+module
 
-import Cache.Marker
+public import Cache.Marker
 
 /-!
 # The `cache query` subcommand
@@ -14,6 +15,8 @@ build, by walking git history back to the merge base with `master` and probing
 each commit's per-SHA marker. Diagnostic only: it prints a SHA for the user to
 pass to `cache get --scope=`, and never reads or writes artifacts itself.
 -/
+
+public section
 
 namespace Cache.Requests
 
@@ -85,12 +88,17 @@ billed as a Read op.
 -/
 def probeContainerForSHA (container : Container) (repo sha : String) :
     IO Bool := do
-  let url := markerURL container repo sha
+  let url ← markerReadURL container repo sha
   -- Discard the response body to the platform null device (`NUL` on Windows),
   -- so curl reports a write error only on a genuine failure, not on every probe.
   let out ← IO.Process.output
     {cmd := (← IO.getCurl),
-     args := #["-s", "-o", IO.nullDevice, "-w", "%{http_code}", "-I", url],
+     args := #["-s", "-o", IO.nullDevice, "-w", "%{http_code}", "-I"] ++
+       -- No retry flags: the probe is diagnostic and a false negative is
+       -- cheap. The time bounds keep an unreachable endpoint from stalling
+       -- the up-to-50-probe `cache query` walk.
+       curlFollowRedirectArgs ++
+       #["--connect-timeout", "10", "--max-time", "30", url],
      cwd := "."}
   if out.exitCode != 0 then
     -- Network error; assume no cache at this SHA

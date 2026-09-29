@@ -6,11 +6,10 @@ Authors: Jiale Miao, Utensil Song, Eric Wieser
 module
 
 public import Mathlib.Algebra.Ring.Action.ConjAct
-public import Mathlib.GroupTheory.GroupAction.ConjAct
 public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Star
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Even
-public import Mathlib.LinearAlgebra.CliffordAlgebra.Inversion
+import Mathlib.LinearAlgebra.CliffordAlgebra.Inversion
 
 /-!
 # The Pin group and the Spin group
@@ -53,7 +52,7 @@ variable {Q : QuadraticForm R M}
 
 section Pin
 
-open CliffordAlgebra MulAction
+open CliffordAlgebra
 
 open scoped Pointwise
 
@@ -284,7 +283,7 @@ end Pin
 
 section Spin
 
-open CliffordAlgebra MulAction
+open CliffordAlgebra
 
 open scoped Pointwise
 

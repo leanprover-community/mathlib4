@@ -5,7 +5,6 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
 
 /-!
@@ -19,7 +18,6 @@ of multiplication and scalar-multiplication operations in normed algebras and no
 
 suppress_compilation
 
-open Metric
 open scoped NNReal Topology Uniformity
 
 variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜]

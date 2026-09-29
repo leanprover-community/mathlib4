@@ -6,14 +6,13 @@ Authors: Kim Morrison, Heather Macbeth
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Tower
-public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.Topology.Algebra.Star.Real
+import Mathlib.Topology.Algebra.Star.Real
 public import Mathlib.Topology.Algebra.StarSubalgebra
 public import Mathlib.Topology.Algebra.NonUnitalStarAlgebra
 public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 public import Mathlib.Topology.ContinuousMap.Lattice
 public import Mathlib.Topology.ContinuousMap.Weierstrass
-public import Mathlib.Algebra.Order.Module.Basic
+import Mathlib.Algebra.Order.Module.Basic
 
 /-!
 # The Stone-Weierstrass theorem
@@ -413,7 +412,7 @@ theorem ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoint
     -- we may apply the real Stone-Weierstrass result to it.
     have SW : A₀.topologicalClosure = ⊤ :=
       haveI := subalgebra_topologicalClosure_eq_top_of_separatesPoints _ hA.rclike_to_real
-      congr_arg Subalgebra.toSubmodule this
+      congr(Subalgebra.toSubmodule $this)
     rw [← Submodule.map_top, ← SW]
     -- So it suffices to prove that the image under `I` of the closure of `A₀` is contained in the
     -- closure of `A`, which follows by abstract nonsense
@@ -591,7 +590,6 @@ lemma ker_evalStarAlgHom_inter_adjoin_id (s : Set 𝕜) (h0 : 0 ∈ s) :
     refine fun hf ↦ ⟨?_, nonUnitalStarAlgebraAdjoin_id_subset_ker_evalStarAlgHom h0 hf⟩
     exact adjoin_le_starAlgebra_adjoin _ _ hf
 
-set_option backward.isDefEq.respectTransparency false in
 -- the statement should be in terms of nonunital subalgebras, but we lack API
 open RingHom Filter Topology in
 theorem AlgHom.closure_ker_inter {F S K A : Type*} [CommRing K] [Ring A] [Algebra K A]

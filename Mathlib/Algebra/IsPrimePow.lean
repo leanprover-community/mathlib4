@@ -5,9 +5,8 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Nat
-public import Mathlib.Order.Nat
-public import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Order.Nat
 public import Mathlib.Data.Nat.Log
 public import Mathlib.Data.Nat.Prime.Pow
 
@@ -24,6 +23,7 @@ variable {R : Type*} [CommMonoidWithZero R] (n p : R) (k : ℕ)
 
 /-- `n` is a prime power if there is a prime `p` and a positive natural `k` such that `n` can be
 written as `p^k`. -/
+@[wikidata Q1667469]
 def IsPrimePow : Prop :=
   ∃ (p : R) (k : ℕ), Prime p ∧ 0 < k ∧ p ^ k = n
 

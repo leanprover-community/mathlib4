@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Equiv.Opposite
 public import Mathlib.Algebra.Group.TypeTags.Basic
-public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
 public import Mathlib.Data.Fintype.Sets
 public import Mathlib.Data.Multiset.Bind
 public meta import Mathlib.Tactic.ToDual
@@ -345,7 +344,7 @@ end BigOperators
 
 namespace Finset
 
-variable {s s₁ s₂ : Finset ι} {a : ι} {f g : ι → M}
+variable {s : Finset ι} {a : ι} {f : ι → M}
 
 @[to_additive]
 theorem prod_eq_multiset_prod [CommMonoid M] (s : Finset ι) (f : ι → M) :
@@ -367,7 +366,7 @@ theorem map_prod [CommMonoid M] [CommMonoid N] {G : Type*} [FunLike G M N] [Mono
     (g : G) (f : ι → M) (s : Finset ι) : g (∏ x ∈ s, f x) = ∏ x ∈ s, g (f x) := by
   simp only [Finset.prod_eq_multiset_prod, map_multiset_prod, Multiset.map_map]; rfl
 
-variable {s s₁ s₂ : Finset ι} {a : ι} {f g : ι → M}
+variable {s : Finset ι} {a : ι} {f g : ι → M}
 
 namespace Finset
 
@@ -460,7 +459,7 @@ theorem prod_bij (i : ∀ a ∈ s, κ) (hi : ∀ a ha, i a ha ∈ t)
     (i_inj : ∀ a₁ ha₁ a₂ ha₂, i a₁ ha₁ = i a₂ ha₂ → a₁ = a₂)
     (i_surj : ∀ b ∈ t, ∃ a ha, i a ha = b) (h : ∀ a ha, f a = g (i a ha)) :
     ∏ x ∈ s, f x = ∏ x ∈ t, g x :=
-  congr_arg Multiset.prod (Multiset.map_eq_map_of_bij_of_nodup f g s.2 t.2 i hi i_inj i_surj h)
+  congr(Multiset.prod $(Multiset.map_eq_map_of_bij_of_nodup f g s.2 t.2 i hi i_inj i_surj h))
 
 /-- Reorder a product.
 

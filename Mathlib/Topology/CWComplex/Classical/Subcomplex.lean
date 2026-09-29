@@ -6,7 +6,6 @@ Authors: Floris van Doorn, Hannah Scholz
 module
 
 public import Mathlib.Topology.CWComplex.Classical.Finite
-public import Mathlib.Analysis.Normed.Module.RCLike.Real
 
 /-!
 # Subcomplexes
@@ -22,7 +21,7 @@ The definition of subcomplexes is in the file `Mathlib/Topology/CWComplex/Classi
 * [K. Jänich, *Topology*][Janich1984]
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

@@ -5,7 +5,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Analysis.Convex.Combination
+import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Analysis.Convex.Extreme
 
 /-!
@@ -44,7 +44,7 @@ independence, convex position
 @[expose] public section
 
 
-open Affine Finset Function
+open Finset Function
 
 variable {𝕜 E ι : Type*}
 

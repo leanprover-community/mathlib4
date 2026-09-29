@@ -5,7 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad
 -/
 module
 
-public import Mathlib.Logic.Basic
+public import Mathlib.Basic.Logic.Basic
 public import Mathlib.Order.Defs.LinearOrder
 
 /-!

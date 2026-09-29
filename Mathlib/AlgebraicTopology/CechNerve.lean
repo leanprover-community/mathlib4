@@ -6,10 +6,8 @@ Authors: Adam Topaz
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-public import Mathlib.CategoryTheory.Comma.Arrow
-public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
-public import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.ApplyFun
 
 /-!
 
@@ -50,7 +48,6 @@ namespace CategoryTheory.Arrow
 variable (f : Arrow C)
 variable [∀ n : ℕ, HasWidePullback.{0} f.right (fun _ : Fin (n + 1) => f.left) fun _ => f.hom]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Čech nerve associated to an arrow. -/
 @[simps, implicit_reducible]
 def cechNerve : SimplicialObject C where
@@ -70,8 +67,6 @@ def mapCechNerve {f g : Arrow C}
     WidePullback.lift (WidePullback.base _ ≫ F.right) (fun i => WidePullback.π _ i ≫ F.left)
       fun j => by simp
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The augmented Čech nerve associated to an arrow. -/
 @[simps]
 def augmentedCechNerve : SimplicialObject.Augmented C where
@@ -334,7 +329,6 @@ abbrev cechConerveAdjunction : augmentedCechConerve ⊣ (Augmented.toArrow : _ �
 
 end CosimplicialObject
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an object `X : C`, the natural simplicial object sending `⦋n⦌` to `Xⁿ⁺¹`. -/
 def cechNerveTerminalFrom {C : Type u} [Category.{v} C] [HasFiniteProducts C] (X : C) :
     SimplicialObject C where
@@ -350,15 +344,12 @@ variable [HasTerminal C] (ι : Type w)
 def wideCospan (X : C) : WidePullbackShape ι ⥤ C :=
   WidePullbackShape.wideCospan (terminal C) (fun _ : ι => X) fun _ => terminal.from X
 
-set_option backward.defeqAttrib.useBackward true in
 instance uniqueToWideCospanNone (X Y : C) : Unique (Y ⟶ (wideCospan ι X).obj none) := by
   dsimp [wideCospan]
   infer_instance
 
 variable [HasFiniteProducts C]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The product `Xᶥ` is the vertex of a limit cone on `wideCospan ι X`. -/
 def wideCospan.limitCone [Finite ι] (X : C) : LimitCone (wideCospan ι X) where
   cone :=
@@ -408,13 +399,11 @@ lemma wideCospan.limitIsoPi_inv_comp_pi [Finite ι] (X : C) (j : ι) :
     (wideCospan.limitIsoPi ι X).inv ≫ WidePullback.π _ j = Pi.π _ j :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ _
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma wideCospan.limitIsoPi_hom_comp_pi [Finite ι] (X : C) (j : ι) :
     (wideCospan.limitIsoPi ι X).hom ≫ Pi.π _ j = WidePullback.π _ j := by
   rw [← wideCospan.limitIsoPi_inv_comp_pi, Iso.hom_inv_id_assoc]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given an object `X : C`, the Čech nerve of the hom to the terminal object `X ⟶ ⊤_ C` is
 naturally isomorphic to a simplicial object sending `⦋n⦌` to `Xⁿ⁺¹` (when `C` is `G-Set`, this is

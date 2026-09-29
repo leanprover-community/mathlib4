@@ -6,7 +6,7 @@ Authors: Gabriel Ebner, Yury Kudryashov, Eric Wieser
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Basic
-public import Mathlib.Analysis.Calculus.FDeriv.Prod
+import Mathlib.Analysis.Calculus.FDeriv.Prod
 
 /-!
 # Derivatives of functions taking values in product types
@@ -26,7 +26,7 @@ public section
 
 universe u v w
 
-open Topology Filter Asymptotics Set
+open Filter Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]

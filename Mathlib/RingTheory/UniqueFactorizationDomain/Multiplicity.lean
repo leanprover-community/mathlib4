@@ -165,7 +165,7 @@ lemma dvd_iff_emultiplicity_le {a b : R} (ha : a ≠ 0) :
     have h1 := emultiplicity_eq_count_normalizedFactors hqprime.irreducible ha
     have h2 := emultiplicity_eq_count_normalizedFactors hqprime.irreducible hb
     rw [normalize_normalized_factor q hq] at h1 h2
-    simpa [h1, h2] using h q hqprime
+    simpa [h1, h2, ENat.natCast_le_natCast] using h q hqprime
   · simp [Multiset.count_eq_zero_of_notMem hq]
 
 lemma pow_dvd_pow_iff_dvd {a b : R} {n : ℕ} (hn : n ≠ 0) : a ^ n ∣ b ^ n ↔ a ∣ b := by

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Data.Nat.Multiplicity
-public import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Data.Nat.Choose.Sum
 
 /-!
 # Characteristic of semirings
@@ -19,7 +19,7 @@ assert_not_exists Algebra LinearMap orderOf
 
 open Finset
 
-variable {R S : Type*}
+variable {R : Type*}
 
 namespace Commute
 
