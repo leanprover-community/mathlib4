@@ -172,18 +172,22 @@ theorem isCarmichael_1105 : IsCarmichael 1105 := by
   simp [isCarmichael_iff_korselt_primeFactorsList]
   norm_num
 
-/-- Trial division gate: checks if `n` has no divisors `d` in `2 ≤ d < 24` with `d * d ≤ n`. -/
-def isPrimeTrial (n : ℕ) : Bool :=
-  (List.range' 2 22).all (fun d => decide (n < d * d) || n % d != 0)
+/-- Bounded trial division gate: checks if `n` has no divisors `d` in `2 ≤ d < bound`
+with `d * d ≤ n`. -/
+def isPrimeTrial (bound : ℕ) (n : ℕ) : Bool :=
+  (List.range' 2 (bound - 2)).all (fun d => decide (n < d * d) || n % d != 0)
 
-lemma not_isPrimeTrial_of_isCarmichael {n : ℕ} (hn : n < 561) (hc : n.IsCarmichael) :
-    isPrimeTrial n = false := by
+lemma not_isPrimeTrial_of_isCarmichael {bound n : ℕ} (hn : n < bound ^ 2) (hc : n.IsCarmichael) :
+    isPrimeTrial bound n = false := by
   rw [Bool.eq_false_iff]; intro hall
   have hp : 2 ≤ minFac n := (minFac_prime (by grind [hc.two_lt])).two_le
   have h_sq := minFac_sq_le_self (by grind [hc.two_lt]) hc.not_prime
-  have h_lt : minFac n < 24 := by nlinarith
-  have hmem : minFac n ∈ List.range' 2 22 :=
-    List.mem_range'.mpr ⟨minFac n - 2, by grind, by grind⟩
+  have h_lt : minFac n < bound := by
+    by_contra! hge
+    have : bound ^ 2 ≤ minFac n ^ 2 := by nlinarith
+    nlinarith
+  have hmem : minFac n ∈ List.range' 2 (bound - 2) :=
+    List.mem_range'.mpr ⟨minFac n - 2, by omega, by omega⟩
   have hdvd := List.all_eq_true.mp hall _ hmem
   simp only [Bool.or_eq_true, decide_eq_true_iff, bne_iff_ne, ne_eq] at hdvd
   rcases hdvd with hlt | hndvd <;> [nlinarith; exact hndvd (Nat.mod_eq_zero_of_dvd (minFac_dvd n))]
@@ -215,13 +219,14 @@ lemma not_isEvenOrSmall_of_isCarmichael {n : ℕ} (hc : n.IsCarmichael) :
   grind
 
 /-- Composite candidate decider combining parity, trial division, and small Fermat witnesses. -/
-def isCarmichaelCandidate (n : ℕ) (bases : List ℕ := [2, 3]) : Bool :=
+def isCarmichaelCandidate (n : ℕ) (bound : ℕ := 24) (bases : List ℕ := [2, 3]) : Bool :=
   if isEvenOrSmall n then false
-  else if isPrimeTrial n then false
+  else if isPrimeTrial bound n then false
   else !hasFermatWitness n bases
 
-theorem isCarmichaelCandidate_of_isCarmichael {n : ℕ} (hn : n < 561) (hc : n.IsCarmichael) :
-    isCarmichaelCandidate n [2, 3] = true := by
+theorem isCarmichaelCandidate_of_isCarmichael {bound n : ℕ}
+    (hn : n < bound ^ 2) (hc : n.IsCarmichael) :
+    isCarmichaelCandidate n bound [2, 3] = true := by
   simp [isCarmichaelCandidate, not_isEvenOrSmall_of_isCarmichael hc,
     not_isPrimeTrial_of_isCarmichael hn hc, not_hasFermatWitness_of_isCarmichael [2, 3] hc]
 
@@ -229,18 +234,18 @@ set_option exponentiation.threshold 1000
 set_option maxRecDepth 10000
 
 /-- Exhaustive verifier ensuring no candidates exist below `N`. -/
-def checkCarmichaelBound (N : ℕ) (bases : List ℕ := [2, 3]) : Bool :=
-  (List.range N).all (fun n => !isCarmichaelCandidate n bases)
+def checkCarmichaelBound (N : ℕ) (bound : ℕ := 24) (bases : List ℕ := [2, 3]) : Bool :=
+  (List.range N).all (fun n => !isCarmichaelCandidate n bound bases)
 
-theorem checkCarmichaelBound_sound {N : ℕ} (hN : N ≤ 561)
-    (h : checkCarmichaelBound N [2, 3] = true) :
+theorem checkCarmichaelBound_sound {N bound : ℕ} (hN : N ≤ bound ^ 2)
+    (h : checkCarmichaelBound N bound [2, 3] = true) :
     ∀ n < N, ¬ n.IsCarmichael := fun n hn hc => by
-  simpa [isCarmichaelCandidate_of_isCarmichael (by grind) hc] using
+  simpa [isCarmichaelCandidate_of_isCarmichael (by nlinarith) hc] using
     List.all_eq_true.mp h n (List.mem_range.mpr hn)
 
 /-- There are no Carmichael numbers strictly less than 561. -/
 theorem not_isCarmichael_of_lt_561 {n : ℕ} (hn : n < 561) : ¬ n.IsCarmichael :=
-  checkCarmichaelBound_sound le_rfl (by decide) n hn
+  checkCarmichaelBound_sound (bound := 24) (by decide) (by decide) n hn
 
 /-- 561 is the smallest Carmichael number. -/
 theorem isCarmichael_min {n : ℕ} (hn : n.IsCarmichael) : 561 ≤ n :=
