@@ -6,11 +6,9 @@ Authors: Kevin Buzzard, Johan Commelin, Patrick Massot, Filippo A. E. Nuccio
 module
 
 public import Mathlib.Algebra.Order.GroupWithZero.Range
-public import Mathlib.Algebra.Order.Hom.Monoid
-public import Mathlib.Algebra.Order.Ring.Basic
+import Mathlib.Algebra.Order.Ring.Basic
 public import Mathlib.Algebra.Ring.Torsion
 public import Mathlib.RingTheory.Ideal.Maps
-public import Mathlib.Tactic.TFAE
 
 /-!
 
@@ -471,7 +469,7 @@ open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
 /-- The restriction of a valuation so that it takes values in its `valueGroup₀`. -/
 @[implicit_reducible]
-def restrict : Valuation R (ValueGroup₀ (v : R →*₀ Γ₀)) where
+def restrict : Valuation R v.ValueGroup₀ where
   __ := restrict₀ (v : R →*₀ Γ₀)
   map_add_le_max' x y := by
     by_cases H : v x ≠ 0 ∨ v y ≠ 0

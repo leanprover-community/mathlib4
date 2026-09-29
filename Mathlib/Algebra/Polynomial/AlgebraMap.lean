@@ -6,9 +6,7 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 module
 
 public import Mathlib.Algebra.Algebra.Pi
-public import Mathlib.Algebra.Algebra.Prod
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.MonoidAlgebra.Basic
 public import Mathlib.Algebra.Polynomial.Eval.Algebra
 public import Mathlib.Algebra.Polynomial.Eval.Degree
@@ -102,7 +100,7 @@ def CAlgHom : A →ₐ[R] A[X] where
 theorem algHom_ext' {f g : A[X] →ₐ[R] B}
     (hC : f.comp CAlgHom = g.comp CAlgHom)
     (hX : f X = g X) : f = g :=
-  AlgHom.toRingHom_injective (ringHom_ext' (congr_arg AlgHom.toRingHom hC) hX)
+  AlgHom.toRingHom_injective (ringHom_ext' congr($(hC).toRingHom) hX)
 
 set_option backward.defeqAttrib.useBackward true in
 variable (R) in
@@ -405,7 +403,7 @@ theorem aeval_X_left : aeval (X : R[X]) = AlgHom.id R R[X] :=
   algHom_ext <| aeval_X X
 
 theorem aeval_X_left_apply (p : R[X]) : aeval X p = p :=
-  AlgHom.congr_fun (@aeval_X_left R _) p
+  congr($(@aeval_X_left R _) p)
 
 lemma aeval_X_left_eq_map [CommSemiring S] [Algebra R S] (p : R[X]) :
     aeval X p = map (algebraMap R S) p :=
@@ -735,7 +733,7 @@ theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 �
   suffices ∀ i, P.coeff i • Q = 0 by
     rw [← leadingCoeff_eq_zero]
     apply h
-    simpa [ext_iff, mul_comm Q.leadingCoeff] using fun i ↦ congr_arg (·.coeff Q.natDegree) (this i)
+    simpa [ext_iff, mul_comm Q.leadingCoeff] using fun i ↦ congr($(this i).coeff Q.natDegree)
   apply Nat.strong_decreasing_induction
   · use P.natDegree
     intro i hi
@@ -774,12 +772,17 @@ theorem notMem_nonZeroDivisors_iff {P : R[X]} : P ∉ R[X]⁰ ↔ ∃ a : R, a �
 protected lemma mem_nonZeroDivisors_iff {P : R[X]} : P ∈ R[X]⁰ ↔ ∀ a : R, a • P = 0 → a = 0 := by
   simpa [not_imp_not] using (notMem_nonZeroDivisors_iff (P := P)).not
 
-lemma mem_nonzeroDivisors_of_coeff_mem {p : R[X]} (n : ℕ) (hp : p.coeff n ∈ R⁰) :
+lemma mem_nonZeroDivisors_of_coeff_mem {p : R[X]} (n : ℕ) (hp : p.coeff n ∈ R⁰) :
     p ∈ R[X]⁰ :=
   Polynomial.mem_nonZeroDivisors_iff.mpr fun r hr ↦ hp.2 _ (by simpa using congr(coeff $hr n))
 
-lemma X_mem_nonzeroDivisors : X ∈ R[X]⁰ :=
-  mem_nonzeroDivisors_of_coeff_mem 1 (by simp [one_mem])
+@[deprecated (since := "2026-09-28")]
+alias mem_nonzeroDivisors_of_coeff_mem := mem_nonZeroDivisors_of_coeff_mem
+
+lemma X_mem_nonZeroDivisors : X ∈ R[X]⁰ :=
+  mem_nonZeroDivisors_of_coeff_mem 1 (by simp [one_mem])
+
+@[deprecated (since := "2026-09-28")] alias X_mem_nonzeroDivisors := X_mem_nonZeroDivisors
 
 end CommSemiring
 
