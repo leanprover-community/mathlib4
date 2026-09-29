@@ -127,4 +127,5 @@ lemma HasUniqueDiv.of_module_rat [AddCommGroup M] [Module ℚ M] : HasUniqueDiv 
   nsmul_right_injective n hn x y hxy := by
     simpa [← Nat.cast_smul_eq_nsmul ℚ n, *] using congr((n⁻¹ : ℚ) • $hxy)
 
-@[deprecated (since := "2026-09-29")] alias IsAddTorsionFree.of_module_rat := HasUniqueDiv.of_module_rat
+@[deprecated (since := "2026-09-29")] alias IsAddTorsionFree.of_module_rat :=
+  HasUniqueDiv.of_module_rat

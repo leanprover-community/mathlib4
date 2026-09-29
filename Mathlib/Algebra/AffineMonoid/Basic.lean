@@ -23,4 +23,4 @@ class abbrev IsAffineAddMonoid (M : Type*) [AddCommMonoid M] : Prop :=
 /-- An affine monoid is a finitely generated cancellative torsion-free commutative monoid. -/
 @[to_additive]
 class abbrev IsAffineMonoid (M : Type*) [CommMonoid M] : Prop :=
-  IsCancelMul M, Monoid.FG M, IsMulTorsionFree M
+  IsCancelMul M, Monoid.FG M, HasUniqueRoots M
