@@ -177,6 +177,21 @@ def guessName (g : GuessNameData) : String → String :=
     applyNameDict g
     s.splitCase
 
+/-- Rename binder names in a pi type. -/
+def renameBinderNames (g : GuessName.GuessNameData) (rename : NameMap Name)
+    (src : Expr) : Expr :=
+  src.mapForallBinderNames fun n => (rename.get? n).getD <|
+    match n with
+    | .str p s => .str p <|
+      let s' := GuessName.guessName g s
+      if s' != s then s' else
+      -- If the name starts with `h`, translate the rest of the name, e.g. `hmax` ↦ `hmin`.
+      if let some suffix := s.dropPrefix? 'h' then
+        "h" ++ GuessName.guessName g suffix.toString
+      else
+        s
+    | n => n
+
 /-- Environment extension used for guessing the translation of a name. -/
 abbrev GuessNameExt := EnvExtension GuessNameData
 

@@ -25,14 +25,12 @@ namespace Mathlib.Tactic.Echelon
 
 /-- Rewrite `Matrix.rank A` to the pivot count of the Bareiss decomposition of the matrix
 literal `A`. -/
-def normalizeRank (e A : Expr) (m n : Nat) (R : Expr) (entries : Array (Array Expr)) :
-    MetaM Simp.Result := do
-  let u ← getDecLevel R
-  have α : Q(Type u) := R
-  let res ← mkBareissDecomposition A m n α entries
+def normalizeRank {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRing $α)) (e : Expr)
+    (A : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Expr)) : MetaM Simp.Result := do
+  let res ← mkBareissDecomposition rα A entries
   let pf ← mkAppM ``Echelon.Decomposition.rank_eq #[res.cert]
   let k := mkNatLit res.data.pivot.size
-  return { expr := k, proof? := some (← mkExpectedTypeHint pf (← mkEq e k)) }
+  return { expr := k, proof? := some (mkExpectedPropHint pf (← mkEq e k)) }
 
 /-- Core of the `norm_rank` simproc. -/
 def normRankCore : Simp.Simproc := fun e => do
@@ -41,8 +39,11 @@ def normRankCore : Simp.Simproc := fun e => do
   let some (m, n, R, entries) ← Matrix.matchMatrixLit? A
     | trace[Tactic.evalRank] "not a closed matrix literal{indentExpr A}"
       return .continue
-  match ← checkBareissApplicable R with
-  | .ok _ => return .done (← normalizeRank e A m n R entries)
+  let u ← getDecLevel R
+  have α : Q(Type u) := R
+  have A : Q(Matrix (Fin $m) (Fin $n) $α) := A
+  match ← checkBareissApplicable α with
+  | .ok rα => return .done (← normalizeRank rα e A entries)
   | .error err =>
     trace[Tactic.evalRank] "{err}{indentExpr A}"
     return .continue
@@ -52,7 +53,8 @@ end Mathlib.Tactic.Echelon
 open Mathlib.Tactic.Echelon
 
 /-- The `norm_rank` simproc evaluates the rank of matrices with non-symbolic entries.
-Terms that it cannot evaluate are skipped. -/
+Terms that it cannot evaluate are skipped, since the fallback model accepts every ring and only
+the evaluation can tell whether an entry is in its scope. -/
 simproc_decl norm_rank (Matrix.rank _) := fun e => do
   try normRankCore e
   catch ex =>

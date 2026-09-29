@@ -6,6 +6,7 @@ public import Mathlib.Tactic.ReduceModChar.Ext
 public import Qq.MetaM
 
 import all Init.Prelude
+import all Mathlib.Tactic.Translate.Expr
 
 open Qq Lean Meta Elab Command Mathlib Tactic Translate ToAdditive
 

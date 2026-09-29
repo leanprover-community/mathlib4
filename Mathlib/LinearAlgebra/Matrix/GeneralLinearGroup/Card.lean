@@ -90,7 +90,7 @@ theorem card_matrix {m n α} [Finite m] [Finite n] :
 
 theorem enatCard_matrix {m n α} :
     ENat.card (Matrix m n α) = ENat.card α ^ (ENat.card n * ENat.card m) := by
-  simp [Matrix, ENat.card_fun, ←ENat.epow_mul]
+  simp [Matrix, ENat.card_fun, ← ENat.epow_mul]
 
 section field
 

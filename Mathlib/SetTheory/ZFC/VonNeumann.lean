@@ -100,7 +100,7 @@ theorem vonNeumann_subset_vonNeumann_iff : V_ a ⊆ V_ b ↔ a ≤ b := by
 
 theorem mem_vonNeumann_of_subset {y : ZFSet} (h : x ⊆ y) (hy : y ∈ V_ o) : x ∈ V_ o := by
   rw [mem_vonNeumann] at *
-  exact (rank_mono h).trans_lt hy
+  gconvert hy
 
 theorem vonNeumann_strictMono : StrictMono vonNeumann :=
   strictMono_of_le_iff_le (by simp)
