@@ -79,7 +79,7 @@ def certifyLowerTriangularDiagList {u : Level} {α : Q(Type u)} (zα : Q(Zero $�
   match c with
   | 0 => do
     have : $cQ =Q 0 := ⟨⟩
-    return q(trivial)
+    return q(IsLowerTriangularDiagList.nil)
   | c + 1 => do
     let_expr List.cons _ row rowsTl := rows |
       throwError "certifyLowerTriangularDiagList: {rows} is not a cons cell"
@@ -114,7 +114,7 @@ def certifyPivotedList {u : Level} {n : Nat} {α : Q(Type u)} (zα : Q(Zero $α)
   | [] => do
     have hz : $rows =Q ($rows).map fun _ ↦ List.replicate $n (0 : $α) := ⟨⟩
     have : $cols =Q ([] : List (Fin $n)) := ⟨⟩
-    return q($hz)
+    return q(IsPivotedList.nil $hz)
   | k :: ks => do
     let_expr List.cons _ col colsTl := cols |
       throwError "certifyPivotedList: {cols} is not a cons cell"
@@ -130,11 +130,10 @@ def certifyPivotedList {u : Level} {n : Nat} {α : Q(Type u)} (zα : Q(Zero $α)
     have suffix : Q(List $α) := suffix
     let rest ← certifyPivotedList zα certifier ks colsTl rowsTl
     let hd : Q($entry ≠ 0) ← certifier q($entry ≠ 0)
-    have hsplit :
-        splitRevAt $row $col [] =Q (List.replicate ($col : Nat) 0, $entry :: $suffix) := ⟨⟩
+    have : $row =Q List.replicate ($col : Nat) 0 ++ $entry :: $suffix := ⟨⟩
     have : $cols =Q $col :: $colsTl := ⟨⟩
     have : $rows =Q $row :: $rowsTl := ⟨⟩
-    return q(IsPivotedList.cons $hsplit $hd $rest)
+    return q(IsPivotedList.cons rfl $hd $rest)
 
 /-- Prove that `U` is pivoted by `pivotOfList cols` from the rows of `U`, with `certifier` proving
 the pivot entries nonzero. -/
