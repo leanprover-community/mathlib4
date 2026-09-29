@@ -56,7 +56,7 @@ namespace CategoryTheory.Limits
 
 universe v v₂ u u₂
 
-to_dual_name_hint Zero One, Mono Epi
+to_dual_name_hint Zero One, π ι, Mono Epi
 
 /-- The type of objects for the diagram indexing a (co)equalizer. -/
 @[to_dual_do_translate]
