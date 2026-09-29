@@ -9,7 +9,7 @@ module
 
 public import Mathlib.Analysis.AbsoluteValue.Equivalence
 public import Mathlib.Analysis.SpecialFunctions.Log.Base
-public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.NumberTheory.Padics.PadicNorm
 
 /-!

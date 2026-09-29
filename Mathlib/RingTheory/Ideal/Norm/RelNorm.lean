@@ -5,12 +5,12 @@ Authors: Anne Baanen, Alex J. Best
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Torsion
+import Mathlib.Algebra.GroupWithZero.Torsion
 public import Mathlib.NumberTheory.RamificationInertia.Galois
 public import Mathlib.RingTheory.DedekindDomain.Factorization
-public import Mathlib.RingTheory.DedekindDomain.Instances
-public import Mathlib.RingTheory.Ideal.Int
-public import Mathlib.RingTheory.NormalClosure
+import Mathlib.RingTheory.DedekindDomain.Instances
+import Mathlib.RingTheory.Ideal.Int
+import Mathlib.RingTheory.NormalClosure
 
 /-!
 

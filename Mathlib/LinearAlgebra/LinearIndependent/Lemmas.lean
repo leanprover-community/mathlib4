@@ -7,12 +7,9 @@ module
 
 public import Mathlib.Data.Fin.Tuple.Reflection
 public import Mathlib.LinearAlgebra.Dual.Defs
-public import Mathlib.LinearAlgebra.Finsupp.SumProd
+import Mathlib.LinearAlgebra.Finsupp.SumProd
 public import Mathlib.LinearAlgebra.LinearIndependent.Basic
 public import Mathlib.LinearAlgebra.Pi
-public import Mathlib.Logic.Equiv.Fin.Rotate
-public import Mathlib.Tactic.FinCases
-public import Mathlib.Tactic.Module
 public import Mathlib.Tactic.ModuleNF
 public import Mathlib.Tactic.Abel
 public import Mathlib.Tactic.NormNum.Ineq
@@ -705,7 +702,7 @@ theorem LinearIndependent.finCons {n} {v : Fin n → V} (hv : LinearIndependent 
 alias LinearIndependent.fin_cons := LinearIndependent.finCons
 
 /-- See `LinearIndependent.finSnoc'` for an uglier version that works if you
-only have a module over a semiring, and `LinearIndependent.finSnoc_of_not_mem_span_over` for a
+only have a module over a semiring, and `LinearIndependent.finSnoc_of_notMem_span_over` for a
 version over a subring of a division ring. -/
 lemma LinearIndependent.finSnoc {n} {v : Fin n → V} (hv : LinearIndependent K v)
     (hx : x ∉ Submodule.span K (range v)) : LinearIndependent K (Fin.snoc v x : Fin (n + 1) → V) :=
@@ -717,7 +714,7 @@ independent.
 
 This is useful when proving `ℤ`-linear independence using the fact that an element is outside the
 `ℝ`-span, which arises naturally in lattice theory and geometry of numbers. -/
-theorem LinearIndependent.finSnoc_of_not_mem_span_over
+theorem LinearIndependent.finSnoc_of_notMem_span_over
     {R : Type*} {K : Type*} {M : Type*}
     [CommRing R] [DivisionRing K] [AddCommGroup M]
     [Algebra R K] [Module K M] [Module R M] [IsScalarTower R K M] [FaithfulSMul R K]
@@ -733,6 +730,10 @@ theorem LinearIndependent.finSnoc_of_not_mem_span_over
   rw [← algebraMap_smul K c x] at heq
   rw [(eq_inv_smul_iff₀ hc').mpr (eq_neg_of_add_eq_zero_left heq), smul_neg]
   exact Submodule.neg_mem _ (Submodule.smul_mem _ _ (Submodule.span_subset_span R K _ hcy))
+
+@[deprecated (since := "2026-09-28")]
+alias LinearIndependent.finSnoc_of_not_mem_span_over :=
+  LinearIndependent.finSnoc_of_notMem_span_over
 
 theorem linearIndependent_finSucc {n} {v : Fin (n + 1) → V} :
     LinearIndependent K v ↔

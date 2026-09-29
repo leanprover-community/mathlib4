@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Algebra.Prod
 public import Mathlib.Algebra.Group.Graph
 public import Mathlib.LinearAlgebra.Span.Basic
 
-/-! ### Products of modules
+/-! # Products of modules
 
 This file defines constructors for linear maps whose domains or codomains are products.
 
@@ -673,6 +673,9 @@ theorem snd_comp_prodComm :
 
 @[simp]
 theorem symm_prodComm : (prodComm R M M₂).symm = prodComm R M₂ M := rfl
+
+@[simp]
+theorem prodComm_trans_prodComm : prodComm R M M₂ ≪≫ₗ prodComm R M₂ M = .refl _ _ := rfl
 
 end prodComm
 

@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
 public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
 public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
-public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 
 /-!
 # The left lifting property is stable under transfinite composition
