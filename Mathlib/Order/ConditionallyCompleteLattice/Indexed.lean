@@ -266,8 +266,8 @@ theorem csSup_image {s : Set β} {f : β → α}
 @[to_dual]
 theorem cbiSup_id {s : Set α} (hs : BddAbove s) (h : sSup ∅ ≤ sSup s) : ⨆ i ∈ s, i = sSup s := by
   rw [← csSup_image (Subtype.range_coe ▸ hs), Set.image_id']
-  · convert! h
-    rw [← sSup_range, Subtype.range_coe]
+  convert! h
+  rw [← sSup_range, Subtype.range_coe]
 
 @[to_dual]
 lemma ciSup_image {ι ι' : Type*} {s : Set ι} {f : ι → ι'} {g : ι' → α}

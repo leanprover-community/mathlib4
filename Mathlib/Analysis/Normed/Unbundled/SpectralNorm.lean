@@ -151,11 +151,11 @@ theorem spectralValue_X_sub_C (r : R) : spectralValue (X - C r) = ‖r‖ := by
     · rw [ite_eq_left hn, ite_eq_left hn, hn, cast_zero, sub_zero, coeff_X_zero, coeff_C_zero,
         zero_sub, norm_neg, inv_one, rpow_one]
     · rw [ite_eq_right hn, ite_eq_right hn]
-  · apply ciSup_eq_of_forall_le_of_forall_lt_exists_gt (fun n ↦ ?_)
-      (fun _ hx ↦ ⟨0, by simp only [ite_true, hx]⟩)
-    split_ifs
-    · exact le_refl _
-    · exact norm_nonneg _
+  apply ciSup_eq_of_forall_le_of_forall_lt_exists_gt (fun n ↦ ?_)
+    (fun _ hx ↦ ⟨0, by simp only [ite_true, hx]⟩)
+  split_ifs
+  · exact le_refl _
+  · exact norm_nonneg _
 
 /-- The polynomial `X ^ n` has spectral value `0`. -/
 theorem spectralValue_X_pow (n : ℕ) : spectralValue (X ^ n : R[X]) = 0 := by
@@ -471,22 +471,22 @@ theorem spectralNorm_eq_iSup_of_finiteDimensional_normal
   refine le_antisymm ?_ (ciSup_le fun σ ↦
     norm_root_le_spectralValue hf_pm hf_na
       (minpoly.monic (hn.isIntegral x)) (minpoly.aeval_algHom _ σ.toAlgHom _))
-  · set p := minpoly K x
-    have hp_sp : Splits ((minpoly K x).map (algebraMap K L)) := hn.splits x
-    obtain ⟨s, hs⟩ := splits_iff_exists_multiset.mp hp_sp
-    have h_lc : (algebraMap K L) (minpoly K x).leadingCoeff = 1 := by
-      rw [minpoly.monic (hn.isIntegral x), map_one]
-    rw [leadingCoeff_map, h_lc, map_one, one_mul] at hs
-    simp only [spectralNorm]
-    rw [← max_norm_root_eq_spectralValue hf_pm hf_na hf1 _ _ hs]
-    apply ciSup_le
-    intro y
-    split_ifs with h
-    · obtain ⟨σ, hσ⟩ : ∃ σ : Gal(L/K), σ x = y := minpoly.exists_algEquiv_of_root'
-        (Algebra.IsAlgebraic.isAlgebraic x) (aeval_root_of_mapAlg_eq_multiset_prod_X_sub_C s h hs)
-      rw [← hσ]
-      apply Finite.le_ciSup _ σ
-    · exact iSup_nonneg fun σ ↦ apply_nonneg _ _
+  set p := minpoly K x
+  have hp_sp : Splits ((minpoly K x).map (algebraMap K L)) := hn.splits x
+  obtain ⟨s, hs⟩ := splits_iff_exists_multiset.mp hp_sp
+  have h_lc : (algebraMap K L) (minpoly K x).leadingCoeff = 1 := by
+    rw [minpoly.monic (hn.isIntegral x), map_one]
+  rw [leadingCoeff_map, h_lc, map_one, one_mul] at hs
+  simp only [spectralNorm]
+  rw [← max_norm_root_eq_spectralValue hf_pm hf_na hf1 _ _ hs]
+  apply ciSup_le
+  intro y
+  split_ifs with h
+  · obtain ⟨σ, hσ⟩ : ∃ σ : Gal(L/K), σ x = y := minpoly.exists_algEquiv_of_root'
+      (Algebra.IsAlgebraic.isAlgebraic x) (aeval_root_of_mapAlg_eq_multiset_prod_X_sub_C s h hs)
+    rw [← hσ]
+    apply Finite.le_ciSup _ σ
+  · exact iSup_nonneg fun σ ↦ apply_nonneg _ _
 
 open IsUltrametricDist
 
