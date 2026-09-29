@@ -300,13 +300,11 @@ instance [inst : FinEnum α] : Std.PRange.LawfulUpwardEnumerable α where
 
   succMany?_add_one n x := (succMany?_succ n x).symm
 
-instance instLinearlyUpwardEnumerable [inst : FinEnum α] : Std.PRange.LinearlyUpwardEnumerable α where
-  eq_of_succ?_eq a b heq := by
-    simp only [Std.PRange.succ?, succMany?] at heq
-
-    apply succMany?_inj_elem 1 a b
-
-
+instance instLinearlyUpwardEnumerable [inst : FinEnum α] :
+    Std.PRange.LinearlyUpwardEnumerable α where
+  eq_of_succ?_eq x y heq := by
+    simp only [Std.PRange.succ?] at heq
+    grind [inst.equiv.injective]
 
 /-- The enumeration merely adds an ordering, leaving the cardinality as is. -/
 theorem card_eq_fintypeCard {α : Type u} [FinEnum α] [Fintype α] : card α = Fintype.card α :=
