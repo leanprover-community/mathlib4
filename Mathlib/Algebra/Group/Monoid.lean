@@ -516,6 +516,8 @@ additive groups and commutative additive semigroups.
 
 For more information, see this mathoverflow answer: https://mathoverflow.net/a/377268/95685
 
+For commutative types (e.g., rings and modules), the stronger `HasUniqueDiv` should be preferred.
+
 TODO: Generalize this definition to additive semigroups once we have the `PNat` action. -/
 @[mk_iff]
 class IsAddTorsionFree (M : Type*) [AddMonoid M] where
@@ -532,6 +534,8 @@ Thus, this definition reconciles the notions of torsion-free for groups and comm
 
 For more information, see this mathoverflow answer: https://mathoverflow.net/a/377268/95685
 
+For commutative types, the stronger `HasUniqueRoots` should be preferred.
+
 TODO: Generalize this definition to semigroups once we have the `PNat` action. -/
 @[to_additive, mk_iff]
 class IsMulTorsionFree (M : Type*) [Monoid M] where
@@ -543,6 +547,8 @@ attribute [to_additive existing] isMulTorsionFree_iff
 /-- An additive monoid has unique divisibility if scalar multiplication by every non-zero element
 `n : ℕ` is injective. This is the uniqueness counterpart to `DivisibleBy` which asserts existence.
 
+For commutative types (e.g., rings and modules), this should be preferred over `IsAddTorsionFree`.
+
 TODO: Generalize this definition to additive semigroups once we have the `PNat` action. -/
 @[mk_iff]
 class HasUniqueDiv (M : Type*) [AddMonoid M] where
@@ -550,6 +556,8 @@ class HasUniqueDiv (M : Type*) [AddMonoid M] where
 
 /-- A monoid has unique roots if exponentiation by every non-zero element `n : ℕ` is injective.
 This is the uniqueness counterpart to `RootableBy` which asserts existence.
+
+For commutative types, this should be preferred over `IsMulTorsionFree`.
 
 TODO: Generalize this definition to semigroups once we have the `PNat` action. -/
 @[mk_iff]
