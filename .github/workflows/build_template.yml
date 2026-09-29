@@ -553,6 +553,7 @@ jobs:
       # test file that fails leaves no build output, so `stage` skips it. `test` ran the
       # PR's code with write access to `pr-branch/.lake/`, so `stage` runs in landrun.
       - name: prepare the MathlibTest staging directory
+        id: test_cache_prepare
         if: ${{ always() && env.MATHLIB_CACHE_PRIMARY == 'master' && (steps.test.outcome == 'success' || steps.test.outcome == 'failure') }}
         continue-on-error: true
         shell: bash
@@ -561,7 +562,8 @@ jobs:
           mkdir -p test-cache-staging
 
       - name: stage MathlibTest cache files
-        if: ${{ always() && env.MATHLIB_CACHE_PRIMARY == 'master' && (steps.test.outcome == 'success' || steps.test.outcome == 'failure') }}
+        id: test_cache_stage
+        if: ${{ always() && steps.test_cache_prepare.outcome == 'success' }}
         continue-on-error: true
         shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw test-cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX -- bash -euxo pipefail {0}
         run: |
@@ -572,7 +574,7 @@ jobs:
 
       - name: check MathlibTest cache staging contents
         id: test_cache_staging
-        if: ${{ always() && env.MATHLIB_CACHE_PRIMARY == 'master' && (steps.test.outcome == 'success' || steps.test.outcome == 'failure') }}
+        if: ${{ always() && steps.test_cache_stage.outcome == 'success' }}
         continue-on-error: true
         shell: bash
         run: |
@@ -884,15 +886,14 @@ jobs:
         continue-on-error: true
         shell: bash
         env:
-          REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
           MATHLIB_CACHE_S3_ACCESS_KEY_ID: ${{ steps.mint-r2.outputs.access-key-id }}
           MATHLIB_CACHE_S3_SECRET_ACCESS_KEY: ${{ steps.mint-r2.outputs.secret-access-key }}
           MATHLIB_CACHE_S3_SESSION_TOKEN: ${{ steps.mint-r2.outputs.session-token }}
           MATHLIB_CACHE_S3_REGION: auto
+          # The flat write under the public bucket's master prefix. An unset secret
+          # fails the upload.
           MATHLIB_CACHE_PUT_URL: ${{ secrets.MATHLIB_CACHE_R2_PUT_URL }}
-        run: |
-          : "${MATHLIB_CACHE_PUT_URL:?the secret MATHLIB_CACHE_R2_PUT_URL is unset}"
-          lake env "$CACHE_BIN" put-staged --backend=s3 --staging-dir="cache-staging" --repo="$REPO"
+        run: lake env "$CACHE_BIN" put-staged --backend=s3 --staging-dir="cache-staging"
 
   post_steps:
     name: Post-Build Step
