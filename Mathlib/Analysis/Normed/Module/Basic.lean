@@ -6,10 +6,7 @@ Authors: Patrick Massot, Johannes Hölzl
 module
 
 public import Mathlib.Algebra.Algebra.Pi
-public import Mathlib.Algebra.Algebra.Prod
-public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Algebra.Algebra.RestrictScalars
-public import Mathlib.Algebra.Module.Rat
 public import Mathlib.Analysis.Normed.Field.Lemmas
 public import Mathlib.Analysis.Normed.MulAction
 

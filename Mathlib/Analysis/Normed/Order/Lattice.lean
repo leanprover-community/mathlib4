@@ -133,8 +133,8 @@ instance (priority := 100) HasSolidNorm.continuousInf : ContinuousInf α := by
     norm_inf_sub_inf_le_add_norm _ _ _ _
   refine squeeze_zero (fun e => norm_nonneg _) this ?_
   convert!
-    ((continuous_fst.tendsto q).sub <| tendsto_const_nhds).norm.add
-      ((continuous_snd.tendsto q).sub <| tendsto_const_nhds).norm
+    ((continuous_fst.tendsto q).sub tendsto_const_nhds).norm.add
+      ((continuous_snd.tendsto q).sub tendsto_const_nhds).norm
   simp
 
 -- see Note [lower instance priority]
