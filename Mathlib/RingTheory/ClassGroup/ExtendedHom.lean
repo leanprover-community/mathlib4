@@ -103,8 +103,9 @@ theorem map_mk0 {A B : Type*} [CommRing A] [CommRing B] [IsDedekindDomain A]
 /-- A ring isomorphism `A ≃+* B` induces an isomorphism on their class groups. -/
 @[expose, simps]
 noncomputable def mulEquiv (g : A ≃+* B) : ClassGroup A ≃* ClassGroup B where
-  -- The injectivity proofs are stated for the coercions to ring homomorphisms, so that
-  -- `mulEquiv_apply` has the same form as `map` and can be rewritten with `map` lemmas.
+  -- The `show` forces the type of the injectivity proof to `Function.Injective ⇑(g : A →+* B)`.
+  -- Without it, `map_mk0` would no longer apply to `mulEquiv g (mk0 I)` since at implicit
+  -- transparency `⇑(g : A →+* B)` is not `⇑g`.
   toFun := map (g : A →+* B) (show Function.Injective (g : A →+* B) from g.injective)
   invFun := map (g.symm : B →+* A)
     (show Function.Injective (g.symm : B →+* A) from g.symm.injective)
