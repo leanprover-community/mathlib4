@@ -240,11 +240,15 @@ theorem checkCarmichaelBound_sound {N bound : ℕ} (hN : N ≤ bound ^ 2)
   simpa [isCarmichaelCandidate_of_isCarmichael (by nlinarith) hc] using
     List.all_eq_true.mp h n (List.mem_range.mpr hn)
 
+section
+set_option exponentiation.threshold 600
+set_option maxRecDepth 3000
+
 /-- There are no Carmichael numbers strictly less than 561. -/
-set_option exponentiation.threshold 600 in
-set_option maxRecDepth 1200 in
 theorem not_isCarmichael_of_lt_561 {n : ℕ} (hn : n < 561) : ¬ n.IsCarmichael :=
   checkCarmichaelBound_sound (bound := 24) (by decide) (by decide) n hn
+
+end
 
 /-- 561 is the smallest Carmichael number. -/
 theorem isCarmichael_min {n : ℕ} (hn : n.IsCarmichael) : 561 ≤ n :=
