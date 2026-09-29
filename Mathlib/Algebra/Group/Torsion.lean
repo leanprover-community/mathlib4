@@ -22,11 +22,10 @@ open Function
 variable {M G : Type*}
 
 section Monoid
-
-instance [AddCommMonoid M] [IsAddTorsionFree M] : Lean.Grind.NoNatZeroDivisors M where
-  no_nat_zero_divisors _ _ _ hk := IsAddTorsionFree.nsmul_right_injective hk (add_comm _ _)
-
 variable [Monoid M]
+
+instance [AddCommMonoid M] [HasUniqueDiv M] : Lean.Grind.NoNatZeroDivisors M where
+  no_nat_zero_divisors _ _ _ hk := IsAddTorsionFree.nsmul_right_injective hk (add_comm _ _)
 
 @[to_additive]
 instance [Subsingleton M] : HasUniqueRoots M where

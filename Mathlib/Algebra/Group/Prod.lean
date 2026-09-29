@@ -99,7 +99,7 @@ instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
     mul_one := by simp }
 
 @[to_additive]
-instance [Monoid M] [Monoid N] [IsMulTorsionFree M] [IsMulTorsionFree N] :
+instance instIsMulTorsionFree [Monoid M] [Monoid N] [IsMulTorsionFree M] [IsMulTorsionFree N] :
     IsMulTorsionFree (M × N) where
   eq_of_pow_eq_pow_of_commute n hn a b h hab := by
     rw [commute_iff_eq, Prod.ext_iff] at *

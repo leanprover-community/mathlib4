@@ -23,7 +23,8 @@ variable {ι : Type*} {M : ι → Type*}
 namespace Pi
 
 @[to_additive]
-instance [∀ i, Monoid (M i)] [∀ i, IsMulTorsionFree (M i)] : IsMulTorsionFree (∀ i, M i) where
+instance instIsMulTorsionFree [∀ i, Monoid (M i)] [∀ i, IsMulTorsionFree (M i)] :
+    IsMulTorsionFree (∀ i, M i) where
   eq_of_pow_eq_pow_of_commute n hn a b hab h := by
     ext i
     exact eq_of_pow_eq_pow_of_commute hn (congr_fun hab i) (congrFun h i)
