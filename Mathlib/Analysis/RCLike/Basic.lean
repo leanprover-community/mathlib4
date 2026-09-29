@@ -1387,6 +1387,7 @@ end LinearIsometryEquiv
 
 namespace Function
 
+@[fun_prop]
 lemma isRadial_normSq {𝕜 : Type*} [RCLike 𝕜] : IsRadial (RCLike.normSq (K := 𝕜)) := by
   simp [isRadial_def, RCLike.normSq_eq_def']
 
