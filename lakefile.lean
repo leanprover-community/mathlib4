@@ -161,6 +161,10 @@ Currently, these checks are quite lenient, but could be made stricter in the fut
 lean_exe «check-title-labels» where
   srcDir := "scripts"
 
+-- TODO: provided for backwards compatibility; delete once the previous PR has been merged
+lean_exe «check_title_labels» where
+  srcDir := "scripts"
+
 /-- `lake exe nightly-testing-checklist` reports nightly-testing branch status. -/
 lean_exe «nightly-testing-checklist» where
   srcDir := "scripts"
