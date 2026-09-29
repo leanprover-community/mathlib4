@@ -144,6 +144,7 @@ lean_exe «check-yaml» where
 
 /-- `lake exe mk_all` constructs the files containing all imports for a project. -/
 lean_exe mk_all where
+  -- TODO: modulise this script, so remove the need for this option
   allowNonModules := true
   srcDir := "scripts"
   supportInterpreter := true
@@ -154,6 +155,7 @@ lean_exe mk_all where
 lean_exe «lint-style» where
   srcDir := "scripts"
   supportInterpreter := true
+  -- TODO: modulise this script, so remove the need for this option
   allowNonModules := true
   -- Executables which import `Lake` must set `-lLake`.
   weakLinkArgs := #["-lLake"]
@@ -162,6 +164,7 @@ lean_exe «lint-style» where
 Currently, these checks are quite lenient, but could be made stricter in the future. -/
 lean_exe «check_title_labels» where
   srcDir := "scripts"
+  -- TODO: modulise this script, so remove the need for this option
   allowNonModules := true
 
 /-- `lake exe nightly-testing-checklist` reports nightly-testing branch status. -/
