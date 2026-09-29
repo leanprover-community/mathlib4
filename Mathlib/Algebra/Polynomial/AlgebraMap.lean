@@ -419,7 +419,7 @@ theorem aeval_algHom_apply {F : Type*} [FunLike F A B] [AlgHomClass F R A B]
 
 theorem aeval_op_apply (x : A) (p : R[X]) :
     aeval (MulOpposite.op x) p = MulOpposite.op (aeval x p) :=
-  p.induction_on' (by simp_all) (by simp [aeval_monomial, MulOpposite.op_pow, Algebra.commutes])
+  p.induction_on' (by simp_all) (by simp [Algebra.commutes])
 
 theorem aeval_smul (f : R[X]) {G : Type*} [Monoid G] [MulSemiringAction G A] [SMulCommClass G R A]
     (g : G) (x : A) : f.aeval (g • x) = g • (f.aeval x) := by
