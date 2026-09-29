@@ -78,8 +78,11 @@ end HasUniqueRoots
 end Monoid
 
 section Group
+variable [Group G] {n : ℤ} {a b : G}
 
-variable [Group G] [IsMulTorsionFree G] {n : ℤ} {a b : G}
+section IsMulTorsionFree
+
+variable [IsMulTorsionFree G]
 
 @[to_additive]
 lemma Commute.eq_of_zpow_eq_zpow (hab : Commute a b) (hn : n ≠ 0) (habn : a ^ n = b ^ n) :
@@ -111,11 +114,11 @@ lemma IsMulTorsionFree.zpow_eq_one_iff_right (ha : a ≠ 1) : a ^ n = 1 ↔ n = 
 
 @[to_additive] lemma isSelfInv_iff_eq_one : IsSelfInv a ↔ a = 1 := inv_eq_self
 
-end Group
+end IsMulTorsionFree
 
-section CommGroup
+section HasUniqueRoots
 
-variable [Group G] [HasUniqueRoots G] {n : ℤ} {a b : G}
+variable [HasUniqueRoots G] {n : ℤ} {a b : G}
 
 @[to_additive zsmul_right_injective]
 lemma zpow_left_injective (hn : n ≠ 0) : Injective fun a : G ↦ a ^ n := by
@@ -135,4 +138,6 @@ lemma zpow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
 and `zsmul_lt_zsmul_iff'`. -/]
 lemma zpow_eq_zpow_iff' (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := zpow_left_inj hn
 
-end CommGroup
+end HasUniqueRoots
+
+end Group
