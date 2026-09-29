@@ -415,11 +415,11 @@ theorem eval_unique (φ : R[X] →ₐ[R] A) (p) : φ p = eval₂ (algebraMap R A
 theorem aeval_algHom_apply {F : Type*} [FunLike F A B] [AlgHomClass F R A B]
     (f : F) (x : A) (p : R[X]) :
     aeval (f x) p = f (aeval x p) :=
-  p.induction_on' (by simp_all) (by simp [AlgHomClass.commutes])
+  p.induction_on' (fun _ _ hp hq => by simp [hp, hq]) (by simp [AlgHomClass.commutes])
 
 theorem aeval_op_apply (x : A) (p : R[X]) :
     aeval (MulOpposite.op x) p = MulOpposite.op (aeval x p) :=
-  p.induction_on' (by simp_all) (by simp [Algebra.commutes])
+  p.induction_on' (fun _ _ hp hq => by simp [hp, hq]) (by simp [Algebra.commutes])
 
 theorem aeval_smul (f : R[X]) {G : Type*} [Monoid G] [MulSemiringAction G A] [SMulCommClass G R A]
     (g : G) (x : A) : f.aeval (g • x) = g • (f.aeval x) := by
