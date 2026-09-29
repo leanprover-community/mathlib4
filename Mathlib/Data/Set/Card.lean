@@ -1238,10 +1238,14 @@ theorem exists_subset_or_subset_of_two_mul_lt_ncard {n : ℕ} (hst : 2 * n < (s 
   obtain ⟨r', hnr', hr'⟩ := Finset.exists_subset_or_subset_of_two_mul_lt_card hst
   exact ⟨r', by simpa, by simpa using hr'⟩
 
-lemma _root_.Finset.exists_not_mem_of_card_lt_enatCard {s : Finset α} (hs : s.card < ENat.card α) :
+lemma _root_.Finset.exists_notMem_of_card_lt_enatCard {s : Finset α} (hs : s.card < ENat.card α) :
     ∃ a, a ∉ s := by
   contrapose! hs
   simp [← Set.encard_coe_eq_coe_finsetCard, Set.eq_univ_of_forall (α := α) (s := s) hs]
+
+@[deprecated (since := "2026-09-28")]
+alias _root_.Finset.exists_not_mem_of_card_lt_enatCard :=
+  _root_.Finset.exists_notMem_of_card_lt_enatCard
 
 /-! ### Explicit description of a set from its cardinality -/
 

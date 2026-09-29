@@ -749,7 +749,7 @@ lemma pow_sub_one_dvd_differentIdeal [Algebra.IsSeparable (FractionRing A) (Frac
   · rw [he, pow_zero]; exact one_dvd _
   exact pow_sub_one_dvd_differentIdeal_aux A (FractionRing A) (FractionRing B) _ he hp hP
 
-theorem not_dvd_differentIdeal_of_intTrace_not_mem
+theorem not_dvd_differentIdeal_of_intTrace_notMem
     [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
     {p : Ideal A} (P Q : Ideal B) (hP : P * Q = Ideal.map (algebraMap A B) p)
     (x : B) (hxQ : x ∈ Q) (hx : Algebra.intTrace A B x ∉ p) :
@@ -807,6 +807,9 @@ theorem not_dvd_differentIdeal_of_intTrace_not_mem
   · simp only [map_add]
     exact fun _ _ h₁ h₂ ↦ Submodule.add_mem _ h₁ h₂
 
+@[deprecated (since := "2026-09-28")]
+alias not_dvd_differentIdeal_of_intTrace_not_mem := not_dvd_differentIdeal_of_intTrace_notMem
+
 open nonZeroDivisors
 
 theorem not_dvd_differentIdeal_of_isCoprime_of_isSeparable
@@ -827,7 +830,7 @@ theorem not_dvd_differentIdeal_of_isCoprime_of_isSeparable
   obtain ⟨x, hx⟩ : ∃ x, Algebra.trace (A ⧸ p) (B ⧸ P) x ≠ 0 := by
     simpa [LinearMap.ext_iff] using Algebra.trace_ne_zero (A ⧸ p) (B ⧸ P)
   obtain ⟨y, hy⟩ := Ideal.Quotient.mk_surjective (e.symm (x, 0))
-  refine not_dvd_differentIdeal_of_intTrace_not_mem A P Q hP y ?_ ?_
+  refine not_dvd_differentIdeal_of_intTrace_notMem A P Q hP y ?_ ?_
   · have := congr((e $hy).2)
     simp at this
     simpa [e, Ideal.Quotient.eq_zero_iff_mem] using this

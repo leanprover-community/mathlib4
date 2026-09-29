@@ -105,11 +105,13 @@ export HasSupport (eventually_le_support)
 
 instance (L : SummationFilter β) [L.LeAtTop] : HasSupport L := ⟨by simp⟩
 
-lemma eventually_mem_or_not_mem (L : SummationFilter β) [HasSupport L] (b : β) :
+lemma eventually_mem_or_notMem (L : SummationFilter β) [HasSupport L] (b : β) :
     (∀ᶠ s in L.filter, b ∈ s) ∨ (∀ᶠ s in L.filter, b ∉ s) := by
   rw [or_iff_not_imp_left]
   intro hb
   filter_upwards [L.eventually_le_support] with a ha using notMem_subset ha hb
+
+@[deprecated (since := "2026-09-28")] alias eventually_mem_or_not_mem := eventually_mem_or_notMem
 
 end has_support
 

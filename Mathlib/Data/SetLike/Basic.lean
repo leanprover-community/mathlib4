@@ -204,10 +204,12 @@ lemma mem_of_subsingleton [Subsingleton B] (S : A) [h : Nonempty S] {b : B} : b 
 
 /-- If `s` is a proper element of a `SetLike` structure (i.e., `s ≠ ⊤`) and the top element
 coerces to the universal set, then there exists an element not in `s`. -/
-lemma exists_not_mem_of_ne_top [LE A] [OrderTop A] (s : A) (hs : s ≠ ⊤)
+lemma exists_notMem_of_ne_top [LE A] [OrderTop A] (s : A) (hs : s ≠ ⊤)
     (h_top : ((⊤ : A) : Set B) = Set.univ := by simp) :
     ∃ b : B, b ∉ s := by
   simpa [-SetLike.coe_set_eq, SetLike.ext'_iff, h_top, Set.ne_univ_iff_exists_notMem] using hs
+
+@[deprecated (since := "2026-09-28")] alias exists_not_mem_of_ne_top := exists_notMem_of_ne_top
 
 end SetLike
 
