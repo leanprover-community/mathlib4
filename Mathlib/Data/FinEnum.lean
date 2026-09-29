@@ -197,7 +197,7 @@ instance (priority := 100) [FinEnum α] : Fintype α where
   elems := univ.map equiv.symm.toEmbedding
   complete := by intros; simp
 
-/- Get the nth successor under the ordering induced by a `FinEnum` instance -/
+/-- Get the nth successor under the ordering induced by a `FinEnum` instance -/
 def succMany? [inst : FinEnum α] (n : Nat) (x : α) : Option α :=
   let next := inst.equiv x + n
   if fits : next < card α
@@ -299,6 +299,14 @@ instance [inst : FinEnum α] : Std.PRange.LawfulUpwardEnumerable α where
   succMany?_zero := succMany?_zero
 
   succMany?_add_one n x := (succMany?_succ n x).symm
+
+instance instLinearlyUpwardEnumerable [inst : FinEnum α] : Std.PRange.LinearlyUpwardEnumerable α where
+  eq_of_succ?_eq a b heq := by
+    simp only [Std.PRange.succ?, succMany?] at heq
+
+    apply succMany?_inj_elem 1 a b
+
+
 
 /-- The enumeration merely adds an ordering, leaving the cardinality as is. -/
 theorem card_eq_fintypeCard {α : Type u} [FinEnum α] [Fintype α] : card α = Fintype.card α :=
