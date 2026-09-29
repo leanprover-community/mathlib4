@@ -5,9 +5,7 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.GroupTheory.Perm.MaximalSubgroups
-public import Mathlib.GroupTheory.SpecificGroups.Alternating
 
 /-! # Maximal subgroups of the alternating group
 
@@ -175,8 +173,7 @@ theorem subgroup_eq_top_of_isPreprimitive (h4 : 4 < Nat.card α)
     (hG : stabilizer (alternatingGroup α) s ≤ G) :
     G = ⊤ := by
   obtain ⟨g, hg, hg3⟩ := exists_mem_stabilizer_isThreeCycle s h4
-  rw [eq_top_iff, ← Subgroup.map_subtype_le_map_subtype,
-    ← MonoidHom.range_eq_map, Subgroup.range_subtype]
+  rw [eq_top_iff, ← Subgroup.map_subtype_le_map_subtype, Subgroup.map_top, Subgroup.range_subtype]
   -- By Jordan's theorem, it suffices to prove that G acts primitively
   apply alternatingGroup_le_of_isPreprimitive_of_isThreeCycle_mem _ hg3
   · use ⟨g, hg3.mem_alternatingGroup⟩

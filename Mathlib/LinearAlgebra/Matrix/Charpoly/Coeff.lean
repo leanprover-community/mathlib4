@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Polynomial.Expand
 public import Mathlib.Algebra.Polynomial.Laurent
 public import Mathlib.Algebra.Polynomial.Eval.SMul
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
-public import Mathlib.LinearAlgebra.Matrix.Reindex
 public import Mathlib.LinearAlgebra.Matrix.SchurComplement
 public import Mathlib.RingTheory.Polynomial.Nilpotent
 
@@ -208,7 +207,7 @@ lemma det_one_add_X_smul (M : Matrix n n R) :
 lemma det_one_add_smul (r : R) (M : Matrix n n R) :
     det (1 + r • M) =
       1 + trace M * r + (det (1 + (X : R[X]) • M.map C)).divX.divX.eval r * r ^ 2 := by
-  simpa [eval_det, ← smul_eq_mul_diagonal] using congr_arg (eval r) (Matrix.det_one_add_X_smul M)
+  simpa [eval_det, ← smul_eq_mul_diagonal] using congr(eval r $(Matrix.det_one_add_X_smul M))
 
 lemma charpoly_of_card_eq_two [Nontrivial R] (hn : Fintype.card n = 2) :
     M.charpoly = X ^ 2 - C M.trace * X + C M.det := by
@@ -426,7 +425,7 @@ theorem coeff_det_one_add_X_smul_eq_sum_minors
       _ = (∑ s : Finset n, (X : R[X]) ^ s.card •
             D (s.piecewise (fun i ↦ (M.map C) i)
               (fun i ↦ (1 : Matrix n n R[X]) i))).coeff k := by
-        congr 2 with s
+        congr 3 with s
         have h_smul : s.piecewise (fun i ↦ ((X : R[X]) • M.map C) i)
             (fun i ↦ (1 : Matrix n n R[X]) i) =
             fun i => (if i ∈ s then (X : R[X]) else 1) •

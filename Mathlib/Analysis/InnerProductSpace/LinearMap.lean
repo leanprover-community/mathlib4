@@ -151,8 +151,8 @@ theorem LinearEquiv.isometryOfInner_toLinearEquiv (f : E ≃ₗ[𝕜] E') (h) :
 /-- A linear map is an isometry if and it preserves the inner product. -/
 theorem LinearMap.norm_map_iff_inner_map_map {F : Type*} [FunLike F E E'] [LinearMapClass F 𝕜 E E']
     (f : F) : (∀ x, ‖f x‖ = ‖x‖) ↔ (∀ x y, ⟪f x, f y⟫_𝕜 = ⟪x, y⟫_𝕜) :=
-  ⟨({ toLinearMap := LinearMapClass.linearMap f, norm_map' := · : E →ₗᵢ[𝕜] E' }.inner_map_map),
-    (LinearMapClass.linearMap f |>.isometryOfInner · |>.norm_map)⟩
+  ⟨({ toLinearMap := ofClass f, norm_map' := · : E →ₗᵢ[𝕜] E' }.inner_map_map),
+    (ofClass f |>.isometryOfInner · |>.norm_map)⟩
 
 end
 

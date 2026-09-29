@@ -5,13 +5,12 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.GroupTheory.NoncommCoprod
 public import Mathlib.GroupTheory.Perm.ConjAct
 public import Mathlib.GroupTheory.Perm.Cycle.PossibleTypes
-public import Mathlib.GroupTheory.Perm.DomMulAct
-public import Mathlib.GroupTheory.Rank
+import Mathlib.GroupTheory.Perm.DomMulAct
+import Mathlib.GroupTheory.Rank
 
 /-!
 # Centralizer of a permutation and cardinality of conjugacy classes in the symmetric groups
@@ -210,6 +209,7 @@ structure Basis (g : Equiv.Perm α) where
   /-- For each cycle, the chosen element belongs to the cycle -/
   (mem_support_self' : ∀ (c : g.cycleFactorsFinset), toFun c ∈ c.val.support)
 
+@[macro_inline]
 instance (g : Perm α) : FunLike (Basis g) g.cycleFactorsFinset α where
   coe a := a.toFun
   coe_injective a a' _ := by cases a; cases a'; congr

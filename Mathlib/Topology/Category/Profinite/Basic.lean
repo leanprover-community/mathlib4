@@ -62,10 +62,15 @@ compact, Hausdorff and totally disconnected topological space.
 -/
 abbrev of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
     [TotallyDisconnectedSpace X] : Profinite :=
-  CompHausLike.of _ X
+  ↧X
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `Profinite.of X` as `↧X`. -/
+@[app_delab Profinite.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 instance : Inhabited Profinite :=
-  ⟨Profinite.of PEmpty⟩
+  ⟨↧PEmpty⟩
 
 instance {X : Profinite} : TotallyDisconnectedSpace X :=
   X.prop
@@ -97,7 +102,7 @@ section Profinite
 to Profinite spaces, given by quotienting a space by its connected components. -/
 @[stacks 0900]
 def CompHaus.toProfiniteObj (X : CompHaus.{u}) : Profinite.{u} where
-  toTop := TopCat.of (ConnectedComponents X)
+  toTop := ↧(ConnectedComponents X)
   is_compact := Quotient.compactSpace
   is_hausdorff := ConnectedComponents.t2
   prop := ConnectedComponents.totallyDisconnectedSpace
@@ -144,7 +149,7 @@ attribute [local instance] FintypeCat.discreteTopology
 discrete topology. -/
 @[simps! -isSimp map_hom_hom_apply obj]
 def FintypeCat.toProfinite : FintypeCat ⥤ Profinite where
-  obj A := Profinite.of A
+  obj A := ↧A
   map f := ofHom _ ⟨f, by fun_prop⟩
 
 /-- `FintypeCat.toLightProfinite` is fully faithful. -/
@@ -261,6 +266,6 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
     apply (forget Profinite).epi_of_epi_map
 
 /-- The pi-type of profinite spaces is profinite. -/
-def pi {α : Type u} (β : α → Profinite) : Profinite := .of (Π (a : α), β a)
+def pi {α : Type u} (β : α → Profinite) : Profinite := ↧(Π (a : α), β a)
 
 end Profinite

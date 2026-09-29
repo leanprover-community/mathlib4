@@ -5,7 +5,7 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.Data.Sign.Defs
+public import Mathlib.Basic.Sign.Defs
 public import Mathlib.Topology.Order.Basic
 
 /-!

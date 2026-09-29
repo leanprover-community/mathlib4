@@ -6,9 +6,8 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Etale.Field
-public import Mathlib.RingTheory.Flat.Equalizer
+import Mathlib.RingTheory.Flat.Equalizer
 public import Mathlib.RingTheory.Kaehler.TensorProduct
-public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 public import Mathlib.RingTheory.Smooth.Local
 public import Mathlib.RingTheory.Etale.Locus
 
@@ -130,7 +129,6 @@ private lemma FormallySmooth.of_formallySmooth_residueField_tensor_aux
   ext x
   dsimp
   induction x with
-  | zero => simp only [LinearEquiv.map_zero, LinearMap.map_zero]
   | add x y _ _ => simp only [LinearEquiv.map_add, LinearMap.map_add, *]
   | tmul x y =>
   dsimp [eₗ, eᵣ, e₁, KaehlerDifferential.cotangentComplexBaseChange,

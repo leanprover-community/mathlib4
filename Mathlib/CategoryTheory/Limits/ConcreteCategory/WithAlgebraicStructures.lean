@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Basic
-public import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 # Colimits in ModuleCat
