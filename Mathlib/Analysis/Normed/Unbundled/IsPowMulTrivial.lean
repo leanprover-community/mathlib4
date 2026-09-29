@@ -20,6 +20,8 @@ In this file, we prove triviality of power-multiplicative norms over trivially n
   trivially normed field is trivial.
 -/
 
+public section
+
 section Ring
 
 variable {A B : Type*} [SeminormedCommRing A] [Ring B] [Algebra A B]
