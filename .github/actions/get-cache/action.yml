@@ -91,9 +91,12 @@ runs:
         run-id: ${{ steps.resolve.outputs.run_id }}
         github-token: ${{ github.token }}
 
-    # 2. Fetch this commit's oleans from the remote cache with the trusted `cache` binary
-    #    (outside landrun). Runs on every repo; the warm above just gives the canonical
-    #    repo a local head start. HEAD-scoped: reads only this commit's own cache scope.
+    # 2. Fetch this commit's oleans from the remote cache with the trusted `cache` binary.
+    #    Runs on every repo; the warm above just gives the canonical repo a local head
+    #    start. HEAD-scoped: reads only this commit's own cache scope.
+    #    Earlier steps give PR code write access to `.lake/`, so it can hold symlinks that
+    #    point outside it. The fetch runs inside landrun, which denies every write that
+    #    resolves outside `.lake/` and the local cache directory.
     - name: Fetch cache from remote
       shell: bash
       env:
@@ -105,11 +108,21 @@ runs:
         # Use the trusted toolchain's `lean`/`leantar` (see setup-build-env).
         export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
         cd "${WORKDIR}"
-        rm -rf .lake/build/lib/lean/Mathlib
+        # This shell writes the log outside the sandbox, so the log must not be under `.lake/`.
         log="${RUNNER_TEMP:-/tmp}/cache-get.log"
         # --repo so fork PRs also read their own repo-namespaced cache (master is read flat,
         # so this still gets the master bulk); for in-repo runs it resolves to the same repo.
-        "${CACHE_BIN}" --repo="${CACHE_REPO}" get 2>&1 | tee "${log}"
+        # `--rwx` on the local cache directory: `cache` can run a `curl` that it downloads there.
+        landrun --unrestricted-network --rox /usr --rox /etc --rw /dev \
+          --rox /home/lean/.elan --rox /home/lean/actions-runner/_work \
+          --rwx /home/lean/.cache/mathlib/ --rw .lake/ \
+          --env PATH --env HOME --env CI --env TERM --env LEAN_SRC_PATH \
+          --env MATHLIB_CACHE_FROM --env MATHLIB_CACHE_REPO_SCOPE \
+          --env MATHLIB_CACHE_GET_URL --env MATHLIB_CACHE_BASE_URL \
+          --env CACHE_BIN --env CACHE_REPO \
+          -- bash -euo pipefail -c \
+          'rm -rf .lake/build/lib/lean/Mathlib; exec "${CACHE_BIN}" --repo="${CACHE_REPO}" get' \
+          2>&1 | tee "${log}"
         # Warmth = how much the snapshot covered HEAD: files already cached locally
         # (just decompressed) vs downloaded from Azure. Parsed best-effort from the log.
         warm=$(grep -oE 'Decompressing [0-9]+ already-cached' "${log}" | grep -oE '[0-9]+' | head -1 || true)
