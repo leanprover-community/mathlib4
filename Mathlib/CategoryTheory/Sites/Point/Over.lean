@@ -5,10 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Filtered.FinallySmall
 public import Mathlib.CategoryTheory.Functor.TypeValuedFlat
-public import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
-public import Mathlib.CategoryTheory.Comma.LocallySmall
+import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
+import Mathlib.CategoryTheory.Comma.LocallySmall
 public import Mathlib.CategoryTheory.Sites.Over
 public import Mathlib.CategoryTheory.Sites.Point.Conservative
 
@@ -78,7 +77,7 @@ lemma IsConservativeFamilyOfPoints.over
       (⟨by exact y, by rw [FunctorToTypes.mem_fromOverSubfunctor_iff]; rfl⟩)
     rw [Subtype.ext_iff] at hz₂
     exact ⟨i, Φ.obj.fiber.map b z,
-      (ConcreteCategory.congr_hom (Φ.obj.fiber.map_comp b (g i)) _).symm.trans (by rwa [hb])⟩)
+      congr($(Φ.obj.fiber.map_comp b (g i)) _).symm.trans (by rwa [hb])⟩)
 
 end ObjectProperty
 

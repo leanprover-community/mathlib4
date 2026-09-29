@@ -243,40 +243,46 @@ def runCurl (args : Array String) (throwFailure stderrAsErr showArgsOnError := t
     IO String := do
   runCmd (← getCurl) (#["--no-progress-meter"] ++ args) throwFailure stderrAsErr showArgsOnError
 
-def validateCurl : IO Bool := do
-  if (← CURLBIN.pathExists) then return true
-  match (← runCmd "curl" #["--version"]).splitOn " " with
+/-- The major and minor version of the curl binary `curl`, read from `curl --version`. -/
+def curlVersion (curl : String) : IO (Nat × Nat) := do
+  match (← runCmd curl #["--version"]).splitOn " " with
   | "curl" :: v :: _ => match v.splitOn "." with
     | maj :: min :: _ =>
       let some majN := String.toNat? maj | throw <| IO.userError "Invalidly formatted version of `curl`"
       let some minN := String.toNat? min | throw <| IO.userError "Invalidly formatted version of `curl`"
-      let version := (majN, minN)
-      let _ := @lexOrd
-      let _ := @leOfOrd
-      if version >= (7, 81) then return true
-      -- TODO: support more platforms if the need arises
-      let arch ← (·.trimAscii.copy) <$> runCmd "uname" #["-m"] false
-      let kernel ← (·.trimAscii.copy) <$> runCmd "uname" #["-s"] false
-      if kernel == "Linux" && arch ∈ ["x86_64", "aarch64"] then
-        IO.println s!"curl is too old; downloading more recent version"
-        IO.FS.createDirAll IO.CACHEDIR
-        let _ ← runCmd "curl" (stderrAsErr := false) #[
-          s!"https://github.com/leanprover-community/static-curl/releases/download/v{CURLVERSION}/curl-{arch}-linux-static",
-          "-L", "-o", CURLBIN.toString]
-        let _ ← runCmd "chmod" #["u+x", CURLBIN.toString]
-        return true
-      -- The parallel transfer paths pass `--retry-all-errors` (curl 7.71)
-      -- and read the `exitcode` and `errormsg` fields of the per-transfer
-      -- JSON report (curl 7.75); an older curl rejects the flag or omits
-      -- the fields.
-      if version >= (7, 75) then
-        IO.println s!"Warning: recommended `curl` version ≥7.81. Found {v}"
-        return true
-      else
-        IO.println s!"Warning: recommended `curl` version ≥7.75. Found {v}. Can't use `--parallel`."
-        return false
+      return (majN, minN)
     | _ => throw <| IO.userError "Invalidly formatted version of `curl`"
   | _ => throw <| IO.userError "Invalidly formatted response from `curl --version`"
+
+def validateCurl : IO Bool := do
+  if (← CURLBIN.pathExists) then return true
+  let version ← curlVersion "curl"
+  let found := s!"{version.1}.{version.2}"
+  let _ := @lexOrd
+  let _ := @leOfOrd
+  -- The get path's write-out reads response headers with `%header{…}` (curl 7.84).
+  if version >= (7, 84) then return true
+  -- TODO: support more platforms if the need arises
+  let arch ← (·.trimAscii.copy) <$> runCmd "uname" #["-m"] false
+  let kernel ← (·.trimAscii.copy) <$> runCmd "uname" #["-s"] false
+  if kernel == "Linux" && arch ∈ ["x86_64", "aarch64"] then
+    IO.println s!"curl is too old; downloading more recent version"
+    IO.FS.createDirAll IO.CACHEDIR
+    let _ ← runCmd "curl" (stderrAsErr := false) #[
+      s!"https://github.com/leanprover-community/static-curl/releases/download/v{CURLVERSION}/curl-{arch}-linux-static",
+      "-L", "-o", CURLBIN.toString]
+    let _ ← runCmd "chmod" #["u+x", CURLBIN.toString]
+    return true
+  -- The parallel transfer paths pass `--retry-all-errors` (curl 7.71)
+  -- and read the `exitcode` and `errormsg` fields of the per-transfer
+  -- JSON report (curl 7.75); an older curl rejects the flag or omits
+  -- the fields.
+  if version >= (7, 75) then
+    IO.println s!"Warning: recommended `curl` version ≥7.84. Found {found}"
+    return true
+  else
+    IO.println s!"Warning: recommended `curl` version ≥7.75. Found {found}. Can't use `--parallel`."
+    return false
 
 /-- Recursively gets all files from a directory with a certain extension -/
 partial def getFilesWithExtension
