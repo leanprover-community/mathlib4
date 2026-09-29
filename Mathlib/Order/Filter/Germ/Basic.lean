@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-public import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Data.Int.Cast.Basic
 public import Mathlib.Data.Int.Cast.Pi
 public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Order.Filter.Tendsto
@@ -62,12 +62,6 @@ open scoped Relator
 namespace Filter
 
 variable {α β γ δ : Type*} {l : Filter α} {f g h : α → β}
-
-theorem const_eventuallyEq' [NeBot l] {a b : β} : (∀ᶠ _ in l, a = b) ↔ a = b :=
-  eventually_const
-
-@[simp] theorem const_eventuallyEq [NeBot l] {a b : β} : ((fun _ => a) =ᶠ[l] fun _ => b) ↔ a = b :=
-  @const_eventuallyEq' _ _ _ _ a b
 
 /-- Setoid used to define the space of germs. -/
 @[instance_reducible]

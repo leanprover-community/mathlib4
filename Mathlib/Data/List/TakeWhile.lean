@@ -6,8 +6,8 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 module
 
 public import Mathlib.Order.Basic
-public import Mathlib.Data.Nat.Basic
-public import Mathlib.Tactic.Set
+import Mathlib.Data.Nat.Basic
+import Mathlib.Tactic.Set
 
 /-! # `List.takeWhile` and `List.dropWhile` -/
 

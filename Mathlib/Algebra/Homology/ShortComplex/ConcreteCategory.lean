@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Homology.ShortComplex.Ab
 public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 public import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
-public import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
+import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 
 /-!
 # Exactness of short complexes in concrete abelian categories

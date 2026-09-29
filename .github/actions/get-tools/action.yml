@@ -143,6 +143,7 @@ runs:
       with:
         ref: ${{ inputs.tools_source_ref }}
         path: ${{ inputs.path }}
+        persist-credentials: false # no later step needs git credentials
 
     - name: Build tools from source
       if: ${{ steps.finalize.outputs.result == 'build' }}

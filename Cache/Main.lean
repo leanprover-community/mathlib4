@@ -3,13 +3,16 @@ Copyright (c) 2023 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Jon Eugster, Marcelo Lynch
 -/
+module
 
-import Cache.Cli
+public import Cache.Cli
 import Cache.Requests
 import Cache.Marker
 import Cache.Upload
 import Cache.Query
 import Cache.Warning
+
+public section
 
 /-- The known container names, interpolated into the help text so the list
 always matches `Container.all`. -/
