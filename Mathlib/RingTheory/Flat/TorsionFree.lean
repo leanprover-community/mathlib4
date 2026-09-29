@@ -5,11 +5,10 @@ Authors: Matthew Jasper, Kevin Buzzard
 -/
 module
 
-public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.RingTheory.DedekindDomain.Dvr
-public import Mathlib.RingTheory.Flat.Localization
+import Mathlib.RingTheory.Flat.Localization
 public import Mathlib.RingTheory.Flat.Tensor
-public import Mathlib.RingTheory.Ideal.IsPrincipal
+import Mathlib.RingTheory.Ideal.IsPrincipal
 
 /-!
 # Relationships between flatness and torsionfreeness.
@@ -53,7 +52,7 @@ lemma isSMulRegular_of_isRegular {r : R} (hr : IsRegular r) [Flat R M] :
   -- `r ∈ R⁰` implies that `toSpanSingleton R R r`, i.e. `(r * ⬝) : R → R` is injective
   -- Flatness implies that corresponding map `R ⊗[R] M →ₗ[R] R ⊗[R] M` is injective
   have h := Flat.rTensor_preserves_injective_linearMap (M := M)
-    (toSpanSingleton R R r) <| hr.right
+    (toSpanSingleton R R r) hr.right
   -- But precomposing and postcomposing with the isomorphism `M ≃ₗ[R] (R ⊗[R] M)`
   -- we get a map `M →ₗ[R] M` which is just `(r • ·)`.
   have h2 : (fun (x : M) ↦ r • x) = ((TensorProduct.lid R M) ∘ₗ

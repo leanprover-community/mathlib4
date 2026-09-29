@@ -5,12 +5,10 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.End
 public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.CategoryTheory.Action.Basic
 public import Mathlib.CategoryTheory.FintypeCat
 public import Mathlib.GroupTheory.GroupAction.Quotient
-public import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-!
 # Constructors for `Action V G` for some concrete categories
@@ -85,7 +83,7 @@ def ofMulActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι →
           comm := fun g => by
             ext x
             funext j
-            exact ConcreteCategory.congr_hom ((s.π.app ⟨j⟩).comm g) x }
+            congrm $((s.π.app ⟨j⟩).comm g) x }
       fac := fun _ _ => rfl
       uniq := fun s f h => by
         ext x

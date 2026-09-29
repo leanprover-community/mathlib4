@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ContDiff.Comp
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 
 /-!

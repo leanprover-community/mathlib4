@@ -5,12 +5,12 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Prod
+import Mathlib.Analysis.Calculus.Deriv.Prod
 public import Mathlib.Analysis.Calculus.DiffContOnCl
-public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
-public import Mathlib.Analysis.Calculus.TangentCone.Prod
+import Mathlib.Analysis.Calculus.FDeriv.Symmetric
+import Mathlib.Analysis.Calculus.TangentCone.Prod
 public import Mathlib.MeasureTheory.Integral.CurveIntegral.Basic
-public import Mathlib.MeasureTheory.Integral.DivergenceTheorem
+import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 public import Mathlib.Topology.Homotopy.Affine
 
 import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
@@ -215,12 +215,8 @@ private theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_coun
       · exact hcontdiff.continuousOn_fderivWithin hunique (by decide)
     rwa [integral_divergence_prod_Icc_of_hasFDerivAt_off_countable_of_le] at this
     · exact zero_le_one
-    · exact s'
-    · exact hs'c
     · fun_prop
     · fun_prop
-    · exact hf'
-    · exact hg'
     · rw [integrableOn_congr_fun_ae hf'g']
       apply integrableOn_zero
   simp [integral_congr_ae hf'g']
