@@ -227,6 +227,11 @@ upload, so its presence is a reliable "this commit was cached" signal. `query`
 prints the SHA to stdout (and does not auto-apply it) — you manually copy the
 result into your `cache get` command if desired.
 
+If `query` finds nothing, run a plain `cache get`. Either CI had nothing
+fork-specific to upload (for example, for a tooling-only PR), so the master cache
+serves every file, or CI has not built your commits yet. In the second case, run
+`cache get` again after CI finishes.
+
 ### Boolean probe on a single commit
 
 `lake exe cache query <REF>` checks a specific commit and exits with 0 (cached)
@@ -269,14 +274,11 @@ into one round per discovered SHA. If no cached fork commit is found in range,
 the [non-default-scope security notice](#security-warning-non-default-scope). It
 is mutually exclusive with `--scope=` (which pins exactly one commit).
 
-### Heads-up note from `cache get`
+### Missing-files note from `cache get`
 
-When you run `cache get` on a fork-trust repo and HEAD has not been built and
-cached at fork-trust level, the tool prints a stderr note pointing you at
-`cache query` (and warning that picking a different commit means trusting its
-artifacts). Costs one HTTP HEAD per `cache get` invocation; only fires when the
-resolved repo's default chain includes `forks` and no `--scope=` / `--cache-from`
-override is supplied.
+If some files are not found in any container, `cache get` prints a note to
+stderr. On a fork branch whose HEAD has no fork cache, the note points you at
+`cache query`. Otherwise, it says that your checkout has diverged from upstream.
 
 ## Security Warning: Non-Default Scope
 
