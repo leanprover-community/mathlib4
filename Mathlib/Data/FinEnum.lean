@@ -208,6 +208,8 @@ def succMany? (n : Nat) (x : α) : Option α :=
   then inst.equiv.symm { val := next, isLt := fits }
   else none
 
+attribute [local grind! .] Equiv.injective
+
 -- Note: the "simp/grind normal form" to which we reduce `succMany?` is (in)equalities over ℕ.
 
 @[simp, grind =]
@@ -267,7 +269,7 @@ lemma succMany?_inj_nat
 @[grind →]
 lemma succMany?_inj_elem
 (n : Nat) (x y : α) (hn : equiv x + n < card α) (heq : succMany? n x = succMany? n y) :
-    x = y := by grind [inst.equiv.injective]
+    x = y := by grind
 
 @[grind =]
 lemma succMany?_bind {n m : Nat} {x : α} :
@@ -307,7 +309,7 @@ instance : Std.PRange.LawfulUpwardEnumerable α where
 instance instLinearlyUpwardEnumerable : Std.PRange.LinearlyUpwardEnumerable α where
   eq_of_succ?_eq x y heq := by
     simp only [Std.PRange.succ?] at heq
-    grind [inst.equiv.injective]
+    grind
 
 end succMany?
 
