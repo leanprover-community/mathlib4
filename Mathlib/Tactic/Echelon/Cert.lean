@@ -64,11 +64,6 @@ def MatrixViews.ofArray {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (m n : 
   have lit : Q(List (List $α)) := mkListLitQ (α := q(List $α)) (entries.map mkListLitQ)
   { matrix := q(ofLists $m $n $lit), lit, entries }
 
-/-- Build the list of pivot columns `[c₀, c₁, …]`. -/
-def mkPivotList (n : Nat) (pivots : Array Nat) : MetaM Q(List (Fin $n)) := do
-  let cols ← pivots.toList.mapM (mkFinLitQ n)
-  return mkListLitQ (u := .zero) (α := q(Fin $n)) cols
-
 /-- Build the permutation `σ = swap a₀ b₀ * swap a₁ b₁ * ⋯` from the recorded swaps. -/
 def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Q(Equiv.Perm (Fin $m)) := do
   let mut acc : Q(Equiv.Perm (Fin $m)) := q(Equiv.refl (Fin $m))
@@ -215,7 +210,7 @@ def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommR
   let cα : Q(AddCommMonoid $α) ← synthInstanceQ q(AddCommMonoid $α)
   have U := MatrixViews.ofArray zα m n data.U
   let σ ← mkPerm m data.swaps
-  let cols : Q(List (Fin $n)) ← mkPivotList n data.pivot
+  let cols : Q(List (Fin $n)) := mkListLitQ (← data.pivot.toList.mapM (mkFinLitQ n))
   have pivot : Q(Fin $m → WithTop (Fin $n)) := q(fun i : Fin $m ↦ pivotOfList $cols i)
   let lRows : List (List Q($α)) := data.L.toList.map Array.toList
   let aRows : List (List Q($α)) := (data.rowOrder.map (entries[·]!)).toList.map Array.toList
