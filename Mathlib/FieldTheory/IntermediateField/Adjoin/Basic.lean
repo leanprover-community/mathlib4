@@ -37,7 +37,7 @@ lemma FG.of_restrictScalars {K L E : Type*} [Field K] [Field L] [Field E]
   obtain ⟨s, hs⟩ := H
   refine ⟨s, le_antisymm ?_ ?_⟩
   · rw [adjoin_le_iff]
-    exact (subset_adjoin K _).trans_eq congr(($hs : Set E))
+    exact (subset_adjoin K _).trans_eq congr($hs)
   · rw [← restrictScalars_le_iff K, ← hs, adjoin_le_iff]
     exact subset_adjoin L _
 
@@ -66,7 +66,8 @@ theorem mem_adjoin_simple_iff {α : E} (x : E) :
 theorem forall_mem_adjoin_smul_eq_self_iff {M : Type*} [Monoid M] [MulSemiringAction M E]
     [SMulCommClass M F E] (m : M) :
     (∀ x ∈ adjoin F S, m • x = x) ↔ ∀ x ∈ S, m • x = x := by
-  simpa [-adjoin_le_iff, Set.subset_def, SetLike.le_def, FixedBy.intermediateField_mem_iff] using
+  simpa [-adjoin_le_iff, Set.subset_def, IsConcreteLE.le_iff,
+    FixedBy.intermediateField_mem_iff] using
     adjoin_le_iff (T := FixedBy.intermediateField F E m)
 
 variable {F}
@@ -220,25 +221,25 @@ instance : IsCompactlyGenerated (IntermediateField F E) :=
   ⟨fun s =>
     ⟨(fun x => F⟮x⟯) '' s,
       ⟨by rintro t ⟨x, _, rfl⟩; exact adjoin_simple_isCompactElement x,
-        sSup_image.trans <| (biSup_adjoin_simple _).trans <|
+        isLUB_iff_sSup_eq.mpr <| sSup_image.trans <| (biSup_adjoin_simple _).trans <|
           le_antisymm (adjoin_le_iff.mpr le_rfl) <| subset_adjoin F (s : Set E)⟩⟩⟩
 
 theorem exists_finset_of_mem_iSup {ι : Type*} {f : ι → IntermediateField F E} {x : E}
     (hx : x ∈ ⨆ i, f i) : ∃ s : Finset ι, x ∈ ⨆ i ∈ s, f i := by
-  have := (adjoin_simple_isCompactElement x).exists_finset_of_le_iSup (IntermediateField F E) f
+  have := (adjoin_simple_isCompactElement x).exists_finset_of_le_iSup f
   simp only [adjoin_simple_le_iff] at this
   exact this hx
 
 theorem exists_finset_of_mem_supr' {ι : Type*} {f : ι → IntermediateField F E} {x : E}
     (hx : x ∈ ⨆ i, f i) : ∃ s : Finset (Σ i, f i), x ∈ ⨆ i ∈ s, F⟮(i.2 : E)⟯ := by
-  refine exists_finset_of_mem_iSup (SetLike.le_def.mp (iSup_le fun i x h ↦ ?_) hx)
-  exact SetLike.le_def.mp (le_iSup_of_le ⟨i, x, h⟩ (by simp)) (mem_adjoin_simple_self F x)
+  refine exists_finset_of_mem_iSup (mem_of_le_of_mem (iSup_le fun i x h ↦ ?_) hx)
+  exact mem_of_le_of_mem (le_iSup_of_le ⟨i, x, h⟩ (by simp)) (mem_adjoin_simple_self F x)
 
 theorem exists_finset_of_mem_supr'' {ι : Type*} {f : ι → IntermediateField F E}
     (h : ∀ i, Algebra.IsAlgebraic F (f i)) {x : E} (hx : x ∈ ⨆ i, f i) :
     ∃ s : Finset (Σ i, f i), x ∈ ⨆ i ∈ s, adjoin F ((minpoly F (i.2 :)).rootSet E) := by
-  refine exists_finset_of_mem_iSup (SetLike.le_def.mp (iSup_le (fun i x1 hx1 => ?_)) hx)
-  refine SetLike.le_def.mp (le_iSup_of_le ⟨i, x1, hx1⟩ ?_)
+  refine exists_finset_of_mem_iSup (mem_of_le_of_mem (iSup_le (fun i x1 hx1 => ?_)) hx)
+  refine mem_of_le_of_mem (le_iSup_of_le ⟨i, x1, hx1⟩ ?_)
     (subset_adjoin F (rootSet (minpoly F x1) E) ?_)
   · rw [IntermediateField.minpoly_eq, Subtype.coe_mk]
   · rw [mem_rootSet_of_ne, minpoly.aeval]
@@ -249,10 +250,31 @@ theorem exists_finset_of_mem_adjoin {S : Set E} {x : E} (hx : x ∈ adjoin F S) 
   simp_rw [← biSup_adjoin_simple S, ← iSup_subtype''] at hx
   obtain ⟨s, hx'⟩ := exists_finset_of_mem_iSup hx
   classical
-  refine ⟨s.image Subtype.val, by simp, SetLike.le_def.mp ?_ hx'⟩
+  refine ⟨s.image Subtype.val, by simp, mem_of_le_of_mem ?_ hx'⟩
   simp_rw [Finset.coe_image, iSup_le_iff, adjoin_le_iff]
   rintro _ h _ rfl
   exact subset_adjoin F _ ⟨_, h, rfl⟩
+
+/-- Adjoining `x + algebraMap F E y`, where `y` lies in the base field, yields the same simple
+extension as adjoining `x`. -/
+theorem adjoin_simple_add_algebraMap (x : E) (y : F) : F⟮x + algebraMap F E y⟯ = F⟮x⟯ := by
+  apply le_antisymm
+  · rw [adjoin_le_iff, Set.singleton_subset_iff, SetLike.mem_coe]
+    exact add_mem (mem_adjoin_simple_self F x) (algebraMap_mem _ y)
+  · rw [adjoin_simple_le_iff]
+    convert IntermediateField.sub_mem _ (mem_adjoin_simple_self F _) (algebraMap_mem _ y)
+    rw [eq_sub_iff_add_eq]
+
+/-- Adjoining `x * algebraMap F E y`, where `y` is a nonzero element of the base field, yields the
+same simple extension as adjoining `x`. -/
+theorem adjoin_simple_mul_algebraMap (x : E) (y : F) (hy : y ≠ 0) :
+    F⟮x * algebraMap F E y⟯ = F⟮x⟯ := by
+  apply le_antisymm
+  · rw [adjoin_le_iff, Set.singleton_subset_iff, SetLike.mem_coe]
+    exact mul_mem (mem_adjoin_simple_self F x) (algebraMap_mem _ y)
+  · rw [adjoin_simple_le_iff]
+    convert IntermediateField.div_mem _ (mem_adjoin_simple_self F _) (algebraMap_mem _ y)
+    rw [mul_div_cancel_right₀ x (by rwa [_root_.map_ne_zero])]
 
 end AdjoinDef
 
@@ -289,7 +311,7 @@ protected theorem finrank_bot : finrank F (⊥ : IntermediateField F E) = 1 := b
 
 @[simp]
 theorem finrank_bot' : finrank (⊥ : IntermediateField F E) E = finrank F E :=
-  congr(Cardinal.toNat $(rank_bot'))
+  congr($(rank_bot').toNat)
 
 @[simp] protected theorem rank_top : Module.rank (⊤ : IntermediateField F E) E = 1 :=
   Subalgebra.bot_eq_top_iff_rank_eq_one.mp <| top_le_iff.mp fun x _ ↦ ⟨⟨x, trivial⟩, rfl⟩
@@ -659,7 +681,7 @@ theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g
     rw [RingHom.map_sub, coeff_map, ← map_C, ← eq_C_of_natDegree_eq_zero e]
     apply hg (AdjoinRoot f)
     rw [AdjoinRoot.minpoly_root hf.ne_zero, hfm, inv_one, map_one, mul_one]
-  have H₁ : f.comp g ≠ 0 := fun h ↦ by simpa [hf', hg', natDegree_comp] using congr_arg natDegree h
+  have H₁ : f.comp g ≠ 0 := fun h ↦ by simpa [hf', hg', natDegree_comp] using congr(natDegree $h)
   have H₂ : ¬ IsUnit (f.comp g) := fun h ↦
     by simpa [hf', hg', natDegree_comp] using natDegree_eq_zero_of_isUnit h
   have ⟨p, hp₁, hp₂⟩ := WfDvdMonoid.exists_irreducible_factor H₂ H₁

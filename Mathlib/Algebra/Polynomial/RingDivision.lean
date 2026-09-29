@@ -49,15 +49,32 @@ theorem degree_pos_of_aeval_root [Algebra R S] {p : R[X]} (hp : p ≠ 0) {z : S}
 
 end
 
-theorem smul_modByMonic (c : R) (p : R[X]) : c • p %ₘ q = c • (p %ₘ q) := by
+private theorem smul_divByMonic_modByMonic (c : R) (p : R[X]) :
+    c • p /ₘ q = c • (p /ₘ q) ∧ c • p %ₘ q = c • (p %ₘ q) := by
   by_cases hq : q.Monic
   · rcases subsingleton_or_nontrivial R with hR | hR
-    · simp only [eq_iff_true_of_subsingleton]
-    · exact
-      (div_modByMonic_unique (c • (p /ₘ q)) (c • (p %ₘ q)) hq
-          ⟨by rw [mul_smul_comm, ← smul_add, modByMonic_add_div],
-            (degree_smul_le _ _).trans_lt (degree_modByMonic_lt _ hq)⟩).2
-  · simp_rw [modByMonic_eq_of_not_monic _ hq]
+    · simp [eq_iff_true_of_subsingleton]
+    · exact div_modByMonic_unique (c • (p /ₘ q)) (c • (p %ₘ q)) hq
+        ⟨by rw [mul_smul_comm, ← smul_add, modByMonic_add_div],
+         (degree_smul_le _ _).trans_lt (degree_modByMonic_lt _ hq)⟩
+  · simp [divByMonic_eq_of_not_monic _ hq, modByMonic_eq_of_not_monic _ hq]
+
+theorem smul_divByMonic (c : R) (p : R[X]) : c • p /ₘ q = c • (p /ₘ q) :=
+  (smul_divByMonic_modByMonic c p).1
+
+theorem smul_modByMonic (c : R) (p : R[X]) : c • p %ₘ q = c • (p %ₘ q) :=
+  (smul_divByMonic_modByMonic c p).2
+
+/-- `_ /ₘ q` as an `R`-linear map. -/
+@[simps]
+def divByMonicHom (q : R[X]) : R[X] →ₗ[R] R[X] where
+  toFun p := p /ₘ q
+  map_add' := add_divByMonic
+  map_smul' := smul_divByMonic
+
+theorem mem_ker_divByMonic [Nontrivial R] (hq : q.Monic) {p : R[X]} :
+    p ∈ LinearMap.ker (divByMonicHom q) ↔ degree p < degree q :=
+  LinearMap.mem_ker.trans (divByMonic_eq_zero_iff hq)
 
 /-- `_ %ₘ q` as an `R`-linear map. -/
 @[simps]
@@ -122,13 +139,13 @@ section nonZeroDivisors
 open scoped nonZeroDivisors
 
 theorem Monic.mem_nonZeroDivisors {p : R[X]} (h : p.Monic) : p ∈ R[X]⁰ :=
-  mem_nonzeroDivisors_of_coeff_mem _ (h.coeff_natDegree ▸ one_mem R⁰)
+  mem_nonZeroDivisors_of_coeff_mem _ (h.coeff_natDegree ▸ one_mem R⁰)
 
 theorem mem_nonZeroDivisors_of_leadingCoeff {p : R[X]} (h : p.leadingCoeff ∈ R⁰) : p ∈ R[X]⁰ :=
-  mem_nonzeroDivisors_of_coeff_mem _ h
+  mem_nonZeroDivisors_of_coeff_mem _ h
 
 theorem mem_nonZeroDivisors_of_trailingCoeff {p : R[X]} (h : p.trailingCoeff ∈ R⁰) : p ∈ R[X]⁰ :=
-  mem_nonzeroDivisors_of_coeff_mem _ h
+  mem_nonZeroDivisors_of_coeff_mem _ h
 
 end nonZeroDivisors
 

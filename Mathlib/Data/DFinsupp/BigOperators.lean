@@ -26,7 +26,7 @@ The support is internally represented (in the primed `DFinsupp.support'`) as a `
 represents a superset of the true support of the function, quotiented by the always-true relation so
 that this does not impact equality. This approach has computational benefits over storing a
 `Finset`; it allows us to add together two finitely-supported functions without
-having to evaluate the resulting function to recompute its support (which would required
+having to evaluate the resulting function to recompute its support (which would require
 decidability of `b = 0` for `b : β i`).
 
 The true support of the function can still be recovered with `DFinsupp.support`; but these
@@ -457,7 +457,7 @@ theorem prod_sum_index {ι₁ : Type u₁} [DecidableEq ι₁] {β₁ : ι₁ �
 @[simp]
 theorem sum_single [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] {f : Π₀ i, β i} :
     f.sum single = f := by
-  have := DFunLike.congr_fun (liftAddHom_singleAddHom (β := β)) f
+  have := congr($(liftAddHom_singleAddHom (β := β)) f)
   rw [liftAddHom_apply, sumAddHom_apply] at this
   exact this
 
@@ -529,7 +529,7 @@ open DFinsupp
 theorem map_dfinsuppSumAddHom [AddCommMonoid R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
     (h : R →+ S) (f : Π₀ i, β i) (g : ∀ i, β i →+ R) :
     h (sumAddHom g f) = sumAddHom (fun i => h.comp (g i)) f :=
-  DFunLike.congr_fun (comp_liftAddHom h g) f
+  congr($(comp_liftAddHom h g) f)
 
 theorem dfinsuppSumAddHom_apply [AddZeroClass R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
     (f : Π₀ i, β i) (g : ∀ i, β i →+ R →+ S) (r : R) :
@@ -554,7 +554,7 @@ open DFinsupp
 theorem map_dfinsuppSumAddHom [NonAssocSemiring R] [NonAssocSemiring S] [∀ i, AddZeroClass (β i)]
     (h : R →+* S) (f : Π₀ i, β i) (g : ∀ i, β i →+ R) :
     h (sumAddHom g f) = sumAddHom (fun i => h.toAddMonoidHom.comp (g i)) f :=
-  DFunLike.congr_fun (comp_liftAddHom h.toAddMonoidHom g) f
+  congr($(comp_liftAddHom h.toAddMonoidHom g) f)
 
 end RingHom
 
@@ -568,7 +568,7 @@ open DFinsupp
 theorem map_dfinsuppSumAddHom [AddCommMonoid R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
     (h : R ≃+ S) (f : Π₀ i, β i) (g : ∀ i, β i →+ R) :
     h (sumAddHom g f) = sumAddHom (fun i => h.toAddMonoidHom.comp (g i)) f :=
-  DFunLike.congr_fun (comp_liftAddHom h.toAddMonoidHom g) f
+  congr($(comp_liftAddHom h.toAddMonoidHom g) f)
 
 end AddEquiv
 

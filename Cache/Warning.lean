@@ -3,8 +3,9 @@ Copyright (c) 2026 Marcelo Lynch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
+module
 
-import Cache.Query
+public import Cache.Query
 
 /-!
 # Read-time advisories
@@ -17,6 +18,8 @@ Two stderr-only notices `cache get` prints before reading:
 * a hint pointing an uncached fork HEAD at `cache query` and the SHA-scoped
   workflow.
 -/
+
+public section
 
 namespace Cache.Requests
 
