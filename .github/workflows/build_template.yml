@@ -335,6 +335,13 @@ jobs:
         if: ${{ always() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure' || steps.build.outcome == 'cancelled') }}
         shell: bash
         run: |
+          # The staging directory is uploaded as-is, so it must hold only regular files.
+          other=$(find cache-staging -mindepth 1 ! -type f ! -type d)
+          if [ -n "${other}" ]; then
+            echo "::error::cache-staging contains entries that are not regular files:"
+            echo "${other}"
+            exit 1
+          fi
           if find cache-staging -type f -name '*.ltar' -print -quit | grep -q .; then
             echo "has_files=true" >> "$GITHUB_OUTPUT"
           else
