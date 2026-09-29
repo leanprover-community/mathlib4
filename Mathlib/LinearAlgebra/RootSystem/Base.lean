@@ -75,6 +75,103 @@ structure Base (P : RootPairing ι R M N) where
   coroot_mem_or_neg_mem (i : ι) : P.coroot i ∈ AddSubmonoid.closure (P.coroot '' support) ∨
                                  -P.coroot i ∈ AddSubmonoid.closure (P.coroot '' support)
 
+section AlternateConstructor
+
+variable [Finite ι] [CharZero R] [IsDomain R] (P : RootPairing ι R M N) [P.IsCrystallographic]
+  {s : Finset ι}
+  (h₀ : LinearIndepOn R P.root s)
+  (h₁ : Set.Pairwise s fun i j ↦ P.pairingIn ℤ i j ≤ 0)
+  (h₂ : ∀ i, P.coroot i ∈ span ℤ (P.coroot '' s))
+include h₀ h₁ h₂
+
+lemma nonneg_or_nonpos_of_sum_smul_mem_range_root
+    (c : s → ℤ) (hc : ∑ k, c k • P.root k ∈ range P.root) :
+    0 ≤ c ∨ c ≤ 0 := by
+  classical
+  have : Fintype ι := Fintype.ofFinite ι
+  have h₀ℤ : LinearIndepOn ℤ P.root s := h₀.linearIndependent.restrict_scalars' ℤ
+  have h₀' : LinearIndepOn ℤ P.coroot s :=
+    ((P.linearIndepOn_coroot_iff s).mpr h₀).linearIndependent.restrict_scalars' ℤ
+  by_contra! hc'
+  have key (d : s → ℤ) (hd : ∑ k, d k • P.root k ∈ range P.root) (hd₀ : ¬ 0 ≤ d) (hd₁ : ¬ d ≤ 0)
+      (hdc : ∑ k, (d k).natAbs = ∑ k, (c k).natAbs) :
+      ∃ k, 0 < d k ∧ d ≤ Pi.single k 1 := by
+    obtain ⟨i, hi⟩ := hd
+    obtain ⟨k, hk, hik⟩ := P.exists_pos_pairingIn h₀ℤ h₁ hi.symm hd₁
+    obtain ⟨l, hl⟩ : ∃ l, d l < 0 := by simpa [Pi.le_def] using hd₀
+    refine ⟨k, hk, ?_⟩
+    have hik' : i ≠ k := by
+      rintro rfl
+      have : d = Pi.single k 1 := funext <| Fintype.linearIndependent_iffₛ.mp h₀ℤ.linearIndependent
+        _ _ (by simpa [Pi.single_apply] using hi.symm)
+      exact hd₀ (this ▸ Pi.single_nonneg.mpr zero_le_one)
+    have hlt : ∑ j, ((d - Pi.single k 1 : s → ℤ) j).natAbs < ∑ j, (c j).natAbs := by
+      refine hdc ▸ Finset.sum_lt_sum (fun j _ ↦ ?_) ⟨k, Finset.mem_univ _, by simp; lia⟩
+      rcases eq_or_ne j k with rfl | hj
+      · simp; lia
+      · simp [hj]
+    obtain ⟨j, hj⟩ := P.root_sub_root_mem_of_pairingIn_pos hik hik'
+    rcases nonneg_or_nonpos_of_sum_smul_mem_range_root (d - Pi.single k 1)
+      ⟨j, by simp [hj, hi, sub_smul, Pi.single_apply]⟩ with h | h
+    · have := h l
+      simp [show l ≠ k by lia] at this
+      lia
+    · exact sub_nonpos.mp h
+  obtain ⟨k, hk, hk'⟩ := key c hc hc'.1 hc'.2 rfl
+  obtain ⟨l, hl, hl'⟩ := key (-c) (by simpa using P.neg_mem_range_root_iff.mpr hc)
+    (by simpa using hc'.2) (by simpa using hc'.1) (by simp)
+  rw [Pi.neg_apply, neg_pos] at hl
+  have hkl : k ≠ l := by lia
+  have : c = Pi.single k 1 - Pi.single l 1 := by
+    ext j
+    have hj := hk' j
+    have hj' := hl' j
+    rcases eq_or_ne j k with rfl | hjk
+    · simp [hkl] at hj ⊢; lia
+    rcases eq_or_ne j l with rfl | hjl
+    · simp [hjk] at hj' ⊢; lia
+    · simp [hjk, hjl] at hj hj' ⊢; lia
+  exact P.root_sub_root_notMem_range h₀' h₂ (h₁ l.2 k.2 (by simpa using hkl.symm)) <| by
+    simpa [this, sub_smul, Pi.single_apply] using hc
+termination_by ∑ k, (c k).natAbs
+
+variable (h₃ : ∀ i, P.root i ∈ span ℤ (P.root '' s))
+include h₃
+
+lemma Base.mkOfPairwiseLEZero_aux (i : ι) :
+     P.root i ∈ AddSubmonoid.closure (P.root '' s) ∨
+    -P.root i ∈ AddSubmonoid.closure (P.root '' s) := by
+  have aux {c : s → ℤ} (hc : 0 ≤ c) :
+      ∑ k, c k • P.root k ∈ AddSubmonoid.closure (P.root '' s) := by
+    rw [← span_nat_eq_addSubmonoidClosure, mem_toAddSubmonoid,
+      Fintype.mem_span_image_iff_exists_fun]
+    refine ⟨fun k ↦ (c k).toNat, Finset.sum_congr rfl fun k _ ↦ ?_⟩
+    rw [← natCast_zsmul, Int.toNat_of_nonneg (hc k)]
+  obtain ⟨c, hc⟩ := (mem_span_image_finset_iff_exists_fun ℤ).mp (h₃ i)
+  rcases P.nonneg_or_nonpos_of_sum_smul_mem_range_root h₀ h₁ h₂ c ⟨i, hc.symm⟩ with h | h
+  · exact .inl (hc ▸ aux h)
+  · exact .inr (by simpa [← hc] using aux (neg_nonneg.mpr h))
+
+/-- An alternate condition for a subset of linearly independent (co)roots to form a base.
+
+This is useful when constructing a root pairing from a realisation of a Cartan matrix. -/
+def Base.mkOfPairwiseLEZero : P.Base where
+  support := s
+  linearIndepOn_root := h₀
+  linearIndepOn_coroot := by
+    have : Fintype ι := Fintype.ofFinite ι
+    rwa [P.linearIndepOn_coroot_iff]
+  root_mem_or_neg_mem := mkOfPairwiseLEZero_aux P h₀ h₁ h₂ h₃
+  coroot_mem_or_neg_mem := by
+    have : Fintype ι := Fintype.ofFinite ι
+    exact Base.mkOfPairwiseLEZero_aux P.flip ((P.linearIndepOn_coroot_iff s).mpr h₀)
+      (fun j hj k hk hjk ↦ h₁ hk hj hjk.symm) h₃ h₂
+
+@[simp]
+lemma Base.mkOfPairwiseLEZero_support : (mkOfPairwiseLEZero P h₀ h₁ h₂ h₃).support = s := rfl
+
+end AlternateConstructor
+
 namespace Base
 
 section RootPairing
@@ -448,6 +545,7 @@ lemma exists_root_eq_sum_int [CharZero R] (i : ι) :
     exact P.ne_zero i <| by simp [hf', contra]
 
 end RootPairing
+
 
 section PositiveRoots
 

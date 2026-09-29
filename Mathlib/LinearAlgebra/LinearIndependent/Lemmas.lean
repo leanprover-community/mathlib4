@@ -923,3 +923,38 @@ theorem exists_finite_card_le_of_finite_of_linearIndependent_of_span {s t : Set 
   ⟨this, by rw [← Eq]; exact Finset.card_le_card <| Finset.coe_subset.mp <| by simp [hsu]⟩
 
 end Module
+
+lemma LinearMap.BilinForm.exists_pos_and_pos_apply_sum_smul {R M ι : Type*} [Fintype ι]
+    [CommRing R] [LinearOrder R] [IsOrderedRing R]
+    [AddCommGroup M] [Module R M]
+    {B : LinearMap.BilinForm R M} (hB : ∀ x ≠ 0, 0 < B x x)
+    {v : ι → M} (hv : LinearIndependent R v) (hv' : Pairwise fun k l ↦ B (v k) (v l) ≤ 0)
+    {c : ι → R} (hc : ¬ c ≤ 0) :
+    ∃ k, 0 < c k ∧ 0 < B (∑ l, c l • v l) (v k) := by
+  set x := ∑ k, c k • v k
+  let X := ∑ k, max (c k) 0 • v k
+  let Y := ∑ k, min (c k) 0 • v k
+  have hXY : x = X + Y := by
+    simp only [x, X, Y, ← Finset.sum_add_distrib, ← add_smul, max_add_min, add_zero]
+  have hX : X ≠ 0 := fun hX ↦
+    hc fun k ↦ max_eq_right_iff.mp <| Fintype.linearIndependent_iff.mp hv _ hX k
+  have hYX : 0 ≤ B Y X := by
+    simp only [X, Y, map_sum, map_smul, LinearMap.sum_apply, LinearMap.smul_apply, smul_eq_mul,
+      Finset.mul_sum]
+    refine Finset.sum_induction _ (0 ≤ ·) (fun _ _ ↦ add_nonneg) le_rfl fun k _ ↦
+      Finset.sum_induction _ (0 ≤ ·) (fun _ _ ↦ add_nonneg) le_rfl fun l _ ↦ ?_
+    rcases eq_or_ne k l with rfl | hkl
+    · rcases le_total (c k) 0 with h | h <;> simp [h]
+    · exact mul_nonneg (le_max_right _ _) <|
+        mul_nonneg_of_nonpos_of_nonpos (min_le_right _ _) (hv' hkl.symm)
+  have : 0 < B x X := by
+    rw [hXY, map_add, LinearMap.add_apply]
+    exact add_pos_of_pos_of_nonneg (hB X hX) hYX
+  by_contra! h
+  refine this.not_ge ?_
+  simp only [X, map_sum, map_smul, smul_eq_mul]
+  refine Finset.sum_induction _ (· ≤ 0) (fun _ _ ↦ add_nonpos) le_rfl fun k _ ↦ ?_
+  rcases le_or_gt (c k) 0 with hk | hk
+  · simp [hk]
+  · rw [max_eq_left hk.le]
+    exact mul_nonpos_of_nonneg_of_nonpos hk.le (h k hk)
