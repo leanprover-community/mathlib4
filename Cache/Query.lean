@@ -226,11 +226,10 @@ def cacheQuery (repo : String) (cap : Nat := 50) (cwd : FilePath := ".") : IO Un
     IO.println s!"Note: this means trusting the artifacts built at that commit;"
     IO.println s!"`cache get` will print a security notice when --scope is set."
   | none =>
-    IO.println s!"No commit-specific cache could be found for fork {repo} within the last {cap} commits."
-    IO.println "If CI has already built this commit, it means it found nothing new to upload to the cache."
+    IO.println s!"No commit-specific cache found for fork {repo} within the last {cap} commits on this branch."
     IO.println "Simply call:"
     IO.println "  lake exe cache get"
-
+    IO.println "If CI is still building your latest commit, call it again after CI finishes."
 
 /--
 Discover the SHA scopes `cache get --unsafe` should try, most recent first.
