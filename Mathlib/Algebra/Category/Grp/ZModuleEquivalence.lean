@@ -36,10 +36,4 @@ def intEquivalence : ModuleCat.{u} ℤ ≌ Ab.{u} where
 instance forget₂AddCommGroupIsEquivalence : (forget₂ (ModuleCat ℤ) Ab.{u}).IsEquivalence :=
   intEquivalence.isEquivalence_functor
 
-/-- The forgetful functor from `ModuleCat ℤ` to `Ab` is full. -/
-instance forget₂_addCommGroup_full : (forget₂ (ModuleCat ℤ) Ab.{u}).Full := inferInstance
-
-/-- The forgetful functor from `ModuleCat ℤ` to `Ab` is essentially surjective. -/
-instance forget₂_addCommGrp_essSurj : (forget₂ (ModuleCat ℤ) Ab.{u}).EssSurj := inferInstance
-
 end ModuleCat
