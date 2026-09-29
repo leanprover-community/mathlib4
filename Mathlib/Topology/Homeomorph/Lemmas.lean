@@ -443,15 +443,15 @@ end Topology.IsEmbedding
 
 lemma Topology.IsEmbedding.uliftMap {f : X → Y} (hf : IsEmbedding f) :
     IsEmbedding (ULift.map f) :=
-  .comp Homeomorph.ulift.symm.isEmbedding (.comp hf <| Homeomorph.ulift.isEmbedding)
+  .comp Homeomorph.ulift.symm.isEmbedding (.comp hf Homeomorph.ulift.isEmbedding)
 
 lemma Topology.IsOpenEmbedding.uliftMap {f : X → Y} (hf : IsOpenEmbedding f) :
     IsOpenEmbedding (ULift.map f) :=
-  .comp Homeomorph.ulift.symm.isOpenEmbedding (.comp hf <| Homeomorph.ulift.isOpenEmbedding)
+  .comp Homeomorph.ulift.symm.isOpenEmbedding (.comp hf Homeomorph.ulift.isOpenEmbedding)
 
 lemma Topology.IsClosedEmbedding.uliftMap {f : X → Y} (hf : IsClosedEmbedding f) :
     IsClosedEmbedding (ULift.map f) :=
-  .comp Homeomorph.ulift.symm.isClosedEmbedding (.comp hf <| Homeomorph.ulift.isClosedEmbedding)
+  .comp Homeomorph.ulift.symm.isClosedEmbedding (.comp hf Homeomorph.ulift.isClosedEmbedding)
 
 end
 

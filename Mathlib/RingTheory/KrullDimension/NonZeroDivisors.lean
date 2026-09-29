@@ -5,11 +5,11 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
+import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
 public import Mathlib.RingTheory.KrullDimension.Basic
-public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
+import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 public import Mathlib.RingTheory.PowerSeries.Basic
-public import Mathlib.RingTheory.Spectrum.Prime.RingHom
+import Mathlib.RingTheory.Spectrum.Prime.RingHom
 
 /-!
 
@@ -68,7 +68,7 @@ open Polynomial in
 lemma ringKrullDim_succ_le_ringKrullDim_polynomial :
     ringKrullDim R + 1 ≤ ringKrullDim R[X] :=
   ringKrullDim_succ_le_of_surjective constantCoeff (⟨C ·, coeff_C_zero⟩)
-    X_mem_nonzeroDivisors coeff_X_zero
+    X_mem_nonZeroDivisors coeff_X_zero
 
 open MvPolynomial in
 @[simp]
@@ -126,4 +126,4 @@ open PowerSeries in
 lemma ringKrullDim_succ_le_ringKrullDim_powerseries :
     ringKrullDim R + 1 ≤ ringKrullDim (PowerSeries R) :=
   ringKrullDim_succ_le_of_surjective constantCoeff (⟨C ·, rfl⟩)
-    MvPowerSeries.X_mem_nonzeroDivisors constantCoeff_X
+    MvPowerSeries.X_mem_nonZeroDivisors constantCoeff_X
