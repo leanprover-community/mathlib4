@@ -197,6 +197,7 @@ instance (priority := 100) [FinEnum α] : Fintype α where
   elems := univ.map equiv.symm.toEmbedding
   complete := by intros; simp
 
+@[grind =]
 def succMany? [inst : FinEnum α] (n : Nat) (x : α) : Option α :=
   let next := inst.equiv x + n
   if fits : next < card α
@@ -206,40 +207,24 @@ def succMany? [inst : FinEnum α] (n : Nat) (x : α) : Option α :=
 @[grind =]
 lemma succMany?_eq_some_iff [inst : FinEnum α] {n : Nat} {x y : α} :
     succMany? n x = some y ↔ (inst.equiv x + n = inst.equiv y ∧ inst.equiv x + n < card α) := by
-  simp only [succMany?]
   constructor
-  · intro h
-    constructor
-    · split_ifs at h
-      grind only [equiv.apply_symm_apply]
-    · simp only [Option.dite_none_right_eq_some, Option.some.injEq] at h
-      exact h.1
-  · intro ⟨h, anLt⟩
-    simp only [Option.dite_none_right_eq_some, Option.some.injEq]
-    constructor
-    · apply equiv.injective
-      simp only [Equiv.apply_symm_apply]
-      congr
-    · assumption
+  case mp => grind
+  case mpr => grind [Equiv.symm_apply_apply]
 
 @[grind =]
 lemma succMany?_succ [inst : FinEnum α] (n : Nat) (x : α) :
-    (succMany? n x).bind (succMany? 1) = succMany? (n + 1) x := by
-  simp only [succMany?]
-  split_ifs <;> simp [succMany?] <;> grind only
+    (succMany? n x).bind (succMany? 1) = succMany? (n + 1) x := by grind
 
 lemma succMany?_bind_flatten [inst : FinEnum α] (n m k : Nat) (x : α) :
     (succMany? n x).bind (fun a => (succMany? m a).bind (succMany? k)) =
-      ((succMany? n x).bind (succMany? m)).bind (succMany? k) := by
-  grind
+      ((succMany? n x).bind (succMany? m)).bind (succMany? k) := by grind
 
 @[grind =]
 lemma succMany?_bind [inst : FinEnum α] {n m : Nat} {x : α} :
     (succMany? n x).bind (succMany? m) = succMany? (n + m) x := by
   induction m with
   | zero =>
-    simp only [succMany?]
-    split_ifs <;> simp [succMany?]
+    grind [succMany?]
   | succ m ih =>
     conv =>
       lhs
