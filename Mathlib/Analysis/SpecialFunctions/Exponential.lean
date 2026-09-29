@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Complex.Exponential
 public import Mathlib.Topology.MetricSpace.CauSeqFilter
 
+import Mathlib.Analysis.Calculus.Deriv.Comp
 import Mathlib.Analysis.Calculus.Deriv.Shift
 import Mathlib.Analysis.Calculus.MeanValue
 
