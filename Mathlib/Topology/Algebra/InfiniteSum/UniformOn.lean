@@ -47,7 +47,7 @@ variable (f g s) in
 /-- `MultipliableUniformlyOn f s` means that there is some infinite product to which
 `f` converges uniformly on `s`. Use `fun x ↦ ∏' i, f i x` to get the product function. -/
 @[to_additive /-- `SummableUniformlyOn f s` means that there is some infinite sum to
-which `f` converges uniformly on `s`. Use fun x ↦ ∑' i, f i x to get the sum function. -/]
+which `f` converges uniformly on `s`. Use `fun x ↦ ∑' i, f i x` to get the sum function. -/]
 def MultipliableUniformlyOn : Prop := Multipliable (UniformOnFun.ofFun {s} ∘ f)
 
 @[to_additive]
@@ -301,7 +301,7 @@ variable (f g) in
 /-- `MultipliableUniformly f` means that there is some infinite product to which
 `f` converges uniformly. Use `fun x ↦ ∏' i, f i x` to get the product function. -/
 @[to_additive /-- `SummableUniformly f` means that there is some infinite sum to which
-`f` converges uniformly. Use `fun x ↦ ∑' i, f i x` to get the product function. -/]
+`f` converges uniformly. Use `fun x ↦ ∑' i, f i x` to get the sum function. -/]
 def MultipliableUniformly : Prop := Multipliable (UniformFun.ofFun ∘ f)
 
 @[to_additive]
