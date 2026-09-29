@@ -272,6 +272,7 @@ theorem ofRestrict_invApp {C : Type*} [Category* C] (X : PresheafedSpace C) {Y :
   change X.presheaf.map _ = X.presheaf.map _
   congr 1
 
+set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 /-- An open immersion is an iso if the underlying continuous map is epi. -/
 theorem to_iso [h' : Epi f.base] : IsIso f := by
   have : ∀ (U : (Opens Y)ᵒᵖ), IsIso (f.c.app U) := by
@@ -891,6 +892,7 @@ theorem sigma_ι_isOpenEmbedding : IsOpenEmbedding (colimit.ι F i).hom.base := 
   simp_rw [TopCat.isOpenEmbedding_iff_comp_isIso, (TopCat.isOpenEmbedding_iff_isIso_comp)]
   exact .sigmaMk
 
+set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 theorem image_preimage_is_empty (j : Discrete ι) (h : i ≠ j) (U : Opens (F.obj i)) :
     (Opens.map (colimit.ι (F ⋙ SheafedSpace.forgetToPresheafedSpace) j).base).obj
         ((Opens.map (preservesColimitIso SheafedSpace.forgetToPresheafedSpace F).inv.base).obj

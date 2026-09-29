@@ -236,6 +236,7 @@ end restrict₂
 
 end EuclideanSpace
 
+set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 /-- A finite, mutually orthogonal family of subspaces of `E`, which span `E`, induce an isometry
 from `E` to `PiLp 2` of the subspaces equipped with the `L2` inner product. -/
 def DirectSum.IsInternal.isometryL2OfOrthogonalFamily [DecidableEq ι] {V : ι → Submodule 𝕜 E}

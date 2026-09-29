@@ -85,6 +85,7 @@ scoped macro "hopf_tensor_induction " var:elimTarget "with " var₁:ident var₂
           tmul_add, add_tmul, add_mul, mul_add, h₁, h₂]
       | tmul $var₁ $var₂ => ?_))
 
+set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.privateInPublic true in
 private lemma coassoc :

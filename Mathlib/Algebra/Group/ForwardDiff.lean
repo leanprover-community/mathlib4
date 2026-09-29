@@ -161,6 +161,7 @@ lemma fwdDiff_comp_add (f : M → G) (m : M) (y : M) :
     Δ_[h] (fun r ↦ f (r + m)) y = (Δ_[h] f) (y + m) :=
   fwdDiff_iter_comp_add h f m 1 y
 
+set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 /--
 **Gregory-Newton formula** expressing `f (y + n • h)` in terms of the iterated forward differences
 of `f` at `y`.

@@ -444,6 +444,7 @@ theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
       simpa [NormalWord.ext_iff, (d.compl (-u)).equiv_mul_left, Units.ext_iff,
         (d.compl (-u)).equiv_snd_eq_inv_mul]
 
+set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 /-- the equivalence given by multiplication on the left by `t` -/
 @[simps]
 noncomputable def unitsSMulEquiv : NormalWord d ≃ NormalWord d :=
