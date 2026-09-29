@@ -99,12 +99,18 @@ instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
     mul_one := by simp }
 
 @[to_additive]
-instance instIsMulTorsionFree [Monoid M] [Monoid N] [IsMulTorsionFree M] [IsMulTorsionFree N] :
+instance [Monoid M] [Monoid N] [IsMulTorsionFree M] [IsMulTorsionFree N] :
     IsMulTorsionFree (M × N) where
   eq_of_pow_eq_pow_of_commute n hn a b h hab := by
     rw [commute_iff_eq, Prod.ext_iff] at *
     exact ⟨IsMulTorsionFree.eq_of_pow_eq_pow_of_commute hn h.1 hab.1,
       IsMulTorsionFree.eq_of_pow_eq_pow_of_commute hn h.2 hab.2⟩
+
+@[to_additive]
+instance [Monoid M] [Monoid N] [HasUniqueRoots M] [HasUniqueRoots N] :
+    HasUniqueRoots (M × N) where
+  pow_left_injective n hn a b hab := by
+    ext <;> apply pow_left_injective hn; exacts [congr(($hab).1), congr(($hab).2)]
 
 @[to_additive Prod.subNegMonoid]
 instance [DivInvMonoid G] [DivInvMonoid H] : DivInvMonoid (G × H) where

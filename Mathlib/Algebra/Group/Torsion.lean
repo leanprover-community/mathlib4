@@ -32,6 +32,8 @@ variable [Monoid M]
 instance [Subsingleton M] : HasUniqueRoots M where
   pow_left_injective _ _ _ _ _ := Subsingleton.elim _ _
 
+section IsMulTorsionFree
+
 variable [IsMulTorsionFree M] {n : ℕ} {a b : M}
 
 @[to_additive]
@@ -58,23 +60,23 @@ lemma pow_eq_one_iff_right (ha : a ≠ 1) : a ^ n = 1 ↔ n = 0 := by simp [*]
 @[to_additive two_nsmul_eq_zero]
 lemma sq_eq_one : a ^ 2 = 1 ↔ a = 1 := pow_eq_one_iff_left (by lia)
 
-end Monoid
+end IsMulTorsionFree
 
-section CommMonoid
+section HasUniqueRoots
 
-variable [CommMonoid M]
-
-variable [IsMulTorsionFree M] {n : ℕ} {a b : M}
+variable [HasUniqueRoots M] {n : ℕ} {a b : M}
 
 @[to_additive nsmul_right_injective]
 lemma pow_left_injective (hn : n ≠ 0) : Injective fun a : M ↦ a ^ n :=
-  fun a b ↦ (Commute.all a b).eq_of_pow_eq_pow hn
+  HasUniqueRoots.pow_left_injective hn
 
 @[to_additive nsmul_right_inj]
 lemma pow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
   (pow_left_injective hn).eq_iff
 
-end CommMonoid
+end HasUniqueRoots
+
+end Monoid
 
 section Group
 
@@ -114,11 +116,15 @@ end Group
 
 section CommGroup
 
-variable [CommGroup G] [IsMulTorsionFree G] {n : ℤ} {a b : G}
+variable [Group G] [HasUniqueRoots G] {n : ℤ} {a b : G}
 
 @[to_additive zsmul_right_injective]
-lemma zpow_left_injective (hn : n ≠ 0) : Injective fun a : G ↦ a ^ n :=
-  fun a b ↦ (Commute.all a b).eq_of_zpow_eq_zpow hn
+lemma zpow_left_injective (hn : n ≠ 0) : Injective fun a : G ↦ a ^ n := by
+  cases n
+  · simp only [Int.ofNat_eq_natCast, zpow_natCast, Int.natCast_ne_zero] at hn ⊢
+    exact pow_left_injective hn
+  · simp only [zpow_negSucc]
+    exact inv_injective.comp (pow_left_injective (Nat.add_one_ne_zero _))
 
 @[to_additive zsmul_right_inj]
 lemma zpow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=

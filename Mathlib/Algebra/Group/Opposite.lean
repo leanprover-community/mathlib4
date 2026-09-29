@@ -176,10 +176,14 @@ variable [Monoid α]
 @[to_additive (attr := simp)] lemma unop_pow (x : αᵐᵒᵖ) (n : ℕ) : unop (x ^ n) = unop x ^ n := rfl
 
 @[to_additive]
-instance instMulTorsionFree [IsMulTorsionFree α] : IsMulTorsionFree αᵐᵒᵖ where
+instance [IsMulTorsionFree α] : IsMulTorsionFree αᵐᵒᵖ where
   eq_of_pow_eq_pow_of_commute n hn a b h hab :=
     unop_injective <| IsMulTorsionFree.eq_of_pow_eq_pow_of_commute hn
       (by simpa [commute_iff_eq] using congrArg unop h.symm) (by simpa using congrArg unop hab)
+
+@[to_additive]
+instance [HasUniqueRoots α] : HasUniqueRoots αᵐᵒᵖ :=
+  ⟨fun _ h ↦ op_injective.comp <| (pow_left_injective h).comp unop_injective⟩
 
 end Monoid
 

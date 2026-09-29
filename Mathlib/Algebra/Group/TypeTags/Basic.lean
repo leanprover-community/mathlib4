@@ -481,6 +481,12 @@ instance [Monoid α] [IsMulTorsionFree α] : IsAddTorsionFree (Additive α) wher
 instance [AddMonoid α] [IsAddTorsionFree α] : IsMulTorsionFree (Multiplicative α) where
   eq_of_pow_eq_pow_of_commute := IsAddTorsionFree.nsmul_right_injective (M := α)
 
+instance [Monoid α] [HasUniqueRoots α] : HasUniqueDiv (Additive α) where
+  nsmul_right_injective _ := pow_left_injective (M := α)
+
+instance [AddMonoid α] [HasUniqueDiv α] : HasUniqueRoots (Multiplicative α) where
+  pow_left_injective _ := nsmul_right_injective (M := α)
+
 /-- If `α` has some multiplicative structure and coerces to a function,
 then `Additive α` should also coerce to the same function.
 

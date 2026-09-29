@@ -218,6 +218,13 @@ instance instIsMulTorsionFree [IsMulTorsionFree G] : IsMulTorsionFree H where
     rw [commute_iff_eq, Subtype.ext_iff] at *
     exact IsMulTorsionFree.eq_of_pow_eq_pow_of_commute hn h hab
 
+@[to_additive]
+instance [HasUniqueRoots G] : HasUniqueRoots H where
+  pow_left_injective n hn a b := by
+    have := pow_left_injective hn (M := G) (a₁ := a) (a₂ := b)
+    dsimp at *
+    norm_cast at this
+
 end Subgroup
 
 namespace Subgroup

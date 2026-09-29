@@ -559,8 +559,7 @@ class HasUniqueRoots (M : Type*) [Monoid M] where
 attribute [to_additive existing HasUniqueDiv] HasUniqueRoots
 attribute [to_additive existing] hasUniqueRoots_iff
 
-/-- `HasUniqueRoots` implies `IsMulTorsionFree`. -/
-@[to_additive /-- `HasUniqueDiv` implies `IsAddTorsionFree`. -/]
+@[to_additive]
 instance (M : Type*) [Monoid M] [HasUniqueRoots M] : IsMulTorsionFree M where
   eq_of_pow_eq_pow_of_commute _ hn _ _ _ hab := HasUniqueRoots.pow_left_injective hn hab
 
