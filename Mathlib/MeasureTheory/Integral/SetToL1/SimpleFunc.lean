@@ -36,7 +36,7 @@ namespace SimpleFunc
 
 theorem norm_eq_sum_mul (f : α →₁ₛ[μ] G) :
     ‖f‖ = ∑ x ∈ (toSimpleFunc f).range, μ.real (toSimpleFunc f ⁻¹' {x}) * ‖x‖ := by
-  rw [norm_toSimpleFunc, eLpNorm_one_eq_lintegral_enorm]
+  rw [norm_toSimpleFunc, eLpNorm_one_eq_lintegral_enorm ((toSimpleFunc f)).aestronglyMeasurable]
   have h_eq := SimpleFunc.map_apply (‖·‖ₑ) (toSimpleFunc f)
   simp_rw [← h_eq, measureReal_def]
   rw [SimpleFunc.lintegral_eq_lintegral, SimpleFunc.map_lintegral, ENNReal.toReal_sum]

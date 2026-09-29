@@ -122,7 +122,7 @@ theorem floor_le_of_le (h : a ≤ n) : ⌊a⌋₊ ≤ n :=
   le_imp_le_iff_lt_imp_lt.2 lt_of_lt_floor h
 
 theorem floor_le_one_of_le_one (h : a ≤ 1) : ⌊a⌋₊ ≤ 1 :=
-  floor_le_of_le <| h.trans_eq <| Nat.cast_one.symm
+  floor_le_of_le <| h.trans_eq Nat.cast_one.symm
 
 @[simp]
 theorem floor_eq_zero : ⌊a⌋₊ = 0 ↔ a < 1 := by

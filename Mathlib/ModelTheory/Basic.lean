@@ -5,7 +5,8 @@ Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.Basic
+public import Mathlib.Basic.Countable.Defs
+public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Basics on First-Order Structures
@@ -109,12 +110,7 @@ instance isAlgebraic_sum [L.IsAlgebraic] [L'.IsAlgebraic] : IsAlgebraic (L.sum L
   fun _ => instIsEmptySum
 
 @[simp]
-theorem card_empty : Language.empty.card = 0 := by simp only [card, mk_sum, mk_sigma, mk_eq_zero,
-  sum_const, mk_eq_aleph0, lift_id', mul_zero, add_zero]
-
-instance isEmpty_empty : IsEmpty Language.empty.Symbols := by
-  simp only [Language.Symbols, isEmpty_sum, isEmpty_sigma]
-  exact ⟨fun _ => inferInstance, fun _ => inferInstance⟩
+theorem card_empty : Language.empty.card = 0 := by simp [card]
 
 instance Countable.countable_functions [h : Countable L.Symbols] : Countable (Σ l, L.Functions l) :=
   @Function.Injective.countable _ _ h _ Sum.inl_injective
@@ -281,6 +277,7 @@ attribute [inherit_doc FirstOrder.Language.Hom.map_rel'] FirstOrder.Language.Emb
 
 namespace Hom
 
+@[macro_inline]
 instance instFunLike : FunLike (M →[L] N) M N where
   coe := Hom.toFun
   coe_injective f g h := by cases f; cases g; cases h; rfl
@@ -365,6 +362,7 @@ end Hom
 
 namespace Embedding
 
+@[macro_inline]
 instance funLike : FunLike (M ↪[L] N) M N where
   coe f := f.toFun
   coe_injective f g h := by
@@ -476,7 +474,7 @@ theorem comp_assoc (f : M ↪[L] N) (g : N ↪[L] P) (h : P ↪[L] Q) :
 theorem comp_injective (h : N ↪[L] P) :
     Function.Injective (h.comp : (M ↪[L] N) → (M ↪[L] P)) := by
   intro f g hfg
-  ext x; exact h.injective (DFunLike.congr_fun hfg x)
+  ext x; exact h.injective congr($hfg x)
 
 @[simp]
 theorem comp_inj (h : N ↪[L] P) (f g : M ↪[L] N) : h.comp f = h.comp g ↔ f = g :=
@@ -485,7 +483,7 @@ theorem comp_inj (h : N ↪[L] P) (f g : M ↪[L] N) : h.comp f = h.comp g ↔ f
 theorem toHom_comp_injective (h : N ↪[L] P) :
     Function.Injective (h.toHom.comp : (M →[L] N) → (M →[L] P)) := by
   intro f g hfg
-  ext x; exact h.injective (DFunLike.congr_fun hfg x)
+  ext x; exact h.injective congr($hfg x)
 
 @[simp]
 theorem toHom_comp_inj (h : N ↪[L] P) (f g : M →[L] N) : h.toHom.comp f = h.toHom.comp g ↔ f = g :=
@@ -515,6 +513,7 @@ end Embedding
 
 namespace Equiv
 
+@[macro_inline]
 instance : EquivLike (M ≃[L] N) M N where
   coe f := f.toFun
   inv f := f.invFun
@@ -596,7 +595,7 @@ theorem coe_toEmbedding (f : M ≃[L] N) : (f.toEmbedding : M → N) = (f : M �
   rfl
 
 theorem injective_toEmbedding : Function.Injective (toEmbedding : (M ≃[L] N) → M ↪[L] N) := by
-  intro _ _ h; apply DFunLike.coe_injective; exact congr_arg (DFunLike.coe ∘ Embedding.toHom) h
+  intro _ _ h; apply DFunLike.coe_injective; congrm (DFunLike.coe ∘ Embedding.toHom) $h
 
 theorem coe_injective : @Function.Injective (M ≃[L] N) (M → N) (↑) :=
   DFunLike.coe_injective
@@ -666,7 +665,7 @@ theorem comp_assoc (f : M ≃[L] N) (g : N ≃[L] P) (h : P ≃[L] Q) :
 theorem injective_comp (h : N ≃[L] P) :
     Function.Injective (h.comp : (M ≃[L] N) → (M ≃[L] P)) := by
   intro f g hfg
-  ext x; exact h.injective (congr_fun (congr_arg DFunLike.coe hfg) x)
+  ext x; exact h.injective congr($hfg x)
 
 @[simp]
 theorem comp_toHom (hnp : N ≃[L] P) (hmn : M ≃[L] N) :

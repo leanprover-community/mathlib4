@@ -36,6 +36,11 @@ namespace FintypeCat
 abbrev of (X : Type*) [Finite X] : FintypeCat :=
   ⟨X, inferInstance⟩
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `FintypeCat.of X` as `↧X`. -/
+@[app_delab FintypeCat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 instance instCoeSort : CoeSort FintypeCat Type* :=
   ⟨fun X ↦ X.obj⟩
 
@@ -79,11 +84,11 @@ lemma hom_apply {X Y : FintypeCat} (f : X ⟶ Y) (x : X) :
 
 -- Isn't `@[simp]` because `simp` can prove it after importing `Mathlib.CategoryTheory.Elementwise`.
 lemma hom_inv_id_apply {X Y : FintypeCat} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = x :=
-  ConcreteCategory.congr_hom f.hom_inv_id x
+  congr($f.hom_inv_id x)
 
 -- Isn't `@[simp]` because `simp` can prove it after importing `Mathlib.CategoryTheory.Elementwise`.
 lemma inv_hom_id_apply {X Y : FintypeCat} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y :=
-  ConcreteCategory.congr_hom f.inv_hom_id y
+  congr($f.inv_hom_id y)
 
 @[ext]
 lemma hom_ext {X Y : FintypeCat} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g :=
@@ -110,7 +115,7 @@ lemma homMk_eq_id_iff {X : FintypeCat} (f : X → X) :
   constructor
   · intro h
     ext x
-    exact ConcreteCategory.congr_hom h x
+    congrm $h x
   · rintro rfl
     rfl
 
@@ -120,7 +125,7 @@ lemma homMk_eq_comp_iff {X Y Z : FintypeCat} (f : X → Y) (g : Y → Z) (h : X 
   constructor
   · intro h
     ext x
-    exact ConcreteCategory.congr_hom h x
+    congrm $h x
   · rintro rfl
     rfl
 
@@ -176,7 +181,7 @@ def len : Skeleton → ℕ :=
 
 @[ext]
 theorem ext (X Y : Skeleton) : X.len = Y.len → X = Y :=
-  ULift.ext _ _
+  ULift.ext
 
 instance : SmallCategory Skeleton.{u} where
   Hom X Y := ULift.{u} (Fin X.len) → ULift.{u} (Fin Y.len)
@@ -186,7 +191,7 @@ instance : SmallCategory Skeleton.{u} where
 theorem is_skeletal : Skeletal Skeleton.{u} := fun X Y ⟨h⟩ =>
   ext _ _ <|
     Fin.equiv_iff_eq.mp <|
-      Nonempty.intro <|
+      Nonempty.intro
         { toFun := fun x => (h.hom ⟨x⟩).down
           invFun := fun x => (h.inv ⟨x⟩).down
           left_inv := by
@@ -206,7 +211,7 @@ theorem is_skeletal : Skeletal Skeleton.{u} := fun X Y ⟨h⟩ =>
 
 /-- The canonical fully faithful embedding of `FintypeCat.Skeleton` into `FintypeCat`. -/
 def incl : Skeleton.{u} ⥤ FintypeCat.{u} where
-  obj X := FintypeCat.of (ULift (Fin X.len))
+  obj X := ↧(ULift (Fin X.len))
   map f := homMk f
 
 instance : incl.Full where map_surjective _ := ⟨_, rfl⟩
@@ -255,7 +260,7 @@ attribute [local instance] FintypeCat.fintype in
 `uSwitch.{u, v} : FintypeCat.{u} ⥤ FintypeCat.{v}` by sending
 `X : FintypeCat.{u}` to `ULift.{v} (Fin (Fintype.card X))`. -/
 noncomputable def uSwitch : FintypeCat.{u} ⥤ FintypeCat.{v} where
-  obj X := FintypeCat.of <| ULift.{v} (Fin (Fintype.card X))
+  obj X := ↧(ULift.{v} (Fin (Fintype.card X)))
   map {X Y} f :=
     homMk (ULift.up ∘ Fintype.equivFin Y ∘ f.hom ∘ (Fintype.equivFin X).symm ∘ ULift.down)
 

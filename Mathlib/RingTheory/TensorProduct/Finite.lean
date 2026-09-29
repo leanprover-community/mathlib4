@@ -34,7 +34,6 @@ submodule of `N`, under the tensor product of the inclusion `J → N` and the id
 theorem exists_fg_le_eq_rTensor_subtype (x : N ⊗ M) :
     ∃ (J : Submodule R N) (_ : J.FG) (y : J ⊗ M), x = rTensor M J.subtype y := by
   induction x with
-  | zero => exact ⟨⊥, fg_bot, 0, rfl⟩
   | tmul i m => exact ⟨R ∙ i, fg_span_singleton i, ⟨i, mem_span_singleton_self _⟩ ⊗ₜ[R] m, rfl⟩
   | add x₁ x₂ ihx₁ ihx₂ =>
     obtain ⟨J₁, fg₁, y₁, rfl⟩ := ihx₁
@@ -84,7 +83,6 @@ instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [
     refine ⟨⟨s.image (TensorProduct.mk R A M 1), eq_top_iff.mpr ?_⟩⟩
     rintro x -
     induction x with
-    | zero => exact zero_mem _
     | tmul x y =>
       rw [Finset.coe_image, ← Submodule.span_span_of_tower R, Submodule.span_image, hs,
         Submodule.map_top, LinearMap.coe_range, ← mul_one x, ← smul_eq_mul,
@@ -131,7 +129,7 @@ lemma Module.exists_surjective_quotient_of_finite :
   let f := (LinearMap.toSpanSingleton R _ x).quotKerEquivOfSurjective
     (by rw [← LinearMap.range_eq_top, ← LinearMap.span_singleton_eq_range, hx])
   refine ⟨_, f.symm.toLinearMap.comp N.mkQ, fun e ↦ ?_, f.symm.surjective.comp N.mkQ_surjective⟩
-  obtain rfl : x = 0 := by simpa using LinearMap.congr_fun (LinearMap.ker_eq_top.mp e) 1
+  obtain rfl : x = 0 := by simpa using congr($(LinearMap.ker_eq_top.mp e) 1)
   have : Nontrivial (M ⧸ N) := by rwa [Submodule.Quotient.nontrivial_iff]
   simp at hx
 

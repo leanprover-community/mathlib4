@@ -155,7 +155,7 @@ theorem mem_centeredArc_div {z : Circle} {s : ℝ} {n : ℕ} (hs : s ≤ π)
     contrapose! h2
     simp [centeredArc_eq_empty h2]
   have hn0 : n ≠ 0 := by
-    contrapose! h1
+    contrapose h1
     simp [h1]
   have hn : 1 ≤ (n : ℝ) := by simpa [Nat.one_le_iff_ne_zero]
   rw [mem_centeredArc ((div_le_self hs0.le hn).trans hs),
@@ -276,7 +276,7 @@ lemma disjoint_path_image_Ioc (h : x ≠ y) :
 
 lemma compl_path_image_Ioc (h : x ≠ y) : (path x y '' Ioc 0 1)ᶜ = path y x '' Ioc 0 1 :=
   (compl_subset_iff_union.mpr <| path_image_Ioc_union h).antisymm
-    <| (disjoint_path_image_Ioc h.symm).subset_compl_right
+    (disjoint_path_image_Ioc h.symm).subset_compl_right
 
 lemma compl_range_path (h : x ≠ y) : (range (path x y))ᶜ = path y x '' Ioo 0 1 := by
   rw [range_path, ← Ioc_insert_left (by simp), image_insert_eq,
@@ -468,7 +468,7 @@ theorem Circle.hasBasis_centeredArc_div_two_pow :
     (fun _ _ ↦ by positivity) (by simp) ?_
   simp_rw [div_eq_mul_inv, pow_succ, mul_inv_rev, ← mul_assoc]
   rw [← mul_zero (π * 2⁻¹)]
-  exact tendsto_inv_atTop_zero.comp (tendsto_pow_atTop_atTop_of_one_lt (by norm_num))
+  exact tendsto_inv_atTop_zero.comp (tendsto_pow_atTop_atTop_of_one_lt (by simp))
     |>.const_mul _
 
 theorem Circle.isOpen_centeredArc (r : ℝ) : IsOpen (centeredArc r) := by

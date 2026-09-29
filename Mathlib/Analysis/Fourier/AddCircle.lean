@@ -134,7 +134,7 @@ theorem fourier_coe_apply {n : ℤ} {x : ℝ} :
   rw [fourier_apply, ← QuotientAddGroup.mk_zsmul, toCircle, Function.Periodic.lift_coe,
     Circle.coe_exp, Complex.ofReal_mul, Complex.ofReal_div, Complex.ofReal_mul, zsmul_eq_mul,
     Complex.ofReal_mul, Complex.ofReal_intCast]
-  norm_num
+  simp
   congr 1; ring
 
 @[simp]
@@ -444,7 +444,7 @@ theorem hasSum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
     apply_mod_cast lp.hasSum_norm ?_ (fourierBasis.repr f)
     simp
   have H₂ : ‖fourierBasis.repr f‖ ^ 2 = ‖f‖ ^ 2 := by simp
-  have H₃ := congr_arg RCLike.re (@L2.inner_def (AddCircle T) ℂ ℂ _ _ _ _ _ f f)
+  have H₃ := congr(RCLike.re $(@L2.inner_def (AddCircle T) ℂ ℂ _ _ _ _ _ f f))
   rw [← integral_re] at H₃
   · simp only [← norm_sq_eq_re_inner] at H₃
     rwa [H₂, H₃] at H₁

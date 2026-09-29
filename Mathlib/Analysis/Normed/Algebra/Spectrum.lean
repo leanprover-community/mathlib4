@@ -5,16 +5,14 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
 public import Mathlib.Analysis.Real.Spectrum
 public import Mathlib.Analysis.Normed.Algebra.Exponential
 public import Mathlib.Analysis.Normed.Algebra.UnitizationL1
-public import Mathlib.Analysis.Normed.Ring.Units
-public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+import Mathlib.Analysis.Normed.Ring.Units
+import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
-public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.Algebra.Module.Spaces.CharacterSpace
-public import Mathlib.Topology.Semicontinuity.Hemicontinuity
+import Mathlib.Topology.Semicontinuity.Hemicontinuity
 
 /-!
 # The spectrum of elements in a complete normed algebra
@@ -138,7 +136,8 @@ theorem spectralRadius_one [Nontrivial A] :
 theorem mem_resolventSet_of_spectralRadius_lt {a : A} {k : 𝕜}
     (h : spectralRadius 𝕜 a < ‖k‖₊) : k ∈ ρ a := by
   rw [spectralRadius_eq_of_unital] at h
-  exact Classical.not_not.mp fun hn => h.not_ge <| le_iSup₂ (α := ℝ≥0∞) k hn
+  contrapose! h
+  grw [← le_iSup₂ k h]
 
 lemma spectralRadius_pow_le (a : A) (n : ℕ) (hn : n ≠ 0) :
     (spectralRadius 𝕜 a) ^ n ≤ spectralRadius 𝕜 (a ^ n) := by
@@ -226,7 +225,7 @@ theorem exists_nnnorm_eq_spectralRadius_of_nonempty [ProperSpace 𝕜] {a : A}
     ∃ k ∈ spectrum 𝕜 a, (‖k‖₊ : ℝ≥0∞) = spectralRadius 𝕜 a := by
   obtain ⟨k, hk, h⟩ := (spectrum.isCompact a).exists_isMaxOn ha continuous_nnnorm.continuousOn
   rw [spectralRadius_eq_of_unital]
-  exact ⟨k, hk, le_antisymm (le_iSup₂ (α := ℝ≥0∞) k hk) (iSup₂_le <| mod_cast h)⟩
+  exact ⟨k, hk, le_antisymm (by grw [← le_iSup₂ k hk]) (iSup₂_le <| mod_cast h)⟩
 
 theorem spectralRadius_lt_of_forall_lt_of_nonempty [ProperSpace 𝕜] {a : A} {r : ℝ≥0}
     (ha : (spectrum 𝕜 a).Nonempty) (hr : ∀ k ∈ spectrum 𝕜 a, ‖k‖₊ < r) :
@@ -496,7 +495,8 @@ alias spectrum.spectralRadius_le_nnnorm := spectralRadius_le_nnnorm
 theorem exists_nnnorm_quasispectrum_eq_spectralRadius [ProperSpace 𝕜] (a : A) :
     ∃ k ∈ quasispectrum 𝕜 a, (‖k‖₊ : ℝ≥0∞) = spectralRadius 𝕜 a := by
   obtain ⟨k, hk, h⟩ := (isCompact a).exists_isMaxOn (nonempty 𝕜 a) continuous_nnnorm.continuousOn
-  exact ⟨k, hk, le_antisymm (le_iSup₂ (α := ℝ≥0∞) k hk) (iSup₂_le <| mod_cast h)⟩
+  unfold spectralRadius
+  exact ⟨k, hk, le_antisymm (by grw [← le_iSup₂ k hk]) (iSup₂_le <| mod_cast h)⟩
 
 theorem spectralRadius_lt_of_forall_quasispectrum_lt [ProperSpace 𝕜] {a : A} {r : ℝ≥0}
     (hr : ∀ k ∈ quasispectrum 𝕜 a, ‖k‖₊ < r) : spectralRadius 𝕜 a < r :=
@@ -722,11 +722,10 @@ lemma QuasispectrumRestricts.spectralRadius_eq {𝕜₁ 𝕜₂ A : Type*} [Norm
   have := algebraMap_isometry 𝕜₁ 𝕜₂ |>.nnnorm_map_of_map_zero (map_zero _)
   apply le_antisymm
   all_goals apply iSup₂_le fun x hx ↦ ?_
-  · refine congr_arg ((↑) : ℝ≥0 → ℝ≥0∞) (this x) |>.symm.trans_le <| le_iSup₂ (α := ℝ≥0∞) _ ?_
+  · grw [← this, ← le_iSup₂ _ ?_]
     exact (quasispectrum.algebraMap_mem_iff _).mpr hx
-  · have ⟨y, hy, hy'⟩ := h.algebraMap_image.symm ▸ hx
-    subst hy'
-    exact this y ▸ le_iSup₂ (α := ℝ≥0∞) y hy
+  · obtain ⟨y, hy, rfl⟩ := h.algebraMap_image.symm ▸ hx
+    grw [this, ← le_iSup₂ y hy]
 
 namespace SpectrumRestricts
 
@@ -762,7 +761,7 @@ lemma nnreal_iff_spectralRadius_le [Algebra ℝ A] {a : A} {t : ℝ≥0} (ht : s
     simp
   · replace h : ∀ x ∈ spectrum ℝ a, ‖t - x‖₊ ≤ t := by
       simpa [spectralRadius, iSup₂_le_iff, ← spectrum.singleton_sub_eq] using h
-    peel h with x hx h_le
+    gconvert h with x hx h_le
     rw [← NNReal.coe_le_coe, coe_nnnorm, Real.norm_eq_abs, abs_le] at h_le
     linarith [h_le.2]
 
