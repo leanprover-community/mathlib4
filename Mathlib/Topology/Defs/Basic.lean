@@ -68,7 +68,7 @@ universe u v
 open Set
 
 /-- A topology on `X`. -/
-@[wikidata Q179899, to_dual_dont_translate]
+@[to_dual_dont_translate, wikidata Q179899]
 class TopologicalSpace (X : Type u) where
   /-- A predicate saying that a set is an open set. Use `IsOpen` in the root namespace instead. -/
   protected IsOpen : Set X → Prop
