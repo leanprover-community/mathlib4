@@ -76,7 +76,7 @@ lemma IsReduced.linearIndependent_iff [Nontrivial R] [P.IsReduced] :
   · rw [h h']
     exact ⟨1, 1, by simp⟩
 
-lemma nsmul_notMem_range_root [CharZero R] [IsAddTorsionFree M] [P.IsReduced]
+lemma nsmul_notMem_range_root [CharZero R] [HasUniqueDiv M] [P.IsReduced]
     {n : ℕ} [n.AtLeastTwo] {i : ι} :
     n • P.root i ∉ range P.root := by
   have : ¬ LinearIndependent R ![n • P.root i, P.root i] := by
@@ -96,7 +96,7 @@ lemma nsmul_notMem_range_root [CharZero R] [IsAddTorsionFree M] [P.IsReduced]
     lia
 
 lemma linearIndependent_of_add_mem_range_root
-    [CharZero R] [IsAddTorsionFree M] [P.IsReduced] {i j : ι}
+    [CharZero R] [HasUniqueDiv M] [P.IsReduced] {i j : ι}
     (h : P.root i + P.root j ∈ range P.root) :
     LinearIndependent R ![P.root i, P.root j] := by
   refine IsReduced.linearIndependent P (fun hij ↦ ?_) (fun hij ↦ P.zero_notMem_range_root ?_)
@@ -105,7 +105,7 @@ lemma linearIndependent_of_add_mem_range_root
   · rwa [hij, neg_add_cancel] at h
 
 lemma linearIndependent_of_sub_mem_range_root
-    [CharZero R] [IsAddTorsionFree M] [P.IsReduced] {i j : ι}
+    [CharZero R] [HasUniqueDiv M] [P.IsReduced] {i j : ι}
     (h : P.root i - P.root j ∈ range P.root) :
     LinearIndependent R ![P.root i, P.root j] := by
   suffices LinearIndependent R ![P.root i, P.root (P.reflectionPerm j j)] by simpa using this
@@ -126,7 +126,7 @@ lemma linearIndependent_of_sub_mem_range_root' [CharZero R] [IsDomain R] [P.IsRe
   have : IsAddTorsionFree M := .of_isTorsionFree R M
   P.linearIndependent_of_sub_mem_range_root h
 
-lemma infinite_of_linearIndependent_coxeterWeight_four [NeZero (2 : R)] [IsAddTorsionFree M]
+lemma infinite_of_linearIndependent_coxeterWeight_four [NeZero (2 : R)] [HasUniqueDiv M]
     (hl : LinearIndependent R ![P.root i, P.root j]) (hc : P.coxeterWeight i j = 4) :
     Infinite ι := by
   refine (infinite_range_iff (Embedding.injective P.root)).mp (Infinite.mono ?_
@@ -169,7 +169,7 @@ section Finite
 
 variable [Finite ι]
 
-lemma coxeterWeight_ne_four_of_linearIndependent [NeZero (2 : R)] [IsAddTorsionFree M]
+lemma coxeterWeight_ne_four_of_linearIndependent [NeZero (2 : R)] [HasUniqueDiv M]
     (hl : LinearIndependent R ![P.root i, P.root j]) :
     P.coxeterWeight i j ≠ 4 := by
   intro contra

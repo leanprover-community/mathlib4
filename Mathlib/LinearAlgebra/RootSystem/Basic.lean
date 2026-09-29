@@ -84,7 +84,7 @@ variable (P : RootPairing ι R M N) [Finite ι]
 roots. The proof depends crucially on the fact that there are finitely-many roots.
 
 Modulo trivial generalisations, this statement is exactly Lemma 1.1.4 on page 87 of SGA 3 XXI. -/
-lemma injOn_dualMap_subtype_span_root_coroot [IsAddTorsionFree M] :
+lemma injOn_dualMap_subtype_span_root_coroot [HasUniqueDiv M] :
     InjOn ((span R (range P.root)).subtype.dualMap ∘ₗ P.toLinearMap.flip) (range P.coroot) := by
   have := injOn_dualMap_subtype_span_range_range (finite_range P.root)
     (c := P.toLinearMap.flip ∘ P.coroot) P.root_coroot_two P.mapsTo_reflection_root
