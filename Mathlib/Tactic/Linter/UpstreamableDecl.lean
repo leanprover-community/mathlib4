@@ -113,10 +113,10 @@ def upstreamableDeclLinter : Linter where run := withSetOptionIn fun stx ↦ do
       match minImports.size, minImports.min? with
       | 1, some upstream => do
         if !(← env.localDefinitionDependencies stx id) then
-          let p : GoToModuleLinkProps := { modName := upstream }
+          let p : ImportGraph.Widget.GoToModuleProps := { modName := upstream }
           let widget : MessageData := .ofWidget
             (← liftCoreM <| Widget.WidgetInstance.ofHash
-              GoToModuleLink.javascriptHash <|
+              ImportGraph.Widget.GoToModule.javascriptHash <|
               Server.RpcEncodable.rpcEncode p)
             (toString upstream)
           Linter.logLint linter.upstreamableDecl id
