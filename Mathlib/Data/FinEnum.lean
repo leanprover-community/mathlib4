@@ -197,6 +197,7 @@ instance (priority := 100) [FinEnum α] : Fintype α where
   elems := univ.map equiv.symm.toEmbedding
   complete := by intros; simp
 
+/- Get the nth successor under the ordering induced by a `FinEnum` instance -/
 def succMany? [inst : FinEnum α] (n : Nat) (x : α) : Option α :=
   let next := inst.equiv x + n
   if fits : next < card α
@@ -225,6 +226,30 @@ lemma succMany?_succ [inst : FinEnum α] (n : Nat) (x : α) :
     (succMany? n x).bind (succMany? 1) = succMany? (n + 1) x := by
   grind [succMany?]
 
+@[grind →]
+lemma succMany?_inj_nat [inst : FinEnum α]
+    (n m : Nat) (x : α) (hn : equiv x + n < card α) (heq : succMany? n x = succMany? m x) :
+    n = m := by
+  simp [succMany?] at heq
+  split_ifs at heq <;> simpa using heq
+
+@[grind →]
+lemma succMany?_inj_elem [inst : FinEnum α]
+    (n : Nat) (x y : α) (hn : equiv x + n < card α) (heq : succMany? n x = succMany? n y) :
+    x = y := by
+  simp only [succMany?] at heq
+  split_ifs at heq
+  · injection heq with heq
+    simp at heq
+    apply inst.equiv.injective
+    apply Fin.ext
+    assumption
+  · injection heq with heq
+    simp at heq
+    apply inst.equiv.injective
+    apply Fin.ext
+    assumption
+
 @[grind =]
 lemma succMany?_bind [inst : FinEnum α] {n m : Nat} {x : α} :
     (succMany? n x).bind (succMany? m) = succMany? (n + m) x := by
@@ -238,6 +263,10 @@ lemma succMany?_bind [inst : FinEnum α] {n m : Nat} {x : α} :
       rewrite [← @succMany?_succ _ inst m x]
     rewrite [← Option.bind_assoc, ih]
     apply succMany?_succ
+
+lemma succMany?_comm [inst : FinEnum α] {n m : Nat} {x : α} :
+    (succMany? n x).bind (succMany? m) = (succMany? m x).bind (succMany? n) := by
+    grind only [succMany?_bind]
 
 instance instUpwardEnumerable [inst : FinEnum α] : Std.PRange.UpwardEnumerable α where
   succ? := succMany? 1
