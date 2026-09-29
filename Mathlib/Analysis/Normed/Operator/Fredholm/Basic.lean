@@ -5,6 +5,7 @@ Authors: Jon Bannon, Anatole Dedecker, Yongxi Lin, Patrick Massot, Oliver Nash, 
 -/
 module
 
+public import Mathlib.Algebra.Module.LinearMap.Index
 public import Mathlib.Analysis.Normed.Operator.Perturbation.StrictByFinite
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Invertible
 
@@ -156,6 +157,11 @@ projection onto the "essential part" `dec.X₁` along the "inessential part" `de
 This is a Fredholm operator, see `FredholmDecomposition.isFredholm_proj`. -/
 abbrev _root_.FredholmDecomposition.proj (dec : FredholmDecomposition 𝕜 E) :
     E →L[𝕜] dec.X₁ := dec.X₁.projectionOntoL dec.X₀ dec.isTopCompl
+
+lemma _root_.FredholmDecomposition.cofg_X₁ (dec : FredholmDecomposition 𝕜 E) :
+    dec.X₁.CoFG :=
+  have := dec.finite_X₀
+  FG.cofg_of_isCompl dec.isTopCompl.isCompl.symm .of_finite
 
 /-- Let `u : E →L[𝕜] F` be a continuous linear map. A **Fredholm package** for `u` is the data of
 Fredholm decompositions `decDom` and `decCodom` of `E` and `F` respectively, together with
@@ -588,6 +594,32 @@ theorem isFredholm_codRestrict_iff {f : E →L[𝕜] F} {B : Submodule 𝕜 F}
 alias ⟨IsFredholm.of_codRestrict, IsFredholm.codRestrict⟩ := isFredholm_codRestrict_iff
 
 end Constructions
+
+section Index
+
+/-!
+## Specific index computations for Fredholm operators
+
+In this section, we restate for Fredholm operators some general algebraic results about
+`LinearMap.index`. Ideally we wouldn't need such a section at all, but as of August 2026
+it is easier to work with the API for `IsFredholm` than with the specific finiteness assumptions
+used, for example, in `LinearMap.index_comp`.
+
+This suggests that we may want an algebraic version of the `IsFredholm` predicate to express
+"this linear map has finite dimensional kernel and cokernel", or equivalently "this linear map
+admits a quasi-inverse". The API would then mimic that of `IsFredholm`.
+-/
+
+lemma IsFredholm.index_comp {g : F →L[𝕜] G} {f : E →L[𝕜] F}
+    (hg : IsFredholm g) (hf : IsFredholm f) :
+    (g ∘L f).index = g.index + f.index :=
+  have := hf.finite_ker
+  have := hf.finite_coker
+  have := hg.finite_ker
+  have := hg.finite_coker
+  LinearMap.index_comp _ _
+
+end Index
 
 end TVS
 end ContinuousLinearMap

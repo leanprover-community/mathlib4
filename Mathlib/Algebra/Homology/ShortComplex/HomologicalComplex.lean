@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.Algebra.Homology.ShortComplex.Exact
-public import Mathlib.Algebra.Homology.ShortComplex.Preadditive
 public import Mathlib.Tactic.NormNum
 
 /-!
@@ -383,6 +382,27 @@ set_option backward.isDefEq.respectTransparency false in
 lemma opcyclesMap_comp : opcyclesMap (φ ≫ ψ) i = opcyclesMap φ i ≫ opcyclesMap ψ i := by
   dsimp [opcyclesMap]
   rw [Functor.map_comp, ShortComplex.opcyclesMap_comp]
+
+instance [IsIso φ] : IsIso (homologyMap φ i) where
+  out := ⟨homologyMap (inv φ) i, by simp [← homologyMap_comp]⟩
+
+instance [IsIso φ] : IsIso (cyclesMap φ i) where
+  out := ⟨cyclesMap (inv φ) i, by simp [← cyclesMap_comp]⟩
+
+instance [IsIso φ] : IsIso (opcyclesMap φ i) where
+  out := ⟨opcyclesMap (inv φ) i, by simp [← opcyclesMap_comp]⟩
+
+@[simp ←, push]
+lemma homologyMap_inv [IsIso φ] : inv (homologyMap φ i) = homologyMap (inv φ) i := by
+  simp [← cancel_epi (homologyMap φ i), ← homologyMap_comp]
+
+@[simp ←, push]
+lemma cyclesMap_inv [IsIso φ] : inv (cyclesMap φ i) = cyclesMap (inv φ) i := by
+  simp [← cancel_epi (cyclesMap φ i), ← cyclesMap_comp]
+
+@[simp ←, push]
+lemma opcyclesMap_inv [IsIso φ] : inv (opcyclesMap φ i) = opcyclesMap (inv φ) i := by
+  simp [← cancel_epi (opcyclesMap φ i), ← opcyclesMap_comp]
 
 variable (K L)
 

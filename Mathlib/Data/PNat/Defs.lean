@@ -11,6 +11,7 @@ public import Mathlib.Data.PNat.Notation
 public import Mathlib.Order.Basic
 public import Mathlib.Tactic.Coe
 public import Mathlib.Tactic.Lift
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 # The positive natural numbers
@@ -99,11 +100,11 @@ theorem mk_le_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) �
 
 theorem mk_lt_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) < ⟨k, hk⟩ ↔ n < k := by simp
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_simp ←]
 theorem coe_le_coe (n k : ℕ+) : (n : ℕ) ≤ k ↔ n ≤ k :=
   Iff.rfl
 
-@[simp, norm_cast]
+@[simp, norm_cast, basify_simp ←]
 theorem coe_lt_coe (n k : ℕ+) : (n : ℕ) < k ↔ n < k :=
   Iff.rfl
 
@@ -124,6 +125,7 @@ theorem ne_zero (n : ℕ+) : (n : ℕ) ≠ 0 :=
 instance _root_.NeZero.pnat {a : ℕ+} : NeZero (a : ℕ) :=
   ⟨a.ne_zero⟩
 
+@[basify_simp]
 theorem toPNat'_coe {n : ℕ} : 0 < n → (n.toPNat' : ℕ) = n :=
   succ_pred_eq_of_pos
 
@@ -147,7 +149,7 @@ instance : Inhabited ℕ+ :=
 theorem mk_one {h} : (⟨1, h⟩ : ℕ+) = (1 : ℕ+) :=
   rfl
 
-@[norm_cast]
+@[norm_cast, basify_op]
 theorem one_coe : ((1 : ℕ+) : ℕ) = 1 :=
   rfl
 
@@ -238,3 +240,11 @@ instance Int.canLiftPNat : CanLift ℤ ℕ+ (↑) ((0 < ·)) :=
         Int.natAbs_of_nonneg hn.le]⟩⟩
 
 end CanLift
+
+
+/-- A `Subtype.mk`-free eliminator for `ℕ+`, exposing the underlying natural and its positivity.
+See `NNReal.recToNNReal` for why `basify` needs this shape. -/
+@[elab_as_elim, basify_elim]
+def PNat.recToPNat {C : ℕ+ → Sort*} (mk : ∀ (n : ℕ) (_pos : 0 < n), C n.toPNat') (t : ℕ+) :
+    C t :=
+  PNat.coe_toPNat' t ▸ mk t t.pos

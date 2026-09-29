@@ -365,8 +365,6 @@ theorem linearIndepOn_equiv (e : ι ≃ ι') {f : ι' → M} {s : Set ι} :
 theorem linearIndepOn_univ_iff : LinearIndepOn R v univ ↔ LinearIndependent R v :=
   linearIndependent_equiv' (Equiv.Set.univ ι) rfl
 
-@[deprecated (since := "2026-02-24")] alias linearIndepOn_univ := linearIndepOn_univ_iff
-
 alias ⟨_, LinearIndependent.linearIndepOn_univ⟩ := linearIndepOn_univ_iff
 
 lemma LinearIndependent.linearIndepOn (h : LinearIndependent R v) (s : Set ι) :
@@ -473,7 +471,7 @@ theorem LinearIndependent.linearCombination_repr (x) :
 
 theorem LinearIndependent.linearCombination_comp_repr :
     (Finsupp.linearCombination R v).comp hv.repr = Submodule.subtype _ :=
-  LinearMap.ext <| hv.linearCombination_repr
+  LinearMap.ext hv.linearCombination_repr
 
 theorem LinearIndependent.repr_ker : LinearMap.ker hv.repr = ⊥ := by
   rw [LinearIndependent.repr, LinearEquiv.ker]
@@ -712,7 +710,7 @@ theorem LinearIndependent.neg (hv : LinearIndependent R v) : LinearIndependent R
   intro f g h
   simp only [Finsupp.linearCombination_apply, Pi.neg_apply, smul_neg, Finsupp.sum_neg, neg_inj] at h
   ext m
-  exact DFunLike.congr_fun (hv h) m
+  congrm $(hv h) m
 
 @[simp] theorem linearIndependent_neg_iff :
     LinearIndependent R (-v) ↔ LinearIndependent R v := by
@@ -832,8 +830,8 @@ theorem linearIndepOn_iff_disjoint : LinearIndepOn R v s ↔
 
 theorem linearIndepOn_iff_linearCombinationOn :
     LinearIndepOn R v s ↔ (LinearMap.ker <| Finsupp.linearCombinationOn ι M R v s) = ⊥ :=
-  linearIndepOn_iff_linearCombinationOnₛ.trans <|
-    LinearMap.ker_eq_bot (M := Finsupp.supported R R s).symm
+  linearIndepOn_iff_linearCombinationOnₛ.trans
+    (LinearMap.ker_eq_bot (M := Finsupp.supported R R s)).symm
 
 /-- A version of `linearIndepOn_iff` where the linear combination is a `Finset` sum. -/
 lemma linearIndepOn_iff' : LinearIndepOn R v s ↔ ∀ (t : Finset ι) (g : ι → R), (t : Set ι) ⊆ s →

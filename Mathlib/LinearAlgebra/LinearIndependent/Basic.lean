@@ -205,10 +205,14 @@ theorem LinearIndependent.units_smul_iff (v : ι → M) (w : ι → Rˣ) :
   convert! h.units_smul (fun i ↦ (w i)⁻¹)
   simp [funext_iff]
 
+protected theorem LinearIndependent.codRestrict (hs : LinearIndependent R v) (N : Submodule R M)
+    (h : ∀ i, v i ∈ N) : LinearIndependent R (Set.codRestrict v N h) :=
+  LinearIndependent.of_comp N.subtype hs
+
 theorem linearIndependent_span (hs : LinearIndependent R v) :
     LinearIndependent R (M := span R (range v))
       (fun i : ι ↦ ⟨v i, subset_span (mem_range_self i)⟩) :=
-  LinearIndependent.of_comp (span R (range v)).subtype hs
+  hs.codRestrict _ _
 
 /-- Every finite subset of a linearly independent set is linearly independent. -/
 theorem linearIndependent_finset_map_embedding_subtype (s : Set M)
@@ -425,7 +429,7 @@ theorem linearIndependent_sum {v : ι ⊕ ι' → M} :
   refine ⟨?_, ?_⟩
   · intro h
     refine ⟨h.comp _ Sum.inl_injective, h.comp _ Sum.inr_injective, ?_⟩
-    exact h.disjoint_span_image <| isCompl_range_inl_range_inr.disjoint
+    exact h.disjoint_span_image isCompl_range_inl_range_inr.disjoint
   rintro ⟨hl, hr, hlr⟩
   rw [linearIndependent_iff'] at *
   intro s g hg i hi
@@ -542,7 +546,7 @@ theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [Com
   -- From these two facts we deduce that `g` actually vanishes on `s`,
   have h3 (i) (his : i ∈ s) : g i = 0 := by
     let ⟨y, hy⟩ := h2 i his
-    have h : g i • i y = g i • a y := congr_fun (h1 i his) y
+    have h : g i • i y = g i • a y := congr($(h1 i his) y)
     rw [← sub_eq_zero, ← smul_sub, smul_eq_zero] at h
     exact h.resolve_right (sub_ne_zero_of_ne hy)
   -- And so, using the fact that the linear combination over `s` and over `insert a s` both

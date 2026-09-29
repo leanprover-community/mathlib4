@@ -5,8 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ComposableArrows.One
-public import Mathlib.CategoryTheory.ComposableArrows.Two
 public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 public import Mathlib.Algebra.Homology.SpectralObject.Basic
 
@@ -136,7 +134,6 @@ section
 variable {ι' : Type*} [Category ι'] (F : ι' ⥤ ι)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] Precomp.map Precomp.obj δ in
 /-- The precomposition of a spectral object with a functor. -/
 def precomp : SpectralObject C ι' where

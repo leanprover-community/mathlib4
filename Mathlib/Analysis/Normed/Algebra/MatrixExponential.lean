@@ -10,9 +10,7 @@ public import Mathlib.Analysis.Matrix.Normed
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 public import Mathlib.LinearAlgebra.Matrix.ZPow
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
-public import Mathlib.LinearAlgebra.Matrix.Symmetric
-public import Mathlib.LinearAlgebra.Matrix.Block
-public import Mathlib.Topology.UniformSpace.Matrix
+import Mathlib.Topology.UniformSpace.Matrix
 public import Mathlib.Topology.Instances.Matrix
 
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
