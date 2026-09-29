@@ -257,6 +257,10 @@ lemma isClosed_isNowhereDense_iff_compl {s : Set X} :
   rw [and_congr_right IsClosed.isNowhereDense_iff,
     isOpen_compl_iff, interior_eq_empty_iff_dense_compl]
 
+theorem isClosed_compl_and_isNowhereDense_compl {s : Set X} :
+    IsClosed sᶜ ∧ IsNowhereDense sᶜ ↔ IsOpen s ∧ Dense s := by
+  rw [isClosed_isNowhereDense_iff_compl, compl_compl]
+
 /-- To check that `s` is nowhere dense, it suffices to check that no point of `s`
 is in the interior of `closure s`. -/
 lemma isNowhereDense_iff_disjoint {s : Set X} :
@@ -333,6 +337,14 @@ lemma isMeagre_iff_countable_union_isNowhereDense {s : Set X} :
     rw [forall_mem_image]
     exact ⟨fun s hs ↦ ⟨isClosed_closure, (hS s hs).closure⟩,
       (hc.image _).image _, hsub.trans (sUnion_mono_subsets fun s ↦ subset_closure)⟩
+
+/-- A set is meagre iff it is a countable union of nowhere dense sets. -/
+theorem isMeagre_iff_eq_countable_union_isNowhereDense {s : Set X} :
+    IsMeagre s ↔ ∃ S : Set (Set X), (∀ t ∈ S, IsNowhereDense t) ∧ S.Countable ∧ s = ⋃₀ S := by
+  refine isMeagre_iff_countable_union_isNowhereDense.trans ⟨fun ⟨S, hd, hc, hsub⟩ ↦ ?_, by grind⟩
+  refine ⟨(s ∩ ·) '' S, ?_, hc.image _, by simpa [← inter_iUnion₂, ← sUnion_eq_biUnion]⟩
+  rintro _ ⟨t, htS, rfl⟩
+  exact hd t htS |>.mono inter_subset_right
 
 /-- A set of second category (i.e. non-meagre) is nonempty. -/
 lemma nonempty_of_not_isMeagre {s : Set X} (hs : ¬IsMeagre s) : s.Nonempty := by

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Order.SetNotation
 public import Mathlib.Tactic.Continuity
-public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.FunProp
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Data.Nat.Notation
@@ -243,7 +242,7 @@ end Topology
 any countable intersection of open dense subsets is dense.
 Formulated here when the source space is ℕ.
 Use `dense_iInter_of_isOpen` which works for any countable index type instead. -/
-@[wikidata Q1150180, pibase topology P000064]
+@[mk_iff, wikidata Q1150180, pibase topology P000064]
 class BaireSpace (X : Type*) [TopologicalSpace X] : Prop where
   baire_property : ∀ f : ℕ → Set X, (∀ n, IsOpen (f n)) → (∀ n, Dense (f n)) → Dense (⋂ n, f n)
 

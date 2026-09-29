@@ -39,7 +39,7 @@ def Lean.Environment.localDefinitionDependencies (env : Environment) (stx id : S
   let immediateDeps : NameSet := immediateDeps.foldl (init := ∅) fun s n =>
     if (env.find? n).isSome then s.insert n else s
 
-  let deps ← liftCoreM <| immediateDeps.transitivelyUsedConstants
+  let deps ← liftCoreM immediateDeps.transitivelyUsedConstants
   let constInfos := deps.toList.filterMap env.find?
   -- We allow depending on theorems and constructors.
   -- We explicitly allow constructors since `inductive` declarations are reported to depend on their
@@ -113,10 +113,10 @@ def upstreamableDeclLinter : Linter where run := withSetOptionIn fun stx ↦ do
       match minImports.size, minImports.min? with
       | 1, some upstream => do
         if !(← env.localDefinitionDependencies stx id) then
-          let p : GoToModuleLinkProps := { modName := upstream }
+          let p : ImportGraph.Widget.GoToModuleProps := { modName := upstream }
           let widget : MessageData := .ofWidget
             (← liftCoreM <| Widget.WidgetInstance.ofHash
-              GoToModuleLink.javascriptHash <|
+              ImportGraph.Widget.GoToModule.javascriptHash <|
               Server.RpcEncodable.rpcEncode p)
             (toString upstream)
           Linter.logLint linter.upstreamableDecl id

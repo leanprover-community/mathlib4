@@ -5,8 +5,6 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-public import Mathlib.Algebra.Regular.Basic
 public import Mathlib.Algebra.Ring.NonZeroDivisors
 public import Mathlib.Data.Fintype.Prod
 public import Mathlib.GroupTheory.MonoidLocalization.Divisibility
@@ -151,7 +149,7 @@ abbrev toLocalizationMap : M.LocalizationMap S where
 
 @[simp]
 lemma toLocalizationMap_toMonoidHom :
-    (toLocalizationMap M S).toMonoidHom = (.ofClass (algebraMap R S) : R →*₀ S) := rfl
+    (toLocalizationMap M S).toMonoidHom = (algebraMap R S : R →*₀ S) := rfl
 
 @[simp] lemma coe_toLocalizationMap : ⇑(toLocalizationMap M S) = algebraMap R S := rfl
 
@@ -480,7 +478,6 @@ theorem lift_spec_mul_add {g : R →+* P} (hg : ∀ y : M, IsUnit (g y)) (z w w'
     mul_comm]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a localization map `f : R →+* S` for a submonoid `M ⊆ R` and a map of `CommSemiring`s
 `g : R →+* P` such that `g y` is invertible for all `y : M`, the homomorphism induced from
 `S` to `P` sending `z : S` to `g x * (g y)⁻¹`, where `(x, y) : R × M` are such that
@@ -543,7 +540,7 @@ theorem monoidHom_ext {P : Type*} [Monoid P] ⦃j k : S →* P⦄
 theorem ringHom_ext {P : Type*} [Semiring P] ⦃j k : S →+* P⦄
     (h : j.comp (algebraMap R S) = k.comp (algebraMap R S)) :
     j = k :=
-  RingHom.coe_monoidHom_injective <| monoidHom_ext M <| MonoidHom.ext <| RingHom.congr_fun h
+  RingHom.toMonoidHom_injective <| monoidHom_ext M <| MonoidHom.ext <| RingHom.congr_fun h
 
 /-- To show `j` and `k` agree on the whole localization, it suffices to show they agree
 on the image of the base ring, if they preserve `1` and `*`. -/
