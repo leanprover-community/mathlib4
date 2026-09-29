@@ -515,13 +515,13 @@ then so is the domain. -/]
 theorem Function.Injective.isMulTorsionFree [Monoid M] [Monoid N] [IsMulTorsionFree N]
     (f : M →* N) (hf : Function.Injective f) : IsMulTorsionFree M where
   eq_of_pow_eq_pow_of_commute n hn x y h hxy :=
-    hf <| IsMulTorsionFree.eq_of_pow_eq_pow_of_commute hn
+    hf <| eq_of_pow_eq_pow_of_commute hn
       (by simpa [commute_iff_eq] using congrArg f h) (by simpa using congrArg f hxy)
 
-/-- If the codomain of an injective monoid homomorphism is torsion free,
+/-- If the codomain of an injective monoid homomorphism has unique roots,
 then so is the domain. -/
-@[to_additive /-- If the codomain of an injective additive monoid homomorphism is torsion free,
-then so is the domain. -/]
+@[to_additive /-- If the codomain of an injective additive monoid homomorphism has unique
+divisibility, then so is the domain. -/]
 theorem Function.Injective.hasUniqueRoots [Monoid M] [Monoid N] [HasUniqueRoots N]
     (f : M →* N) (hf : Function.Injective f) : HasUniqueRoots M where
   pow_left_injective n hn x y hxy := hf <| HasUniqueRoots.pow_left_injective hn <| by

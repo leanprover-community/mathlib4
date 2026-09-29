@@ -521,8 +521,10 @@ For commutative types (e.g., rings and modules), the stronger `HasUniqueDiv` sho
 TODO: Generalize this definition to additive semigroups once we have the `PNat` action. -/
 @[mk_iff]
 class IsAddTorsionFree (M : Type*) [AddMonoid M] where
-  protected nsmul_right_injective ⦃n : ℕ⦄ (hn : n ≠ 0) ⦃a b : M⦄ (hab : AddCommute a b)
+  eq_of_nsmul_eq_nsmul_of_addCommute ⦃n : ℕ⦄ (hn : n ≠ 0) ⦃a b : M⦄ (hab : AddCommute a b)
     (hn : n • a = n • b) : a = b
+
+export IsAddTorsionFree (eq_of_nsmul_eq_nsmul_of_addCommute)
 
 /-- A monoid is torsion-free if exponentiation by every non-zero element `n : ℕ` is
 injective on commuting elements (i.e., `a * b = b * a → a ^ n = b ^ n → a = b`).
@@ -539,10 +541,11 @@ For commutative types, the stronger `HasUniqueRoots` should be preferred.
 TODO: Generalize this definition to semigroups once we have the `PNat` action. -/
 @[to_additive, mk_iff]
 class IsMulTorsionFree (M : Type*) [Monoid M] where
-  protected eq_of_pow_eq_pow_of_commute ⦃n : ℕ⦄ (hn : n ≠ 0) ⦃a b : M⦄ (hab : Commute a b)
+  eq_of_pow_eq_pow_of_commute ⦃n : ℕ⦄ (hn : n ≠ 0) ⦃a b : M⦄ (hab : Commute a b)
     (hn : a ^ n = b ^ n) : a = b
 
 attribute [to_additive existing] isMulTorsionFree_iff
+export IsMulTorsionFree (eq_of_pow_eq_pow_of_commute)
 
 /-- An additive monoid has unique divisibility if scalar multiplication by every non-zero element
 `n : ℕ` is injective. This is the uniqueness counterpart to `DivisibleBy` which asserts existence.

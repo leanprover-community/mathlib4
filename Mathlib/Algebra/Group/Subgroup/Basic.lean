@@ -216,7 +216,7 @@ end Pi
 instance instIsMulTorsionFree [IsMulTorsionFree G] : IsMulTorsionFree H where
   eq_of_pow_eq_pow_of_commute n hn a b h hab := by
     rw [commute_iff_eq, Subtype.ext_iff] at *
-    exact IsMulTorsionFree.eq_of_pow_eq_pow_of_commute hn h hab
+    exact eq_of_pow_eq_pow_of_commute hn h hab
 
 @[to_additive]
 instance [HasUniqueRoots G] : HasUniqueRoots H where

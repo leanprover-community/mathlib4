@@ -38,7 +38,7 @@ variable [IsMulTorsionFree M] {n : ℕ} {a b : M}
 
 @[to_additive]
 lemma Commute.eq_of_pow_eq_pow (hab : Commute a b) (hn : n ≠ 0) (habn : a ^ n = b ^ n) : a = b :=
-  IsMulTorsionFree.eq_of_pow_eq_pow_of_commute hn hab habn
+  eq_of_pow_eq_pow_of_commute hn hab habn
 
 @[to_additive AddCommute.nsmul_right_inj]
 lemma Commute.pow_left_inj (hab : Commute a b) (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=

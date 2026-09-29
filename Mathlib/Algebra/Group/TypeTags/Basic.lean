@@ -476,7 +476,7 @@ instance Multiplicative.commGroup [AddCommGroup α] : CommGroup (Multiplicative 
   { Multiplicative.group, Multiplicative.commMonoid with }
 
 instance [Monoid α] [IsMulTorsionFree α] : IsAddTorsionFree (Additive α) where
-  nsmul_right_injective := IsMulTorsionFree.eq_of_pow_eq_pow_of_commute (M := α)
+  eq_of_nsmul_eq_nsmul_of_addCommute:= eq_of_pow_eq_pow_of_commute (M := α)
 
 instance [AddMonoid α] [IsAddTorsionFree α] : IsMulTorsionFree (Multiplicative α) where
   eq_of_pow_eq_pow_of_commute := IsAddTorsionFree.nsmul_right_injective (M := α)

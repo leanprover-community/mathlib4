@@ -214,11 +214,13 @@ variable (R M) [Semiring R] [AddCommGroup M] [Module R M]
 -- TODO: Add a `ℤ`-specific version of `smul_left_injective` and move this lemma to an earlier file.
 /-- Only a ring of characteristic zero can have a non-trivial module without additive or
 scalar torsion. -/
-lemma CharZero.of_isAddTorsionFree [Nontrivial M] [HasUniqueDiv M] : CharZero R := by
+lemma CharZero.of_hasUniqueDiv [Nontrivial M] [HasUniqueDiv M] : CharZero R := by
   refine ⟨fun {n m h} ↦ ?_⟩
   obtain ⟨x, hx⟩ := exists_ne (0 : M)
   replace h : (n : ℤ) • x = (m : ℤ) • x := by simp [← Nat.cast_smul_eq_nsmul R, h]
   simpa using smul_left_injective ℤ hx h
+
+@[deprecated (since := "2026-09-29")] alias CharZero.of_isAddTorsionFree := CharZero.of_hasUniqueDiv
 
 end Semiring
 

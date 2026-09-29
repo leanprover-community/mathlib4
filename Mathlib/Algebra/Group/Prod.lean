@@ -103,8 +103,7 @@ instance [Monoid M] [Monoid N] [IsMulTorsionFree M] [IsMulTorsionFree N] :
     IsMulTorsionFree (M × N) where
   eq_of_pow_eq_pow_of_commute n hn a b h hab := by
     rw [commute_iff_eq, Prod.ext_iff] at *
-    exact ⟨IsMulTorsionFree.eq_of_pow_eq_pow_of_commute hn h.1 hab.1,
-      IsMulTorsionFree.eq_of_pow_eq_pow_of_commute hn h.2 hab.2⟩
+    exact ⟨eq_of_pow_eq_pow_of_commute hn h.1 hab.1, eq_of_pow_eq_pow_of_commute hn h.2 hab.2⟩
 
 @[to_additive]
 instance [Monoid M] [Monoid N] [HasUniqueRoots M] [HasUniqueRoots N] :
