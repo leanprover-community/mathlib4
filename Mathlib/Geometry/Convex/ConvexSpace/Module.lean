@@ -161,7 +161,7 @@ lemma IsAffineMap.add (hf : IsAffineMap R f) (hg : IsAffineMap R g) : IsAffineMa
   isAffineMap_add.comp (hf.prodMk hg)
 
 section SMul
-variable {M : Type*} [Monoid M] [DistribMulAction M N] [SMulCommClass M R N] {m : M}
+variable {M : Type*} [DistribSMul M N] [SMulCommClass M R N] {m : M}
 
 @[fun_prop]
 lemma isAffineMap_const_smul : IsAffineMap R fun x : N ↦ m • x where
