@@ -230,9 +230,6 @@ theorem isCarmichaelCandidate_of_isCarmichael {bound n : ℕ}
   simp [isCarmichaelCandidate, not_isEvenOrSmall_of_isCarmichael hc,
     not_isPrimeTrial_of_isCarmichael hn hc, not_hasFermatWitness_of_isCarmichael [2, 3] hc]
 
-set_option exponentiation.threshold 1000
-set_option maxRecDepth 10000
-
 /-- Exhaustive verifier ensuring no candidates exist below `N`. -/
 def checkCarmichaelBound (N : ℕ) (bound : ℕ := 24) (bases : List ℕ := [2, 3]) : Bool :=
   (List.range N).all (fun n => !isCarmichaelCandidate n bound bases)
@@ -244,6 +241,8 @@ theorem checkCarmichaelBound_sound {N bound : ℕ} (hN : N ≤ bound ^ 2)
     List.all_eq_true.mp h n (List.mem_range.mpr hn)
 
 /-- There are no Carmichael numbers strictly less than 561. -/
+set_option exponentiation.threshold 600 in
+set_option maxRecDepth 1200 in
 theorem not_isCarmichael_of_lt_561 {n : ℕ} (hn : n < 561) : ¬ n.IsCarmichael :=
   checkCarmichaelBound_sound (bound := 24) (by decide) (by decide) n hn
 
