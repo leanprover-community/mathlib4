@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.BoundedVariation
 public import Mathlib.MeasureTheory.VectorMeasure.BoundedVariation
-public import Mathlib.MeasureTheory.VectorMeasure.Prod
+import Mathlib.MeasureTheory.VectorMeasure.Prod
 public import Mathlib.MeasureTheory.VectorMeasure.WithDensityVec
 
 /-!
