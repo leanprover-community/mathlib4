@@ -46,10 +46,10 @@ sides of the quadrilateral `a b c d` equals the sum of the squares of the two di
 four times the square of the distance between the midpoints of the diagonals. -/
 theorem dist_sq_add_dist_sq_add_dist_sq_add_dist_sq_eq_dist_sq_add_dist_sq_add_four_mul_dist_sq
     (a b c d : P) :
-    dist a b ^ 2 + dist b c ^ 2 + dist c d ^ 2 + dist d a ^ 2
-      = dist a c ^ 2 + dist b d ^ 2 + 4 * dist (midpoint ℝ a c) (midpoint ℝ b d) ^ 2 := by
-  have hm : (4 : ℝ) * dist (midpoint ℝ a c) (midpoint ℝ b d) ^ 2
-      = ‖(a -ᵥ b : V) + (c -ᵥ d)‖ ^ 2 := by
+    dist a b ^ 2 + dist b c ^ 2 + dist c d ^ 2 + dist d a ^ 2 =
+      dist a c ^ 2 + dist b d ^ 2 + 4 * dist (midpoint ℝ a c) (midpoint ℝ b d) ^ 2 := by
+  have hm : (4 : ℝ) * dist (midpoint ℝ a c) (midpoint ℝ b d) ^ 2 =
+      ‖(a -ᵥ b : V) + (c -ᵥ d)‖ ^ 2 := by
     rw [dist_eq_norm_vsub V, midpoint_vsub_midpoint, midpoint_eq_smul_add, norm_smul,
       invOf_eq_inv, Real.norm_eq_abs]
     ring
@@ -65,8 +65,8 @@ direction that assumes the shared midpoint is the parallelogram law, written wit
 between points. -/
 theorem dist_sq_add_dist_sq_add_dist_sq_add_dist_sq_eq_dist_sq_add_dist_sq_iff_midpoint_eq
     (a b c d : P) :
-    dist a b ^ 2 + dist b c ^ 2 + dist c d ^ 2 + dist d a ^ 2 = dist a c ^ 2 + dist b d ^ 2
-      ↔ midpoint ℝ a c = midpoint ℝ b d := by
+    dist a b ^ 2 + dist b c ^ 2 + dist c d ^ 2 + dist d a ^ 2 = dist a c ^ 2 + dist b d ^ 2 ↔
+      midpoint ℝ a c = midpoint ℝ b d := by
   rw [dist_sq_add_dist_sq_add_dist_sq_add_dist_sq_eq_dist_sq_add_dist_sq_add_four_mul_dist_sq,
     add_eq_left, mul_eq_zero_iff_left four_ne_zero, sq_eq_zero_iff, dist_eq_zero]
 
