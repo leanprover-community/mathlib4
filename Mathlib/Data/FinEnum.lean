@@ -273,14 +273,9 @@ instance [inst : FinEnum α] : Std.PRange.LawfulUpwardEnumerable α where
     have ⟨h, _⟩ := succMany?_eq_some_iff.mp h
     grind only
 
-  succMany?_zero x := by
-    apply succMany?_eq_some_iff.mpr
-    grind
+  succMany?_zero := succMany?_zero
 
-  succMany?_add_one n x := by
-    simp only [Std.PRange.UpwardEnumerable.succMany?, Std.PRange.UpwardEnumerable.succ?]
-    symm
-    apply succMany?_bind
+  succMany?_add_one n x := (succMany?_succ n x).symm
 
 /-- The enumeration merely adds an ordering, leaving the cardinality as is. -/
 theorem card_eq_fintypeCard {α : Type u} [FinEnum α] [Fintype α] : card α = Fintype.card α :=
