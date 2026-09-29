@@ -541,8 +541,7 @@ private def filterMinimizeFromLinarithConfig {m : Type → Type} [Monad m] [Mona
     m (TSyntax ``Lean.Parser.Tactic.optConfig) := do
   -- `foldConfigM` unwraps the `configItem` node, so we re-wrap the kept items.
   let wrap (stx : Syntax) : TSyntax ``Lean.Parser.Tactic.configItem :=
-    if stx.isOfKind ``Lean.Parser.Tactic.configItem then ⟨stx⟩
-    else ⟨mkNode ``Lean.Parser.Tactic.configItem #[stx]⟩
+    ⟨mkNode ``Lean.Parser.Tactic.configItem #[stx]⟩
   let items : TSyntaxArray ``Lean.Parser.Tactic.configItem ←
     ConfigEval.foldConfigM (init := #[]) cfg.raw
       -- Keep any item that is not `minimize`.
