@@ -47,8 +47,8 @@ def dropListLitQ {u : Level} {α : Q(Type u)} (l : Q(List $α)) (k : Nat) : Q(Li
     | List.cons _ _ tl => dropListLitQ (α := α) tl k
     | _ => l
 
-/-- Three views of one matrix literal. Cert construction functions often need to take
-several representations as arguments to avoid redundant literal construction or `Expr` parsing. -/
+/-- Three views of one matrix literal. This makes the argument list more succinct when a cert
+construction function needs to use multiple representations. -/
 structure MatrixViews (u : Level) (m n : Nat) (α : Q(Type u)) where
   /-- The matrix, the `ofLists` term on `lit`. -/
   matrix : Q(Matrix (Fin $m) (Fin $n) $α)
@@ -139,11 +139,11 @@ def certifyPivotedList {u : Level} {n : Nat} {α : Q(Type u)} (zα : Q(Zero $α)
 /-- Prove that `U` is pivoted by `pivotOfList cols` from the rows of `U`, with `certifier` proving
 the pivot entries nonzero. -/
 def certifyPivotedBy {u : Level} {m n : Nat} {α : Q(Type u)} (zα : Q(Zero $α))
-    (U : MatrixViews u m n α) (pivots : Array Nat) (cols : Q(List (Fin $n)))
+    (U : MatrixViews u m n α) (pivots : List Nat) (cols : Q(List (Fin $n)))
     (certifier : EntryCertifier) :
     MetaM Q(($(U.matrix)).IsPivotedBy fun i : Fin $m ↦ pivotOfList $cols i) := do
   let hsorted ← mkDecideProofQ q(($cols).SortedLT)
-  let h ← certifyPivotedList zα certifier pivots.toList cols U.lit
+  let h ← certifyPivotedList zα certifier pivots cols U.lit
   return mkExpectedPropHint q(isPivotedBy_ofLists (m := $m) $hsorted $h)
     q(($(U.matrix)).IsPivotedBy fun i : Fin $m ↦ pivotOfList $cols i)
 
@@ -210,7 +210,8 @@ def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommR
   let cα : Q(AddCommMonoid $α) ← synthInstanceQ q(AddCommMonoid $α)
   have U := MatrixViews.ofArray zα m n data.U
   let σ ← mkPerm m data.swaps
-  let cols : Q(List (Fin $n)) := mkListLitQ (← data.pivot.toList.mapM (mkFinLitQ n))
+  let pivots := data.pivot.toList
+  let cols : Q(List (Fin $n)) := mkListLitQ (← pivots.mapM (mkFinLitQ n))
   have pivot : Q(Fin $m → WithTop (Fin $n)) := q(fun i : Fin $m ↦ pivotOfList $cols i)
   let lRows : List (List Q($α)) := data.L.toList.map Array.toList
   let aRows : List (List Q($α)) := (data.rowOrder.map (entries[·]!)).toList.map Array.toList
@@ -223,7 +224,7 @@ def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommR
   let hprod : Q($Lm * $Aσm = $Um) ← certifyProductEq cα mulEq U certifier?
   let hU : Q($Lm * ($A).submatrix $σ id = $Um) := q($hperm ▸ $hprod)
   let certifier := certifier?.getD mkDecideProofQ
-  let hpivot : Q(($Um).IsPivotedBy $pivot) ← certifyPivotedBy zα U data.pivot cols certifier
+  let hpivot : Q(($Um).IsPivotedBy $pivot) ← certifyPivotedBy zα U pivots cols certifier
   let ⟨hlower, hdiag⟩ ← certifyLowerTriangularDiag zα m mulEq.A certifier
   have hlower : Q(($Lm).IsLowerTriangular) := hlower
   have hdiag : Q(∀ i, ($Lm).diag i ≠ 0) := hdiag
