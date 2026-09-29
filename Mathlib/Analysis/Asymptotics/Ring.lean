@@ -15,7 +15,7 @@ This file develops the behavior of `IsBigOWith`, `IsBigO`, and `IsLittleO` under
 multiplication by constants, multiplication of functions, powers, inversion, and division.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsBoundedSMul Summable OpenPartialHomeomorph BoundedLENhdsClass
 

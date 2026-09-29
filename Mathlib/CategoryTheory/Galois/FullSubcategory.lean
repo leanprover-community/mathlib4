@@ -20,7 +20,7 @@ which allows to show that `P.FullSubcategory` is also a Galois category.
 
 universe w v u
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

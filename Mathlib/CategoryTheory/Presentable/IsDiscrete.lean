@@ -14,7 +14,7 @@ object and a single morphism is locally presentable.
 
 -/
 
-@[expose] public section
+public section
 
 universe w
 

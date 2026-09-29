@@ -28,7 +28,7 @@ a unit. Finally, an injective `f` preserves the trace and the norm, and commutes
   an injective algebra homomorphism preserves the trace and the norm, and commutes with conjugation.
 -/
 
-@[expose] public section
+public section
 
 namespace QuadraticAlgebra
 

@@ -14,7 +14,7 @@ public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Init
 This file defines the hypothesis extensions for the `interval_dyadic_real` inclusion family.
 -/
 
-@[expose] public section
+public section
 
 namespace Inclusion
 

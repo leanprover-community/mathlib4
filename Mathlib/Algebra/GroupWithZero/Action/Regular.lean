@@ -12,7 +12,7 @@ public import Mathlib.Algebra.GroupWithZero.Action.Defs
 # Results about `IsSMulRegular` for `MonoidWithZero`
 -/
 
-@[expose] public section
+public section
 
 variable {R S M : Type*} {a b : R} {s : S}
 

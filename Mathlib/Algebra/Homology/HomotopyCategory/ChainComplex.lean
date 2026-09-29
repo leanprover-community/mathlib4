@@ -19,7 +19,7 @@ iff `K₁`.
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Limits HomologicalComplex
 

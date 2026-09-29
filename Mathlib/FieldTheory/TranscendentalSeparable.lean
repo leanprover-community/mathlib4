@@ -23,7 +23,7 @@ transcendental separable field extensions.
 
 -/
 
-@[expose] public section
+public section
 
 section
 

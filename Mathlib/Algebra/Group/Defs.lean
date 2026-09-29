@@ -14,7 +14,7 @@ This file defines additive and multiplicative group structures. Division monoid 
 defined in `Mathlib.Algebra.Group.DivInvMonoid`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero DenselyOrdered Function.const_injective
 

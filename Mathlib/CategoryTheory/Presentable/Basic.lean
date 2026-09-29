@@ -25,7 +25,7 @@ Similarly as for accessible functors, we define a type class `IsPresentable`.
 
 -/
 
-@[expose] public section
+public section
 
 universe t w w' v₁ v₂ v₃ u₁ u₂ u₃
 

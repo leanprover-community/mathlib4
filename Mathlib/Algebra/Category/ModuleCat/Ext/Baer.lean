@@ -41,7 +41,7 @@ universe than `ModuleCat.{v} R`.
 
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
