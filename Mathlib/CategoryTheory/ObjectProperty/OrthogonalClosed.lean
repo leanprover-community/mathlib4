@@ -6,11 +6,11 @@ Authors: Blake Farman
 module
 
 public import Mathlib.CategoryTheory.ObjectProperty.Orthogonal
-public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.ObjectProperty.Extensions
-public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 public import Mathlib.CategoryTheory.ObjectProperty.Subobject
-public import Mathlib.CategoryTheory.Abelian.ShortExact
+
+import Mathlib.Algebra.Homology.ShortComplex.Pullback
+import Mathlib.CategoryTheory.Abelian.Subobject
 
 /-!
 # Closure properties of orthogonals
@@ -142,9 +142,12 @@ lemma rightOrthogonal_cokernel_sSup (P : ObjectProperty C)
   -- The pullback `A'` of `B` along the cokernel projection is an extension of `B` by `A`,
   -- so it satisfies `P` and is therefore contained in `A`.
   let A' : Subobject X := (Subobject.pullback (cokernel.π A.arrow)).obj B
+  have hS : (ShortComplex.mk _ _ (cokernel.condition A.arrow)).ShortExact :=
+    { exact := ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel _) }
   have hA' : P (A' : C) :=
-    P.prop_X₂_of_shortExact (shortExact_shortComplexPullbackπCokernelπ B)
-      (P.prop_sSup _ fun _ hA ↦ hA) hB
+    P.prop_of_iso ((Subobject.isPullback (cokernel.π A.arrow) B).isoIsPullback _ _
+      (IsPullback.of_hasPullback _ _)).symm
+      (P.prop_X₂_of_shortExact (hS.pull B.arrow) (P.prop_sSup _ fun _ hA ↦ hA) hB)
   have hle : A' ≤ A := Subobject.le_sSup _ _ hA'
   -- Hence the projection of `A'` onto `B` vanishes, so `B`, and with it the image of `f`,
   -- is zero.
