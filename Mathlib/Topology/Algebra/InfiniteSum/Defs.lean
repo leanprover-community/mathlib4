@@ -316,7 +316,7 @@ theorem Multipliable.hasProd (ha : Multipliable f L) : HasProd f (∏'[L] b, f b
       rw [finprod_eq_prod_of_mulSupport_subset (s := h.2.toFinset)]
       · exact Finset.prod_congr rfl (by simp_all)
       · simp
-    · grind [Set.Finite.mem_toFinset, mem_mulSupport]
+    · grind [Set.Finite.mem_toFinset]
     · exact h.1
   · exact h'
   · exact ha.choose_spec

@@ -562,7 +562,8 @@ lemma affineCombination_mem_setInterior_face_iff_mem (I : Set k) {n : ℕ} (s : 
     convert! hw'01
     convert! Finset.univ.affineCombination_map (fs.orderEmbOfFin h).toEmbedding w s.points using 1
     simp only [map_orderEmbOfFin_univ, Finset.affineCombination_indicator_subset _ _ fs.subset_univ]
-    grind [Set.indicator_eq_self, mem_support]
+    congr
+    grind [Set.indicator_eq_self]
 
 lemma affineCombination_mem_interior_face_iff_mem_Ioo {n : ℕ} (s : Simplex k P n)
     {fs : Finset (Fin (n + 1))} {m : ℕ} (h : #fs = m + 1) {w : Fin (n + 1) → k}
