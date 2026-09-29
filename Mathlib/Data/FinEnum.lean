@@ -215,7 +215,12 @@ lemma succMany?_eq_some_iff [inst : FinEnum α] {n : Nat} {x y : α} :
   case mp => grind [succMany?]
   case mpr => grind [succMany?, Equiv.symm_apply_apply]
 
-@[grind =]
+@[simp, grind =]
+lemma succMany?_zero [inst : FinEnum α] (x : α) :
+    succMany? 0 x = x := by
+  grind only [succMany?_eq_some_iff]
+
+@[simp, grind =]
 lemma succMany?_succ [inst : FinEnum α] (n : Nat) (x : α) :
     (succMany? n x).bind (succMany? 1) = succMany? (n + 1) x := by
   grind [succMany?]
@@ -224,8 +229,7 @@ lemma succMany?_succ [inst : FinEnum α] (n : Nat) (x : α) :
 lemma succMany?_bind [inst : FinEnum α] {n m : Nat} {x : α} :
     (succMany? n x).bind (succMany? m) = succMany? (n + m) x := by
   induction m with
-  | zero =>
-    grind [succMany?]
+  | zero => simp
   | succ m ih =>
     conv =>
       lhs
