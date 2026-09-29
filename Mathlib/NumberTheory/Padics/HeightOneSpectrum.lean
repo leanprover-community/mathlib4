@@ -52,7 +52,7 @@ equivalent. It is best to do this after `Valued` has been refactored, or at leas
 
 @[expose] public section
 
-open IsDedekindDomain UniformSpace.Completion NumberField PadicInt
+open IsDedekindDomain UniformSpace.Completion NumberField PadicInt HeightOneSpectrum
 
 local instance (p : Nat.Primes) : Fact p.1.Prime := ⟨p.2⟩
 
@@ -143,10 +143,10 @@ noncomputable def withValEquiv (v : HeightOneSpectrum R) :
 /-- The continuous `ℚ`-algebra isomorphism between `v.adicCompletion ℚ` and `ℚ_[primesEquiv v]`. -/
 noncomputable def adicCompletion.padicEquiv (v : HeightOneSpectrum R) :
     v.adicCompletion ℚ ≃A[ℚ] ℚ_[primesEquiv v] where
-  __ := (IsDedekindDomain.HeightOneSpectrum.adicCompletion.equiv ℚ v).trans <|
+  __ := (adicCompletion.equiv ℚ v).trans <|
     (mapRingEquiv _ (withValEquiv v).continuous
       (withValEquiv v).symm.continuous).trans Padic.withValRingEquiv
-  __ := ((IsDedekindDomain.HeightOneSpectrum.adicCompletion.uniformEquiv ℚ v).trans <|
+  __ := ((adicCompletion.uniformEquiv ℚ v).trans <|
     (mapEquiv (withValEquiv v)).trans Padic.withValUniformEquiv).toHomeomorph
   commutes' := by simp
 
@@ -154,22 +154,16 @@ noncomputable def adicCompletion.padicEquiv (v : HeightOneSpectrum R) :
 `ℤ_[primesEquiv v]`. -/
 noncomputable def adicCompletionIntegers.padicIntEquiv (v : HeightOneSpectrum R) :
     v.adicCompletionIntegers ℚ ≃A[ℤ] ℤ_[primesEquiv v] where
-  __ := let e0 := (IsDedekindDomain.HeightOneSpectrum.adicCompletion.equiv ℚ v).restrict
+  __ := let e0 := (adicCompletion.equiv ℚ v).restrict
           (v.adicCompletionIntegers ℚ)
           (Valued.v (R := (v.valuation ℚ).Completion)).valuationSubring
-          fun _ ↦ by
-            rw [HeightOneSpectrum.mem_adicCompletionIntegers,
-              ← IsDedekindDomain.HeightOneSpectrum.adicCompletion.valued_toCompletion]
-            rfl
+          fun _ ↦ by rw [mem_adicCompletionIntegers, ← adicCompletion.valued_toCompletion]; rfl
         let e := (mapRingEquiv _ (withValEquiv v).continuous
           (withValEquiv v).symm.continuous).restrict _ _ fun _ ↦ by
             simpa using! (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
         (e0.trans e).trans withValIntegersRingEquiv
-  __ := let e0 := (IsDedekindDomain.HeightOneSpectrum.adicCompletion.uniformEquiv ℚ v).subtype
-          fun _ ↦ by
-            rw [HeightOneSpectrum.mem_adicCompletionIntegers,
-              ← IsDedekindDomain.HeightOneSpectrum.adicCompletion.valued_toCompletion]
-            rfl
+  __ := let e0 := (adicCompletion.uniformEquiv ℚ v).subtype
+          fun _ ↦ by rw [mem_adicCompletionIntegers, ← adicCompletion.valued_toCompletion]; rfl
         let e := (mapEquiv (withValEquiv v)).subtype fun _ ↦ by
           simpa using! (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
         ((e0.trans e).trans withValIntegersUniformEquiv).toHomeomorph
