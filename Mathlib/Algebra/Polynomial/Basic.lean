@@ -815,7 +815,7 @@ theorem smul_X_eq_monomial {n} : a • X ^ n = monomial n (a : R) := by
 
 @[simp]
 theorem support_X_pow [Nontrivial R] (n : ℕ) : (X ^ n : R[X]).support = singleton n := by
-  convert support_monomial n (NeZero.out (n := (1 : R)))
+  convert! support_monomial n (NeZero.out (n := (1 : R)))
   exact X_pow_eq_monomial n
 
 theorem support_X_empty (H : (1 : R) = 0) : (X : R[X]).support = ∅ := by
@@ -927,7 +927,7 @@ protected theorem induction_on {motive : R[X] → Prop} (p : R[X]) (C : ∀ a, m
     | succ n ih => exact monomial _ _ ih
   have B : ∀ s : Finset ℕ, motive (s.sum fun n : ℕ ↦ Polynomial.C (p.coeff n) * X ^ n) := by
     apply Finset.induction
-    · convert C 0
+    · convert! C 0
       exact C_0.symm
     · intro n s ns ih
       rw [sum_insert ns]

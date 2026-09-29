@@ -574,7 +574,7 @@ theorem lsub_unique {ι} [Unique ι] (f : ι → Ordinal) : lsub f = succ (f def
 @[deprecated "lsub is deprecated" (since := "2026-03-27")]
 theorem lsub_le_of_range_subset {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
     (h : Set.range f ⊆ Set.range g) : lsub.{u, max v w} f ≤ lsub.{v, max u w} g :=
-  csSup_le_csSup' bddAbove_of_small (by convert Set.image_mono h <;> apply Set.range_comp)
+  csSup_le_csSup' bddAbove_of_small (by convert! Set.image_mono h <;> apply Set.range_comp)
 
 @[deprecated "lsub is deprecated" (since := "2026-03-27")]
 theorem lsub_eq_of_range_eq {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}

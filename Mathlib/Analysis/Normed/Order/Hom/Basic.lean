@@ -33,7 +33,7 @@ abbrev GroupSeminormClass.toSeminormedGroup [Group α] [GroupSeminormClass F α 
   dist_eq _ _ := rfl
   dist_self _ := by simp
   dist_comm x y := by simp [← map_inv_eq_map f (x⁻¹ * y)]
-  dist_triangle x y z := by convert map_mul_le_add f (x⁻¹ * y) (y⁻¹ * z) using 2; group
+  dist_triangle x y z := by convert! map_mul_le_add f (x⁻¹ * y) (y⁻¹ * z) using 2; group
 
 @[to_additive]
 lemma GroupSeminormClass.toSeminormedGroup_norm_eq [Group α] [GroupSeminormClass F α ℝ]

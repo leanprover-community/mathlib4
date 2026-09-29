@@ -76,7 +76,7 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
       rsuffices ⟨r, hr⟩ : ∃ r : ℝ, ofRealHom.rangeRestrictField r = j (ι x)
       · have := congr($(ringHom_eq_ofReal_of_continuous hψ₁) r)
         rw [RingHom.comp_apply, RingHom.comp_apply, hr, RingEquiv.toRingHom_eq_coe] at this
-        convert this using 1
+        convert! this using 1
         · exact (IsDenseInducing.extend_eq di hc.continuous _).symm
         · rw [← ofRealHom.coe_rangeRestrictField, hr]
           rfl
@@ -103,7 +103,7 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
   · let j : { x // x ∈ closure (id '' K) } → (K.topologicalClosure : Set ℂ) :=
       fun x =>
       ⟨x, by
-        convert x.prop
+        convert! x.prop
         simp only [id, Set.image_id']
         rfl ⟩
     convert!
@@ -112,7 +112,7 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
     rintro ⟨y, hy⟩
     use
       ⟨y, by
-        convert hy
+        convert! hy
         simp only [id, Set.image_id']
         rfl ⟩
 

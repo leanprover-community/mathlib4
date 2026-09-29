@@ -763,7 +763,7 @@ theorem smulLeftCLM_compL_smulLeftCLM {g₁ g₂ : E → 𝕜} (hg₁ : g₁.Has
 theorem smulLeftCLM_smul {g : E → 𝕜} (hg : g.HasTemperateGrowth) (c : 𝕜) :
     smulLeftCLM F (c • g) = c • smulLeftCLM F g := by
   have : (fun (_ : E) ↦ c).HasTemperateGrowth := by fun_prop
-  convert (smulLeftCLM_compL_smulLeftCLM this hg).symm using 1
+  convert! (smulLeftCLM_compL_smulLeftCLM this hg).symm using 1
   simp
 
 theorem smulLeftCLM_add {g₁ g₂ : E → 𝕜} (hg₁ : g₁.HasTemperateGrowth)

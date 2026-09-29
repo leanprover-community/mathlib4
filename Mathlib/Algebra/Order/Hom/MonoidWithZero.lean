@@ -154,7 +154,7 @@ theorem toOrderMonoidHom_injective : Injective (toOrderMonoidHom : _ → α →*
   ext <| by convert! DFunLike.ext_iff.1 h using 0
 
 theorem toMonoidWithZeroHom_injective : Injective (toMonoidWithZeroHom : _ → α →*₀ β) :=
-  fun f g h => ext <| by convert DFunLike.ext_iff.1 h using 0
+  fun f g h => ext <| by convert! DFunLike.ext_iff.1 h using 0
 
 /-- Copy of an `OrderMonoidWithZeroHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/

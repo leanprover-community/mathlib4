@@ -78,7 +78,7 @@ noncomputable def IsField.toSemifield {R : Type u} [Semiring R] (h : IsField R) 
   inv a := if ha : a = 0 then 0 else Classical.choose (h.mul_inv_cancel ha)
   inv_zero := dite_eq_left rfl
   mul_inv_cancel a ha := by
-    convert Classical.choose_spec (h.mul_inv_cancel ha)
+    convert! Classical.choose_spec (h.mul_inv_cancel ha)
     exact dite_eq_right ha
   nnqsmul := _
   nnqsmul_def _ _ := rfl

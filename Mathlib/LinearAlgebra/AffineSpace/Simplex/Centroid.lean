@@ -515,7 +515,7 @@ theorem eq_centroid_of_forall_mem_median [CharZero k] (s : Simplex k P n) {hn : 
       fun x => ⟨x.val, h x⟩
     have f_inj : Function.Injective f := by intro x y hxy; grind
     have h2 := h1.comp f f_inj
-    convert h2 using 1
+    convert! h2 using 1
     grind only [mem_compl, Finset.notMem_singleton]
   have he : ∃ i j : s', i ≠ j := by
     simp only [ne_eq, Subtype.exists, Subtype.mk.injEq, exists_prop]

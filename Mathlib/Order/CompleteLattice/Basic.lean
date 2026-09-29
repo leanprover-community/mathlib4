@@ -600,7 +600,7 @@ theorem iSup_split (f : ι → α) (p : ι → Prop) :
 
 @[to_dual]
 theorem iSup_split_single (f : ι → α) (i₀ : ι) : ⨆ i, f i = f i₀ ⊔ ⨆ (i) (_ : i ≠ i₀), f i := by
-  convert iSup_split f (fun i => i = i₀)
+  convert! iSup_split f (fun i => i = i₀)
   simp
 
 @[to_dual]

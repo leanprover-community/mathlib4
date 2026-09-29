@@ -100,12 +100,12 @@ attribute [local instance] toCompleteLattice in
 noncomputable abbrev toCompleteDistribLatticeMinimalAxioms [DistribLattice α] [BoundedOrder α] :
     CompleteDistribLattice.MinimalAxioms α where
   iInf_sup_le_sup_sInf := fun a s => by
-    convert (Finset.inf_sup_distrib_left s.toFinset id a).ge using 1
+    convert! (Finset.inf_sup_distrib_left s.toFinset id a).ge using 1
     rw [Finset.inf_eq_iInf]
     simp_rw [Set.mem_toFinset]
     rfl
   inf_sSup_le_iSup_inf := fun a s => by
-    convert (Finset.sup_inf_distrib_left s.toFinset id a).le using 1
+    convert! (Finset.sup_inf_distrib_left s.toFinset id a).le using 1
     rw [Finset.sup_eq_iSup]
     simp_rw [Set.mem_toFinset]
     rfl

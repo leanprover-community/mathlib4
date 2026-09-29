@@ -130,7 +130,7 @@ theorem succNthVal_spec' (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k)
     Polynomial.eval_pow, succNthDefiningPoly, Polynomial.eval_mul, Polynomial.eval_add,
     Polynomial.eval_sub, Polynomial.IsRoot.def]
     at this
-  convert this using 1
+  convert! this using 1
   ring
 
 end IsAlgClosed

@@ -167,7 +167,7 @@ theorem starProjection_tendsto_self {ι : Type*} [Preorder ι]
   have : (⨆ i, U i).topologicalClosure.HasOrthogonalProjection := by
     rw [top_unique hU']
     infer_instance
-  convert starProjection_tendsto_closure_iSup U hU x
+  convert! starProjection_tendsto_closure_iSup U hU x
   rw [eq_comm, starProjection_eq_self_iff, top_unique hU']
   trivial
 

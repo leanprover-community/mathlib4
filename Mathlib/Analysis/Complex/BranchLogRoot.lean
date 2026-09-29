@@ -49,7 +49,7 @@ theorem exists_continuousOn_eqOn_exp_comp (hUc : IsSimplyConnected U) (hUo : IsO
   refine ⟨g, ?hg_cont, ?hg_inv⟩
   case hg_cont =>
     rw [continuousOn_iff_continuous_domRestrict]
-    convert map_continuous f
+    convert! map_continuous f
     ext z
     exact hg z
   case hg_inv =>

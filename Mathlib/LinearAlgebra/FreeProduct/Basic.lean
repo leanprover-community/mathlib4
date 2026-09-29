@@ -165,7 +165,7 @@ theorem mul_injections (a₁ a₂ : A i) :
       = ι' R A (DirectSum.lof R I A i (a₁ * a₂)) := by
   rw [← ι_apply, ← ι_apply, ← RingCon.coe_mul]
   refine Quotient.sound <| RingCon.le_ringConGen _ _ <| ?_
-  convert rel.prod
+  convert! rel.prod
   simp
 
 /-- The `i`th canonical injection, from `A i` to the free product, as

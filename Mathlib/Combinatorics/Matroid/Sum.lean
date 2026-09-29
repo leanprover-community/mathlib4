@@ -142,7 +142,7 @@ lemma Finitary.sigma (h : ∀ i, (M i).Finitary) : (Matroid.sigma M).Finitary :=
   intro i
   apply indep_of_forall_finite_subset_indep
   intro J hJI hJ
-  convert hI (Sigma.mk i '' J) (by simpa) (hJ.image _) i
+  convert! hI (Sigma.mk i '' J) (by simpa) (hJ.image _) i
   rw [sigma_mk_preimage_image_eq_self]
 
 end Sigma
@@ -239,14 +239,14 @@ protected def sum (M : Matroid α) (N : Matroid β) : Matroid (α ⊕ β) :=
     (M.sum N).Indep I ↔ M.Indep (.inl ⁻¹' I) ∧ N.Indep (.inr ⁻¹' I) := by
   simp only [Matroid.sum, mapEquiv_indep_iff, Equiv.sumCongr_symm, Equiv.sumCongr_apply,
     Equiv.symm_symm, sigma_indep_iff, Bool.forall_bool]
-  convert Iff.rfl <;>
+  convert! Iff.rfl <;>
     simp [Set.ext_iff, Equiv.ulift, Equiv.sumEquivSigmaBool]
 
 @[simp] lemma sum_isBase_iff {M : Matroid α} {N : Matroid β} {B : Set (α ⊕ β)} :
     (M.sum N).IsBase B ↔ M.IsBase (.inl ⁻¹' B) ∧ N.IsBase (.inr ⁻¹' B) := by
   simp only [Matroid.sum, mapEquiv_isBase_iff, Equiv.sumCongr_symm, Equiv.sumCongr_apply,
     Equiv.symm_symm, sigma_isBase_iff, Bool.forall_bool]
-  convert Iff.rfl <;>
+  convert! Iff.rfl <;>
     simp [Set.ext_iff, Equiv.ulift, Equiv.sumEquivSigmaBool]
 
 @[simp] lemma sum_isBasis_iff {M : Matroid α} {N : Matroid β} {I X : Set (α ⊕ β)} :
@@ -255,7 +255,7 @@ protected def sum (M : Matroid α) (N : Matroid β) : Matroid (α ⊕ β) :=
   simp only [Matroid.sum, mapEquiv_isBasis_iff, Equiv.sumCongr_symm,
     Equiv.sumCongr_apply, Equiv.symm_symm, sigma_isBasis_iff, Bool.forall_bool,
     Equiv.sumEquivSigmaBool, Equiv.coe_fn_mk, Equiv.ulift]
-  convert Iff.rfl <;> exact ext <| by simp
+  convert! Iff.rfl <;> exact ext <| by simp
 
 end Sum
 

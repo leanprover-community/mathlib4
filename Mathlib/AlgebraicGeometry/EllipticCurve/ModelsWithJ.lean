@@ -87,7 +87,7 @@ variable (R) [W.IsElliptic]
 It is of j-invariant 0 (see `WeierstrassCurve.ofJ0_j`). -/
 instance [hu : Fact (IsUnit (3 : R))] : (ofJ0 R).IsElliptic := by
   rw [isElliptic_iff, ofJ0_Δ]
-  convert (hu.out.pow 3).neg
+  convert! (hu.out.pow 3).neg
   norm_num1
 
 -- TODO: change to `[IsUnit ...]` once https://github.com/leanprover-community/mathlib4/issues/17458 is merged
@@ -100,7 +100,7 @@ lemma ofJ0_j [Fact (IsUnit (3 : R))] : (ofJ0 R).j = 0 := by
 It is of j-invariant 1728 (see `WeierstrassCurve.ofJ1728_j`). -/
 instance [hu : Fact (IsUnit (2 : R))] : (ofJ1728 R).IsElliptic := by
   rw [isElliptic_iff, ofJ1728_Δ]
-  convert (hu.out.pow 6).neg
+  convert! (hu.out.pow 6).neg
   norm_num1
 
 -- TODO: change to `[IsUnit ...]` once https://github.com/leanprover-community/mathlib4/issues/17458 is merged

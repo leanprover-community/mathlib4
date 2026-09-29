@@ -109,7 +109,7 @@ theorem hasSum_qExpansion_E2 :
   have hS : Summable fun n : ℕ ↦ σ 1 (n + 1) * 𝕢 z ^ (n + 1) :=
     (summable_nat_add_iff 1).mpr (summable_sigma_mul_cexp_pow (k := 2) (one_le_two) z)
   rw [← hasSum_nat_add_iff' 1]
-  convert (hS.mul_left (-24)).hasSum using 1
+  convert! (hS.mul_left (-24)).hasSum using 1
   · ext : 1
     simp [mul_assoc]
   · rw [E2_eq_tsum_cexp, tsum_pnat_eq_tsum_succ (f := fun n ↦ σ 1 n * 𝕢 z ^ n), tsum_mul_left]

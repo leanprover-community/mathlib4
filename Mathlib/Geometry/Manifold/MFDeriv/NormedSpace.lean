@@ -536,7 +536,7 @@ lemma mvfderivWithin_smul {a : M → 𝕜} (ha : MDiffAt[s] a x) {g : M → F} (
 lemma mvfderivWithin_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x)
     (hs : UniqueMDiffAt[s] x) :
     d[s](f * g) x = f x • d[s]g x + (g x) • (d[s]f x) := by
-  convert mvfderivWithin_smul hf hg hs
+  convert! mvfderivWithin_smul hf hg hs
   ext v
   simp [mul_comm]
 

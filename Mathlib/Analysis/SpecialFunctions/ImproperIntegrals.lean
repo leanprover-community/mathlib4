@@ -179,12 +179,12 @@ theorem integral_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < c) :
     ∫ t : ℝ in Ioi c, t ^ a = -c ^ (a + 1) / (a + 1) := by
   have hd : ∀ x ∈ Ici c, HasDerivAt (fun t => t ^ (a + 1) / (a + 1)) (x ^ a) x := by
     intro x hx
-    convert (hasDerivAt_rpow_const (p := a + 1) (Or.inl (hc.trans_le hx).ne')).div_const _ using 1
+    convert! (hasDerivAt_rpow_const (p := a + 1) (Or.inl (hc.trans_le hx).ne')).div_const _ using 1
     simp [show a + 1 ≠ 0 from ne_of_lt (by linarith), mul_comm]
   have ht : Tendsto (fun t => t ^ (a + 1) / (a + 1)) atTop (𝓝 (0 / (a + 1))) := by
     apply Tendsto.div_const
     simpa only [neg_neg] using tendsto_rpow_neg_atTop (by linarith : 0 < -(a + 1))
-  convert integral_Ioi_of_hasDerivAt_of_tendsto' hd (integrableOn_Ioi_rpow_of_lt ha hc) ht using 1
+  convert! integral_Ioi_of_hasDerivAt_of_tendsto' hd (integrableOn_Ioi_rpow_of_lt ha hc) ht using 1
   simp only [neg_div, zero_div, zero_sub]
 
 theorem integrableOn_Ioi_norm_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c) :
@@ -326,7 +326,7 @@ theorem integrableOn_inv_div_log_sq_Ioi {c : ℝ} (hc : 1 < c) :
     IntegrableOn (fun t ↦ t⁻¹ / (log t) ^ 2) (.Ioi c) volume := by
   apply integrableOn_Ioi_deriv_of_nonneg' _ _ tendsto_log_atTop.inv_tendsto_atTop.neg
   · intro t _
-    convert (hasDerivAt_inv_log (by grind : t ≠ 0) (by grind) (by grind)).neg using 1
+    convert! (hasDerivAt_inv_log (by grind : t ≠ 0) (by grind) (by grind)).neg using 1
     field
   · intro t _
     have : 0 < t := by grind
@@ -335,13 +335,11 @@ theorem integrableOn_inv_div_log_sq_Ioi {c : ℝ} (hc : 1 < c) :
 @[simp]
 theorem integral_inv_div_log_sq_Ioi {c : ℝ} (hc : 1 < c) :
     ∫ (t : ℝ) in .Ioi c, t⁻¹ / (log t) ^ 2 = (log c)⁻¹ := by
-  convert
-    integral_Ioi_of_hasDerivAt_of_tendsto' (m := 0) (f := fun t ↦ -(log t)⁻¹) ?_
-      (integrableOn_inv_div_log_sq_Ioi hc) ?_ using
-    1
+  convert! integral_Ioi_of_hasDerivAt_of_tendsto' (m := 0) (f := fun t ↦ -(log t)⁻¹) ?_
+    (integrableOn_inv_div_log_sq_Ioi hc) ?_ using 1
   · simp
   · intro t _
-    convert (hasDerivAt_inv_log (by grind : t ≠ 0) (by grind) (by grind)).neg using 1
+    convert! (hasDerivAt_inv_log (by grind : t ≠ 0) (by grind) (by grind)).neg using 1
     field
-  convert tendsto_log_atTop.inv_tendsto_atTop.neg using 1
+  convert! tendsto_log_atTop.inv_tendsto_atTop.neg using 1
   simp

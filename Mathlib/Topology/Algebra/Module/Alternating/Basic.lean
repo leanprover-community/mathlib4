@@ -101,7 +101,7 @@ theorem ext {f g : M [⋀^ι]→L[R] N} (H : ∀ x, f x = g x) : f = g :=
 
 theorem toAlternatingMap_injective :
     Injective (toAlternatingMap : (M [⋀^ι]→L[R] N) → (M [⋀^ι]→ₗ[R] N)) := fun f g h =>
-  DFunLike.ext' <| by convert DFunLike.ext'_iff.1 h
+  DFunLike.ext' <| by convert! DFunLike.ext'_iff.1 h
 
 @[simp]
 theorem range_toAlternatingMap :

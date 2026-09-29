@@ -542,7 +542,7 @@ def trim {m n : MeasurableSpace α} (v : VectorMeasure α M) (hle : m ≤ n) :
     (fun i hi => by rw [ite_eq_right hi])
     (fun f hf₁ hf₂ => by
       have hf₁' : ∀ k, MeasurableSet[n] (f k) := fun k => hle _ (hf₁ k)
-      convert v.m_iUnion hf₁' hf₂ using 1
+      convert! v.m_iUnion hf₁' hf₂ using 1
       · ext n
         rw [ite_eq_left (hf₁ n)]
       · rw [ite_eq_left (@MeasurableSet.iUnion _ _ m _ _ hf₁)])

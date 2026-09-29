@@ -75,10 +75,8 @@ lemma sum_Ico_le_integral_of_le (hab : a ≤ b)
 lemma integral_le_sum_Ico_of_le (hab : a ≤ b)
     (h : ∀ i ∈ Ico a b, ∀ x ∈ Ico (i : ℝ) ↑(i + 1), g x ≤ f i)
     (hg : IntegrableOn g (Ico a b)) : ∫ x in a..b, g x ≤ ∑ i ∈ .Ico a b, f i := by
-  convert
-    neg_le_neg
-      (sum_Ico_le_integral_of_le (f := -f) (g := -g) hab (fun i hi x hx ↦ neg_le_neg (h i hi x hx))
-        hg.neg) <;> simp
+  convert! neg_le_neg (sum_Ico_le_integral_of_le (f := -f) (g := -g) hab
+    (fun i hi x hx ↦ neg_le_neg (h i hi x hx)) hg.neg) <;> simp
 
 private theorem intervalIntegrable_subset_of_integrableOn
     (hfi : IntegrableOn f (Icc x₀ (x₀ + a)))
@@ -93,7 +91,7 @@ theorem AntitoneOn.integral_le_sum_of_integrableOn (hf : AntitoneOn f (Ico x₀ 
   have hii := intervalIntegrable_subset_of_integrableOn hfi
   calc
   _ = ∑ i ∈ .range a, ∫ x in x₀ + i..x₀ + ↑(i + 1), f x := by
-    convert (sum_integral_adjacent_intervals hii).symm
+    convert! (sum_integral_adjacent_intervals hii).symm
     simp
   _ ≤ ∑ i ∈ .range a, ∫ _ in x₀ + i..x₀ + ↑(i + 1), f (x₀ + i) := by
     gcongr with i hi
@@ -128,7 +126,7 @@ theorem AntitoneOn.sum_le_integral_of_integrableOn (hf : AntitoneOn f (Ioc x₀ 
     rify at hi this ⊢
     exact integral_mono_on_of_le_Ioo (by simp) (by simp) this fun _ _ ↦ by apply hf <;> grind
   _ = _ := by
-    convert sum_integral_adjacent_intervals hii
+    convert! sum_integral_adjacent_intervals hii
     simp [-Nat.cast_add]
 
 theorem AntitoneOn.sum_le_integral (hf : AntitoneOn f (Icc x₀ (x₀ + a))) :
@@ -287,10 +285,8 @@ theorem AntitoneOn.abs_tsum_sub_sum_range_le_integral {N : ℕ} (hN : 1 ≤ N)
   rw [← (AntitoneOn.summable_of_integrableOn_Ioi (mod_cast anti) (mod_cast integrable)
     (mod_cast nonneg)).sum_add_tsum_nat_add N, add_sub_cancel_left,
     abs_of_nonneg (tsum_nonneg <| by grind)]
-  convert
-    AntitoneOn.tsum_comp_add_le_integral (N - 1) (mod_cast anti) (mod_cast integrable)
-      (mod_cast nonneg) using
-    1
+  convert! AntitoneOn.tsum_comp_add_le_integral (N - 1) (mod_cast anti) (mod_cast integrable)
+      (mod_cast nonneg) using 1
   · congr; ext; congr 2; grind
   · norm_cast
 
@@ -333,7 +329,7 @@ theorem AntitoneOn.integral_le_tsum_comp_add (N : ℕ) (anti : AntitoneOn f (Ici
   filter_upwards with M
   calc
     _ ≤ ∑ n ∈ Finset.Ico N (N + M), f n := by
-      convert AntitoneOn.integral_le_sum_Ico _ _ using 2 <;> grind [anti.mono]
+      convert!  AntitoneOn.integral_le_sum_Ico _ _ using 2 <;> grind [anti.mono]
     _ = _ := by
       rw [Finset.sum_Ico_eq_sum_range]
       grind
