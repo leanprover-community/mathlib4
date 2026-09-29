@@ -2216,6 +2216,7 @@ public import Mathlib.Analysis.Normed.Group.Lemmas
 public import Mathlib.Analysis.Normed.Group.NullSubmodule
 public import Mathlib.Analysis.Normed.Group.Pointwise
 public import Mathlib.Analysis.Normed.Group.Quotient
+public import Mathlib.Analysis.Normed.Group.RadialFunction
 public import Mathlib.Analysis.Normed.Group.Rat
 public import Mathlib.Analysis.Normed.Group.Real
 public import Mathlib.Analysis.Normed.Group.SemiNormedGrp
