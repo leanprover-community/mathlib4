@@ -32,6 +32,7 @@ variable {D E F : Type*}
 namespace Function
 
 /-- A function on a space with a norm is *radial* if it factors through the norm. -/
+@[fun_prop]
 def IsRadial [Norm E] (f : E → F) : Prop := f.FactorsThrough (‖·‖ : E → ℝ)
 
 lemma isRadial_def [Norm E] (f : E → F) :
@@ -52,6 +53,7 @@ lemma eq_radialPart_comp_norm [Norm E] [Nonempty F] {f : E → F} (hf : f.IsRadi
 
 lemma even [SeminormedAddGroup E] {f : E → F} (hf : f.IsRadial) : f.Even := fun x ↦ hf (norm_neg x)
 
+@[fun_prop]
 lemma comp_right [Norm D] {f : D → E} {g : E → F} (hf : f.IsRadial) :
     (g ∘ f).IsRadial := by grind [isRadial_def]
 
@@ -66,12 +68,14 @@ section Norm
 variable [Norm E]
 
 variable (E) in
+@[fun_prop]
 lemma isRadial_norm : (‖·‖ : E → ℝ).IsRadial := by grind [isRadial_def]
 
 lemma IsRadial.comp_norm (g : ℝ → F) : (g ∘ (‖·‖ : E → ℝ)).IsRadial := by
   simp [IsRadial.comp_right, isRadial_norm]
 
 variable (E) in
+@[fun_prop]
 lemma isRadial_norm_sq : IsRadial (‖·‖ ^ 2 : E → ℝ) := by grind [isRadial_def]
 
 end Norm
