@@ -206,7 +206,7 @@ section Sum
 
 /-- The sum of two independent binomial random variables is a binomial random variable. -/
 lemma IndepFun.hasLaw_add_map_cast_binomial [MeasurableAdd₂ R] {n1 n2 : ℕ}
-    (hXY : X ⟂ᵢ[P] Y) (hX : HasLaw X (Bin(R, n1, p)) P) (hY : HasLaw Y (Bin(R, n2, p)) P) :
+    (hXY : X ⟂ᵢ[P] Y) (hX : HasLaw X Bin(R, n1, p) P) (hY : HasLaw Y Bin(R, n2, p) P) :
     HasLaw (X + Y) Bin(R, n1 + n2, p) P := by
   obtain ⟨Ω', mΩ', P', S, -, hS⟩ := (setBer(Iio (n1 + n2), p)).exists_hasLaw
   have := hS.isProbabilityMeasure
@@ -235,7 +235,7 @@ lemma IndepFun.hasLaw_add_map_cast_binomial [MeasurableAdd₂ R] {n1 n2 : ℕ}
 
 /-- The sum of two independent binomial random variables is a binomial random variable. -/
 lemma IndepFun.hasLaw_add_binomial {X Y : Ω → ℕ} {n1 n2 : ℕ}
-    (hXY : X ⟂ᵢ[P] Y) (hX : HasLaw X (Bin(n1, p)) P) (hY : HasLaw Y (Bin(n2, p)) P) :
+    (hXY : X ⟂ᵢ[P] Y) (hX : HasLaw X Bin(n1, p) P) (hY : HasLaw Y Bin(n2, p) P) :
     HasLaw (X + Y) Bin(n1 + n2, p) P := by
   convert hXY.hasLaw_add_map_cast_binomial (binomial_nat ▸ hX) (binomial_nat ▸ hY)
   simp
