@@ -226,7 +226,7 @@ section Reindex
 
 variable (R) {m o : Type*} [DecidableEq m] [Fintype m] [DecidableEq o] [Fintype o]
 
-/-- The equivalence between `GL m R` and `GL n S` by an equivalence `e : m ≃ n` -/
+/-- The equivalence between `GL m R` and `GL n S` given by an equivalence `e : m ≃ n` -/
 @[simps! apply]
 def reindexMulEquiv (e : m ≃ n) : GL m R ≃* GL n R := Units.mapEquiv (Matrix.reindexRingEquiv R e)
 
