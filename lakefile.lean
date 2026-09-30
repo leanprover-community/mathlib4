@@ -79,6 +79,7 @@ package mathlib where
 lean_lib MathlibInit where
   -- Enforce Mathlib's default linters and style options.
   leanOptions := mathlibLeanOptions
+  precompileLibrary := true
 
 @[default_target]
 lean_lib Mathlib where
