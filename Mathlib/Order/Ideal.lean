@@ -219,7 +219,7 @@ theorem isProper_of_ne_top (ne_top : I ≠ ⊤) : IsProper I :=
   ⟨fun h ↦ ne_top <| ext h⟩
 
 theorem IsProper.ne_top (_ : IsProper I) : I ≠ ⊤ :=
-  fun h ↦ IsProper.ne_univ <| congr_arg SetLike.coe h
+  fun h ↦ IsProper.ne_univ congr(SetLike.coe $h)
 
 theorem _root_.IsCoatom.isProper (hI : IsCoatom I) : IsProper I :=
   isProper_of_ne_top hI.1
@@ -323,7 +323,7 @@ variable [OrderTop P]
 
 @[simp]
 theorem principal_top : principal (⊤ : P) = ⊤ :=
-  toLowerSet_injective <| LowerSet.Iic_top
+  toLowerSet_injective LowerSet.Iic_top
 
 end OrderTop
 
