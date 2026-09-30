@@ -935,6 +935,10 @@ lemma not_isMulTorsionFree_iff_isOfFinOrder :
     ¬ IsMulTorsionFree G ↔ ∃ a ≠ (1 : G), IsOfFinOrder a := by
   simp [isMulTorsionFree_iff_not_isOfFinOrder]
 
+@[to_additive (attr := simp)]
+lemma zpowers_mabs [LinearOrder G] (g : G) : zpowers |g|ₘ = zpowers g :=
+  mabs_by_cases (zpowers ·  = zpowers g) rfl zpowers_inv
+
 @[to_additive]
 lemma IsMulTorsionFree.orderOf_le_one [IsMulTorsionFree G] (g : G) :
     orderOf g ≤ 1 := by
@@ -942,10 +946,6 @@ lemma IsMulTorsionFree.orderOf_le_one [IsMulTorsionFree G] (g : G) :
   · simp
   · rw [ne_eq, ← isOfFinOrder_iff_eq_one, ← orderOf_eq_zero_iff] at ha
     simp [ha]
-
-@[to_additive (attr := simp)]
-lemma zpowers_mabs [LinearOrder G] (g : G) : zpowers |g|ₘ = zpowers g :=
-  mabs_by_cases (fun h ↦ zpowers h = zpowers g) rfl zpowers_inv
 
 end Group
 
