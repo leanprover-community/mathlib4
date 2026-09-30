@@ -56,7 +56,7 @@ theorem lt_of_tsub_lt_tsub_right_of_le (h : c ≤ b) (h2 : a - c < b - c) : a < 
   exact h2.false
 
 theorem tsub_add_tsub_cancel (hab : b ≤ a) (hcb : c ≤ b) : a - b + (b - c) = a - c := by
-  convert! tsub_add_cancel_of_le (tsub_le_tsub_right hab c) using 2
+  convert tsub_add_cancel_of_le (tsub_le_tsub_right hab c) using 2
   rw [tsub_tsub, add_tsub_cancel_of_le hcb]
 
 theorem tsub_tsub_tsub_cancel_right (h : c ≤ b) : a - c - (b - c) = a - b := by

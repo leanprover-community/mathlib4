@@ -364,7 +364,7 @@ lemma nth_comp_of_strictMono {n : ℕ} {f : ℕ → ℕ} (hf : StrictMono f)
     rw [← hs h0', ← hf.monotone.map_csInf]
     · convert! rfl using 8 with k m' hm
       nth_rw 2 [← hf.lt_iff_lt]
-      convert! Iff.rfl using 2
+      convert Iff.rfl using 2
       exact ih m' (Nat.lt_add_one_iff.mp hm) fun hfi ↦ hm.trans (h hfi)
     · rcases h0 _ (nth_mem _ h) with ⟨t, ht⟩
       exact ⟨t, ht ▸ (nth_mem _ h), fun _ hk ↦ ht ▸ nth_lt_nth' hk h⟩

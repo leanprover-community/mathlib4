@@ -61,7 +61,7 @@ theorem mem_nonZeroDivisorsRight_of_constantCoeff {φ : MvPowerSeries σ R}
   intro e he
   rw [map_zero, ← mul_right_mem_nonZeroDivisorsRight_eq_zero_iff hφ,
     ← map_zero (f := coeff e), ← hx]
-  convert! (coeff_mul e x φ).symm
+  convert (coeff_mul e x φ).symm
   rw [Finset.sum_eq_single (e, 0), coeff_zero_eq_constantCoeff]
   · rintro ⟨u, _⟩ huv _
     suffices u < e by simp only [he u this, zero_mul, map_zero]
@@ -82,7 +82,7 @@ theorem mem_nonZeroDivisorsLeft_of_constantCoeff {φ : MvPowerSeries σ R}
   intro e he
   rw [map_zero, ← mul_left_mem_nonZeroDivisorsLeft_eq_zero_iff hφ,
     ← map_zero (f := coeff e), ← hx]
-  convert! (coeff_mul e φ x).symm
+  convert (coeff_mul e φ x).symm
   rw [Finset.sum_eq_single (0, e), coeff_zero_eq_constantCoeff]
   · rintro ⟨_, u⟩ huv _
     suffices u < e by simp only [he u this, mul_zero, map_zero]

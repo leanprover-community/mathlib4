@@ -82,7 +82,7 @@ def invertibleOfDetInvertible [Invertible A.det] : Invertible A where
 
 theorem invOf_eq [Invertible A.det] [Invertible A] : ⅟A = ⅟A.det • A.adjugate := by
   let := invertibleOfDetInvertible A
-  convert! (rfl : ⅟A = _)
+  convert (rfl : ⅟A = _)
 
 /-- `A.det` is invertible if `A` has a left inverse. -/
 @[instance_reducible]
@@ -105,7 +105,7 @@ def detInvertibleOfInvertible [Invertible A] : Invertible A.det :=
 
 theorem det_invOf [Invertible A] [Invertible A.det] : (⅟A).det = ⅟A.det := by
   let := detInvertibleOfInvertible A
-  convert! (rfl : _ = ⅟A.det)
+  convert (rfl : _ = ⅟A.det)
 
 /-- Together `Matrix.detInvertibleOfInvertible` and `Matrix.invertibleOfDetInvertible` form an
 equivalence, although both sides of the equiv are subsingleton anyway. -/

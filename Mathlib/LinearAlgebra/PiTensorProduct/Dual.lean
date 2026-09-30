@@ -75,7 +75,7 @@ theorem dualDistribInvOfBasis_apply [Fintype ι] [∀ i, Fintype (κ i)] (b : Π
   simp only [dualDistribInvOfBasis, Basis.coe_dualBasis, ringLmapEquivSelf_symm_apply, coe_sum,
     coe_comp, coe_smulRight, End.one_apply, Finset.sum_apply, Function.comp_apply,
     applyₗ_apply_apply]
-  convert! rfl
+  convert rfl
 
 theorem dualDistrib_dualDistribInvOfBasis_left_inverse [Finite ι] [∀ i, Finite (κ i)]
     (b : Π i, Basis (κ i) R (M i)) :
