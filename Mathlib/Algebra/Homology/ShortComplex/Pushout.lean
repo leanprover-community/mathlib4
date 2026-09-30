@@ -62,9 +62,8 @@ lemma ShortComplex.ShortExact.push
     obtain ⟨l, hl⟩ := CokernelCofork.IsColimit.desc' hS.gIsCokernel (pushout.inl _ _ ≫ s.π)
       (by simp [pushout.condition_assoc])
     refine ⟨l, by cat_disch, fun {m} hm ↦ ?_⟩
-    rw [← cancel_epi S.g]
     dsimp at m hm hl
-    simp [hl, ← hm]⟩
+    simp [← cancel_epi S.g, hl, ← hm]⟩
   exact { exact := h }
 
 end CategoryTheory
