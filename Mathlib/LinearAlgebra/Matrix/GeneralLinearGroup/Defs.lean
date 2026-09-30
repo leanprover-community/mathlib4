@@ -226,7 +226,7 @@ section Reindex
 
 variable (R) {m o : Type*} [DecidableEq m] [Fintype m] [DecidableEq o] [Fintype o]
 
-/-- The `MulEquiv` induced by an `Equiv` over the index -/
+/-- The equivalence between `GL m R` and `GL n S` by an equivalence `e : m ≃ n` -/
 @[simps! apply]
 def reindexMulEquiv (e : m ≃ n) : GL m R ≃* GL n R := Units.mapEquiv (Matrix.reindexRingEquiv R e)
 
@@ -241,7 +241,7 @@ theorem reindexMulEquiv_trans_reindexRingEquiv (e : m ≃ n) (e' : n ≃ o) :
   rfl
 
 @[simp]
-theorem reindexMulEquiv_refl : reindexMulEquiv R (.refl n) = .refl _ := rfl
+theorem reindexMulEquiv_refl : reindexMulEquiv R (.refl n) = .refl (GL n R) := rfl
 
 end Reindex
 
