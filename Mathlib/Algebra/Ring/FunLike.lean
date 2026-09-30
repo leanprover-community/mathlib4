@@ -5,7 +5,7 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Data.FunLike.Group
+public import Mathlib.Algebra.Group.FunLike
 public import Mathlib.Algebra.Ring.Defs
 import Mathlib.Tactic.Finiteness.Attr
 
