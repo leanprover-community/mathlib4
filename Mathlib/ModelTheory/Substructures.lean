@@ -395,7 +395,7 @@ theorem cardinalLTGenerated_closure {s : Set M} {κ : Cardinal} (hs : HasCardina
 
 theorem cardinalLTGenerated_closure_singleton (m : M) {κ : Cardinal}
     (hκ : Cardinal.aleph0 ≤ κ) : CardinalLTGenerated (closure L ({m} : Set M)) κ := by
-  haveI : Finite ({m} : Set M) := (finite_singleton m).to_subtype
+  have : Finite ({m} : Set M) := (finite_singleton m).to_subtype
   exact cardinalLTGenerated_closure (hasCardinalLT_of_finite ({m} : Set M) κ hκ)
 
 theorem CardinalLTGenerated.sup {S T : L.Substructure M} {κ : Cardinal}
