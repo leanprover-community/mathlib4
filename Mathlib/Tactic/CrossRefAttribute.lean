@@ -61,10 +61,10 @@ end PiBaseTopic
 
 /-- The supported external databases -/
 inductive Database where
-  | oeis
   | dlmf
   | kerodon
   | lmfdb
+  | oeis
   | pibase (topic : PiBaseTopic)
   | stacks
   | wikidata
@@ -78,10 +78,10 @@ namespace Database
 
 /-- The URL for an external database entry, where `id` is the identifier recorded in `Tag.tag`. -/
 def url : Database → String → String
-  | .oeis, id => s!"https://oeis.org/{id}"
   | .dlmf, id => s!"https://dlmf.nist.gov/{id}"
   | .kerodon, id => s!"https://kerodon.net/tag/{id}"
   | .lmfdb, id => s!"https://www.lmfdb.org/knowledge/show/{id}"
+  | .oeis, id => s!"https://oeis.org/{id}"
   | .pibase topic, id =>
     -- The `.toString` is required: `String.take` returns a `String.Slice`, and matching a slice
     -- against a string literal compares the slice structurally, so it would never match here.
@@ -96,20 +96,20 @@ def url : Database → String → String
 
 /-- The display label used in docstring links and trace output. -/
 def label : Database → String
-  | .oeis => "OEIS"
   | .dlmf => "DLMF"
   | .kerodon => "Kerodon Tag"
   | .lmfdb => "LMFDB"
+  | .oeis => "OEIS"
   | .pibase topic => s!"π-Base ({topic.label})"
   | .stacks => "Stacks Tag"
   | .wikidata => "Wikidata"
 
 /-- A lowercase short name for the given database. Useful when exporting to JSON. -/
 def shortName : Database → String
-  | .oeis => "oeis"
   | .dlmf => "dlmf"
   | .kerodon  => "kerodon"
   | .lmfdb    => "lmfdb"
+  | .oeis => "oeis"
   | .pibase topic => s!"pibase-{topic.shortName}"
   | .stacks   => "stacks"
   | .wikidata => "wikidata"
@@ -342,7 +342,7 @@ def dlmfIdParser : Parser :=
 
 /-! ### OEIS parser -/
 
-/-- `oeisId` is the node kind of OEIS identifiers: the letter `A` followed by digits. -/
+/-- `oeisId` is the node kind of OEIS identifiers: the letter `A` followed by six digits. -/
 abbrev oeisIdKind : SyntaxNodeKind := `oeisId
 
 private def isOeisId (id : List Char) : Bool :=
@@ -357,7 +357,7 @@ def oeisIdFn : ParserFn := fun c s =>
   if s.hasError then
     s
   else if s.pos == i then
-    ParserState.mkError s "OEIS id"
+    ParserState.mkError s "oeis id"
   else if isOeisId (c.extract i s.pos).toList then
     mkNodeToken oeisIdKind i true c s
   else
@@ -403,7 +403,7 @@ def Lean.TSyntax.getDlmfId (stx : TSyntax dlmfIdKind) : CoreM String := do
   let some val := Syntax.isLit? dlmfIdKind stx | throwError "Malformed DLMF ref."
   return val
 
-/-- Extract the underlying identifier as a string from a `oeisId` node. -/
+/-- Extract the underlying identifier as a string from an `oeisId` node. -/
 def Lean.TSyntax.getOeisId (stx : TSyntax oeisIdKind) : CoreM String := do
   let some val := Syntax.isLit? oeisIdKind stx | throwError "Malformed OEIS id."
   return val
@@ -603,7 +603,7 @@ initialize Lean.registerBuiltinAttribute {
 
 /-! ### OEIS attribute -/
 
-/-- The `OEIS` attribute.
+/-- The `oeis` attribute.
 Use it as `@[oeis A123456 "Optional comment"]` to associate a Mathlib declaration with
 the corresponding [OEIS](https://oeis.org/) item.
 
@@ -613,7 +613,7 @@ syntax (name := oeisTag) "oeis" oeisIdParser (ppSpace str)? : attr
 
 initialize Lean.registerBuiltinAttribute {
   name := `oeisTag
-  descr := "Apply a OEIS identifier to a declaration."
+  descr := "Apply an OEIS identifier to a declaration."
   add := fun decl stx _attrKind => do
     let (id, comment) ← match stx with
       | `(attr| oeis $id $[$comment]?) => pure (id, comment)
