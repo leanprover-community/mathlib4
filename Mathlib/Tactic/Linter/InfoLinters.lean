@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2026 Jovan Gerbscheid and Thomas R. Murrills. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Thomas R. Murrills, Jovan Gerbscheid
+-/
 module
 
 public meta import Lean.Elab.InfoTree.Util
