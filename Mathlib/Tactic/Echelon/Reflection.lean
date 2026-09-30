@@ -24,7 +24,7 @@ The lower-triangularity check requires each row to be 0 beyond the diagonal, so 
 prefix by `drop`.
 -/
 
-@[expose] public section
+public section
 
 open Mathlib.Tactic.Matrix
 
@@ -88,7 +88,7 @@ inductive IsPivotedList [Zero α] : List (Fin n) → List (List α) → Prop
 
 /-- The pivot function of the list of pivot columns. `WithTop (Fin n)` is `Option (Fin n)`, so
 the lookup `cols[i]?` is the value. -/
-def pivotOfList (cols : List (Fin n)) (i : ℕ) : WithTop (Fin n) := cols[i]?
+@[expose] def pivotOfList (cols : List (Fin n)) (i : ℕ) : WithTop (Fin n) := cols[i]?
 
 /-- Lookup specification for `IsPivotedList`. -/
 theorem getD_of_isPivotedList [Zero α] {cols : List (Fin n)} {rows : List (List α)}
