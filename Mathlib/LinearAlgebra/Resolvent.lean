@@ -47,11 +47,11 @@ This definition only agrees with the conventional one only if `f` is closed, but
 the case, then the conventional definition yields that `f.resolventSet = univ`
 We use this definition for convenience and since it makes fewer assumptions. -/
 protected def resolventSet (f : E →ₗ.[R] E) : Set R :=
-  { z | Function.Bijective (z • LinearMap.id (R := R) (M := E) +ᵥ -f : E →ₗ.[R] E) }
+  { z | Function.Bijective (z • LinearMap.id (R := R) (M := E) +ᵥ -f) }
 
 @[simp]
 theorem mem_resolventSet_iff (f : E →ₗ.[R] E) (z : R) : z ∈ f.resolventSet ↔
-    Function.Bijective (z • LinearMap.id (R := R) (M := E) +ᵥ -f : E →ₗ.[R] E) := by rfl
+    Function.Bijective (z • LinearMap.id (R := R) (M := E) +ᵥ -f) := by rfl
 
 @[simp, grind .]
 theorem _root_.LinearMap.resolventSet_toPMap (g : E →ₗ[R] E) :
@@ -93,7 +93,7 @@ theorem resolventLM_of_notMem_resolventSet (hz : z ∉ f.resolventSet) :
 
 @[simp]
 theorem _root_.LinearMap.resolventLM_toPMap_eq_resolvent (g : E →ₗ[R] E) :
-    (g.toPMap ⊤).resolventLM = resolvent (R := R) g := by
+    (g.toPMap ⊤).resolventLM = resolvent g := by
   ext z : 1
   by_cases h : z ∈ resolventSet R g
   · symm
