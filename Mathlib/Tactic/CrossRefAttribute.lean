@@ -345,6 +345,7 @@ def dlmfIdParser : Parser :=
 /-- `oeisId` is the node kind of OEIS identifiers: the letter `A` followed by six digits. -/
 abbrev oeisIdKind : SyntaxNodeKind := `oeisId
 
+/-- `isOeisId` checks whether a string is an OEIS identifier. -/
 private def isOeisId (id : List Char) : Bool :=
   match id with
   | 'A' :: rest => rest.length == 6 && rest.all Char.isDigit
