@@ -6,9 +6,6 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Decomp
-public import Mathlib.Combinatorics.SimpleGraph.Walk.Maps
-public import Mathlib.Combinatorics.SimpleGraph.Walk.Subwalks
-public import Mathlib.Order.Preorder.Finite
 
 /-!
 
@@ -156,7 +153,7 @@ theorem IsTrail.reverse {u v : V} (p : G.Walk u v) (h : p.IsTrail) : p.reverse.I
 theorem reverse_isTrail_iff {u v : V} (p : G.Walk u v) : p.reverse.IsTrail ↔ p.IsTrail := by
   constructor <;>
     · intro h
-      convert! h.reverse _
+      convert h.reverse _
       try rw [reverse_reverse]
 
 @[simp]
@@ -171,6 +168,19 @@ theorem IsTrail.of_append_left {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
 theorem IsTrail.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
     (h : (p.append q).IsTrail) : q.IsTrail := by
   simp_all
+
+theorem isPath_append (p : G.Walk u v) (q : G.Walk v w) :
+    (p.append q).IsPath ↔ p.IsPath ∧ q.tail.IsPath ∧ p.support.Disjoint q.support.tail := by
+  cases q
+  · simp [isPath_def]
+  simp_rw [isPath_def, support_append, List.nodup_append', support_tail_of_not_nil _ not_nil_cons]
+
+theorem isPath_append' (p : G.Walk u v) (q : G.Walk v w) :
+    (p.append q).IsPath ↔ p.dropLast.IsPath ∧ q.IsPath ∧ p.support.dropLast.Disjoint q.support := by
+  cases p
+  · simp [isPath_def]
+  simp_rw [isPath_def, support_append_eq_support_dropLast_append, List.nodup_append',
+    support_dropLast not_nil_cons]
 
 theorem IsTrail.count_edges_le_one [DecidableEq V] {u v : V} {p : G.Walk u v} (h : p.IsTrail)
     (e : Sym2 V) : p.edges.count e ≤ 1 :=
@@ -211,7 +221,7 @@ protected lemma IsPath.cons {p : Walk G v w} (hp : p.IsPath) (hu : u ∉ p.suppo
 theorem isPath_iff_nil {u : V} {p : G.Walk u u} : p.IsPath ↔ p.Nil := by
   cases p <;> simp [IsPath.nil]
 
-@[deprecated isPath_iff_nil (since := "2026-06-01")]
+@[deprecated isPath_iff_nil +typeChanged (since := "2026-06-01")]
 theorem isPath_iff_eq_nil {u : V} {p : G.Walk u u} : p.IsPath ↔ p = nil := by
   simp
 
@@ -228,18 +238,16 @@ theorem IsPath.reverse {u v : V} {p : G.Walk u v} (h : p.IsPath) : p.reverse.IsP
 
 @[simp]
 theorem isPath_reverse_iff {u v : V} (p : G.Walk u v) : p.reverse.IsPath ↔ p.IsPath := by
-  constructor <;> intro h <;> convert! h.reverse; simp
+  constructor <;> intro h <;> convert h.reverse; simp
 
 theorem IsPath.of_append_left {u v w : V} {p : G.Walk u v} {q : G.Walk v w} :
     (p.append q).IsPath → p.IsPath := by
-  simp only [isPath_def, support_append]
-  exact List.Nodup.of_append_left
+  simpa [isPath_def, support_append] using List.Nodup.of_append_left
 
 theorem IsPath.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
     (h : (p.append q).IsPath) : q.IsPath := by
-  rw [← isPath_reverse_iff] at h ⊢
-  rw [reverse_append] at h
-  apply h.of_append_left
+  simp_rw [isPath_def, support_append_eq_support_dropLast_append] at h ⊢
+  exact h.of_append_right
 
 theorem isTrail_of_isSubwalk {v w v' w'} {p₁ : G.Walk v w} {p₂ : G.Walk v' w'}
     (h : p₁.IsSubwalk p₂) (h₂ : p₂.IsTrail) : p₁.IsTrail := by
@@ -274,6 +282,12 @@ lemma IsPath.take_of_take {n k} {p : G.Walk u v} (h : (p.take k).IsPath) (hle : 
 lemma IsPath.drop_of_drop {n k} {p : G.Walk u v} (h : (p.drop k).IsPath) (hle : k ≤ n) :
     (p.drop n).IsPath :=
   isPath_of_isSubwalk (p.drop_isSubwalk_drop hle) h
+
+theorem IsTrail.take {p : G.Walk u v} (h : p.IsTrail) (n : ℕ) : (p.take n).IsTrail :=
+  isTrail_of_isSubwalk (p.isSubwalk_take n) h
+
+theorem IsTrail.drop {p : G.Walk u v} (h : p.IsTrail) (n : ℕ) : (p.drop n).IsTrail :=
+  isTrail_of_isSubwalk (p.isSubwalk_drop n) h
 
 lemma IsPath.take {p : G.Walk u v} (h : p.IsPath) (n : ℕ) :
     (p.take n).IsPath :=
@@ -344,9 +358,18 @@ theorem IsCycle.nodup_dropLast_support {p : G.Walk u u} (h : p.IsCycle) :
     p.support.dropLast.Nodup :=
   p.tail_support_perm_dropLast_support.nodup_iff.mp h.support_nodup
 
+protected lemma IsCircuit.reverse {p : G.Walk u u} (h : p.IsCircuit) : p.reverse.IsCircuit := by
+  rw [isCircuit_def] at h ⊢
+  exact ⟨h.left.reverse, fun h' ↦ by simp_all⟩
+
+@[simp]
+lemma isCircuit_reverse {p : G.Walk u u} : p.reverse.IsCircuit ↔ p.IsCircuit where
+  mp h := by simpa using h.reverse
+  mpr := .reverse
+
 protected lemma IsCycle.reverse {p : G.Walk u u} (h : p.IsCycle) : p.reverse.IsCycle := by
   simp only [Walk.isCycle_def, nodup_tail_support_reverse] at h ⊢
-  exact ⟨h.1.reverse, fun h' ↦ h.2.1 (by simp_all [← Walk.length_eq_zero_iff]), h.2.2⟩
+  exact ⟨h.1.reverse, fun h' ↦ by simp_all, h.2.2⟩
 
 @[simp]
 lemma isCycle_reverse {p : G.Walk u u} : p.reverse.IsCycle ↔ p.IsCycle where
@@ -367,17 +390,23 @@ lemma IsCycle.isPath_of_append_left {p : G.Walk u v} {q : G.Walk v u} (h : ¬ q.
 theorem IsCycle.isPath_tail {p : G.Walk u u} (h : p.IsCycle) : p.tail.IsPath :=
   IsPath.mk' <| p.support_tail_of_not_nil h.not_nil ▸ h.support_nodup
 
-lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) : p.tail.IsPath := by
-  cases p with
-  | nil => simp
-  | cons hadj p =>
-    simp_all [Walk.isPath_def]
+theorem IsTrail.tail {p : G.Walk u v} (hp : p.IsTrail) : p.tail.IsTrail :=
+  hp.drop 1
 
-theorem IsCycle.isPath_dropLast {p : G.Walk u u} (h : p.IsCycle) : p.dropLast.IsPath :=
-  .mk' <| p.support_dropLast h.not_nil ▸ h.nodup_dropLast_support
+lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) : p.tail.IsPath :=
+  hp.drop 1
+
+theorem IsTrail.dropLast (hp : p.IsTrail) : p.dropLast.IsTrail :=
+  hp.take _
 
 theorem IsPath.dropLast (hp : p.IsPath) : p.dropLast.IsPath :=
   hp.take _
+
+theorem isPath_dropLast_iff_isPath_tail {p : G.Walk v v} : p.dropLast.IsPath ↔ p.tail.IsPath := by
+  simp_rw [isPath_def, p.support_tail_perm_support_dropLast.nodup_iff]
+
+theorem IsCycle.isPath_dropLast {p : G.Walk u u} (h : p.IsCycle) : p.dropLast.IsPath :=
+  isPath_dropLast_iff_isPath_tail.mpr h.isPath_tail
 
 theorem IsCycle.isPath_drop {u n} {p : G.Walk u u} (h : p.IsCycle) (hn : 0 < n) :
     (p.drop n).IsPath := by
@@ -585,6 +614,10 @@ theorem isCycle_iff_isPath_tail_and_le_length {p : G.Walk u u} :
       simp [← List.head_eq_getElem_zero, h₁.eq_penultimate_of_mem_edges hh]
     have := p.isPath_iff_injective_get_support.mp h₁ this
     lia
+
+theorem isCycle_iff_isPath_dropLast_and_le_length {p : G.Walk v v} :
+    p.IsCycle ↔ p.dropLast.IsPath ∧ 3 ≤ p.length := by
+  rw [isPath_dropLast_iff_isPath_tail, isCycle_iff_isPath_tail_and_le_length]
 
 /-! ### Walk decompositions -/
 
@@ -936,7 +969,7 @@ lemma length_le_bypass_length_iff (p : G.Walk u v) :
 alias bypass_eq_self_of_length_le_length_bypass := length_le_bypass_length_iff
 
 @[deprecated (since := "2026-05-25")]
-alias bypass_eq_self_of_length_le := bypass_eq_self_of_length_le_length_bypass
+alias bypass_eq_self_of_length_le := length_le_bypass_length_iff
 
 @[simp]
 lemma bypass_cons_nil (hadj : G.Adj u v) : (cons hadj nil).bypass = cons hadj nil := by

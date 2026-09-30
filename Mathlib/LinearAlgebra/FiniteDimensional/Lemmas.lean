@@ -78,7 +78,7 @@ theorem eq_top_of_disjoint [FiniteDimensional K V] (s t : Submodule K V)
   replace hdim : finrank K V = finrank K s + finrank K t :=
     le_antisymm hdim (finrank_add_finrank_le_of_disjoint hdisjoint)
   rw [hdim]
-  convert! s.finrank_sup_add_finrank_inf_eq t
+  convert s.finrank_sup_add_finrank_inf_eq t
   rw [h_finrank_inf, add_zero]
 
 theorem isCompl_iff_disjoint [FiniteDimensional K V] (s t : Submodule K V)
@@ -285,7 +285,7 @@ lemma coe_basisOfLinearIndependentOfCardEqFinrank' [FiniteDimensional K V] (b : 
 noncomputable def basisOfLinearIndependentOfCardEqFinrank [Nonempty ι]
     {b : ι → V} (lin_ind : LinearIndependent K b) (card_eq : Fintype.card ι = finrank K V) :
     Basis ι K V :=
-  Basis.mk lin_ind <| (lin_ind.span_eq_top_of_card_eq_finrank card_eq).ge
+  Basis.mk lin_ind (lin_ind.span_eq_top_of_card_eq_finrank card_eq).ge
 
 @[simp]
 theorem coe_basisOfLinearIndependentOfCardEqFinrank [Nonempty ι]

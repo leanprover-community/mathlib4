@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Order.IsBotOne
 public import Mathlib.Algebra.Prime.Lemmas
-public import Mathlib.Order.BoundedOrder.Basic
 
 /-!
 # Associated elements.
@@ -69,7 +68,7 @@ protected def setoid (M : Type*) [Monoid M] :
 theorem map {M N : Type*} [Monoid M] [Monoid N] {F : Type*} [FunLike F M N] [MonoidHomClass F M N]
     (f : F) {x y : M} (ha : Associated x y) : Associated (f x) (f y) := by
   obtain ⟨u, ha⟩ := ha
-  exact ⟨Units.map f u, by rw [← ha, map_mul, Units.coe_map, MonoidHom.coe_coe]⟩
+  exact ⟨Units.map f u, by rw [← ha, map_mul, Units.coe_map, MonoidHom.coe_ofClass]⟩
 
 end Associated
 
@@ -177,7 +176,7 @@ theorem Associated.mul_mul [CommMonoid M] {a₁ a₂ b₁ b₂ : M}
 theorem Associated.pow_pow [CommMonoid M] {a b : M} {n : ℕ} (h : a ~ᵤ b) : a ^ n ~ᵤ b ^ n := by
   induction n with
   | zero => simp [Associated.refl]
-  | succ n ih => convert! h.mul_mul ih <;> rw [pow_succ']
+  | succ n ih => convert h.mul_mul ih <;> rw [pow_succ']
 
 protected theorem Associated.dvd [Monoid M] {a b : M} : a ~ᵤ b → a ∣ b := fun ⟨u, hu⟩ =>
   ⟨u, hu.symm⟩
@@ -558,7 +557,7 @@ instance : IsBotOneClass (Associates M) where
 instance instOrderBot : OrderBot (Associates M) where
   bot_le _ := one_le
 
-@[deprecated _root_.one_le (since := "2026-05-07")]
+@[deprecated _root_.one_le +typeChanged (since := "2026-05-07")]
 protected theorem one_le {a : Associates M} : 1 ≤ a :=
   one_le
 
