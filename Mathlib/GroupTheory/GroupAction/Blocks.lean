@@ -6,11 +6,12 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.Algebra.Pointwise.Stabilizer
-public import Mathlib.Data.Setoid.Partition
-import Mathlib.GroupTheory.GroupAction.Pointwise
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.GroupTheory.Index
+public import Mathlib.Order.Setoid.Partition
 public import Mathlib.Tactic.IntervalCases
+
+import Mathlib.GroupTheory.GroupAction.Pointwise
 
 /-! # Blocks
 

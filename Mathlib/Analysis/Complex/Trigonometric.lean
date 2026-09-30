@@ -25,21 +25,22 @@ namespace Complex
 noncomputable section
 
 /-- The complex sine function, defined via `exp` -/
-@[pp_nodot]
+@[pp_nodot, dlmf 4.14.E1]
 def sin (z : ℂ) : ℂ :=
   (exp (-z * I) - exp (z * I)) * I / 2
 
 /-- The complex cosine function, defined via `exp` -/
-@[pp_nodot]
+@[pp_nodot, dlmf 4.14.E2]
 def cos (z : ℂ) : ℂ :=
   (exp (z * I) + exp (-z * I)) / 2
 
 /-- The complex tangent function, defined as `sin z / cos z` -/
-@[pp_nodot]
+@[pp_nodot, dlmf 4.14.E4]
 def tan (z : ℂ) : ℂ :=
   sin z / cos z
 
 /-- The complex cotangent function, defined as `cos z / sin z` -/
+@[pp_nodot, dlmf 4.14.E7]
 def cot (z : ℂ) : ℂ :=
   cos z / sin z
 
@@ -54,7 +55,7 @@ def cosh (z : ℂ) : ℂ :=
   (exp z + exp (-z)) / 2
 
 /-- The complex hyperbolic tangent function, defined as `sinh z / cosh z` -/
-@[pp_nodot]
+@[pp_nodot, dlmf 4.28.E4]
 def tanh (z : ℂ) : ℂ :=
   sinh z / cosh z
 
@@ -84,6 +85,7 @@ nonrec def tan (x : ℝ) : ℝ :=
   (tan x).re
 
 /-- The real cotangent function, defined as the real part of the complex cotangent -/
+@[pp_nodot]
 nonrec def cot (x : ℝ) : ℝ :=
   (cot x).re
 
@@ -986,5 +988,15 @@ theorem norm_exp (z : ℂ) : ‖exp z‖ = Real.exp z.re := by
 
 theorem norm_exp_eq_iff_re_eq {x y : ℂ} : ‖exp x‖ = ‖exp y‖ ↔ x.re = y.re := by
   rw [norm_exp, norm_exp, Real.exp_eq_exp]
+
+theorem norm_exp_mul_I (x : ℂ) : ‖exp (x * I)‖ = Real.exp (-x.im) := by
+  rw [norm_exp, mul_I_re]
+
+theorem abs_one_sub_rexp_re_le (x : ℂ) : |1 - Real.exp x.re| ≤ ‖1 - exp x‖ := by
+  rw [← norm_exp]
+  exact_mod_cast abs_norm_sub_norm_le (1 : ℂ) (exp x)
+
+theorem one_sub_rexp_re_le (x : ℂ) : 1 - Real.exp x.re ≤ ‖1 - exp x‖ :=
+  (le_abs_self _).trans (abs_one_sub_rexp_re_le x)
 
 end Complex

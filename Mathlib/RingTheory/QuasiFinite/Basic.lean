@@ -525,7 +525,7 @@ lemma QuasiFiniteAt.of_isOpen_singleton
     Set.subsingleton_of_subsingleton.finite
 
 attribute [local instance] RingHom.ker_isPrime in
-lemma _root_.Ideal.exists_not_mem_forall_mem_of_ne_of_liesOver
+lemma _root_.Ideal.exists_notMem_forall_mem_of_ne_of_liesOver
     (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p]
     [Algebra.EssFiniteType R S] [Algebra.QuasiFiniteAt R q] :
     ∃ s ∉ q, ∀ q' : Ideal S, q'.IsPrime → q' ≠ q → q'.LiesOver p → s ∈ q' := by
@@ -554,6 +554,10 @@ lemma _root_.Ideal.exists_not_mem_forall_mem_of_ne_of_liesOver
     ← Ideal.IsPrime.mul_mem_left_iff (x := algebraMap _ _ s), ← Algebra.smul_def, hsx]
   · simpa
   · simpa [IsScalarTower.algebraMap_apply R S q'.ResidueField, ← Ideal.mem_comap, ← q'.over_def p]
+
+@[deprecated (since := "2026-09-28")]
+alias _root_.Ideal.exists_not_mem_forall_mem_of_ne_of_liesOver :=
+  _root_.Ideal.exists_notMem_forall_mem_of_ne_of_liesOver
 
 lemma _root_.Ideal.Fiber.lift_residueField_surjective [Algebra.FiniteType R S]
     (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p] [Algebra.QuasiFiniteAt R q]

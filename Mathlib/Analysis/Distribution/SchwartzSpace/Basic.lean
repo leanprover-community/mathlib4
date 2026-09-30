@@ -995,7 +995,7 @@ def compCLMOfAntilipschitz {K : ℝ≥0} {g : D → E}
 Schwartz space. -/
 def compCLMOfContinuousLinearEquiv (g : D ≃L[ℝ] E) :
     𝓢(E, F) →L[𝕜] 𝓢(D, F) :=
-  compCLMOfAntilipschitz 𝕜 (g.toContinuousLinearMap.hasTemperateGrowth) g.antilipschitz
+  compCLMOfAntilipschitz 𝕜 (g.toContinuousLinearMap.hasTemperateGrowth) g.antilipschitzWith
 
 @[simp] lemma compCLMOfContinuousLinearEquiv_apply (g : D ≃L[ℝ] E) (f : 𝓢(E, F)) :
     compCLMOfContinuousLinearEquiv 𝕜 g f = f ∘ g := rfl
