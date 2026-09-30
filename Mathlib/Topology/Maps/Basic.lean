@@ -722,7 +722,7 @@ lemma IsOpenEmbedding.isOpen_iff_image_isOpen (hf : IsOpenEmbedding f) {s : Set 
     IsOpen s ↔ IsOpen (f '' s) where
   mp := hf.isOpenMap s
   mpr h := by
-    convert! ← h.preimage hf.isEmbedding.continuous
+    convert ← h.preimage hf.isEmbedding.continuous
     apply preimage_image_eq _ hf.injective
 
 theorem IsOpenEmbedding.tendsto_nhds_iff [TopologicalSpace Z] {f : ι → Y} {l : Filter ι} {y : Y}
@@ -874,7 +874,7 @@ protected lemma of_comp (hg : IsEmbedding g) (hgf : IsClosedEmbedding (g ∘ f))
     IsClosedEmbedding f where
   __ := hg.of_comp_iff.mp hgf.isEmbedding
   isClosed_range := by
-    convert! hg.isClosed_preimage _ hgf.isClosed_range
+    convert hg.isClosed_preimage _ hgf.isClosed_range
     rw [range_comp, hg.injective.preimage_image]
 
 theorem closure_image_eq (hf : IsClosedEmbedding f) (s : Set X) :

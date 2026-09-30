@@ -101,7 +101,7 @@ lemma mul_le_integral_rnDeriv_of_ac [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     filter_upwards [h_rnDeriv_eq] with x hx
     rw [hx]
   rw [h_eq, mul_comm, ← div_le_iff₀, div_eq_inv_mul, inv_inv] at h
-  · convert! h
+  · convert h
     simp [div_eq_inv_mul, μ', measureReal_def]
   · simp [ENNReal.toReal_pos_iff, hν, measureReal_def]
 

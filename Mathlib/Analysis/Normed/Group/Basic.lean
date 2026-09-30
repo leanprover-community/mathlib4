@@ -349,7 +349,7 @@ theorem NormedGroup.nhds_basis_norm_lt (x : E) :
 @[to_additive]
 theorem NormedGroup.nhds_one_basis_norm_lt :
     (𝓝 (1 : E)).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { y | ‖y‖ < ε } := by
-  convert! NormedGroup.nhds_basis_norm_lt (1 : E) using 1
+  convert NormedGroup.nhds_basis_norm_lt (1 : E) using 1
   simp
 
 @[to_additive]
