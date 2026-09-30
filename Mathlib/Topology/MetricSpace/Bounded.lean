@@ -419,7 +419,7 @@ theorem diam_subsingleton (hs : s.Subsingleton) : diam s = 0 := by
 grind_pattern diam_subsingleton => s.Subsingleton, diam s
 
 /-- The empty set has zero diameter -/
-@[simp, grind =]
+@[grind =]
 theorem diam_empty : diam (∅ : Set α) = 0 :=
   diam_subsingleton subsingleton_empty
 
