@@ -330,9 +330,19 @@ lemma sConvexComb_le_sConvexComb (h : w₁ ≤ w₂) : w₁.sConvexComb ≤ w₂
 lemma monotone_iConvexComb (v : StdSimplex R I) : Monotone (v.iConvexComb : (I → X) → X) :=
   fun _f _g hfg ↦ monotone_sConvexComb <| StdSimplex.monotone_map hfg
 
-@[gcongr, to_dual self]
+@[to_dual self]
 lemma iConvexComb_le_iConvexComb (hfg : f ≤ g) : v.iConvexComb f ≤ v.iConvexComb g :=
   monotone_iConvexComb _ hfg
+
+/-- Convex combinations preserve inequalities on the support of the weights. -/
+@[gcongr, to_dual self]
+lemma iConvexComb_le_iConvexComb_of_support (hfg : ∀ i, v.weights i ≠ 0 → f i ≤ g i) :
+    v.iConvexComb f ≤ v.iConvexComb g := by
+  classical
+  calc
+    v.iConvexComb f = v.iConvexComb fun i ↦ if f i ≤ g i then f i else g i := by
+      congr! with i hi; simp [hfg i hi]
+    _ ≤ v.iConvexComb g := iConvexComb_le_iConvexComb fun i ↦ by split_ifs <;> simp [*]
 
 @[gcongr, to_dual self (dont_translate := R)]
 lemma convexCombPair_le_convexCombPair {a b : R} (ha hb hab) {x₁ x₂ y₁ y₂ : X} (hx : x₁ ≤ x₂)
