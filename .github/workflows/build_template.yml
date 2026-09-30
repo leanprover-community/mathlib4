@@ -74,8 +74,8 @@ jobs:
     # PR code can write `pr-branch/.lake/` from setup-build-env's "download dependencies"
     # step onward, so later steps that use it run inside landrun. The one exception is
     # "prune local cache to this commit's set", which runs only on a trusted checkout.
-    defaults: # On Hoskinson runners, landrun is already installed.
-      run: # note that .pr-branch/.lake must be created in a step below before we use this
+    defaults: # The self-hosted runner image provides landrun.
+      run: # setup-build-env creates the paths below that the runner image can lack.
         shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
     steps:
       - name: job info
@@ -99,7 +99,7 @@ jobs:
           path: workflow-actions
           persist-credentials: false # no later step needs git credentials
 
-      # Shared self-hosted setup (toolchain prune, jq, cache-trust dispatch,
+      # Shared self-hosted setup (cache-trust dispatch,
       # PR-branch checkout, elan + toolchain/LEAN_SRC_PATH env, CI tools, dependency
       # download); see the action for per-step rationale. It is loaded from the
       # `Checkout local actions` checkout above, which therefore runs first.
@@ -147,17 +147,6 @@ jobs:
             echo ""
             exit 1
           fi
-
-      - name: Prepare DownstreamTest directory
-        shell: bash
-        run: |
-          echo "Copying lean-toolchain to DownstreamTest..."
-          cd pr-branch
-          # Ensure DownstreamTest/.lake/ directory exists, since landrun will need it later
-          mkdir -p DownstreamTest/.lake/
-          cd DownstreamTest
-          cp ../lean-toolchain .
-          echo "lean-toolchain copied successfully to DownstreamTest."
 
       - name: validate lake-manifest.json inputRevs
         # Only enforce this on the main mathlib4 repository, not on nightly-testing
@@ -372,7 +361,8 @@ jobs:
           compression-level: 0
 
       # Prune to this commit's `.ltar` set so the published snapshot is exactly master's
-      # current cache (the local dir also holds the previous snapshot it warmed from).
+      # current cache. The local directory can also hold other `.ltar` files, such as
+      # the snapshot this run warmed from or files that the runner image provides.
       - name: prune local cache to this commit's set
         if: ${{ inputs.publish_cache && steps.build.outcome == 'success' }}
         continue-on-error: true # best-effort; never fail the build
@@ -448,8 +438,8 @@ jobs:
     outputs:
       lint-outcome: ${{ steps.lint.outcome }}
       test-outcome: ${{ steps.test.outcome }}
-    defaults: # On Hoskinson runners, landrun is already installed.
-      run: # note that pr-branch/.lake must be created in a step below before we use this
+    defaults: # The self-hosted runner image provides landrun.
+      run: # setup-build-env creates the paths below that the runner image can lack.
         shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
     steps:
       - name: Checkout local actions
