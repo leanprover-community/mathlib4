@@ -23,7 +23,7 @@ assert_not_exists Multiset
 
 open Function OrderDual Set
 
-variable {α β γ : Type*} {ι : Sort*} {κ : ι → Sort*}
+variable {α β γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*}
 
 section
 
