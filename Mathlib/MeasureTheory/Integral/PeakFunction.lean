@@ -84,7 +84,7 @@ theorem integrableOn_peak_smul_of_integrableOn_of_tendsto
       filter_upwards [self_mem_ae_restrict (hs.inter u_open.measurableSet)] with x hx
       rw [inter_comm] at hx
       exact (norm_lt_of_mem_ball (hu x hx)).le
-  convert! A.union B
+  convert A.union B
   simp only [sdiff_union_inter]
 
 /-- If a sequence of peak functions `φᵢ` converges uniformly to zero away from a point `x₀` and its
@@ -196,7 +196,7 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto
     apply tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux hs ht hts h'ts
         hnφ hlφ hiφ h'iφ
     · apply hmg.sub
-      simp only [integrableOn_indicator_iff ht, integrableOn_const_iff (C := a)]
+      simp only [integrableOn_indicator_iff ht.nullMeasurableSet, integrableOn_const_iff (C := a)]
       right
       exact lt_of_le_of_lt (measure_mono inter_subset_left) (h't.lt_top)
     · rw [← sub_self a]

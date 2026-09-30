@@ -199,7 +199,7 @@ theorem mdifferentiableWithinAt_iff_target_inter' :
             (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' (f x)).source))
           (extChartAt I x x) := by
   simp only [MDifferentiableWithinAt, liftPropWithinAt_iff']
-  exact and_congr_right fun hc => differentiableWithinAt_congr_nhds <|
+  exact and_congr_right fun hc => differentiableWithinAt_congr_nhds
     hc.nhdsWithin_extChartAt_symm_preimage_inter_range
 
 /-- One can reformulate smoothness within a set at a point as continuity within this set at this
@@ -210,7 +210,7 @@ theorem mdifferentiableWithinAt_iff_target :
   have cont :
     ContinuousWithinAt f s x ∧ ContinuousWithinAt (extChartAt I' (f x) ∘ f) s x ↔
         ContinuousWithinAt f s x :=
-      and_iff_left_of_imp <| (continuousAt_extChartAt _).comp_continuousWithinAt
+      and_iff_left_of_imp (continuousAt_extChartAt _).comp_continuousWithinAt
   simp_rw [cont, DifferentiableWithinAtProp, extChartAt, OpenPartialHomeomorph.extend,
     PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe,
     OpenPartialHomeomorph.coe_toPartialEquiv, modelWithCornersSelf_coe, chartAt_self_eq,
@@ -397,7 +397,7 @@ theorem mdifferentiableOn_iff :
     specialize h w this
     have w1 : w ∈ (chartAt H x).source := by simp only [w, hz, mfld_simps]
     have w2 : f w ∈ (chartAt H' y).source := by simp only [w, hz, mfld_simps]
-    convert! ((mdifferentiableWithinAt_iff_of_mem_source w1 w2).mp h).2.mono _
+    convert ((mdifferentiableWithinAt_iff_of_mem_source w1 w2).mp h).2.mono _
     · simp only [w, hz, mfld_simps]
     · mfld_set_tac
   · rintro ⟨hcont, hdiff⟩ x hx
@@ -600,7 +600,7 @@ theorem HasMFDerivWithinAt.union (hs : HasMFDerivAt[s] f x f') (ht : HasMFDerivA
     HasMFDerivAt[s ∪ t] f x f' := by
   constructor
   · exact ContinuousWithinAt.union hs.1 ht.1
-  · convert! HasFDerivWithinAt.union hs.2 ht.2 using 1
+  · convert HasFDerivWithinAt.union hs.2 ht.2 using 1
     simp only [union_inter_distrib_right, preimage_union]
 
 theorem HasMFDerivWithinAt.mono_of_mem_nhdsWithin (h : HasMFDerivAt[s] f x f') (ht : s ∈ 𝓝[t] x) :

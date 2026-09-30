@@ -7,8 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
 public import Mathlib.CategoryTheory.Functor.Derived.PointwiseLeftDerived
-public import Mathlib.CategoryTheory.GuitartExact.KanExtension
-public import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.GuitartExact.KanExtension
 
 /-!
 # Existence of pointwise left derived functors via derivability structures
