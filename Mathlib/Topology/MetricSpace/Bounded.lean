@@ -408,23 +408,27 @@ noncomputable def diam (s : Set α) : ℝ :=
   ENNReal.toReal (ediam s)
 
 /-- The diameter of a set is always nonnegative -/
+@[grind! .]
 theorem diam_nonneg : 0 ≤ diam s :=
   ENNReal.toReal_nonneg
 
+@[simp]
 theorem diam_subsingleton (hs : s.Subsingleton) : diam s = 0 := by
   simp [diam, ediam_subsingleton hs]
 
+grind_pattern diam_subsingleton => s.Subsingleton, diam s
+
 /-- The empty set has zero diameter -/
-@[simp]
+@[simp, grind =]
 theorem diam_empty : diam (∅ : Set α) = 0 :=
   diam_subsingleton subsingleton_empty
 
 /-- A singleton has zero diameter -/
-@[simp]
+@[simp, grind =]
 theorem diam_singleton : diam ({x} : Set α) = 0 :=
   diam_subsingleton subsingleton_singleton
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp), grind =]
 theorem diam_one [One α] : diam (1 : Set α) = 0 :=
   diam_singleton
 
