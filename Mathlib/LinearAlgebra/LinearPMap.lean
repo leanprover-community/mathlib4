@@ -1265,7 +1265,7 @@ theorem resolventLM_zero_of_notMem {z : R} (hz : z ∉ f.resolventSet) : f.resol
   simp [resolventLM, hz]
 
 @[simp]
-theorem _root_.LinearMap.resolventLM_toPMap_iff (g : E' →ₗ[R'] E') :
+theorem _root_.LinearMap.resolventLM_toPMap_eq_resolvent (g : E' →ₗ[R'] E') :
     (g.toPMap ⊤).resolventLM = resolvent (R := R') g := by
   ext z : 1
   by_cases h : z ∈ resolventSet R' g
