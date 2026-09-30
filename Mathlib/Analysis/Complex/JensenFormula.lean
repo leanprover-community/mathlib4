@@ -382,7 +382,7 @@ theorem MeromorphicOn.log_norm_meromorphicTrailingCoeffAt (h₁w : w ∈ ball 0 
   -- Combine the circle-average identity with the value of `log ‖h‖` at `w`.
   rw [← smul_eq_mul, h₀h.circleAverage_re_herglotzRieszKernel_smul_log_norm h₁w,
     h₀h.log_norm_eq (ball_subset_closedBall h₁w) h₂w hR]
-  ring_nf
+  ring
 
 
 /-!
