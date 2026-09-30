@@ -61,7 +61,7 @@ structure MatrixViews (u : Level) (m n : Nat) (α : Q(Type u)) where
 def MatrixViews.ofArray {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (m n : Nat)
     (rows : Array (Array Q($α))) : MatrixViews u m n α :=
   let entries := rows.toList.map Array.toList
-  have lit : Q(List (List $α)) := mkListLitQ (α := q(List $α)) (entries.map mkListLitQ)
+  let lit : Q(List (List $α)) := mkListLitQ (α := q(List $α)) (entries.map mkListLitQ)
   { matrix := q(ofLists $m $n $lit), lit, entries }
 
 /-- Build the permutation `σ = swap a₀ b₀ * swap a₁ b₁ * ⋯` from the recorded swaps. -/
@@ -207,7 +207,7 @@ def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommR
   let aα : Q(Add $α) ← synthInstanceQ q(Add $α)
   let mα : Q(Mul $α) ← synthInstanceQ q(Mul $α)
   let cα : Q(AddCommMonoid $α) ← synthInstanceQ q(AddCommMonoid $α)
-  have U := MatrixViews.ofArray zα m n data.U
+  let U := MatrixViews.ofArray zα m n data.U
   let σ ← mkPerm m data.swaps
   let pivots := data.pivot.toList
   let cols : Q(List (Fin $n)) := mkListLitQ (← pivots.mapM (mkFinLitQ n))
@@ -218,7 +218,7 @@ def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommR
   -- `L` and `Aσ` reuse the literals `proveMul` built
   have Lm : Q(Matrix (Fin $m) (Fin $m) $α) := q(ofLists $m $m $(mulEq.A))
   let Aσm : Q(Matrix (Fin $m) (Fin $n) $α) := q(ofLists $m $n $(mulEq.B))
-  have Um := U.matrix
+  let Um := U.matrix
   have hperm : Q(($A).submatrix $σ id = $Aσm) := certifyPermEq A Aσm σ
   let hprod : Q($Lm * $Aσm = $Um) ← certifyProductEq cα mulEq U certifier?
   let hU : Q($Lm * ($A).submatrix $σ id = $Um) := q($hperm ▸ $hprod)
