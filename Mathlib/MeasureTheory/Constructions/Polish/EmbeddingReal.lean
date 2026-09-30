@@ -5,7 +5,7 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Analysis.Real.Cardinality
+import Mathlib.Analysis.Real.Cardinality
 public import Mathlib.MeasureTheory.Constructions.Polish.Basic
 
 /-!

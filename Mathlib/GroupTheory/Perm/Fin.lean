@@ -538,9 +538,9 @@ theorem Equiv.Perm.prod_Iio_comp_eq_sign_mul_prod {R : Type*} [CommRing R]
 theorem Equiv.Perm.prod_Ioi_comp_eq_sign_mul_prod {R : Type*} [CommRing R]
     (σ : Equiv.Perm (Fin n)) {f : Fin n → Fin n → R} (hf : ∀ i j, f i j = -f j i) :
     ∏ i, ∏ j ∈ Finset.Ioi i, f (σ i) (σ j) = σ.sign * ∏ i, ∏ j ∈ Finset.Ioi i, f i j := by
-  convert! σ.prod_Iio_comp_eq_sign_mul_prod hf using 1
+  convert σ.prod_Iio_comp_eq_sign_mul_prod hf using 1
   · apply Finset.prod_comm' (by simp)
-  convert! rfl using 2
+  convert rfl using 2
   apply Finset.prod_comm' (by simp)
 
 end Sign
@@ -583,10 +583,10 @@ lemma decomposeFin'Symm_uncurry_bijective :
     Function.Bijective (decomposeFin'Symm (n := n)).uncurry := by
   rw [Nat.bijective_iff_injective_and_card]
   refine ⟨fun ⟨i, σ⟩ ⟨i', σ'⟩ h ↦ ?_, ?_⟩
-  · obtain rfl : i = i' := by simpa using DFunLike.congr_fun h 0
+  · obtain rfl : i = i' := by simpa using congr($h 0)
     obtain rfl : σ = σ' := by
       ext j : 1
-      simpa using DFunLike.congr_fun h j.succ
+      simpa using congr($h j.succ)
     rfl
   · rw [Nat.card_prod, Nat.card_perm, Nat.card_perm, Nat.card_eq_fintype_card,
       Nat.card_eq_fintype_card, Fintype.card_fin, Fintype.card_fin,

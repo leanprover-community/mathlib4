@@ -5,7 +5,7 @@ Authors: Bhavik Mehta, Jakob von Raumer
 -/
 module
 
-public import Mathlib.Data.List.Chain
+import Mathlib.Data.List.Chain
 public import Mathlib.CategoryTheory.PUnit
 public import Mathlib.CategoryTheory.Groupoid
 public import Mathlib.CategoryTheory.Category.ULift
@@ -88,7 +88,7 @@ private def liftToDiscrete {α : Type u₂} (F : J ⥤ Discrete α) : J ⥤ Disc
   obj j := have := Nonempty.intro j
     Discrete.mk (Function.invFun F.obj (F.obj j))
   map {j _} f := have := Nonempty.intro j
-    ⟨congr_arg (Function.invFun F.obj) (Discrete.ext (Discrete.eq_of_hom (F.map f)))⟩
+    ⟨congr(Function.invFun F.obj $(Discrete.ext (Discrete.eq_of_hom (F.map f))))⟩
 
 set_option backward.privateInPublic true in
 /-- Implementation detail of `isoConstant`. -/

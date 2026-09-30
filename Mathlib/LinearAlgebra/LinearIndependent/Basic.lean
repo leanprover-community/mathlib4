@@ -161,7 +161,7 @@ theorem LinearIndepOn_iff_linearIndepOn_image_injOn [Nontrivial R] :
 theorem linearIndepOn_congr {w : ι → M} (h : EqOn v w s) :
     LinearIndepOn R v s ↔ LinearIndepOn R w s := by
   rw [LinearIndepOn, LinearIndepOn]
-  convert! Iff.rfl using 2
+  convert Iff.rfl using 2
   ext x
   exact h.symm x.2
 
@@ -184,7 +184,7 @@ theorem LinearIndependent.group_smul_iff {G : Type*} [hG : Group G] [MulAction G
     [MulAction G M] [IsScalarTower G R M] [SMulCommClass G R M] (v : ι → M) (w : ι → G) :
     LinearIndependent R (w • v) ↔ LinearIndependent R v := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.group_smul w⟩
-  convert! h.group_smul (fun i ↦ (w i)⁻¹)
+  convert h.group_smul (fun i ↦ (w i)⁻¹)
   simp [funext_iff]
 
 -- This lemma cannot be proved with `LinearIndependent.group_smul` since the action of
@@ -202,7 +202,7 @@ theorem LinearIndependent.units_smul {v : ι → M} (hv : LinearIndependent R v)
 theorem LinearIndependent.units_smul_iff (v : ι → M) (w : ι → Rˣ) :
     LinearIndependent R (w • v) ↔ LinearIndependent R v := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.units_smul w⟩
-  convert! h.units_smul (fun i ↦ (w i)⁻¹)
+  convert h.units_smul (fun i ↦ (w i)⁻¹)
   simp [funext_iff]
 
 protected theorem LinearIndependent.codRestrict (hs : LinearIndependent R v) (N : Submodule R M)
@@ -305,12 +305,12 @@ theorem eq_of_linearIndepOn_id_of_span_subtype [Nontrivial R] {s t : Set M}
     ⟨fun x => ⟨x.1, h x.2⟩, fun a b hab => Subtype.coe_injective (Subtype.mk.inj hab)⟩
   have h_surj : Surjective f := by
     apply surjective_of_linearIndependent_of_span hs f _
-    convert! hst <;> simp [f, comp_def]
+    convert hst <;> simp [f, comp_def]
   change s = t
   apply Subset.antisymm _ h
   intro x hx
   rcases h_surj ⟨x, hx⟩ with ⟨y, hy⟩
-  convert! y.mem
+  convert y.mem
   rw [← Subtype.mk.inj hy]
 
 theorem le_of_span_le_span [Nontrivial R] {s t u : Set M} (hl : LinearIndepOn R id u)
@@ -480,7 +480,7 @@ theorem linearIndepOn_union_iff {t : Set ι} (hdj : Disjoint s t) :
     LinearIndepOn R v s ∧ LinearIndepOn R v t ∧ Disjoint (span R (v '' s)) (span R (v '' t)) := by
   refine ⟨fun h ↦ ⟨h.mono subset_union_left, h.mono subset_union_right, ?_⟩,
     fun h ↦ h.1.union h.2.1 h.2.2⟩
-  convert! h.disjoint_span_image (s := (↑) ⁻¹' s) (t := (↑) ⁻¹' t) (hdj.preimage _) <;>
+  convert h.disjoint_span_image (s := (↑) ⁻¹' s) (t := (↑) ⁻¹' t) (hdj.preimage _) <;>
   aesop
 
 theorem linearIndepOn_id_union_iff {s t : Set M} (hdj : Disjoint s t) :
@@ -546,7 +546,7 @@ theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [Com
   -- From these two facts we deduce that `g` actually vanishes on `s`,
   have h3 (i) (his : i ∈ s) : g i = 0 := by
     let ⟨y, hy⟩ := h2 i his
-    have h : g i • i y = g i • a y := congr_fun (h1 i his) y
+    have h : g i • i y = g i • a y := congr($(h1 i his) y)
     rw [← sub_eq_zero, ← smul_sub, smul_eq_zero] at h
     exact h.resolve_right (sub_ne_zero_of_ne hy)
   -- And so, using the fact that the linear combination over `s` and over `insert a s` both
