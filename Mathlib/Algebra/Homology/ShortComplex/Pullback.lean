@@ -62,9 +62,8 @@ lemma ShortComplex.ShortExact.pull
     obtain ⟨l, hl⟩ := KernelFork.IsLimit.lift' hS.fIsKernel (s.ι ≫ pullback.snd _ _)
       (by simp [← pullback.condition])
     refine ⟨l, by cat_disch, fun {m} hm ↦ ?_⟩
-    rw [← cancel_mono S.f]
     dsimp at m hm hl
-    simp [hl, ← hm]⟩
+    simp [← cancel_mono S.f, hl, ← hm]⟩
   exact { exact := h }
 
 end CategoryTheory
