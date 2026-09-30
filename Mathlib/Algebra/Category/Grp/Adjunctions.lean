@@ -6,10 +6,8 @@ Authors: Kim Morrison, Johannes Hölzl
 module
 
 public import Mathlib.Algebra.Category.Grp.Preadditive
-public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.GroupTheory.FreeAbelianGroup
 public import Mathlib.CategoryTheory.Adjunction.Limits
-public import Mathlib.CategoryTheory.Limits.Types.Coproducts
 
 /-!
 # Adjunctions regarding the category of (abelian) groups
@@ -101,11 +99,9 @@ instance : (free.{u}).PreservesMonomorphisms where
   preserves {X Y} f _ := by
     by_cases! hX : IsEmpty X
     · constructor
-      intro Z g h hgh
-      apply IsZero.eq_of_tgt
-      rw [isZero_iff_subsingleton]
-      simp only [free_obj]
-      infer_instance
+      intros
+      ext
+      exact Subsingleton.elim _ _ (h := Unique.instSubsingleton (α := FreeAbelianGroup X))
     · have hf : Function.Injective f := by rwa [← mono_iff_injective]
       obtain ⟨g, hg⟩ := hf.hasLeftInverse
       have : IsSplitMono f := IsSplitMono.mk' { retraction := ↾g }
@@ -147,11 +143,9 @@ instance : (free.{u}).PreservesMonomorphisms where
   preserves {X Y} f _ := by
     by_cases! hX : IsEmpty X
     · constructor
-      intro Z g h hgh
-      apply IsZero.eq_of_tgt
-      rw [isZero_iff_subsingleton]
-      simp only [free_obj]
-      infer_instance
+      intros
+      ext
+      exact Subsingleton.elim _ _ (h := Unique.instSubsingleton (α := FreeGroup X))
     · have hf : Function.Injective f := by rwa [← mono_iff_injective]
       obtain ⟨g, hg⟩ := hf.hasLeftInverse
       have : IsSplitMono f := IsSplitMono.mk' { retraction := ↾g }
