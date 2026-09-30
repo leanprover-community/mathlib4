@@ -201,5 +201,3 @@ theorem gelfandRadius_mul_le (a b : A) :
   (Commute.all a b).gelfandRadius_mul_le
 
 end SeminormedCommRing
-
-#min_imports
