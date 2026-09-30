@@ -79,11 +79,6 @@ theorem proj_equiv₁' (f : Fin n → α) : graph.proj ∘ graphEquiv₁ f = f :
 def graphEquiv₂ (f : Fin n → α) : Fin n ≃o graph f :=
   Finset.orderIsoOfFin _ (by simp)
 
-/-- `σ` is *stable* for `f` if it breaks ties by increasing index: any two indices sharing the
-same `f`-value keep their original order. This property is independent of the sort direction. -/
-def IsStable {ι κ : Type*} [Preorder ι] [Preorder κ] (f : ι → α) (σ : κ → ι) : Prop :=
-  ∀ ⦃i j⦄, i < j → f (σ i) = f (σ j) → σ i < σ j
-
 /-- `sort f` is the permutation that orders `Fin n` according to the order of the outputs of `f`. -/
 def sort (f : Fin n → α) : Equiv.Perm (Fin n) :=
   (graphEquiv₂ f).toEquiv.trans (graphEquiv₁ f).symm
@@ -190,6 +185,12 @@ theorem eq_sort_iff : σ = sort f ↔ Monotone (f ∘ σ) ∧ IsStable f σ := b
   · obtain he | hl := (h.1 hij.le).eq_or_lt <;> apply Prod.Lex.toLex_lt_toLex.2
     exacts [Or.inr ⟨he, h.2 hij he⟩, Or.inl hl]
 
+/-- A permutation `σ` equals `sortDesc f` if and only if `f ∘ σ` is antitone and `σ` is stable,
+i.e. `σ` breaks ties by increasing index. This is the descending analogue of `eq_sort_iff`. -/
+theorem eq_sortDesc_iff : σ = sortDesc f ↔ Antitone (f ∘ σ) ∧ IsStable f σ := by
+  have h := eq_sort_iff (σ := σ) (f := OrderDual.toDual ∘ f)
+  rwa [Function.comp_assoc, monotone_toDual_comp_iff, isStable_toDual_comp_iff] at h
+
 /-- The permutation that sorts `f` is the identity if and only if `f` is monotone. -/
 theorem sort_eq_refl_iff_monotone : sort f = Equiv.refl _ ↔ Monotone f := by
   rw [eq_comm, eq_sort_iff, Equiv.coe_refl, Function.comp_id]
@@ -227,6 +228,10 @@ theorem sort_comp_rev_eq_sortDesc_of_injective (inj : Function.Injective f) :
     sort f ∘ Fin.rev = sortDesc f :=
   inj.comp_left comp_sort_comp_rev_eq_comp_sortDesc
 
+theorem sortDesc_comp_rev_eq_sort_of_injective (inj : Function.Injective f) :
+    sortDesc f ∘ Fin.rev = sort f :=
+  inj.comp_left comp_sortDesc_comp_rev_eq_comp_sort
+
 /-- If a permutation `f ∘ σ` of the tuple `f` is not the same as `f ∘ sort f`, then `f ∘ σ`
 has a pair of strictly decreasing entries. -/
 theorem antitone_pair_of_not_sorted' (h : f ∘ σ ≠ f ∘ sort f) :
@@ -257,7 +262,7 @@ theorem isStable_sortDesc (f : Fin n → α) : IsStable f (sortDesc f) :=
 /-- `sort f ∘ Fin.rev` is a stable sort exactly when `f` is injective: on tied values it orders
 them by *decreasing* index, the opposite of the stable `sortDesc f`. -/
 theorem isStable_sort_comp_rev_iff :
-    IsStable f (⇑(sort f) ∘ Fin.rev) ↔ Function.Injective f := by
+    IsStable f (sort f ∘ Fin.rev) ↔ Function.Injective f := by
   refine ⟨fun hσ => ?_, fun inj => ?_⟩
   · -- `sort f` and its reversal order any tied `x, y` oppositely, so `f` can have no tie.
     have key : ∀ x y, f x = f y → (sort f).symm x < (sort f).symm y → False := by
