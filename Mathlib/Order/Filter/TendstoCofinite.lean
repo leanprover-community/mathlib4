@@ -62,31 +62,25 @@ theorem tendstoCofinite_iff_finite_preimage_singleton : TendstoCofinite f ↔
 variable {f} in
 lemma tendstoCofinite_of_injective (h : f.Injective) : TendstoCofinite f := ⟨h.tendsto_cofinite⟩
 
-instance tendstoCofinite_of_finite [Finite α] : TendstoCofinite f :=
+@[instance]
+lemma tendstoCofinite_of_finite [Finite α] : TendstoCofinite f :=
   (tendstoCofinite_iff_finite_preimage_singleton f).mpr fun b ↦ Set.toFinite (f ⁻¹' {b})
 
 namespace TendstoCofinite
 
-instance comp [TendstoCofinite g] [TendstoCofinite f] : TendstoCofinite (g ∘ f) :=
+@[instance]
+lemma comp [TendstoCofinite g] [TendstoCofinite f] : TendstoCofinite (g ∘ f) :=
   (tendstoCofinite_iff_finite_preimage_singleton _).mpr (fun r ↦ by
     simpa using! TendstoCofinite.finite_preimage f (TendstoCofinite.finite_preimage g (by simp)))
 
-instance id : TendstoCofinite (id : α → α) := by
-  simp [tendstoCofinite_iff_finite_preimage_singleton]
+@[instance]
+lemma id : TendstoCofinite (id : α → α) := by simp [tendstoCofinite_iff_finite_preimage_singleton]
 
-instance embedding (e : α ↪ β) : TendstoCofinite e := ⟨e.injective.tendsto_cofinite⟩
+@[instance]
+lemma embedding (e : α ↪ β) : TendstoCofinite e := ⟨e.injective.tendsto_cofinite⟩
 
-instance equiv (e : α ≃ β) : TendstoCofinite e := ⟨e.injective.tendsto_cofinite⟩
-
-open Finset in
-/-- Noncomputably constructs `HasMulAntidiagonal` data from the assumption that
-the multiplication map has finite fibers. -/
-@[to_additive /-- Noncomputably constructs `HasMulAntidiagonal` data from the assumption that
-the addition map has finite fibers. -/]
-noncomputable abbrev hasMulAntidiagonal {N : Type*} [Monoid N]
-    [TendstoCofinite fun (p : N × N) ↦ p.1 * p.2] : HasMulAntidiagonal N where
-  mulAntidiagonal a := (finite_preimage_singleton (fun (p : N × N) ↦ p.1 * p.2) a).toFinset
-  mem_mulAntidiagonal := by simp
+@[instance]
+lemma equiv (e : α ≃ β) : TendstoCofinite e := ⟨e.injective.tendsto_cofinite⟩
 
 variable [TendstoCofinite f]
 
@@ -112,7 +106,8 @@ end TendstoCofinite
 
 end Filter
 
-instance Finsupp.mapDomain_tendstoCofinite [TendstoCofinite f] :
+@[instance]
+theorem Finsupp.mapDomain_tendstoCofinite [TendstoCofinite f] :
     TendstoCofinite (mapDomain (M := ℕ) f) := by
   classical
   refine (tendstoCofinite_iff_finite_preimage_singleton _).mpr fun x ↦ ?_
