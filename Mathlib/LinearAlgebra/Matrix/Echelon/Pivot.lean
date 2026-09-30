@@ -21,7 +21,7 @@ public import Mathlib.LinearAlgebra.Matrix.Rank
 ## Main results
 
 - `Matrix.IsPivotedBy.rank_eq`: the rank of a matrix is its number of pivots.
-- `Matrix.IsPivotedBy.det_eq`: the determinant of a square matrix in row echelon form is the
+- `Matrix.IsRowEchelon.det_eq`: the determinant of a square matrix in row echelon form is the
   product of its diagonal.
 - `Matrix.IsPivotedBy.unique`: the pivot of a matrix is unique if the column indices have a
   linear order.
@@ -136,29 +136,21 @@ theorem isPivotedBy_iff' [PartialOrder m] [LinearOrder n] :
 
 end Zero
 
-section Square
+namespace IsRowEchelon
 
-variable [LinearOrder m] {A : Matrix m m R} {l : m → WithTop m}
+variable {A : Matrix m m R}
 
-namespace IsPivotedBy
-
-theorem isUpperTriangular [WellFoundedLT m] [Zero R] (hA : A.IsPivotedBy l) :
+theorem isUpperTriangular [LT m] [WellFoundedLT m] [Zero R] (hA : A.IsRowEchelon) :
     A.IsUpperTriangular := by
   intro i
   induction i using WellFoundedLT.induction with
-  | ind i ih =>
-    intro j hij
-    refine (hA.isPivotEntry i).1 j (lt_of_not_ge fun hle => ?_)
-    obtain ⟨c, hc, hcj⟩ := WithTop.le_coe_iff.mp hle
-    have hci : c < i := hcj.trans_lt hij
-    exact (hA.isPivotEntry i).2 c hc (hA.isRowEchelon hci (ih c hci))
+  | ind i ih => exact fun j hji ↦ hA hji (ih j hji)
 
-theorem det_eq [Fintype m] [CommRing R] (hA : A.IsPivotedBy l) : A.det = ∏ i, A i i :=
+theorem det_eq [Fintype m] [LinearOrder m] [CommRing R] (hA : A.IsRowEchelon) :
+    A.det = ∏ i, A i i :=
   det_of_isUpperTriangular hA.isUpperTriangular
 
-end IsPivotedBy
-
-end Square
+end IsRowEchelon
 
 section Rank
 

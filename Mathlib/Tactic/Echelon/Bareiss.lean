@@ -40,9 +40,9 @@ def modelFor {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) :
     MetaM ((c : Carrier) × Model c.type) := do
   for (name, ext) in bareissExt.getState (← getEnv) do
     if let some model ← ext.model? α then
-      trace[Tactic.evalRank] "selected the model `{name}` for{indentExpr α}"
+      trace[Tactic.echelon] "selected the model `{name}` for{indentExpr α}"
       return model
-  trace[Tactic.evalRank] "no registered model handles the element type; using the rational \
+  trace[Tactic.echelon] "no registered model handles the element type; using the rational \
     model for{indentExpr α}"
   return ⟨.int, ← ratModel α rα⟩
 

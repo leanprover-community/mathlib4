@@ -19,7 +19,8 @@ public import Mathlib.LinearAlgebra.Matrix.Echelon.Pivot
 ## Main results
 
 - `Echelon.Decomposition.rank_eq`: `A.rank` is the pivot count of any certificate for `A`.
-- `Echelon.Decomposition.det_eq`: `A.det` from the diagonal products of a certificate for `A`.
+- `Echelon.Decomposition.prod_diag_mul_det`: `A.det` from the diagonal products of `L` and of the
+  echelon form of a certificate for `A`.
 
 ## Tags
 
@@ -61,24 +62,11 @@ theorem Decomposition.rank_eq {A : Matrix m n R} (cert : Decomposition A) :
     cert.L.rank_mul_eq_right_of_isLowerTriangular _ cert.L_lowerTriangular cert.L_diag_ne_zero]
   exact (A.rank_submatrix cert.σ (.refl _)).symm
 
-/-- Computing determinant from a decomposition. The statement is written in this form to avoid
-mentioning division. -/
-theorem Decomposition.det_eq {A : Matrix m m R} (cert : Decomposition A) {U : Matrix m m R}
-    {l u s v : R} (hU : cert.L * A.submatrix cert.σ id = U) (hl : ∏ i, cert.L i i = l)
-    (hu : ∏ i, U i i = u) (hs : ((Equiv.Perm.sign cert.σ : ℤ) : R) = s) (hv : l * (s * v) = u) :
-    A.det = v := by
-  have hL : cert.L.det = l := (Matrix.det_of_isLowerTriangular _ cert.L_lowerTriangular).trans hl
-  have hpiv : U.IsPivotedBy cert.pivot := by
-    rw [← hU]
-    exact cert.isPivotedBy
-  have hUdet : U.det = u := hpiv.det_eq.trans hu
-  have hprod : l * (s * A.det) = u := by
-    rw [← hL, ← hs, ← hUdet, ← hU, Matrix.det_mul, Matrix.det_permute]
-  have hl0 : l ≠ 0 :=
-    hl.symm.trans_ne (Finset.prod_ne_zero_iff.mpr fun i _ => cert.L_diag_ne_zero i)
-  have hs0 : s ≠ 0 := by
-    rw [← hs]
-    rcases Int.units_eq_one_or (Equiv.Perm.sign cert.σ) with h | h <;> simp [h]
-  exact mul_left_cancel₀ hs0 (mul_left_cancel₀ hl0 (hprod.trans hv.symm))
+omit [IsDomain R] in
+theorem Decomposition.prod_diag_mul_det {A : Matrix m m R} (cert : Decomposition A) :
+    (∏ i, cert.L i i) * (Equiv.Perm.sign cert.σ * A.det) =
+      ∏ i, (cert.L * A.submatrix cert.σ id) i i := by
+  rw [← Matrix.det_of_isLowerTriangular _ cert.L_lowerTriangular,
+    ← cert.isPivotedBy.isRowEchelon.det_eq, Matrix.det_mul, Matrix.det_permute]
 
 end Echelon

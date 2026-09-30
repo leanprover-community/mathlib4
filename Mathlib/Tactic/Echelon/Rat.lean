@@ -69,7 +69,7 @@ def ratModel {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) :
   let entryCertifier? ← do
     if ← checkDecideEq α rα then pure none
     else
-      trace[Tactic.evalRank] "`decide` cannot settle equality in the element type; \
+      trace[Tactic.echelon] "`decide` cannot settle equality in the element type; \
         using the `norm_num` entry certifier{indentExpr α}"
       pure (some normNumCertifier)
   -- the characteristic determines the zero test
