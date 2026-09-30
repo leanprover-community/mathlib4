@@ -16,7 +16,7 @@ The diagonal product of a matrix given as a list of rows, with a bridge lemma to
 `Fin m` of an `ofLists` matrix, and the sign of a permutation given as a chain of swaps.
 -/
 
-@[expose] public section
+public section
 
 open Mathlib.Tactic.Matrix
 
@@ -30,20 +30,23 @@ section
 
 variable [Zero α] [One α] [Mul α]
 
-/-- The product of the `c` entries at columns `k, k + 1, …` of successive rows, a missing row
-contributing `0`. -/
-def diagProd (k : ℕ) : ℕ → List (List α) → α
+/-- The product of the `c` entries at columns `k, k + 1, …` of successive rows. A missing row or
+entry makes it `0`. -/
+@[expose] def diagProd (k : ℕ) : ℕ → List (List α) → α
   | 0, _ => 1
   | _ + 1, [] => 0
-  | c + 1, row :: rows => row.getD k 0 * diagProd (k + 1) c rows
+  | c + 1, row :: rows =>
+    match row.drop k with
+    | [] => 0
+    | a :: _ => a * diagProd (k + 1) c rows
 
 theorem diagProd_zero (k : ℕ) (rows : List (List α)) : diagProd k 0 rows = 1 :=
   rfl
 
 theorem diagProd_succ_cons {k c : ℕ} {row : List α} {rows : List (List α)} {a e : α}
-    (hd : row.getD k 0 = a) (h : diagProd (k + 1) c rows = e) :
+    {suffix : List α} (hd : row.drop k = a :: suffix) (h : diagProd (k + 1) c rows = e) :
     diagProd k (c + 1) (row :: rows) = a * e := by
-  rw [diagProd, hd, h]
+  simp [diagProd, hd, h]
 
 end
 
@@ -59,8 +62,9 @@ theorem prod_getD_eq_diagProd (k c : ℕ) (rows : List (List α)) :
     cases rows with
     | nil => simp [diagProd]
     | cons row rows =>
-      rw [diagProd_succ_cons rfl (ih (k + 1) rows).symm, Fin.prod_univ_succ]
-      grind
+      have := List.getElem?_drop (xs := row) (i := k) (j := 0)
+      rw [Fin.prod_univ_succ]
+      grind [diagProd, zero_mul]
 
 theorem prod_diag_ofLists (m : ℕ) (rows : List (List α)) :
     ∏ i, ofLists m m rows i i = diagProd 0 m rows := by
