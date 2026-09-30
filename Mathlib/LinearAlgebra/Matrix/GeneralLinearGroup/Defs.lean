@@ -240,6 +240,9 @@ theorem reindexMulEquiv_trans_reindexRingEquiv (e : m ≃ n) (e' : n ≃ o) :
     .trans (reindexMulEquiv R e) (reindexMulEquiv R e') = reindexMulEquiv R (.trans e e') :=
   rfl
 
+@[simp]
+theorem reindexMulEquiv_refl : reindexMulEquiv R (.refl n) = .refl _ := rfl
+
 end Reindex
 
 section Pi
