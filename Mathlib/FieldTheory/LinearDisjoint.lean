@@ -225,7 +225,7 @@ theorem map'' {L' : Type*} [Field L'] [Algebra F L'] [Algebra L' E] [IsScalarTow
   have := H.map (IsScalarTower.toAlgHom F E K) (RingHom.injective _)
   simp_rw [AlgHom.fieldRange_toSubalgebra, ← AlgHom.range_comp] at this
   rw [AlgHom.fieldRange_toSubalgebra]
-  convert! this <;> (ext; exact IsScalarTower.algebraMap_apply _ E K _)
+  convert this <;> (ext; exact IsScalarTower.algebraMap_apply _ E K _)
 
 variable (A) in
 theorem self_right : A.LinearDisjoint F := Subalgebra.LinearDisjoint.bot_right _
@@ -370,7 +370,7 @@ theorem of_le_right' (H : A.LinearDisjoint L) (L' : Type*) [Field L']
     [Algebra F L'] [Algebra L' L] [IsScalarTower F L' L]
     [Algebra L' E] [IsScalarTower F L' E] [IsScalarTower L' L E] : A.LinearDisjoint L' := by
   refine Subalgebra.LinearDisjoint.of_le_right_of_flat H ?_
-  convert! AlgHom.range_comp_le_range (IsScalarTower.toAlgHom F L' L) (IsScalarTower.toAlgHom F L E)
+  convert AlgHom.range_comp_le_range (IsScalarTower.toAlgHom F L' L) (IsScalarTower.toAlgHom F L E)
   ext; exact IsScalarTower.algebraMap_apply L' L E _
 
 /-- If `A` and `B` are linearly disjoint, `A'` and `B'` are contained in `A` and `B`,
