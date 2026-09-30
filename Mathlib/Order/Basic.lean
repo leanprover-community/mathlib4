@@ -14,7 +14,6 @@ public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.Inhabit
 public import Mathlib.Tactic.SimpRw
 public import Mathlib.Tactic.GCongr
-public import Mathlib.Tactic.Attr.Register
 public import Mathlib.Tactic.FastInstance
 
 /-!
@@ -283,10 +282,6 @@ protected theorem Decidable.ne_iff_lt_iff_le [DecidableEq α] : (a ≠ b ↔ a <
 @[to_dual (attr := simp) ne_iff_gt_iff_ge]
 theorem ne_iff_lt_iff_le : (a ≠ b ↔ a < b) ↔ a ≤ b := open scoped Classical in
   Decidable.ne_iff_lt_iff_le
-
-@[to_dual eq_of_forall_ge_iff]
-lemma eq_of_forall_le_iff (H : ∀ c, c ≤ a ↔ c ≤ b) : a = b :=
-  ((H _).1 le_rfl).antisymm ((H _).2 le_rfl)
 
 /-- To prove commutativity of a binary operation `○`, we only to check `a ○ b ≤ b ○ a` for all `a`,
 `b`. -/
@@ -863,8 +858,8 @@ end Subtype
 /-!
 ### Pointwise order on `α × β`
 
-The lexicographic order is defined in `Data.Prod.Lex`, and the instances are available via the
-type synonym `α ×ₗ β = α × β`.
+The lexicographic order is defined in `Order.Prod.Lex.Basic`, and the instances are available via
+the type synonym `α ×ₗ β = α × β`.
 -/
 
 

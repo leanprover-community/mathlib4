@@ -5,8 +5,7 @@ Authors: Michael Rothgang
 -/
 module
 
-public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.Algebra.ContinuousAffineMap
 
 /-!
@@ -439,6 +438,9 @@ def prodComm : P₁ × P₂ ≃ᴬ[k] P₂ × P₁ where
 @[simp]
 theorem prodComm_symm : (prodComm k P₁ P₂).symm = prodComm k P₂ P₁ :=
   rfl
+
+@[simp]
+theorem prodComm_trans_prodComm : (prodComm k P₁ P₂).trans (prodComm k P₂ P₁) = .refl _ _ := rfl
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Product of affine spaces is associative up to continuous affine isomorphism. -/
