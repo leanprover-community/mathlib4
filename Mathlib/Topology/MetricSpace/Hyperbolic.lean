@@ -80,7 +80,6 @@ theorem subtype (h : IsHyperbolicWith X δ) (p : X → Prop) : IsHyperbolicWith 
 end IsHyperbolicWith
 
 /-- A pseudometric space with all distances bounded above by `k` is `k`-hyperbolic. -/
-@[grind .]
 lemma isHyperbolicWith_of_forall_dist_le {k : ℝ} (hk : ∀ x y : X, dist x y ≤ k) :
     IsHyperbolicWith X k := by
   grind [IsHyperbolicWith, gromovProduct_le_dist_left]
