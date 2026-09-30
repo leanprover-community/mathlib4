@@ -159,6 +159,10 @@ open MulOpposite in
 lemma op_rightDvd_op_iff : op a ∣ᵣ op b ↔ a ∣ b :=
   ⟨fun ⟨c, hc⟩ ↦ ⟨unop c, op_injective hc⟩, fun ⟨c, hc⟩ ↦ ⟨op c, congrArg op hc⟩⟩
 
+@[deprecated op_dvd_op_iff +typeChanged (since := "2026-09-30")]
+theorem rightDvd_iff_op_dvd_op : a ∣ᵣ b ↔ MulOpposite.op a ∣ MulOpposite.op b :=
+  op_dvd_op_iff.symm
+
 end Semigroup
 
 section RightCancelSemigroup
