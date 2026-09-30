@@ -16,7 +16,9 @@ public import Mathlib.Topology.MetricSpace.Isometry
 
 * `IsHyperbolicWith`: A pseudometric space is hyperbolic with constant `δ`
 if and only if for all `w x y z` the four-point condition
-`min (gromovProduct w x y) (gromovProduct w y z) - δ ≤ gromovProduct w x z` holds.
+* `IsHyperbolicWith`: A pseudometric space is hyperbolic with constant `δ` if and only if for all
+  `w x y z` the four-point condition
+  `min (gromovProduct w x y) (gromovProduct w y z) - δ ≤ gromovProduct w x z` holds.
 * `IsHyperbolic`: A pseudometric space is hyperbolic if it is `δ`-hyperbolic for some constant `δ`.
 
 ## Main results
@@ -44,6 +46,7 @@ namespace Metric
 
 /-- A pseudometric space is `δ`-hyperbolic if for all `w x y z` the four-point condition
 `min (gromovProduct w x y) (gromovProduct w y z) - δ ≤ gromovProduct w x z` holds. -/
+@[wikidata Q3828581]
 def IsHyperbolicWith (X : Type*) [PseudoMetricSpace X] (δ : ℝ) : Prop :=
   ∀ w x y z : X, min (gromovProduct w x y) (gromovProduct w y z) - δ ≤ gromovProduct w x z
 
@@ -90,6 +93,7 @@ theorem isHyperbolicWith_diam_univ [BoundedSpace X] :
 /-! ### Hyperbolic spaces -/
 
 /-- A pseudometric space is hyperbolic if it is `δ`-hyperbolic for some real constant `δ`. -/
+@[wikidata Q3828581]
 class IsHyperbolic (X : Type*) [PseudoMetricSpace X] : Prop where
   exists_isHyperbolicWith : ∃ δ, IsHyperbolicWith X δ
 
