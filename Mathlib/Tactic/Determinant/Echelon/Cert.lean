@@ -107,22 +107,26 @@ def proveEchelonDet {u : Level} {α : Q(Type u)} (_cr : Q(CommRing $α)) (_id : 
     (m : ℕ) (A : Q(Matrix (Fin $m) (Fin $m) $α)) (entries : Array (Array Expr)) :
     MetaM ((v : Q($α)) × Q(($A).det = $v)) := do
   let r ← mkBareissDecomposition _cr A entries
-  -- the model is selected again for its entry certifier, which the result does not carry
-  let certifier? := (← modelFor α).entryCertifier?
+  let certifier? := r.model.entryCertifier?
+  -- the decomposition data as the expressions the certificate was built from
+  let data ← r.data.mapM r.model.mkEntry
   have c := r.cert
-  have cert : Q(Echelon.Decomposition $A) := c.toDecomposition
-  -- the diagonal products as `diagProd` on the row lists of `c.L` and `c.U`, which the views
-  -- rebuild; the certified identity evaluates them
-  have L := mkMatrixViews _cr m m r.data.L
-  have U := mkMatrixViews _cr m m r.data.U
+  have cert : Q(Echelon.Decomposition $A) := c.decomp
+  -- the diagonal products as `diagProd` on the row lists of `L` and `U`, which the views
+  -- rebuild; the certified identity evaluates them. The views' `Zero` instance is scoped to the
+  -- inner block, so that the quotations below keep resolving `Zero` through `_cr`.
+  let (L, U) ← do
+    let zα : Q(Zero $α) ← synthInstanceQ q(Zero $α)
+    pure (MatrixViews.ofArray zα m m data.L, MatrixViews.ofArray zα m m data.U)
   have litL : Q(List (List $α)) := L.lit
   have litU : Q(List (List $α)) := U.lit
   have l : Q($α) := q(diagProd 0 $m $litL)
   have uu : Q($α) := q(diagProd 0 $m $litU)
   have hl : Q(∏ i, ofLists $m $m $litL i i = diagProd 0 $m $litL) := q(prod_diag_ofLists $m $litL)
   have hu : Q(∏ i, ofLists $m $m $litU i i = diagProd 0 $m $litU) := q(prod_diag_ofLists $m $litU)
-  -- the sign of the certificate's permutation
-  let ⟨s, hs⟩ ← provePermSign _cr r.data.swaps.size c.σ
+  -- the sign of the certificate's permutation, rebuilt by `mkPerm` from the same swaps
+  let σ ← mkPerm m data.swaps
+  let ⟨s, hs⟩ ← provePermSign _cr data.swaps.size σ
   -- the identity `l * (s * v) = u` is decided, the kernel evaluating the products, or proved by
   -- the entry certifier on the products unfolded to the entries
   let certifyIdentity : (v : Q($α)) → MetaM Q($l * ($s * $v) = $uu) ← match certifier? with
@@ -136,9 +140,9 @@ def proveEchelonDet {u : Level} {α : Q(Type u)} (_cr : Q(CommRing $α)) (_id : 
         let hv : Q($eL * ($s * $v) = $eU) ← certifier q($eL * ($s * $v) = $eU)
         return q((congrArg (· * ($s * $v)) $hL).trans (Eq.trans $hv (Eq.symm $hU)))
   -- the value, verified by the identity
-  let v ← detValue _cr m r.data
+  let v ← detValue _cr m data
   let hv ← certifyIdentity v
-  -- the projections of `cert` reduce to the fields of `c`, and `c.L`, `c.U` are the terms the
+  -- the projections of `cert` reduce to the matrices the certificate built from `data`, which the
   -- views rebuilt, so the hypotheses transport by defeq
   have Um : Q(Matrix (Fin $m) (Fin $m) $α) := c.U
   have hU' : Q(($cert).L * ($A).submatrix ($cert).σ id = $Um) := c.mul_eq
@@ -156,26 +160,25 @@ def normDetEchelon? (e : Expr) : SimpM (Option Simp.Result) := do
   let some (m, _, R, entries) ← matchMatrixLit? A
     | trace[Tactic.evalDet] "not a closed matrix literal{indentExpr A}"
       return none
-  match ← checkBareissApplicable R with
+  let u ← getDecLevel R
+  have α : Q(Type u) := R
+  match ← inferBareissRing α with
   | .error err =>
     trace[Tactic.evalDet] "{err}{indentExpr A}"
     return none
-  | .ok _ => pure ()
-  let u ← getDecLevel R
-  have α : Q(Type u) := R
-  have _cr : Q(CommRing $α) := ← synthInstanceQ q(CommRing $α)
-  have _id : Q(IsDomain $α) := ← synthInstanceQ q(IsDomain $α)
-  have A : Q(Matrix (Fin $m) (Fin $m) $α) := A
-  try
-    let ⟨v, pf⟩ ← proveEchelonDet _cr _id m A entries
-    -- normalise the value where `norm_num` evaluates it
-    let ctx ← readThe Simp.Context
-    let r : Simp.Result := { expr := v, proof? := some pf }
-    let s ← try Mathlib.Meta.NormNum.deriveSimp ctx (useSimp := false) (e := v)
-      catch _ => pure { expr := v }
-    return some (← r.mkEqTrans s)
-  catch ex =>
-    trace[Tactic.evalDet] "{ex.toMessageData}"
-    return none
+  | .ok _cr =>
+    have _id : Q(IsDomain $α) := ← synthInstanceQ q(IsDomain $α)
+    have A : Q(Matrix (Fin $m) (Fin $m) $α) := A
+    try
+      let ⟨v, pf⟩ ← proveEchelonDet _cr _id m A entries
+      -- normalise the value where `norm_num` evaluates it
+      let ctx ← readThe Simp.Context
+      let r : Simp.Result := { expr := v, proof? := some pf }
+      let s ← try Mathlib.Meta.NormNum.deriveSimp ctx (useSimp := false) (e := v)
+        catch _ => pure { expr := v }
+      return some (← r.mkEqTrans s)
+    catch ex =>
+      trace[Tactic.evalDet] "{ex.toMessageData}"
+      return none
 
 end Mathlib.Tactic.Determinant
