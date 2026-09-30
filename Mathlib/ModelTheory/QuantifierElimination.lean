@@ -521,7 +521,7 @@ private theorem isQF_realize_partialEquiv
 `e : N ↪ₑ[L] N'` and a partial equivalence `q : M ≃ₚ[L] N'` extending the codomain-mapped
 `PartialEquiv.codMap p₀ e`, transport a realization of a quantifier-free formula along `q`. -/
 private theorem exists_realize_codMap_of_extends
-    {α : Type} [Finite α] {φ : L.Formula (α ⊕ Fin 1)} (hφ : φ.IsQF)
+    {α : Type} {φ : L.Formula (α ⊕ Fin 1)} (hφ : φ.IsQF)
     {M N N' A : Type max u v} [L.Structure M] [L.Structure N] [L.Structure N'] [L.Structure A]
     (p₀ : M ≃ₚ[L] N) (e : N ↪ₑ[L] N')
     (q : M ≃ₚ[L] N') (hpq : PartialEquiv.codMap p₀ e.toEmbedding ≤ q)
@@ -557,7 +557,7 @@ private theorem exists_realize_codMap_of_extends
 /-- Pull a realization of a quantifier-free formula back through an elementary embedding to obtain
 a witness in the source structure. -/
 private theorem exists_realize_descent_through_elementary
-    {α : Type} [Finite α] {φ : L.Formula (α ⊕ Fin 1)}
+    {α : Type} {φ : L.Formula (α ⊕ Fin 1)}
     {N N' : Type max u v} [L.Structure N] [L.Structure N']
     (e : N ↪ₑ[L] N') (ga : α → N) (b' : N')
     (htarget : φ.Realize (Sum.elim (e.toEmbedding ∘ ga) (Fin.snoc default b'))) :
