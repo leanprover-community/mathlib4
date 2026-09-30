@@ -5,7 +5,7 @@ Authors: Sven Manthe
 -/
 module
 
-public import Mathlib.Order.CompleteLattice.SetLike
+public import Mathlib.Order.CompleteSublattice.SetLike
 
 /-!
 # Trees in the sense of descriptive set theory
