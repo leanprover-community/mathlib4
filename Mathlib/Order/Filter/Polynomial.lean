@@ -27,7 +27,7 @@ variable {F : Type*} [Field F] [LinearOrder F] [IsStrictOrderedRing F] {P Q : F[
 section PolynomialAtTop
 
 theorem tendsto_atTop_of_leadingCoeff_nonneg (hdeg : 0 < P.degree) :
-    0 ≤ P.leadingCoeff → Tendsto (eval · P) atTop atTop := by
+    0 ≤ P.leadingCoeff → Tendsto P.eval atTop atTop := by
   refine degree_pos_induction_on P hdeg
     (fun _ _ ↦ ?_) (fun _ ih hnnng ↦ ?_) (fun _ _ _ ↦ ?_)
   · simpa using tendsto_id.const_mul_atTop (by simp at *; grind)
@@ -35,33 +35,31 @@ theorem tendsto_atTop_of_leadingCoeff_nonneg (hdeg : 0 < P.degree) :
   · simpa using tendsto_atTop_add_const_right _ _
       (by grind [leadingCoeff_add_of_degree_lt', degree_C_le])
 
-#find_home tendsto_atTop_of_leadingCoeff_nonneg
-
 theorem tendsto_atBot_of_leadingCoeff_nonpos (hdeg : 0 < P.degree) (hnps : P.leadingCoeff ≤ 0) :
     Tendsto (fun x ↦ eval x P) atTop atBot := by
   simpa using tendsto_atTop_of_leadingCoeff_nonneg (P := -P)
     (by simpa using hdeg) (by simpa using hnps)
 
 theorem tendsto_atTop_or_tendsto_atBot (hdeg : 0 < P.degree) :
-    Tendsto (eval · P) atTop atTop ∨ Tendsto (eval · P) atTop atBot := by
+    Tendsto P.eval atTop atTop ∨ Tendsto P.eval atTop atBot := by
   rcases lt_or_ge 0 P.leadingCoeff with pos | neg
   · exact Or.inl <| tendsto_atTop_of_leadingCoeff_nonneg hdeg pos.le
   · exact Or.inr <| tendsto_atBot_of_leadingCoeff_nonpos hdeg neg
 
 theorem tendsto_pure_iff {c : F} :
-    Tendsto (eval · P) atTop (pure c) ↔ P.leadingCoeff = c ∧ P.degree ≤ 0 := by
-  have mp' : Tendsto (eval · P) atTop (pure c) → P.degree ≤ 0 := fun h ↦ by
+    Tendsto P.eval atTop (pure c) ↔ P.leadingCoeff = c ∧ P.degree ≤ 0 := by
+  have mp' : Tendsto P.eval atTop (pure c) → P.degree ≤ 0 := fun h ↦ by
     contrapose! h
     rcases tendsto_atTop_or_tendsto_atBot h with top | bot
     · exact top.not_tendsto (disjoint_pure_atTop _).symm
     · exact bot.not_tendsto (disjoint_pure_atBot _).symm
-  have mpr' : P.degree ≤ 0 → Tendsto (eval · P) atTop (pure P.leadingCoeff) := fun h ↦ by
+  have mpr' : P.degree ≤ 0 → Tendsto P.eval atTop (pure P.leadingCoeff) := fun h ↦ by
     rw! [Polynomial.eq_C_of_degree_le_zero h]
     simp
   grind [Filter.Tendsto.not_tendsto, disjoint_pure_pure]
 
 theorem tendsto_nhds_iff [TopologicalSpace F] [OrderTopology F] {c : F} :
-    Tendsto (eval · P) atTop (𝓝 c) ↔ P.leadingCoeff = c ∧ P.degree ≤ 0 := by
+    Tendsto P.eval atTop (𝓝 c) ↔ P.leadingCoeff = c ∧ P.degree ≤ 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ (tendsto_pure_iff.mpr h).mono_right (by simp)⟩
   · have : P.degree ≤ 0 := by
       contrapose! h
@@ -73,7 +71,7 @@ theorem tendsto_nhds_iff [TopologicalSpace F] [OrderTopology F] {c : F} :
     simp_all
 
 theorem tendsto_atTop_iff_leadingCoeff_nonneg :
-    Tendsto (eval · P) atTop atTop ↔ 0 < P.degree ∧ 0 ≤ P.leadingCoeff := by
+    Tendsto P.eval atTop atTop ↔ 0 < P.degree ∧ 0 ≤ P.leadingCoeff := by
   refine ⟨fun h ↦ ?_, fun h ↦ tendsto_atTop_of_leadingCoeff_nonneg h.1 h.2⟩
   have hdeg : 0 < P.degree := by
     contrapose! h
@@ -92,7 +90,7 @@ theorem tendsto_atTop_iff_leadingCoeff_nonneg :
     exact ih (by simpa using tendsto_atTop_add_const_right _ (-a) h)
 
 theorem tendsto_atBot_iff_leadingCoeff_nonpos :
-    Tendsto (eval · P) atTop atBot ↔ 0 < P.degree ∧ P.leadingCoeff ≤ 0 := by
+    Tendsto P.eval atTop atBot ↔ 0 < P.degree ∧ P.leadingCoeff ≤ 0 := by
   simp only [← tendsto_neg_atTop_iff, ← eval_neg, tendsto_atTop_iff_leadingCoeff_nonneg,
     degree_neg, leadingCoeff_neg, neg_nonneg]
 
