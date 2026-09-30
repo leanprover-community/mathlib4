@@ -152,7 +152,7 @@ variable (P) in
 noncomputable def tensorModelOfHasCoeffsHom : R ⊗[R₀] P.ModelOfHasCoeffs R₀ →ₐ[R] S :=
   Algebra.TensorProduct.lift (Algebra.ofId R S)
     (Ideal.Quotient.liftₐ _ (MvPolynomial.aeval P.val) <| by
-      simp_rw [← RingHom.mem_ker, ← SetLike.le_def, Ideal.span_le]
+      simp_rw [← RingHom.mem_ker, ← IsConcreteLE.le_iff, Ideal.span_le]
       rintro a ⟨i, rfl⟩
       simp)
     fun _ _ ↦ Commute.all _ _
@@ -168,7 +168,7 @@ noncomputable def tensorModelOfHasCoeffsInv : S →ₐ[R] R ⊗[R₀] P.ModelOfH
   (Ideal.Quotient.liftₐ _
     ((Algebra.TensorProduct.map (.id R R) (Ideal.Quotient.mkₐ _ _)).comp
       (MvPolynomial.algebraTensorAlgEquiv R₀ R).symm.toAlgHom) <| by
-    simp_rw [← RingHom.mem_ker, ← SetLike.le_def]
+    simp_rw [← RingHom.mem_ker, ← IsConcreteLE.le_iff]
     rw [← P.span_range_relation_eq_ker, Ideal.span_le]
     rintro a ⟨i, rfl⟩
     simp only [SetLike.mem_coe, RingHom.mem_ker, AlgHom.coe_comp,
@@ -266,7 +266,7 @@ lemma jacobianRelations_spec [DecidableEq σ] [Fintype σ] :
     ∑ i, P.jacobianRelations i * P.relation i =
       P.jacobiMatrix.det * P.σ ↑(P.jacobian_isUnit.unit⁻¹) - 1 := by
   delta jacobianRelations
-  convert! P.exists_sum_eq_σ_jacobian_mul_σ_jacobian_inv_sub_one.choose_spec
+  convert P.exists_sum_eq_σ_jacobian_mul_σ_jacobian_inv_sub_one.choose_spec
 
 /-- The set of coefficients that is enough to descend a submersive presentation `P`. -/
 -- Note: `Set` has no computational content, but Lean still attempts to compile it.
@@ -374,7 +374,7 @@ def ofHasCoeffs [FaithfulSMul R₀ R] :
       $(P.sum_jacobianRelationsOfHasCoeffs_mul_relationOfHasCoeffs R₀))
     simp only [map_sum, map_mul, Ideal.Quotient.mk_span_range, mul_zero, Finset.sum_const_zero,
       map_sub, map_one, @eq_comm (P.ModelOfHasCoeffs R₀) 0, sub_eq_zero] at this
-    convert! IsUnit.of_mul_eq_one _ this
+    convert IsUnit.of_mul_eq_one _ this
     rw [PreSubmersivePresentation.jacobian_eq_jacobiMatrix_det]
     simp [jacobianOfHasCoeffs]
 

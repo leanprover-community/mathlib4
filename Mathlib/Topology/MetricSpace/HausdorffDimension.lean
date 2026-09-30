@@ -609,27 +609,29 @@ theorem Differentiable.dense_compl_range_of_finrank_lt_finrank [FiniteDimensiona
 
 variable [FiniteDimensional ℝ E] {s : Set E}
 
-@[deprecated DifferentiableOn.dimH_image_le (since := "2026-08-03")]
+@[deprecated DifferentiableOn.dimH_image_le +typeChanged (since := "2026-08-03")]
 theorem ContDiffOn.dimH_image_le (hf : ContDiffOn ℝ 1 f s) (hc : Convex ℝ s) (ht : t ⊆ s) :
     dimH (f '' t) ≤ dimH t :=
   dimH_image_le_of_locally_lipschitzOn fun x hx =>
     let ⟨C, u, hu, hf⟩ := (hf x (ht hx)).exists_lipschitzOnWith hc
     ⟨C, u, nhdsWithin_mono _ ht hu, hf⟩
 
-@[deprecated Differentiable.dimH_range_le (since := "2026-08-03")]
+@[deprecated Differentiable.dimH_range_le +typeChanged (since := "2026-08-03")]
 theorem ContDiff.dimH_range_le (h : ContDiff ℝ 1 f) : dimH (range f) ≤ finrank ℝ E :=
   calc
     dimH (range f) = dimH (f '' univ) := by rw [image_univ]
     _ ≤ dimH (univ : Set E) := h.contDiffOn.dimH_image_le convex_univ Subset.rfl
     _ = finrank ℝ E := Real.dimH_univ_eq_finrank E
 
-@[deprecated DifferentiableOn.dense_compl_image_of_dimH_lt_finrank (since := "2026-08-03")]
+@[deprecated DifferentiableOn.dense_compl_image_of_dimH_lt_finrank +typeChanged
+  (since := "2026-08-03")]
 theorem ContDiffOn.dense_compl_image_of_dimH_lt_finrank [FiniteDimensional ℝ F]
     (h : ContDiffOn ℝ 1 f s) (hc : Convex ℝ s) (ht : t ⊆ s)
     (htF : dimH t < finrank ℝ F) : Dense (f '' t)ᶜ :=
   dense_compl_of_dimH_lt_finrank <| (h.dimH_image_le hc ht).trans_lt htF
 
-@[deprecated Differentiable.dense_compl_range_of_finrank_lt_finrank (since := "2026-08-03")]
+@[deprecated Differentiable.dense_compl_range_of_finrank_lt_finrank +typeChanged
+  (since := "2026-08-03")]
 theorem ContDiff.dense_compl_range_of_finrank_lt_finrank [FiniteDimensional ℝ F]
     (h : ContDiff ℝ 1 f) (hEF : finrank ℝ E < finrank ℝ F) : Dense (range f)ᶜ :=
   dense_compl_of_dimH_lt_finrank <| h.dimH_range_le.trans_lt <| Nat.cast_lt.2 hEF

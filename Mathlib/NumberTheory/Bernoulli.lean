@@ -6,8 +6,7 @@ Authors: Johan Commelin, Kevin Buzzard, Seewoo Lee
 module
 
 public import Mathlib.Algebra.BigOperators.Field
-public import Mathlib.Algebra.GCDMonoid.FinsetLemmas
-public import Mathlib.Data.Nat.Choose.Bounds
+import Mathlib.Algebra.GCDMonoid.FinsetLemmas
 public import Mathlib.RingTheory.PowerSeries.Exp
 public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.NumberTheory.Padics.PadicNumbers
@@ -164,10 +163,10 @@ theorem bernoulli'PowerSeries_mul_exp_sub_one :
   rw [bernoulli'PowerSeries, coeff_mul, mul_comm X, sum_antidiagonal_succ']
   suffices (∑ p ∈ antidiagonal n,
       bernoulli' p.1 / p.1! * ((p.2 + 1) * p.2! : ℚ)⁻¹) = (n ! : ℚ)⁻¹ by
-    simpa [map_sum, Nat.factorial] using congr_arg (algebraMap ℚ A) this
+    simpa [map_sum, Nat.factorial] using congr(algebraMap ℚ A $this)
   apply eq_inv_of_mul_eq_one_left
   rw [sum_mul]
-  convert! bernoulli'_spec' n using 1
+  convert bernoulli'_spec' n using 1
   apply sum_congr rfl
   simp_rw [mem_antidiagonal]
   rintro ⟨i, j⟩ rfl
@@ -254,7 +253,7 @@ theorem bernoulli_spec' (n : ℕ) :
   -- massage it to match the structure of the goal, then convert piece by piece
   rw [sum_eq_add_sum_sdiff_singleton_of_mem h₁] at H ⊢
   apply add_eq_of_eq_sub'
-  convert! eq_sub_of_add_eq' H using 1
+  convert eq_sub_of_add_eq' H using 1
   · refine sum_congr rfl fun p h => ?_
     obtain ⟨h', h''⟩ : p ∈ _ ∧ p ≠ _ := by rwa [mem_sdiff, mem_singleton] at h
     simp [bernoulli_eq_bernoulli'_of_ne_one
@@ -363,7 +362,7 @@ theorem sum_Ico_pow (n p : ℕ) :
   cases p with | zero => simp | succ p =>
   let f i := bernoulli i * p.succ.succ.choose i * (n : ℚ) ^ (p.succ.succ - i) / p.succ.succ
   let f' i := bernoulli' i * p.succ.succ.choose i * (n : ℚ) ^ (p.succ.succ - i) / p.succ.succ
-  suffices (∑ k ∈ Ico 1 n.succ, (k : ℚ) ^ p.succ) = ∑ i ∈ range p.succ.succ, f' i by convert!
+  suffices (∑ k ∈ Ico 1 n.succ, (k : ℚ) ^ p.succ) = ∑ i ∈ range p.succ.succ, f' i by convert
     this
   -- prove some algebraic facts that will make things easier for us later on
   have hle := Nat.le_add_left 1 n
@@ -499,10 +498,10 @@ private lemma factorization_succ_le_sub_one {p d : ℕ} [Fact p.Prime] (hd : d �
     suffices ∀ n : ℕ, n ≥ 2 → ¬(p = 2 ∧ n = 2) → n + 1 ≤ p ^ (n - 1) from this d hd hcase
     intro n hn hne'
     induction hn with
-    | refl => norm_num at hne' ⊢; lia
+    | refl => simp at hne' ⊢; lia
     | @step m hm IH =>
       by_cases hm2 : p = 2 ∧ m = 2
-      · obtain ⟨rfl, rfl⟩ := hm2; norm_num
+      · obtain ⟨rfl, rfl⟩ := hm2; simp
       · calc m + 1 + 1 ≤ p ^ (m - 1) + 1 := by linarith [IH hm2]
           _ ≤ p ^ (m - 1) * p := by nlinarith [Nat.one_le_pow (m - 1) p (by lia)]
           _ = p ^ m := by rw [show m = m - 1 + 1 by lia]; exact pow_succ ..
@@ -717,7 +716,7 @@ theorem not_sq_dvd_den_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) :
   have h2 : (bernoulli (2 * k)).den ∣ p * ((p : ℚ) * bernoulli (2 * k)).den := by
     have hd := Rat.mul_den_dvd (1 / (p : ℚ)) ((p : ℚ) * bernoulli (2 * k))
     rwa [one_div, inv_mul_cancel_left₀ hpne, show ((p : ℚ)⁻¹).den = p by simp [hp.ne_zero]] at hd
-  contrapose! h1
+  contrapose h1
   simpa [Nat.mul_dvd_mul_iff_left hp.pos, pow_two] using h1.trans h2
 
 end Valuation
