@@ -195,7 +195,7 @@ theorem AnalyticWithinAt.dslope_of_ne (hf : AnalyticWithinAt 𝕜 f s z) (hz : z
     AnalyticAt 𝕜 (dslope f a) z := by
   rcases eq_or_ne z a with rfl | hz
   · obtain ⟨p, hp⟩ := hf
-    exact hp.has_fpower_series_dslope_fslope.analyticAt
+    exact hp.dslope_fslope.analyticAt
   · exact analyticWithinAt_univ.1 (hf.analyticWithinAt.dslope_of_ne hz)
 
 /--
