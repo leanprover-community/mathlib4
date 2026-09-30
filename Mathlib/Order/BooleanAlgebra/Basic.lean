@@ -134,7 +134,7 @@ instance (priority := 100) GeneralizedBooleanAlgebra.toGeneralizedCoheytingAlgeb
           _ ≤ y \ x ⊔ x ⊔ z := by grind [sup_of_le_left, sdiff_le', le_sup_left, sdiff_sup_self']
           _ = x ⊔ z ⊔ y \ x := by ac_rfl),
       fun h ↦ le_of_inf_le_sup_le (inf_sdiff_self_left.trans_le bot_le) (calc
-        _ = y ⊔ x := by exact sdiff_sup_self'
+        _ = y ⊔ x := private_decl% sdiff_sup_self'
         _ ≤ x ⊔ z ⊔ x := sup_le_sup_right h x
         _ ≤ z ⊔ x := by rw [sup_assoc, sup_comm, sup_assoc, sup_idem])⟩
 
