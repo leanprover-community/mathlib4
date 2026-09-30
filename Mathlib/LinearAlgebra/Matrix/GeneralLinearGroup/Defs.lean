@@ -206,7 +206,7 @@ theorem map_comp_apply (f : T →+* R) (g : R →+* S) (x : GL n T) :
     (map g).comp (map f) x = map g (map f x) :=
   rfl
 
-/-- The `MulEquiv` induces by a `RingEquiv` on the coefficents. -/
+/-- The equivalence between `GL n R` and `GL n S` given by `f : R ≃+* S`. -/
 @[simps! apply]
 def mapEquiv (f : R ≃+* S) : GL n R ≃* GL n S :=
   Units.mapEquiv f.mapMatrix.toMulEquiv
