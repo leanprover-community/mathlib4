@@ -970,17 +970,17 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
   if cfg.existing != alreadyExists && !(← isInductive src) && !cfg.self then
     Linter.logLintIf linter.translateExisting cfg.ref <|
       if alreadyExists then
-        m!"The translated declaration already exists. Please specify this explicitly using \
-           `@[{t.attrName} existing]`."
+        m!"The translated declaration `{.ofConstName tgt}` already exists. \
+          Please specify this explicitly using `@[{t.attrName} existing]`."
       else
-        "The translated declaration doesn't exist. Please remove the option `existing`."
+        m!"The translated declaration `{tgt}` doesn't exist. Please remove the option `existing`."
   if alreadyExists then
     ensureClassTranslated t cfg src
     let (reorder, relevantArg) ← MetaM.run' <| checkExistingType t src tgt cfg
     insertTranslation t src tgt reorder relevantArg cfg.ref
     -- since `tgt` already exists, we just need to
     -- add translations `src.x ↦ tgt.x'` for any subfields.
-    trace[translate_detail] "declaration {tgt} already exists."
+    trace[translate_detail] "declaration `{.ofConstName tgt}` already exists."
     proceedFields t src tgt cfg
   else
     unless (← withoutExporting do getConstInfo src).hasValue (allowOpaque := true) do
