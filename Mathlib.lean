@@ -4527,7 +4527,6 @@ public import Mathlib.Data.Set.Sups
 public import Mathlib.Data.Set.SymmDiff
 public import Mathlib.Data.Set.UnionLift
 public import Mathlib.Data.SetLike.Fintype
-public import Mathlib.Data.SetLike.Lattice
 public import Mathlib.Data.Sigma.Basic
 public import Mathlib.Data.Sigma.Interval
 public import Mathlib.Data.Sign.Basic
