@@ -182,7 +182,8 @@ def LocallyFiniteOrder.orderMonoidHom (G : Type*) [Group G] [IsMulCommutative G]
   ⟨(orderAddMonoidHom (Additive G)).toMultiplicative, (orderAddMonoidHom (Additive G)).2⟩
 
 open scoped IsMulCommutative in
-lemma LocallyFiniteOrder.orderMonoidHom_strictMono {G : Type*} [Group G] [IsMulCommutative G] [LinearOrder G]
+lemma LocallyFiniteOrder.orderMonoidHom_strictMono {G : Type*} [Group G] [IsMulCommutative G]
+    [LinearOrder G]
     [IsOrderedMonoid G] [LocallyFiniteOrder G] :
     StrictMono (orderMonoidHom G) :=
   let : LocallyFiniteOrder (Additive G) := ‹LocallyFiniteOrder G›

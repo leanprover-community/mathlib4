@@ -134,6 +134,7 @@ lemma Subgroup.closure_image_isMulIndecomposable_baseOf [Finite ι] [InvolutiveI
 
 namespace IsMulIndecomposable
 
+omit [IsMulCommutative G] in
 @[to_additive]
 lemma pairwise_div_notMem_range [InvolutiveInv ι]
     (v : ι → G)
@@ -156,7 +157,8 @@ lemma pairwise_div_notMem_range [InvolutiveInv ι]
 
 open scoped IsMulCommutative in
 @[to_additive]
-lemma pairwise_div_notMem_range' [InvolutiveInv ι] [Group S] [IsMulCommutative S] [IsOrderedMonoid S]
+lemma pairwise_div_notMem_range' [InvolutiveInv ι] [Group S] [IsMulCommutative S]
+    [IsOrderedMonoid S]
     (v : ι → G) (hv_inv : ∀ i, v i⁻¹ = (v i)⁻¹)
     (f : G →* S) (hf : ∀ i, f (v i) ≠ 1)
     (s : Set ι) (hst : s ⊆ {j | IsMulIndecomposable v {i | 1 < f (v i)} j}) :
@@ -167,7 +169,8 @@ lemma pairwise_div_notMem_range' [InvolutiveInv ι] [Group S] [IsMulCommutative 
 
 open scoped IsMulCommutative in
 @[to_additive]
-lemma pairwise_baseOf_div_notMem [InvolutiveInv ι] [Group S] [IsMulCommutative S] [IsOrderedMonoid S]
+lemma pairwise_baseOf_div_notMem [InvolutiveInv ι] [Group S] [IsMulCommutative S]
+    [IsOrderedMonoid S]
     (v : ι → G) (hv_inv : ∀ i, v i⁻¹ = (v i)⁻¹)
     (f : G →* S) (hf : ∀ i, f (v i) ≠ 1) :
     (baseOf v f).Pairwise fun i j ↦ v i / v j ∉ range v :=
@@ -176,7 +179,8 @@ lemma pairwise_baseOf_div_notMem [InvolutiveInv ι] [Group S] [IsMulCommutative 
 open scoped IsMulCommutative in
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 @[to_additive]
-lemma mem_or_inv_mem_closure_baseOf [Finite ι] [InvolutiveInv ι] [Group S] [IsMulCommutative S] [IsOrderedMonoid S]
+lemma mem_or_inv_mem_closure_baseOf [Finite ι] [InvolutiveInv ι] [Group S] [IsMulCommutative S]
+    [IsOrderedMonoid S]
     (v : ι → G)
     (f : G →* S) (i : ι) (hi : f (v i) ≠ 1) (hi' : v i⁻¹ = (v i)⁻¹) :
      v i    ∈ Submonoid.closure (v '' baseOf v f) ∨

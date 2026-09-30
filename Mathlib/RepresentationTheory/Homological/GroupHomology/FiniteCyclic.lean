@@ -42,7 +42,8 @@ open CategoryTheory Representation Finsupp
 
 namespace Rep.FiniteCyclicGroup
 
-variable {k G : Type u} [CommRing k] [Group G] [IsMulCommutative G] [Fintype G] (A : Rep k G) (g : G)
+variable {k G : Type u} [CommRing k] [Group G] [IsMulCommutative G] [Fintype G] (A : Rep k G)
+    (g : G)
 
 open scoped IsMulCommutative in
 set_option backward.defeqAttrib.useBackward true in

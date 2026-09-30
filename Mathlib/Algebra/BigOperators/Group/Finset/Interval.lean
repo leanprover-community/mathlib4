@@ -22,7 +22,8 @@ namespace Finset
 
 open scoped IsMulCommutative in
 @[to_additive]
-lemma prod_Icc_of_even_eq_range {α : Type*} [Group α] [IsMulCommutative α] {f : ℤ → α} (hf : f.Even) (N : ℕ) :
+lemma prod_Icc_of_even_eq_range {α : Type*} [Group α] [IsMulCommutative α] {f : ℤ → α}
+    (hf : f.Even) (N : ℕ) :
     ∏ m ∈ Icc (-N : ℤ) N, f m = (∏ m ∈ range (N + 1), f m) ^ 2 / f 0 := by
   induction N with
   | zero => simp [sq]
@@ -37,7 +38,8 @@ lemma prod_Icc_eq_prod_Ico_mul {α : Type*} [CommMonoid α] (f : ℤ → α) {l 
 
 open scoped IsMulCommutative in
 @[to_additive]
-lemma prod_Icc_succ_eq_mul_endpoints {R : Type*} [Group R] [IsMulCommutative R] (f : ℤ → R) {N : ℕ} :
+lemma prod_Icc_succ_eq_mul_endpoints {R : Type*} [Group R] [IsMulCommutative R]
+    (f : ℤ → R) {N : ℕ} :
     ∏ m ∈ Icc (-(N + 1) : ℤ) (N + 1), f m =
     f (N + 1) * f (-(N + 1) : ℤ) * ∏ m ∈ Icc (-N : ℤ) N, f m := by
   induction N

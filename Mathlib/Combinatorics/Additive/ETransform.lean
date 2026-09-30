@@ -62,6 +62,7 @@ theorem mulDysonETransform.subset :
   refine union_mul_inter_subset_union.trans (union_subset Subset.rfl ?_)
   rw [mul_smul_comm, smul_mul_assoc, inv_smul_smul, mul_comm]
 
+omit [IsMulCommutative α] in
 set_option backward.defeqAttrib.useBackward true in
 @[to_additive]
 theorem mulDysonETransform.card :
@@ -70,6 +71,7 @@ theorem mulDysonETransform.card :
   rw [← card_smul_finset e (_ ∩ _), smul_finset_inter, smul_inv_smul, inter_comm,
     card_union_add_card_inter, card_smul_finset]
 
+omit [IsMulCommutative α] in
 set_option backward.defeqAttrib.useBackward true in
 @[to_additive (attr := simp)]
 theorem mulDysonETransform_idem :
@@ -82,6 +84,7 @@ theorem mulDysonETransform_idem :
 
 variable {e x}
 
+omit [IsMulCommutative α] in
 set_option backward.defeqAttrib.useBackward true in
 @[to_additive]
 theorem mulDysonETransform.smul_finset_snd_subset_fst :

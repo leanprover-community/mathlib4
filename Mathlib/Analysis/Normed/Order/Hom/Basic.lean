@@ -44,14 +44,16 @@ open scoped IsMulCommutative in
 -- See note [reducible non-instances]
 @[to_additive /-- Constructs a `SeminormedAddCommGroup` structure from an `AddGroupSeminormClass`
 on an `AddCommGroup`. -/]
-abbrev GroupSeminormClass.toSeminormedCommGroup [Group α] [IsMulCommutative α] [GroupSeminormClass F α ℝ]
+abbrev GroupSeminormClass.toSeminormedCommGroup [Group α] [IsMulCommutative α]
+    [GroupSeminormClass F α ℝ]
     (f : F) : SeminormedCommGroup α where
   __ := GroupSeminormClass.toSeminormedGroup f
   __ : CommGroup α := inferInstance
 
 open scoped IsMulCommutative in
 @[to_additive]
-lemma GroupSeminormClass.toSeminormedCommGroup_norm_eq [Group α] [IsMulCommutative α] [GroupSeminormClass F α ℝ]
+lemma GroupSeminormClass.toSeminormedCommGroup_norm_eq [Group α] [IsMulCommutative α]
+    [GroupSeminormClass F α ℝ]
     (f : F) (x : α) : @norm _ (GroupSeminormClass.toSeminormedCommGroup f).toNorm x = f x := rfl
 
 /-- Constructs a `NormedGroup` structure from a `GroupNormClass` on a `Group`. -/

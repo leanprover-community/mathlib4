@@ -374,13 +374,16 @@ end Group
 
 section CommGroup
 
-variable [Group E] [IsMulCommutative E] [Group F] [IsMulCommutative F] (p q : GroupSeminorm E) (x : E)
+variable [Group E] [IsMulCommutative E] [Group F] [IsMulCommutative F] (p q : GroupSeminorm E)
+    (x : E)
 
+omit [IsMulCommutative F] in
 open scoped IsMulCommutative in
 @[to_additive]
 theorem comp_mul_le (f g : F →* E) : p.comp (f * g) ≤ p.comp f + p.comp g := fun _ =>
   map_mul_le_add p _ _
 
+omit [IsMulCommutative E] in
 @[to_additive]
 theorem mul_bddBelow_range_add {p q : GroupSeminorm E} {x : E} :
     BddBelow (range fun y => p y + q (x / y)) :=
