@@ -372,19 +372,6 @@ theorem normalize_radical : normalize (radical a) = radical a := by
     · rwa [radical_mul_of_dvd dvd]
     · rw [radical_mul coprime, normalize_mul, ih, radical_of_prime prime, normalize_idem]
 
-theorem radical_normalize : radical (normalize a) = radical a := by
-  induction a using induction_on_prime with
-  | h₁ => simp
-  | h₂ x h => simp [radical_of_isUnit h, radical_of_isUnit ((associated_normalize x).isUnit h)]
-  | h₃ b p ne prime ih =>
-    rcases prime.irreducible.dvd_or_isRelPrime (n := b) with dvd | coprime
-    · simpa [radical_mul_of_dvd dvd, normalize_mul, ← coe_normalizeHom,
-        radical_mul_of_dvd (map_dvd normalizeHom dvd)]
-    · rw [radical_mul coprime, normalize_mul, radical_of_prime prime, ← ih,
-        radical_mul (by rwa [(normalize_associated p).isRelPrime_iff_left,
-          (normalize_associated b).isRelPrime_iff_right]),
-        radical_of_prime ((associated_normalize p).prime prime), normalize_idem]
-
 theorem prime_radical_iff_isPrimePow_normalize (ha : a ≠ 0) :
     Prime (radical a) ↔ IsPrimePow (normalize a) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -398,8 +385,8 @@ theorem prime_radical_iff_isPrimePow_normalize (ha : a ≠ 0) :
     · exact hn.symm.trans (associated_normalize a)
     · rw [← coe_normalizeHom, map_pow, coe_normalizeHom, normalize_radical]
   · rcases h with ⟨p, n, prime, ne, h⟩
-    rwa [← radical_normalize, ← h, radical_pow _ (by lia), radical_of_prime prime,
-      (normalize_associated p).prime_iff]
+    rwa [← radical_eq_of_associated (normalize_associated a), ← h, radical_pow _ (by lia),
+      radical_of_prime prime, (normalize_associated p).prime_iff]
 
 end StrongNormalizationMonoid
 
