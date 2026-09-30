@@ -109,8 +109,7 @@ runs:
       shell: bash # We need to run this outside landrun, as it is a prerequisite for landrun!
       run: |
         mkdir -p pr-branch/.lake/
-        mkdir -p .cache/mathlib/
-        mkdir -p _work
+        mkdir -p /home/lean/.cache/mathlib/
 
     # NOTE: if you copy this, consider using `leanprover/lean-action` instead.
     # We install manually, to avoid running lean outside landrun.

@@ -162,7 +162,7 @@ theorem hasDerivWithinAt_taylor_coeff_within {f : ℝ → E} {x y : ℝ} {k : �
       field
     rw [this]
     exact (monomial_has_deriv_aux y x _).hasDerivWithinAt.const_mul _
-  convert! this.smul hf using 1
+  convert this.smul hf using 1
   field_simp
   module
 
@@ -191,7 +191,7 @@ theorem hasDerivWithinAt_taylorWithinEval {f : ℝ → E} {x y : ℝ} {n : ℕ} 
     have hdiff : DifferentiableOn ℝ (iteratedDerivWithin k f s) s' :=
       (hf.differentiableOn_iteratedDerivWithin (mod_cast coe_lt_succ) hs_unique).mono h
     specialize hk hf.of_succ ((hdiff y hy).mono_of_mem_nhdsWithin hs')
-    convert!
+    convert
       hk.add
         (hasDerivWithinAt_taylor_coeff_within hs'_unique (nhdsWithin_mono _ h self_mem_nhdsWithin)
           hf') using 1
@@ -252,7 +252,7 @@ theorem taylor_isLittleO {f : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
     · simp
     replace hs' := uniqueDiffOn_convex hs (hs.nontrivial_iff_nonempty_interior.1 hs')
     simp only [Nat.cast_add, Nat.cast_one] at hf
-    convert!
+    convert
       Convex.isLittleO_pow_succ_real hs hx₀s ?_ (h (hf.derivWithin hs' le_rfl)) (f := fun x ↦
         f x - taylorWithinEval f (n + 1) s x₀ x) using 1
     · simp
@@ -481,7 +481,7 @@ theorem taylor_integral_remainder_aux [NormedAddCommGroup F] [NormedSpace ℝ F]
     rw [sub_add_eq_sub_sub, ih]
     simp only [Nat.factorial, Nat.succ_eq_add_one, Nat.cast_mul, Nat.cast_add, Nat.cast_one]
     have := hf (n + 1) (by rfl)
-    convert! this.symm using 1
+    convert this.symm using 1
     · simp only [sub_self, ne_eq, Nat.add_eq_zero_iff, one_ne_zero, and_false, not_false_eq_true,
         zero_pow, zero_div, zero_smul, zero_sub, deriv_div_const, Nat.factorial]
       apply fun (a b c d : F) (_ : b = c) (_ : a = -d) ↦ show a - b = -c - d by grind

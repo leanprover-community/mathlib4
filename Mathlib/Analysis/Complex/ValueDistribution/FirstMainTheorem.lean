@@ -136,7 +136,7 @@ theorem abs_characteristic_sub_characteristic_shift_le {r : ℝ} (h : Meromorphi
     apply MeromorphicOn.circleIntegrable_posLog_norm
     fun_prop
   rw [← Pi.sub_apply, characteristic_sub_characteristic_eq_proximity_sub_proximity h]
-  simp only [proximity, reduceDIte, Pi.sub_apply, ← circleAverage_sub h₁f h₂f]
+  simp only [proximity_top, Pi.sub_apply, ← circleAverage_sub h₁f h₂f]
   apply le_trans abs_circleAverage_le_circleAverage_abs
   apply circleAverage_mono_on_of_le_circle
   · apply (h₁f.sub h₂f).abs
@@ -147,7 +147,7 @@ theorem abs_characteristic_sub_characteristic_shift_le {r : ℝ} (h : Meromorphi
         using (posLog_norm_add_le (f θ - a₀) a₀)
     · simp only [abs_of_nonpos (le_of_not_ge h), neg_sub, tsub_le_iff_right,
         add_comm (log⁺ ‖a₀‖ + log 2), ← add_assoc]
-      convert! posLog_norm_add_le (-f θ) a₀ using 2
+      convert posLog_norm_add_le (-f θ) a₀ using 2
       · rw [← norm_neg]
         abel_nf
       · simp
