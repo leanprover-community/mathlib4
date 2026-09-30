@@ -5,15 +5,15 @@ Authors: Geoffrey Irving, Bryan Wang, Oliver Nash
 -/
 module
 
-public import Mathlib.Topology.GDelta.MetrizableSpace
+import Mathlib.Topology.GDelta.MetrizableSpace
 public import Mathlib.Topology.Separation.CompletelyRegular
-public import Mathlib.Topology.Separation.Profinite
+import Mathlib.Topology.Separation.Profinite
 
 /-!
 # Further separation lemmas
 -/
 
-@[expose] public section
+public section
 
 variable {X : Type*}
 

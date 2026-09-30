@@ -29,7 +29,7 @@ Most proofs are adapted from the corresponding proofs on `ℝ≥0∞`.
 
 noncomputable section
 
-open Set Filter Metric TopologicalSpace Topology
+open Set Filter TopologicalSpace Topology
 open scoped ENNReal
 
 variable {α : Type*} [TopologicalSpace α]
@@ -74,7 +74,7 @@ theorem continuousOn_toReal : ContinuousOn EReal.toReal ({⊥, ⊤}ᶜ : Set ERe
 /-- The set of finite `EReal` numbers is homeomorphic to `ℝ`. -/
 def neBotTopHomeomorphReal : ({⊥, ⊤}ᶜ : Set EReal) ≃ₜ ℝ where
   toEquiv := neTopBotEquivReal
-  continuous_toFun := continuousOn_iff_continuous_restrict.1 continuousOn_toReal
+  continuous_toFun := continuousOn_iff_continuous_domRestrict.1 continuousOn_toReal
   continuous_invFun := continuous_coe_real_ereal.subtype_mk _
 
 /-! ### ENNReal coercion -/
@@ -300,6 +300,34 @@ lemma liminf_add_top_of_ne_bot (h : liminf u f = ⊤) (h' : liminf v f ≠ ⊥) 
   apply top_le_iff.1 (le_trans _ le_liminf_add)
   rw [h, top_add_of_ne_bot h']
 
+theorem limsup_const_mul_of_nonneg_of_ne_top [NeBot f] {c : EReal} (h₁ : 0 ≤ c) (h₂ : c ≠ ⊤) :
+    limsup (fun x => c * u x) f = c * limsup u f := by
+  obtain rfl | h₃ := h₁.eq_or_lt
+  · simp
+  simp_rw [EReal.mul_comm (x := c)]
+  apply eq_of_le_of_ge
+  · rw [limsup_le_iff]
+    simpa [← EReal.lt_div_iff (by aesop) (by aesop)]
+      using fun _ ↦ eventually_lt_of_limsup_lt
+  · rw [le_limsup_iff]
+    simpa [← EReal.div_lt_iff (by aesop) (by aesop)]
+      using fun _ ↦ frequently_lt_of_lt_limsup
+
+theorem limsup_const_mul_of_nonpos_of_ne_bot [NeBot f] {c : EReal} (h₁ : c ≤ 0) (h₂ : c ≠ ⊥) :
+    limsup (fun x => c * u x) f = c * liminf u f := by
+  simpa [limsup_neg] using
+    limsup_const_mul_of_nonneg_of_ne_top (u := -u) (c := -c) (by aesop) (by aesop)
+
+theorem liminf_const_mul_of_nonneg_of_ne_top [NeBot f] {c : EReal} (h₁ : 0 ≤ c) (h₂ : c ≠ ⊤) :
+    liminf (fun x => c * u x) f = c * liminf u f := by
+  simpa [mul_neg, ← Pi.neg_def, limsup_neg] using
+    limsup_const_mul_of_nonneg_of_ne_top (u := -u) (by aesop) (by aesop)
+
+theorem liminf_const_mul_of_nonpos_of_ne_bot [NeBot f] {c : EReal} (h₁ : c ≤ 0) (h₂ : c ≠ ⊥) :
+    liminf (fun x => c * u x) f = c * limsup u f := by
+  simpa [neg_mul, ← Pi.neg_def, limsup_neg] using
+    limsup_const_mul_of_nonneg_of_ne_top (c := -c) (by aesop) (by aesop)
+
 lemma le_limsup_mul (hu : ∃ᶠ x in f, 0 ≤ u x) (hv : 0 ≤ᶠ[f] v) :
     limsup u f * liminf v f ≤ limsup (u * v) f := by
   rcases f.eq_or_neBot with rfl | _
@@ -309,8 +337,7 @@ lemma le_limsup_mul (hu : ∃ᶠ x in f, 0 ≤ u x) (hv : 0 ≤ᶠ[f] v) :
     le_limsup_of_frequently_le <| (hu.and_eventually hv).mono fun _ ⟨hu, hv⟩ ↦ mul_nonneg hu hv
   refine mul_le_of_forall_lt_of_nonneg u0 uv0 fun a ha b hb ↦ (le_limsup_iff).2 fun c c_ab ↦ ?_
   refine (((frequently_lt_of_lt_limsup) (mem_Ioo.1 ha).2).and_eventually
-    <| (eventually_lt_of_lt_liminf (mem_Ioo.1 hb).2).and
-    <| hv).mono fun x ⟨xa, ⟨xb, vx⟩⟩ ↦ ?_
+    <| (eventually_lt_of_lt_liminf (mem_Ioo.1 hb).2).and hv).mono fun x ⟨xa, ⟨xb, vx⟩⟩ ↦ ?_
   exact c_ab.trans_le (mul_le_mul xa.le xb.le (mem_Ioo.1 hb).1.le ((mem_Ioo.1 ha).1.le.trans xa.le))
 
 lemma limsup_mul_le (hu : ∃ᶠ x in f, 0 ≤ u x) (hv : 0 ≤ᶠ[f] v)
@@ -432,7 +459,7 @@ much as possible the symmetries of the multiplication. -/
 private lemma continuousAt_mul_swap {a b : EReal}
     (h : ContinuousAt (fun p : EReal × EReal ↦ p.1 * p.2) (a, b)) :
     ContinuousAt (fun p : EReal × EReal ↦ p.1 * p.2) (b, a) := by
-  convert h.comp continuous_swap.continuousAt (x := (b, a))
+  convert! h.comp continuous_swap.continuousAt (x := (b, a))
   simp [mul_comm]
 
 private lemma continuousAt_mul_symm1 {a b : EReal}

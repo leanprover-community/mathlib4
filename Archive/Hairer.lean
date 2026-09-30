@@ -4,13 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Sébastien Gouëzel, Patrick Massot, Ruben Van de Velde, Floris van Doorn,
 Junyan Xu
 -/
-import Mathlib.Algebra.MvPolynomial.Funext
-import Mathlib.Analysis.Analytic.Polynomial
-import Mathlib.Analysis.Analytic.Uniqueness
-import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
-import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.RingTheory.MvPolynomial.Basic
-import Mathlib.Topology.Algebra.MvPolynomial
+module
+
+public import Mathlib.Algebra.MvPolynomial.Funext
+public import Mathlib.Analysis.Analytic.Polynomial
+public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
+public import Mathlib.RingTheory.Algebraic.Integral
+public import Mathlib.RingTheory.MvPolynomial.Basic
+public import Mathlib.Topology.Algebra.MvPolynomial
 
 /-!
 # Smooth functions whose integral calculates the values of polynomials
@@ -21,7 +22,7 @@ whose integral against a multivariate polynomial `P` of total degree at most `N`
 This is a test of the state of the library suggested by Martin Hairer.
 -/
 
-noncomputable section
+@[expose] public noncomputable section
 
 open Metric Set MeasureTheory PiLp
 open MvPolynomial hiding support
@@ -50,7 +51,7 @@ variable {n : ℕ∞} {s : Set E}
 
 instance : FunLike (ContDiffSupportedOn 𝕜 E F n s) E F where
   coe := Subtype.val
-  coe_injective' := Subtype.coe_injective
+  coe_injective := Subtype.coe_injective
 
 @[simp]
 lemma coe_mk (f : E → F) (h) : (⟨f, h⟩ : ContDiffSupportedOn 𝕜 E F n s) = f := rfl
@@ -94,6 +95,7 @@ def L : MvPolynomial ι ℝ →ₗ[ℝ]
     (fun p f₁ f₂ ↦ by simp_rw [smul_eq_mul, ← integral_add (int p _) (int p _), ← mul_add]; rfl)
     fun r p f ↦ by simp_rw [← integral_smul, smul_comm r]; rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma inj_L : Injective (L ι) :=
   (injective_iff_map_eq_zero _).mpr fun p hp ↦ by
     have H : ∀ᵐ x : EuclideanSpace ℝ ι, x ∈ ball 0 1 → eval x p = 0 :=

@@ -5,7 +5,7 @@ Authors: Pim Otte
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
+import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
 public import Mathlib.Data.Set.Finite.Lattice
 public import Mathlib.SetTheory.Cardinal.Finite
 
@@ -49,8 +49,8 @@ theorem card_preimage_eq_sum_card_image_eq {M : Type*} {f : ι → M} {s : Finse
   · simpa [← Finset.coe_inj, t] using Set.image_preimage_eq_inter_range
   · rw [Nat.card_eq_card_finite_toFinset (hb _ (by aesop))]
     suffices {a | f a = m} ⊆ ht.toFinset from
-      congr_arg (Finset.card ·) (Finset.ext_iff.mpr fun a ↦ by simpa using fun h ↦ this h)
+      congr($(Finset.ext_iff.mpr fun a ↦ by simpa using fun h ↦ this h).card)
     intro _ h
-    simpa using by rwa [h]
+    simp_all
 
 end Finset

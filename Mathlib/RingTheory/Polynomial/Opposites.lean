@@ -5,9 +5,8 @@ Authors: Damiano Testa
 -/
 module
 
-public import Mathlib.Algebra.MonoidAlgebra.MapDomain
 public import Mathlib.Algebra.Polynomial.Degree.Support
-public import Mathlib.Tactic.NoncommRing
+import Mathlib.Tactic.NoncommRing
 
 /-! # Interactions between `R[X]` and `Rᵐᵒᵖ[X]`
 
@@ -41,7 +40,7 @@ def opRingEquiv (R : Type*) [Semiring R] : R[X]ᵐᵒᵖ ≃+* Rᵐᵒᵖ[X] :=
 @[simp]
 theorem opRingEquiv_op_monomial (n : ℕ) (r : R) :
     opRingEquiv R (op (monomial n r : R[X])) = monomial n (op r) := by
-  simp [opRingEquiv]
+  ext; simp [opRingEquiv, ← ofFinsupp_single]
 
 @[simp]
 theorem opRingEquiv_op_C (a : R) : opRingEquiv R (op (C a)) = C (op a) :=

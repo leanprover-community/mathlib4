@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Monoidal.Category
 # Endomorphisms of an object in a bicategory, as a monoidal category.
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 

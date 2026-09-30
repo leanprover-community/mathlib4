@@ -7,9 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.TStructure
 public import Mathlib.Algebra.Homology.DerivedCategory.KProjective
-public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexCohomology
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexSingle
-public import Mathlib.Algebra.Homology.HomotopyCategory.KProjective
 public import Mathlib.CategoryTheory.Abelian.Projective.Extend
 
 /-!
@@ -21,10 +19,10 @@ of the complex `R.complex` and to make computations in the `Ext`-group.
 
 ## TODO
 * Functoriality in `X`: this would involve a morphism `X ⟶ X'`, projective
-resolutions `R` and `R'` of `X` and `X'`, a lift of `X ⟶ X'` as a morphism
-of cochain complexes `R.complex ⟶ R'.complex`; in this context,
-we should be able to compute the precomposition of an element
-`R.extMk f m hm hf : Ext X' Y n` by `X ⟶ X'`.
+  resolutions `R` and `R'` of `X` and `X'`, a lift of `X ⟶ X'` as a morphism
+  of cochain complexes `R.complex ⟶ R'.complex`; in this context,
+  we should be able to compute the precomposition of an element
+  `R.extMk f m hm hf : Ext X' Y n` by `X ⟶ X'`.
 
 -/
 
@@ -60,7 +58,7 @@ lemma extEquivCohomologyClass_symm_mk_hom [HasDerivedCategory C]
             (zero_add _)) (add_zero _) := by
   change SmallShiftedHom.equiv _ _ (.comp _ (CohomologyClass.mk x).toSmallShiftedHom _) = _
   simp only [SmallShiftedHom.equiv_comp, SmallShiftedHom.equiv_mk₀Inv, isoOfHom, asIso_inv,
-    CohomologyClass.equiv_toSmallShiftedHom_mk, Functor.comp_obj,
+    CohomologyClass.equiv_toSmallShiftedHom_mk,
     DerivedCategory.singleFunctorIsoCompQ, Iso.refl_hom, NatTrans.id_app, Category.id_comp,
     Iso.refl_inv]
   congr

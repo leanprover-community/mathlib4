@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Ext.DimensionShifting
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
-public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
@@ -16,7 +15,7 @@ public import Mathlib.RingTheory.Noetherian.Basic
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

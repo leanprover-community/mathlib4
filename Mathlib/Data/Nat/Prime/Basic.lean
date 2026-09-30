@@ -96,11 +96,26 @@ theorem dvd_of_forall_prime_mul_dvd {a b : ℕ}
 theorem Prime.even_iff {p : ℕ} (hp : Prime p) : Even p ↔ p = 2 := by
   rw [even_iff_two_dvd, prime_dvd_prime_iff_eq prime_two hp, eq_comm]
 
+theorem Prime.odd_iff {p : ℕ} (hp : Prime p) : Odd p ↔ 3 ≤ p := by
+  rw [← not_iff_not, not_odd_iff_even, hp.even_iff, not_le]
+  grind [hp.two_le]
+
 theorem Prime.odd_of_ne_two {p : ℕ} (hp : p.Prime) (h_two : p ≠ 2) : Odd p :=
   hp.eq_two_or_odd'.resolve_left h_two
 
 theorem Prime.even_sub_one {p : ℕ} (hp : p.Prime) (h2 : p ≠ 2) : Even (p - 1) :=
   let ⟨n, hn⟩ := hp.odd_of_ne_two h2; ⟨n, by rw [hn, Nat.add_sub_cancel, two_mul]⟩
+
+/-- A property holds for every prime iff it holds for `2` and for every odd prime. -/
+theorem forall_prime_iff_two_and_odd {P : ℕ → Prop} :
+    (∀ p, p.Prime → P p) ↔ P 2 ∧ ∀ p, p.Prime → Odd p → P p := by
+  refine ⟨fun h ↦ ⟨h 2 prime_two, fun p hp _ ↦ h p hp⟩, fun h p hp ↦ ?_⟩
+  obtain rfl | hne := eq_or_ne p 2
+  · exact h.1
+  · exact h.2 p hp (hp.odd_of_ne_two hne)
+
+/-- To prove a property of all primes, it is enough to prove it for `2` and for the odd primes. -/
+alias ⟨_, forall_prime_of_two_of_odd⟩ := forall_prime_iff_two_and_odd
 
 /-- A prime `p` satisfies `p % 2 = 1` if and only if `p ≠ 2`. -/
 theorem Prime.mod_two_eq_one_iff_ne_two {p : ℕ} (hp : p.Prime) : p % 2 = 1 ↔ p ≠ 2 := by
@@ -127,7 +142,7 @@ theorem Prime.not_coprime_iff_dvd {m n : ℕ} : ¬Coprime m n ↔ ∃ p, Prime p
 /-- If `0 < m < minFac n`, then `n` and `m` are coprime. -/
 lemma coprime_of_lt_minFac {n m : ℕ} (h₀ : m ≠ 0) (h : m < minFac n) : Coprime n m := by
   rw [← not_not (a := n.Coprime m), Prime.not_coprime_iff_dvd]
-  push_neg
+  push Not
   exact fun p hp hn hm ↦
     ((le_of_dvd (by lia) hm).trans_lt <| h.trans_le <| minFac_le_of_dvd hp.two_le hn).false
 
@@ -176,9 +191,8 @@ theorem Prime.mul_eq_prime_sq_iff {x y p : ℕ} (hp : p.Prime) (hx : x ≠ 1) (h
       assumption
   rintro x y hx hy h ⟨a, ha⟩
   have : a ∣ p := ⟨y, by rwa [ha, sq, mul_assoc, mul_right_inj' hp.ne_zero, eq_comm] at h⟩
-  obtain ha1 | hap := (Nat.dvd_prime hp).mp ‹a ∣ p›
-  · subst ha1
-    rw [mul_one] at ha
+  obtain rfl | hap := (Nat.dvd_prime hp).mp ‹a ∣ p›
+  · rw [mul_one] at ha
     subst ha
     simp only [sq, mul_right_inj' hp.ne_zero] at h
     subst h
@@ -216,9 +230,9 @@ theorem prime_eq_prime_of_dvd_pow {m p q} (pp : Prime p) (pq : Prime q) (h : p �
 theorem dvd_prime_pow {p : ℕ} (pp : Prime p) {m i : ℕ} : i ∣ p ^ m ↔ ∃ k ≤ m, i = p ^ k := by
   simp_rw [_root_.dvd_prime_pow (prime_iff.mp pp) m, associated_eq_eq]
 
-theorem Prime.dvd_mul_of_dvd_ne {p1 p2 n : ℕ} (h_neq : p1 ≠ p2) (pp1 : Prime p1) (pp2 : Prime p2)
+theorem Prime.dvd_mul_of_dvd_ne {p1 p2 n : ℕ} (h_ne : p1 ≠ p2) (pp1 : Prime p1) (pp2 : Prime p2)
     (h1 : p1 ∣ n) (h2 : p2 ∣ n) : p1 * p2 ∣ n :=
-  Coprime.mul_dvd_of_dvd_of_dvd ((coprime_primes pp1 pp2).mpr h_neq) h1 h2
+  Coprime.mul_dvd_of_dvd_of_dvd ((coprime_primes pp1 pp2).mpr h_ne) h1 h2
 
 /-- If `p` is prime,
 and `a` doesn't divide `p^k`, but `a` does divide `p^(k+1)`
@@ -245,9 +259,7 @@ theorem eq_one_iff_not_exists_prime_dvd {n : ℕ} : n = 1 ↔ ∀ p : ℕ, p.Pri
 theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul {p : ℕ} (p_prime : Prime p) {m n k l : ℕ}
     (hpm : p ^ k ∣ m) (hpn : p ^ l ∣ n) (hpmn : p ^ (k + l + 1) ∣ m * n) :
     p ^ (k + 1) ∣ m ∨ p ^ (l + 1) ∣ n := by
-  have hpd : p ^ (k + l) * p ∣ m * n := by
-      let hpmn' : p ^ (succ (k + l)) ∣ m * n := hpmn
-      rwa [pow_succ'] at hpmn'
+  have hpd : p ^ (k + l) * p ∣ m * n := by rwa [pow_succ] at hpmn
   have hpd2 : p ∣ m * n / p ^ (k + l) := dvd_div_of_mul_dvd hpd
   have hpd3 : p ∣ m * n / (p ^ k * p ^ l) := by simpa [pow_add] using hpd2
   have hpd4 : p ∣ m / p ^ k * (n / p ^ l) := by simpa [Nat.div_mul_div_comm hpm hpn] using hpd3

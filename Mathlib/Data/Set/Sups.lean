@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Set.NAry
 public import Mathlib.Order.SupClosed
 public import Mathlib.Order.UpperLower.Closure
 
@@ -62,6 +61,7 @@ variable [SemilatticeSup α] [SemilatticeSup β] [FunLike F α β] [SupHomClass 
 variable (s s₁ s₂ t t₁ t₂ u v : Set α)
 
 /-- `s ⊻ t` is the set of elements of the form `a ⊔ b` where `a ∈ s`, `b ∈ t`. -/
+@[instance_reducible]
 protected def hasSups : HasSups (Set α) :=
   ⟨image2 (· ⊔ ·)⟩
 
@@ -154,7 +154,7 @@ lemma subset_sups_self : s ⊆ s ⊻ s := fun _a ha ↦ mem_sups.2 ⟨_, ha, _, 
 lemma sups_subset_self : s ⊻ s ⊆ s ↔ SupClosed s := sups_subset_iff
 
 @[simp] lemma sups_eq_self : s ⊻ s = s ↔ SupClosed s :=
-  subset_sups_self.le.ge_iff_eq'.symm.trans sups_subset_self
+  subset_sups_self.ge_iff_eq'.symm.trans sups_subset_self
 
 lemma sep_sups_le (s t : Set α) (a : α) :
     {b ∈ s ⊻ t | b ≤ a} = {b ∈ s | b ≤ a} ⊻ {b ∈ t | b ≤ a} := by ext; aesop
@@ -191,6 +191,7 @@ variable [SemilatticeInf α] [SemilatticeInf β] [FunLike F α β] [InfHomClass 
 variable (s s₁ s₂ t t₁ t₂ u v : Set α)
 
 /-- `s ⊼ t` is the set of elements of the form `a ⊓ b` where `a ∈ s`, `b ∈ t`. -/
+@[instance_reducible]
 protected def hasInfs : HasInfs (Set α) :=
   ⟨image2 (· ⊓ ·)⟩
 
@@ -283,7 +284,7 @@ lemma subset_infs_self : s ⊆ s ⊼ s := fun _a ha ↦ mem_infs.2 ⟨_, ha, _, 
 lemma infs_self_subset : s ⊼ s ⊆ s ↔ InfClosed s := infs_subset_iff
 
 @[simp] lemma infs_self : s ⊼ s = s ↔ InfClosed s :=
-  subset_infs_self.le.ge_iff_eq'.symm.trans infs_self_subset
+  subset_infs_self.ge_iff_eq'.symm.trans infs_self_subset
 
 lemma sep_infs_le (s t : Set α) (a : α) :
     {b ∈ s ⊼ t | a ≤ b} = {b ∈ s | a ≤ b} ⊼ {b ∈ t | a ≤ b} := by ext; aesop
@@ -312,6 +313,13 @@ theorem infs_right_comm : s ⊼ t ⊼ u = s ⊼ u ⊼ t :=
 theorem infs_infs_infs_comm : s ⊼ t ⊼ (u ⊼ v) = s ⊼ u ⊼ (t ⊼ v) :=
   image2_image2_image2_comm inf_inf_inf_comm
 
+@[simp]
+theorem infs_eq_inter {s t : Set α} (hs : IsLowerSet s) (ht : IsLowerSet t) : s ⊼ t = s ∩ t := by
+  ext u
+  simp only [mem_infs, mem_inter_iff]
+  exact ⟨fun ⟨a, ha, b, hb, h⟩ ↦ ⟨hs (h ▸ inf_le_left) ha, ht (h ▸ inf_le_right) hb⟩,
+    fun ⟨hu_s, hu_t⟩ ↦ ⟨u, hu_s, u, hu_t, inf_idem u⟩⟩
+
 end Infs
 
 open SetFamily
@@ -333,6 +341,9 @@ theorem infs_sups_subset_right : (t ⊻ u) ⊼ s ⊆ t ⊼ s ⊻ u ⊼ s :=
   image2_distrib_subset_right inf_sup_right
 
 end DistribLattice
+
+@[simp]
+theorem isLowerSet_powerset (s : Set α) : IsLowerSet (𝒫 s) := fun _t _u htu hu ↦ htu.trans hu
 
 end Set
 

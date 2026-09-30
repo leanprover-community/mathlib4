@@ -6,7 +6,6 @@ Authors: Yury Kudryashov, Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Normed.Operator.Banach
-public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.Topology.OpenPartialHomeomorph.Basic
 
 /-!
@@ -89,11 +88,11 @@ section
 variable {f' : E →L[𝕜] F} {s t : Set E} {c c' : ℝ≥0}
 
 theorem mono_num (hc : c ≤ c') (hf : ApproximatesLinearOn f f' s c) :
-    ApproximatesLinearOn f f' s c' := fun x hx y hy =>
-  le_trans (hf x hx y hy) (mul_le_mul_of_nonneg_right hc <| norm_nonneg _)
+    ApproximatesLinearOn f f' s c' :=
+  fun x hx y hy ↦ le_trans (hf x hx y hy) (by gcongr)
 
 theorem mono_set (hst : s ⊆ t) (hf : ApproximatesLinearOn f f' t c) :
-    ApproximatesLinearOn f f' s c := fun x hx y hy => hf x (hst hx) y (hst hy)
+    ApproximatesLinearOn f f' s c := fun x hx y hy ↦ hf x (hst hx) y (hst hy)
 
 theorem approximatesLinearOn_iff_lipschitzOnWith {f : E → F} {f' : E →L[𝕜] F} {s : Set E}
     {c : ℝ≥0} : ApproximatesLinearOn f f' s c ↔ LipschitzOnWith c (f - ⇑f') s := by
@@ -104,20 +103,26 @@ theorem approximatesLinearOn_iff_lipschitzOnWith {f : E → F} {f' : E →L[𝕜
 alias ⟨lipschitzOnWith, _root_.LipschitzOnWith.approximatesLinearOn⟩ :=
   approximatesLinearOn_iff_lipschitzOnWith
 
-theorem lipschitz_sub (hf : ApproximatesLinearOn f f' s c) :
+theorem lipschitzWith_sub (hf : ApproximatesLinearOn f f' s c) :
     LipschitzWith c fun x : s => f x - f' x :=
   hf.lipschitzOnWith.to_restrict
 
-protected theorem lipschitz (hf : ApproximatesLinearOn f f' s c) :
-    LipschitzWith (‖f'‖₊ + c) (s.restrict f) := by
-  simpa only [restrict_apply, add_sub_cancel] using
-    (f'.lipschitz.restrict s).add hf.lipschitz_sub
+@[deprecated (since := "2026-09-26")]
+alias lipschitz_sub := lipschitzWith_sub
 
-protected theorem continuous (hf : ApproximatesLinearOn f f' s c) : Continuous (s.restrict f) :=
-  hf.lipschitz.continuous
+protected theorem lipschitzWith (hf : ApproximatesLinearOn f f' s c) :
+    LipschitzWith (‖f'‖₊ + c) (s.domRestrict f) := by
+  simpa only [domRestrict_apply, add_sub_cancel] using!
+    (f'.lipschitzWith.restrict s).add hf.lipschitzWith_sub
+
+@[deprecated (since := "2026-09-26")]
+alias lipschitz := ApproximatesLinearOn.lipschitzWith
+
+protected theorem continuous (hf : ApproximatesLinearOn f f' s c) : Continuous (s.domRestrict f) :=
+  hf.lipschitzWith.continuous
 
 protected theorem continuousOn (hf : ApproximatesLinearOn f f' s c) : ContinuousOn f s :=
-  continuousOn_iff_continuous_restrict.2 hf.continuous
+  continuousOn_iff_continuous_domRestrict.2 hf.continuous
 
 end
 
@@ -158,7 +163,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
     to the desired point `x`. Instead of appealing to general results, we check this by hand.
 
     The main point is that `f (u n)` becomes exponentially close to `y`, and therefore
-    `dist (u (n+1)) (u n)` becomes exponentally small, making it possible to get an inductive
+    `dist (u (n+1)) (u n)` becomes exponentially small, making it possible to get an inductive
     bound on `dist (u n) b`, from which one checks that `u n` stays in the ball on which one has a
     control. Therefore, the bound can be checked at the next step, and so on inductively.
     -/
@@ -210,14 +215,14 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
         exact mem_closedBall'.1 hy
       _ = ε * (1 - c * f'symm.nnnorm) := by field
   /- Main inductive control: `f (u n)` becomes exponentially close to `y`, and therefore
-    `dist (u (n+1)) (u n)` becomes exponentally small, making it possible to get an inductive
+    `dist (u (n+1)) (u n)` becomes exponentially small, making it possible to get an inductive
     bound on `dist (u n) b`, from which one checks that `u n` remains in the ball on which we
     have estimates. -/
   have D : ∀ n : ℕ, dist (f (u n)) y ≤ ((c : ℝ) * f'symm.nnnorm) ^ n * dist (f b) y ∧
       dist (u n) b ≤ f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) /
         (1 - (c : ℝ) * f'symm.nnnorm) * dist (f b) y := fun n ↦ by
     induction n with
-    | zero => simp [hu, le_refl]
+    | zero => simp [hu]
     | succ n IH => ?_
     rw [usucc]
     have Ign : dist (g (u n)) b ≤ f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n.succ) /
@@ -233,7 +238,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
                   · exact IH.2
         _ = f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n.succ) /
               (1 - (c : ℝ) * f'symm.nnnorm) * dist (f b) y := by
-          replace Jcf' : (1 : ℝ) - f'symm.nnnorm * c ≠ 0 := by convert Jcf' using 1; ring
+          replace Jcf' : (1 : ℝ) - f'symm.nnnorm * c ≠ 0 := by convert! Jcf' using 1; ring
           simp [field, pow_succ, -mul_eq_mul_left_iff]
           ring
     refine ⟨?_, Ign⟩
@@ -285,8 +290,8 @@ theorem open_image (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearRi
 theorem image_mem_nhds (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearRightInverse)
     {x : E} (hs : s ∈ 𝓝 x) (hc : Subsingleton F ∨ c < f'symm.nnnorm⁻¹) : f '' s ∈ 𝓝 (f x) := by
   obtain ⟨t, hts, ht, xt⟩ : ∃ t, t ⊆ s ∧ IsOpen t ∧ x ∈ t := _root_.mem_nhds_iff.1 hs
-  have := IsOpen.mem_nhds ((hf.mono_set hts).open_image f'symm ht hc) (mem_image_of_mem _ xt)
-  exact mem_of_superset this (image_mono hts)
+  grw [← hts]
+  exact IsOpen.mem_nhds ((hf.mono_set hts).open_image f'symm ht hc) (mem_image_of_mem _ xt)
 
 theorem map_nhds_eq (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearRightInverse) {x : E}
     (hs : s ∈ 𝓝 x) (hc : Subsingleton F ∨ c < f'symm.nnnorm⁻¹) : map f (𝓝 x) = 𝓝 (f x) := by
@@ -309,16 +314,19 @@ variable {f' : E ≃L[𝕜] F} {s : Set E} {c : ℝ≥0}
 
 local notation "N" => ‖(f'.symm : F →L[𝕜] E)‖₊
 
-protected theorem antilipschitz (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
-    (hc : Subsingleton E ∨ c < N⁻¹) : AntilipschitzWith (N⁻¹ - c)⁻¹ (s.restrict f) := by
+protected theorem antilipschitzWith (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
+    (hc : Subsingleton E ∨ c < N⁻¹) : AntilipschitzWith (N⁻¹ - c)⁻¹ (s.domRestrict f) := by
   rcases hc with hE | hc
   · exact AntilipschitzWith.of_subsingleton
-  convert (f'.antilipschitz.restrict s).add_lipschitzWith hf.lipschitz_sub hc
-  simp [restrict]
+  convert! (f'.antilipschitzWith.domRestrict s).add_lipschitzWith hf.lipschitzWith_sub hc
+  simp [domRestrict]
+
+@[deprecated (since := "2026-09-26")]
+alias antilipschitz := ApproximatesLinearOn.antilipschitzWith
 
 protected theorem injective (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
-    (hc : Subsingleton E ∨ c < N⁻¹) : Injective (s.restrict f) :=
-  (hf.antilipschitz hc).injective
+    (hc : Subsingleton E ∨ c < N⁻¹) : Injective (s.domRestrict f) :=
+  (hf.antilipschitzWith hc).injective
 
 protected theorem injOn (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) : InjOn f s :=
@@ -327,7 +335,7 @@ protected theorem injOn (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
 protected theorem surjective [CompleteSpace E] (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) univ c)
     (hc : Subsingleton E ∨ c < N⁻¹) : Surjective f := by
   rcases hc with hE | hc
-  · haveI : Subsingleton F := (Equiv.subsingleton_congr f'.toEquiv).1 hE
+  · have : Subsingleton F := (Equiv.subsingleton_congr f'.toEquiv).1 hE
     exact surjective_to_subsingleton _
   · apply forall_of_forall_mem_closedBall (fun y : F => ∃ a, f a = y) (f 0) _
     have hc' : (0 : ℝ) < N⁻¹ - c := by rw [sub_pos]; exact hc
@@ -353,8 +361,8 @@ def toPartialEquiv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
 Use properties of `OpenPartialHomeomorph` instead. -/
 theorem inverse_continuousOn (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) : ContinuousOn (hf.toPartialEquiv hc).symm (f '' s) := by
-  apply continuousOn_iff_continuous_restrict.2
-  refine ((hf.antilipschitz hc).to_rightInvOn' ?_ (hf.toPartialEquiv hc).right_inv').continuous
+  apply continuousOn_iff_continuous_domRestrict.2
+  refine ((hf.antilipschitzWith hc).to_rightInvOn' ?_ (hf.toPartialEquiv hc).right_inv').continuous
   exact fun x hx => (hf.toPartialEquiv hc).map_target hx
 
 /-- The inverse function is approximated linearly on `f '' s` by `f'.symm`. -/
@@ -368,16 +376,16 @@ theorem to_inv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c) (hc : Sub
   rw [← Af x', ← Af y', A.left_inv x's, A.left_inv y's]
   calc
     ‖x' - y' - f'.symm (A x' - A y')‖ ≤ N * ‖f' (x' - y' - f'.symm (A x' - A y'))‖ :=
-      (f' : E →L[𝕜] F).bound_of_antilipschitz f'.antilipschitz _
+      (f' : E →L[𝕜] F).bound_of_antilipschitz f'.antilipschitzWith _
     _ = N * ‖A y' - A x' - f' (y' - x')‖ := by
       congr 2
       simp only [ContinuousLinearEquiv.apply_symm_apply, map_sub]
       abel
-    _ ≤ N * (c * ‖y' - x'‖) := mul_le_mul_of_nonneg_left (hf _ y's _ x's) (NNReal.coe_nonneg _)
+    _ ≤ N * (c * ‖y' - x'‖) := by gcongr; exact hf _ y's _ x's
     _ ≤ N * (c * (((N⁻¹ - c)⁻¹ : ℝ≥0) * ‖A y' - A x'‖)) := by
       gcongr
       rw [← dist_eq_norm, ← dist_eq_norm]
-      exact (hf.antilipschitz hc).le_mul_dist ⟨y', y's⟩ ⟨x', x's⟩
+      exact (hf.antilipschitzWith hc).le_mul_dist ⟨y', y's⟩ ⟨x', x's⟩
     _ = (N * (N⁻¹ - c)⁻¹ * c : ℝ≥0) * ‖A x' - A y'‖ := by
       simp only [norm_sub_rev, NNReal.coe_mul]; ring
 
@@ -398,17 +406,11 @@ def toOpenPartialHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s
   continuousOn_toFun := hf.continuousOn
   continuousOn_invFun := hf.inverse_continuousOn hc
 
-@[deprecated (since := "2025-08-29")] noncomputable alias
-  toPartialHomeomorph := toOpenPartialHomeomorph
-
 @[simp]
 theorem toOpenPartialHomeomorph_coe (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) :
     (hf.toOpenPartialHomeomorph f s hc hs : E → F) = f :=
   rfl
-
-@[deprecated (since := "2025-08-29")] alias
-  toPartialHomeomorph_coe := toOpenPartialHomeomorph_coe
 
 @[simp]
 theorem toOpenPartialHomeomorph_source (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
@@ -416,17 +418,11 @@ theorem toOpenPartialHomeomorph_source (hf : ApproximatesLinearOn f (f' : E →L
     (hf.toOpenPartialHomeomorph f s hc hs).source = s :=
   rfl
 
-@[deprecated (since := "2025-08-29")] alias
-  toPartialHomeomorph_source := toOpenPartialHomeomorph_source
-
 @[simp]
 theorem toOpenPartialHomeomorph_target (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) :
     (hf.toOpenPartialHomeomorph f s hc hs).target = f '' s :=
   rfl
-
-@[deprecated (since := "2025-08-29")] alias
-  toPartialHomeomorph_target := toOpenPartialHomeomorph_target
 
 /-- A function `f` that approximates a linear equivalence on the whole space is a homeomorphism. -/
 def toHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) univ c)

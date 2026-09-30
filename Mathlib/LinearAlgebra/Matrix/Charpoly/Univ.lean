@@ -5,7 +5,6 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
@@ -31,7 +30,7 @@ of a matrix are homogeneous polynomials in the matrix entries.
   the `i`-th coefficient of `univ` is a homogeneous polynomial of degree `n - i`.
 -/
 
-@[expose] public section
+public section
 
 namespace Matrix.charpoly
 
@@ -61,7 +60,7 @@ lemma univ_map_eval₂Hom (M : n × n → S) :
 
 lemma univ_map_map :
     (univ R n).map (MvPolynomial.map f) = univ S n := by
-  rw [MvPolynomial.map, univ_map_eval₂Hom]; rfl
+  rw [MvPolynomial.map_eq_eval₂Hom_C_comp, univ_map_eval₂Hom]; rfl
 
 @[simp]
 lemma univ_coeff_eval₂Hom (M : n × n → S) (i : ℕ) :

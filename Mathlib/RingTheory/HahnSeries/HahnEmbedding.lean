@@ -5,12 +5,11 @@ Authors: Weiyi Wang
 -/
 module
 
+import Mathlib.Algebra.Module.LinearMap.Rat
 public import Mathlib.Algebra.Order.Module.HahnEmbedding
-public import Mathlib.Algebra.Module.LinearMap.Rat
-public import Mathlib.Algebra.Field.Rat
 public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.Data.Real.Embedding
-public import Mathlib.GroupTheory.DivisibleHull
+import Mathlib.Basic.Real.Embedding
+import Mathlib.GroupTheory.DivisibleHull
 
 /-!
 
@@ -26,7 +25,7 @@ Archimedean classes of the group. The theorem is stated as `hahnEmbedding_isOrde
 
 -/
 
-@[expose] public section
+public section
 
 open ArchimedeanClass HahnSeries
 

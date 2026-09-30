@@ -22,9 +22,9 @@ which were not available in the import dependencies of `Mathlib/Data/Int/Cast/Ba
 Move order lemmas about `Nat.cast`, `Rat.cast`, `NNRat.cast` here.
 -/
 
-@[expose] public section
+public section
 
-open Function Nat
+open Nat
 
 variable {R : Type*}
 
@@ -90,7 +90,7 @@ variable (R) in
 lemma cast_le_neg_one_or_one_le_cast_of_ne_zero (hn : n ≠ 0) : (n : R) ≤ -1 ∨ 1 ≤ (n : R) :=
   hn.lt_or_gt.imp cast_le_neg_one_of_neg cast_one_le_of_pos
 
-lemma nneg_mul_add_sq_of_abs_le_one (n : ℤ) (hx : |x| ≤ 1) : (0 : R) ≤ n * x + n * n := by
+lemma nonneg_mul_add_sq_of_abs_le_one (n : ℤ) (hx : |x| ≤ 1) : (0 : R) ≤ n * x + n * n := by
   have hnx : 0 < n → 0 ≤ x + n := fun hn => by
     have := _root_.add_le_add (neg_le_of_abs_le hx) (cast_one_le_of_pos hn)
     rwa [neg_add_cancel] at this
@@ -103,37 +103,8 @@ lemma nneg_mul_add_sq_of_abs_le_one (n : ℤ) (hx : |x| ≤ 1) : (0 : R) ≤ n *
   · simp [le_total 0 x]
   · exact Or.inl ⟨mod_cast h.le, hnx h⟩
 
-@[deprecated (since := "2025-11-07")] alias cast_natAbs := Nat.cast_natAbs
+@[deprecated (since := "2026-09-17")]
+alias nneg_mul_add_sq_of_abs_le_one := nonneg_mul_add_sq_of_abs_le_one
 
 end LinearOrderedRing
 end Int
-
-/-! ### Order dual -/
-
-open OrderDual
-
-namespace OrderDual
-
-instance instIntCast [IntCast R] : IntCast Rᵒᵈ := ‹_›
-instance instAddGroupWithOne [AddGroupWithOne R] : AddGroupWithOne Rᵒᵈ := ‹_›
-instance instAddCommGroupWithOne [AddCommGroupWithOne R] : AddCommGroupWithOne Rᵒᵈ := ‹_›
-
-end OrderDual
-
-@[simp] lemma toDual_intCast [IntCast R] (n : ℤ) : toDual (n : R) = n := rfl
-
-@[simp] lemma ofDual_intCast [IntCast R] (n : ℤ) : (ofDual n : R) = n := rfl
-
-/-! ### Lexicographic order -/
-
-namespace Lex
-
-instance instIntCast [IntCast R] : IntCast (Lex R) := ‹_›
-instance instAddGroupWithOne [AddGroupWithOne R] : AddGroupWithOne (Lex R) := ‹_›
-instance instAddCommGroupWithOne [AddCommGroupWithOne R] : AddCommGroupWithOne (Lex R) := ‹_›
-
-end Lex
-
-@[simp] lemma toLex_intCast [IntCast R] (n : ℤ) : toLex (n : R) = n := rfl
-
-@[simp] lemma ofLex_intCast [IntCast R] (n : ℤ) : (ofLex n : R) = n := rfl

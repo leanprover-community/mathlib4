@@ -5,7 +5,6 @@ Authors: Nicolò Cavalleri
 -/
 module
 
-public import Mathlib.Topology.Separation.Hausdorff
 public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
@@ -13,7 +12,7 @@ public import Mathlib.Topology.Homeomorph.Lemmas
 
 In this file we define `TopologicalSpace` structure on `Mᵐᵒᵖ`, `Mᵃᵒᵖ`, `Mˣ`, and `AddUnits M`.
 This file does not import definitions of a topological monoid and/or a continuous multiplicative
-action, so we postpone the proofs of `HasContinuousMul Mᵐᵒᵖ` etc. till we have these definitions.
+action, so we postpone the proofs of `ContinuousMul Mᵐᵒᵖ` etc. till we have these definitions.
 
 ## Tags
 
@@ -49,8 +48,6 @@ theorem continuous_op : Continuous (op : M → Mᵐᵒᵖ) :=
 @[to_additive (attr := simps!) /-- `AddOpposite.op` as a homeomorphism. -/]
 def opHomeomorph : M ≃ₜ Mᵐᵒᵖ where
   toEquiv := opEquiv
-  continuous_toFun := continuous_op
-  continuous_invFun := continuous_unop
 
 @[to_additive]
 instance instT2Space [T2Space M] : T2Space Mᵐᵒᵖ := opHomeomorph.t2Space
@@ -179,5 +176,19 @@ lemma isOpenMap_map {f : M →* N} (hf_inj : Function.Injective f) (hf : IsOpenM
   refine ⟨fun ⟨a, b, h, ha, hb⟩ ↦ ⟨⟨a, b, hf_inj ?_, hf_inj ?_⟩, ?_⟩,
     fun ⟨x, hxV, hx⟩ ↦ ⟨x, x.inv, by simp [hxV, ← hx]⟩⟩
   all_goals simp_all
+
+@[to_additive]
+lemma _root_.Topology.IsInducing.units_map {f : M →* N} (hf : IsInducing f) :
+    IsInducing (map f) := by
+  refine .of_comp (continuous_map hf.continuous) continuous_embedProduct ?_
+  exact hf.prodMap (opHomeomorph.isInducing.comp <| hf.comp opHomeomorph.symm.isInducing)
+    |>.comp isInducing_embedProduct
+
+@[to_additive]
+lemma _root_.Topology.IsEmbedding.units_map {f : M →* N} (hf : IsEmbedding f) :
+    IsEmbedding (map f) := by
+  refine .of_comp (continuous_map hf.continuous) continuous_embedProduct ?_
+  exact hf.prodMap (opHomeomorph.isEmbedding.comp <| hf.comp opHomeomorph.symm.isEmbedding)
+    |>.comp isEmbedding_embedProduct
 
 end Units

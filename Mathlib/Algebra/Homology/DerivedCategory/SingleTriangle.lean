@@ -44,18 +44,16 @@ namespace ShortExact
 category of `C` when `S` is a short exact short complex in `C`. -/
 noncomputable def singleδ : (singleFunctor C 0).obj S.X₃ ⟶
     ((singleFunctor C 0).obj S.X₁)⟦(1 : ℤ)⟧ :=
-  (((SingleFunctors.evaluation _ _ 0).mapIso (singleFunctorsPostcompQIso C)).hom.app S.X₃) ≫
-    triangleOfSESδ (hS.map_of_exact (HomologicalComplex.single C (ComplexShape.up ℤ) 0)) ≫
-    (((SingleFunctors.evaluation _ _ 0).mapIso
-      (singleFunctorsPostcompQIso C)).inv.app S.X₁)⟦(1 : ℤ)⟧'
+  triangleOfSESδ (hS.map_of_exact (HomologicalComplex.single C (ComplexShape.up ℤ) 0))
 
 /-- The (distinguished) triangle in the derived category of `C` given by a
 short exact short complex in `C`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 noncomputable def singleTriangle : Triangle (DerivedCategory C) :=
   Triangle.mk ((singleFunctor C 0).map S.f)
     ((singleFunctor C 0).map S.g) hS.singleδ
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a short exact complex `S` in `C` that is short exact (`hS`), this is the
 canonical isomorphism between the triangle `hS.singleTriangle` in the derived category
 and the triangle attached to the corresponding short exact sequence of cochain complexes
@@ -63,12 +61,8 @@ after the application of the single functor. -/
 @[simps!]
 noncomputable def singleTriangleIso :
     hS.singleTriangle ≅
-      triangleOfSES (hS.map_of_exact (HomologicalComplex.single C (ComplexShape.up ℤ) 0)) := by
-  let e := (SingleFunctors.evaluation _ _ 0).mapIso (singleFunctorsPostcompQIso C)
-  refine Triangle.isoMk _ _ (e.app S.X₁) (e.app S.X₂) (e.app S.X₃) ?_ ?_ ?_
-  · cat_disch
-  · cat_disch
-  · simp [singleδ, e, ← Functor.map_comp, CochainComplex.singleFunctors]
+      triangleOfSES (hS.map_of_exact (HomologicalComplex.single C (ComplexShape.up ℤ) 0)) :=
+  Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
 
 /-- The distinguished triangle in the derived category of `C` given by a
 short exact short complex in `C`. -/
@@ -76,6 +70,22 @@ lemma singleTriangle_distinguished :
     hS.singleTriangle ∈ distTriang (DerivedCategory C) :=
   isomorphic_distinguished _ (triangleOfSES_distinguished (hS.map_of_exact
     (HomologicalComplex.single C (ComplexShape.up ℤ) 0))) _ (singleTriangleIso hS)
+
+variable {S₁ S₂ : ShortComplex C} (h₁ : S₁.ShortExact) (h₂ : S₂.ShortExact) (f : S₁ ⟶ S₂)
+
+/-- The morphism `h₁.singleTriangle h₁ ⟶ h₂.singleTriangle` that is induced by a
+map of short exact sequences of objects of `C`.
+-/
+@[simps!]
+noncomputable def singleTriangle.map : h₁.singleTriangle ⟶ h₂.singleTriangle where
+  hom₁ := (singleFunctor C 0).map f.τ₁
+  hom₂ := (singleFunctor C 0).map f.τ₂
+  hom₃ := (singleFunctor C 0).map f.τ₃
+  comm₁ := by simp [← Functor.map_comp, f.comm₁₂]
+  comm₂ := by simp [← Functor.map_comp, f.comm₂₃]
+  comm₃ := by
+    simpa [singleδ] using! ((triangleOfSES.map (h₁.map_of_exact _) (h₂.map_of_exact _))
+      ((HomologicalComplex.single C (.up ℤ) 0).mapShortComplex.map f)).comm₃
 
 end ShortExact
 

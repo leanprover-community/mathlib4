@@ -6,7 +6,7 @@ Authors: Jesse Alama
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Basic
-public import Mathlib.Algebra.GroupWithZero.Indicator
+import Mathlib.Algebra.GroupWithZero.Indicator
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.LinearAlgebra.Dimension.Finrank
@@ -101,7 +101,9 @@ variable (c : ComplexShape ι) [c.EulerCharSigns]
 
 /-- The support of a graded object with respect to finite rank:
 the set of indices where the rank is nonzero. -/
-def finrankSupport (X : CategoryTheory.GradedObject ι (ModuleCat R)) : Set ι :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def finrankSupport (X : CategoryTheory.GradedObject ι (ModuleCat R)) : Set ι :=
   Function.support (fun i => Module.finrank R (X i))
 
 /-- The finite rank support is contained in a set if and only if

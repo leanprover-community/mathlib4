@@ -34,7 +34,7 @@ be a problem since the only purpose is to obtain the instance `StarOrderedRing C
 `Prop`, but we note it for future reference.
 -/
 
-@[expose] public section
+public section
 
 /-- A type class encoding the property that there is a continuous square root function on
 nonnegative elements. This holds for `ℝ≥0`, `ℝ` and `ℂ` (as well as any C⋆-algebra), and this
@@ -52,6 +52,7 @@ namespace ContinuousMap
 
 variable {α : Type*} [TopologicalSpace α]
 
+set_option backward.isDefEq.respectTransparency false in
 instance {R : Type*} [PartialOrder R] [NonUnitalSemiring R] [StarRing R]
     [StarOrderedRing R] [TopologicalSpace R] [ContinuousStar R] [IsTopologicalSemiring R]
     [ContinuousSqrt R] : StarOrderedRing C(α, R) := by
@@ -60,7 +61,7 @@ instance {R : Type*} [PartialOrder R] [NonUnitalSemiring R] [StarRing R]
   constructor
   · rw [ContinuousMap.le_def]
     intro h
-    use (mk _ ContinuousSqrt.continuousOn_sqrt.restrict).comp
+    use (mk _ ContinuousSqrt.continuousOn_sqrt.domRestrict).comp
       ⟨_, map_continuous (f.prodMk g) |>.codRestrict (s := {x | x.1 ≤ x.2}) (by exact h)⟩
     ext x
     simpa [IsSelfAdjoint.star_eq <| .of_nonneg (ContinuousSqrt.sqrt_nonneg (f x, g x) (h x))]
@@ -88,7 +89,7 @@ instance instStarOrderedRing {R : Type*}
       | add_left s s_mem p p_mem hp' =>
         obtain ⟨s, rfl⟩ := s_mem
         simp only at *
-        have h₀ : (star s * s + p) 0 = 0 := by simpa using congr($(hp) 0).symm
+        have h₀ : (star s * s + p) 0 = 0 := by simpa using congr($hp 0).symm
         rw [← add_assoc] at hp
         have p'₀ : 0 ≤ p 0 := by rw [← StarOrderedRing.nonneg_iff] at p_mem; exact p_mem 0
         have s₉ : (star s * s) 0 = 0 := le_antisymm ((le_add_of_nonneg_right p'₀).trans_eq h₀)

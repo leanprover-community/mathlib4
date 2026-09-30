@@ -5,11 +5,11 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Algebra.Module.Card
+import Mathlib.Algebra.Module.Card
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.SetTheory.Cardinal.Continuum
-public import Mathlib.SetTheory.Cardinal.CountableCover
-public import Mathlib.Topology.MetricSpace.Perfect
+import Mathlib.SetTheory.Cardinal.CountableCover
+import Mathlib.Topology.MetricSpace.Perfect
 
 /-!
 # Cardinality of open subsets of vector spaces
@@ -106,7 +106,7 @@ theorem cardinal_eq_of_mem_nhds
   let t := g ⁻¹' s
   have : t ∈ 𝓝 0 := g.continuous.continuousAt.preimage_mem_nhds (by simpa [g] using hs)
   have A : #t = #E := cardinal_eq_of_mem_nhds_zero 𝕜 this
-  have B : #t = #s := Cardinal.mk_subtype_of_equiv s g.toEquiv
+  have B : #t = #s := Cardinal.mk_subtype_of_equiv (· ∈ s) g.toEquiv
   rwa [B] at A
 
 /-- In a topological vector space over a nontrivially normed field, any nonempty open set has

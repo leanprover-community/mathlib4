@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Module.Rat
+import Mathlib.Algebra.Module.Rat
 public import Mathlib.Data.Rat.Cast.Order
 public import Mathlib.Algebra.Order.Module.Defs
 
@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Order.Module.Defs
 # Monotonicity of the action by rational numbers
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 

@@ -35,6 +35,7 @@ namespace CategoryTheory.Limits
 
 variable {J : Type w} (f : J → C)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The map of a fan is a limit iff the fan consisting of the mapped morphisms is a limit. This
 essentially lets us commute `Fan.mk` with `Functor.mapCone`.
 -/
@@ -42,9 +43,8 @@ def isLimitMapConeFanMkEquiv {P : C} (g : ∀ j, P ⟶ f j) :
     IsLimit (Functor.mapCone G (Fan.mk P g)) ≃
       IsLimit (Fan.mk _ fun j => G.map (g j) : Fan fun j => G.obj (f j)) := by
   refine (IsLimit.postcomposeHomEquiv ?_ _).symm.trans (IsLimit.equivIsoLimit ?_)
-  · refine Discrete.natIso fun j => Iso.refl (G.obj (f j.as))
-  refine Cones.ext (Iso.refl _) fun j =>
-      by dsimp; cases j; simp
+  · exact Discrete.natIso fun j => Iso.refl (G.obj (f j.as))
+  exact Cone.ext (Iso.refl _) fun j ↦ by dsimp; cases j; simp
 
 /-- The property of preserving products expressed in terms of fans. -/
 def isLimitFanMkObjOfIsLimit [PreservesLimit (Discrete.functor f) G] {P : C} (g : ∀ j, P ⟶ f j)
@@ -103,8 +103,14 @@ instance : IsIso (piComparison G f) := by
   rw [← PreservesProduct.iso_hom]
   infer_instance
 
+instance {I : Type*} [Category* I] [IsGroupoid I] (F : C ⥤ D) [PreservesLimitsOfShape I F] :
+    PreservesLimitsOfShape Iᵒᵖ F :=
+  letI : Groupoid I := Groupoid.ofIsGroupoid
+  preservesLimitsOfShape_of_equiv (Groupoid.invEquivalence I) F
+
 end
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The map of a cofan is a colimit iff the cofan consisting of the mapped morphisms is a colimit.
 This essentially lets us commute `Cofan.mk` with `Functor.mapCocone`.
 -/
@@ -113,7 +119,7 @@ def isColimitMapCoconeCofanMkEquiv {P : C} (g : ∀ j, f j ⟶ P) :
       IsColimit (Cofan.mk _ fun j => G.map (g j) : Cofan fun j => G.obj (f j)) := by
   refine (IsColimit.precomposeHomEquiv ?_ _).symm.trans (IsColimit.equivIsoColimit ?_)
   · refine Discrete.natIso fun j => Iso.refl (G.obj (f j.as))
-  refine Cocones.ext (Iso.refl _) fun j => by dsimp; cases j; simp
+  refine Cocone.ext (Iso.refl _) fun j => by dsimp; cases j; simp
 
 /-- The property of preserving coproducts expressed in terms of cofans. -/
 def isColimitCofanMkObjOfIsColimit [PreservesColimit (Discrete.functor f) G] {P : C}
@@ -186,5 +192,9 @@ lemma preservesColimitsOfShape_of_discrete (F : C ⥤ D)
     [∀ (f : J → C), PreservesColimit (Discrete.functor f) F] :
     PreservesColimitsOfShape (Discrete J) F where
   preservesColimit := preservesColimit_of_iso_diagram F (Discrete.natIsoFunctor).symm
+
+instance {I : Type w} (F : C ⥤ D) [PreservesColimitsOfShape (Discrete I) F] :
+    PreservesColimitsOfShape (Discrete I)ᵒᵖ F :=
+  preservesColimitsOfShape_of_equiv (Discrete.opposite I).symm F
 
 end CategoryTheory.Limits

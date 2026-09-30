@@ -24,7 +24,6 @@ the `Finset.sum` operation which computes the additive sum.
 
 @[expose] public section
 
-
 open Function Multiset Sum
 
 namespace Finset

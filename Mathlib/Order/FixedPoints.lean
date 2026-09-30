@@ -5,9 +5,9 @@ Authors: Johannes Hölzl, Kenny Lau, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Dynamics.FixedPoints.Basic
 public import Mathlib.Order.Hom.Order
-public import Mathlib.Order.OmegaCompletePartialOrder
+public import Mathlib.Order.BourbakiWitt
+public import Mathlib.Algebra.Group.End
 
 /-!
 # Fixed point construction on complete lattices
@@ -35,7 +35,7 @@ fixed point, complete lattice, monotone function
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {γ : Type w}
+variable {α : Type u} {β : Type v}
 
 open Function (fixedPoints IsFixedPt)
 
@@ -135,8 +135,8 @@ variable [CompleteLattice α] [CompleteLattice β] (f : β →o α) (g : α →o
 
 -- Rolling rule
 theorem map_lfp_comp : f (g.comp f).lfp = (f.comp g).lfp :=
-  le_antisymm ((f.comp g).map_lfp ▸ f.mono (lfp_le_fixed _ <| congr_arg g (f.comp g).map_lfp)) <|
-    lfp_le _ (congr_arg f (g.comp f).map_lfp).le
+  le_antisymm ((f.comp g).map_lfp ▸ f.mono (lfp_le_fixed _ <| congr(g $((f.comp g).map_lfp)))) <|
+    lfp_le _ congr(f $((g.comp f).map_lfp)).le
 
 theorem map_gfp_comp : f (g.comp f).gfp = (f.comp g).gfp :=
   f.dual.map_lfp_comp g.dual
@@ -148,7 +148,7 @@ theorem lfp_lfp (h : α →o α →o α) : (lfp.comp h).lfp = h.onDiag.lfp := by
   · exact lfp_le _ h.onDiag.map_lfp.le
   have ha : (lfp ∘ h) a = a := (lfp.comp h).map_lfp
   calc
-    h a a = h a (h a).lfp := congr_arg (h a) ha.symm
+    h a a = h a (h a).lfp := congr(h a $ha.symm)
     _ = (h a).lfp := (h a).map_lfp
     _ = a := ha
 
@@ -207,7 +207,7 @@ theorem le_prevFixed {x : α} (hx : f x ≤ x) {y : fixedPoints f} (h : ↑y ≤
 
 theorem le_map_sup_fixedPoints (x y : fixedPoints f) : (x ⊔ y : α) ≤ f (x ⊔ y) :=
   calc
-    (x ⊔ y : α) = f x ⊔ f y := congr_arg₂ (· ⊔ ·) x.2.symm y.2.symm
+    (x ⊔ y : α) = f x ⊔ f y := congr($(x.2.symm) ⊔ $(y.2.symm))
     _ ≤ f (x ⊔ y) := f.mono.le_map_sup x y
 
 -- Porting note: `x ⊓ y` without the `.val`s fails to synthesize `Inf` instance
@@ -245,6 +245,7 @@ instance : SemilatticeSup (fixedPoints f) where
   sup_le _ _ _ hxz hyz := f.nextFixed_le _ <| sup_le hxz hyz
 
 instance : SemilatticeInf (fixedPoints f) where
+  __ : PartialOrder (fixedPoints f) := inferInstance
   inf x y := f.prevFixed (x ⊓ y) (f.map_inf_fixedPoints_le x y)
   __ := OrderDual.instSemilatticeInf (fixedPoints f.dual)
 
@@ -254,15 +255,15 @@ instance completeLattice : CompleteLattice (fixedPoints f) where
     f.nextFixed (sSup (Subtype.val '' s))
       (f.le_map_sSup_subset_fixedPoints (Subtype.val '' s)
         fun _ ⟨x, hx⟩ => hx.2 ▸ x.2)
-  le_sSup _ _ hx :=
-    Subtype.coe_le_coe.1 <| le_trans (le_sSup <| Set.mem_image_of_mem _ hx) (f.le_nextFixed _)
-  sSup_le _ _ hx := f.nextFixed_le _ <| sSup_le <| Set.forall_mem_image.2 hx
+  isLUB_sSup _ :=
+    ⟨fun _ hx ↦ (le_sSup <| Set.mem_image_of_mem _ hx).trans (f.le_nextFixed _),
+      fun _ hx ↦ f.nextFixed_le _ <| sSup_le <| Set.forall_mem_image.2 hx⟩
   sInf s :=
     f.prevFixed (sInf (Subtype.val '' s))
       (f.map_sInf_subset_fixedPoints_le (Subtype.val '' s) fun _ ⟨x, hx⟩ => hx.2 ▸ x.2)
-  le_sInf _ _ hx := f.le_prevFixed _ <| le_sInf <| Set.forall_mem_image.2 hx
-  sInf_le _ _ hx :=
-    Subtype.coe_le_coe.1 <| le_trans (f.prevFixed_le _) (sInf_le <| Set.mem_image_of_mem _ hx)
+  isGLB_sInf _ :=
+    ⟨fun _ hx ↦ (f.prevFixed_le _).trans (sInf_le <| Set.mem_image_of_mem _ hx),
+      fun _ hx ↦ f.le_prevFixed _ <| le_sInf <| Set.forall_mem_image.2 hx⟩
 
 open OmegaCompletePartialOrder fixedPoints
 

@@ -6,11 +6,11 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Comma.Presheaf.Colimit
-public import Mathlib.CategoryTheory.Limits.Filtered
+import Mathlib.CategoryTheory.Limits.Filtered
 public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
-public import Mathlib.CategoryTheory.Limits.FunctorToTypes
+import Mathlib.CategoryTheory.Limits.FunctorToTypes
 public import Mathlib.CategoryTheory.Limits.Indization.IndObject
-public import Mathlib.Logic.Small.Set
+import Mathlib.Logic.Small.Set
 
 /-!
 # Ind-objects are closed under filtered colimits
@@ -68,8 +68,8 @@ noncomputable def compYonedaColimitIsoColimitCompYoneda :
   _ ≅ colimit (H ⋙ yoneda ⋙ (whiskeringLeft _ _ _).obj 𝒢) := (colimitIsoFlipCompColim _).symm
 
 theorem exists_nonempty_limit_obj_of_colimit [IsFiltered K]
-    (h : Nonempty <| limit <| 𝒢 ⋙ yoneda.obj (colimit H)) :
-    ∃ k, Nonempty <| limit <| 𝒢 ⋙ yoneda.obj (H.obj k) := by
+    (h : Nonempty (limit <| 𝒢 ⋙ yoneda.obj (colimit H))) :
+    ∃ k, Nonempty (limit <| 𝒢 ⋙ yoneda.obj (H.obj k)) := by
   obtain ⟨t⟩ := h
   let t₂ := limMap (compYonedaColimitIsoColimitCompYoneda F G H).hom t
   let t₃ := (colimitLimitIso (H ⋙ yoneda ⋙ (whiskeringLeft _ _ _).obj 𝒢).flip).inv t₂
@@ -81,14 +81,15 @@ theorem exists_nonempty_limit_obj_of_colimit [IsFiltered K]
 
 theorem exists_nonempty_limit_obj_of_isColimit [IsFiltered K] {c : Cocone H} (hc : IsColimit c)
     (T : Over (colimit F)) (hT : c.pt ≅ T)
-    (h : Nonempty <| limit <| 𝒢 ⋙ yoneda.obj T) :
-    ∃ k, Nonempty <| limit <| 𝒢 ⋙ yoneda.obj (H.obj k) := by
+    (h : Nonempty (limit <| 𝒢 ⋙ yoneda.obj T)) :
+    ∃ k, Nonempty (limit <| 𝒢 ⋙ yoneda.obj (H.obj k)) := by
   refine exists_nonempty_limit_obj_of_colimit F G H ?_
   suffices T ≅ colimit H from Nonempty.map (lim.map (whiskerLeft 𝒢 (yoneda.map this.hom))) h
   refine hT.symm ≪≫ IsColimit.coconePointUniqueUpToIso hc (colimit.isColimit _)
 
 end Interchange
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem isFiltered [IsFiltered I] (hF : ∀ i, IsIndObject (F.obj i)) :
     IsFiltered (CostructuredArrow yoneda (colimit F)) := by
   -- It suffices to show that for any functor `G : J ⥤ CostructuredArrow yoneda (colimit F)` with

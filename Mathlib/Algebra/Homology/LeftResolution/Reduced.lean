@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.LeftResolution.Transport
 public import Mathlib.CategoryTheory.Idempotents.FunctorExtension
-public import Mathlib.CategoryTheory.MorphismProperty.Retract
+import Mathlib.CategoryTheory.MorphismProperty.Retract
 
 /-!
 # Left resolutions which preserve the zero object
@@ -60,11 +60,13 @@ def karoubi.F : Karoubi A ⥤ Karoubi C := (functorExtension₁ A C).obj (karoub
 
 instance : (karoubi.F Λ).PreservesZeroMorphisms where
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `LeftResolution.karoubi`. -/
 @[simps]
 def karoubi.π' : toKaroubi A ⋙ F Λ ⋙ (functorExtension₂ C A).obj ι ⟶ toKaroubi A where
   app X := ⟨Λ.π.app X, by simp⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `(karoubi.π' Λ).app X` is a retract of `(toKaroubi _).map (Λ.π.app X)`. -/
 def karoubi.retractArrow (X : A) :
     RetractArrow ((karoubi.π' Λ).app X) ((toKaroubi _).map (Λ.π.app X)) where
@@ -83,6 +85,7 @@ instance (X : A) : Epi ((karoubi.π' Λ).app X) :=
 def karoubi.π : karoubi.F Λ ⋙ (functorExtension₂ C A).obj ι ⟶ 𝟭 (Karoubi A) :=
   whiskeringLeftObjToKaroubiFullyFaithful.preimage (karoubi.π' Λ)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma karoubi.π_app_toKaroubi_obj (X : A) :
     (karoubi.π Λ).app ((toKaroubi _).obj X) = (karoubi.π' Λ).app X := by
@@ -104,6 +107,7 @@ noncomputable def karoubi : LeftResolution ((functorExtension₂ C A).obj ι) wh
   F := karoubi.F Λ
   π := karoubi.π Λ
 
+set_option backward.defeqAttrib.useBackward true in
 instance : Λ.karoubi.F.PreservesZeroMorphisms where
 
 section

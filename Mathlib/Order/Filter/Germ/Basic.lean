@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-public import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Data.Int.Cast.Basic
 public import Mathlib.Data.Int.Cast.Pi
 public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Order.Filter.Tendsto
@@ -63,13 +63,8 @@ namespace Filter
 
 variable {α β γ δ : Type*} {l : Filter α} {f g h : α → β}
 
-theorem const_eventuallyEq' [NeBot l] {a b : β} : (∀ᶠ _ in l, a = b) ↔ a = b :=
-  eventually_const
-
-theorem const_eventuallyEq [NeBot l] {a b : β} : ((fun _ => a) =ᶠ[l] fun _ => b) ↔ a = b :=
-  @const_eventuallyEq' _ _ _ _ a b
-
 /-- Setoid used to define the space of germs. -/
+@[instance_reducible]
 def germSetoid (l : Filter α) (β : Type*) : Setoid (α → β) where
   r := EventuallyEq l
   iseqv := ⟨EventuallyEq.refl _, EventuallyEq.symm, EventuallyEq.trans⟩
@@ -80,6 +75,7 @@ def Germ (l : Filter α) (β : Type*) : Type _ :=
 
 /-- Setoid used to define the filter product. This is a dependent version of
   `Filter.germSetoid`. -/
+@[instance_reducible]
 def productSetoid (l : Filter α) (ε : α → Type*) : Setoid ((a : _) → ε a) where
   r f g := ∀ᶠ a in l, f a = g a
   iseqv :=
@@ -118,8 +114,6 @@ def const {l : Filter α} (b : β) : (Germ l β) := ofFun fun _ => b
 
 instance coeTail : CoeTail β (Germ l β) :=
   ⟨const⟩
-
-@[deprecated (since := "2025-08-28")] alias coeTC := coeTail
 
 /-- A germ `P` of functions `α → β` is constant w.r.t. `l`. -/
 def IsConstant {l : Filter α} (P : Germ l β) : Prop :=
@@ -190,7 +184,7 @@ alias ⟨_, _root_.Filter.EventuallyEq.germ_eq⟩ := coe_eq
 
 /-- Lift a function `β → γ` to a function `Germ l β → Germ l γ`. -/
 def map (op : β → γ) : Germ l β → Germ l γ :=
-  map' (op ∘ ·) fun _ _ H => H.mono fun _ H => congr_arg op H
+  map' (op ∘ ·) fun _ _ H => H.mono fun _ H => congr(op $H)
 
 @[simp]
 theorem map_coe (op : β → γ) (f : α → β) : map op (f : Germ l β) = op ∘ f :=
@@ -252,9 +246,12 @@ theorem compTendsto'_coe (f : Germ l β) {lc : Filter γ} {g : γ → α} (hg : 
     f.compTendsto' _ hg.germ_tendsto = f.compTendsto g hg :=
   rfl
 
-theorem Filter.Tendsto.congr_germ {f g : β → γ} {l : Filter α} {l' : Filter β} (h : f =ᶠ[l'] g)
-    {φ : α → β} (hφ : Tendsto φ l l') : (f ∘ φ : Germ l γ) = g ∘ φ :=
+theorem _root_.Filter.Tendsto.congr_germ {f g : β → γ} {l : Filter α} {l' : Filter β}
+    (h : f =ᶠ[l'] g) {φ : α → β} (hφ : Tendsto φ l l') : (f ∘ φ : Germ l γ) = g ∘ φ :=
   EventuallyEq.germ_eq (h.comp_tendsto hφ)
+
+set_option linter.dupNamespace false in
+@[deprecated (since := "2026-05-24")] alias Filter.Tendsto.congr_germ := Filter.Tendsto.congr_germ
 
 lemma isConstant_comp_tendsto {lc : Filter γ} {g : γ → α}
     (hf : (f : Germ l β).IsConstant) (hg : Tendsto g lc l) : IsConstant (f ∘ g : Germ lc β) := by
@@ -382,10 +379,7 @@ instance instMulOneClass [MulOneClass M] : MulOneClass (Germ l M) :=
   { one_mul := Quotient.ind' fun _ => congrArg ofFun <| one_mul _
     mul_one := Quotient.ind' fun _ => congrArg ofFun <| mul_one _ }
 
-@[to_additive]
-instance instSMul [SMul M G] : SMul M (Germ l G) where smul n := map (n • ·)
-
-@[to_additive existing instSMul]
+@[to_additive (attr := to_additive) instSMul]
 instance instPow [Pow G M] : Pow (Germ l G) M where pow f n := map (· ^ n) f
 
 @[to_additive (attr := simp, norm_cast)]
@@ -407,7 +401,7 @@ theorem const_pow [Pow G M] (a : G) (n : M) : (↑(a ^ n) : Germ l G) = (↑a : 
 -- TODO: https://github.com/leanprover-community/mathlib4/pull/7432
 @[to_additive]
 instance instMonoid [Monoid M] : Monoid (Germ l M) :=
-  { Function.Surjective.monoid ofFun Quot.mk_surjective (by rfl)
+  { Function.Surjective.monoid ofFun Quot.mk_surjective rfl
       (fun _ _ => by rfl) fun _ _ => by rfl with
     toSemigroup := instSemigroup
     toOne := instOne
@@ -486,7 +480,7 @@ instance instHasDistribNeg [Mul G] [HasDistribNeg G] : HasDistribNeg (Germ l G) 
 
 @[to_additive]
 instance instInvOneClass [InvOneClass G] : InvOneClass (Germ l G) :=
-  ⟨congr_arg ofFun inv_one⟩
+  ⟨congr(ofFun $inv_one)⟩
 
 @[to_additive subNegMonoid]
 instance instDivInvMonoid [DivInvMonoid G] : DivInvMonoid (Germ l G) where
@@ -502,7 +496,7 @@ instance instDivInvMonoid [DivInvMonoid G] : DivInvMonoid (Germ l G) where
 @[to_additive]
 instance instDivisionMonoid [DivisionMonoid G] : DivisionMonoid (Germ l G) where
   inv_inv := inv_inv
-  mul_inv_rev x y := inductionOn₂ x y fun _ _ ↦ congr_arg ofFun <| mul_inv_rev _ _
+  mul_inv_rev x y := inductionOn₂ x y fun _ _ ↦ congr(ofFun $(mul_inv_rev ..))
   inv_eq_of_mul x y := inductionOn₂ x y fun _ _ h ↦ coe_eq.2 <| (coe_eq.1 h).mono fun _ ↦
     DivisionMonoid.inv_eq_of_mul _ _
 
@@ -758,7 +752,7 @@ instance instExistsMulOfLE [Mul β] [LE β] [ExistsMulOfLE β] : ExistsMulOfLE (
     choose c hc using fun x (hx : f x ≤ g x) ↦ exists_mul_of_le hx
     refine ⟨ofFun fun x ↦ if hx : f x ≤ g x then c x hx else f x, coe_eq.2 ?_⟩
     filter_upwards [h] with x hx
-    rw [dif_pos hx, hc]
+    rw [dite_eq_left hx, hc]
 
 end Germ
 

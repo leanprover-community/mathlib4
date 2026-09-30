@@ -5,11 +5,11 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.Abelian
-public import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
+import Mathlib.Algebra.Category.Grp.Abelian
+import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 public import Mathlib.CategoryTheory.Abelian.Projective.Basic
 public import Mathlib.CategoryTheory.Generator.Preadditive
-public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
+import Mathlib.CategoryTheory.Limits.Preserves.Opposites
 
 /-!
 # Fullness of restrictions of `preadditiveCoyonedaObj`
@@ -33,6 +33,8 @@ section
 
 attribute [local instance] preservesFiniteLimits_op
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 theorem preadditiveCoyonedaObj_map_surjective {G : C} [Projective G] (hG : IsSeparator G) {X : C}
     (p : G ⟶ X) [Epi p] {Y : C} :
     Function.Surjective ((preadditiveCoyonedaObj G).map : (X ⟶ Y) → _) := by

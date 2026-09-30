@@ -15,7 +15,7 @@ public import Mathlib.Order.Atoms
 # Facts about ordered structures and ordered instances on subgroups
 -/
 
-@[expose] public section
+public section
 
 open Subgroup
 
@@ -44,6 +44,8 @@ namespace Subgroup
 variable {G : Type*} [Group G] (H : Subgroup G)
 
 /-- In a group that satisfies the normalizer condition, every maximal subgroup is normal -/
+@[to_additive /-- In an additive group that satisfies the normalizer condition, every maximal
+additive subgroup is normal -/]
 theorem NormalizerCondition.normal_of_coatom (hnc : NormalizerCondition G) (hmax : IsCoatom H) :
     H.Normal :=
   normalizer_eq_top_iff.mp (hmax.2 _ (hnc H (lt_top_iff_ne_top.mpr hmax.1)))
@@ -77,24 +79,25 @@ namespace Subgroup
 variable {G : Type*}
 
 /-- A subgroup of an ordered group is an ordered group. -/
-@[to_additive /-- An `AddSubgroup` of an `AddOrderedCommGroup` is an `AddOrderedCommGroup`. -/]
-instance toIsOrderedMonoid [CommGroup G] [PartialOrder G] [IsOrderedMonoid G] (H : Subgroup G) :
+@[to_additive
+/-- An additive subgroup of an additive ordered group is an additive ordered group. -/]
+instance toIsOrderedMonoid [CommGroup G] [Preorder G] [IsOrderedMonoid G] (H : Subgroup G) :
     IsOrderedMonoid H :=
   Function.Injective.isOrderedMonoid Subtype.val (fun _ _ => rfl) .rfl
 
 end Subgroup
 
 @[to_additive]
-lemma Subsemigroup.strictMono_topEquiv {G : Type*} [CommMonoid G] [PartialOrder G] :
+lemma Subsemigroup.strictMono_topEquiv {G : Type*} [CommMonoid G] [Preorder G] :
     StrictMono (topEquiv (M := G)) := fun _ _ ↦ id
 
 @[to_additive]
 lemma MulEquiv.strictMono_subsemigroupCongr {G : Type*}
-    [CommMonoid G] [PartialOrder G] {S T : Subsemigroup G}
+    [CommMonoid G] [Preorder G] {S T : Subsemigroup G}
     (h : S = T) : StrictMono (subsemigroupCongr h) := fun _ _ ↦ id
 
 @[to_additive]
 lemma MulEquiv.strictMono_symm {G G' : Type*} [CommMonoid G] [LinearOrder G]
-    [CommMonoid G'] [PartialOrder G'] {e : G ≃* G'} (he : StrictMono e) : StrictMono e.symm := by
+    [CommMonoid G'] [Preorder G'] {e : G ≃* G'} (he : StrictMono e) : StrictMono e.symm := by
   intro
   simp [← he.lt_iff_lt]

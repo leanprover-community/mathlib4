@@ -80,8 +80,8 @@ lemma ae_map_iff_ae_trim {f : α → β} (hf : Measurable f)
 lemma trim_add {ν : Measure α} (hm : m ≤ m0) : (μ + ν).trim hm = μ.trim hm + ν.trim hm :=
   @Measure.ext _ m _ _ (fun s hs ↦ by simp [trim_measurableSet_eq hm hs])
 
-theorem measure_eq_zero_of_trim_eq_zero (hm : m ≤ m0) (h : μ.trim hm s = 0) : μ s = 0 :=
-  le_antisymm ((le_trim hm).trans (le_of_eq h)) (zero_le _)
+theorem measure_eq_zero_of_trim_eq_zero (hm : m ≤ m0) (h : μ.trim hm s = 0) : μ s = 0 := by
+  grw [← nonpos_iff_eq_zero, ← h, le_trim hm]
 
 theorem measure_trim_toMeasurable_eq_zero {hm : m ≤ m0} (hs : μ.trim hm s = 0) :
     μ (@toMeasurable α m (μ.trim hm) s) = 0 :=
@@ -112,6 +112,15 @@ theorem restrict_trim (hm : m ≤ m0) (μ : Measure α) (hs : @MeasurableSet α 
     Measure.restrict_apply (hm t ht),
     trim_measurableSet_eq hm (@MeasurableSet.inter α m t s ht hs)]
 
+theorem measure_spanningSets_trim_lt_top (hm : m ≤ m0) (μ : Measure α) [SigmaFinite (μ.trim hm)]
+    (n : ℕ) :
+    μ (spanningSets (μ.trim hm) n) < ⊤ :=
+  (le_trim hm).trans_lt (measure_spanningSets_lt_top (μ.trim hm) n)
+
+instance (hm : m ≤ m0) (μ : Measure α) [SigmaFinite (μ.trim hm)] (n : ℕ) :
+    IsFiniteMeasure (μ.restrict (spanningSets (μ.trim hm) n)) :=
+  isFiniteMeasure_restrict.2 (measure_spanningSets_trim_lt_top hm μ n).ne
+
 instance isFiniteMeasure_trim (hm : m ≤ m0) [IsFiniteMeasure μ] : IsFiniteMeasure (μ.trim hm) where
   measure_univ_lt_top := by
     rw [trim_measurableSet_eq hm (@MeasurableSet.univ _ m)]
@@ -119,19 +128,17 @@ instance isFiniteMeasure_trim (hm : m ≤ m0) [IsFiniteMeasure μ] : IsFiniteMea
 
 theorem sigmaFiniteTrim_mono {m m₂ m0 : MeasurableSpace α} {μ : Measure α} (hm : m ≤ m0)
     (hm₂ : m₂ ≤ m) [SigmaFinite (μ.trim (hm₂.trans hm))] : SigmaFinite (μ.trim hm) := by
-  refine ⟨⟨?_⟩⟩
-  refine
-    { set := spanningSets (μ.trim (hm₂.trans hm))
+  have : SigmaFinite ((μ.trim hm).trim hm₂) := by simpa [trim_trim]
+  exact ⟨⟨
+    { set := spanningSets ((μ.trim hm).trim hm₂)
       set_mem := fun _ => Set.mem_univ _
-      finite := fun i => ?_
-      spanning := iUnion_spanningSets _ }
-  calc
-    (μ.trim hm) (spanningSets (μ.trim (hm₂.trans hm)) i) =
-        ((μ.trim hm).trim hm₂) (spanningSets (μ.trim (hm₂.trans hm)) i) := by
-      rw [@trim_measurableSet_eq α m₂ m (μ.trim hm) _ hm₂ (measurableSet_spanningSets _ _)]
-    _ = (μ.trim (hm₂.trans hm)) (spanningSets (μ.trim (hm₂.trans hm)) i) := by
-      rw [@trim_trim _ _ μ _ _ hm₂ hm]
-    _ < ∞ := measure_spanningSets_lt_top _ _
+      finite := fun i => measure_spanningSets_trim_lt_top hm₂ (μ.trim hm) i
+      spanning := iUnion_spanningSets _ }⟩⟩
+
+lemma SigmaFinite.of_trim {m m0 : MeasurableSpace α} {μ : Measure α} (hm : m ≤ m0)
+    [SigmaFinite (μ.trim hm)] : SigmaFinite μ := by
+  rw [← trim_eq_self (μ := μ)]
+  exact sigmaFiniteTrim_mono le_rfl hm
 
 theorem sigmaFinite_trim_bot_iff : SigmaFinite (μ.trim bot_le) ↔ IsFiniteMeasure μ := by
   rw [sigmaFinite_bot_iff]

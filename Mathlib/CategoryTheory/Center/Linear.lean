@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 public import Mathlib.CategoryTheory.Linear.Basic
 public import Mathlib.CategoryTheory.Center.Preadditive
 
@@ -30,6 +29,7 @@ namespace Linear
 
 variable (R : Type w) [Ring R] (C : Type u) [Category.{v} C] [Preadditive C]
 
+open scoped IsMulCommutative in
 /-- The canonical morphism `R →+* CatCenter C` when `C` is an `R`-linear category. -/
 @[simps]
 def toCatCenter [Linear R C] : R →+* CatCenter C where
@@ -52,6 +52,7 @@ variable (φ : R →+* CatCenter C) (X Y : C)
 
 /-- The scalar multiplication by `R` on the type `X ⟶ Y` of morphisms in
 a category `C` equipped with a ring morphism `R →+* CatCenter C`. -/
+@[instance_reducible]
 def smulOfRingMorphism : SMul R (X ⟶ Y) where
   smul a f := (φ a).app X ≫ f
 
@@ -72,6 +73,7 @@ variable (X Y)
 
 /-- The `R`-module structure on the type `X ⟶ Y` of morphisms in
 a category `C` equipped with a ring morphism `R →+* CatCenter C`. -/
+@[instance_reducible]
 def homModuleOfRingMorphism : Module R (X ⟶ Y) := by
   letI := smulOfRingMorphism φ X Y
   exact
@@ -93,6 +95,7 @@ def homModuleOfRingMorphism : Module R (X ⟶ Y) := by
 
 /-- The `R`-linear structure on a preadditive category `C` equipped with
 a ring morphism `R →+* CatCenter C`. -/
+@[instance_reducible]
 def ofRingMorphism : Linear R C := by
   letI := homModuleOfRingMorphism φ
   exact

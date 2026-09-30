@@ -13,7 +13,7 @@ public import Mathlib.Data.Finset.Powerset
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-public import Mathlib.Data.Finset.Max
+import Mathlib.Data.Finset.Max
 
 /-!
 # Subset sums
@@ -95,8 +95,8 @@ lemma card_add_card_subsetSum_lt_card_subsetSum_insert_max (hA : ∀ x ∈ A, 0 
 theorem card_succ_choose_two_lt_card_subsetSum_of_pos (A_pos : ∀ x ∈ A, 0 < x) :
     (#A + 1).choose 2 < #A.subsetSum := by
   induction A using induction_on_max with
-  | h0 => simp
-  | step a A A_lt_a ih =>
+  | empty => simp
+  | insert a A A_lt_a ih =>
     have A_pos' : ∀ x ∈ A, 0 < x := fun x hx => A_pos x (mem_insert_of_mem hx)
     grw [card_insert_of_notMem fun ha => (A_lt_a a ha).false, Nat.choose_succ_left _ _ (by lia),
       Nat.choose_one_right, add_right_comm, add_assoc, Nat.add_one_le_iff.2 (ih A_pos')]
@@ -106,7 +106,7 @@ theorem card_succ_choose_two_lt_card_subsetSum_of_pos (A_pos : ∀ x ∈ A, 0 < 
 theorem card_choose_two_lt_card_subsetSum_of_nonneg (A_pos : ∀ x ∈ A, 0 ≤ x) :
     (#A).choose 2 < #A.subsetSum := by
   calc (#A).choose 2
-    _ ≤ (#(A.erase 0) + 1).choose 2 := by grw [tsub_le_iff_right.1 <| pred_card_le_card_erase]
+    _ ≤ (#(A.erase 0) + 1).choose 2 := by grw [tsub_le_iff_right.1 pred_card_le_card_erase]
     _ < #(A.erase 0).subsetSum :=
         card_succ_choose_two_lt_card_subsetSum_of_pos fun x hx =>
           (A_pos x (mem_of_mem_erase hx)).lt_of_ne (ne_of_mem_erase hx).symm

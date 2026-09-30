@@ -5,12 +5,12 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Order.Field.Pi
-public import Mathlib.Algebra.Order.Pi
-public import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Algebra.Order.Field.Pi
+import Mathlib.Algebra.Order.Pi
+import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Analysis.Normed.Group.Pointwise
-public import Mathlib.Topology.Algebra.Order.UpperLower
-public import Mathlib.Topology.MetricSpace.Sequences
+import Mathlib.Topology.Algebra.Order.UpperLower
+import Mathlib.Topology.MetricSpace.Sequences
 
 /-!
 # Upper/lower/order-connected sets in normed groups
@@ -32,13 +32,13 @@ situations.
 
 public section
 
-open Bornology Function Metric Set
+open Function Metric Set
 open scoped Pointwise
 
 variable {α ι : Type*}
 
 section NormedOrderedGroup
-variable [NormedCommGroup α] [PartialOrder α] [IsOrderedMonoid α] {s : Set α}
+variable [NormedCommGroup α] [Preorder α] [IsOrderedMonoid α] {s : Set α}
 
 @[to_additive IsUpperSet.thickening]
 protected theorem IsUpperSet.thickening' (hs : IsUpperSet s) (ε : ℝ) :
@@ -122,7 +122,7 @@ variable [Fintype ι] {s : Set (ι → ℝ)} {a₁ a₂ b₁ b₂ x y : ι → �
 
 -- TODO: Generalise those lemmas so that they also apply to `ℝ` and `EuclideanSpace ι ℝ`
 lemma dist_inf_sup_pi (x y : ι → ℝ) : dist (x ⊓ y) (x ⊔ y) = dist x y := by
-  refine congr_arg NNReal.toReal (Finset.sup_congr rfl fun i _ ↦ ?_)
+  congrm NNReal.toReal $(Finset.sup_congr rfl fun i _ ↦ ?_)
   simp only [Real.nndist_eq', max_sub_min_eq_abs, Pi.inf_apply,
     Pi.sup_apply, Real.nnabs_of_nonneg, abs_nonneg, Real.toNNReal_abs]
 
@@ -212,7 +212,7 @@ protected lemma IsClosed.lowerClosure_pi (hs : IsClosed s) (hs' : BddAbove s) :
   cases nonempty_fintype ι
   refine IsSeqClosed.isClosed fun f x hf hx ↦ ?_
   choose g hg hfg using hf
-  haveI : BoundedGENhdsClass ℝ := by infer_instance
+  have : BoundedGENhdsClass ℝ := by infer_instance
   obtain ⟨a, ha⟩ := hx.bddBelow_range
   obtain ⟨b, hb, φ, hφ, hbf⟩ := tendsto_subseq_of_bounded (hs'.isBounded_inter bddBelow_Ici) fun n ↦
     ⟨hg n, (ha <| mem_range_self _).trans <| hfg _⟩

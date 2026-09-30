@@ -7,15 +7,12 @@ module
 
 public import Mathlib.RingTheory.DedekindDomain.Factorization
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
-public import Mathlib.RingTheory.HopkinsLevitzki
-public import Mathlib.RingTheory.IntegralDomain
-public import Mathlib.RingTheory.LocalRing.Quotient
-public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
-public import Mathlib.Topology.Algebra.Field
-public import Mathlib.Topology.Algebra.Module.Basic
-public import Mathlib.Topology.Algebra.Module.Compact
-public import Mathlib.Topology.Algebra.OpenSubgroup
-public import Mathlib.Topology.Algebra.Ring.Ideal
+import Mathlib.RingTheory.HopkinsLevitzki
+import Mathlib.RingTheory.LocalRing.Quotient
+import Mathlib.Topology.Algebra.Group.ClosedSubgroup
+import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.Compact
+import Mathlib.Topology.Algebra.Ring.Ideal
 
 /-!
 
@@ -37,7 +34,7 @@ See https://ncatlab.org/nlab/show/compact+Hausdorff+rings+are+profinite
 
 -/
 
-@[expose] public section
+public section
 
 attribute [local instance] Ideal.Quotient.field Fintype.ofFinite finite_of_compact_of_discrete
   DivisionRing.finite_of_compactSpace_of_t2Space
@@ -116,12 +113,13 @@ end IsLocalRing
 
 section IsDedekindDomain
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma IsDedekindDomain.isOpen_of_ne_bot
     [IsDedekindDomain R] {I : Ideal R} (hI : I ≠ ⊥) :
     IsOpen (X := R) I := by
   rw [← Ideal.finprod_heightOneSpectrum_factorization hI,
-    finprod_eq_finset_prod_of_mulSupport_subset _
-      (s := (Ideal.finite_mulSupport hI).toFinset) (by simp)]
+    finprod_eq_finsetProd_of_mulSupport_subset _
+      (s := (Ideal.hasFiniteMulSupport hI).toFinset) (by simp)]
   refine @AddSubgroup.isOpen_of_isClosed_of_finiteIndex _ _ _ _ (Submodule.toAddSubgroup _)
     ?_ (IsNoetherianRing.isClosed_ideal _)
   refine @AddSubgroup.finiteIndex_of_finite_quotient _ _ _ ?_

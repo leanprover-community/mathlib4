@@ -6,14 +6,14 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Algebra.Module.Basic
-public import Mathlib.Algebra.Module.End
+import Mathlib.Algebra.Module.End
 public import Mathlib.Algebra.Field.Rat
 
 /-!
 # Basic results about modules over the rationals.
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

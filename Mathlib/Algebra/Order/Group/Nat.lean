@@ -17,7 +17,7 @@ This file contains the linear ordered monoid instance on the natural numbers.
 See note [foundational algebra order theory].
 -/
 
-@[expose] public section
+public section
 
 namespace Nat
 

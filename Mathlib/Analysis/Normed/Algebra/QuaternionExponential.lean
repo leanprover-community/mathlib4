@@ -6,7 +6,6 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Analysis.Quaternion
-public import Mathlib.Analysis.Normed.Algebra.Exponential
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
 
 /-!
@@ -42,7 +41,7 @@ theorem expSeries_even_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : �
       ↑((-1 : ℝ) ^ n * ‖q‖ ^ (2 * n) / (2 * n)!) := by
   rw [expSeries_apply_eq]
   have hq2 : q ^ 2 = -normSq q := sq_eq_neg_normSq.mpr hq
-  letI k : ℝ := ↑(2 * n)!
+  let k : ℝ := ↑(2 * n)!
   calc
     k⁻¹ • q ^ (2 * n) = k⁻¹ • (-normSq q) ^ n := by rw [pow_mul, hq2]
     _ = k⁻¹ • ↑((-1 : ℝ) ^ n * ‖q‖ ^ (2 * n)) := ?_
@@ -87,10 +86,10 @@ theorem hasSum_expSeries_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) {c s 
   replace hc := hasSum_coe.mpr hc
   replace hs := (hs.div_const ‖q‖).smul_const q
   refine HasSum.even_add_odd ?_ ?_
-  · convert hc using 1
+  · convert! hc using 1
     ext n : 1
     rw [expSeries_even_of_imaginary hq]
-  · convert hs using 1
+  · convert! hs using 1
     ext n : 1
     rw [expSeries_odd_of_imaginary hq]
 

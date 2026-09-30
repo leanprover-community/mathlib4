@@ -32,7 +32,7 @@ solely on `RootPairing.pairingIn` and `RootPairing.coxeterWeightIn`.
 
 -/
 
-@[expose] public section
+public section
 
 open Module Set Function
 
@@ -44,7 +44,7 @@ namespace RootPairing
 /-- A root pairing is said to be reduced if any linearly dependent pair of roots is related by a
 sign.
 
-TODO Consider redefining this to make it perfectly symemtric between roots and coroots (i.e., so
+TODO Consider redefining this to make it perfectly symmetric between roots and coroots (i.e., so
 that the same demand is made of coroots) and turning `RootPairing.instFlipIsReduced` into a
 convenience constructor. -/
 @[mk_iff] class IsReduced : Prop where
@@ -56,7 +56,7 @@ lemma isReduced_iff' : P.IsReduced ↔ ∀ i j : ι, i ≠ j →
   rw [isReduced_iff]
   refine ⟨fun h i j hij hLin ↦ ?_, fun h i j hLin  ↦ ?_⟩
   · specialize h i j hLin
-    simp_all only [ne_eq, EmbeddingLike.apply_eq_iff_eq, false_or]
+    simp_all
   · rcases eq_or_ne i j with rfl | h'
     · tauto
     · exact Or.inr (h i j h' hLin)
@@ -149,7 +149,7 @@ lemma pairing_smul_root_eq_of_not_linearIndependent [NeZero (2 : R)] [IsDomain R
     [Module.IsTorsionFree R M] (h : ¬ LinearIndependent R ![P.root i, P.root j]) :
     P.pairing j i • P.root i = (2 : R) • P.root j := by
   rw [LinearIndependent.pair_iff] at h
-  push_neg at h
+  push Not at h
   obtain ⟨s, t, h₁, h₂⟩ := h
   replace h₂ : s ≠ 0 := by
     rcases eq_or_ne s 0 with rfl | hs
@@ -160,7 +160,7 @@ lemma pairing_smul_root_eq_of_not_linearIndependent [NeZero (2 : R)] [IsDomain R
     · exact False.elim <| h₂ <| (smul_eq_zero_iff_left <| P.ne_zero i).mp <| by simpa using h₁
     · assumption
   replace h₁ : s • P.root i = -t • P.root j := by rwa [← eq_neg_iff_add_eq_zero, ← neg_smul] at h₁
-  have h₄ : s * 2 = -(t * P.pairing j i) := by simpa using congr_arg (P.coroot' i) h₁
+  have h₄ : s * 2 = -(t * P.pairing j i) := by simpa using congr(P.coroot' i $h₁)
   replace h₁ : (2 : R) • (s • P.root i) = (2 : R) • (-t • P.root j) := by rw [h₁]
   rw [smul_smul, mul_comm, h₄, smul_comm, ← neg_mul, ← smul_smul] at h₁
   exact smul_right_injective M (neg_ne_zero.mpr h₃) h₁
@@ -183,7 +183,7 @@ lemma linearIndependent_iff_coxeterWeight_ne_four :
     LinearIndependent R ![P.root i, P.root j] ↔ P.coxeterWeight i j ≠ 4 := by
   have : IsAddTorsionFree M := .of_isTorsionFree R M
   refine ⟨coxeterWeight_ne_four_of_linearIndependent P, fun h ↦ ?_⟩
-  contrapose! h
+  contrapose h
   have h₁ := P.pairing_smul_root_eq_of_not_linearIndependent h
   rw [LinearIndependent.pair_symm_iff] at h
   have h₂ := P.pairing_smul_root_eq_of_not_linearIndependent h
@@ -205,7 +205,7 @@ instance instFlipIsReduced [P.IsReduced] [IsTorsionFree R N] : P.flip.IsReduced 
   right
   rw [← coxeterWeight_eq_four_iff_not_linearIndependent, coxeterWeight_flip,
     coxeterWeight_eq_four_iff_not_linearIndependent, IsReduced.linearIndependent_iff] at h
-  push_neg at h
+  push Not at h
   simp [P.root_eq_neg_iff.mp (h hij)]
 
 variable (i j)

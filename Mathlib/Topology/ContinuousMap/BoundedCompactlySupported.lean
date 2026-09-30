@@ -21,7 +21,7 @@ open Set BoundedContinuousFunction
 section CompactlySupported
 
 /-- The two-sided ideal of compactly supported functions. -/
-def compactlySupported (α γ : Type*) [TopologicalSpace α] [NonUnitalNormedRing γ] :
+noncomputable def compactlySupported (α γ : Type*) [TopologicalSpace α] [NonUnitalNormedRing γ] :
     TwoSidedIdeal (α →ᵇ γ) :=
   .mk' {z | HasCompactSupport z} .zero .add .neg .mul_left .mul_right
 
@@ -86,7 +86,7 @@ def ofCompactSupport (g : α → γ) (hg₁ : Continuous g) (hg₂ : HasCompactS
   map_bounded' := by
     obtain (hs | hs) := (tsupport g).eq_empty_or_nonempty
     · exact ⟨0, by simp [tsupport_eq_empty_iff.mp hs]⟩
-    · obtain ⟨z, _, hmax⟩ := hg₂.exists_isMaxOn hs <| hg₁.norm.continuousOn
+    · obtain ⟨z, _, hmax⟩ := hg₂.exists_isMaxOn hs hg₁.norm.continuousOn
       refine ⟨2 * ‖g z‖, dist_le_two_norm' fun x ↦ ?_⟩
       by_cases hx : x ∈ tsupport g
       · exact isMaxOn_iff.mp hmax x hx

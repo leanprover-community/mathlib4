@@ -5,7 +5,6 @@ Authors: Jakob von Raumer
 -/
 module
 
-public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
@@ -31,6 +30,7 @@ namespace Preadditive
 
 /-- If `D` is a preadditive category, any fully faithful functor `F : C ⥤ D` induces a preadditive
 structure on `C`. -/
+@[instance_reducible]
 def ofFullyFaithful : Preadditive C where
   homGroup P Q := hF.homEquiv.addCommGroup
   add_comp P Q R f f' g := hF.map_injective (by simp [Equiv.add_def])

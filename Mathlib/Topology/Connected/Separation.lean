@@ -5,7 +5,6 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.Topology.Separation.Hausdorff
 public import Mathlib.Topology.Connected.TotallyDisconnected
 /-!
 
@@ -17,7 +16,7 @@ This file provides an instance `T2Space X` given `TotallySeparatedSpace X`.
 * Move the last part of `Topology/Separation` to this file.
 -/
 
-@[expose] public section
+public section
 
 
 variable {X : Type*} [TopologicalSpace X]

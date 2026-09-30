@@ -34,7 +34,7 @@ public section
 
 assert_not_exists IsDedekindDomain
 
-variable (R A K : Type*) [CommRing R] [CommRing A] [Field K]
+variable (K : Type*) [Field K]
 
 open scoped nonZeroDivisors Polynomial
 
@@ -55,9 +55,6 @@ theorem inv_of_ne_zero {J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) :
 theorem coe_inv_of_ne_zero {J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) :
     (↑J⁻¹ : Submodule R₁ K) = IsLocalization.coeSubmodule K ⊤ / (J : Submodule R₁ K) := by
   simp_rw [inv_of_ne_zero _ h, coe_one, coe_mk, IsLocalization.coeSubmodule_top]
-
-@[deprecated (since := "2025-09-14")] alias inv_nonzero := inv_of_ne_zero
-@[deprecated (since := "2025-09-14")] alias coe_inv_of_nonzero := coe_inv_of_ne_zero
 
 variable {K}
 

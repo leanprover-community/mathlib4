@@ -29,7 +29,7 @@ structure UpperHalfPlane where
 
 @[inherit_doc] scoped[UpperHalfPlane] notation "ℍ" => UpperHalfPlane
 
-open UpperHalfPlane
+open UpperHalfPlane Complex
 
 namespace UpperHalfPlane
 
@@ -37,14 +37,21 @@ attribute [coe] UpperHalfPlane.coe
 
 instance : CoeOut ℍ ℂ := ⟨UpperHalfPlane.coe⟩
 
-/-- Define I := √-1 as an element on the upper half plane. -/
-def I : ℍ := ⟨Complex.I, zero_lt_one⟩
+/-- Define `I := √-1` as an element of the upper half plane. -/
+def I : ℍ := ⟨Complex.I, by simp⟩
+
+/-- Define the cube root of unity `ρ := (-1 + √-3) / 2` as an element of the upper half plane. -/
+def ρ : ℍ := ⟨⟨-1 / 2, Real.sqrt 3 / 2⟩, by positivity⟩
+
+lemma ρ_sq : (ρ : ℂ) ^ 2 = -ρ - 1 := by
+  simp [Complex.ext_iff, pow_two, ρ]
+  grind
+
+lemma norm_ρ : ‖(ρ : ℂ)‖ = 1 := by norm_num [norm_def, normSq, ← pow_two, ρ, div_pow]
 
 instance : Inhabited ℍ := ⟨.I⟩
 
 @[simp, norm_cast] theorem coe_inj {a b : ℍ} : (a : ℂ) = b ↔ a = b := UpperHalfPlane.ext_iff.symm
-
-@[deprecated (since := "2026-01-31")] alias ext_iff' := coe_inj
 
 theorem coe_injective : Function.Injective UpperHalfPlane.coe := fun _ _ ↦ UpperHalfPlane.ext
 
@@ -68,9 +75,6 @@ def re (z : ℍ) :=
 /-- Extensionality lemma in terms of `UpperHalfPlane.re` and `UpperHalfPlane.im`. -/
 theorem ext_re_im {a b : ℍ} (hre : a.re = b.re) (him : a.im = b.im) : a = b :=
   UpperHalfPlane.ext <| Complex.ext hre him
-
-@[deprecated (since := "2026-01-29")]
-alias ext' := ext_re_im
 
 @[simp]
 theorem coe_im (z : ℍ) : (z : ℂ).im = z.im :=
@@ -96,18 +100,13 @@ theorem mk_coe (z : ℍ) (h : 0 < (z : ℂ).im := z.2) : mk z h = z :=
   rfl
 
 @[simp]
-lemma I_im : I.im = 1 := rfl
+lemma I_im : I.im = 1 := Complex.I_im
 
 @[simp]
-lemma I_re : I.re = 0 := rfl
+lemma I_re : I.re = 0 := Complex.I_re
 
 @[simp, norm_cast]
 lemma coe_I : I = Complex.I := rfl
-
-@[deprecated coe_mk (since := "2026-01-29")]
-lemma coe_mk_subtype {z : ℂ} (hz : 0 < z.im) :
-    UpperHalfPlane.coe ⟨z, hz⟩ = z :=
-  rfl
 
 theorem re_add_im (z : ℍ) : (z.re + z.im * Complex.I : ℂ) = z :=
   Complex.re_add_im z
@@ -120,15 +119,27 @@ theorem im_ne_zero (z : ℍ) : z.im ≠ 0 :=
 theorem ne_zero (z : ℍ) : (z : ℂ) ≠ 0 :=
   mt (congr_arg Complex.im) z.im_ne_zero
 
+lemma mem_slitPlane (z : ℍ) : (z : ℂ) ∈ Complex.slitPlane := by
+  simp [Complex.slitPlane, im_ne_zero z]
+
+/-- Criterion for equality in terms of real part and norm. Useful when working with the
+geometry of the fundamental domain. -/
+lemma eq_of_re_of_norm {τ τ' : ℍ} (hre : τ.re = τ'.re) (hnorm : ‖(τ : ℂ)‖ = ‖(τ' : ℂ)‖) :
+    τ = τ' := by
+  apply_fun (· ^ 2) at hnorm
+  simpa [UpperHalfPlane.ext_iff, Complex.ext_iff, hre, Complex.normSq, Complex.sq_norm,
+    ← pow_two, pow_left_inj₀ τ.im_pos.le τ'.im_pos.le two_ne_zero] using hnorm
+
 end UpperHalfPlane
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: `UpperHalfPlane.im`. -/
 @[positivity UpperHalfPlane.im _]
-meta def evalUpperHalfPlaneIm : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalUpperHalfPlaneIm : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(UpperHalfPlane.im $a) =>
     assertInstancesCommute
@@ -137,7 +148,8 @@ meta def evalUpperHalfPlaneIm : PositivityExt where eval {u α} _zα _pα e := d
 
 /-- Extension for the `positivity` tactic: `UpperHalfPlane.coe`. -/
 @[positivity UpperHalfPlane.coe _]
-meta def evalUpperHalfPlaneCoe : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalUpperHalfPlaneCoe : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℂ), ~q(UpperHalfPlane.coe $a) =>
     assertInstancesCommute
@@ -166,11 +178,7 @@ lemma ne_ofReal (z : ℍ) (x : ℝ) : (z : ℂ) ≠ x :=
 
 lemma ne_intCast (z : ℍ) (n : ℤ) : (z : ℂ) ≠ n := mod_cast ne_ofReal z n
 
-@[deprecated (since := "2026-01-29")] alias ne_int := ne_intCast
-
 lemma ne_natCast (z : ℍ) (n : ℕ) : (z : ℂ) ≠ n := mod_cast ne_intCast z n
-
-@[deprecated (since := "2026-01-29")] alias ne_nat := ne_natCast
 
 section PosRealAction
 

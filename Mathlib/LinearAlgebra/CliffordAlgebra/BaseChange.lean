@@ -8,7 +8,6 @@ module
 public import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 public import Mathlib.LinearAlgebra.TensorProduct.Opposite
-public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # The base change of a clifford algebra
@@ -76,14 +75,15 @@ def ofBaseChange (Q : QuadraticForm R V) :
   change algebraMap _ _ z * ofBaseChangeAux A Q 1 = _
   rw [map_one, mul_one]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Convert from the clifford algebra over a base-changed module to the base-changed clifford
 algebra. -/
 def toBaseChange (Q : QuadraticForm R V) :
     CliffordAlgebra (Q.baseChange A) →ₐ[A] A ⊗[R] CliffordAlgebra Q :=
   CliffordAlgebra.lift _ <| by
     refine ⟨TensorProduct.AlgebraTensorModule.map (LinearMap.id : A →ₗ[A] A) (ι Q), ?_⟩
-    letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
-    letI : Invertible (2 : A ⊗[R] CliffordAlgebra Q) :=
+    let : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
+    let : Invertible (2 : A ⊗[R] CliffordAlgebra Q) :=
       (Invertible.map (algebraMap R _) 2).copy 2 (map_ofNat _ _).symm
     suffices hpure_tensor : ∀ v w, (1 * 1) ⊗ₜ[R] (ι Q v * ι Q w) + (1 * 1) ⊗ₜ[R] (ι Q w * ι Q v) =
         QuadraticMap.polarBilin (Q.baseChange A) (1 ⊗ₜ[R] v) (1 ⊗ₜ[R] w) ⊗ₜ[R] 1 by
@@ -118,7 +118,7 @@ theorem toBaseChange_comp_involute (Q : QuadraticForm R V) :
 theorem toBaseChange_involute (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.baseChange A)) :
     toBaseChange A Q (involute x) =
       TensorProduct.map LinearMap.id (involute.toLinearMap) (toBaseChange A Q x) :=
-  DFunLike.congr_fun (toBaseChange_comp_involute A Q) x
+  congr($(toBaseChange_comp_involute A Q) x)
 
 open MulOpposite
 
@@ -142,11 +142,10 @@ theorem toBaseChange_comp_reverseOp (Q : QuadraticForm R V) :
 theorem toBaseChange_reverse (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.baseChange A)) :
     toBaseChange A Q (reverse x) =
       TensorProduct.map LinearMap.id reverse (toBaseChange A Q x) := by
-  have := DFunLike.congr_fun (toBaseChange_comp_reverseOp A Q) x
-  refine (congr_arg unop this).trans ?_; clear this
-  refine (LinearMap.congr_fun (TensorProduct.AlgebraTensorModule.map_comp _ _ _ _).symm _).trans ?_
-  rw [reverse, ← AlgEquiv.toLinearMap, ← AlgEquiv.toLinearEquiv_toLinearMap,
-    AlgEquiv.toLinearEquiv_toOpposite]
+  have := congr($(toBaseChange_comp_reverseOp A Q) x)
+  refine congr(unop $this).trans ?_; clear this
+  refine congr($((TensorProduct.AlgebraTensorModule.map_comp _ _ _ _).symm) _).trans ?_
+  rw [reverse, AlgEquiv.toAlgHom_toLinearMap, AlgEquiv.toLinearEquiv_toOpposite]
   dsimp
   -- `simp` fails here due to a timeout looking for a `Subsingleton` instance!?
   rw [LinearEquiv.self_trans_symm]
@@ -161,7 +160,7 @@ theorem toBaseChange_comp_ofBaseChange (Q : QuadraticForm R V) :
 
 @[simp] theorem toBaseChange_ofBaseChange (Q : QuadraticForm R V) (x : A ⊗[R] CliffordAlgebra Q) :
     toBaseChange A Q (ofBaseChange A Q x) = x :=
-  AlgHom.congr_fun (toBaseChange_comp_ofBaseChange A Q :) x
+  congr($(toBaseChange_comp_ofBaseChange A Q) x)
 
 theorem ofBaseChange_comp_toBaseChange (Q : QuadraticForm R V) :
     (ofBaseChange A Q).comp (toBaseChange A Q) = AlgHom.id _ _ := by
@@ -173,10 +172,10 @@ theorem ofBaseChange_comp_toBaseChange (Q : QuadraticForm R V) :
 @[simp] theorem ofBaseChange_toBaseChange
     (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.baseChange A)) :
     ofBaseChange A Q (toBaseChange A Q x) = x :=
-  AlgHom.congr_fun (ofBaseChange_comp_toBaseChange A Q :) x
+  congr($(ofBaseChange_comp_toBaseChange A Q) x)
 
 /-- Base-changing the vector space of a clifford algebra is isomorphic as an A-algebra to
-base-changing the clifford algebra itself; <|Cℓ(A ⊗_R V, Q_A) ≅ A ⊗_R Cℓ(V, Q)<|.
+base-changing the clifford algebra itself; $<|Cℓ(A ⊗_R V, Q_A) ≅ A ⊗_R Cℓ(V, Q)<|$.
 
 This is `CliffordAlgebra.toBaseChange` and `CliffordAlgebra.ofBaseChange` as an equivalence. -/
 @[simps!]

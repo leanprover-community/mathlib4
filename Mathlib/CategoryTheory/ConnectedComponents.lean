@@ -5,10 +5,9 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.Data.List.Chain
+import Mathlib.Data.List.Chain
 public import Mathlib.CategoryTheory.IsConnected
 public import Mathlib.CategoryTheory.Sigma.Basic
-public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
 /-!
 # Connected components of a category
@@ -153,6 +152,8 @@ theorem inclusion_comp_decomposedTo (j : ConnectedComponents J) :
     inclusion j ⋙ decomposedTo J = ConnectedComponents.ι j :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 instance : (decomposedTo J).Full where
   map_surjective := by
     rintro ⟨j', X, hX⟩ ⟨k', Y, hY⟩ f

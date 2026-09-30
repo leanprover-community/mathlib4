@@ -5,9 +5,8 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.LinearAlgebra.Quotient.Basic
+import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Ideal.Colon
-public import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # Primary submodules
@@ -36,7 +35,7 @@ to define the nilpotency of `r : R`.
 
 @[expose] public section
 
-open Pointwise
+open scoped Pointwise
 
 namespace Submodule
 
@@ -57,7 +56,7 @@ variable {S T : Submodule R M}
 lemma IsPrimary.ne_top (h : S.IsPrimary) : S ≠ ⊤ := h.left
 
 lemma IsPrimary.mem_or_mem (h : S.IsPrimary) {r : R} {m : M} (hrm : r • m ∈ S) :
-    m ∈ S ∨ r ∈ (S.colon ⊤).radical :=
+    m ∈ S ∨ r ∈ (S.colon Set.univ).radical :=
   h.right hrm
 
 protected lemma IsPrimary.inf (hS : S.IsPrimary) (hT : T.IsPrimary)
@@ -101,6 +100,12 @@ theorem IsPrimary.radical_colon_singleton_of_notMem (hI : S.IsPrimary) {m : M} (
   le_antisymm (radical_le_radical_iff.mpr fun _ hy ↦
     (hI.2 (Submodule.mem_colon_singleton.mp hy)).resolve_left hm)
     (radical_mono (Submodule.colon_mono le_rfl (Set.subset_univ {m})))
+
+theorem IsPrimary.radical_colon_singleton_eq_ite (hS : S.IsPrimary) (m : M) [Decidable (m ∈ S)] :
+    radical (S.colon {m}) = if m ∈ S then ⊤ else radical (S.colon Set.univ) := by
+  split_ifs with hm
+  · rwa [radical_eq_top, colon_eq_top_iff_subset, Set.singleton_subset_iff]
+  · exact hS.radical_colon_singleton_of_notMem hm
 
 end CommSemiring
 

@@ -23,8 +23,6 @@ negation. This generalizes the usual absolute value on real numbers (`|x| = max 
 
 public section
 
-open Function
-
 variable {G : Type*}
 
 section LinearOrderedCommGroup
@@ -74,8 +72,6 @@ theorem inv_le_of_mabs_le (h : |a|ₘ ≤ b) : b⁻¹ ≤ a :=
 theorem le_of_mabs_le (h : |a|ₘ ≤ b) : a ≤ b :=
   (mabs_le.mp h).2
 
-@[deprecated (since := "2025-08-14")] alias mabs_mul := mabs_mul_le
-
 @[to_additive]
 theorem mabs_mul' (a b : G) : |a|ₘ ≤ |b|ₘ * |b * a|ₘ := by simpa using mabs_mul_le b⁻¹ (b * a)
 
@@ -94,7 +90,7 @@ theorem mabs_div_lt_iff : |a / b|ₘ < c ↔ a / b < c ∧ b / a < c := by
 
 @[to_additive]
 theorem div_le_of_mabs_div_le_left (h : |a / b|ₘ ≤ c) : b / c ≤ a :=
-  div_le_comm.1 <| (mabs_div_le_iff.1 h).2
+  div_le_comm.1 (mabs_div_le_iff.1 h).2
 
 @[to_additive]
 theorem div_le_of_mabs_div_le_right (h : |a / b|ₘ ≤ c) : a / c ≤ b :=
@@ -102,7 +98,7 @@ theorem div_le_of_mabs_div_le_right (h : |a / b|ₘ ≤ c) : a / c ≤ b :=
 
 @[to_additive]
 theorem div_lt_of_mabs_div_lt_left (h : |a / b|ₘ < c) : b / c < a :=
-  div_lt_comm.1 <| (mabs_div_lt_iff.1 h).2
+  div_lt_comm.1 (mabs_div_lt_iff.1 h).2
 
 @[to_additive]
 theorem div_lt_of_mabs_div_lt_right (h : |a / b|ₘ < c) : a / c < b :=
@@ -247,7 +243,7 @@ end LinearOrderedCommGroup
 
 section LinearOrderedAddCommGroup
 
-variable [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] {a b c : G}
+variable [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] {a : G}
 
 @[to_additive]
 theorem apply_abs_le_mul_of_one_le' {H : Type*} [MulOneClass H] [LE H]

@@ -100,17 +100,17 @@ namespace IsSymm
 theorem isRefl (H : B.IsSymm) : B.IsRefl := fun x y H1 => H.eq x y ▸ H1
 
 protected theorem add {B₁ B₂ : BilinForm R M} (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) :
-    (B₁ + B₂).IsSymm := ⟨fun x y => (congr_arg₂ (· + ·) (hB₁.eq x y) (hB₂.eq x y) :)⟩
+    (B₁ + B₂).IsSymm := ⟨fun x y => congr($(hB₁.eq x y) + $(hB₂.eq x y))⟩
 
 protected theorem sub {B₁ B₂ : BilinForm R₁ M₁} (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) :
-    (B₁ - B₂).IsSymm := ⟨fun x y => (congr_arg₂ Sub.sub (hB₁.eq x y) (hB₂.eq x y) :)⟩
+    (B₁ - B₂).IsSymm := ⟨fun x y => congr(Sub.sub $(hB₁.eq x y) $(hB₂.eq x y))⟩
 
 protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsSymm) : (-B).IsSymm := ⟨fun x y =>
-  congr_arg Neg.neg (hB.eq x y)⟩
+  congr(-$(hB.eq x y))⟩
 
 protected theorem smul {α} [Monoid α] [DistribMulAction α R] [SMulCommClass R α R] (a : α)
     {B : BilinForm R M} (hB : B.IsSymm) : (a • B).IsSymm := ⟨fun x y =>
-  congr_arg (a • ·) (hB.eq x y)⟩
+  congr(a • $(hB.eq x y))⟩
 
 /-- The restriction of a symmetric bilinear form on a submodule is also symmetric. -/
 theorem restrict {B : BilinForm R M} (b : B.IsSymm) (W : Submodule R M) :
@@ -247,17 +247,17 @@ theorem eq_of_add_add_eq_zero [IsCancelAdd R] {a b c : M} (H : B.IsAlt) (hAdd : 
     B a b = B b c := LinearMap.IsAlt.eq_of_add_add_eq_zero H hAdd
 
 protected theorem add {B₁ B₂ : BilinForm R M} (hB₁ : B₁.IsAlt) (hB₂ : B₂.IsAlt) : (B₁ + B₂).IsAlt :=
-  fun x => (congr_arg₂ (· + ·) (hB₁ x) (hB₂ x) :).trans <| add_zero _
+  fun x => congr($(hB₁ x) + $(hB₂ x)).trans <| add_zero _
 
 protected theorem sub {B₁ B₂ : BilinForm R₁ M₁} (hB₁ : B₁.IsAlt) (hB₂ : B₂.IsAlt) :
-    (B₁ - B₂).IsAlt := fun x => (congr_arg₂ Sub.sub (hB₁ x) (hB₂ x)).trans <| sub_zero _
+    (B₁ - B₂).IsAlt := fun x => congr(Sub.sub $(hB₁ x) $(hB₂ x)).trans <| sub_zero _
 
 protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsAlt) : (-B).IsAlt := fun x =>
   neg_eq_zero.mpr <| hB x
 
 protected theorem smul {α} [Monoid α] [DistribMulAction α R] [SMulCommClass R α R] (a : α)
     {B : BilinForm R M} (hB : B.IsAlt) : (a • B).IsAlt := fun x =>
-  (congr_arg (a • ·) (hB x)).trans <| smul_zero _
+  congr(a • $(hB x)).trans <| smul_zero _
 
 end IsAlt
 
@@ -316,7 +316,7 @@ theorem Nondegenerate.congr {B : BilinForm R M} (e : M ≃ₗ[R] M') (h : B.Nond
 theorem nondegenerate_congr_iff {B : BilinForm R M} (e : M ≃ₗ[R] M') :
     (congr e B).Nondegenerate ↔ B.Nondegenerate :=
   ⟨fun h => by
-    convert h.congr e.symm
+    convert! h.congr e.symm
     rw [congr_congr, e.self_trans_symm, congr_refl, LinearEquiv.refl_apply], Nondegenerate.congr e⟩
 
 theorem Nondegenerate.ker_eq_bot {B : BilinForm R M} (h : B.Nondegenerate) :
@@ -348,7 +348,7 @@ variable [FiniteDimensional K V]
 /-- Given a nondegenerate bilinear form `B` on a finite-dimensional vector space, `B.toDual` is
 the linear equivalence between a vector space and its dual. -/
 noncomputable def toDual (B : BilinForm K V) (b : B.Nondegenerate) : V ≃ₗ[K] Module.Dual K V :=
-  B.linearEquivOfInjective (LinearMap.ker_eq_bot.mp <| b.ker_eq_bot)
+  B.linearEquivOfInjective (LinearMap.ker_eq_bot.mp b.ker_eq_bot)
     Subspace.dual_finrank_eq.symm
 
 theorem toDual_def {B : BilinForm K V} (b : B.Nondegenerate) {m n : V} : B.toDual b m n = B m n :=
@@ -360,8 +360,6 @@ lemma apply_toDual_symm_apply {B : BilinForm K V} {hB : B.Nondegenerate}
     B ((B.toDual hB).symm f) v = f v := by
   change B.toDual hB ((B.toDual hB).symm f) v = f v
   simp only [LinearEquiv.apply_symm_apply]
-
-@[deprecated (since := "2026-01-17")] alias nonDegenerateFlip_iff := nondegenerate_flip_iff
 
 end FiniteDimensional
 
@@ -412,7 +410,7 @@ lemma dualBasis_flip_dualBasis (hB : B.Nondegenerate) (b : Basis ι K V) :
 lemma dualBasis_dualBasis (hB : B.Nondegenerate) (hB' : B.IsSymm)
     (b : Basis ι K V) :
     B.dualBasis hB (B.dualBasis hB b) = b := by
-  convert dualBasis_dualBasis_flip hB.flip b
+  convert! dualBasis_dualBasis_flip hB.flip b
   rwa [eq_comm, ← isSymm_iff_flip]
 
 lemma dualBasis_involutive (hB : B.Nondegenerate) (hB' : B.IsSymm) :

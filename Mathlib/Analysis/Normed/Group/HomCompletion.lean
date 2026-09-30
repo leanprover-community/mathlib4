@@ -63,7 +63,7 @@ variable {G : Type*} [SeminormedAddCommGroup G] {H : Type*} [SeminormedAddCommGr
 /-- The normed group hom induced between completions. -/
 def NormedAddGroupHom.completion (f : NormedAddGroupHom G H) :
     NormedAddGroupHom (Completion G) (Completion H) :=
-  .ofLipschitz (f.toAddMonoidHom.completion f.continuous) f.lipschitz.completion_map
+  .ofLipschitz (f.toAddMonoidHom.completion f.continuous) f.lipschitzWith.completion_map
 
 theorem NormedAddGroupHom.completion_def (f : NormedAddGroupHom G H) (x : Completion G) :
     f.completion x = Completion.map f x :=
@@ -127,7 +127,7 @@ theorem NormedAddGroupHom.zero_completion : (0 : NormedAddGroupHom G H).completi
 def NormedAddCommGroup.toCompl : NormedAddGroupHom G (Completion G) where
   toFun := (↑)
   map_add' := Completion.toCompl.map_add
-  bound' := ⟨1, by simp [le_refl]⟩
+  bound' := ⟨1, by simp⟩
 
 open NormedAddCommGroup
 
@@ -188,7 +188,7 @@ variable {H : Type*} [SeminormedAddCommGroup H] [T0Space H] [CompleteSpace H]
 def NormedAddGroupHom.extension (f : NormedAddGroupHom G H) : NormedAddGroupHom (Completion G) H :=
   .ofLipschitz (f.toAddMonoidHom.extension f.continuous) <|
     let _ := MetricSpace.ofT0PseudoMetricSpace H
-    f.lipschitz.completion_extension
+    f.lipschitzWith.completion_extension
 
 theorem NormedAddGroupHom.extension_def (f : NormedAddGroupHom G H) (v : G) :
     f.extension v = Completion.extension f v :=

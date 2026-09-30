@@ -5,7 +5,6 @@ Authors: Simon Hudon, Harun Khan, Alex Keizer
 -/
 module
 
-public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Algebra.Ring.Equiv
 public import Mathlib.Data.ZMod.Defs
 public import Mathlib.Data.Int.Cast.Lemmas
@@ -81,7 +80,8 @@ lemma toFin_pow (x : BitVec w) (n : ℕ) : toFin (x ^ n) = x.toFin ^ n := by
 -/
 
 -- Verify that the `HPow` instance from Lean agrees definitionally with the instance via `Monoid`.
-example : @instHPow (Fin (2 ^ w)) ℕ Monoid.toNatPow = Lean.Grind.Fin.instHPowFinNatOfNeZero := rfl
+example : @instHPow (Fin (2 ^ w)) ℕ NPow.toPow =
+    @instHPow (Fin (2 ^ w)) ℕ (@_root_.instPowNat _ Fin.instNatPow) := rfl
 
 instance : CommSemiring (BitVec w) :=
   open Fin.CommRing in

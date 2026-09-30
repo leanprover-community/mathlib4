@@ -5,9 +5,7 @@ Authors: Joachim Breitner
 -/
 module
 
-public import Mathlib.Probability.ProbabilityMassFunction.Basic
 public import Mathlib.Probability.ProbabilityMassFunction.Constructions
-public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 /-!
 # Integrals with a measure derived from probability mass functions.
@@ -33,7 +31,7 @@ theorem integral_eq_tsum (p : PMF α) (f : α → E) (hf : Integrable f p.toMeas
     ∫ a, f a ∂(p.toMeasure) = ∑' a, (p a).toReal • f a := calc
   _ = ∫ a in p.support, f a ∂(p.toMeasure) := by rw [restrict_toMeasure_support p]
   _ = ∑' (a : support p), (p.toMeasure {a.val}).toReal • f a := by
-    apply integral_countable f p.support_countable
+    apply setIntegral_countable f p.support_countable
     rwa [IntegrableOn, restrict_toMeasure_support p]
   _ = ∑' (a : support p), (p a).toReal • f a := by
     congr with x; congr 2
@@ -46,7 +44,7 @@ theorem integral_eq_tsum (p : PMF α) (f : α → E) (hf : Integrable f p.toMeas
 
 theorem integral_eq_sum [Fintype α] (p : PMF α) (f : α → E) :
     ∫ a, f a ∂(p.toMeasure) = ∑ a, (p a).toReal • f a := by
-  rw [integral_fintype _ .of_finite]
+  rw [integral_fintype .of_finite]
   congr with x
   rw [measureReal_def]
   congr 2
@@ -54,7 +52,9 @@ theorem integral_eq_sum [Fintype α] (p : PMF α) (f : α → E) :
 
 end General
 
+@[deprecated ProbabilityTheory.integral_bernoulliMeasure +typeChanged (since := "2026-04-07")]
 theorem bernoulli_expectation {p : ℝ≥0} (h : p ≤ 1) :
-    ∫ b, cond b 1 0 ∂((bernoulli p h).toMeasure) = p.toReal := by simp [integral_eq_sum]
+    ∫ b, cond b 1 0 ∂((bernoulli p h).toMeasure) = p.toReal := by
+  simp [integral_eq_sum, bernoulli_apply]
 
 end PMF

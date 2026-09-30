@@ -66,7 +66,7 @@ section Profinite
 def FiniteGaloisIntermediateField.finGaloisGroup (L : FiniteGaloisIntermediateField k K) :
     FiniteGrp :=
   letI := AlgEquiv.fintype k L
-  FiniteGrp.of Gal(L/k)
+  ↧Gal(L/k)
 
 /-- For `FiniteGaloisIntermediateField` s `L₁` and `L₂` with `L₂ ≤ L₁`
   the restriction homomorphism from `Gal(L₁/k)` to `Gal(L₂/k)` -/
@@ -165,10 +165,11 @@ theorem restrictNormalHom_continuous (L : IntermediateField k K) [Normal k L] :
     exact SetLike.coe_eq_coe.mp this
   · exact ⟨IntermediateField.fixingSubgroup_isOpen (IntermediateField.lift L'), congrFun rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma algEquivToLimit_continuous : Continuous (algEquivToLimit k K) := by
   rw [continuous_induced_rng]
   refine continuous_pi (fun L ↦ ?_)
-  convert restrictNormalHom_continuous L.unop.1
+  convert! restrictNormalHom_continuous L.unop.1
   exact (DiscreteTopology.eq_bot (α := L.unop ≃ₐ[k] L.unop)).symm
 
 /-- The projection map from `lim Gal(L/k)` to a specific `Gal(L/k)`. -/
@@ -189,8 +190,8 @@ lemma proj_of_le (L : FiniteGaloisIntermediateField k K)
     (proj L g x).val = (proj L' g ⟨x, h x.2⟩).val := by
   induction L with | _ L => ?_
   induction L' with | _ L' => ?_
-  letI : Algebra L L' := RingHom.toAlgebra (Subsemiring.inclusion h)
-  letI : IsScalarTower k L L' := IsScalarTower.of_algebraMap_eq (congrFun rfl)
+  let : Algebra L L' := RingHom.toAlgebra (Subsemiring.inclusion h)
+  let : IsScalarTower k L L' := IsScalarTower.of_algebraMap_eq (congrFun rfl)
   rw [← finGaloisGroupFunctor_map_proj_eq_proj g h.hom]
   change (algebraMap L' K (algebraMap L L' (AlgEquiv.restrictNormal (proj (mk L') g) L x))) = _
   rw [AlgEquiv.restrictNormal_commutes (proj (mk L') g) L]
@@ -302,7 +303,7 @@ lemma isOpen_mulEquivToLimit_image_fixingSubgroup [IsGalois k K]
     exact (isOpen_induced <| (continuous_apply (op L)).isOpen_preimage {1} trivial)
   ext x
   obtain ⟨σ, rfl⟩ := (mulEquivToLimit k K).surjective x
-  simpa using FiniteGaloisIntermediateField.mem_fixingSubgroup_iff _ _
+  simpa using! FiniteGaloisIntermediateField.mem_fixingSubgroup_iff σ L
 
 lemma mulEquivToLimit_symm_continuous [IsGalois k K] : Continuous (mulEquivToLimit k K).symm := by
   apply continuous_of_continuousAt_one _ (continuousAt_def.mpr _)
@@ -331,7 +332,7 @@ instance [IsGalois k K] : CompactSpace Gal(K/k) :=
 /-- `Gal(K/k)` as a profinite group as there is
 a `ContinuousMulEquiv` to a `ProfiniteGrp` given above -/
 noncomputable def profiniteGalGrp [IsGalois k K] : ProfiniteGrp :=
-  ProfiniteGrp.of Gal(K/k)
+  ↧Gal(K/k)
 
 /-- The categorical isomorphism between `profiniteGalGrp` and `lim Gal(L/k)` where `L` is a
   `FiniteGaloisIntermediateField` ordered by inverse inclusion -/

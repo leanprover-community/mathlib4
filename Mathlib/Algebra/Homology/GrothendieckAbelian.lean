@@ -19,7 +19,7 @@ category (with `IsGrothendieckAbelian.{w} C`), the category
 
 -/
 
-@[expose] public section
+public section
 
 universe w w' t v u
 
@@ -40,7 +40,7 @@ instance locallySmall [LocallySmall.{w} C] [Small.{w} ι] :
     have hemb : Function.Injective emb := fun f g h ↦ by
       ext i
       obtain ⟨i, rfl⟩ := (equivShrink.{w} _).symm.surjective i
-      simpa [emb] using congr_fun h i
+      simpa [emb] using congr($h i)
     apply small_of_injective hemb
 
 instance [HasFilteredColimitsOfSize.{w, w'} C] :
@@ -56,7 +56,7 @@ instance hasExactColimitsOfShape (J : Type w) [Category.{w'} J] [HasFiniteLimits
       exact (IsLimit.postcomposeHomEquiv (Functor.isoWhiskerLeft F e) _).1
         (IsLimit.ofIsoLimit
           (isLimitOfPreserves ((Functor.whiskeringRight J _ _).obj (eval C c i) ⋙ colim) hc)
-          (Cones.ext (e.symm.app _) (fun k ↦ (NatIso.naturality_2 e.symm _).symm))))⟩⟩⟩⟩
+          (Cone.ext (e.symm.app _) (fun k ↦ (NatIso.naturality_2 e.symm _).symm))))⟩⟩⟩⟩
 
 instance ab5OfSize [HasFilteredColimitsOfSize.{w', w} C] [HasFiniteLimits C]
     [AB5OfSize.{w', w} C] :

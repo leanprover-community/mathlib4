@@ -32,8 +32,6 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-open Category
-
 variable (C : Type u₁) [Category.{v₁} C]
 variable (D : Type u₂) [Category.{v₂} D]
 variable {E : Type u₃} [Category.{v₃} E]
@@ -76,8 +74,11 @@ its category structure.
 def Skeleton : Type u₁ := InducedCategory (C := Quotient (isIsomorphicSetoid C)) C Quotient.out
 deriving
   Category,
-  [Inhabited C] → Inhabited _,
-  (α : Sort _) → [CoeSort C α] → CoeSort _ α
+  [Inhabited C] → Inhabited _
+
+-- Without this we get errors in Mathlib/RingTheory/PicardGroup.lean
+set_option backward.inferInstanceAs.wrap.data false in
+deriving instance (α : Sort _) → [CoeSort C α] → CoeSort _ α for Skeleton C
 
 end
 
@@ -109,15 +110,13 @@ abbrev toSkeleton (X : C) : Skeleton C := ⟦X⟧
 noncomputable def fromSkeletonToSkeletonIso (X : C) : (fromSkeleton C).obj (toSkeleton X) ≅ X :=
   Nonempty.some (Quotient.mk_out X)
 
-@[deprecated (since := "2025-12-18")] alias preCounitIso :=
-  fromSkeletonToSkeletonIso
-
 @[reassoc, simp]
 lemma Skeleton.comp_hom {X Y Z : Skeleton C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom = f.hom ≫ g.hom := rfl
 
 variable (C)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- An inverse to `fromSkeleton C` that forms an equivalence with it. -/
 @[simps] noncomputable def toSkeletonFunctor : C ⥤ Skeleton C where
   obj := toSkeleton
@@ -126,6 +125,8 @@ variable (C)
   map_id _ := by aesop
   map_comp _ _ := InducedCategory.hom_ext (by simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence between the skeleton and the category itself. -/
 @[simps] noncomputable def skeletonEquivalence : Skeleton C ≌ C where
   functor := fromSkeleton C
@@ -136,10 +137,11 @@ variable (C)
   counitIso := NatIso.ofComponents fromSkeletonToSkeletonIso
   functor_unitIso_comp _ := Iso.inv_hom_id _
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem skeleton_skeletal : Skeletal (Skeleton C) := by
   rintro X Y ⟨h⟩
   have : X.out ≈ Y.out := ⟨(fromSkeleton C).mapIso h⟩
-  simpa using Quotient.sound this
+  simpa using! Quotient.sound this
 
 /-- The `skeleton` of `C` given by choice is a skeleton of `C`. -/
 lemma skeleton_isSkeleton : IsSkeletonOf C (Skeleton C) (fromSkeleton C) where
@@ -178,12 +180,14 @@ lemma mapSkeleton_obj_toSkeleton (X : C) :
     F.mapSkeleton.obj (toSkeleton X) = toSkeleton (F.obj X) :=
   congr_toSkeleton_of_iso <| F.mapIso <| fromSkeletonToSkeletonIso X
 
-instance [F.Full] : F.mapSkeleton.Full := by unfold mapSkeleton; infer_instance
+instance [F.Full] : F.mapSkeleton.Full := inferInstanceAs <| (_ ⋙ _).Full
 
-instance [F.Faithful] : F.mapSkeleton.Faithful := by unfold mapSkeleton; infer_instance
+instance [F.Faithful] : F.mapSkeleton.Faithful := inferInstanceAs <| (_ ⋙ _).Faithful
 
-instance [F.EssSurj] : F.mapSkeleton.EssSurj := by unfold mapSkeleton; infer_instance
+instance [F.EssSurj] : F.mapSkeleton.EssSurj := inferInstanceAs <| (_ ⋙ _).EssSurj
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- A natural isomorphism between `X ↦ ⟦X⟧ ↦ ⟦FX⟧` and `X ↦ FX ↦ ⟦FX⟧`. On the level of
 categories, these are `C ⥤ Skeleton C ⥤ Skeleton D` and `C ⥤ D ⥤ Skeleton D`. So this says that
 the square formed by these 4 objects and 4 functors commutes. -/
@@ -197,7 +201,7 @@ lemma mapSkeleton_injective [F.Full] [F.Faithful] : Function.Injective F.mapSkel
   fun _ _ h ↦ skeleton_skeletal C ⟨F.mapSkeleton.preimageIso <| eqToIso h⟩
 
 lemma mapSkeleton_surjective [F.EssSurj] : Function.Surjective F.mapSkeleton.obj :=
-  fun Y ↦ let ⟨X, h⟩ := EssSurj.mem_essImage Y; ⟨X, skeleton_skeletal D h⟩
+  fun Y ↦ let ⟨X, h⟩ := EssSurj.mem_essImage F.mapSkeleton Y; ⟨X, skeleton_skeletal D h⟩
 
 end Functor
 
@@ -216,6 +220,7 @@ variable (C D)
 preorder with nice definitional properties, but is only really appropriate for thin categories.
 If your original category is not thin, you probably want to be using `Skeleton` instead of this.
 -/
+@[implicit_reducible]
 def ThinSkeleton : Type u₁ :=
   Quotient (isIsomorphicSetoid C)
 
@@ -242,7 +247,7 @@ instance ThinSkeleton.preorder : Preorder (ThinSkeleton C) where
   le_trans a b c := Quotient.inductionOn₃ a b c fun _ _ _ => Nonempty.map2 (· ≫ ·)
 
 /-- The functor from a category to its thin skeleton. -/
-@[simps]
+@[simps, implicit_reducible]
 def toThinSkeleton : C ⥤ ThinSkeleton C where
   obj := ThinSkeleton.mk
   map f := homOfLE (Nonempty.intro f)
@@ -421,8 +426,6 @@ def lowerAdjunction (R : D ⥤ C) (L : C ⥤ D) (h : L ⊣ R) :
         exact Quotient.recOnSubsingleton X fun x => homOfLE ⟨h.counit.app x⟩ }
 
 end ThinSkeleton
-
-open ThinSkeleton
 
 section
 
