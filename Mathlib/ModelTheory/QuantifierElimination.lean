@@ -246,7 +246,7 @@ private theorem exists_model_realize_of_forall_not_imp_not
     intro M v xs hextra
     rw [BoundedFormula.realize_not]
     intro hθ
-    letI : (constantsOn α).Structure M := constantsOn.structure v
+    let : (constantsOn α).Structure M := constantsOn.structure v
     have hθall : ∀ q ∈ lqfs, BoundedFormula.Realize q.1 v xs :=
       (realize_qfConj lqfs v xs).mp hθ
     have hbase : ∀ τ ∈ base, M ⊨ τ := by
@@ -266,10 +266,10 @@ private theorem exists_model_realize_of_forall_not_imp_not
     exact hs (Theory.Model.isSatisfiable M)
   -- Reduce a model to an `L`-structure modelling `T` and read off its constants as `v`.
   obtain ⟨K⟩ := hsat
-  letI : L.Structure K := (L.lhomWithConstants α).reduct K
-  haveI : T.Model K := (LHom.onTheory_model _ _).mp <| K.is_model.mono fun _ hσ =>
+  let : L.Structure K := (L.lhomWithConstants α).reduct K
+  have : T.Model K := (LHom.onTheory_model _ _).mp <| K.is_model.mono fun _ hσ =>
     Set.mem_iUnion.mpr ⟨none, .inl hσ⟩
-  haveI : (L.lhomWithConstants α).IsExpansionOn K := LHom.isExpansionOn_reduct _ _
+  have : (L.lhomWithConstants α).IsExpansionOn K := LHom.isExpansionOn_reduct _ _
   refine ⟨Theory.ModelType.of T K, fun i => (L.con i : K), ?_, fun q => ?_⟩
   · exact (Formula.realize_equivSentence (M := K) extra).mp
       (K.is_model.realize_of_mem _ (Set.mem_iUnion.mpr ⟨none, by simp [U, base]⟩))
