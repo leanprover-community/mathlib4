@@ -88,8 +88,8 @@ lemma isHyperbolicWith_of_subsingleton [h : Subsingleton X] : IsHyperbolicWith X
 
 /-- A bounded space is δ-hyperbolic with respect to its diameter. -/
 theorem isHyperbolicWith_diam_univ [BoundedSpace X] :
-    IsHyperbolicWith X (diam (Set.univ : Set X)) := by
-  grind [dist_le_diam_of_mem]
+    IsHyperbolicWith X (diam (Set.univ : Set X)) :=
+  isHyperbolicWith_of_forall_dist_le (by grind [dist_le_diam_of_mem])
 
 /-! ### Hyperbolic spaces -/
 
