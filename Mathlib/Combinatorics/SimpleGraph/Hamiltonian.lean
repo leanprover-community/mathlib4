@@ -378,7 +378,7 @@ theorem isHamiltonian_sup_edge_iff_of_card_le_degree_add_degree [DecidableEq V] 
   -- Using those two edges and `p` we can construct a Hamiltonian cycle without `(u, v)`,
   refine ⟨v, p.take i |>.reverse.cons hib |>.append <| p.drop (i + 1) |>.cons hia, ?_⟩
   rw [Walk.isHamiltonianCycle_iff_isCycle_and_length_eq, Walk.isCycle_iff_isPath_tail_and_le_length]
-  simp [Walk.isPath_def, Walk.support_append, List.nodup_append]
+  simp [Walk.isPath_def, Walk.support_append, -Walk.drop_support_eq_support_drop_min]
   grind [Walk.support_take_append_support_drop, hp.length_eq, hp.isPath.support_nodup]
 
 open scoped Classical in
