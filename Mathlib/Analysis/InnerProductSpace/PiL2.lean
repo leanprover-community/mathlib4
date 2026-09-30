@@ -6,13 +6,10 @@ Authors: Joseph Myers, Sébastien Gouëzel, Heather Macbeth
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
-public import Mathlib.Analysis.Normed.Lp.PiLp
 public import Mathlib.Analysis.Normed.Lp.Matrix
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.UnitaryGroup
-public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Util.Superscript
-public import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
+import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
 
 /-!
 # `L²` inner product space structure on finite products of inner product spaces
@@ -202,7 +199,7 @@ variable [Fintype ι]
 @[simp]
 theorem finrank_euclideanSpace :
     Module.finrank 𝕜 (EuclideanSpace 𝕜 ι) = Fintype.card ι := by
-  convert! (WithLp.linearEquiv 2 𝕜 (ι → 𝕜)).finrank_eq
+  convert (WithLp.linearEquiv 2 𝕜 (ι → 𝕜)).finrank_eq
   simp
 
 theorem finrank_euclideanSpace_fin {n : ℕ} :
@@ -941,7 +938,7 @@ theorem OrthonormalBasis.toMatrix_orthonormalBasis_conjTranspose_mul_self [Finty
     (a : OrthonormalBasis ι' 𝕜 E) (b : OrthonormalBasis ι 𝕜 E) :
     (a.toBasis.toMatrix b)ᴴ * a.toBasis.toMatrix b = 1 := by
   ext i j
-  convert! a.repr.inner_map_map (b i) (b j)
+  convert a.repr.inner_map_map (b i) (b j)
   · simp only [Matrix.mul_apply, Matrix.conjTranspose_apply, star_def, PiLp.inner_apply,
       inner_apply']
     congr

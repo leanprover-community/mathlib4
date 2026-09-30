@@ -5,12 +5,12 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Lie.Derivation.Killing
+import Mathlib.Algebra.Lie.Derivation.Killing
 public import Mathlib.Algebra.Lie.Killing
 public import Mathlib.Algebra.Lie.Sl2
 public import Mathlib.Algebra.Lie.Weights.Chain
-public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
-public import Mathlib.LinearAlgebra.JordanChevalley
+import Mathlib.LinearAlgebra.Eigenspace.Semisimple
+import Mathlib.LinearAlgebra.JordanChevalley
 
 /-!
 # Roots of Lie algebras with non-degenerate Killing forms
@@ -160,7 +160,7 @@ variable [FiniteDimensional K L] [IsKilling K L]
 instance : InvolutiveNeg (Weight K H L) where
   neg α := ⟨-α, by
     by_cases hα : α.IsZero
-    · convert! α.genWeightSpace_ne_bot; rw [hα, neg_zero]
+    · convert α.genWeightSpace_ne_bot; rw [hα, neg_zero]
     · intro e
       obtain ⟨x, hx, x_ne0⟩ := α.exists_ne_zero
       have := mem_ker_killingForm_of_mem_rootSpace_of_forall_rootSpace_neg K L H hx

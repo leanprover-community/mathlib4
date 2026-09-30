@@ -5,8 +5,8 @@ Authors: Yuma Mizuno, Ralf Stephan
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Rat
-public import Mathlib.Data.Nat.Cast.Field
+import Mathlib.Algebra.Algebra.Rat
+import Mathlib.Data.Nat.Cast.Field
 public import Mathlib.RingTheory.PowerSeries.Derivative
 public import Mathlib.RingTheory.PowerSeries.Inverse
 
@@ -131,7 +131,7 @@ theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
     a ^ x * b ^ (n - x) *
         (algebraMap ℚ A (1 / ↑x.factorial) * algebraMap ℚ A (1 / ↑(n - x).factorial)) =
       a ^ x * b ^ (n - x) * (↑(n.choose x) * (algebraMap ℚ A) (1 / ↑n.factorial))
-    by convert! this using 1 <;> ring
+    by convert this using 1 <;> ring
   congr 1
   rw [← map_natCast (algebraMap ℚ A) (n.choose x), ← map_mul, ← map_mul]
   refine RingHom.congr_arg _ ?_

@@ -153,7 +153,7 @@ end
 theorem span_smul_eq_of_isUnit (s : Set M) (r : R) (hr : IsUnit r) : span R (r • s) = span R s := by
   apply le_antisymm
   · apply span_smul_le
-  · convert! span_smul_le (r • s) ((hr.unit⁻¹ :) : R)
+  · convert span_smul_le (r • s) ((hr.unit⁻¹ :) : R)
     simp [smul_smul]
 
 /-- We can regard `coe_iSup_of_chain` as the statement that `(↑) : (Submodule R M) → Set M` is
@@ -344,6 +344,10 @@ theorem iSup_induction' {ι : Sort*} (p : ι → Submodule R M) {motive : ∀ x,
   · exact ⟨_, zero⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
     exact ⟨_, add _ _ _ _ Cx Cy⟩
+
+theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → Submodule R M) :
+    ((⨆ i, S i : Submodule R M) : Set M) = ⋃ s : Finset ι, (⨆ i ∈ s, S i : Submodule R M) := by
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed _ <| Monotone.directed_le fun _ _ ↦ biSup_mono]
 
 theorem singleton_span_isCompactElement (x : M) :
     IsCompactElement (span R {x} : Submodule R M) := by

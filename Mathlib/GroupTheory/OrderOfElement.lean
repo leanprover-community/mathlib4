@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Group.Commute.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Finite
 public import Mathlib.Algebra.Group.Subgroup.Finite
 public import Mathlib.Algebra.Group.TransferInstance
-public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.Algebra.Order.Group.Action
 public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Data.Int.ModEq
@@ -200,7 +199,7 @@ protected lemma IsOfFinOrder.orderOf_pos (h : IsOfFinOrder x) : 0 < orderOf x :=
 
 @[to_additive (attr := simp) addOrderOf_nsmul_eq_zero]
 theorem pow_orderOf_eq_one (x : G) : x ^ orderOf x = 1 := by
-  convert! Eq.trans _ (isPeriodicPt_minimalPeriod (x * ·) 1)
+  convert Eq.trans _ (isPeriodicPt_minimalPeriod (x * ·) 1)
   rw [orderOf, mul_left_iterate_apply_one]
 
 @[to_additive]

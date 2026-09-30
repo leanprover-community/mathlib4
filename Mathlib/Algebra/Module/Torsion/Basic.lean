@@ -7,12 +7,9 @@ module
 
 public import Mathlib.Algebra.DirectSum.Module
 public import Mathlib.Algebra.Module.ZMod
-public import Mathlib.Algebra.Regular.Opposite
 public import Mathlib.GroupTheory.Torsion
 public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.RingTheory.Coprime.Ideal
-public import Mathlib.RingTheory.Finiteness.Defs
-public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.SimpleModule.Basic
 
@@ -136,7 +133,7 @@ theorem iSupIndep.linearIndependent' {ι R M : Type*} {v : ι → M} [Ring R]
   have : r • v i ∈ (⊥ : Submodule R M) := by
     rw [← hv, Submodule.mem_inf]
     refine ⟨Submodule.mem_span_singleton.mpr ⟨r, rfl⟩, ?_⟩
-    convert! hi
+    convert hi
     ext
     simp
   rw [← Submodule.mem_bot R, ← h_ne_zero i]

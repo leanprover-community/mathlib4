@@ -5,13 +5,8 @@ Authors: Simon Hudon, Patrick Massot, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Equiv.Defs
-public import Mathlib.Algebra.Group.Hom.Basic
 public import Mathlib.Algebra.Group.Opposite
-public import Mathlib.Algebra.Group.SelfInv
-public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Algebra.Group.Units.Hom
-public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Algebra.Notation.Prod
 public import Mathlib.Logic.Equiv.Prod
 public import Mathlib.Tactic.TermCongr
@@ -521,6 +516,9 @@ theorem coe_prodComm : ⇑(prodComm : M × N ≃* N × M) = Prod.swap :=
 @[to_additive (attr := simp) coe_prodComm_symm]
 theorem coe_prodComm_symm : ⇑(prodComm : M × N ≃* N × M).symm = Prod.swap :=
   rfl
+
+@[to_additive (attr := simp) prodComm_trans_prodComm]
+theorem prodComm_trans_prodComm : (prodComm : M × N ≃* N × M).trans prodComm = .refl _ := rfl
 
 variable [MulOneClass P]
 

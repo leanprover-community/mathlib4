@@ -6,7 +6,6 @@ Authors: Yury Kudryashov, Heather Macbeth, Sébastien Gouëzel
 module
 
 public import Mathlib.LinearAlgebra.Alternating.Basic
-public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.Algebra.Module.Multilinear.Basic
 
@@ -102,7 +101,7 @@ theorem ext {f g : M [⋀^ι]→L[R] N} (H : ∀ x, f x = g x) : f = g :=
 
 theorem toAlternatingMap_injective :
     Injective (toAlternatingMap : (M [⋀^ι]→L[R] N) → (M [⋀^ι]→ₗ[R] N)) := fun f g h =>
-  DFunLike.ext' <| by convert! DFunLike.ext'_iff.1 h
+  DFunLike.ext' <| by convert DFunLike.ext'_iff.1 h
 
 @[simp]
 theorem range_toAlternatingMap :

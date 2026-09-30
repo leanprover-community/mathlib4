@@ -6,9 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Extension.Cotangent.Basic
-public import Mathlib.RingTheory.Extension.Generators
 public import Mathlib.Algebra.Module.SnakeLemma
-public import Mathlib.RingTheory.Flat.Basic
 
 /-!
 
@@ -518,7 +516,7 @@ theorem exact_liftBaseChange_map_of_flat' [Module.Flat S T] (f : Hom W Q) (g : H
     Function.Exact ((Extension.H1Cotangent.map g.toExtensionHom).liftBaseChange T)
       (Extension.H1Cotangent.map f.toExtensionHom) := by
   rw [← LinearEquiv.conj_exact_iff_exact _ _ (H1Cotangent.equiv W (Q.comp P))]
-  convert! exact_liftBaseChange_map_of_flat Q P
+  convert exact_liftBaseChange_map_of_flat Q P
   · change Extension.H1Cotangent.map (W.defaultHom (Q.comp P)).toExtensionHom ∘ₗ _ = _
     rw [LinearMap.liftBaseChange_comp, ← Extension.H1Cotangent.map_comp,
       Extension.H1Cotangent.map_eq]

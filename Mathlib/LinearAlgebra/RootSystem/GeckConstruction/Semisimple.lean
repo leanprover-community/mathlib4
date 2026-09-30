@@ -5,11 +5,10 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Lie.Matrix
 public import Mathlib.Algebra.Lie.Semisimple.Lemmas
-public import Mathlib.Algebra.Lie.Weights.Linear
+import Mathlib.Algebra.Lie.Weights.Linear
 public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
-public import Mathlib.RingTheory.Finiteness.Nilpotent
+import Mathlib.RingTheory.Finiteness.Nilpotent
 
 /-!
 # Geck's construction of a Lie algebra associated to a root system yields semisimple algebras
@@ -129,7 +128,7 @@ lemma isNilpotent_e :
       apply IsReduced.linearIndependent P ?_ ?_
       · rintro rfl
         apply P.nsmul_notMem_range_root (n := P.chainTopCoeff i i + 2) (i := i)
-        convert! hk₁ using 1
+        convert hk₁ using 1
         module
       · contrapose hij
         rw [root_eq_neg_iff] at hij

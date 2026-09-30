@@ -5,7 +5,6 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-public import Mathlib.Algebra.Group.Nat.Hom
 public import Mathlib.Algebra.Polynomial.Basic
 public import Mathlib.Algebra.GroupWithZero.Associated
 
@@ -80,7 +79,7 @@ theorem eval₂_monomial {n : ℕ} {r : R} : (monomial n r).eval₂ f x = f r * 
 @[simp]
 theorem eval₂_X_pow {n : ℕ} : (X ^ n).eval₂ f x = x ^ n := by
   rw [X_pow_eq_monomial]
-  convert! eval₂_monomial f x (n := n) (r := 1)
+  convert eval₂_monomial f x (n := n) (r := 1)
   simp
 
 @[simp]
@@ -265,13 +264,13 @@ theorem eval₂_at_apply {S : Type*} [Semiring S] (f : R →+* S) (r : R) :
 
 @[simp]
 theorem eval₂_at_one {S : Type*} [Semiring S] (f : R →+* S) : p.eval₂ f 1 = f (p.eval 1) := by
-  convert! eval₂_at_apply (p := p) f 1
+  convert eval₂_at_apply (p := p) f 1
   simp
 
 @[simp]
 theorem eval₂_at_natCast {S : Type*} [Semiring S] (f : R →+* S) (n : ℕ) :
     p.eval₂ f n = f (p.eval n) := by
-  convert! eval₂_at_apply (p := p) f n
+  convert eval₂_at_apply (p := p) f n
   simp
 
 @[simp]
@@ -783,7 +782,7 @@ theorem intCast_comp (i : ℤ) : comp (i : R[X]) p = i := by cases i <;> simp
 @[simp]
 theorem eval₂_at_intCast {S : Type*} [Ring S] (f : R →+* S) (n : ℤ) :
     p.eval₂ f n = f (p.eval n) := by
-  convert! eval₂_at_apply (p := p) f n
+  convert eval₂_at_apply (p := p) f n
   simp
 
 theorem mul_X_sub_intCast_comp {n : ℕ} :

@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Data.Set.Inclusion
 public import Mathlib.Tactic.Common
-public import Mathlib.Tactic.FastInstance
 public import Mathlib.Tactic.Attr.Core
 
 /-!
@@ -640,7 +639,7 @@ namespace Normal
 @[to_additive]
 theorem conj_mem' (nH : H.Normal) (n : G) (hn : n ∈ H) (g : G) :
     g⁻¹ * n * g ∈ H := by
-  convert! nH.conj_mem n hn g⁻¹
+  convert nH.conj_mem n hn g⁻¹
   rw [inv_inv]
 
 @[to_additive]
