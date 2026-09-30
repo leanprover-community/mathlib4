@@ -180,10 +180,10 @@ structure DecompositionCert {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(Co
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) where
   /-- The decomposition certificate from the theory. -/
   decomp : Q(Echelon.Decomposition $A)
-  /-- The echelon form. -/
-  U : Q(Matrix (Fin $m) (Fin $n) $α)
+  /-- The views of the echelon form. -/
+  U : MatrixViews u m n α
   /-- The product equation. -/
-  mul_eq : Q(($decomp).L * ($A).submatrix ($decomp).σ id = $U)
+  mul_eq : Q(($decomp).L * ($A).submatrix ($decomp).σ id = $(U.matrix))
 
 /-- Build the `DecompositionCert` of `A` from the decomposition data and the parsed entries
 of `A`. -/
@@ -218,6 +218,6 @@ def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommR
   assertInstancesCommute
   let decomp : Q(Echelon.Decomposition $A) :=
     q(⟨$Lm, $σ, $pivot, $hU ▸ $hpivot, $hlower, $hdiag⟩)
-  return { decomp, U := Um, mul_eq := hU }
+  return { decomp, U, mul_eq := hU }
 
 end Mathlib.Tactic.Echelon
