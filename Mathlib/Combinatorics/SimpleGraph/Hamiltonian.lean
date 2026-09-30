@@ -321,8 +321,7 @@ theorem Walk.IsHamiltonian.isHamiltonian_of_adj {G : SimpleGraph α} {u v : α} 
 theorem isHamiltonian_iff_exists_adj_and_isHamiltonian [Nontrivial α] {G : SimpleGraph α} :
     G.IsHamiltonian ↔ ∃ (u v : α) (p : G.Walk u v), G.Adj u v ∧ p.IsHamiltonian ∧ p.length ≠ 1 := by
   refine ⟨fun h ↦ ?_, fun ⟨u, v, p, hadj, hp, hlen⟩ ↦ hp.isHamiltonian_of_adj hadj hlen⟩
-  have v := Classical.arbitrary α
-  have ⟨p, hp⟩ := h.exists_isHamiltonianCycle v
+  have ⟨p, hp⟩ := h.exists_isHamiltonianCycle <| Classical.arbitrary α
   refine ⟨_, _, p.tail, p.adj_snd hp.not_nil |>.symm, hp.isHamiltonian_tail, ?_⟩
   grind [hp.three_le_length, p.length_tail_add_one hp.not_nil]
 
