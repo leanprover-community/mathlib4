@@ -7,7 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Basic
 public import Mathlib.LinearAlgebra.Matrix.Rank
-public import Mathlib.Order.WithBot
 
 /-!
 # Pivots of a matrix
@@ -90,7 +89,7 @@ theorem unique [LT m] {l' : m → WithTop n}
     cases hc : l i with
     | top =>
       rw [hl.eq_top_iff] at hc
-      exact absurd (congrFun hc c') (hl'.isLeadingEntry hc').2
+      exact absurd congr($hc c') (hl'.isLeadingEntry hc').2
     | coe c => exact_mod_cast (hl.isLeadingEntry hc).unique (hl'.isLeadingEntry hc')
 
 theorem strictMonoOn [Preorder m] (hA : A.IsPivotedBy l) :

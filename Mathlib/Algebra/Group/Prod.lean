@@ -5,13 +5,8 @@ Authors: Simon Hudon, Patrick Massot, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Equiv.Defs
-public import Mathlib.Algebra.Group.Hom.Basic
 public import Mathlib.Algebra.Group.Opposite
-public import Mathlib.Algebra.Group.SelfInv
-public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Algebra.Group.Units.Hom
-public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Algebra.Notation.Prod
 public import Mathlib.Logic.Equiv.Prod
 public import Mathlib.Tactic.TermCongr
@@ -121,8 +116,8 @@ instance [DivInvMonoid G] [DivInvMonoid H] : DivInvMonoid (G × H) where
 instance [DivisionMonoid G] [DivisionMonoid H] : DivisionMonoid (G × H) :=
   { mul_inv_rev := fun _ _ => Prod.ext (mul_inv_rev _ _) (mul_inv_rev _ _),
     inv_eq_of_mul := fun _ _ h =>
-      Prod.ext (inv_eq_of_mul_eq_one_right <| congr_arg fst h)
-        (inv_eq_of_mul_eq_one_right <| congr_arg snd h),
+      Prod.ext (inv_eq_of_mul_eq_one_right congr(fst $h))
+        (inv_eq_of_mul_eq_one_right congr(snd $h)),
     inv_inv := by simp }
 
 @[to_additive SubtractionCommMonoid]
@@ -647,7 +642,7 @@ def embedProduct (α : Type*) [Monoid α] : αˣ →* α × αᵐᵒᵖ where
 
 @[to_additive]
 theorem embedProduct_injective (α : Type*) [Monoid α] : Function.Injective (embedProduct α) :=
-  fun _ _ h => Units.ext <| (congr_arg Prod.fst h :)
+  fun _ _ h => Units.ext congr($(h).fst)
 
 end Units
 

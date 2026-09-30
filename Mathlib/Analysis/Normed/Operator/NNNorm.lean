@@ -6,7 +6,6 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 module
 
 public import Mathlib.Analysis.Normed.Operator.Basic
-public import Mathlib.Analysis.Normed.Module.RCLike.Real
 
 /-!
 # Operator norm as an `NNNorm`
@@ -44,7 +43,7 @@ theorem nnnorm_def (f : E →SL[σ₁₂] F) : ‖f‖₊ = sInf { c | ∀ x, �
 
 @[simp, nontriviality]
 theorem opNNNorm_subsingleton [Subsingleton E] (f : E →SL[σ₁₂] F) : ‖f‖₊ = 0 :=
-  NNReal.eq <| f.opNorm_subsingleton
+  NNReal.eq f.opNorm_subsingleton
 
 /-- If one controls the norm of every `A x`, then one controls the norm of `A`. -/
 theorem opNNNorm_le_bound (f : E →SL[σ₁₂] F) (M : ℝ≥0) (hM : ∀ x, ‖f x‖₊ ≤ M * ‖x‖₊) : ‖f‖₊ ≤ M :=
