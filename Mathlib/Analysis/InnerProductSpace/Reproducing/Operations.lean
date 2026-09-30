@@ -203,16 +203,14 @@ def equiv (h : c ≠ 0) : smulSpace H c ≃ₗᵢ[𝕜] H :=
 instance : Subsingleton (smulSpace H (0 : 𝕜)) where
   allEq := by simp [smulSpace, auxSmulSpace]
 
+/-- Any function in the RKHS `c • H` can be coerced into the RKHS `H`. -/
 @[coe, simp]
-def coe_smulSpace : smulSpace H c →L[𝕜] H := if h : c = 0 then 0 else (c : 𝕜) • equiv H h
+def coeSmulSpace : smulSpace H c →L[𝕜] H := if h : c = 0 then 0 else (c : 𝕜) • equiv H h
 
 instance : CoeOut (smulSpace H c) H where
-  coe := coe_smulSpace H c
+  coe := coeSmulSpace H c
 
-@[simp]
-lemma coe_coe (f : smulSpace H c) : ⇑(f : H) = f := rfl
-
-lemma coe_injective : Function.Injective (coe_smulSpace H c) := by
+lemma coe_injective : Function.Injective (coeSmulSpace H c) := by
   intro f g hfg
   by_cases h : c = 0
   · subst h
@@ -220,8 +218,11 @@ lemma coe_injective : Function.Injective (coe_smulSpace H c) := by
   · simp_all
 
 instance : RKHS 𝕜 (smulSpace H c) X V where
-  coeCLM := coeCLM 𝕜 ∘L coe_smulSpace H c
+  coeCLM := coeCLM 𝕜 ∘L coeSmulSpace H c
   coeCLM_injective := coeCLM_injective.comp (coe_injective H c)
+
+@[simp]
+lemma coe_coe (f : smulSpace H c) : ⇑(f : H) = f := rfl
 
 variable [CompleteSpace H] [CompleteSpace V]
 
