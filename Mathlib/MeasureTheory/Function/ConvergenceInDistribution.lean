@@ -145,12 +145,12 @@ theorem TendstoInDistribution.continuous_comp {F : Type*} [OpensMeasurableSpace 
   aemeasurable_limit := hg.measurable.comp_aemeasurable h.aemeasurable_limit
   tendsto := by
     convert! ProbabilityMeasure.tendsto_map_of_tendsto_of_continuous _ _ h.tendsto hg
-    · exact Subtype.ext
-        (AEMeasurable.map_map_of_aemeasurable hg.aemeasurable
-          (h.forall_aemeasurable _)).symm
-    · simp only [ProbabilityMeasure.map, Measure.coe_toProbabilityMeasure]
-      congr
-      rw [AEMeasurable.map_map_of_aemeasurable hg.aemeasurable h.aemeasurable_limit]
+    · rw! [← toProbabilityMeasure_map, AEMeasurable.map_map_of_aemeasurable
+          hg.aemeasurable (h.forall_aemeasurable _)]
+      rfl
+    · rw! [← toProbabilityMeasure_map, AEMeasurable.map_map_of_aemeasurable
+          hg.aemeasurable h.aemeasurable_limit]
+      rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- Almost sure convergence implies convergence in distribution. -/
