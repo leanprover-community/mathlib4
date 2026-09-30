@@ -98,63 +98,68 @@ def getLakefileLeanOptions : IO Lean.Options := do
 register_option linter.checkInitImports : Bool := { defValue := false }
 
 /-- Check that `Mathlib.Init` is transitively imported in all of Mathlib.
-Moreover, every file imported in `Mathlib.Init` should in turn import the `Header` linter
-(except for the header linter itself, of course).
+`Mathlib.Init` just imports the `MathlibInit` library, whose modules are `MathlibInit` and its
+transitive imports. Every module in `MathlibInit` should in turn import the `Header` linter
+(except for the header linter itself, of course), and modules in `Mathlib` should import
+`Mathlib.Init` rather than the `Header` linter.
 Return the number of modules which violated one of these rules.
 -/
 def missingInitImports (opts : LinterOptions) : IO Nat := do
   unless getLinterValue linter.checkInitImports opts do return 0
 
-  -- Find any file in the Mathlib directory which does not contain any Mathlib import.
+  -- Find any file in Mathlib or MathlibInit which does not contain any Mathlib(Init) import.
   -- We simply parse `Mathlib.lean`, as CI ensures this file is up to date.
   let mathlibHeader ← ("Mathlib.lean" : System.FilePath).parseImports'
-  let allModuleNames := eraseExplicitImports (mathlibHeader.filterInit.imports.map (·.module))
+  let mathlibModuleNames := eraseExplicitImports (mathlibHeader.filterInit.imports.map (·.module))
+  let initModules ← findTransitiveImportsFromSource "MathlibInit.lean" (some `MathlibInit)
+  let allModuleNames := mathlibModuleNames ++ initModules.toArray
   let mut modulesWithoutMathlibImports := #[]
   let mut importsHeaderLinter := #[]
   for module in allModuleNames do
     let path := System.mkFilePath (module.components.map fun n ↦ n.toString)|>.addExtension "lean"
     let imports := (← path.parseImports').filterInit.imports.map (·.module)
-    let hasNoMathlibImport := imports.all fun name ↦ name.getRoot != `Mathlib
+    let hasNoMathlibImport := imports.all fun name ↦ ![`Mathlib, `MathlibInit].contains name.getRoot
     if hasNoMathlibImport then
       modulesWithoutMathlibImports := modulesWithoutMathlibImports.push module
-    if imports.contains `Mathlib.Tactic.Linter.Header then
+    if imports.contains `MathlibInit.Tactic.Linter.Header then
       importsHeaderLinter := importsHeaderLinter.push module
 
-  -- Every file importing the `header` linter should be (transitively) imported by `Mathlib.Init`.
+  -- Deprecated module files are just import-redirect stubs: they may import the `header` linter
+  -- (from its deprecated path) and may have no Mathlib imports
+  -- (the `deprecated_module` command is a core builtin).
+  let isDeprecated (module : Lean.Name) : IO Bool := do
+    let path := System.mkFilePath (module.components.map fun n ↦ n.toString)|>.addExtension "lean"
+    let content ← IO.FS.readFile path
+    return content.splitOn "\n" |>.any (·.trimAsciiStart.startsWith "deprecated_module")
+
+  -- Every file importing the `header` linter should be in `MathlibInit`.
   -- (Downstream files should import `Mathlib.Init` and not the header linter.)
-  -- The only exceptions are auto-generated import-only files.
-  let initTransitiveImports ← findTransitiveImportsFromSource ("Mathlib" / "Init.lean") (some `Mathlib)
-  let mismatch := importsHeaderLinter.filter (fun mod ↦
-    ![`Mathlib, `Mathlib.Tactic, `Mathlib.Init].contains mod && !initTransitiveImports.contains mod)
+  -- The only exceptions are auto-generated import-only files and deprecated modules.
+  let mismatch ← importsHeaderLinter.filterM (fun mod ↦ do
+    return ![`Mathlib, `Mathlib.Tactic].contains mod && !initModules.contains mod &&
+      !(← isDeprecated mod))
   if mismatch.size > 0 then
     IO.eprintln s!"error: the following {mismatch.size} module(s) import the `header` linter \
       directly, but should import Mathlib.Init instead: {mismatch}\n"
     for mod in mismatch do
-      IO.eprintln s!"  • `{mod}` is NOT imported by `Mathlib.Init`.\n    \
-        Please replace `import Mathlib.Tactic.Linter.Header` with `import Mathlib.Init`."
+      IO.eprintln s!"  • `{mod}` is NOT part of `MathlibInit`.\n    \
+        Please replace `import MathlibInit.Tactic.Linter.Header` with `import Mathlib.Init`."
     return mismatch.size
 
   -- Now, it only remains to check that every module (except for the Header linter itself)
-  -- imports some file in Mathlib.
-  -- Deprecated module files are exempt: they are just import-redirect stubs and may have
-  -- no Mathlib imports (the `deprecated_module` command is a core builtin).
-  let mut nonDeprecated := #[]
-  for module in modulesWithoutMathlibImports do
-    let path := System.mkFilePath (module.components.map fun n ↦ n.toString)|>.addExtension "lean"
-    let content ← IO.FS.readFile path
-    unless content.splitOn "\n" |>.any (·.trimAsciiStart.startsWith "deprecated_module") do
-      nonDeprecated := nonDeprecated.push module
-  let missing := nonDeprecated.erase `Mathlib.Tactic.Linter.Header
-    -- This file is imported by `Mathlib/Tactic/Linter/Header.lean`.
-    |>.erase `Mathlib.Tactic.Linter.DirectoryDependency
+  -- imports some file in Mathlib or MathlibInit.
+  let nonDeprecated ← modulesWithoutMathlibImports.filterM (fun mod ↦ return !(← isDeprecated mod))
+  let missing := nonDeprecated.erase `MathlibInit.Tactic.Linter.Header
+    -- This file is imported by `MathlibInit/Tactic/Linter/Header.lean`.
+    |>.erase `MathlibInit.Tactic.Linter.DirectoryDependency
   if missing.size > 0 then
     IO.eprintln s!"error: the following {missing.size} module(s) do not import Mathlib.Init: \
       {missing}\n"
     for mod in missing do
-      if initTransitiveImports.contains mod then
-        -- Transitively imported by Init: just needs to import the Header linter
-        IO.eprintln s!"  • `{mod}` is transitively imported by `Mathlib.Init`.\n    \
-          Please add `import Mathlib.Tactic.Linter.Header` to `{mod}`."
+      if initModules.contains mod then
+        -- Part of `MathlibInit`: just needs to import the Header linter
+        IO.eprintln s!"  • `{mod}` is part of `MathlibInit`.\n    \
+          Please add `import MathlibInit.Tactic.Linter.Header` to `{mod}`."
       else
         IO.eprintln s!"  • `{mod}` is NOT imported by `Mathlib.Init`.\n    \
           Please add `import Mathlib.Init` to `{mod}`."

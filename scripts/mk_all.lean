@@ -21,8 +21,8 @@ open Lean System.FilePath
 open Lake in
 /-- `getLeanLibs` returns the names (as an `Array` of `String`s) of all the libraries
 on which the current project depends.
-If the current project is `mathlib`, then it excludes the libraries `Cache` and `MathlibTest` and
-it includes `Mathlib/Tactic`. -/
+If the current project is `mathlib`, then it excludes the libraries `Cache` and `MathlibTest`,
+as well as `MathlibInit` (whose root file is curated by hand), and it includes `Mathlib/Tactic`. -/
 def getLeanLibs : IO (Array String) := do
   let (elanInstall?, leanInstall?, lakeInstall?) ← findInstall?
   let config ← MonadError.runEIO <| mkLoadConfig { elanInstall?, leanInstall?, lakeInstall? }
@@ -31,7 +31,7 @@ def getLeanLibs : IO (Array String) := do
   let package := ws.root
   let libs := (package.leanLibs.map (·.name)).map (·.toString)
   return if package.baseName == `mathlib then
-    libs.erase "Cache" |>.erase "MathlibTest"
+    libs.erase "Cache" |>.erase "MathlibTest" |>.erase "MathlibInit"
       |>.push ("Mathlib".push pathSeparator ++ "Tactic")
   else
     libs
@@ -49,8 +49,8 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
   let moduleFlag := (args.flag? "module").isSome
   -- Check whether the `--lib` flag was set. If so, build the file corresponding to the library
   -- passed to `--lib`. Else build all the libraries of the package.
-  -- If the package is `mathlib`, then it removes the libraries `Cache` and `MathlibTest` and it
-  -- adds `Mathlib/Tactic`.
+  -- If the package is `mathlib`, then it removes the libraries `Cache`, `MathlibTest` and
+  -- `MathlibInit`, and it adds `Mathlib/Tactic`.
   let libs := ← match args.flag? "lib" with
               | some lib => pure #[lib.as! String]
               | none => getLeanLibs
@@ -108,7 +108,7 @@ def mkAll : Cmd := `[Cli|
   mk_all VIA mkAllCLI; ["0.0.1"]
   "Generate a file importing all the files of a Lean folder. \
    By default, it generates the files for the Lean libraries of the package. \
-   In the case of `Mathlib`, it removes the libraries `Cache` and `MathlibTest` \
+   In the case of `Mathlib`, it removes the libraries `Cache`, `MathlibTest` and `MathlibInit` \
    and it adds `Mathlib/Tactic`. \
    If you are working in a project downstream of mathlib, use `lake exe mk_all --lib MyProject`."
 
