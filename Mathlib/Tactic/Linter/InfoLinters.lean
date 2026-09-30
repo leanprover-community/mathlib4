@@ -1,6 +1,10 @@
 module
 
-public import Mathlib.Init
+public meta import Lean.Elab.InfoTree.Util
+public meta import Lean.Elab.Command
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
+import Mathlib.Tactic.Linter.Header -- shake: keep
 
 /-!
 # `InfoTree` linting framework
@@ -134,7 +138,7 @@ def infoLinterRunner : Linter where
 
 initialize addLinter infoLinterRunner
 
-initialize registerTraceClass `Elab.lint.infotree
+initialize registerTraceClass `Elab.lint.infotree (inherited := true)
 initialize registerTraceClass `Elab.lint.infotree.get (inherited := true)
 initialize registerTraceClass `Elab.lint.infotree.run (inherited := true)
 
