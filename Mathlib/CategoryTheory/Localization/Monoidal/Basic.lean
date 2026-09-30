@@ -108,7 +108,6 @@ local notation "L'" => toMonoidalCategory L W ε
 
 instance : (L').IsLocalization W := inferInstanceAs (L.IsLocalization W)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isInvertedBy₂ :
     MorphismProperty.IsInvertedBy₂ W W
@@ -234,7 +233,6 @@ lemma rightUnitor_hom_app (X : C) :
   change _ ≫ (μ L W ε _ _).hom ≫ _ ≫ 𝟙 _ ≫ 𝟙 _ = _
   simp only [comp_id]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma associator_hom_app (X₁ X₂ X₃ : C) :
     (α_ ((L').obj X₁) ((L').obj X₂) ((L').obj X₃)).hom =
       ((μ L W ε _ _).hom ⊗ₘ 𝟙 _) ≫ (μ L W ε _ _).hom ≫ (L').map (α_ X₁ X₂ X₃).hom ≫
@@ -286,7 +284,6 @@ lemma whisker_exchange {Q X Y Z : LocalizedMonoidal L W ε} (f : Q ⟶ X) (g : Y
     Q ◁ g ≫ f ▷ Z = f ▷ Y ≫ X ◁ g := by
   simp only [← id_tensorHom, ← tensorHom_id, ← tensor_comp, id_comp, comp_id]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : LocalizedMonoidal L W ε}
     (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) :
@@ -362,7 +359,6 @@ lemma pentagonNatTrans :
     Iso.inv_hom_id, whiskerRight_id, ← whiskerLeft_comp,
     whiskerLeft_id]
 
-set_option backward.isDefEq.respectTransparency false in
 variable {L W ε} in
 /-- The pointwise pentagon identity in the localized monoidal category. -/
 lemma pentagon (Y₁ Y₂ Y₃ Y₄ : LocalizedMonoidal L W ε) :
@@ -445,7 +441,6 @@ lemma triangle (X Y : LocalizedMonoidal L W ε) :
 local notation "triangleFirstMap" => MonoidalCategory.ofBifunctor.Triangle.firstMap
 local notation "triangleSecondMap" => MonoidalCategory.ofBifunctor.Triangle.secondMap
 
-set_option backward.isDefEq.respectTransparency false in
 variable {L W ε} in
 /-- The two paths around the localized monoidal triangle agree as natural transformations of
 bifunctors. -/
