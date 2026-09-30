@@ -265,7 +265,7 @@ lemma lintegral_eapprox_le_lintegral {f : α → ℝ≥0∞} (hf : Measurable f)
 lemma measure_support_eapprox_lt_top {f : α → ℝ≥0∞} (hf_meas : Measurable f)
     (hf : ∫⁻ x, f x ∂μ ≠ ∞) (n : ℕ) :
     μ (Function.support (eapprox f n)) < ∞ :=
-  measure_support_lt_top_of_lintegral_ne_top <|
+  measure_support_lt_top_of_lintegral_ne_top
     ((lintegral_eapprox_le_lintegral hf_meas n).trans_lt hf.lt_top).ne
 
 /-- The sum of the lower Lebesgue integrals of two functions is less than or equal to the integral

@@ -243,7 +243,7 @@ lemma Finset.gcd_eq_sum_mul {α : Type*} [CommRing R] [IsBezout R] [NormalizedGC
     refine ⟨Function.update (g · * (y * u)) a (x * u), ?_⟩
     rw [gcd_insert, sum_insert ha, ← hu, hg]
     simp only [Function.update_self, add_right_inj, sum_mul, mul_assoc]
-    exact sum_congr rfl fun b hb ↦ congrArg (f b * ·) <|
+    exact sum_congr rfl fun b hb ↦ congrArg (f b * ·)
       (Function.update_of_ne (show b ≠ a by grind) (x * u) (g · * (y * u))).symm
 
 namespace IsPrime
@@ -367,9 +367,8 @@ theorem ringHom_mem_submonoid_of_factors_subset_of_units_subset {R S : Type*} [C
 
 -- see Note [lower instance priority]
 /-- A principal ideal domain has unique factorization -/
-instance (priority := 100) to_uniqueFactorizationMonoid : UniqueFactorizationMonoid R :=
-  { (IsNoetherianRing.wfDvdMonoid : WfDvdMonoid R) with
-    irreducible_iff_prime := irreducible_iff_prime }
+instance (priority := 100) to_uniqueFactorizationMonoid : UniqueFactorizationMonoid R where
+  irreducible_iff_prime := irreducible_iff_prime
 
 end
 
