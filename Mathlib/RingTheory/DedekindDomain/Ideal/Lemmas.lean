@@ -5,9 +5,6 @@ Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
 module
 
-public import Mathlib.Algebra.Order.GroupWithZero.OrderIso
-public import Mathlib.Algebra.Polynomial.FieldDivision
-public import Mathlib.Algebra.Squarefree.Basic
 public import Mathlib.RingTheory.ChainOfDivisors
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
 public import Mathlib.RingTheory.Spectrum.Maximal.Localization
@@ -168,7 +165,7 @@ theorem pow_right_strictAnti (I : Ideal A) (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) :
 
 theorem pow_lt_self (I : Ideal A) (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) (e : ℕ) (he : 2 ≤ e) :
     I ^ e < I := by
-  convert! I.pow_right_strictAnti hI0 hI1 he
+  convert I.pow_right_strictAnti hI0 hI1 he
   dsimp only
   rw [pow_one]
 
@@ -370,7 +367,7 @@ lemma FractionalIdeal.sup_mul_inf (I J : FractionalIdeal A⁰ K) :
   rw [mul_left_comm, ← mul_add, ← mul_add, ← mul_inf₀ (FractionalIdeal.zero_le _),
     ← mul_inf₀ (FractionalIdeal.zero_le _)] at this
   simp only [FractionalIdeal.sup_eq_add, _root_.map_mul, ← spanSingleton_mul_spanSingleton]
-  convert! this using 1 <;> ring
+  convert this using 1 <;> ring
 
 end Gcd
 

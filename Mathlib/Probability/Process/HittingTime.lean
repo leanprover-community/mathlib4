@@ -6,7 +6,7 @@ Authors: Kexing Ying, Rémy Degenne
 module
 
 public import Mathlib.Probability.Process.Stopping
-public import Mathlib.Tactic.AdaptationNote
+import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Hitting times

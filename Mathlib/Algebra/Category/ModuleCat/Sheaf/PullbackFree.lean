@@ -7,8 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Free
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-public import Mathlib.CategoryTheory.Limits.Final.Type
+import Mathlib.CategoryTheory.Limits.Final.Type
 
 /-!
 # Pullbacks of free sheaves of modules
@@ -103,7 +102,7 @@ instance [F.Final] : IsIso (pullbackObjUnitToUnit φ) := by
   intro M
   rw [← ((pullbackPushforwardAdjunction.{u} φ).homEquiv _ _).bijective.of_comp_iff',
     ← (unitHomEquiv _).bijective.of_comp_iff']
-  convert! (bijective_pushforwardSections φ M).comp (unitHomEquiv _).bijective
+  convert (bijective_pushforwardSections φ M).comp (unitHomEquiv _).bijective
   ext f : 1
   dsimp
   rw [pushforwardSections_unitHomEquiv, EmbeddingLike.apply_eq_iff_eq,

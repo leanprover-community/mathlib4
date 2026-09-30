@@ -5,8 +5,7 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Data.List.Rotate
+import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.GroupTheory.Perm.Support
 
 /-!
@@ -211,7 +210,7 @@ theorem support_formPerm_of_nodup' (l : List α) (h : Nodup l) (h' : ∀ x : α,
 theorem support_formPerm_of_nodup [Fintype α] (l : List α) (h : Nodup l) (h' : ∀ x : α, l ≠ [x]) :
     support (formPerm l) = l.toFinset := by
   rw [← Finset.coe_inj]
-  convert! support_formPerm_of_nodup' _ h h'
+  convert support_formPerm_of_nodup' _ h h'
   simp [Set.ext_iff]
 
 theorem formPerm_rotate_one (l : List α) (h : Nodup l) : formPerm (l.rotate 1) = formPerm l := by

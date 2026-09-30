@@ -7,11 +7,9 @@ module
 
 public import Mathlib.Algebra.Order.Ring.Idempotent
 public import Mathlib.Order.Heyting.Hom
-public import Mathlib.RingTheory.Finiteness.Ideal
 public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
 public import Mathlib.RingTheory.KrullDimension.Basic
-public import Mathlib.RingTheory.Localization.Algebra
 public import Mathlib.RingTheory.Spectrum.Maximal.Localization
 public import Mathlib.Topology.Constructible
 public import Mathlib.Topology.KrullDimension
@@ -197,7 +195,7 @@ theorem vanishingIdeal_anti_mono_iff {s t : Set (PrimeSpectrum R)} (ht : IsClose
     s ⊆ t ↔ vanishingIdeal t ≤ vanishingIdeal s :=
   ⟨vanishingIdeal_anti_mono, fun h => by
     rw [← ht.closure_subset_iff, ← ht.closure_eq]
-    convert! ← zeroLocus_anti_mono_ideal h <;> apply zeroLocus_vanishingIdeal_eq_closure⟩
+    convert ← zeroLocus_anti_mono_ideal h <;> apply zeroLocus_vanishingIdeal_eq_closure⟩
 
 theorem vanishingIdeal_strict_anti_mono_iff {s t : Set (PrimeSpectrum R)} (hs : IsClosed s)
     (ht : IsClosed t) : s ⊂ t ↔ vanishingIdeal t < vanishingIdeal s := by
@@ -575,7 +573,7 @@ theorem eq_biUnion_of_isOpen {s : Set (PrimeSpectrum R)} (hs : IsOpen s) :
 
 theorem isBasis_basic_opens : TopologicalSpace.Opens.IsBasis (Set.range (@basicOpen R _)) := by
   unfold TopologicalSpace.Opens.IsBasis
-  convert! isTopologicalBasis_basic_opens (R := R)
+  convert isTopologicalBasis_basic_opens (R := R)
   rw [← Set.range_comp]
   rfl
 
@@ -915,7 +913,7 @@ lemma isQuotientMap_of_generalizingMap (h₂ : GeneralizingMap (comap f)) :
     fun hsc ↦ Set.image_preimage_eq s h₁ ▸ ?_⟩⟩
   apply isClosed_image_of_stableUnderSpecialization _ _ hsc
   rw [Set.image_preimage_eq s h₁, ← stableUnderGeneralization_compl_iff]
-  convert! h₂.stableUnderGeneralization_image hsc.isOpen_compl.stableUnderGeneralization
+  convert h₂.stableUnderGeneralization_image hsc.isOpen_compl.stableUnderGeneralization
   rw [← Set.preimage_compl, Set.image_preimage_eq _ h₁]
 
 end IsQuotientMap

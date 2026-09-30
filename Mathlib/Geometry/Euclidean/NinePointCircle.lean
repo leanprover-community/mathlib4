@@ -5,7 +5,6 @@ Authors: Weiyi Wang
 -/
 module
 
-public import Mathlib.Geometry.Euclidean.Circumcenter
 public import Mathlib.Geometry.Euclidean.MongePoint
 import Mathlib.Geometry.Euclidean.Angle.Sphere
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Projection
@@ -211,7 +210,7 @@ theorem eulerPoint_eq_midpoint (s : Triangle ℝ P) (i : Fin 3) :
 
 theorem altitudeFoot_mem_ninePointCircle (s : Triangle ℝ P) (i : Fin 3) :
     s.altitudeFoot i ∈ s.ninePointCircle := by
-  convert! s.orthogonalProjectionSpan_eulerPoint_mem_ninePointCircle i
+  convert s.orthogonalProjectionSpan_eulerPoint_mem_ninePointCircle i
   rw [Simplex.altitudeFoot]
   unfold Simplex.orthogonalProjectionSpan
   congr 1

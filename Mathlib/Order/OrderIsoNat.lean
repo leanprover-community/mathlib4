@@ -6,9 +6,6 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Basic.Denumerable
-public import Mathlib.Data.Set.Subsingleton
-public import Mathlib.Logic.Function.Iterate
-public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.Lattice.Nat
 
 /-!
@@ -171,7 +168,7 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
         simp only [bad, exists_prop, not_not, Set.mem_ofPred, not_forall] at h
         obtain ⟨n', hn1, hn2⟩ := h
         refine ⟨n + n' - n - m, by lia, ?_⟩
-        convert! hn2
+        convert hn2
         lia
       let g' : ℕ → ℕ := @Nat.rec (fun _ => ℕ) m fun n gn => Nat.find (h gn)
       exact

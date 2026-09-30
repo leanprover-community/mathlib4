@@ -6,11 +6,8 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Limits.EssentiallySmall
-public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Equalizers
+import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Equalizers
 public import Mathlib.CategoryTheory.Subobject.Lattice
-public import Mathlib.CategoryTheory.ObjectProperty.Small
-public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
-public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 
 /-!
@@ -733,7 +730,7 @@ theorem isSeparator_sigma {β : Type w} (f : β → C) [HasCoproduct f] :
 theorem isSeparator_coprod (G H : C) [HasBinaryCoproduct G H] :
     IsSeparator (G ⨿ H) ↔ ObjectProperty.IsSeparating (.pair G H) := by
   refine (isSeparator_iff_of_isColimit_cofan (coprodIsCoprod G H)).trans ?_
-  convert! Iff.rfl
+  convert Iff.rfl
   ext X
   simp only [ObjectProperty.pair_iff, ObjectProperty.ofObj_iff]
   constructor
@@ -779,7 +776,7 @@ theorem isCoseparator_pi {β : Type w} (f : β → C) [HasProduct f] :
 theorem isCoseparator_prod (G H : C) [HasBinaryProduct G H] :
     IsCoseparator (G ⨯ H) ↔ ObjectProperty.IsCoseparating (.pair G H) := by
   refine (isCoseparator_iff_of_isLimit_fan (prodIsProd G H)).trans ?_
-  convert! Iff.rfl
+  convert Iff.rfl
   ext X
   simp only [ObjectProperty.pair_iff, ObjectProperty.ofObj_iff]
   constructor

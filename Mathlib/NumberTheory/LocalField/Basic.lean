@@ -5,8 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
-public import Mathlib.Topology.Algebra.Module.Compact
+import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
+import Mathlib.Topology.Algebra.Module.Compact
 public import Mathlib.Topology.Algebra.Valued.LocallyCompact
 public import Mathlib.Topology.Algebra.Valued.ValuativeRel
 
@@ -88,7 +88,7 @@ lemma isCompact_closedBall (γ : ValueGroupWithZero K) : IsCompact { x | valuati
       dsimp at hx ⊢
       exact hx.trans_lt (hr.trans_le hr1)
   simp_rw [← (valuation K).restrict_le_iff] at H ⊢
-  convert!
+  convert
     (hs'.of_isClosed_subset (Valued.isClosed_closedBall K _) H).image
       (Homeomorph.mulLeft₀ (γ / r) (by simp [hr, div_eq_zero_iff, hγ])).continuous using 1
   refine .trans ?_ (Equiv.image_eq_preimage_symm _ _).symm

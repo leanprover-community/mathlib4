@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Martin Zinkevich, Rémy Degenne
 -/
 module
 
-public import Mathlib.Logic.Encodable.Lattice
+import Mathlib.Logic.Encodable.Lattice
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
 public import Mathlib.Order.Disjointed
 public import Mathlib.Order.SetDissipate
@@ -613,7 +613,7 @@ inductive GenerateHas (s : Set (Set α)) : Set α → Prop
 theorem generateHas_compl {C : Set (Set α)} {s : Set α} : GenerateHas C sᶜ ↔ GenerateHas C s := by
   refine ⟨?_, GenerateHas.compl⟩
   intro h
-  convert! GenerateHas.compl h
+  convert GenerateHas.compl h
   simp
 
 /-- The least Dynkin system containing a collection of basic sets. -/

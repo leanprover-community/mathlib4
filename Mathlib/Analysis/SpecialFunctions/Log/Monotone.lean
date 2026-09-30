@@ -5,7 +5,6 @@ Authors: Bolton Bailey
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 
 /-!
@@ -72,7 +71,7 @@ theorem log_div_self_rpow_antitoneOn {a : ℝ} (ha : 0 < a) :
     mul_div_assoc, mul_le_mul_iff_right₀ (one_div_pos.mpr ha)]
   have hbound {z : ℝ} (hz : z ∈ Ici (rexp a⁻¹)) : z ^ a ∈ {b | rexp 1 ≤ b} := by
     rw [mem_ofPred]
-    convert! rpow_le_rpow _ hz (le_of_lt ha) using 1
+    convert rpow_le_rpow _ hz (le_of_lt ha) using 1
     · simp only [← exp_mul, Real.exp_eq_exp, field]
     positivity
   refine log_div_self_antitoneOn (hbound hex) (hbound (hex.trans hxy)) ?_
@@ -80,7 +79,7 @@ theorem log_div_self_rpow_antitoneOn {a : ℝ} (ha : 0 < a) :
 
 theorem log_div_sqrt_antitoneOn : AntitoneOn (fun x : ℝ ↦ log x / √x) <| .Ici (exp 2) := by
   simp_rw [sqrt_eq_rpow]
-  convert! log_div_self_rpow_antitoneOn one_half_pos
+  convert log_div_self_rpow_antitoneOn one_half_pos
   simp
 
 end Real

@@ -5,7 +5,7 @@ Authors: Etienne Marion
 -/
 module
 
-public import Mathlib.Basic.Finite.Prod
+import Mathlib.Basic.Finite.Prod
 public import Mathlib.MeasureTheory.SetSemiring
 
 /-!

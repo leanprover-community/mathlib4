@@ -7,7 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Function.Jacobian
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 
 /-!
@@ -63,7 +63,7 @@ def polarCoord : OpenPartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     · conv_rhs => rw [← sqrt_sq (le_of_lt hr), ← one_mul (r ^ 2), ← sin_sq_add_cos_sq θ]
       congr 1
       ring
-    · convert! Complex.arg_mul_cos_add_sin_mul_I hr ⟨hθ.1, hθ.2.le⟩
+    · convert Complex.arg_mul_cos_add_sin_mul_I hr ⟨hθ.1, hθ.2.le⟩
       simp only [Complex.equivRealProd_symm_apply, Complex.ofReal_mul, Complex.ofReal_cos,
         Complex.ofReal_sin]
       ring

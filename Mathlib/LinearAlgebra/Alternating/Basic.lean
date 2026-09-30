@@ -6,7 +6,6 @@ Authors: Eric Wieser, Zhangir Azerbayev
 module
 
 public import Mathlib.GroupTheory.Perm.Sign
-public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import Mathlib.LinearAlgebra.Multilinear.Basis
 
 
@@ -658,7 +657,7 @@ theorem map_update_update [DecidableEq ι] {i j : ι} (hij : i ≠ j) (m : M) :
 theorem map_swap_add [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
     f (v ∘ Equiv.swap i j) + f v = 0 := by
   rw [Equiv.comp_swap_eq_update]
-  convert! f.map_update_update v hij (v i + v j)
+  convert f.map_update_update v hij (v i + v j)
   simp [f.map_update_self _ hij, f.map_update_self _ hij.symm,
     Function.update_comm hij (v i + v j) (v _) v, Function.update_comm hij.symm (v i) (v i) v]
 
@@ -821,7 +820,7 @@ open Equiv
 
 variable [Fintype ι] [DecidableEq ι]
 
-private theorem alternization_map_eq_zero_of_eq_aux (m : MultilinearMap R (fun _ : ι => M) N')
+private theorem alternatization_map_eq_zero_of_eq_aux (m : MultilinearMap R (fun _ : ι => M) N')
     (v : ι → M) (i j : ι) (i_ne_j : i ≠ j) (hv : v i = v j) :
     (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ) v = 0 := by
   rw [sum_apply]
@@ -831,6 +830,9 @@ private theorem alternization_map_eq_zero_of_eq_aux (m : MultilinearMap R (fun _
       (fun σ _ _ => (not_congr swap_mul_eq_iff).mpr i_ne_j) (fun σ _ => Finset.mem_univ _)
       fun σ _ => swap_mul_involutive i j σ
 
+@[deprecated (since := "2026-09-17")]
+private alias alternization_map_eq_zero_of_eq_aux := alternatization_map_eq_zero_of_eq_aux
+
 /-- Produce an `AlternatingMap` out of a `MultilinearMap`, by summing over all argument
 permutations. -/
 def alternatization : MultilinearMap R (fun _ : ι => M) N' →+ M [⋀^ι]→ₗ[R] N' where
@@ -838,7 +840,7 @@ def alternatization : MultilinearMap R (fun _ : ι => M) N' →+ M [⋀^ι]→�
     { ∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ with
       toFun := ⇑(∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ)
       map_eq_zero_of_eq' := private fun v i j hvij hij =>
-        alternization_map_eq_zero_of_eq_aux m v i j hij hvij }
+        alternatization_map_eq_zero_of_eq_aux m v i j hij hvij }
   map_add' a b := by ext; simp [Finset.sum_add_distrib]
   map_zero' := by ext; simp
 

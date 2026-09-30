@@ -6,9 +6,9 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Normed.Group.FunctionSeries
-public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
+import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 public import Mathlib.Topology.MetricSpace.HausdorffDistance
-public import Mathlib.Topology.Order.ProjIcc
+import Mathlib.Topology.Order.ProjIcc
 public import Mathlib.Topology.UnitInterval
 
 /-!
@@ -1119,7 +1119,7 @@ lemma continuous_distDenseSeq (n : ℕ) : Continuous (distDenseSeq X n) := by
   cases isEmpty_or_nonempty X
   · exact continuous_of_discreteTopology
   refine continuous_projIcc.comp <| Continuous.dist continuous_id' ?_
-  convert! continuous_const (y := denseSeq X n)
+  convert continuous_const (y := denseSeq X n)
 
 lemma separation {x : X} {C : Set X} (hxC : C ∈ 𝓝 x) :
     ∃ (n : ℕ), C ∈ (𝓝 (distDenseSeq X n x)).comap (distDenseSeq X n) := by

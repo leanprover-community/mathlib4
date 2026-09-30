@@ -5,10 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Finprod
-public import Mathlib.Topology.ContinuousMap.Algebra
 public import Mathlib.Topology.Compactness.Paracompact
-public import Mathlib.Topology.ShrinkingLemma
+import Mathlib.Topology.ShrinkingLemma
 public import Mathlib.Topology.UrysohnsLemma
 public import Mathlib.Topology.ContinuousMap.Ordered
 
@@ -531,7 +529,7 @@ theorem sum_toPOUFun_eq (x : X) : ∑ᶠ i, f.toPOUFun i x = 1 - ∏ᶠ i, (1 - 
   rw [finsum_eq_sum_of_support_subset _ A, finprod_eq_prod_of_mulSupport_subset _ B,
     Finset.prod_one_sub_ordered, sub_sub_cancel]
   refine Finset.sum_congr rfl fun i _ => ?_
-  convert! f.toPOUFun_eq_mul_prod _ _ _ fun j _ hj => _
+  convert f.toPOUFun_eq_mul_prod _ _ _ fun j _ hj => _
   rwa [Finite.mem_toFinset]
 
 open scoped Classical in

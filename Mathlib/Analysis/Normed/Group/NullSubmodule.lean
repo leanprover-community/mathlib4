@@ -5,7 +5,7 @@ Authors: Yoh Tanimoto
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Continuity
+import Mathlib.Analysis.Normed.Group.Continuity
 public import Mathlib.Analysis.Normed.MulAction
 
 /-!

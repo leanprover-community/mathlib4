@@ -5,14 +5,13 @@ Authors: Johan Commelin, Eric Wieser
 -/
 module
 
+public import Mathlib.LinearAlgebra.Dimension.Localization
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 public import Mathlib.LinearAlgebra.Dual.Lemmas
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Diagonal
 public import Mathlib.LinearAlgebra.Matrix.DotProduct
 public import Mathlib.LinearAlgebra.Matrix.Dual
-public import Mathlib.LinearAlgebra.Matrix.Transvection
 public import Mathlib.Data.Nat.Totient
 public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 
@@ -194,6 +193,20 @@ theorem rank_mul_le_right [CommSemiring R] [StrongRankCondition R] (A : Matrix m
 theorem rank_mul_le [CommSemiring R] [StrongRankCondition R] (A : Matrix m n R) (B : Matrix n o R) :
     (A * B).rank ≤ min A.rank B.rank :=
   le_min (rank_mul_le_left _ _) (rank_mul_le_right _ _)
+
+theorem rank_mul_ge [CommRing R] [IsDomain R] (A : Matrix m n R) (B : Matrix n o R) :
+    A.rank + B.rank ≤ (A * B).rank + Fintype.card n := by
+  have hker : finrank R (A.mulVecLin.comp B.mulVecLin).ker ≤
+      finrank R A.mulVecLin.ker + finrank R B.mulVecLin.ker := by
+    have H := B.mulVecLin.lift_rank_comap_le A.mulVecLin.ker
+    simp only [← Submodule.finrank_eq_rank, Cardinal.lift_natCast] at H
+    exact_mod_cast H
+  have hf := A.mulVecLin.finrank_range_add_finrank_ker
+  have hg := B.mulVecLin.finrank_range_add_finrank_ker
+  have hfg := (A.mulVecLin.comp B.mulVecLin).finrank_range_add_finrank_ker
+  simp only [Module.finrank_fintype_fun_eq_card] at hf hg hfg
+  rw [rank, rank, rank, mulVecLin_mul]
+  lia
 
 theorem rank_vecMulVec_le [CommSemiring R] [StrongRankCondition R] (w : m → R) (v : n → R) :
     (Matrix.vecMulVec w v).rank ≤ 1 := by
@@ -459,7 +472,7 @@ theorem cRank_diagonal [DecidableEq m] (w : m → R) :
   have h : LinearIndependent R w' := by
     have hli' := Pi.linearIndependent_single_of_ne_zero (R := R)
       (v := fun i : m ↦ if w i = 0 then (1 : R) else w i) (by simp [ite_eq_iff'])
-    convert! hli'.comp Subtype.val Subtype.val_injective
+    convert hli'.comp Subtype.val Subtype.val_injective
     ext ⟨j, hj⟩ k
     simp [w', diagonal, hj, Pi.single_apply, eq_comm]
   have hrw : insert 0 (range (diagonal w).col) = insert 0 (range w') := by

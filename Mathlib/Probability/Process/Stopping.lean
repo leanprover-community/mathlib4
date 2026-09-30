@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Probability.Process.Adapted
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.WithTop
-public import Mathlib.Data.ENat.Lattice
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Indicator
 
 /-!
@@ -977,7 +976,7 @@ theorem isStronglyProgressive_min_stopping_time [PseudoMetrizableSpace ι]
     · lift τ (ω : Set.Iic i × Ω).2 to ι using h with t ht
       norm_cast
       refine hx_fst_le.trans (le_of_lt ?_)
-      convert! ω.prop
+      convert ω.prop
       simp only [sc, s, not_le, Set.mem_compl_iff, Set.mem_ofPred, ← ht]
       norm_cast
 
@@ -1218,7 +1217,7 @@ theorem memLp_stoppedProcess_of_mem_finset (hτ : IsStoppingTime ℱ τ) (hu : �
   refine MemLp.add ?_ ?_
   · exact (hu n).indicator (ℱ.le n {a : Ω | n ≤ τ a} (hτ.measurableSet_ge n)).nullMeasurableSet
   · suffices MemLp (fun ω => ∑ i ∈ s with i < n, {a : Ω | τ a = i}.indicator (u i) ω) p μ by
-      convert! this using 1; ext1 ω; simp only [Finset.sum_apply]
+      convert this using 1; ext1 ω; simp only [Finset.sum_apply]
     refine memLp_finsetSum _ fun i _ ↦ (hu i).indicator ?_
     exact (ℱ.le i {a : Ω | τ a = i} (hτ.measurableSet_eq i)).nullMeasurableSet
 

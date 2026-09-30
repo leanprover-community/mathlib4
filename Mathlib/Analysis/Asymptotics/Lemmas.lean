@@ -6,11 +6,11 @@ Authors: Jeremy Avigad, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Asymptotics.Ring
-public import Mathlib.Analysis.Normed.Group.Bounded
+import Mathlib.Analysis.Normed.Group.Bounded
 public import Mathlib.Analysis.Normed.Group.InfiniteSum
 public import Mathlib.Analysis.Normed.MulAction
 public import Mathlib.Topology.OpenPartialHomeomorph.Continuity
-public import Mathlib.Order.Filter.AtTopBot.Archimedean
+import Mathlib.Order.Filter.AtTopBot.Archimedean
 
 /-!
 # Further basic lemmas about asymptotics
@@ -300,7 +300,7 @@ theorem IsBigOWith.smul (h₁ : IsBigOWith c l k₁ k₂) (h₂ : IsBigOWith c' 
   simp only [IsBigOWith_def] at *
   filter_upwards [h₁, h₂] with _ hx₁ hx₂
   apply le_trans (norm_smul_le _ _)
-  convert! mul_le_mul hx₁ hx₂ (norm_nonneg _) (le_trans (norm_nonneg _) hx₁) using 1
+  convert mul_le_mul hx₁ hx₂ (norm_nonneg _) (le_trans (norm_nonneg _) hx₁) using 1
   rw [norm_smul, mul_mul_mul_comm]
 
 theorem IsBigO.smul (h₁ : k₁ =O[l] k₂) (h₂ : f' =O[l] g') :
