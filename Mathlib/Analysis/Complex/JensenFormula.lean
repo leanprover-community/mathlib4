@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.Complex.CanonicalDecomposition
 public import Mathlib.Analysis.Complex.Harmonic.Poisson
+public import Mathlib.Analysis.Normed.Module.Connected
 public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLog
-
 
 /-!
 # Jensen's Formula of Complex Analysis
