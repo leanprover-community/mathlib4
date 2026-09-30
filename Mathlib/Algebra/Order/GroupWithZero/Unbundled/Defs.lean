@@ -1,5 +1,5 @@
-module
+module -- shake: keep-all
 
-public import Mathlib.Init
+public import Mathlib.Algebra.Order.GroupWithZero.Defs
 
 deprecated_module (since := "2026-06-09")

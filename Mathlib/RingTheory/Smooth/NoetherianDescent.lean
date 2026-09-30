@@ -6,7 +6,7 @@ Authors: Judith Ludwig, Christian Merten
 module
 
 public import Mathlib.RingTheory.Extension.Presentation.Core
-public import Mathlib.RingTheory.MvPolynomial.Homogeneous
+import Mathlib.RingTheory.MvPolynomial.Homogeneous
 public import Mathlib.RingTheory.Smooth.StandardSmoothOfFree
 
 /-!
@@ -164,7 +164,7 @@ lemma exists_kerSquareLift_comp_eq_id :
   choose p hp using fun i ↦ (D.h i).mem_range_map_iff_coeffs_subset.mpr (D.coeffs_h_subset R i)
   refine ⟨?_, ?_⟩
   · refine Ideal.Quotient.liftₐ _ ((Ideal.Quotient.mkₐ _ _).comp <| aeval p) ?_
-    simp_rw [← RingHom.mem_ker, ← SetLike.le_def, Ideal.span_le, Set.range_subset_iff]
+    simp_rw [← RingHom.mem_ker, ← IsConcreteLE.le_iff, Ideal.span_le, Set.range_subset_iff]
     intro i
     simp only [← AlgHom.comap_ker, Ideal.coe_comap, Set.mem_preimage, SetLike.mem_coe]
     rw [← RingHom.ker_coe_toRingHom, Ideal.Quotient.mkₐ_ker,
@@ -226,8 +226,8 @@ public theorem exists_subalgebra_fg [Smooth A B] :
     algHom_ext (by simp [hh])
   have (j : _) : Ideal.Quotient.mk (RingHom.ker f ^ 2) (aeval h (P.relation j)) = 0 := by
     suffices ho : σ (aeval P.val (P.relation j)) = 0 by
-      convert! ho
-      exact congr($hdiag _)
+      convert ho
+      congrm $hdiag _
     simp
   simp_rw [Ideal.Quotient.eq_zero_iff_mem, hkerf,
     Ideal.mem_span_pow_iff_exists_isHomogeneous] at this

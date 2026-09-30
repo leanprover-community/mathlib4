@@ -36,7 +36,7 @@ def externalProductBifunctorCurried : (J₁ ⥤ C) ⥤ (J₂ ⥤ C) ⥤ J₁ ⥤
 `K₁ : J₁ ⥤ C` and `K₂ : J₂ ⥤ C`, this is the bifunctor `(j₁, j₂) ↦ K₁ j₁ ⊗ K₂ j₂`. -/
 @[simps!, implicit_reducible]
 def externalProductBifunctor : ((J₁ ⥤ C) × (J₂ ⥤ C)) ⥤ J₁ × J₂ ⥤ C :=
-  uncurry.obj <| (Functor.postcompose₂.obj <| uncurry).obj <|
+  uncurry.obj <| (Functor.postcompose₂.obj uncurry).obj <|
     externalProductBifunctorCurried J₁ J₂ C
 
 variable {J₁ J₂ C}
