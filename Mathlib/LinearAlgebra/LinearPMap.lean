@@ -1120,14 +1120,16 @@ theorem inverse_range (hf : f.ker = ⊥) : f.inverse.toFun.range = f.domain := b
   exact f.graph_map_fst_eq_domain
 
 @[grind! .]
-theorem mem_inverse_graph (hf : f.ker = ⊥) {x : E} (hx : x ∈ f.domain) :
+theorem prodMk_mem_inverse_graph (hf : f.ker = ⊥) {x : E} (hx : x ∈ f.domain) :
     (f ⟨x, hx⟩, x) ∈ f.inverse.graph := by
   simp [inverse_graph hf, hx]
 
+@[deprecated (since := "2026-10-01")] alias mem_inverse_graph := prodMk_mem_inverse_graph
+
 @[grind! .]
-theorem mk_inverse_mem_graph (hf : f.ker = ⊥) (y : f.inverse.domain) :
-    (f.inverse y, (y : F)) ∈ f.graph := by
-  simp [graph_eq_map_graph_inverse hf]
+theorem prodMk_inverse_mem_graph (hf : f.ker = ⊥) {y : F} (hy : y ∈ f.inverse.domain) :
+    (f.inverse ⟨y, hy⟩, y) ∈ f.graph := by
+  simp [graph_eq_map_graph_inverse hf, hy]
 
 theorem inverse_apply_eq (hf : f.ker = ⊥) {x : E} {y : F} (hy : y ∈ f.inverse.domain)
     (hx : x ∈ f.domain) (hxy : f ⟨x, hx⟩ = y) :
@@ -1173,7 +1175,7 @@ theorem inverseLM_apply_mem_domain (hf : Function.Bijective f) (x : F) :
   grind [LinearMap.mem_range_self]
 
 @[grind .]
-theorem mk_inverseLM_mem_graph (hf : Function.Bijective f) (y : F) :
+theorem prodMk_inverseLM_mem_graph (hf : Function.Bijective f) (y : F) :
     (f.inverseLM hf.2 y, y) ∈ f.graph := by
   grind [hf.1]
 
