@@ -653,6 +653,9 @@ theorem fundamentalGroupToMulOpposite_apply_eq_iff {g : Gᵐᵒᵖ} :
   have := hp.isCancelSMul.right_cancel'
   aesop
 
+@[deprecated (since := "2026-09-30")]
+alias fundamentalGroupToMulOpposite_apply_eq_Iff := fundamentalGroupToMulOpposite_apply_eq_iff
+
 variable {e} in
 theorem fundamentalGroupToMulOpposite_apply_mk_eq {γ : Path x x} {g : G} {Γ : C(I, E)}
     (hpΓ : p ∘ Γ = γ) (Γ_0 : Γ 0 = e) (Γ_1 : Γ 1 = g • e) :
@@ -782,6 +785,9 @@ variable {e} in
 theorem fundamentalGroupToMulOpposite_apply_eq_iff {g : (Multiplicative G)ᵐᵒᵖ} :
     hp.fundamentalGroupToMulOpposite e γ = g ↔ g.unop • e.1 = hp.isCoveringMap.monodromy γ e :=
   hp.toMultiplicative.fundamentalGroupToMulOpposite_apply_eq_iff
+
+@[deprecated (since := "2026-09-30")]
+alias fundamentalGroupToMulOpposite_apply_eq_Iff := fundamentalGroupToMulOpposite_apply_eq_iff 
 
 variable {e} in
 theorem fundamentalGroupToMulOpposite_apply_mk_eq {γ : Path x x} {g : Multiplicative G}
