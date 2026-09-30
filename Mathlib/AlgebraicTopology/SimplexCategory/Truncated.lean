@@ -108,7 +108,6 @@ lemma δ₂_zero_comp_δ₂_two : δ₂ (0 : Fin 2) ≫ δ₂ 2 = δ₂ 1 ≫ δ
 
 end Two
 
-
 /-- A morphism in `Truncated d` is a monomorphism if and only if it is a monomorphism in
 `SimplexCategory`. -/
 lemma mono_iff {d : ℕ} {a b : Truncated d} {f : a ⟶ b} : Mono f ↔ Mono f.hom := by
@@ -132,13 +131,11 @@ lemma epi_iff {d : ℕ} {a b : Truncated d} {f : a ⟶ b} : Epi f ↔ Epi f.hom 
   · intro hf
     refine SimplexCategory.epi_iff_surjective.2 fun j ↦ not_forall_not.1 fun hj ↦ ?_
     have hb : 1 ≤ b.obj.len := by have := hj 0; grind
-    let g (P : Fin (b.obj.len + 1) → Prop) [DecidablePred P] (hP : Monotone P) :
-        b ⟶ ⟨⦋1⦌, hb.trans b.property⟩ :=
-      ObjectProperty.homMk <| Hom.mk ⟨fun x ↦ if P x then 1 else 0, fun x y h ↦ by
-        have : P x → P y := hP h; grind⟩
-    have hg := (cancel_epi f (g := g (j < ·) fun _ _ h h' ↦ h'.trans_le h)
-      (h := g (j ≤ ·) fun _ _ h h' ↦ h'.trans h)).1 (by ext x : 4; simp [g]; grind [hj x])
-    simpa [g] using congrArg (fun φ ↦ φ.hom.toOrderHom j) hg
+    let g (t : ℕ) : b ⟶ ⟨⦋1⦌, hb.trans b.property⟩ :=
+      ObjectProperty.homMk <| Hom.mk ⟨fun x ↦ if t ≤ x then 1 else 0, fun x y h ↦ by grind⟩
+    have hg (t x) : (g t).hom.toOrderHom x = if t ≤ x.val then 1 else 0 := rfl
+    have h := (cancel_epi f (g := g (j + 1)) (h := g j)).1 (by ext x : 4; simp [hg]; grind [hj x])
+    simpa [hg] using congrArg (fun φ ↦ φ.hom.toOrderHom j) h
   · intro hf
     exact (inclusion d).epi_of_epi_map hf
 
