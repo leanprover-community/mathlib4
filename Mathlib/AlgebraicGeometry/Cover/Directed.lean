@@ -5,9 +5,7 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.LocallyDirected
 public import Mathlib.AlgebraicGeometry.PullbackCarrier
-public import Mathlib.AlgebraicGeometry.Gluing
 
 /-!
 # Locally directed covers
@@ -188,7 +186,7 @@ instance locallyDirectedPullbackCover : Cover.LocallyDirected (𝒰.pullback₁ 
     simp only [Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover,
       PreZeroHypercover.pullback₁_X, Iso.trans_inv, Iso.symm_inv, pullback.congrHom_inv,
       Category.assoc, iso]
-    convert! P.pullback_fst (pullback.snd f (𝒰.f j)) _ (𝒰.property_trans hij)
+    convert P.pullback_fst (pullback.snd f (𝒰.f j)) _ (𝒰.property_trans hij)
     apply pullback.hom_ext <;> simp [pullback.condition]
 
 end BaseChange
@@ -322,7 +320,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance : Scheme.Cover.LocallyDirected X.directedAffineCover :=
   .ofIsBasisOpensRange (by intros; simp; rfl) <| by
-    convert! X.isBasis_affineOpens
+    convert X.isBasis_affineOpens
     simp
 
 @[simp]

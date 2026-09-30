@@ -5,7 +5,6 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 public import Mathlib.Topology.Algebra.Affine
 
@@ -72,7 +71,7 @@ theorem ext {f g : P →ᴬ[R] Q} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
 
 theorem congr_fun {f g : P →ᴬ[R] Q} (h : f = g) (x : P) : f x = g x :=
-  DFunLike.congr_fun h _
+  congr($h _)
 
 /-- Forgetting its algebraic properties, a continuous affine map is a continuous map. -/
 def toContinuousMap (f : P →ᴬ[R] Q) : C(P, Q) :=
@@ -93,7 +92,7 @@ theorem coe_to_continuousMap (f : P →ᴬ[R] Q) : ((f : C(P, Q)) : P → Q) = f
 theorem to_continuousMap_injective {f g : P →ᴬ[R] Q} (h : (f : C(P, Q)) = (g : C(P, Q))) :
     f = g := by
   ext a
-  exact ContinuousMap.congr_fun h a
+  congrm $h a
 
 @[norm_cast]
 theorem coe_toAffineMap_mk (f : P →ᵃ[R] Q) (h) : ((⟨f, h⟩ : P →ᴬ[R] Q) : P →ᵃ[R] Q) = f := rfl
@@ -218,8 +217,11 @@ theorem map_vadd (f : P →ᴬ[R] Q) (p : P) (v : V) : f (v +ᵥ p) = f.contLine
   f.map_vadd' p v
 
 @[simp]
-theorem contLinear_map_vsub (f : P →ᴬ[R] Q) (p₁ p₂ : P) : f.contLinear (p₁ -ᵥ p₂) = f p₁ -ᵥ f p₂ :=
-  f.toAffineMap.linearMap_vsub p₁ p₂
+theorem contLinear_apply_vsub (f : P →ᴬ[R] Q) (p₁ p₂ : P) :
+    f.contLinear (p₁ -ᵥ p₂) = f p₁ -ᵥ f p₂ :=
+  f.toAffineMap.linear_apply_vsub p₁ p₂
+
+@[deprecated (since := "2026-09-22")] alias contLinear_map_vsub := contLinear_apply_vsub
 
 @[simp]
 theorem const_contLinear (q : Q) : (const R P q).contLinear = 0 :=

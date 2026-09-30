@@ -6,10 +6,8 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.LebesgueBochner
-public import Mathlib.Analysis.Normed.Group.InfiniteSum
 public import Mathlib.MeasureTheory.Measure.AddContent
-public import Mathlib.MeasureTheory.Measure.MeasuredSets
-public import Mathlib.MeasureTheory.Measure.Trim
+import Mathlib.MeasureTheory.Measure.MeasuredSets
 public import Mathlib.MeasureTheory.VectorMeasure.SetIntegral
 
 /-!
@@ -146,7 +144,7 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
       apply C'_dense.mono
       intro s hs
       simp only [Set.mem_ofPred_eq]
-      convert! hm s (C'C s hs)
+      convert hm s (C'C s hs)
       exact C'_dense.extend_eq lip.continuous ⟨s, hs⟩
     simpa only [Dense, IsClosed.closure_eq, Set.mem_ofPred_eq] using! this
   /- Most involved technical step: show that the extension `m₁` of `m₀` is still finitely

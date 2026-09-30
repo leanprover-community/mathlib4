@@ -6,8 +6,6 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.LinearAlgebra.RootSystem.Base
-public import Mathlib.LinearAlgebra.RootSystem.Chain
-public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 
 /-!
 # Properties of the `𝔤₂` root system.
@@ -564,7 +562,7 @@ lemma mem_allRoots (i : ι) :
     | mem => grind
     | add => simp_all
     | smul => simp_all
-  simpa using LinearMap.congr_fun key (P.root i)
+  simpa using congr($key (P.root i))
 
 open scoped Classical in
 /-- The natural labelling of `RootPairing.EmbeddedG2.allRoots`. -/
