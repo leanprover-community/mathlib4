@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 module
-public import Mathlib.Algebra.MvPolynomial.Monad
-public import Mathlib.RingTheory.MvPolynomial.Groebner
+
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
 public import Mathlib.Algebra.MonoidAlgebra.Defs
+
+import Mathlib.RingTheory.MvPolynomial.Groebner
 
 /-! # Alon's Combinatorial Nullstellensatz
 
@@ -79,14 +80,14 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
       rwa [← RingHom.mem_ker, that] at this
     apply h _ (fun i ↦ S (e i))
     · intro i
-      convert! Hdeg (e i)
+      convert Hdeg (e i)
       conv_lhs => rw [← e.symm_apply_apply i, degreeOf_rename_of_injective e.symm.injective]
     · intro x hx
       simp only [MvPolynomial.eval_rename]
       apply Heval
       intro s
       simp only [Function.comp_apply]
-      convert! hx (e.symm s)
+      convert hx (e.symm s)
       simp only [Equiv.apply_symm_apply]
   | h_empty =>
     suffices P = C (constantCoeff P) by
@@ -112,7 +113,7 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
         intro d hd
         simp only [hQ]
         rw [MvPolynomial.coeff_eval_eq_eval_coeff]
-        convert! map_zero (MvPolynomial.eval x)
+        convert map_zero (MvPolynomial.eval x)
         ext m
         simp only [AddMonoidAlgebra.coeff_zero, Finsupp.zero_apply]
         set n := (embDomain Function.Embedding.some m).update none d with hn
@@ -122,7 +123,7 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
         apply not_le.mpr hd
         rw [MvPolynomial.degreeOf_eq_sup]
         rw [← ne_eq, ← MvPolynomial.mem_support_iff] at hm
-        convert! Finset.le_sup hm
+        convert Finset.le_sup hm
         exact hn.1.symm
     ext m d
     suffices Q.coeff m = 0 by simp [this]
@@ -135,7 +136,7 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
       rw [eq_option_embedding_update_none_iff] at hn
       rw [hQ, ← hn.1, ← hn.2, optionEquivLeft_coeff_some_coeff_none, ← ne_eq,
         ← MvPolynomial.mem_support_iff] at he
-      convert! Finset.le_sup he
+      convert Finset.le_sup he
       rw [← hn.2, some_apply]
     · intro x hx
       specialize Heval' x hx
@@ -199,7 +200,7 @@ theorem combinatorial_nullstellensatz_exists_linearCombination
       linearCombination_apply, map_finsuppSum, sum, Finset.sum_eq_zero]
     intro i _
     rw [smul_eq_mul, map_mul]
-    convert! mul_zero _
+    convert mul_zero _
     rw [Alon.P, _root_.map_prod]
     apply Finset.prod_eq_zero (hx i)
     simp
