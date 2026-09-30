@@ -73,7 +73,7 @@ simproc_decl norm_det (Matrix.det _) := fun e => do
   let e ← instantiateMVars e
   let ⟨_, _, e⟩ ← inferTypeQ' e
   let ~q(@Matrix.det (Fin $n) _ _ _ $rα $matrix) := e | return .continue
-  if let some r ← normDetEchelon? e then return .done r
+  if let some r ← normDetEchelon? matrix then return .done r
   let some entries ← entriesOfMatrixLiteral? matrix | return .continue
   return .done (← normalizeDetFromEntries rα matrix entries)
 
