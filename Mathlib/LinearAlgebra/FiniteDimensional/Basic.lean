@@ -5,7 +5,6 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.Module.Projective
 public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.LinearAlgebra.Matrix.ToLin
@@ -50,8 +49,7 @@ variable {K : Type u} {V : Type v}
 
 namespace FiniteDimensional
 section DivisionRing
-variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
-  [Module K V₂]
+variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
 theorem finrank_le_iff_rank_le [FiniteDimensional K V] {n : ℕ} :
     finrank K V ≤ n ↔ Module.rank K V ≤ n := by
@@ -124,7 +122,6 @@ theorem exists_relation_sum_zero_pos_coefficient_of_finrank_succ_lt_card [Finite
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a vector space with dimension 1, each set `{v}` is a basis for `v ≠ 0`. -/
 @[simps repr_apply]
 noncomputable def basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) (v : V)
@@ -148,7 +145,6 @@ noncomputable def basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) 
           RingHom.id_apply, smul_eq_mul, Pi.smul_apply]
         exact mul_div_cancel_right₀ _ h }
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem basisSingleton_apply (ι : Type*) [Unique ι] (h : finrank K V = 1) (v : V) (hv : v ≠ 0)
     (i : ι) : basisSingleton ι h v hv i = v := by
@@ -424,12 +420,12 @@ theorem coe_ofInjectiveEndo (f : V →ₗ[K] V) (h_inj : Injective f) :
 @[simp]
 theorem ofInjectiveEndo_right_inv (f : V →ₗ[K] V) (h_inj : Injective f) :
     f * (ofInjectiveEndo f h_inj).symm = 1 :=
-  LinearMap.ext <| (ofInjectiveEndo f h_inj).apply_symm_apply
+  LinearMap.ext (ofInjectiveEndo f h_inj).apply_symm_apply
 
 @[simp]
 theorem ofInjectiveEndo_left_inv (f : V →ₗ[K] V) (h_inj : Injective f) :
     ((ofInjectiveEndo f h_inj).symm : V →ₗ[K] V) * f = 1 :=
-  LinearMap.ext <| (ofInjectiveEndo f h_inj).symm_apply_apply
+  LinearMap.ext (ofInjectiveEndo f h_inj).symm_apply_apply
 
 variable {V' : Type*} [AddCommGroup V'] [Module K V'] [FiniteDimensional K V']
 omit [FiniteDimensional K V]

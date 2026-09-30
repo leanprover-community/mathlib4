@@ -11,11 +11,8 @@ public import Mathlib.Data.Finset.Erase
 public import Mathlib.Data.Finset.Filter
 public import Mathlib.Data.Finset.Range
 public import Mathlib.Data.Finset.SDiff
-public import Mathlib.Data.Multiset.Basic
 public import Mathlib.Logic.Equiv.Set
 public import Mathlib.Order.Directed
-public import Mathlib.Order.Interval.Set.Defs
-public import Mathlib.Data.Set.SymmDiff
 
 /-!
 # Basic lemmas on finite sets
@@ -54,7 +51,7 @@ open Multiset Subtype Function
 
 universe u
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α : Type*} {β : Type*}
 
 namespace Finset
 
@@ -65,7 +62,7 @@ attribute [local trans] Subset.trans Superset.trans
 
 section Lattice
 
-variable [DecidableEq α] {s s₁ s₂ t t₁ t₂ u v : Finset α} {a b : α}
+variable [DecidableEq α] {s t u : Finset α} {a b : α}
 
 /-! #### union -/
 
@@ -110,7 +107,7 @@ instance isDirected_subset : IsDirected (Finset α) (· ⊆ ·) := isDirected_le
 
 section Erase
 
-variable [DecidableEq α] {s t u v : Finset α} {a b : α}
+variable [DecidableEq α] {s t : Finset α} {a b : α}
 
 @[simp]
 theorem erase_empty (a : α) : erase ∅ a = ∅ :=
@@ -193,7 +190,7 @@ lemma Nontrivial.exists_cons_eq {s : Finset α} (hs : s.Nontrivial) :
 
 section Sdiff
 
-variable [DecidableEq α] {s t u v : Finset α} {a b : α}
+variable [DecidableEq α] {s t : Finset α} {a b : α}
 
 lemma erase_sdiff_erase (hab : a ≠ b) (hb : b ∈ s) : s.erase a \ s.erase b = {b} := by
   ext; aesop
@@ -439,7 +436,7 @@ section Range
 
 open Nat
 
-variable {n m l : ℕ}
+variable {n m : ℕ}
 
 @[simp]
 theorem range_filter_eq {n m : ℕ} : (range n).filter (· = m) = if m < n then {m} else ∅ := by grind
@@ -492,8 +489,7 @@ end Multiset
 
 namespace List
 
-variable [DecidableEq α] {l l' : List α} {a : α} {f : α → β}
-  {s : Finset α} {t : Set β} {t' : Finset β}
+variable [DecidableEq α] {l l' : List α} {a : α} {s : Finset α}
 
 @[simp]
 theorem toFinset_union (l l' : List α) : (l ∪ l').toFinset = l.toFinset ∪ l'.toFinset := by
@@ -585,7 +581,7 @@ open Finset
 /-- The disjoint union of finsets is a sum -/
 def Finset.union (s t : Finset α) (h : Disjoint s t) :
     s ⊕ t ≃ (s ∪ t : Finset α) :=
-  Equiv.setCongr (coe_union _ _) |>.trans (Equiv.Set.union (disjoint_coe.mpr h)) |>.symm
+  Set.equivOfEq (coe_union _ _) |>.trans (Equiv.Set.union (disjoint_coe.mpr h)) |>.symm
 
 @[simp]
 theorem Finset.union_inl (h : Disjoint s t) (x : s) :
@@ -610,7 +606,7 @@ theorem Finset.union_symm_right (h : Disjoint s t) {i : α} (hi : i ∈ t)
 /-- The disjoint union of finsets is a sum -/
 def Finset.disjUnionEquiv (s t : Finset α) (h : Disjoint s t) :
     s ⊕ t ≃ s.disjUnion t h :=
-  Equiv.setCongr (coe_disjUnion h) |>.trans (Equiv.Set.union (disjoint_coe.mpr h)) |>.symm
+  Set.equivOfEq (coe_disjUnion h) |>.trans (Equiv.Set.union (disjoint_coe.mpr h)) |>.symm
 
 @[simp]
 theorem Finset.disjUnionEquiv_inl (h : Disjoint s t) (x : s) :

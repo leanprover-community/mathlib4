@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Set.Insert
 public import Mathlib.Order.BooleanAlgebra.Basic
 public import Mathlib.Tactic.Tauto
-public import Mathlib.Tactic.FastInstance
 
 /-!
 # Boolean algebra of sets
@@ -186,9 +185,9 @@ lemma disjoint_compl_right_iff_subset : Disjoint s tᶜ ↔ s ⊆ t := disjoint_
 
 alias ⟨_, _root_.Disjoint.subset_compl_right⟩ := subset_compl_iff_disjoint_right
 alias ⟨_, _root_.Disjoint.subset_compl_left⟩ := subset_compl_iff_disjoint_left
-@[deprecated LE.le.disjoint_compl_left (since := "2026-06-05")]
+@[deprecated LE.le.disjoint_compl_left +typeChanged (since := "2026-06-05")]
 alias ⟨_, _root_.HasSubset.Subset.disjoint_compl_left⟩ := disjoint_compl_left_iff_subset
-@[deprecated LE.le.disjoint_compl_right (since := "2026-06-05")]
+@[deprecated LE.le.disjoint_compl_right +typeChanged (since := "2026-06-05")]
 alias ⟨_, _root_.HasSubset.Subset.disjoint_compl_right⟩ := disjoint_compl_right_iff_subset
 
 @[simp] lemma nonempty_compl_of_nontrivial [Nontrivial α] (x : α) : Set.Nonempty {x}ᶜ := exists_ne x

@@ -66,7 +66,6 @@ noncomputable def f : ℂ ⊗[ℝ] ℂ →ₗ[ℝ] ℝ :=
       map_add' := fun z w => by simp [add_smul]
       map_smul' := fun r z => by simp [mul_smul] }
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem f_apply (z w : ℂ) : f (z ⊗ₜ[ℝ] w) = z.re * w.re := by simp [f]
 
@@ -78,10 +77,10 @@ itself. -/
 example :
     instSMulOfMul (α := ℂ ⊗[ℝ] ℂ) ≠
       (@TensorProduct.Algebra.module ℝ ℂ ℂ (ℂ ⊗[ℝ] ℂ) _ _ _ _ _ _ _ _ _ _ _ _).toSMul := by
-  have contra : I ⊗ₜ[ℝ] I ≠ (-1) ⊗ₜ[ℝ] 1 := fun c => by simpa using congr_arg f c
-  contrapose! contra
+  have contra : I ⊗ₜ[ℝ] I ≠ (-1) ⊗ₜ[ℝ] 1 := fun c => by simpa using congr(f $c)
+  contrapose contra
   rw [SMul.ext_iff, SMul.smul_eq_hSMul, @SMul.smul_eq_hSMul _ _ (_)] at contra
-  replace contra := congr_fun (congr_fun contra (1 ⊗ₜ I)) (I ⊗ₜ 1)
+  replace contra := congr($contra (1 ⊗ₜ I) (I ⊗ₜ 1))
   rw [TensorProduct.Algebra.smul_def (R := ℝ) (1 : ℂ) I (I ⊗ₜ[ℝ] (1 : ℂ))] at contra
   simpa only [smul_eq_mul, Algebra.TensorProduct.tmul_mul_tmul, one_mul, mul_one,
     one_smul, TensorProduct.smul_tmul', I_mul_I] using contra

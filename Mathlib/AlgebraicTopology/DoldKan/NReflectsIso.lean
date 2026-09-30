@@ -26,7 +26,9 @@ reflect isomorphisms for any preadditive category `C`.
 public section
 
 
-open CategoryTheory CategoryTheory.Category CategoryTheory.Idempotents Opposite Simplicial
+open CategoryTheory CategoryTheory.Category CategoryTheory.Idempotents Opposite
+
+open scoped Simplicial
 
 namespace AlgebraicTopology
 
@@ -37,7 +39,6 @@ variable {C : Type*} [Category* C] [Preadditive C]
 open MorphComponents
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance : (N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)).ReflectsIsomorphisms :=
   ⟨fun {X Y} f => by
     intro

@@ -25,7 +25,9 @@ of the chain homotopy as the opposite of alternating sum `∑ i, (-1)^i • H.h 
 universe v u
 
 open CategoryTheory CategoryTheory.SimplicialObject
-open SimplexCategory Simplicial Opposite AlgebraicTopology
+open SimplexCategory Opposite AlgebraicTopology
+
+open scoped Simplicial
 
 namespace CategoryTheory.SimplicialObject.Homotopy
 
@@ -150,7 +152,6 @@ private lemma comm_succ (n : ℕ) :
 
 end ToChainHomotopy
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A simplicial homotopy between `f` and `g` induces a chain homotopy
 between the induced morphisms on the alternating face map complexes. -/
 noncomputable def toChainHomotopy (H : Homotopy f g) :

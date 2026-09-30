@@ -91,7 +91,7 @@ def jacobiSym (a : ℤ) (b : ℕ) : ℤ :=
 @[inherit_doc]
 scoped[NumberTheorySymbols] notation "J(" a " | " b ")" => jacobiSym a b
 
-open NumberTheorySymbols
+open scoped NumberTheorySymbols
 
 /-!
 ### Properties of the Jacobi symbol
@@ -213,13 +213,11 @@ theorem sq_one' {a : ℤ} {b : ℕ} (h : a.gcd b = 1) : J(a ^ 2 | b) = 1 := by r
 
 /-- The symbol `J(a | b)` depends only on `a` mod `b`. -/
 theorem mod_left (a : ℤ) (b : ℕ) : J(a | b) = J(a % b | b) :=
-  congr_arg List.prod <|
-    List.pmap_congr_left _
-      (by
+  congr(List.prod $(List.pmap_congr_left _ (by
         rintro p hp _ h₂
         conv_rhs =>
           rw [legendreSym.mod, Int.emod_emod_of_dvd _ (Int.natCast_dvd_natCast.2 <|
-            dvd_of_mem_primeFactorsList hp), ← legendreSym.mod])
+            dvd_of_mem_primeFactorsList hp), ← legendreSym.mod])))
 
 /-- The symbol `J(a | b)` depends only on `a` mod `b`. -/
 theorem mod_left' {a₁ a₂ : ℤ} {b : ℕ} (h : a₁ % b = a₂ % b) : J(a₁ | b) = J(a₂ | b) := by
@@ -501,7 +499,9 @@ We follow the implementation as in `Mathlib/Tactic/NormNum/LegendreSymbol.lean`.
 -- i.e. needs to be used publicly.
 set_option backward.privateInPublic true
 
-open NumberTheorySymbols jacobiSym
+open jacobiSym
+
+open scoped NumberTheorySymbols
 
 /-- Computes `J(a | b)` (or `-J(a | b)` if `flip` is set to `true`) given assumptions, by reducing
 `a` to odd by repeated division and then using quadratic reciprocity to swap `a`, `b`. -/

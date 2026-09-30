@@ -346,7 +346,6 @@ def Trident.IsLimit.mk' [Nonempty J] (t : Trident f)
   Trident.IsLimit.mk t (fun s => (create s).1) (fun s => (create s).2.1) fun s _ w =>
     (create s).2.2 (w zero)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This is a slightly more convenient method to verify that a cotrident is a colimit cocone. It
     only asks for a proof of facts that carry any mathematical content -/
 def Cotrident.IsColimit.mk [Nonempty J] (t : Cotrident f) (desc : ∀ s : Cotrident f, t.pt ⟶ s.pt)
@@ -512,7 +511,6 @@ def Trident.ext [Nonempty J] {s t : Trident f} (i : s.pt ≅ t.pt)
   hom := Trident.mkHom i.hom w
   inv := Trident.mkHom i.inv (by rw [← w, Iso.inv_hom_id_assoc])
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Helper function for constructing morphisms between coequalizer cotridents.
 -/
 @[simps]
@@ -524,7 +522,6 @@ def Cotrident.mkHom [Nonempty J] {s t : Cotrident f} (k : s.pt ⟶ t.pt)
     · simpa using f (Classical.arbitrary J) ≫= w
     · exact w
 
-set_option backward.isDefEq.respectTransparency false in
 /-- To construct an isomorphism between cotridents,
 it suffices to give an isomorphism between the cocone points
 and check that it commutes with the `π` morphisms.

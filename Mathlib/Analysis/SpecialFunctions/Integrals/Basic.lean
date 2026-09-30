@@ -5,9 +5,8 @@ Authors: Benjamin Davidson
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
-public import Mathlib.Analysis.SpecialFunctions.NonIntegrable
-public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
+import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 public import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Sinc
 public import Mathlib.Analysis.SpecialFunctions.Log.InvLog
@@ -47,7 +46,7 @@ namespace intervalIntegral
 
 open MeasureTheory
 
-variable {f : ℝ → ℝ} {μ : Measure ℝ} [IsLocallyFiniteMeasure μ] (c d : ℝ)
+variable {f : ℝ → ℝ} (c d : ℝ)
 
 /-! ### Integrals of the form `c * ∫ x in a..b, f (c * x + d)` -/
 section
@@ -182,7 +181,7 @@ theorem integral_pow_abs_sub_uIoc : ∫ x in Ι a b, |x - a| ^ n = |b - a| ^ (n 
         rw [uIoc_of_le hab, ← integral_of_le hab]
       _ = ∫ x in 0..(b - a), x ^ n := by
         simp only [integral_comp_sub_right fun x => |x| ^ n, sub_self]
-        refine integral_congr fun x hx => congr_arg₂ Pow.pow (abs_of_nonneg <| ?_) rfl
+        refine integral_congr fun x hx => congr($(abs_of_nonneg ?_) ^ _)
         rw [uIcc_of_le (sub_nonneg.2 hab)] at hx
         exact hx.1
       _ = |b - a| ^ (n + 1) / (n + 1) := by simp [abs_of_nonneg (sub_nonneg.2 hab)]
@@ -191,7 +190,7 @@ theorem integral_pow_abs_sub_uIoc : ∫ x in Ι a b, |x - a| ^ n = |b - a| ^ (n 
         rw [uIoc_of_ge hab.le, ← integral_of_le hab.le]
       _ = ∫ x in b - a..0, (-x) ^ n := by
         simp only [integral_comp_sub_right fun x => |x| ^ n, sub_self]
-        refine integral_congr fun x hx => congr_arg₂ Pow.pow (abs_of_nonpos <| ?_) rfl
+        refine integral_congr fun x hx => congr($(abs_of_nonpos ?_) ^ _)
         rw [uIcc_of_le (sub_nonpos.2 hab.le)] at hx
         exact hx.2
       _ = |b - a| ^ (n + 1) / (n + 1) := by
@@ -366,6 +365,17 @@ theorem integral_div_sq_add_sq {c : ℝ} :
     · simp [hc]
     · rw [integral_const_mul, integral_inv_sq_add_sq hc]
       field_simp
+
+theorem integral_id_div_sq_add_sq {c : ℝ} (hc : c ≠ 0) :
+    ∫ x : ℝ in a..b, x / (c ^ 2 + x ^ 2) = (log (c ^ 2 + b ^ 2) - log (c ^ 2 + a ^ 2)) / 2 := by
+  rw [sub_div]
+  apply integral_eq_sub_of_hasDerivAt (f := fun x => log (c ^ 2 + x ^ 2) / 2)
+  · intro x _
+    have h := (((hasDerivAt_pow 2 x).const_add (c ^ 2)).log
+      (by dsimp; positivity)).div_const 2
+    convert! h using 1
+    ring
+  · exact (continuous_id.div (by fun_prop) fun x => by positivity).intervalIntegrable _ _
 
 /-- The integrand is chosen to match the conclusion of `Real.deriv_log_log`. -/
 @[simp]

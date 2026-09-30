@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 public import Mathlib.Algebra.Homology.HomologicalComplexLimits
 
 /-!

@@ -6,10 +6,8 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
-public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
 public import Mathlib.Analysis.InnerProductSpace.Laplacian
-public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
 /-!
 # Derivatives of Schwartz functions
@@ -40,7 +38,7 @@ In this file we define the various notions of derivatives of Schwartz functions.
 
 @[expose] public noncomputable section
 
-variable {ι 𝕜 𝕜' D E F V F F₁ F₂ F₃ : Type*}
+variable {ι 𝕜 D E F V F F₁ F₂ F₃ : Type*}
 
 namespace SchwartzMap
 

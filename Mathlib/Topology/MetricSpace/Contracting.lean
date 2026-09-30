@@ -5,8 +5,7 @@ Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudr
 -/
 module
 
-public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.Data.Setoid.Basic
+import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.Dynamics.FixedPoints.Topology
 public import Mathlib.Topology.MetricSpace.Lipschitz
 public import Mathlib.Topology.Semicontinuity.Basic
@@ -36,7 +35,9 @@ contracting map, fixed point, Banach fixed point theorem, Caristi fixed point th
 
 @[expose] public section
 
-open NNReal Topology ENNReal Filter Function
+open NNReal ENNReal Filter Function
+
+open scoped Topology
 
 variable {α : Type*}
 
