@@ -292,16 +292,13 @@ theorem apply_apply' (v : E') (f : E' →SL[σ₁₂] F') : apply' F' σ₁₂ v
 
 @[simp] lemma toLinearMap_apply' : (apply' (E' := E') F' σ₁₂).toLinearMap = applyₗ' F' σ₁₂ := rfl
 
-variable (𝕜 Fₗ)
-
+variable (𝕜 Fₗ') in
 /-- The continuous semilinear map obtained by applying a continuous semilinear map at a given
 vector.
 
 This is the continuous version of `applyₗ` (and fully continuous version of `LinearMap.applyₗ`). -/
 def apply : E' →L[𝕜] (E' →L[𝕜] Fₗ') →L[𝕜] Fₗ' :=
   flip (.id 𝕜 (E' →L[𝕜] Fₗ'))
-
-variable {𝕜 Fₗ'}
 
 @[simp]
 theorem apply_apply (v : E') (f : E' →L[𝕜] Fₗ') : apply 𝕜 Fₗ' v f = f v :=
