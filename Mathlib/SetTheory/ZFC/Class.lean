@@ -185,7 +185,8 @@ end ZFClass
 /-- The collection of all classes.
 We define `Class` as `Set ZFSet`, as this allows us to get many instances automatically. However, in
 practice, we treat it as (the definitionally equal) `ZFSet → Prop`. This means, the preferred way to
-state that `x : ZFSet` belongs to `A : Class` is to write `A x`. -/
+state that `x : ZFSet` belongs to `A : Class` is to write `A x`. This is poor practice, and one of
+the reasons why `Class` is deprecated in favor of `ZFClass`. -/
 @[deprecated ZFClass (since := "2026-09-25"), pp_with_univ, use_set_notation_for_order]
 def Class :=
   Set ZFSet deriving LE, EmptyCollection, Nonempty, Union, Inter, Compl, SDiff
