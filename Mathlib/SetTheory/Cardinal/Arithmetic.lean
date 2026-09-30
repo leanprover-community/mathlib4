@@ -52,21 +52,17 @@ theorem mul_eq_self {c : Cardinal} (hc : ℵ₀ ≤ c) : c * c = c := by
   have : NoMaxOrder α := by
     rw [← isSuccPrelimit_type_lt_iff, ← hα]
     exact (isSuccLimit_ord hc).isSuccPrelimit
-  -- Define an order `s` on `α × α`, comparing first by `max x.1 x.2`, then by `toLex (x.1, x.2)`.
-  let g : α × α → α := uncurry max
-  let f : α × α ↪ α ×ₗ (α ×ₗ α) := ⟨fun p ↦ toLex (g p, toLex p), fun p q ↦ congrArg Prod.snd⟩
-  let s := f ⁻¹'o (· < ·)
-  have : IsWellOrder _ s := (RelEmbedding.preimage ..).isWellOrder
-  -- Every initial segment of `s` is contained in `β × β` for some `β` of cardinality `< c`.
-  -- By the inductive hypothesis, this means `#(β × β) < c`. Thus, `α × α` must have
-  -- cardinality `≤ c`.
-  refine @card_le_card (type s) (typeLT α) <| le_of_forall_lt fun o h ↦ ?_
-  obtain ⟨p, rfl⟩ := typein_surj s h
-  obtain ⟨q, hq'⟩ := exists_gt (g p)
-  rw [← hα, lt_ord]
+  -- We embed `α × α` into `α ×ₗ α ×ₗ α` by sending `(x, y)` to `(max x y, x, y)`.
+  -- Every initial segment of the embedding is contained in `β × β` for some `#β < c`.
+  -- By the inductive hypothesis, this means `#(β × β) < c`, and thus `#(α × α) ≤ c`.
+  apply mk_le_of_forall_mk_setOfPred_lt (β := α ×ₗ (α ×ₗ α))
+    (fun p ↦ toLex (uncurry max p, toLex p)) (fun _ _ ↦ congrArg Prod.snd)
+  intro ⟨a, b⟩
+  obtain ⟨q, hq'⟩ := exists_gt (max a b)
   apply lt_of_le_of_lt (b := #(Iio q) * #(Iio q))
-  · apply (Set.embeddingOfSubset { x | s x p } ..).cardinal_le.trans_eq (mk_setProd ..)
-    simp [s, f, Prod.Lex.lt_iff, subset_def]
+  · rw [← mk_setProd]
+    apply (Set.embeddingOfSubset ..).cardinal_le
+    simp [Prod.Lex.lt_iff, subset_def]
     grind
   rcases lt_or_ge #(Iio q) ℵ₀ with hq | hq
   · exact (mul_lt_aleph0 hq hq).trans_le hc
