@@ -99,7 +99,7 @@ jobs:
           path: workflow-actions
           persist-credentials: false # no later step needs git credentials
 
-      # Shared self-hosted setup (jq, cache-trust dispatch,
+      # Shared self-hosted setup (cache-trust dispatch,
       # PR-branch checkout, elan + toolchain/LEAN_SRC_PATH env, CI tools, dependency
       # download); see the action for per-step rationale. It is loaded from the
       # `Checkout local actions` checkout above, which therefore runs first.
