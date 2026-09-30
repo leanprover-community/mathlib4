@@ -5,8 +5,7 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Data.Nat.Factorization.LCM
-public import Mathlib.Algebra.Group.TypeTags.Finite
+import Mathlib.Algebra.Group.TypeTags.Finite
 public import Mathlib.RingTheory.RootsOfUnity.Basic
 
 /-!

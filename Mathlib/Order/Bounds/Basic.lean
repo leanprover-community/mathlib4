@@ -6,10 +6,10 @@ Authors: Johannes Hölzl, Yury Kudryashov
 module
 
 public import Mathlib.Order.Antisymmetrization
-public import Mathlib.Order.Bounds.Defs
-public import Mathlib.Order.Directed
 public import Mathlib.Order.BoundedOrder.Monotone
+public import Mathlib.Order.Directed
 public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Order.SetNotation
 
 /-!
 # Upper / lower bounds
@@ -25,7 +25,7 @@ open Function Set
 
 open OrderDual (toDual ofDual)
 
-variable {α β γ : Type*}
+variable {α β γ : Type*} {ι : Sort*}
 
 section
 
@@ -726,6 +726,43 @@ theorem isLUB_lowerBounds : IsLUB (lowerBounds s) a ↔ IsGLB s a :=
 
 end
 
+section OrderSupSet
+
+variable [Preorder α]
+
+@[to_dual]
+protected theorem IsLUB.isLUB_sSup [OrderSupSet α] {s : Set α} {a : α} :
+    IsLUB s a → IsLUB s (sSup s) :=
+  OrderSupSet.isLUB_sSup_of_isLUB _ _
+
+@[to_dual]
+theorem exists_isLUB_iff_isLUB_sSup [OrderSupSet α] {s : Set α} :
+    (∃ a, IsLUB s a) ↔ IsLUB s (sSup s) :=
+  ⟨fun ⟨_, h⟩ ↦ h.isLUB_sSup, fun h ↦ ⟨_, h⟩⟩
+
+/-- Constructs an `OrderInfSet` from an `OrderSupSet` by defining the infimum of a set as the
+supremum of its lower bounds. -/
+@[to_dual
+/-- Constructs an `OrderSupSet` from an `OrderInfSet` by defining the supremum of a set as the
+infimum of its upper bounds. -/]
+abbrev OrderInfSet.ofOrderSupSet [OrderSupSet α] :
+    OrderInfSet α where
+  sInf s := sSup (lowerBounds s)
+  isGLB_sInf_of_isGLB _ _ h := isLUB_lowerBounds.mp h.isLUB.isLUB_sSup
+
+open Classical in
+/-- Noncomputably constructs an `OrderSupSet` using the axiom of choice,
+where `sSup s` returns `d` if a least upper bound does not exist. -/
+@[to_dual
+/-- Noncomputably constructs an `OrderInfSet` using the axiom of choice,
+where `sInf s` returns `d` if a greatest lower bound does not exist. -/]
+noncomputable abbrev OrderSupSet.choose (d : α) :
+    OrderSupSet α where
+  sSup s := if h : ∃ x, IsLUB s x then h.choose else d
+  isLUB_sSup_of_isLUB _ _ h := dite_eq_left (Exists.intro _ h) ▸ choose_spec _
+
+end OrderSupSet
+
 section Minimal
 
 variable [Preorder α] {s : Set α} {a b : α}
@@ -824,6 +861,66 @@ theorem IsLeast.isLeast_iff_eq (Ha : IsLeast s a) : IsLeast s b ↔ a = b :=
 @[to_dual]
 theorem IsLUB.unique (Ha : IsLUB s a) (Hb : IsLUB s b) : a = b :=
   IsLeast.unique Ha Hb
+
+section OrderSupSet
+
+variable [OrderSupSet α]
+
+@[to_dual]
+theorem IsLUB.sSup_eq {s : Set α} {a : α} (h : IsLUB s a) :
+    sSup s = a :=
+  h.isLUB_sSup.unique h
+
+@[to_dual]
+theorem IsLUB.iSup_eq {f : ι → α} {a : α} (h : IsLUB (.range f) a) :
+    iSup f = a :=
+  h.sSup_eq
+
+@[to_dual (attr := simp)]
+theorem sSup_singleton {a : α} : sSup {a} = a :=
+  isLUB_singleton.sSup_eq
+
+@[to_dual (attr := simp)]
+theorem sSup_empty [OrderBot α] : sSup ∅ = (⊥ : α) :=
+  isLUB_empty.sSup_eq
+
+@[to_dual (attr := simp)]
+theorem sSup_univ [OrderTop α] : sSup univ = (⊤ : α) :=
+  isLUB_univ.sSup_eq
+
+@[to_dual]
+theorem sSup_pair {α} [SemilatticeSup α] [OrderSupSet α] {a b : α} : sSup {a, b} = a ⊔ b :=
+  isLUB_pair.sSup_eq
+
+/-- This `simp` lemma goes well with `sSup_empty` in a complete lattice. -/
+@[to_dual (attr := simp) iInf_of_isEmpty
+/-- This `simp` lemma goes well with `sInf_empty` in a complete lattice. -/]
+theorem iSup_of_empty' {α ι} [SupSet α] [IsEmpty ι] (f : ι → α) : iSup f = sSup (∅ : Set α) :=
+  congr_arg sSup (range_eq_empty f)
+
+@[to_dual]
+theorem iSup_of_empty [OrderBot α] [IsEmpty ι] (f : ι → α) : iSup f = ⊥ :=
+  (iSup_of_empty' f).trans sSup_empty
+
+@[to_dual]
+theorem iSup_const [Nonempty ι] : ⨆ _ : ι, a = a := by
+  rw [iSup, range_const, sSup_singleton]
+
+@[to_dual le_iInf_const]
+theorem iSup_const_le [OrderBot α] : ⨆ _ : ι, a ≤ a := by
+  obtain h | h := isEmpty_or_nonempty ι
+  · simp
+  · simp [iSup_const]
+
+@[to_dual]
+lemma iSup_unique [Unique ι] (f : ι → α) : ⨆ i, f i = f default := by
+  simp only [congr_arg f (Unique.eq_default _), iSup_const]
+
+@[to_dual (attr := simp)]
+theorem iSup_bot [OrderBot α] : (⨆ _ : ι, ⊥ : α) = ⊥ :=
+  bot_unique iSup_const_le
+
+end OrderSupSet
 
 @[to_dual self (reorder := a b, Ha Hb)]
 theorem Set.subsingleton_of_isLUB_le_isGLB (Ha : IsGLB s a) (Hb : IsLUB s b) (hab : b ≤ a) :

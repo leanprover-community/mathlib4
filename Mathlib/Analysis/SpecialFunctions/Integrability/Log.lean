@@ -6,10 +6,10 @@ Authors: Stefan Kebekus
 module
 
 public import Mathlib.Analysis.Meromorphic.FactorizedRational
-public import Mathlib.Analysis.Normed.Module.Connected
-public import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
+import Mathlib.Analysis.Normed.Module.Connected
+import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
 public import Mathlib.Analysis.SpecialFunctions.Log.PosLog
-public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.MeasureTheory.Integral.CircleIntegral
 
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
