@@ -177,6 +177,9 @@ theorem HasFPowerSeriesAt.dslope_fslope {p : FormalMultilinearSeries 𝕜 𝕜 E
       simpa [dslope, slope, h, smul_smul, hxx] using this
     simpa [hp0] using ((hasSum_nat_add_iff' 1).mpr hx).const_smul x⁻¹
 
+@[deprecated (since := "2026-09-30")]
+alias HasFPowerSeriesAt.has_fpower_series_dslope_fslope := HasFPowerSeriesAt.dslope_fslope
+
 /--
 Away from the base point `a`, the function `dslope f a` is analytic within `s` at `z` as soon as `f`
 is.
