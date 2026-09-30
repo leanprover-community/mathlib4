@@ -80,12 +80,10 @@ noncomputable instance [DecidableEq A] [AddCommMonoid A] :
     rw [decomposeTensor_apply] at hi hj ⊢
     obtain ⟨xi, rfl⟩ := hi
     obtain ⟨xj, rfl⟩ := hj
-    induction xi using TensorProduct.induction_on with
-    | zero => simp
+    induction xi using TensorProduct.inductionOn with
     | tmul x y =>
       simp only [LinearMap.rTensor_tmul, Submodule.subtype_apply]
-      induction xj using TensorProduct.induction_on with
-      | zero => simp
+      induction xj using TensorProduct.inductionOn with
       | tmul u v =>
         obtain ⟨x, hx⟩ := x
         obtain ⟨u, hu⟩ := u
@@ -123,7 +121,6 @@ lemma toFinsupp_single_tmul (c : A) (z : L) :
   simp [← toFinsupp_symm_single]
 
 open Finsupp in
-set_option backward.isDefEq.respectTransparency false in
 /-- The residue pairing on the loop algebra.  When `A = ℤ` and the elements are viewed as Laurent
 polynomials with coefficients in `L`, the pairing is interpreted as `(f, g) ↦ Res f dg`. -/
 @[simps]

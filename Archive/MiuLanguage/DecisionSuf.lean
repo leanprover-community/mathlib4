@@ -3,8 +3,10 @@ Copyright (c) 2020 Gihan Marasingha. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gihan Marasingha
 -/
-import Archive.MiuLanguage.DecisionNec
-import Mathlib.Tactic.Linarith
+module
+
+public import Archive.MiuLanguage.DecisionNec
+public import Mathlib.Tactic.Linarith
 
 /-!
 # Decision procedure - sufficient condition and decidability
@@ -44,6 +46,7 @@ introduce an additional `U` and ensure that the final number of `U`s will be eve
 miu, decision procedure, decidability, decidable_pred, decidable
 -/
 
+@[expose] public section
 
 namespace Miu
 
@@ -254,7 +257,7 @@ theorem count_I_eq_length_of_count_U_zero_and_neg_mem {ys : Miustr} (hu : count 
     · -- case `x = M` gives a contradiction.
       exfalso; exact hm mem_cons_self
     · -- case `x = I`
-      rw [count_cons, beq_self_eq_true, if_pos rfl, length, succ_inj]
+      rw [count_cons, beq_self_eq_true, ite_eq_left rfl, length, succ_inj]
       apply hxs
       · simpa only [count]
       · rw [mem_cons, not_or] at hm; exact hm.2
@@ -311,7 +314,7 @@ theorem ind_hyp_suf (k : ℕ) (ys : Miustr) (hu : count U ys = succ k) (hdec : D
   rcases eq_append_cons_U_of_count_U_pos hu with ⟨as, bs, rfl⟩
   use as, bs
   refine ⟨rfl, ?_, ?_, ?_⟩
-  · simp_rw [count_append, count_cons, beq_self_eq_true, if_true, add_succ, beq_iff_eq,
+  · simp_rw [count_append, count_cons, beq_self_eq_true, ite_true, add_succ, beq_iff_eq,
       reduceCtorEq, reduceIte, add_zero, succ_inj] at hu
     rwa [count_append, count_append]
   · apply And.intro rfl

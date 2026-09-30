@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Star.UnitaryStarAlgAut
 public import Mathlib.Analysis.InnerProductSpace.Dual
-public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Analysis.LocallyConvex.SeparatingDual
 
 
@@ -109,13 +108,14 @@ public section
 
 /-- The adjoint of a bounded operator `A` from a Hilbert space `E` to another Hilbert space `F`,
   denoted as `A†`. -/
+@[wikidata Q1509647]
 def adjoint : (E →L[𝕜] F) ≃ₗᵢ⋆[𝕜] F →L[𝕜] E :=
   LinearIsometryEquiv.ofSurjective { adjointAux with norm_map' := adjointAux_norm } fun A =>
     ⟨adjointAux A, adjointAux_adjointAux A⟩
 
 @[inherit_doc]
 scoped[InnerProduct] postfix:1000 "†" => ContinuousLinearMap.adjoint
-open InnerProduct
+open scoped InnerProduct
 
 /-- The fundamental property of the adjoint. -/
 theorem adjoint_inner_left (A : E →L[𝕜] F) (x : E) (y : F) : ⟪(A†) y, x⟫ = ⟪y, A x⟫ :=
@@ -337,6 +337,12 @@ lemma _root_.InnerProductSpace.rankOne_comp {E G : Type*} [SeminormedAddCommGrou
     (x : E) (y : F) (f : G →L[𝕜] F) :
     rankOne 𝕜 x y ∘L f = rankOne 𝕜 x (adjoint f y) := by
   simp_rw [rankOne_def', comp_assoc, innerSL_apply_comp]
+
+theorem lipschitzWith_adjoint_apply (f : E) :
+    LipschitzWith ‖f‖₊ (fun T : F →L[𝕜] E ↦ T.adjoint f) :=
+  .of_dist_le_mul fun x y ↦ by
+    simp only [dist_eq_norm, coe_nnnorm, ← sub_apply, ← map_sub]
+    grw [le_opNorm, mul_comm, LinearIsometryEquiv.norm_map]
 
 end
 
@@ -1072,4 +1078,4 @@ theorem LinearIsometry.adjoint_comp_self' {E E' : Type*}
   have := FiniteDimensional.complete 𝕜 E
   have := FiniteDimensional.complete 𝕜 E'
   ext x
-  exact congr($(f.adjoint_comp_self) x)
+  congrm $f.adjoint_comp_self x

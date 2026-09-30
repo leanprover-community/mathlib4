@@ -10,6 +10,7 @@ public import Mathlib.Topology.Order.UpperLowerSetTopology
 public import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
 
 /-!
+# Sheaves on the Alexandrov topology of a preorder
 
 Let `X` be a preorder `≤`, and consider the associated Alexandrov topology on `X`.
 Given a functor `F : X ⥤ C` to a complete category, we can extend `F` to a
@@ -89,7 +90,7 @@ This definition is primarily meant to be used in `lowerCone`, and `isLimit` belo
 @[simps]
 def projSup {ι : Type v} (Us : ι → Opens X) :
     StructuredArrow (.op <| iSup Us) (principals X) ⥤
-      (OpensLeCover (X := .of X) Us)ᵒᵖ where
+      (OpensLeCover (X := ↧X) Us)ᵒᵖ where
   obj f := .op <| .mk (principalOpen f.right) <| exists_le_of_le_sup Us f.hom.unop.le
   map e := (ObjectProperty.homMk (homOfLE (principalOpen_le e.right.le))).op
 
@@ -100,7 +101,7 @@ variable {F} in
 @[simps]
 def lowerCone
     {α : Type v} (Us : α → Opens X)
-    (S : Cone ((ObjectProperty.ι _ : OpensLeCover (X := .of X) Us ⥤ _).op ⋙
+    (S : Cone ((ObjectProperty.ι _ : OpensLeCover (X := ↧X) Us ⥤ _).op ⋙
       principalsKanExtension F)) :
     Cone (generator (iSup Us) ⋙ F) where
   pt := S.pt
@@ -167,7 +168,6 @@ def isLimit {X : TopCat.{v}} [Preorder X] [Topology.IsUpperSet X]
       congr
       apply limit.lift_π
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem isSheaf_principalsKanExtension
     {X : TopCat.{v}} [Preorder X] [Topology.IsUpperSet X] (F : X ⥤ C) :
     Presheaf.IsSheaf (principalsKanExtension F) := by
@@ -180,7 +180,6 @@ end Alexandrov
 
 open Alexandrov
 
-set_option backward.isDefEq.respectTransparency.types false in
 /--
 The main theorem of this file.
 If `X` is a topological space and preorder whose topology is the `UpperSet` topology associated
@@ -198,6 +197,6 @@ theorem Topology.IsUpperSet.isSheaf_of_isRightKanExtension
   let _ : (principalsKanExtension F).IsRightKanExtension γ := inferInstance
   have : P ≅ principalsKanExtension F :=
     @rightKanExtensionUnique _ _ _ _ _ _ _ _ _ _ (by assumption) _ _ (by assumption)
-  change TopCat.Presheaf.IsSheaf (X := TopCat.of X) P
+  change TopCat.Presheaf.IsSheaf (X := ↧X) P
   rw [isSheaf_iso_iff this]
-  exact isSheaf_principalsKanExtension (X := TopCat.of X) F
+  exact isSheaf_principalsKanExtension (X := ↧X) F

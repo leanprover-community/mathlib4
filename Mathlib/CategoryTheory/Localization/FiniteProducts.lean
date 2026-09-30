@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.ConeCategory
+import Mathlib.CategoryTheory.Limits.ConeCategory
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Localization.Adjunction
 public import Mathlib.CategoryTheory.Localization.HasLocalization
@@ -80,7 +80,6 @@ lemma adj_counit_app (F : Discrete J ⥤ C) :
         whiskerRight (constLimAdj.counit.app F) L := by
   apply constLimAdj.localization_counit_app
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `Localization.preservesProductsOfShape`. -/
 noncomputable def isLimitMapCone (F : Discrete J ⥤ C) :

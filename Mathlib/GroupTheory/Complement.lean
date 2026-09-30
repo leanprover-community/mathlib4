@@ -259,7 +259,7 @@ lemma isComplement_range_left {f : G ⧸ H → G} (hf : ∀ q, ↑(f q) = q) :
   rw [isComplement_subgroup_right_iff_bijective]
   refine ⟨?_, fun q ↦ ⟨⟨f q, q, rfl⟩, hf q⟩⟩
   rintro ⟨-, q₁, rfl⟩ ⟨-, q₂, rfl⟩ h
-  exact Subtype.ext <| congr_arg f <| ((hf q₁).symm.trans h).trans (hf q₂)
+  exact Subtype.ext congr(f $(((hf q₁).symm.trans h).trans (hf q₂)))
 
 @[to_additive]
 lemma isComplement_range_right {f : Quotient (QuotientGroup.rightRel H) → G}
@@ -267,7 +267,7 @@ lemma isComplement_range_right {f : Quotient (QuotientGroup.rightRel H) → G}
   rw [isComplement_subgroup_left_iff_bijective]
   refine ⟨?_, fun q ↦ ⟨⟨f q, q, rfl⟩, hf q⟩⟩
   rintro ⟨-, q₁, rfl⟩ ⟨-, q₂, rfl⟩ h
-  exact Subtype.ext <| congr_arg f <| ((hf q₁).symm.trans h).trans (hf q₂)
+  exact Subtype.ext congr(f $(((hf q₁).symm.trans h).trans (hf q₂)))
 
 @[to_additive]
 lemma exists_isComplement_left (H : Subgroup G) (g : G) : ∃ S, IsComplement S H ∧ g ∈ S := by
@@ -276,7 +276,7 @@ lemma exists_isComplement_left (H : Subgroup G) (g : G) : ∃ S, IsComplement S 
     QuotientGroup.mk g, Function.update_self (Quotient.mk'' g) g Quotient.out⟩
   by_cases hq : q = Quotient.mk'' g
   · exact hq.symm ▸ congr_arg _ (Function.update_self (Quotient.mk'' g) g Quotient.out)
-  · simp [Function.update, dif_neg hq, q.out_eq']
+  · simp [Function.update, dite_eq_right hq, q.out_eq']
 
 @[to_additive]
 lemma exists_isComplement_right (H : Subgroup G) (g : G) :
@@ -286,7 +286,7 @@ lemma exists_isComplement_right (H : Subgroup G) (g : G) :
     Quotient.mk'' g, Function.update_self (Quotient.mk'' g) g Quotient.out⟩
   by_cases hq : q = Quotient.mk'' g
   · exact hq.symm ▸ congr_arg _ (Function.update_self (Quotient.mk'' g) g Quotient.out)
-  · simp [Function.update, dif_neg hq, q.out_eq']
+  · simp [Function.update, dite_eq_right hq, q.out_eq']
 
 /-- Given two subgroups `H' ⊆ H`, there exists a left transversal to `H'` inside `H`. -/
 @[to_additive /-- Given two subgroups `H' ⊆ H`, there exists a transversal to `H'` inside `H` -/]
@@ -301,7 +301,7 @@ lemma exists_left_transversal_of_le {H' H : Subgroup G} (h : H' ≤ H) :
     rw [← this, cmem.mul_eq]
     simp
   · rw [← cmem.card_mul_card]
-    refine congr_arg₂ (· * ·) ?_ ?_ <;>
+    congrm ?_ * ?_ <;>
       exact Nat.card_congr (Equiv.Set.image _ _ <| subtype_injective H).symm
 
 /-- Given two subgroups `H' ⊆ H`, there exists a right transversal to `H'` inside `H`. -/
@@ -318,7 +318,7 @@ lemma exists_right_transversal_of_le {H' H : Subgroup G} (h : H' ≤ H) :
     simp
   · have : Nat.card H'' * Nat.card S = Nat.card H := cmem.card_mul_card
     rw [← this]
-    refine congr_arg₂ (· * ·) ?_ ?_ <;>
+    congrm ?_ * ?_ <;>
       exact Nat.card_congr (Equiv.Set.image _ _ <| subtype_injective H).symm
 
 namespace IsComplement
@@ -502,7 +502,7 @@ theorem inv_toLeftFun_mul_mem (hS : IsComplement S H) (g : G) :
 @[to_additive]
 theorem inv_mul_toLeftFun_mem (hS : IsComplement S H) (g : G) :
     g⁻¹ * toLeftFun hS g ∈ H :=
-  (congr_arg (· ∈ H) (by rw [mul_inv_rev, inv_inv])).mp (H.inv_mem (inv_toLeftFun_mul_mem hS g))
+  congr($(by rw [mul_inv_rev, inv_inv]) ∈ H).mp (H.inv_mem (inv_toLeftFun_mul_mem hS g))
 
 /-- A right transversal is in bijection with right cosets. -/
 @[to_additive /-- A right transversal is in bijection with right cosets. -/]
@@ -546,7 +546,7 @@ theorem mul_inv_toRightFun_mem (hT : IsComplement H T) (g : G) :
 @[to_additive]
 theorem toRightFun_mul_inv_mem (hT : IsComplement H T) (g : G) :
     (toRightFun hT g : G) * g⁻¹ ∈ H :=
-  (congr_arg (· ∈ H) (by rw [mul_inv_rev, inv_inv])).mp (H.inv_mem (mul_inv_toRightFun_mem hT g))
+  congr($(by rw [mul_inv_rev, inv_inv]) ∈ H).mp (H.inv_mem (mul_inv_toRightFun_mem hT g))
 
 @[to_additive]
 theorem encard_left [H.FiniteIndex] (h : IsComplement S H) : S.encard = H.index := by
@@ -653,13 +653,15 @@ noncomputable def IsComplement'.QuotientMulEquiv [K.Normal] (h : H.IsComplement'
   { h.leftQuotientEquiv.symm with
     map_mul' := fun _ _ ↦ rfl }
 
-theorem IsComplement.card_mul (h : IsComplement S T) :
-    Nat.card S * Nat.card T = Nat.card G :=
-  (Nat.card_prod _ _).symm.trans (Nat.card_eq_of_bijective _ h)
-
-theorem IsComplement'.card_mul (h : IsComplement' H K) :
+theorem IsComplement'.card_mul_card (h : IsComplement' H K) :
     Nat.card H * Nat.card K = Nat.card G :=
-  IsComplement.card_mul h
+  IsComplement.card_mul_card h
+
+@[deprecated (since := "2026-08-06")]
+alias IsComplement.card_mul := IsComplement.card_mul_card
+
+@[deprecated (since := "2026-08-06")]
+alias IsComplement'.card_mul := IsComplement'.card_mul_card
 
 theorem isComplement'_of_disjoint_and_mul_eq_univ (h1 : Disjoint H K)
     (h2 : ↑H * ↑K = (Set.univ : Set G)) : IsComplement' H K := by
@@ -675,7 +677,7 @@ theorem isComplement'_of_card_mul_and_disjoint [Finite G]
 
 theorem isComplement'_iff_card_mul_and_disjoint [Finite G] :
     IsComplement' H K ↔ Nat.card H * Nat.card K = Nat.card G ∧ Disjoint H K :=
-  ⟨fun h => ⟨h.card_mul, h.disjoint⟩, fun h => isComplement'_of_card_mul_and_disjoint h.1 h.2⟩
+  ⟨fun h => ⟨h.card_mul_card, h.disjoint⟩, fun h => isComplement'_of_card_mul_and_disjoint h.1 h.2⟩
 
 theorem isComplement'_of_coprime [Finite G]
     (h1 : Nat.card H * Nat.card K = Nat.card G)

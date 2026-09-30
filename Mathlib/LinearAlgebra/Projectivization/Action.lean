@@ -6,13 +6,11 @@ Authors: David Loeffler, Antoine Chambert-Loir
 module
 
 public import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
-public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.LinearAlgebra.Projectivization.Basic
 public import Mathlib.LinearAlgebra.SpecialLinearGroup
-public import Mathlib.LinearAlgebra.Transvection.Basic
-public import Mathlib.LinearAlgebra.Matrix.IsDiag
+import Mathlib.LinearAlgebra.Transvection.Basic
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Projective
-public import Mathlib.LinearAlgebra.Center
+import Mathlib.LinearAlgebra.Center
 
 /-!
 # Group actions on projectivization
@@ -241,7 +239,9 @@ instance : IsPreprimitive (Matrix.ProjectiveSpecialLinearGroup ι K) (ℙ K (ι 
     {toFun := id, map_smul' := by intros; simp; rfl} (prePrimitive_SL (ι := ι) (K := K))
     Function.surjective_id
 
-open MatrixGroups Matrix.ProjGenLinGroup
+open Matrix.ProjGenLinGroup
+
+open scoped MatrixGroups
 
 instance : MulAction PGL(ι, K) (ℙ K (ι → K)) :=
   mulActionOfGL fun u ↦ ind fun v hv ↦ by

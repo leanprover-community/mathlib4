@@ -5,12 +5,11 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.AffineMap
-public import Mathlib.Analysis.Calculus.Deriv.Comp
+import Mathlib.Analysis.Calculus.Deriv.AffineMap
+import Mathlib.Analysis.Calculus.Deriv.Comp
 public import Mathlib.Analysis.Calculus.Deriv.Mul
 public import Mathlib.Analysis.Calculus.Deriv.Slope
 public import Mathlib.Analysis.Normed.Group.AddTorsor
-public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Topology.Instances.RealVectorSpace
 public import Mathlib.Topology.LocallyConstant.Basic
@@ -418,7 +417,6 @@ instance (priority := 100) : PathConnectedSpace 𝕜 := by
   let : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The mean value theorem on a convex set: if the derivative of a function is bounded by `C`, then
 the function is `C`-Lipschitz. Version with `HasFDerivWithinAt`. -/
 theorem norm_image_sub_le_of_norm_hasFDerivWithin_le

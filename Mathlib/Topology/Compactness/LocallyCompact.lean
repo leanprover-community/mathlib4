@@ -120,9 +120,9 @@ instance Pi.locallyCompactSpace [∀ i, CompactSpace (X i)] : LocallyCompactSpac
       rw [← Set.univ_pi_ite]
       refine isCompact_univ_pi fun i => ?_
       by_cases h : i ∈ s
-      · rw [if_pos h]
+      · rw [ite_eq_left h]
         exact hc i
-      · rw [if_neg h]
+      · rw [ite_eq_right h]
         exact CompactSpace.isCompact_univ⟩
 
 instance Function.locallyCompactSpace_of_finite [Finite ι] [LocallyCompactSpace Y] :

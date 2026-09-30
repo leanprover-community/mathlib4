@@ -51,6 +51,7 @@ variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N
 
 /-- The `Weyl group` of a root pairing is the group of automorphisms of the root pairing generated
 by reflections. -/
+@[wikidata Q768074]
 def weylGroup : Subgroup (Aut P) :=
   Subgroup.closure (range (Equiv.reflection P))
 

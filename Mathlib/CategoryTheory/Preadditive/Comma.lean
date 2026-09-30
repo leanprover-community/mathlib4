@@ -21,11 +21,9 @@ We then apply this to `Arrow T` for `T` a preadditive category.
 comma, arrow, preadditive
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
-
-open Category
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 

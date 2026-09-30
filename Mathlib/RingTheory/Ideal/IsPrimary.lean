@@ -6,8 +6,6 @@ Authors: Kenny Lau, Yakov Pechersky
 module
 
 public import Mathlib.RingTheory.IsPrimary
-public import Mathlib.RingTheory.Ideal.Maps
-public import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # Primary ideals
@@ -72,9 +70,6 @@ lemma isPrimary_finsetInf {ι} {s : Finset ι} {f : ι → Ideal R} {i : ι} (hi
     (hs' : ∀ ⦃y⦄, y ∈ s → (f y).radical = (f i).radical) :
     IsPrimary (s.inf f) :=
   Submodule.isPrimary_finsetInf hi hs (by simpa)
-
-@[deprecated (since := "2026-01-19")]
-alias isPrimary_finset_inf := isPrimary_finsetInf
 
 lemma IsPrimary.comap {I : Ideal S} (hI : I.IsPrimary) (φ : R →+* S) : (I.comap φ).IsPrimary := by
   rw [isPrimary_iff] at hI ⊢

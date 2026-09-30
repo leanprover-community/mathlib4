@@ -3,8 +3,9 @@ Copyright (c) 2026 Marcelo Lynch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
+module
 
-import Cache.Query
+public import Cache.Query
 
 /-!
 # Read-time advisories
@@ -17,6 +18,8 @@ Two stderr-only notices `cache get` prints before reading:
 * a hint pointing an uncached fork HEAD at `cache query` and the SHA-scoped
   workflow.
 -/
+
+public section
 
 namespace Cache.Requests
 
@@ -130,11 +133,8 @@ def getNonDefaultScopeReason (repoExplicit? detectedRepo? : Option String)
   unless (← scopeIsHead) do
     if let some s ← scopeOverride.get then
       return s!"--scope={s} (explicit per-commit scope)"
-    let scope? ← IO.getEnv "MATHLIB_CACHE_REPO_SCOPE"
-    if let some scope := scope? then
-      let trimmed := scope.trimAscii
-      if !trimmed.isEmpty then
-        return s!"MATHLIB_CACHE_REPO_SCOPE={trimmed} (explicit per-commit scope)"
+    if let some scope ← getEnvNonEmpty "MATHLIB_CACHE_REPO_SCOPE" then
+      return s!"MATHLIB_CACHE_REPO_SCOPE={scope} (explicit per-commit scope)"
 
   -- Condition 2: --cache-from override
   if let some cliOverride := cliCacheFromOverride? then

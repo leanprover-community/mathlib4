@@ -5,13 +5,7 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
-public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 public import Mathlib.CategoryTheory.Monad.Limits
-public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-public import Mathlib.CategoryTheory.Adjunction.Limits
-public import Mathlib.CategoryTheory.Adjunction.Reflective
 public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
 public import Mathlib.CategoryTheory.Subterminal
 
@@ -116,7 +110,6 @@ theorem reflective_products [Limits.HasFiniteProducts C] [Reflective i] :
 
 open MonoidalClosed MonoidalCategory CartesianMonoidalCategory
 
-set_option backward.isDefEq.respectTransparency false in
 open Limits in
 /-- Given a reflective subcategory `D` of a category with chosen finite products `C`, `D` admits
 finite chosen products. -/
@@ -163,7 +156,6 @@ variable [CartesianMonoidalCategory C] [Reflective i] [MonoidalClosed C]
   [CartesianMonoidalCategory D]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If the reflector preserves binary products, the subcategory is an exponential ideal.
 This is the converse of `preservesBinaryProductsOfExponentialIdeal`.
 -/

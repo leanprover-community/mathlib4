@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 public import Mathlib.RingTheory.Localization.NumDen
-public import Mathlib.RingTheory.Polynomial.ScaleRoots
 
 /-!
 # Rational root theorem and integral root theorem
@@ -34,10 +33,10 @@ open scoped Polynomial
 
 section ScaleRoots
 
-variable {A K R S : Type*} [CommRing A] [Field K] [CommRing R] [CommRing S]
+variable {A K S : Type*} [CommRing A] [Field K] [CommRing S]
 variable {M : Submonoid A} [Algebra A S] [IsLocalization M S] [Algebra A K] [IsFractionRing A K]
 
-open Finsupp IsFractionRing IsLocalization Polynomial
+open IsFractionRing IsLocalization Polynomial
 
 theorem scaleRoots_aeval_eq_zero_of_aeval_mk'_eq_zero {p : A[X]} {r : A} {s : M}
     (hr : aeval (mk' S r s) p = 0) : aeval (algebraMap A S r) (scaleRoots p s) = 0 := by

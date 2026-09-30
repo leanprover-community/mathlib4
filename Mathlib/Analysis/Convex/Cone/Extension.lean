@@ -31,7 +31,7 @@ public section
 
 open Set LinearMap
 
-variable {𝕜 E F G : Type*}
+variable {E F G : Type*}
 
 /-!
 ### M. Riesz extension theorem
@@ -65,7 +65,7 @@ submodule without breaking the non-negativity condition. -/
 theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     (dense : ∀ y, ∃ x : f.domain, (x : E) + y ∈ s) (hdom : f.domain ≠ ⊤) :
     ∃ g, f < g ∧ ∀ x : g.domain, (x : E) ∈ s → 0 ≤ g x := by
-  obtain ⟨y, -, hy⟩ : ∃ y ∈ ⊤, y ∉ f.domain := SetLike.exists_of_lt (lt_top_iff_ne_top.2 hdom)
+  obtain ⟨y, -, hy⟩ : ∃ y ∈ ⊤, y ∉ f.domain := IsConcreteLE.exists_of_lt (lt_top_iff_ne_top.2 hdom)
   obtain ⟨c, le_c, c_le⟩ :
       ∃ c, (∀ x : f.domain, -(x : E) - y ∈ s → f x ≤ c) ∧
         ∀ x : f.domain, (x : E) + y ∈ s → c ≤ f x := by
@@ -152,7 +152,6 @@ theorem riesz_extension (s : PointedCone ℝ E) (f : E →ₗ.[ℝ] ℝ)
   · exact fun x => (hfg rfl).symm
   · exact fun x hx => hgs ⟨x, _⟩ hx
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Hahn-Banach theorem**: if `N : E → ℝ` is a sublinear map, `f` is a linear map
 defined on a subspace of `E`, and `f x ≤ N x` for all `x` in the domain of `f`,
 then `f` can be extended to the whole space to a linear map `g` such that `g x ≤ N x`
@@ -161,7 +160,7 @@ theorem exists_extension_of_le_sublinear (f : E →ₗ.[ℝ] ℝ) (N : E → ℝ
     (N_hom : ∀ c : ℝ, 0 < c → ∀ x, N (c • x) = c * N x) (N_add : ∀ x y, N (x + y) ≤ N x + N y)
     (hf : ∀ x : f.domain, f x ≤ N x) :
     ∃ g : E →ₗ[ℝ] ℝ, (∀ x : f.domain, g x = f x) ∧ ∀ x, g x ≤ N x := by
-  have N_0 : N 0 = 0 := by grind [N_hom 2 (by norm_num) 0, smul_zero]
+  have N_0 : N 0 = 0 := by grind [N_hom 2 (by simp) 0, smul_zero]
   let s : PointedCone ℝ (E × ℝ) :=
     { carrier := { p : E × ℝ | N p.1 ≤ p.2 }
       zero_mem' := by simp [N_0]

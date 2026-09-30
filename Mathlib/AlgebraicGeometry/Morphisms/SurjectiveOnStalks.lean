@@ -7,8 +7,7 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 public import Mathlib.RingTheory.RingHom.Surjective
-public import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
-public import Mathlib.Topology.LocalAtTarget
+import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
 
 /-!
 # Morphisms surjective on stalks
@@ -38,9 +37,6 @@ class SurjectiveOnStalks (f : X ⟶ Y) : Prop where
   stalkMap_surjective (f) : ∀ x, Function.Surjective (f.stalkMap x)
 
 alias Scheme.Hom.stalkMap_surjective := SurjectiveOnStalks.stalkMap_surjective
-
-@[deprecated (since := "2026-01-20")]
-alias SurjectiveOnStalks.surj_on_stalks := Scheme.Hom.stalkMap_surjective
 
 namespace SurjectiveOnStalks
 
