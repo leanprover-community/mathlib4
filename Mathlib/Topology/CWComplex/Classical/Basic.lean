@@ -459,7 +459,7 @@ lemma CWComplex.exists_cellFrontier_one_eq [CWComplex C] (e : cell C 1) :
     exists_prop] at h
   obtain ⟨⟨u, hu, hun1⟩, v, hv, hv1⟩ := h
   use u, v
-  simp [RelCWComplex.cellFrontier_one_eq, image_pair, RelCWComplex.closedCell_zero_eq_singleton,
+  simp [RelCWComplex.cellFrontier_one_eq, RelCWComplex.closedCell_zero_eq_singleton,
     hun1, hv1, pair_comm]
 
 @[alias_in CWComplex]
@@ -680,7 +680,7 @@ instance : SetLike (Subcomplex C) X where
     rw [hE, hF]
     simpa using h
 
-instance : PartialOrder (Subcomplex C) := .ofSetLike (Subcomplex C) X
+instance : PartialOrder (Subcomplex C) := .ofSetLike (Subcomplex C)
 
 initialize_simps_projections Subcomplex (carrier → coe, as_prefix coe)
 

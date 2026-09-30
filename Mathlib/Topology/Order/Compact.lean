@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Topology.Algebra.Support
 public import Mathlib.Topology.Order.IntermediateValue
-public import Mathlib.Topology.Order.IsLUB
 public import Mathlib.Topology.Order.LocalExtr
 
 /-!
@@ -142,8 +141,7 @@ end openIntervals
 
 section LinearOrder
 
-variable {α β γ : Type*} [LinearOrder α] [TopologicalSpace α]
-  [TopologicalSpace β] [TopologicalSpace γ]
+variable {α β : Type*} [LinearOrder α] [TopologicalSpace α] [TopologicalSpace β]
 
 theorem IsCompact.exists_isLeast [ClosedIicTopology α] {s : Set α} (hs : IsCompact s)
     (ne_s : s.Nonempty) : ∃ x, IsLeast s x := by
@@ -152,10 +150,10 @@ theorem IsCompact.exists_isLeast [ClosedIicTopology α] {s : Set α} (hs : IsCom
     ⟨this.choose, this.choose_spec.1, mem_iInter₂.mp this.choose_spec.2⟩
   rw [biInter_eq_iInter]
   by_contra H
-  rw [not_nonempty_iff_eq_empty] at H
+  rw [not_nonempty_iff_eq_empty, ← disjoint_iff_inter_eq_empty] at H
   rcases hs.elim_directed_family_closed (fun x : s => Iic ↑x) (fun x => isClosed_Iic) H
       (Monotone.directed_ge fun _ _ h => Iic_subset_Iic.mpr h) with ⟨x, hx⟩
-  exact not_nonempty_iff_eq_empty.mpr hx ⟨x, x.2, le_rfl⟩
+  exact disjoint_left.mp hx x.2 le_rfl
 
 theorem IsCompact.exists_isGreatest [ClosedIciTopology α] {s : Set α} (hs : IsCompact s)
     (ne_s : s.Nonempty) : ∃ x, IsGreatest s x :=
@@ -196,7 +194,7 @@ theorem atBot_le_cocompact [NoMinOrder α] [ClosedIicTopology α] :
   obtain ⟨t, ht, hts⟩ := mem_cocompact.mp hs
   refine (Set.eq_empty_or_nonempty t).casesOn (fun h_empty ↦ ?_) (fun h_nonempty ↦ ?_)
   · rewrite [compl_univ_iff.mpr h_empty, univ_subset_iff] at hts
-    convert! univ_mem
+    convert univ_mem
   · have := h_nonempty.nonempty
     obtain ⟨a, ha⟩ := ht.exists_isLeast h_nonempty
     obtain ⟨b, hb⟩ := exists_lt a
@@ -351,8 +349,8 @@ end LinearOrder
 
 section ConditionallyCompleteLinearOrder
 
-variable {α β γ : Type*} [ConditionallyCompleteLinearOrder α] [TopologicalSpace α]
-  [TopologicalSpace β] [TopologicalSpace γ]
+variable {α β : Type*} [ConditionallyCompleteLinearOrder α]
+  [TopologicalSpace α] [TopologicalSpace β]
 
 theorem IsCompact.sSup_lt_iff_of_continuous [ClosedIciTopology α] {f : β → α} {K : Set β}
     (hK : IsCompact K) (h0K : K.Nonempty) (hf : ContinuousOn f K) (y : α) :

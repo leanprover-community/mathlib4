@@ -28,7 +28,7 @@ open CategoryTheory Functor MonoidalCategory
 
 namespace CategoryTheory.FunctorToTypes
 
-variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
+variable {C : Type u} [Category.{v} C]
 
 variable (F : C ⥤ Type (max w v u))
 

@@ -5,9 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.Homotopy
-public import Mathlib.Algebra.Homology.Embedding.AreComplementary
-public import Mathlib.Algebra.Homology.ShortComplex.Exact
+public import Mathlib.Algebra.Homology.Embedding.Extend
 
 /-!
 # Extension of degreewise splittings

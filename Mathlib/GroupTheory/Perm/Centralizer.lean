@@ -5,13 +5,12 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.GroupTheory.NoncommCoprod
 public import Mathlib.GroupTheory.Perm.ConjAct
 public import Mathlib.GroupTheory.Perm.Cycle.PossibleTypes
-public import Mathlib.GroupTheory.Perm.DomMulAct
-public import Mathlib.GroupTheory.Rank
+import Mathlib.GroupTheory.Perm.DomMulAct
+import Mathlib.GroupTheory.Rank
 
 /-!
 # Centralizer of a permutation and cardinality of conjugacy classes in the symmetric groups
@@ -210,6 +209,7 @@ structure Basis (g : Equiv.Perm α) where
   /-- For each cycle, the chosen element belongs to the cycle -/
   (mem_support_self' : ∀ (c : g.cycleFactorsFinset), toFun c ∈ c.val.support)
 
+@[macro_inline]
 instance (g : Perm α) : FunLike (Basis g) g.cycleFactorsFinset α where
   coe a := a.toFun
   coe_injective a a' _ := by cases a; cases a'; congr
@@ -594,7 +594,7 @@ section Sign
 
 open Function
 
-variable {a : Type*} (g : Perm α) (k : Perm (fixedPoints g))
+variable (g : Perm α) (k : Perm (fixedPoints g))
     (v : (c : g.cycleFactorsFinset) → Subgroup.zpowers (c : Perm α))
 
 set_option backward.isDefEq.respectTransparency false in
@@ -648,7 +648,7 @@ theorem card_isConj_mul_eq :
   classical
   rw [Nat.card_eq_fintype_card, ← nat_card_centralizer g]
   rw [Subgroup.nat_card_centralizer_nat_card_stabilizer, Nat.card_eq_fintype_card]
-  convert! MulAction.card_orbit_mul_card_stabilizer_eq_card_group (ConjAct (Perm α)) g
+  convert MulAction.card_orbit_mul_card_stabilizer_eq_card_group (ConjAct (Perm α)) g
   · ext h
     simp only [Set.mem_ofPred_eq, ConjAct.mem_orbit_conjAct, isConj_comm]
   · rw [ConjAct.card, Fintype.card_perm]
@@ -683,7 +683,7 @@ theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
   · -- nonempty case
     classical
     obtain ⟨g, rfl⟩ := (exists_with_cycleType_iff α).mpr hm
-    convert! card_isConj_mul_eq g
+    convert card_isConj_mul_eq g
     simp_rw [Set.coe_ofPred, Nat.card_eq_fintype_card, ← Fintype.card_coe, Finset.mem_filter,
       Finset.mem_univ, true_and, ← isConj_iff_cycleType_eq, isConj_comm (g := g)]
   · -- empty case

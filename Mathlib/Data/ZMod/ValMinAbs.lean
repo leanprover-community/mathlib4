@@ -6,7 +6,7 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Data.ZMod.Basic
-public import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Linarith
 
 /-!
 # Absolute value in `ZMod n`

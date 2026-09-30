@@ -5,7 +5,6 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.Algebra.Polynomial.BigOperators
 public import Mathlib.Algebra.Ring.GeomSum
@@ -548,7 +547,7 @@ theorem _root_.Polynomial.not_isField : ¬IsField R[X] := by
   obtain ⟨p, hp⟩ := hR.mul_inv_cancel X_ne_zero
   have hp0 : p ≠ 0 := right_ne_zero_of_mul_eq_one hp
   have := degree_lt_degree_mul_X hp0
-  rw [← X_mul, congr_arg degree hp, degree_one, Nat.WithBot.lt_zero_iff, degree_eq_bot] at this
+  rw [← X_mul, congr(degree $hp), degree_one, Nat.WithBot.lt_zero_iff, degree_eq_bot] at this
   exact hp0 this
 
 @[deprecated (since := "2026-08-01")]
@@ -559,7 +558,7 @@ theorem eq_zero_of_constant_mem_of_maximal (hR : IsField R) (I : Ideal R[X]) [hI
     (x : R) (hx : C x ∈ I) : x = 0 := by
   refine Classical.by_contradiction fun hx0 => hI.ne_top ((eq_top_iff_one I).2 ?_)
   obtain ⟨y, hy⟩ := hR.mul_inv_cancel hx0
-  convert! I.mul_mem_left (C y) hx
+  convert I.mul_mem_left (C y) hx
   rw [← C.map_mul, hR.mul_comm y x, hy, map_one]
 
 end Ring
@@ -577,7 +576,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
   constructor
   · intro H
     have := comap_isPrime C (map C P)
-    convert! this using 1
+    convert this using 1
     ext x
     simp only [mem_comap, mem_map_C_iff]
     constructor
@@ -667,7 +666,7 @@ theorem mem_span_C_coeff : f ∈ Ideal.span { g : R[X] | ∃ i : ℕ, g = C (coe
     rw [mem_ofPred_eq]
     use n
   have : monomial n (1 : R) • C (coeff f n) ∈ p := p.smul_mem _ this
-  convert! this using 1
+  convert this using 1
   simp only [monomial_mul_C, one_mul, smul_eq_mul]
   rw [← C_mul_X_pow_eq_monomial]
 
@@ -711,7 +710,7 @@ private theorem prime_C_iff_of_fintype {R : Type u} (σ : Type v) {r : R} [CommR
   · induction Fintype.card σ with
     | zero => simpa using MulEquiv.prime_iff (isEmptyAlgEquiv R (Fin 0)).symm (p := r)
     | succ d hd =>
-      convert! MulEquiv.prime_iff (finSuccEquiv R d).symm (p := Polynomial.C (C r))
+      convert MulEquiv.prime_iff (finSuccEquiv R d).symm (p := Polynomial.C (C r))
       · simp [← finSuccEquiv_comp_C_eq_C]
       · simp [← hd, Polynomial.prime_C_iff]
 
@@ -728,7 +727,7 @@ theorem prime_C_iff : Prime (C r : MvPolynomial σ R) ↔ Prime r :=
       obtain ⟨s, a', b', rfl, rfl⟩ := exists_finset_rename₂ a b
       rw [← algebraMap_eq] at hd
       have : algebraMap R _ r ∣ a' * b' := by
-        convert! _root_.map_dvd (killCompl Subtype.val_injective) hd
+        convert _root_.map_dvd (killCompl Subtype.val_injective) hd
         · simp
         · simp
       rw [← rename_C ((↑) : s → σ)]
@@ -820,7 +819,7 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
           have := Polynomial.degree_sub_lt_left h1 hp0 h2
           rw [Polynomial.degree_eq_natDegree hp0] at this
           rw [← sub_add_cancel p (q * Polynomial.X ^ (k - q.natDegree))]
-          convert! (Ideal.span ↑s).add_mem _ ((Ideal.span (s : Set R[X])).mul_mem_right _ _)
+          convert (Ideal.span ↑s).add_mem _ ((Ideal.span (s : Set R[X])).mul_mem_right _ _)
           · by_cases hpq : p - q * Polynomial.X ^ (k - q.natDegree) = 0
             · rw [hpq]
               exact Ideal.zero_mem _
@@ -844,7 +843,7 @@ theorem disjoint_ker_aeval_of_isCoprime (f : M →ₗ[R] M) {p q : R[X]} (hpq : 
   rcases hpq with ⟨p', q', hpq'⟩
   simpa [LinearMap.mem_ker.1 (Submodule.mem_inf.1 hv).1,
     LinearMap.mem_ker.1 (Submodule.mem_inf.1 hv).2] using
-    congr_arg (fun p : R[X] => aeval f p v) hpq'.symm
+    congr(aeval f $hpq'.symm v)
 
 theorem sup_aeval_range_eq_top_of_isCoprime (f : M →ₗ[R] M) {p q : R[X]} (hpq : IsCoprime p q) :
     LinearMap.range (aeval f p) ⊔ LinearMap.range (aeval f q) = ⊤ := by
@@ -857,7 +856,7 @@ theorem sup_aeval_range_eq_top_of_isCoprime (f : M →ₗ[R] M) {p q : R[X]} (hp
   use aeval f (q * q') v
   use LinearMap.mem_range.2 ⟨aeval f q' v, by simp only [Module.End.mul_apply, aeval_mul]⟩
   simpa only [mul_comm p p', mul_comm q q', aeval_one, aeval_add] using!
-    congr_arg (fun p : R[X] => aeval f p v) hpq'
+    congr(aeval f $hpq' v)
 
 theorem sup_ker_aeval_le_ker_aeval_mul {f : M →ₗ[R] M} {p q : R[X]} :
     LinearMap.ker (aeval f p) ⊔ LinearMap.ker (aeval f q) ≤ LinearMap.ker (aeval f (p * q)) := by
@@ -890,7 +889,7 @@ theorem sup_ker_aeval_eq_ker_aeval_mul_of_coprime (f : M →ₗ[R] M) {p q : R[X
     ⟨aeval f (q * q') v, LinearMap.mem_ker.1 h_eval₂_pqq', aeval f (p * p') v,
       LinearMap.mem_ker.1 h_eval₂_qpp', ?_⟩
   rw [add_comm, mul_comm p p', mul_comm q q']
-  simpa only [map_add, map_mul, aeval_one] using! congr_arg (fun p : R[X] => aeval f p v) hpq'
+  simpa only [map_add, map_mul, aeval_one] using! congr(aeval f $hpq' v)
 
 end Polynomial
 
@@ -943,7 +942,7 @@ theorem map_mvPolynomial_eq_eval₂ {S : Type*} [CommSemiring S] [Finite σ]
     (ϕ : MvPolynomial σ R →+* S) (p : MvPolynomial σ R) :
     ϕ p = MvPolynomial.eval₂ (ϕ.comp MvPolynomial.C) (fun s => ϕ (MvPolynomial.X s)) p := by
   cases nonempty_fintype σ
-  refine Trans.trans (congr_arg ϕ (MvPolynomial.as_sum p)) ?_
+  refine Trans.trans congr(ϕ $(MvPolynomial.as_sum p)) ?_
   rw [MvPolynomial.eval₂_eq', map_sum ϕ]
   congr
   ext
@@ -954,11 +953,11 @@ multivariate version. -/
 theorem mem_ideal_of_coeff_mem_ideal (I : Ideal (MvPolynomial σ R)) (p : MvPolynomial σ R)
     (hcoe : ∀ m : σ →₀ ℕ, p.coeff m ∈ I.comap (C : R →+* MvPolynomial σ R)) : p ∈ I := by
   rw [as_sum p]
-  suffices ∀ m ∈ p.support, monomial m (MvPolynomial.coeff m p) ∈ I by
+  suffices ∀ m ∈ p.support, monomial m (p.coeff m) ∈ I by
     exact Submodule.sum_mem I this
   intro m _
-  rw [← mul_one (coeff m p), ← C_mul_monomial]
-  suffices C (coeff m p) ∈ I by exact I.mul_mem_right (monomial m 1) this
+  rw [← mul_one (p.coeff m), ← C_mul_monomial]
+  suffices C (p.coeff m) ∈ I by exact I.mul_mem_right (monomial m 1) this
   simpa [Ideal.mem_comap] using hcoe m
 
 /-- The push-forward of an ideal `I` of `R` to `MvPolynomial σ R` via inclusion
@@ -983,11 +982,11 @@ theorem mem_map_C_iff {I : Ideal R} {f : MvPolynomial σ R} :
       exact I.sum_mem fun c _ => I.mul_mem_left (f.coeff c.fst) (hg c.snd)
   · intro hf
     rw [as_sum f]
-    suffices ∀ m ∈ f.support, monomial m (coeff m f) ∈ (Ideal.map C I : Ideal (MvPolynomial σ R)) by
+    suffices ∀ m ∈ f.support, monomial m (f.coeff m) ∈ (Ideal.map C I : Ideal (MvPolynomial σ R)) by
       exact Submodule.sum_mem _ this
     intro m _
-    rw [← mul_one (coeff m f), ← C_mul_monomial]
-    suffices C (coeff m f) ∈ (Ideal.map C I : Ideal (MvPolynomial σ R)) by
+    rw [← mul_one (f.coeff m), ← C_mul_monomial]
+    suffices C (f.coeff m) ∈ (Ideal.map C I : Ideal (MvPolynomial σ R)) by
       exact Ideal.mul_mem_right _ _ this
     apply Ideal.mem_map_of_mem _
     exact hf m
@@ -997,7 +996,7 @@ theorem ker_map (f : R →+* S) :
     Ideal.map (C : R →+* MvPolynomial σ R) (RingHom.ker f) := by
   ext
   rw [MvPolynomial.mem_map_C_iff, RingHom.mem_ker, MvPolynomial.ext_iff]
-  simp_rw [coeff_map, coeff_zero, RingHom.mem_ker]
+  simp_rw [coeff_map, AddMonoidAlgebra.coeff_zero, Finsupp.zero_apply, RingHom.mem_ker]
 
 lemma ker_mapAlgHom {S₁ S₂ σ : Type*} [CommRing S₁] [CommRing S₂] [Algebra R S₁]
     [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :

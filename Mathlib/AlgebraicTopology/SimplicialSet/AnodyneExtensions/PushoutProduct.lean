@@ -6,12 +6,13 @@ Authors: Joël Riou, Jack McKoen
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Basic
-public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.UnionProd
+import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.UnionProd
 public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
-public import Mathlib.AlgebraicTopology.SimplicialSet.PushoutProduct
-public import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
+import Mathlib.AlgebraicTopology.SimplicialSet.PushoutProduct
+import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
 public import Mathlib.CategoryTheory.Monoidal.Braided.PushoutObjObj
-public import Mathlib.CategoryTheory.Monoidal.Closed.Braided
+import Mathlib.CategoryTheory.Monoidal.Closed.Braided
+public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes
 
 /-!
 # Anodyne extensions and pushout-products, fibrations and pullbacks
@@ -44,7 +45,9 @@ public section
 
 universe u
 
-open CategoryTheory MonoidalCategory MonoidalClosed Simplicial HomotopicalAlgebra Limits
+open CategoryTheory MonoidalCategory MonoidalClosed HomotopicalAlgebra Limits
+
+open scoped Simplicial
 
 namespace SSet
 

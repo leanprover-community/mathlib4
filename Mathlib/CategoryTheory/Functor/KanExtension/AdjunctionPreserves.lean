@@ -53,7 +53,6 @@ def leftExtensionPostcompose₂ :
   unit.app E := StructuredArrow.homMk (whiskerLeft E.right adj.unit)
   counit.app E := StructuredArrow.homMk (whiskerLeft E.right adj.counit)
 
-set_option backward.isDefEq.respectTransparency false in
 include adj in
 lemma preservesLeftKanExtension : G₁.PreservesLeftKanExtension F L where
   preserves F' α hα := by
@@ -88,7 +87,6 @@ def rightExtensionPostcompose₂ :
   unit.app E := CostructuredArrow.homMk (whiskerLeft E.left adj.unit)
   counit.app E := CostructuredArrow.homMk (whiskerLeft E.left adj.counit)
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 include adj in
 lemma preservesRightKanExtension : G₂.PreservesRightKanExtension F L where

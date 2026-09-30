@@ -26,7 +26,7 @@ In this file we define `IsUltraUniformity`, a Prop mixin typeclass.
 
 ## Implementation notes
 
-As in the `Mathlib/Topology/UniformSpace/Defs.lean` file, we do not reuse `Mathlib/Data/Rel.lean`
+As in the `Mathlib/Topology/UniformSpace/Defs.lean` file, we do not reuse `Mathlib/Basic/Rel.lean`
 but rather extend the relation properties as needed.
 
 ## TODOs
@@ -48,8 +48,9 @@ but rather extend the relation properties as needed.
 
 public section
 
-open Set Filter Topology
-open scoped SetRel Uniformity
+open Set Filter
+
+open scoped Topology SetRel Uniformity
 
 variable {X : Type*}
 

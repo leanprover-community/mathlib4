@@ -5,10 +5,7 @@ Authors: Joël Riou, Sophie Morel
 -/
 module
 
-public import Mathlib.CategoryTheory.Triangulated.Functor
-public import Mathlib.CategoryTheory.Shift.Adjunction
-public import Mathlib.CategoryTheory.Adjunction.Additive
-public import Mathlib.CategoryTheory.Adjunction.Opposites
+import Mathlib.CategoryTheory.Adjunction.Additive
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Functor
 
 /-!
@@ -52,7 +49,6 @@ variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) [F.CommShift ℤ] [G.CommSh
   [adj.CommShift ℤ]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 include adj in
 /--
 The right adjoint of a triangulated functor is triangulated.
@@ -65,7 +61,7 @@ lemma isTriangulated_rightAdjoint [F.IsTriangulated] : G.IsTriangulated where
       (F.map_distinguished _ mem) hT (adj.counit.app T.obj₁) (adj.counit.app T.obj₂) (by simp)
     dsimp at h h₁ h₂ ⊢
     have h₁' : f ≫ adj.unit.app Z ≫ G.map h = G.map T.mor₂ := by
-      simpa [homEquiv_apply] using DFunLike.congr_arg (adj.homEquiv _ _) h₁
+      simpa [homEquiv_apply] using congr(adj.homEquiv _ _ $h₁)
     have h₂' : g ≫ (G.commShiftIso (1 : ℤ)).inv.app T.obj₁ =
         adj.homEquiv _ _ h ≫ G.map T.mor₃ := by
       apply (adj.homEquiv _ _).symm.injective
@@ -84,7 +80,7 @@ lemma isTriangulated_rightAdjoint [F.IsTriangulated] : G.IsTriangulated where
       dsimp at ψ hφ ⊢
       obtain ⟨α, hα⟩ := T.coyoneda_exact₂ hT ((adj.homEquiv _ _).symm ψ)
         ((adj.homEquiv _ _).injective (by simpa [homEquiv_counit, homEquiv_unit, ← h₁'] using hφ))
-      have eq := DFunLike.congr_arg (adj.homEquiv _ _) hα
+      have eq := congr(adj.homEquiv _ _ $hα)
       simp only [homEquiv_counit, homEquiv_unit, comp_id,
         Functor.map_comp, unit_naturality_assoc, right_triangle_components] at eq
       have eq' := comp_distTriang_mor_zero₁₂ _ mem
@@ -116,7 +112,7 @@ lemma isTriangulated_rightAdjoint [F.IsTriangulated] : G.IsTriangulated where
         obtain ⟨β, hβ⟩ := T.coyoneda_exact₃ hT ((adj.homEquiv _ _).symm α)
           ((adj.homEquiv _ _).injective (by simpa [homEquiv_unit, homEquiv_counit] using hα₀))
         refine ⟨adj.homEquiv _ _ β ≫ f, ?_⟩
-        simpa [homEquiv_unit, h₁'] using congr_arg (adj.homEquiv _ _).toFun hβ.symm)
+        simpa [homEquiv_unit, h₁'] using congr((adj.homEquiv _ _).toFun $hβ.symm))
     refine isomorphic_distinguished _ mem _ (Iso.symm ?_)
     refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (asIso (adj.homEquiv Z T.obj₃ h)) ?_ ?_ ?_
     · simp
@@ -206,7 +202,6 @@ lemma mk' (h : E.functor.IsTriangulated) : E.IsTriangulated where
 lemma mk'' (h : E.inverse.IsTriangulated) : E.IsTriangulated where
   leftAdjoint_isTriangulated := (mk' E.symm h).rightAdjoint_isTriangulated
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The identity equivalence is triangulated.
 -/
@@ -223,7 +218,6 @@ variable {D' : Type*} [Category* D'] [HasZeroObject D'] [Preadditive D'] [HasShi
   [∀ (n : ℤ), (shiftFunctor D' n).Additive] [Pretriangulated D'] {E' : D ≌ D'}
   [E'.functor.CommShift ℤ] [E'.inverse.CommShift ℤ] [E'.CommShift ℤ]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If equivalences `E : C ≌ D` and `E' : D ≌ F` are triangulated, so is `E.trans E'`.
 -/
