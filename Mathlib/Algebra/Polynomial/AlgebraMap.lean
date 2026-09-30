@@ -624,7 +624,7 @@ theorem dvd_term_of_dvd_eval_of_dvd_terms {z p : S} {f : S[X]} (i : ℕ) (dvd_ev
     apply Finset.dvd_sum
     intro j hj
     exact dvd_terms j (Finset.ne_of_mem_erase hj)
-  · convert! dvd_zero p
+  · convert dvd_zero p
     rw [notMem_support_iff] at hi
     simp [hi]
 
@@ -772,12 +772,17 @@ theorem notMem_nonZeroDivisors_iff {P : R[X]} : P ∉ R[X]⁰ ↔ ∃ a : R, a �
 protected lemma mem_nonZeroDivisors_iff {P : R[X]} : P ∈ R[X]⁰ ↔ ∀ a : R, a • P = 0 → a = 0 := by
   simpa [not_imp_not] using (notMem_nonZeroDivisors_iff (P := P)).not
 
-lemma mem_nonzeroDivisors_of_coeff_mem {p : R[X]} (n : ℕ) (hp : p.coeff n ∈ R⁰) :
+lemma mem_nonZeroDivisors_of_coeff_mem {p : R[X]} (n : ℕ) (hp : p.coeff n ∈ R⁰) :
     p ∈ R[X]⁰ :=
   Polynomial.mem_nonZeroDivisors_iff.mpr fun r hr ↦ hp.2 _ (by simpa using congr(coeff $hr n))
 
-lemma X_mem_nonzeroDivisors : X ∈ R[X]⁰ :=
-  mem_nonzeroDivisors_of_coeff_mem 1 (by simp [one_mem])
+@[deprecated (since := "2026-09-28")]
+alias mem_nonzeroDivisors_of_coeff_mem := mem_nonZeroDivisors_of_coeff_mem
+
+lemma X_mem_nonZeroDivisors : X ∈ R[X]⁰ :=
+  mem_nonZeroDivisors_of_coeff_mem 1 (by simp [one_mem])
+
+@[deprecated (since := "2026-09-28")] alias X_mem_nonzeroDivisors := X_mem_nonZeroDivisors
 
 end CommSemiring
 
