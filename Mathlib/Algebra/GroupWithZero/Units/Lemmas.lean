@@ -69,7 +69,7 @@ instance [FunLike F G₀ M₀] [MonoidWithZeroHomClass F G₀ M₀] [Nontrivial 
   isLocalHom_of_exists_map_ne_one ⟨0, by simp⟩
 
 -- not marked `simp` even at low priority because it applies unwanted in too many scenarios
-theorem map_inv₀' [FunLike F G₀ M₀]
+theorem map_inv_eq_ringInverse_map [FunLike F G₀ M₀]
     [MonoidWithZeroHomClass F G₀ M₀] (f : F) (a : G₀) :
     f a⁻¹ = (f a)⁻¹ʳ := by
   obtain (rfl | ha) := eq_or_ne a 0
