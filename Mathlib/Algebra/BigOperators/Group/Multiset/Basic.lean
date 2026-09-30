@@ -93,7 +93,7 @@ theorem prod_hom (s : Multiset M) {F : Type*} [FunLike F M N]
 theorem prod_hom' (s : Multiset ι) {F : Type*} [FunLike F M N]
     [MonoidHomClass F M N] (f : F)
     (g : ι → M) : (s.map fun i => f <| g i).prod = f (s.map g).prod := by
-  convert! (s.map g).prod_hom f
+  convert (s.map g).prod_hom f
   exact (map_map _ _ _).symm
 
 @[to_additive]

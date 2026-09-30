@@ -357,6 +357,7 @@ public import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
 public import Mathlib.Algebra.GCDMonoid.Multiset
 public import Mathlib.Algebra.GCDMonoid.Nat
 public import Mathlib.Algebra.GCDMonoid.PUnit
+public import Mathlib.Algebra.GradedFunLike
 public import Mathlib.Algebra.GradedMonoid
 public import Mathlib.Algebra.GradedMulAction
 public import Mathlib.Algebra.Group.Action.Basic
@@ -404,6 +405,7 @@ public import Mathlib.Algebra.Group.Fin.Basic
 public import Mathlib.Algebra.Group.Fin.Tuple
 public import Mathlib.Algebra.Group.Finsupp
 public import Mathlib.Algebra.Group.ForwardDiff
+public import Mathlib.Algebra.Group.FunLike
 public import Mathlib.Algebra.Group.Graph
 public import Mathlib.Algebra.Group.Hom.Basic
 public import Mathlib.Algebra.Group.Hom.CompTypeclasses
@@ -423,6 +425,7 @@ public import Mathlib.Algebra.Group.Invertible.Defs
 public import Mathlib.Algebra.Group.Irreducible.Defs
 public import Mathlib.Algebra.Group.Irreducible.Indecomposable
 public import Mathlib.Algebra.Group.Irreducible.Lemmas
+public import Mathlib.Algebra.Group.IsApply
 public import Mathlib.Algebra.Group.IsCommutative
 public import Mathlib.Algebra.Group.MinimalAxioms
 public import Mathlib.Algebra.Group.ModEq
@@ -493,6 +496,7 @@ public import Mathlib.Algebra.Group.Submonoid.Support
 public import Mathlib.Algebra.Group.Submonoid.Units
 public import Mathlib.Algebra.Group.Subsemigroup.Basic
 public import Mathlib.Algebra.Group.Subsemigroup.Defs
+public import Mathlib.Algebra.Group.Subsemigroup.Lemmas
 public import Mathlib.Algebra.Group.Subsemigroup.Membership
 public import Mathlib.Algebra.Group.Subsemigroup.MulOpposite
 public import Mathlib.Algebra.Group.Subsemigroup.Operations
@@ -802,6 +806,7 @@ public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Algebra.Module.Equiv.Opposite
 public import Mathlib.Algebra.Module.FinitePresentation
+public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Algebra.Module.GradedModule
 public import Mathlib.Algebra.Module.Hom
 public import Mathlib.Algebra.Module.Injective
@@ -923,6 +928,7 @@ public import Mathlib.Algebra.NoZeroSMulDivisors.Pi
 public import Mathlib.Algebra.NonAssoc.LieAdmissible.Defs
 public import Mathlib.Algebra.NonAssoc.PreLie.Basic
 public import Mathlib.Algebra.Notation
+public import Mathlib.Algebra.Notation.Bracket
 public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Algebra.Notation.FiniteSupport
 public import Mathlib.Algebra.Notation.Indicator
@@ -934,6 +940,7 @@ public import Mathlib.Algebra.Notation.Support
 public import Mathlib.Algebra.Opposites
 public import Mathlib.Algebra.Order.AbsoluteValue.Basic
 public import Mathlib.Algebra.Order.AbsoluteValue.Euclidean
+public import Mathlib.Algebra.Order.AbsoluteValue.Int
 public import Mathlib.Algebra.Order.AddGroupWithTop
 public import Mathlib.Algebra.Order.AddTorsor
 public import Mathlib.Algebra.Order.Algebra
@@ -1072,6 +1079,7 @@ public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Algebra.Order.Monoid.Lex
 public import Mathlib.Algebra.Order.Monoid.LocallyFiniteOrder
+public import Mathlib.Algebra.Order.Monoid.Multiset
 public import Mathlib.Algebra.Order.Monoid.NatCast
 public import Mathlib.Algebra.Order.Monoid.OrderDual
 public import Mathlib.Algebra.Order.Monoid.PNat
@@ -1135,8 +1143,10 @@ public import Mathlib.Algebra.Order.Ring.WithTop
 public import Mathlib.Algebra.Order.Round
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Algebra.Order.Star.Conjneg
+public import Mathlib.Algebra.Order.Star.Int
 public import Mathlib.Algebra.Order.Star.Pi
 public import Mathlib.Algebra.Order.Star.Prod
+public import Mathlib.Algebra.Order.Star.Rat
 public import Mathlib.Algebra.Order.Star.Real
 public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Algebra.Order.Sub.Defs
@@ -1270,6 +1280,7 @@ public import Mathlib.Algebra.Ring.Divisibility.Lemmas
 public import Mathlib.Algebra.Ring.Equiv
 public import Mathlib.Algebra.Ring.Ext
 public import Mathlib.Algebra.Ring.Fin
+public import Mathlib.Algebra.Ring.FunLike
 public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Algebra.Ring.GrindInstances
 public import Mathlib.Algebra.Ring.Hom.Defs
@@ -1358,7 +1369,6 @@ public import Mathlib.Algebra.Star.UnitaryStarAlgAut
 public import Mathlib.Algebra.Symmetrized
 public import Mathlib.Algebra.Torsor.Basic
 public import Mathlib.Algebra.Torsor.Defs
-public import Mathlib.Algebra.TrivSqZeroExt
 public import Mathlib.Algebra.TrivSqZeroExt.Basic
 public import Mathlib.Algebra.TrivSqZeroExt.Ideal
 public import Mathlib.Algebra.Tropical.Basic
@@ -1878,6 +1888,7 @@ public import Mathlib.Analysis.Calculus.LogDeriv
 public import Mathlib.Analysis.Calculus.LogDerivUniformlyOn
 public import Mathlib.Analysis.Calculus.MeanValue
 public import Mathlib.Analysis.Calculus.Monotone
+public import Mathlib.Analysis.Calculus.ParametricCircleIntegral
 public import Mathlib.Analysis.Calculus.ParametricIntegral
 public import Mathlib.Analysis.Calculus.ParametricIntervalIntegral
 public import Mathlib.Analysis.Calculus.Rademacher
@@ -1963,6 +1974,7 @@ public import Mathlib.Analysis.Complex.ValueDistribution.CharacteristicFunction
 public import Mathlib.Analysis.Complex.ValueDistribution.FirstMainTheorem
 public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Asymptotic
 public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Basic
+public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Truncated
 public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.Basic
 public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.IntegralPresentation
 public import Mathlib.Analysis.Complex.ValueDistribution.SecondMainTheorem
@@ -2215,6 +2227,7 @@ public import Mathlib.Analysis.Normed.Group.Lemmas
 public import Mathlib.Analysis.Normed.Group.NullSubmodule
 public import Mathlib.Analysis.Normed.Group.Pointwise
 public import Mathlib.Analysis.Normed.Group.Quotient
+public import Mathlib.Analysis.Normed.Group.RadialFunction
 public import Mathlib.Analysis.Normed.Group.Rat
 public import Mathlib.Analysis.Normed.Group.Real
 public import Mathlib.Analysis.Normed.Group.SemiNormedGrp
@@ -2324,12 +2337,6 @@ public import Mathlib.Analysis.Normed.Unbundled.SeminormFromBounded
 public import Mathlib.Analysis.Normed.Unbundled.SeminormFromConst
 public import Mathlib.Analysis.Normed.Unbundled.SmoothingSeminorm
 public import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
-public import Mathlib.Analysis.NormedSpace.FunctionSeries
-public import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
-public import Mathlib.Analysis.NormedSpace.OperatorNorm.NNNorm
-public import Mathlib.Analysis.NormedSpace.OperatorNorm.Prod
-public import Mathlib.Analysis.NormedSpace.RCLike
-public import Mathlib.Analysis.NormedSpace.Real
 public import Mathlib.Analysis.ODE.Basic
 public import Mathlib.Analysis.ODE.DiscreteGronwall
 public import Mathlib.Analysis.ODE.ExistUnique
@@ -2504,6 +2511,9 @@ public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Basic.Finite.Set
 public import Mathlib.Basic.Finite.Sigma
 public import Mathlib.Basic.Finite.Sum
+public import Mathlib.Basic.FunLike.Basic
+public import Mathlib.Basic.FunLike.Embedding
+public import Mathlib.Basic.FunLike.Equiv
 public import Mathlib.Basic.IsEmpty.Basic
 public import Mathlib.Basic.IsEmpty.Defs
 public import Mathlib.Basic.Logic.Basic
@@ -2514,6 +2524,8 @@ public import Mathlib.Basic.NNReal.Star
 public import Mathlib.Basic.Nonempty
 public import Mathlib.Basic.Nontrivial.Basic
 public import Mathlib.Basic.Nontrivial.Defs
+public import Mathlib.Basic.Opposite
+public import Mathlib.Basic.PEquiv
 public import Mathlib.Basic.Real.Basic
 public import Mathlib.Basic.Real.ConjExponents
 public import Mathlib.Basic.Real.ENatENNReal
@@ -2524,6 +2536,8 @@ public import Mathlib.Basic.Real.Star
 public import Mathlib.Basic.Rel
 public import Mathlib.Basic.Rel.Cover
 public import Mathlib.Basic.Rel.Separated
+public import Mathlib.Basic.SProd
+public import Mathlib.Basic.SetLike.Basic
 public import Mathlib.Basic.Sign.Basic
 public import Mathlib.Basic.Sign.Defs
 public import Mathlib.Basic.TwoPointing
@@ -3420,6 +3434,7 @@ public import Mathlib.CategoryTheory.Products.Basic
 public import Mathlib.CategoryTheory.Products.Bifunctor
 public import Mathlib.CategoryTheory.Products.Unitor
 public import Mathlib.CategoryTheory.Profunctor.Basic
+public import Mathlib.CategoryTheory.Profunctor.Bicategory
 public import Mathlib.CategoryTheory.Profunctor.Comp
 public import Mathlib.CategoryTheory.Quotient
 public import Mathlib.CategoryTheory.Quotient.Linear
@@ -3607,7 +3622,6 @@ public import Mathlib.CategoryTheory.Sums.Associator
 public import Mathlib.CategoryTheory.Sums.Basic
 public import Mathlib.CategoryTheory.Sums.Products
 public import Mathlib.CategoryTheory.Thin
-public import Mathlib.CategoryTheory.Topos.Classifier
 public import Mathlib.CategoryTheory.Topos.Sheaf
 public import Mathlib.CategoryTheory.Triangulated.Adjunction
 public import Mathlib.CategoryTheory.Triangulated.Basic
@@ -3781,8 +3795,6 @@ public import Mathlib.Combinatorics.SimpleGraph.Connectivity.EdgeConnectivity
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Finite
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Represents
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
-public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
-public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkDecomp
 public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Combinatorics.SimpleGraph.CycleGraph
 public import Mathlib.Combinatorics.SimpleGraph.Dart
@@ -3944,13 +3956,11 @@ public import Mathlib.Control.ULift
 public import Mathlib.Control.ULiftable
 public import Mathlib.Data.Analysis.Filter
 public import Mathlib.Data.Analysis.Topology
-public import Mathlib.Data.Array.Defs
 public import Mathlib.Data.BitVec
 public import Mathlib.Data.Bool.AllAny
 public import Mathlib.Data.Bool.Basic
 public import Mathlib.Data.Bool.Count
 public import Mathlib.Data.Bool.Set
-public import Mathlib.Data.Bracket
 public import Mathlib.Data.Bundle
 public import Mathlib.Data.Char
 public import Mathlib.Data.Complex.Basic
@@ -3990,7 +4000,6 @@ public import Mathlib.Data.ENat.Defs
 public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Data.ENat.Monoid
 public import Mathlib.Data.ENat.Pow
-public import Mathlib.Data.ENat.SuccOrder
 public import Mathlib.Data.EReal.Basic
 public import Mathlib.Data.EReal.BigOperators
 public import Mathlib.Data.EReal.Inv
@@ -4007,7 +4016,6 @@ public import Mathlib.Data.Fin.Parity
 public import Mathlib.Data.Fin.Pigeonhole
 public import Mathlib.Data.Fin.Rev
 public import Mathlib.Data.Fin.SuccPred
-public import Mathlib.Data.Fin.SuccPredOrder
 public import Mathlib.Data.Fin.Tuple.Basic
 public import Mathlib.Data.Fin.Tuple.BubbleSortInduction
 public import Mathlib.Data.Fin.Tuple.Curry
@@ -4142,18 +4150,9 @@ public import Mathlib.Data.Fintype.Sum
 public import Mathlib.Data.Fintype.Units
 public import Mathlib.Data.Fintype.Vector
 public import Mathlib.Data.Fintype.WithTopBot
-public import Mathlib.Data.FunLike.Basic
-public import Mathlib.Data.FunLike.Embedding
-public import Mathlib.Data.FunLike.Equiv
 public import Mathlib.Data.FunLike.Fintype
-public import Mathlib.Data.FunLike.Graded
-public import Mathlib.Data.FunLike.Group
-public import Mathlib.Data.FunLike.IsApply
-public import Mathlib.Data.FunLike.Module
-public import Mathlib.Data.FunLike.Ring
 public import Mathlib.Data.Holor
 public import Mathlib.Data.Ineq
-public import Mathlib.Data.Int.AbsoluteValue
 public import Mathlib.Data.Int.Associated
 public import Mathlib.Data.Int.Basic
 public import Mathlib.Data.Int.Bitwise
@@ -4165,14 +4164,12 @@ public import Mathlib.Data.Int.Cast.Lemmas
 public import Mathlib.Data.Int.Cast.Pi
 public import Mathlib.Data.Int.Cast.Prod
 public import Mathlib.Data.Int.CharZero
-public import Mathlib.Data.Int.ConditionallyCompleteOrder
 public import Mathlib.Data.Int.DivMod
 public import Mathlib.Data.Int.Fib.Basic
 public import Mathlib.Data.Int.Fib.Lemmas
 public import Mathlib.Data.Int.GCD
 public import Mathlib.Data.Int.Init
 public import Mathlib.Data.Int.Interval
-public import Mathlib.Data.Int.LeastGreatest
 public import Mathlib.Data.Int.Lemmas
 public import Mathlib.Data.Int.Log
 public import Mathlib.Data.Int.ModEq
@@ -4184,8 +4181,6 @@ public import Mathlib.Data.Int.Order.Lemmas
 public import Mathlib.Data.Int.Order.Units
 public import Mathlib.Data.Int.Range
 public import Mathlib.Data.Int.Sqrt
-public import Mathlib.Data.Int.Star
-public import Mathlib.Data.Int.SuccPred
 public import Mathlib.Data.Int.WithZero
 public import Mathlib.Data.LawfulXor.Basic
 public import Mathlib.Data.LawfulXor.Equiv
@@ -4288,7 +4283,6 @@ public import Mathlib.Data.Multiset.Interval
 public import Mathlib.Data.Multiset.Lattice
 public import Mathlib.Data.Multiset.MapFold
 public import Mathlib.Data.Multiset.NatAntidiagonal
-public import Mathlib.Data.Multiset.OrderedMonoid
 public import Mathlib.Data.Multiset.Pairwise
 public import Mathlib.Data.Multiset.Pi
 public import Mathlib.Data.Multiset.Powerset
@@ -4393,7 +4387,6 @@ public import Mathlib.Data.Nat.Set
 public import Mathlib.Data.Nat.Size
 public import Mathlib.Data.Nat.Sqrt
 public import Mathlib.Data.Nat.Squarefree
-public import Mathlib.Data.Nat.SuccPred
 public import Mathlib.Data.Nat.Totient
 public import Mathlib.Data.Nat.Upto
 public import Mathlib.Data.Nat.WithBot
@@ -4402,7 +4395,6 @@ public import Mathlib.Data.Num.Bitwise
 public import Mathlib.Data.Num.Lemmas
 public import Mathlib.Data.Num.Prime
 public import Mathlib.Data.Num.ZNum
-public import Mathlib.Data.Opposite
 public import Mathlib.Data.Option.Basic
 public import Mathlib.Data.Option.Defs
 public import Mathlib.Data.Option.NAry
@@ -4411,7 +4403,6 @@ public import Mathlib.Data.Ordering.Lemmas
 public import Mathlib.Data.Ordmap.Invariants
 public import Mathlib.Data.Ordmap.Ordnode
 public import Mathlib.Data.Ordmap.Ordset
-public import Mathlib.Data.PEquiv
 public import Mathlib.Data.PFun
 public import Mathlib.Data.PFunctor.Multivariate.Basic
 public import Mathlib.Data.PFunctor.Multivariate.M
@@ -4425,14 +4416,11 @@ public import Mathlib.Data.PNat.Factors
 public import Mathlib.Data.PNat.Find
 public import Mathlib.Data.PNat.Interval
 public import Mathlib.Data.PNat.Notation
-public import Mathlib.Data.PNat.Order
 public import Mathlib.Data.PNat.Prime
 public import Mathlib.Data.PNat.Xgcd
-public import Mathlib.Data.PSigma.Order
 public import Mathlib.Data.Part
 public import Mathlib.Data.Pi.Interval
 public import Mathlib.Data.Prod.Basic
-public import Mathlib.Data.Prod.Lex
 public import Mathlib.Data.Prod.PProd
 public import Mathlib.Data.Prod.TProd
 public import Mathlib.Data.QPF.Multivariate.Basic
@@ -4461,10 +4449,8 @@ public import Mathlib.Data.Rat.Lemmas
 public import Mathlib.Data.Rat.NatSqrt.Defs
 public import Mathlib.Data.Rat.NatSqrt.Real
 public import Mathlib.Data.Rat.Sqrt
-public import Mathlib.Data.Rat.Star
 public import Mathlib.Data.Real.Archimedean
 public import Mathlib.Data.Real.Basic
-public import Mathlib.Data.Real.CompleteField
 public import Mathlib.Data.Real.ConjExponents
 public import Mathlib.Data.Real.ENatENNReal
 public import Mathlib.Data.Real.Embedding
@@ -4477,7 +4463,6 @@ public import Mathlib.Data.Real.StarOrdered
 public import Mathlib.Data.Rel
 public import Mathlib.Data.Rel.Cover
 public import Mathlib.Data.Rel.Separated
-public import Mathlib.Data.SProd
 public import Mathlib.Data.Semiquot
 public import Mathlib.Data.Seq.Basic
 public import Mathlib.Data.Seq.Computation
@@ -4526,7 +4511,6 @@ public import Mathlib.Data.Set.Operations
 public import Mathlib.Data.Set.Opposite
 public import Mathlib.Data.Set.Order
 public import Mathlib.Data.Set.Pairwise.Basic
-public import Mathlib.Data.Set.Pairwise.Chain
 public import Mathlib.Data.Set.Pairwise.Lattice
 public import Mathlib.Data.Set.Pairwise.List
 public import Mathlib.Data.Set.Piecewise
@@ -4542,16 +4526,9 @@ public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Data.Set.Sups
 public import Mathlib.Data.Set.SymmDiff
 public import Mathlib.Data.Set.UnionLift
-public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Data.SetLike.Fintype
-public import Mathlib.Data.SetLike.Lattice
-public import Mathlib.Data.Setoid.Basic
-public import Mathlib.Data.Setoid.Partition
-public import Mathlib.Data.Setoid.Partition.Card
 public import Mathlib.Data.Sigma.Basic
 public import Mathlib.Data.Sigma.Interval
-public import Mathlib.Data.Sigma.Lex
-public import Mathlib.Data.Sigma.Order
 public import Mathlib.Data.Sign.Basic
 public import Mathlib.Data.Sign.Defs
 public import Mathlib.Data.Stream.Defs
@@ -4563,15 +4540,12 @@ public import Mathlib.Data.Subtype
 public import Mathlib.Data.SubtypeNeLift
 public import Mathlib.Data.Sum.Basic
 public import Mathlib.Data.Sum.Interval
-public import Mathlib.Data.Sum.Lattice
-public import Mathlib.Data.Sum.Order
 public import Mathlib.Data.Sym.Basic
 public import Mathlib.Data.Sym.Card
 public import Mathlib.Data.Sym.NatCard
 public import Mathlib.Data.Sym.Sym2
 public import Mathlib.Data.Sym.Sym2.Finsupp
 public import Mathlib.Data.Sym.Sym2.Init
-public import Mathlib.Data.Sym.Sym2.Order
 public import Mathlib.Data.Tree.Basic
 public import Mathlib.Data.Tree.Get
 public import Mathlib.Data.Tree.Traversable
@@ -5478,7 +5452,6 @@ public import Mathlib.LinearAlgebra.TensorProduct.Submodule
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.LinearAlgebra.TensorProduct.Vanishing
 public import Mathlib.LinearAlgebra.Trace
-public import Mathlib.LinearAlgebra.Transvection
 public import Mathlib.LinearAlgebra.Transvection.Basic
 public import Mathlib.LinearAlgebra.Transvection.Generation
 public import Mathlib.LinearAlgebra.Unimodular
@@ -5738,7 +5711,6 @@ public import Mathlib.MeasureTheory.Measure.AEMeasurable
 public import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
 public import Mathlib.MeasureTheory.Measure.AddContent
 public import Mathlib.MeasureTheory.Measure.Basic
-public import Mathlib.MeasureTheory.Measure.CharacteristicFunction
 public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.TaylorExpansion
 public import Mathlib.MeasureTheory.Measure.Comap
@@ -6013,7 +5985,6 @@ public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 public import Mathlib.NumberTheory.ModularForms.CuspFormSubmodule
 public import Mathlib.NumberTheory.ModularForms.Cusps
 public import Mathlib.NumberTheory.ModularForms.DedekindEta
-public import Mathlib.NumberTheory.ModularForms.Delta
 public import Mathlib.NumberTheory.ModularForms.Derivative
 public import Mathlib.NumberTheory.ModularForms.DimensionFormulas.LevelOne
 public import Mathlib.NumberTheory.ModularForms.Discriminant
@@ -6077,7 +6048,6 @@ public import Mathlib.NumberTheory.NumberField.Discriminant.Different
 public import Mathlib.NumberTheory.NumberField.EquivReindex
 public import Mathlib.NumberTheory.NumberField.ExistsRamified
 public import Mathlib.NumberTheory.NumberField.FiniteAdeleRing
-public import Mathlib.NumberTheory.NumberField.FinitePlaces
 public import Mathlib.NumberTheory.NumberField.FractionalIdeal
 public import Mathlib.NumberTheory.NumberField.House
 public import Mathlib.NumberTheory.NumberField.Ideal.Asymptotics
@@ -6085,7 +6055,6 @@ public import Mathlib.NumberTheory.NumberField.Ideal.Basic
 public import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
 public import Mathlib.NumberTheory.NumberField.InfiniteAdeleRing
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
-public import Mathlib.NumberTheory.NumberField.InfinitePlace.Completion
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
@@ -6228,6 +6197,7 @@ public import Mathlib.Order.Copy
 public import Mathlib.Order.CountableDenseLinearOrder
 public import Mathlib.Order.CountableSupClosed
 public import Mathlib.Order.Cover
+public import Mathlib.Order.Defs.Lattice
 public import Mathlib.Order.Defs.LinearOrder
 public import Mathlib.Order.Defs.PartialOrder
 public import Mathlib.Order.Defs.Prop
@@ -6326,6 +6296,8 @@ public import Mathlib.Order.Hom.Set
 public import Mathlib.Order.Hom.WithTopBot
 public import Mathlib.Order.Ideal
 public import Mathlib.Order.InitialSeg
+public import Mathlib.Order.Int.ConditionallyCompleteOrder
+public import Mathlib.Order.Int.LeastGreatest
 public import Mathlib.Order.Interval.Basic
 public import Mathlib.Order.Interval.Finset.Basic
 public import Mathlib.Order.Interval.Finset.Box
@@ -6398,6 +6370,7 @@ public import Mathlib.Order.OrdContinuous
 public import Mathlib.Order.OrderDual
 public import Mathlib.Order.OrderIsoNat
 public import Mathlib.Order.PFilter
+public import Mathlib.Order.PSigma
 public import Mathlib.Order.Part
 public import Mathlib.Order.PartialSups
 public import Mathlib.Order.Partition.Basic
@@ -6407,8 +6380,10 @@ public import Mathlib.Order.PiLex
 public import Mathlib.Order.Preorder.Chain
 public import Mathlib.Order.Preorder.Finite
 public import Mathlib.Order.Preorder.Finsupp
+public import Mathlib.Order.Preorder.PairwiseChain
 public import Mathlib.Order.PrimeIdeal
 public import Mathlib.Order.PrimeSeparator
+public import Mathlib.Order.Prod.Lex.Basic
 public import Mathlib.Order.Prod.Lex.Hom
 public import Mathlib.Order.PropInstances
 public import Mathlib.Order.Quotient
@@ -6429,24 +6404,36 @@ public import Mathlib.Order.SetAccumulate
 public import Mathlib.Order.SetDissipate
 public import Mathlib.Order.SetIsMax
 public import Mathlib.Order.SetNotation
+public import Mathlib.Order.Setoid.Basic
+public import Mathlib.Order.Setoid.Partition
+public import Mathlib.Order.Setoid.Partition.Card
 public import Mathlib.Order.Shrink
+public import Mathlib.Order.Sigma
+public import Mathlib.Order.Sigma.Lex
 public import Mathlib.Order.Std
 public import Mathlib.Order.Sublattice
 public import Mathlib.Order.Sublocale
 public import Mathlib.Order.SuccPred.Archimedean
 public import Mathlib.Order.SuccPred.Basic
 public import Mathlib.Order.SuccPred.CompleteLinearOrder
+public import Mathlib.Order.SuccPred.ENat
+public import Mathlib.Order.SuccPred.Fin
 public import Mathlib.Order.SuccPred.InitialSeg
+public import Mathlib.Order.SuccPred.Int
 public import Mathlib.Order.SuccPred.IntervalSucc
 public import Mathlib.Order.SuccPred.Limit
 public import Mathlib.Order.SuccPred.LinearLocallyFinite
+public import Mathlib.Order.SuccPred.Nat
+public import Mathlib.Order.SuccPred.PNat
 public import Mathlib.Order.SuccPred.Relation
 public import Mathlib.Order.SuccPred.Tree
 public import Mathlib.Order.SuccPred.WithBot
+public import Mathlib.Order.Sum.Lattice
+public import Mathlib.Order.Sum.Order
 public import Mathlib.Order.SupClosed
 public import Mathlib.Order.SupIndep
+public import Mathlib.Order.Sym2
 public import Mathlib.Order.SymmDiff
-public import Mathlib.Order.Synonym
 public import Mathlib.Order.TeichmullerTukey
 public import Mathlib.Order.TransfiniteIteration
 public import Mathlib.Order.TypeTags
@@ -6525,7 +6512,6 @@ public import Mathlib.Probability.Independence.Integration
 public import Mathlib.Probability.Independence.Kernel.Indep
 public import Mathlib.Probability.Independence.Kernel.IndepFun
 public import Mathlib.Probability.Independence.Process.Basic
-public import Mathlib.Probability.Independence.Process.HasIndepIncrements
 public import Mathlib.Probability.Independence.Process.HasIndepIncrements.Basic
 public import Mathlib.Probability.Independence.Process.HasIndepIncrements.IsGaussianProcess
 public import Mathlib.Probability.Independence.ZeroOne
@@ -6669,7 +6655,6 @@ public import Mathlib.RingTheory.Adjoin.Dimension
 public import Mathlib.RingTheory.Adjoin.FG
 public import Mathlib.RingTheory.Adjoin.FGBaseChange
 public import Mathlib.RingTheory.Adjoin.Field
-public import Mathlib.RingTheory.Adjoin.Polynomial
 public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 public import Mathlib.RingTheory.Adjoin.Polynomial.Bivariate
 public import Mathlib.RingTheory.Adjoin.Polynomial.Transcendental
@@ -7192,7 +7177,6 @@ public import Mathlib.RingTheory.QuasiFinite.Basic
 public import Mathlib.RingTheory.QuasiFinite.Polynomial
 public import Mathlib.RingTheory.QuasiFinite.Weakly
 public import Mathlib.RingTheory.QuotSMulTop
-public import Mathlib.RingTheory.Radical
 public import Mathlib.RingTheory.Radical.Basic
 public import Mathlib.RingTheory.Radical.NatInt
 public import Mathlib.RingTheory.RamificationInertia.Basic
@@ -7346,7 +7330,6 @@ public import Mathlib.RingTheory.Valuation.Discrete.RankOne
 public import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
 public import Mathlib.RingTheory.Valuation.ExtendToLocalization
 public import Mathlib.RingTheory.Valuation.Extension
-public import Mathlib.RingTheory.Valuation.FiniteField
 public import Mathlib.RingTheory.Valuation.Integers
 public import Mathlib.RingTheory.Valuation.Integral
 public import Mathlib.RingTheory.Valuation.IsTrivialOn
@@ -7812,6 +7795,7 @@ public import Mathlib.Tactic.ToLevel
 public import Mathlib.Tactic.Trace
 public import Mathlib.Tactic.Translate.Attributes
 public import Mathlib.Tactic.Translate.Core
+public import Mathlib.Tactic.Translate.Expr
 public import Mathlib.Tactic.Translate.GuessName
 public import Mathlib.Tactic.Translate.Reorder
 public import Mathlib.Tactic.Translate.TagUnfoldBoundary
@@ -7994,7 +7978,6 @@ public import Mathlib.Topology.Algebra.PontryaginDual
 public import Mathlib.Topology.Algebra.ProperAction.AddTorsor
 public import Mathlib.Topology.Algebra.ProperAction.Basic
 public import Mathlib.Topology.Algebra.ProperAction.CompactlyGenerated
-public import Mathlib.Topology.Algebra.ProperAction.ProperlyDiscontinuous
 public import Mathlib.Topology.Algebra.ProperAction.Torsor
 public import Mathlib.Topology.Algebra.ProperConstSMul
 public import Mathlib.Topology.Algebra.RestrictedProduct.Basic
@@ -8190,6 +8173,7 @@ public import Mathlib.Topology.Convenient.OpenClosed
 public import Mathlib.Topology.Covering.AddCircle
 public import Mathlib.Topology.Covering.Basic
 public import Mathlib.Topology.Covering.Deck
+public import Mathlib.Topology.Covering.FundamentalGroupCircle
 public import Mathlib.Topology.Covering.Quotient
 public import Mathlib.Topology.Defs.Basic
 public import Mathlib.Topology.Defs.Filter
