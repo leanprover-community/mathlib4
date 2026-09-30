@@ -46,7 +46,7 @@ namespace Finset
 
 section CommGroup
 
-variable [CommGroup α] (e : α) (x : Finset α × Finset α)
+variable [Group α] [IsMulCommutative α] (e : α) (x : Finset α × Finset α)
 
 /-- The **Dyson e-transform**. Turns `(s, t)` into `(s ∪ e • t, t ∩ e⁻¹ • s)`. This reduces the
 product of the two sets. -/
@@ -55,6 +55,7 @@ Turns `(s, t)` into `(s ∪ e +ᵥ t, t ∩ -e +ᵥ s)`. This reduces the sum of
 def mulDysonETransform : Finset α × Finset α :=
   (x.1 ∪ e • x.2, x.2 ∩ e⁻¹ • x.1)
 
+open scoped IsMulCommutative in
 @[to_additive]
 theorem mulDysonETransform.subset :
     (mulDysonETransform e x).1 * (mulDysonETransform e x).2 ⊆ x.1 * x.2 := by
@@ -161,12 +162,14 @@ end Group
 
 section CommGroup
 
-variable [CommGroup α] (e : α) (x : Finset α × Finset α)
+variable [Group α] [IsMulCommutative α] (e : α) (x : Finset α × Finset α)
 
+open scoped IsMulCommutative in
 @[to_additive (attr := simp)]
 theorem mulETransformLeft_inv : mulETransformLeft e⁻¹ x = (mulETransformRight e x.swap).swap := by
   simp [-op_inv, op_smul_eq_smul, mulETransformLeft, mulETransformRight]
 
+open scoped IsMulCommutative in
 @[to_additive (attr := simp)]
 theorem mulETransformRight_inv : mulETransformRight e⁻¹ x = (mulETransformLeft e x.swap).swap := by
   simp [-op_inv, op_smul_eq_smul, mulETransformLeft, mulETransformRight]

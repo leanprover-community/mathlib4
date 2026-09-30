@@ -198,22 +198,26 @@ end Group
 open scoped Combinatorics.Additive
 
 section CommGroup
-variable {G : Type*} [CommGroup G] [DecidableEq G] {A B : Finset G}
+variable {G : Type*} [Group G] [IsMulCommutative G] [DecidableEq G] {A B : Finset G}
 
+open scoped IsMulCommutative in
 @[to_additive (attr := simp)]
 lemma mulConst_inv_left (A B : Finset G) : σₘ[A⁻¹, B] = δₘ[A, B] := by
   rw [mulConst, divConst, card_inv, ← card_inv, mul_inv_rev, inv_inv, inv_mul_eq_div]
 
+open scoped IsMulCommutative in
 @[to_additive (attr := simp)]
 lemma divConst_inv_left (A B : Finset G) : δₘ[A⁻¹, B] = σₘ[A, B] := by
   rw [mulConst, divConst, card_inv, ← card_inv, inv_div, div_inv_eq_mul, mul_comm]
 
+open scoped IsMulCommutative in
 /-- If `A` has small difference, then it has small doubling, with the constant squared.
 
 This is a consequence of the Ruzsa triangle inequality. -/
 @[to_additive
 /-- If `A` has small difference, then it has small doubling, with the constant squared.
 
+open scoped IsMulCommutative in
 This is a consequence of the Ruzsa triangle inequality. -/]
 lemma mulConst_le_divConst_sq : σₘ[A] ≤ δₘ[A] ^ 2 := by
   obtain rfl | hA' := A.eq_empty_or_nonempty

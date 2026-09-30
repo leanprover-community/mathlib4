@@ -163,28 +163,32 @@ def LocallyFiniteOrder.orderAddMonoidEquiv [Nontrivial G] :
 lemma LocallyFiniteOrder.orderAddMonoidEquiv_apply [Nontrivial G] (x : G) :
     orderAddMonoidEquiv G x = addMonoidHom G x := rfl
 
+open scoped IsMulCommutative in
 /-- Any linearly ordered abelian group that is locally finite embeds to `Multiplicative ℤ`. -/
 noncomputable
-def LocallyFiniteOrder.orderMonoidEquiv (G : Type*) [CommGroup G] [LinearOrder G]
+def LocallyFiniteOrder.orderMonoidEquiv (G : Type*) [Group G] [IsMulCommutative G] [LinearOrder G]
     [IsOrderedMonoid G] [LocallyFiniteOrder G] [Nontrivial G] :
     G ≃*o Multiplicative ℤ :=
   have : LocallyFiniteOrder (Additive G) := ‹LocallyFiniteOrder G›
   (orderAddMonoidEquiv (Additive G)).toMultiplicative
 
+open scoped IsMulCommutative in
 /-- Any linearly ordered abelian group that is locally finite embeds into `Multiplicative ℤ`. -/
 noncomputable
-def LocallyFiniteOrder.orderMonoidHom (G : Type*) [CommGroup G] [LinearOrder G]
+def LocallyFiniteOrder.orderMonoidHom (G : Type*) [Group G] [IsMulCommutative G] [LinearOrder G]
     [IsOrderedMonoid G] [LocallyFiniteOrder G] :
     G →*o Multiplicative ℤ :=
   have : LocallyFiniteOrder (Additive G) := ‹LocallyFiniteOrder G›
   ⟨(orderAddMonoidHom (Additive G)).toMultiplicative, (orderAddMonoidHom (Additive G)).2⟩
 
-lemma LocallyFiniteOrder.orderMonoidHom_strictMono {G : Type*} [CommGroup G] [LinearOrder G]
+open scoped IsMulCommutative in
+lemma LocallyFiniteOrder.orderMonoidHom_strictMono {G : Type*} [Group G] [IsMulCommutative G] [LinearOrder G]
     [IsOrderedMonoid G] [LocallyFiniteOrder G] :
     StrictMono (orderMonoidHom G) :=
   let : LocallyFiniteOrder (Additive G) := ‹LocallyFiniteOrder G›
   fun a b h ↦ orderAddMonoidHom_strictMono h
 
+open scoped IsMulCommutative in
 open scoped WithZero in
 /-- Any nontrivial linearly ordered abelian group with zero that is locally finite
 is isomorphic to `ℤᵐ⁰`. -/
@@ -193,6 +197,7 @@ def LocallyFiniteOrder.orderMonoidWithZeroEquiv (G : Type*) [LinearOrderedCommGr
     [LocallyFiniteOrder Gˣ] [Nontrivial Gˣ] : G ≃*o ℤᵐ⁰ :=
   OrderMonoidIso.withZeroUnits.symm.trans (LocallyFiniteOrder.orderMonoidEquiv _).withZero
 
+open scoped IsMulCommutative in
 open scoped WithZero in
 /-- Any linearly ordered abelian group with zero that is locally finite embeds into `ℤᵐ⁰`. -/
 noncomputable
@@ -202,6 +207,7 @@ def LocallyFiniteOrder.orderMonoidWithZeroHom (G : Type*) [LinearOrderedCommGrou
     OrderMonoidIso.withZeroUnits.symm.toMonoidWithZeroHom
   monotone' a b h := by have := (orderMonoidHom Gˣ).monotone'; aesop
 
+open scoped IsMulCommutative in
 lemma LocallyFiniteOrder.orderMonoidWithZeroHom_strictMono {G : Type*}
     [LinearOrderedCommGroupWithZero G] [LocallyFiniteOrder Gˣ] :
     StrictMono (orderMonoidWithZeroHom G) := by

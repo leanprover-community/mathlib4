@@ -19,7 +19,7 @@ public import Mathlib.Topology.UniformSpace.Ascoli
 open Function Topology
 open scoped Pointwise
 
-variable (A B C E : Type*) [Monoid A] [Monoid B] [Monoid C] [CommGroup E]
+variable (A B C E : Type*) [Monoid A] [Monoid B] [Monoid C] [Group E] [IsMulCommutative E]
   [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C]
   [TopologicalSpace E] [IsTopologicalGroup E]
 
@@ -72,6 +72,7 @@ variable {A B C D E}
 instance [T2Space B] : T2Space (ContinuousMonoidHom A B) :=
   (isEmbedding_toContinuousMap A B).t2Space
 
+open scoped IsMulCommutative in
 @[to_additive]
 instance : IsTopologicalGroup (ContinuousMonoidHom A E) :=
   let hi := isInducing_toContinuousMap A E
@@ -105,6 +106,7 @@ theorem continuous_comp_right (f : ContinuousMonoidHom B C) :
   (isInducing_toContinuousMap A C).continuous_iff.2 <|
     f.toContinuousMap.continuous_postcomp.comp (isInducing_toContinuousMap A B).continuous
 
+open scoped IsMulCommutative in
 variable (E) in
 /-- `ContinuousMonoidHom _ f` is a functor. -/
 @[to_additive /-- `ContinuousAddMonoidHom _ f` is a functor. -/]
@@ -115,10 +117,11 @@ def compLeft (f : ContinuousMonoidHom A B) :
   map_mul' _g _h := rfl
   continuous_toFun := f.continuous_comp_left
 
+open scoped IsMulCommutative in
 variable (A) in
 /-- `ContinuousMonoidHom f _` is a functor. -/
 @[to_additive /-- `ContinuousAddMonoidHom f _` is a functor. -/]
-def compRight {B : Type*} [CommGroup B] [TopologicalSpace B] [IsTopologicalGroup B]
+def compRight {B : Type*} [Group B] [IsMulCommutative B] [TopologicalSpace B] [IsTopologicalGroup B]
     (f : ContinuousMonoidHom B E) :
     ContinuousMonoidHom (ContinuousMonoidHom A B) (ContinuousMonoidHom A E) where
   toFun g := f.comp g
@@ -142,8 +145,9 @@ end DiscreteTopology
 section LocallyCompact
 
 variable {X Y : Type*} [TopologicalSpace X] [Group X] [IsTopologicalGroup X]
-  [UniformSpace Y] [CommGroup Y] [IsUniformGroup Y] [T0Space Y] [CompactSpace Y]
+  [UniformSpace Y] [Group Y] [IsMulCommutative Y] [IsUniformGroup Y] [T0Space Y] [CompactSpace Y]
 
+open scoped IsMulCommutative in
 @[to_additive]
 theorem locallyCompactSpace_of_equicontinuousAt (U : Set X) (V : Set Y)
     (hU : IsCompact U) (hV : V ∈ nhds (1 : Y))

@@ -17,7 +17,7 @@ import Mathlib.Algebra.Order.Group.Defs
 
 open Set
 
-variable {ι M G S : Type*} [Monoid M] [CommGroup G] [LinearOrder S]
+variable {ι M G S : Type*} [Monoid M] [Group G] [IsMulCommutative G] [LinearOrder S]
 
 /-- Given a family of elements of a monoid, a member is said to be indecomposable if it cannot be
 written as a product of two others in a non-trivial way. -/
@@ -49,9 +49,10 @@ lemma IsMulIndecomposable.baseOf_subset_one_lt [Monoid S] (v : ι → M) (f : M 
     IsMulIndecomposable.baseOf v f ⊆ {i | 1 < f (v i)} :=
   IsMulIndecomposable.subset _ _
 
+open scoped IsMulCommutative in
 @[to_additive]
 lemma IsMulIndecomposable.image_baseOf_inv_comp_eq [InvolutiveInv ι]
-    [CommGroup S] [IsOrderedMonoid S]
+    [Group S] [IsMulCommutative S] [IsOrderedMonoid S]
     (v : ι → G) (hv_inv : ∀ i, v i⁻¹ = (v i)⁻¹)
     (f : G →* S) :
     v '' baseOf v (invMonoidHom.comp f) = (invMonoidHom ∘ v) '' baseOf v f := by
@@ -107,9 +108,10 @@ lemma Submonoid.closure_image_isMulIndecomposable_baseOf [Finite ι]
   replace hjk : v i ∈ closure (v '' t) := hjk ▸ mul_mem hj' hk'
   exact hi₁ hjk
 
+open scoped IsMulCommutative in
 @[to_additive]
 lemma Subgroup.closure_image_isMulIndecomposable_baseOf [Finite ι] [InvolutiveInv ι]
-    [CommGroup S] [IsOrderedMonoid S]
+    [Group S] [IsMulCommutative S] [IsOrderedMonoid S]
     (v : ι → G) (hv_inv : ∀ i, v i⁻¹ = (v i)⁻¹)
     (f : G →* S) (hf : ∀ i, f (v i) ≠ 1) :
     closure (v '' IsMulIndecomposable.baseOf v f) = closure (range v) := by
@@ -152,8 +154,9 @@ lemma pairwise_div_notMem_range [InvolutiveInv ι]
     simp only [IsMulIndecomposable, hv_one, or_self, imp_false, not_and, not_forall, not_not]
     exact fun _ ↦ ⟨k⁻¹, hk', i, h_sub hi, by simp [hv_inv, hk]⟩
 
+open scoped IsMulCommutative in
 @[to_additive]
-lemma pairwise_div_notMem_range' [InvolutiveInv ι] [CommGroup S] [IsOrderedMonoid S]
+lemma pairwise_div_notMem_range' [InvolutiveInv ι] [Group S] [IsMulCommutative S] [IsOrderedMonoid S]
     (v : ι → G) (hv_inv : ∀ i, v i⁻¹ = (v i)⁻¹)
     (f : G →* S) (hf : ∀ i, f (v i) ≠ 1)
     (s : Set ι) (hst : s ⊆ {j | IsMulIndecomposable v {i | 1 < f (v i)} j}) :
@@ -162,16 +165,18 @@ lemma pairwise_div_notMem_range' [InvolutiveInv ι] [CommGroup S] [IsOrderedMono
   apply pairwise_div_notMem_range v hv_one hv_inv s {i | 1 < f (v i)} hst fun i ↦ ?_
   simpa [hv_inv] using (hf i).symm
 
+open scoped IsMulCommutative in
 @[to_additive]
-lemma pairwise_baseOf_div_notMem [InvolutiveInv ι] [CommGroup S] [IsOrderedMonoid S]
+lemma pairwise_baseOf_div_notMem [InvolutiveInv ι] [Group S] [IsMulCommutative S] [IsOrderedMonoid S]
     (v : ι → G) (hv_inv : ∀ i, v i⁻¹ = (v i)⁻¹)
     (f : G →* S) (hf : ∀ i, f (v i) ≠ 1) :
     (baseOf v f).Pairwise fun i j ↦ v i / v j ∉ range v :=
   pairwise_div_notMem_range' v hv_inv f hf (baseOf v f) (.refl _)
 
+open scoped IsMulCommutative in
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 @[to_additive]
-lemma mem_or_inv_mem_closure_baseOf [Finite ι] [InvolutiveInv ι] [CommGroup S] [IsOrderedMonoid S]
+lemma mem_or_inv_mem_closure_baseOf [Finite ι] [InvolutiveInv ι] [Group S] [IsMulCommutative S] [IsOrderedMonoid S]
     (v : ι → G)
     (f : G →* S) (i : ι) (hi : f (v i) ≠ 1) (hi' : v i⁻¹ = (v i)⁻¹) :
      v i    ∈ Submonoid.closure (v '' baseOf v f) ∨
@@ -197,9 +202,10 @@ lemma Submonoid.mem_closure_image_one_lt_iff [CommMonoid S] [IsOrderedCancelMono
   right
   simpa only [map_mul] using Left.one_lt_mul hx hy
 
+open scoped IsMulCommutative in
 @[to_additive]
 lemma Submonoid.apply_ne_one_of_mem_or_inv_mem_closure
-    [InvolutiveInv ι] [CommGroup S] [IsOrderedMonoid S]
+    [InvolutiveInv ι] [Group S] [IsMulCommutative S] [IsOrderedMonoid S]
     (v : ι → G)
     (f : G →* S)
     (s : Set ι)
@@ -217,10 +223,11 @@ lemma Submonoid.apply_ne_one_of_mem_or_inv_mem_closure
   rcases eq_or_ne y 1 with rfl | hy'; · grind
   simpa using lt_mul_of_lt_of_one_lt (hx hx') (hy hy')
 
+open scoped IsMulCommutative in
 open Submonoid in
 @[to_additive]
 lemma IsMulIndecomposable.apply_ne_one_iff_mem_closure
-    [Finite ι] [InvolutiveInv ι] [CommGroup S] [IsOrderedMonoid S]
+    [Finite ι] [InvolutiveInv ι] [Group S] [IsMulCommutative S] [IsOrderedMonoid S]
     (v : ι → G) (f : G →* S) (i : ι) (hi : v i ≠ 1) (hi' : v i⁻¹ = (v i)⁻¹) :
     f (v i) ≠ 1 ↔ v i ∈ closure (v '' baseOf v f) ∨ (v i)⁻¹ ∈ closure (v '' baseOf v f) :=
   ⟨fun h ↦ mem_or_inv_mem_closure_baseOf v f i h hi',

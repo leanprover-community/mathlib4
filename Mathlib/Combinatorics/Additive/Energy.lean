@@ -172,8 +172,9 @@ end CommMonoid
 
 section CommGroup
 
-variable [CommGroup α] [Fintype α] (s t : Finset α)
+variable [Group α] [IsMulCommutative α] [Fintype α] (s t : Finset α)
 
+open scoped IsMulCommutative in
 @[to_additive (attr := simp)]
 lemma mulEnergy_univ_left : Eₘ[univ, t] = Fintype.card α * t.card ^ 2 := by
   simp only [mulEnergy, univ_product_univ, Fintype.card, sq, ← card_product]
@@ -191,6 +192,7 @@ lemma mulEnergy_univ_left : Eₘ[univ, t] = Fintype.card α * t.card ^ 2 := by
   rintro ⟨b, c, d, hcd, rfl⟩
   simpa [f, mul_right_comm]
 
+open scoped IsMulCommutative in
 @[to_additive (attr := simp)]
 lemma mulEnergy_univ_right : Eₘ[s, univ] = Fintype.card α * s.card ^ 2 := by
   rw [mulEnergy_comm, mulEnergy_univ_left]

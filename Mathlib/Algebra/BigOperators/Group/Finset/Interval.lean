@@ -20,8 +20,9 @@ public section
 
 namespace Finset
 
+open scoped IsMulCommutative in
 @[to_additive]
-lemma prod_Icc_of_even_eq_range {α : Type*} [CommGroup α] {f : ℤ → α} (hf : f.Even) (N : ℕ) :
+lemma prod_Icc_of_even_eq_range {α : Type*} [Group α] [IsMulCommutative α] {f : ℤ → α} (hf : f.Even) (N : ℕ) :
     ∏ m ∈ Icc (-N : ℤ) N, f m = (∏ m ∈ range (N + 1), f m) ^ 2 / f 0 := by
   induction N with
   | zero => simp [sq]
@@ -34,8 +35,9 @@ lemma prod_Icc_eq_prod_Ico_mul {α : Type*} [CommMonoid α] (f : ℤ → α) {l 
     (h : l ≤ u) : ∏ m ∈ Icc l u, f m = (∏ m ∈ Ico l u, f m) * f u := by
   simp [Icc_eq_cons_Ico h, mul_comm]
 
+open scoped IsMulCommutative in
 @[to_additive]
-lemma prod_Icc_succ_eq_mul_endpoints {R : Type*} [CommGroup R] (f : ℤ → R) {N : ℕ} :
+lemma prod_Icc_succ_eq_mul_endpoints {R : Type*} [Group R] [IsMulCommutative R] (f : ℤ → R) {N : ℕ} :
     ∏ m ∈ Icc (-(N + 1) : ℤ) (N + 1), f m =
     f (N + 1) * f (-(N + 1) : ℤ) * ∏ m ∈ Icc (-N : ℤ) N, f m := by
   induction N
@@ -44,8 +46,9 @@ lemma prod_Icc_succ_eq_mul_endpoints {R : Type*} [CommGroup R] (f : ℤ → R) {
   · rw [Icc_succ_succ, prod_union (by simp)]
     grind
 
+open scoped IsMulCommutative in
 @[to_additive]
-lemma prod_Ico_int_div (b : ℕ) {α : Type*} [CommGroup α] (f : ℤ → α) :
+lemma prod_Ico_int_div (b : ℕ) {α : Type*} [Group α] [IsMulCommutative α] (f : ℤ → α) :
     ∏ n ∈ Ico (-b : ℤ) b, f n / f (n + 1) = f (-b) / f b := by
   induction b with
   | zero => simp

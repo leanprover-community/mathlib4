@@ -329,8 +329,9 @@ def mapDomainBialgHomEquiv : (G →* H) ≃ (R[G] →ₐc[R] R[H]) where
 end Group
 
 section CommGroup
-variable [CommGroup G] [CommGroup H]
+variable [Group G] [IsMulCommutative G] [Group H] [IsMulCommutative H]
 
+open scoped IsMulCommutative in
 /-- The group isomorphism between group homs `G → H` and bialgebra homs `R[G] → R[H]` of group
 algebras over a domain. -/
 @[expose, simps!]

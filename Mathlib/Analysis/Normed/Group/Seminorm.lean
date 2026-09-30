@@ -374,8 +374,9 @@ end Group
 
 section CommGroup
 
-variable [CommGroup E] [CommGroup F] (p q : GroupSeminorm E) (x : E)
+variable [Group E] [IsMulCommutative E] [Group F] [IsMulCommutative F] (p q : GroupSeminorm E) (x : E)
 
+open scoped IsMulCommutative in
 @[to_additive]
 theorem comp_mul_le (f g : F →* E) : p.comp (f * g) ≤ p.comp f + p.comp g := fun _ =>
   map_mul_le_add p _ _
@@ -388,6 +389,7 @@ theorem mul_bddBelow_range_add {p q : GroupSeminorm E} {x : E} :
     dsimp
     positivity⟩
 
+open scoped IsMulCommutative in
 @[to_additive]
 noncomputable instance : Min (GroupSeminorm E) :=
   ⟨fun p q =>
@@ -405,10 +407,12 @@ noncomputable instance : Min (GroupSeminorm E) :=
         (inv_surjective.iInf_comp _).symm.trans <| by
           simp_rw [map_inv_eq_map p, ← inv_div', map_inv_eq_map q] }⟩
 
+open scoped IsMulCommutative in
 @[to_additive (attr := simp)]
 theorem inf_apply : (p ⊓ q) x = ⨅ y, p y + q (x / y) :=
   rfl
 
+open scoped IsMulCommutative in
 @[to_additive]
 noncomputable instance : Lattice (GroupSeminorm E) :=
   { GroupSeminorm.semilatticeSup with

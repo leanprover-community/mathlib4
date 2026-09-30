@@ -27,7 +27,7 @@ isomorphic to its double dual.
 open scoped Pointwise
 open Real
 
-variable (A B C G H : Type*) [Monoid A] [Monoid B] [Monoid C] [CommGroup G] [Group H]
+variable (A B C G H : Type*) [Monoid A] [Monoid B] [Monoid C] [Group G] [IsMulCommutative G] [Group H]
   [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C]
   [TopologicalSpace G] [TopologicalSpace H] [IsTopologicalGroup G] [IsTopologicalGroup H]
 
@@ -124,12 +124,14 @@ theorem map_comp (g : B →ₜ* C) (f : A →ₜ* B) :
     map (comp g f) = ContinuousMonoidHom.comp (map f) (map g) :=
   ContinuousMonoidHom.ext fun _x => PontryaginDual.ext fun _y => rfl
 
+open scoped IsMulCommutative in
 @[simp]
 nonrec theorem map_mul (f g : A →ₜ* G) : map (f * g) = map f * map g :=
   ContinuousMonoidHom.ext fun x => PontryaginDual.ext fun y => map_mul x (f y) (g y)
 
 variable (A B C G)
 
+open scoped IsMulCommutative in
 /-- `ContinuousMonoidHom.dual` as a `ContinuousMonoidHom`. -/
 def mapHom [LocallyCompactSpace G] :
     (A →ₜ* G) →ₜ* ((PontryaginDual G) →ₜ* (PontryaginDual A)) where
