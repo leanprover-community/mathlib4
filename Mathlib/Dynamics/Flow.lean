@@ -45,7 +45,6 @@ variable {τ α : Type*}
 section Invariant
 
 /-- A set `s ⊆ α` is invariant under `ϕ : τ → α → α` if `ϕ t s ⊆ s` for all `t` in `τ`. -/
-@[fun_prop]
 def Set.IsInvariant (s : Set α) (ϕ : τ → α → α) : Prop :=
   ∀ t, MapsTo (ϕ t) s s
 
