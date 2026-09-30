@@ -5,7 +5,6 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.RingTheory.Finiteness.Basic
 public import Mathlib.RingTheory.Finiteness.Nakayama
 public import Mathlib.RingTheory.Jacobson.Ideal
 
@@ -193,10 +192,6 @@ lemma le_of_map_mkQ_le_map_mkQ_of_le_jacobson_bot
   on_goal 2 => apply Submodule.comap_mono
   simp only [comap_map_mkQ, smul_le_right, sup_of_le_right] at hmaple
   grw [sup_comm, ← hmaple]
-
-@[deprecated (since := "2026-01-03")]
-alias le_span_of_map_mkQ_le_map_mkQ_span_of_le_jacobson_bot :=
-  le_of_map_mkQ_le_map_mkQ_of_le_jacobson_bot
 
 lemma eq_of_map_mkQ_eq_map_mkQ_of_le_jacobson_bot
     {I : Ideal R} {N N' : Submodule R M} (hN : N.FG) (hIjac : I ≤ jacobson ⊥)

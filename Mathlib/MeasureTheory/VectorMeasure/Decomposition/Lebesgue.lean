@@ -226,11 +226,11 @@ theorem toJordanDecomposition_eq_of_eq_add_withDensity {f : α → ℝ} (hf : Me
       @JordanDecomposition.mk α _
         (t.toJordanDecomposition.posPart + μ.withDensity fun x => ENNReal.ofReal (f x))
         (t.toJordanDecomposition.negPart + μ.withDensity fun x => ENNReal.ofReal (-f x))
-        (by haveI := isFiniteMeasure_withDensity_ofReal hfi.2; infer_instance)
-        (by haveI := isFiniteMeasure_withDensity_ofReal hfi.neg.2; infer_instance)
+        (by have := isFiniteMeasure_withDensity_ofReal hfi.2; infer_instance)
+        (by have := isFiniteMeasure_withDensity_ofReal hfi.neg.2; infer_instance)
         (jordanDecomposition_add_withDensity_mutuallySingular hf htμ) := by
-  haveI := isFiniteMeasure_withDensity_ofReal hfi.2
-  haveI := isFiniteMeasure_withDensity_ofReal hfi.neg.2
+  have := isFiniteMeasure_withDensity_ofReal hfi.2
+  have := isFiniteMeasure_withDensity_ofReal hfi.neg.2
   refine toJordanDecomposition_eq ?_
   simp_rw [JordanDecomposition.toSignedMeasure, hadd]
   ext i hi
@@ -266,7 +266,7 @@ theorem haveLebesgueDecomposition_mk (μ : Measure α) {f : α → ℝ} (hf : Me
     s.HaveLebesgueDecomposition μ := by
   by_cases hfi : Integrable f μ
   · exact haveLebesgueDecomposition_mk' μ hf hfi htμ hadd
-  · rw [withDensityᵥ, dif_neg hfi, add_zero] at hadd
+  · rw [withDensityᵥ, dite_eq_right hfi, add_zero] at hadd
     refine haveLebesgueDecomposition_mk' μ measurable_zero (integrable_zero _ _ μ) htμ ?_
     rwa [withDensityᵥ_zero, add_zero]
 
@@ -296,7 +296,7 @@ theorem eq_singularPart (t : SignedMeasure α) (f : α → ℝ) (htμ : t ⟂ᵥ
   · refine eq_singularPart' t hfi.1.measurable_mk (hfi.congr hfi.1.ae_eq_mk) htμ ?_
     convert! hadd using 2
     exact WithDensityᵥEq.congr_ae hfi.1.ae_eq_mk.symm
-  · rw [withDensityᵥ, dif_neg hfi, add_zero] at hadd
+  · rw [withDensityᵥ, dite_eq_right hfi, add_zero] at hadd
     refine eq_singularPart' t measurable_zero (integrable_zero _ _ μ) htμ ?_
     rwa [withDensityᵥ_zero, add_zero]
 

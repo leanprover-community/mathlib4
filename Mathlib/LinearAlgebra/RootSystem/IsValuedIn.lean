@@ -5,9 +5,8 @@ Authors: Scott Carnahan, Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Rat
-public import Mathlib.Algebra.Module.Submodule.Invariant
-public import Mathlib.LinearAlgebra.PerfectPairing.Restrict
+import Mathlib.Algebra.Algebra.Rat
+import Mathlib.LinearAlgebra.PerfectPairing.Restrict
 public import Mathlib.LinearAlgebra.RootSystem.Defs
 
 import Mathlib.LinearAlgebra.FreeModule.PID
@@ -201,6 +200,7 @@ def root'In [Module S N] [IsScalarTower S R N] [FaithfulSMul S R] [P.IsValuedIn 
     (FaithfulSMul.algebraMap_injective S R) (P.root' i)
     (fun m ↦ P.root'_apply_apply_mem_of_mem_span S m.2 i)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma algebraMap_root'In_apply [Module S N] [IsScalarTower S R N] [FaithfulSMul S R]
     [P.IsValuedIn S] (i : ι) (x : P.corootSpan S) :

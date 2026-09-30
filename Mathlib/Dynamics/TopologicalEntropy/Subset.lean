@@ -157,7 +157,7 @@ lemma coverMincard_union_le (T : X → X) (F G : Set X) (U : SetRel X X) (n : �
   · rw [hG, add_top]; exact le_top
   obtain ⟨s, s_cover, s_coverMincard⟩ := (coverMincard_finite_iff T F U n).1 hF
   obtain ⟨t, t_cover, t_coverMincard⟩ := (coverMincard_finite_iff T G U n).1 hG
-  rw [← s_coverMincard, ← t_coverMincard, ← ENat.coe_add]
+  rw [← s_coverMincard, ← t_coverMincard, ← ENat.natCast_add]
   apply (IsDynCoverOf.coverMincard_le_card _).trans (WithTop.coe_mono (s.card_union_le t))
   rw [s.coe_union t]
   exact s_cover.union t_cover
@@ -196,20 +196,23 @@ lemma coverEntropy_biUnion_le (s : Set ι) (T : X → X) (F : ι → Set X) :
   iSup₂_le fun _ i_s ↦ coverEntropy_monotone T (subset_biUnion_of_mem i_s)
 
 /-- Topological entropy `CoverEntropy T` as a `SupBotHom` function of the subset. -/
-noncomputable def coverEntropy_supBotHom (T : X → X) :
+noncomputable def coverEntropySupBotHom (T : X → X) :
     SupBotHom (Set X) EReal where
   toFun := coverEntropy T
   map_sup' := fun _ _ ↦ coverEntropy_union
   map_bot' := coverEntropy_empty
 
+@[deprecated (since := "2026-07-25")]
+alias coverEntropy_supBotHom := coverEntropySupBotHom
+
 lemma coverEntropy_iUnion_of_finite [Finite ι] {T : X → X} {F : ι → Set X} :
     coverEntropy T (⋃ i : ι, F i) = ⨆ i : ι, coverEntropy T (F i) :=
-  map_finite_iSup (coverEntropy_supBotHom T) F
+  map_finite_iSup (coverEntropySupBotHom T) F
 
 lemma coverEntropy_biUnion_finset {T : X → X} {F : ι → Set X} {s : Finset ι} :
     coverEntropy T (⋃ i ∈ s, F i) = ⨆ i ∈ s, coverEntropy T (F i) := by
-  have := map_finset_sup (coverEntropy_supBotHom T) s F
-  rw [s.sup_set_eq_biUnion, s.sup_eq_iSup, coverEntropy_supBotHom, SupBotHom.coe_mk,
+  have := map_finset_sup (coverEntropySupBotHom T) s F
+  rw [s.sup_set_eq_biUnion, s.sup_eq_iSup, coverEntropySupBotHom, SupBotHom.coe_mk,
     SupHom.coe_mk] at this
   rw [this]
   congr

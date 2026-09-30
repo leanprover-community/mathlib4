@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Algebra.Notation.Pi.Basic
-public import Mathlib.Data.FunLike.Basic
-public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Logic.Equiv.Defs
 
 /-!
@@ -48,10 +46,12 @@ def Multiplicative (α : Type*) := α
 namespace Additive
 
 /-- Reinterpret `x : α` as an element of `Additive α`. -/
+@[implicit_reducible]
 def ofMul : α ≃ Additive α :=
   ⟨fun x => x, fun x => x, fun _ => rfl, fun _ => rfl⟩
 
 /-- Reinterpret `x : Additive α` as an element of `α`. -/
+@[implicit_reducible]
 def toMul : Additive α ≃ α := ofMul.symm
 
 @[simp]
@@ -80,10 +80,12 @@ end Additive
 namespace Multiplicative
 
 /-- Reinterpret `x : α` as an element of `Multiplicative α`. -/
+@[implicit_reducible]
 def ofAdd : α ≃ Multiplicative α :=
   ⟨fun x => x, fun x => x, fun _ => rfl, fun _ => rfl⟩
 
 /-- Reinterpret `x : Multiplicative α` as an element of `α`. -/
+@[implicit_reducible]
 def toAdd : Multiplicative α ≃ α := ofAdd.symm
 
 @[simp]
@@ -262,12 +264,12 @@ instance Multiplicative.mulOneClass [AddZeroClass α] : MulOneClass (Multiplicat
   mul_one := @add_zero α _
 
 instance Additive.addMonoid [h : Monoid α] : AddMonoid (Additive α) where
-  nsmul := h.npow
+  nsmul n a := ofMul (a.toMul ^ n)
   nsmul_zero := h.npow_zero
   nsmul_succ := h.npow_succ
 
 instance Multiplicative.monoid [h : AddMonoid α] : Monoid (Multiplicative α) where
-  npow := h.nsmul
+  npow n a := ofAdd (n • a.toAdd)
   npow_zero := h.nsmul_zero
   npow_succ := h.nsmul_succ
 
@@ -415,14 +417,14 @@ instance Multiplicative.involutiveInv [InvolutiveNeg α] : InvolutiveInv (Multip
 
 instance Additive.subNegMonoid [h : DivInvMonoid α] : SubNegMonoid (Additive α) where
   sub_eq_add_neg := h.div_eq_mul_inv
-  zsmul := h.zpow
+  zsmul n a := ofMul (a.toMul ^ n)
   zsmul_zero' := h.zpow_zero'
   zsmul_succ' := h.zpow_succ'
   zsmul_neg' := h.zpow_neg'
 
 instance Multiplicative.divInvMonoid [h : SubNegMonoid α] : DivInvMonoid (Multiplicative α) where
   div_eq_mul_inv := h.sub_eq_add_neg
-  zpow := h.zsmul
+  zpow n a := ofAdd (n • a.toAdd)
   zpow_zero' := h.zsmul_zero'
   zpow_succ' := h.zsmul_succ'
   zpow_neg' := h.zsmul_neg'
@@ -478,6 +480,12 @@ instance [Monoid α] [IsMulTorsionFree α] : IsAddTorsionFree (Additive α) wher
 
 instance [AddMonoid α] [IsAddTorsionFree α] : IsMulTorsionFree (Multiplicative α) where
   pow_left_injective _ := nsmul_right_injective (M := α)
+
+instance [Mul α] [IsMulCommutative α] : IsAddCommutative (Additive α) where
+  is_comm := ⟨fun a b ↦ congrArg Additive.ofMul (mul_comm' a.toMul b.toMul)⟩
+
+instance [Add α] [IsAddCommutative α] : IsMulCommutative (Multiplicative α) where
+  is_comm := ⟨fun a b ↦ congrArg Multiplicative.ofAdd (add_comm' a.toAdd b.toAdd)⟩
 
 /-- If `α` has some multiplicative structure and coerces to a function,
 then `Additive α` should also coerce to the same function.
