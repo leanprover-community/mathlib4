@@ -1,6 +1,7 @@
 {
   "Mathlib.Algebra.Notation": ["Mathlib.Algebra"],
   "Mathlib": ["Mathlib.Deprecated", "Wanted"],
+  "MathlibInit": ["Mathlib.Deprecated", "Wanted"],
   "Archive": ["Wanted"],
   "Counterexamples": ["Wanted"],
   "Mathlib.Algebra": [

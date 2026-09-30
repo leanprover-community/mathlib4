@@ -206,7 +206,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   -- Fine-grained exceptions: TODO decide if these are fine, or should be scoped more broadly.
   (`Mathlib.Lean.CoreM, `Mathlib.Tactic.ToExpr),
   (`Mathlib.Lean.CoreM, `Mathlib.Util.WhatsNew),
-  (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Tactic.Lemma),
+  (`Mathlib.Lean.Meta.RefinedDiscrTree, `MathlibInit.Tactic.Lemma),
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Tactic.ToAdditive),
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Tactic), -- split this up further?
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Basic),
@@ -234,13 +234,33 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   -- The Mathlib.Tactic.Linter *module* imports all linters, hence requires all the imports.
   -- For more fine-grained exceptions of the next two imports, one needs to rename that file.
   (`Mathlib.Tactic.Linter, `ImportGraph),
-  (`Mathlib.Tactic.Linter, `Mathlib.Tactic.MinImports),
-  (`Mathlib.Tactic.Linter.OverlappingInstances, `Mathlib.Lean.ContextInfo),
-  (`Mathlib.Tactic.Linter.OverlappingInstances, `Mathlib.Lean.Elab.Tactic.Meta),
+  (`Mathlib.Tactic.Linter, `MathlibInit.Tactic.MinImports),
+  (`MathlibInit.Tactic.Linter.OverlappingInstances, `MathlibInit.Lean.ContextInfo),
+  (`MathlibInit.Tactic.Linter.OverlappingInstances, `MathlibInit.Lean.Elab.Tactic.Meta),
   (`Mathlib.Tactic.Linter.TextBased, `Mathlib.Data.Nat.Notation),
-  (`Mathlib.Tactic.Linter.UnusedInstancesInType, `Mathlib.Lean.Expr.Basic),
-  (`Mathlib.Tactic.Linter.UnusedInstancesInType, `Mathlib.Lean.Environment),
-  (`Mathlib.Tactic.Linter.UnusedInstancesInType, `Mathlib.Lean.Elab.InfoTree),
+  (`MathlibInit.Tactic.Linter.UnusedInstancesInType, `MathlibInit.Lean.Expr.Basic),
+  (`MathlibInit.Tactic.Linter.UnusedInstancesInType, `MathlibInit.Lean.Environment),
+  (`MathlibInit.Tactic.Linter.UnusedInstancesInType, `MathlibInit.Lean.Elab.InfoTree),
+
+  -- The rules for `Mathlib.Util`, `Mathlib.Lean`, `Mathlib.Lean.Expr` and `Mathlib.Tactic.Linter`
+  -- above, for the modules from these directories which were moved to `MathlibInit`.
+  (`MathlibInit.Util, `Batteries),
+  (`MathlibInit.Util, `MathlibInit.Lean),
+  (`MathlibInit.Util, `MathlibInit.Tactic),
+  (`MathlibInit.Lean, `Batteries.Tactic.Lint),
+  (`MathlibInit.Lean, `Batteries.CodeAction),
+  (`MathlibInit.Lean, `Batteries.Classes.SatisfiesM),
+  (`MathlibInit.Lean, `Batteries.Data.Array.Match),
+  (`MathlibInit.Lean, `Batteries.Data.Fin),
+  (`MathlibInit.Lean, `Batteries.Data.List),
+  (`MathlibInit.Lean, `Batteries.Lean),
+  (`MathlibInit.Lean, `Batteries.Control),
+  (`MathlibInit.Lean, `Batteries.Tactic.Alias),
+  (`MathlibInit.Lean, `Batteries.Util.ProofWanted),
+  (`MathlibInit.Lean.Expr, `MathlibInit.Util),
+  (`MathlibInit.Tactic.Linter, `Batteries),
+  (`MathlibInit.Tactic.Linter, `ImportGraph),
+  (`MathlibInit.Tactic.Linter, `MathlibInit.Tactic.MinImports),
 
   (`Mathlib.Logic, `Batteries),
   (`Mathlib.Logic, `Mathlib.Basic),
@@ -290,7 +310,7 @@ def forbiddenDirsPath : System.FilePath := "scripts" / "forbiddenDirs.json"
 
 /-- The root modules of the libraries built from the mathlib repository itself.
 When elaborating one of their modules, the linter configuration file must be present. -/
-def mathlibRoots : List Name := [`Mathlib, `MathlibTest, `Archive, `Counterexamples]
+def mathlibRoots : List Name := [`Mathlib, `MathlibInit, `MathlibTest, `Archive, `Counterexamples]
 
 /-- Cache for `forbiddenImportDirs`: the configuration file is read at most once per process. -/
 initialize forbiddenImportDirsCache : IO.Ref (Option NamePrefixRel) ← IO.mkRef none
@@ -412,8 +432,9 @@ public def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array Me
     -- from `Init`, `Lean` and `Std`, as well as imports in `Aesop`, `Qq`, `Plausible`,
     -- `ImportGraph`, `ProofWidgets` or `LeanSearchClient` (as these are imported in Tactic.Common).
     -- We also allow transitive imports of Mathlib.Init, as well as Mathlib.Init itself.
-    let initImports := (← findImports ("Mathlib" / "Init.lean")).append
-      #[`Mathlib.Init, `Mathlib.Tactic.DeclarationNames]
+    -- (`Mathlib.Init` just imports `MathlibInit`, whose root file holds Init's imports.)
+    let initImports := (← findImports "MathlibInit.lean").append
+      #[`Mathlib.Init, `MathlibInit, `MathlibInit.Tactic.DeclarationNames]
     let exclude := [
       `Init, `Std, `Lean,
       `Aesop, `Qq, `Plausible, `ImportGraph, `ProofWidgets, `LeanSearchClient
