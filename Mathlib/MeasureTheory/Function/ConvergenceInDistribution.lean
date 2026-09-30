@@ -93,11 +93,7 @@ lemma tendstoInDistribution_const [OpensMeasurableSpace E] (hZ : AEMeasurable Z 
 @[simp]
 lemma tendstoInDistribution_const_const [OpensMeasurableSpace E] (c : E) :
     TendstoInDistribution (fun _ _ ↦ c) l (fun _ ↦ c) μ μ' where
-  forall_aemeasurable := fun _ ↦ by fun_prop
-  tendsto := by
-    simpa using (tendsto_const_nhds :
-      Tendsto (fun _ : ι ↦ (Measure.dirac c).toProbabilityMeasure) l
-        (𝓝 (Measure.dirac c).toProbabilityMeasure))
+  tendsto := by simpa using tendsto_const_nhds
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma tendstoInDistribution_of_identDistrib [OpensMeasurableSpace E] (i : ι)
