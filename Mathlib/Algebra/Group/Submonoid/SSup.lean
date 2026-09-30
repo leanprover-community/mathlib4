@@ -16,14 +16,14 @@ open Submonoid in
     of `M` to `Submonoid M` preserves suprema. -/
 class SubmonoidClass.IsConcreteSSup (S : Type*) (M : outParam Type*) [Monoid M] [SetLike S M]
     [SubmonoidClass S M] [SupSet S] : Prop where
-  sSup_toSubmonoid (S : Set S) : ofClass (sSup S) = sSup (ofClass '' S)
+  sSup_toSubmonoid (s : Set S) : ofClass (sSup s) = sSup (ofClass '' s)
 
 open AddSubmonoid in
 /-- A class to indicate that the canonical map `.ofClass` from a class `S` of additive submonoids
     of `M` to `AddSubmonoid M` preserves suprema. -/
 class AddSubmonoidClass.IsConcreteSSup (S : Type*) (M : outParam Type*) [AddMonoid M] [SetLike S M]
     [AddSubmonoidClass S M] [SupSet S] : Prop where
-  sSup_toAddSubmonoid (S : Set S) : ofClass (sSup S) = sSup (ofClass '' S)
+  sSup_toAddSubmonoid (s : Set S) : ofClass (sSup s) = sSup (ofClass '' s)
 
 attribute [to_additive existing] SubmonoidClass.IsConcreteSSup
 
