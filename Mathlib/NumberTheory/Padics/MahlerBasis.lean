@@ -213,7 +213,7 @@ lemma fwdDiff_iter_le_of_forall_le {f : C(ℤ_[p], E)} {s t : ℕ}
     · rw [← coe_nnnorm, ← NNReal.coe_natCast, ← NNReal.coe_pow, ← NNReal.coe_div, NNReal.coe_le_coe]
       refine Finset.sup_le fun j _ ↦ ?_
       rw [pow_succ, ← div_div, div_le_div_iff_of_pos_right (mod_cast hp.out.pos), add_right_comm]
-      exact_mod_cast IH (n + (j + 1)) (by lia)
+      exact mod_cast IH (n + (j + 1)) (by lia)
     · exact div_le_div_of_nonneg_left (norm_nonneg _)
         (mod_cast pow_pos hp.out.pos _) (mod_cast pow_le_pow_right₀ hp.out.one_le hk)
 

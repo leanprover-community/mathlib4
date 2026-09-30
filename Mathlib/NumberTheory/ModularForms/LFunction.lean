@@ -126,7 +126,7 @@ lemma hasSum_Λ (hs : k + 1 < s.re) :
     HasSum (fun n ↦ π ^ (-s) * Gamma s * (qExpansion (h Γ) f).coeff n /
       ↑(2 * n / h Γ : ℝ) ^ s) (Λ hk f s) := by
   refine hasSum_Λ_of_qExpansion_isBigO hk f (r := k)
-    (by linarith [show (0 : ℝ) < k from mod_cast hk]) (by exact_mod_cast hs) ?_ ?_
+    (by linarith [show (0 : ℝ) < k from mod_cast hk]) (mod_cast hs) ?_ ?_
   · rw [Λ, ← ((weakFEPair hk f).hasMellin <| by grind [weakFEPair]).2]
   · simpa using ModularFormClass.qExpansion_isBigO hk.le f
 

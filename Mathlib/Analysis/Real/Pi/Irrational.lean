@@ -276,7 +276,7 @@ private lemma not_irrational_exists_rep {x : ℝ} :
     ¬Irrational x → ∃ (a : ℤ) (b : ℕ), 0 < b ∧ x = a / b := by
   rw [Irrational, not_not, mem_range]
   rintro ⟨q, rfl⟩
-  exact ⟨q.num, q.den, q.pos, by exact_mod_cast (Rat.num_div_den _).symm⟩
+  exact ⟨q.num, q.den, q.pos, mod_cast (Rat.num_div_den _).symm⟩
 
 @[simp] theorem irrational_pi : Irrational π := by
   apply Irrational.of_div_natCast 2

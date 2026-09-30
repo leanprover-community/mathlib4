@@ -176,7 +176,7 @@ lemma pow_dvd_pow_iff_dvd {a b : R} {n : ℕ} (hn : n ≠ 0) : a ^ n ∣ b ^ n �
   intro H p hp
   have := H p hp
   rwa [emultiplicity_pow hp, emultiplicity_pow hp,
-    ENat.mul_le_mul_left_iff (by exact_mod_cast hn) (ENat.natCast_ne_top _)] at this
+    ENat.mul_le_mul_left_iff (mod_cast hn) (ENat.natCast_ne_top _)] at this
 
 @[fun_prop]
 lemma hasFiniteMulSupport_fun_pow_multiplicity {α M : Type*} [CommMonoid M] [Subsingleton Rˣ]

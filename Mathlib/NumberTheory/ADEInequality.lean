@@ -155,9 +155,9 @@ theorem lt_three {p q r : ℕ+} (hpq : p ≤ q) (hqr : q ≤ r) (H : 1 < sumInv 
   rw [sumInv_pqr]
   have h3q := H.trans hpq
   have h3r := h3q.trans hqr
-  have hp : (p : ℚ)⁻¹ ≤ 3⁻¹ := inv_anti₀ (by positivity) (by exact_mod_cast H)
-  have hq : (q : ℚ)⁻¹ ≤ 3⁻¹ := inv_anti₀ (by positivity) (by exact_mod_cast h3q)
-  have hr : (r : ℚ)⁻¹ ≤ 3⁻¹ := inv_anti₀ (by positivity) (by exact_mod_cast h3r)
+  have hp : (p : ℚ)⁻¹ ≤ 3⁻¹ := inv_anti₀ (by positivity) (mod_cast H)
+  have hq : (q : ℚ)⁻¹ ≤ 3⁻¹ := inv_anti₀ (by positivity) (mod_cast h3q)
+  have hr : (r : ℚ)⁻¹ ≤ 3⁻¹ := inv_anti₀ (by positivity) (mod_cast h3r)
   calc
     (p : ℚ)⁻¹ + (q : ℚ)⁻¹ + (r : ℚ)⁻¹ ≤ 3⁻¹ + 3⁻¹ + 3⁻¹ := add_le_add (add_le_add hp hq) hr
     _ = 1 := by norm_num
@@ -166,8 +166,8 @@ theorem lt_four {q r : ℕ+} (hqr : q ≤ r) (H : 1 < sumInv {2, q, r}) : q < 4 
   contrapose! H
   rw [sumInv_pqr]
   have h4r := H.trans hqr
-  have hq : (q : ℚ)⁻¹ ≤ 4⁻¹ := inv_anti₀ (by positivity) (by exact_mod_cast H)
-  have hr : (r : ℚ)⁻¹ ≤ 4⁻¹ := inv_anti₀ (by positivity) (by exact_mod_cast h4r)
+  have hq : (q : ℚ)⁻¹ ≤ 4⁻¹ := inv_anti₀ (by positivity) (mod_cast H)
+  have hr : (r : ℚ)⁻¹ ≤ 4⁻¹ := inv_anti₀ (by positivity) (mod_cast h4r)
   calc
     (2⁻¹ + (q : ℚ)⁻¹ + (r : ℚ)⁻¹) ≤ 2⁻¹ + 4⁻¹ + 4⁻¹ := add_le_add (add_le_add le_rfl hq) hr
     _ = 1 := by norm_num
@@ -175,7 +175,7 @@ theorem lt_four {q r : ℕ+} (hqr : q ≤ r) (H : 1 < sumInv {2, q, r}) : q < 4 
 theorem lt_six {r : ℕ+} (H : 1 < sumInv {2, 3, r}) : r < 6 := by
   contrapose! H
   rw [sumInv_pqr]
-  have hr : (r : ℚ)⁻¹ ≤ 6⁻¹ := inv_anti₀ (by positivity) (by exact_mod_cast H)
+  have hr : (r : ℚ)⁻¹ ≤ 6⁻¹ := inv_anti₀ (by positivity) (mod_cast H)
   calc
     (2⁻¹ + 3⁻¹ + (r : ℚ)⁻¹ : ℚ) ≤ 2⁻¹ + 3⁻¹ + 6⁻¹ := add_le_add (add_le_add le_rfl le_rfl) hr
     _ = 1 := by norm_num

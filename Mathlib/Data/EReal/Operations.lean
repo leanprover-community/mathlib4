@@ -819,7 +819,7 @@ lemma right_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
   lift a to ℝ≥0∞ using ha
   lift b to ℝ≥0∞ using hb
   cases c using recENNReal with
-  | coe c => exact_mod_cast add_mul a b c
+  | coe c => exact mod_cast add_mul a b c
   | neg_coe c hc =>
     simp only [mul_neg, ← coe_ennreal_add, ← coe_ennreal_mul, add_mul]
     rw [coe_ennreal_add, EReal.neg_add (.inl (coe_ennreal_ne_bot _)) (.inr (coe_ennreal_ne_bot _)),

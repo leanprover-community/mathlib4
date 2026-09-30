@@ -279,7 +279,7 @@ instance (k : ℤ) : FiniteDimensional ℂ (ModularForm 𝒮ℒ k) := by
   rcases Int.even_or_odd k with hk_even | hk_odd
   · lift k to ℕ using hk_nonneg
     rw [dimension_level_one k (mod_cast hk_even)]
-    split_ifs <;> exact_mod_cast Cardinal.natCast_lt_aleph0
+    split_ifs <;> exact mod_cast Cardinal.natCast_lt_aleph0
   · rw [levelOne_odd_weight_rank_zero hk_odd]
     exact Cardinal.aleph0_pos
 

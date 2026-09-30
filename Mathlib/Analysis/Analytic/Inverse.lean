@@ -537,7 +537,7 @@ theorem radius_rightInv_pos_of_radius_pos
   let a' : NNReal := ⟨a, apos.le⟩
   suffices H : (a' : ENNReal) ≤ (p.rightInv i x).radius by
     apply lt_of_lt_of_le _ H
-    -- Prior to https://github.com/leanprover/lean4/pull/2734, this was `exact_mod_cast apos`.
+    -- Prior to https://github.com/leanprover/lean4/pull/2734, this was `exact mod_cast apos`.
     simpa only [ENNReal.coe_pos]
   apply le_radius_of_eventually_le _ ((I + 1) * a)
   filter_upwards [Ici_mem_atTop 1] with n (hn : 1 ≤ n)
@@ -575,7 +575,7 @@ lemma HasFPowerSeriesAt.tendsto_partialSum_prod_of_comp
   rcases q.comp_summable_nnreal p hq hp with ⟨r1, r1_pos : 0 < r1, hr1⟩
   let r : ℝ≥0∞ := min r0 r1
   have : Metric.eball (0 : E) r ∈ 𝓝 0 :=
-    Metric.eball_mem_nhds 0 (lt_min h0.r_pos (by exact_mod_cast r1_pos))
+    Metric.eball_mem_nhds 0 (lt_min h0.r_pos (mod_cast r1_pos))
   filter_upwards [this] with y hy
   have hy0 : y ∈ Metric.eball 0 r0 := Metric.eball_subset_eball (min_le_left _ _) hy
   have A : HasSum (fun i : Σ n, Composition n => q.compAlongComposition p i.2 fun _j => y)

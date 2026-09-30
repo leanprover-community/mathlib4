@@ -84,10 +84,10 @@ theorem isInitial_natCast (n : ℕ) : IsInitial n := by
   rw [IsInitial, card_nat, ord_natCast]
 
 theorem isInitial_zero : IsInitial 0 := by
-  exact_mod_cast isInitial_natCast 0
+  exact mod_cast isInitial_natCast 0
 
 theorem isInitial_one : IsInitial 1 := by
-  exact_mod_cast isInitial_natCast 1
+  exact mod_cast isInitial_natCast 1
 
 theorem isInitial_omega0 : IsInitial ω := by
   rw [IsInitial, card_omega0, ord_aleph0]

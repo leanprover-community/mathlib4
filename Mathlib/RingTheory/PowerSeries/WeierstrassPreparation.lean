@@ -667,7 +667,7 @@ theorem map_ne_zero_of_ne_top (hI : I ≠ ⊤) : g.map (Ideal.Quotient.mk I) ≠
   have := Ideal.Quotient.nontrivial_iff.mpr hI
   rw [congr(map (Ideal.Quotient.mk I) $H.eq_mul), map_mul, ← Polynomial.polynomial_map_coe, ne_eq,
     (H.isUnit.map _).mul_left_eq_zero]
-  exact_mod_cast f.map_monic_ne_zero (f := Ideal.Quotient.mk I) H.isDistinguishedAt.monic
+  exact mod_cast f.map_monic_ne_zero (f := Ideal.Quotient.mk I) H.isDistinguishedAt.monic
 
 theorem degree_eq_coe_lift_order_map_of_ne_top (hI : I ≠ ⊤) :
     f.degree = (g.map (Ideal.Quotient.mk I)).order.lift

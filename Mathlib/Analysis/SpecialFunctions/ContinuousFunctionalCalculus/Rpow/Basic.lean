@@ -239,7 +239,7 @@ lemma sqrt_eq_nnrpow (a : A) : sqrt a = a ^ (1 / 2 : ℝ≥0) := by
   simp only [sqrt]
   congr
   ext
-  exact_mod_cast NNReal.sqrt_eq_rpow _
+  exact mod_cast NNReal.sqrt_eq_rpow _
 
 lemma sqrt_of_not_nonneg {a : A} (ha : ¬0 ≤ a) : sqrt a = 0 :=
   cfcₙ_apply_of_not_predicate a ha
@@ -705,7 +705,7 @@ lemma isUnit_nnrpow_iff (a : A) (y : ℝ≥0) (hy : y ≠ 0) (ha : 0 ≤ a := by
     IsUnit (a ^ y) ↔ IsUnit a := by
   rw [nnrpow_eq_rpow (pos_of_ne_zero hy)]
   refine isUnit_rpow_iff a y ?_ ha
-  exact_mod_cast hy
+  exact mod_cast hy
 
 @[aesop safe apply]
 lemma _root_.IsUnit.cfcNNRpow (a : A) (y : ℝ≥0) (ha_unit : IsUnit a) (hy : y ≠ 0)

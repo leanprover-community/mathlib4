@@ -514,7 +514,7 @@ private lemma choose_two_mul_succ_mul_div_eq {k m : ℕ} (x : ℚ) (hm_lt : m < 
   rw [div_eq_div_iff (by norm_cast) (by norm_cast; lia), mul_right_comm _ x, mul_right_comm _ x]
   refine congrArg (· * x) ?_
   rw [show (2 * (k : ℚ) - 2 * (m : ℚ) + 1) = (↑(2 * k + 1 - 2 * m) : ℚ) by norm_cast; lia]
-  exact_mod_cast Nat.choose_mul_succ_eq (2 * k) (2 * m) |>.symm
+  exact mod_cast Nat.choose_mul_succ_eq (2 * k) (2 * m) |>.symm
 
 /- `p`-integrality of the core even-index summand after denominator normalization. -/
 private lemma pIntegral_choose_mul_pow_div {k m p : ℕ} (hm_lt : m < k) [Fact p.Prime]
@@ -571,7 +571,7 @@ private lemma pIntegral_faulhaber_sum {k p : ℕ} (hk : k > 0) [Fact p.Prime]
   rw [Finset.mem_range] at hi
   rcases i with _ | _ | i
   · simp only [bernoulli_zero, one_mul, Nat.choose_zero_right, Nat.cast_one, Nat.sub_zero]
-    exact_mod_cast pIntegral_pow_div (by lia)
+    exact mod_cast pIntegral_pow_div (by lia)
       (factorization_succ_le_sub_one (by lia) |>.trans tsub_le_self)
   · rw [zero_add, Nat.choose_one_right, bernoulli_one]
     push_cast
@@ -579,7 +579,7 @@ private lemma pIntegral_faulhaber_sum {k p : ℕ} (hk : k > 0) [Fact p.Prime]
     obtain rfl | hp2 := eq_or_ne p 2
     · push_cast
       rw [show 2 * k - 1 = (2 * k - 2) + 1 by lia, pow_succ, mul_div_cancel_right₀ _ two_ne_zero]
-      exact_mod_cast Int.padicValuation_le_one ..
+      exact mod_cast Int.padicValuation_le_one ..
     · rw [Valuation.map_neg]
       refine pIntegral_pow_div two_ne_zero <|
          (factorization_eq_zero_of_lt ?_).trans_le (by lia)
@@ -625,7 +625,7 @@ private lemma bernoulli_add_indicator_eq_sub {k p : ℕ} (hk : k > 0) [Fact p.Pr
   obtain ⟨T, hT_int⟩ := (ZMod.intCast_zmod_eq_zero_iff_dvd _ _).mp hcast
   use T
   have hT : (∑ v ∈ Ico 1 p, (v : ℚ) ^ (2 * k)) + vonStaudtIndicator (2 * k) p =
-      p * T := by unfold vonStaudtIndicator; exact_mod_cast hT_int
+      p * T := by unfold vonStaudtIndicator; exact mod_cast hT_int
   have hp_ne : (p : ℚ) ≠ 0 := Nat.cast_ne_zero.mpr (Fact.out : p.Prime).ne_zero
   have hAlg : bernoulli (2 * k) + vonStaudtIndicator (2 * k) p / p =
       T - (∑ i ∈ range (2 * k), bernoulli i * ((2 * k + 1).choose i) *

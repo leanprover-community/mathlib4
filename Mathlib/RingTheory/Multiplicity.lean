@@ -125,7 +125,7 @@ theorem multiplicity_eq_of_emultiplicity_eq {c d : β}
 
 theorem multiplicity_le_of_emultiplicity_le {n : ℕ} (h : emultiplicity a b ≤ n) :
     multiplicity a b ≤ n := by
-  exact_mod_cast multiplicity_le_emultiplicity.trans h
+  exact mod_cast multiplicity_le_emultiplicity.trans h
 
 theorem FiniteMultiplicity.emultiplicity_le_of_multiplicity_le (hfin : FiniteMultiplicity a b)
     {n : ℕ} (h : multiplicity a b ≤ n) : emultiplicity a b ≤ n := by
@@ -134,7 +134,7 @@ theorem FiniteMultiplicity.emultiplicity_le_of_multiplicity_le (hfin : FiniteMul
 
 theorem le_emultiplicity_of_le_multiplicity {n : ℕ} (h : n ≤ multiplicity a b) :
     n ≤ emultiplicity a b := by
-  exact_mod_cast (WithTop.coe_mono h).trans multiplicity_le_emultiplicity
+  exact mod_cast (WithTop.coe_mono h).trans multiplicity_le_emultiplicity
 
 theorem FiniteMultiplicity.le_multiplicity_of_le_emultiplicity (hfin : FiniteMultiplicity a b)
     {n : ℕ} (h : n ≤ emultiplicity a b) : n ≤ multiplicity a b := by
@@ -143,7 +143,7 @@ theorem FiniteMultiplicity.le_multiplicity_of_le_emultiplicity (hfin : FiniteMul
 
 theorem multiplicity_lt_of_emultiplicity_lt {n : ℕ} (h : emultiplicity a b < n) :
     multiplicity a b < n := by
-  exact_mod_cast multiplicity_le_emultiplicity.trans_lt h
+  exact mod_cast multiplicity_le_emultiplicity.trans_lt h
 
 theorem FiniteMultiplicity.emultiplicity_lt_of_multiplicity_lt (hfin : FiniteMultiplicity a b)
     {n : ℕ} (h : multiplicity a b < n) : emultiplicity a b < n := by
@@ -152,7 +152,7 @@ theorem FiniteMultiplicity.emultiplicity_lt_of_multiplicity_lt (hfin : FiniteMul
 
 theorem lt_emultiplicity_of_lt_multiplicity {n : ℕ} (h : n < multiplicity a b) :
     n < emultiplicity a b := by
-  exact_mod_cast (WithTop.coe_strictMono h).trans_le multiplicity_le_emultiplicity
+  exact mod_cast (WithTop.coe_strictMono h).trans_le multiplicity_le_emultiplicity
 
 theorem FiniteMultiplicity.lt_multiplicity_of_lt_emultiplicity (hfin : FiniteMultiplicity a b)
     {n : ℕ} (h : n < emultiplicity a b) : n < multiplicity a b := by

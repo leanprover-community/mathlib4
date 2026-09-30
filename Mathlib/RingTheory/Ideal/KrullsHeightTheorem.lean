@@ -291,7 +291,7 @@ lemma Ideal.height_le_spanFinrank (I : Ideal R) (hI : I ≠ ⊤) :
 lemma Ideal.height_le_spanRank (I : Ideal R) (hI : I ≠ ⊤) :
     I.height ≤ I.spanRank := by
   trans ↑I.spanRank.toENat
-  · exact_mod_cast I.height_le_spanRank_toENat hI
+  · exact mod_cast I.height_le_spanRank_toENat hI
   · exact I.spanRank.ofENat_toENat_le
 
 instance Ideal.finiteHeight_of_isNoetherianRing (I : Ideal R) :
