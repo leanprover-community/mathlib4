@@ -79,7 +79,7 @@ lemma one_half_le_sum_primes_ge_one_div (k : ℕ) :
   set N₀ : ℕ := 2 * m ^ 2 with hN₀
   let S : ℝ := ((2 * N₀).succ.primesBelow \ k.primesBelow).sum (fun p ↦ (1 / p : ℝ))
   suffices 1 / 2 ≤ S by
-    convert! this using 5
+    convert this using 5
     rw [show 4 = 2 ^ 2 by simp, pow_right_comm]
     ring
   suffices 2 * N₀ ≤ m * (2 * N₀).sqrt + 2 * N₀ * S by
@@ -102,7 +102,7 @@ theorem not_summable_one_div_on_primes :
   specialize hk ({p | Nat.Prime p} ∩ {p | k ≤ p}) inter_subset_right
   rw [tsum_subtype, indicator_indicator, inter_eq_left.mpr fun n hn ↦ hn.1, mem_Iio] at hk
   have h' : Summable (indicator ({p | Nat.Prime p} ∩ {p | k ≤ p}) fun n ↦ (1 : ℝ) / n) := by
-    convert! h.indicator {n : ℕ | k ≤ n} using 1
+    convert h.indicator {n : ℕ | k ≤ n} using 1
     simp only [indicator_indicator, inter_comm]
   refine ((one_half_le_sum_primes_ge_one_div k).trans_lt <| LE.le.trans_lt ?_ hk).false
   convert!
