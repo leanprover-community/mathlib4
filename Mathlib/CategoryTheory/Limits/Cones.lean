@@ -299,7 +299,7 @@ namespace Cone
 
 /-- To give an isomorphism between cones, it suffices to give an
 isomorphism between their vertices which commutes with the cone maps. -/
-@[to_dual (attr := simps) extInv
+@[to_dual (attr := implicit_reducible, simps) extInv
 /-- To give an isomorphism between cocones, it suffices to give an
 isomorphism between their vertices which commutes with the cone maps. -/]
 def ext {c c' : Cone F} (φ : c.pt ≅ c'.pt)

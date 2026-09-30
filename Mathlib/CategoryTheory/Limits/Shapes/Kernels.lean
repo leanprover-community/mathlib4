@@ -548,9 +548,9 @@ def kernel.ofCompIso [HasKernel f] {Z : C} (l : X ⟶ Z) (i : Z ≅ Y) (h : l �
       (KernelFork.ofι (kernel.ι f) <| show kernel.ι f ≫ l = 0 by simp [← i.comp_inv_eq.2 h.symm]) :=
   IsKernel.ofCompIso f l i h <| limit.isLimit _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `s` is any limit kernel cone over `f` and if `i` is an isomorphism such that
 `i.hom ≫ s.ι = l`, then `l` is a kernel of `f`. -/
+@[implicit_reducible]
 def IsKernel.isoKernel {Z : C} (l : Z ⟶ X) {s : KernelFork f} (hs : IsLimit s) (i : Z ≅ s.pt)
     (h : i.hom ≫ Fork.ι s = l) : IsLimit (KernelFork.ofι l <| show l ≫ f = 0 by simp [← h]) :=
   IsLimit.ofIsoLimit hs <|
@@ -784,7 +784,6 @@ theorem coequalizer_as_cokernel : coequalizer.π f 0 = cokernel.π f :=
 theorem cokernel.condition : f ≫ cokernel.π f = 0 :=
   CokernelCofork.condition _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The cokernel built from `cokernel.π f` is colimiting. -/
 def cokernelIsCokernel :
     IsColimit (Cofork.ofπ (cokernel.π f) ((cokernel.condition f).trans zero_comp.symm)) :=
@@ -1151,6 +1150,7 @@ def cokernel.ofIsoComp [HasCokernel f] {Z : C} (l : Z ⟶ Y) (i : X ≅ Z) (h : 
 set_option backward.defeqAttrib.useBackward true in
 /-- If `s` is any colimit cokernel cocone over `f` and `i` is an isomorphism such that
 `s.π ≫ i.hom = l`, then `l` is a cokernel of `f`. -/
+@[implicit_reducible]
 def IsCokernel.cokernelIso {Z : C} (l : Y ⟶ Z) {s : CokernelCofork f} (hs : IsColimit s)
     (i : s.pt ≅ Z) (h : Cofork.π s ≫ i.hom = l) :
     IsColimit (CokernelCofork.ofπ l <| show f ≫ l = 0 by simp [← h]) :=

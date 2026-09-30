@@ -49,7 +49,6 @@ lemma ab_zero_apply (x : S.X₁) : S.g (S.f x) = 0 := by
 def abToCycles : S.X₁ →+ AddMonoidHom.ker S.g.hom :=
     AddMonoidHom.mk' (fun x => ⟨S.f x, S.ab_zero_apply x⟩) (by aesop)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The explicit left homology data of a short complex of abelian group that is
 given by a kernel and a quotient given by the `AddMonoidHom` API. -/
 @[simps]
