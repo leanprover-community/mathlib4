@@ -55,18 +55,20 @@ register_option linter.internalConstructors : Bool := {
 }
 
 /-- Lints against using constructors with internal names during elaboration. -/
-def internalConstructor : InfoLinter where
-  run infos := withSetOptionIn fun _ => do
-    unless Linter.getLinterValue linter.internalConstructors (← Linter.getLinterOptions) do
-      return
-    let warnings := infos.termInfos.filterMap fun (ctx, i) => Id.run do
+def internalConstructor : InfoCollectionLinter (Name × Syntax) where
+  collect? ctx i := Id.run do
+    if let .ofTermInfo i := i then
       if let .const n _ := i.expr.cleanupAnnotations then
         if
           -- Putting the conjuncts in this order provides a performance benefit.
           n.isInternal && !isPrivateName n && ctx.env.isImportedConst n && ctx.env.isConstructor n
         then
           return some (n, i.stx)
-      return none
+    return none
+  log warnings := withSetOptionIn fun _ => do
+    -- TODO: move elsewhere to guard...
+    unless Linter.getLinterValue linter.internalConstructors (← Linter.getLinterOptions) do
+      return
     for (name, stx) in warnings do
       logLintError linter.internalConstructors stx
         m!"`{.ofConstName name}` is an internal constructor and should not be used directly."
@@ -79,4 +81,4 @@ where
       .tagged linterOption.name <|
       .tagged Linter.linterMessageTag m!"{msg}{disable}"
 
-initialize addInfoLinter internalConstructor
+initialize addInfoLinter <| .ofCollection internalConstructor
