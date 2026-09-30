@@ -148,7 +148,7 @@ theorem nnqsmul_mk (a : ℚ≥0) (m : M) (s : ℕ+) :
   simp [IsLocalization.eq_mk'_iff_mul_eq]
 
 section TorsionFree
-variable [IsAddTorsionFree M]
+variable [HasUniqueDiv M]
 
 theorem mk_eq_mk_iff_smul_eq_smul {m m' : M} {s s' : ℕ+} :
     mk m s = mk m' s' ↔ s'.val • m = s.val • m' := by

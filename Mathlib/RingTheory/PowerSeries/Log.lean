@@ -111,7 +111,7 @@ theorem logOf_one_add_X : logOf (1 + X : A⟦X⟧) = log A := by
 /-! ## Log and exp as inverses -/
 
 omit [Algebra ℚ A] in
-theorem eq_of_derivative_mul_one_add_X_eq_self [IsAddTorsionFree A]
+theorem eq_of_derivative_mul_one_add_X_eq_self [HasUniqueDiv A]
     {g : A⟦X⟧} (hderiv : d⁄dX g * (1 + X) = g) :
     g = constantCoeff g • (1 + X) := by
   have : Invertible (1 + X : A⟦X⟧) := (isUnit_iff_constantCoeff.mpr (by simp)).invertible
@@ -132,7 +132,7 @@ theorem eq_of_derivative_mul_one_add_X_eq_self [IsAddTorsionFree A]
 
 variable (A) in
 theorem subst_exp_log : (exp A).subst (log A) = 1 + X := by
-  have : IsAddTorsionFree A := IsAddTorsionFree.of_module_rat A
+  have : HasUniqueDiv A := .of_module_rat A
   have hderiv : d⁄dX ((exp A).subst (log A)) * (1 + X) = (exp A).subst (log A) := by
     rw [derivative_subst (hg := HasSubst.log), derivative_exp, mul_assoc,
       derivative_log_mul_one_add_X, mul_one]
