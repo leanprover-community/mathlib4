@@ -14,8 +14,6 @@ public import Mathlib.Topology.MetricSpace.Isometry
 
 ## Main definitions
 
-* `IsHyperbolicWith`: A pseudometric space is hyperbolic with constant `δ`
-if and only if for all `w x y z` the four-point condition
 * `IsHyperbolicWith`: A pseudometric space is hyperbolic with constant `δ` if and only if for all
   `w x y z` the four-point condition
   `min (gromovProduct w x y) (gromovProduct w y z) - δ ≤ gromovProduct w x z` holds.
