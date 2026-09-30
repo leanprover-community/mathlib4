@@ -6,6 +6,8 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Complex.CauchyIntegral
+public import Mathlib.Analysis.Polynomial.Basic
+public import Mathlib.Logic.Function.Const
 
 /-!
 # Liouville's theorem
@@ -22,7 +24,7 @@ The proof is based on the Cauchy integral formula for the derivative of an analy
 
 public section
 
-open TopologicalSpace Metric Set Filter Function Bornology
+open Asymptotics Bornology Filter Function Metric Polynomial Set TopologicalSpace
 
 open scoped Topology Filter NNReal Real
 
@@ -143,8 +145,19 @@ theorem eq_const_of_tendsto_cocompact [Nontrivial E] {f : E → F} (hf : Differe
   convert hc'
   exact tendsto_nhds_unique_of_forall hb tendsto_const_nhds (by simp [hc'])
 
-/-- A corollary of Liouville's theorem where the function tends to a finite value at infinity
-(i.e., along `Filter.cocompact`, which in proper spaces coincides with `Bornology.cobounded`). -/
+/--
+**Liouville's theorem**, asymptotic version: a complex differentiable function that is `O(1)` along
+the cocompact filter is constant.
+-/
+theorem isConst_of_isBigO_one {f : E → F} (hf : Differentiable ℂ f)
+    (hb : f =O[cocompact E] (1 : E → ℝ)) : f.IsConst := by
+  rw [Function.isConst_iff_exists_eq_const]
+  exact hf.exists_eq_const_of_bounded <| hf.continuous.isBounded_range_iff_isBigO.2 hb
+
+/--
+A corollary of Liouville's theorem where the function tends to a finite value at infinity (i.e.,
+along `Filter.cocompact`, which in proper spaces coincides with `Bornology.cobounded`).
+-/
 theorem apply_eq_of_tendsto_cocompact [Nontrivial E] {f : E → F} (hf : Differentiable ℂ f) {c : F}
     (x : E) (hb : Tendsto f (cocompact E) (𝓝 c)) : f x = c :=
   congr($(hf.eq_const_of_tendsto_cocompact hb) x)
@@ -158,10 +171,10 @@ theorem exists_eq_polynomial_eval_of_isBigO_pow {n : ℕ} {f : ℂ → ℂ}
     ∃ p : Polynomial ℂ, p.natDegree ≤ n ∧ f = p.eval := by
   induction n generalizing f with
   | zero =>
-    obtain ⟨c, rfl⟩ := Function.IsConst.exists_eq_const <| hf.isConst_of_isBigO_one <| by
+    obtain ⟨c, rfl⟩ := (hf.isConst_of_isBigO_one <| by
       rw [← Metric.cobounded_eq_cocompact]
       refine hg.trans <| isBigO_of_le _ fun _ ↦ ?_
-      simp
+      simp).exists_eq_const
     exact ⟨C c, by simp, by ext; simp⟩
   | succ n ih =>
     have h : (f · - f 0) =O[cobounded ℂ] (· ^ (n + 1)) := by
@@ -177,5 +190,15 @@ theorem exists_eq_polynomial_eval_of_isBigO_pow {n : ℕ} {f : ℂ → ℂ}
     · grw [natDegree_add_C, natDegree_mul_le, natDegree_X_le, hqn, add_comm]
     · ext z
       grind [sub_smul_dslope f 0 z, smul_eq_mul, eval_add, eval_mul, eval_X, eval_C]
+
+/--
+**Liouville's theorem for functions with polynomial growth**: an entire function `f : ℂ → ℂ` is
+`O(z ^ n)` along `cobounded` if and only if it is a polynomial of degree at most `n`.
+-/
+theorem isBigO_pow_iff_exists_eq_polynomial_eval {n : ℕ} {f : ℂ → ℂ} (hf : Differentiable ℂ f) :
+    f =O[cobounded ℂ] (· ^ n) ↔ ∃ p : Polynomial ℂ, p.natDegree ≤ n ∧ f = p.eval := by
+  refine ⟨hf.exists_eq_polynomial_eval_of_isBigO_pow, ?_⟩
+  rintro ⟨p, hp, rfl⟩
+  exact p.isBigO_cobounded_pow_natDegree.trans (isBigO_pow_pow_cobounded_of_le hp)
 
 end Differentiable
