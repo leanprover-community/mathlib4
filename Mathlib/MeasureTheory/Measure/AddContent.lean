@@ -7,7 +7,6 @@ module
 
 public import Mathlib.MeasureTheory.SetSemiring
 public import Mathlib.MeasureTheory.OuterMeasure.Induced
-public import Mathlib.Tactic.FinCases
 
 /-!
 # Additive Contents
@@ -121,7 +120,7 @@ lemma addContent_biUnion {ι : Type*} {a : Finset ι} {f : ι → Set α} (hf : 
 lemma addContent_iUnion {ι : Type*} [Fintype ι] {f : ι → Set α} (hf : ∀ i, f i ∈ C)
     (h_dis : Pairwise (Disjoint on f)) (h_mem : ⋃ i, f i ∈ C) :
     m (⋃ i, f i) = ∑ i, m (f i) := by
-  convert! addContent_biUnion (a := Finset.univ) (f := f) (m := m) ?_ ?_ ?_ using 1
+  convert addContent_biUnion (a := Finset.univ) (f := f) (m := m) ?_ ?_ ?_ using 1
   · simp
   · simpa
   · simpa [Set.PairwiseDisjoint, Set.pairwise_univ] using h_dis
@@ -130,7 +129,7 @@ lemma addContent_iUnion {ι : Type*} [Fintype ι] {f : ι → Set α} (hf : ∀ 
 lemma addContent_union' (hs : s ∈ C) (ht : t ∈ C) (hst : s ∪ t ∈ C) (h_dis : Disjoint s t) :
     m (s ∪ t) = m s + m t := by
   have A : s ∪ t = ⋃ i, ![s, t] i := by ext; simp
-  convert! addContent_iUnion (f := ![s, t]) (m := m) (fun i ↦ ?_) (fun i j hij ↦ ?_) ?_ using 2
+  convert addContent_iUnion (f := ![s, t]) (m := m) (fun i ↦ ?_) (fun i j hij ↦ ?_) ?_ using 2
   · simp [Fin.univ_castSuccEmb, add_comm]
   · fin_cases i <;> simpa
   · #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
@@ -304,7 +303,7 @@ lemma addContent_le_sum_of_subset_sUnion {m : AddContent G C} (hC : IsSetSemirin
   set f := disjointed fun j => (J.equivFin.symm j).1
   have h1 : ∀ j, f j ∈ supClosure C :=
     hC.isSetRing_supClosure.disjointed_mem fun j =>
-      subset_supClosure <| h_ss <| (J.equivFin.symm j).2
+      subset_supClosure <| h_ss (J.equivFin.symm j).2
   have h2 : Pairwise (Disjoint on f) := disjoint_disjointed _
   have h3 : ⋃ i, f i ∈ supClosure C :=
     supClosed_supClosure.iSup_mem (subset_supClosure hC.empty_mem) h1
@@ -542,7 +541,7 @@ def IsSetRing.addContent_of_union (m : Set α → G) (hC : IsSetRing C) (m_empty
         exact h_ss.2 hn
       rw [Set.sUnion_insert, m_add h_ss.1 h_sUnion_mem (Set.disjoint_sUnion_right.mpr h_dis.2),
         Finset.sum_insert hsI, h h_ss.2 h_dis.1]
-      rwa [Set.sUnion_insert] at h_mem
+      exact h_sUnion_mem
 
 variable [PartialOrder G] [CanonicallyOrderedAdd G]
 

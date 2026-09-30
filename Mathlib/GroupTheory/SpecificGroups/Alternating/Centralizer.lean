@@ -177,7 +177,7 @@ theorem count_le_one_of_centralizer_le_alternating
   have hk_cT : k.val.cycleType = Multiset.replicate k.val.cycleType.card 2 := by
     rw [Multiset.eq_replicate_card, ← pow_prime_eq_one_iff, ← Subgroup.coe_pow,
       ← Subgroup.coe_one, Subtype.coe_inj, hk, ← map_pow]
-    convert! MonoidHom.map_one _
+    convert MonoidHom.map_one _
     rw [← Subtype.coe_inj]
     apply Equiv.swap_mul_self
   rw [sign_of_cycleType, hk_cT]
@@ -218,7 +218,7 @@ theorem centralizer_le_alternating_iff :
     Subgroup.centralizer {g} ≤ alternatingGroup α ↔
       (∀ c ∈ g.cycleType, Odd c) ∧ Fintype.card α ≤ g.cycleType.sum + 1 ∧
         ∀ i, g.cycleType.count i ≤ 1 := by
-  rw [SetLike.le_def]
+  rw [IsConcreteLE.le_iff]
   constructor
   · intro h
     exact ⟨odd_of_centralizer_le_alternatingGroup h,
@@ -228,12 +228,12 @@ theorem centralizer_le_alternating_iff :
     rw [← kerParam_range_eq_centralizer_of_count_le_one h_count] at hx
     obtain ⟨⟨y, uv⟩, rfl⟩ := MonoidHom.mem_range.mp hx
     rw [mem_alternatingGroup, sign_kerParam_apply_apply (g := g) y uv]
-    convert! mul_one _
+    convert mul_one _
     · apply Finset.prod_eq_one
       rintro ⟨c, hc⟩ _
       obtain ⟨k, hk⟩ := (uv _).prop
       rw [← hk, map_zpow]
-      convert! one_zpow k
+      convert one_zpow k
       rw [IsCycle.sign, Odd.neg_one_pow, neg_neg]
       · apply h_odd
         rw [cycleType_def, Multiset.mem_map]

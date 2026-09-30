@@ -373,10 +373,16 @@ lemma «forall» {p : Finset α → Prop} :
   mp h s hs := h _
   mpr h s := by simpa using h s s.finite_toSet
 
+theorem forall_toSet {p : Set α → Prop} : (∀ s : Finset α, p s) ↔ ∀ s : Set α, s.Finite → p s := by
+  simp [Finset.forall]
+
 lemma «exists» {p : Finset α → Prop} :
     (∃ s, p s) ↔ ∃ (s : Set α) (hs : s.Finite), p hs.toFinset where
   mp := fun ⟨s, hs⟩ ↦ ⟨s, s.finite_toSet, by simpa⟩
   mpr := fun ⟨s, hs, hs'⟩ ↦ ⟨hs.toFinset, hs'⟩
+
+theorem exists_toSet {p : Set α → Prop} : (∃ s : Finset α, p s) ↔ ∃ s : Set α, s.Finite ∧ p s := by
+  simp [Finset.exists, and_comm]
 
 lemma mem_range_coe_iff {s : Set α} : s ∈ Set.range ((↑) : Finset α → Set α) ↔ s.Finite where
   mp := by
@@ -496,6 +502,7 @@ theorem finite_univ_iff : (@univ α).Finite ↔ Finite α := (Equiv.Set.univ α)
 
 alias ⟨_root_.Finite.of_finite_univ, _⟩ := finite_univ_iff
 
+@[gcongr]
 theorem Finite.subset {s : Set α} (hs : s.Finite) {t : Set α} (ht : t ⊆ s) : t.Finite := by
   have := hs.to_subtype
   exact Finite.Set.subset _ ht
@@ -758,7 +765,7 @@ theorem seq_of_forall_finite_exists {γ : Type*} {P : γ → Set γ → Prop}
   set f : (n : ℕ) → (g : (m : ℕ) → m < n → γ) → γ := fun n g => c (range fun k : Iio n => g k.1 k.2)
   set u : ℕ → γ := fun n ↦ Nat.strongRecOn n f
   refine ⟨u, fun n ↦ ?_⟩
-  convert! hc (u '' Iio n) ((finite_lt_nat _).image _)
+  convert hc (u '' Iio n) ((finite_lt_nat _).image _)
   rw [image_eq_range]
   exact Nat.strongRecOn_eq f n
 
