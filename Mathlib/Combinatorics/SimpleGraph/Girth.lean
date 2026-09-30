@@ -185,11 +185,15 @@ lemma girth_le_two_mul_diam_add_one (h : G.ediam ≠ ⊤) : G.girth ≤ 2 * G.di
 theorem girth_top (h : 3 ≤ ENat.card α) : girth (⊤ : SimpleGraph α) = 3 := by
   simp [girth, egirth_top h]
 
-lemma Walk.IsCircuit.isCycle_of_length_eq_girth {a} {w : G.Walk a a} (hw : w.IsCircuit)
-    (hwg : w.length = G.girth) : w.IsCycle :=
-  have hw0 : w.length ≠ 0 := length_eq_zero_iff.not.mpr hw.not_nil
-  have hwg' : w.length = G.egirth := ((ENat.toNat_eq_iff hw0).mp hwg.symm).symm
-  hw.isTrail.isCycle_of_length_eq_egirth hwg'
+lemma Walk.IsCircuit.isCycle_of_length_le_girth {a} {w : G.Walk a a} (hw : w.IsCircuit)
+    (hwg : w.length ≤ G.girth) : w.IsCycle :=
+  hw.isCycle_of_length_le_egirth <| by grw [hwg, natCast_girth_le_egirth]
+
+lemma Walk.IsTrail.isCycle_of_length_eq_girth {a} {w : G.Walk a a} (hw : w.IsTrail)
+    (hg : ¬ G.IsAcyclic) (hwg : w.length = G.girth) : w.IsCycle := by
+  apply hw.isCycle_of_length_eq_egirth
+  rw [hwg]
+  exact ENat.natCast_toNat <| egirth_eq_top.not.mpr hg
 
 lemma IsContained.girth_le (h : G ⊑ G') (hG : ¬G.IsAcyclic) : G'.girth ≤ G.girth :=
   ENat.toNat_le_toNat h.egirth_le <| egirth_eq_top.not.mpr hG
