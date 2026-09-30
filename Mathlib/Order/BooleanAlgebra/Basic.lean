@@ -87,7 +87,6 @@ private theorem sdiff_le' : x \ y ≤ x :=
     x \ y ≤ x ⊓ y ⊔ x \ y := le_sup_right
     _ = x := sup_inf_sdiff x y
 
-set_option backward.privateInPublic true in
 -- Use `sdiff_sup_self`
 private theorem sdiff_sup_self' : y \ x ⊔ x = y ⊔ x :=
   calc
@@ -119,8 +118,6 @@ theorem inf_sdiff_self_right : x ⊓ y \ x = ⊥ :=
 @[simp]
 theorem inf_sdiff_self_left : y \ x ⊓ x = ⊥ := by rw [inf_comm, inf_sdiff_self_right]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 -- see Note [lower instance priority]
 instance (priority := 100) GeneralizedBooleanAlgebra.toGeneralizedCoheytingAlgebra :
     GeneralizedCoheytingAlgebra α where
@@ -128,17 +125,16 @@ instance (priority := 100) GeneralizedBooleanAlgebra.toGeneralizedCoheytingAlgeb
   __ := GeneralizedBooleanAlgebra.toOrderBot
   sdiff := (· \ ·)
   sdiff_le_iff y x z :=
-    ⟨fun h =>
+    ⟨fun h ↦
       le_of_inf_le_sup_le
         (le_of_eq
           (by grind [sdiff_le', inf_of_le_right, inf_eq_right, inf_sdiff_self_right, bot_sup_eq,
             inf_sup_right]))
         (calc
-          y ⊔ y \ x ≤ y \ x ⊔ x ⊔ z := by
-            grind [sup_of_le_left, sdiff_le', le_sup_left, sdiff_sup_self']
+          _ ≤ y \ x ⊔ x ⊔ z := by grind [sup_of_le_left, sdiff_le', le_sup_left, sdiff_sup_self']
           _ = x ⊔ z ⊔ y \ x := by ac_rfl),
-      fun h => le_of_inf_le_sup_le (inf_sdiff_self_left.trans_le bot_le) (calc
-        y \ x ⊔ x = y ⊔ x := sdiff_sup_self'
+      fun h ↦ le_of_inf_le_sup_le (inf_sdiff_self_left.trans_le bot_le) (calc
+        _ = y ⊔ x := by exact sdiff_sup_self'
         _ ≤ x ⊔ z ⊔ x := sup_le_sup_right h x
         _ ≤ z ⊔ x := by rw [sup_assoc, sup_comm, sup_assoc, sup_idem])⟩
 
