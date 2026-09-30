@@ -16,6 +16,8 @@ We prove various limits for polynomial and rational functions, depending on
 the degrees and leading coefficients of the considered polynomials.
 -/
 
+public section
+
 namespace Polynomial
 
 open Filter
