@@ -23,6 +23,9 @@ f * g = f g
          |
 ```
 diagrammatically, where `μ` stands for multiplication and `δ` for comultiplication.
+
+It also provides `HopfAlgebra.ofSurjective`, which transfers the Hopf algebra axioms along a
+surjective bialgebra homomorphism intertwining the antipodes.
 -/
 
 public section
@@ -55,7 +58,7 @@ lemma antipode_comp_mul_comp_comm :
       ← (Algebra.commute_algebraMap_left (ε a) (_ : A)).eq]
 
 lemma antipode_mul_antidistrib (a b : A) : antipode R (a * b) = antipode R b * antipode R a := by
-  exact congr($antipode_comp_mul_comp_comm (b ⊗ₜ a))
+  congrm $antipode_comp_mul_comp_comm (b ⊗ₜ a)
 
 @[deprecated (since := "2026-06-05")] alias antipode_mul := antipode_mul_antidistrib
 
@@ -94,6 +97,40 @@ variable [Semiring C] [HopfAlgebra R C]
   ext c; rw [(ℛ R c).convMul_apply]; simp [sum_mul_antipode_eq_algebraMap_counit (ℛ R c)]
 
 end LinearMap
+
+namespace HopfAlgebra
+variable [Semiring A] [HopfAlgebra R A]
+
+section
+variable {f : A →ₗ[R] A}
+
+/-- The antipode is the unique left convolution inverse of the identity: any `R`-linear map `f`
+with `f * id = 1` in the convolution monoid equals the antipode. -/
+theorem eq_antipode_of_convMul_id_eq_one (h : toConv f * toConv LinearMap.id = 1) :
+    f = antipode R :=
+  toConv_injective (left_inv_eq_right_inv h LinearMap.id_mul_antipode)
+
+/-- The antipode is the unique right convolution inverse of the identity: any `R`-linear map `f`
+with `id * f = 1` in the convolution monoid equals the antipode. -/
+theorem eq_antipode_of_id_convMul_eq_one (h : toConv LinearMap.id * toConv f = 1) :
+    f = antipode R :=
+  toConv_injective (left_inv_eq_right_inv LinearMap.antipode_mul_id h).symm
+
+end
+
+variable {B : Type*} [Semiring B] [HopfAlgebraStruct R B]
+
+/-- Transfer the Hopf algebra axioms along a surjective bialgebra homomorphism
+intertwining the antipodes. -/
+noncomputable abbrev ofSurjective (f : A →ₐc[R] B) (hf : Function.Surjective f)
+    (map_antipode : ∀ a, f (antipode R a) = antipode R (f a)) : HopfAlgebra R B := by
+  refine .ofConvInverse (antipode R) ?_ ?_ <;>
+    refine f.toCoalgHom.convPrecomp_injective hf ?_ <;>
+    rw [map_mul, f.convPrecomp_eq_convPostcomp map_antipode,
+      f.convPrecomp_eq_convPostcomp (g' := .id) fun _ ↦ rfl, ← map_mul] <;>
+    simp only [LinearMap.antipode_mul_id, LinearMap.id_mul_antipode, map_one]
+
+end HopfAlgebra
 
 namespace LinearMap
 variable [Semiring C] [HopfAlgebra R C]

@@ -5,9 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Sets.OpenCover
-public import Mathlib.Topology.LocallyClosed
 public import Mathlib.Topology.Maps.Proper.Basic
 
 /-!
@@ -38,7 +36,8 @@ variable {ι : Type*} {U : ι → Opens β}
 theorem Set.restrictPreimage_isInducing (s : Set β) (h : IsInducing f) :
     IsInducing (s.restrictPreimage f) := by
   simp_rw [← IsInducing.subtypeVal.of_comp_iff, isInducing_iff_nhds, restrictPreimage,
-    MapsTo.coe_restrict, restrict_eq, ← @Filter.comap_comap _ _ _ _ _ f, Function.comp_apply] at h ⊢
+    MapsTo.coe_restrict, domRestrict_eq, ← @Filter.comap_comap _ _ _ _ _ f,
+    Function.comp_apply] at h ⊢
   intro a
   rw [← h, ← IsInducing.subtypeVal.nhds_eq_comap]
 
@@ -150,7 +149,7 @@ theorem isClosedMap_iff_restrictPreimage :
 theorem isInducing_iff_restrictPreimage (h : Continuous f) :
     IsInducing f ↔ ∀ i, IsInducing ((U i).1.restrictPreimage f) := by
   simp_rw [← IsInducing.subtypeVal.of_comp_iff, isInducing_iff_nhds, restrictPreimage,
-    MapsTo.coe_restrict, restrict_eq, ← Filter.comap_comap]
+    MapsTo.coe_restrict, domRestrict_eq, ← Filter.comap_comap]
   constructor
   · intro H i x
     rw [Function.comp_apply, ← H, ← IsInducing.subtypeVal.nhds_eq_comap]
@@ -256,7 +255,7 @@ theorem isEmbedding_of_iSup_eq_top_of_preimage_subset_range
     have hU'' : (⨆ i, (U i).comap ⟨Subtype.val, continuous_subtype_val⟩ :
         Opens (Set.range f)) = ⊤ := by
       rw [← top_le_iff]
-      simpa [Set.range_subset_iff, SetLike.le_def] using hU
+      simpa [Set.range_subset_iff, IsConcreteLE.le_iff] using hU
     refine this _ ?_ _ ?_ V iV hiV ?_ ?_ hU''
     · fun_prop
     · rw [hU'']; simp

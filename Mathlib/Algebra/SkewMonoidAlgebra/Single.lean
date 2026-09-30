@@ -40,12 +40,12 @@ If `a` is not in the support of `f` then `erase a f = f`. -/
 theorem support_erase [DecidableEq α] : (f.erase a).support = f.support.erase a := by
   ext; simp [erase]
 
-@[deprecated Finsupp.erase_same (since := "2026-07-04")]
+@[deprecated Finsupp.erase_same +typeChanged (since := "2026-07-04")]
 theorem coeff_erase_same : (f.erase a).coeff a = 0 := by
   simp [erase]
 
 variable {a a'} in
-@[deprecated Finsupp.erase_ne (since := "2026-07-04")]
+@[deprecated Finsupp.erase_ne +typeChanged (since := "2026-07-04")]
 theorem coeff_erase_ne (h : a' ≠ a) : (f.erase a).coeff a' = f.coeff a' := by
   simp [erase, h]
 
@@ -99,21 +99,21 @@ theorem support_update [DecidableEq α] [DecidableEq M] :
     support (f.update a b) = if b = 0 then f.support.erase a else insert a f.support := by
   aesop (add norm [update, Finsupp.support_update_ne_zero])
 
-@[deprecated Finsupp.update_apply (since := "2026-07-04")]
+@[deprecated Finsupp.update_apply +typeChanged (since := "2026-07-04")]
 theorem coeff_update_apply [DecidableEq α] :
     (f.update a b).coeff a' = if a' = a then b else f.coeff a' := by
   simp [coeff_update, Function.update_apply]
 
-@[deprecated Finsupp.update_apply (since := "2026-07-04")]
+@[deprecated Finsupp.update_apply +typeChanged (since := "2026-07-04")]
 theorem coeff_update_same : (f.update a b).coeff a = b := by
   classical
-  rw [f.coeff_update_apply, if_pos rfl]
+  rw [f.coeff_update_apply, ite_eq_left rfl]
 
 variable {a a'} in
-@[deprecated Finsupp.update_apply (since := "2026-07-04")]
+@[deprecated Finsupp.update_apply +typeChanged (since := "2026-07-04")]
 theorem coeff_update_ne (h : a' ≠ a) : (f.update a b).coeff a' = f.coeff a' := by
   classical
-  rw [f.coeff_update_apply, if_neg h]
+  rw [f.coeff_update_apply, ite_eq_right h]
 
 theorem update_eq_erase_add_single : f.update a b = f.erase a + single a b := by
   classical ext x; by_cases hx : x = a <;> aesop (add norm coeff_single_apply)

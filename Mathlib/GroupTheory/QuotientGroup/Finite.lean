@@ -7,7 +7,6 @@ Authors: Kevin Buzzard, Patrick Massot
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Finite
-public import Mathlib.Data.Finite.Prod
 public import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!

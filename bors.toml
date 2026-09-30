@@ -28,11 +28,13 @@ restrict_to_paths = [
   "DownstreamTest/**",
   "Mathlib/**",
   "MathlibTest/**",
+  "Wanted/**",
   "widget/**",
   "Archive.lean",
   "Counterexamples.lean",
   "docs.lean",
   "Mathlib.lean",
+  "Wanted.lean",
 ]
 # Deny-list: always revoke delegation when these are touched, even if a path
 # also matches the allow-list.

@@ -6,9 +6,9 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Data.Nat.NthRoot.Defs
-public import Mathlib.Tactic.Linarith
-public import Mathlib.Tactic.Ring.Basic
-public import Mathlib.Tactic.Zify
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring.Basic
+import Mathlib.Tactic.Zify
 public import Mathlib.Algebra.Order.Ring.Pow
 
 /-!
@@ -21,7 +21,7 @@ public section
 
 namespace Nat
 
-variable {m n a b guess fuel : ℕ}
+variable {n a b guess fuel : ℕ}
 
 @[simp] theorem nthRoot_zero_left (a : ℕ) : nthRoot 0 a = 1 := rfl
 

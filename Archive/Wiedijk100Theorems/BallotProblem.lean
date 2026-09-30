@@ -3,7 +3,9 @@ Copyright (c) 2022 Bhavik Mehta, Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Kexing Ying
 -/
-import Mathlib.Probability.UniformOn
+module
+
+public import Mathlib.Probability.UniformOn
 
 /-!
 # Ballot problem
@@ -29,6 +31,7 @@ throughout the count. The probability of this is `(p - q) / (p + q)`.
 
 -/
 
+@[expose] public section
 
 open Set ProbabilityTheory MeasureTheory
 open scoped ENNReal
@@ -115,28 +118,28 @@ theorem counted_succ_succ (p q : ℕ) :
     obtain hlast | hlast := hl₂ (l.head hlnil) (List.head_mem hlnil)
     · refine Or.inl ⟨l.tail, ⟨?_, ?_, ?_⟩, ?_⟩
       · rw [List.count_tail, hl₀, List.head?_eq_some_head hlnil, hlast, beq_self_eq_true,
-          if_pos rfl, Nat.add_sub_cancel]
-      · rw [List.count_tail, hl₁, List.head?_eq_some_head hlnil, hlast, if_neg (by decide),
+          ite_eq_left rfl, Nat.add_sub_cancel]
+      · rw [List.count_tail, hl₁, List.head?_eq_some_head hlnil, hlast, ite_eq_right (by decide),
           Nat.sub_zero]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
       · rw [← hlast, List.cons_head_tail]
     · refine Or.inr ⟨l.tail, ⟨?_, ?_, ?_⟩, ?_⟩
-      · rw [List.count_tail, hl₀, List.head?_eq_some_head hlnil, hlast, if_neg (by decide),
+      · rw [List.count_tail, hl₀, List.head?_eq_some_head hlnil, hlast, ite_eq_right (by decide),
           Nat.sub_zero]
       · rw [List.count_tail, hl₁, List.head?_eq_some_head hlnil, hlast, beq_self_eq_true,
-          if_pos rfl, Nat.add_sub_cancel]
+          ite_eq_left rfl, Nat.add_sub_cancel]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
       · rw [← hlast, List.cons_head_tail]
   · rintro (⟨t, ⟨ht₀, ht₁, ht₂⟩, rfl⟩ | ⟨t, ⟨ht₀, ht₁, ht₂⟩, rfl⟩)
     · refine ⟨?_, ?_, ?_⟩
-      · rw [List.count_cons, beq_self_eq_true, if_pos rfl, ht₀]
-      · rw [List.count_cons, if_neg, ht₁]
+      · rw [List.count_cons, beq_self_eq_true, ite_eq_left rfl, ht₀]
+      · rw [List.count_cons, ite_eq_right, ht₁]
         norm_num
       · simpa
     · refine ⟨?_, ?_, ?_⟩
-      · rw [List.count_cons, if_neg, ht₀]
+      · rw [List.count_cons, ite_eq_right, ht₀]
         norm_num
-      · rw [List.count_cons, beq_self_eq_true, if_pos rfl, ht₁]
+      · rw [List.count_cons, beq_self_eq_true, ite_eq_left rfl, ht₁]
       · simpa
 
 theorem countedSequence_finite : ∀ p q : ℕ, (countedSequence p q).Finite
@@ -165,7 +168,8 @@ theorem disjoint_bits (p q : ℕ) :
 
 open MeasureTheory.Measure
 
-private local instance measurableSpace_list_int : MeasurableSpace (List ℤ) := ⊤
+-- This instance needs to be public, for (public) theorem statements to make sense.
+local instance measurableSpace_list_int : MeasurableSpace (List ℤ) := ⊤
 
 private local instance measurableSingletonClass_list_int : MeasurableSingletonClass (List ℤ) :=
   { measurableSet_singleton := fun _ => trivial }
@@ -315,9 +319,9 @@ theorem ballot_problem' :
     rw [div_self]
     exact Nat.cast_add_one_ne_zero p
   · intro q p qp h₁ h₂
-    haveI := isProbabilityMeasure_uniformOn
+    have := isProbabilityMeasure_uniformOn
       (countedSequence_finite p (q + 1)) (countedSequence_nonempty _ _)
-    haveI := isProbabilityMeasure_uniformOn
+    have := isProbabilityMeasure_uniformOn
       (countedSequence_finite (p + 1) q) (countedSequence_nonempty _ _)
     have h₃ : 0 < p + 1 + (q + 1) := Nat.add_pos_left (Nat.succ_pos _) _
     rw [← uniformOn_add_compl_eq {l : List ℤ | l.headI = 1} _ (countedSequence_finite _ _),
@@ -344,7 +348,7 @@ theorem ballot_problem' :
 theorem ballot_problem :
     ∀ q p, q < p → uniformOn (countedSequence p q) staysPositive = (p - q) / (p + q) := by
   intro q p qp
-  haveI :=
+  have :=
     isProbabilityMeasure_uniformOn (countedSequence_finite p q) (countedSequence_nonempty _ _)
   have :
     (uniformOn (countedSequence p q) staysPositive).toReal =

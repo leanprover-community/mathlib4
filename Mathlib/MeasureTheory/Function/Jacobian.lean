@@ -39,7 +39,7 @@ For the next statements, `s` is a measurable set and `f` is differentiable on `s
 (with a derivative `f'`) and injective on `s`.
 
 * `measurable_image_of_fderivWithin`: the image `f '' s` is measurable.
-* `measurableEmbedding_of_fderivWithin`: the function `s.restrict f` is a measurable embedding.
+* `measurableEmbedding_of_fderivWithin`: the function `s.domRestrict f` is a measurable embedding.
 * `lintegral_abs_det_fderiv_eq_addHaar_image`: the image measure is given by
     `μ (f '' s) = ∫⁻ x in s, |(f' x).det| ∂μ`.
 * `lintegral_image_eq_lintegral_abs_det_fderiv_mul`: for `g : E → ℝ≥0∞`, one has
@@ -784,7 +784,7 @@ theorem nullMeasurable_image_of_fderivWithin (hs : NullMeasurableSet s μ)
 to `s` is a measurable embedding. -/
 theorem measurableEmbedding_of_fderivWithin (hs : MeasurableSet s)
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hf : InjOn f s) :
-    MeasurableEmbedding (s.restrict f) :=
+    MeasurableEmbedding (s.domRestrict f) :=
   haveI : DifferentiableOn ℝ f s := fun x hx => (hf' x hx).differentiableWithinAt
   this.continuousOn.measurableEmbedding hs hf
 
@@ -1145,12 +1145,12 @@ theorem map_withDensity_abs_det_fderiv_eq_addHaar (hs : NullMeasurableSet s μ)
 /-- Change of variable formula for differentiable functions, set version: if a function `f` is
 injective and differentiable on a measurable set `s`, then the pushforward of the measure with
 density `|(f' x).det|` on `s` is the Lebesgue measure on the image set. This version is expressed
-in terms of the restricted function `s.restrict f`.
+in terms of the restricted function `s.domRestrict f`.
 For a version for the original function, see `map_withDensity_abs_det_fderiv_eq_addHaar`.
 -/
 theorem restrict_map_withDensity_abs_det_fderiv_eq_addHaar (hs : MeasurableSet s)
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hf : InjOn f s) :
-    Measure.map (s.restrict f) (comap (↑) (μ.withDensity fun x => ENNReal.ofReal |(f' x).det|)) =
+    Measure.map (s.domRestrict f) (comap (↑) (μ.withDensity fun x => ENNReal.ofReal |(f' x).det|)) =
       μ.restrict (f '' s) := by
   obtain ⟨u, u_meas, uf⟩ : ∃ u, Measurable u ∧ EqOn u f s := by
     classical
@@ -1168,7 +1168,7 @@ theorem restrict_map_withDensity_abs_det_fderiv_eq_addHaar (hs : MeasurableSet s
       restrict_withDensity hs]
     exact map_withDensity_abs_det_fderiv_eq_addHaar μ hs.nullMeasurableSet u' (hf.congr uf.symm)
   rw [uf.image_eq] at A
-  have : F = s.restrict f := by
+  have : F = s.domRestrict f := by
     ext x
     exact uf x.2
   rwa [this] at A
@@ -1185,7 +1185,7 @@ theorem lintegral_image_eq_lintegral_abs_det_fderiv_mul (hs : MeasurableSet s)
     ∫⁻ x in f '' s, g x ∂μ = ∫⁻ x in s, ENNReal.ofReal |(f' x).det| * g (f x) ∂μ := by
   rw [← restrict_map_withDensity_abs_det_fderiv_eq_addHaar μ hs hf' hf,
     (measurableEmbedding_of_fderivWithin hs hf' hf).lintegral_map]
-  simp only [Set.restrict_apply, ← Function.comp_apply (f := g)]
+  simp only [Set.domRestrict_apply, ← Function.comp_apply (f := g)]
   rw [← (MeasurableEmbedding.subtype_coe hs).lintegral_map, map_comap_subtype_coe hs,
     setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable₀ _ _ _ hs]
   · simp only [Pi.mul_apply]
@@ -1201,7 +1201,7 @@ theorem integrableOn_image_iff_integrableOn_abs_det_fderiv_smul (hs : Measurable
     IntegrableOn g (f '' s) μ ↔ IntegrableOn (fun x => |(f' x).det| • g (f x)) s μ := by
   rw [IntegrableOn, ← restrict_map_withDensity_abs_det_fderiv_eq_addHaar μ hs hf' hf,
     (measurableEmbedding_of_fderivWithin hs hf' hf).integrable_map_iff]
-  simp only [Set.restrict_eq, ← Function.comp_assoc, ENNReal.ofReal]
+  simp only [Set.domRestrict_eq, ← Function.comp_assoc, ENNReal.ofReal]
   rw [← (MeasurableEmbedding.subtype_coe hs).integrable_map_iff, map_comap_subtype_coe hs,
     restrict_withDensity hs, integrable_withDensity_iff_integrable_coe_smul₀]
   · simp_rw [IntegrableOn, Real.coe_toNNReal _ (abs_nonneg _), Function.comp_apply]
@@ -1215,7 +1215,7 @@ theorem integral_image_eq_integral_abs_det_fderiv_smul (hs : MeasurableSet s)
     ∫ x in f '' s, g x ∂μ = ∫ x in s, |(f' x).det| • g (f x) ∂μ := by
   rw [← restrict_map_withDensity_abs_det_fderiv_eq_addHaar μ hs hf' hf,
     (measurableEmbedding_of_fderivWithin hs hf' hf).integral_map]
-  simp only [Set.restrict_apply, ← Function.comp_apply (f := g), ENNReal.ofReal]
+  simp only [Set.domRestrict_apply, ← Function.comp_apply (f := g), ENNReal.ofReal]
   rw [← (MeasurableEmbedding.subtype_coe hs).integral_map, map_comap_subtype_coe hs,
     setIntegral_withDensity_eq_setIntegral_smul₀
       (aemeasurable_toNNReal_abs_det_fderivWithin μ hs hf') _ hs]

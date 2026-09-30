@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.SuccPred
 public import Mathlib.Order.PartialSups
-public import Mathlib.Order.SuccPred.LinearLocallyFinite
+import Mathlib.Order.SuccPred.LinearLocallyFinite
 
 /-!
 # `PartialSups` in a `SuccAddOrder`
@@ -17,8 +17,6 @@ the `PartialSup` is defined over a `SuccAddOrder`.
 -/
 
 public section
-
-open Finset
 
 variable {α ι : Type*} [SemilatticeSup α] [LinearOrder ι]
 

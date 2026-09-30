@@ -48,8 +48,6 @@ namespace TopCat
 
 namespace Sheaf
 
-open Presheaf
-
 /-- The pushforward of a sheaf (by a continuous map) is a sheaf.
 -/
 theorem pushforward_sheaf_of_sheaf {F : X.Presheaf C} (h : F.IsSheaf) : (f _* F).IsSheaf :=
@@ -113,7 +111,7 @@ end TopCat
 
 namespace Topology.IsOpenEmbedding
 
-open TopCat Sheaf
+open TopCat
 
 variable (A : Type*) [Category.{w} A]
 variable {f : X ⟶ Y} (hf : IsOpenEmbedding f)

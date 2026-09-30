@@ -37,9 +37,10 @@ def const : C ⥤ J ⥤ C where
   obj X :=
     { obj := fun _ => X
       map := fun _ => 𝟙 X }
-  map f := { app := fun _ => f }
+  map {X Y} f := { app := fun _ => f }
 
 attribute [to_dual self] const_obj_map
+attribute [to_dual self (reorder := X Y)] const_map_app
 
 namespace const
 
@@ -96,9 +97,8 @@ def constComp (X : C) (F : C ⥤ D) : (const J).obj X ⋙ F ≅ (const J).obj (F
 
 /-- If `J` is nonempty, then the constant functor over `J` is faithful. -/
 instance [Nonempty J] : Faithful (const J : C ⥤ J ⥤ C) where
-  map_injective e := NatTrans.congr_app e (Classical.arbitrary J)
+  map_injective e := congr($(e).app (Classical.arbitrary J))
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism
 `F ⋙ Functor.const J ≅ Functor.const F ⋙ (whiskeringRight J _ _).obj L`. -/
@@ -109,7 +109,6 @@ def compConstIso (F : C ⥤ D) :
     (fun X => NatIso.ofComponents (fun _ => Iso.refl _) (by simp))
     (by cat_disch)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism
 `const D ⋙ (whiskeringLeft J _ _).obj F ≅ const J` -/

@@ -5,11 +5,11 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.NumberTheory.Padics.PadicIntegers
-public import Mathlib.Topology.Algebra.Valued.ValuedField
 public import Mathlib.Topology.Algebra.Valued.WithVal
 public import Mathlib.Topology.GDelta.MetrizableSpace
+public import Mathlib.Algebra.Order.BigOperators.Expect
+public import Mathlib.Analysis.Real.Sqrt
 
 /-!
 # Equivalence between `ℚ_[p]` and `(Rat.padicValuation p).Completion`
@@ -33,9 +33,8 @@ namespace Padic
 
 variable {p : ℕ} [Fact p.Prime]
 
-open NNReal WithZero UniformSpace
+open WithZero UniformSpace
 
-set_option backward.isDefEq.respectTransparency.types false in
 open MonoidWithZeroHom.ValueGroup₀ in
 lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).comp
     (WithVal.equiv (Rat.padicValuation p)).toRingHom) := by
@@ -80,8 +79,8 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
     change Rat.padicValuation p (x' - y') < embedding γ.1
     rw [← Nat.cast_pow, ← Rat.cast_natCast, ← Rat.cast_inv_of_ne_zero, Rat.cast_le] at h
     · change padicNorm p (x' - y') ≤ _ at h
-      simp only [Rat.padicValuation, Valuation.coe_mk, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
-        padicNorm, zpow_neg, Nat.cast_pow] at h ⊢
+      unfold Rat.padicValuation at *
+      simp only [Valuation.coe_mk, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk] at h ⊢
       split_ifs with H
       · simp only [exp_neg]
         exact embedding_unit_pos _

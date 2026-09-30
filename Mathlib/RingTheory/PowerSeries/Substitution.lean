@@ -8,8 +8,7 @@ module
 public import Mathlib.Algebra.MvPolynomial.Coeff
 public import Mathlib.RingTheory.MvPowerSeries.Substitution
 public import Mathlib.RingTheory.PowerSeries.Evaluation
-public import Mathlib.Data.Finsupp.Weight
-public import Mathlib.Tactic.Ring.NamePowerVars
+import Mathlib.Tactic.Ring.NamePowerVars
 
 /-! # Substitutions in power series
 
@@ -86,7 +85,7 @@ protected theorem HasSubst.monomial {n : τ →₀ ℕ} (hn : n ≠ 0) (s : S) :
   classical
   apply HasSubst.of_constantCoeff_zero
   rw [← MvPowerSeries.coeff_zero_eq_constantCoeff, MvPowerSeries.coeff_monomial,
-    if_neg hn.symm]
+    ite_eq_right hn.symm]
 
 /-- A variant of `HasSubst.monomial` to avoid the expansion of `Unit`. -/
 protected theorem HasSubst.monomial' {n : ℕ} (hn : n ≠ 0) (s : S) :
@@ -186,7 +185,7 @@ theorem substAlgHom_eq_aeval
     (ha : HasSubst a) :
     (substAlgHom ha : R⟦X⟧ →ₐ[R] MvPowerSeries τ S) = PowerSeries.aeval ha.hasEval := by
   ext1 f
-  simpa [substAlgHom] using! congr_fun (MvPowerSeries.substAlgHom_eq_aeval ha.const) f
+  simpa [substAlgHom] using! congr($(MvPowerSeries.substAlgHom_eq_aeval ha.const) f)
 
 theorem subst_add (ha : HasSubst a) (f g : PowerSeries R) :
     subst a (f + g) = subst a f + subst a g := by
@@ -262,26 +261,30 @@ theorem coeff_subst_X_pow {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R) (n : ℕ)
   · rw [coeff_subst' (.X_pow hk), finsum_eq_single _ (n / k), ← pow_mul, Nat.mul_div_cancel' h,
       coeff_X_pow_self, Algebra.algebraMap_eq_smul_one]
     intro j hj
-    rw [← pow_mul, coeff_X_pow, if_neg, smul_zero]
+    rw [← pow_mul, coeff_X_pow, ite_eq_right, smul_zero]
     contrapose hj
     rw [hj, Nat.mul_div_cancel_left j hk.pos]
   · rw [coeff_subst' (.X_pow hk), finsum_eq_zero_of_forall_eq_zero]
     intro j
-    rw [← pow_mul, coeff_X_pow, if_neg, smul_zero]
+    rw [← pow_mul, coeff_X_pow, ite_eq_right, smul_zero]
     contrapose h
     use j
 
 @[simp]
 theorem constantCoeff_subst_X_pow {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R) :
     constantCoeff (subst (X ^ k) f) = algebraMap R S f.constantCoeff := by
-  rw [← coeff_zero_eq_constantCoeff, coeff_subst_X_pow hk, if_pos (dvd_zero k),
+  rw [← coeff_zero_eq_constantCoeff, coeff_subst_X_pow hk, ite_eq_left (dvd_zero k),
     Nat.zero_div, coeff_zero_eq_constantCoeff]
+
+theorem constantCoeff_subst_of_constantCoeff_zero (ha : a.constantCoeff = 0) (f : PowerSeries R) :
+    MvPowerSeries.constantCoeff (subst a f) = algebraMap R S f.constantCoeff := by
+  rw [constantCoeff_subst (HasSubst.of_constantCoeff_zero ha),
+    finsum_eq_single _ 0 (fun d hd ↦ by rw [map_pow, ha, zero_pow hd, smul_zero])]
+  simp [Algebra.algebraMap_eq_smul_one, coeff_zero_eq_constantCoeff_apply]
 
 theorem constantCoeff_subst_eq_zero (ha : a.constantCoeff = 0) (f : PowerSeries R)
     (hf : f.constantCoeff = 0) : MvPowerSeries.constantCoeff (subst a f) = 0 := by
-  have := MvPowerSeries.constantCoeff_subst_eq_zero
-    (hasSubst_iff.mp <| HasSubst.of_constantCoeff_zero ha) (fun _ ↦ ha) hf
-  simpa [hasSubst_iff]
+  rw [constantCoeff_subst_of_constantCoeff_zero ha, hf, map_zero]
 
 theorem map_algebraMap_eq_subst_X (f : R⟦X⟧) :
     map (algebraMap R S) f = subst X f :=
@@ -296,7 +299,7 @@ lemma coeff_subst_single {σ : Type*} [DecidableEq σ] (s : σ) (f : R⟦X⟧) (
 @[simp]
 theorem X_subst (f : R⟦X⟧) : f.subst (X : R⟦X⟧) = f := by
   rw [← map_algebraMap_eq_subst_X (S := R), Algebra.algebraMap_self]
-  exact congr_fun map_id f
+  congrm $map_id f
 
 theorem _root_.Polynomial.toPowerSeries_toMvPowerSeries (p : Polynomial R) : (p : PowerSeries R) =
     ((Polynomial.aeval (MvPolynomial.X ()) p : MvPolynomial Unit R) : MvPowerSeries Unit R) :=
@@ -373,8 +376,7 @@ theorem HasSubst.comp
     HasSubst (substAlgHom hb a) :=
   MvPowerSeries.IsNilpotent_substAlgHom hb.const ha
 
-variable {a : PowerSeries S} {b : MvPowerSeries υ T} {a' : MvPowerSeries τ S}
-  {b' : τ → MvPowerSeries υ T} [IsScalarTower R S T]
+variable {a : PowerSeries S} {b : MvPowerSeries υ T} [IsScalarTower R S T]
 
 theorem substAlgHom_comp_substAlgHom (ha : HasSubst a) (hb : HasSubst b) :
     ((substAlgHom hb).restrictScalars R).comp (substAlgHom ha) = substAlgHom (ha.comp hb) :=
@@ -382,7 +384,7 @@ theorem substAlgHom_comp_substAlgHom (ha : HasSubst a) (hb : HasSubst b) :
 
 theorem substAlgHom_comp_substAlgHom_apply (ha : HasSubst a) (hb : HasSubst b) (f : PowerSeries R) :
     (substAlgHom hb) (substAlgHom ha f) = substAlgHom (ha.comp hb) f :=
-  DFunLike.congr_fun (substAlgHom_comp_substAlgHom ha hb) f
+  congr($(substAlgHom_comp_substAlgHom ha hb) f)
 
 theorem subst_comp_subst (ha : HasSubst a) (hb : HasSubst b) :
     (subst b) ∘ (subst a) = subst (R := R) (subst b a) := by
@@ -390,15 +392,13 @@ theorem subst_comp_subst (ha : HasSubst a) (hb : HasSubst b) :
 
 theorem subst_comp_subst_apply (ha : HasSubst a) (hb : HasSubst b) (f : PowerSeries R) :
     subst b (subst a f) = subst (subst b a) f :=
-  congr_fun (subst_comp_subst ha hb) f
+  congr($(subst_comp_subst ha hb) f)
 
 lemma rescale_eq (r : R) (f : PowerSeries R) :
     rescale r f = MvPowerSeries.rescale (fun _ ↦ r) f := by
   ext n
   rw [coeff_rescale, coeff, MvPowerSeries.coeff_rescale]
   simp [pow_zero, Finsupp.prod_single_index]
-
-@[deprecated (since := "2026-02-27")] alias _root_.MvPowerSeries.rescaleUnit := rescale_eq
 
 lemma rescale_eq_subst (r : R) (f : PowerSeries R) :
     PowerSeries.rescale r f = PowerSeries.subst (r • X : R⟦X⟧) f := by
@@ -593,6 +593,21 @@ include hP in
 lemma subst_substInvOfIsUnit_left : (P.substInvOfIsUnit hP').subst P = X := by
   let := hP'.invertible
   rw [P.substInvOfIsUnit_eq_substInv hP', P.subst_substInv_left hP]
+
+include hP hP' in
+/-- A right compositional inverse `Q` of `P` is equal to `P.substInvOfIsUnit hP'`. -/
+lemma eq_substInvOfIsUnit_of_subst_eq_X {Q : R⟦X⟧} (hQ : HasSubst Q) (hPQ : P.subst Q = X) :
+    Q = P.substInvOfIsUnit hP' := calc
+  _ = PowerSeries.subst Q X := (subst_X hQ).symm
+  _ = _ := by
+    rw [← P.subst_substInvOfIsUnit_left hP hP',
+      subst_comp_subst_apply (HasSubst.of_constantCoeff_zero' hP) hQ _, hPQ, X_subst _]
+
+include hP hP' in
+/-- A right compositional inverse `Q` of `P` is also a left compositional inverse. -/
+lemma subst_eq_X_of_subst_eq_X {Q : R⟦X⟧} (hQ : HasSubst Q) (hPQ : P.subst Q = X) :
+    Q.subst P = X := by
+  rw [P.eq_substInvOfIsUnit_of_subst_eq_X hP hP' hQ hPQ, P.subst_substInvOfIsUnit_left hP hP']
 
 end IsUnit
 

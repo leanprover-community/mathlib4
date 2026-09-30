@@ -5,8 +5,8 @@ Authors: William Coram
 -/
 module
 
-public import Mathlib.Algebra.Order.Antidiag.Tendsto
-public import Mathlib.Algebra.Order.GroupWithZero.Finset
+import Mathlib.Algebra.Order.Antidiag.Tendsto
+import Mathlib.Algebra.Order.GroupWithZero.Finset
 public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Analysis.Normed.Group.Ultra
 public import Mathlib.RingTheory.MvPowerSeries.Basic
@@ -96,7 +96,7 @@ namespace IsRestricted
 
 /-- Restricted power series as an additive subgroup of `MvPowerSeries σ R`. -/
 protected def addSubgroup (c : σ → ℝ) : AddSubgroup (MvPowerSeries σ R) where
-  carrier := IsRestricted c
+  carrier := {f | IsRestricted c f}
   zero_mem' := isRestricted_zero c
   add_mem' := isRestricted.add c
   neg_mem' := isRestricted.neg c

@@ -67,7 +67,9 @@ applies a scaling factor to `f` and `g` to reduce to the `N = 1` case.
 
 noncomputable section
 
-open Real Complex Filter Topology Asymptotics Set MeasureTheory
+open Real Complex Filter Asymptotics Set MeasureTheory
+
+open scoped Topology
 
 variable (E : Type*) [NormedAddCommGroup E] [NormedSpace ℂ E]
 
@@ -314,7 +316,7 @@ lemma isStrongFEPair_toStrongFEPair : IsStrongFEPair P.toStrongFEPair where
   hf₀ := rfl
   hg₀ := rfl
 
-/- Alternative form for the difference between `f - f₀` and its modified term. -/
+/-- Alternative form for the difference between `f - f₀` and its modified term. -/
 lemma f_modif_aux1 : EqOn (fun x ↦ P.f_modif x - P.f x + P.f₀)
     ((Ioo 0 1).indicator (fun x : ℝ ↦ P.f₀ - (P.ε * ↑(x ^ (-P.k))) • P.g₀)
     + ({1} : Set ℝ).indicator (fun _ ↦ P.f₀ - P.f 1)) (Ioi 0) := by
@@ -482,7 +484,7 @@ lemma symm_Λ_eq : P.symm.Λ = mellin P.g := hP.symm.Λ_eq
 
 /-- The Mellin transform of `f` is well-defined and equal to `P.Λ s`, for all `s`. -/
 theorem hasMellin (s : ℂ) : HasMellin P.f s (P.Λ s) :=
-  ⟨hP.mellinConvergent s, congr_fun hP.Λ_eq.symm s⟩
+  ⟨hP.mellinConvergent s, congr($hP.Λ_eq.symm s)⟩
 
 /-- If `P` is a strong FE pair, then `P.Λ` is entire. -/
 theorem differentiable_Λ : Differentiable ℂ P.Λ :=
