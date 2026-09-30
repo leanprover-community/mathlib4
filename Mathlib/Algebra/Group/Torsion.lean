@@ -40,7 +40,7 @@ lemma Commute.eq_of_pow_eq_pow (hab : Commute a b) (hn : n ≠ 0) (habn : a ^ n 
   eq_of_pow_eq_pow_of_commute hn hab habn
 
 @[to_additive AddCommute.nsmul_right_inj]
-lemma Commute.pow_left_inj (hab : Commute a b) (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
+protected lemma Commute.pow_left_inj (hab : Commute a b) (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
   ⟨hab.eq_of_pow_eq_pow hn, congrArg (· ^ n)⟩
 
 @[to_additive nsmul_eq_zero_iff_right]
@@ -88,7 +88,7 @@ lemma Commute.eq_of_zpow_eq_zpow (hab : Commute a b) (hn : n ≠ 0) (habn : a ^ 
   · exact hab.eq_of_pow_eq_pow (Nat.add_one_ne_zero _) (by simpa using habn)
 
 @[to_additive AddCommute.zsmul_right_inj]
-lemma Commute.zpow_left_inj (hab : Commute a b) (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
+protected lemma Commute.zpow_left_inj (hab : Commute a b) (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
   ⟨hab.eq_of_zpow_eq_zpow hn, congrArg (· ^ n)⟩
 
 @[to_additive IsAddTorsionFree.zsmul_eq_zero_iff_right]
