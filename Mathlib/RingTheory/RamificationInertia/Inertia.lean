@@ -5,7 +5,7 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.RingTheory.Finiteness.Quotient
+import Mathlib.RingTheory.Finiteness.Quotient
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 public import Mathlib.RingTheory.QuasiFinite.Basic
 
@@ -48,10 +48,10 @@ noncomputable def inertiaDeg : ℕ :=
 
 theorem inertiaDeg_def [hq : q.IsPrime]
     [Algebra (Localization.AtPrime (q.under R)) (Localization.AtPrime q)]
-    [Localization.AtPrime.IsLiesOverAlgebra (q.under R) q] :
+    [IsScalarTower R (Localization.AtPrime (q.under R)) (Localization.AtPrime q)] :
     q.inertiaDeg R = Module.finrank (q.under R).ResidueField q.ResidueField := by
   convert! dite_eq_left hq
-  simp [Algebra.algebra_ext_iff, Localization.AtPrime.IsLiesOverAlgebra.algebraMap_eq]
+  simp [Algebra.algebra_ext_iff, Localization.AtPrime.algebraMap_eq]
 
 @[deprecated (since := "2026-07-03")] alias inertiaDeg'_def := inertiaDeg_def
 
@@ -76,13 +76,22 @@ variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 
 theorem inertiaDeg_eq [q.LiesOver p] [q.IsPrime] [p.IsPrime]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
-    [Localization.AtPrime.IsLiesOverAlgebra p q] :
+    [IsScalarTower R (Localization.AtPrime p) (Localization.AtPrime q)] :
     q.inertiaDeg R = Module.finrank p.ResidueField q.ResidueField := by
   have := Ideal.over_def q p
   subst this
   exact inertiaDeg_def q R
 
 @[deprecated (since := "2026-07-03")] alias inertiaDeg'_eq := inertiaDeg_eq
+
+/-- The inertia degree of the zero ideal is the degree of the extension. -/
+@[simp]
+theorem inertiaDeg_bot_eq_finrank [IsDomain S] [FaithfulSMul R S] :
+    (⊥ : Ideal S).inertiaDeg R = Module.finrank R S := by
+  have : IsDomain R := IsDomain.of_faithfulSMul R S
+  let := Localization.AtPrime.algebraOfLiesOver (⊥ : Ideal R) (⊥ : Ideal S)
+  rw [inertiaDeg_eq (⊥ : Ideal R)]
+  exact IsFractionRing.finrank_eq R (⊥ : Ideal R).ResidueField S (⊥ : Ideal S).ResidueField
 
 theorem inertiaDeg_eq_of_isFractionRing [q.LiesOver p] [p.IsPrime] [q.IsPrime]
     (K L : Type*) [Field K] [Field L]

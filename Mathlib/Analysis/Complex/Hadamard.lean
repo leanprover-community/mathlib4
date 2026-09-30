@@ -5,7 +5,7 @@ Authors: Xavier Généreux
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 public import Mathlib.Analysis.Complex.PhragmenLindelof
 
 /-!
@@ -136,7 +136,7 @@ lemma norm_le_sSupNormIm (f : ℂ → E) (z : ℂ) (hD : z ∈ verticalClosedStr
     (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1)) :
     ‖f z‖ ≤ sSupNormIm f (z.re) := by
   refine le_csSup ?_ ?_
-  · revert hB; gcongr
+  · gconvert hB
     exact preimage_mono (singleton_subset_iff.mpr hD)
   · apply mem_image_of_mem (norm ∘ f)
     simp only [mem_preimage, mem_singleton]
@@ -413,7 +413,7 @@ lemma norm_le_interpStrip_of_mem_verticalClosedStrip_eps (ε : ℝ) (hε : ε > 
   · simp only [Real.rpow_pos_of_pos (sSupNormIm_eps_pos f hε _) z.re]
   · simp only [Real.rpow_pos_of_pos (sSupNormIm_eps_pos f hε _) (1 - z.re)]
 
-lemma eventuallyle (z : ℂ) (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1))
+lemma eventuallyLE (z : ℂ) (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1))
     (hd : DiffContOnCl ℂ f (verticalStrip 0 1)) (hz : z ∈ verticalStrip 0 1) :
     (fun _ : ℝ ↦ ‖f z‖) ≤ᶠ[𝓝[>] 0]
     (fun ε ↦ ‖((ε + sSupNormIm f 0) ^ (1 - z) * (ε + sSupNormIm f 1) ^ z : ℂ)‖) := by
@@ -421,15 +421,17 @@ lemma eventuallyle (z : ℂ) (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip
     norm_le_interpStrip_of_mem_verticalClosedStrip_eps f ε hε z hB hd
       (mem_of_mem_of_subset hz (preimage_mono Ioo_subset_Icc_self))
 
+@[deprecated (since := "2026-09-17")] alias eventuallyle := eventuallyLE
+
 lemma norm_le_interpStrip_of_mem_verticalStrip_zero (z : ℂ)
     (hd : DiffContOnCl ℂ f (verticalStrip 0 1))
     (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1)) (hz : z ∈ verticalStrip 0 1) :
     ‖f z‖ ≤ ‖interpStrip f z‖ := by
-  apply tendsto_le_of_eventuallyLE _ _ (eventuallyle f z hB hd hz)
+  apply tendsto_le_of_eventuallyLE _ _ (eventuallyLE f z hB hd hz)
   · simp only [tendsto_const_nhds_iff]
   -- Proof that we can let epsilon tend to zero.
   · rw [interpStrip_eq_of_mem_verticalStrip _ _ hz]
-    convert! ContinuousWithinAt.tendsto _ using 2
+    convert ContinuousWithinAt.tendsto _ using 2
     · simp only [ofReal_zero, zero_add]
     · simp_rw [← ofReal_add]
       have : ∀ x ∈ Ioi 0, (x + sSupNormIm f 0) ^ (1 - z.re) * (x + sSupNormIm f 1) ^ z.re
@@ -512,13 +514,11 @@ lemma norm_le_interp_of_mem_verticalClosedStrip₀₁' (f : ℂ → E) {z : ℂ}
     · use ‖(f 0)‖, 0
       simp
   · apply Real.rpow_le_rpow (sSupNormIm_nonneg f _) _ hz.1
-    · rw [sSupNormIm]
-      apply csSup_le _
-      · simpa [comp_apply, mem_image, forall_exists_index,
-          and_imp, forall_apply_eq_imp_iff₂] using hb
-      · use ‖(f 1)‖, 1
-        simp only [mem_preimage, one_re, mem_singleton_iff, comp_apply,
-          and_self]
+    rw [sSupNormIm]
+    apply csSup_le _
+    · simpa [comp_apply, mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂] using hb
+    · use ‖(f 1)‖, 1
+      simp
 
 /-- The transformation on ℂ that is used for `scale` maps the strip ``re ⁻¹' (l, u)``
   to the strip ``re ⁻¹' (0, 1)``. -/

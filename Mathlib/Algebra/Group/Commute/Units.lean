@@ -5,7 +5,6 @@ Authors: Neil Strickland, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Semiconj.Units
 
 /-!

@@ -585,7 +585,7 @@ theorem ofList_cons (a : α) (l : List α) : ofList (a::l) = cons a (ofList l) :
   ext1 (_ | n) <;> simp
 
 theorem ofList_injective : Function.Injective (ofList : List α → _) :=
-  fun _ _ h => List.ext_getElem? fun _ => congr_fun (Subtype.ext_iff.1 h) _
+  fun _ _ h => List.ext_getElem? fun _ => congr($(Subtype.ext_iff.1 h) _)
 
 /-- Embed an infinite stream as a sequence -/
 @[coe]
@@ -676,8 +676,7 @@ def map (f : α → β) : Seq α → Seq β
     ⟨s.map (Option.map f), fun {n} => by
       dsimp [Stream'.map, Stream'.get]
       rcases e : s n with - | e <;> intro
-      · rw [al e]
-        assumption
+      · rwa [al e]
       · contradiction⟩
 
 /-- Flatten a sequence of sequences. (It is required that the
