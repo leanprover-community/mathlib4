@@ -23,6 +23,11 @@ This file defines spectral norms and uses them to construct extensions of absolu
 
 section matrices
 
+theorem map_finset_sup'' {α β ι : Type*} [SemilatticeSup α] [SemilatticeSup β]
+    (f : α → β) (h : ∀ x y, f (x ⊔ y) = f x ⊔ f y) {s : Finset ι} (hs) (g : ι → α) :
+    f (s.sup' hs g) = s.sup' hs (f ∘ g) := by
+  refine hs.cons_induction ?_ ?_ <;> intros <;> simp [*]
+
 open scoped Matrix.Norms.Operator
 
 open Filter Topology in
@@ -57,13 +62,28 @@ theorem Matrix.gelfandRadius_conj {R m n : Type*}
   grw [← gelfandRadius_conj_le C (A * B * C) A hAC, Matrix.mul_assoc, Matrix.mul_assoc,
     hCA, Matrix.mul_one, ← Matrix.mul_assoc, hCA, Matrix.one_mul]
 
--- waiting on spectral radius
-theorem Matrix.gelfandRadius_blockMatrix {R m : Type*} [DecidableEq m] [Fintype m]
-    [NormedCommRing R] (A : Matrix m m R) (n : Type*) [DecidableEq n] [Fintype n] [Nonempty n] :
-    gelfandRadius (Matrix.blockDiagonal fun _ : n ↦ A) = gelfandRadius A := by
-  refine tendsto_nhds_unique_of_forall (tendsto_gelfandRadius (blockDiagonal fun _ ↦ A))
-    (tendsto_gelfandRadius A) fun k ↦ ?_
-  rw [← blockDiagonal_pow, Matrix.linfty_opNorm_blockDiagonal, Pi.pow_def, pi_norm_const]
+theorem Matrix.gelfandRadius_blockDiagonal_eq_sup {R m n : Type*} (M : n → Matrix m m R)
+    [DecidableEq m] [DecidableEq n] [Fintype m] [Fintype n] [Nonempty n]
+    [NormedCommRing R] :
+    gelfandRadius (Matrix.blockDiagonal M) = ⨆ i, gelfandRadius (M i) := by
+  let s : Finset n := Finset.univ
+  have hs : s.Nonempty := Finset.univ_nonempty
+  rw [← Finset.sup'_univ_eq_ciSup]
+  refine tendsto_nhds_unique_of_forall (tendsto_gelfandRadius (blockDiagonal M))
+    (Filter.Tendsto.finset_sup'_nhds_apply hs fun i hi ↦ tendsto_gelfandRadius (M i)) fun k ↦ ?_
+  suffices ‖blockDiagonal M ^ k‖₊ ^ (k : ℝ)⁻¹ = s.sup' hs fun x ↦ ‖M x ^ k‖₊ ^ (k : ℝ)⁻¹ by
+    rw [← coe_nnnorm, ← NNReal.coe_rpow, this, Finset.sup'_univ_eq_ciSup, Finset.sup'_univ_eq_ciSup]
+    simp
+  have key : ‖blockDiagonal M ^ k‖₊ ^ (k : ℝ)⁻¹ = (s.sup' hs (‖M · ^ k‖₊)) ^ (k : ℝ)⁻¹ := by
+    rw [← blockDiagonal_pow, linfty_opNNNorm_blockDiagonal, Pi.pow_def, Pi.nnnorm_def,
+      Finset.sup_univ_eq_ciSup, Finset.sup'_univ_eq_ciSup]
+  have key : ‖blockDiagonal M ^ k‖₊ ^ (k : ℝ)⁻¹ = s.sup' hs (‖M · ^ k‖₊ ^ (k : ℝ)⁻¹) := by
+    rw [key]
+    apply map_finset_sup'' (fun x : NNReal ↦ x ^ (k : ℝ)⁻¹) (fun x y ↦ ?_) hs
+    rw [← NNReal.coe_inj]
+    simp only [NNReal.coe_rpow, NNReal.coe_max]
+    apply Real.rpow_max <;> positivity
+  exact key
 
 end matrices
 
@@ -84,8 +104,8 @@ noncomputable def gelfandRadiusNorm : AlgebraNorm K L where
   mul_le' x y := by grw [map_mul, ((Commute.all x y).map _).gelfandRadius_mul_le]
   eq_zero_of_map_eq_zero' x h := by
     have : NeZero (Module.finrank K L) := ⟨Module.finrank_pos.ne'⟩
-    have : Commute x x⁻¹ := by simp -- merge master
-    have hx := (this.map (Algebra.leftMulMatrix (Module.finBasis K L))).gelfandRadius_mul_le
+    have hx := ((Commute.inv_right_self₀ x).map
+      (Algebra.leftMulMatrix (Module.finBasis K L))).gelfandRadius_mul_le
     contrapose! hx
     simp [← map_mul, h, hx]
   smul' x y := by rw [map_smul, gelfandRadius_smul]
@@ -136,7 +156,8 @@ theorem gelfandRadiusNorm_algebraMap (x : L) :
   let bKL := Module.finBasis K L
   let bLM := Module.finBasis L M
   rw [gelfandRadiusNorm_apply bKL, gelfandRadiusNorm_apply (bKL.smulTower bLM),
-    Algebra.smulTower_leftMulMatrix_algebraMap, Matrix.gelfandRadius_blockMatrix]
+    Algebra.smulTower_leftMulMatrix_algebraMap, Matrix.gelfandRadius_blockDiagonal_eq_sup,
+    ciSup_const]
 
 end gelfandRadiusNorm
 
