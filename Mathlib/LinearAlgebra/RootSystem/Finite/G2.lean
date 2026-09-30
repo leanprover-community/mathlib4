@@ -6,8 +6,6 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.LinearAlgebra.RootSystem.Base
-public import Mathlib.LinearAlgebra.RootSystem.Chain
-public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 
 /-!
 # Properties of the `𝔤₂` root system.
@@ -78,7 +76,7 @@ section IsG2
 
 /-- By making an arbitrary choice of roots pairing to `-3`, we can obtain an embedded `𝔤₂` root
 system just from the knowledge that such a pairs exists. -/
-@[implicit_reducible]
+@[instance_reducible]
 def IsG2.toEmbeddedG2 [P.IsG2] : P.EmbeddedG2 where
   long := (IsG2.exists_pairingIn_neg_three (P := P)).choose
   short := (IsG2.exists_pairingIn_neg_three (P := P)).choose_spec.choose
@@ -200,7 +198,7 @@ end IsNotG2
 namespace EmbeddedG2
 
 /-- A pair of roots which pair to `+3` are also sufficient to distinguish an embedded `𝔤₂`. -/
-@[simps, implicit_reducible]
+@[simps, instance_reducible]
 def ofPairingInThree [CharZero R] [P.IsCrystallographic] [P.IsReduced] (long short : ι)
     (h : P.pairingIn ℤ long short = 3) : P.EmbeddedG2 where
   long := P.reflectionPerm long long
@@ -544,7 +542,7 @@ def basis : Module.Basis (Fin 2) R M :=
     refine (IsReduced.linearIndependent_iff P).mpr ⟨fun h ↦ ?_, fun h ↦ ?_⟩
     · norm_num [h] at this
     · simp only [root_eq_neg_iff] at h
-      norm_num [h] at this
+      simp [h] at this
   Module.Basis.mk this (by simp)
 
 lemma mem_allRoots (i : ι) :
@@ -564,7 +562,7 @@ lemma mem_allRoots (i : ι) :
     | mem => grind
     | add => simp_all
     | smul => simp_all
-  simpa using LinearMap.congr_fun key (P.root i)
+  simpa using congr($key (P.root i))
 
 open scoped Classical in
 /-- The natural labelling of `RootPairing.EmbeddedG2.allRoots`. -/
@@ -587,7 +585,7 @@ lemma card_index_eq_twelve :
   rw [← this]
   exact Nat.card_congr <| indexEquivAllRoots P
 
-lemma setOf_index_eq_univ :
+lemma setOfPred_index_eq_univ :
     letI _i := P.indexNeg
     { long P, -long P,
       short P, -short P,
@@ -596,6 +594,8 @@ lemma setOf_index_eq_univ :
       threeShortAddLong P, -threeShortAddLong P,
       threeShortAddTwoLong P, -threeShortAddTwoLong P } = univ :=
   eq_univ_iff_forall.mpr fun i ↦ by simpa using mem_allRoots P i
+
+@[deprecated (since := "2026-07-09")] alias setOf_index_eq_univ := setOfPred_index_eq_univ
 
 end IsIrreducible
 

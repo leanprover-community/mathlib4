@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 module
 
 public import Mathlib.RingTheory.UniqueFactorizationDomain.FactorSet
-public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+public import Mathlib.Algebra.GCDMonoid.Basic
 
 /-!
 # Building GCD out of unique factorization
@@ -52,16 +52,16 @@ instance (priority := 100) (α) [CommMonoidWithZero α] [UniqueFactorizationMono
 
 /-- `toNormalizedGCDMonoid` constructs a GCD monoid out of a normalization on a
   unique factorization domain. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def UniqueFactorizationMonoid.toNormalizedGCDMonoid (α : Type*)
     [CommMonoidWithZero α] [UniqueFactorizationMonoid α] [NormalizationMonoid α] :
     NormalizedGCDMonoid α :=
   { ‹NormalizationMonoid α› with
     gcd := fun a b => (Associates.mk a ⊓ Associates.mk b).out
     lcm := fun a b => (Associates.mk a ⊔ Associates.mk b).out
-    gcd_dvd_left := fun a b => (out_dvd_iff a (Associates.mk a ⊓ Associates.mk b)).2 <| inf_le_left
+    gcd_dvd_left := fun a b => (out_dvd_iff a (Associates.mk a ⊓ Associates.mk b)).2 inf_le_left
     gcd_dvd_right := fun a b =>
-      (out_dvd_iff b (Associates.mk a ⊓ Associates.mk b)).2 <| inf_le_right
+      (out_dvd_iff b (Associates.mk a ⊓ Associates.mk b)).2 inf_le_right
     dvd_gcd := fun {a} {b} {c} hac hab =>
       show a ∣ (Associates.mk c ⊓ Associates.mk b).out by
         rw [dvd_out_iff, le_inf_iff, mk_le_mk_iff_dvd, mk_le_mk_iff_dvd]

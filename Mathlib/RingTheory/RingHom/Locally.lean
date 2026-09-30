@@ -6,7 +6,6 @@ Authors: Christian Merten
 module
 
 public import Mathlib.RingTheory.LocalProperties.Basic
-public import Mathlib.RingTheory.Localization.BaseChange
 public import Mathlib.RingTheory.Localization.Away.Lemmas
 
 /-!
@@ -176,6 +175,7 @@ end OfLocalizationSpanTarget
 
 section Stability
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `P` respects isomorphism, so does `Locally P`. -/
 lemma locally_respectsIso (hPi : RespectsIso P) : RespectsIso (Locally P) where
   left {R S T} _ _ _ f e := fun ⟨s, hsone, hs⟩ ↦ by
@@ -271,10 +271,6 @@ lemma locally_stableUnderCompositionWithLocalizationAwayTarget
     apply hPa _ (algebraMap S (Localization.Away a) t)
     apply hs a ha
 
-@[deprecated (since := "2026-02-11")]
-alias locally_StableUnderCompositionWithLocalizationAwayTarget :=
-  locally_stableUnderCompositionWithLocalizationAwayTarget
-
 /-- If `P` is stable under composition with localization away maps on the left,
 then so is `Locally P`. -/
 lemma locally_stableUnderCompositionWithLocalizationAwaySource
@@ -285,10 +281,6 @@ lemma locally_stableUnderCompositionWithLocalizationAwaySource
   rw [← comp_assoc]
   exact hPa _ r _ (hs t ht)
 
-@[deprecated (since := "2026-02-11")]
-alias locally_StableUnderCompositionWithLocalizationAwaySource :=
-  locally_stableUnderCompositionWithLocalizationAwaySource
-
 /-- If `P` is stable under base change, then so is `Locally P`. -/
 lemma locally_isStableUnderBaseChange (hPi : RespectsIso P) (hPb : IsStableUnderBaseChange P) :
     IsStableUnderBaseChange (Locally P) := by
@@ -298,7 +290,7 @@ lemma locally_isStableUnderBaseChange (hPi : RespectsIso P) (hPb : IsStableUnder
     ← hf.span_eq_top, Ideal.map_le_iff_le_comap, Ideal.span_le]
   intro g hg
   apply Ideal.subset_span
-  simp only [Set.mem_setOf_eq, Algebra.TensorProduct.includeRight_apply,
+  simp only [Set.mem_ofPred_eq, Algebra.TensorProduct.includeRight_apply,
     ← IsScalarTower.algebraMap_eq] at hg ⊢
   let e := IsLocalization.Away.tensorProductEquivTMulRight R S g (Localization.Away g)
   rw [← e.toAlgHom.comp_algebraMap]
@@ -317,7 +309,7 @@ lemma locally_localizationAwayPreserves (hPl : LocalizationAwayPreserves P) :
     inferInstanceAs (IsLocalization.Away (rₐ a) (Sₐ a))
   have (a : s) : IsLocalization (Algebra.algebraMapSubmonoid (Localization.Away a.val)
     (Submonoid.map f (Submonoid.powers r))) (Sₐ a) := by
-    convert! (inferInstance : IsLocalization.Away (rₐ a) (Sₐ a))
+    convert (inferInstance : IsLocalization.Away (rₐ a) (Sₐ a))
     simp [rₐ, Algebra.algebraMapSubmonoid]
   have H (a : s) : Submonoid.powers (f r) ≤
       (Submonoid.powers (rₐ a)).comap (algebraMap S (Localization.Away a.val)) := by
@@ -329,7 +321,7 @@ lemma locally_localizationAwayPreserves (hPl : LocalizationAwayPreserves P) :
   refine ⟨s, fun a ↦ algebraMap S S' a.val, ?_, Sₐ,
       inferInstance, inferInstance, fun a ↦ ?_, fun a ↦ ?_⟩
   · rw [← Set.image_eq_range, ← Ideal.map_span, hsone, Ideal.map_top]
-  · convert!
+  · convert
     IsLocalization.commutes (T := Sₐ a) (M₁ := (Submonoid.powers r).map f) (S₁ := S') (S₂ :=
       Localization.Away a.val) (M₂ := Submonoid.powers a.val)
     simp [Algebra.algebraMapSubmonoid]
@@ -362,7 +354,7 @@ lemma locally_localizationPreserves (hPl : LocalizationPreserves P) :
   refine ⟨s, fun a ↦ algebraMap S S' a.val, ?_, Sₐ,
       inferInstance, inferInstance, fun a ↦ ?_, fun a ↦ ?_⟩
   · rw [← Set.image_eq_range, ← Ideal.map_span, hsone, Ideal.map_top]
-  · convert!
+  · convert
     IsLocalization.commutes (T := Sₐ a) (M₁ := M.map f) (S₁ := S') (S₂ := Localization.Away a.val)
       (M₂ := Submonoid.powers a.val)
     simp [Algebra.algebraMapSubmonoid]

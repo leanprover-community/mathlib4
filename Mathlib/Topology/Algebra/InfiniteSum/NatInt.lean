@@ -6,8 +6,9 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Algebra.Group.EvenFunction
+import Mathlib.Algebra.Order.Group.Abs
 public import Mathlib.Logic.Encodable.Lattice
-public import Mathlib.Order.Filter.AtTopBot.Finset
+import Mathlib.Order.Filter.AtTopBot.Finset
 public import Mathlib.Topology.Algebra.InfiniteSum.Group
 
 /-!
@@ -173,7 +174,7 @@ theorem rel_iSup_prod [CompleteLattice α] (m : α → M) (m0 : m ⊥ = 1) (R : 
 theorem rel_sup_mul [CompleteLattice α] (m : α → M) (m0 : m ⊥ = 1) (R : M → M → Prop)
     (m_iSup : ∀ s : ℕ → α, R (m (⨆ i, s i)) (∏' i, m (s i))) (s₁ s₂ : α) :
     R (m (s₁ ⊔ s₂)) (m s₁ * m s₂) := by
-  convert! rel_iSup_tprod m m0 R m_iSup fun b ↦ cond b s₁ s₂
+  convert rel_iSup_tprod m m0 R m_iSup fun b ↦ cond b s₁ s₂
   · simp only [iSup_bool_eq, cond]
   · rw [tprod_fintype, Fintype.prod_bool, cond, cond]
 
@@ -375,7 +376,7 @@ lemma tprod_of_nat_of_neg_add_one [T2Space M] {f : ℤ → M}
 
 /-- If `f₀, f₁, f₂, ...` and `g₀, g₁, g₂, ...` have products `a`, `b` respectively, then
 the `ℤ`-indexed sequence: `..., g₂, g₁, g₀, f₀, f₁, f₂, ...` (with `f₀` at the `0`-th position) has
-product `a + b`. -/
+product `a * b`. -/
 @[to_additive /-- If `f₀, f₁, f₂, ...` and `g₀, g₁, g₂, ...` have sums `a`, `b` respectively, then
 the `ℤ`-indexed sequence: `..., g₂, g₁, g₀, f₀, f₁, f₂, ...` (with `f₀` at the `0`-th position) has
 sum `a + b`. -/]
@@ -425,12 +426,12 @@ theorem HasProd.nat_mul_neg {f : ℤ → M} (hf : HasProd f m) :
       congr 1
       refine (prod_subset_one_on_sdiff inter_subset_union ?_ ?_).symm
       · intro x hx
-        suffices x ≠ 0 by simp only [this, if_false]
+        suffices x ≠ 0 by simp only [this, ite_false]
         rintro rfl
         simp [u1, u2] at hx
       · intro x hx
         simp only [u1, u2, mem_inter, mem_image] at hx
-        suffices x = 0 by simp only [this, if_true]
+        suffices x = 0 by simp only [this, ite_true]
         lia
     _ = (∏ x ∈ u1, f x) * ∏ x ∈ u2, f x := prod_union_inter
     _ = (∏ b ∈ v', f b) * ∏ b ∈ v', f (-b) := by simp [u1, u2]

@@ -47,10 +47,8 @@ theorem surjective_respectsIso : RespectsIso surjective := by
 
 theorem surjective_isStableUnderBaseChange : IsStableUnderBaseChange surjective := by
   refine IsStableUnderBaseChange.mk surjective_respectsIso ?_
-  classical
   introv h x
   induction x with
-  | zero => exact ⟨0, map_zero _⟩
   | tmul x y =>
     obtain ⟨y, rfl⟩ := h y; use y • x; dsimp
     rw [TensorProduct.smul_tmul, Algebra.algebraMap_eq_smul_one]

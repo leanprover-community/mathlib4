@@ -8,8 +8,6 @@ module
 public import Mathlib.Analysis.Normed.Group.Uniform
 public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 public import Mathlib.Topology.MetricSpace.Ultra.Basic
-public import Mathlib.Topology.Algebra.InfiniteSum.Group
-public import Mathlib.Topology.Order.LiminfLimsup
 
 /-!
 # Ultrametric norms
@@ -41,7 +39,7 @@ namespace IsUltrametricDist
 
 section Group
 
-variable {S S' ι : Type*} [SeminormedGroup S] [SeminormedGroup S'] [IsUltrametricDist S]
+variable {S S' : Type*} [SeminormedGroup S] [SeminormedGroup S'] [IsUltrametricDist S]
 
 @[to_additive]
 lemma norm_mul_le_max (x y : S) :
@@ -61,7 +59,7 @@ lemma isUltrametricDist_of_isNonarchimedean_norm {S' : Type*} [SeminormedAddGrou
 lemma isNonarchimedean_norm {R} [SeminormedAddCommGroup R] [IsUltrametricDist R] :
     IsNonarchimedean (‖·‖ : R → ℝ) := by
   intro x y
-  convert! dist_triangle_max 0 x (x + y) using 1
+  convert dist_triangle_max 0 x (x + y) using 1
   · simp
   · congr <;> simp [SeminormedAddGroup.dist_eq]
 
@@ -213,7 +211,7 @@ lemma _root_.Finset.Nonempty.norm_prod_le_sup'_norm {s : Finset ι} (hs : s.None
       simp only [Finset.prod_cons, Finset.mem_cons, exists_eq_or_imp]
       refine (le_total ‖∏ i ∈ t, f i‖ ‖f j‖).imp ?_ ?_ <;> intro h
       · exact (norm_mul_le_max _ _).trans (max_eq_left h).le
-      · exact ⟨_, IH.choose_spec.left, (norm_mul_le_max _ _).trans <|
+      · exact ⟨_, IH.choose_spec.left, (norm_mul_le_max _ _).trans
           ((max_eq_right h).le.trans IH.choose_spec.right)⟩
 
 /-- Nonarchimedean norm of a product is less than or equal to the largest norm of a term in the

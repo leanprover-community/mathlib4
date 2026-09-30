@@ -5,10 +5,10 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.EffectiveEpi
+import Mathlib.AlgebraicGeometry.EffectiveEpi
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen
 public import Mathlib.AlgebraicGeometry.Sites.SheafQuasiCompact
-public import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
+import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 
 /-!
 # Fpqc topology
@@ -34,6 +34,7 @@ open CategoryTheory
 
 namespace AlgebraicGeometry.Scheme
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The fppf precoverage on the category of schemes. The covering families are jointly-surjective
 families of flat morphisms, locally of finite presentation. -/
 def fppfPrecoverage : Precoverage Scheme.{u} :=
@@ -52,6 +53,7 @@ lemma fppfPrecoverage_eq_inf :
 abbrev fppfTopology : GrothendieckTopology Scheme.{u} :=
   fppfPrecoverage.toGrothendieck
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The fpqc precoverage on the category of schemes is the quasi-compact precoverage
 on flat morphisms. The covering families are jointly-surjective, quasi-compact families of
 flat morphisms. -/
@@ -60,6 +62,7 @@ def fpqcPrecoverage : Precoverage Scheme.{u} :=
   deriving Precoverage.HasIsos, Precoverage.IsStableUnderBaseChange,
     Precoverage.IsStableUnderComposition
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma fppfPrecoverage_le_fpqcPrecoverage : fppfPrecoverage ≤ fpqcPrecoverage := by
   rw [fpqcPrecoverage, propQCPrecoverage, le_inf_iff]
   refine ⟨?_, precoverage_mono fun X Y f ⟨hf, _⟩ ↦ inferInstance⟩
@@ -80,6 +83,7 @@ lemma zariskiTopology_le_fpqcTopology : zariskiTopology ≤ fpqcTopology :=
 lemma fppfTopology_le_fpqcTopology : fppfTopology ≤ fpqcTopology :=
   Precoverage.toGrothendieck_mono fppfPrecoverage_le_fpqcPrecoverage
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : fpqcTopology.Subcanonical := by
   refine GrothendieckTopology.Subcanonical.of_isSheaf_yoneda_obj _ fun X ↦ ?_
   rw [fpqcTopology_eq_propQCTopology, isSheaf_type_propQCTopology_iff]
@@ -107,6 +111,7 @@ lemma Hom.singleton_mem_fpqcPrecoverage {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f
   Hom.singleton_mem_propQCPrecoverage ‹_›
 
 /-- Any surjective, quasi-compact and flat morphism is an effective epimorphism. -/
+@[stacks 023Q "Effective epimorphism part, for the fpqc covering by a single morphism."]
 instance {X Y : Scheme} (f : X ⟶ Y) [QuasiCompact f] [Surjective f] [Flat f] : EffectiveEpi f := by
   rw [← Sieve.effectiveEpimorphic_singleton,
     Presieve.EffectiveEpimorphic.iff_forall_isSheafFor_yoneda]

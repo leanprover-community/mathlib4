@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
-public import Mathlib.Algebra.Homology.DerivedCategory.TStructure
+import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 
 /-!
 # Morphisms between bounded complexes are small
@@ -37,7 +37,6 @@ open Localization Limits ZeroObject DerivedCategory Pretriangulated
 
 namespace HasExt
 
-set_option backward.isDefEq.respectTransparency false in
 variable {C} in
 lemma hasSmallLocalizedShiftedHom_of_isLE_of_isGE
     [HasExt.{w} C] (K L : CochainComplex C ℤ)

@@ -5,8 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
@@ -29,6 +27,7 @@ variable {J C D E : Type*} [Category* J] [Category* C] [Category* D] [Category* 
 
 namespace Functor
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance cartesianMonoidalCategory : CartesianMonoidalCategory (J ⥤ C) where
   fst X Y := { app _ := CartesianMonoidalCategory.fst _ _ }

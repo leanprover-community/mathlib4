@@ -5,7 +5,6 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Combinatorics.Matroid.IndepAxioms
 public import Mathlib.Combinatorics.Matroid.Rank.Cardinal
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
 public import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
@@ -92,7 +91,7 @@ theorem AlgebraicIndependent.isTranscendenceBasis_iff [Nontrivial R]
     use i
     intro w i' h
     specialize p w ((↑) : w → A) i' (fun i => ⟨x i, range_subset_iff.mp h i⟩) (by ext; simp)
-    have q := congr_arg (fun s => ((↑) : w → A) '' s) p.range_eq
+    have q := congr(((↑) : w → A) '' $p.range_eq)
     rw [← image_univ, image_image] at q
     simpa using q
 
@@ -184,7 +183,7 @@ theorem IsTranscendenceBasis.polynomial [Nonempty ι] [Subsingleton ι] :
   have := (nonempty_unique ι).some
   refine (isTranscendenceBasis_equiv (Equiv.equivPUnit.{_, 1} _).symm).mp <|
     (MvPolynomial.uniqueAlgEquiv R PUnit).symm.isTranscendenceBasis_iff.mp ?_
-  convert! IsTranscendenceBasis.mvPolynomial PUnit R
+  convert IsTranscendenceBasis.mvPolynomial PUnit R
   ext; simp
 
 variable {ι R}
@@ -333,8 +332,8 @@ theorem isAlgebraic_adjoin_iff_of_matroid_isBasis [NoZeroDivisors A] {s t : Set 
 theorem matroid_closure_eq [IsDomain A] {s : Set A} :
     (matroid R A).closure s = algebraicClosure (adjoin R s) A := by
   have ⟨B, hB⟩ := (matroid R A).exists_isBasis s
-  simp_rw [← hB.closure_eq_closure, hB.1.1.1.closure_eq_setOf_isBasis_insert, Set.ext_iff,
-    mem_setOf, matroid_isBasis_iff, ← matroid_indep_iff, hB.1.1.1, subset_insert, true_and,
+  simp_rw [← hB.closure_eq_closure, hB.1.1.1.closure_eq_setOfPred_isBasis_insert, Set.ext_iff,
+    mem_ofPred, matroid_isBasis_iff, ← matroid_indep_iff, hB.1.1.1, subset_insert, true_and,
     SetLike.mem_coe, mem_algebraicClosure, ← isAlgebraic_adjoin_iff_of_matroid_isBasis hB,
     forall_mem_insert]
   exact fun _ ↦ and_iff_left fun x hx ↦ isAlgebraic_algebraMap (⟨x, subset_adjoin hx⟩ : adjoin R B)
@@ -451,7 +450,7 @@ theorem Polynomial.trdeg_of_isDomain [IsDomain R] : trdeg R (Polynomial R) = 1 :
   simpa using (IsTranscendenceBasis.polynomial Unit R).lift_cardinalMk_eq_trdeg.symm
 
 -- TODO: generalize to Nontrivial S
-theorem trdeg_lt_aleph0 [IsDomain R] [fin : FiniteType R S] : trdeg R S < ℵ₀ :=
+theorem trdeg_lt_aleph0_of_finiteType [IsDomain R] [fin : FiniteType R S] : trdeg R S < ℵ₀ :=
   have ⟨n, f, surj⟩ := FiniteType.iff_quotient_mvPolynomial''.mp fin
   lift_lt.mp <| (lift_trdeg_le_of_surjective f surj).trans_lt <| by simp
 
@@ -578,7 +577,7 @@ lemma of_isAlgebraic_adjoin_insert_sdiff (hj : j ∈ insert i s)
       H₁.comp_equiv <|
         .symm <|
           ((Equiv.swap j i).image s).trans <|
-            .setCongr <| Equiv.image_swap_of_mem_of_notMem hj hi with
+            Set.equivOfEq <| Equiv.image_swap_of_mem_of_notMem hj hi with
       ⟨x, rfl | hxi, hxj⟩
     · simp [eq]
     · simp [Equiv.swap_apply_of_ne_of_ne hxj (ne_of_mem_of_not_mem hxi hi)]

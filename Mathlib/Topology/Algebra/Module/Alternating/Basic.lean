@@ -6,8 +6,7 @@ Authors: Yury Kudryashov, Heather Macbeth, Sébastien Gouëzel
 module
 
 public import Mathlib.LinearAlgebra.Alternating.Basic
-public import Mathlib.LinearAlgebra.BilinearMap
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.Algebra.Module.Multilinear.Basic
 
 /-!
@@ -71,6 +70,7 @@ theorem range_toContinuousMultilinearMap :
       {f | ∀ (v : ι → M) (i j : ι), v i = v j → i ≠ j → f v = 0} :=
   Set.ext fun f => ⟨fun ⟨g, hg⟩ => hg ▸ g.2, fun h => ⟨⟨f, h⟩, rfl⟩⟩
 
+@[macro_inline]
 instance funLike : FunLike (M [⋀^ι]→L[R] N) (ι → M) N where
   coe f := f.toFun
   coe_injective _ _ h := toContinuousMultilinearMap_injective <| DFunLike.ext' h
@@ -101,7 +101,7 @@ theorem ext {f g : M [⋀^ι]→L[R] N} (H : ∀ x, f x = g x) : f = g :=
 
 theorem toAlternatingMap_injective :
     Injective (toAlternatingMap : (M [⋀^ι]→L[R] N) → (M [⋀^ι]→ₗ[R] N)) := fun f g h =>
-  DFunLike.ext' <| by convert! DFunLike.ext'_iff.1 h
+  DFunLike.ext' <| by convert DFunLike.ext'_iff.1 h
 
 @[simp]
 theorem range_toAlternatingMap :

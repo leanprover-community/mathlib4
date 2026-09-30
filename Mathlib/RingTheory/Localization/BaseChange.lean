@@ -54,7 +54,7 @@ theorem isLocalizedModule_iff_isBaseChange : IsLocalizedModule S f ↔ IsBaseCha
   let : Module A (LocalizedModule S M) := LocalizedModule.moduleOfIsLocalization ..
   have : IsBaseChange A (LocalizedModule.mkLinearMap S M) := IsLocalizedModule.isBaseChange S A _
   let e := (this.equiv.symm.trans h.equiv).restrictScalars R
-  convert! IsLocalizedModule.of_linearEquiv S (LocalizedModule.mkLinearMap S M) e
+  convert IsLocalizedModule.of_linearEquiv S (LocalizedModule.mkLinearMap S M) e
   ext
   rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
     LinearEquiv.restrictScalars_apply, LinearEquiv.trans_apply, IsBaseChange.equiv_symm_apply,
@@ -121,7 +121,7 @@ instance (N N') [AddCommMonoid N] [Module R N] [AddCommMonoid N'] [Module R N'] 
     IsLocalizedModule S (TensorProduct.map f g) := by
   let eM := IsLocalizedModule.linearEquiv S f (TensorProduct.mk R (Localization S) M 1)
   let eN := IsLocalizedModule.linearEquiv S g (TensorProduct.mk R (Localization S) N 1)
-  convert!
+  convert
     IsLocalizedModule.of_linearEquiv S (TensorProduct.mk R (Localization S) (M ⊗[R] N) 1) <|
       (AlgebraTensorModule.distribBaseChange R (Localization S) ..).restrictScalars R ≪≫ₗ
         (congr eM eN ≪≫ₗ TensorProduct.equivOfCompatibleSMul ..).symm
@@ -211,11 +211,11 @@ instance {α} [IsLocalizedModule S f] :
   let e' : Localization S ⊗[R] (α →₀ M) ≃ₗ[R] (α →₀ M') :=
     finsuppRight R R (Localization S) M α ≪≫ₗ Finsupp.mapRange.linearEquiv e
   suffices IsLocalizedModule S (e'.symm.toLinearMap ∘ₗ Finsupp.mapRange.linearMap f) by
-    convert! this.of_linearEquiv (e := e')
+    convert this.of_linearEquiv (e := e')
     ext
     simp
   rw [isLocalizedModule_iff_isBaseChange S (Localization S)]
-  convert! TensorProduct.isBaseChange R (α →₀ M) (Localization S) using 1
+  convert TensorProduct.isBaseChange R (α →₀ M) (Localization S) using 1
   ext a m
   apply (finsuppRight R R (Localization S) M α).injective
   ext b
@@ -316,6 +316,7 @@ theorem tensorLeftAlgEquiv_apply_tmul_one (x : S) :
     tensorLeftAlgEquiv M S (x ⊗ₜ[R] 1) = algebraMap _ _ x :=
   (tensorLeftAlgEquiv M S).commutes x
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem tensorLeftAlgEquiv_apply_one_tmul (x : Localization M) :
     tensorLeftAlgEquiv M S (1 ⊗ₜ[R] x) = algebraMap _ _ x := by

@@ -6,9 +6,8 @@ Authors: Mario Carneiro, Vasilii Nesterov
 module
 
 public import Mathlib.Data.Seq.Defs
-public import Mathlib.Data.ENat.Basic
 public import Mathlib.Tactic.ENatToNat
-public import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # Basic properties of sequences (possibly infinite lists)
@@ -38,7 +37,8 @@ theorem length'_of_not_terminates {s : Seq α} (h : ¬ s.Terminates) :
   simp [length', h]
 
 @[simp]
-theorem length_nil : length (nil : Seq α) terminates_nil = 0 := by simp [length, terminatedAt_nil]
+theorem length_nil : length (nil : Seq α) terminates_nil = 0 :=
+  (Nat.find_eq_zero _).mpr terminatedAt_nil
 
 @[simp]
 theorem length'_nil : length' (nil : Seq α) = 0 := by
@@ -56,6 +56,7 @@ theorem length'_cons (x : α) (s : Seq α) :
   · simp [length'_of_terminates h, length'_of_terminates h', length_cons h']
   · simp [length'_of_not_terminates h, length'_of_not_terminates h']
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem length_eq_zero {s : Seq α} {h : s.Terminates} :
     s.length h = 0 ↔ s = nil := by
@@ -70,6 +71,7 @@ theorem length'_ne_zero_iff_cons (s : Seq α) :
     s.length' ≠ 0 ↔ ∃ x s', s = cons x s' := by
   cases s <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The statement of `length_le_iff'` does not assume that the sequence terminates. For a
 simpler statement of the theorem where the sequence is known to terminate see `length_le_iff`. -/
 theorem length_le_iff' {s : Seq α} {n : ℕ} :
@@ -90,9 +92,10 @@ theorem length_le_iff {s : Seq α} {n : ℕ} {h : s.Terminates} :
 theorem length'_le_iff {s : Seq α} {n : ℕ} :
     s.length' ≤ n ↔ s.TerminatedAt n := by
   by_cases h : s.Terminates
-  · simpa [length'_of_terminates h] using length_le_iff
+  · simpa [length'_of_terminates h, ENat.natCast_le_natCast] using length_le_iff
   · simpa [length'_of_not_terminates h] using forall_not_of_not_exists h n
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The statement of `lt_length_iff'` does not assume that the sequence terminates. For a
 simpler statement of the theorem where the sequence is known to terminate see `lt_length_iff`. -/
 theorem lt_length_iff' {s : Seq α} {n : ℕ} :
@@ -114,8 +117,8 @@ theorem lt_length_iff {s : Seq α} {n : ℕ} {h : s.Terminates} :
 theorem lt_length'_iff {s : Seq α} {n : ℕ} :
     n < s.length' ↔ ∃ a, a ∈ s.get? n := by
   by_cases h : s.Terminates
-  · simpa [length'_of_terminates h] using lt_length_iff
-  · simp only [length'_of_not_terminates h, ENat.coe_lt_top, Option.mem_def, true_iff]
+  · simpa [length'_of_terminates h, ENat.natCast_lt_natCast] using lt_length_iff
+  · simp only [length'_of_not_terminates h, ENat.natCast_lt_top, Option.mem_def, true_iff]
     rw [not_terminates_iff] at h
     rw [← Option.isSome_iff_exists]
     exact h n
@@ -132,6 +135,7 @@ end OfStream
 
 section OfList
 
+set_option backward.isDefEq.respectTransparency false in
 theorem terminatedAt_ofList (l : List α) :
     (ofList l).TerminatedAt l.length := by
   simp [ofList, TerminatedAt]
@@ -203,6 +207,7 @@ theorem length_take_le {s : Seq α} {n : ℕ} : (s.take n).length ≤ n := by
       obtain ⟨x, r⟩ := v
       simpa using ih
 
+set_option backward.isDefEq.respectTransparency false in
 theorem length_take_of_le_length {s : Seq α} {n : ℕ}
     (hle : ∀ h : s.Terminates, n ≤ s.length h) : (s.take n).length = n := by
   induction n generalizing s with
@@ -230,6 +235,7 @@ theorem length_toList (s : Seq α) (h : s.Terminates) : (toList s h).length = le
   intro _
   exact le_rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem getElem?_toList (s : Seq α) (h : s.Terminates) (n : ℕ) : (toList s h)[n]? = s.get? n := by
   ext k
@@ -239,6 +245,7 @@ theorem getElem?_toList (s : Seq α) (h : s.Terminates) (n : ℕ) : (toList s h)
   let ⟨a, ha⟩ := ge_stable s hmn h
   simp [ha]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofList_toList (s : Seq α) (h : s.Terminates) :
     ofList (toList s h) = s := by
@@ -248,6 +255,7 @@ theorem ofList_toList (s : Seq α) (h : s.Terminates) :
 theorem toList_ofList (l : List α) : toList (ofList l) (terminates_ofList l) = l :=
   ofList_injective (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toList_nil : toList (nil : Seq α) ⟨0, terminatedAt_zero_iff.2 rfl⟩ = [] := by
   ext; simp [nil, toList, const]
@@ -313,7 +321,7 @@ theorem of_mem_append {s₁ s₂ : Seq α} {a : α} (h : a ∈ append s₁ s₂)
     simpa using m
   | cons c t₁ =>
     intro m e
-    have := congr_arg destruct e
+    have := congr(destruct $e)
     rcases show a = c ∨ a ∈ append t₁ s₂ by simpa using m with e' | m
     · rw [e']
       exact Or.inl (mem_cons _ _)
@@ -423,10 +431,12 @@ section Join
 theorem join_nil : join nil = (nil : Seq α) :=
   destruct_eq_none rfl
 
+set_option backward.isDefEq.respectTransparency false in
 -- Not a simp lemmas as `join_cons` is more general
 theorem join_cons_nil (a : α) (S) : join (cons (a, nil) S) = cons a (join S) :=
   destruct_eq_cons <| by simp [join]
 
+set_option backward.isDefEq.respectTransparency false in
 -- Not a simp lemmas as `join_cons` is more general
 theorem join_cons_cons (a b : α) (s S) :
     join (cons (a, cons b s) S) = cons a (join (cons (b, s) S)) :=
@@ -451,6 +461,7 @@ theorem join_cons (a : α) (s S) : join (cons (a, s) S) = cons a (append s (join
       · simpa only [BisimO, join_cons_cons, destruct_cons, cons_append, true_and] using
           Or.inr ⟨_, _, S, rfl, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem join_append (S T : Seq (Seq1 α)) : join (append S T) = append (join S) (join T) := by
   apply
@@ -482,12 +493,12 @@ theorem drop_get? {n m : ℕ} {s : Seq α} : (s.drop n).get? m = s.get? (n + m) 
   | zero => simp [drop]
   | succ k ih =>
     simp only [drop, get?_tail]
-    convert! ih using 2
+    convert ih using 2
     lia
 
 theorem dropn_add (s : Seq α) (m) : ∀ n, drop s (m + n) = drop (drop s m) n
   | 0 => rfl
-  | n + 1 => congr_arg tail (dropn_add s _ n)
+  | n + 1 => congr(tail $(dropn_add s _ n))
 
 theorem dropn_tail (s : Seq α) (n) : drop (tail s) n = drop s (n + 1) := by
   rw [Nat.add_comm]; symm; apply dropn_add
@@ -522,7 +533,7 @@ theorem drop_length' {n : ℕ} {s : Seq α} :
     | nil => simp
     | cons x s =>
       simp only [drop_succ_cons, length'_cons, Nat.cast_add, Nat.cast_one]
-      convert! drop_length' using 1
+      convert drop_length' using 1
       generalize s.length' = m
       enat_to_nat
       lia
@@ -625,18 +636,19 @@ theorem zip_map (s₁ : Seq α) (s₂ : Seq β) (f₁ : α → α') (f₂ : β �
 
 theorem zip_map_left (s₁ : Seq α) (s₂ : Seq β) (f : α → α') :
     (s₁.map f).zip s₂ = (s₁.zip s₂).map (Prod.map f id) := by
-  convert! zip_map _ _ _ _
+  convert zip_map _ _ _ _
   simp
 
 theorem zip_map_right (s₁ : Seq α) (s₂ : Seq β) (f : β → β') :
     s₁.zip (s₂.map f) = (s₁.zip s₂).map (Prod.map id f) := by
-  convert! zip_map _ _ _ _
+  convert zip_map _ _ _ _
   simp
 
 end ZipWith
 
 section Fold
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fold_nil (init : β) (f : β → α → β) :
     nil.fold init f = cons init nil := by
@@ -663,6 +675,7 @@ section Update
 
 variable (hd x : α) (tl : Seq α) (f : α → α)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem get?_update (s : Seq α) (n : ℕ) (m : ℕ) :
     (s.update n f).get? m = if m = n then (s.get? m).map f else s.get? m := by
   simp [update, Function.update]
@@ -696,6 +709,7 @@ theorem update_cons_succ (n : ℕ) : (cons hd tl).update (n + 1) f = cons hd (tl
 theorem set_cons_succ (n : ℕ) : (cons hd tl).set (n + 1) x = cons hd (tl.set n x) :=
   update_cons_succ _ _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem get?_set_of_not_terminatedAt {s : Seq α} {n : ℕ} (h_not_terminated : ¬ s.TerminatedAt n) :
     (s.set n x).get? n = x := by
   simpa [set, update, ← Option.ne_none_iff_exists'] using! h_not_terminated
@@ -957,6 +971,7 @@ def map (f : α → β) : Seq1 α → Seq1 β
 
 theorem map_pair {f : α → β} {a s} : map f (a, s) = (f a, Seq.map f s) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_id : ∀ s : Seq1 α, map id s = s
   | ⟨a, s⟩ => by simp [map]
 
@@ -995,16 +1010,19 @@ def bind (s : Seq1 α) (f : α → Seq1 β) : Seq1 β :=
 theorem join_map_ret (s : Seq α) : Seq.join (Seq.map ret s) = s := by
   apply coinduction2 s; intro s; cases s <;> simp [ret]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem bind_ret (f : α → β) : ∀ s, bind s (ret ∘ f) = map f s
   | ⟨a, s⟩ => by simp [bind, map, map_comp, ret]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ret_bind (a : α) (f : α → Seq1 β) : bind (ret a) f = f a := by
   simp only [bind, map, ret.eq_1, map_nil]
   obtain ⟨a, s⟩ := f a
   cases s <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_join' (f : α → β) (S) : Seq.map f (Seq.join S) = Seq.join (Seq.map (map f) S) := by
   apply
@@ -1022,10 +1040,12 @@ theorem map_join' (f : α → β) (S) : Seq.map f (Seq.join S) = Seq.join (Seq.m
     | cons _ s => simpa using ⟨s, S, rfl, rfl⟩
   · simpa using ⟨nil, S, by simp, by simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_join (f : α → β) : ∀ S, map f (join S) = join (map (map f) S)
   | ((a, s), S) => by cases s <;> simp [map]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
     Seq.join (Seq.join SS) = Seq.join (Seq.map join SS) := by
@@ -1046,6 +1066,7 @@ theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
     | cons _ s => simpa using ⟨s, SS, rfl, rfl⟩
   · simpa using ⟨nil, SS, by simp, by simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem bind_assoc (s : Seq1 α) (f : α → Seq1 β) (g : β → Seq1 γ) :
     bind (bind s f) g = bind s fun x : α => bind (f x) g := by

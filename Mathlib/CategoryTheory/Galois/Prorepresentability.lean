@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Category.Grp.Limits
 public import Mathlib.CategoryTheory.CofilteredSystem
 public import Mathlib.CategoryTheory.Galois.Decomposition
 public import Mathlib.CategoryTheory.Limits.IndYoneda
-public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
 /-!
 # Pro-Representability of fiber functors
@@ -63,7 +62,7 @@ namespace CategoryTheory
 
 namespace PreGaloisCategory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
 variable {C : Type u₁} [Category.{u₂} C] [GaloisCategory C]
 
@@ -214,7 +213,7 @@ variable (F : C ⥤ FintypeCat.{u₂})
 as an object of `C`. -/
 @[simps]
 noncomputable def autGaloisSystem : PointedGaloisObject F ⥤ GrpCat.{u₂} where
-  obj := fun A ↦ GrpCat.of <| Aut (A : C)
+  obj := fun A ↦ ↧(Aut (A : C))
   map := fun {A B} f ↦ GrpCat.ofHom (autMapHom f)
 
 /-- The limit of `autGaloisSystem`. -/
@@ -354,6 +353,7 @@ lemma endEquivAutGalois_π (f : End F) (A : PointedGaloisObject F) :
   simp only [endEquivSectionsFibers_π]
   erw [evaluationEquivOfIsGalois_symm_fiber]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem endEquivAutGalois_mul (f g : End F) :
     (endEquivAutGalois F) (g ≫ f) = (endEquivAutGalois F g) * (endEquivAutGalois F f) := by
@@ -390,14 +390,15 @@ noncomputable def autMulEquivAutGalois : Aut F ≃* (AutGalois F)ᵐᵒᵖ where
   toFun := MonoidHom.comp (endMulEquivAutGalois F) (Aut.toEnd F)
   invFun t := asIso ((endMulEquivAutGalois F).symm t)
   left_inv t := by
-    simp only [MonoidHom.coe_comp, MonoidHom.coe_coe, Function.comp_apply,
+    simp only [MonoidHom.coe_comp, MonoidHom.coe_ofClass, Function.comp_apply,
       MulEquiv.symm_apply_apply]
     exact Aut.ext rfl
   right_inv t := by
-    simp only [MonoidHom.coe_comp, MonoidHom.coe_coe, Function.comp_apply, Aut.toEnd_apply]
+    simp only [MonoidHom.coe_comp, MonoidHom.coe_ofClass]
     exact (MulEquiv.eq_symm_apply (endMulEquivAutGalois F)).mp rfl
   map_mul' := by simp [map_mul]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma autMulEquivAutGalois_π (f : Aut F) (A : C) [IsGalois A] (a : F.obj A) :
     F.map (AutGalois.π F { obj := A, pt := a } (autMulEquivAutGalois F f).unop).hom a =
@@ -406,6 +407,7 @@ lemma autMulEquivAutGalois_π (f : Aut F) (A : C) [IsGalois A] (a : F.obj A) :
   rw [endEquivAutGalois_π]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma autMulEquivAutGalois_symm_app (x : AutGalois F) (A : C) [IsGalois A] (a : F.obj A) :
     ((autMulEquivAutGalois F).symm ⟨x⟩).hom.app A a =
@@ -447,6 +449,7 @@ section General
 
 variable (F : C ⥤ FintypeCat.{w}) [FiberFunctor F]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The `Aut F` action on the fiber of a connected object is transitive. -/
 instance FiberFunctor.isPretransitive_of_isConnected (X : C) [IsConnected X] :
     MulAction.IsPretransitive (Aut F) (F.obj X) where

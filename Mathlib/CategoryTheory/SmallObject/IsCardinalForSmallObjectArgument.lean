@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
 public import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 public import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
 public import Mathlib.SetTheory.Cardinal.Regular
-public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
 /-!
 # Cardinals that are suitable for the small object argument
@@ -133,6 +132,7 @@ noncomputable def succStruct : SuccStruct (Arrow C ⥤ Arrow C) :=
   haveI := hasPushouts I κ
   SuccStruct.ofNatTrans (ε I.homFamily)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- For the successor structure `succStruct I κ` on `Arrow C ⥤ Arrow C`,
 the morphism from an object to its successor induces
 morphisms in `C` which consists in attaching `I`-cells. -/
@@ -154,6 +154,34 @@ isomorphisms on the right side. -/
 def propArrow : MorphismProperty (Arrow C) := fun _ _ f ↦
   (coproducts.{w} I).pushouts f.left ∧ (isomorphisms C) f.right
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/14624:
+
+We had to use the `instanceSearchTypes` backward compatibility flag to make an instance search
+succeed. Concretely, the following instance cannot be synthesized:
+`Category.{max u v, max u v} (Comma (𝟭 C) (𝟭 C) ⥤ Comma (𝟭 C) (𝟭 C))`
+It is needed by the `⟨F⟩` pattern in the opening `intro`, which re-elaborates `ofHoms.mk F` against
+a goal where the carrier `Arrow C ⥤ Arrow C` is exposed at its `Comma (𝟭 C) (𝟭 C)` spelling.
+
+The failure happens while applying `@Functor.category`: assigning one of its
+instance-implicit-argument metavariables is rejected because the metavariable's type and the type
+of the assigned value do not match at `.instances` transparency. The metavariable's expected type
+is `Category (Comma (𝟭 C) (𝟭 C))`, whereas the assigned value `instCategoryArrow` has type
+`Category (Arrow C)`. The comparison bottoms out at `Comma (𝟭 C) (𝟭 C) =?= Arrow C`, where `Arrow`
+is a plain semireducible `def` and therefore does not unfold at the `.instances` transparency that
+instance search runs at. Lean falls back to synthesize an instance of the correct type, but it
+returns `commaCategory`, which is again not defeq to `instCategoryArrow`: that comparison runs at
+`.implicit`, and `Arrow` does not unfold there either.
+
+With the metavariable unsolved, the `intro` argument `⟨F⟩` has type `ofHoms ?m.69 (?m.69 F)`,
+which fails to unify with `(succStruct I κ).prop f✝`.
+
+Potential fix: mark `Arrow` and `Arrow.Hom` implicit-reducible, then remove
+`instanceSearchTypes false`.
+-/
+set_option backward.isDefEq.respectTransparency.instanceSearchTypes false in
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma succStruct_prop_le_propArrow :
     (succStruct I κ).prop ≤ (propArrow.{w} I).functorCategory (Arrow C) := by
@@ -217,7 +245,6 @@ instance {j₁ j₂ : κ.ord.ToType} (φ : j₁ ⟶ j₂) (f : Arrow C) :
     IsIso (((iterationFunctor I κ).map φ).app f).right :=
   inferInstanceAs (IsIso ((transfiniteCompositionOfShapeιIterationAppRight I κ f).F.map φ))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For any `f : Arrow C`, the object `((iteration I κ).obj f).right`
 identifies to `f.right`. -/
 @[simps! hom]
@@ -233,6 +260,7 @@ noncomputable def iterationFunctorObjObjRightIso (f : Arrow C) (j : κ.ord.ToTyp
   asIso ((transfiniteCompositionOfShapeιIterationAppRight I κ f).incl.app j) ≪≫
     (iterationObjRightIso I κ f).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma iterationFunctorObjObjRightIso_ιIteration_app_right (f : Arrow C) (j : κ.ord.ToType) :
@@ -261,7 +289,7 @@ noncomputable def iterationFunctorMapSuccAppArrowIso (f : Arrow C) (j : κ.ord.T
   Arrow.isoMk (Iso.refl _)
     (((evaluation _ _).obj f).mapIso
       ((succStruct I κ).iterationFunctorObjSuccIso j (not_isMax j))) (by
-    have := NatTrans.congr_app ((succStruct I κ).iterationFunctor_map_succ j (not_isMax j)) f
+    have := congr($((succStruct I κ).iterationFunctor_map_succ j (not_isMax j)).app f)
     dsimp at this
     dsimp [iterationFunctor]
     rw [id_comp, this, assoc, Iso.inv_hom_id_app, comp_id]
@@ -295,12 +323,12 @@ noncomputable def obj : C := ((iteration I κ).obj (Arrow.mk f)).left
 the small object argument. -/
 noncomputable def ιObj : X ⟶ obj I κ f := ((ιIteration I κ).app (Arrow.mk f)).left
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The "projection" morphism in the factorization given by
 the small object argument. -/
 noncomputable def πObj : obj I κ f ⟶ Y :=
   ((iteration I κ).obj (Arrow.mk f)).hom ≫ inv ((ιIteration I κ).app f).right
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma πObj_ιIteration_app_right :
     πObj I κ f ≫ ((ιIteration I κ).app f).right =

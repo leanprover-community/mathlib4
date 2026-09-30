@@ -22,7 +22,7 @@ ultrafilter. Definitions and properties that work for any filter should go to `O
 ultrafilter, ultraproduct
 -/
 
-@[expose] public section
+public section
 
 
 universe u v

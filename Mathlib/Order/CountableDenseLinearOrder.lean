@@ -6,7 +6,7 @@ Authors: David Wärn
 module
 
 public import Mathlib.Order.Ideal
-public import Mathlib.Data.Finset.Max
+import Mathlib.Data.Finset.Max
 
 /-!
 # The back and forth method and countable dense linear orders
@@ -65,6 +65,7 @@ theorem exists_between_finsets [DenselyOrdered α] [NoMinOrder α]
           nonem.elim
         fun m ↦ ⟨m, fun x hx ↦ (nlo ⟨x, hx⟩).elim, fun y hy ↦ (nhi ⟨y, hy⟩).elim⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_orderEmbedding_insert [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β]
     [nonem : Nonempty β] (S : Finset α) (f : S ↪o β) (a : α) :
     ∃ (g : (insert a S : Finset α) ↪o β),

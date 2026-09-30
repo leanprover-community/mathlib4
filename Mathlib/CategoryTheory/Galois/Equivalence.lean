@@ -40,9 +40,11 @@ variable (F) in
 def functorToContAction : C ⥤ ContAction FintypeCat (Aut F) :=
   ObjectProperty.lift _ (functorToAction F) (fun X ↦ continuousSMul_aut_fiber F X)
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : (functorToContAction F).Faithful :=
   inferInstanceAs <| (ObjectProperty.lift _ _ _).Faithful
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : (functorToContAction F).Full :=
   inferInstanceAs <| (ObjectProperty.lift _ _ _).Full
 

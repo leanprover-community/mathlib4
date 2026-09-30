@@ -191,6 +191,15 @@ theorem orientation_isEmpty [IsEmpty ι] (b : Basis ι R M) :
 
 end Module.Basis
 
+namespace Module.Oriented.Arbitrary
+
+/-- An arbitrary choice of orientation. -/
+scoped instance (priority := 100) {n : ℕ} [Module.Finite R M] [Module.Free R M]
+    [Fact (finrank R M = n)] : Module.Oriented R M (Fin n) :=
+  ⟨(finBasisOfFinrankEq _ _ Fact.out).orientation⟩
+
+end Module.Oriented.Arbitrary
+
 end OrderedCommRing
 
 section LinearOrderedCommRing
@@ -201,6 +210,7 @@ variable {ι : Type*}
 
 namespace Orientation
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A module `M` over a linearly ordered commutative ring has precisely two "orientations" with
 respect to an empty index type. (Note that these are only orientations of `M` of in the conventional
 mathematical sense if `M` is zero-dimensional.) -/
@@ -213,7 +223,7 @@ theorem eq_or_eq_neg_of_isEmpty [IsEmpty ι] (o : Orientation R M ι) :
   intro h
   set f : (M [⋀^ι]→ₗ[R] R) ≃ₗ[R] R := AlternatingMap.constLinearEquivOfIsEmpty.symm
   have H : LinearIndependent R ![f x, 1] := by
-    convert! h.map' f.toLinearMap f.ker
+    convert h.map' f.toLinearMap f.ker
     ext i
     fin_cases i <;> simp [f]
   rw [linearIndependent_iff'] at H

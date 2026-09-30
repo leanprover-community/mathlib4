@@ -6,7 +6,6 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Combinatorics.SimpleGraph.Dart
 public import Mathlib.Combinatorics.SimpleGraph.Finite
 public import Mathlib.Data.ZMod.Basic
 
@@ -82,7 +81,7 @@ theorem dart_edge_fiber_card [DecidableEq V] (e : Sym2 V) (h : e ∈ G.edgeSet) 
     #{d : G.Dart | d.edge = e} = 2 := by
   obtain ⟨v, w⟩ := e
   let d : G.Dart := ⟨(v, w), h⟩
-  convert! congr_arg card d.edge_fiber
+  convert! congr(card $d.edge_fiber)
   rw [card_insert_of_notMem, card_singleton]
   rw [mem_singleton]
   exact d.symm_ne.symm
@@ -125,19 +124,18 @@ end DegreeSum
 /-- The handshaking lemma.  See also `SimpleGraph.sum_degrees_eq_twice_card_edges`. -/
 theorem even_card_odd_degree_vertices [Fintype V] [DecidableRel G.Adj] :
     Even #{v | Odd (G.degree v)} := by
-  classical
-    have h := congr_arg (fun n => ↑n : ℕ → ZMod 2) G.sum_degrees_eq_twice_card_edges
-    simp only [ZMod.natCast_self, zero_mul, Nat.cast_mul] at h
-    rw [Nat.cast_sum, ← sum_filter_ne_zero] at h
-    rw [sum_congr (g := fun _v ↦ (1 : ZMod 2)) rfl] at h
-    · simp only [mul_one, nsmul_eq_mul, sum_const, Ne] at h
-      rw [← ZMod.natCast_eq_zero_iff_even]
-      convert! h
-      exact ZMod.natCast_ne_zero_iff_odd.symm
-    · intro v
-      rw [mem_filter_univ, Ne, ZMod.natCast_eq_zero_iff_even, ZMod.natCast_eq_one_iff_odd,
-        ← Nat.not_even_iff_odd]
-      tauto
+  have h := congr(($G.sum_degrees_eq_twice_card_edges : ZMod 2))
+  simp only [ZMod.natCast_self, zero_mul, Nat.cast_mul] at h
+  rw [Nat.cast_sum, ← sum_filter_ne_zero] at h
+  rw [sum_congr (g := fun _v ↦ (1 : ZMod 2)) rfl] at h
+  · simp only [mul_one, nsmul_eq_mul, sum_const, Ne] at h
+    rw [← ZMod.natCast_eq_zero_iff_even]
+    convert! h
+    exact ZMod.natCast_ne_zero_iff_odd.symm
+  · intro v
+    rw [mem_filter_univ, Ne, ZMod.natCast_eq_zero_iff_even, ZMod.natCast_eq_one_iff_odd,
+      ← Nat.not_even_iff_odd]
+    tauto
 
 theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] [DecidableRel G.Adj] (v : V)
     (h : Odd (G.degree v)) : Odd #{w | w ≠ v ∧ Odd (G.degree w)} := by

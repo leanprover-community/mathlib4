@@ -6,7 +6,7 @@ Authors: Wenrong Zou
 module
 
 public import Mathlib.RingTheory.PowerSeries.Substitution
-public import Mathlib.Tactic.Ring.NamePowerVars
+import Mathlib.Tactic.Ring.NamePowerVars
 
 /-! # Formal group laws over commutative ring
 
@@ -221,6 +221,7 @@ lemma coeff_one_Xzero : F.Xzero.coeff 1 = 1 := by
     simp [hd₁]
   · exact HasSubst.X_zero
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma Xzero_subst_Xzero : F.Xzero.subst F.Xzero = F.Xzero := by
   calc
@@ -272,6 +273,7 @@ lemma coeff_one_zeroX : F.zeroX.coeff 1 = 1 := by
     simp [hd₁]
   · exact HasSubst.zero_X
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma zeroX_subst_zeroX : F.zeroX.subst F.zeroX = F.zeroX := by
   calc
@@ -296,7 +298,7 @@ lemma zeroX_eq_X : F.zeroX = PowerSeries.X := by
   calc
     _ = F.zeroX.substInv.subst (F.zeroX.subst F.zeroX) := by
       have aux₀ : PowerSeries.HasSubst F.zeroX :=
-        PowerSeries.HasSubst.of_constantCoeff_zero' <| F.constantCoeff_zeroX
+        PowerSeries.HasSubst.of_constantCoeff_zero' F.constantCoeff_zeroX
       rw [← PowerSeries.subst_comp_subst_apply aux₀ aux₀, PowerSeries.subst_substInv_left _
         F.constantCoeff_zeroX, PowerSeries.subst_X aux₀, zeroX]
     _ = _ := by

@@ -6,12 +6,9 @@ Authors: Anatole Dedecker, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.LocallyConvex.Bounded
-public import Mathlib.Analysis.Normed.Field.Basic
-public import Mathlib.Topology.Algebra.Algebra.Equiv
 public import Mathlib.Topology.Hom.ContinuousEvalConst
-public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
-import Mathlib.Topology.Algebra.Module.Equiv
 import Mathlib.Topology.Algebra.SeparationQuotient.Section
 import Mathlib.Topology.Algebra.Module.UniformConvergence
 
@@ -101,10 +98,11 @@ notation3:25 E' " →Lᵤ[" R ", " 𝔖 "] " F => UniformConvergenceCLM (RingHom
 namespace UniformConvergenceCLM
 
 /-- Reinterpret `f : E →SL[σ] F` as an element of `E →SLᵤ[σ, 𝔖] F`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def ofFun [TopologicalSpace F] (𝔖 : Set (Set E)) : (E →SL[σ] F) ≃ (E →SLᵤ[σ, 𝔖] F) :=
   ⟨fun x => x, fun x => x, fun _ => rfl, fun _ => rfl⟩
 
+@[macro_inline]
 instance instFunLike [TopologicalSpace F] (𝔖 : Set (Set E)) :
     FunLike (E →SLᵤ[σ, 𝔖] F) E F :=
   inferInstanceAs <| FunLike (E →SL[σ] F) E F
@@ -164,19 +162,23 @@ theorem isEmbedding_coeFn [UniformSpace F] [IsUniformAddGroup F] (𝔖 : Set (Se
       (UniformOnFun.ofFun 𝔖 ∘ DFunLike.coe) :=
   IsUniformEmbedding.isEmbedding (isUniformEmbedding_coeFn _ _ _)
 
+-- This instance exists to avoid nsmul and zsmul diamonds.
+instance (M : Type*) [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
+    [TopologicalSpace F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
+    SMul M (E →SLᵤ[σ, 𝔖] F) where
+  smul c f := (ofFun σ F 𝔖) (c • (ofFun σ F 𝔖).symm f)
+
 instance instAddCommGroup [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
     AddCommGroup (E →SLᵤ[σ, 𝔖] F) :=
   inferInstanceAs <| AddCommGroup (E →SL[σ] F)
 
 instance [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
     IsNegApply (E →SLᵤ[σ, 𝔖] F) E F where
-  neg_apply _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] protected alias neg_apply := neg_apply
 
 instance [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
     IsAddApply (E →SLᵤ[σ, 𝔖] F) E F where
-  add_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] protected alias add_apply := add_apply
 
@@ -184,13 +186,11 @@ instance [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
 
 instance [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
     IsSubApply (E →SLᵤ[σ, 𝔖] F) E F where
-  sub_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] protected alias sub_apply := sub_apply
 
 instance [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
     IsZeroApply (E →SLᵤ[σ, 𝔖] F) E F where
-  zero_apply _ := rfl
 
 @[deprecated (since := "2026-06-10")] protected alias coe_zero := FunLike.coe_zero
 
@@ -224,14 +224,12 @@ theorem t2Space [TopologicalSpace F] [IsTopologicalAddGroup F] [T2Space F]
 
 instance instDistribMulAction (M : Type*) [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
     [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
-    DistribMulAction M (E →SLᵤ[σ, 𝔖] F) where
-  smul c f := (ofFun σ F 𝔖) (c • (ofFun σ F 𝔖).symm f)
-  __ : DistribMulAction M (E →SLᵤ[σ, 𝔖] F) := inferInstanceAs <| DistribMulAction M (E →SL[σ] F)
+    DistribMulAction M (E →SLᵤ[σ, 𝔖] F) :=
+  inferInstanceAs <| DistribMulAction M (E →SL[σ] F)
 
 instance {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
-    [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
+    [TopologicalSpace F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
     IsSMulApply M (E →SLᵤ[σ, 𝔖] F) E F where
-  smul_apply _ _ _ := rfl
 
 @[deprecated (since := "2026-06-10")] protected alias smul_apply := smul_apply
 
@@ -361,6 +359,7 @@ theorem tendsto_iff_tendstoUniformlyOn {ι : Type*} {p : Filter ι} [UniformSpac
   rw [(isEmbedding_coeFn σ F 𝔖).tendsto_nhds_iff, UniformOnFun.tendsto_iff_tendstoUniformlyOn]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 variable {F} in
 theorem isUniformInducing_postcomp
     [AddCommGroup G] [UniformSpace G] [IsUniformAddGroup G]
@@ -392,8 +391,8 @@ theorem completeSpace [UniformSpace F] [IsUniformAddGroup F] [ContinuousSMul �
   rw [completeSpace_iff_isComplete_range (isUniformInducing_coeFn _ _ _)]
   apply IsClosed.isComplete
   have H₁ : IsClosed {f : E →ᵤ[𝔖] F | Continuous ((UniformOnFun.toFun 𝔖) f)} :=
-    UniformOnFun.isClosed_setOf_continuous h𝔖
-  convert!
+    UniformOnFun.isClosed_setOfPred_continuous h𝔖
+  convert
     H₁.inter <|
       (LinearMap.isClosed_range_coe E F σ).preimage
         (UniformOnFun.uniformContinuous_toFun h𝔖U).continuous
@@ -481,6 +480,7 @@ variable {𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜₁] [NormedField �
 
 variable (𝔖 : Set (Set E)) (𝔗 : Set (Set F))
 
+set_option backward.isDefEq.respectTransparency false in
 variable (G) in
 /-- Pre-composition by a *fixed* continuous linear map as a continuous linear map for the uniform
 convergence topology. -/
@@ -498,12 +498,7 @@ def precompUniformConvergenceCLM [IsTopologicalAddGroup G] [ContinuousConstSMul 
     exact (UniformOnFun.precomp_uniformContinuous hL).continuous.comp
         (UniformConvergenceCLM.isEmbedding_coeFn _ _ _).continuous
 
-@[deprecated (since := "2026-01-27")]
-alias precomp_uniformConvergenceCLM := precompUniformConvergenceCLM
-
-@[deprecated (since := "2026-01-27")]
-alias precomp_uniformConvergenceCLM_apply := precompUniformConvergenceCLM_apply
-
+set_option backward.isDefEq.respectTransparency false in
 /-- Post-composition by a *fixed* continuous linear map as a continuous linear map for the uniform
 convergence topology. -/
 @[simps]
@@ -523,12 +518,6 @@ def postcompUniformConvergenceCLM [IsTopologicalAddGroup F] [IsTopologicalAddGro
       (UniformOnFun.postcomp_uniformContinuous L.uniformContinuous).continuous.comp
         (UniformConvergenceCLM.isEmbedding_coeFn _ _ _).continuous
 
-@[deprecated (since := "2026-01-27")]
-alias postcomp_uniformConvergenceCLM := postcompUniformConvergenceCLM
-
-@[deprecated (since := "2026-01-27")]
-alias postcomp_uniformConvergenceCLM_apply := postcompUniformConvergenceCLM_apply
-
 end ContinuousLinearMap
 
 /-! ### Continuous linear equivalences -/
@@ -542,6 +531,7 @@ variable (𝕜 : Type*) [NormedField 𝕜] {E ι : Type*} (F : ι → Type*)
   [∀ i, AddCommGroup (F i)] [∀ i, Module 𝕜 (F i)] [∀ i, TopologicalSpace (F i)]
   [∀ i, IsTopologicalAddGroup (F i)] [∀ i, ContinuousConstSMul 𝕜 (F i)]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `ContinuousLinearMap.pi`, upgraded to a continuous linear equivalence between
 `Π i, E →Lᵤ[𝕜, 𝔖] F i` and `E →Lᵤ[𝕜, 𝔖] Π i, F i`. -/
 def UniformConvergenceCLM.piEquivL (𝔖 : Set (Set E)) :

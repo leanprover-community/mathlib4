@@ -66,7 +66,6 @@ initialize_simps_projections LeftHomologyData (-hi, -hπ)
 
 namespace LeftHomologyData
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The chosen kernels and cokernels of the limits API give a `LeftHomologyData` -/
 @[simps]
 noncomputable def ofHasKernelOfHasCokernel
@@ -177,7 +176,6 @@ noncomputable def ofHasCokernel [HasCokernel S.f] (hg : S.g = 0) : S.LeftHomolog
   ofIsColimitCokernelCofork S hg _ (cokernelIsCokernel _)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- When the first map `S.f` is zero, this is the left homology data on `S` given
 by any limit kernel fork of `S.g` -/
 @[simps]
@@ -393,6 +391,7 @@ def ofIsLimitKernelFork (φ : S₁ ⟶ S₂)
 
 variable (S)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the left homology map
 data (for the identity of `S`) which relates the left homology data `ofZeros` and
 `ofIsColimitCokernelCofork`. -/
@@ -848,7 +847,6 @@ end
 
 namespace LeftHomologyData
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `φ : S₁ ⟶ S₂` is a morphism of short complexes such that `φ.τ₁` is epi, `φ.τ₂` is an iso
 and `φ.τ₃` is mono, then a left homology data for `S₁` induces a left homology data for `S₂` with
 the same `K` and `H` fields. The inverse construction is `ofEpiOfIsIsoOfMono'`. -/
@@ -882,7 +880,6 @@ lemma τ₁_ofEpiOfIsIsoOfMono_f' (φ : S₁ ⟶ S₂) (h : LeftHomologyData S�
   rw [← cancel_mono (ofEpiOfIsIsoOfMono φ h).i, assoc, f'_i,
     ofEpiOfIsIsoOfMono_i, f'_i_assoc, φ.comm₁₂]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `φ : S₁ ⟶ S₂` is a morphism of short complexes such that `φ.τ₁` is epi, `φ.τ₂` is an iso
 and `φ.τ₃` is mono, then a left homology data for `S₂` induces a left homology data for `S₁` with
 the same `K` and `H` fields. The inverse construction is `ofEpiOfIsIsoOfMono`. -/
@@ -1081,7 +1078,6 @@ variable (S)
 lemma hasKernel [S.HasLeftHomology] : HasKernel S.g :=
   ⟨⟨⟨_, S.leftHomologyData.hi⟩⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasCokernel [S.HasLeftHomology] [HasKernel S.g] :
     HasCokernel (kernel.lift S.g S.f S.zero) := by
   let h := S.leftHomologyData

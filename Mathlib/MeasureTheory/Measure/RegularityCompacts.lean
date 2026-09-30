@@ -6,7 +6,8 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 module
 
 public import Mathlib.MeasureTheory.Measure.Regular
-public import Mathlib.Topology.MetricSpace.Polish
+import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Topology.Metrizable.CompletelyMetrizable
 
 /-!
 # Inner regularity of finite measures
@@ -74,9 +75,7 @@ theorem innerRegularWRT_of_exists_compl_lt {p q : Set α → Prop} (hpq : ∀ A 
   obtain ⟨K, hK, hK_subset, h_lt⟩ : ∃ K, p K ∧ K ⊆ A ∧ μ (A \ K) < μ A - r := by
     obtain ⟨K', hpK', hK'_lt⟩ := hμ (μ A - r) (tsub_pos_of_lt hr)
     refine ⟨K' ∩ A, hpq K' A hpK' hA, inter_subset_right, ?_⟩
-    · refine (measure_mono fun x ↦ ?_).trans_lt hK'_lt
-      simp only [sdiff_inter_self_eq_sdiff, mem_sdiff, mem_compl_iff, and_imp, imp_self,
-        imp_true_iff]
+    gconvert hK'_lt; simp
   refine ⟨K, hK_subset, hK, ?_⟩
   have h_lt' : μ A - μ K < μ A - r := le_measure_sdiff.trans_lt h_lt
   exact lt_of_tsub_lt_tsub_left h_lt'
@@ -122,7 +121,6 @@ theorem exists_isCompact_closure_measure_compl_lt [TopologicalSpace α]
       · rw [← compl_iUnion, h_univ, compl_univ]
     choose! s' s'bound using h3
     rcases ENNReal.exists_pos_sum_of_countable' (ne_of_gt hε) ℕ with ⟨δ, hδ1, hδ2⟩
-    classical
     let u : ℕ → ℕ := fun n ↦ s' n (δ n)
     refine ⟨interUnionBalls seq u t, isCompact_closure_interUnionBalls h_basis.toHasBasis seq u, ?_⟩
     rw [interUnionBalls, Set.compl_iInter]
@@ -215,9 +213,5 @@ theorem innerRegular_isCompact_isClosed_measurableSet_of_finite [TopologicalSpac
     rw [sdiff_eq]
     exact ⟨hs_compact.inter_right ht_open.isClosed_compl,
       hs_closed.inter (isClosed_compl_iff.mpr ht_open)⟩
-
-@[deprecated (since := "2025-12-08")] alias
-PolishSpace.innerRegular_isCompact_isClosed_measurableSet :=
-innerRegular_isCompact_isClosed_measurableSet_of_finite
 
 end MeasureTheory

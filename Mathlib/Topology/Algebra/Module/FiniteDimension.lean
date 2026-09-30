@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel, Anatole Dedecker
 -/
 module
 
-public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 public import Mathlib.Analysis.LocallyConvex.Bounded
+public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
@@ -18,6 +18,7 @@ public import Mathlib.Topology.Algebra.Module.Simple
 public import Mathlib.Topology.Algebra.Module.Complement
 public import Mathlib.Topology.Algebra.SeparationQuotient.FiniteDimensional
 public import Mathlib.Topology.Maps.Strict.Basic
+public import Lean.Meta.Tactic.Rfl
 
 /-!
 # Finite-dimensional topological vector spaces over complete fields
@@ -31,7 +32,7 @@ continuous.
 
 When `E` is a normed space, this gets us the equivalence of norms in finite dimension.
 
-## Main results :
+## Main results
 
 * `LinearMap.continuous_iff_isClosed_ker` : a linear form is continuous if and only if its kernel
   is closed.
@@ -65,6 +66,12 @@ section FiniteDimensional
 variable {𝕜 E F : Type*}
   [AddCommGroup E] [TopologicalSpace E]
   [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+
+-- Note: ideally this would be in `Mathlib.Topology.Algebra.Module.Basic`, but `CoFG` imports
+-- too much at the moment for this to be allowed.
+instance Submodule.CoFG.topologicalClosure [Ring 𝕜] [Module 𝕜 E] [ContinuousAdd E]
+    [ContinuousConstSMul 𝕜 E] (s : Submodule 𝕜 E) [s.CoFG] : s.topologicalClosure.CoFG :=
+  ‹s.CoFG›.of_le s.le_topologicalClosure
 
 /-- The space of continuous linear maps between finite-dimensional spaces is finite-dimensional. -/
 instance ContinuousLinearMap.instModuleFinite [CommRing 𝕜] [Module 𝕜 E] [Module.Finite 𝕜 E]
@@ -126,7 +133,7 @@ theorem unique_topology_of_t2 {t : TopologicalSpace 𝕜} (h₁ : @IsTopological
         exact notMem_compl_iff.mpr (mem_singleton ξ₀) ((balancedCore_subset _) this)
       -- For that, we use that `𝓑` is balanced : since `‖ξ₀‖ < ε < ‖ξ‖`, we have `‖ξ₀ / ξ‖ ≤ 1`,
       -- hence `ξ₀ = (ξ₀ / ξ) • ξ ∈ 𝓑` because `ξ ∈ 𝓑`.
-      refine (balancedCore_balanced _).smul_mem ?_ hξ
+      refine (balancedCore.balanced _).smul_mem ?_ hξ
       rw [norm_mul, norm_inv, mul_inv_le_iff₀ (norm_pos_iff.mpr hξ0), one_mul]
       exact (hξ₀ε.trans h).le
   · -- Finally, to show `𝓣₀ ≤ 𝓣`, we simply argue that `id = (fun x ↦ x • 1)` is continuous from
@@ -174,7 +181,7 @@ theorem LinearMap.continuous_of_isClosed_ker (l : E →ₗ[𝕜] 𝕜)
     -- is injective. Since `φ.symm` is linear, it is also a vector space topology.
     -- Hence, we know that it is equal to the topology induced by the norm.
     have : induced φ.toEquiv.symm inferInstance = hnorm.toUniformSpace.toTopologicalSpace := by
-      refine unique_topology_of_t2 (topologicalAddGroup_induced φ.symm.toLinearMap)
+      refine unique_topology_of_t2 (isTopologicalAddGroup_induced φ.symm.toLinearMap)
         (continuousSMul_induced φ.symm.toMulActionHom) ?_
       rw [t2Space_iff]
       exact fun x y hxy =>
@@ -330,16 +337,6 @@ theorem coe_toContinuousLinearMap_symm :
 @[simp]
 theorem det_toContinuousLinearMap (f : E →ₗ[𝕜] E) :
     (LinearMap.toContinuousLinearMap f).det = LinearMap.det f :=
-  rfl
-
-@[deprecated coe_toContinuousLinearMap (since := "2025-12-23")]
-theorem ker_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
-    (LinearMap.toContinuousLinearMap f).ker = ker f := by
-  simp
-
-@[deprecated coe_toContinuousLinearMap (since := "2025-12-23")]
-theorem range_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
-    (LinearMap.toContinuousLinearMap f).range = range f :=
   rfl
 
 /-- A surjective linear map `f` with finite-dimensional codomain is an open map. -/
@@ -603,6 +600,23 @@ theorem ContinuousLinearMap.isStrictMap_of_finiteDimensional [T2Space F] [Finite
     IsStrictMap f := by
   rw [isStrictMap_iff_isQuotientMap_rangeFactorization]
   exact f.rangeRestrict.isQuotientMap_of_finiteDimensional (by simp)
+
+variable (E) in
+private lemma isNormableSpace_of_t2Space_finiteDimensional
+    [T2Space E] [FiniteDimensional 𝕜 E] : IsNormableSpace 𝕜 E := by
+  have e : E ≃L[𝕜] (Basis.ofVectorSpaceIndex 𝕜 E) → 𝕜 :=
+    (Basis.ofVectorSpace 𝕜 E).equivFun.toContinuousLinearEquiv
+  exact e.isNormableSpace
+
+/-- A finite dimensional topological vector space over a complete normed field is normable.
+
+Not registered as a global instance only for performance reasons. -/
+theorem isNormableSpace_of_finiteDimensional [FiniteDimensional 𝕜 E] : IsNormableSpace 𝕜 E := by
+  let F := SeparationQuotient E
+  have : IsNormableSpace 𝕜 F := isNormableSpace_of_t2Space_finiteDimensional _
+  let f : E →ₗ[𝕜] F := SeparationQuotient.mkCLM 𝕜 E
+  have : IsInducing f := SeparationQuotient.isInducing_mk
+  exact this.isNormableSpace
 
 /-- If `K` is a complete field and `V` is a finite-dimensional vector space over `K` (equipped with
 any topology so that `V` is a topological `K`-module, meaning `[IsTopologicalAddGroup V]`

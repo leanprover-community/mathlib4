@@ -41,7 +41,7 @@ open MonoidalOpposite
 
 /-- Define a left action of `C` on `D` from a right action of `Cᴹᵒᵖ` on `D` via
 the formula `c ⊙ₗ d := d ⊙ᵣ (mop c)`. -/
-@[simps -isSimp, implicit_reducible]
+@[simps -isSimp, instance_reducible]
 def leftActionOfMonoidalOppositeRightAction [MonoidalRightAction Cᴹᵒᵖ D] :
     MonoidalLeftAction C D where
   actionObj c d := d ⊙ᵣ mop c
@@ -125,8 +125,8 @@ def oppositeLeftAction [MonoidalLeftAction C D] :
   actionHomLeft f d := (f.unop ⊵ₗ unop d).op
   actionHomRight c _ _ f := (unop c ⊴ₗ f.unop).op
   actionHom f g := (f.unop ⊙ₗₘ g.unop).op
-  actionAssocIso _ _ _ := Iso.op <| (αₗ _ _ _).symm
-  actionUnitIso _ := Iso.op <| (λₗ _).symm
+  actionAssocIso _ _ _ := Iso.op (αₗ _ _ _).symm
+  actionUnitIso _ := Iso.op (λₗ _).symm
   actionHom_def
     | op f, op g => by
         apply Quiver.Hom.unop_inj
@@ -167,8 +167,8 @@ def leftActionOfOppositeLeftAction [MonoidalLeftAction Cᵒᵖ Dᵒᵖ] :
   actionHomLeft {c c'} f d := (f.op ⊵ₗ op d).unop
   actionHomRight c {d d'} f := (op c ⊴ₗ f.op).unop
   actionHom {c c'} {d d} f g := (f.op ⊙ₗₘ g.op).unop
-  actionAssocIso _ _ _ := Iso.unop <| (αₗ _ _ _).symm
-  actionUnitIso _ := Iso.unop <| (λₗ _).symm
+  actionAssocIso _ _ _ := Iso.unop (αₗ _ _ _).symm
+  actionUnitIso _ := Iso.unop (λₗ _).symm
   actionHom_def f g := by
     apply Quiver.Hom.op_inj
     simpa [MonoidalLeftAction.action_exchange] using
@@ -257,7 +257,7 @@ open MonoidalOpposite
 
 /-- Define a right action of `C` on `D` from a left action of `Cᴹᵒᵖ` on `D` via
 the formula `d ⊙ᵣ c := (mop c) ⊙ₗ d`. -/
-@[simps -isSimp, implicit_reducible]
+@[simps -isSimp, instance_reducible]
 def rightActionOfMonoidalOppositeLeftAction [MonoidalLeftAction Cᴹᵒᵖ D] :
     MonoidalRightAction C D where
   actionObj d c := mop c ⊙ₗ d
@@ -337,8 +337,8 @@ def oppositeRightAction [MonoidalRightAction C D] :
   actionHomLeft {c c'} f d := (f.unop ⊵ᵣ unop d).op
   actionHomRight c {d d'} f := (unop c ⊴ᵣ f.unop).op
   actionHom {c c'} {d d'} f g := (f.unop ⊙ᵣₘ g.unop).op
-  actionAssocIso _ _ _ := Iso.op <| (αᵣ _ _ _).symm
-  actionUnitIso _ := Iso.op <| (ρᵣ _).symm
+  actionAssocIso _ _ _ := Iso.op (αᵣ _ _ _).symm
+  actionUnitIso _ := Iso.op (ρᵣ _).symm
   actionHom_def
     | op f, op g => by
         apply Quiver.Hom.unop_inj
@@ -379,8 +379,8 @@ def rightActionOfOppositeRightAction [MonoidalRightAction Cᵒᵖ Dᵒᵖ] :
   actionHomLeft {c c'} f d := (f.op ⊵ᵣ op d).unop
   actionHomRight c {d d'} f := (op c ⊴ᵣ f.op).unop
   actionHom {c c'} {d d} f g := (f.op ⊙ᵣₘ g.op).unop
-  actionAssocIso _ _ _ := Iso.unop <| (αᵣ _ _ _).symm
-  actionUnitIso _ := Iso.unop <| (ρᵣ _).symm
+  actionAssocIso _ _ _ := Iso.unop (αᵣ _ _ _).symm
+  actionUnitIso _ := Iso.unop (ρᵣ _).symm
   actionHom_def f g := by
     apply Quiver.Hom.op_inj
     simpa [MonoidalRightAction.action_exchange] using

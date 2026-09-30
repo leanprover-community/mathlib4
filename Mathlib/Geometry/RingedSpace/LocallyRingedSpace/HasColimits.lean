@@ -5,10 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
-public import Mathlib.Algebra.Category.Ring.Constructions
 public import Mathlib.Geometry.RingedSpace.OpenImmersion
-public import Mathlib.CategoryTheory.Limits.Types.Coequalizers
+import Mathlib.CategoryTheory.Limits.Types.Coequalizers
 public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 
 /-!
@@ -80,7 +78,7 @@ noncomputable def coproductCofan : Cocone F where
   pt := coproduct F
   ι :=
     { app j := LocallyRingedSpace.homMk (colimit.ι (F ⋙ forgetToSheafedSpace) j)
-      naturality := fun ⟨j⟩ ⟨j'⟩ ⟨⟨(f : j = j')⟩⟩ => by subst f; simp }
+      naturality := fun ⟨j⟩ ⟨j'⟩ ⟨(f : j = j')⟩ => by subst f; simp }
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -95,10 +93,8 @@ noncomputable def coproductCofanIsColimit : IsColimit (coproductCofan F) where
           (colimit.ι (F ⋙ forgetToSheafedSpace) i).hom
           (colimit.desc (F ⋙ forgetToSheafedSpace) (forgetToSheafedSpace.mapCocone s)).hom y
         simp only [← IsIso.comp_inv_eq,
-          ← InducedCategory.comp_hom,
-          PresheafedSpace.stalkMap.congr_hom _ _
-            (congr_arg (InducedCategory.Hom.hom) (colimit.ι_desc
-              (forgetToSheafedSpace.mapCocone s) i))] at this
+          ← InducedCategory.comp_hom, PresheafedSpace.stalkMap.congr_hom _ _ congr($(colimit.ι_desc
+              (forgetToSheafedSpace.mapCocone s) i).hom)] at this
         rw [← this]
         dsimp
         infer_instance)
@@ -108,7 +104,7 @@ noncomputable def coproductCofanIsColimit : IsColimit (coproductCofan F) where
   uniq s f h :=
     LocallyRingedSpace.forgetToSheafedSpace.map_injective
       (IsColimit.uniq _ (forgetToSheafedSpace.mapCocone s) f.toShHom fun j =>
-        congr_arg LocallyRingedSpace.Hom.toShHom (h j))
+        congr($(h j).toShHom))
 
 instance : HasColimitsOfShape (Discrete ι) LocallyRingedSpace.{u} :=
   ⟨fun F => ⟨⟨⟨_, coproductCofanIsColimit F⟩⟩⟩⟩
@@ -177,7 +173,6 @@ noncomputable def imageBasicOpen : Opens Y :=
       ((coequalizer.π f.toShHom g.toShHom).hom.c.app (op U)) s)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem imageBasicOpen_image_preimage :
     (coequalizer.π f.toShHom g.toShHom).hom.base ⁻¹'
       ((coequalizer.π f.toShHom g.toShHom).hom.base ''
@@ -274,7 +269,7 @@ noncomputable def coequalizerCofork : Cofork f g :=
 theorem isLocalHom_stalkMap_congr {X Y : RingedSpace} (f g : X ⟶ Y) (H : f = g) (x)
     (h : IsLocalHom (f.hom.stalkMap x).hom) :
     IsLocalHom (g.hom.stalkMap x).hom := by
-  rw [PresheafedSpace.stalkMap.congr_hom _ _ (congr_arg InducedCategory.Hom.hom H.symm) x]
+  rw [PresheafedSpace.stalkMap.congr_hom _ _ congr($(H.symm).hom) x]
   infer_instance
 
 set_option backward.isDefEq.respectTransparency false in

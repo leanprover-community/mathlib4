@@ -5,11 +5,8 @@ Authors: Thomas Browning, Patrick Lutz, Yongle Hu, Jingting Wang
 -/
 module
 
-public import Mathlib.FieldTheory.Fixed
-public import Mathlib.FieldTheory.Normal.Closure
 public import Mathlib.FieldTheory.PrimitiveElement
 public import Mathlib.FieldTheory.SeparableClosure
-public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 
 /-!
 # Galois Extensions
@@ -271,9 +268,18 @@ def fixingSubgroupEquiv : fixingSubgroup K ≃* Gal(E/K) where
   invFun ϕ := ⟨ϕ.restrictScalars _, ϕ.commutes⟩
   map_mul' _ _ := by ext; rfl
 
+@[simp]
+theorem coe_fixingSubgroupEquiv_apply (σ : K.fixingSubgroup) :
+    ⇑(K.fixingSubgroupEquiv σ) = ⇑σ.1 :=
+  rfl
+
+@[simp]
+theorem coe_fixingSubgroupEquiv_symm_apply (σ : Gal(E/K)) :
+    ⇑(K.fixingSubgroupEquiv.symm σ).1 = ⇑σ :=
+  rfl
+
 theorem fixingSubgroup_fixedField [FiniteDimensional F E] : fixingSubgroup (fixedField H) = H := by
   have H_le : H ≤ fixingSubgroup (fixedField H) := (le_iff_le _ _).mp le_rfl
-  classical
   suffices Nat.card H = Nat.card (fixingSubgroup (fixedField H)) by
     exact SetLike.coe_injective (Set.eq_of_inclusion_surjective
       ((Nat.bijective_iff_injective_and_card (Set.inclusion H_le)).mpr
@@ -289,6 +295,16 @@ A subgroup is isomorphic to the Galois group of its fixed field.
 def subgroupEquivAlgEquiv [FiniteDimensional F E] (H : Subgroup Gal(E/F)) :
     H ≃* Gal(E/IntermediateField.fixedField H) :=
   (MulEquiv.subgroupCongr (fixingSubgroup_fixedField H).symm).trans (fixingSubgroupEquiv _)
+
+@[simp]
+theorem coe_subgroupEquivAlgEquiv_apply [FiniteDimensional F E] (σ : H) :
+    ⇑(subgroupEquivAlgEquiv H σ) = ⇑σ.1 :=
+  rfl
+
+@[simp]
+theorem coe_subgroupEquivAlgEquiv_symm_apply [FiniteDimensional F E] (σ : Gal(E/fixedField H)) :
+    ⇑((subgroupEquivAlgEquiv H).symm σ).1 = ⇑σ :=
+  rfl
 
 instance fixedField.smul : SMul K (fixedField (fixingSubgroup K)) where
   smul x y := ⟨x * y, fun ϕ => by
@@ -320,7 +336,6 @@ theorem fixedField_fixingSubgroup [FiniteDimensional F E] [h : IsGalois F E] :
   suffices
     finrank K E = finrank (IntermediateField.fixedField (IntermediateField.fixingSubgroup K)) E by
     exact (IntermediateField.eq_of_le_of_finrank_eq' K_le this).symm
-  classical
   rw [IntermediateField.finrank_fixedField_eq_card,
     Nat.card_congr (IntermediateField.fixingSubgroupEquiv K).toEquiv]
   exact (card_aut_eq_finrank K E).symm
@@ -485,7 +500,7 @@ theorem is_separable_splitting_field [FiniteDimensional F E] [IsGalois F E] :
 theorem of_fixedField_eq_bot [FiniteDimensional F E]
     (h : IntermediateField.fixedField (⊤ : Subgroup Gal(E/F)) = ⊥) : IsGalois F E := by
   rw [← isGalois_iff_isGalois_bot, ← h]
-  classical exact IsGalois.of_fixed_field E (⊤ : Subgroup Gal(E/F))
+  exact IsGalois.of_fixed_field E (⊤ : Subgroup Gal(E/F))
 
 /-- Let $E / F$ be a finite extension of fields. If $|\text{Aut}(E/F)| = [E : F]$, then
 $E$ is Galois over $F$. -/
@@ -494,7 +509,6 @@ theorem of_card_aut_eq_finrank [FiniteDimensional F E]
     (h : Nat.card Gal(E/F) = finrank F E) : IsGalois F E := by
   apply of_fixedField_eq_bot
   have p : 0 < finrank (IntermediateField.fixedField (⊤ : Subgroup Gal(E/F))) E := finrank_pos
-  classical
   rw [← IntermediateField.finrank_eq_one_iff, ← mul_left_inj' (ne_of_lt p).symm,
     finrank_mul_finrank, ← h, one_mul, IntermediateField.finrank_fixedField_eq_card]
   apply Nat.card_congr
@@ -567,7 +581,7 @@ theorem sup_right (K L : IntermediateField F E) [IsGalois F K] [FiniteDimensiona
   constructor
   · rw [Polynomial.map_map, ← IsScalarTower.algebraMap_eq]
     exact Polynomial.Splits.of_algHom hT₂.1 (IsScalarTower.toAlgHom _ _ _)
-  · have h' : T'.rootSet E = T.rootSet E := by simp [Set.ext_iff, Polynomial.mem_rootSet', T']
+  · have h' : T'.rootSet E = T.rootSet E := by simp [T']
     rw [← lift_inj, lift_adjoin, ← coe_val, hT₂.1.image_rootSet] at hT₂
     rw [← restrictScalars_eq_top_iff (K := F), restrictScalars_adjoin, adjoin_union, adjoin_self,
       h', hT₂.2, lift_top, sup_comm, h]
@@ -627,7 +641,9 @@ theorem restrictRestrictAlgEquivMapHom_apply (φ : Gal(E/L)) (x : K) :
 theorem restrictRestrictAlgEquivMapHom_injective (h : K ⊔ L = ⊤) :
     Function.Injective (restrictRestrictAlgEquivMapHom F K L E) := by
   refine (injective_iff_map_eq_one _).mpr fun φ hφ ↦ ?_
-  suffices h : MulSemiringAction.toAlgAut Gal(E/L) F E φ = 1 by rwa [AlgEquiv.ext_iff] at h ⊢
+  suffices h : MulSemiringAction.toAlgAut Gal(E/L) F E φ = 1 by
+    rw [AlgEquiv.ext_iff] at h ⊢
+    assumption
   rw [← Subgroup.mem_bot, ← fixingSubgroup_top, ← h, fixingSubgroup_sup]
   exact ⟨fun x ↦ (hφ ▸ restrictRestrictAlgEquivMapHom_apply K L φ x).symm, φ.commutes⟩
 
@@ -643,7 +659,7 @@ theorem restrictRestrictAlgEquivMapHom_surjective [FiniteDimensional F K] [Finit
     refine mem_bot.mp <| (IsGalois.mem_bot_iff_fixed _).mpr fun φ ↦ ?_
     rw [← restrictRestrictAlgEquivMapHom_apply K L φ ⟨x, hx₁⟩]
     rw [mem_fixedField_iff] at hx₂
-    exact congr_arg ((↑) : K → E) <| hx₂ (restrictRestrictAlgEquivMapHom F K L E φ) ⟨φ, rfl⟩
+    congrm $(hx₂ (restrictRestrictAlgEquivMapHom F K L E φ) ⟨φ, rfl⟩)
   obtain ⟨z, rfl⟩ : y ∈ (⊥ : IntermediateField F E) := h ▸ mem_inf.mpr ⟨hx₁, hy⟩
   exact mem_bot.mp ⟨z, rfl⟩
 
@@ -699,13 +715,66 @@ theorem finrank_eq_fixingSubgroup_index (L : IntermediateField F E') [IsGalois F
   classical
   rw [← IsGalois.card_fixingSubgroup_eq_finrank L', ← IsGalois.card_aut_eq_finrank F E] at h
   rw [← L'.fixingSubgroup.index_mul_card, Nat.mul_left_inj Finite.card_pos.ne'] at h
-  rw [(restrict_algEquiv hle).toLinearEquiv.finrank_eq, h, ← L'.map_fixingSubgroup_index E']
+  rw [(restrictAlgEquiv hle).toLinearEquiv.finrank_eq, h, ← L'.map_fixingSubgroup_index E']
   congr 2
   exact lift_restrict hle
 
 end IntermediateField
 
 end restrictRestrictAlgEquivMapHom
+
+section Compositum
+
+variable {F : Type*} [Field F]
+
+/-- The kernel of the restriction homomorphism `Gal(K₁/F) →* Gal(E/F)` is the subgroup fixing
+the image of `E` in `K₁` pointwise. -/
+theorem AlgEquiv.ker_restrictNormalHom {K₁ : Type*} [Field K₁] [Algebra F K₁]
+    (E : Type*) [Field E] [Algebra F E] [Algebra E K₁] [IsScalarTower F E K₁] [Normal F E] :
+    (AlgEquiv.restrictNormalHom E (K₁ := K₁)).ker
+      = (IsScalarTower.toAlgHom F E K₁).fieldRange.fixingSubgroup := by
+  ext σ
+  simp only [MonoidHom.mem_ker, IntermediateField.mem_fixingSubgroup_iff, AlgEquiv.ext_iff,
+    AlgHom.mem_fieldRange, IsScalarTower.coe_toAlgHom', AlgEquiv.one_apply]
+  refine ⟨?_, fun h y ↦
+    (algebraMap E K₁).injective ((AlgEquiv.restrictNormal_commutes σ E y).trans (h _ ⟨y, rfl⟩))⟩
+  rintro h x ⟨y, rfl⟩
+  exact (AlgEquiv.restrictNormal_commutes σ E y).symm.trans (congrArg (algebraMap E K₁) (h y))
+
+namespace IntermediateField
+
+variable {E : Type*} [Field E] [Algebra F E]
+
+/-- The restriction homomorphism embedding the automorphism group of a compositum `K ⊔ L`
+into the product of the automorphism groups of two normal factors `K` and `L`,
+`σ ↦ (σ|_K, σ|_L)`. -/
+@[simps apply]
+noncomputable def restrictNormalHomSupProd (K L : IntermediateField F E) [Normal F K] [Normal F L] :
+    Gal(↑(K ⊔ L)/F) →* Gal(K/F) × Gal(L/F) :=
+  letI : Algebra K ↑(K ⊔ L) := (inclusion le_sup_left).toAlgebra
+  letI : Algebra L ↑(K ⊔ L) := (inclusion le_sup_right).toAlgebra
+  { toFun σ := (AlgEquiv.restrictNormalHom K σ, AlgEquiv.restrictNormalHom L σ)
+    map_one' := by simp
+    map_mul' := by simp }
+
+/-- The restriction homomorphism into the product of the two factor automorphism groups is
+injective: an automorphism of the compositum is determined by its restrictions to `K` and `L`. -/
+theorem restrictNormalHomSupProd_injective (K L : IntermediateField F E) [Normal F K] [Normal F L] :
+    Function.Injective (restrictNormalHomSupProd K L) := by
+  let : Algebra K ↑(K ⊔ L) := (inclusion le_sup_left).toAlgebra
+  let : Algebra L ↑(K ⊔ L) := (inclusion le_sup_right).toAlgebra
+  rw [← MonoidHom.ker_eq_bot_iff]
+  suffices (IsScalarTower.toAlgHom F K ↑(K ⊔ L)).fieldRange ⊔
+      (IsScalarTower.toAlgHom F L ↑(K ⊔ L)).fieldRange = ⊤ by
+    rw [← fixingSubgroup_top, ← this, fixingSubgroup_sup, ← AlgEquiv.ker_restrictNormalHom,
+      ← AlgEquiv.ker_restrictNormalHom]
+    exact MonoidHom.ker_prod _ _
+  change restrict (le_sup_left : K ≤ K ⊔ L) ⊔ restrict (le_sup_right : L ≤ K ⊔ L) = ⊤
+  exact lift_injective _ <| by simp [lift_sup, lift_restrict, lift_top]
+
+end IntermediateField
+
+end Compositum
 
 namespace Algebra
 
@@ -727,7 +796,7 @@ instance IsQuadraticExtension.isCyclic : IsCyclic Gal(K/F) := by
   · exact @isCyclic_of_subsingleton _ _ (Finite.card_le_one_iff_subsingleton.mp h.le)
   · exact isCyclic_of_prime_card h
 
-@[deprecated inferInstance (since := "2026-04-09")]
+@[deprecated inferInstance +typeChanged (since := "2026-04-09")]
 theorem IsQuadraticExtension.isMulCommutative_galoisGroup : IsMulCommutative Gal(K/F) :=
   inferInstance
 

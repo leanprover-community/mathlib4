@@ -32,7 +32,7 @@ open CategoryTheory MorphismProperty Limits
 
 namespace AlgebraicGeometry
 
-variable {X Y Z S : Scheme} (f : X ⟶ S) (g : Y ⟶ S)
+variable {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S)
 
 /-- We say that morphism `f : X ⟶ Y` is geometrically integral if for all `Spec K ⟶ Y` with `K`
 a field, `X ×[Y] Spec K` is integral. -/
@@ -66,15 +66,18 @@ lemma GeometricallyIntegral.of_geometricallyReduced_of_geometricallyIrreducible
 instance : IsStableUnderBaseChange @GeometricallyIntegral :=
   GeometricallyIntegral.eq_geometrically ▸ inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [GeometricallyIntegral g] : GeometricallyIntegral (pullback.fst f g) :=
   MorphismProperty.pullback_fst f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [GeometricallyIntegral f] : GeometricallyIntegral (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g inferInstance
 
 instance (V : S.Opens) [GeometricallyIntegral f] : GeometricallyIntegral (f ∣_ V) :=
   MorphismProperty.of_isPullback (isPullback_morphismRestrict ..).flip ‹_›
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (s : S) [GeometricallyIntegral f] :
     GeometricallyIntegral (f.fiberToSpecResidueField s) :=
   MorphismProperty.pullback_snd _ _ inferInstance

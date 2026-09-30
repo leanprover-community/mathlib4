@@ -39,9 +39,9 @@ noncomputable section
 universe u u' v v' u₁' w w'
 
 variable {R : Type u} {S : Type u'} {M : Type v} {M' : Type v'} {M₁ : Type v}
-variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type*}
+variable {ι : Type w} {η : Type u₁'} {φ : η → Type*}
 
-open Basis Cardinal DirectSum Function Module Set Submodule
+open Cardinal DirectSum Function Module Set Submodule
 
 section Quotient
 
@@ -62,7 +62,7 @@ theorem LinearIndependent.sumElim_of_quotient
 theorem LinearIndepOn.union_of_quotient {s t : Set ι} {f : ι → M} (hs : LinearIndepOn R f s)
     (ht : LinearIndepOn R (mkQ (span R (f '' s)) ∘ f) t) : LinearIndepOn R f (s ∪ t) := by
   apply hs.union ht.of_comp
-  convert! (Submodule.range_ker_disjoint ht).symm
+  convert (Submodule.range_ker_disjoint ht).symm
   · simp
   aesop
 
@@ -273,8 +273,6 @@ variable [∀ i, AddCommMonoid (φ i)] [∀ i, Module R (φ i)] [∀ i, Module.F
 
 open Module.Free
 
-open LinearMap
-
 /-- The rank of a finite product of free modules is the sum of the ranks. -/
 -- this result is not true without the freeness assumption
 @[simp]
@@ -475,7 +473,7 @@ theorem finrank_span_set_eq_card {s : Set M} [Fintype s] (hs : LinearIndepOn R i
 
 theorem finrank_span_finset_eq_card {s : Finset M} (hs : LinearIndepOn R id (s : Set M)) :
     finrank R (span R (s : Set M)) = s.card := by
-  convert! finrank_span_set_eq_card (s := (s : Set M)) hs
+  convert finrank_span_set_eq_card (s := (s : Set M)) hs
   ext
   simp
 
@@ -492,7 +490,7 @@ lemma finrank_le_of_span_eq_top {ι : Type*} [Fintype ι] {v : ι → M}
     (hv : Submodule.span R (Set.range v) = ⊤) : finrank R M ≤ Fintype.card ι := by
   classical
   rw [← finrank_top, ← hv]
-  exact (finrank_span_le_card _).trans (by convert! Fintype.card_range_le v; rw [Set.toFinset_card])
+  exact (finrank_span_le_card _).trans (by convert Fintype.card_range_le v; rw [Set.toFinset_card])
 
 @[simp]
 lemma Pi.dim_spanSubset [Finite ι] [Nontrivial R] {s : Set ι} :
@@ -501,7 +499,7 @@ lemma Pi.dim_spanSubset [Finite ι] [Nontrivial R] {s : Set ι} :
   have := Fintype.ofFinite ι
   rw [Pi.spanSubset, finrank_span_set_eq_card <| (Pi.basisFun R ι).linearIndepOn _ |>.id_image,
     Set.toFinset_card, Fintype.card_eq_nat_card, Nat.card_coe_set_eq]
-  exact Set.ncard_image_of_injective s <| (Pi.basisFun R ι).injective
+  exact Set.ncard_image_of_injective s (Pi.basisFun R ι).injective
 
 end Span
 
@@ -606,7 +604,7 @@ theorem sumQuot_repr_left (i : m) :
 theorem sumQuot_repr_inl (w : W) (i : m) :
     (sumQuot bW bQ).repr w (Sum.inl i) = bW.repr w i := by
   classical
-  refine Eq.symm <| (bW.repr_apply_eq
+  refine Eq.symm (bW.repr_apply_eq
       (fun w i => (sumQuot bW bQ).repr (W.subtype w) (Sum.inl i)) ?_ ?_ ?_ w i) <;>
   aesop (add simp Finsupp.single_apply)
 

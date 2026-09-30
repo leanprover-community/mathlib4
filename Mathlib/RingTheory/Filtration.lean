@@ -6,7 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Polynomial.Module.Basic
-public import Mathlib.RingTheory.Finiteness.Nakayama
+import Mathlib.RingTheory.Finiteness.Nakayama
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 public import Mathlib.RingTheory.ReesAlgebra
 
@@ -152,11 +152,11 @@ theorem bot_N : (⊥ : I.Filtration M).N = ⊥ :=
 
 @[simp]
 theorem iSup_N {ι : Sort*} (f : ι → I.Filtration M) : (iSup f).N = ⨆ i, (f i).N :=
-  congr_arg sSup (Set.range_comp _ _).symm
+  congr(sSup $((Set.range_comp ..).symm))
 
 @[simp]
 theorem iInf_N {ι : Sort*} (f : ι → I.Filtration M) : (iInf f).N = ⨅ i, (f i).N :=
-  congr_arg sInf (Set.range_comp _ _).symm
+  congr(sInf $((Set.range_comp ..).symm))
 
 instance : PartialOrder (I.Filtration M) :=
   PartialOrder.lift _ fun _ _ ↦ Ideal.Filtration.ext
@@ -203,7 +203,7 @@ theorem Stable.exists_pow_smul_eq_of_ge (h : F.Stable) :
   obtain ⟨n₀, hn₀⟩ := h.exists_pow_smul_eq
   use n₀
   intro n hn
-  convert! hn₀ (n - n₀)
+  convert hn₀ (n - n₀)
   rw [add_comm, tsub_add_cancel_of_le hn]
 
 theorem stable_iff_exists_pow_smul_eq_of_ge :
@@ -287,7 +287,6 @@ theorem submodule_span_single :
   rw [← Submodule.span_closure, submodule_closure_single, Submodule.coe_toAddSubmonoid]
   exact Submodule.span_eq (Filtration.submodule F)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     F.submodule = Submodule.span _ (⋃ i ≤ n₀, single R i '' (F.N i : Set M)) ↔
       ∀ n ≥ n₀, I • F.N n = F.N (n + 1) := by
@@ -300,12 +299,12 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     intro x hx
     obtain ⟨l, hl⟩ := (Finsupp.mem_span_iff_linearCombination _ _ _).mp (H _ ⟨x, hx, rfl⟩)
     replace hl := congr_arg (fun f : PolynomialModule R M => f.coeff (n + 1)) hl
-    rw [PolynomialModule.coeff_single, Finsupp.single_apply, if_pos rfl] at hl
+    rw [PolynomialModule.coeff_single, Finsupp.single_apply, ite_eq_left rfl] at hl
     rw [← hl, Finsupp.linearCombination_apply, PolynomialModule.coeff_finsuppSum, Finsupp.sum_apply]
     apply Submodule.sum_mem _ _
     rintro ⟨_, _, ⟨n', rfl⟩, _, ⟨hn', rfl⟩, m, hm, rfl⟩ -
     dsimp only [Subtype.coe_mk]
-    rw [Subalgebra.smul_def, smul_single_apply, if_pos (show n' ≤ n + 1 by lia)]
+    rw [Subalgebra.smul_def, smul_single_apply, ite_eq_left (show n' ≤ n + 1 by lia)]
     have e : n' ≤ n := by lia
     have := F.pow_smul_le_pow_smul (n - n') n' 1
     rw [tsub_add_cancel_of_le e, pow_one, add_comm _ 1, ← add_tsub_assoc_of_le e, add_comm] at this
@@ -331,6 +330,7 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     · rw [PolynomialModule.single_add]
       exact F'.add_mem hx hy
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If the components of a filtration are finitely generated, then the filtration is stable iff
 its associated submodule of is finitely generated. -/
 theorem submodule_fg_iff_stable (hF' : ∀ i, (F.N i).FG) : F.submodule.FG ↔ F.Stable := by
@@ -458,10 +458,6 @@ theorem Ideal.iInf_pow_smul_eq_bot_of_isTorsionFree [IsDomain R]
   obtain ⟨r, hr⟩ := this.mp hx
   have := smul_left_injective _ hx' (hr.trans (one_smul _ x).symm)
   exact I.eq_top_iff_one.not.mp h (this ▸ r.prop)
-
-@[deprecated (since := "2026-01-17")]
-alias Ideal.iInf_pow_smul_eq_bot_of_noZeroSMulDivisors :=
-  Ideal.iInf_pow_smul_eq_bot_of_isTorsionFree
 
 /-- **Krull's intersection theorem** for Noetherian domains. -/
 theorem Ideal.iInf_pow_eq_bot_of_isDomain [IsNoetherianRing R] [IsDomain R] (h : I ≠ ⊤) :

@@ -6,7 +6,6 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Constructors
-public import Mathlib.RingTheory.LocalProperties.Basic
 public import Mathlib.RingTheory.RingHom.Locally
 
 /-!
@@ -110,6 +109,7 @@ Also see `affineLocally_iff_affineOpens_le`. -/
 abbrev affineLocally : MorphismProperty Scheme.{u} :=
   targetAffineLocally (sourceAffineLocally P)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem sourceAffineLocally_respectsIso (h₁ : RingHom.RespectsIso P) :
     (sourceAffineLocally P).toProperty.RespectsIso := by
   apply AffineTargetMorphismProperty.respectsIso_mk
@@ -128,6 +128,7 @@ theorem affineLocally_respectsIso (h : RingHom.RespectsIso P) : (affineLocally P
   letI := sourceAffineLocally_respectsIso P h
   inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 open Scheme in
 theorem sourceAffineLocally_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y)
     (U : Y.Opens) (hU : IsAffineOpen U) :
@@ -189,6 +190,7 @@ open RingHom
 
 variable {X Y : Scheme.{u}} {f : X ⟶ Y}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `P` holds for `f` over affine opens `U₂` of `Y` and `V₂` of `X` and `U₁` (resp. `V₁`) are
 open affine neighborhoods of `x` (resp. `f.base x`), then `P` also holds for `f`
 over some basic open of `U₁` (resp. `V₁`). -/
@@ -477,6 +479,7 @@ lemma stalkwise {P} (hP : RingHom.RespectsIso P) :
     S _ _ φ
   exact (stalkwise_SpecMap_iff hP (CommRingCat.ofHom φ)).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma stableUnderComposition (hP : RingHom.StableUnderComposition Q) :
     P.IsStableUnderComposition where
   comp_mem {X Y Z} f g hf hg := by
@@ -638,7 +641,7 @@ lemma iff_exists_appLE_locally
   · obtain ⟨U, V, hxV, e, hf⟩ := hf x
     use U, V, hxV, e
     simp only [iff_of_isAffine (P := P), Scheme.Hom.appLE, homOfLE_leOfHom] at hf ⊢
-    have : (toMorphismProperty (Locally Q)).RespectsIso := toMorphismProperty_respectsIso_iff.mp <|
+    have : (toMorphismProperty (Locally Q)).RespectsIso := toMorphismProperty_respectsIso_iff.mp
       (isLocal_ringHomProperty P).respectsIso
     exact (MorphismProperty.arrow_mk_iso_iff (toMorphismProperty (Locally Q))
       (arrowResLEAppIso f U V e)).mpr (locally_of hQi _ hf)

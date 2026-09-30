@@ -10,10 +10,9 @@ public import Mathlib.RingTheory.QuasiFinite.Weakly
 
 /-! # Quasi-finite primes in polynomial algebras -/
 
-@[expose] public section
+public section
 
-variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
-  [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
 namespace Polynomial
 
@@ -73,7 +72,7 @@ lemma not_ker_le_map_C_of_surjective_of_weaklyQuasiFiniteAt
   have H' : (RingHom.ker f).map (mapRingHom (algebraMap R p.ResidueField)) = ⊥ := by
     rw [← le_bot_iff, Ideal.map_le_iff_le_comap]
     intro x hx
-    simpa [Polynomial.ext_iff, Ideal.mem_map_C_iff] using! H hx
+    simpa [Polynomial.ext_iff, Ideal.mem_map_C_iff, p] using! H hx
   let g' : p.ResidueField[X] ≃ₐ[p.ResidueField] p.Fiber S :=
     .trans ((AlgEquiv.quotientBot _ _).symm.trans (Ideal.quotientEquivAlgOfEq _ H'.symm))
       (Polynomial.fiberEquivQuotient f hf _).symm

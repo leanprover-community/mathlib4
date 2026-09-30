@@ -5,12 +5,8 @@ Authors: Jineon Baek, Seewoo Lee
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Expand
-public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.NumberTheory.FLT.Basic
 public import Mathlib.NumberTheory.FLT.MasonStothers
-public import Mathlib.RingTheory.Polynomial.Content
-public import Mathlib.Tactic.GCongr
 import Mathlib.RingTheory.Polynomial.IsIntegral
 
 /-!
@@ -54,7 +50,7 @@ private lemma rot_coprime
   rw [add_eq_zero_iff_neg_eq] at heq
   rw [← IsCoprime.pow_iff hq.bot_lt hr.bot_lt, ← isCoprime_mul_units_left hCv hCw,
     ← heq, IsCoprime.neg_right_iff]
-  convert! IsCoprime.add_mul_left_right hab.symm 1 using 2
+  convert IsCoprime.add_mul_left_right hab.symm 1 using 2
   rw [mul_one]
 
 private lemma ineq_pqr_contradiction {p q r a b c : ℕ}
@@ -263,7 +259,7 @@ theorem fermatLastTheoremWith'_polynomial {n : ℕ} (hn : 3 ≤ n) (chn : (n : k
     rw [← hc', C_ne_zero] at hc
     exact ⟨ha.right.isUnit_C, hb.right.isUnit_C, hc.right.isUnit_C⟩
   apply flt hn chn ha.right hb.right hc.right _ heq
-  convert! isCoprime_div_gcd_div_gcd _
+  convert isCoprime_div_gcd_div_gcd _
   · exact EuclideanDomain.eq_div_of_mul_eq_left ha.left eq_a.symm
   · exact EuclideanDomain.eq_div_of_mul_eq_left ha.left eq_b.symm
   · rw [eq_b]

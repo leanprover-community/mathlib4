@@ -17,7 +17,7 @@ We prove that the discrete topology is
 * equal to the order topology in linear orders which are also `PredOrder` and `SuccOrder`,
 * metrizable.
 
-When importing this file and `Data.Nat.SuccPred`, the instances `SecondCountableTopology ℕ`
+When importing this file and `Order.SuccPred.Nat`, the instances `SecondCountableTopology ℕ`
 and `OrderTopology ℕ` become available.
 
 -/
@@ -25,7 +25,7 @@ and `OrderTopology ℕ` become available.
 public section
 
 
-open Order Set TopologicalSpace Filter
+open Set TopologicalSpace Filter
 
 variable {α : Type*} [TopologicalSpace α]
 
