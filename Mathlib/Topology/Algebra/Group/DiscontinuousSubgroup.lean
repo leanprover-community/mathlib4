@@ -36,7 +36,8 @@ lemma Subgroup.properlyDiscontinuousSMul_of_le
     ProperlyDiscontinuousSMul H α := by
   rw [Subgroup.properlyDiscontinuousSMul_iff] at hG ⊢
   intro K L hK hL
-  exact (hG hK hL).subset fun _ ⟨hg, hg'⟩ ↦ ⟨hGH hg, hg'⟩
+  grw [hGH]
+  exact hG hK hL
 
 /-- If `Γ` acts properly discontinuously, so does every subgroup of `Γ`. -/
 @[to_additive /-- If `Γ` acts properly discontinuously, so does every additive subgroup of `Γ`. -/]
