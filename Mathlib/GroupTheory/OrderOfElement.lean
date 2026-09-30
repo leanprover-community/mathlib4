@@ -937,7 +937,7 @@ lemma not_isMulTorsionFree_iff_isOfFinOrder :
 
 @[to_additive (attr := simp)]
 lemma zpowers_mabs [LinearOrder G] (g : G) : zpowers |g|ₘ = zpowers g :=
-  mabs_by_cases (zpowers ·  = zpowers g) rfl zpowers_inv
+  mabs_by_cases (zpowers · = zpowers g) rfl zpowers_inv
 
 @[to_additive]
 lemma IsMulTorsionFree.orderOf_le_one [IsMulTorsionFree G] (g : G) :
