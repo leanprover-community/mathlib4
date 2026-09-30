@@ -5,9 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Order.Interval.Set.ProjIcc
+import Mathlib.Order.Interval.Set.ProjIcc
 public import Mathlib.Data.Finset.Sort
-public import Mathlib.Tactic.Finiteness
 public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 public import Mathlib.Topology.Instances.ENNReal.Lemmas
 public import Mathlib.Topology.Order.LeftRightLim

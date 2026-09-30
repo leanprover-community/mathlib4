@@ -96,7 +96,7 @@ theorem tendsto_norm_le_and_mk_eq_div_atTop :
                 (toMixed K).toLinearMap)
               (F := fun x ↦ mixedEmbedding.norm (toMixed K x)) (X :=
               (toMixed K) ⁻¹' (fundamentalCone K)) (fun _ _ _ h ↦ ?_) (fun _ _ h ↦ ?_)
-              ((toMixed K).antilipschitz.isBounded_preimage (isBounded_normLeOne K)) ?_ ?_).mul
+              ((toMixed K).antilipschitzWith.isBounded_preimage (isBounded_normLeOne K)) ?_ ?_).mul
           (tendsto_const_nhds (x := (absNorm (J : Ideal (𝓞 K)) : ℝ) * (torsionOrder K : ℝ)⁻¹))).comp
       (tendsto_id.atTop_mul_const' <| Nat.cast_pos.mpr (absNorm_pos_of_nonZeroDivisors J)) using
     2 with s

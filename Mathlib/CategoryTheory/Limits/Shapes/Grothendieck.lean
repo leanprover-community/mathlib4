@@ -172,7 +172,7 @@ set_option backward.isDefEq.respectTransparency false in
 `coconeOfFiberwiseCocone G c` -/
 def isColimitCoconeOfFiberwiseCocone {c : Cocone (fiberwiseColimit G)} (hc : IsColimit c) :
     IsColimit (coconeOfCoconeFiberwiseColimit c) where
-  desc s := hc.desc <| Cocone.mk s.pt <|
+  desc s := hc.desc <| Cocone.mk s.pt
     { app := fun X => colimit.desc (Grothendieck.ι F X ⋙ G) (s.whisker _) }
   uniq s m hm := hc.hom_ext <| fun X => by
     simp only [fiberwiseColimit_obj, IsColimit.fac]

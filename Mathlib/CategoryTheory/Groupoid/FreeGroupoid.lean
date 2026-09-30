@@ -5,7 +5,6 @@ Authors: Rémi Bottinelli
 -/
 module
 
-public import Mathlib.CategoryTheory.Groupoid
 public import Mathlib.CategoryTheory.PathCategory.Basic
 
 /-!
@@ -122,7 +121,7 @@ instance : Category (Quiver.FreeGroupoid V) :=
 
 /-- The inverse of an arrow in the free groupoid -/
 def quotInv {X Y : Quiver.FreeGroupoid V} (f : X ⟶ Y) : Y ⟶ X :=
-  Quot.liftOn f (fun pp => Quot.mk _ <| pp.reverse) fun pp qq con =>
+  Quot.liftOn f (fun pp => Quot.mk _ pp.reverse) fun pp qq con =>
     Quot.sound <| congr_reverse pp qq con
 
 instance instGroupoid : Groupoid (Quiver.FreeGroupoid V) where

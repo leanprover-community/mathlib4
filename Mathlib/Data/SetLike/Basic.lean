@@ -204,10 +204,12 @@ lemma mem_of_subsingleton [Subsingleton B] (S : A) [h : Nonempty S] {b : B} : b 
 
 /-- If `s` is a proper element of a `SetLike` structure (i.e., `s ≠ ⊤`) and the top element
 coerces to the universal set, then there exists an element not in `s`. -/
-lemma exists_not_mem_of_ne_top [LE A] [OrderTop A] (s : A) (hs : s ≠ ⊤)
+lemma exists_notMem_of_ne_top [LE A] [OrderTop A] (s : A) (hs : s ≠ ⊤)
     (h_top : ((⊤ : A) : Set B) = Set.univ := by simp) :
     ∃ b : B, b ∉ s := by
   simpa [-SetLike.coe_set_eq, SetLike.ext'_iff, h_top, Set.ne_univ_iff_exists_notMem] using hs
+
+@[deprecated (since := "2026-09-28")] alias exists_not_mem_of_ne_top := exists_notMem_of_ne_top
 
 end SetLike
 
@@ -219,6 +221,9 @@ An instance of this class is automatically available on any order defined via `L
 class IsConcreteLE (A : Type*) (B : outParam Type*) [Membership B A] [LE A] where
   /-- The order corresponds to set inclusion. -/
   le_iff {S T : A} : S ≤ T ↔ ∀ ⦃x⦄, x ∈ S → x ∈ T
+
+instance (α : Type*) : IsConcreteLE (Set α) α where
+  le_iff := .rfl
 
 section default
 
@@ -262,8 +267,7 @@ section LE
 
 variable [LE A] [IsConcreteLE A B] {p q : A}
 
-@[gcongr low] -- lower priority than `Set.mem_of_subset_of_mem`
-alias ⟨_root_.mem_of_le_of_mem, _⟩ := le_iff
+@[gcongr] alias ⟨_root_.mem_of_le_of_mem, _⟩ := le_iff
 
 theorem not_le_iff_exists : ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q := by
   simp [le_iff]

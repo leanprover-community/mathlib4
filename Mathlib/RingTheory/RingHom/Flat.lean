@@ -5,7 +5,7 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.Flat.Localization
+import Mathlib.RingTheory.Flat.Localization
 public import Mathlib.RingTheory.LocalProperties.Basic
 public import Mathlib.RingTheory.Ideal.GoingDown
 
@@ -166,7 +166,7 @@ lemma tensorProductMap {f : A →ₐ[S] C} {g : B →ₐ[R] D} (hf : f.Flat) (hg
     refine RingHom.Flat.comp ?_ (.of_bijective <| AlgEquiv.bijective _)
     change RingHom.Flat (RingHom.comp (Algebra.TensorProduct.lTensor D
       (AlgHom.restrictScalars R f)).toRingHom _)
-    exact RingHom.Flat.comp (.of_bijective <| (TensorProduct.comm R A D).bijective) (lTensor D hf)
+    exact RingHom.Flat.comp (.of_bijective (TensorProduct.comm R A D).bijective) (lTensor D hf)
 
 end
 
