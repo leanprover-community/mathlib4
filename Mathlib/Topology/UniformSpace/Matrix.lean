@@ -5,9 +5,7 @@ Authors: Eric Wieser, Heather Macbeth
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Defs
 public import Mathlib.Topology.Instances.Matrix
-public import Mathlib.Topology.UniformSpace.Pi
 public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 
 /-!
@@ -17,7 +15,7 @@ public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 public section
 
 
-open Uniformity Topology
+open scoped Uniformity
 
 variable (m n 𝕜 : Type*) [UniformSpace 𝕜]
 

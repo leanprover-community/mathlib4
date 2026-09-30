@@ -49,8 +49,11 @@ variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
   {HP : Type*} [TopologicalSpace HP] (IP : ModelWithCorners 𝕜 EP HP)
   {P : Type u} [TopologicalSpace P] [ChartedSpace HP P]
 
-open AlgebraicGeometry Manifold TopologicalSpace Topology
+open AlgebraicGeometry TopologicalSpace Topology
 
+open scoped Manifold
+
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The units of the stalk at `x` of the sheaf of smooth functions from `M` to `𝕜`, considered as a
 sheaf of commutative rings, are the functions whose values at `x` are nonzero. -/
 theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
@@ -58,7 +61,7 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
     IsUnit f ↔ f ∉ RingHom.ker (smoothSheafCommRing.eval IM 𝓘(𝕜) M 𝕜 x) := by
   constructor
   · rintro ⟨⟨f, g, hf, hg⟩, rfl⟩ (h' : smoothSheafCommRing.eval IM 𝓘(𝕜) M 𝕜 x f = 0)
-    simpa [h'] using congr_arg (smoothSheafCommRing.eval IM 𝓘(𝕜) M 𝕜 x) hf
+    simpa [h'] using congr(smoothSheafCommRing.eval IM 𝓘(𝕜) M 𝕜 x $hf)
   · let S := (smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).presheaf
     -- Suppose that `f`, in the stalk at `x`, is nonzero at `x`
     rintro (hf : _ ≠ 0)
@@ -84,7 +87,7 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
     have hxV : x ∈ (V : Set M) := by
       obtain ⟨x₀, hxx₀⟩ := hxV₀
       convert! x₀.2
-      exact congr_arg Subtype.val hxx₀.symm
+      congrm $(hxx₀.symm).val
     have hVf : ∀ y : V, f (Set.inclusion hUV y) ≠ 0 :=
       fun y ↦ hV₀f (Set.inclusion hUV y) (Set.mem_range_self y)
     -- Let `g` be the pointwise inverse of `f` on `V`, which is smooth since `f` is nonzero there
@@ -130,8 +133,9 @@ instance smoothSheafCommRing.instLocalRing_stalk (x : M) :
 variable (M)
 
 /-- A smooth manifold can be considered as a locally ringed space. -/
+@[implicit_reducible]
 def ChartedSpace.locallyRingedSpace : LocallyRingedSpace where
-  carrier := TopCat.of M
+  carrier := ↧M
   presheaf := smoothPresheafCommRing IM 𝓘(𝕜) M 𝕜
   IsSheaf := (smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).property
   isLocalRing x := smoothSheafCommRing.instLocalRing_stalk IM x
@@ -139,7 +143,7 @@ def ChartedSpace.locallyRingedSpace : LocallyRingedSpace where
 @[deprecated (since := "2026-04-01")]
 alias IsManifold.locallyRingedSpace := ChartedSpace.locallyRingedSpace
 
-open CategoryTheory Limits
+open CategoryTheory
 
 variable {M IM IN}
 
@@ -163,7 +167,6 @@ lemma ChartedSpace.stalkMap_locallyRingedSpaceMapAux (f : M → N) (hf : ContMDi
   refine Eq.trans ?_ (smoothSheafCommRing.evalHom_germ _ _ _ _ _ _ _ a).symm
   apply smoothSheafCommRing.evalHom_germ
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A smooth function of manifolds `f : M → N` induces a morphism of locally ringed spaces. -/
 @[simps! base]
 def ChartedSpace.locallyRingedSpaceMap (f : M → N) (hf : ContMDiff IM IN ∞ f) :
@@ -204,7 +207,7 @@ instance (U : Opens M) :
     rw [ConcreteCategory.isIso_iff_bijective]
     refine ⟨fun a b hab ↦ Subtype.ext ?_, fun ⟨g, hg⟩ ↦ ?_⟩
     · ext ⟨x, y, hy, rfl⟩
-      exact congr($(hab).1 ⟨y, ⟨y, hy, rfl⟩⟩)
+      congrm $(hab).1 ⟨y, ⟨y, hy, rfl⟩⟩
     · let a : TopCat.of U ⟶ TopCat.of M := TopCat.ofHom ⟨Subtype.val, continuous_subtype_val⟩
       have ha : IsOpenEmbedding a.hom := U.isOpenEmbedding'
       let V' : Opens U := (Opens.map a).obj (ha.isOpenMap.functor.obj V)
@@ -215,7 +218,7 @@ instance (U : Opens M) :
         rw [← ContMDiff.subtypeVal_comp_iff]
         convert! contMDiff_subtype_val
         ext x
-        exact congr($(b.apply_symm_apply x).1)
+        congrm $(b.apply_symm_apply x).1
       · change g _ = _
         congr
         apply b.symm_apply_apply

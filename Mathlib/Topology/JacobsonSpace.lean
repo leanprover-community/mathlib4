@@ -6,8 +6,6 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Topology.LocalAtTarget
-public import Mathlib.Topology.Separation.Regular
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 
@@ -35,7 +33,7 @@ variable (X) {Y} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
 section closedPoints
 
 /-- The set of closed points. -/
-def closedPoints : Set X := setOf (IsClosed {·})
+def closedPoints : Set X := Set.ofPred (IsClosed {·})
 
 variable {X}
 

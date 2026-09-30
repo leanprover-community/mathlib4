@@ -5,13 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Order.CompleteLattice.Lemmas
-public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
-public import Mathlib.CategoryTheory.CommSq
-public import Mathlib.Data.Finset.Attr
-public import Mathlib.Tactic.Attr.Core
-public import Mathlib.Tactic.SetLike
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Multicoequalizer diagrams in complete lattices
@@ -57,9 +53,6 @@ attribute [grind cases] BicartSq
 
 namespace BicartSq
 
-@[deprecated (since := "2025-11-26")] alias max_eq := sup_eq
-@[deprecated (since := "2025-11-26")] alias min_eq := inf_eq
-
 variable {x₁ x₂ x₃ x₄} (sq : BicartSq x₁ x₂ x₃ x₄)
 
 include sq
@@ -89,8 +82,6 @@ structure MulticoequalizerDiagram : Prop where
   eq_inf (i j : ι) : v i j = u i ⊓ u j
 
 namespace MulticoequalizerDiagram
-
-@[deprecated (since := "2025-11-26")] alias min_eq := eq_inf
 
 attribute [local grind] MulticoequalizerDiagram
 attribute [local grind =] MultispanShape.prod_fst MultispanShape.prod_snd

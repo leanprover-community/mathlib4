@@ -12,12 +12,10 @@ variable {α : Type} [PartialOrder α] (a b c : α)
 class SemilatticeInf (α : Type) extends PartialOrder α, Min α where
   le_inf : ∀ a b c : α, a ≤ b → a ≤ c → a ≤ b ⊓ c
 
+-- The `reorder` arguments are automatically inferred here:
+@[to_dual]
 class SemilatticeSup (α : Type) extends PartialOrder α, Max α where
   protected sup_le : ∀ a b c : α, a ≤ c → b ≤ c → a ⊔ b ≤ c
-
-attribute [to_dual] SemilatticeInf
--- The `reorder` argument is automatically inferred here:
-attribute [to_dual existing] SemilatticeSup.sup_le SemilatticeInf.mk
 
 @[to_dual]
 lemma SemilatticeInf.le_inf' {α : Type} [SemilatticeInf α] (a b c : α) : a ≤ b → a ≤ c → a ≤ b ⊓ c :=
@@ -125,8 +123,8 @@ theorem le_imp_le'' : a ≤ b → a ≤ b := id
 
 -- We can even overwrite it with the empty `reorder`:
 /--
-warning: `to_dual self` is redundant when none of the arguments are reordered.
-Please remove the attribute, or provide an explicit `(reorder := ...)` argument.
+warning: `to_dual self` is redundant when none of the arguments are reordered and no `(relevant_arg := ...)` is provided.
+Please remove the attribute, or provide an explicit `(reorder := ...)` or `(relevant_arg := ...)` argument.
 If you need to give a hint to `to_dual` to translate expressions involving `le_imp_le'''`,
 use `to_dual_do_translate` instead
 
@@ -150,8 +148,8 @@ theorem refl₂ (b c a e d : Nat) : a + b + c + d + e = a + b + c + d + e := rfl
 
 -- Test that we do not translate numerals like we do in `@[to_additive]`
 /--
-warning: `to_dual self` is redundant when none of the arguments are reordered.
-Please remove the attribute, or provide an explicit `(reorder := ...)` argument.
+warning: `to_dual self` is redundant when none of the arguments are reordered and no `(relevant_arg := ...)` is provided.
+Please remove the attribute, or provide an explicit `(reorder := ...)` or `(relevant_arg := ...)` argument.
 If you need to give a hint to `to_dual` to translate expressions involving `one_le_one`,
 use `to_dual_do_translate` instead
 
@@ -209,13 +207,12 @@ def lt_sum_eq_of_le [DecidableLE α] {a b : α} (hab : a ≤ b) :
     a < b ⊕' a = b :=
   if hba : b ≤ a then PSum.inr (le_antisymm hab hba) else PSum.inl (lt_of_le_not_ge hab hba)
 
-set_option warn.classDefReducibility false in
+set_option linter.translate.warnInvalid false in
 @[to_dual DecidableLE1_dual]
-def DecidableLE1 (h : ∀ a b : α, Decidable (a ≤ b)) : DecidableLE α := fun a b ↦ h a b
+abbrev DecidableLE1 (h : ∀ a b : α, Decidable (a ≤ b)) : DecidableLE α := fun a b ↦ h a b
 
-set_option warn.classDefReducibility false in
 @[to_dual DecidableLE2_dual]
-def DecidableLE2 (h : ∀ a b : α, Decidable (a ≤ b)) : DecidableLE α := id h
+abbrev DecidableLE2 (h : ∀ a b : α, Decidable (a ≤ b)) : DecidableLE α := id h
 
 -- Not yet supported because it probably won't show up in practice
 -- (though it wouldn't be too hard to fix `unfoldConsts` to support this)
@@ -344,8 +341,6 @@ inductive WithTop.LE : WithTop α → WithTop α → Prop where
   | le_top (x : WithTop α) : WithTop.LE x .top
   | coe_le_coe {a b : α} : a ≤ b → WithTop.LE (.coe a) (.coe b)
 
-attribute [to_dual existing] WithTop.LE.le_top
-
 @[to_dual]
 instance WithBot.instLE : _root_.LE (WithBot α) := ⟨WithBot.LE⟩
 
@@ -377,7 +372,9 @@ info: renameTest' {α : Type} [Bot α] [Top α] (y : α) {P : α → Prop} (Pbot
 #check renameTest'
 
 -- Test translation of binder names starting with `h`: `hmax` turns into `hmin`.
-@[to_dual]
+/-- trace: [translate] Adding `eq_of_min_of_max` ↔ `eq_of_max_of_min` (relevant_arg := 1) -/
+#guard_msgs in
+@[to_dual?]
 theorem eq_of_min_of_max (hmax : ∀ x, x ≤ a) (hmin : ∀ x, a ≤ x) : a = b :=
   le_antisymm (hmin b) (hmax b)
 
@@ -397,6 +394,21 @@ theorem le_of_lt_and_le_of_lt {β} [Preorder β] (a b : α) (c d : β) : (a < b 
 def universeTest1.{u,v,w} (α : Type u) (β : Type v) (γ : Type w) := α × β × γ
 @[to_dual existing (reorder := α β γ) universeTest1]
 def universeTest1'.{v,w,u} (α : Type u) (β : Type v) (γ : Type w) := α × β × γ
+
+-- Due to the reordering of arguments, the equation theorem of the dual has a different shape,
+-- so we get this warning.
+/--
+warning: @[to_dual] failed to add a translation from `universeTest1''.eq_1` to any of `[universeTest1''._to_dual_1.eq_1]`.
+Please silence this warning and add a translation manually. Errors:
+
+`to_dual` validation failed: expected
+  universeTest1''._to_dual_1 = fun α β γ => universeTest1' β γ α
+but 'universeTest1''._to_dual_1.eq_1' has type
+  ∀ (α : Type u) (β : Type v) (γ : Type w), universeTest1''._to_dual_1 α β γ = universeTest1' β γ α
+
+Note: This linter can be disabled with `set_option linter.translate.warnInvalid false`
+-/
+#guard_msgs in
 @[to_dual none] alias universeTest1'' := universeTest1
 
 @[to_dual (reorder := u₁ u₂) universeTest2']
@@ -435,3 +447,49 @@ to_dual_name_hint Left Right, Epi Mono
 /-- info: "right_epi" -/
 #guard_msgs in
 #eval return GuessName.guessName (data.guessNameExt.getState (← getEnv)) "left_mono"
+
+-- A structure with a universe not appearing in its type
+structure HasLimitsOfSize where
+  foo : ∀ _ : Type u, True
+
+@[to_dual]
+structure HasColimitsOfSize where
+  cofoo : ∀ _ : Type u, True
+
+-- The `simps` attribute is applied after `implicit_reducible`,
+-- which allows the `simps` lemmas to be `@[defeq]`
+@[to_dual (attr := simps, implicit_reducible) MyLE']
+def MyLE : Preorder α where
+  le := (· ≤ ·)
+  lt := (· < ·)
+  le_refl := le_refl
+  le_trans _ _ _ := le_trans
+  lt_iff_le_not_ge _ _ := lt_iff_le_not_ge
+
+/--
+info: @[defeq] theorem MyLE_le : ∀ {α : Type} [inst : PartialOrder α] (x1 x2 : α), (x1 ≤ x2) = (x1 ≤ x2) :=
+fun {α} [PartialOrder α] x1 x2 => Eq.refl (x1 ≤ x2)
+-/
+#guard_msgs in
+#print MyLE_le
+
+class SomeClass (α : Type) where
+  instLE : LE α
+  x : ∀ a b : α, a ≤ b
+
+structure SomeStructure (α : Type) where
+  instLE : LE α
+  x : ∀ a b : α, a ≤ b
+
+-- `SomeClass` is translated to itself with `(relevant_arg := 0)`, while `SomeStructure` is not.
+attribute [to_dual self] SomeClass.x SomeStructure.x
+
+run_meta
+  let some { relevantArg := .arg 0, .. } := findTranslation? (← getEnv) data ``SomeClass | failure
+  guard <| findTranslation? (← getEnv) data ``SomeStructure |>.isNone
+
+run_meta
+  -- `GE.ge` gets `(relevant_arg := α)` because `α` appears in `LE`
+  let some { relevantArg := .arg 0, .. } := findTranslation? (← getEnv) data ``GE.ge | failure
+  -- `WithBot` gets `(relevant_arg := α)` because `WithBot` is a type
+  let some { relevantArg := .arg 0, .. } := findTranslation? (← getEnv) data ``WithBot | failure

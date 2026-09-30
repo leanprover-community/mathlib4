@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Normed.Affine.Simplex
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
-public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
 
 /-!
 # Simplices in Euclidean spaces.
@@ -110,8 +109,8 @@ theorem dist_point_centroid (t : Affine.Triangle ℝ P) (i : Fin 3) :
 /-- In a triangle, the distance from a vertex to the `faceOppositeCentroid` equals three times the
 distance from the `centroid` to the `faceOppositeCentroid`. -/
 theorem dist_point_faceOppositeCentroid (t : Affine.Triangle ℝ P) (i : Fin 3) :
-    dist (t.points i) (t.faceOppositeCentroid i) = 3 * dist t.centroid (t.faceOppositeCentroid i) :=
-    by
+    dist (t.points i) (t.faceOppositeCentroid i) =
+      3 * dist t.centroid (t.faceOppositeCentroid i) := by
   rw [Affine.Simplex.dist_point_faceOppositeCentroid]
   norm_cast
 

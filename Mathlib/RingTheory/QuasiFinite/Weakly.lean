@@ -50,6 +50,7 @@ See `Algebra.QuasiFiniteAt.of_weaklyQuasiFiniteAt`. -/
 abbrev Algebra.WeaklyQuasiFiniteAt :=
   Algebra.QuasiFiniteAt R (q.map (Ideal.Quotient.mk ((q.under R).map (algebraMap R S))))
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Algebra.weaklyQuasiFiniteAt_iff :
     Algebra.WeaklyQuasiFiniteAt R q ↔
       Algebra.QuasiFinite R (Localization.AtPrime q ⧸
@@ -121,7 +122,7 @@ instance comap_algEquiv (p : Ideal S) [p.IsPrime]
 lemma finite_residueField
     [p.IsPrime] [q.LiesOver p] [WeaklyQuasiFiniteAt R q]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
-    [Localization.AtPrime.IsLiesOverAlgebra p q] :
+    [IsScalarTower R (Localization.AtPrime p) (Localization.AtPrime q)] :
     Module.Finite p.ResidueField q.ResidueField := by
   let r := q.map (Ideal.Quotient.mk ((q.under R).map (algebraMap R S)))
   have : r.LiesOver q :=

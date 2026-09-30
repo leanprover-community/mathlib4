@@ -44,11 +44,11 @@ instance add [SMulInvariantMeasure M α μ] [SMulInvariantMeasure M α ν] :
     SMulInvariantMeasure M α (μ + ν) :=
   ⟨fun c _s hs =>
     show _ + _ = _ + _ from
-      congr_arg₂ (· + ·) (measure_preimage_smul c hs) (measure_preimage_smul c hs)⟩
+      congr($(measure_preimage_smul c hs) + $(measure_preimage_smul c hs))⟩
 
 @[to_additive]
 instance smul [SMulInvariantMeasure M α μ] (c : ℝ≥0∞) : SMulInvariantMeasure M α (c • μ) :=
-  ⟨fun a _s hs => show c • _ = c • _ from congr_arg (c • ·) (measure_preimage_smul a hs)⟩
+  ⟨fun a _s hs => show c • _ = c • _ from congr(c • $(measure_preimage_smul a hs))⟩
 
 @[to_additive]
 instance smul_nnreal [SMulInvariantMeasure M α μ] (c : ℝ≥0) : SMulInvariantMeasure M α (c • μ) :=
@@ -70,8 +70,8 @@ theorem measure_preimage_smul_le (c : G) (s : Set α) : μ ((c • ·) ⁻¹' s)
 
 /-- See also `smul_ae`. -/
 @[to_additive /-- See also `vadd_ae`. -/]
-theorem tendsto_smul_ae (c : G) : Filter.Tendsto (c • ·) (ae μ) (ae μ) := fun _s hs ↦
-  eq_bot_mono (measure_preimage_smul_le μ c _) hs
+theorem tendsto_smul_ae (c : G) : Filter.Tendsto (c • ·) (ae μ) (ae μ) := fun s hs ↦
+  eq_bot_mono (measure_preimage_smul_le μ c sᶜ) hs
 
 variable {μ}
 
@@ -154,9 +154,9 @@ theorem smul_ae (c : G) : c • ae μ = ae μ := by
   simp only [mem_smul_filter, preimage_smul, smul_mem_ae]
 
 @[to_additive (attr := simp)]
-theorem eventuallyConst_smul_set_ae (c : G) {s : Set α} :
-    EventuallyConst (c • s : Set α) (ae μ) ↔ EventuallyConst s (ae μ) := by
-  rw [← preimage_smul_inv, eventuallyConst_preimage, Filter.map_smul, smul_ae]
+theorem eventuallyEmptyOrUniv_smul_set_ae (c : G) {s : Set α} :
+    EventuallyEmptyOrUniv (c • s : Set α) (ae μ) ↔ EventuallyEmptyOrUniv s (ae μ) := by
+  rw [← preimage_smul_inv, eventuallyEmptyOrUniv_preimage, Filter.map_smul, smul_ae]
 
 @[to_additive (attr := simp)]
 theorem smul_set_ae_le (c : G) {s t : Set α} : c • s ≤ᵐ[μ] c • t ↔ s ≤ᵐ[μ] t := by
@@ -164,7 +164,7 @@ theorem smul_set_ae_le (c : G) {s t : Set α} : c • s ≤ᵐ[μ] c • t ↔ s
 
 @[to_additive (attr := simp)]
 theorem smul_set_ae_eq (c : G) {s t : Set α} : c • s =ᵐ[μ] c • t ↔ s =ᵐ[μ] t := by
-  simp only [Filter.eventuallyLE_antisymm_iff, smul_set_ae_le]
+  simp only [Filter.eventuallySubset_antisymm_iff, smul_set_ae_le]
 
 end AE
 

@@ -53,13 +53,13 @@ variable [NumberField K]
 
 /-- There are finitely many embeddings of a number field. -/
 noncomputable instance : Fintype (K →+* A) :=
-  Fintype.ofEquiv (K →ₐ[ℚ] A) RingHom.equivRatAlgHom.symm
+  Fintype.ofEquiv (K →ₐ[ℚ] A) (RingHom.equivRatAlgHom K A).symm
 
 variable [IsAlgClosed A]
 
 /-- The number of embeddings of a number field is equal to its finrank. -/
 theorem card : Fintype.card (K →+* A) = finrank ℚ K := by
-  rw [Fintype.ofEquiv_card RingHom.equivRatAlgHom.symm, AlgHom.card]
+  rw [Fintype.ofEquiv_card (RingHom.equivRatAlgHom K A).symm, AlgHom.card]
 
 instance : Nonempty (K →+* A) := by
   rw [← Fintype.card_pos_iff, NumberField.Embeddings.card K A]
@@ -125,7 +125,7 @@ theorem pow_eq_one_of_norm_le_one {x : K} (hx₀ : x ≠ 0) (hxi : IsIntegral �
     (hx : ∀ φ : K →+* A, ‖φ x‖ ≤ 1) : ∃ (n : ℕ) (_ : 0 < n), x ^ n = 1 := by
   obtain ⟨a, -, b, -, habne, h⟩ :=
     Set.Infinite.exists_ne_map_eq_of_mapsTo (f := (x ^ · : ℕ → K)) Set.infinite_univ
-      (fun a _ => mem_setOf.mpr <|
+      (fun a _ => mem_ofPred.mpr
         ⟨hxi.pow a, fun φ => by simp [pow_le_one₀ (norm_nonneg (φ x)) <| hx φ]⟩)
       (finite_of_norm_le K A (1 : ℝ))
   wlog hlt : b < a
@@ -178,13 +178,13 @@ noncomputable def lift [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ
 theorem lift_comp_algebraMap [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ) :
     (lift K φ).comp (algebraMap k K) = φ := by
   unfold lift
-  letI := φ.toAlgebra
+  let := φ.toAlgebra
   rw [AlgHom.toRingHom_eq_coe, AlgHom.comp_algebraMap_of_tower, RingHom.algebraMap_toAlgebra']
 
 @[simp]
 theorem lift_algebraMap_apply [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ) (x : k) :
     lift K φ (algebraMap k K x) = φ x :=
-  RingHom.congr_fun (lift_comp_algebraMap K φ) x
+  congr($(lift_comp_algebraMap K φ) x)
 
 variable {K}
 
@@ -220,7 +220,7 @@ def IsReal.embedding {φ : K →+* ℂ} (hφ : IsReal φ) : K →+* ℝ where
   toFun x := (φ x).re
   map_one' := by simp only [map_one, one_re]
   map_mul' := by
-    simp only [Complex.conj_eq_iff_im.mp (RingHom.congr_fun hφ _), map_mul, mul_re,
+    simp only [Complex.conj_eq_iff_im.mp congr($hφ _), map_mul, mul_re,
       mul_zero, tsub_zero, forall_const]
   map_zero' := by simp only [map_zero, zero_re]
   map_add' := by simp only [map_add, add_re, forall_const]
@@ -231,10 +231,10 @@ theorem IsReal.coe_embedding_apply {φ : K →+* ℂ} (hφ : IsReal φ) (x : K) 
   apply Complex.ext
   · rfl
   · rw [ofReal_im, eq_comm, ← Complex.conj_eq_iff_im]
-    exact RingHom.congr_fun hφ x
+    congrm $hφ x
 
 lemma IsReal.comp (f : k →+* K) {φ : K →+* ℂ} (hφ : IsReal φ) :
-    IsReal (φ.comp f) := by ext1 x; simpa using RingHom.congr_fun hφ (f x)
+    IsReal (φ.comp f) := by ext1 x; simpa using congr($hφ (f x))
 
 lemma isReal_comp_iff {f : k ≃+* K} {φ : K →+* ℂ} :
     IsReal (φ.comp (f : k →+* K)) ↔ IsReal φ :=
@@ -243,10 +243,10 @@ lemma isReal_comp_iff {f : k ≃+* K} {φ : K →+* ℂ} :
 lemma exists_comp_symm_eq_of_comp_eq [Algebra k K] [IsGalois k K] (φ ψ : K →+* ℂ)
     (h : φ.comp (algebraMap k K) = ψ.comp (algebraMap k K)) :
     ∃ σ : Gal(K/k), φ.comp σ.symm = ψ := by
-  letI := (φ.comp (algebraMap k K)).toAlgebra
-  letI := φ.toAlgebra
+  let := (φ.comp (algebraMap k K)).toAlgebra
+  let := φ.toAlgebra
   have : IsScalarTower k K ℂ := IsScalarTower.of_algebraMap_eq' rfl
-  let ψ' : K →ₐ[k] ℂ := { ψ with commutes' := fun r ↦ (RingHom.congr_fun h r).symm }
+  let ψ' : K →ₐ[k] ℂ := { ψ with commutes' := fun r ↦ congr($h r).symm }
   use (AlgHom.restrictNormal' ψ' K).symm
   ext1 x
   exact AlgHom.restrictNormal_commutes ψ' K x
@@ -260,7 +260,7 @@ def IsConj : Prop := conjugate φ = φ.comp σ
 
 variable {φ σ}
 
-lemma IsConj.eq (h : IsConj φ σ) (x) : φ (σ x) = star (φ x) := RingHom.congr_fun h.symm x
+lemma IsConj.eq (h : IsConj φ σ) (x) : φ (σ x) = star (φ x) := congr($h.symm x)
 
 lemma IsConj.ext {σ₁ σ₂ : Gal(K/k)} (h₁ : IsConj φ σ₁) (h₂ : IsConj φ σ₂) : σ₁ = σ₂ :=
   AlgEquiv.ext fun x ↦ φ.injective ((h₁.eq x).trans (h₂.eq x).symm)
@@ -283,7 +283,7 @@ lemma isConj_ne_one_iff (hσ : IsConj φ σ) :
     fun h ↦ (IsConj.ext_iff hσ).mpr h.isConjGal_one⟩
 
 lemma IsConj.symm (hσ : IsConj φ σ) :
-    IsConj φ σ.symm := RingHom.ext fun x ↦ by simpa using congr_arg star (hσ.eq (σ.symm x))
+    IsConj φ σ.symm := RingHom.ext fun x ↦ by simpa using congr(star $(hσ.eq (σ.symm x)))
 
 lemma isConj_symm : IsConj φ σ.symm ↔ IsConj φ σ :=
   ⟨IsConj.symm, IsConj.symm⟩
@@ -295,7 +295,7 @@ lemma isConj_apply_apply (hσ : IsConj φ σ) (x : K) :
 theorem IsConj.comp (hσ : IsConj φ σ) (ν : Gal(K/k)) :
     IsConj (φ.comp ν) (ν⁻¹ * σ * ν) := by
   ext
-  simpa [← AlgEquiv.mul_apply, ← mul_assoc] using! RingHom.congr_fun hσ _
+  simpa [← AlgEquiv.mul_apply, ← mul_assoc] using! congr($hσ _)
 
 lemma orderOf_isConj_two_of_ne_one (hσ : IsConj φ σ) (hσ' : σ ≠ 1) :
     orderOf σ = 2 :=
@@ -375,7 +375,7 @@ theorem disjoint_unmixedEmbeddingsOver_mixedEmbeddingsOver :
 theorem union_unmixedEmbeddingsOver_mixedEmbeddingsOver :
     (unmixedEmbeddingsOver L ψ) ∪ (mixedEmbeddingsOver L ψ) =
       { φ | ComplexEmbedding.LiesOver φ ψ } := by
-  grind [unmixedEmbeddingsOver, mixedEmbeddingsOver, ← Set.setOf_or]
+  grind [unmixedEmbeddingsOver, mixedEmbeddingsOver, ← Set.ofPred_or]
 
 end Extension
 

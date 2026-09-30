@@ -171,7 +171,7 @@ to `F`. -/
 theorem Subalgebra.eq_bot_of_isPurelyInseparable_of_isSeparable (L : Subalgebra F E)
     [IsPurelyInseparable F L] [Algebra.IsSeparable F L] : L = ⊥ := bot_unique fun x hx ↦ by
   obtain ⟨y, hy⟩ := IsPurelyInseparable.surjective_algebraMap_of_isSeparable F L ⟨x, hx⟩
-  exact ⟨y, congr_arg (Subalgebra.val _) hy⟩
+  exact ⟨y, congr(Subalgebra.val _ $hy)⟩
 
 /-- If an intermediate field of `E / F` is both purely inseparable and separable, then it is equal
 to `F`. -/
@@ -179,7 +179,7 @@ theorem IntermediateField.eq_bot_of_isPurelyInseparable_of_isSeparable
     {F : Type u} {E : Type v} [Field F] [Field E] [Algebra F E] (L : IntermediateField F E)
     [IsPurelyInseparable F L] [Algebra.IsSeparable F L] : L = ⊥ := bot_unique fun x hx ↦ by
   obtain ⟨y, hy⟩ := IsPurelyInseparable.surjective_algebraMap_of_isSeparable F L ⟨x, hx⟩
-  exact ⟨y, congr_arg (algebraMap L E) hy⟩
+  exact ⟨y, congr(algebraMap L E $hy)⟩
 
 /-- If `E / F` is purely inseparable, then the separable closure of `F` in `E` is
 equal to `F`. -/
@@ -214,7 +214,7 @@ theorem isPurelyInseparable_iff_pow_mem :
   refine ⟨fun h x ↦ ?_, fun h x ↦ ?_⟩
   · obtain ⟨g, h1, n, h2⟩ := (minpoly.irreducible (h x).1).hasSeparableContraction q
     exact ⟨n, (h _).2 <| h1.of_dvd <| minpoly.dvd F _ <| by
-      simpa only [expand_aeval, minpoly.aeval] using congr_arg (aeval x) h2⟩
+      simpa only [expand_aeval, minpoly.aeval] using congr(aeval x $h2)⟩
   have hdeg := (minpoly.natSepDegree_eq_one_iff_pow_mem q).2 (h x)
   have halg : IsIntegral F x := by_contra fun h' ↦ by
     simp only [minpoly.eq_zero h', natSepDegree_zero, zero_ne_one] at hdeg
@@ -248,7 +248,7 @@ then `K / E` is also purely inseparable. -/
 theorem IsPurelyInseparable.tower_top [Algebra E K] [IsScalarTower F E K]
     [h : IsPurelyInseparable F K] : IsPurelyInseparable E K := by
   obtain ⟨q, _⟩ := ExpChar.exists F
-  haveI := expChar_of_injective_algebraMap (algebraMap F E).injective q
+  have := expChar_of_injective_algebraMap (algebraMap F E).injective q
   rw [isPurelyInseparable_iff_pow_mem _ q] at h ⊢
   intro x
   obtain ⟨n, y, h⟩ := h x
@@ -260,7 +260,7 @@ purely inseparable. -/
 theorem IsPurelyInseparable.trans [Algebra E K] [IsScalarTower F E K]
     [h1 : IsPurelyInseparable F E] [h2 : IsPurelyInseparable E K] : IsPurelyInseparable F K := by
   obtain ⟨q, _⟩ := ExpChar.exists F
-  haveI := expChar_of_injective_algebraMap (algebraMap F E).injective q
+  have := expChar_of_injective_algebraMap (algebraMap F E).injective q
   rw [isPurelyInseparable_iff_pow_mem _ q] at h1 h2 ⊢
   intro x
   obtain ⟨n, y, h2⟩ := h2 x
@@ -332,7 +332,7 @@ lemma IsPurelyInseparable.finrank_eq_pow
     by_cases h : (⊥ : IntermediateField F E) = ⊤
     · rw [← finrank_top', ← h, IntermediateField.finrank_bot] at hd
       exact ⟨0, ((pow_zero q).trans hd).symm⟩
-    obtain ⟨x, -, hx⟩ := SetLike.exists_of_lt (lt_of_le_of_ne bot_le h :)
+    obtain ⟨x, -, hx⟩ := IsConcreteLE.exists_of_lt (lt_of_le_of_ne bot_le h :)
     obtain ⟨m, y, e⟩ := IsPurelyInseparable.minpoly_eq_X_pow_sub_C F q x
     have : finrank F F⟮x⟯ = q ^ m := by
       rw [adjoin.finrank (Algebra.IsIntegral.isIntegral x), e, natDegree_sub_C, natDegree_X_pow]
@@ -375,12 +375,12 @@ theorem injective_comp_algebraMap [CommRing L] [IsReduced L] :
   replace heq := congr($heq y)
   simp_rw [RingHom.comp_apply, h, map_pow] at heq
   nontriviality L
-  haveI := expChar_of_injective_ringHom (f.comp (algebraMap F E)).injective q
+  have := expChar_of_injective_ringHom (f.comp (algebraMap F E)).injective q
   exact iterateFrobenius_inj L q n heq
 
 theorem injective_restrictDomain [CommRing L] [IsReduced L] [Algebra R L] [IsScalarTower R F E] :
-    Function.Injective (AlgHom.restrictDomain (A := R) F (C := E) (D := L)) := fun _ _ eq ↦
-  AlgHom.coe_ringHom_injective <| injective_comp_algebraMap F E L <| congr_arg AlgHom.toRingHom eq
+    Function.Injective (AlgHom.domRestrict (A := R) F (C := E) (D := L)) := fun _ _ eq ↦
+  AlgHom.toRingHom_injective <| injective_comp_algebraMap F E L congr($(eq).toRingHom)
 
 instance [Field L] [PerfectField L] [Algebra F L] : Nonempty (E →ₐ[F] L) :=
   nonempty_algHom_of_splits fun x ↦ ⟨IsPurelyInseparable.isIntegral' _ _,
@@ -395,10 +395,10 @@ theorem bijective_comp_algebraMap [Field L] [PerfectField L] :
     ⟨_, (Classical.arbitrary <| E →ₐ[F] L).comp_algebraMap⟩⟩
 
 theorem bijective_restrictDomain [Field L] [PerfectField L] [Algebra R L] [IsScalarTower R F E] :
-    Function.Bijective (AlgHom.restrictDomain (A := R) F (C := E) (D := L)) :=
+    Function.Bijective (AlgHom.domRestrict (A := R) F (C := E) (D := L)) :=
   ⟨injective_restrictDomain F E R L, fun g ↦ let _ := g.toAlgebra
     let f := Classical.arbitrary (E →ₐ[F] L)
-    ⟨f.restrictScalars R, AlgHom.coe_ringHom_injective f.comp_algebraMap⟩⟩
+    ⟨f.restrictScalars R, AlgHom.toRingHom_injective f.comp_algebraMap⟩⟩
 
 end IsPurelyInseparable
 
@@ -406,7 +406,7 @@ end IsPurelyInseparable
 `F`-algebra homomorphism from `E` to `L`. -/
 instance instSubsingletonAlgHomOfIsPurelyInseparable [IsPurelyInseparable F E] (L : Type w)
     [CommRing L] [IsReduced L] [Algebra F L] : Subsingleton (E →ₐ[F] L) where
-  allEq f g := AlgHom.coe_ringHom_injective <|
+  allEq f g := AlgHom.toRingHom_injective <|
     IsPurelyInseparable.injective_comp_algebraMap F E L (by simp_rw [AlgHom.comp_algebraMap])
 
 instance instUniqueAlgHomOfIsPurelyInseparable [IsPurelyInseparable F E] (L : Type w)
@@ -433,7 +433,7 @@ theorem IsPurelyInseparable.insepDegree_eq [IsPurelyInseparable F E] :
 
 /-- A purely inseparable extension has finite inseparable degree equal to degree. -/
 theorem IsPurelyInseparable.finInsepDegree_eq [IsPurelyInseparable F E] :
-    finInsepDegree F E = finrank F E := congr(Cardinal.toNat $(insepDegree_eq F E))
+    finInsepDegree F E = finrank F E := congr($(insepDegree_eq F E).toNat)
 
 /-- An extension is purely inseparable if and only if it has finite separable degree one. -/
 theorem isPurelyInseparable_iff_finSepDegree_eq_one :
@@ -465,7 +465,7 @@ theorem isPurelyInseparable_iff_fd_isPurelyInseparable [Algebra.IsAlgebraic F E]
   refine ⟨hx, fun _ ↦ ?_⟩
   obtain ⟨y, h⟩ := (h _ (adjoin.finiteDimensional hx)).inseparable' _ <|
     show Separable (minpoly F (AdjoinSimple.gen F x)) by rwa [minpoly_eq]
-  exact ⟨y, congr_arg (algebraMap _ E) h⟩
+  exact ⟨y, congr(algebraMap _ E $h)⟩
 
 /-- A purely inseparable extension is normal. -/
 instance IsPurelyInseparable.normal [IsPurelyInseparable F E] : Normal F E where
@@ -483,8 +483,8 @@ instance separableClosure.isPurelyInseparable [Algebra.IsAlgebraic F E] :
   set L := separableClosure F E
   refine ⟨(IsAlgebraic.tower_top L (Algebra.IsAlgebraic.isAlgebraic (R := F) x)).isIntegral,
     fun h ↦ ?_⟩
-  haveI := (isSeparable_adjoin_simple_iff_isSeparable L E).2 h
-  haveI : Algebra.IsSeparable F (restrictScalars F L⟮x⟯) := Algebra.IsSeparable.trans F L L⟮x⟯
+  have := (isSeparable_adjoin_simple_iff_isSeparable L E).2 h
+  have : Algebra.IsSeparable F (restrictScalars F L⟮x⟯) := Algebra.IsSeparable.trans F L L⟮x⟯
   have hx : x ∈ L⟮x⟯.restrictScalars F := mem_adjoin_simple_self _ x
   exact ⟨⟨x, mem_separableClosure_iff.2 <| isSeparable_of_mem_isSeparable F E hx⟩, rfl⟩
 
@@ -511,9 +511,9 @@ separable closure of `F` in `E` if and only if `E` is purely inseparable over it
 theorem separableClosure_le_iff [Algebra.IsAlgebraic F E] (L : IntermediateField F E) :
     separableClosure F E ≤ L ↔ IsPurelyInseparable L E := by
   refine ⟨fun h ↦ ?_, fun _ ↦ separableClosure_le F E L⟩
-  letI := (inclusion h).toAlgebra
-  letI : SMul (separableClosure F E) L := Algebra.toSMul
-  haveI : IsScalarTower (separableClosure F E) L E := IsScalarTower.of_algebraMap_eq (congrFun rfl)
+  let := (inclusion h).toAlgebra
+  let : SMul (separableClosure F E) L := Algebra.toSMul
+  have : IsScalarTower (separableClosure F E) L E := IsScalarTower.of_algebraMap_eq (congrFun rfl)
   exact IsPurelyInseparable.tower_top (separableClosure F E) L E
 
 /-- If an intermediate field of `E / F` is separable over `F`, and `E` is purely inseparable
@@ -539,7 +539,7 @@ theorem IsPurelyInseparable.of_injective_comp_algebraMap (L : Type w) [Field L] 
     [Nonempty (E →+* L)] (h : Function.Injective fun f : E →+* L ↦ f.comp (algebraMap F E)) :
     IsPurelyInseparable F E := by
   rw [isPurelyInseparable_iff_finSepDegree_eq_one, finSepDegree, Nat.card_eq_one_iff_unique]
-  letI := (Classical.arbitrary (E →+* L)).toAlgebra
+  let := (Classical.arbitrary (E →+* L)).toAlgebra
   let j : AlgebraicClosure E →ₐ[E] L := IsAlgClosed.lift
   exact ⟨⟨fun f g ↦ DFunLike.ext' <| j.injective.comp_left (congr_arg (⇑) <|
     @h (j.toRingHom.comp f) (j.toRingHom.comp g) (by ext; simp))⟩, inferInstance⟩
@@ -558,7 +558,7 @@ purely inseparable. -/
 theorem isSepClosed_iff_isPurelyInseparable_algebraicClosure [IsAlgClosure F E] :
     IsSepClosed F ↔ IsPurelyInseparable F E :=
   ⟨fun _ ↦ inferInstance, fun H ↦ by
-    haveI := IsAlgClosure.isAlgClosed F (K := E)
+    have := IsAlgClosure.isAlgClosed F (K := E)
     rwa [← separableClosure.eq_bot_iff, IsSepClosed.separableClosure_eq_bot_iff] at H⟩
 
 variable {F E} in
@@ -587,7 +587,7 @@ theorem finSepDegree_eq [Algebra.IsAlgebraic F E] :
 to the (finite) field extension degree. -/
 theorem finSepDegree_mul_finInsepDegree : finSepDegree F E * finInsepDegree F E = finrank F E := by
   by_cases halg : Algebra.IsAlgebraic F E
-  · have := congr_arg Cardinal.toNat (sepDegree_mul_insepDegree F E)
+  · have := congr($(sepDegree_mul_insepDegree F E).toNat)
     rwa [Cardinal.toNat_mul, ← finSepDegree_eq F E] at this
   rw [finInsepDegree, finrank_of_infinite_dimensional (K := F) (V := E) fun _ ↦
       halg (Algebra.IsAlgebraic.of_finite F E),
@@ -612,7 +612,6 @@ lemma adjoin_eq_of_isAlgebraic_of_isSeparable [Algebra.IsAlgebraic F E]
     have := Algebra.isSeparable_tower_top_of_isSeparable E L K
     let i : S →+* L := Subsemiring.inclusion fun x hx ↦ subset_adjoin E (S : Set K) hx
     let _ : Algebra S L := i.toAlgebra
-    let _ : SMul S L := Algebra.toSMul
     have : IsScalarTower S L K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
     have := Algebra.IsAlgebraic.trans F E K
     have : IsPurelyInseparable S K := separableClosure.isPurelyInseparable F K
@@ -620,14 +619,15 @@ lemma adjoin_eq_of_isAlgebraic_of_isSeparable [Algebra.IsAlgebraic F E]
     obtain ⟨y, rfl⟩ := IsPurelyInseparable.surjective_algebraMap_of_isSeparable L K x
     exact y.2
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `K / E / F` is a field extension tower, such that `E / F` is algebraic, then
 `E` adjoin `separableClosure F K` is equal to `separableClosure E K`. -/
 theorem adjoin_eq_of_isAlgebraic [Algebra.IsAlgebraic F E] :
     adjoin E (separableClosure F K) = separableClosure E K := by
   set S := separableClosure E K
-  have h := congr_arg lift (adjoin_eq_of_isAlgebraic_of_isSeparable (F := F) S)
+  have h := congr(lift $(adjoin_eq_of_isAlgebraic_of_isSeparable (F := F) S))
   rw [lift_top, lift_adjoin] at h
-  haveI : IsScalarTower F S K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
+  have : IsScalarTower F S K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
   rw [← h, ← map_eq_of_separableClosure_eq_bot F (separableClosure_eq_bot E K)]
   simp only [S, coe_map, IsScalarTower.coe_toAlgHom', IntermediateField.algebraMap_apply]
 
@@ -672,7 +672,6 @@ lemma IsPurelyInseparable.exists_pow_pow_mem_range_tensorProduct_of_expChar
   nontriviality (R ⊗[k] K)
   obtain (hq | hq) := expChar_is_prime_or_one k q
   induction x with
-  | zero => exact ⟨0, 0, by simp⟩
   | add x y h h' =>
     have : ExpChar (R ⊗[k] K) q := expChar_of_injective_ringHom (algebraMap k _).injective q
     simp_rw [RingHom.mem_range, ← RingHom.mem_rangeS, ← Subalgebra.mem_perfectClosure_iff] at h h' ⊢

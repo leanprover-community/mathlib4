@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 public import Mathlib.Topology.Algebra.UniformConvergence
-public import Mathlib.Order.Filter.AtTopBot.Finset
+import Mathlib.Order.Filter.AtTopBot.Finset
 
 /-!
 # Infinite sum and products that converge uniformly
@@ -47,7 +47,7 @@ variable (f g s) in
 /-- `MultipliableUniformlyOn f s` means that there is some infinite product to which
 `f` converges uniformly on `s`. Use `fun x ↦ ∏' i, f i x` to get the product function. -/
 @[to_additive /-- `SummableUniformlyOn f s` means that there is some infinite sum to
-which `f` converges uniformly on `s`. Use fun x ↦ ∑' i, f i x to get the sum function. -/]
+which `f` converges uniformly on `s`. Use `fun x ↦ ∑' i, f i x` to get the sum function. -/]
 def MultipliableUniformlyOn : Prop := Multipliable (UniformOnFun.ofFun {s} ∘ f)
 
 @[to_additive]
@@ -97,12 +97,6 @@ theorem HasProdUniformlyOn.hasProd (h : HasProdUniformlyOn f g s) (hx : x ∈ s)
 theorem HasProdUniformlyOn.tprod_eqOn [T2Space α] (h : HasProdUniformlyOn f g s) :
     s.EqOn (∏' b, f b ·) g :=
   fun _ hx ↦ (h.hasProd hx).tprod_eq
-
-@[deprecated (since := "2025-11-23")]
-alias HasProdUniformlyOn.tprod_eq := HasProdUniformlyOn.tprod_eqOn
-
-@[deprecated (since := "2025-11-23")]
-alias HasSumUniformlyOn.tsum_eq := HasSumUniformlyOn.tsum_eqOn
 
 @[to_additive]
 theorem MultipliableUniformlyOn.multipliable (h : MultipliableUniformlyOn f s) (hx : x ∈ s) :
@@ -307,7 +301,7 @@ variable (f g) in
 /-- `MultipliableUniformly f` means that there is some infinite product to which
 `f` converges uniformly. Use `fun x ↦ ∏' i, f i x` to get the product function. -/
 @[to_additive /-- `SummableUniformly f` means that there is some infinite sum to which
-`f` converges uniformly. Use `fun x ↦ ∑' i, f i x` to get the product function. -/]
+`f` converges uniformly. Use `fun x ↦ ∑' i, f i x` to get the sum function. -/]
 def MultipliableUniformly : Prop := Multipliable (UniformFun.ofFun ∘ f)
 
 @[to_additive]

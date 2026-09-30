@@ -5,7 +5,6 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Data.PFunctor.Multivariate.Basic
 public import Mathlib.Data.QPF.Multivariate.Basic
 
 /-!
@@ -91,6 +90,7 @@ protected def abs ⦃α⦄ : Pi.P F α → Pi F α
 protected def repr ⦃α⦄ : Pi F α → Pi.P F α
   | f => ⟨fun a => (MvQPF.repr (f a)).1, fun _i a => (MvQPF.repr (f _)).2 _ a.2⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance : MvQPF (Pi F) where
   P := Pi.P F
   abs := @Pi.abs _ _ F _
