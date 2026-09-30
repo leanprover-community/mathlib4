@@ -8,12 +8,13 @@ module
 public import Mathlib.Algebra.Group.Action.Opposite
 public import Mathlib.Algebra.Group.Action.Units
 public import Mathlib.Algebra.Group.Invertible.Defs
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 public import Mathlib.Algebra.Ring.Aut
 public import Mathlib.Algebra.Ring.CompTypeclasses
 public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.Basic.SetLike.Basic
 public import Mathlib.Data.Int.Cast.Lemmas
-public import Mathlib.Data.SetLike.Basic
+
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
 /-!
 # Star monoids, rings, and modules

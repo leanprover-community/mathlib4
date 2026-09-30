@@ -5,10 +5,11 @@ Authors: Calle Sönne, Adam Topaz
 -/
 module
 
-public import Mathlib.Data.Setoid.Partition
-public import Mathlib.Topology.LocallyConstant.Basic
-import Mathlib.Topology.Separation.Regular
+public import Mathlib.Order.Setoid.Partition
 public import Mathlib.Topology.Connected.TotallyDisconnected
+public import Mathlib.Topology.LocallyConstant.Basic
+
+import Mathlib.Topology.Separation.Regular
 
 /-!
 
