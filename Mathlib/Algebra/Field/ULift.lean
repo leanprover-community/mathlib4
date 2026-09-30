@@ -17,7 +17,7 @@ This file defines instances for fields, semifields, and related structures on `U
 (Recall `ULift α` is just a "copy" of a type `α` in a higher universe.)
 -/
 
-@[expose] public section
+public section
 
 universe u
 variable {α : Type u}

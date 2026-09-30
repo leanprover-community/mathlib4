@@ -9,7 +9,7 @@ public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.CharP.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.Submonoid.Defs
-public import Mathlib.Algebra.Order.BigOperators.Group.Multiset
+import Mathlib.Algebra.Order.BigOperators.Group.Multiset
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Data.ZMod.Defs
 
@@ -62,7 +62,7 @@ an `AddMonoid`/`Monoid` instead of the `AddMonoid`/`Monoid` itself.
 * Affine maps are Freiman homomorphisms.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field Ideal TwoSidedIdeal
 
@@ -138,7 +138,11 @@ lemma IsMulFreimanIso.congr (hf₁ : IsMulFreimanIso n A B f₁) (h : EqOn f₁ 
 Given a Freiman isomorphism `f` from `A` to `B`, if `g` maps `B` into `A`, and is a right inverse
 to `f` on `B`, then `g` is a Freiman isomorphism from `B` to `A`.
 -/
-@[to_additive]
+@[to_additive
+/--
+Given an additive Freiman isomorphism `f` from `A` to `B`, if `g` maps `B` into `A`, and is a
+right inverse to `f` on `B`, then `g` is an additive Freiman isomorphism from `B` to `A`.
+-/]
 lemma IsMulFreimanIso.symm {g : β → α} (hg₁ : MapsTo g B A) (hg₂ : RightInvOn g f B)
     (hf : IsMulFreimanIso n A B f) :
     IsMulFreimanIso n B A g where
@@ -152,7 +156,11 @@ lemma IsMulFreimanIso.symm {g : β → α} (hg₁ : MapsTo g B A) (hg₂ : Right
 If the inverse of a Freiman homomorphism is itself a Freiman homomorphism, then it is a Freiman
 isomorphism.
 -/
-@[to_additive]
+@[to_additive
+/--
+If the inverse of a Freiman homomorphism is itself a Freiman homomorphism, then it is a Freiman
+isomorphism.
+-/]
 lemma IsMulFreimanHom.to_isMulFreimanIso {g : β → α} (h : InvOn g f A B)
     (hf : IsMulFreimanHom n A B f) (hg : IsMulFreimanHom n B A g) :
     IsMulFreimanIso n A B f where

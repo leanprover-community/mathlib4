@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Probability.Decision.Risk.Defs
 
-import Mathlib.Probability.Decision.Risk.Basic
+public import Mathlib.Probability.Kernel.Composition.CompNotation
 
 /-!
 # Risk in countable spaces
@@ -19,13 +19,13 @@ with sums instead of integrals.
 
 public section
 
-open MeasureTheory Function
+open MeasureTheory
 open scoped ENNReal NNReal
 
 namespace ProbabilityTheory
 
-variable {Θ Θ' 𝓧 𝓧' 𝓨 : Type*} {mΘ : MeasurableSpace Θ} {mΘ' : MeasurableSpace Θ'}
-  {m𝓧 : MeasurableSpace 𝓧} {m𝓧' : MeasurableSpace 𝓧'} {m𝓨 : MeasurableSpace 𝓨}
+variable {Θ 𝓧 𝓨 : Type*}
+  {mΘ : MeasurableSpace Θ} {m𝓧 : MeasurableSpace 𝓧} {m𝓨 : MeasurableSpace 𝓨}
   {ℓ : Θ → 𝓨 → ℝ≥0∞} {P : Kernel Θ 𝓧} {κ : Kernel 𝓧 𝓨} {π : Measure Θ}
 
 lemma avgRisk_countable [Countable Θ] [MeasurableSingletonClass Θ] :

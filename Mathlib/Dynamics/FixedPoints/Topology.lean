@@ -5,8 +5,8 @@ Authors: Yury Kudryashov, Johannes Hölzl
 -/
 module
 
-public import Mathlib.Dynamics.FixedPoints.Basic
 public import Mathlib.Topology.Separation.Hausdorff
+public import Mathlib.Dynamics.FixedPoints.Defs
 
 /-!
 # Topological properties of fixed points
@@ -28,7 +28,7 @@ variable {α : Type*} [TopologicalSpace α] [T2Space α] {f : α → α}
 
 open Function Filter
 
-open Topology
+open scoped Topology
 
 /-- If the iterates `f^[n] x` converge to `y` and `f` is continuous at `y`,
 then `y` is a fixed point for `f`. -/

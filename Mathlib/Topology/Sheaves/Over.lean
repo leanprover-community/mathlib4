@@ -5,9 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.Over.Basic
 public import Mathlib.CategoryTheory.Sites.Over
-public import Mathlib.Topology.Sets.Opens
 public import Mathlib.Topology.Sheaves.SheafCondition.Sites
 
 /-!
@@ -90,6 +88,11 @@ instance : U.overEquivalence.inverse.IsDenseSubsite
 def overPullbackSheafEquivOver {X : TopCat} (U : Opens X) :
     (Opens.grothendieckTopology X).overPullback A U ⋙ U.sheafEquivOver.functor ≅
       U.sheafRestrict := .refl _
+
+instance {X : TopCat} (U : Opens X)
+    [((Opens.grothendieckTopology X).overPullback A U).IsRightAdjoint] :
+    (U.sheafRestrict (C := A)).IsRightAdjoint :=
+  Functor.isRightAdjoint_of_iso U.overPullbackSheafEquivOver
 
 /-- `overPullback` and `sheafRestrict` are isomorphic under `sheafEquivOver`. -/
 def sheafRestrictSheafEquivOver {X : TopCat} (U : Opens X) :

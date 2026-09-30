@@ -9,8 +9,8 @@ public import Mathlib.Algebra.Algebra.RestrictScalars
 public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Algebra.Star.Unitary
-public import Mathlib.Data.Complex.Basic
-public import Mathlib.Data.Real.Star
+public import Mathlib.Basic.Complex.Basic
+public import Mathlib.Basic.Real.Star
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.Algebra.Module.Torsion.Field
 import Mathlib.Algebra.Order.Monoid.Submonoid
@@ -52,9 +52,7 @@ element of a `StarModule` over `ℂ`.
 assert_not_exists NNReal
 namespace Complex
 
-open ComplexConjugate
-
-open scoped SMul
+open scoped Complex.SMul
 
 variable {R : Type*} {S : Type*}
 
@@ -138,7 +136,7 @@ theorem algHom_ext ⦃f g : ℂ →ₐ[ℝ] A⦄ (h : f I = g I) : f = g := by
 
 end
 
-open Module Submodule
+open Module
 
 /-- `ℂ` has a basis over `ℝ` given by `1` and `I`. -/
 noncomputable def basisOneI : Basis (Fin 2) ℝ ℂ :=
@@ -217,7 +215,7 @@ instance (priority := 900) StarModule.complexToReal {E : Type*} [AddCommGroup E]
 
 namespace Complex
 
-open ComplexConjugate
+open scoped ComplexConjugate
 
 /-- Linear map version of the real part function, from `ℂ` to `ℝ`. -/
 def reLm : ℂ →ₗ[ℝ] ℝ where
@@ -426,11 +424,11 @@ theorem imaginaryPart_I_smul (a : A) : ℑ (I • a) = ℜ a := by
   simp [realPart_apply_coe, imaginaryPart_apply_coe, smul_comm I (2⁻¹ : ℝ), smul_smul I]
 
 theorem realPart_smul (z : ℂ) (a : A) : ℜ (z • a) = z.re • ℜ a - z.im • ℑ a := by
-  have := by congrm (ℜ ($((re_add_im z).symm) • a))
+  have := congr(ℜ ($((re_add_im z).symm) • a))
   simpa [-re_add_im, add_smul, ← smul_smul, sub_eq_add_neg]
 
 theorem imaginaryPart_smul (z : ℂ) (a : A) : ℑ (z • a) = z.re • ℑ a + z.im • ℜ a := by
-  have := by congrm (ℑ ($((re_add_im z).symm) • a))
+  have := congr(ℑ ($((re_add_im z).symm) • a))
   simpa [-re_add_im, add_smul, ← smul_smul]
 
 lemma skewAdjointPart_eq_I_smul_imaginaryPart (x : A) :
@@ -453,6 +451,7 @@ lemma realPart_comp_subtype_selfAdjoint :
     realPart.comp (selfAdjoint.submodule ℝ A).subtype = LinearMap.id :=
   selfAdjointPart_comp_subtype_selfAdjoint ℝ
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma imaginaryPart_comp_subtype_selfAdjoint :
     imaginaryPart.comp (selfAdjoint.submodule ℝ A).subtype = 0 := by
   ext; simp [imaginaryPart]
@@ -472,10 +471,10 @@ lemma imaginaryPart_imaginaryPart {x : A} : ℑ (ℑ x : A) = 0 :=
   (ℑ x).property.imaginaryPart
 
 lemma realPart_idem {x : A} : ℜ (ℜ x : A) = ℜ x :=
-  Subtype.ext <| (ℜ x).property.coe_realPart
+  Subtype.ext (ℜ x).property.coe_realPart
 
 lemma realPart_imaginaryPart {x : A} : ℜ (ℑ x : A) = ℑ x :=
-  Subtype.ext <| (ℑ x).property.coe_realPart
+  Subtype.ext (ℑ x).property.coe_realPart
 
 lemma realPart_surjective : Function.Surjective (realPart (A := A)) :=
   fun x ↦ ⟨(x : A), Subtype.ext x.property.coe_realPart⟩
@@ -504,6 +503,7 @@ lemma map_imaginaryPart (f : F) (x : A) : f (ℑ x) = ℑ (f x) := by
 
 end StarHomClass
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ker_imaginaryPart : imaginaryPart.ker = selfAdjoint.submodule ℝ A := by
   ext x
@@ -537,8 +537,7 @@ def Complex.selfAdjointEquiv : selfAdjoint ℂ ≃ₗ[ℝ] ℝ where
 
 lemma Complex.coe_selfAdjointEquiv (z : selfAdjoint ℂ) :
     (selfAdjointEquiv z : ℂ) = z := by
-  simpa [selfAdjointEquiv_symm_apply]
-    using (congr_arg Subtype.val <| Complex.selfAdjointEquiv.left_inv z)
+  simpa [selfAdjointEquiv_symm_apply] using congr($(Complex.selfAdjointEquiv.left_inv z).val)
 
 @[simp]
 lemma realPart_ofReal (r : ℝ) : (ℜ (r : ℂ) : ℂ) = r := by
@@ -562,8 +561,7 @@ lemma star_mul_self_add_self_mul_star (a : A) :
     star a * a + a * star a = 2 • (ℜ a * ℜ a + ℑ a * ℑ a) :=
   have a_eq := (realPart_add_I_smul_imaginaryPart a).symm
   calc
-    star a * a + a * star a = _ :=
-      congr((star $(a_eq)) * $(a_eq) + $(a_eq) * (star $(a_eq)))
+    star a * a + a * star a = _ := congr((star $a_eq) * $a_eq + $a_eq * star $a_eq)
     _ = 2 • (ℜ a * ℜ a + ℑ a * ℑ a) := by
       simp [mul_add, add_mul, smul_smul, mul_smul_comm,
         smul_mul_assoc]
@@ -573,8 +571,7 @@ lemma star_mul_self_sub_self_mul_star (a : A) :
     star a * a - a * star a = 2 • I • (ℜ a * ℑ a - ℑ a * ℜ a) :=
   have a_eq := (realPart_add_I_smul_imaginaryPart a).symm
   calc
-    star a * a - a * star a = _ :=
-      congr((star $(a_eq)) * $(a_eq) - $(a_eq) * (star $(a_eq)))
+    star a * a - a * star a = _ := congr((star $a_eq) * $a_eq - $a_eq * star $a_eq)
     _ = 2 • I • (ℜ a * ℑ a - ℑ a * ℜ a) := by
       simp [mul_add, add_mul, mul_smul_comm, smul_mul_assoc, smul_smul]
       module

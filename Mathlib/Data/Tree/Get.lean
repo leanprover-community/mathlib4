@@ -38,7 +38,6 @@ def indexOf (lt : α → α → Prop) [DecidableRel lt] (x : α) : BinaryTree α
     | Ordering.eq => some PosNum.one
     | Ordering.gt => PosNum.bit1 <$> indexOf lt x t₂
 
-set_option linter.deprecated false in
 /-- **Alias** of `BinaryTree.indexOf`. -/
 @[deprecated BinaryTree.indexOf (since := "2026-06-07")]
 abbrev _root_.Tree.indexOf (lt : α → α → Prop) [DecidableRel lt] (x : α) : Tree α → Option PosNum :=
@@ -55,7 +54,6 @@ def get : PosNum → BinaryTree α → Option α
   | PosNum.bit0 n, node _a t₁ _t₂ => t₁.get n
   | PosNum.bit1 n, node _a _t₁ t₂ => t₂.get n
 
-set_option linter.deprecated false in
 /-- **Alias** of `BinaryTree.get`. -/
 @[deprecated BinaryTree.get (since := "2026-06-07")]
 abbrev _root_.Tree.get (n : PosNum) (t : Tree α) : Option α :=
@@ -66,7 +64,6 @@ if the index is invalid. See `BinaryTree.get`. -/
 def getOrElse (n : PosNum) (t : BinaryTree α) (v : α) : α :=
   (t.get n).getD v
 
-set_option linter.deprecated false in
 /-- **Alias** of `BinaryTree.getOrElse`. -/
 @[deprecated BinaryTree.getOrElse (since := "2026-06-07")]
 abbrev _root_.Tree.getOrElse (n : PosNum) (t : Tree α) (v : α) : α :=

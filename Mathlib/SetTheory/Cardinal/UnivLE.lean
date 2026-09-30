@@ -5,7 +5,6 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.Logic.UnivLE
 public import Mathlib.SetTheory.Ordinal.Univ
 
 /-!
