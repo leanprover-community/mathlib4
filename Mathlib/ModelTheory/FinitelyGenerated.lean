@@ -78,7 +78,7 @@ theorem fg_closure_singleton (x : M) : FG (closure L ({x} : Set M)) :=
 theorem FG.cardinalLTGenerated {N : L.Substructure M} (hN : N.FG) {κ : Cardinal}
     (hκ : Cardinal.aleph0 ≤ κ) : N.CardinalLTGenerated κ := by
   obtain ⟨S, hS, hSN⟩ := fg_def.1 hN
-  haveI : Finite S := hS.to_subtype
+  have : Finite S := hS.to_subtype
   exact ⟨S, hasCardinalLT_of_finite S κ hκ, hSN⟩
 
 theorem cardinalLTGenerated_aleph0_iff {N : L.Substructure M} :
