@@ -5,10 +5,9 @@ Authors: Jake Levinson
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Data.Finset.Preimage
 public import Mathlib.Data.Finset.Prod
-public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.UpperLower.Basic
 
 /-!
@@ -76,7 +75,7 @@ instance : SetLike YoungDiagram (ℕ × ℕ) where
   coe y := y.cells
   coe_injective μ ν h := by rwa [YoungDiagram.ext_iff, ← Finset.coe_inj]
 
-instance : PartialOrder YoungDiagram := .ofSetLike YoungDiagram (ℕ × ℕ)
+instance : PartialOrder YoungDiagram := .ofSetLike YoungDiagram
 
 @[simp]
 theorem mem_cells {μ : YoungDiagram} (c : ℕ × ℕ) : c ∈ μ.cells ↔ c ∈ μ :=

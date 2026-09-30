@@ -53,7 +53,7 @@ theorem isEmbedding_sigmaMk_comp [Nonempty X] :
   injective := by
     rintro ⟨i, g⟩ ⟨i', g'⟩ h
     obtain ⟨rfl, hg⟩ : i = i' ∧ ⇑g ≍ ⇑g' :=
-      Function.eq_of_sigmaMk_comp <| congr_arg DFunLike.coe h
+      Function.eq_of_sigmaMk_comp congr($h)
     simpa using hg
 
 section ConnectedSpace

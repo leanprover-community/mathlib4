@@ -8,7 +8,7 @@ module
 
 public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Algebra.Notation.Pi.Defs
-public import Mathlib.Data.FunLike.Basic
+public import Mathlib.Basic.FunLike.Basic
 public import Mathlib.Logic.Function.Iterate
 
 /-!
@@ -255,7 +255,7 @@ theorem map_ne_one_iff {R S F : Type*} [One R] [One S] [FunLike F R S] [OneHomCl
 
 @[to_additive]
 theorem ne_one_of_map {R S F : Type*} [One R] [One S] [FunLike F R S] [OneHomClass F R S]
-    {f : F} {x : R} (hx : f x ≠ 1) : x ≠ 1 := ne_of_apply_ne f <| (by rwa [(map_one f)])
+    {f : F} {x : R} (hx : f x ≠ 1) : x ≠ 1 := ne_of_apply_ne f (by rwa [(map_one f)])
 
 /-- Turn an element of a type `F` satisfying `OneHomClass F M N` into an actual
 `OneHom`. This is declared as the default coercion from `F` to `OneHom M N`. -/

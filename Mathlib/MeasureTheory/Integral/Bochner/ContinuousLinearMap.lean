@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Normed.Operator.CompleteCodomain
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
 public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
+public import Mathlib.Topology.Algebra.Module.Equiv.Prod
 
 /-!
 # Continuous linear maps composed with integration
@@ -126,7 +127,7 @@ theorem integral_comp_comm (L : E ≃L[𝕜] F) (φ : X → E) : ∫ x, L (φ x)
   have : CompleteSpace E ↔ CompleteSpace F :=
     completeSpace_congr (e := L.toEquiv) L.isUniformEmbedding
   obtain ⟨_, _⟩ | ⟨_, _⟩ := iff_iff_and_or_not_and_not.mp this
-  · exact L.toContinuousLinearMap.integral_comp_comm' L.antilipschitz _
+  · exact L.toContinuousLinearMap.integral_comp_comm' L.antilipschitzWith _
   · simp [integral, *]
 
 end ContinuousLinearEquiv
