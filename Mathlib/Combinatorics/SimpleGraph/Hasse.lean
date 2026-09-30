@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Prod
-import Mathlib.Data.Fin.SuccPredOrder
+
+import Mathlib.Order.SuccPred.Fin
 import Mathlib.Order.SuccPred.Relation
 
 /-!
