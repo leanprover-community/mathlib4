@@ -151,15 +151,13 @@ open MulOpposite in
 /-- Left divisibility in the opposite semigroup is equivalent to right divisibility. -/
 @[simp]
 lemma op_dvd_op_iff : op a ∣ op b ↔ a ∣ᵣ b :=
-  ⟨fun ⟨c, hc⟩ ↦ ⟨unop c, op_injective hc⟩,
-   fun ⟨c, hc⟩ ↦ ⟨op c, congrArg op hc⟩⟩
+  ⟨fun ⟨c, hc⟩ ↦ ⟨unop c, op_injective hc⟩, fun ⟨c, hc⟩ ↦ ⟨op c, congrArg op hc⟩⟩
 
 open MulOpposite in
 /-- Right divisibility in the opposite semigroup is equivalent to left divisibility. -/
 @[simp]
 lemma op_rightDvd_op_iff : op a ∣ᵣ op b ↔ a ∣ b :=
-  ⟨fun ⟨c, hc⟩ ↦ ⟨unop c, op_injective hc⟩,
-   fun ⟨c, hc⟩ ↦ ⟨op c, congrArg op hc⟩⟩
+  ⟨fun ⟨c, hc⟩ ↦ ⟨unop c, op_injective hc⟩, fun ⟨c, hc⟩ ↦ ⟨op c, congrArg op hc⟩⟩
 
 end Semigroup
 
