@@ -204,7 +204,7 @@ instance : Subsingleton (smulSpace H (0 : 𝕜)) where
   allEq := by simp [smulSpace, auxSmulSpace]
 
 /-- Any function in the RKHS `c • H` can be coerced into the RKHS `H`. -/
-@[coe, simp]
+@[coe]
 def coeSmulSpace : smulSpace H c →L[𝕜] H := if h : c = 0 then 0 else (c : 𝕜) • equiv H h
 
 instance : CoeOut (smulSpace H c) H where
@@ -215,7 +215,7 @@ lemma coe_injective : Function.Injective (coeSmulSpace H c) := by
   by_cases h : c = 0
   · subst h
     exact Subsingleton.elim f g
-  · simp_all
+  · simp_all [coeSmulSpace]
 
 instance : RKHS 𝕜 (smulSpace H c) X V where
   coeCLM := coeCLM 𝕜 ∘L coeSmulSpace H c
@@ -235,9 +235,9 @@ theorem kerFun_eq (x : X) (v : V) :
   refine ext_inner_right 𝕜 fun v ↦ ?_
   simp_rw [kerFun_def, coeCLM]
   by_cases h : c = 0
-  · simp [h]
+  · simp [h, coeSmulSpace]
   · simp [h, ContinuousLinearMap.adjoint_inner_left, inner_smul_left, inner_smul_right,
-      LinearIsometryEquiv.inner_map_eq_flip]
+      LinearIsometryEquiv.inner_map_eq_flip, coeSmulSpace]
 
 theorem kernel_smul_eq_norm_sq_smul_kernel :
     kernel (smulSpace H c) = (‖(c : 𝕜)‖ : 𝕜) ^ 2 • kernel H := by
