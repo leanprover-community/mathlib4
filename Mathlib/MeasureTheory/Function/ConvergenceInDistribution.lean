@@ -112,7 +112,8 @@ protected lemma TendstoInDistribution.congr [OpensMeasurableSpace E] {T : Ω' �
   aemeasurable_limit := h.aemeasurable_limit.congr hZT
   tendsto := by
     convert! h.tendsto using 2 with n
-    · simpa using Measure.map_congr (hXY n).symm
+    · simpa only [Measure.toProbabilityMeasure_inj] using
+        Measure.map_congr (hXY n).symm
     · rw! [Measure.map_congr hZT]
       rfl
 
@@ -144,10 +145,10 @@ theorem TendstoInDistribution.continuous_comp {F : Type*} [OpensMeasurableSpace 
   aemeasurable_limit := hg.measurable.comp_aemeasurable h.aemeasurable_limit
   tendsto := by
     convert! ProbabilityMeasure.tendsto_map_of_tendsto_of_continuous _ _ h.tendsto hg
-    · rw! [← toProbabilityMeasure_map, AEMeasurable.map_map_of_aemeasurable
+    · rw! [← ProbabilityMeasure.toProbabilityMeasure_map, AEMeasurable.map_map_of_aemeasurable
           hg.aemeasurable (h.forall_aemeasurable _)]
       rfl
-    · rw! [← toProbabilityMeasure_map, AEMeasurable.map_map_of_aemeasurable
+    · rw! [← ProbabilityMeasure.toProbabilityMeasure_map, AEMeasurable.map_map_of_aemeasurable
           hg.aemeasurable h.aemeasurable_limit]
       rfl
 
