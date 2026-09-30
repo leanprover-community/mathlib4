@@ -341,6 +341,14 @@ lemma Multipliable.pow (hf : Multipliable f L) (n : ℕ) : Multipliable (f · ^ 
   (hf.hasProd.pow n).multipliable
 
 @[to_additive]
+lemma HasProd.ppow (hf : HasProd f a L) (n : ℕ+) : HasProd (f · ^ n) (a ^ n) L := by
+  simpa [← npow_val_eq_ppow] using hf.pow n
+
+@[to_additive]
+lemma Multipliable.ppow (hf : Multipliable f L) (n : ℕ+) : Multipliable (f · ^ n) L :=
+  (hf.hasProd.ppow n).multipliable
+
+@[to_additive]
 theorem hasProd_prod {f : γ → β → α} {a : γ → α} {s : Finset γ} :
     (∀ i ∈ s, HasProd (f i) (a i) L) → HasProd (fun b ↦ ∏ i ∈ s, f i b) (∏ i ∈ s, a i) L := by
   classical

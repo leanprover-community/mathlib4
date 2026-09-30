@@ -214,7 +214,7 @@ end SMul
 
 instance : AddCommSemigroup (π₁ →ⁱL π₂) :=
   fast_instance% toContinuousLinearMap_injective.addCommSemigroup _
-    toContinuousLinearMap_add
+    toContinuousLinearMap_add (fun _ _ => toContinuousLinearMap_smul _ _)
 
 instance : Neg (π₁ →ⁱL π₂) where
   neg f := ⟨-f.toContinuousLinearMap, by simp [f.2]⟩
@@ -264,6 +264,7 @@ instance : AddCommGroup (π₁ →ⁱL π₂) :=
   fast_instance% toContinuousLinearMap_injective.addCommGroup _ toContinuousLinearMap_zero
     toContinuousLinearMap_add toContinuousLinearMap_neg toContinuousLinearMap_sub
     (fun _ _ ↦ toContinuousLinearMap_smul _ _) (fun _ _ ↦ toContinuousLinearMap_smul _ _)
+    (fun _ _ ↦ toContinuousLinearMap_smul _ _)
 
 instance : DistribMulAction S (π₁ →ⁱL π₂) where
   one_smul _ := by ext; simp

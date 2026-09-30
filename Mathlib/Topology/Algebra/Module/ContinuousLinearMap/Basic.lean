@@ -432,6 +432,16 @@ theorem toLinearMap_add (f g : M₁ →SL[σ₁₂] M₂) : (↑(f + g) : M₁ �
 theorem toContinuousAddMonoidHom_add (f g : M₁ →SL[σ₁₂] M₂) :
     ↑(f + g) = (f + g : ContinuousAddMonoidHom M₁ M₂) := rfl
 
+instance instPSMul : SMul ℕ+ (M₁ →SL[σ₁₂] M₂) where
+  smul c f := ⟨c • (f : M₁ →ₛₗ[σ₁₂] M₂), f.2.const_smul c⟩
+
+instance : IsSMulApply ℕ+ (M₁ →SL[σ₁₂] M₂) M₁ M₂ where
+
+@[simp, norm_cast]
+theorem toLinearMap_psmul (c : ℕ+) (f : M₁ →SL[σ₁₂] M₂) :
+    ↑(c • f) = c • (f : M₁ →ₛₗ[σ₁₂] M₂) :=
+  rfl
+
 -- The `AddMonoid` instance exists to help speedup unification
 instance : AddMonoid (M₁ →SL[σ₁₂] M₂) := fast_instance% FunLike.addMonoid
 

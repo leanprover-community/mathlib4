@@ -110,7 +110,8 @@ instance {R} [DistribSMul R M] : SMul R (ι →ᵇᵃ[I₀] M) :=
       simp only [Pi.smul_apply, ← smul_sum, sum_partition_boxes _ hI hπ]⟩⟩
 
 instance : AddCommMonoid (ι →ᵇᵃ[I₀] M) :=
-  Function.Injective.addCommMonoid _ coe_injective rfl (fun _ _ => rfl) fun _ _ => rfl
+  Function.Injective.addCommMonoid _ coe_injective rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    fun _ _ => rfl
 
 instance : IsAddApply (ι →ᵇᵃ[I₀] M) (Box ι) M where
 
