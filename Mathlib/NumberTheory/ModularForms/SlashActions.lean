@@ -211,58 +211,38 @@ theorem mul_slash (k1 k2 : ℤ) (A : GL (Fin 2) ℝ) (f g : ℍ → ℂ) :
   rw [h1]
   ring
 
+theorem zpow_slash (n k : ℤ) (A : GL (Fin 2) ℝ) (f : ℍ → ℂ) :
+    (f ^ n) ∣[n * k] A = |(A.det : ℝ)| ^ (n - 1) • (f ∣[k] A) ^ n := by
+  ext1 τ
+  have hd : ((|A.det| : ℝ) : ℂ) ≠ 0 := ofReal_ne_zero.mpr <| abs_ne_zero.mpr <| NeZero.ne _
+  simp only [slash_apply, Pi.pow_apply, Pi.smul_apply, real_smul, ofReal_zpow, map_zpow₀, mul_zpow,
+    ← zpow_mul, mul_comm]
+  rw [show n * k - 1 = n - 1 + (k - 1) * n by ring, zpow_add₀ hd]
+  ring_nf
+
 theorem pow_slash (n : ℕ) (k : ℤ) (A : GL (Fin 2) ℝ) (f : ℍ → ℂ) :
     (f ^ n) ∣[n * k] A = |(A.det : ℝ)| ^ (n - 1 : ℤ) • (f ∣[k] A) ^ n := by
-  have hd : (|A.det| : ℝ) ≠ 0 := abs_ne_zero.mpr <| NeZero.ne _
-  induction n with
-  | zero =>
-    ext1
-    simp [slash_apply]
-  | succ n ih =>
-    rw [pow_succ, Nat.cast_succ, add_mul, one_mul, add_sub_cancel_right, mul_slash, ih,
-      smul_mul_assoc, smul_smul, ← pow_succ, ← zpow_one_add₀ hd, add_sub_cancel]
+  simpa using zpow_slash n k A f
 
 theorem inv_slash (k : ℤ) (A : GL (Fin 2) ℝ) (f : ℍ → ℂ) :
     (f⁻¹) ∣[k] A = |(A.det : ℝ)| ^ (-2 : ℤ) • (f ∣[-k] A)⁻¹ := by
-  ext1 τ
-  have hd : ((|A.det| : ℝ) : ℂ) ≠ 0 := ofReal_ne_zero.mpr <| abs_ne_zero.mpr <| NeZero.ne _
-  simp only [slash_apply, Pi.inv_apply, Pi.smul_apply, real_smul, ofReal_zpow, map_inv₀, mul_inv,
-    neg_neg, ← zpow_neg]
-  rw [show (k - 1 : ℤ) = -2 + -(-k - 1) by ring, zpow_add₀ hd]
-  ring
-
-theorem zpow_slash (n k : ℤ) (A : GL (Fin 2) ℝ) (f : ℍ → ℂ) :
-    (f ^ n) ∣[n * k] A = |(A.det : ℝ)| ^ (n - 1) • (f ∣[k] A) ^ n := by
-  obtain ⟨m, rfl | rfl⟩ := n.eq_nat_or_neg
-  · rw [zpow_natCast, zpow_natCast, pow_slash]
-  · rw [zpow_neg, zpow_neg, zpow_natCast, zpow_natCast, neg_mul, inv_slash, neg_neg, pow_slash]
-    ext1 τ
-    have hd : ((|A.det| : ℝ) : ℂ) ≠ 0 := ofReal_ne_zero.mpr <| abs_ne_zero.mpr <| NeZero.ne _
-    simp only [Pi.inv_apply, Pi.smul_apply, real_smul, ofReal_zpow, mul_inv, ← zpow_neg,
-      ← mul_assoc, ← zpow_add₀ hd]
-    ring_nf
+  simpa using zpow_slash (-1) (-k) A f
 
 theorem mul_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
     (f * g) ∣[k1 + k2] A = f ∣[k1] A * g ∣[k2] A := by
   simp [SL_slash, mul_slash]
 
+theorem zpow_slash_SL2 (n k : ℤ) (A : SL(2, ℤ)) (f : ℍ → ℂ) :
+    (f ^ n) ∣[n * k] A = (f ∣[k] A) ^ n := by
+  simp [SL_slash, zpow_slash]
+
 theorem pow_slash_SL2 (n : ℕ) (k : ℤ) (A : SL(2, ℤ)) (f : ℍ → ℂ) :
     (f ^ n) ∣[n * k] A = (f ∣[k] A) ^ n := by
-  induction n with
-  | zero => simp [is_invariant_one]
-  | succ n ih => rw [pow_succ, Nat.cast_succ, add_mul, one_mul, mul_slash_SL2, ih, pow_succ]
+  simp [SL_slash, pow_slash]
 
 theorem inv_slash_SL2 (k : ℤ) (A : SL(2, ℤ)) (f : ℍ → ℂ) :
     (f⁻¹) ∣[k] A = (f ∣[-k] A)⁻¹ := by
-  ext1 τ
-  simp [SL_slash_apply, mul_comm]
-
-theorem zpow_slash_SL2 (n k : ℤ) (A : SL(2, ℤ)) (f : ℍ → ℂ) :
-    (f ^ n) ∣[n * k] A = (f ∣[k] A) ^ n := by
-  obtain ⟨m, rfl | rfl⟩ := n.eq_nat_or_neg
-  · rw [zpow_natCast, zpow_natCast, pow_slash_SL2]
-  · rw [zpow_neg, zpow_neg, zpow_natCast, zpow_natCast, neg_mul, inv_slash_SL2, neg_neg,
-      pow_slash_SL2]
+  simp [SL_slash, inv_slash]
 
 theorem div_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
     (f / g) ∣[k1 - k2] A = f ∣[k1] A / g ∣[k2] A := by
