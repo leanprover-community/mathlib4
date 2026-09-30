@@ -571,7 +571,7 @@ elab_rules : tactic
           let sugg ← `(tactic| linarith only [$(idsList.toArray),*])
           Lean.Meta.Tactic.TryThis.addSuggestion tk sugg
         catch e =>
-          discard <| st.restore
+          discard st.restore
           throw e
 
 -- TODO restore this when `add_tactic_doc` is ported
