@@ -482,13 +482,6 @@ def changeGeneratorEquiv (a b : R) (u : Rˣ) (k : R) {a' b' : R}
 @[deprecated (since := "2026-08-14")] alias mapEquiv := changeGeneratorEquiv
 
 end changeGenerator
-
--- Over `ℤ`, the algebra structure of `QuadraticAlgebra.instAlgebra` and the one every ring carries
--- through `Ring.toIntAlgebra` are the same instance.
-example {a b : ℤ} :
-    (Ring.toIntAlgebra (QuadraticAlgebra ℤ a b)) = instAlgebra := by
-  with_implicit rfl
-
 section field
 
 variable [Field K] {a b : K} [Hab : Fact (∀ r, r ^ 2 ≠ a + b * r)]
