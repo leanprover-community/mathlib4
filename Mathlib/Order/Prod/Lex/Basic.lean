@@ -30,8 +30,8 @@ Related files are:
 * `Data.Finset.CoLex`: Colexicographic order on finite sets.
 * `Data.List.Lex`: Lexicographic order on lists.
 * `Data.Pi.Lex`: Lexicographic order on `Πₗ i, α i`.
-* `Data.PSigma.Order`: Lexicographic order on `Σ' i, α i`.
-* `Data.Sigma.Order`: Lexicographic order on `Σ i, α i`.
+* `Order.PSigma`: Lexicographic order on `Σ' i, α i`.
+* `Order.Sigma`: Lexicographic order on `Σ i, α i`.
 
 ## TODO
 
@@ -199,7 +199,7 @@ instance instLinearOrder (α β : Type*) [LinearOrder α] [LinearOrder β] : Lin
     have : Std.LawfulLTOrd (α ×ₗ β) := ⟨by
       simp [compare_def, compareLex, compareOn, Ordering.then_eq_lt, toLex_lt_toLex,
         compare_lt_iff_lt]⟩
-    convert! Std.LawfulLTCmp.eq_compareOfLessAndEq (cmp := compare) a b
+    convert Std.LawfulLTCmp.eq_compareOfLessAndEq (cmp := compare) a b
 
 @[to_dual]
 instance orderBot [PartialOrder α] [Preorder β] [OrderBot α] [OrderBot β] : OrderBot (α ×ₗ β) where
