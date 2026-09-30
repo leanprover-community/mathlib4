@@ -22,10 +22,10 @@ noncomputable section
 
 universe u
 
-variable {ι ι' R R₂ M M' : Type*}
+variable {ι R M : Type*}
 
 namespace Module.Basis
-variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
+variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 variable (b : Basis ι R M)
 
@@ -37,6 +37,7 @@ theorem mem_submodule_iff {P : Submodule R M} (b : Basis ι R P) {x : M} :
         ← Finsupp.range_linearCombination]
   simp [@eq_comm _ x, Function.comp, Finsupp.linearCombination_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the submodule `P` has a finite basis,
 `x ∈ P` iff it is a linear combination of basis vectors. -/
 theorem mem_submodule_iff' [Fintype ι] {P : Submodule R M} (b : Basis ι R P) {x : M} :
@@ -47,12 +48,10 @@ theorem mem_submodule_iff' [Fintype ι] {P : Submodule R M} (b : Basis ι R P) {
 
 end Basis
 
-open LinearMap
-
 variable {v : ι → M}
-variable [Ring R] [CommRing R₂] [AddCommGroup M]
-variable [Module R M] [Module R₂ M]
-variable {x y : M}
+variable [Ring R] [AddCommGroup M]
+variable [Module R M]
+variable {x : M}
 variable (b : Basis ι R M)
 
 theorem Basis.eq_bot_of_rank_eq_zero [IsDomain R] (b : Basis ι R M) (N : Submodule R M)
@@ -130,7 +129,7 @@ lemma mem_center_iff {A}
     · intros
       exact ⟨h.2 _ _, h.3 _ _⟩
   · intro h
-    rw [center, mem_setOf_eq]
+    rw [center, mem_ofPred_eq]
     constructor
     case comm =>
       intro y
@@ -178,7 +177,7 @@ theorem restrictScalars_repr_apply (m : span R (Set.range b)) (i : ι) :
   suffices
     Finsupp.mapRange.linearMap (Algebra.linearMap R S) ∘ₗ (b.restrictScalars R).repr.toLinearMap =
       ((b.repr : M →ₗ[S] ι →₀ S).restrictScalars R).domRestrict _
-    by exact DFunLike.congr_fun (LinearMap.congr_fun this m) i
+    from congr($this m i)
   refine Basis.ext (b.restrictScalars R) fun _ => ?_
   simp only [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply, map_one,
     Basis.repr_self, Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single,
@@ -226,7 +225,7 @@ theorem addSubgroupOfClosure_repr_apply (h : A = .closure (Set.range b)) (x : A)
   suffices Finsupp.mapRange.linearMap (Algebra.linearMap ℤ R) ∘ₗ
       (b.addSubgroupOfClosure A h).repr.toLinearMap =
         ((b.repr : M →ₗ[R] ι →₀ R).restrictScalars ℤ).domRestrict A.toIntSubmodule by
-    exact DFunLike.congr_fun (LinearMap.congr_fun this x) i
+    congrm $this x i
   exact (b.addSubgroupOfClosure A h).ext fun _ ↦ by simp
 
 end AddSubgroup

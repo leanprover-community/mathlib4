@@ -5,8 +5,8 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.InfiniteSum
-public import Mathlib.Topology.Algebra.InfiniteSum.Real
+import Mathlib.Analysis.Normed.Group.InfiniteSum
+import Mathlib.Topology.Algebra.InfiniteSum.Real
 public import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-! # Multiplying two infinite sums in a normed ring
@@ -58,8 +58,10 @@ theorem summable_mul_of_summable_norm' {f : ι → R} {g : ι' → R}
   rw [← prod_atTop_atTop_eq]
   have := Tendsto.prodMap h'f.hasSum h'g.hasSum
   rw [← nhds_prod_eq] at this
-  convert ((continuous_mul (M := R)).continuousAt
-      (x := (∑' (i : ι), f i, ∑' (j : ι'), g j))).tendsto.comp this with p
+  convert!
+    ((continuous_mul (M := R)).continuousAt (x := (∑' (i : ι), f i, ∑' (j : ι'), g j))).tendsto.comp
+      this with
+    p
   simp [sum_product, ← mul_sum, ← sum_mul]
 
 /-- Product of two infinite sums indexed by arbitrary types.
@@ -174,4 +176,4 @@ lemma summable_of_absolute_convergence_real {f : ℕ → ℝ} :
   | ⟨r, hr⟩ => by
     refine .of_norm ⟨r, (hasSum_iff_tendsto_nat_of_nonneg ?_ _).2 ?_⟩
     · exact fun i ↦ norm_nonneg _
-    · simpa only using hr
+    · simpa only using! hr

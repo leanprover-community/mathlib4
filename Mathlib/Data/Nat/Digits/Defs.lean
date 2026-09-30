@@ -5,11 +5,8 @@ Authors: Kim Morrison, Shing Tak Lam, Mario Carneiro
 -/
 module
 
-public import Mathlib.Tactic.NormNum
 public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Linarith
-public import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Algebra.Ring.Defs
 import all Init.Data.Repr  -- for exposing `toDigitsCore`
 
 /-!
@@ -275,7 +272,7 @@ theorem digits_eq_nil_iff_eq_zero {b n : ℕ} : digits b n = [] ↔ n = 0 := by
   constructor
   · intro h
     have : ofDigits b (digits b n) = ofDigits b [] := by rw [h]
-    convert this
+    convert! this
     rw [ofDigits_digits]
   · rintro rfl
     simp
@@ -455,8 +452,9 @@ lemma ofDigits_div_pow_eq_ofDigits_drop
 -/
 lemma self_div_pow_eq_ofDigits_drop {p : ℕ} (i n : ℕ) (h : 2 ≤ p) :
     n / p ^ i = ofDigits p ((p.digits n).drop i) := by
-  convert ofDigits_div_pow_eq_ofDigits_drop i (zero_lt_of_lt h) (p.digits n)
-    (fun l hl ↦ digits_lt_base h hl)
+  convert
+    ofDigits_div_pow_eq_ofDigits_drop i (zero_lt_of_lt h) (p.digits n)
+      (fun l hl ↦ digits_lt_base h hl)
   exact (ofDigits_digits p n).symm
 
 /-- Interpreting as a base `p` number and modulo `p^i` is the same as taking the first `i` digits.
@@ -484,8 +482,9 @@ lemma ofDigits_mod_pow_eq_ofDigits_take
 -/
 lemma self_mod_pow_eq_ofDigits_take {p : ℕ} (i n : ℕ) (h : 2 ≤ p) :
     n % p ^ i = ofDigits p ((p.digits n).take i) := by
-  convert ofDigits_mod_pow_eq_ofDigits_take i (zero_lt_of_lt h) (p.digits n)
-    (fun l hl ↦ digits_lt_base h hl)
+  convert
+    ofDigits_mod_pow_eq_ofDigits_take i (zero_lt_of_lt h) (p.digits n)
+      (fun l hl ↦ digits_lt_base h hl)
   exact (ofDigits_digits p n).symm
 
 /-! ### `Nat.toDigits` length -/
@@ -497,9 +496,9 @@ lemma toDigitsCore_lens_eq_aux (b f : Nat) :
   | zero => assumption
   | succ f ih =>
     if hx : n / b = 0 then
-      simp only [hx, if_true, List.length, congrArg (fun l ↦ l + 1) hlen]
+      simp only [hx, ite_true, List.length, congrArg (fun l ↦ l + 1) hlen]
     else
-      simp only [hx, if_false]
+      simp only [hx, ite_false]
       specialize ih (n / b) (Nat.digitChar (n % b) :: l1) (Nat.digitChar (n % b) :: l2)
       simp only [List.length, congrArg (fun l ↦ l + 1) hlen] at ih
       exact ih trivial

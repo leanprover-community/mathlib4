@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 public import Mathlib.CategoryTheory.Adjunction.Limits
 
 /-!
@@ -35,6 +35,7 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 include adj
 
+set_option backward.defeqAttrib.useBackward true in
 lemma preservesColimitsOfShape_iff (J : Type u) [Category.{v} J]
     [HasColimitsOfShape J C] [G.Full] [G.Faithful] :
     PreservesColimitsOfShape J H ↔ PreservesColimitsOfShape J (F ⋙ H) := by

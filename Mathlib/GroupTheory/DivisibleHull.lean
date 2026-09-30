@@ -6,9 +6,10 @@ Authors: Weiyi Wang
 module
 
 public import Mathlib.Algebra.Module.LocalizedModule.Basic
+import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Algebra.Order.Module.Archimedean
 public import Mathlib.Algebra.Order.Monoid.PNat
-public import Mathlib.Data.Sign.Defs
+public import Mathlib.Basic.Sign.Defs
 public import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
@@ -143,7 +144,7 @@ theorem nsmul_mk (a : ℕ) (m : M) (s : ℕ+) : a • mk m s = mk (a • m) s :=
 
 theorem nnqsmul_mk (a : ℚ≥0) (m : M) (s : ℕ+) :
     a • mk m s = mk (a.num • m) (⟨a.den, a.den_pos⟩ * s) := by
-  convert LocalizedModule.mk'_smul_mk ℚ≥0 a.num m ⟨a.den, by simp⟩ (↑ⁿ s)
+  convert! LocalizedModule.mk'_smul_mk ℚ≥0 a.num m ⟨a.den, by simp⟩ (↑ⁿ s)
   simp [IsLocalization.eq_mk'_iff_mul_eq]
 
 section TorsionFree
@@ -196,6 +197,7 @@ theorem qsmul_of_nonpos {a : ℚ} (h : a ≤ 0) (x : DivisibleHull M) :
   have := h.eq_or_lt
   aesop (add simp [qsmul_def, abs_of_neg])
 
+set_option backward.isDefEq.respectTransparency false in
 theorem qsmul_mk (a : ℚ) (m : M) (s : ℕ+) :
     a • mk m s = mk (a.num • m) (⟨a.den, a.den_pos⟩ * s) := by
   obtain h | h := le_total 0 a
@@ -209,6 +211,7 @@ theorem qsmul_mk (a : ℚ) (m : M) (s : ℕ+) :
       simpa using h
     simp [nnqsmul_mk, this, ← neg_mk]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable
 instance : Module ℚ (DivisibleHull M) where
   one_smul x := by
@@ -268,6 +271,7 @@ instance : LE (DivisibleHull M) where
 theorem mk_le_mk {m m' : M} {s s' : ℕ+} :
     mk m s ≤ mk m' s' ↔ s'.val • m ≤ s.val • m' := by rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance : LinearOrder (DivisibleHull M) where
   le_refl a := by
     induction a with | mk m s
@@ -312,6 +316,7 @@ instance : IsOrderedCancelAddMonoid (DivisibleHull M) :=
     simp_rw [PNat.mul_coe, smul_smul] at this
     convert this using 3 <;> ring)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsStrictOrderedModule ℚ≥0 (DivisibleHull M) where
   smul_lt_smul_of_pos_left a ha b c h := by
     induction b with | mk mb sb
@@ -333,15 +338,16 @@ end LinearOrder
 section OrderedGroup
 variable {M : Type*} [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsStrictOrderedModule ℚ (DivisibleHull M) where
   smul_lt_smul_of_pos_left a ha b c h := by
     simp_rw [qsmul_of_nonneg ha.le]
-    apply smul_lt_smul_of_pos_left h (by simpa using ha)
+    apply smul_lt_smul_of_pos_left h (by simpa using! ha)
   smul_lt_smul_of_pos_right a ha b c h := by
     apply lt_of_sub_pos
     rw [← sub_smul]
     simp_rw [qsmul_of_nonneg (sub_pos_of_lt h).le]
-    apply smul_pos (by simpa [← NNRat.coe_pos] using h) ha
+    apply smul_pos (by simpa [← NNRat.coe_pos] using! h) ha
 
 variable (M) in
 /-- Coercion from `M` to `DivisibleHull M` as an `OrderAddMonoidHom`. -/

@@ -6,7 +6,6 @@ Authors: Frédéric Dupuis
 module
 
 public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 public import Mathlib.Analysis.Normed.Group.NullSubmodule
 public import Mathlib.Topology.Algebra.Module.PerfectPairing
 
@@ -41,7 +40,9 @@ dual, Fréchet-Riesz
 
 noncomputable section
 
-open ComplexConjugate Module
+open Module
+
+open scoped ComplexConjugate
 
 namespace InnerProductSpace
 
@@ -117,14 +118,14 @@ theorem ext_inner_left_basis {ι : Type*} {x y : E} (b : Basis ι 𝕜 E)
   simp only [ContinuousLinearMap.coe_coe, toDualMap_apply_apply]
   rw [← inner_conj_symm]
   conv_rhs => rw [← inner_conj_symm]
-  exact congr_arg conj (h i)
+  congrm conj $(h i)
 
 theorem ext_inner_right_basis {ι : Type*} {x y : E} (b : Basis ι 𝕜 E)
     (h : ∀ i : ι, ⟪x, b i⟫ = ⟪y, b i⟫) : x = y := by
   refine ext_inner_left_basis b fun i => ?_
   rw [← inner_conj_symm]
   conv_rhs => rw [← inner_conj_symm]
-  exact congr_arg conj (h i)
+  congrm conj $(h i)
 
 variable (𝕜) (E)
 variable [CompleteSpace E]
@@ -140,9 +141,7 @@ def toDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
       by_cases htriv : Y = ⊤
       · have hℓ : ℓ = 0 := by
           have h' := LinearMap.ker_eq_top.mp htriv
-          rw [← coe_zero] at h'
-          apply coe_injective
-          exact h'
+          norm_cast at h'
         exact ⟨0, by simp [hℓ]⟩
       · rw [← Submodule.orthogonal_eq_bot_iff] at htriv
         change Yᗮ ≠ ⊥ at htriv
@@ -204,8 +203,7 @@ theorem continuousLinearMapOfBilin_zero : (0 : E →L⋆[𝕜] E →L[𝕜] 𝕜
 
 @[simp]
 theorem continuousLinearMapOfBilin_apply (v w : E) : ⟪B♯ v, w⟫ = B v w := by
-  rw [continuousLinearMapOfBilin, coe_comp', ContinuousLinearEquiv.coe_coe,
-    LinearIsometryEquiv.coe_toContinuousLinearEquiv, Function.comp_apply, toDual_symm_apply]
+  simp [continuousLinearMapOfBilin]
 
 theorem unique_continuousLinearMapOfBilin {v f : E} (is_lax_milgram : ∀ w, ⟪f, w⟫ = B v w) :
     f = B♯ v := by
@@ -221,7 +219,7 @@ instance [NormedAddCommGroup E] [CompleteSpace E] [InnerProductSpace ℝ E] :
   continuous_uncurry := continuous_inner
   bijective_left := (toDual ℝ E).bijective
   bijective_right := by
-    convert (toDual ℝ E).bijective
+    convert! (toDual ℝ E).bijective
     ext y
     simp
 

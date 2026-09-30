@@ -5,7 +5,6 @@ Authors: Etienne Marion
 -/
 module
 
-public import Mathlib.MeasureTheory.Constructions.Polish.StronglyMeasurable
 public import Mathlib.Probability.Process.Filtration
 
 /-!
@@ -52,7 +51,6 @@ theorem StronglyMeasurable.factorsThrough [TopologicalSpace Z]
   borelize Z
   exact hg.measurable.factorsThrough
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a function `g` is strongly measurable with respect to the pullback along some function `f`,
 then there exists some strongly measurable function `h : Y → Z` such that `g = h ∘ f`. -/
 theorem StronglyMeasurable.exists_eq_measurable_comp [Nonempty Z] [TopologicalSpace Z]
@@ -79,7 +77,7 @@ then there exists some measurable function `h : Y → Z` such that `g = h ∘ f`
 theorem _root_.Measurable.exists_eq_measurable_comp [Nonempty Z] [MeasurableSpace Z]
     [StandardBorelSpace Z] (hg : Measurable[mY.comap f] g) :
     ∃ h : Y → Z, Measurable h ∧ g = h ∘ f := by
-  letI := upgradeStandardBorel Z
+  let := upgradeStandardBorel Z
   obtain ⟨h, mh, hh⟩ := hg.stronglyMeasurable.exists_eq_measurable_comp
   exact ⟨h, mh.measurable, hh⟩
 

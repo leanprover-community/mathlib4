@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Central.Basic
 public import Mathlib.Analysis.LocallyConvex.Separation
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
-public import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
 /-!
@@ -222,9 +222,7 @@ theorem exists_continuousLinearEquiv_apply_eq
         smul_eq_mul, mul_sub, mul_one]
       rw [mul_comm _ (G y), ← mul_assoc, mul_inv_cancel₀ Gy]
       simp only [smul_sub, one_mul, add_sub_cancel]
-      abel
-    continuous_toFun := by fun_prop
-    continuous_invFun := by fun_prop }
+      abel }
   exact ⟨A, show x + G x • (y - x) = y by simp [Gx]⟩
 
 end Field

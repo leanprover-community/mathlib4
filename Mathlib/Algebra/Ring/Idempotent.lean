@@ -8,8 +8,8 @@ module
 public import Mathlib.Algebra.GroupWithZero.Idempotent
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Order.Notation
-public import Mathlib.Tactic.Convert
-public import Mathlib.Algebra.Group.Torsion
+import Mathlib.Tactic.Convert
+import Mathlib.Algebra.Group.Torsion
 
 /-!
 # Idempotent elements of a ring
@@ -143,7 +143,7 @@ theorem sub_iff [NonUnitalRing R] [IsAddTorsionFree R] {p q : R}
     simp_rw [sub_mul, add_mul, mul_assoc, hq.eq, add_sub_cancel_left, ← mul_assoc] at h2
     exact h2.symm.trans h1
   rw [hpq.eq, and_self, ← nsmul_right_inj (by simp : 2 ≠ 0), ← zero_add (2 • p)]
-  convert congrArg (· + 2 • p) h using 1
+  convert congrArg (· + 2 • p) h
   simp [sub_mul, mul_sub, hp.eq, hpq.eq, two_nsmul, sub_add, sub_sub]
 
 end IsIdempotentElem

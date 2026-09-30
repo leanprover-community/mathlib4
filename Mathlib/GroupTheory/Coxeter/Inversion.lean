@@ -6,8 +6,8 @@ Authors: Mitchell Lee, Óscar Álvarez
 module
 
 public import Mathlib.GroupTheory.Coxeter.Length
-public import Mathlib.Data.List.GetD
-public import Mathlib.Tactic.Group
+import Mathlib.Data.List.GetD
+import Mathlib.Tactic.Group
 
 /-!
 # Reflections, inversions, and inversion sequences
@@ -51,7 +51,7 @@ assert_not_exists TwoSidedIdeal
 
 namespace CoxeterSystem
 
-open List Matrix Function
+open List Function
 
 variable {B : Type*}
 variable {W : Type*} [Group W]
@@ -220,7 +220,7 @@ theorem rightInvSeq_concat (ω : List B) (i : B) :
     dsimp [rightInvSeq, concat]
     rw [ih]
     simp only [concat_eq_append, wordProd_append, wordProd_cons, wordProd_nil, mul_one, mul_inv_rev,
-      inv_simple, cons.injEq, and_true]
+      inv_simple, map_cons, MulAut.conj_apply, cons_append, cons.injEq, and_true]
     group
 
 private theorem leftInvSeq_eq_reverse_rightInvSeq_reverse (ω : List B) :

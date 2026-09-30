@@ -5,8 +5,9 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
+public import Mathlib.Dynamics.FixedPoints.Defs
 public import Mathlib.Order.DirSupClosed
-public import Mathlib.Order.SuccPred.CompleteLinearOrder
+import Mathlib.Order.SuccPred.CompleteLinearOrder
 public import Mathlib.Order.SuccPred.InitialSeg
 
 /-!
@@ -113,7 +114,7 @@ theorem to_Iio (hf : IsNormal f) (a : α) :
     IsNormal (β := Iio (f a)) fun x : Iio a ↦ ⟨f x.1, hf.strictMono x.2⟩ := by
   rw [isNormal_iff]
   refine ⟨fun x y h ↦ hf.strictMono h, fun b hb c hc ↦ hf.2 (hb.subtypeVal (isLowerSet_Iio _)) ?_⟩
-  simpa [upperBounds] using fun d hd ↦ hc ⟨d, hd.trans b.2⟩ hd
+  simpa [upperBounds] using! fun d hd ↦ hc ⟨d, hd.trans b.2⟩ hd
 
 end LinearOrder
 
@@ -130,6 +131,17 @@ theorem map_iSup {ι} [Nonempty ι] {g : ι → α} (hf : IsNormal f) (hg : BddA
   convert map_sSup hf (range_nonempty g) hg
   ext
   simp
+
+theorem iSup_iterate_mem_fixedPoints [WellFoundedLT α] {f : α → α} (a : α) (hf : IsNormal f)
+    (hf' : BddAbove (.range fun n ↦ f^[n] a)) : ⨆ n, f^[n] a ∈ f.fixedPoints := by
+  rw [f.mem_fixedPoints_iff, hf.map_iSup hf']
+  apply le_antisymm <;> refine ciSup_le fun n ↦ ?_
+  · rw [← f.iterate_succ_apply']
+    exact le_ciSup hf' _
+  · apply hf.strictMono.le_apply.trans
+    apply (le_ciSup (hf'.mono _) n)
+    simp_rw [← f.iterate_succ_apply']
+    grind
 
 theorem preimage_Iic (hf : IsNormal f) {x : β}
     (h₁ : (f ⁻¹' Iic x).Nonempty) (h₂ : BddAbove (f ⁻¹' Iic x)) :

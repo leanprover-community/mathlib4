@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Topology.Convenient.GeneratedBy
-public import Mathlib.Topology.Homeomorph.Lemmas
+import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Sets.Closeds
 
 /-!

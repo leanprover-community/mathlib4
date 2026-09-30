@@ -5,12 +5,12 @@ Authors: Nailin Guan, Yi Song
 -/
 module
 
-public import Mathlib.Algebra.Module.FinitePresentation
-public import Mathlib.LinearAlgebra.Dual.Lemmas
-public import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
-public import Mathlib.RingTheory.Ideal.AssociatedPrime.Localization
-public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
-public import Mathlib.RingTheory.Regular.IsSMulRegular
+import Mathlib.Algebra.Module.FinitePresentation
+import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
+import Mathlib.RingTheory.Ideal.AssociatedPrime.Localization
+import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
+import Mathlib.RingTheory.Regular.IsSMulRegular
 public import Mathlib.RingTheory.Support
 
 /-!
@@ -81,7 +81,7 @@ lemma subsingleton_linearMap_iff [IsNoetherianRing R] [Module.Finite R M] [Modul
       __ := g
       map_smul' r x := by
         simp only [AddHom.toFun_eq_coe, coe_toAddHom, RingHom.id_apply]
-        convert g.map_smul (Ideal.Quotient.mk _ r) x }
+        convert! g.map_smul (Ideal.Quotient.mk _ r) x }
     let to_res : Nₚ →ₗ[Rₚ] p.ResidueField :=
       to_res'.comp ((maximalIdeal (Localization.AtPrime p)) • (⊤ : Submodule Rₚ Nₚ)).mkQ
     replace hx : maximalIdeal (Localization.AtPrime p) = (toSpanSingleton _ _ x).ker :=

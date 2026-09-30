@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.Instances
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Fibrant and cofibrant objects in a model category
@@ -36,6 +35,7 @@ abbrev IsCofibrant (X : C) : Prop := Cofibration (initial.to X)
 lemma isCofibrant_iff (X : C) :
     IsCofibrant X ↔ Cofibration (initial.to X) := Iff.rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isCofibrant_iff_of_isInitial [(cofibrations C).RespectsIso]
     {A X : C} (i : A ⟶ X) (hA : IsInitial A) :
     IsCofibrant X ↔ Cofibration i := by
@@ -83,6 +83,7 @@ abbrev IsFibrant (X : C) : Prop := Fibration (terminal.from X)
 lemma isFibrant_iff (X : C) :
     IsFibrant X ↔ Fibration (terminal.from X) := Iff.rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isFibrant_iff_of_isTerminal [(fibrations C).RespectsIso]
     {X Y : C} (p : X ⟶ Y) (hY : IsTerminal Y) :
     IsFibrant X ↔ Fibration p := by

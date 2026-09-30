@@ -5,10 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.Logic.Function.Coequalizer
-public import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 # Coequalizers in Type
@@ -37,8 +35,7 @@ def coequalizerColimit : Limits.ColimitCocone (parallelPair f g) where
       (by ext x; exact Function.Coequalizer.condition f g x)
   isColimit :=
     Cofork.IsColimit.mk _
-      (fun s ↦ ↾(Function.Coequalizer.desc f g s.π
-        (by ext x; exact ConcreteCategory.congr_hom s.condition x)))
+      (fun s ↦ ↾(Function.Coequalizer.desc f g s.π (by ext x; congrm $s.condition x)))
       (fun _ ↦ rfl)
       (fun _ _ hm ↦ by ext x; exact Quot.inductionOn x (congr_hom hm))
 
@@ -65,9 +62,9 @@ theorem coequalizer_preimage_image_eq_of_preimage_eq (π : Y ⟶ Z) (e : f ≫ �
       (mono_iff_injective
             (h.coconePointUniqueUpToIso (coequalizerColimit f g).isColimit).inv).mp
         inferInstance
-    refine (eqv.eqvGen_iff.mp (Relation.EqvGen.mono lem (Quot.eqvGen_exact ?_))).mp hy
+    refine (eqv.eqvGen_iff.mp (Relation.EqvGen.mono lem y _ (Quot.eqvGen_exact ?_))).mp hy
     apply e''
-    convert e'
+    convert! e'
   · exact fun hx => ⟨_, hx, rfl⟩
 
 /-- The categorical coequalizer in `Type u` is the quotient by `f g ~ g x`. -/

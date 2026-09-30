@@ -5,9 +5,8 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Normed.Operator.NormedSpace
+import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.MeasureTheory.Function.LpSpace.Basic
-public import Mathlib.MeasureTheory.Measure.OpenPos
 public import Mathlib.Topology.ContinuousMap.Compact
 
 /-!
@@ -24,7 +23,7 @@ as `BoundedContinuousFunction.toLp`.
 open BoundedContinuousFunction MeasureTheory Filter
 open scoped ENNReal
 
-variable {α E : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α}
+variable {α E : Type*} {m0 : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α}
   [TopologicalSpace α] [BorelSpace α] [NormedAddCommGroup E] [SecondCountableTopologyEither α E]
 
 variable (E p μ) in
@@ -44,8 +43,9 @@ theorem MeasureTheory.Lp.mem_boundedContinuousFunction_iff {f : Lp E p μ} :
 namespace BoundedContinuousFunction
 
 /-- A bounded continuous function is in `L∞`. -/
-theorem memLp_top (f : α →ᵇ E) : MemLp f ⊤ μ :=
-  ⟨by fun_prop, eLpNormEssSup_lt_top_of_ae_bound <| univ_mem' (id norm_coe_le_norm f)⟩
+theorem memLp_top (f : α →ᵇ E) : MemLp f ⊤ μ := by
+  rw [memLp_iff, eLpNorm_exponent_top (by fun_prop)]
+  exact eLpNormEssSup_lt_top_of_ae_bound <| univ_mem' (id norm_coe_le_norm f)
 
 variable [IsFiniteMeasure μ]
 
@@ -142,7 +142,7 @@ from the space `α →ᵇ E` of bounded continuous functions, so this constructi
 transferring the structure from `BoundedContinuousFunction.toLp` along the isometry. -/
 noncomputable def toLp : C(α, E) →L[𝕜] Lp E p μ :=
   (BoundedContinuousFunction.toLp p μ 𝕜).comp
-    (linearIsometryBoundedOfCompact α E 𝕜).toLinearIsometry.toContinuousLinearMap
+    (linearIsometryBoundedOfCompact α E 𝕜).toContinuousLinearEquiv.toContinuousLinearMap
 
 variable {𝕜}
 
@@ -151,7 +151,7 @@ theorem range_toLp :
       MeasureTheory.Lp.boundedContinuousFunction E p μ := by
   refine SetLike.ext' ?_
   have := (linearIsometryBoundedOfCompact α E 𝕜).surjective
-  convert Function.Surjective.range_comp this (BoundedContinuousFunction.toLp (E := E) p μ 𝕜)
+  convert! Function.Surjective.range_comp this (BoundedContinuousFunction.toLp (E := E) p μ 𝕜)
   rw [← BoundedContinuousFunction.range_toLp p μ (𝕜 := 𝕜), Submodule.coe_toAddSubgroup,
     LinearMap.coe_range, ContinuousLinearMap.coe_coe]
 

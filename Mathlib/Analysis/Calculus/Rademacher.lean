@@ -6,11 +6,9 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.LineDeriv.Measurable
-public import Mathlib.Analysis.Normed.Module.FiniteDimension
-public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-public import Mathlib.Analysis.BoundedVariation
-public import Mathlib.MeasureTheory.Group.Integral
-public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
+import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+import Mathlib.Analysis.BoundedVariation
+import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 public import Mathlib.MeasureTheory.Measure.Haar.Disintegration
 
 /-!
@@ -81,12 +79,12 @@ theorem ae_lineDifferentiableAt
       (measurableSet_lineDifferentiableAt hf.continuous) A
   intro p
   have : ∀ᵐ (s : ℝ), DifferentiableAt ℝ (fun t ↦ f (p + t • v)) s :=
-    (hf.comp ((LipschitzWith.const p).add L.lipschitz)).ae_differentiableAt_real
+    (hf.comp ((LipschitzWith.const p).add L.lipschitzWith)).ae_differentiableAt_real
   filter_upwards [this] with s hs
   have h's : DifferentiableAt ℝ (fun t ↦ f (p + t • v)) (s + 0) := by simpa using hs
   have : DifferentiableAt ℝ (fun t ↦ s + t) 0 := differentiableAt_id.const_add _
   simp only [LineDifferentiableAt]
-  convert h's.comp 0 this with _ t
+  convert! h's.comp 0 this with _ t
   simp only [add_assoc, Function.comp_apply, add_smul]
 
 theorem locallyIntegrable_lineDeriv (hf : LipschitzWith C f) (v : E) :
@@ -109,7 +107,7 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul
   apply tendsto_integral_filter_of_dominated_convergence (fun x ↦ (C * ‖v‖) * ‖g x‖)
   · filter_upwards with t
     apply AEStronglyMeasurable.mul ?_ hg.aestronglyMeasurable
-    apply aestronglyMeasurable_const.smul
+    apply aestronglyMeasurable_const.fun_smul
     apply AEStronglyMeasurable.sub _ hf.continuous.measurable.aestronglyMeasurable
     apply AEMeasurable.aestronglyMeasurable
     exact hf.continuous.measurable.comp_aemeasurable' (aemeasurable_id'.add_const _)
@@ -134,7 +132,7 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul'
       (K.indicator (fun x ↦ (C * ‖v‖) * ‖g x‖))
   · filter_upwards with t
     apply AEStronglyMeasurable.mul ?_ hg.aestronglyMeasurable
-    apply aestronglyMeasurable_const.smul
+    apply aestronglyMeasurable_const.fun_smul
     apply AEStronglyMeasurable.sub _ hf.continuous.measurable.aestronglyMeasurable
     apply AEMeasurable.aestronglyMeasurable
     exact hf.continuous.measurable.comp_aemeasurable' (aemeasurable_id'.add_const _)
@@ -306,7 +304,7 @@ theorem hasFDerivAt_of_hasLineDerivAt_of_closure
       · exact hf.norm_sub_le _ _
       · rw [← smul_sub, norm_smul, norm_rho]
         gcongr
-        exact L.lipschitz.norm_sub_le _ _
+        exact L.lipschitzWith.norm_sub_le _ _
       · conv_rhs => rw [← norm_rho]
         apply hr _ _ _ yq
         simpa [norm_rho, hρ] using hv
@@ -370,7 +368,7 @@ theorem ae_differentiableWithinAt_of_mem {f : E → F} (hf : LipschitzOnWith C f
     rw [this]
     exact A.symm.differentiableAt.comp_differentiableWithinAt x (hx xs)
   apply ae_differentiableWithinAt_of_mem_pi
-  exact A.lipschitz.comp_lipschitzOnWith hf
+  exact A.lipschitzWith.comp_lipschitzOnWith hf
 
 /-- *Rademacher's theorem*: a function between finite-dimensional real vector spaces which is
 Lipschitz on a set is differentiable almost everywhere in this set. -/

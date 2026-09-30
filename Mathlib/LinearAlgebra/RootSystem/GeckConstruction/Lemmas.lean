@@ -5,8 +5,6 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.LinearAlgebra.RootSystem.Base
-public import Mathlib.LinearAlgebra.RootSystem.Chain
 public import Mathlib.LinearAlgebra.RootSystem.Finite.G2
 
 /-!
@@ -74,7 +72,7 @@ lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
   have : P.pairingIn ℤ l i = 1 - P.pairingIn ℤ j i := by
     apply algebraMap_injective ℤ R
     simp only [algebraMap_pairingIn, map_sub, map_one, algebraMap_pairingIn]
-    convert (P.coroot' i : M →ₗ[R] R).congr_arg hl using 1
+    convert! (P.coroot' i : M →ₗ[R] R).congr_arg hl using 1
     simp only [map_sub, map_add, LinearMap.flip_apply, root_coroot_eq_pairing, hki, pairing_same,
       sub_left_inj]
     ring
@@ -92,8 +90,9 @@ lemma root_add_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
     simp only [indexNeg_neg, root_reflectionPerm, reflection_apply_self]
     module
   rw [← neg_mem_range_root_iff]
-  convert b.root_sub_root_mem_of_mem_of_mem j i (-k) hij.symm hj hi hk (by contrapose hkj; aesop)
-    (by convert P.neg_mem_range_root_iff.mpr hk' using 1; simp [neg_add_eq_sub]) using 1
+  convert
+    b.root_sub_root_mem_of_mem_of_mem j i (-k) hij.symm hj hi hk (by contrapose hkj; aesop)
+      (by convert P.neg_mem_range_root_iff.mpr hk' using 1; simp [neg_add_eq_sub]) using 1
   simp only [indexNeg_neg, root_reflectionPerm, reflection_apply_self]
   module
 
@@ -110,6 +109,7 @@ section chainBotCoeff_mul_chainTopCoeff
 
 variable {b : P.Base} {i j k l m : ι}
 
+set_option linter.overlappingInstances false in
 private lemma chainBotCoeff_mul_chainTopCoeff.aux_0 [P.IsNotG2]
     (hik_mem : P.root k + P.root i ∈ range P.root) :
     P.pairingIn ℤ k i = 0 ∨ (P.pairingIn ℤ k i < 0 ∧ P.chainBotCoeff i k = 0) := by
@@ -210,7 +210,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_1
   intro _ him_mem hjl_mem hjk_mem
   /- Setup some typeclasses and name the 6th root `n`. -/
   have := chainBotCoeff_mul_chainTopCoeff.isNotG2 hi hj hij h₁ h₂ h₃
-  letI := P.indexNeg
+  let := P.indexNeg
   have : IsAddTorsionFree M := .of_isTorsionFree R M
   obtain ⟨n, hn⟩ := h₃
   /- Establish basic relationships about roots and their sums / differences. -/
@@ -260,6 +260,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_1
   simp only [P.chainBotCoeff_if_one_zero, hik_mem, him_mem, hjl_mem, hjk_mem]
   simp [key₁, key₂, key₃, key₄]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /- An auxiliary result en route to `RootPairing.chainBotCoeff_mul_chainTopCoeff`. -/
 open RootPositiveForm in
 private lemma chainBotCoeff_mul_chainTopCoeff.aux_2
@@ -270,7 +271,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_2
       P.root j + P.root (-k) ∈ range P.root →
       ¬ (P.chainBotCoeff i m = 1 ∧ P.chainBotCoeff j (-l) = 0) := by
   intro _ him_mem hjl_mem hjk_mem
-  letI := P.indexNeg
+  let := P.indexNeg
   /- Setup some typeclasses. -/
   have := chainBotCoeff_mul_chainTopCoeff.isNotG2 hi hj hij h₁ h₂ h₃
   have : IsAddTorsionFree M := .of_isTorsionFree R M
@@ -336,7 +337,7 @@ lemma chainBotCoeff_mul_chainTopCoeff :
       (P.chainTopCoeff j l + 1) * (P.chainBotCoeff i k + 1) := by
   /- Setup some typeclasses. -/
   have := chainBotCoeff_mul_chainTopCoeff.isNotG2 hi hj hij h₁ h₂ h₃
-  letI := P.indexNeg
+  let := P.indexNeg
   suffices (P.chainBotCoeff i m + 1) * (P.chainBotCoeff j (-k) + 1) =
       (P.chainBotCoeff j (-l) + 1) * (P.chainBotCoeff i k + 1) by simpa
   /- Establish basic relationships about roots and their sums / differences. -/

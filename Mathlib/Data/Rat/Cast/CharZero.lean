@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 public import Mathlib.Data.Rat.Cast.Defs
 
 /-!
@@ -16,7 +15,7 @@ public import Mathlib.Data.Rat.Cast.Defs
 
 open Function
 
-variable {F ι α β : Type*}
+variable {α : Type*}
 
 namespace Rat
 variable [DivisionRing α] [CharZero α] {p q : ℚ}
@@ -50,6 +49,7 @@ lemma cast_ne_zero : (p : α) ≠ 0 ↔ p ≠ 0 := cast_eq_zero.ne
 
 variable (α) in
 /-- Coercion `ℚ → α` as a `RingHom`. -/
+@[implicit_reducible]
 def castHom : ℚ →+* α where
   toFun := (↑)
   map_one' := cast_one

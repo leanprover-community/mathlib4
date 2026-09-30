@@ -37,7 +37,7 @@ fibonacci, zeckendorf, digit
 open List Nat
 
 -- TODO: The `local` attribute makes this not considered as an instance by linters
-@[nolint defLemma docBlame]
+@[nolint docBlame]
 local instance : IsTrans ℕ fun a b ↦ b + 2 ≤ a where
   trans _a _b _c hba hcb := hcb.trans <| le_self_add.trans hba
 
@@ -124,8 +124,6 @@ def zeckendorf : ℕ → List ℕ
   | m@(_ + 1) =>
     letI a := greatestFib m
     a :: zeckendorf (m - fib a)
-decreasing_by simp_wf; subst_vars; apply zeckendorf_aux (zero_lt_succ _)
-
 
 @[simp] lemma zeckendorf_zero : zeckendorf 0 = [] := zeckendorf.eq_1 ..
 

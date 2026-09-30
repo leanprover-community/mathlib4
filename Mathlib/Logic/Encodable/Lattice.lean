@@ -6,8 +6,6 @@ Authors: Floris van Doorn
 module
 
 public import Mathlib.Logic.Encodable.Basic
-public import Mathlib.Logic.Pairwise
-public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Lattice operations on encodable types

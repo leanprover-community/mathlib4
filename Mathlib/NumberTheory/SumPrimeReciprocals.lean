@@ -5,7 +5,7 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Indicator
+import Mathlib.Algebra.Order.Group.Indicator
 public import Mathlib.Analysis.PSeries
 public import Mathlib.NumberTheory.SmoothNumbers
 
@@ -29,6 +29,36 @@ public section
 
 open Set Nat
 open scoped Topology
+
+section PrimeSums
+
+variable {M : Type*} [CommMonoid M] [TopologicalSpace M] (f : ℕ → M)
+
+omit [TopologicalSpace M] in
+@[to_additive]
+private lemma ite_prime_eq_mulIndicator :
+    (fun n : ℕ ↦ if n.Prime then f n else 1) = {n | n.Prime}.mulIndicator f := by
+  ext; simp [Set.mulIndicator_apply]
+
+/-- Reindex a product over `Nat.Primes` as a product over `ℕ`, extending `f` by `1`. -/
+@[to_additive /-- Reindex a sum over `Nat.Primes` as a sum over `ℕ`, extending `f` by `0`. -/]
+theorem Nat.Primes.tprod_eq_tprod_ite :
+    ∏' p : Primes, f p = ∏' n : ℕ, if n.Prime then f n else 1 := by
+  rw [ite_prime_eq_mulIndicator]; exact tprod_subtype {n | n.Prime} f
+
+/-- `Multipliable` over `Nat.Primes` iff over `ℕ` extending `f` by `1`. -/
+@[to_additive /-- `Summable` over `Nat.Primes` iff over `ℕ` extending `f` by `0`. -/]
+theorem Nat.Primes.multipliable_iff_multipliable_ite :
+    Multipliable (fun p : Primes ↦ f p) ↔ Multipliable fun n : ℕ ↦ if n.Prime then f n else 1 := by
+  rw [ite_prime_eq_mulIndicator]; exact multipliable_subtype_iff_mulIndicator
+
+/-- `HasProd` over `Nat.Primes` iff over `ℕ` extending `f` by `1`. -/
+@[to_additive /-- `HasSum` over `Nat.Primes` iff over `ℕ` extending `f` by `0`. -/]
+theorem Nat.Primes.hasProd_iff_hasProd_ite {a : M} :
+    HasProd (fun p : Primes ↦ f p) a ↔ HasProd (fun n : ℕ ↦ if n.Prime then f n else 1) a := by
+  rw [ite_prime_eq_mulIndicator]; exact hasProd_subtype_iff_mulIndicator
+
+end PrimeSums
 
 /-- The cardinality of the set of `k`-rough numbers `≤ N` is bounded by `N` times the sum
 of `1/p` over the primes `k ≤ p ≤ N`. -/
@@ -75,9 +105,11 @@ theorem not_summable_one_div_on_primes :
     convert h.indicator {n : ℕ | k ≤ n} using 1
     simp only [indicator_indicator, inter_comm]
   refine ((one_half_le_sum_primes_ge_one_div k).trans_lt <| LE.le.trans_lt ?_ hk).false
-  convert Summable.sum_le_tsum (primesBelow ((4 ^ (k.primesBelow.card + 1)).succ) \ primesBelow k)
-    (fun n _ ↦ indicator_nonneg (fun p _ ↦ by positivity) _) h' using 2 with p hp
-  obtain ⟨hp₁, hp₂⟩ := mem_setOf_eq ▸ Finset.mem_sdiff.mp hp
+  convert!
+    Summable.sum_le_tsum (primesBelow ((4 ^ (k.primesBelow.card + 1)).succ) \ primesBelow k)
+      (fun n _ ↦ indicator_nonneg (fun p _ ↦ by positivity) _) h' using
+    2 with p hp
+  obtain ⟨hp₁, hp₂⟩ := mem_ofPred_eq ▸ Finset.mem_sdiff.mp hp
   have hpp := prime_of_mem_primesBelow hp₁
   refine (indicator_of_mem ?_ fun n : ℕ ↦ (1 / n : ℝ)).symm
   exact ⟨hpp, by simpa [primesBelow, hpp] using hp₂⟩
@@ -85,7 +117,7 @@ theorem not_summable_one_div_on_primes :
 set_option backward.isDefEq.respectTransparency false in
 /-- The sum over the reciprocals of the primes diverges. -/
 theorem Nat.Primes.not_summable_one_div : ¬ Summable (fun p : Nat.Primes ↦ (1 / p : ℝ)) := by
-  convert summable_subtype_iff_indicator.mp.mt not_summable_one_div_on_primes
+  convert! summable_subtype_iff_indicator.mp.mt not_summable_one_div_on_primes
 
 /-- The series over `p^r` for primes `p` converges if and only if `r < -1`. -/
 theorem Nat.Primes.summable_rpow {r : ℝ} :

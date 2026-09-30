@@ -172,7 +172,7 @@ end
 theorem keys_subset_keys_of_entries_subset_entries
     {s₁ s₂ : AList β} (h : s₁.entries ⊆ s₂.entries) : s₁.keys ⊆ s₂.keys := by
   intro k hk
-  letI : DecidableEq α := Classical.decEq α
+  let : DecidableEq α := Classical.decEq α
   have := h (mem_lookup_iff.1 (Option.get_mem (lookup_isSome.2 hk)))
   rw [← mem_lookup_iff, Option.mem_def] at this
   rw [← mem_keys, ← lookup_isSome, this]
@@ -238,7 +238,7 @@ theorem lookup_erase_ne {a a'} {s : AList β} (h : a ≠ a') : lookup a (erase a
   dlookup_kerase_ne h
 
 theorem erase_erase (a a' : α) (s : AList β) : (s.erase a).erase a' = (s.erase a').erase a :=
-  ext <| kerase_kerase
+  ext kerase_kerase
 
 /-! ### insert -/
 
@@ -352,7 +352,7 @@ theorem insertRec_insert {C : AList β → Sort*} (H0 : C ∅)
       IH c.1 c.2 ⟨l, hl⟩ h (@insertRec α β _ C H0 IH ⟨l, hl⟩) by
     cases c
     apply eq_of_heq
-    convert this <;> rw [insert_of_notMem h]
+    convert! this <;> rw [insert_of_notMem h]
   rw [insertRec]
   apply cast_heq
 

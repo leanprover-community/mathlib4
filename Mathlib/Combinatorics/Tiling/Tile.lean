@@ -197,9 +197,8 @@ directly. -/
   Quotient.liftOn' pt.groupElts (fun g ↦ g • (ps pt.index : Set X))
     fun a b r ↦ by
       rw [QuotientGroup.leftRel_eq] at r
-      simp only
       rw [eq_comm, ← inv_smul_eq_iff, smul_smul, ← MulAction.mem_stabilizer_iff]
-      exact SetLike.le_def.1 (Subgroup.map_subtype_le _) r
+      exact mem_of_le_of_mem (Subgroup.map_subtype_le _) r
 
 instance : CoeOut (PlacedTile ps) (Set X) where
   coe := coeSet

@@ -6,11 +6,11 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Probability.IdentDistrib
-public import Mathlib.Probability.Independence.Integrable
+import Mathlib.Probability.Independence.Integrable
 public import Mathlib.MeasureTheory.Integral.DominatedConvergence
-public import Mathlib.Analysis.SpecificLimits.FloorPow
-public import Mathlib.Analysis.PSeries
-public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
+import Mathlib.Analysis.SpecificLimits.FloorPow
+import Mathlib.Analysis.PSeries
+import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 
 /-!
 # The strong law of large numbers
@@ -219,7 +219,6 @@ theorem sum_prob_mem_Ioc_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 
     (hKN : K ≤ N) :
     ∑ j ∈ range K, ℙ {ω | X ω ∈ Set.Ioc (j : ℝ) N} ≤ ENNReal.ofReal (𝔼[X] + 1) := by
   let ρ : Measure ℝ := Measure.map X ℙ
-  haveI : IsProbabilityMeasure ρ := Measure.isProbabilityMeasure_map hint.aemeasurable
   have A : ∑ j ∈ range K, ∫ _ in j..N, (1 : ℝ) ∂ρ ≤ 𝔼[X] + 1 :=
     calc
       ∑ j ∈ range K, ∫ _ in j..N, (1 : ℝ) ∂ρ =
@@ -301,7 +300,7 @@ theorem tsum_prob_mem_Ioi_lt_top {X : Ω → ℝ} (hint : Integrable X) (hnonneg
         obtain ⟨N, hN⟩ : ∃ N : ℕ, X ω ≤ N := exists_nat_ge (X ω)
         exact Set.mem_iUnion.2 ⟨N, hω, hN⟩
       · simp +contextual only [Set.mem_Ioc, Set.mem_Ioi,
-          Set.iUnion_subset_iff, Set.setOf_subset_setOf, imp_true_iff]
+          Set.iUnion_subset_iff, Set.ofPred_subset_ofPred, imp_true_iff]
     rw [this]
     apply tendsto_measure_iUnion_atTop
     intro m n hmn x hx
@@ -431,7 +430,7 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
         · simp only [Nat.cast_zero]
           simp only [Y, Nat.cast_zero, truncation_zero, variance_zero, mul_zero, le_rfl]
         apply mul_le_mul_of_nonneg_right _ (variance_nonneg _ _)
-        convert sum_div_nat_floor_pow_sq_le_div_sq N (Nat.cast_pos.2 hj) c_one using 2
+        convert! sum_div_nat_floor_pow_sq_le_div_sq N (Nat.cast_pos.2 hj) c_one using 2
         · simp only [u, Nat.cast_lt]
         · simp only [u, one_div]
       _ = c ^ 5 * (c - 1)⁻¹ ^ 3 * ∑ j ∈ range (u (N - 1)), ((j : ℝ) ^ 2)⁻¹ * Var[Y j] := by
@@ -467,8 +466,8 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
     (le_of_tendsto_of_tendsto' (ENNReal.tendsto_nat_tsum _) tendsto_const_nhds I3).trans_lt
       ENNReal.ofReal_lt_top
   filter_upwards [ae_eventually_notMem I4.ne] with ω hω
-  simp_rw [S, not_le, mul_comm, sum_apply] at hω
-  convert hω; simp only [Y, u, sum_apply]
+  simp_rw [S, not_le, mul_comm, Finset.sum_apply] at hω
+  convert! hω; simp only [Y, u, Finset.sum_apply]
 
 include hint hindep hident hnonneg in
 /-- The truncation of `Xᵢ` up to `i` satisfies the strong law of large numbers
@@ -499,7 +498,7 @@ theorem strong_law_aux3 :
     exact (hident i).truncation.integral_eq
   convert Asymptotics.isLittleO_sum_range_of_tendsto_zero (tendsto_sub_nhds_zero_iff.2 A) using 1
   ext1 n
-  simp only [sum_sub_distrib, sum_const, card_range, nsmul_eq_mul, sum_apply, sub_left_inj]
+  simp only [sum_sub_distrib, sum_const, card_range, nsmul_eq_mul, Finset.sum_apply, sub_left_inj]
   rw [integral_finsetSum _ fun i _ => ?_]
   exact ((hident i).symm.integrable_snd hint).1.integrable_truncation
 
@@ -538,7 +537,7 @@ theorem strong_law_aux5 :
     · exact (sub_self _).symm
     · have : -(n : ℝ) < X n ω := by
         apply lt_of_lt_of_le _ (hnonneg n ω)
-        simpa only [Right.neg_neg_iff, Nat.cast_pos] using npos
+        simpa only [Right.neg_neg_iff, Nat.cast_pos] using! npos
       simp only [this, true_and, not_le] at h
       exact (hn h).elim
   filter_upwards [B] with ω hω
@@ -608,7 +607,7 @@ theorem strong_law_ae_real {Ω : Type*} {m : MeasurableSpace Ω} {μ : Measure �
       intro i
       exact (hident i).symm.ae_snd (p := fun x ↦ x = 0) measurableSet_eq h
     filter_upwards [I] with ω hω
-    simpa [hω] using (integral_eq_zero_of_ae h).symm
+    simpa [hω] using! (integral_eq_zero_of_ae h).symm
   have : IsProbabilityMeasure μ :=
     hint.isProbabilityMeasure_of_indepFun (X 0) (X 1) h (hindep zero_ne_one)
   -- then consider separately the positive and the negative part, and apply the result
@@ -624,7 +623,7 @@ theorem strong_law_ae_real {Ω : Type*} {m : MeasurableSpace Ω} {μ : Measure �
     strong_law_aux7 _ hint.neg_part (fun i j hij => (hindep hij).comp negm negm)
       (fun i => (hident i).comp negm) fun i ω => le_max_right _ _
   filter_upwards [A, B] with ω hωpos hωneg
-  convert hωpos.sub hωneg using 2
+  convert! hωpos.sub hωneg using 2
   · simp only [pos, neg, ← sub_div, ← sum_sub_distrib, max_zero_sub_max_neg_zero_eq_self,
       Function.comp_apply]
   · simp +instances only [pos, neg, ← integral_sub hint.pos_part hint.neg_part,
@@ -650,7 +649,6 @@ lemma strong_law_ae_simpleFunc_comp (X : ℕ → Ω → E) (h' : Measurable (X 0
       Tendsto (fun n : ℕ ↦ (n : ℝ)⁻¹ • (∑ i ∈ range n, φ (X i ω))) atTop (𝓝 μ[φ ∘ (X 0)]) := by
   -- this follows from the one-dimensional version when `φ` takes a single value, and is then
   -- extended to the general case by linearity.
-  classical
   refine SimpleFunc.induction (motive := fun ψ ↦ ∀ᵐ ω ∂μ,
     Tendsto (fun n : ℕ ↦ (n : ℝ)⁻¹ • (∑ i ∈ range n, ψ (X i ω))) atTop (𝓝 μ[ψ ∘ (X 0)])) ?_ ?_ φ
   · intro c s hs
@@ -676,7 +674,7 @@ lemma strong_law_ae_simpleFunc_comp (X : ℕ → Ω → E) (h' : Measurable (X 0
       ext
       simp
     simp only [I, integral_smul_const]
-    convert Tendsto.smul_const hω c using 1
+    convert! Tendsto.smul_const hω c using 1
     simp [F, Y, ← sum_smul, smul_smul]
   · rintro φ ψ - hφ hψ
     filter_upwards [hφ, hψ] with ω hωφ hωψ
@@ -850,7 +848,7 @@ theorem strong_law_Lp {p : ℝ≥0∞} (hp : 1 ≤ p) (hp' : p ≠ ∞) (X : ℕ
   have : IsProbabilityMeasure μ := MemLp.isProbabilityMeasure_of_indepFun
     (X 0) (X 1) (zero_lt_one.trans_le hp).ne' hp' hℒp h (hindep zero_ne_one)
   have hmeas : ∀ i, AEStronglyMeasurable (X i) μ := fun i =>
-    (hident i).aestronglyMeasurable_iff.2 hℒp.1
+    (hident i).aestronglyMeasurable_iff.2 hℒp.aestronglyMeasurable
   have hint : Integrable (X 0) μ := hℒp.integrable hp
   have havg (n : ℕ) :
       AEStronglyMeasurable (fun ω => (n : ℝ)⁻¹ • (∑ i ∈ range n, X i ω)) μ :=
@@ -863,7 +861,7 @@ theorem strong_law_Lp {p : ℝ≥0∞} (hp : 1 ≤ p) (hp' : p ≠ ∞) (X : ℕ
     apply uniformIntegrable_average hp
     exact MemLp.uniformIntegrable_of_identDistrib hp hp' hℒp hident
   · ext n ω
-    simp only [Pi.smul_apply, sum_apply]
+    simp only [Pi.smul_apply, Finset.sum_apply]
 
 end StrongLawLp
 

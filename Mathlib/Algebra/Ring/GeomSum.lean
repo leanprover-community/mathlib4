@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.BigOperators.Intervals
 public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Algebra.Ring.Opposite
-public import Mathlib.Algebra.Ring.GrindInstances
+import Mathlib.Algebra.Ring.Opposite
+import Mathlib.Algebra.Ring.GrindInstances
 
 /-!
 # Partial sums of geometric series in a ring
@@ -117,7 +117,7 @@ protected lemma Commute.geom_sum₂_comm (n : ℕ) (h : Commute x y) :
   simp only [Nat.add_sub_cancel]
   rw [← Finset.sum_flip]
   refine Finset.sum_congr rfl fun i hi => ?_
-  simpa [Nat.sub_sub_self (Nat.succ_le_succ_iff.mp (Finset.mem_range.mp hi))] using h.pow_pow _ _
+  simpa [Nat.sub_sub_self (Nat.succ_le_succ_iff.mp (Finset.mem_range.mp hi))] using! h.pow_pow _ _
 
 -- TODO: for consistency, the next two lemmas should be moved to the root namespace
 lemma RingHom.map_geom_sum (x : R) (n : ℕ) (f : R →+* S) :
@@ -152,7 +152,7 @@ lemma geom_sum₂_mul_of_ge (hxy : y ≤ x) (n : ℕ) :
 lemma geom_sum₂_mul_of_le (hxy : x ≤ y) (n : ℕ) :
     (∑ i ∈ range n, x ^ i * y ^ (n - 1 - i)) * (y - x) = y ^ n - x ^ n := by
   rw [← Finset.sum_range_reflect]
-  convert geom_sum₂_mul_of_ge hxy n using 3
+  convert! geom_sum₂_mul_of_ge hxy n using 3
   simp_all only [Finset.mem_range]
   rw [mul_comm]
   congr
@@ -238,7 +238,7 @@ lemma mul_geom_sum (x : R) (n : ℕ) : ((x - 1) * ∑ i ∈ range n, x ^ i) = x 
   op_injective <| by simpa using geom_sum_mul (op x) n
 
 lemma geom_sum_mul_neg (x : R) (n : ℕ) : (∑ i ∈ range n, x ^ i) * (1 - x) = 1 - x ^ n := by
-  have := congr_arg Neg.neg (geom_sum_mul x n)
+  have := congr(-$(geom_sum_mul x n))
   rw [neg_sub, ← mul_neg, neg_sub] at this
   exact this
 

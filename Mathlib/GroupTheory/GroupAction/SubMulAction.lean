@@ -6,11 +6,9 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Actions
-public import Mathlib.Algebra.Module.Defs
-public import Mathlib.Data.SetLike.Basic
-public import Mathlib.Data.Setoid.Basic
 public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.GroupTheory.GroupAction.Hom
+public import Mathlib.Order.Setoid.Basic
 
 /-!
 
@@ -212,7 +210,7 @@ variable [SMul R M]
 instance : SetLike (SubMulAction R M) M :=
   ⟨SubMulAction.carrier, fun p q h => by cases p; cases q; congr⟩
 
-@[to_additive] instance : PartialOrder (SubMulAction R M) := .ofSetLike (SubMulAction R M) M
+@[to_additive] instance : PartialOrder (SubMulAction R M) := .ofSetLike (SubMulAction R M)
 
 @[to_additive]
 instance : SMulMemClass (SubMulAction R M) R M where smul_mem := smul_mem' _
@@ -426,11 +424,6 @@ theorem val_image_orbit {p : SubMulAction R M} (m : p) :
     Subtype.val '' MulAction.orbit R m = MulAction.orbit R (m : M) :=
   (Set.range_comp _ _).symm
 
-/- -- Previously, the relatively useless :
-lemma orbit_of_sub_mul {p : SubMulAction R M} (m : p) :
-    (mul_action.orbit R m : set M) = MulAction.orbit R (m : M) := rfl
--/
-
 @[to_additive]
 theorem val_preimage_orbit {p : SubMulAction R M} (m : p) :
     Subtype.val ⁻¹' MulAction.orbit R (m : M) = MulAction.orbit R m := by
@@ -499,8 +492,8 @@ section AddCommGroup
 
 variable [Ring R] [AddCommGroup M]
 variable [Module R M]
-variable (p p' : SubMulAction R M)
-variable {r : R} {x y : M}
+variable (p : SubMulAction R M)
+variable {x : M}
 
 theorem neg_mem (hx : x ∈ p) : -x ∈ p := by
   rw [← neg_one_smul R]
@@ -527,7 +520,7 @@ namespace SubMulAction
 
 variable [GroupWithZero S] [Monoid R] [MulAction R M]
 variable [SMul S R] [MulAction S M] [IsScalarTower S R M]
-variable (p : SubMulAction R M) {s : S} {x y : M}
+variable (p : SubMulAction R M) {s : S} {x : M}
 
 theorem smul_mem_iff (s0 : s ≠ 0) : s • x ∈ p ↔ x ∈ p :=
   p.smul_mem_iff' (Units.mk0 s s0)

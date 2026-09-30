@@ -6,7 +6,7 @@ Authors: Floris van Doorn, Heather Macbeth
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Calculus
-public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
 # Properties about the powers of the norm
@@ -23,8 +23,9 @@ public section
 
 section ContDiffNormPow
 
-open Asymptotics Real Topology
-open scoped NNReal
+open Asymptotics Real
+
+open scoped Topology NNReal
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
@@ -43,7 +44,7 @@ theorem hasFDerivAt_norm_rpow (x : E) {p : ℝ} (hp : 1 < p) :
           ring_nf
       _ =o[𝓝 0] (fun x : E ↦ ‖x‖ * 1) := by
         refine (isBigO_refl _ _).mul_isLittleO <| (isLittleO_const_iff <| by simp).mpr ?_
-        convert continuousAt_id.norm.rpow_const (.inr h2p.le) |>.tendsto
+        convert! continuousAt_id.norm.rpow_const (.inr h2p.le) |>.tendsto
         simp [h2p.ne']
       _ =O[𝓝 0] (fun (x : E) ↦ x - 0) := by
         simp_rw [mul_one, isBigO_norm_left (f' := fun x ↦ x), sub_zero, isBigO_refl]
@@ -58,7 +59,7 @@ theorem differentiable_norm_rpow {p : ℝ} (hp : 1 < p) :
 
 theorem hasDerivAt_norm_rpow (x : ℝ) {p : ℝ} (hp : 1 < p) :
     HasDerivAt (fun x : ℝ ↦ ‖x‖ ^ p) (p * ‖x‖ ^ (p - 2) * x) x := by
-  convert hasFDerivAt_norm_rpow x hp |>.hasDerivAt using 1; simp
+  convert hasFDerivAt_norm_rpow x hp |>.hasDerivAt; simp
 
 theorem hasDerivAt_abs_rpow (x : ℝ) {p : ℝ} (hp : 1 < p) :
     HasDerivAt (fun x : ℝ ↦ |x| ^ p) (p * |x| ^ (p - 2) * x) x := by

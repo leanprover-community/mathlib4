@@ -3,8 +3,10 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.W.Basic
-import Mathlib.Data.Fin.VecNotation
+module
+
+public import Mathlib.Data.W.Basic
+public import Mathlib.Data.Fin.VecNotation
 
 /-!
 # W types
@@ -20,15 +22,13 @@ From the definition (using `sum`, `unit`, and an encodable type), Lean can infer
 that it is encodable. We then define a map from propositional formulas to the
 corresponding `Wfin` type, and show that map has a left inverse.
 
-We mark the auxiliary constructions `private`, since their only purpose is to
-show encodability.
+The auxiliary constructions are private, since their only purpose is to show encodability.
 -/
-
 
 namespace PropEncodable
 
 /-- Propositional formulas with labels from `α`. -/
-inductive PropForm (α : Type*)
+public inductive PropForm (α : Type*)
   | var : α → PropForm α
   | not : PropForm α → PropForm α
   | and : PropForm α → PropForm α → PropForm α
@@ -36,7 +36,7 @@ inductive PropForm (α : Type*)
 
 namespace PropForm
 
-private def Constructors (α : Type*) :=
+def Constructors (α : Type*) :=
   α ⊕ (Unit ⊕ (Unit ⊕ Unit))
 
 local notation "cvar " a => Sum.inl a
@@ -48,7 +48,7 @@ local notation "cand" => Sum.inr (Sum.inr (Sum.inr Unit.unit))
 local notation "cor" => Sum.inr (Sum.inr (Sum.inl Unit.unit))
 
 @[simp]
-private def arity (α : Type*) : Constructors α → Nat
+def arity (α : Type*) : Constructors α → Nat
   | cvar _ => 0
   | cnot => 1
   | cand => 2
@@ -61,19 +61,19 @@ instance : ∀ c : Unit ⊕ (Unit ⊕ Unit), NeZero (arity α (.inr c))
   | .inr (.inl ()) => ⟨two_ne_zero⟩
   | .inr (.inr ()) => ⟨two_ne_zero⟩
 
-private def f : PropForm α → WType fun i => Fin (arity α i)
+def f : PropForm α → WType fun i => Fin (arity α i)
   | var a => ⟨cvar a, ![]⟩
   | not p => ⟨cnot, ![f p]⟩
   | and p q => ⟨cand, ![f p, f q]⟩
   | or p q => ⟨cor, ![f p, f q]⟩
 
-private def finv : (WType fun i => Fin (arity α i)) → PropForm α
+def finv : (WType fun i => Fin (arity α i)) → PropForm α
   | ⟨cvar a, _⟩ => var a
   | ⟨cnot, fn⟩ => not (finv (fn 0))
   | ⟨cand, fn⟩ => and (finv (fn 0)) (finv (fn 1))
   | ⟨cor, fn⟩ => or (finv (fn 0)) (finv (fn 1))
 
-instance [Encodable α] : Encodable (PropForm α) :=
+@[no_expose] public instance [Encodable α] : Encodable (PropForm α) :=
   haveI : Encodable (Constructors α) := inferInstanceAs <| Encodable (α ⊕ Unit ⊕ Unit ⊕ Unit)
   Encodable.ofLeftInverse f finv (by intro p; induction p <;> simp [f, finv, *])
 

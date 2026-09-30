@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Polynomial.Splits
 public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
-public import Mathlib.RingTheory.LocalRing.Basic
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Approximate roots and polynomials in a normed field
@@ -96,7 +96,8 @@ theorem exists_roots_norm_sub_lt_of_norm_coeff_sub_lt (hε : 0 < ε) {a : K} (ha
     --     (fun i ↦ (C (g.coeff i - f.coeff i) * X ^ i).eval a)
   _ < _ := by
     rw [hdeg]
-    convert Finset.sum_lt_sum_of_nonempty (g := fun i ↦ ε * (‖a‖ ⊔ 1) ^ ↑f.natDegree)
+    convert
+      Finset.sum_lt_sum_of_nonempty (g := fun i ↦ ε * (‖a‖ ⊔ 1) ^ ↑f.natDegree)
         (Finset.nonempty_range_add_one) ?_
     · simp [mul_assoc]
     · simp only [Finset.mem_range, norm_mul, norm_pow]
