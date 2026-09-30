@@ -25,7 +25,7 @@ and "preliminary" versions which include finite values and are sometimes more co
   `preAleph n = n`, `preAleph ω = ℵ₀`, `preAleph (ω + 1) = ℵ₁`, etc. `Cardinal.aleph` is the more
   standard function which skips over finite cardinals.
 * The function `Cardinal.preBeth` is the unique normal function with `beth 0 = 0` and
-  `beth (succ o) = 2 ^ beth o`. `Cardinal.beth` is the more standard function which skips over
+  `beth (o + 1) = 2 ^ beth o`. `Cardinal.beth` is the more standard function which skips over
   finite cardinals.
 
 ## Notation
