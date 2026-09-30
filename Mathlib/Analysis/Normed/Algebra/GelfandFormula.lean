@@ -5,7 +5,7 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Analysis.Normed.Algebra.SpectralRadiusLimit
+public import Mathlib.Analysis.Normed.Algebra.GelfandRadius
 public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.Analysis.Normed.Operator.Mul
@@ -141,11 +141,11 @@ theorem pow_norm_pow_one_div_tendsto_nhds_spectralRadius (a : A) :
 
 /-- **Gelfand's formula**: Given an element `a : A` of a complex Banach algebra, the
 `spectralRadius` of `a` is the limit of the sequence `‖a ^ n‖ ^ (1 / n)`. -/
-theorem spectralRadius_eq_spectralRadiusLimit (a : A) :
-    spectralRadius ℂ a = ENNReal.ofReal (spectralRadiusLim a) := by
+theorem spectralRadius_eq_gelfandRadius (a : A) :
+    spectralRadius ℂ a = ENNReal.ofReal (gelfandRadius a) := by
   have h1 := pow_norm_pow_one_div_tendsto_nhds_spectralRadius a
   simp_rw [one_div] at h1
-  have h2 := continuous_ofReal.continuousAt.tendsto.comp (tendsto_spectralRadiusLim a)
+  have h2 := continuous_ofReal.continuousAt.tendsto.comp (tendsto_gelfandRadius a)
   exact tendsto_nhds_unique h1 h2
 
 section Nontrivial

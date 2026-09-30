@@ -106,14 +106,12 @@ this limit is given in `Subadditive.tendsto_lim` -/
 protected def lim (_h : Subadditive u) :=
   sInf ((fun n : ℕ => u n / n) '' Ici 1)
 
-@[deprecated "No longer needed." (since := "2026-08-20")]
 theorem lim_le_div (hbdd : BddBelow (range fun n => u n / n)) {n : ℕ} (hn : n ≠ 0) :
     h.lim ≤ u n / n := by
   rw [Subadditive.lim]
   exact csInf_le (hbdd.mono <| image_subset_range _ _) ⟨n, hn.bot_lt, rfl⟩
 
 include h in
-@[deprecated "No longer needed." (since := "2026-08-20")]
 theorem apply_mul_add_le (k n r) : u (k * n + r) ≤ k * u n + u r := by
   induction k with
   | zero => simp only [Nat.cast_zero, zero_mul, zero_add]; rfl
@@ -125,7 +123,8 @@ theorem apply_mul_add_le (k n r) : u (k * n + r) ≤ k * u n + u r := by
       _ = (k + 1 : ℕ) * u n + u r := by simp; ring
 
 include h in
-@[deprecated "No longer needed." (since := "2026-08-20")]
+@[deprecated "This was used solely to prove `Subadditive.tendsto_lim` which is now
+proved directly from the multiplicative version." (since := "2026-08-20")]
 theorem eventually_div_lt_of_div_lt {L : ℝ} {n : ℕ} (hn : n ≠ 0) (hL : u n / n < L) :
     ∀ᶠ p in atTop, u p / p < L := by
   /- It suffices to prove the statement for each arithmetic progression `(n * · + r)`. -/
