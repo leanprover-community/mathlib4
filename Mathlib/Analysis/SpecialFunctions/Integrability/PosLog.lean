@@ -8,14 +8,13 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Integrability.Log
 
 /-!
-# Integrability of Functions Prominently Involving the Logarithm
+# Integrability of Functions Prominently Involving `log⁺`
 
-## Integrability for Logarithms of Meromorphic Functions
+## Integrability for `log⁺` of Meromorphic Functions
 
-We establish integrability for functions of the form `log ‖meromorphic‖`. In the real setting, these
-functions are interval integrable over every interval of the real line. This implies in particular
-that logarithms of trigonometric functions are interval integrable. In the complex setting, the
-functions are circle integrable over every circle in the complex plane.
+We establish integrability for functions of the form `log⁺ ‖meromorphic‖`. In the real setting,
+these functions are interval integrable over every interval of the real line. In the complex
+setting, the functions are circle integrable over every circle in the complex plane.
 -/
 
 public section
@@ -23,7 +22,7 @@ public section
 open Filter Interval MeasureTheory MeromorphicOn Metric Real
 
 /-!
-### Interval Integrability for Logarithms of Real Meromorphic Functions
+### Interval Integrability for `log⁺` of Real Meromorphic Functions
 -/
 
 section IntervalIntegrable
@@ -33,7 +32,7 @@ variable
   {f : ℝ → E} {a b : ℝ}
 
 /--
-If `f` is real-meromorphic on a compact interval, then `log ‖f ·‖` is interval integrable on this
+If `f` is real-meromorphic on a compact interval, then `log⁺ ‖f ·‖` is interval integrable on this
 interval.
 -/
 theorem MeromorphicOn.intervalIntegrable_posLog_norm (hf : MeromorphicOn f [[a, b]]) :
@@ -49,7 +48,7 @@ alias MeromorphicOn.intervalIntegrable_posLog_norm_meromorphicOn := intervalInte
 end IntervalIntegrable
 
 /-!
-### Circle Integrability for Logarithms of Complex Meromorphic Functions
+### Circle Integrability for `log⁺` of Complex Meromorphic Functions
 -/
 
 section CircleIntegrable

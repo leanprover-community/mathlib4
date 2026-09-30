@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.Finiteness.Small
 public import Mathlib.RingTheory.IsTensorProduct
 public import Mathlib.RingTheory.TensorProduct.Finite
 public import Mathlib.RingTheory.Adjoin.FGBaseChange
-public import Mathlib.RingTheory.Nilpotent.Defs
+import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # Flat modules
@@ -267,7 +267,7 @@ lemma _root_.LinearMap.baseChangeHom_injective [FaithfulSMul R S] [Flat R N] :
     Injective (LinearMap.baseChangeHom R S M N) := by
   intro f g h
   ext m
-  simpa using Flat.tensorProduct_mk_injective R N S <| LinearMap.congr_fun h (1 ⊗ₜ[R] m)
+  simpa using Flat.tensorProduct_mk_injective R N S congr($h (1 ⊗ₜ[R] m))
 
 end Algebra
 
