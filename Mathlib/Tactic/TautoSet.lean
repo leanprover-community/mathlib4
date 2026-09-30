@@ -25,7 +25,8 @@ open Lean Elab.Tactic
 -/
 elab (name := specialize_all) "specialize_all" x:term : tactic => withMainContext do
   for h in ← getLCtx do
-    evalTactic (← `(tactic|specialize $(mkIdent h.userName) $x)) <|> pure ()
+    unless h.isImplementationDetail do
+      evalTactic (← `(tactic|specialize $(mkIdent h.userName) $x)) <|> pure ()
 
 
 /--
