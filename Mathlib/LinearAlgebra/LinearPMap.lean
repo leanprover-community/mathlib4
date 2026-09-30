@@ -1272,11 +1272,9 @@ theorem _root_.LinearMap.resolventLM_toPMap_eq_resolvent (g : E' →ₗ[R'] E') 
   · symm
     rw [spectrum.resolvent_eq_iff_mul_right_eq_one h]
     ext x
-    rw [Module.End.mul_apply, Module.End.one_apply]
     exact resolventLM_apply_eq' (by simpa) (by simp) (by simp)
   · rw [spectrum.resolvent_zero_of_mem_spectrum h]
-    apply resolventLM_zero_of_notMem
-    simpa
+    exact resolventLM_zero_of_notMem (by simpa)
 
 /-- The range of the resolvent `R(f, z)` is equal to the domain of `f` for any `z` in the resolvent
 set. -/
