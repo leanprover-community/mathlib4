@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Kim Morrison
 -/
 module
 
-public import Mathlib.Init
+import Mathlib.Init
 public import Lean.ToExpr
 
 /-!

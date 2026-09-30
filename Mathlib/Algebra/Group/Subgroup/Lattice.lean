@@ -210,7 +210,7 @@ theorem bot_or_nontrivial (H : Subgroup G) : H = ⊥ ∨ Nontrivial H := by
 /-- A subgroup is either the trivial subgroup or contains a non-identity element. -/
 @[to_additive /-- A subgroup is either the trivial subgroup or contains a nonzero element. -/]
 theorem bot_or_exists_ne_one (H : Subgroup G) : H = ⊥ ∨ ∃ x ∈ H, x ≠ (1 : G) := by
-  convert! H.bot_or_nontrivial
+  convert H.bot_or_nontrivial
   rw [nontrivial_iff_exists_ne_one]
 
 @[to_additive]
@@ -528,7 +528,7 @@ theorem toAddSubgroup'_closure {A : Type*} [AddGroup A] (S : Set (Multiplicative
 
 theorem _root_.AddSubgroup.toSubgroup'_closure (S : Set (Additive G)) :
     (AddSubgroup.closure S).toSubgroup' = Subgroup.closure (Additive.ofMul ⁻¹' S) :=
-  congr_arg AddSubgroup.toSubgroup' (toAddSubgroup'_closure _).symm
+  congr($((toAddSubgroup'_closure _).symm).toSubgroup')
 
 @[to_additive]
 theorem mem_biSup_of_directedOn {ι} {p : ι → Prop} {K : ι → Subgroup G} {i : ι} (hp : p i)
