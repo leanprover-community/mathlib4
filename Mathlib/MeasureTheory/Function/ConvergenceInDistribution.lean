@@ -91,7 +91,7 @@ lemma tendstoInDistribution_const [OpensMeasurableSpace E] (hZ : AEMeasurable Z 
   tendsto := tendsto_const_nhds
 
 @[simp]
-lemma tendstoInDistribution_const_const [OpensMeasurableSpace E] (c : E) :
+lemma TendstoInDistribution.const_const [OpensMeasurableSpace E] {c : E} :
     TendstoInDistribution (fun _ _ ↦ c) l (fun _ ↦ c) μ μ' where
   tendsto := by simpa using tendsto_const_nhds
 
