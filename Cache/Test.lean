@@ -20,7 +20,7 @@ These tests cover the pure logic of the cache system, including:
 - Trust-ordered fallback chains per repo
 - URL construction (`Location`) with support for per-SHA scoping
 - CLI flag parsing (`--cache-from`, `--scope`, `--unsafe`, `--repo`, etc.)
-- `--unsafe` download-round expansion (`expandDownloadRounds`) and the
+- `--unsafe` read locations (`readLocationsFrom`) and the
   non-default-scope security warning it triggers
 - Decompression-pipeline carry across download rounds (`DecompState`,
   `finalizeDecomp`, `monitorCurl`)
@@ -275,11 +275,10 @@ end PerRepoAllowlist
 
 section FileURL
 
-/-- The file URL of a read round: the location `roundLocation` resolves for
-`(container?, url, scope?)`. -/
+/-- The file URL of one read location, with no HEAD fallback. -/
 def fileURLOf (container? : Option Container) (repo url fileName : String)
     (scope? : Option String := none) : String :=
-  (roundLocation repo (container?, url, scope?)).fileURL fileName
+  ((readLocationsFrom repo [(container?, url)] scope? []).head!).fileURL fileName
 
 /-- URL construction for a cache file. The path shape follows the container
 (`Container.flatPath`), not the repo, so the same repo lands flat in `master`
@@ -1468,7 +1467,7 @@ def test_rcloneArgs : IO Unit := do
     let bucketPath := ((s3EndpointSplit dest.root).toOption.map (·.2)).getD ""
     assertEq "the bucket path carries the container's segment"
       "devbucket/mathlib4-forks" bucketPath
-    let files := rcloneFilesArgs bucketPath dest "staging" "tmp/files-from.txt"
+    let files ← IO.ofExcept <| rcloneFilesArgs dest "staging" "tmp/files-from.txt"
       (overwrite := false)
     assertEq "files copy remote matches the location"
       ":s3:devbucket/mathlib4-forks/f/alice/mathlib4/abc1" files[2]!
@@ -1477,17 +1476,31 @@ def test_rcloneArgs : IO Unit := do
       ((files.toList.zip files.toList.tail).contains ("--files-from", "tmp/files-from.txt"))
     assertTrue "a non-overwrite copy skips existing objects"
       (files.contains "--ignore-existing")
+    let overwriteFiles ← IO.ofExcept <| rcloneFilesArgs dest "staging" "tmp/files-from.txt"
+      (overwrite := true)
     assertTrue "an overwrite copy replaces existing objects"
-      (!(rcloneFilesArgs bucketPath dest "staging" "tmp/files-from.txt"
-        (overwrite := true)).contains "--ignore-existing")
+      (!overwriteFiles.contains "--ignore-existing")
     assertTrue "files copy skips the bucket-creation probe"
       (files.contains "--s3-no-check-bucket")
-    let marker := rcloneMarkerArgs bucketPath dest "tmp/abc1" "abc1"
+    let marker ← IO.ofExcept <| rcloneMarkerArgs dest "tmp/abc1" "abc1"
     assertEq "marker remote matches the marker path contract"
       ":s3:devbucket/mathlib4-forks/m/alice/mathlib4/abc1" marker[2]!
     assertTrue "marker copy is a copyto" (marker[0]! == "copyto")
     assertTrue "marker copy overwrites freely"
       !(marker.contains "--ignore-existing")
+    let prefixed := { dest with root := "https://acct.example/otherbucket/prefix/mathlib4-forks" }
+    let prefixedFiles ← IO.ofExcept <| rcloneFilesArgs prefixed "staging" "tmp/files-from.txt"
+      (overwrite := false)
+    assertEq "file remotes keep the bucket, prefix, and container from the root"
+      ":s3:otherbucket/prefix/mathlib4-forks/f/alice/mathlib4/abc1" prefixedFiles[2]!
+    let prefixedMarker ← IO.ofExcept <| rcloneMarkerArgs prefixed "tmp/abc1" "abc1"
+    assertEq "marker remotes keep the same root prefix"
+      ":s3:otherbucket/prefix/mathlib4-forks/m/alice/mathlib4/abc1" prefixedMarker[2]!
+    let invalid := { dest with root := "https://acct.example" }
+    assertTrue "file args reject a root without a bucket"
+      (rcloneFilesArgs invalid "staging" "tmp/files-from.txt" false matches .error _)
+    assertTrue "marker args reject a root without a bucket"
+      (rcloneMarkerArgs invalid "tmp/abc1" "abc1" matches .error _)
   else
     assertTrue "rclone destination resolves" false
 
@@ -1547,7 +1560,7 @@ def test_putStagedViaRclone : IO Unit := do
       | assertTrue "rclone destination resolves" false
     withSuppressedOutput <| putStagedViaRclone dest
       (rcloneEnv ⟨"AK", "SK", some "tok"⟩ "https://acct.example" "Other" "auto")
-      "devbucket/mathlib4-forks" staging
+      staging
       #["aa.ltar"] (overwrite := false) (rclone := fake.toString)
     let copyArgs ← IO.FS.readFile (dir / "args-copy")
     assertTrue "files copy targets the staging dir"
@@ -1584,11 +1597,14 @@ def test_putStagedViaRclone : IO Unit := do
       IO.FS.writeFile (dir / "calls") ""
       for name in ["args-copyto", "marker-content"] do
         if ← (dir / name).pathExists then IO.FS.removeFile (dir / name)
-      let .ok endpoint := uploadLocationFrom .s3 (some "https://acct.example/devbucket")
+      let .ok endpoint := uploadLocationFrom .s3 (some "https://acct.example/devbucket/prefix")
           none none MATHLIBREPO scope?
         | assertTrue "endpoint destination resolves" false
-      withSuppressedOutput <| putStagedViaRclone endpoint #[] "devbucket" staging
+      withSuppressedOutput <| putStagedViaRclone endpoint #[] staging
         #["aa.ltar"] (overwrite := false) (rclone := fake.toString)
+      assertTrue "endpoint file copies derive the bucket prefix from the location"
+        (((← IO.FS.readFile (dir / "args-copy")).splitOn "\n").contains
+          ":s3:devbucket/prefix/f")
       match scope? with
       | some _ =>
         assertEq "a scoped endpoint uploads files before its marker"
@@ -1601,7 +1617,7 @@ def test_putStagedViaRclone : IO Unit := do
         if ← (dir / "args-copyto").pathExists then
           assertTrue "an endpoint marker uses the canonical repo path"
             (((← IO.FS.readFile (dir / "args-copyto")).splitOn "\n").contains
-              ":s3:devbucket/m/leanprover-community/mathlib4/abc2")
+              ":s3:devbucket/prefix/m/leanprover-community/mathlib4/abc2")
         else
           assertTrue "a scoped endpoint invokes the marker copy" false
       | none =>
@@ -1614,61 +1630,65 @@ def test_putStagedViaRclone : IO Unit := do
 
 end UploadDestination
 
-section UnsafeRounds
+section ReadLocationPolicy
 
-/-- `expandDownloadRounds` turns the trust-ordered container list into the
-concrete download rounds to run, each tagged with the SHA scope to read at.
-
-Without `--unsafe` (empty `unsafeScopes`) every round carries the single resolved
-base scope; with no base scope, `headScope?` applies to the `forks` round only,
-so a plain `cache get` reads the fork namespace of the checked-out commit while
-the other containers' non-SHA-scoped layouts stay untouched. With `--unsafe` the
-`forks` container — the only SHA-scoped container — fans out into one round per
-discovered SHA (most recent first), while every other container reads unscoped
-and the base scope is dropped. -/
-def test_expandDownloadRounds : IO Unit := do
-  IO.println "expandDownloadRounds:"
+/-- Pin the file URLs and scopes of resolved reads, including endpoint
+exceptions and unsafe expansion. Expected paths are independent literals. -/
+def test_readLocationsFrom : IO Unit := do
+  IO.println "readLocationsFrom:"
   let chain : List (Option Container × String) :=
     [(some .master, "U_m"), (some .forks, "U_f"), (some .nightlyTesting, "U_n")]
+  let paths (locations : List Location) :=
+    locations.map fun l => (l.fileURL "x.ltar", l.scope?)
+  let resolve scope? unsafeScopes headScope? :=
+    paths (readLocationsFrom "Alice/Mathlib4" chain scope? unsafeScopes headScope?)
+  assertTrue "no scope gives unscoped locations"
+    (resolve none [] none ==
+      [("U_m/f/x.ltar", none), ("U_f/f/alice/mathlib4/x.ltar", none),
+       ("U_n/f/alice/mathlib4/x.ltar", none)])
+  assertTrue "an explicit scope applies to every location"
+    (resolve (some "abc1") [] none ==
+      [("U_m/f/x.ltar", some "abc1"), ("U_f/f/alice/mathlib4/abc1/x.ltar", some "abc1"),
+       ("U_n/f/alice/mathlib4/abc1/x.ltar", some "abc1")])
+  assertTrue "HEAD applies only to forks"
+    (resolve none [] (some "abc2") ==
+      [("U_m/f/x.ltar", none), ("U_f/f/alice/mathlib4/abc2/x.ltar", some "abc2"),
+       ("U_n/f/alice/mathlib4/x.ltar", none)])
+  assertTrue "an explicit scope wins over HEAD"
+    (resolve (some "abc1") [] (some "abc2") ==
+      [("U_m/f/x.ltar", some "abc1"), ("U_f/f/alice/mathlib4/abc1/x.ltar", some "abc1"),
+       ("U_n/f/alice/mathlib4/abc1/x.ltar", some "abc1")])
+  assertTrue "unsafe scopes replace HEAD"
+    (resolve none ["abc3"] (some "abc2") ==
+      [("U_m/f/x.ltar", none), ("U_f/f/alice/mathlib4/abc3/x.ltar", some "abc3"),
+       ("U_n/f/alice/mathlib4/x.ltar", none)])
+  assertTrue "unsafe scopes expand forks in order and drop the explicit scope"
+    (resolve (some "abc1") ["abc3", "abc4"] none ==
+      [("U_m/f/x.ltar", none),
+       ("U_f/f/alice/mathlib4/abc3/x.ltar", some "abc3"),
+       ("U_f/f/alice/mathlib4/abc4/x.ltar", some "abc4"),
+       ("U_n/f/alice/mathlib4/x.ltar", none)])
+  assertTrue "unsafe scopes have no effect without forks"
+    (paths (readLocationsFrom "Alice/Mathlib4"
+      [(some .master, "U_m"), (some .nightlyTesting, "U_n")] none ["abc3", "abc4"]) ==
+      [("U_m/f/x.ltar", none), ("U_n/f/alice/mathlib4/x.ltar", none)])
+  assertTrue "a fork endpoint retains its explicit scope"
+    (paths (readLocationsFrom "Alice/Mathlib4" [(none, "U_e")]
+      (some "abc1") [] (some "abc2")) ==
+      [("U_e/f/alice/mathlib4/abc1/x.ltar", some "abc1")])
+  assertTrue "an endpoint does not inherit the forks HEAD fallback"
+    (paths (readLocationsFrom "Alice/Mathlib4" [(none, "U_e")]
+      none [] (some "abc2")) == [("U_e/f/alice/mathlib4/x.ltar", none)])
+  assertTrue "a canonical endpoint stays flat while retaining its explicit scope"
+    (paths (readLocationsFrom MATHLIBREPO [(none, "U_e")] (some "abc1") []) ==
+      [("U_e/f/x.ltar", some "abc1")])
+  assertTrue "unsafe scopes do not expand an endpoint"
+    (paths (readLocationsFrom "Alice/Mathlib4" [(none, "U_e")]
+      (some "abc1") ["abc3", "abc4"]) == [("U_e/f/alice/mathlib4/x.ltar", none)])
+  assertTrue "an empty chain gives no locations"
+    ((readLocationsFrom "Alice/Mathlib4" [] (some "abc1") ["abc3"]).isEmpty)
 
-  -- No unsafe scopes: one round per container, each carrying the base scope.
-  assertTrue "no unsafe scopes, no base scope → scope none on every round"
-    (expandDownloadRounds chain none [] ==
-      [(some .master, "U_m", none), (some .forks, "U_f", none),
-       (some .nightlyTesting, "U_n", none)])
-  assertTrue "no unsafe scopes, base scope → base scope on every round"
-    (expandDownloadRounds chain (some "S") [] ==
-      [(some .master, "U_m", some "S"), (some .forks, "U_f", some "S"),
-       (some .nightlyTesting, "U_n", some "S")])
-
-  -- With no base scope the forks round defaults to the HEAD scope; the other
-  -- containers' layouts are not SHA-scoped, so it must not leak into them.
-  assertTrue "no base scope, head scope → forks at head, others unscoped"
-    (expandDownloadRounds chain none [] (some "H") ==
-      [(some .master, "U_m", none), (some .forks, "U_f", some "H"),
-       (some .nightlyTesting, "U_n", none)])
-  assertTrue "explicit base scope wins over head scope"
-    (expandDownloadRounds chain (some "S") [] (some "H") ==
-      [(some .master, "U_m", some "S"), (some .forks, "U_f", some "S"),
-       (some .nightlyTesting, "U_n", some "S")])
-  assertTrue "unsafe mode ignores head scope"
-    (expandDownloadRounds chain none ["a"] (some "H") ==
-      [(some .master, "U_m", none), (some .forks, "U_f", some "a"),
-       (some .nightlyTesting, "U_n", none)])
-
-  -- Unsafe scopes: only forks fans out, in order; others unscoped, base dropped.
-  assertTrue "unsafe scopes fan out forks (in order), others unscoped"
-    (expandDownloadRounds chain (some "ignored") ["a", "b"] ==
-      [(some .master, "U_m", none),
-       (some .forks, "U_f", some "a"), (some .forks, "U_f", some "b"),
-       (some .nightlyTesting, "U_n", none)])
-
-  -- A chain without forks admits no SHA-scoped reads, so it is left unchanged.
-  assertTrue "no forks container → unsafe scopes have no effect"
-    (expandDownloadRounds [(some .master, "U_m"), (some .nightlyTesting, "U_n")] none ["a", "b"] ==
-      [(some .master, "U_m", none), (some .nightlyTesting, "U_n", none)])
-
-end UnsafeRounds
+end ReadLocationPolicy
 
 section DecompPipeline
 
@@ -1866,7 +1886,7 @@ def runAll : IO Unit := do
   test_rcloneArgs
   test_rcloneEnv
   test_putStagedViaRclone
-  test_expandDownloadRounds
+  test_readLocationsFrom
   test_finalizeDecomp
   test_monitorCurl_carries_decomp_state
   test_splitWriteOut

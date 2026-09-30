@@ -28,7 +28,7 @@ namespace Cache.Requests
 
 A HEAD scope only serves artifacts built from the commit already checked out,
 and it is what an unscoped `cache get` reads anyway — the forks round defaults
-to the HEAD namespace (see `expandDownloadRounds`). So an explicit HEAD scope
+to the HEAD namespace (see `readLocationsFrom`). So an explicit HEAD scope
 (e.g. CI's `MATHLIB_CACHE_REPO_SCOPE`, set to the build SHA on every fork
 build) just pins the default behavior and warrants no warning.
 

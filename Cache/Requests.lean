@@ -858,9 +858,8 @@ private def downloadFilesFromLocation (location : Location)
         | _ => (served, failed + 1)
     return ({ failed, decomp := decompState }, served)
 
-/-- Expand the trust-ordered container list into the concrete download rounds to
-run, each carrying the SHA scope to read at. A round is
-`(container?, url, scope?)`; `readLocations` turns each into a `Location`.
+/-- Build the locations of a read directly from the trust-ordered container
+URLs, or from a user-supplied endpoint when the container is absent.
 
 Without `--unsafe` (`unsafeScopes` empty) every round uses the single resolved
 `scope?`: one round per container, all at the same scope. When no explicit
@@ -875,32 +874,23 @@ SHA-scoped container, whose markers the walk probed — is expanded into one rou
 per discovered SHA, most recent first. Every other container reads unscoped
 (`master` is flat and serves the bulk of files by hash), so the base `scope?`
 is intentionally dropped here. -/
-def expandDownloadRounds (containerURLs : List (Option Container × String))
+def readLocationsFrom (repo : String) (containerURLs : List (Option Container × String))
     (scope? : Option String) (unsafeScopes : List String)
-    (headScope? : Option String := none) :
-    List (Option Container × String × Option String) :=
-  if unsafeScopes.isEmpty then
-    containerURLs.map fun (c, url) =>
-      if c == some Container.forks then (c, url, scope? <|> headScope?)
-      else (c, url, scope?)
-  else
-    containerURLs.flatMap fun (c, url) =>
-      if c == some Container.forks then
-        unsafeScopes.map fun sha => (c, url, some sha)
-      else
-        [(c, url, none)]
-
-/-- The location of the download round `(container?, url, scope?)` for `repo`:
-the container's location at `url` (`Container.location`), or the
-`MATHLIB_CACHE_GET_URL` endpoint for a round without a container
-(`Location.ofEndpoint`). -/
-def roundLocation (repo : String) : Option Container × String × Option String → Location
-  | (some c, url, scope?) => c.location url repo scope?
-  | (none, url, scope?) => .ofEndpoint url "MATHLIB_CACHE_GET_URL" repo scope?
+    (headScope? : Option String := none) : List Location :=
+  containerURLs.flatMap fun (c, url) =>
+    let location scope? := match c with
+      | some c => c.location url repo scope?
+      | none => Location.ofEndpoint url "MATHLIB_CACHE_GET_URL" repo scope?
+    if unsafeScopes.isEmpty then
+      [location (if c == some Container.forks then scope? <|> headScope? else scope?)]
+    else if c == some Container.forks then
+      unsafeScopes.map fun sha => location (some sha)
+    else
+      [location none]
 
 /--
 The locations a read for `repo` tries, most trusted first: the lookup chain of
-`effectiveGetURLs`, expanded into rounds by `expandDownloadRounds` at the
+`effectiveGetURLs`, resolved by `readLocationsFrom` at the
 resolved scope (`getRepoScope`), with the checked-out HEAD as the default
 scope of the `forks` round. `unsafeScopes` is the list of SHA scopes
 discovered by `cache get --unsafe` (empty for a normal read).
@@ -915,8 +905,7 @@ def readLocations (repo : String) (unsafeScopes : List String := []) : IO (List 
   let headScope? ← if scope?.isNone && unsafeScopes.isEmpty then
       try pure (some (← getGitCommitHash)) catch _ => pure none
     else pure none
-  return (expandDownloadRounds containerURLs scope? unsafeScopes headScope?).map
-    (roundLocation repo)
+  return readLocationsFrom repo containerURLs scope? unsafeScopes headScope?
 
 /-- Call `curl` to download files from the server to `CACHEDIR` (`.cache`).
 Return the number of files which failed to download.

@@ -18,9 +18,11 @@ The complete s3 upload path. This module holds:
 * the location resolution (`s3UploadLocationFrom`);
 * the transfer-tool policy (`s3UploadToolFrom`);
 * the SigV4 curl arguments (`s3CurlArgs`);
-* the rclone tool's configuration (`rcloneEnv`) and the endpoint and bucket
-  addressing it needs (`s3EndpointSplit`);
+* the rclone tool's configuration (`rcloneEnv`);
 * the transfer entry point (`s3PutStaged`).
+
+`Cache/Upload/Rclone.lean` validates S3 URLs (`s3EndpointSplit`) and derives
+the rclone remote paths from the upload location.
 -/
 
 public section
@@ -102,25 +104,6 @@ def s3CurlArgs (creds : S3Credentials) (region : String) : Array String :=
     "-H", "x-amz-content-sha256: UNSIGNED-PAYLOAD"] ++ sessionArgs
 
 /--
-Split an S3 upload base into the endpoint origin and the bucket path:
-`https://host/bucket[/prefix]` becomes `(https://host, bucket[/prefix])`.
-rclone addresses a destination as `:s3:{bucket}/{key}` against an endpoint.
-`uploadLocationFrom` rejects an s3 root that does not split.
--/
-def s3EndpointSplit (base : String) : Except String (String × String) :=
-  match base.splitOn "://" with
-  | [scheme, rest] =>
-    match rest.splitOn "/" with
-    | host :: parts =>
-      if host.isEmpty || parts.isEmpty || parts.any (·.isEmpty) then
-        .error s!"the upload base '{base}' does not name a bucket \
-          (the s3 backend needs https://endpoint/bucket)"
-      else
-        .ok (s!"{scheme}://{host}", "/".intercalate parts)
-    | [] => .error s!"the upload base '{base}' is not a URL"
-  | _ => .error s!"the upload base '{base}' is not a URL"
-
-/--
 The upload location for the s3 backend: the container write rebased under
 the bucket endpoint `MATHLIB_CACHE_PUT_BASE_URL` names (`putBase?`), as
 `MATHLIB_CACHE_BASE_URL` rebases reads. A bucket URL is account-specific, so
@@ -189,7 +172,7 @@ the flag does not already force curl.
 -/
 def s3PutStaged (dest : Location) (creds : S3Credentials) (region : String)
     (srcDir : FilePath) (fileNames : Array String) (overwrite : Bool) : IO Unit := do
-  let (endpoint, bucketPath) ← IO.ofExcept (s3EndpointSplit dest.root)
+  let (endpoint, _) ← IO.ofExcept (s3EndpointSplit dest.root)
   let forceCurl ← getEnvFlag "MATHLIB_CACHE_PUT_FORCE_CURL" (ifUnset := false)
   let available ← if forceCurl then pure false else rcloneAvailable
   match s3UploadToolFrom forceCurl available with
@@ -197,7 +180,7 @@ def s3PutStaged (dest : Location) (creds : S3Credentials) (region : String)
     putStagedViaCurl dest (pure (s3CurlArgs creds region)) srcDir fileNames overwrite
   | .rclone =>
     let provider := (← getEnvNonEmpty "RCLONE_S3_PROVIDER").getD "Other"
-    putStagedViaRclone dest (rcloneEnv creds endpoint provider region) bucketPath
+    putStagedViaRclone dest (rcloneEnv creds endpoint provider region)
       srcDir fileNames overwrite
 
 end Cache.Requests
