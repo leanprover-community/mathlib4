@@ -6,7 +6,6 @@ Authors: Yury Kudryashov, Frédéric Dupuis
 module
 
 public import Mathlib.Analysis.Convex.Hull
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Convex cones
@@ -79,7 +78,7 @@ instance : SetLike (ConvexCone R M) M where
   coe := carrier
   coe_injective C₁ C₂ h := by cases C₁; congr!
 
-instance : PartialOrder (ConvexCone R M) := .ofSetLike (ConvexCone R M) M
+instance : PartialOrder (ConvexCone R M) := .ofSetLike (ConvexCone R M)
 
 @[simp, norm_cast] lemma coe_mk (s : Set M) (h₁ h₂) : ↑(mk (R := R) s h₁ h₂) = s := rfl
 
@@ -729,7 +728,7 @@ end Convex
 @[deprecated "no replacement" (since := "2026-03-30")]
 theorem convexHull_toCone_isLeast (s : Set M) :
     IsLeast { t : ConvexCone 𝕜 M | s ⊆ t } ((convex_convexHull 𝕜 s).toCone _) := by
-  convert! (convex_convexHull 𝕜 s).toCone_isLeast using 1
+  convert (convex_convexHull 𝕜 s).toCone_isLeast using 1
   ext t
   exact ⟨fun h => convexHull_min h t.convex, (subset_convexHull 𝕜 s).trans⟩
 

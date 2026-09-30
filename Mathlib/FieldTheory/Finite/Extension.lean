@@ -84,7 +84,7 @@ theorem finrank_extension : Module.finrank k (Extension k p n) = n := by
 
 instance : IsSplittingField k (Extension k p n) (X ^ Nat.card k ^ n - X) := by
   have := Fintype.ofFinite (Extension k p n)
-  convert! FiniteField.isSplittingField_sub (Extension k p n) k
+  convert FiniteField.isSplittingField_sub (Extension k p n) k
   · rw [Fintype.card_eq_nat_card, natCard_extension]
 
 example : IsGalois k (Extension k p n) :=
@@ -148,7 +148,7 @@ theorem exists_forall_apply_eq_pow (l : Type*) [Field l] [Algebra k l] [Finite l
     (algEquivExtension k p n l rfl).symm.trans (g.trans (algEquivExtension k p n l rfl))
   refine ⟨i, fun x ↦ ?_⟩
   simpa using (AlgEquiv.congr_arg (f := (algEquivExtension k p n l rfl).symm) <|
-    AlgEquiv.congr_fun hi (algEquivExtension k p n l rfl x)).symm
+    congr($hi (algEquivExtension k p n l rfl x))).symm
 
 end FiniteField
 
