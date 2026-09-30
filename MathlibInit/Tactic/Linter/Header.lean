@@ -35,7 +35,7 @@ It emits a warning if
 * any import in `Lake` is present;
 * the first non-`import` command is not a module doc-string.
 
-The linter allows `import`-only files and does not require a copyright statement in `Mathlib.Init`.
+The linter allows `import`-only files and does not require a copyright statement in `MathlibInit`.
 
 ## Implementation
 
@@ -220,7 +220,7 @@ It emits a warning if
 * any import in `Lake` is present;
 * the first non-`import` command is not a module doc-string.
 
-The linter allows `import`-only files and does not require a copyright statement in `Mathlib.Init`.
+The linter allows `import`-only files and does not require a copyright statement in `MathlibInit`.
 -/
 public register_option linter.style.header : Bool := {
   defValue := false
@@ -289,10 +289,11 @@ def headerTestFiles : NameSet := .ofList [
 /-- Check the `Syntax` `imports` for broad imports:
 `Mathlib.Tactic`, any import starting with `Lake`, or `Mathlib.Tactic.{Have,Replace}`.
 
-This currently returns without logging if `mainModule` is not in `Mathlib` (nor the linter's test
-files). TODO: make this extensible for use in other libraries. -/
+This currently returns without logging if `mainModule` is not in `Mathlib` or `MathlibInit`
+(nor the linter's test files). TODO: make this extensible for use in other libraries. -/
 def broadImportsCheck (imports : Array ImportRef) (mainModule : Name) : CommandElabM Unit := do
-  unless mainModule.getRoot == `Mathlib || headerTestFiles.contains mainModule do
+  unless [`Mathlib, `MathlibInit].contains mainModule.getRoot ||
+      headerTestFiles.contains mainModule do
     return
   for i in imports do
     match i.module with
@@ -385,7 +386,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     Linter.logLint linter.directoryDependency (importRefs.back?.elim headerStx (·.stx)) <|
       m!"\n\n".joinSep errors.toList
   -- Report any errors about the copyright line.
-  if mainModule != `Mathlib.Init && mainModule != `Mathlib.Tactic then
+  if mainModule != `MathlibInit && mainModule != `Mathlib.Tactic then
     let expectedLicense := linter.style.header.license.get (← getOptions)
     let copyright := match headerStx.raw.getHeadInfo with
       | .original lead .. => lead.toString
