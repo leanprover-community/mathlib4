@@ -12,8 +12,7 @@ public import Mathlib.Tactic.Matrix.OfLists
 /-!
 # Reflection certificates for the echelon decomposition
 
-The conditions of `Echelon.Decomposition` on a matrix given as a list of rows, each a sweep along
-the rows, with a bridge lemma to the condition on `ofLists`.
+The list-based certificates for a part of `Echelon.Decomposition` and their bridge lemmas.
 
 ## Implementation notes
 
