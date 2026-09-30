@@ -108,4 +108,51 @@ lemma δ₂_zero_comp_δ₂_two : δ₂ (0 : Fin 2) ≫ δ₂ 2 = δ₂ 1 ≫ δ
 
 end Two
 
+
+/-- A morphism in `Truncated d` is a monomorphism if and only if it is a monomorphism in
+`SimplexCategory`. -/
+lemma mono_iff {d : ℕ} {a b : Truncated d} {f : a ⟶ b} : Mono f ↔ Mono f.hom := by
+  constructor
+  · intro hf
+    rw [SimplexCategory.mono_iff_injective]
+    intro x y hxy
+    let z : Truncated d := ⟨⦋0⦌, by simp⟩
+    have h : ObjectProperty.homMk (X := z) (Y := a) (SimplexCategory.const ⦋0⦌ a.obj x) ≫ f =
+        ObjectProperty.homMk (X := z) (Y := a) (SimplexCategory.const ⦋0⦌ a.obj y) ≫ f := by
+      apply Hom.ext
+      exact OrderHom.ext _ _ (funext fun i ↦ hxy)
+    exact congrArg (fun g ↦ g.hom.toOrderHom 0) ((cancel_mono f).1 h)
+  · intro hf
+    exact (inclusion d).mono_of_mono_map hf
+
+/-- A morphism in `Truncated d` is an epimorphism if and only if it is an epimorphism in
+`SimplexCategory`. -/
+lemma epi_iff {d : ℕ} {a b : Truncated d} {f : a ⟶ b} : Epi f ↔ Epi f.hom := by
+  constructor
+  · intro hf
+    rw [SimplexCategory.epi_iff_surjective]
+    intro j
+    by_contra! hj
+    have hb : 0 < b.obj.len := by
+      by_contra! hb
+      exact hj 0 (Fin.ext (by have := j.2; have := (f.hom.toOrderHom 0).2; lia))
+    let z : Truncated d := ⟨⦋1⦌, by simpa using (hb.trans_le b.property)⟩
+    let g₁ : b.obj ⟶ ⦋1⦌ := SimplexCategory.Hom.mk
+      ⟨fun x ↦ if j < x then 1 else 0, fun x y hxy ↦ by dsimp; split_ifs <;> grind⟩
+    let g₂ : b.obj ⟶ ⦋1⦌ := SimplexCategory.Hom.mk
+      ⟨fun x ↦ if j ≤ x then 1 else 0, fun x y hxy ↦ by dsimp; split_ifs <;> grind⟩
+    have h : f ≫ ObjectProperty.homMk (X := b) (Y := z) g₁ =
+        f ≫ ObjectProperty.homMk (X := b) (Y := z) g₂ := by
+      apply Hom.ext
+      refine OrderHom.ext _ _ (funext fun x ↦ ?_)
+      have := hj x
+      dsimp [g₁, g₂]
+      split_ifs <;> grind
+    have := congrArg (fun g ↦ g.hom.toOrderHom j) ((cancel_epi f).1 h)
+    dsimp [g₁, g₂] at this
+    simp at this
+  · intro hf
+    exact (inclusion d).epi_of_epi_map hf
+
+
 end SimplexCategory.Truncated
