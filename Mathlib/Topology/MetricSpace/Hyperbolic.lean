@@ -85,6 +85,10 @@ lemma isHyperbolicWith_of_forall_dist_le {k : ℝ} (hk : ∀ x y : X, dist x y �
     IsHyperbolicWith X k := by
   grind [IsHyperbolicWith, gromovProduct_le_dist_left]
 
+/-- A pseudometric space with at most one point is `0`-hyperbolic. -/
+lemma isHyperbolicWith_of_subsingleton [h : Subsingleton X] : IsHyperbolicWith X 0 :=
+  isHyperbolicWith_of_forall_dist_le (by simp)
+
 /-- A bounded space is δ-hyperbolic with respect to its diameter. -/
 theorem isHyperbolicWith_diam_univ [BoundedSpace X] :
     IsHyperbolicWith X (diam (Set.univ : Set X)) := by
@@ -99,10 +103,6 @@ class IsHyperbolic (X : Type*) [PseudoMetricSpace X] : Prop where
 
 /-- Every bounded pseudometric space is hyperbolic. -/
 instance [BoundedSpace X] : IsHyperbolic X := ⟨_, isHyperbolicWith_diam_univ⟩
-
-/-- A space is at most one element is hyperbolic. -/
-instance [Subsingleton X] : IsHyperbolic X := by
-  infer_instance
 
 /-- A subspace of a hyperbolic space is hyperbolic. -/
 instance [h : IsHyperbolic X] (p : X → Prop) : IsHyperbolic (Subtype p) := by
