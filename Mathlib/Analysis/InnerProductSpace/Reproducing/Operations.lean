@@ -203,13 +203,25 @@ def equiv (h : c ≠ 0) : smulSpace H c ≃ₗᵢ[𝕜] H :=
 instance : Subsingleton (smulSpace H (0 : 𝕜)) where
   allEq := by simp [smulSpace, auxSmulSpace]
 
+@[coe, simp]
+def coe_smulSpace : smulSpace H c →L[𝕜] H := if h : c = 0 then 0 else (c : 𝕜) • equiv H h
+
+instance : CoeOut (smulSpace H c) H where
+  coe := coe_smulSpace H c
+
+@[simp]
+lemma coe_coe (f : smulSpace H c) : ⇑(f : H) = f := rfl
+
+lemma coe_injective : Function.Injective (coe_smulSpace H c) := by
+  intro f g hfg
+  by_cases h : c = 0
+  · subst h
+    exact Subsingleton.elim f g
+  · simp_all
+
 instance : RKHS 𝕜 (smulSpace H c) X V where
-  coeCLM := if h : c = 0 then 0 else (c : 𝕜) • (coeCLM (H:=H) 𝕜 ∘L equiv H h)
-  coeCLM_injective := fun f g hfg => by
-    by_cases h : c = 0
-    · subst h
-      exact Subsingleton.elim f g
-    · simp_all
+  coeCLM := coeCLM 𝕜 ∘L coe_smulSpace H c
+  coeCLM_injective := coeCLM_injective.comp (coe_injective H c)
 
 variable [CompleteSpace H] [CompleteSpace V]
 
