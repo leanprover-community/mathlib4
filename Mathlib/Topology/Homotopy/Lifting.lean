@@ -787,7 +787,7 @@ theorem fundamentalGroupToMulOpposite_apply_eq_iff {g : (Multiplicative G)ᵐᵒ
   hp.toMultiplicative.fundamentalGroupToMulOpposite_apply_eq_iff
 
 @[deprecated (since := "2026-09-30")]
-alias fundamentalGroupToMulOpposite_apply_eq_Iff := fundamentalGroupToMulOpposite_apply_eq_iff 
+alias fundamentalGroupToMulOpposite_apply_eq_Iff := fundamentalGroupToMulOpposite_apply_eq_iff
 
 variable {e} in
 theorem fundamentalGroupToMulOpposite_apply_mk_eq {γ : Path x x} {g : Multiplicative G}
