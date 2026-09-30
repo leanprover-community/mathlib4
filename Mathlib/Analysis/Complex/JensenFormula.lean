@@ -380,9 +380,7 @@ theorem MeromorphicOn.log_norm_meromorphicTrailingCoeffAt (h₁w : w ∈ ball 0 
     apply (h₁f.exists_meromorphicOrderAt_ne_top_iff_forall (isConnected_closedBall hR.le)).1
     exact ⟨⟨w, ball_subset_closedBall h₁w⟩, by simp [h₂w]⟩
   -- Combine the circle-average identity with the value of `log ‖h‖` at `w`.
-  rw [show (Complex.re ∘ herglotzRieszKernel 0 w * (log ‖f ·‖))
-        = Complex.re ∘ herglotzRieszKernel 0 w • (log ‖f ·‖) by ext x; simp [smul_eq_mul],
-    h₀h.circleAverage_re_herglotzRieszKernel_smul_log_norm h₁w,
+  rw [← smul_eq_mul, h₀h.circleAverage_re_herglotzRieszKernel_smul_log_norm h₁w,
     h₀h.log_norm_eq (ball_subset_closedBall h₁w) h₂w hR]
   ring_nf
 
