@@ -35,17 +35,11 @@ everywhere defined linear maps, the abstract definitions coincide with the ones 
 
 namespace LinearPMap
 
-variable {R R' E E' : Type*}
-  [Ring R] [AddCommGroup E] [Module R E]
-  [CommRing R'] [AddCommGroup E'] [Module R' E']
+variable {R E : Type*} [CommRing R] [AddCommGroup E] [Module R E]
 
 section resolvent
 
-variable {f : E →ₗ.[R] E}
-
-variable {r : R}
-
-variable [SMulCommClass R R E]
+variable {f : E →ₗ.[R] E} {z : R}
 
 /-- The resolvent set of a `LinearPMap`.
 
@@ -60,8 +54,8 @@ theorem mem_resolventSet_iff (f : E →ₗ.[R] E) (z : R) : z ∈ f.resolventSet
     Function.Bijective (z • LinearMap.id (R := R) (M := E) +ᵥ -f : E →ₗ.[R] E) := by rfl
 
 @[simp, grind .]
-theorem _root_.LinearMap.resolventSet_toPMap (g : E' →ₗ[R'] E') :
-    (g.toPMap ⊤).resolventSet = resolventSet R' g := by
+theorem _root_.LinearMap.resolventSet_toPMap (g : E →ₗ[R] E) :
+    (g.toPMap ⊤).resolventSet = resolventSet R g := by
   ext z
   rw [spectrum.mem_resolventSet_iff, mem_resolventSet_iff, Module.End.isUnit_iff]
   simp only [vadd_domain, neg_domain, LinearMap.toPMap_domain, coe_vadd]
@@ -81,11 +75,11 @@ noncomputable def resolventLM (f : E →ₗ.[R] E) (z : R) : E →ₗ[R] E :=
       (z • LinearMap.id +ᵥ -f : E →ₗ.[R] E).inverseLM hz.2
     else 0
 
-theorem resolventLM_apply_apply {z : R} (hz : z ∈ f.resolventSet) :
+theorem resolventLM_apply_apply (hz : z ∈ f.resolventSet) :
     f.resolventLM z = (z • LinearMap.id +ᵥ -f : E →ₗ.[R] E).inverseLM hz.2 := by
   simp [resolventLM, hz]
 
-theorem resolventLM_apply_eq {z : R} (hz : z ∈ f.resolventSet) {x y : E} (hx : x ∈ f.domain)
+theorem resolventLM_apply_eq (hz : z ∈ f.resolventSet) {x y : E} (hx : x ∈ f.domain)
     (hxy : z • x - f ⟨x, hx⟩ = y) :
     f.resolventLM z y = x := by
   rw [resolventLM_apply_apply hz]
@@ -93,15 +87,15 @@ theorem resolventLM_apply_eq {z : R} (hz : z ∈ f.resolventSet) {x y : E} (hx :
   simpa [sub_eq_add_neg] using hxy
 
 @[grind .]
-theorem resolventLM_of_notMem_resolventSet {z : R} (hz : z ∉ f.resolventSet) :
+theorem resolventLM_of_notMem_resolventSet (hz : z ∉ f.resolventSet) :
     f.resolventLM z = 0 := by
   simp [resolventLM, hz]
 
 @[simp]
-theorem _root_.LinearMap.resolventLM_toPMap_eq_resolvent (g : E' →ₗ[R'] E') :
-    (g.toPMap ⊤).resolventLM = resolvent (R := R') g := by
+theorem _root_.LinearMap.resolventLM_toPMap_eq_resolvent (g : E →ₗ[R] E) :
+    (g.toPMap ⊤).resolventLM = resolvent (R := R) g := by
   ext z : 1
-  by_cases h : z ∈ resolventSet R' g
+  by_cases h : z ∈ resolventSet R g
   · symm
     rw [spectrum.resolvent_eq_iff_mul_right_eq_one h]
     ext x
@@ -112,12 +106,12 @@ theorem _root_.LinearMap.resolventLM_toPMap_eq_resolvent (g : E' →ₗ[R'] E') 
 /-- The range of the resolvent `R(f, z)` is equal to the domain of `f` for any `z` in the resolvent
 set. -/
 @[grind .]
-theorem range_resolventLM (f : E →ₗ.[R] E) {z : R} (hz : z ∈ f.resolventSet) :
+theorem range_resolventLM (hz : z ∈ f.resolventSet) :
     (f.resolventLM z).range = f.domain := by
   simp [resolventLM, hz, range_inverseLM hz]
 
 /-- The first resolvent identity. -/
-theorem resolventLM_sub_resolventLM {f : E →ₗ.[R] E} {z₁ z₂ : R} (hz₁ : z₁ ∈ f.resolventSet)
+theorem resolventLM_sub_resolventLM {z₁ z₂ : R} (hz₁ : z₁ ∈ f.resolventSet)
     (hz₂ : z₂ ∈ f.resolventSet) :
     f.resolventLM z₁ - f.resolventLM z₂ = (z₂ - z₁) • f.resolventLM z₁ ∘ₗ f.resolventLM z₂ := by
   rw [resolventLM_apply_apply hz₁, resolventLM_apply_apply hz₂,
@@ -127,7 +121,7 @@ theorem resolventLM_sub_resolventLM {f : E →ₗ.[R] E} {z₁ z₂ : R} (hz₁ 
   rw [LinearMap.smul_apply, compLinearMap_apply (by simp [range_inverseLM hz₂, sub_domain])]
   simp [sub_apply, vadd_apply, vadd_apply, ← sub_smul]
 
-theorem resolventLM_comm [IsCancelMulZero R] [Module.IsTorsionFree R E] {f : E →ₗ.[R] E}
+theorem resolventLM_comm [IsCancelMulZero R] [Module.IsTorsionFree R E]
     {z₁ z₂ : R} (hz₁ : z₁ ∈ f.resolventSet) (hz₂ : z₂ ∈ f.resolventSet) :
     f.resolventLM z₁ ∘ₗ f.resolventLM z₂ = f.resolventLM z₂ ∘ₗ f.resolventLM z₁ := by
   by_cases hz : z₁ = z₂
