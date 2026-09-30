@@ -222,7 +222,7 @@ instance orderBot [IsBotZeroClass α] : OrderBot (ι →₀ α) where
 instance [IsBotZeroClass α] : IsBotZeroClass (ι →₀ α) where
   isBot_zero := isBot_bot
 
-@[deprecated _root_.bot_eq_zero (since := "2026-05-07")]
+@[deprecated _root_.bot_eq_zero +typeChanged (since := "2026-05-07")]
 protected theorem bot_eq_zero [IsBotZeroClass α] : (⊥ : ι →₀ α) = 0 :=
   rfl
 

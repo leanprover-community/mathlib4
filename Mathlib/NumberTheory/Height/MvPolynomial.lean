@@ -420,7 +420,7 @@ private lemma mulHeight_eval_ge_aux {M N : ℕ} {q : ι × ι' → MvPolynomial 
     x = 0 := by
   ext i
   simp only [Finset.univ_eq_empty, Finset.sum_empty] at h
-  exact eq_zero_of_pow_eq_zero <| (h i).symm
+  exact eq_zero_of_pow_eq_zero (h i).symm
 
 variable [AdmissibleAbsValues K] [Finite ι]
 
@@ -558,14 +558,14 @@ lemma mulHeight_sym2_le :
   simp only [pow_one] at hC
   refine ⟨max C 1, by grind, fun a b c d ↦ ?_⟩
   by_cases hab : ![a, b] = 0
-  · rw [hab, mulHeight_zero, mul_one, show a = 0 from congrFun hab 0,
-      show b = 0 from congrFun hab 1,
+  · rw [hab, mulHeight_zero, mul_one, show a = 0 from congr($hab 0),
+      show b = 0 from congr($hab 1),
       show ![0 * c, 0 * d + 0 * c, 0 * d] = 0 by ext i; fin_cases i <;> simp, mulHeight_zero]
     grw [← one_le_mulHeight]
     grind
   by_cases hcd : ![c, d] = 0
-  · rw [hcd, mulHeight_zero, mul_one, show c = 0 from congrFun hcd 0,
-      show d = 0 from congrFun hcd 1,
+  · rw [hcd, mulHeight_zero, mul_one, show c = 0 from congr($hcd 0),
+      show d = 0 from congr($hcd 1),
       show ![a * 0, a * 0 + b * 0, b * 0] = 0 by ext i; fin_cases i <;> simp, mulHeight_zero]
     grw [← one_le_mulHeight]
     grind

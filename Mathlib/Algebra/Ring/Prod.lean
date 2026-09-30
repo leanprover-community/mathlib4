@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Int.Cast.Prod
 public import Mathlib.Algebra.GroupWithZero.Prod
 public import Mathlib.Algebra.Ring.CompTypeclasses
-public import Mathlib.Algebra.Ring.Equiv
 
 /-!
 # Semiring, ring etc. structures on `R × S`
@@ -70,6 +69,11 @@ instance instNonUnitalCommSemiring [NonUnitalCommSemiring R] [NonUnitalCommSemir
 /-- Product of two commutative semirings is a commutative semiring. -/
 instance instCommSemiring [CommSemiring R] [CommSemiring S] : CommSemiring (R × S) :=
   { (inferInstance : Semiring (R × S)), (inferInstance : CommMonoid (R × S)) with }
+
+/-- Product of two `AddCommGroupWithOne`s is an `AddCommGroupWithOne`. -/
+instance instAddCommGroupWithOne [AddCommGroupWithOne R] [AddCommGroupWithOne S] :
+    AddCommGroupWithOne (R × S) :=
+  { (inferInstance : AddGroupWithOne (R × S)), (inferInstance : AddCommGroup (R × S)) with }
 
 instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S] :
     NonUnitalNonAssocRing (R × S) :=
@@ -266,6 +270,9 @@ theorem coe_prodComm : ⇑(prodComm : R × S ≃+* S × R) = Prod.swap :=
 @[simp]
 theorem coe_prodComm_symm : ⇑(prodComm : R × S ≃+* S × R).symm = Prod.swap :=
   rfl
+
+@[simp]
+theorem prodComm_trans_prodComm : (prodComm : R × S ≃+* S × R).trans prodComm = .refl _ := rfl
 
 @[simp]
 theorem fst_comp_coe_prodComm :

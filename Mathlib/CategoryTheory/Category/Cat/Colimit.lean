@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Emily Riehl
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
+import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
 public import Mathlib.CategoryTheory.Monad.Limits
 
 

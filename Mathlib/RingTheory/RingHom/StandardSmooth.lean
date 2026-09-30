@@ -5,10 +5,7 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.LocalProperties.Basic
 public import Mathlib.RingTheory.RingHom.Etale
-public import Mathlib.RingTheory.Smooth.StandardSmoothOfFree
-public import Mathlib.Tactic.Algebraize
 
 /-!
 # Standard smooth ring homomorphisms
@@ -224,10 +221,10 @@ theorem _root_.Algebra.IsStandardSmoothOfRelativeDimension.exists_etale_mvPolyno
   let P' : Algebra.PreSubmersivePresentation (MvPolynomial (Fin n) R) S σ σ :=
   { toGenerators := .ofSurjective (algebraMap _ _ <| e <| .X ·) <| by
       convert! P.algebraMap_surjective.comp e.surjective
-      exact congr($H)
+      congrm $H
     relation := e.symm ∘ P.relation
     span_range_relation_eq_ker := by
-      rw [Set.range_comp, ← AlgEquiv.coe_ringEquiv e.symm, AlgEquiv.symm_toRingEquiv,
+      rw [Set.range_comp, ← AlgEquiv.coe_toRingEquiv e.symm, AlgEquiv.symm_toRingEquiv,
         ← Ideal.map_span, P.span_range_relation_eq_ker, Ideal.map_symm]
       exact congr(RingHom.ker $H).symm
     map := _

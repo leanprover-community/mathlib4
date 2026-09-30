@@ -8,10 +8,10 @@ module
 public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Group.AddTorsor
-public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 public import Mathlib.Topology.Instances.RealVectorSpace
 
+import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 
 /-!
 # Torsors of normed space actions.
@@ -139,6 +139,41 @@ theorem nndist_self_homothety (p₁ p₂ : P) (c : 𝕜) :
     nndist p₂ (homothety p₁ c p₂) = ‖1 - c‖₊ * nndist p₁ p₂ :=
   NNReal.eq <| dist_self_homothety _ _ _
 
+open scoped Pointwise in
+private theorem image_homothety (c : P) (x : 𝕜) (s : Set P) :
+    homothety c x '' s =
+      IsometryEquiv.vaddConst c '' (x • ((IsometryEquiv.vaddConst c).symm '' s)) := by
+  simp [← Set.image_smul, ← Set.image_comp]; rfl
+
+theorem Metric.image_homothety_ball (p c : P) (r : ℝ) {x : 𝕜} (hx : x ≠ 0) :
+    homothety c x '' ball p r = ball (homothety c x p) (‖x‖ * r) := by
+  rw [image_homothety, IsometryEquiv.image_ball, smul_ball hx, IsometryEquiv.image_ball]
+  simp [homothety_apply]
+
+theorem Metric.image_homothety_closedBall (p c : P) (r : ℝ) {x : 𝕜} (hx : x ≠ 0) :
+    homothety c x '' closedBall p r = closedBall (homothety c x p) (‖x‖ * r) := by
+  rw [image_homothety, IsometryEquiv.image_closedBall, smul_closedBall' hx,
+    IsometryEquiv.image_closedBall]
+  simp [homothety_apply]
+
+theorem Metric.image_homothety_closedBall_of_nonneg (p c : Q) {r : ℝ} (hr : 0 ≤ r) (x : 𝕜) :
+    homothety c x '' closedBall p r = closedBall (homothety c x p) (‖x‖ * r) := by
+  rw [image_homothety, IsometryEquiv.image_closedBall, smul_closedBall x _ hr,
+    IsometryEquiv.image_closedBall]
+  simp [homothety_apply]
+
+theorem Metric.image_homothety_sphere (p c : P) (r : ℝ) {x : 𝕜} (hx : x ≠ 0) :
+    homothety c x '' sphere p r = sphere (homothety c x p) (‖x‖ * r) := by
+  rw [← closedBall_sdiff_ball, ← closedBall_sdiff_ball, Set.image_sdiff (homothety_injective c hx),
+    image_homothety_ball p c r hx, image_homothety_closedBall p c r hx]
+
+theorem Metric.image_homothety_sphere_of_nonneg [NormedSpace ℝ W] [Nontrivial W]
+    (p c : Q) {r : ℝ} (hr : 0 ≤ r) (x : 𝕜) :
+    homothety c x '' sphere p r = sphere (homothety c x p) (‖x‖ * r) := by
+  rw [image_homothety, IsometryEquiv.image_sphere, smul_sphere x _ hr,
+    IsometryEquiv.image_sphere]
+  simp [homothety_apply]
+
 section invertibleTwo
 
 variable [Invertible (2 : 𝕜)]
@@ -241,7 +276,7 @@ def AffineMap.ofMapMidpoint (f : P → Q) (h : ∀ x y, f (midpoint ℝ x y) = m
     (hfc : Continuous f) : P →ᵃ[ℝ] Q :=
   let c := Classical.arbitrary P
   AffineMap.mk' f (↑((AddMonoidHom.ofMapMidpoint ℝ ℝ
-    ((AffineEquiv.vaddConst ℝ (f <| c)).symm ∘ f ∘ AffineEquiv.vaddConst ℝ c) (by simp)
+    ((AffineEquiv.vaddConst ℝ (f c)).symm ∘ f ∘ AffineEquiv.vaddConst ℝ c) (by simp)
     fun x y => by simp [h]).toRealLinearMap <| by
         apply_rules [Continuous.vadd, Continuous.vsub, continuous_const, hfc.comp, continuous_id]))
     c fun p => by simp

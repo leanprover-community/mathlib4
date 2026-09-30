@@ -13,7 +13,7 @@ public import Mathlib.Analysis.Analytic.Basic
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Positivity
 
 /-!
 # Resolvent Transform of a Measure
@@ -168,7 +168,7 @@ theorem hasDerivAt_resolventTransform [RCLike A] [NormedAlgebra 𝕜 A] {μ : Me
     filter_upwards [support_mem_ae] with x hx w hw
     apply hasDerivAt_resolvent_const_right
     replace hw := hs_μ hw
-    contrapose! hw
+    contrapose hw
     rw [Set.notMem_compl_iff]
     use x, hx
     simpa [resolventSet, sub_eq_zero] using hw

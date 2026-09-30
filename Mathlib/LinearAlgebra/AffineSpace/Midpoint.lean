@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 
 /-!
