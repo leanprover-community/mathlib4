@@ -47,7 +47,7 @@ structure Infos where
   /-- All of the `TacticInfo` nodes from the info trees. -/
   tacticInfos : Array (ContextInfo × TacticInfo) := #[]
   /-- All of the `TermInfo` nodes from the info trees, indexed by their elaborator name. -/
-  termInfos : Std.HashMap Name (Array (ContextInfo × TermInfo)) := {}
+  termInfos : NameMap (AssocList TermInfo ContextInfo) := {}
 
 /-- A linter that has also been provided with `Infos`, which contains arrays of `Elab.Info`s that
 have been collected through a single efficient traversal of the infotrees and then shared among all
@@ -77,7 +77,8 @@ def getInfos : CommandElabM Infos :=
       | .ofTacticInfo i =>
         { infos with tacticInfos := infos.tacticInfos.push (ctx, i) }
       | .ofTermInfo i =>
-        { infos with termInfos := infos.termInfos.alter i.elaborator (·.getD #[] |>.push (ctx, i)) }
+        let entries := (infos.termInfos.find? i.elaborator).getD .nil
+        { infos with termInfos := infos.termInfos.insert i.elaborator (.cons i ctx entries) }
       | _ => infos
 
 /--

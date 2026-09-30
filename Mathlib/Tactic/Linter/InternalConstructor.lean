@@ -61,8 +61,8 @@ def internalConstructor : InfoLinter where
   run := fun infos ↦ withSetOptionIn fun _ => do
     unless Linter.getLinterValue linter.internalConstructors (← Linter.getLinterOptions) do
       return
-    let some infos := infos.termInfos[Name.anonymous]? | return
-    for (ctx, i) in infos do
+    let some infos := infos.termInfos.find? .anonymous | return
+    for (i, ctx) in infos do
       let .const n _ := i.expr.cleanupAnnotations | pure ()
       -- Putting the conjuncts in this order provides a performance benefit.
       if n.isInternal && !isPrivateName n && ctx.env.isImportedConst n
