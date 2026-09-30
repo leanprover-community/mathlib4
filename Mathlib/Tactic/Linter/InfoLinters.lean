@@ -42,13 +42,12 @@ open Lean Elab Command
 
 namespace Mathlib.Linter
 
-/-- The information that we extract from the info trees and pass to the `InfoLinter`s. This
-contains flat arrays of infos organized by kind. -/
+/-- The information that we extract from the info trees and pass to the `InfoLinter`s. -/
 structure Infos where
   /-- All of the `TacticInfo` nodes from the info trees. -/
   tacticInfos : Array (ContextInfo × TacticInfo) := #[]
-  /-- All of the `TermInfo` nodes from the info trees. -/
-  termInfos : Array (ContextInfo × TermInfo) := #[]
+  /-- All of the `TermInfo` nodes from the info trees, indexed by their elaborator name. -/
+  termInfos : Std.HashMap Name (Array (ContextInfo × TermInfo)) := {}
 
 /-- A linter that has also been provided with `Infos`, which contains arrays of `Elab.Info`s that
 have been collected through a single efficient traversal of the infotrees and then shared among all
@@ -75,8 +74,10 @@ def getInfos : CommandElabM Infos :=
     let trees ← getInfoTrees
     return trees.foldl (init := {}) <| InfoTree.foldInfo fun ctx info infos =>
       match info with
-      | .ofTacticInfo i => { infos with tacticInfos := infos.tacticInfos.push (ctx, i) }
-      | .ofTermInfo i => { infos with termInfos := infos.termInfos.push (ctx, i) }
+      | .ofTacticInfo i =>
+        { infos with tacticInfos := infos.tacticInfos.push (ctx, i) }
+      | .ofTermInfo i =>
+        { infos with termInfos := infos.termInfos.alter i.elaborator (·.getD #[] |>.push (ctx, i)) }
       | _ => infos
 
 /--
@@ -93,7 +94,6 @@ final `CommandElabM` state. If running this from inside another (standard) linte
 collect these from the resulting state. Otherwise, these may be extracted by keeping track of the
 number of trees and code quality metrics from before, and comparing to after.
 -/
-@[inline] -- We `@[inline]` this because it is almost never used.
 def runLinterLikes {α} (traceCls : Name) (linterLikes : Array α) (run : α → CommandElabM Unit)
     (traceMsg : α → CommandElabM MessageData) (failureMsgHeader : α → MessageData) :
     CommandElabM Unit := do
