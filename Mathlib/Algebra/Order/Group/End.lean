@@ -6,7 +6,7 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Algebra.Group.End
-public import Mathlib.Data.FunLike.IsApply
+public import Mathlib.Algebra.Group.IsApply
 public import Mathlib.Order.Hom.Basic
 
 /-!
