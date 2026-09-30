@@ -126,6 +126,7 @@ open scoped Topology
 /-- A set is called a neighborhood of `x` if it contains an open set around `x`. The set of all
 neighborhoods of `x` forms a filter, the neighborhood filter at `x`, is here defined as the
 infimum over the principal filters of all open sets containing `x`. -/
+@[wikidata Q3275652]
 irreducible_def nhds (x : X) : Filter X :=
   ⨅ s ∈ { s : Set X | x ∈ s ∧ IsOpen s }, 𝓟 s
 
