@@ -5,7 +5,7 @@ Authors: Sven Manthe
 -/
 module
 
-public import Mathlib.Order.CompleteSublattice
+public import Mathlib.Order.CompleteSublattice.Basic
 
 /-!
 # `SetLike` instance for elements of `CompleteSublattice (Set X)`
