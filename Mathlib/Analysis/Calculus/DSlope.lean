@@ -186,12 +186,11 @@ is.
 -/
 theorem AnalyticWithinAt.dslope_of_ne (hf : AnalyticWithinAt 𝕜 f s z) (hz : z ≠ a) :
     AnalyticWithinAt 𝕜 (dslope f a) s z := by
-  have h : AnalyticWithinAt 𝕜 (fun w ↦ (w - a)⁻¹ • (f w - f a)) s z :=
-    ((analyticWithinAt_id.sub analyticWithinAt_const).inv (sub_ne_zero.2 hz)).smul
-      (hf.sub analyticWithinAt_const)
-  refine h.congr_of_eventuallyEq_insert ?_
-  filter_upwards [nhdsWithin_le_nhds (dslope_eventuallyEq_slope_of_ne f hz)] with w hw
-  rw [hw, slope_def_module]
+  suffices h : AnalyticWithinAt 𝕜 (fun w ↦ (w - a)⁻¹ • (f w - f a)) s z from
+    h.congr_of_eventuallyEq (dslope_eventuallyEq_slope_of_ne f hz |>.filter_mono nhdsWithin_le_nhds)
+      (by simp [dslope, slope, hz])
+  apply_rules [sub, inv, analyticWithinAt_id, analyticWithinAt_const, smul]
+  grind
 
 /-- If `f` is analytic at `z`, then so is `dslope f a`, for any base point `a`. -/
 @[fun_prop] protected theorem AnalyticAt.dslope (hf : AnalyticAt 𝕜 f z) (a : 𝕜) :
