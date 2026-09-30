@@ -7,9 +7,8 @@ module
 
 public import Mathlib.Analysis.Convex.Strict
 public import Mathlib.Analysis.Convex.StdSimplex
-public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
+public import Mathlib.Geometry.Convex.ConvexSpace.ModuleTopology
 public import Mathlib.Topology.Algebra.Affine
-public import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # Topological properties of convex sets
@@ -26,11 +25,11 @@ We prove the following facts:
 
 @[expose] public section
 
-assert_not_exists Cardinal Norm
+assert_not_exists Norm
 
 open Metric Bornology Set Pointwise Convex
 
-variable {ι 𝕜 E : Type*}
+variable {𝕜 E : Type*}
 
 namespace Real
 variable {s : Set ℝ} {r ε : ℝ}
@@ -144,6 +143,25 @@ theorem Convex.openSegment_interior_closure_subset_interior {s : Set E} (hs : Co
     (hx : x ∈ interior s) (hy : y ∈ closure s) : openSegment 𝕜 x y ⊆ interior s := by
   rintro _ ⟨a, b, ha, hb, hab, rfl⟩
   exact hs.combo_interior_closure_mem_interior hx hy ha hb.le hab
+
+omit [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E] in
+/-- For a convex set `s`, the open segment between affine images of points in
+`interior (A ⁻¹' s)` and `closure (A ⁻¹' s)` is contained in the affine image of
+`interior (A ⁻¹' s)`. This is the affine-map version of
+`Convex.openSegment_interior_closure_subset_interior`; taking `A` to be the identity gives that
+statement, while the assumptions on `A` are exactly used to make `A ⁻¹' s` convex and to transport
+open segments through `A`. -/
+theorem Convex.openSegment_image_interior_closure_preimage_subset {F : Type*}
+    [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+    [ContinuousConstSMul 𝕜 F] {A : F →ᵃ[𝕜] E} {s} (hs : Convex 𝕜 s)
+    {x y} (hx : x ∈ interior (A ⁻¹' s)) (hy : y ∈ closure (A ⁻¹' s)) :
+    openSegment 𝕜 (A x) (A y) ⊆ A '' interior (A ⁻¹' s) := by
+  rintro _ ⟨a, b, ha, hb, hab, rfl⟩
+  refine ⟨AffineMap.lineMap x y b, ?_, ?_⟩
+  · apply (hs.affine_preimage A).openSegment_interior_closure_subset_interior hx hy
+    refine ⟨a, b, ha, hb, hab, ?_⟩
+    rw [AffineMap.lineMap_apply_module, sub_eq_iff_eq_add.2 hab.symm]
+  · rw [A.apply_lineMap, AffineMap.lineMap_apply_module, sub_eq_iff_eq_add.2 hab.symm]
 
 theorem Convex.openSegment_interior_self_subset_interior {s : Set E} (hs : Convex 𝕜 s) {x y : E}
     (hx : x ∈ interior s) (hy : y ∈ s) : openSegment 𝕜 x y ⊆ interior s :=
@@ -339,16 +357,18 @@ end ContinuousConstSMul
 
 section Compact
 variable (𝕜 : Type*) [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜]
-  [OrderClosedTopology 𝕜] [CompactIccSpace 𝕜] [ContinuousAdd 𝕜]
+  [OrderClosedTopology 𝕜] [CompactIccSpace 𝕜] [IsTopologicalRing 𝕜]
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
 
+open Convexity in
+attribute [local instance] ConvexSpace.ofModule IsModuleConvexSpace.of_module in
 /-- Convex hull of a finite set is compact. -/
 theorem Set.Finite.isCompact_convexHull {s : Set E} (hs : s.Finite) :
     IsCompact (convexHull 𝕜 s) := by
-  rw [hs.convexHull_eq_image]
-  let := hs.fintype
-  exact (isCompact_stdSimplex 𝕜 s).image (LinearMap.continuous_on_pi _)
+  have := hs.to_subtype
+  rw [Set.convexHull_eq_range_iConvexComb]
+  exact isCompact_range (by fun_prop)
 
 /-- Convex hull of a finite set is closed. -/
 theorem Set.Finite.isClosed_convexHull [T2Space E] {s : Set E} (hs : s.Finite) :
@@ -431,7 +451,7 @@ lemma Convex.Ioo_subset_of_mem_closure {s : Set 𝕜} (hs : Convex 𝕜 s) {a b 
     simp only [nontrivial_coe_sort] at h'
     calc Ioo a b
     _ = interior (Ioo a b) := interior_Ioo.symm
-    _ ⊆ interior (openSegment 𝕜 a b) := interior_mono <| Ioo_subset_openSegment
+    _ ⊆ interior (openSegment 𝕜 a b) := interior_mono Ioo_subset_openSegment
     _ ⊆ interior (closure s) := interior_mono <| hs.closure.openSegment_subset has hbs
     _ = interior s := hs.interior_closure_eq_interior_of_nonempty_interior <|
       hs.nontrivial_iff_nonempty_interior.1 h'
@@ -509,11 +529,12 @@ namespace Affine.Simplex
 
 variable {𝕜 V P : Type*}
   [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜]
-  [OrderClosedTopology 𝕜] [CompactIccSpace 𝕜] [ContinuousAdd 𝕜]
+  [OrderClosedTopology 𝕜] [CompactIccSpace 𝕜] [IsTopologicalRing 𝕜]
   [AddCommGroup V] [TopologicalSpace V] [IsTopologicalAddGroup V]
   [Module 𝕜 V] [ContinuousSMul 𝕜 V] [AddTorsor V P]
   [TopologicalSpace P] [IsTopologicalAddTorsor P]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The closed interior of a simplex is compact. -/
 theorem isCompact_closedInterior {n : ℕ} (s : Simplex 𝕜 P n) : IsCompact s.closedInterior := by
   suffices IsCompact ((AffineEquiv.vaddConst 𝕜 (s.points 0)).symm.toAffineMap ''

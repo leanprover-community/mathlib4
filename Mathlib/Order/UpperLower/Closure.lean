@@ -6,7 +6,7 @@ Authors: Yaël Dillies, Sara Rousta
 module
 
 public import Mathlib.Order.Interval.Set.OrdConnected
-public import Mathlib.Order.Minimal
+import Mathlib.Order.Minimal
 public import Mathlib.Order.UpperLower.Principal
 
 /-!
@@ -193,7 +193,7 @@ variable [PartialOrder α] {s : Set α} {x : α}
 
 lemma IsAntichain.minimal_mem_upperClosure_iff_mem (hs : IsAntichain (· ≤ ·) s) :
     Minimal (· ∈ upperClosure s) x ↔ x ∈ s := by
-  simp only [upperClosure, UpperSet.mem_mk, mem_setOf_eq]
+  simp only [upperClosure]
   refine ⟨fun h ↦ ?_, fun h ↦ ⟨⟨x, h, rfl.le⟩, fun b ⟨a, has, hab⟩ hbx ↦ ?_⟩⟩
   · obtain ⟨a, has, hax⟩ := h.prop
     rwa [h.eq_of_ge ⟨a, has, rfl.le⟩ hax]

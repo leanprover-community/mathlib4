@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Category.Grp.LargeColimits
 public import Mathlib.Algebra.Category.Grp.Limits
 public import Mathlib.Algebra.Module.CharacterModule
-public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
 /-!
 # Properties of the universe lift functor for groups
@@ -140,12 +139,12 @@ def uliftFunctorFullyFaithful : uliftFunctor.{u, v}.FullyFaithful where
   map_preimage _ := rfl
   preimage_map _ := rfl
 
--- The universe lift functor for commutative groups is faithful. -/
+/-- The universe lift functor for commutative groups is faithful. -/
 @[to_additive
   /-- The universe lift functor for commutative additive groups is faithful. -/]
 instance : uliftFunctor.{u, v}.Faithful := uliftFunctorFullyFaithful.faithful
 
--- The universe lift functor for commutative groups is full. -/
+/-- The universe lift functor for commutative groups is full. -/
 @[to_additive
   /-- The universe lift functor for commutative additive groups is full. -/]
 instance : uliftFunctor.{u, v}.Full := uliftFunctorFullyFaithful.full

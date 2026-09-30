@@ -6,9 +6,7 @@ Authors: Andrew Yang, Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Adjunction.Restrict
-public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 public import Mathlib.CategoryTheory.Sites.CoverPreserving
-public import Mathlib.CategoryTheory.Sites.Sheafification
 
 /-!
 # Cocontinuous functors between sites.
@@ -113,7 +111,6 @@ section
 
 variable {F : C ⥤ D} {G : D ⥤ C}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Adjunction.isCocontinuous_iff_coverPreserving (adj : F ⊣ G) :
     F.IsCocontinuous J K ↔ CoverPreserving K J G := by
   refine ⟨fun h ↦ ⟨?_⟩, fun h ↦ ⟨?_⟩⟩
@@ -185,6 +182,7 @@ def liftAux {Y : C} (f : G.obj Y ⟶ X) : s.pt ⟶ F.obj (op Y) :=
           r.w := by simpa using G.congr_map w =≫ f
           .. })
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma liftAux_map {Y : C} (f : G.obj Y ⟶ X) {W : C} (g : W ⟶ Y) (i : S.Arrow)
     (h : G.obj W ⟶ i.Y) (w : h ≫ i.f = G.map g ≫ f) :
@@ -233,6 +231,7 @@ lemma fac' (j : StructuredArrow (op X) G.op) :
     lift hF hR s ≫ R.map j.hom ≫ α.app j.right = liftAux hF α s j.hom.unop := by
   apply IsLimit.fac
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma fac (i : S.Arrow) : lift hF hR s ≫ R.map i.f.op = s.ι i := by
@@ -245,7 +244,6 @@ lemma fac (i : S.Arrow) : lift hF hR s ≫ R.map i.f.op = s.ι i := by
   simpa using liftAux_map hF α s (j.hom.unop ≫ i.f) (𝟙 _) i j.hom.unop (by simp)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 include hR hF in
 variable (K) in
 lemma hom_ext {W : A} {f g : W ⟶ R.obj (op X)}

@@ -5,7 +5,6 @@ Authors: Justus Springer
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Spaces
 public import Mathlib.Topology.Sheaves.Sheaf
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
 
@@ -147,7 +146,7 @@ variable {X Y : TopCat.{w}} {f : X ⟶ Y} {F : Y.Presheaf C}
 
 theorem Topology.IsOpenEmbedding.compatiblePreserving (hf : IsOpenEmbedding f) :
     CompatiblePreserving (Opens.grothendieckTopology Y) hf.functor := by
-  haveI : Mono f := (TopCat.mono_iff_injective f).mpr hf.injective
+  have : Mono f := (TopCat.mono_iff_injective f).mpr hf.injective
   apply compatiblePreservingOfDownwardsClosed
   intro U V i
   refine ⟨(Opens.map f).obj V, eqToIso <| Opens.ext <| Set.image_preimage_eq_of_subset fun x h ↦ ?_⟩

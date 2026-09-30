@@ -5,9 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Order.Filter.AtTopBot.Archimedean
-public import Mathlib.Order.Filter.AtTopBot.Finite
-public import Mathlib.Order.Filter.AtTopBot.Prod
+import Mathlib.Order.Filter.AtTopBot.Archimedean
 public import Mathlib.Topology.Algebra.Ring.Real
 
 /-!
@@ -27,7 +25,9 @@ Define a bundled `SubadditiveHom`, use it.
 
 noncomputable section
 
-open Set Filter Topology
+open Set Filter
+
+open scoped Topology
 
 /-- A real-valued sequence is subadditive if it satisfies the inequality `u (m + n) ≤ u m + u n`
 for all `m, n`. -/
