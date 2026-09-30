@@ -16,12 +16,8 @@ import Mathlib.Tactic.GRewrite
 /-!
 # Basic properties of lattices
 
-This file contains some basic results, alternative constructors and instances for (semi)lattices.
-For the definitions, see `Mathlib.Order.Defs.Lattice`.
-
-(Semi)modular lattices, a kind of lattice useful in algebra.
-For examples, look to the subobject lattices of abelian groups, submodules, and ideals, or consider
-any distributive lattice.
+This file contains some basic results, alternative constructors and instances for (semi)lattices
+and (semi)modular lattices. For the definitions, see `Mathlib.Order.Defs.Lattice`.
 
 ## Main declarations
 
