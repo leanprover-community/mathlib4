@@ -2,7 +2,7 @@ import Mathlib.Tactic.Widget.CommDiag
 import ProofWidgets.Component.Panel.SelectionPanel
 import ProofWidgets.Component.Panel.GoalTypePanel
 
-/-! ## Example use of commutative diagram widgets -/
+/-! # Example use of commutative diagram widgets -/
 
 universe u
 namespace CategoryTheory

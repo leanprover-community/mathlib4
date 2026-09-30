@@ -6,7 +6,6 @@ Authors: Kim Morrison, Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Discrete.Basic
-public import Mathlib.Data.ULift
 
 /-!
 # The category `Discrete PUnit`

@@ -6,10 +6,8 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.VectorField
-public import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
-public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
+import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
-public import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # Vector fields in manifolds
@@ -91,7 +89,7 @@ section Pullback
 
 open ContinuousLinearMap
 
-variable {V W V₁ W₁ : Π (x : M'), TangentSpace I' x}
+variable {V V₁ : Π (x : M'), TangentSpace I' x}
 variable {c : 𝕜} {m n : ℕ∞ω} {t : Set M'} {y₀ : M'}
 
 variable (I I') in

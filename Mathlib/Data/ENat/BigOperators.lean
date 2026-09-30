@@ -5,8 +5,8 @@ Authors: Joachim Breitner, Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Algebra.BigOperators.WithTop
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.BigOperators.WithTop
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Data.ENat.Lattice
 
@@ -20,7 +20,7 @@ assert_not_exists Field
 
 namespace ENat
 
-variable {a b c d : ℕ∞} {r p q : ℕ}
+variable {a : ℕ∞} {p : ℕ}
 
 section OperationsAndInfty
 

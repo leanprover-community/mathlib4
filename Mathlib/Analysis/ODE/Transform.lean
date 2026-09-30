@@ -6,10 +6,10 @@ Authors: Winston Yin
 module
 
 public import Mathlib.Analysis.ODE.Basic
-public import Mathlib.Analysis.Calculus.FDeriv.Add
-public import Mathlib.Analysis.Calculus.FDeriv.Equiv
-public import Mathlib.Analysis.Calculus.Deriv.Comp
-public import Mathlib.Analysis.Calculus.Deriv.Mul
+import Mathlib.Analysis.Calculus.FDeriv.Add
+import Mathlib.Analysis.Calculus.FDeriv.Equiv
+import Mathlib.Analysis.Calculus.Deriv.Comp
+import Mathlib.Analysis.Calculus.Deriv.Mul
 
 /-!
 # Translation and scaling of integral curves
@@ -28,7 +28,7 @@ open Function Set Pointwise
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {γ γ' : ℝ → E} {v : ℝ → E → E} {s s' : Set ℝ} {t₀ : ℝ}
+  {γ : ℝ → E} {v : ℝ → E → E} {s : Set ℝ} {t₀ : ℝ}
 
 /-! ### Translation lemmas -/
 

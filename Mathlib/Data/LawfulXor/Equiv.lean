@@ -18,7 +18,7 @@ namespace Equiv
 
 open LawfulXor
 
-variable {α β : Type*} [XorOp α] [Zero α] [LawfulXor α] {a b c : α}
+variable {α : Type*} [XorOp α] [Zero α] [LawfulXor α] {a b : α}
 
 /-- `XorOp.xor` as a permutation. -/
 @[simps! apply] protected def xor (a : α) : Perm α where
@@ -39,6 +39,6 @@ theorem xor_involutive (a : α) : Function.Involutive (Equiv.xor a) := xor_right
 theorem isFixedPt_xor : Function.IsFixedPt (Equiv.xor a) b ↔ a = 0 := isFixedPt_xor_left_iff
 
 @[simp] theorem xor_trans_xor : (Equiv.xor b).trans (Equiv.xor a) = Equiv.xor (a ^^^ b) :=
-  Equiv.ext <| (.symm <| xor_assoc a b ·)
+  Equiv.ext (.symm <| xor_assoc a b ·)
 
 end Equiv

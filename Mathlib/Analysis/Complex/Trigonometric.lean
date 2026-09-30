@@ -25,36 +25,37 @@ namespace Complex
 noncomputable section
 
 /-- The complex sine function, defined via `exp` -/
-@[pp_nodot]
+@[pp_nodot, dlmf 4.14.E1]
 def sin (z : ℂ) : ℂ :=
   (exp (-z * I) - exp (z * I)) * I / 2
 
 /-- The complex cosine function, defined via `exp` -/
-@[pp_nodot]
+@[pp_nodot, dlmf 4.14.E2]
 def cos (z : ℂ) : ℂ :=
   (exp (z * I) + exp (-z * I)) / 2
 
 /-- The complex tangent function, defined as `sin z / cos z` -/
-@[pp_nodot]
+@[pp_nodot, dlmf 4.14.E4]
 def tan (z : ℂ) : ℂ :=
   sin z / cos z
 
 /-- The complex cotangent function, defined as `cos z / sin z` -/
+@[pp_nodot, dlmf 4.14.E7]
 def cot (z : ℂ) : ℂ :=
   cos z / sin z
 
 /-- The complex hyperbolic sine function, defined via `exp` -/
-@[pp_nodot]
+@[pp_nodot, dlmf 4.28.E1]
 def sinh (z : ℂ) : ℂ :=
   (exp z - exp (-z)) / 2
 
 /-- The complex hyperbolic cosine function, defined via `exp` -/
-@[pp_nodot]
+@[pp_nodot, dlmf 4.28.E2]
 def cosh (z : ℂ) : ℂ :=
   (exp z + exp (-z)) / 2
 
 /-- The complex hyperbolic tangent function, defined as `sinh z / cosh z` -/
-@[pp_nodot]
+@[pp_nodot, dlmf 4.28.E4]
 def tanh (z : ℂ) : ℂ :=
   sinh z / cosh z
 
@@ -84,6 +85,7 @@ nonrec def tan (x : ℝ) : ℝ :=
   (tan x).re
 
 /-- The real cotangent function, defined as the real part of the complex cotangent -/
+@[pp_nodot]
 nonrec def cot (x : ℝ) : ℝ :=
   (cot x).re
 
@@ -236,7 +238,7 @@ theorem cosh_sub_sinh : cosh x - sinh x = exp (-x) := by
 @[simp]
 theorem sinh_sub_cosh : sinh x - cosh x = -exp (-x) := by rw [← neg_sub, cosh_sub_sinh]
 
-@[simp]
+@[simp, dlmf 4.35.E11]
 theorem cosh_sq_sub_sinh_sq : cosh x ^ 2 - sinh x ^ 2 = 1 := by
   rw [sq_sub_sq, cosh_add_sinh, cosh_sub_sinh, ← exp_add, add_neg_cancel, exp_zero]
 
@@ -248,8 +250,10 @@ theorem sinh_sq : sinh x ^ 2 = cosh x ^ 2 - 1 := by
   rw [← cosh_sq_sub_sinh_sq x]
   ring
 
+@[dlmf 4.35.E27]
 theorem cosh_two_mul : cosh (2 * x) = cosh x ^ 2 + sinh x ^ 2 := by rw [two_mul, cosh_add, sq, sq]
 
+@[dlmf 4.35.E26]
 theorem sinh_two_mul : sinh (2 * x) = 2 * sinh x * cosh x := by
   rw [two_mul, sinh_add]
   ring
@@ -883,8 +887,7 @@ theorem cos_pos_of_le_one {x : ℝ} (hx : |x| ≤ 1) : 0 < cos x :=
             |x| ^ 4 * (5 / 96) + x ^ 2 / 2 ≤ 1 * (5 / 96) + 1 / 2 := by
                   gcongr
                   · exact pow_le_one₀ (abs_nonneg _) hx
-                  · rw [sq, ← abs_mul_self, abs_mul]
-                    exact mul_le_one₀ hx (abs_nonneg _) hx
+                  · exact (sq_le_one_iff_abs_le_one x).mpr hx
             _ < 1 := by norm_num)
     _ ≤ cos x := sub_le_comm.1 (abs_sub_le_iff.1 (cos_bound hx)).2
 
@@ -911,7 +914,7 @@ theorem cos_one_pos : 0 < cos 1 :=
   cos_pos_of_le_one (le_of_eq abs_one)
 
 theorem cos_two_neg : cos 2 < 0 :=
-  calc cos 2 = cos (2 * 1) := congr_arg cos (mul_one _).symm
+  calc cos 2 = cos (2 * 1) := congr(cos $((mul_one _).symm))
     _ = _ := Real.cos_two_mul 1
     _ ≤ 2 * (5 / 9) ^ 2 - 1 := by
       gcongr
@@ -985,5 +988,15 @@ theorem norm_exp (z : ℂ) : ‖exp z‖ = Real.exp z.re := by
 
 theorem norm_exp_eq_iff_re_eq {x y : ℂ} : ‖exp x‖ = ‖exp y‖ ↔ x.re = y.re := by
   rw [norm_exp, norm_exp, Real.exp_eq_exp]
+
+theorem norm_exp_mul_I (x : ℂ) : ‖exp (x * I)‖ = Real.exp (-x.im) := by
+  rw [norm_exp, mul_I_re]
+
+theorem abs_one_sub_rexp_re_le (x : ℂ) : |1 - Real.exp x.re| ≤ ‖1 - exp x‖ := by
+  rw [← norm_exp]
+  exact_mod_cast abs_norm_sub_norm_le (1 : ℂ) (exp x)
+
+theorem one_sub_rexp_re_le (x : ℂ) : 1 - Real.exp x.re ≤ ‖1 - exp x‖ :=
+  (le_abs_self _).trans (abs_one_sub_rexp_re_le x)
 
 end Complex

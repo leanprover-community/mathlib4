@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Nat.Basic
 public import Mathlib.Data.Int.Order.Basic
-public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Order.Compare
 public import Mathlib.Order.Max
 public import Mathlib.Order.Monotone.Defs
@@ -58,7 +57,7 @@ open Function OrderDual
 
 universe u v
 
-variable {ι : Type*} {α : Type u} {β : Type v}
+variable {α : Type u} {β : Type v}
 
 /-! ### Monotonicity on the dual order
 

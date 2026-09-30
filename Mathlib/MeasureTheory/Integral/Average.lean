@@ -187,7 +187,6 @@ theorem laverage_union_mem_openSegment (hd : AEDisjoint μ s t) (ht : NullMeasur
   rw [← ENNReal.add_div,
     ENNReal.div_self (add_eq_zero.not.2 fun h => hs₀ h.1) (add_ne_top.2 ⟨hsμ, htμ⟩)]
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem laverage_union_mem_segment (hd : AEDisjoint μ s t) (ht : NullMeasurableSet t μ)
     (hsμ : μ s ≠ ∞) (htμ : μ t ≠ ∞) :
     ⨍⁻ x in s ∪ t, f x ∂μ ∈ [⨍⁻ x in s, f x ∂μ -[ℝ≥0∞] ⨍⁻ x in t, f x ∂μ] := by
@@ -453,7 +452,6 @@ theorem average_union_mem_openSegment {f : α → E} {s t : Set α} (hd : AEDisj
   exact mem_openSegment_iff_div.mpr
     ⟨μ.real s, μ.real t, hs₀, ht₀, (average_union hd ht hsμ htμ hfs hft).symm⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem average_union_mem_segment {f : α → E} {s t : Set α} (hd : AEDisjoint μ s t)
     (ht : NullMeasurableSet t μ) (hsμ : μ s ≠ ∞) (htμ : μ t ≠ ∞) (hfs : IntegrableOn f s μ)
     (hft : IntegrableOn f t μ) :
@@ -700,7 +698,7 @@ theorem measure_le_setLAverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞)
   rw [← ofPred_inter_eq_sep, ← Measure.restrict_apply₀
     (hf.ennreal_toReal.aestronglyMeasurable.nullMeasurableSet_le aestronglyMeasurable_const),
     ← measure_sdiff_null (measure_eq_top_of_lintegral_ne_top hf h)] at this
-  refine this.trans_le (measure_mono ?_)
+  gconvert this
   rintro x ⟨hfx, hx⟩
   dsimp at hfx
   rwa [← toReal_laverage hf, toReal_le_toReal hx (setLAverage_lt_top h).ne] at hfx
@@ -721,7 +719,7 @@ theorem measure_setLAverage_le_pos (hμ : μ s ≠ 0) (hs : NullMeasurableSet s 
   simp_rw [← ofPred_inter_eq_sep, ← Measure.restrict_apply₀' hs, hfg']
   rw [← ofPred_inter_eq_sep, ← Measure.restrict_apply₀' hs, ←
     measure_sdiff_null (measure_eq_top_of_lintegral_ne_top hg.aemeasurable hint)] at this
-  refine this.trans_le (measure_mono ?_)
+  gconvert this
   rintro x ⟨hfx, hx⟩
   dsimp at hfx
   rw [← toReal_laverage hg.aemeasurable, toReal_le_toReal (setLAverage_lt_top hint).ne hx] at hfx
