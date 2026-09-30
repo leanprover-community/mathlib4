@@ -96,6 +96,10 @@ class IsHyperbolic (X : Type*) [PseudoMetricSpace X] : Prop where
 /-- Every bounded pseudometric space is hyperbolic. -/
 instance [BoundedSpace X] : IsHyperbolic X := ⟨_, isHyperbolicWith_diam_univ⟩
 
+/-- A space is at most one element is hyperbolic. -/
+instance [Subsingleton X] : IsHyperbolic X := by
+  infer_instance
+
 /-- A subspace of a hyperbolic space is hyperbolic. -/
 instance [h : IsHyperbolic X] (p : X → Prop) : IsHyperbolic (Subtype p) := by
   obtain ⟨_, hX⟩ := h
