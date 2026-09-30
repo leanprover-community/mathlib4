@@ -45,16 +45,23 @@ open scoped ENNReal
 
 variable {X : Type*} [EMetricSpace X] {s : Set X} {a b : X}
 
+/-- The points at finite distance from `a`. -/
+def boundedComponent (a : X) : Set X := {x | edist a x ≠ ∞}
+
 /-- In a preconnected subset of an extended metric space, any two points are at finite distance. -/
 theorem IsPreconnected.edist_ne_top (hs : IsPreconnected s) (ha : a ∈ s) (hb : b ∈ s) :
     edist a b ≠ ∞ := by
   rw [edist_comm, ← lt_top_iff_ne_top, ← mem_eball]
   exact hs.subset_isClopen isClopen_eball_top ⟨a, ha, by simp⟩ hb
 
+/-- A preconnected set lies in the bounded component of any of its points. -/
+theorem IsPreconnected.subset_boundedComponent (hs : IsPreconnected s) (ha : a ∈ s) :
+    s ⊆ boundedComponent a :=
+  fun _ hb => hs.edist_ne_top ha hb
+
 /-- The points at finite distance from `a` form a pseudometric space, with distance given by the
 real part of the extended distance. -/
-@[reducible] def pseudoMetricSpaceSetOfEdistNeTop (a : X) :
-    PseudoMetricSpace {x : X | edist a x ≠ ∞} :=
+instance (a : X) : PseudoMetricSpace (boundedComponent a) :=
   PseudoEMetricSpace.toPseudoMetricSpace fun p q => by
     refine ((edist_triangle p.1 a q.1).trans_lt (ENNReal.add_lt_top.2 ⟨?_, q.2.lt_top⟩)).ne
     rw [edist_comm]
@@ -64,9 +71,8 @@ real part of the extended distance. -/
 contains `a`. -/
 theorem lipschitzOnWith_toReal_edist (hs : IsPreconnected s) (ha : a ∈ s) :
     LipschitzOnWith 1 (fun x => (edist a x).toReal) s := by
-  let := pseudoMetricSpaceSetOfEdistNeTop a
   intro x hx y hy
-  exact LipschitzWith.dist_right (⟨a, by simp⟩ : {x | edist a x ≠ ∞})
+  exact LipschitzWith.dist_right (⟨a, by simp [boundedComponent]⟩ : boundedComponent a)
     ⟨x, hs.edist_ne_top ha hx⟩ ⟨y, hs.edist_ne_top ha hy⟩
 
 variable [MeasurableSpace X] [BorelSpace X]
