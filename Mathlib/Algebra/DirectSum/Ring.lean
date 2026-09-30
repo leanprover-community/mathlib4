@@ -221,14 +221,14 @@ variable [∀ i, AddCommMonoid (A i)] [AddMonoid ι] [GSemiring A]
 open AddMonoidHom (flipHom coe_comp compHom flip_apply)
 
 private nonrec theorem one_mul (x : ⨁ i, A i) : 1 * x = x := by
-  suffices mulHom A One.one = AddMonoidHom.id (⨁ i, A i) from DFunLike.congr_fun this x
+  suffices mulHom A One.one = AddMonoidHom.id (⨁ i, A i) from congr($this x)
   apply addHom_ext; intro i xi
   simp only [One.one]
   rw [mulHom_of_of]
   exact of_eq_of_gradedMonoid_eq (one_mul <| GradedMonoid.mk i xi)
 
 private nonrec theorem mul_one (x : ⨁ i, A i) : x * 1 = x := by
-  suffices (mulHom A).flip One.one = AddMonoidHom.id (⨁ i, A i) from DFunLike.congr_fun this x
+  suffices (mulHom A).flip One.one = AddMonoidHom.id (⨁ i, A i) from congr($this x)
   apply addHom_ext; intro i xi
   simp only [One.one]
   rw [flip_apply, mulHom_of_of]
@@ -238,8 +238,7 @@ set_option backward.defeqAttrib.useBackward true in
 private theorem mul_assoc (a b c : ⨁ i, A i) : a * b * c = a * (b * c) := by
   -- (`fun a b c => a * b * c` as a bundled hom) = (`fun a b c => a * (b * c)` as a bundled hom)
   suffices AddMonoidHom.mulLeft₃ = AddMonoidHom.mulRight₃ by
-      simpa only [AddMonoidHom.mulLeft₃_apply, AddMonoidHom.mulRight₃_apply] using
-        DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this a) b) c
+    simpa only [AddMonoidHom.mulLeft₃_apply, AddMonoidHom.mulRight₃_apply] using congr($this a b c)
   ext ai ax bi bx ci cx : 6
   dsimp only [coe_comp, Function.comp_apply, AddMonoidHom.mulLeft₃_apply,
     AddMonoidHom.mulRight₃_apply]
@@ -339,7 +338,7 @@ variable [∀ i, AddCommGroup (A i)] [AddMonoid ι] [GRing A]
 -- Porting note: overspecified fields in ml4
 /-- The `Ring` derived from `GSemiring A`. -/
 instance ring : Ring (⨁ i, A i) where
-  toIntCast.intCast z := of A 0 <| (GRing.intCast z)
+  toIntCast.intCast z := of A 0 (GRing.intCast z)
   intCast_ofNat _ := congrArg (of A 0) <| GRing.intCast_ofNat _
   intCast_negSucc _ :=
     (congrArg (of A 0) <| GRing.intCast_negSucc_ofNat _).trans <| map_neg _ _
@@ -524,7 +523,7 @@ See note [partially-applied ext lemmas]. -/
 @[ext]
 theorem ringHom_ext' ⦃F G : (⨁ i, A i) →+* R⦄
     (h : ∀ i, (↑F : _ →+ R).comp (of A i) = (↑G : _ →+ R).comp (of A i)) : F = G :=
-  RingHom.coe_addMonoidHom_injective <| DirectSum.addHom_ext' h
+  RingHom.toAddMonoidHom_injective <| DirectSum.addHom_ext' h
 
 /-- Two `RingHom`s out of a direct sum are equal if they agree on the generators. -/
 theorem ringHom_ext ⦃f g : (⨁ i, A i) →+* R⦄ (h : ∀ i x, f (of A i x) = g (of A i x)) : f = g :=
@@ -562,9 +561,11 @@ theorem toSemiring_of (f : ∀ i, A i →+ R) (hone hmul) (i : ι) (x : A i) :
   toAddMonoid_of f i x
 
 @[simp]
-theorem toSemiring_coe_addMonoidHom (f : ∀ i, A i →+ R) (hone hmul) :
+theorem toSemiring_toAddMonoidHom (f : ∀ i, A i →+ R) (hone hmul) :
     (toSemiring f hone hmul : (⨁ i, A i) →+ R) = toAddMonoid f :=
   rfl
+
+@[deprecated (since := "2026-09-15")] alias toSemiring_coe_addMonoidHom := toSemiring_toAddMonoidHom
 
 /-- Families of `AddMonoidHom`s preserving `DirectSum.One.one` and `DirectSum.Mul.mul`
 are isomorphic to `RingHom`s on `⨁ i, A i`. This is a stronger version of `DFinsupp.liftAddHom`.
@@ -584,15 +585,15 @@ def liftRingHom :
       rfl,
       by
       intro i j ai aj
-      simp only [AddMonoidHom.comp_apply, AddMonoidHom.coe_coe]
+      simp only [AddMonoidHom.comp_apply, AddMonoidHom.coe_ofClass]
       rw [← F.map_mul (of A i ai), of_mul_of ai]⟩
   left_inv f := by
     ext xi xv
     exact toAddMonoid_of (fun _ => f.1) xi xv
   right_inv F := by
-    apply RingHom.coe_addMonoidHom_injective
+    apply RingHom.toAddMonoidHom_injective
     refine DirectSum.addHom_ext' (fun xi ↦ AddMonoidHom.ext (fun xv ↦ ?_))
-    simp only [DirectSum.toAddMonoid_of, AddMonoidHom.comp_apply, toSemiring_coe_addMonoidHom]
+    simp only [DirectSum.toAddMonoid_of, AddMonoidHom.comp_apply, toSemiring_toAddMonoidHom]
 
 end ToSemiring
 

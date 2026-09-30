@@ -141,7 +141,7 @@ theorem killCompl_comp_rename : (killCompl hf).comp (rename f) = AlgHom.id R _ :
 
 @[simp]
 theorem killCompl_rename_app (p : MvPolynomial σ R) : killCompl hf (rename f p) = p :=
-  AlgHom.congr_fun (killCompl_comp_rename hf) p
+  congr($(killCompl_comp_rename hf) p)
 
 lemma killCompl_map (φ : R →+* S) (p : MvPolynomial τ R) :
     (p.map φ).killCompl hf = (p.killCompl hf).map φ := by
@@ -192,7 +192,7 @@ lemma coeff_killCompl {s} :
     · simp only [coeff_zero, Finsupp.zero_apply, coeff_monomial, right_eq_ite_iff]
       intro rfl
       contrapose! h
-      apply subset_trans <| SetLike.coe_subset_coe.mpr <| Finsupp.mapDomain_support
+      apply subset_trans <| SetLike.coe_subset_coe.mpr Finsupp.mapDomain_support
       simp
   · simp_intro ..
 

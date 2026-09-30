@@ -461,8 +461,8 @@ theorem changeGenerator_injective (a b u k : R) {a' b' : R}
     (hb : b' = u * b + 2 * k) (hu : IsRegular u) :
     Function.Injective (changeGenerator a b u k ha hb) := by
   intro z w h
-  have hy : z.im = w.im := hu.right <| by simpa using congr_arg im h
-  exact QuadraticAlgebra.ext (by simpa [hy] using congr_arg re h) hy
+  have hy : z.im = w.im := hu.right <| by simpa using congr(im $h)
+  exact QuadraticAlgebra.ext (by simpa [hy] using congr(re $h)) hy
 
 /-- `changeGenerator` along a unit `u`, as an isomorphism. -/
 @[simps! apply symm_apply]

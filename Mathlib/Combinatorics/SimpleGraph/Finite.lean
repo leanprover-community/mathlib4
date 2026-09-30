@@ -9,7 +9,6 @@ public import Mathlib.Combinatorics.SimpleGraph.Maps
 public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Set.Card
 public import Mathlib.Data.Sym.Card
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Definitions for finite and locally finite graphs
@@ -412,7 +411,7 @@ section Finite
 variable [Fintype V]
 
 /-- `Fintype` for `neighborSet` -/
-@[deprecated inferInstance (since := "2026-04-29")]
+@[deprecated inferInstance +typeChanged (since := "2026-04-29")]
 abbrev neighborSetFintype [DecidableRel G.Adj] (v : V) : Fintype (G.neighborSet v) :=
   inferInstance
 

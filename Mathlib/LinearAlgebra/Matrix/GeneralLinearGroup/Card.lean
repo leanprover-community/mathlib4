@@ -5,7 +5,7 @@ Authors: Chris Birkbeck, Inna Capdeboscq, Johan Commelin, Thomas Lanard, Peiran 
 -/
 module
 
-public import Mathlib.FieldTheory.Finiteness
+import Mathlib.FieldTheory.Finiteness
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 public import Mathlib.LinearAlgebra.Matrix.Rank
 public import Mathlib.LinearAlgebra.Matrix.Basis
@@ -90,7 +90,7 @@ theorem card_matrix {m n α} [Finite m] [Finite n] :
 
 theorem enatCard_matrix {m n α} :
     ENat.card (Matrix m n α) = ENat.card α ^ (ENat.card n * ENat.card m) := by
-  simp [Matrix, ENat.card_fun, ←ENat.epow_mul]
+  simp [Matrix, ENat.card_fun, ← ENat.epow_mul]
 
 section field
 

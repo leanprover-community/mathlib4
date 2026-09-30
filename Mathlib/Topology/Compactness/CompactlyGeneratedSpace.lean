@@ -6,7 +6,7 @@ Authors: Dagur Asgeirsson, Etienne Marion
 module
 
 public import Mathlib.Topology.Category.CompHaus.Basic
-public import Mathlib.Topology.Compactification.OnePoint.Basic
+import Mathlib.Topology.Compactification.OnePoint.Basic
 
 /-!
 # Compactly generated topological spaces

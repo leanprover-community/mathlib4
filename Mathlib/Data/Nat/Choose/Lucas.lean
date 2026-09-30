@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.CharP.Lemmas
 public import Mathlib.Data.ZMod.Basic
-public import Mathlib.RingTheory.Polynomial.Basic
+import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 # Lucas's theorem
