@@ -224,7 +224,7 @@ def mapEquiv (f : R ≃+* S) : GL n R ≃* GL n S :=
 
 section Reindex
 
-variable (R) {m o : Type u} [DecidableEq m] [Fintype m] [DecidableEq o] [Fintype o]
+variable (R) {m o : Type*} [DecidableEq m] [Fintype m] [DecidableEq o] [Fintype o]
 
 /-- The `MulEquiv` induced by an `Equiv` over the index -/
 @[simps! apply]
