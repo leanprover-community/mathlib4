@@ -5,10 +5,10 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-public import Mathlib.Algebra.Field.IsField
+import Mathlib.Algebra.Field.IsField
 public import Mathlib.Algebra.Polynomial.Inductions
 public import Mathlib.Algebra.Polynomial.Monic
-public import Mathlib.Order.Lattice.Nat
+import Mathlib.Order.Lattice.Nat
 public import Mathlib.RingTheory.Multiplicity
 
 /-!
@@ -72,7 +72,7 @@ theorem finiteMultiplicity_of_degree_pos_of_monic (hp : (0 : WithBot ℕ) < degr
           hr0, not_false_eq_true]
     have hnp : 0 < natDegree p := Nat.cast_lt.1 <| by
       rw [← degree_eq_natDegree hp0]; exact hp
-    have := congr_arg natDegree hr
+    have := congr(natDegree $hr)
     rw [natDegree_mul' hpnr0, natDegree_pow' hpn0', add_mul, add_assoc] at this
     exact
       ne_of_lt
@@ -433,7 +433,7 @@ theorem map_dvd_map [Ring S] (f : R →+* S) (hf : Function.Injective f) {x y : 
 
 @[simp]
 theorem modByMonic_one (p : R[X]) : p %ₘ 1 = 0 :=
-  (modByMonic_eq_zero_iff_dvd (by convert! monic_one (R := R))).2 (one_dvd _)
+  (modByMonic_eq_zero_iff_dvd (by convert monic_one (R := R))).2 (one_dvd _)
 
 @[simp]
 theorem divByMonic_one (p : R[X]) : p /ₘ 1 = p := by

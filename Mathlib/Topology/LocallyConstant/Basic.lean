@@ -5,7 +5,6 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Order.Filter.EventuallyConst
 public import Mathlib.Topology.Connected.LocallyConnected
 public import Mathlib.Topology.Sets.Closeds
@@ -240,10 +239,10 @@ theorem coe_mk (f : X → Y) (h) : ⇑(⟨f, h⟩ : LocallyConstant X Y) = f :=
   rfl
 
 protected theorem congr_fun {f g : LocallyConstant X Y} (h : f = g) (x : X) : f x = g x :=
-  DFunLike.congr_fun h x
+  congr($h x)
 
 protected theorem congr_arg (f : LocallyConstant X Y) {x y : X} (h : x = y) : f x = f y :=
-  DFunLike.congr_arg f h
+  congr(f $h)
 
 theorem coe_injective : @Function.Injective (LocallyConstant X Y) (X → Y) (↑) := fun _ _ =>
   DFunLike.ext'
@@ -300,13 +299,13 @@ def ofIsClopen {X : Type*} [TopologicalSpace X] {U : Set X} [∀ x, Decidable (x
   toFun x := if x ∈ U then 0 else 1
   isLocallyConstant := by
     refine IsLocallyConstant.iff_isOpen_fiber.2 <| Fin.forall_fin_two.2 ⟨?_, ?_⟩
-    · convert! hU.2 using 1
+    · convert hU.2 using 1
       ext
       simp only [mem_singleton_iff, Fin.one_eq_zero_iff, mem_preimage, ite_eq_left_iff,
         Nat.succ_succ_ne_one]
       tauto
     · rw [← isClosed_compl_iff]
-      convert! hU.1
+      convert hU.1
       ext
       simp
 
@@ -424,7 +423,7 @@ lemma comap_injective (f : C(X, Y)) (hfs : f.1.Surjective) :
   intro a b h
   ext y
   obtain ⟨x, hx⟩ := hfs y
-  simpa [← hx] using LocallyConstant.congr_fun h x
+  simpa [← hx] using congr($h x)
 
 end Comap
 

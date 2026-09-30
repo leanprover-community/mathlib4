@@ -316,7 +316,6 @@ instance endIsFreeOfConnectedFree
 
 end IsFreeGroupoid
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Nielsen-Schreier theorem: a subgroup of a free group is free. -/
 instance subgroupIsFreeOfIsFree {G : Type u} [Group G] [IsFreeGroup G] (H : Subgroup G) :
     IsFreeGroup H :=
