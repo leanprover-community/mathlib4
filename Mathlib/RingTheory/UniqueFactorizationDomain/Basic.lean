@@ -389,7 +389,7 @@ theorem MulEquiv.uniqueFactorizationMonoid (e : α ≃* β) (hα : UniqueFactori
   obtain ⟨w, hp, u, h⟩ :=
     hα (e.symm a) fun h =>
       ha <| by
-        convert! ← map_zero e
+        convert ← map_zero e
         simp [← h]
   exact
     ⟨w.map e, fun b hb =>
