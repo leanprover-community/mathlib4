@@ -7,8 +7,7 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.EdgeConnectivity
-public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
-public import Mathlib.Combinatorics.SimpleGraph.Metric
+public import Mathlib.Combinatorics.SimpleGraph.CycleGraph
 
 /-!
 
@@ -664,5 +663,38 @@ lemma isAcyclic_iff_pairwise_not_isEdgeReachable_two :
   · rw [isAcyclic_iff_forall_isBridge]
     rintro ⟨u, v⟩ huv
     exact (isBridge_iff_not_isEdgeReachable_two huv).mpr (h huv.ne)
+
+theorem isAcyclic_iff_free_cycleGraph : G.IsAcyclic ↔ ∀ n ≥ 3, (cycleGraph n).Free G := by
+  refine ⟨fun h n hn hle ↦ ?_, fun h v p hcyc ↦ h p.length hcyc.three_le_length ?_⟩
+  · have ⟨v, p, hcyc, hlen⟩ := cycleGraph_isContained_iff hn |>.mp hle
+    exact h p hcyc
+  · exact cycleGraph_isContained_iff hcyc.three_le_length |>.mpr ⟨v, p, hcyc, rfl⟩
+
+theorem IsAcyclic.cliqueFree (h : G.IsAcyclic) {n : ℕ} (hn : 3 ≤ n) : G.CliqueFree n := by
+  refine not_cliqueFree_iff_top_isContained n |>.not_right.mpr fun hle ↦ ?_
+  exact isAcyclic_iff_free_cycleGraph.mp h n hn <| hle.trans' <| .of_le le_top
+
+section Hasse
+
+theorem isAcyclic_hasse_of_linearOrder (α : Type*) [LinearOrder α] : (hasse α).IsAcyclic := by
+  refine isAcyclic_iff_forall_adj_isBridge.mpr fun u v huv ↦ ?_
+  wlog hle : u < v with h
+  · rw [Sym2.eq_swap]
+    exact h _ _ _ huv.symm <| (ne_of_adj _ huv.symm).lt_of_le (le_of_not_gt hle)
+  refine isBridge_iff.mpr fun ⟨w⟩ ↦ ?_
+  have ⟨d, _⟩ := w.exists_boundary_dart {x | x < v} hle (lt_irrefl v)
+  grind [Dart.adj, hasse_adj, deleteEdges_adj, CovBy]
+
+@[simp]
+theorem isAcyclic_pathGraph (n : ℕ) : (pathGraph n).IsAcyclic := isAcyclic_hasse_of_linearOrder _
+
+theorem isTree_pathGraph_add_one (n : ℕ) : (pathGraph (n + 1)).IsTree :=
+  ⟨connected_pathGraph_add_one n, isAcyclic_pathGraph (n + 1)⟩
+
+@[simp]
+theorem isTree_pathGraph {n : ℕ} : (pathGraph n).IsTree ↔ n ≠ 0 := by
+  simp [isTree_iff, connected_iff, ← Fin.isEmpty_iff]
+
+end Hasse
 
 end SimpleGraph
