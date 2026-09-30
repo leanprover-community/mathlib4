@@ -25,7 +25,7 @@ section Monoid
 variable [Monoid M]
 
 instance [AddCommMonoid M] [HasUniqueDiv M] : Lean.Grind.NoNatZeroDivisors M where
-  no_nat_zero_divisors _ _ _ hk := eq_of_nsmul_eq_nsmul_of_addCommute hk (add_comm _ _)
+  no_nat_zero_divisors _ _ _ hk h := nsmul_right_injective hk h
 
 @[to_additive]
 instance [Subsingleton M] : HasUniqueRoots M where
