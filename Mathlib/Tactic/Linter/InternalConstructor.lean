@@ -5,13 +5,11 @@ Authors: Thomas R. Murrills
 -/
 module
 
-public meta import Lean.Linter.Basic
-public meta import Lean.Elab.InfoTree.Util
+public import Lean.Linter.Basic
+public import Mathlib.Tactic.Linter.InfoLinters
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 import Mathlib.Tactic.Linter.Header  -- shake: keep
-public import Mathlib.Tactic.Linter.InfoLinters
-public import Lean.Message
 
 /-!
 # Linting against internal constructors
@@ -61,14 +59,14 @@ def internalConstructor : InfoLinter where
   run infos := withSetOptionIn fun _ => do
     unless Linter.getLinterValue linter.internalConstructors (← Linter.getLinterOptions) do
       return
-    let mut warnings := #[]
-    for (ctx, i) in infos.termInfos do
+    let warnings := infos.termInfos.foldl (init := #[]) fun warnings (ctx, i) => Id.run do
       if let .const n _ := i.expr.cleanupAnnotations then
         if
           -- Putting the conjuncts in this order provides a performance benefit.
           n.isInternal && !isPrivateName n && ctx.env.isImportedConst n && ctx.env.isConstructor n
         then
-          warnings := warnings.push (n, i.stx)
+          return warnings.push (n, i.stx)
+      return warnings
     for (name, stx) in warnings do
       logLintError linter.internalConstructors stx
         m!"`{.ofConstName name}` is an internal constructor and should not be used directly."
