@@ -5,7 +5,7 @@ Authors: Yağız Kaan Aydoğdu, Yusuf Demir, Salih Erdem Koçak
 -/
 module
 
-public import Mathlib.Data.Finite.Sum
+public import Mathlib.Basic.Finite.Sum
 public import Mathlib.ModelTheory.Complexity
 public import Mathlib.ModelTheory.Satisfiability
 
@@ -425,7 +425,7 @@ theorem hasQuantifierElimination_iff_finite_isQFEquivalent {T : L.Theory} :
   refine ⟨fun h _ _ φ => h φ, fun h α φ => ?_⟩
   classical
   let S : Set α := ↑φ.freeVarFinset
-  haveI : Finite S := φ.freeVarFinset.finite_toSet.to_subtype
+  have : Finite S := φ.freeVarFinset.finite_toSet.to_subtype
   obtain ⟨ψ', hψ'QF, hψ'eq⟩ := h (φ.restrictFreeVar (Set.inclusion subset_rfl))
   refine ⟨ψ'.relabel ((↑) : S → α), hψ'QF.relabel _, fun M v xs => ?_⟩
   rw [BoundedFormula.realize_iff,
