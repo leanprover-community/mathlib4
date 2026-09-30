@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.Small
 public import Mathlib.CategoryTheory.Limits.Presentation
 
 import Mathlib.CategoryTheory.Adjunction.Limits
@@ -28,14 +27,6 @@ is essentially small.
 
 By requiring `P.limitsOfShape J ≤ P`, we introduce a typeclass
 `P.IsClosedUnderLimitsOfShape J`.
-
-
-## TODO
-
-* formalize the closure of `P` under finite limits (which require
-  iterating over `ℕ`), and more generally the closure under limits
-  indexed by a category whose type of arrows has a cardinality
-  that is bounded by a certain regular cardinal (@joelriou)
 
 -/
 

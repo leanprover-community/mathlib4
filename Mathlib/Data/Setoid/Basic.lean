@@ -5,9 +5,8 @@ Authors: Amelia Livingston, Bryan Gin-ge Chen
 -/
 module
 
-public import Mathlib.Logic.Relation
 public import Mathlib.Order.CompleteLattice.Basic
-public import Mathlib.Order.GaloisConnection.Defs
+public import Mathlib.Order.GaloisConnection.Basic
 
 /-!
 # Equivalence relations
@@ -75,7 +74,7 @@ theorem comm [Setoid α] {x y : α} : x ≈ y ↔ y ≈ x :=
 open scoped Function -- required for scoped `on` notation
 
 /-- The kernel of a function is an equivalence relation. -/
-@[implicit_reducible]
+@[instance_reducible]
 def ker (f : α → β) : Setoid α :=
   ⟨(· = ·) on f, eq_equivalence.comap f⟩
 
@@ -94,7 +93,7 @@ theorem ker_def {f : α → β} {x y : α} : ker f x y ↔ f x = f y :=
 /-- Given types `α`, `β`, the product of two equivalence relations `r` on `α` and `s` on `β`:
 `(x₁, x₂), (y₁, y₂) ∈ α × β` are related by `r.prod s` iff `x₁` is related to `y₁`
 by `r` and `x₂` is related to `y₂` by `s`. -/
-@[implicit_reducible]
+@[instance_reducible]
 protected def prod (r : Setoid α) (s : Setoid β) :
     Setoid (α × β) where
   r x y := r x.1 y.1 ∧ s x.2 y.2
@@ -381,7 +380,7 @@ noncomputable def quotientKerEquivRangeKerLift : Quotient (ker f) ≃ Set.range 
 /-- The first isomorphism theorem for sets: the quotient of α by the kernel of a function f
 bijects with f's image. -/
 noncomputable def quotientKerEquivRange : Quotient (ker f) ≃ Set.range f :=
-  quotientKerEquivRangeKerLift _ |>.trans <| .setCongr <| range_kerLift_eq_range _
+  quotientKerEquivRangeKerLift _ |>.trans <| Set.equivOfEq <| range_kerLift_eq_range _
 
 /-- If `f` has a computable right-inverse, then the quotient by its kernel is equivalent to its
 domain. -/
@@ -405,7 +404,7 @@ variable {r f}
 /-- Given a function `f : α → β` and equivalence relation `r` on `α`, the equivalence
 closure of the relation on `f`'s image defined by '`x ≈ y` iff the elements of `f⁻¹(x)` are
 related to the elements of `f⁻¹(y)` by `r`.' -/
-@[implicit_reducible]
+@[instance_reducible]
 def map (r : Setoid α) (f : α → β) : Setoid β :=
   Relation.EqvGen.setoid (Relation.Map r f f)
 
@@ -427,7 +426,7 @@ theorem coe_map_of_ker_le (r : Setoid α) (f : α → β) (hf : ker f ≤ r) :
 /-- Given a surjective function f whose kernel is contained in an equivalence relation r, the
 equivalence relation on f's codomain defined by x ≈ y ↔ the elements of f⁻¹(x) are related to
 the elements of f⁻¹(y) by r. -/
-@[implicit_reducible]
+@[instance_reducible]
 def mapOfSurjective (r : Setoid α) (f : α → β) (h : ker f ≤ r) (hf : Surjective f) : Setoid β :=
   ⟨Relation.Map r f f, Relation.map_equivalence r.iseqv f hf h⟩
 
@@ -460,6 +459,54 @@ theorem comap_id (c : Setoid α) : c.comap id = c := rfl
 @[simp]
 theorem comap_comp (c : Setoid γ) (g : β → γ) (f : α → β) : c.comap (g ∘ f) = (c.comap g).comap f :=
   rfl
+
+theorem gc_map_comap {f : α → β} :
+    GaloisConnection (fun s => Setoid.map s f) (Setoid.comap f) :=
+  fun _ _ => Setoid.gi.gc.le_iff_le.trans (gc_map_bicompl f f).le_iff_le
+
+@[simp]
+theorem map_id (s : Setoid α) : s.map id = s :=
+  Setoid.gc_map_comap.l_unique GaloisConnection.id Setoid.comap_id
+
+theorem map_map (f : α → β) (g : β → γ) (s : Setoid α) :
+    (s.map f).map g = s.map (g ∘ f) :=
+  (Setoid.gc_map_comap.compose Setoid.gc_map_comap).l_unique
+    Setoid.gc_map_comap (fun c => (Setoid.comap_comp c g f).symm)
+
+theorem map_le_comap_of_inverse
+    {f : α → β} {g : β → α} (I : Function.LeftInverse g f)
+    (s : Setoid α) : s.map f ≤ s.comap g := by
+  rw [Setoid.gc_map_comap.le_iff_le, ← Setoid.comap_comp, I.comp_eq_id, Setoid.comap_id]
+
+theorem comap_le_map_of_inverse
+    {f : α → β} {g : β → α} (I : Function.LeftInverse g f)
+    (s : Setoid β) : s.comap f ≤ s.map g :=
+  fun x y hxy => Relation.EqvGen.rel x y ⟨f x, f y, hxy, I x, I y⟩
+
+theorem map_eq_comap_of_inverse {f : α → β} {g : β → α}
+    (hl : Function.LeftInverse g f) (hr : Function.RightInverse g f)
+    (s : Setoid α) : s.map f = s.comap g :=
+  le_antisymm
+    (Setoid.map_le_comap_of_inverse hl s)
+    (Setoid.comap_le_map_of_inverse hr s)
+
+theorem map_equiv_eq_comap_symm (e : α ≃ β)
+    (s : Setoid α) : s.map e = s.comap e.symm :=
+  le_antisymm
+    (Setoid.map_le_comap_of_inverse e.left_inv s)
+    (Setoid.comap_le_map_of_inverse e.right_inv s)
+
+theorem comap_equiv_eq_map_symm (e : α ≃ β)
+    (s : Setoid β) : s.comap e = s.map e.symm :=
+  le_antisymm
+    (Setoid.comap_le_map_of_inverse e.left_inv s)
+    (Setoid.map_le_comap_of_inverse e.right_inv s)
+
+theorem map_monotone (f : α → β) : Monotone (fun s => Setoid.map s f) :=
+  Setoid.gc_map_comap.monotone_l
+
+theorem comap_monotone (f : α → β) : Monotone (Setoid.comap f) :=
+  Setoid.gc_map_comap.monotone_u
 
 theorem comap_injective (f : α → β) (hf : Function.Surjective f) :
     Function.Injective (comap f) :=

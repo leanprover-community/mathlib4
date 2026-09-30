@@ -5,11 +5,11 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Field.Subfield.Defs
 public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-public import Mathlib.Algebra.Ring.Subring.Basic
 public import Mathlib.RingTheory.SimpleRing.Basic
+
+import Mathlib.Order.CompleteLattice.Finset
 
 /-!
 # Subfields
@@ -424,12 +424,16 @@ theorem coe_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subfield K} (h
 
 theorem mem_sSup_of_directedOn {S : Set (Subfield K)} (Sne : S.Nonempty) (hS : DirectedOn (· ≤ ·) S)
     {x : K} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
-  haveI : Nonempty S := Sne.to_subtype
+  have : Nonempty S := Sne.to_subtype
   simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, Subtype.exists, exists_prop]
 
 theorem coe_sSup_of_directedOn {S : Set (Subfield K)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set K) = ⋃ s ∈ S, ↑s :=
   Set.ext fun x => by simp [mem_sSup_of_directedOn Sne hS]
+
+theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → Subfield K) :
+    ((⨆ i, S i : Subfield K) : Set K) = ⋃ s : Finset ι, (⨆ i ∈ s, S i : Subfield K) := by
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le fun _ _ ↦ biSup_mono]
 
 end Subfield
 
@@ -529,7 +533,7 @@ variable {s t : Subfield K}
 /-- Makes the identity isomorphism from a proof two subfields of a multiplicative
     monoid are equal. -/
 def subfieldCongr (h : s = t) : s ≃+* t :=
-  { Equiv.setCongr <| SetLike.ext'_iff.1 h with
+  { Set.equivOfEq <| SetLike.ext'_iff.1 h with
     map_mul' := fun _ _ => rfl
     map_add' := fun _ _ => rfl }
 

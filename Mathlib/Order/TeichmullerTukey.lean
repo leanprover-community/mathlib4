@@ -5,9 +5,8 @@ Authors: Ansar Azhdarov
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Data.Set.Finite.Lattice
-public import Mathlib.Order.Zorn
+import Mathlib.Order.Zorn
 
 /-!
 # Teichmuller-Tukey
@@ -32,7 +31,7 @@ Teichmuller-Tukey lemma.
 
 @[expose] public section
 
-open Set Finite
+open Set
 
 variable {α : Type*} (F : Set (Set α))
 

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.Algebra.Group.Pi.Torsion
 public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Finsupp.Single
 
@@ -70,7 +71,7 @@ instance instAddZeroClass : AddZeroClass (ι →₀ M) :=
   fast_instance% DFunLike.coe_injective.addZeroClass _ coe_zero coe_add
 
 instance instIsLeftCancelAdd [IsLeftCancelAdd M] : IsLeftCancelAdd (ι →₀ M) where
-  add_left_cancel _ _ _ h := ext fun x => add_left_cancel <| DFunLike.congr_fun h x
+  add_left_cancel _ _ _ h := ext fun x => add_left_cancel congr($h x)
 
 /-- When ι is finite and M is an AddMonoid,
   then Finsupp.equivFunOnFinite gives an AddEquiv -/
@@ -92,13 +93,13 @@ noncomputable def uniqueAddEquiv (i : ι) [Subsingleton ι] : (ι →₀ M) ≃+
 
 /-- If `M` is the trivial monoid, then the monoid of finitely supported functions `ι →₀ M` is
 is isomorphic to `M`. -/
-@[simps!, deprecated uniqueAddEquiv (since := "2026-05-06")]
+@[simps!, deprecated uniqueAddEquiv +typeChanged (since := "2026-05-06")]
 noncomputable def _root_.AddEquiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →₀ M) ≃+ M where
   toEquiv := .finsuppUnique
   map_add' _ _ := rfl
 
 instance instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (ι →₀ M) where
-  add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| DFunLike.congr_fun h x
+  add_right_cancel _ _ _ h := ext fun x => add_right_cancel congr($h x)
 
 instance instIsCancelAdd [IsCancelAdd M] : IsCancelAdd (ι →₀ M) where
 
@@ -137,7 +138,7 @@ def embDomain.addMonoidHom (f : ι ↪ F) : (ι →₀ M) →+ F →₀ M where
     by_cases h : b ∈ Set.range f
     · rcases h with ⟨a, rfl⟩
       simp
-    · simp only [coe_add, Pi.add_apply, embDomain_notin_range _ _ _ h, add_zero]
+    · simp only [coe_add, Pi.add_apply, embDomain_of_notMem_range _ _ _ h, add_zero]
 
 @[simp]
 lemma embDomain_add (f : ι ↪ F) (v w : ι →₀ M) :
@@ -176,7 +177,8 @@ lemma support_single_add_single_subset [DecidableEq ι] {f₁ f₂ : ι} {g₁ g
   refine subset_trans Finsupp.support_add <| union_subset_iff.mpr ⟨?_, ?_⟩ <;>
   exact subset_trans Finsupp.support_single_subset (by simp)
 
-@[deprecated uniqueAddEquiv_symm_apply (since := "2026-05-06")]
+set_option backward.isDefEq.respectTransparency false in
+@[deprecated uniqueAddEquiv_symm_apply +typeChanged (since := "2026-05-06")]
 lemma _root_.AddEquiv.finsuppUnique_symm {M : Type*} [AddZeroClass M] (d : M) :
     AddEquiv.finsuppUnique.symm d = single () d := by ext; simp [AddEquiv.finsuppUnique]
 
@@ -269,7 +271,6 @@ protected lemma induction {motive : (ι →₀ M) → Prop} (f : ι →₀ M) (z
 lemma induction₂ {motive : (ι →₀ M) → Prop} (f : ι →₀ M) (zero : motive 0)
     (add_single : ∀ (a b) (f : ι →₀ M),
       a ∉ f.support → b ≠ 0 → motive f → motive (f + single a b)) : motive f := by
-  classical
   refine f.induction zero ?_
   convert! add_single using 7
   apply (addCommute_of_disjoint _).eq
@@ -315,7 +316,6 @@ The lemma `induction_on_max` swaps the argument order in the sum. -/
 lemma induction_on_max₂ (f : ι →₀ M) (zero : motive 0)
     (add_single : ∀ a b (f : ι →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 →
       motive f → motive (f + single a b)) : motive f := by
-  classical
   refine f.induction_on_max zero ?_
   convert! add_single using 7 with _ _ _ H
   have := fun c hc ↦ (H c hc).ne
@@ -439,7 +439,7 @@ lemma mapRange_sub [SubNegZeroMonoid G] [SubNegZeroMonoid H] {f : G → H} {hf :
   ext fun _ => by simp only [hf', sub_apply, mapRange_apply]
 
 section AddGroup
-variable [AddGroup G] {p : ι → Prop} {v v' : ι →₀ G}
+variable [AddGroup G] {v : ι →₀ G}
 
 lemma mapRange_neg' [SubtractionMonoid H] [FunLike F G H] [AddMonoidHomClass F G H]
     {f : F} (v : ι →₀ G) :
@@ -464,7 +464,7 @@ instance instAddGroup : AddGroup (ι →₀ G) :=
 lemma support_neg (f : ι →₀ G) : support (-f) = support f :=
   Finset.Subset.antisymm support_mapRange
     (calc
-      support f = support (- -f) := congr_arg support (neg_neg _).symm
+      support f = support (- -f) := congr(support $((neg_neg _).symm))
       _ ⊆ support (-f) := support_mapRange)
 
 lemma support_sub [DecidableEq ι] {f g : ι →₀ G} : support (f - g) ⊆ support f ∪ support g := by

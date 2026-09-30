@@ -41,6 +41,7 @@ lemma lineGraph_adj_iff_exists {e₁ e₂ : G.edgeSet} :
 
 @[simp] lemma lineGraph_bot : (⊥ : SimpleGraph V).lineGraph = ⊥ := by aesop (add simp lineGraph)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Lift a copy between graphs to an embedding between their line graphs -/
 def Copy.toLineGraphEmbedding (f : Copy G G') : G.lineGraph ↪g G'.lineGraph where
   toFun e := ⟨e.val.map f, by rcases e with ⟨⟨⟩, h⟩; exact f.toHom.map_adj h⟩

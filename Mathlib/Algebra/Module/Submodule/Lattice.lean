@@ -5,13 +5,11 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Lattice
 public import Mathlib.Algebra.Group.Submonoid.Membership
 public import Mathlib.Algebra.Group.Submonoid.BigOperators
 public import Mathlib.Algebra.Module.Submodule.Defs
 public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Algebra.Module.PUnit
-public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
@@ -222,7 +220,7 @@ theorem coe_sInf (P : Set (Submodule R M)) : (↑(sInf P) : Set M) = ⋂ p ∈ P
 @[simp]
 theorem coe_finsetInf {ι} (s : Finset ι) (p : ι → Submodule R M) :
     (↑(s.inf p) : Set M) = ⋂ i ∈ s, ↑(p i) := by
-  letI := Classical.decEq ι
+  let := Classical.decEq ι
   refine s.induction_on ?_ fun i s _ ih ↦ ?_
   · simp
   · rw [Finset.inf_insert, coe_inf, ih]

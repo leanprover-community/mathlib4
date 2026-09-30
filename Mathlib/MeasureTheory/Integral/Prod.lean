@@ -6,7 +6,7 @@ Authors: Floris van Doorn
 module
 
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Prod
-public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # Integration with respect to the product measure
@@ -128,11 +128,11 @@ protected theorem MeasureTheory.AEStronglyMeasurable.prod_swap [SFinite μ] [SFi
   rw [← prod_swap] at hf
   exact hf.comp_measurable measurable_swap
 
-theorem MeasureTheory.AEStronglyMeasurable.comp_fst {γ} [TopologicalSpace γ] {f : α → γ}
+theorem MeasureTheory.AEStronglyMeasurable.comp_fst [SFinite ν] {γ} [TopologicalSpace γ] {f : α → γ}
     (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
 
-theorem MeasureTheory.AEStronglyMeasurable.comp_snd {γ} [TopologicalSpace γ] {f : β → γ}
+theorem MeasureTheory.AEStronglyMeasurable.comp_snd [SFinite ν] {γ} [TopologicalSpace γ] {f : β → γ}
     (hf : AEStronglyMeasurable f ν) : AEStronglyMeasurable (fun z : α × β => f z.2) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_snd
 
@@ -258,7 +258,6 @@ theorem Integrable.integral_norm_prod_right [SFinite μ] ⦃f : α × β → E�
     (hf : Integrable f (μ.prod ν)) : Integrable (fun y => ∫ x, ‖f (x, y)‖ ∂μ) ν :=
   hf.swap.integral_norm_prod_left
 
-omit [SFinite ν] in
 theorem Integrable.op_fst_snd {F G : Type*} [NormedAddCommGroup F] [NormedAddCommGroup G]
     {op : E → F → G} (hop : Continuous op.uncurry) (hop_norm : ∃ C, ∀ x y, ‖op x y‖ ≤ C * ‖x‖ * ‖y‖)
     {f : α → E} {g : β → F} (hf : Integrable f μ) (hg : Integrable g ν) :
@@ -288,14 +287,12 @@ lemma Integrable.comp_snd {f : β → E} (hf : Integrable f ν) (μ : Measure α
   rw [← memLp_one_iff_integrable] at hf ⊢
   exact hf.comp_snd μ
 
-omit [SFinite ν] in
 @[fun_prop]
 theorem Integrable.smul_prod {R : Type*} [NormedRing R] [Module R E] [IsBoundedSMul R E]
     {f : α → R} {g : β → E} (hf : Integrable f μ) (hg : Integrable g ν) :
     Integrable (fun z : α × β => f z.1 • g z.2) (μ.prod ν) :=
   hf.op_fst_snd continuous_smul ⟨1, by simpa using norm_smul_le⟩ hg
 
-omit [SFinite ν] in
 @[fun_prop]
 theorem Integrable.mul_prod {L : Type*} [NormedRing L] {f : α → L} {g : β → L} (hf : Integrable f μ)
     (hg : Integrable g ν) : Integrable (fun z : α × β => f z.1 * g z.2) (μ.prod ν) :=
@@ -428,7 +425,7 @@ theorem continuous_integral_integral :
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i => zero_le) _
   · exact fun i => ∫⁻ x, ∫⁻ y, ‖i (x, y) - g (x, y)‖ₑ ∂ν ∂μ
   swap; · exact fun i => lintegral_mono fun x => enorm_integral_le_lintegral_enorm _
-  have this (i : α × β →₁[μ.prod ν] E) : Measurable fun z => ‖i z - g z‖ₑ :=
+  have (i : α × β →₁[μ.prod ν] E) : Measurable fun z => ‖i z - g z‖ₑ :=
     ((Lp.stronglyMeasurable i).sub (Lp.stronglyMeasurable g)).enorm
   simp_rw [← lintegral_prod _ (this _).aemeasurable, ← L1.ofReal_norm_sub_eq_lintegral,
     ← ofReal_zero]
@@ -442,7 +439,7 @@ theorem continuous_integral_integral :
   of the right-hand side is integrable. -/
 theorem integral_prod (f : α × β → E) (hf : Integrable f (μ.prod ν)) :
     ∫ z, f z ∂μ.prod ν = ∫ x, ∫ y, f (x, y) ∂ν ∂μ := by
-  by_cases hE : CompleteSpace E; swap; · simp only [integral, dif_neg hE]
+  by_cases hE : CompleteSpace E; swap; · simp only [integral, dite_eq_right hE]
   revert f
   apply Integrable.induction
   · intro c s hs h2s
@@ -556,7 +553,7 @@ section ContinuousLinearMap
 
 variable {E F G : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {mE : MeasurableSpace E}
   [NormedAddCommGroup F] [NormedSpace ℝ F] {mF : MeasurableSpace F}
-  [NormedAddCommGroup G] [NormedSpace ℝ G] {mG : MeasurableSpace G}
+  [NormedAddCommGroup G] [NormedSpace ℝ G]
   {μ : Measure E} [IsProbabilityMeasure μ] {ν : Measure F} [IsProbabilityMeasure ν]
   {L : E × F →L[ℝ] G}
 

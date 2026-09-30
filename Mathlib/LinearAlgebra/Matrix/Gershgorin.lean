@@ -15,7 +15,7 @@ public import Mathlib.LinearAlgebra.Determinant
 This file gives the proof of Gershgorin's circle theorem `eigenvalue_mem_ball` on the eigenvalues
 of matrices and some applications.
 
-## Reference
+## References
 
 * https://en.wikipedia.org/wiki/Gershgorin_circle_theorem
 -/
@@ -50,7 +50,7 @@ theorem eigenvalue_mem_ball {μ : K} (hμ : Module.End.HasEigenvalue (Matrix.toL
       _ = ‖(A i i * v i - ∑ j, A i j * v j) * (v i)⁻¹‖ := by
                 rw [show μ * v i = ∑ x : n, A i x * v x by
                   rw [← dotProduct, ← Matrix.mulVec]
-                  exact (congrFun (Module.End.mem_eigenspace_iff.mp h_eg) i).symm]
+                  exact congr($(Module.End.mem_eigenspace_iff.mp h_eg) i).symm]
       _ = ‖(∑ j ∈ Finset.univ.erase i, A i j * v j) * (v i)⁻¹‖ := by
                 rw [Finset.sum_erase_eq_sub (Finset.mem_univ i), ← neg_sub, neg_mul, norm_neg]
       _ ≤ ∑ j ∈ Finset.univ.erase i, ‖A i j‖ * ‖v j * (v i)⁻¹‖ := by

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Order.Antidiag.Finsupp
 public import Mathlib.Combinatorics.Enumerative.Composition
-public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Partitions
@@ -30,10 +29,6 @@ related results.
 
 The representation of a partition as a multiset is very handy as multisets are very flexible and
 already have a well-developed API.
-
-## TODO
-
-Link this to Young diagrams.
 
 ## Tags
 
@@ -165,6 +160,7 @@ def indiscrete (n : ℕ) : Partition n := ofSums n {n} rfl
 
 instance {n : ℕ} : Inhabited (Partition n) := ⟨indiscrete n⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma indiscrete_parts {n : ℕ} (hn : n ≠ 0) : (indiscrete n).parts = {n} := by
   simp [indiscrete, filter_eq_self, hn]
 
