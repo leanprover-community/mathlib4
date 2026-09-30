@@ -81,7 +81,6 @@ variable {n : ℕ}
 /-- The rows with a nonzero entry at their pivot columns and zeros before it, then the rows
 beyond the pivot list (all 0). -/
 inductive IsPivotedList [Zero α] : List (Fin n) → List (List α) → Prop
-  -- one traversal of `rows` only
   | nil {rows : List (List α)} (hz : rows = rows.map fun _ ↦ List.replicate n 0) :
       IsPivotedList [] rows
   | cons {k : Fin n} {ks : List (Fin n)} {row : List α} {rows : List (List α)} {d : α}
@@ -129,6 +128,6 @@ theorem isPivotedBy_ofLists [Zero α] {m : ℕ} {rows : List (List α)} {cols : 
   refine Matrix.isPivotedBy_iff.mpr ⟨?_, fun _ _ _ hj hij ↦ ?_, fun i ↦ ?_⟩
   · exact (pivotOfList_mono_of_sortedLT hsorted).comp Fin.val_strictMono.monotone
   · exact pivotOfList_lt_pivotOfList hsorted hij hj
-  · simpa [ofLists_apply, ofList_apply] using getD_of_isPivotedList h i
+  · simpa only [ofLists_apply, ofList_apply] using getD_of_isPivotedList h i
 
 end Mathlib.Tactic.Echelon

@@ -209,7 +209,6 @@ example (x : ℝ) :
       Matrix.rank (R := ℝ) !![x, 1; 2 * x, 2] + 1 := by
   eval_rank
 
-
 /-! ## A larger matrix -/
 
 -- This 9x9 matrix has rank 8 and is the Cartan matrix of the affine-type E8 root system.

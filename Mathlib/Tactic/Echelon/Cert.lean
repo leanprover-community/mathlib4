@@ -106,45 +106,46 @@ def certifyLowerTriangularDiag {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) 
   let h ← certifyLowerTriangularDiagList zα certifier 0 m q(0) q($m) rows
   return (q(isLowerTriangular_ofLists $h), q(diag_ofLists_ne_zero $h))
 
-/-- The proof of `IsPivotedList cols rows` on the literals, one `IsPivotedList.cons` per pivot. -/
+/-- The proof of `IsPivotedList pivots rows` on the literals, one `IsPivotedList.cons` per
+pivot. -/
 def certifyPivotedList {u : Level} {n : Nat} {α : Q(Type u)} (zα : Q(Zero $α))
-    (certifier : EntryCertifier) (pivots : List Nat) (cols : Q(List (Fin $n)))
-    (rows : Q(List (List $α))) : MetaM Q(IsPivotedList $cols $rows) :=
-  match pivots with
+    (certifier : EntryCertifier) (cols : List Nat) (pivots : Q(List (Fin $n)))
+    (rows : Q(List (List $α))) : MetaM Q(IsPivotedList $pivots $rows) :=
+  match cols with
   | [] => do
     have hz : $rows =Q ($rows).map fun _ ↦ List.replicate $n (0 : $α) := ⟨⟩
-    have : $cols =Q ([] : List (Fin $n)) := ⟨⟩
+    have : $pivots =Q ([] : List (Fin $n)) := ⟨⟩
     return q(IsPivotedList.nil $hz)
   | k :: ks => do
-    let_expr List.cons _ col colsTl := cols |
-      throwError "certifyPivotedList: {cols} is not a cons cell"
+    let_expr List.cons _ pivot pivotsTl := pivots |
+      throwError "certifyPivotedList: {pivots} is not a cons cell"
     let_expr List.cons _ row rowsTl := rows |
       throwError "certifyPivotedList: {rows} is not a cons cell"
-    have col : Q(Fin $n) := col
-    have colsTl : Q(List (Fin $n)) := colsTl
+    have pivot : Q(Fin $n) := pivot
+    have pivotsTl : Q(List (Fin $n)) := pivotsTl
     have row : Q(List $α) := row
     have rowsTl : Q(List (List $α)) := rowsTl
     let_expr List.cons _ entry suffix := dropListLitQ row k |
       throwError "certifyPivotedList: {row} has no entry at {k}"
     have entry : Q($α) := entry
     have suffix : Q(List $α) := suffix
-    let rest ← certifyPivotedList zα certifier ks colsTl rowsTl
+    let rest ← certifyPivotedList zα certifier ks pivotsTl rowsTl
     let hd : Q($entry ≠ 0) ← certifier q($entry ≠ 0)
-    have : $row =Q List.replicate ($col : Nat) 0 ++ $entry :: $suffix := ⟨⟩
-    have : $cols =Q $col :: $colsTl := ⟨⟩
+    have : $row =Q List.replicate ($pivot : Nat) 0 ++ $entry :: $suffix := ⟨⟩
+    have : $pivots =Q $pivot :: $pivotsTl := ⟨⟩
     have : $rows =Q $row :: $rowsTl := ⟨⟩
     return q(IsPivotedList.cons rfl $hd $rest)
 
-/-- Prove that `U` is pivoted by `pivotOfList cols` from the rows of `U`, with `certifier` proving
-the pivot entries nonzero. -/
+/-- Prove that `U` is pivoted by `pivotOfList pivots` from the rows of `U`, with `certifier`
+proving the pivot entries nonzero. -/
 def certifyPivotedBy {u : Level} {m n : Nat} {α : Q(Type u)} (zα : Q(Zero $α))
-    (U : MatrixViews u m n α) (pivots : List Nat) (cols : Q(List (Fin $n)))
+    (U : MatrixViews u m n α) (cols : List Nat) (pivots : Q(List (Fin $n)))
     (certifier : EntryCertifier) :
-    MetaM Q(($(U.matrix)).IsPivotedBy fun i : Fin $m ↦ pivotOfList $cols i) := do
-  let hsorted ← mkDecideProofQ q(($cols).SortedLT)
-  let h ← certifyPivotedList zα certifier pivots cols U.lit
+    MetaM Q(($(U.matrix)).IsPivotedBy fun i : Fin $m ↦ pivotOfList $pivots i) := do
+  let hsorted ← mkDecideProofQ q(($pivots).SortedLT)
+  let h ← certifyPivotedList zα certifier cols pivots U.lit
   return mkExpectedPropHint q(isPivotedBy_ofLists (m := $m) $hsorted $h)
-    q(($(U.matrix)).IsPivotedBy fun i : Fin $m ↦ pivotOfList $cols i)
+    q(($(U.matrix)).IsPivotedBy fun i : Fin $m ↦ pivotOfList $pivots i)
 
 /-- Prove the row arrangement `A.submatrix σ id = Aσ`. -/
 def certifyPermEq {u : Level} {m n : Nat} {α : Q(Type u)} (A : Q(Matrix (Fin $m) (Fin $n) $α))
@@ -209,9 +210,9 @@ def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommR
   let cα : Q(AddCommMonoid $α) ← synthInstanceQ q(AddCommMonoid $α)
   let U := MatrixViews.ofArray zα m n data.U
   let σ ← mkPerm m data.swaps
-  let pivots := data.pivot.toList
-  let cols : Q(List (Fin $n)) := mkListLitQ (← pivots.mapM (mkFinLitQ n))
-  have pivot : Q(Fin $m → WithTop (Fin $n)) := q(fun i : Fin $m ↦ pivotOfList $cols i)
+  let cols := data.pivot.toList
+  let pivots : Q(List (Fin $n)) := mkListLitQ (← cols.mapM (mkFinLitQ n))
+  have pivot : Q(Fin $m → WithTop (Fin $n)) := q(fun i : Fin $m ↦ pivotOfList $pivots i)
   let lRows : List (List Q($α)) := data.L.toList.map Array.toList
   let aRows : List (List Q($α)) := (data.rowOrder.map (entries[·]!)).toList.map Array.toList
   let mulEq := proveMul zα aα mα m m n lRows aRows
@@ -223,7 +224,7 @@ def certifyDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommR
   let hprod : Q($Lm * $Aσm = $Um) ← certifyProductEq cα mulEq U certifier?
   let hU : Q($Lm * ($A).submatrix $σ id = $Um) := q($hperm ▸ $hprod)
   let certifier := certifier?.getD mkDecideProofQ
-  let hpivot : Q(($Um).IsPivotedBy $pivot) ← certifyPivotedBy zα U pivots cols certifier
+  let hpivot : Q(($Um).IsPivotedBy $pivot) ← certifyPivotedBy zα U cols pivots certifier
   let ⟨hlower, hdiag⟩ ← certifyLowerTriangularDiag zα m mulEq.A certifier
   have hlower : Q(($Lm).IsLowerTriangular) := hlower
   have hdiag : Q(∀ i, ($Lm).diag i ≠ 0) := hdiag
