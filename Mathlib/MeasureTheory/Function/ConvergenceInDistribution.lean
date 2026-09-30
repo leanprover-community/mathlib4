@@ -95,7 +95,6 @@ lemma TendstoInDistribution.const_const [OpensMeasurableSpace E] {c : E} :
     TendstoInDistribution (fun _ _ ↦ c) l (fun _ ↦ c) μ μ' where
   tendsto := by simpa using tendsto_const_nhds
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma tendstoInDistribution_of_identDistrib [OpensMeasurableSpace E] (i : ι)
     (hX : ∀ j, IdentDistrib (X i) (X j) (μ i) (μ j)) (hZ : IdentDistrib (X i) Z (μ i) μ') :
     TendstoInDistribution X l Z μ μ' where
