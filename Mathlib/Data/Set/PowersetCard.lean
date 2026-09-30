@@ -5,8 +5,7 @@ Authors: Daniel Morrison, Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Data.Set.Card
+import Mathlib.Data.ENat.Lattice
 public import Mathlib.SetTheory.Cardinal.NatCard
 
 /-! # Combinations
@@ -44,7 +43,7 @@ theorem mem_iff {s : Finset α} :
 
 instance : SetLike (powersetCard α n) α := SetLike.instSubtype
 
-instance : PartialOrder (Set.powersetCard α n) := .ofSetLike (Set.powersetCard α n) α
+instance : PartialOrder (Set.powersetCard α n) := .ofSetLike (Set.powersetCard α n)
 
 @[simp]
 theorem coe_coe {s : powersetCard α n} :

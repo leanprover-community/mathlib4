@@ -186,7 +186,7 @@ theorem oangle_eq_pi_iff_oangle_rev_eq_pi {p₁ p₂ p₃ : P} : ∡ p₁ p₂ p
 @[simp] lemma oangle_homothety (p p₁ p₂ p₃ : P) {r : ℝ} (h : r ≠ 0) :
     ∡ (AffineMap.homothety p r p₁) (AffineMap.homothety p r p₂) (AffineMap.homothety p r p₃) =
       ∡ p₁ p₂ p₃ := by
-  simp_rw [oangle, ← AffineMap.linearMap_vsub, AffineMap.homothety_linear, LinearMap.smul_apply,
+  simp_rw [oangle, ← AffineMap.linear_apply_vsub, AffineMap.homothety_linear, LinearMap.smul_apply,
     LinearMap.id_coe, id_eq]
   rcases h.lt_or_gt with hlt | hlt <;> simp [hlt, -neg_vsub_eq_vsub_rev]
 
@@ -890,7 +890,7 @@ lemma angle_eq_angle_div_two_of_oangle_eq_of_sSameSide {p₁ p₂ p₃ p₄ : P}
     rw [angle_eq_abs_oangle_toReal h₁₂ h₃₂, angle_eq_abs_oangle_toReal h₁₂ h₄₂, this, abs_div]
     simp
   have hadd := oangle_add h₁₂ h₃₂ h₄₂
-  rw [div_left_inj' (by norm_num), ← hadd]
+  rw [div_left_inj' (by simp), ← hadd]
   have h : ∡ p₁ p₂ p₃ ≠ π := fun h ↦ hs.left_notMem ((oangle_eq_zero_or_eq_pi_iff_collinear.1
     (.inr h)).mem_affineSpan_of_mem_of_ne (by grind) (by grind) (by grind) h₁₂)
   refine (Real.Angle.toReal_add_eq_toReal_add_toReal h (ha ▸ h) (.inr ?_)).symm
