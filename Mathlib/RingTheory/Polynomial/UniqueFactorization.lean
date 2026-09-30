@@ -162,7 +162,7 @@ theorem exists_monic_irreducible_factor (f : F[X])
   exact ⟨_, monic_mul_leadingCoeff_inv hi.ne_zero, ha.irreducible hi, ha.dvd_iff_dvd_left.1 hf⟩
 
 theorem exists_odd_natDegree_monic_irreducible_factor {f : F[X]} (hf : Odd f.natDegree) :
-    ∃ g : F[X], (Odd g.natDegree) ∧ g.Monic ∧ Irreducible g ∧ g ∣ f := by
+    ∃ g : F[X], Odd g.natDegree ∧ g.Monic ∧ Irreducible g ∧ g ∣ f := by
   induction h : f.natDegree using Nat.strong_induction_on generalizing f with | h n ih =>
     have hu : ¬ IsUnit f := not_isUnit_of_natDegree_pos _ (Odd.pos hf)
     rcases exists_monic_irreducible_factor f hu with ⟨g, g_monic, g_irred, g_div⟩
