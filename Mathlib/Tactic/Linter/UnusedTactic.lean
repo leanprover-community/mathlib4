@@ -12,6 +12,7 @@ public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Batteries.Tactic.Unreachable
 public import Lean.Parser.Syntax
 public import Mathlib.Tactic.Linter.UnusedTacticExtension
+public import Mathlib.Tactic.Linter.InfoLinters
 
 /-!
 # The unused tactic linter
@@ -146,29 +147,25 @@ def getNames (mctx : MetavarContext) : List Name :=
 /-- Search for tactic executions in the info tree and remove the syntax of the tactics that
 changed something. -/
 partial def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind)
-    (trees : PersistentArray InfoTree) : M Unit :=
-  let ranges := trees.foldl (init := #[]) <| InfoTree.foldInfo fun _ i ranges => Id.run do
-    let .ofTacticInfo i := i | return ranges
+    (tactics : Array (ContextInfo × TacticInfo)) : M Unit :=
+  for (_, i) in tactics do
     let stx := i.stx
-    let some r := stx.getRange? true | return ranges
+    let some r := stx.getRange? true | pure ()
     let kind := stx.getKind
     -- if the tactic is allowed to not change the goals
     if exceptions.contains kind then
-      return ranges.push r
+      modify (·.erase r)
     -- if the goals have changed
     if i.goalsAfter != i.goalsBefore then
-      return ranges.push r
+      modify (·.erase r)
     -- bespoke check for `swap_var`: the only change that it does is
     -- in the usernames of local declarations, so we check the names before and after
     if (kind == `Mathlib.Tactic.«tacticSwap_var__,,») &&
             (getNames i.mctxBefore != getNames i.mctxAfter) then
-      return ranges.push r
-    return ranges
-  for r in ranges do
-    modify (·.erase r)
+      modify (·.erase r)
 
 /-- The main entry point to the unused tactic linter. -/
-def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
+def unusedTacticLinter : InfoLinter where run infos := withSetOptionIn fun stx => do
   unless getLinterValue linter.unusedTactic (← getLinterOptions) && (← getInfoState).enabled do
     return
   if (← get).messages.hasErrors then
@@ -180,11 +177,10 @@ def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
     | return
   let some convs := Parser.ParserCategory.kinds <$> cats.find? `conv
     | return
-  let trees ← getInfoTrees
   let exceptions := (← allowedRef.get).union <| allowedUnusedTacticExt.getState env
   let go : M Unit := do
     getTactics (← ignoreTacticKindsRef.get) (fun k => tactics.contains k || convs.contains k) stx
-    eraseUsedTactics exceptions trees
+    eraseUsedTactics exceptions infos.tacticInfos
   let (_, map) ← go.run {}
   let unused := map.toArray
   let key (r : Lean.Syntax.Range) := (r.start.byteIdx, (-r.stop.byteIdx : Int))
@@ -196,4 +192,4 @@ def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
     Linter.logLint linter.unusedTactic stx m!"Unused tactic linter: `{stx}` does nothing"
     last := r
 
-initialize addLinter unusedTacticLinter
+initialize addInfoLinter unusedTacticLinter

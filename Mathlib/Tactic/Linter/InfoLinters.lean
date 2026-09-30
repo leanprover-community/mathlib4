@@ -74,8 +74,8 @@ def getInfos : CommandElabM Infos :=
     let trees ← getInfoTrees
     return trees.foldl (init := {}) <| InfoTree.foldInfo fun ctx info infos =>
       match info with
-      -- | .ofTacticInfo i =>
-      --   { infos with tacticInfos := infos.tacticInfos.push (ctx, i) }
+      | .ofTacticInfo i =>
+        { infos with tacticInfos := infos.tacticInfos.push (ctx, i) }
       | .ofTermInfo i =>
         let entries := (infos.termInfos.find? i.elaborator).getD .nil
         { infos with termInfos := infos.termInfos.insert i.elaborator (.cons i ctx entries) }
