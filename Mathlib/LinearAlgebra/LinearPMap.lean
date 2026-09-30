@@ -5,6 +5,7 @@ Authors: Yury Kudryashov, Moritz Doll
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Spectrum.Basic
 public import Mathlib.Algebra.Field.Basic
 public import Mathlib.Algebra.Module.Torsion.Field
 public import Mathlib.GroupTheory.GroupAction.Basic
@@ -716,6 +717,7 @@ end LinearPMap
 namespace LinearMap
 
 /-- Restrict a linear map to a submodule, reinterpreting the result as a `LinearPMap`. -/
+@[implicit_reducible]
 def toPMap (f : E →ₛₗ[σ] F) (p : Submodule R E) : E →ₛₗ.[σ] F :=
   ⟨p, f.comp p.subtype⟩
 
@@ -1112,9 +1114,7 @@ theorem inverse_graph (hf : f.ker = ⊥) :
 
 theorem graph_eq_map_graph_inverse (hf : f.ker = ⊥) :
     f.graph = f.inverse.graph.map (LinearEquiv.prodComm R F E : (F × E) →ₗ[R] (E × F)) := by
-  rw [inverse_graph hf]
-  ext x
-  simp
+  simp [inverse_graph hf, ← Submodule.map_comp]
 
 theorem inverse_range (hf : f.ker = ⊥) : f.inverse.toFun.range = f.domain := by
   rw [← LinearPMap.graph_map_snd_eq_range, inverse_graph hf, ← Submodule.map_comp]
@@ -1154,6 +1154,10 @@ noncomputable def inverseLM (hf : Function.Surjective f) : F →ₗ[R] E :=
 theorem inverseLM_apply_eq_inverse_apply (hf : Function.Surjective f) {y : F} :
     f.inverseLM hf y = f.inverse ⟨y, mem_inverse_domain_of_surjective hf y⟩ := by
   simp [inverseLM, toLinearMap_apply_eq]
+
+theorem inverseLM_apply_eq (hf : Function.Bijective f) {y : F} {x : f.domain} (hxy : f x = y) :
+    f.inverseLM hf.2 y = x := by
+  rw [inverseLM_apply_eq_inverse_apply, inverse_apply_eq (by rw [ker_eq_bot]; exact hf.1) hxy]
 
 @[grind _=_]
 theorem inverseLM_range (hf : Function.Bijective f) :
@@ -1210,8 +1214,25 @@ variable [SMulCommClass R R E]
 This definition only agrees with the conventional one only if `f` is closed, but if that is not
 the case, then the conventional definition yields that `resolvent_set f = ⊤`
 We use this definition for convenience and since it makes fewer assumptions. -/
-def resolventSet (f : E →ₗ.[R] E) : Set R :=
+protected def resolventSet (f : E →ₗ.[R] E) : Set R :=
   { z | Function.Bijective ((z • (LinearMap.id (R := R) (M := E))) +ᵥ (-f) : E →ₗ.[R] E) }
+
+@[simp]
+theorem mem_resolventSet_iff (f : E →ₗ.[R] E) (z : R) : z ∈ f.resolventSet ↔
+    Function.Bijective ((z • (LinearMap.id (R := R) (M := E))) +ᵥ (-f) : E →ₗ.[R] E) := by rfl
+
+variable {R' E' : Type*} [CommRing R'] [AddCommGroup E'] [Module R' E']
+
+@[simp]
+theorem _root_.LinearMap.resolventSet_toPMap_iff (g : E' →ₗ[R'] E') :
+    (g.toPMap ⊤).resolventSet = resolventSet R' g := by
+  ext z
+  rw [spectrum.mem_resolventSet_iff, mem_resolventSet_iff, Module.End.isUnit_iff]
+  simp only [vadd_domain, neg_domain, LinearMap.toPMap_domain, coe_vadd]
+  rw [← EquivLike.bijective_comp Submodule.topEquiv.symm]
+  congrm Function.Bijective ?_
+  ext x
+  simp [sub_eq_add_neg]
 
 open Classical in
 /-- The resolvent of a `LinearPMap` as a `LinearMap`.
@@ -1220,13 +1241,42 @@ This definition is only used to deduce algebraic properties, which hold without 
 the topology. In particular, we prove the first and second resolvent identity.
 -/
 noncomputable def resolventLM (f : E →ₗ.[R] E) (z : R) : E →ₗ[R] E :=
-    if hz : z ∈ resolventSet f then
+    if hz : z ∈ f.resolventSet then
       ((z • LinearMap.id) +ᵥ (-f) : E →ₗ.[R] E).inverseLM hz.2
     else 0
 
-theorem resolventLM_apply_apply {z : R} (hz : z ∈ resolventSet f) : resolventLM f z =
+theorem resolventLM_apply_apply {z : R} (hz : z ∈ f.resolventSet) : f.resolventLM z =
     ((z • LinearMap.id) +ᵥ (-f) : E →ₗ.[R] E).inverseLM hz.2 := by
   simp [resolventLM, hz]
+
+theorem resolventLM_apply_eq {z : R} (hz : z ∈ f.resolventSet) {y : E} {x : f.domain}
+    (hxy : z • ↑x - f x = y) :
+    f.resolventLM z y = x := by
+  rw [resolventLM_apply_apply hz]
+  apply inverseLM_apply_eq (by simpa using hz)
+  simpa [sub_eq_add_neg] using hxy
+
+theorem resolventLM_apply_eq' {z : R} (hz : z ∈ f.resolventSet) {x y : E} (hx : x ∈ f.domain)
+    (hxy : z • x - f ⟨x, hx⟩ = y) :
+    f.resolventLM z y = x := by
+  rwa [resolventLM_apply_eq hz (x := ⟨x, hx⟩)]
+
+theorem resolventLM_zero_of_notMem {z : R} (hz : z ∉ f.resolventSet) : f.resolventLM z = 0 := by
+  simp [resolventLM, hz]
+
+@[simp]
+theorem _root_.LinearMap.resolventLM_toPMap_iff (g : E' →ₗ[R'] E') :
+    (g.toPMap ⊤).resolventLM = resolvent (R := R') g := by
+  ext z : 1
+  by_cases h : z ∈ resolventSet R' g
+  · symm
+    rw [spectrum.resolvent_eq_iff_mul_right_eq_one h]
+    ext x
+    rw [Module.End.mul_apply, Module.End.one_apply]
+    exact resolventLM_apply_eq' (by simpa) (by simp) (by simp)
+  · rw [spectrum.resolvent_zero_of_mem_spectrum h]
+    apply resolventLM_zero_of_notMem
+    simpa
 
 /-- The range of the resolvent `R(f, z)` is equal to the domain of `f` for any `z` in the resolvent
 set. -/
