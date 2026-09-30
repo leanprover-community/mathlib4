@@ -57,7 +57,6 @@ instance [IsHyperbolic G] : FG G := by
   obtain ⟨_, P, _, _⟩ := IsHyperbolic.exists_isHyperbolicWith G
   exact P.fg
 
-set_option trace.Meta.synthInstance true in
 /-- Every finite group is hyperbolic. -/
 instance [Finite G] : IsHyperbolic G :=
   let ⟨n, ⟨P⟩⟩ := fg_iff_nonempty_finite_generators.mp inferInstance
