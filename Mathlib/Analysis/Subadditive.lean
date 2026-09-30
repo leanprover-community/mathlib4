@@ -106,14 +106,12 @@ this limit is given in `Subadditive.tendsto_lim` -/
 protected def lim (_h : Subadditive u) :=
   sInf ((fun n : ℕ => u n / n) '' Ici 1)
 
-@[deprecated "No longer needed." (since := "2026-08-20")]
 theorem lim_le_div (hbdd : BddBelow (range fun n => u n / n)) {n : ℕ} (hn : n ≠ 0) :
     h.lim ≤ u n / n := by
   rw [Subadditive.lim]
   exact csInf_le (hbdd.mono <| image_subset_range _ _) ⟨n, hn.bot_lt, rfl⟩
 
 include h in
-@[deprecated "No longer needed." (since := "2026-08-20")]
 theorem apply_mul_add_le (k n r) : u (k * n + r) ≤ k * u n + u r := by
   induction k with
   | zero => simp only [Nat.cast_zero, zero_mul, zero_add]; rfl
