@@ -5,9 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Colimits
-public import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
+import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
 
 /-!
 # Free sheaves of modules
@@ -84,6 +83,7 @@ lemma freeHomEquiv_apply {M : SheafOfModules.{u} R} {I : Type u}
     freeHomEquiv M f i = sectionsMap f (freeSection i) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma unitHomEquiv_symm_freeHomEquiv_apply
     {I : Type u} {M : SheafOfModules.{u} R} (f : free I ⟶ M) (i : I) :
     M.unitHomEquiv.symm (M.freeHomEquiv f i) = ιFree i ≫ f := by
@@ -114,7 +114,7 @@ lemma sectionsMap_freeHomEquiv_symm_freeSection
   obtain ⟨f, rfl⟩ := (freeHomEquiv M).surjective f
   cat_disch
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 lemma ιFree_freeMap (i : I) :
     ιFree (R := R) i ≫ freeMap f = ιFree (f i) := by
   rw [← unitHomEquiv_symm_freeHomEquiv_apply, freeHomEquiv_freeMap]
@@ -137,7 +137,7 @@ lemma freeFunctor_obj (X : Type u) :
 lemma freeFunctor_map {X Y : Type u} (f : X ⟶ Y) :
     dsimp% (freeFunctor (R := R)).map f = freeMap f :=
   Cofan.IsColimit.hom_ext (isColimitFreeCofan _) _ _
-    (fun i ↦ (Sigma.ι_desc _ _).trans (ιFree_freeMap f i).symm)
+    (fun i ↦ (Sigma.ι_comp_desc _ _).trans (ιFree_freeMap f i).symm)
 
 instance : PreservesColimitsOfSize.{v₂, u₂} (freeFunctor (R := R)) :=
   inferInstanceAs (PreservesColimitsOfSize.{v₂, u₂} (sigmaConst.obj _))

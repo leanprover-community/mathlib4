@@ -6,10 +6,8 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 module
 
 public import Mathlib.Algebra.CharZero.Defs
-public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-public import Mathlib.Algebra.Order.ZeroLEOne
 public import Mathlib.Order.WithBot
 
 /-! # Adjoining top/bottom elements to ordered monoids.
@@ -131,6 +129,7 @@ lemma _root_.IsAddRightRegular.withTop (ha : IsAddRightRegular a) :
     IsAddRightRegular (a : WithTop α) := by
   rintro (_ | b) (_ | c) <;> simp [none_eq_top, some_eq_coe, ← coe_add, ha.eq_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma _root_.AddLECancellable.withTop [LE α] (ha : AddLECancellable a) :
     AddLECancellable (a : WithTop α) := by
   rintro (_ | b) (_ | c)
@@ -491,6 +490,7 @@ lemma _root_.IsAddRightRegular.withBot (ha : IsAddRightRegular a) :
     IsAddRightRegular (a : WithBot α) := by
   rintro (_ | b) (_ | c) <;> simp [none_eq_bot, some_eq_coe, ← coe_add]; simpa using @ha _ _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma _root_.AddLECancellable.withBot [LE α] (ha : AddLECancellable a) :
     AddLECancellable (a : WithBot α) := by
   rintro (_ | b) (_ | c)

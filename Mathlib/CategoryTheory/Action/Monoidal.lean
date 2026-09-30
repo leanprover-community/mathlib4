@@ -218,6 +218,7 @@ noncomputable def diagonalSuccIsoTensorDiagonal [Monoid G] (n : ℕ) :
 
 variable [Group G]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given `X : Action (Type u) G` for `G` a group, then `G × X` (with `G` acting as left
 multiplication on the first factor and by `X.ρ` on the second) is isomorphic as a `G`-set to
 `G × X` (with `G` acting as left multiplication on the first factor and trivially on the second).
@@ -253,6 +254,7 @@ noncomputable def diagonalSuccIsoTensorTrivial :
 
 variable {G}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem diagonalSuccIsoTensorTrivial_hom_hom_apply {n : ℕ} (f : Fin (n + 1) → G) :
     dsimp% (diagonalSuccIsoTensorTrivial G n).hom.hom f =
@@ -282,7 +284,7 @@ theorem diagonalSuccIsoTensorTrivial_inv_hom_apply {n : ℕ} (g : G) (f : Fin n 
     | zero => simp; rfl
     | succ i =>
       simpa [diagonalSuccIsoTensorTrivial, types_tensorObj_def, mul_assoc, Fin.partialProd_succ',
-        ofMulAction_V] using! congrFun (hn (g * f 0) (Fin.tail f)) i
+        ofMulAction_V] using! congr($(hn (g * f 0) (Fin.tail f)) i)
 
 end
 

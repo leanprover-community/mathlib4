@@ -81,7 +81,7 @@ theorem countable_meas_le_ne_meas_lt (g : α → R) :
   intro t ht
   have : μ {a | t < g a} < μ {a | t ≤ g a} :=
     lt_of_le_of_ne (measure_mono (fun a ha ↦ le_of_lt ha)) (Ne.symm ht)
-  exact ⟨μ {a | t < g a}, this, fun s hs ↦ measure_mono (fun a ha ↦ hs.trans_le ha)⟩
+  exact ⟨μ {a | t < g a}, this, fun s hs ↦ by grw [hs]⟩
 
 theorem meas_le_ae_eq_meas_lt {R : Type*} [LinearOrder R] [MeasurableSpace R]
     (ν : Measure R) [NullSingletonClass ν] (g : α → R) :
@@ -289,7 +289,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
       exists_seq_strictMono_tendsto M
     have I : ∀ n, g =ᵐ[volume.restrict (Ioc (0 : ℝ) (u n))] 0 := by
       intro n
-      obtain ⟨s, hs, uns⟩ : ∃ s, g =ᶠ[ae (Measure.restrict volume (Ioc 0 s))] 0 ∧ u n < s :=
+      obtain ⟨s, hs, uns⟩ : ∃ s, g =ᵐ[Measure.restrict volume (Ioc 0 s)] 0 ∧ u n < s :=
         exists_lt_of_lt_csSup (Set.nonempty_of_mem zero_mem) (uM n)
       exact ae_restrict_of_ae_restrict_of_subset (Ioc_subset_Ioc_right uns.le) hs
     have : g =ᵐ[volume.restrict (⋃ n, Ioc (0 : ℝ) (u n))] 0 := (ae_restrict_iUnion_iff _ _).2 I
@@ -420,7 +420,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul (μ : Measure α) (f_nn : 0 ≤�
     rw [ht]
     congr 1
     apply measure_congr
-    filter_upwards [f_eq_F] with a ha using by simp [setOf, ha]
+    filter_upwards [f_eq_F] with a ha using by simp [ha]
   have eq₂ : ∀ᵐ ω ∂μ,
       ENNReal.ofReal (∫ t in 0..f ω, g t) = ENNReal.ofReal (∫ t in 0..F ω, G t) := by
     filter_upwards [f_eq_F] with ω fω_nn

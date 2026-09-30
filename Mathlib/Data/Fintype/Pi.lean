@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Finset.Pi
-public import Mathlib.Data.Fintype.Basic
 public import Mathlib.Data.Set.Finite.Basic
 
 /-!
@@ -85,7 +84,7 @@ theorem piFinset_disjoint_of_disjoint (t₁ t₂ : ∀ a, Finset (δ a)) {a : α
     (h : Disjoint (t₁ a) (t₂ a)) : Disjoint (piFinset t₁) (piFinset t₂) :=
   disjoint_iff_ne.2 fun f₁ hf₁ f₂ hf₂ eq₁₂ =>
     disjoint_iff_ne.1 h (f₁ a) (mem_piFinset.1 hf₁ a) (f₂ a) (mem_piFinset.1 hf₂ a)
-      (congr_fun eq₁₂ a)
+      congr($eq₁₂ a)
 
 lemma piFinset_image [∀ a, DecidableEq (δ a)] (f : ∀ a, γ a → δ a) (s : ∀ a, Finset (γ a)) :
     piFinset (fun a ↦ (s a).image (f a)) = (piFinset s).image fun b a ↦ f _ (b a) := by
@@ -103,7 +102,7 @@ lemma eval_image_piFinset (t : ∀ a, Finset (δ a)) (a : α) [DecidableEq (δ a
 lemma eval_image_piFinset_const {β} [DecidableEq β] (t : Finset β) (a : α) :
     ((piFinset fun _i : α ↦ t).image fun f ↦ f a) = t := by
   obtain rfl | ht := t.eq_empty_or_nonempty
-  · haveI : Nonempty α := ⟨a⟩
+  · have : Nonempty α := ⟨a⟩
     simp
   · exact eval_image_piFinset (fun _ ↦ t) a fun _ _ ↦ ht
 

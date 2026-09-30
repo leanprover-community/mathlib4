@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Category.Pointed
 public import Mathlib.Data.PFun
+public import Mathlib.CategoryTheory.ConcreteCategory.Notation
 
 /-!
 # The category of types with partial functions
@@ -46,15 +47,22 @@ instance : CoeSort PartialFun Type* :=
 def of : Type* → PartialFun :=
   id
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `PartialFun.of X` as `↧X`. -/
+@[app_delab PartialFun.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 instance : Inhabited PartialFun.{u} :=
-  ⟨PartialFun.of PUnit⟩
+  ⟨↧PUnit⟩
 
 -- TODO: wrap morphisms in this category into a one-field `PFun.Hom` structure
+set_option backward.isDefEq.respectTransparency.types false in
 instance largeCategory : LargeCategory.{u} PartialFun where
   Hom X Y := PFun X Y
   id X := PFun.id X
   comp f g := g.comp f
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Constructs a partial function isomorphism between types from an equivalence between them. -/
 @[simps]
 def Iso.mk {α β : PartialFun.{u}} (e : α ≃ β) : α ≅ β where
@@ -78,7 +86,7 @@ def typeToPartialFun : Type u ⥤ PartialFun where
 instance : typeToPartialFun.Faithful where
   map_injective h := by
     ext x
-    exact congrFun (PFun.lift_injective h) x
+    congrm $(PFun.lift_injective h) x
 
 -- b ∈ PFun.toSubtype (fun x ↦ x ≠ X.point) Subtype.val a ↔ b ∈ Part.some a
 set_option backward.isDefEq.respectTransparency false in
@@ -86,7 +94,7 @@ set_option backward.isDefEq.respectTransparency false in
 This is the computable part of the equivalence `PartialFunEquivPointed`. -/
 @[simps obj map]
 def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
-  obj X := PartialFun.of { x : X // x ≠ X.point }
+  obj X := ↧{ x : X // x ≠ X.point }
   map f := PFun.toSubtype _ f.toFun ∘ Subtype.val
   map_id _ :=
     PFun.ext fun _ b =>
@@ -97,7 +105,7 @@ def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
     suffices c = g.toFun (f.toFun a) → ¬Y.point = f.toFun a ∧ ¬Z.point = g.toFun (f.toFun a) from
       ⟨by aesop, by simp; grind⟩
     rintro rfl
-    refine ⟨fun h => hc.symm <| g.map_point ▸ congr_arg g.toFun h, hc.symm⟩
+    exact ⟨fun h => hc.symm <| g.map_point ▸ congr(g $h), hc.symm⟩
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

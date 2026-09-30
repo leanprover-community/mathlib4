@@ -293,6 +293,7 @@ end PushoutObjObj
 
 end
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃` to a category `C₃` which has pushouts, the Leibniz pushout
   (pushout-product) of `f₁ : X₁ ⟶ Y₁` in `C₁` and `f₂ : X₂ ⟶ Y₂` in `C₂` is the map
@@ -347,7 +348,6 @@ namespace PullbackObjObj
 
 attribute [reassoc (attr := simp)] π_fst π_snd
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `PullbackObjObj` structure given by the pullback of the limits API. -/
 @[simps]
 noncomputable def ofHasPullback
@@ -521,6 +521,7 @@ end PullbackObjObj
 
 end
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Given a bifunctor `G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂` to a category `C₂` which has pullbacks, the Leibniz
   pullback (pullback-power) of `f₁ : X₁ ⟶ Y₁` in `C₁` and `f₃ : X₃ ⟶ Y₃` in `C₃` is the map

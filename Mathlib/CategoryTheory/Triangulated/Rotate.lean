@@ -5,7 +5,6 @@ Authors: Luke Kershaw
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Triangulated.Basic
 
 /-!
@@ -97,7 +96,6 @@ def rotate : Triangle C ⥤ Triangle C where
       dsimp
       simp only [comp_neg, neg_comp, ← Functor.map_comp, f.comm₁] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The inverse rotation of triangles gives an endofunctor on the category of triangles in `C`.
 -/
 @[simps]

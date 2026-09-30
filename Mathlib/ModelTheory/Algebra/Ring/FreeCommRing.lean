@@ -54,6 +54,7 @@ noncomputable def termOfFreeCommRing (p : FreeCommRing α) : Language.ring.Term 
 
 variable {R : Type*} [CommRing R] [CompatibleRing R]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem realize_termOfFreeCommRing (p : FreeCommRing α) (v : α → R) :
     (termOfFreeCommRing p).realize v = FreeCommRing.lift v p := by

@@ -198,7 +198,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         exact (ih.eval f).trans h₁
       have hf'c : ∀ n, IsUnit (f'.eval (c n)) := by
         intro n
-        haveI := isLocalHom_of_le_jacobson_bot I (IsAdicComplete.le_jacobson_bot I)
+        have := isLocalHom_of_le_jacobson_bot I (IsAdicComplete.le_jacobson_bot I)
         apply IsUnit.of_map (Ideal.Quotient.mk I)
         convert! h₂ using 1
         exact SModEq.def.mp ((hc_mod n).eval _)
@@ -271,7 +271,7 @@ theorem IsLocalRing.eq_of_eval_eq_zero_of_not_isUnit_sub {R : Type*} [CommRing R
   suffices (c * (b - a) + eval a (derivative f)) ∉ maximalIdeal R by
     rw [notMem_maximalIdeal, isUnit_iff_exists] at this
     grind
-  by_contra!
+  by_contra
   replace this := (maximalIdeal R).add_mem this ((maximalIdeal R).mul_mem_left c h)
   ring_nf at this
   contradiction
