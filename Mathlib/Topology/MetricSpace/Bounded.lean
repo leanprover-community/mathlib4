@@ -412,14 +412,13 @@ noncomputable def diam (s : Set α) : ℝ :=
 theorem diam_nonneg : 0 ≤ diam s :=
   ENNReal.toReal_nonneg
 
-@[simp]
 theorem diam_subsingleton (hs : s.Subsingleton) : diam s = 0 := by
   simp [diam, ediam_subsingleton hs]
 
 grind_pattern diam_subsingleton => s.Subsingleton, diam s
 
 /-- The empty set has zero diameter -/
-@[grind =]
+@[simp, grind =]
 theorem diam_empty : diam (∅ : Set α) = 0 :=
   diam_subsingleton subsingleton_empty
 
