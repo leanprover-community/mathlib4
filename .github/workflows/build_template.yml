@@ -442,6 +442,12 @@ jobs:
       lint-outcome: ${{ steps.lint.outcome }}
       test-outcome: ${{ steps.test.outcome }}
       test-cache-staging-has-files: ${{ steps.test_cache_staging.outputs.has_files }}
+    # `test` runs only on a clean build: `build` itself, the `mk_all` check, and
+    # the archive/counterexamples builds all succeeded. `RUN_TESTS` reads those from
+    # the build job's outputs. The MathlibTest cache fetch and the problem-matcher
+    # wrap of `test` are gated to match.
+    env:
+      RUN_TESTS: ${{ needs.build.outputs.build-outcome == 'success' && needs.build.outputs.mk_all-outcome == 'success' && needs.build.outputs.archive-outcome == 'success' && needs.build.outputs.counterexamples-outcome == 'success' && needs.build.outputs.wanted-outcome == 'success' }}
     defaults: # On Hoskinson runners, landrun is already installed.
       run: # note that pr-branch/.lake must be created in a step below before we use this
         shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
@@ -515,7 +521,7 @@ jobs:
       # Fetch the `MathlibTest` oleans that the cache holds. `test` rebuilds only the
       # test files that the cache does not hold.
       - name: get the MathlibTest cache
-        if: ${{ needs.build.outputs.build-outcome == 'success' }}
+        if: ${{ env.RUN_TESTS == 'true' }}
         continue-on-error: true
         shell: bash # runs the trusted `cache` binary outside landrun, as `get-cache` does
         env:
@@ -526,23 +532,21 @@ jobs:
           cd pr-branch
           ../tools-branch/.lake/build/bin/cache --repo="${CACHE_REPO}" get 'MathlibTest.+'
 
-      # `test` runs only on a clean build: `build` itself, the `mk_all` check, and
-      # the archive/counterexamples builds all succeeded. The condition reads those
-      # from the build job's outputs, and the problem-matcher wrap is gated to match.
+      # `test` and its problem-matcher wrap run only when `RUN_TESTS` is true (see the job's `env`).
       - name: begin gh-problem-match-wrap for test step
-        if: ${{ needs.build.outputs.build-outcome == 'success' && needs.build.outputs.mk_all-outcome == 'success' && needs.build.outputs.archive-outcome == 'success' && needs.build.outputs.counterexamples-outcome == 'success' && needs.build.outputs.wanted-outcome == 'success' }}
+        if: ${{ env.RUN_TESTS == 'true' }}
         uses: leanprover-community/gh-problem-matcher-wrap@65a654fcdf7b64ff7633bc7a558f7b46d59a27bf # 2026-06-25
         with:
           action: add # In order to be able to run a multiline script, we need to add/remove the problem matcher before and after.
           linters: lean
       - name: test mathlib
-        if: ${{ needs.build.outputs.build-outcome == 'success' && needs.build.outputs.mk_all-outcome == 'success' && needs.build.outputs.archive-outcome == 'success' && needs.build.outputs.counterexamples-outcome == 'success' && needs.build.outputs.wanted-outcome == 'success' }}
+        if: ${{ env.RUN_TESTS == 'true' }}
         id: test
         run: |
           cd pr-branch
           ../tools-branch/scripts/lake-build-wrapper.py .lake/build_summary_MathlibTest.json lake --iofail test
       - name: end gh-problem-match-wrap for test step
-        if: ${{ needs.build.outputs.build-outcome == 'success' && needs.build.outputs.mk_all-outcome == 'success' && needs.build.outputs.archive-outcome == 'success' && needs.build.outputs.counterexamples-outcome == 'success' && needs.build.outputs.wanted-outcome == 'success' }}
+        if: ${{ env.RUN_TESTS == 'true' }}
         uses: leanprover-community/gh-problem-matcher-wrap@65a654fcdf7b64ff7633bc7a558f7b46d59a27bf # 2026-06-25
         with:
           action: remove
@@ -575,7 +579,6 @@ jobs:
       - name: check MathlibTest cache staging contents
         id: test_cache_staging
         if: ${{ always() && steps.test_cache_stage.outcome == 'success' }}
-        continue-on-error: true
         shell: bash
         run: |
           # The staging directory is uploaded as-is, so it must hold only regular files.
@@ -854,6 +857,8 @@ jobs:
   upload_test_cache:
     name: Upload tests to cache
     needs: [test_lint]
+    # The upload is best effort: if it fails, later runs rebuild these test files.
+    continue-on-error: true
     runs-on: ubuntu-latest # These steps run on a GitHub runner; no landrun sandboxing is needed.
     # The environment of `upload_cache` gives this job the same OIDC `sub` claim.
     environment:
@@ -881,7 +886,7 @@ jobs:
       - *mint_r2_credentials
 
       - name: Upload staged MathlibTest cache to R2
-        if: steps.mint-r2.outputs.success == 'true'
+        if: steps.mint-r2.outputs.success == 'true' && env.MATHLIB_CACHE_PRIMARY == 'master'
         # If the upload fails, later runs rebuild these test files.
         continue-on-error: true
         shell: bash
