@@ -32,4 +32,3 @@ Note: This linter can be disabled with `set_option linter.internalConstructors f
 -/
 #guard_msgs (positions := true) in
 def e₂ : Foo := Foo._mkInternal 4
-
