@@ -516,7 +516,10 @@ additive groups and commutative additive semigroups.
 
 For more information, see this mathoverflow answer: https://mathoverflow.net/a/377268/95685
 
-For commutative types (e.g., rings and modules), the stronger `HasUniqueDiv` should be preferred.
+`IsAddTorsionFree` is weaker than `HasUniqueDiv` for general additive monoids, but equivalent to
+it for commutative ones. Prefer using `HasUniqueDiv` for commutative additive monoids, so that
+typeclass-search can derive both `HasUniqueDiv` and `IsAddTorsionFree` without us needing to
+introduce an expensive `[AddCommMonoid M] [IsAddTorsionFree M] : HasUniqueDiv M` instance loop.
 
 TODO: Generalize this definition to additive semigroups once we have the `PNat` action. -/
 @[mk_iff]
@@ -539,7 +542,10 @@ Thus, this definition reconciles the notions of torsion-free for groups and comm
 
 For more information, see this mathoverflow answer: https://mathoverflow.net/a/377268/95685
 
-For commutative types, the stronger `HasUniqueRoots` should be preferred.
+`IsMulTorsionFree` is weaker than `HasUniqueRoots` for general monoids, but equivalent to it for
+commutative ones. Prefer using `HasUniqueRoots` over commutative monoids, so that typeclass-search
+can derive both `HasUniqueRoots` and `IsMulTorsionFree` without us needing to introduce an expensive
+`[CommMonoid M] [IsMulTorsionFree M] : HasUniqueRoots M` instance loop.
 
 TODO: Generalize this definition to semigroups once we have the `PNat` action. -/
 @[to_additive, mk_iff]
@@ -556,7 +562,10 @@ alias IsMulTorsionFree.pow_left_injective := eq_of_pow_eq_pow_of_commute
 /-- An additive monoid has unique divisibility if scalar multiplication by every non-zero element
 `n : ℕ` is injective. This is the uniqueness counterpart to `DivisibleBy` which asserts existence.
 
-For commutative types (e.g., rings and modules), this should be preferred over `IsAddTorsionFree`.
+`HasUniqueDiv` is stronger than `IsAddTorsionFree` for general additive monoids, but equivalent to
+it for commutative ones. Prefer using `HasUniqueDiv` for commutative additive monoids, so that
+typeclass-search can derive both `HasUniqueDiv` and `IsAddTorsionFree` without us needing to
+introduce an expensive `[AddCommMonoid M] [IsAddTorsionFree M] : HasUniqueDiv M` instance loop.
 
 TODO: Generalize this definition to additive semigroups once we have the `PNat` action. -/
 @[mk_iff]
@@ -568,7 +577,10 @@ export HasUniqueDiv (nsmul_right_injective)
 /-- A monoid has unique roots if exponentiation by every non-zero element `n : ℕ` is injective.
 This is the uniqueness counterpart to `RootableBy` which asserts existence.
 
-For commutative types, this should be preferred over `IsMulTorsionFree`.
+`HasUniqueRoots` is stronger than `IsMulTorsionFree` for general monoids, but equivalent to it for
+commutative ones. Prefer using `HasUniqueRoots` for commutative monoids, so that typeclass-search
+can derive both `HasUniqueRoots` and `IsMulTorsionFree` without us needing to introduce an expensive
+`[CommMonoid M] [IsMulTorsionFree M] : HasUniqueRoots M` instance loop.
 
 TODO: Generalize this definition to semigroups once we have the `PNat` action. -/
 @[mk_iff]
