@@ -91,6 +91,7 @@ theorem isHyperbolicWith_diam_univ [BoundedSpace X] :
 /-! ### Hyperbolic spaces -/
 
 /-- A pseudometric space is hyperbolic if it is `δ`-hyperbolic for some real constant `δ`. -/
+@[wikidata Q3828581]
 class IsHyperbolic (X : Type*) [PseudoMetricSpace X] : Prop where
   exists_isHyperbolicWith : ∃ δ, IsHyperbolicWith X δ
 
