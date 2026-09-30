@@ -85,8 +85,8 @@ instance : Inhabited InfoLinterState := InfoLinterStateSpec.snd
 initialize infoLintersRef : IO.Ref (Array (InfoLinter InfoLinterState)) ← IO.mkRef #[]
 
 /-- Add an `InfoLinter`. Like `addLinter`, this should be used under `initialize`. -/
-@[inline] unsafe def addInfoLinter {α} (l : InfoLinter α) : IO Unit :=
-  infoLintersRef.modify fun ls => ls.push (unsafeCast l)
+@[inline] def addInfoLinter {α} (l : InfoLinter α) : IO Unit :=
+  unsafe infoLintersRef.modify fun ls => ls.push (unsafeCast l)
 
 def foldInfos (linters : Array (InfoLinter InfoLinterState)) (trees : PersistentArray InfoTree) :
     Array InfoLinterState :=
@@ -95,6 +95,8 @@ def foldInfos (linters : Array (InfoLinter InfoLinterState)) (trees : Persistent
     states.zipWith (fun s l => l.add ctx info s) linters
 
 -- TODO: not crazy about index management
+
+-- BIG TODO: option management. probably need a new field?
 
 /--
 This function "runs" a series of "linter-likes" (for any provided meaning of "run" and
