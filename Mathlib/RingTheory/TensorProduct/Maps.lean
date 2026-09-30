@@ -6,8 +6,6 @@ Authors: Kim Morrison, Johan Commelin
 module
 
 public import Mathlib.Algebra.Algebra.RestrictScalars
-public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-public import Mathlib.Algebra.Module.Rat
 public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
@@ -357,7 +355,7 @@ theorem lidOfCompatibleSMul_tmul (s a) : lidOfCompatibleSMul R S A (s ⊗ₜ[R] 
 instance {R M N : Type*} [CommSemiring R] [AddCommGroup M] [AddCommGroup N]
     [Module R M] [Module R N] [Module ℚ M] [Module ℚ N] : CompatibleSMul R ℚ M N where
   smul_tmul q m n := by
-    have : IsAddTorsionFree (M ⊗[R] N) := .of_module_rat _
+    have : HasUniqueDiv (M ⊗[R] N) := .of_module_rat _
     suffices q.den • ((q • m) ⊗ₜ[R] n) = q.den • (m ⊗ₜ[R] (q • n)) from
       smul_right_injective (M ⊗[R] N) q.den_nz <| by norm_cast
     rw [smul_tmul', ← tmul_smul, ← smul_assoc, ← smul_assoc, nsmul_eq_mul, Rat.den_mul_eq_num]
@@ -632,7 +630,7 @@ theorem congr_symm_apply (f : A ≃ₐ[S] C) (g : B ≃ₐ[R] D) (x) :
 
 @[simp]
 theorem congr_refl : congr (.refl : A ≃ₐ[S] A) (.refl : B ≃ₐ[R] B) = .refl :=
-  AlgEquiv.coe_toAlgHom_injective <| map_id
+  AlgEquiv.coe_toAlgHom_injective map_id
 
 theorem congr_trans
     (f₁ : A ≃ₐ[S] C) (f₂ : C ≃ₐ[S] E) (g₁ : B ≃ₐ[R] D) (g₂ : D ≃ₐ[R] F) :
@@ -775,11 +773,11 @@ theorem lmul'_apply_tmul (a b : S) : lmul' (S := S) R (a ⊗ₜ[R] b) = a * b :=
 
 @[simp]
 theorem lmul'_comp_includeLeft : (lmul' R : _ →ₐ[R] S).comp includeLeft = AlgHom.id R S :=
-  AlgHom.ext <| mul_one
+  AlgHom.ext mul_one
 
 @[simp]
 theorem lmul'_comp_includeRight : (lmul' R : _ →ₐ[R] S).comp includeRight = AlgHom.id R S :=
-  AlgHom.ext <| one_mul
+  AlgHom.ext one_mul
 
 lemma lmul'_comp_map (f : A →ₐ[R] S) (g : B →ₐ[R] S) :
     (lmul' R).comp (map f g) = lift f g (fun _ _ ↦ .all _ _) := by ext <;> rfl
@@ -852,7 +850,7 @@ See `LinearMap.tensorProductEnd` for this map specialized to endomorphisms,
 and bundled as `A`-algebra homomorphism. -/
 @[simps!]
 def tensorProduct : A ⊗[R] (M →ₗ[R] N) →ₗ[A] (A ⊗[R] M) →ₗ[A] (A ⊗[R] N) :=
-  TensorProduct.AlgebraTensorModule.lift <|
+  TensorProduct.AlgebraTensorModule.lift
   { toFun := fun a ↦ a • baseChangeHom R A M N
     map_add' := by simp only [add_smul, forall_true_iff]
     map_smul' := by simp only [smul_assoc, RingHom.id_apply, forall_true_iff] }

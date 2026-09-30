@@ -66,7 +66,7 @@ lemma tendsto_charFun_inv_sqrt_mul_pow {X : Ω → ℝ}
     convert! this using 4 with n <;> norm_cast <;> simp [field]
   have : Tendsto (fun (n : ℕ) ↦ (√n)⁻¹ * t) atTop (𝓝 0) := by
     rw [← zero_mul t]
-    exact .mul_const t (tendsto_inv_atTop_zero.comp <| Real.tendsto_sqrt_atTop.comp <|
+    exact .mul_const t (tendsto_inv_atTop_zero.comp <| Real.tendsto_sqrt_atTop.comp
       tendsto_natCast_atTop_atTop)
   convert! (taylor_charFun_two hX h0 h1).comp_tendsto this using 2
   simp
@@ -110,7 +110,7 @@ private theorem tendstoInDistribution_inv_sqrt_mul_var_mul_sum_sub
     rw [← Finset.sum_div, Finset.sum_sub_distrib]
     simp [field]
   simp_rw [this]
-  convert! tendstoInDistribution_inv_sqrt_mul_sum hY ?_ ?_ ?_ ?_
+  convert tendstoInDistribution_inv_sqrt_mul_sum hY ?_ ?_ ?_ ?_
   · rw [integral_div, integral_sub intX0 (by simp)]
     simp
   · simp only [Pi.pow_apply, div_pow]
@@ -143,7 +143,7 @@ theorem tendstoInDistribution_inv_sqrt_mul_sum_sub
       simp [hω]
     · exact ⟨by fun_prop, by fun_prop, by simp [hY.map_eq, h]⟩
   have : HasLaw (fun ω ↦ Y ω / √Var[X 0; P]) (gaussianReal 0 1) P' := by
-    convert! gaussianReal_div_const hY _
+    convert gaussianReal_div_const hY _
     · simp
     · ext; simp [h]
   convert!
