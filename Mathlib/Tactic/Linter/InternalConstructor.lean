@@ -61,13 +61,4 @@ def internalConstructor : Linter where
     unless Linter.getLinterValue linter.internalConstructors (← Linter.getLinterOptions) do
       return
 
-where
-  /-- We inline some of `logLint` so that we can log an error instead of a warning. -/
-  logLintError (linterOption) (stx) (msg) := do
-    let disable := .note m!"This linter can be disabled with `set_option {linterOption.name} false`"
-    logErrorAt stx <|
-      .ofOriginatingSyntax stx  <|
-      .tagged linterOption.name <|
-      .tagged Linter.linterMessageTag m!"{msg}{disable}"
-
 initialize addLinter internalConstructor
