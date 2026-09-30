@@ -71,8 +71,7 @@ theorem isLowerTriangular_ofLists [Zero α] {m : ℕ} {rows : List (List α)}
 
 theorem diag_ofLists_ne_zero [Zero α] {m : ℕ} {rows : List (List α)}
     (h : IsLowerTriangularDiagList 0 m rows) (i : Fin m) : (ofLists m m rows).diag i ≠ 0 := by
-  rw [Matrix.diag_apply, ofLists_apply, ofList_apply]
-  simpa using (getD_of_isLowerTriangularDiagList h i.isLt).1
+  simpa [ofLists_apply, ofList_apply] using (getD_of_isLowerTriangularDiagList h i.isLt).1
 
 /-! ### Pivots of `U` -/
 
@@ -103,7 +102,6 @@ theorem getD_of_isPivotedList [Zero α] {cols : List (Fin n)} {rows : List (List
   | @cons k ks row rows d suffix hrow hd h ih =>
     cases i with
     | zero =>
-      rw [List.getD_cons_zero]
       refine ⟨fun j hj ↦ ?_, fun c hc ↦ ?_⟩
       · have hjk : (j : ℕ) < k := Fin.lt_def.mp (WithTop.coe_lt_coe.mp hj)
         grind
@@ -113,7 +111,7 @@ theorem getD_of_isPivotedList [Zero α] {cols : List (Fin n)} {rows : List (List
 
 theorem pivotOfList_lt_pivotOfList {cols : List (Fin n)} (hsorted : cols.SortedLT) {i j : ℕ}
     (hij : i < j) (hj : pivotOfList cols j ≠ ⊤) : pivotOfList cols i < pivotOfList cols j := by
-  grind [pivotOfList, List.pairwise_iff_getElem, WithTop.coe_lt_coe, WithTop.some_eq_coe,
+  grind [pivotOfList, List.SortedLT.getElem_lt_getElem_iff, WithTop.coe_lt_coe, WithTop.some_eq_coe,
     WithTop.none_eq_top]
 
 theorem pivotOfList_mono_of_sortedLT {cols : List (Fin n)} (hsorted : cols.SortedLT) :
