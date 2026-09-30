@@ -234,7 +234,7 @@ theorem LinearMap.exists_antilipschitzWith [FiniteDimensional 𝕜 E] (f : E →
   · exact ⟨1, zero_lt_one, AntilipschitzWith.of_subsingleton⟩
   · rw [LinearMap.ker_eq_bot] at hf
     let e : E ≃L[𝕜] LinearMap.range f := (LinearEquiv.ofInjective f hf).toContinuousLinearEquiv
-    exact ⟨_, e.nnnorm_symm_pos, e.antilipschitz⟩
+    exact ⟨_, e.nnnorm_symm_pos, e.antilipschitzWith⟩
 
 open Function in
 /-- A `LinearMap` on a finite-dimensional space over a complete field
@@ -545,7 +545,7 @@ explicitly when needed. -/
 theorem FiniteDimensional.proper [FiniteDimensional 𝕜 E] : ProperSpace E := by
   have : ProperSpace 𝕜 := .of_locallyCompactSpace 𝕜
   set e := ContinuousLinearEquiv.ofFinrankEq (@finrank_fin_fun 𝕜 _ _ (finrank 𝕜 E)).symm
-  exact e.symm.antilipschitz.properSpace e.symm.continuous e.symm.surjective
+  exact e.symm.antilipschitzWith.properSpace e.symm.continuous e.symm.surjective
 
 end LocallyCompactField
 

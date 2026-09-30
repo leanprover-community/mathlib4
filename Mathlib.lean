@@ -1877,6 +1877,7 @@ public import Mathlib.Analysis.Calculus.LogDeriv
 public import Mathlib.Analysis.Calculus.LogDerivUniformlyOn
 public import Mathlib.Analysis.Calculus.MeanValue
 public import Mathlib.Analysis.Calculus.Monotone
+public import Mathlib.Analysis.Calculus.ParametricCircleIntegral
 public import Mathlib.Analysis.Calculus.ParametricIntegral
 public import Mathlib.Analysis.Calculus.ParametricIntervalIntegral
 public import Mathlib.Analysis.Calculus.Rademacher
@@ -1962,6 +1963,7 @@ public import Mathlib.Analysis.Complex.ValueDistribution.CharacteristicFunction
 public import Mathlib.Analysis.Complex.ValueDistribution.FirstMainTheorem
 public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Asymptotic
 public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Basic
+public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Truncated
 public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.Basic
 public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.IntegralPresentation
 public import Mathlib.Analysis.Complex.ValueDistribution.SecondMainTheorem
@@ -2214,6 +2216,7 @@ public import Mathlib.Analysis.Normed.Group.Lemmas
 public import Mathlib.Analysis.Normed.Group.NullSubmodule
 public import Mathlib.Analysis.Normed.Group.Pointwise
 public import Mathlib.Analysis.Normed.Group.Quotient
+public import Mathlib.Analysis.Normed.Group.RadialFunction
 public import Mathlib.Analysis.Normed.Group.Rat
 public import Mathlib.Analysis.Normed.Group.Real
 public import Mathlib.Analysis.Normed.Group.SemiNormedGrp
@@ -3413,6 +3416,7 @@ public import Mathlib.CategoryTheory.Products.Basic
 public import Mathlib.CategoryTheory.Products.Bifunctor
 public import Mathlib.CategoryTheory.Products.Unitor
 public import Mathlib.CategoryTheory.Profunctor.Basic
+public import Mathlib.CategoryTheory.Profunctor.Bicategory
 public import Mathlib.CategoryTheory.Profunctor.Comp
 public import Mathlib.CategoryTheory.Quotient
 public import Mathlib.CategoryTheory.Quotient.Linear
@@ -8167,6 +8171,7 @@ public import Mathlib.Topology.Convenient.OpenClosed
 public import Mathlib.Topology.Covering.AddCircle
 public import Mathlib.Topology.Covering.Basic
 public import Mathlib.Topology.Covering.Deck
+public import Mathlib.Topology.Covering.FundamentalGroupCircle
 public import Mathlib.Topology.Covering.Quotient
 public import Mathlib.Topology.Defs.Basic
 public import Mathlib.Topology.Defs.Filter
