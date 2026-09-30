@@ -768,7 +768,7 @@ theorem exists_root_of_odd_natDegree_imp_not_irreducible
 theorem exists_root_of_monic_odd_natDegree_imp_not_irreducible
     (h : ∀ {g : R[X]}, g.Monic → Odd g.natDegree → g.natDegree ≠ 1 → ¬ Irreducible g)
     {f : R[X]} (hf : Odd f.natDegree) : ∃ x, f.IsRoot x := by
-  open Classical in -- decidable equality for `normalize`
+  classical
   refine exists_root_of_odd_natDegree_imp_not_irreducible (fun {f} hf₁ hf₂ hf₃ ↦ ?_) hf
   exact h (monic_normalize hf₃.ne_zero)
     (by simpa using hf₁) (by simpa using hf₂) (by simpa using hf₃)
