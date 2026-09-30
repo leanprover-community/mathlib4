@@ -291,12 +291,12 @@ private theorem exists_model_not_realize_with_qf_consequences
       exact hqe ⟨qfConj l, qfConj_isQF l, Theory.imp_antisymm hφθ hθφ⟩
   exact ⟨M1, v0, Formula.realize_not.mp hnotφ, hcons⟩
 
-/-- Henkin-style construction: given constants `v0 : α → M1` in a model of `T` such that every
+/-- Henkin-style construction: given constants `v0 : α → M1` in an `L`-structure such that every
 quantifier-free consequence of `φ` is realized at `v0`, there is a model `N1` of `T` with constants
 `w : α → N1` realizing `φ` and agreeing with `v0` on every quantifier-free formula. -/
 private theorem exists_model_realize_with_qf_realized_at
     {T : L.Theory} {α : Type u'} (φ : L.Formula α)
-    {M1 : Type max u v u'} [L.Structure M1] [T.Model M1] [Nonempty M1] (v0 : α → M1)
+    {M1 : Type max u v u'} [L.Structure M1] (v0 : α → M1)
     (hqfConseq : ∀ q : {ψ : L.Formula α // ψ.IsQF ∧ φ ⟹[T] ψ}, q.1.Realize v0) :
     ∃ (N1 : Theory.ModelType.{u, v, max u v u'} T) (w : α → N1),
       φ.Realize w ∧ ∀ ψ : L.Formula α, ψ.IsQF → (ψ.Realize v0 ↔ ψ.Realize w) := by
