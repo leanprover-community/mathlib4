@@ -73,13 +73,14 @@ theorem partialSections.nonempty [IsCofilteredOrEmpty J] [h : ∀ j : J, Nonempt
   classical
   cases isEmpty_or_nonempty J
   · exact ⟨isEmptyElim, fun {j} => IsEmpty.elim' inferInstance j.1⟩
-  haveI : IsCofiltered J := ⟨⟩
+  have : IsCofiltered J := ⟨⟩
   use fun j : J =>
     if hj : j ∈ G then F.map (IsCofiltered.infTo G H hj) (h (IsCofiltered.inf G H)).some
     else (h _).some
   rintro ⟨X, Y, hX, hY, f⟩ hf
   dsimp only
-  rwa [dif_pos hX, dif_pos hY, ← comp_app, ← F.map_comp, @IsCofiltered.infTo_commutes _ _ _ G H]
+  rwa [dite_eq_left hX, dite_eq_left hY, ← comp_app, ← F.map_comp,
+    @IsCofiltered.infTo_commutes _ _ _ G H]
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -113,7 +114,7 @@ theorem partialSections.closed [∀ j : J, T2Space (F.obj j)] {G : Finset J}
     partialSections F H =
       ⋂ (f : FiniteDiagramArrow G) (_ : f ∈ H), {u | F.map f.2.2.2.2 (u f.1) = u f.2.1} := by
     ext1
-    simp only [Set.mem_iInter, Set.mem_setOf_eq]
+    simp only [Set.mem_iInter, Set.mem_ofPred_eq]
     rfl
   rw [this]
   apply isClosed_biInter

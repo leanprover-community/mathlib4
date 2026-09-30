@@ -351,6 +351,7 @@ initialize registerTraceClass `Tactic.positivity.failure
 where `a` is a numeral. -/
 def compareHyp (pα : Q(PartialOrder $α)) (e : Q($α)) (ldecl : LocalDecl) :
     MetaM (Strictness zα e pα) := do
+  unless ← isProp ldecl.type do return .none
   have e' : Q(Prop) := ldecl.type
   let p : Q($e') := .fvar ldecl.fvarId
   match e' with
@@ -396,6 +397,7 @@ def compareHyp (pα : Q(PartialOrder $α)) (e : Q($α)) (ldecl : LocalDecl) :
 
 /-- A variation on `assumption` when the hypothesis is `e ≠ 0` or `0 ≠ e`. -/
 def compareHypNonzero {pα?} (e : Q($α)) (ldecl : LocalDecl) : MetaM (Strictness zα e pα?) := do
+  unless ← isProp ldecl.type do return .none
   have e' : Q(Prop) := ldecl.type
   let p : Q($e') := .fvar ldecl.fvarId
   match e' with

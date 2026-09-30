@@ -5,9 +5,10 @@ Authors: Yongle Hu
 -/
 module
 
+import Mathlib.GroupTheory.MonoidLocalization.UniqueFactorization
 public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
-public import Mathlib.RingTheory.Localization.Away.Lemmas
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Localization
+import Mathlib.RingTheory.Localization.Away.Lemmas
+import Mathlib.RingTheory.UniqueFactorizationDomain.Kaplansky
 
 /-!
 # UFD criteria via height `1` prime ideals and localization

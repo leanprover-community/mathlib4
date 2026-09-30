@@ -5,9 +5,9 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 module
 
+public import Mathlib.Basic.SetLike.Basic
 public import Mathlib.Data.Multiset.Defs
 public import Mathlib.Data.Set.Pairwise.Basic
-public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.Hom.Basic
 
 /-!
@@ -67,7 +67,7 @@ open Multiset Subtype Function
 
 universe u
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α : Type*} {β : Type*}
 
 /-- `Finset α` is the type of finite sets of elements of `α`. It is implemented
   as a multiset (a list up to permutation) which has no duplicate elements. -/
@@ -120,15 +120,17 @@ instance decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable
 @[simp] lemma forall_mem_not_eq {s : Finset α} {a : α} : (∀ b ∈ s, ¬ a = b) ↔ a ∉ s := by grind
 @[simp] lemma forall_mem_not_eq' {s : Finset α} {a : α} : (∀ b ∈ s, ¬ b = a) ↔ a ∉ s := by grind
 
-instance : PartialOrder (Finset α) := .ofSetLike (Finset α) α
+instance : PartialOrder (Finset α) := .ofSetLike (Finset α)
 
 @[norm_cast, grind =]
 theorem mem_coe {a : α} {s : Finset α} : a ∈ (s : Set α) ↔ a ∈ (s : Finset α) :=
   Iff.rfl
 
 @[simp]
-theorem setOf_mem {α} {s : Finset α} : { a | a ∈ s } = s :=
+theorem setOfPred_mem {α} {s : Finset α} : { a | a ∈ s } = s :=
   rfl
+
+@[deprecated (since := "2026-07-09")] alias setOf_mem := setOfPred_mem
 
 theorem coe_mem {s : Finset α} (x : (s : Set α)) : ↑x ∈ s :=
   x.2
@@ -215,7 +217,9 @@ theorem mem_of_subset {s₁ s₂ : Finset α} {a : α} : s₁ ⊆ s₂ → a ∈
 theorem notMem_mono {s t : Finset α} (h : s ⊆ t) {a : α} : a ∉ t → a ∉ s :=
   mt <| @h _
 
-alias not_mem_subset := notMem_mono
+alias notMem_subset := notMem_mono
+
+@[deprecated (since := "2026-09-28")] alias not_mem_subset := notMem_subset
 
 theorem Subset.antisymm {s₁ s₂ : Finset α} (H₁ : s₁ ⊆ s₂) (H₂ : s₂ ⊆ s₁) : s₁ = s₂ :=
   ext fun a => ⟨@H₁ a, @H₂ a⟩
@@ -284,7 +288,7 @@ theorem ssubset_of_subset_of_ssubset {s₁ s₂ s₃ : Finset α} (hs₁s₂ : s
 theorem exists_of_ssubset {s₁ s₂ : Finset α} (h : s₁ ⊂ s₂) : ∃ x ∈ s₂, x ∉ s₁ :=
   Set.exists_of_ssubset h
 
-instance isWellFounded_ssubset : IsWellFounded (Finset α) (· ⊂ ·) :=
+instance isWellFounded_ssubset : @WellFounded (Finset α) (· ⊂ ·) :=
   Subrelation.isWellFounded (InvImage _ _) val_lt_iff.2
 
 instance wellFoundedLT : WellFoundedLT (Finset α) :=
@@ -353,7 +357,7 @@ end Finset
 
 namespace List
 
-variable [DecidableEq α] {a : α} {f : α → β} {s : Finset α} {t : Set β} {t' : Finset β}
+variable [DecidableEq α] {f : α → β} {s : Finset α} {t : Set β} {t' : Finset β}
 
 instance [DecidablePred (· ∈ t)] : Decidable (Set.MapsTo f s t) :=
   inferInstanceAs (Decidable (∀ x ∈ s, f x ∈ t))

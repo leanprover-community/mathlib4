@@ -61,7 +61,7 @@ instance Pi.totallyDisconnectedSpace {α : Type*} {β : α → Type*}
     [∀ a, TopologicalSpace (β a)] [∀ a, TotallyDisconnectedSpace (β a)] :
     TotallyDisconnectedSpace (∀ a : α, β a) :=
   ⟨fun t _ h2 =>
-    have this : ∀ a, IsPreconnected ((fun x : ∀ a, β a => x a) '' t) := fun a =>
+    have : ∀ a, IsPreconnected ((fun x : ∀ a, β a => x a) '' t) := fun a =>
       h2.image (fun x => x a) (continuous_apply a).continuousOn
     fun x x_in y y_in => funext fun a => (this a).subsingleton ⟨x, x_in, rfl⟩ ⟨y, y_in, rfl⟩⟩
 
@@ -258,7 +258,7 @@ def Continuous.connectedComponentsLift (h : Continuous f) : ConnectedComponents 
 @[continuity]
 theorem Continuous.connectedComponentsLift_continuous (h : Continuous f) :
     Continuous h.connectedComponentsLift :=
-  h.quotient_liftOn' <| by convert! h.image_eq_of_connectedComponent_eq
+  h.quotient_liftOn' <| by convert h.image_eq_of_connectedComponent_eq
 
 @[simp]
 theorem Continuous.connectedComponentsLift_apply_coe (h : Continuous f) (x : α) :

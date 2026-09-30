@@ -5,7 +5,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Analysis.Convex.Combination
+import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Analysis.Convex.Extreme
 
 /-!
@@ -44,7 +44,7 @@ independence, convex position
 @[expose] public section
 
 
-open Affine Finset Function
+open Finset Function
 
 variable {𝕜 E ι : Type*}
 
@@ -87,13 +87,14 @@ protected theorem ConvexIndependent.subtype {p : ι → E} (hc : ConvexIndepende
     ConvexIndependent 𝕜 fun i : s => p i :=
   hc.comp_embedding (Embedding.subtype _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If an indexed family of points is convex independent, so is the corresponding set of points. -/
 protected theorem ConvexIndependent.range {p : ι → E} (hc : ConvexIndependent 𝕜 p) :
     ConvexIndependent 𝕜 ((↑) : Set.range p → E) := by
   let f : Set.range p → ι := fun x => x.property.choose
   have hf : ∀ x, p (f x) = x := fun x => x.property.choose_spec
   let fe : Set.range p ↪ ι := ⟨f, fun x₁ x₂ he => Subtype.ext (hf x₁ ▸ hf x₂ ▸ he ▸ rfl)⟩
-  convert! hc.comp_embedding fe
+  convert hc.comp_embedding fe
   ext
   rw [Embedding.coeFn_mk, comp_apply, hf]
 

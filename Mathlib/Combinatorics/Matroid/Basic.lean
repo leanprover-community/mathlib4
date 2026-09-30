@@ -6,9 +6,8 @@ Authors: Peter Nelson
 module
 
 public import Mathlib.Combinatorics.Matroid.Init
-public import Mathlib.Data.Finite.Prod
 public import Mathlib.Data.Set.Card
-public import Mathlib.Data.Set.Finite.Powerset
+import Mathlib.Data.Set.Finite.Powerset
 public import Mathlib.Order.UpperLower.Closure
 
 /-!
@@ -533,15 +532,22 @@ variable {B B' I J D X : Set α} {e f : α}
 theorem indep_iff : M.Indep I ↔ ∃ B, M.IsBase B ∧ I ⊆ B :=
   M.indep_iff' (I := I)
 
-theorem setOf_indep_eq (M : Matroid α) : {I | M.Indep I} = lowerClosure ({B | M.IsBase B}) := by
-  simp_rw [indep_iff, lowerClosure, LowerSet.coe_mk, mem_setOf]
+set_option backward.isDefEq.respectTransparency false in
+theorem setOfPred_indep_eq (M : Matroid α) : {I | M.Indep I} = lowerClosure ({B | M.IsBase B}) := by
+  simp_rw [indep_iff, lowerClosure, LowerSet.coe_mk, mem_ofPred]
+
+@[deprecated (since := "2026-07-09")]
+alias setOf_indep_eq := setOfPred_indep_eq
 
 theorem Indep.exists_isBase_superset (hI : M.Indep I) : ∃ B, M.IsBase B ∧ I ⊆ B :=
   indep_iff.1 hI
 
 theorem dep_iff : M.Dep D ↔ ¬M.Indep D ∧ D ⊆ M.E := Iff.rfl
 
-theorem setOf_dep_eq (M : Matroid α) : {D | M.Dep D} = {I | M.Indep I}ᶜ ∩ Iic M.E := rfl
+theorem setOfPred_dep_eq (M : Matroid α) : {D | M.Dep D} = {I | M.Indep I}ᶜ ∩ Iic M.E := rfl
+
+@[deprecated (since := "2026-07-09")]
+alias setOf_dep_eq := setOfPred_dep_eq
 
 @[aesop unsafe 30% (rule_sets := [Matroid])]
 theorem Indep.subset_ground (hI : M.Indep I) : I ⊆ M.E := by
@@ -851,7 +857,7 @@ theorem IsBasis.subset_ground (hI : M.IsBasis I X) : X ⊆ M.E :=
   hI.2
 
 theorem IsBasis.isBasis_inter_ground (hI : M.IsBasis I X) : M.IsBasis I (X ∩ M.E) := by
-  convert! hI
+  convert hI
   rw [inter_eq_self_of_subset_left hI.subset_ground]
 
 @[aesop unsafe 15% (rule_sets := [Matroid])]
@@ -1027,7 +1033,7 @@ theorem IsBasis.iUnion_isBasis_iUnion {ι : Type _} (X I : ι → Set α)
 
 theorem IsBasis.isBasis_iUnion {ι : Type _} [Nonempty ι] (X : ι → Set α)
     (hI : ∀ i, M.IsBasis I (X i)) : M.IsBasis I (⋃ i, X i) := by
-  convert! IsBasis.iUnion_isBasis_iUnion X (fun _ ↦ I) (fun i ↦ hI i) _ <;> rw [iUnion_const]
+  convert IsBasis.iUnion_isBasis_iUnion X (fun _ ↦ I) (fun i ↦ hI i) _ <;> rw [iUnion_const]
   exact (hI (Classical.arbitrary ι)).indep
 
 theorem IsBasis.isBasis_sUnion {Xs : Set (Set α)} (hne : Xs.Nonempty)
@@ -1036,27 +1042,30 @@ theorem IsBasis.isBasis_sUnion {Xs : Set (Set α)} (hne : Xs.Nonempty)
   have := Iff.mpr nonempty_coe_sort hne
   exact IsBasis.isBasis_iUnion _ fun X ↦ h X X.prop
 
-theorem Indep.isBasis_setOf_insert_isBasis (hI : M.Indep I) :
+theorem Indep.isBasis_setOfPred_insert_isBasis (hI : M.Indep I) :
     M.IsBasis I {x | M.IsBasis I (insert x I)} := by
   refine hI.isBasis_of_forall_insert (fun e he ↦ (?_ : M.IsBasis _ _))
     (fun e he ↦ ⟨fun hu ↦ he.2 ?_, he.1.subset_ground⟩)
   · rw [insert_eq_of_mem he]; exact hI.isBasis_self
   simpa using (hu.eq_of_isBasis he.1).symm
 
+@[deprecated (since := "2026-07-09")]
+alias Indep.isBasis_setOf_insert_isBasis := Indep.isBasis_setOfPred_insert_isBasis
+
 theorem IsBasis.union_isBasis_union (hIX : M.IsBasis I X) (hJY : M.IsBasis J Y)
     (h : M.Indep (I ∪ J)) : M.IsBasis (I ∪ J) (X ∪ Y) := by
   rw [union_eq_iUnion, union_eq_iUnion]
   refine IsBasis.iUnion_isBasis_iUnion _ _ ?_ ?_
-  · simp only [Bool.forall_bool, cond_false, cond_true]; exact ⟨hJY, hIX⟩
+  · simp only [Bool.forall_bool, Bool.cond_false, Bool.cond_true]; exact ⟨hJY, hIX⟩
   rwa [← union_eq_iUnion]
 
 theorem IsBasis.isBasis_union (hIX : M.IsBasis I X) (hIY : M.IsBasis I Y) :
     M.IsBasis I (X ∪ Y) := by
-  convert! hIX.union_isBasis_union hIY _ <;> rw [union_self]; exact hIX.indep
+  convert hIX.union_isBasis_union hIY _ <;> rw [union_self]; exact hIX.indep
 
 theorem IsBasis.isBasis_union_of_subset (hI : M.IsBasis I X) (hJ : M.Indep J) (hIJ : I ⊆ J) :
     M.IsBasis J (J ∪ X) := by
-  convert! hJ.isBasis_self.union_isBasis_union hI _ <;>
+  convert hJ.isBasis_self.union_isBasis_union hI _ <;>
   rw [union_eq_self_of_subset_right hIJ]
   assumption
 
@@ -1104,7 +1113,8 @@ end IsBasis
 section Finite
 
 /-- For finite `E`, finitely many matroids have ground set contained in `E`. -/
-theorem finite_setOf_matroid {E : Set α} (hE : E.Finite) : {M : Matroid α | M.E ⊆ E}.Finite := by
+theorem finite_setOfPred_matroid {E : Set α} (hE : E.Finite) :
+    {M : Matroid α | M.E ⊆ E}.Finite := by
   set f : Matroid α → Set α × (Set (Set α)) := fun M ↦ ⟨M.E, {B | M.IsBase B}⟩
   have hf : f.Injective := by
     refine fun M M' hMM' ↦ ?_
@@ -1113,12 +1123,18 @@ theorem finite_setOf_matroid {E : Set α} (hE : E.Finite) : {M : Matroid α | M.
   rw [← Set.finite_image_iff hf.injOn]
   refine (hE.finite_subsets.prod hE.finite_subsets.finite_subsets).subset ?_
   rintro _ ⟨M, hE : M.E ⊆ E, rfl⟩
-  simp only [Set.mem_prod, Set.mem_setOf_eq]
+  simp only [Set.mem_prod, Set.mem_ofPred_eq]
   exact ⟨hE, fun B hB ↦ hB.subset_ground.trans hE⟩
 
+@[deprecated (since := "2026-07-09")]
+alias finite_setOf_matroid := finite_setOfPred_matroid
+
 /-- For finite `E`, finitely many matroids have ground set `E`. -/
-theorem finite_setOf_matroid' {E : Set α} (hE : E.Finite) : {M : Matroid α | M.E = E}.Finite :=
-  (finite_setOf_matroid hE).subset (fun M ↦ by rintro rfl; exact subset_refl M.E)
+theorem finite_setOfPred_matroid' {E : Set α} (hE : E.Finite) : {M : Matroid α | M.E = E}.Finite :=
+  (finite_setOfPred_matroid hE).subset (fun M ↦ by rintro rfl; exact subset_refl M.E)
+
+@[deprecated (since := "2026-07-09")]
+alias finite_setOf_matroid' := finite_setOfPred_matroid'
 
 end Finite
 

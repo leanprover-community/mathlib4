@@ -17,8 +17,6 @@ assert_not_exists HeytingAlgebra RelIso
 
 /-! ### Set coercion to a type -/
 
-open Function
-
 universe u v
 
 namespace Set

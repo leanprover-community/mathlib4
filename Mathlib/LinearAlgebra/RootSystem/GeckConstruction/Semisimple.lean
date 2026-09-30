@@ -5,11 +5,10 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Lie.Matrix
 public import Mathlib.Algebra.Lie.Semisimple.Lemmas
-public import Mathlib.Algebra.Lie.Weights.Linear
+import Mathlib.Algebra.Lie.Weights.Linear
 public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
-public import Mathlib.RingTheory.Finiteness.Nilpotent
+import Mathlib.RingTheory.Finiteness.Nilpotent
 
 /-!
 # Geck's construction of a Lie algebra associated to a root system yields semisimple algebras
@@ -28,7 +27,7 @@ algebras.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -54,7 +53,7 @@ private lemma isNilpotent_e_aux {j : ι} (n : ℕ) (h : letI _i := P.indexNeg; j
         (e i ^ n).col (.inr j) = x • Pi.single (.inr k) 1 := by
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
   have : IsAddTorsionFree M := .of_isTorsionFree R M
-  letI := P.indexNeg
+  let := P.indexNeg
   have aux (n : ℕ) : (e i ^ (n + 1)).col (.inr j) = (e i).mulVec ((e i ^ n).col (.inr j)) := by
     rw [pow_succ', ← Matrix.mulVec_single_one, ← Matrix.mulVec_mulVec]; simp
   induction n with
@@ -100,7 +99,7 @@ lemma isNilpotent_e :
   classical
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
   have : IsAddTorsionFree M := .of_isTorsionFree R M
-  letI := P.indexNeg
+  let := P.indexNeg
   rw [Matrix.isNilpotent_iff_forall_col]
   have case_inl (j : b.support) : (e i ^ 2).col (Sum.inl j) = 0 := by
     ext (k | k)
@@ -129,7 +128,7 @@ lemma isNilpotent_e :
       apply IsReduced.linearIndependent P ?_ ?_
       · rintro rfl
         apply P.nsmul_notMem_range_root (n := P.chainTopCoeff i i + 2) (i := i)
-        convert! hk₁ using 1
+        convert hk₁ using 1
         module
       · contrapose hij
         rw [root_eq_neg_iff] at hij
@@ -140,7 +139,7 @@ lemma isNilpotent_e :
 lemma isNilpotent_f :
     IsNilpotent (f i) := by
   obtain ⟨n, hn⟩ := isNilpotent_e i
-  suffices (ω b) * (f i ^ n) = 0 from ⟨n, by simpa [← mul_assoc] using congr_arg (ω b * ·) this⟩
+  suffices (ω b) * (f i ^ n) = 0 from ⟨n, by simpa [← mul_assoc] using congr(ω b * $this)⟩
   suffices (ω b) * (f i ^ n) = (e i ^ n) * (ω b) by simp [this, hn]
   clear hn
   induction n with
@@ -151,7 +150,7 @@ omit [P.IsReduced] [IsDomain R] [DecidableEq ι] in
 @[simp] lemma trace_h_eq_zero :
     (h i).trace = 0 := by
   classical
-  letI _i := P.indexNeg
+  let _i := P.indexNeg
   suffices ∑ j, P.pairingIn ℤ j i = 0 by
     simp only [h_eq_diagonal, Matrix.trace_diagonal, Fintype.sum_sum_type, Finset.univ_eq_attach,
       Sum.elim_inl, Pi.zero_apply, Finset.sum_const_zero, Sum.elim_inr, zero_add]
@@ -211,14 +210,15 @@ private lemma instIsIrreducible_aux₀ {U : LieSubmodule K H (b.support ⊕ ι �
     replace hdx : x = diagonal d := by simpa using! hdx
     have this (d : b.support ⊕ ι → K) (μ : K) :
         (diagonal d).toLin' - μ • 1 = (diagonal (d - μ • 1)).toLin' := by
-      aesop (add simp Pi.single_apply)
+      ext i j
+      simp [Pi.single_apply, ite_sub_ite]
     simp [mem_genWeightSpaceOf, hdx, this, ← toLin'_pow, diagonal_pow]
   obtain ⟨i, hi⟩ : ∃ i, w (Sum.inr i) ≠ 0 := by
     obtain ⟨l, hl⟩ : ∃ l, χ (h' l) ≠ 0 := by
       replace hw₀ : genWeightSpace (b.support ⊕ ι → K) χ ≠ ⊥ := by
         contrapose hw₀; rw [LieSubmodule.eq_bot_iff] at hw₀; exact hw₀ _ hw
       let χ' : H →ₗ[K] K := (Weight.mk χ hw₀).toLinear
-      replace hχ : χ' ≠ 0 := by contrapose hχ; ext x; simpa using! LinearMap.congr_fun hχ x
+      replace hχ : χ' ≠ 0 := by contrapose hχ; ext x; simpa using! congr($hχ x)
       contrapose! hχ
       apply LinearMap.ext_on (span_range_h'_eq_top b)
       rintro - ⟨l, rfl⟩
@@ -229,7 +229,7 @@ private lemma instIsIrreducible_aux₀ {U : LieSubmodule K H (b.support ⊕ ι �
     replace hw := genWeightSpace_le_genWeightSpaceOf (b.support ⊕ ι → K) (h' l) χ hw
     rw [aux (Sum.elim 0 (P.pairingIn ℤ · l)) (h' l) (h_eq_diagonal l)] at hw
     obtain ⟨k, hk⟩ := hw
-    simpa [mulVec_eq_sum, diagonal_apply, hl] using! congr_fun hk (Sum.inl i)
+    simpa [mulVec_eq_sum, diagonal_apply, hl] using! congr($hk (Sum.inl i))
   refine ⟨i, (w (Sum.inr i))⁻¹, ?_⟩
   suffices ∃ d : ι → K, (∀ i, d i ≠ 0) ∧ Pairwise ((· ≠ ·) on d) ∧
       diagonal (Sum.elim 0 d) ∈ cartanSubalgebra b by
@@ -239,15 +239,15 @@ private lemma instIsIrreducible_aux₀ {U : LieSubmodule K H (b.support ⊕ ι �
     rw [aux (Sum.elim 0 d) x rfl] at hw
     obtain ⟨k, hk⟩ := hw
     obtain ⟨hχx, hk₀⟩ : d i = χ x ∧ k ≠ 0 := by
-      simpa [hi, mulVec_eq_sum, diagonal_apply, sub_eq_zero] using! congr_fun hk (Sum.inr i)
+      simpa [hi, mulVec_eq_sum, diagonal_apply, sub_eq_zero] using! congr($hk (Sum.inr i))
     ext (j | j)
     · have : χ x ≠ 0 := hχx ▸ hd₀ i
-      simpa [hi, mulVec_eq_sum, diagonal_apply, hk₀, this] using! congr_fun hk (Sum.inl j)
+      simpa [hi, mulVec_eq_sum, diagonal_apply, hk₀, this] using! congr($hk (Sum.inl j))
     · rcases eq_or_ne i j with rfl | hij
       · simp [hi]
       · suffices d j ≠ χ x by
           simpa [mulVec_eq_sum, diagonal_apply, sub_eq_zero, this, hij, hi] using!
-            congr_fun hk (Sum.inr j)
+            congr($hk (Sum.inr j))
         rw [← hχx]
         exact hd₁ <| by simp [hij.symm]
   simp_rw [cartanSubalgebra, LieSubalgebra.mem_mk_iff', diagonal_elim_mem_span_h_iff]
@@ -270,7 +270,7 @@ omit [P.IsRootSystem] in
 private lemma instIsIrreducible_aux₂ [P.IsReduced] [P.IsIrreducible]
     {U : LieSubmodule K (lieAlgebra b) (b.support ⊕ ι → K)} {i : ι} (hi : v b i ∈ U) :
     U = ⊤ := by
-  letI _i := P.indexNeg
+  let _i := P.indexNeg
   have hωu (i : b.support) : ω b *ᵥ (u i) = u i := by
     ext (j | j) <;> simp [ω, u, Pi.single_apply, one_apply]
   have hωv (i : ι) : ω b *ᵥ (v b i) = v b (-i) := by ext (j | j) <;> simp [ω, v, Pi.single_apply]
@@ -345,7 +345,7 @@ lemma coe_genWeightSpace_zero_eq_span_range_u :
       exact ⟨⟨j, hj⟩, hj₀⟩
     obtain ⟨k, hk⟩ := hw (h j) (h_mem_lieAlgebra j) (h_mem_cartanSubalgebra' j _)
     simpa [h_eq_diagonal, ← toLin'_pow, fromBlocks_diagonal_pow, diagonal_pow,
-      mulVec_eq_sum, diagonal_apply, hj] using congr_fun hk (Sum.inr i)
+      mulVec_eq_sum, diagonal_apply, hj] using congr($hk (Sum.inr i))
   · rw [span_le]
     rintro - ⟨i, rfl⟩
     simp only [SetLike.mem_coe, LieSubmodule.mem_toSubmodule, mem_genWeightSpace]

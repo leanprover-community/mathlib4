@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 module
 
-public import Mathlib.Data.Fintype.Option
+import Mathlib.Data.Fintype.Option
 public import Mathlib.Order.Hom.CompleteLattice
 public import Mathlib.Topology.Compactness.Bases
 public import Mathlib.Topology.ContinuousMap.Basic
@@ -74,7 +74,7 @@ instance : SetLike (Opens α) α where
   coe := Opens.carrier
   coe_injective := fun ⟨_, _⟩ ⟨_, _⟩ _ => by congr
 
-instance : PartialOrder (Opens α) := fast_instance% .ofSetLike (Opens α) α
+instance : PartialOrder (Opens α) := fast_instance% .ofSetLike (Opens α)
 
 instance : CanLift (Set α) (Opens α) (↑) IsOpen :=
   ⟨fun s h => ⟨⟨s, h⟩, rfl⟩⟩
@@ -257,13 +257,9 @@ theorem mem_iSup {ι} {x : α} {s : ι → Opens α} : x ∈ iSup s ↔ ∃ i, x
 theorem mem_sSup {Us : Set (Opens α)} {x : α} : x ∈ sSup Us ↔ ∃ u ∈ Us, x ∈ u := by
   simp_rw [sSup_eq_iSup, mem_iSup, exists_prop]
 
-/-- Open sets in a topological space form a frame. -/
-@[implicit_reducible]
-def frameMinimalAxioms : Frame.MinimalAxioms (Opens α) where
+instance instFrame : Frame (Opens α) := fast_instance% .ofMinimalAxioms {
   inf_sSup_le_iSup_inf a s :=
-    (ext <| by simp only [coe_inf, coe_iSup, coe_sSup, Set.inter_iUnion₂]).le
-
-instance instFrame : Frame (Opens α) := fast_instance% .ofMinimalAxioms frameMinimalAxioms
+    (ext <| by simp only [coe_inf, coe_iSup, coe_sSup, Set.inter_iUnion₂]).le }
 
 theorem mem_himp {U V : Opens α} {x : α} : x ∈ U ⇨ V ↔ ∃ W : Opens α, W ⊓ U ≤ V ∧ x ∈ W := by
   simp [himp_eq_sSup]
@@ -282,10 +278,10 @@ theorem mem_compl {U : Opens α} {x : α} : x ∈ Uᶜ ↔ ∃ V : Opens α, Dis
   simp [compl_eq_sSup_disjoint]
 
 theorem interior_compl {U : Opens α} : Opens.interior (U : Set α)ᶜ = Uᶜ := by
-  simp [←himp_bot, himp_def]
+  simp [← himp_bot, himp_def]
 
 theorem coe_compl_eq_interior_compl {U : Opens α} : ↑(Uᶜ) = interior (U : Set α)ᶜ := by
-  rw [←interior_compl, coe_interior]
+  rw [← interior_compl, coe_interior]
 
 /-- The coercion from open sets to sets as a `FrameHom`. -/
 @[simps] protected def frameHom : FrameHom (Opens α) (Set α) where
@@ -345,7 +341,7 @@ theorem isBasis_iff_cover {B : Set (Opens α)} :
   · intro hB U
     refine ⟨{ V : Opens α | V ∈ B ∧ V ≤ U }, fun U hU => hU.left, ext ?_⟩
     rw [coe_sSup, hB.open_eq_sUnion' U.isOpen]
-    simp_rw [sUnion_eq_biUnion, iUnion, mem_setOf_eq, iSup_and, iSup_image]
+    simp_rw [sUnion_eq_biUnion, iUnion, mem_ofPred_eq, iSup_and, iSup_image]
     rfl
   · intro h
     rw [isBasis_iff_nbhd]
@@ -381,7 +377,7 @@ theorem IsBasis.isCompact_open_iff_eq_finite_iUnion {ι : Type*} (b : ι → Ope
     (hb : IsBasis (Set.range b)) (hb' : ∀ i, IsCompact (b i : Set α)) (U : Set α) :
     IsCompact U ∧ IsOpen U ↔ ∃ s : Set ι, s.Finite ∧ U = ⋃ i ∈ s, b i := by
   apply isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis fun i : ι => (b i).1
-  · convert! (config := { transparency := .default }) hb
+  · convert (config := { transparency := .default }) hb
     ext
     simp
   · exact hb'
@@ -404,20 +400,20 @@ lemma IsBasis.le_iff {α} {t₁ t₂ : TopologicalSpace α}
 lemma isBasis_sigma {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (α i)]
     {B : ∀ i, Set (Opens (α i))} (hB : ∀ i, IsBasis (B i)) :
     IsBasis (⋃ i : ι, (fun U ↦ ⟨Sigma.mk i '' U.1, isOpenMap_sigmaMk _ U.2⟩) '' B i) := by
-  convert! TopologicalSpace.IsTopologicalBasis.sigma hB
+  convert TopologicalSpace.IsTopologicalBasis.sigma hB
   simp only [IsBasis, Set.image_iUnion, ← Set.image_comp]
   simp
 
 lemma IsBasis.of_isInducing {B : Set (Opens β)} (H : IsBasis B) {f : α → β} (h : IsInducing f) :
     IsBasis { ⟨f ⁻¹' U, U.2.preimage h.continuous⟩ | U ∈ B } := by
   simp only [IsBasis] at H ⊢
-  convert! H.isInducing h
+  convert h.isTopologicalBasis H
   ext; simp
 
 @[simp]
 theorem isCompactElement_iff (s : Opens α) :
     IsCompactElement s ↔ IsCompact (s : Set α) := by
-  rw [isCompact_iff_finite_subcover, CompleteLattice.isCompactElement_iff_exists_le_iSup_of_le_iSup]
+  rw [isCompact_iff_finite_subcover, isCompactElement_iff_exists_le_iSup_of_le_iSup]
   refine ⟨?_, fun H ι U hU => ?_⟩
   · introv H hU hU'
     obtain ⟨t, ht⟩ := H ι (fun i => ⟨U i, hU i⟩) (by simpa)
@@ -466,7 +462,7 @@ theorem comap_injective [T0Space β] : Injective (comap : C(α, β) → FrameHom
   ContinuousMap.ext fun a =>
     Inseparable.eq <|
       inseparable_iff_forall_isOpen.2 fun s hs =>
-        have : comap f ⟨s, hs⟩ = comap g ⟨s, hs⟩ := DFunLike.congr_fun h ⟨_, hs⟩
+        have : comap f ⟨s, hs⟩ = comap g ⟨s, hs⟩ := congr($h ⟨_, hs⟩)
         show a ∈ f ⁻¹' s ↔ a ∈ g ⁻¹' s from Set.ext_iff.1 (coe_inj.2 this) a
 
 /-- A homeomorphism induces an order-preserving equivalence on open sets, by taking comaps. -/
@@ -504,7 +500,7 @@ instance : SetLike (OpenNhdsOf x) α where
   coe U := U.1
   coe_injective := SetLike.coe_injective.comp toOpens_injective
 
-instance : PartialOrder (OpenNhdsOf x) := fast_instance% .ofSetLike (OpenNhdsOf x) α
+instance : PartialOrder (OpenNhdsOf x) := fast_instance% .ofSetLike (OpenNhdsOf x)
 
 instance canLiftSet : CanLift (Set α) (OpenNhdsOf x) (↑) fun s => IsOpen s ∧ x ∈ s :=
   ⟨fun s hs => ⟨⟨⟨s, hs.1⟩, hs.2⟩, rfl⟩⟩

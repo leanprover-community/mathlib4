@@ -3,8 +3,9 @@ Copyright (c) 2026 Marcelo Lynch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
+module
 
-import Cache.Marker
+public import Cache.Marker
 
 /-!
 # The `cache query` subcommand
@@ -14,6 +15,8 @@ build, by walking git history back to the merge base with `master` and probing
 each commit's per-SHA marker. Diagnostic only: it prints a SHA for the user to
 pass to `cache get --scope=`, and never reads or writes artifacts itself.
 -/
+
+public section
 
 namespace Cache.Requests
 
@@ -77,20 +80,28 @@ Probe a single container for the per-SHA marker blob.
 
 Issues an anonymous HEAD against `{container}/m/{repo}/{sha}` and returns
 `true` iff the response is 200. The marker is uploaded by `put-staged`
-after a successful upload, so its existence is a reliable "this commit
-was fully cached" signal.
+after a successful upload, so its presence means CI published this commit's
+artifacts. Absence is a weaker signal: CI may not have built the commit yet,
+or its build staged no files — a commit with no cache-relevant changes is
+fully served by the master container, so CI uploads nothing for it, marker
+included.
 
 Cheaper than blob-listing: deterministic URL, headers-only response,
 billed as a Read op.
 -/
 def probeContainerForSHA (container : Container) (repo sha : String) :
     IO Bool := do
-  let url := markerURL container repo sha
+  let url ← markerReadURL container repo sha
   -- Discard the response body to the platform null device (`NUL` on Windows),
   -- so curl reports a write error only on a genuine failure, not on every probe.
   let out ← IO.Process.output
     {cmd := (← IO.getCurl),
-     args := #["-s", "-o", IO.nullDevice, "-w", "%{http_code}", "-I", url],
+     args := #["-s", "-o", IO.nullDevice, "-w", "%{http_code}", "-I"] ++
+       -- No retry flags: the probe is diagnostic and a false negative is
+       -- cheap. The time bounds keep an unreachable endpoint from stalling
+       -- the up-to-50-probe `cache query` walk.
+       curlFollowRedirectArgs ++
+       #["--connect-timeout", "10", "--max-time", "30", url],
      cwd := "."}
   if out.exitCode != 0 then
     -- Network error; assume no cache at this SHA
@@ -215,8 +226,10 @@ def cacheQuery (repo : String) (cap : Nat := 50) (cwd : FilePath := ".") : IO Un
     IO.println s!"Note: this means trusting the artifacts built at that commit;"
     IO.println s!"`cache get` will print a security notice when --scope is set."
   | none =>
-    IO.println s!"No cached CI build found for fork {repo} within the last {cap} commits on this branch."
-    IO.println s!"This usually means CI hasn't built any of these commits yet."
+    IO.println s!"No commit-specific cache found for fork {repo} within the last {cap} commits on this branch."
+    IO.println "Simply call:"
+    IO.println "  lake exe cache get"
+    IO.println "If CI is still building your latest commit, call it again after CI finishes."
 
 /--
 Discover the SHA scopes `cache get --unsafe` should try, most recent first.

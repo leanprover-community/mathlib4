@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Preadditive.Projective.Internal
 public import Mathlib.Condensed.Light.Epi
-public import Mathlib.Condensed.Light.Functors
 public import Mathlib.Condensed.Light.Monoidal
 /-!
 
@@ -157,7 +156,6 @@ lemma internallyProjective_iff_tensor_condition' (P : LightCondMod R) : Internal
     refine ⟨S', π, hπ, (β_ _ _).hom ≫ g', ?_⟩
     simp [← hh]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given a `P : LightCondSet`, the light free light condensed module `R[P]` is internally projective if
 and only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`, for all

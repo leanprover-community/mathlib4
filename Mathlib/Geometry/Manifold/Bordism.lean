@@ -5,7 +5,7 @@ Authors: Michael Rothgang
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 
 /-!
@@ -95,7 +95,7 @@ singular manifold, bordism, bordism group
 public section
 
 open scoped Manifold
-open Module Set
+open Module
 
 suppress_compilation
 

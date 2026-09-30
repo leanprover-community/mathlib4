@@ -5,8 +5,7 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Data.Finset.Preimage
-public import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
+import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Order.LiminfLimsup
 
@@ -63,13 +62,13 @@ def support (L : SummationFilter β) : Set β := {b | ∀ᶠ s in L.filter, b �
 lemma support_eq_limsInf (L : SummationFilter β) :
     support L = limsInf (L.filter.map (↑)) := by
   refine eq_of_forall_ge_iff fun c ↦ ?_
-  simpa [support, limsInf, setOf_subset] using
+  simpa [support, limsInf, ofPred_subset] using
     ⟨fun hL b hb x hx ↦ hL x <| hb.mp <| .of_forall fun c hc ↦ hc hx,
       fun hL x hx ↦ singleton_subset_iff.mp <| hL _ <| by simpa using hx⟩
 
 lemma support_eq_univ_iff {L : SummationFilter β} :
     L.support = univ ↔ L.filter ≤ atTop := by
-  simp only [support, Set.eq_univ_iff_forall, Set.mem_setOf]
+  simp only [support, Set.eq_univ_iff_forall, Set.mem_ofPred]
   refine ⟨fun h s hs ↦ ?_, fun h b ↦ .filter_mono h ?_⟩
   · obtain ⟨t, ht⟩ := mem_atTop_sets.mp hs
     have := (Filter.biInter_finset_mem t).mpr fun b hb ↦ h b
@@ -106,11 +105,13 @@ export HasSupport (eventually_le_support)
 
 instance (L : SummationFilter β) [L.LeAtTop] : HasSupport L := ⟨by simp⟩
 
-lemma eventually_mem_or_not_mem (L : SummationFilter β) [HasSupport L] (b : β) :
+lemma eventually_mem_or_notMem (L : SummationFilter β) [HasSupport L] (b : β) :
     (∀ᶠ s in L.filter, b ∈ s) ∨ (∀ᶠ s in L.filter, b ∉ s) := by
   rw [or_iff_not_imp_left]
   intro hb
   filter_upwards [L.eventually_le_support] with a ha using notMem_subset ha hb
+
+@[deprecated (since := "2026-09-28")] alias eventually_mem_or_not_mem := eventually_mem_or_notMem
 
 end has_support
 
@@ -192,13 +193,12 @@ instance [Countable β] : IsCountablyGenerated (unconditional β).filter :=
 `L.LeAtTop` and `L.NeBot`. -/
 lemma eq_unconditional_of_finite {β} [Finite β]
     (L : SummationFilter β) [L.LeAtTop] [L.NeBot] : L = unconditional β := by
-  classical
-  haveI := Fintype.ofFinite β
+  have := Fintype.ofFinite β
   have hAtTop : (atTop : Filter (Finset β)) = pure Finset.univ := by
     rw [(isTop_iff_eq_top.mpr rfl).atTop_eq (a := Finset.univ), ← Finset.top_eq_univ,
       Ici_top, principal_singleton]
   have hL := L.le_atTop
-  have hL' : ∅ ∉ L.filter := empty_mem_iff_bot.not.mpr <| NeBot.ne_bot.ne'
+  have hL' : ∅ ∉ L.filter := empty_mem_iff_bot.not.mpr NeBot.ne_bot.ne'
   cases L with | mk F =>
   simp only [unconditional, hAtTop] at *
   congr 1
@@ -251,7 +251,7 @@ lemma conditional_filter_eq_map_range : (conditional ℕ).filter = atTop.map Fin
       simp only [tendsto_atTop', mem_map, mem_atTop_sets, mem_preimage] <;>
       rintro s ⟨a, ha⟩
   · exact ⟨a + 1, fun b hb ↦ ha (b + 1) (by lia)⟩
-  · exact ⟨a + 1, fun b hb ↦ by convert! ha (b - 1) (by lia); lia⟩
+  · exact ⟨a + 1, fun b hb ↦ by convert ha (b - 1) (by lia); lia⟩
 
 end conditionalTop
 

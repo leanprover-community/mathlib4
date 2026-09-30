@@ -3,6 +3,7 @@
 import json
 import os
 from pathlib import Path
+from typing import Generator
 
 OUTFILE = Path(os.environ["OUTPUT_FILE"])
 
@@ -18,6 +19,16 @@ def output_result(
         data["unit"] = unit
     with open(OUTFILE, "a") as f:
         f.write(f"{json.dumps(data)}\n")
+
+
+def find_lean_files() -> Generator[Path, None, None]:
+    for p in Path().iterdir():
+        if p.name.startswith("."):
+            continue
+        elif p.is_dir():
+            yield from p.glob("**/*.lean")
+        elif p.name.endswith(".lean"):
+            yield p
 
 
 def measure_lines(topic: str, *paths: Path) -> None:
@@ -37,7 +48,7 @@ def measure_bytes(topic: str, *paths: Path) -> None:
 
 
 if __name__ == "__main__":
-    measure_lines("size/.lean", *Path().glob("Mathlib/**/*.lean"))
+    measure_lines("size/.lean", *find_lean_files())
     measure_bytes("size/.olean", *Path().glob(".lake/build/**/*.olean"))
     measure_bytes("size/.olean.server", *Path().glob(".lake/build/**/*.olean.server"))
     measure_bytes("size/.olean.private", *Path().glob(".lake/build/**/*.olean.private"))

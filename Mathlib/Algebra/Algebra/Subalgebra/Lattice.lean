@@ -44,7 +44,7 @@ protected theorem gc : GaloisConnection (adjoin R : Set A → Subalgebra R A) (�
 protected def gi : GaloisInsertion (adjoin R : Set A → Subalgebra R A) (↑) where
   choice s hs := (adjoin R s).copy s <| le_antisymm (Algebra.gc.le_u_l s) hs
   gc := Algebra.gc
-  le_l_u S := (Algebra.gc (S : Set A) (adjoin R S)).1 <| le_rfl
+  le_l_u S := (Algebra.gc (S : Set A) (adjoin R S)).1 le_rfl
   choice_eq _ _ := Subalgebra.copy_eq _ _ _
 
 instance : CompleteLattice (Subalgebra R A) where
@@ -294,8 +294,11 @@ noncomputable def botEquivOfInjective (h : Function.Injective (algebraMap R A)) 
     (⊥ : Subalgebra R A) ≃ₐ[R] R :=
   AlgEquiv.symm <|
     AlgEquiv.ofBijective (Algebra.ofId R _)
-      ⟨fun _x _y hxy => h (congr_arg Subtype.val hxy :), fun ⟨_y, x, hx⟩ => ⟨x, Subtype.ext hx⟩⟩
+      ⟨fun _x _y hxy => h congr($(hxy).val), fun ⟨_y, x, hx⟩ => ⟨x, Subtype.ext hx⟩⟩
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The bottom subalgebra is isomorphic to the field. -/
 @[simps! symm_apply]
 noncomputable def botEquiv (F R : Type*) [Field F] [Semiring R] [Nontrivial R] [Algebra F R] :
@@ -381,7 +384,7 @@ variable {F : Type*} [FunLike F A B] [AlgHomClass F R A B]
 
 theorem eqOn_sup {φ ψ : F} {S T : Subalgebra R A} (hS : Set.EqOn φ ψ S) (hT : Set.EqOn φ ψ T) :
     Set.EqOn φ ψ ↑(S ⊔ T) := by
-  rw [← AlgHom.coe_coe φ, ← AlgHom.coe_coe ψ, ← le_equalizer] at hS hT ⊢
+  rw [← AlgHom.coe_ofClass φ, ← AlgHom.coe_ofClass ψ, ← le_equalizer] at hS hT ⊢
   exact sup_le hS hT
 
 theorem ext_on_codisjoint {φ ψ : F} {S T : Subalgebra R A} (hST : Codisjoint S T)
@@ -740,7 +743,7 @@ theorem mem_adjoin_of_map_mul {s} {x : A} {f : A →ₗ[R] B} (hf : ∀ a₁ a�
   | algebraMap r =>
     have : f 1 ∈ adjoin R (f '' (s ∪ {1})) :=
       subset_adjoin ⟨1, ⟨Set.subset_union_right <| Set.mem_singleton 1, rfl⟩⟩
-    convert! Subalgebra.smul_mem (adjoin R (f '' (s ∪ { 1 }))) this r
+    convert Subalgebra.smul_mem (adjoin R (f '' (s ∪ { 1 }))) this r
     rw [algebraMap_eq_smul_one]
     exact f.map_smul _ _
   | add y z _ _ hy hz => simpa [hy, hz] using Subalgebra.add_mem _ hy hz
@@ -751,7 +754,7 @@ lemma adjoin_le_centralizer_centralizer (s : Set A) :
   adjoin_le Set.subset_centralizer_centralizer
 
 /-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is commutative. -/
-theorem isMulCommutative_adjoin {s : Set A} (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) :
+theorem isMulCommutative_adjoin {s : Set A} (hcomm : s.Pairwise Commute) :
     IsMulCommutative (adjoin R s) :=
   have := adjoin_le_centralizer_centralizer R s
   .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
@@ -766,15 +769,15 @@ open scoped IsMulCommutative in
 semiring.
 
 See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_adjoin (since := "2026-03-11")]
-abbrev adjoinCommSemiringOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
+@[deprecated isMulCommutative_adjoin +typeChanged (since := "2026-03-11")]
+abbrev adjoinCommSemiringOfComm {s : Set A} (hcomm : s.Pairwise Commute) :
     CommSemiring (adjoin R s) :=
   have := isMulCommutative_adjoin R hcomm
   inferInstance
 
 instance instIsMulCommutative_adjoin {S : Type*} [SetLike S A] [MulMemClass S A] (s : S)
     [IsMulCommutative s] : IsMulCommutative (adjoin R (s : Set A)) :=
-  isMulCommutative_adjoin R fun _ h₁ _ h₂ => setLike_mul_comm h₁ h₂
+  isMulCommutative_adjoin R fun _ h₁ _ h₂ _ => setLike_mul_comm h₁ h₂
 
 variable {R}
 
@@ -821,7 +824,7 @@ end CommSemiring
 section Ring
 
 variable [CommRing R] [Ring A]
-variable [Algebra R A] {s t : Set A}
+variable [Algebra R A] {s : Set A}
 
 @[simp]
 theorem adjoin_singleton_intCast (n : ℤ) : R[n : A] = ⊥ := by
@@ -846,8 +849,8 @@ variable (R)
 open scoped IsMulCommutative in
 /-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a commutative
 ring. -/
-@[deprecated isMulCommutative_adjoin (since := "2026-03-11")]
-abbrev adjoinCommRingOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
+@[deprecated isMulCommutative_adjoin +typeChanged (since := "2026-03-11")]
+abbrev adjoinCommRingOfComm {s : Set A} (hcomm : s.Pairwise Commute) :
     CommRing (adjoin R s) :=
   have := isMulCommutative_adjoin R hcomm
   inferInstance
@@ -887,8 +890,8 @@ theorem eqOn_adjoin_iff {φ ψ : A →ₐ[R] B} {s : Set A} :
 theorem adjoin_ext {s : Set A} ⦃φ₁ φ₂ : adjoin R s →ₐ[R] B⦄
     (h : ∀ x hx, φ₁ ⟨x, subset_adjoin hx⟩ = φ₂ ⟨x, subset_adjoin hx⟩) : φ₁ = φ₂ :=
   ext fun ⟨x, hx⟩ ↦ adjoin_induction h (fun _ ↦ φ₂.commutes _ ▸ φ₁.commutes _)
-    (fun _ _ _ _ h₁ h₂ ↦ by convert! congr_arg₂ (· + ·) h₁ h₂ <;> rw [← map_add] <;> rfl)
-    (fun _ _ _ _ h₁ h₂ ↦ by convert! congr_arg₂ (· * ·) h₁ h₂ <;> rw [← map_mul] <;> rfl) hx
+    (fun _ _ _ _ h₁ h₂ ↦ by convert congr_arg₂ (· + ·) h₁ h₂ <;> rw [← map_add] <;> rfl)
+    (fun _ _ _ _ h₁ h₂ ↦ by convert congr_arg₂ (· * ·) h₁ h₂ <;> rw [← map_mul] <;> rfl) hx
 
 theorem ext_of_eq_adjoin {S : Subalgebra R A} {s : Set A} (hS : S = adjoin R s) ⦃φ₁ φ₂ : S →ₐ[R] B⦄
     (h : ∀ x hx, φ₁ ⟨x, hS.ge (subset_adjoin hx)⟩ = φ₂ ⟨x, hS.ge (subset_adjoin hx)⟩) :
@@ -974,7 +977,7 @@ variable [CommSemiring R] [Semiring A] [Algebra R A]
 def toNonUnitalSubalgebraOrderEmbedding : Subalgebra R A ↪o NonUnitalSubalgebra R A where
   toFun := toNonUnitalSubalgebra
   inj' := toNonUnitalSubalgebra_injective
-  map_rel_iff' := by simp [SetLike.le_def]
+  map_rel_iff' := by simp [IsConcreteLE.le_iff]
 
 @[simp]
 lemma toNonUnitalSubalgebra_le_toNonUnitalSubalgebra {S T : Subalgebra R A} :
@@ -1004,7 +1007,7 @@ theorem comap_map_eq (f : A →ₐ[R] B) (S : Subalgebra R A) :
 
 theorem comap_map_eq_self {f : A →ₐ[R] B} {S : Subalgebra R A}
     (h : f ⁻¹' {0} ⊆ S) : (S.map f).comap f = S := by
-  convert! comap_map_eq f S
+  convert comap_map_eq f S
   rwa [left_eq_sup, Algebra.adjoin_le_iff]
 
 end Subalgebra

@@ -6,7 +6,6 @@ Authors: Joseph Myers
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
-public import Mathlib.Geometry.Euclidean.Projection
 public import Mathlib.Geometry.Euclidean.Sphere.Basic
 
 /-!
@@ -29,8 +28,9 @@ namespace EuclideanGeometry
 
 namespace Sphere
 
-open AffineSubspace Function RealInnerProductSpace
-open scoped Affine
+open AffineSubspace Function
+
+open scoped RealInnerProductSpace Affine
 
 variable {V P : Type*}
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
@@ -119,7 +119,7 @@ lemma orthRadius_injective (s : Sphere P) : Injective s.orthRadius :=
 lemma finrank_orthRadius [FiniteDimensional ℝ V] {s : Sphere P} {p : P} (hp : p ≠ s.center) :
     Module.finrank ℝ (s.orthRadius p).direction + 1 = Module.finrank ℝ V := by
   rw [orthRadius, add_comm, direction_mk']
-  convert! (ℝ ∙ (p -ᵥ s.center)).finrank_add_finrank_orthogonal
+  convert (ℝ ∙ (p -ᵥ s.center)).finrank_add_finrank_orthogonal
   exact (finrank_span_singleton (vsub_ne_zero.2 hp)).symm
 
 lemma orthRadius_map {s : Sphere P} (p : P) {f : P ≃ᵃⁱ[ℝ] P} (h : f s.center = s.center) :
@@ -208,7 +208,7 @@ lemma inter_orthRadius_eq_singleton_iff {s : Sphere P} {p q : P} :
       simpa [-neg_vsub_eq_vsub_rev] using hq'
     have hqq := (h' _).1 hq''
     rw [eq_comm, eq_vadd_iff_vsub_eq, eq_neg_iff_add_eq_zero, ← two_smul ℝ,
-      smul_eq_zero_iff_right (by norm_num), vsub_eq_zero_iff_eq] at hqq
+      smul_eq_zero_iff_right (by simp), vsub_eq_zero_iff_eq] at hqq
     refine ⟨hqq, ?_⟩
     subst hqq
     exact hq.1
@@ -350,7 +350,7 @@ lemma inter_orthRadius_eq_of_dist_le_radius [hf2 : Fact (Module.finrank ℝ V = 
     (hv : v ∈ (ℝ ∙ (p -ᵥ s.center))ᗮ) (hv0 : v ≠ 0) :
     (s ∩ s.orthRadius p : Set P) = {(√(s.radius ^ 2 - (dist p s.center) ^ 2) / ‖v‖) • v +ᵥ p,
       -(√(s.radius ^ 2 - (dist p s.center) ^ 2) / ‖v‖) • v +ᵥ p} := by
-  convert!
+  convert
     inter_orthRadius_eq_of_dist_le_radius_of_norm_eq_one hp hpc (v := ‖v‖⁻¹ • v)
       (Submodule.smul_mem _ _ hv) ?_ using 2
   · simp [div_eq_mul_inv, smul_smul]
