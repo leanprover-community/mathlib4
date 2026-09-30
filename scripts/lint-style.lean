@@ -8,6 +8,7 @@ import Lake.CLI.Main
 import Lean.Elab.ParseImportsFast
 import Batteries.Data.String.Basic
 import Mathlib.Tactic.Linter.TextBased
+import Mathlib.Util.GetAllModules
 import ImportGraph.Imports.FromSource
 import Cli.Basic
 
@@ -102,6 +103,7 @@ register_option linter.checkInitImports : Bool := { defValue := false }
 transitive imports. Every module in `MathlibInit` should in turn import the `Header` linter
 (except for the header linter itself, of course), and modules in `Mathlib` should import
 `Mathlib.Init` rather than the `Header` linter.
+Finally, every module in `MathlibInit` should be imported directly by `MathlibInit.lean`.
 Return the number of modules which violated one of these rules.
 -/
 def missingInitImports (opts : LinterOptions) : IO Nat := do
@@ -164,6 +166,19 @@ def missingInitImports (opts : LinterOptions) : IO Nat := do
         IO.eprintln s!"  • `{mod}` is NOT imported by `Mathlib.Init`.\n    \
           Please add `import Mathlib.Init` to `{mod}`."
     return missing.size
+
+  -- The `header` linter and the text-based linters only inspect modules imported directly by
+  -- their library root, so every module in `MathlibInit` should be imported by `MathlibInit.lean`.
+  let initRootImports := (← ("MathlibInit.lean" : System.FilePath).parseImports').imports.map
+    (·.module)
+  let notInRoot := (← getAllModulesSorted false "MathlibInit").filter
+    (!initRootImports.contains ·.toName)
+  if notInRoot.size > 0 then
+    IO.eprintln s!"error: the following {notInRoot.size} module(s) are not imported directly by \
+      `MathlibInit.lean`: {notInRoot}\n    \
+      Please add a (non-`public`) `import` of each of them to `MathlibInit.lean`, \
+      so that the `header` and text-based linters inspect them."
+    return notInRoot.size
   return 0
 
 /-- Verify that every file in the `scripts` directory is documented in `scripts/README.md` -/

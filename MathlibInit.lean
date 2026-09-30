@@ -43,9 +43,25 @@ public import MathlibInit.Tactic.Linter.Lint
 public import MathlibInit.Tactic.MinImports
 -- This import makes the binder plicity code action available globally
 public import MathlibInit.Util.CodeActions
+-- The following modules are already imported transitively by the imports above.
+-- They are listed here because the `header` linter and `lake exe lint-style` only inspect the
+-- modules imported directly by their library root; `lint-style` checks that every module in
+-- `MathlibInit` is imported directly here. These imports are not `public`, so that they do not
+-- change what downstream files see.
+import MathlibInit.Lean.ContextInfo
+import MathlibInit.Lean.Elab.InfoTree
+import MathlibInit.Lean.Elab.Tactic.Meta
+import MathlibInit.Lean.Environment
+import MathlibInit.Lean.Expr.Basic
+import MathlibInit.Tactic.DeclarationNames
+import MathlibInit.Tactic.ExtractGoal
+import MathlibInit.Tactic.TacticAnalysis
+import MathlibInit.Util.CodeActions.BinderPlicity
+import MathlibInit.Util.ParseCommand
 
 /-!
-This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.
+This is the root file of the `MathlibInit` library. Through `Mathlib.Init`, it is imported by
+virtually *all* Mathlib files.
 For this reason, the imports of this file are carefully curated.
 Any modification involving a change in the imports of this file should be discussed beforehand.
 
@@ -56,7 +72,7 @@ Here are some general guidelines:
   any exception to this rule should be accompanied by a comment explaining the transitive imports.
 
 A linter verifies that every file in Mathlib imports `Mathlib.Init`
-(perhaps indirectly) --- except for the imports in this file, of course.
+(perhaps indirectly) --- except for the files in `MathlibInit`, of course.
 
 ## Linters
 
