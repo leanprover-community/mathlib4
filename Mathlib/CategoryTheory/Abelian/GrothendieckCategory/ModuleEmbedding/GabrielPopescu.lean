@@ -5,12 +5,12 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Injective
-public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Connected
+import Mathlib.Algebra.Category.ModuleCat.Injective
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Connected
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Coseparator
 public import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
-public import Mathlib.CategoryTheory.Preadditive.LiftToFinset
-public import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
+import Mathlib.CategoryTheory.Preadditive.LiftToFinset
+import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
 
 /-!
 # The Gabriel-Popescu theorem

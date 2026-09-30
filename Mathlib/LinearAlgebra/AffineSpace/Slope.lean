@@ -6,10 +6,10 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
-public import Mathlib.Tactic.Field
+import Mathlib.Tactic.Field
 public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.Module
-public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Slope of a function
@@ -75,7 +75,7 @@ theorem eq_of_slope_eq_zero {f : k → PE} {a b : k} (h : slope f a b = (0 : E))
 
 theorem AffineMap.slope_comp {F PF : Type*} [AddCommGroup F] [Module k F] [AddTorsor F PF]
     (f : PE →ᵃ[k] PF) (g : k → PE) (a b : k) : slope (f ∘ g) a b = f.linear (slope g a b) := by
-  simp only [slope, (· ∘ ·), f.linear.map_smul, f.linearMap_vsub]
+  simp only [slope, (· ∘ ·), f.linear.map_smul, f.linear_apply_vsub]
 
 theorem LinearMap.slope_comp {F : Type*} [AddCommGroup F] [Module k F] (f : E →ₗ[k] F) (g : k → E)
     (a b : k) : slope (f ∘ g) a b = f (slope g a b) :=

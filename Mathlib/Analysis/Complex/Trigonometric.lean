@@ -912,7 +912,7 @@ theorem cos_one_pos : 0 < cos 1 :=
   cos_pos_of_le_one (le_of_eq abs_one)
 
 theorem cos_two_neg : cos 2 < 0 :=
-  calc cos 2 = cos (2 * 1) := congr_arg cos (mul_one _).symm
+  calc cos 2 = cos (2 * 1) := congr(cos $((mul_one _).symm))
     _ = _ := Real.cos_two_mul 1
     _ ≤ 2 * (5 / 9) ^ 2 - 1 := by
       gcongr
@@ -986,5 +986,15 @@ theorem norm_exp (z : ℂ) : ‖exp z‖ = Real.exp z.re := by
 
 theorem norm_exp_eq_iff_re_eq {x y : ℂ} : ‖exp x‖ = ‖exp y‖ ↔ x.re = y.re := by
   rw [norm_exp, norm_exp, Real.exp_eq_exp]
+
+theorem norm_exp_mul_I (x : ℂ) : ‖exp (x * I)‖ = Real.exp (-x.im) := by
+  rw [norm_exp, mul_I_re]
+
+theorem abs_one_sub_rexp_re_le (x : ℂ) : |1 - Real.exp x.re| ≤ ‖1 - exp x‖ := by
+  rw [← norm_exp]
+  exact_mod_cast abs_norm_sub_norm_le (1 : ℂ) (exp x)
+
+theorem one_sub_rexp_re_le (x : ℂ) : 1 - Real.exp x.re ≤ ‖1 - exp x‖ :=
+  (le_abs_self _).trans (abs_one_sub_rexp_re_le x)
 
 end Complex

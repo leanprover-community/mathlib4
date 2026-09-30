@@ -6,7 +6,6 @@ Authors: Joseph Myers, Manuel Candales
 module
 
 public import Mathlib.Analysis.Convex.Between
-public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
 public import Mathlib.Analysis.Normed.Affine.Isometry
 
@@ -68,7 +67,7 @@ theorem _root_.AffineSubspace.angle_coe {s : AffineSubspace ℝ P} (p₁ p₂ p�
 @[simp] lemma angle_homothety (p p₁ p₂ p₃ : P) {r : ℝ} (h : r ≠ 0) :
     ∠ (AffineMap.homothety p r p₁) (AffineMap.homothety p r p₂) (AffineMap.homothety p r p₃) =
       ∠ p₁ p₂ p₃ := by
-  simp_rw [angle, ← AffineMap.linearMap_vsub, AffineMap.homothety_linear, LinearMap.smul_apply,
+  simp_rw [angle, ← AffineMap.linear_apply_vsub, AffineMap.homothety_linear, LinearMap.smul_apply,
     LinearMap.id_coe, id_eq]
   rcases h.lt_or_gt with hlt | hlt <;> simp [hlt, -neg_vsub_eq_vsub_rev]
 
@@ -417,7 +416,7 @@ lemma angle_pointReflection_right {p₁ p₂ p₃ : P} :
     field
   rw [eq_sub_iff_add_eq]
   apply EuclideanGeometry.angle_add_angle_eq_pi_of_angle_eq_pi
-  exact Sbtw.angle₁₂₃_eq_pi <| (sbtw_pointReflection_of_ne ℝ h₃₂.symm).symm
+  exact Sbtw.angle₁₂₃_eq_pi (sbtw_pointReflection_of_ne ℝ h₃₂.symm).symm
 
 /-- Three points are collinear if and only if the first or third point equals the second or the
 angle between them is 0 or π. -/

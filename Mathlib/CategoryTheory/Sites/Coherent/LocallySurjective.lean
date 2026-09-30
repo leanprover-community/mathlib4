@@ -5,9 +5,8 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveTopology
+import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveTopology
 public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
-public import Mathlib.CategoryTheory.Sites.LocallySurjective
 /-!
 
 # Locally surjective morphisms of coherent sheaves

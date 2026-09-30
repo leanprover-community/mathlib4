@@ -6,8 +6,6 @@ Authors: Jujian Zhang
 module
 
 public import Mathlib.Tactic.Abel
-public import Mathlib.Algebra.Ring.Opposite
-public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.RingTheory.Congruence.Opposite
 
 /-!
@@ -66,7 +64,7 @@ instance setLike : SetLike (TwoSidedIdeal R) R where
       rw [← h] at H'
       convert! t₁.add H' (t₁.refl b) using 1 <;> abel
 
-instance : PartialOrder (TwoSidedIdeal R) := .ofSetLike (TwoSidedIdeal R) R
+instance : PartialOrder (TwoSidedIdeal R) := .ofSetLike (TwoSidedIdeal R)
 
 lemma mem_iff (x : R) : x ∈ I ↔ I.ringCon x 0 := Iff.rfl
 
