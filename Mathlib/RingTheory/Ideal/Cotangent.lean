@@ -7,12 +7,10 @@ module
 
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.Algebra.Module.SpanRank
-public import Mathlib.Algebra.Ring.Idempotent
-public import Mathlib.LinearAlgebra.Dimension.Finite
+import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.RingTheory.Filtration
-public import Mathlib.RingTheory.Ideal.Operations
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.Nakayama
 
@@ -150,7 +148,7 @@ noncomputable def cotangentEquivIdeal : I.Cotangent ≃ₗ[R] I.cotangentIdeal :
       fun x => by rw [← range_cotangentToQuotientSquare]; exact LinearMap.mem_range_self _ _,
     Equiv.ofBijective _ ⟨?_, ?_⟩ with }
   · rintro x y e
-    replace e := congr_arg Subtype.val e
+    replace e := congr($(e).val)
     obtain ⟨x, rfl⟩ := I.toCotangent_surjective x
     obtain ⟨y, rfl⟩ := I.toCotangent_surjective y
     rw [I.toCotangent_eq]
@@ -212,7 +210,7 @@ def mapCotangent (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁
     refine Submodule.smul_induction_on hx ?_ (fun _ _ ↦ add_mem)
     rintro a ha ⟨b, hb⟩ -
     simp only [SetLike.mk_smul_mk, smul_eq_mul, Submodule.mem_comap, Submodule.restrictScalars_mem]
-    convert!
+    convert
       (Submodule.smul_mem_smul (M := I₂) (r := f a) (n := ⟨f b, h hb⟩) (h ha)
         (Submodule.mem_top)) using 1
     ext
@@ -431,5 +429,5 @@ lemma Ideal.mapCotangent_ker_of_surjective (surj : Function.Surjective (algebraM
   · rw [Submodule.map_le_iff_le_comap, ← LinearMap.ker_comp]
     intro x hx
     simp only [LinearMap.mem_ker, LinearMap.comp_apply, Ideal.mapCotangent_toCotangent]
-    convert! map_zero I.toCotangent
+    convert map_zero I.toCotangent
     exact (Ideal.mem_inf.mp hx).1

@@ -5,7 +5,7 @@ Authors: David Loeffler, Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
+import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
 
 /-!
@@ -48,7 +48,7 @@ theorem sin_lt (h : 0 < x) : sin x < x := by
   rw [sub_le_iff_le_add', hx] at this
   apply this.trans_lt
   rw [sub_add, sub_lt_self_iff, sub_pos, div_eq_mul_inv (x ^ 3)]
-  refine mul_lt_mul' ?_ (by norm_num) (by norm_num) (pow_pos h 3)
+  refine mul_lt_mul' ?_ (by norm_num) (by simp) (pow_pos h 3)
   apply pow_le_pow_of_le_one h.le h'
   simp
 
@@ -93,13 +93,13 @@ lemma sin_le_mul (hx : -(π / 2) ≤ x) (hx₀ : x ≤ 0) : sin x ≤ 2 / π * x
 /-- Half of **Jordan's inequality** for absolute values. -/
 lemma mul_abs_le_abs_sin (hx : |x| ≤ π / 2) : 2 / π * |x| ≤ |sin x| := by
   wlog hx₀ : 0 ≤ x
-  case inr => simpa using this (by rwa [abs_neg]) <| neg_nonneg.2 <| le_of_not_ge hx₀
+  case isFalse => simpa using this (by rwa [abs_neg]) <| neg_nonneg.2 <| le_of_not_ge hx₀
   rw [abs_of_nonneg hx₀] at hx ⊢
   exact (mul_le_sin hx₀ hx).trans (le_abs_self _)
 
 lemma sin_sq_lt_sq (hx : x ≠ 0) : sin x ^ 2 < x ^ 2 := by
   wlog! hx₀ : 0 < x
-  case inr =>
+  case isFalse =>
     simpa using this (neg_ne_zero.2 hx) <| neg_pos_of_neg <| hx.lt_of_le hx₀
   rcases le_or_gt x 1 with hxπ | hxπ
   case inl =>
@@ -137,7 +137,7 @@ lemma one_add_mul_le_cos (hx₀ : -(π / 2) ≤ x) (hx : x ≤ 0) : 1 + 2 / π *
 
 lemma cos_le_one_sub_mul_cos_sq (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x ^ 2 := by
   wlog hx₀ : 0 ≤ x
-  case inr => simpa using this (by rwa [abs_neg]) <| neg_nonneg.2 <| le_of_not_ge hx₀
+  case isFalse => simpa using this (by rwa [abs_neg]) <| neg_nonneg.2 <| le_of_not_ge hx₀
   rw [abs_of_nonneg hx₀] at hx
   have : x / π ≤ sin (x / 2) := by simpa using mul_le_sin (x := x / 2) (by positivity) (by linarith)
   have := (pow_le_pow_left₀ (by positivity) this 2).trans_eq (sin_sq_eq_half_sub _)
@@ -246,7 +246,7 @@ theorem cos_lt_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx
   suffices ∀ {y : ℝ}, 0 < y → y ≤ 3 * π / 2 → cos y < 1 / √(y ^ 2 + 1) by
     rcases lt_or_lt_iff_ne.mpr hx3.symm with ⟨h⟩
     · exact this h hx2
-    · convert! this (by linarith : 0 < -x) (by linarith) using 1
+    · convert this (by linarith : 0 < -x) (by linarith) using 1
       · rw [cos_neg]
       · rw [neg_sq]
   intro y hy1 hy2

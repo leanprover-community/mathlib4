@@ -5,9 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Sets.OpenCover
-public import Mathlib.Topology.LocallyClosed
 public import Mathlib.Topology.Maps.Proper.Basic
 
 /-!
@@ -219,7 +217,7 @@ include hU
 lemma isOpenMap_iff_comp : IsOpenMap f ↔ ∀ i, IsOpenMap (f ∘ ((↑) : U i → α)) := by
   refine ⟨fun hf ↦ fun i ↦ hf.comp (U i).isOpenEmbedding'.isOpenMap, fun hf ↦ ?_⟩
   intro V hV
-  convert! isOpen_iUnion (fun i ↦ hf i _ <| isOpen_induced hV)
+  convert isOpen_iUnion (fun i ↦ hf i _ <| isOpen_induced hV)
   simp_rw [Set.image_comp, Set.image_preimage_eq_inter_range, ← Set.image_iUnion,
     Subtype.range_coe_subtype, SetLike.setOfPred_mem_eq, hU.iUnion_inter]
 
@@ -257,7 +255,7 @@ theorem isEmbedding_of_iSup_eq_top_of_preimage_subset_range
     have hU'' : (⨆ i, (U i).comap ⟨Subtype.val, continuous_subtype_val⟩ :
         Opens (Set.range f)) = ⊤ := by
       rw [← top_le_iff]
-      simpa [Set.range_subset_iff, SetLike.le_def] using hU
+      simpa [Set.range_subset_iff, IsConcreteLE.le_iff] using hU
     refine this _ ?_ _ ?_ V iV hiV ?_ ?_ hU''
     · fun_prop
     · rw [hU'']; simp
