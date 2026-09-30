@@ -25,21 +25,22 @@ namespace Complex
 noncomputable section
 
 /-- The complex sine function, defined via `exp` -/
-@[pp_nodot]
+@[pp_nodot, dlmf 4.14.E1]
 def sin (z : ℂ) : ℂ :=
   (exp (-z * I) - exp (z * I)) * I / 2
 
 /-- The complex cosine function, defined via `exp` -/
-@[pp_nodot]
+@[pp_nodot, dlmf 4.14.E2]
 def cos (z : ℂ) : ℂ :=
   (exp (z * I) + exp (-z * I)) / 2
 
 /-- The complex tangent function, defined as `sin z / cos z` -/
-@[pp_nodot]
+@[pp_nodot, dlmf 4.14.E4]
 def tan (z : ℂ) : ℂ :=
   sin z / cos z
 
 /-- The complex cotangent function, defined as `cos z / sin z` -/
+@[pp_nodot, dlmf 4.14.E7]
 def cot (z : ℂ) : ℂ :=
   cos z / sin z
 
@@ -54,7 +55,7 @@ def cosh (z : ℂ) : ℂ :=
   (exp z + exp (-z)) / 2
 
 /-- The complex hyperbolic tangent function, defined as `sinh z / cosh z` -/
-@[pp_nodot]
+@[pp_nodot, dlmf 4.28.E4]
 def tanh (z : ℂ) : ℂ :=
   sinh z / cosh z
 
@@ -84,6 +85,7 @@ nonrec def tan (x : ℝ) : ℝ :=
   (tan x).re
 
 /-- The real cotangent function, defined as the real part of the complex cotangent -/
+@[pp_nodot]
 nonrec def cot (x : ℝ) : ℝ :=
   (cot x).re
 
