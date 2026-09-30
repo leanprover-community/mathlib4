@@ -119,7 +119,7 @@ theorem precompA_contLinear (g : P →ᴬ[R] Q) : (g.precompA Q₂).contLinear =
   rfl
 
 @[simp]
-theorem toContinuousAffineMap_precompL (g : P →ᴬ[R] Q) :
+theorem precompL_toContinuousAffineMap (g : P →ᴬ[R] Q) :
     (g.precompL W₂).toContinuousAffineMap = g.precompA W₂ :=
   rfl
 
@@ -168,7 +168,7 @@ theorem postcompA_contLinear (f : Q →ᴬ[R] Q₂) :
   rfl
 
 @[simp]
-theorem _root_.ContinuousLinearMap.toContinuousAffineMap_postcompContinuousAffineMap
+theorem _root_.ContinuousLinearMap.postcompContinuousAffineMap_toContinuousAffineMap
     (g : W →L[R] W₂) :
     (g.postcompContinuousAffineMap P).toContinuousAffineMap = g.toContinuousAffineMap.postcompA P :=
   rfl
