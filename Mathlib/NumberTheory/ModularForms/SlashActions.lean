@@ -48,6 +48,11 @@ theorem SlashAction.neg_slash {β G α : Type*} [Monoid G] [AddGroup α]
   eq_neg_of_add_eq_zero_left <| by
     rw [← add_slash, neg_add_cancel, zero_slash]
 
+@[simp]
+theorem SlashAction.sub_slash {β G α : Type*} [Monoid G] [AddGroup α]
+    [SlashAction β G α] (k : β) (g : G) (a b : α) : (a - b) ∣[k] g = a ∣[k] g - b ∣[k] g := by
+  rw [sub_eq_add_neg, add_slash, neg_slash, sub_eq_add_neg]
+
 attribute [simp] SlashAction.zero_slash SlashAction.slash_one SlashAction.add_slash
 
 @[simp] lemma SlashAction.sum_slash {β G α ι : Type*} [Monoid G] [AddCommGroup α]
@@ -209,6 +214,12 @@ theorem mul_slash (k1 k2 : ℤ) (A : GL (Fin 2) ℝ) (f g : ℍ → ℂ) :
 theorem mul_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
     (f * g) ∣[k1 + k2] A = f ∣[k1] A * g ∣[k2] A := by
   simp [SL_slash, mul_slash]
+
+theorem pow_slash_SL2 (n : ℕ) (k : ℤ) (A : SL(2, ℤ)) (f : ℍ → ℂ) :
+    (f ^ n) ∣[n * k] A = (f ∣[k] A) ^ n := by
+  induction n with
+  | zero => simp [is_invariant_one]
+  | succ n ih => rw [pow_succ, Nat.cast_succ, add_mul, one_mul, mul_slash_SL2, ih, pow_succ]
 
 theorem div_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
     (f / g) ∣[k1 - k2] A = f ∣[k1] A / g ∣[k2] A := by
