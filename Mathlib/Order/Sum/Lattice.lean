@@ -5,8 +5,8 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Sum.Order
 public import Mathlib.Order.Hom.Lattice
+public import Mathlib.Order.Sum.Order
 
 /-!
 # Lexicographic sum of lattices

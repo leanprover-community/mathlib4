@@ -74,13 +74,42 @@ runs:
         # credentials, so checking it out under pull_request_target is safe.
         allow-unsafe-pr-checkout: true
 
+    # The steps below and the landrun rules expect the checkout to contain no
+    # symlinks, and nothing under `.lake/`.
+    - name: check checkout contents
+      shell: bash
+      run: |
+        set -euo pipefail
+        cd pr-branch
+        # Allowed entries are in `git ls-files --stage` format: mode, blob (for a
+        # symlink, its target), stage, path. The two `scripts/bench/` symlinks
+        # were removed when this check was added; branches based on older commits
+        # still contain them. TODO: drop these entries once such branches are no
+        # longer being built.
+        links=$(git ls-files --stage | awk '
+          BEGIN {
+            allowed["120000 819298943e1a8c331413fb55e2c4bbc98d05e562 0\tscripts/bench/build/fake-root/bin/lean.py"] = 1
+            allowed["120000 e5224d533ef27b001224859a9b36696846a7e7fe 0\tscripts/bench/size/run.py"] = 1
+          }
+          $1 == "120000" && !($0 in allowed)')
+        if [ -n "${links}" ]; then
+          echo "::error::The branch contains symlinks, which are not supported:"
+          echo "${links}"
+          exit 1
+        fi
+        lake=$(git ls-files -- .lake DownstreamTest/.lake)
+        if [ -n "${lake}" ]; then
+          echo "::error::The branch contains files under .lake/, which must not be committed:"
+          echo "${lake}"
+          exit 1
+        fi
+
     # Create empty directories so landrun doesn't complain.
     - name: Create empty directories
       shell: bash # We need to run this outside landrun, as it is a prerequisite for landrun!
       run: |
         mkdir -p pr-branch/.lake/
-        mkdir -p .cache/mathlib/
-        mkdir -p _work
+        mkdir -p /home/lean/.cache/mathlib/
 
     # NOTE: if you copy this, consider using `leanprover/lean-action` instead.
     # We install manually, to avoid running lean outside landrun.
