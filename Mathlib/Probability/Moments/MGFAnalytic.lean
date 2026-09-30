@@ -6,8 +6,8 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.Moments.ComplexMGF
-public import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
-public import Mathlib.Analysis.Calculus.Taylor
+import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
+import Mathlib.Analysis.Calculus.Taylor
 
 /-!
 # The moment-generating function is analytic

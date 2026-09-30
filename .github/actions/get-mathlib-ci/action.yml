@@ -39,6 +39,7 @@ runs:
         ref: ${{ inputs.ref }}
         fetch-depth: ${{ inputs.fetch-depth }}
         path: ${{ inputs.path }}
+        persist-credentials: false # no later step needs git credentials
 
     - name: Setup CI Scripts Paths
       id: paths

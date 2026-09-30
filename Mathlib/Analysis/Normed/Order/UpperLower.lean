@@ -5,12 +5,12 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Order.Field.Pi
-public import Mathlib.Algebra.Order.Pi
-public import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Algebra.Order.Field.Pi
+import Mathlib.Algebra.Order.Pi
+import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Analysis.Normed.Group.Pointwise
-public import Mathlib.Topology.Algebra.Order.UpperLower
-public import Mathlib.Topology.MetricSpace.Sequences
+import Mathlib.Topology.Algebra.Order.UpperLower
+import Mathlib.Topology.MetricSpace.Sequences
 
 /-!
 # Upper/lower/order-connected sets in normed groups

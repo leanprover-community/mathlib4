@@ -6,9 +6,9 @@ Authors: Jeremy Tan
 module
 
 public import Mathlib.Analysis.Complex.Basic
-public import Mathlib.Analysis.SpecificLimits.Normed
-public import Mathlib.Tactic.Peel
-public import Mathlib.Tactic.Positivity
+import Mathlib.Analysis.SpecificLimits.Normed
+import Mathlib.Tactic.Peel
+import Mathlib.Tactic.Positivity
 
 /-!
 # Abel's limit theorem
