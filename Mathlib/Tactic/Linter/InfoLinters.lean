@@ -53,31 +53,48 @@ structure Infos where
 /-- A linter that has also been provided with `Infos`, which contains arrays of `Elab.Info`s that
 have been collected through a single efficient traversal of the infotrees and then shared among all
 `InfoLinter`s. -/
-structure InfoLinter where
+structure InfoLinter (α) where
   /-- The name of the `InfoLinter`. This is by default the declaration name. -/
   name : Name := by exact decl_name%
-  /-- `InfoLinter.run` is like `Linter.run`, but also takes in `Infos`, which contains flat arrays
-  of `Elab.Info`s collected from the info trees. Generally, `run` should obtain `Elab.Info`s from
-  these arrays instead of traversing the info trees itself. -/
-  run : Infos → Syntax → CommandElabM Unit
+  init : α
+  add : ContextInfo → Info → α → α
+  log : α → Syntax → CommandElabM Unit
+
+structure InfoCollectionLinter (α) where
+  /-- The name of the `InfoLinter`. This is by default the declaration name. -/
+  name : Name := by exact decl_name%
+  collect? : ContextInfo → Info → Option α
+  log : Array α → Syntax → CommandElabM Unit
+
+@[inline] def InfoLinter.ofCollection {α} : InfoCollectionLinter α → InfoLinter (Array α)
+  | { name, collect?, log } => {
+      name
+      log
+      init := #[]
+      add := fun ctx i as =>
+        match collect? ctx i with
+        | some a => as.push a
+        | none => as
+         }
+
+opaque InfoLinterStateSpec : (α : Type) × Inhabited α := ⟨Unit, ⟨()⟩⟩
+@[expose] def InfoLinterState : Type := InfoLinterStateSpec.fst
+instance : Inhabited InfoLinterState := InfoLinterStateSpec.snd
 
 /-- An `IO.Ref` akin to `lintersRef`, used to implement info linters. -/
-initialize infoLintersRef : IO.Ref (Array InfoLinter) ← IO.mkRef #[]
+initialize infoLintersRef : IO.Ref (Array (InfoLinter InfoLinterState)) ← IO.mkRef #[]
 
 /-- Add an `InfoLinter`. Like `addLinter`, this should be used under `initialize`. -/
-@[inline] def addInfoLinter (l : InfoLinter) : IO Unit :=
-  infoLintersRef.modify fun ls => ls.push l
+@[inline] unsafe def addInfoLinter {α} (l : InfoLinter α) : IO Unit :=
+  infoLintersRef.modify fun ls => ls.push (unsafeCast l)
 
-/-- Efficiently traverses the `InfoTrees` to gather `Elab.Info`s and store them in the appropriate
-field of `Infos`. -/
-def getInfos : CommandElabM Infos :=
-  withTraceNode `Elab.lint.infotree.get (fun _ => return m!"getting info nodes") do
-    let trees ← getInfoTrees
-    return trees.foldl (init := {}) <| InfoTree.foldInfo fun ctx info infos =>
-      match info with
-      | .ofTacticInfo i => { infos with tacticInfos := infos.tacticInfos.push (ctx, i) }
-      | .ofTermInfo i => { infos with termInfos := infos.termInfos.push (ctx, i) }
-      | _ => infos
+def foldInfos (linters : Array (InfoLinter InfoLinterState)) (trees : PersistentArray InfoTree) :
+    Array InfoLinterState :=
+  trees.foldl (init := linters.map (·.init)) <| InfoTree.foldInfo fun ctx info states =>
+    -- ehhh
+    states.zipWith (fun s l => l.add ctx info s) linters
+
+-- TODO: not crazy about index management
 
 /--
 This function "runs" a series of "linter-likes" (for any provided meaning of "run" and
@@ -94,17 +111,18 @@ collect these from the resulting state. Otherwise, these may be extracted by kee
 number of trees and code quality metrics from before, and comparing to after.
 -/
 @[inline] -- We `@[inline]` this because it is almost never used.
-def runLinterLikes {α} (traceCls : Name) (linterLikes : Array α) (run : α → CommandElabM Unit)
+def runLinterLikes {α} (traceCls : Name) (linterLikes : Array α) (run : Nat → α → CommandElabM Unit)
     (traceMsg : α → CommandElabM MessageData) (failureMsgHeader : α → MessageData) :
     CommandElabM Unit := do
   let producedInfoTrees ← IO.mkRef ({} : PersistentArray InfoTree)
   let producedCodeQualityEntries ← IO.mkRef (#[] : Array Linter.CodeQualityLogEntry)
-  for linter in linterLikes do
+  for h : i in 0...linterLikes.size do
+    let linter := linterLikes[i]
     withTraceNode traceCls (fun _ => traceMsg linter) do
       let savedState ← get
       let originalSize := savedState.infoState.trees.size
       try
-        run linter
+        run i linter
       catch
         | Exception.error ref msg =>
           logException (.error ref m!"{failureMsgHeader linter}\n\n{msg}")
@@ -135,9 +153,12 @@ def infoLinterRunner : Linter where
   run stx := do
     profileitM Exception "infotree linting" (← getOptions) do
     withTraceNode `Elab.lint.infotree (fun _ => return m!"infotree linting") do
-    let infos ← getInfos
+    let linters ← infoLintersRef.get
+    let states ← withTraceNode `Elab.lint.infotree.get (fun _ => return m!"getting info nodes") do
+      let trees ← getInfoTrees
+      return foldInfos linters trees
     runLinterLikes `Elab.lint.infotree.run (← infoLintersRef.get)
-      (·.run infos stx)
+      (fun idx linter => linter.log states[idx]! stx)
       (fun linter => return m!"running infotree linter {.ofConstName linter.name}")
       (fun linter => m!"infotree linter {.ofConstName linter.name} failed:")
 
