@@ -5,6 +5,7 @@ Authors: Aaron Anderson, Gabin Kolly, David Wärn
 -/
 module
 
+import Mathlib.Data.Set.Finite.Range
 public import Mathlib.ModelTheory.DirectLimit
 public import Mathlib.Order.Ideal
 
@@ -411,7 +412,7 @@ theorem exists_cardinalLTEquiv_of_embeddings
   let k : S ↪[L] N := g.comp (f.equivRange.symm.toEmbedding.comp (Substructure.inclusion hSrange))
   have hS_cardinal : S.CardinalLTGenerated κ := by
     have hS_finite : (Set.range (f ∘ a)).Finite := Set.finite_range (f ∘ a)
-    haveI : Finite (Set.range (f ∘ a)) := hS_finite.to_subtype
+    have : Finite (Set.range (f ∘ a)) := hS_finite.to_subtype
     exact Substructure.cardinalLTGenerated_closure
       (hasCardinalLT_of_finite (Set.range (f ∘ a)) κ hκ)
   refine ⟨⟨{ dom := S, cod := k.toHom.range, toEquiv := k.equivRange }, hS_cardinal⟩,

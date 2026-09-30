@@ -433,7 +433,7 @@ theorem hasQuantifierElimination_iff_finite_isQFEquivalent {T : L.Theory} :
   refine ⟨fun h _ _ φ => h φ, fun h α φ => ?_⟩
   classical
   let S : Set α := ↑φ.freeVarFinset
-  haveI : Finite S := φ.freeVarFinset.finite_toSet.to_subtype
+  have : Finite S := φ.freeVarFinset.finite_toSet.to_subtype
   obtain ⟨ψ', hψ'QF, hψ'eq⟩ := h (φ.restrictFreeVar (Set.inclusion subset_rfl))
   refine ⟨ψ'.relabel ((↑) : S → α), hψ'QF.relabel _, fun M v xs => ?_⟩
   rw [BoundedFormula.realize_iff,
@@ -590,7 +590,7 @@ theorem hasQuantifierElimination_of_isElementaryExtensionPairCardinalLTGenerated
   obtain ⟨b, hb⟩ := hM
   obtain ⟨p₀, hp_dom, hp_apply⟩ := exists_cardinalLTEquiv_of_embeddings hκ f g a
   obtain ⟨N', hN', e, q₀, hbq, hpq⟩ := h p₀ b
-  letI : L.Structure N' := hN'
+  let : L.Structure N' := hN'
   obtain ⟨b', hb'⟩ := exists_realize_codMap_of_extends hφ (p₀ : M ≃ₚ[L] N) e
     (q₀ : M ≃ₚ[L] N') hpq f g a b hp_dom hp_apply hbq hb
   exact exists_realize_descent_through_elementary e (g ∘ a) b' hb'
