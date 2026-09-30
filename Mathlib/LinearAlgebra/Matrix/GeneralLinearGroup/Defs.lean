@@ -236,7 +236,7 @@ theorem symm_reindexMulEquiv (e : m ≃ n) :
   rfl
 
 @[simp]
-theorem reindexMulEquiv_trans_reindexRingEquiv (e : m ≃ n) (e' : n ≃ o) :
+theorem reindexMulEquiv_trans_reindexMulEquiv (e : m ≃ n) (e' : n ≃ o) :
     .trans (reindexMulEquiv R e) (reindexMulEquiv R e') = reindexMulEquiv R (.trans e e') :=
   rfl
 
