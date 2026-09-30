@@ -503,7 +503,7 @@ theorem exact_liftBaseChange_map_of_flat [Module.Flat S T] :
   rcases hx with ⟨x, rfl⟩
   rw [mem_ker, ← comp_apply, ← map_comp_cotangentComplex_baseChange, comp_apply,
     ← mem_ker, ker_eq_bot.mpr (CotangentSpace.map_toComp_injective Q P), Submodule.mem_bot,
-    baseChange_eq_ltensor, ← mem_ker, (Module.Flat.lTensor_exact T
+    baseChange_eq_lTensor, ← mem_ker, (Module.Flat.lTensor_exact T
       P.toExtension.exact_hCotangentι_cotangentComplex).linearMap_ker_eq] at x_in
   rcases x_in with ⟨x, rfl⟩
   use x; induction x with
