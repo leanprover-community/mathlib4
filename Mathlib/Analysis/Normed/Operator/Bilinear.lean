@@ -307,7 +307,7 @@ variable {𝕜 Fₗ'}
 theorem apply_apply (v : E') (f : E' →L[𝕜] Fₗ') : apply 𝕜 Fₗ' v f = f v :=
   rfl
 
-@[simp] lemma toLinearMap_apply : (apply 𝕜 (E' := E') Fₗ).toLinearMap = applyₗ 𝕜 Fₗ := rfl
+@[simp] lemma toLinearMap_apply : (apply 𝕜 (E' := E') Fₗ').toLinearMap = applyₗ 𝕜 Fₗ' := rfl
 
 variable (σ₁₂ σ₂₃ E F G E' F' G')
 
