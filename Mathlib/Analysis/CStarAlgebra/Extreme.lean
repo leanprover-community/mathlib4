@@ -232,7 +232,7 @@ lemma CStarAlgebra.one_mem_extremePoints_unitClosedBall (A : Type*) [CStarAlgebr
 
 lemma unitary_mem_extremePoints_unitClosedBall {A : Type*} [CStarAlgebra A] {u : A}
     (hu : u ∈ unitary A) : u ∈ extremePoints ℝ (closedBall 0 1) := by
-  rw [← map_zero (mulLeft ℝ A ⟨u, hu⟩), ← LinearIsometryEquiv.image_closedBall,
+  rw [← map_zero (Unitary.mulLeft ℝ A ⟨u, hu⟩), ← LinearIsometryEquiv.image_closedBall,
     ← image_extremePoints]
   exact ⟨1 , ⟨one_mem_extremePoints_unitClosedBall A, by simp⟩⟩
 
