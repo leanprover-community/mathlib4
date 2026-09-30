@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
-public import Mathlib.Algebra.Group.Indicator
 public import Mathlib.Data.Rat.BigOperators
 
 /-!
@@ -278,19 +277,22 @@ lemma mapDomain_apply (f : α → β) (x : α →₀ M) (b : β) :
   · intro _
     rw [single_zero, coe_zero, Pi.zero_apply]
 
-lemma mapDomain_of_not_mem_image_support {f : α → β} {x : α →₀ M} {b : β}
+lemma mapDomain_of_notMem_image_support {f : α → β} {x : α →₀ M} {b : β}
     (hb : b ∉ f '' x.support) : mapDomain f x b = 0 := by
   rw [mapDomain, sum_apply, sum, Finset.sum_eq_zero]
   exact fun a ha ↦ single_eq_of_ne fun eq => hb <| eq ▸ Set.mem_image_of_mem _ ha
 
+@[deprecated (since := "2026-09-28")]
+alias mapDomain_of_not_mem_image_support := mapDomain_of_notMem_image_support
+
 theorem mapDomain_of_notMem_range {f : α → β} (x : α →₀ M) (a : β) (h : a ∉ Set.range f) :
     mapDomain f x a = 0 :=
-  mapDomain_of_not_mem_image_support <| by grw [Set.image_subset_range]; exact h
+  mapDomain_of_notMem_image_support <| by grw [Set.image_subset_range]; exact h
 
 @[deprecated (since := "2026-07-15")] alias mapDomain_notin_range := mapDomain_of_notMem_range
 
 lemma mem_range_of_mapDomain_ne_zero {f : α → β} {x : α →₀ M} {b : β} (h : mapDomain f x b ≠ 0) :
-    b ∈ Set.range f := by contrapose! h; exact mapDomain_of_notMem_range _ _ h
+    b ∈ Set.range f := by contrapose h; exact mapDomain_of_notMem_range _ _ h
 
 @[to_fun mapDomain_fun_id]
 lemma mapDomain_id : mapDomain id v = v := sum_single _
@@ -467,7 +469,7 @@ theorem mapDomain_mapRange [AddCommMonoid N] (f : α → β) (v : α →₀ M) (
     { toFun := g
       map_zero' := h0
       map_add' := hadd }
-  DFunLike.congr_fun (mapDomain.addMonoidHom_comp_mapRange f g') v
+  congr($(mapDomain.addMonoidHom_comp_mapRange f g') v)
 
 theorem sum_update_add [AddZeroClass α] [AddCommMonoid β] (f : ι →₀ α) (i : ι) (a : α)
     (g : ι → α → β) (hg : ∀ i, g i 0 = 0)
@@ -533,13 +535,16 @@ theorem eq_zero_of_comapDomain_eq_zero [Zero M] (f : α → β) (l : β →₀ M
   exact h b (hb.2.symm ▸ ha)
 
 @[simp]
-lemma comapDomain_single_of_not_mem_range [Zero M] {f : α → β} {b : β} (hb : b ∉ Set.range f)
+lemma comapDomain_single_of_notMem_range [Zero M] {f : α → β} {b : β} (hb : b ∉ Set.range f)
     (m : M) (hf) : comapDomain f (single b m) hf = 0 := by
   classical
   ext a
   simp only [comapDomain, single_apply, coe_mk, coe_zero, Pi.zero_apply, ite_eq_right_iff]
   rintro rfl
   simp at hb
+
+@[deprecated (since := "2026-09-28")]
+alias comapDomain_single_of_not_mem_range := comapDomain_single_of_notMem_range
 
 section FInjective
 

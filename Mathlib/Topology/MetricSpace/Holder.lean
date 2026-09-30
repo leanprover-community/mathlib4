@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.MetricSpace.Lipschitz
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.Analysis.Convex.NNReal
 

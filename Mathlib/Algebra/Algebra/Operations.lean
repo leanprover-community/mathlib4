@@ -690,10 +690,10 @@ submodules. -/
 def equivOpposite : Submodule R Aᵐᵒᵖ ≃+* (Submodule R A)ᵐᵒᵖ where
   toFun p := op <| p.comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ)
   invFun p := p.unop.comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A)
-  left_inv _ := SetLike.coe_injective <| rfl
+  left_inv _ := SetLike.coe_injective rfl
   right_inv _ := unop_injective <| SetLike.coe_injective rfl
   map_add' p q := by simp [comap_equiv_eq_map_symm, ← op_add]
-  map_mul' _ _ := congr_arg op <| comap_op_mul _ _
+  map_mul' _ _ := congr(op $(comap_op_mul ..))
 
 protected theorem map_pow {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') (n : ℕ) :
     map f.toLinearMap (M ^ n) = map f.toLinearMap M ^ n :=

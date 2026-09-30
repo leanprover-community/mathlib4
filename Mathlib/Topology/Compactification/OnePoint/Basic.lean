@@ -509,7 +509,7 @@ instance : CompactSpace (OnePoint X) where
 instance [T0Space X] : T0Space (OnePoint X) := by
   refine ⟨fun x y hxy => ?_⟩
   rcases inseparable_iff.1 hxy with (⟨rfl, rfl⟩ | ⟨x, rfl, y, rfl, h⟩)
-  exacts [rfl, congr_arg some h.eq]
+  exacts [rfl, congr(some $h.eq)]
 
 /-- The one point compactification of a `T1Space` space is a `T1Space`. -/
 instance [T1Space X] : T1Space (OnePoint X) where

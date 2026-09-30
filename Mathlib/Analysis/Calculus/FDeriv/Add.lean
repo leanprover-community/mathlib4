@@ -393,86 +393,45 @@ section Sum
 
 variable {ι : Type*} {u : Finset ι} {A : ι → E → F} {A' : ι → E →L[𝕜] F}
 
-@[fun_prop]
-theorem HasStrictFDerivAt.fun_sum (h : ∀ i ∈ u, HasStrictFDerivAt (A i) (A' i) x) :
-    HasStrictFDerivAt (fun y => ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) x := by
-  simp only [hasStrictFDerivAt_iff_isLittleO] at *
-  convert! IsLittleO.sum h
-  simp [Finset.sum_sub_distrib]
-
-@[fun_prop]
-theorem HasStrictFDerivAt.sum (h : ∀ i ∈ u, HasStrictFDerivAt (A i) (A' i) x) :
-    HasStrictFDerivAt (∑ i ∈ u, A i) (∑ i ∈ u, A' i) x := by
-  convert! HasStrictFDerivAt.fun_sum h; simp
-
-theorem HasFDerivAtFilter.fun_sum (h : ∀ i ∈ u, HasFDerivAtFilter (A i) (A' i) L) :
-    HasFDerivAtFilter (fun y => ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) L := by
-  simp only [hasFDerivAtFilter_iff_isLittleO] at *
-  convert! IsLittleO.sum h
-  simp
-
+@[to_fun]
 theorem HasFDerivAtFilter.sum (h : ∀ i ∈ u, HasFDerivAtFilter (A i) (A' i) L) :
     HasFDerivAtFilter (∑ i ∈ u, A i) (∑ i ∈ u, A' i) L := by
-  convert! HasFDerivAtFilter.fun_sum h; simp
+  simp only [hasFDerivAtFilter_iff_isLittleO] at *
+  refine (IsLittleO.sum h).congr_left ?_
+  simp
 
-@[fun_prop]
-theorem HasFDerivWithinAt.fun_sum (h : ∀ i ∈ u, HasFDerivWithinAt (A i) (A' i) s x) :
-    HasFDerivWithinAt (fun y => ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) s x :=
-  HasFDerivAtFilter.fun_sum h
+@[to_fun (attr := fun_prop)]
+theorem HasStrictFDerivAt.sum (h : ∀ i ∈ u, HasStrictFDerivAt (A i) (A' i) x) :
+    HasStrictFDerivAt (∑ i ∈ u, A i) (∑ i ∈ u, A' i) x :=
+  HasFDerivAtFilter.sum h
 
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem HasFDerivWithinAt.sum (h : ∀ i ∈ u, HasFDerivWithinAt (A i) (A' i) s x) :
     HasFDerivWithinAt (∑ i ∈ u, A i) (∑ i ∈ u, A' i) s x :=
   HasFDerivAtFilter.sum h
 
-@[fun_prop]
-theorem HasFDerivAt.fun_sum (h : ∀ i ∈ u, HasFDerivAt (A i) (A' i) x) :
-    HasFDerivAt (fun y => ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) x :=
-  HasFDerivAtFilter.fun_sum h
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem HasFDerivAt.sum (h : ∀ i ∈ u, HasFDerivAt (A i) (A' i) x) :
     HasFDerivAt (∑ i ∈ u, A i) (∑ i ∈ u, A' i) x :=
   HasFDerivAtFilter.sum h
 
-@[fun_prop]
-theorem DifferentiableWithinAt.fun_sum (h : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (A i) s x) :
-    DifferentiableWithinAt 𝕜 (fun y => ∑ i ∈ u, A i y) s x :=
-  HasFDerivWithinAt.differentiableWithinAt <|
-    HasFDerivWithinAt.fun_sum fun i hi => (h i hi).hasFDerivWithinAt
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem DifferentiableWithinAt.sum (h : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (A i) s x) :
     DifferentiableWithinAt 𝕜 (∑ i ∈ u, A i) s x :=
   HasFDerivWithinAt.differentiableWithinAt <|
     HasFDerivWithinAt.sum fun i hi => (h i hi).hasFDerivWithinAt
 
-@[simp, fun_prop]
-theorem DifferentiableAt.fun_sum (h : ∀ i ∈ u, DifferentiableAt 𝕜 (A i) x) :
-    DifferentiableAt 𝕜 (fun y => ∑ i ∈ u, A i y) x :=
-  HasFDerivAt.differentiableAt <| HasFDerivAt.fun_sum fun i hi => (h i hi).hasFDerivAt
-
-@[simp, fun_prop]
+@[to_fun (attr := simp, fun_prop)]
 theorem DifferentiableAt.sum (h : ∀ i ∈ u, DifferentiableAt 𝕜 (A i) x) :
     DifferentiableAt 𝕜 (∑ i ∈ u, A i) x :=
   HasFDerivAt.differentiableAt <| HasFDerivAt.sum fun i hi => (h i hi).hasFDerivAt
 
-@[fun_prop]
-theorem DifferentiableOn.fun_sum (h : ∀ i ∈ u, DifferentiableOn 𝕜 (A i) s) :
-    DifferentiableOn 𝕜 (fun y => ∑ i ∈ u, A i y) s := fun x hx =>
-  DifferentiableWithinAt.fun_sum fun i hi => h i hi x hx
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem DifferentiableOn.sum (h : ∀ i ∈ u, DifferentiableOn 𝕜 (A i) s) :
     DifferentiableOn 𝕜 (∑ i ∈ u, A i) s := fun x hx =>
   DifferentiableWithinAt.sum fun i hi => h i hi x hx
 
-@[simp, fun_prop]
-theorem Differentiable.fun_sum (h : ∀ i ∈ u, Differentiable 𝕜 (A i)) :
-    Differentiable 𝕜 fun y => ∑ i ∈ u, A i y :=
-  fun x => DifferentiableAt.fun_sum fun i hi => h i hi x
-
-@[simp, fun_prop]
+@[to_fun (attr := simp, fun_prop)]
 theorem Differentiable.sum (h : ∀ i ∈ u, Differentiable 𝕜 (A i)) :
     Differentiable 𝕜 (∑ i ∈ u, A i) := fun x => DifferentiableAt.sum fun i hi => h i hi x
 
