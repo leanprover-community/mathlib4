@@ -33,8 +33,6 @@ public meta section
 
 open Lean Meta Qq Mathlib.Tactic.Echelon Mathlib.Tactic.Matrix
 
-initialize registerTraceClass `Tactic.evalDet
-
 namespace Mathlib.Tactic.Determinant
 
 /-- The proof of `diagProd k c rows = a₀ * (a₁ * (… * 1))` on the literal `rows`, the product of
@@ -156,13 +154,13 @@ left to Bird's method, since the fallback model accepts every ring and only the 
 whether an entry is in its scope. -/
 def normDetEchelon? (A : Expr) : MetaM (Option Simp.Result) := do
   let some (m, _, R, entries) ← matchMatrixLit? A
-    | trace[Tactic.evalDet] "not a closed matrix literal{indentExpr A}"
+    | trace[Tactic.echelon] "not a closed matrix literal{indentExpr A}"
       return none
   let u ← getDecLevel R
   have α : Q(Type u) := R
   match ← inferBareissRing α with
   | .error err =>
-    trace[Tactic.evalDet] "{err}{indentExpr A}"
+    trace[Tactic.echelon] "{err}{indentExpr A}"
     return none
   | .ok rα =>
     let iα : Q(IsDomain $α) ← synthInstanceQ q(IsDomain $α)
@@ -171,7 +169,7 @@ def normDetEchelon? (A : Expr) : MetaM (Option Simp.Result) := do
       let ⟨v, pf⟩ ← proveEchelonDet rα iα m A entries
       return some { expr := v, proof? := some pf }
     catch ex =>
-      trace[Tactic.evalDet] "{ex.toMessageData}"
+      trace[Tactic.echelon] "{ex.toMessageData}"
       return none
 
 end Mathlib.Tactic.Determinant
