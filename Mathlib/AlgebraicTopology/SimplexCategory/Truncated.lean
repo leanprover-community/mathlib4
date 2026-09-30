@@ -130,29 +130,16 @@ lemma mono_iff {d : ℕ} {a b : Truncated d} {f : a ⟶ b} : Mono f ↔ Mono f.h
 lemma epi_iff {d : ℕ} {a b : Truncated d} {f : a ⟶ b} : Epi f ↔ Epi f.hom := by
   constructor
   · intro hf
-    rw [SimplexCategory.epi_iff_surjective]
-    intro j
-    by_contra! hj
-    have hb : 0 < b.obj.len := by
-      by_contra! hb
-      exact hj 0 (Fin.ext (by have := j.2; have := (f.hom.toOrderHom 0).2; lia))
-    let z : Truncated d := ⟨⦋1⦌, by simpa using (hb.trans_le b.property)⟩
-    let g₁ : b.obj ⟶ ⦋1⦌ := SimplexCategory.Hom.mk
-      ⟨fun x ↦ if j < x then 1 else 0, fun x y hxy ↦ by dsimp; split_ifs <;> grind⟩
-    let g₂ : b.obj ⟶ ⦋1⦌ := SimplexCategory.Hom.mk
-      ⟨fun x ↦ if j ≤ x then 1 else 0, fun x y hxy ↦ by dsimp; split_ifs <;> grind⟩
-    have h : f ≫ ObjectProperty.homMk (X := b) (Y := z) g₁ =
-        f ≫ ObjectProperty.homMk (X := b) (Y := z) g₂ := by
-      apply Hom.ext
-      refine OrderHom.ext _ _ (funext fun x ↦ ?_)
-      have := hj x
-      dsimp [g₁, g₂]
-      split_ifs <;> grind
-    have := congrArg (fun g ↦ g.hom.toOrderHom j) ((cancel_epi f).1 h)
-    dsimp [g₁, g₂] at this
-    simp at this
+    refine SimplexCategory.epi_iff_surjective.2 fun j ↦ not_forall_not.1 fun hj ↦ ?_
+    have hb : 1 ≤ b.obj.len := by have := hj 0; grind
+    let g (P : Fin (b.obj.len + 1) → Prop) [DecidablePred P] (hP : Monotone P) :
+        b ⟶ ⟨⦋1⦌, hb.trans b.property⟩ :=
+      ObjectProperty.homMk <| Hom.mk ⟨fun x ↦ if P x then 1 else 0, fun x y h ↦ by
+        have : P x → P y := hP h; grind⟩
+    have hg := (cancel_epi f (g := g (j < ·) fun _ _ h h' ↦ h'.trans_le h)
+      (h := g (j ≤ ·) fun _ _ h h' ↦ h'.trans h)).1 (by ext x : 4; simp [g]; grind [hj x])
+    simpa [g] using congrArg (fun φ ↦ φ.hom.toOrderHom j) hg
   · intro hf
     exact (inclusion d).epi_of_epi_map hf
-
 
 end SimplexCategory.Truncated
