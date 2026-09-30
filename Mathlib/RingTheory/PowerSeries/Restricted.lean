@@ -64,17 +64,17 @@ lemma isRestricted_C (a : R) : IsRestricted c (C a) :=
   MvPowerSeries.isRestricted_C (fun _ ↦ c) a
 
 variable {f} in
-@[deprecated MvPowerSeries.IsRestricted.add (since := "2026-09-28")]
+@[deprecated MvPowerSeries.IsRestricted.add +typeChanged (since := "2026-09-28")]
 lemma isRestricted.add {g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) :
     IsRestricted c (f + g) :=
   hf.add hg
 
 variable {f} in
-@[deprecated MvPowerSeries.IsRestricted.neg (since := "2026-09-28")]
+@[deprecated MvPowerSeries.IsRestricted.neg +typeChanged (since := "2026-09-28")]
 lemma isRestricted.neg (hf : IsRestricted c f) : IsRestricted c (-f) :=
   hf.neg
 
-@[deprecated MvPowerSeries.IsRestricted.mul (since := "2026-09-28")]
+@[deprecated MvPowerSeries.IsRestricted.mul +typeChanged (since := "2026-09-28")]
 lemma isRestricted.mul [IsUltrametricDist R] (c : ℝ) {f g : PowerSeries R}
     (hf : IsRestricted c f) (hg : IsRestricted c g) : IsRestricted c (f * g) :=
   hf.mul hg
