@@ -44,6 +44,7 @@ namespace Metric
 
 /-- A pseudometric space is `δ`-hyperbolic if for all `w x y z` the four-point condition
 `min (gromovProduct w x y) (gromovProduct w y z) - δ ≤ gromovProduct w x z` holds. -/
+@[wikidata Q3828581]
 def IsHyperbolicWith (X : Type*) [PseudoMetricSpace X] (δ : ℝ) : Prop :=
   ∀ w x y z : X, min (gromovProduct w x y) (gromovProduct w y z) - δ ≤ gromovProduct w x z
 
