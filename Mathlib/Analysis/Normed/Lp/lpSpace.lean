@@ -6,10 +6,8 @@ Authors: Heather Macbeth, Jireh Loreaux
 module
 
 public import Mathlib.Analysis.MeanInequalities
-public import Mathlib.Analysis.MeanInequalitiesPow
+import Mathlib.Analysis.MeanInequalitiesPow
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-public import Mathlib.Data.Set.Image
-public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Algebra.Order.Group.Pointwise.Bounds
 
 /-!
@@ -169,7 +167,8 @@ theorem mono {f : (i : α) → E i} {g : α → ℝ}
   replace hfg (i) : ‖f i‖ ≤ ‖g i‖ := (hfg i).trans (Real.le_norm_self _)
   obtain (rfl | rfl | hp) := p.trichotomy
   · simp_rw [memℓp_zero_iff, ← norm_pos_iff] at hg ⊢
-    refine hg.subset fun i hi ↦ hi.trans_le <| hfg i
+    grw [hfg]
+    exact hg
   · rw [memℓp_infty_iff] at hg ⊢
     exact hg.range_mono _ hfg
   · rw [memℓp_gen_iff hp] at hg ⊢
@@ -525,7 +524,7 @@ theorem norm_eq_zero_iff {f : lp E p} : ‖f‖ = 0 ↔ f = 0 := by
     rw [hasSum_zero_iff_of_nonneg this] at hf
     ext i
     have : f i = 0 ∧ p.toReal ≠ 0 := by
-      simpa [Real.rpow_eq_zero_iff_of_nonneg (norm_nonneg (f i))] using! congr_fun hf i
+      simpa [Real.rpow_eq_zero_iff_of_nonneg (norm_nonneg (f i))] using! congr($hf i)
     exact this.1
 
 theorem eq_zero_iff_coeFn_eq_zero {f : lp E p} : f = 0 ↔ ⇑f = 0 := by
@@ -731,7 +730,7 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
     apply nnnorm_smul_le
 
 instance [Fact (1 ≤ p)] : IsBoundedSMul 𝕜 (lp E p) :=
-  IsBoundedSMul.of_norm_smul_le <| norm_const_smul_le (zero_lt_one.trans_le <| Fact.out).ne'
+  IsBoundedSMul.of_norm_smul_le <| norm_const_smul_le (zero_lt_one.trans_le Fact.out).ne'
 
 end IsBoundedSMul
 
@@ -1206,7 +1205,7 @@ theorem ext_continuousAddMonoidHom
   have := lp.hasSum_single hp x
   rw [← (this.map f f.continuous).tsum_eq, ← (this.map g g.continuous).tsum_eq]
   congr! 2 with i
-  exact DFunLike.congr_fun (h i) (x i)
+  congrm $(h i) (x i)
 
 /-- Two continuous linear maps from `lp E p` agree if they agree on `lp.single`.
 
