@@ -164,7 +164,7 @@ variable {z : 𝕜}
 /--
 If `f` has power series `p` at `z₀`, then `dslope f z₀` has power series `p.fslope` at `z₀`.
 -/
-theorem HasFPowerSeriesAt.has_fpower_series_dslope_fslope {p : FormalMultilinearSeries 𝕜 𝕜 E}
+theorem HasFPowerSeriesAt.dslope_fslope {p : FormalMultilinearSeries 𝕜 𝕜 E}
     {z₀ : 𝕜} (hp : HasFPowerSeriesAt f p z₀) : HasFPowerSeriesAt (dslope f z₀) p.fslope z₀ := by
   have hpd : deriv f z₀ = p.coeff 1 := hp.deriv
   have hp0 : p.coeff 0 = f z₀ := hp.coeff_zero 1
