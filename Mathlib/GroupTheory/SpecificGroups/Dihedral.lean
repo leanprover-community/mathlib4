@@ -5,11 +5,8 @@ Authors: Shing Tak Lam
 -/
 module
 
-public import Mathlib.Basic.Finite.Sum
-public import Mathlib.Data.ZMod.Basic
-public import Mathlib.GroupTheory.Exponent
+import Mathlib.Basic.Finite.Sum
 public import Mathlib.GroupTheory.GroupAction.CardCommute
-public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 public import Mathlib.GroupTheory.SpecificGroups.KleinFour
 
 /-!
@@ -76,17 +73,17 @@ instance : Group (DihedralGroup n) where
   one := one
   one_mul := by
     rintro (a | a)
-    · exact congr_arg r (zero_add a)
-    · exact congr_arg sr (sub_zero a)
+    · congrm r $(zero_add a)
+    · congrm sr $(sub_zero a)
   mul_one := by
     rintro (a | a)
-    · exact congr_arg r (add_zero a)
-    · exact congr_arg sr (add_zero a)
+    · congrm r $(add_zero a)
+    · congrm sr $(add_zero a)
   inv := inv
   inv_mul_cancel := by
     rintro (a | a)
-    · exact congr_arg r (neg_add_cancel a)
-    · exact congr_arg r (sub_self a)
+    · congrm r $(neg_add_cancel a)
+    · congrm r $(sub_self a)
 
 @[simp]
 theorem r_mul_r (i j : ZMod n) : r i * r j = r (i + j) :=
@@ -220,9 +217,9 @@ theorem exponent : Monoid.exponent (DihedralGroup n) = lcm n 2 := by
     · rw [← orderOf_dvd_iff_pow_eq_one, orderOf_sr]
       exact dvd_lcm_right n 2
   · apply lcm_dvd
-    · convert! Monoid.order_dvd_exponent (r (1 : ZMod n))
+    · convert Monoid.order_dvd_exponent (r (1 : ZMod n))
       exact orderOf_r_one.symm
-    · convert! Monoid.order_dvd_exponent (sr (0 : ZMod n))
+    · convert Monoid.order_dvd_exponent (sr (0 : ZMod n))
       exact (orderOf_sr 0).symm
 
 lemma not_commutative : ∀ {n : ℕ}, n ≠ 1 → n ≠ 2 → ¬IsMulCommutative (DihedralGroup n)

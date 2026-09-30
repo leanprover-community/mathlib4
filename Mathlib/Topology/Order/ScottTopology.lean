@@ -215,7 +215,7 @@ lemma dirSupClosed_of_isClosed [IsScott α univ] : IsClosed s → DirSupClosed s
   (isClosed_iff_isLowerSet_and_dirSupClosed.mp h).right
 
 lemma lowerClosure_subset_closure [IsScott α univ] : ↑(lowerClosure s) ⊆ closure s := by
-  convert! closure.mono (@upperSet_le_scott α _)
+  convert closure.mono (@upperSet_le_scott α _)
   · rw [@IsUpperSet.closure_eq_lowerClosure α _ (upperSet α) ?_ s]
     infer_instance
   · exact topology_eq α univ
@@ -310,6 +310,10 @@ instance [TopologicalSpace α] [IsUpper α] : IsScott α univ where
   topology_eq_scott := by
     rw [scott_eq_upper_of_completeLinearOrder]
     exact IsUpper.topology_eq α
+
+instance : IsScott Prop univ :=
+  let := Prop.completeLinearOrder
+  inferInstance
 
 end CompleteLinearOrder
 

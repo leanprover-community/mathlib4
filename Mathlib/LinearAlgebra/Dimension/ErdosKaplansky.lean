@@ -5,8 +5,8 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.Field.Opposite
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.Algebra.Field.Opposite
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.LinearAlgebra.Dimension.Constructions
 public import Mathlib.SetTheory.Cardinal.Subfield
 
@@ -75,7 +75,7 @@ theorem max_aleph0_card_le_rank_fun_nat : max ℵ₀ #K ≤ Module.rank K (ℕ �
   simp_rw [← rep_e, Finset.sum_apply, Pi.smul_apply, Finset.smul_sum]
   rw [Finset.sum_comm]
   refine Finset.sum_eq_zero fun i hi ↦ ?_
-  replace eq0 := congr_arg L.subtype (congr_fun eq0 ⟨i, hi⟩)
+  replace eq0 := congr(L.subtype ($eq0 ⟨i, hi⟩))
   rw [Finset.sum_apply, map_sum] at eq0
   have : SMulCommClass Lᵐᵒᵖ K K := ⟨fun _ _ _ ↦ mul_assoc _ _ _⟩
   simp_rw [smul_comm _ (c i), ← Finset.smul_sum]
@@ -136,10 +136,10 @@ theorem lift_rank_lt_rank_dual {K : Type u} {V : Type v} [Field K] [AddCommGroup
 
 theorem rank_lt_rank_dual' {V : Type u} [AddCommGroup V] [Module K V] (h : ℵ₀ ≤ Module.rank K V) :
     Module.rank K V < Module.rank Kᵐᵒᵖ (V →ₗ[K] K) := by
-  convert! lift_rank_lt_rank_dual' h; rw [lift_id]
+  convert lift_rank_lt_rank_dual' h; rw [lift_id]
 
 theorem rank_lt_rank_dual {K V : Type u} [Field K] [AddCommGroup V] [Module K V]
     (h : ℵ₀ ≤ Module.rank K V) : Module.rank K V < Module.rank K (V →ₗ[K] K) := by
-  convert! lift_rank_lt_rank_dual h; rw [lift_id]
+  convert lift_rank_lt_rank_dual h; rw [lift_id]
 
 end Cardinal

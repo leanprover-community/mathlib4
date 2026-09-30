@@ -5,7 +5,6 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Basic
 public import Mathlib.Topology.Algebra.FilterBasis
 public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 
@@ -158,9 +157,7 @@ theorem hasBasis_nhds (a : A) :
     constructor
     · rintro ⟨-, ⟨i, rfl⟩, hi⟩
       use i
-      suffices h : { b : A | b - a ∈ B i } = (fun y => a + y) '' ↑(B i) by
-        rw [h]
-        assumption
+      suffices h : { b : A | b - a ∈ B i } = (fun y => a + y) '' ↑(B i) by rwa [h]
       simp only [image_add_left, neg_add_eq_sub]
       ext b
       simp

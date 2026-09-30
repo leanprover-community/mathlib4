@@ -5,7 +5,7 @@ Authors: Patrick Massot, Michael Rothgang, Thomas Murrills
 -/
 module
 
-public import Mathlib.Geometry.Manifold.ContMDiff.Defs
+import Mathlib.Geometry.Manifold.ContMDiff.Defs
 public import Mathlib.Geometry.Manifold.MFDeriv.Defs
 
 /-!
@@ -1066,7 +1066,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
   let .lam n _ b _ ← getExpr | failure
   guard <| b.isAppOf ``Bundle.TotalSpace.mk'
   let σe := b.getAppArgs[4]!.getAppFn
-  guard <| σe.isFVar
+  guard σe.isFVar
   let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
   -- TODO: this always adds parentheses; find a more parsimonious way!
   `((T% $σs)) >>= annotateGoToSyntaxDef
@@ -1075,16 +1075,16 @@ open Bundle PrettyPrinter Delaborator SubExpr
 @[app_delab TotalSpace.mk] meta def delabTotalSpaceMk : Delab := do
   whenPPOption getPPNotation do
   withOverApp 5 do
-  let bd ← withNaryArg 3 <| delab
-  let vd ← withNaryArg 4 <| delab
+  let bd ← withNaryArg 3 delab
+  let vd ← withNaryArg 4 delab
   `(⟨$bd, $vd⟩)
 
 /-- Delaborator for `Bundle.TotalSpace.mk'` using anonymous constructor notation. -/
 @[app_delab Bundle.TotalSpace.mk'] meta def delabTotalSpaceMkPrime : Delab := do
   whenPPOption getPPNotation do
   withOverApp 5 do
-  let bd ← withNaryArg 3 <| delab
-  let vd ← withNaryArg 4 <| delab
+  let bd ← withNaryArg 3 delab
+  let vd ← withNaryArg 4 delab
   `(⟨$bd, $vd⟩)
 
 /-- Delaborator for `mfderiv` using the custom elaborator -/
@@ -1121,7 +1121,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
   whenPPOption getPPNotation do
   withOverApp 22 do
   let ss ← withAppArg delab
-  let fs ← withNaryArg 20 <| delab
+  let fs ← withNaryArg 20 delab
   `(MDiff[$ss] $fs) >>= annotateGoToSyntaxDef
 
 /-- Delaborator for `MDifferentiableWithinAt` using the custom elaborator -/
@@ -1129,7 +1129,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
   whenPPOption getPPNotation do
   withOverApp 22 do
   let ss ← withAppArg delab
-  let fs ← withNaryArg 20 <| delab
+  let fs ← withNaryArg 20 delab
   `(MDiffAt[$ss] $fs) >>= annotateGoToSyntaxDef
 
 /-- Delaborator for `HasMFDerivWithinAt` using the custom elaborator -/

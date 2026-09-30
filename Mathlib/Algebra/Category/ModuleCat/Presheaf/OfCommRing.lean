@@ -73,6 +73,10 @@ abbrev isoMk {M₁ M₂ : PresheafOfModulesOfCommRing.{v} R}
         (app X).hom ≫ M₂.map f := by cat_disch) : M₁ ≅ M₂ :=
   PresheafOfModules.isoMk app naturality
 
+/-- a family of linear maps `M₁.obj X ⟶ M₂.obj X` for all `X`. -/
+abbrev _root_.PresheafOfModules.Hom.app' {M₁ M₂ : PresheafOfModulesOfCommRing.{v} R}
+    (f : M₁ ⟶ M₂) (X : Cᵒᵖ) : M₁.obj X ⟶ M₂.obj X := f.app X
+
 /-- The free presheaf of modules of rank one over a presheaf of commutative rings. -/
 noncomputable abbrev unit (R : Cᵒᵖ ⥤ CommRingCat.{u}) :
     PresheafOfModulesOfCommRing.{u} R :=
@@ -82,6 +86,11 @@ noncomputable abbrev unit (R : Cᵒᵖ ⥤ CommRingCat.{u}) :
 noncomputable abbrev restrictScalars {S : Cᵒᵖ ⥤ CommRingCat.{u}} (φ : R ⟶ S) :
     PresheafOfModulesOfCommRing.{v} S ⥤ PresheafOfModulesOfCommRing.{v} R :=
   PresheafOfModules.restrictScalars (whiskerRight φ (forget₂ _ _))
+
+lemma naturality_apply {M₁ M₂ : PresheafOfModulesOfCommRing.{v} R}
+    (f : M₁ ⟶ M₂) {X Y : Cᵒᵖ} (g : X ⟶ Y) (x : M₁.obj X) :
+    (f.app' Y) ((M₁.map g) x) = (M₂.map g) ((f.app' X) x) :=
+  PresheafOfModules.naturality_apply _ _ _
 
 end Basic
 

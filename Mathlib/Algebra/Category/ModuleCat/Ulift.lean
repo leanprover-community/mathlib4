@@ -5,8 +5,8 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Injective
-public import Mathlib.Algebra.Category.ModuleCat.Projective
+import Mathlib.Algebra.Category.ModuleCat.Injective
+import Mathlib.Algebra.Category.ModuleCat.Projective
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
@@ -38,7 +38,7 @@ variable [Ring R]
 /-- Universe lift functor for `R`-module. -/
 @[simps obj map, pp_with_univ]
 def uliftFunctor : ModuleCat.{v} R ⥤ ModuleCat.{max v v'} R where
-  obj X := ModuleCat.of R (ULift.{v', v} X)
+  obj X := ↧(ULift.{v', v} X)
   map f := ModuleCat.ofHom <|
     ULift.moduleEquiv.symm.toLinearMap.comp (f.hom.comp ULift.moduleEquiv.toLinearMap)
 

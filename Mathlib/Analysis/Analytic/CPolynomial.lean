@@ -5,10 +5,12 @@ Authors: Sophie Morel
 -/
 module
 
-public import Mathlib.Analysis.Analytic.Composition
-public import Mathlib.Analysis.Analytic.Constructions
 public import Mathlib.Analysis.Analytic.CPolynomialDef
 public import Mathlib.Analysis.Normed.Module.Alternating.Basic
+public import Mathlib.Topology.Algebra.Module.Equiv.Prod
+
+import Mathlib.Analysis.Analytic.Constructions
+import Mathlib.Analysis.Normed.Operator.Mul
 
 /-! # Properties of continuously polynomial functions
 
@@ -115,27 +117,27 @@ theorem CPolynomialAt.smul (hf : CPolynomialAt 𝕜 f x) (c : 𝕜) : CPolynomia
 theorem CPolynomialOn.smul (hf : CPolynomialOn 𝕜 f s) (c : 𝕜) : CPolynomialOn 𝕜 (c • f) s :=
   fun x hx ↦ (hf x hx).smul c
 
-lemma HasFiniteFPowerSeriesOnBall.prod {g : E → G} {pg : FormalMultilinearSeries 𝕜 E G}
+lemma HasFiniteFPowerSeriesOnBall.prodMk {g : E → G} {pg : FormalMultilinearSeries 𝕜 E G}
     (hf : HasFiniteFPowerSeriesOnBall f pf x n r) (hg : HasFiniteFPowerSeriesOnBall g pg x m r) :
     HasFiniteFPowerSeriesOnBall (fun x ↦ (f x, g x)) (pf.prod pg) x (max n m) r :=
   ⟨by simpa using hf.1.prod hg.1, fun N hN ↦ by simp [FormalMultilinearSeries.prod,
     hf.finite _ ((le_max_left n m).trans hN), hg.finite _ ((le_max_right n m).trans hN)]⟩
 
-theorem HasFiniteFPowerSeriesAt.prod {g : E → G} {pg : FormalMultilinearSeries 𝕜 E G}
+theorem HasFiniteFPowerSeriesAt.prodMk {g : E → G} {pg : FormalMultilinearSeries 𝕜 E G}
     (hf : HasFiniteFPowerSeriesAt f pf x n) (hg : HasFiniteFPowerSeriesAt g pg x m) :
     HasFiniteFPowerSeriesAt (fun x ↦ (f x, g x)) (pf.prod pg) x (max n m) := by
   rcases (hf.eventually.and hg.eventually).exists with ⟨r, hr⟩
-  exact ⟨r, hr.1.prod hr.2⟩
+  exact ⟨r, hr.1.prodMk hr.2⟩
 
-theorem CPolynomialAt.prod {g : E → G} (hf : CPolynomialAt 𝕜 f x) (hg : CPolynomialAt 𝕜 g x) :
+theorem CPolynomialAt.prodMk {g : E → G} (hf : CPolynomialAt 𝕜 f x) (hg : CPolynomialAt 𝕜 g x) :
     CPolynomialAt 𝕜 (fun x ↦ (f x, g x)) x :=
   let ⟨_, _, hpf⟩ := hf
   let ⟨_, _, hqf⟩ := hg
-  (hpf.prod hqf).cpolynomialAt
+  (hpf.prodMk hqf).cpolynomialAt
 
-theorem CPolynomialOn.prod {g : E → G} (hf : CPolynomialOn 𝕜 f s) (hg : CPolynomialOn 𝕜 g s) :
+theorem CPolynomialOn.prodMk {g : E → G} (hf : CPolynomialOn 𝕜 f s) (hg : CPolynomialOn 𝕜 g s) :
     CPolynomialOn 𝕜 (fun x ↦ (f x, g x)) s :=
-  fun x hx ↦ (hf x hx).prod (hg x hx)
+  fun x hx ↦ (hf x hx).prodMk (hg x hx)
 
 /-!
 ### Continuous multilinear maps
@@ -210,7 +212,7 @@ lemma cpolynomialAt_smul_compContinuousLinearMapCLM (f₀ : E →L[𝕜] F) :
   -/
   classical
   let A : ContinuousMultilinearMap 𝕜 (fun (i : ι) ↦ E) G →L[𝕜] (E [⋀^ι]→L[𝕜] G) :=
-    ContinuousMultilinearMap.alternatizationCLM
+    ContinuousMultilinearMap.alternatizationL
   let B : ContinuousMultilinearMap 𝕜 (fun (i : ι) ↦ (E →L[𝕜] F))
       ((ContinuousMultilinearMap 𝕜 (fun (i : ι) ↦ F) G)
         →L[𝕜] (ContinuousMultilinearMap 𝕜 (fun (i : ι) ↦ E) G)) :=
@@ -364,7 +366,7 @@ lemma cpolynomialOn_uncurry_of_linear :
     CPolynomialOn 𝕜 (fun (p : (Π i, Em i) × G) ↦ f p.1 p.2) s :=
   fun _ _ ↦ f.cpolynomialAt_uncurry_of_linear
 
-@[deprecated (since := "2026-09-02")]
+@[deprecated (since := "2026-09-17")]
 alias cpolyomialOn_uncurry_of_linear := cpolynomialOn_uncurry_of_linear
 
 lemma analyticOnNhd_uncurry_of_linear :
@@ -462,7 +464,7 @@ lemma cpolynomialAt_apply :
   rw [this]
   apply CPolynomialAt.comp
   · apply ContinuousMultilinearMap.cpolynomialAt_apply
-  · apply CPolynomialAt.prod
+  · apply CPolynomialAt.prodMk
     · apply ContinuousLinearMap.comp_cpolynomialAt
       exact (ContinuousLinearMap.fst 𝕜 (E [⋀^ι]→L[𝕜] F) (ι → E)).cpolynomialAt _
     · exact (ContinuousLinearMap.snd 𝕜 (E [⋀^ι]→L[𝕜] F) (ι → E)).cpolynomialAt _
