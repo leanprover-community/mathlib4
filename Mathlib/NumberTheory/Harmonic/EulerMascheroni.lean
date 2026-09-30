@@ -126,6 +126,7 @@ lemma eulerMascheroniSeq_lt_eulerMascheroniSeq' (m n : ℕ) :
 end UpperSequence
 
 /-- The Euler-Mascheroni constant `γ`. -/
+@[oeis A001620 "decimal expansion"]
 noncomputable def eulerMascheroniConstant : ℝ := limUnder atTop eulerMascheroniSeq
 
 lemma tendsto_eulerMascheroniSeq :

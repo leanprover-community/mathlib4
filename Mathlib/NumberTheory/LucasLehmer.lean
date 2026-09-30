@@ -35,6 +35,7 @@ extension and made to use kernel reductions by Kyle Miller.
 @[expose] public section
 
 /-- The Mersenne numbers, 2^p - 1. -/
+@[oeis A000225]
 def mersenne (p : ℕ) : ℕ :=
   2 ^ p - 1
 
@@ -151,6 +152,7 @@ so we take a moment setting up the lemmas relating them.
 -/
 
 /-- The recurrence `s (i+1) = (s i)^2 - 2` in `ℤ`. -/
+@[oeis A003010]
 def s : ℕ → ℤ
   | 0 => 4
   | i + 1 => s i ^ 2 - 2

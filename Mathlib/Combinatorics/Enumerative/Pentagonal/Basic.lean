@@ -29,6 +29,7 @@ convention, but implicitly shows the monotonicity in `pentagonal_lt_pentagonal_n
 public section
 
 /-- Pentagonal numbers $k(3k-1)/2$ for integer $k$. -/
+@[oeis A000326]
 def pentagonal (k : ℤ) : ℕ := (k * (3 * k - 1) / 2).toNat
 
 theorem pentagonal_def (k : ℤ) : pentagonal k = (k * (3 * k - 1) / 2).toNat := by rfl
