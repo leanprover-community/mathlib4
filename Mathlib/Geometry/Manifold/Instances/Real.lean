@@ -317,12 +317,12 @@ lemma modelWithCornersEuclideanQuadrant_symm_apply_of_le {n : ℕ}
     (𝓡c n).symm x = ⟨x, hx⟩ := by
   simp [modelWithCornersEuclideanQuadrant_symm_apply, hx]
 
-lemma modelWithCornersEuclideanQuadrant_zero {n : ℕ} [NeZero n] : (𝓡c n) 0 = 0 := rfl
+lemma modelWithCornersEuclideanQuadrant_zero {n : ℕ} : (𝓡c n) 0 = 0 := rfl
 
-lemma range_modelWithCornersEuclideanQuadrant (n : ℕ) [NeZero n] :
+lemma range_modelWithCornersEuclideanQuadrant (n : ℕ) :
     range (𝓡c n) = { y | ∀ i, 0 ≤ y i } := range_euclideanQuadrant n
 
-lemma interior_range_modelWithCornersEuclideanQuadrant (n : ℕ) [NeZero n] :
+lemma interior_range_modelWithCornersEuclideanQuadrant (n : ℕ) :
     interior (range (𝓡c n)) = { y | ∀ i, 0 < y i } := by
   calc interior (range (𝓡c n))
     _ = interior ({ y | ∀ i, 0 ≤ y i}) := by
@@ -330,7 +330,7 @@ lemma interior_range_modelWithCornersEuclideanQuadrant (n : ℕ) [NeZero n] :
       apply range_euclideanQuadrant
     _ = { y | ∀ i, 0 < y i } := interior_quadrant _ _
 
-lemma frontier_range_modelWithCornersEuclideanQuadrant (n : ℕ) [NeZero n] :
+lemma frontier_range_modelWithCornersEuclideanQuadrant (n : ℕ) :
     frontier (range (𝓡c n)) = { y | (∀ i : Fin n, 0 ≤ y i) ∧ ∃ i : Fin n, 0 = y i } := by
   calc frontier (range (𝓡c n))
     _ = frontier ({ y | ∀ i, 0 ≤ y i }) := by
