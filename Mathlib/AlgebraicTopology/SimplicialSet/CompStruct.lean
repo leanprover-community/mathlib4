@@ -6,6 +6,7 @@ Authors: Joël Riou, Arnoud van der Leer
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.CompStructTruncated
+public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 
 /-!
 # Edges, "triangles" and isos in simplicial sets
@@ -142,6 +143,20 @@ def ofEq {y₀ y₁ : X _⦋0⦌} (e : Edge x₀ x₁) (h₀ : x₀ = y₀) (h�
   src_eq  := e.src_eq.trans h₀
   tgt_eq  := e.tgt_eq.trans h₁
 
+/-- When the underlying simplex of an edge belongs to a subcomplex,
+this is the induced edge of the subcomplex. -/
+def toSubcomplex (e : Edge x₀ x₁) (A : X.Subcomplex)
+    (h : e.edge ∈ A.obj _) :
+    Edge (X := A) ⟨x₀, by rw [← e.src_eq]; exact A.map _ h⟩
+      ⟨x₁, by rw [← e.tgt_eq]; exact A.map _ h⟩ :=
+  Edge.mk ⟨e.edge, h⟩ (Subtype.ext_iff.2 e.src_eq)
+    (Subtype.ext_iff.2 e.tgt_eq)
+
+@[simp]
+lemma toSubcomplex_edge (e : Edge x₀ x₁) (A : X.Subcomplex)
+    (h : e.edge ∈ A.obj _) :
+  (e.toSubcomplex A h).edge = ⟨e.edge, h⟩ := rfl
+
 /-- Let `x₀`, `x₁`, `x₂` be `0`-simplices of a simplicial set `X`,
 `e₀₁` an edge from `x₀` to `x₁`, `e₁₂` an edge from `x₁` to `x₂`,
 `e₀₂` an edge from `x₀` to `x₂`. This is the data of a `2`-simplex whose
@@ -260,6 +275,26 @@ def ofEq {y₀ y₁ y₂ : X _⦋0⦌}
   d₂ := c.d₂.trans h₀₁
   d₀ := c.d₀.trans h₁₂
   d₁ := c.d₁.trans h₀₂
+
+/-- When the underlying simplex of a `CompStruct` belongs to a subcomplex,
+this is the induced `CompStruct` for the corresponding edges of the subcomplex. -/
+def toSubcomplex (h : CompStruct e₀₁ e₁₂ e₀₂) (A : X.Subcomplex)
+    (mem : h.simplex ∈ A.obj _) :
+    CompStruct (e₀₁.toSubcomplex A (by rw [← h.d₂]; exact A.map _ mem))
+      (e₁₂.toSubcomplex A (by rw [← h.d₀]; exact A.map _ mem))
+      (e₀₂.toSubcomplex A (by rw [← h.d₁]; exact A.map _ mem)) :=
+  CompStruct.mk ⟨h.simplex, mem⟩ (Subtype.ext_iff.2 h.d₂) (Subtype.ext_iff.2 h.d₀)
+    (Subtype.ext_iff.2 h.d₁)
+
+@[simp]
+lemma toSubcomplex_simplex (h : CompStruct e₀₁ e₁₂ e₀₂) (A : X.Subcomplex)
+    (mem : h.simplex ∈ A.obj _) :
+    (h.toSubcomplex A mem).simplex = ⟨h.simplex, mem⟩ := rfl
+
+@[simp]
+lemma toSubcomplex_edge (e : Edge x₀ x₁) (A : X.Subcomplex)
+    (h : e.edge ∈ A.obj _) :
+  (e.toSubcomplex A h).edge = ⟨e.edge, h⟩ := rfl
 
 end CompStruct
 

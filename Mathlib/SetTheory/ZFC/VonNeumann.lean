@@ -100,7 +100,7 @@ theorem vonNeumann_subset_vonNeumann_iff : V_ a ⊆ V_ b ↔ a ≤ b := by
 
 theorem mem_vonNeumann_of_subset {y : ZFSet} (h : x ⊆ y) (hy : y ∈ V_ o) : x ∈ V_ o := by
   rw [mem_vonNeumann] at *
-  exact (rank_mono h).trans_lt hy
+  gconvert hy
 
 theorem vonNeumann_strictMono : StrictMono vonNeumann :=
   strictMono_of_le_iff_le (by simp)
@@ -120,13 +120,13 @@ theorem vonNeumann_zero : V_ 0 = ∅ :=
 theorem vonNeumann_add_one (o : Ordinal) : V_ (o + 1) = powerset (V_ o) :=
   ext fun z ↦ by rw [mem_vonNeumann, mem_powerset, subset_vonNeumann, lt_add_one_iff]
 
-@[deprecated vonNeumann_add_one (since := "2026-05-25")]
+@[deprecated vonNeumann_add_one +typeChanged (since := "2026-05-25")]
 theorem vonNeumann_succ (o : Ordinal) : V_ (succ o) = powerset (V_ o) :=
   vonNeumann_add_one o
 
 theorem vonNeumann_of_isSuccPrelimit (h : IsSuccPrelimit o) :
     V_ o = ⋃ a : Set.Iio o, vonNeumann a :=
-  ext fun z ↦ by simpa [mem_vonNeumann] using h.lt_iff_exists_lt
+  ext fun z ↦ by simp [mem_vonNeumann, h.lt_iff_nonempty_Ioo (b := z.rank), Set.Nonempty, and_comm]
 
 theorem iUnion_vonNeumann : ⋃ o, (V_ o : Class) = Class.univ :=
   Class.eq_univ_of_forall fun x ↦ Set.mem_iUnion.2 <| exists_mem_vonNeumann x

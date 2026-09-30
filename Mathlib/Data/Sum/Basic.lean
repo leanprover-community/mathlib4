@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Yury Kudryashov
 module
 
 public import Mathlib.Logic.Function.Basic
-public import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Additional lemmas about sum types
@@ -273,7 +273,7 @@ theorem map_surjective {f : α → γ} {g : β → δ} :
 @[simp]
 theorem map_bijective {f : α → γ} {g : β → δ} :
     Bijective (Sum.map f g) ↔ Bijective f ∧ Bijective g :=
-  (map_injective.and map_surjective).trans <| and_and_and_comm
+  (map_injective.and map_surjective).trans and_and_and_comm
 
 end Sum
 
