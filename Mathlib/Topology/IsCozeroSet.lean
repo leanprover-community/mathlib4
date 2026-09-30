@@ -25,7 +25,7 @@ general it is a stronger property.
 * Images and coimages of cozero sets under open proper maps are cozero sets.
 -/
 
-@[expose] public section
+public section
 
 open Set Function
 
@@ -34,6 +34,7 @@ open scoped Topology unitInterval
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {u : Set X}
 
 /-- A set is a cozero set if it is the support of some continuous function to `ℝ`. -/
+@[expose]
 def IsCozeroSet (u : Set X) : Prop := ∃ f : C(X, ℝ), support f = u
 
 /-- The function that a cozero set is the support of can be chosen to be nonnegative. -/
