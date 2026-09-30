@@ -58,8 +58,7 @@ def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Q(Equiv.Perm (Fin $m))
     acc := q((Equiv.swap $(← mkFinLitQ m a) $(← mkFinLitQ m b)).trans $acc)
   return acc
 
-/-- The proof of `IsLowerTriangularDiagList k c rows` on the literal `rows` by rolling
-`IsLowerTriangularDiagList.cons` per row. -/
+/-- Construct the list-based `IsLowerTriangularDiagList k c rows` cert. -/
 def certifyLowerTriangularDiagList {u : Level} {α : Q(Type u)} (zα : Q(Zero $α))
     (certifier : EntryCertifier) (k c : Nat) (kQ cQ : Q(Nat)) (rows : Q(List (List $α))) :
     MetaM Q(IsLowerTriangularDiagList $kQ $cQ $rows) :=
@@ -68,19 +67,13 @@ def certifyLowerTriangularDiagList {u : Level} {α : Q(Type u)} (zα : Q(Zero $�
     have : $cQ =Q 0 := ⟨⟩
     return q(IsLowerTriangularDiagList.nil)
   | c + 1 => do
-    let_expr List.cons _ row rowsTl := rows |
-      throwError "certifyLowerTriangularDiagList: {rows} is not a cons cell"
-    have row : Q(List $α) := row
-    have rowsTl : Q(List (List $α)) := rowsTl
-    let_expr List.cons _ entry _ := dropListLitQ k row |
-      throwError "certifyLowerTriangularDiagList: {row} has no entry at {k}"
-    have entry : Q($α) := entry
+    let ⟨row, rowsTl, _⟩ ← unconsListLitQ rows
+    let ⟨entry, _, _⟩ ← unconsListLitQ (dropListLitQ k row)
     have k₁Q : Q(Nat) := mkNatLitQ (k + 1)
     have c₁Q : Q(Nat) := mkNatLitQ c
     let rest ← certifyLowerTriangularDiagList zα certifier (k + 1) c k₁Q c₁Q rowsTl
     let hd : Q($entry ≠ 0) ← certifier q($entry ≠ 0)
     have hdrop : List.drop $kQ $row =Q $entry :: List.replicate $c₁Q (0 : $α) := ⟨⟩
-    have : $rows =Q $row :: $rowsTl := ⟨⟩
     have : $cQ =Q $c₁Q + 1 := ⟨⟩
     have : $k₁Q =Q $kQ + 1 := ⟨⟩
     return q(IsLowerTriangularDiagList.cons $hdrop $hd $rest)
@@ -93,8 +86,7 @@ def certifyLowerTriangularDiag {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) 
   let h ← certifyLowerTriangularDiagList zα certifier 0 m q(0) q($m) rows
   return (q(isLowerTriangular_ofLists $h), q(diag_ofLists_ne_zero $h))
 
-/-- The proof of `IsPivotedList pivots rows` on the literals, one `IsPivotedList.cons` per
-pivot. -/
+/-- Construct the list-based `IsPivotedList pivots rows` cert. -/
 def certifyPivotedList {u : Level} {n : Nat} {α : Q(Type u)} (zα : Q(Zero $α))
     (certifier : EntryCertifier) (cols : List Nat) (pivots : Q(List (Fin $n)))
     (rows : Q(List (List $α))) : MetaM Q(IsPivotedList $pivots $rows) :=
@@ -104,23 +96,12 @@ def certifyPivotedList {u : Level} {n : Nat} {α : Q(Type u)} (zα : Q(Zero $α)
     have : $pivots =Q ([] : List (Fin $n)) := ⟨⟩
     return q(IsPivotedList.nil $hz)
   | k :: ks => do
-    let_expr List.cons _ pivot pivotsTl := pivots |
-      throwError "certifyPivotedList: {pivots} is not a cons cell"
-    let_expr List.cons _ row rowsTl := rows |
-      throwError "certifyPivotedList: {rows} is not a cons cell"
-    have pivot : Q(Fin $n) := pivot
-    have pivotsTl : Q(List (Fin $n)) := pivotsTl
-    have row : Q(List $α) := row
-    have rowsTl : Q(List (List $α)) := rowsTl
-    let_expr List.cons _ entry suffix := dropListLitQ k row |
-      throwError "certifyPivotedList: {row} has no entry at {k}"
-    have entry : Q($α) := entry
-    have suffix : Q(List $α) := suffix
+    let ⟨pivot, pivotsTl, _⟩ ← unconsListLitQ pivots
+    let ⟨row, rowsTl, _⟩ ← unconsListLitQ rows
+    let ⟨entry, suffix, _⟩ ← unconsListLitQ (dropListLitQ k row)
     let rest ← certifyPivotedList zα certifier ks pivotsTl rowsTl
     let hd : Q($entry ≠ 0) ← certifier q($entry ≠ 0)
     have : $row =Q List.replicate ($pivot : Nat) 0 ++ $entry :: $suffix := ⟨⟩
-    have : $pivots =Q $pivot :: $pivotsTl := ⟨⟩
-    have : $rows =Q $row :: $rowsTl := ⟨⟩
     return q(IsPivotedList.cons rfl $hd $rest)
 
 /-- Prove that `U` is pivoted by `pivotOfList pivots` from the rows of `U`, with `certifier`

@@ -105,6 +105,15 @@ def dropListLitQ {u : Level} {α : Q(Type u)} (n : Nat) (l : Q(List $α)) : Q(Li
     | List.cons _ _ tl => dropListLitQ (α := α) n tl
     | _ => l
 
+/-- A specialised version of `~q($hd :: $tl)`. -/
+def unconsListLitQ {u : Level} {α : Q(Type u)} (l : Q(List $α)) :
+    MetaM ((hd : Q($α)) × (tl : Q(List $α)) ×' $l =Q $hd :: $tl) := do
+  let_expr List.cons _ hd tl := l | throwError "unconsListLitQ: expected a cons cell{indentExpr l}"
+  have hd : Q($α) := hd
+  have tl : Q(List $α) := tl
+  have : $l =Q $hd :: $tl := ⟨⟩
+  return ⟨hd, tl, ⟨⟩⟩
+
 /-- Version of `instantiateMVarsQ` that returns the Qq-fact that the new expression is equal to the
 previous one. -/
 def instantiateMVarsQ' {u : Level} {α : Q(Sort u)} (e : Q($α)) :
