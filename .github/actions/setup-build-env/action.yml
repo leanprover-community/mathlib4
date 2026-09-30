@@ -45,7 +45,7 @@ runs:
 
     # The Hoskinson runners may not have jq installed, so do that now.
     - name: 'Setup jq'
-      uses: dcarbone/install-jq-action@b7ef57d46ece78760b4019dbc4080a1ba2a40b45 # v3.2.0
+      uses: dcarbone/install-jq-action@4fcb5062d7ce9bc4382d1a352d19ba3ba2c317c1 # v4.0.1
 
     # Compute the trust-classified container target and read fallback for this
     # job. Sets MATHLIB_CACHE_FROM / MATHLIB_CACHE_PRIMARY in env so every
@@ -74,13 +74,42 @@ runs:
         # credentials, so checking it out under pull_request_target is safe.
         allow-unsafe-pr-checkout: true
 
+    # The steps below and the landrun rules expect the checkout to contain no
+    # symlinks, and nothing under `.lake/`.
+    - name: check checkout contents
+      shell: bash
+      run: |
+        set -euo pipefail
+        cd pr-branch
+        # Allowed entries are in `git ls-files --stage` format: mode, blob (for a
+        # symlink, its target), stage, path. The two `scripts/bench/` symlinks
+        # were removed when this check was added; branches based on older commits
+        # still contain them. TODO: drop these entries once such branches are no
+        # longer being built.
+        links=$(git ls-files --stage | awk '
+          BEGIN {
+            allowed["120000 819298943e1a8c331413fb55e2c4bbc98d05e562 0\tscripts/bench/build/fake-root/bin/lean.py"] = 1
+            allowed["120000 e5224d533ef27b001224859a9b36696846a7e7fe 0\tscripts/bench/size/run.py"] = 1
+          }
+          $1 == "120000" && !($0 in allowed)')
+        if [ -n "${links}" ]; then
+          echo "::error::The branch contains symlinks, which are not supported:"
+          echo "${links}"
+          exit 1
+        fi
+        lake=$(git ls-files -- .lake DownstreamTest/.lake)
+        if [ -n "${lake}" ]; then
+          echo "::error::The branch contains files under .lake/, which must not be committed:"
+          echo "${lake}"
+          exit 1
+        fi
+
     # Create empty directories so landrun doesn't complain.
     - name: Create empty directories
       shell: bash # We need to run this outside landrun, as it is a prerequisite for landrun!
       run: |
         mkdir -p pr-branch/.lake/
-        mkdir -p .cache/mathlib/
-        mkdir -p _work
+        mkdir -p /home/lean/.cache/mathlib/
 
     # NOTE: if you copy this, consider using `leanprover/lean-action` instead.
     # We install manually, to avoid running lean outside landrun.
@@ -147,6 +176,22 @@ runs:
         tools_source_ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.event.pull_request.head.repo.fork && 'master' || inputs.pr_branch_ref) }}
         source_dir: ${{ github.event.pull_request.head.repo.fork != true && 'pr-branch' || '' }}
         github_token: ${{ github.token }}
+
+    # Resolve the sysroot of the toolchain pinned by `tools-branch` (`master` for
+    # fork PRs). The `cache` steps put its `bin/` first on PATH, so the `lean` and
+    # `leantar` that `cache` invokes come from this toolchain rather than the one
+    # the PR's `lean-toolchain` selects. Fails if the sysroot can't be resolved.
+    - name: resolve trusted toolchain
+      shell: bash
+      run: |
+        set -euo pipefail
+        prefix="$(cd tools-branch && lean --print-prefix)"
+        if [ -z "${prefix}" ]; then
+          echo "::error::could not resolve the trusted toolchain sysroot from tools-branch"
+          exit 1
+        fi
+        echo "Trusted toolchain sysroot: ${prefix}"
+        echo "TRUSTED_LEAN_PREFIX=${prefix}" >> "$GITHUB_ENV"
 
     - name: download dependencies
       # We need network access to download dependencies. We run this inside

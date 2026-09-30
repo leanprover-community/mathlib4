@@ -5,11 +5,9 @@ Authors: Kenny Lau, Eric Wieser, Antoine Chambert-Loir, María-Inés de Frutos-F
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-public import Mathlib.Algebra.GroupWithZero.Invertible
 public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-public import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Trivial Square-Zero Extension
@@ -577,7 +575,7 @@ theorem snd_pow_of_smul_comm [Monoid R] [AddMonoid M] [DistribMulAction R M]
   | 0 => rw [Nat.pred_zero, pow_zero, List.range_zero, zero_smul, List.map_nil, List.sum_nil]
   | (Nat.succ n) =>
     simp_rw [Nat.pred_succ]
-    exact (List.sum_eq_card_nsmul _ (x.fst ^ n • x.snd) (by grind)).trans
+    exact (List.sum_eq_length_nsmul _ (x.fst ^ n • x.snd) (by grind)).trans
       (by rw [List.length_map, List.length_range])
 where
   aux : ∀ n : ℕ, x.snd <• x.fst ^ n = x.fst ^ n •> x.snd := by
@@ -708,8 +706,8 @@ abbrev invertibleFstOfInvertible (x : tsze R M) [Invertible x] : Invertible x.fs
   mul_invOf_self := by rw [← fst_mul, mul_invOf_self, fst_one]
 
 theorem fst_invOf (x : tsze R M) [Invertible x] [Invertible x.fst] : (⅟x).fst = ⅟(x.fst) := by
-  letI := invertibleFstOfInvertible x
-  convert! (rfl : _ = ⅟x.fst)
+  let := invertibleFstOfInvertible x
+  convert (rfl : _ = ⅟x.fst)
 
 theorem mul_left_eq_one (r : R) (x : tsze R M) (h : r * x.fst = 1) :
     (inl r + inr (-((r •> x.snd) <• r))) * x = 1 := by
@@ -726,21 +724,22 @@ theorem mul_right_eq_one (x : tsze R M) (r : R) (h : x.fst * r = 1) :
 
 variable [SMulCommClass R Rᵐᵒᵖ M]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `x : tzre R M` is invertible when `x.fst : R` is. -/
 abbrev invertibleOfInvertibleFst (x : tsze R M) [Invertible x.fst] : Invertible x where
   invOf := (⅟x.fst, -(⅟x.fst •> x.snd <• ⅟x.fst))
   invOf_mul_self := by
-    convert! mul_left_eq_one _ _ (invOf_mul_self x.fst)
+    convert mul_left_eq_one _ _ (invOf_mul_self x.fst)
     ext <;> simp
   mul_invOf_self := by
-    convert! mul_right_eq_one _ _ (mul_invOf_self x.fst)
+    convert mul_right_eq_one _ _ (mul_invOf_self x.fst)
     ext <;> simp [smul_comm]
 
 theorem snd_invOf (x : tsze R M) [Invertible x] [Invertible x.fst] :
     (⅟x).snd = -(⅟x.fst •> x.snd <• ⅟x.fst) := by
-  letI := invertibleOfInvertibleFst x
-  convert! congr_arg (TrivSqZeroExt.snd (R := R) (M := M)) (_ : _ = ⅟x)
-  convert! rfl
+  let := invertibleOfInvertibleFst x
+  convert! congr(TrivSqZeroExt.snd (R := R) (M := M) $((_ : _ = ⅟x)))
+  convert rfl
 
 /-- Together `TrivSqZeroExt.detInvertibleOfInvertible` and `TrivSqZeroExt.invertibleOfDetInvertible`
 form an equivalence, although both sides of the equiv are subsingleton anyway. -/
@@ -796,7 +795,7 @@ protected theorem inv_mul_cancel {x : tsze R M} (hx : fst x ≠ 0) : x⁻¹ * x 
 variable [SMulCommClass R Rᵐᵒᵖ M]
 
 @[simp] theorem invOf_eq_inv (x : tsze R M) [Invertible x] : ⅟x = x⁻¹ := by
-  letI := invertibleFstOfInvertible x
+  let := invertibleFstOfInvertible x
   ext <;> simp [fst_invOf, snd_invOf]
 
 protected theorem mul_inv_cancel {x : tsze R M} (hx : fst x ≠ 0) : x * x⁻¹ = 1 := by

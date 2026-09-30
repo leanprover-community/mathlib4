@@ -5,9 +5,9 @@ Authors: Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 -/
 module
 
-public import Mathlib.Analysis.Convex.Jensen
+import Mathlib.Analysis.Convex.Jensen
 public import Mathlib.Analysis.Convex.Mul
-public import Mathlib.Analysis.Convex.SpecificFunctions.Basic
+import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
 /-!
@@ -118,7 +118,7 @@ theorem rpow_add_le_mul_rpow_add_rpow (z₁ z₂ : ℝ≥0) {p : ℝ} (hp : 1 �
     (z₁ + z₂) ^ p ≤ (2 : ℝ≥0) ^ (p - 1) * (z₁ ^ p + z₂ ^ p) := by
   rcases eq_or_lt_of_le hp with (rfl | h'p)
   · simp only [rpow_one, sub_self, rpow_zero, one_mul]; rfl
-  convert!
+  convert
     rpow_arith_mean_le_arith_mean2_rpow (1 / 2) (1 / 2) (2 * z₁) (2 * z₂) (add_halves 1) hp using 1
   · simp only [one_div, inv_mul_cancel_left₀, Ne, two_ne_zero,
       not_false_iff]
@@ -271,7 +271,7 @@ theorem rpow_arith_mean_le_arith_mean2_rpow (w₁ w₂ z₁ z₂ : ℝ≥0∞) (
 /-- Unweighted mean inequality, version for two elements of `ℝ≥0∞` and real exponents. -/
 theorem rpow_add_le_mul_rpow_add_rpow (z₁ z₂ : ℝ≥0∞) {p : ℝ} (hp : 1 ≤ p) :
     (z₁ + z₂) ^ p ≤ (2 : ℝ≥0∞) ^ (p - 1) * (z₁ ^ p + z₂ ^ p) := by
-  convert!
+  convert
     rpow_arith_mean_le_arith_mean2_rpow (1 / 2) (1 / 2) (2 * z₁) (2 * z₂) (ENNReal.add_halves 1) hp
       using 1
   · simp [← mul_assoc, ENNReal.inv_mul_cancel two_ne_zero ofNat_ne_top]
@@ -324,12 +324,12 @@ for `p ≥ 1` or `p = 0`, and `2^(1/p-1)` in the more tricky interval `(0, 1)`. 
   if p ∈ Set.Ioo (0 : ℝ≥0∞) 1 then (2 : ℝ≥0∞) ^ (1 / p.toReal - 1) else 1
 
 theorem LpAddConst_of_one_le {p : ℝ≥0∞} (hp : 1 ≤ p) : LpAddConst p = 1 := by
-  rw [LpAddConst, if_neg]
+  rw [LpAddConst, ite_eq_right]
   intro h
   exact lt_irrefl _ (h.2.trans_le hp)
 
 theorem LpAddConst_zero : LpAddConst 0 = 1 := by
-  rw [LpAddConst, if_neg]
+  rw [LpAddConst, ite_eq_right]
   intro h
   exact lt_irrefl _ h.1
 
@@ -341,6 +341,11 @@ theorem LpAddConst_lt_top (p : ℝ≥0∞) : LpAddConst p < ∞ := by
     exact ENNReal.toReal_mono (by simpa using h.1.ne') (ENNReal.one_le_inv.2 h.2.le)
   · exact ENNReal.one_lt_top
 
+theorem LpAddConst_ne_zero (p : ℝ≥0∞) : LpAddConst p ≠ 0 := by
+  intro h
+  unfold LpAddConst at h
+  split_ifs at h <;> simp at h
+
 /-- Variant of `ENNReal.rpow_add_le_mul_rpow_add_rpow` using `LpAddConst` as the constant,
 valid for all `0 ≤ p` (not just `1 ≤ p`). -/
 theorem rpow_add_le_mul_rpow_add_rpow' (z₁ z₂ : ℝ≥0∞) {p : ℝ} (hp : 0 ≤ p) :
@@ -351,8 +356,8 @@ theorem rpow_add_le_mul_rpow_add_rpow' (z₁ z₂ : ℝ≥0∞) {p : ℝ} (hp : 
       · simp
       · rwa [ENNReal.inv_lt_one, one_lt_ofReal]
     rw [show LpAddConst (ENNReal.ofReal p)⁻¹ =
-        (2 : ℝ≥0∞) ^ (1 / ((ENNReal.ofReal p)⁻¹).toReal - 1) from by
-      rw [LpAddConst, if_pos hmem]]
+        (2 : ℝ≥0∞) ^ (1 / ((ENNReal.ofReal p)⁻¹).toReal - 1) by
+      rw [LpAddConst, ite_eq_left hmem]]
     simp only [ENNReal.toReal_inv, div_inv_eq_mul, one_mul]
     rw [ENNReal.toReal_ofReal hp]
     exact rpow_add_le_mul_rpow_add_rpow _ _ h.le

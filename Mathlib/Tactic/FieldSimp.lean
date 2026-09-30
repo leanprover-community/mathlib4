@@ -124,6 +124,7 @@ def split (iM : Q(CommGroupWithZero $M)) (l : qNF M) :
       let r' : ℤ := -r
       return ⟨t_n, ((r', x), i) :: t_d, (q(NF.cons_eq_div_of_eq_div' $r' $x $pf):)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 private def evalPrettyAux (iM : Q(CommGroupWithZero $M)) (l : qNF M) :
     MetaM (Σ e : Q($M), Q(NF.eval $(l.toNF) = $e)) :=
   match l with
@@ -799,7 +800,7 @@ simproc_decl fieldLt (LT.lt _ _) := FieldSimp.proc
 attribute [field, inherit_doc FieldSimp.proc] fieldEq fieldLe fieldLt
 
 /-!
- We register `field_simp` with the `hint` tactic.
- -/
+We register `field_simp` with the `hint` tactic.
+-/
 register_hint 1000 field_simp
 register_try?_tactic (priority := 1000) field_simp

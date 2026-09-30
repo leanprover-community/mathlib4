@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Ring.CentroidHom
 public import Mathlib.Algebra.Star.StarRingHom
 public import Mathlib.Algebra.Star.Subsemiring
-public import Mathlib.Algebra.Star.Basic
 
 /-!
 # Centroid homomorphisms on Star Rings
@@ -117,6 +116,7 @@ section NonAssocStarSemiring
 
 variable [NonAssocSemiring α] [StarRing α]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism from the center of a (non-associative) semiring onto its centroid. -/
 def starCenterIsoCentroid : StarSubsemiring.center α ≃⋆+* CentroidHom α where
   __ := starCenterToCentroid

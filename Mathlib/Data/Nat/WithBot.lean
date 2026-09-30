@@ -6,7 +6,8 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Data.Nat.Cast.WithTop
-public import Mathlib.Order.Nat
+import Mathlib.Order.Nat
+public import Mathlib.Algebra.Ring.Nat
 
 /-!
 # `WithBot ℕ`
@@ -21,9 +22,7 @@ namespace Nat
 
 namespace WithBot
 
-instance : WellFoundedRelation (WithBot ℕ) where
-  rel := (· < ·)
-  wf := IsWellFounded.wf
+instance : WellFoundedRelation (WithBot ℕ) := WellFoundedLT.toWellFoundedRelation
 
 theorem add_eq_zero_iff {n m : WithBot ℕ} : n + m = 0 ↔ n = 0 ∧ m = 0 := by
   cases n

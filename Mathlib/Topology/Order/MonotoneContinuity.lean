@@ -5,7 +5,6 @@ Authors: Yury Kudryashov, Heather Macbeth
 -/
 module
 
-public import Mathlib.Topology.Homeomorph.Defs
 public import Mathlib.Topology.Order.LeftRightNhds
 
 /-!
@@ -27,7 +26,7 @@ public section
 
 open Set Filter
 
-open Topology
+open scoped Topology
 
 section LinearOrder
 

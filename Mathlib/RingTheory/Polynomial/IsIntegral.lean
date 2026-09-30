@@ -5,10 +5,11 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Data.Multiset.Fintype
-public import Mathlib.RingTheory.AdjoinRoot
+import Mathlib.Data.Multiset.Fintype
+import Mathlib.RingTheory.AdjoinRoot
 public import Mathlib.RingTheory.Polynomial.RationalRoot
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.AlmostIntegral
+import Mathlib.Algebra.MvPolynomial.Variables
 
 /-!
 
@@ -155,11 +156,6 @@ protected lemma IsIntegral.coeff
   · simpa [show i ≠ m by lia] using this
   · simp [coeff_eq_zero_of_natDegree_lt hi, isIntegral_zero]
 
-@[deprecated (since := "2026-01-01")]
-alias IsIntegral.coeff_of_exists_smul_mem_lifts := IsIntegral.coeff
-
-@[deprecated (since := "2026-01-01")] alias IsIntegral.coeff_of_isFractionRing := IsIntegral.coeff
-
 theorem Polynomial.isIntegral_iff_isIntegral_coeff {f : S[X]} :
     IsIntegral R[X] f ↔ ∀ n, IsIntegral R (f.coeff n) := by
   refine ⟨IsIntegral.coeff, fun H ↦ ?_⟩
@@ -192,14 +188,13 @@ attribute [local instance] MvPolynomial.algebraMvPolynomial in
 attribute [-simp] AlgEquiv.symm_toRingEquiv in
 theorem MvPolynomial.isIntegral_iff_isIntegral_coeff.{w} {σ : Type w} {f : MvPolynomial σ S} :
     IsIntegral (MvPolynomial σ R) f ↔ ∀ n, IsIntegral R (f.coeff n) := by
-  classical
   refine ⟨fun H n ↦ ?mp, fun H ↦ ?mpr⟩
   case mpr =>
     rw [← f.support_sum_monomial_coeff]
     simp_rw [monomial_eq]
     refine IsIntegral.sum _ fun n _ ↦ .mul ((H n).map (Algebra.ofId _ _)).tower_top
       (.prod _ fun i _ ↦ .pow ?_ _)
-    convert! isIntegral_algebraMap (x := MvPolynomial.X i)
+    convert isIntegral_algebraMap (x := MvPolynomial.X i)
     simp only [algebraMap_def, map_X]
   unfold IsIntegral at H
   wlog hσ : Finite σ generalizing σ
@@ -212,7 +207,7 @@ theorem MvPolynomial.isIntegral_iff_isIntegral_coeff.{w} {σ : Type w} {f : MvPo
         (g := (rename ((↑) : f.vars → σ)).toRingHom) (rename_injective _ Subtype.val_injective)
         (.of_comp (f := (killCompl (f := ((↑) : f.vars → σ)) Subtype.val_injective).toRingHom) <| by
         simp only [AlgHom.toRingHom_eq_coe, algebraMap_def, RingHom.coe_coe, hg]
-        convert!
+        convert
           H.map
             ((rename Subtype.val).comp
                 (killCompl (f := ((↑) : f.vars → σ)) Subtype.val_injective)).toRingHom
@@ -231,8 +226,8 @@ theorem MvPolynomial.isIntegral_iff_isIntegral_coeff.{w} {σ : Type w} {f : MvPo
     refine .of_map (g := (isEmptyAlgEquiv _ PEmpty).symm.toRingHom)
       (isEmptyAlgEquiv _ PEmpty).symm.injective
       (.of_comp (f := (isEmptyAlgEquiv _ PEmpty).toRingHom) ?_)
-    convert! H
-    · aesop (add simp MvPolynomial.isEmptyAlgEquiv)
+    convert H
+    · ext r m <;> simp [Subsingleton.elim m 0, C, X, monomial, map]
     · obtain rfl := Subsingleton.elim n 0
       have : constantCoeff = (isEmptyAlgEquiv S PEmpty).toRingHom := by aesop
       simpa [-EmbeddingLike.apply_eq_iff_eq, -isEmptyAlgEquiv_apply] using!
@@ -242,7 +237,7 @@ theorem MvPolynomial.isIntegral_iff_isIntegral_coeff.{w} {σ : Type w} {f : MvPo
       (p := optionEquivLeft _ _ f) (.of_map
       (g := (optionEquivLeft _ _).symm.toRingHom) (optionEquivLeft _ _).symm.injective
       (.of_comp (f := (optionEquivLeft _ _).toRingHom) (by
-        convert! H
+        convert H
         · ext i m
           · aesop
           · cases i <;> aesop

@@ -5,10 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Category.AlgCat.TensorAlgebra
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf
-public import Mathlib.Algebra.Category.ModuleCat.Limits
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
-public import Mathlib.CategoryTheory.Sites.Whiskering
 
 /-!
 # Sheaves of modules over a sheaf of rings
@@ -166,8 +165,6 @@ def sectionsFunctor : SheafOfModules.{v} R ⥤ Type _ where
   obj M := M.sections
   map f := ↾(sectionsMap f)
 
-variable [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
-
 variable (R) in
 /-- The obvious free sheaf of modules of rank `1`. -/
 @[simps]
@@ -229,7 +226,7 @@ noncomputable def homEquivOfIsLocallyBijective : (M₂ ⟶ N) ≃ (M₁ ⟶ N) w
           ((PresheafOfModules.toPresheaf R).map ψ)
         simp only [← hφ, Equiv.symm_apply_apply]
         replace hφ : ∀ (Z : Cᵒᵖ) (x : M₁.obj Z), φ.app Z (f.app Z x) = ψ.app Z x :=
-          fun Z x ↦ CategoryTheory.congr_fun (congr_app hφ Z) x
+          fun Z x ↦ congr($(hφ).app Z x)
         intro X r y
         apply hN.isSeparated _ _
           (Presheaf.imageSieve_mem J ((toPresheaf R).map f) y)
