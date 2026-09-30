@@ -941,10 +941,6 @@ theorem HaveLebesgueDecomposition.sfinite_of_isFiniteMeasure [SFinite μ]
     HaveLebesgueDecomposition μ ν :=
   sum_sfiniteSeq μ ▸ sum_left _
 
-@[deprecated (since := "2026-09-29")]
-alias HaveLebesgueDecomposition.sFinite_of_isFiniteMeasure :=
-  HaveLebesgueDecomposition.sfinite_of_isFiniteMeasure
-
 attribute [local instance] haveLebesgueDecomposition_of_finiteMeasure
 
 -- see Note [lower instance priority]
