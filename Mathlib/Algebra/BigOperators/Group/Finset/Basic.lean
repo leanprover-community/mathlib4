@@ -494,12 +494,25 @@ theorem prod_extend_by_one [DecidableEq ι] (s : Finset ι) (f : ι → M) :
     ∏ i ∈ s, (if i ∈ s then f i else 1) = ∏ i ∈ s, f i :=
   (prod_congr rfl) fun _i hi => ite_eq_left hi
 
+@[to_additive]
+theorem prod_extend_one {t : Finset κ} {f : ι → κ} {g : ι → M}
+    (hfg : Function.FactorsThrough g f) (hfs : Set.InjOn f s) (hfst : Set.MapsTo f s t)
+    (h : ∀ j ∈ t, j ∉ f '' s → j ∉ Set.range f) :
+    ∏ j ∈ t, Function.extend f g 1 j = ∏ i ∈ s, g i := by
+  refine (Finset.prod_of_injOn f hfs hfst (fun j hjt hjs ↦ ?_) ?_).symm
+  · rw [Function.extend_apply' _ _ _ (by simpa using h j hjt hjs), Pi.one_apply]
+  · simp [hfg.extend_apply]
+
+@[to_additive]
+theorem prod_extend_one_eq_prod_univ [Fintype ι] {t : Finset κ} {f : ι → κ} (g : ι → M)
+    (hf : Function.Injective f) (ht : ∀ i, f i ∈ t) :
+    ∏ j ∈ t, Function.extend f g 1 j = ∏ i, g i :=
+  prod_extend_one (hf.factorsThrough _) hf.injOn (by simpa using ht) (by simp)
+
 /-- Also see `Finset.prod_ite_mem_eq` -/
 @[to_additive /-- Also see `Finset.sum_ite_mem_eq` -/]
-theorem prod_eq_prod_extend (f : s → M) : ∏ x, f x = ∏ x ∈ s, Subtype.val.extend f 1 x := by
-  rw [univ_eq_attach, ← Finset.prod_attach s]
-  congr with ⟨x, hx⟩
-  rw [Subtype.val_injective.extend_apply]
+theorem prod_eq_prod_extend (f : s → M) : ∏ x, f x = ∏ x ∈ s, Subtype.val.extend f 1 x :=
+  (prod_extend_one_eq_prod_univ _ Subtype.val_injective fun i ↦ i.prop).symm
 
 @[to_additive]
 theorem prod_bij_ne_one {s : Finset ι} {t : Finset κ} {f : ι → M} {g : κ → M}
