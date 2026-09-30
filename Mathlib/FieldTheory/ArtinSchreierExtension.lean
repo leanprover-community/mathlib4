@@ -50,10 +50,10 @@ open AdjoinRoot Multiset
 lemma splits_artinSchreierPoly {a : F} {c : F} (hr : c ^ p - c - a = 0) :
     Splits (X ^ p - X - C a) := by
   rcases CharP.char_is_prime_or_zero F p with hp | rfl
-  · have := Fact.mk hp
-    have := Polynomial.splits_X_pow_char_sub_X F p
-    have h : ((X ^ p - X - C a).taylor c).Splits := by simp_all
-    exact (splits_iff_comp_splits_of_natDegree_eq_one (natDegree_X_add_C c)).mpr h
+  · rw [Splits.taylor_iff c]
+    have := Fact.mk hp
+    have := splits_X_pow_char_sub_X F p
+    simp_all
   · apply Splits.of_natDegree_le_one; compute_degree
 
 lemma irreducible_artinSchreierPoly {a : F} (hr : (X ^ p - X - C a).roots = 0) :

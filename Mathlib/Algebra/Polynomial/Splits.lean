@@ -293,6 +293,11 @@ theorem eval_rootOfSplits (hf : f.Splits) (hfd : f.degree ≠ 0) :
 theorem Splits.comp_X_sub_C (hf : f.Splits) (a : R) : (f.comp (X - C a)).Splits :=
   hf.comp_of_natDegree_le_one_of_monic (natDegree_sub_C.trans_le natDegree_X_le) (monic_X_sub_C a)
 
+lemma Splits.taylor_iff {p : R[X]} (r : R) : p.Splits ↔ (p.taylor r).Splits := by
+  refine ⟨fun h ↦ Splits.taylor h r, fun h ↦ ?_⟩
+  have h1 := Splits.taylor h (-r)
+  simp_all [taylor_taylor]
+
 variable [IsDomain R]
 
 theorem Splits.eq_prod_roots (hf : Splits f) :
