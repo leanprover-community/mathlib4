@@ -71,11 +71,10 @@ lemma irreducible_artinSchreierPoly {a : F} (hr : (X ^ p - X - C a).roots = 0) :
     have h2 : b.natDegree ∣ f.natDegree := by
       refine dvd_natDegree_of_monic_of_irreducible _ fun c hc0 hc hc1 ↦ ?_
       have := Fact.mk hc
-      let i := algebraMap F (AdjoinRoot c)
-      have hm0 : f.map i ≠ 0 := map_ne_zero h0
-      have hdiv : b.map i ∣ f.map i := map_dvd i hb3
-      have hc : (f.map i).IsRoot (root c) := (isRoot_root _).dvd (map_dvd i (by aesop))
-      rw [show f.map i = X ^ p - X - C (i a) by simp [hf]] at hm0 hdiv hc
+      have hm0 : f.map (of c) ≠ 0 := map_ne_zero h0
+      have hdiv : b.map (of c) ∣ f.map (of c) := map_dvd _ hb3
+      have hc := IsRoot.dvd (isRoot_root c) (map_dvd (of c) hc1)
+      rw [show f.map (of c) = X ^ p - X - C (of c a) by simp [hf]] at hm0 hdiv hc
       simp only [IsRoot.def, eval_sub, eval_pow, eval_X, eval_C] at hc
       have := (Algebra.charP_iff F (AdjoinRoot c) p).mp ‹CharP F p›
       rw [← (AdjoinRoot.isAdjoinRootMonic _ hc0).finrank]

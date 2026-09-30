@@ -736,7 +736,7 @@ theorem natDegree_eq_sum_natDegree_normalizedFactors [DecidableEq R] (a : R[X]) 
   then so does `f` itself. -/
 lemma dvd_natDegree_of_monic_of_irreducible (f : R[X]) {n : ℕ}
     (h : ∀ d, Monic d → Irreducible d → d ∣ f → n ∣ d.natDegree) : n ∣ f.natDegree := by
-  open Classical in
+  classical
   by_cases h0 : f = 0
   · simp [h0]
   · rw [natDegree_eq_sum_natDegree_normalizedFactors]
