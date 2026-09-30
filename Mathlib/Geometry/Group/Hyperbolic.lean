@@ -11,6 +11,9 @@ public import Mathlib.Topology.MetricSpace.Hyperbolic
 /-!
 # Hyperbolic groups
 
+A finitely generated group is hyperbolic if its induced metric space with respect to a chosen family
+of `Group.Generators` satisfies the Gromov hyperbolicity condition.
+
 ## Main definitions
 
 * `Generators.IsHyperbolicWith`: A group is `δ`-hyperbolic with respect to a generating set `P`
@@ -51,9 +54,10 @@ class IsHyperbolic (G : Type*) [Group G] : Prop where
 
 /-- Every hyperbolic group is finitely generated. -/
 instance [IsHyperbolic G] : FG G := by
-  obtain ⟨n, P, δ, hP⟩ := IsHyperbolic.exists_isHyperbolicWith G
+  obtain ⟨_, P, _, _⟩ := IsHyperbolic.exists_isHyperbolicWith G
   exact P.fg
 
+set_option trace.Meta.synthInstance true in
 /-- Every finite group is hyperbolic. -/
 instance [Finite G] : IsHyperbolic G :=
   let ⟨n, ⟨P⟩⟩ := fg_iff_nonempty_finite_generators.mp inferInstance
