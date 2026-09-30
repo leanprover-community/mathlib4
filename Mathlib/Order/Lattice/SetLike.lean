@@ -27,9 +27,6 @@ theorem mem_sup_left {x : B} (h : x ∈ p) : x ∈ p ⊔ q :=
 theorem mem_sup_right {x : B} (h : x ∈ q) : x ∈ p ⊔ q :=
   mem_of_le_of_mem le_sup_right h
 
-theorem mem_sup_of_mem_or_mem {x : B} (h : x ∈ p ∨ x ∈ q) : x ∈ p ⊔ q :=
-  h.elim (mem_sup_left ·) (mem_sup_right ·)
-
 end SemilatticeSup
 
 section OrderBot
