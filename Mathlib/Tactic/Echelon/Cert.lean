@@ -34,19 +34,6 @@ open Lean Meta Qq Mathlib.Tactic.Matrix
 
 namespace Mathlib.Tactic.Echelon
 
-/-- Build the numeral `i : Fin n`. -/
-def mkFinLitQ (n : Nat) (i : Nat) : MetaM Q(Fin $n) := do
-  if h : i < n then return toExpr (⟨i, h⟩ : Fin n)
-  throwError "mkFinLitQ: {i} is out of range for `Fin {n}`"
-
-/-- `List.drop k` on the list literal `l`. -/
-def dropListLitQ {u : Level} {α : Q(Type u)} (l : Q(List $α)) (k : Nat) : Q(List $α) :=
-  match k with
-  | 0 => l
-  | k + 1 => match_expr l with
-    | List.cons _ _ tl => dropListLitQ (α := α) tl k
-    | _ => l
-
 /-- Three views of one matrix literal. This makes the argument list more succinct when a cert
 construction function needs to use multiple representations. -/
 structure MatrixViews (u : Level) (m n : Nat) (α : Q(Type u)) where
@@ -85,7 +72,7 @@ def certifyLowerTriangularDiagList {u : Level} {α : Q(Type u)} (zα : Q(Zero $�
       throwError "certifyLowerTriangularDiagList: {rows} is not a cons cell"
     have row : Q(List $α) := row
     have rowsTl : Q(List (List $α)) := rowsTl
-    let_expr List.cons _ entry _ := dropListLitQ row k |
+    let_expr List.cons _ entry _ := dropListLitQ k row |
       throwError "certifyLowerTriangularDiagList: {row} has no entry at {k}"
     have entry : Q($α) := entry
     have k₁Q : Q(Nat) := mkNatLitQ (k + 1)
@@ -125,7 +112,7 @@ def certifyPivotedList {u : Level} {n : Nat} {α : Q(Type u)} (zα : Q(Zero $α)
     have pivotsTl : Q(List (Fin $n)) := pivotsTl
     have row : Q(List $α) := row
     have rowsTl : Q(List (List $α)) := rowsTl
-    let_expr List.cons _ entry suffix := dropListLitQ row k |
+    let_expr List.cons _ entry suffix := dropListLitQ k row |
       throwError "certifyPivotedList: {row} has no entry at {k}"
     have entry : Q($α) := entry
     have suffix : Q(List $α) := suffix

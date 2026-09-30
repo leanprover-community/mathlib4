@@ -87,10 +87,23 @@ def mkNatLitQ (n : Nat) : Q(Nat) := mkNatLit n
 This is a Qq version of `Lean.mkIntLit`. -/
 def mkIntLitQ (n : Int) : Q(Int) := mkIntLit n
 
+/-- Build the numeral `i : Fin n`. -/
+def mkFinLitQ (n : Nat) (i : Nat) : MetaM Q(Fin $n) := do
+  if h : i < n then return toExpr (⟨i, h⟩ : Fin n)
+  throwError "mkFinLitQ: {i} is out of range for `Fin {n}`"
+
 /-- The list literal `[a₀, …]` of the entries `as`. -/
 def mkListLitQ {u : Level} {α : Q(Type u)} : List Q($α) → Q(List $α)
   | [] => q([])
   | a :: as => q($a :: $(mkListLitQ as))
+
+/-- `List.drop n` on the list literal `l`. -/
+def dropListLitQ {u : Level} {α : Q(Type u)} (n : Nat) (l : Q(List $α)) : Q(List $α) :=
+  match n with
+  | 0 => l
+  | n + 1 => match_expr l with
+    | List.cons _ _ tl => dropListLitQ (α := α) n tl
+    | _ => l
 
 /-- Version of `instantiateMVarsQ` that returns the Qq-fact that the new expression is equal to the
 previous one. -/
