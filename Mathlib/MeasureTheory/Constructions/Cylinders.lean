@@ -122,10 +122,10 @@ theorem comap_eval_le_generateFrom_squareCylinders_singleton
   classical
   refine ⟨fun j ↦ if hji : j = i then by convert! t else univ, fun j ↦ ?_, ?_⟩
   · by_cases hji : j = i
-    · simp only [hji, eq_mpr_eq_cast, dif_pos]
+    · simp only [hji, eq_mpr_eq_cast, dite_eq_left]
       convert! ht
       simp only [cast_heq]
-    · simp only [hji, not_false_iff, dif_neg, MeasurableSet.univ]
+    · simp only [hji, not_false_iff, dite_eq_right, MeasurableSet.univ]
   · #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
     (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
     It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
@@ -185,7 +185,7 @@ theorem cylinder_eq_empty_iff [h_nonempty : Nonempty (∀ i, α i)] (s : Finset 
   let f' : ∀ i, α i := fun i ↦ if hi : i ∈ s then f ⟨i, hi⟩ else h_nonempty.some i
   have hf' : f' ∈ cylinder s S := by
     rw [mem_cylinder]
-    simpa only [Finset.restrict_def, Finset.coe_mem, dif_pos, f']
+    simpa only [Finset.restrict_def, Finset.coe_mem, dite_eq_left, f']
   rw [h] at hf'
   exact notMem_empty _ hf'
 
@@ -253,7 +253,7 @@ theorem IsClosed.cylinder [∀ i, TopologicalSpace (α i)] (s : Finset ι) {S : 
 theorem _root_.MeasurableSet.cylinder [∀ i, MeasurableSpace (α i)] (s : Finset ι)
     {S : Set (∀ i : s, α i)} (hS : MeasurableSet S) :
     MeasurableSet (cylinder s S) :=
-  measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _) hS
+  Measurable.of_eval (fun _ ↦ measurable_pi_apply _) hS
 
 /-- The indicator of a cylinder only depends on the variables whose the cylinder depends on. -/
 theorem dependsOn_cylinder_indicator_const {M : Type*} [Zero M] {I : Finset ι}
@@ -324,8 +324,8 @@ theorem inter_mem_measurableCylinders (hs : s ∈ measurableCylinders α)
     Finset.restrict₂ Finset.subset_union_left ⁻¹' S₁ ∩
       {f | Finset.restrict₂ Finset.subset_union_right f ∈ S₂}, ?_, ?_⟩
   · refine MeasurableSet.inter ?_ ?_
-    · exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _) hS₁
-    · exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _) hS₂
+    · exact Measurable.of_eval (fun _ ↦ measurable_pi_apply _) hS₁
+    · exact Measurable.of_eval (fun _ ↦ measurable_pi_apply _) hS₂
   · exact inter_cylinder _ _ _ _
 
 theorem isPiSystem_measurableCylinders : IsPiSystem (measurableCylinders α) :=

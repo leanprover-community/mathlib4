@@ -6,12 +6,11 @@ Authors: Eric Rodriguez
 module
 
 public import Mathlib.Algebra.Group.Fin.Basic
-public import Mathlib.Algebra.NeZero
 public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Algebra.Ring.GrindInstances  -- shake: keep (used in `example` only)
 public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Data.Fintype.EquivFin
-public import Mathlib.Algebra.Ring.Nat
+import Mathlib.Algebra.Ring.Nat
 
 /-!
 # Definition of `ZMod n` + basic results.
@@ -60,7 +59,7 @@ open scoped Fin.IntCast Fin.NatCast
     · rw [← Int.natCast_dvd] at h
       rw [Int.emod_eq_zero_of_dvd h, Int.toNat_zero]
     · rw [Int.emod_natAbs_of_neg (by lia) (NeZero.ne n),
-        if_neg (by rwa [← Int.natCast_dvd] at h)]
+        ite_eq_right (by rwa [← Int.natCast_dvd] at h)]
       have : x % n < n := Int.emod_lt_of_pos x (by have := NeZero.ne n; lia)
       lia
 
@@ -104,6 +103,10 @@ instance instNonUnitalCommRing (n : ℕ) [NeZero n] : NonUnitalCommRing (Fin n) 
 instance instCommMonoid (n : ℕ) [NeZero n] : CommMonoid (Fin n) where
   one_mul := Fin.one_mul
   mul_one := Fin.mul_one
+  -- Use core's `Fin.npow`, which computes by modular exponentiation.
+  npow n x := Fin.npow x n
+  npow_zero := Fin.pow_zero
+  npow_succ n x := Fin.pow_succ x n
 
 /-- Note this is more general than `Fin.instCommRing` as it applies (vacuously) to `Fin 0` too. -/
 instance instHasDistribNeg (n : ℕ) : HasDistribNeg (Fin n) where

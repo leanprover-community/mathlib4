@@ -8,8 +8,6 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.CategoryTheory.Monoidal.Linear
 public import Mathlib.CategoryTheory.Monoidal.Transport
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
 /-!
@@ -129,7 +127,6 @@ section
 
 variable {P} {P' : ObjectProperty C} [P'.IsMonoidal] (h : P ≤ P')
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- An inequality `P ≤ P'` between monoidal properties of objects induces
 a monoidal functor between full monoidal subcategories. -/
@@ -161,7 +158,6 @@ instance : P.ι.Braided where
 
 variable {P}
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- An inequality `P ≤ P'` between monoidal properties of objects induces
 a braided functor between full braided subcategories. -/
@@ -184,7 +180,6 @@ section Closed
 variable [MonoidalClosed C] [P.IsMonoidalClosed]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance fullMonoidalClosedSubcategory : MonoidalClosed (FullSubcategory P) where
   closed X :=
     { rightAdj := P.lift (P.ι ⋙ ihom X.1) (fun Y => P.prop_ihom X.2 Y.2)

@@ -6,14 +6,12 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.GroupTheory.Index
-public import Mathlib.LinearAlgebra.Dimension.Finrank
-public import Mathlib.LinearAlgebra.FreeModule.Basic
-public import Mathlib.RingTheory.Finiteness.Defs
 
 import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 import Mathlib.Data.ZMod.QuotientGroup
 import Mathlib.LinearAlgebra.Dimension.Constructions
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.LinearAlgebra.Dimension.Free
 
 /-!
 # Lemmas about index and multiplication-by-n
@@ -27,7 +25,7 @@ public section
 
 namespace AddSubgroup
 
-variable {M N : Type*} [AddCommGroup M] [AddCommGroup N]
+variable {M : Type*} [AddCommGroup M]
 
 open Module
 

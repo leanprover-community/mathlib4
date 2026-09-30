@@ -6,7 +6,7 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Abelian.Yoneda
-public import Mathlib.CategoryTheory.Generator.Abelian
+import Mathlib.CategoryTheory.Generator.Abelian
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.EnoughInjectives
 
 /-!
@@ -45,7 +45,6 @@ set_option backward.privateInPublic true in
 private noncomputable def generator : Cᵒᵖ :=
   ∐ (fun (X : D) => ∐ fun (_ : projectiveSeparator C ⟶ F.obj X) => projectiveSeparator C)
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem exists_epi (X : D) : ∃ f : generator F ⟶ F.obj X, Epi f := by
   classical
   refine ⟨Sigma.desc (Pi.single X (𝟙 _)) ≫ Sigma.desc (fun f => f), ?_⟩

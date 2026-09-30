@@ -28,7 +28,7 @@ noncomputable section
 
 universe u v v' w
 
-open Cardinal Basis Submodule Function Set Module
+open Cardinal Function Set Module
 
 section Tower
 
@@ -69,6 +69,30 @@ theorem Module.finrank_mul_finrank : finrank F K * finrank K A = finrank F A := 
   simp_rw [finrank]
   rw [← toNat_lift.{w} (Module.rank F K), ← toNat_lift.{v} (Module.rank K A), ← toNat_mul,
     lift_rank_mul_lift_rank, toNat_lift]
+
+theorem Module.finrank_dvd_finrank_left :
+    Module.finrank K A ∣ Module.finrank F A :=
+  Dvd.intro_left (finrank F K) (finrank_mul_finrank ..)
+
+theorem Module.finrank_dvd_finrank_right :
+    Module.finrank F K ∣ Module.finrank F A :=
+  Dvd.intro (finrank K A) (finrank_mul_finrank ..)
+
+theorem Module.finrank_div_finrank_cancel_right (h : Module.finrank K A ≠ 0) :
+    Module.finrank F A / Module.finrank K A = Module.finrank F K :=
+  Nat.div_eq_of_eq_mul_left h.bot_lt (finrank_mul_finrank ..).symm
+
+theorem Module.finrank_div_finrank_cancel_left (h : Module.finrank F K ≠ 0) :
+    Module.finrank F A / Module.finrank F K = Module.finrank K A :=
+  Nat.div_eq_of_eq_mul_right h.bot_lt (finrank_mul_finrank ..).symm
+
+theorem Module.finrank_div_finrank_cancel_right_of_nontrivial [Nontrivial A] [Module.Finite K A] :
+    Module.finrank F A / Module.finrank K A = Module.finrank F K :=
+  finrank_div_finrank_cancel_right F K A ((finrank_pos_iff_of_free ..).mpr ‹_›).ne'
+
+theorem Module.finrank_div_finrank_cancel_left_of_nontrivial [Nontrivial K] [Module.Finite F K] :
+    Module.finrank F A / Module.finrank F K = Module.finrank K A :=
+  finrank_div_finrank_cancel_left F K A ((finrank_pos_iff_of_free ..).mpr ‹_›).ne'
 
 end Tower
 
@@ -361,7 +385,6 @@ theorem _root_.OrzechProperty.bijective_of_surjective_of_finrank_le
 variable {R : Type*} [CommSemiring R] [StrongRankCondition R]
     {M : Type*} [AddCommMonoid M] [Module R M] [Module.Free R M]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.LinearMap.existsUnique_eq_smul_id_of_finrank_eq_one
     (d1 : Module.finrank R M = 1) (u : M →ₗ[R] M) :
     ∃! c : R, u = c • LinearMap.id := by

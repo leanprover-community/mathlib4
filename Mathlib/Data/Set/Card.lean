@@ -6,7 +6,7 @@ Authors: Peter Nelson
 module
 
 public import Mathlib.SetTheory.Cardinal.Finite
-public import Mathlib.Data.Set.Finite.Powerset
+import Mathlib.Data.Set.Finite.Powerset
 
 /-!
 # Noncomputable Set Cardinality
@@ -507,7 +507,7 @@ theorem _root_.Function.Injective.encard_image (hf : f.Injective) (s : Set α) :
   hf.injOn.encard_image
 
 theorem _root_.Function.Injective.encard_range (hf : f.Injective) :
-    ENat.card α ≤ (range f).encard := by
+    (range f).encard = ENat.card α := by
   rw [← image_univ, hf.encard_image, encard_univ]
 
 theorem _root_.Function.Embedding.encard_le (e : s ↪ t) : s.encard ≤ t.encard :=
@@ -541,7 +541,6 @@ open Notation in
 lemma encard_preimage_val_le_encard_left (P Q : Set α) : (P ↓∩ Q).encard ≤ P.encard :=
   (Function.Embedding.subtype _).encard_le
 
-set_option backward.isDefEq.respectTransparency false in
 open Notation in
 lemma encard_preimage_val_le_encard_right (P Q : Set α) : (P ↓∩ Q).encard ≤ Q.encard :=
   Function.Embedding.encard_le ⟨fun ⟨⟨x, _⟩, hx⟩ ↦ ⟨x, hx⟩, fun _ _ h ↦ by
@@ -733,8 +732,8 @@ theorem one_le_ncard_insert (a : α) (s : Set α) (hs : s.Finite := by toFinite_
 theorem ncard_insert_eq_ite {a : α} [Decidable (a ∈ s)] (hs : s.Finite := by toFinite_tac) :
     ncard (insert a s) = if a ∈ s then s.ncard else s.ncard + 1 := by
   by_cases h : a ∈ s
-  · rw [ncard_insert_of_mem h, if_pos h]
-  · rw [ncard_insert_of_notMem h hs, if_neg h]
+  · rw [ncard_insert_of_mem h, ite_eq_left h]
+  · rw [ncard_insert_of_notMem h hs, ite_eq_right h]
 
 theorem ncard_le_ncard_insert (a : α) (s : Set α) : s.ncard ≤ (insert a s).ncard := by
   classical
@@ -789,7 +788,7 @@ theorem pred_ncard_le_ncard_sdiff_singleton (s : Set α) (a : α) :
 alias pred_ncard_le_ncard_diff_singleton := pred_ncard_le_ncard_sdiff_singleton
 
 theorem ncard_exchange {a b : α} (ha : a ∉ s) (hb : b ∈ s) : (insert a (s \ {b})).ncard = s.ncard :=
-  congr_arg ENat.toNat <| encard_exchange ha hb
+  congr($(encard_exchange ha hb).toNat)
 
 theorem ncard_exchange' {a b : α} (ha : a ∉ s) (hb : b ∈ s) :
     (insert a s \ {b}).ncard = s.ncard := by
@@ -813,9 +812,7 @@ theorem ncard_image_le (hs : s.Finite := by toFinite_tac) : (f '' s).ncard ≤ s
   to_encard_tac; rw [hs.cast_ncard_eq, (hs.image _).cast_ncard_eq]; apply encard_image_le
 
 theorem InjOn.ncard_image (H : Set.InjOn f s) : (f '' s).ncard = s.ncard :=
-  congr_arg ENat.toNat <| H.encard_image
-
-@[deprecated (since := "2026-01-30")] alias ncard_image_of_injOn := InjOn.ncard_image
+  congr($(H.encard_image).toNat)
 
 theorem injOn_of_ncard_image_eq (h : (f '' s).ncard = s.ncard) (hs : s.Finite := by toFinite_tac) :
     Set.InjOn f s := by
@@ -1241,10 +1238,14 @@ theorem exists_subset_or_subset_of_two_mul_lt_ncard {n : ℕ} (hst : 2 * n < (s 
   obtain ⟨r', hnr', hr'⟩ := Finset.exists_subset_or_subset_of_two_mul_lt_card hst
   exact ⟨r', by simpa, by simpa using hr'⟩
 
-lemma _root_.Finset.exists_not_mem_of_card_lt_enatCard {s : Finset α} (hs : s.card < ENat.card α) :
+lemma _root_.Finset.exists_notMem_of_card_lt_enatCard {s : Finset α} (hs : s.card < ENat.card α) :
     ∃ a, a ∉ s := by
   contrapose! hs
   simp [← Set.encard_coe_eq_coe_finsetCard, Set.eq_univ_of_forall (α := α) (s := s) hs]
+
+@[deprecated (since := "2026-09-28")]
+alias _root_.Finset.exists_not_mem_of_card_lt_enatCard :=
+  _root_.Finset.exists_notMem_of_card_lt_enatCard
 
 /-! ### Explicit description of a set from its cardinality -/
 
@@ -1430,6 +1431,5 @@ there is at most a collision between a unique pair of elements. -/
 theorem Set.ncard_le_ncard_image_add_one_iff {α β : Type*} (s : Set α) [Finite s] (f : α → β) :
     s.ncard ≤ (f '' s).ncard + 1 ↔ ∀ a ∈ s, ∀ b ∈ s, ∀ c ∈ s, ∀ d ∈ s,
       f a = f b → f c = f d → a ≠ b → c ≠ d → {a, b} = ({c, d} : Set α) := by
-  simpa [Subtype.ext_iff, ← (Set.image_injective.mpr Subtype.val_injective).eq_iff,
-     Set.image_insert_eq, Set.image_singleton] using
+  simpa [Subtype.ext_iff, ← (Set.image_injective.mpr Subtype.val_injective).eq_iff] using
       (Set.surjective_mapsTo_image_restrict f s).card_le_card_add_one_iff

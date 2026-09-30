@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 module
 
 public import Mathlib.Topology.Homeomorph.Defs
-public import Mathlib.Topology.Maps.OpenQuotient
 public import Mathlib.Topology.Separation.SeparatedNhds
 
 /-!
@@ -97,7 +96,7 @@ theorem ContinuousAt.fst'' {f : X → Z} {x : X × Y} (hf : ContinuousAt f x.fst
   hf.comp continuousAt_fst
 
 theorem Filter.Tendsto.fst_nhds {X} {l : Filter X} {f : X → Y × Z} {p : Y × Z}
-    (h : Tendsto f l (𝓝 p)) : Tendsto (fun a ↦ (f a).1) l (𝓝 <| p.1) :=
+    (h : Tendsto f l (𝓝 p)) : Tendsto (fun a ↦ (f a).1) l (𝓝 p.1) :=
   continuousAt_fst.tendsto.comp h
 
 @[continuity]
@@ -133,7 +132,7 @@ theorem ContinuousAt.snd'' {f : Y → Z} {x : X × Y} (hf : ContinuousAt f x.snd
   hf.comp continuousAt_snd
 
 theorem Filter.Tendsto.snd_nhds {X} {l : Filter X} {f : X → Y × Z} {p : Y × Z}
-    (h : Tendsto f l (𝓝 p)) : Tendsto (fun a ↦ (f a).2) l (𝓝 <| p.2) :=
+    (h : Tendsto f l (𝓝 p)) : Tendsto (fun a ↦ (f a).2) l (𝓝 p.2) :=
   continuousAt_snd.tendsto.comp h
 
 @[continuity, fun_prop]
@@ -146,6 +145,10 @@ theorem Continuous.prodMk_right (x : X) : Continuous fun y : Y => (x, y) := by f
 
 @[continuity]
 theorem Continuous.prodMk_left (y : Y) : Continuous fun x : X => (x, y) := by fun_prop
+
+@[continuity, fun_prop]
+theorem continuous_diag : Continuous (Function.diag : X → X × X) :=
+  continuous_id.prodMk continuous_id
 
 /-- If `f x y` is continuous in `x` for all `y ∈ s`,
 then the set of `x` such that `f x` maps `s` to `t` is closed. -/
@@ -690,6 +693,9 @@ theorem prodComm_symm : (prodComm X Y).symm = prodComm Y X :=
 @[simp]
 theorem coe_prodComm : ⇑(prodComm X Y) = Prod.swap :=
   rfl
+
+@[simp]
+theorem prodComm_trans_prodComm : (prodComm X Y).trans (prodComm Y X) = .refl _ := rfl
 
 /-- `(X × Y) × Z` is homeomorphic to `X × (Y × Z)`. -/
 def prodAssoc : (X × Y) × Z ≃ₜ X × Y × Z where

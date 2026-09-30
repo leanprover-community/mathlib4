@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Normed.Module.Span
 public import Mathlib.Analysis.Normed.Operator.Bilinear
-public import Mathlib.Analysis.Normed.Operator.NNNorm
 
 /-!
 # Operator norm for maps on normed spaces
@@ -96,7 +95,7 @@ section
 
 variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₃ G] [NormedSpace 𝕜 Fₗ]
-  {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃} (f : E →SL[σ₁₂] F)
+  {σ₁₂ : 𝕜 →+* 𝕜₂} (f : E →SL[σ₁₂] F)
 
 namespace LinearMap
 
@@ -149,7 +148,7 @@ end LinearMap
 
 namespace ContinuousLinearMap
 
-open Set Real
+open Real
 
 /-- An operator is zero iff its norm vanishes. -/
 theorem opNorm_zero_iff [RingHomIsometric σ₁₂] : ‖f‖ = 0 ↔ f = 0 :=
@@ -197,7 +196,7 @@ theorem norm_smulRightL (c : StrongDual 𝕜 E) [Nontrivial Fₗ] : ‖smulRight
   ContinuousLinearMap.homothety_norm _ c.norm_smulRight_apply
 
 lemma norm_smulRightL_le : ‖smulRightL 𝕜 E Fₗ‖ ≤ 1 :=
-  LinearMap.mkContinuous₂_norm_le _ zero_le_one _
+  ContinuousLinearMap.opNorm_le_bound₂ _ zero_le_one fun c x ↦ by simp
 
 /-! ### Composition with isometries -/
 
@@ -264,9 +263,12 @@ section
 
 variable [RingHomIsometric σ₂₁]
 
-protected theorem antilipschitz (e : E ≃SL[σ₁₂] F) :
+protected theorem antilipschitzWith (e : E ≃SL[σ₁₂] F) :
     AntilipschitzWith ‖(e.symm : F →SL[σ₂₁] E)‖₊ e :=
-  e.symm.lipschitz.to_rightInverse e.left_inv
+  e.symm.lipschitzWith.to_rightInverse e.left_inv
+
+@[deprecated (since := "2026-09-27")]
+protected alias antilipschitz := ContinuousLinearEquiv.antilipschitzWith
 
 theorem one_le_norm_mul_norm_symm [RingHomIsometric σ₁₂] [Nontrivial E] (e : E ≃SL[σ₁₂] F) :
     1 ≤ ‖(e : E →SL[σ₁₂] F)‖ * ‖(e.symm : F →SL[σ₂₁] E)‖ := by

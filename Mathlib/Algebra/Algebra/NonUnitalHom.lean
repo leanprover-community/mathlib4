@@ -6,7 +6,6 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Algebra.Hom
-public import Mathlib.Algebra.GroupWithZero.Action.Prod
 
 /-!
 # Morphisms of non-unital algebras
@@ -159,6 +158,7 @@ variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction S B]
 variable [NonUnitalNonAssocSemiring C] [DistribMulAction T C]
 
+@[macro_inline]
 instance : FunLike (A →ₛₙₐ[φ] B) A B where
   coe f := f.toFun
   coe_injective := by rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
@@ -182,6 +182,7 @@ protected theorem coe_coe {F : Type*} [FunLike F A B]
 
 theorem coe_injective : @Function.Injective (A →ₛₙₐ[φ] B) (A → B) (↑) := by
   rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
+@[macro_inline]
 instance : FunLike (A →ₛₙₐ[φ] B) A B where
   coe f := f.toFun
   coe_injective := coe_injective
@@ -228,11 +229,11 @@ theorem coe_to_mulHom (f : A →ₛₙₐ[φ] B) : ⇑(f : A →ₙ* B) = f :=
 theorem to_distribMulActionHom_injective {f g : A →ₛₙₐ[φ] B}
     (h : (f : A →ₑ+[φ] B) = (g : A →ₑ+[φ] B)) : f = g := by
   ext a
-  exact DistribMulActionHom.congr_fun h a
+  congrm $h a
 
 theorem to_mulHom_injective {f g : A →ₛₙₐ[φ] B} (h : (f : A →ₙ* B) = (g : A →ₙ* B)) : f = g := by
   ext a
-  exact DFunLike.congr_fun h a
+  congrm $h a
 
 @[norm_cast]
 theorem coe_distribMulActionHom_mk (f : A →ₛₙₐ[φ] B) (h₁ h₂ h₃ h₄) :
@@ -318,7 +319,6 @@ theorem coe_inverse (f : A →ₙₐ[R] B₁) (g : B₁ → A) (h₁ : Function.
     (h₂ : Function.RightInverse g f) : (inverse f g h₁ h₂ : B₁ → A) = g :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The inverse of a bijective morphism is a morphism. -/
 def inverse' (f : A →ₛₙₐ[φ] B) (g : B → A)
     (k : Function.RightInverse φ' φ)
@@ -370,7 +370,6 @@ def snd : A × B →ₙₐ[R] B where
 variable {R A B}
 variable [DistribMulAction R C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The prod of two morphisms is a morphism. -/
 @[simps toFun]
 def prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : A →ₙₐ[R] B × C where

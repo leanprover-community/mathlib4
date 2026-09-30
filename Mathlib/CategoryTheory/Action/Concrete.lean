@@ -5,12 +5,10 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.End
 public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.CategoryTheory.Action.Basic
 public import Mathlib.CategoryTheory.FintypeCat
 public import Mathlib.GroupTheory.GroupAction.Quotient
-public import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-!
 # Constructors for `Action V G` for some concrete categories
@@ -85,7 +83,7 @@ def ofMulActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι →
           comm := fun g => by
             ext x
             funext j
-            exact ConcreteCategory.congr_hom ((s.π.app ⟨j⟩).comm g) x }
+            congrm $((s.π.app ⟨j⟩).comm g) x }
       fac := fun _ _ => rfl
       uniq := fun s f h => by
         ext x
@@ -129,7 +127,7 @@ theorem ofMulAction_apply {G : Type*} {H : FintypeCat.{u}} [Monoid G] [MulAction
 section
 
 /-- Shorthand notation for the quotient of `G` by `H` as a finite `G`-set. -/
-notation:10 G:10 " ⧸ₐ " H:10 => Action.FintypeCat.ofMulAction G (FintypeCat.of <| G ⧸ H)
+notation:10 G:10 " ⧸ₐ " H:10 => Action.FintypeCat.ofMulAction G ↧(G ⧸ H)
 
 variable {G : Type*} [Group G] (H N : Subgroup G) [Fintype (G ⧸ N)]
 
@@ -163,11 +161,9 @@ def toEndHom [N.Normal] : G →* End (G ⧸ₐ N) where
     change ⟦x * (σ * τ)⁻¹⟧ = ⟦x * τ⁻¹ * σ⁻¹⟧
     rw [mul_inv_rev, mul_assoc]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma toEndHom_apply [N.Normal] (g h : G) : (toEndHom N g).hom ⟦h⟧ = ⟦h * g⁻¹⟧ := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable {N} in
 lemma toEndHom_trivial_of_mem [N.Normal] {n : G} (hn : n ∈ N) : toEndHom N n = 𝟙 (G ⧸ₐ N) := by
   apply Action.hom_ext
@@ -181,7 +177,6 @@ def quotientToEndHom [N.Normal] : H ⧸ Subgroup.subgroupOf N H →* End (G ⧸�
   QuotientGroup.lift (Subgroup.subgroupOf N H) ((toEndHom N).comp H.subtype) <| fun _ uinU' ↦
     toEndHom_trivial_of_mem uinU'
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma quotientToEndHom_mk [N.Normal] (x : H) (g : G) :
     (quotientToEndHom H N ⟦x⟧).hom ⟦g⟧ = ⟦g * x⁻¹⟧ :=
@@ -225,6 +220,9 @@ instance instMulAction {G : Type*} [Monoid G] (X : Action V G) :
 /-- Specialize `instMulAction` to assist typeclass inference. -/
 instance {G : Type*} [Monoid G] (X : Action FintypeCat G) : MulAction G X.V :=
   Action.instMulAction X
+
+lemma ρ_apply_eq_smul {G : Type*} [Monoid G] (X : Action V G) (g : G) (v : ToType X.V) :
+    ConcreteCategory.hom (X.ρ g) v = g • v := rfl
 
 end ToMulAction
 

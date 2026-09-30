@@ -5,9 +5,7 @@ Authors: Adam Topaz
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Creates
 public import Mathlib.CategoryTheory.Sites.Sheafification
-public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 public import Mathlib.CategoryTheory.Limits.FullSubcategory
 
 /-!
@@ -228,7 +226,6 @@ instance [HasFiniteColimits D] : HasFiniteColimits (Sheaf J D) :=
 instance [HasColimitsOfSize.{u₁, u₂} D] : HasColimitsOfSize.{u₁, u₂} (Sheaf J D) :=
   ⟨inferInstance⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If every cocone on a diagram of sheaves which is a colimit on the level of presheaves satisfies
 the condition that the cocone point is a sheaf, then the functor from sheaves to presheaves

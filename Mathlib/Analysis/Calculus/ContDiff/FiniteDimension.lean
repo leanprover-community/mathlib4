@@ -36,17 +36,23 @@ open scoped ContDiff
 
 variable [CompleteSpace 𝕜]
 
-
-/-- A family of continuous linear maps is `C^n` on `s` if all its applications are. -/
-theorem contDiffOn_clm_apply {f : D → E →L[𝕜] F} {s : Set D} [FiniteDimensional 𝕜 E] :
-    ContDiffOn 𝕜 n f s ↔ ∀ y, ContDiffOn 𝕜 n (fun x => f x y) s := by
-  refine ⟨fun h y => h.clm_apply contDiffOn_const, fun h => ?_⟩
+/-- A family of continuous linear maps is `C^n` at `x` within `s` if and only if all its
+  applications are. -/
+theorem contDiffWithinAt_clm_apply {f : D → E →L[𝕜] F} {s : Set D} {x : D} [FiniteDimensional 𝕜 E] :
+    ContDiffWithinAt 𝕜 n f s x ↔ ∀ y, ContDiffWithinAt 𝕜 n (fun x ↦ f x y) s x := by
+  refine ⟨fun h y => h.clm_apply contDiffWithinAt_const, fun h => ?_⟩
   let d := finrank 𝕜 E
   have hd : d = finrank 𝕜 (Fin d → 𝕜) := (finrank_fin_fun 𝕜).symm
   let e₁ := ContinuousLinearEquiv.ofFinrankEq hd
   let e₂ := (e₁.arrowCongr (1 : F ≃L[𝕜] F)).trans (ContinuousLinearEquiv.piRing (Fin d))
   rw [← id_comp f, ← e₂.symm_comp_self]
-  exact e₂.symm.contDiff.comp_contDiffOn (contDiffOn_pi.mpr fun i => h _)
+  exact e₂.symm.contDiff.comp_contDiffWithinAt (contDiffWithinAt_pi.mpr fun i ↦ h _)
+
+/-- A family of continuous linear maps is `C^n` on `s` if and only if all its applications are. -/
+theorem contDiffOn_clm_apply {f : D → E →L[𝕜] F} {s : Set D} [FiniteDimensional 𝕜 E] :
+    ContDiffOn 𝕜 n f s ↔ ∀ y, ContDiffOn 𝕜 n (fun x => f x y) s := by
+  simp [ContDiffOn, contDiffWithinAt_clm_apply]
+  tauto
 
 theorem contDiff_clm_apply_iff {f : D → E →L[𝕜] F} [FiniteDimensional 𝕜 E] :
     ContDiff 𝕜 n f ↔ ∀ y, ContDiff 𝕜 n fun x => f x y := by

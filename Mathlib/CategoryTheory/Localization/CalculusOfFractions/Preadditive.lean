@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Fractions
 public import Mathlib.CategoryTheory.Localization.HasLocalization
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
@@ -318,7 +317,6 @@ lemma functor_additive :
 
 attribute [irreducible] preadditive
 
-set_option backward.isDefEq.respectTransparency false in
 include W in
 lemma functor_additive_iff {E : Type*} [Category* E] [Preadditive E] [Preadditive D] [L.Additive]
     (G : D ⥤ E) :
