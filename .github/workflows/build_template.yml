@@ -442,10 +442,10 @@ jobs:
       lint-outcome: ${{ steps.lint.outcome }}
       test-outcome: ${{ steps.test.outcome }}
       test-cache-staging-has-files: ${{ steps.test_cache_staging.outputs.has_files }}
-    # `test` runs only on a clean build: `build` itself, the `mk_all` check, and
-    # the archive/counterexamples builds all succeeded. `RUN_TESTS` reads those from
-    # the build job's outputs. The MathlibTest cache fetch and the problem-matcher
-    # wrap of `test` are gated to match.
+    # `RUN_TESTS` is true on a clean build: `build` itself, the `mk_all` check, and
+    # the archive, counterexamples, and Wanted builds all succeeded. It reads these
+    # from the outputs of `build`. It gates `test`, the problem-matcher wrap of
+    # `test`, and the MathlibTest cache fetch.
     env:
       RUN_TESTS: ${{ needs.build.outputs.build-outcome == 'success' && needs.build.outputs.mk_all-outcome == 'success' && needs.build.outputs.archive-outcome == 'success' && needs.build.outputs.counterexamples-outcome == 'success' && needs.build.outputs.wanted-outcome == 'success' }}
     defaults: # On Hoskinson runners, landrun is already installed.
@@ -532,7 +532,6 @@ jobs:
           cd pr-branch
           ../tools-branch/.lake/build/bin/cache --repo="${CACHE_REPO}" get 'MathlibTest.+'
 
-      # `test` and its problem-matcher wrap run only when `RUN_TESTS` is true (see the job's `env`).
       - name: begin gh-problem-match-wrap for test step
         if: ${{ env.RUN_TESTS == 'true' }}
         uses: leanprover-community/gh-problem-matcher-wrap@65a654fcdf7b64ff7633bc7a558f7b46d59a27bf # 2026-06-25
@@ -552,10 +551,10 @@ jobs:
           action: remove
           linters: lean
 
-      # For `upload_test_cache`, stage the `MathlibTest` oleans that `test` built and the
-      # cache does not hold. Only runs that write the `master` container stage them. A
-      # test file that fails leaves no build output, so `stage` skips it. `test` ran the
-      # PR's code with write access to `pr-branch/.lake/`, so `stage` runs in landrun.
+      # For `upload_test_cache`, stage the `MathlibTest` oleans that `test` built. Only
+      # runs that write the `master` container stage them. A test file that fails leaves
+      # no build output, so `stage` skips it. `test` ran the PR's code with write access
+      # to `pr-branch/.lake/`, so `stage` runs in landrun.
       - name: prepare the MathlibTest staging directory
         id: test_cache_prepare
         if: ${{ always() && env.MATHLIB_CACHE_PRIMARY == 'master' && (steps.test.outcome == 'success' || steps.test.outcome == 'failure') }}
@@ -887,7 +886,6 @@ jobs:
 
       - name: Upload staged MathlibTest cache to R2
         if: steps.mint-r2.outputs.success == 'true' && env.MATHLIB_CACHE_PRIMARY == 'master'
-        # If the upload fails, later runs rebuild these test files.
         continue-on-error: true
         shell: bash
         env:
