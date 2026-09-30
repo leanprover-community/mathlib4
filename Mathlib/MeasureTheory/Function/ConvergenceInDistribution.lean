@@ -113,7 +113,7 @@ protected lemma TendstoInDistribution.congr [OpensMeasurableSpace E] {T : Ω' �
   aemeasurable_limit := h.aemeasurable_limit.congr hZT
   tendsto := by
     convert! h.tendsto using 2 with n
-    · exact Subtype.ext (Measure.map_congr (hXY n).symm)
+    · simpa using Measure.map_congr (hXY n).symm
     · rw! [Measure.map_congr hZT]
       rfl
 

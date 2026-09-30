@@ -109,6 +109,7 @@ variable {Ω : Type*} [MeasurableSpace Ω]
 def Measure.toProbabilityMeasure (μ : Measure Ω) [IsProbabilityMeasure μ] :
     ProbabilityMeasure Ω := ⟨μ, inferInstance⟩
 
+@[simp]
 theorem Measure.toProbabilityMeasure_inj (μ ν : Measure Ω)
     [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
     μ.toProbabilityMeasure = ν.toProbabilityMeasure ↔ μ = ν :=
