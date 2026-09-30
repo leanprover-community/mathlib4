@@ -134,7 +134,6 @@ lemma tendstoInDistribution_unique [HasOuterApproxClosed E] [BorelSpace E]
   rw [Subtype.ext_iff] at h_eq
   simpa using h_eq
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- **Continuous mapping theorem**: if `X n` tends to `Z` in distribution and `g` is continuous,
 then `g ∘ X n` tends to `g ∘ Z` in distribution. -/
 theorem TendstoInDistribution.continuous_comp {F : Type*} [OpensMeasurableSpace E]
