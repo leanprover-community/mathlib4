@@ -59,14 +59,14 @@ def internalConstructor : InfoLinter where
   run infos := withSetOptionIn fun _ => do
     unless Linter.getLinterValue linter.internalConstructors (← Linter.getLinterOptions) do
       return
-    let warnings := infos.termInfos.foldl (init := #[]) fun warnings (ctx, i) => Id.run do
+    let warnings := infos.termInfos.filterMap fun (ctx, i) => Id.run do
       if let .const n _ := i.expr.cleanupAnnotations then
         if
           -- Putting the conjuncts in this order provides a performance benefit.
           n.isInternal && !isPrivateName n && ctx.env.isImportedConst n && ctx.env.isConstructor n
         then
-          return warnings.push (n, i.stx)
-      return warnings
+          return some (n, i.stx)
+      return none
     for (name, stx) in warnings do
       logLintError linter.internalConstructors stx
         m!"`{.ofConstName name}` is an internal constructor and should not be used directly."
