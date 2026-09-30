@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 module
 
 public import Mathlib.Topology.Homeomorph.Defs
-public import Mathlib.Topology.Maps.OpenQuotient
 public import Mathlib.Topology.Separation.SeparatedNhds
 
 /-!
@@ -694,6 +693,9 @@ theorem prodComm_symm : (prodComm X Y).symm = prodComm Y X :=
 @[simp]
 theorem coe_prodComm : ⇑(prodComm X Y) = Prod.swap :=
   rfl
+
+@[simp]
+theorem prodComm_trans_prodComm : (prodComm X Y).trans (prodComm Y X) = .refl _ := rfl
 
 /-- `(X × Y) × Z` is homeomorphic to `X × (Y × Z)`. -/
 def prodAssoc : (X × Y) × Z ≃ₜ X × Y × Z where

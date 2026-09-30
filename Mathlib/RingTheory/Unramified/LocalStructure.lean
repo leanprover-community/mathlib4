@@ -6,9 +6,9 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Etale.StandardEtale
-public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
+import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 public import Mathlib.RingTheory.RingHom.StandardSmooth
-public import Mathlib.RingTheory.Unramified.LocalRing
+import Mathlib.RingTheory.Unramified.LocalRing
 public import Mathlib.RingTheory.ZariskisMainTheorem
 
 /-!
@@ -233,7 +233,7 @@ lemma exists_notMem_forall_ne_mem_and_adjoin_eq_top
   set φ : p.Fiber S →ₐ[p.ResidueField] Q.ResidueField := TensorProduct.lift
       (Algebra.ofId _ _) (IsScalarTower.toAlgHom _ _ _) fun _ _ ↦ .all _ _
   obtain ⟨r, hrQ, hrid, hr⟩ :=
-    IsArtinianRing.exists_not_mem_forall_mem_of_ne (α ⟨Q, ‹_›, ⟨rfl⟩⟩).asIdeal
+    IsArtinianRing.exists_notMem_forall_mem_of_ne (α ⟨Q, ‹_›, ⟨rfl⟩⟩).asIdeal
   obtain ⟨s, hsQ, t, e⟩ := Ideal.Fiber.exists_smul_eq_one_tmul _ (r * x)
   have hrQ' : φ r ≠ 0 := by
     have : Ideal.ResidueField.mapₐ p Q (ofId R S) (Ideal.over_def Q p) =

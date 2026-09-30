@@ -5,7 +5,7 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.FieldTheory.Galois.Infinite
+import Mathlib.FieldTheory.Galois.Infinite
 public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.RingTheory.IsGaloisGroup.Basic
 
@@ -524,7 +524,7 @@ theorem map_quotientMk' [Finite G] [IsGaloisGroup G K L] (h : E ≤ F) :
       obtain ⟨a, ha⟩ := hE.isInvariant.isInvariant (algebraMap F L x) (by
         rintro ⟨g, hg⟩
         rw [MulAction.subgroup_smul_def, ← algebraMap.smul']
-        exact congr_arg (algebraMap F L) <| h ⟨g, ⟨g, hg, rfl⟩⟩)
+        congrm algebraMap F L $(h ⟨g, ⟨g, hg, rfl⟩⟩))
       exact ⟨a, FaithfulSMul.algebraMap_injective F L
         (by rw [← IsScalarTower.algebraMap_apply, ha])⟩⟩ }
 

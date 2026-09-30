@@ -7,9 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.Analysis.Distribution.TemperateGrowth
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.MeasureTheory.Function.L2Space
-public import Mathlib.Tactic.FunProp
 public import Mathlib.Topology.Algebra.UniformFilterBasis
 
 import Mathlib.Analysis.Calculus.ContDiff.Bounds
@@ -997,7 +995,7 @@ def compCLMOfAntilipschitz {K : ℝ≥0} {g : D → E}
 Schwartz space. -/
 def compCLMOfContinuousLinearEquiv (g : D ≃L[ℝ] E) :
     𝓢(E, F) →L[𝕜] 𝓢(D, F) :=
-  compCLMOfAntilipschitz 𝕜 (g.toContinuousLinearMap.hasTemperateGrowth) g.antilipschitz
+  compCLMOfAntilipschitz 𝕜 (g.toContinuousLinearMap.hasTemperateGrowth) g.antilipschitzWith
 
 @[simp] lemma compCLMOfContinuousLinearEquiv_apply (g : D ≃L[ℝ] E) (f : 𝓢(E, F)) :
     compCLMOfContinuousLinearEquiv 𝕜 g f = f ∘ g := rfl
@@ -1197,7 +1195,7 @@ theorem toBoundedContinuousFunctionCLM_apply (f : 𝓢(E, F)) (x : E) :
 
 theorem toBoundedContinuousFunctionCLM_injective :
     Function.Injective (toBoundedContinuousFunctionCLM .. : 𝓢(E, F) →L[𝕜] E →ᵇ F) :=
-  fun _ _ h ↦ DFunLike.ext _ _ fun x ↦ DFunLike.congr_fun h x
+  fun _ _ h ↦ DFunLike.ext _ _ fun x ↦ congr($h x)
 
 instance : T3Space 𝓢(E, F) :=
   suffices T2Space 𝓢(E, F) from inferInstance
