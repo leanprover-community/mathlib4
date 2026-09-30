@@ -1216,15 +1216,15 @@ This definition only agrees with the conventional one only if `f` is closed, but
 the case, then the conventional definition yields that `f.resolventSet = univ`
 We use this definition for convenience and since it makes fewer assumptions. -/
 protected def resolventSet (f : E →ₗ.[R] E) : Set R :=
-  { z | Function.Bijective (z • LinearMap.id (R := R) (M := E) +ᵥ (-f) : E →ₗ.[R] E) }
+  { z | Function.Bijective (z • LinearMap.id (R := R) (M := E) +ᵥ -f : E →ₗ.[R] E) }
 
 @[simp]
 theorem mem_resolventSet_iff (f : E →ₗ.[R] E) (z : R) : z ∈ f.resolventSet ↔
-    Function.Bijective (z • LinearMap.id (R := R) (M := E) +ᵥ (-f) : E →ₗ.[R] E) := by rfl
+    Function.Bijective (z • LinearMap.id (R := R) (M := E) +ᵥ -f : E →ₗ.[R] E) := by rfl
 
 variable {R' E' : Type*} [CommRing R'] [AddCommGroup E'] [Module R' E']
 
-@[simp]
+@[simp, grind .]
 theorem _root_.LinearMap.resolventSet_toPMap (g : E' →ₗ[R'] E') :
     (g.toPMap ⊤).resolventSet = resolventSet R' g := by
   ext z
@@ -1243,11 +1243,11 @@ the topology. In particular, we prove the first and second resolvent identity.
 -/
 noncomputable def resolventLM (f : E →ₗ.[R] E) (z : R) : E →ₗ[R] E :=
     if hz : z ∈ f.resolventSet then
-      (z • LinearMap.id +ᵥ (-f) : E →ₗ.[R] E).inverseLM hz.2
+      (z • LinearMap.id +ᵥ -f : E →ₗ.[R] E).inverseLM hz.2
     else 0
 
 theorem resolventLM_apply_apply {z : R} (hz : z ∈ f.resolventSet) :
-    f.resolventLM z = (z • LinearMap.id +ᵥ (-f) : E →ₗ.[R] E).inverseLM hz.2 := by
+    f.resolventLM z = (z • LinearMap.id +ᵥ -f : E →ₗ.[R] E).inverseLM hz.2 := by
   simp [resolventLM, hz]
 
 theorem resolventLM_apply_eq {z : R} (hz : z ∈ f.resolventSet) {x y : E} (hx : x ∈ f.domain)
@@ -1257,7 +1257,9 @@ theorem resolventLM_apply_eq {z : R} (hz : z ∈ f.resolventSet) {x y : E} (hx :
   apply inverseLM_apply_eq (by simpa using hz)
   simpa [sub_eq_add_neg] using hxy
 
-theorem resolventLM_zero_of_notMem {z : R} (hz : z ∉ f.resolventSet) : f.resolventLM z = 0 := by
+@[grind .]
+theorem resolventLM_of_notMem_resolventSet {z : R} (hz : z ∉ f.resolventSet) :
+    f.resolventLM z = 0 := by
   simp [resolventLM, hz]
 
 @[simp]
@@ -1270,10 +1272,11 @@ theorem _root_.LinearMap.resolventLM_toPMap_eq_resolvent (g : E' →ₗ[R'] E') 
     ext x
     exact resolventLM_apply_eq (by simpa) (by simp) (by simp)
   · rw [spectrum.resolvent_zero_of_mem_spectrum h]
-    exact resolventLM_zero_of_notMem (by simpa)
+    grind
 
 /-- The range of the resolvent `R(f, z)` is equal to the domain of `f` for any `z` in the resolvent
 set. -/
+@[grind .]
 theorem range_resolventLM (f : E →ₗ.[R] E) {z : R} (hz : z ∈ f.resolventSet) :
     (f.resolventLM z).range = f.domain := by
   simp [resolventLM, hz, range_inverseLM hz]
