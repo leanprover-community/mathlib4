@@ -1120,17 +1120,20 @@ theorem inverse_range (hf : f.ker = ⊥) : f.inverse.toFun.range = f.domain := b
   rw [← LinearPMap.graph_map_snd_eq_range, inverse_graph hf, ← Submodule.map_comp]
   exact f.graph_map_fst_eq_domain
 
-@[grind .]
-theorem mem_inverse_graph (hf : f.ker = ⊥) (x : f.domain) : (f x, (x : E)) ∈ f.inverse.graph := by
-  simp [inverse_graph hf]
+@[grind! .]
+theorem mem_inverse_graph (hf : f.ker = ⊥) {x : E} (hx : x ∈ f.domain) :
+    (f ⟨x, hx⟩, x) ∈ f.inverse.graph := by
+  simp [inverse_graph hf, hx]
 
+@[grind! .]
 theorem mk_inverse_mem_graph (hf : f.ker = ⊥) (y : f.inverse.domain) :
     (f.inverse y, (y : F)) ∈ f.graph := by
   simp [graph_eq_map_graph_inverse hf]
 
-theorem inverse_apply_eq (hf : f.ker = ⊥) {y : f.inverse.domain} {x : f.domain} (hxy : f x = y) :
-    f.inverse y = x := by
-  grind [mem_inverse_graph]
+theorem inverse_apply_eq (hf : f.ker = ⊥) {x : E} {y : F} (hy : y ∈ f.inverse.domain)
+    (hx : x ∈ f.domain) (hxy : f ⟨x, hx⟩ = y) :
+    f.inverse ⟨y, hy⟩ = x := by
+  grind
 
 end injective
 
@@ -1151,14 +1154,15 @@ open Classical in
 noncomputable def inverseLM (hf : Function.Surjective f) : F →ₗ[R] E :=
   f.inverse.toLinearMap (domain_inverse_eq_top_of_surjective hf)
 
+@[grind .]
 theorem inverseLM_apply_eq_inverse_apply (hf : Function.Surjective f) {y : F} :
     f.inverseLM hf y = f.inverse ⟨y, mem_inverse_domain_of_surjective hf y⟩ := by
   simp [inverseLM, toLinearMap_apply_eq]
 
-theorem inverseLM_apply_eq (hf : Function.Bijective f) {y : F} {x : E} {hx : x ∈ f.domain}
+theorem inverseLM_apply_eq (hf : Function.Bijective f) {y : F} {x : E} (hx : x ∈ f.domain)
     (hxy : f ⟨x, hx⟩ = y) :
     f.inverseLM hf.2 y = x := by
-  rw [inverseLM_apply_eq_inverse_apply, inverse_apply_eq (by rw [ker_eq_bot]; exact hf.1) hxy]
+  grind [inverse_apply_eq, ker_eq_bot, hf.1]
 
 @[grind _=_]
 theorem range_inverseLM (hf : Function.Bijective f) :
@@ -1170,20 +1174,22 @@ theorem inverseLM_apply_mem_domain (hf : Function.Bijective f) (x : F) :
   grind [LinearMap.mem_range_self]
 
 @[grind .]
-theorem mem_graph_of_inverseLM (hf : Function.Bijective f) (y : F) :
+theorem mk_inverseLM_mem_graph (hf : Function.Bijective f) (y : F) :
     (f.inverseLM hf.2 y, y) ∈ f.graph := by
-  grind [inverseLM_apply_eq_inverse_apply, LinearPMap.mk_inverse_mem_graph, hf.1]
+  grind [hf.1]
 
+@[grind! .]
 theorem inverseLM_apply_apply_cancel (hf : Function.Bijective f) (x : F) :
     f ⟨f.inverseLM hf.2 x, inverseLM_apply_mem_domain hf x⟩ = x := by
   apply ((image_iff (inverseLM_apply_mem_domain hf x)).mpr ?_).symm
   grind
 
-theorem apply_inverseLM_apply_cancel (hf : Function.Bijective f) (x' : f.domain) :
-    f.inverseLM hf.2 (f x') = x' := by
-  have : (f x', (x' : E)) ∈ f.inverse.graph := by grind [hf.1]
+@[grind! .]
+theorem apply_inverseLM_apply_cancel (hf : Function.Bijective f) {x' : E} (hx' : x' ∈ f.domain) :
+    f.inverseLM hf.2 (f ⟨x', hx'⟩) = x' := by
+  have : (f ⟨x', hx'⟩, (x' : E)) ∈ f.inverse.graph := by grind [hf.1]
   rw [← image_iff (mem_inverse_domain_of_surjective hf.2 _)] at this
-  grind [inverseLM_apply_eq_inverse_apply]
+  grind
 
 /-- Calculate the difference of inverses of `LinearPMap`s `f` and `g` assuming both are bijective
 and the domain of `g` is contained in the domain of `f`.
@@ -1196,7 +1202,7 @@ theorem inverseLM_sub_inverseLM_eq {g : E →ₗ.[R] F} (hf : Function.Bijective
   ext x
   simp only [LinearMap.sub_apply, LinearMap.coe_comp, Function.comp_apply]
   rw [compLinearMap_apply (by simpa [sub_domain, range_inverseLM hg] using hfg), sub_apply]
-  simp [inverseLM_apply_apply_cancel hg, apply_inverseLM_apply_cancel hf]
+  grind
 
 end bijective
 
