@@ -6,7 +6,7 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.Analysis.Matrix.Normed
-public import Mathlib.Analysis.Normed.Algebra.SpectralRadiusLimit
+public import Mathlib.Analysis.Normed.Algebra.GelfandRadius
 public import Mathlib.Analysis.Normed.Field.WithAbs
 public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
@@ -34,10 +34,10 @@ open scoped Matrix.Norms.Operator
 
 -- waiting on spectral radius (also look into further golfing)
 open Filter Topology in
-private theorem Matrix.spectralRadiusLim_conj_le {R m n : Type*}
+private theorem Matrix.gelfandRadius_conj_le {R m n : Type*}
     [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [NormedCommRing R]
     (A : Matrix m n R) (B : Matrix n n R) (C : Matrix n m R)
-    (hAC : A * C = 1) (hCA : C * A = 1) : spectralRadiusLim (A * B * C) ≤ spectralRadiusLim B := by
+    (hAC : A * C = 1) (hCA : C * A = 1) : gelfandRadius (A * B * C) ≤ gelfandRadius B := by
   cases subsingleton_or_nontrivial (Matrix n n R)
   · simp [Subsingleton.elim B 0]
   have h k : (A * B * C) ^ k = A * B ^ k * C := by
@@ -45,40 +45,40 @@ private theorem Matrix.spectralRadiusLim_conj_le {R m n : Type*}
     | zero => simp [hAC]
     | succ n ih => transitivity A * B ^ n * (C * A) * B * C <;> grind [Matrix.mul_assoc]
   suffices Tendsto (fun k : ℕ ↦ ‖A‖ ^ (k : ℝ)⁻¹ * ‖B ^ k‖ ^ (k : ℝ)⁻¹ * ‖C‖ ^ (k : ℝ)⁻¹) atTop
-      (𝓝 (1 * spectralRadiusLim B * 1)) by
+      (𝓝 (1 * gelfandRadius B * 1)) by
     rw [one_mul, mul_one] at this
-    refine le_of_tendsto_of_tendsto' (tendsto_spectralRadiusLim (A * B * C)) this fun n ↦ ?_
+    refine le_of_tendsto_of_tendsto' (tendsto_gelfandRadius (A * B * C)) this fun n ↦ ?_
     grw [h, Matrix.linfty_opNorm_mul, Matrix.linfty_opNorm_mul,
       Real.mul_rpow, Real.mul_rpow] <;> positivity
   have hA : ‖A‖ ≠ 0 := by contrapose! hCA; simp_all
   have hC : ‖C‖ ≠ 0 := by contrapose! hCA; simp_all
   have key {c : ℝ} (hc : c ≠ 0) :=
     ((Real.continuous_const_rpow hc).tendsto' 0 1 c.rpow_zero).comp tendsto_inv_atTop_nhds_zero_nat
-  exact ((key hA).mul (tendsto_spectralRadiusLim B)).mul (key hC)
+  exact ((key hA).mul (tendsto_gelfandRadius B)).mul (key hC)
 
 -- waiting on spectral radius (also look into further golfing)
-theorem Matrix.spectralRadiusLim_conj {R m n : Type*}
+theorem Matrix.gelfandRadius_conj {R m n : Type*}
     [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [NormedCommRing R]
     (A : Matrix m n R) (B : Matrix n n R) (C : Matrix n m R)
-    (hAC : A * C = 1) (hCA : C * A = 1) : spectralRadiusLim (A * B * C) = spectralRadiusLim B := by
-  refine le_antisymm (Matrix.spectralRadiusLim_conj_le A B C hAC hCA) ?_
+    (hAC : A * C = 1) (hCA : C * A = 1) : gelfandRadius (A * B * C) = gelfandRadius B := by
+  refine le_antisymm (Matrix.gelfandRadius_conj_le A B C hAC hCA) ?_
   have h : C * (A * B * C) * A = B := by
     transitivity (C * A) * B * (C * A) <;> grind [Matrix.mul_assoc]
-  have := Matrix.spectralRadiusLim_conj_le C (A * B * C) A hCA hAC
+  have := Matrix.gelfandRadius_conj_le C (A * B * C) A hCA hAC
   rwa [h] at this
 
 -- waiting on spectral radius
-theorem Matrix.spectralRadiusLim_blockMatrix {R m : Type*} [DecidableEq m] [Fintype m]
+theorem Matrix.gelfandRadius_blockMatrix {R m : Type*} [DecidableEq m] [Fintype m]
     [NormedCommRing R] (A : Matrix m m R) (n : Type*) [DecidableEq n] [Fintype n] [Nonempty n] :
-    spectralRadiusLim (Matrix.blockDiagonal fun _ : n ↦ A) = spectralRadiusLim A := by
-  refine tendsto_nhds_unique_of_forall (tendsto_spectralRadiusLim (blockDiagonal fun _ ↦ A))
-    (tendsto_spectralRadiusLim A) fun k ↦ ?_
+    gelfandRadius (Matrix.blockDiagonal fun _ : n ↦ A) = gelfandRadius A := by
+  refine tendsto_nhds_unique_of_forall (tendsto_gelfandRadius (blockDiagonal fun _ ↦ A))
+    (tendsto_gelfandRadius A) fun k ↦ ?_
   rw [← blockDiagonal_pow, Matrix.linfty_opNorm_blockDiagonal, Pi.pow_def, pi_norm_const]
 
 end matrices
 
 -- all blocked by spectral radius
-section spectralRadiusLimNorm
+section gelfandRadiusNorm
 
 variable (K L M : Type*) [NormedField K] [Field L] [Field M] [Algebra K L] [Algebra K M]
   [Algebra L M] [IsScalarTower K L M] [FiniteDimensional K L] [FiniteDimensional K M]
@@ -86,49 +86,49 @@ variable (K L M : Type*) [NormedField K] [Field L] [Field M] [Algebra K L] [Alge
 open scoped Matrix.Norms.Operator
 
 /-- The spectral norm defined by the spectral radius limit `lim ‖x ^ k‖ ^ (1 / k)`. -/
-noncomputable def spectralRadiusLimNorm : AlgebraNorm K L where
-  toFun x := spectralRadiusLim (Algebra.leftMulMatrix (Module.finBasis K L) x)
-  map_zero' := by rw [map_zero, spectralRadiusLim_zero]
-  add_le' x y := by grw [map_add, ((Commute.all x y).map _).spectralRadiusLim_add_le]
-  neg' x := by rw [map_neg, spectralRadiusLim_neg]
-  mul_le' x y := by grw [map_mul, ((Commute.all x y).map _).spectralRadiusLim_mul_le]
+noncomputable def gelfandRadiusNorm : AlgebraNorm K L where
+  toFun x := gelfandRadius (Algebra.leftMulMatrix (Module.finBasis K L) x)
+  map_zero' := by rw [map_zero, gelfandRadius_zero]
+  add_le' x y := by grw [map_add, ((Commute.all x y).map _).gelfandRadius_add_le]
+  neg' x := by rw [map_neg, gelfandRadius_neg]
+  mul_le' x y := by grw [map_mul, ((Commute.all x y).map _).gelfandRadius_mul_le]
   eq_zero_of_map_eq_zero' x h := by
     have : NeZero (Module.finrank K L) := ⟨Module.finrank_pos.ne'⟩
     have : Commute x x⁻¹ := by simp -- merge master
-    have hx := (this.map (Algebra.leftMulMatrix (Module.finBasis K L))).spectralRadiusLim_mul_le
+    have hx := (this.map (Algebra.leftMulMatrix (Module.finBasis K L))).gelfandRadius_mul_le
     contrapose! hx
     simp [← map_mul, h, hx]
-  smul' x y := by rw [map_smul, spectralRadiusLim_smul]
+  smul' x y := by rw [map_smul, gelfandRadius_smul]
 
 variable {K L M}
 
-theorem spectralRadiusLimNorm_def (x : L) : spectralRadiusLimNorm K L x =
-    spectralRadiusLim (Algebra.leftMulMatrix (Module.finBasis K L) x) :=
+theorem gelfandRadiusNorm_def (x : L) : gelfandRadiusNorm K L x =
+    gelfandRadius (Algebra.leftMulMatrix (Module.finBasis K L) x) :=
   rfl
 
 @[simp]
-theorem spectralRadiusLimNorm_one : spectralRadiusLimNorm K L 1 = 1 := by
+theorem gelfandRadiusNorm_one : gelfandRadiusNorm K L 1 = 1 := by
   have : NeZero (Module.finrank K L) := ⟨Module.finrank_pos.ne'⟩
-  rw [spectralRadiusLimNorm_def, map_one, spectralRadiusLim_one]
+  rw [gelfandRadiusNorm_def, map_one, gelfandRadius_one]
 
-theorem spectralRadiusLimNorm_extends (x : K) :
-    spectralRadiusLimNorm K L (algebraMap K L x) = ‖x‖ := by
-  rw [Algebra.algebraMap_eq_smul_one, map_smul_eq_mul, spectralRadiusLimNorm_one, mul_one]
+theorem gelfandRadiusNorm_extends (x : K) :
+    gelfandRadiusNorm K L (algebraMap K L x) = ‖x‖ := by
+  rw [Algebra.algebraMap_eq_smul_one, map_smul_eq_mul, gelfandRadiusNorm_one, mul_one]
 
-theorem isPowMul_spectralRadiusLimNorm : IsPowMul (spectralRadiusLimNorm K L) := by
+theorem isPowMul_gelfandRadiusNorm : IsPowMul (gelfandRadiusNorm K L) := by
   have : NeZero (Module.finrank K L) := ⟨Module.finrank_pos.ne'⟩
   intro x k hk
-  simp_rw [spectralRadiusLimNorm_def, map_pow, spectralRadiusLim_pow]
+  simp_rw [gelfandRadiusNorm_def, map_pow, gelfandRadius_pow]
 
-theorem spectralRadiusLimNorm_apply
+theorem gelfandRadiusNorm_apply
     {ι : Type*} [DecidableEq ι] [Fintype ι] (b : Module.Basis ι K L) (x : L) :
-    spectralRadiusLimNorm K L x = spectralRadiusLim (Algebra.leftMulMatrix b x) := by
+    gelfandRadiusNorm K L x = gelfandRadius (Algebra.leftMulMatrix b x) := by
   let ι' := Fin (Module.finrank K L)
   let b' := Module.finBasis K L
-  rw [spectralRadiusLimNorm_def]
+  rw [gelfandRadiusNorm_def]
   let m : Matrix ι ι K := Algebra.leftMulMatrix b x
   let m' : Matrix ι' ι' K := Algebra.leftMulMatrix b' x
-  change spectralRadiusLim m' = spectralRadiusLim m
+  change gelfandRadius m' = gelfandRadius m
   let v := b.toMatrix b'
   let v' := b'.toMatrix b
   have h : v * m' * v' = m := by
@@ -136,19 +136,19 @@ theorem spectralRadiusLimNorm_apply
   have h' : v' * m * v = m' := by
     apply basis_toMatrix_mul_linearMap_toMatrix_mul_basis_toMatrix
   rw [← h']
-  exact Matrix.spectralRadiusLim_conj v' m v (b'.toMatrix_mul_toMatrix_flip b)
+  exact Matrix.gelfandRadius_conj v' m v (b'.toMatrix_mul_toMatrix_flip b)
     (b.toMatrix_mul_toMatrix_flip b')
 
-theorem spectralRadiusLimNorm_algebraMap (x : L) :
-    spectralRadiusLimNorm K M (algebraMap L M x) = spectralRadiusLimNorm K L x := by
+theorem gelfandRadiusNorm_algebraMap (x : L) :
+    gelfandRadiusNorm K M (algebraMap L M x) = gelfandRadiusNorm K L x := by
   have : FiniteDimensional L M := .of_restrictScalars_finite K L M
   have : NeZero (Module.finrank L M) := ⟨Module.finrank_pos.ne'⟩
   let bKL := Module.finBasis K L
   let bLM := Module.finBasis L M
-  rw [spectralRadiusLimNorm_apply bKL, spectralRadiusLimNorm_apply (bKL.smulTower bLM),
-    Algebra.smulTower_leftMulMatrix_algebraMap, Matrix.spectralRadiusLim_blockMatrix]
+  rw [gelfandRadiusNorm_apply bKL, gelfandRadiusNorm_apply (bKL.smulTower bLM),
+    Algebra.smulTower_leftMulMatrix_algebraMap, Matrix.gelfandRadius_blockMatrix]
 
-end spectralRadiusLimNorm
+end gelfandRadiusNorm
 
 section spectralNorm
 
@@ -165,7 +165,7 @@ open Classical in
 noncomputable def spectralNorm (x : L) : ℝ :=
   if hx : IsAlgebraic K x then
     haveI := adjoin.finiteDimensional hx.isIntegral
-    spectralRadiusLimNorm K K⟮x⟯ (AdjoinSimple.gen K x)
+    gelfandRadiusNorm K K⟮x⟯ (AdjoinSimple.gen K x)
   else 0
 
 variable {K L}
@@ -175,13 +175,13 @@ theorem spectralNorm_eq_zero {x : L} (hx : ¬ IsAlgebraic K x) : spectralNorm K 
 
 theorem IsAlgebraic.spectralNorm_eq {x : L} (hx : IsAlgebraic K x) :
     haveI := adjoin.finiteDimensional hx.isIntegral
-    spectralNorm K L x = spectralRadiusLimNorm K K⟮x⟯ (AdjoinSimple.gen K x) :=
+    spectralNorm K L x = gelfandRadiusNorm K K⟮x⟯ (AdjoinSimple.gen K x) :=
   dite_eq_left hx
 
 theorem FiniteDimensional.spectralNorm_eq [FiniteDimensional K L] (x : L) :
-    spectralNorm K L x = spectralRadiusLimNorm K L x :=
+    spectralNorm K L x = gelfandRadiusNorm K L x :=
   (Algebra.IsAlgebraic.isAlgebraic x).spectralNorm_eq.trans
-    (spectralRadiusLimNorm_algebraMap (AdjoinSimple.gen K x)).symm
+    (gelfandRadiusNorm_algebraMap (AdjoinSimple.gen K x)).symm
 
 theorem spectralNorm_algebraMap {E : Type*} [Field E] [Algebra K E] [Algebra E L]
     [IsScalarTower K E L] (x : E) :
@@ -197,7 +197,7 @@ theorem spectralNorm_algebraMap {E : Type*} [Field E] [Algebra K E] [Algebra E L
     have := adjoin.finiteDimensional hx.isIntegral
     have : FiniteDimensional K K⟮algebraMap E L x⟯ :=
       adjoin.finiteDimensional hx.algebraMap.isIntegral
-    exact spectralRadiusLimNorm_algebraMap (AdjoinSimple.gen K x)
+    exact gelfandRadiusNorm_algebraMap (AdjoinSimple.gen K x)
   · rw [spectralNorm_eq_zero hx, spectralNorm_eq_zero]
     exact mt (isAlgebraic_algebraMap_iff (algebraMap E L).injective).mp hx
 
@@ -208,7 +208,7 @@ theorem spectralNorm.eq_of_tower {E : Type*} [Field E] [Algebra K E] [Algebra E 
   (spectralNorm_algebraMap x).symm
 
 theorem spectralNorm_eq_of_mem (E : IntermediateField K L) [FiniteDimensional K E]
-    (x : L) (y : E) (h : x = y) : spectralNorm K L x = spectralRadiusLimNorm K E y := by
+    (x : L) (y : E) (h : x = y) : spectralNorm K L x = gelfandRadiusNorm K E y := by
   rw [h, ← E.algebraMap_apply, spectralNorm_algebraMap, FiniteDimensional.spectralNorm_eq]
 
 @[simp]
@@ -217,7 +217,7 @@ theorem spectralNorm_zero : spectralNorm K L 0 = 0 := by
 
 @[simp]
 theorem spectralNorm_one : spectralNorm K L 1 = 1 := by
-  rw [spectralNorm_eq_of_mem ⊥ 1 1 rfl, spectralRadiusLimNorm_one]
+  rw [spectralNorm_eq_of_mem ⊥ 1 1 rfl, gelfandRadiusNorm_one]
 
 theorem spectralNorm_neg (x : L) : spectralNorm K L (-x) = spectralNorm K L x := by
   by_cases hx : IsAlgebraic K x
@@ -271,7 +271,7 @@ theorem isPowMul_spectralNorm : IsPowMul (spectralNorm K L) := by
   · have : FiniteDimensional K K⟮x⟯ := adjoin.finiteDimensional hx.isIntegral
     rw [spectralNorm_eq_of_mem K⟮x⟯ x (AdjoinSimple.gen K x) rfl,
       spectralNorm_eq_of_mem K⟮x⟯ (x ^ k) (AdjoinSimple.gen K x ^ k) rfl,
-      isPowMul_spectralRadiusLimNorm (AdjoinSimple.gen K x) hk]
+      isPowMul_gelfandRadiusNorm (AdjoinSimple.gen K x) hk]
   · rw [spectralNorm_eq_zero hx, spectralNorm_eq_zero, zero_pow (by grind)]
     contrapose! hx
     exact hx.of_pow hk
@@ -283,6 +283,7 @@ section spectralAlgNorm
 variable (K : Type*) [NormedField K] (L : Type*) [Field L] [Algebra K L] [Algebra.IsAlgebraic K L]
 
 open Algebra.IsAlgebraic in
+/-- The spectral norm is a `K`-algebra norm on `L`. -/
 noncomputable def spectralAlgNorm : AlgebraNorm K L where
   toFun := spectralNorm K L
   map_zero' := spectralNorm_zero
@@ -356,11 +357,13 @@ theorem spectralNorm_eq_of_equiv {K L : Type*} [NormedField K] [Field L] [Algebr
     (σ : Gal(L/K)) (x : L) : spectralNorm K L x = spectralNorm K L (σ x) :=
   (spectralNorm_algHom σ.toAlgHom x).symm
 
+/-- The spectral norm gives `L` the structure of a normed field. -/
 @[instance_reducible]
 noncomputable def spectralNorm.normedField (K L : Type*) [NormedField K] [Field L]
     [Algebra K L] [Algebra.IsAlgebraic K L] [CompleteSpace K] : NormedField L :=
   (spectralAbsoluteValue K L).toNormedField
 
+/-- The spectral norm gives `L` the structure of a nontrivally normed field. -/
 @[instance_reducible]
 noncomputable def spectralNorm.nontriviallyNormedField (K L : Type*) [NontriviallyNormedField K]
     [Field L] [Algebra K L] [Algebra.IsAlgebraic K L] [CompleteSpace K] :
@@ -370,6 +373,7 @@ noncomputable def spectralNorm.nontriviallyNormedField (K L : Type*) [Nontrivial
     let ⟨x, hx⟩ := NontriviallyNormedField.non_trivial (α := K)
     ⟨algebraMap K L x, hx.trans_eq (spectralNorm_extends x).symm⟩
 
+/-- The spectral norm gives `L` the structure of a normed algebra. -/
 @[instance_reducible]
 noncomputable def spectralNorm.normedAlgebra
     (K L : Type*) [NormedField K] [Field L] [Algebra K L]
@@ -379,6 +383,7 @@ noncomputable def spectralNorm.normedAlgebra
   __ := spectralNorm.normedField K L
   norm_smul_le x y := ((spectralAlgNorm K L).smul' x y).le
 
+/-- The spectral norm gives `L` the structure of a normed algebra over any intermediate field. -/
 @[instance_reducible]
 noncomputable def spectralNorm.normedAlgebra' (K E L : Type*) [NormedField K]
     [CompleteSpace K] [Field L] [Algebra K L] [Algebra.IsAlgebraic K L] [NormedField E]
@@ -432,22 +437,22 @@ theorem foobar {α β γ κ : Type*} [SeminormedAddCommGroup γ] [IsUltrametricD
 
 open scoped Matrix.Norms.Operator Topology in
 open Filter in
-theorem isNonarchimedean_spectralRadiusLimNorm {K L : Type*} [NormedField K] [Field L] [Algebra K L]
+theorem isNonarchimedean_gelfandRadiusNorm {K L : Type*} [NormedField K] [Field L] [Algebra K L]
     [IsUltrametricDist K] [FiniteDimensional K L] :
-    IsNonarchimedean (spectralRadiusLimNorm K L) := by
+    IsNonarchimedean (gelfandRadiusNorm K L) := by
   intro x y
   let T := Algebra.leftMulMatrix (Module.finBasis K L)
-  let M := max (spectralRadiusLim (T x)) (spectralRadiusLim (T y))
-  change spectralRadiusLim (T (x + y)) ≤ M
+  let M := max (gelfandRadius (T x)) (gelfandRadius (T y))
+  change gelfandRadius (T (x + y)) ≤ M
   apply le_of_forall_pos_le_add
   intro ε hε
   obtain ⟨Cx, hCx0, hCx⟩ : ∃ C > 0, ∀ (n : ℕ), ‖T x ^ n‖ ≤ C * (M + ε) ^ n := by
-    obtain ⟨C, hC0, hC⟩ := exists_le_spectralRadiusLim (T x) ε hε
+    obtain ⟨C, hC0, hC⟩ := exists_le_gelfandRadius (T x) ε hε
     refine ⟨C, hC0, fun n ↦ (hC n).trans ?_⟩
     gcongr
     apply le_max_left
   obtain ⟨Cy, hCy0, hCy⟩ : ∃ C > 0, ∀ (n : ℕ), ‖T y ^ n‖ ≤ C * (M + ε) ^ n := by
-    obtain ⟨C, hC0, hC⟩ := exists_le_spectralRadiusLim (T y) ε hε
+    obtain ⟨C, hC0, hC⟩ := exists_le_gelfandRadius (T y) ε hε
     refine ⟨C, hC0, fun n ↦ (hC n).trans ?_⟩
     gcongr
     apply le_max_right
@@ -473,7 +478,7 @@ theorem isNonarchimedean_spectralRadiusLimNorm {K L : Type*} [NormedField K] [Fi
       ← Real.rpow_mul_natCast (by positivity), ← Real.rpow_mul_natCast (by positivity),
       inv_mul_cancel₀ (by simpa), Real.rpow_one, Real.rpow_one]
   suffices ∀ C > (0 : ℝ), Tendsto (fun n : ℕ ↦ C ^ (n : ℝ)⁻¹) atTop (𝓝 1) by
-    refine le_of_tendsto_of_tendsto (tendsto_spectralRadiusLim (T (x + y)))
+    refine le_of_tendsto_of_tendsto (tendsto_gelfandRadius (T (x + y)))
       (by simpa using (this C (by positivity)).mul_const _)
         (eventually_atTop.mpr ⟨1, fun n hn ↦ key n (by grind)⟩)
   intro C hC
@@ -490,6 +495,6 @@ theorem isNonarchimedean_spectralNorm {K L : Type*} [NormedField K] [Field L] [A
   rw [spectralNorm_eq_of_mem K⟮x, y⟯ x (AdjoinPair.gen₁ K x y) rfl,
     spectralNorm_eq_of_mem K⟮x, y⟯ y (AdjoinPair.gen₂ K x y) rfl,
     spectralNorm_eq_of_mem K⟮x, y⟯ (x + y) (AdjoinPair.gen₁ K x y + AdjoinPair.gen₂ K x y) rfl]
-  apply isNonarchimedean_spectralRadiusLimNorm
+  apply isNonarchimedean_gelfandRadiusNorm
 
 end
