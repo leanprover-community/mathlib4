@@ -5,7 +5,7 @@ Authors: Moritz Firsching, Ashvni Narayanan, Michael Stoll
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Associated
+import Mathlib.Algebra.BigOperators.Associated
 public import Mathlib.Data.ZMod.Basic
 public import Mathlib.RingTheory.Coprime.Lemmas
 

@@ -5,7 +5,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Analysis.Convex.Combination
+import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Analysis.Convex.Extreme
 
 /-!

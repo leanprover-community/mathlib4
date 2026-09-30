@@ -6,10 +6,8 @@ Authors: Heather Macbeth, Jireh Loreaux
 module
 
 public import Mathlib.Analysis.MeanInequalities
-public import Mathlib.Analysis.MeanInequalitiesPow
+import Mathlib.Analysis.MeanInequalitiesPow
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-public import Mathlib.Data.Set.Image
-public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Algebra.Order.Group.Pointwise.Bounds
 
 /-!
@@ -169,7 +167,8 @@ theorem mono {f : (i : α) → E i} {g : α → ℝ}
   replace hfg (i) : ‖f i‖ ≤ ‖g i‖ := (hfg i).trans (Real.le_norm_self _)
   obtain (rfl | rfl | hp) := p.trichotomy
   · simp_rw [memℓp_zero_iff, ← norm_pos_iff] at hg ⊢
-    refine hg.subset fun i hi ↦ hi.trans_le <| hfg i
+    grw [hfg]
+    exact hg
   · rw [memℓp_infty_iff] at hg ⊢
     exact hg.range_mono _ hfg
   · rw [memℓp_gen_iff hp] at hg ⊢

@@ -42,7 +42,7 @@ theorem Transcendental.algEquivAdjoin_apply (hx : Transcendental R x) (p : R[X][
 attribute [local instance] algebra in
 theorem Transcendental.algEquivAdjoin_swap_eq_aeval (hx : Transcendental R x) (p : R[X][Y]) :
     hx.algEquivAdjoin (swap p) = aeval (C ⟨x, self_mem_adjoin_singleton R x⟩) p := by
-  simp [algEquivAdjoin, Bivariate.aveal_eq_map_swap]
+  simp [algEquivAdjoin, Bivariate.aeval_eq_map_swap]
 
 end Ring
 
