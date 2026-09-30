@@ -25,40 +25,37 @@ section matrices
 
 open scoped Matrix.Norms.Operator
 
--- waiting on spectral radius (also look into further golfing)
 open Filter Topology in
-private theorem Matrix.gelfandRadius_conj_le {R m n : Type*}
+theorem Matrix.gelfandRadius_conj_le {R m n : Type*}
     [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [NormedCommRing R]
     (A : Matrix m n R) (B : Matrix n n R) (C : Matrix n m R)
-    (hAC : A * C = 1) (hCA : C * A = 1) : gelfandRadius (A * B * C) ≤ gelfandRadius B := by
+    (hCA : C * A = 1) : gelfandRadius (A * B * C) ≤ gelfandRadius B := by
   cases subsingleton_or_nontrivial (Matrix n n R)
   · simp [Subsingleton.elim B 0]
-  have h k : (A * B * C) ^ k = A * B ^ k * C := by
-    induction k with
-    | zero => simp [hAC]
-    | succ n ih => transitivity A * B ^ n * (C * A) * B * C <;> grind [Matrix.mul_assoc]
-  suffices Tendsto (fun k : ℕ ↦ ‖A‖ ^ (k : ℝ)⁻¹ * ‖B ^ k‖ ^ (k : ℝ)⁻¹ * ‖C‖ ^ (k : ℝ)⁻¹) atTop
-      (𝓝 (1 * gelfandRadius B * 1)) by
-    rw [one_mul, mul_one] at this
-    refine le_of_tendsto_of_tendsto' (tendsto_gelfandRadius (A * B * C)) this fun n ↦ ?_
-    grw [h, Matrix.linfty_opNorm_mul, Matrix.linfty_opNorm_mul,
-      Real.mul_rpow, Real.mul_rpow] <;> positivity
+  have h k (hk : 1 ≤ k) : (A * B * C) ^ k = A * B ^ k * C := by
+    refine Nat.le_induction (by simp) (fun k _ ih ↦ ?_) k hk
+    transitivity A * B ^ k * (C * A) * B * C
+    · simp_rw [pow_succ, ih, Matrix.mul_assoc]
+    · simp_rw [pow_succ, hCA, Matrix.mul_assoc, Matrix.one_mul]
+  have key {c : ℝ} (hc : c ≠ 0) : Tendsto (fun n : ℕ ↦ (c ^ ((n : ℝ)⁻¹))) atTop (𝓝 1) :=
+    ((c.continuous_const_rpow hc).tendsto' 0 1 c.rpow_zero).comp tendsto_inv_atTop_nhds_zero_nat
   have hA : ‖A‖ ≠ 0 := by contrapose! hCA; simp_all
   have hC : ‖C‖ ≠ 0 := by contrapose! hCA; simp_all
-  have key {c : ℝ} (hc : c ≠ 0) :=
-    ((Real.continuous_const_rpow hc).tendsto' 0 1 c.rpow_zero).comp tendsto_inv_atTop_nhds_zero_nat
-  exact ((key hA).mul (tendsto_gelfandRadius B)).mul (key hC)
+  replace key := ((key hA).mul (tendsto_gelfandRadius B)).mul (key hC)
+  rw [one_mul, mul_one] at key
+  refine le_of_tendsto_of_tendsto' (tendsto_gelfandRadius (A * B * C)) key fun k ↦ ?_
+  rcases eq_zero_or_pos k with rfl | hk
+  · simp
+  · grw [h k hk, Matrix.linfty_opNorm_mul, Matrix.linfty_opNorm_mul,
+      Real.mul_rpow, Real.mul_rpow] <;> positivity
 
--- waiting on spectral radius (also look into further golfing)
 theorem Matrix.gelfandRadius_conj {R m n : Type*}
     [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [NormedCommRing R]
     (A : Matrix m n R) (B : Matrix n n R) (C : Matrix n m R)
     (hAC : A * C = 1) (hCA : C * A = 1) : gelfandRadius (A * B * C) = gelfandRadius B := by
-  refine le_antisymm (Matrix.gelfandRadius_conj_le A B C hAC hCA) ?_
-  have h : C * (A * B * C) * A = B := by
-    transitivity (C * A) * B * (C * A) <;> grind [Matrix.mul_assoc]
-  have := Matrix.gelfandRadius_conj_le C (A * B * C) A hCA hAC
-  rwa [h] at this
+  refine le_antisymm (Matrix.gelfandRadius_conj_le A B C hCA) ?_
+  grw [← gelfandRadius_conj_le C (A * B * C) A hAC, Matrix.mul_assoc, Matrix.mul_assoc,
+    hCA, Matrix.mul_one, ← Matrix.mul_assoc, hCA, Matrix.one_mul]
 
 -- waiting on spectral radius
 theorem Matrix.gelfandRadius_blockMatrix {R m : Type*} [DecidableEq m] [Fintype m]
