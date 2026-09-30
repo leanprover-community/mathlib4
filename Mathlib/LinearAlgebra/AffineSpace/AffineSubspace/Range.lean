@@ -51,7 +51,7 @@ instance instNonemptyRange : Nonempty (range f) :=
 theorem coe_range : f.range = Set.range f := rfl
 
 @[simp]
-theorem mem_range (x : P₂) : x ∈ f.range ↔ ∃ (y : P₁), f y = x :=
+theorem mem_range (x : P₂) : x ∈ f.range ↔ ∃ y, f y = x :=
   Iff.rfl
 
 @[simp]
