@@ -86,7 +86,7 @@ theorem resolventLM_apply_eq (hz : z ∈ f.resolventSet) {x y : E} (hx : x ∈ f
   apply inverseLM_apply_eq (by simpa using hz)
   simpa [sub_eq_add_neg] using hxy
 
-@[grind .]
+@[simp, grind .]
 theorem resolventLM_of_notMem_resolventSet (hz : z ∉ f.resolventSet) :
     f.resolventLM z = 0 := by
   simp [resolventLM, hz]
@@ -105,7 +105,7 @@ theorem _root_.LinearMap.resolventLM_toPMap_eq_resolvent (g : E →ₗ[R] E) :
 
 /-- The range of the resolvent `R(f, z)` is equal to the domain of `f` for any `z` in the resolvent
 set. -/
-@[grind .]
+@[simp, grind .]
 theorem range_resolventLM (hz : z ∈ f.resolventSet) :
     (f.resolventLM z).range = f.domain := by
   simp [resolventLM, hz, range_inverseLM hz]
