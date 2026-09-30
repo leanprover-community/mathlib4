@@ -102,7 +102,7 @@ lemma tendstoInDistribution_of_identDistrib [OpensMeasurableSpace E] (i : ι)
   forall_aemeasurable j := (hX j).aemeasurable_snd
   aemeasurable_limit := hZ.aemeasurable_snd
   tendsto := by
-    convert! tendsto_const_nhds (x := (μ'.map Z).toProbabilityMeasure) with j
+    convert! tendsto_const_nhds with j
     exact (hX j).map_eq.symm.trans hZ.map_eq
 
 set_option backward.isDefEq.respectTransparency.types false in
