@@ -9,7 +9,7 @@ public import Mathlib.Topology.MetricSpace.PiNat
 public import Mathlib.Topology.MetricSpace.UniformConvergence
 public import Mathlib.Topology.MetricSpace.Contracting
 public import Mathlib.Data.Seq.Defs
-public import Mathlib.Tactic.ENatToNat
+import Mathlib.Tactic.ENatToNat
 
 /-!
 # Non-primitive corecursion for sequences
@@ -65,7 +65,7 @@ Then `f` is friendly iff it is `1`-Lipschitz.
 
 namespace Tactic.ComputeAsymptotics.Seq
 
-open Stream' Seq
+open Stream' Stream'.Seq
 
 open scoped UniformConvergence
 
@@ -84,15 +84,14 @@ local instance : CompleteSpace (Stream' α) :=
   @PiNat.completeSpace _ (fun _ ↦ ⊥) (fun _ ↦ discreteTopology_bot _)
 
 local instance : CompleteSpace (Seq α) := by
-  suffices IsClosed (X := Stream' (Option α))
-      (fun x ↦ ∀ {n : ℕ}, x n = none → x (n + 1) = none) by
-    apply IsClosed.completeSpace_coe
+  suffices IsClosed (X := Stream' (Option α)) {x | ∀ {n : ℕ}, x n = none → x (n + 1) = none} by
+    exact this.completeSpace_coe
   rw [isClosed_iff_clusterPt]
   intro s hs n hn
   rw [clusterPt_principal_iff] at hs
   obtain ⟨t, hts, ht⟩ := hs (Metric.ball s ((1 / 2 : ℝ) ^ (n + 1)))
     (Metric.ball_mem_nhds _ (by positivity))
-  simp only [Metric.ball, Set.mem_setOf_eq] at hts
+  simp only [Metric.ball, Set.mem_ofPred_eq] at hts
   rw [← PiNat.apply_eq_of_dist_lt hts (by simp)] at hn
   rw [← PiNat.apply_eq_of_dist_lt hts (by rfl)]
   exact ht hn
@@ -136,7 +135,7 @@ theorem dist_cons_cons (x : α) (s t : Seq α) : dist (cons x s) (cons x t) = 2�
   · contrapose! h'
     apply_fun Subtype.val using Subtype.val_injective
     simpa
-  · convert! Nat.find_comp_succ _ _ _
+  · convert Nat.find_comp_succ _ _ _
     simp [Stream'.cons]
 
 theorem dist_eq_half_of_head {s t : Seq α} (h : s.head = t.head) :
@@ -146,7 +145,7 @@ theorem dist_eq_half_of_head {s t : Seq α} (h : s.head = t.head) :
 set_option backward.isDefEq.respectTransparency false in
 theorem dist_eq_one_of_head {s t : Seq α} (h : s.head ≠ t.head) : dist s t = 1 := by
   rw [Subtype.dist_eq, PiNat.dist_eq_of_ne]
-  · convert! pow_zero _
+  · convert pow_zero _
     simp only [PiNat.firstDiff, ne_eq, Classical.dite_not, dite_eq_left_iff,
       Nat.find_eq_zero]
     intro h'
@@ -198,7 +197,7 @@ theorem FriendlyOperation.comp {op op' : Seq α → Seq α}
     (h : FriendlyOperation op) (h' : FriendlyOperation op') :
     FriendlyOperation (op ∘ op') := by
   rw [FriendlyOperation] at h h' ⊢
-  convert! h.comp h'
+  convert h.comp h'
   simp
 
 theorem FriendlyOperation.const {s : Seq α} : FriendlyOperation (fun _ ↦ s) := by
@@ -234,6 +233,7 @@ theorem exists_fixed_point_of_contractible (F : (β →ᵤ Seq α) → (β →�
   use f
   exact hF.fixedPoint_isFixedPt
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Main theorem of this file. It shows that there exists a function satisfying the corecursive
 definition of the form `def foo (x : X) := hd x :: op (foo (tlArg x))` where `f` is friendly. -/
 theorem FriendlyOperation.exists_fixed_point (F : β → Option (α × γ × β)) (op : γ → Seq α → Seq α)
@@ -416,6 +416,7 @@ theorem FriendlyOperation.of_dist_le_pow {op : Seq α → Seq α}
   obtain ⟨n, hst⟩ := dist_eq_two_inv_pow hst
   grind
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Coinduction principle for proving that an operation is friendly. -/
 theorem FriendlyOperation.coind (motive : (Seq α → Seq α) → Prop)
     {op : Seq α → Seq α}

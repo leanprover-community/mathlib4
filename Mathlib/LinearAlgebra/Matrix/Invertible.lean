@@ -6,7 +6,7 @@ Authors: Eric Wieser, Ahmad Alkhalawi
 module
 
 public import Mathlib.LinearAlgebra.Matrix.ConjTranspose
-public import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Abel
 
 /-! # Extra lemmas about invertible matrices
 
@@ -111,8 +111,8 @@ instance invertibleTranspose [Invertible A] : Invertible Aᵀ where
   mul_invOf_self := by rw [← transpose_mul, invOf_mul_self, transpose_one]
 
 lemma transpose_invOf [Invertible A] [Invertible Aᵀ] : (⅟A)ᵀ = ⅟(Aᵀ) := by
-  letI := invertibleTranspose A
-  convert! (rfl : _ = ⅟(Aᵀ))
+  let := invertibleTranspose A
+  convert (rfl : _ = ⅟(Aᵀ))
 
 /-- `Aᵀ` is invertible when `A` is. -/
 @[implicit_reducible]
@@ -198,7 +198,7 @@ def invertibleAddMulMul : Invertible (A + U * C * V) where
 See `Matrix.invOf_add_mul_mul'` for the Binomial Inverse Theorem. -/
 theorem invOf_add_mul_mul [Invertible (A + U * C * V)] :
     ⅟(A + U * C * V) = ⅟A - ⅟A * U * ⅟(⅟C + V * ⅟A * U) * V * ⅟A := by
-  letI := invertibleAddMulMul A U C V
+  let := invertibleAddMulMul A U C V
   convert! (rfl : ⅟(A + U * C * V) = _)
 
 end Woodbury
@@ -242,7 +242,7 @@ def invertibleAddMulMul' : Invertible (A + U * C * V) where
 See `Matrix.invOf_add_mul_mul` for the Woodbury identity. -/
 theorem invOf_add_mul_mul' [Invertible (A + U * C * V)] :
     ⅟(A + U * C * V) = ⅟A - ⅟A * U * C * ⅟(C + C * V * ⅟A * U * C) * C * V * ⅟A := by
-  letI := invertibleAddMulMul' A U C V
+  let := invertibleAddMulMul' A U C V
   convert! (rfl : ⅟(A + U * C * V) = _)
 
 end BinomialInverseTheorem

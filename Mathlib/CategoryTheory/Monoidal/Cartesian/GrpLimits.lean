@@ -6,7 +6,7 @@ Authors: Thomas Browning, Christian Merten
 module
 
 public import Mathlib.Algebra.Group.Invertible.Basic
-public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.ShrinkYoneda
 public import Mathlib.CategoryTheory.Monoidal.Internal.Limits
 
@@ -20,7 +20,7 @@ We show that `Grp C` has limits.
 
 namespace CategoryTheory
 
-open Functor Grp Limits MonObj
+open CategoryTheory.Functor Grp Limits MonObj
 
 universe w v
 

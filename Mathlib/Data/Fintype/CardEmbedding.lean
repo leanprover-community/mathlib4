@@ -5,9 +5,8 @@ Authors: Eric Rodriguez
 -/
 module
 
-public import Mathlib.Data.Nat.Factorial.Basic
 public import Mathlib.Data.Fintype.BigOperators
-public import Mathlib.Data.Set.Finite.Range
+import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Logic.Equiv.Embedding
 
 /-!
@@ -42,7 +41,7 @@ theorem card_embedding_eq {α β : Type*} [Fintype α] [Fintype β] [emb : Finty
   rw [Subsingleton.elim emb Embedding.fintype]
   refine Fintype.induction_empty_option (P := fun t ↦ ‖t ↪ β‖ = ‖β‖.descFactorial ‖t‖)
         (fun α₁ α₂ h₂ e ih ↦ ?_) (?_) (fun γ h ih ↦ ?_) α <;> clear! α
-  · letI := Fintype.ofEquiv _ e.symm
+  · let := Fintype.ofEquiv _ e.symm
     rw [← card_congr (Equiv.embeddingCongr e (Equiv.refl β)), ih, card_congr e]
   · rw [card_pempty, Nat.descFactorial_zero, card_eq_one_iff]
     exact ⟨Embedding.ofIsEmpty, fun x ↦ DFunLike.ext _ _ isEmptyElim⟩

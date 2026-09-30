@@ -6,10 +6,10 @@ Authors: Riccardo Brasca, Anthony Fernandes, Marc Robin
 module
 
 public import Mathlib.Algebra.Module.SpanRank
-public import Mathlib.RingTheory.Noetherian.OfPrime
+import Mathlib.RingTheory.Noetherian.OfPrime
 public import Mathlib.RingTheory.PowerSeries.Inverse
-public import Mathlib.RingTheory.PowerSeries.Trunc
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Kaplansky
+import Mathlib.RingTheory.PowerSeries.Trunc
+import Mathlib.RingTheory.UniqueFactorizationDomain.Kaplansky
 
 /-!
 # Ideals in power series.

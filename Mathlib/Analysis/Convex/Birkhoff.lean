@@ -5,11 +5,8 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Analysis.Convex.Extreme
-public import Mathlib.Analysis.Convex.Jensen
-public import Mathlib.Analysis.Normed.Module.Convex
-public import Mathlib.Combinatorics.Hall.Basic
+import Mathlib.Combinatorics.Hall.Basic
 public import Mathlib.Analysis.Convex.DoublyStochasticMatrix
 
 /-!
@@ -44,11 +41,12 @@ section LinearOrderedSemifield
 
 variable [Semifield R] [LinearOrder R] [IsStrictOrderedRing R] {M : Matrix n n R}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 If M is a positive scalar multiple of a doubly stochastic matrix, then there is a permutation matrix
 whose support is contained in the support of M.
 -/
-private lemma exists_perm_eq_zero_implies_eq_zero [Nonempty n] {s : R} (hs : 0 < s)
+private lemma exists_perm_eq_zero_implies_eq_zero {s : R} (hs : 0 < s)
     (hM : ∃ M' ∈ doublyStochastic R n, M = s • M') :
     ∃ σ : Equiv.Perm n, ∀ i j, M i j = 0 → σ.permMatrix R i j = 0 := by
   rw [exists_mem_doublyStochastic_eq_smul_iff hs.le] at hM

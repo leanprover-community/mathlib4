@@ -5,7 +5,7 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.CategoryTheory.Limits.VanKampen
 public import Mathlib.CategoryTheory.Sites.Hypercover.SheafOfTypes
 
@@ -45,9 +45,6 @@ def PreZeroHypercover.isLimitSigmaOfIsColimitEquiv (E : PreZeroHypercover.{w} S)
     [PreservesLimit (Discrete.functor fun i ↦ op (E.toPreOneHypercover.Y' i)) F] :
     IsLimit ((E.sigmaOfIsColimit hc).toPreOneHypercover.multifork F) ≃
       IsLimit (E.toPreOneHypercover.multifork F) := by
-  have : HasPullback (Cofan.IsColimit.desc hc E.f) (Cofan.IsColimit.desc hc E.f) :=
-    inferInstanceAs <| HasPullback
-      ((E.sigmaOfIsColimit hc).f ⟨⟩) ((E.sigmaOfIsColimit hc).f ⟨⟩)
   let c' : Cofan E.toPreOneHypercover.Y' :=
     Cofan.mk
       ((E.sigmaOfIsColimit hc).toPreOneHypercover.Y (i₁ := ⟨⟩) (i₂ := ⟨⟩) ⟨⟩)
@@ -98,7 +95,7 @@ lemma Presieve.isSheafFor_sigmaDesc_iff {ι : Type*} {X : ι → C} (f : ∀ i, 
   have : PreservesLimit (Discrete.functor fun i ↦ op (E.toPreOneHypercover.X i)) F := by
     dsimp [E]; infer_instance
   have : PreservesLimit (Discrete.functor fun i ↦ op (E.toPreOneHypercover.Y' i)) F := by
-    convert! Functor.Initial.preservesLimit_of_comp (Discrete.equivalence <| .sigmaPUnit _).inverse
+    convert Functor.Initial.preservesLimit_of_comp (Discrete.equivalence <| .sigmaPUnit _).inverse
     · infer_instance
     · assumption
   let equiv := (E.isLimitSigmaOfIsColimitEquiv hc hc' F).nonempty_congr

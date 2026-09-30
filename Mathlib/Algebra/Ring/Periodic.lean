@@ -33,8 +33,6 @@ assert_not_exists Field
 
 variable {α β γ : Type*} {f g : α → β} {c c₁ c₂ x : α}
 
-open Set
-
 namespace Function
 
 /-! ### Periodicity -/
@@ -220,7 +218,7 @@ def Periodic.lift [AddGroup α] (h : Periodic f c) (x : α ⧸ AddSubgroup.zmult
   Quotient.liftOn' x f fun a b h' => by
     rw [QuotientAddGroup.leftRel_apply] at h'
     obtain ⟨k, hk⟩ := h'
-    exact (h.zsmul k _).symm.trans (congr_arg f (add_eq_of_eq_neg_add hk))
+    exact (h.zsmul k _).symm.trans congr(f $(add_eq_of_eq_neg_add hk))
 
 @[simp]
 theorem Periodic.lift_coe [AddGroup α] (h : Periodic f c) (a : α) :
@@ -414,5 +412,12 @@ theorem Antiperiodic.mul [Add α] [Mul β] [HasDistribNeg β] (hf : Antiperiodic
 
 theorem Antiperiodic.div [Add α] [DivisionMonoid β] [HasDistribNeg β] (hf : Antiperiodic f c)
     (hg : Antiperiodic g c) : Periodic (f / g) c := by simp_all [neg_div_neg_eq]
+
+/-- For an antiperiodic function `f` with antiperiod `c`, summing `f` over a `Finset` shifted by
+`c` (via `addRightEmbedding c`) negates the sum over the original `Finset`. -/
+theorem Antiperiodic.sum_map_addRightEmbedding [Add α] [IsRightCancelAdd α]
+    [SubtractionCommMonoid β] (hf : Antiperiodic f c) (s : Finset α) :
+    ∑ k ∈ s.map (addRightEmbedding c), f k = -∑ k ∈ s, f k := by
+  simp [hf _]
 
 end Function

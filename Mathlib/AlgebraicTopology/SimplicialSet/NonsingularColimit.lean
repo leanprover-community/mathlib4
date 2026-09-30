@@ -26,7 +26,9 @@ of `Δ[x.dim]` for `x : X.N`.
 
 universe u
 
-open CategoryTheory Simplicial Limits
+open CategoryTheory Limits
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -37,7 +39,7 @@ namespace N
 set_option backward.isDefEq.respectTransparency false in
 /-- If `X` is a nonsingular simplicial set, this is the functor
 `X.N ⥤ SemiSimplexCategory` which sends a nondegenerate
-simplex `s : X : N` to `⦋s.dim⦌ₛ` -/
+simplex `s : X.N` to `⦋s.dim⦌ₛ`. -/
 @[simps obj map]
 noncomputable def toSemiSimplexCategory : X.N ⥤ SemiSimplexCategory where
   obj s := ⦋s.dim⦌ₛ
@@ -51,6 +53,7 @@ end N
 noncomputable abbrev functorN' : X.N ⥤ SSet.{u} :=
     N.toSemiSimplexCategory X ⋙ SemiSimplexCategory.toSimplexCategory ⋙ SSet.stdSimplex
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism `X.functorN' ≅ X.functorN` for a nonsingular simplicial set `X`. -/
 noncomputable def functorN'Iso : X.functorN' ≅ X.functorN :=

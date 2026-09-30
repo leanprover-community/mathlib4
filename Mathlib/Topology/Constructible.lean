@@ -6,10 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Order.BooleanSubalgebra
-public import Mathlib.Topology.Compactness.Bases
 public import Mathlib.Topology.LocalAtTarget
-public import Mathlib.Topology.QuasiSeparated
-public import Mathlib.Topology.Spectral.Hom
 public import Mathlib.Topology.Spectral.Prespectral
 
 /-!
@@ -135,7 +132,7 @@ lemma IsRetrocompact_iff_isSpectralMap_subtypeVal :
     IsRetrocompact s ↔ IsSpectralMap (Subtype.val : s → X) := by
   refine ⟨fun hs ↦ ⟨continuous_subtype_val, fun t htopen htcomp ↦ ?_⟩, fun hs t htcomp htopen ↦ ?_⟩
   · rw [IsEmbedding.subtypeVal.isCompact_iff, image_preimage_eq_inter_range,
-      Subtype.range_coe_subtype, setOf_mem_eq, inter_comm]
+      Subtype.range_coe_subtype, ofPred_mem_eq, inter_comm]
     exact hs htcomp htopen
   · simpa using (hs.isCompact_preimage_of_isOpen htopen htcomp).image continuous_subtype_val
 
@@ -304,7 +301,7 @@ lemma _root_.QuasiSeparatedSpace.of_isOpenCover {ι : Type*} {U : ι → Opens X
     QuasiSeparatedSpace X where
   inter_isCompact V₁ V₂ ho₁ hc₁ ho₂ hc₂ := by
     obtain ⟨t, ht⟩ := hc₁.elim_finite_subcover _ (fun i ↦ (U i).2) (by simp [hU.iSup_set_eq_univ])
-    convert!
+    convert
       t.isCompact_biUnion fun i _ ↦
         h₂ i _ _ Set.inter_subset_left ((U i).2.inter ho₁) (h₁ i hc₁ ho₁) Set.inter_subset_left
           ((U i).2.inter ho₂) (h₁ i hc₂ ho₂)
@@ -479,7 +476,7 @@ lemma IsLocallyConstructible.isConstructible_of_subset_of_isCompact
     ⟨V, hV₁, hV₂, hxV, this⟩
   choose U hU hU' hxU hUs using this
   obtain ⟨σ, hσ, htσ⟩ := ht.elim_nhds_subcover U (fun x _ ↦ (hU x).mem_nhds (hxU x))
-  convert! IsConstructible.biUnion σ.finite_toSet (fun x _ ↦ hUs x)
+  convert IsConstructible.biUnion σ.finite_toSet (fun x _ ↦ hUs x)
   apply subset_antisymm
   · rw [← Set.iUnion₂_inter, Set.subset_inter_iff]
     exact ⟨hst.trans htσ, subset_rfl⟩
@@ -500,6 +497,7 @@ lemma IsLocallyConstructible.inter_of_isOpen_isCompact
 
 variable {ι : Type*} {U : ι → Opens X}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsLocallyConstructible.of_isOpenCover
     (hU : IsOpenCover U) (H : ∀ i, IsLocallyConstructible ((U i : Set X) ↓∩ s)) :
     IsLocallyConstructible s := by

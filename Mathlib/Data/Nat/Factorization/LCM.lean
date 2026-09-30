@@ -6,7 +6,7 @@ Authors: Paul Lezeau
 module
 
 public import Mathlib.Data.Nat.Factorization.Basic
-public import Mathlib.Data.Nat.GCD.BigOperators
+import Mathlib.Data.Nat.GCD.BigOperators
 
 /-!
 # Lemmas about `factorizationLCMLeft`
@@ -17,7 +17,7 @@ These were split from `Mathlib.Data.Nat.Factorization.Basic` to reduce transitiv
 
 public section
 
-open Finset List Finsupp
+open Finset Finsupp
 
 namespace Nat
 

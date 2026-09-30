@@ -7,8 +7,7 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 public import Mathlib.RingTheory.RingHom.Surjective
-public import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
-public import Mathlib.Topology.LocalAtTarget
+import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
 
 /-!
 # Morphisms surjective on stalks
@@ -39,9 +38,6 @@ class SurjectiveOnStalks (f : X ⟶ Y) : Prop where
 
 alias Scheme.Hom.stalkMap_surjective := SurjectiveOnStalks.stalkMap_surjective
 
-@[deprecated (since := "2026-01-20")]
-alias SurjectiveOnStalks.surj_on_stalks := Scheme.Hom.stalkMap_surjective
-
 namespace SurjectiveOnStalks
 
 instance (priority := 900) [IsOpenImmersion f] : SurjectiveOnStalks f :=
@@ -54,6 +50,7 @@ instance : MorphismProperty.IsMultiplicative @SurjectiveOnStalks where
     rw [Scheme.Hom.stalkMap_comp]
     exact (f.stalkMap_surjective x).comp (g.stalkMap_surjective (f x))
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [SurjectiveOnStalks f]
     [SurjectiveOnStalks g] : SurjectiveOnStalks (f ≫ g) :=
   MorphismProperty.IsStableUnderComposition.comp_mem f g inferInstance inferInstance

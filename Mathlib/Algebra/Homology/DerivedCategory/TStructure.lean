@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Fractions
 public import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
-public import Mathlib.Algebra.Homology.Embedding.CochainComplex
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
 
 /-!
@@ -192,7 +191,6 @@ lemma exists_iso_singleFunctor_obj_of_isGE_of_isLE
   obtain ⟨K, _, _, ⟨e⟩⟩ := exists_iso_Q_obj_of_isGE_of_isLE X n n
   obtain ⟨Y, ⟨e'⟩⟩ := CochainComplex.exists_iso_single K n
   exact ⟨Y, ⟨e ≪≫ Q.mapIso e'⟩⟩
-
 
 open DerivedCategory.TStructure
 
