@@ -5,9 +5,11 @@ Authors: Felix Pernegger
 -/
 module
 
-import Mathlib.Data.Nat.Factorization.PrimePow
 public import Mathlib.NumberTheory.ArithmeticFunction.Carmichael
 public import Mathlib.NumberTheory.FermatPsp
+public import Mathlib.Tactic.NormNum.Prime
+
+import Mathlib.Data.Nat.Factorization.PrimePow
 import Mathlib.Tactic.Simproc.Factors
 
 /-!
