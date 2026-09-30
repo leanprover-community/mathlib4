@@ -6,7 +6,7 @@ Authors: Fox Thomson
 module
 
 public import Mathlib.Computability.Language
-import Mathlib.Tactic.AdaptationNote
+import MathlibInit.Tactic.AdaptationNote
 
 /-!
 # Regular Expressions

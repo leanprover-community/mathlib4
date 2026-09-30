@@ -5,7 +5,7 @@ Authors: Robert Y. Lewis
 -/
 module
 
-public import Mathlib.Lean.Expr.Basic
+public import MathlibInit.Lean.Expr.Basic
 
 /-!
 # `Ineq` datatype

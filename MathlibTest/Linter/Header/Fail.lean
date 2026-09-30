@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 
-import Mathlib.Tactic.Linter.Header
+import MathlibInit.Tactic.Linter.Header
 
 /- Test that the module header linter correctly complains about missing headers,
 even if we set `doc.verso` to `true. -/

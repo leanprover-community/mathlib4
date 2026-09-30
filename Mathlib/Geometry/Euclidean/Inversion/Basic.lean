@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.Tactic.AdaptationNote
+import MathlibInit.Tactic.AdaptationNote
 
 /-!
 # Inversion in an affine space

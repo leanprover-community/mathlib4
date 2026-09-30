@@ -5,10 +5,10 @@ Authors: Anne Baanen
 -/
 module
 
-public meta import Mathlib.Lean.Elab.Tactic.Meta
+public meta import MathlibInit.Lean.Elab.Tactic.Meta
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-public import Mathlib.Tactic.Linter.Header  -- shake: keep
+public import MathlibInit.Tactic.Linter.Header  -- shake: keep
 
 /-! # Executing actions using the infotree
 
@@ -140,7 +140,7 @@ def runTacticCapturingInfoTree (ctx : ContextInfo) (i : TacticInfo) (goal : MVar
 /-- Run tactic code in the context of an infotree node, capturing InfoTrees for suggestion extraction.
 
 Returns both the resulting goals and the InfoTrees produced during tactic execution.
-Use `collectTryThisSuggestions` from `Mathlib.Lean.Elab.InfoTree` to extract suggestions. -/
+Use `collectTryThisSuggestions` from `MathlibInit.Lean.Elab.InfoTree` to extract suggestions. -/
 def runTacticCodeCapturingInfoTree (ctx : ContextInfo) (i : TacticInfo) (goal : MVarId)
     (code : Syntax) : CommandElabM (List MVarId × PersistentArray InfoTree) := do
   let termCtx ← liftTermElabM read

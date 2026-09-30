@@ -8,7 +8,7 @@ module
 public import Mathlib.Geometry.Euclidean.Inversion.Basic
 public import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Analysis.Calculus.Deriv.Inv
-import Mathlib.Tactic.AdaptationNote
+import MathlibInit.Tactic.AdaptationNote
 
 /-!
 # Derivative of the inversion

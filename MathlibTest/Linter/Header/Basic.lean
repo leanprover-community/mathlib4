@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
-import Mathlib.Tactic.Linter.Header
+import MathlibInit.Tactic.Linter.Header
 import Lake
-import Mathlib.Tactic.Linter.Header
+import MathlibInit.Tactic.Linter.Header
 import /- -/ Mathlib.Tactic -- the `TextBased` linter does not flag this `broadImport`
 import Mathlib.Tactic.Have
 import Mathlib.Deprecated.Aliases
@@ -32,7 +32,7 @@ warning: `Mathlib.Tactic.Have` defines a deprecated form of the `have` tactic; p
 
 Note: This linter can be disabled with `set_option linter.style.header false`
 ---
-warning: Duplicate imports: `Mathlib.Tactic.Linter.Header` already imported
+warning: Duplicate imports: `MathlibInit.Tactic.Linter.Header` already imported
 
 Note: This linter can be disabled with `set_option linter.style.header false`
 -/

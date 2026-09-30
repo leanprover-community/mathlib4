@@ -7,10 +7,10 @@ module
 
 public meta import Lean.Util.Heartbeats
 public meta import Lean.Elab.InfoTree.Util
-public meta import Mathlib.Lean.Elab.Tactic.Meta
+public meta import MathlibInit.Lean.Elab.Tactic.Meta
 public meta import Lean.Compiler.IR.CompilerM
 public import Lean.Elab.Command
-public import Mathlib.Lean.ContextInfo
+public import MathlibInit.Lean.ContextInfo
 
 /-! # Tactic analysis framework
 
@@ -77,7 +77,7 @@ abbrev TacticNode.runTacticCode (i : TacticNode) :
 /-- Run tactic code, capturing InfoTrees for extracting "Try this:" suggestions.
 
 Returns both the resulting goals and the InfoTrees produced during tactic execution.
-Use `collectTryThisSuggestions` from `Mathlib.Lean.Elab.InfoTree` to extract suggestions. -/
+Use `collectTryThisSuggestions` from `MathlibInit.Lean.Elab.InfoTree` to extract suggestions. -/
 abbrev TacticNode.runTacticCodeCapturingInfoTree (i : TacticNode) :
     MVarId → Syntax → CommandElabM (List MVarId × PersistentArray InfoTree) :=
   i.ctxI.runTacticCodeCapturingInfoTree i.tacI

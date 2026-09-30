@@ -1,6 +1,6 @@
 module
 
-import Mathlib.Tactic.Linter.OverlappingInstances
+import MathlibInit.Tactic.Linter.OverlappingInstances
 import Mathlib.Init
 
 public section

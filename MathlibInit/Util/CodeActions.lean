@@ -5,4 +5,4 @@ Authors: Fernando Leal, Thomas Murrills
 -/
 module
 
-public import Mathlib.Util.CodeActions.BinderPlicity
+public import MathlibInit.Util.CodeActions.BinderPlicity
