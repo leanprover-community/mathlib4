@@ -736,7 +736,7 @@ lemma Nat.stabilises_of_antitone {f : ℕ → ℕ} (hfmono : Antitone f)
       let g (i : ℕ) := f (i + 1)
       have hg_anti : Antitone g := by grind [Antitone]
       obtain ⟨p, hp, hp'⟩ := ih (f 1) (by grind) hg_anti (by grind) rfl
-      refine ⟨p + 1, by omega, fun m hm => ?_⟩
+      refine ⟨p + 1, by lia, fun m hm => ?_⟩
       specialize hp' (m - 1) (by lia)
       grind
 

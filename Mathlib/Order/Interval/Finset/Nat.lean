@@ -87,7 +87,7 @@ theorem range_succ_eq_Iic (n : ℕ) : range (n + 1) = Iic n := by
 
 @[simp]
 theorem card_uIcc : #(uIcc a b) = (b - a : ℤ).natAbs + 1 :=
-  (card_Icc _ _).trans <| by rw [← Int.natCast_inj, Int.ofNat_sub] <;> omega
+  (card_Icc _ _).trans <| by lia
 
 @[simp]
 lemma card_Iic : #(Iic b) = b + 1 := by rw [Iic_eq_Icc, card_Icc, Nat.bot_eq_zero, Nat.sub_zero]

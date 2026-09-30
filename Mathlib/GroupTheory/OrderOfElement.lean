@@ -283,9 +283,8 @@ multiple of `x`. -/]
 theorem exists_pow_eq_pow_two_mul {p : ℕ} (hx : x ^ p = 1) (hp : Odd p) (n : ℕ) :
     ∃ m, x ^ n = x ^ (2 * m) := by
   obtain ⟨r, rfl⟩ := hp
-  have key : x ^ (2 * (r + 1)) = x := by
-    have h2 : 2 * (r + 1) = 2 * r + 1 + 1 := by omega
-    rw [h2, pow_succ, hx, one_mul]
+  have h2 : 2 * (r + 1) = 2 * r + 1 + 1 := by lia
+  have key : x ^ (2 * (r + 1)) = x := by rw [h2, pow_succ, hx, one_mul]
   exact ⟨(r + 1) * n, by rw [← mul_assoc, pow_mul, key]⟩
 
 @[to_additive addOrderOf_smul_dvd]
