@@ -95,7 +95,6 @@ instance (F : C ⥤ D) (G : D ⥤ E) (H : E ⥤ E') [F.LaxMonoidal] [G.LaxMonoid
 
 end IsMonoidal
 
-set_option backward.isDefEq.respectTransparency false in
 instance {F G : C ⥤ D} {H K : C ⥤ E} (α : F ⟶ G) (β : H ⟶ K)
     [F.LaxMonoidal] [G.LaxMonoidal] [IsMonoidal α]
     [H.LaxMonoidal] [K.LaxMonoidal] [IsMonoidal β] :
@@ -137,18 +136,16 @@ namespace IsMonoidal
 variable [F.Monoidal] [G.LaxMonoidal] [adj.IsMonoidal]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance : NatTrans.IsMonoidal adj.unit where
   unit := by
     dsimp
-    rw [id_comp, ← unit_app_unit_comp_map_η adj, assoc, Monoidal.map_η_ε]
+    rw [id_comp, ← unit_app_unit_comp_map_η adj, assoc, Monoidal.η_ε_map]
     dsimp
     rw [comp_id]
   tensor X Y := by
     dsimp
-    rw [← unit_app_tensor_comp_map_δ_assoc, id_comp, Monoidal.map_δ_μ, comp_id]
+    rw [← unit_app_tensor_comp_map_δ_assoc, id_comp, Monoidal.δ_μ_map, comp_id]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : NatTrans.IsMonoidal adj.counit where
   unit := by
     dsimp
@@ -236,7 +233,7 @@ a monoidal natural transformation.
 lemma natTransIsMonoidal_of_transport {F G : C ⥤ D} [F.Monoidal] (e : F ≅ G) :
     letI : G.Monoidal := transport e
     e.hom.IsMonoidal := by
-  letI : G.Monoidal := transport e
+  let : G.Monoidal := transport e
   refine ⟨rfl, fun X Y ↦ ?_⟩
   simp [transport_μ, tensorHom_comp_tensorHom_assoc]
 

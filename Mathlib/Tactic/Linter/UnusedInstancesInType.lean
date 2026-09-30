@@ -11,7 +11,7 @@ public meta import Mathlib.Lean.Elab.InfoTree
 public meta import Lean.Linter.Basic
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-public import Mathlib.Tactic.Linter.Header  --shake: keep
+public import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Batteries.Tactic.Lint.Basic
 public import Batteries.Tactic.Lint.Misc
 

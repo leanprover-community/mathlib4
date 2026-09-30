@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Fintype.EquivFin
 public import Mathlib.CategoryTheory.Discrete.Basic
-public import Mathlib.CategoryTheory.Opposites
 public import Mathlib.CategoryTheory.Category.ULift
 
 /-!
@@ -37,9 +36,8 @@ instance discreteFintype {α : Type*} [Fintype α] : Fintype (Discrete α) :=
 instance {α : Type*} [Finite α] : Finite (Discrete α) :=
   Finite.of_equiv α discreteEquiv.symm
 
-instance discreteHomFintype {α : Type*} (X Y : Discrete α) : Fintype (X ⟶ Y) := by
-  classical
-  apply ULift.fintype
+@[no_expose]
+instance discreteHomFintype {α : Type*} (X Y : Discrete α) : Fintype (X ⟶ Y) := .ofFinite _
 
 /-- A category with a `Fintype` of objects, and a `Fintype` for each morphism space. -/
 class FinCategory (J : Type v) [SmallCategory J] where
@@ -50,8 +48,8 @@ attribute [instance_reducible, instance] FinCategory.fintypeObj FinCategory.fint
 
 instance finCategoryDiscreteOfFintype (J : Type v) [Fintype J] : FinCategory (Discrete J) where
 
-instance {J : Type u} [Finite J] [SmallCategory J] [Quiver.IsThin J] : FinCategory J :=
-  FinCategory.mk (Fintype.ofFinite J) (fun j j' ↦ Fintype.ofFinite (j ⟶ j'))
+instance {J : Type u} [Fintype J] [SmallCategory J] [Quiver.IsThin J] : FinCategory J :=
+  FinCategory.mk ‹Fintype J› fun j j' ↦ Fintype.ofFinite (j ⟶ j')
 
 open Opposite
 

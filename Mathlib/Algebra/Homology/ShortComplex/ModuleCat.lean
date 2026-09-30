@@ -25,8 +25,6 @@ variable {R : Type u} [Ring R]
 
 namespace CategoryTheory
 
-open Limits
-
 namespace ShortComplex
 
 noncomputable instance : (forget₂ (ModuleCat.{v} R) Ab).PreservesHomology where
@@ -94,17 +92,16 @@ lemma Exact.moduleCat_of_range_eq_ker {X₁ X₂ X₃ : ModuleCat.{v} R}
 
 /-- The canonical linear map `S.X₁ →ₗ[R] LinearMap.ker S.g` induced by `S.f`. -/
 abbrev moduleCatToCycles : S.X₁ →ₗ[R] LinearMap.ker S.g.hom :=
-  S.f.hom.codRestrict _ <| S.moduleCat_zero_apply
+  S.f.hom.codRestrict _ S.moduleCat_zero_apply
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The explicit left homology data of a short complex of modules that is
 given by a kernel and a quotient given by the `LinearMap` API. The projections to `K` and `H` are
 not simp lemmas because the generic lemmas about `LeftHomologyData` are more useful here. -/
 @[simps! K H i_hom π_hom]
 def moduleCatLeftHomologyData : S.LeftHomologyData where
-  K := ModuleCat.of R (LinearMap.ker S.g.hom)
-  H := ModuleCat.of R (LinearMap.ker S.g.hom ⧸ LinearMap.range S.moduleCatToCycles)
+  K := ↧S.g.hom.ker
+  H := ↧(S.g.hom.ker ⧸ S.moduleCatToCycles.range)
   i := ModuleCat.ofHom (LinearMap.ker S.g.hom).subtype
   π := ModuleCat.ofHom (LinearMap.range S.moduleCatToCycles).mkQ
   wi := by aesop
@@ -151,8 +148,7 @@ lemma toCycles_moduleCatCyclesIso_hom :
 
 /-- Given a short complex `S` of modules, this is the isomorphism between the abstract `S.opcycles`
 of the homology API and the more concrete description as `S.X₂ ⧸ LinearMap.range S.f.hom`. -/
-noncomputable def moduleCatOpcyclesIso :
-    S.opcycles ≅ ModuleCat.of R (S.X₂ ⧸ LinearMap.range S.f.hom) :=
+noncomputable def moduleCatOpcyclesIso : S.opcycles ≅ ↧(S.X₂ ⧸ S.f.hom.range) :=
   S.opcyclesIsoCokernel ≪≫ ModuleCat.cokernelIsoRangeQuotient _
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
@@ -262,7 +258,7 @@ abbrev ModuleCat.shortComplexOfConj (eq0 : g ∘ₗ f = 0) :
   ModuleCat.shortComplexOfCompEqZero ((eN.symm.comp f).comp eM.toLinearMap)
     (eL.symm.comp (g.comp eN.toLinearMap)) (by
       ext x
-      simpa using LinearMap.congr_fun eq0 (eM x))
+      simpa using congr($eq0 (eM x)))
 
 private lemma exact_conj_of_exact (exact : Function.Exact f g) : Function.Exact
     ((eN.symm.comp f).comp eM.toLinearMap) (eL.symm.comp (g.comp eN.toLinearMap)) := by

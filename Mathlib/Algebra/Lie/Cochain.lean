@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Lie.Abelian
 
 /-!
 # Lie algebra cohomology in low degree
+
 This file defines low degree cochains of Lie algebras with coefficients given by a module. They are
 useful in the construction of central extensions, so we treat these easier cases separately from the
 general theory of Lie algebra cohomology.
@@ -52,11 +53,12 @@ section
 
 variable {R L M}
 
+@[macro_inline]
 instance : FunLike (twoCochain R L M) L (L →ₗ[R] M) where
   coe := fun a x ↦ a.1 x
-  coe_injective' _ _ h := by
+  coe_injective _ _ h := by
     ext
-    exact congrFun (congrArg DFunLike.coe (congrFun h _)) _
+    congrm $h _ _
 
 instance : LinearMapClass (twoCochain R L M) R L (L →ₗ[R] M) where
   map_add a := a.1.map_add
@@ -117,26 +119,20 @@ lemma d₁₂_apply_apply_ofTrivial [LieModule.IsTrivial L M] (f : oneCochain R 
     d₁₂ R L M f x y = - f ⁅x, y⁆ := by
   simp [trivial_lie_zero]
 
-set_option backward.privateInPublic true in
-/-- The coboundary operator taking degree 2 cochains to a space containing degree 3 cochains. -/
-private def d₂₃_aux (a : twoCochain R L M) : L →ₗ[R] L →ₗ[R] L →ₗ[R] M where
-  toFun x :=
-    { toFun y :=
-        { toFun z := ⁅x, a y z⁆ - ⁅y, a x z⁆ + ⁅z, a x y⁆ - a ⁅x, y⁆ z + a ⁅x, z⁆ y - a ⁅y, z⁆ x
-          map_add' _ _ := by simp; abel
-          map_smul' _ _ := by abel_nf; simp }
-      map_add' _ _ := by ext; simp; abel
-      map_smul' _ _ := by ext; abel_nf; simp }
-  map_add' _ _ := by ext; simp; abel
-  map_smul' _ _ := by ext; abel_nf; simp
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The coboundary operator taking degree 2 cochains to a space containing degree 3 cochains. -/
 def d₂₃ : twoCochain R L M →ₗ[R] L →ₗ[R] L →ₗ[R] L →ₗ[R] M where
-  toFun := d₂₃_aux R L M
-  map_add' _ _ := by ext; simp [d₂₃_aux]; abel
-  map_smul' _ _ := by ext; simp [d₂₃_aux]; abel_nf; simp
+  toFun a := {
+    toFun x := {
+      toFun y := {
+        toFun z := ⁅x, a y z⁆ - ⁅y, a x z⁆ + ⁅z, a x y⁆ - a ⁅x, y⁆ z + a ⁅x, z⁆ y - a ⁅y, z⁆ x
+        map_add' _ _ := by simp; abel
+        map_smul' _ _ := by simp; abel_nf; simp }
+      map_add' _ _ := by ext; simp; abel
+      map_smul' _ _ := by ext; simp; abel_nf; simp }
+    map_add' _ _ := by ext; simp; abel
+    map_smul' _ _ := by ext; simp; abel_nf; simp }
+  map_add' _ _ := by ext; simp; abel
+  map_smul' _ _ := by ext; simp; abel_nf; simp
 
 @[simp]
 lemma d₂₃_apply (a : twoCochain R L M) (x y z : L) :
@@ -151,7 +147,7 @@ lemma d₂₃_comp_d₁₂ : (d₂₃ R L M) ∘ₗ (d₁₂ R L M) = 0 := by
     d₁₂_apply_coe_apply_apply R L M, lie_sub, lie_lie]
   rw [leibniz_lie y x, leibniz_lie z x, leibniz_lie z y]
   have : a ⁅y, ⁅z, x⁆⁆ = a ⁅x, ⁅z, y⁆⁆ + a ⁅z, ⁅y, x⁆⁆ := by
-    rw [congr_arg a (leibniz_lie y z x), ← lie_skew, ← lie_skew z y, lie_neg, map_add]
+    rw [congr(a $(leibniz_lie y z x)), ← lie_skew, ← lie_skew z y, lie_neg, map_add]
   simp only [lie_lie, sub_add_cancel, map_sub, ← lie_skew x y, ← lie_skew x z, ← lie_skew y z,
     lie_neg, map_neg, this]
   abel

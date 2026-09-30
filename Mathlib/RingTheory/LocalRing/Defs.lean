@@ -12,14 +12,14 @@ public import Mathlib.Algebra.Ring.Defs
 
 # Local rings
 
-Define local rings as commutative rings having a unique maximal ideal.
+Define the notion of a local ring for non-commutative semirings. In the commutative case,
+this is shown to be equivalent to the familiar definition that there exists a unique
+maximal ideal in `IsLocalRing.of_unique_max_ideal` and `IsLocalRing.maximal_ideal_unique`.
 
 ## Main definitions
 
 * `IsLocalRing`: A predicate on semirings, stating that for any pair of elements that
-  adds up to `1`, one of them is a unit. In the commutative case this is shown to be equivalent
-  to the condition that there exists a unique maximal ideal, see
-  `IsLocalRing.of_unique_max_ideal` and `IsLocalRing.maximal_ideal_unique`.
+  adds up to `1`, one of them is a unit.
 
 -/
 

@@ -84,7 +84,7 @@ end ConstructorsEtc
 
 section ScientificNotation
 
-variable [DivisionRing α] [CharZero α]
+variable [DivisionSemiring α] [CharZero α]
 
 example : (0.1 : ℚ) = 1/10 := by norm_num1
 example : (3.14 : ℚ) = 157/50 := by norm_num1
@@ -710,7 +710,7 @@ example : - ((94 * 89) + (79 - (23 - (((- 1 / 55) + 95) * (28 - (54 / - - - 22))
 example : (- 23 + 61) = (38 : α) := by norm_num1
 example : - (93 / 69) = (-31/23 : α) := by norm_num1
 example : (- - ((68 / (39 + (((45 * - (59 - (37 + 35))) / (53 - 75)) -
- - (100 + - (50 / (- 30 - 59)))))) - (69 - (23 * 30))) / (57 + 17)) = (137496481/16368578 : α) := by
+    - (100 + - (50 / (- 30 - 59)))))) - (69 - (23 * 30))) / (57 + 17)) = (137496481/16368578 : α) := by
   norm_num1
 example : (- 19 * - - (75 * - - 41)) = (-58425 : α) := by norm_num1
 example : ((3 / ((- 28 * 45) * (19 + ((- (- 88 - (- (- 1 + 90) + 8)) + 87) * 48)))) + 1) =
@@ -747,6 +747,12 @@ example : (1 : R PUnit.{u+1} PUnit.{v+1}) <= 2 := by
 -- This used to be 10^40000000, but Lean's non-GMP multiplication is
 -- asymptotically slower than the GMP implementation.
 -- It would be great to fix that, and restore this test.
+-- `norm_num` runs simp's simprocs, so `Nat.reducePow` reports the skipped evaluation here,
+-- exactly as a bare `simp` on this goal would.
+/--
+warning: exponent 400000 exceeds the threshold 256, exponentiation operation was not evaluated, use `set_option exponentiation.threshold <num>` to set a new threshold
+-/
+#guard_msgs in
 example : 10^400000 = 10^400000 := by norm_num
 
 theorem large1 {α} [Ring α] : 2^(2^2000) + (2*2) - 2^(2^2000) = (4 : α) := by
@@ -754,3 +760,19 @@ theorem large1 {α} [Ring α] : 2^(2^2000) + (2*2) - 2^(2^2000) = (4 : α) := by
   set_option exponentiation.threshold 20 in
     norm_num1 -- TODO: this should warn, but the warning is discarded
   simp only [add_sub_cancel_left]
+
+/-!
+### Arithmetic provided by simp's default simprocs
+
+`norm_num` runs simp's default simprocs, so it can do arithmetic in types whose arithmetic
+is implemented by simprocs rather than by `norm_num` extensions or simp lemmas.
+-/
+
+example : (2 : Fin 7) + 6 = 1 := by norm_num
+example : (3 : Fin 7) * 5 = 1 := by norm_num
+example : (2 : Fin 7) < 5 := by norm_num
+example : (⟨3, by omega⟩ : Fin 7) = 3 := by norm_num
+example : (5 : UInt8) + 3 = 8 := by norm_num
+example : (200 : UInt8) + 100 = 44 := by norm_num
+example : (5 : Int8) * 3 = 15 := by norm_num
+example : (0xff : BitVec 8) &&& 0x0f = 0x0f := by norm_num

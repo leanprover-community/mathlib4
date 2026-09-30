@@ -5,15 +5,13 @@ Authors: Janos Wolosz
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Rat
-public import Mathlib.Algebra.Lie.AdjointAction.JordanChevalley
+import Mathlib.Algebra.Algebra.Rat
+import Mathlib.Algebra.Lie.AdjointAction.JordanChevalley
 public import Mathlib.Algebra.Lie.Killing
-public import Mathlib.Algebra.Lie.TraceForm
-public import Mathlib.LinearAlgebra.Eigenspace.Matrix
-public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
-public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
+import Mathlib.LinearAlgebra.Eigenspace.Matrix
+import Mathlib.LinearAlgebra.Eigenspace.Minpoly
+import Mathlib.LinearAlgebra.Eigenspace.Semisimple
 public import Mathlib.LinearAlgebra.Lagrange
-public import Mathlib.RingTheory.Flat.Localization
 
 /-!
 # Cartan's criteria
@@ -68,6 +66,7 @@ lemma exists_polynomial_eval_sub_aux
   rw [← (algebraMap R K).map_sub, ← (algebraMap R K).map_sub, ← map_sub, ← map_sub, heq]
 
 variable [AddCommGroup M] [LieRingModule L M]
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- An auxiliary lemma used to prove `LieModule.isNilpotent_derivedSeries_of_traceForm_eq_zero`
 which proves the same result except without the algebraically closed assumption. -/

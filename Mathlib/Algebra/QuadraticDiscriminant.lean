@@ -5,9 +5,9 @@ Authors: Zhouhang Zhou
 -/
 module
 
-public import Mathlib.Order.Filter.AtTopBot.Field
-public import Mathlib.Tactic.Field
-public import Mathlib.Tactic.LinearCombination
+import Mathlib.Order.Filter.AtTopBot.Field
+import Mathlib.Tactic.Field
+import Mathlib.Tactic.LinearCombination
 public import Mathlib.Tactic.Linarith.Frontend
 
 /-!
@@ -139,7 +139,7 @@ theorem discrim_le_zero (h : ∀ x : K, 0 ≤ a * (x * x) + b * x + c) : discrim
       linarith
   -- if a > 0
   · have ha' : 0 ≤ 4 * a := mul_nonneg zero_le_four ha.le
-    convert! neg_nonpos.2 (mul_nonneg ha' (h (-b / (2 * a)))) using 1
+    convert neg_nonpos.2 (mul_nonneg ha' (h (-b / (2 * a))))
     field
 
 lemma discrim_le_zero_of_nonpos (h : ∀ x : K, a * (x * x) + b * x + c ≤ 0) : discrim a b c ≤ 0 :=

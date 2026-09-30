@@ -5,8 +5,7 @@ Authors: James Sundstrom
 -/
 module
 
-public import Mathlib.Data.ENNReal.Real
-public import Mathlib.Order.WellFoundedSet
+import Mathlib.Order.WellFoundedSet
 public import Mathlib.Topology.EMetricSpace.Diam
 
 /-!
@@ -28,7 +27,9 @@ oscillation, oscillationWithin
 
 @[expose] public section
 
-open Topology Metric Set ENNReal
+open Metric Set ENNReal
+
+open scoped Topology
 
 universe u v
 
