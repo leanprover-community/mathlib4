@@ -65,10 +65,6 @@ section HasUniqueRoots
 
 variable [HasUniqueRoots M] {n : ℕ} {a b : M}
 
-@[to_additive nsmul_right_injective]
-lemma pow_left_injective (hn : n ≠ 0) : Injective fun a : M ↦ a ^ n :=
-  HasUniqueRoots.pow_left_injective hn
-
 @[to_additive nsmul_right_inj]
 lemma pow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
   (pow_left_injective hn).eq_iff

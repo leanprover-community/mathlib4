@@ -561,7 +561,9 @@ For commutative types (e.g., rings and modules), this should be preferred over `
 TODO: Generalize this definition to additive semigroups once we have the `PNat` action. -/
 @[mk_iff]
 class HasUniqueDiv (M : Type*) [AddMonoid M] where
-  protected nsmul_right_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : M ↦ n • a
+  nsmul_right_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : M ↦ n • a
+
+export HasUniqueDiv (nsmul_right_injective)
 
 /-- A monoid has unique roots if exponentiation by every non-zero element `n : ℕ` is injective.
 This is the uniqueness counterpart to `RootableBy` which asserts existence.
@@ -571,14 +573,15 @@ For commutative types, this should be preferred over `IsMulTorsionFree`.
 TODO: Generalize this definition to semigroups once we have the `PNat` action. -/
 @[mk_iff]
 class HasUniqueRoots (M : Type*) [Monoid M] where
-  protected pow_left_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : M ↦ a ^ n
+  pow_left_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : M ↦ a ^ n
 
 attribute [to_additive existing HasUniqueDiv] HasUniqueRoots
 attribute [to_additive existing] hasUniqueRoots_iff
+export HasUniqueRoots (pow_left_injective)
 
 @[to_additive]
 instance (M : Type*) [Monoid M] [HasUniqueRoots M] : IsMulTorsionFree M where
-  eq_of_pow_eq_pow_of_commute _ hn _ _ _ hab := HasUniqueRoots.pow_left_injective hn hab
+  eq_of_pow_eq_pow_of_commute _ hn _ _ _ hab := pow_left_injective hn hab
 
 /-- An additive commutative monoid is an additive monoid with commutative `(+)`. -/
 class AddCommMonoid (M : Type*) extends AddMonoid M, AddCommSemigroup M
