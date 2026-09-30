@@ -44,19 +44,12 @@ def proveDiagProd {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) (k c : Na
     have : $cQ =Q 0 := ⟨⟩
     return ⟨q(1), q(diagProd_zero $kQ $rows)⟩
   | c + 1 => do
-    let_expr List.cons _ row rowsTl := rows |
-      throwError "proveDiagProd: {rows} is not a cons cell"
-    have row : Q(List $α) := row
-    have rowsTl : Q(List (List $α)) := rowsTl
-    let_expr List.cons _ entry suffix := dropListLitQ k row |
-      throwError "proveDiagProd: {row} has no entry at {k}"
-    have entry : Q($α) := entry
-    have suffix : Q(List $α) := suffix
+    let ⟨row, rowsTl, _⟩ ← unconsListLitQ rows
+    let ⟨entry, suffix, _⟩ ← unconsListLitQ (dropListLitQ k row)
     have k₁Q : Q(Nat) := mkNatLitQ (k + 1)
     have c₁Q : Q(Nat) := mkNatLitQ c
     let ⟨e, h⟩ ← proveDiagProd rα (k + 1) c k₁Q c₁Q rowsTl
     have hdrop : List.drop $kQ $row =Q $entry :: $suffix := ⟨⟩
-    have : $rows =Q $row :: $rowsTl := ⟨⟩
     have : $cQ =Q $c₁Q + 1 := ⟨⟩
     have : $k₁Q =Q $kQ + 1 := ⟨⟩
     return ⟨q($entry * $e), q(diagProd_add_one_cons $hdrop $h)⟩
