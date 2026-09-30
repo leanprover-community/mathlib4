@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.DoldKan.EquivalencePseudoabelian
-public import Mathlib.AlgebraicTopology.DoldKan.Normalized
 
 /-!
 

@@ -60,7 +60,7 @@ structure IsAddFundamentalDomain (G : Type*) {α : Type*} [Zero G] [VAdd G α] [
     (s : Set α) (μ : Measure α := by volume_tac) : Prop where
   protected nullMeasurableSet : NullMeasurableSet s μ
   protected ae_covers : ∀ᵐ x ∂μ, ∃ g : G, g +ᵥ x ∈ s
-  protected aedisjoint : Pairwise <| (AEDisjoint μ on fun g : G => g +ᵥ s)
+  protected aedisjoint : Pairwise (AEDisjoint μ on fun g : G => g +ᵥ s)
 
 /-- A measurable set `s` is a *fundamental domain* for an action of a group `G` on a measurable
 space `α` with respect to a measure `μ` if the sets `g • s`, `g : G`, are pairwise a.e. disjoint and
@@ -70,7 +70,7 @@ structure IsFundamentalDomain (G : Type*) {α : Type*} [One G] [SMul G α] [Meas
     (s : Set α) (μ : Measure α := by volume_tac) : Prop where
   protected nullMeasurableSet : NullMeasurableSet s μ
   protected ae_covers : ∀ᵐ x ∂μ, ∃ g : G, g • x ∈ s
-  protected aedisjoint : Pairwise <| (AEDisjoint μ on fun g : G => g • s)
+  protected aedisjoint : Pairwise (AEDisjoint μ on fun g : G => g • s)
 
 variable {G H α β E : Type*}
 
@@ -132,7 +132,7 @@ theorem mk_of_measure_univ_le [IsFiniteMeasure μ] [Countable G] (h_meas : NullM
 
 @[to_additive]
 theorem iUnion_smul_ae_eq (h : IsFundamentalDomain G s μ) : ⋃ g : G, g • s =ᵐ[μ] univ :=
-  eventuallyEq_univ.2 <| h.ae_covers.mono fun _ ⟨g, hg⟩ =>
+  eventuallyEqSet_univ.2 <| h.ae_covers.mono fun _ ⟨g, hg⟩ =>
     mem_iUnion.2 ⟨g⁻¹, _, hg, inv_smul_smul _ _⟩
 
 @[to_additive]
@@ -286,11 +286,10 @@ is determined by the measure of its intersection with a fundamental domain for t
   finite additive group `G`, the measure of any `G`-invariant set is determined by the measure of
   its intersection with a fundamental domain for the action of `G`. -/]
 theorem measure_eq_card_smul_of_smul_ae_eq_self [Finite G] (h : IsFundamentalDomain G s μ)
-    (t : Set α) (ht : ∀ g : G, (g • t : Set α) =ᵐ[μ] t) : μ t = Nat.card G • μ (t ∩ s) := by
+    (t : Set α) (ht : ∀ g : G, g • t =ᵐ[μ] t) : μ t = Nat.card G • μ (t ∩ s) := by
   have : Fintype G := Fintype.ofFinite G
   rw [h.measure_eq_tsum]
-  replace ht : ∀ g : G, (g • t ∩ s : Set α) =ᵐ[μ] (t ∩ s : Set α) := fun g =>
-    ae_eq_set_inter (ht g) (ae_eq_refl s)
+  replace ht (g : G) : g • t ∩ s =ᵐ[μ] t ∩ s := .inter (ht _) .rfl
   simp_rw [measure_congr (ht _), tsum_fintype, Finset.sum_const, Nat.card_eq_fintype_card,
     Finset.card_univ]
 

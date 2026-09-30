@@ -5,9 +5,8 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveTopology
+import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveTopology
 public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
-public import Mathlib.CategoryTheory.Sites.LocallySurjective
 /-!
 
 # Locally surjective morphisms of coherent sheaves
@@ -133,7 +132,7 @@ lemma regularTopology.isLocallySurjective_sheaf_of_types [Preregular C] [Finitar
       rw [← Iso.eq_inv_comp] at this
       simp only [types_comp_apply, Iso.inv_hom_id_apply]
       simp [← comp_apply]
-    · simp only [← Functor.map_comp_apply, ← op_comp, Sigma.ι_desc]
+    · simp only [← Functor.map_comp_apply, ← op_comp, Sigma.ι_comp_desc]
 
 lemma coherentTopology.presheafIsLocallySurjective_iff {F G : Cᵒᵖ ⥤ D} (f : F ⟶ G)
     [Preregular C] [FinitaryPreExtensive C] [PreservesFiniteProducts F] [PreservesFiniteProducts G]

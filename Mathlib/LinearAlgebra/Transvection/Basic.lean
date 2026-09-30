@@ -440,7 +440,7 @@ theorem mem_transvections_iff_mem_dilatransvections_and_fixedReduce_eq_one
     have hefixed_ne_top : e.fixedSubmodule ≠ ⊤ := by
       rwa [ne_eq, LinearEquiv.fixedSubmodule_eq_top_iff]
     obtain ⟨w : V, hw : w ∉ e.fixedSubmodule⟩ :=
-      SetLike.exists_not_mem_of_ne_top e.fixedSubmodule hefixed_ne_top rfl
+      SetLike.exists_notMem_of_ne_top e.fixedSubmodule hefixed_ne_top rfl
     obtain ⟨f, hfw, hf⟩ := Submodule.exists_dual_map_eq_bot_of_notMem hw inferInstance
     rw [mem_dilatransvections_iff_finrank_quotient] at he
     have hf' : e.fixedSubmodule = LinearMap.ker f := by
@@ -510,7 +510,6 @@ theorem IsBaseChange.transvection (f : Dual R V) (v : V) :
     ibc.endHom (transvection f v) = transvection (ibc.toDual f) (ε v) := by
   ext w
   induction w using ibc.inductionOn with
-  | zero => simp
   | add x y hx hy => simp [hx, hy]
   | smul a w hw => simp [hw]
   | tmul x => simp [LinearMap.transvection.apply, endHom_comp_apply, toDual_comp_apply]

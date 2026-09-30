@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.Bounds.Basic
 public import Mathlib.Order.Preorder.Chain
 
 /-!
@@ -289,7 +289,7 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α] [PartialOrder β] {f : α → β} {s : Set α}
+variable [PartialOrder α] [Preorder β] {f : α → β} {s : Set α}
 
 lemma IsAntichain.of_strictMonoOn_antitoneOn (hf : StrictMonoOn f s) (hf' : AntitoneOn f s) :
     IsAntichain (· ≤ ·) s :=

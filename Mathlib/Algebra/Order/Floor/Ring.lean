@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Order.Floor.Semiring
 public import Mathlib.Tactic.Abel
 public import Mathlib.Tactic.Field
 public import Mathlib.Tactic.Linarith
-public import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Lemmas on `Int.floor`, `Int.ceil` and `Int.fract`
@@ -250,7 +249,7 @@ lemma floor_eq_self_iff_mem (a : R) : ⌊a⌋ = a ↔ a ∈ Set.range Int.cast :
   aesop
 
 theorem floor_lt_self_iff {a : R} : ⌊a⌋ < a ↔ a ∉ range Int.cast :=
-  (floor_le a).lt_iff_ne.trans <| (floor_eq_self_iff_mem _).not
+  (floor_le a).lt_iff_ne.trans (floor_eq_self_iff_mem _).not
 
 section LinearOrderedRing
 variable {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R] {a : R}
@@ -453,6 +452,28 @@ theorem fract_eq_self {a : R} : fract a = a ↔ 0 ≤ a ∧ a < 1 :=
 @[simp]
 theorem fract_fract (a : R) : fract (fract a) = fract a :=
   fract_eq_self.2 ⟨fract_nonneg _, fract_lt_one _⟩
+
+@[simp]
+theorem fract_fract_add (a b : R) : fract (fract a + b) = fract (a + b) :=
+  fract_eq_fract.2 ⟨-⌊a⌋, by unfold fract; push_cast; abel⟩
+
+@[simp]
+theorem fract_add_fract (a b : R) : fract (a + fract b) = fract (a + b) :=
+  fract_eq_fract.2 ⟨-⌊b⌋, by unfold fract; push_cast; abel⟩
+
+@[simp]
+theorem fract_fract_sub (a b : R) : fract (fract a - b) = fract (a - b) :=
+  fract_eq_fract.2 ⟨-⌊a⌋, by unfold fract; push_cast; abel⟩
+
+@[simp]
+theorem fract_sub_fract (a b : R) : fract (a - fract b) = fract (a - b) :=
+  fract_eq_fract.2 ⟨⌊b⌋, by unfold fract; abel⟩
+
+theorem fract_fract_add_fract (a b : R) : fract (fract a + fract b) = fract (a + b) := by
+  simp
+
+theorem fract_fract_sub_fract (a b : R) : fract (fract a - fract b) = fract (a - b) := by
+  simp
 
 theorem fract_eq_zero_iff {a : R} : fract a = 0 ↔ a ∈ range Int.cast := by
   simp [fract_eq_iff, eq_comm]

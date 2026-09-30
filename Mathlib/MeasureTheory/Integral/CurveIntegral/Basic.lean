@@ -5,10 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Order.Field.Pointwise
+import Mathlib.Algebra.Order.Field.Pointwise
 public import Mathlib.Analysis.Calculus.ContDiff.Deriv
-public import Mathlib.Analysis.Calculus.Deriv.AffineMap
-public import Mathlib.Analysis.Calculus.Deriv.Shift
+import Mathlib.Analysis.Calculus.Deriv.AffineMap
+import Mathlib.Analysis.Calculus.Deriv.Shift
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
@@ -222,7 +222,7 @@ theorem curveIntegralFun_trans_of_lt_half (ω : E → E →L[𝕜] F) (γab : Pa
   have H₁ : (γab.trans γbc).extend =ᶠ[𝓝 t] (fun s ↦ γab.extend (2 * s)) :=
     (eventually_le_nhds ht).mono fun _ ↦ Path.extend_trans_of_le_half _ _
   have H₂ : (2 : ℝ) • I =ᶠ[𝓝 (2 * t)] I := by
-    rw [LinearOrderedField.smul_Icc two_pos, mul_zero, mul_one, ← nhdsWithin_eq_iff_eventuallyEq]
+    rw [LinearOrderedField.smul_Icc two_pos, mul_zero, mul_one, ← nhdsWithin_eq_iff_eventuallyEqSet]
     rcases lt_trichotomy t 0 with ht₀ | rfl | ht₀
     · rw [notMem_closure_iff_nhdsWithin_eq_bot.mp, notMem_closure_iff_nhdsWithin_eq_bot.mp] <;>
         simp_intro h <;> linarith

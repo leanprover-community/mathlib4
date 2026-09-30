@@ -5,11 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Minimal
-public import Mathlib.Order.Zorn
-public import Mathlib.Topology.ContinuousOn
 public import Mathlib.Topology.DiscreteSubset
-public import Mathlib.Tactic.CrossRefAttribute
 import Mathlib.Topology.WithTopology
 
 /-!
@@ -313,8 +309,8 @@ theorem isIrreducible_iff_sUnion_isClosed :
     IsIrreducible s ↔
       ∀ t : Finset (Set X), (∀ z ∈ t, IsClosed z) → (s ⊆ ⋃₀ ↑t) → ∃ z ∈ t, s ⊆ z := by
   simp only [isIrreducible_iff_sInter]
-  refine (Equiv.Finset.congr ((@compl_involutive (Set X) _).toPerm _)).forall_congr fun {t} => ?_
-  simp_rw [Equiv.Finset.congr_apply, Finset.forall_mem_map, Finset.mem_map, Finset.coe_map,
+  refine ((@compl_involutive (Set X) _).toPerm _).finsetCongr.forall_congr fun {t} => ?_
+  simp_rw [Equiv.finsetCongr_apply, Finset.forall_mem_map, Finset.mem_map, Finset.coe_map,
     sUnion_image, Equiv.coe_toEmbedding, Function.Involutive.coe_toPerm, isClosed_compl_iff,
     exists_exists_and_eq_and]
   refine forall_congr' fun _ => Iff.trans ?_ not_imp_not
