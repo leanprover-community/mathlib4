@@ -7,12 +7,11 @@ module
 
 public import Mathlib.Order.SetNotation
 public import Mathlib.Tactic.Continuity
-public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.FunProp
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Data.Nat.Notation
 
-public meta import Mathlib.Util.DelabNonCanonical
+public import Mathlib.Util.DelabNonCanonical
 
 /-!
 # Basic definitions about topological spaces
@@ -199,6 +198,9 @@ scoped notation (name := IsOpen_of) "IsOpen[" t "]" => @IsOpen _ t
 /-- Notation for `IsClosed` with respect to a non-standard topology. -/
 scoped notation (name := IsClosed_of) "IsClosed[" t "]" => @IsClosed _ t
 
+/-- Notation for `IsClopen` with respect to a non-standard topology. -/
+scoped notation (name := IsClopen_of) "IsClopen[" t "]" => @IsClopen _ t
+
 /-- Notation for `closure` with respect to a non-standard topology. -/
 scoped notation (name := closure_of) "closure[" t "]" => @closure _ t
 
@@ -215,6 +217,10 @@ open Lean.PrettyPrinter.Delaborator Delab.Noncanonical
 @[scoped app_delab IsClosed]
 meta def delabIsClosed : Delab := delabUnary 2 1 fun x ↦ `(IsClosed[$x])
 
+/-- Delaborator for `IsClopen[_]`. -/
+@[scoped app_delab IsClopen]
+meta def delabIsClopen : Delab := delabUnary 2 1 fun x ↦ `(IsClopen[$x])
+
 /-- Delaborator for `closure[_]`. -/
 @[scoped app_delab closure] meta def delabClosure : Delab := delabUnary 2 1 fun x ↦ `(closure[$x])
 
@@ -229,6 +235,7 @@ end Topology
 any countable intersection of open dense subsets is dense.
 Formulated here when the source space is ℕ.
 Use `dense_iInter_of_isOpen` which works for any countable index type instead. -/
+@[mk_iff]
 class BaireSpace (X : Type*) [TopologicalSpace X] : Prop where
   baire_property : ∀ f : ℕ → Set X, (∀ n, IsOpen (f n)) → (∀ n, Dense (f n)) → Dense (⋂ n, f n)
 

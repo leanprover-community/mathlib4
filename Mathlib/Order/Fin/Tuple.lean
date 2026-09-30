@@ -5,9 +5,7 @@ Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 -/
 module
 
-public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Logic.Equiv.Fin.Basic
-public import Mathlib.Order.Fin.Basic
 public import Mathlib.Order.PiLex
 public import Mathlib.Order.Interval.Set.Defs
 
@@ -22,8 +20,8 @@ assert_not_exists Monoid
 open Function Set
 
 namespace Fin
-variable {m n : ℕ} {α : Fin (n + 1) → Type*} (x : α 0) (q : ∀ i, α i) (p : ∀ i : Fin n, α i.succ)
-  (i : Fin n) (y : α i.succ) (z : α 0)
+variable {n : ℕ} {α : Fin (n + 1) → Type*} (x : α 0) (q : ∀ i, α i) (p : ∀ i : Fin n, α i.succ)
+  (i : Fin n) (y : α i.succ)
 
 lemma pi_lex_lt_cons_cons {x₀ y₀ : α 0} {x y : ∀ i : Fin n, α i.succ}
     (s : ∀ {i : Fin n.succ}, α i → α i → Prop) :
@@ -106,7 +104,7 @@ lemma Fin.strictMono_cons {f : Fin n → α} {a : α} :
     -- Import restrictions prevent us using `StrictMono.eq_id`: hence this manual proof.
     refine funext fun x ↦ le_antisymm ?_ (hg.id_le x)
     simpa using ((Fin.rev_strictAnti.comp_strictMono hg).comp Fin.rev_strictAnti).id_le (Fin.rev x)
-  simpa using congrFun (key _ h) i.succ
+  simpa using congr($(key _ h) i.succ)
 
 variable {f : Fin (n + 1) → α} {a : α}
 
@@ -228,7 +226,6 @@ lemma finSuccAboveOrderIso_symm_apply_ne_last {p : Fin (n + 1)} (h : p ≠ Fin.l
   rw [← Option.some_inj]
   simpa [finSuccAboveEquiv, OrderIso.symm] using finSuccEquiv'_ne_last_apply h x.property
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Promote a `Fin n` into a larger `Fin m`, as a subtype where the underlying
 values are retained. This is the `OrderIso` version of `Fin.castLE`. -/
 @[simps apply symm_apply]

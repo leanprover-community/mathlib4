@@ -5,8 +5,6 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Expect
-public import Mathlib.Algebra.Group.AddChar
 public import Mathlib.Analysis.RCLike.Inner
 
 /-!
@@ -23,7 +21,7 @@ open Fintype (card)
 open RCLike
 open scoped BigOperators ComplexConjugate DirectSum
 
-variable {G H R : Type*}
+variable {G R : Type*}
 
 namespace AddChar
 section AddGroup

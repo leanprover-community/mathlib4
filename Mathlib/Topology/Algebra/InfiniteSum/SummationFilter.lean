@@ -5,8 +5,7 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Data.Finset.Preimage
-public import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
+import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Order.LiminfLimsup
 
@@ -106,11 +105,13 @@ export HasSupport (eventually_le_support)
 
 instance (L : SummationFilter β) [L.LeAtTop] : HasSupport L := ⟨by simp⟩
 
-lemma eventually_mem_or_not_mem (L : SummationFilter β) [HasSupport L] (b : β) :
+lemma eventually_mem_or_notMem (L : SummationFilter β) [HasSupport L] (b : β) :
     (∀ᶠ s in L.filter, b ∈ s) ∨ (∀ᶠ s in L.filter, b ∉ s) := by
   rw [or_iff_not_imp_left]
   intro hb
   filter_upwards [L.eventually_le_support] with a ha using notMem_subset ha hb
+
+@[deprecated (since := "2026-09-28")] alias eventually_mem_or_not_mem := eventually_mem_or_notMem
 
 end has_support
 
@@ -197,7 +198,7 @@ lemma eq_unconditional_of_finite {β} [Finite β]
     rw [(isTop_iff_eq_top.mpr rfl).atTop_eq (a := Finset.univ), ← Finset.top_eq_univ,
       Ici_top, principal_singleton]
   have hL := L.le_atTop
-  have hL' : ∅ ∉ L.filter := empty_mem_iff_bot.not.mpr <| NeBot.ne_bot.ne'
+  have hL' : ∅ ∉ L.filter := empty_mem_iff_bot.not.mpr NeBot.ne_bot.ne'
   cases L with | mk F =>
   simp only [unconditional, hAtTop] at *
   congr 1

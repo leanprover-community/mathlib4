@@ -8,7 +8,7 @@ module
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
 public import Mathlib.MeasureTheory.Integral.CompactlySupported
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
-public import Mathlib.Order.Interval.Set.Union
+import Mathlib.Order.Interval.Set.Union
 
 /-!
 # Riesz–Markov–Kakutani representation theorem for real-linear functionals
@@ -44,9 +44,10 @@ equality is proven using two inequalities by considering `Λ f` and `Λ (-f)` fo
 
 @[expose] public section
 
-open scoped ENNReal BoundedContinuousFunction
-open CompactlySupported CompactlySupportedContinuousMap Filter Function Set Topology
+open CompactlySupportedContinuousMap Filter Function Set
   TopologicalSpace MeasureTheory
+
+open scoped ENNReal BoundedContinuousFunction CompactlySupported Topology
 
 namespace RealRMK
 

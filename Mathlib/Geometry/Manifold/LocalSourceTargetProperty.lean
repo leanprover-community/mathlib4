@@ -104,7 +104,7 @@ def LiftSourceTargetPropertyAt (f : M → N) (x : M)
 
 namespace LocalPresentationAt
 
-variable {f g : M → N} {x : M}
+variable {f : M → N} {x : M}
   {P : (M → N) → OpenPartialHomeomorph M H → OpenPartialHomeomorph N G → Prop}
 
 lemma mapsto_domChart_source_codChart_source (h : LocalPresentationAt I J n f x P) :

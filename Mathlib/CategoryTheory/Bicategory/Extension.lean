@@ -139,7 +139,6 @@ def whiskerHom (i : s ⟶ t) {x : B} (h : c ⟶ x) :
       _ = unit t ▷ h := congrArg (· ▷ h) (LeftExtension.w i)
       _ = _ := by simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Construct an isomorphism between whiskered extensions. -/
 def whiskerIso (i : s ≅ t) {x : B} (h : c ⟶ x) :
     s.whisker h ≅ t.whisker h :=
@@ -263,7 +262,6 @@ def whiskerHom (i : s ⟶ t) {x : B} (h : x ⟶ c) :
       _ = h ◁ unit t := congrArg (h ◁ ·) (LeftLift.w i)
       _ = _ := by simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Construct an isomorphism between whiskered lifts. -/
 def whiskerIso (i : s ≅ t) {x : B} (h : x ⟶ c) :
     s.whisker h ≅ t.whisker h :=

@@ -5,12 +5,13 @@ Authors: Patrick Massot, Michael Rothgang, Heather Macbeth
 -/
 module
 
-public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Topology.Algebra.Module.FiniteDimensionBilinear
 public import Mathlib.Topology.Algebra.Module.TransferInstance
 public import Mathlib.Topology.VectorBundle.FiniteDimensional
 import Mathlib.Geometry.Manifold.Notation
 import Mathlib.Geometry.Manifold.VectorBundle.LocalFrame
+public import Mathlib.Geometry.Manifold.MFDeriv.Defs
+public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 /-!
 # The tensoriality criterion
@@ -36,7 +37,9 @@ fibre `W x`), the construction produces a continuous linear map `V x →L[𝕜] 
 
 -/
 
-open Bundle FiberBundle Topology Module
+open Bundle FiberBundle Module
+
+open scoped Topology
 
 open scoped Manifold ContDiff
 
