@@ -5,7 +5,7 @@ Authors: Kexing Ying
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
+import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
 public import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
 public import Mathlib.MeasureTheory.Measure.Sub
 
@@ -457,7 +457,7 @@ theorem singularPart_smul_right (μ ν : Measure α) (r : ℝ≥0) (hr : r ≠ 0
         smul_absolutelyContinuous
     · rw [ENNReal.smul_def r, withDensity_smul_measure, ← withDensity_smul]
       swap; · exact (measurable_rnDeriv _ _).const_smul _
-      convert! haveLebesgueDecomposition_add μ ν
+      convert haveLebesgueDecomposition_add μ ν
       ext x
       simp only [Pi.smul_apply]
       rw [← ENNReal.smul_def, smul_inv_smul₀ hr]

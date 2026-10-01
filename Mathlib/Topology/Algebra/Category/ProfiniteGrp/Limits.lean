@@ -5,7 +5,7 @@ Authors: Nailin Guan, Youle Fang, Jujian Zhang, Yuyang Zhao
 -/
 module
 
-public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
 public import Mathlib.Topology.Algebra.ClopenNhdofOne
 
@@ -79,7 +79,7 @@ lemma toLimitFun_continuous (P : ProfiniteGrp.{u}) : Continuous (toLimitFun P) :
   intro s _
   rw [← (Set.biUnion_preimage_singleton QuotientGroup.mk s)]
   refine isOpen_iUnion (fun i ↦ isOpen_iUnion (fun _ ↦ ?_))
-  convert! IsOpen.leftCoset H.toOpenSubgroup.isOpen' (Quotient.out i)
+  convert IsOpen.leftCoset H.toOpenSubgroup.isOpen' (Quotient.out i)
   ext x
   simp only [Set.mem_preimage, Set.mem_singleton_iff]
   nth_rw 1 [← QuotientGroup.out_eq' i, eq_comm, QuotientGroup.eq]

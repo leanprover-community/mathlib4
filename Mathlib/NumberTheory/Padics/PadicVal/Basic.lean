@@ -6,8 +6,6 @@ Authors: Robert Y. Lewis, Matthew Robert Ballard
 module
 
 public import Mathlib.NumberTheory.Divisors
-public import Mathlib.NumberTheory.Padics.PadicVal.Defs
-public import Mathlib.Data.Nat.MaxPowDiv
 public import Mathlib.Data.Nat.Multiplicity
 public import Mathlib.Data.Nat.Prime.Int
 
@@ -694,7 +692,7 @@ digits of `k` plus the sum of the digits of `n - k` minus the sum of digits of `
 theorem sub_one_mul_padicValNat_choose_eq_sub_sum_digits {k n : ℕ} [hp : Fact p.Prime]
     (h : k ≤ n) : (p - 1) * padicValNat p (choose n k) =
     (p.digits k).sum + (p.digits (n - k)).sum - (p.digits n).sum := by
-  convert! @sub_one_mul_padicValNat_choose_eq_sub_sum_digits' _ _ _ ‹_›
+  convert @sub_one_mul_padicValNat_choose_eq_sub_sum_digits' _ _ _ ‹_›
   all_goals lia
 
 end padicValNat

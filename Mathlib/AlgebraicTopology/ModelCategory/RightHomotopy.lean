@@ -7,7 +7,6 @@ module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.PathObject
 public import Mathlib.AlgebraicTopology.ModelCategory.LeftHomotopy
-public import Mathlib.CategoryTheory.Localization.Quotient
 
 /-!
 # Right homotopies in model categories
@@ -172,7 +171,7 @@ lemma exists_good_pathObject {f g : X ⟶ Y} (h : P.RightHomotopy f g) :
       p₁ := d.p ≫ prod.snd
       ι := P.ι ≫ d.i }, ⟨by
         rw [fibration_iff]
-        convert! d.hp
+        convert d.hp
         aesop⟩, ⟨{ h := h.h ≫ d.i }⟩⟩
 
 /-- The homotopy extension theorem: if `p : A ⟶ X` is a cofibration,
