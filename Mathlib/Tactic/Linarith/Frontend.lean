@@ -290,9 +290,8 @@ In each branch, the hypotheses are partitioned by type and `linarith` is run on 
 turn; one of these must succeed in order for `linarith` to succeed on the branch. If `prefType`
 is provided, the corresponding class is tried first.
 
-On success, the metavariable `g` is assigned and the function returns the union of the origins of
-the facts the certificates used, over all branches since every branch must succeed.
-See `TaggedProof`.
+On success, the metavariable `g` is assigned and the function returns the origins of the facts
+the certificates used, unioned over all branches. See `TaggedProof`.
 -/
 -- If it succeeds, the passed metavariable should have been assigned.
 def runLinarith (cfg : LinarithConfig) (prefType : Option Expr) (g : MVarId)
@@ -364,11 +363,9 @@ partial def linarithUsedHyps (only_on : Bool) (hyps : List Expr)
 
   let all := ctx ++ hyps
   let used ← go ctx hyps g
-  -- Sort so that hypotheses are reported in the order they were supplied.
   return (used.mergeSort (· ≤ ·)).filterMap (all[·]?)
 where
-  /-- Runs `linarith` on `g` with the hypotheses `ctx ++ hyps`, returning the indices of those the
-  certificates were derived from. -/
+  /-- Runs `linarith` on `g` with hypotheses `ctx ++ hyps`; returns the indices of those used. -/
   go (ctx hyps : List Expr) (g : MVarId) : MetaM Origin := g.withContext do
     -- if the target is an equality, we run `linarith` twice, to prove ≤ and ≥.
     if (← whnfR (← instantiateMVars (← g.getType))).isEq then
@@ -398,8 +395,8 @@ where
     g.withContext do
       let tag (l : List Expr) (k : Nat) : List TaggedProof :=
         (l.zipIdx k).map fun (h, i) => ⟨h, [i]⟩
-      -- The negated goal goes at the end of the local context, where `applyContrLemma` introduced
-      -- it. It has no origin: it is not a nameable hypothesis, and `linarith only` regenerates it.
+      -- The negated goal goes where `applyContrLemma` introduced it, after the local context.
+      -- It has no origin, since `linarith only` regenerates it.
       let facts := tag ctx 0 ++ new_var.toList.map (⟨·, []⟩) ++ tag hyps ctx.length
       linarithTraceProofs "linarith is running on the following hypotheses:" (facts.map (·.proof))
       runLinarith cfg target_type g facts
@@ -492,11 +489,8 @@ final proof.  Use `linarith?!` for the higher-reducibility variant and set the
 `minimize` flag in the configuration to control whether greedy minimization is
 performed.
 
-The suggestion lists only named hypotheses. If a term argument such as
-`linarith? [mul_pos h₁ h₂]` is genuinely required to close the goal, `linarith?`
-cannot name it and reports an error instead of a suggestion. An unnecessary term
-argument is normally dropped, but with `minimize := false` it may be kept and so
-still cause an error.
+The suggestion can only name hypotheses, so if a term argument such as `mul_pos h₁ h₂`
+is needed (or is kept because `minimize := false`), `linarith?` reports an error instead.
 -/
 syntax (name := linarith?) "linarith?" "!"? linarithArgsRest : tactic
 
