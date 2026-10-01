@@ -327,8 +327,8 @@ theorem map_sum_eq_of_lt {ι : Type*} [DecidableEq ι] {s : Finset ι} {f : ι �
   rw [Finset.sum_eq_add_sum_sdiff_singleton_of_mem hj]
   exact map_add_eq_of_lt_left _ (map_sum_lt _ h0 hf)
 
-theorem exists_map_eq_of_sum_eq_zero {ι : Type*} {s : Finset ι} {f : ι → R}
-    (hs : ∃ i ∈ s, v (f i) ≠ 0) (h : ∑ i ∈ s, f i = 0) :
+theorem exists_map_eq_of_map_sum_eq_zero {ι : Type*} {s : Finset ι} {f : ι → R}
+    (hs : ∃ i ∈ s, v (f i) ≠ 0) (h : v (∑ i ∈ s, f i) = 0) :
     ∃ i ∈ s, ∃ j ∈ s, i ≠ j ∧ v (f i) ≠ 0 ∧ v (f j) ≠ 0 ∧ v (f i) = v (f j) := by
   classical
   by_contra! hne
@@ -336,7 +336,7 @@ theorem exists_map_eq_of_sum_eq_zero {ι : Type*} {s : Finset ι} {f : ι → R}
   obtain ⟨c, hcu, hc⟩ := Finset.exists_max_image s (fun i => v (f i)) ⟨u, hu⟩
   have hvc : 0 < v (f c) := (zero_lt_iff.2 hfu).trans_le (hc u hu)
   apply hvc.ne
-  rw [← map_zero v, ← h]
+  rw [← h]
   refine map_sum_eq_of_lt v hcu fun i hi => ?_
   rw [Finset.mem_sdiff, Finset.mem_singleton] at hi
   by_cases hfi : v (f i) = 0
