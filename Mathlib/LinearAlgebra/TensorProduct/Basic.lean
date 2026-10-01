@@ -347,7 +347,7 @@ lemma mem_ker_mapOfCompatibleSMul_iff (x : M ⊗[A] N) :
   Iff.of_eq rfl
 
 lemma mapOfCompatibleSMul_restrictScalars_eq [SMul S' S] [IsScalarTower S' S M] :
-    (mapOfCompatibleSMul R A S M N).restrictScalars S'  = mapOfCompatibleSMul R A S' M N := rfl
+    (mapOfCompatibleSMul R A S M N).restrictScalars S' = mapOfCompatibleSMul R A S' M N := rfl
 
 end
 
