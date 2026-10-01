@@ -7,7 +7,7 @@ module
 
 public meta import Mathlib.Tactic.Core
 public meta import Mathlib.Lean.Expr.Basic
-public import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Attr
 public import Mathlib.Data.Fintype.Defs
 public meta import Mathlib.Tactic.ToDual
 
