@@ -434,3 +434,175 @@ info: AdditiveTestCat.morphism_hom.{u_1} (X : AdditiveTestCat) : Hom.hom X.morph
 #check morphism_hom
 
 end AdditiveTestCat
+
+-- Resolve qualified category names inside their enclosing namespace and infer their universes.
+namespace Nested
+
+structure PlainAddCat where
+  carrier : Type u
+  [str : AddMonoid carrier]
+
+@[to_additive]
+structure PlainMulCat where
+  carrier : Type u
+  [str : Monoid carrier]
+
+attribute [instance] PlainAddCat.str PlainMulCat.str
+
+namespace PlainMulCat
+
+@[to_additive]
+instance : CoeSort PlainMulCat (Type u) := ⟨PlainMulCat.carrier⟩
+
+@[to_additive]
+abbrev of (M : Type u) [Monoid M] : PlainMulCat := ⟨M⟩
+
+end PlainMulCat
+
+mk_concrete_category Nested.PlainMulCat (· →* ·) MonoidHom.id MonoidHom.comp
+  to_additive _root_.Nested.PlainAddCat (· →+ ·) AddMonoidHom.id AddMonoidHom.comp
+
+namespace PlainMulCat
+
+-- Subsequent translations must find the generated declarations on both sides.
+@[to_additive]
+lemma test_comp {X Y Z : PlainMulCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).hom = g.hom.comp f.hom := hom_comp f g
+
+end PlainMulCat
+
+example {X Y Z : PlainAddCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).hom = g.hom.comp f.hom := PlainAddCat.test_comp f g
+
+example {X Y : PlainMulCat.{u}} (f : X →* Y) :
+    (PlainMulCat.ofHom f).hom = f := PlainMulCat.hom_ofHom f
+
+example {X Y : PlainAddCat.{u}} (f : X →+ Y) :
+    (PlainAddCat.ofHom f).hom = f := PlainAddCat.hom_ofHom f
+
+-- Resolve short category names inside an enclosing namespace.
+structure CustomMulAddCat where
+  carrier : Type u
+  [str : AddMonoid carrier]
+
+@[to_additive CustomMulAddCat]
+structure CustomMulMulCat where
+  carrier : Type u
+  [str : Monoid carrier]
+
+attribute [instance] CustomMulAddCat.str CustomMulMulCat.str
+
+namespace CustomMulMulCat
+
+@[to_additive]
+instance : CoeSort CustomMulMulCat (Type u) := ⟨CustomMulMulCat.carrier⟩
+
+@[to_additive]
+abbrev of (M : Type u) [Monoid M] : CustomMulMulCat := ⟨M⟩
+
+end CustomMulMulCat
+
+mk_concrete_category CustomMulMulCat.{u} (· →* ·) MonoidHom.id MonoidHom.comp
+  with_of_hom {X Y : CustomMulMulCat.{u}}
+  hom_type (X →* Y) from X to Y
+  to_additive CustomMulAddCat.{u} (· →+ ·) AddMonoidHom.id AddMonoidHom.comp
+
+namespace CustomMulMulCat
+
+-- Subsequent translations must find the generated declarations on both sides.
+@[to_additive]
+lemma test_comp {X Y Z : CustomMulMulCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).hom = g.hom.comp f.hom := hom_comp f g
+
+end CustomMulMulCat
+
+example {X Y Z : CustomMulAddCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).hom = g.hom.comp f.hom := CustomMulAddCat.test_comp f g
+
+example {X Y : CustomMulMulCat.{u}} (f : X →* Y) :
+    (CustomMulMulCat.ofHom f).hom = f := CustomMulMulCat.hom_ofHom f
+
+example {X Y : CustomMulAddCat.{u}} (f : X →+ Y) :
+    (CustomMulAddCat.ofHom f).hom = f := CustomMulAddCat.hom_ofHom f
+
+end Nested
+
+-- Check paired declarations with independently optional `with_of_hom` clauses.
+structure CustomAddAddCat where
+  carrier : Type u
+  [str : AddMonoid carrier]
+
+@[to_additive]
+structure CustomAddMulCat where
+  carrier : Type u
+  [str : Monoid carrier]
+
+attribute [instance] CustomAddAddCat.str CustomAddMulCat.str
+
+namespace CustomAddMulCat
+
+@[to_additive]
+instance : CoeSort CustomAddMulCat (Type u) := ⟨CustomAddMulCat.carrier⟩
+
+@[to_additive]
+abbrev of (M : Type u) [Monoid M] : CustomAddMulCat := ⟨M⟩
+
+end CustomAddMulCat
+
+mk_concrete_category CustomAddMulCat.{u} (· →* ·) MonoidHom.id MonoidHom.comp
+  to_additive CustomAddAddCat.{u} (· →+ ·) AddMonoidHom.id AddMonoidHom.comp
+  with_of_hom {X Y : CustomAddAddCat.{u}}
+  hom_type (X →+ Y) from X to Y
+
+namespace CustomAddMulCat
+
+-- Subsequent translations must find the generated declarations on both sides.
+@[to_additive]
+lemma test_comp {X Y Z : CustomAddMulCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).hom = g.hom.comp f.hom := hom_comp f g
+
+end CustomAddMulCat
+
+example {X Y Z : CustomAddAddCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).hom = g.hom.comp f.hom := CustomAddAddCat.test_comp f g
+
+example {X Y : CustomAddMulCat.{u}} (f : X →* Y) :
+    (CustomAddMulCat.ofHom f).hom = f := CustomAddMulCat.hom_ofHom f
+
+example {X Y : CustomAddAddCat.{u}} (f : X →+ Y) :
+    (CustomAddAddCat.ofHom f).hom = f := CustomAddAddCat.hom_ofHom f
+
+-- `MonoidHom` permits different source and target universes, but categorical homs must not.
+structure InferredUniverseCat where
+  carrier : Type u
+  [str : Monoid carrier]
+
+attribute [instance] InferredUniverseCat.str
+
+namespace InferredUniverseCat
+
+instance : CoeSort InferredUniverseCat (Type u) := ⟨InferredUniverseCat.carrier⟩
+
+mk_concrete_category InferredUniverseCat (· →* ·) MonoidHom.id (MonoidHom.comp · ·)
+
+/-- info: InferredUniverseCat.Hom.{u_1} (X Y : InferredUniverseCat) : Type u_1 -/
+#guard_msgs in
+#check Hom
+
+example : Category InferredUniverseCat.{u} := inferInstance
+
+example : ConcreteCategory InferredUniverseCat.{u} (fun X Y => X →* Y) := inferInstance
+
+example {X Y Z : InferredUniverseCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).hom = g.hom.comp f.hom := by dsimp
+
+@[simps! hom]
+def morphism (X : InferredUniverseCat.{u}) : X ⟶ X := ofHom (MonoidHom.id _)
+
+/--
+info: InferredUniverseCat.morphism_hom.{u} (X : InferredUniverseCat) : Hom.hom X.morphism = MonoidHom.id X.carrier
+-/
+#guard_msgs in
+#check morphism_hom
+
+end InferredUniverseCat
