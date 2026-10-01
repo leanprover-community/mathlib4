@@ -233,7 +233,7 @@ def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S whe
 @[simp] lemma map_comp (f : R →+* S) (g : S →+* T) :
     (map (n := n) g).comp (map f) = map (g.comp f) := rfl
 
-/-- A ring isomorphism `R ≃+* S` induces `SL(n, R) ≃* SL(n, S)`. -/
+/-- The equivalence between `SL n R` and `SL n S` given by `f : R ≃+* S`. -/
 @[simps! apply_coe]
 def mapEquiv (e : R ≃+* S) : SpecialLinearGroup n R ≃* SpecialLinearGroup n S where
   toFun := map e
@@ -248,7 +248,7 @@ def mapEquiv (e : R ≃+* S) : SpecialLinearGroup n R ≃* SpecialLinearGroup n 
     (mapEquiv (n := n) f).symm = mapEquiv f.symm := rfl
 
 @[simp] lemma mapEquiv_trans (f : R ≃+* S) (g : S ≃+* T) :
-    mapEquiv (n := n) (f.trans g) = (mapEquiv f).trans (mapEquiv g) := rfl
+    .trans (mapEquiv f) (mapEquiv g) = mapEquiv (n := n) (f.trans g) := rfl
 
 @[simp] lemma toMonoidHom_mapEquiv (f : R ≃+* S) :
     (mapEquiv (n := n) f : SpecialLinearGroup n R →* SpecialLinearGroup n S)
@@ -263,7 +263,7 @@ section Reindex
 
 variable (R) {m o : Type*} [DecidableEq m] [Fintype m] [DecidableEq o] [Fintype o]
 
-/-- The `MulEquiv` induced by the equivalence over the index -/
+/-- The equivalence between `SL m R` and `SL n S` given by an equivalence `e : m ≃ n` -/
 @[simps! apply]
 def reindexMulEquiv (e : m ≃ n) : SpecialLinearGroup m R ≃* SpecialLinearGroup n R where
   toFun A := ⟨reindexRingEquiv R e A, by rw [coe_reindexRingEquiv, det_reindex_self, A.det_coe]⟩
@@ -281,6 +281,10 @@ theorem symm_reindexMulEquiv (e : m ≃ n) :
 @[simp]
 theorem reindexMulEquiv_trans_reindexMulEquiv (e : m ≃ n) (e' : n ≃ o) :
     .trans (reindexMulEquiv R e) (reindexMulEquiv R e') = reindexMulEquiv R (.trans e e') :=
+  rfl
+
+@[simp]
+theorem reindexMulEquiv_refl : reindexMulEquiv R (.refl n) = .refl (SpecialLinearGroup n R) :=
   rfl
 
 end Reindex
