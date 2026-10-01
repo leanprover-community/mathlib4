@@ -127,7 +127,7 @@ instance instCoalgebra : Coalgebra S (A ⊗[R] B) where
   coassoc := coassoc (R := R)
   rTensor_counit_comp_comul := by
     ext x y
-    convert!
+    convert
       congr((TensorProduct.lid S _).symm
         (TensorProduct.lid _ _ $(rTensor_counit_comul (R := S) x) ⊗ₜ[R]
           TensorProduct.lid _ _ $(rTensor_counit_comul (R := R) y)))
@@ -141,7 +141,7 @@ instance instCoalgebra : Coalgebra S (A ⊗[R] B) where
       simp only [one_smul]
   lTensor_counit_comp_comul := by
     ext x y
-    convert!
+    convert
       congr((TensorProduct.rid S _).symm
         (TensorProduct.rid _ _ $(lTensor_counit_comul (R := S) x) ⊗ₜ[R]
           TensorProduct.rid _ _ $(lTensor_counit_comul (R := R) y)))

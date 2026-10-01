@@ -6,9 +6,8 @@ Authors: Mario Carneiro, Vasilii Nesterov
 module
 
 public import Mathlib.Data.Seq.Defs
-public import Mathlib.Data.ENat.Basic
 public import Mathlib.Tactic.ENatToNat
-public import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # Basic properties of sequences (possibly infinite lists)
@@ -494,7 +493,7 @@ theorem drop_get? {n m : ℕ} {s : Seq α} : (s.drop n).get? m = s.get? (n + m) 
   | zero => simp [drop]
   | succ k ih =>
     simp only [drop, get?_tail]
-    convert! ih using 2
+    convert ih using 2
     lia
 
 theorem dropn_add (s : Seq α) (m) : ∀ n, drop s (m + n) = drop (drop s m) n
@@ -534,7 +533,7 @@ theorem drop_length' {n : ℕ} {s : Seq α} :
     | nil => simp
     | cons x s =>
       simp only [drop_succ_cons, length'_cons, Nat.cast_add, Nat.cast_one]
-      convert! drop_length' using 1
+      convert drop_length' using 1
       generalize s.length' = m
       enat_to_nat
       lia
@@ -637,12 +636,12 @@ theorem zip_map (s₁ : Seq α) (s₂ : Seq β) (f₁ : α → α') (f₂ : β �
 
 theorem zip_map_left (s₁ : Seq α) (s₂ : Seq β) (f : α → α') :
     (s₁.map f).zip s₂ = (s₁.zip s₂).map (Prod.map f id) := by
-  convert! zip_map _ _ _ _
+  convert zip_map _ _ _ _
   simp
 
 theorem zip_map_right (s₁ : Seq α) (s₂ : Seq β) (f : β → β') :
     s₁.zip (s₂.map f) = (s₁.zip s₂).map (Prod.map id f) := by
-  convert! zip_map _ _ _ _
+  convert zip_map _ _ _ _
   simp
 
 end ZipWith

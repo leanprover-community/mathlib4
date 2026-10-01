@@ -5,7 +5,6 @@ Authors: Johan Commelin, Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.RingTheory.Multiplicity
 public import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.RingTheory.MvPowerSeries.Order
@@ -118,7 +117,7 @@ theorem le_order (φ : R⟦X⟧) (n : ℕ∞) (h : ∀ i : ℕ, ↑i < n → coe
   cases n with
   | top => simpa using ext (by simpa using h)
   | coe n =>
-    convert! nat_le_order φ n _
+    convert nat_le_order φ n _
     simpa using h
 
 /-- The order of a formal power series is at least `n` if and only if its coefficients below `n`

@@ -6,8 +6,8 @@ Authors: Christian Merten
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Affine
-public import Mathlib.AlgebraicGeometry.Properties
-public import Mathlib.AlgebraicGeometry.PullbackCarrier
+import Mathlib.AlgebraicGeometry.Properties
+import Mathlib.AlgebraicGeometry.PullbackCarrier
 public import Mathlib.Topology.Sets.CompactOpenCovered
 
 /-!
@@ -152,7 +152,7 @@ instance [IsAffine S] {P : MorphismProperty Scheme.{u}} (𝒰 : S.AffineCover P)
 
 instance [IsEmpty S] : QuasiCompactCover 𝒰 where
   isCompactOpenCovered_of_isAffineOpen {U} hU := by
-    convert! IsCompactOpenCovered.empty
+    convert IsCompactOpenCovered.empty
     simp [eq_bot_iff]
 
 variable {P : MorphismProperty Scheme.{u}}
