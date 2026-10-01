@@ -149,13 +149,13 @@ variable [Module R 𝕜] [IsScalarTower R 𝕜 E]
 
 theorem segment.lift [SMulPosMono R 𝕜] (x y : E) : segment R x y ⊆ segment 𝕜 x y := by
   rintro z ⟨a, b, ha, hb, hab, hxy⟩
-  refine ⟨_, _, ?_, ?_, by simpa [add_smul] using congr($(hab) • (1 : 𝕜)), by simpa⟩
+  refine ⟨_, _, ?_, ?_, by simpa [add_smul] using congr($hab • (1 : 𝕜)), by simpa⟩
   all_goals exact zero_smul R (1 : 𝕜) ▸ smul_le_smul_of_nonneg_right ‹_› zero_le_one
 
 theorem openSegment.lift [Nontrivial 𝕜] [SMulPosStrictMono R 𝕜] (x y : E) :
     openSegment R x y ⊆ openSegment 𝕜 x y := by
   rintro z ⟨a, b, ha, hb, hab, hxy⟩
-  refine ⟨_, _, ?_, ?_, by simpa [add_smul] using congr($(hab) • (1 : 𝕜)), by simpa⟩
+  refine ⟨_, _, ?_, ?_, by simpa [add_smul] using congr($hab • (1 : 𝕜)), by simpa⟩
   all_goals exact zero_smul R (1 : 𝕜) ▸ smul_lt_smul_of_pos_right ‹_› zero_lt_one
 
 end lift
@@ -294,7 +294,7 @@ lemma segment_inter_subset_endpoint_of_linearIndependent_sub
   have Hy : y = (y - c) + c := by abel
   rw [Hx, Hy, smul_add, smul_add] at H
   have : c + q • (y - c) = c + p • (x - c) := by
-    convert! H using 1 <;> simp [sub_smul]
+    convert H using 1 <;> simp [sub_smul]
   obtain ⟨rfl, rfl⟩ : p = 0 ∧ q = 0 := h.eq_zero_of_pair' ((add_right_inj c).1 this).symm
   simp
 
@@ -321,7 +321,7 @@ lemma segment_inter_eq_endpoint_of_linearIndependent_of_ne
   apply segment_inter_eq_endpoint_of_linearIndependent_sub
   simp only [add_sub_add_left_eq_sub]
   suffices H : LinearIndependent 𝕜 ![(-1 : 𝕜) • x + t • y, (-1 : 𝕜) • x + s • y] by
-    convert! H using 1; simp only [neg_smul, one_smul]; abel_nf
+    convert H using 1; simp only [neg_smul, one_smul]; abel_nf
   nontriviality 𝕜
   rw [LinearIndependent.pair_add_smul_add_smul_iff]
   aesop
@@ -340,7 +340,7 @@ theorem midpoint_mem_segment [Invertible (2 : 𝕜)] (x y : E) : midpoint 𝕜 x
 
 theorem mem_openSegment_sub_add [Invertible (2 : 𝕜)] (x y : E) :
     x ∈ openSegment 𝕜 (x - y) (x + y) := by
-  convert! midpoint_mem_openSegment (𝕜 := 𝕜) (x - y) (x + y)
+  convert midpoint_mem_openSegment (𝕜 := 𝕜) (x - y) (x + y)
   rw [midpoint_sub_add]
 
 theorem mem_segment_sub_add [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x - y -[𝕜] x + y] :=
@@ -348,7 +348,7 @@ theorem mem_segment_sub_add [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x - y -[�
 
 theorem mem_openSegment_add_sub [Invertible (2 : 𝕜)] (x y : E) :
     x ∈ openSegment 𝕜 (x + y) (x - y) := by
-  convert! midpoint_mem_openSegment (𝕜 := 𝕜) (x + y) (x - y)
+  convert midpoint_mem_openSegment (𝕜 := 𝕜) (x + y) (x - y)
   rw [midpoint_add_sub]
 
 theorem mem_segment_add_sub [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x + y -[𝕜] x - y] :=
@@ -628,12 +628,12 @@ variable [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [AddCommMonoid F]
 
 theorem segment_subset (x y : E × F) : segment 𝕜 x y ⊆ segment 𝕜 x.1 y.1 ×ˢ segment 𝕜 x.2 y.2 := by
   rintro z ⟨a, b, ha, hb, hab, hz⟩
-  exact ⟨⟨a, b, ha, hb, hab, congr_arg Prod.fst hz⟩, a, b, ha, hb, hab, congr_arg Prod.snd hz⟩
+  exact ⟨⟨a, b, ha, hb, hab, congr($(hz).fst)⟩, a, b, ha, hb, hab, congr($(hz).snd)⟩
 
 theorem openSegment_subset (x y : E × F) :
     openSegment 𝕜 x y ⊆ openSegment 𝕜 x.1 y.1 ×ˢ openSegment 𝕜 x.2 y.2 := by
   rintro z ⟨a, b, ha, hb, hab, hz⟩
-  exact ⟨⟨a, b, ha, hb, hab, congr_arg Prod.fst hz⟩, a, b, ha, hb, hab, congr_arg Prod.snd hz⟩
+  exact ⟨⟨a, b, ha, hb, hab, congr($(hz).fst)⟩, a, b, ha, hb, hab, congr($(hz).snd)⟩
 
 theorem image_mk_segment_left (x₁ x₂ : E) (y : F) :
     (fun x => (x, y)) '' [x₁ -[𝕜] x₂] = [(x₁, y) -[𝕜] (x₂, y)] := by
@@ -668,12 +668,12 @@ variable [Semiring 𝕜] [PartialOrder 𝕜] [∀ i, AddCommMonoid (M i)] [∀ i
 
 theorem segment_subset (x y : ∀ i, M i) : segment 𝕜 x y ⊆ s.pi fun i => segment 𝕜 (x i) (y i) := by
   rintro z ⟨a, b, ha, hb, hab, hz⟩ i -
-  exact ⟨a, b, ha, hb, hab, congr_fun hz i⟩
+  exact ⟨a, b, ha, hb, hab, congr($hz i)⟩
 
 theorem openSegment_subset (x y : ∀ i, M i) :
     openSegment 𝕜 x y ⊆ s.pi fun i => openSegment 𝕜 (x i) (y i) := by
   rintro z ⟨a, b, ha, hb, hab, hz⟩ i -
-  exact ⟨a, b, ha, hb, hab, congr_fun hz i⟩
+  exact ⟨a, b, ha, hb, hab, congr($hz i)⟩
 
 variable [DecidableEq ι]
 

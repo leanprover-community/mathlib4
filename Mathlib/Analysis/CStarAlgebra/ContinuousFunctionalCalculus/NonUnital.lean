@@ -5,10 +5,7 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
-public import Mathlib.Topology.ContinuousMap.Compact
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
-public import Mathlib.Topology.UniformSpace.CompactConvergence
 
 /-!
 # The continuous functional calculus for non-unital algebras
@@ -177,7 +174,7 @@ theorem cfcₙHom_comp [UniqueHom R A] (f : C(σₙ R a, R)₀)
       map_zero' := rfl
       map_star' := fun _ ↦ rfl }
   let φ : C(σₙ R (cfcₙHom ha f), R)₀ →⋆ₙₐ[R] A := (cfcₙHom ha).comp ψ
-  suffices cfcₙHom (cfcₙHom_predicate ha f) = φ from DFunLike.congr_fun this.symm g
+  suffices cfcₙHom (cfcₙHom_predicate ha f) = φ from congr($this.symm g)
   refine cfcₙHom_eq_of_continuous_of_map_id (cfcₙHom_predicate ha f) φ ?_ ?_
   · refine (cfcₙHom_continuous ha).comp <| continuous_induced_rng.mpr ?_
     exact f'.toContinuousMap.continuous_precomp.comp continuous_induced_dom
@@ -446,7 +443,7 @@ lemma cfcₙ_star : cfcₙ (fun x ↦ star (f x)) a = star (cfcₙ f a) := by
     · rw [cfcₙ_apply_of_not_continuousOn a hf, cfcₙ_apply_of_not_continuousOn, star_zero]
       exact fun hf_star ↦ hf <| by simpa using hf_star.star
     · rw [cfcₙ_apply_of_not_map_zero a h0, cfcₙ_apply_of_not_map_zero, star_zero]
-      exact fun hf0 ↦ h0 <| by simpa using congr(star $(hf0))
+      exact fun hf0 ↦ h0 <| by simpa using congr(star $hf0)
 
 lemma cfcₙ_smul_id {S : Type*} [SMulZeroClass S R] [ContinuousConstSMul S R]
     [SMulZeroClass S A] [IsScalarTower S R A] [IsScalarTower S R (R → R)]
@@ -488,7 +485,7 @@ lemma cfcₙ_comp (g f : R → R) (a : A)
     ext
     simp
   rw [cfcₙ_apply .., cfcₙ_apply f a,
-    cfcₙ_apply _ _ (by convert! hg) (ha := cfcₙHom_predicate (show p a from ha) _),
+    cfcₙ_apply _ _ (by convert hg) (ha := cfcₙHom_predicate (show p a from ha) _),
     ← cfcₙHom_comp _ _]
   swap
   · exact ⟨.mk _ <| hf.domRestrict.codRestrict fun x ↦ by rw [sp_eq]; use x.1; simp,

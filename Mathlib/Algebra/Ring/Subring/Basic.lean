@@ -6,11 +6,9 @@ Authors: Ashvni Narayanan
 module
 
 public import Mathlib.Algebra.Field.Defs
-public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.Algebra.Ring.Subring.Defs
 public import Mathlib.Algebra.Ring.Subsemiring.Basic
 public import Mathlib.RingTheory.NonUnitalSubring.Basic
-public import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Subrings
@@ -1173,7 +1171,7 @@ theorem comap_map_eq (f : R →+* S) (s : Subring R) :
 
 theorem comap_map_eq_self {f : R →+* S} {s : Subring R}
     (h : f ⁻¹' {0} ⊆ s) : (s.map f).comap f = s := by
-  convert! comap_map_eq f s
+  convert comap_map_eq f s
   rwa [left_eq_sup, closure_le]
 
 theorem comap_map_eq_self_of_injective
