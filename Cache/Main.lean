@@ -271,8 +271,8 @@ def main (args : List String) : IO Unit := do
       | none => pure []
     let missing ← getFiles resolvedRepo hashMap force force goodCurl decompress
       (unsafeScopes := unsafeScopes)
-    -- Explain any files no container served — keyed on the actual outcome, so
-    -- a read fully served by higher-trust containers stays silent even when
+    -- Explain any files no location served — keyed on the actual outcome, so
+    -- a read fully served by the configured locations stays silent even when
     -- HEAD has no fork cache of its own.
     warnIfMissingFiles resolvedRepo missing (unsafeMode := unsafeWindow?.isSome)
   let pack (overwrite verbose unpackedOnly := false) := do

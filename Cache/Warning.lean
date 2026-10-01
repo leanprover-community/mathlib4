@@ -15,7 +15,7 @@ Two stderr-only notices around a `cache get` read:
 * before reading: a security warning when the read is taken off the repo's
   default trust boundary (a scope, a widened `--cache-from`, or a `--repo`
   that diverges from the git remote), and
-* after reading: guidance for files no container served, keyed on the actual
+* after reading: guidance for files no location served, keyed on the actual
   misses — a naive fork read is pointed at `cache query` and the SHA-scoped
   workflow, every other read gets the generic divergence warning.
 -/

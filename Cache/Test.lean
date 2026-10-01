@@ -48,11 +48,11 @@ leantar run on a nonexistent archive; none makes a network request.
    `pr-toolchain-tests` namespace by repo so uploads from different sources don't
    collide.
 5. Multi-round downloads decompress every file they fetch: the decompression
-   pipeline state is carried from each container round into the next and
+   pipeline state is carried from each download round into the next and
    drained after the last one, so a fork-PR `get` leaves no downloaded file
    compressed on disk.
 7. Missing-file guidance is keyed on the download's outcome, not on upfront
-   proxies: a read fully served by the containers prints nothing, and the
+   proxies: a read fully served by the locations prints nothing, and the
    fork-workflow hint replaces the generic divergence warning only for naive
    fork reads whose HEAD has no published fork cache.
 
@@ -1189,7 +1189,7 @@ end RunCmdErrors
 section CacheMissStatus
 
 /-- `isCacheMissStatus` decides whether a read's HTTP status is a benign miss
-(fall through to the next container) or a real transfer failure: `404` is the
+(fall through to the next location) or a real transfer failure: `404` is the
 only miss. -/
 def test_isCacheMissStatus : IO Unit := do
   IO.println "isCacheMissStatus:"
@@ -1198,7 +1198,7 @@ def test_isCacheMissStatus : IO Unit := do
   assertTrue "500 is not a miss"               (!isCacheMissStatus 500)
   -- A refused redirect (`--proto-redir`, `--max-redirs`) leaves its status
   -- here. A miss verdict would make it look like an empty cache and send the
-  -- read silently down the container chain, so it counts as a failure.
+  -- read silently through the fallback locations, so it counts as a failure.
   assertTrue "302 is not a miss"               (!isCacheMissStatus 302)
 
 end CacheMissStatus
@@ -1794,7 +1794,7 @@ def test_finalizeDecomp : IO Unit := do
 
 /-- A download round returns its decompression pipeline state in
 `TransferState.decomp` so `downloadFiles` can hand it to the next round and
-the final drain. A round in which curl transfers nothing, e.g. a container
+the final drain. A round in which curl transfers nothing, e.g. a location
 missing every requested file, must return the carried state intact; otherwise
 a prior round's queued files would be lost at the round boundary.
 `curl --version` drives `monitorCurl` through a real curl spawn with no

@@ -294,8 +294,9 @@ private def chainWithGetURLs (containers : List Container) :
   containers.mapM fun c => do return (some c, ← c.getURL)
 
 /--
-Compute the trust-ordered list of container base URLs to try when downloading
-files for a given GitHub repo.
+Resolve the read URLs for a GitHub repo. Each URL carries its container
+identity when one applies. Container URLs retain the lookup chain's trust
+order; a user-supplied endpoint has no container identity.
 
 Precedence (most specific wins):
 1. `MATHLIB_CACHE_GET_URL` env var: a single anonymous URL that bypasses the
@@ -448,7 +449,7 @@ def mkGetConfigContent (location : Location) (hashMap : IO.ModuleHashMap) : IO S
 
 /--
 Whether an HTTP status returned for a single-file read should be treated as a
-cache miss (fall through to the next container in the chain) rather than a
+cache miss (fall through to the next location) rather than a
 transfer failure worth reporting: `404` is the only miss.
 -/
 def isCacheMissStatus (httpCode : Nat) : Bool :=
@@ -693,7 +694,7 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
     (decompState : DecompState := {}) : IO (TransferState × Std.HashSet UInt64) := do
   let useAnsi := (← IO.getEnv "TERM").isSome
   -- Hashes of the files this pass fetched, used to decide what the next
-  -- container in the chain still needs to retry.
+  -- location still needs to retry.
   let servedRef ← IO.mkRef (∅ : Std.HashSet UInt64)
   let mkStatus (s : TransferState) : String := Id.run do
     let speedStr :=
@@ -846,7 +847,7 @@ private def downloadFilesFromLocation (location : Location)
     let r ← hashMap.foldM (init := []) fun acc _ hash => do
       pure <| (hash, ← IO.asTask do
         downloadFile location hash) :: acc
-    -- Served hashes carry the remaining files to the next container; hard
+    -- Served hashes carry the remaining files to the next location; hard
     -- failures (anything but a 404 miss, including a task that threw)
     -- feed `TransferState.failed`, so they drive the exit code exactly as the
     -- parallel path threads its own `failed` count.
@@ -858,22 +859,17 @@ private def downloadFilesFromLocation (location : Location)
         | _ => (served, failed + 1)
     return ({ failed, decomp := decompState }, served)
 
-/-- Build the locations of a read directly from the trust-ordered container
-URLs, or from a user-supplied endpoint when the container is absent.
+/-- Build read locations from URLs paired with optional container identities.
+A URL without a container identity is a user-supplied endpoint.
 
-Without `--unsafe` (`unsafeScopes` empty) every round uses the single resolved
-`scope?`: one round per container, all at the same scope. When no explicit
-scope is given, `headScope?` (the checked-out HEAD, resolved by the caller)
-applies to the `forks` round only: fork uploads live under the per-commit
-namespace, so this is what lets a plain `cache get` retrieve what CI built for
-exactly the commit the reader has checked out. The other containers' layouts
-are not SHA-scoped, so `headScope?` must not leak into their rounds.
+Without `--unsafe` (`unsafeScopes` empty), produce one location per input URL
+at `scope?`. When no explicit scope applies, `headScope?` supplies the scope
+only for the `forks` container. This lets a plain `cache get` read the fork
+artifacts for the checked-out commit. Other locations do not inherit HEAD.
 
-With `--unsafe` (`unsafeScopes` non-empty) the `forks` container — the only
-SHA-scoped container, whose markers the walk probed — is expanded into one round
-per discovered SHA, most recent first. Every other container reads unscoped
-(`master` is flat and serves the bulk of files by hash), so the base `scope?`
-is intentionally dropped here. -/
+With `--unsafe`, produce one forks location per discovered SHA, in the supplied
+order. Every other input URL produces one unscoped location, including an
+endpoint override. The explicit `scope?` and `headScope?` are ignored. -/
 def readLocationsFrom (repo : String) (containerURLs : List (Option Container × String))
     (scope? : Option String) (unsafeScopes : List String)
     (headScope? : Option String := none) : List Location :=
@@ -937,11 +933,11 @@ def downloadFiles
   IO.FS.createDirAll IO.CACHEDIR
 
   if locations.isEmpty then
-    IO.eprintln "No container URLs configured for download"
+    IO.eprintln "No cache locations configured for download"
     return { failed := hashMap.size }
 
-  -- Set up decompression config if enabled: one config shared by all container
-  -- rounds, with the pipeline state carried between them via `decompState`.
+  -- Set up one decompression config for all download rounds, with the pipeline
+  -- state carried between them via `decompState`.
   let decompConfig ← if decompress then
     let hashToMod : Std.HashMap UInt64 Lean.Name := hashMap.fold (init := ∅) fun acc mod hash =>
       acc.insert hash mod
@@ -957,7 +953,7 @@ def downloadFiles
   let mut decompState : DecompState := {}
   -- Hard transfer failures (not 404 misses) drive the exit code; misses are
   -- normal and instead surface as the "not found" hint keyed on `remaining`.
-  -- Accumulated across rounds: a failure in an early container counts even
+  -- Accumulated across rounds: a failure at an early location counts even
   -- when a later round serves the file.
   let mut downloadFailed := 0
   -- For the `--unsafe` summary: how many files each scoped (forks) round supplied,
@@ -987,7 +983,7 @@ def downloadFiles
   if unsafeMode then
     if scopeServed.isEmpty then
       IO.eprintln "--unsafe: no fork scopes were needed; \
-        all files were served by higher-trust containers."
+        all files were served by other locations."
     else
       IO.eprintln s!"--unsafe: cache served from {scopeServed.size} fork commit scope(s):"
       for (sha, n) in scopeServed do
@@ -1083,14 +1079,13 @@ def checkForManifestMismatch : IO.CacheM Unit := do
 
 /-- Downloads missing files, and unpacks files.
 
-Returns the number of files no container served, so the caller can print the
+Returns the number of files no location served, so the caller can print the
 appropriate missing-files guidance (see `warnIfMissingFiles`).
 
-`repo` is the already-resolved GitHub repo (see `resolveRepo`); its
-trust-ordered container list from `defaultContainersForRepo` is the single
-source of truth for what gets tried — there's no separate outer-loop
-iteration. Master's cache reaches fork builds via `master` being in the fork
-chain (the highest-trust source, holding the bulk of any fork's deps). -/
+`repo` is the already-resolved GitHub repo (see `resolveRepo`). `readLocations`
+resolves the locations to try, including endpoint and container overrides,
+explicit scopes, and the forks HEAD fallback. Without an override, the fork
+lookup chain starts with `master`, which supplies shared upstream artifacts. -/
 def getFiles
     (repo : String) (hashMap : IO.ModuleHashMap)
     (forceDownload forceUnpack parallel decompress : Bool)

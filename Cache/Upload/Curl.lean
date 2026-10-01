@@ -55,7 +55,7 @@ def putFilesViaCurl
     IO.FS.writeFile tempConfigFilePath (mkPutConfigContent dest files)
     IO.println
       s!"Attempting to upload {size} file(s) under {dest.root}/{dest.filesDir} \
-        (container: {dest.label})"
+        (location: {dest.label})"
     -- A retry after a PUT that landed is safe: the server answers a
     -- non-overwrite retry with 409/412, which `classifyUpload` excuses, and
     -- an overwrite retry re-sends the same bytes.
