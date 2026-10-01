@@ -5,9 +5,9 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.Polynomial.Eisenstein.Distinguished
-public import Mathlib.RingTheory.PowerSeries.CoeffMulMem
+import Mathlib.RingTheory.PowerSeries.CoeffMulMem
 public import Mathlib.RingTheory.PowerSeries.Inverse
 public import Mathlib.RingTheory.PowerSeries.Trunc
 
@@ -188,8 +188,8 @@ theorem IsWeierstrassDivisor.of_map_ne_zero [IsLocalRing A]
 
 theorem _root_.Polynomial.IsDistinguishedAt.isWeierstrassDivisorAt {g : A[X]} {I : Ideal A}
     (H : g.IsDistinguishedAt I) (hI : I ≠ ⊤) : IsWeierstrassDivisorAt g I := by
-  have : g.natDegree = _ := congr(ENat.toNat $(H.coe_natDegree_eq_order_map g 1
-    (by rwa [constantCoeff_one, ← Ideal.ne_top_iff_one]) (by simp)))
+  have : g.natDegree = _ := congr($(H.coe_natDegree_eq_order_map g 1
+    (by rwa [constantCoeff_one, ← Ideal.ne_top_iff_one]) (by simp)).toNat)
   simp [IsWeierstrassDivisorAt, ← this, H.monic.leadingCoeff]
 
 theorem _root_.Polynomial.IsDistinguishedAt.isWeierstrassDivisorAt' {g : A[X]} {I : Ideal A}
@@ -478,7 +478,7 @@ noncomputable def _root_.Polynomial.IsDistinguishedAt.algEquivQuotient :
       rw [Eq.comm, Ideal.Quotient.mk_eq_mk_iff_sub_mem, Ideal.mem_span_singleton']
       exact ⟨f /ₘ g, by rw [Polynomial.modByMonic_eq_sub_mul_div]; ring⟩
     have h1 : g.degree = ((g : A⟦X⟧).map (Ideal.Quotient.mk I)).order.toNat := by
-      convert!
+      convert
         H.degree_eq_coe_lift_order_map g 1 (by rwa [constantCoeff_one, ← Ideal.ne_top_iff_one])
           (by simp)
       exact (ENat.lift_eq_toNat_of_lt_top _).symm
@@ -665,7 +665,7 @@ include H
 
 theorem map_ne_zero_of_ne_top (hI : I ≠ ⊤) : g.map (Ideal.Quotient.mk I) ≠ 0 := by
   have := Ideal.Quotient.nontrivial_iff.mpr hI
-  rw [congr(map (Ideal.Quotient.mk I) $(H.eq_mul)), map_mul, ← Polynomial.polynomial_map_coe, ne_eq,
+  rw [congr(map (Ideal.Quotient.mk I) $H.eq_mul), map_mul, ← Polynomial.polynomial_map_coe, ne_eq,
     (H.isUnit.map _).mul_left_eq_zero]
   exact_mod_cast f.map_monic_ne_zero (f := Ideal.Quotient.mk I) H.isDistinguishedAt.monic
 

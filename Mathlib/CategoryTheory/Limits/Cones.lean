@@ -311,7 +311,7 @@ def ext {c c' : Cone F} (φ : c.pt ≅ c'.pt)
 
 /-- To give an isomorphism between cones, it suffices to give an
 isomorphism between their vertices which commutes with the cone maps. -/
-@[to_dual (attr := simps!) ext
+@[to_dual (attr := reducible, simps! -isSimp) ext
 /-- To give an isomorphism between cocones, it suffices to give an
 isomorphism between their vertices which commutes with the cocone maps. -/]
 def extInv {c c' : Cone F} (φ : c.pt ≅ c'.pt)
@@ -480,7 +480,7 @@ instance functoriality_full [G.Full] [G.Faithful] : (functoriality F G).Full whe
 @[to_dual]
 instance functoriality_faithful [G.Faithful] : (functoriality F G).Faithful where
   map_injective {_X} {_Y} f g h :=
-    ConeMorphism.ext f g <| G.map_injective <| congr_arg ConeMorphism.hom h
+    ConeMorphism.ext f g <| G.map_injective congr(ConeMorphism.hom $h)
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- If `e : C ≌ D` is an equivalence of categories, then `functoriality F e.functor` induces an
@@ -729,7 +729,7 @@ def coconeEquivalenceOpConeOp : Cocone F ≌ (Cone F.op)ᵒᵖ where
 def coneOpEquiv {F : J ⥤ C} : (Cone F)ᵒᵖ ≌ Cocone F.op where
   functor.obj c := c.unop.op
   functor.map f := { hom := f.unop.hom.op, w j := congr($(f.unop.w j.unop).op) }
-  inverse.obj c := .op <| c.unop
+  inverse.obj c := .op c.unop
   inverse.map f := ⟨{ hom := f.hom.unop, w j := congr($(f.w (.op j)).unop) }⟩
   unitIso := Iso.refl _
   counitIso := Iso.refl _
