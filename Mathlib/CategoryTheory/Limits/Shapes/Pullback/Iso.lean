@@ -3,8 +3,9 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+module
 
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 /-!
 # The pullback of an isomorphism
@@ -12,6 +13,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 This file provides some basic results about the pullback (and pushout) of an isomorphism.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -44,11 +47,9 @@ theorem pullbackConeOfLeftIso_snd : (pullbackConeOfLeftIso f g).snd = 𝟙 _ := 
 
 theorem pullbackConeOfLeftIso_π_app_none : (pullbackConeOfLeftIso f g).π.app none = g := by simp
 
-@[simp]
 theorem pullbackConeOfLeftIso_π_app_left : (pullbackConeOfLeftIso f g).π.app left = g ≫ inv f :=
   rfl
 
-@[simp]
 theorem pullbackConeOfLeftIso_π_app_right : (pullbackConeOfLeftIso f g).π.app right = 𝟙 _ := rfl
 
 /-- Verify that the constructed limit cone is indeed a limit. -/
@@ -94,11 +95,9 @@ theorem pullbackConeOfRightIso_snd : (pullbackConeOfRightIso f g).snd = f ≫ in
 
 theorem pullbackConeOfRightIso_π_app_none : (pullbackConeOfRightIso f g).π.app none = f := by simp
 
-@[simp]
 theorem pullbackConeOfRightIso_π_app_left : (pullbackConeOfRightIso f g).π.app left = 𝟙 _ :=
   rfl
 
-@[simp]
 theorem pullbackConeOfRightIso_π_app_right : (pullbackConeOfRightIso f g).π.app right = f ≫ inv g :=
   rfl
 

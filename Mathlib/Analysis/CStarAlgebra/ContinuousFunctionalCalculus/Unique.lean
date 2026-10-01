@@ -3,9 +3,11 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
-import Mathlib.Topology.ContinuousMap.StoneWeierstrass
+module
+
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
+public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 
 /-!
 # Uniqueness of the continuous functional calculus
@@ -23,6 +25,8 @@ the natural way, and then applying the uniqueness for `ℝ`-algebra homomorphism
 This is the reason the `ContinuousMap.UniqueHom` class exists in the first place, as
 opposed to simply appealing directly to Stone-Weierstrass to prove `StarAlgHom.ext_continuousMap`.
 -/
+
+@[expose] public section
 
 open Topology
 
@@ -105,7 +109,7 @@ namespace StarAlgHom
 
 section IsTopologicalRing
 
-variable [TopologicalSpace A] [IsTopologicalRing A]
+variable [TopologicalSpace A] [IsSemitopologicalRing A]
 
 /-- Given a star `ℝ≥0`-algebra homomorphism `φ` from `C(X, ℝ≥0)` into an `ℝ`-algebra `A`, this is
 the unique extension of `φ` from `C(X, ℝ)` to `A` as a star `ℝ`-algebra homomorphism. -/
@@ -131,18 +135,18 @@ noncomputable def realContinuousMapOfNNReal (φ : C(X, ℝ≥0) →⋆ₐ[ℝ≥
     obtain (hr | hr) := le_total 0 r
     · lift r to ℝ≥0 using hr
       simpa only [ContinuousMap.toNNReal_algebraMap, ContinuousMap.toNNReal_neg_algebraMap,
-        map_zero, sub_zero] using AlgHomClass.commutes φ r
+        map_zero, sub_zero] using! AlgHomClass.commutes φ r
     · rw [← neg_neg r, ← map_neg, neg_neg (-r)]
       rw [← neg_nonneg] at hr
       lift -r to ℝ≥0 using hr with r
       simpa only [map_neg, ContinuousMap.toNNReal_neg_algebraMap, map_zero,
-        ContinuousMap.toNNReal_algebraMap, zero_sub, neg_inj] using AlgHomClass.commutes φ r
+        ContinuousMap.toNNReal_algebraMap, zero_sub, neg_inj] using! AlgHomClass.commutes φ r
   map_star' f := by simp only [star_trivial, star_sub, ← map_star]
 
 @[fun_prop]
 lemma continuous_realContinuousMapOfNNReal (φ : C(X, ℝ≥0) →⋆ₐ[ℝ≥0] A)
     (hφ : Continuous φ) : Continuous φ.realContinuousMapOfNNReal := by
-  simp [realContinuousMapOfNNReal]
+  dsimp [realContinuousMapOfNNReal]
   fun_prop
 
 end IsTopologicalRing
@@ -163,26 +167,17 @@ lemma realContinuousMapOfNNReal_injective :
     Function.Injective (realContinuousMapOfNNReal (X := X) (A := A)) := by
   intro φ ψ h
   ext f
-  simpa using congr($(h) ((ContinuousMap.mk toReal continuous_coe).comp f))
+  simpa using congr($h ((ContinuousMap.mk toReal continuous_coe).comp f))
 
 end StarAlgHom
 
-variable [TopologicalSpace A] [IsTopologicalRing A]
+variable [TopologicalSpace A] [IsSemitopologicalRing A]
 
 instance NNReal.instContinuousMap.UniqueHom [T2Space A] :
     ContinuousMap.UniqueHom ℝ≥0 A where
   eq_of_continuous_of_map_id s hs φ ψ hφ hψ h := by
     let s' : Set ℝ := (↑) '' s
-    let e : s ≃ₜ s' :=
-      { toFun := Subtype.map (↑) (by simp [s'])
-        invFun := Subtype.map Real.toNNReal (by simp [s'])
-        left_inv := fun _ ↦ by ext; simp
-        right_inv := fun x ↦ by
-          ext
-          obtain ⟨y, -, hy⟩ := x.2
-          simpa using hy ▸ NNReal.coe_nonneg y
-        continuous_toFun := continuous_coe.subtype_map (by simp [s'])
-        continuous_invFun := continuous_real_toNNReal.subtype_map (by simp [s']) }
+    let e : s ≃ₜ s' := NNReal.isEmbedding_coe.homeomorphImage s
     have (ξ : C(s, ℝ≥0) →⋆ₐ[ℝ≥0] A) (hξ : Continuous ξ) :
         (let ξ' := ξ.realContinuousMapOfNNReal.comp <| ContinuousMap.compStarAlgHom' ℝ ℝ e
         Continuous ξ' ∧ ξ' (.restrict s' <| .id ℝ) = ξ (.restrict s <| .id ℝ≥0)) := by
@@ -243,7 +238,7 @@ lemma toNNReal_apply (f : C(X, ℝ)₀) (x : X) : f.toNNReal x = Real.toNNReal (
 @[fun_prop]
 lemma continuous_toNNReal : Continuous (toNNReal (X := X)) := by
   rw [continuous_induced_rng]
-  convert_to Continuous (ContinuousMap.toNNReal ∘ ((↑) : C(X, ℝ)₀ → C(X, ℝ))) using 1
+  convert_to! Continuous (ContinuousMap.toNNReal ∘ ((↑) : C(X, ℝ)₀ → C(X, ℝ))) using 1
   exact ContinuousMap.continuous_postcomp _ |>.comp continuous_induced_dom
 
 lemma toContinuousMapHom_toNNReal (f : C(X, ℝ)₀) :
@@ -254,10 +249,9 @@ lemma toContinuousMapHom_toNNReal (f : C(X, ℝ)₀) :
 @[simp]
 lemma toNNReal_smul (r : ℝ≥0) (f : C(X, ℝ)₀) : (r • f).toNNReal = r • f.toNNReal := by
   ext x
-  by_cases h : 0 ≤ f x
+  by_cases! h : 0 ≤ f x
   · simpa [max_eq_left h, NNReal.smul_def] using mul_nonneg r.coe_nonneg h
-  · push_neg at h
-    simpa [max_eq_right h.le, NNReal.smul_def]
+  · simpa [max_eq_right h.le, NNReal.smul_def]
       using mul_nonpos_of_nonneg_of_nonpos r.coe_nonneg h.le
 
 @[simp]
@@ -268,15 +262,15 @@ lemma toNNReal_mul_add_neg_mul_add_mul_neg_eq (f g : C(X, ℝ)₀) :
     ((f * g).toNNReal + (-f).toNNReal * g.toNNReal + f.toNNReal * (-g).toNNReal) =
     ((-(f * g)).toNNReal + f.toNNReal * g.toNNReal + (-f).toNNReal * (-g).toNNReal) := by
   apply toContinuousMap_injective
-  simpa only [← toContinuousMapHom_apply, map_add, map_mul, map_neg, toContinuousMapHom_toNNReal]
-    using (f : C(X, ℝ)).toNNReal_mul_add_neg_mul_add_mul_neg_eq g
+  simpa only [map_add, map_mul, map_neg, toContinuousMapHom_toNNReal]
+    using! (f : C(X, ℝ)).toNNReal_mul_add_neg_mul_add_mul_neg_eq g
 
 lemma toNNReal_add_add_neg_add_neg_eq (f g : C(X, ℝ)₀) :
     ((f + g).toNNReal + (-f).toNNReal + (-g).toNNReal) =
       ((-(f + g)).toNNReal + f.toNNReal + g.toNNReal) := by
   apply toContinuousMap_injective
-  simpa only [← toContinuousMapHom_apply, map_add, map_mul, map_neg, toContinuousMapHom_toNNReal]
-    using (f : C(X, ℝ)).toNNReal_add_add_neg_add_neg_eq g
+  simpa only [map_add, map_mul, map_neg, toContinuousMapHom_toNNReal]
+    using! (f : C(X, ℝ)).toNNReal_add_add_neg_add_neg_eq g
 
 end ContinuousMapZero
 
@@ -288,7 +282,7 @@ open ContinuousMapZero
 
 section IsTopologicalRing
 
-variable [TopologicalSpace A] [IsTopologicalRing A]
+variable [TopologicalSpace A] [IsSemitopologicalRing A]
 
 /-- Given a non-unital star `ℝ≥0`-algebra homomorphism `φ` from `C(X, ℝ≥0)₀` into a non-unital
 `ℝ`-algebra `A`, this is the unique extension of `φ` from `C(X, ℝ)₀` to `A` as a non-unital
@@ -312,10 +306,10 @@ noncomputable def realContinuousMapZeroOfNNReal (φ : C(X, ℝ≥0)₀ →⋆ₙ
     abel
   map_smul' r f := by
     simp only [MonoidHom.id_apply]
-    by_cases hr : 0 ≤ r
+    by_cases! hr : 0 ≤ r
     · lift r to ℝ≥0 using hr
       simp only [← smul_def, toNNReal_smul, map_smul, toNNReal_neg_smul, smul_sub]
-    · rw [not_le, ← neg_pos] at hr
+    · rw [← neg_pos] at hr
       rw [← neg_smul]
       nth_rw 1 [← neg_neg r]
       nth_rw 3 [← neg_neg r]
@@ -328,11 +322,12 @@ noncomputable def realContinuousMapZeroOfNNReal (φ : C(X, ℝ≥0)₀ →⋆ₙ
 @[fun_prop]
 lemma continuous_realContinuousMapZeroOfNNReal (φ : C(X, ℝ≥0)₀ →⋆ₙₐ[ℝ≥0] A)
     (hφ : Continuous φ) : Continuous φ.realContinuousMapZeroOfNNReal := by
-  simp [realContinuousMapZeroOfNNReal]
+  dsimp [realContinuousMapZeroOfNNReal]
   fun_prop
 
 end IsTopologicalRing
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp high]
 lemma realContinuousMapZeroOfNNReal_apply_comp_toReal (φ : C(X, ℝ≥0)₀ →⋆ₙₐ[ℝ≥0] A)
     (f : C(X, ℝ≥0)₀) :
@@ -350,32 +345,22 @@ lemma realContinuousMapZeroOfNNReal_injective :
     Function.Injective (realContinuousMapZeroOfNNReal (X := X) (A := A)) := by
   intro φ ψ h
   ext f
-  simpa using congr($(h) ((ContinuousMapZero.mk ⟨toReal, continuous_coe⟩ rfl).comp f))
+  simpa using congr($h ((ContinuousMapZero.mk ⟨toReal, continuous_coe⟩ rfl).comp f))
 
 end NonUnitalStarAlgHom
 
 open ContinuousMapZero
 
 instance NNReal.instContinuousMapZero.UniqueHom
-    [TopologicalSpace A] [IsTopologicalRing A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
+    [TopologicalSpace A] [IsSemitopologicalRing A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
     [T2Space A] :
     ContinuousMapZero.UniqueHom ℝ≥0 A where
   eq_of_continuous_of_map_id s hs h0 φ ψ hφ hψ h := by
     let s' : Set ℝ := (↑) '' s
-    let e : s ≃ₜ s' :=
-      { toFun := Subtype.map (↑) (by simp [s'])
-        invFun := Subtype.map Real.toNNReal (by simp [s'])
-        left_inv := fun _ ↦ by ext; simp
-        right_inv := fun x ↦ by
-          ext
-          obtain ⟨y, -, hy⟩ := x.2
-          simpa using hy ▸ NNReal.coe_nonneg y
-        continuous_toFun := continuous_coe.subtype_map (by simp [s'])
-        continuous_invFun := continuous_real_toNNReal.subtype_map (by simp [s']) }
+    let e : s ≃ₜ s' := NNReal.isEmbedding_coe.homeomorphImage s
     have : Fact (0 ∈ s') := ⟨0, Fact.out, coe_zero⟩
-    have e0 : e 0 = 0 := by ext; simp [e]; rfl
-    have e0' : e.symm 0 = 0 := by
-      simpa only [Homeomorph.symm_apply_apply] using congr(e.symm $(e0)).symm
+    have e0 : e 0 = 0 := rfl
+    have e0' : e.symm 0 = 0 := e.symm_apply_eq.mpr e0
     have (ξ : C(s, ℝ≥0)₀ →⋆ₙₐ[ℝ≥0] A) (hξ : Continuous ξ) :
         (let ξ' := ξ.realContinuousMapZeroOfNNReal.comp <|
           ContinuousMapZero.nonUnitalStarAlgHom_precomp ℝ ⟨e, e0⟩;
@@ -420,6 +405,7 @@ variable {F R S A B : Type*} {p : A → Prop} {q : B → Prop}
   [ContinuousMapZero.UniqueHom R B] [FunLike F A B] [NonUnitalAlgHomClass F S A B]
   [StarHomClass F A B]
 
+set_option backward.isDefEq.respectTransparency false in
 include S in
 /-- Non-unital star algebra homomorphisms commute with the non-unital continuous functional
 calculus. -/
@@ -427,7 +413,7 @@ lemma NonUnitalStarAlgHomClass.map_cfcₙ (φ : F) (f : R → R) (a : A)
     (hf : ContinuousOn f (quasispectrum R a) := by cfc_cont_tac)
     (hf₀ : f 0 = 0 := by cfc_zero_tac) (hφ : Continuous φ := by fun_prop) (ha : p a := by cfc_tac)
     (hφa : q (φ a) := by cfc_tac) : φ (cfcₙ f a) = cfcₙ f (φ a) := by
-  let ψ : A →⋆ₙₐ[R] B := (φ : A →⋆ₙₐ[S] B).restrictScalars R
+  let ψ : A →⋆ₙₐ[R] B := (.ofClass φ : A →⋆ₙₐ[S] B).restrictScalars R
   have : Continuous ψ := hφ
   have h_spec := NonUnitalAlgHom.quasispectrum_apply_subset' (R := R) S φ a
   have hψa : q (ψ a) := hφa
@@ -444,7 +430,7 @@ lemma NonUnitalStarAlgHomClass.map_cfcₙ (φ : F) (f : R → R) (a : A)
     · simp [cfcₙHom_id]
     · congr
   all_goals
-    simp [ContinuousMapZero.nonUnitalStarAlgHom_precomp]
+    dsimp [ContinuousMapZero.nonUnitalStarAlgHom_precomp]
     fun_prop
 
 /-- Non-unital star algebra homomorphisms commute with the non-unital continuous functional
@@ -470,13 +456,14 @@ variable {F R S A B : Type*} {p : A → Prop} {q : B → Prop}
   [ContinuousMap.UniqueHom R B] [FunLike F A B] [AlgHomClass F S A B]
   [StarHomClass F A B]
 
+set_option backward.isDefEq.respectTransparency false in
 include S in
 /-- Star algebra homomorphisms commute with the continuous functional calculus. -/
 lemma StarAlgHomClass.map_cfc (φ : F) (f : R → R) (a : A)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
     (hφ : Continuous φ := by fun_prop) (ha : p a := by cfc_tac) (hφa : q (φ a) := by cfc_tac) :
     φ (cfc f a) = cfc f (φ a) := by
-  let ψ : A →⋆ₐ[R] B := (φ : A →⋆ₐ[S] B).restrictScalars R
+  let ψ : A →⋆ₐ[R] B := (.ofClass φ : A →⋆ₐ[S] B).restrictScalars R
   have : Continuous ψ := hφ
   have h_spec := AlgHom.spectrum_apply_subset ψ a
   have hψa : q (ψ a) := hφa
@@ -485,14 +472,14 @@ lemma StarAlgHomClass.map_cfc (φ : F) (f : R → R) (a : A)
   suffices ψ.comp (cfcHom ha) = (cfcHom hψa).comp (ContinuousMap.compStarAlgHom' R R ι) by
     have hf' : ContinuousOn f (spectrum R (ψ a)) := hf.mono h_spec
     rw [cfc_apply .., cfc_apply ..]
-    congrm($(this) ⟨_, hf.restrict⟩)
+    congrm($(this) ⟨_, hf.domRestrict⟩)
   refine ContinuousMap.UniqueHom.eq_of_continuous_of_map_id _ _ _ ?_ ?_ ?apply_id
   case apply_id =>
     trans cfcHom hψa (.restrict (spectrum R (ψ a)) (.id R))
     · simp [cfcHom_id]
     · congr
   all_goals
-    simp [ContinuousMap.compStarAlgHom']
+    dsimp [ContinuousMap.compStarAlgHom']
     fun_prop
 
 /-- Star algebra homomorphisms commute with the continuous functional calculus.

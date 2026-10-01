@@ -3,10 +3,10 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.Data.Matrix.Basis
-import Mathlib.Data.Matrix.Block
-import Mathlib.LinearAlgebra.Matrix.Notation
-import Mathlib.LinearAlgebra.Matrix.RowCol
+module
+
+public import Mathlib.Data.Matrix.Block
+public import Mathlib.LinearAlgebra.Matrix.Notation
 
 /-!
 # Trace of a matrix
@@ -21,6 +21,8 @@ See also `LinearAlgebra.Trace` for the trace of an endomorphism.
 matrix, trace, diagonal
 
 -/
+
+@[expose] public section
 
 
 open Matrix
@@ -168,8 +170,6 @@ theorem trace_replicateCol_mul_replicateRow {ι : Type*} [Unique ι] [NonUnitalN
   apply Finset.sum_congr rfl
   simp [mul_apply]
 
-@[deprecated (since := "2025-03-20")] alias trace_col_mul_row := trace_replicateCol_mul_replicateRow
-
 @[simp]
 theorem trace_vecMulVec [NonUnitalNonAssocSemiring R] (a b : n → R) :
     trace (vecMulVec a b) = a ⬝ᵥ b := by
@@ -216,7 +216,7 @@ theorem trace_fin_one (A : Matrix (Fin 1) (Fin 1) R) : trace A = A 0 0 :=
   add_zero _
 
 theorem trace_fin_two (A : Matrix (Fin 2) (Fin 2) R) : trace A = A 0 0 + A 1 1 :=
-  congr_arg (_ + ·) (add_zero (A 1 1))
+  congr(_ + $(add_zero (A 1 1)))
 
 theorem trace_fin_three (A : Matrix (Fin 3) (Fin 3) R) : trace A = A 0 0 + A 1 1 + A 2 2 := by
   rw [← add_zero (A 2 2), add_assoc]
@@ -239,22 +239,16 @@ end Fin
 
 section single
 
-variable {l m n : Type*} {R α : Type*} [DecidableEq l] [DecidableEq m] [DecidableEq n]
+variable {m n : Type*} {R α : Type*} [DecidableEq m] [DecidableEq n]
 variable [Fintype n] [AddCommMonoid α] (i j : n) (c : α)
 
 @[simp]
 theorem trace_single_eq_of_ne (h : i ≠ j) : trace (single i j c) = 0 := by
   simp [trace, h]
 
-@[deprecated (since := "2025-05-05")]
-alias StdBasisMatrix.trace_zero := trace_single_eq_of_ne
-
 @[simp]
 theorem trace_single_eq_same : trace (single i i c) = c := by
   simp [trace]
-
-@[deprecated (since := "2025-05-05")]
-alias StdBasisMatrix.trace_eq := trace_single_eq_same
 
 theorem trace_single_mul [NonUnitalNonAssocSemiring R] [Fintype m]
     (i : n) (j : m) (a : R) (x : Matrix m n R) :
@@ -267,6 +261,12 @@ theorem trace_mul_single [NonUnitalNonAssocSemiring R] [Fintype m]
   simp [trace, mul_apply, single, ite_and]
 
 end single
+
+theorem trace_surjective [AddCommMonoid R] [Nonempty n] :
+    Function.Surjective (trace : Matrix n n R → R) := fun r ↦ by
+  classical
+  inhabit n
+  exact ⟨single default default r, trace_single_eq_same default r⟩
 
 /-- Matrices `A` and `B` are equal iff `(x * A).trace = (x * B).trace` for all `x`. -/
 theorem ext_iff_trace_mul_left [NonAssocSemiring R] {A B : Matrix m n R} :

@@ -3,7 +3,9 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jung Tao Cheng, Christian Merten, Andrew Yang
 -/
-import Mathlib.RingTheory.Extension.Presentation.Submersive
+module
+
+public import Mathlib.RingTheory.Extension.Presentation.Submersive
 
 /-!
 # Standard smooth algebras
@@ -28,6 +30,17 @@ All of these are in the `Algebra` namespace. Let `S` be an `R`-algebra.
 - `Algebra.IsStandardSmoothOfRelativeDimension n`: `S` is `R`-standard smooth of relative dimension
   `n` if it admits a submersive `R`-presentation of dimension `n`.
 
+## Main results
+
+- `Algebra.IsStandardSmoothOfRelativeDimension.mvPolynomial`: If `ι` is finite, the polynomial
+  algebra `MvPolynomial ι R` is `R`-standard smooth of relative dimension `Nat.card ι`.
+- Standard smoothness is stable under composition
+  (`Algebra.IsStandardSmooth.trans`), base change (`Algebra.IsStandardSmooth.baseChange`) and
+  localization away from an element (`Algebra.IsStandardSmooth.localization_away`), and similarly
+  for standard smoothness of a fixed relative dimension.
+- `Algebra.IsStandardSmooth.finitePresentation`: A standard smooth algebra is of finite
+  presentation.
+
 ## TODO
 
 - Show that locally on the target, smooth algebras are standard smooth.
@@ -39,9 +52,11 @@ in June 2024.
 
 -/
 
+@[expose] public section
+
 universe t t' w w' u v
 
-open TensorProduct Module MvPolynomial
+open TensorProduct
 
 variable (n m : ℕ)
 
@@ -60,6 +75,7 @@ class IsStandardSmooth : Prop where
 
 variable [Finite σ]
 
+variable {R S ι σ} in
 lemma SubmersivePresentation.isStandardSmooth [Finite ι] (P : SubmersivePresentation R S ι σ) :
     IsStandardSmooth R S := by
   exact ⟨_, _, _, inferInstance, ⟨P.reindex (Fintype.equivFin _).symm (Fintype.equivFin _).symm⟩⟩
@@ -84,6 +100,7 @@ class IsStandardSmoothOfRelativeDimension : Prop where
   out : ∃ (ι σ : Type) (_ : Finite σ) (_ : Finite ι) (P : SubmersivePresentation R S ι σ),
     P.dimension = n
 
+variable {R S ι σ n} in
 lemma SubmersivePresentation.isStandardSmoothOfRelativeDimension [Finite ι]
     (P : SubmersivePresentation R S ι σ) (hP : P.dimension = n) :
     IsStandardSmoothOfRelativeDimension n R S := by
@@ -109,10 +126,40 @@ instance IsStandardSmoothOfRelativeDimension.id :
     IsStandardSmoothOfRelativeDimension 0 R R :=
   IsStandardSmoothOfRelativeDimension.of_algebraMap_bijective Function.bijective_id
 
+variable (R) in
+/-- The polynomial algebra `MvPolynomial ι R` is standard smooth over `R` of relative
+dimension `Nat.card ι`, for a finite type `ι`. -/
+lemma IsStandardSmoothOfRelativeDimension.mvPolynomial [Finite ι] :
+    IsStandardSmoothOfRelativeDimension (Nat.card ι) R (MvPolynomial ι R) :=
+  (SubmersivePresentation.mvPolynomial.{0} R ι).isStandardSmoothOfRelativeDimension
+    (Presentation.dimension_mvPolynomial)
+
+/-- The polynomial algebra `MvPolynomial (Fin n) R` is standard smooth over `R` of relative
+dimension `n`. -/
+instance IsStandardSmoothOfRelativeDimension.mvPolynomial_fin {n : ℕ} :
+    IsStandardSmoothOfRelativeDimension n R (MvPolynomial (Fin n) R) := by
+  simpa using IsStandardSmoothOfRelativeDimension.mvPolynomial R (Fin n)
+
+/-- The polynomial algebra `MvPolynomial ι R` is standard smooth over `R` when `ι` is finite. -/
+instance IsStandardSmooth.mvPolynomial [Finite ι] :
+    IsStandardSmooth R (MvPolynomial ι R) :=
+  IsStandardSmoothOfRelativeDimension.mvPolynomial R ι|>.isStandardSmooth
+
 instance (priority := 100) IsStandardSmooth.finitePresentation [IsStandardSmooth R S] :
     FinitePresentation R S := by
   obtain ⟨_, _, _, _, ⟨P⟩⟩ := ‹IsStandardSmooth R S›
   exact P.finitePresentation_of_isFinite
+
+lemma IsStandardSmooth.of_algEquiv {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T)
+    [IsStandardSmooth R S] : IsStandardSmooth R T := by
+  obtain ⟨_, _, _, _, ⟨P⟩⟩ := ‹IsStandardSmooth R S›
+  exact (P.ofAlgEquiv e).isStandardSmooth
+
+lemma IsStandardSmoothOfRelativeDimension.of_algEquiv {T : Type*} [CommRing T] [Algebra R T]
+    (e : S ≃ₐ[R] T) [IsStandardSmoothOfRelativeDimension n R S] :
+    IsStandardSmoothOfRelativeDimension n R T := by
+  obtain ⟨_, _, _, _, ⟨P, hP⟩⟩ := ‹IsStandardSmoothOfRelativeDimension n R S›
+  exact (P.ofAlgEquiv e).isStandardSmoothOfRelativeDimension (by simpa)
 
 section Composition
 
@@ -163,5 +210,13 @@ instance IsStandardSmoothOfRelativeDimension.baseChange
     exact ⟨_, _, _, inferInstance, P.baseChange T, hP⟩
 
 end BaseChange
+
+@[nontriviality]
+instance (priority := 100) [Subsingleton S] : IsStandardSmooth R S :=
+  ⟨Unit, Unit, inferInstance, inferInstance, ⟨.ofSubsingleton R S⟩⟩
+
+@[nontriviality]
+instance (priority := 100) [Subsingleton S] : IsStandardSmoothOfRelativeDimension 0 R S :=
+  ⟨Unit, Unit, inferInstance, inferInstance, .ofSubsingleton R S, by simp [Presentation.dimension]⟩
 
 end Algebra

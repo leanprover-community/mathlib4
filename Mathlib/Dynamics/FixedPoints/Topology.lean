@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Johannes Hölzl
 -/
-import Mathlib.Dynamics.FixedPoints.Basic
-import Mathlib.Topology.Separation.Hausdorff
+module
+
+public import Mathlib.Topology.Separation.Hausdorff
+public import Mathlib.Dynamics.FixedPoints.Defs
 
 /-!
 # Topological properties of fixed points
@@ -19,12 +21,14 @@ Currently this file contains two lemmas:
 fixed points, iterates
 -/
 
+public section
+
 
 variable {α : Type*} [TopologicalSpace α] [T2Space α] {f : α → α}
 
 open Function Filter
 
-open Topology
+open scoped Topology
 
 /-- If the iterates `f^[n] x` converge to `y` and `f` is continuous at `y`,
 then `y` is a fixed point for `f`. -/

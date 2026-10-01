@@ -3,9 +3,11 @@ Copyright (c) 2021 Lu-Ming Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lu-Ming Zhang
 -/
-import Mathlib.LinearAlgebra.Matrix.Kronecker
-import Mathlib.LinearAlgebra.Matrix.Orthogonal
-import Mathlib.LinearAlgebra.Matrix.Symmetric
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Kronecker
+public import Mathlib.LinearAlgebra.Matrix.Orthogonal
+public import Mathlib.LinearAlgebra.Matrix.Symmetric
 
 /-!
 # Diagonal matrices
@@ -21,6 +23,8 @@ This file contains the definition and basic results about diagonal matrices.
 diag, diagonal, matrix
 -/
 
+@[expose] public section
+
 
 namespace Matrix
 
@@ -28,7 +32,9 @@ variable {α β R n m : Type*}
 
 open Function
 
-open Matrix Kronecker
+open Matrix
+
+open scoped Kronecker
 
 /-- `A.IsDiag` means square matrix `A` is a diagonal matrix. -/
 def IsDiag [Zero α] (A : Matrix n n α) : Prop :=

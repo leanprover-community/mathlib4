@@ -3,12 +3,13 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Perm.Subperm
-import Mathlib.Data.Quot
-import Mathlib.Order.Monotone.Defs
-import Mathlib.Order.RelClasses
-import Mathlib.Tactic.Monotonicity.Attr
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Data.List.Perm.Subperm
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Order.Monotone.Defs
+public import Mathlib.Order.RelClasses
+public import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # Multisets
@@ -52,14 +53,16 @@ importing `Multiset.Defs`.
   occurrences of `a` in `s` and `t`.
 -/
 
+@[expose] public section
+
 -- No algebra should be required
 assert_not_exists Monoid OrderHom
 
 universe v
 
-open List Subtype Nat Function
+open List Subtype Nat
 
-variable {α : Type*} {β : Type v} {γ : Type*}
+variable {α : Type*} {β : Type v}
 
 /-- `Multiset α` is the quotient of `List α` by list permutation. The result
   is a type of finite sets with duplicates allowed. -/
@@ -112,7 +115,7 @@ section Mem
 
 /-- `a ∈ s` means that `a` has nonzero multiplicity in `s`. -/
 def Mem (s : Multiset α) (a : α) : Prop :=
-  Quot.liftOn s (fun l => a ∈ l) fun l₁ l₂ (e : l₁ ~ l₂) => propext <| e.mem_iff
+  Quot.liftOn s (fun l => a ∈ l) fun l₁ l₂ (e : l₁ ~ l₂) => propext e.mem_iff
 
 instance : Membership α (Multiset α) :=
   ⟨Mem⟩
@@ -199,8 +202,6 @@ theorem mem_of_le (h : s ≤ t) : a ∈ s → a ∈ t :=
 theorem notMem_mono (h : s ⊆ t) : a ∉ t → a ∉ s :=
   mt <| @h _
 
-@[deprecated (since := "2025-05-23")] alias not_mem_mono := notMem_mono
-
 @[simp]
 theorem coe_le {l₁ l₂ : List α} : (l₁ : Multiset α) ≤ l₂ ↔ l₁ <+~ l₂ :=
   Iff.rfl
@@ -223,25 +224,24 @@ def card : Multiset α → ℕ := Quot.lift length fun _l₁ _l₂ => Perm.lengt
 theorem coe_card (l : List α) : card (l : Multiset α) = length l :=
   rfl
 
-@[gcongr]
 theorem card_le_card {s t : Multiset α} (h : s ≤ t) : card s ≤ card t :=
   leInductionOn h Sublist.length_le
 
 theorem eq_of_le_of_card_le {s t : Multiset α} (h : s ≤ t) : card t ≤ card s → s = t :=
   leInductionOn h fun s h₂ => congr_arg _ <| s.eq_of_length_le h₂
 
-@[gcongr]
 theorem card_lt_card {s t : Multiset α} (h : s < t) : card s < card t :=
   lt_of_not_ge fun h₂ => _root_.ne_of_lt h <| eq_of_le_of_card_le (le_of_lt h) h₂
 
-@[mono]
+@[gcongr, mono]
 theorem card_mono : Monotone (@card α) := fun _a _b => card_le_card
 
-lemma card_strictMono : StrictMono (card : Multiset α → ℕ) := fun _ _ ↦ card_lt_card
+@[gcongr]
+lemma card_strictMono : StrictMono (@card α) := fun _ _ ↦ card_lt_card
 
 /-- Another way of expressing `strongInductionOn`: the `(<)` relation is well-founded. -/
 instance instWellFoundedLT : WellFoundedLT (Multiset α) :=
-  ⟨Subrelation.wf Multiset.card_lt_card (measure Multiset.card).2⟩
+  Subrelation.wf Multiset.card_lt_card (measure Multiset.card).2
 
 @[simp]
 theorem coe_reverse (l : List α) : (reverse l : Multiset α) = l :=
@@ -339,9 +339,9 @@ theorem pairwise_coe_iff {r : α → α → Prop} {l : List α} :
     Multiset.Pairwise r l ↔ ∃ l' : List α, l ~ l' ∧ l'.Pairwise r :=
   exists_congr <| by simp
 
-theorem pairwise_coe_iff_pairwise {r : α → α → Prop} (hr : Symmetric r) {l : List α} :
+theorem pairwise_coe_iff_pairwise {r : α → α → Prop} [Std.Symm r] {l : List α} :
     Multiset.Pairwise r l ↔ l.Pairwise r :=
-  Iff.intro (fun ⟨_l', Eq, h⟩ => ((Quotient.exact Eq).pairwise_iff @hr).2 h) fun h => ⟨l, rfl, h⟩
+  ⟨fun ⟨_l', Eq, h⟩ ↦ Quotient.exact Eq |>.pairwise_iff symm |>.mpr h, fun h ↦ ⟨l, rfl, h⟩⟩
 
 section Nodup
 

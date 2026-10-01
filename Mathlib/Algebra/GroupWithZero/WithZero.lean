@@ -3,13 +3,15 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
 -/
-import Mathlib.Algebra.Group.TypeTags.Basic
-import Mathlib.Algebra.Group.WithOne.Defs
-import Mathlib.Algebra.GroupWithZero.Equiv
-import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Data.Nat.Cast.Defs
-import Mathlib.Data.Option.Basic
-import Mathlib.Data.Option.NAry
+module
+
+public import Mathlib.Algebra.Group.TypeTags.Basic
+public import Mathlib.Algebra.Group.WithOne.Defs
+public import Mathlib.Algebra.GroupWithZero.Equiv
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.Data.Nat.Cast.Defs
+public import Mathlib.Data.Option.NAry
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Adjoining a zero to a group
@@ -33,6 +35,8 @@ In scope `WithZero`:
 * `WithZero.exp`: The "exponential map" `M → Mᵐ⁰`
 * `WithZero.exp`: The "logarithm" `Mᵐ⁰ → M`
 -/
+
+@[expose] public section
 
 open Function
 
@@ -81,12 +85,14 @@ instance instCommSemigroup [CommSemigroup α] : CommSemigroup (WithZero α) wher
   mul_comm _ _ := Option.map₂_comm mul_comm
 
 section MulOneClass
-variable [MulOneClass α]
 
 instance instMulZeroOneClass [MulOneClass α] : MulZeroOneClass (WithZero α) where
   one_mul := Option.map₂_left_identity one_mul
   mul_one := Option.map₂_right_identity mul_one
 
+variable [MulOneClass α]
+
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Coercion as a monoid hom. -/
 @[simps apply]
 def coeMonoidHom : α →* WithZero α where
@@ -104,7 +110,7 @@ theorem monoidWithZeroHom_ext ⦃f g : WithZero α →*₀ β⦄
     f = g :=
   DFunLike.ext _ _ fun
     | 0 => (map_zero f).trans (map_zero g).symm
-    | (g : α) => DFunLike.congr_fun h g
+    | (g : α) => congr($h g)
 
 /-- The (multiplicative) universal property of `WithZero`. -/
 @[simps! symm_apply_apply]
@@ -192,10 +198,10 @@ instance instMonoidWithZero [Monoid α] : MonoidWithZero (WithZero α) where
   npow n a := a ^ n
   npow_zero
     | 0 => rfl
-    | some _ => congr_arg some (pow_zero _)
+    | some _ => congr(some $(pow_zero _))
   npow_succ
     | n, 0 => by simp only [mul_zero]; rfl
-    | n, some _ => congr_arg some <| pow_succ _ _
+    | n, some _ => congr(some $(pow_succ ..))
 
 instance instCommMonoidWithZero [CommMonoid α] : CommMonoidWithZero (WithZero α) :=
   { WithZero.instMonoidWithZero, WithZero.instCommSemigroup with }
@@ -242,20 +248,21 @@ instance instDivInvMonoid [DivInvMonoid α] : DivInvMonoid (WithZero α) where
   div_eq_mul_inv
     | none, _ => rfl
     | some _, none => rfl
-    | some a, some b => congr_arg some (div_eq_mul_inv a b)
+    | some a, some b => congr(some $(div_eq_mul_inv a b))
   zpow n a := a ^ n
   zpow_zero'
     | none => rfl
-    | some _ => congr_arg some (zpow_zero _)
+    | some _ => congr(some $(zpow_zero _))
   zpow_succ'
     | n, none => by change 0 ^ _ = 0 ^ _ * 0; simp only [mul_zero]; rfl
-    | n, some _ => congr_arg some (DivInvMonoid.zpow_succ' _ _)
+    | n, some _ => congr(some $(DivInvMonoid.zpow_succ' ..))
   zpow_neg'
     | n, none => rfl
-    | n, some _ => congr_arg some (DivInvMonoid.zpow_neg' _ _)
+    | n, some _ => congr(some $(DivInvMonoid.zpow_neg' ..))
 
 instance instDivInvOneMonoid [DivInvOneMonoid α] : DivInvOneMonoid (WithZero α) where
 
+set_option backward.isDefEq.respectTransparency false in
 instance instInvolutiveInv [InvolutiveInv α] : InvolutiveInv (WithZero α) where
   inv_inv a := (Option.map_map _ _ _).trans <| by simp
 
@@ -264,11 +271,11 @@ instance instDivisionMonoid [DivisionMonoid α] : DivisionMonoid (WithZero α) w
     | none, none => rfl
     | none, some _ => rfl
     | some _, none => rfl
-    | some _, some _ => congr_arg some (mul_inv_rev _ _)
+    | some _, some _ => congr(some $(mul_inv_rev ..))
   inv_eq_of_mul
     | none, none, _ => rfl
     | some _, some _, h =>
-      congr_arg some <| inv_eq_of_mul_eq_one_right <| Option.some_injective _ h
+      congr(some $(inv_eq_of_mul_eq_one_right <| Option.some_injective _ h))
 
 instance instDivisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid (WithZero α) where
 
@@ -358,10 +365,29 @@ def exp (a : M) : Mᵐ⁰ := coe <| .ofAdd a
 
 @[simp] lemma exp_ne_zero {a : M} : exp a ≠ 0 := by simp [exp]
 
+lemma exp_eq_coe_ofAdd (a : M) : exp a = coe (Multiplicative.ofAdd a) := rfl
+
 lemma exp_injective : Injective (exp : M → Mᵐ⁰) :=
   Multiplicative.ofAdd.injective.comp WithZero.coe_injective
 
 @[simp] lemma exp_inj {x y : M} : exp x = exp y ↔ x = y := exp_injective.eq_iff
+
+/-- Recursion principle for `Mᵐ⁰`. To construct predicate for all elements of `Mᵐ⁰`, it is enough to
+construct its value at `0` and its value at `exp a` for all `a : M`. -/
+-- TODO: Uncomment once it stops firing on `WithZero M`.
+-- See https://github.com/leanprover-community/mathlib4/issues/31213
+@[elab_as_elim] -- , induction_eliminator, cases_eliminator]
+def expRecOn {motive : Mᵐ⁰ → Sort*} (x : Mᵐ⁰) (zero : motive 0) (exp : ∀ a, motive (exp a)) :
+    motive x := Option.recOn x zero exp
+
+@[simp] lemma expRecOn_zero {motive : Mᵐ⁰ → Sort*} (zero : motive 0) (exp : ∀ a, motive (exp a)) :
+    expRecOn 0 zero exp = zero := rfl
+
+@[simp] lemma expRecOn_exp {motive : Mᵐ⁰ → Sort*} (x : M) (zero : motive 0)
+    (exp : ∀ a, motive (exp a)) :
+    expRecOn (M := M) (motive := motive) (.exp x) zero exp = exp x := rfl
+
+instance : CanLift Mᵐ⁰ M exp (· ≠ 0) where prf | (.exp a : Mᵐ⁰), _ => ⟨a, rfl⟩
 
 variable [AddMonoid M]
 
@@ -386,13 +412,17 @@ def log (x : Mᵐ⁰) : M := x.recZeroCoe 0 Multiplicative.toAdd
 lemma log_mul {x y : Mᵐ⁰} (hx : x ≠ 0) (hy : y ≠ 0) : log (x * y) = log x + log y := by
   lift x to Multiplicative M using hx; lift y to Multiplicative M using hy; rfl
 
-@[simp← ] lemma exp_nsmul (n : ℕ) (a : M) : exp (n • a) = exp a ^ n := rfl
+@[simp ←] lemma exp_nsmul (n : ℕ) (a : M) : exp (n • a) = exp a ^ n := rfl
 
 @[simp]
 lemma log_pow : ∀ (x : Mᵐ⁰) (n : ℕ), log (x ^ n) = n • log x
   | 0, 0 => by simp
   | 0, n + 1 => by simp
   | (x : Multiplicative M), n => rfl
+
+lemma toAdd_unzero_eq_log {x : Mᵐ⁰} (hx : x ≠ 0) : (unzero hx).toAdd = log x := by
+  lift x to Multiplicative M using hx
+  simp [log]
 
 end AddMonoid
 
@@ -410,29 +440,29 @@ def logEquiv : (Gᵐ⁰)ˣ ≃ G := unitsWithZeroEquiv.toEquiv.trans Multiplicat
 
 @[simp] lemma coe_expEquiv_apply (a : G) : expEquiv a = exp a := rfl
 
-@[simp] lemma logEquiv_apply (x : (Gᵐ⁰)ˣ) : logEquiv x = log x := by
-  obtain ⟨_ | a, _ | b, hab, hba⟩ := x
-  · cases hab
-  · cases hab
-  · cases hab
-  · rfl
+@[simp] lemma logEquiv_apply (x : (Gᵐ⁰)ˣ) : logEquiv x = log x := toAdd_unzero_eq_log x.ne_zero
 
 lemma logEquiv_unitsMk0 (x : Gᵐ⁰) (hx) : logEquiv (.mk0 x hx) = log x := logEquiv_apply _
 
-@[simp] lemma exp_sub (a b : G) : exp (a - b) = exp a / exp b  := rfl
+@[simp] lemma exp_sub (a b : G) : exp (a - b) = exp a / exp b := rfl
 
 @[simp]
 lemma log_div {x y : Gᵐ⁰} (hx : x ≠ 0) (hy : y ≠ 0) : log (x / y) = log x - log y := by
   lift x to Multiplicative G using hx; lift y to Multiplicative G using hy; rfl
 
-@[simp] lemma exp_neg (a : G) : exp (-a) = (exp a)⁻¹  := rfl
+-- This is deliberately not a `simp` lemma: the group structure on `Gᵐ⁰` interacts much worse with
+-- the order relation than the one on `G`, so `exp (-a)` is a better normal form than `(exp a)⁻¹`.
+-- The `simp` lemma pushing `⁻¹` inside `exp` is `WithZero.inv_exp` below.
+lemma exp_neg (a : G) : exp (-a) = (exp a)⁻¹ := rfl
+
+@[simp] lemma inv_exp (a : G) : (exp a)⁻¹ = exp (-a) := rfl
 
 @[simp]
 lemma log_inv : ∀ x : Gᵐ⁰, log x⁻¹ = -log x
   | 0 => by simp
   | (x : Multiplicative G) => rfl
 
-@[simp← ] lemma exp_zsmul (n : ℤ) (a : G) : exp (n • a) = exp a ^ n := rfl
+@[simp ←] lemma exp_zsmul (n : ℤ) (a : G) : exp (n • a) = exp a ^ n := rfl
 
 @[simp]
 lemma log_zpow (x : Gᵐ⁰) (n : ℤ) : log (x ^ n) = n • log x := by cases n <;> simp [log_pow, log_inv]

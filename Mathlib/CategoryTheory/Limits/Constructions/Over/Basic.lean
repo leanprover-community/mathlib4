@@ -3,11 +3,11 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Reid Barton, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Connected
+module
+
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
-import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
-import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
-import Mathlib.CategoryTheory.Limits.Constructions.Equalizers
+public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
+public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 
 /-!
 # Limits in the over category
@@ -16,6 +16,8 @@ Declare instances for limits in the over category: If `C` has finite wide pullba
 finite limits, and if `C` has arbitrary wide pullbacks then `Over B` has limits.
 -/
 
+public section
+
 
 universe w v u
 
@@ -23,7 +25,6 @@ universe w v u
 open CategoryTheory CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C]
-variable {X : C}
 
 namespace CategoryTheory.Over
 
@@ -44,4 +45,16 @@ instance hasLimits {B : C} [HasWidePullbacks.{w} C] : HasLimitsOfSize.{w, w} (Ov
   have := ConstructProducts.over_products_of_widePullbacks (B := B)
   apply has_limits_of_hasEqualizers_and_products
 
-end CategoryTheory.Over
+end Over
+
+namespace Under
+
+instance {B : C} [HasFiniteWidePushouts C] : HasFiniteColimits (Under B) := by
+  rw [← hasFiniteLimits_opposite_iff]
+  exact hasFiniteLimits_of_hasLimitsLimits_of_createsFiniteLimits (Over.opEquivOpUnder _).inverse
+
+instance {B : C} [HasWidePushouts.{w} C] : HasColimitsOfSize.{w, w} (Under B) := by
+  rw [← hasLimitsOfSize_opposite_iff]
+  exact hasLimits_of_hasLimits_createsLimits (Over.opEquivOpUnder _).inverse
+
+end CategoryTheory.Under

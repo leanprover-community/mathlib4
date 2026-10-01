@@ -3,8 +3,10 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.DFinsupp.Defs
-import Mathlib.Data.Finsupp.Notation
+module
+
+public import Mathlib.Data.DFinsupp.Defs
+public import Mathlib.Data.Finsupp.Notation
 
 /-!
 # Notation for `DFinsupp`
@@ -17,6 +19,8 @@ Note that this syntax is for `Finsupp` by default, but works for `DFinsupp` if t
 is correct.
 -/
 
+public section
+
 namespace DFinsupp
 
 open Lean Parser Term
@@ -26,7 +30,7 @@ open Finsupp.Internal
 
 /-- `DFinsupp` elaborator for `single₀`. -/
 @[term_elab Finsupp.Internal.stxSingle₀]
-def elabSingle₀ : Elab.Term.TermElab
+meta def elabSingle₀ : Elab.Term.TermElab
   | `(term| single₀ $i $x) => fun ty? => do
     Elab.Term.tryPostponeIfNoneOrMVar ty?
     let some ty := ty? | Elab.throwUnsupportedSyntax
@@ -36,7 +40,7 @@ def elabSingle₀ : Elab.Term.TermElab
 
 /-- `DFinsupp` elaborator for `update₀`. -/
 @[term_elab Finsupp.Internal.stxUpdate₀]
-def elabUpdate₀ : Elab.Term.TermElab
+meta def elabUpdate₀ : Elab.Term.TermElab
   | `(term| update₀ $f $i $x) => fun ty? => do
     Elab.Term.tryPostponeIfNoneOrMVar ty?
     let some ty := ty? | Elab.throwUnsupportedSyntax
@@ -48,13 +52,13 @@ end Internal
 
 /-- Unexpander for the `fun₀ | i => x` notation. -/
 @[app_unexpander DFinsupp.single]
-def singleUnexpander : Lean.PrettyPrinter.Unexpander
+meta def singleUnexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $pat $val) => `(fun₀ | $pat => $val)
   | _ => throw ()
 
 /-- Unexpander for the `fun₀ | i => x` notation. -/
 @[app_unexpander DFinsupp.update]
-def updateUnexpander : Lean.PrettyPrinter.Unexpander
+meta def updateUnexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $f $pat $val) => match f with
     | `(fun₀ $xs:matchAlt*) => `(fun₀ $xs:matchAlt* | $pat => $val)
     | _ => throw ()
@@ -71,8 +75,7 @@ unsafe instance {α : Type*} {β : α → Type*} [Repr α] [∀ i, Repr (β i)] 
     if vals.length = 0 then
       "0"
     else
-      let ret : Std.Format := f!"fun₀" ++ .nest 2 (
-        .group (.join <| vals_dedup.map fun a =>
+      let ret : Std.Format := f!"fun₀" ++ .nest 2 (.group (.join <| vals_dedup.map fun a =>
           .line ++ .group (f!"| {a.1} =>" ++ .line ++ a.2)))
       if p ≥ leadPrec then Format.paren ret else ret
 

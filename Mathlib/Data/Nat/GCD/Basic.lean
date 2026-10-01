@@ -3,9 +3,11 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Algebra.Group.Nat.Units
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.GroupWithZero.Nat
+module
+
+public import Mathlib.Algebra.Group.Nat.Units
+public import Mathlib.Algebra.GroupWithZero.Divisibility
+public import Mathlib.Algebra.GroupWithZero.Nat
 
 /-!
 # Properties of `Nat.gcd`, `Nat.lcm`, and `Nat.Coprime`
@@ -21,7 +23,9 @@ Note that the global `IsCoprime` is not a straightforward generalization of `Nat
 Most of this file could be moved to batteries as well.
 -/
 
-assert_not_exists OrderedCommMonoid
+public section
+
+assert_not_exists IsOrderedMonoid
 
 namespace Nat
 variable {a a₁ a₂ b b₁ b₂ c : ℕ}
@@ -31,6 +35,15 @@ variable {a a₁ a₂ b b₁ b₂ c : ℕ}
 theorem gcd_greatest {a b d : ℕ} (hda : d ∣ a) (hdb : d ∣ b) (hd : ∀ e : ℕ, e ∣ a → e ∣ b → e ∣ d) :
     d = a.gcd b :=
   (dvd_antisymm (hd _ (gcd_dvd_left a b) (gcd_dvd_right a b)) (dvd_gcd hda hdb)).symm
+
+theorem gcd_right_comm (a b c : ℕ) : gcd (gcd a b) c = gcd (gcd a c) b := by
+  rw [gcd_assoc, gcd_assoc, gcd_comm b c]
+
+theorem gcd_gcd_gcd_right (a b c : ℕ) : (a.gcd c).gcd (b.gcd c) = (a.gcd b).gcd c := by
+  rw [gcd_left_comm, gcd_gcd_self_left_right, gcd_left_comm, gcd_assoc]
+
+theorem gcd_gcd_gcd_left (a b c : ℕ) : (c.gcd a).gcd (c.gcd b) = c.gcd (a.gcd b) := by
+  rw [gcd_comm c a, gcd_comm c b, gcd_gcd_gcd_right, gcd_comm]
 
 /-! Lemmas where one argument consists of addition of a multiple of the other -/
 
@@ -86,7 +99,10 @@ See also `Nat.coprime_of_dvd` and `Nat.coprime_of_dvd'` to prove `Nat.Coprime m 
 theorem Coprime.lcm_eq_mul {m n : ℕ} (h : Coprime m n) : lcm m n = m * n := by
   rw [← one_mul (lcm m n), ← h.gcd_eq_one, gcd_mul_lcm]
 
-theorem Coprime.symmetric : Symmetric Coprime := fun _ _ => Coprime.symm
+instance Coprime.stdSymm : Std.Symm Coprime where
+  symm _ _ := Coprime.symm
+
+@[deprecated (since := "2026-06-10")] alias Coprime.symmetric := Coprime.stdSymm
 
 theorem Coprime.dvd_mul_right {m n k : ℕ} (H : Coprime k n) : k ∣ m * n ↔ k ∣ m :=
   ⟨H.dvd_of_dvd_mul_right, fun h => dvd_mul_of_dvd_left h n⟩
@@ -209,9 +225,7 @@ theorem Coprime.eq_of_mul_eq_zero {m n : ℕ} (h : m.Coprime n) (hmn : m * n = 0
     m = 0 ∧ n = 1 ∨ m = 1 ∧ n = 0 :=
   (Nat.mul_eq_zero.mp hmn).imp (fun hm => ⟨hm, n.coprime_zero_left.mp <| hm ▸ h⟩) fun hn =>
     let eq := hn ▸ h.symm
-    ⟨m.coprime_zero_left.mp <| eq, hn⟩
-
-@[deprecated (since := "2025-04-01")] alias prodDvdAndDvdOfDvdProd := dvdProdDvdOfDvdProd
+    ⟨m.coprime_zero_left.mp eq, hn⟩
 
 theorem coprime_iff_isRelPrime {m n : ℕ} : m.Coprime n ↔ IsRelPrime m n := by
   simp_rw [coprime_iff_gcd_eq_one, IsRelPrime, ← and_imp, ← dvd_gcd_iff, isUnit_iff_dvd_one]
@@ -253,6 +267,17 @@ lemma div_mul_div (hkm : m ∣ k) (hkn : n ∣ m) : (k / m) * (m / n) = k / n :=
 
 lemma div_dvd_div_left (hkm : m ∣ k) (hkn : n ∣ m) : k / m ∣ k / n :=
   ⟨_, (div_mul_div hkm hkn).symm⟩
+
+/-- `k / m ∣ k / n` iff `n ∣ m`, when both `m` and `n` divide `k`. -/
+lemma div_dvd_div_iff_left (hk : 0 < k) (hmk : m ∣ k) (hnk : n ∣ k) :
+    k / m ∣ k / n ↔ n ∣ m := by
+  grind [Nat.div_div_self, div_dvd_div_left, div_dvd_of_dvd]
+
+/-- `m / k ∣ n / k` iff `m ∣ n`, when `k` divides both `m` and `n`. -/
+lemma div_dvd_div_iff_right (hkm : k ∣ m) (hkn : k ∣ n) : m / k ∣ n / k ↔ m ∣ n := by
+  rcases k.eq_zero_or_pos with rfl | hk
+  · simp_all
+  · rw [← Nat.mul_dvd_mul_iff_left hk, Nat.mul_div_cancel' hkm, Nat.mul_div_cancel' hkn]
 
 lemma div_lcm_eq_div_gcd (hkm : m ∣ k) (hkn : n ∣ k) : (k / m).lcm (k / n) = k / (m.gcd n) := by
   rw [Nat.lcm_eq_iff]

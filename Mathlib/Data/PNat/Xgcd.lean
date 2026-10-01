@@ -3,8 +3,10 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
 -/
+module
+
 import Mathlib.Tactic.Ring
-import Mathlib.Data.PNat.Prime
+public import Mathlib.Data.PNat.Prime
 
 /-!
 # Euclidean algorithm for ℕ
@@ -14,6 +16,7 @@ Given `0 < a, b`, it computes the unique `(w, x, y, z, d)` such that the followi
 * `a = (w + x) d`
 * `b = (y + z) d`
 * `w * z = x * y + 1`
+
 `d` is then the gcd of `a` and `b`, and `a' := a / d = w + x` and `b' := b / d = y + z` are coprime.
 
 This story is closely related to the structure of SL₂(ℕ) (as a free monoid on two generators) and
@@ -31,6 +34,8 @@ the theory of continued fractions.
 See `Nat.Xgcd` for a very similar algorithm allowing values in `ℤ`.
 -/
 
+@[expose] public section
+
 
 open Nat
 
@@ -38,8 +43,8 @@ namespace PNat
 
 /-- A term of `XgcdType` is a system of six naturals.  They should
 be thought of as representing the matrix
-[[w, x], [y, z]] = [[wp + 1, x], [y, zp + 1]]
-together with the vector [a, b] = [ap + 1, bp + 1].
+`[[w, x], [y, z]] = [[wp + 1, x], [y, zp + 1]]`
+together with the vector `[a, b] = [ap + 1, bp + 1]`.
 -/
 structure XgcdType where
   /-- `wp` is a variable which changes through the algorithm. -/
@@ -104,9 +109,9 @@ def qp : ℕ :=
   u.q - 1
 
 /-- The map `v` gives the product of the matrix
-[[w, x], [y, z]] = [[wp + 1, x], [y, zp + 1]]
-and the vector [a, b] = [ap + 1, bp + 1].  The map
-`vp` gives [sp, tp] such that v = [sp + 1, tp + 1].
+`[[w, x], [y, z]] = [[wp + 1, x], [y, zp + 1]]`
+and the vector `[a, b] = [ap + 1, bp + 1]`.  The map
+`vp` gives `[sp, tp]` such that `v = [sp + 1, tp + 1]`.
 -/
 def vp : ℕ × ℕ :=
   ⟨u.wp + u.x + u.ap + u.wp * u.ap + u.x * u.bp, u.y + u.zp + u.bp + u.y * u.ap + u.zp * u.bp⟩
@@ -130,6 +135,7 @@ def IsSpecial : Prop :=
 def IsSpecial' : Prop :=
   u.w * u.z = succPNat (u.x * u.y)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isSpecial_iff : u.IsSpecial ↔ u.IsSpecial' := by
   dsimp [IsSpecial, IsSpecial']
   let ⟨wp, x, y, zp, ap, bp⟩ := u
@@ -227,10 +233,11 @@ theorem start_isSpecial (a b : ℕ+) : (start a b).IsSpecial := by
 
 theorem start_v (a b : ℕ+) : (start a b).v = ⟨a, b⟩ := by
   dsimp [start, v, XgcdType.a, XgcdType.b, w, z]
-  rw [one_mul, one_mul, zero_mul, zero_mul]
   have := a.pos
   have := b.pos
-  congr <;> omega
+  #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
+  we need to re-enable model-based theory combination in `lia` for this to go through. -/
+  lia +mbtc
 
 /-- `finish` happens when the reducing process ends. -/
 def finish : XgcdType :=
@@ -302,11 +309,11 @@ decreasing_by apply u.step_wf _h
 
 theorem reduce_a {u : XgcdType} (h : u.r = 0) : u.reduce = u.finish := by
   rw [reduce]
-  exact if_pos h
+  exact ite_eq_left h
 
 theorem reduce_b {u : XgcdType} (h : u.r ≠ 0) : u.reduce = u.step.reduce.flip := by
   rw [reduce]
-  exact if_neg h
+  exact ite_eq_right h
 
 theorem reduce_isReduced : ∀ u : XgcdType, u.reduce.IsReduced
   | u =>
@@ -414,8 +421,8 @@ theorem gcd_props :
   let hv : Prod.mk (w * d + x * ur.b : ℕ) (y * d + z * ur.b : ℕ) = ⟨a, b⟩ :=
     u.reduce_v.trans (XgcdType.start_v a b)
   rw [← hb, ← add_mul, ← add_mul, ← ha', ← hb'] at hv
-  have ha'' : (a : ℕ) = a' * d := (congr_arg Prod.fst hv).symm
-  have hb'' : (b : ℕ) = b' * d := (congr_arg Prod.snd hv).symm
+  have ha'' : (a : ℕ) = a' * d := congr($(hv).fst).symm
+  have hb'' : (b : ℕ) = b' * d := congr($(hv).snd).symm
   constructor
   · exact eq ha''
   constructor
@@ -432,10 +439,7 @@ theorem gcd_props :
   constructor
   · apply eq
     rw [succPNat_coe, Nat.succ_eq_add_one, mul_coe, hwb']
-  rw [ha'', hb'']
-  repeat rw [← @mul_assoc]
-  rw [hza', hwb']
-  constructor <;> ring
+  grind
 
 theorem gcd_eq : gcdD a b = gcd a b := by
   rcases gcd_props a b with ⟨_, h₁, h₂, _, _, h₅, _⟩

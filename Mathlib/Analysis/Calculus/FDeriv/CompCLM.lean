@@ -3,8 +3,10 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Bilinear
-import Mathlib.Analysis.NormedSpace.Alternating.Basic
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Bilinear
+public import Mathlib.Analysis.Normed.Module.Alternating.Basic
 
 /-!
 # Multiplicative operations on derivatives
@@ -18,8 +20,10 @@ This file contains the usual formulas (and existence assertions) for the derivat
 * application of continuous (multi)linear maps to a constant
 -/
 
+public section
 
-open Asymptotics ContinuousLinearMap Topology
+
+open ContinuousLinearMap
 
 section
 
@@ -146,11 +150,15 @@ section ContinuousMultilinearApplyConst
 
 /-! ### Derivative of the application of continuous multilinear maps to a constant -/
 
-variable {ι : Type*} [Fintype ι]
+variable {ι : Type*}
   {M : ι → Type*} [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace 𝕜 (M i)]
   {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H]
   {c : E → ContinuousMultilinearMap 𝕜 M H}
   {c' : E →L[𝕜] ContinuousMultilinearMap 𝕜 M H}
+
+section fintype
+
+variable [Fintype ι]
 
 @[fun_prop]
 theorem HasStrictFDerivAt.continuousMultilinear_apply_const (hc : HasStrictFDerivAt c c' x)
@@ -168,16 +176,33 @@ theorem HasFDerivAt.continuousMultilinear_apply_const (hc : HasFDerivAt c c' x) 
     HasFDerivAt (fun y ↦ (c y) u) (c'.flipMultilinear u) x :=
   (ContinuousMultilinearMap.apply 𝕜 M H u).hasFDerivAt.comp x hc
 
+theorem fderivWithin_continuousMultilinear_apply_const (hxs : UniqueDiffWithinAt 𝕜 s x)
+    (hc : DifferentiableWithinAt 𝕜 c s x) (u : ∀ i, M i) :
+    fderivWithin 𝕜 (fun y ↦ (c y) u) s x = ((fderivWithin 𝕜 c s x).flipMultilinear u) :=
+  (hc.hasFDerivWithinAt.continuousMultilinear_apply_const u).fderivWithin hxs
+
+theorem fderiv_continuousMultilinear_apply_const (hc : DifferentiableAt 𝕜 c x) (u : ∀ i, M i) :
+    (fderiv 𝕜 (fun y ↦ (c y) u) x) = (fderiv 𝕜 c x).flipMultilinear u :=
+  (hc.hasFDerivAt.continuousMultilinear_apply_const u).fderiv
+
+end fintype
+
+section finite
+
+variable [Finite ι]
+
 @[fun_prop]
 theorem DifferentiableWithinAt.continuousMultilinear_apply_const
     (hc : DifferentiableWithinAt 𝕜 c s x) (u : ∀ i, M i) :
     DifferentiableWithinAt 𝕜 (fun y ↦ (c y) u) s x :=
+  have := Fintype.ofFinite ι
   (hc.hasFDerivWithinAt.continuousMultilinear_apply_const u).differentiableWithinAt
 
 @[fun_prop]
 theorem DifferentiableAt.continuousMultilinear_apply_const (hc : DifferentiableAt 𝕜 c x)
     (u : ∀ i, M i) :
     DifferentiableAt 𝕜 (fun y ↦ (c y) u) x :=
+  have := Fintype.ofFinite ι
   (hc.hasFDerivAt.continuousMultilinear_apply_const u).differentiableAt
 
 @[fun_prop]
@@ -189,26 +214,21 @@ theorem DifferentiableOn.continuousMultilinear_apply_const (hc : DifferentiableO
 theorem Differentiable.continuousMultilinear_apply_const (hc : Differentiable 𝕜 c) (u : ∀ i, M i) :
     Differentiable 𝕜 fun y ↦ (c y) u := fun x ↦ (hc x).continuousMultilinear_apply_const u
 
-theorem fderivWithin_continuousMultilinear_apply_const (hxs : UniqueDiffWithinAt 𝕜 s x)
-    (hc : DifferentiableWithinAt 𝕜 c s x) (u : ∀ i, M i) :
-    fderivWithin 𝕜 (fun y ↦ (c y) u) s x = ((fderivWithin 𝕜 c s x).flipMultilinear u) :=
-  (hc.hasFDerivWithinAt.continuousMultilinear_apply_const u).fderivWithin hxs
-
-theorem fderiv_continuousMultilinear_apply_const (hc : DifferentiableAt 𝕜 c x) (u : ∀ i, M i) :
-    (fderiv 𝕜 (fun y ↦ (c y) u) x) = (fderiv 𝕜 c x).flipMultilinear u :=
-  (hc.hasFDerivAt.continuousMultilinear_apply_const u).fderiv
-
 /-- Application of a `ContinuousMultilinearMap` to a constant commutes with `fderivWithin`. -/
 theorem fderivWithin_continuousMultilinear_apply_const_apply (hxs : UniqueDiffWithinAt 𝕜 s x)
     (hc : DifferentiableWithinAt 𝕜 c s x) (u : ∀ i, M i) (m : E) :
     (fderivWithin 𝕜 (fun y ↦ (c y) u) s x) m = (fderivWithin 𝕜 c s x) m u := by
+  have := Fintype.ofFinite ι
   simp [fderivWithin_continuousMultilinear_apply_const hxs hc]
 
 /-- Application of a `ContinuousMultilinearMap` to a constant commutes with `fderiv`. -/
 theorem fderiv_continuousMultilinear_apply_const_apply (hc : DifferentiableAt 𝕜 c x)
     (u : ∀ i, M i) (m : E) :
     (fderiv 𝕜 (fun y ↦ (c y) u) x) m = (fderiv 𝕜 c x) m u := by
+  have := Fintype.ofFinite ι
   simp [fderiv_continuousMultilinear_apply_const hc]
+
+end finite
 
 end ContinuousMultilinearApplyConst
 
@@ -223,7 +243,11 @@ the derivative of `c x u` as a function of `x` is given by `fun m ↦ c' m u`,
 where `c'` is the derivative of `c` at `x`.
 -/
 
-variable {ι : Type*} [Fintype ι] {c : E → F [⋀^ι]→L[𝕜] G} {c' : E →L[𝕜] (F [⋀^ι]→L[𝕜] G)}
+variable {ι : Type*} {c : E → F [⋀^ι]→L[𝕜] G} {c' : E →L[𝕜] (F [⋀^ι]→L[𝕜] G)}
+
+section fintype
+
+variable [Fintype ι]
 
 @[fun_prop]
 theorem HasStrictFDerivAt.continuousAlternatingMap_apply_const (hc : HasStrictFDerivAt c c' x)
@@ -241,17 +265,48 @@ theorem HasFDerivAt.continuousAlternatingMap_apply_const (hc : HasFDerivAt c c' 
     HasFDerivAt (fun y ↦ (c y) u) (c'.flipAlternating u) x :=
   (ContinuousAlternatingMap.apply 𝕜 F G u).hasFDerivAt.comp x hc
 
+theorem fderivWithin_continuousAlternatingMap_apply_const (hxs : UniqueDiffWithinAt 𝕜 s x)
+    (hc : DifferentiableWithinAt 𝕜 c s x) (u : ι → F) :
+    fderivWithin 𝕜 (fun y ↦ (c y) u) s x = ((fderivWithin 𝕜 c s x).flipAlternating u) :=
+  (hc.hasFDerivWithinAt.continuousAlternatingMap_apply_const u).fderivWithin hxs
+
+theorem fderiv_continuousAlternatingMap_apply_const (hc : DifferentiableAt 𝕜 c x) (u : ι → F) :
+    (fderiv 𝕜 (fun y ↦ (c y) u) x) = (fderiv 𝕜 c x).flipAlternating u :=
+  (hc.hasFDerivAt.continuousAlternatingMap_apply_const u).fderiv
+
+end fintype
+
+section finite
+
+variable [Finite ι]
+
 @[fun_prop]
 theorem DifferentiableWithinAt.continuousAlternatingMap_apply_const
     (hc : DifferentiableWithinAt 𝕜 c s x) (u : ι → F) :
     DifferentiableWithinAt 𝕜 (fun y ↦ (c y) u) s x :=
+  have := Fintype.ofFinite ι
   (hc.hasFDerivWithinAt.continuousAlternatingMap_apply_const u).differentiableWithinAt
 
 @[fun_prop]
 theorem DifferentiableAt.continuousAlternatingMap_apply_const (hc : DifferentiableAt 𝕜 c x)
     (u : ι → F) :
     DifferentiableAt 𝕜 (fun y ↦ (c y) u) x :=
+  have := Fintype.ofFinite ι
   (hc.hasFDerivAt.continuousAlternatingMap_apply_const u).differentiableAt
+
+/-- Application of a `ContinuousAlternatingMap` to a constant commutes with `fderivWithin`. -/
+theorem fderivWithin_continuousAlternatingMap_apply_const_apply (hxs : UniqueDiffWithinAt 𝕜 s x)
+    (hc : DifferentiableWithinAt 𝕜 c s x) (u : ι → F) (m : E) :
+    (fderivWithin 𝕜 (fun y ↦ (c y) u) s x) m = (fderivWithin 𝕜 c s x) m u := by
+  have := Fintype.ofFinite ι
+  simp [fderivWithin_continuousAlternatingMap_apply_const hxs hc]
+
+/-- Application of a `ContinuousAlternatingMap` to a constant commutes with `fderiv`. -/
+theorem fderiv_continuousAlternatingMap_apply_const_apply (hc : DifferentiableAt 𝕜 c x)
+    (u : ι → F) (m : E) :
+    (fderiv 𝕜 (fun y ↦ (c y) u) x) m = (fderiv 𝕜 c x) m u := by
+  have := Fintype.ofFinite ι
+  simp [fderiv_continuousAlternatingMap_apply_const hc]
 
 @[fun_prop]
 theorem DifferentiableOn.continuousAlternatingMap_apply_const (hc : DifferentiableOn 𝕜 c s)
@@ -262,26 +317,7 @@ theorem DifferentiableOn.continuousAlternatingMap_apply_const (hc : Differentiab
 theorem Differentiable.continuousAlternatingMap_apply_const (hc : Differentiable 𝕜 c) (u : ι → F) :
     Differentiable 𝕜 fun y ↦ (c y) u := fun x ↦ (hc x).continuousAlternatingMap_apply_const u
 
-theorem fderivWithin_continuousAlternatingMap_apply_const (hxs : UniqueDiffWithinAt 𝕜 s x)
-    (hc : DifferentiableWithinAt 𝕜 c s x) (u : ι → F) :
-    fderivWithin 𝕜 (fun y ↦ (c y) u) s x = ((fderivWithin 𝕜 c s x).flipAlternating u) :=
-  (hc.hasFDerivWithinAt.continuousAlternatingMap_apply_const u).fderivWithin hxs
-
-theorem fderiv_continuousAlternatingMap_apply_const (hc : DifferentiableAt 𝕜 c x) (u : ι → F) :
-    (fderiv 𝕜 (fun y ↦ (c y) u) x) = (fderiv 𝕜 c x).flipAlternating u :=
-  (hc.hasFDerivAt.continuousAlternatingMap_apply_const u).fderiv
-
-/-- Application of a `ContinuousAlternatingMap` to a constant commutes with `fderivWithin`. -/
-theorem fderivWithin_continuousAlternatingMap_apply_const_apply (hxs : UniqueDiffWithinAt 𝕜 s x)
-    (hc : DifferentiableWithinAt 𝕜 c s x) (u : ι → F) (m : E) :
-    (fderivWithin 𝕜 (fun y ↦ (c y) u) s x) m = (fderivWithin 𝕜 c s x) m u := by
-  simp [fderivWithin_continuousAlternatingMap_apply_const hxs hc]
-
-/-- Application of a `ContinuousAlternatingMap` to a constant commutes with `fderiv`. -/
-theorem fderiv_continuousAlternatingMap_apply_const_apply (hc : DifferentiableAt 𝕜 c x)
-    (u : ι → F) (m : E) :
-    (fderiv 𝕜 (fun y ↦ (c y) u) x) m = (fderiv 𝕜 c x) m u := by
-  simp [fderiv_continuousAlternatingMap_apply_const hc]
+end finite
 
 end ContinuousAlternatingMapApplyConst
 

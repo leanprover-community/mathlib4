@@ -3,8 +3,9 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Group.Action
-import Mathlib.Order.Filter.EventuallyConst
+module
+
+public import Mathlib.MeasureTheory.Group.Action
 
 /-!
 # A.e. stabilizer of a set
@@ -27,6 +28,8 @@ Also, many lemmas in this file are true for a *quasi-measure-preserving* action,
 but we don't have the corresponding typeclass.
 -/
 
+@[expose] public section
+
 open Filter Set MeasureTheory
 open scoped Pointwise
 
@@ -41,8 +44,8 @@ def aestabilizer (s : Set α) : Subgroup G where
   carrier := {g | g • s =ᵐ[μ] s}
   one_mem' := by simp
   -- TODO: `calc` would be more readable but fails because of defeq abuse
-  mul_mem' {g₁ g₂} h₁ h₂ := by simpa only [smul_smul] using ((smul_set_ae_eq g₁).2 h₂).trans h₁
-  inv_mem' {g} h := by simpa using (smul_set_ae_eq g⁻¹).2 h.out.symm
+  mul_mem' {g₁ g₂} h₁ h₂ := by simpa only [smul_smul] using! ((smul_set_ae_eq g₁).2 h₂).trans h₁
+  inv_mem' {g} h := by simpa using! (smul_set_ae_eq g⁻¹).2 h.out.symm
 
 variable {G μ}
 variable {g : G} {s t : Set α}
@@ -66,9 +69,10 @@ lemma aestabilizer_congr (h : s =ᵐ[μ] t) : aestabilizer G μ s = aestabilizer
   ext g
   rw [mem_aestabilizer, mem_aestabilizer, h.congr_right, ((smul_set_ae_eq g).2 h).congr_left]
 
-lemma aestabilizer_of_aeconst (hs : EventuallyConst s (ae μ)) : aestabilizer G μ s = ⊤ := by
+lemma aestabilizer_of_eventuallyEmptyOrUniv (hs : EventuallyEmptyOrUniv s (ae μ)) :
+    aestabilizer G μ s = ⊤ := by
   refine top_unique fun g _ ↦ ?_
-  cases eventuallyConst_set'.mp hs with
+  cases eventuallyEmptyOrUniv_iff'.mp hs with
   | inl h => simp [aestabilizer_congr h]
   | inr h => simp [aestabilizer_congr h]
 

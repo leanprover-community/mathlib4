@@ -3,12 +3,16 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Prod
-import Mathlib.Data.Nat.Cast.Defs
+module
+
+public import Mathlib.Algebra.Group.Prod
+public import Mathlib.Data.Nat.Cast.Defs
 
 /-!
 # The product of two `AddMonoidWithOne`s.
 -/
+
+public section
 
 assert_not_exists MonoidWithZero
 
@@ -18,11 +22,10 @@ namespace Prod
 
 variable [AddMonoidWithOne α] [AddMonoidWithOne β]
 
-instance instAddMonoidWithOne : AddMonoidWithOne (α × β) :=
-  { Prod.instAddMonoid, @Prod.instOne α β _ _ with
-    natCast := fun n => (n, n)
-    natCast_zero := congr_arg₂ Prod.mk Nat.cast_zero Nat.cast_zero
-    natCast_succ := fun _ => congr_arg₂ Prod.mk (Nat.cast_succ _) (Nat.cast_succ _) }
+instance instAddMonoidWithOne : AddMonoidWithOne (α × β) where
+  natCast := fun n => (n, n)
+  natCast_zero := by ext <;> simp
+  natCast_succ n := by ext <;> simp
 
 @[simp]
 theorem fst_natCast (n : ℕ) : (n : α × β).fst = n := by induction n <;> simp [*]

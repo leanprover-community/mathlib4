@@ -3,15 +3,19 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 -/
-import Mathlib.Order.Filter.Germ.OrderedMonoid
-import Mathlib.Algebra.Order.Ring.Defs
+module
+
+public import Mathlib.Order.Filter.Germ.OrderedMonoid
+public import Mathlib.Algebra.Order.Ring.Defs
 
 /-!
 # Lemmas about filters and ordered rings.
 -/
+
+public section
 namespace Filter
 
-open Function Filter
+open Filter
 
 universe u v
 
@@ -32,7 +36,7 @@ theorem EventuallyLE.mul_nonneg [Semiring β] [PartialOrder β] [IsOrderedRing �
     {l : Filter α} {f g : α → β} (hf : 0 ≤ᶠ[l] f)
     (hg : 0 ≤ᶠ[l] g) : 0 ≤ᶠ[l] f * g := by filter_upwards [hf, hg] with x using _root_.mul_nonneg
 
-theorem eventually_sub_nonneg [Ring β] [PartialOrder β] [IsOrderedRing β]
+theorem eventually_sub_nonneg [AddGroup β] [LE β] [AddRightMono β]
     {l : Filter α} {f g : α → β} :
     0 ≤ᶠ[l] g - f ↔ f ≤ᶠ[l] g :=
   eventually_congr <| Eventually.of_forall fun _ => sub_nonneg
@@ -44,10 +48,12 @@ variable {l : Filter α}
 instance instIsOrderedRing [Semiring β] [PartialOrder β] [IsOrderedRing β] :
     IsOrderedRing (Germ l β) where
   zero_le_one := const_le zero_le_one
-  mul_le_mul_of_nonneg_left x y z := inductionOn₃ x y z fun _f _g _h hfg hh ↦ hh.mp <| hfg.mono
-    fun _a ↦ mul_le_mul_of_nonneg_left
-  mul_le_mul_of_nonneg_right x y z := inductionOn₃ x y z fun _f _g _h hfg hh ↦ hh.mp <| hfg.mono
-    fun _a ↦ mul_le_mul_of_nonneg_right
+  mul_le_mul_of_nonneg_left x :=
+    inductionOn x fun _f hx y z ↦ inductionOn₂ y z fun _g _h hfg ↦ hx.mp <| hfg.mono
+      fun _a ↦ mul_le_mul_of_nonneg_left
+  mul_le_mul_of_nonneg_right x :=
+    inductionOn x fun _f hx y z ↦ inductionOn₂ y z fun _g _h hfg ↦ hx.mp <| hfg.mono
+      fun _a ↦ mul_le_mul_of_nonneg_right
 
 end Germ
 

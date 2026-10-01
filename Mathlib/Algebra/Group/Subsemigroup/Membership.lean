@@ -3,7 +3,9 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Group.Subsemigroup.Basic
+module
+
+public import Mathlib.Algebra.Group.Subsemigroup.Basic
 
 /-!
 # Subsemigroups: membership criteria
@@ -27,6 +29,8 @@ stub and only provides rudimentary support.
 subsemigroup
 -/
 
+public section
+
 assert_not_exists MonoidWithZero
 
 variable {ι : Sort*} {M : Type*}
@@ -35,27 +39,64 @@ section NonAssoc
 
 variable [Mul M]
 
-open Set
+open Set Function
 
 namespace Subsemigroup
 
 -- TODO: this section can be generalized to `[MulMemClass B M] [CompleteLattice B]`
--- such that `complete_lattice.le` coincides with `set_like.le`
+-- such that `CompleteLattice.LE` coincides with `SetLike.LE`
+
 @[to_additive]
-theorem mem_iSup_of_directed {S : ι → Subsemigroup M} (hS : Directed (· ≤ ·) S) {x : M} :
-    (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
+lemma mem_iSup_of_directed {ι : Sort*} {S : ι → Subsemigroup M} (hS : Directed (· ≤ ·) S) {x : M} :
+    x ∈ ⨆ i, S i ↔ ∃ i, x ∈ S i := by
   refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
   suffices x ∈ closure (⋃ i, (S i : Set M)) → ∃ i, x ∈ S i by
     simpa only [closure_iUnion, closure_eq (S _)] using this
-  refine fun hx ↦ closure_induction (fun y hy ↦ mem_iUnion.mp hy) ?_ hx
-  rintro x y - - ⟨i, hi⟩ ⟨j, hj⟩
-  rcases hS i j with ⟨k, hki, hkj⟩
-  exact ⟨k, (S k).mul_mem (hki hi) (hkj hj)⟩
+  refine fun hx ↦ closure_induction (fun _ ↦ ?_) ?_ hx
+  · simp
+  rintro x y _ _ ⟨i, hi⟩ ⟨j, hj⟩
+  obtain ⟨k, hik, hjk⟩ := hS i j
+  exact ⟨k, mul_mem (hik hi) (hjk hj)⟩
+
+@[to_additive]
+theorem mem_biSup_of_directedOn {ι : Type*} {p : ι → Prop} {S : ι → Subsemigroup M}
+    (hS : DirectedOn ((· ≤ ·) on S) {i | p i}) {x : M} :
+    x ∈ ⨆ i, ⨆ (_h : p i), S i ↔ ∃ i, p i ∧ x ∈ S i := by
+  rw [iSup_subtype', mem_iSup_of_directed]
+  · simp
+  rw [← Function.comp_def, directed_comp]
+  exact hS.directed_val
+
+@[to_additive (attr := simp)]
+theorem mem_iSup_prop {p : Prop} {S : p → Subsemigroup M} {x : M} :
+    x ∈ ⨆ (h : p), S h ↔ ∃ (h : p), x ∈ S h := by
+  by_cases h : p
+  · simp +contextual [h]
+  · simpa [h] using! id
 
 @[to_additive]
 theorem coe_iSup_of_directed {S : ι → Subsemigroup M} (hS : Directed (· ≤ ·) S) :
     ((⨆ i, S i : Subsemigroup M) : Set M) = ⋃ i, S i :=
   Set.ext fun x => by simp [mem_iSup_of_directed hS]
+
+/-- The supremum of a directed family of commutative subsemigroups is commutative. -/
+@[to_additive]
+theorem isMulCommutative_iSup {S : ι → Subsemigroup M}
+    [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :
+    IsMulCommutative (⨆ i, S i : Subsemigroup M) := by
+  refine .of_setLike_mul_comm ?_
+  simp_rw [← SetLike.mem_coe, coe_iSup_of_directed dir, Set.mem_iUnion,
+    SetLike.mem_coe, forall_exists_index]
+  intro a i ha b j hb
+  obtain ⟨k, hik, hjk⟩ := dir i j
+  exact setLike_mul_comm (hik ha) (hjk hb)
+
+/-- The supremum of a directed family of commutative subsemigroups is commutative. -/
+@[to_additive]
+instance instIsMulCommutative_iSup {ι : Type*} [Preorder ι] [IsDirectedOrder ι]
+    (S : ι →o Subsemigroup M) [hS : ∀ i, IsMulCommutative (S i)] :
+    IsMulCommutative (⨆ i, S i : Subsemigroup M) :=
+  isMulCommutative_iSup S.monotone.directed_le
 
 @[to_additive]
 theorem mem_sSup_of_directed_on {S : Set (Subsemigroup M)} (hS : DirectedOn (· ≤ ·) S) {x : M} :

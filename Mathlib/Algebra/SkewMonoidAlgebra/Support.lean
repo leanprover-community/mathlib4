@@ -3,14 +3,18 @@ Copyright (c) 2025 Xavier Généreux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Généreux, María Inés de Frutos Fernández
 -/
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-import Mathlib.Algebra.SkewMonoidAlgebra.Basic
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Algebra.SkewMonoidAlgebra.Basic
 
 /-!
-#  Lemmas about the support of an element of a skew monoid algebra
+# Lemmas about the support of an element of a skew monoid algebra
 
 For `f : SkewMonoidAlgebra k G`, `f.support` is the set of all `a ∈ G` such that `f.coeff a ≠ 0`.
 -/
+
+public section
 
 open scoped Pointwise
 
@@ -24,16 +28,17 @@ section AddCommMonoid
 
 variable [AddCommMonoid k] {a : G} {b : k}
 
-theorem support_single_ne_zero (a : G) (h : b ≠ 0) : (single a b).support = {a} :=
-  Finsupp.support_single_ne_zero _ h
+@[simp] lemma support_single (a : G) (h : b ≠ 0) : (single a b).support = {a} :=
+  Finsupp.support_single _ h
+
+@[deprecated (since := "2026-05-05")] alias support_single_ne_zero := support_single
 
 theorem support_single_subset : (single a b).support ⊆ {a} := Finsupp.support_single_subset
 
-theorem support_sum {k' G' : Type*} [DecidableEq G'] [AddCommMonoid k'] {f : SkewMonoidAlgebra k G}
+theorem support_sum {k' G' : Type*} [DecidableEq G'] [AddCommMonoid k'] {f : G →₀ k}
     {g : G → k → SkewMonoidAlgebra k' G'} :
-    (f.sum g).support ⊆ f.support.biUnion fun a ↦ (g a (f.coeff a)).support := by
-  simp_rw [support, toFinsupp_sum']
-  apply Finsupp.support_sum
+    (f.sum g).support ⊆ f.support.biUnion fun a ↦ (g a (f a)).support := by
+  simpa [support, coeff_finsuppSum] using Finsupp.support_sum
 
 end AddCommMonoid
 
@@ -42,7 +47,7 @@ section AddCommGroup
 variable [AddCommGroup k]
 
 theorem support_neg (p : SkewMonoidAlgebra k G) : (-p).support = p.support := by
-  rw [support, toFinsupp_neg, Finsupp.support_neg, support_toFinsupp]
+  rw [support, coeff_neg, Finsupp.support_neg, support_coeff]
 
 end AddCommGroup
 
@@ -55,7 +60,7 @@ lemma support_one_subset : (1 : SkewMonoidAlgebra k G).support ⊆ 1 :=
 
 @[simp]
 lemma support_one [NeZero (1 : k)] : (1 : SkewMonoidAlgebra k G).support = 1 :=
-  Finsupp.support_single_ne_zero _ one_ne_zero
+  Finsupp.support_single _ one_ne_zero
 
 end AddCommMonoidWithOne
 
@@ -89,8 +94,8 @@ theorem support_single_mul_eq_image {r : k} {x : G} (lx : IsLeftRegular x)
   refine subset_antisymm (support_single_mul_subset f _ _) fun y hy ↦ ?_
   obtain ⟨y, yf, rfl⟩ : ∃ a : G, a ∈ f.support ∧ x * a = y := by
     simpa only [Finset.mem_image, exists_prop] using hy
-  simp [coeff_mul, mem_support_iff.mp yf, hrx, mem_support_iff, sum_single_index, Ne,
-    zero_mul, ite_self, sum_zero, lx.eq_iff]
+  simp [coeff_mul, mem_support_iff.mp yf, hrx, mem_support_iff, Ne,
+    zero_mul, ite_self, lx.eq_iff]
 
 theorem support_mul_single_eq_image {r : k} {x : G} (rx : IsRightRegular x)
     (hrx : ∀ g : G, ∀ y, y * g • r = 0 ↔ y = 0) :
@@ -98,13 +103,13 @@ theorem support_mul_single_eq_image {r : k} {x : G} (rx : IsRightRegular x)
   refine subset_antisymm (support_mul_single_subset f _ _) fun y hy ↦ ?_
   obtain ⟨y, yf, rfl⟩ : ∃ a : G, a ∈ f.support ∧ a * x = y := by
     simpa only [Finset.mem_image, exists_prop] using hy
-  simp [coeff_mul, mem_support_iff.mp yf, hrx, mem_support_iff, sum_single_index, mul_zero,
+  simp [coeff_mul, mem_support_iff.mp yf, hrx, mem_support_iff, mul_zero,
     ite_self, rx.eq_iff]
 
 end DecidableEq
 
 theorem support_mul_single [IsRightCancelMul G] (r : k) (x : G)
-   (hrx : ∀ g : G, ∀ y, y * g • r = 0 ↔ y = 0) :
+    (hrx : ∀ g : G, ∀ y, y * g • r = 0 ↔ y = 0) :
     (f * single x r).support = f.support.map (mulRightEmbedding x) := by
   classical
   ext a
@@ -124,7 +129,9 @@ theorem mem_span_support (f : SkewMonoidAlgebra k G) :
     f ∈ Submodule.span k (of k G '' (f.support : Set G)) := by
   rw [Fintype.mem_span_image_iff_exists_fun k]
   use Finset.restrict f.support f.coeff
-  simp [smul_single, ← sum_def', sum_single]
+  simp only [Finset.restrict_def, smul_of]
+  conv_rhs => rw [← sum_coeff_single f, Finsupp.sum, ← Finset.sum_finset_coe]
+  rfl
 
 end Span
 

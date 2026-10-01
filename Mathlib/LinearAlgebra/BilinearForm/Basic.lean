@@ -3,8 +3,10 @@ Copyright (c) 2018 Andreas Swerdlow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow, Kexing Ying
 -/
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.LinearAlgebra.BilinearMap
+module
+
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
 # Bilinear form
@@ -42,6 +44,8 @@ In this file we use the following type variables:
 Bilinear form,
 -/
 
+@[expose] public section
+
 export LinearMap (BilinForm)
 
 open LinearMap (BilinForm)
@@ -51,7 +55,6 @@ universe u v w
 variable {R : Type*} {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 variable {S : Type*} [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
 variable {R₁ : Type*} {M₁ : Type*} [CommRing R₁] [AddCommGroup M₁] [Module R₁ M₁]
-variable {V : Type*} {K : Type*} [Field K] [AddCommGroup V] [Module K V]
 variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁}
 
 namespace LinearMap

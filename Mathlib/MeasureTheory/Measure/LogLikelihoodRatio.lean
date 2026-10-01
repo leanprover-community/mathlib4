@@ -3,7 +3,9 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Measure.Tilted
+module
+
+public import Mathlib.MeasureTheory.Measure.Tilted
 
 /-!
 # Log-likelihood Ratio
@@ -20,6 +22,8 @@ This file contains a definition of the log-likelihood ratio (llr) and its proper
   `x ↦ log (μ.rnDeriv ν x).toReal`.
 
 -/
+
+@[expose] public section
 
 open Real
 
@@ -43,43 +47,43 @@ lemma exp_llr (μ ν : Measure α) [SigmaFinite μ] :
   filter_upwards [Measure.rnDeriv_lt_top μ ν] with x hx
   by_cases h_zero : μ.rnDeriv ν x = 0
   · simp only [llr, h_zero, ENNReal.toReal_zero, log_zero, exp_zero, ite_true]
-  · rw [llr, exp_log, if_neg h_zero]
+  · rw [llr, exp_log, ite_eq_right h_zero]
     exact ENNReal.toReal_pos h_zero hx.ne
 
 lemma exp_llr_of_ac (μ ν : Measure α) [SigmaFinite μ] [Measure.HaveLebesgueDecomposition μ ν]
     (hμν : μ ≪ ν) :
     (fun x ↦ exp (llr μ ν x)) =ᵐ[μ] fun x ↦ (μ.rnDeriv ν x).toReal := by
   filter_upwards [hμν.ae_le (exp_llr μ ν), Measure.rnDeriv_pos hμν] with x hx_eq hx_pos
-  rw [hx_eq, if_neg hx_pos.ne']
+  rw [hx_eq, ite_eq_right hx_pos.ne']
 
 lemma exp_llr_of_ac' (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν] (hμν : ν ≪ μ) :
     (fun x ↦ exp (llr μ ν x)) =ᵐ[ν] fun x ↦ (μ.rnDeriv ν x).toReal := by
   filter_upwards [exp_llr μ ν, Measure.rnDeriv_pos' hμν] with x hx hx_pos
-  rwa [if_neg hx_pos.ne'] at hx
+  rwa [ite_eq_right hx_pos.ne'] at hx
 
 lemma neg_llr [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
-    - llr μ ν =ᵐ[μ] llr ν μ := by
+    -llr μ ν =ᵐ[μ] llr ν μ := by
   filter_upwards [Measure.inv_rnDeriv hμν] with x hx
   rw [Pi.neg_apply, llr, llr, ← log_inv, ← ENNReal.toReal_inv]
   congr
 
 lemma exp_neg_llr [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
-    (fun x ↦ exp (- llr μ ν x)) =ᵐ[μ] fun x ↦ (ν.rnDeriv μ x).toReal := by
+    (fun x ↦ exp (-llr μ ν x)) =ᵐ[μ] fun x ↦ (ν.rnDeriv μ x).toReal := by
   filter_upwards [neg_llr hμν, exp_llr_of_ac' ν μ hμν] with x hx hx_exp_log
   rw [Pi.neg_apply] at hx
   rw [hx, hx_exp_log]
 
 lemma exp_neg_llr' [SigmaFinite μ] [SigmaFinite ν] (hμν : ν ≪ μ) :
-    (fun x ↦ exp (- llr μ ν x)) =ᵐ[ν] fun x ↦ (ν.rnDeriv μ x).toReal := by
+    (fun x ↦ exp (-llr μ ν x)) =ᵐ[ν] fun x ↦ (ν.rnDeriv μ x).toReal := by
   filter_upwards [neg_llr hμν, exp_llr_of_ac ν μ hμν] with x hx hx_exp_log
   rw [Pi.neg_apply, neg_eq_iff_eq_neg] at hx
   rw [← hx, hx_exp_log]
 
-@[measurability, fun_prop]
+@[fun_prop]
 lemma measurable_llr (μ ν : Measure α) : Measurable (llr μ ν) :=
   (Measure.measurable_rnDeriv μ ν).ennreal_toReal.log
 
-@[measurability]
+@[fun_prop]
 lemma stronglyMeasurable_llr (μ ν : Measure α) : StronglyMeasurable (llr μ ν) :=
   (measurable_llr μ ν).stronglyMeasurable
 
@@ -100,6 +104,14 @@ lemma llr_smul_left [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ �
     simp [hx_pos.ne', hx_ne_top.ne]
   ring
 
+lemma llr_smul_nnreal_left [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ ν]
+    (hμν : μ ≪ ν) (c : ℝ≥0) (hc : c ≠ 0) :
+    llr (c • μ) ν =ᵐ[μ] fun x ↦ llr μ ν x + log c := by
+  rw [← Measure.coe_nnreal_smul]
+  filter_upwards [llr_smul_left hμν (c : ℝ≥0∞) (by simpa) (by simp)] with x hx
+  rw [hx]
+  simp
+
 lemma llr_smul_right [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ ν]
     (hμν : μ ≪ ν) (c : ℝ≥0∞) (hc : c ≠ 0) (hc_ne_top : c ≠ ∞) :
     llr μ (c • ν) =ᵐ[μ] fun x ↦ llr μ ν x - log c.toReal := by
@@ -117,6 +129,39 @@ lemma llr_smul_right [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ 
     simp [hx_pos.ne', hx_ne_top.ne]
   rw [ENNReal.toReal_inv, log_inv]
   ring
+
+lemma llr_smul_nnreal_right [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ ν]
+    (hμν : μ ≪ ν) (c : ℝ≥0) (hc : c ≠ 0) :
+    llr μ (c • ν) =ᵐ[μ] fun x ↦ llr μ ν x - log c := by
+  rw [← Measure.coe_nnreal_smul]
+  filter_upwards [llr_smul_right hμν (c : ℝ≥0∞) (by simpa) (by simp)] with x hx
+  rw [hx]
+  simp
+
+lemma llr_smul_inv_left_eq_smul_right [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ ν]
+    (hμν : μ ≪ ν) (c : ℝ≥0∞) (hc : c ≠ 0) (hc_ne_top : c ≠ ∞) :
+    llr (c⁻¹ • μ) ν =ᵐ[μ] llr μ (c • ν) := by
+  have hc' : c⁻¹ ≠ 0 := by simp [hc_ne_top]
+  have hc_ne_top' : c⁻¹ ≠ ∞ := by simp [hc]
+  filter_upwards [llr_smul_left hμν c⁻¹ hc' hc_ne_top', llr_smul_right hμν c hc hc_ne_top] with
+    x hx_left hx_right
+  rw [hx_left, hx_right]
+  simp [sub_eq_add_neg]
+
+lemma llr_smul_same [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ ν]
+    (hμν : μ ≪ ν) (c : ℝ≥0∞) (hc : c ≠ 0) (hc_ne_top : c ≠ ∞) :
+    llr (c • μ) (c • ν) =ᵐ[μ] llr μ ν := by
+  simp only [llr_def]
+  lift c to ℝ≥0 using hc_ne_top
+  norm_cast at hc
+  filter_upwards [hμν.ae_le (Measure.rnDeriv_smul_same μ ν hc)] with x hx using by simp [hx]
+
+lemma llr_smul_nnreal_same [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ ν]
+    (hμν : μ ≪ ν) (c : ℝ≥0) (hc : c ≠ 0) :
+    llr (c • μ) (c • ν) =ᵐ[μ] llr μ ν := by
+  simp_rw [← Measure.coe_nnreal_smul]
+  filter_upwards [llr_smul_same hμν (c : ℝ≥0∞) (by simpa) (by simp)] with x hx
+  rw [hx]
 
 lemma integrable_rnDeriv_mul_log_iff [SigmaFinite μ] [μ.HaveLebesgueDecomposition ν] (hμν : μ ≪ ν) :
     Integrable (fun a ↦ (μ.rnDeriv ν a).toReal * log (μ.rnDeriv ν a).toReal) ν
@@ -143,7 +188,7 @@ lemma llr_tilted_left [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν)
     · simp only [ne_eq, inv_eq_zero]
       exact (integral_exp_pos hf).ne'
     · simp only [ne_eq, div_eq_zero_iff]
-      push_neg
+      push Not
       exact ⟨(exp_pos _).ne', (integral_exp_pos hf).ne'⟩
     · simp [ENNReal.toReal_eq_zero_iff, hx_lt_top.ne, hx_pos.ne']
 
@@ -165,12 +210,12 @@ lemma integral_llr_tilted_left [IsProbabilityMeasure μ] [SigmaFinite ν]
         rw [integral_add ?_ h_int]
         swap; · exact hf.sub (integrable_const _)
         rw [integral_sub hf (integrable_const _)]
-        simp only [integral_const, measureReal_univ_eq_one, smul_eq_mul, one_mul]
+        simp only [integral_const, probReal_univ, smul_eq_mul, one_mul]
   _ = ∫ x, llr μ ν x ∂μ + ∫ x, f x ∂μ - log (∫ x, exp (f x) ∂μ) := by abel
 
 lemma llr_tilted_right [SigmaFinite μ] [SigmaFinite ν]
     (hμν : μ ≪ ν) (hf : Integrable (fun x ↦ exp (f x)) ν) :
-    (llr μ (ν.tilted f)) =ᵐ[μ] fun x ↦ - f x + log (∫ z, exp (f z) ∂ν) + llr μ ν x := by
+    (llr μ (ν.tilted f)) =ᵐ[μ] fun x ↦ -f x + log (∫ z, exp (f z) ∂ν) + llr μ ν x := by
   cases eq_zero_or_neZero ν with
   | inl h =>
     have hμ : μ = 0 := by ext s _; exact hμν (by simp [h])
@@ -195,14 +240,14 @@ lemma integral_llr_tilted_right [IsProbabilityMeasure μ] [SigmaFinite ν]
     (h_int : Integrable (llr μ ν) μ) :
     ∫ x, llr μ (ν.tilted f) x ∂μ = ∫ x, llr μ ν x ∂μ - ∫ x, f x ∂μ + log (∫ x, exp (f x) ∂ν) := by
   calc ∫ x, llr μ (ν.tilted f) x ∂μ
-    = ∫ x, - f x + log (∫ x, exp (f x) ∂ν) + llr μ ν x ∂μ :=
+    = ∫ x, -f x + log (∫ x, exp (f x) ∂ν) + llr μ ν x ∂μ :=
         integral_congr_ae (llr_tilted_right hμν hfν)
-  _ = - ∫ x, f x ∂μ + log (∫ x, exp (f x) ∂ν) + ∫ x, llr μ ν x ∂μ := by
+  _ = -∫ x, f x ∂μ + log (∫ x, exp (f x) ∂ν) + ∫ x, llr μ ν x ∂μ := by
         rw [← integral_neg, integral_add ?_ h_int]
         swap; · exact hfμ.neg.add (integrable_const _)
         rw [integral_add ?_ (integrable_const _)]
         swap; · exact hfμ.neg
-        simp only [integral_const, measureReal_univ_eq_one, smul_eq_mul, one_mul]
+        simp only [integral_const, probReal_univ, smul_eq_mul, one_mul]
   _ = ∫ x, llr μ ν x ∂μ - ∫ x, f x ∂μ + log (∫ x, exp (f x) ∂ν) := by abel
 
 end llr_tilted

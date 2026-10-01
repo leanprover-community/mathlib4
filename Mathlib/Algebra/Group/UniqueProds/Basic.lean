@@ -3,13 +3,14 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
+
 import Mathlib.Algebra.Group.Equiv.Opposite
-import Mathlib.Algebra.Group.Finsupp
-import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-import Mathlib.Algebra.Group.TypeTags.Basic
-import Mathlib.Algebra.Group.ULift
-import Mathlib.Data.DFinsupp.Defs
+public import Mathlib.Algebra.Group.Finsupp
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Algebra.Group.TypeTags.Basic
+public import Mathlib.Algebra.Group.ULift
+public import Mathlib.Data.DFinsupp.Defs
 
 /-!
 # Unique products and related notions
@@ -29,9 +30,9 @@ However, the order is just a convenience and is not part of the `UniqueProds/Sum
 Here you can see several examples of Types that have `UniqueSums/Prods`
 (`inferInstance` uses `Covariant.to_uniqueProds_left` and `Covariant.to_uniqueSums_left`).
 ```lean
-import Mathlib.Data.Real.Basic
-import Mathlib.Data.PNat.Basic
 import Mathlib.Algebra.Group.UniqueProds.Basic
+import Mathlib.Basic.Real.Basic
+import Mathlib.Data.PNat.Basic
 
 example : UniqueSums ℕ   := inferInstance
 example : UniqueSums ℕ+  := inferInstance
@@ -49,7 +50,9 @@ about the grading type and then a generic statement of the form "look at the coe
 The file `Algebra/MonoidAlgebra/NoZeroDivisors` contains several examples of this use.
 -/
 
-assert_not_exists Cardinal Subsemiring Algebra Submodule StarModule FreeMonoid OrderedCommMonoid
+@[expose] public section
+
+assert_not_exists Cardinal Subsemiring Algebra Submodule StarModule FreeMonoid IsOrderedMonoid
 
 open Finset
 
@@ -183,7 +186,7 @@ open Finset MulOpposite
 theorem of_mulOpposite
     (h : UniqueMul (B.map ⟨_, op_injective⟩) (A.map ⟨_, op_injective⟩) (op b0) (op a0)) :
     UniqueMul A B a0 b0 := fun a b aA bB ab ↦ by
-  simpa [and_comm] using h (mem_map_of_mem _ bB) (mem_map_of_mem _ aA) (congr_arg op ab)
+  simpa [and_comm] using h (mem_map_of_mem _ bB) (mem_map_of_mem _ aA) congr(op $ab)
 
 @[to_additive]
 theorem to_mulOpposite (h : UniqueMul A B a0 b0) :
@@ -256,9 +259,8 @@ attribute [to_additive] TwoUniqueProds
 lemma uniqueMul_of_twoUniqueMul {G} [Mul G] {A B : Finset G} (h : 1 < #A * #B →
     ∃ p1 ∈ A ×ˢ B, ∃ p2 ∈ A ×ˢ B, p1 ≠ p2 ∧ UniqueMul A B p1.1 p1.2 ∧ UniqueMul A B p2.1 p2.2)
     (hA : A.Nonempty) (hB : B.Nonempty) : ∃ a ∈ A, ∃ b ∈ B, UniqueMul A B a b := by
-  by_cases hc : #A ≤ 1 ∧ #B ≤ 1
+  by_cases! +distrib hc : #A ≤ 1 ∧ #B ≤ 1
   · exact UniqueMul.of_card_le_one hA hB hc.1 hc.2
-  simp_rw [not_and_or, not_le] at hc
   rw [← Finset.card_pos] at hA hB
   obtain ⟨p, hp, _, _, _, hu, _⟩ := h (Nat.one_lt_mul_iff.mpr ⟨hA, hB, hc⟩)
   rw [Finset.mem_product] at hp
@@ -356,7 +358,7 @@ open MulOpposite in
   contains a unique pair with the `UniqueMul` property. Strojnowski showed that if `G` is
   a group, then we only need to check this when `A = B`.
   Here we generalize the result to cancellative semigroups.
-  Non-cancellative counterexample: the AddMonoid {0,1} with 1+1=1. -/
+  Non-cancellative counterexample: the AddMonoid `{0,1}` with 1+1=1. -/
 @[to_additive] theorem of_same {G} [Semigroup G] [IsCancelMul G]
     (h : ∀ {A : Finset G}, A.Nonempty → ∃ a1 ∈ A, ∃ a2 ∈ A, UniqueMul A A a1 a2) :
     UniqueProds G where
@@ -404,17 +406,17 @@ open MulOpposite in
       simp only [UniqueMul, mem_mul, mem_image] at he hf hu
       obtain ⟨_, ⟨d1, hd1, rfl⟩, c1, hc1, rfl⟩ := he
       obtain ⟨d2, hd2, _, ⟨c2, hc2, rfl⟩, rfl⟩ := hf
-      by_cases h12 : c1 ≠ 1 ∨ d2 ≠ 1
+      by_cases! h12 : c1 ≠ 1 ∨ d2 ≠ 1
       · refine ⟨c1, hc1, d2, hd2, h12, fun c3 d3 hc3 hd3 he => ?_⟩
         specialize hu ⟨_, ⟨_, hd1, rfl⟩, _, hc3, rfl⟩ ⟨_, hd3, _, ⟨_, hc2, rfl⟩, rfl⟩
         rw [mul_left_cancel_iff, mul_right_cancel_iff,
             mul_assoc, ← mul_assoc c3, he, mul_assoc, mul_assoc] at hu; exact hu rfl
-      push_neg at h12; obtain ⟨rfl, rfl⟩ := h12
-      by_cases h21 : c2 ≠ 1 ∨ d1 ≠ 1
+      obtain ⟨rfl, rfl⟩ := h12
+      by_cases! h21 : c2 ≠ 1 ∨ d1 ≠ 1
       · refine ⟨c2, hc2, d1, hd1, h21, fun c4 d4 hc4 hd4 he => ?_⟩
         specialize hu ⟨_, ⟨_, hd4, rfl⟩, _, hC, rfl⟩ ⟨_, hD, _, ⟨_, hc4, rfl⟩, rfl⟩
         simpa only [mul_one, one_mul, ← mul_inv_rev, he, true_imp_iff, inv_inj, and_comm] using hu
-      push_neg at h21; obtain ⟨rfl, rfl⟩ := h21
+      obtain ⟨rfl, rfl⟩ := h21
       rcases hcard with hC | hD
       · obtain ⟨c, hc, hc1⟩ := exists_mem_ne hC 1
         refine (hc1 ?_).elim
@@ -430,11 +432,10 @@ open UniqueMul in
   uniqueMul_of_nonempty {A} := by
     classical
     let _ := isWellFounded_ssubset (α := ∀ i, G i) -- why need this?
-    apply IsWellFounded.induction (· ⊂ ·) A; intro A ihA B hA
-    apply IsWellFounded.induction (· ⊂ ·) B; intro B ihB hB
-    by_cases hc : #A ≤ 1 ∧ #B ≤ 1
+    apply WellFounded.induction' (· ⊂ ·) A; intro A ihA B hA
+    apply WellFounded.induction' (· ⊂ ·) B; intro B ihB hB
+    by_cases! +distrib hc : #A ≤ 1 ∧ #B ≤ 1
     · exact of_card_le_one hA hB hc.1 hc.2
-    simp_rw [not_and_or, not_le] at hc
     obtain ⟨i, hc⟩ := exists_or.mpr (hc.imp exists_of_one_lt_card_pi exists_of_one_lt_card_pi)
     obtain ⟨ai, hA, bi, hB, hi⟩ := uniqueMul_of_nonempty (hA.image (· i)) (hB.image (· i))
     rw [mem_image, ← filter_nonempty_iff] at hA hB
@@ -455,7 +456,7 @@ open ULift in
   · exact of_injective_mulHom (downMulHom H) down_injective ‹_›
   · refine of_injective_mulHom (Prod.upMulHom G H) (fun x y he => Prod.ext ?_ ?_)
       (UniqueProds.instForall <| I G H) <;> apply up_injective
-    exacts [congr_fun he false, congr_fun he true]
+    exacts [congr($he false), congr($he true)]
   · exact of_injective_mulHom (downMulHom G) down_injective ‹_›
 
 end UniqueProds
@@ -509,8 +510,8 @@ instance instForall {ι} (G : ι → Type*) [∀ i, Mul (G i)] [∀ i, TwoUnique
   uniqueMul_of_one_lt_card {A} := by
     classical
     let _ := isWellFounded_ssubset (α := ∀ i, G i) -- why need this?
-    apply IsWellFounded.induction (· ⊂ ·) A; intro A ihA B
-    apply IsWellFounded.induction (· ⊂ ·) B; intro B ihB hc
+    apply WellFounded.induction' (· ⊂ ·) A; intro A ihA B
+    apply WellFounded.induction' (· ⊂ ·) B; intro B ihB hc
     obtain ⟨hA, hB, hc⟩ := Nat.one_lt_mul_iff.mp hc
     rw [card_pos] at hA hB
     obtain ⟨i, hc⟩ := exists_or.mpr (hc.imp exists_of_one_lt_card_pi exists_of_one_lt_card_pi)
@@ -545,7 +546,7 @@ instance _root_.Prod.instTwoUniqueProds [TwoUniqueProds G] [TwoUniqueProds H] :
   · exact of_injective_mulHom (downMulHom H) down_injective ‹_›
   · refine of_injective_mulHom (Prod.upMulHom G H) (fun x y he ↦ Prod.ext ?_ ?_)
       (TwoUniqueProds.instForall <| I G H) <;> apply up_injective
-    exacts [congr_fun he false, congr_fun he true]
+    exacts [congr($he false), congr($he true)]
   · exact of_injective_mulHom (downMulHom G) down_injective ‹_›
 
 open MulOpposite in
@@ -558,7 +559,7 @@ theorem of_mulOpposite (h : TwoUniqueProds Gᵐᵒᵖ) : TwoUniqueProds G where
     simp_rw [mem_product] at h1 h2 ⊢
     refine ⟨(_, _), ⟨?_, ?_⟩, (_, _), ⟨?_, ?_⟩, ?_, hu1.of_mulOpposite, hu2.of_mulOpposite⟩
     pick_goal 5
-    · contrapose! hne; rw [Prod.ext_iff] at hne ⊢
+    · contrapose hne; rw [Prod.ext_iff] at hne ⊢
       exact ⟨unop_injective hne.2, unop_injective hne.1⟩
     all_goals apply (mem_map' f).mp
     exacts [h1.2, h1.1, h2.2, h2.1]
@@ -584,9 +585,9 @@ instance (priority := 100) of_covariant_right [IsRightCancelMul G]
     have : UniqueMul A B a0 b0 := by
       intro a b ha hb he
       obtain hl | rfl | hl := lt_trichotomy b b0
-      · exact ((he0 ▸ he ▸ mul_lt_mul_left' hl a).not_ge <| le_max' _ _ <| mul_mem_mul ha hb0).elim
+      · exact ((he0 ▸ he ▸ mul_lt_mul_right hl a).not_ge <| le_max' _ _ <| mul_mem_mul ha hb0).elim
       · exact ⟨mul_right_cancel he, rfl⟩
-      · exact ((he0 ▸ mul_lt_mul_left' hl a0).not_ge <| le_max' _ _ <| mul_mem_mul ha0 hb).elim
+      · exact ((he0 ▸ mul_lt_mul_right hl a0).not_ge <| le_max' _ _ <| mul_mem_mul ha0 hb).elim
     refine ⟨_, mk_mem_product ha0 hb0, _, mk_mem_product ha1 hb1, fun he ↦ ?_, this, ?_⟩
     · rw [Prod.mk_inj] at he; rw [he.1, he.2, he1] at he0
       obtain ⟨⟨a2, b2⟩, h2, hne⟩ := exists_mem_ne hc (a0, b0)
@@ -595,9 +596,9 @@ instance (priority := 100) of_covariant_right [IsRightCancelMul G]
       exact Prod.ext_iff.mpr (this h2.1 h2.2 he.symm)
     · intro a b ha hb he
       obtain hl | rfl | hl := lt_trichotomy b b1
-      · exact ((he1 ▸ mul_lt_mul_left' hl a1).not_ge <| min'_le _ _ <| mul_mem_mul ha1 hb).elim
+      · exact ((he1 ▸ mul_lt_mul_right hl a1).not_ge <| min'_le _ _ <| mul_mem_mul ha1 hb).elim
       · exact ⟨mul_right_cancel he, rfl⟩
-      · exact ((he1 ▸ he ▸ mul_lt_mul_left' hl a).not_ge <| min'_le _ _ <| mul_mem_mul ha hb1).elim
+      · exact ((he1 ▸ he ▸ mul_lt_mul_right hl a).not_ge <| min'_le _ _ <| mul_mem_mul ha hb1).elim
 
 open MulOpposite in
 -- see Note [lower instance priority]
@@ -611,7 +612,7 @@ instance (priority := 100) of_covariant_left [IsLeftCancelMul G]
     TwoUniqueProds G :=
   let _ := LinearOrder.lift' (unop : Gᵐᵒᵖ → G) unop_injective
   let _ : MulLeftStrictMono Gᵐᵒᵖ :=
-    { elim := fun _ _ _ bc ↦ mul_lt_mul_right' (α := G) bc (unop _) }
+    { elim := fun _ _ _ bc ↦ mul_lt_mul_left (α := G) bc (unop _) }
   of_mulOpposite of_covariant_right
 
 end TwoUniqueProds

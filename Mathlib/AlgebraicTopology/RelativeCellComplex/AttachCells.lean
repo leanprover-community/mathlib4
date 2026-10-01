@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Limits
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Attaching cells
@@ -25,6 +27,8 @@ See the file `Mathlib/AlgebraicTopology/RelativeCellComplex/Basic.lean` for tran
 of morphisms `f` with `AttachCells g f` structures.
 
 -/
+
+@[expose] public section
 
 universe w' w t t' v u
 
@@ -149,14 +153,14 @@ def reindexCellTypes : AttachCells g' f where
       Discrete.natIso (fun ⟨i⟩ ↦ Arrow.leftFunc.mapIso (ha (c.π i)))
     refine (IsColimit.precomposeHomEquiv e _).1
       (IsColimit.ofIsoColimit c.isColimit₁ (Cofan.ext (Iso.refl _) (fun i ↦ ?_)))
-    simp [Cocones.precompose, e, Cofan.inj]
+    simp [Cocone.precompose, e, Cofan.inj]
   isColimit₂ := by
     let e : Discrete.functor (fun i ↦ B (c.π i)) ≅
         Discrete.functor (fun i ↦ B' (a (c.π i))) :=
       Discrete.natIso (fun ⟨i⟩ ↦ Arrow.rightFunc.mapIso (ha (c.π i)))
     refine (IsColimit.precomposeHomEquiv e _).1
       (IsColimit.ofIsoColimit c.isColimit₂ (Cofan.ext (Iso.refl _) (fun i ↦ ?_)))
-    simp [Cocones.precompose, e, Cofan.inj]
+    simp [Cocone.precompose, e, Cofan.inj]
   m := c.m
   g₁ := c.g₁
   g₂ := c.g₂
@@ -187,10 +191,10 @@ lemma nonempty_attachCells_iff :
       cofan₂ := Cofan.mk c₂.pt (fun i ↦ (e₂ i).inv ≫ c₂.ι.app ⟨i⟩)
       isColimit₁ :=
         (IsColimit.precomposeHomEquiv (Discrete.natIso (fun ⟨i⟩ ↦ e₁ i)) _).1
-          (IsColimit.ofIsoColimit h₁ (Cocones.ext (Iso.refl _) (by simp)))
+          (IsColimit.ofIsoColimit h₁ (Cocone.ext (Iso.refl _) (by simp)))
       isColimit₂ :=
         (IsColimit.precomposeHomEquiv (Discrete.natIso (fun ⟨i⟩ ↦ e₂ i)) _).1
-          (IsColimit.ofIsoColimit h₂ (Cocones.ext (Iso.refl _) (by simp)))
+          (IsColimit.ofIsoColimit h₂ (Cocone.ext (Iso.refl _) (by simp)))
       hm i := by simp [e₁, e₂]
       isPushout := sq, .. }⟩
 

@@ -3,11 +3,13 @@ Copyright (c) 2023 Parth Shastri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parth Shastri, Gabriel Ebner, Mario Carneiro
 -/
-import Mathlib.Init
-import Lean.Elab.Command
-import Lean.Compiler.CSimpAttr
-import Lean.Util.FoldConsts
-import Lean.Data.AssocList
+module  -- shake: keep-downstream (`[csimp]` is not currently tracked)
+
+public import Mathlib.Init
+public meta import Lean.Elab.Command
+public meta import Lean.Compiler.CSimpAttr
+public meta import Lean.Util.FoldConsts
+public meta import Lean.Data.AssocList
 
 /-!
 # Define the `compile_inductive%` command.
@@ -23,9 +25,13 @@ Similarly, `compile_def% Foo.foo` adds compiled code for definitions when missin
 This can be the case for type class projections, or definitions like `List._sizeOf_1`.
 -/
 
+public section
+
 namespace Mathlib.Util
 
 open Lean Meta
+
+meta section
 
 private def replaceConst (repl : AssocList Name Name) (e : Expr) : Expr :=
   e.replace fun | .const n us => repl.find? n |>.map (.const · us) | _ => none
@@ -176,7 +182,7 @@ def compileInductiveOnly (iv : InductiveVal) (rv : RecursorVal) (warn := true) :
     }]
     Compiler.CSimp.add name .global
   for name in iv.all do
-    for aux in [mkRecOnName name, mkBRecOnName name] do
+    for aux in [mkRecOnName name, (mkBRecOnName name).str "go", mkBRecOnName name] do
       if let some (.defnInfo dv) := (← getEnv).find? aux then
         compileDefn dv
 
@@ -230,10 +236,13 @@ elab tk:"compile_inductive% " i:ident : command => Command.liftTermElabM do
   let iv ← withRef i <| getConstInfoInduct n
   withRef tk <| compileInductive iv
 
+end
+
 end Mathlib.Util
 
 -- `Nat.rec` already has a `@[csimp]` lemma in Lean.
 compile_def% Nat.recOn
+compile_def% Nat.brecOn.go
 compile_def% Nat.brecOn
 compile_inductive% Prod
 compile_inductive% List
@@ -242,28 +251,18 @@ compile_inductive% PEmpty
 compile_inductive% Sum
 compile_inductive% PSum
 compile_inductive% And
-compile_inductive% False
-compile_inductive% Empty
 compile_inductive% Bool
 compile_inductive% Sigma
 compile_inductive% Option
-
--- In addition to the manual implementation below, we also have to override the `Float.val` and
--- `Float.mk` functions because these also have no implementation in core lean.
--- Because `floatSpec.float` is an opaque type, the identity function is as good an implementation
--- as any.
-private unsafe def Float.valUnsafe : Float → floatSpec.float := unsafeCast
-private unsafe def Float.mkUnsafe : floatSpec.float → Float := unsafeCast
-@[implemented_by Float.valUnsafe] private def Float.valImpl (x : Float) : floatSpec.float := x.1
-@[implemented_by Float.mkUnsafe] private def Float.mkImpl (x : floatSpec.float) : Float := ⟨x⟩
-@[csimp] private theorem Float.val_eq : @Float.val = Float.valImpl := rfl
-@[csimp] private theorem Float.mk_eq : @Float.mk = Float.mkImpl := rfl
+-- False.rec and Empty.rec already have special compiler support
+compile_def% False.recOn
+compile_def% Empty.recOn
 
 -- These types need manual implementations because the default implementation in `compileStruct`
 -- uses `Expr.proj` which has an invalid IR type.
 open Lean Meta Elab Mathlib.Util in
 run_cmd Command.liftTermElabM do
-  for n in [``UInt8, ``UInt16, ``UInt32, ``UInt64, ``USize, ``Float] do
+  for n in [``UInt8, ``UInt16, ``UInt32, ``UInt64, ``USize, ``Float, ``Float32] do
     let iv ← getConstInfoInduct n
     let rv ← getConstInfoRec <| mkRecName n
     let value ← Elab.Term.elabTerm (← `(fun H t => H t.1))
@@ -275,5 +274,6 @@ run_cmd Command.liftTermElabM do
 -- were manually implemented as `noncomputable`
 compile_inductive% String
 compile_inductive% Lean.Name
+compile_def% Lean.Name.sizeOf._f
 compile_def% Lean.Name.sizeOf
 compile_def% Lean.instSizeOfName

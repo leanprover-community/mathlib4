@@ -3,8 +3,10 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.RingTheory.Coalgebra.Equiv
-import Mathlib.RingTheory.Bialgebra.Hom
+module
+
+public import Mathlib.RingTheory.Coalgebra.Equiv
+public import Mathlib.RingTheory.Bialgebra.Hom
 
 /-!
 # Isomorphisms of `R`-bialgebras
@@ -20,6 +22,8 @@ This file defines bundled isomorphisms of `R`-bialgebras. We simply mimic the ea
 
 * `A ≃ₐc[R] B` : `R`-bialgebra equivalence from `A` to `B`.
 -/
+
+@[expose] public section
 
 universe u v w u₁
 
@@ -111,6 +115,7 @@ theorem toEquiv_inj {e₁ e₂ : A ≃ₐc[R] B} : e₁.toEquiv = e₂.toEquiv �
 theorem toBialgHom_injective : Function.Injective (toBialgHom : (A ≃ₐc[R] B) → A →ₐc[R] B) :=
   fun _ _ H => toEquiv_injective <| Equiv.ext <| BialgHom.congr_fun H
 
+@[macro_inline]
 instance : EquivLike (A ≃ₐc[R] B) A B where
   coe f := f.toFun
   inv := fun f => f.invFun
@@ -118,9 +123,10 @@ instance : EquivLike (A ≃ₐc[R] B) A B where
   left_inv := fun f => f.left_inv
   right_inv := fun f => f.right_inv
 
+@[macro_inline]
 instance : FunLike (A ≃ₐc[R] B) A B where
   coe := DFunLike.coe
-  coe_injective' := DFunLike.coe_injective
+  coe_injective := DFunLike.coe_injective
 
 instance : BialgEquivClass (A ≃ₐc[R] B) R A B where
   map_add := (·.map_add')
@@ -128,6 +134,8 @@ instance : BialgEquivClass (A ≃ₐc[R] B) R A B where
   counit_comp := (·.counit_comp)
   map_comp_comul := (·.map_comp_comul)
   map_mul := (·.map_mul')
+
+instance : CoeOut (A ≃ₐc[R] B) (A ≃ₐ[R] B) where coe := toAlgEquiv
 
 @[simp, norm_cast]
 theorem toBialgHom_inj {e₁ e₂ : A ≃ₐc[R] B} : (↑e₁ : A →ₐc[R] B) = e₂ ↔ e₁ = e₂ :=
@@ -156,7 +164,7 @@ theorem toCoalgEquiv_eq_coe (f : A ≃ₐc[R] B) : f.toCoalgEquiv = f :=
 theorem toBialgHom_eq_coe (f : A ≃ₐc[R] B) : f.toBialgHom = f :=
   rfl
 
-@[simp]
+@[deprecated "Now a syntactic tautology" (since := "2026-04-09"), nolint synTaut]
 theorem toAlgEquiv_eq_coe (f : A ≃ₐc[R] B) : f.toAlgEquiv = f :=
   rfl
 
@@ -175,6 +183,7 @@ theorem coe_toAlgEquiv : ⇑(e : A ≃ₐ[R] B) = e :=
 theorem toCoalgEquiv_toCoalgHom : ((e : A ≃ₐc[R] B) : A →ₗc[R] B) = (e : A →ₐc[R] B) :=
   rfl
 
+@[deprecated "Now a syntactic equality" (since := "2026-04-30"), nolint synTaut]
 theorem toBialgHom_toAlgHom : ((e : A →ₐc[R] B) : A →ₐ[R] B) = e := rfl
 
 section
@@ -189,7 +198,7 @@ protected theorem congr_arg {x x'} : x = x' → e x = e x' :=
   DFunLike.congr_arg e
 
 protected theorem congr_fun (h : e = e') (x : A) : e x = e' x :=
-  DFunLike.congr_fun h x
+  congr($h x)
 
 end
 
@@ -210,7 +219,7 @@ initialize_simps_projections BialgEquiv (toFun → apply, invFun → symm_apply)
 
 variable (A R) in
 /-- The identity map is a bialgebra equivalence. -/
-@[refl, simps!]
+@[refl, simps! apply]
 def refl : A ≃ₐc[R] A :=
   { CoalgEquiv.refl R A, BialgHom.id R A with }
 
@@ -250,7 +259,7 @@ theorem coe_symm_toEquiv : ⇑e.toEquiv.symm = e.symm :=
 variable {e₁₂ : A ≃ₐc[R] B} {e₂₃ : B ≃ₐc[R] C}
 
 /-- Bialgebra equivalences are transitive. -/
-@[trans, simps!]
+@[trans, simps! apply]
 def trans (e₁₂ : A ≃ₐc[R] B) (e₂₃ : B ≃ₐc[R] C) : A ≃ₐc[R] C :=
   { (e₁₂ : A ≃ₗc[R] B).trans (e₂₃ : B ≃ₗc[R] C), (e₁₂ : A ≃* B).trans (e₂₃ : B ≃* C) with }
 
@@ -273,15 +282,15 @@ lemma apply_symm_apply (e : A ≃ₐc[R] B) : ∀ x, e (e.symm x) = x := e.toEqu
 lemma symm_apply_apply (e : A ≃ₐc[R] B) : ∀ x, e.symm (e x) = x := e.toEquiv.symm_apply_apply
 
 @[simp] lemma comp_symm (e : A ≃ₐc[R] B) : (e : A →ₐc[R] B).comp e.symm = .id R B :=
-  BialgHom.coe_algHom_injective e.toAlgEquiv.comp_symm
+  BialgHom.coe_toAlgHom_injective e.toAlgEquiv.comp_symm
 
 @[simp] lemma symm_comp (e : A ≃ₐc[R] B) : (e.symm : B →ₐc[R] A).comp e = .id R A :=
-  BialgHom.coe_algHom_injective e.toAlgEquiv.symm_comp
+  BialgHom.coe_toAlgHom_injective e.toAlgEquiv.symm_comp
 
 @[simp] lemma toRingEquiv_toRingHom (e : A ≃ₐc[R] B) : ((e : A ≃+* B) : A →+* B) = e := rfl
 @[simp] lemma toAlgEquiv_toRingHom (e : A ≃ₐc[R] B) : ((e : A ≃ₐ[R] B) : A →+* B) = e := rfl
 
-/-- If an coalgebra morphism has an inverse, it is an coalgebra isomorphism. -/
+/-- If a coalgebra morphism has an inverse, it is a coalgebra isomorphism. -/
 def ofBialgHom (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ : f.comp g = BialgHom.id R B)
     (h₂ : g.comp f = BialgHom.id R A) : A ≃ₐc[R] B where
   __ := f
@@ -317,6 +326,7 @@ variable [Semiring A] [Semiring B] [Bialgebra R A] [Bialgebra R B]
 lemma toLinearMap_ofAlgEquiv (f : A ≃ₐ[R] B) (counit_comp map_comp_comul) :
     (ofAlgEquiv f counit_comp map_comp_comul : A →ₗ[R] B) = f := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Promotes a bijective bialgebra homomorphism to a bialgebra equivalence. -/
 @[simps! apply]
 noncomputable def ofBijective (f : A →ₐc[R] B) (hf : Bijective f) : A ≃ₐc[R] B :=

@@ -3,8 +3,10 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.RingTheory.WittVector.Frobenius
-import Mathlib.RingTheory.WittVector.Verschiebung
+module
+
+public import Mathlib.RingTheory.WittVector.Frobenius
+public import Mathlib.RingTheory.WittVector.Verschiebung
 import Mathlib.RingTheory.WittVector.MulP
 
 /-!
@@ -24,6 +26,8 @@ In this file we derive common identities between the Frobenius and Verschiebung 
 
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
+
+public section
 
 
 namespace WittVector
@@ -75,11 +79,11 @@ theorem coeff_p [CharP R p] (i : ℕ) : (p : 𝕎 R).coeff i = if i = 1 then 1 e
 
 @[simp]
 theorem coeff_p_zero [CharP R p] : (p : 𝕎 R).coeff 0 = 0 := by
-  rw [coeff_p, if_neg]
+  rw [coeff_p, ite_eq_right]
   exact zero_ne_one
 
 @[simp]
-theorem coeff_p_one [CharP R p] : (p : 𝕎 R).coeff 1 = 1 := by rw [coeff_p, if_pos rfl]
+theorem coeff_p_one [CharP R p] : (p : 𝕎 R).coeff 1 = 1 := by rw [coeff_p, ite_eq_left rfl]
 
 theorem p_nonzero [Nontrivial R] [CharP R p] : (p : 𝕎 R) ≠ 0 := by
   intro h

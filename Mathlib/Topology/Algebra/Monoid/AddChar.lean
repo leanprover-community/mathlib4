@@ -3,12 +3,16 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Algebra.Group.AddChar
-import Mathlib.Topology.DenseEmbedding
+module
+
+public import Mathlib.Algebra.Group.AddChar
+public import Mathlib.Topology.DenseEmbedding
 
 /-!
 # Additive characters of topological monoids
 -/
+
+public section
 
 lemma DenseRange.addChar_eq_of_eval_one_eq {A M : Type*} [TopologicalSpace A] [AddMonoidWithOne A]
     [Monoid M] [TopologicalSpace M] [T2Space M] (hdr : DenseRange ((↑) : ℕ → A))

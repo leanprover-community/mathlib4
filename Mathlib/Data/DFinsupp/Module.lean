@@ -3,10 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Pi
-import Mathlib.Algebra.Module.LinearMap.Defs
-import Mathlib.Algebra.Module.Pi
-import Mathlib.Data.DFinsupp.Defs
+module
+
+public import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Data.DFinsupp.Defs
 
 /-!
 # Group actions on `DFinsupp`
@@ -16,9 +17,11 @@ import Mathlib.Data.DFinsupp.Defs
 * `DFinsupp.module`: pointwise scalar multiplication on `DFinsupp` gives a module structure
 -/
 
+@[expose] public section
+
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l
 
-variable {ι : Type u} {γ : Type w} {β : ι → Type v} {β₁ : ι → Type v₁} {β₂ : ι → Type v₂}
+variable {ι : Type u} {γ : Type w} {β : ι → Type v}
 
 namespace DFinsupp
 
@@ -64,7 +67,7 @@ instance distribMulAction [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribM
 each coordinate. -/
 instance module [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, Module γ (β i)] :
     Module γ (Π₀ i, β i) :=
-  { inferInstanceAs (DistribMulAction γ (Π₀ i, β i)) with
+  { (inferInstance : DistribMulAction γ (Π₀ i, β i)) with
     zero_smul := fun c => ext fun i => by simp only [smul_apply, zero_smul, zero_apply]
     add_smul := fun c x y => ext fun i => by simp only [add_apply, smul_apply, add_smul] }
 
@@ -151,8 +154,6 @@ theorem support_smul {γ : Type w} [∀ i, Zero (β i)] [∀ i, SMulZeroClass γ
 end DecidableEq
 
 section Equiv
-
-open Finset
 
 variable {κ : Type*}
 

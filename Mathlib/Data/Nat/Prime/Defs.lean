@@ -3,11 +3,13 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Nat.Units
-import Mathlib.Algebra.GroupWithZero.Nat
-import Mathlib.Algebra.Prime.Defs
-import Mathlib.Data.Nat.Sqrt
-import Mathlib.Order.Basic
+module
+
+public import Mathlib.Algebra.Group.Nat.Units
+public import Mathlib.Algebra.GroupWithZero.Nat
+public import Mathlib.Algebra.Prime.Defs
+public import Mathlib.Data.Nat.Sqrt
+public import Mathlib.Order.Basic
 
 /-!
 # Prime numbers
@@ -25,6 +27,8 @@ This file deals with prime numbers: natural numbers `p ≥ 2` whose only divisor
 
 -/
 
+@[expose] public section
+
 assert_not_exists Ring
 
 namespace Nat
@@ -34,7 +38,7 @@ variable {n : ℕ}
 /-- `Nat.Prime p` means that `p` is a prime number, that is, a natural number
   at least 2 whose only divisors are `p` and `1`.
   The theorem `Nat.prime_def` witnesses this description of a prime number. -/
-@[pp_nodot]
+@[pp_nodot, wikidata Q49008]
 def Prime (p : ℕ) :=
   Irreducible p
 
@@ -128,14 +132,14 @@ theorem prime_def_le_sqrt {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m →
 
 theorem prime_iff_not_exists_mul_eq {p : ℕ} :
     p.Prime ↔ 2 ≤ p ∧ ¬ ∃ m n, m < p ∧ n < p ∧ m * n = p := by
-  push_neg
+  push Not
   simp_rw [prime_def_lt, dvd_def, exists_imp]
   refine and_congr_right fun hp ↦ forall_congr' fun m ↦ (forall_congr' fun h ↦ ?_).trans forall_comm
   simp_rw [Ne, forall_comm (β := _ = _), eq_comm, imp_false, not_lt]
   refine forall₂_congr fun n hp ↦ ⟨by simp_all, fun hpn ↦ ?_⟩
-  have := mul_ne_zero_iff.mp (hp ▸ show p ≠ 0 by cutsat)
-  exact (Nat.mul_eq_right (by cutsat)).mp
-    (hp.symm.trans (hpn.antisymm (hp ▸ Nat.le_mul_of_pos_left _ (by cutsat))))
+  have := mul_ne_zero_iff.mp (hp ▸ show p ≠ 0 by lia)
+  exact (Nat.mul_eq_right (by lia)).mp
+    (hp.symm.trans (hpn.antisymm (hp ▸ Nat.le_mul_of_pos_left _ (by lia))))
 
 theorem prime_of_coprime (n : ℕ) (h1 : 1 < n) (h : ∀ m < n, m ≠ 0 → n.Coprime m) : Prime n := by
   refine prime_def_lt.mpr ⟨h1, fun m mlt mdvd => ?_⟩
@@ -158,6 +162,12 @@ much faster.
 instance decidablePrime (p : ℕ) : Decidable (Prime p) :=
   decidable_of_iff' _ prime_def_lt'
 
+/-!
+### Specific small primes
+
+It is recommended not to add further lemmas to this list; instead, import
+`Mathlib.Tactic.NormNum.Prime` in downstream files and use `norm_num` for primality proofs.
+-/
 theorem prime_two : Prime 2 := by decide
 
 theorem prime_three : Prime 3 := by decide
@@ -191,14 +201,10 @@ If `n < k * k`, then `minFacAux n k = n`, if `k | n`, then `minFacAux n k = k`.
 Otherwise, `minFacAux n k = minFacAux n (k+2)` using well-founded recursion.
 If `n` is odd and `1 < n`, then `minFacAux n 3` is the smallest prime factor of `n`.
 
-By default this well-founded recursion would be irreducible.
-This prevents use `decide` to resolve `Nat.prime n` for small values of `n`,
-so we mark this as `@[semireducible]`.
-
-In future, we may want to remove this annotation and instead use `norm_num` instead of `decide`
-in these situations.
+This definition is by well-founded recursion, so `rfl` or `decide` cannot be used.
+One can use `norm_num` to prove `Nat.prime n` for small `n`.
 -/
-@[semireducible] def minFacAux (n : ℕ) : ℕ → ℕ
+def minFacAux (n : ℕ) : ℕ → ℕ
   | k =>
     if n < k * k then n
     else
@@ -229,7 +235,7 @@ theorem minFac_eq (n : ℕ) : minFac n = if 2 ∣ n then 2 else minFacAux n 3 :=
 private def minFacProp (n k : ℕ) :=
   2 ≤ k ∧ k ∣ n ∧ ∀ m, 2 ≤ m → m ∣ n → k ≤ m
 
-theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
+private theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
     ∀ k i, k = 2 * i + 3 → (∀ m, 2 ≤ m → m ∣ n → k ≤ m) → minFacProp n (minFacAux n k)
   | k => fun i e a => by
     rw [minFacAux]
@@ -249,9 +255,8 @@ theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
         have := minFac_lemma n k h
         minFacAux_has_prop n2 (k + 2) (i + 1) (by simp [k, e, Nat.left_distrib, add_right_comm])
           fun m m2 d => ?_
-      rcases Nat.eq_or_lt_of_le (a m m2 d) with me | ml
-      · subst me
-        contradiction
+      rcases Nat.eq_or_lt_of_le (a m m2 d) with rfl | ml
+      · contradiction
       apply (Nat.eq_or_lt_of_le ml).resolve_left
       intro me
       rw [← me, e] at d
@@ -261,7 +266,7 @@ theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
       exact absurd this (by contradiction)
   termination_by k => sqrt n + 2 - k
 
-theorem minFac_has_prop {n : ℕ} (n1 : n ≠ 1) : minFacProp n (minFac n) := by
+private theorem minFac_has_prop {n : ℕ} (n1 : n ≠ 1) : minFacProp n (minFac n) := by
   by_cases n0 : n = 0
   · simp [n0, minFacProp]
   have n2 : 2 ≤ n := by
@@ -335,7 +340,7 @@ def decidablePrime' (p : ℕ) : Decidable (Prime p) :=
   subsingleton
 
 theorem not_prime_iff_minFac_lt {n : ℕ} (n2 : 2 ≤ n) : ¬Prime n ↔ minFac n < n :=
-  (not_congr <| prime_def_minFac.trans <| and_iff_right n2).trans <|
+  (not_congr <| prime_def_minFac.trans <| and_iff_right n2).trans
     (lt_iff_le_and_ne.trans <| and_iff_right <| minFac_le <| le_of_succ_le n2).symm
 
 theorem minFac_le_div {n : ℕ} (pos : 0 < n) (np : ¬Prime n) : minFac n ≤ n / minFac n :=
@@ -371,7 +376,7 @@ theorem minFac_eq_one_iff {n : ℕ} : minFac n = 1 ↔ n = 1 := by
     rw [h] at this
     exact not_prime_one this
   · rintro rfl
-    rfl
+    simp [minFac, minFacAux]
 
 @[simp]
 theorem minFac_eq_two_iff (n : ℕ) : minFac n = 2 ↔ 2 ∣ n := by
@@ -383,17 +388,14 @@ theorem minFac_eq_two_iff (n : ℕ) : minFac n = 2 ↔ 2 ∣ n := by
     have ub := minFac_le_of_dvd (le_refl 2) h
     have lb := minFac_pos n
     refine ub.eq_or_lt.resolve_right fun h' => ?_
-    have := le_antisymm (Nat.succ_le_of_lt lb) (Nat.lt_succ_iff.mp h')
-    rw [eq_comm, Nat.minFac_eq_one_iff] at this
-    subst this
-    exact not_lt_of_ge (le_of_dvd lb h) h'
+    suffices n.minFac = 1 by simp_all
+    exact (le_antisymm (Nat.succ_le_of_lt lb) (Nat.lt_succ_iff.mp h')).symm
 
 theorem factors_lemma {k} : (k + 2) / minFac (k + 2) < k + 2 :=
   div_lt_self (Nat.zero_lt_succ _) (minFac_prime (by
       apply Nat.ne_of_gt
       apply Nat.succ_lt_succ
-      apply Nat.zero_lt_succ
-      )).one_lt
+      apply Nat.zero_lt_succ)).one_lt
 
 end MinFac
 

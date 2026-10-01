@@ -3,9 +3,10 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.LinearAlgebra.Charpoly.Basic
-import Mathlib.LinearAlgebra.Matrix.Basis
-import Mathlib.RingTheory.Finiteness.Prod
+module
+
+public import Mathlib.LinearAlgebra.Charpoly.Basic
+public import Mathlib.RingTheory.Finiteness.Prod
 
 /-!
 
@@ -17,6 +18,8 @@ import Mathlib.RingTheory.Finiteness.Prod
   of `f` in any basis.
 
 -/
+
+public section
 
 noncomputable section
 
@@ -75,7 +78,7 @@ lemma LinearEquiv.charpoly_conj (e : M₁ ≃ₗ[R] M₂) (φ : Module.End R M�
   rw [← LinearMap.charpoly_toMatrix φ b, ← LinearMap.charpoly_toMatrix (e.conj φ) (b.map e)]
   congr 1
   ext i j : 1
-  simp [LinearMap.toMatrix, LinearEquiv.conj_apply]
+  simp [LinearMap.toMatrix]
 
 namespace Matrix
 

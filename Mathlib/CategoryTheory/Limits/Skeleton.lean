@@ -3,8 +3,9 @@ Copyright (c) 2025 Fernando Chu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fernando Chu
 -/
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Skeletal
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Limits
 
 /-!
 # (Co)limits of the skeleton of a category
@@ -19,6 +20,8 @@ If this is something we really want, we should consider changing the category in
 `ThinSkeleton C`.
 -/
 
+public section
+
 noncomputable section
 
 open CategoryTheory ThinSkeleton
@@ -28,7 +31,6 @@ namespace CategoryTheory.Limits
 universe v₁ u₁ v₂ u₂ v₃ u₃ w w'
 
 variable {J : Type u₁} [Category.{v₁} J] {C : Type u₂} [Category.{v₂} C]
-  {D : Type u₃} [Category.{v₃} D]
 
 instance hasLimitsOfShape_skeleton [HasLimitsOfShape J C] : HasLimitsOfShape J (Skeleton C) :=
   hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape (fromSkeleton C)

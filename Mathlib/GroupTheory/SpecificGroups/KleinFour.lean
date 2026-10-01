@@ -3,7 +3,9 @@ Copyright (c) 2023 Newell Jensen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen
 -/
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
+module
+
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 /-!
 # Klein Four Group
@@ -39,7 +41,9 @@ produces the third one.
 non-cyclic abelian group
 -/
 
-/-! # Klein four-groups as a mixin class -/
+@[expose] public section
+
+/-! ### Klein four-groups as a mixin class -/
 
 /-- An (additive) Klein four-group is an (additive) group of cardinality four and exponent two. -/
 class IsAddKleinFour (G : Type*) [AddGroup G] : Prop where
@@ -69,9 +73,15 @@ instance {G : Type*} [AddGroup G] [IsAddKleinFour G] : IsKleinFour (Multiplicati
 
 namespace IsKleinFour
 
+@[to_additive]
+theorem isMulCommutative {G : Type*} [Group G] [IsKleinFour G] :
+    IsMulCommutative G where
+  is_comm.comm := mul_comm_of_exponent_two exponent_two
+
 /-- This instance is scoped, because it always applies (which makes linting and typeclass inference
 potentially *a lot* slower). -/
-@[to_additive]
+@[to_additive /-- This instance is scoped, because it always applies (which makes linting and
+typeclass inference potentially *a lot* slower). -/]
 scoped instance instFinite {G : Type*} [Group G] [IsKleinFour G] : Finite G :=
   Nat.finite_of_card_ne_zero <| by simp [IsKleinFour.card_four]
 

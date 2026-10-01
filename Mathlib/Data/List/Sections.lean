@@ -3,7 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Forall2
+module
+
+public import Mathlib.Data.List.Forall2
 /-!
 # List sections
 
@@ -11,8 +13,10 @@ This file proves some stuff about `List.sections` (definition in `Data.List.Defs
 list of lists `[l₁, ..., lₙ]` is a list whose `i`-th element comes from the `i`-th list.
 -/
 
+public section
 
-open Nat Function
+
+open Nat
 
 namespace List
 

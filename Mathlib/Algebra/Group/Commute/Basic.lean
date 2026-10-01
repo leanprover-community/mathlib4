@@ -3,13 +3,17 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Commute.Defs
-import Mathlib.Algebra.Group.Semiconj.Basic
+module
+
+public import Mathlib.Algebra.Group.Commute.Defs
+public import Mathlib.Algebra.Group.Semiconj.Basic
 
 /-!
 # Additional lemmas about commuting pairs of elements in monoids
 
 -/
+
+public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 
@@ -78,10 +82,18 @@ lemma inv_left_iff : Commute a⁻¹ b ↔ Commute a b := SemiconjBy.inv_symm_lef
 
 @[to_additive] alias ⟨_, inv_left⟩ := inv_left_iff
 
+variable (a) in
+theorem inv_left_self : Commute a⁻¹ a :=
+  (Commute.refl a).inv_left
+
 @[to_additive (attr := simp)]
 lemma inv_right_iff : Commute a b⁻¹ ↔ Commute a b := SemiconjBy.inv_right_iff
 
 @[to_additive] alias ⟨_, inv_right⟩ := inv_right_iff
+
+variable (a) in
+theorem inv_right_self : Commute a a⁻¹ :=
+  (Commute.refl a).inv_right
 
 @[to_additive]
 protected lemma inv_mul_cancel (h : Commute a b) : a⁻¹ * b * a = b := by

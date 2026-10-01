@@ -3,17 +3,21 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Scalar
-import Mathlib.Data.Finite.Prod
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+public import Mathlib.Basic.Finite.Prod
 
 /-! # Finiteness lemmas for pointwise operations on sets -/
 
+public section
+
 assert_not_exists MulAction MonoidWithZero
 
-open Pointwise
+open scoped Pointwise
 
-variable {F α β γ : Type*}
+variable {α β : Type*}
 
 namespace Set
 
@@ -87,14 +91,15 @@ theorem Infinite.of_smul_set : (a • s).Infinite → s.Infinite :=
 
 end HasSMulSet
 
-section Vsub
+section SDiv
 
-variable [VSub α β] {s t : Set β}
+variable [SDiv α β] {s t : Set β}
 
-theorem Finite.vsub (hs : s.Finite) (ht : t.Finite) : Set.Finite (s -ᵥ t) :=
+@[to_additive]
+theorem Finite.sdiv (hs : s.Finite) (ht : t.Finite) : Set.Finite (s /ₛ t) :=
   hs.image2 _ ht
 
-end Vsub
+end SDiv
 
 section Cancel
 
@@ -178,7 +183,7 @@ theorem card_pow_eq_card_pow_card_univ [∀ k : ℕ, DecidablePred (· ∈ S ^ k
       apply fintypeMul
     refine Set.eq_of_subset_of_card_le ?_ (le_trans (ge_of_eq h) ?_)
     · exact mul_subset_mul Set.Subset.rfl (Set.singleton_subset_iff.mpr ha)
-    · convert key a (S ^ n) (S ^ n * {a}) fun b hb ↦ Set.mul_mem_mul hb (Set.mem_singleton a)
+    · convert key a (S ^ n) (S ^ n * { a }) fun b hb ↦ Set.mul_mem_mul hb (Set.mem_singleton a)
   rw [pow_succ', ← h₂, ← mul_assoc, ← pow_succ', h₂, mul_singleton, forall_mem_image]
   intro x hx
   rwa [mul_inv_cancel_right]

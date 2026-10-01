@@ -3,9 +3,11 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Algebra.Star.Pi
-import Mathlib.LinearAlgebra.Matrix.RowCol
+module
+
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Algebra.Order.Star.Pi
+public import Mathlib.LinearAlgebra.Matrix.RowCol
 
 /-!
 # Dot product of two vectors
@@ -25,6 +27,8 @@ vectors `v w : n → R` to the sum of the entrywise products `v i * w i`.
 matrix
 
 -/
+
+public section
 
 
 variable {m n p R : Type*}
@@ -56,12 +60,12 @@ lemma dotProduct_nonneg_of_nonneg {v w : n → R} (hv : 0 ≤ v) (hw : 0 ≤ w) 
   Finset.sum_nonneg (fun i _ => mul_nonneg (hv i) (hw i))
 
 lemma dotProduct_le_dotProduct_of_nonneg_right {u v w : n → R} (huv : u ≤ v) (hw : 0 ≤ w) :
-    u ⬝ᵥ w ≤ v ⬝ᵥ w :=
-  Finset.sum_le_sum fun i _ => mul_le_mul_of_nonneg_right (huv i) (hw i)
+    u ⬝ᵥ w ≤ v ⬝ᵥ w := by
+  unfold dotProduct; gcongr <;> apply_rules
 
 lemma dotProduct_le_dotProduct_of_nonneg_left {u v w : n → R} (huv : u ≤ v) (hw : 0 ≤ w) :
-    w ⬝ᵥ u ≤ w ⬝ᵥ v :=
-  Finset.sum_le_sum (fun i _ => mul_le_mul_of_nonneg_left (huv i) (hw i))
+    w ⬝ᵥ u ≤ w ⬝ᵥ v := by
+  unfold dotProduct; gcongr <;> apply_rules
 
 end OrderedSemiring
 
@@ -89,19 +93,18 @@ theorem dotProduct_star_self_nonneg (v : n → R) : 0 ≤ star v ⬝ᵥ v :=
 theorem dotProduct_self_star_nonneg (v : n → R) : 0 ≤ v ⬝ᵥ star v :=
   Fintype.sum_nonneg fun _ => mul_star_self_nonneg _
 
-variable [NoZeroDivisors R]
+variable [IsProperStar R]
 
 /-- Note that this applies to `ℂ` via `RCLike.toStarOrderedRing`. -/
 @[simp]
 theorem dotProduct_star_self_eq_zero {v : n → R} : star v ⬝ᵥ v = 0 ↔ v = 0 :=
   (Fintype.sum_eq_zero_iff_of_nonneg fun _ => star_mul_self_nonneg _).trans <|
-    by simp [funext_iff, mul_eq_zero]
+    by simp [funext_iff]
 
 /-- Note that this applies to `ℂ` via `RCLike.toStarOrderedRing`. -/
 @[simp]
-theorem dotProduct_self_star_eq_zero {v : n → R} : v ⬝ᵥ star v = 0 ↔ v = 0 :=
-  (Fintype.sum_eq_zero_iff_of_nonneg fun _ => mul_star_self_nonneg _).trans <|
-    by simp [funext_iff, mul_eq_zero]
+theorem dotProduct_self_star_eq_zero {v : n → R} : v ⬝ᵥ star v = 0 ↔ v = 0 := by
+  simp [dotProduct, Finset.sum_eq_zero_iff_of_nonneg, funext_iff]
 
 namespace Matrix
 
@@ -111,11 +114,12 @@ lemma conjTranspose_mul_self_eq_zero {n} {A : Matrix m n R} : Aᴴ * A = 0 ↔ A
     (congr_fun <| dotProduct_star_self_eq_zero.1 <| Matrix.ext_iff.2 h j j) i,
   fun h => h ▸ Matrix.mul_zero _⟩
 
+instance : IsProperStar (Matrix m m R) where
+  eq_zero_of_star_mul_self_eq_zero := by simp [star_eq_conjTranspose]
+
 @[simp]
-lemma self_mul_conjTranspose_eq_zero {m} {A : Matrix m n R} : A * Aᴴ = 0 ↔ A = 0 :=
-  ⟨fun h => Matrix.ext fun i j =>
-    (congr_fun <| dotProduct_self_star_eq_zero.1 <| Matrix.ext_iff.2 h i i) j,
-  fun h => h ▸ Matrix.zero_mul _⟩
+lemma self_mul_conjTranspose_eq_zero {m} {A : Matrix m n R} : A * Aᴴ = 0 ↔ A = 0 := by
+  simpa using conjTranspose_mul_self_eq_zero (A := Aᴴ)
 
 lemma conjTranspose_mul_self_mul_eq_zero {p} (A : Matrix m n R) (B : Matrix n p R) :
     (Aᴴ * A) * B = 0 ↔ A * B = 0 := by
@@ -159,18 +163,11 @@ lemma vecMul_self_mul_conjTranspose_eq_zero (A : Matrix m n R) (v : m → R) :
 @[simp]
 theorem dotProduct_star_self_pos_iff {v : n → R} :
     0 < star v ⬝ᵥ v ↔ v ≠ 0 := by
-  nontriviality R
-  refine (Fintype.sum_pos_iff_of_nonneg fun i => star_mul_self_nonneg _).trans ?_
-  simp_rw [Pi.lt_def, Function.ne_iff, Pi.zero_apply]
-  refine (and_iff_right fun i => star_mul_self_nonneg (v i)).trans <| exists_congr fun i => ?_
-  constructor
-  · rintro h hv
-    simp [hv] at h
-  · exact (star_mul_self_pos <| isRegular_of_ne_zero ·)
+  simp [dotProduct, Finset.sum_pos_iff_of_nonneg, funext_iff]
 
 /-- Note that this applies to `ℂ` via `RCLike.toStarOrderedRing`. -/
 @[simp]
-theorem dotProduct_self_star_pos_iff {v : n → R} : 0 < dotProduct v (star v) ↔ v ≠ 0 := by
+theorem dotProduct_self_star_pos_iff {v : n → R} : 0 < v ⬝ᵥ star v ↔ v ≠ 0 := by
   simpa using dotProduct_star_self_pos_iff (v := star v)
 
 end Matrix

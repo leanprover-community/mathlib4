@@ -3,7 +3,9 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
+module
+
+public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 
 /-! # Quadratic form on product and pi types
 
@@ -28,6 +30,8 @@ non-negative elements, and would generalize to any map `Q` where `Q 0 = 0`, not 
 forms specifically.
 
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -59,7 +63,7 @@ def IsometryEquiv.prod
     {Q₁' : QuadraticMap R N₁ P} {Q₂' : QuadraticMap R N₂ P}
     (e₁ : Q₁.IsometryEquiv Q₁') (e₂ : Q₂.IsometryEquiv Q₂') :
     (Q₁.prod Q₂).IsometryEquiv (Q₁'.prod Q₂') where
-  map_app' x := congr_arg₂ (· + ·) (e₁.map_app x.1) (e₂.map_app x.2)
+  map_app' x := congr($(e₁.map_app x.1) + $(e₂.map_app x.2))
   toLinearEquiv := LinearEquiv.prodCongr e₁.toLinearEquiv e₂.toLinearEquiv
 
 /-- `LinearMap.inl` as an isometry. -/
@@ -176,7 +180,7 @@ theorem PosDef.prod [PartialOrder P] [AddLeftMono P]
 theorem IsOrtho.prod {Q₁ : QuadraticMap R M₁ P} {Q₂ : QuadraticMap R M₂ P}
     {v w : M₁ × M₂} (h₁ : Q₁.IsOrtho v.1 w.1) (h₂ : Q₂.IsOrtho v.2 w.2) :
     (Q₁.prod Q₂).IsOrtho v w :=
-  (congr_arg₂ HAdd.hAdd h₁ h₂).trans <| add_add_add_comm _ _ _ _
+  congr($h₁ + $h₂).trans <| add_add_add_comm _ _ _ _
 
 @[simp] theorem IsOrtho.inl_inr {Q₁ : QuadraticMap R M₁ P} {Q₂ : QuadraticMap R M₂ P}
     (m₁ : M₁) (m₂ : M₂) :
@@ -205,6 +209,7 @@ variable [CommRing R]
 variable [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup P]
 variable [Module R M₁] [Module R M₂] [Module R P]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp] theorem polar_prod (Q₁ : QuadraticMap R M₁ P) (Q₂ : QuadraticMap R M₂ P) (x y : M₁ × M₂) :
     polar (Q₁.prod Q₂) x y = polar Q₁ x.1 y.1 + polar Q₂ x.2 y.2 := by
   dsimp [polar]

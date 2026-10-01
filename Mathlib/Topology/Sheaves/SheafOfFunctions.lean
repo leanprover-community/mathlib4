@@ -3,8 +3,10 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison
 -/
-import Mathlib.Topology.Sheaves.PresheafOfFunctions
-import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
+module
+
+public import Mathlib.Topology.Sheaves.PresheafOfFunctions
+public import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
 
 /-!
 # Sheaf conditions for presheaves of (continuous) functions.
@@ -15,7 +17,8 @@ We show that
 
 For
 * `Top.sheafToTop`: continuous functions into a topological space form a sheaf
-please see `Topology/Sheaves/LocalPredicate.lean`, where we set up a general framework
+
+please see `Mathlib/Topology/Sheaves/LocalPredicate.lean`, where we set up a general framework
 for constructing sub(pre)sheaves of the sheaf of dependent functions.
 
 ## Future work
@@ -25,8 +28,10 @@ Obviously there's more to do:
 * functions into spaces with algebraic structure, which the sections inherit
 -/
 
+@[expose] public section
 
-open CategoryTheory Limits TopologicalSpace Opens
+
+open CategoryTheory TopologicalSpace Opens
 
 noncomputable section
 
@@ -62,14 +67,14 @@ theorem toTypes_isSheaf (T : X → Type*) : (presheafToTypes X T).IsSheaf :=
       -- we may have used the axiom of choice to pick a different `j` with `x ∈ U j`
       -- when defining the function.
       -- Thus we'll need to use the fact that the restrictions are compatible.
-      exact congr_fun (hsf (index ⟨x, _⟩) i) ⟨x, ⟨index_spec ⟨x.1, _⟩, x.2⟩⟩
+      congrm $(hsf (index ⟨x, _⟩) i) ⟨x, ⟨index_spec ⟨x.1, _⟩, x.2⟩⟩
     · -- Now we just need to check that the lift we picked was the only possible one.
       -- So we suppose we had some other gluing `t` of our sections
       intro t ht
       -- and observe that we need to check that it agrees with our choice
       -- for each `x ∈ ↑(iSup U)`.
       funext x
-      exact congr_fun (ht (index x)) ⟨x.1, index_spec x⟩
+      congrm $(ht (index x)) ⟨x.1, index_spec x⟩
 
 -- We verify that the non-dependent version is an immediate consequence:
 /-- The presheaf of not-necessarily-continuous functions to

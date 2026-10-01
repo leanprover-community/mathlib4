@@ -3,8 +3,10 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.RingTheory.SimpleModule.Basic
-import Mathlib.Topology.Algebra.Module.Basic
+module
+
+public import Mathlib.RingTheory.SimpleModule.Basic
+public import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # The kernel of a linear function is closed or dense
@@ -13,6 +15,8 @@ In this file we prove (`LinearMap.isClosed_or_dense_ker`) that the kernel of a l
 `f : M →ₗ[R] N` is either closed or dense in `M` provided that `N` is a simple module over `R`. This
 applies, e.g., to the case when `R = N` is a division ring.
 -/
+
+public section
 
 
 universe u v w

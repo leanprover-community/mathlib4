@@ -3,9 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Jacobson.Ring
-import Mathlib.RingTheory.Spectrum.Prime.Noetherian
-import Mathlib.Topology.JacobsonSpace
+module
+
+public import Mathlib.RingTheory.Jacobson.Ring
+public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
+public import Mathlib.Topology.JacobsonSpace
 
 /-!
 # The prime spectrum of a Jacobson ring
@@ -20,6 +22,8 @@ import Mathlib.Topology.JacobsonSpace
   3. `{x}` is both closed and stable under generalization
     (i.e. `x` is both a minimal prime and a maximal ideal)
 -/
+
+public section
 
 open Ideal
 
@@ -50,7 +54,7 @@ instance [IsJacobsonRing R] : JacobsonSpace (PrimeSpectrum R) := by
   simp only [Set.nonempty_iff_ne_empty, ne_eq, Set.inter_assoc,
     ← Set.disjoint_iff_inter_eq_empty, Set.disjoint_compl_left_iff_subset,
     zeroLocus_subset_zeroLocus_iff, Ideal.radical_eq_jacobson, Ideal.jacobson, le_sInf_iff] at hS ⊢
-  contrapose! hS
+  contrapose hS
   rintro x ⟨hJx, hx⟩
   exact @hS ⟨x, hx.isPrime⟩ ⟨hJx, (isClosed_singleton_iff_isMaximal _).mpr hx⟩
 
@@ -89,9 +93,9 @@ lemma isOpen_singleton_tfae_of_isNoetherian_of_isJacobsonRing
     suffices {x} = (⋃ p ∈ { p : PrimeSpectrum R | IsMin p ∧ p ≠ x }, closure {p})ᶜ by
       rw [this, isOpen_compl_iff]
       refine Set.Finite.isClosed_biUnion ?_ (fun _ _ ↦ isClosed_closure)
-      exact (finite_setOf_isMin R).subset fun x h ↦ h.1
+      exact (finite_setOfPred_isMin R).subset fun x h ↦ h.1
     ext p
-    simp only [Set.mem_singleton_iff, ne_eq, Set.mem_setOf_eq, Set.compl_iUnion, Set.mem_iInter,
+    simp only [Set.mem_singleton_iff, ne_eq, Set.mem_ofPred_eq, Set.compl_iUnion, Set.mem_iInter,
       Set.mem_compl_iff, and_imp, ← specializes_iff_mem_closure, ← le_iff_specializes,
       not_imp_not]
     constructor

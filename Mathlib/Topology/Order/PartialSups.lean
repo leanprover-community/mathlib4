@@ -3,8 +3,9 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Order.Lattice
-import Mathlib.Order.PartialSups
+module
+
+public import Mathlib.Topology.Order.Lattice
 
 /-!
 # Continuity of `partialSups`
@@ -12,6 +13,8 @@ import Mathlib.Order.PartialSups
 In this file we prove that `partialSups` of a sequence of continuous functions is continuous
 as well as versions for `Filter.Tendsto`, `ContinuousAt`, `ContinuousWithinAt`, and `ContinuousOn`.
 -/
+
+public section
 
 open Filter
 open scoped Topology

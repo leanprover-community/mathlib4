@@ -3,14 +3,16 @@ Copyright (c) 2017 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
-import Mathlib.Data.Fin.SuccPred
-import Mathlib.Logic.Embedding.Basic
+module
+
+public import Mathlib.Data.Fin.SuccPred
+public import Mathlib.Logic.Embedding.Basic
 
 /-!
 # Embeddings of `Fin n`
 
 `Fin n` is the type whose elements are natural numbers smaller than `n`.
-This file defines embeddings between `Fin n` and other types,
+This file defines embeddings between `Fin n` and other types.
 
 ## Main definitions
 
@@ -24,6 +26,8 @@ This file defines embeddings between `Fin n` and other types,
 * `Fin.natAddEmb n i` : `Fin.natAdd` as an `Embedding`, adds `n` on `i` on the left;
 
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid Finset
 
@@ -66,9 +70,6 @@ def succEmb (n : ℕ) : Fin n ↪ Fin (n + 1) where
 theorem coe_succEmb : ⇑(succEmb n) = Fin.succ :=
   rfl
 
-@[deprecated (since := "2025-04-12")]
-alias val_succEmb := coe_succEmb
-
 attribute [simp] castSucc_inj
 
 /-- `Fin.castLE` as an `Embedding`, `castLEEmb h i` embeds `i` into a larger `Fin` type. -/
@@ -88,7 +89,7 @@ lemma nonempty_embedding_iff : Nonempty (Fin n ↪ Fin m) ↔ n ≤ m := by
   | zero => exact m.zero_le
   | succ n ihn =>
     obtain ⟨e⟩ := h
-    rcases exists_eq_succ_of_ne_zero (pos_iff_nonempty.2 (Nonempty.map e inferInstance)).ne'
+    rcases exists_eq_succ_of_ne_zero (Nat.ne_of_gt (pos_iff_nonempty.2 ⟨e 0⟩))
       with ⟨m, rfl⟩
     refine Nat.succ_le_succ <| ihn ⟨?_⟩
     refine ⟨fun i ↦ (e.setValue 0 0 i.succ).pred (mt e.setValue_eq_iff.1 i.succ_ne_zero),
@@ -96,7 +97,7 @@ lemma nonempty_embedding_iff : Nonempty (Fin n ↪ Fin m) ↔ n ≤ m := by
     simpa only [pred_inj, EmbeddingLike.apply_eq_iff_eq, succ_inj] using h
 
 lemma equiv_iff_eq : Nonempty (Fin m ≃ Fin n) ↔ m = n :=
-  ⟨fun ⟨e⟩ ↦ le_antisymm (nonempty_embedding_iff.1 ⟨e⟩) (nonempty_embedding_iff.1 ⟨e.symm⟩),
+  ⟨fun ⟨e⟩ ↦ Nat.le_antisymm (nonempty_embedding_iff.1 ⟨e⟩) (nonempty_embedding_iff.1 ⟨e.symm⟩),
     fun h ↦ h ▸ ⟨.refl _⟩⟩
 
 /-- `Fin.castAdd` as an `Embedding`, `castAddEmb m i` embeds `i : Fin n` in `Fin (n+m)`.
@@ -144,13 +145,13 @@ at the end of the latter.
 `natAdd_castLEEmb hmn i` maps `i : Fin m` to `i + (m - n) : Fin n` by adding `m - n` to `i` -/
 @[simps!]
 def natAdd_castLEEmb (hmn : n ≤ m) : Fin n ↪ Fin m :=
-  (addNatEmb (m - n)).trans (finCongr (by cutsat)).toEmbedding
+  (addNatEmb (m - n)).trans (finCongr (by lia)).toEmbedding
 
 lemma range_natAdd_castLEEmb {n m : ℕ} (hmn : n ≤ m) :
     Set.range (natAdd_castLEEmb hmn) = {i | m - n ≤ i.1} := by
   simp only [natAdd_castLEEmb, Nat.sub_le_iff_le_add]
   ext y
-  exact ⟨fun ⟨x, hx⟩ ↦ by simp [← hx]; cutsat,
+  exact ⟨fun ⟨x, hx⟩ ↦ by simp [← hx]; lia,
     fun xin ↦ ⟨subNat (m - n) (y.cast (Nat.add_sub_of_le hmn).symm)
     (Nat.sub_le_of_le_add xin), by simp⟩⟩
 

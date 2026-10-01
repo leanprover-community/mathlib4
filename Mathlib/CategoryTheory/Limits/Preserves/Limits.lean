@@ -3,7 +3,9 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Isomorphisms about functors which preserve (co)limits
@@ -14,8 +16,10 @@ We also show that we can commute `IsLimit.lift` of a preserved limit with `Funct
 `(PreservesLimit.preserves t).lift (G.mapCone c₂) = G.map (t.lift c₂)`.
 
 The duals of these are also given. For functors which preserve (co)limits of specific shapes, see
-`preserves/shapes.lean`.
+the files in the directory `Mathlib/CategoryTheory/Limits/Preserves/Shapes/`.
 -/
+
+@[expose] public section
 
 
 universe w' w v₁ v₂ u₁ u₂
@@ -36,6 +40,7 @@ section
 
 variable [PreservesLimit F G]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem preserves_lift_mapCone (c₁ c₂ : Cone F) (t : IsLimit c₁) :
     (isLimitOfPreserves G t).lift (G.mapCone c₂) = G.map (t.lift c₂) :=
@@ -71,6 +76,7 @@ instance : IsIso (limit.post F G) :=
 
 variable [PreservesLimitsOfShape J G] [HasLimitsOfShape J D] [HasLimitsOfShape J C]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `C, D` has all limits of shape `J`, and `G` preserves them, then `preservesLimitsIso` is
 functorial w.r.t. `F`. -/
 @[simps!]
@@ -138,6 +144,7 @@ instance : IsIso (colimit.post F G) :=
 
 variable [PreservesColimitsOfShape J G] [HasColimitsOfShape J D] [HasColimitsOfShape J C]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `C, D` has all colimits of shape `J`, and `G` preserves them, then `preservesColimitIso`
 is functorial w.r.t. `F`. -/
 @[simps!]

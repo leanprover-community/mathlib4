@@ -3,10 +3,13 @@ Copyright (c) 2023 Andrea Laretto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrea Laretto, Fernando Chu
 -/
-import Mathlib.CategoryTheory.Opposites
+module
+
+public import Mathlib.CategoryTheory.Opposites
 
 /-!
 # Dinatural transformations
+
 Dinatural transformations are special kinds of transformations between
 functors `F G : Cᵒᵖ ⥤ C ⥤ D` which depend both covariantly and contravariantly
 on the same category (also known as difunctors).
@@ -20,6 +23,8 @@ ordinary natural transformations.
 ## References
 * <https://ncatlab.org/nlab/show/dinatural+transformation>
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

@@ -3,14 +3,17 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
-import Mathlib.LinearAlgebra.Prod
-import Mathlib.LinearAlgebra.Basis.Defs
-import Mathlib.LinearAlgebra.Finsupp.SumProd
-import Mathlib.LinearAlgebra.FreeModule.Basic
+module
+
+public import Mathlib.LinearAlgebra.Prod
+public import Mathlib.LinearAlgebra.Finsupp.SumProd
+public import Mathlib.LinearAlgebra.FreeModule.Basic
 
 /-!
 # Bases for the product of modules
 -/
+
+@[expose] public section
 
 assert_not_exists Ordinal
 
@@ -18,9 +21,9 @@ noncomputable section
 
 universe u
 
-open Function Set Submodule Finsupp
+open Function Finsupp
 
-variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {M : Type*} {M' : Type*}
+variable {ι : Type*} {ι' : Type*} {R : Type*} {M : Type*} {M' : Type*}
 
 namespace Module.Basis
 
@@ -59,7 +62,7 @@ theorem prod_apply_inr_fst (i) : (b.prod b' (Sum.inr i)).1 = 0 :=
     simp only [Basis.prod, Basis.coe_ofRepr, LinearEquiv.symm_trans_apply,
       LinearEquiv.prodCongr_symm, LinearEquiv.prodCongr_apply, b.repr.apply_symm_apply,
       LinearEquiv.symm_symm, Finsupp.fst_sumFinsuppLEquivProdFinsupp,
-      LinearEquiv.map_zero, Finsupp.zero_apply]
+      map_zero, Finsupp.zero_apply]
     apply Finsupp.single_eq_of_ne Sum.inl_ne_inr
 
 theorem prod_apply_inl_snd (i) : (b.prod b' (Sum.inl i)).2 = 0 :=
@@ -68,7 +71,7 @@ theorem prod_apply_inl_snd (i) : (b.prod b' (Sum.inl i)).2 = 0 :=
     simp only [Basis.prod, Basis.coe_ofRepr, LinearEquiv.symm_trans_apply,
       LinearEquiv.prodCongr_symm, LinearEquiv.prodCongr_apply, b'.repr.apply_symm_apply,
       LinearEquiv.symm_symm, Finsupp.snd_sumFinsuppLEquivProdFinsupp,
-      LinearEquiv.map_zero, Finsupp.zero_apply]
+      map_zero, Finsupp.zero_apply]
     apply Finsupp.single_eq_of_ne Sum.inr_ne_inl
 
 theorem prod_apply_inr_snd (i) : (b.prod b' (Sum.inr i)).2 = b' i :=

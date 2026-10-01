@@ -3,7 +3,10 @@ Copyright (c) 2024 Vasily Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
-import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
+module
+
+public meta import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
+public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
 
 /-!
 # Gaussian Elimination algorithm
@@ -11,6 +14,8 @@ import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
 The first step of `Linarith.SimplexAlgorithm.findPositiveVector` is finding initial feasible
 solution which is done by standard Gaussian Elimination algorithm implemented in this file.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Linarith.SimplexAlgorithm.Gauss
 
@@ -60,13 +65,13 @@ def getTableauImp : GaussM n m matType <| Tableau matType := do
   for i in [col:m] do
     free := free.push i
 
-  let ansMatrix : matType basic.size free.size := ← do
+  let ansMatrix : matType basic.size free.size ← do
     let vals := getValues (← get) |>.filterMap fun (i, j, v) =>
       if j == basic[i]! then
         none
       else
         some (i, free.findIdx? (· == j) |>.get!, -v)
-    return ofValues vals
+    pure <| ofValues vals
 
   return ⟨basic, free, ansMatrix⟩
 

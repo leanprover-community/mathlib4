@@ -3,9 +3,10 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+module
+
+public import Mathlib.Algebra.Category.MonCat.Basic
+public import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # The category of monoids has all colimits.
@@ -46,13 +47,13 @@ Monoid.mk : {M : Type u} →
 ```
 -/
 
+@[expose] public section
+
 assert_not_exists MonoidWithZero
 
 universe v u
 
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 namespace MonCat.Colimits
 
@@ -85,18 +86,18 @@ open Prequotient
 because of the monoid laws, or
 because one element is mapped to another by a morphism in the diagram.
 -/
-inductive Relation : Prequotient F → Prequotient F → Prop-- Make it an equivalence relation:
+inductive Relation : Prequotient F → Prequotient F → Prop -- Make it an equivalence relation:
   | refl : ∀ x, Relation x x
   | symm : ∀ (x y) (_ : Relation x y), Relation y x
   | trans : ∀ (x y z) (_ : Relation x y) (_ : Relation y z),
-      Relation x z-- There's always a `map` relation
+      Relation x z -- There's always a `map` relation
   | map :
     ∀ (j j' : J) (f : j ⟶ j') (x : F.obj j),
-      Relation (Prequotient.of j' ((F.map f) x))
-        (Prequotient.of j x)-- Then one relation per operation, describing the interaction with `of`
+      -- Then one relation per operation, describing the interaction with `of`
+      Relation (Prequotient.of j' ((F.map f) x)) (Prequotient.of j x)
   | mul : ∀ (j) (x y : F.obj j), Relation (Prequotient.of j (x * y))
       (mul (Prequotient.of j x) (Prequotient.of j y))
-  | one : ∀ j, Relation (Prequotient.of j 1) one-- Then one relation per argument of each operation
+  | one : ∀ j, Relation (Prequotient.of j 1) one -- Then one relation per argument of each operation
   | mul_1 : ∀ (x x' y) (_ : Relation x x'), Relation (mul x y) (mul x' y)
   | mul_2 : ∀ (x y y') (_ : Relation y y'), Relation (mul x y) (mul x y')
     -- And one relation per axiom
@@ -106,20 +107,15 @@ inductive Relation : Prequotient F → Prequotient F → Prop-- Make it an equiv
 
 /-- The setoid corresponding to monoid expressions modulo monoid relations and identifications.
 -/
-def colimitSetoid : Setoid (Prequotient F) where
+instance colimitSetoid : Setoid (Prequotient F) where
   r := Relation F
   iseqv := ⟨Relation.refl, Relation.symm _ _, Relation.trans _ _ _⟩
-
-attribute [instance] colimitSetoid
 
 /-- The underlying type of the colimit of a diagram in `MonCat`.
 -/
 def ColimitType : Type v :=
   Quotient (colimitSetoid F)
-
-instance : Inhabited (ColimitType F) := by
-  dsimp [ColimitType]
-  infer_instance
+deriving Inhabited
 
 instance monoidColimitType : Monoid (ColimitType F) where
   one := Quotient.mk _ one
@@ -168,6 +164,7 @@ theorem cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
   rw [← cocone_naturality F f]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The cocone over the proposed colimit monoid. -/
 def colimitCocone : Cocone F where
   pt := colimit F
@@ -192,8 +189,8 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
     | map j j' f x => exact s.w_apply f x
     | mul j x y => exact map_mul (s.ι.app j).hom x y
     | one j => exact map_one (s.ι.app j).hom
-    | mul_1 x x' y _ h => exact congr_arg (· * _) h
-    | mul_2 x y y' _ h => exact congr_arg (_ * ·) h
+    | mul_1 x x' y _ h => congrm $h * _
+    | mul_2 x y y' _ h => congrm _ * $h
     | mul_assoc x y z => exact mul_assoc _ _ _
     | one_mul x => exact one_mul _
     | mul_one x => exact mul_one _
@@ -208,6 +205,7 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt :=
       induction y using Quot.inductionOn
       solve_by_elim }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitIsColimit : IsColimit (colimitCocone F) where
   desc s := descMorphism F s

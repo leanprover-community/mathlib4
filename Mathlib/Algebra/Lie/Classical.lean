@@ -3,12 +3,11 @@ Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Data.Matrix.Basis
-import Mathlib.Data.Matrix.DMatrix
-import Mathlib.Algebra.Lie.Abelian
-import Mathlib.LinearAlgebra.Matrix.Trace
-import Mathlib.Algebra.Lie.SkewAdjoint
-import Mathlib.LinearAlgebra.SymplecticGroup
+module
+
+public import Mathlib.Algebra.Lie.Abelian
+public import Mathlib.Algebra.Lie.SkewAdjoint
+public import Mathlib.LinearAlgebra.SymplecticGroup
 
 /-!
 # Classical Lie algebras
@@ -63,6 +62,8 @@ definitions are equivalent. Similarly for the algebras of type `B`.
 classical lie algebra, special linear, symplectic, orthogonal
 -/
 
+@[expose] public section
+
 
 universe u₁ u₂
 
@@ -70,10 +71,8 @@ namespace LieAlgebra
 
 open Matrix
 
-open scoped Matrix
-
 variable (n p q l : Type*) (R : Type u₂)
-variable [DecidableEq n] [DecidableEq p] [DecidableEq q] [DecidableEq l]
+variable [DecidableEq p] [DecidableEq q] [DecidableEq l]
 variable [CommRing R]
 
 @[simp]
@@ -81,8 +80,11 @@ theorem matrix_trace_commutator_zero [Fintype n] (X Y : Matrix n n R) : Matrix.t
   calc
     _ = Matrix.trace (X * Y) - Matrix.trace (Y * X) := trace_sub _ _
     _ = Matrix.trace (X * Y) - Matrix.trace (X * Y) :=
-      (congr_arg (fun x => _ - x) (Matrix.trace_mul_comm Y X))
+      congr(_ - $(Matrix.trace_mul_comm Y X))
     _ = 0 := sub_self _
+
+variable [DecidableEq n]
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 namespace SpecialLinear
 
@@ -104,13 +106,9 @@ Along with some elements produced by `singleSubSingle`, these form a natural bas
 def single (h : i ≠ j) : R →ₗ[R] sl n R :=
   Matrix.singleLinearMap R i j |>.codRestrict _ fun r => Matrix.trace_single_eq_of_ne i j r h
 
-@[deprecated (since := "2025-05-06")] alias Eb := single
-
 @[simp]
 theorem val_single (h : i ≠ j) (r : R) : (single i j h r).val = Matrix.single i j r :=
   rfl
-
-@[deprecated (since := "2025-05-06")] alias eb_val := val_single
 
 /-- The matrices with matching positive and negative elements on the diagonal are elements of
 `sl n R`. Along with `single`, a subset of these form a basis for `sl n R`. -/
@@ -148,7 +146,7 @@ theorem sl_non_abelian [Fintype n] [Nontrivial R] (h : 1 < Fintype.card n) :
   intro c
   have c' : A.val * B.val = B.val * A.val := by
     rw [← sub_eq_zero, ← sl_bracket, c.trivial, ZeroMemClass.coe_zero]
-  simpa [A, B, Matrix.single, Matrix.mul_apply, hij.symm] using congr_fun (congr_fun c' i) i
+  simpa [A, B, Matrix.single, Matrix.mul_apply, hij.symm] using congr($c' i i)
 
 end SpecialLinear
 
@@ -190,7 +188,7 @@ def Pso (i : R) : Matrix (p ⊕ q) (p ⊕ q) R :=
 variable [Fintype p] [Fintype q]
 
 theorem pso_inv {i : R} (hi : i * i = -1) : Pso p q R i * Pso p q R (-i) = 1 := by
-  ext (x y); rcases x with ⟨x⟩|⟨x⟩ <;> rcases y with ⟨y⟩|⟨y⟩
+  ext (x y); rcases x with ⟨x⟩ | ⟨x⟩ <;> rcases y with ⟨y⟩ | ⟨y⟩
   · -- x y : p
     by_cases h : x = y <;>
     simp [Pso, h, one_apply]
@@ -203,12 +201,13 @@ theorem pso_inv {i : R} (hi : i * i = -1) : Pso p q R i * Pso p q R (-i) = 1 := 
     simp [Pso, h, hi, one_apply]
 
 /-- There is a constructive inverse of `Pso p q R i`. -/
+@[instance_reducible]
 def invertiblePso {i : R} (hi : i * i = -1) : Invertible (Pso p q R i) :=
   invertibleOfRightInverse _ _ (pso_inv p q R hi)
 
 theorem indefiniteDiagonal_transform {i : R} (hi : i * i = -1) :
     (Pso p q R i)ᵀ * indefiniteDiagonal p q R * Pso p q R i = 1 := by
-  ext (x y); rcases x with ⟨x⟩|⟨x⟩ <;> rcases y with ⟨y⟩|⟨y⟩
+  ext (x y); rcases x with ⟨x⟩ | ⟨x⟩ <;> rcases y with ⟨y⟩ | ⟨y⟩
   · -- x y : p
     by_cases h : x = y <;>
     simp [Pso, indefiniteDiagonal, h, one_apply]
@@ -229,19 +228,21 @@ noncomputable def soIndefiniteEquiv {i : R} (hi : i * i = -1) : so' p q R ≃ₗ
   apply LieEquiv.ofEq
   ext A; rw [indefiniteDiagonal_transform p q R hi]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem soIndefiniteEquiv_apply {i : R} (hi : i * i = -1) (A : so' p q R) :
     (soIndefiniteEquiv p q R hi A : Matrix (p ⊕ q) (p ⊕ q) R) =
       (Pso p q R i)⁻¹ * (A : Matrix (p ⊕ q) (p ⊕ q) R) * Pso p q R i := by
   rw [soIndefiniteEquiv, LieEquiv.trans_apply, LieEquiv.ofEq_apply]
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [skewAdjointMatricesLieSubalgebraEquiv_apply]
+  simp only [so', skewAdjointMatricesLieSubalgebraEquiv_apply]
 
 /-- A matrix defining a canonical even-rank symmetric bilinear form.
 
 It looks like this as a `2l x 2l` matrix of `l x l` blocks:
 
-   [ 0 1 ]
-   [ 1 0 ]
+```
+[ 0 1 ]
+[ 1 0 ]
+```
 -/
 def JD : Matrix (l ⊕ l) (l ⊕ l) R :=
   Matrix.fromBlocks 0 1 1 0
@@ -256,9 +257,10 @@ diagonal matrix.
 
 It looks like this as a `2l x 2l` matrix of `l x l` blocks:
 
-   [ 1 -1 ]
-   [ 1  1 ]
--/
+```
+[ 1 -1 ]
+[ 1  1 ]
+``` -/
 def PD : Matrix (l ⊕ l) (l ⊕ l) R :=
   Matrix.fromBlocks 1 (-1) 1 1
 
@@ -297,15 +299,19 @@ noncomputable def typeDEquivSo' [Fintype l] [Invertible (2 : R)] : typeD l R ≃
 
 It looks like this as a `(2l+1) x (2l+1)` matrix of blocks:
 
-   [ 2 0 0 ]
-   [ 0 0 1 ]
-   [ 0 1 0 ]
+```
+[ 2 0 0 ]
+[ 0 0 1 ]
+[ 0 1 0 ]
+```
 
 where sizes of the blocks are:
 
-   [`1 x 1` `1 x l` `1 x l`]
-   [`l x 1` `l x l` `l x l`]
-   [`l x 1` `l x l` `l x l`]
+```
+[`1 x 1` `1 x l` `1 x l`]
+[`l x 1` `l x l` `l x l`]
+[`l x 1` `l x l` `l x l`]
+```
 -/
 def JB :=
   Matrix.fromBlocks ((2 : R) • (1 : Matrix Unit Unit R)) 0 0 (JD l R)
@@ -320,16 +326,19 @@ almost-split-signature diagonal matrix.
 
 It looks like this as a `(2l+1) x (2l+1)` matrix of blocks:
 
-   [ 1 0  0 ]
-   [ 0 1 -1 ]
-   [ 0 1  1 ]
+```
+[ 1 0  0 ]
+[ 0 1 -1 ]
+[ 0 1  1 ]
+```
 
 where sizes of the blocks are:
 
-   [`1 x 1` `1 x l` `1 x l`]
-   [`l x 1` `l x l` `l x l`]
-   [`l x 1` `l x l` `l x l`]
--/
+```
+[`1 x 1` `1 x l` `1 x l`]
+[`l x 1` `l x l` `l x l`]
+[`l x 1` `l x l` `l x l`]
+``` -/
 def PB :=
   Matrix.fromBlocks (1 : Matrix Unit Unit R) 0 0 (PD l R)
 
@@ -354,8 +363,8 @@ theorem indefiniteDiagonal_assoc :
   ext ⟨⟨i₁ | i₂⟩ | i₃⟩ ⟨⟨j₁ | j₂⟩ | j₃⟩ <;>
     simp only [indefiniteDiagonal, Matrix.diagonal_apply, Equiv.sumAssoc_apply_inl_inl,
       Matrix.reindexLieEquiv_apply, Matrix.submatrix_apply, Equiv.symm_symm, Matrix.reindex_apply,
-      Sum.elim_inl, if_true, Matrix.one_apply_eq, Matrix.fromBlocks_apply₁₁,
-      Equiv.sumAssoc_apply_inl_inr, if_false, Matrix.fromBlocks_apply₁₂, Matrix.fromBlocks_apply₂₁,
+      Sum.elim_inl, ite_true, Matrix.one_apply_eq, Matrix.fromBlocks_apply₁₁,
+      Equiv.sumAssoc_apply_inl_inr, ite_false, Matrix.fromBlocks_apply₁₂, Matrix.fromBlocks_apply₂₁,
       Matrix.fromBlocks_apply₂₂, Equiv.sumAssoc_apply_inr, Sum.elim_inr, Sum.inl_injective.eq_iff,
       Sum.inr_injective.eq_iff, reduceCtorEq] <;>
     congr 1

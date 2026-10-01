@@ -3,10 +3,12 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Data.Finset.Sort
+module
+
+public import Mathlib.Data.Finset.Sort
 import Mathlib.Tactic.NoncommRing
 import Mathlib.Topology.Category.Profinite.CofilteredLimit
-import Mathlib.Topology.Category.Profinite.Nobeling.Basic
+public import Mathlib.Topology.Category.Profinite.Nobeling.Basic
 
 /-!
 # The good products span
@@ -28,6 +30,8 @@ For the overall proof outline see `Mathlib/Topology/Category/Profinite/Nobeling/
 - [scholze2019condensed], Theorem 5.4.
 -/
 
+@[expose] public section
+
 universe u
 
 namespace Profinite.NobelingProof
@@ -46,9 +50,8 @@ def πJ : LocallyConstant (π C (· ∈ s)) ℤ →ₗ[ℤ] LocallyConstant C �
 theorem eval_eq_πJ (l : Products I) (hl : l.isGood (π C (· ∈ s))) :
     l.eval C = πJ C s (l.eval (π C (· ∈ s))) := by
   ext f
-  simp only [πJ, LocallyConstant.comapₗ, LinearMap.coe_mk, AddHom.coe_mk,
-    LocallyConstant.coe_comap, Function.comp_apply]
-  exact (congr_fun (Products.evalFacProp C (· ∈ s) (Products.prop_of_isGood C (· ∈ s) hl)) _).symm
+  simp only [πJ, LocallyConstant.comapₗ]
+  exact (congr($(Products.evalFacProp C (· ∈ s) (Products.prop_of_isGood C (· ∈ s) hl)) _)).symm
 
 /-- `π C (· ∈ s)` is finite for a finite set `s`. -/
 noncomputable
@@ -58,8 +61,8 @@ instance : Fintype (π C (· ∈ s)) := by
   intro ⟨_, x, hx, rfl⟩ ⟨_, y, hy, rfl⟩ h
   ext i
   by_cases hi : i ∈ s
-  · exact congrFun h ⟨i, hi⟩
-  · simp only [Proj, if_neg hi]
+  · congrm $h ⟨i, hi⟩
+  · simp only [Proj, ite_eq_right hi]
 
 open scoped Classical in
 /-- The Kronecker delta as a locally constant map from `π C (· ∈ s)` to `ℤ`. -/
@@ -70,7 +73,6 @@ def spanFinBasis (x : π C (· ∈ s)) : LocallyConstant (π C (· ∈ s)) ℤ w
     haveI : DiscreteTopology (π C (· ∈ s)) := Finite.instDiscreteTopology
     IsLocallyConstant.of_discrete _
 
-open scoped Classical in
 theorem spanFinBasis.span : ⊤ ≤ Submodule.span ℤ (Set.range (spanFinBasis C s)) := by
   intro f _
   rw [Finsupp.mem_span_range_iff_exists_finsupp]
@@ -94,6 +96,7 @@ theorem list_prod_apply {I} (C : Set (I → Bool)) (x : C) (l : List (LocallyCon
     l.prod x = (l.map (LocallyConstant.evalMonoidHom x)).prod := by
   rw [← map_list_prod (LocallyConstant.evalMonoidHom x) l, LocallyConstant.evalMonoidHom_apply]
 
+set_option backward.defeqAttrib.useBackward true in
 theorem factors_prod_eq_basis_of_eq {x y : (π C fun x ↦ x ∈ s)} (h : y = x) :
     (factors C s x).prod y = 1 := by
   rw [list_prod_apply (π C (· ∈ s)) y _]
@@ -102,15 +105,16 @@ theorem factors_prod_eq_basis_of_eq {x y : (π C fun x ↦ x ∈ s)} (h : y = x)
   rintro _ ⟨a, ⟨b, _, rfl⟩, rfl⟩
   dsimp
   split_ifs with hh
-  · rw [e, LocallyConstant.coe_mk, if_pos hh]
-  · rw [LocallyConstant.sub_apply, e, LocallyConstant.coe_mk, LocallyConstant.coe_mk, if_neg hh]
+  · rw [e, LocallyConstant.coe_mk, ite_eq_left hh]
+  · rw [LocallyConstant.sub_apply, e, LocallyConstant.coe_mk, LocallyConstant.coe_mk,
+      ite_eq_right hh]
     simp only [LocallyConstant.toFun_eq_coe, LocallyConstant.coe_one, Pi.one_apply, sub_zero]
 
 theorem e_mem_of_eq_true {x : (π C (· ∈ s))} {a : I} (hx : x.val a = true) :
     e (π C (· ∈ s)) a ∈ factors C s x := by
   rcases x with ⟨_, z, hz, rfl⟩
   simp only [factors, List.mem_map, Finset.mem_sort]
-  refine ⟨a, ?_, if_pos hx⟩
+  refine ⟨a, ?_, ite_eq_left hx⟩
   aesop (add simp Proj)
 
 theorem one_sub_e_mem_of_false {x y : (π C (· ∈ s))} {a : I} (ha : y.val a = true)
@@ -131,10 +135,10 @@ theorem factors_prod_eq_basis_of_ne {x y : (π C (· ∈ s))} (h : y ≠ x) :
   · rw [hx, ne_eq, Bool.not_eq_false] at ha
     refine ⟨1 - (e (π C (· ∈ s)) a), ⟨one_sub_e_mem_of_false _ _ ha hx, ?_⟩⟩
     rw [e, LocallyConstant.evalMonoidHom_apply, LocallyConstant.sub_apply,
-      LocallyConstant.coe_one, Pi.one_apply, LocallyConstant.coe_mk, if_pos ha, sub_self]
+      LocallyConstant.coe_one, Pi.one_apply, LocallyConstant.coe_mk, ite_eq_left ha, sub_self]
   · refine ⟨e (π C (· ∈ s)) a, ⟨e_mem_of_eq_true _ _ hx, ?_⟩⟩
     rw [hx] at ha
-    rw [LocallyConstant.evalMonoidHom_apply, e, LocallyConstant.coe_mk, if_neg ha]
+    rw [LocallyConstant.evalMonoidHom_apply, e, LocallyConstant.coe_mk, ite_eq_right ha]
 
 /-- If `s` is finite, the product of the elements of the list `factors C s x`
 is the delta function at `x`. -/
@@ -163,9 +167,6 @@ theorem GoodProducts.finsuppSum_mem_span_eval {a : I} {as : List I}
   refine ⟨⟨a :: m.val, ha.cons_of_le m.prop hmas⟩, ⟨List.cons_le_cons a hmas, ?_⟩⟩
   simp only [Products.eval, List.map, List.prod_cons]
 
-@[deprecated (since := "2025-04-06")]
-alias GoodProducts.finsupp_sum_mem_span_eval := GoodProducts.finsuppSum_mem_span_eval
-
 /-- If `s` is a finite subset of `I`, then the good products span. -/
 theorem GoodProducts.spanFin [WellFoundedLT I] :
     ⊤ ≤ Submodule.span ℤ (Set.range (eval (π C (· ∈ s)))) := by
@@ -176,10 +177,12 @@ theorem GoodProducts.spanFin [WellFoundedLT I] :
   rw [← factors_prod_eq_basis]
   let l := s.sort (· ≥ ·)
   dsimp [factors]
-  suffices l.IsChain (· > ·) → (l.map (fun i ↦ if x.val i = true then e (π C (· ∈ s)) i
+  suffices l.SortedGT → (l.map (fun i ↦ if x.val i = true then e (π C (· ∈ s)) i
       else (1 - (e (π C (· ∈ s)) i)))).prod ∈
       Submodule.span ℤ ((Products.eval (π C (· ∈ s))) '' {m | m.val ≤ l}) from
-    Submodule.span_mono (Set.image_subset_range _ _) (this (Finset.sort_sorted_gt _).isChain)
+    Submodule.span_mono (Set.image_subset_range _ _)
+      (this (Finset.sortedGT_sort _))
+  rw [List.sortedGT_iff_isChain]
   induction l with
   | nil =>
     intro _
@@ -188,7 +191,7 @@ theorem GoodProducts.spanFin [WellFoundedLT I] :
   | cons a as ih =>
     rw [List.map_cons, List.prod_cons]
     intro ha
-    specialize ih (by rw [List.isChain_cons'] at ha; exact ha.2)
+    specialize ih (by rw [List.isChain_cons] at ha; exact ha.2)
     rw [Finsupp.mem_span_image_iff_linearCombination] at ih
     simp only [Finsupp.mem_supported, Finsupp.linearCombination_apply] at ih
     obtain ⟨c, hc, hc'⟩ := ih
@@ -208,7 +211,7 @@ theorem GoodProducts.spanFin [WellFoundedLT I] :
         apply Submodule.smul_mem
         apply Submodule.subset_span
         refine ⟨m, ⟨?_, rfl⟩⟩
-        simp only [Set.mem_setOf_eq]
+        simp only [Set.mem_ofPred_eq]
         have hmas : m.val ≤ as :=
           hc (by simpa only [Finset.mem_coe, Finsupp.mem_support_iff] using hm)
         refine le_trans hmas ?_

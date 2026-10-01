@@ -3,8 +3,10 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Extreme
-import Mathlib.Dynamics.Ergodic.Function
+module
+
+public import Mathlib.Analysis.Convex.Extreme
+public import Mathlib.Dynamics.Ergodic.Function
 import Mathlib.Dynamics.Ergodic.RadonNikodym
 import Mathlib.Probability.ConditionalProbability
 
@@ -15,6 +17,8 @@ In this file we prove that a finite measure `μ` is an ergodic measure for a sel
 iff it is an extreme point of the set of invariant measures of `f` with the same total volume.
 We also specialize this result to probability measures.
 -/
+
+public section
 
 open Filter Set Function MeasureTheory Measure ProbabilityTheory
 open scoped NNReal ENNReal Topology
@@ -31,7 +35,7 @@ theorem of_mem_extremePoints_measure_univ_eq {c : ℝ≥0∞} (hc : c ≠ ∞)
   rcases eq_or_ne c 0 with rfl | hc₀
   · convert zero_measure hf.measurable
     rw [← measure_univ_eq_zero, h.1.2]
-  · refine ⟨hf, ⟨?_⟩⟩
+  · refine ⟨hf, .of_preimage_eq hf.quasiMeasurePreserving ?_⟩
     have : IsFiniteMeasure μ := by
       constructor
       rwa [h.1.2, lt_top_iff_ne_top]
@@ -45,8 +49,8 @@ theorem of_mem_extremePoints_measure_univ_eq {c : ℝ≥0∞} (hc : c ≠ ∞)
     intro s hsm hfs
     by_contra H
     obtain ⟨hs, hs'⟩ : μ s ≠ 0 ∧ μ sᶜ ≠ 0 := by
-      simpa [eventuallyConst_set, ae_iff, and_comm] using H
-    obtain ⟨hcond, -⟩ : c • μ[|s] = μ ∧ c • μ[|sᶜ] = μ := by
+      simpa [eventuallyEmptyOrUniv_iff, ae_iff, and_comm] using! H
+    have hcond : c • μ[|s] = μ := by
       apply h.2 (this hsm hfs hs) (this hsm.compl (by rw [preimage_compl, hfs]) hs')
       refine ⟨μ s / c, μ sᶜ / c, ENNReal.div_pos hs hc, ENNReal.div_pos hs' hc, ?_, ?_⟩
       · rw [← ENNReal.add_div, measure_add_measure_compl hsm, h.1.2, ENNReal.div_self hc₀ hc]

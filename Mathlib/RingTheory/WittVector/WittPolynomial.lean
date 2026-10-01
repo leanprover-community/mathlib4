@@ -3,12 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Algebra.MvPolynomial.Variables
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Algebra.MvPolynomial.Expand
-import Mathlib.Algebra.Order.Ring.Rat
-import Mathlib.Data.Fintype.BigOperators
+module
+
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Algebra.MvPolynomial.Expand
 import Mathlib.Data.ZMod.Basic
 
 /-!
@@ -56,6 +55,8 @@ In this file we use the following notation
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
 
+@[expose] public section
+
 
 open MvPolynomial
 
@@ -97,7 +98,7 @@ set_option quotPrecheck false in
 @[inherit_doc]
 scoped[Witt] notation "W" => wittPolynomial p _
 
-open Witt
+open scoped Witt
 
 /-! The first observation is that the Witt polynomial doesn't really depend on the coefficient ring.
 If we map the coefficients through a ring homomorphism, we obtain the corresponding Witt polynomial
@@ -110,7 +111,7 @@ variable {R} {S : Type*} [CommRing S]
 theorem map_wittPolynomial (f : R →+* S) (n : ℕ) : map f (W n) = W n := by
   rw [wittPolynomial, map_sum, wittPolynomial]
   refine sum_congr rfl fun i _ => ?_
-  rw [map_monomial, RingHom.map_pow, map_natCast]
+  rw [map_monomial, map_pow, map_natCast]
 
 variable (R)
 
@@ -120,7 +121,7 @@ theorem constantCoeff_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
   simp only [wittPolynomial, map_sum, constantCoeff_monomial]
   rw [sum_eq_zero]
   rintro i _
-  rw [if_neg]
+  rw [ite_eq_right]
   rw [Finsupp.single_eq_zero]
   exact ne_of_gt (pow_pos hp.1.pos _)
 
@@ -159,8 +160,7 @@ theorem wittPolynomial_vars [CharZero R] (n : ℕ) : (wittPolynomial p R n).vars
   have : ∀ i, (monomial (Finsupp.single i (p ^ (n - i))) ((p : R) ^ i)).vars = {i} := by
     intro i
     refine vars_monomial_single i (pow_ne_zero _ hp.1) ?_
-    rw [← Nat.cast_pow, Nat.cast_ne_zero]
-    exact pow_ne_zero i hp.1
+    exact_mod_cast pow_ne_zero i hp.1
   rw [wittPolynomial, vars_sum_of_disjoint]
   · simp only [this, biUnion_singleton_eq_self]
   · simp only [this]
@@ -201,11 +201,11 @@ theorem xInTermsOfW_eq [Invertible (p : R)] {n : ℕ} : xInTermsOfW p R n =
 theorem constantCoeff_xInTermsOfW [hp : Fact p.Prime] [Invertible (p : R)] (n : ℕ) :
     constantCoeff (xInTermsOfW p R n) = 0 := by
   induction n using Nat.strongRecOn with | ind n IH => ?_
-  rw [xInTermsOfW_eq, mul_comm, RingHom.map_mul, RingHom.map_sub, map_sum, constantCoeff_C,
+  rw [xInTermsOfW_eq, mul_comm, map_mul, map_sub, map_sum, constantCoeff_C,
     constantCoeff_X, zero_sub, mul_neg, neg_eq_zero, sum_eq_zero, mul_zero]
   intro m H
   rw [mem_range] at H
-  simp only [RingHom.map_mul, RingHom.map_pow, map_natCast, IH m H]
+  simp only [map_mul, map_pow, map_natCast, IH m H]
   rw [zero_pow, mul_zero]
   exact pow_ne_zero _ hp.1.ne_zero
 
@@ -241,8 +241,8 @@ theorem xInTermsOfW_vars_aux (n : ℕ) :
     replace H := (ih j hj).2 (vars_pow _ _ H)
     rw [mem_range] at H
   · rw [mem_range]
-    cutsat
-  · cutsat
+    lia
+  · lia
 
 theorem xInTermsOfW_vars_subset (n : ℕ) : (xInTermsOfW p ℚ n).vars ⊆ range (n + 1) :=
   (xInTermsOfW_vars_aux p n).2

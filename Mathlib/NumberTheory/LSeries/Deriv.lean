@@ -3,8 +3,10 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Analysis.Complex.LocallyUniformLimit
-import Mathlib.NumberTheory.LSeries.Convergence
+module
+
+public import Mathlib.Analysis.Complex.LocallyUniformLimit
+public import Mathlib.NumberTheory.LSeries.Convergence
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 import Mathlib.Analysis.Complex.HalfPlane
 
@@ -27,6 +29,8 @@ import Mathlib.Analysis.Complex.HalfPlane
 We introduce `LSeries.logMul` as an abbreviation for the point-wise product `log * f`, to avoid
 the problem that this expression does not type-check.
 -/
+
+public section
 
 open Complex LSeries
 
@@ -63,11 +67,11 @@ private lemma LSeries.LSeriesSummable_logMul_and_hasDerivAt {f : ℕ → ℂ} {s
     fun z _ ↦ (hasDerivAt_term f n _).differentiableAt.differentiableWithinAt
   have h₂ : IsOpen S := isOpen_lt continuous_const continuous_re
   have h₃ (n z) (hz : z ∈ S) : ‖term f z n‖ ≤ ‖term f x n‖ :=
-    norm_term_le_of_re_le_re f (by simpa using (hxy.trans hz).le) n
+    norm_term_le_of_re_le_re f (by simpa using! (hxy.trans hz).le) n
   have H := hasSum_deriv_of_summable_norm h₀ h₁ h₂ h₃ hys
   simp_rw [(hasDerivAt_term f _ _).deriv] at H
   refine ⟨summable_neg_iff.mp H.summable, ?_⟩
-  simpa [← H.tsum_eq, tsum_neg] using ((differentiableOn_tsum_of_summable_norm
+  simpa [← H.tsum_eq, tsum_neg] using! ((differentiableOn_tsum_of_summable_norm
     h₀ h₁ h₂ h₃).differentiableAt <| h₂.mem_nhds hys).hasDerivAt
 
 /-- If `re s` is greater than the abscissa of absolute convergence of `f`, then the L-series
@@ -117,12 +121,15 @@ lemma LSeries.abscissaOfAbsConv_logMul {f : ℕ → ℂ} :
 /-- The abscissa of absolute convergence of the point-wise product of a power of `log` and `f`
 is the same as that of `f`. -/
 @[simp]
-lemma LSeries.absicssaOfAbsConv_logPowMul {f : ℕ → ℂ} {m : ℕ} :
+lemma LSeries.abscissaOfAbsConv_logPowMul {f : ℕ → ℂ} {m : ℕ} :
     abscissaOfAbsConv (logMul^[m] f) = abscissaOfAbsConv f := by
   induction m with
   | zero => simp
   | succ n ih => simp [ih, Function.iterate_succ', Function.comp_def,
       -Function.comp_apply, -Function.iterate_succ]
+
+@[deprecated (since := "2026-09-17")]
+alias LSeries.absicssaOfAbsConv_logPowMul := LSeries.abscissaOfAbsConv_logPowMul
 
 /-- If `re s` is greater than the abscissa of absolute convergence of `f`, then
 the `m`th derivative of this L-series is `(-1)^m` times the L-series of `log^m * f`. -/
@@ -137,7 +144,7 @@ lemma LSeries_iteratedDeriv {f : ℕ → ℂ} (m : ℕ) {s : ℂ} (h : abscissaO
     simp_rw [derivWithin_of_isOpen (isOpen_re_gt_EReal _) h] at this
     rw [iteratedDeriv_succ, this]
     simp [Pi.mul_def, pow_succ, Function.iterate_succ',
-      LSeries_deriv <| absicssaOfAbsConv_logPowMul.symm ▸ h, -Function.iterate_succ]
+      LSeries_deriv <| abscissaOfAbsConv_logPowMul.symm ▸ h, -Function.iterate_succ]
 
 /-!
 ### The L-series is holomorphic

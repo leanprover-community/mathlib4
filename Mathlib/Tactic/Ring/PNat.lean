@@ -3,8 +3,12 @@ Copyright (c) 2023 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Tactic.Ring.Basic
-import Mathlib.Data.PNat.Basic
+module
+
+public meta import Mathlib.Tactic.Ring.Basic
+public meta import Mathlib.Data.PNat.Basic
+public import Mathlib.Data.PNat.Basic
+public import Mathlib.Tactic.Ring.Basic
 
 /-!
 # Additional instances for `ring` over `PNat`
@@ -12,6 +16,8 @@ import Mathlib.Data.PNat.Basic
 This adds some instances which enable `ring` to work on `PNat` even though it is not a commutative
 semiring, by lifting to `Nat`.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Ring
 

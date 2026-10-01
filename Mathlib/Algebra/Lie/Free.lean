@@ -3,10 +3,12 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.FreeNonUnitalNonAssocAlgebra
-import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
-import Mathlib.Algebra.Lie.UniversalEnveloping
-import Mathlib.GroupTheory.GroupAction.Ring
+module
+
+public import Mathlib.Algebra.FreeNonUnitalNonAssocAlgebra
+public import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
+public import Mathlib.Algebra.Lie.UniversalEnveloping
+public import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Free Lie algebras
@@ -47,6 +49,8 @@ A related MathOverflow question is [this one](https://mathoverflow.net/questions
 lie algebra, free algebra, non-unital, non-associative, universal property, forgetful functor,
 adjoint functor
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -93,7 +97,7 @@ theorem Rel.subLeft (a : lib R X) {b c : lib R X} (h : Rel R X b c) : Rel R X (a
 theorem Rel.subRight {a b : lib R X} (c : lib R X) (h : Rel R X a b) : Rel R X (a - c) (b - c) := by
   simpa only [sub_eq_add_neg] using h.add_right (-c)
 
-theorem Rel.smulOfTower {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (t : S)
+theorem Rel.smulOfTower {S : Type*} [SMulZeroClass S R] [IsScalarTower S R R] (t : S)
     (a b : lib R X) (h : Rel R X a b) : Rel R X (t • a) (t • b) := by
   rw [← smul_one_smul R t a, ← smul_one_smul R t b]
   exact h.smul _
@@ -109,9 +113,9 @@ and `f : α → L` is any function, then this function is the composite of
 `FreeLieAlgebra.of R` and a unique Lie algebra homomorphism
 `FreeLieAlgebra.lift R f : FreeLieAlgebra R α →ₗ⁅R⁆ L`.
 
-A typical element of `FreeLieAlgebra R α` is a `R`-linear combination of
+A typical element of `FreeLieAlgebra R α` is an `R`-linear combination of
 formal brackets of elements of `α`. For example if `x` and `y` are terms of type `α`
-and `a` and `b` are term of type `R` then
+and `a` and `b` are terms of type `R` then
 `(3 * a * a) • ⁅⁅x, y⁆, x⁆ - (2 * b - 1) • ⁅y, x⁆` is a "typical" element of `FreeLieAlgebra R α`.
 -/
 def FreeLieAlgebra :=
@@ -121,12 +125,12 @@ instance : Inhabited (FreeLieAlgebra R X) := by rw [FreeLieAlgebra]; infer_insta
 
 namespace FreeLieAlgebra
 
-instance {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] :
+instance {S : Type*} [SMulZeroClass S R] [IsScalarTower S R R] :
     SMul S (FreeLieAlgebra R X) where smul t := Quot.map (t • ·) (Rel.smulOfTower t)
 
-instance {S : Type*} [Monoid S] [DistribMulAction S R] [DistribMulAction Sᵐᵒᵖ R]
+instance {S : Type*} [SMulZeroClass S R] [SMulZeroClass Sᵐᵒᵖ R]
     [IsScalarTower S R R] [IsCentralScalar S R] : IsCentralScalar S (FreeLieAlgebra R X) where
-  op_smul_eq_smul t := Quot.ind fun a => congr_arg (Quot.mk _) (op_smul_eq_smul t a)
+  op_smul_eq_smul t := Quot.ind fun a => congr(Quot.mk _ $(op_smul_eq_smul t a))
 
 instance : Zero (FreeLieAlgebra R X) where zero := Quot.mk _ 0
 
@@ -147,7 +151,7 @@ instance : AddCommSemigroup (FreeLieAlgebra R X) :=
 
 instance : AddCommGroup (FreeLieAlgebra R X) :=
   { (inferInstance : AddGroup (FreeLieAlgebra R X)),
-    (inferInstance :  AddCommSemigroup (FreeLieAlgebra R X)) with }
+    (inferInstance : AddCommSemigroup (FreeLieAlgebra R X)) with }
 
 instance {S : Type*} [Semiring S] [Module S R] [IsScalarTower S R R] :
     Module S (FreeLieAlgebra R X) :=
@@ -183,20 +187,20 @@ def liftAux (f : X → CommutatorRing L) :=
 
 theorem liftAux_map_smul (f : X → L) (t : R) (a : lib R X) :
     liftAux R f (t • a) = t • liftAux R f a :=
-  NonUnitalAlgHom.map_smul _ t a
+  map_smul _ t a
 
 theorem liftAux_map_add (f : X → L) (a b : lib R X) :
     liftAux R f (a + b) = liftAux R f a + liftAux R f b :=
-  NonUnitalAlgHom.map_add _ a b
+  map_add _ a b
 
 theorem liftAux_map_mul (f : X → L) (a b : lib R X) :
     liftAux R f (a * b) = ⁅liftAux R f a, liftAux R f b⁆ :=
-  NonUnitalAlgHom.map_mul _ a b
+  map_mul _ a b
 
 theorem liftAux_spec (f : X → L) (a b : lib R X) (h : FreeLieAlgebra.Rel R X a b) :
     liftAux R f a = liftAux R f b := by
   induction h with
-  | lie_self a' => simp only [liftAux_map_mul, NonUnitalAlgHom.map_zero, lie_self]
+  | lie_self a' => simp only [liftAux_map_mul, map_zero, lie_self]
   | leibniz_lie a' b' c' =>
     simp only [liftAux_map_mul, liftAux_map_add, sub_add_cancel, lie_lie]
   | smul b' _ h₂ => simp only [liftAux_map_smul, h₂]
@@ -212,6 +216,7 @@ def mk : lib R X →ₙₐ[R] CommutatorRing (FreeLieAlgebra R X) where
   map_add' _ _ := rfl
   map_mul' _ _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `X ↦ FreeLieAlgebra R X` from the category of types to the category of Lie
 algebras over `R` is adjoint to the forgetful functor in the other direction. -/
 def lift : (X → L) ≃ (FreeLieAlgebra R X →ₗ⁅R⁆ L) where
@@ -227,7 +232,7 @@ def lift : (X → L) ≃ (FreeLieAlgebra R X →ₗ⁅R⁆ L) where
   right_inv F := by
     ext ⟨a⟩
     let F' := F.toNonUnitalAlgHom.comp (mk R)
-    exact NonUnitalAlgHom.congr_fun (lib.lift_comp_of R F') a
+    congrm $(lib.lift_comp_of R F') a
 
 @[simp]
 theorem lift_symm_apply (F : FreeLieAlgebra R X →ₗ⁅R⁆ L) : (lift R).symm F = F ∘ of R := rfl
@@ -256,6 +261,7 @@ theorem hom_ext {F₁ F₂ : FreeLieAlgebra R X →ₗ⁅R⁆ L} (h : ∀ x, F�
   (lift R).symm.injective h'
 
 variable (R X)
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- The universal enveloping algebra of the free Lie algebra is just the free unital associative
 algebra. -/

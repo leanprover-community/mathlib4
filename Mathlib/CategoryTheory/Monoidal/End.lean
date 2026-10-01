@@ -3,7 +3,9 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Andrew Yang
 -/
-import Mathlib.CategoryTheory.Monoidal.Functor
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Functor
 
 /-!
 # Endofunctors as a monoidal category.
@@ -17,6 +19,10 @@ Can we use this to show coherence results, e.g. a cheap proof that `λ_ (𝟙_ C
 I suspect this is harder than is usually made out.
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
+@[expose] public section
+
 
 universe v u
 
@@ -26,6 +32,7 @@ open Functor.LaxMonoidal Functor.OplaxMonoidal Functor.Monoidal
 
 variable (C : Type u) [Category.{v} C]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The category of endofunctors of any category is a monoidal category,
 with tensor product given by composition of functors
 (and horizontal composition of natural transformations).
@@ -34,6 +41,7 @@ Note: due to the fact that composition of functors in mathlib is reversed compar
 one usually found in the literature, this monoidal structure is in fact the monoidal
 opposite of the one usually considered in the literature.
 -/
+@[instance_reducible]
 def endofunctorMonoidalCategory : MonoidalCategory (C ⥤ C) where
   tensorObj F G := F ⋙ G
   whiskerLeft X _ _ F := Functor.whiskerLeft X F
@@ -62,7 +70,7 @@ attribute [local instance] endofunctorMonoidalCategory
 
 @[simp] theorem endofunctorMonoidalCategory_tensorMap_app
     {F G H K : C ⥤ C} {α : F ⟶ G} {β : H ⟶ K} (X : C) :
-    (α ⊗ₘ β).app X = β.app (F.obj X) ≫ K.map (α.app X) := rfl
+    (α ⊗ₘ β).app X = β.app (F.obj X) ≫ K.map (α.app X) := NatTrans.hcomp_app _ _ _
 
 @[simp] theorem endofunctorMonoidalCategory_whiskerLeft_app
     {F H K : C ⥤ C} {β : H ⟶ K} (X : C) :
@@ -94,6 +102,7 @@ namespace MonoidalCategory
 
 variable [MonoidalCategory C]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Tensoring on the right gives a monoidal functor from `C` into endofunctors of `C`.
 -/
 instance : (tensoringRight C).Monoidal :=
@@ -117,7 +126,7 @@ instance : (tensoringRight C).Monoidal :=
 end MonoidalCategory
 
 variable {C}
-variable {M : Type*} [Category M] [MonoidalCategory M] (F : M ⥤ (C ⥤ C))
+variable {M : Type*} [Category* M] [MonoidalCategory M] (F : M ⥤ (C ⥤ C))
 
 @[reassoc (attr := simp)]
 theorem μ_δ_app (i j : M) (X : C) [F.Monoidal] :
@@ -232,6 +241,7 @@ theorem η_app_obj (n : M) (X : C) [F.Monoidal] :
   dsimp
   simp only [Category.comp_id, μ_δ_app_assoc]
 
+set_option backward.isDefEq.respectTransparency false in -- Needed below
 @[reassoc]
 theorem associativity_app (m₁ m₂ m₃ : M) (X : C) [F.LaxMonoidal] :
     (F.obj m₃).map ((μ F m₁ m₂).app X) ≫

@@ -3,24 +3,27 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+module
+
 import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.MvPolynomial.Polynomial
-import Mathlib.Algebra.MvPolynomial.Rename
+public import Mathlib.Algebra.MvPolynomial.Rename
 
 /-!
-## Function extensionality for multivariate polynomials
+# Function extensionality for multivariate polynomials
 
 In this file we show that two multivariate polynomials over an infinite integral domain are equal
 if they are equal upon evaluating them on an arbitrary assignment of the variables.
 
-# Main declaration
+## Main declaration
 
 * `MvPolynomial.funext`: two polynomials `φ ψ : MvPolynomial σ R`
   over an infinite integral domain `R` are equal if `eval x φ = eval x ψ` for all `x : σ → R`.
 
 -/
+
+public section
 
 namespace MvPolynomial
 
@@ -32,8 +35,7 @@ private theorem funext_fin {n : ℕ} {p : MvPolynomial (Fin n) R}
   induction n with
   | zero =>
     apply (MvPolynomial.isEmptyRingEquiv R (Fin 0)).injective
-    rw [RingEquiv.map_zero]
-    convert h _ finZeroElim
+    simpa [constantCoeff] using h 0 finZeroElim
   | succ n ih =>
     apply (finSuccEquiv R n).injective
     rw [map_zero]
@@ -42,7 +44,7 @@ private theorem funext_fin {n : ℕ} {p : MvPolynomial (Fin n) R}
     rintro _ ⟨r, hr, rfl⟩
     refine ih (s ·.succ) (fun _ ↦ hs _) fun x hx ↦ ?_
     rw [eval_polynomial_eval_finSuccEquiv]
-    exact h _ fun i _ ↦ i.cases (by simpa using hr) (by simpa using hx)
+    exact h _ fun i _ ↦ i.cases (by simpa [eval_C] using hr) (by simpa using hx)
 
 section
 
@@ -66,7 +68,7 @@ theorem funext_set (h : ∀ x ∈ Set.pi .univ s, eval x p = eval x q) :
   · simp only [eval, eval₂Hom_rename, Function.extend_comp hf]
   obtain ⟨i, rfl⟩ | nex := em (∃ x, f x = i)
   · rw [hf.extend_apply]; exact hx _ ⟨⟩
-  · simp_rw [Function.extend, dif_neg nex, hg]
+  · simp_rw [Function.extend, dite_eq_right nex, hg]
 
 theorem funext_set_iff : p = q ↔ (∀ x ∈ Set.pi .univ s, eval x p = eval x q) :=
   ⟨by rintro rfl _ _; rfl, funext_set s hs⟩

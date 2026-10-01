@@ -3,13 +3,16 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
+module
 
-import Mathlib.Data.Nat.Basic
-import Batteries.WF
+public import Mathlib.Data.Nat.Basic
+import Mathlib.Tactic.Push
 
 /-!
 # `Nat.find` and `Nat.findGreatest`
 -/
+
+public section
 
 variable {m n k : ℕ} {p q : ℕ → Prop}
 
@@ -22,9 +25,7 @@ section Find
 private def lbp (m n : ℕ) : Prop :=
   m = n + 1 ∧ ∀ k ≤ n, ¬p k
 
-variable [DecidablePred p] (H : ∃ n, p n)
-
-private def wf_lbp : WellFounded (@lbp p) :=
+private theorem wf_lbp (H : ∃ n, p n) : WellFounded (@lbp p) :=
   ⟨let ⟨n, pn⟩ := H
     suffices ∀ m k, n ≤ k + m → Acc lbp k from fun _ => this _ _ (Nat.le_add_left _ _)
     fun m =>
@@ -37,6 +38,8 @@ private def wf_lbp : WellFounded (@lbp p) :=
       ⟨_, fun y r =>
         match y, r with
         | _, ⟨rfl, _a⟩ => IH _ (by rw [Nat.add_right_comm]; exact kn)⟩⟩
+
+variable [DecidablePred p] (H : ∃ n, p n)
 
 /-- Find the smallest `n` satisfying `p n`. Returns a subtype. -/
 protected def findX : { n // p n ∧ ∀ m < n, ¬p m } :=
@@ -157,16 +160,17 @@ section FindGreatest
 
 /-- `Nat.findGreatest P n` is the largest `i ≤ n` such that `P i` holds, or `0` if no such `i`
 exists -/
+@[expose]
 def findGreatest (P : ℕ → Prop) [DecidablePred P] : ℕ → ℕ
   | 0 => 0
   | n + 1 => if P (n + 1) then n + 1 else Nat.findGreatest P n
 
 variable {P Q : ℕ → Prop} [DecidablePred P] {n : ℕ}
 
-@[simp] lemma findGreatest_zero : Nat.findGreatest P 0 = 0 := rfl
+@[simp] lemma findGreatest_zero : Nat.findGreatest P 0 = 0 := (rfl)
 
 lemma findGreatest_succ (n : ℕ) :
-    Nat.findGreatest P (n + 1) = if P (n + 1) then n + 1 else Nat.findGreatest P n := rfl
+    Nat.findGreatest P (n + 1) = if P (n + 1) then n + 1 else Nat.findGreatest P n := (rfl)
 
 @[simp] lemma findGreatest_eq : ∀ {n}, P n → Nat.findGreatest P n = n
   | 0, _ => rfl
@@ -183,33 +187,24 @@ lemma findGreatest_eq_iff :
     rw [eq_comm, Iff.comm]
     simp only [Nat.le_zero, ne_eq, findGreatest_zero, and_iff_left_iff_imp]
     rintro rfl
-    exact ⟨fun h ↦ (h rfl).elim, fun n hlt heq ↦ by cutsat⟩
+    exact ⟨fun h ↦ (h rfl).elim, fun n hlt heq ↦ by lia⟩
   | succ k ihk =>
     by_cases hk : P (k + 1)
     · rw [findGreatest_eq hk]
       constructor
       · rintro rfl
-        exact ⟨le_refl _, fun _ ↦ hk, fun n hlt hle ↦ by cutsat⟩
+        exact ⟨le_refl _, fun _ ↦ hk, fun n hlt hle ↦ by lia⟩
       · rintro ⟨hle, h0, hm⟩
         rcases Decidable.lt_or_eq_of_le hle with hlt | rfl
         exacts [(hm hlt (le_refl _) hk).elim, rfl]
     · rw [findGreatest_of_not hk, ihk]
-      constructor
-      · rintro ⟨hle, hP, hm⟩
-        refine ⟨le_trans hle k.le_succ, hP, fun n hlt hle ↦ ?_⟩
-        rcases Decidable.lt_or_eq_of_le hle with hlt' | rfl
-        exacts [hm hlt <| Nat.lt_succ_iff.1 hlt', hk]
-      · rintro ⟨hle, hP, hm⟩
-        refine ⟨Nat.lt_succ_iff.1 (lt_of_le_of_ne hle ?_), hP,
-          fun n hlt hle ↦ hm hlt (le_trans hle k.le_succ)⟩
-        rintro rfl
-        exact hk (hP k.succ_ne_zero)
+      grind
 
 lemma findGreatest_eq_zero_iff : Nat.findGreatest P k = 0 ↔ ∀ ⦃n⦄, 0 < n → n ≤ k → ¬P n := by
   simp [findGreatest_eq_iff]
 
 @[simp] lemma findGreatest_pos : 0 < Nat.findGreatest P k ↔ ∃ n, 0 < n ∧ n ≤ k ∧ P n := by
-  rw [Nat.pos_iff_ne_zero, Ne, findGreatest_eq_zero_iff]; push_neg; rfl
+  rw [Nat.pos_iff_ne_zero, Ne, findGreatest_eq_zero_iff]; push Not; rfl
 
 lemma findGreatest_spec (hmb : m ≤ n) (hm : P m) : P (Nat.findGreatest P n) := by
   by_cases h : Nat.findGreatest P n = 0

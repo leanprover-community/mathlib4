@@ -3,7 +3,9 @@ Copyright (c) 2020 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Devon Tuma
 -/
-import Mathlib.Probability.ProbabilityMassFunction.Basic
+module
+
+public import Mathlib.Probability.ProbabilityMassFunction.Basic
 
 /-!
 # Monad Operations for Probability Mass Functions
@@ -18,12 +20,14 @@ so that the second argument only needs to be defined on the support of the first
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
 variable {α β γ : Type*}
 
-open NNReal ENNReal
+open ENNReal
 
 open MeasureTheory
 
@@ -50,10 +54,10 @@ theorem support_pure : (pure a).support = {a} :=
 theorem mem_support_pure_iff : a' ∈ (pure a).support ↔ a' = a := by simp
 
 theorem pure_apply_self : pure a a = 1 :=
-  if_pos rfl
+  ite_eq_left rfl
 
 theorem pure_apply_of_ne (h : a' ≠ a) : pure a a' = 0 :=
-  if_neg h
+  ite_eq_right h
 
 instance [Inhabited α] : Inhabited (PMF α) :=
   ⟨pure default⟩
@@ -118,11 +122,8 @@ theorem mem_support_bind_iff (b : β) :
 
 @[simp]
 theorem pure_bind (a : α) (f : α → PMF β) : (pure a).bind f = f a := by
-  classical
-  have : ∀ b a', ite (a' = a) (f a' b) 0 = ite (a' = a) (f a b) 0 := fun b a' => by
-    split_ifs with h <;> simp [h]
-  ext b
-  simp [this]
+  ext
+  simp
 
 @[simp]
 theorem bind_pure : p.bind pure = p :=
@@ -173,7 +174,7 @@ theorem toMeasure_bind_apply [MeasurableSpace β] (hs : MeasurableSet s) :
   (toMeasure_apply_eq_toOuterMeasure_apply (p.bind f) hs).trans
     ((toOuterMeasure_bind_apply p f s).trans
       (tsum_congr fun a =>
-        congr_arg (fun x => p a * x) (toMeasure_apply_eq_toOuterMeasure_apply (f a) hs).symm))
+        congr(p a * $((toMeasure_apply_eq_toOuterMeasure_apply (f a) hs).symm))))
 
 end Measure
 
@@ -204,16 +205,11 @@ theorem bindOnSupport_apply (b : β) :
 @[simp]
 theorem support_bindOnSupport :
     (p.bindOnSupport f).support = ⋃ (a : α) (h : a ∈ p.support), (f a h).support := by
-  refine Set.ext fun b => ?_
-  simp only [ENNReal.tsum_eq_zero, not_or, mem_support_iff, bindOnSupport_apply, Ne, not_forall,
-    mul_eq_zero, Set.mem_iUnion]
-  exact
-    ⟨fun hb =>
-      let ⟨a, ⟨ha, ha'⟩⟩ := hb
-      ⟨a, ha, by simpa [ha] using ha'⟩,
-      fun hb =>
-      let ⟨a, ha, ha'⟩ := hb
-      ⟨a, ⟨ha, by simpa [(mem_support_iff _ a).1 ha] using ha'⟩⟩⟩
+  ext
+  -- `simp` suffices; squeezed for performance
+  simp only [mem_support_iff, bindOnSupport_apply, ne_eq, ENNReal.tsum_eq_zero,
+    dite_eq_left_iff, mul_eq_zero, not_forall, not_or, and_exists_self,
+    Set.mem_iUnion]
 
 theorem mem_support_bindOnSupport_iff (b : β) :
     b ∈ (p.bindOnSupport f).support ↔ ∃ (a : α) (h : a ∈ p.support), b ∈ (f a h).support := by
@@ -232,8 +228,8 @@ theorem bindOnSupport_eq_bind (p : PMF α) (f : α → PMF β) :
 theorem bindOnSupport_eq_zero_iff (b : β) :
     p.bindOnSupport f b = 0 ↔ ∀ (a) (ha : p a ≠ 0), f a ha b = 0 := by
   simp only [bindOnSupport_apply, ENNReal.tsum_eq_zero, mul_eq_zero, or_iff_not_imp_left]
-  exact ⟨fun h a ha => Trans.trans (dif_neg ha).symm (h a ha),
-    fun h a ha => Trans.trans (dif_neg ha) (h a ha)⟩
+  exact ⟨fun h a ha => Trans.trans (dite_eq_right ha).symm (h a ha),
+    fun h a ha => Trans.trans (dite_eq_right ha) (h a ha)⟩
 
 @[simp]
 theorem pure_bindOnSupport (a : α) (f : ∀ (a' : α) (_ : a' ∈ (pure a).support), PMF β) :
@@ -241,12 +237,13 @@ theorem pure_bindOnSupport (a : α) (f : ∀ (a' : α) (_ : a' ∈ (pure a).supp
   refine PMF.ext fun b => ?_
   simp only [bindOnSupport_apply, pure_apply]
   classical
-  refine _root_.trans (tsum_congr fun a' => ?_) (tsum_ite_eq a _)
+  refine _root_.trans (tsum_congr fun a' => ?_) (tsum_ite_eq a (fun _ ↦ _))
   by_cases h : a' = a <;> simp [h]
 
 theorem bindOnSupport_pure (p : PMF α) : (p.bindOnSupport fun a _ => pure a) = p := by
   simp only [PMF.bind_pure, PMF.bindOnSupport_eq_bind]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem bindOnSupport_bindOnSupport (p : PMF α) (f : ∀ a ∈ p.support, PMF β)
     (g : ∀ b ∈ (p.bindOnSupport f).support, PMF γ) :

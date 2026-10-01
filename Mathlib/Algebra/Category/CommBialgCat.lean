@@ -3,9 +3,11 @@ Copyright (c) 2025 Yaël Dillies, Michał Mrugała, Andrew Yang. All rights rese
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Michał Mrugała, Andrew Yang
 -/
-import Mathlib.Algebra.Category.CommAlgCat.Monoidal
-import Mathlib.CategoryTheory.Monoidal.Mon_
-import Mathlib.RingTheory.Bialgebra.Equiv
+module
+
+public import Mathlib.Algebra.Category.CommAlgCat.Monoidal
+public import Mathlib.CategoryTheory.Monoidal.Mon
+public import Mathlib.RingTheory.Bialgebra.Equiv
 
 /-!
 # The category of commutative bialgebras over a commutative ring
@@ -13,6 +15,8 @@ import Mathlib.RingTheory.Bialgebra.Equiv
 This file defines the bundled category `CommBialgCat R` of commutative bialgebras over a fixed
 commutative ring `R` along with the forgetful functor to `CommAlgCat`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -25,7 +29,7 @@ variable {R : Type u} [CommRing R]
 variable (R) in
 /-- The category of commutative `R`-bialgebras and their morphisms. -/
 structure CommBialgCat where
-  private mk ::
+  _mkInternal ::
   /-- The underlying type. -/
   carrier : Type v
   [commRing : CommRing carrier]
@@ -49,13 +53,18 @@ variable (R) in
 This is the preferred way to construct a term of `CommBialgCat R`. -/
 abbrev of (X : Type v) [CommRing X] [Bialgebra R X] : CommBialgCat.{v} R := ⟨X⟩
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `CommBialgCat.of R X` as `↧X`. -/
+@[app_delab CommBialgCat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 variable (R) in
 lemma coe_of (X : Type v) [CommRing X] [Bialgebra R X] : (of R X : Type v) = X := rfl
 
 /-- The type of morphisms in `CommBialgCat R`. -/
 @[ext]
 structure Hom (A B : CommBialgCat.{v} R) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying bialgebra map. -/
   hom' : A →ₐc[R] B
 
@@ -66,7 +75,7 @@ instance : Category (CommBialgCat.{v} R) where
 
 instance : ConcreteCategory (CommBialgCat.{v} R) (· →ₐc[R] ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `CommBialgCat` back into a `BialgHom`. -/
 abbrev Hom.hom (f : Hom A B) : A →ₐc[R] B := ConcreteCategory.hom (C := CommBialgCat R) f
@@ -85,7 +94,7 @@ initialize_simps_projections Hom (hom' → hom)
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
 -/
 
-@[simp] lemma hom_id : (𝟙 A : A ⟶ A).hom = AlgHom.id R A := rfl
+@[simp] lemma hom_id : (𝟙 A : A ⟶ A).hom = .id R A := rfl
 @[simp] lemma hom_comp (f : A ⟶ B) (g : B ⟶ C) : (f ≫ g).hom = g.hom.comp f.hom := rfl
 
 lemma id_apply (A : CommBialgCat.{v} R) (a : A) : (𝟙 A : A ⟶ A) a = a := by simp
@@ -108,9 +117,11 @@ lemma hom_inv_apply (e : A ≅ B) (x : B) : e.hom (e.inv x) = x := by simp
 
 instance : Inhabited (CommBialgCat R) := ⟨of R R⟩
 
-lemma forget_obj (A : CommBialgCat.{v} R) : (forget (CommBialgCat.{v} R)).obj A = A := rfl
+lemma forget_obj (A : CommBialgCat.{v} R) : (forget (CommBialgCat.{v} R)).obj A = A :=
+  rfl
 
-lemma forget_map (f : A ⟶ B) : (forget (CommBialgCat.{v} R)).map f = f := rfl
+@[deprecated ConcreteCategory.forget_map_eq_ofHom +typeChanged (since := "2026-03-06")]
+lemma forget_map (f : A ⟶ B) : (forget (CommBialgCat.{v} R)).map f = (f : _ → _) := rfl
 
 instance : CommRing ((forget (CommBialgCat R)).obj A) := inferInstanceAs <| CommRing A
 
@@ -118,20 +129,23 @@ instance : Bialgebra R ((forget (CommBialgCat R)).obj A) := inferInstanceAs <| B
 
 instance hasForgetToCommAlgCat : HasForget₂ (CommBialgCat.{v} R) (CommAlgCat.{v} R) where
   forget₂.obj M := .of R M
-  forget₂.map f := CommAlgCat.ofHom f.hom
+  forget₂.map f := CommAlgCat.ofHom f.hom.toAlgHom
 
 @[simp] lemma forget₂_commAlgCat_obj (A : CommBialgCat.{v} R) :
     (forget₂ (CommBialgCat.{v} R) (CommAlgCat.{v} R)).obj A = .of R A := rfl
 
 @[simp] lemma forget₂_commAlgCat_map (f : A ⟶ B) :
-    (forget₂ (CommBialgCat.{v} R) (CommAlgCat.{v} R)).map f = CommAlgCat.ofHom f.hom := rfl
+    (forget₂ (CommBialgCat.{v} R) (CommAlgCat.{v} R)).map f =
+      CommAlgCat.ofHom f.hom.toAlgHom := rfl
 
 /-- Forgetting to the underlying type and then building the bundled object returns the original
 bialgebra. -/
 @[simps]
-def ofSelfIso (M : CommBialgCat.{v} R) : of R M ≅ M where
+def ofIsoSelf (M : CommBialgCat.{v} R) : of R M ≅ M where
   hom := 𝟙 M
   inv := 𝟙 M
+
+@[deprecated (since := "2026-06-09")] alias ofSelfIso := ofIsoSelf
 
 /-- Build an isomorphism in the category `CommBialgCat R` from a `BialgEquiv` between
 `Bialgebra`s. -/
@@ -189,7 +203,7 @@ instance {A : Type u} [CommRing A] [Bialgebra R A] [IsCocomm R A] :
   mul_comm := by ext; exact comm_comul R _
 
 instance {A B : Type u} [CommRing A] [Bialgebra R A] [CommRing B] [Bialgebra R B]
-    (f : A →ₐc[R] B) : IsMonHom (CommAlgCat.ofHom (f : A →ₐ[R] B)).op where
+    (f : A →ₐc[R] B) : IsMonHom (CommAlgCat.ofHom f.toAlgHom).op where
 
 instance (A : (CommAlgCat R)ᵒᵖ) [MonObj A] : Bialgebra R A.unop :=
   .ofAlgHom μ[A].unop.hom η[A].unop.hom
@@ -204,7 +218,7 @@ variable (R) in
   unitIso_inv_app counitIso_hom_app counitIso_inv_app]
 def commBialgCatEquivComonCommAlgCat : CommBialgCat R ≌ (Mon (CommAlgCat R)ᵒᵖ)ᵒᵖ where
   functor.obj A := .op <| .mk <| .op <| .of R A
-  functor.map {A B} f := .op <| .mk' <| .op <| CommAlgCat.ofHom f.hom
+  functor.map {A B} f := .op <| .mk' <| .op <| CommAlgCat.ofHom f.hom.toAlgHom
   inverse.obj A := .of R A.unop.X.unop
   inverse.map {A B} f := CommBialgCat.ofHom <| .ofAlgHom f.unop.hom.unop.hom
     congr(($(IsMonHom.one_hom (f := f.unop.hom))).unop.hom)
@@ -217,12 +231,12 @@ def commBialgCatEquivComonCommAlgCat : CommBialgCat R ≌ (Mon (CommAlgCat R)ᵒ
 @[simp]
 lemma commBialgCatEquivComonCommAlgCat_functor_map_unop_hom {A B : CommBialgCat R} (f : A ⟶ B) :
   ((commBialgCatEquivComonCommAlgCat R).functor.map f).unop.hom =
-    (CommAlgCat.ofHom (AlgHomClass.toAlgHom f.hom)).op := rfl
+    (CommAlgCat.ofHom f.hom.toAlgHom).op := rfl
 
 @[simp]
 lemma commBialgCatEquivComonCommAlgCat_inverse_map_unop_hom
     {A B : (Mon (CommAlgCat R)ᵒᵖ)ᵒᵖ} (f : A ⟶ B) :
-  AlgHomClass.toAlgHom ((commBialgCatEquivComonCommAlgCat R).inverse.map f).hom =
+  ((commBialgCatEquivComonCommAlgCat R).inverse.map f).hom.toAlgHom =
     f.unop.hom.unop.hom := rfl
 
 instance {A : CommBialgCat.{u} R} [IsCocomm R A] :

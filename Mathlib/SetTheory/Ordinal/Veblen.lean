@@ -3,7 +3,9 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Ordinal.FixedPoint
+module
+
+public import Mathlib.SetTheory.Cardinal.Ordinal
 
 /-!
 # Veblen hierarchy
@@ -28,14 +30,14 @@ The following notation is scoped to the `Ordinal` namespace.
 
 ## TODO
 
-- Prove that `ε₀` and `Γ₀` are countable.
-- Prove that the exponential principal ordinals are the epsilon ordinals (and 0, 1, 2, ω).
 - Prove that the ordinals principal under `veblen` are the gamma ordinals (and 0).
 
 ## References
 
 * [Larry W. Miller, Normal functions and constructive ordinal notations][Miller_1976]
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -65,11 +67,11 @@ termination_by o
 
 @[simp]
 theorem veblenWith_zero (f : Ordinal → Ordinal) : veblenWith f 0 = f := by
-  rw [veblenWith, if_pos rfl]
+  rw [veblenWith, ite_eq_left rfl]
 
 theorem veblenWith_of_ne_zero (f : Ordinal → Ordinal) (h : o ≠ 0) :
     veblenWith f o = derivFamily fun x : Iio o ↦ veblenWith f x.1 := by
-  rw [veblenWith, if_neg h]
+  rw [veblenWith, ite_eq_right h]
 
 /-- `veblenWith f o` is always normal for `o ≠ 0`. See `isNormal_veblenWith` for a version which
 assumes `IsNormal f`. -/
@@ -86,8 +88,6 @@ theorem isNormal_veblenWith (o : Ordinal) : IsNormal (veblenWith f o) := by
   obtain rfl | h := eq_or_ne o 0
   · rwa [veblenWith_zero]
   · exact isNormal_veblenWith' f h
-
-protected alias IsNormal.veblenWith := isNormal_veblenWith
 
 theorem mem_range_veblenWith (h : o ≠ 0) :
     a ∈ range (veblenWith f o) ↔ ∀ b < o, veblenWith f b a = a := by
@@ -111,9 +111,9 @@ theorem veblenWith_mem_range : veblenWith f o a ∈ range f := by
   · rw [← veblenWith_veblenWith_of_lt hf h]
     simp
 
-theorem veblenWith_succ (o : Ordinal) : veblenWith f (succ o) = deriv (veblenWith f o) := by
-  rw [deriv_eq_enumOrd (hf.veblenWith o), veblenWith_of_ne_zero f (succ_ne_zero _),
-    derivFamily_eq_enumOrd]
+theorem veblenWith_add_one (o : Ordinal) : veblenWith f (o + 1) = deriv (veblenWith f o) := by
+  rw [deriv_eq_enumOrd (isNormal_veblenWith hf o),
+    veblenWith_of_ne_zero f (add_pos_of_right zero_lt_one _).ne', derivFamily_eq_enumOrd]
   · apply congr_arg
     ext a
     rw [mem_iInter]
@@ -123,10 +123,14 @@ theorem veblenWith_succ (o : Ordinal) : veblenWith f (succ o) = deriv (veblenWit
     · rw [Function.mem_fixedPoints_iff, ha]
     · rw [← ha]
       exact veblenWith_veblenWith_of_lt hf hb _
-  · exact fun o ↦ hf.veblenWith o.1
+  · exact fun o ↦ isNormal_veblenWith hf o.1
+
+@[simp]
+theorem veblenWith_one : veblenWith f 1 = deriv f := by
+  simpa using veblenWith_add_one hf 0
 
 theorem veblenWith_right_strictMono (o : Ordinal) : StrictMono (veblenWith f o) :=
-  (hf.veblenWith o).strictMono
+  (isNormal_veblenWith hf o).strictMono
 
 @[simp]
 theorem veblenWith_lt_veblenWith_iff_right : veblenWith f o a < veblenWith f o b ↔ a < b :=
@@ -155,7 +159,7 @@ theorem veblenWith_left_monotone (a : Ordinal) : Monotone (veblenWith f · a) :=
 theorem veblenWith_pos (hp : 0 < f 0) : 0 < veblenWith f o a := by
   have H (b) : 0 < veblenWith f 0 b := by
     rw [veblenWith_zero]
-    exact hp.trans_le (hf.monotone (Ordinal.zero_le _))
+    exact hp.trans_le (hf.monotone zero_le)
   obtain rfl | h := eq_zero_or_pos o
   · exact H a
   · rw [← veblenWith_veblenWith_of_lt hf h]
@@ -180,10 +184,10 @@ theorem veblenWith_zero_inj (hp : 0 < f 0) : veblenWith f o₁ 0 = veblenWith f 
 
 theorem left_le_veblenWith (hp : 0 < f 0) (o a : Ordinal) : o ≤ veblenWith f o a :=
   (veblenWith_zero_strictMono hf hp).le_apply.trans <|
-    (veblenWith_right_strictMono hf _).monotone (Ordinal.zero_le _)
+    (veblenWith_right_strictMono hf _).monotone zero_le
 
-theorem IsNormal.veblenWith_zero (hp : 0 < f 0) : IsNormal (veblenWith f · 0) := by
-  rw [isNormal_iff_strictMono_limit]
+theorem isNormal_veblenWith_zero (hp : 0 < f 0) : IsNormal (veblenWith f · 0) := by
+  rw [isNormal_iff]
   refine ⟨veblenWith_zero_strictMono hf hp, fun o ho a IH ↦ ?_⟩
   rw [veblenWith_of_ne_zero f ho.ne_bot, derivFamily_zero]
   apply nfpFamily_le fun l ↦ ?_
@@ -211,10 +215,10 @@ theorem veblenWith_lt_veblenWith_veblenWith_iff (h : o₂ ≤ o₁) :
     veblenWith_veblenWith_eq_veblenWith_iff hf h]
 
 theorem veblenWith_apply_eq_apply_iff : veblenWith f o (f a) = f a ↔ veblenWith f o a = a := by
-  simpa using veblenWith_veblenWith_eq_veblenWith_iff hf (zero_le o)
+  simpa using veblenWith_veblenWith_eq_veblenWith_iff hf zero_le
 
 theorem apply_lt_veblenWith_apply_iff : f a < veblenWith f o (f a) ↔ a < veblenWith f o a := by
-  simpa using veblenWith_lt_veblenWith_veblenWith_iff hf (zero_le o)
+  simpa using veblenWith_lt_veblenWith_veblenWith_iff hf zero_le
 
 theorem cmp_veblenWith :
     cmp (veblenWith f o₁ a) (veblenWith f o₂ b) =
@@ -284,7 +288,7 @@ theorem veblen_of_ne_zero (h : o ≠ 0) : veblen o = derivFamily fun x : Iio o �
   veblenWith_of_ne_zero _ h
 
 theorem isNormal_veblen (o : Ordinal) : IsNormal (veblen o) :=
-  (isNormal_opow one_lt_omega0).veblenWith o
+  isNormal_veblenWith (isNormal_opow one_lt_omega0) o
 
 theorem mem_range_veblen (h : o ≠ 0) : a ∈ range (veblen o) ↔ ∀ b < o, veblen b a = a :=
   mem_range_veblenWith (isNormal_opow one_lt_omega0) h
@@ -298,8 +302,8 @@ theorem veblen_eq_self_of_le (h : o₁ ≤ o₂) (h' : veblen o₂ a = a) : vebl
 theorem veblen_mem_range_opow (o a : Ordinal) : veblen o a ∈ range (ω ^ · : Ordinal → Ordinal) :=
   veblenWith_mem_range (isNormal_opow one_lt_omega0)
 
-theorem veblen_succ (o : Ordinal) : veblen (succ o) = deriv (veblen o) :=
-  veblenWith_succ (isNormal_opow one_lt_omega0) o
+theorem veblen_add_one (o : Ordinal) : veblen (o + 1) = deriv (veblen o) :=
+  veblenWith_add_one (isNormal_opow one_lt_omega0) o
 
 theorem veblen_right_strictMono (o : Ordinal) : StrictMono (veblen o) :=
   veblenWith_right_strictMono (isNormal_opow one_lt_omega0) o
@@ -348,7 +352,7 @@ theorem left_le_veblen (o a : Ordinal) : o ≤ veblen o a :=
   left_le_veblenWith (isNormal_opow one_lt_omega0) (by simp) o a
 
 theorem isNormal_veblen_zero : IsNormal (veblen · 0) :=
-  (isNormal_opow one_lt_omega0).veblenWith_zero (by simp)
+  isNormal_veblenWith_zero (isNormal_opow one_lt_omega0) (by simp)
 
 theorem veblen_veblen_eq_veblen_iff (h : o₂ ≤ o₁) :
     veblen o₁ (veblen o₂ a) = veblen o₂ a ↔ veblen o₁ a = a :=
@@ -455,7 +459,7 @@ theorem invVeblen₁_veblen (h : a < veblen o a) : invVeblen₁ (veblen o a) = o
       simp
 
 theorem invVeblen₁_of_lt_opow (h : a < ω ^ a) : invVeblen₁ a = 0 := by
-  rwa [← Ordinal.le_zero, ← lt_veblen_iff_invVeblen₁_le, veblen_zero]
+  rwa [← nonpos_iff_eq_zero, ← lt_veblen_iff_invVeblen₁_le, veblen_zero]
 
 @[simp]
 theorem invVeblen₁_zero : invVeblen₁ 0 = 0 :=
@@ -526,46 +530,64 @@ This is an abbreviation for `veblen 1`. -/
 abbrev epsilon := veblen 1
 
 @[inherit_doc] scoped notation "ε_ " => epsilon
+recommended_spelling "epsilon" for "ε_ " in [epsilon, «termε_»]
 
 /-- `ε₀` is the first fixed point of `ω ^ ⬝`, i.e. the supremum of `ω`, `ω ^ ω`, `ω ^ ω ^ ω`, … -/
 scoped notation "ε₀" => ε_ 0
+recommended_spelling "epsilon_zero" for "ε₀" in [«termε₀»]
 
 theorem epsilon_eq_deriv (o : Ordinal) : ε_ o = deriv (fun a ↦ ω ^ a) o := by
-  rw [epsilon, ← succ_zero, veblen_succ, veblen_zero]
+  simpa [epsilon] using congr($(veblen_add_one 0) o)
 
-theorem epsilon0_eq_nfp : ε₀ = nfp (fun a ↦ ω ^ a) 0 := by
+theorem epsilon_zero_eq_nfp : ε₀ = nfp (fun a ↦ ω ^ a) 0 := by
   rw [epsilon_eq_deriv, deriv_zero_right]
 
-theorem epsilon_succ_eq_nfp (o : Ordinal) : ε_ (succ o) = nfp (fun a ↦ ω ^ a) (succ (ε_ o)) := by
-  rw [epsilon_eq_deriv, epsilon_eq_deriv, deriv_succ]
+theorem epsilon_add_one_eq_nfp (o : Ordinal) : ε_ (o + 1) = nfp (fun a ↦ ω ^ a) (ε_ o + 1) := by
+  simp [epsilon_eq_deriv, deriv_add_one]
 
-theorem epsilon0_le_of_omega0_opow_le (h : ω ^ o ≤ o) : ε₀ ≤ o := by
-  rw [epsilon0_eq_nfp]
-  exact nfp_le_fp (fun _ _ ↦ (opow_le_opow_iff_right one_lt_omega0).2) (Ordinal.zero_le o) h
+@[deprecated epsilon_add_one_eq_nfp +typeChanged (since := "2026-06-18")]
+theorem epsilon_succ_eq_nfp (o : Ordinal) : ε_ (succ o) = nfp (fun a ↦ ω ^ a) (succ (ε_ o)) := by
+  simpa [succ_eq_add_one] using epsilon_add_one_eq_nfp o
+
+theorem epsilon_zero_le_of_omega0_opow_le (h : ω ^ o ≤ o) : ε₀ ≤ o := by
+  rw [epsilon_zero_eq_nfp]
+  exact nfp_le_fp (fun _ _ ↦ (opow_le_opow_iff_right one_lt_omega0).2) zero_le h
+
+theorem epsilon_le_veblen_of_ne_zero (ha : a ≠ 0) : ε_ b ≤ veblen a b :=
+  veblen_left_monotone b <| Order.one_le_iff_ne_zero.mpr ha
 
 @[simp]
 theorem omega0_opow_epsilon (o : Ordinal) : ω ^ ε_ o = ε_ o := by
-  rw [epsilon_eq_deriv, (isNormal_opow one_lt_omega0).deriv_fp]
+  rw [epsilon_eq_deriv, deriv_fp (isNormal_opow one_lt_omega0)]
 
 /-- `ε₀` is the limit of `0`, `ω ^ 0`, `ω ^ ω ^ 0`, … -/
-theorem lt_epsilon0 : o < ε₀ ↔ ∃ n : ℕ, o < (fun a ↦ ω ^ a)^[n] 0 := by
-  rw [epsilon0_eq_nfp, lt_nfp_iff]
+theorem lt_epsilon_zero : o < ε₀ ↔ ∃ n : ℕ, o < (fun a ↦ ω ^ a)^[n] 0 := by
+  rw [epsilon_zero_eq_nfp, lt_nfp_iff]
 
 /-- `ω ^ ω ^ … ^ 0 < ε₀` -/
-theorem iterate_omega0_opow_lt_epsilon0 (n : ℕ) : (fun a ↦ ω ^ a)^[n] 0 < ε₀ := by
-  rw [epsilon0_eq_nfp]
+theorem iterate_omega0_opow_lt_epsilon_zero (n : ℕ) : (fun a ↦ ω ^ a)^[n] 0 < ε₀ := by
+  rw [epsilon_zero_eq_nfp]
   apply iterate_lt_nfp (isNormal_opow one_lt_omega0).strictMono
   simp
 
 theorem omega0_lt_epsilon (o : Ordinal) : ω < ε_ o := by
-  apply lt_of_lt_of_le _ <| (veblen_right_strictMono _).monotone (Ordinal.zero_le o)
-  simpa using iterate_omega0_opow_lt_epsilon0 2
+  apply lt_of_lt_of_le _ <| (veblen_right_strictMono _).monotone zero_le
+  simpa using iterate_omega0_opow_lt_epsilon_zero 2
 
 theorem natCast_lt_epsilon (n : ℕ) (o : Ordinal) : n < ε_ o :=
-  (nat_lt_omega0 n).trans <| omega0_lt_epsilon o
+  (natCast_lt_omega0 n).trans <| omega0_lt_epsilon o
 
 theorem epsilon_pos (o : Ordinal) : 0 < ε_ o :=
   veblen_pos
+
+theorem omega0_le_veblen_of_left_ne_zero
+    {a : Ordinal} (b : Ordinal) (ha : a ≠ 0) : ω ≤ veblen a b := by
+  grw [omega0_lt_epsilon b |>.le, epsilon_le_veblen_of_ne_zero ha]
+
+theorem omega0_le_veblen_of_right_ne_zero
+    (a : Ordinal) {b : Ordinal} (hb : b ≠ 0) : ω ≤ veblen a b := by
+  grw [← opow_one ω, opow_le_opow_right omega0_pos <| Order.one_le_iff_ne_zero.mpr hb,
+    ← veblen_zero_apply b, show veblen .. ≤ _ from veblen_left_monotone b zero_le]
 
 theorem invVeblen₁_epsilon (h : o < ε_ o) : invVeblen₁ (ε_ o) = 1 :=
   invVeblen₁_veblen h
@@ -581,18 +603,19 @@ Of particular importance is `Γ₀ = gamma 0`, the Feferman-Schütte ordinal. -/
 def gamma : Ordinal → Ordinal :=
   deriv (veblen · 0)
 
-@[inherit_doc]
-scoped notation "Γ_ " => gamma
+@[inherit_doc] scoped notation "Γ_ " => gamma
+recommended_spelling "gamma" for "Γ_ " in [gamma, «termΓ_»]
 
 /-- The Feferman-Schütte ordinal `Γ₀` is the smallest fixed point of `veblen · 0`, i.e. the supremum
 of `veblen ε₀ 0`, `veblen (veblen ε₀ 0) 0`, etc. -/
 scoped notation "Γ₀" => Γ_ 0
+recommended_spelling "gamma_zero" for "Γ₀" in [«termΓ₀»]
 
 theorem isNormal_gamma : IsNormal gamma :=
   isNormal_deriv _
 
 theorem mem_range_gamma : o ∈ range Γ_ ↔ veblen o 0 = o :=
-  isNormal_veblen_zero.mem_range_deriv
+  mem_range_deriv isNormal_veblen_zero
 
 theorem strictMono_gamma : StrictMono gamma :=
   isNormal_gamma.strictMono
@@ -614,37 +637,41 @@ theorem gamma_inj : Γ_ a = Γ_ b ↔ a = b :=
 
 @[simp]
 theorem veblen_gamma_zero (o : Ordinal) : veblen (Γ_ o) 0 = Γ_ o :=
-  isNormal_veblen_zero.deriv_fp o
+  deriv_fp isNormal_veblen_zero o
 
-theorem gamma0_eq_nfp : Γ₀ = nfp (veblen · 0) 0 :=
+theorem gamma_zero_eq_nfp : Γ₀ = nfp (veblen · 0) 0 :=
   deriv_zero_right _
 
-theorem gamma_succ_eq_nfp (o : Ordinal) : Γ_ (succ o) = nfp (veblen · 0) (succ (Γ_ o)) :=
-  deriv_succ _ _
+theorem gamma_add_one_eq_nfp (o : Ordinal) : Γ_ (o + 1) = nfp (veblen · 0) (Γ_ o + 1) := by
+  simp [gamma, deriv_add_one]
 
-theorem gamma0_le_of_veblen_le (h : veblen o 0 ≤ o) : Γ₀ ≤ o := by
-  rw [gamma0_eq_nfp]
-  exact nfp_le_fp (veblen_left_monotone 0) (Ordinal.zero_le o) h
+@[deprecated gamma_add_one_eq_nfp +typeChanged (since := "2026-06-18")]
+theorem gamma_succ_eq_nfp (o : Ordinal) : Γ_ (succ o) = nfp (veblen · 0) (succ (Γ_ o)) := by
+  simpa [succ_eq_add_one] using gamma_add_one_eq_nfp o
+
+theorem gamma_zero_le_of_veblen_le (h : veblen o 0 ≤ o) : Γ₀ ≤ o := by
+  rw [gamma_zero_eq_nfp]
+  exact nfp_le_fp (veblen_left_monotone 0) zero_le h
 
 /-- `Γ₀` is the limit of `0`, `veblen 0 0`, `veblen (veblen 0 0) 0`, … -/
-theorem lt_gamma0 : o < Γ₀ ↔ ∃ n : ℕ, o < (fun a ↦ veblen a 0)^[n] 0 := by
-  rw [gamma0_eq_nfp, lt_nfp_iff]
+theorem lt_gamma_zero : o < Γ₀ ↔ ∃ n : ℕ, o < (fun a ↦ veblen a 0)^[n] 0 := by
+  rw [gamma_zero_eq_nfp, lt_nfp_iff]
 
 /-- `veblen (veblen … (veblen 0 0) … 0) 0 < Γ₀` -/
-theorem iterate_veblen_lt_gamma0 (n : ℕ) : (fun a ↦ veblen a 0)^[n] 0 < Γ₀ := by
-  rw [gamma0_eq_nfp]
+theorem iterate_veblen_lt_gamma_zero (n : ℕ) : (fun a ↦ veblen a 0)^[n] 0 < Γ₀ := by
+  rw [gamma_zero_eq_nfp]
   apply iterate_lt_nfp veblen_zero_strictMono
   simp
 
-theorem epsilon0_lt_gamma (o : Ordinal) : ε₀ < Γ_ o := by
-  apply lt_of_lt_of_le _ <| (gamma_le_gamma.2 (Ordinal.zero_le _))
-  simpa using iterate_veblen_lt_gamma0 2
+theorem epsilon_zero_lt_gamma (o : Ordinal) : ε₀ < Γ_ o := by
+  apply (gamma_le_gamma.2 zero_le).trans_lt'
+  simpa using iterate_veblen_lt_gamma_zero 2
 
 theorem omega0_lt_gamma (o : Ordinal) : ω < Γ_ o :=
-  (omega0_lt_epsilon 0).trans (epsilon0_lt_gamma o)
+  (omega0_lt_epsilon 0).trans (epsilon_zero_lt_gamma o)
 
 theorem natCast_lt_gamma (n : ℕ) : n < Γ_ o :=
-  (nat_lt_omega0 n).trans (omega0_lt_gamma o)
+  (natCast_lt_omega0 n).trans (omega0_lt_gamma o)
 
 @[simp]
 theorem gamma_pos : 0 < Γ_ o :=
@@ -673,5 +700,66 @@ theorem invVeblen₁_eq_iff : invVeblen₁ o = o ↔ o = 0 ∨ o ∈ range Γ_ :
 
 theorem invVeblen₁_lt_iff : invVeblen₁ o < o ↔ o ≠ 0 ∧ o ∉ range Γ_ := by
   rw [(invVeblen₁_le o).lt_iff_ne, ne_eq, invVeblen₁_eq_iff, not_or]
+
+section Countable
+
+open Cardinal
+
+theorem card_veblen_le (a b : Ordinal) : (veblen a b).card ≤ max (max a.card b.card) ℵ₀ := by
+  induction a using WellFoundedLT.induction generalizing b with
+  | ind a ih =>
+    obtain rfl | ha := eq_or_ne a 0
+    · simpa [Or.comm] using card_opow_le ω b
+    rw [veblen_of_ne_zero ha, ← max_right_comm]
+    apply card_derivFamily_le (le_max_right _ _) (by simp)
+    intro i x
+    grw [ih i i.2 x, max_right_comm]
+    apply sup_le_sup_right (c := x.card) <| sup_le_sup_right ?_ ℵ₀
+    simp [card_le_card i.2.le]
+
+private theorem le_card_veblen_aux (a b : Ordinal) : max a.card b.card ≤ (veblen a b).card :=
+  max_le (card_le_card (left_le_veblen a b)) (card_le_card (right_le_veblen a b))
+
+theorem card_veblen_of_left_ne_zero {a : Ordinal} (b : Ordinal) (ha : a ≠ 0) :
+    (veblen a b).card = max (max a.card b.card) ℵ₀ := by
+  apply le_antisymm (card_veblen_le a b) <| max_le (le_card_veblen_aux a b) ?_
+  exact aleph0_le_card.mpr <| omega0_le_veblen_of_left_ne_zero b ha
+
+theorem card_veblen_of_right_ne_zero (a : Ordinal) {b : Ordinal} (hb : b ≠ 0) :
+    (veblen a b).card = max (max a.card b.card) ℵ₀ := by
+  apply le_antisymm (card_veblen_le a b) <| max_le (le_card_veblen_aux a b) ?_
+  exact aleph0_le_card.mpr <| omega0_le_veblen_of_right_ne_zero a hb
+
+@[simp]
+theorem card_epsilon (o : Ordinal) : (ε_ o).card = max ℵ₀ o.card := by
+  rw [card_veblen_of_left_ne_zero o one_ne_zero,
+    card_one, max_right_comm, max_eq_right one_le_aleph0]
+
+@[simp]
+theorem card_gamma (o : Ordinal) : (Γ_ o).card = max ℵ₀ o.card := by
+  apply le_antisymm (card_deriv_le_of_forall_le (by simpa [Or.comm] using card_veblen_le · 0))
+    (max_le ?_ ?_)
+  · exact aleph0_le_card.mpr <| omega0_lt_gamma o |>.le
+  · exact card_le_card isNormal_gamma.strictMono.le_apply
+
+theorem epsilon_lt_omega_of_lt_omega (hx : x ≠ 0) (ho : o < ω_ x) : ε_ o < ω_ x := by
+  simp_all [card_epsilon, lt_omega_iff_card_lt, hx.pos]
+
+theorem epsilon_zero_lt_omega_one : ε₀ < ω₁ :=
+  epsilon_lt_omega_of_lt_omega one_ne_zero <| omega_pos 1
+
+instance : Countable (ToType ε₀) :=
+  countable_toType_of_lt_omega_one epsilon_zero_lt_omega_one
+
+theorem gamma_lt_omega_of_lt_omega (hx : x ≠ 0) (ho : o < ω_ x) : Γ_ o < ω_ x := by
+  simp_all [card_gamma, lt_omega_iff_card_lt, hx.pos]
+
+theorem gamma_zero_lt_omega_one : Γ₀ < ω₁ :=
+  gamma_lt_omega_of_lt_omega one_ne_zero <| omega_pos 1
+
+instance : Countable (ToType Γ₀) :=
+  countable_toType_of_lt_omega_one gamma_zero_lt_omega_one
+
+end Countable
 
 end Ordinal

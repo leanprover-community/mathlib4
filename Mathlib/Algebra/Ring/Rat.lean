@@ -3,11 +3,13 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Algebra.Ring.Basic
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Data.Rat.Defs
-import Mathlib.Algebra.Group.Nat.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.Algebra.Ring.Basic
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Data.Rat.Defs
+public import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
 # The rational numbers are a commutative ring
@@ -17,7 +19,9 @@ This file contains the commutative ring instance on the rational numbers.
 See note [foundational algebra order theory].
 -/
 
-assert_not_exists OrderedCommMonoid Field PNat Nat.gcd_greatest IsDomain.toCancelMonoidWithZero
+public section
+
+assert_not_exists IsOrderedMonoid Field PNat Nat.gcd_greatest
 
 namespace Rat
 
@@ -50,7 +54,7 @@ instance commGroupWithZero : CommGroupWithZero ℚ :=
 instance isDomain : IsDomain ℚ := NoZeroDivisors.to_isDomain _
 /-- The characteristic of `ℚ` is 0. -/
 @[stacks 09FS "Second part."]
-instance instCharZero : CharZero ℚ where cast_injective a b hab := by simpa using congr_arg num hab
+instance instCharZero : CharZero ℚ where cast_injective a b hab := by simpa using congr(num $hab)
 
 /-!
 ### Extra instances to short-circuit type class resolution

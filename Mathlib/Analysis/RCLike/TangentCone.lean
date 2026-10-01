@@ -3,9 +3,11 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.TangentCone
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Topology.Instances.RealVectorSpace
+module
+
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Topology.Instances.RealVectorSpace
+public import Mathlib.Analysis.Calculus.TangentCone.Real
 
 /-! # Relationships between unique differentiability over `ℝ` and `ℂ`
 
@@ -13,18 +15,20 @@ A set of unique differentiability for `ℝ` is also a set of unique differentiab
 (or for a general field satisfying `IsRCLikeNormedField 𝕜`).
 -/
 
+public section
+
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [h𝕜 : IsRCLikeNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedSpace ℝ E]
   {s : Set E} {x : E}
 
 theorem tangentConeAt_real_subset_isRCLikeNormedField :
     tangentConeAt ℝ s x ⊆ tangentConeAt 𝕜 s x := by
-  letI := h𝕜.rclike
+  let := h𝕜.rclike
   exact tangentConeAt_mono_field
 
 theorem UniqueDiffWithinAt.of_real (hs : UniqueDiffWithinAt ℝ s x) :
     UniqueDiffWithinAt 𝕜 s x := by
-  letI := h𝕜.rclike
+  let := h𝕜.rclike
   exact hs.mono_field
 
 theorem UniqueDiffOn.of_real (hs : UniqueDiffOn ℝ s) :

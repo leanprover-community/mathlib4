@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
-import Mathlib.Data.Finset.Powerset
+module
+
+public import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Set.Finite.Basic
 
 /-!
@@ -19,13 +21,15 @@ and a `Set.Finite` constructor.
 finite sets
 -/
 
-assert_not_exists OrderedRing MonoidWithZero
+public section
+
+assert_not_exists IsOrderedRing MonoidWithZero
 
 open Set Function
 
 universe u v w x
 
-variable {α : Type u} {β : Type v} {ι : Sort w} {γ : Type x}
+variable {α : Type u}
 
 namespace Set
 

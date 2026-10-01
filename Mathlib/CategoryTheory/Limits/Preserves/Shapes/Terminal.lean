@@ -3,8 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Preserving terminal object
@@ -15,6 +17,8 @@ to concrete objects.
 In particular, we show that `terminalComparison G` is an isomorphism iff `G` preserves terminal
 objects.
 -/
+
+@[expose] public section
 
 
 universe w v v₁ v₂ u u₁ u₂
@@ -82,7 +86,7 @@ has limits of shape `J` and `G` preserves them, then `D` does not necessarily ha
 -/
 theorem hasTerminal_of_hasTerminal_of_preservesLimit [PreservesLimit (Functor.empty.{0} C) G] :
     HasTerminal D := ⟨fun F => by
-  haveI := HasLimit.mk ⟨_, isLimitOfHasTerminalOfPreservesLimit G⟩
+  have := HasLimit.mk ⟨_, isLimitOfHasTerminalOfPreservesLimit G⟩
   apply hasLimit_of_iso F.uniqueFromEmpty.symm⟩
 
 variable [HasTerminal D]
@@ -174,7 +178,7 @@ shape `J`.
 theorem hasInitial_of_hasInitial_of_preservesColimit [PreservesColimit (Functor.empty.{0} C) G] :
     HasInitial D :=
   ⟨fun F => by
-    haveI := HasColimit.mk ⟨_, isColimitOfHasInitialOfPreservesColimit G⟩
+    have := HasColimit.mk ⟨_, isColimitOfHasInitialOfPreservesColimit G⟩
     apply hasColimit_of_iso F.uniqueFromEmpty⟩
 
 variable [HasInitial D]

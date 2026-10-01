@@ -3,18 +3,24 @@ Copyright (c) 2023 Alex Keizer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Keizer
 -/
-import Mathlib.Data.Vector.Basic
+module
+
+public import Mathlib.Data.Vector.Basic
 
 /-!
-  This file establishes a `snoc : Vector α n → α → Vector α (n+1)` operation, that appends a single
-  element to the back of a vector.
+# Appending to the back of a vector
 
-  It provides a collection of lemmas that show how different `Vector` operations reduce when their
-  argument is `snoc xs x`.
+This file establishes a `snoc : Vector α n → α → Vector α (n+1)` operation, that appends a single
+element to the back of a vector.
 
-  Also, an alternative, reverse, induction principle is added, that breaks down a vector into
-  `snoc xs x` for its inductive case. Effectively doing induction from right-to-left
+It provides a collection of lemmas that show how different `Vector` operations reduce when their
+argument is `snoc xs x`.
+
+Also, an alternative, reverse, induction principle is added, that breaks down a vector into
+`snoc xs x` for its inductive case. Effectively doing induction from right-to-left
 -/
+
+@[expose] public section
 
 namespace List
 

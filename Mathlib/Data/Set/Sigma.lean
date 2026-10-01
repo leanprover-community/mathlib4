@@ -3,14 +3,17 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.Image
-import Mathlib.Data.Set.BooleanAlgebra
+module
+
+public import Mathlib.Data.Set.BooleanAlgebra
 
 /-!
 # Sets in sigma types
 
 This file defines `Set.sigma`, the indexed sum of sets.
 -/
+
+@[expose] public section
 
 namespace Set
 
@@ -21,16 +24,16 @@ variable {ι ι' : Type*} {α : ι → Type*} {s s₁ s₂ : Set ι} {t t₁ t�
 theorem range_sigmaMk (i : ι) : range (Sigma.mk i : α i → Sigma α) = Sigma.fst ⁻¹' {i} := by grind
 
 theorem preimage_image_sigmaMk_of_ne (h : i ≠ j) (s : Set (α j)) :
-    Sigma.mk i ⁻¹' (Sigma.mk j '' s) = ∅ := by grind
+    Sigma.mk i ⁻¹' Sigma.mk j '' s = ∅ := by grind
 
 theorem image_sigmaMk_preimage_sigmaMap_subset {β : ι' → Type*} (f : ι → ι')
     (g : ∀ i, α i → β (f i)) (i : ι) (s : Set (β (f i))) :
-    Sigma.mk i '' (g i ⁻¹' s) ⊆ Sigma.map f g ⁻¹' (Sigma.mk (f i) '' s) :=
+    Sigma.mk i '' g i ⁻¹' s ⊆ Sigma.map f g ⁻¹' Sigma.mk (f i) '' s :=
   image_subset_iff.2 fun x hx ↦ ⟨g i x, hx, rfl⟩
 
 theorem image_sigmaMk_preimage_sigmaMap {β : ι' → Type*} {f : ι → ι'} (hf : Function.Injective f)
     (g : ∀ i, α i → β (f i)) (i : ι) (s : Set (β (f i))) :
-    Sigma.mk i '' (g i ⁻¹' s) = Sigma.map f g ⁻¹' (Sigma.mk (f i) '' s) := by
+    Sigma.mk i '' g i ⁻¹' s = Sigma.map f g ⁻¹' Sigma.mk (f i) '' s := by
   refine (image_sigmaMk_preimage_sigmaMap_subset f g i s).antisymm ?_
   rintro ⟨j, x⟩ ⟨y, hys, hxy⟩
   simp only [hf.eq_iff, Sigma.map, Sigma.ext_iff] at hxy
@@ -204,11 +207,20 @@ theorem fst_image_sigma (s : Set ι) (ht : ∀ i, (t i).Nonempty) : Sigma.fst ''
     let ⟨a, ha⟩ := ht i
     ⟨⟨i, a⟩, ⟨hi, ha⟩, rfl⟩
 
-theorem sigma_diff_sigma : s₁.sigma t₁ \ s₂.sigma t₂ = s₁.sigma (t₁ \ t₂) ∪ (s₁ \ s₂).sigma t₁ :=
+theorem sigma_sdiff_sigma : s₁.sigma t₁ \ s₂.sigma t₂ = s₁.sigma (t₁ \ t₂) ∪ (s₁ \ s₂).sigma t₁ :=
   ext fun x ↦ by
     by_cases h₁ : x.1 ∈ s₁ <;> by_cases h₂ : x.2 ∈ t₁ x.1 <;> simp [*, ← imp_iff_or_not]
 
+@[deprecated (since := "2026-06-03")] alias sigma_diff_sigma := sigma_sdiff_sigma
+
 lemma sigma_eq_biUnion : s.sigma t = ⋃ i ∈ s, Sigma.mk i '' t i := by
   aesop
+
+lemma uncurry_preimage_sigma_pi {β : (i : ι) → α i → Type*} (s : Set ι) (t : (i : ι) → Set (α i))
+    (u : (p : (i : ι) × α i) → Set (β p.1 p.2)) :
+    Sigma.uncurry ⁻¹' (s.sigma t).pi u = s.pi (fun i ↦ (t i).pi fun j ↦ u ⟨i, j⟩) := by
+  ext x
+  simp only [mem_preimage, mem_pi, mem_sigma_iff, and_imp]
+  exact ⟨fun h i hi j hj ↦ h ⟨i, j⟩ hi hj, fun h p hp1 hp2 ↦ h p.1 hp1 p.2 hp2⟩
 
 end Set

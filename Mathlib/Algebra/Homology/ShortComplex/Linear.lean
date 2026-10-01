@@ -3,23 +3,27 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Preadditive
-import Mathlib.CategoryTheory.Linear.LinearFunctor
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Preadditive
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-!
 # Homology of linear categories
 
-In this file, it is shown that if `C` is a `R`-linear category, then
-`ShortComplex C` is a `R`-linear category. Various homological notions
+In this file, it is shown that if `C` is an `R`-linear category, then
+`ShortComplex C` is an `R`-linear category. Various homological notions
 are also shown to be linear.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
 open Category Limits
 
-variable {R C : Type*} [Semiring R] [Category C] [Preadditive C] [Linear R C]
+variable {R C : Type*} [Semiring R] [Category* C] [Preadditive C] [Linear R C]
 
 namespace ShortComplex
 
@@ -49,7 +53,7 @@ instance : Linear R (ShortComplex C) where
 
 section LeftHomology
 
-variable {φ φ' : S₁ ⟶ S₂} {h₁ : S₁.LeftHomologyData} {h₂ : S₂.LeftHomologyData}
+variable {φ : S₁ ⟶ S₂} {h₁ : S₁.LeftHomologyData} {h₂ : S₂.LeftHomologyData}
 
 namespace LeftHomologyMapData
 
@@ -103,7 +107,7 @@ end LeftHomology
 
 section RightHomology
 
-variable {φ φ' : S₁ ⟶ S₂} {h₁ : S₁.RightHomologyData} {h₂ : S₂.RightHomologyData}
+variable {φ : S₁ ⟶ S₂} {h₁ : S₁.RightHomologyData} {h₂ : S₂.RightHomologyData}
 
 namespace RightHomologyMapData
 
@@ -157,11 +161,11 @@ end RightHomology
 
 section Homology
 
-variable {φ φ' : S₁ ⟶ S₂} {h₁ : S₁.HomologyData} {h₂ : S₂.HomologyData}
+variable {φ : S₁ ⟶ S₂} {h₁ : S₁.HomologyData} {h₂ : S₂.HomologyData}
 
 namespace HomologyMapData
 
-variable (γ : HomologyMapData φ h₁ h₂) (γ' : HomologyMapData φ' h₁ h₂)
+variable (γ : HomologyMapData φ h₁ h₂)
 
 /-- Given a homology map data for a morphism `φ`, this is the induced homology
 map data for `a • φ`. -/

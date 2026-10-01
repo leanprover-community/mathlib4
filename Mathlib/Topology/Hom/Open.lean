@@ -3,7 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Topology.ContinuousMap.Basic
+module
+
+public import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
 # Continuous open maps
@@ -21,6 +23,8 @@ be satisfied by itself and all stricter types.
 
 * `ContinuousOpenMapClass`
 -/
+
+@[expose] public section
 
 
 open Function
@@ -59,9 +63,10 @@ namespace ContinuousOpenMap
 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
 
+@[macro_inline]
 instance instFunLike : FunLike (α →CO β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
@@ -84,7 +89,7 @@ theorem ext {f g : α →CO β} (h : ∀ a, f a = g a) : f = g :=
 /-- Copy of a `ContinuousOpenMap` with a new `ContinuousMap` equal to the old one. Useful to fix
 definitional equalities. -/
 protected def copy (f : α →CO β) (f' : α → β) (h : f' = f) : α →CO β :=
-  ⟨f.toContinuousMap.copy f' <| h, h.symm.subst f.map_open'⟩
+  ⟨f.toContinuousMap.copy f' h, h.symm.subst f.map_open'⟩
 
 @[simp]
 theorem coe_copy (f : α →CO β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' :=

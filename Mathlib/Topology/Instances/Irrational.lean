@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Real.Irrational
+module
+
 import Mathlib.Data.Rat.Encodable
+public import Mathlib.NumberTheory.Real.Irrational
 import Mathlib.Topology.Separation.GDelta
 import Mathlib.Topology.Instances.Real.Lemmas
 
@@ -13,8 +15,8 @@ import Mathlib.Topology.Instances.Real.Lemmas
 
 In this file we prove the following theorems:
 
-* `IsGδ.setOf_irrational`, `dense_irrational`, `eventually_residual_irrational`: irrational numbers
-  form a dense Gδ set;
+* `IsGδ.setOfPred_irrational`, `dense_irrational`, `eventually_residual_irrational`: irrational
+  numbers form a dense Gδ set;
 
 * `Irrational.eventually_forall_le_dist_cast_div`,
   `Irrational.eventually_forall_le_dist_cast_div_of_denom_le`;
@@ -29,13 +31,17 @@ instances for `{x // Irrational x}`.
 irrational, residual
 -/
 
+public section
+
 
 open Set Filter Metric
 
 open Filter Topology
 
-protected theorem IsGδ.setOf_irrational : IsGδ { x | Irrational x } :=
+protected theorem IsGδ.setOfPred_irrational : IsGδ { x | Irrational x } :=
   (countable_range _).isGδ_compl
+
+@[deprecated (since := "2026-07-09")] alias IsGδ.setOf_irrational := IsGδ.setOfPred_irrational
 
 
 theorem dense_irrational : Dense { x : ℝ | Irrational x } := by
@@ -46,7 +52,7 @@ theorem dense_irrational : Dense { x : ℝ | Irrational x } := by
   exact exists_irrational_btwn (Rat.cast_lt.2 hlt)
 
 theorem eventually_residual_irrational : ∀ᶠ x in residual ℝ, Irrational x :=
-  residual_of_dense_Gδ .setOf_irrational dense_irrational
+  residual_of_dense_Gδ .setOfPred_irrational dense_irrational
 
 namespace Irrational
 

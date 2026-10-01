@@ -3,9 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Set.Monotone
+module
+
+public import Mathlib.Data.Set.Monotone
 import Mathlib.Order.Interval.Set.Disjoint
-import Mathlib.Order.SuccPred.Archimedean
+public import Mathlib.Order.SuccPred.Archimedean
 
 /-!
 # Monotonicity on intervals
@@ -13,6 +15,8 @@ import Mathlib.Order.SuccPred.Archimedean
 In this file we prove that `Set.Ici` etc. are monotone/antitone functions. We also prove some lemmas
 about functions monotone on intervals in `SuccOrder`s.
 -/
+
+public section
 
 
 open Set
@@ -152,7 +156,7 @@ theorem iUnion_Ioo_of_mono_of_isGLB_of_isLUB (hf : Antitone f) (hg : Monotone g)
   calc
     ⋃ x, Ioo (f x) (g x) = (⋃ x, Ioi (f x)) ∩ ⋃ x, Iio (g x) :=
       iUnion_inter_of_monotone hf.Ioi hg.Iio
-    _ = Ioi a ∩ Iio b := congr_arg₂ (· ∩ ·) ha.iUnion_Ioi_eq hb.iUnion_Iio_eq
+    _ = Ioi a ∩ Iio b := congr($ha.iUnion_Ioi_eq ∩ $hb.iUnion_Iio_eq)
 
 end iUnion
 

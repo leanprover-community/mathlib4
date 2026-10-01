@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yuyang Zhao
 -/
-import Mathlib.Data.List.Pi
-import Mathlib.Data.Fintype.Defs
+module
+
+public import Mathlib.Data.List.Pi
+public import Mathlib.Data.Fintype.Defs
 
 /-!
 # Quotients of families indexed by a finite type
@@ -25,6 +27,10 @@ by a finite type.
 
 -/
 
+@[expose] public section
+
+-- We want the theorems in this file to be constructive.
+set_option linter.unusedDecidableInType false
 
 namespace Quotient
 
@@ -36,7 +42,7 @@ variable {ι : Type*} [DecidableEq ι] {α : ι → Sort*} {S : ∀ i, Setoid (�
   term in the quotient of the product of the setoids indexed by `l`. -/
 def listChoice {l : List ι} (q : ∀ i ∈ l, Quotient (S i)) : @Quotient (∀ i ∈ l, α i) piSetoid :=
   match l with
-  |     [] => ⟦nofun⟧
+  | [] => ⟦nofun⟧
   | i :: _ => Quotient.liftOn₂ (List.Pi.head (i := i) q)
     (listChoice (List.Pi.tail q))
     (⟦List.Pi.cons _ _ · ·⟧)
@@ -44,7 +50,7 @@ def listChoice {l : List ι} (q : ∀ i ∈ l, Quotient (S i)) : @Quotient (∀ 
 
 theorem listChoice_mk {l : List ι} (a : ∀ i ∈ l, α i) : listChoice (S := S) (⟦a · ·⟧) = ⟦a⟧ :=
   match l with
-  |     [] => Quotient.sound nofun
+  | [] => Quotient.sound nofun
   | i :: l => by
     unfold listChoice List.Pi.tail
     rw [listChoice_mk]
@@ -55,7 +61,7 @@ theorem listChoice_mk {l : List ι} (a : ∀ i ∈ l, α i) : listChoice (S := S
 lemma list_ind {l : List ι} {C : (∀ i ∈ l, Quotient (S i)) → Prop}
     (f : ∀ a : ∀ i ∈ l, α i, C (⟦a · ·⟧)) (q : ∀ i ∈ l, Quotient (S i)) : C q :=
   match l with
-  |     [] => cast (congr_arg _ (funext₂ nofun)) (f nofun)
+  | [] => cast (congr_arg _ (funext₂ nofun)) (f nofun)
   | i :: l => by
     rw [← List.Pi.cons_eta q]
     induction List.Pi.head q using Quotient.ind with | _ a
@@ -67,6 +73,11 @@ lemma list_ind {l : List ι} {C : (∀ i ∈ l, Quotient (S i)) → Prop}
 end List
 
 section Fintype
+
+-- `Fintype.ofFinite` depends on this file, so the `unusedFintypeInType` linter
+-- makes no sense yet.
+set_option linter.unusedFintypeInType false
+
 variable {ι : Type*} [Fintype ι] [DecidableEq ι] {α : ι → Sort*} {S : ∀ i, Setoid (α i)} {β : Sort*}
 
 /-- Choice-free induction principle for quotients indexed by a finite type.
@@ -165,7 +176,7 @@ def finRecOn {C : (∀ i, Quotient (S i)) → Sort*}
     (h : ∀ (a b : ∀ i, α i) (h : ∀ i, a i ≈ b i),
       Eq.ndrec (f a) (funext fun i ↦ Quotient.sound (h i)) = f b) :
     C q :=
-  finHRecOn q f (eqRec_heq_iff_heq.mp <| heq_of_eq <| h · · ·)
+  finHRecOn q f (eqRec_heq_iff.mp <| heq_of_eq <| h · · ·)
 
 @[simp]
 lemma finHRecOn_mk {C : (∀ i, Quotient (S i)) → Sort*}
@@ -229,6 +240,7 @@ def finRecOn {C : (∀ i, Trunc (α i)) → Sort*}
     C q :=
   Quotient.finRecOn q (f ·) (fun _ _ _ ↦ h _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma finRecOn_mk {C : (∀ i, Trunc (α i)) → Sort*}
     (a : ∀ i, α i) :

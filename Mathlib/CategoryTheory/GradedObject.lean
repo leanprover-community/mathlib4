@@ -3,10 +3,10 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.CategoryTheory.Shift.Basic
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Algebra.Group.Int.Defs
+module
+
+public import Mathlib.CategoryTheory.Shift.Basic
+public import Mathlib.Algebra.Group.Int.Defs
 
 /-!
 # The category of graded objects
@@ -30,6 +30,8 @@ have a functor `map : GradedObject I C ⥤ GradedObject J C`.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits
@@ -37,6 +39,7 @@ open Category Limits
 universe w v u
 
 /-- A type synonym for `β → C`, used for `β`-graded objects in a category `C`. -/
+@[implicit_reducible]
 def GradedObject (β : Type w) (C : Type u) : Type max w u :=
   β → C
 
@@ -67,7 +70,7 @@ lemma hom_ext {β : Type*} {X Y : GradedObject β C} (f g : X ⟶ Y) (h : ∀ x,
   apply h
 
 /-- The projection of a graded object to its `i`-th component. -/
-@[simps]
+@[implicit_reducible, simps]
 def eval {β : Type w} (b : β) : GradedObject β C ⥤ C where
   obj X := X b
   map f := f b
@@ -85,6 +88,7 @@ def isoMk (e : ∀ i, X i ≅ Y i) : X ≅ Y where
 variable {X Y}
 
 -- this lemma is not an instance as it may create a loop with `isIso_apply_of_isIso`
+set_option backward.isDefEq.respectTransparency.types false in
 lemma isIso_of_isIso_apply (f : X ⟶ Y) [hf : ∀ i, IsIso (f i)] :
     IsIso f := by
   change IsIso (isoMk X Y (fun i => asIso (f i))).hom
@@ -100,44 +104,43 @@ end GradedObject
 
 namespace Iso
 
-variable {C D E J : Type*} [Category C] [Category D] [Category E]
+variable {C D E J : Type*} [Category* C] [Category* D] [Category* E]
   {X Y : GradedObject J C}
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 lemma hom_inv_id_eval (e : X ≅ Y) (j : J) :
     e.hom j ≫ e.inv j = 𝟙 _ := by
   rw [← GradedObject.categoryOfGradedObjects_comp, e.hom_inv_id,
     GradedObject.categoryOfGradedObjects_id]
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 lemma inv_hom_id_eval (e : X ≅ Y) (j : J) :
     e.inv j ≫ e.hom j = 𝟙 _ := by
   rw [← GradedObject.categoryOfGradedObjects_comp, e.inv_hom_id,
     GradedObject.categoryOfGradedObjects_id]
 
-@[reassoc (attr := simp)]
+@[reassoc, deprecated hom_inv_id_eval_map +typeChanged (since := "2026-09-16")]
 lemma map_hom_inv_id_eval (e : X ≅ Y) (F : C ⥤ D) (j : J) :
-    F.map (e.hom j) ≫ F.map (e.inv j) = 𝟙 _ := by
-  rw [← F.map_comp, ← GradedObject.categoryOfGradedObjects_comp, e.hom_inv_id,
-    GradedObject.categoryOfGradedObjects_id, Functor.map_id]
+    F.map (e.hom j) ≫ F.map (e.inv j) = 𝟙 _ := by simp
 
-@[reassoc (attr := simp)]
+@[reassoc, deprecated inv_hom_id_eval_map +typeChanged (since := "2026-09-16")]
 lemma map_inv_hom_id_eval (e : X ≅ Y) (F : C ⥤ D) (j : J) :
-    F.map (e.inv j) ≫ F.map (e.hom j) = 𝟙 _ := by
-  rw [← F.map_comp, ← GradedObject.categoryOfGradedObjects_comp, e.inv_hom_id,
-    GradedObject.categoryOfGradedObjects_id, Functor.map_id]
+    F.map (e.inv j) ≫ F.map (e.hom j) = 𝟙 _ := by simp
+
+attribute [deprecated hom_inv_id_eval_map_assoc +typeChanged (since := "2026-09-16")]
+  map_hom_inv_id_eval_assoc
+attribute [deprecated inv_hom_id_eval_map_assoc +typeChanged (since := "2026-09-16")]
+  map_inv_hom_id_eval_assoc
 
 @[reassoc (attr := simp)]
 lemma map_hom_inv_id_eval_app (e : X ≅ Y) (F : C ⥤ D ⥤ E) (j : J) (Y : D) :
     (F.map (e.hom j)).app Y ≫ (F.map (e.inv j)).app Y = 𝟙 _ := by
-  rw [← NatTrans.comp_app, ← F.map_comp, hom_inv_id_eval,
-    Functor.map_id, NatTrans.id_app]
+  rw [← NatTrans.comp_app, hom_inv_id_eval_map, NatTrans.id_app]
 
 @[reassoc (attr := simp)]
 lemma map_inv_hom_id_eval_app (e : X ≅ Y) (F : C ⥤ D ⥤ E) (j : J) (Y : D) :
     (F.map (e.inv j)).app Y ≫ (F.map (e.hom j)).app Y = 𝟙 _ := by
-  rw [← NatTrans.comp_app, ← F.map_comp, inv_hom_id_eval,
-    Functor.map_id, NatTrans.id_app]
+  rw [← NatTrans.comp_app, inv_hom_id_eval_map, NatTrans.id_app]
 
 end Iso
 
@@ -192,6 +195,7 @@ def comapEquiv {β γ : Type w} (e : β ≃ γ) : GradedObject β C ≌ GradedOb
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 instance hasShift {β : Type*} [AddCommGroup β] (s : β) : HasShift (GradedObjectWithShift s C) ℤ :=
   hasShiftMk _ _
     { F := fun n => comap C fun b : β => b + n • s
@@ -273,23 +277,7 @@ end GradedObject
 
 namespace GradedObject
 
-noncomputable section
-
-variable (β : Type)
-variable (C : Type (u + 1)) [LargeCategory C] [HasForget C] [HasCoproducts.{0} C]
-  [HasZeroMorphisms C]
-
-instance : HasForget (GradedObject β C) where forget := total β C ⋙ forget C
-
-instance : HasForget₂ (GradedObject β C) C where forget₂ := total β C
-
-end
-
-end GradedObject
-
-namespace GradedObject
-
-variable {I J K : Type*} {C : Type*} [Category C]
+variable {I J K : Type*} {C : Type*} [Category* C]
   (X Y Z : GradedObject I C) (φ : X ⟶ Y) (e : X ≅ Y) (ψ : Y ⟶ Z) (p : I → J)
 
 /-- If `X : GradedObject I C` and `p : I → J`, `X.mapObjFun p j` is the family of objects `X i`
@@ -453,6 +441,8 @@ def cofanMapObjComp : X.CofanMapObjFun r k :=
     (c (p i) (by rw [hpqr, hi])).inj ⟨i, rfl⟩ ≫ c'.inj (⟨p i, by
       rw [Set.mem_preimage, Set.mem_singleton_iff, hpqr, hi]⟩))
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Given maps `p : I → J`, `q : J → K` and `r : I → K` such that `q.comp p = r`,
 `X : GradedObject I C`, `k : K`, the cofan constructed by `cofanMapObjComp` is a colimit.
 In other words, if we have, for all `j : J` such that `hj : q j = k`,
@@ -462,7 +452,7 @@ the point of this latter cofan computes the coproduct of the `X i` such that `r 
 @[simp]
 def isColimitCofanMapObjComp :
     IsColimit (cofanMapObjComp X p q r hpqr k c c') :=
-  mkCofanColimit _
+  Cofan.IsColimit.mk _
     (fun s => Cofan.IsColimit.desc hc'
       (fun ⟨j, (hj : q j = k)⟩ => Cofan.IsColimit.desc (hc j hj)
         (fun ⟨i, (hi : p i = j)⟩ => s.inj ⟨i, by
@@ -493,9 +483,9 @@ noncomputable def ιMapObjOrZero : X i ⟶ X.mapObj p j :=
     then X.ιMapObj p i j h
     else 0
 
-lemma ιMapObjOrZero_eq (h : p i = j) : X.ιMapObjOrZero p i j = X.ιMapObj p i j h := dif_pos h
+lemma ιMapObjOrZero_eq (h : p i = j) : X.ιMapObjOrZero p i j = X.ιMapObj p i j h := dite_eq_left h
 
-lemma ιMapObjOrZero_eq_zero (h : p i ≠ j) : X.ιMapObjOrZero p i j = 0 := dif_neg h
+lemma ιMapObjOrZero_eq_zero (h : p i ≠ j) : X.ιMapObjOrZero p i j = 0 := dite_eq_right h
 
 variable {X Y} in
 @[reassoc (attr := simp)]

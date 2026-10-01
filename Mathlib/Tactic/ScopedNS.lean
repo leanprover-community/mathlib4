@@ -3,13 +3,17 @@ Copyright (c) 2021 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Mario Carneiro
 -/
-import Mathlib.Util.WithWeakNamespace
+module
+
+public import Mathlib.Util.WithWeakNamespace
 
 /-! # `scoped[NS]` syntax
 
 This is a replacement for the `localized` command in mathlib. It is similar to `scoped`,
 but it scopes the syntax in the specified namespace instead of the current namespace.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 open Lean

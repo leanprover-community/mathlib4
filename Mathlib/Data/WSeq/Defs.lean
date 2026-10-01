@@ -3,8 +3,10 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Batteries.Data.DList.Basic
-import Mathlib.Data.WSeq.Basic
+module
+
+public import Batteries.Data.DList.Basic
+public import Mathlib.Data.WSeq.Basic
 
 /-!
 # Miscellaneous definitions concerning weak sequences
@@ -13,13 +15,13 @@ These definitions, as well as those in `Mathlib/Data/WSeq/Productive.lean`, are 
 development of `Mathlib/Data/Seq/Parallel.lean`.
 -/
 
+@[expose] public section
+
 universe u v w
 
 namespace Stream'.WSeq
 
 variable {α : Type u} {β : Type v} {γ : Type w}
-
-open Function
 
 /-- Get the length of `s` (if it is finite and completes in finite time). -/
 def length (s : WSeq α) : Computation ℕ :=

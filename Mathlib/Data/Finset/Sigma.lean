@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Data.Set.Sigma
-import Mathlib.Order.CompleteLattice.Finset
+module
+
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Data.Set.Sigma
+public import Mathlib.Order.CompleteLattice.Finset
 
 /-!
 # Finite sets in a sigma type
@@ -26,6 +28,8 @@ worth it, we must first refactor the functor library so that the `alternative` i
 is computable and universe-polymorphic.
 -/
 
+@[expose] public section
+
 
 open Function Multiset
 
@@ -43,7 +47,7 @@ protected def sigma : Finset (Σ i, α i) :=
 
 variable {s s₁ s₂ t t₁ t₂}
 
-@[simp]
+@[simp, grind =]
 theorem mem_sigma {a : Σ i, α i} : a ∈ s.sigma t ↔ a.1 ∈ s ∧ a.2 ∈ t a.1 :=
   Multiset.mem_sigma
 
@@ -60,9 +64,9 @@ alias ⟨_, Aesop.sigma_nonempty_of_exists_nonempty⟩ := sigma_nonempty
 
 @[simp]
 theorem sigma_eq_empty : s.sigma t = ∅ ↔ ∀ i ∈ s, t i = ∅ := by
-  simp only [← not_nonempty_iff_eq_empty, sigma_nonempty, not_exists, not_and]
+  contrapose!; exact sigma_nonempty
 
-@[mono]
+@[gcongr, mono]
 theorem sigma_mono (hs : s₁ ⊆ s₂) (ht : ∀ i, t₁ i ⊆ t₂ i) : s₁.sigma t₁ ⊆ s₂.sigma t₂ :=
   fun ⟨i, _⟩ h =>
   let ⟨hi, ha⟩ := mem_sigma.1 h
@@ -74,7 +78,7 @@ theorem pairwiseDisjoint_map_sigmaMk :
   rw [Function.onFun, disjoint_left]
   simp_rw [mem_map, Function.Embedding.sigmaMk_apply]
   rintro _ ⟨y, _, rfl⟩ ⟨z, _, hz'⟩
-  exact hij (congr_arg Sigma.fst hz'.symm)
+  exact hij congr($(hz'.symm).fst)
 
 @[simp]
 theorem disjiUnion_map_sigma_mk :
@@ -86,6 +90,16 @@ theorem sigma_eq_biUnion [DecidableEq (Σ i, α i)] (s : Finset ι) (t : ∀ i, 
     s.sigma t = s.biUnion fun i => (t i).map <| Embedding.sigmaMk i := by
   ext ⟨x, y⟩
   simp [and_left_comm]
+
+lemma filter_sigma (s : Finset ι) (t : ∀ i, Finset (α i)) (p : (i : ι) × α i → Prop)
+    [DecidablePred p] : (s.sigma t).filter p = s.sigma fun i ↦ (t i).filter fun x => p ⟨i, x⟩ := by
+  ext ⟨i, a⟩
+  simp [Finset.mem_filter, Finset.mem_sigma, and_assoc]
+
+lemma filter_sigma' (s : Finset ι) (t : ∀ i, Finset (α i)) (p : (i : ι) → α i → Prop)
+    [∀ i, DecidablePred (p i)] :
+    (s.sigma t).filter (fun x ↦ p x.fst x.snd) = s.sigma fun i ↦ (t i).filter (p i)  := by
+  simp [filter_sigma]
 
 variable (s t) (f : (Σ i, α i) → β)
 
@@ -155,16 +169,16 @@ theorem mem_sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Si
       rintro x hx rfl
       exact ⟨rfl, rfl, hx⟩
     · rintro ⟨⟨⟩, ⟨⟩, hx⟩
-      rw [sigmaLift, dif_pos rfl, mem_map]
+      rw [sigmaLift, dite_eq_left rfl, mem_map]
       exact ⟨_, hx, by simp⟩
-  · rw [sigmaLift, dif_neg h]
+  · rw [sigmaLift, dite_eq_right h]
     refine iff_of_false (notMem_empty _) ?_
     rintro ⟨⟨⟩, ⟨⟩, _⟩
     exact h rfl
 
 theorem mk_mem_sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (i : ι) (a : α i) (b : β i)
     (x : γ i) : (⟨i, x⟩ : Sigma γ) ∈ sigmaLift f ⟨i, a⟩ ⟨i, b⟩ ↔ x ∈ f a b := by
-  rw [sigmaLift, dif_pos rfl, mem_map]
+  rw [sigmaLift, dite_eq_left rfl, mem_map]
   refine ⟨?_, fun hx => ⟨_, hx, rfl⟩⟩
   rintro ⟨x, hx, _, rfl⟩
   exact hx
@@ -174,16 +188,10 @@ theorem notMem_sigmaLift_of_ne_left (f : ∀ ⦃i⦄, α i → β i → Finset (
   rw [mem_sigmaLift]
   exact fun H => h H.fst
 
-@[deprecated (since := "2025-05-23")]
-alias not_mem_sigmaLift_of_ne_left := notMem_sigmaLift_of_ne_left
-
 theorem notMem_sigmaLift_of_ne_right (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) {a : Sigma α}
     (b : Sigma β) {x : Sigma γ} (h : b.1 ≠ x.1) : x ∉ sigmaLift f a b := by
   rw [mem_sigmaLift]
   exact fun H => h H.snd.fst
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_sigmaLift_of_ne_right := notMem_sigmaLift_of_ne_right
 
 variable {f g : ∀ ⦃i⦄, α i → β i → Finset (γ i)} {a : Σ i, α i} {b : Σ i, β i}
 

@@ -3,8 +3,10 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
+module
+
 import Mathlib.Data.Set.Monotone
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Extension of a monotone function from a set to the whole space
@@ -13,10 +15,12 @@ In this file we prove that if a function is monotone and is bounded on a set `s`
 monotone extension to the whole space.
 -/
 
+public section
+
 
 open Set
 
-variable {α β : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder β] {f : α → β} {s : Set α}
+variable {α β : Type*} [PartialOrder α] [ConditionallyCompleteLinearOrder β] {f : α → β} {s : Set α}
 
 /-- If a function is monotone and is bounded on a set `s`, then it admits a monotone extension to
 the whole space. -/
@@ -32,12 +36,12 @@ theorem MonotoneOn.exists_monotone_extension (h : MonotoneOn f s) (hl : BddBelow
     have hgs : EqOn f g s := by
       intro x hx
       simp only [g]
-      have : IsGreatest (Iic x ∩ s) x := ⟨⟨right_mem_Iic, hx⟩, fun y hy => hy.1⟩
-      rw [if_neg this.nonempty.not_disjoint,
+      have : IsGreatest (Iic x ∩ s) x := ⟨⟨self_mem_Iic, hx⟩, fun y hy => hy.1⟩
+      rw [ite_eq_right this.nonempty.not_disjoint,
         ((h.mono inter_subset_right).map_isGreatest this).csSup_eq]
     refine ⟨g, fun x y hxy => ?_, hgs⟩
     by_cases hx : Disjoint (Iic x) s <;> by_cases hy : Disjoint (Iic y) s <;>
-      simp only [g, if_pos, if_neg, not_false_iff, *, refl]
+      simp only [g, ite_eq_left, ite_eq_right, not_false_iff, *, refl]
     · rcases not_disjoint_iff_nonempty_inter.1 hy with ⟨z, hz⟩
       exact le_csSup_of_le (hu' _) (mem_image_of_mem _ hz) (ha <| mem_image_of_mem _ hz.2)
     · exact (hx <| hy.mono_left <| Iic_subset_Iic.2 hxy).elim

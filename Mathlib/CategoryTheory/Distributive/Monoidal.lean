@@ -3,12 +3,13 @@ Copyright (c) 2024 Sina Hazratpour. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour
 -/
-import Mathlib.CategoryTheory.Closed.Monoidal
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Monoidal.End
-import Mathlib.CategoryTheory.Monoidal.Preadditive
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Monoidal.End
+public import Mathlib.CategoryTheory.Monoidal.Preadditive
 
 /-!
 # Distributive monoidal categories
@@ -38,7 +39,7 @@ A distributive monoidal category is a monoidal category that is both left and ri
   in the functor categories is computed pointwise.
 
 - We show that any preadditive monoidal category with coproducts is distributive. This includes the
-examples of abelian groups, R-modules, and vector bundles.
+  examples of abelian groups, R-modules, and vector bundles.
 
 ## TODO
 
@@ -54,6 +55,8 @@ pointed types and the coproduct given by the wedge sum is distributive.
   Conferences, Contemporary Mathematics 202, AMS (1997) 137-166][MR1268290]
 
 -/
+
+@[expose] public section
 
 universe v v₂ u u₂
 
@@ -199,6 +202,7 @@ lemma whiskerRight_coprod_inr_rightDistrib_inv [IsMonoidalRightDistrib C] {X Y Z
   apply (cancel_iso_hom_right _ _ (∂R X Y Z)).mp
   rw [assoc, Iso.inv_hom_id, comp_id, coprod_inr_rightDistrib_hom]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- In a symmetric monoidal category, the left distributivity is equal to
 the right distributivity up to braiding isomorphisms. -/
 @[simp]
@@ -207,6 +211,7 @@ lemma coprodComparison_tensorLeft_braiding_hom [BraidedCategory C] {X Y Z : C} :
     (coprod.map (β_ X Y).hom (β_ X Z).hom) ≫ (coprodComparison (tensorRight X) Y Z) := by
   simp [coprodComparison]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- In a symmetric monoidal category, the right distributivity is equal to
 the left distributivity up to braiding isomorphisms. -/
 @[simp]

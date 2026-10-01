@@ -3,9 +3,11 @@ Copyright (c) 2025 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
-import Mathlib.Algebra.Category.FGModuleCat.Colimits
-import Mathlib.Algebra.Category.FGModuleCat.Limits
-import Mathlib.Algebra.Category.ModuleCat.Abelian
+module
+
+public import Mathlib.Algebra.Category.FGModuleCat.Colimits
+public import Mathlib.Algebra.Category.FGModuleCat.Limits
+public import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.AbelianImages
 
 /-!
@@ -13,11 +15,13 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.AbelianImages
 
 -/
 
+public section
+
 noncomputable section
 
 universe v u
 
-open CategoryTheory Limits
+open CategoryTheory
 
 namespace FGModuleCat
 

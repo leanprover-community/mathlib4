@@ -3,8 +3,10 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Scalar
-import Mathlib.Algebra.Order.Module.Field
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+public import Mathlib.Algebra.Order.Module.Field
 import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Order.GaloisConnection.Basic
 
@@ -13,6 +15,8 @@ import Mathlib.Order.GaloisConnection.Basic
 
 This file proves order properties of pointwise operations of sets.
 -/
+
+public section
 
 open scoped Pointwise
 

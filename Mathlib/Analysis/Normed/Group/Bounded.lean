@@ -3,9 +3,9 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Analysis.Normed.Group.Continuity
-import Mathlib.Topology.MetricSpace.Bounded
-import Mathlib.Order.Filter.Pointwise
+module
+
+public import Mathlib.Analysis.Normed.Group.Continuity
 
 /-!
 # Boundedness in normed groups
@@ -16,6 +16,8 @@ This file rephrases metric boundedness in terms of norms.
 
 normed group
 -/
+
+public section
 
 open Filter Metric Bornology
 open scoped Pointwise Topology
@@ -68,11 +70,8 @@ theorem Filter.tendsto_inv_cobounded : Tendsto Inv.inv (cobounded E) (cobounded 
 lemma isBounded_iff_forall_norm_le' : Bornology.IsBounded s ↔ ∃ C, ∀ x ∈ s, ‖x‖ ≤ C := by
   simpa only [Set.subset_def, mem_closedBall_one_iff] using isBounded_iff_subset_closedBall (1 : E)
 
+@[to_additive exists_norm_le]
 alias ⟨Bornology.IsBounded.exists_norm_le', _⟩ := isBounded_iff_forall_norm_le'
-
-alias ⟨Bornology.IsBounded.exists_norm_le, _⟩ := isBounded_iff_forall_norm_le
-
-attribute [to_additive existing exists_norm_le] Bornology.IsBounded.exists_norm_le'
 
 @[to_additive exists_pos_norm_le]
 lemma Bornology.IsBounded.exists_pos_norm_le' (hs : IsBounded s) : ∃ R > 0, ∀ x ∈ s, ‖x‖ ≤ R :=
@@ -86,8 +85,8 @@ lemma Bornology.IsBounded.exists_pos_norm_lt' (hs : IsBounded s) : ∃ R > 0, �
 
 @[to_additive]
 lemma NormedCommGroup.cauchySeq_iff [Nonempty α] [SemilatticeSup α] {u : α → E} :
-    CauchySeq u ↔ ∀ ε > 0, ∃ N, ∀ m, N ≤ m → ∀ n, N ≤ n → ‖u m / u n‖ < ε := by
-  simp [Metric.cauchySeq_iff, dist_eq_norm_div]
+    CauchySeq u ↔ ∀ ε > 0, ∃ N, ∀ m, N ≤ m → ∀ n, N ≤ n → ‖(u m)⁻¹ * u n‖ < ε := by
+  simp [Metric.cauchySeq_iff, dist_eq_norm_inv_mul]
 
 @[to_additive IsCompact.exists_bound_of_continuousOn]
 lemma IsCompact.exists_bound_of_continuousOn' [TopologicalSpace α] {s : Set α} (hs : IsCompact s)
@@ -113,7 +112,7 @@ lemma Filter.Tendsto.op_one_isBoundedUnder_le' {f : α → E} {g : α → F} {l 
     (h_op : ∃ A, ∀ x y, ‖op x y‖ ≤ A * ‖x‖ * ‖y‖) : Tendsto (fun x => op (f x) (g x)) l (𝓝 1) := by
   obtain ⟨A, h_op⟩ := h_op
   rcases hg with ⟨C, hC⟩; rw [eventually_map] at hC
-  rw [NormedCommGroup.tendsto_nhds_one] at hf ⊢
+  rw [NormedGroup.tendsto_nhds_one] at hf ⊢
   intro ε ε₀
   rcases exists_pos_mul_lt ε₀ (A * C) with ⟨δ, δ₀, hδ⟩
   filter_upwards [hf δ δ₀, hC] with i hf hg

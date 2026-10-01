@@ -3,8 +3,10 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.MeasureTheory.Measure.Prod
-import Mathlib.Probability.Kernel.Composition.MapComap
+module
+
+public import Mathlib.MeasureTheory.Measure.Prod
+public import Mathlib.Probability.Kernel.Composition.MapComap
 import Mathlib.Probability.Kernel.MeasurableLIntegral
 
 /-!
@@ -26,6 +28,8 @@ Two kernels `κ : Kernel α β` and `η : Kernel γ δ` can be applied in parall
 
 -/
 
+@[expose] public section
+
 open MeasureTheory
 
 open scoped ENNReal
@@ -36,7 +40,7 @@ variable {α β γ δ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace
   {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ}
   {κ : Kernel α β} {η : Kernel γ δ} {x : α × γ}
 
-open Classical in
+open scoped Classical in
 /-- Parallel product of two kernels. -/
 noncomputable
 irreducible_def parallelComp (κ : Kernel α β) (η : Kernel γ δ) : Kernel (α × γ) (β × δ) :=
@@ -61,17 +65,17 @@ scoped[ProbabilityTheory] infixl:100 " ∥ₖ " => ProbabilityTheory.Kernel.para
 @[simp]
 lemma parallelComp_of_not_isSFiniteKernel_left (η : Kernel γ δ) (h : ¬ IsSFiniteKernel κ) :
     κ ∥ₖ η = 0 := by
-  rw [parallelComp, dif_neg (not_and_of_not_left _ h)]
+  rw [parallelComp, dite_eq_right (not_and_of_not_left _ h)]
 
 @[simp]
 lemma parallelComp_of_not_isSFiniteKernel_right (κ : Kernel α β) (h : ¬ IsSFiniteKernel η) :
     κ ∥ₖ η = 0 := by
-  rw [parallelComp, dif_neg (not_and_of_not_right _ h)]
+  rw [parallelComp, dite_eq_right (not_and_of_not_right _ h)]
 
 lemma parallelComp_apply (κ : Kernel α β) [IsSFiniteKernel κ]
     (η : Kernel γ δ) [IsSFiniteKernel η] (x : α × γ) :
     (κ ∥ₖ η) x = (κ x.1).prod (η x.2) := by
-  rw [parallelComp, dif_pos ⟨inferInstance, inferInstance⟩, coe_mk]
+  rw [parallelComp, dite_eq_left ⟨inferInstance, inferInstance⟩, coe_mk]
 
 lemma parallelComp_apply' [IsSFiniteKernel κ] [IsSFiniteKernel η]
     {s : Set (β × δ)} (hs : MeasurableSet s) :
@@ -99,6 +103,12 @@ lemma parallelComp_zero_right (κ : Kernel α β) : κ ∥ₖ (0 : Kernel γ δ)
   by_cases h : IsSFiniteKernel κ
   · ext; simp [parallelComp_apply]
   · exact parallelComp_of_not_isSFiniteKernel_left _ h
+
+@[simp]
+lemma id_parallelComp_id :
+    Kernel.id ∥ₖ Kernel.id = (Kernel.id : Kernel (α × β) (α × β)) := by
+  ext : 1
+  simp [parallelComp_apply, id_apply, Measure.dirac_prod_dirac]
 
 lemma deterministic_parallelComp_deterministic
     {f : α → γ} {g : β → δ} (hf : Measurable f) (hg : Measurable g) :

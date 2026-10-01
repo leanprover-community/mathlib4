@@ -3,8 +3,10 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Batteries.Data.DList.Lemmas
-import Mathlib.Control.Traversable.Equiv
+module
+
+public import Batteries.Data.DList.Lemmas
+public import Mathlib.Control.Traversable.Equiv
 import Mathlib.Control.Traversable.Instances
 
 /-!
@@ -14,8 +16,10 @@ This file provides the equivalence between `List α` and `DList α` and the trav
 for `DList`.
 -/
 
+@[expose] public section
 
-open Function Equiv
+
+open Equiv
 
 namespace Batteries
 
@@ -34,8 +38,5 @@ instance : Traversable DList :=
 
 instance : LawfulTraversable DList :=
   Equiv.isLawfulTraversable DList.listEquivDList
-
-instance {α} : Inhabited (DList α) :=
-  ⟨DList.empty⟩
 
 end Batteries

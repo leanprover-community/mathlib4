@@ -3,14 +3,18 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.Asymptotics.Theta
+module
+
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Analysis.Asymptotics.Theta
 
 /-!
 # Lemmas about asymptotics and the natural embedding `ℝ → ℂ`
 
 In this file we prove several trivial lemmas about `Asymptotics.IsBigO` etc. and `(↑) : ℝ → ℂ`.
 -/
+
+public section
 
 namespace Complex
 
@@ -43,7 +47,7 @@ theorem isTheta_ofReal_left {f : α → ℝ} {g : α → E} : (f · : α → ℂ
 theorem isTheta_ofReal_right {f : α → E} {g : α → ℝ} : f =Θ[l] (g · : α → ℂ) ↔ f =Θ[l] g :=
   (isTheta_ofReal g l).isTheta_congr_right
 
-open Topology
+open scoped Topology
 
 lemma isBigO_comp_ofReal_nhds {f g : ℂ → ℂ} {x : ℝ} (h : f =O[𝓝 (x : ℂ)] g) :
     (fun y : ℝ ↦ f y) =O[𝓝 x] (fun y : ℝ ↦ g y) :=

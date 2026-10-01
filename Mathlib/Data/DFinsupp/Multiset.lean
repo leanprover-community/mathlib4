@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.DFinsupp.BigOperators
-import Mathlib.Data.DFinsupp.Order
+module
+
+public import Mathlib.Data.DFinsupp.BigOperators
+public import Mathlib.Data.DFinsupp.Order
 
 /-!
 # Equivalence between `Multiset` and `ℕ`-valued finitely supported functions
@@ -12,6 +14,8 @@ import Mathlib.Data.DFinsupp.Order
 This defines `DFinsupp.toMultiset` the equivalence between `Π₀ a : α, ℕ` and `Multiset α`, along
 with `Multiset.toDFinsupp` the reverse equivalence.
 -/
+
+@[expose] public section
 
 open Function
 
@@ -56,6 +60,7 @@ theorem toDFinsupp_apply (s : Multiset α) (a : α) : Multiset.toDFinsupp s a = 
 theorem toDFinsupp_support (s : Multiset α) : s.toDFinsupp.support = s.toFinset :=
   Finset.filter_true_of_mem fun _ hx ↦ count_ne_zero.mpr <| Multiset.mem_toFinset.1 hx
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toDFinsupp_replicate (a : α) (n : ℕ) :
     toDFinsupp (Multiset.replicate n a) = DFinsupp.single a n := by
@@ -133,7 +138,7 @@ theorem toMultiset_inf : toMultiset (f ⊓ g) = toMultiset f ∩ toMultiset g :=
   Multiset.toDFinsupp_injective <| by simp
 
 @[simp]
-theorem toMultiset_sup : toMultiset (f ⊔ g) = toMultiset f∪ toMultiset g :=
+theorem toMultiset_sup : toMultiset (f ⊔ g) = toMultiset f ∪ toMultiset g :=
   Multiset.toDFinsupp_injective <| by simp
 
 end DFinsupp

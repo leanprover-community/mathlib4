@@ -3,10 +3,11 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Module.Projective
+module
+
+public import Mathlib.Algebra.Module.Projective
 import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.Topology.Algebra.SeparationQuotient.Basic
-import Mathlib.Topology.Maps.OpenQuotient
+public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
 
 /-!
 # Algebraic operations on `SeparationQuotient`
@@ -14,6 +15,8 @@ import Mathlib.Topology.Maps.OpenQuotient
 In this file we construct a section of the quotient map `E → SeparationQuotient E` as a continuous
 linear map `SeparationQuotient E →L[K] E`.
 -/
+
+@[expose] public section
 
 open Topology
 
@@ -32,7 +35,7 @@ theorem exists_out_continuousLinearMap :
     ∃ f : SeparationQuotient E →L[K] E, mkCLM K E ∘L f = .id K (SeparationQuotient E) := by
   rcases (mkCLM K E).toLinearMap.exists_rightInverse_of_surjective
     (LinearMap.range_eq_top.mpr surjective_mk) with ⟨f, hf⟩
-  replace hf : mk ∘ f = id := congr_arg DFunLike.coe hf
+  replace hf : mk ∘ f = id := congr($hf)
   exact ⟨⟨f, isInducing_mk.continuous_iff.2 (by continuity)⟩, DFunLike.ext' hf⟩
 
 /-- A continuous `K`-linear map from `SeparationQuotient E` to `E`
@@ -47,7 +50,7 @@ theorem mkCLM_comp_outCLM : mkCLM K E ∘L outCLM K E = .id K (SeparationQuotien
 variable {E} in
 @[simp]
 theorem mk_outCLM (x : SeparationQuotient E) : mk (outCLM K E x) = x :=
-  DFunLike.congr_fun (mkCLM_comp_outCLM K E) x
+  congr($(mkCLM_comp_outCLM K E) x)
 
 @[simp]
 theorem mk_comp_outCLM : mk ∘ outCLM K E = id := funext (mk_outCLM K)
@@ -74,14 +77,17 @@ section VectorSpaceUniform
 variable (K E : Type*) [DivisionRing K] [AddCommGroup E] [Module K E]
     [UniformSpace E] [IsUniformAddGroup E] [ContinuousConstSMul K E]
 
+@[fun_prop]
 theorem outCLM_isUniformInducing : IsUniformInducing (outCLM K E) := by
-  rw [← isUniformInducing_mk.isUniformInducing_comp_iff, mk_comp_outCLM]
+  rw [← isUniformInducing_mk.of_comp_iff, mk_comp_outCLM]
   exact .id
 
+@[fun_prop]
 theorem outCLM_isUniformEmbedding : IsUniformEmbedding (outCLM K E) where
   injective := outCLM_injective K E
   toIsUniformInducing := outCLM_isUniformInducing K E
 
+@[fun_prop]
 theorem outCLM_uniformContinuous : UniformContinuous (outCLM K E) :=
   (outCLM_isUniformInducing K E).uniformContinuous
 

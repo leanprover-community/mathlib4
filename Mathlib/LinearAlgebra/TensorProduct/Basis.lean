@@ -3,10 +3,11 @@ Copyright (c) 2021 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.LinearAlgebra.Basis.Basic
-import Mathlib.LinearAlgebra.DirectSum.Finsupp
-import Mathlib.LinearAlgebra.Finsupp.VectorSpace
-import Mathlib.LinearAlgebra.FreeModule.Basic
+module
+
+public import Mathlib.LinearAlgebra.DirectSum.Finsupp
+public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+public import Mathlib.LinearAlgebra.TensorProduct.Lift
 
 /-!
 # Bases and dimensionality of tensor products of modules
@@ -15,10 +16,12 @@ This file defines various bases on the tensor product of modules,
 and shows that the tensor product of free modules is again free.
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
-open LinearMap Module Set Submodule
+open LinearMap Module
 
 open scoped TensorProduct
 
@@ -82,7 +85,7 @@ If `{𝒞ᵢ}` is a basis for the module `N`, then every elements of `x ∈ M �
 as `∑ᵢ mᵢ ⊗ 𝒞ᵢ` for some `mᵢ ∈ M`.
 -/
 def TensorProduct.equivFinsuppOfBasisRight : M ⊗[R] N ≃ₗ[R] κ →₀ M :=
-  LinearEquiv.lTensor M 𝒞.repr ≪≫ₗ TensorProduct.finsuppScalarRight R M κ
+  LinearEquiv.lTensor M 𝒞.repr ≪≫ₗ TensorProduct.finsuppScalarRight R R M κ
 
 @[simp]
 lemma TensorProduct.equivFinsuppOfBasisRight_apply_tmul (m : M) (n : N) :
@@ -138,6 +141,18 @@ lemma TensorProduct.equivFinsuppOfBasisLeft_apply_tmul_apply
     ℬ.repr m i • n := by
   simp only [equivFinsuppOfBasisLeft_apply_tmul, Finsupp.mapRange_apply]
 
+/-- Given a basis `𝒞` of `N`, `x ∈ M ⊗ N` can be written as `∑ᵢ mᵢ ⊗ 𝒞 i`. The coefficient `mᵢ`
+equals the `i`-th coordinate functional applied to the right tensor factor. -/
+lemma TensorProduct.equivFinsuppOfBasisRight_apply (x : M ⊗[R] N) (i : κ) :
+    equivFinsuppOfBasisRight 𝒞 x i = TensorProduct.rid R M ((𝒞.coord i).lTensor _ x) := by
+  induction x <;> simp_all
+
+/-- Given a basis `ℬ` of `M`, `x ∈ M ⊗ N` can be written as `∑ᵢ ℬ i ⊗ nᵢ`. The coefficient `nᵢ`
+equals the `i`-th coordinate functional applied to the left tensor factor. -/
+lemma TensorProduct.equivFinsuppOfBasisLeft_apply (x : M ⊗[R] N) (i : ι) :
+    equivFinsuppOfBasisLeft ℬ x i = TensorProduct.lid R N ((ℬ.coord i).rTensor _ x) := by
+  induction x <;> simp_all
+
 lemma TensorProduct.equivFinsuppOfBasisLeft_symm :
     (TensorProduct.equivFinsuppOfBasisLeft ℬ).symm.toLinearMap =
     Finsupp.lsum R fun i ↦ (TensorProduct.mk R M N) (ℬ i) := by
@@ -178,14 +193,30 @@ lemma TensorProduct.sum_tmul_basis_left_eq_zero
 
 end
 
-variable [CommSemiring R] [Semiring S] [Algebra R S] [AddCommMonoid M] [Module R M]
-  [Module S M] [IsScalarTower R S M] [Module.Free S M]
-  [AddCommMonoid N] [Module R N] [Module.Free R N]
-instance Module.Free.tensor : Module.Free S (M ⊗[R] N) :=
+instance Module.Free.tensor [Module.Free S M] [Module.Free R N] : Module.Free S (M ⊗[R] N) :=
   let ⟨bM⟩ := exists_basis (R := S) (M := M)
   let ⟨bN⟩ := exists_basis (R := R) (M := N)
   of_basis (bM.2.tensorProduct bN.2)
 
 end CommSemiring
+
+namespace LinearMap
+
+variable {R A M N ι : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
+  [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] [Module A N]
+  [IsScalarTower R A N]
+
+lemma liftBaseChange_injective_iff (l : M →ₗ[R] N) (b : Module.Basis ι R M) :
+    Function.Injective (l.liftBaseChange A) ↔ LinearIndependent A (l ∘ b) := by
+  have heq : (l.liftBaseChange A).comp (b.baseChange A).repr.symm.toLinearMap =
+      Finsupp.linearCombination A (l ∘ b) := by
+    ext i
+    simp [Function.comp_def]
+  rw [linearIndependent_iff_injective_finsuppLinearCombination, ← heq]
+  simpa only [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap] using
+    (Function.Injective.of_comp_iff'
+      (l.liftBaseChange A) (b.baseChange A).repr.symm.bijective).symm
+
+end LinearMap
 
 end

@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.BoxIntegral.Box.SubboxInduction
-import Mathlib.Analysis.BoxIntegral.Partition.Tagged
+module
+
+public import Mathlib.Analysis.BoxIntegral.Box.SubboxInduction
+public import Mathlib.Analysis.BoxIntegral.Partition.Tagged
 
 /-!
 # Induction on subboxes
@@ -26,12 +28,14 @@ integral is well-defined.
 partition, tagged partition, Henstock integral
 -/
 
+@[expose] public section
+
 
 namespace BoxIntegral
 
 open Set Metric
 
-open Topology
+open scoped Topology
 
 noncomputable section
 

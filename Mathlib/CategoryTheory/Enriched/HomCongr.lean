@@ -3,7 +3,9 @@ Copyright (c) 2024 Nick Ward. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nick Ward
 -/
-import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
+module
+
+public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 
 /-!
 # Congruence of enriched homs
@@ -23,6 +25,8 @@ The treatment here parallels that for unenriched categories in
 they construct equivalences between `Type`s and `Sort`s, respectively, while
 in this file we construct isomorphisms between objects in `V`.
 -/
+
+@[expose] public section
 
 universe v' v u u'
 

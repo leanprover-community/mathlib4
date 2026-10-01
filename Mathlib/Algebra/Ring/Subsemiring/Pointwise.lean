@@ -3,8 +3,10 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.GroupWithZero.Submonoid.Pointwise
-import Mathlib.Algebra.Ring.Subsemiring.Basic
+module
+
+public import Mathlib.Algebra.GroupWithZero.Submonoid.Pointwise
+public import Mathlib.Algebra.Ring.Subsemiring.Basic
 
 /-! # Pointwise instances on `Subsemiring`s
 
@@ -19,12 +21,24 @@ This file is almost identical to the files `Mathlib/Algebra/GroupWithZero/Submon
 and `Mathlib/Algebra/Ring/Submonoid/Pointwise.lean`. Where possible, try to keep them in sync.
 -/
 
+@[expose] public section
+
 
 open Set
 
 variable {M R : Type*}
 
 namespace Subsemiring
+
+section NonAssocSemiring
+
+variable [NonAssocSemiring R]
+
+theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → Subsemiring R) :
+    ((⨆ i, S i : Subsemiring R) : Set R) = ⋃ s : Finset ι, (⨆ i ∈ s, S i : Subsemiring R) := by
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le fun _ _ ↦ biSup_mono]
+
+end NonAssocSemiring
 
 section Monoid
 
@@ -33,6 +47,7 @@ variable [Monoid M] [Semiring R] [MulSemiringAction M R]
 /-- The action on a subsemiring corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
+@[instance_reducible]
 protected def pointwiseMulAction : MulAction M (Subsemiring R) where
   smul a S := S.map (MulSemiringAction.toRingHom _ _ a)
   one_smul S := (congr_arg (fun f => S.map f) (RingHom.ext <| one_smul M)).trans S.map_id
@@ -41,7 +56,7 @@ protected def pointwiseMulAction : MulAction M (Subsemiring R) where
 
 scoped[Pointwise] attribute [instance] Subsemiring.pointwiseMulAction
 
-open Pointwise
+open scoped Pointwise
 
 theorem pointwise_smul_def {a : M} (S : Subsemiring R) :
     a • S = S.map (MulSemiringAction.toRingHom _ _ a) :=
@@ -86,7 +101,7 @@ section Group
 
 variable [Group M] [Semiring R] [MulSemiringAction M R]
 
-open Pointwise
+open scoped Pointwise
 
 @[simp]
 theorem smul_mem_pointwise_smul_iff {a : M} {S : Subsemiring R} {x : R} : a • x ∈ a • S ↔ x ∈ S :=
@@ -119,7 +134,7 @@ section GroupWithZero
 
 variable [GroupWithZero M] [Semiring R] [MulSemiringAction M R]
 
-open Pointwise
+open scoped Pointwise
 
 @[simp]
 theorem smul_mem_pointwise_smul_iff₀ {a : M} (ha : a ≠ 0) (S : Subsemiring R) (x : R) :

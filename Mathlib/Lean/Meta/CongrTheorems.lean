@@ -3,13 +3,19 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Lean.Meta.Tactic.Cleanup
-import Lean.Meta.Tactic.Refl
-import Mathlib.Logic.IsEmpty
+module
+
+public meta import Lean.Meta.Tactic.Refl
+
+public import Mathlib.Basic.IsEmpty.Defs
+public import Lean.Meta.CongrTheorems
+public meta import Mathlib.Basic.IsEmpty.Defs
 
 /-!
 # Additions to `Lean.Meta.CongrTheorems`
 -/
+
+public meta section
 
 namespace Lean.Meta
 

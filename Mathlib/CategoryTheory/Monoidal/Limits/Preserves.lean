@@ -3,19 +3,23 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-!
-# Miscellany about preservations of (co)limits in monoidal categories
+# Miscellany about preservation of (co)limits in monoidal categories
 
-This file records some `PreservesColimits` instance on tensors products on monoidal categories. -/
+This file records some `PreservesColimits` instances on tensor products in monoidal categories. -/
+
+public section
 
 namespace CategoryTheory.MonoidalCategory.Limits
 open _root_.CategoryTheory.Limits
 
-variable {C : Type*} [Category C] [MonoidalCategory C]
-  {J : Type*} [Category J] (F : J ⥤ C)
+variable {C : Type*} [Category* C] [MonoidalCategory C]
+  {J : Type*} [Category* J] (F : J ⥤ C)
 
 section Colimits
 
@@ -35,10 +39,13 @@ lemma preservesColimit_of_braided_and_preservesColimit_tensor_right
     PreservesColimit F (tensorLeft c) :=
   preservesColimit_of_natIso F (BraidedCategory.tensorLeftIsoTensorRight c).symm
 
-lemma preservesCoLimit_curriedTensor [h : ∀ c : C, PreservesColimit F (tensorRight c)] :
+lemma preservesColimit_curriedTensor [h : ∀ c : C, PreservesColimit F (tensorRight c)] :
     PreservesColimit F (curriedTensor C) :=
   preservesColimit_of_evaluation _ _
     (fun c ↦ inferInstanceAs (PreservesColimit F (tensorRight c)))
+
+@[deprecated (since := "2026-09-17")]
+alias preservesCoLimit_curriedTensor := preservesColimit_curriedTensor
 
 end Colimits
 

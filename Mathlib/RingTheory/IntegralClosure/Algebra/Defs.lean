@@ -3,7 +3,9 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
+module
+
+public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
 
 /-!
 # Integral algebras
@@ -16,13 +18,12 @@ Let `R` be a `CommRing` and let `A` be an R-algebra.
   over the base ring.
 -/
 
-
-open Polynomial Submodule
+public section
 
 section Ring
 
-variable {R S A : Type*}
-variable [CommRing R] [Ring A] [Ring S] (f : R →+* S)
+variable {R A : Type*}
+variable [CommRing R] [Ring A]
 
 variable [Algebra R A] (R)
 

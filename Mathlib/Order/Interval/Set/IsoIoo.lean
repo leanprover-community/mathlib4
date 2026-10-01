@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Monotone.Odd
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Tactic.FieldSimp
+module
+
+public import Mathlib.Order.Monotone.Odd
+public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Tactic.FieldSimp
 
 /-!
 # Order isomorphism between a linear ordered field and `(-1, 1)`
@@ -14,8 +16,11 @@ In this file we provide an order isomorphism `orderIsoIooNegOneOne` between the 
 `(-1, 1)` in a linear ordered field and the whole field.
 -/
 
+@[expose] public section
+
 open Set
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a linear ordered field, the whole field is order isomorphic to the open interval `(-1, 1)`.
 We consider the actual implementation to be a "black box", so it is irreducible.
 -/

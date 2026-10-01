@@ -3,12 +3,16 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+module
+
 import Mathlib.Init
-import Lean.Meta.Tactic.Symm
+public meta import Lean.Meta.Tactic.Symm
 
 /-!
 # `relSidesIfSymm?`
 -/
+
+public meta section
 
 open Lean Meta Symm
 

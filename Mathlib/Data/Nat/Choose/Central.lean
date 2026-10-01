@@ -3,10 +3,12 @@ Copyright (c) 2021 Patrick Stevens. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Stevens, Thomas Browning
 -/
-import Mathlib.Data.Nat.Choose.Basic
+module
+
+public import Mathlib.Data.Nat.Choose.Bounds
 import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.Linarith
 
 /-!
 # Central binomial coefficients
@@ -23,6 +25,8 @@ This file proves properties of the central binomial coefficients (that is, `Nat.
 * `succ_dvd_centralBinom`: The result that `n+1 ∣ n.centralBinom`, ensuring that the explicit
   definition of the Catalan numbers is integer-valued.
 -/
+
+@[expose] public section
 
 
 namespace Nat
@@ -52,11 +56,22 @@ theorem choose_le_centralBinom (r n : ℕ) : choose (2 * n) r ≤ centralBinom n
     (2 * n).choose r ≤ (2 * n).choose (2 * n / 2) := choose_le_middle r (2 * n)
     _ = (2 * n).choose n := by rw [Nat.mul_div_cancel_left n zero_lt_two]
 
+theorem centralBinom_strictMono : StrictMono centralBinom :=
+  strictMono_nat_of_lt_succ (by grind [Nat.choose_pos, centralBinom])
+
 theorem two_le_centralBinom (n : ℕ) (n_pos : 0 < n) : 2 ≤ centralBinom n :=
   calc
     2 ≤ 2 * n := Nat.le_mul_of_pos_right _ n_pos
     _ = (2 * n).choose 1 := (choose_one_right (2 * n)).symm
     _ ≤ centralBinom n := choose_le_centralBinom 1 n
+
+theorem centralBinom_le_four_pow (n : ℕ) : centralBinom n ≤ 4 ^ n := by
+  grw [show 4 = 2 ^ 2 by rfl, ← pow_mul, centralBinom_eq_two_mul_choose, choose_le_two_pow]
+
+theorem centralBinom_lt_four_pow {n : ℕ} (h : n ≠ 0) : centralBinom n < 4 ^ n := by
+  rw [show 4 = 2 ^ 2 by rfl, ← pow_mul]
+  apply choose_lt_two_pow
+  lia
 
 /-- An inductive property of the central binomial coefficient.
 -/
@@ -79,7 +94,7 @@ theorem four_pow_lt_mul_centralBinom (n : ℕ) (n_big : 4 ≤ n) : 4 ^ n < n * c
   induction n using Nat.strong_induction_on with | _ n IH
   rcases lt_trichotomy n 4 with (hn | rfl | hn)
   · clear IH; exact False.elim ((not_lt.2 n_big) hn)
-  · norm_num [centralBinom, choose]
+  · simp [centralBinom, choose]
   obtain ⟨n, rfl⟩ : ∃ m, n = m + 1 := Nat.exists_eq_succ_of_ne_zero (Nat.ne_zero_of_lt hn)
   calc
     4 ^ (n + 1)
@@ -100,9 +115,23 @@ theorem four_pow_le_two_mul_self_mul_centralBinom :
   | 3, _ => by simp [centralBinom, choose]
   | n + 4, _ =>
     calc
-      4 ^ (n+4) ≤ (n+4) * centralBinom (n+4) := (four_pow_lt_mul_centralBinom _ le_add_self).le
-      _ ≤ 2 * (n+4) * centralBinom (n+4) := by
+      4 ^ (n + 4) ≤ (n + 4) * centralBinom (n + 4) :=
+        (four_pow_lt_mul_centralBinom _ le_add_self).le
+      _ ≤ 2 * (n + 4) * centralBinom (n + 4) := by
         rw [mul_assoc]; refine Nat.le_mul_of_pos_left _ zero_lt_two
+
+theorem four_pow_le_two_mul_add_one_mul_centralBinom (n : ℕ) :
+    4 ^ n ≤ (2 * n + 1) * centralBinom n := by
+  rcases n.eq_zero_or_pos with rfl | hn
+  · simp [centralBinom]
+  · refine (four_pow_le_two_mul_self_mul_centralBinom n hn).trans ?_
+    gcongr
+    exact le_add_right (2 * n) 1
+
+@[deprecated four_pow_le_two_mul_add_one_mul_centralBinom +typeChanged (since := "2026-09-13")]
+theorem four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
+    4 ^ n ≤ (2 * n + 1) * (2 * n).choose n :=
+  four_pow_le_two_mul_add_one_mul_centralBinom n
 
 theorem two_dvd_centralBinom_succ (n : ℕ) : 2 ∣ centralBinom (n + 1) := by
   use (n + 1 + n).choose n

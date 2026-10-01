@@ -3,8 +3,10 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Order.SuccPred.Limit
-import Mathlib.Order.UpperLower.Basic
+module
+
+public import Mathlib.Order.SuccPred.Limit
+public import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Definition of direct systems, inverse systems, and cardinalities in specific inverse systems
@@ -56,6 +58,8 @@ the distinguished bijection that is compatible with the projections to all `X i`
 
 -/
 
+@[expose] public section
+
 open Order Set
 
 variable {ι : Type*} [Preorder ι] {F₁ F₂ F X : ι → Type*}
@@ -89,9 +93,10 @@ theorem DirectedSystem.map_map' ⦃i j k⦄ (hij hjk x) :
 namespace DirectLimit
 open DirectedSystem
 
-variable [IsDirected ι (· ≤ ·)]
+variable [IsDirectedOrder ι]
 
 /-- The setoid on the sigma type defining the direct limit. -/
+@[instance_reducible]
 def setoid : Setoid (Σ i, F i) where
   r x y := ∃ᵉ (i) (hx : x.1 ≤ i) (hy : y.1 ≤ i), f _ _ hx x.2 = f _ _ hy y.2
   iseqv := ⟨fun x ↦ ⟨x.1, le_rfl, le_rfl, rfl⟩, fun ⟨i, hx, hy, eq⟩ ↦ ⟨i, hy, hx, eq.symm⟩,
@@ -111,6 +116,12 @@ variable {f} in
 theorem eq_of_le (x : Σ i, F i) (i : ι) (h : x.1 ≤ i) :
     (⟦x⟧ : DirectLimit F f) = ⟦⟨i, f _ _ h x.2⟩⟧ :=
   Quotient.sound (r_of_le _ x i h)
+
+variable {f} in
+@[simp]
+theorem mk_apply (i j : ι) (x : F i) (h : i ≤ j) :
+    ⟦⟨j, f _ _ h x⟩⟧ = (⟦⟨i, x⟩⟧ : DirectLimit F f) :=
+  eq_of_le ⟨_, x⟩ j h |>.symm
 
 @[elab_as_elim] protected theorem induction {C : DirectLimit F f → Prop}
     (ih : ∀ i x, C ⟦⟨i, x⟩⟧) (x : DirectLimit F f) : C x :=
@@ -165,6 +176,7 @@ protected def lift (z : DirectLimit F f) : C :=
   z.recOn (fun x ↦ ih x.1 x.2) fun x y ⟨k, hxk, hyk, eq⟩ ↦ by
     simp_rw [eq_rec_constant, compat _ _ hxk, compat _ _ hyk, eq]
 
+@[simp]
 theorem lift_def (x) : DirectLimit.lift f ih compat ⟦x⟧ = ih x.1 x.2 := rfl
 
 theorem lift_injective (h : ∀ i, Function.Injective (ih i)) :
@@ -202,6 +214,7 @@ private noncomputable def lift₂Aux (z : Σ i, F₁ i) (w : Σ i, F₂ i) :
 
 /-- To define a binary function from the direct limit, it suffices to provide one binary function
 from each component subject to a compatibility condition. -/
+@[no_expose]
 protected noncomputable def lift₂ (z : DirectLimit F₁ f₁) (w : DirectLimit F₂ f₂) : C :=
   z.hrecOn₂ w (φ := fun _ _ ↦ C) (lift₂Aux f₁ f₂ ih compat · ·)
     fun _ _ _ _ ⟨j, hx, hyj, jeq⟩ ⟨k, hyk, hz, keq⟩ ↦ heq_of_eq <| by
@@ -246,7 +259,7 @@ end DirectedSystem
 
 variable (f : ∀ ⦃i j : ι⦄, i ≤ j → F j → F i) ⦃i j : ι⦄ (h : i ≤ j)
 
-/-- A inverse system indexed by a preorder is a contravariant functor from the preorder
+/-- An inverse system indexed by a preorder is a contravariant functor from the preorder
 to another category. It is dual to `DirectedSystem`. -/
 class InverseSystem : Prop where
   map_self ⦃i : ι⦄ (x : F i) : f le_rfl x = x
@@ -260,7 +273,7 @@ section proj
 def limit (i : ι) : Set (∀ l : Iio i, F l) :=
   {F | ∀ ⦃j k⦄ (h : j.1 ≤ k.1), f h (F k) = F j}
 
-/-- For a family of types `X` indexed by an preorder `ι` and an element `i : ι`,
+/-- For a family of types `X` indexed by a preorder `ι` and an element `i : ι`,
 `piLT X i` is the product of all the types indexed by elements below `i`. -/
 abbrev piLT (X : ι → Type*) (i : ι) := ∀ l : Iio i, X l
 
@@ -287,7 +300,7 @@ then `piLT X i` is the limit of all `piLT X j` for `j < i`. -/
     ext j l
     set k := hi.mid (l.2.trans j.2)
     obtain le | le := le_total j ⟨k, k.2.2⟩
-    exacts [congr_fun (f.2 le) l, (congr_fun (f.2 le) ⟨l, _⟩).symm]
+    exacts [congr($(f.2 le) l), congr($(f.2 le) ⟨l, _⟩).symm]
 
 theorem piLTLim_symm_apply {f} (k : Iio i) {l : Iio i} (hl : l.1 < k.1) :
     (piLTLim (X := X) hi).symm f l = f.1 k ⟨l, hl⟩ := by
@@ -306,14 +319,14 @@ variable [PartialOrder ι] [DecidableEq ι]
 def piSplitLE : piLT X i × X i ≃ ∀ j : Iic i, X j where
   toFun f j := if h : j = i then h.symm ▸ f.2 else f.1 ⟨j, j.2.lt_of_ne h⟩
   invFun f := (fun j ↦ f ⟨j, j.2.le⟩, f ⟨i, le_rfl⟩)
-  left_inv f := by ext j; exacts [dif_neg j.2.ne, dif_pos rfl]
+  left_inv f := by ext j; exacts [dite_eq_right j.2.ne, dite_eq_left rfl]
   right_inv f := by grind
 
 @[simp] theorem piSplitLE_eq {f : piLT X i × X i} :
     piSplitLE f ⟨i, le_rfl⟩ = f.2 := by simp [piSplitLE]
 
 theorem piSplitLE_lt {f : piLT X i × X i} {j} (hj : j < i) :
-    piSplitLE f ⟨j, hj.le⟩ = f.1 ⟨j, hj⟩ := dif_neg hj.ne
+    piSplitLE f ⟨j, hj.le⟩ = f.1 ⟨j, hj⟩ := dite_eq_right hj.ne
 
 end
 
@@ -338,6 +351,8 @@ theorem piEquivSucc_self {x} :
   simp [piEquivSucc]
 
 variable {equiv e}
+
+set_option backward.isDefEq.respectTransparency.types false in
 theorem isNatEquiv_piEquivSucc [InverseSystem f] (H : ∀ x, (e x).1 = f (le_succ i) x)
     (nat : IsNatEquiv f equiv) : IsNatEquiv f (piEquivSucc equiv e hi) := fun j k hj hk h x ↦ by
   have lt_succ {j} := (lt_succ_iff_of_not_isMax (b := j) hi).mpr
@@ -433,6 +448,7 @@ theorem pEquivOn_apply_eq (h : IsLowerSet (s ∩ t))
        (e₂.restrict inter_subset_right).equiv ⟨i, his, hit⟩ from
   congr_fun (congr_arg _ <| unique_pEquivOn h) _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Extend a partial family of bijections by one step. -/
 def pEquivOnSucc [InverseSystem f] (hi : ¬IsMax i) (e : PEquivOn f equivSucc (Iic i))
     (H : ∀ ⦃i⦄ (hi : ¬ IsMax i) x, (equivSucc hi x).1 = f (le_succ i) x) :
@@ -479,7 +495,7 @@ private noncomputable def globalEquivAux (i : ι) :
     fun i hi e ↦ pEquivOnLim hi (fun j ↦ e j j.2) (equivLim i hi).1 (equivLim i hi).2
 
 /-- Over a well-ordered type, construct a family of bijections by transfinite recursion. -/
-noncomputable def globalEquiv (i : ι) : F i ≃ piLT X i :=
+@[no_expose] noncomputable def globalEquiv (i : ι) : F i ≃ piLT X i :=
   (globalEquivAux equivSucc equivLim i).equiv ⟨i, le_rfl⟩
 
 theorem globalEquiv_naturality ⦃i j⦄ (h : i ≤ j) (x : F j) :

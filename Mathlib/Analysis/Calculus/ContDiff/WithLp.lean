@@ -3,18 +3,22 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Eric Wieser
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Operations
-import Mathlib.Analysis.Normed.Lp.PiLp
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Normed.Lp.PiLp
 
 /-!
 # Derivatives on `WithLp`
 -/
 
+public section
+
 open scoped ENNReal
 
 section PiLp
 
-open ContinuousLinearMap WithLp
+open WithLp
 
 variable {𝕜 ι : Type*} {E : ι → Type*} {H : Type*}
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup H] [∀ i, NormedAddCommGroup (E i)]

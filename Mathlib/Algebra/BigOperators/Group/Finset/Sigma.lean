@@ -3,19 +3,23 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Finset.Sigma
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Data.Finset.Sigma
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Product and sums indexed by finite sets in sigma types.
 
 -/
 
+public section
+
 variable {ι κ α β γ : Type*}
 
-open Fin Function
+open Function
 
-variable {s s₁ s₂ : Finset α} {a : α} {f g : α → β}
+variable {s : Finset α} {a : α} {f : α → β}
 
 namespace Finset
 

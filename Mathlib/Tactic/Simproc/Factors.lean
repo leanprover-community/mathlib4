@@ -3,8 +3,11 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Eric Wieser
 -/
-import Mathlib.Data.Nat.Factors
-import Mathlib.Tactic.NormNum.Prime
+module
+
+public import Mathlib.Data.Nat.Factors
+public import Mathlib.Tactic.NormNum.Prime
+public import Batteries.Lean.Expr
 
 /-!
 # `simproc` for `Nat.primeFactorsList`
@@ -12,6 +15,8 @@ import Mathlib.Tactic.NormNum.Prime
 Note that since `norm_num` can only produce numerals,
 we can't register this as a `norm_num` extension.
 -/
+
+public meta section
 
 open Nat
 
@@ -59,8 +64,8 @@ theorem FactorsHelper.primeFactorsList_eq {n : ℕ} {l : List ℕ} (H : FactorsH
     Nat.primeFactorsList n = l :=
   let ⟨h₁, h₂, h₃⟩ := H Nat.prime_two
   have := List.isChain_iff_pairwise.1 (@List.IsChain.tail _ _ (_ :: _) h₁)
-  (List.eq_of_perm_of_sorted
-    (Nat.primeFactorsList_unique h₃ h₂) this (Nat.primeFactorsList_sorted _)).symm
+  ((Nat.primeFactorsList_unique h₃ h₂).eq_of_pairwise'
+     this (Nat.primeFactorsList_sorted _).pairwise).symm
 
 open Lean Elab Tactic Qq
 
@@ -107,7 +112,7 @@ private partial def evalPrimeFactorsListAux
       have ehp₂ : Q(Nat.blt $ea $eb = true) :=
         have : a < b := lt_of_le_of_ne' hab h_ba_eq
         (q(Eq.refl (true)) : Expr)
-      let .isNat _ lit ehp₃ ← evalMinFac.core q($eb) q(inferInstance) q($eb) ehb b | failure
+      let .isNat _ lit ehp₃ ← evalMinFac.core q($eb) q($eb) ehb b | failure
       assertInstancesCommute
       have : $lit =Q $eb := ⟨⟩
       let ⟨l, p₄⟩ ← evalPrimeFactorsListAux ehm ehb
@@ -122,9 +127,9 @@ private partial def evalPrimeFactorsListAux
       pure ⟨q([$ea]), q($eh ▸ FactorsHelper.singleton_self $ea)⟩
     else do
       let eh_a_lt_n : Q(Nat.blt $ea $en = true) :=
-        have : a < n := by cutsat
+        have : a < n := by lia
         (q(Eq.refl true) : Expr)
-      let .isNat _ lit ehn_minFac ← evalMinFac.core q($en) q(inferInstance) q($enl) ehn n | failure
+      let .isNat _ lit ehn_minFac ← evalMinFac.core q($en) q($enl) ehn n | failure
       have : $lit =Q $en := ⟨⟩
       assertInstancesCommute
       pure ⟨q([$en]), q(FactorsHelper.singleton $en $eh_a_lt_n $ehn_minFac)⟩

@@ -3,8 +3,10 @@ Copyright (c) 2025 Yaël Dillies, Christian Merten, Michał Mrugała, Andrew Yan
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christian Merten, Michał Mrugała, Andrew Yang
 -/
-import Mathlib.Algebra.Category.CommAlgCat.Basic
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+module
+
+public import Mathlib.Algebra.Category.CommAlgCat.Basic
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 
 /-!
 # The co-Cartesian monoidal category structure on commutative `R`-algebras
@@ -12,6 +14,8 @@ import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 This file provides the co-Cartesian-monoidal category structure on `CommAlgCat R` constructed
 explicitly using the tensor product.
 -/
+
+@[expose] public section
 
 open CategoryTheory MonoidalCategory CartesianMonoidalCategory Limits TensorProduct Opposite
 open Algebra.TensorProduct
@@ -30,7 +34,7 @@ def binaryCofan : BinaryCofan A B := .mk (ofHom includeLeft) (ofHom <| includeRi
 
 @[simp] lemma binaryCofan_inl : (binaryCofan A B).inl = ofHom includeLeft := rfl
 @[simp] lemma binaryCofan_inr : (binaryCofan A B).inr = ofHom includeRight := rfl
-@[simp] lemma binaryCofan_pt : (binaryCofan A B).pt = .of R (A ⊗[R] B) := rfl
+@[simp] lemma binaryCofan_pt : (binaryCofan A B).pt = ↧(A ⊗[R] B) := rfl
 
 /-- Verify that the pushout cocone is indeed the colimit. -/
 def binaryCofanIsColimit : IsColimit (binaryCofan A B) :=
@@ -53,8 +57,8 @@ instance : MonoidalCategory (CommAlgCat.{u} R) where
   whiskerLeft _ {_ _} f := ofHom (map (.id _ _) f.hom)
   whiskerRight f T := ofHom (map f.hom (.id _ _))
   tensorHom f g := ofHom (map f.hom g.hom)
-  tensorUnit := .of R R
-  associator _ _ _ := isoMk (assoc R R _ _ _)
+  tensorUnit := ↧R
+  associator _ _ _ := isoMk (assoc R R R _ _ _)
   leftUnitor _ := isoMk (lid R _)
   rightUnitor _ := isoMk (rid R R _)
 
@@ -73,10 +77,10 @@ variable (C) in
 @[simp] lemma whiskerLeft_hom (f : A ⟶ B) : (C ◁ f).hom = map (.id _ _) f.hom := rfl
 
 variable (A B C) in
-@[simp] lemma associator_hom_hom : (α_ A B C).hom.hom = (assoc R R A B C).toAlgHom := rfl
+@[simp] lemma associator_hom_hom : (α_ A B C).hom.hom = (assoc R R R A B C).toAlgHom := rfl
 
 variable (A B C) in
-@[simp] lemma associator_inv_hom : (α_ A B C).inv.hom = (assoc R R A B C).symm.toAlgHom := rfl
+@[simp] lemma associator_inv_hom : (α_ A B C).inv.hom = (assoc R R R A B C).symm.toAlgHom := rfl
 
 instance : BraidedCategory (CommAlgCat.{u} R) where
   braiding S T := isoMk (comm R _ _)
@@ -100,7 +104,7 @@ instance : CartesianMonoidalCategory (CommAlgCat.{u} R)ᵒᵖ where
   fst_def S T := by ext x; change x ⊗ₜ 1 = x ⊗ₜ algebraMap R T.unop 1; simp
   snd_def S T := by ext x; change 1 ⊗ₜ x = algebraMap R S.unop 1 ⊗ₜ x; simp
 
-variable {A B C D : (CommAlgCat.{u} R)ᵒᵖ}
+variable {A B C : (CommAlgCat.{u} R)ᵒᵖ}
 
 @[simp] lemma fst_unop_hom (A B : (CommAlgCat.{u} R)ᵒᵖ) : (fst A B).unop.hom = includeLeft := rfl
 @[simp] lemma snd_unop_hom (A B : (CommAlgCat.{u} R)ᵒᵖ) : (snd A B).unop.hom = includeRight := rfl

@@ -3,12 +3,13 @@ Copyright (c) 2018 Ellen Arlt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu-Ming Zhang
 -/
-import Mathlib.Algebra.Algebra.Opposite
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.BigOperators.RingEquiv
-import Mathlib.Data.Finite.Prod
-import Mathlib.Data.Matrix.Mul
-import Mathlib.LinearAlgebra.Pi
+module
+
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.BigOperators.RingEquiv
+public import Mathlib.Data.Matrix.Mul
+public import Mathlib.GroupTheory.DedekindFinite
+public import Mathlib.LinearAlgebra.Pi
 
 /-!
 # Matrices
@@ -28,11 +29,13 @@ Under various conditions, multiplication of infinite matrices makes sense.
 These have not yet been implemented.
 -/
 
+@[expose] public section
+
 assert_not_exists TrivialStar
 
 universe u u' v w
 
-variable {l m n o : Type*} {m' : o → Type*} {n' : o → Type*}
+variable {l m n : Type*}
 variable {R S T A α β γ : Type*}
 
 namespace Matrix
@@ -45,6 +48,8 @@ instance {n m} [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] (α) [Fin
 
 instance {n m} [Finite m] [Finite n] (α) [Finite α] :
     Finite (Matrix m n α) := inferInstanceAs (Finite (m → n → α))
+
+instance (priority := low) [Semiring α] [Finite α] : IsStablyFiniteRing α := ⟨inferInstance⟩
 
 section
 variable (R)
@@ -63,7 +68,7 @@ end
 
 theorem sum_apply [AddCommMonoid α] (i : m) (j : n) (s : Finset β) (g : β → Matrix m n α) :
     (∑ c ∈ s, g c) i j = ∑ c ∈ s, g c i j :=
-  (congr_fun (s.sum_apply i g) j).trans (s.sum_apply j _)
+  congr($(s.sum_apply i g) j).trans (s.sum_apply j _)
 
 end Matrix
 
@@ -150,12 +155,6 @@ end Diag
 
 open Matrix
 
-section AddCommMonoid
-
-variable [AddCommMonoid α] [Mul α]
-
-end AddCommMonoid
-
 section NonAssocSemiring
 
 variable [NonAssocSemiring α]
@@ -182,6 +181,10 @@ theorem diagonal_pow [Fintype n] [DecidableEq n] (v : n → α) (k : ℕ) :
 
 /-- The ring homomorphism `α →+* Matrix n n α`
 sending `a` to the diagonal matrix with `a` on the diagonal.
+
+This is available in bundled forms as:
+* `Matrix.scalarAlgHom`
+* `Matrix.GeneralLinearGroup.scalar`
 -/
 def scalar (n : Type u) [DecidableEq n] [Fintype n] : α →+* Matrix n n α :=
   (diagonalRingHom n α).comp <| Pi.constRingHom n α
@@ -229,9 +232,7 @@ instance instAlgebra : Algebra R (Matrix n n α) where
   smul_def' r x := by ext; simp [Matrix.scalar, Algebra.smul_def r]
 
 theorem algebraMap_matrix_apply {r : R} {i j : n} :
-    algebraMap R (Matrix n n α) r i j = if i = j then algebraMap R α r else 0 := by
-  dsimp [algebraMap, Algebra.algebraMap, Matrix.scalar]
-  split_ifs with h <;> simp [h]
+    algebraMap R (Matrix n n α) r i j = if i = j then algebraMap R α r else 0 := rfl
 
 theorem algebraMap_eq_diagonal (r : R) :
     algebraMap R (Matrix n n α) r = diagonal (algebraMap R (n → α) r) := rfl
@@ -271,7 +272,9 @@ section AddHom
 variable [Add α]
 
 variable (R α) in
-/-- Extracting entries from a matrix as an additive homomorphism. -/
+/-- Extracting entries from a matrix as an additive homomorphism.
+
+See also `Matrix.entryAddMonoidHom` and `Matrix.entryLinearMap`. -/
 @[simps]
 def entryAddHom (i : m) (j : n) : AddHom (Matrix m n α) α where
   toFun M := M i j
@@ -295,6 +298,8 @@ variable (R α) in
 /--
 Extracting entries from a matrix as an additive monoid homomorphism. Note this cannot be upgraded to
 a ring homomorphism, as it does not respect multiplication.
+
+See also `Matrix.entryAddHom` and `Matrix.entryLinearMap`.
 -/
 @[simps]
 def entryAddMonoidHom (i : m) (j : n) : Matrix m n α →+ α where
@@ -307,7 +312,7 @@ def entryAddMonoidHom (i : m) (j : n) : Matrix m n α →+ α where
 lemma entryAddMonoidHom_eq_comp {i : m} {j : n} :
     entryAddMonoidHom α i j =
       ((Pi.evalAddMonoidHom (fun _ => α) j).comp (Pi.evalAddMonoidHom _ i)).comp
-        (AddMonoidHomClass.toAddMonoidHom ofAddEquiv.symm) := by
+        (AddMonoidHom.ofClass ofAddEquiv.symm) := by
   rfl
 
 @[simp] lemma evalAddMonoidHom_comp_diagAddMonoidHom (i : m) :
@@ -327,10 +332,11 @@ variable (R α) in
 /--
 Extracting entries from a matrix as a linear map. Note this cannot be upgraded to an algebra
 homomorphism, as it does not respect multiplication.
+
+See also `Matrix.entryAddHom` and `Matrix.entryAddMonoidHom`.
 -/
 @[simps]
-def entryLinearMap (i : m) (j : n) :
-    Matrix m n α →ₗ[R] α where
+def entryLinearMap (i : m) (j : n) : Matrix m n α →ₗ[R] α where
   toFun M := M i j
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -606,6 +612,10 @@ theorem mapMatrix_comp (f : β →+* γ) (g : α →+* β) :
     f.mapMatrix.comp g.mapMatrix = ((f.comp g).mapMatrix : Matrix m m α →+* _) :=
   rfl
 
+protected lemma _root_.Matrix.map_pow {α β : Type*} [Semiring α] [Semiring β]
+    (M : Matrix m m α) (f : α →+* β) (a : ℕ) : (M ^ a).map f = (M.map f) ^ a :=
+  f.mapMatrix.map_pow M a
+
 end RingHom
 
 namespace RingEquiv
@@ -636,19 +646,31 @@ theorem mapMatrix_trans (f : α ≃+* β) (g : β ≃+* γ) :
   rfl
 
 open MulOpposite in
-/--
-For any ring `R`, we have ring isomorphism `Matₙₓₙ(Rᵒᵖ) ≅ (Matₙₓₙ(R))ᵒᵖ` given by transpose.
--/
+/-- For any ring `α`, we have ring isomorphism `Matₙₓₙ(αᵒᵖ) ≅ (Matₙₓₙ(α))ᵒᵖ` given by transpose.
+
+See also `Matrix.transposeRingEquiv` for a version that doesn't take the opposite of `α`,
+given that its multiplication is commutative. -/
 @[simps apply symm_apply]
-def mopMatrix : Matrix m m αᵐᵒᵖ ≃+* (Matrix m m α)ᵐᵒᵖ where
+def mopMatrix {α} [Mul α] [AddCommMonoid α] : Matrix m m αᵐᵒᵖ ≃+* (Matrix m m α)ᵐᵒᵖ where
   toFun M := op (M.transpose.map unop)
   invFun M := M.unop.transpose.map op
-  left_inv _ := by aesop
-  right_inv _ := by aesop
-  map_mul' _ _ := unop_injective <| by ext; simp [transpose, mul_apply]
-  map_add' _ _ := by aesop
+  map_mul' _ _ := unop_injective <| by ext; simp [mul_apply]
+  map_add' _ _ := rfl
 
 end RingEquiv
+
+instance (α) [MulOne α] [AddCommMonoid α] [IsStablyFiniteRing α] : IsStablyFiniteRing αᵐᵒᵖ where
+  isDedekindFiniteMonoid n := .of_injective (MonoidHom.mk
+    ⟨RingEquiv.mopMatrix, by simp⟩ RingEquiv.mopMatrix.map_mul) (RingEquiv.injective _)
+
+open MulOpposite in
+theorem MulOpposite.isStablyFiniteRing_iff (α) [MulOne α] [AddCommMonoid α] :
+    IsStablyFiniteRing αᵐᵒᵖ ↔ IsStablyFiniteRing α where
+  mp _ :=
+  ⟨fun n ↦ let f := MonoidHom.mk ⟨fun M : Matrix (Fin n) (Fin n) α ↦ M.map (op ∘ op), by aesop⟩
+               fun _ _ ↦ by ext; simp [mul_apply]
+  .of_injective f (map_injective (op_injective.comp op_injective))⟩
+  mpr _ := inferInstance
 
 namespace AlgHom
 
@@ -705,8 +727,10 @@ theorem mapMatrix_trans (f : α ≃ₐ[R] β) (g : β ≃ₐ[R] γ) :
   rfl
 
 /-- For any algebra `α` over a ring `R`, we have an `R`-algebra isomorphism
-`Matₙₓₙ(αᵒᵖ) ≅ (Matₙₓₙ(R))ᵒᵖ` given by transpose. If `α` is commutative,
-we can get rid of the `ᵒᵖ` in the left-hand side, see `Matrix.transposeAlgEquiv`. -/
+`Matₙₓₙ(αᵒᵖ) ≅ (Matₙₓₙ(R))ᵒᵖ` given by transpose.
+
+See also `Matrix.transposeAlgEquiv` for a version that doesn't take the opposite of `α`,
+given that its multiplication is commutative. -/
 @[simps!] def mopMatrix : Matrix m m αᵐᵒᵖ ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ where
   __ := RingEquiv.mopMatrix
   commutes' _ := MulOpposite.unop_injective <| by
@@ -761,7 +785,7 @@ end Subsemiring
 
 namespace Subring
 
-variable {R : Type*} [Ring R]
+variable {R : Type*} [NonAssocRing R]
 variable [Fintype n] [DecidableEq n]
 
 /-- A version of `Set.matrix` for `Subring`s.
@@ -791,6 +815,49 @@ end Submodule
 open Matrix
 
 namespace Matrix
+
+section Pi
+
+variable {ι : Type*} {β : ι → Type*}
+
+/-- Matrices over a Pi type are in canonical bijection with tuples of matrices.
+
+This is available in bundled forms as:
+* `Matrix.piAddEquiv`
+* `Matrix.piLinearEquiv`
+* `Matrix.piRingEquiv`
+* `Matrix.piAlgEquiv`
+-/
+@[simps] def piEquiv : Matrix m n (Π i, β i) ≃ Π i, Matrix m n (β i) where
+  toFun f i := f.map (· i)
+  invFun f := .of fun j k i ↦ f i j k
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+/-- `piEquiv` as an `AddEquiv`. -/
+@[simps!] def piAddEquiv [∀ i, Add (β i)] : Matrix m n (Π i, β i) ≃+ Π i, Matrix m n (β i) where
+  __ := piEquiv
+  map_add' _ _ := rfl
+
+/-- `piEquiv` as a `LinearEquiv`. -/
+@[simps] def piLinearEquiv (R) [Semiring R] [∀ i, AddCommMonoid (β i)] [∀ i, Module R (β i)] :
+    Matrix m n (Π i, β i) ≃ₗ[R] Π i, Matrix m n (β i) where
+  __ := piAddEquiv
+  map_smul' _ _ := rfl
+
+/-- `piEquiv` as a `RingEquiv`. -/
+@[simps!] def piRingEquiv [∀ i, AddCommMonoid (β i)] [∀ i, Mul (β i)] [Fintype n] :
+    Matrix n n (Π i, β i) ≃+* Π i, Matrix n n (β i) where
+  __ := piAddEquiv
+  map_mul' _ _ := by ext; simp [Matrix.mul_apply]
+
+/-- `piEquiv` as an `AlgEquiv`. -/
+@[simps!] def piAlgEquiv (R) [CommSemiring R] [∀ i, Semiring (β i)] [∀ i, Algebra R (β i)]
+    [Fintype n] [DecidableEq n] : Matrix n n (Π i, β i) ≃ₐ[R] Π i, Matrix n n (β i) where
+  __ := piRingEquiv
+  commutes' := (AlgHom.mk' (piRingEquiv (β := β) (n := n)).toRingHom fun _ _ ↦ rfl).commutes
+
+end Pi
 
 section Transpose
 
@@ -830,8 +897,9 @@ variable (m n R α)
 /-- `Matrix.transpose` as a `LinearMap` -/
 @[simps apply]
 def transposeLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
-    Matrix m n α ≃ₗ[R] Matrix n m α :=
-  { transposeAddEquiv m n α with map_smul' := transpose_smul }
+    Matrix m n α ≃ₗ[R] Matrix n m α where
+  __ := transposeAddEquiv m n α
+  map_smul' := transpose_smul
 
 @[simp]
 theorem transposeLinearEquiv_symm [Semiring R] [AddCommMonoid α] [Module R α] :
@@ -841,17 +909,15 @@ theorem transposeLinearEquiv_symm [Semiring R] [AddCommMonoid α] [Module R α] 
 variable {m n R α}
 variable (m α)
 
-/-- `Matrix.transpose` as a `RingEquiv` to the opposite ring -/
-@[simps]
-def transposeRingEquiv [AddCommMonoid α] [CommSemigroup α] [Fintype m] :
-    Matrix m m α ≃+* (Matrix m m α)ᵐᵒᵖ :=
-  { (transposeAddEquiv m m α).trans MulOpposite.opAddEquiv with
-    toFun := fun M => MulOpposite.op Mᵀ
-    invFun := fun M => M.unopᵀ
-    map_mul' := fun M N =>
-      (congr_arg MulOpposite.op (transpose_mul M N)).trans (MulOpposite.op_mul _ _)
-    left_inv := fun M => transpose_transpose M
-    right_inv := fun M => MulOpposite.unop_injective <| transpose_transpose M.unop }
+/-- `Matrix.transpose` as a `RingEquiv` to the opposite ring.
+
+See also `RingEquiv.mopMatrix` for a version that doesn't require `α` to have commutative
+multiplication, by taking its opposite. -/
+@[simps!]
+def transposeRingEquiv [AddCommMonoid α] [CommMagma α] [Fintype m] :
+    Matrix m m α ≃+* (Matrix m m α)ᵐᵒᵖ where
+  __ := transposeAddEquiv m m α |>.trans MulOpposite.opAddEquiv
+  map_mul' M N := (congrArg MulOpposite.op <| transpose_mul M N).trans <| MulOpposite.op_mul ..
 
 variable {m α}
 
@@ -866,17 +932,15 @@ theorem transpose_list_prod [CommSemiring α] [Fintype m] [DecidableEq m] (l : L
 
 variable (R m α)
 
-/-- `Matrix.transpose` as an `AlgEquiv` to the opposite ring -/
-@[simps]
-def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [DecidableEq m] [Algebra R α] :
-    Matrix m m α ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ :=
-  { (transposeAddEquiv m m α).trans MulOpposite.opAddEquiv,
-    transposeRingEquiv m α with
-    toFun := fun M => MulOpposite.op Mᵀ
-    commutes' := fun r => by
-      simp only [algebraMap_eq_diagonal, diagonal_transpose, MulOpposite.algebraMap_apply] }
+/-- `Matrix.transpose` as an `AlgEquiv` to the opposite ring.
 
-variable {R m α}
+See also `AlgEquiv.mopMatrix` for a version that doesn't require `α` to have commutative
+multiplication, by taking its opposite. -/
+@[simps!]
+def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [DecidableEq m] [Algebra R α] :
+    Matrix m m α ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ where
+  __ := transposeRingEquiv m α
+  commutes' r := by simp [algebraMap_eq_diagonal]
 
 end Transpose
 

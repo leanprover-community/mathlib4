@@ -3,9 +3,9 @@ Copyright (c) 2024 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 -/
-import Mathlib.Topology.LocallyClosed
-import Mathlib.MeasureTheory.MeasurableSpace.EventuallyMeasurable
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
 # Baire category and Baire measurable sets
@@ -25,19 +25,49 @@ A set `s` in a topological space `α` is called a `BaireMeasurableSet` or said t
 
 -/
 
+@[expose] public section
+
 variable (α : Type*) {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 open Topology
 
 /-- Notation for `=ᶠ[residual _]`. That is, eventual equality with respect to
-the filter of residual sets. -/
-scoped[Topology] notation:50 f " =ᵇ " g:50 => Filter.EventuallyEq (residual _) f g
+the filter of residual sets.
+In lemma names, this is called `residualEq`. -/
+scoped[Topology] notation:50 f " =ᵇ " g:50 => f =ᶠ[residual _] g
+
+section delaborators
+open Lean Lean.PrettyPrinter.Delaborator
+
+/-- Delaborator printing `Filter.EventuallyEq (residual _) f g` as `f =ᵇ g`. -/
+@[app_delab Filter.EventuallyEq]
+meta def delabResidualEventuallyEq : Delab :=
+  whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
+    let e ← SubExpr.getExpr
+    guard <| e.isAppOfArity ``Filter.EventuallyEq 5
+    guard <| (e.getArg! 2).isAppOfArity ``residual 2
+    let f ← SubExpr.withNaryArg 3 delab
+    let g ← SubExpr.withNaryArg 4 delab
+    `($f =ᵇ $g)
+
+/-- Delaborator printing `Filter.EventuallyEqSet (residual _) s t` as `s =ᵇ t`. -/
+@[app_delab Filter.EventuallyEqSet]
+meta def delabResidualEventuallyEqSet : Delab :=
+  whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
+    let e ← SubExpr.getExpr
+    guard <| e.isAppOfArity ``Filter.EventuallyEqSet 4
+    guard <| (e.getArg! 1).isAppOfArity ``residual 2
+    let s ← SubExpr.withNaryArg 2 delab
+    let t ← SubExpr.withNaryArg 3 delab
+    `($s =ᵇ $t)
+
+end delaborators
 
 /-- Notation to say that a property of points in a topological space holds
 almost everywhere in the sense of Baire category. That is, on a residual set. -/
 scoped[Topology] notation3 "∀ᵇ " (...) ", " r:(scoped p => Filter.Eventually p <| residual _) => r
 
-/-- Notation to say that a property of points in a topological space holds on a non meager set. -/
+/-- Notation to say that a property of points in a topological space holds on a nonmeager set. -/
 scoped[Topology] notation3 "∃ᵇ " (...) ", " r:(scoped p => Filter.Frequently p <| residual _) => r
 
 variable {α}
@@ -46,7 +76,7 @@ theorem coborder_mem_residual {s : Set α} (hs : IsLocallyClosed s) : coborder s
   residual_of_dense_open hs.isOpen_coborder dense_coborder
 
 theorem closure_residualEq {s : Set α} (hs : IsLocallyClosed s) : closure s =ᵇ s := by
-  rw [Filter.eventuallyEq_set]
+  rw [Filter.eventuallyEqSet_iff]
   filter_upwards [coborder_mem_residual hs] with x hx
   nth_rewrite 2 [← closure_inter_coborder (s := s)]
   simp [hx]
@@ -136,7 +166,7 @@ theorem MeasurableSet.residualEq_isOpen [MeasurableSpace α] [BorelSpace α] (h 
     exact .compl <| hsU.trans <| .symm <| closure_residualEq Uo.isLocallyClosed
   | iUnion f _ _ ihf =>
     choose u uo su using ihf
-    exact ⟨⋃ i, u i, isOpen_iUnion uo, EventuallyEq.countable_iUnion su⟩
+    exact ⟨⋃ i, u i, isOpen_iUnion uo, .countable_iUnion su⟩
 
 /-- Any `BaireMeasurableSet` differs from some open set by a meager set. -/
 theorem BaireMeasurableSet.residualEq_isOpen (h : BaireMeasurableSet s) :

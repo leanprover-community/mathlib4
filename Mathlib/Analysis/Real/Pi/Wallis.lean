@@ -3,7 +3,9 @@ Copyright (c) 2021 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 
 /-! # The Wallis formula for Pi
 
@@ -28,6 +30,8 @@ algebraic manipulation.
 * `Real.Wallis.W_le` and `Real.Wallis.le_W`: upper and lower bounds for `W n`.
 * `Real.tendsto_prod_pi_div_two`: the Wallis product formula.
 -/
+
+@[expose] public section
 
 
 open scoped Real Topology Nat
@@ -59,7 +63,7 @@ theorem W_eq_factorial_ratio (n : ℕ) :
   induction n with
   | zero =>
     simp only [W, prod_range_zero, Nat.factorial_zero, mul_zero, pow_zero]
-    norm_num
+    simp
   | succ n IH =>
     unfold W at IH ⊢
     rw [prod_range_succ, IH, _root_.div_mul_div_comm, _root_.div_mul_div_comm]

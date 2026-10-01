@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplexCategory.Rev
-import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+module
+
+public import Mathlib.AlgebraicTopology.SimplexCategory.Rev
+public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 
 /-!
 # The covariant involution of the category of simplicial objects
@@ -14,6 +16,8 @@ of the category of simplicial objects that is induced by the
 covariant involution `SimplexCategory.rev : SimplexCategory ⥤ SimplexCategory`.
 
 -/
+
+@[expose] public section
 
 universe v
 
@@ -25,7 +29,10 @@ variable {C : Type*} [Category.{v} C]
 
 /-- The covariant involution of the category of simplicial objects
 that is induced by the involution
-`SimplexCategory.rev : SimplexCategory ⥤ SimplexCategory`. -/
+`SimplexCategory.rev : SimplexCategory ⥤ SimplexCategory`.
+This functor is purposely not made `implicit_reducible` so as to avoid
+confusion between `(opFunctor.obj X) _⦋n⦌` and `X _⦋n⦌`: use the
+isomorphism `opObjIso`. -/
 def opFunctor : SimplicialObject C ⥤ SimplicialObject C :=
   (Functor.whiskeringLeft _ _ _).obj SimplexCategory.rev.op
 
@@ -47,19 +54,21 @@ lemma opFunctor_obj_map (X : SimplicialObject C) {n m : SimplexCategoryᵒᵖ} (
 @[simp]
 lemma opFunctor_obj_δ (X : SimplicialObject C) {n : ℕ} (i : Fin (n + 2)) :
     (opFunctor.obj X).δ i = opObjIso.hom ≫ X.δ i.rev ≫ opObjIso.inv := by
-  simp [SimplicialObject.δ]
+  simp [opObjIso, SimplicialObject.δ]
 
 @[simp]
 lemma opFunctor_obj_σ (X : SimplicialObject C) {n : ℕ} (i : Fin (n + 1)) :
     (opFunctor.obj X).σ i = opObjIso.hom ≫ X.σ i.rev ≫ opObjIso.inv := by
-  simp [SimplicialObject.σ]
+  simp [opObjIso, SimplicialObject.σ]
 
 /-- The functor `opFunctor : SimplicialObject C ⥤ SimplicialObject C`
 is a covariant involution. -/
 def opFunctorCompOpFunctorIso : opFunctor (C := C) ⋙ opFunctor ≅ 𝟭 _ :=
   (Functor.whiskeringLeftObjCompIso _ _).symm ≪≫
     (Functor.whiskeringLeft _ _ _).mapIso
-    ((Functor.opHom _ _).mapIso (SimplexCategory.revCompRevIso).symm.op) ≪≫
+    ((Functor.opComp _ _).symm ≪≫
+      (Functor.opHom _ _).mapIso (SimplexCategory.revCompRevIso).symm.op ≪≫
+      Functor.opId _) ≪≫
     Functor.whiskeringLeftObjIdIso
 
 @[simp]

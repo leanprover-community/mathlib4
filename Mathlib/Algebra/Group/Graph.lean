@@ -3,7 +3,9 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, David Loeffler
 -/
-import Mathlib.Algebra.Group.Subgroup.Ker
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Ker
 
 /-!
 # Vertical line test for group homs
@@ -23,6 +25,8 @@ We also prove specialised versions when `f` is the inclusion of a subgroup of th
 homomorphism version is more flexible in applications.)
 -/
 
+@[expose] public section
+
 open Function Set
 
 variable {G H I : Type*}
@@ -35,7 +39,7 @@ namespace MonoidHom
 /-- The graph of a monoid homomorphism as a submonoid.
 
 See also `MonoidHom.graph` for the graph as a subgroup. -/
-@[to_additive
+@[to_additive (attr := simps! coe)
 /-- The graph of a monoid homomorphism as a submonoid.
 
 See also `AddMonoidHom.graph` for the graph as a subgroup. -/]
@@ -44,20 +48,11 @@ def mgraph (f : G →* H) : Submonoid (G × H) where
   one_mem' := map_one f
   mul_mem' {x y} := by simp +contextual
 
--- TODO: Can `to_additive` be smarter about `simps`?
-attribute [simps! coe] mgraph
-attribute [simps! coe] AddMonoidHom.mgraph
-set_option linter.existingAttributeWarning false in
-attribute [to_additive existing] coe_mgraph
-
 @[to_additive (attr := simp)]
 lemma mem_mgraph {f : G →* H} {x : G × H} : x ∈ f.mgraph ↔ f x.1 = x.2 := .rfl
 
 @[to_additive mgraph_eq_mrange_prod]
 lemma mgraph_eq_mrange_prod (f : G →* H) : f.mgraph = mrange ((id _).prod f) := by aesop
-
-@[deprecated (since := "2025-03-11")]
-alias _root_.AddMonoidHom.mgraph_eq_mrange_sum := AddMonoidHom.mgraph_eq_mrange_prod
 
 /-- **Vertical line test** for monoid homomorphisms.
 
@@ -125,7 +120,7 @@ graph of some monoid homomorphism `f : H → I`. -/]
 lemma Submonoid.exists_eq_mgraph {G : Submonoid (H × I)} (hG₁ : Bijective (Prod.fst ∘ G.subtype)) :
     ∃ f : H →* I, G = f.mgraph := by
   simpa using MonoidHom.exists_mrange_eq_mgraph hG₁.surjective
-    fun a b h ↦ congr_arg (Prod.snd ∘ G.subtype) (hG₁.injective h)
+    fun a b h ↦ congr($(hG₁.injective h).val.snd)
 
 /-- **Goursat's lemma** for monoid isomorphisms.
 
@@ -162,7 +157,6 @@ def graph (f : G →* H) : Subgroup (G × H) where
 -- TODO: Can `to_additive` be smarter about `simps`?
 attribute [simps! coe toSubmonoid] graph
 attribute [simps! coe toAddSubmonoid] AddMonoidHom.graph
-set_option linter.existingAttributeWarning false in
 attribute [to_additive existing] coe_graph graph_toSubmonoid
 
 @[to_additive]
@@ -170,9 +164,6 @@ lemma mem_graph {f : G →* H} {x : G × H} : x ∈ f.graph ↔ f x.1 = x.2 := .
 
 @[to_additive graph_eq_range_prod]
 lemma graph_eq_range_prod (f : G →* H) : f.graph = range ((id _).prod f) := by aesop
-
-@[deprecated (since := "2025-03-11")]
-alias AddMonoidHom.graph_eq_range_sum := graph_eq_range_prod
 
 /-- **Vertical line test** for group homomorphisms.
 
@@ -187,7 +178,7 @@ once. Then the image of `f` is the graph of some group homomorphism `f' : H → 
 lemma exists_range_eq_graph {f : G →* H × I} (hf₁ : Surjective (Prod.fst ∘ f))
     (hf : ∀ g₁ g₂, (f g₁).1 = (f g₂).1 → (f g₁).2 = (f g₂).2) :
     ∃ f' : H →* I, range f = f'.graph := by
-  simpa [SetLike.ext_iff] using exists_mrange_eq_mgraph hf₁ hf
+  simpa [SetLike.ext_iff] using! exists_mrange_eq_mgraph hf₁ hf
 
 /-- **Line test** for group isomorphisms.
 
@@ -204,7 +195,7 @@ group isomorphism `f' : H ≃ I`. -/]
 lemma exists_mulEquiv_range_eq_graph {f : G →* H × I} (hf₁ : Surjective (Prod.fst ∘ f))
     (hf₂ : Surjective (Prod.snd ∘ f)) (hf : ∀ g₁ g₂, (f g₁).1 = (f g₂).1 ↔ (f g₁).2 = (f g₂).2) :
     ∃ e : H ≃* I, range f = e.toMonoidHom.graph := by
-  simpa [SetLike.ext_iff] using exists_mulEquiv_mrange_eq_mgraph hf₁ hf₂ hf
+  simpa [SetLike.ext_iff] using! exists_mulEquiv_mrange_eq_mgraph hf₁ hf₂ hf
 
 end MonoidHom
 
@@ -219,7 +210,7 @@ factor and `G` intersects every "vertical line" `{(h, i) | i : I}` at most once.
 graph of some monoid homomorphism `f : H → I`. -/]
 lemma Subgroup.exists_eq_graph {G : Subgroup (H × I)} (hG₁ : Bijective (Prod.fst ∘ G.subtype)) :
     ∃ f : H →* I, G = f.graph := by
-  simpa [SetLike.ext_iff] using Submonoid.exists_eq_mgraph hG₁
+  simpa [SetLike.ext_iff] using! Submonoid.exists_eq_mgraph hG₁
 
 /-- **Goursat's lemma** for monoid isomorphisms.
 
@@ -232,6 +223,6 @@ Let `G ≤ H × I` be a submonoid of a product of additive monoids. Assume that 
 lemma Subgroup.exists_mulEquiv_eq_graph {G : Subgroup (H × I)}
     (hG₁ : Bijective (Prod.fst ∘ G.subtype)) (hG₂ : Bijective (Prod.snd ∘ G.subtype)) :
     ∃ e : H ≃* I, G = e.toMonoidHom.graph := by
-  simpa [SetLike.ext_iff] using Submonoid.exists_mulEquiv_eq_mgraph hG₁ hG₂
+  simpa [SetLike.ext_iff] using! Submonoid.exists_mulEquiv_eq_mgraph hG₁ hG₂
 
 end Group

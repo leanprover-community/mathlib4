@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
-import Mathlib.Data.DFinsupp.Defs
-import Mathlib.Data.Fintype.Pi
+module
+
+public import Mathlib.Data.DFinsupp.Defs
+public import Mathlib.Data.Fintype.Pi
 
 /-!
 # Finiteness and infiniteness of the `DFinsupp` type
@@ -17,10 +19,12 @@ import Mathlib.Data.Fintype.Pi
   then `DFinsupp` is infinite
 -/
 
+public section
+
 
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l
 
-variable {ι : Type u} {γ : Type w} {β : ι → Type v} {β₁ : ι → Type v₁} {β₂ : ι → Type v₂}
+variable {ι : Type u}
 
 section FiniteInfinite
 
@@ -30,7 +34,7 @@ instance DFinsupp.fintype {ι : Sort _} {π : ι → Sort _} [DecidableEq ι] [�
 
 instance DFinsupp.infinite_of_left {ι : Sort _} {π : ι → Sort _} [∀ i, Nontrivial (π i)]
     [∀ i, Zero (π i)] [Infinite ι] : Infinite (Π₀ i, π i) := by
-  letI := Classical.decEq ι; choose m hm using fun i => exists_ne (0 : π i)
+  let := Classical.decEq ι; choose m hm using fun i => exists_ne (0 : π i)
   exact Infinite.of_injective _ (DFinsupp.single_left_injective hm)
 
 /-- See `DFinsupp.infinite_of_right` for this in instance form, with the drawback that

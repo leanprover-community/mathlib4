@@ -3,9 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.GroupWithZero.Regular
-import Mathlib.Algebra.Polynomial.Coeff
-import Mathlib.Algebra.Polynomial.Degree.Definitions
+module
+
+public import Mathlib.Algebra.Polynomial.Coeff
+public import Mathlib.Algebra.Polynomial.Degree.Defs
 
 /-!
 # Lemmas for calculating the degree of univariate polynomials
@@ -15,6 +16,8 @@ import Mathlib.Algebra.Polynomial.Degree.Definitions
 - `leadingCoeff_add_of_degree_eq` and `leadingCoeff_add_of_degree_lt` :
     The leading coefficient of a sum is determined by the leading coefficients and degrees
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -26,11 +29,11 @@ namespace Polynomial
 
 universe u v
 
-variable {R : Type u} {S : Type v} {a b c d : R} {n m : ℕ}
+variable {R : Type u} {S : Type v} {a b c : R} {n m : ℕ}
 
 section Semiring
 
-variable [Semiring R] [Semiring S] {p q r : R[X]}
+variable [Semiring R] [Semiring S] {p q : R[X]}
 
 theorem supDegree_eq_degree (p : R[X]) : p.toFinsupp.supDegree WithBot.some = p.degree :=
   max_eq_sup_coe
@@ -119,11 +122,14 @@ variable [Ring R]
 theorem coeff_mul_X_sub_C {p : R[X]} {r : R} {a : ℕ} :
     coeff (p * (X - C r)) (a + 1) = coeff p a - coeff p (a + 1) * r := by simp [mul_sub]
 
+theorem coeff_X_sub_C_mul {p : R[X]} {r : R} {a : ℕ} :
+    coeff ((X - C r) * p) (a + 1) = coeff p a - r * coeff p (a + 1) := by simp [sub_mul]
+
 end Ring
 
 section Semiring
 
-variable [Semiring R] {p q : R[X]} {ι : Type*}
+variable [Semiring R] {p q : R[X]}
 
 theorem coeff_natDegree_eq_zero_of_degree_lt (h : degree p < degree q) :
     coeff p (natDegree q) = 0 :=
@@ -156,7 +162,7 @@ theorem natDegree_lt_natDegree_iff (hp : p ≠ 0) : natDegree p < natDegree q �
 theorem eq_C_of_degree_le_zero (h : degree p ≤ 0) : p = C (coeff p 0) := by
   ext (_ | n)
   · simp
-  rw [coeff_C, if_neg (Nat.succ_ne_zero _), coeff_eq_zero_of_degree_lt]
+  rw [coeff_C, ite_eq_right (Nat.succ_ne_zero _), coeff_eq_zero_of_degree_lt]
   exact h.trans_lt (WithBot.coe_lt_coe.2 n.succ_pos)
 
 theorem eq_C_of_degree_eq_zero (h : degree p = 0) : p = C (coeff p 0) :=
@@ -193,16 +199,20 @@ theorem natDegree_add_eq_right_of_natDegree_lt (h : natDegree p < natDegree q) :
 theorem degree_add_C (hp : 0 < degree p) : degree (p + C a) = degree p :=
   add_comm (C a) p ▸ degree_add_eq_right_of_degree_lt <| lt_of_le_of_lt degree_C_le hp
 
-@[simp] theorem natDegree_add_C {a : R} : (p + C a).natDegree = p.natDegree := by
+@[simp, grind =] theorem natDegree_add_C {a : R} : (p + C a).natDegree = p.natDegree := by
   rcases eq_or_ne p 0 with rfl | hp
   · simp
-  by_cases hpd : p.degree ≤ 0
+  by_cases! hpd : p.degree ≤ 0
   · rw [eq_C_of_degree_le_zero hpd, ← C_add, natDegree_C, natDegree_C]
-  · rw [not_le, degree_eq_natDegree hp, Nat.cast_pos, ← natDegree_C a] at hpd
+  · rw [degree_eq_natDegree hp, Nat.cast_pos, ← natDegree_C a] at hpd
     exact natDegree_add_eq_left_of_natDegree_lt hpd
 
 @[simp] theorem natDegree_C_add {a : R} : (C a + p).natDegree = p.natDegree := by
   simp [add_comm _ p]
+
+@[simp] theorem natDegree_add_one : (p + 1).natDegree = p.natDegree := natDegree_add_C
+
+@[simp] theorem natDegree_one_add : (1 + p).natDegree = p.natDegree := natDegree_C_add
 
 theorem degree_add_eq_of_leadingCoeff_add_ne_zero (h : leadingCoeff p + leadingCoeff q ≠ 0) :
     degree (p + q) = max p.degree q.degree :=
@@ -247,8 +257,7 @@ theorem monic_of_natDegree_le_of_coeff_eq_one (n : ℕ) (pn : p.natDegree ≤ n)
   refine (congr_arg _ <| natDegree_eq_of_le_of_coeff_ne_zero pn ?_).trans p1
   exact ne_of_eq_of_ne p1 one_ne_zero
 
-theorem monic_of_degree_le_of_coeff_eq_one (n : ℕ) (pn : p.degree ≤ n) (p1 : p.coeff n = 1) :
-    Monic p :=
+theorem monic_of_degree_le (n : ℕ) (pn : p.degree ≤ n) (p1 : p.coeff n = 1) : Monic p :=
   monic_of_natDegree_le_of_coeff_eq_one n (natDegree_le_of_degree_le pn) p1
 
 theorem leadingCoeff_add_of_degree_lt (h : degree p < degree q) :
@@ -325,9 +334,10 @@ theorem natDegree_mul' (h : leadingCoeff p * leadingCoeff q ≠ 0) :
 
 theorem leadingCoeff_mul' (h : leadingCoeff p * leadingCoeff q ≠ 0) :
     leadingCoeff (p * q) = leadingCoeff p * leadingCoeff q := by
-  unfold leadingCoeff
-  rw [natDegree_mul' h, coeff_mul_degree_add_degree]
-  rfl
+  simp [← coeff_natDegree, natDegree_mul' h, coeff_mul_degree_add_degree]
+
+lemma Monic.leadingCoeff_C_mul (hp : p.Monic) (r : R) : (C r * p).leadingCoeff = r := by
+  by_cases hr : r = 0 <;> simp_all [leadingCoeff_mul']
 
 theorem leadingCoeff_pow' : leadingCoeff p ^ n ≠ 0 → leadingCoeff (p ^ n) = leadingCoeff p ^ n :=
   Nat.recOn n (by simp) fun n ih h => by
@@ -428,7 +438,7 @@ theorem coeff_pow_mul_natDegree (p : R[X]) (n : ℕ) :
           exact leadingCoeff_eq_zero.mp hi
         calc
           (p ^ i * p).natDegree ≤ (p ^ i).natDegree + p.natDegree := natDegree_mul_le
-          _ < i * p.natDegree + p.natDegree := add_lt_add_right h1 _
+          _ < i * p.natDegree + p.natDegree := by gcongr
     · rw [← natDegree_pow' hp1, ← leadingCoeff_pow' hp1]
       exact coeff_mul_degree_add_degree _ _
 
@@ -463,7 +473,7 @@ theorem degree_smul_of_isRightRegular_leadingCoeff (ha : a ≠ 0)
   exact hp.mul_right_eq_zero_iff.ne.mpr ha
 
 theorem degree_lt_degree_mul_X (hp : p ≠ 0) : p.degree < (p * X).degree := by
-  haveI := Nontrivial.of_polynomial_ne hp
+  have := Nontrivial.of_polynomial_ne hp
   have : leadingCoeff p * leadingCoeff X ≠ 0 := by simpa
   rw [degree_mul' this, degree_eq_natDegree hp, degree_X, ← Nat.cast_one, ← Nat.cast_add]
   norm_cast
@@ -485,6 +495,7 @@ theorem eq_one_of_monic_natDegree_zero (hf : p.Monic) (hfd : p.natDegree = 0) : 
   rw [Monic.def, leadingCoeff, hfd] at hf
   rw [eq_C_of_natDegree_eq_zero hfd, hf, map_one]
 
+@[simp]
 theorem Monic.natDegree_eq_zero (hf : p.Monic) : p.natDegree = 0 ↔ p = 1 :=
   ⟨eq_one_of_monic_natDegree_zero hf, by rintro rfl; simp⟩
 
@@ -501,7 +512,7 @@ end Semiring
 
 section NontrivialSemiring
 
-variable [Semiring R] [Nontrivial R] {p q : R[X]} (n : ℕ)
+variable [Semiring R] [Nontrivial R] {p : R[X]} (n : ℕ)
 
 @[simp] lemma natDegree_mul_X (hp : p ≠ 0) : natDegree (p * X) = natDegree p + 1 := by
   rw [natDegree_mul' (by simpa), natDegree_X]
@@ -623,14 +634,11 @@ theorem zero_notMem_multiset_map_X_add_C {α : Type*} (m : Multiset α) (f : α 
   let ⟨_a, _, ha⟩ := Multiset.mem_map.mp mem
   X_add_C_ne_zero _ ha
 
-@[deprecated (since := "2025-05-24")]
-alias zero_nmem_multiset_map_X_add_C := zero_notMem_multiset_map_X_add_C
-
 theorem natDegree_X_pow_add_C {n : ℕ} {r : R} : (X ^ n + C r).natDegree = n := by
   simp
 
 theorem X_pow_add_C_ne_one {n : ℕ} (hn : 0 < n) (a : R) : (X : R[X]) ^ n + C a ≠ 1 := fun h =>
-  hn.ne' <| by simpa only [natDegree_X_pow_add_C, natDegree_one] using congr_arg natDegree h
+  hn.ne' <| by simpa only [natDegree_X_pow_add_C, natDegree_one] using congr(natDegree $h)
 
 theorem X_add_C_ne_one (r : R) : X + C r ≠ 1 :=
   pow_one (X : R[X]) ▸ X_pow_add_C_ne_one zero_lt_one r
@@ -648,7 +656,7 @@ theorem leadingCoeff_X_pow_add_C {n : ℕ} (hn : 0 < n) {r : R} :
     (X ^ n + C r).leadingCoeff = 1 := by
   nontriviality R
   rw [leadingCoeff, natDegree_X_pow_add_C, coeff_add, coeff_X_pow_self, coeff_C,
-    if_neg (pos_iff_ne_zero.mp hn), add_zero]
+    ite_eq_right (pos_iff_ne_zero.mp hn), add_zero]
 
 @[simp]
 theorem leadingCoeff_X_add_C [Semiring S] (r : S) : (X + C r).leadingCoeff = 1 := by
@@ -713,7 +721,6 @@ lemma leadingCoeff_dvd_leadingCoeff {a p : R[X]} (hap : a ∣ p) :
   map_dvd leadingCoeffHom hap
 
 lemma degree_le_mul_left (p : R[X]) (hq : q ≠ 0) : degree p ≤ degree (p * q) := by
-  classical
   obtain rfl | hp := eq_or_ne p 0
   · simp
   · rw [degree_mul, degree_eq_natDegree hp, degree_eq_natDegree hq]
@@ -722,7 +729,7 @@ lemma degree_le_mul_left (p : R[X]) (hq : q ≠ 0) : degree p ≤ degree (p * q)
 end Semiring
 
 section CommSemiring
-variable [CommSemiring R] {a p : R[X]} (hp : p.Monic)
+variable [CommSemiring R] {p : R[X]} (hp : p.Monic)
 include hp
 
 lemma Monic.natDegree_pos : 0 < natDegree p ↔ p ≠ 1 :=
@@ -773,9 +780,6 @@ theorem zero_notMem_multiset_map_X_sub_C {α : Type*} (m : Multiset α) (f : α 
     (0 : R[X]) ∉ m.map fun a => X - C (f a) := fun mem =>
   let ⟨_a, _, ha⟩ := Multiset.mem_map.mp mem
   X_sub_C_ne_zero _ ha
-
-@[deprecated (since := "2025-05-24")]
-alias zero_nmem_multiset_map_X_sub_C := zero_notMem_multiset_map_X_sub_C
 
 theorem natDegree_X_pow_sub_C {n : ℕ} {r : R} : (X ^ n - C r).natDegree = n := by
   rw [sub_eq_add_neg, ← map_neg C r, natDegree_X_pow_add_C]

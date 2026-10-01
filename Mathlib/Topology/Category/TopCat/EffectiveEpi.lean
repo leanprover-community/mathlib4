@@ -3,8 +3,10 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
-import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 /-!
 
 # Effective epimorphisms in `TopCat`
@@ -13,6 +15,8 @@ This file proves the result `TopCat.effectiveEpi_iff_isQuotientMap`:
 The effective epimorphisms in `TopCat` are precisely the quotient maps.
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -30,25 +34,21 @@ def effectiveEpiStructOfQuotientMap {B X : TopCat.{u}} (π : X ⟶ B) (hπ : IsQ
     EffectiveEpiStruct π where
   /- `IsQuotientMap.lift` gives the required morphism -/
   desc e h := ofHom <| hπ.lift e.hom fun a b hab ↦
-    CategoryTheory.congr_fun (h
-      (ofHom ⟨fun _ ↦ a, continuous_const⟩)
-      (ofHom ⟨fun _ ↦ b, continuous_const⟩)
-    (by ext; exact hab)) a
-  /- `IsQuotientMap.lift_comp` gives the factorisation -/
-  fac e h := hom_ext (hπ.lift_comp e.hom
-    fun a b hab ↦ CategoryTheory.congr_fun (h
-      (ofHom ⟨fun _ ↦ a, continuous_const⟩)
+    congr($(h (ofHom ⟨fun _ ↦ a, continuous_const⟩)
       (ofHom ⟨fun _ ↦ b, continuous_const⟩)
     (by ext; exact hab)) a)
+  /- `IsQuotientMap.lift_comp` gives the factorisation -/
+  fac e h := hom_ext (hπ.lift_comp e.hom fun a b hab ↦ congr($(h
+      (ofHom ⟨fun _ ↦ a, continuous_const⟩)
+      (ofHom ⟨fun _ ↦ b, continuous_const⟩)
+    (by ext; exact hab)) a))
   /- Uniqueness follows from the fact that `IsQuotientMap.lift` is an equivalence (given by
   `IsQuotientMap.liftEquiv`). -/
   uniq e h g hm := by
-    suffices g = ofHom (hπ.liftEquiv ⟨e.hom,
-      fun a b hab ↦ CategoryTheory.congr_fun (h
+    suffices g = ofHom (hπ.liftEquiv ⟨e.hom, fun a b hab ↦ congr($(h
           (ofHom ⟨fun _ ↦ a, continuous_const⟩)
           (ofHom ⟨fun _ ↦ b, continuous_const⟩)
-          (by ext; exact hab))
-        a⟩) by assumption
+          (by ext; exact hab)) a)⟩) by assumption
     apply hom_ext
     rw [hom_ofHom, ← Equiv.symm_apply_eq hπ.liftEquiv]
     ext
@@ -63,7 +63,6 @@ theorem effectiveEpi_iff_isQuotientMap {B X : TopCat.{u}} (π : X ⟶ B) :
   /- Since `TopCat` has pullbacks, `π` is in fact a `RegularEpi`. This means that it exhibits `B` as
     a coequalizer of two maps into `X`. It suffices to prove that `π` followed by the isomorphism to
     an arbitrary coequalizer is a quotient map. -/
-  have hπ : RegularEpi π := inferInstance
-  exact isQuotientMap_of_isColimit_cofork _ hπ.isColimit
+  exact isQuotientMap_of_isColimit_cofork _ (IsRegularEpi.isColimit π)
 
 end TopCat

@@ -3,9 +3,9 @@ Copyright (c) 2024 Yudai Yamazaki. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yudai Yamazaki
 -/
+module
 
-import Mathlib.GroupTheory.GroupAction.ConjAct
-import Mathlib.GroupTheory.SemidirectProduct
+public import Mathlib.GroupTheory.SemidirectProduct
 
 /-!
 # Group Extensions
@@ -22,14 +22,14 @@ such as splittings and equivalences.
 
 ```text
 For multiplicative groups:
-      ↗︎ E  ↘
+      ↗ E  ↘
 1 → N   ↓    G → 1
-      ↘︎ E' ↗︎️
+      ↘ E' ↗
 
 For additive groups:
-      ↗︎ E  ↘
+      ↗ E  ↘
 0 → N   ↓    G → 0
-      ↘︎ E' ↗︎️
+      ↘ E' ↗
 ```
 
 - `(Add?)GroupExtension.Section S`: structure for right inverses to `rightHom` of a group extension
@@ -45,10 +45,13 @@ If `N` is abelian,
 
 - there is a bijection between `N`-conjugacy classes of
   `(SemidirectProduct.toGroupExtension φ).Splitting` and `groupCohomology.H1`
-  (which will be available in `GroupTheory/GroupExtension/Abelian.lean` to be added in a later PR).
+  (which will be available in the planned file `Mathlib/GroupTheory/GroupExtension/Abelian.lean` to
+  be added in a later PR).
 - there is a bijection between equivalence classes of group extensions and `groupCohomology.H2`
-  (which is also stated as a TODO in `RepresentationTheory/GroupCohomology/LowDegree.lean`).
+  (which is also stated as a TODO in `Mathlib/RepresentationTheory/GroupCohomology/LowDegree.lean`).
 -/
+
+@[expose] public section
 
 variable (N E G : Type*)
 
@@ -160,7 +163,7 @@ namespace Equiv
 variable {S}
 variable {E' : Type*} [Group E'] {S' : GroupExtension N E' G}
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance : EquivLike (S.Equiv S') E E' where
   coe equiv := equiv.toMulEquiv
   inv equiv := equiv.toMulEquiv.symm
@@ -184,11 +187,11 @@ theorem toMulEquiv_eq_coe : equiv.toMulEquiv = equiv := rfl
 theorem coe_toMulEquiv : ⇑(equiv : E ≃* E') = equiv := rfl
 
 @[to_additive (attr := simp)]
-theorem map_inl (n : N) : equiv (S.inl n) = S'.inl n := congrFun equiv.inl_comm n
+theorem map_inl (n : N) : equiv (S.inl n) = S'.inl n := congr($equiv.inl_comm n)
 
 @[to_additive (attr := simp)]
 theorem rightHom_map (e : E) : S'.rightHom (equiv e) = S.rightHom e :=
-  congrFun equiv.rightHom_comm e
+  congr($equiv.rightHom_comm e)
 
 /-- The inverse of an equivalence of group extensions is an equivalence. -/
 @[to_additive /-- The inverse of an equivalence of additive group extensions is an equivalence. -/]
@@ -242,10 +245,10 @@ structure Section where
 
 namespace Section
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance : FunLike S.Section G E where
   coe := toFun
-  coe_injective' := fun ⟨_, _⟩ ⟨_, _⟩ _ ↦ by congr
+  coe_injective := fun ⟨_, _⟩ ⟨_, _⟩ _ ↦ by congr
 
 variable {S}
 
@@ -271,10 +274,10 @@ add_decl_doc Splitting.toSection
 
 namespace Splitting
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance : FunLike S.Splitting G E where
   coe s := s.toFun
-  coe_injective' := by
+  coe_injective := by
     intro ⟨_, _⟩ ⟨_, _⟩ h
     congr
     exact DFunLike.coe_injective h
@@ -290,8 +293,11 @@ variable {S}
 theorem coe_mk (s : G →* E) (hs : Function.RightInverse s S.rightHom) : (mk s hs : G → E) = s := rfl
 
 @[to_additive (attr := simp)]
-theorem coe_monoidHom_mk (s : G →* E) (hs : Function.RightInverse s S.rightHom) :
+theorem toMonoidHom_mk (s : G →* E) (hs : Function.RightInverse s S.rightHom) :
     (mk s hs : G →* E) = s := rfl
+
+@[to_additive (attr := deprecated (since := "2026-09-15"))]
+alias coe_monoidHom_mk := toMonoidHom_mk
 
 variable (s : S.Splitting)
 
@@ -301,7 +307,7 @@ theorem rightHom_splitting (g : G) : S.rightHom (s g) = g := s.rightInverse_righ
 @[to_additive (attr := simp)]
 theorem rightHom_comp_splitting : S.rightHom.comp s = MonoidHom.id G := by
   ext g
-  simp only [MonoidHom.comp_apply, MonoidHom.id_apply, MonoidHom.coe_coe, rightHom_splitting]
+  simp only [MonoidHom.comp_apply, MonoidHom.id_apply, MonoidHom.coe_ofClass, rightHom_splitting]
 
 end Splitting
 

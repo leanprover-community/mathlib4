@@ -3,17 +3,18 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christopher Hoskin
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Module.Hom
-import Mathlib.GroupTheory.GroupAction.Ring
-import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
-import Mathlib.Algebra.Ring.Subsemiring.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Defs  -- shake: keep (`example` dependency)
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.Module.Hom
+public import Mathlib.GroupTheory.GroupAction.Ring
+public import Mathlib.Algebra.Ring.Subsemiring.Basic
 
 /-!
 # Centroid homomorphisms
 
-Let `A` be a (non unital, non associative) algebra. The centroid of `A` is the set of linear maps
+Let `A` be a (nonunital, non-associative) algebra. The centroid of `A` is the set of linear maps
 `T` on `A` such that `T` commutes with left and right multiplication, that is to say, for all `a`
 and `b` in `A`,
 $$
@@ -43,6 +44,8 @@ be satisfied by itself and all stricter types.
 centroid
 -/
 
+@[expose] public section
+
 assert_not_exists Field
 
 open Function
@@ -51,9 +54,9 @@ variable {F M N R α : Type*}
 
 /-- The type of centroid homomorphisms from `α` to `α`. -/
 structure CentroidHom (α : Type*) [NonUnitalNonAssocSemiring α] extends α →+ α where
-  /-- Commutativity of centroid homomorphims with left multiplication. -/
+  /-- Commutativity of centroid homomorphisms with left multiplication. -/
   map_mul_left' (a b : α) : toFun (a * b) = a * toFun b
-  /-- Commutativity of centroid homomorphims with right multiplication. -/
+  /-- Commutativity of centroid homomorphisms with right multiplication. -/
   map_mul_right' (a b : α) : toFun (a * b) = toFun a * b
 
 attribute [nolint docBlame] CentroidHom.toAddMonoidHom
@@ -63,9 +66,9 @@ attribute [nolint docBlame] CentroidHom.toAddMonoidHom
 You should extend this class when you extend `CentroidHom`. -/
 class CentroidHomClass (F : Type*) (α : outParam Type*)
     [NonUnitalNonAssocSemiring α] [FunLike F α α] : Prop extends AddMonoidHomClass F α α where
-  /-- Commutativity of centroid homomorphims with left multiplication. -/
+  /-- Commutativity of centroid homomorphisms with left multiplication. -/
   map_mul_left (f : F) (a b : α) : f (a * b) = a * f b
-  /-- Commutativity of centroid homomorphims with right multiplication. -/
+  /-- Commutativity of centroid homomorphisms with right multiplication. -/
   map_mul_right (f : F) (a b : α) : f (a * b) = f a * b
 
 
@@ -87,13 +90,14 @@ section NonUnitalNonAssocSemiring
 
 variable [NonUnitalNonAssocSemiring α]
 
+@[macro_inline]
 instance : FunLike (CentroidHom α) α α where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr with x
-    exact congrFun h x
+    congrm $h x
 
 instance : CentroidHomClass (CentroidHom α) α where
   map_zero f := f.map_zero'
@@ -117,7 +121,7 @@ theorem toAddMonoidHom_eq_coe (f : CentroidHom α) : f.toAddMonoidHom = f :=
 
 theorem coe_toAddMonoidHom_injective : Injective ((↑) : CentroidHom α → α →+ α) :=
   fun _f _g h => ext fun a ↦
-    haveI := DFunLike.congr_fun h a
+    haveI := congr($h a)
     this
 
 /-- Turn a centroid homomorphism into an additive monoid endomorphism. -/
@@ -130,7 +134,7 @@ theorem toEnd_injective : Injective (CentroidHom.toEnd : CentroidHom α → AddM
 /-- Copy of a `CentroidHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
 protected def copy (f : CentroidHom α) (f' : α → α) (h : f' = f) : CentroidHom α :=
-  { f.toAddMonoidHom.copy f' <| h with
+  { f.toAddMonoidHom.copy f' h with
     toFun := f'
     map_mul_left' := fun a b ↦ by simp_rw [h, map_mul_left]
     map_mul_right' := fun a b ↦ by simp_rw [h, map_mul_right] }
@@ -170,9 +174,9 @@ theorem id_apply (a : α) : CentroidHom.id α a = a :=
 /-- Composition of `CentroidHom`s as a `CentroidHom`. -/
 def comp (g f : CentroidHom α) : CentroidHom α :=
   { g.toAddMonoidHom.comp f.toAddMonoidHom with
-    map_mul_left' := fun _a _b ↦ (congr_arg g <| f.map_mul_left' _ _).trans <| g.map_mul_left' _ _
+    map_mul_left' := fun _a _b ↦ congr(g $(f.map_mul_left' ..)).trans <| g.map_mul_left' _ _
     map_mul_right' := fun _a _b ↦
-      (congr_arg g <| f.map_mul_right' _ _).trans <| g.map_mul_right' _ _ }
+      congr(g $(f.map_mul_right' ..)).trans <| g.map_mul_right' _ _ }
 
 @[simp, norm_cast]
 theorem coe_comp (g f : CentroidHom α) : ⇑(g.comp f) = g ∘ f :=
@@ -183,8 +187,12 @@ theorem comp_apply (g f : CentroidHom α) (a : α) : g.comp f a = g (f a) :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_comp_addMonoidHom (g f : CentroidHom α) : (g.comp f : α →+ α) = (g : α →+ α).comp f :=
+theorem toAddMonoidHom_comp (g f : CentroidHom α) :
+    (g.comp f : α →+ α) = (g : α →+ α).comp f :=
   rfl
+
+@[deprecated (since := "2026-09-15")]
+alias coe_comp_addMonoidHom := toAddMonoidHom_comp
 
 @[simp]
 theorem comp_assoc (h g f : CentroidHom α) : (h.comp g).comp f = h.comp (g.comp f) :=
@@ -201,7 +209,7 @@ theorem id_comp (f : CentroidHom α) : (CentroidHom.id α).comp f = f :=
 @[simp]
 theorem cancel_right {g₁ g₂ f : CentroidHom α} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h ↦ ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun a ↦ congrFun (congrArg comp a) f⟩
+  ⟨fun h ↦ ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun a ↦ congr(comp $a f)⟩
 
 @[simp]
 theorem cancel_left {g f₁ f₂ : CentroidHom α} (hg : Injective g) :
@@ -262,13 +270,13 @@ instance hasNPowNat : Pow (CentroidHom α) ℕ :=
         | zero => rfl
         | succ n ih =>
           rw [pow_succ']
-          exact (congr_arg f.toEnd ih).trans (f.map_mul_left' _ _)
+          exact congr(f.toEnd $ih).trans (f.map_mul_left' _ _)
       map_mul_right' := fun a b ↦ by
         induction n with
         | zero => rfl
         | succ n ih =>
           rw [pow_succ']
-          exact (congr_arg f.toEnd ih).trans (f.map_mul_right' _ _)}⟩
+          exact congr(f.toEnd $ih).trans (f.map_mul_right' _ _)}⟩
 
 @[simp, norm_cast]
 theorem coe_zero : ⇑(0 : CentroidHom α) = 0 :=
@@ -459,13 +467,14 @@ def centerToCentroidCenter :
     rfl
   map_mul' z₁ z₂ := by ext a; exact (z₁.prop.left_assoc z₂ a).symm
 
+@[macro_inline]
 instance : FunLike (Subsemiring.center (CentroidHom α)) α α where
   coe f := f.val.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr with x
-    exact congrFun h x
+    congrm $h x
 
 lemma centerToCentroidCenter_apply (z : NonUnitalSubsemiring.center α) (a : α) :
     (centerToCentroidCenter z) a = z * a := rfl
@@ -515,6 +524,7 @@ section NonAssocSemiring
 
 variable [NonAssocSemiring α]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism from the center of a (non-associative) semiring onto its centroid. -/
 def centerIsoCentroid : Subsemiring.center α ≃+* CentroidHom α :=
   { centerToCentroid with
@@ -599,7 +609,7 @@ section NonUnitalRing
 
 variable [NonUnitalRing α]
 
--- See note [reducible non instances]
+-- See note [reducible non-instances]
 /-- A prime associative ring has commutative centroid. -/
 abbrev commRing
     (h : ∀ a b : α, (∀ r : α, a * r * b = 0) → a = 0 ∨ b = 0) : CommRing (CentroidHom α) :=

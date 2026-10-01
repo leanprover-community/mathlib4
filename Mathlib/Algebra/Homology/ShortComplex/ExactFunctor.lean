@@ -3,11 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Jujian Zhang
 -/
-import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import Mathlib.Algebra.Homology.ShortComplex.Abelian
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.CategoryTheory.Preadditive.LeftExact
-import Mathlib.CategoryTheory.Abelian.Exact
+public import Mathlib.CategoryTheory.Abelian.Exact
 
 /-!
 # Exact functors
@@ -28,28 +28,30 @@ If we further assume that `C` and `D` are abelian categories, then we have:
 
 - `Functor.preservesFiniteLimits_tfae`: the following are equivalent:
   1. for every short exact sequence `0 ⟶ A ⟶ B ⟶ C ⟶ 0`,
-    `0 ⟶ F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact.
+     `0 ⟶ F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact.
   2. for every exact sequence `A ⟶ B ⟶ C` where `A ⟶ B` is mono,
-    `F(A) ⟶ F(B) ⟶ F(C)` is exact and `F(A) ⟶ F(B)` is mono.
+     `F(A) ⟶ F(B) ⟶ F(C)` is exact and `F(A) ⟶ F(B)` is mono.
   3. `F` preserves kernels.
   4. `F` preserves finite limits.
 
 - `Functor.preservesFiniteColimits_tfae`: the following are equivalent:
   1. for every short exact sequence `0 ⟶ A ⟶ B ⟶ C ⟶ 0`,
-    `F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact.
+     `F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact.
   2. for every exact sequence `A ⟶ B ⟶ C` where `B ⟶ C` is epi,
-    `F(A) ⟶ F(B) ⟶ F(C)` is exact and `F(B) ⟶ F(C)` is epi.
+     `F(A) ⟶ F(B) ⟶ F(C)` is exact and `F(B) ⟶ F(C)` is epi.
   3. `F` preserves cokernels.
   4. `F` preserves finite colimits.
 
 - `Functor.exact_tfae`: the following are equivalent:
   1. for every short exact sequence `0 ⟶ A ⟶ B ⟶ C ⟶ 0`,
-    `0 ⟶ F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact.
+     `0 ⟶ F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact.
   2. for every exact sequence `A ⟶ B ⟶ C`, `F(A) ⟶ F(B) ⟶ F(C)` is exact.
   3. `F` preserves homology.
   4. `F` preserves both finite limits and finite colimits.
 
 -/
+
+public section
 
 namespace CategoryTheory
 
@@ -59,7 +61,7 @@ namespace Functor
 
 section
 
-variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
+variable {C D : Type*} [Category* C] [Category* D] [Preadditive C] [Preadditive D]
   (F : C ⥤ D) [F.Additive] [F.PreservesHomology] [HasZeroObject C]
 
 /-- An additive functor which preserves homology preserves finite limits. -/
@@ -86,7 +88,7 @@ end
 
 section
 
-variable {C D : Type*} [Category C] [Category D] [Abelian C] [Abelian D]
+variable {C D : Type*} [Category* C] [Category* D] [Abelian C] [Abelian D]
 variable (F : C ⥤ D) [F.Additive]
 
 /--
@@ -142,6 +144,11 @@ lemma preservesFiniteLimits_tfae : List.TFAE
   | ⟨_⟩, S, hS =>
     (S.map F).exact_and_mono_f_iff_f_is_kernel |>.2 ⟨KernelFork.mapIsLimit _ hS.fIsKernel F⟩
   tfae_finish
+
+lemma preservesFiniteLimits_iff_forall_exact_map_and_mono :
+    PreservesFiniteLimits F ↔
+      ∀ (S : ShortComplex C), S.ShortExact → (S.map F).Exact ∧ Mono (F.map S.f) :=
+  (Functor.preservesFiniteLimits_tfae F).out 4 1
 
 /--
 If a functor `F : C ⥤ D` preserves exact sequences on the right-hand side (i.e.
@@ -215,10 +222,10 @@ lemma exact_tfae : List.TFAE
   tfae_have 1 → 3
   | hF => by
     refine ⟨fun {X Y} f ↦ ?_, fun {X Y} f ↦ ?_⟩
-    · have h := (preservesFiniteLimits_tfae F |>.out 0 2 |>.1 fun S hS ↦
+    · have h := (preservesFiniteLimits_tfae F |>.out 1 3 |>.1 fun S hS ↦
         And.intro (hF S hS).exact (hF S hS).mono_f)
       exact h f
-    · have h := (preservesFiniteColimits_tfae F |>.out 0 2 |>.1 fun S hS ↦
+    · have h := (preservesFiniteColimits_tfae F |>.out 1 3 |>.1 fun S hS ↦
         And.intro (hF S hS).exact (hF S hS).epi_g)
       exact h f
   tfae_have 2 → 1
@@ -234,6 +241,11 @@ lemma exact_tfae : List.TFAE
   tfae_have 4 → 2
   | ⟨h1, h2⟩, _, h => h.map F
   tfae_finish
+
+lemma preservesFiniteColimits_iff_forall_exact_map_and_epi :
+    PreservesFiniteColimits F ↔
+      ∀ (S : ShortComplex C), S.ShortExact → (S.map F).Exact ∧ Epi (F.map S.g) :=
+  (Functor.preservesFiniteColimits_tfae F).out 4 1
 
 end
 

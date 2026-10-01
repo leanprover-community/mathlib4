@@ -3,14 +3,21 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Functor
-import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Functor
+public import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
+public import Mathlib.Tactic.CategoryTheory.CancelIso
 
 /-!
 # Monoidal opposites
 
 We write `Cᵐᵒᵖ` for the monoidal opposite of a monoidal category `C`.
 -/
+
+set_option backward.defeqAttrib.useBackward true
+
+@[expose] public section
 
 
 universe v₁ v₂ u₁ u₂
@@ -75,11 +82,11 @@ open MonoidalOpposite renaming mop → mop', unmop → unmop'
 
 theorem mop_inj {X Y : C} :
     Function.Injective (Quiver.Hom.mop : (X ⟶ Y) → (mop' X ⟶ mop' Y)) :=
-  fun _ _ H => congr_arg Quiver.Hom.unmop H
+  fun _ _ H => congr($(H).unmop)
 
 theorem unmop_inj {X Y : Cᴹᵒᵖ} :
     Function.Injective (Quiver.Hom.unmop : (X ⟶ Y) → (unmop' X ⟶ unmop' Y)) :=
-  fun _ _ H => congr_arg Quiver.Hom.mop H
+  fun _ _ H => congr($(H).mop)
 
 @[simp]
 theorem unmop_mop {X Y : C} {f : X ⟶ Y} : f.mop.unmop = f :=
@@ -150,8 +157,9 @@ end IsIso
 
 variable [MonoidalCategory.{v₁} C]
 
-open Opposite MonoidalCategory Functor LaxMonoidal OplaxMonoidal
+open Opposite MonoidalCategory CategoryTheory.Functor LaxMonoidal OplaxMonoidal
 
+set_option backward.defeqAttrib.useBackward true in
 instance monoidalCategoryOp : MonoidalCategory Cᵒᵖ where
   tensorObj X Y := op (unop X ⊗ unop Y)
   whiskerLeft X _ _ f := (X.unop ◁ f.unop).op
@@ -185,7 +193,7 @@ section OppositeLemmas
 @[simp] lemma op_whiskerLeft (X : C) {Y Z : C} (f : Y ⟶ Z) :
     (X ◁ f).op = op X ◁ f.op := rfl
 @[simp] lemma unop_whiskerLeft (X : Cᵒᵖ) {Y Z : Cᵒᵖ} (f : Y ⟶ Z) :
-    (X ◁ f).unop =  unop X ◁ f.unop := rfl
+    (X ◁ f).unop = unop X ◁ f.unop := rfl
 
 @[simp] lemma op_whiskerRight {X Y : C} (f : X ⟶ Y) (Z : C) :
     (f ▷ Z).op = f.op ▷ op Z := rfl
@@ -232,6 +240,8 @@ theorem op_tensor_op {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f.op ⊗ₘ g.o
 theorem unop_tensor_unop {W X Y Z : Cᵒᵖ} (f : W ⟶ X) (g : Y ⟶ Z) :
     f.unop ⊗ₘ g.unop = (f ⊗ₘ g).unop := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 instance monoidalCategoryMop : MonoidalCategory Cᴹᵒᵖ where
   tensorObj X Y := mop (unmop Y ⊗ unmop X)
   whiskerLeft X _ _ f := (f.unmop ▷ X.unmop).mop
@@ -310,6 +320,8 @@ end MonoidalOppositeLemmas
 
 variable (C)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The (identity) equivalence between `C` and its monoidal opposite. -/
 @[simps] def MonoidalOpposite.mopEquiv : C ≌ Cᴹᵒᵖ where
   functor   := mopFunctor C
@@ -320,6 +332,9 @@ variable (C)
 /-- The (identity) equivalence between `Cᴹᵒᵖ` and `C`. -/
 @[simps!] def MonoidalOpposite.unmopEquiv : Cᴹᵒᵖ ≌ C := (mopEquiv C).symm
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The equivalence between `C` and its monoidal opposite's monoidal opposite. -/
 @[simps!] def MonoidalOpposite.mopMopEquivalence : Cᴹᵒᵖᴹᵒᵖ ≌ C :=
   .trans (MonoidalOpposite.unmopEquiv Cᴹᵒᵖ) (MonoidalOpposite.unmopEquiv C)
@@ -336,6 +351,7 @@ instance MonoidalOpposite.mopMopEquivalenceFunctorMonoidal :
   μ_δ X Y := Category.comp_id _
   δ_μ X Y := Category.comp_id _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps!]
 instance MonoidalOpposite.mopMopEquivalenceInverseMonoidal :
     (MonoidalOpposite.mopMopEquivalence C).inverse.Monoidal where
@@ -348,11 +364,12 @@ instance MonoidalOpposite.mopMopEquivalenceInverseMonoidal :
   μ_δ X Y := Category.comp_id _
   δ_μ X Y := Category.comp_id _
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : (mopMopEquivalence C).IsMonoidal where
   leftAdjoint_ε := by
-    simp [ε, η, Adjunction.homEquiv, mopMopEquivalence, Equivalence.trans, unmopEquiv, ε]
+    simp [ε, η, mopMopEquivalence, Equivalence.trans, unmopEquiv, ε]
   leftAdjoint_μ X Y := by
-    simp [μ, δ, Adjunction.homEquiv, mopMopEquivalence, Equivalence.trans, unmopEquiv, μ]
+    simp [μ, δ, mopMopEquivalence, Equivalence.trans, unmopEquiv, μ]
 
 /-- The identification `mop X ⊗ mop Y = mop (Y ⊗ X)` as a natural isomorphism. -/
 @[simps!]
@@ -424,17 +441,8 @@ instance monoidalUnopUnop : (unopUnop C).Monoidal where
 instance : (opOpEquivalence C).functor.Monoidal := monoidalUnopUnop
 instance : (opOpEquivalence C).inverse.Monoidal := monoidalOpOp
 
-@[deprecated (since := "2025-06-08")] alias opOp_ε := monoidalOpOp_ε
-@[deprecated (since := "2025-06-08")] alias opOp_η := monoidalOpOp_η
-@[deprecated (since := "2025-06-08")] alias unopUnop_ε := monoidalUnopUnop_ε
-@[deprecated (since := "2025-06-08")] alias unopUnop_η := monoidalUnopUnop_η
-@[deprecated (since := "2025-06-08")] alias opOp_μ := monoidalOpOp_μ
-@[deprecated (since := "2025-06-08")] alias opOp_δ := monoidalOpOp_δ
-@[deprecated (since := "2025-06-08")] alias unopUnop_μ := monoidalUnopUnop_μ
-@[deprecated (since := "2025-06-08")] alias unopUnop_δ := monoidalUnopUnop_δ
-
 instance : (opOpEquivalence C).IsMonoidal where
-  leftAdjoint_ε := by simp [Adjunction.homEquiv, opOpEquivalence]
-  leftAdjoint_μ := by simp [Adjunction.homEquiv, opOpEquivalence]
+  leftAdjoint_ε := by simp [opOpEquivalence]
+  leftAdjoint_μ := by simp [opOpEquivalence]
 
 end CategoryTheory

@@ -3,7 +3,9 @@ Copyright (c) 2025 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey
 -/
-import Mathlib.FieldTheory.Finite.Basic
+module
+
+public import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 # Modular exponentiation with the totient function
@@ -24,6 +26,8 @@ function when the base is coprime to the modulus.
   or towers of exponents using these results.
 
 -/
+
+public section
 
 namespace Nat
 

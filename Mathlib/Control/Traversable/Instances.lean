@@ -3,10 +3,13 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
+module
+
 import Mathlib.Control.Applicative
-import Mathlib.Control.Traversable.Basic
-import Mathlib.Data.List.Forall2
-import Mathlib.Data.Set.Functor
+public import Mathlib.Control.Traversable.Basic
+public import Mathlib.Data.List.Forall2
+public import Mathlib.Data.Set.Functor
+import Mathlib.Data.List.Basic
 
 /-!
 # LawfulTraversable instances
@@ -14,6 +17,8 @@ import Mathlib.Data.Set.Functor
 This file provides instances of `LawfulTraversable` for types from the core library: `Option`,
 `List` and `Sum`.
 -/
+
+public section
 
 
 universe u v

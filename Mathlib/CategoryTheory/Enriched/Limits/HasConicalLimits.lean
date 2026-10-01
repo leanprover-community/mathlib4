@@ -3,8 +3,9 @@ Copyright (c) 2025 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster, Dagur Asgeirsson, Emily Riehl
 -/
-import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
-import Mathlib.CategoryTheory.Limits.Final
+module
+
+public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 
 /-!
 # Existence of conical limits
@@ -16,7 +17,7 @@ The main constructions are the following.
 - `HasConicalLimit`: there exists a conical limit for `F : J ⥤ C`.
 - `HasConicalLimitsOfShape J`: All functors `F : J ⥤ C` have conical limits.
 - `HasConicalLimitsOfSize.{v₁, u₁}`: For all small `J` all functors `F : J ⥤ C` have conical limits.
-- `HasConicalLimits `: `C` has all (small) conical limits.
+- `HasConicalLimits`: `C` has all (small) conical limits.
 
 ## References
 
@@ -32,6 +33,8 @@ inference prefers this. Otherwise it failed with
 However, it is not fully clear yet whether this could lead to potential issues, for example
 if there are multiple `MonoidalCategory _` instances in scope.
 -/
+
+public section
 
 universe v₁ u₁ v₂ u₂ w v' v u u'
 
@@ -68,7 +71,10 @@ attribute [instance] HasConicalLimitsOfShape.hasConicalLimit
 `C` has all conical limits of size `v₁ u₁` (`HasLimitsOfSize.{v₁ u₁} C`)
 if it has conical limits of every shape `J : Type u₁` with `[Category.{v₁} J]`.
 -/
-@[pp_with_univ]
+-- After https://github.com/leanprover/lean4/pull/12286 and
+-- https://github.com/leanprover/lean4/pull/12423, the shape universes `v₁, u₁` would default
+-- to universe output parameters. See Note [universe output parameters and typeclass caching].
+@[univ_out_params, pp_with_univ]
 class HasConicalLimitsOfSize : Prop where
   /-- All functors `F : J ⥤ C` from all small `J` have conical limits -/
   hasConicalLimitsOfShape : ∀ (J : Type u₁) [Category.{v₁} J], HasConicalLimitsOfShape J V C := by

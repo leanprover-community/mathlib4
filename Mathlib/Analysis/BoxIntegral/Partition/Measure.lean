@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.BoxIntegral.Partition.Additive
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+module
+
+public import Mathlib.Analysis.BoxIntegral.Partition.Additive
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
 /-!
 # Box-additive functions defined by measures
@@ -22,6 +24,8 @@ For the last statement, we both prove it as a proposition and define a bundled
 
 rectangular box, measure
 -/
+
+@[expose] public section
 
 open Set
 
@@ -43,7 +47,7 @@ theorem measure_Icc_lt_top (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure �
   show μ (Icc I.lower I.upper) < ∞ from I.isCompact_Icc.measure_lt_top
 
 theorem measure_coe_lt_top (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] : μ I < ∞ :=
-  (measure_mono <| coe_subset_Icc).trans_lt (I.measure_Icc_lt_top μ)
+  (measure_mono coe_subset_Icc).trans_lt (I.measure_Icc_lt_top μ)
 
 section Countable
 
@@ -139,7 +143,7 @@ protected def volume {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] : ι
 theorem volume_apply {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (I : Box ι) (x : E) :
     BoxAdditiveMap.volume I x = (∏ j, (I.upper j - I.lower j)) • x := by
   rw [BoxAdditiveMap.volume, toSMul_apply]
-  exact congr_arg₂ (· • ·) I.volume_apply rfl
+  congrm $I.volume_apply • _
 
 end BoxAdditiveMap
 

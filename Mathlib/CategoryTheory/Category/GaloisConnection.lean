@@ -3,9 +3,10 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Kim Morrison, Johannes Hölzl, Reid Barton
 -/
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.Order.GaloisConnection.Defs
+module
+
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
 
@@ -14,6 +15,8 @@ import Mathlib.Order.GaloisConnection.Defs
 * `GaloisConnection.adjunction` is the adjunction associated to a Galois connection.
 
 -/
+
+@[expose] public section
 
 
 universe u v

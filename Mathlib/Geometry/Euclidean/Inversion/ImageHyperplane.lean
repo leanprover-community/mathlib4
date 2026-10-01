@@ -3,8 +3,10 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Geometry.Euclidean.Inversion.Basic
-import Mathlib.Geometry.Euclidean.PerpBisector
+module
+
+public import Mathlib.Geometry.Euclidean.Inversion.Basic
+public import Mathlib.Geometry.Euclidean.PerpBisector
 
 /-!
 # Image of a hyperplane under inversion
@@ -24,7 +26,9 @@ We also prove that the inversion sends an affine subspace passing through the ce
 inversion
 -/
 
-open Metric Function AffineMap Set AffineSubspace
+public section
+
+open Metric AffineMap Set AffineSubspace
 open scoped Topology
 
 variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]

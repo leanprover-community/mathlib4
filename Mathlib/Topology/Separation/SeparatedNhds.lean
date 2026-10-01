@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+module
+
 import Mathlib.Topology.Continuous
-import Mathlib.Topology.NhdsSet
+public import Mathlib.Topology.NhdsSet
 
 /-!
 # Separated neighbourhoods
@@ -25,7 +27,11 @@ formulating separation axioms for topological spaces.
 * [Willard's *General Topology*][zbMATH02107988]
 -/
 
-open Function Set Filter Topology TopologicalSpace
+@[expose] public section
+
+open Set Filter TopologicalSpace
+
+open scoped Topology
 
 universe u v
 

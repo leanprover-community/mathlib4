@@ -3,8 +3,10 @@ Copyright (c) 2022 Edward Ayers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edward Ayers
 -/
+module
+
 import Mathlib.Init
-import Lean.Exception
+public import Lean.Exception
 
 /-!
 # Additional methods for working with `Exception`s
@@ -14,6 +16,8 @@ This file contains two additional methods for working with `Exception`s
 * `isFailedToSynthesize`: check if an exception is of the "failed to synthesize" form
 
 -/
+
+public section
 
 open Lean
 

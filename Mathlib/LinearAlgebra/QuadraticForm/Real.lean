@@ -3,10 +3,14 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
-import Mathlib.Data.Sign.Basic
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Analysis.RCLike.Basic
+module
+
+public import Mathlib.Algebra.CharP.Invertible
+import Mathlib.Algebra.Order.BigOperators.Expect
+import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Analysis.Real.Sqrt
+public import Mathlib.Basic.Sign.Basic
+public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 
 /-!
 # Real quadratic forms
@@ -19,6 +23,8 @@ When the real quadratic form is nondegenerate we can take the weights to be ±1,
 as in `QuadraticForm.equivalent_one_zero_neg_one_weighted_sum_squared`.
 
 -/
+
+@[expose] public section
 
 open Finset Module QuadraticMap SignType
 
@@ -38,8 +44,9 @@ noncomputable def isometryEquivSignWeightedSumSquares (w : ι → ℝ) :
     by_cases hi : w i = 0
     · simp [hi]
     · simp only [hi, ↓reduceDIte, Units.val_mk0, u]; field_simp; simp
-  convert QuadraticMap.isometryEquivBasisRepr (weightedSumSquares ℝ w)
-    ((Pi.basisFun ℝ ι).unitsSMul fun i => .mk0 _ (hu i))
+  convert
+    QuadraticMap.isometryEquivBasisRepr (weightedSumSquares ℝ w)
+      ((Pi.basisFun ℝ ι).unitsSMul fun i => .mk0 _ (hu i))
   ext1 v
   classical
   suffices ∑ i, (w i / |(u i : ℝ)|) * v i ^ 2 = ∑ i, w i * (v i ^ 2 * |(u i : ℝ)|⁻¹) by

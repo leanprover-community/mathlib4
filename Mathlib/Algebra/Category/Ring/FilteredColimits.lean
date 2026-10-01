@@ -3,8 +3,10 @@ Copyright (c) 2021 Justus Springer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
 -/
-import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.Algebra.Category.Grp.FilteredColimits
+module
+
+public import Mathlib.Algebra.Category.Ring.Basic
+public import Mathlib.Algebra.Category.Grp.FilteredColimits
 import Mathlib.Algebra.Ring.ULift
 
 /-!
@@ -21,6 +23,8 @@ In particular, this implies that `forget SemiRingCat` preserves filtered colimit
 Similarly for `CommSemiRingCat`, `RingCat` and `CommRingCat`.
 
 -/
+
+@[expose] public section
 
 
 universe v u
@@ -47,7 +51,7 @@ variable {J : Type v} [SmallCategory J] (F : J ⥤ SemiRingCat.{max v u})
 -- semiring axioms.
 instance semiringObj (j : J) :
     Semiring (((F ⋙ forget₂ SemiRingCat.{max v u} MonCat) ⋙ forget MonCat).obj j) :=
-  show Semiring (F.obj j) by infer_instance
+  inferInstanceAs <| Semiring (F.obj j)
 
 variable [IsFiltered J]
 
@@ -106,7 +110,7 @@ instance colimitSemiring : Semiring.{max v u} <| R.{v, u} F :=
 
 /-- The bundled semiring giving the filtered colimit of a diagram. -/
 def colimit : SemiRingCat.{max v u} :=
-  SemiRingCat.of <| R.{v, u} F
+  ↧(R.{v, u} F)
 
 /-- The cocone over the proposed colimit semiring. -/
 def colimitCocone : Cocone F where
@@ -117,8 +121,9 @@ def colimitCocone : Cocone F where
             (F ⋙ forget₂ SemiRingCat.{max v u} MonCat)).ι.app j).hom,
             ((AddCommMonCat.FilteredColimits.colimitCocone
               (F ⋙ forget₂ SemiRingCat.{max v u} AddCommMonCat)).ι.app j).hom with }
-      naturality := fun {_ _} f => hom_ext <|
-        RingHom.coe_inj ((Types.TypeMax.colimitCocone (F ⋙ forget SemiRingCat)).ι.naturality f) }
+      naturality _ _ f := by
+        ext
+        simpa using! (Types.TypeMax.colimitCocone (F ⋙ forget SemiRingCat)).ι.naturality_apply f _ }
 
 namespace colimitCoconeIsColimit
 
@@ -132,10 +137,10 @@ def descAddMonoidHom : R F →+ t.1 :=
 
 lemma descAddMonoidHom_quotMk {j : J} (x : F.obj j) :
     descAddMonoidHom t (Quot.mk _ ⟨j, x⟩) = t.ι.app j x :=
-  congr_fun ((forget _).congr_map
+  congr($((forget AddCommMonCat).congr_map
     ((AddCommMonCat.FilteredColimits.colimitCoconeIsColimit.{v, u}
       (F ⋙ forget₂ SemiRingCat AddCommMonCat)).fac
-        ((forget₂ SemiRingCat AddCommMonCat).mapCocone t) j)) x
+        ((forget₂ SemiRingCat AddCommMonCat).mapCocone t) j)) x)
 
 /-- Auxiliary definition for `colimitCoconeIsColimit`. -/
 def descMonoidHom : R F →* t.1 :=
@@ -144,9 +149,8 @@ def descMonoidHom : R F →* t.1 :=
 
 lemma descMonoidHom_quotMk {j : J} (x : F.obj j) :
     descMonoidHom t (Quot.mk _ ⟨j, x⟩) = t.ι.app j x :=
-  congr_fun ((forget _).congr_map
-    ((MonCat.FilteredColimits.colimitCoconeIsColimit.{v, u}
-      (F ⋙ forget₂ _ _)).fac ((forget₂ _ _).mapCocone t) j)) x
+  congr($((forget MonCat).congr_map ((MonCat.FilteredColimits.colimitCoconeIsColimit.{v, u}
+      (F ⋙ forget₂ _ _)).fac ((forget₂ _ _).mapCocone t) j)) x)
 
 lemma descMonoidHom_apply_eq (x : R F) :
     descMonoidHom t x = descAddMonoidHom t x := by
@@ -168,7 +172,7 @@ def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F where
   fac t j := by ext x; exact descAddMonoidHom_quotMk t x
   uniq t m hm := by
     ext ⟨j, x⟩
-    exact (congr_fun ((forget _).congr_map (hm j)) x).trans
+    exact congr($((forget SemiRingCat).congr_map (hm j)) x).trans
       (descAddMonoidHom_quotMk t x).symm
 
 instance forget₂Mon_preservesFilteredColimits :
@@ -207,18 +211,18 @@ instance colimitCommSemiring : CommSemiring.{max v u} <| R.{v, u} F :=
 
 /-- The bundled commutative semiring giving the filtered colimit of a diagram. -/
 def colimit : CommSemiRingCat.{max v u} :=
-  CommSemiRingCat.of <| R.{v, u} F
+  ↧(R.{v, u} F)
 
 /-- The cocone over the proposed colimit commutative semiring. -/
 def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
   ι :=
-    { app := fun X ↦ ofHom <| ((SemiRingCat.FilteredColimits.colimitCocone
+    { app := fun X ↦ ofHom ((SemiRingCat.FilteredColimits.colimitCocone
           (F ⋙ forget₂ CommSemiRingCat SemiRingCat.{max v u})).ι.app X).hom
-      naturality := fun _ _ f ↦ hom_ext <|
-        RingHom.coe_inj ((Types.TypeMax.colimitCocone
-          (F ⋙ forget CommSemiRingCat)).ι.naturality f) }
-
+      naturality _ _ f := by
+        ext
+        simpa using! (Types.TypeMax.colimitCocone
+          (F ⋙ forget CommSemiRingCat)).ι.naturality_apply f _ }
 
 /-- The proposed colimit cocone is a colimit in `CommSemiRingCat`. -/
 def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F :=
@@ -260,21 +264,22 @@ abbrev R : SemiRingCat.{max v u} :=
 
 instance colimitRing : Ring.{max v u} <| R.{v, u} F :=
   { (R F).semiring,
-    AddCommGrp.FilteredColimits.colimitAddCommGroup.{v, u}
-      (F ⋙ forget₂ RingCat AddCommGrp.{max v u}) with }
+    AddCommGrpCat.FilteredColimits.colimitAddCommGroup.{v, u}
+      (F ⋙ forget₂ RingCat AddCommGrpCat.{max v u}) with }
 
 /-- The bundled ring giving the filtered colimit of a diagram. -/
 def colimit : RingCat.{max v u} :=
-  RingCat.of <| R.{v, u} F
+  ↧(R.{v, u} F)
 
 /-- The cocone over the proposed colimit ring. -/
 def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
   ι :=
-    { app := fun X ↦ ofHom <| ((SemiRingCat.FilteredColimits.colimitCocone
+    { app := fun X ↦ ofHom ((SemiRingCat.FilteredColimits.colimitCocone
           (F ⋙ forget₂ RingCat SemiRingCat.{max v u})).ι.app X).hom
-      naturality := fun _ _ f ↦ hom_ext <|
-        RingHom.coe_inj ((Types.TypeMax.colimitCocone (F ⋙ forget RingCat)).ι.naturality f) }
+      naturality _ _ f := by
+        ext
+        simpa using! (Types.TypeMax.colimitCocone (F ⋙ forget RingCat)).ι.naturality_apply f _ }
 
 /-- The proposed colimit cocone is a colimit in `Ring`. -/
 def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F :=
@@ -290,6 +295,14 @@ instance forget₂SemiRing_preservesFilteredColimits :
         preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
           (SemiRingCat.FilteredColimits.colimitCoconeIsColimit
             (F ⋙ forget₂ RingCat SemiRingCat.{u})) }
+
+instance : Limits.PreservesFilteredColimits (forget₂ RingCat AddCommGrpCat.{u}) where
+  preserves_filtered_colimits _ :=
+    { preservesColimit := fun {F} =>
+        Limits.preservesColimit_of_preserves_colimit_cocone
+          (RingCat.FilteredColimits.colimitCoconeIsColimit.{u, u} F)
+          (AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit
+            (F ⋙ forget₂ RingCat AddCommGrpCat.{u})) }
 
 instance forget_preservesFilteredColimits : PreservesFilteredColimits (forget RingCat.{u}) :=
   Limits.comp_preservesFilteredColimits (forget₂ RingCat SemiRingCat) (forget SemiRingCat.{u})
@@ -319,16 +332,17 @@ instance colimitCommRing : CommRing.{max v u} <| R.{v, u} F :=
 
 /-- The bundled commutative ring giving the filtered colimit of a diagram. -/
 def colimit : CommRingCat.{max v u} :=
-  CommRingCat.of <| R.{v, u} F
+  ↧(R.{v, u} F)
 
 /-- The cocone over the proposed colimit commutative ring. -/
 def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
   ι :=
-    { app := fun X ↦ ofHom <| ((RingCat.FilteredColimits.colimitCocone
+    { app := fun X ↦ ofHom ((RingCat.FilteredColimits.colimitCocone
           (F ⋙ forget₂ CommRingCat RingCat.{max v u})).ι.app X).hom
-      naturality := fun _ _ f ↦ hom_ext <|
-        RingHom.coe_inj ((Types.TypeMax.colimitCocone (F ⋙ forget CommRingCat)).ι.naturality f) }
+      naturality _ _ f := by
+        ext
+        simpa using! (Types.TypeMax.colimitCocone (F ⋙ forget CommRingCat)).ι.naturality_apply f _ }
 
 /-- The proposed colimit cocone is a colimit in `CommRingCat`. -/
 def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F :=
@@ -350,9 +364,8 @@ instance forget_preservesFilteredColimits : PreservesFilteredColimits (forget Co
 omit [IsFiltered J] in
 protected lemma nontrivial {F : J ⥤ CommRingCat.{v}} [IsFilteredOrEmpty J]
     [∀ i, Nontrivial (F.obj i)] {c : Cocone F} (hc : IsColimit c) : Nontrivial c.pt := by
-  classical
   cases isEmpty_or_nonempty J
-  · exact ((isColimitEquivIsInitialOfIsEmpty _ _ hc).to (.of (ULift ℤ))).hom.domain_nontrivial
+  · exact ((isColimitEquivIsInitialOfIsEmpty _ _ hc).to ↧(ULift ℤ)).hom.domain_nontrivial
   have i := ‹Nonempty J›.some
   refine ⟨c.ι.app i 0, c.ι.app i 1, fun h ↦ ?_⟩
   have : IsFiltered J := ⟨⟩
@@ -360,6 +373,7 @@ protected lemma nontrivial {F : J ⥤ CommRingCat.{v}} [IsFilteredOrEmpty J]
     (Types.FilteredColimit.isColimit_eq_iff' (isColimitOfPreserves (forget _) hc) _ _).mp h
   exact zero_ne_one (((F.map f).hom.map_zero.symm.trans e).trans (F.map f).hom.map_one)
 
+set_option linter.overlappingInstances false in
 omit [IsFiltered J] in
 instance {F : J ⥤ CommRingCat.{v}} [IsFilteredOrEmpty J]
     [HasColimit F] [∀ i, Nontrivial (F.obj i)] : Nontrivial ↑(Limits.colimit F) :=

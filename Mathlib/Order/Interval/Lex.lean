@@ -3,9 +3,14 @@ Copyright (c) 2025 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Order.Interval.Basic
-import Mathlib.Data.Prod.Lex
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Order.Interval.Basic
+public import Mathlib.Order.Prod.Lex.Basic
+
+meta import Mathlib.Order.Interval.Basic  -- shake: keep (for `#eval` testing)
+meta import Mathlib.Order.Lex  -- shake: keep (for `#eval` testing)
+
 /-!
 # The lexicographic order on intervals
 
@@ -13,6 +18,8 @@ This order is compatible with the inclusion ordering, but is total.
 
 Under this ordering, `[(3, 3), (2, 2), (2, 3), (1, 1), (1, 2), (1, 3)]` is sorted.
 -/
+
+public section
 
 namespace NonemptyInterval
 
@@ -40,17 +47,6 @@ instance [DecidableEq α] [DecidableLT α] [DecidableLE α] : DecidableLE (Lex (
 
 instance [DecidableEq α] [DecidableLT α] : DecidableLT (Lex (NonemptyInterval α)) :=
   fun _ _ => decidable_of_iff' _ toLex_lt_toLex
-
--- Sanity check on the ordering.
-/-- info: [(3, 3), (2, 2), (2, 3), (1, 1), (1, 2), (1, 3)] -/
-#guard_msgs in
-#eval [
-  NonemptyInterval.mk (1, 1) (by grind),
-  NonemptyInterval.mk (1, 2) (by grind),
-  NonemptyInterval.mk (1, 3) (by grind),
-  NonemptyInterval.mk (2, 2) (by grind),
-  NonemptyInterval.mk (2, 3) (by grind),
-  NonemptyInterval.mk (3, 3) (by grind)].map toLex |>.mergeSort.map (·.toProd)
 
 end LELT
 

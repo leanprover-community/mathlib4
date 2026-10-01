@@ -3,16 +3,16 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Square
-import Mathlib.CategoryTheory.Limits.Yoneda
-import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Square
 
 /-!
-# Preservations of pullback/pushout squares
+# Preservation of pullback/pushout squares
 
 If a functor `F : C ⥤ D` preserves suitable cospans (resp. spans),
 and `sq : Square C` is a pullback square (resp. a pushout square)
-then so is the square`sq.map F`.
+then so is the square `sq.map F`.
 
 The lemma `Square.isPullback_iff_map_coyoneda_isPullback` also
 shows that a square is a pullback square iff it is so after the
@@ -22,6 +22,8 @@ square becomes a pullback square after the application of the
 functor `yoneda.obj X` for all `X : C`.
 
 -/
+
+public section
 
 universe v v' u u'
 
@@ -87,6 +89,8 @@ variable {sq₁ : Square (Type v)} {sq₂ : Square (Type u)}
   (comm₃₄ : e₄ ∘ sq₁.f₃₄ = sq₂.f₃₄ ∘ e₃)
 include comm₁₂ comm₁₃ comm₂₄ comm₃₄
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 variable (sq₁ sq₂) in
 lemma IsPullback.iff_of_equiv : sq₁.IsPullback ↔ sq₂.IsPullback := by
   rw [← IsPullback.map_iff sq₁ uliftFunctor.{max u v},
@@ -98,10 +102,10 @@ lemma IsPullback.iff_of_equiv : sq₁.IsPullback ↔ sq₂.IsPullback := by
     (((Equiv.trans Equiv.ulift e₄).trans Equiv.ulift.symm).toIso)
     ?_ ?_ ?_ ?_)
   all_goals ext; apply ULift.down_injective
-  · simpa [types_comp, uliftFunctor_map] using congrFun comm₁₂ _
-  · simpa [types_comp, uliftFunctor_map] using congrFun comm₁₃ _
-  · simpa [types_comp, uliftFunctor_map] using congrFun comm₂₄ _
-  · simpa [types_comp, uliftFunctor_map] using congrFun comm₃₄ _
+  · simpa [types_comp, uliftFunctor_map] using congr($comm₁₂ _)
+  · simpa [types_comp, uliftFunctor_map] using congr($comm₁₃ _)
+  · simpa [types_comp, uliftFunctor_map] using congr($comm₂₄ _)
+  · simpa [types_comp, uliftFunctor_map] using congr($comm₃₄ _)
 
 lemma IsPullback.of_equiv (h₁ : sq₁.IsPullback) : sq₂.IsPullback :=
   (iff_of_equiv sq₁ sq₂ e₁ e₂ e₃ e₄ comm₁₂ comm₁₃ comm₂₄ comm₃₄).1 h₁

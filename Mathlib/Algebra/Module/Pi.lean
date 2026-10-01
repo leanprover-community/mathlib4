@@ -3,16 +3,20 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Pi
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Regular.SMul
-import Mathlib.Algebra.Ring.Pi
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Pi
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Regular.SMul
+public import Mathlib.Algebra.Ring.Pi
 
 /-!
 # Pi instances for modules
 
 This file defines instances for module and related structures on Pi Types
 -/
+
+public section
 
 
 universe u v w
@@ -26,7 +30,7 @@ namespace Pi
 
 theorem _root_.IsSMulRegular.pi {α : Type*} [∀ i, SMul α <| f i] {k : α}
     (hk : ∀ i, IsSMulRegular (f i) k) : IsSMulRegular (∀ i, f i) k := fun _ _ h =>
-  funext fun i => hk i (congr_fun h i :)
+  funext fun i => hk i congr($h i)
 
 variable (I f)
 

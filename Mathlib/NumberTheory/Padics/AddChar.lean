@@ -3,9 +3,11 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.NumberTheory.Padics.MahlerBasis
+module
+
+public import Mathlib.NumberTheory.Padics.MahlerBasis
 import Mathlib.Topology.Algebra.Monoid.AddChar
-import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Analysis.SpecificLimits.Normed
 
 /-!
 # Additive characters of `ℤ_[p]`
@@ -19,7 +21,7 @@ Note that if the norm on `R` is not strictly multiplicative, then the condition 
 topologically nilpotent is strictly weaker than assuming `‖κ 1 - 1‖ < 1`, although they are
 equivalent if `NormMulClass R` holds.
 
-## Main definitions and theorems:
+## Main definitions and theorems:
 
 * `addChar_of_value_at_one`: given a topologically nilpotent `r : R`, construct a continuous
   additive character of `ℤ_[p]` mapping `1` to `1 + r`.
@@ -30,13 +32,16 @@ equivalent if `NormMulClass R` holds.
   sub-multiplicative), then `addChar_of_value_at_one` is a bijection between continuous additive
   characters `ℤ_[p] → R` and elements of `R` with `‖r‖ < 1`.
 
-## TODO:
+## TODO:
 
 * Show that the above equivalences are homeomorphisms, for appropriate choices of the topology.
 -/
 
-open scoped fwdDiff
-open Filter Topology
+@[expose] public section
+
+open Filter
+
+open scoped fwdDiff Topology
 
 variable {p : ℕ} [Fact p.Prime]
 
@@ -46,7 +51,7 @@ variable {R : Type*} [NormedRing R] [Algebra ℤ_[p] R] [IsBoundedSMul ℤ_[p] R
 lemma AddChar.tendsto_eval_one_sub_pow {κ : AddChar ℤ_[p] R} (hκ : Continuous κ) :
     Tendsto (fun n ↦ (κ 1 - 1) ^ n) atTop (𝓝 0) := by
   refine (PadicInt.fwdDiff_tendsto_zero ⟨κ, hκ⟩).congr fun n ↦ ?_
-  simpa only [AddChar.map_zero_eq_one, mul_one] using fwdDiff_addChar_eq κ 0 1 n
+  simpa only [AddChar.map_zero_eq_one, mul_one] using! fwdDiff_addChar_eq κ 0 1 n
 
 namespace PadicInt
 variable [CompleteSpace R]
@@ -67,9 +72,9 @@ noncomputable def addChar_of_value_at_one (r : R) (hr : Tendsto (r ^ ·) atTop (
       rw [mahlerSeries_apply_nat hr le_rfl, (Commute.one_right _).add_pow]
       refine Finset.sum_congr rfl fun i hi ↦ ?_
       rw [one_pow, mul_one, nsmul_eq_mul, Nat.cast_comm]
-    refine congr_fun ((denseRange_natCast.prodMap denseRange_natCast).equalizer
-      ((map_continuous F).comp continuous_add)
-      (continuous_mul.comp (map_continuous <| F.prodMap F)) (funext fun ⟨m, n⟩ ↦ ?_)) (a, b)
+    congrm $((denseRange_natCast.prodMap denseRange_natCast).equalizer
+     ((map_continuous F).comp continuous_add)
+     (continuous_mul.comp (map_continuous <| F.prodMap F)) (funext fun ⟨m, n⟩ ↦ ?_)) (a, b)
     simp [← Nat.cast_add, hF, ContinuousMap.prodMap_apply, pow_add]
 
 @[fun_prop]

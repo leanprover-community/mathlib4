@@ -3,14 +3,18 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 -/
-import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Algebra.Group.Units.Hom
-import Mathlib.Algebra.Ring.Hom.Defs
+module
+
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.Algebra.Group.Units.Hom
+public import Mathlib.Algebra.Ring.Hom.Defs
 
 /-!
 # Units in semirings and rings
 
 -/
+
+public section
 
 
 universe u v w x
@@ -38,6 +42,10 @@ protected theorem val_neg (u : αˣ) : (↑(-u) : α) = -u :=
 @[simp, norm_cast]
 protected theorem coe_neg_one : ((-1 : αˣ) : α) = -1 :=
   rfl
+
+@[simp, norm_cast]
+theorem val_eq_neg_one {a : αˣ} : (a : α) = -1 ↔ a = -1 := by
+  rw [← Units.coe_neg_one, val_inj]
 
 instance : HasDistribNeg αˣ := val_injective.hasDistribNeg _ Units.val_neg val_mul
 
@@ -77,7 +85,7 @@ theorem divp_sub (a b : α) (u : αˣ) : a /ₚ u - b = (a - b * u) /ₚ u := by
 @[simp]
 protected theorem map_neg {F : Type*} [Ring β] [FunLike F α β] [RingHomClass F α β]
     (f : F) (u : αˣ) : map (f : α →* β) (-u) = -map (f : α →* β) u :=
-  ext (by simp only [coe_map, Units.val_neg, MonoidHom.coe_coe, map_neg])
+  ext (by simp only [coe_map, Units.val_neg, MonoidHom.coe_ofClass, map_neg])
 
 protected theorem map_neg_one {F : Type*} [Ring β] [FunLike F α β] [RingHomClass F α β]
     (f : F) : map (f : α →* β) (-1) = -1 := by
@@ -130,5 +138,3 @@ theorem isUnit_map (f : α →+* β) {a : α} : IsUnit a → IsUnit (f a) :=
 end Semiring
 
 end RingHom
-
-variable [Semiring α] [Semiring β]

@@ -3,9 +3,11 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
+module
+
 import Mathlib.Analysis.Calculus.Deriv.Pow
-import Mathlib.Analysis.Calculus.Deriv.Inv
-import Mathlib.Analysis.Calculus.Deriv.Shift
+public import Mathlib.Analysis.Calculus.Deriv.Inv
+public import Mathlib.Analysis.Calculus.Deriv.Shift
 
 /-!
 # Derivatives of `x ^ m`, `m : ℤ`
@@ -13,16 +15,18 @@ import Mathlib.Analysis.Calculus.Deriv.Shift
 In this file we prove theorems about (iterated) derivatives of `x ^ m`, `m : ℤ`.
 
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
-`analysis/calculus/deriv/basic`.
+`Mathlib/Analysis/Calculus/Deriv/Basic.lean`.
 
 ## Keywords
 
 derivative, power
 -/
 
+public section
+
 universe u v w
 
-open Topology Filter Asymptotics Set
+open Set
 open scoped Nat
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
@@ -38,7 +42,7 @@ theorem hasStrictDerivAt_zpow (m : ℤ) (x : 𝕜) (h : x ≠ 0 ∨ 0 ≤ m) :
   have : ∀ m : ℤ, 0 < m → HasStrictDerivAt (· ^ m) ((m : 𝕜) * x ^ (m - 1)) x := fun m hm ↦ by
     lift m to ℕ using hm.le
     simp only [zpow_natCast, Int.cast_natCast]
-    convert hasStrictDerivAt_pow m x using 2
+    convert hasStrictDerivAt_pow m x
     rw [← Int.ofNat_one, ← Int.ofNat_sub, zpow_natCast]
     norm_cast at hm
   rcases lt_trichotomy m 0 with (hm | hm | hm)
@@ -78,7 +82,7 @@ theorem deriv_zpow (m : ℤ) (x : 𝕜) : deriv (fun x => x ^ m) x = m * x ^ (m 
   by_cases H : x ≠ 0 ∨ 0 ≤ m
   · exact (hasDerivAt_zpow m x H).deriv
   · rw [deriv_zero_of_not_differentiableAt (mt differentiableAt_zpow.1 H)]
-    push_neg at H
+    push Not at H
     rcases H with ⟨rfl, hm⟩
     rw [zero_zpow _ ((sub_one_lt _).trans hm).ne, mul_zero]
 
@@ -104,7 +108,7 @@ theorem iter_deriv_zpow' (m : ℤ) (k : ℕ) :
 
 theorem iter_deriv_zpow (m : ℤ) (x : 𝕜) (k : ℕ) :
     deriv^[k] (fun y => y ^ m) x = (∏ i ∈ Finset.range k, ((m : 𝕜) - i)) * x ^ (m - k) :=
-  congr_fun (iter_deriv_zpow' m k) x
+  congr($(iter_deriv_zpow' m k) x)
 
 theorem iter_deriv_pow (n : ℕ) (x : 𝕜) (k : ℕ) :
     deriv^[k] (fun x : 𝕜 => x ^ n) x = (∏ i ∈ Finset.range k, ((n : 𝕜) - i)) * x ^ (n - k) := by
@@ -164,17 +168,21 @@ theorem iter_deriv_inv_linear_sub (k : ℕ) (c d : 𝕜) :
 
 variable {f : E → 𝕜} {t : Set E} {a : E}
 
+@[fun_prop]
 theorem DifferentiableWithinAt.zpow (hf : DifferentiableWithinAt 𝕜 f t a) (h : f a ≠ 0 ∨ 0 ≤ m) :
     DifferentiableWithinAt 𝕜 (fun x => f x ^ m) t a :=
   (differentiableAt_zpow.2 h).comp_differentiableWithinAt a hf
 
+@[fun_prop]
 theorem DifferentiableAt.zpow (hf : DifferentiableAt 𝕜 f a) (h : f a ≠ 0 ∨ 0 ≤ m) :
     DifferentiableAt 𝕜 (fun x => f x ^ m) a :=
   (differentiableAt_zpow.2 h).comp a hf
 
+@[fun_prop]
 theorem DifferentiableOn.zpow (hf : DifferentiableOn 𝕜 f t) (h : (∀ x ∈ t, f x ≠ 0) ∨ 0 ≤ m) :
     DifferentiableOn 𝕜 (fun x => f x ^ m) t := fun x hx =>
   (hf x hx).zpow <| h.imp_left fun h => h x hx
 
+@[fun_prop]
 theorem Differentiable.zpow (hf : Differentiable 𝕜 f) (h : (∀ x, f x ≠ 0) ∨ 0 ≤ m) :
     Differentiable 𝕜 fun x => f x ^ m := fun x => (hf x).zpow <| h.imp_left fun h => h x

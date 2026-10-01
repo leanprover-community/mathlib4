@@ -3,7 +3,9 @@ Copyright (c) 2020 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton
 -/
-import Mathlib.Data.Set.Finite.Basic
+module
+
+public import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Order.Interval.Set.Basic
 
 /-!
@@ -13,6 +15,8 @@ Bounded intervals in dense orders are infinite, as are unbounded intervals
 in orders that are unbounded on the appropriate side. We also prove that an unbounded
 preorder is an infinite type.
 -/
+
+public section
 
 
 variable {α : Type*} [Preorder α]

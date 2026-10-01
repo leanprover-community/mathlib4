@@ -3,8 +3,12 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Data.List.Defs
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Data.List.Defs
+public import Mathlib.Tactic.Common
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # `Take` and `Drop` lemmas for lists
@@ -12,13 +16,13 @@ import Mathlib.Tactic.Common
 This file provides lemmas about `List.take` and `List.drop` and related functions.
 -/
 
+public section
+
 assert_not_exists GroupWithZero
 assert_not_exists Lattice
 assert_not_exists Prod.swap_eq_iff_eq_swap
 assert_not_exists Ring
 assert_not_exists Set.range
-
-open Function
 
 open Nat hiding one_pos
 
@@ -26,7 +30,7 @@ namespace List
 
 universe u v w
 
-variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : List α}
+variable {α : Type u} {l₁ l₂ : List α}
 
 /-! ### take, drop -/
 
@@ -77,6 +81,34 @@ lemma drop_length_sub_one {l : List α} (h : l ≠ []) : l.drop (l.length - 1) =
     rw [length_cons, Nat.add_one_sub_one, List.drop_length_cons hl a]
     simp [getLast_cons, hl]
 
+/-- Applying `tail` to a list `n` times is equivalent to dropping `n` elements. -/
+theorem tail_iterate (l : List α) (n : ℕ) : (List.tail^[n]) l = l.drop n := by
+  induction n generalizing l with
+  | zero => rfl
+  | succ n ih => cases l <;> simp [*]
+
+section TailDropLast
+
+variable (l : List α) (n : ℕ)
+
+theorem tail_take_eq_take_tail : (l.take n).tail = l.tail.take (n - 1) := by
+  ext
+  grind
+
+theorem dropLast_take_eq_take_dropLast : (l.take n).dropLast = l.dropLast.take (n - 1) := by
+  ext
+  grind
+
+theorem tail_drop_eq_drop_tail : (l.drop n).tail = l.tail.drop n := by
+  ext
+  grind
+
+theorem dropLast_drop_eq_drop_dropLast : (l.drop n).dropLast = l.dropLast.drop n := by
+  ext
+  grind
+
+end TailDropLast
+
 section TakeI
 
 variable [Inhabited α]
@@ -84,16 +116,16 @@ variable [Inhabited α]
 @[simp]
 theorem takeI_length : ∀ n l, length (@takeI α _ n l) = n
   | 0, _ => rfl
-  | _ + 1, _ => congr_arg succ (takeI_length _ _)
+  | _ + 1, _ => congr(succ $(takeI_length ..))
 
 @[simp]
 theorem takeI_nil : ∀ n, takeI n (@nil α) = replicate n default
   | 0 => rfl
-  | _ + 1 => congr_arg (cons _) (takeI_nil _)
+  | _ + 1 => congr(cons _ $(takeI_nil _))
 
 theorem takeI_eq_take : ∀ {n} {l : List α}, n ≤ length l → takeI n l = take n l
   | 0, _, _ => rfl
-  | _ + 1, _ :: _, h => congr_arg (cons _) <| takeI_eq_take <| le_of_succ_le_succ h
+  | _ + 1, _ :: _, h => congr(cons _ $(takeI_eq_take <| le_of_succ_le_succ h))
 
 @[simp]
 theorem takeI_left (l₁ l₂ : List α) : takeI (length l₁) (l₁ ++ l₂) = l₁ :=
@@ -110,13 +142,13 @@ section TakeD
 @[simp]
 theorem takeD_length : ∀ n l a, length (@takeD α n l a) = n
   | 0, _, _ => rfl
-  | _ + 1, _, _ => congr_arg succ (takeD_length _ _ _)
+  | _ + 1, _, _ => congr(succ $(takeD_length ..))
 
 -- `takeD_nil` is already in batteries
 
 theorem takeD_eq_take : ∀ {n} {l : List α} a, n ≤ length l → takeD n l a = take n l
   | 0, _, _, _ => rfl
-  | _ + 1, _ :: _, a, h => congr_arg (cons _) <| takeD_eq_take a <| le_of_succ_le_succ h
+  | _ + 1, _ :: _, a, h => congr(cons _ $(takeD_eq_take a <| le_of_succ_le_succ h))
 
 @[simp]
 theorem takeD_left (l₁ l₂ : List α) (a : α) : takeD (length l₁) (l₁ ++ l₂) a = l₁ :=
@@ -143,7 +175,7 @@ private theorem span.loop_eq_take_drop :
 
 @[simp]
 theorem span_eq_takeWhile_dropWhile (l : List α) : span p l = (takeWhile p l, dropWhile p l) := by
-  simpa using span.loop_eq_take_drop p l []
+  simpa using! span.loop_eq_take_drop p l []
 
 end Filter
 

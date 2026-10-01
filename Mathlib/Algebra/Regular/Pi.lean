@@ -3,11 +3,16 @@ Copyright (c) 2025 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Regular.SMul
+module
+
+public import Mathlib.Algebra.Regular.SMul
+public import Mathlib.Algebra.Notation.Pi.Basic
 
 /-!
 # Results about `IsRegular` and pi types
 -/
+
+public section
 
 variable {ι α : Type*} {R : ι → Type*}
 
@@ -22,7 +27,7 @@ theorem isLeftRegular_iff {a : ∀ i, R i} : IsLeftRegular a ↔ ∀ i, IsLeftRe
 
 @[to_additive (attr := simp)]
 theorem isRightRegular_iff {a : ∀ i, R i} : IsRightRegular a ↔ ∀ i, IsRightRegular (a i) :=
-  have (i : _) : Nonempty (R i) := ⟨a i⟩; .symm <| Pi.map_injective.symm
+  have (i : _) : Nonempty (R i) := ⟨a i⟩; .symm Pi.map_injective.symm
 
 @[to_additive (attr := simp)]
 theorem isRegular_iff {a : ∀ i, R i} : IsRegular a ↔ ∀ i, IsRegular (a i) := by

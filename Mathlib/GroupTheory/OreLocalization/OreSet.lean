@@ -3,7 +3,9 @@ Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge
 -/
-import Mathlib.Algebra.Group.Submonoid.Defs
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Defs
 
 /-!
 
@@ -16,6 +18,8 @@ This defines left Ore sets on arbitrary monoids.
 * https://ncatlab.org/nlab/show/Ore+set
 
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 
@@ -63,7 +67,9 @@ variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S]
 
 /-- Common factors on the right can be turned into common factors on the left, a weak form of
 cancellability. -/
-@[to_additive AddOreLocalization.ore_right_cancel]
+@[to_additive AddOreLocalization.ore_right_cancel
+/-- Common summands on the right can be turned into common summands on the left, a weak form of
+cancellability. -/]
 theorem ore_right_cancel (r₁ r₂ : R) (s : S) (h : r₁ * s = r₂ * s) : ∃ s' : S, s' * r₁ = s' * r₂ :=
   OreSet.ore_right_cancel r₁ r₂ s h
 
@@ -92,7 +98,7 @@ def oreCondition (r : R) (s : S) : Σ' r' : R, Σ' s' : S, s' * r = r' * s :=
   ⟨oreNum r s, oreDenom r s, ore_eq r s⟩
 
 /-- The trivial submonoid is an Ore set. -/
-@[to_additive AddOreLocalization.addOreSetBot]
+@[to_additive AddOreLocalization.addOreSetBot /-- The trivial submonoid is an Ore set. -/]
 instance oreSetBot : OreSet (⊥ : Submonoid R) where
   ore_right_cancel _ _ s h :=
     ⟨s, by
@@ -110,12 +116,21 @@ instance oreSetBot : OreSet (⊥ : Submonoid R) where
     simp [hs]
 
 /-- Every submonoid of a commutative monoid is an Ore set. -/
-@[to_additive AddOreLocalization.addOreSetComm]
+@[to_additive AddOreLocalization.addOreSetComm
+/-- Every submonoid of an additive commutative monoid is an Ore set. -/]
 instance (priority := 100) oreSetComm {R} [CommMonoid R] (S : Submonoid R) : OreSet S where
   ore_right_cancel m n s h := ⟨s, by rw [mul_comm (s : R) n, mul_comm (s : R) m, h]⟩
   oreNum r _ := r
   oreDenom _ s := s
   ore_eq r s := by rw [mul_comm]
+
+@[to_additive (attr := simp) AddOreLocalization.addOreSetComm_oreMin]
+lemma oreSetComm_oreNum {R : Type*} [CommMonoid R] (S : Submonoid R) (r : R) (s : S) :
+    oreNum r s = r := rfl
+
+@[to_additive (attr := simp) AddOreLocalization.addOreSetComm_oreSubtra]
+lemma oreSetComm_oreDenom {R : Type*} [CommMonoid R] (S : Submonoid R) (r : R) (s : S) :
+    oreDenom r s = s := rfl
 
 end Monoid
 

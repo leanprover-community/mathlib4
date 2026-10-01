@@ -3,7 +3,9 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Group.Submonoid.Pointwise
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Pointwise
 
 /-!
 
@@ -18,8 +20,8 @@ For the pointwise inverse of submonoids of groups, please refer to the file
 `Mathlib/Algebra/Group/Submonoid/Pointwise.lean`.
 
 `N.leftInv` is distinct from `N.units`, which is the subgroup of `Mˣ` containing all units that are
-in `N`. See the implementation notes of `Mathlib/GroupTheory/Submonoid/Units.lean` for more details
-on related constructions.
+in `N`. See the implementation notes of `Mathlib/Algebra/Group/Submonoid/Units.lean` for more
+details on related constructions.
 
 ## TODO
 
@@ -28,6 +30,8 @@ See the comments of https://github.com/leanprover-community/mathlib4/pull/10679 
 implementation.
 -/
 
+@[expose] public section
+
 
 variable {M : Type*}
 
@@ -35,20 +39,26 @@ namespace Submonoid
 
 @[to_additive]
 noncomputable instance [Monoid M] : Group (IsUnit.submonoid M) :=
-  { inferInstanceAs (Monoid (IsUnit.submonoid M)) with
+  { (inferInstance : Monoid (IsUnit.submonoid M)) with
     inv := fun x ↦ ⟨x.prop.unit⁻¹.val, x.prop.unit⁻¹.isUnit⟩
     inv_mul_cancel := fun x ↦
       Subtype.ext ((Units.val_mul x.prop.unit⁻¹ _).trans x.prop.unit.inv_val) }
 
 @[to_additive]
 noncomputable instance [CommMonoid M] : CommGroup (IsUnit.submonoid M) :=
-  { inferInstanceAs (Group (IsUnit.submonoid M)) with
+  { (inferInstance : Group (IsUnit.submonoid M)) with
     mul_comm := fun a b ↦ by convert mul_comm a b }
 
 @[to_additive]
-theorem IsUnit.Submonoid.coe_inv [Monoid M] (x : IsUnit.submonoid M) :
+theorem _root_.IsUnit.submonoid.coe_inv [Monoid M] (x : IsUnit.submonoid M) :
     ↑x⁻¹ = (↑x.prop.unit⁻¹ : M) :=
   rfl
+
+@[deprecated (since := "2026-05-24")]
+alias _root_.AddSubmonoid.IsUnit.Submonoid.coe_neg := IsAddUnit.addSubmonoid.coe_neg
+set_option linter.dupNamespace false in
+@[to_additive existing, deprecated (since := "2026-05-24")]
+alias IsUnit.Submonoid.coe_inv := IsUnit.submonoid.coe_inv
 
 section Monoid
 
@@ -96,7 +106,7 @@ theorem mul_fromLeftInv (x : S.leftInv) : (x : M) * S.fromLeftInv x = 1 :=
 
 @[to_additive (attr := simp)]
 theorem fromLeftInv_one : S.fromLeftInv 1 = 1 :=
-  (one_mul _).symm.trans (Subtype.eq <| S.mul_fromLeftInv 1)
+  (one_mul _).symm.trans (Subtype.ext <| S.mul_fromLeftInv 1)
 
 end Monoid
 
@@ -130,6 +140,7 @@ noncomputable def fromCommLeftInv : S.leftInv →* S where
 
 variable (hS : S ≤ IsUnit.submonoid M)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The submonoid of pointwise inverse of `S` is `MulEquiv` to `S`. -/
 @[to_additive (attr := simps apply) /-- The additive submonoid of pointwise additive inverse of `S`
 is `AddEquiv` to `S`. -/]
@@ -178,7 +189,7 @@ section Group
 
 variable [Group M] (S : Submonoid M)
 
-open Pointwise
+open scoped Pointwise
 
 @[to_additive]
 theorem leftInv_eq_inv : S.leftInv = S⁻¹ :=

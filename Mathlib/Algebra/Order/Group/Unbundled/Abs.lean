@@ -3,9 +3,12 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Group.Even
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.Order.Group.Lattice
+module
+
+public import Mathlib.Algebra.Group.Even
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Order.Group.Lattice
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 # Absolute values in ordered groups
@@ -19,7 +22,7 @@ negation. This generalizes the usual absolute value on real numbers (`|x| = max 
 - `|a|ₘ`: The *absolute value* of an element `a` of a multiplicative lattice ordered group
 -/
 
-open Function
+@[expose] public section
 
 variable {α : Type*}
 
@@ -30,7 +33,7 @@ section Group
 variable [Group α] {a b : α}
 
 /-- `mabs a`, denoted `|a|ₘ`, is the absolute value of `a`. -/
-@[to_additive /-- `abs a`, denoted `|a|`, is the absolute value of `a` -/]
+@[to_additive (attr := grind) /-- `abs a`, denoted `|a|`, is the absolute value of `a` -/]
 def mabs (a : α) : α := a ⊔ a⁻¹
 
 @[inherit_doc mabs]
@@ -42,7 +45,7 @@ macro:max atomic("|" noWs) a:term noWs "|" : term => `(abs $a)
 /-- Unexpander for the notation `|a|ₘ` for `mabs a`.
 Tries to add discretionary parentheses in unparsable cases. -/
 @[app_unexpander mabs]
-def mabs.unexpander : Lean.PrettyPrinter.Unexpander
+meta def mabs.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $a) =>
     match a with
     | `(|$_|) | `(|$_|ₘ) | `(-$_) => `(|($a)|ₘ)
@@ -52,7 +55,7 @@ def mabs.unexpander : Lean.PrettyPrinter.Unexpander
 /-- Unexpander for the notation `|a|` for `abs a`.
 Tries to add discretionary parentheses in unparsable cases. -/
 @[app_unexpander abs]
-def abs.unexpander : Lean.PrettyPrinter.Unexpander
+meta def abs.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $a) =>
     match a with
     | `(|$_|) | `(|$_|ₘ) | `(-$_) => `(|($a)|)
@@ -154,7 +157,7 @@ lemma inf_sq_eq_mul_div_mabs_div (a b : α) : (a ⊓ b) ^ 2 = a * b / |b / a|ₘ
 @[to_additive]
 lemma mabs_div_sup_mul_mabs_div_inf (a b c : α) :
     |(a ⊔ c) / (b ⊔ c)|ₘ * |(a ⊓ c) / (b ⊓ c)|ₘ = |a / b|ₘ := by
-  letI : DistribLattice α := CommGroup.toDistribLattice α
+  let : DistribLattice α := CommGroup.toDistribLattice α
   calc
     |(a ⊔ c) / (b ⊔ c)|ₘ * |(a ⊓ c) / (b ⊓ c)|ₘ =
         (b ⊔ c ⊔ (a ⊔ c)) / ((b ⊔ c) ⊓ (a ⊔ c)) * |(a ⊓ c) / (b ⊓ c)|ₘ := by
@@ -239,7 +242,7 @@ variable [MulLeftMono α] {a b : α}
   · simp [mabs_of_le_one h]
 
 @[to_additive add_abs_nonneg] lemma one_le_mul_mabs (a : α) : 1 ≤ a * |a|ₘ := by
-  rw [← mul_inv_cancel a]; exact mul_le_mul_left' (inv_le_mabs a) _
+  grw [← mul_inv_cancel a, inv_le_mabs a]
 
 @[to_additive] lemma inv_mabs_le_inv (a : α) : |a|ₘ⁻¹ ≤ a⁻¹ := by simpa using inv_mabs_le a⁻¹
 
@@ -271,6 +274,11 @@ variable [MulRightMono α]
 @[to_additive] lemma max_div_min_eq_mabs (a b : α) : max a b / min a b = |b / a|ₘ := by
   rw [mabs_div_comm, max_div_min_eq_mabs']
 
+@[to_additive] lemma mabs_div_lt_of_lt_lt {N M n m : α} (hn : 1 ≤ n) (hm : 1 ≤ m) (hnN : n < N)
+    (hmM : m < M) : |n / m|ₘ < N ⊔ M := by
+  rw [← max_div_min_eq_mabs', div_lt_iff_lt_mul]
+  exact lt_of_le_of_lt' (le_mul_of_one_le_right' (le_min hn hm)) (max_lt_max hnN hmM)
+
 end LinearOrder
 
 namespace LatticeOrderedAddCommGroup
@@ -292,10 +300,18 @@ lemma solidClosure_min (hst : s ⊆ t) (ht : IsSolid t) : solidClosure s ⊆ t :
 end LatticeOrderedAddCommGroup
 
 namespace Pi
-variable {ι : Type*} {α : ι → Type*} [∀ i, AddGroup (α i)] [∀ i, Lattice (α i)]
 
-@[simp] lemma abs_apply (f : ∀ i, α i) (i : ι) : |f| i = |f i| := rfl
+variable {ι : Type*} {α : ι → Type*} [∀ i, Group (α i)] (f : (i : ι) → α i)
 
-lemma abs_def (f : ∀ i, α i) : |f| = fun i ↦ |f i| := rfl
+@[to_additive (attr := simp)]
+lemma mabs_apply [∀ i, Lattice (α i)] (i : ι) : |f|ₘ i = |f i|ₘ := rfl
+
+@[to_additive (attr := push ←)]
+lemma mabs_def [∀ i, Lattice (α i)] : |f|ₘ = fun i ↦ |f i|ₘ := rfl
+
+@[to_additive (attr := simp)]
+lemma mabs_eq_one [∀ i, LinearOrder (α i)] [∀ i, MulLeftMono (α i)] [∀ i, MulRightMono (α i)] :
+    |f|ₘ = 1 ↔ f = 1 :=
+  ⟨fun h ↦ funext fun i ↦ by simpa using congr_fun h i, fun h ↦ funext fun i ↦ by simp [h]⟩
 
 end Pi

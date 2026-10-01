@@ -3,8 +3,9 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.InnerProductSpace.Calculus
-import Mathlib.Analysis.InnerProductSpace.PiL2
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 
 /-!
@@ -18,6 +19,8 @@ Then we define `Euclidean.dist x y = dist (toEuclidean x) (toEuclidean y)` and
 provide some definitions (`Euclidean.ball`, `Euclidean.closedBall`) and simple lemmas about this
 distance. This way we hide the usage of `toEuclidean` behind an API.
 -/
+
+@[expose] public section
 
 
 open scoped Topology

@@ -3,9 +3,11 @@ Copyright (c) 2025 Loic Simon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Loic Simon
 -/
-import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
-import Mathlib.MeasureTheory.Measure.Sub
-import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
+module
+
+public import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
+public import Mathlib.MeasureTheory.Measure.Sub
+public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
 
 /-!
 # Jordan decomposition from signed measure subtraction
@@ -27,6 +29,8 @@ where `μ ≤ ν` and `ν ≤ μ`, and the measure difference behaves like a sig
   The signed measure `μ.toSignedMeasure - ν.toSignedMeasure` equals
   `(μ - ν).toSignedMeasure - (ν - μ).toSignedMeasure`.
 -/
+
+@[expose] public section
 
 open scoped ENNReal NNReal
 
@@ -72,9 +76,9 @@ theorem sub_toSignedMeasure_eq_toSignedMeasure_sub :
     sub_apply_eq_zero_of_isHahnDecomposition hs
   have h₂' := toSignedMeasure_congr <| restrict_eq_zero.mpr <|
   sub_apply_eq_zero_of_isHahnDecomposition hsc
-  have partition₁ := VectorMeasure.restrict_add_restrict_compl (μ - ν).toSignedMeasure
+  have partition₁ := VectorMeasure.restrict_add_restrict_compl (v := (μ - ν).toSignedMeasure)
     hs.measurableSet
-  have partition₂ := VectorMeasure.restrict_add_restrict_compl (ν - μ).toSignedMeasure
+  have partition₂ := VectorMeasure.restrict_add_restrict_compl (v := (ν - μ).toSignedMeasure)
     hs.measurableSet
   rw [toSignedMeasure_restrict_eq_restrict_toSignedMeasure _ _ hs.measurableSet,
     toSignedMeasure_restrict_eq_restrict_toSignedMeasure _ _ hs.measurableSet.compl]
@@ -82,10 +86,9 @@ theorem sub_toSignedMeasure_eq_toSignedMeasure_sub :
   rw [h₁', h₂] at partition₁
   rw [h₁, h₂'] at partition₂
   simp only [toSignedMeasure_zero, zero_add] at partition₁ partition₂
-  rw [← VectorMeasure.restrict_add_restrict_compl μ.toSignedMeasure hs.measurableSet,
-    ← VectorMeasure.restrict_add_restrict_compl ν.toSignedMeasure hs.measurableSet,
+  rw [← VectorMeasure.restrict_add_restrict_compl (v := μ.toSignedMeasure) hs.measurableSet,
+    ← VectorMeasure.restrict_add_restrict_compl (v := ν.toSignedMeasure) hs.measurableSet,
     ← partition₁, ← partition₂]
-  repeat rw [sub_eq_add_neg]
   abel
 
 /-- The Jordan decomposition associated to the pair of mutually singular measures `μ - ν`

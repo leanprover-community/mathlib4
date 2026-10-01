@@ -3,9 +3,10 @@ Copyright (c) 2025 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Yunzhou Xie
 -/
+module
 
-import Mathlib.Algebra.Central.Basic
-import Mathlib.RingTheory.Flat.Basic
+public import Mathlib.Algebra.Central.Basic
+public import Mathlib.RingTheory.Flat.Basic
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
@@ -28,6 +29,8 @@ algebra and `B, C` nontrivial, then both `B` and `C` are central algebras.
 Central Algebras, Central Simple Algebras, Noncommutative Algebra
 -/
 
+public section
+
 universe u v
 
 open TensorProduct
@@ -40,8 +43,7 @@ lemma Algebra.TensorProduct.includeLeft_map_center_le :
   simp only [Subalgebra.mem_map, Subalgebra.mem_center_iff] at hx ⊢
   obtain ⟨b, hb0, rfl⟩ := hx
   intro bc
-  induction bc using TensorProduct.induction_on with
-  | zero => simp
+  induction bc using TensorProduct.inductionOn with
   | tmul b' c => simp [hb0]
   | add _ _ _ _ => simp_all [add_mul, mul_add]
 
@@ -50,8 +52,7 @@ lemma Algebra.TensorProduct.includeRight_map_center_le :
   simp only [Subalgebra.mem_map, Subalgebra.mem_center_iff] at hx ⊢
   obtain ⟨c, hc0, rfl⟩ := hx
   intro bc
-  induction bc using TensorProduct.induction_on with
-  | zero => simp
+  induction bc using TensorProduct.inductionOn with
   | tmul b c' => simp [hc0]
   | add _ _ _ _ => simp_all [add_mul, mul_add]
 

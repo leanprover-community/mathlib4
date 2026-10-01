@@ -3,9 +3,9 @@ Copyright (c) 2025 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Yunzhou Xie
 -/
-import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-import Mathlib.CategoryTheory.Linear.LinearFunctor
-import Mathlib.Algebra.Category.ModuleCat.Basic
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 import Mathlib.CategoryTheory.Adjunction.Limits
 
 /-!
@@ -15,7 +15,7 @@ Two `R`-algebras `A` and `B` are Morita equivalent if the categories of modules 
 `B` are `R`-linearly equivalent. In this file, we prove that Morita equivalence is an equivalence
 relation and that isomorphic algebras are Morita equivalent.
 
-# Main definitions
+## Main definitions
 
 - `MoritaEquivalence R A B`: a structure containing an `R`-linear equivalence of categories between
   the module categories of `A` and `B`.
@@ -39,6 +39,8 @@ relation and that isomorphic algebras are Morita equivalent.
 Morita Equivalence, Category Theory, Noncommutative Ring, Module Theory
 
 -/
+
+@[expose] public section
 
 universe u₀ u₁ u₂ u₃
 

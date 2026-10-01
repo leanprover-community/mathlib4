@@ -3,9 +3,11 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
 -/
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Ring.GeomSum
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Algebra.Ring.GeomSum
 
 /-!
 # Partial sums of geometric series in an ordered ring
@@ -15,9 +17,11 @@ $\sum_{i=0}^{n-1} x^i y^{n-1-i}$ and variants thereof. We also provide some boun
 "geometric" sum of `a/b^i` where `a b : ℕ`.
 -/
 
+public section
+
 assert_not_exists Field
 
-open Finset MulOpposite
+open Finset
 
 variable {R : Type*}
 
@@ -45,11 +49,11 @@ lemma geom_sum_alternating_of_le_neg_one (hx : x + 1 ≤ 0) (n : ℕ) :
   | zero => simp only [range_zero, sum_empty, le_refl, ite_true, Even.zero]
   | succ n ih =>
     simp only [Nat.even_add_one, geom_sum_succ]
-    split_ifs at ih with h
-    · rw [if_neg (not_not_intro h), le_add_iff_nonneg_left]
+    split_ifs at ih ⊢ with h
+    · rw [le_add_iff_nonneg_left]
       exact mul_nonneg_of_nonpos_of_nonpos hx0 ih
-    · rw [if_pos h]
-      refine (add_le_add_right ?_ _).trans hx
+    · grw [← hx]
+      gcongr
       simpa only [mul_one] using mul_le_mul_of_nonpos_left ih hx0
 
 end IsOrderedRing
@@ -66,7 +70,7 @@ lemma geom_sum_pos_and_lt_one (hx : x < 0) (hx' : 0 < x + 1) (hn : 1 < n) :
   intro n _ ihn
   rw [geom_sum_succ, add_lt_iff_neg_right, ← neg_lt_iff_pos_add', neg_mul_eq_neg_mul]
   exact
-    ⟨mul_lt_one_of_nonneg_of_lt_one_left (neg_nonneg.2 hx.le) (neg_lt_iff_pos_add'.2 hx') ihn.2.le,
+    ⟨by grw [ihn.2, mul_one, neg_le_iff_add_nonneg', hx']; exact neg_pos.2 hx,
       mul_neg_of_neg_of_pos hx ihn.1⟩
 
 lemma geom_sum_alternating_of_lt_neg_one (hx : x + 1 < 0) (hn : 1 < n) :
@@ -77,18 +81,12 @@ lemma geom_sum_alternating_of_lt_neg_one (hx : x + 1 < 0) (hn : 1 < n) :
   clear hn
   intro n _ ihn
   simp only [Nat.even_add_one, geom_sum_succ]
-  by_cases hn' : Even n
-  · rw [if_pos hn'] at ihn
-    rw [if_neg, lt_add_iff_pos_left]
-    · exact mul_pos_of_neg_of_neg hx0 ihn
-    · exact not_not_intro hn'
-  · rw [if_neg hn'] at ihn
-    rw [if_pos]
-    swap
-    · exact hn'
-    have := add_lt_add_right (mul_lt_mul_of_neg_left ihn hx0) 1
-    rw [mul_one] at this
-    exact this.trans hx
+  split_ifs at ihn ⊢ with hn'
+  · rw [lt_add_iff_pos_left]
+    exact mul_pos_of_neg_of_neg hx0 ihn
+  · grw [← hx.le]
+    gcongr
+    simpa only [mul_one] using mul_lt_mul_of_neg_left ihn hx0
 
 end IsStrictOrderedRing
 end PartialOrder
@@ -102,7 +100,7 @@ lemma geom_sum_pos' (hx : 0 < x + 1) (hn : n ≠ 0) : 0 < ∑ i ∈ range n, x ^
   · simp only [zero_add, range_one, sum_singleton, pow_zero, zero_lt_one]
   obtain hx' | hx' := lt_or_ge x 0
   · exact (geom_sum_pos_and_lt_one hx' hx n.one_lt_succ_succ).1
-  · exact geom_sum_pos hx' (by simp only [Nat.succ_ne_zero, Ne, not_false_iff])
+  · exact geom_sum_pos hx' (by simp)
 
 lemma Odd.geom_sum_pos (h : Odd n) : 0 < ∑ i ∈ range n, x ^ i := by
   rcases n with (_ | _ | k)
@@ -111,16 +109,16 @@ lemma Odd.geom_sum_pos (h : Odd n) : 0 < ∑ i ∈ range n, x ^ i := by
   rw [← Nat.not_even_iff_odd] at h
   rcases lt_trichotomy (x + 1) 0 with (hx | hx | hx)
   · have := geom_sum_alternating_of_lt_neg_one hx k.one_lt_succ_succ
-    simp only [h, if_false] at this
+    simp only [h, ite_false] at this
     exact zero_lt_one.trans this
-  · simp only [eq_neg_of_add_eq_zero_left hx, h, neg_one_geom_sum, if_false, zero_lt_one]
+  · simp only [eq_neg_of_add_eq_zero_left hx, h, neg_one_geom_sum, ite_false, zero_lt_one]
   · exact geom_sum_pos' hx k.succ.succ_ne_zero
 
 lemma geom_sum_pos_iff (hn : n ≠ 0) : 0 < ∑ i ∈ range n, x ^ i ↔ Odd n ∨ 0 < x + 1 := by
   refine ⟨fun h => ?_, ?_⟩
   · rw [or_iff_not_imp_left, ← not_le, Nat.not_odd_iff_even]
     refine fun hn hx => h.not_ge ?_
-    simpa [if_pos hn] using geom_sum_alternating_of_le_neg_one hx n
+    simpa [ite_eq_left hn] using geom_sum_alternating_of_le_neg_one hx n
   · rintro (hn | hx')
     · exact hn.geom_sum_pos
     · exact geom_sum_pos' hx' hn
@@ -138,7 +136,7 @@ lemma geom_sum_ne_zero (hx : x ≠ -1) (hn : n ≠ 0) : ∑ i ∈ range n, x ^ i
   · exact (geom_sum_pos' h n.succ.succ_ne_zero).ne'
 
 lemma geom_sum_eq_zero_iff_neg_one (hn : n ≠ 0) : ∑ i ∈ range n, x ^ i = 0 ↔ x = -1 ∧ Even n := by
-  refine ⟨fun h => ?_, @fun ⟨h, hn⟩ => by simp only [h, hn, neg_one_geom_sum, if_true]⟩
+  refine ⟨fun h => ?_, @fun ⟨h, hn⟩ => by simp only [h, hn, neg_one_geom_sum, ite_true]⟩
   contrapose! h
   have hx := eq_or_ne x (-1)
   rcases hx with hx | hx
@@ -182,7 +180,7 @@ lemma Nat.geom_sum_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
 lemma Nat.geom_sum_Ico_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
     ∑ i ∈ Ico 1 n, a / b ^ i ≤ a / (b - 1) := by
   rcases n with - | n
-  · rw [Ico_eq_empty_of_le (by cutsat), sum_empty]
+  · rw [Ico_eq_empty_of_le (by lia), sum_empty]
     exact Nat.zero_le _
   rw [← add_le_add_iff_left a]
   calc
@@ -192,7 +190,7 @@ lemma Nat.geom_sum_Ico_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
       rw [range_eq_Ico, ← Finset.insert_Ico_add_one_left_eq_Ico (Nat.succ_pos _), sum_insert] <;>
         simp
     _ ≤ a * b / (b - 1) := Nat.geom_sum_le hb a _
-    _ = (a * 1 + a * (b - 1)) / (b - 1) := by rw [← mul_add, add_tsub_cancel_of_le (by cutsat)]
+    _ = (a * 1 + a * (b - 1)) / (b - 1) := by rw [← mul_add, add_tsub_cancel_of_le (by lia)]
     _ = a + a / (b - 1) := by rw [mul_one, Nat.add_mul_div_right _ _ (tsub_pos_of_lt hb), add_comm]
 
 variable {m n : ℕ} {s : Finset ℕ}
@@ -205,4 +203,4 @@ lemma Nat.geomSum_lt (hm : 2 ≤ m) (hs : ∀ k ∈ s, k < n) : ∑ k ∈ s, m ^
       mem_range.2 <| hs _ hk
     _ = (m ^ n - 1) / (m - 1) := Nat.geomSum_eq hm _
     _ ≤ m ^ n - 1 := Nat.div_le_self _ _
-    _ < m ^ n := tsub_lt_self (Nat.pow_pos <| by cutsat) (by cutsat)
+    _ < m ^ n := tsub_lt_self (Nat.pow_pos <| by lia) (by lia)

@@ -3,10 +3,10 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yaël Dillies, Patrick Stevens
 -/
-import Mathlib.Algebra.CharZero.Defs
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Tactic.Common
-import Mathlib.Algebra.Field.Defs
+module
+
+public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 
 /-!
@@ -18,6 +18,8 @@ This file concerns the canonical homomorphism `ℕ → F`, where `F` is a field.
 
 * `Nat.cast_div`: if `n` divides `m`, then `↑(m / n) = ↑m / ↑n`
 -/
+
+public section
 
 
 namespace Nat

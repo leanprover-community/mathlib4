@@ -3,8 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Multiset.Count
-import Mathlib.Data.List.Count
+module
+
+public import Mathlib.Data.Multiset.Count
+public import Mathlib.Data.List.Count
 
 /-!
 # Sum and difference of multisets
@@ -24,14 +26,16 @@ This file defines the following operations on multisets:
 
 -/
 
+@[expose] public section
+
 -- No algebra should be required
 assert_not_exists Monoid
 
 universe v
 
-open List Subtype Nat Function
+open List Nat
 
-variable {α : Type*} {β : Type v} {γ : Type*}
+variable {α : Type*} {β : Type v}
 
 namespace Multiset
 
@@ -165,8 +169,6 @@ theorem erase_singleton (a : α) : ({a} : Multiset α).erase a = 0 :=
 theorem erase_of_notMem {a : α} {s : Multiset α} : a ∉ s → s.erase a = s :=
   Quot.inductionOn s fun _l h => congr_arg _ <| List.erase_of_not_mem h
 
-@[deprecated (since := "2025-05-23")] alias erase_of_not_mem := erase_of_notMem
-
 @[simp]
 theorem cons_erase {s : Multiset α} {a : α} : a ∈ s → a ::ₘ s.erase a = s :=
   Quot.inductionOn s fun _l h => Quot.sound (perm_cons_erase h).symm
@@ -250,8 +252,8 @@ theorem card_erase_le {a : α} {s : Multiset α} : card (s.erase a) ≤ card s :
 theorem card_erase_eq_ite {a : α} {s : Multiset α} :
     card (s.erase a) = if a ∈ s then pred (card s) else card s := by
   by_cases h : a ∈ s
-  · rwa [card_erase_of_mem h, if_pos]
-  · rwa [erase_of_notMem h, if_neg]
+  · rwa [card_erase_of_mem h, ite_eq_left]
+  · rwa [erase_of_notMem h, ite_eq_right]
 
 @[simp]
 theorem count_erase_self (a : α) (s : Multiset α) : count a (erase s a) = count a s - 1 :=
@@ -365,7 +367,7 @@ end sub
 
 section Rel
 
-variable {δ : Type*} {r : α → β → Prop} {p : γ → δ → Prop}
+variable {r : α → β → Prop}
 
 theorem Rel.add {s t u v} (hst : Rel r s t) (huv : Rel r u v) : Rel r (s + u) (t + v) := by
   induction hst with

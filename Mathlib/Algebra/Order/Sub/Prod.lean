@@ -3,13 +3,15 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Algebra.Notation.Pi.Defs
-import Mathlib.Algebra.Notation.Prod
+module
+
+public import Mathlib.Algebra.Order.Sub.Defs
 
 /-!
 # Products of `OrderedSub` types.
 -/
+
+public section
 
 assert_not_exists MonoidWithZero
 

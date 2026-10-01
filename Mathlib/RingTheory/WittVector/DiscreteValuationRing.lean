@@ -3,10 +3,11 @@ Copyright (c) 2022 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Heather Macbeth, Johan Commelin
 -/
-import Mathlib.RingTheory.WittVector.Domain
-import Mathlib.RingTheory.WittVector.MulCoeff
-import Mathlib.RingTheory.DiscreteValuationRing.Basic
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Mathlib.RingTheory.WittVector.Domain
+public import Mathlib.RingTheory.WittVector.MulCoeff
+public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 
 /-!
 
@@ -24,6 +25,8 @@ When `k` is also a field, this `b` can be chosen to be a unit of `𝕎 k`.
 * `WittVector.isDiscreteValuationRing`: `𝕎 k` is a discrete valuation ring if `k` is a perfect field
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -116,11 +119,11 @@ theorem exists_eq_pow_p_mul (a : 𝕎 k) (ha : a ≠ 0) :
   obtain ⟨m, c, hc, hcm⟩ := WittVector.verschiebung_nonzero ha
   obtain ⟨b, rfl⟩ := (frobenius_bijective p k).surjective.iterate m c
   rw [WittVector.iterate_frobenius_coeff] at hc
-  have := congr_fun (WittVector.verschiebung_frobenius_comm.comp_iterate m) b
+  have := congr($(WittVector.verschiebung_frobenius_comm.comp_iterate m) b)
   simp only [Function.comp_apply] at this
   rw [← this] at hcm
   refine ⟨m, b, ?_, ?_⟩
-  · contrapose! hc
+  · contrapose hc
     simp [hc, zero_pow <| pow_ne_zero _ hp.out.ne_zero]
   · simp_rw [← mul_left_iterate (p : 𝕎 k) m]
     convert hcm using 2

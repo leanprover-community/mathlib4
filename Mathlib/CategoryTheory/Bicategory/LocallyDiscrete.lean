@@ -3,8 +3,10 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Calle Sönne
 -/
-import Mathlib.CategoryTheory.Discrete.Basic
-import Mathlib.CategoryTheory.Bicategory.Strict
+module
+
+public import Mathlib.CategoryTheory.CommSq
+public import Mathlib.CategoryTheory.Bicategory.Strict.Basic
 
 /-!
 # Locally discrete bicategories
@@ -15,6 +17,8 @@ in `C`, and the 2-morphisms in `LocallyDiscrete C` are the equalities between 1-
 other words, the category consisting of the 1-morphisms between each pair of objects `X` and `Y`
 in `LocallyDiscrete C` is defined as the discrete category associated with the type `X ⟶ Y`.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -79,7 +83,7 @@ instance subsingleton2Hom {a b : LocallyDiscrete C} (f g : a ⟶ b) : Subsinglet
 
 /-- Extract the equation from a 2-morphism in a locally discrete 2-category. -/
 theorem eq_of_hom {X Y : LocallyDiscrete C} {f g : X ⟶ Y} (η : f ⟶ g) : f = g :=
-  Discrete.ext η.1.1
+  Discrete.ext η.1
 
 end LocallyDiscrete
 
@@ -91,8 +95,8 @@ variable [Category.{v} C]
 equalities between 1-morphisms.
 -/
 instance locallyDiscreteBicategory : Bicategory (LocallyDiscrete C) where
-  whiskerLeft _ _ _ η := eqToHom (congr_arg₂ (· ≫ ·) rfl (LocallyDiscrete.eq_of_hom η))
-  whiskerRight η _ := eqToHom (congr_arg₂ (· ≫ ·) (LocallyDiscrete.eq_of_hom η) rfl)
+  whiskerLeft _ _ _ η := eqToHom congr(_ ≫ $(LocallyDiscrete.eq_of_hom η))
+  whiskerRight η _ := eqToHom congr($(LocallyDiscrete.eq_of_hom η) ≫ _)
   associator f g h := eqToIso <| by apply Discrete.ext; simp
   leftUnitor f := eqToIso <| by apply Discrete.ext; simp
   rightUnitor f := eqToIso <| by apply Discrete.ext; simp
@@ -110,7 +114,7 @@ namespace Bicategory
 /-- A bicategory is locally discrete if the categories of 1-morphisms are discrete. -/
 abbrev IsLocallyDiscrete (B : Type*) [Bicategory B] := ∀ (b c : B), IsDiscrete (b ⟶ c)
 
-instance (C : Type*) [Category C] : IsLocallyDiscrete (LocallyDiscrete C) :=
+instance (C : Type*) [Category* C] : IsLocallyDiscrete (LocallyDiscrete C) :=
   fun _ _ ↦ Discrete.isDiscrete _
 
 instance (B : Type*) [Bicategory B] [IsLocallyDiscrete B] : Strict B where
@@ -141,7 +145,7 @@ def toLoc {a b : C} (f : a ⟶ b) : LocallyDiscrete.mk a ⟶ LocallyDiscrete.mk 
 lemma id_toLoc (a : C) : (𝟙 a).toLoc = 𝟙 (LocallyDiscrete.mk a) :=
   rfl
 
-@[simp]
+@[simp, grind _=_]
 lemma comp_toLoc {a b c : C} (f : a ⟶ b) (g : b ⟶ c) : (f ≫ g).toLoc = f.toLoc ≫ g.toLoc :=
   rfl
 
@@ -151,5 +155,11 @@ end Quiver.Hom
 lemma CategoryTheory.LocallyDiscrete.eqToHom_toLoc {C : Type u} [Category.{v} C] {a b : C}
     (h : a = b) : (eqToHom h).toLoc = eqToHom (congrArg LocallyDiscrete.mk h) := by
   subst h; rfl
+
+lemma CategoryTheory.CommSq.toLoc {C : Type*} [Category C] {X₁ X₂ X₃ X₄ : C}
+    {t : X₁ ⟶ X₂} {l : X₁ ⟶ X₃} {r : X₂ ⟶ X₄} {b : X₃ ⟶ X₄}
+    (h : CommSq t l r b) :
+    CommSq t.toLoc l.toLoc r.toLoc b.toLoc :=
+  ⟨by simp only [← Quiver.Hom.comp_toLoc, h.w]⟩
 
 end

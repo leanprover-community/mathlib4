@@ -3,9 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Interval.Set.OrdConnected
-import Mathlib.Order.Filter.SmallSets
-import Mathlib.Order.Filter.AtTopBot.Basic
+module
+
+public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Order.Filter.SmallSets
 import Mathlib.Order.Filter.Bases.Finite
 
 /-!
@@ -73,10 +74,12 @@ that need topology are defined in `Mathlib/Topology/Algebra/Ordered`.
 
 -/
 
+public section
+
 
 variable {α β : Type*}
 
-open Filter Set Function
+open Filter Set
 
 namespace Filter
 
@@ -236,7 +239,7 @@ end PartialOrder
 
 section LinearOrder
 
-open Interval
+open scoped Interval
 
 variable [LinearOrder α]
 

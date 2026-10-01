@@ -3,7 +3,9 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Topology.MetricSpace.Antilipschitz
+module
+
+public import Mathlib.Topology.MetricSpace.Antilipschitz
 import Mathlib.Topology.MetricSpace.Lipschitz
 
 /-! # Bilipschitz equivalence
@@ -27,11 +29,13 @@ choose to use these convenience lemmas. This encourages good hygiene in the deve
 synonyms.
 -/
 
+public section
+
 open NNReal
 
 section Uniformity
 
-open Uniformity
+open scoped Uniformity
 
 variable {α β : Type*} [PseudoEMetricSpace α] [PseudoEMetricSpace β]
 variable {K₁ K₂ : ℝ≥0} {f : α → β}

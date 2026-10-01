@@ -3,13 +3,17 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Kaehler.Basic
-import Mathlib.Algebra.MvPolynomial.PDeriv
-import Mathlib.Algebra.Polynomial.Derivation
+module
+
+public import Mathlib.RingTheory.Kaehler.Basic
+public import Mathlib.Algebra.MvPolynomial.PDeriv
+public import Mathlib.Algebra.Polynomial.Derivation
 
 /-!
 # The Kähler differential module of polynomial algebras
 -/
+
+@[expose] public section
 
 open Algebra Module
 open scoped TensorProduct
@@ -44,7 +48,7 @@ def KaehlerDifferential.mvPolynomialEquiv (σ : Type*) :
     | add => simp only [map_add, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom] at *; simp only [*]
     | single a b =>
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Finsupp.linearCombination_single,
-        LinearMap.map_smul, Derivation.liftKaehlerDifferential_comp_D]
+        map_smul, Derivation.liftKaehlerDifferential_comp_D]
       congr 1
       induction a using MvPolynomial.induction_on
       · simp only [MvPolynomial.derivation_C, map_zero]
@@ -65,7 +69,7 @@ lemma KaehlerDifferential.mvPolynomialBasis_repr_comp_D (σ) :
 lemma KaehlerDifferential.mvPolynomialBasis_repr_D (σ) (x) :
     (mvPolynomialBasis R σ).repr (D _ _ x) =
       MvPolynomial.mkDerivation R (Finsupp.single · (1 : MvPolynomial σ R)) x :=
-  Derivation.congr_fun (mvPolynomialBasis_repr_comp_D R σ) x
+  congr($(mvPolynomialBasis_repr_comp_D R σ) x)
 
 @[simp]
 lemma KaehlerDifferential.mvPolynomialBasis_repr_D_X (σ) (i) :
@@ -80,7 +84,6 @@ lemma KaehlerDifferential.mvPolynomialBasis_repr_apply (σ) (x) (i) :
     (mvPolynomialBasis R σ).repr.toLinearMap).compDer (D _ _) = MvPolynomial.pderiv i by
     rw [← this]; rfl
   apply MvPolynomial.derivation_ext
-  intro j
   simp [Finsupp.single_apply, Pi.single_apply]
 
 lemma KaehlerDifferential.mvPolynomialBasis_repr_symm_single (σ) (i) (x) :
@@ -128,7 +131,7 @@ lemma KaehlerDifferential.polynomialEquiv_comp_D :
 @[simp]
 lemma KaehlerDifferential.polynomialEquiv_D (P) :
     polynomialEquiv R (D R R[X] P) = derivative P :=
-  Derivation.congr_fun (polynomialEquiv_comp_D R) P
+  congr($(polynomialEquiv_comp_D R) P)
 
 @[simp]
 lemma KaehlerDifferential.polynomialEquiv_symm (P) :

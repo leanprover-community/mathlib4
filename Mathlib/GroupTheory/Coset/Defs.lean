@@ -3,11 +3,13 @@ Copyright (c) 2018 Mitchell Rowett. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Rowett, Kim Morrison
 -/
-import Mathlib.Algebra.Quotient
-import Mathlib.Algebra.Group.Action.Opposite
-import Mathlib.Algebra.Group.Subgroup.MulOpposite
-import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.Algebra.Quotient
+public import Mathlib.Algebra.Group.Action.Opposite
+public import Mathlib.Algebra.Group.Subgroup.MulOpposite
+public import Mathlib.GroupTheory.GroupAction.Defs
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Cosets
@@ -16,11 +18,13 @@ This file develops the basic theory of left and right cosets.
 
 When `G` is a group and `a : G`, `s : Set G`, with  `open scoped Pointwise` we can write:
 * the left coset of `s` by `a` as `a • s`
-* the right coset of `s` by `a` as `MulOpposite.op a • s` (or `op a • s` with `open MulOpposite`)
+* the right coset of `s` by `a` as `MulOpposite.op a • s` (or `op a • s` with `open MulOpposite`,
+  or `s <• a` with `open scoped Pointwise RightActions`)
 
 If instead `G` is an additive group, we can write (with  `open scoped Pointwise` still)
 * the left coset of `s` by `a` as `a +ᵥ s`
-* the right coset of `s` by `a` as `AddOpposite.op a +ᵥ s` (or `op a • s` with `open AddOpposite`)
+* the right coset of `s` by `a` as `AddOpposite.op a +ᵥ s` (or `op a +ᵥ s` with `open AddOpposite`,
+  or `s <+ᵥ a` with `open scoped Pointwise RightActions`)
 
 ## Main definitions
 
@@ -38,6 +42,8 @@ If instead `G` is an additive group, we can write (with  `open scoped Pointwise`
 Properly merge with pointwise actions on sets, by renaming and deduplicating lemmas as appropriate.
 -/
 
+@[expose] public section
+
 assert_not_exists Cardinal
 
 open Function Set
@@ -45,8 +51,8 @@ open scoped Pointwise
 
 variable {α : Type*}
 
--- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.E2.9C.94.20to_additive.2Emap_namespace
-run_cmd Lean.Elab.Command.liftCoreM <| ToAdditive.insertTranslation `QuotientGroup `QuotientAddGroup
+/- Ensure that `@[to_additive]` uses the right namespace. -/
+insert_to_additive_translation QuotientGroup QuotientAddGroup
 
 namespace QuotientGroup
 
@@ -54,7 +60,8 @@ variable [Group α] (s : Subgroup α)
 
 /-- The equivalence relation corresponding to the partition of a group by left cosets
 of a subgroup. -/
-@[to_additive /-- The equivalence relation corresponding to the partition of a group by left cosets
+@[to_additive (attr := instance_reducible)
+  /-- The equivalence relation corresponding to the partition of a group by left cosets
 of a subgroup. -/]
 def leftRel : Setoid α :=
   MulAction.orbitRel s.op α
@@ -93,8 +100,9 @@ instance [DecidablePred (· ∈ s)] : DecidableEq (α ⧸ s) :=
 
 /-- The equivalence relation corresponding to the partition of a group by right cosets of a
 subgroup. -/
-@[to_additive /-- The equivalence relation corresponding to the partition of a group by right cosets
-of a subgroup. -/]
+@[to_additive (attr := instance_reducible)
+  /-- The equivalence relation corresponding to the partition of a group by right cosets
+  of a subgroup. -/]
 def rightRel : Setoid α :=
   MulAction.orbitRel s α
 
@@ -123,11 +131,11 @@ def quotientRightRelEquivQuotientLeftRel : Quotient (QuotientGroup.rightRel s) �
   toFun :=
     Quotient.map' (fun g => g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
-      exact fun h => (congr_arg (· ∈ s) (by simp)).mp (s.inv_mem h)
+      exact fun h => congr($(by simp) ∈ s).mp (s.inv_mem h)
   invFun :=
     Quotient.map' (fun g => g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
-      exact fun h => (congr_arg (· ∈ s) (by simp)).mp (s.inv_mem h)
+      exact fun h => congr($(by simp) ∈ s).mp (s.inv_mem h)
   left_inv g :=
     Quotient.inductionOn' g fun g =>
       Quotient.sound'
@@ -198,18 +206,29 @@ theorem out_eq' (a : α ⧸ s) : mk a.out = a :=
 
 variable (s)
 
-/- It can be useful to write `obtain ⟨h, H⟩ := mk_out_eq_mul ...`, and then `rw [H]` or
-  `simp_rw [H]` or `simp only [H]`. In order for `simp_rw` and `simp only` to work, this lemma is
-  stated in terms of an arbitrary `h : s`, rather than the specific `h = g⁻¹ * (mk g).out`. -/
-@[to_additive QuotientAddGroup.mk_out_eq_mul]
+/-- It can be useful to write `obtain ⟨h, H⟩ := mk_out_eq_mul ...`, and then `rw [H]` or
+`simp_rw [H]` or `simp only [H]`. In order for `simp_rw` and `simp only` to work, this lemma is
+stated in terms of an arbitrary `h : s`, rather than the specific `h = g⁻¹ * (mk g).out`. -/
+@[to_additive /-- It can be useful to write
+`obtain ⟨h, H⟩ := mk_out_eq_add ...`, and then `rw [H]` or `simp_rw [H]` or `simp only [H]`. In
+order for `simp_rw` and `simp only` to work, this lemma is stated in terms of an arbitrary `h : s`,
+rather than the specific `h = -g + (mk g).out`. -/]
 theorem mk_out_eq_mul (g : α) : ∃ h : s, (mk g : α ⧸ s).out = g * h :=
   ⟨⟨g⁻¹ * (mk g).out, QuotientGroup.eq.mp (mk g).out_eq'.symm⟩, by rw [mul_inv_cancel_left]⟩
 
-variable {s} {a b : α}
+variable {s} {a b c : α}
 
 @[to_additive (attr := simp)]
 theorem mk_mul_of_mem (a : α) (hb : b ∈ s) : (mk (a * b) : α ⧸ s) = mk a := by
   rwa [QuotientGroup.eq, mul_inv_rev, inv_mul_cancel_right, s.inv_mem_iff]
+
+@[to_additive]
+theorem mk_mul_eq_iff : (mk (a * b) : α ⧸ s) = mk c ↔ (mk b : α ⧸ s) = mk (a⁻¹ * c) := by
+  simp [QuotientGroup.eq, mul_assoc]
+
+@[to_additive (attr := simp)]
+theorem mk_mul_left_cancel_iff : (mk (a * b) : α ⧸ s) = mk (a * c) ↔ (mk b : α ⧸ s) = mk c := by
+  simp [mk_mul_eq_iff]
 
 @[to_additive]
 theorem preimage_image_mk (N : Subgroup α) (s : Set α) :
@@ -233,7 +252,16 @@ theorem preimage_image_mk_eq_mul (N : Subgroup α) (s : Set α) :
   rw [preimage_image_mk_eq_iUnion_image, iUnion_subtype, ← image2_mul, ← iUnion_image_right]
   simp only [SetLike.mem_coe]
 
+@[to_additive]
+theorem preimage_mk_one (N : Subgroup α) :
+    mk ⁻¹' {(mk : α → α ⧸ N) 1} = N := by
+  rw [← image_singleton, preimage_image_mk_eq_mul]
+  simp
+
 end QuotientGroup
+
+@[deprecated (since := "2026-07-12")]
+alias QuotientAddGroup.mk_out_eq_mul := QuotientAddGroup.mk_out_eq_add
 
 namespace Subgroup
 

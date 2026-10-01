@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Set.Piecewise
-import Mathlib.Order.FixedPoints
-import Mathlib.Order.Zorn
+module
+
+public import Mathlib.Data.Set.Piecewise
+public import Mathlib.Order.FixedPoints
+public import Mathlib.Order.Zorn
 
 /-!
 # Schröder-Bernstein theorem, well-ordering of cardinals
@@ -24,6 +26,8 @@ Cardinals are naturally ordered by `α ≤ β ↔ ∃ f : a → β, Injective f`
 
 Cardinals are defined and further developed in the folder `SetTheory.Cardinal`.
 -/
+
+public section
 
 
 open Set Function
@@ -131,7 +135,7 @@ theorem min_injective [I : Nonempty ι] : ∃ i, Nonempty (∀ j, β i ↪ β j)
           hs.eq_of_subset this (subset_insert _ _) ▸ mem_insert ..
         let ⟨i⟩ := I
         hf i f this rfl
-  ⟨i, ⟨fun j => ⟨s.restrict (fun x => x j) ∘ surjInv e,
+  ⟨i, ⟨fun j => ⟨s.domRestrict (fun x => x j) ∘ surjInv e,
     ((hs.1 j).injective).comp (injective_surjInv _)⟩⟩⟩
 
 end Wo

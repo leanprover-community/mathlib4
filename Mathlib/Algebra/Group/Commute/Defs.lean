@@ -3,7 +3,9 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Semiconj.Defs
+module
+
+public import Mathlib.Algebra.Group.Semiconj.Defs
 
 /-!
 # Commuting pairs of elements in monoids
@@ -24,31 +26,17 @@ This file defines only a few operations (`mul_left`, `inv_right`, etc).  Other o
 Most of the proofs come from the properties of `SemiconjBy`.
 -/
 
+@[expose] public section
+
 assert_not_exists MonoidWithZero DenselyOrdered
 
 variable {G M S : Type*}
-
-/-- Two elements commute if `a * b = b * a`. -/
-@[to_additive /-- Two elements additively commute if `a + b = b + a` -/]
-def Commute [Mul S] (a b : S) : Prop :=
-  SemiconjBy a b b
-
-/--
-Two elements `a` and `b` commute if `a * b = b * a`.
--/
-@[to_additive]
-theorem commute_iff_eq [Mul S] (a b : S) : Commute a b ↔ a * b = b * a := Iff.rfl
 
 namespace Commute
 
 section Mul
 
 variable [Mul S]
-
-/-- Equality behind `Commute a b`; useful for rewriting. -/
-@[to_additive /-- Equality behind `AddCommute a b`; useful for rewriting. -/]
-protected theorem eq {a b : S} (h : Commute a b) : a * b = b * a :=
-  h
 
 /-- Any element commutes with itself. -/
 @[to_additive (attr := refl, simp) /-- Any element commutes with itself. -/]
@@ -64,17 +52,21 @@ protected theorem symm {a b : S} (h : Commute a b) : Commute b a :=
 protected theorem semiconjBy {a b : S} (h : Commute a b) : SemiconjBy a b b :=
   h
 
-@[to_additive]
+@[to_additive (attr := grind =)]
 protected theorem symm_iff {a b : S} : Commute a b ↔ Commute b a :=
   ⟨Commute.symm, Commute.symm⟩
 
 @[to_additive]
-instance : IsRefl S Commute :=
+instance : @Std.Refl S Commute :=
   ⟨Commute.refl⟩
+
+@[to_additive]
+instance : @Std.Symm S Commute where
+  symm _ _ := .symm
 
 -- This instance is useful for `Finset.noncommProd`
 @[to_additive]
-instance on_isRefl {f : G → S} : IsRefl G fun a b => Commute (f a) (f b) :=
+instance on_refl {f : G → S} : Std.Refl fun a b => Commute (f a) (f b) :=
   ⟨fun _ => Commute.refl _⟩
 
 end Mul
@@ -174,7 +166,7 @@ protected theorem inv (hab : Commute a b) : (a * b)⁻¹ = a⁻¹ * b⁻¹ := by
 
 @[to_additive AddCommute.zsmul_add]
 protected lemma mul_zpow (h : Commute a b) : ∀ n : ℤ, (a * b) ^ n = a ^ n * b ^ n
-  | (n : ℕ)    => by simp [zpow_natCast, h.mul_pow n]
+  | (n : ℕ) => by simp [zpow_natCast, h.mul_pow n]
   | .negSucc n => by simp [h.mul_pow, (h.pow_pow _ _).eq, mul_inv_rev]
 
 end DivisionMonoid
@@ -191,6 +183,31 @@ protected theorem mul_inv_cancel (h : Commute a b) : a * b * a⁻¹ = b := by
 theorem mul_inv_cancel_assoc (h : Commute a b) : a * (b * a⁻¹) = b := by
   rw [← mul_assoc, h.mul_inv_cancel]
 
+@[to_additive nsmul_sub]
+lemma div_pow (h : Commute a b) : ∀ n, (a / b) ^ n = a ^ n / b ^ n
+  | 0 => by rw [pow_zero, pow_zero, pow_zero, div_self']
+  | n + 1 => by
+    rw [pow_succ', pow_succ', pow_succ, h.div_pow n]
+    simp only [div_eq_mul_inv, mul_assoc, mul_right_inj]
+    apply mul_right_injective b
+    simp [← mul_assoc, ← (h.pow_left n).eq]
+
+@[to_additive zsmul_sub]
+lemma div_zpow (h : Commute a b) : ∀ n : ℤ, (a / b) ^ n = a ^ n / b ^ n
+  | (n : ℕ) => by simpa using h.div_pow n
+  | .negSucc n => by
+    rw [zpow_negSucc, h.div_pow]
+    apply inv_eq_of_mul_eq_one_left
+    simp [div_eq_mul_inv, ← (h.pow_pow (n + 1) (n + 1)).mul_mul_mul_comm]
+
 end Group
 
 end Commute
+
+@[to_additive] protected lemma IsLeftRegular.commute_mul_left_iff [Semigroup S] {a b : S}
+    (reg : IsLeftRegular a) : Commute (a * b) a ↔ Commute a b := by
+  simp [commute_iff_eq, mul_assoc, reg.eq_iff, eq_comm]
+
+@[to_additive] protected lemma IsRightRegular.commute_mul_right_iff [Semigroup S] {a b : S}
+    (reg : IsRightRegular a) : Commute (b * a) a ↔ Commute a b := by
+  simp [commute_iff_eq, ← mul_assoc, reg.eq_iff, eq_comm]

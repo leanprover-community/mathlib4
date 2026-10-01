@@ -3,12 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+module
 
-import Mathlib.Logic.Function.Defs
+public import Mathlib.Logic.Function.Defs
 
 /-!
 # Relator for functions, pairs, sums, and lists.
 -/
+
+@[expose] public section
 
 namespace Relator
 universe u₁ u₂ v₁ v₂
@@ -38,7 +41,7 @@ end
 
 section
 
-variable {α : Type u₁} {β : Type u₂} (R : α → β → Prop)
+variable {α : Sort u₁} {β : Sort u₂} (R : α → β → Prop)
 
 /-- A relation is "right total" if every element appears on the right. -/
 def RightTotal : Prop := ∀ b, ∃ a, R a b

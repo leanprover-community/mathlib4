@@ -3,16 +3,18 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 
 /-!
 # Constructing pullbacks from binary products and equalizers
 
-If a category as binary products and equalizers, then it has pullbacks.
-Also, if a category has binary coproducts and coequalizers, then it has pushouts
+If a category has binary products and equalizers, then it has pullbacks.
+Also, if a category has binary coproducts and coequalizers, then it has pushouts.
 -/
+
+public section
 
 
 universe v u
@@ -41,7 +43,7 @@ theorem hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallelPair {C : Type u} [
             exact PullbackCone.condition _)
           (by simp [π₁, e]) (by simp [π₂, e]) fun s m h₁ h₂ => by
           ext
-          · dsimp; simpa using h₁
+          · simpa using h₁
           · simpa using h₂ }
 
 section

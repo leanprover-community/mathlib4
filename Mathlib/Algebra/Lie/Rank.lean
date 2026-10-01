@@ -3,10 +3,11 @@ Copyright (c) 2024 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Lie.EngelSubalgebra
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Algebra.Module.LinearMap.Polynomial
-import Mathlib.LinearAlgebra.Eigenspace.Zero
+module
+
+public import Mathlib.Algebra.Lie.EngelSubalgebra
+public import Mathlib.Algebra.Module.LinearMap.Polynomial
+public import Mathlib.LinearAlgebra.Eigenspace.Zero
 
 /-!
 # Rank of a Lie algebra and regular elements
@@ -30,11 +31,12 @@ if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-
 
 -/
 
+@[expose] public section
+
 open Module
 
-variable {R A L M ι ιₘ : Type*}
+variable {R L M ι ιₘ : Type*}
 variable [CommRing R]
-variable [CommRing A] [Algebra R A]
 variable [LieRing L] [LieAlgebra R L] [Module.Finite R L] [Module.Free R L]
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 variable [Module.Finite R M] [Module.Free R M]
@@ -45,6 +47,7 @@ variable (b : Basis ι R L) (bₘ : Basis ιₘ R M) (x : L)
 namespace LieModule
 
 open LieAlgebra LinearMap Module.Free
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 variable (R L M)
 
@@ -120,6 +123,7 @@ end LieModule
 namespace LieAlgebra
 
 open LieAlgebra LinearMap Module.Free
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 variable (R L)
 

@@ -3,9 +3,10 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Jonas Bayer
 -/
+module
 
-import Mathlib.MeasureTheory.Constructions.Projective
-import Mathlib.Probability.IdentDistrib
+public import Mathlib.MeasureTheory.Constructions.Projective
+public import Mathlib.Probability.IdentDistrib
 
 /-!
 # Finite-dimensional distributions of a stochastic process
@@ -30,6 +31,8 @@ finite-dimensional distributions.
 
 -/
 
+public section
+
 open MeasureTheory
 
 namespace ProbabilityTheory
@@ -43,7 +46,7 @@ lemma isProjectiveMeasureFamily_map_restrict (hX : ∀ t, AEMeasurable (X t) P) 
   intro I J hJI
   rw [AEMeasurable.map_map_of_aemeasurable (Finset.measurable_restrict₂ _).aemeasurable]
   · simp [Finset.restrict_def, Finset.restrict₂_def, Function.comp_def]
-  · exact aemeasurable_pi_lambda _ fun _ ↦ hX _
+  · exact .of_eval fun _ ↦ hX _
 
 /-- The projective limit of the finite-dimensional distributions of a stochastic process is the law
 of the process. -/

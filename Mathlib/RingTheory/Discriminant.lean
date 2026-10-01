@@ -3,9 +3,10 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
-import Mathlib.RingTheory.Norm.Basic
-import Mathlib.RingTheory.Trace.Basic
+module
+
+import Mathlib.RingTheory.Norm.Transitivity
+public import Mathlib.RingTheory.Trace.Basic
 
 /-!
 # Discriminant of a family of vectors
@@ -45,12 +46,14 @@ Our definition works for any `A`-algebra `B`, but note that if `B` is not free a
 then `trace A B = 0` by definition, so `discr A b = 0` for any `b`.
 -/
 
+@[expose] public section
+
 
 universe u v w z
 
 open scoped Matrix
 
-open Matrix Module Fintype Polynomial Finset IntermediateField
+open Matrix Module Fintype Polynomial Finset
 
 namespace Algebra
 
@@ -79,12 +82,11 @@ section Basic
 
 @[simp]
 theorem discr_reindex (b : Basis ι A B) (f : ι ≃ ι') : discr A (b ∘ ⇑f.symm) = discr A b := by
-  classical rw [← Basis.coe_reindex, discr_def, traceMatrix_reindex, det_reindex_self, ← discr_def]
+  rw [← Basis.coe_reindex, discr_def, traceMatrix_reindex, det_reindex_self, ← discr_def]
 
 /-- If `b` is not linear independent, then `Algebra.discr A b = 0`. -/
 theorem discr_zero_of_not_linearIndependent [IsDomain A] {b : ι → B}
     (hli : ¬LinearIndependent A b) : discr A b = 0 := by
-  classical
   obtain ⟨g, hg, i, hi⟩ := Fintype.not_linearIndependent_iff.1 hli
   have : (traceMatrix A b) *ᵥ g = 0 := by
     ext i
@@ -92,7 +94,7 @@ theorem discr_zero_of_not_linearIndependent [IsDomain A] {b : ι → B}
       intro j
       simp [mul_comm]
     simp only [mulVec, dotProduct, traceMatrix_apply, Pi.zero_apply, traceForm_apply, fun j =>
-      this j, ← map_sum, ← sum_mul, hg, zero_mul, LinearMap.map_zero]
+      this j, ← map_sum, ← sum_mul, hg, zero_mul, map_zero]
   by_contra h
   rw [discr_def] at h
   simp [Matrix.eq_zero_of_mulVec_eq_zero h this] at hi
@@ -175,23 +177,20 @@ theorem discr_powerBasis_eq_prod'' [Algebra.IsSeparable K L] (e : Fin pb.dim ≃
   simp only [prod_pow_eq_pow_sum, prod_const]
   congr
   rw [← @Nat.cast_inj ℚ, Nat.cast_sum]
-  have : ∀ x : Fin pb.dim, ↑x + 1 ≤ pb.dim := by simp [Nat.succ_le_iff, Fin.is_lt]
+  have : ∀ x : Fin pb.dim, ↑x + 1 ≤ pb.dim := by simp [Fin.is_lt]
   simp_rw [Fin.card_Ioi, Nat.sub_sub, add_comm 1]
   simp only [Nat.cast_sub, this, Finset.card_fin, nsmul_eq_mul, sum_const, sum_sub_distrib,
     Nat.cast_add, Nat.cast_one, sum_add_distrib, mul_one]
   rw [← Nat.cast_sum, ← @Finset.sum_range ℕ _ pb.dim fun i => i, sum_range_id]
   have hn : n = pb.dim := by
     rw [← AlgHom.card K L E, ← Fintype.card_fin pb.dim]
-    -- FIXME: Without the `Fintype` namespace, why does it complain about `Finset.card_congr` being
-    -- deprecated?
-    exact Fintype.card_congr e.symm
+    exact card_congr e.symm
   have h₂ : 2 ∣ pb.dim * (pb.dim - 1) := pb.dim.even_mul_pred_self.two_dvd
   have hne : ((2 : ℕ) : ℚ) ≠ 0 := by simp
   have hle : 1 ≤ pb.dim := by
     rw [← hn, Nat.one_le_iff_ne_zero, ← zero_lt_iff, Module.finrank_pos_iff]
     infer_instance
   rw [hn, Nat.cast_div h₂ hne, Nat.cast_mul, Nat.cast_sub hle]
-  field_simp
   ring
 
 /-- Formula for the discriminant of a power basis using the norm of the field extension. -/
@@ -200,7 +199,7 @@ theorem discr_powerBasis_eq_norm [Algebra.IsSeparable K L] :
       (-1) ^ (n * (n - 1) / 2) *
       norm K (aeval pb.gen (minpoly K pb.gen).derivative) := by
   let E := AlgebraicClosure L
-  letI := fun a b : E => Classical.propDecidable (Eq a b)
+  let := fun a b : E => Classical.propDecidable (Eq a b)
   have e : Fin pb.dim ≃ (L →ₐ[K] E) := by
     refine equivOfCardEq ?_
     rw [Fintype.card_fin, AlgHom.card]
@@ -209,21 +208,19 @@ theorem discr_powerBasis_eq_norm [Algebra.IsSeparable K L] :
     nodup_roots (Separable.map (Algebra.IsSeparable.isSeparable K pb.gen))
   have hroots : ∀ σ : L →ₐ[K] E, σ pb.gen ∈ (minpoly K pb.gen).aroots E := by
     intro σ
-    rw [mem_roots, IsRoot.def, eval_map, ← aeval_def, aeval_algHom_apply]
-    repeat' simp [minpoly.ne_zero (Algebra.IsSeparable.isIntegral K pb.gen)]
+    rw [mem_roots, IsRoot.def, eval_map_algebraMap, aeval_algHom_apply]
+    repeat' simp [minpoly.ne_zero pb.isIntegral_gen]
   apply (algebraMap K E).injective
-  rw [RingHom.map_mul, RingHom.map_pow, RingHom.map_neg, RingHom.map_one,
-    discr_powerBasis_eq_prod'' _ _ _ e]
+  rw [map_mul, map_pow, map_neg, map_one, discr_powerBasis_eq_prod'' _ _ _ e]
   congr
   rw [norm_eq_prod_embeddings, prod_prod_Ioi_mul_eq_prod_prod_off_diag]
   conv_rhs =>
     congr
     rfl
     ext σ
-    rw [← aeval_algHom_apply,
-      aeval_root_derivative_of_splits (minpoly.monic (Algebra.IsSeparable.isIntegral K pb.gen))
-        (IsAlgClosed.splits_codomain _) (hroots σ),
-      ← Finset.prod_mk _ (hnodup.erase _)]
+    rw [← aeval_algHom_apply, ← eval_map_algebraMap, ← derivative_map,
+      (IsAlgClosed.splits _).eval_root_derivative ((minpoly.monic pb.isIntegral_gen).map _)
+      (hroots σ), ← Finset.prod_mk _ (hnodup.erase _)]
   rw [Finset.prod_sigma', Finset.prod_sigma']
   refine prod_bij' (fun i _ ↦ ⟨e i.2, e i.1 pb.gen⟩)
     (fun σ hσ ↦ ⟨e.symm (PowerBasis.lift pb σ.2 ?_), e.symm σ.1⟩) ?_ ?_ ?_ ?_ (fun i _ ↦ by simp)
@@ -245,7 +242,6 @@ variable {R : Type z} [CommRing R] [Algebra R K] [Algebra R L] [IsScalarTower R 
 /-- If `K` and `L` are fields and `IsScalarTower R K L`, and `b : ι → L` satisfies
 ` ∀ i, IsIntegral R (b i)`, then `IsIntegral R (discr K b)`. -/
 theorem discr_isIntegral {b : ι → L} (h : ∀ i, IsIntegral R (b i)) : IsIntegral R (discr K b) := by
-  classical
   rw [discr_def]
   exact IsIntegral.det fun i j ↦ isIntegral_trace ((h i).mul (h j))
 
@@ -276,10 +272,10 @@ theorem discr_mul_isIntegral_mem_adjoin [Algebra.IsSeparable K L] [IsIntegrallyC
     exact Subalgebra.pow_mem _ (subset_adjoin (Set.mem_singleton _)) _
   intro i
   rw [← H, ← mulVec_smul] at cramer
-  replace cramer := congr_arg (mulVec (traceMatrix K B.basis)⁻¹) cramer
+  replace cramer := congr((mulVec (traceMatrix K B.basis)⁻¹) $cramer)
   rw [mulVec_mulVec, nonsing_inv_mul _ hinv, mulVec_mulVec, nonsing_inv_mul _ hinv, one_mulVec,
     one_mulVec] at cramer
-  rw [← congr_fun cramer i, cramer_apply, det_apply]
+  rw [← congr($cramer i), cramer_apply, det_apply]
   refine
     Subalgebra.sum_mem _ fun σ _ => Subalgebra.zsmul_mem _ (Subalgebra.prod_mem _ fun j _ => ?_) _
   by_cases hji : j = i

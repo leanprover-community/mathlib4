@@ -3,18 +3,20 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+module
+
 import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.Algebra.Ring.Action.Basic
-import Mathlib.GroupTheory.Coset.Card
-import Mathlib.GroupTheory.GroupAction.Hom
-import Mathlib.GroupTheory.GroupAction.Quotient
+public import Mathlib.Algebra.Polynomial.Monic
+public import Mathlib.GroupTheory.Coset.Card
+public import Mathlib.GroupTheory.GroupAction.Quotient
 
 /-!
 # Group action on rings applied to polynomials
 
 This file contains instances and definitions relating `MulSemiringAction` to `Polynomial`.
 -/
+
+@[expose] public section
 
 
 variable (M : Type*) [Monoid M]
@@ -52,8 +54,8 @@ variable (S : Type*) [CommSemiring S] [MulSemiringAction M S]
 theorem smul_eval_smul (m : M) (f : S[X]) (x : S) : (m • f).eval (m • x) = m • f.eval x :=
   Polynomial.induction_on f (fun r ↦ by rw [smul_C, eval_C, eval_C])
     (fun f g ihf ihg ↦ by rw [smul_add, eval_add, ihf, ihg, eval_add, smul_add]) fun n r _ ↦ by
-    rw [smul_mul', smul_pow', smul_C, smul_X, eval_mul, eval_C, eval_pow, eval_X, eval_mul, eval_C,
-      eval_pow, eval_X, smul_mul', smul_pow']
+    rw [smul_mul', smul_pow', smul_C, smul_X, eval_mul, eval_C, eval_X_pow, eval_mul, eval_C,
+      eval_X_pow, smul_mul', smul_pow']
 
 variable (G : Type*) [Group G]
 
