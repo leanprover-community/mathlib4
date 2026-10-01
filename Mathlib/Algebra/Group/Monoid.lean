@@ -241,9 +241,9 @@ implicit transparency. In particular, when a `Module` instance is defined using 
 `SMul` instance should be defined first, then `AddCommMonoid` (which extends `AddMonoid`), then
 finally the `Module` instance.
 
-Note that `@[no_expose]` should not be used for the `AddMonoid` instance of a type when there is a
-generic `SMul` instance, as the defeq between the two `SMul ℕ` instances coming from them will not
-hold in downstream modules, even if it holds in the module defining these instances.
+Note that `@[no_expose]` should not be used for the `AddMonoid` instance of a type, especially when
+there is a generic `SMul` instance, as the defeq between the two `SMul ℕ` instances coming from
+them will not hold in downstream modules, even if it holds in the module defining these instances.
 
 The tactic `to_additive` transfers definitions and results from multiplicative monoids to additive
 monoids. To work, it has to map fields to fields. This means that we should also add corresponding
