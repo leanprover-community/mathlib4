@@ -163,4 +163,3 @@ noncomputable instance : CompleteLinearOrder (Colex ((i : ι) → α i)) where
 
 end Colex
 end Pi
-#lint

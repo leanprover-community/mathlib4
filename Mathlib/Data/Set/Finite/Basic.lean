@@ -286,7 +286,9 @@ instance fintypeDiffLeft (s t : Set α) [Fintype s] [DecidablePred (· ∈ t)] :
 instance fintypeEmpty : Fintype (∅ : Set α) :=
   Fintype.ofFinset ∅ <| by simp
 
-example (a : α) : Fintype ({a} : Set α) := by infer_instance
+-- Shortcut instance, seems needed. TODO expand this comment.
+instance fintypeSingleton (a : α) : Fintype ({a} : Set α) := by infer_instance
+-- the explicit term `Fintype.ofFinset {a} <| by simp` causes diamonds at implicit transparency
 
 /-- A `Fintype` instance for inserting an element into a `Set` using the
 corresponding `insert` function on `Finset`. This requires `DecidableEq α`.
