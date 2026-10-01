@@ -5,15 +5,12 @@ Authors: Alex J. Best, Riccardo Brasca, Eric Rodriguez
 -/
 module
 
-public import Mathlib.Data.Nat.Factorization.LCM
-public import Mathlib.Data.Nat.Factorization.PrimePow
 public import Mathlib.Data.PNat.Prime
 public import Mathlib.NumberTheory.Cyclotomic.Basic
 public import Mathlib.RingTheory.Adjoin.PowerBasis
-public import Mathlib.RingTheory.Norm.Transitivity
+import Mathlib.RingTheory.Norm.Transitivity
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
-public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Primitive roots in cyclotomic fields
@@ -100,7 +97,7 @@ theorem aeval_zeta [IsDomain B] [NeZero (n : B)] :
   exact zeta_spec n A B
 
 theorem zeta_isRoot [IsDomain B] [NeZero (n : B)] : IsRoot (cyclotomic n B) (zeta n A B) := by
-  convert! aeval_zeta n A B using 0
+  convert aeval_zeta n A B using 0
   rw [IsRoot.def, aeval_def, eval₂_eq_eval_map, map_cyclotomic]
 
 theorem zeta_pow : zeta n A B ^ n = 1 :=
@@ -198,7 +195,7 @@ theorem _root_.IsPrimitiveRoot.lcm_totient_le_finrank [FiniteDimensional K L] {p
   let k := PNat.lcm ⟨p, hppos⟩ ⟨q, hqpos⟩
   have : IsPrimitiveRoot z k := hx.pow_mul_pow_lcm hy hppos.ne' hqpos.ne'
   have := IsPrimitiveRoot.adjoin_isCyclotomicExtension K this
-  convert! Submodule.finrank_le (Subalgebra.toSubmodule (adjoin K { z }))
+  convert Submodule.finrank_le (Subalgebra.toSubmodule (adjoin K { z }))
   rw [show Nat.lcm p q = (k : ℕ) from rfl] at hirr
   simpa using! (IsCyclotomicExtension.finrank (Algebra.adjoin K {z}) hirr).symm
 
@@ -246,7 +243,7 @@ theorem exists_neg_pow_of_isOfFinOrder [IsCyclotomicExtension {n} ℚ K]
     (hno : Odd n) {ζ x : K} (hζ : IsPrimitiveRoot ζ n) (hx : IsOfFinOrder x) :
     ∃ r : ℕ, x = (-ζ) ^ r := by
   have hnegζ : IsPrimitiveRoot (-ζ) (2 * n) := by
-    convert! IsPrimitiveRoot.orderOf (-ζ)
+    convert IsPrimitiveRoot.orderOf (-ζ)
     rw [neg_eq_neg_one_mul, (Commute.all _ _).orderOf_mul_eq_mul_orderOf_of_coprime]
     · simp [hζ.eq_orderOf]
     · simp [← hζ.eq_orderOf, hno]
@@ -305,7 +302,7 @@ omit [NeZero n] in
 theorem norm_eq_one_of_linearly_ordered {K : Type*}
     [Field K] [LinearOrder K] [IsStrictOrderedRing K] [Algebra K L] (hodd : Odd n) :
     norm K ζ = 1 := by
-  have hz := congr_arg (norm K) ((IsPrimitiveRoot.iff_def _ n).1 hζ).1
+  have hz := congr(norm K $(((IsPrimitiveRoot.iff_def _ n).1 hζ).1))
   rw [← (algebraMap K L).map_one, Algebra.norm_algebraMap, one_pow, map_pow, ← one_pow n] at hz
   exact StrictMono.injective hodd.strictMono_pow hz
 
@@ -414,7 +411,7 @@ theorem norm_pow_sub_one_of_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot 
     refine IsCyclotomicExtension.equiv _ _ _ (h := ?_) (.refl : K⟮η + 1⟯.toSubalgebra ≃ₐ[K] _)
     rw [H]
     have hη' : IsPrimitiveRoot (η + 1) (p ^ (k + 1 - s)) := by simpa using hη
-    convert! hη'.adjoin_isCyclotomicExtension K using 1
+    convert hη'.adjoin_isCyclotomicExtension K using 1
     rw [Nat.sub_add_comm hs]
   replace hη : IsPrimitiveRoot (η₁ + 1) (p ^ (k - s + 1)) := by
     apply coe_submonoidClass_iff.1

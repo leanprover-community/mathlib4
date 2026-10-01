@@ -5,8 +5,6 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 -/
 module
 
-public import Mathlib.Basic.ENNReal.Real
-public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Topology.EMetricSpace.Basic
 public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 public import Mathlib.Topology.Metrizable.Basic
@@ -229,12 +227,6 @@ protected theorem IsEmbedding.isSeparable_preimage {α : Type*} [TopologicalSpac
   hf.isInducing.isSeparable_preimage hs
 
 end Topology
-
-/-- A compact set is separable. -/
-theorem IsCompact.isSeparable {α : Type*} [TopologicalSpace α] [PseudoMetrizableSpace α]
-    {s : Set α} (hs : IsCompact s) : IsSeparable s :=
-  haveI : CompactSpace s := isCompact_iff_compactSpace.mp hs
-  .of_subtype s
 
 namespace Metric
 

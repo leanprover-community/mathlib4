@@ -61,7 +61,6 @@ def constCocone : Cocone ((Functor.const J).obj X) where
 
 variable [IsConnected J]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- When `J` is a connected category, the limit of a
 constant functor `J ⥤ C` with value `X : C` identifies to `X`. -/
@@ -74,7 +73,6 @@ def isLimitConstCone : IsLimit (constCone J X) where
       (fun _ _ f ↦ by simpa using s.w f) _ _
   uniq s m hm := by simpa using hm (Classical.arbitrary _)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- When `J` is a connected category, the colimit of a
 constant functor `J ⥤ C` with value `X : C` identifies to `X`. -/
@@ -99,7 +97,6 @@ section
 
 variable [IsConnected J]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `J` is connected, `F : J ⥤ C` and `c` is a cone on `F`, then to check that `c` is a
 limit it is sufficient to check that `limMap c.π` is an isomorphism. The converse is also
 true, see `Cone.isLimit_iff_isIso_limMap_π`. -/
@@ -113,7 +110,6 @@ def Cone.isLimitOfIsIsoLimMapπ {F : J ⥤ C} [HasLimit F] (c : Cone F)
   congr 1
   simp [← Iso.inv_comp_eq_id]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsLimit.isIso_limMap_π {F : J ⥤ C} [HasLimit F] {c : Cone F} (hc : IsLimit c) :
     IsIso (limMap c.π) := by
   suffices limMap c.π = ((limit.isLimit _).conePointUniqueUpToIso (isLimitConstCone J c.pt) ≪≫
@@ -129,7 +125,6 @@ theorem Cone.isLimit_iff_isIso_limMap_π {F : J ⥤ C} [HasLimit F] (c : Cone F)
     Nonempty (IsLimit c) ↔ IsIso (limMap c.π) :=
   ⟨fun ⟨h⟩ => IsLimit.isIso_limMap_π h, fun _ => ⟨c.isLimitOfIsIsoLimMapπ⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `J` is connected, `F : J ⥤ C` and `C` is a cocone on `F`, then to check that `c` is a
 colimit it is sufficient to check that `colimMap c.ι` is an isomorphism. The converse is also
 true, see `Cocone.isColimit_iff_isIso_colimMap_ι`. -/
@@ -138,7 +133,6 @@ def Cocone.isColimitOfIsIsoColimMapι {F : J ⥤ C} [HasColimit F] (c : Cocone F
   IsColimit.ofIsoColimit (colimit.isColimit _) (Cocone.ext (asIso (colimMap c.ι) ≪≫
     (colimit.isColimit _).coconePointUniqueUpToIso (isColimitConstCocone J c.pt)) (by simp))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsColimit.isIso_colimMap_ι {F : J ⥤ C} [HasColimit F] {c : Cocone F} (hc : IsColimit c) :
     IsIso (colimMap c.ι) := by
   suffices colimMap c.ι = ((colimit.isColimit _).coconePointUniqueUpToIso hc ≪≫
@@ -175,9 +169,6 @@ instance widePushoutShape_connected (J : Type v₁) : IsConnected (WidePushoutSh
     cases j
     · exact hp
     · rwa [← t (WidePushoutShape.Hom.init _)]
-
-instance parallelPairInhabited : Inhabited WalkingParallelPair :=
-  ⟨WalkingParallelPair.one⟩
 
 instance parallel_pair_connected : IsConnected WalkingParallelPair := by
   apply IsConnected.of_induct
