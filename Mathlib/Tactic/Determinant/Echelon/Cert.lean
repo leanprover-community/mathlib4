@@ -25,7 +25,7 @@ through the certificate `Echelon.Decomposition A` of its echelon decomposition.
 The determinant is the quotient of the diagonal products of `U` and `L`, up to the sign of the
 row permutation. The model computes it in its carrier by exact division. Where the division is not
 exact, as under the rational model's row scaling, the value is the fraction of the two products in
-`norm_num`'s normal form.
+`norm_num`'s normal form when possible.
 -/
 
 public meta section
@@ -34,8 +34,7 @@ open Lean Meta Qq Mathlib.Tactic.Echelon Mathlib.Tactic.Matrix
 
 namespace Mathlib.Tactic.Determinant
 
-/-- The proof of `diagProd k c rows = a₀ * (a₁ * (… * 1))` on the literal `rows`, the product of
-the diagonal entries from column `k` on, one `diagProd_add_one_cons` per row. -/
+/-- Compute `diagProd k c rows` with a proof of the equality. -/
 def proveDiagProd {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) (k c : Nat) (kQ cQ : Q(Nat))
     (rows : Q(List (List $α))) : MetaM ((e : Q($α)) × Q(diagProd $kQ $cQ $rows = $e)) :=
   match c with
@@ -53,20 +52,19 @@ def proveDiagProd {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) (k c : Na
     have : $k₁Q =Q $kQ + 1 := ⟨⟩
     return ⟨q($entry * $e), q(diagProd_add_one_cons $hdrop $h)⟩
 
-/-- The permutation `(swap a₀ b₀).trans (… (refl _))` of the swaps `(a₀, b₀) :: …`, with a proof
-of its sign in the ring, `-(-(… 1))`, one lemma per swap. -/
+/-- Compute the sign of the permutation from the swaps with the corresponding proof. -/
 def provePermSign {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) (m : Nat)
     (swaps : List (Nat × Nat)) :
     MetaM ((σ : Q(Equiv.Perm (Fin $m))) × (s : Q($α)) ×
       Q(((Equiv.Perm.sign $σ : Int) : $α) = $s)) :=
   match swaps with
   | [] => return ⟨q(Equiv.refl (Fin $m)), q(1), q(intCast_sign_refl)⟩
-  | (i, j) :: rest => do
+  | (a, b) :: rest => do
     let ⟨σ, s, h⟩ ← provePermSign rα m rest
-    let a : Q(Fin $m) ← mkFinLitQ m i
-    let b : Q(Fin $m) ← mkFinLitQ m j
-    let hab : Q($a ≠ $b) ← mkDecideProofQ q($a ≠ $b)
-    return ⟨q((Equiv.swap $a $b).trans $σ), q(-$s), q(intCast_sign_swap_trans $h $hab)⟩
+    let aQ : Q(Fin $m) ← mkFinLitQ m a
+    let bQ : Q(Fin $m) ← mkFinLitQ m b
+    let hab : Q($aQ ≠ $bQ) ← mkDecideProofQ q($aQ ≠ $bQ)
+    return ⟨q((Equiv.swap $aQ $bQ).trans $σ), q(-$s), q(intCast_sign_swap_trans $h $hab)⟩
 
 /-- The value of the determinant read off the decomposition `data`, computed by `s * u / l`,
 where `u` and `l` are the diagonal products of `U` and `L` and `s` is the sign of the swaps.
@@ -95,22 +93,24 @@ def detValue {u : Level} (α : Q(Type u)) (m : Nat) {V : Type} (model : Model V)
   let some _dα ← synthInstanceQ? q(DivisionRing $α) | return none
   let frac : Q($α) := q($n / $d)
   -- Normalize `frac` when it is `norm_num` evaluable
-  let some r ← try some <$> Mathlib.Meta.NormNum.derive frac catch _ => pure none |
+  let some r ← try some <$> Meta.NormNum.derive frac catch _ => pure none |
     return some frac
   return some (← r.toSimpResult).expr
 
 /-- Construct the value `v` and a proof that `A.det = v` by computing the echelon decomposition. -/
 def proveEchelonDet {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) (iα : Q(IsDomain $α))
-    (m : Nat) (A : Q(Matrix (Fin $m) (Fin $m) $α)) (entries : Array (Array Expr)) :
+    (m : Nat) (A : Q(Matrix (Fin $m) (Fin $m) $α)) (entries : Array (Array Q($α))) :
     MetaM (Option ((v : Q($α)) × Q(($A).det = $v))) := do
   let r ← mkBareissDecomposition rα A entries
   let cert := r.cert
+  -- A `have`, since `decomp` is spliced bare and also occurs in the types of `hL` and `hmul`, and
+  -- Qq cannot match a `let`'s placeholder against its unfolded value.
   have decomp : Q(Echelon.Decomposition $A) := cert.decomp
   -- `L`'s literal, rebuilt from the data the certificate was built from
   let rowsL : List (List Q($α)) ← r.data.L.toList.mapM fun row ↦
     row.toList.mapM r.model.mkEntry
   let litL : Q(List (List $α)) := mkListLitQ (α := q(List $α)) (rowsL.map mkListLitQ)
-  have litU : Q(List (List $α)) := cert.U.lit
+  let litU : Q(List (List $α)) := cert.U.lit
   let ⟨diagL, hl⟩ ← proveDiagProd rα 0 m q(0) q($m) litL
   let ⟨diagU, hu⟩ ← proveDiagProd rα 0 m q(0) q($m) litU
   let ⟨_, s, hs⟩ ← provePermSign rα m r.data.swaps.toList.reverse

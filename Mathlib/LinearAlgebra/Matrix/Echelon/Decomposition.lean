@@ -19,8 +19,8 @@ public import Mathlib.LinearAlgebra.Matrix.Echelon.Pivot
 ## Main results
 
 - `Echelon.Decomposition.rank_eq`: `A.rank` is the pivot count of any certificate for `A`.
-- `Echelon.Decomposition.prod_diag_mul_det`: `A.det` from the diagonal products of `L` and of the
-  echelon form of a certificate for `A`.
+- `Echelon.Decomposition.det_eq_iff`: `A.det` from the diagonal products of `L` and of the
+  echelon form of any certificate for `A`.
 
 ## Tags
 
@@ -62,11 +62,16 @@ theorem Decomposition.rank_eq {A : Matrix m n R} (cert : Decomposition A) :
     cert.L.rank_mul_eq_right_of_isLowerTriangular _ cert.L_lowerTriangular cert.L_diag_ne_zero]
   exact (A.rank_submatrix cert.σ (.refl _)).symm
 
-omit [IsDomain R] in
-theorem Decomposition.prod_diag_mul_det {A : Matrix m m R} (cert : Decomposition A) :
-    (∏ i, cert.L i i) * (Equiv.Perm.sign cert.σ * A.det) =
+theorem Decomposition.det_eq_iff {A : Matrix m m R} (cert : Decomposition A) {v : R} :
+    A.det = v ↔ (∏ i, cert.L i i) * (Equiv.Perm.sign cert.σ * v) =
       ∏ i, (cert.L * A.submatrix cert.σ id) i i := by
-  rw [← Matrix.det_of_isLowerTriangular _ cert.L_lowerTriangular,
-    ← cert.isPivotedBy.isRowEchelon.det_eq, Matrix.det_mul, Matrix.det_permute]
+  have hU : ∏ i, (cert.L * A.submatrix cert.σ id) i i =
+      (∏ i, cert.L i i) * (Equiv.Perm.sign cert.σ * A.det) := by
+    rw [← cert.isPivotedBy.isRowEchelon.det_eq, Matrix.det_mul, Matrix.det_permute,
+      Matrix.det_of_isLowerTriangular _ cert.L_lowerTriangular]
+  have hL : ∏ i, cert.L i i ≠ 0 := Finset.prod_ne_zero_iff.mpr fun i _ ↦ cert.L_diag_ne_zero i
+  have hσ : IsUnit (Equiv.Perm.sign cert.σ : R) :=
+    (Equiv.Perm.sign cert.σ).isUnit.map (Int.castRingHom R)
+  rw [hU, mul_right_inj' hL, hσ.mul_right_inj, eq_comm]
 
 end Echelon

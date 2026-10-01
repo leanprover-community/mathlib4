@@ -32,8 +32,8 @@ section
 
 variable [Zero α] [One α] [Mul α]
 
-/-- The product of the `c` entries at columns `k, k + 1, …` of successive rows. A missing row or
-entry counts as `0`. -/
+/-- The product of the entries of rows at positions `(i, k + i)` for `i < c`. Missing entries
+are padded with 0. -/
 def diagProd (k c : ℕ) (rows : List (List α)) : α :=
   match c with
   | 0 => 1
@@ -84,20 +84,13 @@ theorem intCast_sign_swap_trans [AddGroupWithOne α] {s : α}
 
 /-- Compute determinant from a decomposition. The statement is written in this shape to avoid
 mentioning division. -/
-theorem det_eq_of_decomposition {m : ℕ} {R : Type*} [CommRing R] [NoZeroDivisors R]
+theorem det_eq_of_decomposition {m : ℕ} {R : Type*} [CommRing R] [IsDomain R]
     {A : Matrix (Fin m) (Fin m) R} (cert : Echelon.Decomposition A) {rowsL rowsU : List (List R)}
     {l u s v : R} (hL : cert.L = ofLists m m rowsL)
     (hU : cert.L * A.submatrix cert.σ id = ofLists m m rowsU) (hl : diagProd 0 m rowsL = l)
     (hu : diagProd 0 m rowsU = u) (hs : ((Equiv.Perm.sign cert.σ : ℤ) : R) = s)
     (hv : l * (s * v) = u) : A.det = v := by
-  rcases subsingleton_or_nontrivial R with _ | _
-  · exact Subsingleton.elim _ _
-  have hl0 : l ≠ 0 := by
-    rw [← hl, ← prod_diag_ofLists, ← hL]
-    exact Finset.prod_ne_zero_iff.mpr fun i _ ↦ cert.L_diag_ne_zero i
-  have h := cert.prod_diag_mul_det
-  rw [hU, prod_diag_ofLists, hu, hL, prod_diag_ofLists, hl, hs, ← hv] at h
-  have hsu : IsUnit s := hs ▸ (Equiv.Perm.sign cert.σ).isUnit.map (Int.castRingHom R)
-  exact hsu.mul_left_cancel (mul_left_cancel₀ hl0 h)
+  rw [cert.det_eq_iff, hU, hL, prod_diag_ofLists, prod_diag_ofLists, hl, hu, hs]
+  exact hv
 
 end Mathlib.Tactic.Determinant
