@@ -9,9 +9,6 @@ public import Mathlib.Data.Fintype.Defs
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Defs
 
-import Mathlib.Order.WellFounded
-
-
 /-!
 # Row echelon forms
 
