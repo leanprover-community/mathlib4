@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Export workflow telemetry
-        uses: corentinmusard/otel-cicd-action@6022e68732c1cab4d2c8218b810f69006ee5cc34 # v4.1.0
+        uses: corentinmusard/otel-cicd-action@4826b79d63662fa91657272e7711420cb6aea543 # v4.2.0
         with:
           otlpEndpoint: ${{ vars.OTLP_ENDPOINT }}
           otlpHeaders: ${{ secrets.OTLP_HEADERS }}
