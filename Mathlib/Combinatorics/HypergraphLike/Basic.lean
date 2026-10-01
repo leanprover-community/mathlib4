@@ -46,8 +46,9 @@ Incidence hypergraphs are more general than graphs or definitions of hypergraph 
 set-systems. Incidence hypergraphs allow for arbitrary number of incidences of an edge and a vertex,
 and arbitrary number of edges between two vertices. It also has good categorical properties. Two
 additional fields, `IsSource` and `IsTarget`, are used to orient the incidences. Every incidence
-is either a source or a target or both. Strictly source and target incidences are used to model
-directed edges and source & target incidences are used to model undirected edges.
+is either a source or a target or both. Incidences that are sources but not targets, or targets but
+not sources, are used to model directed edges. Incidences that are both sources and targets are
+used to model undirected edges.
 
 Links require two *distinct* incidences of an edge, one source and one target. This separates loops
 (an edge with two incidences to the same vertex) and a dangling edge (an edge with one incidence
@@ -85,9 +86,11 @@ class HypergraphLike (ν ι ε : outParam Type*) (Gr : Type*) where
   edges (G : Gr) : Set ε
   /-- The set of incidences used by a graph-like structure. -/
   incs (G : Gr) : Set ι
-  /-- Each incidence is assigned an edge. -/
+  /-- Assigns an edge in `edges G` to each incidence in `incs G`, without a nonemptiness assumption.
+  Prefer `HypergraphLike.edgeMap` which is a map from arbitrary incidence labels to edge labels. -/
   edgeMap' (G : Gr) (i : incs G) : edges G
-  /-- Each incidence is assigned a vertex. -/
+  /-- Assigns a vertex in `verts G` to each incidence in `incs G`, with no nonemptiness assumption.
+  Prefer `HypergraphLike.attach` which is a map from arbitrary incidence labels to vertex labels. -/
   attach' (G : Gr) (i : incs G) : verts G
   /-- The predicate whether an incidence is a source. -/
   IsSource (G : Gr) (i : ι) : Prop
@@ -160,13 +163,25 @@ lemma incs_eq_empty_of_verts_eq_empty (hV : V(G) = ∅) : I(G) = ∅ :=
 lemma incs_eq_empty_of_edges_eq_empty (hE : E(G) = ∅) : I(G) = ∅ :=
   eq_empty_iff_forall_notMem.mpr fun i hi ↦ by simpa [hE] using (edgeMap' G ⟨i, hi⟩).property
 
+lemma verts_nonempty_of_incs_nonempty (hI : I(G).Nonempty) : V(G).Nonempty := by
+  obtain ⟨i, hi⟩ := hI
+  exact ⟨_, (attach' G ⟨i, hi⟩).property⟩
+
+lemma edges_nonempty_of_incs_nonempty (hI : I(G).Nonempty) : E(G).Nonempty := by
+  obtain ⟨i, hi⟩ := hI
+  exact ⟨_, (edgeMap' G ⟨i, hi⟩).property⟩
+
 open Classical in
-/-- The vertex attached to an incidence, with an arbitrary value outside `I(G)`. -/
+/-- The vertex attached to an incidence, with an arbitrary value outside `I(G)`.
+Unlike `HypergraphLike.attach'`, this takes arbitrary incidence labels and returns vertex labels,
+requiring the vertex type to be nonempty. -/
 noncomputable def attach [Nonempty V] (G : Gr) (i : I) : V :=
   if hi : i ∈ I(G) then attach' G ⟨i, hi⟩ else Classical.arbitrary V
 
 open Classical in
-/-- The edge of an incidence, with an arbitrary value outside `I(G)`. -/
+/-- The edge of an incidence, with an arbitrary value outside `I(G)`.
+Unlike `HypergraphLike.edgeMap'`, this takes arbitrary incidence labels and returns edge labels,
+requiring the edge type to be nonempty. -/
 noncomputable def edgeMap [Nonempty E] (G : Gr) (i : I) : E :=
   if hi : i ∈ I(G) then edgeMap' G ⟨i, hi⟩ else Classical.arbitrary E
 
@@ -365,13 +380,23 @@ lemma mem_incEdges_iff_exists_incidence [Nonempty V] [Nonempty E] :
     e ∈ incEdges G v ↔ ∃ i, i ∈ I(G) ∧ attach G i = v ∧ edgeMap G i = e := by
   simp only [incEdges_eq_image, mem_image, mem_vertexFiber, and_assoc]
 
+@[grind ←]
 lemma incVerts_subset_verts : incVerts G e ⊆ V(G) := by
   rintro v ⟨i, _, rfl⟩
   exact (attach' G i).property
 
+@[grind ←]
 lemma incEdges_subset_edges : incEdges G v ⊆ E(G) := by
   rintro e ⟨i, _, rfl⟩
   exact (edgeMap' G i).property
+
+@[grind →]
+lemma mem_verts_of_mem_incVerts (h : v ∈ incVerts G e) : v ∈ V(G) :=
+  incVerts_subset_verts h
+
+@[grind →]
+lemma mem_edges_of_mem_incEdges (h : e ∈ incEdges G v) : e ∈ E(G) :=
+  incEdges_subset_edges h
 
 @[grind →]
 lemma mem_edges_of_mem_incVerts (h : v ∈ incVerts G e) : e ∈ E(G) :=
@@ -381,23 +406,28 @@ lemma mem_edges_of_mem_incVerts (h : v ∈ incVerts G e) : e ∈ E(G) :=
 lemma mem_verts_of_mem_incEdges (h : e ∈ incEdges G v) : v ∈ V(G) :=
   incVerts_subset_verts (mem_incEdges.mp h)
 
-@[simp]
+@[simp, grind →]
 lemma incVerts_of_notMem_edges (he : e ∉ E(G)) : incVerts G e = ∅ :=
   eq_empty_iff_forall_notMem.mpr fun _ hv ↦ he (mem_edges_of_mem_incVerts hv)
 
-@[simp]
+@[simp, grind →]
 lemma incEdges_of_notMem_verts (hv : v ∉ V(G)) : incEdges G v = ∅ :=
   eq_empty_iff_forall_notMem.mpr fun _ he ↦ hv (mem_verts_of_mem_incEdges he)
 
+-- Emptiness and nonemptiness simplify to the incidence fibers, removing the endpoint/edge image.
+@[simp]
 lemma incVerts_eq_empty : incVerts G e = ∅ ↔ edgeFiber G e = ∅ := by
   simp [incVerts, edgeFiber]
 
+@[simp]
 lemma incEdges_eq_empty : incEdges G v = ∅ ↔ vertexFiber G v = ∅ := by
   simp [incEdges, vertexFiber]
 
+@[simp]
 lemma incVerts_nonempty : (incVerts G e).Nonempty ↔ (edgeFiber G e).Nonempty := by
   simp [incVerts, edgeFiber]
 
+@[simp]
 lemma incEdges_nonempty : (incEdges G v).Nonempty ↔ (vertexFiber G v).Nonempty := by
   simp [incEdges, vertexFiber]
 
@@ -418,9 +448,6 @@ lemma IsLink.left_mem_incVerts (h : u ~[G; e] v) : u ∈ incVerts G e := by
 lemma IsLink.right_mem_incVerts (h : u ~[G; e] v) : v ∈ incVerts G e := by
   obtain ⟨l⟩ := h
   exact ⟨⟨l.target, l.isTarget_target.mem_incs⟩, l.edgeMap'_target, l.attach'_target⟩
-
-lemma IsLink.pair_subset_incVerts (h : u ~[G; e] v) : {u, v} ⊆ incVerts G e :=
-  pair_subset_iff.mpr ⟨h.left_mem_incVerts, h.right_mem_incVerts⟩
 
 @[grind →]
 lemma IsLink.mem_incEdges_left (h : u ~[G; e] v) : e ∈ incEdges G u :=
