@@ -290,7 +290,7 @@ theorem pointwise_smul_def {α : Type*} [Group α] [MulDistribMulAction α G] {g
   rfl
 
 instance mulAction : MulAction G (Sylow p G) :=
-  compHom _ MulAut.conj
+  compHom _ MulAut.conjHom
 
 theorem smul_def {g : G} {P : Sylow p G} : g • P = MulAut.conj g • P :=
   rfl

@@ -631,6 +631,26 @@ class MulDistribMulAction (M N : Type*) [Monoid M] [Monoid N] extends MulAction 
   /-- Distributivity of `•` across `*` -/
   smul_mul : ∀ (r : M) (x y : N), r • (x * y) = r • x * r • y
 
+/-- Typeclass for multiplicative actions on additive structures.
+
+For example, if `G` is a group (with group law written as multiplication) and `A` is an
+abelian group (with group law written as addition), then to give `A` a `G`-module
+structure (for example, to use the theory of group cohomology) is to say `[DistribMulAction G A]`.
+Note in that we do not use the `Module` typeclass for `G`-modules, as the `Module` typeclass
+is for modules over a ring rather than a group.
+
+Mathematically, `DistribMulAction G A` is equivalent to giving `A` the structure of
+a `ℤ[G]`-module.
+-/
+@[ext]
+class DistribMulAction (M A : Type*) [Monoid M] [AddMonoid A] extends MulAction M A where
+  /-- Multiplying `0` by a scalar gives `0` -/
+  smul_zero : ∀ a : M, a • (0 : A) = 0
+  /-- Scalar multiplication distributes across addition -/
+  smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
+
+attribute [to_additive existing (dont_translate := M) DistribMulAction] MulDistribMulAction
+
 /-- Typeclass for additive actions on additive structures.
 
 The key axiom here is `vadd_add : g +ᵥ (x + y) = (g +ᵥ x) + (g +ᵥ y)`.
@@ -646,12 +666,11 @@ class AddDistribAddAction (M N : Type*) [AddMonoid M] [AddMonoid N] extends AddA
 export MulDistribMulAction (smul_one)
 export AddDistribAddAction (vadd_zero)
 
-attribute [to_additive existing] MulDistribMulAction
-
 section MulDistribMulAction
 variable [Monoid M] [Monoid N] [MulDistribMulAction M N]
 
-@[to_additive]
+@[to_additive (dont_translate := M) smul_add'
+/-- A special case of `smul_add`, but necessary for `to_additive`. -/]
 lemma smul_mul' (a : M) (b₁ b₂ : N) : a • (b₁ * b₂) = a • b₁ * a • b₂ :=
   MulDistribMulAction.smul_mul ..
 

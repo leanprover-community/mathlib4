@@ -627,7 +627,7 @@ end Group
 end Equiv
 
 /-- The group of multiplicative automorphisms. -/
-@[to_additive /-- The group of additive automorphisms. -/]
+@[to_additive /-- The group of additive automorphisms. -/, to_additive_dont_translate]
 abbrev MulAut (M : Type*) [Mul M] :=
   M ≃* M
 
@@ -638,13 +638,7 @@ variable (M) [Mul M]
 /-- If `M` is a type with multiplicative, then multiplicative automorphisms of `M` have the
 structure of a group. -/
 @[to_additive /-- If `M` is a type with addition, then additive automorphisms of `M` have the
-structure of a group.
-
-We give `AddAut M` the structure of an additive group rather than a multiplicative group to help
-with `to_additive` translation. Without this, any proof in group theory making use of the
-conjugation action `G →* MulAut G` would be impossible to `to_additive`-ize because a correct
-additivization would require inserting `Additive` around `AddAut G` and dealing with these extra
-`Additive`s in the proof, but `to_additive` is unable to do this automatically. -/]
+structure of a group. -/]
 instance : Group (MulAut M) where
   mul g h := MulEquiv.trans h g
   one := MulEquiv.refl _
@@ -658,76 +652,108 @@ instance : Group (MulAut M) where
 instance : Inhabited (MulAut M) :=
   ⟨1⟩
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) coe_mul]
 theorem coe_mul (e₁ e₂ : MulAut M) : ⇑(e₁ * e₂) = e₁ ∘ e₂ :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) coe_one]
 theorem coe_one : ⇑(1 : MulAut M) = id :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) coe_inv]
 theorem coe_inv (e : MulAut M) : ⇑e⁻¹ = e.symm := rfl
 
-@[to_additive]
+@[to_additive mul_def]
 theorem mul_def (e₁ e₂ : MulAut M) : e₁ * e₂ = e₂.trans e₁ :=
   rfl
 
-@[to_additive]
+@[to_additive one_def]
 theorem one_def : (1 : MulAut M) = MulEquiv.refl _ :=
   rfl
 
-@[to_additive]
+@[to_additive inv_def]
 theorem inv_def (e₁ : MulAut M) : e₁⁻¹ = e₁.symm :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) inv_symm]
 theorem inv_symm (e : MulAut M) : e⁻¹.symm = e := rfl
 
-@[to_additive (attr := simp)]
-theorem symm_inv (e : MulAut M) : (e.symm)⁻¹ = e := rfl
+@[to_additive (attr := simp) symm_inv]
+theorem symm_inv (e : MulAut M) : (by exact e.symm : MulAut M)⁻¹ = e := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) inv_apply]
 theorem inv_apply (e : MulAut M) (m : M) : e⁻¹ m = e.symm m := by
   rw [inv_def]
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) mul_apply]
 theorem mul_apply (e₁ e₂ : MulAut M) (m : M) : (e₁ * e₂) m = e₁ (e₂ m) :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) one_apply]
 theorem one_apply (m : M) : (1 : MulAut M) m = m :=
   rfl
 
-@[to_additive]
+@[to_additive apply_inv_self]
 theorem apply_inv_self (e : MulAut M) (m : M) : e (e⁻¹ m) = m :=
   MulEquiv.apply_symm_apply _ _
 
-@[to_additive]
+@[to_additive inv_apply_self]
 theorem inv_apply_self (e : MulAut M) (m : M) : e⁻¹ (e m) = m :=
   MulEquiv.apply_symm_apply _ _
 
 /-- Monoid hom from the group of multiplicative automorphisms to the group of permutations. -/
+@[to_additive
+/-- Monoid hom from the group of additive automorphisms to the group of permutations. -/]
 def toPerm : MulAut M →* Equiv.Perm M where
   toFun := MulEquiv.toEquiv
   map_one' := rfl
   map_mul' _ _ := rfl
 
-/-- Group conjugation, `MulAut.conj g h = g * h * g⁻¹`, as a monoid homomorphism
+/-- Group conjugation, `MulAut.conj g h = g * h * g⁻¹`, as a plain function. -/
+@[to_additive /-- Group conjugation, `AddAut.addConj g h = g + h + -g`, as a plain function. -/]
+def conj [Group G] (g : G) : MulAut G where
+  toFun h := g * h * g⁻¹
+  invFun h := g⁻¹ * h * g
+  left_inv _ := by simp [mul_assoc]
+  right_inv _ := by simp [mul_assoc]
+  map_mul' := by simp [mul_assoc]
+
+/-- Group conjugation, `AddAut.addConjHom (.ofAdd g) h = g + h + -g`, as an homomorphism
+mapping addition in `G` into multiplication in the additive automorphism group `AddAut G`. -/
+@[simps] def _root_.AddAut.addConjHom [AddGroup G] : Multiplicative G →* AddAut G where
+  toFun := AddAut.addConj ∘ Multiplicative.toAdd
+  map_mul' _ _ := by ext; simp [AddAut.addConj, add_assoc]
+  map_one' := by ext; simp [AddAut.addConj]
+
+/-- Group conjugation, `MulAut.conjHom g h = g * h * g⁻¹`, as a monoid homomorphism
 mapping multiplication in `G` into multiplication in the automorphism group `MulAut G`.
 See also the type `ConjAct G` for any group `G`, which has a `MulAction (ConjAct G) G` instance
 where `conj G` acts on `G` by conjugation. -/
-@[to_additive /-- Group conjugation, `AddAut.addConj g h = g + h + -g`, as an additive homomorphism
-mapping addition in `G` into addition in the additive automorphism group `AddAut G`. -/]
-def conj [Group G] : G →* MulAut G where
-  toFun g :=
-    { toFun h := g * h * g⁻¹
-      invFun h := g⁻¹ * h * g
-      left_inv _ := by simp [mul_assoc]
-      right_inv _ := by simp [mul_assoc]
-      map_mul' := by simp [mul_assoc] }
-  map_mul' _ _ := by ext; simp [mul_assoc]
-  map_one' := by ext; simp
+@[simps] def conjHom [Group G] : G →* MulAut G where
+  toFun := conj
+  map_mul' _ _ := by ext; simp [conj, mul_assoc]
+  map_one' := by ext; simp [conj]
+
+theorem _root_.AddAut.addConj_zero [AddGroup G] : AddAut.addConj (0 : G) = 1 :=
+  AddAut.addConjHom.map_one ..
+
+@[to_additive existing (attr := simp)] theorem conj_one [Group G] : conj (1 : G) = 1 :=
+  conjHom.map_one ..
+
+theorem _root_.AddAut.addConj_add [AddGroup G] (g h : G) :
+    AddAut.addConj (g + h) = AddAut.addConj g * AddAut.addConj h :=
+  AddAut.addConjHom.map_mul ..
+
+@[to_additive existing (attr := simp)]
+theorem conj_mul [Group G] (g h : G) : conj (g * h) = conj g * conj h :=
+  conjHom.map_mul ..
+
+theorem _root_.AddAut.addConj_neg [AddGroup G] (g : G) :
+    AddAut.addConj (-g) = (AddAut.addConj g)⁻¹ :=
+  AddAut.addConjHom.map_inv (Multiplicative.ofAdd g)
+
+@[to_additive existing (attr := simp)] theorem conj_inv [Group G] (g : G) : conj g⁻¹ = (conj g)⁻¹ :=
+  conjHom.map_inv _
 
 @[to_additive (attr := simp)]
 theorem conj_apply [Group G] (g h : G) : conj g h = g * h * g⁻¹ :=
@@ -743,7 +769,7 @@ theorem conj_inv_apply [Group G] (g h : G) : (conj g)⁻¹ h = g⁻¹ * h * g :=
 
 /-- Isomorphic groups have isomorphic automorphism groups. -/
 @[to_additive (attr := simps) /-- Isomorphic groups have isomorphic automorphism groups. -/]
-def congr [Group G] {H : Type*} [Group H] (ϕ : G ≃* H) :
+def congr [Mul G] {H : Type*} [Mul H] (ϕ : G ≃* H) :
     MulAut G ≃* MulAut H where
   toFun f := ϕ.symm.trans (f.trans ϕ)
   invFun f := ϕ.trans (f.trans ϕ.symm)
@@ -751,39 +777,41 @@ def congr [Group G] {H : Type*} [Group H] (ϕ : G ≃* H) :
   right_inv _ := by simp [DFunLike.ext_iff]
   map_mul' := by simp [DFunLike.ext_iff]
 
+/-- The group isomorphism Aut(G) ≅ End(G)ˣ for a monoid G. -/
+@[to_additive AddAut.equivUnitsEnd
+/-- The group isomorphism Aut(G) ≅ End(G)ˣ for an additive monoid G. -/]
+def equivUnitsEnd [MulOneClass G] : MulAut G ≃* (Monoid.End G)ˣ where
+  toFun f := ⟨(f : G →* G), (f.symm : G →* G), MonoidHom.ext f.right_inv, MonoidHom.ext f.left_inv⟩
+  map_mul' _ _ := rfl
+  invFun f := ⟨⟨f, (f⁻¹ : _ˣ), (congr($f.inv_mul ·)), (congr($f.mul_inv ·))⟩, fun _ _ ↦ by simp⟩
+
 end MulAut
 
 namespace AddAut
 
 variable (A) [Add A]
 
-@[deprecated (since := "2026-05-26")] alias coe_mul := coe_add
-@[deprecated (since := "2026-05-26")] alias coe_one := coe_zero
-@[deprecated (since := "2026-05-26")] alias coe_inv := coe_neg
-@[deprecated (since := "2026-05-26")] alias mul_def := add_def
-@[deprecated (since := "2026-05-26")] alias one_def := zero_def
-@[deprecated (since := "2026-05-26")] alias inv_def := neg_def
-@[deprecated (since := "2026-05-26")] alias mul_apply := add_apply
-@[deprecated (since := "2026-05-26")] alias one_apply := zero_apply
-@[deprecated (since := "2026-05-26")] alias inv_symm := neg_symm
-@[deprecated (since := "2026-05-26")] alias symm_inv := symm_neg
-@[deprecated (since := "2026-05-26")] alias inv_apply := neg_apply
-@[deprecated (since := "2026-05-26")] alias inv_apply_self := neg_apply_self
-@[deprecated (since := "2026-05-26")] alias apply_inv_self := apply_neg_self
-
-/-- Monoid hom from the group of multiplicative automorphisms to the group of permutations. -/
-def toPerm : AddAut A →+ Additive (Equiv.Perm A) where
-  toFun := AddEquiv.toEquiv
-  map_zero' := rfl
-  map_add' _ _ := rfl
+@[deprecated (since := "2026-09-27")] alias coe_add := coe_mul
+@[deprecated (since := "2026-09-27")] alias coe_zero := coe_one
+@[deprecated (since := "2026-09-27")] alias coe_neg := coe_inv
+@[deprecated (since := "2026-09-27")] alias add_def := mul_def
+@[deprecated (since := "2026-09-27")] alias zero_def := one_def
+@[deprecated (since := "2026-09-27")] alias neg_def := inv_def
+@[deprecated (since := "2026-09-27")] alias add_apply := mul_apply
+@[deprecated (since := "2026-09-27")] alias zero_apply := one_apply
+@[deprecated (since := "2026-09-27")] alias neg_symm := inv_symm
+@[deprecated (since := "2026-09-27")] alias symm_neg := symm_inv
+@[deprecated (since := "2026-09-27")] alias neg_apply := inv_apply
+@[deprecated (since := "2026-09-27")] alias neg_apply_self := inv_apply_self
+@[deprecated (since := "2026-09-27")] alias apply_neg_self := apply_inv_self
 
 @[deprecated (since := "2026-05-26")] alias conj := addConj
 @[deprecated (since := "2026-05-26")] alias conj_apply := addConj_apply
 @[deprecated (since := "2026-05-26")] alias conj_symm_apply := addConj_symm_apply
 @[deprecated (since := "2026-05-26")] alias conj_inv_apply := addConj_neg_apply
 
-@[deprecated "use `addConj_neg_apply` instead" (since := "2026-05-26")]
-theorem neg_conj_apply [AddGroup G] (g h : G) : (-addConj g) h = -g + h + g := by
+@[deprecated "use `addConj_inv_apply` instead" (since := "2026-05-26")]
+theorem neg_conj_apply [AddGroup G] (g h : G) : (addConj g)⁻¹ h = -g + h + g := by
   simp
 
 end AddAut
@@ -792,10 +820,10 @@ variable (G)
 
 /-- `Multiplicative G` and `G` have isomorphic automorphism groups. -/
 @[simps!]
-def MulAutMultiplicative [AddGroup G] : MulAut (Multiplicative G) ≃* Multiplicative (AddAut G) :=
+def MulAutMultiplicative [AddGroup G] : MulAut (Multiplicative G) ≃* AddAut G :=
   { AddEquiv.toMultiplicative.symm with map_mul' := fun _ _ ↦ rfl }
 
 /-- `Additive G` and `G` have isomorphic automorphism groups. -/
 @[simps!]
-def AddAutAdditive [Group G] : AddAut (Additive G) ≃+ Additive (MulAut G) :=
-  { MulEquiv.toAdditive.symm with map_add' := fun _ _ ↦ rfl }
+def AddAutAdditive [Group G] : AddAut (Additive G) ≃* MulAut G :=
+  { MulEquiv.toAdditive.symm with map_mul' := fun _ _ ↦ rfl }
