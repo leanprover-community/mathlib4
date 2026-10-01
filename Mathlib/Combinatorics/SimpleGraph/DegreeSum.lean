@@ -176,4 +176,11 @@ theorem cardinalMk_dart_eq_two_mul_cardinalMk_edgeSet :
   apply Cardinal.mk_congr
   exact ⟨fun d ↦ ⟨d.toProd, d.adj⟩, fun z ↦ ⟨z.val, z.property⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩
 
+theorem enatCard_dart_eq_two_mul_encard_edgeSet : ENat.card G.Dart = 2 * G.edgeSet.encard := by
+  simp [← ENat.card_coe_set_eq, ← Cardinal.toENat_mk, -Set.toENat_cardinalMk,
+    cardinalMk_dart_eq_two_mul_cardinalMk_edgeSet]
+
+theorem natCard_dart_eq_two_mul_ncard_edgeSet : Nat.card G.Dart = 2 * G.edgeSet.ncard := by
+  simp [Set.ncard_def, ← ENat.toNat_card, enatCard_dart_eq_two_mul_encard_edgeSet]
+
 end SimpleGraph
