@@ -1432,22 +1432,22 @@ def test_uploadLocationFrom : IO Unit := do
     (urls (uploadLocationFrom .azure (some "https://my.example.org") none none
         MATHLIBREPO none) ==
       some ("https://my.example.org/f/x.ltar",
-        none, "(env override)"))
+        none, "MATHLIB_CACHE_PUT_URL"))
   assertTrue "PUT_URL applies on the s3 backend too"
     (urls (uploadLocationFrom .s3 (some "https://my.example.org/bucket") none none
         MATHLIBREPO none) ==
       some ("https://my.example.org/bucket/f/x.ltar",
-        none, "(env override)"))
+        none, "MATHLIB_CACHE_PUT_URL"))
   for backend in [UploadBackend.azure, .s3] do
     assertTrue s!"{backend.name}: a flat PUT_URL loses whitespace and trailing slashes"
       (urls (uploadLocationFrom backend (some " https://my.example.org/bucket/// ")
         none none MATHLIBREPO none) ==
-        some ("https://my.example.org/bucket/f/x.ltar", none, "(env override)"))
+        some ("https://my.example.org/bucket/f/x.ltar", none, "MATHLIB_CACHE_PUT_URL"))
     assertTrue s!"{backend.name}: a scoped PUT_URL normalizes both file and marker URLs"
       (urls (uploadLocationFrom backend (some " https://my.example.org/bucket/// ")
         none none "alice/mathlib4" (some "abc1")) ==
         some ("https://my.example.org/bucket/f/alice/mathlib4/abc1/x.ltar",
-          some "https://my.example.org/bucket/m/alice/mathlib4/abc1", "(env override)"))
+          some "https://my.example.org/bucket/m/alice/mathlib4/abc1", "MATHLIB_CACHE_PUT_URL"))
   -- A base without a bucket path fails at resolution.
   assertTrue "s3: a put base without a bucket path errors"
     (uploadLocationFrom .s3 none (some "https://s3.example.org") (some .forks)

@@ -83,7 +83,7 @@ def uploadLocationFrom (backend : UploadBackend) (putUrl? putBase? : Option Stri
     (container? : Option Container) (repo : String) (scope? : Option String) :
     Except String Location := do
   let dest ← if let some url := putUrl? then
-      pure (.ofEndpoint url "(env override)" repo scope?)
+      pure (.ofEndpoint url "MATHLIB_CACHE_PUT_URL" repo scope?)
     else
       let putBase? := normalizeBaseURL putBase?
       match backend with
