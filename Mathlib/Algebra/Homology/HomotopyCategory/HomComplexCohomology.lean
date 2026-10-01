@@ -223,8 +223,6 @@ def mkLinearMap [Linear R C] : Cocycle K L n →ₗ[R] CohomologyClass K L n whe
 
 end CohomologyClass
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- `CohomologyClass K L m` identifies to the cohomology of the complex `HomComplex K L`
 in degree `m`. -/
 @[simps, implicit_reducible]
@@ -239,7 +237,7 @@ def leftHomologyData' (hm : n + 1 = m) (hp : m + 1 = p) :
   wπ := by
     ext x
     dsimp
-    rw [CohomologyClass.mk_eq_zero_iff]
+    rw [CohomologyClass.mkAddMonoidHom_apply, CohomologyClass.mk_eq_zero_iff]
     exact ⟨n, hm, x, rfl⟩
   hπ :=
     Cofork.IsColimit.mk _
