@@ -482,6 +482,7 @@ def changeGeneratorEquiv (a b : R) (u : Rˣ) (k : R) {a' b' : R}
 @[deprecated (since := "2026-08-14")] alias mapEquiv := changeGeneratorEquiv
 
 end changeGenerator
+
 section field
 
 variable [Field K] {a b : K} [Hab : Fact (∀ r, r ^ 2 ≠ a + b * r)]

@@ -21,6 +21,11 @@ and define some algebraic structures on it.
 * `QuadraticAlgebra R a b`:
   [Bourbaki, *Algebra I*][bourbaki1989] with coefficients `a`, `b` in `R`.
 
+## Implementation notes
+
+The canonical way of writing an element `r` of `R` in `QuadraticAlgebra R a b` is
+`QuadraticAlgebra.C r` (or `algebraMap R _ r` when `R` is a commutative ring), rather than `⟨r, 0⟩`.
+
 ## Tags
 
 Quadratic algebra, quadratic extension
