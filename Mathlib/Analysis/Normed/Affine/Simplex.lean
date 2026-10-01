@@ -92,7 +92,7 @@ lemma Equilateral.dist_eq {s : Simplex R P n} (he : s.Equilateral) {i₁ i₂ i�
 @[simp] lemma equilateral_reindex_iff {s : Simplex R P m} (e : Fin (m + 1) ≃ Fin (n + 1)) :
     (s.reindex e).Equilateral ↔ s.Equilateral := by
   refine ⟨fun ⟨r, hr⟩ ↦ ⟨r, fun i j hij ↦ ?_⟩, fun ⟨r, hr⟩ ↦ ⟨r, fun i j hij ↦ ?_⟩⟩
-  · convert! hr (e i) (e j) (e.injective.ne hij) using 2 <;> simp
+  · convert hr (e i) (e j) (e.injective.ne hij) using 2 <;> simp
   · convert! hr (e.symm i) (e.symm j) (e.symm.injective.ne hij) using 2
 
 /-- A simplex is regular if it is equivalent under an isometry to any reindexing. -/
@@ -120,13 +120,13 @@ lemma Regular.equilateral {s : Simplex R P n} (hr : s.Regular) : s.Equilateral :
     nth_rw 2 [← x.dist_eq]
     simp_rw [← Function.comp_apply (f := x), ← hx]
     simp only [comp_apply, Equiv.swap_apply_left]
-    convert! rfl
+    convert rfl
     rw [Equiv.swap_apply_of_ne_of_ne (by simp [hn]) (by lia)]
   · rcases hr ((Equiv.swap 0 i).trans (Equiv.swap 1 j)) with ⟨x, hx⟩
     nth_rw 2 [← x.dist_eq]
     simp_rw [← Function.comp_apply (f := x), ← hx]
     simp only [Equiv.coe_trans, comp_apply, Equiv.swap_apply_left]
-    convert! rfl
+    convert rfl
     · exact Equiv.swap_apply_of_ne_of_ne hi hij
     · rw [Equiv.swap_apply_of_ne_of_ne (by simp [hn]) (Ne.symm hi)]
       simp
