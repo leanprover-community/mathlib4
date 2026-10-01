@@ -5,7 +5,6 @@ Authors: Yaël Dillies, Etienne Marion
 -/
 module
 
-public import Mathlib.Probability.CondVar
 public import Mathlib.Probability.Distributions.SetBernoulli
 
 import Mathlib.MeasureTheory.MeasurableSpace.NCard

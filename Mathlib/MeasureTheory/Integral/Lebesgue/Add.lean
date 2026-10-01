@@ -191,7 +191,7 @@ theorem lintegral_iSup_directed [Countable β] {f : β → α → ℝ≥0∞} (h
           apply_rules [hz₁, hz₂]
         · simp only [aeSeq, hx, ite_false]
           exact le_rfl
-  convert! lintegral_iSup_directed_of_measurable (aeSeq.measurable hf p) h_ae_seq_directed using 1
+  convert lintegral_iSup_directed_of_measurable (aeSeq.measurable hf p) h_ae_seq_directed using 1
   · simp_rw [← iSup_apply]
     rw [lintegral_congr_ae (aeSeq.iSup hf hp).symm]
   · congr 1
@@ -265,7 +265,7 @@ lemma lintegral_eapprox_le_lintegral {f : α → ℝ≥0∞} (hf : Measurable f)
 lemma measure_support_eapprox_lt_top {f : α → ℝ≥0∞} (hf_meas : Measurable f)
     (hf : ∫⁻ x, f x ∂μ ≠ ∞) (n : ℕ) :
     μ (Function.support (eapprox f n)) < ∞ :=
-  measure_support_lt_top_of_lintegral_ne_top <|
+  measure_support_lt_top_of_lintegral_ne_top
     ((lintegral_eapprox_le_lintegral hf_meas n).trans_lt hf.lt_top).ne
 
 /-- The sum of the lower Lebesgue integrals of two functions is less than or equal to the integral
@@ -449,6 +449,13 @@ theorem lintegral_lintegral_mul {β} [MeasurableSpace β] {ν : Measure β} {f :
     {g : β → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g ν) :
     ∫⁻ x, ∫⁻ y, f x * g y ∂ν ∂μ = (∫⁻ x, f x ∂μ) * ∫⁻ y, g y ∂ν := by
   simp [lintegral_const_mul'' _ hg, lintegral_mul_const'' _ hf]
+
+theorem lintegral_lintegral_mul_le {β} [MeasurableSpace β] {ν : Measure β} (f : α → ℝ≥0∞)
+    (g : β → ℝ≥0∞) :
+    (∫⁻ x, f x ∂μ) * ∫⁻ y, g y ∂ν ≤ ∫⁻ x, ∫⁻ y, f x * g y ∂ν ∂μ := by
+  grw [lintegral_mul_const_le]
+  refine lintegral_mono fun a ↦ ?_
+  grw [lintegral_const_mul_le]
 
 end Mul
 

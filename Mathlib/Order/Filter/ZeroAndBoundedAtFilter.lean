@@ -5,7 +5,6 @@ Authors: Chris Birkbeck, David Loeffler
 -/
 module
 
-public import Mathlib.Algebra.Module.Submodule.Basic
 public import Mathlib.Analysis.Asymptotics.Lemmas
 public import Mathlib.Algebra.Algebra.Pi
 
@@ -134,7 +133,7 @@ def boundedFilterSubalgebra
     (const_boundedAtFilter l (1 : β))
     (fun f g hf hg ↦ by simpa only [Pi.one_apply, mul_one, norm_mul] using! hf.mul hg)
 
-theorem BoundedAtFilter.prod {ι : Type} (s : Finset ι) [SeminormedCommRing β]
+theorem BoundedAtFilter.prod {ι : Type*} (s : Finset ι) [SeminormedCommRing β]
     {l : Filter α} {f : ι → α → β} (h : ∀ i ∈ s, BoundedAtFilter l (f i)) :
     BoundedAtFilter l (∏ i ∈ s, f i) :=
   (boundedFilterSubalgebra β l).prod_mem (f := f) h

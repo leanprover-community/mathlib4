@@ -1,8 +1,12 @@
-module
+module -- shake: keep-all
 
-public import Mathlib.Data.Finset.Attr
-public import Mathlib.Tactic.NormNum.Inv
-public import Mathlib.Tactic.NormNum.Pow
-public import Mathlib.Tactic.SetLike
+public import Mathlib.Algebra.BigOperators.Finsupp.Basic
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Data.Finsupp.Order
+public import Mathlib.Data.Finsupp.SMul
+public import Mathlib.Data.Finsupp.SMulWithZero
+public import Mathlib.Tactic.Bound
 
 deprecated_module (since := "2026-05-11")

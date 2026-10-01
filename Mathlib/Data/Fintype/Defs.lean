@@ -5,8 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Basic.Finite.Defs
 public import Mathlib.Data.Finset.Filter
-public import Mathlib.Data.Finite.Defs
 public import Mathlib.Order.Lex
 
 /-!
@@ -213,6 +213,10 @@ instance decidableForallFintype {p : α → Prop} [DecidablePred p] [Fintype α]
 instance decidableExistsFintype {p : α → Prop} [DecidablePred p] [Fintype α] :
     Decidable (∃ a, p a) :=
   decidable_of_iff (∃ a ∈ @univ α _, p a) (by simp)
+
+instance {β : α → Type*} [∀ a, LE (β a)] [∀ a, DecidableLE (β a)] [Fintype α] :
+    DecidableLE (∀ a, β a) :=
+  fun _ _ ↦ decidable_of_iff _ Pi.le_def.symm
 
 instance decidableMemRangeFintype [Fintype α] [DecidableEq β] (f : α → β) :
     DecidablePred (· ∈ Set.range f) := fun _ => Fintype.decidableExistsFintype

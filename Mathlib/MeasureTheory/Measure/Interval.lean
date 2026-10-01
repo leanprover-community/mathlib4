@@ -76,19 +76,19 @@ theorem Ioi_ae_eq_Ici' (ha : μ {a} = 0) : Ioi a =ᵐ[μ] Ici a :=
   Iio_ae_eq_Iic' (α := αᵒᵈ) ha
 
 theorem Ioo_ae_eq_Ioc' (hb : μ {b} = 0) : Ioo a b =ᵐ[μ] Ioc a b :=
-  (ae_eq_refl _).inter (Iio_ae_eq_Iic' hb)
+  .inter .rfl (Iio_ae_eq_Iic' hb)
 
 theorem Ioc_ae_eq_Icc' (ha : μ {a} = 0) : Ioc a b =ᵐ[μ] Icc a b :=
-  (Ioi_ae_eq_Ici' ha).inter (ae_eq_refl _)
+  (Ioi_ae_eq_Ici' ha).inter .rfl
 
 theorem Ioo_ae_eq_Ico' (ha : μ {a} = 0) : Ioo a b =ᵐ[μ] Ico a b :=
-  (Ioi_ae_eq_Ici' ha).inter (ae_eq_refl _)
+  (Ioi_ae_eq_Ici' ha).inter .rfl
 
 theorem Ioo_ae_eq_Icc' (ha : μ {a} = 0) (hb : μ {b} = 0) : Ioo a b =ᵐ[μ] Icc a b :=
   (Ioi_ae_eq_Ici' ha).inter (Iio_ae_eq_Iic' hb)
 
 theorem Ico_ae_eq_Icc' (hb : μ {b} = 0) : Ico a b =ᵐ[μ] Icc a b :=
-  (ae_eq_refl _).inter (Iio_ae_eq_Iic' hb)
+  .inter .rfl (Iio_ae_eq_Iic' hb)
 
 theorem Ico_ae_eq_Ioc' (ha : μ {a} = 0) (hb : μ {b} = 0) : Ico a b =ᵐ[μ] Ioc a b :=
   (Ioo_ae_eq_Ico' ha).symm.trans (Ioo_ae_eq_Ioc' hb)

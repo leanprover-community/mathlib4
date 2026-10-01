@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Algebra.Order.Field.Rat
-public import Mathlib.Data.Finite.Prod
+public import Mathlib.Basic.Finite.Prod
 public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.Tactic.NoncommRing
 public import Mathlib.Tactic.Ring

@@ -5,16 +5,13 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Init
-public import Mathlib.Algebra.Ring.InjSurj
-public import Mathlib.Data.ZMod.Defs
 public import Mathlib.Data.BitVec
 
 
 /-!
 # Adds Mathlib specific instances to the `UIntX` data types.
 
-The `CommRing` instances (and the `NatCast` and `IntCast` instances from which they is built) are
+The `CommRing` instances (and the `NatCast` and `IntCast` instances from which they are built) are
 scoped in the `UIntX.CommRing` namespace, rather than available globally. As a result, the `ring`
 tactic will not work on `UIntX` types without `open scoped UIntX.Ring`.
 

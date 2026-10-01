@@ -5,9 +5,11 @@ Authors: David Wärn, Kim Morrison, Matteo Cipollina, Runtian Zhou
 -/
 module
 
-public import Mathlib.Combinatorics.Quiver.Prefunctor
-public import Mathlib.Logic.Lemmas
 public import Batteries.Data.List.Basic
+public import Mathlib.Basic.Logic.Lemmas
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Combinatorics.Quiver.Prefunctor
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Paths in quivers
@@ -284,7 +286,7 @@ def decidableEqBddPathsOfDecidableEq (n : ℕ) (h₁ : DecidableEq V)
               rw [h, show p' = q' from Subtype.mk.inj h'']
           else
             isFalse fun h =>
-              h'' <| Subtype.ext <| eq_of_heq <| (Quiver.Path.cons.inj <| Subtype.mk.inj h).2.1
+              h'' <| Subtype.ext <| eq_of_heq (Quiver.Path.cons.inj <| Subtype.mk.inj h).2.1
         else
           isFalse fun h' =>
             h <| eq_of_heq (Quiver.Path.cons.inj <| Subtype.mk.inj h').2.2
