@@ -5,9 +5,9 @@ Authors: Miriam Philipp, Justus Springer, Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Basis
+import Mathlib.Algebra.Polynomial.Basis
 public import Mathlib.FieldTheory.RatFunc.IntermediateField
-public import Mathlib.FieldTheory.Relrank
+import Mathlib.FieldTheory.Relrank
 
 /-!
 # Lüroth's theorem
@@ -329,7 +329,7 @@ lemma swap_θ : Bivariate.swap (θ E) = -(θ E) := by
   ring
 
 lemma θ_natDegree_le (h : E ≠ ⊥) : (θ E).natDegree ≤ m E := by
-  convert! natDegree_sub_le _ _ using 3
+  convert natDegree_sub_le _ _ using 3
   · rw [natDegree_mul (C_ne_zero.mpr (generator E).denom_ne_zero)
       (Polynomial.map_ne_zero (num_ne_zero (generator_ne_zero h))), natDegree_C, zero_add,
       natDegree_map]

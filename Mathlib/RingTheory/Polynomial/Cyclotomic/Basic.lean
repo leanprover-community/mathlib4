@@ -5,7 +5,6 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Splits
 public import Mathlib.FieldTheory.RatFunc.AsPolynomial
 public import Mathlib.NumberTheory.ArithmeticFunction.Moebius
 public import Mathlib.RingTheory.RootsOfUnity.Complex
@@ -616,7 +615,7 @@ private theorem _root_.IsPrimitiveRoot.pow_sub_pow_eq_prod_sub_mul_field {K : Ty
   · simp only [hy, zero_pow (Nat.ne_zero_of_lt hpos), sub_zero, mul_zero, prod_const]
     congr
     rw [h.card_nthRootsFinset]
-  convert!
+  convert
     congr_arg (eval (x / y) · * y ^ card (nthRootsFinset n (1 : K))) <|
       X_pow_sub_one_eq_prod hpos h using 1
   · simp [sub_mul, div_pow, hy, h.card_nthRootsFinset]

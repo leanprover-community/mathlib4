@@ -5,14 +5,14 @@ Authors: Joël Riou, Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
-public import Mathlib.Algebra.Homology.HomologicalComplexKernels
+import Mathlib.Algebra.Homology.HomologicalComplexAbelian
+import Mathlib.Algebra.Homology.HomologicalComplexKernels
 public import Mathlib.Algebra.Homology.HomologySequence
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.SSetPair
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Kernels
-public import Mathlib.CategoryTheory.Limits.MonoCoprod
-public import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Kernels
+import Mathlib.CategoryTheory.Limits.MonoCoprod
+import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
 
 /-!
 # Relative simplicial homology

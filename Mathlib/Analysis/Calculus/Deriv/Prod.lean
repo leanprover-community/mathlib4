@@ -6,7 +6,7 @@ Authors: Gabriel Ebner, Yury Kudryashov, Eric Wieser
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Basic
-public import Mathlib.Analysis.Calculus.FDeriv.Prod
+import Mathlib.Analysis.Calculus.FDeriv.Prod
 
 /-!
 # Derivatives of functions taking values in product types

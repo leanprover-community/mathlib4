@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Polynomial.BigOperators
 public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Data.Nat.Choose.Cast
 public import Mathlib.Data.Nat.Choose.Vandermonde
-public import Mathlib.Tactic.Field
+import Mathlib.Tactic.Field
 public import Mathlib.Tactic.Positivity
 
 /-!
@@ -195,7 +195,7 @@ theorem hasseDeriv_natDegree_eq_C : f.hasseDeriv f.natDegree = C f.leadingCoeff 
   rw [eq_C_of_natDegree_le_zero this, hasseDeriv_coeff, zero_add, Nat.choose_self,
     Nat.cast_one, one_mul, leadingCoeff]
 
-theorem natDegree_hasseDeriv [IsAddTorsionFree R] (p : R[X]) (n : ℕ) :
+theorem natDegree_hasseDeriv [HasUniqueDiv R] (p : R[X]) (n : ℕ) :
     natDegree (hasseDeriv n p) = natDegree p - n := by
   classical
   refine map_natDegree_eq_sub (fun h => hasseDeriv_eq_zero_of_lt_natDegree _ _) ?_

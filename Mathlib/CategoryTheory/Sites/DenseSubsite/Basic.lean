@@ -5,10 +5,7 @@ Authors: Andrew Yang, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Sheaf
 public import Mathlib.CategoryTheory.Sites.CoverLifting
-public import Mathlib.CategoryTheory.Sites.CoverPreserving
-public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 public import Mathlib.CategoryTheory.Sites.LocallyFullyFaithful
 
 /-!
@@ -480,7 +477,7 @@ lemma restrictHomEquivHom_naturality_left
 -/
 theorem iso_of_restrict_iso {ℱ ℱ' : Sheaf K A} (α : ℱ ⟶ ℱ') (i : IsIso (whiskerLeft G.op α.hom)) :
     IsIso α := by
-  convert! (sheafIso (asIso (whiskerLeft G.op α.hom))).isIso_hom using 1
+  convert (sheafIso (asIso (whiskerLeft G.op α.hom))).isIso_hom using 1
   ext1
   apply (sheafHom_eq _ _).symm
 
