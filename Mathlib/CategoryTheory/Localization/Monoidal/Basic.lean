@@ -375,74 +375,48 @@ lemma rightUnitor_naturality {X Y : LocalizedMonoidal L W ε} (f : X ⟶ Y) :
     f ▷ 𝟙_ (LocalizedMonoidal L W ε) ≫ (ρ_ Y).hom = (ρ_ X).hom ≫ f :=
   (rightUnitor L W ε).hom.naturality f
 
-@[reassoc]
-lemma triangle_aux₁ {X₁ X₂ X₃ Y₁ Y₂ Y₃ : LocalizedMonoidal L W ε}
-    (i₁ : X₁ ≅ Y₁) (i₂ : X₂ ≅ Y₂) (i₃ : X₃ ≅ Y₃) :
-    ((i₁.hom ⊗ₘ i₂.hom) ⊗ₘ i₃.hom) ≫ (α_ Y₁ Y₂ Y₃).hom ≫ (i₁.inv ⊗ₘ i₂.inv ⊗ₘ i₃.inv) =
-      (α_ X₁ X₂ X₃).hom := by
-  simp only [associator_naturality_assoc, ← tensor_comp, Iso.hom_inv_id, id_tensorHom,
-    whiskerLeft_id, comp_id]
-
-set_option backward.isDefEq.respectTransparency.types false in
-lemma triangle_aux₂ {X Y : LocalizedMonoidal L W ε} {X' Y' : C}
-    (e₁ : (L').obj X' ≅ X) (e₂ : (L').obj Y' ≅ Y) :
-      e₁.hom ⊗ₘ (ε.hom ⊗ₘ e₂.hom) ≫ (λ_ Y).hom =
-        (L').obj X' ◁ ((ε' L W ε).hom ▷ (L').obj Y' ≫
-          𝟙_ _ ◁ e₂.hom ≫ (λ_ Y).hom) ≫ e₁.hom ▷ Y := by
-  simp only [← tensorHom_id, ← id_tensorHom, ← tensor_comp, comp_id, id_comp,
-    ← tensor_comp_assoc, id_comp]
-  congr 3
-  exact (comp_id _).symm
-
-set_option backward.isDefEq.respectTransparency false in
-lemma triangle_aux₃ {X Y : LocalizedMonoidal L W ε} {X' Y' : C}
-    (e₁ : (L').obj X' ≅ X) (e₂ : (L').obj Y' ≅ Y) : (ρ_ X).hom ▷ _ =
-      ((e₁.inv ⊗ₘ ε.inv) ⊗ₘ e₂.inv) ≫ _ ◁ e₂.hom ≫ ((μ L W ε X' (𝟙_ C)).hom ≫
-        (L').map (ρ_ X').hom) ▷ Y ≫ e₁.hom ▷ Y := by
-  simp only [← tensorHom_id, ← id_tensorHom, ← tensor_comp, assoc, comp_id,
-    id_comp, Iso.inv_hom_id]
-  congr
-  rw [← cancel_mono e₁.inv, assoc, assoc, assoc, Iso.hom_inv_id, comp_id,
-    ← rightUnitor_naturality, rightUnitor_hom_app,
-    ← tensorHom_id, ← id_tensorHom, ← tensor_comp_assoc, comp_id, id_comp]
-
-set_option backward.isDefEq.respectTransparency.types false in
-variable {L W ε} in
-lemma triangle (X Y : LocalizedMonoidal L W ε) :
-    (α_ X (𝟙_ _) Y).hom ≫ X ◁ (λ_ Y).hom = (ρ_ X).hom ▷ Y := by
-  obtain ⟨X', ⟨e₁⟩⟩ : ∃ X₁, Nonempty ((L').obj X₁ ≅ X) := ⟨_, ⟨(L').objObjPreimageIso X⟩⟩
-  obtain ⟨Y', ⟨e₂⟩⟩ : ∃ X₂, Nonempty ((L').obj X₂ ≅ Y) := ⟨_, ⟨(L').objObjPreimageIso Y⟩⟩
-  have h₁ := (associator_hom_app L W ε X' (𝟙_ _) Y' =≫
-    (𝟙 ((L').obj X') ⊗ₘ (μ L W ε (𝟙_ C) Y').hom))
-  simp only [assoc, id_tensorHom, ← whiskerLeft_comp,
-    Iso.inv_hom_id, whiskerLeft_id, comp_id, Iso.inv_hom_id,
-    ← cancel_mono (μ L W ε X' (𝟙_ C ⊗ Y')).hom] at h₁
-  have h₂ := (ε' L W ε).hom ▷ (L').obj Y' ≫= leftUnitor_hom_app L W ε Y'
-  simp only [← whiskerRight_comp_assoc, Iso.hom_inv_id, whiskerRight_id, id_comp] at h₂
-  have h₃ := (((μ L W ε _ _).hom ⊗ₘ 𝟙 _) ≫ (μ L W ε _ _).hom) ≫=
-    ((L').congr_map (MonoidalCategory.triangle X' Y'))
-  simp only [assoc, Functor.map_comp, ← reassoc_of% h₁] at h₃
-  rw [← μ_natural_left, tensorHom_id, ← whiskerRight_comp_assoc,
-    ← μ_natural_right, ← Iso.comp_inv_eq, assoc, assoc, assoc,
-    Iso.hom_inv_id, comp_id, ← whiskerLeft_comp, ← h₂] at h₃
-  replace h₃ := ((e₁.inv ⊗ₘ ε.inv) ⊗ₘ e₂.inv) ≫= (h₃ =≫ (_ ◁ e₂.hom)) =≫ (e₁.hom ▷ _)
-  simp only [← whiskerLeft_comp, assoc, ← leftUnitor_naturality, ← whisker_exchange] at h₃
-  have : _ = (α_ X (𝟙_ (LocalizedMonoidal L W ε)) Y).hom :=
-    triangle_aux₁ _ _ _ e₁.symm ε.symm e₂.symm
-  simp only [← this, Iso.symm_hom, Iso.symm_inv, assoc,
-    ← id_tensorHom, ← tensor_comp, comp_id]
-  convert! h₃
-  · exact triangle_aux₂ _ _ _ e₁ e₂
-  · exact triangle_aux₃ _ _ _ e₁ e₂
-
 variable {L W ε} in
 /-- The two paths around the localized monoidal triangle agree as natural transformations of
 bifunctors. -/
 lemma triangle_natTrans : ofBifunctor.Triangle.firstMap (tensorBifunctor L W ε) unit
     (associator L W ε) (leftUnitor L W ε) =
       ofBifunctor.Triangle.secondMap (tensorBifunctor L W ε) unit (rightUnitor L W ε) := by
-  ext X Y
-  exact triangle (L := L) (W := W) (ε := ε) X Y
+  apply Localization.natTrans₂_ext L' L' W W
+  intro X Y
+  change (α_ ((L').obj X) (𝟙_ _) ((L').obj Y)).hom ≫
+    (L').obj X ◁ (λ_ ((L').obj Y)).hom = (ρ_ ((L').obj X)).hom ▷ (L').obj Y
+  let e : (L').obj (𝟙_ C) ≅ 𝟙_ (LocalizedMonoidal L W ε) := ε' L W ε
+  have h₁ := (associator_hom_app L W ε X (𝟙_ _) Y =≫
+    (𝟙 ((L').obj X) ⊗ₘ (μ L W ε (𝟙_ C) Y).hom))
+  simp only [assoc, id_tensorHom, ← whiskerLeft_comp,
+    Iso.inv_hom_id, whiskerLeft_id, comp_id, Iso.inv_hom_id,
+    ← cancel_mono (μ L W ε X (𝟙_ C ⊗ Y)).hom] at h₁
+  have h₂ : e.hom ▷ (L').obj Y ≫ (λ_ ((L').obj Y)).hom =
+      (μ L W ε (𝟙_ C) Y).hom ≫ (L').map (λ_ Y).hom := by
+    rw [leftUnitor_hom_app]
+    change e.hom ▷ (L').obj Y ≫ e.inv ▷ (L').obj Y ≫ _ = _
+    rw [← whiskerRight_comp_assoc, e.hom_inv_id, whiskerRight_id, id_comp]
+  have h₃ := (((μ L W ε _ _).hom ⊗ₘ 𝟙 _) ≫ (μ L W ε _ _).hom) ≫=
+    ((L').congr_map (MonoidalCategory.triangle X Y))
+  simp only [assoc, Functor.map_comp, ← reassoc_of% h₁] at h₃
+  rw [← μ_natural_left, tensorHom_id, ← whiskerRight_comp_assoc,
+    ← μ_natural_right, ← Iso.comp_inv_eq, assoc, assoc, assoc,
+    Iso.hom_inv_id, comp_id, ← whiskerLeft_comp, ← h₂] at h₃
+  have h₄ : (ρ_ ((L').obj X)).hom =
+      (L').obj X ◁ e.inv ≫ (μ L W ε X (𝟙_ C)).hom ≫ (L').map (ρ_ X).hom :=
+    rightUnitor_hom_app L W ε X
+  have h := (((L').obj X ◁ e.inv) ▷ (L').obj Y) ≫= h₃
+  simpa only [whiskerLeft_comp, assoc, associator_naturality₂_assoc,
+    ← whiskerLeft_comp_assoc, ← whiskerRight_comp, Iso.inv_hom_id, whiskerRight_id,
+    whiskerLeft_id, id_comp, comp_id, h₄] using h
+
+variable {L W ε} in
+/-- The pointwise triangle identity in the localized monoidal category. -/
+lemma triangle (X Y : LocalizedMonoidal L W ε) :
+    (α_ X (𝟙_ _) Y).hom ≫ X ◁ (λ_ Y).hom = (ρ_ X).hom ▷ Y := by
+  have h := NatTrans.congr_app
+    (NatTrans.congr_app (triangle_natTrans (L := L) (W := W) (ε := ε)) X) Y
+  exact h
 
 noncomputable instance :
     MonoidalCategory (LocalizedMonoidal L W ε) :=
