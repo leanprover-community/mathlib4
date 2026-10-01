@@ -155,13 +155,12 @@ theorem eLpNorm_measure_zero {f : α → ε} :
 @[simp]
 lemma memLp_dirac [MeasurableSingletonClass α] {a : α} {f : α → ε} (hf : ‖f a‖ₑ < ∞) :
     MemLp f p (Measure.dirac a) := by
-  rw [MemLp, eLpNorm]
-  split_ifs with hq hq' hq''
+  rw [MemLp, eLpNorm, ite_eq_left aestronglyMeasurable_dirac]
+  split_ifs with hq hq'
   · simp
   · simpa
   · simp [eLpNorm']
     finiteness
-  · exact (hq aestronglyMeasurable_dirac).elim
 
 end Zero
 
