@@ -5,12 +5,12 @@ Authors: Anne Baanen, Alex J. Best
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Torsion
+import Mathlib.Algebra.GroupWithZero.Torsion
 public import Mathlib.NumberTheory.RamificationInertia.Galois
 public import Mathlib.RingTheory.DedekindDomain.Factorization
-public import Mathlib.RingTheory.DedekindDomain.Instances
-public import Mathlib.RingTheory.Ideal.Int
-public import Mathlib.RingTheory.NormalClosure
+import Mathlib.RingTheory.DedekindDomain.Instances
+import Mathlib.RingTheory.Ideal.Int
+import Mathlib.RingTheory.NormalClosure
 
 /-!
 
@@ -323,7 +323,7 @@ theorem relNorm_map_algEquiv {T : Type*} [CommRing T] [IsDedekindDomain T] [IsIn
     [Algebra R T] [Module.Finite R T] [IsTorsionFree R T] (σ : S ≃ₐ[R] T) (I : Ideal S) :
     relNorm R (I.map σ) = relNorm R I := by
   refine le_antisymm (relNorm_map_algEquiv_aux σ I) ?_
-  convert! relNorm_map_algEquiv_aux σ.symm (I.map σ)
+  convert relNorm_map_algEquiv_aux σ.symm (I.map σ)
   change I = map σ.symm.toAlgHom (map σ.toAlgHom I)
   simp [map_mapₐ]
 
@@ -457,7 +457,7 @@ local instance : Infinite R := Module.Free.infinite ℤ R
 local instance : Infinite S := Module.Free.infinite ℤ S
 
 open UniqueFactorizationMonoid in
-theorem absNorm_relNorm [PerfectField (FractionRing R)] (I : Ideal S) :
+theorem absNorm_relNorm (I : Ideal S) :
     absNorm (relNorm R I) = absNorm I := by
   have : Module.Finite ℤ R := Module.Finite.left ℤ R S
   by_cases hI : I = ⊥
@@ -474,6 +474,8 @@ theorem absNorm_relNorm [PerfectField (FractionRing R)] (I : Ideal S) :
     let P := under R Q
     let p := absNorm (under ℤ P)
     have : Q.LiesOver (span {(p : ℤ)}) := LiesOver.trans Q P _
+    have : HasUniqueDiv R := .of_isTorsionFree ℤ _
+    have : CharZero R := .of_hasUniqueDiv R R
     rw [relNorm_eq_pow_of_isMaximal Q P, map_pow, ← pow_inertiaDeg p, ← pow_inertiaDeg p,
       ← pow_mul, ← inertiaDeg_tower]
 

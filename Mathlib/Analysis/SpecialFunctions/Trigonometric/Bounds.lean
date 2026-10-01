@@ -5,7 +5,7 @@ Authors: David Loeffler, Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
+import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
 
 /-!
@@ -48,7 +48,7 @@ theorem sin_lt (h : 0 < x) : sin x < x := by
   rw [sub_le_iff_le_add', hx] at this
   apply this.trans_lt
   rw [sub_add, sub_lt_self_iff, sub_pos, div_eq_mul_inv (x ^ 3)]
-  refine mul_lt_mul' ?_ (by norm_num) (by norm_num) (pow_pos h 3)
+  refine mul_lt_mul' ?_ (by norm_num) (by simp) (pow_pos h 3)
   apply pow_le_pow_of_le_one h.le h'
   simp
 
@@ -246,7 +246,7 @@ theorem cos_lt_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx
   suffices ∀ {y : ℝ}, 0 < y → y ≤ 3 * π / 2 → cos y < 1 / √(y ^ 2 + 1) by
     rcases lt_or_lt_iff_ne.mpr hx3.symm with ⟨h⟩
     · exact this h hx2
-    · convert! this (by linarith : 0 < -x) (by linarith) using 1
+    · convert this (by linarith : 0 < -x) (by linarith) using 1
       · rw [cos_neg]
       · rw [neg_sq]
   intro y hy1 hy2

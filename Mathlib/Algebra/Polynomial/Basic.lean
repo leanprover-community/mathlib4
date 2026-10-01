@@ -6,14 +6,10 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 module
 
 public import Mathlib.Algebra.Group.AddChar
-public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.Algebra.MonoidAlgebra.Module
 public import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
-public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 public import Mathlib.Algebra.Ring.Action.Rat
 public import Mathlib.Data.Finset.Sort
-public import Mathlib.Tactic.FastInstance
-public import Mathlib.LinearAlgebra.Finsupp.LSum
 public import Mathlib.Algebra.Order.Group.Nat
 
 
@@ -134,7 +130,7 @@ instance instNSMul : SMul ℕ R[X] where
 
 instance smulZeroClass {S : Type*} [SMulZeroClass S R] : SMulZeroClass S R[X] where
   smul r p := ⟨r • p.toFinsupp⟩
-  smul_zero a := congr_arg ofFinsupp (smul_zero a)
+  smul_zero a := congr(ofFinsupp $(smul_zero a))
 
 -- to avoid a bug in the `ring` tactic
 instance (priority := 1) pow : Pow R[X] ℕ where pow p n := npowRec n p
@@ -819,7 +815,7 @@ theorem smul_X_eq_monomial {n} : a • X ^ n = monomial n (a : R) := by
 
 @[simp]
 theorem support_X_pow [Nontrivial R] (n : ℕ) : (X ^ n : R[X]).support = singleton n := by
-  convert! support_monomial n (NeZero.out (n := (1 : R)))
+  convert support_monomial n (NeZero.out (n := (1 : R)))
   exact X_pow_eq_monomial n
 
 theorem support_X_empty (H : (1 : R) = 0) : (X : R[X]).support = ∅ := by
@@ -931,7 +927,7 @@ protected theorem induction_on {motive : R[X] → Prop} (p : R[X]) (C : ∀ a, m
     | succ n ih => exact monomial _ _ ih
   have B : ∀ s : Finset ℕ, motive (s.sum fun n : ℕ ↦ Polynomial.C (p.coeff n) * X ^ n) := by
     apply Finset.induction
-    · convert! C 0
+    · convert C 0
       exact C_0.symm
     · intro n s ns ih
       rw [sum_insert ns]

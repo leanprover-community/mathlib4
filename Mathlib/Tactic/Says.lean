@@ -5,7 +5,6 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Meta.Tactic.TryThis
 public meta import Mathlib.Lean.Elab.InfoTree
 public import Batteries.Linter.UnreachableTactic
@@ -60,7 +59,7 @@ def evalTacticCapturingTryThis (tac : TSyntax `tactic) : TacticM (TSyntax ``tact
     if let some msg := s.messageData? then
       pure <| SuggestionText.string <| ← msg.toString
     else
-      pure <| s.suggestion
+      pure s.suggestion
   match suggestion with
   | .tsyntax (kind := ``tacticSeq) stx =>
     return stx
