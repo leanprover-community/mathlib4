@@ -104,7 +104,6 @@ lemma tendstoInDistribution_of_identDistrib [OpensMeasurableSpace E] (i : ι)
     convert! tendsto_const_nhds with j
     exact (hX j).map_eq.symm.trans hZ.map_eq
 
-set_option backward.isDefEq.respectTransparency.types false in
 protected lemma TendstoInDistribution.congr [OpensMeasurableSpace E] {T : Ω' → E}
     (hXY : ∀ i, X i =ᵐ[μ i] Y i) (hZT : Z =ᵐ[μ'] T) (h : TendstoInDistribution X l Z μ μ') :
     TendstoInDistribution Y l T μ μ' where
