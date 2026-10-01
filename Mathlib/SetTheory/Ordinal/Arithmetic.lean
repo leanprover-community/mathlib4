@@ -6,8 +6,7 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 module
 
 public import Mathlib.Algebra.GroupWithZero.Divisibility
-public import Mathlib.Data.Nat.SuccPred
-public import Mathlib.Order.SuccPred.InitialSeg
+public import Mathlib.Order.SuccPred.Nat
 public import Mathlib.SetTheory.Ordinal.Basic
 
 /-!
@@ -68,7 +67,7 @@ theorem lift_add (a b : Ordinal.{v}) : lift.{u} (a + b) = lift.{u} a + lift.{u} 
 theorem lift_add_one (a : Ordinal.{v}) : lift.{u} (a + 1) = lift.{u} a + 1 := by
   simp
 
-@[deprecated lift_add_one (since := "2026-06-17")]
+@[deprecated lift_add_one +typeChanged (since := "2026-06-17")]
 theorem lift_succ (a : Ordinal.{v}) : lift.{u} (succ a) = succ (lift.{u} a) :=
   lift_add_one a
 
@@ -109,17 +108,14 @@ theorem add_le_add_iff_right {a b : Ordinal} : ∀ n : ℕ, a + n ≤ b + n ↔ 
 theorem add_right_cancel {a b : Ordinal} (n : ℕ) : a + n = b + n ↔ a = b := by
   simp only [le_antisymm_iff, add_le_add_iff_right]
 
-@[simp]
-theorem add_eq_zero_iff {a b : Ordinal} : a + b = 0 ↔ a = 0 ∧ b = 0 :=
-  inductionOn₂ a b fun α r _ β s _ => by
-    simp_rw [← type_sum_lex, type_eq_zero_iff_isEmpty]
-    exact isEmpty_sum
+@[deprecated (since := "2026-07-07")]
+alias left_eq_zero_of_add_eq_zero := eq_zero_of_add_right
 
-theorem left_eq_zero_of_add_eq_zero {a b : Ordinal} (h : a + b = 0) : a = 0 :=
-  (add_eq_zero_iff.1 h).1
+@[deprecated (since := "2026-07-07")]
+alias right_eq_zero_of_add_eq_zero := eq_zero_of_add_left
 
-theorem right_eq_zero_of_add_eq_zero {a b : Ordinal} (h : a + b = 0) : b = 0 :=
-  (add_eq_zero_iff.1 h).2
+@[deprecated (since := "2026-07-07")]
+alias add_eq_zero_iff := add_eq_zero
 
 /-! ### Limit ordinals -/
 
@@ -169,7 +165,7 @@ theorem limitRecOn_add_one {motive} (o H₁ H₂ H₃) :
     @limitRecOn motive (o + 1) H₁ H₂ H₃ = H₂ o (@limitRecOn motive o H₁ H₂ H₃) :=
   SuccOrder.limitRecOn_succ ..
 
-@[deprecated limitRecOn_add_one (since := "2026-05-21")]
+@[deprecated limitRecOn_add_one +typeChanged (since := "2026-05-21")]
 theorem limitRecOn_succ {motive} (o H₁ H₂ H₃) :
     @limitRecOn motive (succ o) H₁ H₂ H₃ = H₂ o (@limitRecOn motive o H₁ H₂ H₃) :=
   limitRecOn_add_one ..
@@ -187,15 +183,15 @@ theorem enum_succ_eq_top {o : Ordinal} :
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
-@[deprecated isSuccPrelimit_type_lt_iff (since := "2026-04-12")]
+@[deprecated isSuccPrelimit_type_lt_iff +typeChanged (since := "2026-04-12")]
 theorem has_succ_of_type_succ_lt {α} {r : α → α → Prop} [wo : IsWellOrder α r]
     (h : ∀ a < type r, succ a < type r) (x : α) : ∃ y, r x y := by
   use enum r ⟨succ (typein r x), h _ (typein_lt_type r x)⟩
-  convert! enum_lt_enum.mpr _
+  convert enum_lt_enum.mpr _
   · rw [enum_typein]
   · rw [Subtype.mk_lt_mk, lt_succ_iff]
 
-@[deprecated isSuccPrelimit_type_lt_iff (since := "2026-04-12")]
+@[deprecated isSuccPrelimit_type_lt_iff +typeChanged (since := "2026-04-12")]
 theorem toType_noMax_of_succ_lt {o : Ordinal} (ho : ∀ a < o, succ a < o) : NoMaxOrder o.ToType :=
   ⟨has_succ_of_type_succ_lt (type_toType _ ▸ ho)⟩
 
@@ -219,7 +215,7 @@ def pred (o : Ordinal) : Ordinal :=
 theorem pred_add_one (o) : pred (o + 1) = o :=
   isSuccPrelimitRecOn_succ ..
 
-@[deprecated pred_add_one (since := "2026-05-25")]
+@[deprecated pred_add_one +typeChanged (since := "2026-05-25")]
 theorem pred_succ (o) : pred (succ o) = o :=
   pred_add_one o
 
@@ -453,11 +449,11 @@ instance mulRightMono : MulRightMono Ordinal.{u} :=
       · exact Prod.Lex.right _ (f.toRelEmbedding.map_rel_iff.2 h')⟩
 
 theorem le_mul_left (a : Ordinal) {b : Ordinal} (hb : 0 < b) : a ≤ a * b := by
-  convert! mul_le_mul_right (one_le_iff_pos.2 hb) a
+  convert mul_le_mul_right (one_le_iff_pos.2 hb) a
   rw [mul_one a]
 
 theorem le_mul_right (a : Ordinal) {b : Ordinal} (hb : 0 < b) : a ≤ b * a := by
-  convert! mul_le_mul_left (one_le_iff_pos.2 hb) a
+  convert mul_le_mul_left (one_le_iff_pos.2 hb) a
   rw [one_mul a]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -549,7 +545,7 @@ theorem add_mul_add_one {a b : Ordinal} (c) (ba : b + a = a) :
   | add_one c IH => rw [mul_add_one, IH, ← add_assoc, add_assoc _ b, ba, ← mul_add_one]
   | limit c l IH => rw [mul_add_one, add_mul_limit_aux ba l IH, mul_add_one, add_assoc]
 
-@[deprecated add_mul_add_one (since := "2026-06-17")]
+@[deprecated add_mul_add_one +typeChanged (since := "2026-06-17")]
 theorem add_mul_succ {a b : Ordinal} (c) (ba : b + a = a) : (a + b) * succ c = a * succ c + b :=
   add_mul_add_one c ba
 
@@ -646,7 +642,7 @@ theorem mul_add_div_mul {a c : Ordinal} (hc : c < a) (b d : Ordinal) :
     · grw [← mul_le_iff_le_div H, mul_assoc, mul_div_le b d, ← le_self_add]
 
 theorem mul_div_mul_cancel {a : Ordinal} (ha : a ≠ 0) (b c) : a * b / (a * c) = b / c := by
-  convert! mul_add_div_mul (pos_iff_ne_zero.2 ha) b c using 1
+  convert mul_add_div_mul (pos_iff_ne_zero.2 ha) b c using 1
   rw [add_zero]
 
 theorem div_eq {a b c : Ordinal} (hle : b * c ≤ a) (hlt : a < b * (c + 1)) : a / b = c := by
@@ -788,7 +784,7 @@ theorem mul_add_mod_mul {w x : Ordinal} (hw : w < x) (y z : Ordinal) :
 theorem mul_mod_mul (x y z : Ordinal) : (x * y) % (x * z) = x * (y % z) := by
   obtain rfl | hx := eq_zero_or_pos x
   · simp
-  · convert! mul_add_mod_mul hx y z using 1 <;>
+  · convert mul_add_mod_mul hx y z using 1 <;>
     rw [add_zero]
 
 theorem mod_mod_of_dvd (a : Ordinal) {b c : Ordinal} (h : c ∣ b) : a % b % c = a % c := by
@@ -820,11 +816,11 @@ instance instCharZero : CharZero Ordinal := by
   refine ⟨fun a b h ↦ ?_⟩
   rwa [← Cardinal.ord_natCast, ← Cardinal.ord_natCast, Cardinal.ord_inj, Nat.cast_inj] at h
 
-@[deprecated Nat.cast_add_one_comm (since := "2026-05-10")]
+@[deprecated Nat.cast_add_one_comm +typeChanged (since := "2026-05-10")]
 theorem one_add_natCast (m : ℕ) : 1 + (m : Ordinal) = succ m :=
   m.cast_add_one_comm.symm
 
-@[deprecated Nat.cast_add_one_comm (since := "2026-05-10")]
+@[deprecated Nat.cast_add_one_comm +typeChanged (since := "2026-05-10")]
 theorem one_add_ofNat (m : ℕ) [m.AtLeastTwo] :
     1 + (ofNat(m) : Ordinal) = Order.succ (OfNat.ofNat m : Ordinal) :=
   m.cast_add_one_comm.symm

@@ -5,11 +5,8 @@ Authors: Kenny Lau, Anne Baanen, Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Derivative
-public import Mathlib.Algebra.Polynomial.Div
 public import Mathlib.FieldTheory.SplittingField.Construction
 public import Mathlib.RingTheory.Polynomial.DegreeLT
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
 /-!
 # Resultant of two polynomials
@@ -109,7 +106,7 @@ lemma sylvesterDeriv_updateRow (f : R[X]) (hf : 0 < f.natDegree) :
     on_goal 2 => rw [show f.natDegree = 1 by lia]
     on_goal 3 =>
       rw [← Nat.cast_one (R := R), ← Nat.cast_add, show f.natDegree = 1 by lia]
-      norm_num
+      simp
     on_goal 6 =>
       rw [← Nat.cast_one (R := R), ← Nat.cast_add]
       #adaptation_note
@@ -661,17 +658,17 @@ lemma resultant_prod_right {ι : Type*} (s : Finset ι) (f : R[X]) (g : ι → R
 @[simp]
 lemma resultant_pow_left (hf : f.leadingCoeff ^ m ≠ 0) (hn : g.natDegree ≤ n) :
     (f ^ m).resultant g (f ^ m).natDegree n = (f.resultant g f.natDegree n) ^ m := by
-  convert! resultant_prod_left (Finset.range m) (fun _ ↦ f) g n (by simpa) hn <;> simp
+  convert resultant_prod_left (Finset.range m) (fun _ ↦ f) g n (by simpa) hn <;> simp
 
 @[simp]
 lemma resultant_pow_right (hm : f.natDegree ≤ m) (hg : g.leadingCoeff ^ n ≠ 0) :
     f.resultant (g ^ n) m (g ^ n).natDegree = (f.resultant g m g.natDegree) ^ n := by
-  convert! resultant_prod_right (Finset.range n) f (fun _ ↦ g) m hm (by simpa) <;> simp
+  convert resultant_prod_right (Finset.range n) f (fun _ ↦ g) m hm (by simpa) <;> simp
 
 lemma resultant_X_sub_C_pow_left (r : R) (g : R[X]) (m n : ℕ) (hn : g.natDegree ≤ n) :
     ((X - C r) ^ m).resultant g m n = eval r g ^ m := by
   nontriviality R
-  convert! resultant_pow_left _ _ _ _ _ _ <;> simp [natDegree_pow', hn]
+  convert resultant_pow_left _ _ _ _ _ _ <;> simp [natDegree_pow', hn]
 
 lemma resultant_X_sub_C_pow_right (f : R[X]) (r : R) (m n : ℕ) (hm : f.natDegree ≤ m) :
     f.resultant ((X - C r) ^ n) m n = (-1) ^ (m * n) * eval r f ^ n := by
@@ -679,11 +676,11 @@ lemma resultant_X_sub_C_pow_right (f : R[X]) (r : R) (m n : ℕ) (hm : f.natDegr
 
 lemma resultant_X_pow_left (g : R[X]) (m n : ℕ) (hn : g.natDegree ≤ n) :
     (X ^ m).resultant g m n = g.coeff 0 ^ m := by
-  convert! resultant_X_sub_C_pow_left 0 g m n hn <;> simp [coeff_zero_eq_eval_zero]
+  convert resultant_X_sub_C_pow_left 0 g m n hn <;> simp [coeff_zero_eq_eval_zero]
 
 lemma resultant_X_pow_right (f : R[X]) (m n : ℕ) (hm : f.natDegree ≤ m) :
     f.resultant (X ^ n) m n = (-1) ^ (m * n) * f.coeff 0 ^ n := by
-  convert! resultant_X_sub_C_pow_right f 0 m n hm <;> simp [coeff_zero_eq_eval_zero]
+  convert resultant_X_sub_C_pow_right f 0 m n hm <;> simp [coeff_zero_eq_eval_zero]
 
 nonrec lemma resultant_scaleRoots (f g : R[X]) (r : R) :
     resultant (f.scaleRoots r) (g.scaleRoots r) =
@@ -854,7 +851,8 @@ def adjSylvester (f g : R[X]) :
   (f.sylvester g m n).adjugate.toLin (degreeLT.basis R (m + n))
     (((degreeLT.basis R m).prod (degreeLT.basis R n)).reindex finSumFinEquiv)
 
-lemma sylveserMap_comp_adjSylvester (f g : R[X]) (hf : f.natDegree ≤ m) (hg : g.natDegree ≤ n) :
+lemma sylvesterMap_comp_adjSylvester (f g : R[X]) (hf : f.natDegree ≤ m)
+    (hg : g.natDegree ≤ n) :
     sylvesterMap f g hf hg ∘ₗ adjSylvester f g = f.resultant g m n • LinearMap.id := by
   let b₁ := ((degreeLT.basis R m).prod (degreeLT.basis R n)).reindex finSumFinEquiv
   let b₂ := degreeLT.basis R (m + n)
@@ -862,13 +860,20 @@ lemma sylveserMap_comp_adjSylvester (f g : R[X]) (hf : f.natDegree ≤ m) (hg : 
   rwa [Matrix.toLin_mul b₂ b₁ b₂, Matrix.toLin_toMatrix, map_smul,
     toMatrix_sylvesterMap', Matrix.toLin_one, ← resultant] at this
 
-lemma adjSylvester_comp_sylveserMap (f g : R[X]) (hf : f.natDegree ≤ m) (hg : g.natDegree ≤ n) :
+@[deprecated (since := "2026-09-17")]
+alias sylveserMap_comp_adjSylvester := sylvesterMap_comp_adjSylvester
+
+lemma adjSylvester_comp_sylvesterMap (f g : R[X]) (hf : f.natDegree ≤ m)
+    (hg : g.natDegree ≤ n) :
     adjSylvester f g ∘ₗ sylvesterMap f g hf hg = f.resultant g m n • LinearMap.id := by
   let b₁ := ((degreeLT.basis R m).prod (degreeLT.basis R n)).reindex finSumFinEquiv
   let b₂ := degreeLT.basis R (m + n)
   have := congr(Matrix.toLin b₁ b₁ $(((sylvesterMap f g hf hg).toMatrix b₁ b₂).adjugate_mul))
   rwa [Matrix.toLin_mul b₁ b₂ b₁, Matrix.toLin_toMatrix, map_smul,
     toMatrix_sylvesterMap', Matrix.toLin_one, ← resultant] at this
+
+@[deprecated (since := "2026-09-17")]
+alias adjSylvester_comp_sylveserMap := adjSylvester_comp_sylvesterMap
 
 /-- Note that if `n = m = 0` then `resultant = 1` but `f` and `g` aren't necessarily coprime. -/
 lemma exists_mul_add_mul_eq_C_resultant
@@ -878,7 +883,7 @@ lemma exists_mul_add_mul_eq_C_resultant
   let X := adjSylvester f g ⟨1, by simpa [Polynomial.mem_degreeLT,
     ← Nat.cast_add, Nat.pos_iff_ne_zero, not_and_or, -not_and] using H⟩
   have : ((sylvesterMap f g hf hg X)).1 = _ :=
-    congr(($(sylveserMap_comp_adjSylvester f g hf hg) _).1)
+    congr(($(sylvesterMap_comp_adjSylvester f g hf hg) _).1)
   refine ⟨X.2, X.1, by simpa [-SetLike.coe_mem] using X.2.2,
     by simpa [-SetLike.coe_mem] using X.1.2, by simpa [Algebra.smul_def] using this⟩
 
@@ -977,7 +982,7 @@ lemma resultant_deriv {f : R[X]} (hf : 0 < f.degree) :
   rw [resultant_comm, resultant, ← sylvesterDeriv_updateRow f hf, Matrix.det_updateRow_smul,
     Matrix.updateRow_eq_self, discr, mul_comm f.natDegree]
   ring_nf
-  rw [Nat.div_mul_cancel (by convert! Nat.two_dvd_mul_add_one (f.natDegree - 1) using 2; lia)]
+  rw [Nat.div_mul_cancel (by convert Nat.two_dvd_mul_add_one (f.natDegree - 1) using 2; lia)]
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 private lemma sylvesterDeriv_of_natDegree_eq_three {f : R[X]} (hf : f.natDegree = 3) :

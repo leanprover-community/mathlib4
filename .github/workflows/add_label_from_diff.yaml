@@ -39,7 +39,8 @@ jobs:
         ref: ${{ github.event.pull_request.head.sha || github.sha }}
         fetch-depth: 0
         path: pr-branch
-        # Untrusted (potentially fork) checkout: don't persist the GITHUB_TOKEN into its .git/config.
+        # Untrusted (potentially fork) checkout:
+        # don't persist the GITHUB_TOKEN into its .git/config.
         persist-credentials: false
         # autolabel is built from the trusted base checkout and only reads these files,
         # so checking out fork PR code under pull_request_target is safe.
@@ -47,7 +48,17 @@ jobs:
     - name: Run autolabel
       working-directory: pr-branch
       run: |
-        "${GITHUB_WORKSPACE}/tools/.lake/build/bin/autolabel" --pr "${{ github.event.pull_request.number }}" --curl "${{ secrets.GITHUB_TOKEN }}"
+        set +e
+        "${GITHUB_WORKSPACE}/tools/.lake/build/bin/autolabel" \
+          --pr "${PR_NUMBER}" \
+          --curl "${GH_TOKEN}"
+        code=$?
+        if [ "$code" -ne 0 ]; then
+          echo "::warning file=scripts/autolabel.lean::autolabel exited with code ${code}. \
+          If this PR adds or removes directories, please update \
+          \`scripts/autolabel.lean\` in the same PR so \`master\` stays consistent."
+        fi
+        exit 0
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         PR_NUMBER: ${{ github.event.pull_request.number }}

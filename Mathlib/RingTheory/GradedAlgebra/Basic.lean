@@ -5,10 +5,8 @@ Authors: Eric Wieser, Kevin Buzzard, Jujian Zhang, Fangming Li
 -/
 module
 
-public import Mathlib.Algebra.DirectSum.Algebra
 public import Mathlib.Algebra.DirectSum.Decomposition
 public import Mathlib.Algebra.DirectSum.Internal
-public import Mathlib.Algebra.DirectSum.Ring
 
 /-!
 # Internally-graded rings and algebras
@@ -227,7 +225,7 @@ open DirectSum
 
 /-- The projection maps of graded algebra -/
 def GradedAlgebra.proj (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜] (i : ι) : A →ₗ[R] A :=
-  (𝒜 i).subtype.comp <| (DFinsupp.lapply i).comp <| (decomposeAlgEquiv 𝒜).toAlgHom.toLinearMap
+  (𝒜 i).subtype.comp <| (DFinsupp.lapply i).comp (decomposeAlgEquiv 𝒜).toAlgHom.toLinearMap
 
 @[simp]
 theorem GradedAlgebra.proj_apply (i : ι) (r : A) :
