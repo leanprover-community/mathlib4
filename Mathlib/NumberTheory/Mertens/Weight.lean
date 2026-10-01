@@ -253,7 +253,7 @@ theorem E₂_bound {x : ℝ} (hx : 2 ≤ x) : |f.E₂ x| ≤ f.C₂ / log x := b
   have hx' : 1 < x := by linarith
   have := log_pos hx'
   have := f.integrable_mul_E₁ hx
-  have : NullMeasurableSet (.Ioi x) volume := by measurability
+  have : NullMeasurableSet (.Ioi x) := by measurability
   rw [f.E₂_eq hx, abs_le, C₂]
   constructor
   · calc
