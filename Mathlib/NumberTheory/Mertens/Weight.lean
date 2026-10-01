@@ -155,7 +155,7 @@ theorem sum_sub_log_bounded : (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, f n - log x
 
 theorem sum_sub_log_bounded_nat : (fun N ↦ ∑ n ∈ Ioc 0 N, f n - log N)
     =O[atTop] fun _ ↦ (1 : ℝ) := by
-  convert! f.sum_sub_log_bounded.comp_tendsto tendsto_natCast_atTop_atTop; simp
+  simpa [Function.comp_def] using f.sum_sub_log_bounded.comp_tendsto tendsto_natCast_atTop_atTop
 
 theorem sum_asymp : (∑ n ∈ Ioc 0 ⌊·⌋₊, f n) ~[atTop] log :=
   f.sum_sub_log_bounded.trans_isLittleO (isLittleO_const_log_atTop)|>.isEquivalent
