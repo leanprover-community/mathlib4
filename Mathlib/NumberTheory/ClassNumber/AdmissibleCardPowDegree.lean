@@ -160,7 +160,7 @@ theorem cardPowDegree_anti_archimedean {x y z : Fq[X]} {a : ℤ} (hxy : cardPowD
   refine Or.imp (pow_le_pow_right₀ this) (pow_le_pow_right₀ this) ?_
   rw [natDegree_le_iff_degree_le, natDegree_le_iff_degree_le, ← le_max_iff, ←
     degree_eq_natDegree hxy', ← degree_eq_natDegree hyz']
-  convert! degree_add_le (x - y) (y - z) using 2
+  convert degree_add_le (x - y) (y - z) using 2
   exact (sub_add_sub_cancel _ _ _).symm
 
 /-- A slightly stronger version of `exists_partition` on which we perform induction on `n`:

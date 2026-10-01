@@ -103,7 +103,7 @@ def upperCentralSeriesStep : Subgroup G where
   carrier := { x : G | ∀ y : G, ⁅x, y⁆ ∈ N }
   one_mem' y := by simp
   mul_mem' {a b} ha hb y := by
-    convert! Subgroup.mul_mem _ (ha (b * y * b⁻¹)) (hb y) using 1
+    convert Subgroup.mul_mem _ (ha (b * y * b⁻¹)) (hb y) using 1
     group
   inv_mem' {x} hx y := by
     specialize hx y⁻¹
@@ -345,7 +345,7 @@ theorem is_descending_rev_series_of_is_ascending {H : ℕ → Subgroup G} {n : �
     rw [commutatorElement_one_left]
     exact Subgroup.one_mem _
   · apply hH
-    convert! hx using 1
+    convert hx using 1
     rw [tsub_add_eq_add_tsub (Nat.succ_le_of_lt hm), Nat.succ_eq_add_one, Nat.add_sub_add_right]
 
 @[to_additive]
@@ -358,7 +358,7 @@ theorem is_ascending_rev_series_of_is_descending {H : ℕ → Subgroup G} {n : �
   · have hnm : n - m = 0 := tsub_eq_zero_iff_le.mpr hm
     rw [hnm, h0]
     exact mem_top _
-  · convert! hH x _ hx g using 1
+  · convert hH x _ hx g using 1
     rw [tsub_add_eq_add_tsub (Nat.succ_le_of_lt hm), Nat.succ_eq_add_one, Nat.add_sub_add_right]
 
 /-- A group `G` is nilpotent iff there exists a descending central series which reaches the
