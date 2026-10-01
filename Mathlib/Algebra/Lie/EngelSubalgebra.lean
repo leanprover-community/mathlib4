@@ -6,10 +6,6 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Lie.Engel
-public import Mathlib.Algebra.Lie.Normalizer
-public import Mathlib.Algebra.Lie.OfAssociative
-public import Mathlib.Algebra.Lie.Subalgebra
-public import Mathlib.Data.Finset.NatAntidiagonal
 
 /-!
 # Engel subalgebras
