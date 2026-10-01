@@ -135,7 +135,7 @@ theorem ciSup_extend [Nonempty ι] {f : ι → β} {g : ι → α} (hf : Factors
       exact le_ciSup_of_le hg b (by simp [hf.extend_apply])
     · simpa [h] using hjg i
   · refine ciSup_le fun i ↦ le_ciSup_of_le ?_ (f i) (by simp [hf.extend_apply])
-    apply (bddAbove_union.mpr ⟨hg, ?_⟩).mono (Set.range_extend_subset f g j)
+    refine (bddAbove_union.mpr ⟨hg, ?_⟩).mono (Set.range_extend_subset f g j)
     exact ⟨iSup g, by grind [mem_upperBounds]⟩
 
 /-- If the set of all `f i j` is bounded above, then so is the set of the supremums of every row -/
