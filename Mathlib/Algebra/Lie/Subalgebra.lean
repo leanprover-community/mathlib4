@@ -387,8 +387,6 @@ def comap : LieSubalgebra R L :=
 
 section LatticeStructure
 
-open Set
-
 theorem le_def : K ≤ K' ↔ (K : Set L) ⊆ K' :=
   Iff.rfl
 
