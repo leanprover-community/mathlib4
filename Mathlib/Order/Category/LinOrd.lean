@@ -27,7 +27,7 @@ open Lean.PrettyPrinter.Delaborator in
 @[app_delab LinOrd.of]
 meta def delabOf : Delab := CategoryTheory.delabOf
 
-mk_concrete_category LinOrd.{u} (· →o ·) (fun (_ : LinOrd) ↦ OrderHom.id) OrderHom.comp
+mk_concrete_category LinOrd (· →o ·) (fun (_ : LinOrd) ↦ OrderHom.id) OrderHom.comp
   with_of_hom {X Y : Type u} [LinearOrder X] [LinearOrder Y]
   hom_type (X →o Y) from (of X) to (of Y)
 

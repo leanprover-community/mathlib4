@@ -47,7 +47,7 @@ open Lean.PrettyPrinter.Delaborator in
 @[app_delab BddOrd.of]
 meta def delabOf : Delab := CategoryTheory.delabOf
 
-mk_concrete_category BddOrd.{u} (BoundedOrderHom · ·) (fun (X : BddOrd) ↦ BoundedOrderHom.id X)
+mk_concrete_category BddOrd (BoundedOrderHom · ·) (fun (X : BddOrd) ↦ BoundedOrderHom.id X)
   BoundedOrderHom.comp
   with_of_hom {X Y : Type u} [PartialOrder X] [BoundedOrder X] [PartialOrder Y]
   [BoundedOrder Y] hom_type (BoundedOrderHom X Y) from (of X) to (of Y)

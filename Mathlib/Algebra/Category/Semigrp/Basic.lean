@@ -85,10 +85,10 @@ meta def MagmaCat.delabOf : Delab := CategoryTheory.delabOf
 end Notation
 
 @[to_additive AddMagmaCat]
-mk_concrete_category MagmaCat.{u} (· →ₙ* ·) MulHom.id MulHom.comp
+mk_concrete_category MagmaCat (· →ₙ* ·) MulHom.id MulHom.comp
   with_of_hom {X Y : Type u} [Mul X] [Mul Y]
   hom_type (X →ₙ* Y) from (MagmaCat.of X) to (MagmaCat.of Y)
-  to_additive AddMagmaCat.{u} (· →ₙ+ ·) AddHom.id AddHom.comp
+  to_additive AddMagmaCat (· →ₙ+ ·) AddHom.id AddHom.comp
   with_of_hom {X Y : Type u} [Add X] [Add Y]
   hom_type (X →ₙ+ Y) from (AddMagmaCat.of X) to (AddMagmaCat.of Y)
 
@@ -205,10 +205,10 @@ meta def Semigrp.delabOf : Delab := CategoryTheory.delabOf
 end Notation
 
 @[to_additive AddSemigrp]
-mk_concrete_category Semigrp.{u} (· →ₙ* ·) MulHom.id MulHom.comp
+mk_concrete_category Semigrp (· →ₙ* ·) MulHom.id MulHom.comp
   with_of_hom {X Y : Type u} [Semigroup X] [Semigroup Y]
   hom_type (X →ₙ* Y) from (Semigrp.of X) to (Semigrp.of Y)
-  to_additive AddSemigrp.{u} (· →ₙ+ ·) AddHom.id AddHom.comp
+  to_additive AddSemigrp (· →ₙ+ ·) AddHom.id AddHom.comp
   with_of_hom {X Y : Type u} [AddSemigroup X] [AddSemigroup Y]
   hom_type (X →ₙ+ Y) from (AddSemigrp.of X) to (AddSemigrp.of Y)
 

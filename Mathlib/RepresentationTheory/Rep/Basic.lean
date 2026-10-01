@@ -65,7 +65,7 @@ lemma of_V : (of ρ).V = X := by with_reducible rfl
 variable (X ρ) in
 lemma of_ρ : (of ρ).ρ = ρ := by with_reducible rfl
 
-mk_concrete_category (Rep.{w} k G) (fun A B ↦ A.ρ.IntertwiningMap B.ρ)
+mk_concrete_category (Rep k G) (fun A B ↦ A.ρ.IntertwiningMap B.ρ)
   (fun A ↦ Representation.IntertwiningMap.id A.ρ) (fun g f ↦ g.comp f)
   with_of_hom {X Y : Type w} [AddCommGroup X] [AddCommGroup Y] [Module k X] [Module k Y]
   {ρ : Representation k G X} {σ : Representation k G Y}

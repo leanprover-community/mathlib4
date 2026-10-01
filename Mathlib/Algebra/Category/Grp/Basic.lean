@@ -75,10 +75,10 @@ meta def GrpCat.delabOf : Delab := CategoryTheory.delabOf
 end Notation
 
 @[to_additive AddGrpCat]
-mk_concrete_category GrpCat.{u} (· →* ·) MonoidHom.id MonoidHom.comp
+mk_concrete_category GrpCat (· →* ·) MonoidHom.id MonoidHom.comp
   with_of_hom {X Y : Type u} [Group X] [Group Y]
   hom_type (X →* Y) from (GrpCat.of X) to (GrpCat.of Y)
-  to_additive AddGrpCat.{u} (· →+ ·) AddMonoidHom.id AddMonoidHom.comp
+  to_additive AddGrpCat (· →+ ·) AddMonoidHom.id AddMonoidHom.comp
   with_of_hom {X Y : Type u} [AddGroup X] [AddGroup Y]
   hom_type (X →+ Y) from (AddGrpCat.of X) to (AddGrpCat.of Y)
 
@@ -250,10 +250,10 @@ meta def CommGrpCat.delabOf : Delab := CategoryTheory.delabOf
 end Notation
 
 @[to_additive AddCommGrpCat]
-mk_concrete_category CommGrpCat.{u} (· →* ·) MonoidHom.id MonoidHom.comp
+mk_concrete_category CommGrpCat (· →* ·) MonoidHom.id MonoidHom.comp
   with_of_hom {X Y : Type u} [CommGroup X] [CommGroup Y]
   hom_type (X →* Y) from (CommGrpCat.of X) to (CommGrpCat.of Y)
-  to_additive AddCommGrpCat.{u} (· →+ ·) AddMonoidHom.id AddMonoidHom.comp
+  to_additive AddCommGrpCat (· →+ ·) AddMonoidHom.id AddMonoidHom.comp
   with_of_hom {X Y : Type u} [AddCommGroup X] [AddCommGroup Y]
   hom_type (X →+ Y) from (AddCommGrpCat.of X) to (AddCommGrpCat.of Y)
 

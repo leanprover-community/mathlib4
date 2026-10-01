@@ -59,7 +59,7 @@ lemma coe_of (X : Type v) [Ring X] [Algebra R X] : (of R X : Type v) = X :=
   rfl
 
 variable {R} in
-mk_concrete_category (AlgCat.{v} R) (· →ₐ[R] ·) (AlgHom.id R) AlgHom.comp
+mk_concrete_category (AlgCat R) (· →ₐ[R] ·) (AlgHom.id R) AlgHom.comp
   with_of_hom {A B : Type v} [Ring A] [Ring B] [Algebra R A] [Algebra R B]
   hom_type (A →ₐ[R] B) from (of R A) to (of R B)
 

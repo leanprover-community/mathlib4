@@ -66,8 +66,8 @@ lemma coe_of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [Co
     [ContinuousSMul R M] : (of R M) = M := rfl
 
 variable {R} in
-mk_concrete_category (TopModuleCat.{v} R) (· →L[R] ·)
-  (fun (M : TopModuleCat.{v} R) ↦ ContinuousLinearMap.id R M) ContinuousLinearMap.comp
+mk_concrete_category (TopModuleCat R) (· →L[R] ·)
+  (fun (M : TopModuleCat R) ↦ ContinuousLinearMap.id R M) ContinuousLinearMap.comp
   with_of_hom {X Y : Type v}
     [AddCommGroup X] [Module R X] [TopologicalSpace X] [ContinuousAdd X] [ContinuousSMul R X]
     [AddCommGroup Y] [Module R Y] [TopologicalSpace Y] [ContinuousAdd Y] [ContinuousSMul R Y]

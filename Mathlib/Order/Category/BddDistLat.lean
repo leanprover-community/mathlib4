@@ -53,7 +53,7 @@ meta def delabOf : Delab := CategoryTheory.delabOf
 theorem coe_of (α : Type*) [DistribLattice α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 
-mk_concrete_category BddDistLat.{u} (BoundedLatticeHom · ·)
+mk_concrete_category BddDistLat (BoundedLatticeHom · ·)
   (fun (X : BddDistLat) ↦ BoundedLatticeHom.id X)
   BoundedLatticeHom.comp
   with_of_hom {X Y : Type u} [DistribLattice X] [BoundedOrder X] [DistribLattice Y]

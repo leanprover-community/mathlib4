@@ -59,7 +59,7 @@ meta def delabOf : Delab := CategoryTheory.delabOf
 variable (R) in
 lemma coe_of (X : Type v) [CommRing X] [Algebra R X] : (of R X : Type v) = X := rfl
 
-mk_concrete_category (CommAlgCat.{v} R) (· →ₐ[R] ·) (AlgHom.id R) AlgHom.comp
+mk_concrete_category (CommAlgCat R) (· →ₐ[R] ·) (AlgHom.id R) AlgHom.comp
   with_of_hom {X Y : Type v} [CommRing X] [Algebra R X] [CommRing Y] [Algebra R Y]
   hom_type (X →ₐ[R] Y) from (of R X) to (of R Y)
 

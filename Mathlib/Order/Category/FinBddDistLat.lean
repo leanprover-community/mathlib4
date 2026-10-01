@@ -54,7 +54,7 @@ abbrev of' (α : Type*) [DistribLattice α] [Fintype α] [Nonempty α] : FinBddD
   carrier := α
   isBoundedOrder := Fintype.toBoundedOrder α
 
-mk_concrete_category FinBddDistLat.{u} (BoundedLatticeHom · ·)
+mk_concrete_category FinBddDistLat (BoundedLatticeHom · ·)
   (fun (X : FinBddDistLat) ↦ BoundedLatticeHom.id X)
   BoundedLatticeHom.comp
   with_of_hom {X Y : Type u} [DistribLattice X] [BoundedOrder X] [Fintype X]

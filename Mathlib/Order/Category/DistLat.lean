@@ -49,7 +49,7 @@ open Lean.PrettyPrinter.Delaborator in
 @[app_delab DistLat.of]
 meta def delabOf : Delab := CategoryTheory.delabOf
 
-mk_concrete_category DistLat.{u} (LatticeHom · ·) (fun (X : DistLat) ↦ LatticeHom.id X)
+mk_concrete_category DistLat (LatticeHom · ·) (fun (X : DistLat) ↦ LatticeHom.id X)
   LatticeHom.comp
   with_of_hom {X Y : Type u} [DistribLattice X] [DistribLattice Y]
   hom_type (LatticeHom X Y) from (of X) to (of Y)
