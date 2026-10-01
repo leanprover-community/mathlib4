@@ -115,6 +115,6 @@ instance [CommGroup α] : CommGroup (Shrink.{v} α) :=
 
 @[to_additive]
 instance [Monoid M] [MulAction M α] : MulAction M (Shrink.{v} α) :=
-  (equivShrink α).symm.mulAction M
+  fast_instance% (equivShrink α).symm.mulAction M
 
 end Shrink
