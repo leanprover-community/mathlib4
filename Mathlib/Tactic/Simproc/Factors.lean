@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Eric Wieser
 -/
 module
 
-import all Mathlib.Tactic.NormNum.Prime  -- for accessing `evalMinFac.core`
 public import Mathlib.Data.Nat.Factors
 public import Mathlib.Tactic.NormNum.Prime
 public import Batteries.Lean.Expr
@@ -113,7 +112,7 @@ private partial def evalPrimeFactorsListAux
       have ehp₂ : Q(Nat.blt $ea $eb = true) :=
         have : a < b := lt_of_le_of_ne' hab h_ba_eq
         (q(Eq.refl (true)) : Expr)
-      let .isNat _ lit ehp₃ ← evalMinFac.core q($eb) q(inferInstance) q($eb) ehb b | failure
+      let .isNat _ lit ehp₃ ← evalMinFac.core q($eb) q($eb) ehb b | failure
       assertInstancesCommute
       have : $lit =Q $eb := ⟨⟩
       let ⟨l, p₄⟩ ← evalPrimeFactorsListAux ehm ehb
@@ -130,7 +129,7 @@ private partial def evalPrimeFactorsListAux
       let eh_a_lt_n : Q(Nat.blt $ea $en = true) :=
         have : a < n := by lia
         (q(Eq.refl true) : Expr)
-      let .isNat _ lit ehn_minFac ← evalMinFac.core q($en) q(inferInstance) q($enl) ehn n | failure
+      let .isNat _ lit ehn_minFac ← evalMinFac.core q($en) q($enl) ehn n | failure
       have : $lit =Q $en := ⟨⟩
       assertInstancesCommute
       pure ⟨q([$en]), q(FactorsHelper.singleton $en $eh_a_lt_n $ehn_minFac)⟩

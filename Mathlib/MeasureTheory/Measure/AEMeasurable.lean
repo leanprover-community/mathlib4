@@ -126,7 +126,7 @@ protected theorem map_add₀ {μ ν : Measure α} {f : α → β}
 @[fun_prop]
 protected theorem iUnion [Countable ι] {s : ι → Set α}
     (h : ∀ i, AEMeasurable f (μ.restrict (s i))) : AEMeasurable f (μ.restrict (⋃ i, s i)) :=
-  (sum_measure h).mono_measure <| restrict_iUnion_le
+  (sum_measure h).mono_measure restrict_iUnion_le
 
 @[simp]
 theorem _root_.aemeasurable_iUnion_iff [Countable ι] {s : ι → Set α} :
@@ -156,11 +156,6 @@ theorem comp_aemeasurable' {f : α → δ} {g : δ → β} (hg : AEMeasurable g 
 theorem comp_measurable {f : α → δ} {g : δ → β} (hg : AEMeasurable g (μ.map f))
     (hf : Measurable f) : AEMeasurable (g ∘ f) μ :=
   hg.comp_aemeasurable hf.aemeasurable
-
-@[fun_prop]
-theorem comp_quasiMeasurePreserving {ν : Measure δ} {f : α → δ} {g : δ → β} (hg : AEMeasurable g ν)
-    (hf : QuasiMeasurePreserving f μ ν) : AEMeasurable (g ∘ f) μ :=
-  (hg.mono_ac hf.absolutelyContinuous).comp_measurable hf.measurable
 
 theorem map_map_of_aemeasurable {g : β → γ} {f : α → β} (hg : AEMeasurable g (Measure.map f μ))
     (hf : AEMeasurable f μ) : (μ.map f).map g = μ.map (g ∘ f) := by
@@ -314,15 +309,15 @@ variable [Zero β]
 
 theorem aemeasurable_indicator_iff {s} (hs : MeasurableSet s) :
     AEMeasurable (indicator s f) μ ↔ AEMeasurable f (μ.restrict s) := by
-  constructor
-  · intro h
-    exact (h.mono_measure Measure.restrict_le_self).congr (indicator_ae_eq_restrict hs)
-  · intro h
-    refine ⟨indicator s (h.mk f), h.measurable_mk.indicator hs, ?_⟩
+  constructor <;> intro h
+  · exact h.restrict.congr (indicator_ae_eq_restrict hs.nullMeasurableSet)
+  · refine ⟨indicator s (h.mk f), h.measurable_mk.indicator hs, ?_⟩
     have A : s.indicator f =ᵐ[μ.restrict s] s.indicator (AEMeasurable.mk f h) :=
-      (indicator_ae_eq_restrict hs).trans (h.ae_eq_mk.trans <| (indicator_ae_eq_restrict hs).symm)
+      (indicator_ae_eq_restrict hs.nullMeasurableSet).trans
+        (h.ae_eq_mk.trans (indicator_ae_eq_restrict hs.nullMeasurableSet).symm)
     have B : s.indicator f =ᵐ[μ.restrict sᶜ] s.indicator (AEMeasurable.mk f h) :=
-      (indicator_ae_eq_restrict_compl hs).trans (indicator_ae_eq_restrict_compl hs).symm
+      (indicator_ae_eq_restrict_compl hs.nullMeasurableSet).trans
+        (indicator_ae_eq_restrict_compl hs.nullMeasurableSet).symm
     exact ae_of_ae_restrict_of_ae_restrict_compl _ A B
 
 theorem aemeasurable_indicator_iff₀ {s} (hs : NullMeasurableSet s μ) :
@@ -337,7 +332,7 @@ lemma aemeasurable_indicator_const_iff {s} [MeasurableSingletonClass β] (b : β
     AEMeasurable (s.indicator (fun _ ↦ b)) μ ↔ NullMeasurableSet s μ := by
   classical
   constructor <;> intro h
-  · convert! h.nullMeasurable (MeasurableSet.singleton (0 : β)).compl
+  · convert h.nullMeasurable (MeasurableSet.singleton (0 : β)).compl
     rw [indicator_const_preimage_eq_union s {0}ᶜ b]
     simp [NeZero.ne b]
   · exact (aemeasurable_indicator_iff₀ h).mpr aemeasurable_const
@@ -366,8 +361,7 @@ theorem MeasureTheory.Measure.restrict_map_of_aemeasurable {f : α → δ} (hf :
       apply congr_arg
       ext1 t ht
       simp only [ht, Measure.restrict_apply]
-      apply measure_congr
-      apply (EventuallyEq.refl _ _).inter (hf.ae_eq_mk.symm.preimage s)
+      exact measure_congr <| .inter .rfl (hf.ae_eq_mk.symm.preimage s)
 
 theorem MeasureTheory.Measure.map_mono_of_aemeasurable {f : α → δ} (h : μ ≤ ν)
     (hf : AEMeasurable f ν) : μ.map f ≤ ν.map f :=
@@ -384,7 +378,7 @@ lemma MeasureTheory.NullMeasurable.aemeasurable {f : α → β}
   choose! U hUf hUm hUeq using fun s hs ↦ (h <| .basic s hs).exists_measurable_superset_ae_eq
   set v := ⋃ s ∈ S, U s \ T s
   have hvm : MeasurableSet v := .biUnion hSc fun s hs ↦ (hUm s hs).diff (hTm s hs)
-  have hvμ : μ v = 0 := (measure_biUnion_null_iff hSc).2 fun s hs ↦ ae_le_set.1 <|
+  have hvμ : μ v = 0 := (measure_biUnion_null_iff hSc).2 fun s hs ↦ ae_le_set.1
     ((hUeq s hs).trans (hTeq s hs).symm).le
   refine ⟨v.piecewise (fun _ ↦ default) f, ?_, measure_mono_null (fun x ↦
     not_imp_comm.2 fun hxv ↦ (piecewise_eq_of_notMem _ _ _ hxv).symm) hvμ⟩
@@ -394,7 +388,7 @@ lemma MeasureTheory.NullMeasurable.aemeasurable {f : α → β}
   · rw [domRestrict_piecewise_compl, domRestrict_eq]
     refine measurable_generateFrom fun s hs ↦ .of_subtype_image ?_
     rw [preimage_comp, Subtype.image_preimage_coe]
-    convert! (hTm s hs).diff hvm using 1
+    convert (hTm s hs).diff hvm using 1
     rw [inter_comm]
     refine Set.ext fun x ↦ and_congr_left fun hxv ↦ ⟨fun hx ↦ ?_, fun hx ↦ hTf s hs hx⟩
     exact by_contra fun hx' ↦ hxv <| mem_biUnion hs ⟨hUf s hs hx, hx'⟩
