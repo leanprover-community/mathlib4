@@ -4,6 +4,13 @@ public import Mathlib.Tactic.PPWithUniv
 
 universe u
 
+/-!
+### Tests for `pp.mdata`
+
+Setting `pp.mdata` to `true` used to break delaboration of
+constants tagged with `@[pp_with_univ]`, so we test for it.
+-/
+
 @[pp_with_univ]
 def Foo := Sort u
 
