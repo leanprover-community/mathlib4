@@ -560,9 +560,9 @@ theorem isOrdinal_notCMem_univ : {x | IsOrdinal x} ᶜ∉ (.univ : ZFClass.{u}) 
   rintro ⟨x, hx, -⟩
   suffices IsOrdinal x by
     apply ZFClass.cmem_irrefl (A := (x : ZFClass.{u}))
-    rwa [ZFClass.coe_cmem, hx, Set.mem_ofPred_eq]
+    rwa [ZFClass.coe_cmem, hx, Set.mem_ofPred]
   refine ⟨fun y hy z hz ↦ ?_, fun hyz hzw hwx ↦ ?_⟩ <;>
-    rw [← SetLike.mem_coe, hx, Set.mem_ofPred_eq] at *
+    rw [← SetLike.mem_coe, hx, Set.mem_ofPred] at *
   exacts [hy.mem hz, hwx.mem_trans hyz hzw]
 
 end ZFSet
