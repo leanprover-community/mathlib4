@@ -11,7 +11,7 @@ public import Mathlib.Geometry.Convex.Hull
 public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 
 /-!
-# Convex polytope
+# Convex polytopes
 
 This file introduces convex polytopes as V-polytopes and proves basic facts about them.
 
@@ -24,15 +24,19 @@ This file introduces convex polytopes as V-polytopes and proves basic facts abou
 * The term "polytope" usually refers to the object defined via the V-representation (convex hull
 of finitely many points), whereas the object defined via the H-representation (intersection of
 finitely many halfspaces) is referred to as "polyhedron".
-* We decided to not implement bundled polytope until a clear usecase comes up.
+* We decided to not implement bundled polytopes until a clear usecase comes up.
 
 ## TODO
 
 Future PRs will define polyhedra (using H-representations) and prove that, in vector spaces,
 polytopes are polyhedra.
+
+## References
+
+* Günter M. Ziegler, "Lectures on Poyltopes"
 -/
 
-@[expose] public section
+public section
 
 namespace Convexity
 
