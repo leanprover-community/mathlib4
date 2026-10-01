@@ -405,15 +405,28 @@ scaled by the cardinality. -/]
 lemma Pi.sum_nnnorm_apply_le_nnnorm' : ∑ i, ‖f i‖₊ ≤ Fintype.card ι • ‖f‖₊ :=
   (NNReal.coe_sum ..).trans_le <| Pi.sum_norm_apply_le_norm' _
 
+@[to_additive Function.FactorsThrough.nnnorm_extend]
+theorem Function.FactorsThrough.nnnorm_extend' [Nonempty ι] {f : ι → ι'} {g : ι → E} {j : ι' → E}
+    (h : FactorsThrough g f) (hj : ‖j‖₊ ≤ ‖g‖₊) :
+    ‖extend f g j‖₊ = ‖g‖₊ := by
+  simp_rw [Pi.nnnorm_def', Finset.sup_univ_eq_ciSup] at ⊢ hj
+  simp_rw [apply_extend nnnorm]
+  apply ciSup_extend (h.comp_left _) (Finite.bddAbove_range _)
+  exact (ciSup_le_iff' (Finite.bddAbove_range _)).mp hj
+
+@[to_additive Function.FactorsThrough.norm_extend]
+theorem Function.FactorsThrough.norm_extend' [Nonempty ι] {f : ι → ι'} {g : ι → E} {j : ι' → E}
+    (h : FactorsThrough g f) (hj : ‖j‖ ≤ ‖g‖) :
+    ‖extend f g j‖ = ‖g‖ :=
+  congr(↑$(h.nnnorm_extend' hj))
+
 @[to_additive]
 theorem Function.FactorsThrough.nnnorm_extend_one {f : ι → ι'} {g : ι → E}
     (h : FactorsThrough g f) :
     ‖extend f g 1‖₊ = ‖g‖₊ := by
-  simp_rw [Pi.nnnorm_def']
   rcases isEmpty_or_nonempty ι with _ | hι
-  · simp
-  simp_rw [Finset.sup_univ_eq_ciSup, apply_extend nnnorm]
-  exact ciSup_extend (h.comp_left _) (Finite.bddAbove_range _) (by simp)
+  · simp [Pi.nnnorm_def']
+  exact h.nnnorm_extend' (by simp)
 
 @[to_additive]
 theorem Function.FactorsThrough.norm_extend_one {f : ι → ι'} {g : ι → E} (h : FactorsThrough g f) :

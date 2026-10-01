@@ -23,7 +23,7 @@ assert_not_exists Multiset
 
 open Function OrderDual Set
 
-variable {α β γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*}
+variable {α β γ : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 section
 
@@ -125,18 +125,18 @@ theorem le_ciSup_of_le {f : ι → α} (H : BddAbove (range f)) (c : ι) (h : a 
   le_trans h (le_ciSup H c)
 
 @[to_dual]
-theorem ciSup_extend [Nonempty ι'] {f : ι' → ι} {g : ι' → α} (hf : FactorsThrough g f)
-    (hg : BddAbove (range g)) {j : ι → α} (hjg : ∀ i, j i ≤ iSup g) :
+theorem ciSup_extend [Nonempty ι] {f : ι → β} {g : ι → α} (hf : FactorsThrough g f)
+    (hg : BddAbove (range g)) {j : β → α} (hjg : ∀ i, j i ≤ iSup g) :
     iSup (extend f g j) = iSup g := by
-  have hι : Nonempty ι := ‹Nonempty ι'›.map f
+  have hβ : Nonempty β := ‹Nonempty ι›.map f
   refine le_antisymm (ciSup_le fun i ↦ ?_) ?_
   · by_cases h : ∃ b, f b = i
     · obtain ⟨b, rfl⟩ := h
       exact le_ciSup_of_le hg b (by simp [hf.extend_apply])
     · simpa [h] using hjg i
   · refine ciSup_le fun i ↦ le_ciSup_of_le ?_ (f i) (by simp [hf.extend_apply])
-    refine (bddAbove_union.mpr ⟨hg, ?_⟩).range_extend _
-    exact ⟨iSup g, by simpa [mem_upperBounds] using hjg⟩
+    apply (bddAbove_union.mpr ⟨hg, ?_⟩).mono (Set.range_extend_subset f g j)
+    exact ⟨iSup g, by grind [mem_upperBounds]⟩
 
 /-- If the set of all `f i j` is bounded above, then so is the set of the supremums of every row -/
 @[to_dual /-- If the set of all `f i j` is bounded below, then so is the set of the infimums of
