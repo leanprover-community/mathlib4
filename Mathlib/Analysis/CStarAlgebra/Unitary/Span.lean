@@ -6,8 +6,8 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unitary
-public import Mathlib.Analysis.Normed.Module.Normalize
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unitary
+import Mathlib.Analysis.Normed.Module.Normalize
 
 /-! # Unitary elements span C⋆-algebras
 
@@ -29,7 +29,6 @@ section Ordered
 
 variable [PartialOrder A] [StarOrderedRing A]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `a : A` is a selfadjoint element in a C⋆-algebra with `‖a‖ ≤ 1`,
 then `a + I • CFC.sqrt (1 - a ^ 2)` is unitary.
 
@@ -70,15 +69,15 @@ lemma selfAdjoint.realPart_unitarySelfAddISMul (a : selfAdjoint A) (ha_norm : �
 elements precisely. The `let`s in the statement are intentional. -/
 lemma CStarAlgebra.norm_smul_two_inv_smul_add_four_unitary (x : A) (hx : x ≠ 0) :
     let u₁ : unitary A := selfAdjoint.unitarySelfAddISMul (ℜ (‖x‖⁻¹ • x))
-      (by simpa [norm_smul, inv_mul_le_one₀ (norm_pos_iff.2 hx)] using realPart.norm_le x)
+      (by simpa [norm_smul, inv_mul_le_one₀ (norm_pos_iff.2 hx)] using! realPart.norm_le x)
     let u₂ : unitary A := selfAdjoint.unitarySelfAddISMul (ℑ (‖x‖⁻¹ • x))
-      (by simpa [norm_smul, inv_mul_le_one₀ (norm_pos_iff.2 hx)] using imaginaryPart.norm_le x)
+      (by simpa [norm_smul, inv_mul_le_one₀ (norm_pos_iff.2 hx)] using! imaginaryPart.norm_le x)
     x = ‖x‖ • (2⁻¹ : ℝ) • (u₁ + star u₁ + I • (u₂ + star u₂) : A) := by
   intro u₁ u₂
   rw [smul_add, smul_comm _ I, Unitary.coe_star, Unitary.coe_star,
     ← realPart_apply_coe (u₁ : A), ← realPart_apply_coe (u₂ : A)]
   simpa only [u₁, u₂, selfAdjoint.realPart_unitarySelfAddISMul, realPart_add_I_smul_imaginaryPart]
-    using Eq.symm <| NormedSpace.norm_smul_normalize x
+    using! Eq.symm <| NormedSpace.norm_smul_normalize x
 
 end Ordered
 

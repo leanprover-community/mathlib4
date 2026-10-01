@@ -18,7 +18,7 @@ We
 - define the topology `ℝ≥0∞` (which is the order topology, *not* the `EMetricSpace` topology)
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsTopologicalRing UniformSpace
 

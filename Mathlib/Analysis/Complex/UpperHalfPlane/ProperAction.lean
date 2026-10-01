@@ -32,6 +32,7 @@ theorem num_continuous : Continuous ↿num := by unfold num; fun_prop
 @[fun_prop]
 theorem denom_continuous : Continuous ↿denom := by unfold denom; fun_prop
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma continuous_toSL2R : Continuous toSL2R := by
   apply continuous_induced_rng.mpr
   simp only [Function.comp_def, coe_toSL2R]
@@ -102,7 +103,7 @@ lemma isProperMap_smul_I : IsProperMap fun g : SL(2, ℝ) ↦ g • I := by
   let : SeminormedAddCommGroup (Matrix (Fin 2) (Fin 2) ℝ) := Matrix.seminormedAddCommGroup
   have : ProperSpace (Matrix (Fin 2) (Fin 2) ℝ) := pi_properSpace
   have : IsCompact {m : Matrix (Fin 2) (Fin 2) ℝ | ∀ i j, |m i j| ≤ max √A √A'} := by
-    convert ProperSpace.isCompact_closedBall (0 : Matrix (Fin 2) (Fin 2) ℝ) (max √A √A')
+    convert! ProperSpace.isCompact_closedBall (0 : Matrix (Fin 2) (Fin 2) ℝ) (max √A √A')
     simp only [le_sup_iff, Fin.forall_fin_two, Fin.isValue, Metric.closedBall, dist_zero_right,
       Matrix.norm_def, pi_norm_le_iff_of_nonempty, Real.norm_eq_abs]
     #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
@@ -122,6 +123,13 @@ instance instProperSMul : ProperSMul SL(2, ℝ) ℍ :=
   MulAction.properSMul_of_proper_orbitMap isProperMap_smul_I
 
 end proper_orbit_map
+
+/-- Any discrete subgroup of `SL(2, ℝ)` acts properly discontinuously on `ℍ`. -/
+instance instProperlyDiscontinuousSL2RSubgroup (𝒢 : Subgroup SL(2, ℝ)) [DiscreteTopology 𝒢] :
+    ProperlyDiscontinuousSMul 𝒢 ℍ := by
+  have : IsClosed (𝒢 : Set SL(2, ℝ)) := Subgroup.isClosed_of_discreteTopology
+  rw [properlyDiscontinuousSMul_iff_properSMul]
+  infer_instance
 
 end UpperHalfPlane
 

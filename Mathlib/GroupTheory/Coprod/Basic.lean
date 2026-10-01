@@ -153,7 +153,8 @@ section MulOneClass
 variable {M N M' N' P : Type*} [MulOneClass M] [MulOneClass N] [MulOneClass M'] [MulOneClass N']
   [MulOneClass P]
 
-@[to_additive] protected instance : MulOneClass (M ∗ N) := Con.mulOneClass _
+@[to_additive] protected instance : MulOneClass (M ∗ N) :=
+  inferInstanceAs <| MulOneClass (coprodCon M N).Quotient
 
 /-- The natural projection `FreeMonoid (M ⊕ N) →* M ∗ N`. -/
 @[to_additive /-- The natural projection `FreeAddMonoid (M ⊕ N) →+ AddMonoid.Coprod M N`. -/]
@@ -192,21 +193,22 @@ theorem mk_of_inl (x : M) : (mk (of (.inl x)) : M ∗ N) = inl x := rfl
 theorem mk_of_inr (x : N) : (mk (of (.inr x)) : M ∗ N) = inr x := rfl
 
 @[to_additive (attr := elab_as_elim)]
-theorem induction_on' {C : M ∗ N → Prop} (m : M ∗ N)
-    (one : C 1)
-    (inl_mul : ∀ m x, C x → C (inl m * x))
-    (inr_mul : ∀ n x, C x → C (inr n * x)) : C m := by
+theorem induction_on' {motive : M ∗ N → Prop} (m : M ∗ N)
+    (one : motive 1)
+    (inl_mul : ∀ m x, motive x → motive (inl m * x))
+    (inr_mul : ∀ n x, motive x → motive (inr n * x)) : motive m := by
   rcases mk_surjective m with ⟨x, rfl⟩
   induction x using FreeMonoid.inductionOn' with
   | one => exact one
-  | mul_of x xs ih =>
+  | of_mul x xs ih =>
     cases x with
     | inl m => simpa using inl_mul m _ ih
     | inr n => simpa using inr_mul n _ ih
 
 @[to_additive (attr := elab_as_elim)]
-theorem induction_on {C : M ∗ N → Prop} (m : M ∗ N)
-    (inl : ∀ m, C (inl m)) (inr : ∀ n, C (inr n)) (mul : ∀ x y, C x → C y → C (x * y)) : C m :=
+theorem induction_on {motive : M ∗ N → Prop} (m : M ∗ N)
+    (inl : ∀ m, motive (inl m)) (inr : ∀ n, motive (inr n))
+    (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive m :=
   induction_on' m (by simpa using inl 1) (fun _ _ ↦ mul _ _ (inl _)) fun _ _ ↦ mul _ _ (inr _)
 
 /-- Lift a monoid homomorphism `FreeMonoid (M ⊕ N) →* P` satisfying additional properties to
@@ -328,7 +330,7 @@ theorem map_comp_map {M'' N''} [MulOneClass M''] [MulOneClass N''] (f' : M' →*
 theorem map_map {M'' N''} [MulOneClass M''] [MulOneClass N''] (f' : M' →* M'') (g' : N' →* N'')
     (f : M →* M') (g : N →* N') (x : M ∗ N) :
     map f' g' (map f g x) = map (f'.comp f) (g'.comp g) x :=
-  DFunLike.congr_fun (map_comp_map f' g' f g) x
+  congr($(map_comp_map f' g' f g) x)
 
 variable (M N)
 
@@ -353,7 +355,7 @@ variable {M N}
 
 @[to_additive (attr := simp)]
 theorem swap_swap (x : M ∗ N) : swap N M (swap M N x) = x :=
-  DFunLike.congr_fun (swap_comp_swap _ _) x
+  congr($(swap_comp_swap _ _) x)
 
 @[to_additive]
 theorem swap_comp_map (f : M →* M') (g : N →* N') :
@@ -363,7 +365,7 @@ theorem swap_comp_map (f : M →* M') (g : N →* N') :
 @[to_additive]
 theorem swap_map (f : M →* M') (g : N →* N') (x : M ∗ N) :
     swap M' N' (map f g x) = map g f (swap M N x) :=
-  DFunLike.congr_fun (swap_comp_map f g) x
+  congr($(swap_comp_map f g) x)
 
 @[to_additive (attr := simp)] theorem swap_comp_inl : (swap M N).comp inl = inr := rfl
 @[to_additive (attr := simp)] theorem swap_inl (x : M) : swap M N (inl x) = inr x := rfl
@@ -442,7 +444,7 @@ theorem lift_comp_swap (f : M →* P) (g : N →* P) : (lift f g).comp (swap N M
 
 @[to_additive (attr := simp)]
 theorem lift_swap (f : M →* P) (g : N →* P) (x : N ∗ M) : lift f g (swap N M x) = lift g f x :=
-  DFunLike.congr_fun (lift_comp_swap f g) x
+  congr($(lift_comp_swap f g) x)
 
 @[to_additive]
 theorem comp_lift {P' : Type*} [Monoid P'] (f : P →* P') (g₁ : M →* P) (g₂ : N →* P) :
@@ -580,7 +582,7 @@ theorem con_inv_mul_cancel (x : FreeMonoid (G ⊕ H)) :
   rw [← mk_eq_mk, map_mul, map_one]
   induction x using FreeMonoid.inductionOn' with
   | one => simp
-  | mul_of x xs ihx =>
+  | of_mul x xs ihx =>
     simp only [toList_of_mul, map_cons, reverse_cons, ofList_append, map_mul, ofList_singleton]
     rwa [mul_assoc, ← mul_assoc (mk (of _)), mk_of_inv_mul, one_mul]
 
@@ -603,7 +605,6 @@ theorem closure_range_inl_union_inr :
     Subgroup.closure (range (inl : G →* G ∗ H) ∪ range inr) = ⊤ :=
   Subgroup.closure_eq_top_of_mclosure_eq_top mclosure_range_inl_union_inr
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)] theorem range_inl_sup_range_inr :
     MonoidHom.range (inl : G →* G ∗ H) ⊔ MonoidHom.range inr = ⊤ := by
   rw [← closure_range_inl_union_inr, Subgroup.closure_union, ← MonoidHom.coe_range,
@@ -619,7 +620,6 @@ theorem codisjoint_range_inl_range_inr :
 
 variable {K : Type*} [Group K]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive] theorem range_eq (f : G ∗ H →* K) :
     MonoidHom.range f = MonoidHom.range (f.comp inl) ⊔ MonoidHom.range (f.comp inr) := by
   rw [MonoidHom.range_eq_map, ← range_inl_sup_range_inr, Subgroup.map_sup, MonoidHom.map_range,
@@ -664,7 +664,6 @@ end MulOneClass
 
 variable (M N P : Type*) [Monoid M] [Monoid N] [Monoid P]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A multiplicative equivalence between `(M ∗ N) ∗ P` and `M ∗ (N ∗ P)`. -/
 @[to_additive /-- An additive equivalence between `AddMonoid.Coprod (AddMonoid.Coprod M N) P` and
 `AddMonoid.Coprod M (AddMonoid.Coprod N P)`. -/]

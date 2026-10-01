@@ -6,7 +6,6 @@ Authors: Judith Ludwig, Christian Merten
 module
 
 public import Mathlib.RingTheory.AdicCompletion.AsTensorProduct
-public import Mathlib.RingTheory.Flat.Stability
 public import Mathlib.RingTheory.Smooth.AdicCompletion
 public import Mathlib.RingTheory.Smooth.NoetherianDescent
 public import Mathlib.RingTheory.RingHom.Flat
@@ -32,7 +31,7 @@ The proof proceeds in two steps:
 - [Conde-Lago, A short proof of smooth implies flat][condelago2016shortproofsmoothimplies]
 -/
 
-@[expose] public section
+public section
 
 namespace Algebra
 

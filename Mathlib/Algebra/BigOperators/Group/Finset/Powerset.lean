@@ -17,7 +17,7 @@ In this file we prove theorems about products and sums over a `Finset.powerset`.
 
 public section
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 variable {s : Finset α} {a : α}
 
@@ -47,6 +47,7 @@ lemma prod_powerset_cons (ha : a ∉ s) (f : Finset α → β) :
   simp_rw [cons_eq_insert]
   rw [prod_powerset_insert ha, prod_attach _ fun t ↦ f (insert a t)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A product over `powerset s` is equal to the double product over sets of subsets of `s` with
 `#s = k`, for `k = 0, ..., #s`. -/
 @[to_additive /-- A sum over `powerset s` is equal to the double sum over sets of subsets of `s`

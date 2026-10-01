@@ -6,8 +6,8 @@ Authors: María Inés de Frutos-Fernández
 module
 
 public import Mathlib.GroupTheory.Commutator.Basic
-public import Mathlib.Tactic.Group
-public import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Tactic.Group
+public import Mathlib.Topology.Algebra.Group.Subgroup
 
 /-!
 # The topological abelianization of a group.
@@ -28,7 +28,7 @@ group, topological abelianization
 
 -/
 
-@[expose] public section
+public section
 
 open scoped commutatorElement
 

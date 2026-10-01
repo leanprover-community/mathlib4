@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Yury Kudryashov
 module
 
 public import Mathlib.Logic.Function.Basic
-public import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Additional lemmas about sum types
@@ -50,9 +50,11 @@ section get
 
 variable {x : α ⊕ β}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_left_iff_getLeft_eq {a : α} : x = inl a ↔ ∃ h, x.getLeft h = a := by
   cases x <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_right_iff_getRight_eq {b : β} : x = inr b ↔ ∃ h, x.getRight h = b := by
   cases x <;> simp
 
@@ -246,7 +248,7 @@ theorem elim_injective {γ : Sort*} {f : α → γ} {g : β → γ} :
 @[simp]
 theorem elim_injective' {γ : Sort*} {f : α → γ} :
     Injective (Sum.elim f : (β → γ) → (α ⊕ β → γ)) :=
-  fun g₁ g₂ hg ↦  funext fun b ↦ by simpa using congr_fun hg (Sum.inr b)
+  fun g₁ g₂ hg ↦ funext fun b ↦ by simpa using congr_fun hg (Sum.inr b)
 
 @[simp]
 theorem map_injective {f : α → γ} {g : β → δ} :
@@ -271,7 +273,7 @@ theorem map_surjective {f : α → γ} {g : β → δ} :
 @[simp]
 theorem map_bijective {f : α → γ} {g : β → δ} :
     Bijective (Sum.map f g) ↔ Bijective f ∧ Bijective g :=
-  (map_injective.and map_surjective).trans <| and_and_and_comm
+  (map_injective.and map_surjective).trans and_and_and_comm
 
 end Sum
 

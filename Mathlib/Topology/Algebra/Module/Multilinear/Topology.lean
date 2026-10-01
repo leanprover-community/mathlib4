@@ -5,13 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.Algebra.Module.Multilinear.Bounded
 public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 public import Mathlib.Topology.Algebra.Module.UniformConvergence
 public import Mathlib.Topology.Algebra.SeparationQuotient.Section
-public import Mathlib.Topology.Hom.ContinuousEvalConst
-public import Mathlib.Topology.Algebra.InfiniteSum.Basic
 
 /-!
 # Topology on continuous multilinear maps
@@ -53,7 +51,7 @@ lemma range_toUniformOnFun [DecidableEq ι] [TopologicalSpace F] :
   · rintro ⟨f, rfl⟩
     exact ⟨f.cont, f.map_update_add, f.map_update_smul⟩
   · rintro ⟨hcont, hadd, hsmul⟩
-    exact ⟨⟨⟨f, by intro; convert hadd, by intro; convert hsmul⟩, hcont⟩, rfl⟩
+    exact ⟨⟨⟨f, by intro; convert! hadd, by intro; convert! hsmul⟩, hcont⟩, rfl⟩
 
 @[simp]
 lemma toUniformOnFun_toFun [TopologicalSpace F] (f : ContinuousMultilinearMap 𝕜 E F) :
@@ -87,11 +85,13 @@ lemma isEmbedding_toUniformOnFun :
       ((Π i, E i) →ᵤ[{s | IsVonNBounded 𝕜 s}] F)) :=
   isUniformEmbedding_toUniformOnFun.isEmbedding
 
+@[fun_prop]
 theorem uniformContinuous_coe_fun [∀ i, ContinuousSMul 𝕜 (E i)] :
     UniformContinuous (DFunLike.coe : ContinuousMultilinearMap 𝕜 E F → (Π i, E i) → F) :=
   (UniformOnFun.uniformContinuous_toFun sUnion_isVonNBounded_eq_univ).comp
     isUniformEmbedding_toUniformOnFun.uniformContinuous
 
+@[fun_prop]
 theorem uniformContinuous_eval_const [∀ i, ContinuousSMul 𝕜 (E i)] (x : Π i, E i) :
     UniformContinuous fun f : ContinuousMultilinearMap 𝕜 E F ↦ f x :=
   uniformContinuous_pi.1 uniformContinuous_coe_fun x
@@ -107,6 +107,7 @@ instance instUniformContinuousConstSMul {M : Type*}
   haveI := uniformContinuousConstSMul_of_continuousConstSMul M F
   isUniformEmbedding_toUniformOnFun.uniformContinuousConstSMul fun _ _ ↦ rfl
 
+@[fun_prop]
 theorem isUniformInducing_postcomp
     {G : Type*} [AddCommGroup G] [UniformSpace G] [IsUniformAddGroup G] [Module 𝕜 G]
     (g : F →L[𝕜] G) (hg : IsUniformInducing g) :
@@ -134,9 +135,9 @@ theorem completeSpace (h : IsCoherentWith {s : Set (Π i, E i) | IsVonNBounded �
       Continuous fun f : (Π i, E i) →ᵤ[{s | IsVonNBounded 𝕜 s}] F ↦ toFun _ f m :=
     (uniformContinuous_eval (sUnion_isVonNBounded_eq_univ) _).continuous
   rw [completeSpace_iff_isComplete_range isUniformInducing_toUniformOnFun, range_toUniformOnFun]
-  simp only [setOf_and, setOf_forall]
+  simp only [ofPred_and, ofPred_forall]
   apply_rules [IsClosed.isComplete, IsClosed.inter]
-  · exact UniformOnFun.isClosed_setOf_continuous h
+  · exact UniformOnFun.isClosed_setOfPred_continuous h
   · exact isClosed_iInter fun m ↦ isClosed_iInter fun i ↦
       isClosed_iInter fun x ↦ isClosed_iInter fun y ↦ isClosed_eq H (H.add H)
   · exact isClosed_iInter fun m ↦ isClosed_iInter fun i ↦
@@ -155,15 +156,17 @@ variable (𝕜' : Type*) [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' �
   [∀ i, ContinuousSMul 𝕜 (E i)]
 
 set_option backward.isDefEq.respectTransparency false in
+@[fun_prop]
 theorem isUniformEmbedding_restrictScalars :
     IsUniformEmbedding
       (restrictScalars 𝕜' : ContinuousMultilinearMap 𝕜 E F → ContinuousMultilinearMap 𝕜' E F) := by
-  letI : NontriviallyNormedField 𝕜 :=
+  let : NontriviallyNormedField 𝕜 :=
     ⟨let ⟨x, hx⟩ := @NontriviallyNormedField.non_trivial 𝕜' _; ⟨algebraMap 𝕜' 𝕜 x, by simpa⟩⟩
   rw [← isUniformEmbedding_toUniformOnFun.of_comp_iff]
-  convert isUniformEmbedding_toUniformOnFun using 4 with s
+  convert! isUniformEmbedding_toUniformOnFun using 4 with s
   exact ⟨fun h ↦ h.extend_scalars _, fun h ↦ h.restrict_scalars _⟩
 
+@[fun_prop]
 theorem uniformContinuous_restrictScalars :
     UniformContinuous
       (restrictScalars 𝕜' : ContinuousMultilinearMap 𝕜 E F → ContinuousMultilinearMap 𝕜' E F) :=
@@ -183,8 +186,8 @@ instance instIsTopologicalAddGroup : IsTopologicalAddGroup (ContinuousMultilinea
 instance instContinuousConstSMul
     {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜 M F] [ContinuousConstSMul M F] :
     ContinuousConstSMul M (ContinuousMultilinearMap 𝕜 E F) := by
-  letI := IsTopologicalAddGroup.rightUniformSpace F
-  haveI := isUniformAddGroup_of_addCommGroup (G := F)
+  let := IsTopologicalAddGroup.rightUniformSpace F
+  have := isUniformAddGroup_of_addCommGroup (G := F)
   infer_instance
 
 instance instContinuousSMul [ContinuousSMul 𝕜 F] :
@@ -201,8 +204,8 @@ theorem hasBasis_nhds_zero_of_basis {ι : Type*} {p : ι → Prop} {b : ι → S
     (𝓝 (0 : ContinuousMultilinearMap 𝕜 E F)).HasBasis
       (fun Si : Set (Π i, E i) × ι => IsVonNBounded 𝕜 Si.1 ∧ p Si.2)
       fun Si => { f | MapsTo f Si.1 (b Si.2) } := by
-  letI : UniformSpace F := IsTopologicalAddGroup.rightUniformSpace F
-  haveI : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
+  let : UniformSpace F := IsTopologicalAddGroup.rightUniformSpace F
+  have : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
   rw [nhds_induced]
   refine (UniformOnFun.hasBasis_nhds_zero_of_basis _ ?_ ?_ h).comap DFunLike.coe
   · exact ⟨∅, isVonNBounded_empty _ _⟩
@@ -259,6 +262,11 @@ def compContinuousLinearMapL (f : ∀ i, E i →L[𝕜] E₁ i) :
       set φ : (∀ i, E i) →L[𝕜] (∀ i, E₁ i) := .piMap f
       exact ⟨(φ '' U, V), ⟨hU.image φ, hV⟩, fun g hg ↦ hg.comp (mapsTo_image _ _)⟩ }
 
+@[fun_prop]
+theorem continuous_precomp (f : ∀ i, E i →L[𝕜] E₁ i) :
+    Continuous fun g : ContinuousMultilinearMap 𝕜 E₁ F ↦ g.compContinuousLinearMap f :=
+  map_continuous (compContinuousLinearMapL f)
+
 end CompContinuousLinearMap
 
 variable [∀ i, ContinuousSMul 𝕜 (E i)]
@@ -311,7 +319,6 @@ def apply [ContinuousConstSMul 𝕜 F] (m : Π i, E i) : ContinuousMultilinearMa
   toFun c := c m
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  cont := continuous_eval_const m
 
 variable {𝕜 E F}
 
@@ -327,6 +334,32 @@ theorem hasSum_eval {α : Type*} {p : α → ContinuousMultilinearMap 𝕜 E F}
 theorem tsum_eval [T2Space F] {α : Type*} {p : α → ContinuousMultilinearMap 𝕜 E F} (hp : Summable p)
     (m : Π i, E i) : (∑' a, p a) m = ∑' a, p a m :=
   (hasSum_eval hp.hasSum m).tsum_eq.symm
+
+variable {G : Type*} [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G]
+  [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜 G]
+
+/-- An equivalence of the index set defines an equivalence between the spaces of continuous
+multilinear maps. This is the forward map of this equivalence, as a continuous linear map. -/
+def domDomCongrL {ι' : Type*} (e : ι ≃ ι') :
+    ContinuousMultilinearMap 𝕜 (fun _ : ι => F) G →L[𝕜]
+      ContinuousMultilinearMap 𝕜 (fun _ : ι' => F) G :=
+  letI aux : ContinuousMultilinearMap 𝕜 (fun _ : ι => F) G →ₗ[𝕜]
+      ContinuousMultilinearMap 𝕜 (fun _ : ι' => F) G :=
+    { toFun := domDomCongr e
+      map_add' _ _ := rfl
+      map_smul' _ _ := rfl }
+  { toLinearMap := aux
+    cont := by
+      apply continuous_of_tendsto_nhds_zero aux
+      rw [ContinuousMultilinearMap.hasBasis_nhds_zero.tendsto_iff
+        ContinuousMultilinearMap.hasBasis_nhds_zero]
+      rintro ⟨S, V⟩ ⟨hS, hV⟩
+      refine ⟨((fun v : ι' → F ↦ v ∘ e) '' S, V), ⟨?_, hV⟩, fun g hg v hv ↦ hg ⟨v, hv, rfl⟩⟩
+      rw [isVonNBounded_pi_iff] at hS ⊢
+      intro i
+      have : eval i '' ((fun v ↦ v ∘ e) '' S) = eval (e i) '' S := by simp [Set.image_image, eval]
+      rw [this]
+      exact hS (e i) }
 
 end ContinuousMultilinearMap
 
@@ -375,7 +408,7 @@ def compContinuousMultilinearMapL :
     cont := by
       apply continuous_of_tendsto_nhds_zero aux
       rw [ContinuousLinearMap.hasBasis_nhds_zero.tendsto_iff <|
-        ContinuousLinearMap.hasBasis_nhds_zero_of_basis <|
+        ContinuousLinearMap.hasBasis_nhds_zero_of_basis
         ContinuousMultilinearMap.hasBasis_nhds_zero]
       rintro ⟨U, V, W⟩ ⟨hU, hV, hW⟩
       refine ⟨(.image2 (fun f v ↦ f v) U V, W), ⟨?_, hW⟩, ?_⟩
@@ -386,6 +419,11 @@ def compContinuousMultilinearMapL :
 theorem compContinuousMultilinearMapL_apply (g : F →L[𝕜] G) (f : ContinuousMultilinearMap 𝕜 E F) :
     compContinuousMultilinearMapL 𝕜 E F G g f = g.compContinuousMultilinearMap f :=
   rfl
+
+@[fun_prop]
+theorem _root_.ContinuousLinearMap.continuous_postcomp_continuousMultilinearMap (g : F →L[𝕜] G) :
+    Continuous (g.compContinuousMultilinearMap (M₁ := E)) :=
+  map_continuous (compContinuousMultilinearMapL 𝕜 E F G g)
 
 end ContinuousLinearMap
 

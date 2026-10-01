@@ -5,7 +5,7 @@ Authors: Jeremy Tan
 -/
 module
 
-public import Batteries.Tactic.Alias
+import Batteries.Tactic.Alias
 public import Mathlib.Logic.OpClass
 
 /-!
@@ -36,7 +36,7 @@ The third duality theorem is in the standard library under the names
 `List.foldr_reverse` and `List.foldl_eq_foldr_reverse`.
 -/
 
-@[expose] public section
+public section
 
 namespace List
 

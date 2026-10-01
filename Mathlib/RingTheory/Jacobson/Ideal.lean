@@ -127,7 +127,7 @@ theorem exists_mul_add_sub_mem_of_mem_jacobson {I : Ideal R} (r : R) (h : r ∈ 
 
 theorem exists_mul_sub_mem_of_sub_one_mem_jacobson {I : Ideal R} (r : R) (h : r - 1 ∈ jacobson I) :
     ∃ s, s * r - 1 ∈ I := by
-  convert exists_mul_add_sub_mem_of_mem_jacobson _ h
+  convert! exists_mul_add_sub_mem_of_mem_jacobson _ h
   simp
 
 /-- An ideal equals its Jacobson radical iff it is the intersection of a set of maximal ideals.
@@ -185,7 +185,7 @@ theorem map_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f) 
   · refine
       sInf_le_sInf fun J hJ =>
         ⟨comap f J, ⟨⟨le_comap_of_map_le hJ.1, ?_⟩, map_comap_of_surjective f hf J⟩⟩
-    haveI : J.IsMaximal := hJ.right
+    have : J.IsMaximal := hJ.right
     exact comap_isMaximal_of_surjective f hf
   · refine sInf_le_sInf_of_subset_insert_top fun j hj => hj.recOn fun J hJ => ?_
     rw [← hJ.2]
@@ -218,10 +218,10 @@ theorem comap_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f
         this⟩
   · simp_rw [comap_sInf, le_iInf_iff]
     intro J hJ
-    haveI : J.IsMaximal := hJ.right
+    have : J.IsMaximal := hJ.right
     exact sInf_le ⟨comap_mono hJ.left, comap_isMaximal_of_surjective _ hf⟩
 
-@[mono]
+@[gcongr, mono]
 theorem jacobson_mono {I J : Ideal R} : I ≤ J → I.jacobson ≤ J.jacobson := by
   intro h x hx
   rw [jacobson, mem_sInf] at hx ⊢
@@ -302,11 +302,11 @@ theorem jacobson_eq_iff_jacobson_quotient_eq_bot :
   have hf : Function.Surjective (Ideal.Quotient.mk I) := Submodule.Quotient.mk_surjective I
   constructor
   · intro h
-    replace h := congr_arg (Ideal.map (Ideal.Quotient.mk I)) h
+    replace h := congr(Ideal.map (Ideal.Quotient.mk I) $h)
     rw [map_jacobson_of_surjective hf (le_of_eq mk_ker)] at h
     simpa using h
   · intro h
-    replace h := congr_arg (comap (Ideal.Quotient.mk I)) h
+    replace h := congr(comap (Ideal.Quotient.mk I) $h)
     rw [comap_jacobson_of_surjective hf, ← RingHom.ker_eq_comap_bot (Ideal.Quotient.mk I)] at h
     simpa using h
 
@@ -317,19 +317,19 @@ theorem radical_eq_jacobson_iff_radical_quotient_eq_jacobson_bot :
   have hf : Function.Surjective (Ideal.Quotient.mk I) := Submodule.Quotient.mk_surjective I
   constructor
   · intro h
-    have := congr_arg (map (Ideal.Quotient.mk I)) h
+    have := congr(map (Ideal.Quotient.mk I) $h)
     rw [map_radical_of_surjective hf (le_of_eq mk_ker),
       map_jacobson_of_surjective hf (le_of_eq mk_ker)] at this
     simpa using this
   · intro h
-    have := congr_arg (comap (Ideal.Quotient.mk I)) h
+    have := congr(comap (Ideal.Quotient.mk I) $h)
     rw [comap_radical, comap_jacobson_of_surjective hf,
       ← RingHom.ker_eq_comap_bot (Ideal.Quotient.mk I)] at this
     simpa using this
 
 theorem jacobson_radical_eq_jacobson : I.radical.jacobson = I.jacobson :=
   le_antisymm
-    (le_trans (le_of_eq (congr_arg jacobson (radical_eq_sInf I)))
+    (le_trans (le_of_eq congr(jacobson $(radical_eq_sInf I)))
       (sInf_le_sInf fun _ hJ => ⟨sInf_le ⟨hJ.1, hJ.2.isPrime⟩, hJ.2⟩))
     (jacobson_mono le_radical)
 

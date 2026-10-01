@@ -17,7 +17,7 @@ This file provides measurable-space instances for a selection of standard counta
 in each case defining the Σ-algebra to be `⊤` (the discrete measurable-space structure).
 -/
 
-@[expose] public section
+public section
 
 instance Empty.instMeasurableSpace : MeasurableSpace Empty := ⊤
 

@@ -155,10 +155,12 @@ noncomputable def mapBilipschitz (f : X ≃ Y) (K₁ K₂ : ℝ≥0) (hK₁ : 0 
   coveringRadius_pos := mul_pos hK₂ D.coveringRadius_pos
   isCover_coveringRadius := D.isCover_coveringRadius.image_lipschitz_of_surjective hf₂ f.surjective
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma mapBilipschitz_refl (D : DeloneSet X) (hK1 hK2 hA hL) :
     D.mapBilipschitz (.refl X) 1 1 hK1 hK2 hA hL = D := by
   ext <;> simp only [mapBilipschitz, Equiv.refl_apply, Set.image_id', div_one, one_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mapBilipschitz_trans {Z : Type*} [MetricSpace Z] (D : DeloneSet X)
     (f : X ≃ Y) (g : Y ≃ Z) (K₁f K₂f K₁g K₂g : ℝ≥0)
     (hf₁_pos : 0 < K₁f) (hf₂_pos : 0 < K₂f)
@@ -176,20 +178,22 @@ lemma mapBilipschitz_trans {Z : Type*} [MetricSpace Z] (D : DeloneSet X)
   · simp only [mapBilipschitz_packingRadius, NNReal.coe_div, div_div]
   · simp only [mapBilipschitz_coveringRadius, NNReal.coe_mul, mul_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The image of a Delone set under an isometry. This is a specialization of
 `DeloneSet.mapBilipschitz` where the packing and covering radii are preserved because the
 Lipschitz constants are both 1. -/
 @[simps!]
 noncomputable def mapIsometry (f : X ≃ᵢ Y) : DeloneSet X ≃ DeloneSet Y where
   toFun D := (D.mapBilipschitz f.toEquiv 1 1 zero_lt_one zero_lt_one
-      f.isometry.antilipschitz f.isometry.lipschitz).copy (f '' D.carrier)
+      f.isometry.antilipschitzWith f.isometry.lipschitzWith).copy (f '' D.carrier)
       D.packingRadius D.coveringRadius rfl (by simp [mapBilipschitz]) (by simp [mapBilipschitz])
   invFun D := (D.mapBilipschitz f.symm.toEquiv 1 1 zero_lt_one zero_lt_one
-      f.symm.isometry.antilipschitz f.symm.isometry.lipschitz).copy (f.symm '' D.carrier)
+      f.symm.isometry.antilipschitzWith f.symm.isometry.lipschitzWith).copy (f.symm '' D.carrier)
       D.packingRadius D.coveringRadius rfl (by simp [mapBilipschitz]) (by simp [mapBilipschitz])
   left_inv D := by ext <;> simp [copy_eq]
   right_inv D := by ext <;> simp [copy_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma mapIsometry_refl (D : DeloneSet X) : D.mapIsometry (.refl X) = D := by
   ext <;> simp [mapIsometry, IsometryEquiv.refl, DeloneSet.copy]
 

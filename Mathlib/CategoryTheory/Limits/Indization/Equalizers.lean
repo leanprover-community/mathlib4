@@ -5,9 +5,8 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
+import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
 public import Mathlib.CategoryTheory.Limits.Indization.ParallelPair
-public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 
 /-!
 # Equalizers of ind-objects
@@ -18,7 +17,7 @@ We show that if a category `C` has equalizers, then ind-objects are closed under
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Section 6.1
 -/
 
-@[expose] public section
+public section
 
 universe v v' u u'
 

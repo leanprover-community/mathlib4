@@ -5,7 +5,6 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Order.SuccPred.LinearLocallyFinite
 public import Mathlib.Probability.Martingale.Basic
 
 /-!
@@ -69,8 +68,8 @@ theorem condExp_stopping_time_ae_eq_restrict_eq_const_of_le_const (h : Martingal
     rw [Set.inter_comm _ t, IsStoppingTime.measurableSet_inter_eq_iff]
   · suffices {x : Ω | τ x = i} = ∅ by simp [this]; norm_cast
     ext1 x
-    simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
-    contrapose! hin
+    simp only [Set.mem_ofPred_eq, Set.mem_empty_iff_false, iff_false]
+    contrapose hin
     exact_mod_cast hin ▸ hτ_le x
 
 variable [Nonempty ι]
@@ -82,7 +81,7 @@ theorem stoppedValue_ae_eq_restrict_eq (h : Martingale f ℱ μ) (hτ : IsStoppi
     (condExp_stopping_time_ae_eq_restrict_eq_const_of_le_const h hτ hτ_le i).symm
   rw [Filter.EventuallyEq, ae_restrict_iff' (ℱ.le _ _ (hτ.measurableSet_eq i))]
   refine Filter.Eventually.of_forall fun x hx => ?_
-  rw [Set.mem_setOf_eq] at hx
+  rw [Set.mem_ofPred_eq] at hx
   simp [stoppedValue, hx]
 
 /-- The value of a martingale `f` at a stopping time `τ` bounded by `n` is the conditional
@@ -94,7 +93,7 @@ theorem stoppedValue_ae_eq_condExp_of_le_const_of_countable_range (h : Martingal
   have : Set.univ = ⋃ i ∈ Set.range τ, {x | τ x = i} := by
     ext1 x
     simp only [Set.mem_univ, Set.mem_range, Set.iUnion_exists, Set.iUnion_iUnion_eq',
-      Set.mem_iUnion, Set.mem_setOf_eq, exists_apply_eq_apply']
+      Set.mem_iUnion, Set.mem_ofPred_eq, exists_apply_eq_apply']
   nth_rw 1 [← @Measure.restrict_univ Ω _ μ]
   rw [this, ae_eq_restrict_biUnion_iff _ h_countable_range]
   intro i hi
@@ -183,7 +182,7 @@ theorem condExp_stoppedValue_stopping_time_ae_eq_restrict_le (h : Martingale f �
       exact ht.2
     · refine StronglyMeasurable.indicator ?_ (hτ.measurableSet_le_stopping_time hσ)
       refine Measurable.stronglyMeasurable ?_
-      exact measurable_stoppedValue h.stronglyAdapted.progMeasurable_of_discrete hτ
+      exact measurable_stoppedValue h.stronglyAdapted.isStronglyProgressive_of_discrete hτ
     · intro x hx
       simp only [hx, Set.indicator_of_notMem, not_false_iff]
   exact condExp_of_aestronglyMeasurable' hσ.measurableSpace_le h_meas h_int
@@ -206,7 +205,7 @@ theorem stoppedValue_min_ae_eq_condExp [SigmaFiniteFiltration μ ℱ] (h : Marti
       rw [Filter.EventuallyEq, ae_restrict_iff'] at this
       swap; · exact hτ.measurableSpace_le _ (hτ.measurableSet_le_stopping_time hσ)
       filter_upwards [this] with x hx hx_mem
-      simp only [Set.mem_compl_iff, Set.mem_setOf_eq, not_le] at hx_mem
+      simp only [Set.mem_compl_iff, Set.mem_ofPred_eq, not_le] at hx_mem
       exact hx hx_mem.le
     apply Filter.EventuallyEq.trans _ ((condExp_min_stopping_time_ae_eq_restrict_le hτ hσ).trans _)
     · exact stoppedValue f τ
@@ -215,7 +214,7 @@ theorem stoppedValue_min_ae_eq_condExp [SigmaFiniteFiltration μ ℱ] (h : Marti
     · have h1 : μ[stoppedValue f τ | hτ.measurableSpace] = stoppedValue f τ := by
         apply condExp_of_stronglyMeasurable hτ.measurableSpace_le
         · exact Measurable.stronglyMeasurable <|
-            measurable_stoppedValue h.stronglyAdapted.progMeasurable_of_discrete hτ
+            measurable_stoppedValue h.stronglyAdapted.isStronglyProgressive_of_discrete hτ
         · exact integrable_stoppedValue ι hτ h.integrable hτ_le
       rw [h1]
       exact (condExp_stoppedValue_stopping_time_ae_eq_restrict_le h hτ hσ hτ_le).symm

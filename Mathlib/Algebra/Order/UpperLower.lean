@@ -6,9 +6,9 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
-public import Mathlib.Algebra.Order.Group.Defs
-public import Mathlib.Algebra.Order.Group.OrderIso
+import Mathlib.Algebra.Group.Pointwise.Set.Lattice
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.OrderIso
 public import Mathlib.Algebra.Order.Monoid.OrderDual
 public import Mathlib.Order.UpperLower.Closure
 
@@ -18,12 +18,10 @@ public import Mathlib.Order.UpperLower.Closure
 Upper/lower sets are preserved under pointwise algebraic operations in ordered groups.
 -/
 
-@[expose] public section
+public section
 
-
-open Function Set
-
-open Pointwise
+open Set
+open scoped Pointwise
 
 section OrderedCommMonoid
 

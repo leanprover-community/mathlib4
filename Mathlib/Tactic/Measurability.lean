@@ -39,6 +39,7 @@ initialize registerBuiltinAttribute {
     if ← isFunPropGoal (← getConstInfo decl).type then
       try
         Attribute.add decl `fun_prop (← `(attr|fun_prop)) kind
+        logWarningAt stx "Use `@[fun_prop]` instead"
       catch e =>
         logWarningAt stx m!"This theorem will not be used by `measurability`: {e.toMessageData}"
     else

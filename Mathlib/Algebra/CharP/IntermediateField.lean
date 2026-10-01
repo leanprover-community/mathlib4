@@ -5,7 +5,7 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.Algebra.CharP.Algebra
+import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.FieldTheory.IntermediateField.Basic
 
 /-!
@@ -18,7 +18,7 @@ covered by `SubsemiringClass.instCharZero`.
 
 -/
 
-@[expose] public section
+public section
 
 variable {F E : Type*} [Field F] [Field E] [Algebra F E]
 

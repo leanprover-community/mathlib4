@@ -6,15 +6,15 @@ Authors: Michael Stoll, Patrick Massot, Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Normed.Field.Basic
-public import Mathlib.Analysis.Normed.Ring.Lemmas
-public import Mathlib.Order.Filter.IsBounded
+import Mathlib.Analysis.Normed.Ring.Lemmas
+import Mathlib.Order.Filter.IsBounded
 public import Mathlib.Topology.Algebra.UniformField
 
 /-!
 # A normed field is a completable topological field
 -/
 
-@[expose] public section
+public section
 
 open SeminormedAddGroup IsUniformAddGroup Filter
 

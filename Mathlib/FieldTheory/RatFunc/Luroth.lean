@@ -5,9 +5,9 @@ Authors: Miriam Philipp, Justus Springer, Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Basis
+import Mathlib.Algebra.Polynomial.Basis
 public import Mathlib.FieldTheory.RatFunc.IntermediateField
-public import Mathlib.FieldTheory.Relrank
+import Mathlib.FieldTheory.Relrank
 
 /-!
 # Lüroth's theorem
@@ -71,29 +71,29 @@ lemma exists_φ_coeff_not_mem (h : E ≠ ⊥) :
   refine transcendental_X ⟨f, ?_, ?_⟩
   · apply (Polynomial.map_ne_zero_iff (FaithfulSMul.algebraMap_injective K E)).mp
     exact hf ▸ φ_ne_zero h
-  · simpa using congr(aeval (X : K⟮X⟯) $(hf))
+  · simpa using congr(aeval (X : K⟮X⟯) $hf)
 
 /-- A choice of coefficient index `i` such that `φ.coeff i` is not in `K`. -/
 def generatorIndex (h : E ≠ ⊥) : ℕ :=
   (exists_φ_coeff_not_mem h).choose
 
 variable (E) in
-open Classical in
+open scoped Classical in
 /-- A choice of a generator for Lüroth's theorem, see `Luroth.eq_adjoin_generator`. -/
 public def generator : K⟮X⟯ :=
   if h : E = ⊥ then 0 else (φ E).coeff (generatorIndex h)
 
 public lemma generator_eq_zero (h : E = ⊥) : generator E = 0 :=
-  dif_pos h
+  dite_eq_left h
 
 lemma generator_eq_coeff (h : E ≠ ⊥) : generator E = (φ E).coeff (generatorIndex h) :=
-  dif_neg h
+  dite_eq_right h
 
 public lemma generator_mem : generator E ∈ E := by
   by_cases h : E = ⊥
   · rw [generator_eq_zero h]
     exact E.zero_mem
-  · rw [generator_eq_coeff h,]
+  · rw [generator_eq_coeff h]
     exact SetLike.coe_mem _
 
 public lemma generator_spec (h : E ≠ ⊥) : generator E ∉ (algebraMap K K⟮X⟯).range := by
@@ -141,7 +141,7 @@ def b : K[X] :=
     ((φ E).map (algebraMap E K⟮X⟯))).choose
 
 lemma b_ne_zero : b E ≠ 0 :=
-  nonZeroDivisors.ne_zero <| (IsLocalization.integerNormalization_spec _
+  nonZeroDivisors.ne_zero (IsLocalization.integerNormalization_spec _
     ((φ E).map (algebraMap ..))).choose_spec.1
 
 lemma Φ'_map :
@@ -149,19 +149,19 @@ lemma Φ'_map :
   (IsLocalization.integerNormalization_spec _ ((φ E).map (algebraMap ..))).choose_spec.2
 
 variable (E) in
-open Classical in
+open scoped Classical in
 /-- A rational function `c` that satisfies `c * φ = Φ`. This is `ν₀(x)` in Cohn's notation. -/
 abbrev c : K⟮X⟯ :=
   (algebraMap K[X] K⟮X⟯ (Φ' E).content)⁻¹ * (algebraMap K[X] K⟮X⟯ (b E))
 
-open Classical in
+open scoped Classical in
 lemma c_ne_zero (h : E ≠ ⊥) : c E ≠ 0 :=
   mul_ne_zero_iff.mpr ⟨inv_ne_zero <| (FaithfulSMul.algebraMap_eq_zero_iff _ _).not.mpr <|
     content_eq_zero_iff.not.mpr (Φ'_ne_zero h),
   (FaithfulSMul.algebraMap_eq_zero_iff _ _).not.mpr b_ne_zero⟩
 
 variable (E) in
-open Classical in
+open scoped Classical in
 /-- The primitive part of `Φ'`. -/
 abbrev Φ : K[X][Y] := (Φ' E).primPart
 
@@ -174,7 +174,7 @@ lemma C_c_mul_φ (h : E ≠ ⊥) :
   conv =>
     enter [1, 2]
     rw [← Polynomial.smul_eq_C_mul, algebraMap_smul, ← Φ'_map, eq_C_content_mul_primPart (Φ' E)]
-  rw [Polynomial.map_mul, map_C, ← mul_assoc, ← C_mul, inv_mul_cancel₀,  map_one, one_mul]
+  rw [Polynomial.map_mul, map_C, ← mul_assoc, ← C_mul, inv_mul_cancel₀, map_one, one_mul]
   · rw [ne_eq, FaithfulSMul.algebraMap_eq_zero_iff, content_eq_zero_iff]
     exact Φ'_ne_zero h
 

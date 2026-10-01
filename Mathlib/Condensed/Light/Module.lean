@@ -7,11 +7,9 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Abelian
 public import Mathlib.Algebra.Category.ModuleCat.Adjunctions
-public import Mathlib.Algebra.Category.ModuleCat.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
 public import Mathlib.CategoryTheory.Sites.Abelian
 public import Mathlib.CategoryTheory.Sites.Adjunction
-public import Mathlib.CategoryTheory.Sites.Equivalence
 public import Mathlib.Condensed.Light.Basic
 public import Mathlib.Condensed.Light.Instances
 /-!
@@ -46,9 +44,21 @@ abbrev LightCondMod := LightCondensed.{u} (ModuleCat.{u} R)
 noncomputable instance : Abelian (LightCondMod.{u} R) := sheafIsAbelian
 
 /-- The forgetful functor from light condensed `R`-modules to light condensed sets. -/
-@[simps! obj_obj_map map_hom_app]
 def LightCondensed.forget : LightCondMod R ⥤ LightCondSet :=
   sheafCompose _ (CategoryTheory.forget _)
+
+@[simp]
+lemma LightCondensed.forget_obj_obj_map_hom_apply (X : LightCondMod R)
+    {S T : LightProfiniteᵒᵖ} (f : S ⟶ T) (a : ((sheafToPresheaf _ _).obj X).obj S) :
+    ((forget R).obj X).obj.map f a = X.obj.map f a :=
+  rfl
+
+@[simp]
+lemma LightCondensed.forget_map_hom_app_hom_apply
+    {X Y : LightCondMod R} (f : X ⟶ Y) (S : LightProfiniteᵒᵖ)
+    (a : ((sheafToPresheaf _ _).obj X).obj S) :
+    ((forget R).map f).hom.app S a = f.hom.app S a :=
+  rfl
 
 /--
 The left adjoint to the forgetful functor. The *free light condensed `R`-module* on a light
