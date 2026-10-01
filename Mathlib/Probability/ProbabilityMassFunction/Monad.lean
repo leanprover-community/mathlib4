@@ -39,28 +39,28 @@ section Pure
 open scoped Classical in
 /-- The pure `PMF` is the `PMF` where all the mass lies in one point.
   The value of `pure a` is `1` at `a` and `0` elsewhere. -/
-@[deprecated Measure.dirac (since := "2026-08-17")]
+@[deprecated Measure.dirac +typeChanged (since := "2026-08-17")]
 def pure (a : α) : PMF α :=
   ⟨fun a' => if a' = a then 1 else 0, hasSum_ite_eq _ _⟩
 
 variable (a a' : α)
 
 open scoped Classical in
-@[deprecated Measure.dirac_apply (since := "2026-08-17")]
+@[deprecated Measure.dirac_apply +typeChanged (since := "2026-08-17")]
 theorem pure_apply : pure a a' = if a' = a then 1 else 0 := rfl
 
-@[deprecated Measure.dirac_apply (since := "2026-08-17")]
+@[deprecated Measure.dirac_apply +typeChanged (since := "2026-08-17")]
 theorem support_pure : (pure a).support = {a} :=
   Set.ext fun a' => by simp [mem_support_iff, pure_apply]
 
-@[deprecated Measure.dirac_apply (since := "2026-08-17")]
+@[deprecated Measure.dirac_apply +typeChanged (since := "2026-08-17")]
 theorem mem_support_pure_iff : a' ∈ (pure a).support ↔ a' = a := by simp [support_pure]
 
-@[deprecated Measure.dirac_apply_of_mem (since := "2026-08-17")]
+@[deprecated Measure.dirac_apply_of_mem +typeChanged (since := "2026-08-17")]
 theorem pure_apply_self : pure a a = 1 :=
   ite_eq_left rfl
 
-@[deprecated dirac_eq_zero_iff_not_mem (since := "2026-08-17")]
+@[deprecated dirac_eq_zero_iff_notMem +typeChanged (since := "2026-08-17")]
 theorem pure_apply_of_ne (h : a' ≠ a) : pure a a' = 0 :=
   ite_eq_right h
 
@@ -73,7 +73,7 @@ section Measure
 variable (s : Set α)
 
 open scoped Classical in
-@[deprecated OuterMeasure.dirac_apply (since := "2026-08-17")]
+@[deprecated OuterMeasure.dirac_apply +typeChanged (since := "2026-08-17")]
 theorem toOuterMeasure_pure_apply : (pure a).toOuterMeasure s = if a ∈ s then 1 else 0 := by
   refine (toOuterMeasure_apply (pure a) s).trans ?_
   split_ifs with ha
@@ -87,16 +87,16 @@ theorem toOuterMeasure_pure_apply : (pure a).toOuterMeasure s = if a ∈ s then 
 variable [MeasurableSpace α]
 
 open scoped Classical in
-@[deprecated Measure.dirac_apply (since := "2026-08-17")]
+@[deprecated Measure.dirac_apply +typeChanged (since := "2026-08-17")]
 theorem toMeasure_pure_apply (hs : MeasurableSet s) :
     (pure a).toMeasure s = if a ∈ s then 1 else 0 :=
   (toMeasure_apply_eq_toOuterMeasure_apply (pure a) hs).trans (toOuterMeasure_pure_apply a s)
 
-@[deprecated rfl (since := "2026-08-17")]
+@[deprecated rfl +typeChanged (since := "2026-08-17")]
 theorem toMeasure_pure : (pure a).toMeasure = Measure.dirac a :=
   Measure.ext fun s hs => by rw [toMeasure_pure_apply a s hs, Measure.dirac_apply' a hs]; rfl
 
-@[deprecated rfl (since := "2026-08-17")]
+@[deprecated rfl +typeChanged (since := "2026-08-17")]
 theorem toPMF_dirac [Countable α] [h : MeasurableSingletonClass α] :
     (Measure.dirac a).toPMF = pure a := by
   rw [toPMF_eq_iff_toMeasure_eq, toMeasure_pure]
@@ -108,42 +108,42 @@ end Pure
 section Bind
 
 /-- The monadic bind operation for `PMF`. -/
-@[deprecated Measure.bind (since := "2026-08-17")]
+@[deprecated Measure.bind +typeChanged (since := "2026-08-17")]
 def bind (p : PMF α) (f : α → PMF β) : PMF β :=
   ⟨fun b => ∑' a, p a * f a b,
     ENNReal.summable.hasSum_iff.2
       (ENNReal.tsum_comm.trans <| by simp only [ENNReal.tsum_mul_left, tsum_coe, mul_one])⟩
 
-@[deprecated Measure.bind_apply (since := "2026-08-17")]
+@[deprecated Measure.bind_apply +typeChanged (since := "2026-08-17")]
 theorem bind_apply (p : PMF α) (f : α → PMF β) (b : β) :
     p.bind f b = ∑' a, p a * f a b := rfl
 
-@[deprecated Measure.bind_apply (since := "2026-08-17")]
+@[deprecated Measure.bind_apply +typeChanged (since := "2026-08-17")]
 theorem support_bind (p : PMF α) (f : α → PMF β) :
     (p.bind f).support = ⋃ a ∈ p.support, (f a).support :=
   Set.ext fun b => by simp [mem_support_iff, ENNReal.tsum_eq_zero, not_or, bind_apply]
 
-@[deprecated Measure.bind_apply (since := "2026-08-17")]
+@[deprecated Measure.bind_apply +typeChanged (since := "2026-08-17")]
 theorem mem_support_bind_iff (p : PMF α) (f : α → PMF β) (b : β) :
     b ∈ (p.bind f).support ↔ ∃ a ∈ p.support, b ∈ (f a).support := by
   simp only [support_bind, Set.mem_iUnion, exists_prop]
 
-@[deprecated Measure.bind_dirac (since := "2026-08-17")]
+@[deprecated Measure.bind_dirac +typeChanged (since := "2026-08-17")]
 theorem pure_bind (a : α) (f : α → PMF β) : (pure a).bind f = f a := by
   refine PMF.ext fun _ ↦ ?_
   simp [bind_apply, pure_apply]
 
-@[deprecated Measure.dirac_bind (since := "2026-08-17")]
+@[deprecated Measure.dirac_bind +typeChanged (since := "2026-08-17")]
 theorem bind_pure (p : PMF α) : p.bind pure = p :=
   PMF.ext fun x => (bind_apply _ _ _).trans (_root_.trans
     (tsum_eq_single x fun y hy => by rw [pure_apply_of_ne _ _ hy.symm, mul_zero]) <|
     by rw [pure_apply_self, mul_one])
 
-@[deprecated Measure.bind_const (since := "2026-08-17")]
+@[deprecated Measure.bind_const +typeChanged (since := "2026-08-17")]
 theorem bind_const (p : PMF α) (q : PMF β) : (p.bind fun _ => q) = q :=
   PMF.ext fun x => by rw [bind_apply, ENNReal.tsum_mul_right, tsum_coe, one_mul]
 
-@[deprecated Measure.bind_bind (since := "2026-08-17")]
+@[deprecated Measure.bind_bind +typeChanged (since := "2026-08-17")]
 theorem bind_bind (p : PMF α) (f : α → PMF β) (g : β → PMF γ) :
     (p.bind f).bind g = p.bind fun a => (f a).bind g :=
   PMF.ext fun b => by
@@ -159,7 +159,7 @@ theorem bind_comm (p : PMF α) (q : PMF β) (f : α → β → PMF γ) :
 
 section Measure
 
-@[deprecated Measure.bind_apply (since := "2026-08-17")]
+@[deprecated Measure.bind_apply +typeChanged (since := "2026-08-17")]
 theorem toOuterMeasure_bind_apply (p : PMF α) (f : α → PMF β) (s : Set β) :
     (p.bind f).toOuterMeasure s = ∑' a, p a * (f a).toOuterMeasure s := by
   classical
@@ -176,7 +176,7 @@ theorem toOuterMeasure_bind_apply (p : PMF α) (f : α → PMF β) (s : Set β) 
 
 /-- The measure of a set under `p.bind f` is the sum over `a : α`
   of the probability of `a` under `p` times the measure of the set under `f a`. -/
-@[deprecated Measure.bind_apply (since := "2026-08-17")]
+@[deprecated Measure.bind_apply +typeChanged (since := "2026-08-17")]
 theorem toMeasure_bind_apply (p : PMF α) (f : α → PMF β) (s : Set β)
     [MeasurableSpace β] (hs : MeasurableSet s) :
     (p.bind f).toMeasure s = ∑' a, p a * (f a).toMeasure s :=
@@ -198,7 +198,7 @@ section BindOnSupport
 
 /-- Generalized version of `bind` allowing `f` to only be defined on the support of `p`.
   `p.bind f` is equivalent to `p.bindOnSupport (fun a _ ↦ f a)`, see `bindOnSupport_eq_bind`. -/
-@[deprecated Measure.bind (since := "2026-08-17")]
+@[deprecated Measure.bind +typeChanged (since := "2026-08-17")]
 def bindOnSupport (p : PMF α) (f : ∀ a ∈ p.support, PMF β) : PMF β :=
   ⟨fun b => ∑' a, p a * if h : p a = 0 then 0 else f a h b, ENNReal.summable.hasSum_iff.2 (by
     refine ENNReal.tsum_comm.trans (_root_.trans (tsum_congr fun a => ?_) p.tsum_coe)
@@ -207,11 +207,11 @@ def bindOnSupport (p : PMF α) (f : ∀ a ∈ p.support, PMF β) : PMF β :=
     · simp only [h, zero_mul]
     · rw [(f a h).tsum_coe, mul_one])⟩
 
-@[deprecated Measure.bind_apply (since := "2026-08-17")]
+@[deprecated Measure.bind_apply +typeChanged (since := "2026-08-17")]
 theorem bindOnSupport_apply {p : PMF α} (f : ∀ a ∈ p.support, PMF β) (b : β) :
     p.bindOnSupport f b = ∑' a, p a * if h : p a = 0 then 0 else f a h b := rfl
 
-@[deprecated Measure.bind_apply (since := "2026-08-17")]
+@[deprecated Measure.bind_apply +typeChanged (since := "2026-08-17")]
 theorem support_bindOnSupport {p : PMF α} (f : ∀ a ∈ p.support, PMF β) :
     (p.bindOnSupport f).support = ⋃ (a : α) (h : a ∈ p.support), (f a h).support := by
   ext
@@ -220,12 +220,12 @@ theorem support_bindOnSupport {p : PMF α} (f : ∀ a ∈ p.support, PMF β) :
     dite_eq_left_iff, mul_eq_zero, not_forall, not_or, and_exists_self,
     Set.mem_iUnion]
 
-@[deprecated Measure.bind_apply (since := "2026-08-17")]
+@[deprecated Measure.bind_apply +typeChanged (since := "2026-08-17")]
 theorem mem_support_bindOnSupport_iff {p : PMF α} (f : ∀ a ∈ p.support, PMF β) (b : β) :
     b ∈ (p.bindOnSupport f).support ↔ ∃ (a : α) (h : a ∈ p.support), b ∈ (f a h).support := by
   simp only [support_bindOnSupport, Set.mem_iUnion]
 
-@[deprecated rfl (since := "2026-08-17")]
+@[deprecated rfl +typeChanged (since := "2026-08-17")]
 theorem bindOnSupport_eq_bind (p : PMF α) (f : α → PMF β) :
     (p.bindOnSupport fun a _ => f a) = p.bind f := by
   refine PMF.ext fun b ↦ ?_
@@ -241,7 +241,7 @@ theorem bindOnSupport_eq_zero_iff {p : PMF α} (f : ∀ a ∈ p.support, PMF β)
   exact ⟨fun h a ha => Trans.trans (dite_eq_right ha).symm (h a ha),
     fun h a ha => Trans.trans (dite_eq_right ha) (h a ha)⟩
 
-@[deprecated Measure.bind_dirac (since := "2026-08-17")]
+@[deprecated Measure.bind_dirac +typeChanged (since := "2026-08-17")]
 theorem pure_bindOnSupport (a : α) (f : ∀ (a' : α) (_ : a' ∈ (pure a).support), PMF β) :
     (pure a).bindOnSupport f = f a ((mem_support_pure_iff a a).mpr rfl) := by
   refine PMF.ext fun b => ?_
@@ -250,12 +250,12 @@ theorem pure_bindOnSupport (a : α) (f : ∀ (a' : α) (_ : a' ∈ (pure a).supp
   refine _root_.trans (tsum_congr fun a' => ?_) (tsum_ite_eq a (fun _ ↦ _))
   by_cases h : a' = a <;> simp [h]
 
-@[deprecated Measure.dirac_bind (since := "2026-08-17")]
+@[deprecated Measure.dirac_bind +typeChanged (since := "2026-08-17")]
 theorem bindOnSupport_pure (p : PMF α) : (p.bindOnSupport fun a _ => pure a) = p := by
   simp only [PMF.bind_pure, PMF.bindOnSupport_eq_bind]
 
 set_option backward.isDefEq.respectTransparency false in
-@[deprecated Measure.bind_bind (since := "2026-08-17")]
+@[deprecated Measure.bind_bind +typeChanged (since := "2026-08-17")]
 theorem bindOnSupport_bindOnSupport (p : PMF α) (f : ∀ a ∈ p.support, PMF β)
     (g : ∀ b ∈ (p.bindOnSupport f).support, PMF γ) :
     (p.bindOnSupport f).bindOnSupport g =
@@ -286,7 +286,7 @@ theorem bindOnSupport_comm (p : PMF α) (q : PMF β) (f : ∀ a ∈ p.support, �
 
 section Measure
 
-@[deprecated Measure.bind_apply (since := "2026-08-17")]
+@[deprecated Measure.bind_apply +typeChanged (since := "2026-08-17")]
 theorem toOuterMeasure_bindOnSupport_apply {p : PMF α} (f : ∀ a ∈ p.support, PMF β) (s : Set β) :
     (p.bindOnSupport f).toOuterMeasure s =
       ∑' a, p a * if h : p a = 0 then 0 else (f a h).toOuterMeasure s := by
@@ -303,7 +303,7 @@ theorem toOuterMeasure_bindOnSupport_apply {p : PMF α} (f : ∀ a ∈ p.support
     _ = ∑' a, p a * dite (p a = 0) (fun h => 0) fun h => ∑' b, ite (b ∈ s) (f a h b) 0 :=
       tsum_congr fun a => by split_ifs with ha <;> simp only [ite_self, tsum_zero]
 
-@[deprecated Measure.bind_apply (since := "2026-08-17")]
+@[deprecated Measure.bind_apply +typeChanged (since := "2026-08-17")]
 theorem toMeasure_bindOnSupport_apply {p : PMF α} (f : ∀ a ∈ p.support, PMF β) (s : Set β)
     [MeasurableSpace β] (hs : MeasurableSet s) :
     (p.bindOnSupport f).toMeasure s =
