@@ -199,22 +199,20 @@ theorem _root_.TendstoUniformlyOn.tendsto_intervalIntegral_of_continuousOn
   case h_lim =>
     exact .of_forall fun x hx ↦ h_lim.tendsto_at <| uIoc_subset_uIcc hx
 
-/-- If a family of functions tends to zero uniformly on `[[a, b]]`, then the corresponding
-interval integrals tend to zero. Due to default values for the integral, this
-does not
-require additional hypotheses as does `TendstoUniformlyOn.tendsto_intervalIntegral_of_continuousOn`
--/
 theorem _root_.TendstoUniformlyOn.tendsto_intervalIntegral_nhds_zero {l : Filter ι}
+    [IsLocallyFiniteMeasure μ]
     {F : ι → ℝ → E} (h : TendstoUniformlyOn F 0 l [[a, b]]) :
-    Tendsto (fun i ↦ ∫ x in a..b, F i x) l (𝓝 0) := by
-  rw [NormedAddGroup.tendsto_nhds_zero]
-  rw [tendstoUniformlyOn_iff] at h
+    Tendsto (fun i ↦ ∫ x in a..b, F i x ∂μ) l (𝓝 0) := by
+  set M := μ.real (Ι a b)
+  simp_rw [NormedAddGroup.tendsto_nhds_zero, norm_integral_eq_norm_integral_uIoc]
   intro ε hε
-  filter_upwards [h (ε / (|b - a| + 1)) (by positivity)] with i hi
-  calc ‖∫ x in a..b, F i x‖
-    _ ≤ ε / (|b - a| + 1) * |b - a| :=
-      norm_integral_le_of_norm_le_const fun x hx ↦ by simpa using (hi x (uIoc_subset_uIcc hx)).le
-    _ < ε := by field_simp; bound
+  filter_upwards [Metric.tendstoUniformlyOn_iff.mp h (ε / (M + 1)) (by positivity)] with i hi
+  calc ‖∫ x in Ι a b, F i x ∂μ‖
+      ≤ ε / (M + 1) * M := norm_setIntegral_le_of_norm_le_const measure_Ioc_lt_top
+        fun x hx ↦ by simpa using (hi x (uIoc_subset_uIcc hx)).le
+    _ < ε := by
+      rw [div_mul_eq_mul_div, div_lt_iff₀ (by positivity)]
+      exact mul_lt_mul_of_pos_left (lt_add_one M) hε
 
 /-- Lebesgue dominated convergence theorem for parametric interval integrals. -/
 nonrec theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι → ℝ → E}
