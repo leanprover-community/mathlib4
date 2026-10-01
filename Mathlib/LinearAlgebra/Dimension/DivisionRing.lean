@@ -160,9 +160,9 @@ theorem finrank_span_eq_finrank_of_linearIndepOn
     finrank K (span K (M : Set V)) = finrank R M :=
   congrArg Cardinal.toNat (rank_span_eq_rank_of_linearIndepOn M H)
 
-/-- If the `K`-rank of the `K`-span of a finitely generated `M` is as large as the `R`-rank of
-`M`, then every `R`-linearly independent subset of `M` is `K`-linearly independent. -/
-theorem linearIndepOn_of_finrank_span_le_finrank (hfg : M.FG)
+/-- If the `R`-rank of a finitely generated `R`-module `M` is at most the `K`-rank of the `K`-span
+of `M`, then every `R`-linearly independent subset of `M` is `K`-linearly independent. -/
+theorem linearIndepOn_of_finrank_le_finrank_span (hfg : M.FG)
     (h : finrank R M ≤ finrank K (span K (M : Set V)))
     {s : Set V} (hsM : s ⊆ M) (hs : LinearIndepOn R id s) :
     LinearIndepOn K id s := by
@@ -191,7 +191,7 @@ and only if every `R`-linearly independent subset of `M` is `K`-linearly indepen
 theorem finrank_span_eq_finrank_iff (hfg : M.FG) :
     finrank K (span K (M : Set V)) = finrank R M ↔
       ∀ s ⊆ (M : Set V), LinearIndepOn R id s → LinearIndepOn K id s :=
-  ⟨fun h _ ↦ linearIndepOn_of_finrank_span_le_finrank M hfg h.ge,
+  ⟨fun h _ ↦ linearIndepOn_of_finrank_le_finrank_span M hfg h.ge,
     finrank_span_eq_finrank_of_linearIndepOn M⟩
 
 end Submodule
