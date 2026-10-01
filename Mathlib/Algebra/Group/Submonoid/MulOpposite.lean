@@ -23,11 +23,11 @@ assert_not_exists MonoidWithZero
 
 variable {ι : Sort*} {M : Type*}
 
+namespace Submonoid
+
 section MulOneClass
 
 variable [MulOneClass M]
-
-namespace Submonoid
 
 /-- Pull a submonoid back to an opposite submonoid along `MulOpposite.unop` -/
 @[to_additive (attr := simps) /-- Pull an additive submonoid back to an opposite submonoid along
@@ -203,15 +203,11 @@ def mopMulEquivOp (S : Submonoid M) : Sᵐᵒᵖ ≃* S.op where
   toEquiv := (MulOpposite.opEquiv : S ≃ Sᵐᵒᵖ).symm.trans S.equivOp
   map_mul' _ _ := rfl
 
-end Submonoid
-
 end MulOneClass
 
 section CommMonoid
 
 variable [CommMonoid M]
-
-namespace Submonoid
 
 /-- Bijection between a submonoid `S` and its opposite as a monoid equivalence. -/
 @[to_additive (attr := simps!)
@@ -220,6 +216,6 @@ def mulEquivOp (S : Submonoid M) : S ≃* S.op where
   toEquiv := S.equivOp
   map_mul' x y := by ext; simp [MulOpposite.op_mul, mul_comm]
 
-end Submonoid
-
 end CommMonoid
+
+end Submonoid
