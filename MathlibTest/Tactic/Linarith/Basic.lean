@@ -852,6 +852,15 @@ info: Try this:
 example (a b : ℚ) (h₁ : a ≤ b) (h₂ : b ≤ a) (junk : a < a + 1) : a = b := by
   linarith?
 
+-- ... and the union of the two runs is still exact without minimization
+/--
+info: Try this:
+  [apply] linarith only [h₁, h₂]
+-/
+#guard_msgs in
+example (a b : ℚ) (h₁ : a ≤ b) (h₂ : b ≤ a) (junk : a < a + 1) : a = b := by
+  linarith? -minimize
+
 -- `splitNe` case splits on the `≠` hypothesis; the facts introduced in each branch are
 -- attributed back to it
 /--
@@ -861,6 +870,16 @@ info: Try this:
 #guard_msgs in
 example (a b : ℚ) (hne : a ≠ b) (hle : a ≥ b) (junk : (0:ℚ) < 1) : b < a := by
   linarith? +splitNe
+
+-- `nlinarithExtras` multiplies `ha` and `hb`; the product is attributed to both of them.
+-- There is no `nlinarith?`, so this calls `linarithUsedHyps` directly, without minimization.
+/-- info: [ha, hb] -/
+#guard_msgs in
+open Mathlib.Tactic.Linarith in
+example (a b : ℚ) (ha : 0 < a) (hb : 0 < b) (junk : a < a + 1) : 0 < a * b := by
+  run_tac do
+    let cfg : LinarithConfig := { preprocessors := defaultPreprocessors.concat nlinarithExtras }
+    Lean.logInfo m!"{← linarithUsedHyps false [] cfg (← Lean.Elab.Tactic.getMainGoal)}"
 
 -- the goal alone suffices
 /--
