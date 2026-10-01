@@ -349,15 +349,10 @@ theorem two_pow_le_lcmUpto {n : ℕ} (hn : 7 ≤ n) : 2 ^ n ≤ lcmUpto n := by
   obtain ⟨k, rfl | rfl⟩ := n.even_or_odd'
   · obtain rfl | gk : k = 4 ∨ 4 ≤ k - 1 := by lia
     · decide
-    · rw [p2, ← k.sub_one_add_one (by lia), pow_succ']
-      calc
-        _ ≤ _ := mul_le_mul_left gk _
-        _ ≤ _ := mul_four_pow_le_lcmUpto (by lia)
-        _ ≤ _ := le_of_dvd (lcmUpto_pos _) (lcmUpto_dvd_lcmUpto (by lia))
-  · rw [pow_succ', p2]
-    calc
-      _ ≤ _ := by gcongr; lia
-      _ ≤ _ := mul_four_pow_le_lcmUpto (by lia)
+    · nth_grw 1 [p2, ← k.sub_one_add_one (by lia), pow_succ', gk, mul_four_pow_le_lcmUpto (by lia)]
+      exact le_of_dvd (lcmUpto_pos _) (lcmUpto_dvd_lcmUpto (by lia))
+  · grw [pow_succ', p2, ← mul_four_pow_le_lcmUpto (by lia)]
+    exact Nat.mul_le_mul_right _ (by lia)
 
 /-!
 ## Relating `ψ` and `θ`
