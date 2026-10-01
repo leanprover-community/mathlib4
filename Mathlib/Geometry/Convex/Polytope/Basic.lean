@@ -105,7 +105,7 @@ lemma convexHull_sUnion_of_finite {p : Set (Set X)} (hp : p.Finite)
     simp only [Set.mem_insert_iff, forall_eq_or_imp] at h
     exact convexHull_union h.1 (h' h.2)
 
-lemma convexHull_iUnion {ι : Type*} [Finite ι] (P : ι → Set X)
+lemma convexHull_iUnion_of_finite {ι : Type*} [Finite ι] (P : ι → Set X)
     (h : ∀ i, IsPolytope R (P i)) : IsPolytope R (convexHull R (⋃ i, P i)) := by
   rw [← Set.sUnion_range]
   apply convexHull_sUnion_of_finite (Set.finite_range P)
