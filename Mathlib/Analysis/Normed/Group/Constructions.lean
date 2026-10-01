@@ -368,6 +368,11 @@ lemma pi_norm_const' [Nonempty ι] (a : E) : ‖fun _i : ι => a‖ = ‖a‖ :=
 lemma pi_nnnorm_const' [Nonempty ι] (a : E) : ‖fun _i : ι => a‖₊ = ‖a‖₊ :=
   NNReal.eq <| pi_norm_const' a
 
+@[to_additive pi_nnnorm_comp_le]
+lemma pi_nnnorm_comp_le' [Fintype F] (g : ι → E) (f : F → ι) : ‖g ∘ f‖₊ ≤ ‖g‖₊ := by
+  rw [pi_nnnorm_le_iff']
+  exact fun x ↦ norm_le_pi_norm' g (f x)
+
 @[to_additive pi_norm_comp_le]
 lemma pi_norm_comp_le' [Fintype F] (g : ι → E) (f : F → ι) : ‖g ∘ f‖ ≤ ‖g‖ := by
   rw [pi_norm_le_iff_of_nonneg' (by positivity)]
@@ -405,29 +410,23 @@ scaled by the cardinality. -/]
 lemma Pi.sum_nnnorm_apply_le_nnnorm' : ∑ i, ‖f i‖₊ ≤ Fintype.card ι • ‖f‖₊ :=
   (NNReal.coe_sum ..).trans_le <| Pi.sum_norm_apply_le_norm' _
 
-@[to_additive Function.FactorsThrough.nnnorm_extend_le]
-theorem Function.FactorsThrough.nnnorm_extend_le' {f : ι → ι'} {g : ι → E} (j : ι' → E)
-    (h : FactorsThrough g f) :
-    ‖extend f g j‖₊ ≤ max ‖g‖₊ ‖j‖₊ := by
-  rcases isEmpty_or_nonempty ι' with _ | _
-  · simp [Pi.nnnorm_def']
-  simp_rw [Pi.nnnorm_def', Finset.sup_univ_eq_ciSup, apply_extend nnnorm]
-  exact ciSup_extend_le (h.comp_left _) (Finite.bddAbove_range _) (Finite.bddAbove_range _)
+@[to_additive Pi.nnnorm_extend_le]
+theorem Pi.nnnorm_extend_le' (f : ι → ι') (g : ι → E) (j : ι' → E) :
+    ‖Function.extend f g j‖₊ ≤ max ‖g‖₊ ‖j‖₊ := by
+  rw [pi_nnnorm_le_iff']
+  classical aesop (add simp [Function.extend_def, nnnorm_le_pi_nnnorm'])
 
-@[to_additive Function.FactorsThrough.norm_extend_le]
-theorem Function.FactorsThrough.norm_extend_le' {f : ι → ι'} {g : ι → E} (j : ι' → E)
-    (h : FactorsThrough g f) :
-    ‖extend f g j‖ ≤ max ‖g‖ ‖j‖ :=
-  h.nnnorm_extend_le' j
+@[to_additive Pi.norm_extend_le]
+theorem Pi.norm_extend_le' (f : ι → ι') (g : ι → E) (j : ι' → E) :
+    ‖Function.extend f g j‖ ≤ max ‖g‖ ‖j‖ :=
+  nnnorm_extend_le' f g j
 
 @[to_additive Function.FactorsThrough.nnnorm_extend]
 theorem Function.FactorsThrough.nnnorm_extend' [Nonempty ι] {f : ι → ι'} {g : ι → E} {j : ι' → E}
     (h : FactorsThrough g f) (hj : ‖j‖₊ ≤ ‖g‖₊) :
     ‖extend f g j‖₊ = ‖g‖₊ := by
-  simp_rw [Pi.nnnorm_def', Finset.sup_univ_eq_ciSup] at ⊢ hj
-  simp_rw [apply_extend nnnorm]
-  apply ciSup_extend (h.comp_left _) (Finite.bddAbove_range _)
-  exact (ciSup_le_iff' (Finite.bddAbove_range _)).mp hj
+  grw [le_antisymm (Pi.nnnorm_extend_le' f g j), max_eq_left hj]
+  simpa [hj, h.extend_comp j] using pi_nnnorm_comp_le' (extend f g j) f
 
 @[to_additive Function.FactorsThrough.norm_extend]
 theorem Function.FactorsThrough.norm_extend' [Nonempty ι] {f : ι → ι'} {g : ι → E} {j : ι' → E}
