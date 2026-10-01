@@ -74,8 +74,9 @@ private def normalizeDetByEchelon? {u : Level} {α : Q(Type u)} {n : Q(Nat)} (r�
   if entries.any fun x ↦ x.hasFVar || x.hasMVar then return none
   let some m ← getNatValue? n | return none
   let some iα ← synthInstanceQ? q(IsDomain $α) | return none
-  let A ← zetaReduce A
   have A : Q(Matrix (Fin $m) (Fin $m) $α) := A
+  -- The entries come flattened from the parser shared with Bird's path. Regrouping them here
+  -- avoids parsing the literal twice.
   let rows := Array.ofFn (n := m) fun i ↦ entries.extract ((i : Nat) * m) ((i : Nat) * m + m)
   let some ⟨v, pf⟩ ← proveEchelonDet rα iα m A rows | return none
   return some { expr := v, proof? := some pf }
