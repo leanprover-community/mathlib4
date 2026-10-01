@@ -651,7 +651,7 @@ theorem _root_.Algebra.TensorProduct.not_isField_of_transcendental
     refine ⟨⟨a, by simp [fa]⟩, ⟨b, hf ?_⟩⟩
     simp_rw [fb, Algebra.TensorProduct.includeRight_apply, f,
       Algebra.TensorProduct.mapOfCompatibleSMul_tmul]
-    convert! ← (TensorProduct.smul_tmul (R := R[X]) (R' := R[X]) (M := A) (N := B) X 1 1).symm <;>
+    convert ← (TensorProduct.smul_tmul (R := R[X]) (R' := R[X]) (M := A) (N := B) X 1 1).symm <;>
       (simp_rw [Algebra.smul_def, mul_one]; exact aeval_X _)
   have key3 := (Subalgebra.inclusion key2).comp (AlgEquiv.ofInjective gab htab).toAlgHom
     |>.toLinearMap.lift_rank_le_of_injective

@@ -71,8 +71,11 @@ jobs:
       # shake-outcome: ${{ steps.shake.outcome }}
       # `test`/`lint` outcomes are exposed by the `test_lint` job (and consumed by
       # its nightly-testing comment step).
-    defaults: # On Hoskinson runners, landrun is already installed.
-      run: # note that .pr-branch/.lake must be created in a step below before we use this
+    # PR code can write `pr-branch/.lake/` from setup-build-env's "download dependencies"
+    # step onward, so later steps that use it run inside landrun. The one exception is
+    # "prune local cache to this commit's set", which runs only on a trusted checkout.
+    defaults: # The self-hosted runner image provides landrun.
+      run: # setup-build-env creates the paths below that the runner image can lack.
         shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
     steps:
       - name: job info
@@ -96,7 +99,7 @@ jobs:
           path: workflow-actions
           persist-credentials: false # no later step needs git credentials
 
-      # Shared self-hosted setup (toolchain prune, jq, cache-trust dispatch,
+      # Shared self-hosted setup (cache-trust dispatch,
       # PR-branch checkout, elan + toolchain/LEAN_SRC_PATH env, CI tools, dependency
       # download); see the action for per-step rationale. It is loaded from the
       # `Checkout local actions` checkout above, which therefore runs first.
@@ -144,17 +147,6 @@ jobs:
             echo ""
             exit 1
           fi
-
-      - name: Prepare DownstreamTest directory
-        shell: bash
-        run: |
-          echo "Copying lean-toolchain to DownstreamTest..."
-          cd pr-branch
-          # Ensure DownstreamTest/.lake/ directory exists, since landrun will need it later
-          mkdir -p DownstreamTest/.lake/
-          cd DownstreamTest
-          cp ../lean-toolchain .
-          echo "lean-toolchain copied successfully to DownstreamTest."
 
       - name: validate lake-manifest.json inputRevs
         # Only enforce this on the main mathlib4 repository, not on nightly-testing
@@ -240,7 +232,8 @@ jobs:
       # Hopefully a future re-implementation of `cache` will obviate the present need for this hack.
 
       - name: fetch archive, counterexamples and wanted cache
-        shell: bash
+        # Same sandbox as "Fetch cache from remote" in get-cache.
+        shell: landrun --unrestricted-network --rox /usr --rox /etc --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rwx /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env CI --env TERM --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX --env MATHLIB_CACHE_FROM --env MATHLIB_CACHE_REPO_SCOPE --env MATHLIB_CACHE_GET_URL --env MATHLIB_CACHE_BASE_URL -- bash -euxo pipefail {0}
         run: |
           # Use the trusted toolchain's `lean`/`leantar` (see setup-build-env).
           export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
@@ -304,8 +297,9 @@ jobs:
         shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX -- bash -euxo pipefail {0}
         run: |
           # Run `cache` directly, as the get/clean steps do, rather than via `lake env`:
-          # it reads its context from LEAN_SRC_PATH (forwarded above). Use the trusted
-          # toolchain's `lean`/`leantar` (see setup-build-env).
+          # it reads its context from LEAN_SRC_PATH (forwarded above), and no PR code
+          # runs with write access to `cache-staging/`. Use the trusted toolchain's
+          # `lean`/`leantar` (see setup-build-env).
           export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
           ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage
@@ -343,6 +337,8 @@ jobs:
         shell: bash
         run: |
           # The staging directory is uploaded as-is, so it must hold only regular files.
+          # Only the stage steps can write to it, and they run no PR code, so nothing
+          # can change it between this check and the upload.
           other=$(find cache-staging -mindepth 1 ! -type f ! -type d)
           if [ -n "${other}" ]; then
             echo "::error::cache-staging contains entries that are not regular files:"
@@ -365,11 +361,12 @@ jobs:
           compression-level: 0
 
       # Prune to this commit's `.ltar` set so the published snapshot is exactly master's
-      # current cache (the local dir also holds the previous snapshot it warmed from).
+      # current cache. The local directory can also hold other `.ltar` files, such as
+      # the snapshot this run warmed from or files that the runner image provides.
       - name: prune local cache to this commit's set
         if: ${{ inputs.publish_cache && steps.build.outcome == 'success' }}
         continue-on-error: true # best-effort; never fail the build
-        shell: bash # runs the trusted tools-branch `cache` binary, so no landrun needed
+        shell: bash # only master pushes publish the cache, so the checkout is trusted
         run: |
           # Use the trusted toolchain's `lean`/`leantar` (see setup-build-env).
           export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
@@ -448,8 +445,8 @@ jobs:
     # `test`, and the MathlibTest cache fetch.
     env:
       RUN_TESTS: ${{ needs.build.outputs.build-outcome == 'success' && needs.build.outputs.mk_all-outcome == 'success' && needs.build.outputs.archive-outcome == 'success' && needs.build.outputs.counterexamples-outcome == 'success' && needs.build.outputs.wanted-outcome == 'success' }}
-    defaults: # On Hoskinson runners, landrun is already installed.
-      run: # note that pr-branch/.lake must be created in a step below before we use this
+    defaults: # The self-hosted runner image provides landrun.
+      run: # setup-build-env creates the paths below that the runner image can lack.
         shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
     steps:
       - name: Checkout local actions
@@ -523,7 +520,8 @@ jobs:
       - name: get the MathlibTest cache
         if: ${{ env.RUN_TESTS == 'true' }}
         continue-on-error: true
-        shell: bash # runs the trusted `cache` binary outside landrun, as `get-cache` does
+        # Same sandbox as "Fetch cache from remote" in get-cache.
+        shell: landrun --unrestricted-network --rox /usr --rox /etc --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rwx /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env CI --env TERM --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX --env MATHLIB_CACHE_FROM --env MATHLIB_CACHE_REPO_SCOPE --env MATHLIB_CACHE_GET_URL --env MATHLIB_CACHE_BASE_URL --env CACHE_REPO -- bash -euxo pipefail {0}
         env:
           CACHE_REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
         run: |
