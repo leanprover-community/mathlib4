@@ -508,7 +508,7 @@ variable {x y : ZFSet.{u}}
 theorem map_fval {f : ZFSet.{u} → ZFSet.{u}} [Definable₁ f] (h : y ∈ x) :
     (ZFSet.map f x ′ y : ZFClass.{u}) = f y :=
   ZFClass.iota_val _ _ fun z => by
-    simp only [ZFClass.coe_cmem, Set.mem_ofPred_eq, SetLike.mem_coe, mem_map]
+    simp only [ZFClass.coe_cmem, Set.mem_ofPred, SetLike.mem_coe, mem_map]
     exact
       ⟨fun ⟨w, _, pr⟩ => by
         let ⟨wy, fw⟩ := ZFSet.pair_injective pr
