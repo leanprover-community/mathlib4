@@ -510,8 +510,7 @@ theorem prod_extend [DecidableEq κ] {t : Finset κ} {f : ι → κ} {g : ι →
 theorem prod_extend_one {t : Finset κ} {f : ι → κ} {g : ι → M}
     (hfg : Function.FactorsThrough g f) (hf : Set.BijOn f s (t ∩ Set.range f)) :
     ∏ i ∈ t, Function.extend f g 1 i = ∏ i ∈ s, g i := by
-  classical
-  simp [prod_extend 1 hfg hf]
+  classical simp [prod_extend 1 hfg hf]
 
 @[to_additive]
 theorem prod_extend_one_eq_prod_univ [Fintype ι] {t : Finset κ} {f : ι → κ} (g : ι → M)
