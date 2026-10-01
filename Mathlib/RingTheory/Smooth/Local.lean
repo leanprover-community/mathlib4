@@ -5,8 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
-public import Mathlib.RingTheory.LocalRing.Module
+import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+import Mathlib.RingTheory.LocalRing.Module
 public import Mathlib.RingTheory.Smooth.Basic
 public import Mathlib.RingTheory.TensorProduct.Free
 
@@ -90,8 +90,8 @@ theorem FormallySmooth.iff_injective_cotangentComplexBaseChange
     simp_rw [AlgebraTensorModule.curry_apply, LinearMap.restrictScalars_comp, curry_apply,
       LinearMap.coe_comp, LinearMap.coe_restrictScalars, LinearEquiv.coe_coe, Function.comp_apply,
       AlgebraTensorModule.cancelBaseChange_symm_tmul, LinearMap.baseChange_tmul,
-      cotangentComplexBaseChange_tmul, kerToTensor_apply, one_smul]
-    erw [AlgebraTensorModule.cancelBaseChange_tmul]
+      cotangentComplexBaseChange_tmul, kerToTensor_apply, one_smul,
+      AlgebraTensorModule.cancelBaseChange_tmul]
     simp
   rw [← this]
   refine .trans ?_ ((AlgebraTensorModule.cancelBaseChange _ _ _ _ _).comp_injective _).symm

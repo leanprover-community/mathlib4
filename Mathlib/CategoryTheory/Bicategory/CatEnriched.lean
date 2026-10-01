@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Emily Riehl
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
-public import Mathlib.CategoryTheory.Enriched.Basic
 public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 
 /-!
@@ -315,6 +314,7 @@ theorem hComp_assoc_heq {a b c d : CatEnrichedOrdinary C}
     {f f' : a ⟶ b} {g g' : b ⟶ c} {h h' : c ⟶ d} (η : f ⟶ f') (θ : g ⟶ g') (κ : h ⟶ h') :
     HEq (hComp (hComp η θ) κ) (hComp η (hComp θ κ)) := by simp [hComp_assoc]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : Bicategory (CatEnrichedOrdinary C) where
   homCategory := inferInstance
   whiskerLeft {_ _ _} f {_ _} η := hComp (𝟙 f) η

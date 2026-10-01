@@ -5,7 +5,6 @@ Authors: Jake Levinson
 -/
 module
 
-public import Mathlib.Data.Nat.Factorial.Basic
 public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
@@ -87,7 +86,8 @@ open Lean Meta Qq
 
 /-- Extension for `Nat.doubleFactorial`. -/
 @[positivity Nat.doubleFactorial _]
-meta def evalDoubleFactorial : PositivityExt where eval {u α} _ _ e := do
+meta def evalDoubleFactorial : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.doubleFactorial $n) =>
     assumeInstancesCommute

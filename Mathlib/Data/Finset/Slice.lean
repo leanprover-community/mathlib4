@@ -91,7 +91,7 @@ namespace Finset
 
 section Sized
 
-variable [Fintype α] {𝒜 : Finset (Finset α)} {s : Finset α} {r : ℕ}
+variable [Fintype α] {𝒜 : Finset (Finset α)} {r : ℕ}
 
 theorem subset_powersetCard_univ_iff : 𝒜 ⊆ powersetCard r univ ↔ (𝒜 : Set (Finset α)).Sized r :=
   forall_congr' fun A => by rw [mem_powersetCard_univ, mem_coe]
@@ -134,7 +134,7 @@ theorem eq_of_mem_slice (h₁ : A ∈ 𝒜 # r₁) (h₂ : A ∈ 𝒜 # r₂) : 
 
 /-- Elements in distinct slices must be distinct. -/
 theorem ne_of_mem_slice (h₁ : A₁ ∈ 𝒜 # r₁) (h₂ : A₂ ∈ 𝒜 # r₂) : r₁ ≠ r₂ → A₁ ≠ A₂ :=
-  mt fun h => (sized_slice h₁).symm.trans ((congr_arg card h).trans (sized_slice h₂))
+  mt fun h => (sized_slice h₁).symm.trans (congr(card $h).trans (sized_slice h₂))
 
 theorem pairwiseDisjoint_slice : (Set.univ : Set ℕ).PairwiseDisjoint (slice 𝒜) := fun _ _ _ _ hmn =>
   disjoint_filter.2 fun _s _hs hm hn => hmn <| hm.symm.trans hn
@@ -144,11 +144,11 @@ variable [Fintype α] (𝒜)
 @[simp]
 theorem biUnion_slice [DecidableEq α] : (Iic <| Fintype.card α).biUnion 𝒜.slice = 𝒜 :=
   Subset.antisymm (biUnion_subset.2 fun _r _ => slice_subset) fun s hs =>
-    mem_biUnion.2 ⟨#s, mem_Iic.2 <| s.card_le_univ, mem_slice.2 <| ⟨hs, rfl⟩⟩
+    mem_biUnion.2 ⟨#s, mem_Iic.2 s.card_le_univ, mem_slice.2 ⟨hs, rfl⟩⟩
 
 @[simp]
 theorem sum_card_slice : ∑ r ∈ Iic (Fintype.card α), #(𝒜 # r) = #𝒜 := by
-  letI := Classical.decEq α
+  let := Classical.decEq α
   rw [← card_biUnion, biUnion_slice]
   exact Finset.pairwiseDisjoint_slice.subset (Set.subset_univ _)
 

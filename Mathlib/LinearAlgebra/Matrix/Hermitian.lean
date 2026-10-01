@@ -5,7 +5,7 @@ Authors: Alexander Bentkamp
 -/
 module
 
-public import Mathlib.Algebra.Star.Pi
+import Mathlib.Algebra.Star.Pi
 public import Mathlib.LinearAlgebra.Matrix.Hadamard
 public import Mathlib.LinearAlgebra.Matrix.ZPow
 
@@ -54,14 +54,23 @@ theorem isHermitian_iff_isSelfAdjoint {A : Matrix n n α} :
 protected alias ⟨IsHermitian.isSelfAdjoint, _root_.IsSelfAdjoint.isHermitian⟩ :=
   isHermitian_iff_isSelfAdjoint
 
+theorem IsHermitian.star_eq (hA : A.IsHermitian) : star A = A := hA.isSelfAdjoint.star_eq
+
 theorem IsHermitian.ext {A : Matrix n n α} : (∀ i j, star (A j i) = A i j) → A.IsHermitian := by
   intro h; ext i j; exact h i j
 
 theorem IsHermitian.apply {A : Matrix n n α} (h : A.IsHermitian) (i j : n) : star (A j i) = A i j :=
-  congr_fun (congr_fun h _) _
+  congr($h _ _)
 
 theorem IsHermitian.ext_iff {A : Matrix n n α} : A.IsHermitian ↔ ∀ i j, star (A j i) = A i j :=
   ⟨IsHermitian.apply, IsHermitian.ext⟩
+
+@[simp] lemma isHermitian_iff_isSymm [TrivialStar α] {A : Matrix n n α} :
+    A.IsHermitian ↔ A.IsSymm := by
+  simp [IsHermitian.ext_iff, IsSymm.ext_iff]
+
+lemma IsHermitian.isSymm [TrivialStar α] {A : Matrix n n α} (hA : A.IsHermitian) : A.IsSymm :=
+  isHermitian_iff_isSymm.mp hA
 
 @[simp]
 theorem IsHermitian.map {A : Matrix n n α} (h : A.IsHermitian) (f : α → β)
@@ -79,7 +88,7 @@ theorem IsHermitian.of_subsingleton {A : Matrix n n α} [Subsingleton α] : A.Is
 
 theorem IsHermitian.transpose {A : Matrix n n α} (h : A.IsHermitian) : Aᵀ.IsHermitian := by
   rw [IsHermitian, conjTranspose, transpose_map]
-  exact congr_arg Matrix.transpose h
+  congrm $(h).transpose
 
 @[simp]
 theorem isHermitian_transpose_iff {A : Matrix n n α} : Aᵀ.IsHermitian ↔ A.IsHermitian :=
@@ -149,8 +158,7 @@ theorem isHermitian_fromBlocks_iff {A : Matrix m m α} {B : Matrix m n α} {C : 
     {D : Matrix n n α} :
     (A.fromBlocks B C D).IsHermitian ↔ A.IsHermitian ∧ Bᴴ = C ∧ Cᴴ = B ∧ D.IsHermitian :=
   ⟨fun h =>
-    ⟨congr_arg toBlocks₁₁ h, congr_arg toBlocks₂₁ h, congr_arg toBlocks₁₂ h,
-      congr_arg toBlocks₂₂ h⟩,
+    ⟨congr(toBlocks₁₁ $h), congr(toBlocks₂₁ $h), congr(toBlocks₁₂ $h), congr(toBlocks₂₂ $h)⟩,
     fun ⟨hA, hBC, _hCB, hD⟩ => IsHermitian.fromBlocks hA hBC hD⟩
 
 end InvolutiveStar
@@ -188,7 +196,6 @@ theorem isHermitian_blockDiagonal_iff [DecidableEq n] {M : n → Matrix m m α} 
 
 /-- A diagonal matrix is Hermitian if the entries have the trivial `star` operation
 (such as on the reals). -/
-@[simp]
 theorem isHermitian_diagonal [TrivialStar α] [DecidableEq n] (v : n → α) :
     (diagonal v).IsHermitian :=
   isHermitian_diagonal_of_self_adjoint _ (IsSelfAdjoint.all _)
@@ -297,6 +304,11 @@ lemma IsHermitian.commute_iff [Fintype n] {A B : Matrix n n α}
     (hA : A.IsHermitian) (hB : B.IsHermitian) : Commute A B ↔ (A * B).IsHermitian :=
   hA.isSelfAdjoint.commute_iff hB.isSelfAdjoint
 
+lemma IsHermitian.star_dotProduct_mulVec_comm [Fintype n] {A : Matrix n n α}
+    (hA : A.IsHermitian) (x y : n → α) :
+    star (star x ⬝ᵥ A *ᵥ y) = star y ⬝ᵥ A *ᵥ x := by
+  rw [star_dotProduct, star_star, star_mulVec, hA.eq, ← dotProduct_mulVec]
+
 end NonUnitalSemiring
 
 section NonAssocSemiring
@@ -396,7 +408,7 @@ theorem fromBlocks₂₂ [Fintype n] [DecidableEq n] (A : Matrix m m α) (B : Ma
     (Matrix.fromBlocks A B Bᴴ D).IsHermitian ↔ (A - B * D⁻¹ * Bᴴ).IsHermitian := by
   rw [← isHermitian_submatrix_equiv (Equiv.sumComm n m), Equiv.sumComm_apply,
     fromBlocks_submatrix_sum_swap_sum_swap]
-  convert! IsHermitian.fromBlocks₁₁ _ _ hD <;> simp
+  convert IsHermitian.fromBlocks₁₁ _ _ hD <;> simp
 
 end IsHermitian
 

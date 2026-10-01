@@ -7,7 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Function.Jacobian
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 
 /-!
@@ -44,7 +44,7 @@ def polarCoord : OpenPartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     · simpa using! hr
     · right
       simp at hr
-      simpa only [ne_of_gt hr, Ne, mem_setOf_eq, mul_eq_zero, false_or,
+      simpa only [ne_of_gt hr, Ne, mem_ofPred_eq, mul_eq_zero, false_or,
         sin_eq_zero_iff_of_lt_of_lt hθ.1 hθ.2] using! h'θ
   map_source' := by
     rintro ⟨x, y⟩ hxy
@@ -63,7 +63,7 @@ def polarCoord : OpenPartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     · conv_rhs => rw [← sqrt_sq (le_of_lt hr), ← one_mul (r ^ 2), ← sin_sq_add_cos_sq θ]
       congr 1
       ring
-    · convert! Complex.arg_mul_cos_add_sin_mul_I hr ⟨hθ.1, hθ.2.le⟩
+    · convert Complex.arg_mul_cos_add_sin_mul_I hr ⟨hθ.1, hθ.2.le⟩
       simp only [Complex.equivRealProd_symm_apply, Complex.ofReal_mul, Complex.ofReal_cos,
         Complex.ofReal_sin]
       ring
@@ -123,7 +123,7 @@ instance : Measure.IsAddHaarMeasure volume (G := ℝ × ℝ) :=
 theorem polarCoord_source_ae_eq_univ : polarCoord.source =ᵐ[volume] univ := by
   have A : polarCoord.sourceᶜ ⊆ LinearMap.ker (LinearMap.snd ℝ ℝ ℝ) := by
     intro x hx
-    simp only [polarCoord_source, compl_union, mem_inter_iff, mem_compl_iff, mem_setOf_eq, not_lt,
+    simp only [polarCoord_source, compl_union, mem_inter_iff, mem_compl_iff, mem_ofPred_eq, not_lt,
       Classical.not_not] at hx
     exact hx.2
   have B : volume (LinearMap.ker (LinearMap.snd ℝ ℝ ℝ) : Set (ℝ × ℝ)) = 0 := by

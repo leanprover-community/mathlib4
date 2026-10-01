@@ -5,7 +5,6 @@ Authors: Kyle Miller, Pim Otte
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Walk.Operations
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Subwalks
 
 /-!
@@ -58,6 +57,7 @@ lemma takeUntil_first (p : G.Walk u v) :
 lemma nil_takeUntil (p : G.Walk u v) (hwp : w ∈ p.support) :
     (p.takeUntil w hwp).Nil ↔ u = w := ⟨Nil.eq, (by cases ·; simp)⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma takeUntil_eq_take (p : G.Walk u v) (h : w ∈ p.support) :
     p.takeUntil w h = (p.take <| p.support.idxOf w).copy rfl (p.getVert_support_idxOf h) := by
   apply ext_support
@@ -105,6 +105,7 @@ lemma dropUntil_first (p : G.Walk u v) (h : u ∈ p.support) : p.dropUntil u h =
   unfold dropUntil
   split <;> simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma dropUntil_eq_drop (p : G.Walk u v) (h : w ∈ p.support) :
     p.dropUntil w h = (p.drop <| p.support.idxOf w).copy (p.getVert_support_idxOf h) rfl := by
   apply ext_support
@@ -115,7 +116,7 @@ lemma dropUntil_eq_drop (p : G.Walk u v) (h : w ∈ p.support) :
   | @cons a _ _ _ p ih =>
     by_cases! h' : w = a
     · subst h'
-      simp [dropUntil_first, drop_support_eq_support_drop_min]
+      simp [dropUntil_first]
     · rw [drop_cons_eq _ _ _ (by grind), support_copy, dropUntil]
       grind
 
@@ -304,6 +305,10 @@ lemma length_takeUntil_lt_length {u v w : V} {p : G.Walk v w} (h : u ∈ p.suppo
 
 @[deprecated (since := "2026-05-25")] alias length_takeUntil_lt := length_takeUntil_lt_length
 
+lemma length_dropUntil_lt_length {u v w : V} {p : G.Walk v w} (h : u ∈ p.support) (huv : u ≠ v) :
+    (p.dropUntil u h).length < p.length := by
+  grind [length_dropUntil, cons_tail_support]
+
 lemma takeUntil_takeUntil {w x : V} (p : G.Walk u v) (hw : w ∈ p.support)
     (hx : x ∈ (p.takeUntil w hw).support) :
     (p.takeUntil w hw).takeUntil x hx =
@@ -354,7 +359,7 @@ theorem rotate_edges (c : G.Walk v v) (u : V) (h) : (c.rotate u h).edges ~r c.ed
 theorem nil_rotate {c : G.Walk v v} (h) : (c.rotate u h).Nil ↔ c.Nil := by
   simp [← length_eq_zero_iff]
 
-@[deprecated nil_rotate (since := "2026-05-11")]
+@[deprecated nil_rotate +typeChanged (since := "2026-05-11")]
 lemma rotate_eq_nil {c : G.Walk v v} (h) : c.rotate u h = nil ↔ c = nil := by simp
 
 end WalkDecomp

@@ -58,12 +58,13 @@ noncomputable scoped instance commShift_adjunction_op_int {G : D ⥤ C} [G.CommS
   have eq : adj.op = PullbackShift.adjunction
     (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; lia))
       (OppositeShift.adjunction ℤ adj) := by
-    ext
+    ext x
     dsimp [PullbackShift.adjunction, NatTrans.PullbackShift.natIsoId,
       NatTrans.PullbackShift.natIsoComp, PullbackShift.functor, PullbackShift.natTrans,
       OppositeShift.adjunction, OppositeShift.natTrans, NatTrans.OppositeShift.natIsoId,
       NatTrans.OppositeShift.natIsoComp, OppositeShift.functor]
-    simp only [Category.comp_id, Category.id_comp]
+    rw [unop_id]
+    simp
   rw [eq]
   exact inferInstanceAs (Adjunction.CommShift (PullbackShift.adjunction
     (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; lia))
@@ -84,7 +85,6 @@ lemma op_commShiftIso_hom_app (X : Cᵒᵖ) (n m : ℤ) (h : n + m = 0) :
   rfl
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma op_commShiftIso_inv_app (X : Cᵒᵖ) (n m : ℤ) (h : n + m = 0) :
     (F.op.commShiftIso n).inv.app X =
@@ -95,13 +95,15 @@ lemma op_commShiftIso_inv_app (X : Cᵒᵖ) (n m : ℤ) (h : n + m = 0) :
     op_commShiftIso_hom_app _ X n m h, assoc, assoc]
   simp [← op_comp, ← F.map_comp]
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma shift_map_op {X Y : C} (f : X ⟶ Y) (n : ℤ) :
     (F.map f).op⟦n⟧' = (F.op.commShiftIso n).inv.app _ ≫
       (F.map (f.op⟦n⟧').unop).op ≫ (F.op.commShiftIso n).hom.app _ :=
   (NatIso.naturality_1 (F.op.commShiftIso n) f.op).symm
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_shift_unop {X Y : Cᵒᵖ} (f : X ⟶ Y) (n : ℤ) :
     F.map ((f⟦n⟧').unop) = ((F.op.commShiftIso n).inv.app Y).unop ≫
@@ -109,7 +111,6 @@ lemma map_shift_unop {X Y : Cᵒᵖ} (f : X ⟶ Y) (n : ℤ) :
   simp [shift_map_op]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_opShiftFunctorEquivalence_unitIso_hom_app_unop (X : Cᵒᵖ) (n : ℤ) :
     F.map ((opShiftFunctorEquivalence C n).unitIso.hom.app X).unop =
@@ -117,6 +118,7 @@ lemma map_opShiftFunctorEquivalence_unitIso_hom_app_unop (X : Cᵒᵖ) (n : ℤ)
         (((F.op).commShiftIso n).inv.app X).unop⟦n⟧' ≫
         ((opShiftFunctorEquivalence D n).unitIso.hom.app (op _)).unop := by
   dsimp [opShiftFunctorEquivalence]
+  simp only [comp_id]
   simp only [map_comp, unop_comp, Quiver.Hom.unop_op, assoc,
     map_shiftFunctorCompIsoId_hom_app, commShiftIso_hom_naturality_assoc,
     op_commShiftIso_inv_app _ _ _ _ (add_neg_cancel n)]
@@ -127,7 +129,6 @@ lemma map_opShiftFunctorEquivalence_unitIso_hom_app_unop (X : Cᵒᵖ) (n : ℤ)
   rw [map_id, id_comp]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_opShiftFunctorEquivalence_unitIso_inv_app_unop (X : Cᵒᵖ) (n : ℤ) :
     F.map ((opShiftFunctorEquivalence C n).unitIso.inv.app X).unop =
@@ -141,7 +142,6 @@ lemma map_opShiftFunctorEquivalence_unitIso_inv_app_unop (X : Cᵒᵖ) (n : ℤ)
   simp
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_opShiftFunctorEquivalence_counitIso_hom_app_unop (X : Cᵒᵖ) (n : ℤ) :
     F.map ((opShiftFunctorEquivalence C n).counitIso.hom.app X).unop =
@@ -150,11 +150,11 @@ lemma map_opShiftFunctorEquivalence_counitIso_hom_app_unop (X : Cᵒᵖ) (n : �
           ((F.op.commShiftIso n).hom.app (op (X.unop⟦n⟧))).unop := by
   apply Quiver.Hom.op_inj
   dsimp [opShiftFunctorEquivalence]
+  simp only [id_comp, comp_id]
   rw [assoc, F.op_commShiftIso_hom_app_assoc _ _ _ (add_neg_cancel n), map_comp,
     map_shiftFunctorCompIsoId_inv_app_assoc, op_comp, op_comp_assoc, op_comp_assoc,
     NatTrans.naturality_assoc, op_map, Iso.inv_hom_id_app_assoc, Quiver.Hom.unop_op]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_opShiftFunctorEquivalence_counitIso_inv_app_unop (X : Cᵒᵖ) (n : ℤ) :
     F.map ((opShiftFunctorEquivalence C n).counitIso.inv.app X).unop =
@@ -179,7 +179,6 @@ variable [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Ad
 namespace Functor
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `F : C ⥤ D` commutes with shifts, this expresses the compatibility of `F.mapTriangle`
 with the equivalences `Pretriangulated.triangleOpEquivalence` on `C` and `D`.
@@ -191,6 +190,7 @@ noncomputable def mapTriangleOpCompTriangleOpEquivalenceFunctorApp (T : Triangle
   Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) (by simp)
       (by simp [shift_map_op, map_opShiftFunctorEquivalence_counitIso_inv_app_unop])
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /--
 If `F : C ⥤ D` commutes with shifts, this expresses the compatibility of `F.mapTriangle`
@@ -236,7 +236,7 @@ end Functor
 
 namespace Pretriangulated.Opposite
 
-open Functor in
+open CategoryTheory.Functor in
 /-- If `F` is triangulated, so is `F.op`.
 -/
 scoped instance functor_isTriangulated_op [F.IsTriangulated] : F.op.IsTriangulated where

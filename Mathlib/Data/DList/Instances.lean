@@ -7,7 +7,7 @@ module
 
 public import Batteries.Data.DList.Lemmas
 public import Mathlib.Control.Traversable.Equiv
-public import Mathlib.Control.Traversable.Instances
+import Mathlib.Control.Traversable.Instances
 
 /-!
 # Traversable instance for DLists
@@ -19,7 +19,7 @@ for `DList`.
 @[expose] public section
 
 
-open Function Equiv
+open Equiv
 
 namespace Batteries
 

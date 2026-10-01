@@ -6,6 +6,7 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.MeasureTheory.Integral.IntegrableOn
 
 import Mathlib.Analysis.Normed.Module.FiniteDimension
 

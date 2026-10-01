@@ -17,7 +17,7 @@ cardinality of a cofinal subset.
 
 public noncomputable section
 
-open Function Cardinal Set Order
+open Cardinal Set Order
 
 universe u v w
 
@@ -31,6 +31,7 @@ variable [Preorder α]
 
 variable (α) in
 /-- The cofinality of a preorder is the smallest cardinality of a cofinal subset. -/
+@[wikidata Q1283623]
 def cof : Cardinal :=
   ⨅ s : {s : Set α // IsCofinal s}, #s
 
@@ -44,8 +45,6 @@ theorem le_lift_cof_iff {c : Cardinal.{max u v}} :
 
 theorem le_cof_iff {c : Cardinal} : c ≤ cof α ↔ ∀ s : Set α, IsCofinal s → c ≤ #s := by
   simpa using @le_lift_cof_iff.{u, u} α _ c
-
-@[deprecated (since := "2026-02-18")] alias le_cof := le_cof_iff
 
 variable (α) in
 /-- Every well-order has a cofinal subset of cardinal `cof α`. -/
@@ -186,9 +185,6 @@ theorem OrderIso.cof_congr (f : α ≃o γ) : Order.cof α = Order.cof γ := by
   simpa using f.lift_cof_congr
 
 @[deprecated (since := "2026-03-20")] alias OrderIso.cof_eq := OrderIso.cof_congr
-
-@[deprecated (since := "2026-02-18")] alias RelIso.cof_eq_lift := OrderIso.lift_cof_congr
-@[deprecated (since := "2026-02-18")] alias RelIso.cof_eq := OrderIso.cof_congr
 
 end Congr
 
