@@ -66,12 +66,6 @@ public register_option linter.unusedTactic : Bool := {
   descr := "enable the unused tactic linter"
 }
 
-/-- An option for the unused tactic linter to lint for redundant uses of `<;>`. -/
-public register_option linter.unusedTactic.seqFocus : Bool := {
-  defValue := true
-  descr := "enable the `<;>` tactic linter"
-}
-
 namespace UnusedTactic
 
 /-- The monad for collecting the ranges of the syntaxes that do not modify any goal. -/
@@ -214,7 +208,7 @@ def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
       continue
     if last.start ≤ r.start && r.stop ≤ last.stop then continue
     if stx.isAtom then
-      Linter.logLintIf linter.unusedTactic.seqFocus stx
+      Linter.logLint linter.unusedTactic stx
         m!"Unused tactic linter: `<;>` should be replaced with `;` or be removed."
     else
       Linter.logLint linter.unusedTactic stx m!"Unused tactic linter: `{stx}` does nothing."
