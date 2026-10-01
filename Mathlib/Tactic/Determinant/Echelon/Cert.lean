@@ -9,7 +9,6 @@ public import Mathlib.LinearAlgebra.Matrix.Echelon.Decomposition  -- shake: keep
 public import Mathlib.Tactic.Determinant.Echelon.Reflection  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.Echelon.Bareiss
 public import Mathlib.Tactic.Echelon.Cert
-public import Mathlib.Tactic.Matrix.Parsing
 public import Mathlib.Tactic.NormNum.Basic
 public meta import Mathlib.Tactic.Echelon.Bareiss
 public meta import Mathlib.Tactic.Echelon.Cert
@@ -124,18 +123,5 @@ def proveEchelonDet {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) (iα : 
     cert.mul_eq
   have hs' : Q(((Equiv.Perm.sign ($decomp).σ : Int) : $α) = $s) := hs
   return some ⟨v, q(det_eq_of_decomposition $decomp $hL $hmul $hl $hu $hs' $hv)⟩
-
-/-- The `norm_det` branch for square matrix literals with non-symbolic entries over a domain the
-echelon method handles. It returns `none` where it does not apply, and throws on a term it cannot
-evaluate. -/
-def normDetEchelon? (A : Expr) : MetaM (Option Simp.Result) := do
-  let some (m, _, R, entries) ← matchMatrixLit? A | return none
-  let u ← getDecLevel R
-  have α : Q(Type u) := R
-  let .ok rα ← inferBareissRing α | return none
-  let iα : Q(IsDomain $α) ← synthInstanceQ q(IsDomain $α)
-  have A : Q(Matrix (Fin $m) (Fin $m) $α) := A
-  let some ⟨v, pf⟩ ← proveEchelonDet rα iα m A entries | return none
-  return some { expr := v, proof? := some pf }
 
 end Mathlib.Tactic.Determinant

@@ -67,16 +67,30 @@ private def entriesOfMatrixLiteral? {u : Level} {α : Q(Type u)} {n : Q(ℕ)}
     return entry
   return some entries.toArray
 
+/-- A fast path of determinant evaluation when an echelon form is derivable. -/
+private def normalizeDetByEchelon? {u : Level} {α : Q(Type u)} {n : Q(Nat)} (rα : Q(CommRing $α))
+    (A : Q(Matrix (Fin $n) (Fin $n) $α)) (entries : Array Q($α)) :
+    MetaM (Option Simp.Result) := do
+  if entries.any fun x ↦ x.hasFVar || x.hasMVar then return none
+  let some m ← getNatValue? n | return none
+  let some iα ← synthInstanceQ? q(IsDomain $α) | return none
+  let A ← zetaReduce A
+  have A : Q(Matrix (Fin $m) (Fin $m) $α) := A
+  let rows := Array.ofFn (n := m) fun i ↦ entries.extract ((i : Nat) * m) ((i : Nat) * m + m)
+  let some ⟨v, pf⟩ ← proveEchelonDet rα iα m A rows | return none
+  return some { expr := v, proof? := some pf }
+
 /-- The `norm_det` simproc normalizes determinants of matrices written using `!![...]`
 notation over a commutative ring. -/
 simproc_decl norm_det (Matrix.det _) := fun e => do
   let e ← instantiateMVars e
   let ⟨_, _, e⟩ ← inferTypeQ' e
   let ~q(@Matrix.det (Fin $n) _ _ _ $rα $matrix) := e | return .continue
+  let some entries ← entriesOfMatrixLiteral? matrix | return .continue
   -- TODO: once the echelon models return `none` on an entry out of scope, this `catch` only
   -- sees bugs on the echelon path; trace them under the engine's class.
-  if let some r ← try normDetEchelon? matrix catch _ => pure none then return .done r
-  let some entries ← entriesOfMatrixLiteral? matrix | return .continue
+  if let some r ← try normalizeDetByEchelon? rα matrix entries catch _ => pure none then
+    return .done r
   return .done (← normalizeDetFromEntries rα matrix entries)
 
 /--

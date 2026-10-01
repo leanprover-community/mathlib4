@@ -33,15 +33,11 @@ section
 variable [Zero α] [One α] [Mul α]
 
 /-- The product of the `c` entries at columns `k, k + 1, …` of successive rows. A missing row or
-entry makes the product terminate with `0`. -/
+entry counts as `0`. -/
 def diagProd (k c : ℕ) (rows : List (List α)) : α :=
-  match c, rows with
-  | 0, _ => 1
-  | _ + 1, [] => 0
-  | c + 1, row :: rows =>
-    match row.drop k with
-    | [] => 0
-    | d :: _ => d * diagProd (k + 1) c rows
+  match c with
+  | 0 => 1
+  | c + 1 => ((rows.headD []).drop k).headD 0 * diagProd (k + 1) c rows.tail
 
 theorem diagProd_zero (k : ℕ) (rows : List (List α)) : diagProd k 0 rows = 1 := by
   rw [diagProd]
@@ -53,27 +49,23 @@ theorem diagProd_add_one_cons {k c : ℕ} {row : List α} {rows : List (List α)
 
 end
 
-section CommMonoidWithZero
+section CommMonoid
 
-variable [CommMonoidWithZero α]
+variable [CommMonoid α] [Zero α]
 
 theorem prod_getD_eq_diagProd (k c : ℕ) (rows : List (List α)) :
     ∏ i : Fin c, (rows.getD i []).getD (k + i) 0 = diagProd k c rows := by
   induction c generalizing k rows with
   | zero => simp [diagProd]
   | succ c ih =>
-    cases rows with
-    | nil => simp [diagProd]
-    | cons row rows =>
-      have := List.getElem?_drop (xs := row) (i := k) (j := 0)
-      rw [Fin.prod_univ_succ]
-      grind [diagProd, zero_mul]
+    rw [Fin.prod_univ_succ, diagProd, ← ih]
+    cases rows <;> simp [Nat.add_assoc, Nat.add_comm 1]
 
 theorem prod_diag_ofLists (m : ℕ) (rows : List (List α)) :
     ∏ i, ofLists m m rows i i = diagProd 0 m rows := by
   simp [← prod_getD_eq_diagProd]
 
-end CommMonoidWithZero
+end CommMonoid
 
 /-! ### Signs of chains of swaps -/
 
