@@ -333,10 +333,6 @@ theorem LpAddConst_zero : LpAddConst 0 = 1 := by
   intro h
   exact lt_irrefl _ h.1
 
-theorem LpAddConst_ne_zero {p : ℝ≥0∞} : LpAddConst p ≠ 0 := by
-  rw [LpAddConst]
-  split_ifs <;> positivity
-
 theorem LpAddConst_lt_top (p : ℝ≥0∞) : LpAddConst p < ∞ := by
   rw [LpAddConst]
   split_ifs with h
@@ -344,6 +340,11 @@ theorem LpAddConst_lt_top (p : ℝ≥0∞) : LpAddConst p < ∞ := by
     rw [one_div, sub_nonneg, ← ENNReal.toReal_inv, ← ENNReal.toReal_one]
     exact ENNReal.toReal_mono (by simpa using h.1.ne') (ENNReal.one_le_inv.2 h.2.le)
   · exact ENNReal.one_lt_top
+
+theorem LpAddConst_ne_zero (p : ℝ≥0∞) : LpAddConst p ≠ 0 := by
+  intro h
+  unfold LpAddConst at h
+  split_ifs at h <;> simp at h
 
 /-- Variant of `ENNReal.rpow_add_le_mul_rpow_add_rpow` using `LpAddConst` as the constant,
 valid for all `0 ≤ p` (not just `1 ≤ p`). -/
