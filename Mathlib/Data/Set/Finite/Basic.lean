@@ -286,9 +286,7 @@ instance fintypeDiffLeft (s t : Set α) [Fintype s] [DecidablePred (· ∈ t)] :
 instance fintypeEmpty : Fintype (∅ : Set α) :=
   Fintype.ofFinset ∅ <| by simp
 
-@[nolint instanceDiamonds]
-instance fintypeSingleton (a : α) : Fintype ({a} : Set α) :=
-  Fintype.ofFinset {a} <| by simp
+example (a : α) : Fintype ({a} : Set α) := by infer_instance
 
 /-- A `Fintype` instance for inserting an element into a `Set` using the
 corresponding `insert` function on `Finset`. This requires `DecidableEq α`.
