@@ -120,6 +120,11 @@ private def withSuppressedOutput (action : IO α) : IO α := do
     discard <| IO.setStderr savedErr
     throw e
 
+/-- Run a cache action with a controlled Mathlib path and suppress its diagnostics. -/
+private def withSuppressedCacheOutput (action : IO.CacheM α)
+    (mathlibDepPath : System.FilePath := ".") : IO α :=
+  withSuppressedOutput (ReaderT.run action { mathlibDepPath, srcSearchPath := [] })
+
 section ContainerModel
 
 /-- The short name is the string used on the CLI (`--container=NAME`) and to
@@ -669,20 +674,20 @@ def test_readLocations : IO Unit := do
     cacheFromOverride.set none
     scopeOverride.set none
     assertTrue "the default fork chain uses HEAD only for forks"
-      (paths (← withSuppressedOutput (readLocations "Alice/Mathlib4")) ==
+      (paths (← withSuppressedCacheOutput (readLocations "Alice/Mathlib4") dir) ==
         [(s!"{masterBase}/mathlib4-master/f/x.ltar", none, "master"),
          (s!"{forksBase}/mathlib4-forks/f/alice/mathlib4/{head}/x.ltar", some head, "forks")])
     assertTrue "the canonical default chain contains only master"
-      (paths (← withSuppressedOutput (readLocations MATHLIBREPO)) ==
+      (paths (← withSuppressedCacheOutput (readLocations MATHLIBREPO) dir) ==
         [(s!"{masterBase}/mathlib4-master/f/x.ltar", none, "master")])
     scopeOverride.set (some "abc1")
     assertTrue "an explicit scope replaces HEAD"
-      (paths (← withSuppressedOutput (readLocations "Alice/Mathlib4")) ==
+      (paths (← withSuppressedCacheOutput (readLocations "Alice/Mathlib4") dir) ==
         [(s!"{masterBase}/mathlib4-master/f/x.ltar", none, "master"),
          (s!"{forksBase}/mathlib4-forks/f/alice/mathlib4/abc1/x.ltar", some "abc1", "forks")])
     cacheFromOverride.set (some [.forks, .master, .nightlyTesting])
     assertTrue "unsafe rounds preserve the requested container and SHA order"
-      (paths (← withSuppressedOutput (readLocations "Alice/Mathlib4" ["abc2", "abc3"])) ==
+      (paths (← withSuppressedCacheOutput (readLocations "Alice/Mathlib4" ["abc2", "abc3"]) dir) ==
         [(s!"{forksBase}/mathlib4-forks/f/alice/mathlib4/abc2/x.ltar", some "abc2", "forks"),
          (s!"{forksBase}/mathlib4-forks/f/alice/mathlib4/abc3/x.ltar", some "abc3", "forks"),
          (s!"{masterBase}/mathlib4-master/f/x.ltar", none, "master"),
@@ -690,11 +695,97 @@ def test_readLocations : IO Unit := do
           none, "nightly-testing")])
     cacheFromOverride.set (some [])
     assertTrue "an empty container override produces no locations"
-      ((← withSuppressedOutput (readLocations "alice/mathlib4")).isEmpty)
+      ((← withSuppressedCacheOutput (readLocations "alice/mathlib4") dir).isEmpty)
   finally
     IO.Process.setCurrentDir cwd
     cacheFromOverride.set savedContainers
     scopeOverride.set savedScope
+    IO.FS.removeDirAll dir
+
+
+/-- A downstream checkout must not supply Mathlib's repo, commits, refs, or history. -/
+def test_mathlibGitLookups : IO Unit := do
+  IO.println "Mathlib Git lookup context:"
+  if (← getEnvNonEmpty "GIT_DIR").isSome ||
+      (← getEnvNonEmpty "GIT_WORK_TREE").isSome ||
+      (← getEnvNonEmpty "MATHLIB_CACHE_GET_URL").isSome ||
+      (← getEnvNonEmpty "MATHLIB_CACHE_FROM").isSome ||
+      (← getEnvNonEmpty "MATHLIB_CACHE_REPO_SCOPE").isSome then
+    IO.println "  skipped: cache read overrides or Git directory overrides are set"
+    return
+  let savedScope ← scopeOverride.get
+  let savedContainers ← cacheFromOverride.get
+  let cwd ← IO.Process.getCurrentDir
+  let dir ← IO.FS.createTempDir
+  let mathlibPath := dir / "mathlib"
+  let downstreamPath := dir / "downstream"
+  let git (path : System.FilePath) (args : Array String) : IO String := do
+    let out ← IO.Process.output { cmd := "git", args, cwd := path }
+    unless out.exitCode == 0 do
+      throw <| IO.userError s!"test git command failed: {out.stderr}"
+    return out.stdout.trimAscii.toString
+  let commit (path : System.FilePath) (message : String) : IO Unit := do
+    discard <| git path #["-c", "user.name=cache-test", "-c",
+      "user.email=cache-test@example.invalid", "-c", "commit.gpgsign=false",
+      "commit", "--quiet", "--allow-empty", "--no-verify", "-m", message]
+  try
+    for (path, repo) in [(mathlibPath, "alice/mathlib4"), (downstreamPath, "bob/downstream")] do
+      IO.FS.createDirAll path
+      discard <| git path #["init", "--quiet", "--template=", "--initial-branch=master"]
+      discard <| git path #["remote", "add", "origin", s!"https://github.com/{repo}.git"]
+      commit path repo
+    discard <| git downstreamPath #["checkout", "--quiet", "-b", "downstream-work"]
+    commit downstreamPath "downstream-only change"
+    for path in [mathlibPath, downstreamPath] do
+      discard <| git path #["tag", "cache-scope"]
+    let mathlibHead ← git mathlibPath #["rev-parse", "HEAD"]
+    let downstreamHead ← git downstreamPath #["rev-parse", "HEAD"]
+    assertTrue "the two fixture checkouts have different HEAD commits"
+      (mathlibHead != downstreamHead)
+    IO.Process.setCurrentDir downstreamPath
+    scopeOverride.set none
+    cacheFromOverride.set none
+    let (detected?, repo) ← withSuppressedCacheOutput (resolveRepo none) mathlibPath
+    assertTrue "repo discovery uses the Mathlib remote"
+      (detected? == some "alice/mathlib4" && repo == "alice/mathlib4")
+    assertEq "HEAD lookup uses the Mathlib commit" mathlibHead
+      (← withSuppressedCacheOutput getGitCommitHash mathlibPath)
+    assertEq "scope refs resolve in the Mathlib checkout" mathlibHead
+      (← withSuppressedCacheOutput (resolveGitRef "cache-scope") mathlibPath)
+    assertEq "query repo discovery uses the Mathlib remote" "alice/mathlib4"
+      (← withSuppressedCacheOutput (resolveQueryRepo none) mathlibPath)
+    assertTrue "history walks use only Mathlib commits"
+      ((← withSuppressedCacheOutput (gitLogWalk "HEAD" "" 5) mathlibPath) == [mathlibHead])
+    assertTrue "merge-base lookup uses the Mathlib checkout"
+      ((← withSuppressedCacheOutput (gitMergeBase "master") mathlibPath) == some mathlibHead)
+    assertTrue "the ancestor check uses Mathlib's master branch"
+      (← withSuppressedCacheOutput headIsAncestorOfMaster mathlibPath)
+    let locations ← withSuppressedCacheOutput (readLocations repo) mathlibPath
+    assertTrue "the default fork read uses Mathlib's HEAD scope"
+      (locations.map (·.sha?) == [none, some mathlibHead])
+    scopeOverride.set (some mathlibHead)
+    assertTrue "the Mathlib HEAD scope is exempt from warnings"
+      (!(← withSuppressedCacheOutput
+        (shouldWarnNonDefaultScope none detected? none repo) mathlibPath))
+    assertEq "the Mathlib HEAD scope has no warning reason" "unknown reason"
+      (← withSuppressedCacheOutput
+        (getNonDefaultScopeReason none detected? none repo) mathlibPath)
+    scopeOverride.set (some downstreamHead)
+    assertTrue "the downstream HEAD scope triggers a warning"
+      (← withSuppressedCacheOutput
+        (shouldWarnNonDefaultScope none detected? none repo) mathlibPath)
+    scopeOverride.set none
+    assertTrue "the Mathlib master ancestor suppresses a fork hint without a probe"
+      ((← withSuppressedCacheOutput (forkHintSHA? repo false) mathlibPath) == none)
+    let archivePath := dir / "archive"
+    IO.FS.createDir archivePath
+    let locations ← withSuppressedCacheOutput (readLocations repo) archivePath
+    assertTrue "a non-git dependency path does not use the current directory's HEAD"
+      (locations.map (·.sha?) == [none, none])
+  finally
+    IO.Process.setCurrentDir cwd
+    scopeOverride.set savedScope
+    cacheFromOverride.set savedContainers
     IO.FS.removeDirAll dir
 
 end ReadLocations
@@ -722,57 +813,57 @@ def test_shouldWarnNonDefaultScope : IO Unit := do
     scopeOverride.set none
 
     assertTrue "plain get with no flags does not warn"
-      (!(← withSuppressedOutput (shouldWarnNonDefaultScope none none none MATHLIBREPO)))
+      (!(← withSuppressedCacheOutput (shouldWarnNonDefaultScope none none none MATHLIBREPO)))
 
     scopeOverride.set (some "abc123")
     assertTrue "a set scope warns"
-      (← withSuppressedOutput (shouldWarnNonDefaultScope none none none MATHLIBREPO))
+      (← withSuppressedCacheOutput (shouldWarnNonDefaultScope none none none MATHLIBREPO))
     scopeOverride.set none
 
     -- A scope equal to HEAD is trust-equivalent to no scope (CI's normal mode).
     -- Skipped when HEAD can't be resolved (not in a git checkout).
-    let head? ← try some <$> withSuppressedOutput getGitCommitHash catch _ => pure none
+    let head? ← try some <$> withSuppressedCacheOutput getGitCommitHash catch _ => pure none
     if let some head := head? then
       scopeOverride.set (some head)
       assertTrue "a scope equal to HEAD does not warn"
-        (!(← withSuppressedOutput (shouldWarnNonDefaultScope none none none MATHLIBREPO)))
+        (!(← withSuppressedCacheOutput (shouldWarnNonDefaultScope none none none MATHLIBREPO)))
       scopeOverride.set none
 
     -- --cache-from equal to the repo's default chain is not widening.
     let mathlibDefault := defaultContainersForRepo MATHLIBREPO
     assertTrue "--cache-from equal to the default does not warn"
-      (!(← withSuppressedOutput
+      (!(← withSuppressedCacheOutput
           (shouldWarnNonDefaultScope none none (some mathlibDefault) MATHLIBREPO)))
 
     assertTrue "--cache-from widening the chain warns"
-      (← withSuppressedOutput
+      (← withSuppressedCacheOutput
           (shouldWarnNonDefaultScope none none (some [.master, .forks]) MATHLIBREPO))
 
     -- A fork checkout (remote ≠ resolved repo) stays silent without an explicit --repo.
     assertTrue "a fork checkout without --repo does not warn"
-      (!(← withSuppressedOutput
+      (!(← withSuppressedCacheOutput
           (shouldWarnNonDefaultScope none (some "alice/mathlib4") none "alice/mathlib4")))
 
     assertTrue "--repo differing from the remote warns"
-      (← withSuppressedOutput
+      (← withSuppressedCacheOutput
           (shouldWarnNonDefaultScope (some "bob/mathlib4") (some "alice/mathlib4") none "bob/mathlib4"))
 
     assertTrue "--repo matching the remote does not warn"
-      (!(← withSuppressedOutput
+      (!(← withSuppressedCacheOutput
           (shouldWarnNonDefaultScope (some "alice/mathlib4") (some "alice/mathlib4") none
             "alice/mathlib4")))
 
     -- With no detectable remote there is nothing to compare --repo against.
     assertTrue "--repo with no detectable remote does not warn"
-      (!(← withSuppressedOutput
+      (!(← withSuppressedCacheOutput
           (shouldWarnNonDefaultScope (some "bob/mathlib4") none none "bob/mathlib4")))
 
     -- `--unsafe` (any window) always warns; it walks several untrusted scopes.
     assertTrue "--unsafe warns regardless of other inputs"
-      (← withSuppressedOutput
+      (← withSuppressedCacheOutput
           (shouldWarnNonDefaultScope none none none MATHLIBREPO (unsafeWindow? := some 5)))
     assertTrue "no --unsafe (none window) does not warn on its own"
-      (!(← withSuppressedOutput
+      (!(← withSuppressedCacheOutput
           (shouldWarnNonDefaultScope none none none MATHLIBREPO (unsafeWindow? := none))))
 
 /-- `getNonDefaultScopeReason` produces the `Reason:` line in the warning, naming
@@ -785,52 +876,53 @@ def test_getNonDefaultScopeReason : IO Unit := do
     scopeOverride.set none
 
     -- A placeholder rather than a crash if nothing matches.
-    let reason ← withSuppressedOutput (getNonDefaultScopeReason none none none MATHLIBREPO)
+    let reason ← withSuppressedCacheOutput (getNonDefaultScopeReason none none none MATHLIBREPO)
     assertTrue "no trigger yields a placeholder reason" (reason == "unknown reason")
 
     scopeOverride.set (some "abc123")
-    let reason ← withSuppressedOutput (getNonDefaultScopeReason none none none MATHLIBREPO)
+    let reason ← withSuppressedCacheOutput (getNonDefaultScopeReason none none none MATHLIBREPO)
     assertTrue "scope reason names the flag and SHA"
       (reason == "--scope=abc123 (explicit per-commit scope)")
 
     -- Scope outranks cache-from when both apply.
-    let reason ← withSuppressedOutput (getNonDefaultScopeReason none none (some [.forks]) MATHLIBREPO)
+    let reason ← withSuppressedCacheOutput
+      (getNonDefaultScopeReason none none (some [.forks]) MATHLIBREPO)
     assertTrue "scope is reported ahead of cache-from"
       (reason == "--scope=abc123 (explicit per-commit scope)")
     scopeOverride.set none
 
     -- A HEAD scope is exempt from condition 1, so a simultaneous cache-from
     -- trigger is reported instead of the scope.
-    let head? ← try some <$> withSuppressedOutput getGitCommitHash catch _ => pure none
+    let head? ← try some <$> withSuppressedCacheOutput getGitCommitHash catch _ => pure none
     if let some head := head? then
       scopeOverride.set (some head)
       let reason ←
-        withSuppressedOutput
+        withSuppressedCacheOutput
           (getNonDefaultScopeReason none none (some [.forks, .nightlyTesting]) MATHLIBREPO)
       assertTrue "a HEAD scope yields the cache-from reason"
         (reason == "--cache-from=forks, nightly-testing (explicit container override)")
       scopeOverride.set none
 
     let reason ←
-      withSuppressedOutput
+      withSuppressedCacheOutput
         (getNonDefaultScopeReason none none (some [.forks, .nightlyTesting]) MATHLIBREPO)
     assertTrue "cache-from reason names the container list"
       (reason == "--cache-from=forks, nightly-testing (explicit container override)")
 
-    let reason ← withSuppressedOutput
+    let reason ← withSuppressedCacheOutput
       (getNonDefaultScopeReason (some "bob/mathlib4") (some "alice/mathlib4") none "bob/mathlib4")
     assertTrue "repo reason names the override and the detected remote"
       (reason == "--repo=bob/mathlib4 (overrides detected git remote: alice/mathlib4)")
 
     -- --cache-from equal to the default is not a trigger, so no reason applies.
     let reason ←
-      withSuppressedOutput (getNonDefaultScopeReason none none (some [.master]) MATHLIBREPO)
+      withSuppressedCacheOutput (getNonDefaultScopeReason none none (some [.master]) MATHLIBREPO)
     assertTrue "cache-from equal to the default yields the placeholder"
       (reason == "unknown reason")
 
     -- `--unsafe` outranks every other trigger and names its window.
     scopeOverride.set (some "abc123")
-    let reason ← withSuppressedOutput
+    let reason ← withSuppressedCacheOutput
       (getNonDefaultScopeReason (some "bob/mathlib4") (some "alice/mathlib4") (some [.forks])
         "bob/mathlib4" (unsafeWindow? := some 7))
     assertTrue "unsafe reason names the window and outranks scope/cache-from/repo"
@@ -896,20 +988,20 @@ def test_forkHintSHA_guards : IO Unit := do
     cacheFromOverride.set none
 
     assertTrue "--unsafe mode suppresses the hint"
-      ((← withSuppressedOutput <| forkHintSHA? "alice/mathlib4" true) == none)
+      ((← withSuppressedCacheOutput <| forkHintSHA? "alice/mathlib4" true) == none)
 
     scopeOverride.set (some "cafe0123")
     assertTrue "an explicit scope suppresses the hint"
-      ((← withSuppressedOutput <| forkHintSHA? "alice/mathlib4" false) == none)
+      ((← withSuppressedCacheOutput <| forkHintSHA? "alice/mathlib4" false) == none)
     scopeOverride.set none
 
     cacheFromOverride.set (some [Container.master])
     assertTrue "a --cache-from override suppresses the hint"
-      ((← withSuppressedOutput <| forkHintSHA? "alice/mathlib4" false) == none)
+      ((← withSuppressedCacheOutput <| forkHintSHA? "alice/mathlib4" false) == none)
     cacheFromOverride.set none
 
     assertTrue "the canonical repo suppresses the hint"
-      ((← withSuppressedOutput <| forkHintSHA? MATHLIBREPO false) == none)
+      ((← withSuppressedCacheOutput <| forkHintSHA? MATHLIBREPO false) == none)
   finally
     scopeOverride.set savedScope
     cacheFromOverride.set savedCacheFrom
@@ -951,7 +1043,7 @@ def test_getRemoteRepo_gitFallback : IO Unit := do
 
   -- resolveRepo propagates the fallback correctly:
   --   detected? = none, resolved = MATHLIBREPO → master-only chain.
-  let (detected?, resolved) ← withSuppressedOutput (resolveRepo none fakePath)
+  let (detected?, resolved) ← withSuppressedCacheOutput (resolveRepo none) fakePath
   assertTrue "resolveRepo detected? is none on git failure" (detected? == none)
   assertTrue "resolveRepo falls back to MATHLIBREPO on git failure" (resolved == MATHLIBREPO)
   assertTrue "fallback chain includes master"
@@ -980,10 +1072,10 @@ how the other git-walking helpers are tested. -/
 def test_headIsAncestorOfMaster_gitFallback : IO Unit := do
   IO.println "headIsAncestorOfMaster git fallback:"
   let fakePath := "/tmp/surely-nonexistent-mathlib-cache-test-xyz-9999999"
-  let r1 ← withSuppressedOutput (headIsAncestorOfMaster fakePath)
+  let r1 ← withSuppressedCacheOutput headIsAncestorOfMaster fakePath
   assertTrue "headIsAncestorOfMaster returns false when git throws (nonexistent cwd)"
     (r1 == false)
-  let r2 ← withSuppressedOutput (headIsAncestorOfMaster "/tmp")
+  let r2 ← withSuppressedCacheOutput headIsAncestorOfMaster "/tmp"
   assertTrue "headIsAncestorOfMaster returns false in a non-git directory" (r2 == false)
 
 end GitFallback
@@ -2005,6 +2097,7 @@ def runAll : IO Unit := do
   test_checkMarker
   test_getRepoScope
   test_readLocations
+  test_mathlibGitLookups
   test_shouldWarnNonDefaultScope
   test_getNonDefaultScopeReason
   test_missingFilesLines

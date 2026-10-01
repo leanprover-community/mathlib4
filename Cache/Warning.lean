@@ -25,7 +25,7 @@ public section
 namespace Cache.Requests
 
 /--
-`true` iff the resolved scope (see `getRepoScope`) equals the checked-out HEAD.
+`true` iff the resolved scope (see `getRepoScope`) equals the Mathlib checkout's HEAD.
 
 A HEAD scope only serves artifacts built from the commit already checked out,
 and it is what an unscoped `cache get` reads anyway — the forks round defaults
@@ -35,7 +35,7 @@ build) just pins the default behavior and warrants no warning.
 
 `false` when no scope is set or HEAD cannot be determined.
 -/
-def scopeIsHead : IO Bool := do
+def scopeIsHead : IO.CacheM Bool := do
   let some scope ← getRepoScope | return false
   let head ← try getGitCommitHash catch _ => return false
   return head == scope
@@ -59,7 +59,7 @@ Otherwise returns `false` (default lookup chain, no warning needed).
 def shouldWarnNonDefaultScope (repoExplicit? detectedRepo? : Option String)
     (cliCacheFromOverride? : Option (List Container)) (resolvedRepo : String)
     (unsafeWindow? : Option Nat := none) :
-    IO Bool := do
+    IO.CacheM Bool := do
   -- Condition 0: `--unsafe` (with its SHA window) — the most permissive read.
   if unsafeWindow?.isSome then return true
 
@@ -120,7 +120,7 @@ Returns a human-readable string describing which condition triggered the warning
 def getNonDefaultScopeReason (repoExplicit? detectedRepo? : Option String)
     (cliCacheFromOverride? : Option (List Container)) (resolvedRepo : String)
     (unsafeWindow? : Option Nat := none) :
-    IO String := do
+    IO.CacheM String := do
   -- Check conditions in order; return the first that matches.
 
   -- Condition 0: `--unsafe` walks up to `window` fork commits, trusting each.
@@ -162,7 +162,7 @@ never prompts, so it stays safe to run in CI.
 def warnIfNonDefaultScope (repoExplicit? detectedRepo? : Option String)
     (cliCacheFromOverride? : Option (List Container)) (resolvedRepo : String)
     (unsafeWindow? : Option Nat := none) :
-    IO Unit := do
+    IO.CacheM Unit := do
   if (← shouldWarnNonDefaultScope repoExplicit? detectedRepo? cliCacheFromOverride? resolvedRepo
         unsafeWindow?)
     then
@@ -235,7 +235,7 @@ runs only when every local check passes.
 
 `repo` is the already-resolved repo (see `resolveRepo`).
 -/
-def forkHintSHA? (repo : String) (unsafeMode : Bool) : IO (Option String) := do
+def forkHintSHA? (repo : String) (unsafeMode : Bool) : IO.CacheM (Option String) := do
   if unsafeMode then return none
   if (← getRepoScope).isSome then return none
   if (← cacheFromOverride.get).isSome then return none
@@ -256,7 +256,7 @@ consequence. When files are missing, reads that `forkHintSHA?` accepts get
 the fork-workflow hint; every other read gets the generic divergence warning.
 -/
 def warnIfMissingFiles (repo : String) (missing : Nat) (unsafeMode : Bool := false) :
-    IO Unit := do
+    IO.CacheM Unit := do
   if missing == 0 then return
   let lines ← match ← forkHintSHA? repo unsafeMode with
     | some sha => pure (missingFilesForkLines repo sha missing)

@@ -275,8 +275,8 @@ Returns `(detectedRepo?, resolvedRepo)`:
 resolving here lets the read path, the warning, and the HEAD hint share a
 single probe keyed on `mathlibDepPath`.
 -/
-def resolveRepo (repo? : Option String) (mathlibDepPath : FilePath) :
-    IO (Option String × String) := do
+def resolveRepo (repo? : Option String) : IO.CacheM (Option String × String) := do
+  let mathlibDepPath := (← read).mathlibDepPath
   let detected? := (← getRemoteRepo mathlibDepPath).map (·.repo)
   return (detected?, repo?.getD (detected?.getD MATHLIBREPO))
 
@@ -420,8 +420,18 @@ def getRepoScope : IO (Option String) := do
       digits; --scope also accepts any ref `git rev-parse` can resolve from inside a git checkout)"
   return some scope
 
-def getGitCommitHash : IO String :=
-  return (← IO.runCmd "git" #["rev-parse", "HEAD"]).trimAsciiEnd.copy
+/-- Resolve a Git ref in the Mathlib checkout selected by `CacheM`. -/
+def resolveGitRef (ref : String) : IO.CacheM String := do
+  let out ← IO.Process.output
+    {cmd := "git", args := #["rev-parse", ref], cwd := (← read).mathlibDepPath}
+  unless out.exitCode == 0 do
+    throw <| IO.userError
+      s!"git rev-parse {ref} failed (exit code {out.exitCode}):\n{out.stderr.trimAscii}"
+  pure out.stdout.trimAscii.toString
+
+/-- The HEAD commit of the Mathlib checkout selected by `CacheM`. -/
+def getGitCommitHash : IO.CacheM String :=
+  resolveGitRef "HEAD"
 
 section Get
 
@@ -888,11 +898,12 @@ def readLocationsFrom (repo : String) (containerBases : List (Option Container �
 /--
 The locations a read for `repo` tries, most trusted first: the lookup chain of
 `effectiveGetBases`, resolved by `readLocationsFrom` at the
-resolved scope (`getRepoScope`), with the checked-out HEAD as the default
+resolved scope (`getRepoScope`), with the Mathlib checkout's HEAD as the default
 scope of the `forks` round. `unsafeScopes` is the list of SHA scopes
 discovered by `cache get --unsafe` (empty for a normal read).
 -/
-def readLocations (repo : String) (unsafeScopes : List String := []) : IO (List Location) := do
+def readLocations (repo : String) (unsafeScopes : List String := []) :
+    IO.CacheM (List Location) := do
   let containerBases ← effectiveGetBases repo
   let scope? ← getRepoScope
   -- With no explicit scope, the forks round defaults to HEAD: `cache get` on a
