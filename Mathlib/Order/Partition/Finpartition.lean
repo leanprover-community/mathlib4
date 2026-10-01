@@ -9,8 +9,8 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Data.Finset.Pairwise
 public import Mathlib.Data.Finset.Preimage
 public import Mathlib.Data.Fintype.Powerset
-public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Order.Atoms
+public import Mathlib.Order.Setoid.Basic
 public import Mathlib.Order.SupIndep
 
 /-!
@@ -141,13 +141,13 @@ def map {β : Type*} [Lattice β] [OrderBot β] {a : α} (e : α ≃o β) (P : F
     have := P.supIndep hu hb (by simp [hbu]) (map_rel e.symm hx) ?_
     · rw [← e.symm.map_bot] at this
       exact e.symm.map_rel_iff.mp this
-    · convert! e.symm.map_rel_iff.mpr hxu
+    · convert e.symm.map_rel_iff.mpr hxu
       rw [map_finset_sup, sup_map]
       rfl
   sup_parts := by simp [← P.sup_parts]
   bot_notMem := by
     rw [mem_map_equiv]
-    convert! P.bot_notMem
+    convert P.bot_notMem
     exact e.symm.map_bot
 
 @[simp]
