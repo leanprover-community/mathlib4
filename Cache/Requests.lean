@@ -290,7 +290,7 @@ initialize cacheFromOverride : IO.Ref (Option (List Container)) ← IO.mkRef non
 /-- Pair each container in a lookup chain with its read URL. The result keeps
 the chain's trust order. -/
 private def chainWithGetURLs (containers : List Container) :
-    IO (List (Option Container × String)) :=
+    BaseIO (List (Option Container × String)) :=
   containers.mapM fun c => do return (some c, ← c.getURL)
 
 /--
@@ -449,7 +449,7 @@ from a single container's base URL. `scope?` is the per-round SHA scope (see
 `mkFileURL`); it is the resolved `getRepoScope` for a normal read and an
 individual walked SHA for an `--unsafe` forks round. -/
 def mkGetConfigContent (container : Option Container) (repo containerURL : String)
-    (hashMap : IO.ModuleHashMap) (scope? : Option String) : IO String := do
+    (hashMap : IO.ModuleHashMap) (scope? : Option String) : BaseIO String := do
   hashMap.toArray.foldlM (init := "") fun acc ⟨_, hash⟩ => do
     let fileName := hash.asLTar
     -- Below we use `String.quote`, which is intended for quoting for use in Lean code
