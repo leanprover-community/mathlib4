@@ -339,8 +339,8 @@ section
 variable (S' : Type*) [CommSemiring S'] [Module S' M] [SMulCommClass R S' M] [SMulCommClass A S' M]
 
 lemma toAddMonoidHom_mapOfCompatibleSMul_eq :
-    (mapOfCompatibleSMul R A S M N).toAddMonoidHom = (mapOfCompatibleSMul R A S' M N).toAddMonoidHom
-  := rfl
+    (mapOfCompatibleSMul R A S M N).toAddMonoidHom =
+      (mapOfCompatibleSMul R A S' M N).toAddMonoidHom := rfl
 
 lemma mem_ker_mapOfCompatibleSMul_iff (x : M ⊗[A] N) :
     x ∈ (mapOfCompatibleSMul R A S M N).ker ↔ x ∈ (mapOfCompatibleSMul R A S' M N).ker :=
