@@ -73,16 +73,6 @@ instance instCommSemigroup (n : ℕ) : CommSemigroup (Fin n) where
         _ ≡ a * (b * c % n) [MOD n] := (Nat.mod_modEq _ _).symm.mul_left _
   mul_comm := Fin.mul_comm
 
--- XXX: why were these here? might not be needed
--- -- Shortcut instances to replace the power operation on `Fin` with a more efficient one
--- @[nolint instanceDiamonds]
--- instance (n : ℕ) [NeZero n] : HPow (Fin n) ℕ (Fin n) where
---   hPow a m := npowRecAuto m a
-
--- @[nolint instanceDiamonds]
--- instance (n : ℕ) [NeZero n] : Pow (Fin n) ℕ where
---   pow a m := npowRecAuto m a
-
 private theorem left_distrib_aux (n : ℕ) : ∀ a b c : Fin n, a * (b + c) = a * b + a * c :=
   fun ⟨a, _⟩ ⟨b, _⟩ ⟨c, _⟩ =>
   Fin.eq_of_val_eq <|
