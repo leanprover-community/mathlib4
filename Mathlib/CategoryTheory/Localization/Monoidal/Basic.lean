@@ -312,15 +312,12 @@ lemma associator_naturality₃ {X₁ X₂ X₃ Y₃ : LocalizedMonoidal L W ε} 
 
 instance : (L').EssSurj := Localization.essSurj L' W
 
-local notation "pentagonFirstMap" => MonoidalCategory.ofBifunctor.Pentagon.firstMap
-local notation "pentagonSecondMap" => MonoidalCategory.ofBifunctor.Pentagon.secondMap
-
 variable {L W ε} in
 /-- The two paths around the localized monoidal pentagon agree as natural transformations of
 quadrifunctors. -/
-lemma pentagonNatTrans :
-    pentagonFirstMap (tensorBifunctor L W ε) (associator L W ε) =
-      pentagonSecondMap (tensorBifunctor L W ε) (associator L W ε) := by
+lemma pentagon_natTrans :
+    ofBifunctor.Pentagon.firstMap (tensorBifunctor L W ε) (associator L W ε) =
+      ofBifunctor.Pentagon.secondMap (tensorBifunctor L W ε) (associator L W ε) := by
   apply Localization.natTrans₄_ext L' L' L' L' W W W W
   intro X₁ X₂ X₃ X₄
   change Pentagon ((L').obj X₁) ((L').obj X₂) ((L').obj X₃) ((L').obj X₄)
@@ -364,7 +361,7 @@ variable {L W ε} in
 lemma pentagon (Y₁ Y₂ Y₃ Y₄ : LocalizedMonoidal L W ε) :
     Pentagon Y₁ Y₂ Y₃ Y₄ := by
   have h := NatTrans.congr_app (NatTrans.congr_app (NatTrans.congr_app
-    (NatTrans.congr_app (pentagonNatTrans (L := L) (W := W) (ε := ε)) Y₁) Y₂) Y₃) Y₄
+    (NatTrans.congr_app (pentagon_natTrans (L := L) (W := W) (ε := ε)) Y₁) Y₂) Y₃) Y₄
   rw [MonoidalCategory.ofBifunctor.Pentagon.firstMap_app_app_app_app,
     MonoidalCategory.ofBifunctor.Pentagon.secondMap_app_app_app_app] at h
   change Pentagon Y₁ Y₂ Y₃ Y₄ at h
@@ -438,26 +435,21 @@ lemma triangle (X Y : LocalizedMonoidal L W ε) :
   · exact triangle_aux₂ _ _ _ e₁ e₂
   · exact triangle_aux₃ _ _ _ e₁ e₂
 
-local notation "triangleFirstMap" => MonoidalCategory.ofBifunctor.Triangle.firstMap
-local notation "triangleSecondMap" => MonoidalCategory.ofBifunctor.Triangle.secondMap
-
 variable {L W ε} in
 /-- The two paths around the localized monoidal triangle agree as natural transformations of
 bifunctors. -/
-lemma triangleNatTrans :
-    triangleFirstMap (tensorBifunctor L W ε) unit (associator L W ε) (leftUnitor L W ε) =
-      triangleSecondMap (tensorBifunctor L W ε) unit (rightUnitor L W ε) := by
+lemma triangle_natTrans : ofBifunctor.Triangle.firstMap (tensorBifunctor L W ε) unit
+    (associator L W ε) (leftUnitor L W ε) =
+      ofBifunctor.Triangle.secondMap (tensorBifunctor L W ε) unit (rightUnitor L W ε) := by
   ext X Y
-  change (α_ X (𝟙_ (LocalizedMonoidal L W ε)) Y).hom ≫ X ◁ (λ_ Y).hom =
-    (ρ_ X).hom ▷ Y
   exact triangle (L := L) (W := W) (ε := ε) X Y
 
 noncomputable instance :
     MonoidalCategory (LocalizedMonoidal L W ε) :=
   MonoidalCategory.ofBifunctor (tensorBifunctor L W ε) unit (associator L W ε)
     (leftUnitor L W ε) (rightUnitor L W ε)
-    (pentagonNatTrans (L := L) (W := W) (ε := ε))
-    (triangleNatTrans (L := L) (W := W) (ε := ε))
+    (pentagon_natTrans (L := L) (W := W) (ε := ε))
+    (triangle_natTrans (L := L) (W := W) (ε := ε))
 
 end Monoidal
 
