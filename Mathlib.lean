@@ -6259,7 +6259,6 @@ public import Mathlib.Order.Filter.NAry
 public import Mathlib.Order.Filter.Partial
 public import Mathlib.Order.Filter.Pi
 public import Mathlib.Order.Filter.Pointwise
-public import Mathlib.Order.Filter.Polynomial
 public import Mathlib.Order.Filter.Prod
 public import Mathlib.Order.Filter.Ring
 public import Mathlib.Order.Filter.SmallSets
@@ -7974,6 +7973,7 @@ public import Mathlib.Topology.Algebra.Order.Floor
 public import Mathlib.Topology.Algebra.Order.Group
 public import Mathlib.Topology.Algebra.Order.LiminfLimsup
 public import Mathlib.Topology.Algebra.Order.Module
+public import Mathlib.Topology.Algebra.Order.Polynomial
 public import Mathlib.Topology.Algebra.Order.Support
 public import Mathlib.Topology.Algebra.Order.UpperLower
 public import Mathlib.Topology.Algebra.Polynomial
