@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Group.PUnit
 public import Mathlib.Algebra.Group.ULift
 public import Mathlib.Analysis.Normed.Group.Basic
 
+import Mathlib.Data.Fintype.Order
+
 /-!
 # Product of normed groups and other constructions
 
@@ -20,7 +22,7 @@ public section
 
 open NNReal
 
-variable {ι E F : Type*} {G : ι → Type*}
+variable {ι ι' E F : Type*} {G : ι → Type*}
 
 /-! ### `PUnit` -/
 
@@ -293,7 +295,7 @@ end Prod
 /-! ### Finite product of normed groups -/
 
 section Pi
-variable [Fintype ι]
+variable [Fintype ι] [Fintype ι']
 
 section SeminormedGroup
 variable [∀ i, SeminormedGroup (G i)] [SeminormedGroup E] (f : ∀ i, G i) {x : ∀ i, G i} {r : ℝ}
@@ -402,6 +404,21 @@ lemma Pi.sum_norm_apply_le_norm' : ∑ i, ‖f i‖ ≤ Fintype.card ι • ‖f
 scaled by the cardinality. -/]
 lemma Pi.sum_nnnorm_apply_le_nnnorm' : ∑ i, ‖f i‖₊ ≤ Fintype.card ι • ‖f‖₊ :=
   (NNReal.coe_sum ..).trans_le <| Pi.sum_norm_apply_le_norm' _
+
+@[to_additive]
+theorem Function.FactorsThrough.nnnorm_extend_one {f : ι → ι'} {g : ι → E}
+    (h : FactorsThrough g f) :
+    ‖extend f g 1‖₊ = ‖g‖₊ := by
+  simp_rw [Pi.nnnorm_def']
+  rcases isEmpty_or_nonempty ι with _ | hι
+  · simp
+  simp_rw [Finset.sup_univ_eq_ciSup, apply_extend nnnorm]
+  exact ciSup_extend (h.comp_left _) (Finite.bddAbove_range _) (by simp)
+
+@[to_additive]
+theorem Function.FactorsThrough.norm_extend_one {f : ι → ι'} {g : ι → E} (h : FactorsThrough g f) :
+    ‖extend f g 1‖ = ‖g‖ :=
+  congr(↑$h.nnnorm_extend_one)
 
 end SeminormedGroup
 
