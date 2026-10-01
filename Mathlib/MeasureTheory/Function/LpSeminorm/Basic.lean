@@ -997,7 +997,7 @@ lemma MemLp.add_measure (h1 : MemLp f p μ) (h2 : MemLp f p ν) : MemLp f p (μ 
       ← eLpNorm_eq_eLpNorm' hp hp' h2.aestronglyMeasurable, h1.eLpNorm_lt_top]
     · simp
     · exact h2.eLpNorm_ne_top
-    · exact ENNReal.LpAddConst_ne_zero
+    · exact ENNReal.LpAddConst_ne_zero _
     · exact (ENNReal.LpAddConst_lt_top _).ne
 
 lemma memLp_add_measure : MemLp f p (μ + ν) ↔ MemLp f p μ ∧ MemLp f p ν where
