@@ -129,27 +129,16 @@ def proveEchelonDet {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) (iα : 
   return ⟨v, q(det_eq_of_decomposition $decomp $hL $hmul $hl $hu $hs' $hv)⟩
 
 /-- The `norm_det` branch for square matrix literals with non-symbolic entries over a domain the
-echelon method handles. It returns `none` where it does not apply, and terms it cannot evaluate are
-left to Bird's method, since the fallback model accepts every ring and only the evaluation can tell
-whether an entry is in its scope. -/
+echelon method handles. It returns `none` where it does not apply, and throws on a term it cannot
+evaluate. -/
 def normDetEchelon? (A : Expr) : MetaM (Option Simp.Result) := do
-  let some (m, _, R, entries) ← matchMatrixLit? A
-    | trace[Tactic.echelon] "not a closed matrix literal{indentExpr A}"
-      return none
+  let some (m, _, R, entries) ← matchMatrixLit? A | return none
   let u ← getDecLevel R
   have α : Q(Type u) := R
-  match ← inferBareissRing α with
-  | .error err =>
-    trace[Tactic.echelon] "{err}{indentExpr A}"
-    return none
-  | .ok rα =>
-    let iα : Q(IsDomain $α) ← synthInstanceQ q(IsDomain $α)
-    have A : Q(Matrix (Fin $m) (Fin $m) $α) := A
-    try
-      let ⟨v, pf⟩ ← proveEchelonDet rα iα m A entries
-      return some { expr := v, proof? := some pf }
-    catch ex =>
-      trace[Tactic.echelon] "{ex.toMessageData}"
-      return none
+  let .ok rα ← inferBareissRing α | return none
+  let iα : Q(IsDomain $α) ← synthInstanceQ q(IsDomain $α)
+  have A : Q(Matrix (Fin $m) (Fin $m) $α) := A
+  let ⟨v, pf⟩ ← proveEchelonDet rα iα m A entries
+  return some { expr := v, proof? := some pf }
 
 end Mathlib.Tactic.Determinant

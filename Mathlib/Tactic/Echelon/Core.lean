@@ -42,7 +42,7 @@ public meta section
 
 open Lean Meta
 
-initialize registerTraceClass `Tactic.echelon
+initialize registerTraceClass `Tactic.evalRank
 
 namespace Mathlib.Tactic.Echelon
 

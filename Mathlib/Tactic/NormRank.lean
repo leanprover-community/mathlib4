@@ -37,7 +37,7 @@ def normRankCore : Simp.Simproc := fun e => do
   let_expr Matrix.rank _ _ _ _ _ A := e | return .continue
   let A ← instantiateMVars A
   let some (m, n, R, entries) ← Matrix.matchMatrixLit? A
-    | trace[Tactic.echelon] "not a closed matrix literal{indentExpr A}"
+    | trace[Tactic.evalRank] "not a closed matrix literal{indentExpr A}"
       return .continue
   let u ← getDecLevel R
   have α : Q(Type u) := R
@@ -45,7 +45,7 @@ def normRankCore : Simp.Simproc := fun e => do
   match ← inferBareissRing α with
   | .ok rα => return .done (← normalizeRank rα e A entries)
   | .error err =>
-    trace[Tactic.echelon] "{err}{indentExpr A}"
+    trace[Tactic.evalRank] "{err}{indentExpr A}"
     return .continue
 
 end Mathlib.Tactic.Echelon
@@ -58,19 +58,19 @@ the evaluation can tell whether an entry is in its scope. -/
 simproc_decl norm_rank (Matrix.rank _) := fun e => do
   try normRankCore e
   catch ex =>
-    trace[Tactic.echelon] "{ex.toMessageData}"
+    trace[Tactic.evalRank] "{ex.toMessageData}"
     return .continue
 
 /--
 `eval_rank` evaluates the rank of matrices with non-symbolic entries.
 
 The element type must be a commutative domain.
-Terms skipped can be viewed by using `set_option trace.Tactic.echelon true`.
+Terms skipped can be viewed by using `set_option trace.Tactic.evalRank true`.
 -/
 elab (name := evalRank) "eval_rank" : tactic => do
   try
     Tactic.evalTactic (← `(tactic| simp only [norm_rank]))
   catch _ =>
     throwError "`eval_rank` made no progress.\n\
-      Additional information may be available using `set_option trace.Tactic.echelon true`."
+      Additional information may be available using `set_option trace.Tactic.evalRank true`."
   Tactic.evalTactic (← `(tactic| try lia))

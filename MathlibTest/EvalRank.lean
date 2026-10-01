@@ -227,15 +227,15 @@ example :
 
 /-! ## Failure tests -/
 
-set_option trace.Tactic.echelon true
+set_option trace.Tactic.evalRank true
 
 /-! ### No closed matrix literal in the goal -/
 
 /--
 error: `eval_rank` made no progress.
-Additional information may be available using `set_option trace.Tactic.echelon true`.
+Additional information may be available using `set_option trace.Tactic.evalRank true`.
 ---
-trace: [Tactic.echelon] not a closed matrix literal
+trace: [Tactic.evalRank] not a closed matrix literal
       A
 -/
 #guard_msgs in
@@ -243,9 +243,9 @@ example (A : Matrix (Fin 2) (Fin 2) ℚ) : A.rank = 2 := by eval_rank
 
 /--
 error: `eval_rank` made no progress.
-Additional information may be available using `set_option trace.Tactic.echelon true`.
+Additional information may be available using `set_option trace.Tactic.evalRank true`.
 ---
-trace: [Tactic.echelon] not a closed matrix literal
+trace: [Tactic.evalRank] not a closed matrix literal
       !![a, 1; 1, a]
 -/
 #guard_msgs in
@@ -255,9 +255,9 @@ example (a : ℚ) : Matrix.rank (R := ℚ) !![a, 1; 1, a] = 2 := by eval_rank
 
 /--
 error: `eval_rank` made no progress.
-Additional information may be available using `set_option trace.Tactic.echelon true`.
+Additional information may be available using `set_option trace.Tactic.evalRank true`.
 ---
-trace: [Tactic.echelon] expected the element type to be a commutative ring
+trace: [Tactic.evalRank] expected the element type to be a commutative ring
       !![1, 2; 3, 4]
 -/
 #guard_msgs in
@@ -265,9 +265,9 @@ example : Matrix.rank (R := ℕ) !![1, 2; 3, 4] = 2 := by eval_rank
 
 /--
 error: `eval_rank` made no progress.
-Additional information may be available using `set_option trace.Tactic.echelon true`.
+Additional information may be available using `set_option trace.Tactic.evalRank true`.
 ---
-trace: [Tactic.echelon] expected the element type to be a domain
+trace: [Tactic.evalRank] expected the element type to be a domain
       !![1, 2; 3, 4]
 -/
 #guard_msgs in
@@ -281,13 +281,13 @@ Rejected today; extensions of the tactic could support these inputs. -/
 open Polynomial in
 /--
 error: `eval_rank` made no progress.
-Additional information may be available using `set_option trace.Tactic.echelon true`.
+Additional information may be available using `set_option trace.Tactic.evalRank true`.
 ---
-trace: [Tactic.echelon] no registered model handles the element type; using the rational model for
+trace: [Tactic.evalRank] no registered model handles the element type; using the rational model for
       ℚ[X]
-[Tactic.echelon] `decide` cannot settle equality in the element type; using the `norm_num` entry certifier
+[Tactic.evalRank] `decide` cannot settle equality in the element type; using the `norm_num` entry certifier
       ℚ[X]
-[Tactic.echelon] the following entry cannot be simplified to a numeral
+[Tactic.evalRank] the following entry cannot be simplified to a numeral
       X
 -/
 #guard_msgs in
@@ -296,11 +296,11 @@ example : Matrix.rank (R := ℚ[X]) !![X, 1; 1, X] = 2 := by eval_rank
 -- Requires an extension to compute the modulo inverse and handle the syntax parsing
 /--
 error: `eval_rank` made no progress.
-Additional information may be available using `set_option trace.Tactic.echelon true`.
+Additional information may be available using `set_option trace.Tactic.evalRank true`.
 ---
-trace: [Tactic.echelon] no registered model handles the element type; using the rational model for
+trace: [Tactic.evalRank] no registered model handles the element type; using the rational model for
       ZMod 7
-[Tactic.echelon] the following entry cannot be simplified to a numeral
+[Tactic.evalRank] the following entry cannot be simplified to a numeral
       2 / 3
 -/
 #guard_msgs in
@@ -310,9 +310,9 @@ example : Matrix.rank (R := ZMod 7) !![2/3, 0; 0, 1] = 2 := by eval_rank
 /--
 error: `simp` made no progress
 ---
-trace: [Tactic.echelon] no registered model handles the element type; using the rational model for
+trace: [Tactic.evalRank] no registered model handles the element type; using the rational model for
       ZMod 7
-[Tactic.echelon] the following entry cannot be simplified to a numeral
+[Tactic.evalRank] the following entry cannot be simplified to a numeral
       2 / 3
 -/
 #guard_msgs in
