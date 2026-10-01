@@ -195,13 +195,9 @@ jobs:
           sparse-checkout: .github/actions
           path: workflow-actions
 
-      # The full history lets the PR body list the mathlib-ci commits between
-      # the ref on master and the new ref.
       - name: Get mathlib-ci
         if: ${{ steps.pr-title.outcome == 'success' }}
         uses: ./workflow-actions/.github/actions/get-mathlib-ci
-        with:
-          fetch-depth: 0
 
       # create-pull-request commits every untracked file that git does not ignore.
       - name: Exclude the checkouts from the PR
@@ -213,6 +209,9 @@ jobs:
       # output of the script, which renders each subject inside a code span.
       - name: Generate PR body
         if: ${{ steps.pr-title.outcome == 'success' }}
+        env:
+          # The script reads the mathlib-ci commits with `gh api`.
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git show origin/master:lake-manifest.json > "$RUNNER_TEMP/old-lake-manifest.json"
           git show origin/master:.github/actions/get-mathlib-ci/action.yml > "$RUNNER_TEMP/old-get-mathlib-ci.yml"
@@ -220,7 +219,7 @@ jobs:
           if ! python3 "$CI_SCRIPTS_DIR/dependencies/dependency_update_summary.py" \
               --old-manifest "$RUNNER_TEMP/old-lake-manifest.json" \
               --new-manifest lake-manifest.json \
-              --extra mathlib-ci https://github.com/leanprover-community/mathlib-ci "$CI_CHECKOUT_PATH" \
+              --extra mathlib-ci https://github.com/leanprover-community/mathlib-ci \
                 "$(ci_ref "$RUNNER_TEMP/old-get-mathlib-ci.yml")" \
                 "$(ci_ref .github/actions/get-mathlib-ci/action.yml)" \
               > "$RUNNER_TEMP/dependency-changes.md"; then
