@@ -299,15 +299,12 @@ lemma Link.left_mem_vertexSet (l : Link G e u v) : u ∈ V(G) :=
 lemma Link.right_mem_vertexSet (l : Link G e u v) : v ∈ V(G) :=
   l.attach'_target ▸ (attach' G ⟨l.target, l.isTarget_target.mem_incs⟩).property
 
-@[grind →]
 lemma IsLink.edge_mem_edgeSet (h : u ~[G; e] v) : e ∈ E(G) :=
   h.elim (·.edge_mem_edgeSet)
 
-@[grind →]
 lemma IsLink.left_mem_vertexSet (h : u ~[G; e] v) : u ∈ V(G) :=
   h.elim (·.left_mem_vertexSet)
 
-@[grind →]
 lemma IsLink.right_mem_vertexSet (h : u ~[G; e] v) : v ∈ V(G) :=
   h.elim (·.right_mem_vertexSet)
 
