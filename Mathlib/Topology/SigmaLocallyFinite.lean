@@ -23,7 +23,7 @@ universe u
 
 open Set Function
 
-variable {ι X : Type*} [TopologicalSpace X] {s t : ι → Set X}
+variable {ι X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {s t : ι → Set X}
 
 /-- A family of sets is *σ-locally finite* if it can be split into countably many locally finite
 families. -/
@@ -103,3 +103,18 @@ lemma SigmaLocallyFinite.preimage_continuous (hs : SigmaLocallyFinite s)
     SigmaLocallyFinite (fun i ↦ f ⁻¹' s i) := by
   obtain ⟨g, hg⟩ := hs
   exact ⟨g, hg.1, fun n ↦ (hg.2 n).preimage_continuous hf⟩
+
+lemma SigmaLocallyFinite.prod_right (hs : SigmaLocallyFinite s) (t : ι → Set Y) :
+    SigmaLocallyFinite fun i ↦ s i ×ˢ t i := by
+  obtain ⟨f, hf⟩ := hs
+  exact ⟨f, hf.1, fun n ↦ (hf.2 n).prod_right  _⟩
+
+lemma SigmaLocallyFinite.prod_left {t : ι → Set Y} (ht : SigmaLocallyFinite t) (s : ι → Set X) :
+    SigmaLocallyFinite fun i ↦ s i ×ˢ t i := by
+  obtain ⟨f, hf⟩ := ht
+  exact ⟨f, hf.1, fun n ↦ (hf.2 n).prod_left  _⟩
+
+@[simp]
+lemma Equiv.sigmaLocallyFinite_comp_iff {ι' : Type*} (e : ι' ≃ ι) :
+    SigmaLocallyFinite (s ∘ e) ↔ SigmaLocallyFinite s :=
+  ⟨fun hs ↦ hs.of_comp_surjective e.surjective, fun hs ↦ hs.comp_injective e.injective⟩
