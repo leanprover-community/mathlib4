@@ -69,8 +69,8 @@ initialize infoLintersRef : IO.Ref (Array InfoLinter) ← IO.mkRef #[]
 
 /-- Efficiently traverses the `InfoTrees` to gather `Elab.Info`s and store them in the appropriate
 field of `Infos`. -/
-def getInfos : CommandElabM Infos :=
-  withTraceNode `Elab.lint.infotree.get (fun _ => return m!"getting info nodes") do
+def getInfos : CommandElabM Infos := do
+  -- withTraceNode `Elab.lint.infotree.get (fun _ => return m!"getting info nodes") do
     let _ ← getInfoTrees
     -- return trees.foldl (init := {}) <| InfoTree.foldInfo fun _ info infos =>
     --   match info with
@@ -136,7 +136,7 @@ def runLinterLikes {α} (traceCls : Name) (linterLikes : Array α) (run : α →
 def infoLinterRunner : Linter where
   run stx := do
     profileitM Exception "infotree linting" (← getOptions) do
-    withTraceNode `Elab.lint.infotree (fun _ => return m!"infotree linting") do
+    -- withTraceNode `Elab.lint.infotree (fun _ => return m!"infotree linting") do
     let infos ← getInfos
     runLinterLikes `Elab.lint.infotree.run (← infoLintersRef.get)
       (·.run infos stx)
