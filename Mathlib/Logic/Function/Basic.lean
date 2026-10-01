@@ -9,7 +9,6 @@ public import Mathlib.Basic.ExistsUnique
 public import Mathlib.Basic.Logic.Basic
 public import Mathlib.Basic.Nonempty
 public import Mathlib.Basic.Nontrivial.Defs
-public import Mathlib.Data.Set.Defs
 public import Mathlib.Logic.Function.Defs
 public import Batteries.Tactic.Init
 public import Mathlib.Order.Defs.Unbundled
@@ -913,6 +912,15 @@ lemma extend_const (f : α → β) (c : γ) : extend f (fun _ ↦ c) (fun _ ↦ 
 @[simp]
 theorem extend_comp (hf : Injective f) (g : α → γ) (e' : β → γ) : extend f g e' ∘ f = g :=
   funext fun a ↦ hf.extend_apply g e' a
+
+theorem Injective.extend_update [DecidableEq α] [DecidableEq β] (hf : Injective f) (g : α → γ)
+    (e : β → γ) (i : α) (a : γ) :
+    extend f (update g i a) e = update (extend f g e) (f i) a := by
+  ext j
+  by_cases h : ∃ k, f k = j
+  · obtain ⟨k, rfl⟩ := h
+    simp [hf, update_apply, hf.eq_iff]
+  · grind [extend_apply']
 
 theorem Injective.surjective_comp_right' (hf : Injective f) (g₀ : β → γ) :
     Surjective fun g : β → γ ↦ g ∘ f :=

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
-public import Mathlib.Algebra.Order.GroupWithZero.OrderIso
+import Mathlib.Algebra.Order.GroupWithZero.OrderIso
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Order.Interval.Set.OrderIso
 public import Mathlib.Algebra.Group.Action.Defs

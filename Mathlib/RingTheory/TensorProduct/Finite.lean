@@ -129,7 +129,7 @@ lemma Module.exists_surjective_quotient_of_finite :
   let f := (LinearMap.toSpanSingleton R _ x).quotKerEquivOfSurjective
     (by rw [← LinearMap.range_eq_top, ← LinearMap.span_singleton_eq_range, hx])
   refine ⟨_, f.symm.toLinearMap.comp N.mkQ, fun e ↦ ?_, f.symm.surjective.comp N.mkQ_surjective⟩
-  obtain rfl : x = 0 := by simpa using LinearMap.congr_fun (LinearMap.ker_eq_top.mp e) 1
+  obtain rfl : x = 0 := by simpa using congr($(LinearMap.ker_eq_top.mp e) 1)
   have : Nontrivial (M ⧸ N) := by rwa [Submodule.Quotient.nontrivial_iff]
   simp at hx
 
@@ -173,7 +173,7 @@ lemma RingHom.Finite.tensorProductMap
     [Algebra R S] [Algebra R T] [Algebra R S'] [Algebra R T']
     {f : S →ₐ[R] S'} (Hf : f.Finite) {g : T →ₐ[R] T'} (Hg : g.Finite) :
     (Algebra.TensorProduct.map f g).toRingHom.Finite := by
-  convert!
+  convert
     RingHom.Finite.tensorProductMap_id (T := T') Hf |>.comp <|
       (Algebra.TensorProduct.comm _ _ _).toRingEquiv.finite |>.comp <|
         RingHom.Finite.tensorProductMap_id (T := S) Hg |>.comp <|

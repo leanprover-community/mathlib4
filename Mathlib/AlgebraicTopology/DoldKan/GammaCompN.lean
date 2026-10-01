@@ -7,7 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.DoldKan.FunctorGamma
 public import Mathlib.AlgebraicTopology.DoldKan.SplitSimplicialObject
-public import Mathlib.CategoryTheory.Idempotents.HomologicalComplex
+import Mathlib.CategoryTheory.Idempotents.HomologicalComplex
 public import Mathlib.Tactic.SuppressCompilation
 
 /-! # The counit isomorphism of the Dold-Kan equivalence
@@ -60,7 +60,7 @@ def Γ₀NondegComplexIso (K : ChainComplex C ℕ) : (Γ₀.splitting K).nondegC
         rw [δ, Γ₀.Obj.mapMono_on_summand_id_assoc, Γ₀.Obj.Termwise.mapMono_eq_zero, zero_comp,
           zsmul_zero]
         · intro h
-          replace h := congr_arg SimplexCategory.len h
+          replace h := congr($(h).len)
           change n + 1 = n at h
           lia
         · simpa only [Isδ₀.iff] using hi)
@@ -151,7 +151,7 @@ lemma N₂Γ₂ToKaroubiIso_inv_app (X : ChainComplex C ℕ) :
   ext n
   dsimp [N₂Γ₂ToKaroubiIso]
   simp only [comp_id, PInfty_f_idem_assoc, AlternatingFaceMapComplex.obj_X, Γ₀_obj_obj]
-  convert! comp_id _
+  convert comp_id _
   apply (Γ₀.splitting X).hom_ext'
   intro A
   rw [Splitting.ι_desc]
