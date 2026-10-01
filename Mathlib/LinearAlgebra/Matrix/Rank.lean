@@ -130,8 +130,6 @@ end Infinite
 
 variable [Fintype n] [Fintype o]
 
-attribute [local instance] nontrivial_of_invariantBasisNumber
-
 /-- The rank of a matrix is the rank of its image. -/
 noncomputable def rank [CommSemiring R] (A : Matrix m n R) : ℕ :=
   finrank R <| LinearMap.range A.mulVecLin
@@ -143,6 +141,7 @@ theorem rank_subsingleton [CommSemiring R] [Subsingleton R] (A : Matrix m n R) :
 @[simp]
 theorem cRank_one [Semiring R] [DecidableEq m] [StrongRankCondition R] :
     (cRank (1 : Matrix m m R)) = lift.{uR} #m := by
+  have := nontrivial_of_invariantBasisNumber R
   have h : LinearIndependent R (1 : Matrix m m R).col := by
     convert! Pi.linearIndependent_single_one m R
     simp [funext_iff, one_apply, Pi.single_apply]
@@ -150,6 +149,7 @@ theorem cRank_one [Semiring R] [DecidableEq m] [StrongRankCondition R] :
 
 @[simp] theorem eRank_one [Semiring R] [DecidableEq m] [StrongRankCondition R] :
     (eRank (1 : Matrix m m R)) = ENat.card m := by
+  have := nontrivial_of_invariantBasisNumber R
   rw [eRank, cRank_one, toENat_lift, ENat.card]
 
 @[simp]
