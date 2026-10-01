@@ -5,7 +5,7 @@ Authors: Benjamin Davidson
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
+import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 public import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
@@ -19,7 +19,9 @@ powers and the logarithm.
 
 public section
 
-open Interval MeasureTheory Real Set
+open MeasureTheory Real Set
+
+open scoped Interval
 
 variable {a b c : ℝ} (n : ℕ) {f : ℝ → ℝ} {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
 
@@ -51,7 +53,7 @@ theorem intervalIntegrable_rpow' {r : ℝ} (h : -1 < r) :
     rw [intervalIntegrable_iff, uIoc_of_le hc]
     have hderiv : ∀ x ∈ Ioo 0 c, HasDerivAt (fun x : ℝ => x ^ (r + 1) / (r + 1)) (x ^ r) x := by
       intro x hx
-      convert! (Real.hasDerivAt_rpow_const (p := r + 1) (Or.inl hx.1.ne')).div_const (r + 1) using 1
+      convert (Real.hasDerivAt_rpow_const (p := r + 1) (Or.inl hx.1.ne')).div_const (r + 1) using 1
       simp [(by linarith : r + 1 ≠ 0)]
     apply integrableOn_deriv_of_nonneg _ hderiv
     · intro x hx; apply rpow_nonneg hx.1.le
@@ -241,7 +243,7 @@ theorem intervalIntegrable_log' : IntervalIntegrable log volume a b := by
     apply intervalIntegrable_deriv_of_nonneg (g := fun x ↦ -(x * log x - x))
     · exact (continuous_mul_log.continuousOn.sub continuous_id.continuousOn).neg
     · intro s ⟨hs, _⟩
-      norm_num at *
+      simp at *
       simpa using! (hasDerivAt_id s).sub (hasDerivAt_mul_log hs.ne.symm)
     · intro s ⟨hs₁, hs₂⟩
       grind [Pi.neg_apply, log_nonpos_iff]

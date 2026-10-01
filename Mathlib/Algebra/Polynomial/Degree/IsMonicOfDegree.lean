@@ -6,7 +6,7 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.Algebra.Polynomial.AlgebraMap
-public import Mathlib.Algebra.Polynomial.Monic
+import Mathlib.Algebra.Polynomial.Monic
 
 /-!
 # Monic polynomials of given degree

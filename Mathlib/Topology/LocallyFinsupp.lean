@@ -9,9 +9,9 @@ public import Mathlib.Algebra.BigOperators.Finprod
 public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.Algebra.Group.Support
 public import Mathlib.Algebra.Order.Group.PosPart
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-public import Mathlib.Algebra.Order.Pi
-public import Mathlib.Topology.DiscreteSubset
+public import Mathlib.Algebra.Order.Hom.Monoid
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+import Mathlib.Algebra.Order.Pi
 public import Mathlib.Topology.Separation.Hausdorff
 public import Mathlib.Tactic.Peel
 
@@ -27,7 +27,9 @@ Throughout the present file, `X` denotes a topologically space and `U` a subset 
 
 @[expose] public section
 
-open Filter Function Set Topology
+open Filter Function Set
+
+open scoped Topology
 
 variable
   {X : Type*} [TopologicalSpace X] {U : Set X}
@@ -92,8 +94,8 @@ def LocallyFiniteSupport [Zero Y] (f : X → Y) : Prop :=
 
 lemma LocallyFiniteSupport.iff_locallyFinite_support [Zero Y] (f : X → Y) :
     LocallyFinite (fun s : f.support ↦ ({s.val} : Set X)) ↔ LocallyFiniteSupport f := by
-  dsimp only [LocallyFinite]
-  peel with z t ht
+  dsimp only [LocallyFinite, LocallyFiniteSupport]
+  congr! with z t ht
   have aux1 : t ∩ f.support = {i : f.support | ↑i ∈ t} := by aesop
   have aux2 : InjOn Subtype.val {i : f.support | ↑i ∈ t} := by aesop
   simp only [singleton_inter_nonempty, aux1, finite_image_iff aux2]
@@ -121,6 +123,7 @@ namespace Function.locallyFinsuppWithin
 Functions with locally finite support within `U` are `FunLike`: the coercion to functions is
 injective.
 -/
+@[macro_inline]
 instance [Zero Y] : FunLike (locallyFinsuppWithin U Y) X Y where
   coe D := D.toFun
   coe_injective := fun ⟨_, _, _⟩ ⟨_, _, _⟩ ↦ by simp
@@ -141,6 +144,11 @@ lemma supportWithinDomain [Zero Y] (D : locallyFinsuppWithin U Y) :
 
 lemma supportLocallyFiniteWithinDomain [Zero Y] (D : locallyFinsuppWithin U Y) :
     ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ D.support) := D.supportLocallyFiniteWithinDomain'
+
+lemma _root_.Function.locallyFinsupp.finite_support
+    [Zero Y] [CompactSpace X] (f : locallyFinsupp X Y) : f.support.Finite := by
+  simpa using LocallyFiniteSupport.finite_inter_support_of_isCompact f.locallyFiniteSupport
+      CompactSpace.isCompact_univ
 
 @[ext]
 lemma ext [Zero Y] {D₁ D₂ : locallyFinsuppWithin U Y} (h : ∀ a, D₁ a = D₂ a) :
@@ -194,7 +202,7 @@ Simplifier lemma: Functions with locally finite support within `U` evaluate to z
 @[simp]
 lemma apply_eq_zero_of_notMem [Zero Y] {z : X} (D : locallyFinsuppWithin U Y)
     (hz : z ∉ U) :
-    D z = 0 := notMem_support.mp fun a ↦ hz (D.supportWithinDomain a)
+    D z = 0 := by grind [D.supportWithinDomain]
 
 /--
 On a T1 space, the support of a function with locally finite support within `U` is discrete within
@@ -235,7 +243,7 @@ support within `U` is also closed.
 theorem closedSupport [T1Space X] [Zero Y] (D : locallyFinsuppWithin U Y)
     (hU : IsClosed U) :
     IsClosed D.support := by
-  convert!
+  convert
     isClosed_sdiff_of_codiscreteWithin
       ((supportDiscreteWithin_iff_locallyFiniteWithin D.supportWithinDomain).2
         D.supportLocallyFiniteWithinDomain)
@@ -315,9 +323,6 @@ def mk_of_mem_addSubmonoid [AddMonoid Y] (f : X → Y)
     (hf : f ∈ locallyFinsuppWithin.addSubmonoid U) :
     locallyFinsuppWithin U Y := ⟨f, hf.1, hf.2⟩
 
-instance [AddMonoid Y] : Zero (locallyFinsuppWithin U Y) where
-  zero := mk_of_mem_addSubmonoid 0 <| zero_mem _
-
 instance [AddMonoid Y] : Add (locallyFinsuppWithin U Y) where
   add D₁ D₂ := mk_of_mem_addSubmonoid (D₁ + D₂) <| add_mem D₁.memAddSubmonoid D₂.memAddSubmonoid
 
@@ -395,6 +400,24 @@ its negative.
 instance [AddCommGroup Y] : AddCommGroup (locallyFinsuppWithin U Y) :=
   Injective.addCommGroup (M₁ := locallyFinsuppWithin U Y) (M₂ := X → Y)
     _ coe_injective coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
+
+variable (Y) in
+/--
+`supported Y U s` is the additive subgroup of those functions with locally finite support
+within `U` whose support is contained in `s`.
+
+This is the analogue of `Finsupp.supported`, which cannot be used here: it is a `Submodule` of
+`α →₀ M` and so requires a semiring acting on a commutative `M`, whereas `Y` is an arbitrary
+additive group.
+-/
+def supported [AddGroup Y] (U s : Set X) : AddSubgroup (locallyFinsuppWithin U Y) where
+  carrier := {D | D.support ⊆ s}
+  zero_mem' := by simp
+  add_mem' ha hb := (support_add _ _).trans (Set.union_subset ha hb)
+  neg_mem' ha := by simpa [support_neg] using ha
+
+@[simp] lemma mem_supported [AddGroup Y] {s : Set X} {D : locallyFinsuppWithin U Y} :
+    D ∈ supported Y U s ↔ D.support ⊆ s := Iff.rfl
 
 instance [LE Y] [Zero Y] : LE (locallyFinsuppWithin U Y) where
   le := fun D₁ D₂ ↦ (D₁ : X → Y) ≤ D₂
@@ -619,13 +642,22 @@ Restriction of the zero function is the zero function.
   rw [restrict_apply]
   aesop
 
+/-- Restriction is monotone -/
+lemma restrict_mono [Zero Y] [LinearOrder Y] {A B : locallyFinsuppWithin U Y} {V : Set X}
+    (hVU : V ⊆ U) (hAB : A ≤ B) :
+    A.restrict hVU ≤ B.restrict hVU := by
+  intro z
+  by_cases hz : z ∈ V
+  · simp_all [restrict_apply, hAB z]
+  · simp_all
+
 /-- Restriction as a group morphism -/
 noncomputable def restrictMonoidHom [AddCommGroup Y] {V : Set X} (h : V ⊆ U) :
     locallyFinsuppWithin U Y →+ locallyFinsuppWithin V Y where
   toFun D := D.restrict h
   map_zero' := by
     ext x
-    simp [restrict_apply]
+    simp
   map_add' D₁ D₂ := by
     ext x
     by_cases hx : x ∈ V
@@ -635,6 +667,25 @@ noncomputable def restrictMonoidHom [AddCommGroup Y] {V : Set X} (h : V ⊆ U) :
 lemma restrictMonoidHom_apply [AddCommGroup Y] {V : Set X} (D : locallyFinsuppWithin U Y)
     (h : V ⊆ U) :
     restrictMonoidHom h D = D.restrict h := by rfl
+
+/-- Restriction as an ordered group morphism -/
+noncomputable def restrictOrderMonoidHom [AddCommGroup Y] [LinearOrder Y] {V : Set X} (h : V ⊆ U) :
+    locallyFinsuppWithin U Y →+o locallyFinsuppWithin V Y where
+  toFun D := D.restrict h
+  map_zero' := by
+    ext x
+    simp
+  map_add' D₁ D₂ := by
+    ext x
+    by_cases hx : x ∈ V
+    <;> simp [restrict_apply, hx]
+  monotone' _ _ hAB z := by
+    apply restrict_mono h hAB
+
+@[simp]
+lemma restrictOrderMonoidHom_apply [AddCommGroup Y] [LinearOrder Y] {V : Set X}
+    (D : locallyFinsuppWithin U Y) (h : V ⊆ U) :
+    restrictOrderMonoidHom h D = D.restrict h := by rfl
 
 /--
 Present a function with with finite support as a finsum of singleton indicator functions.
@@ -719,5 +770,139 @@ lemma _root_.Function.locallyFinsupp.disjoint_nhdsWithin_cofinite
     [Zero Y] (f : locallyFinsupp X Y) (p : X) :
     Disjoint (𝓝[f.support] p) cofinite :=
   disjoint_nhdsWithin_cofinite_of_mem f p (mem_univ _)
+
+
+/-!
+### Composition a.k.a. `mapRange`
+
+See the documentation of `Finsupp.mapRange` for further explanation and a list of similar
+definitions.
+-/
+
+section MapRange
+
+variable {Y Z : Type*} [Zero Y] [Zero Z]
+
+/--
+The composition of `f : Y → Z` and `g : locallyFinsuppWithin` is `mapRange f hf g :
+locallyFinsuppWithin`, which is well-defined when `f 0 = 0`.
+-/
+def mapRange (f : Y → Z) (hf : f 0 = 0) (g : locallyFinsuppWithin U Y) :
+    locallyFinsuppWithin U Z where
+  toFun := f ∘ g
+  supportWithinDomain' := by grw [support_comp_subset hf g, ← g.supportWithinDomain]
+  supportLocallyFiniteWithinDomain' := by
+    grw [support_comp_subset hf g]
+    exact g.supportLocallyFiniteWithinDomain
+
+@[simp, grind =]
+theorem mapRange_apply {f : Y → Z} {hf : f 0 = 0} {g : locallyFinsuppWithin U Y} {a : X} :
+    mapRange f hf g a = f (g a) :=
+  rfl
+
+theorem support_mapRange_subset (f : Y → Z) (hf : f 0 = 0) (g : locallyFinsuppWithin U Y) :
+    (g.mapRange f hf).support ⊆ g.support := support_comp_subset hf g
+
+end MapRange
+
+
+section Truncation
+
+/-!
+## Truncation of a Function with Locally Finite Support
+-/
+
+variable {Y : Type*} {y : Y} [Zero Y] [LinearOrder Y]
+
+/--
+Truncation of a function with locally finite support: the pointwise minimum with a non-negative
+constant `y`.
+-/
+noncomputable abbrev truncate (D : locallyFinsuppWithin U Y) (y : Y) (hy : 0 ≤ y) :
+    locallyFinsuppWithin U Y := D.mapRange (min · y) (min_eq_left hy)
+
+/--
+Truncation of a function with locally finite support: the pointwise minimum with the constant `1`.
+
+This is an `abbrev` for `D.truncate 1 zero_le_one`, so all lemmas about `truncate` apply directly.
+For instance, `D.truncate_le 1 _ : D.truncate₁ ≤ D`, where Lean infers the proof of `0 ≤ 1` from
+the expected type.
+-/
+noncomputable abbrev truncate₁ [One Y] [ZeroLEOneClass Y] (D : locallyFinsuppWithin U Y) :
+    locallyFinsuppWithin U Y := D.truncate 1 zero_le_one
+
+/-- Evaluation of the truncation. -/
+@[simp] lemma truncate_apply (D : locallyFinsuppWithin U Y) (y : Y) (hy : 0 ≤ y) (z : X) :
+    D.truncate y hy z = min (D z) y := by simp
+
+/-- Truncation of the zero function. -/
+@[simp] lemma truncate_zero {hy : 0 ≤ y} : (0 : locallyFinsuppWithin U Y).truncate y hy = 0 := by
+  ext z
+  exact min_eq_left hy
+
+/-- Truncation decreases functions. -/
+lemma truncate_le (D : locallyFinsuppWithin U Y) (y : Y) (hy : 0 ≤ y) : D.truncate y hy ≤ D :=
+  fun z ↦ min_le_left (D z) y
+
+/-- Truncation is monotone. -/
+@[gcongr]
+lemma truncate_mono {D₁ D₂ : locallyFinsuppWithin U Y} (y : Y) (hy : 0 ≤ y) (h : D₁ ≤ D₂) :
+    D₁.truncate y hy ≤ D₂.truncate y hy := by
+  intro z
+  simpa using min_le_min_right y ((le_def.1 h) z)
+
+/-- Truncation preserves non-negativity. -/
+lemma truncate_nonneg {D : locallyFinsuppWithin U Y} (y : Y) (hy : 0 ≤ y) (h : 0 ≤ D) :
+    0 ≤ D.truncate y hy := by
+  intro z
+  simpa using le_min ((le_def.1 h) z) hy
+
+/-- Repeated truncation is truncation at minimum. -/
+@[simp] lemma truncate_truncate (D : locallyFinsuppWithin U Y) (y₁ y₂ : Y) (hy₁ : 0 ≤ y₁)
+    (hy₂ : 0 ≤ y₂) :
+    (D.truncate y₁ hy₁).truncate y₂ hy₂ = D.truncate (min y₁ y₂) (le_min hy₁ hy₂) := by
+  ext z
+  simp [min_assoc]
+
+/-- Truncation is idempotent. -/
+lemma truncate_idempotent (D : locallyFinsuppWithin U Y) (y : Y) (hy : 0 ≤ y) :
+    (D.truncate y hy).truncate y hy = D.truncate y hy := by simp
+
+/-- Truncation does not change the support. -/
+lemma support_truncate (D : locallyFinsuppWithin U Y) (y : Y) (hy : 0 < y) :
+    (D.truncate y hy.le).support = D.support :=
+  le_antisymm (D.support_mapRange_subset _ _) <| by grind
+
+variable (U) in
+/-- Truncation as an order homomorphism. -/
+noncomputable def truncateOrderHom (y : Y) (hy : 0 ≤ y) :
+    locallyFinsuppWithin U Y →o locallyFinsuppWithin U Y where
+  toFun D := D.truncate y hy
+  monotone' _ _ := truncate_mono y hy
+
+/-- Evaluation of the order homomorphism `truncateOrderHom`. -/
+@[simp] lemma truncateOrderHom_apply (y : Y) (hy : 0 ≤ y) (D : locallyFinsuppWithin U Y) :
+    truncateOrderHom U y hy D = D.truncate y hy := rfl
+
+variable (U) in
+/-- Truncation as a lattice homomorphism. -/
+noncomputable def truncateLatticeHom (y : Y) (hy : 0 ≤ y) :
+    LatticeHom (locallyFinsuppWithin U Y) (locallyFinsuppWithin U Y) where
+  toFun D := D.truncate y hy
+  map_sup' D₁ D₂ := by
+    ext z
+    simp only [truncate_apply, max_apply]
+    exact min_max_distrib_right ..
+  map_inf' D₁ D₂ := by
+    ext z
+    simp only [truncate_apply, min_apply]
+    conv_lhs => rw [← min_self y]
+    exact min_min_min_comm ..
+
+/-- Evaluation of the lattice homomorphism `truncateLatticeHom`. -/
+@[simp] lemma truncateLatticeHom_apply (y : Y) (hy : 0 ≤ y) (D : locallyFinsuppWithin U Y) :
+    truncateLatticeHom U y hy D = D.truncate y hy := rfl
+
+end Truncation
 
 end Function.locallyFinsuppWithin

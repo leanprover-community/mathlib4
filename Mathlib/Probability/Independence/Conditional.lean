@@ -6,8 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.Independence.Kernel.IndepFun
-public import Mathlib.Probability.Kernel.CompProdEqIff
-public import Mathlib.Probability.Kernel.Composition.Lemmas
+import Mathlib.Probability.Kernel.CompProdEqIff
 public import Mathlib.Probability.Kernel.Condexp
 
 /-!
@@ -850,11 +849,11 @@ theorem condIndepFun_iff_map_prod_eq_prod_condDistrib_prod_condDistrib
     rw [@Measure.dirac_apply' _ (mγ.comap k) _ _ (hk_meas hs)]
     congr
   refine ⟨fun h s t u hs ht hu ↦ ?_, fun h ↦ ?_⟩
-  · convert! h (hk_meas hs) ht hu
+  · convert h (hk_meas hs) ht hu
     · exact h_left hs ht hu
     · exact h_right hs ht hu
   · rintro - t u ⟨s, hs, rfl⟩ ht hu
-    convert! h hs ht hu
+    convert h hs ht hu
     · exact (h_left hs ht hu).symm
     · exact (h_right hs ht hu).symm
 
@@ -868,7 +867,7 @@ theorem condIndepFun_iff_condDistrib_prod_ae_eq_prodMkRight
     g ⟂ᵢ[k, hk; μ] f ↔
       condDistrib f (fun ω ↦ (k ω, g ω)) μ =ᵐ[μ.map (fun ω ↦ (k ω, g ω))]
         (condDistrib f k μ).prodMkRight _ := by
-  rw [condDistrib_ae_eq_iff_measure_eq_compProd (μ := μ) _ hf.aemeasurable,
+  rw [condDistrib_ae_eq_iff_measure_eq_compProd (μ := μ) (by fun_prop) hf.aemeasurable,
     condIndepFun_iff_map_prod_eq_prod_condDistrib_prod_condDistrib hg hf hk,
     Measure.compProd_eq_comp_prod]
   let e : γ × β' × β ≃ᵐ (γ × β') × β := MeasurableEquiv.prodAssoc.symm
@@ -883,7 +882,7 @@ theorem condIndepFun_iff_condDistrib_prod_ae_eq_prodMkRight
       rw [← Kernel.id] at h
       simpa using h.symm
     _ = (Kernel.id ×ₖ (condDistrib f k μ).prodMkRight _) ∘ₘ μ.map (fun a ↦ (k a, g a)) := by
-      rw [compProd_map_condDistrib hg.aemeasurable]
+      rw [compProd_map_condDistrib hk.aemeasurable hg.aemeasurable]
   rw [← h_eq]
   have h1 : μ.map (fun x ↦ ((k x, g x), f x)) = (μ.map (fun a ↦ (k a, g a, f a))).map e := by
     rw [Measure.map_map (by fun_prop) (by fun_prop)]

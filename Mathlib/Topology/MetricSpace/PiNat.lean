@@ -6,9 +6,9 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Normed.Group.FunctionSeries
-public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
+import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 public import Mathlib.Topology.MetricSpace.HausdorffDistance
-public import Mathlib.Topology.Order.ProjIcc
+import Mathlib.Topology.Order.ProjIcc
 public import Mathlib.Topology.UnitInterval
 
 /-!
@@ -807,11 +807,12 @@ lemma edist_eq_tsum (x y : ∀ i, F i) :
     edist x y = ∑' i, min (2⁻¹ ^ encode i) (edist (x i) (y i)) := rfl
 
 lemma min_edist_le_edist_pi (x y : ∀ i, F i) (i : ι) :
-    min (2⁻¹ ^ encode i) (edist (x i) (y i)) ≤ edist x y := ENNReal.le_tsum _
+    min (2⁻¹ ^ encode i) (edist (x i) (y i)) ≤ edist x y := by
+  grw [edist_eq_tsum, ← ENNReal.le_tsum i]
 
 lemma edist_le_two : edist x y ≤ 2 :=
   (ENNReal.tsum_geometric_two_encode_le_two).trans' <| by
-    rw [edist_eq_tsum]; gcongr; exact min_le_left ..
+    grw [edist_eq_tsum, min_le_left]
 
 lemma edist_lt_top : edist x y < ∞ := edist_le_two.trans_lt (by simp)
 
@@ -877,7 +878,7 @@ protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
           _ ≤ ε / 2 + ε / 2 := by gcongr; simpa [mul_comm] using hδ.le
           _ = ε := ENNReal.add_halves _
     · intro i ε hε₀
-      have : (0 : ℝ≥0∞) < 2⁻¹ ^ encode i := ENNReal.pow_pos (by norm_num) _
+      have : (0 : ℝ≥0∞) < 2⁻¹ ^ encode i := ENNReal.pow_pos (by simp) _
       refine mem_iInf_of_mem (min (2⁻¹ ^ encode i) ε) <| mem_iInf_of_mem (by positivity) ?_
       simp only [and_imp, Prod.forall, ofPred_subset_ofPred, lt_min_iff, mem_principal]
       intro x y hn
@@ -1118,7 +1119,7 @@ lemma continuous_distDenseSeq (n : ℕ) : Continuous (distDenseSeq X n) := by
   cases isEmpty_or_nonempty X
   · exact continuous_of_discreteTopology
   refine continuous_projIcc.comp <| Continuous.dist continuous_id' ?_
-  convert! continuous_const (y := denseSeq X n)
+  convert continuous_const (y := denseSeq X n)
 
 lemma separation {x : X} {C : Set X} (hxC : C ∈ 𝓝 x) :
     ∃ (n : ℕ), C ∈ (𝓝 (distDenseSeq X n x)).comap (distDenseSeq X n) := by

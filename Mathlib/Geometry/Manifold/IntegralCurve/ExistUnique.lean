@@ -5,8 +5,8 @@ Authors: Winston Yin
 -/
 module
 
-public import Mathlib.Analysis.ODE.ExistUnique
-public import Mathlib.Analysis.ODE.Gronwall
+import Mathlib.Analysis.ODE.ExistUnique
+import Mathlib.Analysis.ODE.Gronwall
 public import Mathlib.Analysis.ODE.PicardLindelof
 public import Mathlib.Geometry.Manifold.IntegralCurve.Transform
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
@@ -49,7 +49,9 @@ public section
 
 open scoped Topology
 
-open Function Manifold Set
+open Function Set
+
+open scoped Manifold
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
