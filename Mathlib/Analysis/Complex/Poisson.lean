@@ -57,6 +57,10 @@ noncomputable def poissonKernel (c w z : ℂ) : ℝ :=
 lemma poissonKernel_def (c w z : ℂ) :
     poissonKernel c w z = (‖z - c‖ ^ 2 - ‖w - c‖ ^ 2) / ‖(z - c) - (w - c)‖ ^ 2 := by rfl
 
+lemma poissonKernel_add_const (c w z : ℂ) :
+    poissonKernel c w (z + c) = poissonKernel 0 (w - c) z := by
+  simp [poissonKernel_def]
+
 private lemma poissonKernel_eq_re_herglotzRieszKernel_aux {a b : ℂ} :
     ((a + b) / (a - b)).re = (‖a‖ ^ 2 - ‖b‖ ^ 2) / ‖a - b‖ ^ 2 := by
   rw [div_re, normSq_eq_norm_sq (a - b), ← add_div, add_re, sub_re, add_im, sub_im]
@@ -153,12 +157,13 @@ whenever `w` does not lie on the circle.
   exact hw hz
 
 /--
-The real part of the Herglotz–Riesz kernel `herglotzRieszKernel c w` is continuous on the circle
-`sphere c |R|` whenever `w` does not lie on the circle.
+The Poisson kernel `poissonKernel c w` is continuous on the circle `sphere c |R|` whenever `w` does
+not lie on the circle.
 -/
 @[fun_prop]
-theorem continuousOn_re_herglotzRieszKernel_sphere (hw : w ∉ sphere c |R|) :
-    ContinuousOn (re ∘ herglotzRieszKernel c w) (sphere c |R|) := by
+theorem continuousOn_poissonKernel_sphere (hw : w ∉ sphere c |R|) :
+    ContinuousOn (poissonKernel c w) (sphere c |R|) := by
+  rw [poissonKernel_eq_re_herglotzRieszKernel]
   fun_prop (disch := assumption)
 
 /-- The Herglotz–Riesz kernel `herglotzRieszKernel c w` is analytic away from its pole at `w`. -/
