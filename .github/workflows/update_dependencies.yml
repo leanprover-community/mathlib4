@@ -71,20 +71,6 @@ jobs:
           prNumber: ${{ steps.PR.outputs.number }}
           prUrl: ${{ steps.PR.outputs.pr_url }}
 
-      # create-pull-request commits every untracked file that git does not ignore.
-      - name: Exclude the mathlib-ci checkout from the PR
-        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
-        run: echo "/ci-tools/" >> .git/info/exclude
-
-      # This checkout uses the mathlib-ci ref on master, because the next steps
-      # change the ref. The full history lets the PR body list the mathlib-ci
-      # commits between the ref on master and the latest commit.
-      - name: Get mathlib-ci
-        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
-        uses: ./.github/actions/get-mathlib-ci
-        with:
-          fetch-depth: 0
-
       - name: Get latest mathlib-ci SHA
         if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
         id: mathlib-ci-sha
@@ -197,6 +183,30 @@ jobs:
         run: |
           echo "timestamp=$(date -u +"%Y-%m-%d-%H-%M")" >> "$GITHUB_ENV"
           echo "pr_title=chore: update Mathlib dependencies $(date -u +"%Y-%m-%d")" >> "$GITHUB_ENV"
+
+      # The local actions come from the workflow commit, so `get-mathlib-ci`
+      # uses the mathlib-ci ref on master and not the ref in the working tree.
+      - name: Checkout local actions
+        if: ${{ steps.pr-title.outcome == 'success' }}
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+
+      # The full history lets the PR body list the mathlib-ci commits between
+      # the ref on master and the new ref.
+      - name: Get mathlib-ci
+        if: ${{ steps.pr-title.outcome == 'success' }}
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+        with:
+          fetch-depth: 0
+
+      # create-pull-request commits every untracked file that git does not ignore.
+      - name: Exclude the checkouts from the PR
+        if: ${{ steps.pr-title.outcome == 'success' }}
+        run: printf '/workflow-actions/\n/ci-tools/\n' >> .git/info/exclude
 
       # The PR body lists the commits that each changed dependency brings in.
       # Commit subjects are untrusted text: they go to the body only through the
