@@ -115,11 +115,9 @@ lemma first_le (ht : t ≥ 1) : f.E₁ t ≤ f.upperBound := f.first_le' t ht
 
 lemma apply_bound : |f n| ≤ f.C₀ * log n / n := f.f_bound n
 
-lemma hi_nonneg : 0 ≤ f.upperBound := by
-  simpa [(by rfl : Icc 0 1 = {0, 1})] using f.first_le' 1 (by rfl)
+lemma hi_nonneg : 0 ≤ f.upperBound := by simpa using f.first_le' 1 (by rfl)
 
-lemma lo_nonpos : f.lowerBound ≤ 0 := by
-  simpa [(by rfl : Icc 0 1 = {0, 1})] using f.le_first' 1 (by rfl)
+lemma lo_nonpos : f.lowerBound ≤ 0 := by simpa using f.le_first' 1 (by rfl)
 
 lemma C₀_nonneg : 0 ≤ f.C₀ := by
   refine le_of_mul_le_mul_of_pos_right ?_ (by positivity : 0 < log (2 : ℕ) / (2 : ℕ))
@@ -155,13 +153,13 @@ theorem sum_sub_log_bounded : (fun x ↦ ∑ n ∈ Ioc 0 ⌊x⌋₊, f n - log x
 
 theorem sum_sub_log_bounded_nat : (fun N ↦ ∑ n ∈ Ioc 0 N, f n - log N)
     =O[atTop] fun _ ↦ (1 : ℝ) := by
-  convert! f.sum_sub_log_bounded.comp_tendsto tendsto_natCast_atTop_atTop; simp
+  simpa [Function.comp_def] using f.sum_sub_log_bounded.comp_tendsto tendsto_natCast_atTop_atTop
 
 theorem sum_asymp : (∑ n ∈ Ioc 0 ⌊·⌋₊, f n) ~[atTop] log :=
   f.sum_sub_log_bounded.trans_isLittleO (isLittleO_const_log_atTop)|>.isEquivalent
 
 theorem sum_asymp_nat : (∑ n ∈ Ioc 0 ·, f n) ~[atTop] (log ↑·) := by
-  convert! f.sum_asymp.comp_tendsto tendsto_natCast_atTop_atTop; simp
+  simpa [Function.comp_def] using f.sum_asymp.comp_tendsto tendsto_natCast_atTop_atTop
 
 /-- The Meissel--Mertens constant associated to a weight `f` is defined as
 `M = (∫ t in .Ioi 2, (t⁻¹ / (log t)^2) * E₁ t) + 1 - log (log 2)`.
@@ -187,25 +185,35 @@ lemma integrable_mul_E₁ {x : ℝ} (hx : 2 ≤ x) :
   have : 0 < log t := log_pos (by linarith)
   grw [f.E₁_bound (by linarith), le_abs_self f.C₁]
 
-/-- General upper and lower bounds for the Meissel--Mertens constant. -/
-theorem M_bounds : f.M ≤ f.upperBound / log 2 + 1 - log (log 2) ∧
-    f.lowerBound / log 2 + 1 - log (log 2) ≤ f.M := by
+/-- Upper bound for the Meissel--Mertens constant. -/
+theorem M_le : f.M ≤ f.upperBound / log 2 + 1 - log (log 2) := by
   unfold M
-  rw [← integ_div_mul_log_sq, ← integ_div_mul_log_sq] <;> try rfl
+  rw [← integ_div_mul_log_sq] <;> try rfl
   have := f.integrable_mul_E₁ (by rfl)
-  have : NullMeasurableSet (.Ioi (2 : ℝ)) volume := by measurability
-  constructor <;> gcongr with t ht
+  have : NullMeasurableSet (.Ioi (2 : ℝ)) := by measurability
+  gcongr with t ht
   exacts [integrable_const_div_mul_log_sq _ (by rfl), inv_div_log_sq_nonneg ht (by norm_num),
-    f.first_le (by grind), integrable_const_div_mul_log_sq _ (by rfl),
+  f.first_le (by grind)]
+
+/-- Lower bound for the Meissel--Mertens constant. -/
+theorem M_ge : f.lowerBound / log 2 + 1 - log (log 2) ≤ f.M := by
+  unfold M
+  rw [← integ_div_mul_log_sq] <;> try rfl
+  have := f.integrable_mul_E₁ (by rfl)
+  have : NullMeasurableSet (.Ioi (2 : ℝ)) := by measurability
+  gcongr with t ht
+  exacts [integrable_const_div_mul_log_sq _ (by rfl),
     inv_div_log_sq_nonneg ht (by norm_num), f.le_first (by grind)]
 
 /-- Expresses the error term `E₂` in terms of `E₁`. -/
 theorem E₂_eq {x : ℝ} (hx : 2 ≤ x) :
     f.E₂ x = (log x)⁻¹ * f.E₁ x - ∫ t in .Ioi x, (t⁻¹ / (log t)^2) * f.E₁ t := by
-  -- a weird bug - if I move `hcont` too far into the proof, the `grind` discharger breaks.
+  -- due to grind nested case split limitations, this proof breaks if moved
+  -- too far in to the proof.
   -- discussion https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Strange.20.60fun_prop.60.20behavior
+  -- https://github.com/leanprover-community/mathlib4/pull/44061#discussion_r4147115463
   have hcont : ContinuousOn (fun t ↦  -t⁻¹ / log t ^ 2) (.Icc 2 x) := by
-    fun_prop (disch := grind [log_ne_zero])
+    fun_prop (disch := grind [log_ne_zero_of_pos_of_ne_one])
   have : 0 < log x := log_pos (by linarith)
   suffices ∫ t in 2..x, (t⁻¹ / (log t)^2) * f.E₁ t = ∑ n ∈ Icc 0 ⌊x⌋₊, (log n)⁻¹ * f n -
       (log x)⁻¹ * (∑ n ∈ Icc 0 ⌊x⌋₊, f n) - log (log x) + log (log 2) by
