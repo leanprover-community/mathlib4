@@ -5,7 +5,6 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Elementwise
 public import Mathlib.Topology.Sequences
 public import Mathlib.Topology.Instances.Discrete
 public import Mathlib.Topology.Category.TopCat.Basic

@@ -3,8 +3,9 @@ Copyright (c) 2026 Marcelo Lynch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
+module
 
-import Cache.Upload.Dest
+public import Cache.Upload.Dest
 
 /-!
 # The rclone upload tool
@@ -15,6 +16,8 @@ remote syntax. `Cache/Upload/S3.lean` assembles the child environment that
 carries the credentials and endpoint, splits the bucket path out of the
 destination base, and calls the tool's entry point, `putStagedViaRclone`.
 -/
+
+public section
 
 namespace Cache.Requests
 

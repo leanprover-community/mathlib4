@@ -32,7 +32,6 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.style.header, true⟩,
   ⟨`linter.checkInitImports, true⟩,
   ⟨`linter.allScriptsDocumented, true⟩,
-  ⟨`linter.pythonStyle, true⟩,
   ⟨`linter.style.longFile, .ofNat 1500⟩,
   -- ⟨`linter.nightlyRegressionSet, true⟩,
   -- `latest_import.yml` uses this comment: if you edit it, make sure that the workflow still works
@@ -65,6 +64,7 @@ package mathlib where
   platformIndependent := true
   -- Mathlib currently expects artifacts to be in the build directory.
   restoreAllArtifacts := true
+  requiresModuleSystem := true
   -- These are additional settings which do not affect the lake hash,
   -- so they can be enabled in CI and disabled locally or vice versa.
   -- Warning: Do not put any options here that actually change the olean files,
@@ -88,6 +88,7 @@ lean_lib Cache where
 lean_lib MathlibTest where
   globs := #[`MathlibTest.+]
   leanOptions := mathlibTestOptions
+  allowNonModules := true
 
 lean_lib Archive where
   leanOptions := mathlibLeanOptions

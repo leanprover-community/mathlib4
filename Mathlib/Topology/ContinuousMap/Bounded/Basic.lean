@@ -113,7 +113,7 @@ theorem isBounded_image (f : α →ᵇ β) (s : Set α) : IsBounded (f '' s) :=
   f.isBounded_range.subset <| image_subset_range _ _
 
 theorem eq_of_empty [h : IsEmpty α] (f g : α →ᵇ β) : f = g :=
-  ext <| h.elim
+  ext h.elim
 
 /-- A continuous function with an explicit bound is a bounded continuous function. -/
 def mkOfBound (f : C(α, β)) (C : ℝ) (h : ∀ x y : α, dist (f x) (f y) ≤ C) : α →ᵇ β :=
@@ -182,7 +182,7 @@ theorem dist_lt_iff_of_compact [CompactSpace α] (C0 : (0 : ℝ) < C) :
   · by_cases h : Nonempty α
     · exact dist_lt_of_nonempty_compact
     · rintro -
-      convert! C0
+      convert C0
       apply le_antisymm _ dist_nonneg'
       rw [dist_eq]
       exact csInf_le ⟨0, fun C => And.left⟩ ⟨le_rfl, fun x => False.elim (h (Nonempty.intro x))⟩
@@ -260,7 +260,7 @@ theorem isInducing_coeFn : IsInducing (UniformFun.ofFun ∘ (⇑) : (α →ᵇ �
 
 -- TODO: upgrade to `IsUniformEmbedding`
 theorem isEmbedding_coeFn : IsEmbedding (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) → α →ᵤ β) :=
-  ⟨isInducing_coeFn, fun _ _ h => ext fun x => congr_fun h x⟩
+  ⟨isInducing_coeFn, fun _ _ h => ext fun x => congr($h x)⟩
 
 variable (α) in
 /-- Constant as a continuous bounded function. -/
@@ -462,7 +462,7 @@ end Extend
 @[simps]
 noncomputable def indicator (s : Set α) (hs : IsClopen s) : BoundedContinuousFunction α ℝ where
   toFun := s.indicator 1
-  continuous_toFun := continuous_indicator (by simp [hs]) <| continuous_const.continuousOn
+  continuous_toFun := continuous_indicator (by simp [hs]) continuous_const.continuousOn
   map_bounded' := ⟨1, fun x y ↦ by by_cases hx : x ∈ s <;> by_cases hy : y ∈ s <;> simp [hx, hy]⟩
 
 end Basics

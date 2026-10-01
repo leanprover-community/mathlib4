@@ -12,6 +12,7 @@ public import Mathlib.NumberTheory.EulerProduct.DirichletLSeries
 public import Mathlib.NumberTheory.LSeries.PrimesInAP
 
 import Mathlib.Algebra.Order.Field.GeomSum
+import Mathlib.Algebra.Order.Floor.Semifield
 import Mathlib.Analysis.Complex.ExponentialBounds
 import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
