@@ -71,7 +71,7 @@ lemma Module.FaithfullyFlat.of_flat_of_isLocalHom [IsLocalRing A] [IsLocalRing B
 
 instance [Module.Flat A B] (p : Ideal A) (q : Ideal B) [p.IsPrime] [q.IsPrime] [q.LiesOver p]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
-    [Localization.AtPrime.IsLiesOverAlgebra p q] :
+    [IsScalarTower A (Localization.AtPrime p) (Localization.AtPrime q)] :
     Module.FaithfullyFlat (Localization.AtPrime p) (Localization.AtPrime q) :=
   Module.FaithfullyFlat.of_flat_of_isLocalHom
 
