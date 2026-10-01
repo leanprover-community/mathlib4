@@ -163,7 +163,7 @@ abbrev stacksTagKind : SyntaxNodeKind := `stacksTag
 uppercase letters. -/
 def stacksTagFn : ParserFn := fun c s =>
   let i := s.pos
-  let s := takeWhileFn (fun c => c.isAlphanum) c s
+  let s := takeWhileFn Char.isAlphanum c s
   if s.hasError then
     s
   else if s.pos == i then
@@ -196,7 +196,7 @@ abbrev wikidataIdKind : SyntaxNodeKind := `wikidataId
 /-- The main parser for Wikidata identifiers: it accepts `Q` followed by one or more digits. -/
 def wikidataIdFn : ParserFn := fun c s =>
   let i := s.pos
-  let s := takeWhileFn (fun c => c.isAlphanum) c s
+  let s := takeWhileFn Char.isAlphanum c s
   if s.hasError then
     s
   else if s.pos == i then
@@ -267,7 +267,7 @@ abbrev pibaseIdKind : SyntaxNodeKind := `pibaseId
 identifiers, such as `P000001`, `S000023`, and `T000010`. -/
 def pibaseIdFn : ParserFn := fun c s =>
   let i := s.pos
-  let s := takeWhileFn (fun c => c.isAlphanum) c s
+  let s := takeWhileFn Char.isAlphanum c s
   if s.hasError then
     s
   else if s.pos == i then
@@ -354,7 +354,7 @@ private def isOeisId (id : List Char) : Bool :=
 /-- The main parser for OEIS identifiers: it accepts `A` followed by six digits. -/
 def oeisIdFn : ParserFn := fun c s =>
   let i := s.pos
-  let s := takeWhileFn (fun c => c.isAlphanum) c s
+  let s := takeWhileFn Char.isAlphanum c s
   if s.hasError then
     s
   else if s.pos == i then
@@ -487,7 +487,7 @@ syntax (name := stacksTag) stacksTagDB stacksTagParser (ppSpace str)? : attr
 initialize Lean.registerBuiltinAttribute {
   name := `stacksTag
   descr := "Apply a Stacks or Kerodon project tag to a theorem."
-  add := fun decl stx _attrKind => do
+  add decl stx _attrKind := do
     let (db, tag, comment) ← match stx with
       | `(attr| stacks $tag $[$comment]?) => pure (Database.stacks, tag, comment)
       | `(attr| kerodon $tag $[$comment]?) => pure (Database.kerodon, tag, comment)
@@ -510,7 +510,7 @@ syntax (name := wikidataTag) "wikidata" wikidataIdParser (ppSpace str)? : attr
 initialize Lean.registerBuiltinAttribute {
   name := `wikidataTag
   descr := "Apply a Wikidata identifier to a declaration."
-  add := fun decl stx _attrKind => do
+  add decl stx _attrKind := do
     let (id, comment) ← match stx with
       | `(attr| wikidata $id $[$comment]?) => pure (id, comment)
       | _ => throwUnsupportedSyntax
@@ -530,7 +530,7 @@ syntax (name := lmfdbTag) "lmfdb" lmfdbIdParser (ppSpace str)? : attr
 initialize Lean.registerBuiltinAttribute {
   name := `lmfdbTag
   descr := "Apply an LMFDB identifier to a declaration."
-  add := fun decl stx _attrKind => do
+  add decl stx _attrKind := do
     let (id, comment) ← match stx with
       | `(attr| lmfdb $id $[$comment]?) => pure (id, comment)
       | _ => throwUnsupportedSyntax
@@ -571,7 +571,7 @@ syntax (name := pibaseTag) "pibase" pibaseTopic pibaseIdParser (ppSpace str)? : 
 initialize Lean.registerBuiltinAttribute {
   name := `pibaseTag
   descr := "Apply a π-Base identifier to a declaration."
-  add := fun decl stx _attrKind => do
+  add decl stx _attrKind := do
     let (id, topic, comment) ← match stx with
       | `(attr| pibase $topic $id $[$comment]?) =>
         let some topic := getPiBaseTopic? topic | throwUnsupportedSyntax
@@ -593,7 +593,7 @@ syntax (name := dlmfTag) "dlmf" dlmfIdParser (ppSpace str)? : attr
 initialize Lean.registerBuiltinAttribute {
   name := `dlmfTag
   descr := "Apply a DLMF identifier to a declaration."
-  add := fun decl stx _attrKind => do
+  add decl stx _attrKind := do
     let (id, comment) ← match stx with
       | `(attr| dlmf $id $[$comment]?) => pure (id, comment)
       | _ => throwUnsupportedSyntax
@@ -615,7 +615,7 @@ syntax (name := oeisTag) "oeis" oeisIdParser (ppSpace str)? : attr
 initialize Lean.registerBuiltinAttribute {
   name := `oeisTag
   descr := "Apply an OEIS identifier to a declaration."
-  add := fun decl stx _attrKind => do
+  add decl stx _attrKind := do
     let (id, comment) ← match stx with
       | `(attr| oeis $id $[$comment]?) => pure (id, comment)
       | _ => throwUnsupportedSyntax

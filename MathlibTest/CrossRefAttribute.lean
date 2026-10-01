@@ -213,6 +213,10 @@ namespace OEIS
 theorem test : 1 + 1 = 2 := by
   rfl
 
+@[oeis A123456]
+theorem test' : 1 + 1 = 2 := by
+  rfl
+
 /--
 info: some ([OEIS A123456](https://oeis.org/A123456) (A vacuous comment))
 -/
@@ -234,6 +238,7 @@ run_cmd
 
 /--
 info:
+[OEIS A123456](https://oeis.org/A123456) corresponds to declaration 'test''.
 [OEIS A123456](https://oeis.org/A123456) corresponds to declaration 'test'. (A vacuous comment)
 -/
 #guard_msgs in
