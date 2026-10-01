@@ -365,10 +365,7 @@ theorem ofFun_smul {f : E → F} {μ : Measure E} (c : ℝ) :
 
 theorem ofFun_dirac_eq_delta (x : E) :
     ofFun Ω (1 : E → ℝ) (Measure.dirac x) n = delta x := by
-  ext φ
-  rw [Pi.one_def, ofFun_apply <|
-    (locallyIntegrable_const (1 : ℝ)).locallyIntegrableOn (Ω : Set E)]
-  simp
+  ext; simp [ofFun_apply_eq_ite, Pi.one_def, locallyIntegrableOn_const]
 
 variable [BorelSpace E] [FiniteDimensional ℝ E] [CompleteSpace F]
 
