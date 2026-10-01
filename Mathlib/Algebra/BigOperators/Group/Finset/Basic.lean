@@ -500,7 +500,7 @@ theorem prod_extend [DecidableEq κ] {t : Finset κ} {f : ι → κ} {g : ι →
     ∏ i ∈ t, Function.extend f g j i = (∏ i ∈ t \ s.image f, j i) * ∏ i ∈ s, g i := by
   have : s.image f ⊆ t := by simp [← coe_subset, hf.image_eq]
   rw [← prod_sdiff this, prod_image hf.injOn]
-  congrm $(prod_congr rfl fun i hi ↦ ?_) * $(prod_congr rfl fun i hi ↦ by apply hfg.extend_apply)
+  congrm $(prod_congr rfl fun i hi ↦ ?_) * $(prod_congr rfl fun i hi ↦ hfg.extend_apply _ _)
   refine extend_apply' _ _ _ (fun hfi ↦ ?_)
   obtain ⟨hit, hifs⟩ := mem_sdiff.mp hi
   obtain ⟨a, rfl⟩ := hfi
