@@ -35,7 +35,8 @@ We do not require lattice to be full. See `Submodule.IsFullLattice` for full lat
 - `Submodule.IsLattice.of_fg`: over the fraction field `A = K` of a domain `R` the second axiom
   is automatic, so there lattices are exactly the finitely generated submodules.
 - `Submodule.IsLattice.free`: over a PID, every lattice is `R`-free.
-- `Submodule.IsLattice.inf`: over a Noetherian ring, the intersection of two lattices is a lattice.
+- `Submodule.IsLattice.inf_left`, `Submodule.IsLattice.inf_right`: over a
+Noetherian ring, the intersection of two lattices is a lattice.
 
 ## Future work
 
@@ -115,10 +116,17 @@ theorem mono [IsNoetherianRing R] {M N : Submodule R V} (hle : M ≤ N) [IsLatti
   have := finite A N
   mono_of_fg A hle (isNoetherian_submodule.mp inferInstance M hle)
 
-/-- Over a Noetherian ring, the intersection of two lattices is a lattice. -/
-instance inf [IsNoetherianRing R] (M N : Submodule R V) [IsLattice A M] [IsLattice A N] :
+/-- Over a Noetherian ring, the intersection of two submodules,
+the first a lattice, is a lattice. -/
+instance inf_left [IsNoetherianRing R] (M N : Submodule R V) [IsLattice A M] :
     IsLattice A (M ⊓ N) :=
   mono A inf_le_left
+
+/-- Over a Noetherian ring, the intersection of two submodules,
+the second a lattice, is a lattice. -/
+instance inf_right [IsNoetherianRing R] (M N : Submodule R V) [IsLattice A N] :
+    IsLattice A (M ⊓ N) :=
+  mono A inf_le_right
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The action of `Aˣ` on `R`-submodules of `V` preserves `IsLattice`. -/
