@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Data.SetLike.Fintype
 public import Mathlib.GroupTheory.PGroup
-public import Mathlib.GroupTheory.NoncommPiCoprod
 
 import Mathlib.Data.Fintype.Lattice
 
@@ -281,7 +280,7 @@ instance pointwiseMulAction {α : Type*} [Group α] [MulDistribMulAction α G] :
     ⟨g • P.toSubgroup, P.2.map _, fun {Q} hQ hS =>
       inv_smul_eq_iff.mp
         (P.3 (hQ.map _) fun s hs =>
-          (congr_arg (· ∈ g⁻¹ • Q) (inv_smul_smul g s)).mp
+          congr($(inv_smul_smul g s) ∈ g⁻¹ • Q).mp
             (smul_mem_pointwise_smul (g • s) g⁻¹ Q (hS (smul_mem_pointwise_smul s g P hs))))⟩
   one_smul P := ext (one_smul α P.toSubgroup)
   mul_smul g h P := ext (mul_smul g h P.toSubgroup)
@@ -539,7 +538,7 @@ theorem normalizer_sup_eq_top {p : ℕ} [Fact p.Prime] {N : Subgroup G} [N.Norma
     Sylow.ext_iff, pointwise_smul_def, Subgroup.pointwise_smul_def] at hn
   have : Function.Injective (MulAut.conj (n * g)).toMonoidHom := (MulAut.conj (n * g)).injective
   refine fun x ↦ (mem_map_iff_mem this).symm.trans ?_
-  rw [map_map, ← congr_arg (map N.subtype) hn, map_map]
+  rw [map_map, ← congr(map N.subtype $hn), map_map]
   rfl
 
 /-- **Frattini's Argument**: If `N` is a normal subgroup of `G`, and if `P` is a Sylow `p`-subgroup
@@ -573,7 +572,7 @@ theorem mem_fixedPoints_mul_left_cosets_iff_mem_normalizer {H : Subgroup G} [Fin
         have : (n⁻¹ * x)⁻¹ * x ∈ H := QuotientGroup.eq.1 (ha ⟨⟨n⁻¹, inv_mem hn⟩, rfl⟩)
         show _ ∈ H by
           rw [mul_inv_rev, inv_inv] at this
-          convert! this
+          convert this
           rw [inv_inv]),
     fun hx : ∀ n : G, n ∈ H ↔ x * n * x⁻¹ ∈ H =>
     mem_fixedPoints'.2 fun y =>

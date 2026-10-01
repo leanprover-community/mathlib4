@@ -9,7 +9,7 @@ public import Mathlib.Data.Semiquot
 public import Mathlib.Data.Nat.Size
 public import Mathlib.Data.PNat.Defs
 public import Mathlib.Data.Rat.Init
-public import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 
 /-!
