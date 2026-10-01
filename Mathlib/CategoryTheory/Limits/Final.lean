@@ -5,16 +5,11 @@ Authors: Kim Morrison, Jakob von Raumer
 -/
 module
 
-public import Mathlib.CategoryTheory.Category.Cat.AsSmall
-public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 public import Mathlib.CategoryTheory.IsConnected
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 public import Mathlib.CategoryTheory.Limits.Types.Products
 public import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
 public import Mathlib.CategoryTheory.Filtered.Basic
 public import Mathlib.CategoryTheory.Limits.Yoneda
-public import Mathlib.CategoryTheory.PUnit
-public import Mathlib.CategoryTheory.Grothendieck
 
 /-!
 # Final and initial functors
@@ -1158,7 +1153,7 @@ private lemma Grothendieck.final_map_small {C : Type u₁} [SmallCategory C] {F 
   intro H
   let i := (colimitFiberwiseColimitIso _).symm ≪≫
     HasColimit.isoOfNatIso (fiberwiseColimitMapCompEquivalence α H) ≪≫ colimitFiberwiseColimitIso _
-  convert! Iso.isIso_hom i
+  convert Iso.isIso_hom i
   apply colimit.hom_ext
   intro X
   simp [i, fiberwiseColimitMapCompEquivalence]

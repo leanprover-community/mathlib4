@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
-public import Mathlib.CategoryTheory.Monad.Limits
+import Mathlib.CategoryTheory.Monad.Limits
 
 /-!
 # Presentable objects and adjunctions

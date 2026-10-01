@@ -5,7 +5,6 @@ Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van 
 -/
 module
 
-public import Mathlib.Order.Antisymmetrization
 public import Mathlib.Order.Interval.Set.OrdConnected
 public import Mathlib.Order.Interval.Set.WithBotTop
 
@@ -522,7 +521,7 @@ variable {s t : Set α} {a : α}
 
 @[simp] lemma sdiff_singleton_wcovBy (s : Set α) (a : α) : s \ {a} ⩿ s := by
   by_cases ha : a ∈ s
-  · convert! wcovBy_insert a _
+  · convert wcovBy_insert a _
     ext
     simp [ha]
   · simp [ha]
