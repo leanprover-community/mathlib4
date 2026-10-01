@@ -340,11 +340,11 @@ abbrev instSubtype {X S} [SetLike S X] {p : S → Prop} : SetLike {s // p s} X w
 
 instance {α : Type*} (r : α → α → Prop) : SetLike (Quot r) α where
   coe := Quot.toSet
-  coe_injective' := Quot.toSet_injective
+  coe_injective := Quot.toSet_injective
 
 instance {α : Type*} (s : Setoid α) : SetLike (Quotient s) α where
   coe := Quotient.toSet
-  coe_injective' := Quotient.toSet_injective
+  coe_injective := Quotient.toSet_injective
 
 section
 

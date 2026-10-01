@@ -1425,9 +1425,9 @@ theorem range_toSet_eq_range_equivClassOf :
     range (toSet (r := r)) = range (equivClassOf (r := r)) :=
   lift_equivClassOf_eq_toSet ▸ range_quot_lift _
 
-theorem mk_preimage_singleton_eq_toSet (q : Quot r) : Quot.mk _ ⁻¹' {q} = toSet q := by
+theorem mk_preimage_singleton_eq_toSet (q : Quot r) : Quot.mk r ⁻¹' {q} = toSet q := by
   ext
-  grind
+  simp
 
 end Quot
 
@@ -1439,8 +1439,8 @@ theorem range_toSet_eq_range_equivClassOf :
     range (toSet (s := s)) = range (equivClassOf (s := s)) :=
   lift_equivClassOf_eq_toSet ▸ range_quotient_lift _
 
-theorem mk_preimage_singleton_eq_toSet (q : Quotient s) : Quotient.mk _ ⁻¹' {q} = toSet q := by
+theorem mk_preimage_singleton_eq_toSet (q : Quotient s) : Quotient.mk s ⁻¹' {q} = toSet q := by
   ext
-  grind
+  simp
 
 end Quotient

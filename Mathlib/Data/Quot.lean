@@ -192,11 +192,15 @@ instance (r : α → α → Prop) (s : β → β → Prop) (q₁ : Quot r) (q₂
     Decidable (Quot.liftOn₂ q₁ q₂ f ha hb) :=
   Quot.lift₂.decidablePred _ _ _ _ _ _ _
 
-variable {α : Type*} {r : α → α → Prop}
+variable {α : Type*} {r : α → α → Prop} {x : α} {q : Quot r}
 
 /-- The set corresponding to an equivalence class. -/
 def toSet (q : Quot r) : Set α :=
   { x | ⟦x⟧ = q }
+
+@[simp]
+theorem mem_toSet : x ∈ toSet q ↔ ⟦x⟧ = q := by
+  rfl
 
 theorem mem_toSet_mk_self (x : α) : x ∈ toSet (r := r) ⟦x⟧ :=
   rfl
@@ -815,11 +819,15 @@ instance (q₁ : Quotient s₁) (q₂ : Quotient s₂) (f : α → β → Prop)
     Decidable (Quotient.liftOn₂' q₁ q₂ f h) :=
   Quotient.lift₂.decidablePred _ h _ _
 
-variable {α : Type*} {s : Setoid α}
+variable {α : Type*} {s : Setoid α} {x : α} {q : Quotient s}
 
 /-- The set corresponding to an equivalence class. -/
 def toSet (q : Quotient s) : Set α :=
   { x | ⟦x⟧ = q }
+
+@[simp]
+theorem mem_toSet : x ∈ toSet q ↔ ⟦x⟧ = q := by
+  rfl
 
 theorem mem_toSet_mk_self (x : α) : x ∈ toSet (s := s) ⟦x⟧ :=
   rfl
