@@ -71,6 +71,20 @@ jobs:
           prNumber: ${{ steps.PR.outputs.number }}
           prUrl: ${{ steps.PR.outputs.pr_url }}
 
+      # create-pull-request commits every untracked file that git does not ignore.
+      - name: Exclude the mathlib-ci checkout from the PR
+        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
+        run: echo "/ci-tools/" >> .git/info/exclude
+
+      # This checkout uses the mathlib-ci ref on master, because the next steps
+      # change the ref. The full history lets the PR body list the mathlib-ci
+      # commits between the ref on master and the latest commit.
+      - name: Get mathlib-ci
+        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
+        uses: ./.github/actions/get-mathlib-ci
+        with:
+          fetch-depth: 0
+
       - name: Get latest mathlib-ci SHA
         if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
         id: mathlib-ci-sha
@@ -184,6 +198,40 @@ jobs:
           echo "timestamp=$(date -u +"%Y-%m-%d-%H-%M")" >> "$GITHUB_ENV"
           echo "pr_title=chore: update Mathlib dependencies $(date -u +"%Y-%m-%d")" >> "$GITHUB_ENV"
 
+      # The PR body lists the commits that each changed dependency brings in.
+      # Commit subjects are untrusted text: they go to the body only through the
+      # output of the script, which renders each subject inside a code span.
+      - name: Generate PR body
+        if: ${{ steps.pr-title.outcome == 'success' }}
+        run: |
+          git show origin/master:lake-manifest.json > "$RUNNER_TEMP/old-lake-manifest.json"
+          git show origin/master:.github/actions/get-mathlib-ci/action.yml > "$RUNNER_TEMP/old-get-mathlib-ci.yml"
+          ci_ref() { sed -n 's/^ *default: \([0-9a-f]\{40\}\)$/\1/p' "$1"; }
+          if ! python3 "$CI_SCRIPTS_DIR/dependencies/dependency_update_summary.py" \
+              --old-manifest "$RUNNER_TEMP/old-lake-manifest.json" \
+              --new-manifest lake-manifest.json \
+              --extra mathlib-ci https://github.com/leanprover-community/mathlib-ci "$CI_CHECKOUT_PATH" \
+                "$(ci_ref "$RUNNER_TEMP/old-get-mathlib-ci.yml")" \
+                "$(ci_ref .github/actions/get-mathlib-ci/action.yml)" \
+              > "$RUNNER_TEMP/dependency-changes.md"; then
+            echo "The list of commits is not available. See the workflow run." \
+              > "$RUNNER_TEMP/dependency-changes.md"
+          fi
+          {
+            cat <<'EOF'
+          This PR updates the Mathlib dependencies.
+
+          It is not merged automatically: a maintainer should look at what the new
+          dependency revisions bring in before sending it to bors. The list below
+          shows the new commits of each dependency.
+
+          EOF
+            cat "$RUNNER_TEMP/dependency-changes.md"
+            printf '\n---\n\n[workflow run for this PR](%s/%s/actions/runs/%s)\n' \
+              "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID"
+          } > "$RUNNER_TEMP/pr-body.md"
+          cat "$RUNNER_TEMP/pr-body.md"
+
       - name: Create Pull Request
         if: ${{ steps.pr-title.outcome == 'success' }}
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
@@ -196,15 +244,7 @@ jobs:
           branch: ${{ env.BRANCH_NAME }}
           base: master
           title: "${{ env.pr_title }}"
-          body: |
-            This PR updates the Mathlib dependencies.
-
-            It is not merged automatically: a maintainer should look at what the new
-            dependency revisions bring in before sending it to bors.
-
-            ---
-
-            [workflow run for this PR](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          body-path: ${{ runner.temp }}/pr-body.md
 
       - name: Send Zulip message (failure)
         if: ${{ failure() }}
