@@ -6,6 +6,7 @@ Authors: Rao Xiaojia
 module
 
 public import Mathlib.Data.Fintype.Defs
+public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Defs
 
 import Mathlib.Order.WellFounded
@@ -99,3 +100,21 @@ theorem IsReducedRowEchelon.eq_zero_of_ne_of_isLeadingEntry [LinearOrder m] [LT 
   · exact hA.isRowEchelon hlt hlead.1
 
 end Matrix
+
+/-! ### Properties of row echelon forms -/
+
+namespace Matrix.IsRowEchelon
+
+variable {A : Matrix m m R}
+
+theorem isUpperTriangular [LT m] [WellFoundedLT m] [Zero R] (hA : A.IsRowEchelon) :
+    A.IsUpperTriangular := by
+  intro i
+  induction i using WellFoundedLT.induction with
+  | ind i ih => exact fun j hji ↦ hA hji (ih j hji)
+
+theorem det_eq [Fintype m] [LinearOrder m] [CommRing R] (hA : A.IsRowEchelon) :
+    A.det = ∏ i, A i i :=
+  det_of_isUpperTriangular hA.isUpperTriangular
+
+end Matrix.IsRowEchelon

@@ -21,8 +21,6 @@ public import Mathlib.LinearAlgebra.Matrix.Rank
 ## Main results
 
 - `Matrix.IsPivotedBy.rank_eq`: the rank of a matrix is its number of pivots.
-- `Matrix.IsRowEchelon.det_eq`: the determinant of a square matrix in row echelon form is the
-  product of its diagonal.
 - `Matrix.IsPivotedBy.unique`: the pivot of a matrix is unique if the column indices have a
   linear order.
 - `Matrix.isPivotedBy_iff`: the map-structural characterisation of pivots.
@@ -135,22 +133,6 @@ theorem isPivotedBy_iff' [PartialOrder m] [LinearOrder n] :
   cases l i <;> simp [IsLeadingEntry, funext_iff]
 
 end Zero
-
-namespace IsRowEchelon
-
-variable {A : Matrix m m R}
-
-theorem isUpperTriangular [LT m] [WellFoundedLT m] [Zero R] (hA : A.IsRowEchelon) :
-    A.IsUpperTriangular := by
-  intro i
-  induction i using WellFoundedLT.induction with
-  | ind i ih => exact fun j hji ↦ hA hji (ih j hji)
-
-theorem det_eq [Fintype m] [LinearOrder m] [CommRing R] (hA : A.IsRowEchelon) :
-    A.det = ∏ i, A i i :=
-  det_of_isUpperTriangular hA.isUpperTriangular
-
-end IsRowEchelon
 
 section Rank
 

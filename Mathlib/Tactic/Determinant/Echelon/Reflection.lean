@@ -53,44 +53,47 @@ section CommMonoid
 
 variable [CommMonoid α] [Zero α]
 
-theorem prod_getD_eq_diagProd (k c : ℕ) (rows : List (List α)) :
-    ∏ i : Fin c, (rows.getD i []).getD (k + i) 0 = diagProd k c rows := by
+theorem diagProd_eq (k c : ℕ) (rows : List (List α)) :
+    diagProd k c rows = ∏ i : Fin c, (rows.getD i []).getD (k + i) 0 := by
   induction c generalizing k rows with
   | zero => simp [diagProd]
   | succ c ih =>
-    rw [Fin.prod_univ_succ, diagProd, ← ih]
+    rw [Fin.prod_univ_succ, diagProd, ih]
     cases rows <;> simp [Nat.add_assoc, Nat.add_comm 1]
 
 theorem prod_diag_ofLists (m : ℕ) (rows : List (List α)) :
     ∏ i, ofLists m m rows i i = diagProd 0 m rows := by
-  simp [← prod_getD_eq_diagProd]
+  simp [diagProd_eq]
 
 end CommMonoid
 
 /-! ### Signs of chains of swaps -/
 
-variable {n : Type*} [DecidableEq n] [Fintype n] {σ : Equiv.Perm n} {x y : n}
+section AddGroupWithOne
 
-theorem intCast_sign_refl [AddGroupWithOne α] :
-    ((Equiv.Perm.sign (Equiv.refl n) : ℤ) : α) = 1 := by
+variable [AddGroupWithOne α] {n : Type*} [DecidableEq n] [Fintype n] {σ : Equiv.Perm n} {x y : n}
+
+theorem intCast_sign_refl : ((Equiv.Perm.sign (Equiv.refl n) : ℤ) : α) = 1 := by
   simp
 
-theorem intCast_sign_swap_trans [AddGroupWithOne α] {s : α}
-    (h : ((Equiv.Perm.sign σ : ℤ) : α) = s) (hxy : x ≠ y) :
+theorem intCast_sign_swap_trans {s : α} (h : ((Equiv.Perm.sign σ : ℤ) : α) = s) (hxy : x ≠ y) :
     ((Equiv.Perm.sign ((Equiv.swap x y).trans σ) : ℤ) : α) = -s := by
   simp [hxy, ← h]
 
+end AddGroupWithOne
+
 /-! ### Determinants from echelon decompositions -/
 
-/-- Compute determinant from a decomposition. The statement is written in this shape to avoid
-mentioning division. -/
 theorem det_eq_of_decomposition {m : ℕ} {R : Type*} [CommRing R] [IsDomain R]
     {A : Matrix (Fin m) (Fin m) R} (cert : Echelon.Decomposition A) {rowsL rowsU : List (List R)}
     {l u s v : R} (hL : cert.L = ofLists m m rowsL)
     (hU : cert.L * A.submatrix cert.σ id = ofLists m m rowsU) (hl : diagProd 0 m rowsL = l)
     (hu : diagProd 0 m rowsU = u) (hs : ((Equiv.Perm.sign cert.σ : ℤ) : R) = s)
     (hv : l * (s * v) = u) : A.det = v := by
-  rw [cert.det_eq_iff, hU, hL, prod_diag_ofLists, prod_diag_ofLists, hl, hu, hs]
-  exact hv
+  have hdiag : ∏ i, cert.L i i ≠ 0 := Finset.prod_ne_zero_iff.mpr fun i _ ↦ cert.L_diag_ne_zero i
+  have hσ : IsUnit (Equiv.Perm.sign cert.σ : R) :=
+    (Equiv.Perm.sign cert.σ).isUnit.map (Int.castRingHom R)
+  rw [← hσ.mul_right_inj, ← mul_right_inj' hdiag, cert.prod_diag_mul_det, hU, hL,
+    prod_diag_ofLists, prod_diag_ofLists, hl, hu, hs, hv]
 
 end Mathlib.Tactic.Determinant
