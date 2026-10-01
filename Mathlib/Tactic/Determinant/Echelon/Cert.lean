@@ -54,29 +54,20 @@ def proveDiagProd {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) (k c : Na
     have : $k₁Q =Q $kQ + 1 := ⟨⟩
     return ⟨q($entry * $e), q(diagProd_add_one_cons $hdrop $h)⟩
 
-/-- Prove the sign in the ring, `-(-(… 1))`, of a permutation of the shape `mkPerm` builds from
-`k` swaps, `(swap a b).trans (… (refl _))`, one lemma per swap. -/
-def provePermSign {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) {m : Nat} (k : Nat)
-    (σ : Q(Equiv.Perm (Fin $m))) :
-    MetaM ((s : Q($α)) × Q(((Equiv.Perm.sign $σ : Int) : $α) = $s)) :=
-  match k with
-  | 0 => do
-    let_expr Equiv.refl _ := σ |
-      throwError "provePermSign: expected the identity permutation in{indentExpr σ}"
-    have : $σ =Q Equiv.refl (Fin $m) := ⟨⟩
-    return ⟨q(1), q(intCast_sign_refl)⟩
-  | k + 1 => do
-    let_expr Equiv.trans _ _ _ sw rest := σ |
-      throwError "provePermSign: expected a swap in{indentExpr σ}"
-    let_expr Equiv.swap _ _ a b := sw |
-      throwError "provePermSign: expected a swap in{indentExpr σ}"
-    have a : Q(Fin $m) := a
-    have b : Q(Fin $m) := b
-    have rest : Q(Equiv.Perm (Fin $m)) := rest
-    let ⟨s, h⟩ ← provePermSign rα k rest
+/-- The permutation `(swap a₀ b₀).trans (… (refl _))` of the swaps `(a₀, b₀) :: …`, with a proof
+of its sign in the ring, `-(-(… 1))`, one lemma per swap. -/
+def provePermSign {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) (m : Nat)
+    (swaps : List (Nat × Nat)) :
+    MetaM ((σ : Q(Equiv.Perm (Fin $m))) × (s : Q($α)) ×
+      Q(((Equiv.Perm.sign $σ : Int) : $α) = $s)) :=
+  match swaps with
+  | [] => return ⟨q(Equiv.refl (Fin $m)), q(1), q(intCast_sign_refl)⟩
+  | (i, j) :: rest => do
+    let ⟨σ, s, h⟩ ← provePermSign rα m rest
+    let a : Q(Fin $m) ← mkFinLitQ m i
+    let b : Q(Fin $m) ← mkFinLitQ m j
     let hab : Q($a ≠ $b) ← mkDecideProofQ q($a ≠ $b)
-    have : $σ =Q (Equiv.swap $a $b).trans $rest := ⟨⟩
-    return ⟨q(-$s), q(intCast_sign_swap_trans $h $hab)⟩
+    return ⟨q((Equiv.swap $a $b).trans $σ), q(-$s), q(intCast_sign_swap_trans $h $hab)⟩
 
 /-- The value of the determinant read off the decomposition `data`, computed by `model`. It is `1`
 for the empty matrix and `0` when there are fewer than `m` pivots. Otherwise it is `s * u / l`, for
@@ -113,33 +104,29 @@ def proveEchelonDet {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) (iα : 
   let r ← mkBareissDecomposition rα A entries
   let cert := r.cert
   have decomp : Q(Echelon.Decomposition $A) := cert.decomp
-  let Lm ← whnfR q(($decomp).L)
-  let_expr ofLists _ _ _ _ litL := Lm |
-    throwError "proveEchelonDet: expected the transform as an `ofLists` literal{indentExpr Lm}"
-  have litL : Q(List (List $α)) := litL
+  -- `L`'s literal, rebuilt from the data the certificate was built from
+  let rowsL : List (List Q($α)) ← r.data.L.toList.mapM fun row ↦
+    row.toList.mapM r.model.mkEntry
+  let litL : Q(List (List $α)) := mkListLitQ (α := q(List $α)) (rowsL.map mkListLitQ)
   have litU : Q(List (List $α)) := cert.U.lit
   let ⟨diagL, hl⟩ ← proveDiagProd rα 0 m q(0) q($m) litL
   let ⟨diagU, hu⟩ ← proveDiagProd rα 0 m q(0) q($m) litU
-  have hl : Q(∏ i, ofLists $m $m $litL i i = $diagL) :=
-    q((prod_diag_ofLists $m $litL).trans $hl)
-  have hu : Q(∏ i, ofLists $m $m $litU i i = $diagU) :=
-    q((prod_diag_ofLists $m $litU).trans $hu)
-  -- the sign of the certificate's permutation
-  let σ : Q(Equiv.Perm (Fin $m)) ← whnfR q(($decomp).σ)
-  let ⟨s, hs⟩ ← provePermSign rα r.data.swaps.size σ
+  -- the sign of the certificate's permutation, rebuilt from the swaps with the last one outermost
+  let ⟨_, s, hs⟩ ← provePermSign rα m r.data.swaps.toList.reverse
   -- the value, verified by the identity `diagL * (s * v) = diagU` on the products unfolded to
   -- the entries, which the entry certifier proves or the kernel decides
   let v ← detValue rα m r.model r.data
   let hv : Q($diagL * ($s * $v) = $diagU) ←
     (r.model.entryCertifier?.getD mkDecideProofQ) q($diagL * ($s * $v) = $diagU)
-  -- the projections of `decomp` reduce to the `ofLists` matrices of `litL` and `litU`, so the
-  -- hypotheses transport by defeq
-  let Um : Q(Matrix (Fin $m) (Fin $m) $α) := cert.U.matrix
-  have hmul : Q(($decomp).L * ($A).submatrix ($decomp).σ id = $Um) := cert.mul_eq
-  have hl' : Q(∏ i, ($decomp).L i i = $diagL) := hl
-  have hu' : Q(∏ i, $Um i i = $diagU) := hu
+  -- `decomp` is built from `r.data`, so `($decomp).L` and `($decomp).σ` are `ofLists m m litL`
+  -- and the permutation `provePermSign` built by definition, which the kernel checks for `hL` and
+  -- `hs'`. `hmul` is `cert.mul_eq` on the local names.
+  let hrfl : Q(ofLists $m $m $litL = ofLists $m $m $litL) := q(rfl)
+  have hL : Q(($decomp).L = ofLists $m $m $litL) := hrfl
+  have hmul : Q(($decomp).L * ($A).submatrix ($decomp).σ id = ofLists $m $m $litU) :=
+    cert.mul_eq
   have hs' : Q(((Equiv.Perm.sign ($decomp).σ : Int) : $α) = $s) := hs
-  return ⟨v, q(det_eq_of_decomposition $decomp $hmul $hl' $hu' $hs' $hv)⟩
+  return ⟨v, q(det_eq_of_decomposition $decomp $hL $hmul $hl $hu $hs' $hv)⟩
 
 /-- The `norm_det` branch for square matrix literals with non-symbolic entries over a domain the
 echelon method handles. It returns `none` where it does not apply, and terms it cannot evaluate are

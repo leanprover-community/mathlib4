@@ -16,8 +16,8 @@ public import Mathlib.Tactic.Determinant.Echelon.Cert
 This module defines the `norm_det` simproc and the `eval_det` tactic for
 normalizing determinants of matrix literals over a commutative ring.
 
-A literal with non-symbolic entries over a commutative domain is evaluated through its echelon
-decomposition; any other literal is evaluated by Bird's division-free algorithm.
+The simproc tries an echelon decomposition of the literal before falling back to Bird's
+division-free algorithm.
 -/
 
 public meta section

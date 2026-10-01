@@ -92,16 +92,19 @@ theorem intCast_sign_swap_trans [AddGroupWithOne α] {s : α}
 
 /-- Computing determinant from a decomposition. The statement is written in this form to avoid
 mentioning division. -/
-theorem det_eq_of_decomposition {m R : Type*} [Fintype m] [LinearOrder m] [CommRing R]
-    [NoZeroDivisors R] {A : Matrix m m R} (cert : Echelon.Decomposition A) {U : Matrix m m R}
-    {l u s v : R} (hU : cert.L * A.submatrix cert.σ id = U) (hl : ∏ i, cert.L i i = l)
-    (hu : ∏ i, U i i = u) (hs : ((Equiv.Perm.sign cert.σ : ℤ) : R) = s) (hv : l * (s * v) = u) :
-    A.det = v := by
+theorem det_eq_of_decomposition {m : ℕ} {R : Type*} [CommRing R] [NoZeroDivisors R]
+    {A : Matrix (Fin m) (Fin m) R} (cert : Echelon.Decomposition A) {rowsL rowsU : List (List R)}
+    {l u s v : R} (hL : cert.L = ofLists m m rowsL)
+    (hU : cert.L * A.submatrix cert.σ id = ofLists m m rowsU) (hl : diagProd 0 m rowsL = l)
+    (hu : diagProd 0 m rowsU = u) (hs : ((Equiv.Perm.sign cert.σ : ℤ) : R) = s)
+    (hv : l * (s * v) = u) : A.det = v := by
   rcases subsingleton_or_nontrivial R with _ | _
   · exact Subsingleton.elim _ _
+  have hl0 : l ≠ 0 := by
+    rw [← hl, ← prod_diag_ofLists, ← hL]
+    exact Finset.prod_ne_zero_iff.mpr fun i _ ↦ cert.L_diag_ne_zero i
   have h := cert.prod_diag_mul_det
-  rw [hl, hs, hU, hu, ← hv] at h
-  have hl0 : l ≠ 0 := hl ▸ Finset.prod_ne_zero_iff.mpr fun i _ ↦ cert.L_diag_ne_zero i
+  rw [hU, prod_diag_ofLists, hu, hL, prod_diag_ofLists, hl, hs, ← hv] at h
   have hsu : IsUnit s := hs ▸ (Equiv.Perm.sign cert.σ).isUnit.map (Int.castRingHom R)
   exact hsu.mul_left_cancel (mul_left_cancel₀ hl0 h)
 
