@@ -51,7 +51,7 @@ example : True := by
 /--
 warning: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
 
-Note: This linter can be disabled with `set_option linter.unusedTactic.seqFocus false`
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
 ---
 warning: Unused tactic linter: `show False` does nothing.
 
@@ -85,7 +85,7 @@ example (a b : Nat) (h : a + 1 ≤ b + 1) : max a b ≤ b := by
 /--
 warning: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
 
-Note: This linter can be disabled with `set_option linter.unusedTactic.seqFocus false`
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
 ---
 warning: Unused tactic linter: `simp` does nothing.
 
@@ -99,7 +99,7 @@ example : True ∧ True := by simp <;> simp
 @ +1:45...48
 warning: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
 
-Note: This linter can be disabled with `set_option linter.unusedTactic.seqFocus false`
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/
 #guard_msgs (positions := true) in
 example : True ∧ True := by show True ∧ True <;> simp
@@ -116,7 +116,7 @@ example : True ∧ True ∧ True := by
 /--
 warning: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
 
-Note: This linter can be disabled with `set_option linter.unusedTactic.seqFocus false`
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
 ---
 warning: Unused tactic linter: `simp` does nothing.
 
@@ -132,7 +132,7 @@ example : True ∧ True := by
 @ +2:15...18
 warning: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
 
-Note: This linter can be disabled with `set_option linter.unusedTactic.seqFocus false`
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/
 #guard_msgs (positions := true) in
 example : True ∧ True := by
