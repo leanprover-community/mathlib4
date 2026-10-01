@@ -246,9 +246,7 @@ lemma IsHamiltonianCycle.mem_support (hp : p.IsHamiltonianCycle) (b : α) :
 /-- The length of a Hamiltonian cycle is the number of vertices. -/
 lemma IsHamiltonianCycle.length_eq [Fintype α] (hp : p.IsHamiltonianCycle) :
     p.length = Fintype.card α := by
-  rw [← length_tail_add_one hp.not_nil, hp.isHamiltonian_tail.length_eq, Nat.sub_add_cancel]
-  rw [Nat.succ_le_iff, Fintype.card_pos_iff]
-  exact ⟨a⟩
+  rw [← length_tail_add_one hp.not_nil, hp.isHamiltonian_tail.length_add_one_eq]
 
 lemma IsHamiltonianCycle.count_support_self (hp : p.IsHamiltonianCycle) :
     p.support.count a = 2 := by
@@ -310,11 +308,11 @@ alias ⟨_, IsHamiltonianCycle.transfer⟩ := isHamiltonianCycle_transfer
 theorem isHamiltonianCycle_iff_isHamiltonian_tail_and_le_card :
     p.IsHamiltonianCycle ↔ p.tail.IsHamiltonian ∧ 3 ≤ Nat.card α := by
   refine ⟨fun hp ↦ ⟨hp.isHamiltonian_tail, ?_⟩, fun ⟨hp, hcard⟩ ↦ ?_⟩
-  · have := @Fintype.ofFinite α hp.finite
+  · have := hp.isHamiltonian_tail.fintype
     grw [hp.three_le_length, hp.length_eq, Fintype.card_eq_nat_card]
   · rw [isHamiltonianCycle_isCycle_and_isHamiltonian_tail, isCycle_iff_isPath_tail_and_le_length]
     refine ⟨⟨hp.isPath, ?_⟩, hp⟩
-    have := @Fintype.ofFinite α hp.finite
+    have := hp.fintype
     grind [hp.length_eq, Fintype.card_eq_nat_card, Nil.tail, length_tail_add_one]
 
 lemma IsHamiltonianCycle.cycleGraph_cycle (n : ℕ) : (cycleGraph.cycle n).IsHamiltonianCycle :=
