@@ -170,7 +170,7 @@ theorem exists_ne_odd_degree_of_exists_odd_degree [Fintype V] [DecidableRel G.Ad
 
 theorem cardinalMk_dart_eq_two_mul_cardinalMk_edgeSet :
     Cardinal.mk G.Dart = 2 * Cardinal.mk G.edgeSet := by
-  change Cardinal.mk G.Dart = 2 * Cardinal.mk (Sym2.fromRel G.symm)
+  rw [edgeSet, edgeSetEmbedding, OrderEmbedding.coe_ofMapLEIff]
   have := G.loopless
   rw [← Sym2.cardinalMk_prod_eq_two_mul_cardinalMk_fromRel G.symm]
   apply Cardinal.mk_congr
