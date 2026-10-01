@@ -7424,8 +7424,6 @@ import Mathlib.SetTheory.ZFC.PSet
 import Mathlib.SetTheory.ZFC.Rank
 import Mathlib.SetTheory.ZFC.VonNeumann
 import Mathlib.Tactic
-import Mathlib.Tactic
-import Mathlib.Tactic
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.AddGroup
@@ -7630,8 +7628,6 @@ import Mathlib.Tactic.Linarith.Preprocessing
 import Mathlib.Tactic.Linarith.Verification
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.LinearCombination.Lemmas
-import Mathlib.Tactic.LinearCombinationPrime
-import Mathlib.Tactic.LinearCombinationPrime
 import Mathlib.Tactic.Linter
 import Mathlib.Tactic.Linter.AuxLemma
 import Mathlib.Tactic.Linter.CommandRanges
