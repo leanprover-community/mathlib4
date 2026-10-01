@@ -188,7 +188,7 @@ lemma integrable_mul_E₁ {x : ℝ} (hx : 2 ≤ x) :
 /-- Upper bound for the Meissel--Mertens constant. -/
 theorem M_le : f.M ≤ f.upperBound / log 2 + 1 - log (log 2) := by
   unfold M
-  rw [← integ_div_mul_log_sq] <;> try rfl
+  rw [← integ_div_mul_log_sq _ (by rfl)]
   have := f.integrable_mul_E₁ (by rfl)
   have : NullMeasurableSet (.Ioi (2 : ℝ)) := by measurability
   gcongr with t ht
@@ -198,7 +198,7 @@ theorem M_le : f.M ≤ f.upperBound / log 2 + 1 - log (log 2) := by
 /-- Lower bound for the Meissel--Mertens constant. -/
 theorem M_ge : f.lowerBound / log 2 + 1 - log (log 2) ≤ f.M := by
   unfold M
-  rw [← integ_div_mul_log_sq] <;> try rfl
+  rw [← integ_div_mul_log_sq _ (by rfl)]
   have := f.integrable_mul_E₁ (by rfl)
   have : NullMeasurableSet (.Ioi (2 : ℝ)) := by measurability
   gcongr with t ht
