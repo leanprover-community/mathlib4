@@ -5,7 +5,7 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Data.Fintype.Order
+import Mathlib.Data.Fintype.Order
 public import Mathlib.MeasureTheory.Function.AEEqFun
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
 public import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
@@ -321,7 +321,7 @@ theorem eLpNormEssSup_congr_ae {f g : α → ε'} (hfg : f =ᵐ[μ] g) :
 
 theorem eLpNormEssSup_mono_enorm_ae {f : α → ε'} {g : α → ε''} (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
     eLpNormEssSup f μ ≤ eLpNormEssSup g μ :=
-  essSup_mono_ae <| hfg
+  essSup_mono_ae hfg
 
 theorem eLpNormEssSup_mono_nnnorm_ae {f : α → F} {g : α → G} (hfg : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ ‖g x‖₊) :
     eLpNormEssSup f μ ≤ eLpNormEssSup g μ :=
@@ -432,7 +432,7 @@ theorem eLpNorm_congr_enorm_ae [TopologicalSpace ε']
     (hg : AEStronglyMeasurable g μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ = ‖g x‖ₑ) :
     eLpNorm f p μ = eLpNorm g p μ :=
   le_antisymm (eLpNorm_mono_enorm_ae hf <| EventuallyEq.le hfg)
-    (eLpNorm_mono_enorm_ae hg <| (EventuallyEq.symm hfg).le)
+    (eLpNorm_mono_enorm_ae hg (EventuallyEq.symm hfg).le)
 
 /-- See also `eLpNorm_zero_of_ae_enorm_zero` dropping the measurability assumption
 but assuming that the space is an enormed monoid. -/
@@ -447,7 +447,7 @@ theorem eLpNorm_congr_nnnorm_ae {f : α → F} {g : α → G} (hf : AEStronglyMe
     (hg : AEStronglyMeasurable g μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖₊ = ‖g x‖₊) :
     eLpNorm f p μ = eLpNorm g p μ :=
   le_antisymm (eLpNorm_mono_nnnorm_ae hf <| EventuallyEq.le hfg)
-    (eLpNorm_mono_nnnorm_ae hg <| (EventuallyEq.symm hfg).le)
+    (eLpNorm_mono_nnnorm_ae hg (EventuallyEq.symm hfg).le)
 
 theorem eLpNorm_congr_norm_ae {f : α → F} {g : α → G}
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ = ‖g x‖) :
@@ -521,8 +521,7 @@ theorem eLpNorm'_norm_rpow (f : α → F) (p q : ℝ) (hq_pos : 0 < q) :
 theorem eLpNorm_enorm_rpow {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε] (f : α → ε)
     (hf : AEStronglyMeasurable f μ) (hq_pos : 0 < q) :
     eLpNorm (‖f ·‖ₑ ^ q) p μ = eLpNorm f (p * ENNReal.ofReal q) μ ^ q := by
-  have hfrpow : AEStronglyMeasurable (‖f ·‖ₑ ^ q) μ :=
-    ENNReal.continuous_rpow_const.comp_aestronglyMeasurable hf.enorm.aestronglyMeasurable
+  have hfrpow : AEStronglyMeasurable (‖f ·‖ₑ ^ q) μ := by fun_prop
   by_cases h0 : p = 0
   · simp [h0, hf, hfrpow, ENNReal.zero_rpow_of_pos hq_pos]
   by_cases hp_top : p = ∞

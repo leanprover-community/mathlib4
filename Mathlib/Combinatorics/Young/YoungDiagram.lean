@@ -5,10 +5,9 @@ Authors: Jake Levinson
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Data.Finset.Preimage
 public import Mathlib.Data.Finset.Prod
-public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.UpperLower.Basic
 
 /-!
@@ -221,7 +220,7 @@ protected theorem le_of_transpose_le {μ ν : YoungDiagram} (h_le : μ.transpose
 @[simp]
 theorem transpose_le_iff {μ ν : YoungDiagram} : μ.transpose ≤ ν.transpose ↔ μ ≤ ν :=
   ⟨fun h => by
-    convert! YoungDiagram.le_of_transpose_le h
+    convert YoungDiagram.le_of_transpose_le h
     simp, fun h => by
     rw [← transpose_transpose μ] at h
     exact YoungDiagram.le_of_transpose_le h ⟩
@@ -319,7 +318,7 @@ theorem mem_col_iff {μ : YoungDiagram} {j : ℕ} {c : ℕ × ℕ} : c ∈ μ.co
 theorem mk_mem_col_iff {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ.col j ↔ (i, j) ∈ μ := by simp [col]
 
 protected theorem exists_notMem_col (μ : YoungDiagram) (j : ℕ) : ∃ i, (i, j) ∉ μ.cells := by
-  convert! μ.transpose.exists_notMem_row j using 1
+  convert μ.transpose.exists_notMem_row j using 1
   simp
 
 /-- Length of a column of a Young diagram -/
@@ -350,7 +349,7 @@ theorem colLen_eq_card (μ : YoungDiagram) {j : ℕ} : μ.colLen j = (μ.col j).
 
 @[gcongr, mono]
 theorem colLen_anti (μ : YoungDiagram) (j1 j2 : ℕ) (hj : j1 ≤ j2) : μ.colLen j2 ≤ μ.colLen j1 := by
-  convert! μ.transpose.rowLen_anti j1 j2 hj using 1 <;> simp
+  convert μ.transpose.rowLen_anti j1 j2 hj using 1 <;> simp
 
 end Columns
 
