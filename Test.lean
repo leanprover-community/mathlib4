@@ -11,10 +11,6 @@ Not an instance for performance reasons.
 theorem Preorder.topology.orderTopology (α : Type*) [Preorder α] :
   letI := topology α; OrderTopology α := let := Preorder.topology α; ⟨rfl⟩
 
--- Mathlib.Algebra.Group.Invertible.Basic
-@[reducible] def Invertible.of_ne_zero {G₀ : Type*} [GroupWithZero G₀] {x : G₀} (hx : x ≠ 0) :
-  Invertible x := (Units.mk0 _ hx).invertible
-
 -- Mathlib.Algebra.Polynomial.Reverse
 @[simp]
 theorem Polynomial.eval_reverse_zero
@@ -32,7 +28,7 @@ theorem Polynomial.eval_reverse_mul_pow
 theorem Polynomial.eval_reverse_mul_pow₀
     {F : Type*} [Field F] {x : F} (hx : x ≠ 0) (f : F[X]) :
     f.reverse.eval x⁻¹ * x ^ f.natDegree = f.eval x := by
-  let := Invertible.of_ne_zero hx
+  let := invertibleOfNonzero hx
   simpa using f.eval_reverse_mul_pow x
 
 -- Mathlib.Order.Filter.Pointwise
