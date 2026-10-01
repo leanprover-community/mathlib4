@@ -25,8 +25,8 @@ The active model has three destinations:
 | `nightly-testing` | All native nightly-testing push builds | Repository and HEAD SHA |
 
 Nightly builds use one R2 bucket, `mathlib4-nightly-testing-cache`. They do not
-write to Azure. `pr-toolchain-tests` is retired; its name remains available
-only for explicit reads of historical artifacts.
+write to Azure. The public resolver no longer serves `pr-toolchain-tests`
+after the R2 cutover.
 
 | Consumer | Default lookup chain |
 |----------|----------------------|
@@ -146,9 +146,10 @@ The nightly R2 destination variable is
 `MATHLIB_CACHE_R2_NIGHTLY_PUT_BASE_URL`, the account S3 endpoint plus bucket.
 
 Start with fresh SHA-scoped uploads. Do not relabel either old nightly
-container's artifacts as trusted commit uploads. Retire the Azure fallback
-for `mathlib4-nightly-testing` when the new path is enabled. Historical cache
-objects can remain in storage for old clients or explicit recovery.
+container's artifacts as trusted commit uploads. Remove the nightly Azure
+fallback and the `pr-toolchain-tests` route after a real R2 upload succeeds.
+The nightly read and write paths then use only R2. This cutover does not
+require deletion of the old Azure containers.
 
 ## Explicitly out of scope
 

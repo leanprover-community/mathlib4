@@ -93,7 +93,8 @@ When arguments are provided, only the specified files and their transitive impor
 | `--staging-dir=DIR` | For `stage`/`stage!`/`unstage`/`unstage!`: the staging directory. |
 
 Container names (for `--cache-from`): `master`, `forks`, `nightly-testing`.
-`pr-toolchain-tests` remains available for explicit historical reads.
+The parser still accepts `pr-toolchain-tests`, but the public resolver no longer
+serves that retired container after the R2 cutover.
 
 ## Trust-ordered containers
 
