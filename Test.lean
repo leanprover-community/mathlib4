@@ -13,14 +13,38 @@ theorem Preorder.topology.orderTopology (α : Type*) [Preorder α] :
 
 -- Mathlib.Algebra.Polynomial.Reverse
 @[simp]
+theorem Polynomial.reflect_natDegree_eq_reverse {R : Type*} [CommSemiring R] (f : R[X]) :
+    f.reflect f.natDegree = f.reverse := rfl
+
+-- Mathlib.Algebra.Polynomial.Reverse
+theorem Polynomial.eval_reflect_zero_of_degree_le
+    {R : Type*} [CommSemiring R] (f : R[X]) {N : ℕ} (hf : f.degree < N) :
+    (f.reflect N).eval 0 = 0 := by
+  simp [← coeff_zero_eq_eval_zero, coeff_eq_zero_of_degree_lt hf]
+
+-- Mathlib.Algebra.Polynomial.Reverse
+theorem Polynomial.eval_reflect_mul_pow
+    {R : Type*} [CommSemiring R] (x : R) [Invertible x] (f : R[X]) {N : ℕ} (hf : f.natDegree ≤ N) :
+    (f.reflect N).eval (⅟x) * x ^ N = f.eval x := by
+  simpa using f.eval₂_reflect_mul_pow (RingHom.id _) x N hf
+
+-- Mathlib.Algebra.Polynomial.Reverse
+theorem Polynomial.eval_reflect_mul_pow₀
+    {F : Type*} [Field F] {x : F} (hx : x ≠ 0) (f : F[X]) {N : ℕ} (hf : f.natDegree ≤ N) :
+    (f.reflect N).eval x⁻¹ * x ^ N = f.eval x := by
+  let := invertibleOfNonzero hx
+  simpa using f.eval₂_reflect_mul_pow (RingHom.id _) x N hf
+
+-- Mathlib.Algebra.Polynomial.Reverse
+@[simp]
 theorem Polynomial.eval_reverse_zero
-    {R : Type*} [CommSemiring R] (f : Polynomial R) :
+    {R : Type*} [CommSemiring R] (f : R[X]) :
     f.reverse.eval 0 = f.leadingCoeff := by
-  rw [← coeff_zero_eq_eval_zero, f.coeff_zero_reverse]
+  simp [← coeff_zero_eq_eval_zero]
 
 -- Mathlib.Algebra.Polynomial.Reverse
 theorem Polynomial.eval_reverse_mul_pow
-    {R : Type*} [CommSemiring R] (x : R) [Invertible x] (f : Polynomial R) :
+    {R : Type*} [CommSemiring R] (x : R) [Invertible x] (f : R[X]) :
     f.reverse.eval (⅟x) * x ^ f.natDegree = f.eval x := by
   simpa using f.eval₂_reverse_mul_pow (RingHom.id _) x
 
@@ -50,57 +74,73 @@ theorem Filter.Tendsto.atTop_pow₀ {α β : Type*} [Semiring α] [PartialOrder 
 
 -- Actual theorems
 
+namespace Polynomial
+
 variable {F : Type*} [Field F] [LinearOrder F] [IsStrictOrderedRing F] {P Q : F[X]}
 
-theorem Polynomial.tendsto_eval_atTop_of_tendsto_eval_reverse_mul
+theorem div_tendsto_atTop_of_degree_lt_of_leadingCoeff_pos
     [TopologicalSpace F] [OrderTopology F]
-    {l : Filter F} (h : Tendsto (fun x ↦ P.reverse.eval x * x⁻¹ ^ P.natDegree) (𝓝[>] 0) l):
-    Tendsto P.eval atTop l := by
-  rwa [tendsto_iff_tendsto_inv_inv, inv_atTop₀,
-    tendsto_congr' <| eventuallyEq_of_mem (s := {0}ᶜ) ?_ fun x hx ↦ ?_]
-  · simpa [mem_nhdsWithin] using ⟨Set.univ, by simp⟩
-  · grind [P.eval_reverse_mul_pow₀ (x := x⁻¹)]
+    (hdeg : P.degree < Q.degree) (hP : 0 < P.leadingCoeff) (hQ : 0 < Q.leadingCoeff) :
+    Tendsto (fun x ↦ P.eval x / Q.eval x) atTop (𝓝[>] 0) := by
+  have : P ≠ 0 := by grind [leadingCoeff_zero]
+  have : Q ≠ 0 := by grind [degree_zero, not_lt_bot]
+  rw [Filter.tendsto_iff_tendsto_inv_inv, inv_atTop₀,
+    tendsto_congr' (f₂ := (fun x ↦
+      x ^ (Q.natDegree - P.natDegree) * P.reverse.eval x / Q.reverse.eval x))]
+  · apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
+    · convert ContinuousWithinAt.tendsto _
+      · simp [Nat.sub_ne_zero_of_lt (natDegree_lt_natDegree ‹P ≠ 0› hdeg)]
+      · fun_prop (disch := simp [‹Q ≠ 0›])
+    · refine Filter.Eventually.mono ?_ (fun x ⟨hx₁, hx₂, hx₃⟩ ↦ ?_)
+        (p := fun x ↦ 0 < x ∧ 0 < P.reverse.eval x ∧ 0 < Q.reverse.eval x)
+      · have hpos : ∀ {f : F[X]}, 0 < f.leadingCoeff →
+            ∀ᶠ (x : F) in 𝓝[>] 0, 0 < eval x f.reverse := fun {f} hf ↦ by
+          convert ((ContinuousWithinAt.tendsto (f := f.reverse.eval) _).eventually_mem
+            (s := Set.Ioo 0 (2 * f.leadingCoeff)) _).mono _
+          · fun_prop
+          · grind [eval_reverse_zero, Ioo_mem_nhds]
+          · grind
+        filter_upwards [self_mem_nhdsWithin, hpos hP, hpos hQ] using by grind
+      · simpa using by positivity
+  filter_upwards [show {0}ᶜ ∈ _ from ⟨Set.univ, by simp⟩] with x hx
+  simp [pow_sub₀ x hx (natDegree_le_natDegree hdeg.le),
+    ← eval_reverse_mul_pow₀ (x := x⁻¹) (by simpa using hx)]
+  field
 
-theorem Polynomial.tendsto_atTop_of_leadingCoeff_nonneg
+theorem div_tendsto_atTop_of_degree_eq [TopologicalSpace F] [OrderTopology F]
+    (hdeg : P.degree = Q.degree) :
+    Tendsto (fun x ↦ P.eval x / Q.eval x) atTop (𝓝 (P.leadingCoeff / Q.leadingCoeff)) := by
+  rcases eq_or_ne Q 0 with rfl | _
+  · simp
+  rw [Filter.tendsto_iff_tendsto_inv_inv, inv_atTop₀,
+    tendsto_congr' (f₂ := (fun x ↦ P.reverse.eval x  / Q.reverse.eval x))]
+  · convert (ContinuousAt.tendsto _).mono_left nhdsWithin_le_nhds using 2
+    · simp
+    · fun_prop (disch := simp [‹Q ≠ 0›])
+  filter_upwards [show {0}ᶜ ∈ _ from ⟨Set.univ, by simp⟩] with x hx
+  grind [eval_reverse_mul_pow₀ (x := x⁻¹), pow_ne_zero, natDegree_eq_natDegree]
+
+theorem div_tendsto_atTop_of_degree_lt [TopologicalSpace F] [OrderTopology F]
+    (hdeg : P.degree < Q.degree) (hlcf : 0 < P.leadingCoeff / Q.leadingCoeff) :
+    Tendsto (fun x ↦ P.eval x / Q.eval x) atTop (𝓝[>] 0) := by
+  wlog hlcf : 0 ≤ P.leadingCoeff
+  · simpa using this (P := - P) (Q := - Q)
+      (by simpa) (by simpa) (by grind [leadingCoeff_neg])
+  apply div_tendsto_atTop_of_degree_lt_of_leadingCoeff_pos <;>
+    grind [div_pos_iff, leadingCoeff_eq_zero, degree_zero, not_lt_bot]
+
+theorem div_tendsto_atTop_of_degree_gt [TopologicalSpace F] [OrderTopology F]
+    (hdeg : Q.degree < P.degree) (hlcf : 0 < P.leadingCoeff / Q.leadingCoeff) :
+    Tendsto (fun x ↦ P.eval x / Q.eval x) atTop atTop := by
+  convert (div_tendsto_atTop_of_degree_lt hdeg (by grind [div_pos_iff])).inv_tendsto_nhdsGT_zero
+  simp
+
+theorem tendsto_atTop_of_leadingCoeff_nonneg
     (hdeg : 0 < P.degree) (hlcf : 0 ≤ P.leadingCoeff) :
     Tendsto P.eval atTop atTop := by
   let := Preorder.topology F
   have := Preorder.topology.orderTopology F
-  rw [← Polynomial.natDegree_pos_iff_degree_pos] at hdeg
-  exact tendsto_eval_atTop_of_tendsto_eval_reverse_mul <|
-    Filter.Tendsto.pos_mul_atTop (C := P.leadingCoeff)
-      (by grind [leadingCoeff_eq_zero, not_lt_bot])
-      (by simpa using (P.reverse.continuous.tendsto 0).mono_left nhdsWithin_le_nhds)
-      (tendsto_inv_nhdsGT_zero.atTop_pow₀ _ hdeg)
+  simpa using div_tendsto_atTop_of_degree_gt (P := P) (Q := 1) (by simpa)
+    (by simp; grind [leadingCoeff_eq_zero, not_lt_bot])
 
-theorem Polynomial.div_tendsto_atTop_zero_of_degree_lt [TopologicalSpace F] [OrderTopology F]
-    (hdeg : P.degree < Q.degree) :
-    Tendsto (fun x ↦ eval x P / eval x Q) atTop (𝓝 0) := by
-  by_cases hP : P = 0
-  · simp [hP]
-  rw [← natDegree_lt_natDegree_iff hP] at hdeg
-  have : Tendsto (fun x ↦ (P.reverse.eval x * x⁻¹ ^ P.natDegree) / (Q.reverse.eval x * x⁻¹ ^ Q.natDegree)) (𝓝[>] 0) (𝓝 0) := by
-    have : ∀ x, P.reverse.eval x * x⁻¹ ^ P.natDegree / (Q.reverse.eval x * x⁻¹ ^ Q.natDegree) =
-           (P.reverse.eval x * x ^ (Q.natDegree - P.natDegree)) / Q.reverse.eval x := fun x ↦ by
-      rcases eq_or_ne (Q.reverse.eval x) 0 with eq | ne
-      · simp [eq]
-      rcases eq_or_ne x 0 with rfl | ne
-      · simp_all [show Q.natDegree ≠ 0 by grind, show Q.natDegree - P.natDegree ≠ 0 by grind]
-      field_simp
-      ring_nf
-      simp
-      have : eval x P.reverse * x ^ (Q.natDegree - P.natDegree) * (x ^ Q.natDegree)⁻¹ =
-             eval x P.reverse * x ^ (Q.natDegree - P.natDegree : ℤ) * x ^ (- (Q.natDegree : ℤ)) := by
-        simp [← Int.natCast_sub hdeg.le]
-      rw [this, mul_assoc, ← zpow_add₀ ne]
-      ring_nf
-      simp
-    simp_rw [this]
-    simpa [Pi.div_def] using Filter.Tendsto.div (a := 0) (b := Q.leadingCoeff)
-      (by simpa [show Q.natDegree - P.natDegree ≠ 0 by grind] using (Continuous.tendsto (f := fun x => eval x P.reverse * x ^ (Q.natDegree - P.natDegree)) (by fun_prop) 0).mono_left nhdsWithin_le_nhds)
-      (by simpa using (Continuous.tendsto (f := fun x => eval x Q.reverse) (by fun_prop) 0).mono_left nhdsWithin_le_nhds)
-      (by grind [leadingCoeff_eq_zero])
-  rwa [tendsto_iff_tendsto_inv_inv, inv_atTop₀,
-      tendsto_congr' <| eventuallyEq_of_mem (s := {0}ᶜ) ?_ fun x hx ↦ ?_]
-  · simpa [mem_nhdsWithin] using ⟨Set.univ, by simp⟩
-  · simp [← Polynomial.eval_reverse_mul_pow₀ (x := x⁻¹) (by simpa using hx)]
+end Polynomial
