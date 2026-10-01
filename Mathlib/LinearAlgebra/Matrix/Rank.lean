@@ -149,7 +149,6 @@ theorem cRank_one [Semiring R] [DecidableEq m] [StrongRankCondition R] :
 
 @[simp] theorem eRank_one [Semiring R] [DecidableEq m] [StrongRankCondition R] :
     (eRank (1 : Matrix m m R)) = ENat.card m := by
-  have := nontrivial_of_invariantBasisNumber R
   rw [eRank, cRank_one, toENat_lift, ENat.card]
 
 @[simp]
