@@ -501,6 +501,7 @@ def CostructuredArrow (S : C ⥤ D) (T : D) :=
   Comma S (Functor.fromPUnit.{0} T)
 
 /-- The type of morphisms in the category `CostructuredArrow`. -/
+@[implicit_reducible]
 protected def CostructuredArrow.Hom {S : C ⥤ D} {T : D}
     (f g : CostructuredArrow S T) := CommaMorphism f g
 
@@ -508,9 +509,6 @@ protected def CostructuredArrow.Hom {S : C ⥤ D} {T : D}
 instance {S : C ⥤ D} {T : D} : Category (CostructuredArrow S T) where
   Hom := CostructuredArrow.Hom
   __ := (inferInstance : Category (Comma _ _))
-
-@[nolint instanceDiamonds]
-instance (S : C ⥤ D) (T : D) : Category (CostructuredArrow S T) := commaCategory
 
 namespace CostructuredArrow
 
