@@ -227,15 +227,14 @@ lemma multivariateGaussian_map_inner (hS : S.PosSemidef) (t : EuclideanSpace ℝ
     (multivariateGaussian μ S).map (fun x ↦ ⟪x, t⟫) =
       gaussianReal ⟪μ, t⟫ (t ⬝ᵥ S *ᵥ t).toNNReal := by
   have ht : (fun x : EuclideanSpace ℝ ι ↦ ⟪x, t⟫) = innerSL ℝ t := by
-    funext x
+    ext x
     exact real_inner_comm t x
   rw [ht, IsGaussian.map_eq_gaussianReal]
-  congr 1
+  congr
   · rw [ContinuousLinearMap.integral_comp_id_comm]
     · simp [real_inner_comm]
     · exact IsGaussian.integrable_id
-  · change Var[fun u ↦ ⟪t, u⟫; multivariateGaussian μ S].toNNReal = _
-    rw [← covarianceBilin_self IsGaussian.memLp_two_id,
+  · rw [coe_innerSL_apply, ← covarianceBilin_self IsGaussian.memLp_two_id,
       covarianceBilin_multivariateGaussian hS]
 
 lemma measurePreserving_eval_multivariateGaussian (hS : S.PosSemidef) {i : ι} :
