@@ -1389,6 +1389,25 @@ def test_filesDir : IO Unit := do
   assertEq "the repo is lowercased"
     "f/alice/mathlib4" ((Container.forks.location "U" "Alice/Mathlib4" none).filesDir)
 
+/-- Constructors normalize file and marker roots, including bases with a prefix. -/
+def test_locationNormalization : IO Unit := do
+  IO.println "Location URL normalization:"
+  let endpoint := Location.ofEndpoint " https://cache.example/bucket/// \n"
+    "endpoint" "alice/mathlib4" (some "abc1")
+  assertEq "an endpoint normalizes its file URL"
+    "https://cache.example/bucket/f/alice/mathlib4/abc1/x.ltar"
+    (endpoint.fileURL "x.ltar")
+  assertTrue "an endpoint normalizes its marker URL"
+    (endpoint.markerURL? == some "https://cache.example/bucket/m/alice/mathlib4/abc1")
+  let container := Container.forks.location " https://cache.example/bucket/// \n"
+    "alice/mathlib4" (some "abc1")
+  assertEq "a container normalizes its base before adding its segment"
+    "https://cache.example/bucket/mathlib4-forks/f/alice/mathlib4/abc1/x.ltar"
+    (container.fileURL "x.ltar")
+  assertTrue "a container marker retains the normalized base and prefix"
+    (container.markerURL? ==
+      some "https://cache.example/bucket/mathlib4-forks/m/alice/mathlib4/abc1")
+
 /-- `uploadLocationFrom` resolves the upload location per backend. Each
 backend writes the container layout under the base that
 `MATHLIB_CACHE_PUT_BASE_URL` names. The azure backend defaults to the Azure
@@ -1419,6 +1438,16 @@ def test_uploadLocationFrom : IO Unit := do
         MATHLIBREPO none) ==
       some ("https://my.example.org/bucket/f/x.ltar",
         none, "(env override)"))
+  for backend in [UploadBackend.azure, .s3] do
+    assertTrue s!"{backend.name}: a flat PUT_URL loses whitespace and trailing slashes"
+      (urls (uploadLocationFrom backend (some " https://my.example.org/bucket/// ")
+        none none MATHLIBREPO none) ==
+        some ("https://my.example.org/bucket/f/x.ltar", none, "(env override)"))
+    assertTrue s!"{backend.name}: a scoped PUT_URL normalizes both file and marker URLs"
+      (urls (uploadLocationFrom backend (some " https://my.example.org/bucket/// ")
+        none none "alice/mathlib4" (some "abc1")) ==
+        some ("https://my.example.org/bucket/f/alice/mathlib4/abc1/x.ltar",
+          some "https://my.example.org/bucket/m/alice/mathlib4/abc1", "(env override)"))
   -- A base without a bucket path fails at resolution.
   assertTrue "s3: a put base without a bucket path errors"
     (uploadLocationFrom .s3 none (some "https://s3.example.org") (some .forks)
@@ -1450,6 +1479,12 @@ def test_uploadLocationFrom : IO Unit := do
   assertTrue "an empty PUT_URL still counts"
     ((uploadLocationFrom .azure (some "") none none MATHLIBREPO none).toOption.map (·.root) ==
       some "")
+  assertTrue "an empty PUT_URL does not select a configured fallback container"
+    ((uploadLocationFrom .azure (some "") (some putBase) (some .forks)
+      "alice/mathlib4" none).toOption.map (·.root) == some "")
+  assertTrue "s3: an empty PUT_URL errors despite a valid fallback container"
+    (uploadLocationFrom .s3 (some "") (some putBase) (some .forks)
+      "alice/mathlib4" none matches .error _)
   assertTrue "azure: an empty put base means unset"
     ((uploadLocationFrom .azure none (some "") (some .forks) "alice/mathlib4" none).toOption.map
       (·.root) == some Container.forks.azureURL)
@@ -1996,6 +2031,7 @@ def runAll : IO Unit := do
   test_s3RegionFrom
   test_isValidScope
   test_filesDir
+  test_locationNormalization
   test_uploadLocationFrom
   test_uploadLocationScope
   test_s3CurlArgs

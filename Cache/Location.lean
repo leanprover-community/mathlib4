@@ -17,6 +17,7 @@ scopes without a commit have no marker.
 
 `Container.location` selects the layout of a known container.
 `Location.ofEndpoint` selects the layout of a user-supplied endpoint.
+Both constructors trim whitespace and remove trailing slashes from URLs.
 The location constructs the file paths and derives its marker. Reads try
 locations in trust order (`readLocations`). Uploads write to one location
 (`uploadLocation`). `Cache/Marker.lean` defines the marker read and write
@@ -49,6 +50,10 @@ structure Location where
   deriving Repr, BEq, Inhabited
 
 namespace Location
+
+/-- Normalize a URL without treating an empty value as an absent endpoint. -/
+private def normalizeRoot (url : String) : String :=
+  (url.trimAscii.dropEndWhile '/').copy
 
 /-- The directory of cache files relative to the root. -/
 def filesDir (location : Location) : String :=
@@ -89,7 +94,7 @@ def markerURL? (location : Location) : Option String :=
 
 /-- An endpoint follows the repo's layout: flat for the canonical repo. -/
 def ofEndpoint (url label repo : String) (sha? : Option String) : Location :=
-  { root := url, label,
+  { root := normalizeRoot url, label,
     scope? := if normalizeRepo repo == MATHLIBREPO then none
       else some { repo, sha? } }
 
@@ -100,7 +105,7 @@ container segment and selects a flat layout or a repo scope. The location
 constructs the file and marker paths. -/
 def Container.location (c : Container) (base repo : String)
     (sha? : Option String) : Location :=
-  { root := c.urlUnder base, label := c.name,
+  { root := c.urlUnder (Location.normalizeRoot base), label := c.name,
     scope? := if c.flatPath then none else some { repo, sha? } }
 
 end Cache.Requests
