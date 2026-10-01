@@ -495,19 +495,31 @@ theorem prod_extend_by_one [DecidableEq ι] (s : Finset ι) (f : ι → M) :
   (prod_congr rfl) fun _i hi => ite_eq_left hi
 
 @[to_additive]
+theorem prod_extend [DecidableEq κ] {t : Finset κ} {f : ι → κ} {g : ι → M} (j : κ → M)
+    (hfg : Function.FactorsThrough g f) (hf : Set.BijOn f s (t ∩ Set.range f)) :
+    ∏ i ∈ t, Function.extend f g j i = (∏ i ∈ t \ s.image f, j i) * ∏ i ∈ s, g i := by
+  have : s.image f ⊆ t := by simp [← coe_subset, hf.image_eq]
+  rw [← prod_sdiff this, prod_image hf.injOn]
+  congrm $(prod_congr rfl fun i hi ↦ ?_) * $(prod_congr rfl fun i hi ↦ by apply hfg.extend_apply)
+  refine extend_apply' _ _ _ (fun hfi ↦ ?_)
+  obtain ⟨hit, hifs⟩ := mem_sdiff.mp hi
+  obtain ⟨a, rfl⟩ := hfi
+  simp [← mem_coe, hf.image_eq, hit] at hifs
+
+@[to_additive]
 theorem prod_extend_one {t : Finset κ} {f : ι → κ} {g : ι → M}
-    (hfg : Function.FactorsThrough g f) (hfs : Set.InjOn f s) (hfst : Set.MapsTo f s t)
-    (h : ∀ j ∈ t, j ∉ f '' s → j ∉ Set.range f) :
-    ∏ j ∈ t, Function.extend f g 1 j = ∏ i ∈ s, g i := by
-  refine (Finset.prod_of_injOn f hfs hfst (fun j hjt hjs ↦ ?_) ?_).symm
-  · rw [Function.extend_apply' _ _ _ (by simpa using h j hjt hjs), Pi.one_apply]
-  · simp [hfg.extend_apply]
+    (hfg : Function.FactorsThrough g f) (hf : Set.BijOn f s (t ∩ Set.range f)) :
+    ∏ i ∈ t, Function.extend f g 1 i = ∏ i ∈ s, g i := by
+  classical
+  simp [prod_extend 1 hfg hf]
 
 @[to_additive]
 theorem prod_extend_one_eq_prod_univ [Fintype ι] {t : Finset κ} {f : ι → κ} (g : ι → M)
     (hf : Function.Injective f) (ht : ∀ i, f i ∈ t) :
-    ∏ j ∈ t, Function.extend f g 1 j = ∏ i, g i :=
-  prod_extend_one (hf.factorsThrough _) hf.injOn (by simpa using ht) (by simp)
+    ∏ i ∈ t, Function.extend f g 1 i = ∏ i, g i := by
+  apply prod_extend_one (hf.factorsThrough _)
+  convert hf.bijOn_image
+  simpa [Set.range_subset_iff] using ht
 
 /-- Also see `Finset.prod_ite_mem_eq` -/
 @[to_additive /-- Also see `Finset.sum_ite_mem_eq` -/]
