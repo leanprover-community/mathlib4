@@ -37,15 +37,6 @@ namespace Walk
 this definition doesn't contain that `p` is a path, `p.isPath` gives that. -/
 def IsHamiltonian (p : G.Walk a b) : Prop := ∀ a, p.support.count a = 1
 
-@[simp]
-theorem isHamiltonian_copy {a' b' : α} {ha : a = a'} {hb : b = b'} :
-    (p.copy ha hb).IsHamiltonian ↔ p.IsHamiltonian := by
-  simp [IsHamiltonian]
-
-theorem IsHamiltonian.copy {a' b' : α} (ha : a = a') (hb : b = b') (h : p.IsHamiltonian) :
-    (p.copy ha hb).IsHamiltonian :=
-  isHamiltonian_copy.mpr h
-
 theorem isHamiltonian_map (hf : Function.Bijective f) :
     (p.map f).IsHamiltonian ↔ p.IsHamiltonian := by
   simp [IsHamiltonian, hf.surjective.forall, hf.injective]
@@ -174,6 +165,15 @@ theorem isHamiltonian_iff_finite_and_isPath_and_length_eq :
   · simp [hinf]
   cases nonempty_fintype α
   simp [isHamiltonian_iff_isPath_and_length_eq, hfin]
+
+@[simp]
+theorem isHamiltonian_copy {a' b' : α} {ha : a = a'} {hb : b = b'} :
+    (p.copy ha hb).IsHamiltonian ↔ p.IsHamiltonian := by
+  simp [isHamiltonian_iff_finite_and_isPath_and_length_eq]
+
+theorem IsHamiltonian.copy {a' b' : α} (ha : a = a') (hb : b = b') (h : p.IsHamiltonian) :
+    (p.copy ha hb).IsHamiltonian :=
+  isHamiltonian_copy.mpr h
 
 @[simp]
 theorem isHamiltonian_reverse : p.reverse.IsHamiltonian ↔ p.IsHamiltonian := by
