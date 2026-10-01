@@ -61,7 +61,7 @@ theorem Polynomial.tendsto_eval_atTop_of_tendsto_eval_reverse_mul
     {l : Filter F} (h : Tendsto (fun x ↦ P.reverse.eval x * x⁻¹ ^ P.natDegree) (𝓝[>] 0) l):
     Tendsto P.eval atTop l := by
   rwa [tendsto_iff_tendsto_inv_inv, inv_atTop₀,
-      tendsto_congr' <| eventuallyEq_of_mem (s := {0}ᶜ) ?_ fun x hx ↦ ?_]
+    tendsto_congr' <| eventuallyEq_of_mem (s := {0}ᶜ) ?_ fun x hx ↦ ?_]
   · simpa [mem_nhdsWithin] using ⟨Set.univ, by simp⟩
   · grind [P.eval_reverse_mul_pow₀ (x := x⁻¹)]
 
@@ -85,11 +85,26 @@ theorem Polynomial.div_tendsto_atTop_zero_of_degree_lt [TopologicalSpace F] [Ord
   rw [← natDegree_lt_natDegree_iff hP] at hdeg
   have : Tendsto (fun x ↦ (P.reverse.eval x * x⁻¹ ^ P.natDegree) / (Q.reverse.eval x * x⁻¹ ^ Q.natDegree)) (𝓝[>] 0) (𝓝 0) := by
     have : ∀ x, P.reverse.eval x * x⁻¹ ^ P.natDegree / (Q.reverse.eval x * x⁻¹ ^ Q.natDegree) =
-           (P.reverse.eval x / Q.reverse.eval x) * x⁻¹ ^ (P.natDegree - Q.natDegree) := fun x ↦ by
+           (P.reverse.eval x * x ^ (Q.natDegree - P.natDegree)) / Q.reverse.eval x := fun x ↦ by
       rcases eq_or_ne (Q.reverse.eval x) 0 with eq | ne
       · simp [eq]
       rcases eq_or_ne x 0 with rfl | ne
-      · field_simp; ring_nf
+      · simp_all [show Q.natDegree ≠ 0 by grind, show Q.natDegree - P.natDegree ≠ 0 by grind]
       field_simp
-    -- take a small enough (0, ε) and compute equalities there..
-  rwa [tendsto_iff_tendsto_inv_inv, inv_atTop₀]
+      ring_nf
+      simp
+      have : eval x P.reverse * x ^ (Q.natDegree - P.natDegree) * (x ^ Q.natDegree)⁻¹ =
+             eval x P.reverse * x ^ (Q.natDegree - P.natDegree : ℤ) * x ^ (- (Q.natDegree : ℤ)) := by
+        simp [← Int.natCast_sub hdeg.le]
+      rw [this, mul_assoc, ← zpow_add₀ ne]
+      ring_nf
+      simp
+    simp_rw [this]
+    simpa [Pi.div_def] using Filter.Tendsto.div (a := 0) (b := Q.leadingCoeff)
+      (by simpa [show Q.natDegree - P.natDegree ≠ 0 by grind] using (Continuous.tendsto (f := fun x => eval x P.reverse * x ^ (Q.natDegree - P.natDegree)) (by fun_prop) 0).mono_left nhdsWithin_le_nhds)
+      (by simpa using (Continuous.tendsto (f := fun x => eval x Q.reverse) (by fun_prop) 0).mono_left nhdsWithin_le_nhds)
+      (by grind [leadingCoeff_eq_zero])
+  rwa [tendsto_iff_tendsto_inv_inv, inv_atTop₀,
+      tendsto_congr' <| eventuallyEq_of_mem (s := {0}ᶜ) ?_ fun x hx ↦ ?_]
+  · simpa [mem_nhdsWithin] using ⟨Set.univ, by simp⟩
+  · simp [← Polynomial.eval_reverse_mul_pow₀ (x := x⁻¹) (by simpa using hx)]
