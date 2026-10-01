@@ -150,11 +150,13 @@ runs:
     # and only when the branch under test doesn't change the cache tool — get-tools
     # makes that comparison against `source_dir`). Source build otherwise. See the
     # get-tools action for the full trust rationale.
+    # Nightly builds always use canonical master tooling and its toolchain.
     - name: Get CI tools
       uses: ./workflow-actions/.github/actions/get-tools
       with:
         use_artifact: ${{ inputs.tools_branch_ref == '' && github.repository == 'leanprover-community/mathlib4' }}
-        tools_source_ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.event.pull_request.head.repo.fork && 'master' || inputs.pr_branch_ref) }}
+        tools_source_repo: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'leanprover-community/mathlib4' || github.repository }}
+        tools_source_ref: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'master' || inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.event.pull_request.head.repo.fork && 'master' || inputs.pr_branch_ref) }}
         source_dir: ${{ github.event.pull_request.head.repo.fork != true && 'pr-branch' || '' }}
         github_token: ${{ github.token }}
 

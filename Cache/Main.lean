@@ -55,18 +55,18 @@ Options:
                      (e.g. `--cache-from=master,forks`). Overrides the per-repo default.
                      Known containers: " ++ knownContainersLine ++ ".
   --scope=REF        The per-commit namespace (any git ref `git rev-parse`
-                     accepts: HEAD, branch, tag, SHA). For reads: the fork
+                     accepts: HEAD, branch, tag, SHA). For reads: the
                      SHA-scoped namespace to read instead of the default, the
                      checked-out HEAD. Use the SHA reported by `cache query`.
                      Reading another commit's scope means trusting the
                      artifacts produced at that commit; `cache get` prints a
                      security notice when the scope differs from HEAD.
   --unsafe           (get only) Instead of pinning one --scope, automatically walk
-                     this branch's history and try the most recent cached fork
+                     this branch's history and try the most recent cached
                      commits as scopes, in order, until the cache is satisfied.
                      Trusts the artifacts of every commit it tries. Mutually
                      exclusive with --scope; always prints a security notice.
-  --unsafe-window=N  Number of cached fork commits --unsafe will try (default
+  --unsafe-window=N  Number of cached commits --unsafe will try (default
                      1). Implies --unsafe.
 
 * Linked files refer to local cache files with corresponding Lean sources

@@ -11,41 +11,37 @@ defeating the point of caching.
 
 The cache thus cannot prevent a malicious build from producing a poisoned
 artifact; it prevents delivery of that artifact to a higher-trust consumer.
-Artifacts produced at trust level T are only readable by consumers at level T
-or below.
+Default reads select the public cache and, where applicable, the consumer’s
+own repository and commit namespace. Other scopes require an explicit choice.
 
 ## Trust hierarchy and containers
 
-The model spans four storage containers, each written by a distinct class of
-CI job and assigned a trust level:
+The active model has three destinations:
 
-| Container             | Who may write                                          | Trust  |
-|-----------------------|--------------------------------------------------------|--------|
-| `master`              | mathlib4 `master`/`staging`, `v4.*` release tags       | high   |
-| `forks`               | mathlib4 PR builds, non-master branches, `bors try`    | medium |
-| `nightly-testing`     | nightly-testing's trusted branches                     | medium |
-| `pr-toolchain-tests`  | nightly-testing's experimental toolchain branches      | low    |
+| Container | Writers | Default read scope |
+|-----------|---------|--------------------|
+| `master` | mathlib4 `master`/`staging` and `v4.*` release tags | Flat, public artifacts |
+| `forks` | mathlib4 PR builds, development branches, and `bors try` | Repository and HEAD SHA |
+| `nightly-testing` | All native nightly-testing push builds | Repository and HEAD SHA |
 
-Each writer identity is granted write access to exactly one container, enforced
-by the storage backend. An upload aimed at any other container is rejected,
-regardless of what the cache binary requests.
+Nightly builds use one R2 bucket, `mathlib4-nightly-testing-cache`. They do not
+write to Azure. `pr-toolchain-tests` is retired; its name remains available
+only for explicit reads of historical artifacts.
 
-On the read side, each repo has a default lookup chain — the ordered list of
-containers a consumer reads from:
+| Consumer | Default lookup chain |
+|----------|----------------------|
+| mathlib4 | `master` |
+| nightly-testing | `master`, `nightly-testing` at HEAD |
+| forks (PRs) | `master`, `forks` at HEAD |
 
-| Consumer                | Default lookup chain |
-|-------------------------|----------------------|
-| mathlib4                | `master`             |
-| nightly-testing         | `nightly-testing`, `forks` |
-| forks (PRs)             | `master`, `forks`    |
+The public cache supplies matching upstream artifacts first. A different
+nightly toolchain usually causes a public-cache miss. The second destination
+serves only the commit that the reader has checked out. Reads never fall back
+to an unscoped nightly namespace. A failed HEAD lookup skips the scoped round.
 
-The nightly chain includes `forks`
-because PRs from that repo into mathlib4 upload there; it excludes
-`pr-toolchain-tests`, so a poisoned upload from an experimental toolchain
-branch cannot reach a trusted nightly consumer.
-
-Branches that legitimately need to read their own prior low-trust uploads opt
-into a wider chain explicitly.
+A nightly branch opened as a PR into mathlib4 still uploads to `forks` in
+mathlib4 CI. Nightly users can explicitly select that container when needed.
+It is not part of the nightly default chain.
 
 ## Four enforcement layers
 
@@ -60,27 +56,41 @@ only when the workflow's identity — stamped by GitHub from the repo, event
 type, and ref — matches a pre-registered grant. The credential's scope is
 fixed when it is issued and cannot be widened afterward.
 
-Two credential mechanisms implement this. Azure writes mint an OIDC-federated
-bearer token whose RBAC role covers exactly one container. An S3-compatible
-destination takes a short-lived credential pair scoped to one container's
-namespace, and the tool signs each request with it (SigV4); CI mints the
-pair per job the same OIDC-gated way.
+Azure writes use an OIDC-federated bearer token with one container's RBAC
+role. R2 writes use short-lived S3 credentials from the cache broker.
 
-This is the boundary's anchor: a compromised cache binary, a tampered workflow,
-or a malicious PR that captures and replays the credential still cannot upload
-outside the one container the credential grants.
+For nightly uploads, the broker matches the nightly repository, its
+`cache-upload-nightly-testing` environment, and the `push` event. It derives
+the scope from GitHub's signed `sha` claim. The credential permits only:
+
+- `mathlib4-nightly-testing/f/{repo}/{sha}/` for artifacts;
+- the exact object `mathlib4-nightly-testing/m/{repo}/{sha}` for the marker.
+
+The caller cannot choose a different repository or SHA. Missing or malformed
+SHA claims fail before credentials are minted. The parent token is restricted
+to the nightly bucket. Thus, even a compromised uploader cannot write to the
+public cache or another commit's nightly namespace.
+
+The fork grant remains container-scoped. Its trusted uploader enforces the
+per-commit namespace. Do not assume that the fork credential itself enforces
+SHA isolation.
 
 ### 2. Isolation of the cache binary
 
-The cache binary is built from a trusted branch, never from the PR's checkout,
-so the PR's toolchain never reaches the compiler that produces it. The binary
-runs in two separate jobs — one that fetches and packs artifacts, one that
-uploads them — and each job builds its own copy from the trusted source. The
-PR's own build writes only its artifacts, which the trusted binary later packs.
+Nightly builds always obtain cache tooling from canonical mathlib4 `master`,
+including its `lean-toolchain`. This applies both to the build job's packer
+and to the upload job's independently built binary. Nightly branch inputs
+cannot select their own tools source. Canonical CI retains its existing
+policy: fork PRs use trusted tools, while maintainer branches may test their
+own tool changes.
 
-The two jobs also run on different runner pools, and the upload token is minted
-only in the upload job, so it never reaches the build host; a compromised build
-host cannot extract it.
+The packer and uploader run on different runner pools. Only the upload job
+receives storage credentials. That job handles staged files with trusted
+tooling on a fresh runner; it does not execute the branch under test.
+
+Stopping experimental Lean branch pushes is not the security boundary. If
+such a branch runs again, its artifacts still remain under its own SHA, and
+its compiler does not build the uploader.
 
 ### 3. Read-only source tree during the build
 
@@ -110,27 +120,35 @@ not from the PR, so a PR cannot route itself to a higher-trust container.
 This routing applies only in CI. User machines fall back to the strict per-repo
 default and must opt into a wider lookup chain explicitly.
 
-## Per-commit namespace for fork uploads
+## Per-commit namespaces
 
-Within the fork container, uploads are further namespaced by the PR's head
-commit. This closes a replay window: artifacts from a closed, hidden, or
-force-pushed-away PR live under a different commit, so a later honest PR from
-the same fork cannot read them. Uploads to the other containers are not
-commit-scoped — each receives uploads from a single trust level, so the
-container boundary alone isolates them.
+Both `forks` and `nightly-testing` use `f/{repo}/{sha}/{hash}.ltar`.
+A closed, hidden, or force-pushed-away branch cannot supply artifacts to a
+later commit through the default read chain. CI sets
+`MATHLIB_CACHE_REPO_SCOPE` to the build SHA; local reads default to HEAD.
 
-By default a `cache get` reads the fork namespace at the checked-out HEAD: it
-can only serve artifacts built from the commit the reader already has, so it
-adds no trust over the fork container itself and prints no notice. (CI pins
-the same namespace explicitly via `MATHLIB_CACHE_REPO_SCOPE`, set to the build
-SHA.) A reader opts into a *different* commit's namespace with
-`cache get --scope=SHA`, or lets `cache get --unsafe` discover the most recent
-cached fork commits automatically (`--unsafe-window=N` reads the `N` most
-recent, default `1`). Either way the reader is choosing to trust whoever
-produced those fork artifacts — the per-commit namespace bounds *replay*, not
-the trust decision itself — so both forms print the non-default-scope security
-notice before reading. Neither runs in CI; CI routing (above) is loaded from
-the trusted branch.
+`cache get --scope=SHA` selects another commit explicitly. `cache get --unsafe`
+discovers recent cached commits, with `--unsafe-window=N` controlling their
+number. Both choices print the non-default-scope security notice. Marker
+queries use `nightly-testing` for that repository and `forks` for other
+noncanonical repositories.
+
+SHA scoping bounds replay; it does not validate artifact bytes. A reader
+already trusts code from its checked-out commit. Reading another commit's
+artifacts adds that commit's producer to the trust decision.
+
+## Nightly cutover
+
+Deploy the broker's commit-scoped grant before enabling nightly R2 uploads.
+Configure the nightly environment and broker URL, then land the client and
+workflow changes on canonical master before nightly workflows consume them.
+The nightly R2 destination variable is
+`MATHLIB_CACHE_R2_NIGHTLY_PUT_BASE_URL`, the account S3 endpoint plus bucket.
+
+Start with fresh SHA-scoped uploads. Do not relabel either old nightly
+container's artifacts as trusted commit uploads. Retire the Azure fallback
+for `mathlib4-nightly-testing` when the new path is enabled. Historical cache
+objects can remain in storage for old clients or explicit recovery.
 
 ## Explicitly out of scope
 

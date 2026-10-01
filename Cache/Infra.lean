@@ -10,7 +10,7 @@ public import Cache.Env
 /-!
 # Cache backend infrastructure
 
-The multi-container model — trust-classified Azure containers and the per-repo
+The multi-container model — trust-classified storage destinations and the per-repo
 lookup chain — together with the GitHub repo names the cache tool dispatches on.
 
 This lives apart from `Cache.Requests` so the container model and trust ordering
@@ -29,10 +29,9 @@ def MATHLIBREPO := "leanprover-community/mathlib4"
 /-- The full name of the Mathlib nightly-testing GitHub repository. -/
 def NIGHTLY_TESTING_REPO := "leanprover-community/mathlib4-nightly-testing"
 
-/-- Whether `repo` is a first-party Mathlib repo rather than a fork. Forks cache
-into the per-commit `forks` namespace; the canonical repos do not. -/
+/-- Whether `repo` uses only the flat public cache by default. -/
 def isCanonicalRepo (repo : String) : Bool :=
-  repo == MATHLIBREPO || repo == NIGHTLY_TESTING_REPO
+  repo == MATHLIBREPO
 
 /--
 Canonical form of a GitHub `owner/repo` name for use as a cache blob path
@@ -46,20 +45,20 @@ uploads and downloads always meet at the same path.
 def normalizeRepo (repo : String) : String := repo.toLower
 
 /--
-Trust-classified Azure storage containers for the Mathlib cache.
+Trust-classified storage destinations for the Mathlib cache.
 
-Each variant maps to one Azure Blob Storage container on the `lakecache` storage
-account. A CI job at a given trust level may write only to its corresponding
-container, and `cache get` always tries the most trusted container first.
+Each variant names a path at the public resolver. Storage credentials restrict
+which destination a CI job may write. Reads try the public cache first, then
+the repository's commit-scoped cache. Azure URLs also support historical reads.
 -/
 inductive Container where
   /-- Most-trusted container (`mathlib4-master`); only master CI writes here. -/
   | master
   /-- Container for PR builds on forks of mathlib4. -/
   | forks
-  /-- Container for the `nightly-testing` branch and related refs. -/
+  /-- SHA-scoped container for all nightly-testing push builds. -/
   | nightlyTesting
-  /-- Container for toolchain-PR test runs. -/
+  /-- Retired container, retained for explicit reads of historical artifacts. -/
   | prToolchainTests
   deriving DecidableEq, Repr, BEq, Inhabited
 
@@ -123,6 +122,9 @@ writers in sync.
 def flatPath : Container → Bool
   | .master => true
   | _ => false
+
+/-- Whether default reads use the checked-out commit as a namespace. -/
+def shaScoped (c : Container) : Bool := c == .forks || c == .nightlyTesting
 
 end Container
 
@@ -222,17 +224,19 @@ whatever the `repo` is, and a fork build finds the master-built deps that make
 up the bulk of its files there; the fork's own container then supplies the
 PR-specific files at `/f/{repo}/...`.
 
-Nightly-testing chains omit `master`: that repo builds under a non-release
-toolchain, so its root hash differs and a master probe never matches.
+Nightly-testing also starts with `master`, then reads its own SHA namespace.
+Different toolchains naturally miss in the public cache.
 -/
 def defaultContainersForRepo (repo : String) : List Container :=
   if repo == MATHLIBREPO then
     [.master]
   else if repo == NIGHTLY_TESTING_REPO then
-    -- `forks` is needed for PRs opened from this repo into mathlib4: their CI
-    -- uploads land in `forks`. `pr-toolchain-tests` is excluded.
-    [.nightlyTesting, .forks]
+    [.master, .nightlyTesting]
   else
     -- Forks and everything else: `master` for shared upstream deps, the fork's
     -- own container for PR-specific files.
     [.master, .forks]
+
+/-- The per-commit container used for marker discovery in this repository. -/
+def scopedContainerForRepo (repo : String) : Container :=
+  if repo == NIGHTLY_TESTING_REPO then .nightlyTesting else .forks

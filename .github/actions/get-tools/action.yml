@@ -17,6 +17,10 @@ inputs:
   use_artifact:
     description: Whether to attempt the prebuilt-artifact fast path ('true'/'false').
     required: true
+  tools_source_repo:
+    description: Repository for the trusted source checkout.
+    required: false
+    default: ${{ github.repository }}
   tools_source_ref:
     description: Git ref to check out and build from when not using the artifact.
     required: true
@@ -141,6 +145,7 @@ runs:
       if: ${{ steps.finalize.outputs.result == 'build' }}
       uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       with:
+        repository: ${{ inputs.tools_source_repo }}
         ref: ${{ inputs.tools_source_ref }}
         path: ${{ inputs.path }}
         persist-credentials: false # no later step needs git credentials

@@ -644,23 +644,18 @@ jobs:
     # See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Some.20files.20not.20found.20in.20the.20cache/near/407183836
     if: ${{ always() && needs.build.outputs.cache-staging-has-files == 'true' }}
     steps:
-      # Build the write-side cache tool (and load the trust-dispatch action below)
-      # from the branch under test, so a PR's `--container`-aware tool is what
-      # writes the cache. This job only runs in trusted in-repo contexts (bors,
-      # dev branches, the nightly-testing repo) — fork PRs run master's
-      # `build_template` via `pull_request_target`, never this one — so
-      # `pr_branch_ref` is always a trusted ref here. Fork PRs keep `master`.
+      # Nightly artifacts may come from any branch. Build the uploader with
+      # canonical master's sources and toolchain on this fresh runner.
       - name: Checkout tools branch
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.event.pull_request.head.repo.fork && 'master' || inputs.pr_branch_ref) }}
+          repository: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'leanprover-community/mathlib4' || github.repository }}
+          ref: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'master' || inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.event.pull_request.head.repo.fork && 'master' || inputs.pr_branch_ref) }}
           fetch-depth: 1
           persist-credentials: false # no later step needs git credentials
 
-      # Same trust dispatch as in the `build` and `post_steps` jobs. Loaded from
-      # the tools-branch checkout above (the branch under test, a trusted in-repo
-      # ref in the contexts where this job runs), which is what the OIDC token's
-      # container scoping is keyed to.
+      # Load dispatch from the uploader's tools checkout. Nightly uses
+      # canonical master; other builds retain their existing tools selection.
       - name: Compute cache trust dispatch
         uses: ./.github/actions/cache-trust-dispatch
         with:
@@ -693,12 +688,14 @@ jobs:
           path: cache-staging
 
       - name: Azure CLI OIDC login and mint storage bearer token
+        if: env.MATHLIB_CACHE_PRIMARY != 'nightly-testing'
         uses: leanprover-community/mathlib-ci/.github/actions/azure-create-cache-token@d6393a535c054122e507b6c5e1b2f4c31c604121
         with:
           azure-client-id: ${{ inputs.cache_application_id }}
           azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
 
       - name: Upload staged cache to Azure
+        if: env.MATHLIB_CACHE_PRIMARY != 'nightly-testing'
         shell: bash
         env:
           REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
@@ -714,17 +711,22 @@ jobs:
       # A second upload of the same staged set, to R2. `master` writes the
       # public cache bucket, flat. `forks` writes the developer cache bucket
       # in the container's layout, the layout the Azure upload above wrote,
-      # so the cache resolver serves both stores at one path. The other
-      # containers upload to Azure alone.
-      # The action returns short-lived S3 credentials as masked step outputs.
-      # A failed mint fails only this step, and the upload below is skipped.
-      # An empty `MATHLIB_CACHE_BROKER_URL` turns the R2 upload off.
+      # so the cache resolver serves both stores at one path. Nightly-testing
+      # writes only to R2, under its build SHA. The action returns short-lived
+      # S3 credentials as masked outputs. R2 is optional for master and forks;
+      # nightly requires a configured broker and a successful upload.
+      - name: Require the nightly broker configuration
+        if: env.MATHLIB_CACHE_PRIMARY == 'nightly-testing'
+        env:
+          BROKER_URL: ${{ vars.MATHLIB_CACHE_BROKER_URL }}
+        run: test -n "$BROKER_URL"
+
       - name: Mint R2 credentials
         id: mint-r2
         if: >-
-          (env.MATHLIB_CACHE_PRIMARY == 'master' || env.MATHLIB_CACHE_PRIMARY == 'forks') &&
+          (env.MATHLIB_CACHE_PRIMARY == 'master' || env.MATHLIB_CACHE_PRIMARY == 'forks' || env.MATHLIB_CACHE_PRIMARY == 'nightly-testing') &&
           vars.MATHLIB_CACHE_BROKER_URL != ''
-        continue-on-error: true
+        continue-on-error: ${{ env.MATHLIB_CACHE_PRIMARY != 'nightly-testing' }}
         uses: leanprover-community/mathlib-ci/.github/actions/mint-s3-credentials@d6393a535c054122e507b6c5e1b2f4c31c604121
         with:
           broker-url: ${{ vars.MATHLIB_CACHE_BROKER_URL }}
@@ -732,8 +734,8 @@ jobs:
 
       - name: Upload staged cache to R2
         if: steps.mint-r2.outputs.success == 'true'
-        # No need to fail the job for now. Remove when this becomes the primary cache endpoint
-        continue-on-error: true
+        # R2 is the only nightly destination, so its failure must fail the job.
+        continue-on-error: ${{ env.MATHLIB_CACHE_PRIMARY != 'nightly-testing' }}
         shell: bash
         env:
           REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
@@ -751,8 +753,9 @@ jobs:
           # with the completeness marker `{base}/mathlib4-forks/m/{repo}/{sha}`, for
           # the per-commit scope the dispatch sets.
           DEVELOPER_PUT_BASE_URL: ${{ secrets.MATHLIB_CACHE_R2_DEVELOPER_PUT_BASE_URL }}
+          NIGHTLY_PUT_BASE_URL: ${{ vars.MATHLIB_CACHE_R2_NIGHTLY_PUT_BASE_URL }}
         run: |
-          # $MATHLIB_CACHE_PRIMARY is the container the Azure upload above wrote.
+          # Dispatch selects the destination and the build SHA namespace.
           case "$MATHLIB_CACHE_PRIMARY" in
             master)
               if [ -z "$MASTER_PUT_URL" ]; then
@@ -770,10 +773,15 @@ jobs:
               export MATHLIB_CACHE_PUT_BASE_URL="$DEVELOPER_PUT_BASE_URL"
               container_args=(--container=forks)
               ;;
+            nightly-testing)
+              : "${NIGHTLY_PUT_BASE_URL:?MATHLIB_CACHE_R2_NIGHTLY_PUT_BASE_URL is unset}"
+              export MATHLIB_CACHE_PUT_BASE_URL="$NIGHTLY_PUT_BASE_URL"
+              container_args=(--container=nightly-testing)
+              ;;
           esac
           echo "Uploading cache to R2 (container: $MATHLIB_CACHE_PRIMARY)..."
           if ! lake env "$CACHE_BIN" put-staged --backend=s3 "${container_args[@]}" --staging-dir="cache-staging" --repo="$REPO"; then
-            echo "::warning::the R2 upload failed; the Azure upload holds this run's files"
+            echo "::warning::the R2 upload failed for $MATHLIB_CACHE_PRIMARY"
             exit 1
           fi
 
