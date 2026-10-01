@@ -1154,4 +1154,3 @@ theorem _root_.Continuous.memLp_top_of_hasCompactSupport
 
 end Lp
 end MeasureTheory
-#min_imports
