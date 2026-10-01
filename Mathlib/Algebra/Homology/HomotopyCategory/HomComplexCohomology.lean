@@ -269,8 +269,6 @@ noncomputable def homologyAddEquiv :
     (HomComplex K L).homology n ≃+ CohomologyClass K L n :=
   (leftHomologyData K L n).homologyIso.addCommGroupIsoToAddEquiv
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- `CohomologyClass K L m` identifies to the cohomology of the
 complex `linearHomComplex R K L` in degree `m`. -/
 @[simps, implicit_reducible]
@@ -286,7 +284,7 @@ noncomputable def linearLeftHomologyData' [Linear R C] (hm : n + 1 = m) (hp : m 
     dsimp
     ext x
     dsimp
-    rw [CohomologyClass.mk_eq_zero_iff]
+    rw [CohomologyClass.mkLinearMap_apply, CohomologyClass.mk_eq_zero_iff]
     refine ⟨n, hm, x, ?_⟩
     rw [HomComplex.Cocycle.isKernel'_lift_apply_coe_eq_δ R K L n m p hp]
   hπ :=

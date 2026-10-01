@@ -34,7 +34,7 @@ variable (C : Type*) [Category* C] [HasZeroMorphisms C] {ι : Type*} (c : Comple
 
 /-- The functor `HomologicalComplex C c ⥤ ShortComplex C` which sends a homological
 complex `K` to the short complex `K.X i ⟶ K.X j ⟶ K.X k` for arbitrary indices `i`, `j` and `k`. -/
-@[simps]
+@[simps, implicit_reducible]
 def shortComplexFunctor' (i j k : ι) : HomologicalComplex C c ⥤ ShortComplex C where
   obj K := ShortComplex.mk (K.d i j) (K.d j k) (K.d_comp_d i j k)
   map f :=
