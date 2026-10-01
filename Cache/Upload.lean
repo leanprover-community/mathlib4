@@ -34,8 +34,9 @@ The complete `put` operation, from the command inputs: resolve the
 location and the backend's credentials, then upload the `.ltar` files
 `getFileNames` produces under `srcDir` on the selected backend. The
 resolutions run before `getFileNames`, so a misconfiguration fails before
-`put`'s expensive packing pass. The per-SHA marker is written when the upload
-has a scope, from `--scope` or `MATHLIB_CACHE_REPO_SCOPE`: it lets
+`put`'s expensive packing pass. The upload writes the marker derived by
+`Location.marker?`, if present. The SHA comes from `--scope` or
+`MATHLIB_CACHE_REPO_SCOPE`. The marker lets
 `cache query` discover cached commits with a cheap HEAD probe.
 -/
 def runPut [Monad m] [MonadLiftT IO m] (container? : Option Container)

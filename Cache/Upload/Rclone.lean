@@ -6,6 +6,7 @@ Authors: Marcelo Lynch
 module
 
 public import Cache.Requests
+public import Cache.Marker
 
 /-!
 # The rclone upload tool
@@ -71,12 +72,12 @@ def rcloneFilesArgs (dest : Location) (srcDir filesFrom : FilePath)
 The rclone invocation for the per-SHA marker: a single-file copy to the
 marker path. A marker's content is the SHA that names it, so an overwrite is
 safe and the copy omits `--ignore-existing`, like the curl tool's marker
-put. The bucket path comes from `dest.root`.
+put. The bucket and relative path come from the resolved marker.
 -/
-def rcloneMarkerArgs (dest : Location) (markerFile : FilePath)
-    (sha : String) : Except String (Array String) := do
-  let (_, bucketPath) ← s3EndpointSplit dest.root
-  return #["copyto", markerFile.toString, s!":s3:{bucketPath}/{dest.markerDir}/{sha}"] ++
+def rcloneMarkerArgs (marker : Location.Marker) (markerFile : FilePath) :
+    Except String (Array String) := do
+  let (_, bucketPath) ← s3EndpointSplit marker.root
+  return #["copyto", markerFile.toString, s!":s3:{bucketPath}/{marker.path}"] ++
     rcloneCommonFlags
 
 /--
@@ -85,8 +86,8 @@ from `rcloneEnv`, so no credential appears on a command line. The remote
 paths come from `dest`. An invalid root fails before any transfer.
 `srcDir` holds the files and `fileNames` lists the ones to upload; the list is passed as a
 `--files-from` file, so only the named files are uploaded. The files are
-uploaded first, then the per-SHA marker, in the same order as the curl tool. A
-files failure exits 1; a marker failure only warns (see `uploadMarkerWith`).
+uploaded first, then the marker derived by `Location.marker?`, if present.
+A files failure exits 1; a marker failure only warns (see `uploadMarker`).
 The `rclone` parameter names the binary and exists for the tests; production
 callers use the default.
 -/
@@ -112,10 +113,9 @@ def putStagedViaRclone (dest : Location) (env : Array (String × Option String))
     if code != 0 then
       IO.eprintln s!"rclone upload failed with exit code {code}"
       IO.Process.exit 1
-  if let some sha := dest.scope? then
-    uploadMarkerWith (dest.markerURL sha) sha fun file => do
-      let code ← run (← IO.ofExcept (rcloneMarkerArgs dest file sha))
-      unless code == 0 do
-        throw <| IO.userError s!"rclone exited with code {code}"
+  uploadMarker dest fun marker file => do
+    let code ← run (← IO.ofExcept (rcloneMarkerArgs marker file))
+    unless code == 0 do
+      throw <| IO.userError s!"rclone exited with code {code}"
 
 end Cache.Requests

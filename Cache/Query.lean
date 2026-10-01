@@ -6,6 +6,7 @@ Authors: Marcelo Lynch
 module
 
 public import Cache.Requests
+public import Cache.Marker
 
 /-!
 # The `cache query` subcommand
@@ -76,44 +77,15 @@ def headIsAncestorOfMaster (cwd : FilePath := ".") : IO Bool := do
     pure false
 
 /-- URL of the per-SHA marker of `sha` in `container` on the container's read
-base (`Container.getURL`). Marker writes use the upload location
-(`uploadLocation`). -/
-def markerProbeURL (container : Container) (repo sha : String) : IO String := do
-  return (container.location (← container.getURL) repo none).markerURL sha
+base (`Container.getURL`), or `none` for a flat container. Marker writes
+use the upload location (`uploadLocation`). -/
+def markerProbeURL (container : Container) (repo sha : String) : IO (Option String) := do
+  return (container.location (← container.getURL) repo (some sha)).markerURL?
 
-/--
-Probe a single container for the per-SHA marker blob.
-
-Issues an anonymous HEAD against `{container}/m/{repo}/{sha}` and returns
-`true` iff the response is 200. The marker is uploaded by `put-staged`
-after a successful upload, so its presence means CI published this commit's
-artifacts. Absence is a weaker signal: CI may not have built the commit yet,
-or its build staged no files — a commit with no cache-relevant changes is
-fully served by the master container, so CI uploads nothing for it, marker
-included.
-
-Cheaper than blob-listing: deterministic URL, headers-only response,
-billed as a Read op.
--/
+/-- Resolve the read location of a container at `sha` and check its marker. -/
 def probeContainerForSHA (container : Container) (repo sha : String) :
     IO Bool := do
-  let url ← markerProbeURL container repo sha
-  -- Discard the response body to the platform null device (`NUL` on Windows),
-  -- so curl reports a write error only on a genuine failure, not on every probe.
-  let out ← IO.Process.output
-    {cmd := (← IO.getCurl),
-     args := #["-s", "-o", IO.nullDevice, "-w", "%{http_code}", "-I"] ++
-       -- No retry flags: the probe is diagnostic and a false negative is
-       -- cheap. The time bounds keep an unreachable endpoint from stalling
-       -- the up-to-50-probe `cache query` walk.
-       curlFollowRedirectArgs ++
-       #["--connect-timeout", "10", "--max-time", "30", url],
-     cwd := "."}
-  if out.exitCode != 0 then
-    -- Network error; assume no cache at this SHA
-    pure false
-  else
-    pure (out.stdout.trimAscii.toString == "200")
+  checkMarker (container.location (← container.getURL) repo (some sha))
 
 /-- Default number of marked fork commits `cache get --unsafe` will try as SHA
 scopes: 1, namely just the latest cached SHA. Overridden by

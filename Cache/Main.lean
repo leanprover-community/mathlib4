@@ -7,7 +7,6 @@ module
 
 public import Cache.Cli
 import Cache.Requests
-import Cache.Marker
 import Cache.Upload
 import Cache.Query
 import Cache.Warning

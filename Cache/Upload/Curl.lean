@@ -6,6 +6,7 @@ Authors: Marcelo Lynch
 module
 
 public import Cache.Requests
+public import Cache.Marker
 
 /-!
 # The curl upload tool
@@ -79,24 +80,23 @@ def putFilesViaCurl
 /--
 The staged put on the curl tool: validate the system curl, then send the
 `.ltar` files named by `fileNames` under `srcDir`, then the per-SHA marker
-when the location has a scope. `getSignArgs` produces the backend's signing
+when the location derives a marker. `getSignArgs` produces the backend's signing
 arguments and runs once per curl invocation: once for the files batch and
 once for the marker. The curl config file is written under `srcDir` for the
 duration of the transfer, named after this process (`IO.curlConfigIn`). A files
-failure exits 1; a marker failure only warns (see `uploadMarkerWith`).
+failure exits 1; a marker failure only warns (see `uploadMarker`).
 -/
 def putStagedViaCurl (dest : Location) (getSignArgs : IO (Array String))
     (srcDir : FilePath) (fileNames : Array String) (overwrite : Bool) : IO Unit := do
   discard IO.validateCurl
   let files := fileNames.map fun (f : String) => srcDir / f
   putFilesViaCurl dest files (IO.curlConfigIn srcDir) overwrite (← getSignArgs)
-  if let some sha := dest.scope? then
-    uploadMarkerWith (dest.markerURL sha) sha fun file => do
-      -- A marker may be overwritten freely, so its PUT carries no
-      -- non-overwrite guard.
-      let args := uploadPutArgs (← getSignArgs) (overwrite := true) ++
-        #["-X", "PUT", "-T", file.toString, dest.markerURL sha]
-      -- The argument list carries the credential; keep it out of the failure message.
-      discard <| IO.runCurl args (showArgsOnError := false)
+  uploadMarker dest fun marker file => do
+    -- A marker may be overwritten freely, so its PUT carries no
+    -- non-overwrite guard.
+    let args := uploadPutArgs (← getSignArgs) (overwrite := true) ++
+      #["-X", "PUT", "-T", file.toString, marker.url]
+    -- The argument list carries the credential; keep it out of the failure message.
+    discard <| IO.runCurl args (showArgsOnError := false)
 
 end Cache.Requests

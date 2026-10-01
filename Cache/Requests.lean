@@ -961,7 +961,7 @@ def downloadFiles
   let mut scopeServed : Array (String × Nat) := #[]
   for location in locations do
     if remaining.isEmpty then break
-    let scopeNote := match location.scope? with | some s => s!" (scope {s})" | none => ""
+    let scopeNote := match location.sha? with | some s => s!" (scope {s})" | none => ""
     IO.println s!"Attempting to download {remaining.size} file(s) from {repo} cache at \
       {location.root}{scopeNote}"
     let before := remaining.size
@@ -975,7 +975,7 @@ def downloadFiles
     downloadFailed := downloadFailed + s.failed
     remaining := remaining.filter fun _ hash => !served.contains hash
     if unsafeMode then
-      if let some sha := location.scope? then
+      if let some sha := location.sha? then
         scopeServed := scopeServed.push (sha, before - remaining.size)
 
   -- `--unsafe`: report which fork commits actually contributed files, so the

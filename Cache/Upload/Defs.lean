@@ -5,7 +5,6 @@ Authors: Marcelo Lynch
 -/
 module
 
-public import Cache.Marker
 public import Cache.Upload.Azure
 public import Cache.Upload.S3
 
@@ -22,10 +21,10 @@ The backend-neutral layer over the backend modules:
   `Location` lives in `Cache/Location.lean`, and the reads use it too.
 
 `Cache/Upload.lean` runs the complete `put`, dispatching to the selected
-backend. The marker path contract and write mechanics live in
-`Cache/Marker.lean`. The reads resolve their locations with the same
-resolvers (`Container.location`, `Location.ofEndpoint`), so every upload
-writes to the URLs that the reads probe.
+backend. `Cache/Location.lean` derives the marker. `Cache/Marker.lean`
+defines its read and write operations. The reads resolve their locations
+with the same resolvers (`Container.location`, `Location.ofEndpoint`), so
+every upload writes to the URLs that the reads probe.
 -/
 
 public section
@@ -97,8 +96,9 @@ def uploadLocationFrom (backend : UploadBackend) (putUrl? putBase? : Option Stri
 /--
 `uploadLocationFrom` on the environment variables `MATHLIB_CACHE_PUT_URL` and
 `MATHLIB_CACHE_PUT_BASE_URL`. `scope?` is the caller's resolved scope
-(`getRepoScope`). The location carries it to the marker write, so the file
-puts and the marker put of every tool use one resolution.
+(`getRepoScope`). A repo-namespaced location retains it in its scope.
+The location derives both the file directory and its optional marker, so
+every transfer tool uses one resolution.
 -/
 def uploadLocation (backend : UploadBackend) (container? : Option Container)
     (repo : String) (scope? : Option String) : IO Location := do

@@ -5,20 +5,14 @@ Authors: Marcelo Lynch
 -/
 module
 
-public import Cache.Infra
+public import Cache.Requests
 
 /-!
-# Per-SHA cache markers
+# Cache marker operations
 
-A marker is a tiny blob at `/m/{repo}/{sha}` whose existence signals that the
-full `.ltar` upload for a commit completed. `cache put` writes it as the last
-upload step, and `cache query` probes it to discover cached commits with a
-cheap HEAD request instead of a blob listing.
-
-This module holds everything about the marker except the transfer itself: the
-path contract (`markerDirPath`, `markerPath`) and the write mechanics and
-failure policy that the upload tools share (`uploadMarkerWith`). Reads and
-uploads get a marker's URL from `Location.markerURL`.
+`uploadMarker` uploads the marker derived from a location after its artifacts.
+`checkMarker` probes that marker to check whether the commit has a cached build.
+`Location.marker?` defines the marker path and whether a location has a marker.
 -/
 
 public section
@@ -28,45 +22,64 @@ namespace Cache.Requests
 open System (FilePath)
 
 /--
-Blob path of the directory that holds a repo's per-SHA markers: `m/{repo}`,
-with `repo` lowercased via `normalizeRepo`. A marker for one commit lives at
-`{markerDirPath repo}/{sha}`; its presence signals that the writing `put`
-completed its upload to that destination.
+Upload the marker derived from `location`, if present. The temporary file
+contains the marker's SHA and is removed after the transfer. `transfer`
+receives the resolved marker and the file to upload. Repeated writes are
+safe because the content is always the same SHA. The content helps with
+debugging; the marker's presence signals completion.
+
+Call this after the artifact uploads complete. A transfer failure warns
+instead of throwing: the artifacts are already uploaded, and the only loss
+is that `cache query` will not find this commit.
+
+A marker records completion only at its own destination. When destinations
+receive uploads independently, a marker does not establish that its
+destination holds the commit's full transitive closure. The infrastructure
+documentation governs when markers may be trusted for completeness.
 -/
-def markerDirPath (repo : String) : String :=
-  s!"m/{normalizeRepo repo}"
-
-/-- Blob path of the per-SHA marker: `m/{repo}/{sha}` (see `markerDirPath`). -/
-def markerPath (repo sha : String) : String :=
-  s!"{markerDirPath repo}/{sha}"
-
-/--
-Write the marker file for `sha` and hand it to `transfer`, which moves it to
-`markerURL`; every upload tool shares these marker mechanics. The blob
-content is the SHA itself, as a debugging aid; existence is the signal. A
-marker may be overwritten freely, so a re-upload of an already-marked commit
-does not fail here.
-
-Runs after the `.ltar` artifact uploads complete. A `transfer` failure warns
-instead of throwing: the artifacts are already uploaded, and the only loss is
-that `cache query` will not find this commit.
-
-A marker applies only to its own destination: it records that the writing
-`put` completed there. When several destinations receive uploads
-independently, one destination's marker does not say that the destination
-holds a commit's full transitive closure; the infrastructure documentation
-governs when a destination's markers may be trusted for completeness.
--/
-def uploadMarkerWith (markerURL sha : String) (transfer : FilePath → IO Unit) :
-    IO Unit := do
+def uploadMarker (location : Location)
+    (transfer : Location.Marker → FilePath → IO Unit) : IO Unit := do
+  let some marker := location.marker? | return
   let dir ← IO.FS.createTempDir
   try
-    let file := dir / sha
-    IO.FS.writeFile file s!"{sha}\n"
-    transfer file
+    let file := dir / marker.sha
+    IO.FS.writeFile file s!"{marker.sha}\n"
+    transfer marker file
   catch e =>
-    IO.eprintln s!"warning: marker upload to {markerURL} failed: {e}"
+    IO.eprintln s!"warning: marker upload to {marker.url} failed: {e}"
   finally
     IO.FS.removeDirAll dir
+
+/--
+Probe the marker derived from `location`. Return `false` without a request
+when the location has no marker. Otherwise issue an anonymous HEAD against
+the marker URL and return `true` iff the response is 200. The marker is uploaded by `put-staged`
+after a successful upload, so its presence means CI published this commit's
+artifacts. Absence is a weaker signal: CI may not have built the commit yet,
+or its build staged no files — a commit with no cache-relevant changes is
+fully served by the master container, so CI uploads nothing for it, marker
+included.
+
+Cheaper than blob-listing: deterministic URL, headers-only response,
+billed as a Read op.
+-/
+def checkMarker (location : Location) : IO Bool := do
+  let some marker := location.marker? | return false
+  -- Discard the response body to the platform null device (`NUL` on Windows),
+  -- so curl reports a write error only on a genuine failure, not on every probe.
+  let out ← IO.Process.output
+    {cmd := (← IO.getCurl),
+     args := #["-s", "-o", IO.nullDevice, "-w", "%{http_code}", "-I"] ++
+       -- No retry flags: the probe is diagnostic and a false negative is
+       -- cheap. The time bounds keep an unreachable endpoint from stalling
+       -- the up-to-50-probe `cache query` walk.
+       curlFollowRedirectArgs ++
+       #["--connect-timeout", "10", "--max-time", "30", marker.url],
+     cwd := "."}
+  if out.exitCode != 0 then
+    -- Network error; assume no cache at this SHA
+    pure false
+  else
+    pure (out.stdout.trimAscii.toString == "200")
 
 end Cache.Requests

@@ -133,27 +133,6 @@ def flatPath : Container → Bool
 end Container
 
 /--
-Blob path of the directory that holds the cache artifacts, per the container's
-layout policy (`Container.flatPath`): `f` for a flat container, `f/{repo}` for
-a repo-namespaced one, `f/{repo}/{scope}` when a per-SHA scope applies. `repo`
-is lowercased via `normalizeRepo`. A file lives at
-`{fileDirPath container repo scope}/{fileName}`. Every `Location` builds its
-files directory with this function, so reads and uploads share one path
-contract. Like `markerDirPath` (`Cache/Marker.lean`), the path has no trailing
-slash.
--/
-def fileDirPath (container : Option Container) (repo : String)
-    (repoScope : Option String) : String :=
-  let repo := normalizeRepo repo
-  let flat := match container with
-    | some c => c.flatPath
-    | none => repo == MATHLIBREPO
-  if flat then "f"
-  else match repoScope with
-    | some s => s!"f/{repo}/{s}"
-    | none => s!"f/{repo}"
-
-/--
 The public Mathlib cache endpoint. It serves the same `/{container}/{key}`
 namespace as the storage account and caches artifacts at its edge, so reads
 cost the project less and land nearer the reader.

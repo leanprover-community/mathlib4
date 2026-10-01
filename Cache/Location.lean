@@ -5,75 +5,102 @@ Authors: Marcelo Lynch
 -/
 module
 
-public import Cache.Marker
+public import Cache.Infra
 
 /-!
 # Cache locations
 
-A location is where a set of cache files and their per-SHA markers live: a
-root URL, and the directories of the files and of the markers under it. Every
-read and every upload builds its URLs from a location (`Location.fileURL`,
-`Location.markerURL`), so reads and uploads share one path contract.
+A location is a root URL and an optional scope. A scope names a repo and,
+optionally, a commit. Files use the scope as a directory under `f`. A commit
+marker uses the same scope as a file under `m`. Flat locations and repo
+scopes without a commit have no marker.
 
-Two resolvers build a location:
-* `Container.location`, for a known container. The root is the container's
-  URL (`Container.urlUnder`), and the files follow the container's layout.
-* `Location.ofEndpoint`, for a user-supplied URL (`MATHLIB_CACHE_GET_URL`,
-  `MATHLIB_CACHE_PUT_URL`). The files follow the repo.
-
-A read tries a trust-ordered list of locations (`readLocations`). An upload
-writes to one location (`uploadLocation`).
+`Container.location` selects the layout of a known container.
+`Location.ofEndpoint` selects the layout of a user-supplied endpoint.
+The location constructs the file paths and derives its marker. Reads try
+locations in trust order (`readLocations`). Uploads write to one location
+(`uploadLocation`). `Cache/Marker.lean` defines the marker read and write
+operations.
 -/
 
 public section
 
 namespace Cache.Requests
 
-/--
-Where a set of cache files and their per-SHA markers live. `root` is the URL
-that holds the `f/` and `m/` trees, without a trailing slash: a container's URL
-on a read host or on an upload base, or a user-supplied endpoint. `filesDir`
-and `markerDir` are relative to `root`, without a trailing slash. `scope?` is
-the per-SHA scope, if any. The resolvers pass it to the file layout
-(`fileDirPath`), and an upload writes the marker of that SHA after the files.
-`label` names the location in messages.
--/
+/-- The repo namespace, optionally restricted to a commit. -/
+structure Scope where
+  repo : String
+  sha? : Option String
+  deriving Repr, BEq, Inhabited
+
+/-- The shared path under the file and marker trees. -/
+def Scope.path (scope : Scope) : String :=
+  let repo := normalizeRepo scope.repo
+  match scope.sha? with
+  | none => repo
+  | some sha => s!"{repo}/{sha}"
+
+/-- A cache root and its scope. An absent scope selects the flat file layout.
+`root` has no trailing slash. `label` names the location in messages. -/
 structure Location where
   root : String
   label : String
-  filesDir : String
-  markerDir : String
-  scope? : Option String := none
+  scope? : Option Scope
   deriving Repr, BEq, Inhabited
 
 namespace Location
 
-/-- URL of the cache file `fileName`: `{root}/{filesDir}/{fileName}`. -/
-def fileURL (l : Location) (fileName : String) : String :=
-  s!"{l.root}/{l.filesDir}/{fileName}"
+/-- The directory of cache files relative to the root. -/
+def filesDir (location : Location) : String :=
+  match location.scope? with
+  | none => "f"
+  | some scope => s!"f/{scope.path}"
 
-/-- URL of the per-SHA marker of `sha`: `{root}/{markerDir}/{sha}`. -/
-def markerURL (l : Location) (sha : String) : String :=
-  s!"{l.root}/{l.markerDir}/{sha}"
+/-- The URL of one cache file. -/
+def fileURL (location : Location) (fileName : String) : String :=
+  s!"{location.root}/{location.filesDir}/{fileName}"
 
-/-- The location of the user-supplied endpoint `url` for `repo` at the per-SHA
-scope `scope?`. The files are flat for `MATHLIBREPO` and repo-namespaced
-otherwise (`fileDirPath none`). -/
-def ofEndpoint (url label : String) (repo : String) (scope? : Option String) : Location :=
-  { root := url, label, scope?,
-    filesDir := fileDirPath none repo scope?, markerDir := markerDirPath repo }
+/-- The commit SHA for read messages and summaries, if the scope names one. -/
+def sha? (location : Location) : Option String :=
+  location.scope?.bind (·.sha?)
+
+/-- A resolved commit marker. Its SHA also supplies the marker's contents. -/
+structure Marker where
+  root : String
+  path : String
+  sha : String
+  deriving Repr, BEq, Inhabited
+
+/-- The URL of a resolved marker. -/
+def Marker.url (marker : Marker) : String :=
+  s!"{marker.root}/{marker.path}"
+
+/-- Derive the marker an upload writes after its files. Flat locations and
+repo scopes without a SHA have no marker. A commit scope is a directory
+under `f` and a marker file under `m`. -/
+def marker? (location : Location) : Option Marker := do
+  let scope ← location.scope?
+  let sha ← scope.sha?
+  return { root := location.root, path := s!"m/{scope.path}", sha }
+
+/-- The URL of the location's marker, if present. -/
+def markerURL? (location : Location) : Option String :=
+  location.marker?.map (·.url)
+
+/-- An endpoint follows the repo's layout: flat for the canonical repo. -/
+def ofEndpoint (url label repo : String) (sha? : Option String) : Location :=
+  { root := url, label,
+    scope? := if normalizeRepo repo == MATHLIBREPO then none
+      else some { repo, sha? } }
 
 end Location
 
-/--
-The location of container `c` at `root`, for `repo` at the per-SHA scope
-`scope?`. `root` is the container's URL on a read host or on an upload base
-(`Container.urlUnder`). The files follow the container's layout
-(`fileDirPath`).
--/
-def Container.location (c : Container) (root : String) (repo : String)
-    (scope? : Option String) : Location :=
-  { root, label := c.name, scope?,
-    filesDir := fileDirPath (some c) repo scope?, markerDir := markerDirPath repo }
+/-- The location of container `c` at `root`. The root already includes the
+container's segment (`Container.urlUnder`). The container selects a flat
+layout or a repo scope, and the location constructs the paths. -/
+def Container.location (c : Container) (root repo : String)
+    (sha? : Option String) : Location :=
+  { root, label := c.name,
+    scope? := if c.flatPath then none else some { repo, sha? } }
 
 end Cache.Requests
