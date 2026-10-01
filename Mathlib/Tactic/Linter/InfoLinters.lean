@@ -71,15 +71,16 @@ initialize infoLintersRef : IO.Ref (Array InfoLinter) ← IO.mkRef #[]
 field of `Infos`. -/
 def getInfos : CommandElabM Infos :=
   withTraceNode `Elab.lint.infotree.get (fun _ => return m!"getting info nodes") do
-    let trees ← getInfoTrees
-    return trees.foldl (init := {}) <| InfoTree.foldInfo fun ctx info infos =>
-      match info with
-      | .ofTacticInfo i =>
-        { infos with tacticInfos := infos.tacticInfos.push (ctx, i) }
+    let _ ← getInfoTrees
+    -- return trees.foldl (init := {}) <| InfoTree.foldInfo fun _ info infos =>
+    --   match info with
+      -- | .ofTacticInfo i =>
+      --   { infos with tacticInfos := infos.tacticInfos.push (ctx, i) }
       -- | .ofTermInfo i =>
       --   let entries := (infos.termInfos.find? i.elaborator).getD .nil
       --   { infos with termInfos := infos.termInfos.insert i.elaborator (.cons i ctx entries) }
-      | _ => infos
+      -- | _ => infos
+    return {}
 
 /--
 This function "runs" a series of "linter-likes" (for any provided meaning of "run" and
