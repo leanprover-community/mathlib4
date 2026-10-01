@@ -17,13 +17,13 @@ public import Mathlib.LinearAlgebra.LinearIndependent.Basic
 
 Let `A` be an `R`-algebra and `V` an `A`-module. An `R`-submodule `M` of `V` is a lattice if it is
 finitely generated and every `R`-linearly independent subset of `M` is `A`-linearly independent.
-Equivalently, the `R`-rank of `M` equals the `A`-rank of its `A`-span (See
-`Submodule.IsLattice.iff_fg_and_finrank_eq_finrank_span`).
+Equivalently, the `R`-rank of `M` equals the `A`-rank of its `A`-span (see
+`Submodule.IsLattice.iff_fg_and_finrank_span_eq_finrank`).
 
 The typical use-case of this is when `A = K` is a field with `[FaithfulSMul R K]`,
 which includes e.g. `(R, K) = (ℤ, ℚ)` or `(R, K) = (ℤ, ℝ)`.
 
-We do not require lattice to be full. See `Submodule.IsFullLattice` for full lattices.
+We do not require a lattice to be full. See `Submodule.IsFullLattice` for full lattices.
 
 ## Main definitions
 
@@ -36,7 +36,7 @@ We do not require lattice to be full. See `Submodule.IsFullLattice` for full lat
   is automatic, so there lattices are exactly the finitely generated submodules.
 - `Submodule.IsLattice.free`: over a PID, every lattice is `R`-free.
 - `Submodule.IsLattice.inf_left`, `Submodule.IsLattice.inf_right`: over a
-Noetherian ring, the intersection of two lattices is a lattice.
+  Noetherian ring, the intersection of a lattice with a submodule is a lattice.
 
 ## Future work
 
@@ -55,7 +55,7 @@ them is still missing.
 -/
 @[expose] public section
 
-universe u v
+universe v
 
 open Module
 open scoped Pointwise
@@ -105,6 +105,7 @@ theorem finite [IsLattice A M] : Module.Finite R M := by
   rw [Module.Finite.iff_fg]
   exact IsLattice.fg A
 
+/-- A finitely generated submodule of a lattice is a lattice. -/
 theorem mono_of_fg {M N : Submodule R V} (hle : M ≤ N) (hfg : M.FG) [IsLattice A N] :
     IsLattice A M where
   fg := hfg
@@ -155,8 +156,8 @@ theorem rank_span_eq_rank [IsLattice K M] :
   have : Nontrivial R := (algebraMap R K).domain_nontrivial
   rank_span_eq_rank_of_linearIndepOn M linearIndepOn
 
-/-- The `R`-rank of a lattice equals the `K`-dimension
-of its `K`-span. This is the finrank version of `rank_eq_rank_span`. -/
+/-- The `R`-rank of a lattice equals the `K`-dimension of its `K`-span.
+This is the finrank version of `rank_span_eq_rank`. -/
 theorem finrank_span_eq_finrank [IsLattice K M] : finrank K (span K (M : Set V)) = finrank R M :=
   congrArg Cardinal.toNat (rank_span_eq_rank K M)
 
