@@ -222,7 +222,7 @@ info: some ([OEIS A123456](https://oeis.org/A123456) (A vacuous comment))
 -/
 #guard_msgs in
 run_cmd
-  Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `OEIS.test}"
+  Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) ``OEIS.test}"
 
 /-- error: <input>:1:6: OEIS ids must be the letter A followed by exactly six digits, e.g. A123456. -/
 #guard_msgs in #parse Mathlib.CrossRef.oeisIdFn => "search"
