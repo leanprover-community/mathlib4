@@ -50,7 +50,7 @@ theorem sign_one : sign 1 = 1 :=
 theorem sign_apply_eq (r : ℝ) : sign r = -1 ∨ sign r = 0 ∨ sign r = 1 := by
   obtain hn | rfl | hp := lt_trichotomy r (0 : ℝ)
   · exact Or.inl <| sign_of_neg hn
-  · exact Or.inr <| Or.inl <| sign_zero
+  · exact Or.inr <| Or.inl sign_zero
   · exact Or.inr <| Or.inr <| sign_of_pos hp
 
 /-- This lemma is useful for working with `ℝˣ` -/
