@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Order.ConditionallyCompleteLattice.Group
+import Mathlib.Order.ConditionallyCompleteLattice.Group
 public import Mathlib.Topology.MetricSpace.Isometry
 
 /-!
@@ -441,7 +441,7 @@ protected theorem completeSpace [∀ i, CompleteSpace (E i)] : CompleteSpace (Σ
   have hd : ∀ (i j), ∀ x ∈ s i, ∀ y ∈ s j, (x, y) ∈ U → i = j := fun i j x hx y hy hxy =>
     (Eq.symm hx).trans ((fst_eq_of_dist_lt_one _ _ hxy).trans hy)
   refine completeSpace_of_isComplete_univ ?_
-  convert! isComplete_iUnion_separated hc (dist_mem_uniformity zero_lt_one) hd
+  convert isComplete_iUnion_separated hc (dist_mem_uniformity zero_lt_one) hd
   simp only [s, ← preimage_iUnion, iUnion_of_singleton, preimage_univ]
 
 end Sigma

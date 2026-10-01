@@ -222,7 +222,7 @@ theorem smul_mem_of_mem (hx : x ∈ fundamentalCone K) (hc : c ≠ 0) :
 theorem smul_mem_iff_mem (hc : c ≠ 0) :
     c • x ∈ fundamentalCone K ↔ x ∈ fundamentalCone K := by
   refine ⟨fun h ↦ ?_, fun h ↦ smul_mem_of_mem h hc⟩
-  convert! smul_mem_of_mem h (inv_ne_zero hc)
+  convert smul_mem_of_mem h (inv_ne_zero hc)
   rw [eq_inv_smul_iff₀ hc]
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -277,7 +277,7 @@ theorem existsUnique_preimage_of_mem_integerSet {a : mixedSpace K} (ha : a ∈ i
   exact (mixedEmbedding_injective K).comp RingOfIntegers.coe_injective
 
 theorem ne_zero_of_mem_integerSet (a : integerSet K) : (a : mixedSpace K) ≠ 0 := by
-  by_contra!
+  by_contra
   exact a.prop.1.2 (this.symm ▸ mixedEmbedding.norm.map_zero')
 
 open scoped nonZeroDivisors

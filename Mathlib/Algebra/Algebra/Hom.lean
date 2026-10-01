@@ -201,10 +201,10 @@ theorem toAddMonoidHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) �
 @[deprecated (since := "2026-09-15")] alias coe_addMonoidHom_injective := toAddMonoidHom_injective
 
 protected theorem congr_fun {φ₁ φ₂ : A →ₐ[R] B} (H : φ₁ = φ₂) (x : A) : φ₁ x = φ₂ x :=
-  DFunLike.congr_fun H x
+  congr($H x)
 
 protected theorem congr_arg (φ : A →ₐ[R] B) {x y : A} (h : x = y) : φ x = φ y :=
-  DFunLike.congr_arg φ h
+  congr(φ $h)
 
 @[ext]
 theorem ext {φ₁ φ₂ : A →ₐ[R] B} (H : ∀ x, φ₁ x = φ₂ x) : φ₁ = φ₂ :=
@@ -221,7 +221,7 @@ theorem commutes (r : R) : φ (algebraMap R A r) = algebraMap R B r :=
   φ.commutes' r
 
 theorem comp_algebraMap : (φ : A →+* B).comp (algebraMap R A) = algebraMap R B :=
-  RingHom.ext <| φ.commutes
+  RingHom.ext φ.commutes
 
 /-- If a `RingHom` is `R`-linear, then it is an `AlgHom`. -/
 def mk' (f : A →+* B) (h : ∀ (c : R) (x), f (c • x) = c • f x) : A →ₐ[R] B :=
@@ -465,7 +465,7 @@ lemma toIntAlgHom_apply [Ring R] [Ring S] (f : R →+* S) (x : R) :
 
 lemma toIntAlgHom_injective [Ring R] [Ring S] :
     Function.Injective (RingHom.toIntAlgHom : (R →+* S) → _) :=
-  fun _ _ e ↦ DFunLike.ext _ _ (fun x ↦ DFunLike.congr_fun e x)
+  fun _ _ e ↦ DFunLike.ext _ _ (fun x ↦ congr($e x))
 
 variable (R) (S) in
 /-- Ring homomorphisms are the same as `ℤ`-algebra homomorphisms. -/

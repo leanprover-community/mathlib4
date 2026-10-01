@@ -66,7 +66,7 @@ def gi : GaloisInsertion (adjoin F : Set E → IntermediateField F E)
     (fun (x : IntermediateField F E) => (x : Set E)) where
   choice s hs := (adjoin F s).copy s <| le_antisymm (gc.le_u_l s) hs
   gc := IntermediateField.gc
-  le_l_u S := (IntermediateField.gc (S : Set E) (adjoin F S)).1 <| le_rfl
+  le_l_u S := (IntermediateField.gc (S : Set E) (adjoin F S)).1 le_rfl
   choice_eq _ _ := copy_eq _ _ _
 
 instance : CompleteLattice (IntermediateField F E) where
@@ -499,9 +499,9 @@ theorem adjoin_algHom_ext {s : Set E} ⦃φ₁ φ₂ : adjoin F s →ₐ[F] K⦄
     (h : ∀ x hx, φ₁ ⟨x, subset_adjoin _ _ hx⟩ = φ₂ ⟨x, subset_adjoin _ _ hx⟩) :
     φ₁ = φ₂ :=
   AlgHom.ext fun ⟨x, hx⟩ ↦ adjoin_induction _ h (fun _ ↦ φ₂.commutes _ ▸ φ₁.commutes _)
-    (fun _ _ _ _ h₁ h₂ ↦ by convert! congr_arg₂ (· + ·) h₁ h₂ <;> rw [← map_add] <;> rfl)
+    (fun _ _ _ _ h₁ h₂ ↦ by convert congr_arg₂ (· + ·) h₁ h₂ <;> rw [← map_add] <;> rfl)
     (fun _ _ ↦ eq_on_inv₀ _ _)
-    (fun _ _ _ _ h₁ h₂ ↦ by convert! congr_arg₂ (· * ·) h₁ h₂ <;> rw [← map_mul] <;> rfl)
+    (fun _ _ _ _ h₁ h₂ ↦ by convert congr_arg₂ (· * ·) h₁ h₂ <;> rw [← map_mul] <;> rfl)
     hx
 
 theorem algHom_ext_of_eq_adjoin {S : IntermediateField F E} {s : Set E} (hS : S = adjoin F s)
