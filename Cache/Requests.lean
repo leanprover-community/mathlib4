@@ -287,16 +287,16 @@ all repos use `cs` instead.
 -/
 initialize cacheFromOverride : IO.Ref (Option (List Container)) ← IO.mkRef none
 
-/-- Pair each container in a lookup chain with its read URL. The result keeps
-the chain's trust order. -/
-private def chainWithGetURLs (containers : List Container) :
+/-- Pair each container in a lookup chain with its read base. The result
+keeps the chain's trust order. -/
+private def chainWithGetBases (containers : List Container) :
     IO (List (Option Container × String)) :=
-  containers.mapM fun c => do return (some c, ← c.getURL)
+  containers.mapM fun c => do return (some c, ← getBaseURL c)
 
 /--
-Resolve the read URLs for a GitHub repo. Each URL carries its container
-identity when one applies. Container URLs retain the lookup chain's trust
-order; a user-supplied endpoint has no container identity.
+Resolve the read bases for a GitHub repo. Each base carries its container
+identity. The bases retain the lookup chain's trust order. A user-supplied
+endpoint has no container identity and names its complete root URL.
 
 Precedence (most specific wins):
 1. `MATHLIB_CACHE_GET_URL` env var: a single anonymous URL that bypasses the
@@ -312,11 +312,11 @@ Precedence (most specific wins):
 An empty value means unset for both variables here, as it does for
 `MATHLIB_CACHE_BASE_URL`. `nonEmptyEnvValue` holds that rule.
 -/
-def effectiveGetURLs (repo : String) : IO (List (Option Container × String)) := do
+def effectiveGetBases (repo : String) : IO (List (Option Container × String)) := do
   if let some url := normalizeBaseURL (← IO.getEnv "MATHLIB_CACHE_GET_URL") then
     return [(none, url)]
   if let some cliOverride ← cacheFromOverride.get then
-    return ← chainWithGetURLs cliOverride
+    return ← chainWithGetBases cliOverride
   let envOverride? ← do
     match (← getEnvNonEmpty "MATHLIB_CACHE_FROM") with
     | none => pure none
@@ -328,7 +328,7 @@ def effectiveGetURLs (repo : String) : IO (List (Option Container × String)) :=
           (unrecognized container name). Known containers: \
           {", ".intercalate (Container.all.map Container.name)}."
         pure none
-  chainWithGetURLs (envOverride?.getD (defaultContainersForRepo repo))
+  chainWithGetBases (envOverride?.getD (defaultContainersForRepo repo))
 
 /--
 `curl` flags that let a cache read follow a redirect, so a read base may answer
@@ -859,24 +859,25 @@ private def downloadFilesFromLocation (location : Location)
         | _ => (served, failed + 1)
     return ({ failed, decomp := decompState }, served)
 
-/-- Build read locations from URLs paired with optional container identities.
-A URL without a container identity is a user-supplied endpoint.
+/-- Build read locations from bases paired with optional container identities.
+`Container.location` adds each container's segment. A URL without a container
+identity is the complete root of a user-supplied endpoint.
 
-Without `--unsafe` (`unsafeScopes` empty), produce one location per input URL
+Without `--unsafe` (`unsafeScopes` empty), produce one location per input base
 at `scope?`. When no explicit scope applies, `headScope?` supplies the scope
 only for the `forks` container. This lets a plain `cache get` read the fork
 artifacts for the checked-out commit. Other locations do not inherit HEAD.
 
 With `--unsafe`, produce one forks location per discovered SHA, in the supplied
-order. Every other input URL produces one unscoped location, including an
+order. Every other input base produces one unscoped location, including an
 endpoint override. The explicit `scope?` and `headScope?` are ignored. -/
-def readLocationsFrom (repo : String) (containerURLs : List (Option Container × String))
+def readLocationsFrom (repo : String) (containerBases : List (Option Container × String))
     (scope? : Option String) (unsafeScopes : List String)
     (headScope? : Option String := none) : List Location :=
-  containerURLs.flatMap fun (c, url) =>
+  containerBases.flatMap fun (c, base) =>
     let location scope? := match c with
-      | some c => c.location url repo scope?
-      | none => Location.ofEndpoint url "MATHLIB_CACHE_GET_URL" repo scope?
+      | some c => c.location base repo scope?
+      | none => Location.ofEndpoint base "MATHLIB_CACHE_GET_URL" repo scope?
     if unsafeScopes.isEmpty then
       [location (if c == some Container.forks then scope? <|> headScope? else scope?)]
     else if c == some Container.forks then
@@ -886,13 +887,13 @@ def readLocationsFrom (repo : String) (containerURLs : List (Option Container ×
 
 /--
 The locations a read for `repo` tries, most trusted first: the lookup chain of
-`effectiveGetURLs`, resolved by `readLocationsFrom` at the
+`effectiveGetBases`, resolved by `readLocationsFrom` at the
 resolved scope (`getRepoScope`), with the checked-out HEAD as the default
 scope of the `forks` round. `unsafeScopes` is the list of SHA scopes
 discovered by `cache get --unsafe` (empty for a normal read).
 -/
 def readLocations (repo : String) (unsafeScopes : List String := []) : IO (List Location) := do
-  let containerURLs ← effectiveGetURLs repo
+  let containerBases ← effectiveGetBases repo
   let scope? ← getRepoScope
   -- With no explicit scope, the forks round defaults to HEAD: `cache get` on a
   -- checked-out commit retrieves what CI built for exactly that commit, fork
@@ -901,7 +902,7 @@ def readLocations (repo : String) (unsafeScopes : List String := []) : IO (List 
   let headScope? ← if scope?.isNone && unsafeScopes.isEmpty then
       try pure (some (← getGitCommitHash)) catch _ => pure none
     else pure none
-  return readLocationsFrom repo containerURLs scope? unsafeScopes headScope?
+  return readLocationsFrom repo containerBases scope? unsafeScopes headScope?
 
 /-- Outcome of a multi-round download. `failed` counts hard transfer errors
 (anything but a 404 miss) and drives the caller's exit code; `missing` counts

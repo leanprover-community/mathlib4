@@ -118,7 +118,7 @@ def s3UploadLocationFrom (putBase? : Option String) (container? : Option Contain
     -- base without a bucket, such as `https://host`, passes the check with the
     -- segment as the bucket name.
     discard (s3EndpointSplit base)
-    return c.location (c.urlUnder base) repo scope?
+    return c.location base repo scope?
   | some _, none => .error
       "MATHLIB_CACHE_PUT_BASE_URL is set, which rebases a container write; \
       pass --container=NAME to name the container."

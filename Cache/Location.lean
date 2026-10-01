@@ -95,12 +95,12 @@ def ofEndpoint (url label repo : String) (sha? : Option String) : Location :=
 
 end Location
 
-/-- The location of container `c` at `root`. The root already includes the
-container's segment (`Container.urlUnder`). The container selects a flat
-layout or a repo scope, and the location constructs the paths. -/
-def Container.location (c : Container) (root repo : String)
+/-- The location of container `c` under `base`. The constructor adds the
+container segment and selects a flat layout or a repo scope. The location
+constructs the file and marker paths. -/
+def Container.location (c : Container) (base repo : String)
     (sha? : Option String) : Location :=
-  { root, label := c.name,
+  { root := c.urlUnder base, label := c.name,
     scope? := if c.flatPath then none else some { repo, sha? } }
 
 end Cache.Requests

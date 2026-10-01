@@ -175,7 +175,7 @@ def main (args : List String) : IO Unit := do
     let resolved ← try resolveGitRef s catch _ => pure s
     scopeOverride.set (some resolved)
 
-  -- Apply `--cache-from` to the process-wide override read by `effectiveGetURLs`.
+  -- Apply `--cache-from` to the process-wide override read by `effectiveGetBases`.
   if let some s := cacheFromStr? then
     match parseCacheFromList s with
     | none =>

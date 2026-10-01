@@ -163,7 +163,7 @@ The trust model does not attempt to defend against:
 |------------------------------------------------|------------------------------------------------------------------|
 | Container model, URL shape, per-repo defaults  | [`Cache/Infra.lean`](Infra.lean)                                 |
 | Where files live: the URLs of reads and uploads | [`Cache/Location.lean`](Location.lean) (`Location`)             |
-| Read-fallback resolution, dispatch             | [`Cache/Requests.lean`](Requests.lean) (`effectiveGetURLs`, `readLocations`) |
+| Read-fallback resolution, dispatch             | [`Cache/Requests.lean`](Requests.lean) (`effectiveGetBases`, `readLocations`) |
 | Backend selection, location arbitration        | [`Cache/Upload/Defs.lean`](Upload/Defs.lean) (`UploadBackend`, `uploadLocation`), [`Cache/Upload.lean`](Upload.lean) (`runPut`) |
 | Upload backends: credentials, location, signing, transfer | [`Cache/Upload/Azure.lean`](Upload/Azure.lean), [`Cache/Upload/S3.lean`](Upload/S3.lean) |
 | Transfer tool mechanics                        | [`Cache/Upload/Curl.lean`](Upload/Curl.lean), [`Cache/Upload/Rclone.lean`](Upload/Rclone.lean) |

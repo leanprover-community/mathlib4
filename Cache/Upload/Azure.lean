@@ -36,7 +36,7 @@ container.
 def azureUploadLocationFrom (putBase? : Option String) (container? : Option Container)
     (repo : String) (scope? : Option String) : Except String Location :=
   match container? with
-  | some c => .ok (c.location (c.urlUnder (putBase?.getD azureAccountURL)) repo scope?)
+  | some c => .ok (c.location (putBase?.getD azureAccountURL) repo scope?)
   | none => .error
       s!"an upload targets one container: pass --container=NAME (known: \
       {", ".intercalate (Container.all.map Container.name)}), or set \

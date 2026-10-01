@@ -255,32 +255,32 @@ def test_defaultContainersForRepo : IO Unit := do
   assertTrue "unknown repo falls back to the fork chain"
     (defaultContainersForRepo "some/other-repo" == [.master, .forks])
 
-/-- `effectiveGetURLs` pairs the lookup chain with read URLs in trust order.
+/-- `effectiveGetBases` pairs the lookup chain with read bases in trust order.
 This test covers the default chain and the `--cache-from` override. The
 `MATHLIB_CACHE_GET_URL` and `MATHLIB_CACHE_FROM` branches need process state,
 so the CI integration tests exercise them instead. -/
-def test_effectiveGetURLs : IO Unit := do
-  IO.println "effectiveGetURLs:"
+def test_effectiveGetBases : IO Unit := do
+  IO.println "effectiveGetBases:"
   if (← getEnvNonEmpty "MATHLIB_CACHE_GET_URL").isSome ||
       (← getEnvNonEmpty "MATHLIB_CACHE_FROM").isSome then
     IO.println "  skipped: MATHLIB_CACHE_GET_URL or MATHLIB_CACHE_FROM is set"
     return
   let base ← getBaseURL .master
-  assertTrue "default chain pairs each container with its read URL"
-    ((← effectiveGetURLs MATHLIBREPO) ==
-      [(some .master, s!"{base}/mathlib4-master")])
+  assertTrue "default chain pairs each container with its read base"
+    ((← effectiveGetBases MATHLIBREPO) ==
+      [(some .master, base)])
   cacheFromOverride.set (some [.forks, .master])
   assertTrue "--cache-from override keeps its order"
-    ((← effectiveGetURLs MATHLIBREPO) ==
-      [(some .forks, s!"{← getBaseURL .forks}/mathlib4-forks"),
-       (some .master, s!"{base}/mathlib4-master")])
+    ((← effectiveGetBases MATHLIBREPO) ==
+      [(some .forks, ← getBaseURL .forks), (some .master, base)])
   cacheFromOverride.set none
 
 end PerRepoAllowlist
 
 section FileURL
 
-/-- The file URL of one read location, with no HEAD fallback. -/
+/-- The file URL of one read location from a base or endpoint, with no HEAD
+fallback. -/
 def fileURLOf (container? : Option Container) (repo url fileName : String)
     (scope? : Option String := none) : String :=
   ((readLocationsFrom repo [(container?, url)] scope? []).head!).fileURL fileName
@@ -296,29 +296,29 @@ fork uploads in their own namespace. Flat paths ignore the scope.
 -/
 def test_fileURL : IO Unit := do
   IO.println "Location.fileURL:"
-  let url (c : Container) := c.urlUnder "https://cache.example.org"
+  let base := "https://cache.example.org"
   assertEq "master is flat for the canonical repo"
     "https://cache.example.org/mathlib4-master/f/abc.ltar"
-    (fileURLOf (some .master) MATHLIBREPO (url .master) "abc.ltar")
+    (fileURLOf (some .master) MATHLIBREPO base "abc.ltar")
   assertEq "master is flat for a fork repo too"
     "https://cache.example.org/mathlib4-master/f/abc.ltar"
-    (fileURLOf (some .master) "alice/mathlib4" (url .master) "abc.ltar")
+    (fileURLOf (some .master) "alice/mathlib4" base "abc.ltar")
   -- `forks` prefixes by repo even for the canonical repo, so its fork-trust
   -- uploads don't collide with fork uploads in the same container.
   assertEq "forks prefixes by repo for the canonical repo"
     "https://cache.example.org/mathlib4-forks/f/leanprover-community/mathlib4/abc.ltar"
-    (fileURLOf (some .forks) MATHLIBREPO (url .forks) "abc.ltar")
+    (fileURLOf (some .forks) MATHLIBREPO base "abc.ltar")
   assertEq "forks prefixes by repo for a fork repo"
     "https://cache.example.org/mathlib4-forks/f/alice/mathlib4/abc.ltar"
-    (fileURLOf (some .forks) "alice/mathlib4" (url .forks) "abc.ltar")
+    (fileURLOf (some .forks) "alice/mathlib4" base "abc.ltar")
   assertEq "nightly-testing prefixes by repo"
     "https://cache.example.org/mathlib4-nightly-testing/f/leanprover-community/mathlib4-nightly-testing/abc.ltar"
     (fileURLOf (some .nightlyTesting) NIGHTLY_TESTING_REPO
-      (url .nightlyTesting) "abc.ltar")
+      base "abc.ltar")
   assertEq "pr-toolchain-tests prefixes by repo"
     "https://cache.example.org/mathlib4-pr-toolchain-tests/f/leanprover-community/mathlib4-nightly-testing/abc.ltar"
     (fileURLOf (some .prToolchainTests) NIGHTLY_TESTING_REPO
-      (url .prToolchainTests) "abc.ltar")
+      base "abc.ltar")
   -- No container (user-supplied URL): the shape follows the repo — flat for the
   -- canonical repo, prefixed otherwise.
   assertEq "user URL is flat for the canonical repo"
@@ -330,19 +330,19 @@ def test_fileURL : IO Unit := do
   -- A scope adds a `{sha}` path segment on prefixed paths.
   assertEq "scope adds a SHA segment on a fork path"
     "https://cache.example.org/mathlib4-forks/f/alice/mathlib4/abc123def/H.ltar"
-    (fileURLOf (some .forks) "alice/mathlib4" (url .forks) "H.ltar" (some "abc123def"))
+    (fileURLOf (some .forks) "alice/mathlib4" base "H.ltar" (some "abc123def"))
   assertEq "scope adds a SHA segment on the canonical repo's forks path"
     "https://cache.example.org/mathlib4-forks/f/leanprover-community/mathlib4/abc123def/H.ltar"
-    (fileURLOf (some .forks) MATHLIBREPO (url .forks) "H.ltar" (some "abc123def"))
+    (fileURLOf (some .forks) MATHLIBREPO base "H.ltar" (some "abc123def"))
   -- A scope is ignored on flat paths.
   assertEq "scope is ignored on a flat master path"
     "https://cache.example.org/mathlib4-master/f/abc.ltar"
-    (fileURLOf (some .master) MATHLIBREPO (url .master) "abc.ltar" (some "abc123def"))
+    (fileURLOf (some .master) MATHLIBREPO base "abc.ltar" (some "abc123def"))
   -- The repo segment is lowercased, so a mixed-case GitHub owner resolves to the
   -- same path whether it reaches the cache from CI or a local remote URL.
   assertEq "fork repo is lowercased in the path"
     "https://cache.example.org/mathlib4-forks/f/alice/mathlib4/abc.ltar"
-    (fileURLOf (some .forks) "Alice/Mathlib4" (url .forks) "abc.ltar")
+    (fileURLOf (some .forks) "Alice/Mathlib4" base "abc.ltar")
 
 end FileURL
 
@@ -1753,34 +1753,40 @@ def test_readLocationsFrom : IO Unit := do
     paths (readLocationsFrom "Alice/Mathlib4" chain scope? unsafeScopes headScope?)
   assertTrue "no scope gives unscoped locations"
     (resolve none [] none ==
-      [("U_m/f/x.ltar", none), ("U_f/f/alice/mathlib4/x.ltar", none),
-       ("U_n/f/alice/mathlib4/x.ltar", none)])
+      [("U_m/mathlib4-master/f/x.ltar", none),
+       ("U_f/mathlib4-forks/f/alice/mathlib4/x.ltar", none),
+       ("U_n/mathlib4-nightly-testing/f/alice/mathlib4/x.ltar", none)])
   assertTrue "an explicit scope applies to repo-namespaced locations"
     (resolve (some "abc1") [] none ==
-      [("U_m/f/x.ltar", none), ("U_f/f/alice/mathlib4/abc1/x.ltar", some "abc1"),
-       ("U_n/f/alice/mathlib4/abc1/x.ltar", some "abc1")])
+      [("U_m/mathlib4-master/f/x.ltar", none),
+       ("U_f/mathlib4-forks/f/alice/mathlib4/abc1/x.ltar", some "abc1"),
+       ("U_n/mathlib4-nightly-testing/f/alice/mathlib4/abc1/x.ltar", some "abc1")])
   assertTrue "HEAD applies only to forks"
     (resolve none [] (some "abc2") ==
-      [("U_m/f/x.ltar", none), ("U_f/f/alice/mathlib4/abc2/x.ltar", some "abc2"),
-       ("U_n/f/alice/mathlib4/x.ltar", none)])
+      [("U_m/mathlib4-master/f/x.ltar", none),
+       ("U_f/mathlib4-forks/f/alice/mathlib4/abc2/x.ltar", some "abc2"),
+       ("U_n/mathlib4-nightly-testing/f/alice/mathlib4/x.ltar", none)])
   assertTrue "an explicit scope wins over HEAD"
     (resolve (some "abc1") [] (some "abc2") ==
-      [("U_m/f/x.ltar", none), ("U_f/f/alice/mathlib4/abc1/x.ltar", some "abc1"),
-       ("U_n/f/alice/mathlib4/abc1/x.ltar", some "abc1")])
+      [("U_m/mathlib4-master/f/x.ltar", none),
+       ("U_f/mathlib4-forks/f/alice/mathlib4/abc1/x.ltar", some "abc1"),
+       ("U_n/mathlib4-nightly-testing/f/alice/mathlib4/abc1/x.ltar", some "abc1")])
   assertTrue "unsafe scopes replace HEAD"
     (resolve none ["abc3"] (some "abc2") ==
-      [("U_m/f/x.ltar", none), ("U_f/f/alice/mathlib4/abc3/x.ltar", some "abc3"),
-       ("U_n/f/alice/mathlib4/x.ltar", none)])
+      [("U_m/mathlib4-master/f/x.ltar", none),
+       ("U_f/mathlib4-forks/f/alice/mathlib4/abc3/x.ltar", some "abc3"),
+       ("U_n/mathlib4-nightly-testing/f/alice/mathlib4/x.ltar", none)])
   assertTrue "unsafe scopes expand forks in order and drop the explicit scope"
     (resolve (some "abc1") ["abc3", "abc4"] none ==
-      [("U_m/f/x.ltar", none),
-       ("U_f/f/alice/mathlib4/abc3/x.ltar", some "abc3"),
-       ("U_f/f/alice/mathlib4/abc4/x.ltar", some "abc4"),
-       ("U_n/f/alice/mathlib4/x.ltar", none)])
+      [("U_m/mathlib4-master/f/x.ltar", none),
+       ("U_f/mathlib4-forks/f/alice/mathlib4/abc3/x.ltar", some "abc3"),
+       ("U_f/mathlib4-forks/f/alice/mathlib4/abc4/x.ltar", some "abc4"),
+       ("U_n/mathlib4-nightly-testing/f/alice/mathlib4/x.ltar", none)])
   assertTrue "unsafe scopes have no effect without forks"
     (paths (readLocationsFrom "Alice/Mathlib4"
       [(some .master, "U_m"), (some .nightlyTesting, "U_n")] none ["abc3", "abc4"]) ==
-      [("U_m/f/x.ltar", none), ("U_n/f/alice/mathlib4/x.ltar", none)])
+      [("U_m/mathlib4-master/f/x.ltar", none),
+       ("U_n/mathlib4-nightly-testing/f/alice/mathlib4/x.ltar", none)])
   assertTrue "a fork endpoint retains its explicit scope"
     (paths (readLocationsFrom "Alice/Mathlib4" [(none, "U_e")]
       (some "abc1") [] (some "abc2")) ==
@@ -1949,7 +1955,7 @@ def runAll : IO Unit := do
   test_envValueNormalization
   test_getBaseURLFrom
   test_defaultContainersForRepo
-  test_effectiveGetURLs
+  test_effectiveGetBases
   test_fileURL
   test_parseCacheFromList
   test_extractRepoFromUrl
