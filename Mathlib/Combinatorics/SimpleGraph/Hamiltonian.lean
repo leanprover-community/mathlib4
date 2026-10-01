@@ -378,25 +378,10 @@ theorem IsBridge.not_isHamiltonian {e : Sym2 α} (he : G.IsBridge e) : ¬G.IsHam
     (fun huv ↦ he <| .trans ?_ huv) he (hp.isHamiltonian_tail.mem_support v)
   apply hp.isTrail.isEdgeReachable_two <;> simp
 
--- #41435
-set_option warn.sorry false in set_option linter.style.longLine false in
-omit [Fintype α] in
-@[simp] theorem Walk.isHamiltonian_copy {G : SimpleGraph α} {u v u' v' : α} {p : G.Walk u v} (hu : u = u') (hv : v = v') : (p.copy hu hv).IsHamiltonian ↔ p.IsHamiltonian := sorry
-set_option warn.sorry false in set_option linter.style.longLine false in
-omit [Fintype α] in
-@[simp] theorem Walk.isHamiltonianCycle_reverse {G : SimpleGraph α} {v : α} {p : G.Walk v v} : p.reverse.IsHamiltonianCycle ↔ p.IsHamiltonianCycle := sorry
-protected alias ⟨_, Walk.IsHamiltonianCycle.reverse⟩ := Walk.isHamiltonianCycle_reverse
-set_option warn.sorry false in set_option linter.style.longLine false in
-omit [Fintype α] in
-@[simp] theorem Walk.isHamiltonian_mapLe {G'} {u v : α} {p : G.Walk u v} (hle : G ≤ G') : (p.mapLe hle).IsHamiltonian ↔ p.IsHamiltonian := sorry
-protected alias ⟨_, Walk.IsHamiltonian.mapLe⟩ := Walk.isHamiltonian_mapLe
-set_option warn.sorry false in set_option linter.style.longLine false in
-omit [Fintype α] in
-theorem Walk.IsHamiltonianCycle.isHamiltonian_dropLast {v : α} {p : G.Walk v v} (hp : p.IsHamiltonianCycle) : p.dropLast.IsHamiltonian := sorry
-
 -- #41393
-set_option warn.sorry false in set_option linter.style.longLine false in
-theorem Walk.IsHamiltonian.isHamiltonian_of_adj {G : SimpleGraph α} {u v : α} {p : G.Walk u v} (hp : p.IsHamiltonian) (hadj : G.Adj u v) (hlen : p.length ≠ 1) : G.IsHamiltonian := sorry
+set_option warn.sorry false in
+theorem Walk.IsHamiltonian.isHamiltonian_of_adj (hp : p.IsHamiltonian) (hadj : G.Adj a b)
+    (hlen : p.length ≠ 1) : G.IsHamiltonian := sorry
 
 theorem isHamiltonian_sup_edge {u v : α} :
     (G ⊔ edge u v).IsHamiltonian ↔
