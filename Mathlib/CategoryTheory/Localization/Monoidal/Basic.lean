@@ -364,7 +364,6 @@ lemma pentagon (Y₁ Y₂ Y₃ Y₄ : LocalizedMonoidal L W ε) :
     (NatTrans.congr_app (pentagon_natTrans (L := L) (W := W) (ε := ε)) Y₁) Y₂) Y₃) Y₄
   rw [MonoidalCategory.ofBifunctor.Pentagon.firstMap_app_app_app_app,
     MonoidalCategory.ofBifunctor.Pentagon.secondMap_app_app_app_app] at h
-  change Pentagon Y₁ Y₂ Y₃ Y₄ at h
   exact h
 
 lemma leftUnitor_naturality {X Y : LocalizedMonoidal L W ε} (f : X ⟶ Y) :
@@ -393,8 +392,7 @@ lemma triangle_natTrans : ofBifunctor.Triangle.firstMap (tensorBifunctor L W ε)
     ← cancel_mono (μ L W ε X (𝟙_ C ⊗ Y)).hom] at h₁
   have h₂ : e.hom ▷ (L').obj Y ≫ (λ_ ((L').obj Y)).hom =
       (μ L W ε (𝟙_ C) Y).hom ≫ (L').map (λ_ Y).hom := by
-    rw [leftUnitor_hom_app]
-    change e.hom ▷ (L').obj Y ≫ e.inv ▷ (L').obj Y ≫ _ = _
+    simp only [leftUnitor_hom_app, ε']
     rw [← whiskerRight_comp_assoc, e.hom_inv_id, whiskerRight_id, id_comp]
   have h₃ := (((μ L W ε _ _).hom ⊗ₘ 𝟙 _) ≫ (μ L W ε _ _).hom) ≫=
     ((L').congr_map (MonoidalCategory.triangle X Y))
