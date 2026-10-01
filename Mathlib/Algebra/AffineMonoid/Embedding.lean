@@ -23,7 +23,7 @@ public section
 
 open Algebra AddLocalization Function
 
-variable {M : Type*} [AddCancelCommMonoid M] [AddMonoid.FG M] [IsAddTorsionFree M]
+variable {M : Type*} [AddCancelCommMonoid M] [AddMonoid.FG M] [HasUniqueDiv M]
 
 namespace AffineAddMonoid
 
