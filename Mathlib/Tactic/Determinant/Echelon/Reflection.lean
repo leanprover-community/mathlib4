@@ -33,7 +33,7 @@ section
 variable [Zero α] [One α] [Mul α]
 
 /-- The product of the `c` entries at columns `k, k + 1, …` of successive rows. A missing row or
-entry makes it `0`. -/
+entry makes the product terminate with `0`. -/
 def diagProd (k c : ℕ) (rows : List (List α)) : α :=
   match c, rows with
   | 0, _ => 1
@@ -90,7 +90,7 @@ theorem intCast_sign_swap_trans [AddGroupWithOne α] {s : α}
 
 /-! ### Determinants from echelon decompositions -/
 
-/-- Computing determinant from a decomposition. The statement is written in this form to avoid
+/-- Compute determinant from a decomposition. The statement is written in this shape to avoid
 mentioning division. -/
 theorem det_eq_of_decomposition {m : ℕ} {R : Type*} [CommRing R] [NoZeroDivisors R]
     {A : Matrix (Fin m) (Fin m) R} (cert : Echelon.Decomposition A) {rowsL rowsU : List (List R)}

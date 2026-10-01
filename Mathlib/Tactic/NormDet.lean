@@ -73,8 +73,8 @@ simproc_decl norm_det (Matrix.det _) := fun e => do
   let e ← instantiateMVars e
   let ⟨_, _, e⟩ ← inferTypeQ' e
   let ~q(@Matrix.det (Fin $n) _ _ _ $rα $matrix) := e | return .continue
-  -- TODO: this `try … catch` is removable once the echelon models return `none` on an entry
-  -- out of scope instead of throwing.
+  -- TODO: once the echelon models return `none` on an entry out of scope, this `catch` only
+  -- sees bugs on the echelon path; trace them under the engine's class.
   if let some r ← try normDetEchelon? matrix catch _ => pure none then return .done r
   let some entries ← entriesOfMatrixLiteral? matrix | return .continue
   return .done (← normalizeDetFromEntries rα matrix entries)
