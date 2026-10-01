@@ -81,7 +81,7 @@ end CommRing
 
 section TorsionFree
 
-variable {R : Type*} [CommRing R] [IsAddTorsionFree R]
+variable {R : Type*} [CommRing R] [HasUniqueDiv R]
 variable {P Y : R⟦X⟧}
 variable (hY : Y = X * P.subst Y)
 include hY
