@@ -245,6 +245,8 @@ theorem _root_.Matrix.mem_range_scalar_iff_commute_transvectionStruct {M : Matri
   refine (Commute.one_left M).add_left ?_
   convert! (h _ _ t.hij).smul_left t.c using 1
   simp
+  convert (h _ _ t.hij).smul_left t.c using 1
+  rw [smul_single, smul_eq_mul, mul_one]
 
 end
 
