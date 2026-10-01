@@ -94,7 +94,7 @@ arbitrary `Fintype` instances, use `Finset.univ_eq_empty`. -/
 theorem univ_ofIsEmpty [IsEmpty α] : @univ α Fintype.ofIsEmpty = ∅ :=
   rfl
 
-@[nolint instanceDiamonds] instance : Fintype Empty := Fintype.ofIsEmpty
-@[nolint instanceDiamonds] instance : Fintype PEmpty := Fintype.ofIsEmpty
+instance : Fintype Empty := Fintype.ofIsEmpty
+instance : Fintype PEmpty := Fintype.ofIsEmpty
 
 end Fintype
