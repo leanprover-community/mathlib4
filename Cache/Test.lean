@@ -628,8 +628,10 @@ def test_readLocations : IO Unit := do
   IO.println "readLocations:"
   if (← getEnvNonEmpty "MATHLIB_CACHE_GET_URL").isSome ||
       (← getEnvNonEmpty "MATHLIB_CACHE_FROM").isSome ||
-      (← getEnvNonEmpty "MATHLIB_CACHE_REPO_SCOPE").isSome then
-    IO.println "  skipped: a read endpoint, container list, or scope is set in the environment"
+      (← getEnvNonEmpty "MATHLIB_CACHE_REPO_SCOPE").isSome ||
+      (← getEnvNonEmpty "GIT_DIR").isSome ||
+      (← getEnvNonEmpty "GIT_WORK_TREE").isSome then
+    IO.println "  skipped: cache read overrides or Git directory overrides are set"
     return
   let savedContainers ← cacheFromOverride.get
   let savedScope ← scopeOverride.get
