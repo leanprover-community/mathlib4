@@ -6,7 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Batteries.Data.List.Interleave
-public import Mathlib.Data.Nat.SuccPred
+public import Mathlib.Order.SuccPred.Nat
 
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.ChainOfFn
