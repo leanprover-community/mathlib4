@@ -5,12 +5,11 @@ Authors: Yaël Dillies, Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Order.SuccPred.WithBot
 public import Mathlib.Algebra.Polynomial.CoeffMem
-public import Mathlib.Data.DFinsupp.WellFounded
+import Mathlib.Data.DFinsupp.WellFounded
 public import Mathlib.RingTheory.Spectrum.Prime.ConstructibleSet
 public import Mathlib.RingTheory.Spectrum.Prime.Polynomial
-public import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-!
 # Chevalley's theorem with complexity bound
@@ -203,7 +202,7 @@ private lemma induction_structure (n : ℕ)
     by_cases he0 : e = ⟨0⟩
     · exact he0 ▸ hP₁ R
     cases subsingleton_or_nontrivial R
-    · convert! hP₁ R; ext; exact Subsingleton.elim _ _
+    · convert hP₁ R; ext; exact Subsingleton.elim _ _
     simp only [InductionObj.ext_iff, funext_iff, Pi.zero_apply, not_forall] at he0
     -- Case I : The `e i ≠ 0` with minimal degree has invertible leading coefficient
     by_cases H : (∃ i, (e.1 i).Monic ∧ ∀ j, e.1 j ≠ 0 → (e.1 i).degree ≤ (e.1 j).degree)
@@ -267,7 +266,7 @@ private lemma induction_structure (n : ℕ)
       · intro j; simpa using degree_map_le
       simp only [coe_mapRingHom, ne_eq]
       intro h_eq
-      replace h_eq := congr_fun h_eq i
+      replace h_eq := congr($h_eq i)
       simp only [Ideal.Quotient.algebraMap_eq, comp_apply, degree_map_eq_iff,
         Ideal.Quotient.mk_singleton_self, ne_eq, not_true_eq_false, false_or] at h_eq
       exact hi h_eq
@@ -432,7 +431,7 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
   apply induction_structure
   · intro R _ R₀ _ _ f
     refine ⟨(Finset.range (f.natDegree + 2)).image fun j ↦ ⟨f.coeff j, 0, 0⟩, ?_, ?_⟩
-    · convert! image_comap_C_basicOpen f
+    · convert image_comap_C_basicOpen f
       · simp only [basicOpen_eq_zeroLocus_compl, Set.compl_eq_univ_sdiff]
         congr 1
         rw [← Set.univ_subset_iff]
@@ -531,7 +530,7 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
       · intro l m
         rw [update_apply]
         split_ifs with hlj
-        · convert!
+        · convert
           coeff_modByMonic_mem_pow_natDegree_mul _ _ _ (fun _ ↦ coeff_mem_coeffSubmodule)
             one_mem_coeffSubmodule _ (fun _ ↦ coeff_mem_coeffSubmodule) one_mem_coeffSubmodule _
           rw [← pow_succ, Polynomial.degree_eq_natDegree, WithBot.succ_natCast, Nat.cast_id]
@@ -814,7 +813,7 @@ lemma chevalley_mvPolynomial_mvPolynomial
   let σ : MvPolynomial (Fin m) R →+* MvPolynomial (Fin m) (MvPolynomial (Fin n) R) :=
     map (algebraMap _ _)
   have hσ : g.comp σ = .id _ := by ext : 2 <;> simp [g, σ]
-  have hσ' (x) : g (σ x) = x := DFunLike.congr_fun hσ x
+  have hσ' (x) : g (σ x) = x := congr($hσ x)
   have hg' : Surjective g := LeftInverse.surjective hσ'
   let S' : ConstructibleSetData (MvPolynomial (Fin m) (MvPolynomial (Fin n) R)) := S.image
     fun ⟨fk, k, gk⟩ ↦ ⟨σ fk, k + n, fun s ↦ (finSumFinEquiv.symm s).elim (σ ∘ gk)

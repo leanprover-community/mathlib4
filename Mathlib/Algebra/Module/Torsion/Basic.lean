@@ -7,12 +7,9 @@ module
 
 public import Mathlib.Algebra.DirectSum.Module
 public import Mathlib.Algebra.Module.ZMod
-public import Mathlib.Algebra.Regular.Opposite
 public import Mathlib.GroupTheory.Torsion
 public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.RingTheory.Coprime.Ideal
-public import Mathlib.RingTheory.Finiteness.Defs
-public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.SimpleModule.Basic
 
@@ -136,7 +133,7 @@ theorem iSupIndep.linearIndependent' {ι R M : Type*} {v : ι → M} [Ring R]
   have : r • v i ∈ (⊥ : Submodule R M) := by
     rw [← hv, Submodule.mem_inf]
     refine ⟨Submodule.mem_span_singleton.mpr ⟨r, rfl⟩, ?_⟩
-    convert! hi
+    convert hi
     ext
     simp
   rw [← Submodule.mem_bot R, ← h_ne_zero i]
@@ -366,7 +363,7 @@ theorem isTorsionBy_iff_torsionBy_eq_top : IsTorsionBy R M a ↔ torsionBy R M a
 theorem isTorsionBySet_iff_subseteq_ker_lsmul :
     IsTorsionBySet R M s ↔ s ⊆ LinearMap.ker (LinearMap.lsmul R M) where
   mp h r hr := LinearMap.mem_ker.mpr <| LinearMap.ext fun x => @h x ⟨r, hr⟩
-  mpr | h, x, ⟨_, hr⟩ => DFunLike.congr_fun (LinearMap.mem_ker.mp (h hr)) x
+  mpr | h, x, ⟨_, hr⟩ => congr($(LinearMap.mem_ker.mp (h hr)) x)
 
 theorem isTorsionBy_iff_mem_ker_lsmul :
     IsTorsionBy R M a ↔ a ∈ LinearMap.ker (LinearMap.lsmul R M) :=
@@ -484,7 +481,7 @@ variable {q : ι → R}
 
 open scoped Function -- required for scoped `on` notation
 
-theorem iSup_torsionBy_eq_torsionBy_prod (hq : (S : Set ι).Pairwise <| (IsCoprime on q)) :
+theorem iSup_torsionBy_eq_torsionBy_prod (hq : (S : Set ι).Pairwise (IsCoprime on q)) :
     ⨆ i ∈ S, torsionBy R M (q i) = torsionBy R M (∏ i ∈ S, q i) := by
   rw [← torsionBySet_span_singleton_eq, Ideal.submodule_span_eq, ←
     Ideal.finset_inf_span_singleton _ _ hq, Finset.inf_eq_iInf, ←
@@ -496,7 +493,7 @@ theorem iSup_torsionBy_eq_torsionBy_prod (hq : (S : Set ι).Pairwise <| (IsCopri
     exact (torsionBySet_span_singleton_eq _).symm
   exact fun i hi j hj ij => (Ideal.sup_eq_top_iff_isCoprime _ _).mpr (hq hi hj ij)
 
-theorem supIndep_torsionBy (hq : (S : Set ι).Pairwise <| (IsCoprime on q)) :
+theorem supIndep_torsionBy (hq : (S : Set ι).Pairwise (IsCoprime on q)) :
     S.SupIndep fun i => torsionBy R M <| q i := by
   convert!
     supIndep_torsionBySet_ideal (M := M) fun i hi j hj ij =>
@@ -533,7 +530,7 @@ theorem torsionBySet_isInternal {p : ι → Ideal R}
 open scoped Function in -- required for scoped `on` notation
 /-- If the `q i` are pairwise coprime, a `∏ i, q i`-torsion module is the internal direct sum of
 its `q i`-torsion submodules. -/
-theorem torsionBy_isInternal {q : ι → R} (hq : (S : Set ι).Pairwise <| (IsCoprime on q))
+theorem torsionBy_isInternal {q : ι → R} (hq : (S : Set ι).Pairwise (IsCoprime on q))
     (hM : Module.IsTorsionBy R M <| ∏ i ∈ S, q i) :
     DirectSum.IsInternal fun i : S => torsionBy R M <| q i := by
   rw [← Module.isTorsionBySet_span_singleton_iff, Ideal.submodule_span_eq, ←

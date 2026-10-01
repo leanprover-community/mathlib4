@@ -586,7 +586,7 @@ protected theorem inv [DecidableEq n] {M : Matrix n n K} (hM : M.PosDef) : M⁻�
 theorem _root_.Matrix.posDef_inv_iff [DecidableEq n] {M : Matrix n n K} :
     M⁻¹.PosDef ↔ M.PosDef :=
   ⟨fun h =>
-    letI := (Matrix.isUnit_nonsing_inv_iff.1 <| h.isUnit).invertible
+    letI := (Matrix.isUnit_nonsing_inv_iff.1 h.isUnit).invertible
     Matrix.inv_inv_of_invertible M ▸ h.inv, (·.inv)⟩
 
 /-- A positive semi-definite matrix is positive definite if and only if it is invertible. -/
@@ -659,7 +659,7 @@ theorem fromBlocks₂₂ [DecidableEq n] (A : Matrix m m R')
     (fromBlocks A B Bᴴ D).PosSemidef ↔ (A - B * D⁻¹ * Bᴴ).PosSemidef := by
   rw [← posSemidef_submatrix_equiv (Equiv.sumComm n m), Equiv.sumComm_apply,
     fromBlocks_submatrix_sum_swap_sum_swap]
-  convert! fromBlocks₁₁ Bᴴ A hD <;> simp
+  convert fromBlocks₁₁ Bᴴ A hD <;> simp
 
 end SchurComplement
 
