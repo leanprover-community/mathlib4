@@ -1,6 +1,6 @@
 module
 
-import all Mathlib.Tactic.Linter.PrivateModule
+import all MathlibInit.Tactic.Linter.PrivateModule
 import Mathlib.Util.Notation3
 
 open Lean

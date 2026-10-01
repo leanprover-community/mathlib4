@@ -1,5 +1,5 @@
-import Mathlib.Tactic.TacticAnalysis.Declarations
-import Mathlib.Tactic.AdaptationNote
+import MathlibInit.Tactic.TacticAnalysis.Declarations
+import MathlibInit.Tactic.AdaptationNote
 import Lean.LibrarySuggestions
 import Mathlib.Algebra.BigOperators.Associated
 

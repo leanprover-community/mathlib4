@@ -32,6 +32,7 @@ def IRDIR : FilePath :=
 TODO: write a better predicate. -/
 def isPartOfMathlibCache (mod : Name) : Bool := #[
   `Mathlib,
+  `MathlibInit,
   `Batteries,
   `BatteriesRecycling,
   `Aesop,
@@ -413,7 +414,7 @@ def getLocalCacheSet : IO <| Std.TreeSet String compare := do
   return .ofList (paths.toList.map (·.withoutParent CACHEDIR |>.toString)) _
 
 def isFromMathlib (mod : Name) : Bool :=
-  mod.getRoot == `Mathlib
+  mod.getRoot == `Mathlib || mod.getRoot == `MathlibInit
 
 /-- Get the trace file path for a module. -/
 def getTracePath (mod : Name) : CacheM FilePath := do

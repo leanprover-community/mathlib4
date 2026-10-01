@@ -5,7 +5,7 @@ Authors: Jannis Limperg
 -/
 
 import Aesop
-import Mathlib.Tactic.Linter.UnusedTactic
+import MathlibInit.Tactic.Linter.UnusedTactic
 
 set_option linter.unusedTactic true
 

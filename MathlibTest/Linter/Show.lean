@@ -1,5 +1,5 @@
 module
-import Mathlib.Tactic.Linter.Style
+import MathlibInit.Tactic.Linter.Style
 
 set_option linter.style.show true
 

@@ -1,6 +1,6 @@
 module
 
-public import Mathlib.Tactic.Linter.HaveILetI
+public import MathlibInit.Tactic.Linter.HaveILetI
 
 /--
 warning: Try this: ⏎

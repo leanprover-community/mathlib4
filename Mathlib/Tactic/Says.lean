@@ -6,7 +6,7 @@ Authors: Kim Morrison
 module
 
 public meta import Lean.Meta.Tactic.TryThis
-public meta import Mathlib.Lean.Elab.InfoTree
+public meta import MathlibInit.Lean.Elab.InfoTree
 public import Batteries.Linter.UnreachableTactic
 public import Mathlib.Tactic.Basic
 public meta import Qq.MatchImpl

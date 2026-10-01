@@ -1,6 +1,6 @@
 module
 
-public import Mathlib.Tactic.Linter.AuxLemma
+public import MathlibInit.Tactic.Linter.AuxLemma
 public import Mathlib.Init
 public import Init.Data.Iterators.Combinators.Monadic.FilterMap
 

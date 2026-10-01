@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Linter.TacticDocumentation
+import MathlibInit.Tactic.Linter.TacticDocumentation
 import Batteries.Tactic.Lint.Frontend
 
 syntax "noDocs" : tactic

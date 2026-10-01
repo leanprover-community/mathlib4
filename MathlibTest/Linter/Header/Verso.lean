@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 
-import Mathlib.Tactic.Linter.Header
+import MathlibInit.Tactic.Linter.Header
 
 set_option doc.verso true in
 /-!

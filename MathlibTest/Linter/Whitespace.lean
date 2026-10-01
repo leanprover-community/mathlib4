@@ -1,8 +1,8 @@
 module
 
 import Aesop.Frontend.Attribute
-import all Mathlib.Tactic.Linter.Whitespace
-import Mathlib.Tactic.Linter.Style
+import all MathlibInit.Tactic.Linter.Whitespace
+import MathlibInit.Tactic.Linter.Style
 import Mathlib.Init
 
 set_option linter.style.whitespace true
