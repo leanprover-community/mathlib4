@@ -450,12 +450,12 @@ lemma sum_restrict (P : Finpartition a) (hb : b ≤ a) {M : Type*} [AddCommMonoi
 
 /-- A `Finpartition` constructor of `parts.sup id` from a finset `parts` of pairwise disjoint
 elements. Any `⊥` elements in `parts` are erased. -/
-@[deprecated ofErase (since := "2026-06-05"), simps! parts]
+@[deprecated ofErase (since := "2026-10-01"), simps! parts]
 def ofPairwiseDisjoint (parts : Finset α) (hdisjoint : (parts : Set α).PairwiseDisjoint id) :
     Finpartition (parts.sup id) :=
   ofErase parts hdisjoint.supIndep rfl
 
-@[deprecated Finset.sum_erase (since := "2026-06-05")]
+@[deprecated Finset.sum_erase (since := "2026-10-01")]
 lemma sum_ofPairwiseDisjoint_eq_sum {parts : Finset α}
     (hdisjoint : (parts : Set α).PairwiseDisjoint id)
     {X : Type*} [AddCommMonoid X] {f : α → X} (hf : f ⊥ = 0) :
