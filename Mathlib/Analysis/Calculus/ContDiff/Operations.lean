@@ -326,7 +326,7 @@ theorem contDiffWithinAt_comp_add_iff {k : E} :
   · rw [show f = (fun y ↦ f (y + k)) ∘ fun z ↦ (z - k) by simp [Function.comp_def]]
     exact ContDiffWithinAt.comp (x + k) (by simpa) (by fun_prop)
       <| fun _ _ ↦ by simpa
-  · exact ContDiffWithinAt.comp x h (by fun_prop) <| fun _ _ ↦ by simpa
+  · exact h.comp x (by fun_prop) <| fun _ _ ↦ by simpa
 
 /-- Translations preserve `C^n` regularity at a point. -/
 theorem contDiffAt_comp_add_iff {k : E} :
