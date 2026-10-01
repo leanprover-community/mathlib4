@@ -70,8 +70,7 @@ def mkZsqrtdRawLit (dQ : Q(ℤ)) {d : ℤ} (v : ℤ√d) : Q(Zsqrtd $dQ) :=
   q(⟨$(Meta.NormNum.mkRawIntLit v.re), $(Meta.NormNum.mkRawIntLit v.im)⟩)
 
 /-- The `ℤ√d` model. The elimination runs on literals with raw integer components, computed
-with the arithmetic of `ℤ√d`. `d` is the value of the integer literal `dQ`. Equality in `ℤ√d`
-is settled by `decide`, so the model has no entry certifier. -/
+with the arithmetic of `ℤ√d`. `d` is the value of the integer literal `dQ`. -/
 def zsqrtdModel (dQ : Q(ℤ)) (d : ℤ) : Model Expr where
   ops := (zsqrtdOps d).lift (zsqrtdOfRawLit? d) (mkZsqrtdRawLit dQ)
   evalEntry e := return (mkZsqrtdRawLit dQ (← evalZsqrtdEntry d e), none)
