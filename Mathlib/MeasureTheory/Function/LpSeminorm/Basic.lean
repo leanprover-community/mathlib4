@@ -5,12 +5,13 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 module
 
-import Mathlib.Data.Fintype.Order
 public import Mathlib.MeasureTheory.Function.AEEqFun
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
 public import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
 
+import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Analysis.MeanInequalitiesPow
+import Mathlib.Data.Fintype.Order
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 
 /-!
@@ -983,18 +984,20 @@ lemma eLpNormEssSup_add_measure {ε : Type*} [TopologicalSpace ε] [ContinuousEN
       eLpNormEssSup_mono_measure _ (.add_right' .rfl _)⟩
 
 lemma MemLp.add_measure (h1 : MemLp f p μ) (h2 : MemLp f p ν) : MemLp f p (μ + ν) := by
-  refine ⟨h1.aestronglyMeasurable.add_measure h2.aestronglyMeasurable, ?_⟩
-  rw [eLpNorm]
+  rw [MemLp, eLpNorm, ite_eq_left]
+  swap; · exact h1.aestronglyMeasurable.add_measure h2.aestronglyMeasurable
   split_ifs with hp hp'
   · simp
   · rw [hp'] at h1 h2
     grw [eLpNormEssSup_add_measure, max_le_add_of_nonneg (by simp) (by simp),
-      ← eLpNorm_exponent_top, ← eLpNorm_exponent_top, h1.2, top_add]
-    exact h2.2.ne
+      ← eLpNorm_exponent_top h1.aestronglyMeasurable,
+      ← eLpNorm_exponent_top h2.aestronglyMeasurable, h1.eLpNorm_lt_top, top_add]
+    exact h2.eLpNorm_ne_top
   · grw [eLpNorm', lintegral_add_measure, ENNReal.rpow_add_le_mul_rpow_add_rpow' _ _ (by simp),
-      ← eLpNorm', ← eLpNorm', ← eLpNorm_eq_eLpNorm' hp hp', ← eLpNorm_eq_eLpNorm' hp hp', h1.2]
+      ← eLpNorm', ← eLpNorm', ← eLpNorm_eq_eLpNorm' hp hp' h1.aestronglyMeasurable,
+      ← eLpNorm_eq_eLpNorm' hp hp' h2.aestronglyMeasurable, h1.eLpNorm_lt_top]
     · simp
-    · exact h2.2.ne
+    · exact h2.eLpNorm_ne_top
     · exact ENNReal.LpAddConst_ne_zero
     · exact (ENNReal.LpAddConst_lt_top _).ne
 
@@ -1151,3 +1154,4 @@ theorem _root_.Continuous.memLp_top_of_hasCompactSupport
 
 end Lp
 end MeasureTheory
+#min_imports
