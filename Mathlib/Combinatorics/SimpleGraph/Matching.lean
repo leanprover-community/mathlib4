@@ -130,10 +130,10 @@ theorem IsMatching.cardinalMk_verts (h : M.IsMatching) :
     ← image_coe_edgeSet_coe, Cardinal.mk_image_eq <| Sym2.map.injective Subtype.val_injective]
 
 theorem IsMatching.encard_verts (h : M.IsMatching) : M.verts.encard = 2 * M.edgeSet.encard := by
-  simpa using congr(Cardinal.toENat $h.cardinalMk_verts)
+  simp [← Set.toENat_cardinalMk, h.cardinalMk_verts]
 
 theorem IsMatching.ncard_verts (h : M.IsMatching) : M.verts.ncard = 2 * M.edgeSet.ncard := by
-  simpa using congr(ENat.toNat $h.encard_verts)
+  simp [Set.ncard_def, h.encard_verts]
 
 lemma IsMatching.sup (hM : M.IsMatching) (hM' : M'.IsMatching)
     (hd : Disjoint M.support M'.support) : (M ⊔ M').IsMatching := by
