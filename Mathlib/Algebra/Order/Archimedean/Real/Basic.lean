@@ -7,11 +7,11 @@ module
 
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Order.Archimedean.Basic
-public import Mathlib.Data.Real.Basic
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.Order.Interval.Set.Disjoint
 
 import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
-import Mathlib.Data.Int.LeastGreatest
+import Mathlib.Order.Int.LeastGreatest
 
 /-!
 # The real numbers are an Archimedean floor ring, and a conditionally complete linear order.

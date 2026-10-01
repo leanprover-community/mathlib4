@@ -8,13 +8,10 @@ module
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Analysis.Normed.Group.Lemmas
 public import Mathlib.Analysis.Normed.Affine.Isometry
-public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.Analysis.Normed.Module.RieszLemma
-public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
-public import Mathlib.Analysis.SpecificLimits.Normed
-public import Mathlib.Topology.Algebra.AffineSubspace
+import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
-public import Mathlib.Topology.Algebra.InfiniteSum.Module
+import Mathlib.Topology.Algebra.InfiniteSum.Module
 public import Mathlib.Topology.Instances.Matrix
 public import Mathlib.LinearAlgebra.Dimension.LinearMap
 
@@ -162,7 +159,7 @@ theorem AffineEquiv.coe_toHomeomorphOfFiniteDimensional_symm (f : PE ≃ᵃ[𝕜
     ⇑f.toHomeomorphOfFiniteDimensional.symm = f.symm :=
   rfl
 
-attribute [deprecated AffineEquiv.toContinuousAffineEquiv (since := "2026-05-11")]
+attribute [deprecated AffineEquiv.toContinuousAffineEquiv +typeChanged (since := "2026-05-11")]
   AffineEquiv.toHomeomorphOfFiniteDimensional
 
 /-- An affine map from a finite-dimensional space is automatically Lipschitz. -/
@@ -170,7 +167,7 @@ theorem AffineMap.lipschitzWith_of_finiteDimensional (f : PE →ᵃ[𝕜] PF) :
     ∃ K : ℝ≥0, LipschitzWith K f := by
   let fL : E →L[𝕜] F := f.linear.toContinuousLinearMap
   refine ⟨‖fL‖₊, LipschitzWith.of_dist_le_mul fun x y ↦ ?_⟩
-  rw [NormedAddTorsor.dist_eq_norm', NormedAddTorsor.dist_eq_norm', ← f.linearMap_vsub]
+  rw [NormedAddTorsor.dist_eq_norm', NormedAddTorsor.dist_eq_norm', ← f.linear_apply_vsub]
   exact fL.le_opNorm _
 
 end Affine
@@ -237,7 +234,7 @@ theorem LinearMap.exists_antilipschitzWith [FiniteDimensional 𝕜 E] (f : E →
   · exact ⟨1, zero_lt_one, AntilipschitzWith.of_subsingleton⟩
   · rw [LinearMap.ker_eq_bot] at hf
     let e : E ≃L[𝕜] LinearMap.range f := (LinearEquiv.ofInjective f hf).toContinuousLinearEquiv
-    exact ⟨_, e.nnnorm_symm_pos, e.antilipschitz⟩
+    exact ⟨_, e.nnnorm_symm_pos, e.antilipschitzWith⟩
 
 open Function in
 /-- A `LinearMap` on a finite-dimensional space over a complete field
@@ -257,7 +254,7 @@ theorem AffineMap.antilipschitzWith_of_finiteDimensional {PE PF : Type*} [Metric
     ∃ K : ℝ≥0, AntilipschitzWith K f := by
   obtain ⟨K, -, hK⟩ := f.linear.injective_iff_antilipschitz.mp (f.linear_injective_iff.mpr hf)
   refine ⟨K, AntilipschitzWith.of_le_mul_dist fun x y ↦ ?_⟩
-  rw [dist_eq_norm_vsub E, dist_eq_norm_vsub F, ← f.linearMap_vsub]
+  rw [dist_eq_norm_vsub E, dist_eq_norm_vsub F, ← f.linear_apply_vsub]
   exact ZeroHomClass.bound_of_antilipschitz f.linear hK (x -ᵥ y)
 
 open Function in
@@ -548,7 +545,7 @@ explicitly when needed. -/
 theorem FiniteDimensional.proper [FiniteDimensional 𝕜 E] : ProperSpace E := by
   have : ProperSpace 𝕜 := .of_locallyCompactSpace 𝕜
   set e := ContinuousLinearEquiv.ofFinrankEq (@finrank_fin_fun 𝕜 _ _ (finrank 𝕜 E)).symm
-  exact e.symm.antilipschitz.properSpace e.symm.continuous e.symm.surjective
+  exact e.symm.antilipschitzWith.properSpace e.symm.continuous e.symm.surjective
 
 end LocallyCompactField
 
@@ -699,16 +696,10 @@ theorem Asymptotics.IsEquivalent.summable_iff {ι E : Type*} [NormedAddCommGroup
     Summable f ↔ Summable g :=
   h.isTheta.summable_iff
 
-@[deprecated (since := "2026-02-07")]
-alias IsEquivalent.summable_iff := Asymptotics.IsEquivalent.summable_iff
-
 theorem Asymptotics.IsEquivalent.summable_iff_nat {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] {f : ℕ → E} {g : ℕ → E} (h : f ~[atTop] g) :
     Summable f ↔ Summable g :=
   h.isTheta.summable_iff_nat
-
-@[deprecated (since := "2026-02-07")]
-alias IsEquivalent.summable_iff_nat := Asymptotics.IsEquivalent.summable_iff_nat
 
 namespace Module.Basis
 

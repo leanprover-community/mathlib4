@@ -86,7 +86,7 @@ theorem measurable_to_nat {f : α → ℕ} : (∀ y, MeasurableSet (f ⁻¹' {f 
 theorem measurable_to_bool {f : α → Bool} (h : MeasurableSet (f ⁻¹' {true})) : Measurable f := by
   apply measurable_to_countable'
   rintro (- | -)
-  · convert! h.compl
+  · convert h.compl
     rw [← preimage_compl, Bool.compl_singleton, Bool.not_true]
   exact h
 
@@ -117,7 +117,7 @@ protected theorem MeasurableSet.disjointed {f : ℕ → Set α} (h : ∀ i, Meas
 theorem measurable_find {p : α → ℕ → Prop} [∀ x, DecidablePred (p x)] (hp : ∀ x, ∃ N, p x N)
     (hm : ∀ k, MeasurableSet { x | p x k }) : Measurable fun x => Nat.find (hp x) := by
   refine measurable_to_nat fun x => ?_
-  rw [preimage_find_eq_disjointed (fun k => {x | p x k})]
+  rw [preimage_find_eq_disjointed_setOf]
   exact MeasurableSet.disjointed hm _
 
 end Nat
@@ -244,7 +244,7 @@ theorem MeasurableSet.image_inclusion' {s t : Set α} (h : s ⊆ t) {u : Set s}
     (hs : MeasurableSet (Subtype.val ⁻¹' s : Set t)) (hu : MeasurableSet u) :
     MeasurableSet (inclusion h '' u) := by
   rcases hu with ⟨u, hu, rfl⟩
-  convert! (measurable_subtype_coe hu).inter hs
+  convert (measurable_subtype_coe hu).inter hs
   ext ⟨x, hx⟩
   simpa [@and_comm _ (_ = x)] using and_comm
 
@@ -256,7 +256,7 @@ theorem MeasurableSet.image_inclusion {s t : Set α} (h : s ⊆ t) {u : Set s}
 theorem MeasurableSet.of_union_cover {s t u : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
     (h : univ ⊆ s ∪ t) (hsu : MeasurableSet (((↑) : s → α) ⁻¹' u))
     (htu : MeasurableSet (((↑) : t → α) ⁻¹' u)) : MeasurableSet u := by
-  convert! (hs.subtype_image hsu).union (ht.subtype_image htu)
+  convert (hs.subtype_image hsu).union (ht.subtype_image htu)
   simp [image_preimage_eq_inter_range, ← inter_union_distrib_left, univ_subset_iff.1 h]
 
 theorem measurable_of_measurable_union_cover {f : α → β} (s t : Set α) (hs : MeasurableSet s)
@@ -268,7 +268,7 @@ theorem measurable_of_restrict_of_restrict_compl {f : α → β} {s : Set α} (h
     (h₁ : Measurable (s.domRestrict f)) (h₂ : Measurable (sᶜ.domRestrict f)) : Measurable f :=
   measurable_of_measurable_union_cover s sᶜ hs hs.compl (union_compl_self s).ge h₁ h₂
 
-theorem Measurable.dite [∀ x, Decidable (x ∈ s)] {f : s → β} (hf : Measurable f)
+protected theorem Measurable.dite [∀ x, Decidable (x ∈ s)] {f : s → β} (hf : Measurable f)
     {g : (sᶜ : Set α) → β} (hg : Measurable g) (hs : MeasurableSet s) :
     Measurable fun x => if hx : x ∈ s then f ⟨x, hx⟩ else g ⟨x, hx⟩ :=
   measurable_of_restrict_of_restrict_compl hs (by simpa) (by simpa)
@@ -593,9 +593,11 @@ theorem Measurable.eval {a : δ} {g : α → ∀ a, X a} (hg : Measurable g) :
   (measurable_pi_apply a).comp hg
 
 @[fun_prop]
-theorem measurable_pi_lambda (f : α → ∀ a, X a) (hf : ∀ a, Measurable fun c => f c a) :
+theorem Measurable.of_eval {f : α → ∀ a, X a} (hf : ∀ a, Measurable fun c => f c a) :
     Measurable f :=
   measurable_pi_iff.mpr hf
+
+@[deprecated (since := "2026-08-20")] alias measurable_pi_lambda := Measurable.of_eval
 
 lemma MeasurableSpace.comap_process_pi (X : (a : δ) → β → X a) :
     MeasurableSpace.comap (fun b a ↦ X a b) inferInstance =
@@ -652,21 +654,21 @@ theorem measurable_update_left {a : δ} [DecidableEq δ] {x : X a} :
 
 @[fun_prop]
 theorem Set.measurable_restrict (s : Set δ) : Measurable (s.domRestrict (π := X)) :=
-  measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+  .of_eval fun _ ↦ measurable_pi_apply _
 
 @[fun_prop]
 theorem Set.measurable_restrict₂ {s t : Set δ} (hst : s ⊆ t) :
     Measurable (domRestrict₂ (π := X) hst) :=
-  measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+  .of_eval fun _ ↦ measurable_pi_apply _
 
 @[fun_prop]
 theorem Finset.measurable_restrict (s : Finset δ) : Measurable (s.restrict (π := X)) :=
-  measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+  .of_eval fun _ ↦ measurable_pi_apply _
 
 @[fun_prop]
 theorem Finset.measurable_restrict₂ {s t : Finset δ} (hst : s ⊆ t) :
     Measurable (Finset.restrict₂ (π := X) hst) :=
-  measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+  .of_eval fun _ ↦ measurable_pi_apply _
 
 @[fun_prop]
 theorem Set.measurable_restrict_apply (s : Set α) {f : α → γ} (hf : Measurable f) :
@@ -687,13 +689,13 @@ theorem Finset.measurable_restrict₂_apply {s t : Finset α} (hst : s ⊆ t)
     Measurable (restrict₂ (π := fun _ ↦ γ) hst f) := hf.comp (measurable_inclusion hst)
 
 variable (X) in
-theorem measurable_eq_mp {i i' : δ} (h : i = i') : Measurable (congr_arg X h).mp := by
+theorem measurable_eq_mp {i i' : δ} (h : i = i') : Measurable congr(X $h).mp := by
   cases h
   exact measurable_id
 
 variable (X) in
 theorem Measurable.eq_mp {β} [MeasurableSpace β] {i i' : δ} (h : i = i') {f : β → X i}
-    (hf : Measurable f) : Measurable fun x => (congr_arg X h).mp (f x) :=
+    (hf : Measurable f) : Measurable fun x => congr(X $h).mp (f x) :=
   (measurable_eq_mp X h).comp hf
 
 @[fun_prop]
@@ -724,7 +726,7 @@ theorem measurableSet_pi_of_nonempty {s : Set δ} {t : ∀ i, Set (X i)} (hs : s
   classical
     rcases h with ⟨f, hf⟩
     refine ⟨fun hst i hi => ?_, MeasurableSet.pi hs⟩
-    convert! measurable_update f (a := i) hst
+    convert measurable_update f (a := i) hst
     rw [update_preimage_pi hi]
     exact fun j hj _ => hf j hj
 
@@ -791,7 +793,7 @@ theorem measurable_tProd_elim [DecidableEq δ] :
 
 theorem measurable_tProd_elim' [DecidableEq δ] {l : List δ} (h : ∀ i, i ∈ l) :
     Measurable (TProd.elim' h : TProd X l → ∀ i, X i) :=
-  measurable_pi_lambda _ fun i => measurable_tProd_elim (h i)
+  .of_eval fun i => measurable_tProd_elim (h i)
 
 theorem MeasurableSet.tProd (l : List δ) {s : ∀ i, Set (X i)} (hs : ∀ i, MeasurableSet (s i)) :
     MeasurableSet (Set.tprod l s) := by
@@ -824,8 +826,8 @@ theorem measurableSet_sum_iff {s : Set (α ⊕ β)} :
 theorem measurable_fun_sum {_ : MeasurableSpace γ} {f : α ⊕ β → γ} (hl : Measurable (f ∘ Sum.inl))
     (hr : Measurable (f ∘ Sum.inr)) : Measurable f :=
   Measurable.of_comap_le <|
-    le_inf (MeasurableSpace.comap_le_iff_le_map.2 <| hl)
-      (MeasurableSpace.comap_le_iff_le_map.2 <| hr)
+    le_inf (MeasurableSpace.comap_le_iff_le_map.2 hl)
+      (MeasurableSpace.comap_le_iff_le_map.2 hr)
 
 @[fun_prop]
 theorem Measurable.sumElim {_ : MeasurableSpace γ} {f : α → γ} {g : β → γ} (hf : Measurable f)
@@ -1040,7 +1042,7 @@ variable {κ X : Type*} [MeasurableSpace X]
 
 @[fun_prop]
 lemma measurable_curry : Measurable (@curry ι κ X) :=
-  measurable_pi_lambda _ fun _ ↦ measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+  .of_eval fun _ ↦ .of_eval fun _ ↦ measurable_pi_apply _
 
 -- This cannot be tagged with `fun_prop` because `fun_prop` can see through `Function.uncurry`.
 lemma measurable_uncurry : Measurable (@uncurry ι κ X) := by fun_prop
@@ -1059,11 +1061,11 @@ variable {κ : ι → Type*} {X : (i : ι) → κ i → Type*} [∀ i j, Measura
 
 @[fun_prop]
 lemma measurable_sigmaCurry : Measurable (Sigma.curry (γ := X)) :=
-    measurable_pi_lambda _ fun _ ↦ measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+    .of_eval fun _ ↦ .of_eval fun _ ↦ measurable_pi_apply _
 
 @[fun_prop]
 lemma measurable_sigmaUncurry : Measurable (Sigma.uncurry (γ := X)) := by
-  refine measurable_pi_lambda _ fun _ ↦ ?_
+  refine .of_eval fun _ ↦ ?_
   simp only [Sigma.uncurry]
   fun_prop
 

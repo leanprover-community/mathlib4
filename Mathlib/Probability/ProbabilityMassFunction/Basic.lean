@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Devon Tuma
 -/
 module
 
-public import Mathlib.Topology.Instances.ENNReal.Lemmas
 public import Mathlib.MeasureTheory.Measure.Dirac.Basic
 
 /-!
@@ -55,57 +54,57 @@ instance instFunLike : FunLike (PMF α) α ℝ≥0∞ where
   coe p a := p.1 a
   coe_injective _ _ h := Subtype.ext h
 
-@[deprecated Measure.sum_congr (since := "2026-08-01")]
+@[deprecated Measure.sum_congr +typeChanged (since := "2026-08-01")]
 protected theorem ext {p q : PMF α} (h : ∀ x, p x = q x) : p = q :=
   DFunLike.ext p q h
 
-@[deprecated IsProbabilityMeasure.measure_univ (since := "2026-08-01")]
+@[deprecated IsProbabilityMeasure.measure_univ +typeChanged (since := "2026-08-01")]
 theorem hasSum_coe_one (p : PMF α) : HasSum p 1 :=
   p.2
 
-@[deprecated IsProbabilityMeasure.measure_univ (since := "2026-08-16")]
+@[deprecated IsProbabilityMeasure.measure_univ +typeChanged (since := "2026-08-16")]
 theorem tsum_coe (p : PMF α) : ∑' a, p a = 1 :=
   p.hasSum_coe_one.tsum_eq
 
-@[deprecated measure_ne_top (since := "2026-08-16")]
+@[deprecated measure_ne_top +typeChanged (since := "2026-08-16")]
 theorem tsum_coe_ne_top (p : PMF α) : ∑' a, p a ≠ ∞ :=
   p.tsum_coe.symm ▸ ENNReal.one_ne_top
 
-@[deprecated measure_ne_top (since := "2026-08-16")]
+@[deprecated measure_ne_top +typeChanged (since := "2026-08-16")]
 theorem tsum_coe_indicator_ne_top (p : PMF α) (s : Set α) : ∑' a, s.indicator p a ≠ ∞ :=
   ne_of_lt (lt_of_le_of_lt
     (ENNReal.tsum_le_tsum (fun _ => Set.indicator_apply_le fun _ => le_rfl))
     (lt_of_le_of_ne le_top p.tsum_coe_ne_top))
 
-@[deprecated IsProbabilityMeasure.ne_zero (since := "2026-08-16")]
+@[deprecated IsProbabilityMeasure.ne_zero +typeChanged (since := "2026-08-16")]
 theorem coe_ne_zero (p : PMF α) : ⇑p ≠ 0 := fun hp =>
-  zero_ne_one ((tsum_zero.symm.trans (tsum_congr fun x => symm (congr_fun hp x))).trans p.tsum_coe)
+  zero_ne_one ((tsum_zero.symm.trans (tsum_congr fun x => symm congr($hp x))).trans p.tsum_coe)
 
 /-- The support of a `PMF` is the set where it is nonzero. -/
 @[deprecated "Use Function.support of the scalars." (since := "2026-08-16")]
 def support (p : PMF α) : Set α :=
   Function.support p
 
-@[deprecated Function.mem_support (since := "2026-08-16")]
+@[deprecated Function.mem_support +typeChanged (since := "2026-08-16")]
 theorem mem_support_iff (p : PMF α) (a : α) : a ∈ p.support ↔ p a ≠ 0 := Iff.rfl
 
-@[deprecated Function.support_nonempty_iff (since := "2026-08-16")]
+@[deprecated Function.support_nonempty_iff +typeChanged (since := "2026-08-16")]
 theorem support_nonempty (p : PMF α) : p.support.Nonempty :=
   Function.support_nonempty_iff.2 p.coe_ne_zero
 
-@[deprecated Summable.countable_support_ennreal (since := "2026-08-16")]
+@[deprecated Summable.countable_support_ennreal +typeChanged (since := "2026-08-16")]
 theorem support_countable (p : PMF α) : p.support.Countable :=
   Summable.countable_support_ennreal (tsum_coe_ne_top p)
 
-@[deprecated Function.notMem_support (since := "2026-08-16")]
+@[deprecated Function.notMem_support +typeChanged (since := "2026-08-16")]
 theorem apply_eq_zero_iff (p : PMF α) (a : α) : p a = 0 ↔ a ∉ p.support := by
   rw [mem_support_iff, Classical.not_not]
 
-@[deprecated Function.notMem_support (since := "2026-08-16")]
+@[deprecated Function.notMem_support +typeChanged (since := "2026-08-16")]
 theorem apply_pos_iff (p : PMF α) (a : α) : 0 < p a ↔ a ∈ p.support :=
   pos_iff_ne_zero.trans (p.mem_support_iff a).symm
 
-@[deprecated tsum_eq_single (since := "2026-08-16")]
+@[deprecated tsum_eq_single +typeChanged (since := "2026-08-16")]
 theorem apply_eq_one_iff (p : PMF α) (a : α) : p a = 1 ↔ p.support = {a} := by
   refine ⟨fun h => Set.Subset.antisymm (fun a' ha' => by_contra fun ha => ?_)
     fun a' ha' => ha'.symm ▸ (p.mem_support_iff a).2 fun ha => zero_ne_one <| ha.symm.trans h,
@@ -127,17 +126,17 @@ theorem apply_eq_one_iff (p : PMF α) (a : α) : p a = 1 ↔ p.support = {a} := 
     _ = ∑' b, (ite (b = a) (p b) 0 + ite (b = a) 0 (p b)) := ENNReal.tsum_add.symm
     _ = ∑' b, p b := tsum_congr fun b => by split_ifs <;> simp only [zero_add, add_zero]
 
-@[deprecated Summable.le_tsum' (since := "2026-08-16")]
+@[deprecated Summable.le_tsum' +typeChanged (since := "2026-08-16")]
 theorem coe_le_one (p : PMF α) (a : α) : p a ≤ 1 := by
   classical
   refine hasSum_le (fun b => ?_) (hasSum_ite_eq a (p a)) (hasSum_coe_one p)
   split_ifs with h <;> simp [h]
 
-@[deprecated measure_ne_top (since := "2026-08-16")]
+@[deprecated measure_ne_top +typeChanged (since := "2026-08-16")]
 theorem apply_ne_top (p : PMF α) (a : α) : p a ≠ ∞ :=
   ne_of_lt (lt_of_le_of_lt (p.coe_le_one a) ENNReal.one_lt_top)
 
-@[deprecated measure_lt_top (since := "2026-08-16")]
+@[deprecated measure_lt_top +typeChanged (since := "2026-08-16")]
 theorem apply_lt_top (p : PMF α) (a : α) : p a < ∞ :=
   lt_of_le_of_ne le_top (p.apply_ne_top a)
 
@@ -152,7 +151,7 @@ open OuterMeasure
 def toOuterMeasure (p : PMF α) : OuterMeasure α :=
   OuterMeasure.sum fun x : α => p x • dirac x
 
-@[deprecated OuterMeasure.sum_apply (since := "2026-08-16")]
+@[deprecated OuterMeasure.sum_apply +typeChanged (since := "2026-08-16")]
 theorem toOuterMeasure_apply (p : PMF α) (s : Set α) : p.toOuterMeasure s = ∑' x, s.indicator p x :=
   tsum_congr fun x => smul_dirac_apply (p x) x s
 
@@ -164,35 +163,35 @@ theorem toOuterMeasure_caratheodory (p : PMF α) : p.toOuterMeasure.caratheodory
   exact
     ((le_of_eq (dirac_caratheodory y).symm).trans (le_smul_caratheodory _ _)).trans (le_of_eq hy)
 
-@[deprecated OuterMeasure.sum_apply (since := "2026-08-16")]
+@[deprecated OuterMeasure.sum_apply +typeChanged (since := "2026-08-16")]
 theorem toOuterMeasure_apply_finset (p : PMF α) (s : Finset α) :
     p.toOuterMeasure s = ∑ x ∈ s, p x := by
   refine (toOuterMeasure_apply p s).trans ((tsum_eq_sum (s := s) ?_).trans ?_)
   · exact fun x hx => Set.indicator_of_notMem (Finset.mem_coe.not.2 hx) _
   · exact Finset.sum_congr rfl fun x hx => Set.indicator_of_mem (Finset.mem_coe.2 hx) _
 
-@[deprecated OuterMeasure.sum_apply (since := "2026-08-16")]
+@[deprecated OuterMeasure.sum_apply +typeChanged (since := "2026-08-16")]
 theorem toOuterMeasure_apply_singleton (p : PMF α) (a : α) : p.toOuterMeasure {a} = p a := by
   refine (p.toOuterMeasure_apply {a}).trans ((tsum_eq_single a fun b hb => ?_).trans ?_)
   · classical exact ite_eq_right_iff.2 fun hb' => False.elim <| hb hb'
   · classical exact ite_eq_left_iff.2 fun ha' => False.elim <| ha' rfl
 
-@[deprecated congrArg (since := "2026-08-16")]
+@[deprecated congrArg +typeChanged (since := "2026-08-16")]
 theorem toOuterMeasure_injective : (toOuterMeasure : PMF α → OuterMeasure α).Injective :=
   fun p q h => PMF.ext fun x => (p.toOuterMeasure_apply_singleton x).symm.trans
     ((congr_fun (congr_arg _ h) _).trans <| q.toOuterMeasure_apply_singleton x)
 
-@[deprecated congrArg (since := "2026-08-16")]
+@[deprecated congrArg +typeChanged (since := "2026-08-16")]
 theorem toOuterMeasure_inj {p q : PMF α} : p.toOuterMeasure = q.toOuterMeasure ↔ p = q :=
   toOuterMeasure_injective.eq_iff
 
-@[deprecated Measure.sum_eq_zero (since := "2026-08-16")]
+@[deprecated Measure.sum_eq_zero +typeChanged (since := "2026-08-16")]
 theorem toOuterMeasure_apply_eq_zero_iff (p : PMF α) (s : Set α) :
     p.toOuterMeasure s = 0 ↔ Disjoint p.support s := by
   rw [toOuterMeasure_apply, ENNReal.tsum_eq_zero]
   exact funext_iff.symm.trans Set.indicator_eq_zero'
 
-@[deprecated tsum_subtype_eq_of_support_subset (since := "2026-08-16")]
+@[deprecated tsum_subtype_eq_of_support_subset +typeChanged (since := "2026-08-16")]
 theorem toOuterMeasure_apply_eq_one_iff (p : PMF α) (s : Set α) :
     p.toOuterMeasure s = 1 ↔ p.support ⊆ s := by
   refine (p.toOuterMeasure_apply s).symm ▸ ⟨fun h a hap => ?_, fun h => ?_⟩
@@ -207,23 +206,23 @@ theorem toOuterMeasure_apply_eq_one_iff (p : PMF α) (s : Set α) :
           (ite_eq_left_iff.2 <| symm ∘ this a)) p.tsum_coe
     exact fun a ha => (p.apply_eq_zero_iff a).2 <| Set.notMem_subset h ha
 
-@[deprecated OuterMeasure.sum_apply (since := "2026-08-16")]
+@[deprecated OuterMeasure.sum_apply +typeChanged (since := "2026-08-16")]
 theorem toOuterMeasure_apply_inter_support (p : PMF α) (s : Set α) :
     p.toOuterMeasure (s ∩ p.support) = p.toOuterMeasure s := by
   simp only [toOuterMeasure_apply, PMF.support, Set.indicator_inter_support]
 
-@[deprecated measure_mono_ae (since := "2026-08-16")]
+@[deprecated measure_mono_ae +typeChanged (since := "2026-08-16")]
 theorem toOuterMeasure_mono (p : PMF α) {s t : Set α} (h : s ∩ p.support ⊆ t) :
     p.toOuterMeasure s ≤ p.toOuterMeasure t :=
   le_trans (le_of_eq (toOuterMeasure_apply_inter_support p s).symm) (p.toOuterMeasure.mono h)
 
-@[deprecated MeasureTheory.measure_congr (since := "2026-08-16")]
+@[deprecated MeasureTheory.measure_congr +typeChanged (since := "2026-08-16")]
 theorem toOuterMeasure_apply_eq_of_inter_support_eq (p : PMF α) {s t : Set α}
     (h : s ∩ p.support = t ∩ p.support) : p.toOuterMeasure s = p.toOuterMeasure t :=
   le_antisymm (p.toOuterMeasure_mono (h.symm ▸ Set.inter_subset_left))
     (p.toOuterMeasure_mono (h ▸ Set.inter_subset_left))
 
-@[deprecated Measure.finsetSum_apply (since := "2026-08-16")]
+@[deprecated Measure.finsetSum_apply +typeChanged (since := "2026-08-16")]
 theorem toOuterMeasure_apply_fintype [Fintype α] (p : PMF α) (s : Set α) :
     p.toOuterMeasure s = ∑ x, s.indicator p x :=
   (p.toOuterMeasure_apply s).trans (tsum_eq_sum fun x h => absurd (Finset.mem_univ x) h)
@@ -241,53 +240,53 @@ def toMeasure [MeasurableSpace α] (p : PMF α) : Measure α :=
 
 variable [MeasurableSpace α] {s : Set α}
 
-@[deprecated le_toMeasure_apply (since := "2026-08-16")]
+@[deprecated le_toMeasure_apply +typeChanged (since := "2026-08-16")]
 theorem toOuterMeasure_apply_le_toMeasure_apply (p : PMF α) (s : Set α) :
     p.toOuterMeasure s ≤ p.toMeasure s :=
   le_toMeasure_apply p.toOuterMeasure _ s
 
-@[deprecated toMeasure_apply (since := "2026-08-16")]
+@[deprecated toMeasure_apply +typeChanged (since := "2026-08-16")]
 theorem toMeasure_apply_eq_toOuterMeasure_apply (p : PMF α) (hs : MeasurableSet s) :
     p.toMeasure s = p.toOuterMeasure s :=
   toMeasure_apply p.toOuterMeasure _ hs
 
-@[deprecated Measure.sum_apply (since := "2026-08-16")]
+@[deprecated Measure.sum_apply +typeChanged (since := "2026-08-16")]
 theorem toMeasure_apply (p : PMF α) (hs : MeasurableSet s) :
     p.toMeasure s = ∑' x, s.indicator p x :=
   (p.toMeasure_apply_eq_toOuterMeasure_apply hs).trans (p.toOuterMeasure_apply s)
 
-@[deprecated Measure.sum_smul_dirac_singleton (since := "2026-08-16")]
+@[deprecated Measure.sum_smul_dirac_singleton +typeChanged (since := "2026-08-16")]
 theorem toMeasure_apply_singleton (p : PMF α) (a : α) (h : MeasurableSet ({a} : Set α)) :
     p.toMeasure {a} = p a := by
   simp [p.toMeasure_apply_eq_toOuterMeasure_apply h, toOuterMeasure_apply_singleton]
 
-@[deprecated Measure.sum_eq_zero (since := "2026-08-16")]
+@[deprecated Measure.sum_eq_zero +typeChanged (since := "2026-08-16")]
 theorem toMeasure_apply_eq_zero_iff (p : PMF α) (hs : MeasurableSet s) :
     p.toMeasure s = 0 ↔ Disjoint p.support s := by
   rw [p.toMeasure_apply_eq_toOuterMeasure_apply hs, toOuterMeasure_apply_eq_zero_iff]
 
-@[deprecated tsum_subtype_eq_of_support_subset (since := "2026-08-16")]
+@[deprecated tsum_subtype_eq_of_support_subset +typeChanged (since := "2026-08-16")]
 theorem toMeasure_apply_eq_one_iff (p : PMF α) (hs : MeasurableSet s) :
     p.toMeasure s = 1 ↔ p.support ⊆ s :=
   (p.toMeasure_apply_eq_toOuterMeasure_apply hs).symm ▸ p.toOuterMeasure_apply_eq_one_iff s
 
-@[deprecated measure_mono_ae (since := "2026-08-16")]
+@[deprecated measure_mono_ae +typeChanged (since := "2026-08-16")]
 theorem toMeasure_mono (p : PMF α) {t : Set α} (hs : MeasurableSet s)
     (h : s ∩ p.support ⊆ t) : p.toMeasure s ≤ p.toMeasure t := by
   rw [p.toMeasure_apply_eq_toOuterMeasure_apply hs]
   exact (p.toOuterMeasure_mono h).trans (p.toOuterMeasure_apply_le_toMeasure_apply t)
 
-@[deprecated measure_congr (since := "2026-08-16")]
+@[deprecated measure_congr +typeChanged (since := "2026-08-16")]
 theorem toMeasure_apply_inter_support (p : PMF α) (hs : MeasurableSet s) :
     p.toMeasure (s ∩ p.support) = p.toMeasure s :=
   (measure_mono s.inter_subset_left).antisymm (p.toMeasure_mono hs (refl _))
 
-@[deprecated Measure.restrict_eq_self_of_ae_mem (since := "2026-08-16")]
+@[deprecated Measure.restrict_eq_self_of_ae_mem +typeChanged (since := "2026-08-16")]
 theorem restrict_toMeasure_support (p : PMF α) : p.toMeasure.restrict p.support = p.toMeasure := by
   ext s hs
   rw [Measure.restrict_apply hs, p.toMeasure_apply_inter_support hs]
 
-@[deprecated measure_congr (since := "2026-08-16")]
+@[deprecated measure_congr +typeChanged (since := "2026-08-16")]
 theorem toMeasure_apply_eq_of_inter_support_eq (p : PMF α) {t : Set α} (hs : MeasurableSet s)
     (ht : MeasurableSet t) (h : s ∩ p.support = t ∩ p.support) : p.toMeasure s = p.toMeasure t := by
   simpa only [p.toMeasure_apply_eq_toOuterMeasure_apply, hs, ht] using
@@ -297,33 +296,33 @@ section MeasurableSingletonClass
 
 variable [MeasurableSingletonClass α]
 
-@[deprecated congrArg (since := "2026-08-16")]
+@[deprecated congrArg +typeChanged (since := "2026-08-16")]
 theorem toMeasure_injective : (toMeasure : PMF α → Measure α).Injective := by
   intro p q h
   refine PMF.ext fun x ↦ ?_
   rw [← p.toMeasure_apply_singleton x <| measurableSet_singleton x,
     ← q.toMeasure_apply_singleton x <| measurableSet_singleton x, h]
 
-@[deprecated congrArg (since := "2026-08-16")]
+@[deprecated congrArg +typeChanged (since := "2026-08-16")]
 theorem toMeasure_inj {p q : PMF α} : p.toMeasure = q.toMeasure ↔ p = q :=
   toMeasure_injective.eq_iff
 
-@[deprecated MeasureTheory.toMeasure_apply (since := "2026-08-16")]
+@[deprecated MeasureTheory.toMeasure_apply +typeChanged (since := "2026-08-16")]
 theorem toMeasure_apply_eq_toOuterMeasure (p : PMF α) (s : Set α) :
     p.toMeasure s = p.toOuterMeasure s := by
   have hs := (p.support_countable.mono s.inter_subset_right).measurableSet
   rw [← restrict_toMeasure_support, Measure.restrict_apply' p.support_countable.measurableSet,
     p.toMeasure_apply_eq_toOuterMeasure_apply hs, toOuterMeasure_apply_inter_support]
 
-@[deprecated Measure.sum_apply (since := "2026-08-16")]
+@[deprecated Measure.sum_apply +typeChanged (since := "2026-08-16")]
 theorem toMeasure_apply_finset (p : PMF α) (s : Finset α) : p.toMeasure s = ∑ x ∈ s, p x :=
   (p.toMeasure_apply_eq_toOuterMeasure s).trans (p.toOuterMeasure_apply_finset s)
 
-@[deprecated Measure.sum_apply (since := "2026-08-16")]
+@[deprecated Measure.sum_apply +typeChanged (since := "2026-08-16")]
 theorem toMeasure_apply_eq_tsum (p : PMF α) (s : Set α) : p.toMeasure s = ∑' x, s.indicator p x :=
   (p.toMeasure_apply_eq_toOuterMeasure s).trans (p.toOuterMeasure_apply s)
 
-@[deprecated Measure.finsetSum_apply (since := "2026-08-16")]
+@[deprecated Measure.finsetSum_apply +typeChanged (since := "2026-08-16")]
 theorem toMeasure_apply_fintype (p : PMF α) (s : Set α) [Fintype α] :
     p.toMeasure s = ∑ x, s.indicator p x :=
   (p.toMeasure_apply_eq_toOuterMeasure s).trans (p.toOuterMeasure_apply_fintype s)
@@ -358,10 +357,10 @@ def toPMF [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (μ 
 variable [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (μ : Measure α)
   [IsProbabilityMeasure μ]
 
-@[deprecated Measure.sum_smul_dirac_singleton (since := "2026-08-16")]
+@[deprecated Measure.sum_smul_dirac_singleton +typeChanged (since := "2026-08-16")]
 theorem toPMF_apply (x : α) : μ.toPMF x = μ {x} := rfl
 
-@[deprecated rfl (since := "2026-08-16")]
+@[deprecated rfl +typeChanged (since := "2026-08-16")]
 theorem toPMF_toMeasure : μ.toPMF.toMeasure = μ :=
   Measure.ext fun s hs => by
     rw [μ.toPMF.toMeasure_apply hs, ← μ.tsum_indicator_apply_singleton s hs]
@@ -382,16 +381,16 @@ instance toMeasure.isProbabilityMeasure [MeasurableSpace α] (p : PMF α) :
 
 variable [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α]
 
-@[deprecated rfl (since := "2026-08-16")]
+@[deprecated rfl +typeChanged (since := "2026-08-16")]
 theorem toMeasure_toPMF (p : PMF α) : p.toMeasure.toPMF = p :=
   PMF.ext fun x => by
     rw [← p.toMeasure_apply_singleton x (measurableSet_singleton x), p.toMeasure.toPMF_apply]
 
-@[deprecated Iff.rfl (since := "2026-08-16")]
+@[deprecated Iff.rfl +typeChanged (since := "2026-08-16")]
 theorem toMeasure_eq_iff_eq_toPMF (p : PMF α) (μ : Measure α) [IsProbabilityMeasure μ] :
     p.toMeasure = μ ↔ p = μ.toPMF := by rw [← toMeasure_inj, Measure.toPMF_toMeasure]
 
-@[deprecated Iff.rfl (since := "2026-08-16")]
+@[deprecated Iff.rfl +typeChanged (since := "2026-08-16")]
 theorem toPMF_eq_iff_toMeasure_eq (p : PMF α) (μ : Measure α) [IsProbabilityMeasure μ] :
     μ.toPMF = p ↔ μ = p.toMeasure := by rw [← toMeasure_inj, Measure.toPMF_toMeasure]
 
