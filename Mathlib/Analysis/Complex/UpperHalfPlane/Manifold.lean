@@ -123,7 +123,7 @@ lemma eq_zero_of_frequently {f : ℍ → ℂ} (hf : MDiff f) {τ : ℍ} (hτ : �
   rw [mdifferentiable_iff] at hf
   have := hf.analyticOnNhd isOpen_upperHalfPlaneSet
   ext w
-  convert! this.eqOn_zero_of_preconnected_of_frequently_eq_zero (z₀ := ↑τ) ?_ τ.2 ?_ w.im_pos
+  convert this.eqOn_zero_of_preconnected_of_frequently_eq_zero (z₀ := ↑τ) ?_ τ.2 ?_ w.im_pos
   · rw [Function.comp_apply, ofComplex_apply]
   · exact (Complex.isConnected_of_upperHalfPlane subset_rfl (by grind)).isPreconnected
   · contrapose! hτ

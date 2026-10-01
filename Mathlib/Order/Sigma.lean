@@ -5,11 +5,11 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Sigma.Lex
 public import Mathlib.Data.Sigma.Basic
 public import Mathlib.Order.BoundedOrder.Basic
 public import Mathlib.Order.Lattice
 public import Mathlib.Order.Lex
+public import Mathlib.Order.Sigma.Lex
 
 /-!
 # Orders on a sigma type
@@ -34,8 +34,8 @@ Related files are:
 * `Data.Finset.CoLex`: Colexicographic order on finite sets.
 * `Data.List.Lex`: Lexicographic order on lists.
 * `Data.Pi.Lex`: Lexicographic order on `Πₗ i, α i`.
-* `Data.PSigma.Order`: Lexicographic order on `Σₗ' i, α i`. Basically a twin of this file.
-* `Data.Prod.Lex`: Lexicographic order on `α × β`.
+* `Order.PSigma`: Lexicographic order on `Σₗ' i, α i`. Basically a twin of this file.
+* `Order.Prod.Lex.Basic`: Lexicographic order on `α × β`.
 
 ## TODO
 

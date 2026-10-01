@@ -420,7 +420,7 @@ theorem stabilizer_isOpen_of_isIntegral (x : L) :
   let E := adjoin K {x}
   have hL : Algebra.EssFiniteType K E := IntermediateField.essFiniteType_iff.2
     (IntermediateField.fg_adjoin_of_finite (Set.finite_singleton _))
-  convert! isOpen_fixingSubgroup E
+  convert isOpen_fixingSubgroup E
   ext g
   simpa using (forall_mem_adjoin_smul_eq_self_iff K (S := {x}) g).symm
 
