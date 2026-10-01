@@ -99,9 +99,9 @@ number of trees and code quality metrics from before, and comparing to after.
 def runLinterLikes {α} (traceCls : Name) (linterLikes : Array α) (run : α → CommandElabM Unit)
     (traceMsg : α → CommandElabM MessageData) (failureMsgHeader : α → MessageData) :
     CommandElabM Unit := do
-  let producedInfoTrees ← IO.mkRef ({} : PersistentArray InfoTree)
-  let producedCodeQualityEntries ← IO.mkRef (#[] : Array Linter.CodeQualityLogEntry)
   for linter in linterLikes do
+    let producedInfoTrees ← IO.mkRef ({} : PersistentArray InfoTree)
+    let producedCodeQualityEntries ← IO.mkRef (#[] : Array Linter.CodeQualityLogEntry)
     withTraceNode traceCls (fun _ => traceMsg linter) do
       let savedState ← get
       let originalSize := savedState.infoState.trees.size
@@ -124,13 +124,13 @@ def runLinterLikes {α} (traceCls : Name) (linterLikes : Array α) (run : α →
         producedCodeQualityEntries.modify (· ++ newState.extract oldStateSize)
         -- Pass along messages and traces
         modify fun s => { savedState with messages := s.messages, traceState := s.traceState }
-  /- Record the aggregated new infotrees and code quality metrics (produced by the linters) in the
-  final command state -/
-  let producedInfoTrees ← producedInfoTrees.get
-  let producedCodeQualityEntries ← producedCodeQualityEntries.get
-  modifyEnv fun env =>
-    Linter.codeQualityLogExt.modifyState env (· ++ producedCodeQualityEntries)
-  modifyInfoState fun s => { s with trees := s.trees ++ producedInfoTrees }
+        /- Record the aggregated new infotrees and code quality metrics (produced by the linters) in the
+        final command state -/
+        let producedInfoTrees ← producedInfoTrees.get
+        let producedCodeQualityEntries ← producedCodeQualityEntries.get
+        modifyEnv fun env =>
+          Linter.codeQualityLogExt.modifyState env (· ++ producedCodeQualityEntries)
+        modifyInfoState fun s => { s with trees := s.trees ++ producedInfoTrees }
 
 /-- Runs all infotree linters. -/
 def infoLinterRunner : Linter where
