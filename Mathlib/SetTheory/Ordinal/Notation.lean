@@ -58,7 +58,6 @@ instance : Inhabited ONote :=
   ⟨0⟩
 
 /-- Notation for 1 -/
-@[nolint instanceDiamonds]
 instance : One ONote :=
   ⟨oadd 0 1 0⟩
 
