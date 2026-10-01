@@ -628,7 +628,7 @@ end Equiv
 
 namespace Set
 
-variable {p : α → Prop} {f f₁ f₂ : Equiv.Perm α} {s t : Set α}
+variable {p : α → Prop} {f : Equiv.Perm α} {s t : Set α}
 
 lemma MapsTo.subtypePerm (hp : ∀ x : α, p (f x) ↔ p x) (h : MapsTo f s t) :
     MapsTo (f.subtypePerm hp) ((↑) ⁻¹' s) ((↑) ⁻¹' t) :=
