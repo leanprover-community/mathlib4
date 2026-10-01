@@ -6,8 +6,6 @@ Authors: Sébastien Gouëzel, Antoine Chambert-Loir, Anatole Dedecker
 module
 
 public import Mathlib.Topology.Semicontinuity.Defs
-public import Mathlib.Algebra.GroupWithZero.Indicator
-public import Mathlib.Topology.Piecewise
 public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
 /-!
@@ -60,7 +58,9 @@ ones for lower semicontinuous functions using `OrderDual`.
 
 public section
 
-open Topology ENNReal
+open ENNReal
+
+open scoped Topology
 
 open Set Function Filter
 
@@ -92,7 +92,7 @@ theorem LowerSemicontinuousOn.exists_isMinOn {s : Set α} (ne_s : s.Nonempty)
       have : (pure x : Filter α) ≤ φ (f x) := le_principal_iff.mpr ⟨x.2, le_refl (f x)⟩
       exact neBot_of_le this
   have hℱs : ℱ ≤ 𝓟 s :=
-    iInf_le_of_le (Classical.choice inferInstance) (principal_mono.mpr <| inter_subset_left)
+    iInf_le_of_le (Classical.choice inferInstance) (principal_mono.mpr inter_subset_left)
   have hℱ (x) (hx : x ∈ s) : ∀ᶠ y in ℱ, f y ≤ f x :=
     mem_iInf_of_mem ⟨x, hx⟩ (by apply inter_subset_right)
   obtain ⟨a, ha, h⟩ := hs hℱs

@@ -5,7 +5,7 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.FieldTheory.Galois.Infinite
+import Mathlib.FieldTheory.Galois.Infinite
 public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.RingTheory.IsGaloisGroup.Basic
 
@@ -174,7 +174,7 @@ theorem fixedPoints_of_isGaloisGroup [hGKL : IsGaloisGroup G K L] [hHFL : IsGalo
 theorem of_fixedPoints_eq [hGKL : IsGaloisGroup G K L] (hF : FixedPoints.intermediateField H = F) :
     IsGaloisGroup H F L := by
   rw [eq_comm] at hF
-  convert! IsGaloisGroup.subgroup G K L H
+  convert IsGaloisGroup.subgroup G K L H
 
 variable {G K L H F} in
 theorem subgroup_iff [hGKL : IsGaloisGroup G K L] :
@@ -202,16 +202,38 @@ instance intermediateField [Finite G] [hGKL : IsGaloisGroup G K L] :
   have := hGKL.isGalois
   .of_mulEquiv_algEquiv e fun _ _ ↦ rfl
 
-include K in
-/-- If `G` is a Galois group on `L/K` and `L/E/K` is a tower of field extensions,
-then the fixing subgroup of the image of `E` in `L` is a Galois group on `L/E`. -/
-theorem of_isScalarTower [Finite G] [IsGaloisGroup G K L] (E : Type*) [Field E] [Algebra K E]
-    [Algebra E L] [IsScalarTower K E L] :
-    IsGaloisGroup (fixingSubgroup G (Set.range (algebraMap E L))) E L := by
-  rw [← IsScalarTower.toAlgHom_fieldRange K E L]
-  refine IsGaloisGroup.of_ringEquiv _ _ _ L
-    (AlgHom.equivFieldRange (IsScalarTower.toAlgHom K E L)).toRingEquiv.symm fun ⟨_, ⟨x, rfl⟩⟩ ↦ ?_
-  simp [AlgEquiv.symm_apply_eq, Subtype.ext_iff]
+#adaptation_note
+/-- Before nightly-2026-09-11 this elaborated within the default `synthInstance.maxHeartbeats`.
+Synthesizing the `Algebra K ↑(IsScalarTower.toAlgHom K F L).fieldRange` instance needed by the
+`rw [← IsScalarTower.toAlgHom_fieldRange K F L]` step now exceeds it. The responsible Lean change
+has not been pinned down; it lies between nightly-2026-09-09 and nightly-2026-09-11. The proof
+itself is unchanged, so the original is restored by deleting the `set_option` line below. -/
+set_option synthInstance.maxHeartbeats 80000 in
+-- Synthesizing `Algebra K ↑(IsScalarTower.toAlgHom K F L).fieldRange` needs more than the
+-- default limit; see adaptation note above.
+attribute [local instance] FractionRing.liftAlgebra in
+/-- If `G` is a finite Galois group for `B / R` and `R ⊆ A ⊆ B` is a tower of commutative domains
+with `A` integrally closed, then the fixing subgroup of the image of `A` in `B` is a Galois group
+for `B / A`. -/
+theorem of_isScalarTower [Finite G] (R B A : Type*) [CommRing R] [CommRing B] [CommRing A]
+    [IsDomain B] [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
+    [FaithfulSMul A B] [MulSemiringAction G B] [IsGaloisGroup G R B] [IsIntegrallyClosed A] :
+    IsGaloisGroup (fixingSubgroup G (Set.range (algebraMap A B))) A B := by
+  let R := (algebraMap R A).range
+  have : IsDomain A := IsDomain.of_faithfulSMul A B
+  have := Algebra.IsInvariant.isIntegral R B G
+  have : Algebra.IsIntegral A B := .tower_top R
+  let F := FractionRing A
+  let K := FractionRing R
+  let L := FractionRing B
+  let : MulSemiringAction G L := IsFractionRing.mulSemiringAction G B L
+  rw [IsFractionRing.fixingSubgroup_range_algebraMap G F L]
+  have : IsGaloisGroup (fixingSubgroup G (Set.range (algebraMap F L))) F L := by
+    rw [← IsScalarTower.toAlgHom_fieldRange K F L]
+    exact IsGaloisGroup.of_ringEquiv _ _ _ L
+      (AlgHom.equivFieldRange (IsScalarTower.toAlgHom K F L)).toRingEquiv.symm
+        fun ⟨_, ⟨x, rfl⟩⟩ ↦ by simp [AlgEquiv.symm_apply_eq, Subtype.ext_iff]
+  exact IsGaloisGroup.of_isFractionRing _ A B F L
 
 @[simp]
 theorem card_fixingSubgroup_eq_finrank [Finite G] [IsGaloisGroup G K L] :
@@ -260,7 +282,7 @@ theorem fixingSubgroup_top : fixingSubgroup G ((⊤ : IntermediateField K L) : S
 @[simp]
 theorem fixedPoints_top :
     (FixedPoints.intermediateField (⊤ : Subgroup G) : IntermediateField K L) = ⊥ := by
-  convert! IsGaloisGroup.fixedPoints_eq_bot G K L
+  convert IsGaloisGroup.fixedPoints_eq_bot G K L
   ext; simp
 
 /-- The Galois correspondence from intermediate fields to subgroups. -/
@@ -268,7 +290,7 @@ noncomputable def intermediateFieldEquivSubgroup [Finite G] :
     IntermediateField K L ≃o (Subgroup G)ᵒᵈ :=
   have := isGalois G K L
   have := finiteDimensional G K L
-  IsGalois.intermediateFieldEquivSubgroup.trans <| (mulEquivAlgEquiv G K L).comapSubgroup.dual
+  IsGalois.intermediateFieldEquivSubgroup.trans (mulEquivAlgEquiv G K L).comapSubgroup.dual
 
 @[simp] theorem intermediateFieldEquivSubgroup_apply [Finite G] {F} :
     intermediateFieldEquivSubgroup G K L F = .toDual (fixingSubgroup G (F : Set L)) := rfl
@@ -448,7 +470,7 @@ theorem algebraMap_restrictHom_smul [Finite G] [Finite G'] [MulSemiringAction G 
   apply FaithfulSMul.algebraMap_injective C (FractionRing C)
   rw [← IsScalarTower.algebraMap_apply,
     IsScalarTower.algebraMap_apply B (FractionRing B) (FractionRing C)]
-  simp only [restrictHom, MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_comp, MonoidHom.coe_coe,
+  simp only [restrictHom, MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_comp, MonoidHom.coe_ofClass,
     QuotientGroup.coe_mk', Function.comp_apply]
   rw [algebraMap.smul', algebraMap_quotientMulEquiv_smul, ← IsScalarTower.algebraMap_apply,
     algebraMap.smul', ← IsScalarTower.algebraMap_apply]
@@ -502,7 +524,7 @@ theorem map_quotientMk' [Finite G] [IsGaloisGroup G K L] (h : E ≤ F) :
       obtain ⟨a, ha⟩ := hE.isInvariant.isInvariant (algebraMap F L x) (by
         rintro ⟨g, hg⟩
         rw [MulAction.subgroup_smul_def, ← algebraMap.smul']
-        exact congr_arg (algebraMap F L) <| h ⟨g, ⟨g, hg, rfl⟩⟩)
+        congrm algebraMap F L $(h ⟨g, ⟨g, hg, rfl⟩⟩))
       exact ⟨a, FaithfulSMul.algebraMap_injective F L
         (by rw [← IsScalarTower.algebraMap_apply, ha])⟩⟩ }
 

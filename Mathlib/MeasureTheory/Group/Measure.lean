@@ -5,12 +5,12 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Algebra.Group.Pointwise.Set.Card
+import Mathlib.Algebra.Group.Pointwise.Set.Card
 public import Mathlib.GroupTheory.Complement
 public import Mathlib.MeasureTheory.Group.Action
 public import Mathlib.MeasureTheory.Group.Pointwise
 public import Mathlib.MeasureTheory.Measure.Prod
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.ContinuousMap.CocompactMap
 
 /-!
@@ -54,21 +54,27 @@ theorem map_mul_right_eq_self (μ : Measure G) [IsMulRightInvariant μ] (g : G) 
   IsMulRightInvariant.map_mul_right_eq_self g
 
 @[to_additive MeasureTheory.isAddLeftInvariant_smul]
-instance isMulLeftInvariant_smul [IsMulLeftInvariant μ] (c : ℝ≥0∞) : IsMulLeftInvariant (c • μ) :=
-  ⟨fun g => by rw [Measure.map_smul, map_mul_left_eq_self]⟩
+instance isMulLeftInvariant_smul [MeasurableConstSMul G G] [IsMulLeftInvariant μ] (c : ℝ≥0∞) :
+    IsMulLeftInvariant (c • μ) :=
+  ⟨fun g => by
+    rw [Measure.map_smul, map_mul_left_eq_self]
+    exact (measurable_const_smul g).aemeasurable⟩
 
 @[to_additive MeasureTheory.isAddRightInvariant_smul]
-instance isMulRightInvariant_smul [IsMulRightInvariant μ] (c : ℝ≥0∞) :
+instance isMulRightInvariant_smul [MeasurableConstSMul Gᵐᵒᵖ G] [IsMulRightInvariant μ] (c : ℝ≥0∞) :
     IsMulRightInvariant (c • μ) :=
-  ⟨fun g => by rw [Measure.map_smul, map_mul_right_eq_self]⟩
+  ⟨fun g => by
+    rw [Measure.map_smul, map_mul_right_eq_self]
+    exact (measurable_const_smul (MulOpposite.op g)).aemeasurable⟩
 
 @[to_additive MeasureTheory.isAddLeftInvariant_smul_nnreal]
-instance isMulLeftInvariant_smul_nnreal [IsMulLeftInvariant μ] (c : ℝ≥0) :
+instance isMulLeftInvariant_smul_nnreal [MeasurableConstSMul G G] [IsMulLeftInvariant μ] (c : ℝ≥0) :
     IsMulLeftInvariant (c • μ) :=
   MeasureTheory.isMulLeftInvariant_smul (c : ℝ≥0∞)
 
 @[to_additive MeasureTheory.isAddRightInvariant_smul_nnreal]
-instance isMulRightInvariant_smul_nnreal [IsMulRightInvariant μ] (c : ℝ≥0) :
+instance isMulRightInvariant_smul_nnreal [MeasurableConstSMul Gᵐᵒᵖ G] [IsMulRightInvariant μ]
+    (c : ℝ≥0) :
     IsMulRightInvariant (c • μ) :=
   MeasureTheory.isMulRightInvariant_smul (c : ℝ≥0∞)
 
@@ -101,7 +107,7 @@ theorem MeasurePreserving.mul_right (μ : Measure G) [IsMulRightInvariant μ] (g
 @[to_additive]
 instance Subgroup.smulInvariantMeasure {G α : Type*} [Group G] [MulAction G α] [MeasurableSpace α]
     {μ : Measure α} [SMulInvariantMeasure G α μ] (H : Subgroup G) : SMulInvariantMeasure H α μ :=
-  ⟨fun y s hs => by convert! SMulInvariantMeasure.measure_preimage_smul (μ := μ) (y : G) hs⟩
+  ⟨fun y s hs => by convert SMulInvariantMeasure.measure_preimage_smul (μ := μ) (y : G) hs⟩
 
 /-- An alternative way to prove that `μ` is left invariant under multiplication. -/
 @[to_additive /-- An alternative way to prove that `μ` is left invariant under addition. -/]
@@ -245,17 +251,17 @@ theorem measure_preimage_mul_right (μ : Measure G) [IsMulRightInvariant μ] (g 
 @[to_additive]
 theorem map_mul_left_ae (μ : Measure G) [IsMulLeftInvariant μ] (x : G) :
     Filter.map (fun h => x * h) (ae μ) = ae μ :=
-  ((MeasurableEquiv.mulLeft x).map_ae μ).trans <| congr_arg ae <| map_mul_left_eq_self μ x
+  ((MeasurableEquiv.mulLeft x).map_ae μ).trans congr(ae $(map_mul_left_eq_self μ x))
 
 @[to_additive]
 theorem map_mul_right_ae (μ : Measure G) [IsMulRightInvariant μ] (x : G) :
     Filter.map (fun h => h * x) (ae μ) = ae μ :=
-  ((MeasurableEquiv.mulRight x).map_ae μ).trans <| congr_arg ae <| map_mul_right_eq_self μ x
+  ((MeasurableEquiv.mulRight x).map_ae μ).trans congr(ae $(map_mul_right_eq_self μ x))
 
 @[to_additive]
 theorem map_div_right_ae (μ : Measure G) [IsMulRightInvariant μ] (x : G) :
     Filter.map (fun t => t / x) (ae μ) = ae μ :=
-  ((MeasurableEquiv.divRight x).map_ae μ).trans <| congr_arg ae <| map_div_right_eq_self μ x
+  ((MeasurableEquiv.divRight x).map_ae μ).trans congr(ae $(map_div_right_eq_self μ x))
 
 @[to_additive]
 theorem eventually_mul_left_iff (μ : Measure G) [IsMulLeftInvariant μ] (t : G) {p : G → Prop} :
@@ -482,7 +488,7 @@ variable [MeasurableMul G]
 @[to_additive]
 theorem map_div_left_ae (μ : Measure G) [IsMulLeftInvariant μ] [IsInvInvariant μ] (x : G) :
     Filter.map (fun t => x / t) (ae μ) = ae μ :=
-  ((MeasurableEquiv.divLeft x).map_ae μ).trans <| congr_arg ae <| map_div_left_eq_self μ x
+  ((MeasurableEquiv.divLeft x).map_ae μ).trans congr(ae $(map_div_left_eq_self μ x))
 
 end Group
 
@@ -784,16 +790,18 @@ variable [Group G] [TopologicalSpace G] (μ : Measure G) [IsHaarMeasure μ]
 
 @[to_additive (attr := simp)]
 theorem haar_singleton [ContinuousMul G] [BorelSpace G] (g : G) : μ {g} = μ {(1 : G)} := by
-  convert! measure_preimage_mul μ g⁻¹ _
+  convert measure_preimage_mul μ g⁻¹ _
   simp only [mul_one, preimage_mul_left_singleton, inv_inv]
 
 @[to_additive IsAddHaarMeasure.smul]
-theorem IsHaarMeasure.smul {c : ℝ≥0∞} (cpos : c ≠ 0) (ctop : c ≠ ∞) : IsHaarMeasure (c • μ) :=
+theorem IsHaarMeasure.smul [MeasurableConstSMul G G] {c : ℝ≥0∞} (cpos : c ≠ 0) (ctop : c ≠ ∞) :
+    IsHaarMeasure (c • μ) :=
   { lt_top_of_isCompact := fun _K hK => ENNReal.mul_lt_top ctop.lt_top hK.measure_lt_top
     toIsOpenPosMeasure := isOpenPosMeasure_smul μ cpos }
 
 @[to_additive IsAddHaarMeasure.nnreal_smul]
-lemma IsHaarMeasure.nnreal_smul {c : ℝ≥0} (hc : c ≠ 0) : IsHaarMeasure (c • μ) :=
+lemma IsHaarMeasure.nnreal_smul [MeasurableConstSMul G G] {c : ℝ≥0} (hc : c ≠ 0) :
+    IsHaarMeasure (c • μ) :=
   .smul _ (by simp [hc]) (Option.some_ne_none _)
 
 /-- If a left-invariant measure gives positive mass to some compact set with nonempty interior, then

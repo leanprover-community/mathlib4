@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 public import Mathlib.Analysis.SpecificLimits.Normed
-public import Mathlib.Topology.Algebra.InfiniteSum.Module
+import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!
 # Radius of convergence of a power series
@@ -45,8 +45,9 @@ noncomputable section
 
 variable {𝕜 𝕜' E F G : Type*}
 
-open Topology NNReal Filter ENNReal Set Asymptotics
-open scoped Pointwise
+open NNReal Filter ENNReal Set Asymptotics
+
+open scoped Topology Pointwise
 
 namespace FormalMultilinearSeries
 

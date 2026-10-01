@@ -5,7 +5,7 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Lean.Meta.Basic
+import Lean.Meta.Basic
 public import Mathlib.Init
 
 /-!

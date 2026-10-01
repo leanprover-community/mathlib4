@@ -23,8 +23,10 @@ public section
 
 noncomputable section
 
-open RCLike Real Filter Topology
+open RCLike Real Filter
 open LinearMap renaming BilinForm → BilinForm
+
+open scoped Topology
 
 variable {𝕜 E : Type*} [RCLike 𝕜]
 
@@ -108,7 +110,7 @@ theorem Dense.eq_zero_of_inner_left (hS : Dense S) (h : ∀ v ∈ S, ⟪x, v⟫ 
   have : (⟪x, ·⟫) = 0 := (continuous_const.inner continuous_id).ext_on
     hK continuous_const fun v ↦ Submodule.span_induction h (by simp)
       (by simp +contextual [inner_add_right]) (by simp +contextual [inner_smul_right])
-  simpa using congr_fun this x
+  simpa using congr($this x)
 
 theorem Dense.eq_zero_of_inner_right (hS : Dense S) (h : ∀ v ∈ S, ⟪v, x⟫ = 0) : x = 0 :=
   hS.eq_zero_of_inner_left 𝕜 fun v hv ↦ by rw! [← inner_conj_symm]; simp [-inner_conj_symm, h, hv]

@@ -6,7 +6,6 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
-public import Mathlib.MeasureTheory.Measure.Continuity
 public import Mathlib.MeasureTheory.SetAlgebra
 
 /-!
@@ -102,7 +101,7 @@ theorem Measure.MeasureDense.nonempty' (h𝒜 : μ.MeasureDense 𝒜) :
     {s | s ∈ 𝒜 ∧ μ s ≠ ∞}.Nonempty := by
   rcases h𝒜.approx ∅ MeasurableSet.empty (by simp) 1 (by simp) with ⟨t, ht, hμt⟩
   refine ⟨t, ht, ?_⟩
-  convert! ne_top_of_lt hμt
+  convert ne_top_of_lt hμt
   rw [← bot_eq_empty, bot_symmDiff]
 
 /-- The set of measurable sets is measure-dense. -/
@@ -117,7 +116,7 @@ theorem Measure.MeasureDense.completion (h𝒜 : μ.MeasureDense 𝒜) : μ.comp
     obtain ⟨t, ht, hμst⟩ :=
       h𝒜.approx (toMeasurable μ s) (measurableSet_toMeasurable μ s) (by simpa) ε ε_pos
     refine ⟨t, ht, ?_⟩
-    convert! hμst using 1
+    convert hμst using 1
     rw [completion_apply]
     exact measure_congr <| ae_eq_set_symmDiff (NullMeasurableSet.toMeasurable_ae_eq hs).symm
       Filter.EventuallyEq.rfl
@@ -368,7 +367,7 @@ theorem isSeparable_of_sigmaFinite [CountablyGenerated X] [SigmaFinite μ] :
     · rw [← hgen]
       exact generateFrom_mono <| le_trans self_subset_generateSetAlgebra <|
         generateSetAlgebra_mono <| subset_union_left ..
-    · induction hs with
+    · induction hs using generateSetAlgebra_induction with
       | base t t_mem =>
         rcases t_mem with t_mem | ⟨n, rfl⟩
         · exact hgen ▸ measurableSet_generateFrom t_mem

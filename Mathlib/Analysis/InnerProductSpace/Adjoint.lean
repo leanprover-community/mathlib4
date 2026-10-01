@@ -7,9 +7,7 @@ module
 
 public import Mathlib.Algebra.Star.UnitaryStarAlgAut
 public import Mathlib.Analysis.InnerProductSpace.Dual
-public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Analysis.LocallyConvex.SeparatingDual
-public import Mathlib.Tactic.CrossRefAttribute
 
 
 /-!
@@ -117,7 +115,7 @@ def adjoint : (E →L[𝕜] F) ≃ₗᵢ⋆[𝕜] F →L[𝕜] E :=
 
 @[inherit_doc]
 scoped[InnerProduct] postfix:1000 "†" => ContinuousLinearMap.adjoint
-open InnerProduct
+open scoped InnerProduct
 
 /-- The fundamental property of the adjoint. -/
 theorem adjoint_inner_left (A : E →L[𝕜] F) (x : E) (y : F) : ⟪(A†) y, x⟫ = ⟪y, A x⟫ :=
@@ -1080,4 +1078,4 @@ theorem LinearIsometry.adjoint_comp_self' {E E' : Type*}
   have := FiniteDimensional.complete 𝕜 E
   have := FiniteDimensional.complete 𝕜 E'
   ext x
-  exact congr($(f.adjoint_comp_self) x)
+  congrm $f.adjoint_comp_self x

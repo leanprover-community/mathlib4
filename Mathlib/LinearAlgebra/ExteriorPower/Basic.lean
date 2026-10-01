@@ -161,14 +161,14 @@ noncomputable def relationsSolutionEquiv {ι : Type*} [DecidableEq ι] {M : Type
         rw [map_sub, map_add, Finsupp.linearCombination_single, one_smul,
           Finsupp.linearCombination_single, one_smul,
           Finsupp.linearCombination_single, one_smul, sub_eq_zero] at this
-        convert! this.symm -- `convert` is necessary due to the implementation of `MultilinearMap`
+        convert this.symm -- `convert` is necessary due to the implementation of `MultilinearMap`
       map_update_smul' := fun m i r x ↦ by
         have := s.linearCombination_var_relation (.smul m i r x)
         dsimp at this ⊢
         rw [Finsupp.smul_single, smul_eq_mul, mul_one, map_sub,
           Finsupp.linearCombination_single, one_smul,
           Finsupp.linearCombination_single, sub_eq_zero] at this
-        convert! this
+        convert this
       map_eq_zero_of_eq' := fun v i j hm hij ↦
         by simpa using s.linearCombination_var_relation (.alt v i j hm hij) }
   invFun f :=
@@ -227,7 +227,7 @@ lemma alternatingMapLinearEquiv_comp_ιMulti (f : M [⋀^Fin n]→ₗ[R] N) :
 @[simp]
 lemma alternatingMapLinearEquiv_apply_ιMulti (f : M [⋀^Fin n]→ₗ[R] N) (a : Fin n → M) :
     alternatingMapLinearEquiv f (ιMulti R n a) = f a :=
-  DFunLike.congr_fun (alternatingMapLinearEquiv_comp_ιMulti f) a
+  congr($(alternatingMapLinearEquiv_comp_ιMulti f) a)
 
 @[simp]
 lemma alternatingMapLinearEquiv_symm_apply (F : ⋀[R]^n M →ₗ[R] N) (m : Fin n → M) :
@@ -299,6 +299,15 @@ theorem map_comp (f : M →ₗ[R] N) (g : N →ₗ[R] N') :
     map n (g ∘ₗ f) = map n g ∘ₗ map n f := by
   aesop
 
+theorem subtype_comp_map_eq (f : M →ₗ[R] N) :
+    (Submodule.subtype _) ∘ₗ (map n f) =
+      (ExteriorAlgebra.map f).toLinearMap ∘ₗ (Submodule.subtype _) :=
+  linearMap_ext <| AlternatingMap.ext fun m ↦ (by simp)
+
+@[simp]
+theorem coe_map (f : M →ₗ[R] N) (x : ⋀[R]^n M) : map n f x = ExteriorAlgebra.map f x.1 :=
+  congr($(subtype_comp_map_eq f) x)
+
 /-! Exactness properties of the exterior power functor. -/
 
 /-- If a linear map has a retraction, then the map it induces on exterior powers is injective. -/
@@ -351,7 +360,7 @@ private lemma ιMulti_family_span_fixedDegree_aux
   have α_card : (Finset.image α Finset.univ).card = n :=
     (Finset.card_image_of_injective Finset.univ α_inj).trans (Finset.card_fin n)
   use (Finset.orderIsoOfFin (Finset.image α Finset.univ) α_card).toEquiv.trans
-    ((Equiv.setCongr Fintype.coe_image_univ).trans (Equiv.ofInjective α α_inj).symm)
+    ((Set.equivOfEq Fintype.coe_image_univ).trans (Equiv.ofInjective α α_inj).symm)
   apply Submodule.mem_span_of_mem
   use ⟨(Finset.image α Finset.univ), α_card⟩
   rw [ExteriorAlgebra.ιMulti_family, Function.comp_assoc]
@@ -406,9 +415,11 @@ lemma ιMulti_family_span {I : Type*} [LinearOrder I] (v : I → M) :
 
 end ιMulti_family
 
-lemma subsingleton_of_span_eq_top_of_card_lt {ι : Type*} [Finite ι] [LinearOrder ι] (g : ι → M)
+lemma subsingleton_of_span_eq_top_of_card_lt {ι : Type*} [Finite ι] (g : ι → M)
     (hg : Submodule.span R (range g) = ⊤) (i : ℕ) (hi : Nat.card ι < i) :
     Subsingleton (⋀[R]^i M) := by
+  obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin ι
+  let : LinearOrder ι := LinearOrder.lift' e e.injective
   replace hi : range (ιMulti_family R i g) = ∅ := by
     rw [range_eq_empty_iff, powersetCard.eq_empty_iff.mpr hi, isEmpty_coe_sort]
   suffices (⊥ : Submodule R (⋀[R]^i M)) = ⊤ by
