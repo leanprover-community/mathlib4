@@ -3,9 +3,10 @@ Copyright (c) 2026 Marcelo Lynch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
+module
 
-import Cache.Upload.Dest
-import Cache.Upload.Curl
+public import Cache.Upload.Dest
+public import Cache.Upload.Curl
 
 /-!
 # The Azure Blob Storage backend
@@ -19,6 +20,8 @@ transfers with the curl tool.
 The storage account URL and the container model live in `Cache/Infra.lean`,
 because the read side uses them too.
 -/
+
+public section
 
 namespace Cache.Requests
 

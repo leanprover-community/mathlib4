@@ -5,13 +5,13 @@ Authors: Dennj Osele
 -/
 module
 
-public import Mathlib.Algebra.Order.Algebra
-public import Mathlib.Algebra.Order.BigOperators.Expect
-public import Mathlib.Algebra.Order.Field.Power
-public import Mathlib.Analysis.Complex.Order
+import Mathlib.Algebra.Order.Algebra
+import Mathlib.Algebra.Order.BigOperators.Expect
+import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Analysis.Complex.Order
 public import Mathlib.Analysis.Complex.Trigonometric
-public import Mathlib.Data.EReal.Inv
-public import Mathlib.Tactic.Positivity
+import Mathlib.Data.EReal.Inv
+import Mathlib.Tactic.Positivity
 
 /-!
 # Discrete Grönwall inequality
@@ -58,7 +58,7 @@ theorem discrete_gronwall_prod_general {n₀ : ℕ} (hu : ∀ n ≥ n₀, u (n +
     have heq : c k * ∑ j ∈ Ico n₀ k, b j * ∏ i ∈ Ico (j + 1) k, c i + b k =
         ∑ j ∈ Ico n₀ (k + 1), b j * ∏ i ∈ Ico (j + 1) (k + 1), c i := by
       rw [sum_Ico_succ_top hk, mul_sum, Ico_self, prod_empty, mul_one]
-      refine congr_arg (· + b k) (sum_congr rfl fun j hj ↦ ?_)
+      congrm $(sum_congr rfl fun j hj ↦ ?_) + b k
       rw [prod_Ico_succ_top (by have := mem_Ico.mp hj; omega)]; ring
     calc u (k + 1)
       _ ≤ c k * u k + b k := hu k hk
