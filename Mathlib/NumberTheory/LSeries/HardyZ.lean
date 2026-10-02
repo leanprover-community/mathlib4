@@ -55,15 +55,6 @@ private lemma half_add_mul_I_ne_zero (t : ℝ) : (1 : ℂ) / 2 + t * I ≠ 0 := 
   rw [half_add_mul_I_re] at hre
   norm_num at hre
 
-private lemma half_add_mul_I_ne_one (t : ℝ) : (1 : ℂ) / 2 + t * I ≠ 1 := by
-  intro h
-  have hre : ((1 : ℂ) / 2 + t * I).re = 1 := by rw [h]; simp
-  rw [half_add_mul_I_re] at hre
-  norm_num at hre
-
-private lemma continuous_half_add_mul_I : Continuous fun t : ℝ ↦ (1 : ℂ) / 2 + t * I :=
-  continuous_const.add (Complex.continuous_ofReal.mul continuous_const)
-
 /-- The completed zeta function is real on the critical line. -/
 theorem conj_completedRiemannZeta_half_add_mul_I (t : ℝ) :
     conj (completedRiemannZeta (1 / 2 + t * I)) = completedRiemannZeta (1 / 2 + t * I) := by
@@ -123,31 +114,29 @@ theorem hardyZ_eq_zero_iff (t : ℝ) :
     hardyZ t = 0 ↔ riemannZeta (1 / 2 + t * I) = 0 := by
   rw [← abs_eq_zero (a := hardyZ t), abs_hardyZ, norm_eq_zero]
 
-/-- `Z` is continuous, so the intermediate value theorem applies to it. -/
+private lemma half_add_mul_I_ne_one (t : ℝ) : (1 : ℂ) / 2 + t * I ≠ 1 := by
+  intro h
+  have hre : ((1 : ℂ) / 2 + t * I).re = 1 := by rw [h]; simp
+  rw [half_add_mul_I_re] at hre
+  norm_num at hre
+
+/-- Hardy's `Z`-function is continuous. -/
 theorem continuous_hardyZ : Continuous hardyZ := by
   have hnum : Continuous fun t : ℝ ↦ (completedRiemannZeta (1 / 2 + t * I)).re :=
     Complex.continuous_re.comp (continuous_iff_continuousAt.mpr fun t ↦
       ContinuousAt.comp (g := completedRiemannZeta) (f := fun t : ℝ ↦ (1 : ℂ) / 2 + t * I)
         (x := t) (differentiableAt_completedZeta (half_add_mul_I_ne_zero t)
-          (half_add_mul_I_ne_one t)).continuousAt continuous_half_add_mul_I.continuousAt)
+          (half_add_mul_I_ne_one t)).continuousAt (by fun_prop))
   have hden : Continuous fun t : ℝ ↦ ‖Gammaℝ (1 / 2 + t * I)‖ := by
     refine continuous_norm.comp (continuous_iff_continuousAt.mpr fun t ↦ ?_)
     have hne : ∀ m : ℕ, ((1 : ℂ) / 2 + t * I) / 2 ≠ -m := by
       intro m hm
       have hre : (((1 : ℂ) / 2 + t * I) / 2).re = (-(m : ℂ)).re := by rw [hm]
       rw [Complex.div_ofNat_re, half_add_mul_I_re] at hre
-      simp only [Complex.neg_re, Complex.natCast_re] at hre
-      have hm0 : (0 : ℝ) ≤ (m : ℝ) := Nat.cast_nonneg m
-      linarith
+      grind [Complex.neg_re, Complex.natCast_re]
     have hG : ContinuousAt Gammaℝ (1 / 2 + t * I) := by
-      rw [continuousAt_congr (Filter.Eventually.of_forall Gammaℝ_def)]
-      refine ContinuousAt.mul ?_ ?_
-      · exact (continuousAt_const_cpow (by exact_mod_cast Real.pi_ne_zero)).comp
-          (continuousAt_id.neg.div_const 2)
-      · have h2 : ContinuousAt (fun z : ℂ ↦ z / 2) (1 / 2 + t * I) :=
-          continuousAt_id.div_const 2
-        exact ContinuousAt.comp (g := Complex.Gamma) (f := fun z : ℂ ↦ z / 2)
-          (x := 1 / 2 + t * I) (Complex.continuousAt_Gamma _ hne) h2
-    exact ContinuousAt.comp (g := Gammaℝ) (f := fun t : ℝ ↦ (1 : ℂ) / 2 + t * I) (x := t) hG
-      continuous_half_add_mul_I.continuousAt
+      rw [funext Gammaℝ_def]
+      apply ((continuousAt_const_cpow (by simp)).comp (by fun_prop)).mul
+      exact .comp (continuousAt_Gamma _ hne) (by fun_prop)
+    exact hG.comp (f := fun t : ℝ ↦ _ + t * I) (by fun_prop)
   exact hnum.div hden fun t ↦ norm_ne_zero_iff.mpr (Gammaℝ_half_add_mul_I_ne_zero t)
