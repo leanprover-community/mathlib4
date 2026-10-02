@@ -200,7 +200,7 @@ theorem isInducing_postcomp [IsTopologicalAddGroup F] [IsTopologicalAddGroup G]
   letI : UniformSpace F := IsTopologicalAddGroup.rightUniformSpace F
   haveI : IsUniformAddGroup F := IsUniformAddGroup.rightUniformSpace_of_addCommGroup F
   letI : UniformSpace G := IsTopologicalAddGroup.rightUniformSpace G
-  haveI : IsUniformAddGroup G := IsUniformAddGroup.rightUniformSpace_of_addCommGroup F
+  haveI : IsUniformAddGroup G := IsUniformAddGroup.rightUniformSpace_of_addCommGroup G
   (isUniformInducing_postcomp f <| AddMonoidHom.isUniformInducing_of_isInducing hf).isInducing
 
 theorem isEmbedding_postcomp [IsTopologicalAddGroup F] [IsTopologicalAddGroup G]
