@@ -753,7 +753,7 @@ theorem liftOn₂_mk' {p : Sort*} (f : M → S → M → S → p) (H) (a c : M) 
 
 /-- The localization of a torsion-free monoid is torsion-free. -/
 @[to_additive /-- The localization of a torsion-free monoid is torsion-free. -/]
-instance instIsMulTorsionFree [IsMulTorsionFree M] : IsMulTorsionFree <| Localization S where
+instance [HasUniqueRoots M] : HasUniqueRoots <| Localization S where
   pow_left_injective n hn := by
     rintro ⟨a⟩ ⟨b⟩ (hab : mk a.1 a.2 ^ n = mk b.1 b.2 ^ n)
     change mk a.1 a.2 = mk b.1 b.2
