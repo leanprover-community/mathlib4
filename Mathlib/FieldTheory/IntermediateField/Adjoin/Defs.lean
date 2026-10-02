@@ -695,10 +695,11 @@ theorem induction_on_adjoin_finset (S : Finset E)
     exact adjoin_simple (adjoin F _) _ ha h
 
 theorem induction_on_adjoin_fg {motive : IntermediateField F E → Prop} (base : motive ⊥)
-    (ih : ∀ (K : IntermediateField F E) (x : E), motive K → motive (K⟮x⟯.restrictScalars F))
+    (adjoin_simple : ∀ (K : IntermediateField F E)
+      (x : E), motive K → motive (K⟮x⟯.restrictScalars F))
     (K : IntermediateField F E) (hK : K.FG) : motive K := by
   obtain ⟨S, rfl⟩ := hK
-  exact induction_on_adjoin_finset S base fun K x _ hK => ih K x hK
+  exact induction_on_adjoin_finset S base fun K x _ hK => adjoin_simple K x hK
 
 end Induction
 
