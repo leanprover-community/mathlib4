@@ -15,8 +15,8 @@ public import Mathlib.RingTheory.Depth.Rees
 # The Definition of Depth
 
 In this file, we give the definition of depth of a module over a local ring. We also establish
-some basic facts about it using the Rees theorem proven above.
-In this file, most of the times we set `R` to be a noetherian commutative ring,
+some basic facts about it using the Rees theorem proven in file `Mathlib.RingTheory.Depth.Rees`.
+In this file, `R` will usually be a noetherian commutative ring,
 all modules refer to `R`-module.
 
 ## Main definition and results
@@ -25,8 +25,8 @@ all modules refer to `R`-module.
   between them, equal to `⊤ : ℕ∞` if no such index.
 
 * `Ideal.depth` : The depth of an `R`-module `M` with respect to an ideal `I`,
-  defined as `moduleDepth (R⧸ I, M)`.
-  This is `grade(I, M)` in Bruns–Herzog, where "depth" is reserved for the local case below..
+  defined as `moduleDepth (R⧸ I) M`.
+  This is `grade(I, M)` in Bruns–Herzog, where "depth" is reserved for the local case below.
 
 * `IsLocalRing.depth` : For a local ring `R`, the depth of an `R`-module with respect to
   the maximal ideal.
