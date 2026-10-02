@@ -5,14 +5,9 @@ Authors: Moritz Doll
 -/
 module
 
-<<<<<<< HEAD:Mathlib/Data/FunLike/Ring.lean
-public import Mathlib.Data.FunLike.GroupWithZero
+public import Mathlib.Algebra.GroupWithZero.FunLike
 public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Algebra.Ring.Pi
-=======
-public import Mathlib.Algebra.Group.FunLike
-public import Mathlib.Algebra.Ring.Defs
->>>>>>> master:Mathlib/Algebra/Ring/FunLike.lean
 import Mathlib.Tactic.Finiteness.Attr
 
 /-! # Ring instances for `FunLike` types
