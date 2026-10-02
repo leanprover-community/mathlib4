@@ -74,6 +74,8 @@ noncomputable def Ideal.depth (I : Ideal R) (M : ModuleCat.{v} R) : ℕ∞ :=
 noncomputable def IsLocalRing.depth [IsLocalRing R] (M : ModuleCat.{v} R) : ℕ∞ :=
   (IsLocalRing.maximalIdeal R).depth M
 
+namespace ModuleCat
+
 open Classical in
 private lemma moduleDepth_eq_find (N M : ModuleCat.{v} R) (h : ∃ n, Nontrivial (Ext N M n)) :
     moduleDepth N M = Nat.find h := by
@@ -101,11 +103,11 @@ lemma moduleDepth_eq_top_of_subsingleton (N M : ModuleCat.{v} R) [Subsingleton M
   apply (extFunctorObj N i).map_isZero
   exact ModuleCat.isZero_iff_subsingleton.mpr ‹_›
 
-lemma Ideal.depth_eq_top_of_subsingleton (I : Ideal R)
+lemma _root_.Ideal.depth_eq_top_of_subsingleton (I : Ideal R)
     (M : ModuleCat.{v} R) [Subsingleton M] : I.depth M = ⊤ :=
   moduleDepth_eq_top_of_subsingleton _ M
 
-lemma IsLocalRing.depth_eq_top_of_subsingleton [IsLocalRing R]
+lemma _root_.IsLocalRing.depth_eq_top_of_subsingleton [IsLocalRing R]
     (M : ModuleCat.{v} R) [Subsingleton M] : IsLocalRing.depth M = ⊤ :=
   Ideal.depth_eq_top_of_subsingleton _ M
 
@@ -183,11 +185,11 @@ lemma moduleDepth_eq_of_iso_right (N : ModuleCat.{v} R) {M M' : ModuleCat.{v} R}
   exact forall₂_congr fun i _ ↦
     ((extFunctorObj N i).mapIso e).addCommGroupIsoToAddEquiv.subsingleton_congr
 
-lemma Ideal.depth_eq_of_iso (I : Ideal R) {M M' : ModuleCat.{v} R} (e : M ≅ M') :
+lemma _root_.Ideal.depth_eq_of_iso (I : Ideal R) {M M' : ModuleCat.{v} R} (e : M ≅ M') :
     I.depth M = I.depth M' :=
   moduleDepth_eq_of_iso_right ↧(Shrink.{v} (R ⧸ I)) e
 
-lemma IsLocalRing.depth_eq_of_iso [IsLocalRing R] {M M' : ModuleCat.{v} R} (e : M ≅ M') :
+lemma _root_.IsLocalRing.depth_eq_of_iso [IsLocalRing R] {M M' : ModuleCat.{v} R} (e : M ≅ M') :
     IsLocalRing.depth M = IsLocalRing.depth M' :=
   (maximalIdeal R).depth_eq_of_iso e
 
@@ -327,6 +329,8 @@ lemma moduleDepth_eq_sSup_length_isRegular [IsNoetherianRing R] (I : Ideal R)
     have rees := ((exists_isRegular_tfae I rs.length M smul_lt).out 4 1).mp (by use rs)
     exact rees N ‹_› ‹_› (le_of_eq hsupp)
 
+end ModuleCat
+
 lemma Ideal.depth_eq_sSup_length_isRegular [IsNoetherianRing R] (I : Ideal R)
     (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤) :
     I.depth M = sSup {(List.length rs : ℕ∞) | (rs : List R)
@@ -378,7 +382,7 @@ section
 
 universe w
 
-lemma moduleDepth_uliftFunctor_obj [Small.{max v w} R] (N M : ModuleCat.{v} R) :
+lemma ModuleCat.moduleDepth_uliftFunctor_obj [Small.{max v w} R] (N M : ModuleCat.{v} R) :
     moduleDepth ((ModuleCat.uliftFunctor.{w} R).obj N) ((ModuleCat.uliftFunctor.{w} R).obj M) =
     moduleDepth N M := by
   simp only [moduleDepth]
@@ -392,7 +396,7 @@ variable [Small.{w} R] {N M : Type v} {N' M' : Type w}
   [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
   [AddCommGroup M'] [Module R M'] [AddCommGroup N'] [Module R N']
 
-lemma moduleDepth_eq_of_linearEquiv (eN : N ≃ₗ[R] N') (eM : M ≃ₗ[R] M') :
+lemma ModuleCat.moduleDepth_eq_of_linearEquiv (eN : N ≃ₗ[R] N') (eM : M ≃ₗ[R] M') :
     moduleDepth (ModuleCat.of R N) (ModuleCat.of R M) =
       moduleDepth (ModuleCat.of R N') (ModuleCat.of R M') := by
   have : Small.{max v w} R := small_lift R
