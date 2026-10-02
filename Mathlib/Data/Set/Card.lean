@@ -80,8 +80,12 @@ theorem encard_eq_coe_toFinset_card (s : Set α) [Fintype s] : encard s = s.toFi
   have h := toFinite s
   rw [h.encard_eq_coe_toFinset_card, toFinite_toFinset]
 
-@[simp] theorem toENat_cardinalMk (s : Set α) : (Cardinal.mk s).toENat = s.encard := rfl
+theorem toENat_cardinalMk (s : Set α) : (Cardinal.mk s).toENat = s.encard := rfl
 
+theorem encard_ofPred (P : α → Prop) : {x | P x}.encard = ENat.card {x // P x} :=
+  rfl
+
+@[deprecated encard_ofPred +typeChanged (since := "2026-10-01")]
 theorem toENat_cardinalMk_subtype (P : α → Prop) :
     (Cardinal.mk {x // P x}).toENat = {x | P x}.encard :=
   rfl
@@ -629,6 +633,9 @@ macro_rules
 noncomputable def ncard (s : Set α) : ℕ := ENat.toNat s.encard
 
 theorem ncard_def (s : Set α) : s.ncard = ENat.toNat s.encard := rfl
+
+theorem ncard_ofPred (P : α → Prop) : {x | P x}.ncard = Nat.card {x // P x} :=
+  rfl
 
 theorem Finite.cast_ncard_eq (hs : s.Finite) : s.ncard = s.encard := by
   rwa [ncard, ENat.natCast_toNat_eq_self, ne_eq, encard_eq_top_iff, Set.Infinite, not_not]
