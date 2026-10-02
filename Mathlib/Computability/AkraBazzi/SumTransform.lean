@@ -195,7 +195,7 @@ lemma tendsto_atTop_r (i : α) : Tendsto (r i) atTop atTop := by
   intro b
   have := R.eventually_r_ge b
   rw [Filter.eventually_all] at this
-  exact_mod_cast this i
+  exact mod_cast this i
 
 lemma tendsto_atTop_r_real (i : α) : Tendsto (fun n => (r i n : ℝ)) atTop atTop :=
   Tendsto.comp tendsto_natCast_atTop_atTop (R.tendsto_atTop_r i)
@@ -612,7 +612,7 @@ lemma eventually_atTop_sumTransform_le :
           rw [Set.mem_Icc]
           refine ⟨?_, by norm_cast; lia⟩
           calc c₁ * n ≤ r i n := by exact hn₁ i
-                    _ ≤ u := by exact_mod_cast hu'.1
+                    _ ≤ u := mod_cast hu'.1
          _ ≤ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
           gcongr with u hu; rw [Finset.mem_Ico] at hu; exact hu.1
          _ ≤ n ^ p a b * #(Ico (r i n) n) • (c₂ * g n / r i n ^ (p a b + 1)) := by
@@ -644,7 +644,7 @@ lemma eventually_atTop_sumTransform_le :
         rw [Set.mem_Icc]
         refine ⟨?_, by norm_cast; lia⟩
         calc c₁ * n ≤ r i n := by exact hn₁ i
-                  _ ≤ u := by exact_mod_cast hu'.1
+                  _ ≤ u := mod_cast hu'.1
       _ ≤ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / n ^ ((p a b) + 1)) := by
         gcongr n ^ (p a b) * (Finset.Ico (r i n) n).sum (fun _ => c₂ * g n / ?_) with u hu
         rw [Finset.mem_Ico] at hu
@@ -652,7 +652,7 @@ lemma eventually_atTop_sumTransform_le :
           0 < r i n := by exact hrpos_i
           _ ≤ u := by exact hu.1
         exact rpow_le_rpow_of_nonpos (by positivity)
-          (by exact_mod_cast (le_of_lt hu.2)) (le_of_lt hp)
+          (mod_cast (le_of_lt hu.2)) (le_of_lt hp)
       _ ≤ n ^ p a b * #(Ico (r i n) n) • (c₂ * g n / n ^ (p a b + 1)) := by
         gcongr; exact Finset.sum_le_card_nsmul _ _ _ (fun x _ => by rfl)
       _ = n ^ p a b * #(Ico (r i n) n) * (c₂ * g n / n ^ (p a b + 1)) := by
@@ -691,7 +691,7 @@ lemma eventually_atTop_sumTransform_ge :
         rw [Set.mem_Icc]
         refine ⟨?_, by norm_cast; lia⟩
         calc c₁ * n ≤ r i n := by exact hn₁ i
-                  _ ≤ u := by exact_mod_cast hu'.1
+                  _ ≤ u := mod_cast hu'.1
       _ ≥ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / n ^ ((p a b) + 1)) := by
         gcongr with u hu
         · rw [Finset.mem_Ico] at hu
@@ -725,7 +725,7 @@ lemma eventually_atTop_sumTransform_ge :
         rw [Set.mem_Icc]
         refine ⟨?_, by norm_cast; lia⟩
         calc c₁ * n ≤ r i n := by exact hn₁ i
-                  _ ≤ u := by exact_mod_cast hu'.1
+                  _ ≤ u := mod_cast hu'.1
       _ ≥ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
         gcongr n ^ (p a b) * (Finset.Ico (r i n) n).sum (fun _ => c₂ * g n / ?_) with u hu
         · rw [Finset.mem_Ico] at hu
@@ -734,7 +734,7 @@ lemma eventually_atTop_sumTransform_ge :
           positivity
         · rw [Finset.mem_Ico] at hu
           exact rpow_le_rpow_of_nonpos (by positivity)
-            (by exact_mod_cast hu.1) (le_of_lt hp)
+            (mod_cast hu.1) (le_of_lt hp)
       _ ≥ n ^ p a b * #(Ico (r i n) n) • (c₂ * g n / r i n ^ (p a b + 1)) := by
           gcongr; exact Finset.card_nsmul_le_sum _ _ _ (fun x _ => by rfl)
       _ = n ^ p a b * #(Ico (r i n) n) * (c₂ * g n / r i n ^ (p a b + 1)) := by

@@ -243,7 +243,7 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_not_aestronglyMeasurable
   apply eLpNorm_le_eLpNorm_mul_eLpNorm_of_not_aestronglyMeasurable_ennreal p q r b c ?_ hfg hp hq
   filter_upwards [h] with x hx
   simp only [enorm_eq_nnnorm]
-  exact_mod_cast hx
+  exact mod_cast hx
 
 theorem eLpNorm_le_eLpNorm_top_mul_eLpNorm_of_pos (p : ℝ≥0∞)
     (b : E → F → G) (c : ℝ≥0) (hb : Continuous b.uncurry)

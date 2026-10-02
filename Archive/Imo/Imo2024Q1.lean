@@ -43,7 +43,7 @@ lemma condition_two_mul_int (m : ℤ) : Condition (2 * m) := by
   rintro n -
   suffices (n : ℤ) ∣ ∑ i ∈ Finset.Icc 0 n, ⌊((i * (2 * m) : ℤ) : ℝ)⌋ by
     rw [← insert_Icc_add_one_left_eq_Icc n.zero_le, sum_insert_zero (by simp)] at this
-    exact_mod_cast this
+    exact mod_cast this
   simp_rw [Int.floor_intCast, ← sum_mul, ← Ico_succ_right_eq_Icc, ← range_eq_Ico, ← mul_assoc]
   apply dvd_mul_of_dvd_left
   rw [← Nat.cast_sum, ← Nat.cast_ofNat (n := 2), ← Nat.cast_mul, Finset.sum_range_id_mul_two]
@@ -76,7 +76,7 @@ lemma mem_Ico_one_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) : α ∈ Set.Ico 1 2 := by
   by_contra! hn
   have hr : 1 < ⌈α⁻¹⌉₊ := by
     rw [Nat.lt_ceil]
-    exact_mod_cast (one_lt_inv₀ h0).2 hn
+    exact mod_cast (one_lt_inv₀ h0).2 hn
   apply hr.ne'
   suffices ⌈α⁻¹⌉₊ = (1 : ℤ) from mod_cast this
   apply Int.eq_one_of_dvd_one (Int.zero_le_ofNat _)
@@ -162,7 +162,7 @@ lemma not_condition_of_mem_Ioo {α : ℝ} (h : α ∈ Set.Ioo 0 2) : ¬Condition
   rw [sub_eq_add_neg, ← le_sub_iff_add_le', neg_le, neg_sub] at hna'
   rw [le_inv_comm₀ (by linarith) (mod_cast hn), ← not_lt] at hna'
   apply hna'
-  exact_mod_cast Nat.lt_floor_add_one (_ : ℝ)
+  exact mod_cast Nat.lt_floor_add_one (_ : ℝ)
 
 lemma condition_iff_of_mem_Ico {α : ℝ} (h : α ∈ Set.Ico 0 2) : Condition α ↔ α = 0 := by
   constructor

@@ -68,7 +68,7 @@ modulo `p`. Also see `choose_modEq_choose_mod_mul_choose_div` for the version wi
 theorem choose_modEq_choose_mod_mul_choose_div_nat :
     choose n k ≡ choose (n % p) (k % p) * choose (n / p) (k / p) [MOD p] := by
   rw [← Int.natCast_modEq_iff]
-  exact_mod_cast choose_modEq_choose_mod_mul_choose_div
+  exact mod_cast choose_modEq_choose_mod_mul_choose_div
 
 /-- For primes `p`, `choose n k` is congruent to the product of `choose (⌊n / p ^ i⌋ % p)
 (⌊k / p ^ i⌋ % p)` over i < a, multiplied by `choose (⌊n / p ^ a⌋) (⌊k / p ^ a⌋)`, modulo `p`. -/
@@ -96,7 +96,7 @@ theorem choose_modEq_prod_range_choose {a : ℕ} (ha₁ : n < p ^ a) (ha₂ : k 
 theorem choose_modEq_prod_range_choose_nat {a : ℕ} (ha₁ : n < p ^ a) (ha₂ : k < p ^ a) :
     choose n k ≡ ∏ i ∈ range a, choose (n / p ^ i % p) (k / p ^ i % p) [MOD p] := by
   rw [← Int.natCast_modEq_iff]
-  exact_mod_cast choose_modEq_prod_range_choose ha₁ ha₂
+  exact mod_cast choose_modEq_prod_range_choose ha₁ ha₂
 
 alias lucas_theorem := choose_modEq_prod_range_choose
 alias lucas_theorem_nat := choose_modEq_prod_range_choose_nat
@@ -113,7 +113,7 @@ Also see `choose_mul_mul_modEq_choose` for the version with `ZMOD`. -/
 theorem choose_mul_mul_modEq_choose_nat :
     choose (p * a) (p * b) ≡ choose a b [MOD p] := by
   rw [← Int.natCast_modEq_iff]
-  exact_mod_cast choose_mul_mul_modEq_choose
+  exact mod_cast choose_mul_mul_modEq_choose
 
 /-- For primes `p`, `choose (p ^ k * a) (p ^ k * b)` is congruent to `choose a b` modulo `p`.
 Also see `choose_pow_mul_pow_mul_modEq_choose_nat` for the version with `MOD`. -/
@@ -129,7 +129,7 @@ Also see `choose_pow_mul_pow_mul_modEq_choose` for the version with `ZMOD`. -/
 theorem choose_pow_mul_pow_mul_modEq_choose_nat :
     choose (p ^ k * a) (p ^ k * b) ≡ choose a b [MOD p] := by
   rw [← Int.natCast_modEq_iff]
-  exact_mod_cast choose_pow_mul_pow_mul_modEq_choose
+  exact mod_cast choose_pow_mul_pow_mul_modEq_choose
 
 /-- For primes `p` and positive integer `n`, assume that for all `i ∈ Icc 1 (n - 1)`,
 `choose n i` congruent to `0` module `p`, then `n = p ^ multiplicity p n`.
@@ -144,7 +144,7 @@ theorem eq_pow_multiplicity_of_choose_modEq_zero (hn : 0 < n)
   suffices multiplicity p n + 1 ≤ multiplicity p n by lia
   rw [← FiniteMultiplicity.pow_dvd_iff_le_multiplicity]
   · nth_rw 2 [hm]
-    simpa [pow_add] using Nat.mul_dvd_mul_left _ (dvd_iff_mod_eq_zero.mpr (by exact_mod_cast h))
+    simpa [pow_add] using Nat.mul_dvd_mul_left _ (dvd_iff_mod_eq_zero.mpr (mod_cast h))
   · exact finiteMultiplicity_iff.mpr ⟨hp.out.ne_one, hn⟩
 
 /-- For primes `p` and positive integer `n`, assume that for all `i ∈ Icc 1 (n - 1)`,
@@ -152,7 +152,7 @@ theorem eq_pow_multiplicity_of_choose_modEq_zero (hn : 0 < n)
 Also see `eq_pow_multiplicity_of_choose_modEq_zero` for the version with `ZMOD`. -/
 theorem eq_pow_multiplicity_of_choose_modEq_zero_nat (hn : 0 < n)
     (h : ∀ i ∈ Icc 1 (n - 1), n.choose i ≡ 0 [MOD p]) : n = p ^ multiplicity p n :=
-  eq_pow_multiplicity_of_choose_modEq_zero hn (by exact_mod_cast h)
+  eq_pow_multiplicity_of_choose_modEq_zero hn (mod_cast h)
 
 /-- For a prime power `n`, the minimal prime factor divides the greatest common divisor of
 `choose n 1, ⋯, choose n (n - 1)`. -/

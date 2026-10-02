@@ -320,7 +320,7 @@ lemma nonempty_inter_of_coverMincard [U.IsSymm] {s : Finset X} (h : IsDynCoverOf
     exact mem_inter y_F <| (dynEntourage T U n).symm hz
   apply smaller_cover.coverMincard_le_card.not_gt
   rw [← h']
-  exact_mod_cast s.card_erase_lt_of_mem x_s
+  exact mod_cast s.card_erase_lt_of_mem x_s
 
 /-! ### Cover entropy of entourages -/
 
@@ -402,7 +402,7 @@ lemma IsDynCoverOf.coverEntropyEntourage_le_log_card_div (F_inv : MapsTo T F F) 
     coverEntropyEntourage T F (U ○ U) ≤ log s.card / n := by
   apply (coverEntropyEntourage_le_log_coverMincard_div F_inv n_pos).trans
   apply monotone_div_right_of_nonneg n.cast_nonneg' (log_monotone _)
-  exact_mod_cast coverMincard_le_card h
+  exact mod_cast coverMincard_le_card h
 
 lemma coverEntropyEntourage_le_coverEntropyInfEntourage (F_inv : MapsTo T F F) [U.IsSymm] :
     coverEntropyEntourage T F (U ○ U) ≤ coverEntropyInfEntourage T F U := by
@@ -417,7 +417,7 @@ lemma coverEntropyEntourage_finite_of_isCompact_invariant [UniformSpace X]
   apply (coverEntropyEntourage_antitone T F V_U).trans_lt
   apply (s_cover.coverEntropyEntourage_le_log_card_div F_inv one_ne_zero).trans_lt
   rw [Nat.cast_one, div_one, log_lt_top_iff, ← ENat.toENNReal_top]
-  exact_mod_cast (ENat.natCast_ne_top (Finset.card s)).lt_top
+  exact mod_cast (ENat.natCast_ne_top (Finset.card s)).lt_top
 
 /-! ### Cover entropy -/
 

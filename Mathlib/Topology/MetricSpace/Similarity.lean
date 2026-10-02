@@ -219,7 +219,7 @@ lemma similar_iff_exists_pairwise_nndist_eq :
     Similar v₁ v₂ ↔ (∃ r : ℝ≥0, r ≠ 0 ∧ Pairwise fun i₁ i₂ ↦ (nndist (v₁ i₁) (v₁ i₂) =
       r * nndist (v₂ i₁) (v₂ i₂))) := by
   simp_rw [similar_iff_exists_pairwise_edist_eq, edist_nndist]
-  exact_mod_cast Iff.rfl
+  exact mod_cast Iff.rfl
 
 /-- Similarity holds if and only if all distances are proportional. -/
 lemma similar_iff_exists_dist_eq :
@@ -235,7 +235,7 @@ lemma similar_iff_exists_pairwise_dist_eq :
     Similar v₁ v₂ ↔ (∃ r : ℝ≥0, r ≠ 0 ∧ Pairwise fun i₁ i₂ ↦ (dist (v₁ i₁) (v₁ i₂) =
       r * dist (v₂ i₁) (v₂ i₂))) := by
   simp_rw [similar_iff_exists_pairwise_nndist_eq, dist_nndist]
-  exact_mod_cast Iff.rfl
+  exact mod_cast Iff.rfl
 
 /-- Similarity holds if and only if all distances are proportional with a positive real ratio. -/
 lemma similar_iff_exists_pos_dist_eq : Similar v₁ v₂ ↔

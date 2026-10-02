@@ -229,7 +229,7 @@ lemma AntitoneOn.sum_range_le_integral {N : ℕ} (anti : AntitoneOn f (Icc 0 (N 
     (integrable : IntegrableOn f (Ioi 0)) (nonneg : ∀ t ∈ Ioi 0, 0 ≤ f t) :
     ∑ n ∈ Finset.range N, f ((n + 1 : ℕ)) ≤ ∫ x in Ioi 0, f x := by
   rw [Finset.range_eq_Ico]
-  exact_mod_cast AntitoneOn.sum_Ico_le_integral (a := 0) (mod_cast anti)
+  exact mod_cast AntitoneOn.sum_Ico_le_integral (a := 0) (mod_cast anti)
     (mod_cast integrable) (mod_cast nonneg)
 
 /-- **Integral test**: A function which is nonnegative, integrable and antitone
@@ -267,7 +267,7 @@ theorem AntitoneOn.tsum_comp_add_le_integral (N : ℕ) (anti : AntitoneOn f (Ici
 theorem AntitoneOn.tsum_add_one_le_integral (anti : AntitoneOn f (Ici 0))
     (integrable : IntegrableOn f (Ioi 0)) (nonneg : ∀ t ∈ Ioi 0, 0 ≤ f t) :
     ∑' (n : ℕ),  f (n + 1 : ℕ) ≤ ∫ x in Ioi 0, f x  := by
-  exact_mod_cast AntitoneOn.tsum_comp_add_le_integral 0 (mod_cast anti) (mod_cast integrable)
+  exact mod_cast AntitoneOn.tsum_comp_add_le_integral 0 (mod_cast anti) (mod_cast integrable)
     (mod_cast nonneg)
 
 /-- **Integral test**: bounds the sum of a nonnegative antitone function by an integral. -/

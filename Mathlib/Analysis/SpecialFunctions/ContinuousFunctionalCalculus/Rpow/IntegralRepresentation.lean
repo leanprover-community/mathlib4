@@ -486,7 +486,7 @@ lemma exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₀₁ [CompleteSpac
   obtain ⟨μ, hμ⟩ := exists_measure_rpow_eq_integral_rpowIntegrand₀₁ hp
   refine ⟨μ, fun a (ha : 0 ≤ a) => ?_⟩
   nontriviality A
-  have p_pos : 0 < (p : ℝ) := by exact_mod_cast hp.1
+  have p_pos : 0 < (p : ℝ) := mod_cast hp.1
   let f t := rpowIntegrand₀₁ p t
   let maxr := sSup (quasispectrum ℝ a)
   have maxr_nonneg : 0 ≤ maxr :=
@@ -529,7 +529,7 @@ lemma exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₁₂ [CompleteSpac
       ∧ a ^ p = ∫ t in Ioi 0, cfcₙ (rpowIntegrand₁₂ p t) a ∂μ := by
   obtain ⟨μ, hμ⟩ := exists_measure_rpow_eq_integral_rpowIntegrand₁₂ hp
   refine ⟨μ, fun a (ha : 0 ≤ a) => ?_⟩
-  have hpcoe : (p : ℝ) ∈ Ioo 1 2 := by exact_mod_cast hp
+  have hpcoe : (p : ℝ) ∈ Ioo 1 2 := mod_cast hp
   let f t := rpowIntegrand₁₂ p t
   let maxr := sSup (quasispectrum ℝ a)
   have maxr_nonneg : 0 ≤ maxr :=

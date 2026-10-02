@@ -315,7 +315,7 @@ theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] {x : R}
     rcases WfDvdMonoid.exists_irreducible_factor hu h0 with ⟨b, hib, hdvd⟩
     apply le_trans (emultiplicity_le_emultiplicity_of_dvd_left hdvd)
     rw [emultiplicity_eq_count_normalizedFactors hib x0]
-    exact_mod_cast h (normalize b)
+    exact mod_cast h (normalize b)
 
 end UniqueFactorizationMonoid
 

@@ -72,5 +72,5 @@ theorem harmonic_floor_le_one_add_log (y : ℝ) (hy : 1 ≤ y) :
     harmonic ⌊y⌋₊ ≤ 1 + Real.log y := by
   refine (harmonic_le_one_add_log _).trans ?_
   gcongr
-  · exact_mod_cast Nat.floor_pos.mpr hy
+  · exact mod_cast Nat.floor_pos.mpr hy
   · exact Nat.floor_le <| zero_le_one.trans hy

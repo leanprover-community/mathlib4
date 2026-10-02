@@ -79,7 +79,7 @@ lemma positive_of_differentiable_of_eqOn {a : ℕ → ℂ} (ha₀ : 0 ≤ a) (ha
   · have hs : IsOpen {s : ℂ | x < s.re} := continuous_re.isOpen_preimage _ isOpen_Ioi
     simpa only [hf'.iteratedDeriv_of_isOpen hs n hys, ofReal_add, ofReal_one] using
       iteratedDeriv_alternating ha₀ hxy' n
-  · exact_mod_cast (le_max_right x y).trans (lt_add_one _).le
+  · exact mod_cast (le_max_right x y).trans (lt_add_one _).le
 
 end LSeries
 

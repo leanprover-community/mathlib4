@@ -191,7 +191,7 @@ lemma deriv_smul_ne_zero {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) (τ : ℍ) :
     deriv (fun z ↦ ↑(g • ofComplex z) : ℂ → ℂ) τ ≠ 0 := by
   rw [deriv_smul hg]
   apply div_ne_zero
-  · exact_mod_cast hg.ne'
+  · exact mod_cast hg.ne'
   · exact pow_ne_zero _ (denom_ne_zero g τ)
 
 lemma analyticAt_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) (τ : ℍ) :

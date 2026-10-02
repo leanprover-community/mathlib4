@@ -123,7 +123,7 @@ def padic (p : ℕ) [Fact p.Prime] : AbsoluteValue ℚ ℝ where
 
 lemma padic_le_one (p : ℕ) [Fact p.Prime] (n : ℤ) : padic p n ≤ 1 := by
   simp only [padic_eq_padicNorm]
-  exact_mod_cast padicNorm.of_int n
+  exact mod_cast padicNorm.of_int n
 
 -- ## Step 1: define `p = minimal n s. t. 0 < f n < 1`
 
@@ -422,7 +422,7 @@ theorem equiv_real_of_unbounded : f.IsEquiv real := by
       rw [rpow_logb (by positivity) (by norm_cast; omega) (zero_lt_one.trans hfm1)]
     have hfn : f n = n ^ logb n (f n) := by
       rw [rpow_logb (by positivity) (by norm_cast; omega)
-        (map_pos_of_ne_zero f (by exact_mod_cast ne_zero_of_lt h))]
+        (map_pos_of_ne_zero f (mod_cast ne_zero_of_lt h))]
     rw [hfn, ← eq_of_eq_pow oneltm h notbdd hfm hfn]
 
 end Archimedean
