@@ -342,6 +342,10 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
     | .const funName _ =>
 
       let dec ← fData.decomposition
+      let form := dec.toTheoremForm
+      if form == .comp then
+        unless ← fData.validateCompositionalForm do
+          logWarning "invalid compositional form"
 
       return .function {
 -- funPropName funName fData.mainArgs fData.args.size thmForm
@@ -351,7 +355,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
         mainArgs := fData.mainArgs
         appliedArgs := fData.args.size
         priority := prio
-        form := dec.toTheoremForm
+        form
       }
     | .fvar .. =>
       let (_,_,b') ← forallMetaTelescope info.type
