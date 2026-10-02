@@ -593,12 +593,12 @@ theorem union_toSet_eq_univ : ⋃ (q : Quot r), q.toSet = Set.univ :=
   Set.ext fun _ ↦ ⟨fun _ ↦ trivial, fun _ ↦ ⟨_, ⟨_, rfl⟩, mem_toSet_mk_self _⟩⟩
 
 /-- The range of `Quot.toSet` is equivalent to the quotient type. -/
-noncomputable def range_toSet_equiv : Set.range (toSet (r := r)) ≃ Quot r :=
+noncomputable def rangeToSetEquiv : Set.range (toSet (r := r)) ≃ Quot r :=
   Equiv.ofInjective _ toSet_injective |>.symm
 
 /-- The range of `Quot.equivClassOf` is equivalent to the quotient type. -/
-noncomputable def range_equivClassOf_equiv : Set.range (equivClassOf (r := r)) ≃ Quot r :=
-  range_toSet_eq_range_equivClassOf ▸ range_toSet_equiv
+noncomputable def rangeEquivClassOfEquiv : Set.range (equivClassOf (r := r)) ≃ Quot r :=
+  range_toSet_eq_range_equivClassOf ▸ rangeToSetEquiv
 
 end Quot
 
@@ -613,12 +613,12 @@ theorem union_toSet_eq_univ : ⋃ (q : Quotient s), q.toSet = Set.univ :=
   Set.ext fun _ ↦ ⟨fun _ ↦ trivial, fun _ ↦ ⟨_, ⟨_, rfl⟩, mem_toSet_mk_self _⟩⟩
 
 /-- The range of `Quotient.toSet` is equivalent to the quotient type. -/
-noncomputable def range_toSet_equiv : Set.range (toSet (s := s)) ≃ Quotient s :=
+noncomputable def rangeToSetEquiv : Set.range (toSet (s := s)) ≃ Quotient s :=
   Equiv.ofInjective _ toSet_injective |>.symm
 
 /-- The range of `Quotient.equivClassOf` is equivalent to the quotient type. -/
-noncomputable def range_equivClassOf_equiv : Set.range (equivClassOf (s := s)) ≃ Quotient s :=
-  range_toSet_eq_range_equivClassOf ▸ range_toSet_equiv
+noncomputable def rangeEquivClassOfEquiv : Set.range (equivClassOf (s := s)) ≃ Quotient s :=
+  range_toSet_eq_range_equivClassOf ▸ rangeToSetEquiv
 
 end Quotient
 
