@@ -291,6 +291,15 @@ theorem EvalsTo.induction_on {σ : Type*} {f : σ → Option σ} {a b : σ} (h :
     obtain ⟨c, hc, hc'⟩ := Option.bind_eq_some_iff.1 hc'
     exact succ n c c' (ih c hc) hc'
 
+/-- A map sending every step of `f` to a step of `g` sends a run of `f` to a run of `g` with the
+same number of steps. -/
+def EvalsTo.map {σ τ : Type*} {f : σ → Option σ} {g : τ → Option τ} (e : σ → τ)
+    (he : ∀ c c', f c = some c' → g (e c) = some (e c')) {a b : σ} (h : EvalsTo f a (some b)) :
+    EvalsTo g (e a) (some (e b)) where
+  steps := h.steps
+  evals_in_steps := h.induction_on (fun n c ↦ (flip bind g)^[n] (some (e a)) = some (e c)) rfl
+    fun n c c' ih hc ↦ by rw [Function.iterate_succ_apply', ih]; exact he c c' hc
+
 /-- Reflexivity of `EvalsToInTime` in 0 steps. -/
 def EvalsToInTime.refl {σ : Type*} (f : σ → Option σ) (a : σ) : EvalsToInTime f a (some a) 0 :=
   ⟨EvalsTo.refl f a, le_refl 0⟩
