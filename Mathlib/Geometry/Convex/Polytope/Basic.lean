@@ -33,7 +33,7 @@ polytopes are polyhedra.
 
 ## References
 
-* Günter M. Ziegler, "Lectures on Poyltopes"
+* [G. M. Ziegler, *Lectures on Polytopes*][ziegler1995]
 -/
 
 public section
