@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Algebra.Unitization
 public import Mathlib.Topology.Compactification.OnePoint.Basic
+public import Mathlib.Topology.ContinuousMap.Compact
 public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 
 /-!  # The unitization (over `R`) of `C₀(X, R)` is `C(OnePoint X, R)`
@@ -25,6 +26,10 @@ equivalence between `Unitization R C₀(X, R)` and `C(OnePoint X, R)`.
   lift `ZeroAtInftyContinuousMap.toOnePoint` to an equivalence from the `Unitization`, with
   inverse given by `f ↦ .mk (f ∞, f.toZeroAtInfty)`
 * Various bundled versions of all of the above.
+
+When the codomain is a normed additive group, extension by zero is isometric
+(`ZeroAtInftyContinuousMap.norm_toOnePoint`) and `ContinuousMap.toZeroAtInfty` is Lipschitz with
+constant `2` (`ContinuousMap.lipschitzWith_toZeroAtInfty`).
 
 ## Implementation notes
 
@@ -177,6 +182,9 @@ lemma toZeroAtInfty_apply (g : C(OnePoint X, R)) (x : X) : g.toZeroAtInfty x = g
 lemma toZeroAtInfty_const (r : R) : (const (OnePoint X) r).toZeroAtInfty = 0 := by ext; simp
 
 @[simp]
+lemma toZeroAtInfty_one [One R] : (1 : C(OnePoint X, R)).toZeroAtInfty = 0 := by ext; simp
+
+@[simp]
 lemma toZeroAtInfty_zero : (0 : C(OnePoint X, R)).toZeroAtInfty = 0 := by ext; simp
 
 @[simp]
@@ -193,6 +201,16 @@ lemma toZeroAtInfty_neg (g : C(OnePoint X, R)) :
 lemma toZeroAtInfty_sub (g h : C(OnePoint X, R)) :
     (g - h).toZeroAtInfty = g.toZeroAtInfty - h.toZeroAtInfty := by
   ext; simp; abel
+
+@[simp]
+lemma _root_.ZeroAtInftyContinuousMap.toZeroAtInfty_toOnePoint (f : C₀(X, R)) :
+    f.toOnePoint.toZeroAtInfty = f := by
+  ext; simp
+
+@[simp]
+lemma toZeroAtInfty_surjective :
+    Function.Surjective (toZeroAtInfty : C(OnePoint X, R) → C₀(X, R)) :=
+  fun f ↦ ⟨f.toOnePoint, by simp⟩
 
 @[simp]
 lemma toZeroAtInfty_smul [Semiring S] [Module S R] [ContinuousConstSMul S R]
@@ -435,3 +453,62 @@ lemma coe_starLift_toOnePointNonUnitalStarAlgHom :
 end CommRing
 
 end ZeroAtInftyContinuousMap
+
+section Norm
+
+open ZeroAtInftyContinuousMap
+
+variable {E : Type*} [NormedAddCommGroup E]
+
+/-- `ZeroAtInftyContinuousMap.norm_toOnePoint` is isometric. -/
+@[simp]
+theorem ZeroAtInftyContinuousMap.norm_toOnePoint (f : C₀(X, E)) : ‖f.toOnePoint‖ = ‖f‖ := by
+  refine le_antisymm (f.toOnePoint.norm_le (norm_nonneg f) |>.mpr fun x ↦ ?_) ?_
+  · induction x using OnePoint.rec with
+    | infty => simp
+    | coe x => simpa using f.toBCF.norm_coe_le_norm x
+  · rw [← norm_toBCF_eq_norm]
+    refine (f.toBCF.norm_le (norm_nonneg _)).mpr fun x ↦ ?_
+    simpa using f.toOnePoint.norm_coe_le_norm x
+
+namespace ContinuousMap
+
+@[simp]
+theorem norm_le_of_onePoint (f : C(OnePoint X, E)) :
+    ‖f‖ ≤ ‖f.toZeroAtInfty‖ + ‖f ∞‖ := by
+  refine f.norm_le (by positivity) |>.mpr fun x ↦ ?_
+  induction x with
+  | infty => simp
+  | coe x => calc
+    ‖f x‖ ≤ ‖f x - f ∞‖ + ‖f ∞‖ := by grw [← norm_add_le]; simp
+    _ ≤ ‖f.toZeroAtInfty‖ + ‖f ∞‖ := by gcongr; exact f.toZeroAtInfty.toBCF.norm_coe_le_norm _
+
+variable (X E) in
+theorem lipschitzWith_toZeroAtInfty :
+    LipschitzWith 2 (fun f : C(OnePoint X, E) ↦ f.toZeroAtInfty) := by
+  have : (2 : ℝ).toNNReal = 2 := by norm_num
+  simp_rw [← toZeroAtInftyAddMonoidHom_apply, ← this]
+  refine AddMonoidHomClass.lipschitz_of_bound _ _ fun f ↦ ?_
+  simp only [toZeroAtInftyAddMonoidHom_apply, ← norm_toBCF_eq_norm, two_mul]
+  refine f.toZeroAtInfty.toBCF.norm_le (by positivity) |>.mpr fun x ↦ ?_
+  calc ‖f.toZeroAtInfty.toBCF x‖ = ‖f x - f ∞‖ := by simp
+    _ ≤ ‖f x‖ + ‖f ∞‖ := norm_sub_le ..
+    _ ≤ ‖f‖ + ‖f‖ := by gcongr <;> exact f.norm_coe_le_norm _
+
+variable (X E) in
+/-- `ContinuousMap.toZeroAtInfty` as a `ContinuousLinearMap`. -/
+noncomputable def toZeroAtInftyContinuousLinearMap
+    (𝕜 : Type*) [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] :
+    C(OnePoint X, E) →L[𝕜] C₀(X, E) :=
+  toZeroAtInftyLinearMap X E 𝕜 |>.mkContinuous 2 <|
+    (lipschitzWith_toZeroAtInfty X E).norm_le_mul (by simp)
+
+@[simp]
+lemma coe_toZeroAtInftyContinuousLinearMap
+    (𝕜 : Type*) [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] :
+    ⇑(toZeroAtInftyContinuousLinearMap X E 𝕜) = toZeroAtInfty := by
+  rfl
+
+end ContinuousMap
+
+end Norm
