@@ -358,6 +358,38 @@ theorem ProbabilityMeasure.tendsto_measure_of_null_frontier_of_tendsto {Ω ι : 
   exact (ENNReal.tendsto_toNNReal (measure_ne_top (↑μ) E)).comp key
 
 /-- One implication of the portmanteau theorem:
+Weak convergence of finite measures implies that if the boundary of a set carries no mass under
+the limit measure, then the measures of that set converge to its measure under the limit measure.
+-/
+theorem FiniteMeasure.tendsto_measure_of_null_frontier_of_tendsto {Ω ι : Type*} [Nonempty Ω]
+    {L : Filter ι} [MeasurableSpace Ω] [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
+    [HasOuterApproxClosed Ω] {μ : FiniteMeasure Ω} {μs : ι → FiniteMeasure Ω}
+    (μs_lim : Tendsto μs L (𝓝 μ)) {E : Set Ω}
+    (E_nullbdry : (μ : Measure Ω) (frontier E) = 0) :
+    Tendsto (fun i ↦ μs i E) L (𝓝 (μ E)) := by
+  by_cases hμ : μ = 0
+  · subst μ
+    have hmass : Tendsto (fun i ↦ (μs i).mass) L (𝓝 0) := by
+      simpa using μs_lim.mass
+    have hmassReal : Tendsto (fun i ↦ ((μs i).mass : ℝ)) L (𝓝 0) :=
+      NNReal.tendsto_coe.mpr hmass
+    have hsetReal : Tendsto (fun i ↦ ((μs i E : ℝ≥0) : ℝ)) L (𝓝 0) :=
+      squeeze_zero (fun _ ↦ NNReal.coe_nonneg _)
+        (fun i ↦ NNReal.coe_le_coe.mpr ((μs i).apply_le_mass E)) hmassReal
+    exact NNReal.tendsto_coe.mp (by simpa using hsetReal)
+  · have hnormalized : Tendsto (fun i ↦ (μs i).normalize) L (𝓝 μ.normalize) :=
+      FiniteMeasure.tendsto_normalize_of_tendsto μs_lim hμ
+    have hfrontierNormalized : μ.normalize (frontier E) = 0 := by
+      rw [μ.normalize_eq_of_nonzero hμ]
+      apply mul_eq_zero_of_right
+      exact FiniteMeasure.null_iff_toMeasure_null μ (frontier E) |>.mpr E_nullbdry
+    have hsetNormalized :=
+      ProbabilityMeasure.tendsto_measure_of_null_frontier_of_tendsto hnormalized
+        hfrontierNormalized
+    have hmass := μs_lim.mass
+    simpa only [FiniteMeasure.self_eq_mass_mul_normalize] using hmass.mul hsetNormalized
+
+/-- One implication of the portmanteau theorem:
 Weak convergence of probability measures implies that if a set is clopen, then the limit of the
 measures of the set equals the measure of the set under the limit probability measure.
 -/
@@ -679,6 +711,79 @@ theorem tendsto_of_forall_isCompact_of_isTightMeasureSet
     exact le_trans (measure_mono (by simp)) <| hK_le (μs i) <| by simp
 
 end Closed
+
+/-- Restriction to a continuity set is continuous for weak convergence of finite measures. -/
+theorem FiniteMeasure.tendsto_restrict_of_null_frontier {Ω : Type*} [Nonempty Ω]
+    [PseudoMetricSpace Ω] [MeasurableSpace Ω] [OpensMeasurableSpace Ω]
+    {μ : FiniteMeasure Ω} {μs : ℕ → FiniteMeasure Ω}
+    (μs_lim : Tendsto μs atTop (𝓝 μ)) {E : Set Ω}
+    (E_nullbdry : (μ : Measure Ω) (frontier E) = 0) :
+    Tendsto (fun n ↦ (μs n).restrict E) atTop (𝓝 (μ.restrict E)) := by
+  let νs : ℕ → FiniteMeasure Ω := fun n ↦ (μs n).restrict E
+  let ν : FiniteMeasure Ω := μ.restrict E
+  change Tendsto νs atTop (𝓝 ν)
+  have hmass : Tendsto (fun n ↦ (νs n).mass) atTop (𝓝 ν.mass) := by
+    simpa [νs, ν] using
+      FiniteMeasure.tendsto_measure_of_null_frontier_of_tendsto μs_lim E_nullbdry
+  by_cases hν : ν = 0
+  · rw [hν]
+    apply FiniteMeasure.tendsto_zero_of_tendsto_zero_mass
+    simpa [hν] using hmass
+  · have hνMass : ν.mass ≠ 0 := ν.mass_nonzero_iff.mpr hν
+    have hmassInv : Tendsto (fun n ↦ (νs n).mass⁻¹) atTop (𝓝 ν.mass⁻¹) := by
+      have hnhds : {(0 : ℝ≥0)}ᶜ ∈ 𝓝 ν.mass :=
+        isOpen_compl_singleton.mem_nhds hνMass
+      exact (continuousOn_inv₀.continuousAt hnhds).tendsto.comp hmass
+    have heventuallyNonzero : ∀ᶠ n in atTop, νs n ≠ 0 := by
+      have hnhds : {(0 : ℝ≥0)}ᶜ ∈ 𝓝 ν.mass :=
+        isOpen_compl_singleton.mem_nhds hνMass
+      filter_upwards [hmass hnhds] with n hn
+      exact (νs n).mass_nonzero_iff.mp hn
+    have hnormalizedContinuitySets :
+        ∀ {S : Set Ω}, MeasurableSet S →
+          (ν.normalize : Measure Ω) (frontier S) = 0 →
+          Tendsto (fun n ↦ ((νs n).normalize : Measure Ω) S) atTop
+            (𝓝 ((ν.normalize : Measure Ω) S)) := by
+      intro S hS hSfrontier
+      have hSfrontierNN : ν.normalize (frontier S) = 0 := by
+        rw [← ENNReal.coe_eq_zero]
+        simpa only [ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure] using hSfrontier
+      have hνSfrontierNN : ν (frontier S) = 0 := by
+        rw [ν.normalize_eq_of_nonzero hν] at hSfrontierNN
+        exact (mul_eq_zero.mp hSfrontierNN).resolve_left (inv_ne_zero hνMass)
+      have hνSfrontier : (ν : Measure Ω) (frontier S) = 0 :=
+        (FiniteMeasure.null_iff_toMeasure_null ν (frontier S)).mp hνSfrontierNN
+      have hfirstNull : (μ : Measure Ω) (frontier S ∩ E) = 0 := by
+        rw [← FiniteMeasure.restrict_apply_measure μ E isClosed_frontier.measurableSet]
+        exact hνSfrontier
+      have hinterFrontier : (μ : Measure Ω) (frontier (S ∩ E)) = 0 := by
+        apply measure_mono_null (frontier_inter_subset S E)
+        apply measure_union_null
+        · apply measure_mono_null ?_ (measure_union_null hfirstNull E_nullbdry)
+          intro x hx
+          by_cases hxE : x ∈ E
+          · exact Or.inl ⟨hx.1, hxE⟩
+          · exact Or.inr ⟨hx.2, fun hxInterior ↦ hxE (interior_subset hxInterior)⟩
+        · exact measure_mono_null inter_subset_right E_nullbdry
+      have hrestrictedApply : Tendsto (fun n ↦ νs n S) atTop (𝓝 (ν S)) := by
+        have happly := FiniteMeasure.tendsto_measure_of_null_frontier_of_tendsto μs_lim
+          hinterFrontier
+        simpa [νs, ν, FiniteMeasure.restrict_apply _ _ hS] using happly
+      have hnormalizedApplyNN : Tendsto (fun n ↦ (νs n).normalize S) atTop
+          (𝓝 (ν.normalize S)) := by
+        have hmul := hmassInv.mul hrestrictedApply
+        rw [ν.normalize_eq_of_nonzero hν]
+        apply Tendsto.congr' ?_ hmul
+        filter_upwards [heventuallyNonzero] with n hn
+        exact ((νs n).normalize_eq_of_nonzero hn S).symm
+      simpa only [← ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure,
+        ENNReal.tendsto_coe] using hnormalizedApplyNN
+    have hnormalized : Tendsto (fun n ↦ (νs n).normalize) atTop (𝓝 ν.normalize) := by
+      apply tendsto_of_forall_isClosed_limsup_le'
+      exact limsup_measure_closed_le_of_forall_tendsto_measure hnormalizedContinuitySets
+    have hfinite : Tendsto νs atTop (𝓝 ν) :=
+      (FiniteMeasure.tendsto_normalize_iff_tendsto hν).mp ⟨hnormalized, hmass⟩
+    simpa [νs, ν] using hfinite
 
 section Lipschitz
 
