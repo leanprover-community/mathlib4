@@ -441,7 +441,7 @@ theorem isExtensionPair_iff_exists_embedding_closure_singleton_sup :
         and_self]
     · ext ⟨x, hx⟩
       rw [Embedding.subtype_equivRange] at ff'2
-      simp only [← ff'2, Embedding.comp_apply, Substructure.coe_inclusion,
+      simp only [← ff'2, Embedding.comp_apply, Substructure.coe_inclusion, Set.inclusion_mk,
         Equiv.coe_toEmbedding, coe_subtype, PartialEquiv.toEmbedding_apply]
   · obtain ⟨f', eq_f'⟩ := h f.dom f_FG f.toEmbedding m
     refine ⟨⟨⟨closure L {m} ⊔ f.dom, f'.toHom.range, f'.equivRange⟩,
