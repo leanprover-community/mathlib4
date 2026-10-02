@@ -6,9 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
-public import Mathlib.CategoryTheory.Sites.Coverage
 public import Mathlib.CategoryTheory.Sites.Sheaf
-public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
+public import Mathlib.CategoryTheory.Sites.PrecoverageToGrothendieck
 
 /-!
 # 1-hypercovers
@@ -86,11 +85,11 @@ variable {i₁ i₂ : E.I₀} [HasPullback (E.f i₁) (E.f i₂)]
 noncomputable abbrev toPullback (j : E.I₁ i₁ i₂) : E.Y j ⟶ pullback (E.f i₁) (E.f i₂) :=
   pullback.lift (E.p₁ j) (E.p₂ j) (E.w j)
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma toPullback_fst (k : E.I₁ i₁ i₂) : E.toPullback k ≫ pullback.fst _ _ = E.p₁ k := by
   rw [pullback.lift_fst]
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma toPullback_snd (k : E.I₁ i₁ i₂) : E.toPullback k ≫ pullback.snd _ _ = E.p₂ k := by
   rw [pullback.lift_snd]
 
@@ -99,7 +98,6 @@ variable (i₁ i₂) in
 noncomputable def sieve₁' : Sieve (pullback (E.f i₁) (E.f i₂)) :=
   Sieve.ofArrows _ (fun (j : E.I₁ i₁ i₂) => E.toPullback j)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sieve₁_eq_pullback_sieve₁' {W : C} (p₁ : W ⟶ E.X i₁) (p₂ : W ⟶ E.X i₂)
     (w : p₁ ≫ E.f i₁ = p₂ ≫ E.f i₂) :
     E.sieve₁ p₁ p₂ = (E.sieve₁' i₁ i₂).pullback (pullback.lift _ _ w) := by
@@ -259,7 +257,7 @@ def isLimitSigmaOfIsColimitEquiv {c : Cofan E.X} (hc : IsColimit c) {d : Cofan E
     [PreservesLimit (Discrete.functor fun i ↦ Opposite.op (E.Y' i)) F] :
     IsLimit ((E.sigmaOfIsColimit hc hd).multifork F) ≃ IsLimit (E.multifork F) := by
   refine (Multifork.isLimitEquivOfIsos _ _ ?_ ?_ ?_ ?_ ?_ ?_).trans
-    (IsLimit.ofConeEquiv <| (MulticospanIndex.multiforkOfParallelHomsEquivFork
+    (IsLimit.ofConeEquiv (MulticospanIndex.multiforkOfParallelHomsEquivFork
       (E.sigmaOfIsColimit hc hd).multicospanShape _ _).symm) |>.trans
       (E.isLimitMultiforkEquivIsLimitFork hc hd F).symm
   · exact .refl _
@@ -496,7 +494,7 @@ lemma congrIndexOneOfEq_congrFun
     (h₁ : ∀ (i j : E.I₀) (k : E.I₁ i j),
       u₁ k = F.congrIndexOneOfEq (by simp [h₀]) (by simp [h₀]) (v₁ k))
     {i j : E.I₀} (k : E.I₁ i j) :
-    F.congrIndexOneOfEq (congrFun h₀.symm _) (congrFun h₀.symm _) (v₁ k) = u₁ k := by
+    F.congrIndexOneOfEq congr($h₀.symm _) congr($h₀.symm _) (v₁ k) = u₁ k := by
   subst h₀
   simp [h₁]
 
@@ -588,7 +586,7 @@ lemma Hom.ext' {E F : PreOneHypercover S} {f g : E.Hom F}
       f.s₁ k = F.congrIndexOneOfEq (by simp [hs₀]) (by simp [hs₀]) (g.s₁ k))
     (hh₁ : ∀ (i j : E.I₀) (k : E.I₁ i j),
       f.h₁ k = g.h₁ k ≫
-        (F.congrIndexOneOfEqIso (congrFun hs₀.symm i) (congrFun hs₀.symm j) (g.s₁ k)).inv ≫
+        (F.congrIndexOneOfEqIso congr($hs₀.symm i) congr($hs₀.symm j) (g.s₁ k)).inv ≫
         eqToHom (by rw [PreOneHypercover.congrIndexOneOfEq_congrFun hs₀ hs₁])) :
     f = g := by
   obtain ⟨toHomf, fs₁, fh₁⟩ := f
@@ -609,7 +607,7 @@ lemma Hom.ext'_iff {E F : PreOneHypercover S} {f g : E.Hom F} :
         f.s₁ k = F.congrIndexOneOfEq (by simp [hs₀]) (by simp [hs₀]) (g.s₁ k)),
       ∀ (i j : E.I₀) (k : E.I₁ i j),
         f.h₁ k = g.h₁ k ≫
-          (F.congrIndexOneOfEqIso (congrFun hs₀.symm i) (congrFun hs₀.symm j) (g.s₁ k)).inv ≫
+          (F.congrIndexOneOfEqIso congr($hs₀.symm i) congr($hs₀.symm j) (g.s₁ k)).inv ≫
           eqToHom (by rw [PreOneHypercover.congrIndexOneOfEq_congrFun hs₀ hs₁]) := by
   refine ⟨fun h ↦ ?_, fun ⟨hs₀, hh₀, hs₁, hh₁⟩ ↦ Hom.ext' hs₀ hh₀ hs₁ hh₁⟩
   subst h

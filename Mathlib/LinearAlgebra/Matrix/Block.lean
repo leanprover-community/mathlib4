@@ -7,7 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Transvection
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-public import Mathlib.Tactic.FinCases
 
 /-!
 # Block matrices and their determinant
@@ -20,10 +19,12 @@ matrices built out of blocks.
 
 * `Matrix.BlockTriangular` expresses that an `o` by `o` matrix is block triangular,
   if the rows and columns are ordered according to some order `b : o → α`
+* `Matrix.IsUpperTriangular` and `Matrix.IsLowerTriangular`, as abbreviations for
+  `Matrix.BlockTriangular` with the identity and the dual order, respectively.
 
 ## Main results
 
-* `Matrix.det_of_blockTriangular`: the determinant of a block triangular matrix
+* `Matrix.BlockTriangular.det`: the determinant of a block triangular matrix
   is equal to the product of the determinants of all the blocks
 * `Matrix.det_of_isUpperTriangular` and `Matrix.det_of_isLowerTriangular`: the determinant of
   a triangular matrix is the product of the entries along the diagonal
@@ -43,7 +44,7 @@ open Matrix
 
 universe v
 
-variable {α β m n o : Type*} {m' n' : α → Type*}
+variable {α m n : Type*} {m' : α → Type*}
 variable {R : Type v} {A : Type*} {M N : Matrix m m R} {b : m → α}
 
 namespace Matrix
@@ -69,6 +70,10 @@ abbrev IsUpperTriangular [LT m] (M : Matrix m m R) : Prop :=
 abbrev IsLowerTriangular [LT m] (M : Matrix m m R) : Prop :=
   M.BlockTriangular toDual
 
+/-- A matrix is indecomposable if it cannot be reindexed to block-triangular form. -/
+def IsIndecomposable (M : Matrix m m R) : Prop :=
+  ∀ i j A B D (e : Fin i ⊕ Fin j ≃ m), M = (fromBlocks A B 0 D).reindex e e → i = 0 ∨ j = 0
+
 @[simp]
 protected theorem BlockTriangular.submatrix {f : n → m} (h : M.BlockTriangular b) :
     (M.submatrix f f).BlockTriangular (b ∘ f) := fun _ _ hij => h hij
@@ -76,7 +81,7 @@ protected theorem BlockTriangular.submatrix {f : n → m} (h : M.BlockTriangular
 theorem blockTriangular_reindex_iff {b : n → α} {e : m ≃ n} :
     (reindex e e M).BlockTriangular b ↔ M.BlockTriangular (b ∘ e) := by
   refine ⟨fun h => ?_, fun h => ?_⟩
-  · convert! h.submatrix
+  · convert h.submatrix
     simp only [reindex_apply, submatrix_submatrix, submatrix_id_id, Equiv.symm_comp_self]
   · convert! h.submatrix
     simp only [comp_assoc b e e.symm, Equiv.self_comp_symm, comp_id]
@@ -237,6 +242,51 @@ theorem mem_blockTriangularSubalgebra [CommSemiring R] [Semiring A] [Algebra R A
     M ∈ blockTriangularSubalgebra R A b ↔ BlockTriangular M b :=
   Iff.rfl
 
+open Fintype in
+lemma isIndecomposable_iff_blockTriangular_const [Nontrivial α] [Finite m] [Zero R]
+    (M : Matrix m m R) :
+    M.IsIndecomposable ↔ ∀ b : m → α, M.BlockTriangular b → ∃ a, b = const m a := by
+  simp_rw [IsIndecomposable]
+  refine ⟨fun h b hb ↦ ?_, fun h i j A B D e he ↦ ?_⟩
+  · contrapose! h
+    have : Fintype m := .ofFinite m
+    rcases isEmpty_or_nonempty m with hm | hm
+    · exact False.elim <| h (Nonempty.some inferInstance) (IsEmpty.congr_fun _ _)
+    obtain ⟨K, k, hKk⟩ : ∃ K k, b k < b K := by
+      obtain ⟨K, hK⟩ := Finite.exists_max b
+      obtain ⟨k, hk⟩ : ∃ k, b k ≠ b K := by simpa using ne_iff.mp <| h (b K)
+      exact ⟨K, k, (hK k).lt_of_ne hk⟩
+    let s := {k // b k < b K}
+    let t := {k // ¬ b k < b K}
+    have : Nonempty s := ⟨⟨k, hKk⟩⟩
+    have : Nonempty t := ⟨⟨K, lt_irrefl _⟩⟩
+    let e : Fin (card s) ⊕ Fin (card t) ≃ m :=
+      ((Fintype.equivFin _).sumCongr (Fintype.equivFin _)).symm.trans (Equiv.sumCompl _)
+    let M' := M.submatrix e e
+    suffices M'.toBlocks₂₁ = 0 by
+      refine ⟨_, _, M'.toBlocks₁₁, M'.toBlocks₁₂, M'.toBlocks₂₂, e, ?_, card_ne_zero, card_ne_zero⟩
+      simp [← this, M'.fromBlocks_toBlocks, M']
+    have hp (x : Fin (card s)) : b (e (.inl x)) < b K := ((equivFin s).symm x).property
+    have hn (x : Fin (card t)) : b K ≤ b (e (.inr x)) := not_lt.mp ((equivFin t).symm x).property
+    ext i j
+    replace hb : M (e (Sum.inr i)) (e (Sum.inl j)) = 0 := hb (lt_of_lt_of_le (hp j) (hn i))
+    simpa [M', toBlocks₂₁]
+  · obtain ⟨a₁, a₂, ha₁₂⟩ : ∃ a₁ a₂ : α, a₁ < a₂ := exists_pair_lt α
+    set b : m → α := fun k ↦ Sum.elim (fun _ ↦ a₁) (fun _ ↦ a₂) (e.symm k) with hb
+    have hBT : M.BlockTriangular b := by
+      rw [he, Matrix.blockTriangular_reindex_iff]
+      rintro (r | r) (s | s) hrs
+      · aesop
+      · exact False.elim <| lt_irrefl a₁ <| ha₁₂.trans <| by aesop
+      · simp
+      · aesop
+    contrapose! ha₁₂
+    obtain ⟨a, ha⟩ := h b hBT
+    rw [hb] at ha
+    obtain rfl : a₁ = a := by simpa using congr($ha (e <| .inl <| Nonempty.some ⟨⟨0, by lia⟩⟩))
+    obtain rfl : a₂ = a₁ := by simpa using congr($ha (e <| .inr <| Nonempty.some ⟨⟨0, by lia⟩⟩))
+    exact le_refl _
+
 end LinearOrder
 
 theorem upper_two_blockTriangular [Zero R] [Preorder α] (A : Matrix m m R) (B : Matrix m n R)
@@ -314,7 +364,7 @@ protected theorem BlockTriangular.det [DecidableEq α] [LinearOrder α] (hM : Bl
     let b' := fun i : { a // b a ≠ k } => b ↑i
     have h' : BlockTriangular (M.toSquareBlockProp fun i => b i ≠ k) b' := hM.submatrix
     have hb' : image b' univ = (image b univ).erase k := by
-      convert! image_subtype_ne_univ_eq_image_erase k b
+      convert image_subtype_ne_univ_eq_image_erase k b
     rw [ih _ (max'_mem _ _) h' hb']
     refine Finset.prod_congr rfl fun l hl => ?_
     let he : { a // b' a = l } ≃ { a // b a = l } :=
@@ -327,6 +377,8 @@ protected theorem BlockTriangular.det [DecidableEq α] [LinearOrder α] (hM : Bl
     rw [hi]
     apply lt_of_le_of_ne _ hj
     exact Finset.le_max' (univ.image b) _ (mem_image_of_mem _ (mem_univ _))
+
+@[deprecated (since := "2026-08-31")] alias det_of_blockTriangular := Matrix.BlockTriangular.det
 
 theorem BlockTriangular.det_fintype [DecidableEq α] [Fintype α] [LinearOrder α]
     (h : BlockTriangular M b) : M.det = ∏ k : α, (M.toSquareBlock b k).det := by
@@ -350,16 +402,19 @@ theorem det_of_isLowerTriangular [LinearOrder m] (M : Matrix m m R) (h : M.IsLow
 
 open Polynomial
 
-theorem matrixOfPolynomials_blockTriangular {R} [Semiring R] {n : ℕ} (p : Fin n → R[X])
+theorem matrixOfPolynomials_isUpperTriangular {R} [Semiring R] {n : ℕ} (p : Fin n → R[X])
     (h_deg : ∀ i, (p i).natDegree ≤ i) :
-    Matrix.BlockTriangular (Matrix.of (fun (i j : Fin n) => (p j).coeff i)) id :=
+    (Matrix.of (fun (i j : Fin n) => (p j).coeff i)).IsUpperTriangular :=
   fun _ j h => by
     exact coeff_eq_zero_of_natDegree_lt <| Nat.lt_of_le_of_lt (h_deg j) h
+
+@[deprecated (since := "2026-08-31")]
+alias matrixOfPolynomials_blockTriangular := Matrix.matrixOfPolynomials_isUpperTriangular
 
 theorem det_matrixOfPolynomials {n : ℕ} (p : Fin n → R[X])
     (h_deg : ∀ i, (p i).natDegree = i) (h_monic : ∀ i, Monic <| p i) :
     (Matrix.of (fun (i j : Fin n) => (p j).coeff i)).det = 1 := by
-  rw [Matrix.det_of_isUpperTriangular (Matrix.matrixOfPolynomials_blockTriangular p (fun i ↦
+  rw [Matrix.det_of_isUpperTriangular (Matrix.matrixOfPolynomials_isUpperTriangular p (fun i ↦
       Nat.le_of_eq (h_deg i)))]
   convert! prod_const_one with x _
   rw [Matrix.of_apply, ← h_deg, coeff_natDegree, (h_monic x).leadingCoeff]
@@ -438,8 +493,8 @@ theorem blockTriangular_inv_of_blockTriangular [LinearOrder α] [Invertible M]
   have : Invertible A := hM.invertibleToBlock _
   have hA : A.BlockTriangular b' := hM.submatrix
   have hb' : image b' univ ⊂ image b univ := by
-    convert! image_subtype_univ_ssubset_image_univ k b _ (fun a => a < k) (lt_irrefl _)
-    convert! max'_mem (α := α) _ _
+    convert image_subtype_univ_ssubset_image_univ k b _ (fun a => a < k) (lt_irrefl _)
+    convert max'_mem (α := α) _ _
   have hij' : b' ⟨j, hij.trans hi⟩ < b' ⟨i, hi⟩ := by simp_rw [b', hij]
   simp [A, hM.inv_toBlock k, (ih (image b' univ) hb' hA rfl hij').symm]
 

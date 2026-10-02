@@ -49,7 +49,7 @@ abbrev Deterministic {X Y : C} (f : X ⟶ Y) := IsComonHom f
 
 namespace Deterministic
 
-variable {X Y Z : C}
+variable {X Y : C}
 
 /-- Deterministic morphisms commute with copying. -/
 lemma copy_natural (f : X ⟶ Y) [Deterministic f] : f ≫ Δ[Y] = Δ[X] ≫ (f ⊗ₘ f) :=

@@ -6,14 +6,11 @@ Authors: Johan Commelin, Kevin Buzzard, Seewoo Lee
 module
 
 public import Mathlib.Algebra.BigOperators.Field
-public import Mathlib.Algebra.GCDMonoid.FinsetLemmas
-public import Mathlib.Algebra.Field.GeomSum
-public import Mathlib.Data.Nat.Choose.Bounds
+import Mathlib.Algebra.GCDMonoid.FinsetLemmas
 public import Mathlib.RingTheory.PowerSeries.Exp
 public import Mathlib.FieldTheory.Finite.Basic
-public import Mathlib.RingTheory.ZMod.UnitsCyclic
 public import Mathlib.NumberTheory.Padics.PadicNumbers
-import Mathlib.Tactic.NormNum.GCD
+public import Mathlib.Algebra.Order.Star.Basic
 
 /-!
 # Bernoulli numbers
@@ -166,10 +163,10 @@ theorem bernoulli'PowerSeries_mul_exp_sub_one :
   rw [bernoulli'PowerSeries, coeff_mul, mul_comm X, sum_antidiagonal_succ']
   suffices (∑ p ∈ antidiagonal n,
       bernoulli' p.1 / p.1! * ((p.2 + 1) * p.2! : ℚ)⁻¹) = (n ! : ℚ)⁻¹ by
-    simpa [map_sum, Nat.factorial] using congr_arg (algebraMap ℚ A) this
+    simpa [map_sum, Nat.factorial] using congr(algebraMap ℚ A $this)
   apply eq_inv_of_mul_eq_one_left
   rw [sum_mul]
-  convert! bernoulli'_spec' n using 1
+  convert bernoulli'_spec' n using 1
   apply sum_congr rfl
   simp_rw [mem_antidiagonal]
   rintro ⟨i, j⟩ rfl
@@ -256,7 +253,7 @@ theorem bernoulli_spec' (n : ℕ) :
   -- massage it to match the structure of the goal, then convert piece by piece
   rw [sum_eq_add_sum_sdiff_singleton_of_mem h₁] at H ⊢
   apply add_eq_of_eq_sub'
-  convert! eq_sub_of_add_eq' H using 1
+  convert eq_sub_of_add_eq' H using 1
   · refine sum_congr rfl fun p h => ?_
     obtain ⟨h', h''⟩ : p ∈ _ ∧ p ≠ _ := by rwa [mem_sdiff, mem_singleton] at h
     simp [bernoulli_eq_bernoulli'_of_ne_one
@@ -365,7 +362,7 @@ theorem sum_Ico_pow (n p : ℕ) :
   cases p with | zero => simp | succ p =>
   let f i := bernoulli i * p.succ.succ.choose i * (n : ℚ) ^ (p.succ.succ - i) / p.succ.succ
   let f' i := bernoulli' i * p.succ.succ.choose i * (n : ℚ) ^ (p.succ.succ - i) / p.succ.succ
-  suffices (∑ k ∈ Ico 1 n.succ, (k : ℚ) ^ p.succ) = ∑ i ∈ range p.succ.succ, f' i by convert!
+  suffices (∑ k ∈ Ico 1 n.succ, (k : ℚ) ^ p.succ) = ∑ i ∈ range p.succ.succ, f' i by convert
     this
   -- prove some algebraic facts that will make things easier for us later on
   have hle := Nat.le_add_left 1 n
@@ -501,10 +498,10 @@ private lemma factorization_succ_le_sub_one {p d : ℕ} [Fact p.Prime] (hd : d �
     suffices ∀ n : ℕ, n ≥ 2 → ¬(p = 2 ∧ n = 2) → n + 1 ≤ p ^ (n - 1) from this d hd hcase
     intro n hn hne'
     induction hn with
-    | refl => norm_num at hne' ⊢; lia
+    | refl => simp at hne' ⊢; lia
     | @step m hm IH =>
       by_cases hm2 : p = 2 ∧ m = 2
-      · obtain ⟨rfl, rfl⟩ := hm2; norm_num
+      · obtain ⟨rfl, rfl⟩ := hm2; simp
       · calc m + 1 + 1 ≤ p ^ (m - 1) + 1 := by linarith [IH hm2]
           _ ≤ p ^ (m - 1) * p := by nlinarith [Nat.one_le_pow (m - 1) p (by lia)]
           _ = p ^ m := by rw [show m = m - 1 + 1 by lia]; exact pow_succ ..
@@ -672,6 +669,57 @@ theorem vonStaudt_clausen (k : ℕ) :
     by_contra h
     obtain ⟨p, hp, hdvd⟩ := ne_one_iff_exists_prime_dvd.mp h
     exact (let : Fact p.Prime := ⟨hp⟩; not_dvd_den_vonStaudt_sum hk) hdvd
+
+section Valuation
+
+variable {k p : ℕ} [Fact p.Prime]
+
+/-- If `p` is prime, `0 < k`, and `p - 1 ∣ 2 * k`, then the `p`-adic valuation of the Bernoulli
+number `B₂ₖ` is `WithZero.exp 1`, the valuation of `1 / p`. -/
+theorem padicValuation_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) :
+    Rat.padicValuation p (bernoulli (2 * k)) = WithZero.exp 1 := by
+  have hkey := not_dvd_den_bernoulli_add_indicator (k := k) (p := p) hk
+  rw [show vonStaudtIndicator (2 * k) p = 1 by simp [vonStaudtIndicator, hpk]] at hkey
+  have h1 : 1 < Rat.padicValuation p (1 / (p : ℚ)) := by simp
+  simpa using (Rat.padicValuation p).map_sub_eq_of_lt_right
+    (lt_of_le_of_lt (Rat.padicValuation_le_one_iff.mpr hkey) h1)
+
+/-- If `p` is prime, `0 < k`, and `p - 1 ∣ 2 * k`, then the `p`-adic valuation of the Bernoulli
+number `B₂ₖ` is `-1`. -/
+theorem padicValRat_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) :
+    padicValRat p (bernoulli (2 * k)) = -1 := by
+  grind [Rat.padicValuation, Valuation.coe_mk, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
+    WithZero.exp_inj, WithZero.exp_ne_zero, padicValuation_bernoulli hk hpk]
+
+/-- If `p` is prime, `0 < k`, and `p - 1 ∣ 2 * k`, then `p` divides the denominator of the
+Bernoulli number `B₂ₖ`. -/
+theorem dvd_den_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) : p ∣ (bernoulli (2 * k)).den := by
+  by_contra hcon
+  simp [← Rat.padicValuation_le_one_iff, padicValuation_bernoulli hk hpk] at hcon
+
+/-- If `p` is prime, `0 < k`, and `p - 1 ∣ 2 * k`, then `p` does not divide the numerator of the
+Bernoulli number `B₂ₖ`. -/
+theorem not_dvd_num_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) :
+    ¬ (p : ℤ) ∣ (bernoulli (2 * k)).num := by
+  rw [Int.natCast_dvd]
+  exact fun hnum ↦ Nat.not_coprime_of_dvd_of_dvd (Fact.out : p.Prime).one_lt hnum
+    (dvd_den_bernoulli hk hpk) (bernoulli (2 * k)).reduced
+
+/-- If `p` is prime, `0 < k`, and `p - 1 ∣ 2 * k`, then `p ^ 2` does not divide the denominator of
+the Bernoulli number `B₂ₖ`: each prime occurs in the denominator with multiplicity one. -/
+theorem not_sq_dvd_den_bernoulli (hk : 0 < k) (hpk : p - 1 ∣ 2 * k) :
+    ¬ p ^ 2 ∣ (bernoulli (2 * k)).den := by
+  have hp : p.Prime := Fact.out
+  have hpne : (p : ℚ) ≠ 0 := mod_cast hp.ne_zero
+  have h1 : ¬ p ∣ (p * bernoulli (2 * k)).den := by
+    simp [← Rat.padicValuation_le_one_iff, padicValuation_bernoulli hk hpk, ← WithZero.exp_add]
+  have h2 : (bernoulli (2 * k)).den ∣ p * ((p : ℚ) * bernoulli (2 * k)).den := by
+    have hd := Rat.mul_den_dvd (1 / (p : ℚ)) ((p : ℚ) * bernoulli (2 * k))
+    rwa [one_div, inv_mul_cancel_left₀ hpne, show ((p : ℚ)⁻¹).den = p by simp [hp.ne_zero]] at hd
+  contrapose h1
+  simpa [Nat.mul_dvd_mul_iff_left hp.pos, pow_two] using h1.trans h2
+
+end Valuation
 
 end Bernoulli
 

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Probability.Notation
 public import Mathlib.Probability.Independence.Basic
-public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 
 /-!
 

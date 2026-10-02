@@ -51,7 +51,7 @@ namespace Representation
 
 variable {k G H : Type*} [CommRing k] [Group G] [Group H] (φ : G →* H) {A B : Type*}
   [AddCommGroup A] [Module k A] (ρ : Representation k G A)
-  [AddCommGroup B] [Module k B] (τ : Representation k G B)
+  [AddCommGroup B] [Module k B]
 
 /-- Given a group homomorphism `φ : G →* H` and a `G`-representation `(A, ρ)`, this is the
 `k`-module `(k[H] ⊗[k] A)_G` with the `G`-representation on `k[H]` defined by `φ`.

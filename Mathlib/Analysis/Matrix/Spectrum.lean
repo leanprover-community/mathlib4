@@ -5,11 +5,10 @@ Authors: Alexander Bentkamp
 -/
 module
 
-public import Mathlib.Algebra.Star.UnitaryStarAlgAut
 public import Mathlib.Analysis.InnerProductSpace.Spectrum
 public import Mathlib.Analysis.Matrix.Hermitian
 public import Mathlib.LinearAlgebra.Eigenspace.Matrix
-public import Mathlib.LinearAlgebra.Matrix.Charpoly.Eigs
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Eigs
 public import Mathlib.LinearAlgebra.Matrix.Rank
 
 /-! # Spectral theory of Hermitian matrices
@@ -42,10 +41,11 @@ theorem spectrum_toLpLin [DecidableEq n] (p : ENNReal) :
   AlgEquiv.spectrum_eq (Matrix.toLinAlgEquiv (PiLp.basisFun p 𝕜 n)) _
 
 /-- The spectral radii of a matrix and its transpose are equal. See `Matrix.spectrum_transpose`. -/
-@[simp] theorem spectralRadius_transpose {K : Type*} [NormedField K] [DecidableEq n]
+@[simp] theorem spectralRadius_transpose {K : Type*} [NormedField K]
     (A : Matrix n n K) :
     spectralRadius K Aᵀ = spectralRadius K A := by
-  simp [spectralRadius]
+  classical
+  simp [spectralRadius_eq_of_unital]
 
 namespace IsHermitian
 

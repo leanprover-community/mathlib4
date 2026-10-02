@@ -5,11 +5,11 @@ Authors: Anatole Dedecker, Eric Wieser, Yuyang Zhao
 -/
 module
 
-public import Mathlib.Algebra.Algebra.TransferInstance
+import Mathlib.Algebra.Algebra.TransferInstance
 public import Mathlib.Algebra.Ring.Action.ConjAct
 public import Mathlib.Analysis.Analytic.ChangeOrigin
 public import Mathlib.Analysis.Complex.Basic
-public import Mathlib.Data.Nat.Choose.Cast
+import Mathlib.Data.Nat.Choose.Cast
 public import Mathlib.Analysis.Analytic.OfScalars
 
 /-!
@@ -377,7 +377,7 @@ theorem isUnit_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
 theorem invOf_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
     (hx : x ∈ Metric.eball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) [Invertible (exp x)] :
     ⅟(exp x) = exp (-x) := by
-  let := invertibleExpOfMemBall hx; convert! (rfl : ⅟(exp x) = _)
+  let := invertibleExpOfMemBall hx; convert (rfl : ⅟(exp x) = _)
 
 /-- Any continuous ring homomorphism commutes with `NormedSpace.exp`. -/
 theorem map_exp_of_mem_ball [Algebra 𝕂 𝔹] [CharZero 𝕂] {F} [FunLike F 𝔸 𝔹] [RingHomClass F 𝔸 𝔹]
@@ -560,7 +560,7 @@ commute then `NormedSpace.exp (∑ i, f i) = ∏ i, NormedSpace.exp (f i)`. -/
 theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → 𝔸)
     (h : (s : Set ι).Pairwise (Commute on f)) :
     exp (∑ i ∈ s, f i) =
-      s.noncommProd (fun i => exp (f i)) fun _ hi _ hj _ => (h.of_refl hi hj).exp := by
+      s.noncommProd (fun i => exp (f i)) fun _ hi _ hj _ => (h.forall₂ hi hj).exp := by
   classical
   induction s using Finset.induction_on with
   | empty => simp
@@ -568,7 +568,7 @@ theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → 𝔸)
     rw [Finset.noncommProd_insert_of_notMem _ _ _ _ ha, Finset.sum_insert ha, exp_add_of_commute,
       ih (h.mono <| Finset.subset_insert _ _)]
     refine Commute.sum_right _ _ _ fun i hi => ?_
-    exact h.of_refl (Finset.mem_insert_self _ _) (Finset.mem_insert_of_mem hi)
+    exact h.forall₂ (Finset.mem_insert_self _ _) (Finset.mem_insert_of_mem hi)
 
 theorem exp_nsmul (n : ℕ) (x : 𝔸) : exp (n • x) = exp x ^ n := by
   induction n with

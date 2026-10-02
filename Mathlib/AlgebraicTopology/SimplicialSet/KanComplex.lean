@@ -7,7 +7,6 @@ module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
 public import Mathlib.AlgebraicTopology.SimplicialSet.CategoryWithFibrations
-public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 
 /-!
 # Kan complexes
@@ -31,7 +30,9 @@ universe u
 
 namespace SSet
 
-open CategoryTheory Simplicial Limits HomotopicalAlgebra
+open CategoryTheory Limits HomotopicalAlgebra
+
+open scoped Simplicial
 
 open modelCategoryQuillen in
 /-- A simplicial set `S` is a Kan complex if it is fibrant, which means that

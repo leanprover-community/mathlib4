@@ -6,7 +6,7 @@ Authors: Patrick Massot, Yury Kudryashov
 module
 
 public import Mathlib.Topology.Algebra.Support
-public import Mathlib.Topology.UniformSpace.Compact
+import Mathlib.Topology.UniformSpace.Compact
 public import Mathlib.Topology.UniformSpace.Equicontinuity
 
 /-!
@@ -25,7 +25,9 @@ uniform space, uniform continuity, compact space
 
 public section
 
-open Uniformity Topology Filter UniformSpace Set
+open Filter UniformSpace Set
+
+open scoped Uniformity Topology
 
 variable {α β γ : Type*} [UniformSpace α] [UniformSpace β]
 
