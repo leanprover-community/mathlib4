@@ -759,7 +759,7 @@ theorem isUniformGroup_of_commGroup : IsUniformGroup G := by
     rw [mul_assoc, mul_comm x.2.2⁻¹, mul_comm x.2.1]
     simp [mul_assoc]
   simp only [UniformContinuous, div_eq_mul_inv, uniformity_prod_eq_prod,
-    uniformity_eq_comap_nhds_one', prod_comap_comap_eq, ← nhds_prod_eq, tendsto_comap_iff,
+    uniformity_eq_comap_nhds_one_right, prod_comap_comap_eq, ← nhds_prod_eq, tendsto_comap_iff,
     Function.comp_def, mul_inv_rev, inv_inv, tendsto_map'_iff]
   rw [this]
   apply Tendsto.comp ?_ tendsto_comap
@@ -776,6 +776,6 @@ end
 theorem IsUniformGroup.rightUniformSpace_eq {G : Type*} [u : UniformSpace G] [Group G]
     [IsUniformGroup G] : IsTopologicalGroup.rightUniformSpace G = u := by
   ext : 1
-  rw [uniformity_eq_comap_nhds_one' G, uniformity_eq_comap_mul_inv_nhds_one]
+  rw [uniformity_eq_comap_nhds_one_right G, uniformity_eq_comap_mul_inv_nhds_one]
 
 end TopologicalCommGroup
