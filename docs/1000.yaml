@@ -3182,6 +3182,9 @@ Q5454965:
 
 Q5455495:
   title: Fitting's theorem
+  decl: Subgroup.isNilpotent_sup_of_normal
+  authors: Kim Morrison
+  date: 2026
 
 Q5456213:
   title: Five circles theorem
