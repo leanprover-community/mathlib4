@@ -110,6 +110,11 @@ protected theorem id_map (x : P α) : P.map id x = x := rfl
 protected theorem map_map (f : α → β) (g : β → γ) (x : P α) :
     P.map g (P.map f x) = P.map (g ∘ f) x := rfl
 
+variable (α) in
+theorem map_id : P.map (@id α) = id := rfl
+
+theorem map_comp_map (f : α → β) (g : β → γ) : P.map g ∘ P.map f = P.map (g ∘ f) := rfl
+
 instance : LawfulFunctor (Obj.{v} P) where
   map_const := rfl
   id_map x := P.id_map x
