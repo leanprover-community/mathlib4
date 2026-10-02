@@ -71,10 +71,9 @@ example (hAB : A ⊆ B) (hBC : B ⊆ C) (hCD : C ⊆ D) (hDE : D = E) (hEA : E �
     (Dᶜ ∩ C ∪ (B ∩ Aᶜ)ᶜ ∩ (Eᶜ ∪ E))ᶜ ∩ (D ∪ Cᶜᶜ)ᶜ := by tauto_set
 
 /-!
-  Regression tests: `tauto_set` must not specialize the auxiliary local
-  declaration for the theorem currently being elaborated.
+`tauto_set` must not specialize the auxiliary local
+declaration for the theorem currently being elaborated.
 -/
-
 example : ∀ x : ℕ, {x} ⊆ Set.univ := by
   intro x
   tauto_set
