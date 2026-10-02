@@ -178,9 +178,8 @@ theorem lagrange_burmann_coeff (n : ℕ) (H : R⟦X⟧) :
     ext i
     simp [H₀, e, U, coeff_map]
   obtain ⟨Y₀, hY₀, _⟩ := existsUnique_fixedPoint P₀
-  have hY₀s := hasSubst_of_fixedPoint hY₀
   have hmap_subst (F : U⟦X⟧) : map e (F.subst Y₀) = (map e F).subst (map e Y₀) :=
-    map_subst hY₀s F
+    map_subst (hasSubst_of_fixedPoint hY₀) F
   have hmapY : map e Y₀ = Y := by
     apply fixedPoint_unique _ hY
     calc

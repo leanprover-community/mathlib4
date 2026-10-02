@@ -66,36 +66,36 @@ private lemma coeff_fixedPointApprox_stable (P : R⟦X⟧) (n s j : ℕ) (hj : j
       intro i hi
       exact ih i (by omega)
 
-private noncomputable def lagrangeSolution (P : R⟦X⟧) : R⟦X⟧ :=
+private noncomputable def fixedPointSolution (P : R⟦X⟧) : R⟦X⟧ :=
   mk fun n ↦ (fixedPointApprox P (n + 1)).coeff n
 
-private lemma coeff_lagrangeSolution_eq_approx (P : R⟦X⟧) {n j : ℕ} (hj : j < n) :
-    (lagrangeSolution P).coeff j = (fixedPointApprox P n).coeff j := by
+private lemma coeff_fixedPointSolution_eq_approx (P : R⟦X⟧) {n j : ℕ} (hj : j < n) :
+    (fixedPointSolution P).coeff j = (fixedPointApprox P n).coeff j := by
   obtain ⟨s, rfl⟩ := Nat.exists_eq_add_of_le (Nat.succ_le_of_lt hj)
-  rw [lagrangeSolution, coeff_mk]
+  rw [fixedPointSolution, coeff_mk]
   exact coeff_fixedPointApprox_stable P (j + 1) s j (by omega)
 
-@[simp] private lemma constantCoeff_lagrangeSolution (P : R⟦X⟧) :
-    (lagrangeSolution P).constantCoeff = 0 := by
+@[simp] private lemma constantCoeff_fixedPointSolution (P : R⟦X⟧) :
+    (fixedPointSolution P).constantCoeff = 0 := by
   rw [← coeff_zero_eq_constantCoeff_apply,
-    coeff_lagrangeSolution_eq_approx P (Nat.zero_lt_succ 0)]
+    coeff_fixedPointSolution_eq_approx P (Nat.zero_lt_succ 0)]
   simpa only [coeff_zero_eq_constantCoeff_apply] using constantCoeff_fixedPointApprox P 1
 
-private theorem lagrangeSolution_fixedPoint (P : R⟦X⟧) :
-    lagrangeSolution P = X * P.subst (lagrangeSolution P) := by
+private theorem fixedPointSolution_fixedPoint (P : R⟦X⟧) :
+    fixedPointSolution P = X * P.subst (fixedPointSolution P) := by
   ext n
   cases n with
   | zero => simp
   | succ n =>
-    nth_rw 1 [lagrangeSolution]
+    nth_rw 1 [fixedPointSolution]
     rw [coeff_mk, fixedPointApprox, coeff_succ_X_mul, coeff_succ_X_mul]
     apply coeff_subst_congr (constantCoeff_fixedPointApprox P (n + 1))
-      (constantCoeff_lagrangeSolution P)
+      (constantCoeff_fixedPointSolution P)
     intro j hj
-    exact (coeff_lagrangeSolution_eq_approx P (by omega : j < n + 1)).symm
+    exact (coeff_fixedPointSolution_eq_approx P (by omega : j < n + 1)).symm
 
-private theorem eq_lagrangeSolution_of_fixedPoint {P Y : R⟦X⟧}
-    (hY : Y = X * P.subst Y) : Y = lagrangeSolution P := by
+private theorem eq_fixedPointSolution_of_fixedPoint {P Y : R⟦X⟧}
+    (hY : Y = X * P.subst Y) : Y = fixedPointSolution P := by
   have hY₀ : Y.constantCoeff = 0 := by simpa using congrArg constantCoeff hY
   ext n
   induction n using Nat.strong_induction_on with
@@ -104,19 +104,19 @@ private theorem eq_lagrangeSolution_of_fixedPoint {P Y : R⟦X⟧}
     | zero => simpa using hY₀
     | succ n =>
       nth_rw 1 [hY]
-      rw [lagrangeSolution_fixedPoint P, coeff_succ_X_mul, coeff_succ_X_mul]
-      apply coeff_subst_congr hY₀ (constantCoeff_lagrangeSolution P)
+      rw [fixedPointSolution_fixedPoint P, coeff_succ_X_mul, coeff_succ_X_mul]
+      apply coeff_subst_congr hY₀ (constantCoeff_fixedPointSolution P)
       intro j hj
       exact ih j (by omega)
 
 /-- Existence and uniqueness of a solution of `Y = X * P(Y)`. -/
 theorem existsUnique_fixedPoint (P : R⟦X⟧) : ∃! Y : R⟦X⟧, Y = X * P.subst Y :=
-  ⟨lagrangeSolution P, lagrangeSolution_fixedPoint P, fun _ hY ↦
-    eq_lagrangeSolution_of_fixedPoint hY⟩
+  ⟨fixedPointSolution P, fixedPointSolution_fixedPoint P, fun _ hY ↦
+    eq_fixedPointSolution_of_fixedPoint hY⟩
 
 /-- Solutions of `Y = X * P(Y)` over a commutative ring are unique. -/
 theorem fixedPoint_unique {P Y Z : R⟦X⟧} (hY : Y = X * P.subst Y)
     (hZ : Z = X * P.subst Z) : Y = Z :=
-  (eq_lagrangeSolution_of_fixedPoint hY).trans (eq_lagrangeSolution_of_fixedPoint hZ).symm
+  (eq_fixedPointSolution_of_fixedPoint hY).trans (eq_fixedPointSolution_of_fixedPoint hZ).symm
 
 end PowerSeries

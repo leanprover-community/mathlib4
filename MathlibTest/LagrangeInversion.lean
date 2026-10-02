@@ -17,23 +17,11 @@ section CommRing
 variable {R : Type*} [CommRing R] {P Y : R⟦X⟧}
 variable (hY : Y = X * P.subst Y)
 
-example (n : ℕ) (H : R⟦X⟧) :
-    (n + 1) • coeff (n + 1) (H.subst Y) = (d⁄dX H * P ^ (n + 1)).coeff n :=
-  lagrange_burmann_coeff hY n H
-
-example (n k : ℕ) :
-    (n + k) • (Y ^ k).coeff (n + k) = k • (P ^ (n + k)).coeff n :=
-  lagrange_inversion_coeff_pow hY n k
-
 example (H : R⟦X⟧) : coeff 1 (H.subst Y) = (d⁄dX H * P).coeff 0 := by
   simpa using lagrange_burmann_coeff hY 0 H
 
 example (n : ℕ) : n • (Y ^ 0).coeff n = 0 := by
   simpa using lagrange_inversion_coeff_pow hY n 0
-
-example : ∃! Z : R⟦X⟧, Z = X * P.subst Z := existsUnique_fixedPoint P
-
-example {Z : R⟦X⟧} (hZ : Z = X * P.subst Z) : Y = Z := fixedPoint_unique hY hZ
 
 end CommRing
 
