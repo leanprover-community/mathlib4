@@ -17,41 +17,42 @@ public import Mathlib.Tactic.ENatToNat
 # The Definition of Depth
 
 In this file, we give the definition of depth of a module over a local ring. We also establish
-some basic facts about it using the Rees theorem proven above.
-In this file, most of the times we set `R` to be a noetherian commutative ring,
+some basic facts about it using the Rees theorem proven in file `Mathlib.RingTheory.Depth.Rees`.
+In this file, `R` will usually be a noetherian commutative ring,
 all modules refer to `R`-module.
 
 ## Main definition and results
 
-* `moduleDepth` : The depth between two `R`-modules defined as the minimal nontrivial `Ext`
+* `depth` : The depth between two `R`-modules defined as the minimal nontrivial `Ext`
   between them, equal to `⊤ : ℕ∞` if no such index.
 
 * `Ideal.depth` : The depth of an `R`-module `M` with respect to an ideal `I`,
-  defined as `moduleDepth (R⧸ I, M)`.
-  This is `grade(I, M)` in Bruns–Herzog, where "depth" is reserved for the local case below..
+  defined as `depth (R⧸ I) M`.
+  This is `grade(I, M)` in Bruns–Herzog, where "depth" is reserved for the local case below.
 
 * `IsLocalRing.depth` : For a local ring `R`, the depth of an `R`-module with respect to
   the maximal ideal.
 
-* `moduleDepth_eq_depth_of_support_eq` : For `I : Ideal R`, if support of a finitely generated
+* `depth_eq_depth_of_support_eq` : For `I : Ideal R`, if support of a finitely generated
   module `N` is equal to `PrimeSpectrum.zeroLocus I`, then for any finitely generated nontrivial
-  module `M` with `IM < M`, `moduleDepth N M = I.depth M`
+  module `M` with `IM < M`, `depth N M = I.depth M`
 
-* `moduleDepth_eq_sSup_length_isRegular` : For `I : Ideal R`, nontrivial finitely generated module
+* `depth_eq_sSup_length_isRegular` : For `I : Ideal R`, nontrivial finitely generated module
   `M` and `N`, if support of `N` is equal to `PrimeSpectrum.zeroLocus I` and `IM < M`,
-  `moduleDepth N M` is equal to the supremum of length of `M`-regular sequence in `I`
+  `depth N M` is equal to the supremum of length of `M`-regular sequence in `I`
 
-* `IsLocalRing.depth_quotSMulTop_succ_eq_moduleDepth` : For `R` local, a `R`-module `M` and a
+* `IsLocalRing.depth_quotSMulTop_succ_eq_depth` : For `R` local, a `R`-module `M` and a
   `M`-regular element `x` in `maximalIdeal R`,
   `IsLocalRing.depth (QuotSMulTop x M) + 1 = IsLocalRing.depth M`
 
-* `moduleDepth_quotient_isRegular_add_length_eq_moduleDepth` : For `R` local, a `R`-module
+* `depth_quotient_isRegular_add_length_eq_depth` : For `R` local, a `R`-module
   `M` and a `M`-regular sequence `rs` in `maximalIdeal R`,
-  `moduleDepth N (M ⧸ (Ideal.ofList rs) • (⊤ : Submodule R M)) + rs.length = moduleDepth N M`
+  `depth N (M ⧸ (Ideal.ofList rs) • (⊤ : Submodule R M)) + rs.length = depth N M`
 
 ## References
 
 * [Commutative Algebra, Theorem 28][matsumuraCommAlg]
+* [W. Bruns, J. Herzog, Cohen–Macaulay rings][brunsHerzog1998]
 
 -/
 
@@ -68,85 +69,87 @@ variable {R : Type u} [CommRing R] [Small.{v} R]
 section depth
 
 /-- The depth between two `R`-modules defined as the minimal nontrivial `Ext` between them. -/
-noncomputable def ModuleCat.moduleDepth (N M : ModuleCat.{v} R) : ℕ∞ :=
+noncomputable def ModuleCat.depth (N M : ModuleCat.{v} R) : ℕ∞ :=
   sSup {n : ℕ∞ | ∀ i : ℕ, i < n → Subsingleton (Ext N M i)}
 
 /-- The depth of an `R`-module `M` with respect to an ideal `I`,
-defined as `moduleDepth (R ⧸ I) M`. -/
+defined as `depth (R ⧸ I) M`. -/
 @[stacks 00LI "Here we define depth using vanishing of Ext groups, it coincides with the
 regular sequence characterization in the case R is Noetherian and IM ≠ M."]
 noncomputable def Ideal.depth (I : Ideal R) (M : ModuleCat.{v} R) : ℕ∞ :=
-  moduleDepth ↧(Shrink.{v} (R ⧸ I)) M
+  ModuleCat.depth ↧(Shrink.{v} (R ⧸ I)) M
 
 /-- For a local ring `R`, the depth of an `R`-module with respect to the maximal ideal. -/
 @[stacks 00LI "The local ring case."]
 noncomputable def IsLocalRing.depth [IsLocalRing R] (M : ModuleCat.{v} R) : ℕ∞ :=
   (IsLocalRing.maximalIdeal R).depth M
 
+namespace ModuleCat
+
 open Classical in
-private lemma moduleDepth_eq_find (N M : ModuleCat.{v} R) (h : ∃ n, Nontrivial (Ext N M n)) :
-    moduleDepth N M = Nat.find h := by
+private lemma depth_eq_find (N M : ModuleCat.{v} R) (h : ∃ n, Nontrivial (Ext N M n)) :
+    N.depth M = Nat.find h := by
   apply le_antisymm
-  · simp only [moduleDepth, sSup_le_iff, Set.mem_ofPred_eq]
+  · simp only [depth, sSup_le_iff, Set.mem_ofPred_eq]
     intro n hn
     by_contra gt
     absurd Nat.find_spec h
     exact not_nontrivial_iff_subsingleton.mpr (hn (Nat.find h) (not_le.mp gt))
-  · simp only [moduleDepth]
+  · simp only [depth]
     apply le_sSup
     simpa using fun i hi ↦ not_nontrivial_iff_subsingleton.mp (hi i (le_refl i))
 
-lemma moduleDepth_eq_top_iff (N M : ModuleCat.{v} R) :
-    moduleDepth N M = ⊤ ↔ ∀ i, Subsingleton (Ext N M i) := by
+lemma depth_eq_top_iff (N M : ModuleCat.{v} R) :
+    N.depth M = ⊤ ↔ ∀ i, Subsingleton (Ext N M i) := by
   refine ⟨fun h ↦ ?_, fun h ↦ csSup_eq_top_of_top_mem (fun i _ ↦ h i)⟩
   by_contra! exist
-  simp [moduleDepth_eq_find N M exist] at h
+  simp [depth_eq_find N M exist] at h
 
-lemma moduleDepth_eq_top_of_subsingleton (N M : ModuleCat.{v} R) [Subsingleton M] :
-    moduleDepth N M = ⊤ := by
-  simp only [moduleDepth_eq_top_iff]
+lemma depth_eq_top_of_subsingleton (N M : ModuleCat.{v} R) [Subsingleton M] :
+    N.depth M = ⊤ := by
+  simp only [depth_eq_top_iff]
   intro i
   apply AddCommGrpCat.isZero_of_iff_subsingleton.mp
   apply (extFunctorObj N i).map_isZero
   exact ModuleCat.isZero_iff_subsingleton.mpr ‹_›
 
-lemma Ideal.depth_eq_top_of_subsingleton (I : Ideal R)
+lemma _root_.Ideal.depth_eq_top_of_subsingleton (I : Ideal R)
     (M : ModuleCat.{v} R) [Subsingleton M] : I.depth M = ⊤ :=
-  moduleDepth_eq_top_of_subsingleton _ M
+  ModuleCat.depth_eq_top_of_subsingleton _ M
 
-lemma IsLocalRing.depth_eq_top_of_subsingleton [IsLocalRing R]
+lemma _root_.IsLocalRing.depth_eq_top_of_subsingleton [IsLocalRing R]
     (M : ModuleCat.{v} R) [Subsingleton M] : IsLocalRing.depth M = ⊤ :=
   Ideal.depth_eq_top_of_subsingleton _ M
 
-lemma moduleDepth_lt_top_iff (N M : ModuleCat.{v} R) :
-    moduleDepth N M < ⊤ ↔ ∃ n, Nontrivial (Ext N M n) := by
-  convert (moduleDepth_eq_top_iff N M).not
+lemma depth_lt_top_iff (N M : ModuleCat.{v} R) :
+    N.depth M < ⊤ ↔ ∃ n, Nontrivial (Ext N M n) := by
+  convert (depth_eq_top_iff N M).not
   · exact lt_top_iff_ne_top
   · simp [not_subsingleton_iff_nontrivial]
 
-lemma moduleDepth_eq_iff (N M : ModuleCat.{v} R) (n : ℕ) : moduleDepth N M = n ↔
+lemma depth_eq_iff (N M : ModuleCat.{v} R) (n : ℕ) : N.depth M = n ↔
     Nontrivial (Ext N M n) ∧ ∀ i < n, Subsingleton (Ext N M i) := by
   classical
   refine ⟨fun h ↦ ?_, fun ⟨ntr, h⟩ ↦ ?_⟩
-  · have exist := (moduleDepth_lt_top_iff N M).mp (by simp [h])
-    simp only [moduleDepth_eq_find _ _ exist, Nat.cast_inj] at h
+  · have exist := (depth_lt_top_iff N M).mp (by simp [h])
+    simp only [depth_eq_find _ _ exist, Nat.cast_inj] at h
     refine ⟨h ▸ Nat.find_spec exist, fun i hi ↦ ?_⟩
     exact not_nontrivial_iff_subsingleton.mp (Nat.find_min exist (lt_of_lt_of_eq hi h.symm))
   · have exist : ∃ n, Nontrivial (Ext N M n) := by use n
-    simpa [moduleDepth_eq_find _ _ exist, Nat.find_eq_iff, ntr] using
+    simpa [depth_eq_find _ _ exist, Nat.find_eq_iff, ntr] using
       fun i hi ↦ not_nontrivial_iff_subsingleton.mpr (h i hi)
 
-lemma subsingleton_ext_of_lt_moduleDepth {N M : ModuleCat.{v} R} {i : ℕ}
-    (lt : i < moduleDepth N M) : Subsingleton (Ext N M i) := by
-  by_cases lttop : moduleDepth N M < ⊤
+lemma subsingleton_ext_of_lt_depth {N M : ModuleCat.{v} R} {i : ℕ}
+    (lt : i < N.depth M) : Subsingleton (Ext N M i) := by
+  by_cases lttop : N.depth M < ⊤
   · have : Nonempty {n : ℕ∞ | ∀ (i : ℕ), i < n → Subsingleton (Ext N M i)} := ⟨⟨(0 : ℕ∞), by simp⟩⟩
     exact ENat.sSup_mem_of_nonempty_of_lt_top lttop i lt
-  · simp only [not_lt, top_le_iff, moduleDepth_eq_top_iff] at lttop
+  · simp only [not_lt, top_le_iff, depth_eq_top_iff] at lttop
     exact lttop i
 
-lemma moduleDepth_eq_sSup_lt_top (N M : ModuleCat.{v} R) : moduleDepth N M =
+lemma depth_eq_sSup_lt_top (N M : ModuleCat.{v} R) : N.depth M =
     sSup {n : ℕ∞ | n < ⊤ ∧ ∀ i : ℕ, i < n → Subsingleton (Ext N M i)} := by
-  simp only [moduleDepth]
+  simp only [depth]
   by_cases h : ⊤ ∈ {n : ℕ∞ | ∀ (i : ℕ), i < n → Subsingleton (Ext N M i)}
   · rw [csSup_eq_top_of_top_mem h, eq_comm, ENat.eq_top_iff_forall_ge]
     refine fun m ↦ le_sSup ?_
@@ -157,11 +160,11 @@ lemma moduleDepth_eq_sSup_lt_top (N M : ModuleCat.{v} R) : moduleDepth N M =
 
 /-- This lemma relates the general depth between two modules and the depth of a module
 with respect to an ideal, which is used more frequently. -/
-lemma moduleDepth_eq_depth_of_support_eq [IsNoetherianRing R] (I : Ideal R)
+lemma depth_eq_depth_of_support_eq [IsNoetherianRing R] (I : Ideal R)
     (N M : ModuleCat.{v} R) [Module.Finite R M] [Module.Finite R N]
     [Nontrivial N] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
     (hsupp : Module.support R N = PrimeSpectrum.zeroLocus I) :
-    moduleDepth N M = I.depth M := by
+    N.depth M = I.depth M := by
   have (n : ℕ) : (∀ i < n, Subsingleton (Ext N M i)) ↔
     (∀ i < n, Subsingleton (Ext ↧(Shrink.{v} (R ⧸ I)) M i)) := by
     refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -169,41 +172,41 @@ lemma moduleDepth_eq_depth_of_support_eq [IsNoetherianRing R] (I : Ideal R)
       use N
     · have rees := ((exists_isRegular_tfae I n M smul_lt).out 1 2).mpr h
       exact rees N ‹_› ‹_› (le_of_eq hsupp)
-  simp only [moduleDepth_eq_sSup_lt_top, Ideal.depth]
+  simp only [depth_eq_sSup_lt_top, Ideal.depth]
   congr
   ext n
   induction n with
   | top => simp
   | coe n => simpa using this n
 
-lemma moduleDepth_eq_of_iso_left (M : ModuleCat.{v} R) {N N' : ModuleCat.{v} R} (e : N ≅ N') :
-    moduleDepth N M = moduleDepth N' M := by
-  simp only [moduleDepth]
+lemma depth_eq_of_iso_left (M : ModuleCat.{v} R) {N N' : ModuleCat.{v} R} (e : N ≅ N') :
+    N.depth M = N'.depth M := by
+  simp only [depth]
   congr
   ext n
   exact forall₂_congr fun i _ ↦
     (((extFunctor.{v} i).mapIso e.symm.op).app M).addCommGroupIsoToAddEquiv.subsingleton_congr
 
-lemma moduleDepth_eq_of_iso_right (N : ModuleCat.{v} R) {M M' : ModuleCat.{v} R} (e : M ≅ M') :
-    moduleDepth N M = moduleDepth N M' := by
-  simp only [moduleDepth]
+lemma depth_eq_of_iso_right (N : ModuleCat.{v} R) {M M' : ModuleCat.{v} R} (e : M ≅ M') :
+    N.depth M = N.depth M' := by
+  simp only [depth]
   congr
   ext n
   exact forall₂_congr fun i _ ↦
     ((extFunctorObj N i).mapIso e).addCommGroupIsoToAddEquiv.subsingleton_congr
 
-lemma Ideal.depth_eq_of_iso (I : Ideal R) {M M' : ModuleCat.{v} R} (e : M ≅ M') :
+lemma _root_.Ideal.depth_eq_of_iso (I : Ideal R) {M M' : ModuleCat.{v} R} (e : M ≅ M') :
     I.depth M = I.depth M' :=
-  moduleDepth_eq_of_iso_right ↧(Shrink.{v} (R ⧸ I)) e
+  depth_eq_of_iso_right ↧(Shrink.{v} (R ⧸ I)) e
 
-lemma IsLocalRing.depth_eq_of_iso [IsLocalRing R] {M M' : ModuleCat.{v} R} (e : M ≅ M') :
+lemma _root_.IsLocalRing.depth_eq_of_iso [IsLocalRing R] {M M' : ModuleCat.{v} R} (e : M ≅ M') :
     IsLocalRing.depth M = IsLocalRing.depth M' :=
   (maximalIdeal R).depth_eq_of_iso e
 
-lemma moduleDepth_eq_zero_iff_nontrivial_linearMap (N M : ModuleCat.{v} R) :
-    moduleDepth N M = 0 ↔ Nontrivial (N →ₗ[R] M) := by
+lemma depth_eq_zero_iff_nontrivial_linearMap (N M : ModuleCat.{v} R) :
+    N.depth M = 0 ↔ Nontrivial (N →ₗ[R] M) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · simp only [moduleDepth] at h
+  · simp only [depth] at h
     have : 1 ∉ {n : ℕ∞ | ∀ (i : ℕ), i < n → Subsingleton (Ext N M i)} := by
       by_contra mem
       absurd le_sSup mem
@@ -216,114 +219,113 @@ lemma moduleDepth_eq_zero_iff_nontrivial_linearMap (N M : ModuleCat.{v} R) :
     simpa [not_subsingleton_iff_nontrivial, Ext.addEquiv₀.nontrivial_congr,
       (ModuleCat.homLinearEquiv (S := R)).nontrivial_congr] using h
 
-lemma moduleDepth_min_fst_trd_le_snd_left
+lemma depth_min_fst_trd_le_snd_left
     (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact) (N : ModuleCat.{v} R) :
-    moduleDepth S.X₁ N ⊓ moduleDepth S.X₃ N ≤ moduleDepth S.X₂ N := by
+    S.X₁.depth N ⊓ S.X₃.depth N ≤ S.X₂.depth N := by
   apply le_sSup
   simp only [Set.mem_ofPred_eq, lt_inf_iff, and_imp]
   intro i hi1 hi3
   have zero1 : IsZero (AddCommGrpCat.of (Ext S.X₁ N i)) :=
-    AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsingleton_ext_of_lt_moduleDepth hi1)
+    AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsingleton_ext_of_lt_depth hi1)
   have zero3 : IsZero (AddCommGrpCat.of (Ext S.X₃ N i)) :=
-    AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsingleton_ext_of_lt_moduleDepth hi3)
+    AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsingleton_ext_of_lt_depth hi3)
   exact AddCommGrpCat.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
     (Ext.contravariant_sequence_exact₂' hS N i)
     (zero3.eq_zero_of_src _) (zero1.eq_zero_of_tgt _)
 
-lemma moduleDepth_min_snd_trd_sub_one_le_fst_left
+lemma depth_min_snd_trd_sub_one_le_fst_left
     (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact) (N : ModuleCat.{v} R) :
-    moduleDepth S.X₂ N ⊓ (moduleDepth S.X₃ N - 1) ≤ moduleDepth S.X₁ N := by
+    S.X₂.depth N ⊓ (S.X₃.depth N - 1) ≤ S.X₁.depth N := by
   apply le_sSup
   simp only [Set.mem_ofPred_eq, lt_inf_iff, and_imp]
   intro i hi2 hi3
-  have hi3' : (i + 1 : ℕ) < moduleDepth S.X₃ N := by simpa using lt_tsub_iff_right.mp hi3
+  have hi3' : (i + 1 : ℕ) < depth S.X₃ N := by simpa using lt_tsub_iff_right.mp hi3
   have zero2 : IsZero (AddCommGrpCat.of (Ext S.X₂ N i)) :=
-    AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsingleton_ext_of_lt_moduleDepth hi2)
+    AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsingleton_ext_of_lt_depth hi2)
   have zero3 : IsZero (AddCommGrpCat.of (Ext S.X₃ N (i + 1))) :=
-    AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsingleton_ext_of_lt_moduleDepth hi3')
+    AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsingleton_ext_of_lt_depth hi3')
   exact AddCommGrpCat.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
     (Ext.contravariant_sequence_exact₁' hS N i (i + 1) (add_comm _ _))
     (zero2.eq_zero_of_src _) (zero3.eq_zero_of_tgt _)
 
-lemma moduleDepth_min_snd_fst_add_one_le_trd_left
+lemma depth_min_snd_fst_add_one_le_trd_left
     (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact) (N : ModuleCat.{v} R) :
-    moduleDepth S.X₂ N ⊓ (moduleDepth S.X₁ N + 1) ≤ moduleDepth S.X₃ N := by
+    S.X₂.depth N ⊓ (S.X₁.depth N + 1) ≤ S.X₃.depth N := by
   apply le_sSup
   simp only [Set.mem_ofPred_eq, lt_inf_iff, and_imp]
   intro i hi2 hi1
-  have zero2 :=
-    AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsingleton_ext_of_lt_moduleDepth hi2)
+  have zero2 := AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsingleton_ext_of_lt_depth hi2)
   match i with
   | 0 =>
     simp only [AddCommGrpCat.isZero_iff_subsingleton] at zero2 ⊢
     exact (Ext.precomp_mk₀_injective_of_epi N S.g (hg := hS.epi_g)).subsingleton
   | i + 1 =>
-    have hi1' : i < moduleDepth S.X₁ N := by simpa using hi1
+    have hi1' : i < S.X₁.depth N := by simpa using hi1
     have zero1 : IsZero (AddCommGrpCat.of (Ext S.X₁ N i)) :=
-      AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsingleton_ext_of_lt_moduleDepth hi1')
+      AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsingleton_ext_of_lt_depth hi1')
     exact AddCommGrpCat.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
       (Ext.contravariant_sequence_exact₃' hS N i (i + 1) (by omega))
       (zero1.eq_zero_of_src _) (zero2.eq_zero_of_tgt _)
 
 @[stacks 00LX "(1)"]
-lemma moduleDepth_min_fst_trd_le_snd_right
+lemma depth_min_fst_trd_le_snd_right
     (N : ModuleCat.{v} R) (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact) :
-    moduleDepth N S.X₁ ⊓ moduleDepth N S.X₃ ≤ moduleDepth N S.X₂ := by
+    N.depth S.X₁ ⊓ N.depth S.X₃ ≤ N.depth S.X₂ := by
   apply le_sSup
   simp only [Set.mem_ofPred_eq, lt_inf_iff, and_imp]
   intro i hi1 hi3
   have zero1 : IsZero (AddCommGrpCat.of (Ext N S.X₁ i)) :=
-    AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsingleton_ext_of_lt_moduleDepth hi1)
+    AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsingleton_ext_of_lt_depth hi1)
   have zero3 : IsZero (AddCommGrpCat.of (Ext N S.X₃ i)) :=
-    AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsingleton_ext_of_lt_moduleDepth hi3)
+    AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsingleton_ext_of_lt_depth hi3)
   exact AddCommGrpCat.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
     (Ext.covariant_sequence_exact₂' N hS i)
     (zero1.eq_zero_of_src _) (zero3.eq_zero_of_tgt _)
 
 @[stacks 00LX "(3)"]
-lemma moduleDepth_min_snd_trd_add_one_le_fst_right
+lemma depth_min_snd_trd_add_one_le_fst_right
     (N : ModuleCat.{v} R) (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact) :
-    moduleDepth N S.X₂ ⊓ (moduleDepth N S.X₃ + 1) ≤ moduleDepth N S.X₁ := by
+    N.depth S.X₂ ⊓ (N.depth S.X₃ + 1) ≤ N.depth S.X₁ := by
   apply le_sSup
   simp only [Set.mem_ofPred_eq, lt_inf_iff, and_imp]
   intro i hi2 hi3
   have zero2 : IsZero (AddCommGrpCat.of (Ext N S.X₂ i)) :=
-    AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsingleton_ext_of_lt_moduleDepth hi2)
+    AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsingleton_ext_of_lt_depth hi2)
   match i with
   | 0 =>
     simp only [AddCommGrpCat.isZero_iff_subsingleton] at zero2 ⊢
     exact (Ext.postcomp_mk₀_injective_of_mono N S.f (hf := hS.mono_f)).subsingleton
   | i + 1 =>
-    have hi3' : i < moduleDepth N S.X₃ := by simpa using hi3
+    have hi3' : i < N.depth S.X₃ := by simpa using hi3
     have zero3 : IsZero (AddCommGrpCat.of (Ext N S.X₃ i)) :=
-      AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsingleton_ext_of_lt_moduleDepth hi3')
+      AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsingleton_ext_of_lt_depth hi3')
     exact AddCommGrpCat.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
       (Ext.covariant_sequence_exact₁' N hS i (i + 1) (by omega))
       (zero3.eq_zero_of_src _) (zero2.eq_zero_of_tgt _)
 
 @[stacks 00LX "(2)"]
-lemma moduleDepth_min_snd_fst_sub_one_le_trd_right
+lemma depth_min_snd_fst_sub_one_le_trd_right
     (N : ModuleCat.{v} R) (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact) :
-    moduleDepth N S.X₂ ⊓ (moduleDepth N S.X₁ - 1) ≤ moduleDepth N S.X₃ := by
+    N.depth S.X₂ ⊓ (N.depth S.X₁ - 1) ≤ N.depth S.X₃ := by
   apply le_sSup
   simp only [Set.mem_ofPred_eq, lt_inf_iff, and_imp]
   intro i hi2 hi1
-  have hi1' : (i + 1 : ℕ) < moduleDepth N S.X₁ := by simpa using lt_tsub_iff_right.mp hi1
+  have hi1' : (i + 1 : ℕ) < N.depth S.X₁ := by simpa using lt_tsub_iff_right.mp hi1
   have zero2 : IsZero (AddCommGrpCat.of (Ext N S.X₂ i)) :=
-    AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsingleton_ext_of_lt_moduleDepth hi2)
+    AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsingleton_ext_of_lt_depth hi2)
   have zero1 : IsZero (AddCommGrpCat.of (Ext N S.X₁ (i + 1))) :=
-    AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsingleton_ext_of_lt_moduleDepth hi1')
+    AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsingleton_ext_of_lt_depth hi1')
   exact AddCommGrpCat.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
     (Ext.covariant_sequence_exact₃' N hS i (i + 1) rfl)
     (zero2.eq_zero_of_src _) (zero1.eq_zero_of_tgt _)
 
-lemma moduleDepth_eq_sSup_length_isRegular [IsNoetherianRing R] (I : Ideal R)
+lemma depth_eq_sSup_length_isRegular [IsNoetherianRing R] (I : Ideal R)
     (N M : ModuleCat.{v} R) [Module.Finite R M] [Module.Finite R N]
     [Nontrivial N] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
     (hsupp : Module.support R N = PrimeSpectrum.zeroLocus I) :
-    moduleDepth N M = sSup {(List.length rs : ℕ∞) | (rs : List R)
+    N.depth M = sSup {(List.length rs : ℕ∞) | (rs : List R)
       (_ : RingTheory.Sequence.IsRegular M rs) (_ : ∀ r ∈ rs, r ∈ I) } := by
-  rw [moduleDepth_eq_sSup_lt_top]
+  rw [depth_eq_sSup_lt_top]
   congr
   ext m
   simp only [exists_prop]
@@ -336,6 +338,8 @@ lemma moduleDepth_eq_sSup_length_isRegular [IsNoetherianRing R] (I : Ideal R)
     have rees := ((exists_isRegular_tfae I rs.length M smul_lt).out 4 1).mp (by use rs)
     exact rees N ‹_› ‹_› (le_of_eq hsupp)
 
+end ModuleCat
+
 lemma Ideal.depth_eq_sSup_length_isRegular [IsNoetherianRing R] (I : Ideal R)
     (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤) :
     I.depth M = sSup {(List.length rs : ℕ∞) | (rs : List R)
@@ -344,7 +348,7 @@ lemma Ideal.depth_eq_sSup_length_isRegular [IsNoetherianRing R] (I : Ideal R)
     apply Submodule.Quotient.nontrivial_iff.mpr
     by_contra eq
     simp [eq] at smul_lt
-  apply moduleDepth_eq_sSup_length_isRegular I ↧(Shrink.{v} (R ⧸ I)) M smul_lt
+  apply ModuleCat.depth_eq_sSup_length_isRegular I ↧(Shrink.{v} (R ⧸ I)) M smul_lt
   rw [(Shrink.linearEquiv R (R ⧸ I)).support_eq, Module.support_eq_zeroLocus,
     Ideal.annihilator_quotient]
 
@@ -387,11 +391,10 @@ section
 
 universe w
 
-private lemma moduleDepth_uliftFunctor_obj (N M : ModuleCat R) :
-    @moduleDepth R _ (small_lift R : Small.{max v w} R) ((ModuleCat.uliftFunctor.{w} R).obj N)
-      ((ModuleCat.uliftFunctor.{w} R).obj M) = moduleDepth N M := by
-  have : Small.{max v w} R := small_lift R
-  simp only [moduleDepth]
+lemma ModuleCat.depth_uliftFunctor_obj [Small.{max v w} R] (N M : ModuleCat.{v} R) :
+    ((ModuleCat.uliftFunctor.{w} R).obj N).depth ((ModuleCat.uliftFunctor.{w} R).obj M) =
+    N.depth M := by
+  simp only [depth]
   congr
   ext n
   refine forall₂_congr fun i _ ↦ ?_
@@ -402,18 +405,18 @@ variable [Small.{w} R] {N M : Type v} {N' M' : Type w}
   [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
   [AddCommGroup M'] [Module R M'] [AddCommGroup N'] [Module R N']
 
-lemma moduleDepth_eq_of_linearEquiv (eN : N ≃ₗ[R] N') (eM : M ≃ₗ[R] M') :
-    moduleDepth (ModuleCat.of R N) (ModuleCat.of R M) =
-      moduleDepth (ModuleCat.of R N') (ModuleCat.of R M') := by
+lemma ModuleCat.depth_eq_of_linearEquiv (eN : N ≃ₗ[R] N') (eM : M ≃ₗ[R] M') :
+    (ModuleCat.of R N).depth (ModuleCat.of R M) =
+      (ModuleCat.of R N').depth (ModuleCat.of R M') := by
   have : Small.{max v w} R := small_lift R
-  rw [← moduleDepth_uliftFunctor_obj ↧N ↧M, ← moduleDepth_uliftFunctor_obj ↧N' ↧M']
-  exact (moduleDepth_eq_of_iso_left _
+  rw [← depth_uliftFunctor_obj ↧N ↧M, ← depth_uliftFunctor_obj ↧N' ↧M']
+  exact (depth_eq_of_iso_left _
       (ULift.moduleEquiv.trans (eN.trans ULift.moduleEquiv.symm)).toModuleIso).trans
-    (moduleDepth_eq_of_iso_right _
+    (depth_eq_of_iso_right _
       (ULift.moduleEquiv.trans (eM.trans ULift.moduleEquiv.symm)).toModuleIso)
 
 lemma Ideal.depth_eq_of_linearEquiv (I : Ideal R) (eM : M ≃ₗ[R] M') : I.depth ↧M = I.depth ↧M' :=
-  moduleDepth_eq_of_linearEquiv
+  ModuleCat.depth_eq_of_linearEquiv
     ((Shrink.linearEquiv R _).trans (Shrink.linearEquiv R _).symm) eM
 
 lemma IsLocalRing.depth_eq_of_linearEquiv [IsLocalRing R] (eM : M ≃ₗ[R] M') :
@@ -421,16 +424,15 @@ lemma IsLocalRing.depth_eq_of_linearEquiv [IsLocalRing R] (eM : M ≃ₗ[R] M') 
   Ideal.depth_eq_of_linearEquiv _ eM
 
 omit [Small.{w} R] in
-lemma Ideal.depth_shrink (I : Ideal R) :
-    I.depth ↧(Shrink.{v} R) = I.depth ↧R :=
+lemma Ideal.depth_shrink (I : Ideal R) : I.depth ↧(Shrink.{v} R) = I.depth ↧R :=
   Ideal.depth_eq_of_linearEquiv (M := Shrink.{v} R) (M' := R) I (Shrink.linearEquiv R R)
 
 end
 
-lemma moduleDepth_quotSMulTop_succ_eq_moduleDepth (N M : ModuleCat.{v} R) (x : R)
+lemma ModuleCat.depth_quotSMulTop_succ_eq_depth (N M : ModuleCat.{v} R) (x : R)
     (reg : IsSMulRegular M x) (mem : x ∈ Module.annihilator R N) :
-    moduleDepth N ↧(QuotSMulTop x M) + 1 = moduleDepth N M := by
-  simp only [moduleDepth, add_comm]
+    N.depth ↧(QuotSMulTop x M) + 1 = N.depth M := by
+  simp only [ModuleCat.depth, add_comm]
   have iff (i : ℕ) : Subsingleton (Ext N ↧(QuotSMulTop x M) i) ↔
     (Subsingleton (Ext N M i) ∧ Subsingleton (Ext N M (i + 1))) := by
     refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨h1, h3⟩ ↦ ?_⟩
@@ -472,26 +474,26 @@ lemma moduleDepth_quotSMulTop_succ_eq_moduleDepth (N M : ModuleCat.{v} R) (x : R
       have lt1 : i < n := lt_of_le_of_lt (self_le_add_right _ _) lt2
       exact (iff i).mpr ⟨hn i lt1, hn (i + 1) lt2⟩
 
-lemma Ideal.depth_quotSMulTop_succ_eq_moduleDepth (I : Ideal R) (M : ModuleCat.{v} R) (x : R)
+lemma Ideal.depth_quotSMulTop_succ_eq_depth (I : Ideal R) (M : ModuleCat.{v} R) (x : R)
     (reg : IsSMulRegular M x) (mem : x ∈ I) :
     I.depth ↧(QuotSMulTop x M) + 1 = I.depth M := by
-  apply moduleDepth_quotSMulTop_succ_eq_moduleDepth _ M x reg
+  apply ModuleCat.depth_quotSMulTop_succ_eq_depth _ M x reg
   simpa [LinearEquiv.annihilator_eq (Shrink.linearEquiv R (R ⧸ I)), Ideal.annihilator_quotient]
 
-lemma IsLocalRing.depth_quotSMulTop_succ_eq_moduleDepth [IsLocalRing R] (M : ModuleCat.{v} R)
+lemma IsLocalRing.depth_quotSMulTop_succ_eq_depth [IsLocalRing R] (M : ModuleCat.{v} R)
     (x : R) (reg : IsSMulRegular M x) (mem : x ∈ maximalIdeal R) :
     IsLocalRing.depth (ModuleCat.of R (QuotSMulTop x M)) + 1 = IsLocalRing.depth M :=
-  (maximalIdeal R).depth_quotSMulTop_succ_eq_moduleDepth M x reg mem
+  (maximalIdeal R).depth_quotSMulTop_succ_eq_depth M x reg mem
 
-lemma moduleDepth_quotient_isRegular_add_length_eq_moduleDepth (N M : ModuleCat.{v} R)
+lemma ModuleCat.depth_quotient_isRegular_add_length_eq_depth (N M : ModuleCat.{v} R)
     (rs : List R) (reg : IsWeaklyRegular M rs) (h : ∀ r ∈ rs, r ∈ Module.annihilator R N) :
-    moduleDepth N ↧(M ⧸ (Ideal.ofList rs) • (⊤ : Submodule R M)) + rs.length =
-    moduleDepth N M := by
+    N.depth ↧(M ⧸ (Ideal.ofList rs) • (⊤ : Submodule R M)) + rs.length =
+    N.depth M := by
   generalize len : rs.length = n
   induction n generalizing M rs with
   | zero =>
     rw [List.length_eq_zero_iff.mp len, Ideal.ofList_nil, Submodule.bot_smul]
-    simpa using moduleDepth_eq_of_iso_right N (Submodule.quotEquivOfEqBot ⊥ rfl).toModuleIso
+    simpa using depth_eq_of_iso_right N (Submodule.quotEquivOfEqBot ⊥ rfl).toModuleIso
   | succ n hn =>
     match rs with
     | [] => simp at len
@@ -499,24 +501,24 @@ lemma moduleDepth_quotient_isRegular_add_length_eq_moduleDepth (N M : ModuleCat.
       simp only [Nat.cast_add, Nat.cast_one]
       simp only [List.length_cons, Nat.add_right_cancel_iff] at len
       have : IsSMulRegular M x := ((isWeaklyRegular_cons_iff M _ _).mp reg).1
-      rw [moduleDepth_eq_of_iso_right N
+      rw [depth_eq_of_iso_right N
         (Submodule.quotOfListConsSMulTopEquivQuotSMulTopInner M x rs').toModuleIso,
-        ← moduleDepth_quotSMulTop_succ_eq_moduleDepth N M x this (h x List.mem_cons_self),
+        ← depth_quotSMulTop_succ_eq_depth N M x this (h x List.mem_cons_self),
         ← hn ↧(QuotSMulTop x M) rs' ((isWeaklyRegular_cons_iff M _ _).mp reg).2
         (fun r hr ↦ h r (List.mem_cons_of_mem x hr)) len, add_assoc]
 
-lemma ideal_depth_quotient_isRegular_add_length_eq_ideal_depth (I : Ideal R)
+lemma Ideal.depth_quotient_isRegular_add_length_eq_ideal_depth (I : Ideal R)
     (M : ModuleCat.{v} R) (rs : List R) (reg : IsWeaklyRegular M rs) (h : ∀ r ∈ rs, r ∈ I) :
     I.depth ↧(M ⧸ (Ideal.ofList rs) • (⊤ : Submodule R M)) + rs.length =
     I.depth M := by
-  apply moduleDepth_quotient_isRegular_add_length_eq_moduleDepth _ M rs reg
+  apply depth_quotient_isRegular_add_length_eq_depth _ M rs reg
   simpa [(Shrink.linearEquiv R (R ⧸ I)).annihilator_eq , Ideal.annihilator_quotient] using h
 
-lemma depth_quotient_isRegular_add_length_eq_depth [IsLocalRing R]
+lemma IsLocalRing.depth_quotient_isRegular_add_length_eq_depth [IsLocalRing R]
     (M : ModuleCat.{v} R) (rs : List R) (reg : IsRegular M rs) :
     IsLocalRing.depth (ModuleCat.of R (M ⧸ (Ideal.ofList rs) • (⊤ : Submodule R M))) + rs.length =
     IsLocalRing.depth M := by
-  apply ideal_depth_quotient_isRegular_add_length_eq_ideal_depth _ M rs reg.1
+  apply Ideal.depth_quotient_isRegular_add_length_eq_ideal_depth _ M rs reg.1
   intro r hr
   simp only [mem_maximalIdeal, mem_nonunits_iff]
   by_contra isu
@@ -592,7 +594,7 @@ lemma IsLocalRing.depth_quotient_isSMulRegular_succ_eq_depth [IsLocalRing R] [Is
     Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul])
   have : IsLocalRing (R ⧸ x • (⊤ : Ideal R)) :=
     IsLocalRing.of_surjective' (Ideal.Quotient.mk _) Ideal.Quotient.mk_surjective
-  rw [← IsLocalRing.depth_quotSMulTop_succ_eq_moduleDepth (ModuleCat.of R R) x reg mem, eq_comm]
+  rw [← IsLocalRing.depth_quotSMulTop_succ_eq_depth (ModuleCat.of R R) x reg mem, eq_comm]
   congr 1
   apply depth_eq_of_algebraMap_surjective _
   simpa only [Quotient.algebraMap_eq] using Ideal.Quotient.mk_surjective
@@ -620,7 +622,7 @@ lemma IsLocalRing.depth_quotient_span_isSMulRegular_succ_eq_depth [IsLocalRing R
     IsLocalRing.depth_quotient_isSMulRegular_succ_eq_depth x reg mem]
 
 omit [Small.{v, u} R] in
-lemma IsLocalRing.depth_quotient_isRegular_add_length_eq_depth [IsLocalRing R]
+lemma IsLocalRing.ring_depth_quotient_isRegular_add_length_eq_depth [IsLocalRing R]
     [IsNoetherianRing R] (rs : List R) (reg : RingTheory.Sequence.IsWeaklyRegular R rs)
     (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) :
     letI : IsLocalRing (R ⧸ Ideal.ofList rs) :=
