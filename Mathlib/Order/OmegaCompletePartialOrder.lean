@@ -676,7 +676,6 @@ instance : OmegaCompletePartialOrder (α →𝒄 β) :=
   OmegaCompletePartialOrder.lift ContinuousHom.toMono ContinuousHom.ωSup
     (fun _ _ h => h) (fun _ => rfl)
 
-set_option backward.defeqAttrib.useBackward true in
 @[fun_prop]
 lemma ωScottContinuous_apply
     {f : α → β →𝒄 γ} (hf : ωScottContinuous f) {g : α → β} (hg : ωScottContinuous g) :
@@ -689,8 +688,8 @@ lemma ωScottContinuous_apply
     apply le_antisymm
     · apply ωSup_le
       intro i
-      dsimp
-      rw [(f (c i)).continuous]
+      simp only [coe_map, OrderHom.apply_coe, OrderHom.coe_mk, Function.comp_apply, toMono_coe,
+        OrderHomClass.coe_coe, (f (c i)).continuous]
       apply ωSup_le
       intro j
       apply le_ωSup_of_le (i ⊔ j)

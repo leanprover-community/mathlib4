@@ -733,13 +733,11 @@ lemma liminf_le_limsup_of_frequently_le {v : α → β} (h : ∃ᶠ x in f, u x 
 
 variable [ConditionallyCompleteLinearOrder α] {f : Filter α} {b : α}
 
--- The linter erroneously claims that I'm not referring to `c`
-set_option linter.unusedVariables false in
 @[to_dual gt_mem_sets_of_limsInf_gt]
 theorem lt_mem_sets_of_limsSup_lt (h : f.IsBounded (· ≤ ·)) (l : f.limsSup < b) :
-    ∀ᶠ a in f, a < b :=
-  let ⟨c, (h : ∀ᶠ a in f, a ≤ c), hcb⟩ := exists_lt_of_csInf_lt h l
-  mem_of_superset h fun _a => hcb.trans_le'
+    ∀ᶠ a in f, a < b := by
+  obtain ⟨c, (h : ∀ᶠ a in f, a ≤ c), hcb⟩ := exists_lt_of_csInf_lt h l
+  exact mem_of_superset h fun _ ↦ hcb.trans_le'
 
 section Classical
 
