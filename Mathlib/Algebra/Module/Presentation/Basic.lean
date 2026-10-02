@@ -473,7 +473,7 @@ lemma isPresentation_iff :
       Submodule.span A (Set.range solution.var) = ⊤ ∧
       LinearMap.ker solution.π = Submodule.span A (Set.range relations.relation) := by
   rw [← injective_fromQuotient_iff_ker_π_eq_span,
-    ← surjective_π_iff_span_eq_top, ← surjective_fromQuotient_iff_surjective_π, ]
+    ← surjective_π_iff_span_eq_top, ← surjective_fromQuotient_iff_surjective_π]
   exact ⟨fun h ↦ ⟨h.bijective.2, h.bijective.1⟩, fun h ↦ ⟨⟨h.2, h.1⟩⟩⟩
 
 lemma isPresentation_mk

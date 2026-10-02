@@ -234,10 +234,8 @@ def toFractionRingRingEquiv : K⟮X⟯ ≃+* FractionRing K[X] where
 
 end Field
 
-section TacticInterlude
-
 /-- Solve equations for `K⟮X⟯` by working in `FractionRing K[X]`. -/
-macro "frac_tac" : tactic => `(tactic|
+local macro "frac_tac" : tactic => `(tactic|
   · repeat (rintro (⟨⟩ : _⟮X⟯))
     try simp only [← ofFractionRing_zero, ← ofFractionRing_add, ← ofFractionRing_sub,
       ← ofFractionRing_neg, ← ofFractionRing_one, ← ofFractionRing_mul, ← ofFractionRing_div,
@@ -247,7 +245,7 @@ macro "frac_tac" : tactic => `(tactic|
       add_mul, zero_mul, one_mul, neg_mul, mul_neg, add_neg_cancel])
 
 /-- Solve equations for `K⟮X⟯` by applying `RatFunc.induction_on`. -/
-macro "smul_tac" : tactic => `(tactic|
+local macro "smul_tac" : tactic => `(tactic|
     repeat
       (first
         | rintro (⟨⟩ : _⟮X⟯)
@@ -259,8 +257,6 @@ macro "smul_tac" : tactic => `(tactic|
       Int.cast_negSucc, Int.cast_natCast, Nat.cast_succ,
       Localization.mk_zero, Localization.add_mk_self, Localization.neg_mk,
       ofFractionRing_zero, ← ofFractionRing_add, ← ofFractionRing_neg])
-
-end TacticInterlude
 
 section CommRing
 
@@ -446,8 +442,7 @@ def liftRingHom (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) : R⟮X⟯
       obtain ⟨p, q⟩ := pq
       obtain ⟨p', q'⟩ := p'q'
       rw [← ofFractionRing_add, Localization.add_mk]
-      simp only [RingHom.toMonoidWithZeroHom_eq_coe,
-        liftMonoidWithZeroHom_apply_ofFractionRing_mk]
+      simp only [RingHom.coe_toMonoidWithZeroHom, liftMonoidWithZeroHom_apply_ofFractionRing_mk]
       rw [div_add_div, div_eq_div_iff]
       · rw [mul_comm _ p, mul_comm _ p', mul_comm _ (φ p'), add_comm]
         simp only [map_add, map_mul, Submonoid.coe_mul]

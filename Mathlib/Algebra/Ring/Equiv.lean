@@ -127,6 +127,7 @@ variable [Mul R] [Mul S] [Add R] [Add S] [Mul S'] [Add S']
 
 section coe
 
+@[macro_inline]
 instance : EquivLike (R ≃+* S) R S where
   coe f := f.toFun
   inv f := f.invFun
@@ -617,38 +618,53 @@ protected theorem map_eq_one_iff : f x = 1 ↔ x = 1 :=
 theorem map_ne_one_iff : f x ≠ 1 ↔ x ≠ 1 :=
   EmbeddingLike.map_ne_one_iff
 
-theorem coe_monoidHom_refl : (RingEquiv.refl R : R →* R) = MonoidHom.id R :=
+theorem toMonoidHom_refl : (RingEquiv.refl R : R →* R) = MonoidHom.id R :=
   rfl
 
+@[deprecated (since := "2026-09-15")]
+alias coe_monoidHom_refl := toMonoidHom_refl
+
 @[simp]
-theorem coe_addMonoidHom_refl : (RingEquiv.refl R : R →+ R) = AddMonoidHom.id R :=
+theorem toAddMonoidHom_refl : (RingEquiv.refl R : R →+ R) = AddMonoidHom.id R :=
   rfl
+
+@[deprecated (since := "2026-09-15")]
+alias coe_addMonoidHom_refl := toAddMonoidHom_refl
 
 /-! `RingEquiv.coe_mulEquiv_refl` and `RingEquiv.coe_addEquiv_refl` are proved above
 in higher generality -/
 
-
 @[simp]
-theorem coe_ringHom_refl : (RingEquiv.refl R : R →+* R) = RingHom.id R :=
+theorem toRingHom_refl : (RingEquiv.refl R : R →+* R) = RingHom.id R :=
   rfl
 
+@[deprecated (since := "2026-05-05")] alias coe_ringHom_refl := toRingHom_refl
+
 @[simp]
-theorem coe_monoidHom_trans [NonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
+theorem toMonoidHom_trans [NonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
     (e₁.trans e₂ : R →* S') = (e₂ : S →* S').comp ↑e₁ :=
   rfl
 
+@[deprecated (since := "2026-09-15")]
+alias coe_monoidHom_trans := toMonoidHom_trans
+
 @[simp]
-theorem coe_addMonoidHom_trans [NonUnitalNonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
+theorem toAddMonoidHom_trans [NonUnitalNonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
     (e₁.trans e₂ : R →+ S') = (e₂ : S →+ S').comp ↑e₁ :=
   rfl
+
+@[deprecated (since := "2026-09-15")]
+alias coe_addMonoidHom_trans := toAddMonoidHom_trans
 
 /-! `RingEquiv.coe_mulEquiv_trans` and `RingEquiv.coe_addEquiv_trans` are proved above
 in higher generality -/
 
 @[simp]
-theorem coe_ringHom_trans [NonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
+theorem toRingHom_trans [NonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
     (e₁.trans e₂ : R →+* S') = (e₂ : S →+* S').comp ↑e₁ :=
   rfl
+
+@[deprecated (since := "2026-05-05")] alias coe_ringHom_trans := toRingHom_trans
 
 @[simp]
 theorem comp_symm (e : R ≃+* S) : (e : R →+* S).comp (e.symm : S →+* R) = RingHom.id S :=
@@ -717,12 +733,12 @@ theorem toNonUnitalRingHom_refl :
     (RingEquiv.refl R).toNonUnitalRingHom = NonUnitalRingHom.id R :=
   rfl
 
-@[deprecated apply_symm_apply (since := "2026-06-16")]
+@[deprecated apply_symm_apply +typeChanged (since := "2026-06-16")]
 theorem toNonUnitalRingHom_apply_symm_toNonUnitalRingHom_apply (e : R ≃+* S) :
     ∀ y : S, e.toNonUnitalRingHom (e.symm.toNonUnitalRingHom y) = y :=
   e.toEquiv.apply_symm_apply
 
-@[deprecated symm_apply_apply (since := "2026-06-16")]
+@[deprecated symm_apply_apply +typeChanged (since := "2026-06-16")]
 theorem symm_toNonUnitalRingHom_apply_toNonUnitalRingHom_apply (e : R ≃+* S) :
     ∀ x : R, e.symm.toNonUnitalRingHom (e.toNonUnitalRingHom x) = x :=
   Equiv.symm_apply_apply e.toEquiv
@@ -764,10 +780,13 @@ theorem toRingHom_injective : Function.Injective (toRingHom : R ≃+* S → R �
 theorem coe_toRingHom (f : R ≃+* S) : ⇑(f : R →+* S) = f :=
   rfl
 
-theorem coe_ringHom_inj_iff {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
+theorem toRingHom_inj_iff {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
     (f g : R ≃+* S) : f = g ↔ (f : R →+* S) = g :=
   ⟨fun h => by rw [h], fun h => ext <| RingHom.ext_iff.mp h⟩
 
+@[deprecated (since := "2026-05-05")] alias coe_ringHom_inj_iff := toRingHom_inj_iff
+
+-- TODO : rename lemma
 /-- The two paths coercion can take to a `NonUnitalRingEquiv` are equivalent -/
 @[simp, norm_cast]
 theorem toNonUnitalRingHom_commutes (f : R ≃+* S) :
@@ -782,30 +801,36 @@ abbrev toMonoidHom (e : R ≃+* S) : R →* S :=
 abbrev toAddMonoidHom (e : R ≃+* S) : R →+ S :=
   e.toRingHom.toAddMonoidHom
 
+-- TODO : rename lemma
 /-- The two paths coercion can take to an `AddMonoidHom` are equivalent -/
 theorem toAddMonoidMom_commutes (f : R ≃+* S) :
     (f : R →+* S).toAddMonoidHom = (f : R ≃+ S).toAddMonoidHom :=
   rfl
 
+-- TODO : rename lemma
 /-- The two paths coercion can take to a `MonoidHom` are equivalent -/
 theorem toMonoidHom_commutes (f : R ≃+* S) :
     (f : R →+* S).toMonoidHom = (f : R ≃* S).toMonoidHom :=
   rfl
 
+-- TODO : rename lemma
 /-- The two paths coercion can take to an `Equiv` are equivalent -/
 theorem toEquiv_commutes (f : R ≃+* S) : (f : R ≃+ S).toEquiv = (f : R ≃* S).toEquiv :=
   rfl
 
+-- TODO: remove lemma when we remove the RingHom.ofClass coercion
 @[simp]
-theorem toRingHom_refl : (RingEquiv.refl R).toRingHom = RingHom.id R :=
+theorem toRingHom_refl' : (RingEquiv.refl R).toRingHom = RingHom.id R :=
   rfl
 
+-- TODO: Delete this lemma after moving `coe` from `.ofClass` to `.toMonoidHom`, in #43765.
 @[simp]
-theorem toMonoidHom_refl : (RingEquiv.refl R).toMonoidHom = MonoidHom.id R :=
+theorem toMonoidHom_refl' : (RingEquiv.refl R).toMonoidHom = MonoidHom.id R :=
   rfl
 
+-- TODO: Delete this lemma after moving `coe` from `.ofClass` to `.toAddMonoidHom`, in #43765.
 @[simp]
-theorem toAddMonoidHom_refl : (RingEquiv.refl R).toAddMonoidHom = AddMonoidHom.id R :=
+theorem toAddMonoidHom_refl' : (RingEquiv.refl R).toAddMonoidHom = AddMonoidHom.id R :=
   rfl
 
 theorem toRingHom_apply_symm_toRingHom_apply (e : R ≃+* S) :
@@ -816,8 +841,9 @@ theorem symm_toRingHom_apply_toRingHom_apply (e : R ≃+* S) :
     ∀ x : R, e.symm.toRingHom (e.toRingHom x) = x :=
   Equiv.symm_apply_apply e.toEquiv
 
+-- TODO: remove lemma when we remove the RingHom.ofClass coercion
 @[simp]
-theorem toRingHom_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
+theorem toRingHom_trans' (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
     (e₁.trans e₂).toRingHom = e₂.toRingHom.comp e₁.toRingHom :=
   rfl
 
@@ -919,12 +945,15 @@ def ofRingHom (f : R →+* S) (g : S →+* R) (h₁ : f.comp g = RingHom.id S)
 
 attribute [simp] ofRingHom_apply
 
-theorem coe_ringHom_ofRingHom (f : R →+* S) (g : S →+* R) (h₁ h₂) : ofRingHom f g h₁ h₂ = f :=
+theorem toRingHom_ofRingHom (f : R →+* S) (g : S →+* R) (h₁ h₂) : ofRingHom f g h₁ h₂ = f :=
   rfl
 
 @[simp]
-theorem ofRingHom_coe_ringHom (f : R ≃+* S) (g : S →+* R) (h₁ h₂) : ofRingHom (↑f) g h₁ h₂ = f :=
+theorem ofRingHom_toRingHom (f : R ≃+* S) (g : S →+* R) (h₁ h₂) : ofRingHom (↑f) g h₁ h₂ = f :=
   ext fun _ ↦ rfl
+
+@[deprecated (since := "2026-05-05")] alias coe_ringHom_ofRingHom := toRingHom_ofRingHom
+@[deprecated (since := "2026-05-05")] alias ofRingHom_coe_ringHom := ofRingHom_toRingHom
 
 @[simp]
 theorem ofRingHom_symm (f : R →+* S) (g : S →+* R) (h₁ h₂) :

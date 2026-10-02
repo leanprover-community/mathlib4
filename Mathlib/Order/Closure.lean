@@ -71,6 +71,7 @@ structure ClosureOperator [Preorder α] extends α →o α where
 
 namespace ClosureOperator
 
+@[macro_inline]
 instance [Preorder α] : FunLike (ClosureOperator α) α α where
   coe c := c.1
   coe_injective := by rintro ⟨⟩ ⟨⟩ h; obtain rfl := DFunLike.ext' h; congr with x; simp_all
@@ -167,6 +168,16 @@ lemma closure_min (hxy : x ≤ y) (hy : c.IsClosed y) : c x ≤ y := hy.closure_
 lemma closure_isGLB (x : α) : IsGLB { y | x ≤ y ∧ c.IsClosed y } (c x) where
   left _ := and_imp.mpr closure_min
   right _ h := h ⟨c.le_closure x, c.isClosed_closure x⟩
+
+/-- If the closed elements are stable under a binary operation `f` that is monotone in both of its
+arguments, then the closure is sub-`f`: `c (f x y) ≤ f (c x) (c y)`. Compare `closure_inf_le`,
+which is the case `f = (· ⊓ ·)`, where no stability assumption is needed. -/
+lemma closure_binop_le (c : ClosureOperator α) {f : α → α → α}
+    (hf : ∀ ⦃x y x' y'⦄, x ≤ x' → y ≤ y' → f x y ≤ f x' y')
+    (hclosed : ∀ ⦃x y⦄, c.IsClosed x → c.IsClosed y → c.IsClosed (f x y)) (x y : α) :
+    c (f x y) ≤ f (c x) (c y) :=
+  closure_min (hf (c.le_closure x) (c.le_closure y))
+    (hclosed (c.isClosed_closure x) (c.isClosed_closure y))
 
 end Preorder
 
@@ -416,7 +427,6 @@ theorem closed_eq_range_close : l.closed = Set.range (u ∘ l) :=
 def toClosed (x : α) : l.closed :=
   ⟨u (l x), l.closure_is_closed x⟩
 
-@[simp]
 theorem closure_le_closed_iff_le (x : α) {y : α} (hy : y ∈ l.closed) : u (l x) ≤ y ↔ x ≤ y :=
   (show l.closureOperator.IsClosed y from hy).closure_le_iff
 

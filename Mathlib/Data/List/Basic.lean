@@ -10,8 +10,6 @@ public import Mathlib.Data.List.Defs
 public import Mathlib.Data.List.Monad
 public import Mathlib.Tactic.Common
 public import Batteries.Data.List.Lemmas
-public import Batteries.Tactic.Lint.Simp
-public import Batteries.Tactic.SeqFocus
 public import Mathlib.Data.Subtype
 public import Mathlib.Tactic.Attr.Core
 
@@ -172,6 +170,12 @@ theorem exists_mem_cons_iff (p : α → Prop) (a : α) (l : List α) :
     (∃ x ∈ a :: l, p x) ↔ p a ∨ ∃ x ∈ l, p x := by grind
 
 /-! ### list subset -/
+
+attribute [refl] List.Subset.refl
+
+instance : IsPreorder (List α) (· ⊆ ·) where
+  refl := .refl
+  trans _ _ _ := .trans
 
 theorem cons_subset_of_subset_of_mem {a : α} {l m : List α}
     (ainm : a ∈ m) (lsubm : l ⊆ m) : a::l ⊆ m :=
@@ -527,6 +531,11 @@ theorem sublist_cons_of_sublist (a : α) (h : l₁ <+ l₂) : l₁ <+ a :: l₂ 
 
 theorem Sublist.antisymm (s₁ : l₁ <+ l₂) (s₂ : l₂ <+ l₁) : l₁ = l₂ :=
   s₁.eq_of_length_le s₂.length_le
+
+instance : IsPartialOrder (List α) List.Sublist where
+  refl := .refl
+  trans _ _ _ := .trans
+  antisymm _ _ := Sublist.antisymm
 
 /-- If the first element of two lists are different, then a sublist relation can be reduced. -/
 theorem Sublist.of_cons_of_ne {a b} (h₁ : a ≠ b) (h₂ : a :: l₁ <+ b :: l₂) : a :: l₁ <+ l₂ :=

@@ -6,7 +6,6 @@ Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van 
 module
 
 public import Mathlib.Order.Antisymmetrization
-public import Mathlib.Order.Hom.WithTopBot
 public import Mathlib.Order.Interval.Set.OrdConnected
 public import Mathlib.Order.Interval.Set.WithBotTop
 
@@ -116,6 +115,10 @@ theorem WCovBy.image (f : α ↪o β) (hab : a ⩿ b) (h : (range f).OrdConnecte
   obtain ⟨c, rfl⟩ := h.out (mem_range_self _) (mem_range_self _) ⟨ha.le, hb.le⟩
   rw [f.lt_iff_lt] at ha hb
   exact hab.2 ha hb
+
+@[to_dual (rename := a ↔ b) (reorder := a b)]
+theorem WCovBy.of_isLUB_Iio (h : IsLUB (.Iio b) a) : a ⩿ b :=
+  ⟨h.right fun _ ↦ le_of_lt, fun _ hac hcb ↦ hac.not_ge <| h.left hcb⟩
 
 @[to_dual self]
 theorem Set.OrdConnected.apply_wcovBy_apply_iff (f : α ↪o β) (h : (range f).OrdConnected) :
@@ -487,6 +490,11 @@ lemma LT.lt.exists_disjoint_Iio_Ioi (h : a < b) :
     ∃ a' > a, ∃ b' < b, ∀ x < a', ∀ y > b', x < y := by
   grind
 
+@[to_dual (rename := a ↔ b) (reorder := a b)]
+theorem CovBy.isLUB_Iio_of_linearOrder {α : Type*} [LinearOrder α] {a b : α} (h : a ⋖ b) :
+    IsLUB (.Iio b) a :=
+  ⟨fun _ ↦ h.le_of_lt, fun _ hc ↦ hc h.lt⟩
+
 end LinearOrder
 
 namespace Bool
@@ -845,6 +853,6 @@ variable [Preorder α]
 lemma exists_covBy_of_wellFoundedLT [wf : WellFoundedLT α] ⦃a : α⦄ (h : ¬ IsMax a) :
     ∃ a', a ⋖ a' := by
   rw [not_isMax_iff] at h
-  exact ⟨_, wellFounded_lt.min_mem (Ioi a) h, fun a' ↦ wf.wf.not_lt_min (Ioi a)⟩
+  exact ⟨_, wellFounded_lt.min_mem (Ioi a) h, fun a' ↦ wf.not_lt_min (Ioi a)⟩
 
 end WellFounded

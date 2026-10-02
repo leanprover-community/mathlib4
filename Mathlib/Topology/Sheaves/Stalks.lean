@@ -574,7 +574,7 @@ theorem mono_of_stalk_mono {F G : Sheaf C X} (f : F ⟶ G) [∀ x, Mono <| (stal
       (ConcreteCategory.mono_iff_injective_of_preservesPullback _).mpr <|
         app_injective_of_stalkFunctor_map_injective f.1 U.unop fun _x _hx =>
           (ConcreteCategory.mono_iff_injective_of_preservesPullback
-            ((stalkFunctor C _).map f.hom)).mp <| inferInstance
+            ((stalkFunctor C _).map f.hom)).mp inferInstance
 
 include instCC in
 theorem mono_iff_stalk_mono {F G : Sheaf C X} (f : F ⟶ G) :

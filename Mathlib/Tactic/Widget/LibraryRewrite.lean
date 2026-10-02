@@ -258,7 +258,7 @@ def checkAndSortRewriteLemmas (e : Expr) (rewrites : Array RewriteLemma) :
     (compare a.1.extraGoals.size b.1.extraGoals.size).then <|
     (compare a.1.symm b.1.symm).then <|
     (compare a.2.toString.length b.2.toString.length).then <|
-    (compare a.1.stringLength b.1.stringLength).then <|
+    (compare a.1.stringLength b.1.stringLength).then
     (Name.cmp a.2 b.2)
   return rewrites.qsort lt
 
@@ -522,7 +522,7 @@ def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
       let some (subExpr, occ) ← withReducible <| viewKAbstractSubExpr rootExpr loc.pos |
         return .text "rw??: expressions with bound variables are not yet supported"
       unless ← kabstractIsTypeCorrect rootExpr subExpr loc.pos do
-        return .text <| "rw??: the selected expression cannot be rewritten, \
+        return .text "rw??: the selected expression cannot be rewritten, \
           because the motive is not type correct. \
           This usually occurs when trying to rewrite a term that appears as a dependent argument."
       let location ← loc.fvarId?.mapM FVarId.getUserName

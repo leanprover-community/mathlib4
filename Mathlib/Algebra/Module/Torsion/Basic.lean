@@ -484,7 +484,7 @@ variable {q : ι → R}
 
 open scoped Function -- required for scoped `on` notation
 
-theorem iSup_torsionBy_eq_torsionBy_prod (hq : (S : Set ι).Pairwise <| (IsCoprime on q)) :
+theorem iSup_torsionBy_eq_torsionBy_prod (hq : (S : Set ι).Pairwise (IsCoprime on q)) :
     ⨆ i ∈ S, torsionBy R M (q i) = torsionBy R M (∏ i ∈ S, q i) := by
   rw [← torsionBySet_span_singleton_eq, Ideal.submodule_span_eq, ←
     Ideal.finset_inf_span_singleton _ _ hq, Finset.inf_eq_iInf, ←
@@ -496,7 +496,7 @@ theorem iSup_torsionBy_eq_torsionBy_prod (hq : (S : Set ι).Pairwise <| (IsCopri
     exact (torsionBySet_span_singleton_eq _).symm
   exact fun i hi j hj ij => (Ideal.sup_eq_top_iff_isCoprime _ _).mpr (hq hi hj ij)
 
-theorem supIndep_torsionBy (hq : (S : Set ι).Pairwise <| (IsCoprime on q)) :
+theorem supIndep_torsionBy (hq : (S : Set ι).Pairwise (IsCoprime on q)) :
     S.SupIndep fun i => torsionBy R M <| q i := by
   convert!
     supIndep_torsionBySet_ideal (M := M) fun i hi j hj ij =>
@@ -533,7 +533,7 @@ theorem torsionBySet_isInternal {p : ι → Ideal R}
 open scoped Function in -- required for scoped `on` notation
 /-- If the `q i` are pairwise coprime, a `∏ i, q i`-torsion module is the internal direct sum of
 its `q i`-torsion submodules. -/
-theorem torsionBy_isInternal {q : ι → R} (hq : (S : Set ι).Pairwise <| (IsCoprime on q))
+theorem torsionBy_isInternal {q : ι → R} (hq : (S : Set ι).Pairwise (IsCoprime on q))
     (hM : Module.IsTorsionBy R M <| ∏ i ∈ S, q i) :
     DirectSum.IsInternal fun i : S => torsionBy R M <| q i := by
   rw [← Module.isTorsionBySet_span_singleton_iff, Ideal.submodule_span_eq, ←

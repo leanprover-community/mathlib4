@@ -582,7 +582,7 @@ theorem colimitFlipCompColimIsoColimitCompColim_ι_ι_hom (j) (k) :
         (colimit.ι _ k ≫ colimit.ι (F ⋙ colim) j : _ ⟶ colimit (F ⋙ colim)) := by
   dsimp [colimitFlipCompColimIsoColimitCompColim]
   conv_lhs => slice 1 3
-  simp [Equivalence.unit]
+  simp
 
 set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]

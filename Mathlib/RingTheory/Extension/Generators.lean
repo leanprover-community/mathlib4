@@ -188,7 +188,7 @@ noncomputable def ofAlgEquiv
   val := e ∘ P.val
   σ' := P.σ ∘ e.symm
   aeval_val_σ' t := by
-    rw [Function.comp_def, ← AlgHom.coe_coe e, ← MvPolynomial.comp_aeval_apply]
+    rw [Function.comp_def, ← AlgHom.coe_ofClass e, ← MvPolynomial.comp_aeval_apply]
     simp
 
 @[simp]
@@ -262,8 +262,7 @@ def baseChange (T) [CommRing T] [Algebra R T] (P : Generators R S ι) :
     Generators T (T ⊗[R] S) ι := by
   apply Generators.ofSurjective (fun x ↦ 1 ⊗ₜ[R] P.val x)
   intro x
-  induction x using TensorProduct.induction_on with
-  | zero => exact ⟨0, map_zero _⟩
+  induction x using TensorProduct.inductionOn with
   | tmul a b =>
     let X := P.σ b
     use a • MvPolynomial.map (algebraMap R T) X
@@ -555,8 +554,7 @@ lemma toComp_toAlgHom_monomial (Q : Generators S T ι') (P : Generators R S ι) 
   · ext f (i₁ | i₂)
     simp [rename_eq_aeval]
     rfl
-  · ext f (i₁ | i₂) <;>
-      simp [Finsupp.mapDomain_of_notMem_range, Finsupp.mapDomain_apply Sum.inr_injective]
+  · ext f (i₁ | i₂) <;> simp [Finsupp.mapDomain_of_notMem_range, Sum.inr_injective]
 
 @[simp]
 lemma toAlgHom_ofComp_rename (Q : Generators S T ι') (P : Generators R S ι) (p : P.Ring) :
@@ -656,9 +654,9 @@ lemma ker_ofAlgHom {I : Type*} (f : MvPolynomial I R →ₐ[R] S) (h : Function.
 @[simp]
 lemma ker_ofAlgEquiv (P : Generators R S ι) {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T) :
     (P.ofAlgEquiv e).ker = P.ker := by
-  rw [ker_eq_ker_aeval_val, ofAlgEquiv_val, Function.comp_def, ← AlgHom.coe_coe,
+  rw [ker_eq_ker_aeval_val, ofAlgEquiv_val, Function.comp_def, ← AlgHom.coe_ofClass,
     ← MvPolynomial.comp_aeval, ← AlgHom.comap_ker, ← RingHom.ker_coe_toRingHom,
-    AlgHomClass.toRingHom_toAlgHom, AlgHom.ker_coe_equiv, ← RingHom.ker_eq_comap_bot,
+    AlgHomClass.toRingHom_ofClass, AlgHom.ker_coe_equiv, ← RingHom.ker_eq_comap_bot,
     ← ker_eq_ker_aeval_val]
 
 lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :

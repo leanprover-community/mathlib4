@@ -137,7 +137,7 @@ instance uliftFunctorInclusion_is_mono (S : Sieve X) :
     Mono (Sieve.uliftFunctorInclusion.{w} S) :=
   ⟨fun _ _ h => by
     ext Y y
-    refine ULift.ext _ _ (Subtype.ext_iff.2 ?_)
+    refine ULift.ext (Subtype.ext_iff.2 ?_)
     simpa using congr_hom (NatTrans.congr_app h Y) y⟩
 
 /-- A variant of `Sieve.sieveOfSubfunctor` with universe lifting. -/

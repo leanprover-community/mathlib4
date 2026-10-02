@@ -79,12 +79,12 @@ def cochainsIso₁ : (inhomogeneousCochains A).X 1 ≅ ↧(G → A) :=
 /-- The 2nd object in the complex of inhomogeneous cochains of `A : Rep k G` is isomorphic
 to `Fun(G², A)` as a `k`-module. -/
 def cochainsIso₂ : (inhomogeneousCochains A).X 2 ≅ ↧(G × G → A) :=
-  (LinearEquiv.funCongrLeft k A <| (piFinTwoEquiv fun _ => G)).toModuleIso.symm
+  (LinearEquiv.funCongrLeft k A (piFinTwoEquiv fun _ => G)).toModuleIso.symm
 
 /-- The 3rd object in the complex of inhomogeneous cochains of `A : Rep k G` is isomorphic
 to `Fun(G³, A)` as a `k`-module. -/
 def cochainsIso₃ : (inhomogeneousCochains A).X 3 ≅ ↧(G × G × G → A) :=
-  (LinearEquiv.funCongrLeft k A <| ((Fin.consEquiv _).symm.trans
+  (LinearEquiv.funCongrLeft k A ((Fin.consEquiv _).symm.trans
     ((Equiv.refl G).prodCongr (piFinTwoEquiv fun _ => G)))).toModuleIso.symm
 
 end Cochains
@@ -282,6 +282,7 @@ def cocycles₂ : Submodule k (G × G → A) := LinearMap.ker (d₂₃ A).hom
 
 variable {A}
 
+@[macro_inline]
 instance : FunLike (cocycles₁ A) G A := ⟨Subtype.val, Subtype.val_injective⟩
 
 @[simp]
@@ -348,6 +349,7 @@ def cocycles₁IsoOfIsTrivial [hA : A.IsTrivial] :
       { val := f
         property := mem_cocycles₁_of_addMonoidHom f } }
 
+@[macro_inline]
 instance : FunLike (cocycles₂ A) (G × G) A := ⟨Subtype.val, Subtype.val_injective⟩
 
 @[simp]
@@ -416,6 +418,7 @@ def coboundaries₂ : Submodule k (G × G → A) :=
 
 variable {A}
 
+@[macro_inline]
 instance : FunLike (coboundaries₁ A) G A := ⟨Subtype.val, Subtype.val_injective⟩
 
 @[simp]
@@ -448,6 +451,7 @@ theorem coboundaries₁_eq_bot_of_isTrivial (A : Rep k G) [A.IsTrivial] :
   simp_rw [coboundaries₁, d₀₁_eq_zero]
   exact LinearMap.range_eq_bot.2 rfl
 
+@[macro_inline]
 instance : FunLike (coboundaries₂ A) (G × G) A := ⟨Subtype.val, Subtype.val_injective⟩
 
 @[simp]
@@ -844,7 +848,7 @@ lemma cocyclesMk₁_eq (x : cocycles₁ A) :
   have := (isoCocycles₁_inv_comp_iCocycles_apply _ x).symm
   rw [HomologicalComplex.i_cyclesMk]
   simp only [ModuleCat.forget₂_obj, ModuleCat.forget₂_map, ConcreteCategory.hom_ofHom,
-    AddMonoidHom.coe_coe]
+    AddMonoidHom.coe_ofClass]
   rw [← this]
   rfl
 
@@ -978,7 +982,7 @@ lemma H1π_eq_zero_iff (x : cocycles₁ A) : H1π A x = 0 ↔ ⇑x ∈ coboundar
   simp only [H1π, isoCocycles₁, π, HomologicalComplex.homologyπ, homologyπ,
     cyclesMapIso'_inv, leftHomologyπ, ← h, ← leftHomologyMapIso'_inv, ModuleCat.hom_comp,
     LinearMap.coe_comp, Function.comp_apply, map_eq_zero_iff _
-    ((ModuleCat.mono_iff_injective <| _).1 inferInstance)]
+    ((ModuleCat.mono_iff_injective _).1 inferInstance)]
   simp [LinearMap.range_codRestrict, coboundaries₁, shortComplexH1, cocycles₁]
 
 lemma H1π_eq_iff (x y : cocycles₁ A) :
@@ -1059,7 +1063,7 @@ lemma H2π_eq_zero_iff (x : cocycles₂ A) : H2π A x = 0 ↔ ⇑x ∈ coboundar
   simp only [H2π, isoCocycles₂, π, HomologicalComplex.homologyπ, homologyπ,
     cyclesMapIso'_inv, leftHomologyπ, ← h, ← leftHomologyMapIso'_inv, ModuleCat.hom_comp,
     LinearMap.coe_comp, Function.comp_apply, map_eq_zero_iff _
-    ((ModuleCat.mono_iff_injective <| _).1 inferInstance)]
+    ((ModuleCat.mono_iff_injective _).1 inferInstance)]
   simp [LinearMap.range_codRestrict, coboundaries₂, shortComplexH2, cocycles₂]
 
 lemma H2π_eq_iff (x y : cocycles₂ A) :

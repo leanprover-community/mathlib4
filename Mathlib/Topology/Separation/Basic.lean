@@ -89,6 +89,9 @@ theorem t0Space_iff_not_inseparable (X : Type u) [TopologicalSpace X] :
 theorem Inseparable.eq [T0Space X] {x y : X} (h : Inseparable x y) : x = y :=
   T0Space.t0 h
 
+instance [T0Space X] : IsPartialOrder X Specializes where
+  antisymm _ _ := (·.antisymm · |>.eq)
+
 /-- A topology inducing map from a T₀ space is injective. -/
 protected theorem Topology.IsInducing.injective [TopologicalSpace Y] [T0Space X] {f : X → Y}
     (hf : IsInducing f) : Injective f := fun _ _ h =>
@@ -218,7 +221,7 @@ theorem exists_open_singleton_of_finite [T0Space X] [Finite X] [Nonempty X] :
 
 theorem t0Space_of_injective_of_continuous [TopologicalSpace Y] {f : X → Y}
     (hf : Function.Injective f) (hf' : Continuous f) [T0Space Y] : T0Space X :=
-  ⟨fun _ _ h => hf <| (h.map hf').eq⟩
+  ⟨fun _ _ h => hf (h.map hf').eq⟩
 
 protected theorem Topology.IsEmbedding.t0Space [TopologicalSpace Y] [T0Space Y] {f : X → Y}
     (hf : IsEmbedding f) : T0Space X :=
@@ -302,6 +305,9 @@ theorem Specializes.symm (h : x ⤳ y) : y ⤳ x :=
 
 /-- In an R₀ space, the `Specializes` relation is symmetric, `Iff` version. -/
 theorem specializes_comm : x ⤳ y ↔ y ⤳ x := ⟨Specializes.symm, Specializes.symm⟩
+
+instance : IsEquiv X Specializes where
+  toSymm := specializes_symm
 
 /-- In an R₀ space, `Specializes` is equivalent to `Inseparable`. -/
 theorem specializes_iff_inseparable : x ⤳ y ↔ Inseparable x y :=
@@ -1084,7 +1090,7 @@ theorem IsCompact.finite_compact_cover {s : Set X} (hs : IsCompact s) {ι : Type
 
 theorem R1Space.of_continuous_specializes_imp [TopologicalSpace Y] {f : Y → X} (hc : Continuous f)
     (hspec : ∀ x y, f x ⤳ f y → x ⤳ y) : R1Space Y where
-  specializes_or_disjoint_nhds x y := (specializes_or_disjoint_nhds (f x) (f y)).imp (hspec x y) <|
+  specializes_or_disjoint_nhds x y := (specializes_or_disjoint_nhds (f x) (f y)).imp (hspec x y)
     ((hc.tendsto _).disjoint · (hc.tendsto _))
 
 theorem Topology.IsInducing.r1Space [TopologicalSpace Y] {f : Y → X} (hf : IsInducing f) :

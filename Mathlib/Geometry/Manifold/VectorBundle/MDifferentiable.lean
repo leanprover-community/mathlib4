@@ -373,7 +373,7 @@ lemma mdifferentiableWithinAt_add_section
   set e := trivializationAt F E x₀
   refine (hs.add ht).congr_of_eventuallyEq ?_ ?_
   · apply eventually_of_mem (U := e.baseSet)
-    · exact mem_nhdsWithin_of_mem_nhds <|
+    · exact mem_nhdsWithin_of_mem_nhds
         (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F E x₀)
     · exact fun x hx ↦ (e.linear 𝕜 hx).1 ..
   · exact (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).1 ..
@@ -399,7 +399,7 @@ lemma mdifferentiableWithinAt_neg_section
   set e := trivializationAt F E x₀
   refine hs.neg.congr_of_eventuallyEq ?_ ?_
   · apply eventually_of_mem (U := e.baseSet)
-    · exact mem_nhdsWithin_of_mem_nhds <|
+    · exact mem_nhdsWithin_of_mem_nhds
         (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F E x₀)
     · exact fun x hx ↦ (e.linear 𝕜 hx).map_neg ..
   · exact (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).map_neg ..
@@ -442,7 +442,7 @@ lemma MDifferentiableWithinAt.smul_section
   set e := trivializationAt F E x₀
   refine (hf.smul hs).congr_of_eventuallyEq ?_ ?_
   · apply eventually_of_mem (U := e.baseSet)
-    · exact mem_nhdsWithin_of_mem_nhds <|
+    · exact mem_nhdsWithin_of_mem_nhds
         (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F E x₀)
     · exact fun x hx ↦ (e.linear 𝕜 hx).2 ..
   · apply (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).2

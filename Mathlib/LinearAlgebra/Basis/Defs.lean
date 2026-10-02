@@ -107,6 +107,7 @@ theorem repr_injective : Injective (repr : Basis ι R M → M ≃ₗ[R] ι →�
   cases f; cases g; congr
 
 /-- `b i` is the `i`th basis vector. -/
+@[macro_inline]
 instance instFunLike : FunLike (Basis ι R M) ι M where
   coe b i := b.repr.symm (Finsupp.single i 1)
   coe_injective f g h := repr_injective <| LinearEquiv.symm_bijective.injective <|
@@ -185,10 +186,10 @@ variable (e : ι ≃ ι')
 def reindex : Basis ι' R M :=
   .ofRepr (b.repr.trans (Finsupp.domLCongr e))
 
-theorem reindex_apply (i' : ι') : b.reindex e i' = b (e.symm i') :=
-  show (b.repr.trans (Finsupp.domLCongr e)).symm (Finsupp.single i' 1) =
+theorem reindex_apply (i' : ι') : b.reindex e i' = b (e.symm i') := by
+  change (b.repr.trans (Finsupp.domLCongr e)).symm (Finsupp.single i' 1) =
     b.repr.symm (Finsupp.single (e.symm i') 1)
-  by rw [LinearEquiv.symm_trans_apply, Finsupp.domLCongr_symm, Finsupp.domLCongr_single]
+  rw [LinearEquiv.symm_trans_apply, Finsupp.domLCongr_symm, Finsupp.domLCongr_single]
 
 @[simp]
 theorem coe_reindex : (b.reindex e : ι' → M) = b ∘ e.symm :=

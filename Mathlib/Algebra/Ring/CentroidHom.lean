@@ -91,6 +91,7 @@ section NonUnitalNonAssocSemiring
 
 variable [NonUnitalNonAssocSemiring α]
 
+@[macro_inline]
 instance : FunLike (CentroidHom α) α α where
   coe f := f.toFun
   coe_injective f g h := by
@@ -134,7 +135,7 @@ theorem toEnd_injective : Injective (CentroidHom.toEnd : CentroidHom α → AddM
 /-- Copy of a `CentroidHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
 protected def copy (f : CentroidHom α) (f' : α → α) (h : f' = f) : CentroidHom α :=
-  { f.toAddMonoidHom.copy f' <| h with
+  { f.toAddMonoidHom.copy f' h with
     toFun := f'
     map_mul_left' := fun a b ↦ by simp_rw [h, map_mul_left]
     map_mul_right' := fun a b ↦ by simp_rw [h, map_mul_right] }
@@ -187,8 +188,12 @@ theorem comp_apply (g f : CentroidHom α) (a : α) : g.comp f a = g (f a) :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_comp_addMonoidHom (g f : CentroidHom α) : (g.comp f : α →+ α) = (g : α →+ α).comp f :=
+theorem toAddMonoidHom_comp (g f : CentroidHom α) :
+    (g.comp f : α →+ α) = (g : α →+ α).comp f :=
   rfl
+
+@[deprecated (since := "2026-09-15")]
+alias coe_comp_addMonoidHom := toAddMonoidHom_comp
 
 @[simp]
 theorem comp_assoc (h g f : CentroidHom α) : (h.comp g).comp f = h.comp (g.comp f) :=
@@ -463,6 +468,7 @@ def centerToCentroidCenter :
     rfl
   map_mul' z₁ z₂ := by ext a; exact (z₁.prop.left_assoc z₂ a).symm
 
+@[macro_inline]
 instance : FunLike (Subsemiring.center (CentroidHom α)) α α where
   coe f := f.val.toFun
   coe_injective f g h := by

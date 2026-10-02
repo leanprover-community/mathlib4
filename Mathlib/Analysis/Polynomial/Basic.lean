@@ -36,10 +36,10 @@ namespace Polynomial
 variable {𝕜 : Type*} [NormedField 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] (P Q : 𝕜[X])
 
 theorem eventually_atTop_not_isRoot (hP : P ≠ 0) : ∀ᶠ x in atTop, ¬P.IsRoot x :=
-  atTop_le_cofinite <| (finite_setOfPred_isRoot hP).compl_mem_cofinite
+  atTop_le_cofinite (finite_setOfPred_isRoot hP).compl_mem_cofinite
 
 theorem eventually_atBot_not_isRoot (hP : P ≠ 0) : ∀ᶠ x in atBot, ¬P.IsRoot x :=
-  atBot_le_cofinite <| (finite_setOfPred_isRoot hP).compl_mem_cofinite
+  atBot_le_cofinite (finite_setOfPred_isRoot hP).compl_mem_cofinite
 
 variable [OrderTopology 𝕜]
 

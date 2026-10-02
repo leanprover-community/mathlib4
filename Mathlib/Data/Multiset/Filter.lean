@@ -208,7 +208,7 @@ theorem filterMap_cons (f : α → Option β) (a : α) (s : Multiset α) :
 @[simp]
 theorem filterMap_add (f : α → Option β) (s t : Multiset α) :
     filterMap f (s + t) = filterMap f s + filterMap f t :=
-  Quotient.inductionOn₂ s t fun _l₁ _l₂ => congr_arg ofList <| filterMap_append
+  Quotient.inductionOn₂ s t fun _l₁ _l₂ => congr_arg ofList filterMap_append
 
 theorem filterMap_eq_map (f : α → β) : filterMap (some ∘ f) = map f :=
   funext fun s =>
@@ -277,9 +277,7 @@ theorem countP_filter (q) [DecidablePred q] (s : Multiset α) :
 
 theorem countP_eq_countP_filter_add (s) (p q : α → Prop) [DecidablePred p] [DecidablePred q] :
     countP p s = (filter q s).countP p + (filter (fun a => ¬q a) s).countP p :=
-  Quot.inductionOn s fun l => by
-    convert! l.countP_eq_countP_filter_add (p ·) (q ·)
-    simp
+  Quot.inductionOn s fun l => l.countP_eq_countP_filter_add (p ·) (q ·)
 
 theorem countP_map (f : α → β) (s : Multiset α) (p : β → Prop) [DecidablePred p] :
     countP p (map f s) = card (s.filter fun a => p (f a)) := by
@@ -330,7 +328,7 @@ theorem count_map_eq_count [DecidableEq β] (f : α → β) (s : Multiset α)
     (hf : Set.InjOn f { x : α | x ∈ s }) (x) (H : x ∈ s) : (s.map f).count (f x) = s.count x := by
   suffices (filter (fun a : α => f x = f a) s).count x = card (filter (fun a : α => f x = f a) s) by
     rw [count, countP_map, ← this]
-    exact count_filter_of_pos <| rfl
+    exact count_filter_of_pos rfl
   · rw [eq_replicate_card.2 fun b hb => (hf H (mem_filter.1 hb).left _).symm]
     · simp
     · simp only [mem_filter, and_imp, @eq_comm _ (f x), imp_self, implies_true]

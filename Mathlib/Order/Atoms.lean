@@ -223,12 +223,12 @@ variable {A B : Type*} [PartialOrder A] [SetLike A B] [IsConcreteLE A B]
 
 theorem isAtom_iff [OrderBot A] {K : A} :
     IsAtom K ↔ K ≠ ⊥ ∧ ∀ H g, H ≤ K → g ∉ H → g ∈ K → H = ⊥ := by
-  simp_rw [IsAtom, lt_iff_le_not_ge, SetLike.not_le_iff_exists,
+  simp_rw [IsAtom, lt_iff_le_not_ge, IsConcreteLE.not_le_iff_exists,
     and_comm (a := _ ≤ _), and_imp, exists_imp, ← and_imp, and_comm]
 
 theorem isCoatom_iff [OrderTop A] {K : A} :
     IsCoatom K ↔ K ≠ ⊤ ∧ ∀ H g, K ≤ H → g ∉ K → g ∈ H → H = ⊤ := by
-  simp_rw [IsCoatom, lt_iff_le_not_ge, SetLike.not_le_iff_exists,
+  simp_rw [IsCoatom, lt_iff_le_not_ge, IsConcreteLE.not_le_iff_exists,
     and_comm (a := _ ≤ _), and_imp, exists_imp, ← and_imp, and_comm]
 
 theorem covBy_iff {K L : A} :
@@ -237,7 +237,7 @@ theorem covBy_iff {K L : A} :
   contrapose!
   rw [lt_iff_le_not_ge, lt_iff_le_and_ne, and_and_and_comm]
   simp_rw [exists_and_left, and_assoc, and_congr_right_iff, ← and_assoc, and_comm, exists_and_left,
-    SetLike.not_le_iff_exists, and_comm, implies_true]
+    IsConcreteLE.not_le_iff_exists, and_comm, implies_true]
 
 /-- Dual variant of `SetLike.covBy_iff` -/
 theorem covBy_iff' {K L : A} :
@@ -246,7 +246,7 @@ theorem covBy_iff' {K L : A} :
   push Not
   rw [lt_iff_le_and_ne, lt_iff_le_not_ge, and_and_and_comm]
   simp_rw [exists_and_left, and_assoc, and_congr_right_iff, ← and_assoc, and_comm, exists_and_left,
-    SetLike.not_le_iff_exists, ne_comm, implies_true]
+    IsConcreteLE.not_le_iff_exists, ne_comm, implies_true]
 
 end SetLike
 
@@ -498,19 +498,19 @@ instance [WellFoundedGT α] : IsStronglyCoatomic α :=
 @[deprecated instIsStronglyAtomicOfWellFoundedLT (since := "2026-08-01")]
 theorem IsStronglyAtomic.of_wellFounded_lt (h : WellFounded ((· < ·) : α → α → Prop)) :
     IsStronglyAtomic α :=
-  have : WellFoundedLT α := ⟨h⟩; inferInstance
+  inferInstance
 
-@[deprecated instIsStronglyAtomicOfWellFoundedLT (since := "2026-08-01")]
+@[deprecated instIsStronglyAtomicOfWellFoundedLT +typeChanged (since := "2026-08-01")]
 theorem IsStronglyCoatomic.of_wellFounded_gt (h : WellFounded ((· > ·) : α → α → Prop)) :
     IsStronglyCoatomic α :=
-  have : WellFoundedGT α := ⟨h⟩; inferInstance
+  inferInstance
 
-@[deprecated instIsStronglyAtomicOfWellFoundedLT (since := "2026-08-01")]
+@[deprecated instIsStronglyAtomicOfWellFoundedLT +typeChanged (since := "2026-08-01")]
 theorem isAtomic_of_orderBot_wellFounded_lt [OrderBot α]
     (h : WellFounded ((· < ·) : α → α → Prop)) : IsAtomic α :=
   (IsStronglyAtomic.of_wellFounded_lt h).isAtomic
 
-@[deprecated instIsStronglyAtomicOfWellFoundedLT (since := "2026-08-01")]
+@[deprecated instIsStronglyAtomicOfWellFoundedLT +typeChanged (since := "2026-08-01")]
 theorem isCoatomic_of_orderTop_gt_wellFounded [OrderTop α]
     (h : WellFounded ((· > ·) : α → α → Prop)) : IsCoatomic α :=
   isAtomic_dual_iff_isCoatomic.1 (@isAtomic_of_orderBot_wellFounded_lt αᵒᵈ _ _ h)
@@ -1016,7 +1016,7 @@ theorem isAtom_iff [OrderBot α] [IsAtomic α] [OrderBot β] {l : α → β} {u 
   obtain ⟨a', ha', hab'⟩ :=
     (eq_bot_or_exists_atom_le (u (l a))).resolve_left (hbot ▸ fun h => hla.1 (gi.u_injective h))
   have :=
-    (hla.le_iff.mp <| (gi.l_u_eq (l a) ▸ gi.gc.monotone_l hab' : l a' ≤ l a)).resolve_left fun h =>
+    (hla.le_iff.mp (gi.l_u_eq (l a) ▸ gi.gc.monotone_l hab' : l a' ≤ l a)).resolve_left fun h =>
       ha'.1 (hbot ▸ h_atom a' ha' ▸ congr_arg u h)
   have haa' : a = a' :=
     (ha'.le_iff.mp <|
@@ -1194,7 +1194,7 @@ theorem ComplementedLattice.isStronglyAtomic [IsAtomic α] : IsStronglyAtomic α
 /-- A complemented modular coatomic lattice is strongly coatomic.
 Not an instance to prevent loops. -/
 theorem ComplementedLattice.isStronglyCoatomic [IsCoatomic α] : IsStronglyCoatomic α :=
-  isStronglyAtomic_dual_iff_is_stronglyCoatomic.1 <| ComplementedLattice.isStronglyAtomic
+  isStronglyAtomic_dual_iff_is_stronglyCoatomic.1 ComplementedLattice.isStronglyAtomic
 
 /-- A complemented modular atomic lattice is strongly coatomic.
 Not an instance to prevent loops. -/

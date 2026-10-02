@@ -749,7 +749,7 @@ include hU in
 theorem basicOpen_basicOpen_is_basicOpen (g : Γ(X, X.basicOpen f)) :
     ∃ f' : Γ(X, U), X.basicOpen f' = X.basicOpen g := by
   have := isLocalization_basicOpen hU f
-  obtain ⟨x, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.surj'' (Submonoid.powers f) g
+  obtain ⟨x, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.surj' (Submonoid.powers f) g
   use f * x
   rw [Algebra.smul_def, Scheme.basicOpen_mul, Scheme.basicOpen_mul, RingHom.algebraMap_toAlgebra,
     Scheme.basicOpen_res]
@@ -1239,7 +1239,7 @@ lemma Scheme.Hom.liftQuotient_comp (f : X.Hom (Spec A)) (I : Ideal A)
 is the scheme-theoretic image of `f`. For this quotient as an object of `CommRingCat` see
 `specTargetImage` below. -/
 def specTargetImageIdeal (f : X ⟶ Spec A) : Ideal A :=
-  (RingHom.ker <| (((ΓSpec.adjunction).homEquiv X (op A)).symm f).unop.hom)
+  (RingHom.ker (((ΓSpec.adjunction).homEquiv X (op A)).symm f).unop.hom)
 
 /-- If `X ⟶ Spec A` is a morphism of schemes, then `Spec` of `specTargetImage f` is the
 scheme-theoretic image of `f` and `f` factors as
@@ -1265,10 +1265,10 @@ lemma specTargetImageRingHom_surjective : Function.Surjective (specTargetImageRi
 
 set_option backward.isDefEq.respectTransparency false in
 lemma specTargetImageFactorization_app_injective :
-    Function.Injective <| (specTargetImageFactorization f).appTop := by
+    Function.Injective (specTargetImageFactorization f).appTop := by
   let φ : A ⟶ Γ(X, ⊤) := (((ΓSpec.adjunction).homEquiv X (op A)).symm f).unop
   let φ' : specTargetImage f ⟶ Scheme.Γ.obj (op X) := CommRingCat.ofHom (RingHom.kerLift φ.hom)
-  change Function.Injective <| ((ΓSpec.adjunction.homEquiv X _) φ'.op).appTop
+  change Function.Injective ((ΓSpec.adjunction.homEquiv X _) φ'.op).appTop
   rw [ΓSpec_adjunction_homEquiv_eq]
   apply (RingHom.kerLift_injective φ.hom).comp
   exact ((ConcreteCategory.isIso_iff_bijective (Scheme.ΓSpecIso _).hom).mp inferInstance).injective

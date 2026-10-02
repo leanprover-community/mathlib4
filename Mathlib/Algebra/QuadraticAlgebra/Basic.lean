@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Algebra.Rat  -- shake: keep (used in `example` onl
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.Algebra.QuadraticAlgebra.Defs
 public import Mathlib.Algebra.Star.Unitary
-public import Mathlib.Tactic.FieldSimp.Lemmas
 
 import Mathlib.Tactic.FieldSimp
 

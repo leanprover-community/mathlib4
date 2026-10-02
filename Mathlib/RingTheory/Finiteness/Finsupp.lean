@@ -48,7 +48,7 @@ theorem finsuppLinearMap_bijective_of_moduleFinite [Module.Finite R M] :
   have ⟨s, span_s⟩ := Module.finite_def.mp ‹Module.Finite R M›
   classical refine ⟨finsuppLinearMap_injective ..,
     fun x ↦ ⟨.onFinset (s.sup fun m ↦ (x m).support) (lapply · ∘ₗ x) fun i h ↦ ?_, ?_⟩⟩
-  · contrapose! h; exact LinearMap.ext_on span_s (by simpa using! h)
+  · contrapose h; exact LinearMap.ext_on span_s (by simpa using! h)
   · ext; rfl
 
 theorem finsuppLinearMap_bijective_of_finite [Finite ι] :

@@ -293,6 +293,7 @@ noncomputable def toBaseChange (T : Type*) [CommRing T] [Algebra R T] :
 
 end
 
+@[macro_inline]
 instance {P P' : Extension R S} : FunLike (P.Hom P') P.Ring P'.Ring where
   coe f := f.toRingHom
   coe_injective _ _ h := Extension.Hom.ext (DFunLike.coe_fn_eq.mp h)

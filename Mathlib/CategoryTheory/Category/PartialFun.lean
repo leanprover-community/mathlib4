@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Category.Pointed
 public import Mathlib.Data.PFun
+public import Mathlib.CategoryTheory.ConcreteCategory.Notation
 
 /-!
 # The category of types with partial functions

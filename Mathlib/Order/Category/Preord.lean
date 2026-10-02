@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.Category.Preorder
-public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.CompleteBooleanAlgebra
 

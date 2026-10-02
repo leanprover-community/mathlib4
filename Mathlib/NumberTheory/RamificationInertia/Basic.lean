@@ -3,7 +3,7 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.LinearAlgebra.Dimension.DivisionRing
 public import Mathlib.NumberTheory.RamificationInertia.Inertia
@@ -427,7 +427,7 @@ noncomputable def quotientRangePowQuotSuccInclusionEquiv [IsDedekindDomain S]
     ((P ^ i).map (Ideal.Quotient.mk (P ^ e)) ⧸ LinearMap.range (powQuotSuccInclusion p P i))
       ≃ₗ[R ⧸ p] S ⧸ P := by
   choose a a_mem a_notMem using
-    SetLike.exists_of_lt
+    IsConcreteLE.exists_of_lt
       (Ideal.pow_right_strictAnti P hP (Ideal.IsPrime.ne_top inferInstance) (le_refl i.succ))
   refine (LinearEquiv.ofBijective ?_ ⟨?_, ?_⟩).symm
   · exact quotientToQuotientRangePowQuotSucc p P a_mem

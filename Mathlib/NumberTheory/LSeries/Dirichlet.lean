@@ -267,7 +267,7 @@ lemma LSeries_zeta_eq : L ↗ζ = L 1 := by
 /-- The `LSeries` associated to the arithmetic function `ζ` converges at `s` if and only if
 `re s > 1`. -/
 theorem LSeriesSummable_zeta_iff {s : ℂ} : LSeriesSummable (ζ ·) s ↔ 1 < s.re :=
-  (LSeriesSummable_congr s const_one_eq_zeta).symm.trans <| LSeriesSummable_one_iff
+  (LSeriesSummable_congr s const_one_eq_zeta).symm.trans LSeriesSummable_one_iff
 
 /-- The abscissa of (absolute) convergence of the arithmetic function `ζ` is `1`. -/
 lemma abscissaOfAbsConv_zeta : abscissaOfAbsConv ↗ζ = 1 := by

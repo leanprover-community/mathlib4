@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Limits.Preorder
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 public import Mathlib.Order.Category.PartOrdEmb
+public import Mathlib.Order.Hom.WithTopBot
 
 /-!
 # The κ-accessible category of κ-directed posets

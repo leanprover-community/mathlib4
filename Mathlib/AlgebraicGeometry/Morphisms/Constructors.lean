@@ -102,7 +102,6 @@ theorem HasAffineProperty.diagonal_of_openCover_diagonal
   diagonal_of_openCover P f 𝒰 (fun _ ↦ Scheme.affineCover _)
     (fun _ _ _ ↦ h𝒰 _ _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem HasAffineProperty.diagonal_of_diagonal_of_isPullback
     (P) {Q} [HasAffineProperty P Q]
     {X Y U V : Scheme.{u}} {f : X ⟶ Y} {g : U ⟶ Y}

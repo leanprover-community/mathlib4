@@ -117,7 +117,6 @@ def castDropB {a a' : P.A} (h : a = a') : P.drop.B a ⟹ P.drop.B a' := fun _i b
 /-- Proof of type equality as a function -/
 def castLastB {a a' : P.A} (h : a = a') : P.last.B a → P.last.B a' := fun b => Eq.recOn h b
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Using corecursion, construct the contents of an M-type -/
 def M.corecContents {α : TypeVec.{u} n}
     {β : Type v}

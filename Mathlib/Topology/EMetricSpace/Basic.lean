@@ -87,7 +87,7 @@ theorem controlled_of_isUniformInducing [PseudoEMetricSpace β] {f : γ → β}
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : γ}, edist (f a) (f b) < ε → edist a b < δ :=
   ⟨uniformContinuous_iff.1 h.uniformContinuous, (isUniformInducing_iff.1 h).2⟩
 
-@[deprecated controlled_of_isUniformInducing (since := "2026-04-01")]
+@[deprecated controlled_of_isUniformInducing +typeChanged (since := "2026-04-01")]
 theorem controlled_of_isUniformEmbedding [PseudoEMetricSpace β] {f : γ → β}
     (h : IsUniformEmbedding f) :
     (∀ ε > 0, ∃ δ > 0, ∀ {a b : γ}, edist a b < δ → edist (f a) (f b) < ε) ∧

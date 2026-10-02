@@ -98,6 +98,7 @@ abbrev Equiv.Perm (α : Sort*) :=
 
 namespace Equiv
 
+@[macro_inline]
 instance : EquivLike (α ≃ β) α β where
   coe := Equiv.toFun
   inv := Equiv.invFun
@@ -296,7 +297,7 @@ theorem symm_apply_eq {α β} (e : α ≃ β) {x y} : e.symm x = y ↔ x = e y :
 
 theorem eq_symm_apply {α β} (e : α ≃ β) {x y} : y = e.symm x ↔ e y = x := by grind
 
-@[deprecated eq_symm_apply (since := "2026-07-26")]
+@[deprecated eq_symm_apply +typeChanged (since := "2026-07-26")]
 theorem apply_eq_iff_eq_symm_apply {x : α} {y : β} (f : α ≃ β) : f x = y ↔ x = f.symm y :=
   f.eq_symm_apply.symm
 
@@ -357,7 +358,7 @@ theorem extend_apply {f : α ≃ β} (g : α → γ) (e' : β → γ) (b : β) :
 is equivalent to the type of equivalences `β ≃ δ`. -/
 def equivCongr {δ : Sort*} (ab : α ≃ β) (cd : γ ≃ δ) : (α ≃ γ) ≃ (β ≃ δ) where
   toFun ac := (ab.symm.trans ac).trans cd
-  invFun bd := ab.trans <| bd.trans <| cd.symm
+  invFun bd := ab.trans <| bd.trans cd.symm
   left_inv ac := by grind
   right_inv ac := by grind
 

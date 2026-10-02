@@ -74,7 +74,7 @@ instance isScalarTower_right [Add R] [MulOneClass R] [SMul α R] [IsScalarTower 
 
 instance smulCommClass [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R]
     [SMulCommClass α R R] (c : RingCon R) : SMulCommClass α c.Quotient c.Quotient where
-  smul_comm _ := Quotient.ind₂' fun _ _ => congr_arg Quotient.mk'' <| (mul_smul_comm _ _ _).symm
+  smul_comm _ := Quotient.ind₂' fun _ _ => congr_arg Quotient.mk'' (mul_smul_comm _ _ _).symm
 
 instance smulCommClass' [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R]
     [SMulCommClass R α R] (c : RingCon R) : SMulCommClass c.Quotient α c.Quotient :=

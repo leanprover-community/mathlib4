@@ -104,7 +104,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps app]
 def SubmonoidPresheaf.toLocalizationPresheaf : F ⟶ G.localizationPresheaf where
   app U := CommRingCat.ofHom <| algebraMap (F.obj U) (Localization <| G.obj U)
-  naturality {_ _} i := CommRingCat.hom_ext <| (IsLocalization.map_comp (G.map i)).symm
+  naturality {_ _} i := CommRingCat.hom_ext (IsLocalization.map_comp (G.map i)).symm
 
 instance epi_toLocalizationPresheaf : Epi G.toLocalizationPresheaf :=
   @NatTrans.epi_of_epi_app _ _ _ _ _ _ G.toLocalizationPresheaf fun U => Localization.epi' (G.obj U)

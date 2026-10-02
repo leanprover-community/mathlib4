@@ -11,7 +11,7 @@ public import Mathlib.Data.Int.Star
 public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 public import Mathlib.LinearAlgebra.Matrix.Block
-public import Mathlib.LinearAlgebra.Matrix.Cartan
+public import Mathlib.LinearAlgebra.Matrix.Cartan.Basic
 public import Mathlib.LinearAlgebra.Matrix.PosDef
 public import Mathlib.LinearAlgebra.Matrix.ZMatrix
 public import Mathlib.LinearAlgebra.RootSystem.Base

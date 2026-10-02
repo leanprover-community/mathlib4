@@ -93,7 +93,7 @@ noncomputable def uniqueAddEquiv (i : ι) [Subsingleton ι] : (ι →₀ M) ≃+
 
 /-- If `M` is the trivial monoid, then the monoid of finitely supported functions `ι →₀ M` is
 is isomorphic to `M`. -/
-@[simps!, deprecated uniqueAddEquiv (since := "2026-05-06")]
+@[simps!, deprecated uniqueAddEquiv +typeChanged (since := "2026-05-06")]
 noncomputable def _root_.AddEquiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →₀ M) ≃+ M where
   toEquiv := .finsuppUnique
   map_add' _ _ := rfl
@@ -178,7 +178,7 @@ lemma support_single_add_single_subset [DecidableEq ι] {f₁ f₂ : ι} {g₁ g
   exact subset_trans Finsupp.support_single_subset (by simp)
 
 set_option backward.isDefEq.respectTransparency false in
-@[deprecated uniqueAddEquiv_symm_apply (since := "2026-05-06")]
+@[deprecated uniqueAddEquiv_symm_apply +typeChanged (since := "2026-05-06")]
 lemma _root_.AddEquiv.finsuppUnique_symm {M : Type*} [AddZeroClass M] (d : M) :
     AddEquiv.finsuppUnique.symm d = single () d := by ext; simp [AddEquiv.finsuppUnique]
 

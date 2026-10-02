@@ -175,7 +175,7 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
     ∀ C, a ∈ C → ∀ (l : List (Computation α)) (S),
       corec parallel.aux1 (l, S) = C → ∃ c, (c ∈ l ∨ c ∈ S) ∧ a ∈ c from
     let ⟨c, h1, h2⟩ := this _ h [] S rfl
-    ⟨c, h1.resolve_left <| List.not_mem_nil, h2⟩
+    ⟨c, h1.resolve_left List.not_mem_nil, h2⟩
   let F : List (Computation α) → α ⊕ (List (Computation α)) → Prop := by
     intro l a
     rcases a with a | l'

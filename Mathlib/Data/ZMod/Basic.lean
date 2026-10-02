@@ -1114,7 +1114,7 @@ instance subsingleton_ringHom [Semiring R] : Subsingleton (ZMod n →+* R) :=
 
 instance subsingleton_ringEquiv [Semiring R] : Subsingleton (ZMod n ≃+* R) :=
   ⟨fun f g => by
-    rw [RingEquiv.coe_ringHom_inj_iff]
+    rw [RingEquiv.toRingHom_inj_iff]
     apply RingHom.ext_zmod _ _⟩
 
 set_option backward.isDefEq.respectTransparency false in
@@ -1179,7 +1179,7 @@ theorem lift_comp_castAddHom : (ZMod.lift n f).comp (Int.castAddHom (ZMod n)) = 
 
 lemma lift_injective {f : {f : ℤ →+ A // f n = 0}} :
     Injective (lift n f) ↔ ∀ m, f.1 m = 0 → (m : ZMod n) = 0 := by
-  simp only [← AddMonoidHom.ker_eq_bot_iff, eq_bot_iff, SetLike.le_def,
+  simp only [← AddMonoidHom.ker_eq_bot_iff, eq_bot_iff, IsConcreteLE.le_iff,
     ZMod.intCast_surjective.forall, ZMod.lift_coe, AddMonoidHom.mem_ker, AddSubgroup.mem_bot]
 
 end lift

@@ -763,7 +763,7 @@ lemma nnreal_iff_spectralRadius_le [Algebra ℝ A] {a : A} {t : ℝ≥0} (ht : s
     simp
   · replace h : ∀ x ∈ spectrum ℝ a, ‖t - x‖₊ ≤ t := by
       simpa [spectralRadius, iSup₂_le_iff, ← spectrum.singleton_sub_eq] using h
-    peel h with x hx h_le
+    gconvert h with x hx h_le
     rw [← NNReal.coe_le_coe, coe_nnnorm, Real.norm_eq_abs, abs_le] at h_le
     linarith [h_le.2]
 

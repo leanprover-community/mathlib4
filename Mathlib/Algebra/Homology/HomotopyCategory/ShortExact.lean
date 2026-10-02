@@ -69,6 +69,7 @@ section
 
 variable (S₁ S₂ : ShortComplex (CochainComplex C ℤ)) (f : S₁ ⟶ S₂)
 
+@[map (attr := reassoc)]
 lemma map_descShortComplex : map S₁.f S₂.f f.τ₁ f.τ₂ f.comm₁₂.symm ≫ descShortComplex S₂ =
     descShortComplex S₁ ≫ f.τ₃ := by
   ext i
@@ -178,7 +179,6 @@ lemma descShortComplex_naturality {S₁ S₂ : ShortComplex (CochainComplex C �
 variable {D : Type*} [Category* D] [Abelian D]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma mapHomologicalComplexIso_hom_descShortComplex (F : C ⥤ D) [F.Additive]
     (S : ShortComplex (CochainComplex C ℤ)) :

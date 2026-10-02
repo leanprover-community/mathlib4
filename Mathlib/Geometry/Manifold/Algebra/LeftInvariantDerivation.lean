@@ -62,6 +62,7 @@ theorem toDerivation_injective :
     Function.Injective (toDerivation : LeftInvariantDerivation I G → _) :=
   fun X Y h => by cases X; cases Y; congr
 
+@[macro_inline]
 instance : FunLike (LeftInvariantDerivation I G) C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯ where
   coe f := f.toDerivation
   coe_injective _ _ h := toDerivation_injective <| DFunLike.ext' h

@@ -238,6 +238,10 @@ noncomputable def QCompιIso :
     DerivedCategory.Plus.Q ⋙ Plus.ι ≅ CochainComplex.Plus.ι C ⋙ DerivedCategory.Q :=
   ObjectProperty.liftCompιIso ..
 
+instance : (Q (C := C)).Additive :=
+  have := Functor.additive_of_iso (QCompιIso C).symm
+  Functor.additive_of_comp_faithful _ Plus.ι
+
 instance : NatTrans.CommShift (QCompιIso C).hom ℤ :=
   ObjectProperty.commShift_liftCompιIso_hom ..
 
@@ -270,16 +274,9 @@ instance : NatTrans.CommShift (quotientCompQhIso C).hom ℤ :=
     rw [whiskerRight_quotientCompQhIso_hom_ι]
     infer_instance)
 
-instance : (HomotopyCategory.Plus.quotient C ⋙ Qh).IsLocalization
+example : (HomotopyCategory.Plus.quotient C ⋙ Qh).IsLocalization
     (CochainComplex.Plus.quasiIso C) := by
-  refine Functor.IsLocalization.comp _ _
-    (((HomologicalComplex.homotopyEquivalences C (.up ℤ)).inverseImage (CochainComplex.Plus.ι C)))
-    (HomotopyCategory.Plus.quasiIso C) _ (fun _ _ f _ ↦ ?_) (fun _ _ _ hf ↦ ?_)
-    (by rw [HomotopyCategory.Plus.quasiIso_map_quotient_eq_quasiIso])
-  · refine Localization.inverts Qh (HomotopyCategory.Plus.quasiIso C) _ ?_
-    simpa [HomotopyCategory.Plus.quasiIso_iff, HomotopyCategory.quotient_map_mem_quasiIso_iff]
-  · rw [CochainComplex.Plus.quasiIso_iff]
-    exact homotopyEquivalences_le_quasiIso _ _ _ hf
+  infer_instance
 
 instance : Q.IsLocalization (CochainComplex.Plus.quasiIso C) :=
   Functor.IsLocalization.of_iso _ (quotientCompQhIso C)

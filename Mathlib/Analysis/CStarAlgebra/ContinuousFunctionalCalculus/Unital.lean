@@ -424,11 +424,13 @@ lemma cfc_congr {f g : R → R} {a : A} (hfg : (spectrum R a).EqOn f g) :
     · rw [cfc_apply_of_not_continuousOn a hg, cfc_apply_of_not_continuousOn]
       exact fun hf ↦ hg (hf.congr hfg.symm)
 
-/-- A version of `cfc_congr` suitable for `@[congr]`. -/
+/-- A version of `cfc_congr` suitable for `@[congr]`. The `a = b` argument is necessary to ensure
+that `norm_cast` visits both the function and the element. -/
 @[congr]
-lemma cfc_congr' {f g : R → R} {a : A} (hfg : ∀ x ∈ spectrum R a, f x = g x) :
-    cfc f a = cfc g a :=
-  cfc_congr hfg
+lemma cfc_congr' {f g : R → R} {a b : A} (hab : a = b) (hfg : ∀ x ∈ spectrum R b, f x = g x) :
+    cfc f a = cfc g b := by
+  subst hab
+  exact cfc_congr hfg
 
 lemma eqOn_of_cfc_eq_cfc {f g : R → R} {a : A} (h : cfc f a = cfc g a)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
@@ -1118,7 +1120,7 @@ example, if it is necessary to use uniqueness of this continuous functional calc
 @[simps!]
 noncomputable def cfcHomSuperset {a : A} (ha : p a) {s : Set R} (hs : spectrum R a ⊆ s) :
     C(s, R) →⋆ₐ[R] A :=
-  cfcHom ha |>.comp <| ContinuousMap.compStarAlgHom' R R <| ⟨_, continuous_id.subtype_map hs⟩
+  cfcHom ha |>.comp <| ContinuousMap.compStarAlgHom' R R ⟨_, continuous_id.subtype_map hs⟩
 
 lemma cfcHomSuperset_continuous {a : A} (ha : p a) {s : Set R} (hs : spectrum R a ⊆ s) :
     Continuous (cfcHomSuperset ha hs) :=
@@ -1147,7 +1149,7 @@ class ClosedEmbeddingContinuousFunctionalCalculus (R A : Type*) (p : outParam (A
 lemma cfcHom_isClosedEmbedding {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R]
     [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [TopologicalSpace A] [Ring A]
     [StarRing A] [Algebra R A] [instCFC : ClosedEmbeddingContinuousFunctionalCalculus R A p]
-    {a : A} (ha : p a) : IsClosedEmbedding <| (cfcHom ha : C(spectrum R a, R) →⋆ₐ[R] A) :=
+    {a : A} (ha : p a) : IsClosedEmbedding (cfcHom ha : C(spectrum R a, R) →⋆ₐ[R] A) :=
   ClosedEmbeddingContinuousFunctionalCalculus.isClosedEmbedding a ha
 
 end IsClosedEmbedding

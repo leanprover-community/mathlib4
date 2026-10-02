@@ -340,7 +340,7 @@ theorem single_one_one : single (1 : G) (1 : k) = 1 := rfl
 
 theorem one_def : (1 : SkewMonoidAlgebra k G) = single 1 1 := rfl
 
-@[deprecated coeff_one (since := "2026-07-04")]
+@[deprecated coeff_one +typeChanged (since := "2026-07-04")]
 theorem coeff_one_one : coeff (1 : SkewMonoidAlgebra k G) 1 = 1 := by simp
 
 theorem natCast_def (n : ℕ) : (n : SkewMonoidAlgebra k G) = single (1 : G) (n : k) := by
@@ -367,7 +367,7 @@ instance [DecidableEq G] [DecidableEq k] : DecidableEq (SkewMonoidAlgebra k G) :
   Equiv.decidableEq coeffAddEquiv.toEquiv
 
 /-- `sum f g` is the sum of `g a (f.coeff a)` over the support of `f`. -/
-@[deprecated Finsupp.sum (since := "2026-07-04")]
+@[deprecated Finsupp.sum +typeChanged (since := "2026-07-04")]
 def sum {N : Type*} [AddCommMonoid N] (f : SkewMonoidAlgebra k G) (g : G → k → N) : N :=
   f.coeff.sum g
 
@@ -376,16 +376,16 @@ theorem sum_def {N : Type*} [AddCommMonoid N] (f : SkewMonoidAlgebra k G) (g : G
     sum f g = f.coeff.sum g := rfl
 
 /-- Unfolded version of `sum_def` in terms of `Finset.sum`. -/
-@[deprecated Finsupp.sum (since := "2026-07-04")]
+@[deprecated Finsupp.sum +typeChanged (since := "2026-07-04")]
 theorem sum_def' {N : Type*} [AddCommMonoid N] (f : SkewMonoidAlgebra k G) (g : G → k → N) :
     sum f g = ∑ a ∈ f.support, g a (f.coeff a) := rfl
 
-@[deprecated Finsupp.sum_single_index (since := "2026-07-06")]
+@[deprecated Finsupp.sum_single_index +typeChanged (since := "2026-07-06")]
 theorem sum_single_index {N} [AddCommMonoid N] {a : G} {b : k} {h : G → k → N}
     (h_zero : h a 0 = 0) : (SkewMonoidAlgebra.single a b).sum h = h a b :=
   Finsupp.sum_single_index h_zero
 
-@[deprecated map_finsuppSum (since := "2026-07-04")]
+@[deprecated map_finsuppSum +typeChanged (since := "2026-07-04")]
 theorem map_sum {N P : Type*} [AddCommMonoid N] [AddCommMonoid P] {H : Type*} [FunLike H N P]
     [AddMonoidHomClass H N P] (h : H) (f : SkewMonoidAlgebra k G) (g : G → k → N) :
     h (sum f g) = sum f fun a b ↦ h (g a b) :=
@@ -416,7 +416,7 @@ lemma sum_coeff_single (f : SkewMonoidAlgebra k G) : f.coeff.sum single = f := b
 
 /-- Taking the `sum` under `h` is an additive homomorphism, if `h` is an additive homomorphism.
 This is a more specific version of `SkewMonoidAlgebra.sum_add_index` with simpler hypotheses. -/
-@[deprecated Finsupp.sum_add_index' (since := "2026-07-04")]
+@[deprecated Finsupp.sum_add_index' +typeChanged (since := "2026-07-04")]
 theorem sum_add_index' {S : Type*} [AddCommMonoid S] {f g : SkewMonoidAlgebra k G} {h : G → k → S}
     (hf : ∀ i, h i 0 = 0) (h_add : ∀ a b₁ b₂, h a (b₁ + b₂) = h a b₁ + h a b₂) :
     (f + g).sum h = f.sum h + g.sum h := by
@@ -426,7 +426,7 @@ theorem sum_add_index' {S : Type*} [AddCommMonoid S] {f g : SkewMonoidAlgebra k 
 /-- Taking the `sum` under `h` is an additive homomorphism, if `h` is an additive homomorphism.
 This is a more general version of `SkewMonoidAlgebra.sum_add_index'`;
 the latter has simpler hypotheses. -/
-@[deprecated Finsupp.sum_add_index (since := "2026-07-04")]
+@[deprecated Finsupp.sum_add_index +typeChanged (since := "2026-07-04")]
 theorem sum_add_index {S : Type*} [DecidableEq G] [AddCommMonoid S]
     {f g : SkewMonoidAlgebra k G} {h : G → k → S} (h_zero : ∀ a ∈ f.support ∪ g.support, h a 0 = 0)
     (h_add : ∀ a ∈ f.support ∪ g.support, ∀ b₁ b₂, h a (b₁ + b₂) = h a b₁ + h a b₂) :
@@ -434,19 +434,19 @@ theorem sum_add_index {S : Type*} [DecidableEq G] [AddCommMonoid S]
   rw [show f + g = ⟨f.coeff + g.coeff⟩ by rw [ofCoeff_add, eta]]
   exact Finsupp.sum_add_index h_zero h_add
 
-@[deprecated Finsupp.sum_add (since := "2026-07-04")]
+@[deprecated Finsupp.sum_add +typeChanged (since := "2026-07-04")]
 theorem sum_add {S : Type*} [AddCommMonoid S] (p : SkewMonoidAlgebra k G) (f g : G → k → S) :
     (p.sum fun n x ↦ f n x + g n x) = p.sum f + p.sum g := Finsupp.sum_add
 
-@[deprecated Finsupp.sum_zero_index (since := "2026-07-04")]
+@[deprecated Finsupp.sum_zero_index +typeChanged (since := "2026-07-04")]
 theorem sum_zero_index {S : Type*} [AddCommMonoid S] {f : G → k → S} :
     (0 : SkewMonoidAlgebra k G).sum f = 0 := by simp [sum]
 
-@[deprecated Finsupp.sum_fun_zero (since := "2026-07-04")]
+@[deprecated Finsupp.sum_fun_zero +typeChanged (since := "2026-07-04")]
 theorem sum_zero {N : Type*} [AddCommMonoid N] {f : SkewMonoidAlgebra k G} :
     (f.sum fun _ _ ↦ (0 : N)) = 0 := Finset.sum_const_zero
 
-@[deprecated Finsupp.sum_sum_index (since := "2026-07-04")]
+@[deprecated Finsupp.sum_sum_index +typeChanged (since := "2026-07-04")]
 theorem sum_sum_index {α β M N P : Type*} [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
     {f : SkewMonoidAlgebra M α} {g : α → M → SkewMonoidAlgebra N β} {h : β → N → P}
     (h_zero : ∀ (a : β), h a 0 = 0)
@@ -454,30 +454,30 @@ theorem sum_sum_index {α β M N P : Type*} [AddCommMonoid M] [AddCommMonoid N] 
     sum (sum f g) h = sum f fun a b ↦ sum (g a b) h := by
   simp [sum_def, coeff_finsuppSum, Finsupp.sum_sum_index h_zero h_add]
 
-@[deprecated Finsupp.sum_mul (since := "2026-07-04")]
+@[deprecated Finsupp.sum_mul +typeChanged (since := "2026-07-04")]
 theorem sum_mul {S : Type*} [NonUnitalNonAssocSemiring S] (b : S) (s : SkewMonoidAlgebra k G)
     {f : G → k → S} : s.sum f * b = s.sum fun a c ↦ f a c * b := by
   simp only [sum, Finsupp.sum, Finset.sum_mul]
 
-@[deprecated Finsupp.mul_sum (since := "2026-07-04")]
+@[deprecated Finsupp.mul_sum +typeChanged (since := "2026-07-04")]
 theorem mul_sum {S : Type*} [NonUnitalNonAssocSemiring S] (b : S) (s : SkewMonoidAlgebra k G)
     {f : G → k → S} : b * s.sum f = s.sum fun a c ↦ b * f a c := by
   simp only [sum, Finsupp.sum, Finset.mul_sum]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Analogue of `Finsupp.sum_ite_eq'` for `SkewMonoidAlgebra`. -/
-@[deprecated Finsupp.sum_ite_eq' (since := "2026-07-04")]
+@[deprecated Finsupp.sum_ite_eq' +typeChanged (since := "2026-07-04")]
 theorem sum_ite_eq' {N : Type*} [AddCommMonoid N] [DecidableEq G] (f : SkewMonoidAlgebra k G)
     (a : G) (b : G → k → N) : (f.sum fun (x : G) (v : k) ↦ if x = a then b x v else 0) =
       if a ∈ f.support then b a (f.coeff a) else 0 := by
   simp only [sum_def', f.coeff.support.sum_ite_eq', support]
 
-@[deprecated Finsupp.smul_sum (since := "2026-07-04")]
+@[deprecated Finsupp.smul_sum +typeChanged (since := "2026-07-04")]
 theorem smul_sum {M : Type*} {R : Type*} [AddCommMonoid M] [DistribSMul R M]
     {v : SkewMonoidAlgebra k G} {c : R} {h : G → k → M} :
     c • v.sum h = v.sum fun a b ↦ c • h a b := Finsupp.smul_sum
 
-@[deprecated Finsupp.sum_congr (since := "2026-07-04")]
+@[deprecated Finsupp.sum_congr +typeChanged (since := "2026-07-04")]
 theorem sum_congr {f : SkewMonoidAlgebra k G} {M : Type*} [AddCommMonoid M] {g₁ g₂ : G → k → M}
     (h : ∀ x ∈ f.support, g₁ x (f.coeff x) = g₂ x (f.coeff x)) :
     f.sum g₁ = f.sum g₂ := Finset.sum_congr rfl h
@@ -532,7 +532,7 @@ theorem mapDomain_id : mapDomain id v = v := by ext; simp
 theorem mapDomain_comp : mapDomain (g ∘ f) v = mapDomain g (mapDomain f v) := by
   ext; simp [Finsupp.mapDomain_fun_comp]
 
-@[deprecated Finsupp.sum_mapDomain_index (since := "2026-07-04")]
+@[deprecated Finsupp.sum_mapDomain_index +typeChanged (since := "2026-07-04")]
 theorem sum_mapDomain_index {k' : Type*} [AddCommMonoid k'] {h : G' → k → k'}
     (h_zero : ∀ (b : G'), h b 0 = 0)
     (h_add : ∀ (b : G') (m₁ m₂ : k), h b (m₁ + m₂) = h b m₁ + h b m₂) :
@@ -638,14 +638,14 @@ end AddGroupWithOne
 section Mul
 
 /-- Interaction of `sum` and `•` assuming some multiplication structure. -/
-@[deprecated Finsupp.sum_smul_index (since := "2026-07-04")]
+@[deprecated Finsupp.sum_smul_index +typeChanged (since := "2026-07-04")]
 theorem sum_smul_index {N : Type*} [AddCommMonoid N] [NonUnitalNonAssocSemiring k]
     {g : SkewMonoidAlgebra k G} {b : k} {h : G → k → N} (h0 : ∀ i, h i 0 = 0) :
     (b • g).sum h = g.sum (h · <| b * ·) := by
   simp [sum_def, Finsupp.sum_smul_index' h0]
 
 /-- Variant of the interaction of `sum` and `•` assuming some scalar multiplication structure. -/
-@[deprecated Finsupp.sum_smul_index' (since := "2026-07-04")]
+@[deprecated Finsupp.sum_smul_index' +typeChanged (since := "2026-07-04")]
 theorem sum_smul_index' {N R : Type*} [AddCommMonoid k]
     [DistribSMul R k] [AddCommMonoid N]
     {g : SkewMonoidAlgebra k G} {b : R} {h : G → k → N} (h0 : ∀ i, h i 0 = 0) :
@@ -655,7 +655,7 @@ theorem sum_smul_index' {N R : Type*} [AddCommMonoid k]
 @[simp]
 theorem liftNC_one {g_hom R : Type*} [NonAssocSemiring k] [One G] [Semiring R] [FunLike g_hom G R]
     [OneHomClass g_hom G R] (f : k →+* R) (g : g_hom) : liftNC (f : k →+ R) g 1 = 1 := by
-  simp only [one_def, liftNC_single, AddMonoidHom.coe_coe, map_one, mul_one]
+  simp only [one_def, liftNC_single, AddMonoidHom.coe_ofClass, map_one, mul_one]
 
 end Mul
 
@@ -697,7 +697,7 @@ theorem liftNC_mul {g_hom : Type*} [FunLike g_hom G R]
   conv_rhs => rw [← sum_coeff_single a, ← sum_coeff_single b]
   simp_rw [mul_def, map_finsuppSum, liftNC_single, Finsupp.sum_mul, Finsupp.mul_sum]
   refine Finsupp.sum_congr fun y hy ↦ Finsupp.sum_congr fun x _hx ↦ ?_
-  simp only [AddMonoidHom.coe_coe, map_mul]
+  simp only [AddMonoidHom.coe_ofClass, map_mul]
   rw [mul_assoc, ← mul_assoc (f (y • b.coeff x)), h_comm hy, mul_assoc, mul_assoc]
 
 end DistribSMul
@@ -1056,9 +1056,9 @@ theorem ringHom_ext {f g : SkewMonoidAlgebra k G →+* k} (h₁ : ∀ b, f (sing
     (h_of : ∀ a, f (single a 1) = g (single a 1)) : f = g :=
   have {a : G} {b₁ b₂ : k} : (single 1 b₁) * (single a b₂) = single a (b₁ * b₂) := by
     simp [single_mul_single, one_mul, one_smul]
-  RingHom.coe_addMonoidHom_injective <|
-    addHom_ext fun a b ↦ by rw [← mul_one b, ← this, AddMonoidHom.coe_coe f,
-      AddMonoidHom.coe_coe g, f.map_mul, g.map_mul, h₁, h_of]
+  RingHom.toAddMonoidHom_injective <|
+    addHom_ext fun a b ↦ by rw [← mul_one b, ← this, AddMonoidHom.coe_ofClass f,
+      AddMonoidHom.coe_ofClass g, f.map_mul, g.map_mul, h₁, h_of]
 
 end singleOneRingHom
 

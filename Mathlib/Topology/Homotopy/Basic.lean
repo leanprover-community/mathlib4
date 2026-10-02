@@ -102,6 +102,7 @@ section
 
 variable {f₀ f₁ : C(X, Y)}
 
+@[macro_inline]
 instance instFunLike : FunLike (Homotopy f₀ f₁) (I × X) Y where
   coe f := f.toFun
   coe_injective f g h := by
@@ -210,7 +211,7 @@ reversing the homotopy.
 def symm {f₀ f₁ : C(X, Y)} (F : Homotopy f₀ f₁) : Homotopy f₁ f₀ where
   toFun x := F (σ x.1, x.2)
   map_zero_left := by simp
-  map_one_left := by norm_num
+  map_one_left := by simp
 
 @[simp]
 theorem symm_symm {f₀ f₁ : C(X, Y)} (F : Homotopy f₀ f₁) : F.symm.symm = F := by
@@ -231,8 +232,8 @@ def trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁
   continuous_toFun :=
     continuous_if_le (by fun_prop) continuous_const
       (F.continuous.comp (by fun_prop)).continuousOn
-      (G.continuous.comp (by fun_prop)).continuousOn (fun x hx ↦ by norm_num [hx])
-  map_zero_left x := by norm_num
+      (G.continuous.comp (by fun_prop)).continuousOn (fun x hx ↦ by simp [hx])
+  map_zero_left x := by simp
   map_one_left x := by norm_num
 
 theorem trans_apply {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) (x : I × X) :
@@ -393,6 +394,7 @@ section
 
 variable {f₀ f₁ : C(X, Y)} {P : C(X, Y) → Prop}
 
+@[macro_inline]
 instance instFunLike : FunLike (HomotopyWith f₀ f₁ P) (I × X) Y where
   coe F := ⇑F.toHomotopy
   coe_injective

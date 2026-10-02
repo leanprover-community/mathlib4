@@ -144,7 +144,7 @@ variable [Fintype α] (𝒜)
 @[simp]
 theorem biUnion_slice [DecidableEq α] : (Iic <| Fintype.card α).biUnion 𝒜.slice = 𝒜 :=
   Subset.antisymm (biUnion_subset.2 fun _r _ => slice_subset) fun s hs =>
-    mem_biUnion.2 ⟨#s, mem_Iic.2 <| s.card_le_univ, mem_slice.2 <| ⟨hs, rfl⟩⟩
+    mem_biUnion.2 ⟨#s, mem_Iic.2 s.card_le_univ, mem_slice.2 ⟨hs, rfl⟩⟩
 
 @[simp]
 theorem sum_card_slice : ∑ r ∈ Iic (Fintype.card α), #(𝒜 # r) = #𝒜 := by

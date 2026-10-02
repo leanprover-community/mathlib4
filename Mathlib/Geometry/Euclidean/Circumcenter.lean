@@ -368,11 +368,10 @@ theorem circumradius_reindex {m n : ℕ} (s : Simplex ℝ P m) (e : Fin (m + 1) 
 
 theorem dist_circumcenter_sq_eq_sq_sub_circumradius {n : ℕ} {r : ℝ} (s : Simplex ℝ P n) {p₁ : P}
     (h₁ : ∀ i : Fin (n + 1), dist (s.points i) p₁ = r)
-    (h₁' : ↑(s.orthogonalProjectionSpan p₁) = s.circumcenter)
-    (h : s.points 0 ∈ affineSpan ℝ (Set.range s.points)) :
+    (h₁' : ↑(s.orthogonalProjectionSpan p₁) = s.circumcenter) :
     dist p₁ s.circumcenter * dist p₁ s.circumcenter = r * r - s.circumradius * s.circumradius := by
-  rw [dist_comm, ← h₁ 0,
-    s.dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p₁ h]
+  rw [dist_comm, ← h₁ 0, s.dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq
+    p₁ (mem_affineSpan_range ..)]
   simp only [h₁', dist_comm p₁, add_sub_cancel_left, Simplex.dist_circumcenter_eq_circumradius]
 
 /-- If there exists a distance that a point has from all vertices of a
@@ -797,13 +796,12 @@ theorem eq_or_eq_reflection_of_dist_eq {n : ℕ} {s : Simplex ℝ P n} {p p₁ p
     subst hp₂
     exact s.coe_orthogonalProjection_vadd_smul_vsub_orthogonalProjection hp₂o
   rw [h₂'] at hp₂
-  have h : s.points 0 ∈ span_s := mem_affineSpan ℝ (Set.mem_range_self _)
   have hd₁ :
     dist p₁ s.circumcenter * dist p₁ s.circumcenter = r * r - s.circumradius * s.circumradius :=
-    s.dist_circumcenter_sq_eq_sq_sub_circumradius h₁ h₁' h
+    s.dist_circumcenter_sq_eq_sq_sub_circumradius h₁ h₁'
   have hd₂ :
     dist p₂ s.circumcenter * dist p₂ s.circumcenter = r * r - s.circumradius * s.circumradius :=
-    s.dist_circumcenter_sq_eq_sq_sub_circumradius h₂ h₂' h
+    s.dist_circumcenter_sq_eq_sq_sub_circumradius h₂ h₂'
   rw [← hd₂, hp₁, hp₂, dist_eq_norm_vsub V _ s.circumcenter, dist_eq_norm_vsub V _ s.circumcenter,
     vadd_vsub, vadd_vsub, ← real_inner_self_eq_norm_mul_norm, ← real_inner_self_eq_norm_mul_norm,
     real_inner_smul_left, real_inner_smul_left, real_inner_smul_right, real_inner_smul_right, ←
