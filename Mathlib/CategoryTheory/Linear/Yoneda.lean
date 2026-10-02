@@ -108,7 +108,6 @@ variable (R : Type w) [CommRing R] {C : Type u} [Category.{v} C] [Preadditive C]
 variable (C)
 
 instance (X : C) : ((linearYoneda R C).obj X).Linear R where
-  map_smul f r := by ext; apply Linear.smul_comp;
 
 instance linearCoyoneda_obj_linear (Y : Cᵒᵖ) : ((linearCoyoneda R C).obj Y).Linear R where
 

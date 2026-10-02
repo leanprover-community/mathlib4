@@ -97,8 +97,10 @@ instance oppositeCategory : Linear R Cᵒᵖ where
   smul_comp _ _ _ _ f g := Quiver.Hom.unop_inj (comp_smul _ _ _ g.unop _ f.unop)
   comp_smul _ _ _ f _ g := Quiver.Hom.unop_inj (smul_comp _ _ _ _ g.unop f.unop)
 
+@[simp]
 lemma unop_smul {X Y : Cᵒᵖ} (r : R) (f : X ⟶ Y) : (r • f).unop = r • f.unop := rfl
 
+@[simp]
 lemma op_smul {X Y : C} (r : R) (f : X ⟶ Y) : (r • f).op = r • f.op := rfl
 
 end oppositeCategory
