@@ -92,4 +92,3 @@ elab (name := evalCharpoly) "eval_charpoly" : tactic => do
     throwError "`eval_charpoly` made no progress.\n\
       Additional information may be available using `set_option trace.Tactic.evalCharpoly true`."
   Tactic.evalTactic (← `(tactic| try ring1))
-
