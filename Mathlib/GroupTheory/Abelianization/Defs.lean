@@ -69,6 +69,7 @@ section lift
 -- Let `A` be an abelian group and let `f` be a group homomorphism from `G` to `A`.
 variable {A : Type v} [Group A] [IsMulCommutative A] (f : G →* A)
 
+@[to_additive]
 theorem commutator_subset_ker : commutator G ≤ f.ker := by
   rw [commutator_eq_closure, Subgroup.closure_le]
   rintro x ⟨p, q, rfl⟩
