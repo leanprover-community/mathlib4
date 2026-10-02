@@ -14,6 +14,8 @@ We prove various limits for polynomial and rational functions, depending on
 the degrees and leading coefficients of the considered polynomials.
 -/
 
+-- TODO : switch to f / x ^ n style using Horner induction
+
 public section
 
 namespace Polynomial
@@ -40,9 +42,9 @@ theorem div_tendsto_atTop_of_degree_gt' (hdeg : Q.degree < P.degree)
       · simp
       · fun_prop (disch := simp [‹Q ≠ 0›])
     · simp_all [← natDegree_lt_natDegree_iff, Nat.sub_ne_zero_of_lt]
-  filter_upwards [show {0}ᶜ ∈ _ from ⟨Set.univ, by simp⟩] with x hx
-  simp_rw [pow_sub₀ x⁻¹ (by simpa) (natDegree_le_natDegree hdeg.le),
-    ← eval_reverse_mul_pow₀ (x := x⁻¹) (by simpa)]
+  filter_upwards [self_mem_nhdsWithin] with x hx
+  simp_rw [pow_sub₀ x⁻¹ (by grind) (natDegree_le_natDegree hdeg.le),
+    ← eval_reverse_mul_pow₀ (x := x⁻¹) (by grind)]
   field_simp
 
 theorem div_tendsto_atTop_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 0)
@@ -104,7 +106,7 @@ theorem div_tendsto_atTop_leadingCoeff_div_of_degree_eq [TopologicalSpace F] [Or
   · convert (ContinuousAt.tendsto _).mono_left nhdsWithin_le_nhds using 2
     · simp
     · fun_prop (disch := simp [‹Q ≠ 0›])
-  filter_upwards [show {0}ᶜ ∈ _ from ⟨Set.univ, by simp⟩] with x hx
+  filter_upwards [self_mem_nhdsWithin] with x hx
   grind [eval_reverse_mul_pow₀ (x := x⁻¹), pow_ne_zero, natDegree_eq_natDegree]
 
 -- TODO : bounded iff version (see non-quotient part)
