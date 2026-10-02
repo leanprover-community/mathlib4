@@ -43,6 +43,10 @@ characteristic zero.
 * `PowerSeries.lagrange_inversion_coeff`: the usual divided coefficient formula over a field of
   characteristic zero.
 
+## TODO
+
+Generalize the division-free formulas to arbitrary commutative rings using universal coefficients.
+
 ## References
 
 * [Erlang Surya and Lutz Warnke, *Lagrange Inversion Formula by Induction*][surya_warnke_2023]
