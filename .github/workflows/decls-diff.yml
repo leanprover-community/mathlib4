@@ -157,6 +157,9 @@ jobs:
           reference-imports-file: ${{ github.workspace }}/ref-artifact/imports.json
           new-decls-file:         ${{ github.workspace }}/new-artifact/decls.txt
           new-imports-file:       ${{ github.workspace }}/new-artifact/imports.json
+          # Optional: absent from artifacts built before `meta` tracking.
+          reference-meta-file:    ${{ github.workspace }}/ref-artifact/meta_decls.txt
+          new-meta-file:          ${{ github.workspace }}/new-artifact/meta_decls.txt
           new-sha:                ${{ steps.meta.outputs.new-sha }}
           with-heading:           'true'
 
