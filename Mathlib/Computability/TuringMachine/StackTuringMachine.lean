@@ -152,6 +152,13 @@ instance Cfg.inhabited [Inhabited σ] : Inhabited (Cfg Γ Λ σ) :=
 
 variable {Γ Λ σ}
 
+/-- The number of `push` instructions in a statement. -/
+def Stmt.pushes : Stmt Γ Λ σ → ℕ
+  | push _ _ q => q.pushes + 1
+  | peek _ _ q | pop _ _ q | load _ q => q.pushes
+  | branch _ q₁ q₂ => q₁.pushes + q₂.pushes
+  | goto _ | halt => 0
+
 section
 variable [DecidableEq K]
 
@@ -176,13 +183,6 @@ attribute [simp] stepAux.eq_1 stepAux.eq_2 stepAux.eq_3
 /-- The (reflexive) reachability relation for the TM2 model. -/
 def Reaches (M : Λ → Stmt Γ Λ σ) : Cfg Γ Λ σ → Cfg Γ Λ σ → Prop :=
   ReflTransGen fun a b ↦ b ∈ step M a
-
-/-- The number of `push` instructions in a statement. -/
-def Stmt.pushes : Stmt Γ Λ σ → ℕ
-  | push _ _ q => q.pushes + 1
-  | peek _ _ q | pop _ _ q | load _ q => q.pushes
-  | branch _ q₁ q₂ => q₁.pushes + q₂.pushes
-  | goto _ | halt => 0
 
 /-- Running a statement adds to each stack at most as many letters as the statement has `push`
 instructions. -/
