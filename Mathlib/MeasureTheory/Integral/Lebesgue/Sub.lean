@@ -190,8 +190,8 @@ theorem exists_measurable_le_setLIntegral_eq_of_integrable {f : α → ℝ≥0�
   rw [← compl_compl s, setLIntegral_compl hms.compl, setLIntegral_compl hms.compl, hifg]
   · gcongr; apply hgf
   · rw [hifg] at hf
-    exact ne_top_of_le_ne_top hf (setLIntegral_le_lintegral _ _)
-  · exact ne_top_of_le_ne_top hf (setLIntegral_le_lintegral _ _)
+    grw [setLIntegral_le_lintegral]; exact hf
+  · grw [setLIntegral_le_lintegral]; exact hf
 
 end UnifTight
 

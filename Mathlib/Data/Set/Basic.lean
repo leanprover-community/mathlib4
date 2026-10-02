@@ -495,8 +495,15 @@ instance uniqueEmpty [IsEmpty α] : Unique (Set α) where
 theorem eq_empty_or_nonempty (s : Set α) : s = ∅ ∨ s.Nonempty :=
   or_iff_not_imp_left.2 nonempty_iff_ne_empty.2
 
-theorem subset_eq_empty {s t : Set α} (h : t ⊆ s) (e : s = ∅) : t = ∅ :=
-  subset_empty_iff.1 <| e ▸ h
+@[gcongr] theorem eq_empty_of_subset (h : t ⊆ s) (e : s = ∅) : t = ∅ := eq_bot_mono h e
+
+@[deprecated (since := "2026-09-29")] alias subset_eq_empty := eq_empty_of_subset
+
+@[gcongr] theorem empty_eq_of_subset (h : t ⊆ s) (e : ∅ = s) : ∅ = t := bot_eq_mono h e
+
+@[gcongr] theorem ne_empty_of_subset (h : s ⊆ t) (e : s ≠ ∅) : t ≠ ∅ := ne_bot_mono h e
+
+@[gcongr] theorem empty_ne_of_subset (h : s ⊆ t) (e : ∅ ≠ s) : ∅ ≠ t := bot_ne_mono h e
 
 theorem forall_mem_empty {p : α → Prop} : (∀ x ∈ (∅ : Set α), p x) ↔ True :=
   iff_true_intro fun _ => False.elim
@@ -588,8 +595,13 @@ theorem Nonempty.eq_univ [Subsingleton α] : s.Nonempty → s = univ := by
   rintro ⟨x, hx⟩
   exact eq_univ_of_forall fun y => by rwa [Subsingleton.elim y x]
 
-theorem eq_univ_of_subset {s t : Set α} (h : s ⊆ t) (hs : s = univ) : t = univ :=
-  eq_univ_of_univ_subset (hs ▸ h : univ ⊆ t)
+@[gcongr] theorem eq_univ_of_subset (h : s ⊆ t) (hs : s = univ) : t = univ := eq_top_mono h hs
+
+@[gcongr] theorem univ_eq_of_subset (h : s ⊆ t) (hs : univ = s) : univ = t := top_eq_mono h hs
+
+@[gcongr] theorem ne_univ_of_subset (h : t ⊆ s) (hs : s ≠ univ) : t ≠ univ := ne_top_mono h hs
+
+@[gcongr] theorem univ_ne_of_subset (h : t ⊆ s) (hs : univ ≠ s) : univ ≠ t := top_ne_mono h hs
 
 theorem exists_mem_univ_of_nonempty (α) : ∀ [Nonempty α], ∃ x : α, x ∈ (univ : Set α)
   | ⟨x⟩ => ⟨x, trivial⟩

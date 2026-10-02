@@ -99,7 +99,7 @@ protected theorem Submartingale.stoppedProcess [SigmaFiniteFiltration μ 𝒢]
   · intro σ π hσ hπ hσ_le_π hπ_bdd
     simp_rw [stoppedValue_stoppedProcess]
     obtain ⟨n, hπ_le_n⟩ := hπ_bdd
-    have hπ_top ω : π ω ≠ ⊤ := ne_top_of_le_ne_top (by simp) (hπ_le_n ω)
+    have hπ_top ω : π ω ≠ ⊤ := by grw [hπ_le_n]; simp
     have hσ_top ω : σ ω ≠ ⊤ := ne_top_of_le_ne_top (hπ_top ω) (hσ_le_π ω)
     simp only [ne_eq, hσ_top, not_false_eq_true, ↓reduceIte, hπ_top, ge_iff_le]
     exact h.expected_stoppedValue_mono (hσ.min hτ) (hπ.min hτ)

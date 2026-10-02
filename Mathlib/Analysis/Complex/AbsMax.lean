@@ -391,7 +391,7 @@ theorem exists_mem_frontier_isMaxOn_norm [FiniteDimensional ℂ E] {f : E → F}
     hc.exists_isMaxOn hne.closure hd.continuousOn.norm
   rw [closure_eq_interior_union_frontier, mem_union] at hwU
   rcases hwU with hwU | hwU; rotate_left; · exact ⟨w, hwU, hle⟩
-  have : interior U ≠ univ := ne_top_of_le_ne_top hc.ne_univ interior_subset_closure
+  have : interior U ≠ univ := by grw [interior_subset_closure, hc.ne_univ]
   rcases exists_mem_frontier_infDist_compl_eq_dist hwU this with ⟨z, hzU, hzw⟩
   refine ⟨z, frontier_interior_subset hzU, fun x hx => (hle hx).out.trans_eq ?_⟩
   refine (norm_eq_norm_of_isMaxOn_of_ball_subset hd (hle.of_subset subset_closure) ?_).symm

@@ -113,7 +113,9 @@ noncomputable def Measure.toFiniteSpanningSetsIn (μ : Measure α) [h : SigmaFin
   finite n := by
     rw [measure_toMeasurable]
     exact h.out.some.finite n
-  spanning := eq_univ_of_subset (iUnion_mono fun _ => subset_toMeasurable _ _) h.out.some.spanning
+  spanning := by
+    grw [← subset_toMeasurable]
+    exact h.out.some.spanning
 
 /-- A noncomputable way to get a monotone collection of sets that span `univ` and have finite
   measure using `Classical.choose`. This definition satisfies monotonicity in addition to all other

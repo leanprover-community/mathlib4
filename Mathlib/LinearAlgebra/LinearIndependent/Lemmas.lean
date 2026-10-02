@@ -873,12 +873,7 @@ theorem exists_of_linearIndepOn_of_finite_span {s : Set V} {t : Finset V}
         have : b₁ ∈ s ∩ ↑(insert b₁ t) := ⟨h, Finset.mem_insert_self _ _⟩
         rwa [hst] at this
       have hb₁s' : b₁ ∉ s' := fun h => hb₁s <| hs' h
-      have hst : s ∩ ↑t = ∅ :=
-        eq_empty_of_subset_empty <|
-          -- Porting note: `-subset_inter_iff` required.
-          Subset.trans
-            (by simp [inter_subset_inter, -subset_inter_iff])
-            (le_of_eq hst)
+      have hst : s ∩ ↑t = ∅ := by gconvert hst; simp
       Classical.by_cases (p := s ⊆ (span K ↑(s' ∪ t) : Submodule K V))
         (fun this =>
           let ⟨u, hust, hsu, Eq⟩ := ih _ hs' hst this

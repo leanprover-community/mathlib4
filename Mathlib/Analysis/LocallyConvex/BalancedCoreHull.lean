@@ -99,8 +99,8 @@ theorem Balanced.subset_balancedCore_of_subset (hs : Balanced 𝕜 s) (h : s ⊆
 theorem balancedCore_mono (hst : s ⊆ t) : balancedCore 𝕜 s ⊆ balancedCore 𝕜 t :=
   (balancedCore.balanced s).subset_balancedCore_of_subset ((balancedCore_subset s).trans hst)
 
-theorem balancedCore_empty : balancedCore 𝕜 (∅ : Set E) = ∅ :=
-  eq_empty_of_subset_empty (balancedCore_subset _)
+theorem balancedCore_empty : balancedCore 𝕜 (∅ : Set E) = ∅ := by
+  grw [balancedCore_subset]
 
 theorem mem_balancedCore_iff : x ∈ balancedCore 𝕜 s ↔ ∃ t, Balanced 𝕜 t ∧ t ⊆ s ∧ x ∈ t := by
   simp_rw [balancedCore, mem_sUnion, mem_ofPred_eq, and_assoc]

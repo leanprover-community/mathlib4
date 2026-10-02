@@ -173,8 +173,8 @@ theorem apply_union_le (μ : FiniteMeasure Ω) {s₁ s₂ : Set Ω} : μ (s₁ �
   apply (ENNReal.toNNReal_mono (by finiteness) this).trans_eq
   rw [ENNReal.toNNReal_add (by finiteness) (by finiteness), coeFn_def]
 
-theorem mono_null (μ : FiniteMeasure Ω) (h : s ⊆ t) (ht : μ t = 0) : μ s = 0 :=
-  eq_bot_mono (apply_mono μ h) ht
+theorem mono_null (μ : FiniteMeasure Ω) (h : s ⊆ t) (ht : μ t = 0) : μ s = 0 := by
+  grw [h, ht]
 
 lemma pos_mono (μ : FiniteMeasure Ω) (h : s ⊆ t) (hs : 0 < μ s) :
     0 < μ t := hs.trans_le <| μ.apply_mono h
