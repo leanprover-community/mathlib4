@@ -228,6 +228,27 @@ def ofMapDiv {H : Type*} [Group H] (f : G → H) (hf : ∀ x y, f (x / y) = f x 
 theorem coe_of_map_div {H : Type*} [Group H] (f : G → H) (hf : ∀ x y, f (x / y) = f x / f y) :
     ↑(ofMapDiv f hf) = f := rfl
 
+/-- Makes a group homomorphism from a map `f` with `f 1 = 1` that sends triples with product `1`
+to triples with product `1`. Useful when a map is naturally defined via a symmetric ternary
+relation, like collinearity on a cubic curve. -/
+@[to_additive /-- Makes an additive group homomorphism from a map `f` with `f 0 = 0` that sends
+triples with sum `0` to triples with sum `0`. Useful when a map is naturally defined via a
+symmetric ternary relation, like collinearity on a cubic curve. -/]
+def ofMapMulMulEqOne {H : Type*} [Group H] (f : G → H) (map_one : f 1 = 1)
+    (map_mul_mul_eq_one : ∀ a b c, a * b * c = 1 → f a * f b * f c = 1) : G →* H :=
+  have hinv (x : G) : f x⁻¹ = (f x)⁻¹ :=
+    eq_inv_of_mul_eq_one_right <| by simpa [map_one] using map_mul_mul_eq_one x x⁻¹ 1 (by simp)
+  mk' f fun a b ↦ by
+    have h := map_mul_mul_eq_one (a * b) b⁻¹ a⁻¹ (by simp)
+    rw [hinv, hinv, mul_assoc, ← mul_inv_rev] at h
+    exact mul_inv_eq_one.mp h
+
+@[to_additive (attr := simp)]
+theorem coe_ofMapMulMulEqOne {H : Type*} [Group H] (f : G → H) (map_one : f 1 = 1)
+    (map_mul_mul_eq_one : ∀ a b c, a * b * c = 1 → f a * f b * f c = 1) :
+    ⇑(ofMapMulMulEqOne f map_one map_mul_mul_eq_one) = f :=
+  rfl
+
 end Group
 
 section Mul

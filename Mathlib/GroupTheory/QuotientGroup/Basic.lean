@@ -477,6 +477,24 @@ namespace QuotientGroup
 
 section powMonoidHom
 
+section congrRangePowMonoidHom
+
+variable {A B : Type*} [CommGroup A] [CommGroup B] (e : A ≃* B) (n : ℕ)
+
+/-- A multiplicative equivalence of commutative groups induces an isomorphism between the
+quotients by the images of the `n`th power maps. -/
+@[to_additive /-- An additive equivalence of additive commutative groups induces an isomorphism
+between the quotients by the images of the multiplication-by-`n` maps. -/]
+def congrRangePowMonoidHom : A ⧸ (powMonoidHom n).range ≃* B ⧸ (powMonoidHom n).range :=
+  congr _ _ e (e.map_range_powMonoidHom n)
+
+@[to_additive (attr := simp)]
+lemma congrRangePowMonoidHom_mk (x : A) :
+    congrRangePowMonoidHom e n x = (e x : B ⧸ (powMonoidHom n).range) :=
+  rfl
+
+end congrRangePowMonoidHom
+
 -- TODO: Generalize to arbitrary products of homomorphisms
 
 variable {ι : Type*} (A : ι → Type*) [∀ i, CommGroup (A i)] (n : ℕ)

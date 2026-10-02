@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
 public import Mathlib.Algebra.Group.Int.TypeTags
+public import Mathlib.GroupTheory.QuotientGroup.UnitsModPow
 
 /-!
 # Selmer groups of fraction fields of Dedekind domains
@@ -64,7 +65,7 @@ class group, selmer group, unit group
 @[expose] public section
 
 set_option quotPrecheck false
-local notation K "/" n => Kˣ ⧸ (powMonoidHom n : Kˣ →* Kˣ).range
+local notation K "/" n => Units.ModPow K n
 
 namespace IsDedekindDomain
 
