@@ -350,53 +350,46 @@ section
 
 universe w
 
-variable [IsNoetherianRing R] [Small.{w, u} R] {N M : Type v} {N' M' : Type w}
-  [AddCommGroup M] [Module R M] [Module.Finite R M]
-  [AddCommGroup N] [Module R N] [Module.Finite R N]
-  [AddCommGroup M'] [Module R M'] [Module.Finite R M']
-  [AddCommGroup N'] [Module R N'] [Module.Finite R N']
+lemma moduleDepth_uliftFunctor_obj (N M : ModuleCat R) :
+    @moduleDepth R _ (small_lift R : Small.{max v w} R) ((ModuleCat.uliftFunctor.{w} R).obj N)
+      ((ModuleCat.uliftFunctor.{w} R).obj M) = moduleDepth N M := by
+  have : Small.{max v w} R := small_lift R
+  simp only [moduleDepth]
+  congr
+  ext n
+  refine forall₂_congr fun i _ ↦ ?_
+  exact (Equiv.ofBijective _ (Functor.mapExt_bijective_of_preservesProjectiveObjects
+    (ModuleCat.uliftFunctor.{w} R) N M i)).subsingleton_congr.symm
 
-lemma moduleDepth_eq_of_linearEquiv [Nontrivial N] (eM : M ≃ₗ[R] M') (eN : N ≃ₗ[R] N')
-    (I : Ideal R) (smul_lt : I • (⊤ : Submodule R M) < ⊤)
-    (hsupp : Module.support R N = PrimeSpectrum.zeroLocus I) :
+variable [Small.{w} R] {N M : Type v} {N' M' : Type w}
+  [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+  [AddCommGroup M'] [Module R M'] [AddCommGroup N'] [Module R N']
+
+lemma moduleDepth_eq_of_linearEquiv (eN : N ≃ₗ[R] N') (eM : M ≃ₗ[R] M') :
     moduleDepth (ModuleCat.of R N) (ModuleCat.of R M) =
-    moduleDepth (ModuleCat.of R N') (ModuleCat.of R M') := by
-  have : Nontrivial N' := eN.injective.nontrivial
-  rw [moduleDepth_eq_sSup_length_isRegular I (ModuleCat.of R N) (ModuleCat.of R M) smul_lt hsupp]
-  have smul_lt' : I • (⊤ : Submodule R M') < ⊤ := by
-    nth_rw 1 [← eM.range, ← Submodule.map_top, ← Submodule.map_smul'', lt_top_iff_ne_top,
-      Submodule.map_ne_top_iff]
-    exact smul_lt.ne
-  have hsupp' : Module.support R N' = PrimeSpectrum.zeroLocus I := by rw [← eN.support_eq, hsupp]
-  rw [moduleDepth_eq_sSup_length_isRegular I (ModuleCat.of R N') (ModuleCat.of R M') smul_lt'
-    hsupp']
-  congr!
-  ext rs
-  exact eM.isRegular_congr rs
+      moduleDepth (ModuleCat.of R N') (ModuleCat.of R M') := by
+  have : Small.{max v w} R := small_lift R
+  rw [← moduleDepth_uliftFunctor_obj (ModuleCat.of R N) (ModuleCat.of R M),
+    ← moduleDepth_uliftFunctor_obj (ModuleCat.of R N') (ModuleCat.of R M')]
+  exact (moduleDepth_eq_of_iso_left _
+      (ULift.moduleEquiv.trans (eN.trans ULift.moduleEquiv.symm)).toModuleIso).trans
+    (moduleDepth_eq_of_iso_right _
+      (ULift.moduleEquiv.trans (eM.trans ULift.moduleEquiv.symm)).toModuleIso)
 
-lemma Ideal.depth_eq_of_linearEquiv (eM : M ≃ₗ[R] M')
-    (I : Ideal R) (smul_lt : I • (⊤ : Submodule R M) < ⊤) :
-    I.depth (ModuleCat.of R M) = I.depth (ModuleCat.of R M') := by
-  simp only [Ideal.depth]
-  have : Nontrivial (R ⧸ I) := by
-    apply Submodule.Quotient.nontrivial_iff.mpr
-    by_contra eq
-    simp [eq] at smul_lt
-  let e : (Shrink.{v} (R ⧸ I)) ≃ₗ[R] (Shrink.{w} (R ⧸ I)) :=
-    ((Shrink.linearEquiv R _).trans (Shrink.linearEquiv R _).symm)
-  apply moduleDepth_eq_of_linearEquiv eM e I smul_lt
-  rw [(Shrink.linearEquiv R _).support_eq, Module.support_eq_zeroLocus, annihilator_quotient]
+lemma Ideal.depth_eq_of_linearEquiv (I : Ideal R) (eM : M ≃ₗ[R] M') :
+    I.depth (ModuleCat.of R M) = I.depth (ModuleCat.of R M') :=
+  moduleDepth_eq_of_linearEquiv
+    ((Shrink.linearEquiv R _).trans (Shrink.linearEquiv R _).symm :
+      Shrink.{v} (R ⧸ I) ≃ₗ[R] Shrink.{w} (R ⧸ I)) eM
 
-lemma IsLocalRing.depth_eq_of_linearEquiv [IsLocalRing R] [Nontrivial M] (eM : M ≃ₗ[R] M') :
+lemma IsLocalRing.depth_eq_of_linearEquiv [IsLocalRing R] (eM : M ≃ₗ[R] M') :
     IsLocalRing.depth (ModuleCat.of R M) = IsLocalRing.depth (ModuleCat.of R M') :=
-  Ideal.depth_eq_of_linearEquiv eM _ (Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
-    (IsLocalRing.maximalIdeal_le_jacobson _)).lt_top'
+  Ideal.depth_eq_of_linearEquiv _ eM
 
-omit [Small.{w, u} R] in
-lemma ring_depth_shrink_eq (I : Ideal R) (lt_top : I < ⊤) :
-    I.depth (ModuleCat.of R (Shrink.{v} R)) = I.depth (ModuleCat.of R R) := by
-  apply (Ideal.depth_eq_of_linearEquiv (Shrink.linearEquiv.{v} R R).symm I _).symm
-  simpa using lt_top
+omit [Small.{w} R] in
+lemma Ideal.depth_shrink (I : Ideal R) :
+    I.depth (ModuleCat.of R (Shrink.{v} R)) = I.depth (ModuleCat.of R R) :=
+  Ideal.depth_eq_of_linearEquiv (M := Shrink.{v} R) (M' := R) I (Shrink.linearEquiv R R)
 
 end
 
