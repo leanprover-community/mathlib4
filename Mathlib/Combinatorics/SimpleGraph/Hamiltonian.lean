@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Bhavik Mehta, Rishi Mehta, Linus Sommer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bhavik Mehta, Rishi Mehta, Linus Sommer, Yue Sun
+Authors: Bhavik Mehta, Rishi Mehta, Linus Sommer, Yue Sun, Snir Broshi
 -/
 module
 
@@ -108,16 +108,17 @@ theorem IsHamiltonian.setOfPred_support (hp : p.IsHamiltonian) : {v | v ∈ p.su
 @[deprecated (since := "2026-07-09")]
 alias IsHamiltonian.setOf_support := IsHamiltonian.setOfPred_support
 
+theorem IsHamiltonian.length_add_one_eq (hp : p.IsHamiltonian) : p.length + 1 = Fintype.card α := by
+  rw [← length_support, ← List.sum_toFinset_count_eq_length, Finset.sum_congr rfl fun _ _ ↦ hp _,
+    ← card_eq_sum_ones, hp.toFinset_support, card_univ]
+
 /-- The length of a Hamiltonian path is one less than the number of vertices of the graph. -/
 lemma IsHamiltonian.length_eq (hp : p.IsHamiltonian) : p.length = Fintype.card α - 1 :=
-  eq_tsub_of_add_eq <| by
-    rw [← length_support, ← List.sum_toFinset_count_eq_length, Finset.sum_congr rfl fun _ _ ↦ hp _,
-      ← card_eq_sum_ones, hp.toFinset_support, card_univ]
+  eq_tsub_of_add_eq hp.length_add_one_eq
 
 /-- The length of the support of a Hamiltonian path equals the number of vertices of the graph. -/
 lemma IsHamiltonian.length_support (hp : p.IsHamiltonian) : p.support.length = Fintype.card α := by
-  have : Inhabited α := ⟨a⟩
-  grind [Fintype.card_ne_zero, length_eq]
+  simp [hp.length_add_one_eq]
 
 end
 
@@ -245,9 +246,7 @@ lemma IsHamiltonianCycle.mem_support (hp : p.IsHamiltonianCycle) (b : α) :
 /-- The length of a Hamiltonian cycle is the number of vertices. -/
 lemma IsHamiltonianCycle.length_eq [Fintype α] (hp : p.IsHamiltonianCycle) :
     p.length = Fintype.card α := by
-  rw [← length_tail_add_one hp.not_nil, hp.isHamiltonian_tail.length_eq, Nat.sub_add_cancel]
-  rw [Nat.succ_le_iff, Fintype.card_pos_iff]
-  exact ⟨a⟩
+  rw [← length_tail_add_one hp.not_nil, hp.isHamiltonian_tail.length_add_one_eq]
 
 lemma IsHamiltonianCycle.count_support_self (hp : p.IsHamiltonianCycle) :
     p.support.count a = 2 := by
@@ -305,6 +304,16 @@ theorem isHamiltonianCycle_transfer {H : SimpleGraph α} {p : G.Walk v v} (h) :
   simp [isHamiltonianCycle_iff_isCycle_and_length_eq_natCard]
 
 alias ⟨_, IsHamiltonianCycle.transfer⟩ := isHamiltonianCycle_transfer
+
+theorem isHamiltonianCycle_iff_isHamiltonian_tail_and_le_card :
+    p.IsHamiltonianCycle ↔ p.tail.IsHamiltonian ∧ 3 ≤ Nat.card α := by
+  refine ⟨fun hp ↦ ⟨hp.isHamiltonian_tail, ?_⟩, fun ⟨hp, hcard⟩ ↦ ?_⟩
+  · have := hp.isHamiltonian_tail.fintype
+    grw [hp.three_le_length, hp.length_eq, Fintype.card_eq_nat_card]
+  · rw [isHamiltonianCycle_isCycle_and_isHamiltonian_tail, isCycle_iff_isPath_tail_and_le_length]
+    refine ⟨⟨hp.isPath, ?_⟩, hp⟩
+    have := hp.fintype
+    grind [hp.length_eq, Fintype.card_eq_nat_card, Nil.tail, length_tail_add_one]
 
 lemma IsHamiltonianCycle.cycleGraph_cycle (n : ℕ) : (cycleGraph.cycle n).IsHamiltonianCycle :=
   isHamiltonianCycle_iff_isCycle_and_length_eq.mpr ⟨cycleGraph.isCycle_cycle, by simp⟩
@@ -367,6 +376,20 @@ lemma IsHamiltonian.of_unique [Unique α] : G.IsHamiltonian :=
 theorem Walk.IsHamiltonian.isHamiltonian_of_nil (hp : p.IsHamiltonian) (hnil : p.Nil) :
     G.IsHamiltonian := by
   grind [IsHamiltonian.of_card_eq_one, hp.length_support, hnil.length_eq_zero]
+
+theorem Walk.IsHamiltonian.isHamiltonian_of_adj (hp : p.IsHamiltonian) (hadj : G.Adj a b)
+    (hlen : p.length ≠ 1) : G.IsHamiltonian := by
+  refine fun h ↦ ⟨b, p.cons hadj.symm, ?_⟩
+  rw [isHamiltonianCycle_iff_isHamiltonian_tail_and_le_card, tail_cons]
+  simp_rw [getVert_cons_succ, isHamiltonian_copy, Nat.card_eq_fintype_card]
+  lia [hp.length_eq, Fintype.card_pos_iff.mpr ⟨b⟩]
+
+theorem isHamiltonian_iff_exists_adj_and_isHamiltonian [Nontrivial α] :
+    G.IsHamiltonian ↔ ∃ (u v : α) (p : G.Walk u v), G.Adj u v ∧ p.IsHamiltonian ∧ p.length ≠ 1 := by
+  refine ⟨fun h ↦ ?_, fun ⟨u, v, p, hadj, hp, hlen⟩ ↦ hp.isHamiltonian_of_adj hadj hlen⟩
+  have ⟨p, hp⟩ := h.exists_isHamiltonianCycle <| Classical.arbitrary α
+  refine ⟨p.snd, _, p.tail, p.adj_snd hp.not_nil |>.symm, hp.isHamiltonian_tail, ?_⟩
+  lia [hp.three_le_length, p.length_tail_add_one hp.not_nil]
 
 /-- A finite simple graph with a bridge is not hamiltonian. -/
 theorem IsBridge.not_isHamiltonian {e : Sym2 α} (he : G.IsBridge e) : ¬G.IsHamiltonian := by
