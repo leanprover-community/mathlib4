@@ -33,11 +33,6 @@ section General
 
 variable {α β : Type*} {r r₁ r₂ : α → α → Prop} {r' : β → β → Prop} {s t : Set α} {a b : α}
 
-protected instance Std.Symm.compl [Std.Symm r] : Std.Symm rᶜ where
-  symm a b hr hr' := hr <| symm b a hr'
-
-@[deprecated (since := "2026-06-10")] alias Symmetric.compl := Std.Symm.compl
-
 /-- An antichain is a set such that no two distinct elements are related. -/
 def IsAntichain (r : α → α → Prop) (s : Set α) : Prop :=
   s.Pairwise rᶜ
