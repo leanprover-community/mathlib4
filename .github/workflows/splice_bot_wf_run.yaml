@@ -45,7 +45,7 @@ jobs:
           owner: leanprover-community
 
       - name: Run splice bot action
-        uses: leanprover-community/SpliceBot/.github/actions/splice-wf-run@d86d20efffbd18f839199fdd5ec126570f7eceda
+        uses: leanprover-community/SpliceBot/.github/actions/splice-wf-run@644692751ae68be07228437afd13fc014cde11ea # master
         with:
           source_workflow: ${{ github.event.workflow_run.name }}
           push_to_fork: leanprover-community/mathlib4_copy
