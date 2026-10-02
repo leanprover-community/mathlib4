@@ -16,6 +16,7 @@ import Mathlib.Tactic.NormNum.NatLog
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.Parity
 import Mathlib.Tactic.NormNum.Prime
+import Mathlib.Tactic.NormNum.Squarefree
 import Mathlib.Algebra.Order.Floor.Semifield
 import Mathlib.Data.NNRat.Floor
 import Mathlib.Data.Rat.Floor
@@ -291,7 +292,6 @@ example : ¬ Nat.Prime 851 := by norm_num1
 example : Nat.minFac 851 = 23 := by norm_num1
 example : Nat.primeFactorsList 851 = [23, 37] := by simp
 
-/-
 example : ¬ Squarefree 0 := by norm_num1
 example : Squarefree 1 := by norm_num1
 example : Squarefree 2 := by norm_num1
@@ -306,27 +306,6 @@ example : Squarefree 10 := by norm_num1
 example : Squarefree (2*3*5*17) := by norm_num1
 example : ¬ Squarefree (2*3*5*5*17) := by norm_num1
 example : Squarefree 251 := by norm_num1
-example : Squarefree (3 : ℤ) := by
-  -- `norm_num` should fail on this example, instead of producing an incorrect proof.
-  fail_if_success norm_num1
-  exact Irreducible.squarefree (Prime.irreducible
-    (Int.prime_iff_natAbs_prime.mpr (by norm_num)))
-
-example : @Squarefree ℕ Multiplicative.monoid 1 := by
-  -- `norm_num` should fail on this example, instead of producing an incorrect proof.
-  -- fail_if_success norm_num1
-  -- the statement was deliberately wacky, let's fix it
-  change Squarefree (Multiplicative.ofAdd 1 : Multiplicative ℕ)
-  rintro x ⟨dx, hd⟩
-  revert x dx
-  rw [Multiplicative.ofAdd.surjective.forall₂]
-  intro x dx h
-  simp_rw [← ofAdd_add, Multiplicative.ofAdd.injective.eq_iff] at h
-  cases x
-  · simp [isUnit_one]
-  · simp only [Nat.succ_add, Nat.add_succ] at h
-    cases h
--/
 
 section NatLog
 

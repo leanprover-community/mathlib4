@@ -1,0 +1,152 @@
+/-
+Copyright (c) 2026 Xavier Roblot. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro, Xavier Roblot
+-/
+module
+
+public import Mathlib.Data.Nat.Squarefree
+public import Mathlib.Tactic.NormNum.Basic
+public meta import Mathlib.Data.Nat.Squarefree
+
+/-!
+# `norm_num` extension for `Squarefree`
+
+This file provides a `norm_num` extension to decide whether a natural number is squarefree.
+
+If `n` is not squarefree, the proof is given by a witness `a > 1` with `a * a ∣ n`. If `n` is
+squarefree, the proof is a trial division of `n` by the odd numbers `k = 3, 5, 7, …`, keeping the
+invariant that every prime divisor of the current cofactor is at least `k`.
+
+This is adapted from the Mathlib 3 `norm_num` extension for `squarefree`, written by Mario Carneiro.
+-/
+
+public meta section
+
+open Nat Qq Lean Meta
+
+namespace Mathlib.Meta.NormNum
+
+/-- A predicate representing partial progress in a proof of `Squarefree n`: if every prime
+divisor of `n` is at least `k`, then `n` is squarefree. -/
+def SquarefreeHelper (n k : ℕ) : Prop :=
+  (∀ p, p.Prime → p ∣ n → k ≤ p) → Squarefree n
+
+theorem not_squarefree_mul (a b n : ℕ) (h : a * a * b = n) (h₁ : ble a 1 = false) :
+    ¬ Squarefree n :=
+  fun H ↦ (ble_eq_false.mp h₁).ne' (Nat.isUnit_iff.mp <| H a ⟨b, h.symm⟩)
+
+/-- If `n` is odd, its prime divisors are at least `3`, so `SquarefreeHelper n 3` implies that
+`n` is squarefree. This starts the trial division at `k = 3`. -/
+theorem squarefree_of_odd (n : ℕ) (hn : n % 2 = 1) (h : SquarefreeHelper n 3) :
+    Squarefree n :=
+  h fun p hp hpn ↦ by obtain ⟨rfl | _⟩ := LE.le.eq_or_lt (hp.two_le) <;> lia
+
+/-- Start of the trial division for an even `n = 2 * m` with `m` odd. -/
+theorem squarefree_two_mul (n m : ℕ) (e : 2 * m = n) (hm : m % 2 = 1) (h : SquarefreeHelper m 3) :
+    Squarefree n :=
+  e ▸ squarefree_mul_iff.mpr ⟨coprime_two_left.mpr (odd_iff.mpr hm), prime_two.squarefree,
+    squarefree_of_odd m hm h⟩
+
+/-- If `n` and `k` are odd and `k` does not divide `n`, a prime divisor of `n` which is at least
+`k` is at least `k + 2`, so `SquarefreeHelper n (k + 2)` implies `SquarefreeHelper n k`. This is
+the step of the trial division when `k` does not divide `n`. -/
+theorem squarefreeHelper_1 (n k k' : ℕ) (e : k' = k + 2) (hn : n % 2 = 1) (hk : k % 2 = 1)
+    (hnk : (n % k).beq 0 = false) (h : SquarefreeHelper n k') : SquarefreeHelper n k :=
+  fun H ↦ h fun p hp hpn ↦ by
+    have : k ≤ p := H p hp hpn
+    have : p ≠ k := fun h ↦ ne_of_beq_eq_false hnk (dvd_iff_mod_eq_zero.mp (h ▸ hpn))
+    have : p % 2 = 1 := by
+      obtain ⟨rfl | h2⟩ := hp.eq_two_or_odd <;> lia
+    lia
+
+/-- Step of the trial division when `k` divides `n`: `n = k * m` with `k` not dividing `m`. -/
+theorem squarefreeHelper_2 (n m k k' : ℕ) (e : k' = k + 2) (hn : n % 2 = 1) (hk : k % 2 = 1)
+    (hk₁ : Nat.ble 2 k = true) (hm : k * m = n) (hmk : (m % k).beq 0 = false)
+    (h : SquarefreeHelper m k') : SquarefreeHelper n k := fun H ↦ by
+  have hkp : k.Prime :=
+    prime_def_minFac.mpr ⟨le_of_ble_eq_true hk₁, le_antisymm (minFac_le (by lia))
+      (H _ (minFac_prime (by lia [ble_eq])) ((minFac_dvd k).trans ⟨m, hm.symm⟩))⟩
+  refine hm ▸ squarefree_mul_iff.mpr ⟨hkp.coprime_iff_not_dvd.mpr fun h ↦ ?_,
+    hkp.squarefree, squarefreeHelper_1 m k k' e ?_ hk hmk h
+      fun p hp hpm ↦ H p hp (hpm.trans ⟨k, by rw [← hm, mul_comm]⟩)⟩
+  · exact ne_of_beq_eq_false hmk <| mod_eq_zero_of_dvd h
+  · exact odd_iff.mp (odd_mul.mp (odd_iff.mpr (hm ▸ hn))).2
+
+/-- End of the trial division: if `n < k * k`, a prime `p ≥ k` cannot have `p * p ∣ n`. -/
+theorem squarefreeHelper_3 (n k : ℕ) (hn : n % 2 = 1) (h : Nat.ble (k * k) n = false) :
+    SquarefreeHelper n k := fun H ↦ squarefree_iff_prime_squarefree.mpr fun p hp hpp ↦ by
+  have : k * k ≤ p * p := by
+    gcongr <;>
+    exact H p hp ((Dvd.intro _ rfl).trans hpp)
+  have : p * p ≤ n := le_of_dvd (by omega) hpp
+  have : n < k * k := ble_eq_false.mp h
+  lia
+
+theorem isNat_squarefree {n n' : ℕ} (h : IsNat n n') : Squarefree n' → Squarefree n :=
+  isNat.natElim h
+
+theorem isNat_not_squarefree {n n' : ℕ} (h : IsNat n n') : ¬ Squarefree n' → ¬ Squarefree n :=
+  isNat.natElim h
+
+/-- Given an odd numeral `en` with value `n` and an odd numeral `ek` with value `k ≥ 3`, such that
+`n` is squarefree, produce a proof of `SquarefreeHelper n k`. -/
+partial def proveSquarefreeHelper (en : Q(ℕ)) (n : ℕ) (ek : Q(ℕ)) (k : ℕ) :
+    Q(SquarefreeHelper $en $ek) :=
+  have hn : Q($en % 2 = 1) := (q(Eq.refl 1) : Expr)
+  if n < k * k then
+    have h : Q(Nat.ble ($ek * $ek) $en = false) := (q(Eq.refl false) : Expr)
+    q(squarefreeHelper_3 $en $ek $hn $h)
+  else
+    have ek' : Q(ℕ) := mkRawNatLit (k + 2)
+    have e : Q($ek' = $ek + 2) := (q(Eq.refl $ek') : Expr)
+    have hk : Q($ek % 2 = 1) := (q(Eq.refl 1) : Expr)
+    if n % k = 0 then
+      have em : Q(ℕ) := mkRawNatLit (n / k)
+      have hk₁ : Q(Nat.ble 2 $ek = true) := (q(Eq.refl true) : Expr)
+      have hm : Q($ek * $em = $en) := (q(Eq.refl $en) : Expr)
+      have hmk : Q(Nat.beq ($em % $ek) 0 = false) := (q(Eq.refl false) : Expr)
+      let h := proveSquarefreeHelper em (n / k) ek' (k + 2)
+      q(squarefreeHelper_2 $en $em $ek $ek' $e $hn $hk $hk₁ $hm $hmk $h)
+    else
+      have hnk : Q(Nat.beq ($en % $ek) 0 = false) := (q(Eq.refl false) : Expr)
+      let h := proveSquarefreeHelper en n ek' (k + 2)
+      q(squarefreeHelper_1 $en $ek $ek' $e $hn $hk $hnk $h)
+
+/-- Given a numeral `en` with value `n ≥ 1` such that `n` is squarefree, produce a proof of
+`Squarefree n`. -/
+def proveSquarefree (en : Q(ℕ)) (n : ℕ) : Q(Squarefree $en) :=
+  if n % 2 = 1 then
+    have hn : Q($en % 2 = 1) := (q(Eq.refl 1) : Expr)
+    let h := proveSquarefreeHelper en n q(nat_lit 3) 3
+    q(squarefree_of_odd $en $hn $h)
+  else
+    have em : Q(ℕ) := mkRawNatLit (n / 2)
+    have e : Q(2 * $em = $en) := (q(Eq.refl $en) : Expr)
+    have hm : Q($em % 2 = 1) := (q(Eq.refl 1) : Expr)
+    let h := proveSquarefreeHelper em (n / 2) q(nat_lit 3) 3
+    q(squarefree_two_mul $en $em $e $hm $h)
+
+/-- The `norm_num` extension which identifies expressions of the form `Squarefree (n : ℕ)`. -/
+@[norm_num @Squarefree ℕ _ _]
+def evalNatSquarefree : NormNumExt where eval {u αP} e := do
+  match u, αP, e with
+  | 0, ~q(Prop), ~q(@Squarefree ℕ $inst $a) => do
+    let ⟨nn, pa⟩ ← deriveNat (u := 0) (α := q(ℕ)) a q(inferInstance)
+    let n := nn.natLit!
+    assertInstancesCommute
+    match n.minSqFac with
+    | some d =>
+      have ed : Q(ℕ) := mkRawNatLit d
+      have eb : Q(ℕ) := mkRawNatLit (n / (d * d))
+      have h : Q($ed * $ed * $eb = $nn) := (q(Eq.refl $nn) : Expr)
+      have h₁ : Q(Nat.ble $ed 1 = false) := (q(Eq.refl false) : Expr)
+      return .isFalse q(isNat_not_squarefree $pa (not_squarefree_mul $ed $eb $nn $h $h₁))
+    | none =>
+      if n = 0 then
+        have : $nn =Q 0 := ⟨⟩
+        return .isFalse q(isNat_not_squarefree $pa not_squarefree_zero)
+      return .isTrue q(isNat_squarefree $pa $(proveSquarefree nn n))
+  | _ => failure
+
+end Mathlib.Meta.NormNum
