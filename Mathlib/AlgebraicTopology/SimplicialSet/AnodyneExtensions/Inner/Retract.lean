@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Subfunctor.Retract
 /-!
 # Inner horn inclusions as retracts of pushout-products
 
-Any inner horn inclusion `Λ[n, i].ι` is a retract of the pushout-product `Λ[2, 1].ι □ Λ[n, i].ι`.
+An inner horn inclusion `Λ[n, i].ι` is a retract of `(Λ[2, 1] ⊔ Λ[n, i]).ι`.
 
 ## References
 
@@ -42,8 +42,7 @@ private def innerHornRetract.r₀ {n : ℕ} (i : Fin (n + 1)) :
 
 open innerHornRetract in
 set_option backward.isDefEq.respectTransparency false in
-/-- An inner horn inclusion `Λ[n, i].ι` is a retract of `(Λ[2, 1] ⊔ Λ[n, i]).ι`
-its pushout-product with `Λ[2, 1].ι`. -/
+/-- An inner horn inclusion `Λ[n, i].ι` is a retract of `(Λ[2, 1] ⊔ Λ[n, i]).ι` -/
 @[no_expose]
 noncomputable def innerHornRetract {n : ℕ} (i : Fin (n + 1))
     (h0 : 0 < i) (hn : i < Fin.last n) :
