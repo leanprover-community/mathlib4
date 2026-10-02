@@ -95,12 +95,10 @@ theorem isSquare [IsAlgClosed k] (x : k) : IsSquare x := by
 
 theorem roots_eq_zero_iff [IsAlgClosed k] {p : k[X]} :
     p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) := by
-  refine ⟨fun h => ?_, fun hp => by rw [hp, roots_C]⟩
-  rcases le_or_gt (degree p) 0 with hd | hd
-  · exact eq_C_of_degree_le_zero hd
-  · obtain ⟨z, hz⟩ := IsAlgClosed.exists_root p hd.ne'
-    rw [← mem_roots (ne_zero_of_degree_gt hd), h] at hz
-    simp at hz
+  refine ⟨fun h => eq_C_of_degree_le_zero ?_, fun hp => by rw [hp, roots_C]⟩
+  contrapose! h
+  rw [roots_ne_zero_iff_exists_isRoot (ne_zero_of_degree_gt h)]
+  exact IsAlgClosed.exists_root p h.ne'
 
 theorem roots_eq_zero_iff_natDegree_eq_zero [IsAlgClosed k] {p : k[X]} :
     p.roots = 0 ↔ p.natDegree = 0 :=
