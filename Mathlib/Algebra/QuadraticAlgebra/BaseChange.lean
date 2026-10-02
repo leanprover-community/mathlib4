@@ -77,7 +77,6 @@ noncomputable def baseChangeEquiv :
 @[simp]
 theorem baseChangeEquiv_tmul (s : S) (x : QuadraticAlgebra R a b) :
     baseChangeEquiv S a b (s ⊗ₜ x) = s • mapRingHom (algebraMap R S) a b x := by
-  rw [baseChangeEquiv, Algebra.IsPushout.equiv_tmul, Algebra.smul_def]
-  simp
+  simp [baseChangeEquiv, Algebra.IsPushout.equiv_tmul, Algebra.smul_def]
 
 end QuadraticAlgebra
