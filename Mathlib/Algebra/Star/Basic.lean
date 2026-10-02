@@ -8,12 +8,13 @@ module
 public import Mathlib.Algebra.Group.Action.Opposite
 public import Mathlib.Algebra.Group.Action.Units
 public import Mathlib.Algebra.Group.Invertible.Defs
-public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 public import Mathlib.Algebra.Ring.Aut
 public import Mathlib.Algebra.Ring.CompTypeclasses
 public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.Basic.SetLike.Basic
 public import Mathlib.Data.Int.Cast.Lemmas
-public import Mathlib.Data.SetLike.Basic
+
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
 /-!
 # Star monoids, rings, and modules
@@ -307,7 +308,7 @@ def starRingEquiv [NonUnitalNonAssocSemiring R] [StarRing R] : R ≃+* Rᵐᵒ�
 
 @[simp, norm_cast]
 theorem star_natCast [NonAssocSemiring R] [StarRing R] (n : ℕ) : star (n : R) = n :=
-  (congr_arg unop (map_natCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) n)).trans (unop_natCast _)
+  congr(unop $(map_natCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) n)).trans (unop_natCast _)
 
 @[simp]
 theorem star_ofNat [NonAssocSemiring R] [StarRing R] (n : ℕ) [n.AtLeastTwo] :
@@ -318,7 +319,7 @@ section
 
 @[simp, norm_cast]
 theorem star_intCast [NonAssocRing R] [StarRing R] (z : ℤ) : star (z : R) = z :=
-  (congr_arg unop <| map_intCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) z).trans (unop_intCast _)
+  congr(unop $(map_intCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) z)).trans (unop_intCast _)
 
 end
 
@@ -466,8 +467,8 @@ instance : StarMul Rˣ where
   star u :=
     { val := star u
       inv := star ↑u⁻¹
-      val_inv := (star_mul _ _).symm.trans <| (congr_arg star u.inv_val).trans <| star_one _
-      inv_val := (star_mul _ _).symm.trans <| (congr_arg star u.val_inv).trans <| star_one _ }
+      val_inv := (star_mul _ _).symm.trans <| congr(star $u.inv_val).trans <| star_one _
+      inv_val := (star_mul _ _).symm.trans <| congr(star $u.val_inv).trans <| star_one _ }
   star_involutive _ := Units.ext (star_involutive _)
   star_mul _ _ := Units.ext (star_mul _ _)
 
@@ -515,11 +516,11 @@ section Regular
 
 protected theorem IsLeftRegular.star [Mul R] [StarMul R] {x : R} (hx : IsLeftRegular x) :
     IsRightRegular (star x) :=
-  fun a b h => star_injective <| hx <| by simpa using congr_arg Star.star h
+  fun a b h => star_injective <| hx <| by simpa using congr(star $h)
 
 protected theorem IsRightRegular.star [Mul R] [StarMul R] {x : R} (hx : IsRightRegular x) :
     IsLeftRegular (star x) :=
-  fun a b h => star_injective <| hx <| by simpa using congr_arg Star.star h
+  fun a b h => star_injective <| hx <| by simpa using congr(star $h)
 
 protected theorem IsRegular.star [Mul R] [StarMul R] {x : R} (hx : IsRegular x) :
     IsRegular (star x) :=
@@ -622,3 +623,36 @@ end MulOpposite
 instance StarSemigroup.toOpposite_starModule [CommMonoid R] [StarMul R] :
     StarModule Rᵐᵒᵖ R :=
   ⟨fun r s => star_mul' s r.unop⟩
+
+variable (R) in
+/-- A *proper star* is when `star x * x = 0` implies `x = 0`. -/
+class IsProperStar [Mul R] [Zero R] [Star R] : Prop where
+  eq_zero_of_star_mul_self_eq_zero {x : R} : star x * x = 0 → x = 0
+
+@[simp] lemma star_mul_self_eq_zero [MulZeroClass R] [Star R] [IsProperStar R] {x : R} :
+    star x * x = 0 ↔ x = 0 :=
+  ⟨IsProperStar.eq_zero_of_star_mul_self_eq_zero, fun h ↦ by simp [h]⟩
+
+lemma star_mul_self_ne_zero [MulZeroClass R] [Star R] [IsProperStar R] {x : R} :
+    star x * x ≠ 0 ↔ x ≠ 0 := by simp
+
+@[simp] lemma mul_star_self_eq_zero [NonUnitalNonAssocSemiring R] [StarAddMonoid R]
+    [IsProperStar R] {x : R} : x * star x = 0 ↔ x = 0 := by
+  simpa using star_mul_self_eq_zero (x := star x)
+
+lemma mul_star_self_ne_zero [NonUnitalNonAssocSemiring R] [StarAddMonoid R]
+    [IsProperStar R] {x : R} : x * star x ≠ 0 ↔ x ≠ 0 := by simp
+
+instance (priority := low) [NonUnitalNonAssocSemiring R] [NoZeroDivisors R] [StarRing R] :
+    IsProperStar R where eq_zero_of_star_mul_self_eq_zero := by simp
+
+instance {S : Type*} [MulZeroClass R] [Star R] [IsProperStar R]
+    [MulZeroClass S] [Star S] [IsProperStar S] : IsProperStar (R × S) where
+  eq_zero_of_star_mul_self_eq_zero := by simp [Prod.ext_iff]
+
+instance {ι : Type*} {S : ι → Type*} [Π i, MulZeroClass (S i)] [Π i, Star (S i)]
+    [∀ i, IsProperStar (S i)] : IsProperStar (Π i, S i) where
+  eq_zero_of_star_mul_self_eq_zero := by simp [funext_iff]
+
+instance [NonUnitalNonAssocSemiring R] [StarAddMonoid R] [IsProperStar R] : IsProperStar Rᵐᵒᵖ where
+  eq_zero_of_star_mul_self_eq_zero := by simp [← MulOpposite.op_star, ← MulOpposite.op_mul]

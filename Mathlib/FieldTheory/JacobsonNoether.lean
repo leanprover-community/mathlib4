@@ -6,9 +6,9 @@ Authors: Filippo A. E. Nuccio, Huanyu Zheng, Sihan Wu, Wanyi He, Weichen Jiao, Y
 module
 
 public import Mathlib.Algebra.Central.Defs
-public import Mathlib.Algebra.CharP.LinearMaps
-public import Mathlib.Algebra.CharP.Subring
-public import Mathlib.Algebra.GroupWithZero.Conj
+import Mathlib.Algebra.CharP.LinearMaps
+import Mathlib.Algebra.CharP.Subring
+import Mathlib.Algebra.GroupWithZero.Conj
 public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
 
@@ -133,7 +133,7 @@ theorem exists_separable_and_not_isCentral (H : k ≠ (⊤ : Subring D)) :
     refine ⟨Nat.find h_exist, ⟨(Nat.find_spec h_exist).1, ?_, (Nat.find_spec h_exist).2⟩⟩
     set t := (Nat.find h_exist - 1 : ℕ) with ht
     by_cases! h_pos : 0 < t
-    · convert! (ne_eq _ _) ▸ not_and.mp (Nat.find_min h_exist (m := t) (by lia)) h_pos
+    · convert (ne_eq _ _) ▸ not_and.mp (Nat.find_min h_exist (m := t) (by lia)) h_pos
       lia
     · suffices h_find : Nat.find h_exist = 1 by
         rwa [h_find]
