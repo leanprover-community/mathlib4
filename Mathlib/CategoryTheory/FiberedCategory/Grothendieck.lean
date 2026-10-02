@@ -61,7 +61,6 @@ instance isHomLift_homCartesianLift {a' : ∫ᶜ F} {φ' : a' ⟶ ⟨S, a⟩} {g
   IsHomLift.map (forget F) (homCartesianLift f g φ')
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma isStronglyCartesian_homCartesianLift :
     IsStronglyCartesian (forget F) f (cartesianLift a f) where
   universal_property' {a'} g φ' hφ' := by
@@ -84,7 +83,7 @@ variable (F) (S : 𝒮)
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] PrelaxFunctor.map₂_eqToHom in
 /-- The inclusion map from `F(S)` into `∫ᶜ F`. -/
-@[simps]
+@[implicit_reducible, simps]
 def ι : F.obj ⟨op S⟩ ⥤ ∫ᶜ F where
   obj a := { base := S, fiber := a }
   map {a b} φ := { base := 𝟙 S, fiber := φ ≫ (F.mapId ⟨op S⟩).inv.toNatTrans.app b }
@@ -106,7 +105,6 @@ lemma comp_const : (ι F S) ⋙ forget F = (const (F.obj ⟨op S⟩)).obj S :=
   Functor.ext_of_iso (compIso F S) (fun _ ↦ rfl) (fun _ => rfl)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : (Fiber.inducedFunctor (comp_const F S)).Full where
   map_surjective {X Y} f := by
     have hf : (fiberInclusion.map f).base = 𝟙 S := by
@@ -115,7 +113,6 @@ noncomputable instance : (Fiber.inducedFunctor (comp_const F S)).Full where
       (F.mapId ⟨op S⟩).hom.toNatTrans.app Y
     ext <;> simp [hf, ← Cat.Hom₂.comp_app]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (Fiber.inducedFunctor (comp_const F S)).Faithful where
   map_injective {a b} := by
     intro f g heq

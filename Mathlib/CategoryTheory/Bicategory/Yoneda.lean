@@ -35,7 +35,7 @@ def precomposingCat (a b c : B) :
   map η := NatTrans.toCatHom₂ ((precomposing a b c).map η)
 
 /-- Version of `Bicategory.postcomposing` viewed in the bicategory `Cat`. -/
-@[simps]
+@[implicit_reducible, simps]
 def postcomposingCat (a b c : B) : (b ⟶ c) ⥤ (Cat.of (a ⟶ b) ⟶ Cat.of (a ⟶ c)) where
   obj f := (postcomp a f).toCatHom
   map η := NatTrans.toCatHom₂ ((postcomposing a b c).map η)
@@ -68,7 +68,6 @@ set_option backward.defeqAttrib.useBackward true in
 def rightUnitorNatIsoCat (a b : B) : (postcomposingCat a _ _).obj (𝟙 b) ≅ 𝟙 (Cat.of (a ⟶ b)) :=
   Cat.Hom.isoMk <| NatIso.ofComponents (ρ_ ·)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Left component of the associator as a 2-isomorphism in `Cat`. -/
 @[simps!]
 def associatorNatIsoLeftCat (a : B) {b c d : B} (g : b ⟶ c) (h : c ⟶ d) :
@@ -77,14 +76,13 @@ def associatorNatIsoLeftCat (a : B) {b c d : B} (g : b ⟶ c) (h : c ⟶ d) :
   Cat.Hom.isoMk <| NatIso.ofComponents (α_ · g h)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The map on objects underlying the Yoneda embedding. It sends an object `x` to
 the pseudofunctor defined by:
 * Objects: `a ↦ (a ⟶ x)`
 * Higher morphisms get sent to the corresponding "precomposing" operation.
 
 This is only used for defining `yoneda`, after which `Bicategory.yoneda.obj` should be preferred. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def yoneda₀ (x : B) : Pseudofunctor Bᵒᵖ Cat.{w, v} where
   toPrelaxFunctor := PrelaxFunctor.mkOfHomFunctors (fun y => ↧(unop y ⟶ x))
     (fun a b => unopFunctor a b ⋙ precomposingCat (unop b) (unop a) x)
@@ -92,7 +90,6 @@ def yoneda₀ (x : B) : Pseudofunctor Bᵒᵖ Cat.{w, v} where
   mapComp f g := associatorNatIsoRightCat g.unop f.unop x
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Postcomposing of a 1-morphism seen as a strong transformation between pseudofunctors. -/
 @[simps!]
 def postcomp₂ {a b : B} (f : a ⟶ b) : yoneda₀ a ⟶ yoneda₀ b where

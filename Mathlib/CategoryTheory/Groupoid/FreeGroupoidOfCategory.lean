@@ -118,7 +118,6 @@ section UniversalProperty
 
 variable {G : Type u₁} [Groupoid.{v₁} G]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The lift of a functor from `C` to a groupoid to a functor from
 `FreeGroupoid C` to the groupoid -/
 def lift (φ : C ⥤ G) : FreeGroupoid C ⥤ G :=

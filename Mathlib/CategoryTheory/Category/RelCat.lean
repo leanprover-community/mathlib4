@@ -115,12 +115,14 @@ open Opposite
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The argument-swap isomorphism from `RelCat` to its opposite. -/
+@[implicit_reducible]
 def opFunctor : RelCat ⥤ RelCatᵒᵖ where
   obj X := op X
   map {_ _} r := .op <| .ofRel r.rel.inv
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The other direction of `opFunctor`. -/
+@[implicit_reducible]
 def unopFunctor : RelCatᵒᵖ ⥤ RelCat where
   obj X := unop X
   map {_ _} r := .ofRel r.unop.rel.inv
@@ -131,7 +133,6 @@ def unopFunctor : RelCatᵒᵖ ⥤ RelCat where
 @[simp] theorem unopFunctor_comp_opFunctor_eq :
     Functor.comp unopFunctor opFunctor = Functor.id _ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `RelCat` is self-dual: The map that swaps the argument order of a
 relation induces an equivalence between `RelCat` and its opposite. -/
 @[simps]

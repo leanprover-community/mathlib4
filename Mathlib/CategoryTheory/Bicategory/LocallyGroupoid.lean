@@ -106,7 +106,7 @@ instance : Bicategory.{w₁, v₁} (Pith B) where
 example : IsLocallyGroupoid (Pith B) := by infer_instance
 
 /-- The canonical inclusion from the pith of `B` to `B`, as a Pseudofunctor. -/
-@[simps]
+@[implicit_reducible, simps]
 def inclusion : Pseudofunctor (Pith B) B where
   obj x := x.as
   map f := f.of
@@ -117,7 +117,7 @@ def inclusion : Pseudofunctor (Pith B) B where
 variable {B} in
 /-- Any pseudofunctor from a (2,1)-category to a bicategory factors through
 the pith of the target bicategory. -/
-@[simps!]
+@[implicit_reducible, simps!]
 noncomputable def pseudofunctorToPith {B' : Type u₂} [Bicategory.{w₂, v₂} B']
     [IsLocallyGroupoid B'] (F : Pseudofunctor B' B) :
     Pseudofunctor B' (Pith B) where
@@ -132,7 +132,6 @@ section
 variable {B} {B' : Type u₂} [Bicategory.{w₂, v₂} B'] [IsLocallyGroupoid B'] (F : Pseudofunctor B' B)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The hom direction of the (strong) natural isomorphism of pseudofunctors
 between `(pseudofunctorToPith F).comp (inclusion B)` and `F`. -/
 noncomputable def pseudofunctorToPithCompInclusionStrongIsoHom :
@@ -141,7 +140,6 @@ noncomputable def pseudofunctorToPithCompInclusionStrongIsoHom :
   naturality f := (ρ_ _) ≪≫ (λ_ _).symm
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The inv direction of the (strong) natural isomorphism of pseudofunctors
 between `(pseudofunctorToPith F).comp (inclusion B)` and `F`. -/
 noncomputable def pseudofunctorToPithCompInclusionStrongIsoInv :

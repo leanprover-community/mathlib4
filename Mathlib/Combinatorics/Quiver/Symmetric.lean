@@ -162,6 +162,7 @@ variable {V' : Type*} [Quiver.{v'} V']
 
 /-- Given a quiver `V'` with reversible arrows, a prefunctor to `V'` can be lifted to one from
     `Symmetrify V` to `V'` -/
+@[implicit_reducible]
 def lift [HasReverse V'] (φ : Prefunctor V V') :
     Prefunctor (Symmetrify V) V' where
   obj := φ.obj

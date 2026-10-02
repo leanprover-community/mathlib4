@@ -42,6 +42,7 @@ instance : Quiver (Push σ) :=
 namespace Push
 
 /-- The prefunctor induced by pushing arrows via `σ` -/
+@[implicit_reducible]
 def of : V ⥤q Push σ where
   obj := σ
   map f := PushQuiver.arrow f

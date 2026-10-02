@@ -71,7 +71,7 @@ instance (V : Type*) [Quiver V] : Inhabited (Prefunctor V V) :=
   ⟨id V⟩
 
 /-- Composition of morphisms between quivers. -/
-@[simps]
+@[implicit_reducible, simps]
 def comp {U : Type*} [Quiver U] {V : Type*} [Quiver V] {W : Type*} [Quiver W]
     (F : Prefunctor U V) (G : Prefunctor V W) : Prefunctor U W where
   obj X := G.obj (F.obj X)

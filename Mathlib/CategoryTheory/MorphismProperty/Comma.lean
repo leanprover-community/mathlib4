@@ -265,7 +265,7 @@ def isoMk [Q.RespectsIso] [W.RespectsIso] {X Y : P.Comma L R Q W} (l : X.left �
 variable (L R P Q W)
 
 /-- The forgetful functor. -/
-@[simps]
+@[implicit_reducible, simps]
 def forget : P.Comma L R Q W ⥤ Comma L R where
   obj X := X.toComma
   map f := f.hom
@@ -354,7 +354,7 @@ variable {L₁ L₂ L₃ : A ⥤ T} {R₁ R₂ R₃ : B ⥤ T}
 
 /-- Lift a functor `F : C ⥤ Comma L R` to the subcategory `P.Comma L R Q W` under
 suitable assumptions on `F`. -/
-@[simps obj_toComma map_hom]
+@[implicit_reducible, simps obj_toComma map_hom]
 def lift {C : Type*} [Category* C] (F : C ⥤ Comma L R)
     (hP : ∀ X, P (F.obj X).hom)
     (hQ : ∀ {X Y} (f : X ⟶ Y), Q (F.map f).left)
@@ -435,7 +435,7 @@ def mapLeftIso [P.RespectsIso] [Q.RespectsIso] [W.RespectsIso]
 
 variable (L) in
 /-- A natural transformation `R₁ ⟶ R₂` induces a functor `P.Comma L R₁ Q W ⥤ P.Comma L R₂ Q W`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def mapRight (r : R₁ ⟶ R₂) (hr : ∀ X : P.Comma L R₁ Q W, P (X.hom ≫ r.app X.right)) :
     P.Comma L R₁ Q W ⥤ P.Comma L R₂ Q W :=
   lift (forget _ _ _ _ _ ⋙ CategoryTheory.Comma.mapRight L r) hr
