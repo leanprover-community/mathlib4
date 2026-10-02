@@ -17,6 +17,14 @@ elimination, and elaborates the certificate of the decomposition.
 The elimination itself is the model-parameterized `bareissDecomp` in
 `Mathlib.Tactic.Echelon.Core`, and the certificate construction `certifyDecomposition` in
 `Mathlib.Tactic.Echelon.Cert`.
+
+## Main definitions
+
+- `mkBareissDecomposition`: selects a model, runs the elimination algorithm
+  and builds the certificate.
+- `BareissResult`: the elaborated certificate together with the model and the raw decomposition
+  data.
+- `modelFor`: selects the computation model for a given ring.
 -/
 
 public meta section

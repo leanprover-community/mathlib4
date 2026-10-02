@@ -24,6 +24,14 @@ The `certify*` functions assemble these proofs from facts about single entries, 
 arithmetic equalities for the product and the non-zeroness for `L`, which are established
 by the model's certifier (or the kernel).
 
+## Main definitions
+
+- `certifyDecomposition`: builds the `Echelon.Decomposition` certificate from decomposition data.
+- `DecompositionCert`: the internal certificate structure that includes `U` and the product
+  equation for downstream tactics.
+- `MatrixViews`: a `Matrix` literal together with its list-based literal and its literal entry
+  lists.
+
 ## Implementation notes
 
 The elimination records its echelon form `U`, making the product `L * A_σ = U` a certificate

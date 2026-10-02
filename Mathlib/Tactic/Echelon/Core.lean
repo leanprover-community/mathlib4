@@ -20,6 +20,16 @@ A computation model supplies the carrier, its arithmetic operations (`RingOps`) 
 encoding between entry syntax and values, and the tactic selects a model through the `bareiss_ext`
 extension registry.
 
+## Main definitions
+
+- `RingOps`: the arithmetic of a model's carrier.
+- `Model`: the computation model of a ring, including the encode/decode between the ring element
+  and the carrier representation, and an optional entry certifier.
+- `EntryCertifier`: a function that proves the facts about single entries that a certificate needs.
+- `bareissDecomp`: runs fraction-free elimination over a model's carrier.
+- `BareissData`: raw data of the computed decomposition.
+- `bareiss_ext`: the attribute registering a computation model.
+
 ## Implementation notes
 
 The elimination in `bareissDecomp` maintains the invariant `L * A_σ = W`, where
