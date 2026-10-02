@@ -496,8 +496,8 @@ theorem prod_extend_by_one [DecidableEq ι] (s : Finset ι) (f : ι → M) :
 
 @[to_additive]
 theorem prod_extend [DecidableEq κ] {t : Finset κ} {f : ι → κ} {g : ι → M} (j : κ → M)
-    (hfg : Function.FactorsThrough g f) (hf : Set.BijOn f s (t ∩ Set.range f)) :
-    ∏ i ∈ t, Function.extend f g j i = (∏ i ∈ t \ s.image f, j i) * ∏ i ∈ s, g i := by
+    (hfg : FactorsThrough g f) (hf : Set.BijOn f s (t ∩ Set.range f)) :
+    ∏ i ∈ t, extend f g j i = (∏ i ∈ t \ s.image f, j i) * ∏ i ∈ s, g i := by
   have : s.image f ⊆ t := by simp [← coe_subset, hf.image_eq]
   rw [← prod_sdiff this, prod_image hf.injOn]
   congrm $(prod_congr rfl fun i hi ↦ ?_) * $(prod_congr rfl fun i hi ↦ hfg.extend_apply _ _)
@@ -507,15 +507,15 @@ theorem prod_extend [DecidableEq κ] {t : Finset κ} {f : ι → κ} {g : ι →
   simp [← mem_coe, hf.image_eq, hit] at hifs
 
 @[to_additive]
-theorem prod_extend_one {t : Finset κ} {f : ι → κ} {g : ι → M}
-    (hfg : Function.FactorsThrough g f) (hf : Set.BijOn f s (t ∩ Set.range f)) :
-    ∏ i ∈ t, Function.extend f g 1 i = ∏ i ∈ s, g i := by
+theorem prod_extend_one {t : Finset κ} {f : ι → κ} {g : ι → M} (hfg : FactorsThrough g f)
+    (hf : Set.BijOn f s (t ∩ Set.range f)) :
+    ∏ i ∈ t, extend f g 1 i = ∏ i ∈ s, g i := by
   classical simp [prod_extend 1 hfg hf]
 
 @[to_additive]
-theorem prod_extend_one_eq_prod_univ [Fintype ι] {t : Finset κ} {f : ι → κ} (g : ι → M)
-    (hf : Function.Injective f) (ht : ∀ i, f i ∈ t) :
-    ∏ i ∈ t, Function.extend f g 1 i = ∏ i, g i := by
+theorem prod_extend_one_of_injective [Fintype ι] {t : Finset κ} {f : ι → κ} (g : ι → M)
+    (hf : Injective f) (ht : ∀ i, f i ∈ t) :
+    ∏ i ∈ t, extend f g 1 i = ∏ i, g i := by
   apply prod_extend_one (hf.factorsThrough _)
   convert hf.bijOn_image
   simpa [Set.range_subset_iff] using ht
@@ -523,7 +523,7 @@ theorem prod_extend_one_eq_prod_univ [Fintype ι] {t : Finset κ} {f : ι → κ
 /-- Also see `Finset.prod_ite_mem_eq` -/
 @[to_additive /-- Also see `Finset.sum_ite_mem_eq` -/]
 theorem prod_eq_prod_extend (f : s → M) : ∏ x, f x = ∏ x ∈ s, Subtype.val.extend f 1 x :=
-  (prod_extend_one_eq_prod_univ _ Subtype.val_injective fun i ↦ i.prop).symm
+  (prod_extend_one_of_injective _ Subtype.val_injective fun i ↦ i.prop).symm
 
 @[to_additive]
 theorem prod_bij_ne_one {s : Finset ι} {t : Finset κ} {f : ι → M} {g : κ → M}
