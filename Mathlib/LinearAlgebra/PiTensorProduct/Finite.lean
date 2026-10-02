@@ -22,7 +22,7 @@ open TensorProduct
 namespace PiTensorProduct
 
 /-- The tensor product `⨂[R] i, M i` of a finite collection of finite modules `M i` over a
-`CommSemiring` is projective.
+`CommSemiring` is finite.
 -/
 instance finite {R : Type*} [CommSemiring R] {ι : Type*} [Finite ι] {M : ι → Type*}
     [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] [∀ i, Module.Finite R (M i)] :
