@@ -18,7 +18,7 @@ This file shows that `Option α` is finite iff `α` is. Similarly, `Option α` i
 
 public section
 
-/-- `Option α`  is finite if and only if the underlying type `α`is finite. -/
+/-- `Option α` is finite if and only if the underlying type `α` is finite. -/
 @[simp]
 theorem Option.finite_iff {α : Type*} : Finite (Option α) ↔ Finite α where
   mpr _ := inferInstance
@@ -26,7 +26,7 @@ theorem Option.finite_iff {α : Type*} : Finite (Option α) ↔ Finite α where
   | @Finite.intro _ 0 e => (e none).elim0
   | @Finite.intro _ (n + 1) e => ⟨(e.trans (finSuccEquiv n)).removeNone⟩
 
-/-- `Option α`  is infinite if and only if the underlying type `α`is infinite. -/
+/-- `Option α` is infinite if and only if the underlying type `α` is infinite. -/
 @[simp]
 theorem Option.infinite_iff {α : Type*} : Infinite (Option α) ↔ Infinite α := by
   rw [← not_finite_iff_infinite, ← not_finite_iff_infinite, Option.finite_iff]
