@@ -193,16 +193,12 @@ theorem IsEuler.dens_eq_one (h : g.IsEuler) : g.dens n = 1 := by
   obtain ⟨ρ, hρ⟩ := h.exists_euler
   rw [← hρ]
   set g := euler g.h ρ
-  induction n using Nat.strong_induction_on with | h n ih =>
-  match n with
-  | 0 => exact zeroth_den_eq_one
-  | n + 1 =>
+  induction n using Nat.strong_induction_on with | ind n ih
+  cases n with | zero => exact zeroth_den_eq_one | succ n
   rcases Decidable.em <| g.TerminatedAt n with terminatedAt_n | not_terminatedAt_n
   · simpa only [dens_stable_of_terminated n.le_succ terminatedAt_n] using ih n n.lt_add_one
   rw [terminatedAt_euler] at not_terminatedAt_n
-  match n with
-  | 0 => exact dens_euler_one
-  | n + 1 =>
+  cases n with | zero => exact dens_euler_one | succ n
   obtain ⟨a, s_n_succ_eq⟩ : ∃ a, g.s.get? (n + 1) = some ⟨-a, 1 + a⟩ :=
     exists_euler_s_of_not_terminatedAt_succ not_terminatedAt_n
   simp [dens_recurrence s_n_succ_eq, ih, add_assoc]
@@ -268,10 +264,8 @@ theorem convs_toEuler_of_forall_le (hB : ∀ m ≤ n, g.dens m ≠ 0) :
     ∀ m ≤ n, g.toEuler.convs m = g.convs m := by
   intro m hm
   conv_lhs => simp [convs]
-  induction m using Nat.strong_induction_on with | h m ih =>
-  match m with
-  | 0 => simp [toEuler, euler_h]
-  | m + 1 =>
+  induction m using Nat.strong_induction_on with | ind m ih
+  cases m with | zero => simp [toEuler, euler_h] | succ m
   replace ih := fun m hm => ih m hm <| by omega
   rw [← sub_left_inj (a := g.convs m), ← ih m m.lt_add_one]
   rcases Decidable.em <| TerminatedAt g m with terminatedAt_m | not_terminatedAt_m
@@ -280,8 +274,8 @@ theorem convs_toEuler_of_forall_le (hB : ∀ m ≤ n, g.dens m ≠ 0) :
       g.convs_stable_of_terminated m.lt_add_one.le terminatedAt_m, sub_self]
   obtain ⟨⟨a, b⟩, g_mth_eq⟩ : ∃ gp, g.s.get? m = some gp :=
     Option.ne_none_iff_exists'.mp not_terminatedAt_m
-  match m with
-  | 0 =>
+  cases m with
+  | zero =>
     have g_toEuler_zeroth_eq : g.toEuler.s.get? 0 = some ⟨a / b, 1⟩ := by
       simp [toEuler_s_zero, g_mth_eq]
     simp only [zero_add, zeroth_num_eq_h, sub_left_inj]
@@ -289,7 +283,7 @@ theorem convs_toEuler_of_forall_le (hB : ∀ m ≤ n, g.dens m ≠ 0) :
       first_num_eq g_toEuler_zeroth_eq, one_mul]
     rw [add_div, mul_div_cancel_left₀ _ fun nh => hB 1 hm
       (first_den_eq g_mth_eq ▸ nh), toEuler, euler_h]
-  | m + 1 =>
+  | succ m =>
     have g_toEuler_mth_eq : g.toEuler.s.get? (m + 1) =
         some ⟨a * g.dens m / g.dens (m + 2), 1 - a * g.dens m / g.dens (m + 2)⟩ := by
       simp only [toEuler_s_succ, g_mth_eq, Option.map_some]

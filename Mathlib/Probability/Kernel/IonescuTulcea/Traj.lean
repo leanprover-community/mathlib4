@@ -277,8 +277,8 @@ theorem le_lmarginalPartialTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a
       (update (updateFinset x (Iic k) y) (k + 1) z) := by
   have _ n : Nonempty (X n) := by
     induction n using Nat.case_strong_induction_on with
-    | hz => exact ⟨y ⟨0, mem_Iic.2 zero_le⟩⟩
-    | hi m hm =>
+    | zero => exact ⟨y ⟨0, mem_Iic.2 zero_le⟩⟩
+    | succ m hm =>
       have : Nonempty (Π i : Iic m, X i) :=
         ⟨fun i ↦ @Classical.ofNonempty _ (hm i.1 (mem_Iic.1 i.2))⟩
       exact nonempty_of_isProbabilityMeasure (κ m Classical.ofNonempty)
@@ -349,8 +349,8 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
     Tendsto (fun n ↦ trajContent κ x₀ (A n)) atTop (𝓝 0) := by
   have _ n : Nonempty (X n) := by
     induction n using Nat.case_strong_induction_on with
-    | hz => exact ⟨x₀ ⟨0, mem_Iic.2 zero_le⟩⟩
-    | hi m hm =>
+    | zero => exact ⟨x₀ ⟨0, mem_Iic.2 zero_le⟩⟩
+    | succ m hm =>
       have : Nonempty (Π i : Iic m, X i) :=
         ⟨fun i ↦ @Classical.ofNonempty _ (hm i.1 (mem_Iic.1 i.2))⟩
       exact nonempty_of_isProbabilityMeasure (κ m Classical.ofNonempty)

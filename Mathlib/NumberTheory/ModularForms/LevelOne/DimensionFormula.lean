@@ -250,7 +250,7 @@ theorem levelOne_weight_two_rank_zero : Module.rank ℂ (ModularForm 𝒮ℒ 2) 
 theorem dimension_level_one (k : ℕ) (hk2 : Even k) :
     Module.rank ℂ (ModularForm 𝒮ℒ k) =
       if k ≡ 2 [MOD 12] then k / 12 else k / 12 + 1 := by
-  induction k using Nat.strong_induction_on with | h k ihn =>
+  induction k using Nat.strong_induction_on with | ind k ihn
   have : k < 3 ∨ (3 ≤ k ∧ k < 12) ∨ 12 ≤ k := by grind
   rcases this with hk | hk | hk
   · -- `k < 3`: direct case-by-case check
