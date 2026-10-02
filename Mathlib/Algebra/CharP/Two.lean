@@ -223,12 +223,6 @@ theorem sq_inj {x y : R} : x ^ 2 = y ^ 2 ↔ x = y :=
 
 end CommSemiring
 
-@[deprecated (since := "2026-02-05")]
-alias CommRing.sq_injective := sq_injective
-
-@[deprecated (since := "2026-02-05")]
-alias CommRing.sq_inj := sq_inj
-
 end CharTwo
 
 @[simp]
