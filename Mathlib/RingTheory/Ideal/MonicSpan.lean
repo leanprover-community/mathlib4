@@ -5,9 +5,9 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.FieldDivision
-public import Mathlib.Algebra.Polynomial.Lifts
-public import Mathlib.RingTheory.Ideal.Quotient.Operations
+import Mathlib.Algebra.Polynomial.FieldDivision
+import Mathlib.Algebra.Polynomial.Lifts
+import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Polynomial.Basic
 
 /-!

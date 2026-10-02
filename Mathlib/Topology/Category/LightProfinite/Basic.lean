@@ -7,8 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Countable
 public import Mathlib.Topology.Category.Profinite.AsLimit
-public import Mathlib.Topology.Category.Profinite.CofilteredLimit
-public import Mathlib.Topology.ClopenBox
+import Mathlib.Topology.Category.Profinite.CofilteredLimit
+import Mathlib.Topology.ClopenBox
 /-!
 
 # Light profinite spaces

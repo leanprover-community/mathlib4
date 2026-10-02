@@ -8,7 +8,7 @@ module
 
 public import Mathlib.LinearAlgebra.SModEq.Basic
 public import Mathlib.RingTheory.Ideal.Operations
-public import Mathlib.Algebra.Ring.GeomSum
+import Mathlib.Algebra.Ring.GeomSum
 
 /-! # Lemmas about SModEq related to powers -/
 
