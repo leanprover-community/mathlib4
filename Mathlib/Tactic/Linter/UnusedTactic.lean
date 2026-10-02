@@ -67,7 +67,8 @@ public register_option linter.unusedTactic : Bool := {
 
 namespace UnusedTactic
 
-/-- `Parser`s/tactics allowed to not change the tactic state.
+/--
+`Parser`s/tactics allowed to not change the tactic state.
 This can be increased dynamically, using `allow_unused_tactic` or `allow_unused_tactic!`.
 -/
 def initialAllowedUnusedTactics : Std.HashSet SyntaxNodeKind :=
@@ -145,30 +146,27 @@ tactics also in files importing a file where this command is issued.
 
 The command `#show_kind tac` may help to find the `SyntaxNodeKind`.
 -/
-elab (name := allowUnusedTactic) "allow_unused_tactic" pers:("!")? ppSpace colGt ids:ident* : command => do
+elab (name := allowUnusedTactic) attrKind:attrKind "allow_unused_tactic"
+    ppSpace colGt ids:ident* : command => do
   let ids ← Command.liftCoreM do ids.mapM fun id ↦ do
     try
       realizeGlobalConstNoOverload id
     catch e =>
       throwErrorAt id m!"{e.toMessageData}\n\
         The command `#show_kind {id}` may help to find the correct `SyntaxNodeKind`."
-  if pers.isSome then
-    for id in ids do
-      modifyEnv (allowedUnusedTacticExt.addEntry · id)
-  else
-    for id in ids do
-      modifyEnv (allowedUnusedTacticExt.addLocalEntry · id)
-
-@[inherit_doc allowUnusedTactic]
-macro "allow_unused_tactic!" ppSpace colGt ids:ident* : command =>
-  `(command| allow_unused_tactic ! $[$ids]*)
+  let attrKind ← liftMacroM <| toAttributeKind attrKind
+  for id in ids do
+    allowedUnusedTacticExt.add id attrKind
+    if attrKind != .local then
+      if (← getEnv).isImportedConst id then
+        recordIndirectModUse "allow_unused_tactic" id
 
 /-- `#allow_unused_tactic` is deprecated in favour of `allow_unused_tactic` -/
 syntax (name := hashStx) "#allow_unused_tactic" ("!")? ppSpace colGt ident* : command
 
 macro_rules
-| `(command| #allow_unused_tactic $ids) => `(command| allow_unused_tactic $ids)
-| `(command| #allow_unused_tactic ! $ids) => `(command| allow_unused_tactic! $ids)
+| `(command| #allow_unused_tactic $ids) => `(command| local allow_unused_tactic $ids)
+| `(command| #allow_unused_tactic ! $ids) => `(command| allow_unused_tactic $ids)
 
 deprecated_syntax hashStx "use `allow_usused_tactic` instead of `#allow_unused_tactic"
   (since := "2026-08-07")
@@ -184,10 +182,8 @@ For instance, to see the `SyntaxNodeKind` of the `refine` tactic, you could use
 ```
 The trailing underscore `_` makes the syntax valid, since `refine` expects something else.
 -/
-elab "#show_kind " t:tactic : command => do
-  let stx ← `(tactic| $t)
-  Lean.logInfoAt t m!"The `SyntaxNodeKind` is '{stx.raw.getKind}'."
-
+elab "#show_kind " t:tactic : command =>
+  logInfoAt t m!"The `{.ofConstName ``SyntaxNodeKind}` is `{t.raw.getKind}`."
 
 /-- The monad for collecting the ranges of the syntaxes that do not modify any goal. -/
 abbrev M := StateRefT (Std.HashMap Lean.Syntax.Range Syntax) IO
