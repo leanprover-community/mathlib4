@@ -445,6 +445,29 @@ theorem exists_iterate_apply_eq_of_mem_periodicPts (hx : x ∈ periodicPts f) : 
 theorem self_mem_periodicOrbit (hx : x ∈ periodicPts f) : x ∈ periodicOrbit f x := by
   simp [hx]
 
+theorem iterate_not_monotone_of_mem_periodicPts [PartialOrder α]
+    (hx : x ∈ periodicPts f) (hnfix : ¬IsFixedPt f x) :
+    ¬Monotone (f^[·] x) := by
+  intro h
+  obtain ⟨n, hn, (hp : f^[n] x = x)⟩ := hx
+  refine hnfix <| le_antisymm ?_ (h (Nat.zero_le 1))
+  simpa [hp] using h hn
+
+theorem exists_map_lt_of_mem_periodicPts [LinearOrder α]
+    (hx : x ∈ periodicPts f) (hnfix : ¬IsFixedPt f x) :
+    ∃ b ∈ periodicOrbit f x, f b < b := by
+  have h := iterate_not_monotone_of_mem_periodicPts hx hnfix
+  rw [monotone_nat_iff] at h
+  push Not at h
+  obtain ⟨n, hn⟩ := h
+  refine ⟨f^[n] x, iterate_mem_periodicOrbit hx n, ?_⟩
+  rwa [iterate_succ'] at hn
+
+theorem exists_lt_map_of_mem_periodicPts [LinearOrder α]
+    (hx : x ∈ periodicPts f) (hnfix : ¬IsFixedPt f x) :
+    ∃ b ∈ periodicOrbit f x, b < f b :=
+  exists_map_lt_of_mem_periodicPts (α := αᵒᵈ) hx hnfix
+
 theorem nodup_periodicOrbit : (periodicOrbit f x).Nodup := by
   rw [periodicOrbit, Cycle.nodup_coe_iff, List.nodup_map_iff_inj_on List.nodup_range]
   intro m hm n hn hmn
