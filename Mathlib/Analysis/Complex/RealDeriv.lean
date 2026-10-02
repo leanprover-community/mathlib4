@@ -38,7 +38,7 @@ theorem HasStrictDerivAt.real_of_complex (h : HasStrictDerivAt e e' z) :
       (ofRealCLM z) :=
     h.hasStrictFDerivAt.restrictScalars ℝ
   have C : HasStrictFDerivAt re reCLM (e (ofRealCLM z)) := reCLM.hasStrictFDerivAt
-  simpa using (C.comp z (B.comp z A)).hasStrictDerivAt
+  simpa using (C.fun_comp z (B.comp z A)).hasStrictDerivAt
 
 /-- If a complex function `e` is differentiable at a real point, then the function `ℝ → ℝ` given by
 the real part of `e` is also differentiable at this point, with a derivative equal to the real part
@@ -51,7 +51,7 @@ theorem HasDerivAt.real_of_complex (h : HasDerivAt e e' z) :
       (ofRealCLM z) :=
     h.hasFDerivAt.restrictScalars ℝ
   have C : HasFDerivAt re reCLM (e (ofRealCLM z)) := reCLM.hasFDerivAt
-  simpa using! (C.comp z (B.comp z A)).hasDerivAt
+  simpa using! (C.fun_comp z (B.comp z A)).hasDerivAt
 
 theorem ContDiffAt.real_of_complex {n : WithTop ℕ∞} (h : ContDiffAt ℂ n e z) :
     ContDiffAt ℝ n (fun x : ℝ => (e x).re) z := by

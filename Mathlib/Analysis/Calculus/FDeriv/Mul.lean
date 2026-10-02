@@ -58,7 +58,7 @@ variable {c : E → 𝕜'} {c' : E →L[𝕜] 𝕜'}
 @[to_fun (attr := fun_prop)]
 theorem HasStrictFDerivAt.smul (hc : HasStrictFDerivAt c c' x) (hf : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt (c • f) (c x • f' + c'.smulRight (f x)) x :=
-  (isBoundedBilinearMap_smul.hasStrictFDerivAt (c x, f x)).comp x <| hc.prodMk hf
+  (isBoundedBilinearMap_smul.hasStrictFDerivAt (c x, f x)).fun_comp x <| hc.prodMk hf
 
 @[to_fun (attr := fun_prop)]
 theorem HasFDerivWithinAt.smul
@@ -170,7 +170,7 @@ variable {𝔸 𝔸' : Type*} [NormedRing 𝔸] [NormedCommRing 𝔸'] [NormedAl
 theorem HasStrictFDerivAt.mul' {x : E} (ha : HasStrictFDerivAt a a' x)
     (hb : HasStrictFDerivAt b b' x) :
     HasStrictFDerivAt (a * b) (a x • b' + a' <• b x) x :=
-  ((ContinuousLinearMap.mul 𝕜 𝔸).isBoundedBilinearMap.hasStrictFDerivAt (a x, b x)).comp x
+  ((ContinuousLinearMap.mul 𝕜 𝔸).isBoundedBilinearMap.hasStrictFDerivAt (a x, b x)).fun_comp x
     (ha.prodMk hb)
 
 @[to_fun (attr := fun_prop)]
@@ -269,7 +269,7 @@ theorem fderiv_mul (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt 𝕜 
 @[fun_prop]
 theorem HasStrictFDerivAt.mul_const' (ha : HasStrictFDerivAt a a' x) (b : 𝔸) :
     HasStrictFDerivAt (fun y => a y * b) (a' <• b) x :=
-  ((ContinuousLinearMap.mul 𝕜 𝔸).flip b).hasStrictFDerivAt.comp x ha
+  ((ContinuousLinearMap.mul 𝕜 𝔸).flip b).hasStrictFDerivAt.fun_comp x ha
 
 @[fun_prop]
 theorem HasStrictFDerivAt.mul_const (hc : HasStrictFDerivAt c c' x) (d : 𝔸') :
@@ -341,7 +341,7 @@ theorem fderiv_mul_const (hc : DifferentiableAt 𝕜 c x) (d : 𝔸') :
 @[fun_prop]
 theorem HasStrictFDerivAt.const_mul (ha : HasStrictFDerivAt a a' x) (b : 𝔸) :
     HasStrictFDerivAt (fun y => b * a y) (b • a') x :=
-  ((ContinuousLinearMap.mul 𝕜 𝔸) b).hasStrictFDerivAt.comp x ha
+  ((ContinuousLinearMap.mul 𝕜 𝔸) b).hasStrictFDerivAt.fun_comp x ha
 
 @[fun_prop]
 theorem HasFDerivWithinAt.const_mul (ha : HasFDerivWithinAt a a' s x) (b : 𝔸) :
@@ -602,7 +602,7 @@ theorem HasStrictFDerivAt.finsetProd [DecidableEq ι] {x : E}
     (hg : ∀ i ∈ u, HasStrictFDerivAt (g i) (g' i) x) :
     HasStrictFDerivAt (∏ i ∈ u, g i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, g j x) • g' i) x := by
   simpa [← Finset.prod_attach u] using .congr_fderiv
-    (hasStrictFDerivAt_finsetProd.comp x <| hasStrictFDerivAt_pi.mpr fun i ↦ hg i i.prop)
+    (hasStrictFDerivAt_finsetProd.fun_comp x <| hasStrictFDerivAt_pi.mpr fun i ↦ hg i i.prop)
     (by ext; simp [Finset.prod_erase_attach (g · x), ← u.sum_attach])
 
 @[deprecated (since := "2026-04-08")]
