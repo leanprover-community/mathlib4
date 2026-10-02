@@ -412,7 +412,7 @@ variable (c f g)
 
 @[simp]
 theorem isBigOWith_bot : IsBigOWith c ⊥ f g :=
-  IsBigOWith.of_bound <| trivial
+  IsBigOWith.of_bound trivial
 
 @[simp]
 theorem isBigO_bot : f =O[⊥] g :=

@@ -7,9 +7,11 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Ext.Finite
 public import Mathlib.RingTheory.Depth.Basic
+public import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
 public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 public import Mathlib.RingTheory.KrullDimension.Field
 public import Mathlib.RingTheory.KrullDimension.Module
+public import Mathlib.RingTheory.Regular.Category
 
 /-!
 
@@ -20,7 +22,7 @@ public import Mathlib.RingTheory.KrullDimension.Module
 @[expose] public section
 
 open IsLocalRing LinearMap ModuleCat Pointwise
-open RingTheory.Sequence Ideal CategoryTheory Abelian Limits
+open RingTheory.Sequence Ideal CategoryTheory Abelian Limits ModuleCat
 
 universe u v
 
