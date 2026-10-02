@@ -6,8 +6,9 @@ Authors: Jovan Gerbscheid, Thomas R. Murrills
 module
 
 public meta import Lean.Elab.Command
+public meta import Lean.Linter.Basic
 public meta import Batteries.Lean.Position
-public import Mathlib.Tactic.Linter.UnusedInstancesInType
+public meta import Mathlib.Lean.Elab.InfoTree
 
 /-!
 # A linter for declarations with local instances that overlap
@@ -212,7 +213,7 @@ open Linter in
 Lints against data-carrying overlaps between instances in the local contexts of declarations.
 -/
 def overlappingInstances : Linter where
-  run := UnusedInstancesInType.withSetBoolOptionIn fun cmd => do
+  run := withSetOptionIn fun cmd => do
     unless getLinterValue linter.overlappingInstances (← getLinterOptions) do
       return
     -- Note: we don't break on errors; we want to lint even on partial declarations
