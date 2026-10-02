@@ -102,7 +102,7 @@ noncomputable def setDiffEquiv {s t : Set α} [Fintype s] [Fintype t]
   have hst (x : α) : x ∈ fs \ ft ↔ x ∈ s \ t := by simp [hs, ht]
   have hts (x : α) : x ∈ ft \ fs ↔ x ∈ t \ s := by simp [hs, ht]
   have hc : fs.card = ft.card := by
-    rw [← Fintype.subtype_card fs hs, ← Fintype.subtype_card ft ht]; convert! h
+    rw [← Fintype.subtype_card fs hs, ← Fintype.subtype_card ft ht]; convert h
   replace hc := Finset.card_sdiff_comm hc
   rw [← Fintype.subtype_card (fs \ ft) hst, ← Fintype.subtype_card (ft \ fs) hts] at hc
   exact ((Fintype.card_eq (_F := (_)) (_G := (_))).mp hc).some
@@ -122,8 +122,8 @@ noncomputable def toCompl {p q : α → Prop} [Finite {x | p x}]
   have h := setDiffEquiv (Fintype.card_congr e)
   have hpc : spᶜ = (sq \ sp) ∪ (sp ∪ sq)ᶜ := by ext; simp; tauto
   have hqc : sqᶜ = (sp \ sq) ∪ (sp ∪ sq)ᶜ := by ext; simp; tauto
-  let epc := (Equiv.Set.congr hpc).trans (Equiv.Set.union (by simp [Set.disjoint_left]; tauto))
-  let eqc := (Equiv.Set.congr hqc).trans (Equiv.Set.union (by simp [Set.disjoint_left]; tauto))
+  let epc := (Set.equivOfEq hpc).trans (Equiv.Set.union (by simp [Set.disjoint_left]; tauto))
+  let eqc := (Set.equivOfEq hqc).trans (Equiv.Set.union (by simp [Set.disjoint_left]; tauto))
   epc.trans <| .trans (h.symm.sumCongr <| .refl _) eqc.symm
 
 variable {p q : α → Prop} [DecidablePred p] [DecidablePred q] [Finite {x | p x}]

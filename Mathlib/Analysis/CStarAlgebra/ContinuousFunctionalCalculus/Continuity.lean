@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
 public import Mathlib.Topology.MetricSpace.UniformConvergence
-public import Mathlib.Topology.UniformSpace.CompactConvergence
 
 /-! # Continuity of the continuous functional calculus in each variable
 
@@ -99,7 +98,7 @@ theorem tendsto_cfc_fun {l : Filter X} {F : X → R → R} {f : R → R} {a : A}
     rw [hf.tendsto_domRestrict_iff_tendstoUniformlyOn Subtype.property]
     intro t
     simp only [eventually_comap, Subtype.forall]
-    peel h_tendsto t with ht x _
+    gconvert h_tendsto t with ht x
     simp_all
   · simpa [cfc_apply_of_not_predicate a ha] using tendsto_const_nhds
 
@@ -614,9 +613,8 @@ theorem tendsto_cfcₙ_fun {l : Filter X} {F : X → R → R} {f : R → R} {a :
   obtain (rfl | hl) := l.eq_or_neBot
   · simp
   have hf := h_tendsto.continuousOn hF.frequently
-  have hf0 : f 0 = 0 := Eq.symm <|
-    tendsto_nhds_unique (tendsto_const_nhds.congr' <| .symm hF0) <|
-    h_tendsto.tendsto_at (quasispectrum.zero_mem R a)
+  have hf0 : f 0 = 0 := tendsto_nhds_unique_of_eventuallyEq
+    (h_tendsto.tendsto_at (quasispectrum.zero_mem R a)) tendsto_const_nhds hF0
   by_cases ha : p a
   · let s : Set X := {x | ContinuousOn (F x) (quasispectrum R a) ∧ F x 0 = 0}
     have hs : s ∈ l := hF.and hF0
@@ -632,7 +630,7 @@ theorem tendsto_cfcₙ_fun {l : Filter X} {F : X → R → R} {f : R → R} {a :
     rw [hf.tendsto_domRestrict_iff_tendstoUniformlyOn (fun x ↦ x.2.1)]
     intro t
     simp only [eventually_comap, Subtype.forall]
-    peel h_tendsto t with ht x _
+    gconvert h_tendsto t with ht x
     simp_all
   · simpa [cfcₙ_apply_of_not_predicate a ha] using tendsto_const_nhds
 
@@ -779,7 +777,7 @@ theorem continuousOn_cfcₙ {s : Set 𝕜} (hs : IsCompact s) (f : 𝕜 → 𝕜
       x
     rw [cfcₙHomSuperset_apply, Set.domRestrict_apply, cfcₙ_apply _ _ (hf.mono x.2.2) hf0 x.2.1]
     congr!
-  · convert! continuousOn_empty _
+  · convert continuousOn_empty _
     rw [Set.eq_empty_iff_forall_notMem]
     exact fun a ha ↦ hs0 <| ha.2 <| quasispectrum.zero_mem 𝕜 a
 
