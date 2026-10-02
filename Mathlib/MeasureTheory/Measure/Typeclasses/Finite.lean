@@ -181,7 +181,7 @@ theorem ae_eq_univ_iff_measure_eq [IsFiniteMeasure μ] (hs : NullMeasurableSet s
 
 theorem ae_iff_measure_eq [IsFiniteMeasure μ] {p : α → Prop}
     (hp : NullMeasurableSet { a | p a } μ) : (∀ᵐ a ∂μ, p a) ↔ μ { a | p a } = μ univ := by
-  rw [← ae_eq_univ_iff_measure_eq hp, eventuallyEq_univ, eventually_iff]
+  rw [← ae_eq_univ_iff_measure_eq hp, eventuallyEqSet_univ, eventually_iff]
 
 theorem ae_mem_iff_measure_eq [IsFiniteMeasure μ] {s : Set α} (hs : NullMeasurableSet s μ) :
     (∀ᵐ a ∂μ, a ∈ s) ↔ μ s = μ univ :=
@@ -205,7 +205,7 @@ lemma tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
   have key := tendsto_measure_iInter_atTop (μ := μ) (fun n ↦ by measurability)
     decr ⟨0, measure_ne_top _ _⟩
   simp only [nothing, measure_empty] at key
-  convert! key
+  convert key
 
 open scoped symmDiff
 
@@ -217,7 +217,7 @@ theorem abs_measureReal_sub_le_measureReal_symmDiff'
   have hts : μ (t \ s) ≠ ∞ := (measure_lt_top_of_subset sdiff_subset ht').ne
   suffices (μ s).toReal - (μ t).toReal = (μ (s \ t)).toReal - (μ (t \ s)).toReal by
     rw [this, measure_symmDiff_eq hs ht, ENNReal.toReal_add hst hts]
-    convert! abs_sub (μ (s \ t)).toReal (μ (t \ s)).toReal <;> simp
+    convert abs_sub (μ (s \ t)).toReal (μ (t \ s)).toReal <;> simp
   rw [measure_sdiff' s ht ht', measure_sdiff' t hs hs',
     ENNReal.toReal_sub_of_le measure_le_measure_union_right (by finiteness),
     ENNReal.toReal_sub_of_le measure_le_measure_union_right (by finiteness),
@@ -312,13 +312,16 @@ theorem Measure.exists_isOpen_measure_lt_top [TopologicalSpace α] (μ : Measure
     [IsLocallyFiniteMeasure μ] (x : α) : ∃ s : Set α, x ∈ s ∧ IsOpen s ∧ μ s < ∞ := by
   simpa only [and_assoc] using (μ.finiteAt_nhds x).exists_mem_basis (nhds_basis_opens x)
 
+theorem Measure.isLocallyFiniteMeasure_smul [TopologicalSpace α] (μ : Measure α)
+    [IsLocallyFiniteMeasure μ] {c : ℝ≥0∞} (h : c ≠ ∞) :
+    IsLocallyFiniteMeasure (c • μ) := by
+  refine ⟨fun x ↦ ?_⟩
+  obtain ⟨o, xo, o_open, μo⟩ : ∃ s, x ∈ s ∧ IsOpen s ∧ μ s < ∞ := μ.exists_isOpen_measure_lt_top x
+  exact ⟨o, o_open.mem_nhds xo, ENNReal.mul_lt_top h.lt_top μo⟩
+
 instance isLocallyFiniteMeasureSMulNNReal [TopologicalSpace α] (μ : Measure α)
-    [IsLocallyFiniteMeasure μ] (c : ℝ≥0) : IsLocallyFiniteMeasure (c • μ) := by
-  refine ⟨fun x => ?_⟩
-  rcases μ.exists_isOpen_measure_lt_top x with ⟨o, xo, o_open, μo⟩
-  refine ⟨o, o_open.mem_nhds xo, ?_⟩
-  apply ENNReal.mul_lt_top _ μo
-  simp
+    [IsLocallyFiniteMeasure μ] (c : ℝ≥0) : IsLocallyFiniteMeasure (c • μ) :=
+  μ.isLocallyFiniteMeasure_smul coe_ne_top
 
 protected theorem Measure.isTopologicalBasis_isOpen_lt_top [TopologicalSpace α]
     (μ : Measure α) [IsLocallyFiniteMeasure μ] :

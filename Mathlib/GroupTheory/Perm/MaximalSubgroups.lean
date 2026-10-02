@@ -6,7 +6,6 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.GroupTheory.GroupAction.Jordan
-public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 
 /-! # Maximal subgroups of the symmetric groups
 
@@ -174,7 +173,7 @@ theorem has_swap_mem_of_lt_stabilizer [DecidableEq α]
   have hα : Set.encard (_root_.Set.univ : Set α) = 2 := by
     rw [← Set.encard_add_encard_compl s]
     have : (1 + 1 : ENat) = 2 := by norm_num
-    convert! this <;>
+    convert this <;>
     · apply le_antisymm
       · assumption
       rw [one_le_encard_iff_nonempty, Set.nonempty_iff_ne_empty]
@@ -214,7 +213,7 @@ lemma _root_.Subgroup.isPretransitive_of_stabilizer_lt
     apply not_lt_of_ge
     --  `G ≤ stabilizer (Equiv.Perm α) s`
     have : G = Subgroup.map G.subtype ⊤ := by
-      rw [← MonoidHom.range_eq_map, Subgroup.range_subtype]
+      rw [Subgroup.map_top, Subgroup.range_subtype]
     rw [this, Subgroup.map_le_iff_le_comap]
     rw [show Subgroup.comap G.subtype (stabilizer M s) = stabilizer G s from rfl, hG]
 
@@ -269,7 +268,7 @@ lemma subsingleton_of_stabilizer_lt_of_subset {B : Set α}
     · -- `Subtype.val ⁻¹' B = s`
       have hBs' : B = s := Set.Subset.antisymm hBs (by simp_all)
       subst hBs'
-      obtain ⟨g', hg', hg's⟩ := SetLike.exists_of_lt hG
+      obtain ⟨g', hg', hg's⟩ := IsConcreteLE.exists_of_lt hG
       have h := (isBlock_iff_smul_eq_or_disjoint.mp hB ⟨g', hg'⟩).resolve_left hg's
       suffices (g' • B).Subsingleton by
         exact subsingleton_of_image (MulAction.injective g') B this

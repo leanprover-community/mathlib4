@@ -8,7 +8,6 @@ module
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Formula
 public import Mathlib.LinearAlgebra.FreeModule.Norm
 public import Mathlib.RingTheory.ClassGroup.Basic
-public import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
 /-!
 # Nonsingular points and the group law in affine coordinates
@@ -236,7 +235,7 @@ lemma C_addPolynomial_slope [DecidableEq F] {x₁ x₂ y₁ y₂ : F}
     (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂) (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
     mk W (C <| W.addPolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) =
       -(XClass W x₁ * XClass W x₂ * XClass W (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂)) :=
-  congr_arg (mk W) <| W.C_addPolynomial_slope h₁ h₂ hxy
+  congr(mk W $(W.C_addPolynomial_slope h₁ h₂ hxy))
 
 variable (W') in
 /-- The ideal `⟨X - x⟩` of `R[W]` for some `x` in `R`. -/
@@ -306,14 +305,14 @@ lemma XYIdeal_neg_mul {x y : F} (h : W.Nonsingular x y) :
       C (X - C x) * (C (X ^ 2 + C (x + W.a₂) * X + C (x ^ 2 + W.a₂ * x + W.a₄)) - C (C W.a₁) * Y) =
         W.polynomial * 1 := by
     linear_combination (norm := (rw [negY, polynomial]; C_simp; ring1))
-      congr_arg C (congr_arg C ((equation_iff ..).mp h.left).symm)
+      congr(C (C $(((equation_iff ..).mp h.left).symm)))
   simp_rw [XYIdeal, XClass, YClass, span_pair_mul_span_pair, mul_comm, ← map_mul,
     AdjoinRoot.mk_eq_mk.mpr ⟨1, Y_rw⟩, map_mul, span_insert, ← span_singleton_mul_span_singleton,
     ← Ideal.mul_sup, ← span_insert]
   convert! mul_top (_ : Ideal W.CoordinateRing) using 2
   on_goal 2 => infer_instance
   simp_rw [← Set.image_singleton (f := mk W), ← Set.image_insert_eq, ← map_span]
-  convert! map_top (R := F[X][Y]) (mk W) using 1
+  convert map_top (R := F[X][Y]) (mk W) using 1
   apply congr_arg
   simp_rw [eq_top_iff_one, mem_span_insert', mem_span_singleton']
   rcases ((nonsingular_iff' ..).mp h).right with hx | hy
@@ -350,7 +349,7 @@ lemma XYIdeal_mul_XYIdeal [DecidableEq F] {x₁ x₂ y₁ y₂ : F}
     ← sub_eq_add_neg, ← sub_mul, ← map_sub <| mk W, sub_sub_sub_cancel_right, span_insert,
     ← span_singleton_mul_span_singleton, ← sup_rw, ← Ideal.sup_mul, ← Ideal.sup_mul]
   apply congr_arg (_ ∘ _)
-  convert! top_mul (_ : Ideal W.CoordinateRing)
+  convert top_mul (_ : Ideal W.CoordinateRing)
   simp_rw [XClass, ← Set.image_singleton (f := mk W), ← map_span, ← Ideal.map_sup, eq_top_iff_one,
     mem_map_iff_of_surjective _ AdjoinRoot.mk_surjective, ← span_insert, mem_span_insert',
     mem_span_singleton']
@@ -366,7 +365,7 @@ lemma XYIdeal_mul_XYIdeal [DecidableEq F] {x₁ x₂ y₁ y₂ : F}
     rw [polynomial, negPolynomial, ← mul_right_inj' <| C_ne_zero.mpr <| C_ne_zero.mpr hxy]
     simp only [y, mul_add, ← mul_assoc, ← C_mul, mul_inv_cancel₀ hxy]
     linear_combination (norm := (rw [b₂, b₄, negY]; C_simp; ring1))
-      -4 * congr_arg C (congr_arg C <| (equation_iff ..).mp h₁)
+      -4 * congr(C (C $((equation_iff ..).mp h₁)))
   · replace hx := sub_ne_zero_of_ne hx
     refine ⟨_, ⟨⟨C <| C (x₁ - x₂)⁻¹, C <| C <| (x₁ - x₂)⁻¹ * -1, 0, ?_⟩, map_one _⟩⟩
     rw [← mul_right_inj' <| C_ne_zero.mpr <| C_ne_zero.mpr hx]
@@ -441,14 +440,14 @@ lemma degree_norm_smul_basis [IsDomain R] (p q : R[X]) :
         · exact (hq hq').elim -- `hq'` should be `rfl`
         · rw [hq'] at hdpq hdq -- line should be redundant
           rcases le_or_gt dp (dq + 1) with hpq | hpq
-          · convert!
+          · convert
             (degree_sub_eq_right_of_degree_lt <|
                   (degree_sub_le _ _).trans_lt <|
                     max_lt_iff.mpr ⟨hdp.trans_lt _, hdpq.trans_lt _⟩).trans
               (max_eq_right_of_lt _).symm <;> rw [hdq] <;>
                 exact WithBot.coe_lt_coe.mpr <| by dsimp; linarith only [hpq]
           · rw [sub_sub]
-            convert!
+            convert
               (degree_sub_eq_left_of_degree_lt <|
                     (degree_add_le _ _).trans_lt <|
                       max_lt_iff.mpr ⟨hdpq.trans_lt _, hdq.trans_lt _⟩).trans
@@ -864,7 +863,7 @@ noncomputable abbrev baseChange [Algebra F K] [IsScalarTower R F K] :
 lemma map_baseChange [Algebra F K] [IsScalarTower R F K] [Algebra F L] [IsScalarTower R F L]
     (f : K →ₐ[F] L) (P : (W'⁄F).Point) : map f (baseChange F K P) = baseChange F L P := by
   have : Subsingleton (F →ₐ[F] L) := inferInstance
-  convert! map_map (Algebra.ofId F K) f P
+  convert map_map (Algebra.ofId F K) f P
 
 end Point
 
@@ -919,7 +918,56 @@ lemma xRep_eq_xRep_iff {P Q : W.Point} : P.xRep = Q.xRep ↔ P = Q ∨ P = -Q :=
   refine ⟨eq_or_eq_neg_of_xRep_eq_xRep, fun H ↦ ?_⟩
   rcases H with rfl | rfl <;> simp
 
+variable [DecidableEq F]
+
+/-- We give an explicit expression for `xRep` of `P + P` when `2*P ≠ 0`. -/
+lemma xRep_add_self_of_Y_ne {x y : F} (h : W.Nonsingular x y) (hn : y ≠ W.negY x y) :
+    (some x y h + some x y h).xRep =
+      ![(x ^ 4 - W.b₄ * x ^ 2 - 2 * W.b₆ * x - W.b₈) /
+        (4 * x ^ 3 + W.b₂ * x ^ 2 + 2 * W.b₄ * x + W.b₆), 1] := by
+  simp only [add_self_of_Y_ne hn, ← addX_self_of_Y_ne h.1 hn, xRep_some]
+
+/-- We give an explicit expression for `xRep` of `P + P` when `P ≠ 0` and `2*P = 0`. -/
+lemma xRep_add_self_of_Y_eq {x y : F} (h : W.Nonsingular x y) (hn : y = W.negY x y) :
+    (some x y h + some x y h).xRep = ![1, 0] := by
+  simp only [add_self_of_Y_eq hn, xRep_zero]
+
+/-- We give an explicit expression for `xRep` of `P + Q` when `P ≠ ±Q`. -/
+lemma xRep_add_of_X_ne {xP yP xQ yQ : F} (hP : W.Nonsingular xP yP)
+    (hQ : W.Nonsingular xQ yQ) (hn : xP ≠ xQ) :
+    (some xP yP hP + some xQ yQ hQ).xRep =
+      ![((yP - yQ) ^ 2 + W.a₁ * (yP - yQ) * (xP - xQ) - (W.a₂ + xP + xQ) * (xP - xQ) ^2) /
+         (xP - xQ) ^ 2, 1] := by
+  simp only [add_of_X_ne (h₁ := hP) (h₂ := hQ) hn, xRep_some, addX_of_X_ne hn]
+
+/-- We give an explicit expression for `xRep` of `P - Q` when `P ≠ ±Q`. -/
+lemma xRep_sub_of_X_ne {xP yP xQ yQ : F} (hP : W.Nonsingular xP yP)
+    (hQ : W.Nonsingular xQ yQ) (hn : xP ≠ xQ) :
+    (some xP yP hP - some xQ yQ hQ).xRep =
+      ![((yP + yQ + W.a₁ * xQ + W.a₃) ^ 2 + W.a₁ * (yP + yQ + W.a₁ * xQ + W.a₃) * (xP - xQ)
+           - (W.a₂ + xP + xQ) * (xP - xQ) ^2) / (xP - xQ) ^ 2, 1] := by
+  simp only [sub_eq_add_neg (some ..), neg_some hQ,
+    add_of_X_ne (h₁ := hP) (h₂ := (nonsingular_neg ..).mpr hQ) hn, xRep_some,
+    addX_of_X_ne hn]
+  grind only [negY]
+
 end Point
+
+lemma finite_preimage_xRep (x : F) : {P : W.Point | P.xRep = ![x, 1]}.Finite := by
+  rcases Set.eq_empty_or_nonempty {P : W.Point | P.xRep = ![x, 1]} with h | h
+  · exact h ▸ Set.finite_empty
+  choose Q hQ using h
+  simp only [Set.mem_ofPred_eq] at hQ
+  rw [show {P | P.xRep = ![x, 1]} = {Q, -Q} by ext : 1; simp [← hQ, Point.xRep_eq_xRep_iff]]
+  simp
+
+lemma finite_preimage_xRep0 (x : F) : {P : W.Point | P.xRep 0 = x}.Finite := by
+  have : {P : W.Point | P.xRep 0 = x} ⊆ {P | P.xRep = ![x, 1]} ∪ {0} := by
+    intro P hP
+    match P with
+    | 0 => simp
+    | .some x' y h => simp_all [Point.xRep_some]
+  exact (finite_preimage_xRep x).union (Set.finite_singleton 0) |>.subset this
 
 end Affine
 

@@ -52,7 +52,7 @@ protected theorem continuous_iff {Y : Type*} [TopologicalSpace Y] {f : X → Y}
     (hS : IsCoherentWith S) :
     Continuous f ↔ ∀ s ∈ S, ContinuousOn f s :=
   ⟨fun h _ _ ↦ h.continuousOn, fun h ↦ continuous_def.2 fun _u hu ↦ hS.isOpen_iff.2 fun s hs ↦
-    hu.preimage <| (h s hs).domRestrict⟩
+    hu.preimage (h s hs).domRestrict⟩
 
 theorem of_continuous_prop (h : ∀ f : X → Prop, (∀ s ∈ S, ContinuousOn f s) → Continuous f) :
     IsCoherentWith S where

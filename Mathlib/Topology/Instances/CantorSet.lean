@@ -7,13 +7,9 @@ Filippo A. E. Nuccio
 -/
 module
 
-public import Mathlib.Algebra.CharP.Defs
+import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Analysis.Real.OfDigits
 public import Mathlib.Data.Stream.Init
-public import Mathlib.Topology.Algebra.GroupWithZero
-public import Mathlib.Topology.Algebra.Ring.Real
-public import Mathlib.Tactic.FinCases
-public import Mathlib.Tactic.Field
 
 /-!
 # Ternary Cantor Set

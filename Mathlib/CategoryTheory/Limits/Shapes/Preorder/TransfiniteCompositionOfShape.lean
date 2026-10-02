@@ -6,14 +6,11 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.ComposableArrows.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
-public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Fin
-public import Mathlib.CategoryTheory.Limits.Final
-public import Mathlib.CategoryTheory.Filtered.Final
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Preorder
-public import Mathlib.Data.Fin.SuccPredOrder
-public import Mathlib.Order.LatticeIntervals
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Fin
 public import Mathlib.Order.Interval.Set.Final
+public import Mathlib.Order.LatticeIntervals
+public import Mathlib.Order.SuccPred.Fin
 
 /-!
 # A structure to describe transfinite compositions
@@ -67,7 +64,6 @@ attribute [instance] isWellOrderContinuous
 
 variable {J f} [SuccOrder J] [WellFoundedLT J] (c : TransfiniteCompositionOfShape J f)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` and `f'` are two isomorphic morphisms, and `f` is a transfinite composition
 of shape `J`, then `f'` also is. -/
 @[simps]
@@ -116,7 +112,6 @@ noncomputable def map (F : C ⥤ D) [PreservesWellOrderContinuousOfShape J F]
       (Cocone.ext (Iso.refl _))
   fac := by simp [← Functor.map_comp]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A transfinite composition of shape `J` induces a transfinite composition
 of shape `Set.Iic j` for any `j : J`. -/

@@ -10,7 +10,7 @@ public import Mathlib.Data.Finset.Order
 public import Mathlib.Data.Set.Finite.Basic  -- shake: keep (IsAtomic α), cf. lean#13417
 public import Mathlib.Order.Atoms
 
-import Mathlib.Data.Finite.Prod
+import Mathlib.Basic.Finite.Prod
 import Mathlib.Order.ConditionallyCompleteLattice.Finset
 
 /-!
@@ -25,7 +25,7 @@ On a `Fintype`, we can construct
 * an `OrderTop` from `SemilatticeSup`.
 * a `BoundedOrder` from `Lattice`.
 
-Those are marked as `def` to avoid defeqness issues.
+Those are marked as `def` to avoid issues with defeq.
 
 ## Completion instances
 
@@ -100,12 +100,12 @@ attribute [local instance] toCompleteLattice in
 noncomputable abbrev toCompleteDistribLatticeMinimalAxioms [DistribLattice α] [BoundedOrder α] :
     CompleteDistribLattice.MinimalAxioms α where
   iInf_sup_le_sup_sInf := fun a s => by
-    convert! (Finset.inf_sup_distrib_left s.toFinset id a).ge using 1
+    convert (Finset.inf_sup_distrib_left s.toFinset id a).ge using 1
     rw [Finset.inf_eq_iInf]
     simp_rw [Set.mem_toFinset]
     rfl
   inf_sSup_le_iSup_inf := fun a s => by
-    convert! (Finset.sup_inf_distrib_left s.toFinset id a).le using 1
+    convert (Finset.sup_inf_distrib_left s.toFinset id a).le using 1
     rw [Finset.sup_eq_iSup]
     simp_rw [Set.mem_toFinset]
     rfl
