@@ -20,6 +20,12 @@ squarefree, the proof is a trial division of `n` by the odd numbers `k = 3, 5, 7
 invariant that every prime divisor of the current cofactor is at least `k`.
 
 This is adapted from the Mathlib 3 `norm_num` extension for `squarefree`, written by Mario Carneiro.
+
+## Implementation Notes
+
+The proof that `n` is squarefree has depth about `√n / 2`. As for the primality proofs of
+`Mathlib.Tactic.NormNum.Prime`, the kernel raises a deep recursion error when type-checking it for
+large `n` (for example `n = 1000000007`).
 -/
 
 public meta section
@@ -77,12 +83,12 @@ theorem squarefreeHelper_2 (n m k k' : ℕ) (e : k' = k + 2) (hm : k * m = n)
   · exact odd_iff.mp (odd_mul.mp (odd_iff.mpr (hm ▸ hn))).2
 
 /-- End of the trial division: if `n < k * k`, a prime `p ≥ k` cannot have `p * p ∣ n`. -/
-theorem squarefreeHelper_3 (n k : ℕ) (h : Nat.ble (k * k) n = false) :
+theorem squarefreeHelper_3 (n k : ℕ) (h : ble (k * k) n = false) :
     SquarefreeHelper n k := fun hn _ _ H ↦ squarefree_iff_prime_squarefree.mpr fun p hp hpp ↦ by
   have : k * k ≤ p * p := by
     gcongr <;>
     exact H p hp ((Dvd.intro _ rfl).trans hpp)
-  have : p * p ≤ n := le_of_dvd (by omega) hpp
+  have : p * p ≤ n := le_of_dvd (by lia) hpp
   have : n < k * k := ble_eq_false.mp h
   lia
 
