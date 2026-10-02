@@ -114,35 +114,41 @@ end Finite
 
 section NormedLatticeAddCommGroup
 variable [NormedAddCommGroup α] [Lattice α] [IsOrderedAddMonoid α] [HasSolidNorm α]
-  {a₁ a₂ b₁ b₂ x y : α}
 
 lemma dist_inf_sup (x y : α) : dist (x ⊓ y) (x ⊔ y) = dist x y := by
   simp [dist_eq_norm, sup_sub_inf_eq_abs_sub, norm_abs_eq_norm, norm_sub_rev]
 
-lemma dist_mono_left : MonotoneOn (dist · y) (Ici y) := by
+lemma dist_mono_left {y : α} : MonotoneOn (dist · y) (Ici y) := by
   intro y₁ hy₁ y₂ hy₂ hy
   simp only [dist_eq_norm]
   apply norm_le_norm_of_abs_le_abs
   rw [abs_of_nonneg (sub_nonneg.mpr hy₁), abs_of_nonneg (sub_nonneg.mpr hy₂)]
   exact sub_le_sub_right hy y
 
-lemma dist_mono_right : MonotoneOn (dist x) (Ici x) := by
+lemma dist_mono_right {x : α} : MonotoneOn (dist x) (Ici x) := by
   simpa only [dist_comm] using dist_mono_left (y := x)
 
-lemma dist_anti_left : AntitoneOn (dist · y) (Iic y) := by
+lemma dist_anti_left {y : α} : AntitoneOn (dist · y) (Iic y) := by
   intro y₁ hy₁ y₂ hy₂ hy
   simp only [dist_comm, dist_eq_norm]
   apply norm_le_norm_of_abs_le_abs
   rw [abs_of_nonneg (sub_nonneg.mpr hy₂), abs_of_nonneg (sub_nonneg.mpr hy₁)]
   exact sub_le_sub_left hy y
 
-lemma dist_anti_right : AntitoneOn (dist x) (Iic x) := by
+lemma dist_anti_right {x : α} : AntitoneOn (dist x) (Iic x) := by
   simpa only [dist_comm] using dist_anti_left (y := x)
 
-lemma dist_le_dist_of_le (ha : a₂ ≤ a₁) (h₁ : a₁ ≤ b₁) (hb : b₁ ≤ b₂) :
+lemma dist_le_dist_of_le {a₁ a₂ b₁ b₂ : α} (ha : a₂ ≤ a₁) (h₁ : a₁ ≤ b₁) (hb : b₁ ≤ b₂) :
     dist a₁ b₁ ≤ dist a₂ b₂ :=
   (dist_mono_right h₁ (h₁.trans hb) hb).trans <|
     dist_anti_left (ha.trans <| h₁.trans hb) (h₁.trans hb) ha
+
+@[deprecated (since := "2026-10-02")] alias dist_inf_sup_pi := dist_inf_sup
+@[deprecated (since := "2026-10-02")] alias dist_mono_left_pi := dist_mono_left
+@[deprecated (since := "2026-10-02")] alias dist_mono_right_pi := dist_mono_right
+@[deprecated (since := "2026-10-02")] alias dist_anti_left_pi := dist_anti_left
+@[deprecated (since := "2026-10-02")] alias dist_anti_right_pi := dist_anti_right
+@[deprecated (since := "2026-10-02")] alias dist_le_dist_of_le_pi := dist_le_dist_of_le
 
 end NormedLatticeAddCommGroup
 
