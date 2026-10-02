@@ -23,7 +23,9 @@ This file defines the `Majorized` predicate, along with a few basic lemmas.
 
 namespace Tactic.ComputeAsymptotics
 
-open Topology Filter Asymptotics
+open Filter Asymptotics
+
+open scoped Topology
 
 /-- `Majorized f g exp` for real functions `f` and `g` means that for any `exp' > exp`,
 `f =o[atTop] g ^ exp'`. This is used to define the `MultiseriesExpansion.Approximates` predicate.
@@ -99,7 +101,6 @@ theorem add {f_exp g_exp : ℝ} (hf : Majorized f b f_exp)
   intro exp' h_exp'
   exact (hf _ (by order)).add (hg _ (by order))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The product of two functions that are majorized with exponents `f_exp` and `g_exp` is
 majorized with exponent `f_exp + g_exp`. -/
 theorem mul {f_exp g_exp : ℝ} (hf : Majorized f b f_exp)

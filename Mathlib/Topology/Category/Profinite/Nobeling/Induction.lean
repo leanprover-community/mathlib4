@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Free
 public import Mathlib.Topology.Category.Profinite.Nobeling.Span
-public import Mathlib.Topology.Category.Profinite.Nobeling.Successor
-public import Mathlib.Topology.Category.Profinite.Nobeling.ZeroLimit
+import Mathlib.Topology.Category.Profinite.Nobeling.Successor
+import Mathlib.Topology.Category.Profinite.Nobeling.ZeroLimit
 
 /-!
 # Nöbeling's theorem
@@ -119,21 +119,19 @@ open scoped Classical in
 noncomputable
 def Nobeling.ι : S → ({C : Set S // IsClopen C} → Bool) := fun s C => decide (s ∈ C.1)
 
-open scoped Classical in
 /-- The map `Nobeling.ι` is a closed embedding. -/
 theorem Nobeling.isClosedEmbedding : IsClosedEmbedding (Nobeling.ι S) := by
+  classical
   apply Continuous.isClosedEmbedding
   · dsimp +unfoldPartialApp [ι]
     refine continuous_pi ?_
     intro C
-    rw [← IsLocallyConstant.iff_continuous]
-    refine ((IsLocallyConstant.tfae _).out 0 3).mpr ?_
+    rw [← IsLocallyConstant.iff_continuous, IsLocallyConstant.iff_isOpen_fiber]
     rintro ⟨⟩
     · refine IsClopen.isOpen (isClopen_compl_iff.mp ?_)
       convert C.2
       ext x
-      simp only [Set.mem_compl_iff, Set.mem_preimage, Set.mem_singleton_iff,
-        decide_eq_false_iff_not, not_not]
+      simp
     · refine IsClopen.isOpen ?_
       convert C.2
       ext x
@@ -154,5 +152,5 @@ open Profinite NobelingProof
 `S : Profinite`. -/
 instance LocallyConstant.freeOfProfinite (S : Profinite.{u}) :
     Module.Free ℤ (LocallyConstant S ℤ) := by
-  obtain ⟨_, _⟩ := exists_wellOrder {C : Set S // IsClopen C}
+  obtain ⟨_, _⟩ := exists_wellFoundedLT {C : Set S // IsClopen C}
   exact @Nobeling_aux {C : Set S // IsClopen C} _ _ S (Nobeling.ι S) (Nobeling.isClosedEmbedding S)

@@ -11,7 +11,7 @@ public import Mathlib.FieldTheory.Fixed
 public import Mathlib.FieldTheory.SplittingField.IsSplittingField
 public import Mathlib.RingTheory.Adjoin.Dimension
 public import Mathlib.RingTheory.TensorProduct.Finite
-
+public import Mathlib.SetTheory.Cardinal.Subfield
 
 /-!
 # Adjoining Elements to Fields
@@ -37,7 +37,7 @@ lemma FG.of_restrictScalars {K L E : Type*} [Field K] [Field L] [Field E]
   obtain ⟨s, hs⟩ := H
   refine ⟨s, le_antisymm ?_ ?_⟩
   · rw [adjoin_le_iff]
-    exact (subset_adjoin K _).trans_eq congr(($hs : Set E))
+    exact (subset_adjoin K _).trans_eq congr($hs)
   · rw [← restrictScalars_le_iff K, ← hs, adjoin_le_iff]
     exact subset_adjoin L _
 
@@ -66,7 +66,8 @@ theorem mem_adjoin_simple_iff {α : E} (x : E) :
 theorem forall_mem_adjoin_smul_eq_self_iff {M : Type*} [Monoid M] [MulSemiringAction M E]
     [SMulCommClass M F E] (m : M) :
     (∀ x ∈ adjoin F S, m • x = x) ↔ ∀ x ∈ S, m • x = x := by
-  simpa [-adjoin_le_iff, Set.subset_def, SetLike.le_def, FixedBy.intermediateField_mem_iff] using
+  simpa [-adjoin_le_iff, Set.subset_def, IsConcreteLE.le_iff,
+    FixedBy.intermediateField_mem_iff] using
     adjoin_le_iff (T := FixedBy.intermediateField F E m)
 
 variable {F}
@@ -75,7 +76,6 @@ section Supremum
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] (E1 E2 : IntermediateField K L)
 
-set_option backward.isDefEq.respectTransparency false in
 instance finiteDimensional_sup [FiniteDimensional K E1] [FiniteDimensional K E2] :
     FiniteDimensional K (E1 ⊔ E2 : IntermediateField K L) := by
   let g := Algebra.TensorProduct.productMap E1.val E2.val
@@ -128,6 +128,11 @@ theorem toSubalgebra_iSup_of_directed (dir : Directed (· ≤ ·) t) :
   · simp_rw [iSup_of_empty, bot_toSubalgebra]
   · exact SetLike.ext' ((coe_iSup_of_directed dir).trans (Subalgebra.coe_iSup_of_directed dir).symm)
 
+theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → IntermediateField K L) :
+    ((⨆ i, S i : IntermediateField K L) : Set L) =
+      ⋃ s : Finset ι, (⨆ i ∈ s, S i : IntermediateField K L) := by
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le fun _ _ ↦ biSup_mono]
+
 instance finiteDimensional_iSup_of_finite [h : Finite ι] [∀ i, FiniteDimensional K (t i)] :
     FiniteDimensional K (⨆ i, t i : IntermediateField K L) := by
   rw [← iSup_univ]
@@ -152,7 +157,6 @@ theorem finiteDimensional_iSup_of_finset'
   have := Subtype.forall'.mp h
   iSup_subtype'' s t ▸ IntermediateField.finiteDimensional_iSup_of_finite
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A compositum of splitting fields is a splitting field -/
 theorem isSplittingField_iSup {p : ι → K[X]}
     {s : Finset ι} (h0 : ∏ i ∈ s, p i ≠ 0) (h : ∀ i ∈ s, (p i).IsSplittingField K (t i)) :
@@ -172,7 +176,6 @@ section Tower
 variable (E)
 variable {K : Type*} [Field K] [Algebra F K] [Algebra E K] [IsScalarTower F E K]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `K / E / F` is a field extension tower, `L` is an intermediate field of `K / F`, such that
 either `E / F` or `L / F` is algebraic, then `[E(L) : E] ≤ [L : F]`. A corollary of
 `Subalgebra.adjoin_rank_le` since in this case `E(L) = E[L]`. -/
@@ -223,25 +226,25 @@ instance : IsCompactlyGenerated (IntermediateField F E) :=
   ⟨fun s =>
     ⟨(fun x => F⟮x⟯) '' s,
       ⟨by rintro t ⟨x, _, rfl⟩; exact adjoin_simple_isCompactElement x,
-        sSup_image.trans <| (biSup_adjoin_simple _).trans <|
+        isLUB_iff_sSup_eq.mpr <| sSup_image.trans <| (biSup_adjoin_simple _).trans <|
           le_antisymm (adjoin_le_iff.mpr le_rfl) <| subset_adjoin F (s : Set E)⟩⟩⟩
 
 theorem exists_finset_of_mem_iSup {ι : Type*} {f : ι → IntermediateField F E} {x : E}
     (hx : x ∈ ⨆ i, f i) : ∃ s : Finset ι, x ∈ ⨆ i ∈ s, f i := by
-  have := (adjoin_simple_isCompactElement x).exists_finset_of_le_iSup (IntermediateField F E) f
+  have := (adjoin_simple_isCompactElement x).exists_finset_of_le_iSup f
   simp only [adjoin_simple_le_iff] at this
   exact this hx
 
 theorem exists_finset_of_mem_supr' {ι : Type*} {f : ι → IntermediateField F E} {x : E}
     (hx : x ∈ ⨆ i, f i) : ∃ s : Finset (Σ i, f i), x ∈ ⨆ i ∈ s, F⟮(i.2 : E)⟯ := by
-  refine exists_finset_of_mem_iSup (SetLike.le_def.mp (iSup_le fun i x h ↦ ?_) hx)
-  exact SetLike.le_def.mp (le_iSup_of_le ⟨i, x, h⟩ (by simp)) (mem_adjoin_simple_self F x)
+  refine exists_finset_of_mem_iSup (mem_of_le_of_mem (iSup_le fun i x h ↦ ?_) hx)
+  exact mem_of_le_of_mem (le_iSup_of_le ⟨i, x, h⟩ (by simp)) (mem_adjoin_simple_self F x)
 
 theorem exists_finset_of_mem_supr'' {ι : Type*} {f : ι → IntermediateField F E}
     (h : ∀ i, Algebra.IsAlgebraic F (f i)) {x : E} (hx : x ∈ ⨆ i, f i) :
     ∃ s : Finset (Σ i, f i), x ∈ ⨆ i ∈ s, adjoin F ((minpoly F (i.2 :)).rootSet E) := by
-  refine exists_finset_of_mem_iSup (SetLike.le_def.mp (iSup_le (fun i x1 hx1 => ?_)) hx)
-  refine SetLike.le_def.mp (le_iSup_of_le ⟨i, x1, hx1⟩ ?_)
+  refine exists_finset_of_mem_iSup (mem_of_le_of_mem (iSup_le (fun i x1 hx1 => ?_)) hx)
+  refine mem_of_le_of_mem (le_iSup_of_le ⟨i, x1, hx1⟩ ?_)
     (subset_adjoin F (rootSet (minpoly F x1) E) ?_)
   · rw [IntermediateField.minpoly_eq, Subtype.coe_mk]
   · rw [mem_rootSet_of_ne, minpoly.aeval]
@@ -252,10 +255,31 @@ theorem exists_finset_of_mem_adjoin {S : Set E} {x : E} (hx : x ∈ adjoin F S) 
   simp_rw [← biSup_adjoin_simple S, ← iSup_subtype''] at hx
   obtain ⟨s, hx'⟩ := exists_finset_of_mem_iSup hx
   classical
-  refine ⟨s.image Subtype.val, by simp, SetLike.le_def.mp ?_ hx'⟩
+  refine ⟨s.image Subtype.val, by simp, mem_of_le_of_mem ?_ hx'⟩
   simp_rw [Finset.coe_image, iSup_le_iff, adjoin_le_iff]
   rintro _ h _ rfl
   exact subset_adjoin F _ ⟨_, h, rfl⟩
+
+/-- Adjoining `x + algebraMap F E y`, where `y` lies in the base field, yields the same simple
+extension as adjoining `x`. -/
+theorem adjoin_simple_add_algebraMap (x : E) (y : F) : F⟮x + algebraMap F E y⟯ = F⟮x⟯ := by
+  apply le_antisymm
+  · rw [adjoin_le_iff, Set.singleton_subset_iff, SetLike.mem_coe]
+    exact add_mem (mem_adjoin_simple_self F x) (algebraMap_mem _ y)
+  · rw [adjoin_simple_le_iff]
+    convert IntermediateField.sub_mem _ (mem_adjoin_simple_self F _) (algebraMap_mem _ y)
+    rw [eq_sub_iff_add_eq]
+
+/-- Adjoining `x * algebraMap F E y`, where `y` is a nonzero element of the base field, yields the
+same simple extension as adjoining `x`. -/
+theorem adjoin_simple_mul_algebraMap (x : E) (y : F) (hy : y ≠ 0) :
+    F⟮x * algebraMap F E y⟯ = F⟮x⟯ := by
+  apply le_antisymm
+  · rw [adjoin_le_iff, Set.singleton_subset_iff, SetLike.mem_coe]
+    exact mul_mem (mem_adjoin_simple_self F x) (algebraMap_mem _ y)
+  · rw [adjoin_simple_le_iff]
+    convert IntermediateField.div_mem _ (mem_adjoin_simple_self F _) (algebraMap_mem _ y)
+    rw [mul_div_cancel_right₀ x (by rwa [_root_.map_ne_zero])]
 
 end AdjoinDef
 
@@ -267,7 +291,7 @@ section AdjoinRank
 
 open Module Module
 
-variable {K L : IntermediateField F E}
+variable {K : IntermediateField F E}
 
 @[simp]
 theorem rank_eq_one_iff : Module.rank F K = 1 ↔ K = ⊥ := by
@@ -287,18 +311,18 @@ protected theorem rank_bot : Module.rank F (⊥ : IntermediateField F E) = 1 := 
 protected theorem finrank_bot : finrank F (⊥ : IntermediateField F E) = 1 := by
   rw [finrank_eq_one_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem rank_bot' : Module.rank (⊥ : IntermediateField F E) E = Module.rank F E := by
   rw [← rank_mul_rank F (⊥ : IntermediateField F E) E, IntermediateField.rank_bot, one_mul]
 
-@[simp] theorem finrank_bot' : finrank (⊥ : IntermediateField F E) E = finrank F E :=
-  congr(Cardinal.toNat $(rank_bot'))
+@[simp]
+theorem finrank_bot' : finrank (⊥ : IntermediateField F E) E = finrank F E :=
+  congr($(rank_bot').toNat)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] protected theorem rank_top : Module.rank (⊤ : IntermediateField F E) E = 1 :=
   Subalgebra.bot_eq_top_iff_rank_eq_one.mp <| top_le_iff.mp fun x _ ↦ ⟨⟨x, trivial⟩, rfl⟩
 
-@[simp] protected theorem finrank_top : finrank (⊤ : IntermediateField F E) E = 1 :=
+@[simp]
+protected theorem finrank_top : finrank (⊤ : IntermediateField F E) E = 1 :=
   rank_eq_one_iff_finrank_eq_one.mp IntermediateField.rank_top
 
 @[simp] theorem rank_top' : Module.rank F (⊤ : IntermediateField F E) = Module.rank F E :=
@@ -307,7 +331,6 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem finrank_top' : finrank F (⊤ : IntermediateField F E) = finrank F E :=
   finrank_top F E
 
-set_option backward.isDefEq.respectTransparency false in
 lemma finrank_eq_one_iff_eq_top {K : IntermediateField F E} :
     Module.finrank K E = 1 ↔ K = ⊤ := by
   refine ⟨?_, (· ▸ IntermediateField.finrank_top)⟩
@@ -385,19 +408,16 @@ universe u
 variable (F : Type*) [Field F] {E : Type*} [Field E] [Algebra F E] {α : E}
 variable {K : Type u} [Field K] [Algebra F K]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem minpoly_gen (α : E) :
     minpoly F (AdjoinSimple.gen F α) = minpoly F α := by
   rw [← minpoly.algebraMap_eq (algebraMap F⟮α⟯ E).injective, AdjoinSimple.algebraMap_gen]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem aeval_gen_minpoly (α : E) : aeval (AdjoinSimple.gen F α) (minpoly F α) = 0 := by
   ext
   convert minpoly.aeval F α
   conv in aeval α => rw [← AdjoinSimple.algebraMap_gen F α]
   exact (aeval_algebraMap_apply E (AdjoinSimple.gen F α) _).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- algebra isomorphism between `AdjoinRoot` and `F⟮α⟯` -/
 @[stacks 09G1 "Algebraic case"]
 noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) :
@@ -406,7 +426,7 @@ noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) :
     (AdjoinRoot.liftAlgHom (minpoly F α) _ (AdjoinSimple.gen F α) (aeval_gen_minpoly F α))
     (by
       set f := AdjoinRoot.lift _ _ (aeval_gen_minpoly F α :)
-      haveI := Fact.mk (minpoly.irreducible h)
+      have := Fact.mk (minpoly.irreducible h)
       constructor
       · exact RingHom.injective f
       · suffices F⟮α⟯.toSubfield ≤ RingHom.fieldRange (F⟮α⟯.toSubfield.subtype.comp f) by
@@ -442,7 +462,6 @@ section PowerBasis
 
 variable {L : Type*} [Field L] [Algebra K L]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The elements `1, x, ..., x ^ (d - 1)` form a basis for `K⟮x⟯`,
 where `d` is the degree of the minimal polynomial of `x`. -/
 noncomputable def powerBasisAux {x : L} (hx : IsIntegral K x) :
@@ -467,11 +486,9 @@ noncomputable def adjoin.powerBasis {x : L} (hx : IsIntegral K x) : PowerBasis K
 theorem adjoin.finiteDimensional {x : L} (hx : IsIntegral K x) : FiniteDimensional K K⟮x⟯ :=
   (adjoin.powerBasis hx).finite
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isAlgebraic_adjoin_simple {x : L} (hx : IsIntegral K x) : Algebra.IsAlgebraic K K⟮x⟯ :=
   have := adjoin.finiteDimensional hx; Algebra.IsAlgebraic.of_finite K K⟮x⟯
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `x` is an algebraic element of field `K`, then its minimal polynomial has degree
 `[K(x) : K]`. -/
 @[stacks 09GN]
@@ -488,7 +505,6 @@ theorem adjoin_eq_top_of_adjoin_eq_top [Algebra E K] [IsScalarTower F E K]
     rw [restrictScalars_top, ← top_le_iff, ← hprim, adjoin_le_iff,
       coe_restrictScalars, ← adjoin_le_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `E / F` is a finite extension such that `E = F(α)`, then for any intermediate field `K`, the
 `F` adjoin the coefficients of `minpoly K α` is equal to `K` itself. -/
 theorem adjoin_minpoly_coeff_of_exists_primitive_element
@@ -515,13 +531,13 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
     simp_all
   refine eq_of_le_of_finrank_le' hsub ?_
   simp_rw [finrank_eq]
-  convert natDegree_le_of_dvd dvd_g
-    ((g.monic_toSubring _ _).mpr <| (minpoly.monic <| .of_finite K α).map _).ne_zero using 1
+  convert
+    natDegree_le_of_dvd dvd_g
+      ((g.monic_toSubring _ _).mpr <| (minpoly.monic <| .of_finite K α).map _).ne_zero using 1
   rw [natDegree_toSubring, natDegree_map]
 
 instance : Module.Finite F (⊥ : IntermediateField F E) := Subalgebra.finite_bot
 
-set_option backward.isDefEq.respectTransparency false in
 variable {F} in
 /-- If `E / F` is an infinite algebraic extension, then there exists an intermediate field
 `L / F` with arbitrarily large finite extension degree. -/
@@ -537,22 +553,12 @@ theorem exists_lt_finrank_of_infinite_dimensional
       rw [show L = ⊤ from eq_top_iff.2 fun x _ ↦ hnfd x] at fin
       exact topEquiv.toLinearEquiv.finiteDimensional
     let L' := L ⊔ F⟮x⟯
-    haveI := adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral (R := F) x)
+    have := adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral (R := F) x)
     refine ⟨L', inferInstance, by_contra fun h ↦ ?_⟩
     have h1 : L = L' := eq_of_le_of_finrank_le le_sup_left ((not_lt.1 h).trans hn)
     have h2 : F⟮x⟯ ≤ L' := le_sup_right
     exact hx <| (h1.symm ▸ h2) <| mem_adjoin_simple_self F x
 
-theorem _root_.minpoly.natDegree_le (x : L) [FiniteDimensional K L] :
-    (minpoly K x).natDegree ≤ finrank K L :=
-  le_of_eq_of_le (IntermediateField.adjoin.finrank (.of_finite _ _)).symm
-    K⟮x⟯.toSubmodule.finrank_le
-
-theorem _root_.minpoly.degree_le (x : L) [FiniteDimensional K L] :
-    (minpoly K x).degree ≤ finrank K L :=
-  degree_le_of_natDegree_le (minpoly.natDegree_le x)
-
-set_option backward.isDefEq.respectTransparency false in
 /-- If `x : L` is an integral element in a field extension `L` over `K`, then the degree of the
   minimal polynomial of `x` over `K` divides `[L : K]`. -/
 theorem _root_.minpoly.degree_dvd {x : L} (hx : IsIntegral K x) :
@@ -561,7 +567,32 @@ theorem _root_.minpoly.degree_dvd {x : L} (hx : IsIntegral K x) :
   use finrank K⟮x⟯ L
   rw [mul_comm, finrank_mul_finrank]
 
-set_option backward.isDefEq.respectTransparency false in
+theorem _root_.Polynomial.Irreducible.natDegree_dvd_finrank {f : K[X]} (hi : Irreducible f)
+    (hs : (f.map (algebraMap K L)).Splits) : f.natDegree ∣ finrank K L := by
+  have := hi.degree_pos.ne'
+  rw [← f.degree_map (algebraMap K L)] at this
+  obtain ⟨x, hx⟩ := hs.exists_eval_eq_zero this
+  rw [eval_map_algebraMap] at hx
+  have key := minpoly.Irreducible.eq_minpoly hi hx
+  replace hi := hi.ne_zero
+  rw [key, natDegree_C_mul (leadingCoeff_ne_zero.mpr hi)]
+  apply minpoly.degree_dvd
+  rw [← minpoly.ne_zero_iff]
+  contrapose hi
+  rwa [hi, mul_zero] at key
+
+instance : Algebra.IsAlgebraic K (⊥ : IntermediateField K L) where
+  isAlgebraic := by
+    intro ⟨x, hx⟩
+    obtain ⟨c, rfl⟩ := hx
+    exact isAlgebraic_algebraMap c
+
+instance : Algebra.IsAlgebraic (⊤ : IntermediateField K L) L where
+  isAlgebraic := by
+    intro x
+    let xt : (⊤ : IntermediateField K L) := ⟨x, mem_top⟩
+    exact isAlgebraic_algebraMap xt
+
 -- TODO: generalize to `Sort`
 /-- A compositum of algebraic extensions is algebraic -/
 theorem isAlgebraic_iSup {ι : Type*} {t : ι → IntermediateField K L}
@@ -571,7 +602,7 @@ theorem isAlgebraic_iSup {ι : Type*} {t : ι → IntermediateField K L}
   rintro ⟨x, hx⟩
   obtain ⟨s, hx⟩ := exists_finset_of_mem_supr' hx
   rw [isAlgebraic_iff, Subtype.coe_mk, ← Subtype.coe_mk (p := (· ∈ _)) x hx, ← isAlgebraic_iff]
-  haveI : ∀ i : Σ i, t i, FiniteDimensional K K⟮(i.2 : L)⟯ := fun ⟨i, x⟩ ↦
+  have : ∀ i : Σ i, t i, FiniteDimensional K K⟮(i.2 : L)⟯ := fun ⟨i, x⟩ ↦
     adjoin.finiteDimensional (isIntegral_iff.1 (Algebra.IsIntegral.isIntegral x))
   apply IsAlgebraic.of_finite
 
@@ -586,8 +617,26 @@ A direct corollary of `finiteDimensional_iSup_of_finite`. -/
 theorem finiteDimensional_adjoin {S : Set L} [Finite S] (hS : ∀ x ∈ S, IsIntegral K x) :
     FiniteDimensional K (adjoin K S) := by
   rw [← biSup_adjoin_simple, ← iSup_subtype'']
-  haveI (x : S) := adjoin.finiteDimensional (hS x.1 x.2)
+  have (x : S) := adjoin.finiteDimensional (hS x.1 x.2)
   exact finiteDimensional_iSup_of_finite
+
+/-- If `x` generates `L` over `K` (i.e., `K⟮x⟯ = ⊤`) and is integral over `K`, then `x`
+defines a `PowerBasis` for `L` over `K`. See `PowerBasis.ofAdjoinEqTop` for a version with
+`Algebra.adjoin`. -/
+noncomputable def _root_.PowerBasis.ofAdjoinSimpleEqTop {x : L} (h : IsIntegral K x)
+    (hgen : K⟮x⟯ = ⊤) : PowerBasis K L :=
+  (adjoin.powerBasis h).map ((IntermediateField.equivOfEq hgen).trans IntermediateField.topEquiv)
+
+@[simp]
+lemma _root_.PowerBasis.ofAdjoinSimpleEqTop_gen {x : L} (h : IsIntegral K x)
+    (hgen : K⟮x⟯ = ⊤) : (PowerBasis.ofAdjoinSimpleEqTop h hgen).gen = x := by
+  simp [PowerBasis.ofAdjoinSimpleEqTop]
+
+@[simp]
+lemma _root_.PowerBasis.ofAdjoinSimpleEqTop_dim {x : L} (h : IsIntegral K x)
+    (hgen : K⟮x⟯ = ⊤) :
+    (PowerBasis.ofAdjoinSimpleEqTop h hgen).dim = (minpoly K x).natDegree := by
+  simp [PowerBasis.ofAdjoinSimpleEqTop]
 
 end PowerBasis
 
@@ -606,11 +655,10 @@ lemma algHomAdjoinIntegralEquiv_symm_apply_gen (h : IsIntegral F α)
     rw [adjoin.powerBasis_gen, minpoly_gen]; exact (mem_aroots.mp x.2).2
 
 /-- Fintype of algebra homomorphism `F⟮α⟯ →ₐ[F] K` -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def fintypeOfAlgHomAdjoinIntegral (h : IsIntegral F α) : Fintype (F⟮α⟯ →ₐ[F] K) :=
   PowerBasis.AlgHom.fintype (adjoin.powerBasis h)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem card_algHom_adjoin_integral (h : IsIntegral F α) (h_sep : IsSeparable F α)
     (h_splits : ((minpoly F α).map (algebraMap F K)).Splits) :
     Nat.card (F⟮α⟯ →ₐ[F] K) = (minpoly F α).natDegree := by
@@ -619,7 +667,6 @@ theorem card_algHom_adjoin_integral (h : IsIntegral F α) (h_sep : IsSeparable F
     simp only [IsSeparable, adjoin.powerBasis_dim, adjoin.powerBasis_gen, minpoly_gen, h_splits]
   exact h_sep
 
-set_option backward.isDefEq.respectTransparency false in
 -- Apparently `K⟮root f⟯ →+* K⟮root f⟯` is expensive to unify during instance synthesis.
 open Module AdjoinRoot in
 /-- Let `f, g` be monic polynomials over `K`. If `f` is irreducible, and `g(x) - α` is irreducible
@@ -639,7 +686,7 @@ theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g
     rw [RingHom.map_sub, coeff_map, ← map_C, ← eq_C_of_natDegree_eq_zero e]
     apply hg (AdjoinRoot f)
     rw [AdjoinRoot.minpoly_root hf.ne_zero, hfm, inv_one, map_one, mul_one]
-  have H₁ : f.comp g ≠ 0 := fun h ↦ by simpa [hf', hg', natDegree_comp] using congr_arg natDegree h
+  have H₁ : f.comp g ≠ 0 := fun h ↦ by simpa [hf', hg', natDegree_comp] using congr(natDegree $h)
   have H₂ : ¬ IsUnit (f.comp g) := fun h ↦
     by simpa [hf', hg', natDegree_comp] using natDegree_eq_zero_of_isUnit h
   have ⟨p, hp₁, hp₂⟩ := WfDvdMonoid.exists_irreducible_factor H₂ H₁
@@ -647,7 +694,7 @@ theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g
     (this.trans natDegree_comp.symm).ge).irreducible hp₁
   have := Fact.mk hp₁
   let Kx := AdjoinRoot p
-  letI := (AdjoinRoot.powerBasis hp₁.ne_zero).finite
+  let := (AdjoinRoot.powerBasis hp₁.ne_zero).finite
   have key₁ : f = minpoly K (aeval (root p) g) := by
     refine minpoly.eq_of_irreducible_of_monic hf ?_ hfm
     rw [← aeval_comp]
@@ -794,3 +841,8 @@ theorem AdjoinPair.algebraMap_gen₂ : (algebraMap (↥K⟮x, y⟯) L) (gen₂ K
 end AdjoinPair
 
 end IntermediateField
+
+instance (R : Type*) [CommSemiring R] (K : Type*) [Field K] [Algebra R K]
+    (S : Type*) [Semiring S] [Algebra R S] [Module.Finite R S] :
+    Finite (S →ₐ[R] K) :=
+  .of_equiv _ (Algebra.TensorProduct.liftEquivRight _ K _ _).symm

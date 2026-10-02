@@ -244,7 +244,7 @@ end continuous_add
 section ContinuousSMul
 
 variable [Field 𝕝] [Module 𝕝 E] [ContinuousConstSMul 𝕝 E]
-  [LinearMap.CompatibleSMul E E 𝕜 𝕝] {s : Set E} {x : E}
+  [LinearMap.CompatibleSMul E E 𝕜 𝕝] {s : Set E}
 
 theorem StrictConvex.smul (hs : StrictConvex 𝕜 s) (c : 𝕝) : StrictConvex 𝕜 (c • s) := by
   obtain rfl | hc := eq_or_ne c 0

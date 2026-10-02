@@ -5,8 +5,6 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.LinearAlgebra.RootSystem.Base
-public import Mathlib.LinearAlgebra.RootSystem.Chain
 public import Mathlib.LinearAlgebra.RootSystem.Finite.G2
 
 /-!
@@ -67,14 +65,14 @@ lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
       exact P.ne_zero _ hk'.choose_spec
     have aux (h : P.pairingIn ℤ i k = -2) : ¬P.pairingIn ℤ k i = -2 := by
       have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-      contrapose! hk'; exact (P.pairingIn_neg_two_neg_two_iff ℤ i k).mp ⟨h, hk'⟩
+      contrapose hk'; exact (P.pairingIn_neg_two_neg_two_iff ℤ i k).mp ⟨h, hk'⟩
     have := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i k
     aesop -- https://github.com/leanprover-community/mathlib4/issues/24551 (this should be faster)
   replace hki : P.pairing k i = -1 := by rw [← P.algebraMap_pairingIn ℤ, hki]; simp
   have : P.pairingIn ℤ l i = 1 - P.pairingIn ℤ j i := by
     apply algebraMap_injective ℤ R
     simp only [algebraMap_pairingIn, map_sub, map_one, algebraMap_pairingIn]
-    convert (P.coroot' i : M →ₗ[R] R).congr_arg hl using 1
+    convert! (P.coroot' i : M →ₗ[R] R).congr_arg hl using 1
     simp only [map_sub, map_add, LinearMap.flip_apply, root_coroot_eq_pairing, hki, pairing_same,
       sub_left_inj]
     ring
@@ -92,8 +90,9 @@ lemma root_add_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
     simp only [indexNeg_neg, root_reflectionPerm, reflection_apply_self]
     module
   rw [← neg_mem_range_root_iff]
-  convert b.root_sub_root_mem_of_mem_of_mem j i (-k) hij.symm hj hi hk (by contrapose! hkj; aesop)
-    (by convert P.neg_mem_range_root_iff.mpr hk' using 1; simp [neg_add_eq_sub]) using 1
+  convert
+    b.root_sub_root_mem_of_mem_of_mem j i (-k) hij.symm hj hi hk (by contrapose hkj; aesop)
+      (by convert P.neg_mem_range_root_iff.mpr hk' using 1; simp [neg_add_eq_sub]) using 1
   simp only [indexNeg_neg, root_reflectionPerm, reflection_apply_self]
   module
 
@@ -110,6 +109,7 @@ section chainBotCoeff_mul_chainTopCoeff
 
 variable {b : P.Base} {i j k l m : ι}
 
+set_option linter.overlappingInstances false in
 private lemma chainBotCoeff_mul_chainTopCoeff.aux_0 [P.IsNotG2]
     (hik_mem : P.root k + P.root i ∈ range P.root) :
     P.pairingIn ℤ k i = 0 ∨ (P.pairingIn ℤ k i < 0 ∧ P.chainBotCoeff i k = 0) := by
@@ -129,7 +129,7 @@ include hi hj hij h₁ h₂ h₃
 
 lemma chainBotCoeff_mul_chainTopCoeff.isNotG2 : P.IsNotG2 := by
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-  have : IsAddTorsionFree M := .of_isTorsionFree R M
+  have : HasUniqueDiv M := .of_isTorsionFree R M
   rw [← P.not_isG2_iff_isNotG2]
   intro contra
   obtain ⟨n, h₃⟩ := h₃
@@ -210,8 +210,8 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_1
   intro _ him_mem hjl_mem hjk_mem
   /- Setup some typeclasses and name the 6th root `n`. -/
   have := chainBotCoeff_mul_chainTopCoeff.isNotG2 hi hj hij h₁ h₂ h₃
-  letI := P.indexNeg
-  have : IsAddTorsionFree M := .of_isTorsionFree R M
+  let := P.indexNeg
+  have : HasUniqueDiv M := .of_isTorsionFree R M
   obtain ⟨n, hn⟩ := h₃
   /- Establish basic relationships about roots and their sums / differences. -/
   have hnk_ne : n ≠ k := by rintro rfl; simp [sub_eq_zero, hij, add_sub_assoc] at hn
@@ -236,7 +236,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_1
   have key₁ : P.pairingIn ℤ i k = 0 := by rwa [pairingIn_eq_zero_iff]
   have key₂ : P.pairingIn ℤ i m = 0 := P.pairingIn_eq_zero_iff.mp <| by simpa [aux₁] using aux₀
   have key₃ : P.pairingIn ℤ j k = 2 := by
-    suffices 2 ≤ P.pairingIn ℤ j k by have := IsNotG2.pairingIn_mem_zero_one_two (P := P) j k; aesop
+    suffices 2 ≤ P.pairingIn ℤ j k by have := IsNotG2.pairingIn_mem_zero_one_two (P := P) j k; grind
     have hn₁ : P.pairingIn ℤ n k = 2 + P.pairingIn ℤ i k - P.pairingIn ℤ j k := by
       apply algebraMap_injective ℤ R
       simp only [map_add, map_sub, algebraMap_pairingIn, ← root_coroot_eq_pairing, hn]
@@ -249,7 +249,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_1
       rw [pairing_eq_zero_iff, ← P.algebraMap_pairingIn ℤ, aux₁, map_zero]
     have hkj : P.pairing k j = 1 := by
       rw [← P.algebraMap_pairingIn ℤ]
-      have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' j k (by aesop) (by aesop)
+      have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' j k (by grind) (by grind)
       aesop
     apply algebraMap_injective ℤ R
     rw [algebraMap_pairingIn, ← root_coroot_eq_pairing, ← h₁]
@@ -260,6 +260,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_1
   simp only [P.chainBotCoeff_if_one_zero, hik_mem, him_mem, hjl_mem, hjk_mem]
   simp [key₁, key₂, key₃, key₄]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /- An auxiliary result en route to `RootPairing.chainBotCoeff_mul_chainTopCoeff`. -/
 open RootPositiveForm in
 private lemma chainBotCoeff_mul_chainTopCoeff.aux_2
@@ -270,17 +271,17 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_2
       P.root j + P.root (-k) ∈ range P.root →
       ¬ (P.chainBotCoeff i m = 1 ∧ P.chainBotCoeff j (-l) = 0) := by
   intro _ him_mem hjl_mem hjk_mem
-  letI := P.indexNeg
+  let := P.indexNeg
   /- Setup some typeclasses. -/
   have := chainBotCoeff_mul_chainTopCoeff.isNotG2 hi hj hij h₁ h₂ h₃
-  have : IsAddTorsionFree M := .of_isTorsionFree R M
+  have : HasUniqueDiv M := .of_isTorsionFree R M
   /- Establish basic relationships about roots and their sums / differences. -/
   have hkj_ne : k ≠ j ∧ P.root k ≠ -P.root j := (IsReduced.linearIndependent_iff _).mp <|
     P.linearIndependent_of_sub_mem_range_root <| h₂ ▸ mem_range_self m
   have hlj_mem : P.root l - P.root j ∈ range P.root := by rwa [← h₁]
   /- It is sufficient to prove that two key pairings vanish. -/
   suffices ¬ (P.pairingIn ℤ m i = 0 ∧ P.pairingIn ℤ l j ≠ 0) by
-    contrapose! this
+    contrapose this
     rcases ne_or_eq (P.pairingIn ℤ m i) 0 with hmi | hmi
     · simpa [hmi, this.1, P.pairingIn_eq_zero_iff (i := i)] using chainBotCoeff_if_one_zero him_mem
     refine ⟨hmi, fun hlj ↦ ?_⟩
@@ -305,14 +306,14 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_2
         algebraMap_injective ℤ R <| by simpa only [algebraMap_pairingIn, map_add]
       simp [← P.root_coroot_eq_pairing l, ← h₁, add_comm]
     · have := IsNotG2.pairingIn_mem_zero_one_two (P := P) k j
-      aesop
+      grind
   /- Choose a positive invariant form. -/
   obtain B : RootPositiveForm ℤ P := have : Fintype ι := Fintype.ofFinite ι; P.posRootForm ℤ
   /- Calculate root length relationships implied by the pairings calculated above. -/
   have ⟨aux₃, aux₄⟩ : B.rootLength i = B.rootLength j ∧ B.rootLength j < B.rootLength k := by
     have hij_le : B.rootLength i ≤ B.rootLength j := B.rootLength_le_of_pairingIn_eq <| Or.inl aux₁
     have hjk_lt : B.rootLength j < B.rootLength k :=
-      B.rootLength_lt_of_pairingIn_notMem (by aesop) hkj_ne.2 <| by aesop
+      B.rootLength_lt_of_pairingIn_notMem (by grind) hkj_ne.2 <| by grind
     refine ⟨?_, hjk_lt⟩
     simpa [posForm, rootLength] using (B.toInvariantForm.apply_eq_or_of_apply_ne (i := j) (j := k)
       (by simpa [posForm, rootLength] using hjk_lt.ne) i).resolve_right
@@ -323,7 +324,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_2
     have aux : B.toInvariantForm.form (P.root i) (P.root i) =
         B.toInvariantForm.form (P.root j) (P.root j) := by simpa [posForm, rootLength] using aux₃
     have := P.pairingIn_pairingIn_mem_set_of_length_eq_of_ne aux hij (b.root_ne_neg_of_ne hi hj hij)
-    aesop
+    grind
   /- Use the newly calculated pairing result to obtain further information about root lengths. -/
   have aux₆ : B.rootLength k ≤ B.rootLength i := B.rootLength_le_of_pairingIn_eq <| Or.inl aux₅
   /- We now have contradictory information about root lengths. -/
@@ -336,7 +337,7 @@ lemma chainBotCoeff_mul_chainTopCoeff :
       (P.chainTopCoeff j l + 1) * (P.chainBotCoeff i k + 1) := by
   /- Setup some typeclasses. -/
   have := chainBotCoeff_mul_chainTopCoeff.isNotG2 hi hj hij h₁ h₂ h₃
-  letI := P.indexNeg
+  let := P.indexNeg
   suffices (P.chainBotCoeff i m + 1) * (P.chainBotCoeff j (-k) + 1) =
       (P.chainBotCoeff j (-l) + 1) * (P.chainBotCoeff i k + 1) by simpa
   /- Establish basic relationships about roots and their sums / differences. -/

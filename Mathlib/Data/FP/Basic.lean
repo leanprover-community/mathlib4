@@ -9,7 +9,7 @@ public import Mathlib.Data.Semiquot
 public import Mathlib.Data.Nat.Size
 public import Mathlib.Data.PNat.Defs
 public import Mathlib.Data.Rat.Init
-public import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 
 /-!
@@ -56,9 +56,7 @@ def emin : ℤ :=
 @[nolint docBlame]
 def ValidFinite (e : ℤ) (m : ℕ) : Prop :=
   emin ≤ e + prec - 1 ∧ e + prec - 1 ≤ emax ∧ e = max (e + m.size - prec) emin
-
-instance decValidFinite (e m) : Decidable (ValidFinite e m) := by
-  (unfold ValidFinite; infer_instance)
+deriving Decidable
 
 @[nolint docBlame]
 inductive Float

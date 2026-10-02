@@ -136,6 +136,6 @@ instance cancelCommMonoid [CancelCommMonoid α] : CancelCommMonoid (ULift α) :=
 instance nontrivial [Nontrivial α] : Nontrivial (ULift α) :=
   Equiv.ulift.symm.injective.nontrivial
 
--- TODO we don't do `OrderedCancelCommMonoid` or `OrderedCommGroup`
+-- TODO: We don't do `IsOrderedCancelMonoid`.
 -- We'd need to add instances for `ULift` in `Order.Basic`.
 end ULift

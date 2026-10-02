@@ -5,8 +5,7 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Data.Finset.Preimage
-public import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
+import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Order.LiminfLimsup
 
@@ -63,17 +62,17 @@ def support (L : SummationFilter β) : Set β := {b | ∀ᶠ s in L.filter, b �
 lemma support_eq_limsInf (L : SummationFilter β) :
     support L = limsInf (L.filter.map (↑)) := by
   refine eq_of_forall_ge_iff fun c ↦ ?_
-  simpa [support, limsInf, setOf_subset] using
+  simpa [support, limsInf, ofPred_subset] using
     ⟨fun hL b hb x hx ↦ hL x <| hb.mp <| .of_forall fun c hc ↦ hc hx,
       fun hL x hx ↦ singleton_subset_iff.mp <| hL _ <| by simpa using hx⟩
 
 lemma support_eq_univ_iff {L : SummationFilter β} :
     L.support = univ ↔ L.filter ≤ atTop := by
-  simp only [support, Set.eq_univ_iff_forall, Set.mem_setOf]
+  simp only [support, Set.eq_univ_iff_forall, Set.mem_ofPred]
   refine ⟨fun h s hs ↦ ?_, fun h b ↦ .filter_mono h ?_⟩
   · obtain ⟨t, ht⟩ := mem_atTop_sets.mp hs
     have := (Filter.biInter_finset_mem t).mpr fun b hb ↦ h b
-    exact Filter.mem_of_superset this fun r hr ↦ ht r (by simpa using hr)
+    exact Filter.mem_of_superset this fun r hr ↦ ht r (by simpa using! hr)
   · filter_upwards [eventually_ge_atTop {b}] using by simp
 
 @[simp] lemma support_eq_univ (L : SummationFilter β) [L.LeAtTop] : L.support = univ :=
@@ -106,11 +105,13 @@ export HasSupport (eventually_le_support)
 
 instance (L : SummationFilter β) [L.LeAtTop] : HasSupport L := ⟨by simp⟩
 
-lemma eventually_mem_or_not_mem (L : SummationFilter β) [HasSupport L] (b : β) :
+lemma eventually_mem_or_notMem (L : SummationFilter β) [HasSupport L] (b : β) :
     (∀ᶠ s in L.filter, b ∈ s) ∨ (∀ᶠ s in L.filter, b ∉ s) := by
   rw [or_iff_not_imp_left]
   intro hb
   filter_upwards [L.eventually_le_support] with a ha using notMem_subset ha hb
+
+@[deprecated (since := "2026-09-28")] alias eventually_mem_or_not_mem := eventually_mem_or_notMem
 
 end has_support
 
@@ -182,7 +183,7 @@ instance [Countable β] : IsCountablyGenerated (unconditional β).filter :=
   classical
   simp only [unconditional, comap]
   congr 1 with s
-  simp only [mem_map, mem_atTop_sets, ge_iff_le, Finset.le_eq_subset, mem_preimage]
+  simp only [mem_map, mem_atTop_sets, mem_preimage]
   constructor <;> rintro ⟨t, ht⟩
   · refine ⟨t.preimage f (by simp), fun x hx ↦ ?_⟩
     simpa [Finset.union_eq_right.mpr hx] using ht (t ∪ x.map f) t.subset_union_left
@@ -192,13 +193,12 @@ instance [Countable β] : IsCountablyGenerated (unconditional β).filter :=
 `L.LeAtTop` and `L.NeBot`. -/
 lemma eq_unconditional_of_finite {β} [Finite β]
     (L : SummationFilter β) [L.LeAtTop] [L.NeBot] : L = unconditional β := by
-  classical
-  haveI := Fintype.ofFinite β
+  have := Fintype.ofFinite β
   have hAtTop : (atTop : Filter (Finset β)) = pure Finset.univ := by
     rw [(isTop_iff_eq_top.mpr rfl).atTop_eq (a := Finset.univ), ← Finset.top_eq_univ,
       Ici_top, principal_singleton]
   have hL := L.le_atTop
-  have hL' : ∅ ∉ L.filter := empty_mem_iff_bot.not.mpr <| NeBot.ne_bot.ne'
+  have hL' : ∅ ∉ L.filter := empty_mem_iff_bot.not.mpr NeBot.ne_bot.ne'
   cases L with | mk F =>
   simp only [unconditional, hAtTop] at *
   congr 1
@@ -218,11 +218,10 @@ finite: this corresponds to limits of finite sums over larger and larger interva
 
 instance : (conditional β).LeAtTop := ⟨support_eq_univ_iff.mp <| by
   simpa [eq_univ_iff_forall, support, -eventually_and]
-    using fun x ↦ prod_mem_prod (eventually_le_atBot x) (eventually_ge_atTop x)⟩
+    using! fun x ↦ prod_mem_prod (eventually_le_atBot x) (eventually_ge_atTop x)⟩
 
-set_option linter.flexible false in -- simp followed by infer_instance
 instance [Nonempty β] [IsDirectedOrder β] [IsCodirectedOrder β] : (conditional β).NeBot :=
-  ⟨by simp; infer_instance⟩
+  ⟨by rw [conditional_filter]; infer_instance⟩
 
 instance [IsCountablyGenerated (atTop : Filter β)] [IsCountablyGenerated (atBot : Filter β)] :
     IsCountablyGenerated (conditional β).filter :=

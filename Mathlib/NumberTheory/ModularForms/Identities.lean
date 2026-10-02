@@ -6,7 +6,6 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
-public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 public import Mathlib.NumberTheory.ModularForms.Cusps
 
 /-!
@@ -19,7 +18,7 @@ public section
 
 noncomputable section
 
-open ModularForm UpperHalfPlane Matrix CongruenceSubgroup Matrix.SpecialLinearGroup
+open ModularForm UpperHalfPlane Matrix CongruenceSubgroup Matrix.SpecialLinearGroup MatrixGroups
 
 namespace SlashInvariantForm
 
@@ -27,7 +26,7 @@ theorem vAdd_apply_of_mem_strictPeriods {Γ : Subgroup (GL (Fin 2) ℝ)} {k : �
     {F : Type*} [FunLike F ℍ ℂ] [SlashInvariantFormClass F Γ k]
     (f : F) (τ : ℍ) {h : ℝ} (hH : h ∈ Γ.strictPeriods) :
     f (h +ᵥ τ) = f τ := by
-  rw [← congr_fun (slash_action_eqn f _ <| Γ.mem_strictPeriods_iff.mp hH) τ]
+  rw [← congr($(slash_action_eqn f _ <| Γ.mem_strictPeriods_iff.mp hH) τ)]
   suffices GeneralLinearGroup.upperRightHom h • τ = h +ᵥ τ by
     simp_rw [slash_def, this]
     simp [σ, denom, GeneralLinearGroup.val_det_apply, denom]
@@ -44,9 +43,26 @@ theorem T_zpow_width_invariant (N : ℕ) (k n : ℤ) (f : SlashInvariantForm (Ga
   rw [modular_T_zpow_smul z (N * n)]
   simpa only [Int.cast_mul, Int.cast_natCast] using vAdd_width_periodic N k n f z
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma slash_S_apply (f : ℍ → ℂ) (k : ℤ) (z : ℍ) :
     (f ∣[k] ModularGroup.S) z = f (.mk _ z.im_inv_neg_coe_pos) * z ^ (-k) := by
   rw [SL_slash_apply, modular_S_smul]
   simp [ModularGroup.S, denom]
+
+section Generators
+
+theorem slash_action_generators {f : ℍ → ℂ} {Γ : Subgroup (GL (Fin 2) ℝ)}
+    {s : Set (GL (Fin 2) ℝ)} (hΓ : Γ = Subgroup.closure s) {k : ℤ} :
+    (∀ γ ∈ Γ, f ∣[k] γ = f) ↔ (∀ γ ∈ s, f ∣[k] γ = f) := by
+  constructor <;> intro h γ hγ
+  · exact h γ (hΓ ▸ Subgroup.mem_closure_of_mem hγ)
+  · apply Subgroup.closure_induction (p := fun γ _ ↦ f ∣[k] γ = f) h (by simp)
+    · simp +contextual [SlashAction.slash_mul]
+    · intro x hx hf
+      rw [← hf, ← SlashAction.slash_mul]
+      simp [hf]
+    · simpa [← hΓ]
+
+end Generators
 
 end SlashInvariantForm

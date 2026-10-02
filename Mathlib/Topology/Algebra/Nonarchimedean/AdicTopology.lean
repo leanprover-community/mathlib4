@@ -6,10 +6,12 @@ Authors: Patrick Massot
 module
 
 public import Mathlib.RingTheory.Ideal.Maps
-public import Mathlib.Topology.Algebra.Nonarchimedean.Bases
-import Mathlib.Topology.Algebra.UniformRing  -- shake: keep (used in `example` only)
 public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+public import Mathlib.Topology.Algebra.Nonarchimedean.Bases
+public import Mathlib.Topology.Algebra.TopologicallyNilpotent
+public import Mathlib.Topology.UniformSpace.Equiv
 
+import Mathlib.Topology.Algebra.UniformRing  -- shake: keep (used in `example` only)
 
 /-!
 # Adic topology
@@ -51,46 +53,47 @@ variable {R : Type*} [CommRing R]
 
 open Set IsTopologicalAddGroup Submodule Filter
 
-open Topology Pointwise
+open Pointwise
+
+open scoped Topology
 
 namespace Ideal
 
 theorem adic_basis (I : Ideal R) : SubmodulesRingBasis fun n : ℕ => (I ^ n • ⊤ : Ideal R) :=
   { inter := by
       suffices ∀ i j : ℕ, ∃ k, I ^ k ≤ I ^ i ∧ I ^ k ≤ I ^ j by
-        simpa only [smul_eq_mul, mul_top, Algebra.algebraMap_self, map_id, le_inf_iff] using this
+        simpa only [smul_eq_mul, mul_top, Algebra.algebraMap_self, map_id, le_inf_iff] using! this
       intro i j
       exact ⟨max i j, pow_le_pow_right (le_max_left i j), pow_le_pow_right (le_max_right i j)⟩
     leftMul := by
       suffices ∀ (a : R) (i : ℕ), ∃ j : ℕ, a • I ^ j ≤ I ^ i by
-        simpa only [smul_top_eq_map, Algebra.algebraMap_self, map_id] using this
+        simpa only [smul_top_eq_map, Algebra.algebraMap_self, map_id] using! this
       intro r n
       use n
       rintro a ⟨x, hx, rfl⟩
       exact (I ^ n).smul_mem r hx
     mul := by
       suffices ∀ i : ℕ, ∃ j : ℕ, (↑(I ^ j) * ↑(I ^ j) : Set R) ⊆ (↑(I ^ i) : Set R) by
-        simpa only [smul_top_eq_map, Algebra.algebraMap_self, map_id] using this
+        simpa only [smul_top_eq_map, Algebra.algebraMap_self, map_id] using! this
       intro n
       use n
       rintro a ⟨x, _hx, b, hb, rfl⟩
       exact (I ^ n).smul_mem x hb }
 
 /-- The adic ring filter basis associated to an ideal `I` is made of powers of `I`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def ringFilterBasis (I : Ideal R) :=
   I.adic_basis.toRing_subgroups_basis.toRingFilterBasis
 
 /-- The adic topology associated to an ideal `I`. This topology admits powers of `I` as a basis of
 neighborhoods of zero. It is compatible with the ring structure and is non-archimedean. -/
-@[implicit_reducible]
+@[instance_reducible]
 def adicTopology (I : Ideal R) : TopologicalSpace R :=
   (adic_basis I).topology
 
 theorem nonarchimedean (I : Ideal R) : @NonarchimedeanRing R _ I.adicTopology :=
   I.adic_basis.toRing_subgroups_basis.nonarchimedean
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For the `I`-adic topology, the neighborhoods of zero has basis given by the powers of `I`. -/
 theorem hasBasis_nhds_zero_adic (I : Ideal R) :
     HasBasis (@nhds R I.adicTopology (0 : R)) (fun _n : ℕ => True) fun n =>
@@ -105,13 +108,16 @@ theorem hasBasis_nhds_zero_adic (I : Ideal R) :
     · rintro ⟨i, -, h⟩
       exact ⟨(I ^ i : Ideal R), ⟨i, by simp⟩, h⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hasBasis_nhds_adic (I : Ideal R) (x : R) :
     HasBasis (@nhds R I.adicTopology x) (fun _n : ℕ => True) fun n =>
       (fun y => x + y) '' (I ^ n : Ideal R) := by
-  letI := I.adicTopology
+  let := I.adicTopology
   have := I.hasBasis_nhds_zero_adic.map fun y => x + y
   rwa [map_add_left_nhds_zero x] at this
+
+theorem isLinearTopology (I : Ideal R) : @IsLinearTopology R R _ _ _ I.adicTopology :=
+  letI := I.adicTopology
+  IsLinearTopology.mk_of_hasBasis _ I.hasBasis_nhds_zero_adic
 
 variable (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
 
@@ -129,7 +135,7 @@ theorem adic_module_basis :
 
 /-- The topology on an `R`-module `M` associated to an ideal `M`. Submodules $I^n M$,
 written `I^n • ⊤` form a basis of neighborhoods of zero. -/
-@[implicit_reducible]
+@[instance_reducible]
 def adicModuleTopology : TopologicalSpace M :=
   @ModuleFilterBasis.topology R M _ I.adic_basis.topology _ _
     (I.ringFilterBasis.moduleFilterBasis (I.adic_module_basis M))
@@ -162,7 +168,7 @@ theorem isAdic_iff [top : TopologicalSpace R] [IsTopologicalRing R] {J : Ideal R
   · intro H
     change _ = _ at H
     rw [H]
-    letI := J.adicTopology
+    let := J.adicTopology
     constructor
     · intro n
       exact (J.openAddSubgroup n).isOpen'
@@ -170,10 +176,10 @@ theorem isAdic_iff [top : TopologicalSpace R] [IsTopologicalRing R] {J : Ideal R
       simpa using J.hasBasis_nhds_zero_adic.mem_iff.mp hs
   · rintro ⟨H₁, H₂⟩
     apply IsTopologicalAddGroup.ext
-    · apply @IsTopologicalRing.to_topologicalAddGroup
+    · apply IsTopologicalRing.isTopologicalAddGroup
     · apply (RingSubgroupsBasis.toRingFilterBasis _).toAddGroupFilterBasis.isTopologicalAddGroup
     · ext s
-      letI := Ideal.adic_basis J
+      let := Ideal.adic_basis J
       rw [J.hasBasis_nhds_zero_adic.mem_iff]
       constructor <;> intro H
       · rcases H₂ s H with ⟨n, h⟩
@@ -248,9 +254,33 @@ instance (priority := 100) : UniformSpace R :=
 instance (priority := 100) : IsUniformAddGroup R :=
   isUniformAddGroup_of_addCommGroup
 
+instance (priority := 100) : IsLinearTopology R R := i.isLinearTopology
+
+variable {R} in
+theorem uniformContinuous_of_map_le {S : Type*} [CommRing S] [WithIdeal S] {f : R →+* S}
+    (hf : i.map f ≤ i) : UniformContinuous f := uniformContinuous_of_continuousAt_zero f (by
+  rw [ContinuousAt, map_zero, i.hasBasis_nhds_zero_adic.tendsto_iff i.hasBasis_nhds_zero_adic]
+  refine fun n _ ↦ ⟨n, trivial, Ideal.map_le_iff_le_comap.mp ?_⟩
+  simpa [Ideal.map_pow] using Ideal.pow_right_mono hf n)
+
+variable {R} in
+/-- A ring equivalence induces a uniform equivalence with respect to the adic topologies,
+provided it preserves the defining ideals. -/
+def uniformEquiv {S : Type*} [CommRing S] [WithIdeal S] (e : R ≃+* S)
+    (h : i.map e.toRingHom = i) : UniformEquiv R S where
+  __ := e
+  uniformContinuous_toFun := uniformContinuous_of_map_le (f := e.toRingHom) (by rw [h])
+  uniformContinuous_invFun := uniformContinuous_of_map_le (f := e.symm.toRingHom) (by simp [← h])
+
+variable {R} in
+lemma isTopologicallyNilpotent_of_mem {a : R} (ha : a ∈ i) : IsTopologicallyNilpotent a := by
+  suffices ∀ m : ℕ, ∃ n₀, ∀ n, n₀ ≤ n → a ^ n ∈ i ^ m by
+    simpa [IsTopologicallyNilpotent, i.hasBasis_nhds_zero_adic.tendsto_right_iff]
+  exact fun m ↦ ⟨m, fun n hn ↦ Ideal.pow_le_pow_right hn (Ideal.pow_mem_pow ha _)⟩
+
 /-- The adic topology on an `R` module coming from the ideal `WithIdeal.I`.
 This cannot be an instance because `R` cannot be inferred from `M`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def topologicalSpaceModule (M : Type*) [AddCommGroup M] [Module R M] : TopologicalSpace M :=
   (i : Ideal R).adicModuleTopology M
 
@@ -262,11 +292,9 @@ example : NonarchimedeanRing R := by infer_instance
 
 example : IsTopologicalRing (UniformSpace.Completion R) := by infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 example (M : Type*) [AddCommGroup M] [Module R M] :
     @IsTopologicalAddGroup M (WithIdeal.topologicalSpaceModule R M) _ := by infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 example (M : Type*) [AddCommGroup M] [Module R M] :
     @ContinuousSMul R M _ _ (WithIdeal.topologicalSpaceModule R M) := by infer_instance
 

@@ -15,7 +15,7 @@ This file defines the `Star` structure on tensor products. This also
 defines the `StarAddMonoid` and `StarModule` instances for tensor products.
 -/
 
-@[expose] public section
+public section
 
 namespace TensorProduct
 variable {R A B : Type*}
@@ -35,7 +35,7 @@ noncomputable instance : InvolutiveStar (A ⊗[R] B) where
   star_involutive x := by
     simp_rw [star]
     rw [congr_congr]
-    convert congr($congr_refl_refl x) <;> ext <;> simp
+    convert! congr($congr_refl_refl x) <;> ext <;> simp
 
 noncomputable instance : StarAddMonoid (A ⊗[R] B) where
   star_add := map_add _

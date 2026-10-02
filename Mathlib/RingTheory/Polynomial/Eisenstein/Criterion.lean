@@ -5,13 +5,12 @@ Authors: Chris Hughes, Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Polynomial.Content
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 /-! # The Eisenstein criterion
 
-`Polynomial.generalizedEisenstein` :
+- `Polynomial.generalizedEisenstein` :
   Let `R` be an integral domain
   and let `K` an `R`-algebra which is a field
   Let `q : R[X]` be a monic polynomial which is prime in `K[X]`.
@@ -20,6 +19,7 @@ public import Mathlib.RingTheory.Ideal.Quotient.Operations
   * the image of `f` in `K[X]` is a power of `q`.
   * the leading coefficient of `f` is not zero in `K`
   * the polynomial `f` is primitive.
+
   Assume moreover that `f.modByMonic q` is not zero in `(R ⧸ (P ^ 2))[X]`,
   where `P` is the kernel of `algebraMap R K`.
   Then `f` is irreducible.
@@ -103,13 +103,12 @@ private lemma generalizedEisenstein_aux {q f g : R[X]} {p : ℕ}
     obtain ⟨a, rfl⟩ := Polynomial.natDegree_eq_zero.mp this
     apply IsUnit.map
     apply hf_prim
-    rwa [leadingCoeff_C] at hgP
+    exact hg_div
   by_contra hg'
   apply hgP
-  rw [hg, leadingCoeff, coeff_add, ← hg, coeff_C, if_neg hg', zero_add,
+  rw [hg, leadingCoeff, coeff_add, ← hg, coeff_C, ite_eq_right hg', zero_add,
     mem_ker, ← coeff_map, hr, coeff_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A generalized Eisenstein criterion
 
 Let `R` be an integral domain and `K` an `R`-algebra which is a domain.
@@ -169,7 +168,6 @@ theorem generalizedEisenstein {q f : R[X]} {p : ℕ}
       exact (dvd_pow_self q hn).mul_left _
     · exact ((dvd_pow_self q hn).mul_left _).mul_left _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a nonconstant polynomial with coefficients in `R`, and `P` is a prime ideal in `R`,
 then if every coefficient in `R` except the leading coefficient is in `P`, and
 the trailing coefficient is not in `P^2` and no nonunits in `R` divide `f`, then `f` is

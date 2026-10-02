@@ -5,11 +5,9 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 module
 
-public import Lean.Linter.Deprecated
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.BinaryRec
-public import Mathlib.Tactic.TypeStar
 
 /-!
 # Binary representation of integers using inductive types
@@ -24,7 +22,9 @@ collection of theorems is to show the equivalence of the different approaches.
 
 /-- The type of positive binary numbers.
 
-     13 = 1101(base 2) = bit1 (bit0 (bit1 one)) -/
+```
+13 = 1101(base 2) = bit1 (bit0 (bit1 one))
+``` -/
 inductive PosNum : Type
   | one : PosNum
   | bit1 : PosNum → PosNum
@@ -39,7 +39,9 @@ instance : Inhabited PosNum :=
 
 /-- The type of nonnegative binary numbers, using `PosNum`.
 
-     13 = 1101(base 2) = pos (bit1 (bit0 (bit1 one))) -/
+```
+13 = 1101(base 2) = pos (bit1 (bit0 (bit1 one)))
+``` -/
 inductive Num : Type
   | zero : Num
   | pos : PosNum → Num
@@ -56,8 +58,10 @@ instance : Inhabited Num :=
 
 /-- Representation of integers using trichotomy around zero.
 
-     13 = 1101(base 2) = pos (bit1 (bit0 (bit1 one)))
-     -13 = -1101(base 2) = neg (bit1 (bit0 (bit1 one))) -/
+```
+13 = 1101(base 2) = pos (bit1 (bit0 (bit1 one)))
+-13 = -1101(base 2) = neg (bit1 (bit0 (bit1 one)))
+``` -/
 inductive ZNum : Type
   | zero : ZNum
   | pos : PosNum → ZNum
@@ -483,11 +487,11 @@ instance : LT ZNum :=
 instance : LE ZNum :=
   ⟨fun a b => ¬b < a⟩
 
-instance decidableLT : DecidableLT ZNum
-  | a, b => by dsimp [LT.lt]; infer_instance
+instance decidableLT : DecidableLT ZNum :=
+  inferInstanceAs <| DecidableRel fun a b => cmp a b = Ordering.lt
 
-instance decidableLE : DecidableLE ZNum
-  | a, b => by dsimp [LE.le]; infer_instance
+instance decidableLE : DecidableLE ZNum :=
+  inferInstanceAs <| DecidableRel fun a b => ¬b < a
 
 end ZNum
 

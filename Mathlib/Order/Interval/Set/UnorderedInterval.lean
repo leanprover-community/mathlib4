@@ -11,6 +11,7 @@ public import Mathlib.Order.Interval.Set.Image
 public import Mathlib.Order.Interval.Set.LinearOrder
 public import Mathlib.Tactic.Common
 public import Mathlib.Order.MinMax
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Intervals without endpoints ordering
@@ -61,7 +62,7 @@ def uIcc (a b : α) : Set α := Icc (a ⊓ b) (a ⊔ b)
 /-- `[[a, b]]` denotes the set of elements lying between `a` and `b`, inclusive. -/
 scoped[Interval] notation "[[" a ", " b "]]" => Set.uIcc a b
 
-open Interval
+open scoped Interval
 
 @[simp]
 lemma uIcc_toDual (a b : α) : [[toDual a, toDual b]] = ofDual ⁻¹' [[a, b]] :=
@@ -137,7 +138,7 @@ end Prod
 
 end Lattice
 
-open Interval
+open scoped Interval
 
 section DistribLattice
 
@@ -367,9 +368,6 @@ lemma uIoo_of_not_ge (h : ¬b ≤ a) : uIoo a b = Ioo a b := uIoo_of_lt <| lt_of
 
 lemma uIoo_subset_uIcc_self : uIoo a b ⊆ uIcc a b := by
   simp [uIoo, uIcc, Ioo_subset_Icc_self]
-
-@[deprecated uIoo_subset_uIcc_self (since := "2025-11-09")]
-lemma uIoo_subset_uIcc (a b : α) : uIoo a b ⊆ uIcc a b := uIoo_subset_uIcc_self
 
 lemma uIoo_subset_Ioo (ha : a₁ ∈ Icc a₂ b₂) (hb : b₁ ∈ Icc a₂ b₂) : uIoo a₁ b₁ ⊆ Ioo a₂ b₂ :=
   Ioo_subset_Ioo (le_inf ha.1 hb.1) (sup_le ha.2 hb.2)

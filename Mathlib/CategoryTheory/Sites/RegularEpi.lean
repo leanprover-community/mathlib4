@@ -5,9 +5,9 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.EffectiveEpi.Comp
-public import Mathlib.CategoryTheory.Functor.RegularEpi
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Images
+import Mathlib.CategoryTheory.EffectiveEpi.Comp
+import Mathlib.CategoryTheory.Functor.RegularEpi
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Images
 public import Mathlib.CategoryTheory.Sites.LeftExact
 
 /-!
@@ -36,7 +36,7 @@ The first part of that proof, the result for presheaf categories, is proved in t
 `Mathlib.CategoryTheory.Functor.RegularEpi`.
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
@@ -46,7 +46,6 @@ open Limits
 
 variable {C D : Type*} [Category C] [Category D]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isRegularEpiCategory_sheaf (J : GrothendieckTopology C)
     [HasPullbacks D] [HasPushouts D] [IsRegularEpiCategory D]
     (h : ∀ {F G : Sheaf J D} (f : F ⟶ G) [Epi f], ∃ (I : Cᵒᵖ ⥤ D) (p : F.obj ⟶ I) (i : I ⟶ G.obj),

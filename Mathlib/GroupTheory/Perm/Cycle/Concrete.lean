@@ -5,9 +5,7 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Data.List.Cycle
 public import Mathlib.GroupTheory.Perm.Cycle.Type
-public import Mathlib.GroupTheory.Perm.List
 
 /-!
 
@@ -71,9 +69,9 @@ theorem formPerm_disjoint_iff (hl : Nodup l) (hl' : Nodup l') (hn : 2 ≤ l.leng
 
 theorem isCycle_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) : IsCycle (formPerm l) := by
   rcases l with - | ⟨x, l⟩
-  · norm_num at hn
+  · simp at hn
   induction l generalizing x with
-  | nil => norm_num at hn
+  | nil => simp at hn
   | cons y l =>
     use x
     constructor
@@ -138,6 +136,7 @@ def formPerm : ∀ s : Cycle α, Nodup s → Equiv.Perm α :=
 theorem formPerm_coe (l : List α) (hl : l.Nodup) : formPerm (l : Cycle α) hl = l.formPerm :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem formPerm_subsingleton (s : Cycle α) (h : Subsingleton s) : formPerm s h.nodup = 1 := by
   obtain ⟨s⟩ := s
   simp only [formPerm_coe, mk_eq_coe]
@@ -159,6 +158,7 @@ theorem support_formPerm [Fintype α] (s : Cycle α) (h : Nodup s) (hn : Nontriv
   rintro _ rfl
   simpa [Nat.succ_le_succ_iff] using length_nontrivial hn
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem formPerm_eq_self_of_notMem (s : Cycle α) (h : Nodup s) (x : α) (hx : x ∉ s) :
     formPerm s h x = x := by
   induction s using Quot.inductionOn
@@ -167,22 +167,21 @@ theorem formPerm_eq_self_of_notMem (s : Cycle α) (h : Nodup s) (x : α) (hx : x
 theorem formPerm_apply_mem_eq_next (s : Cycle α) (h : Nodup s) (x : α) (hx : x ∈ s) :
     formPerm s h x = next s h x hx := by
   induction s using Quot.inductionOn
-  simpa using List.formPerm_apply_mem_eq_next h _ (by simp_all)
+  simpa using! List.formPerm_apply_mem_eq_next h _ (by simp_all)
 
+set_option backward.isDefEq.respectTransparency.types false in
 nonrec theorem formPerm_reverse (s : Cycle α) (h : Nodup s) :
     formPerm s.reverse (nodup_reverse_iff.mpr h) = (formPerm s h)⁻¹ := by
   induction s using Quot.inductionOn
   simpa using formPerm_reverse _
 
+set_option backward.isDefEq.respectTransparency.types false in
 nonrec theorem formPerm_eq_formPerm_iff {α : Type*} [DecidableEq α] {s s' : Cycle α} {hs : s.Nodup}
     {hs' : s'.Nodup} :
     s.formPerm hs = s'.formPerm hs' ↔ s = s' ∨ s.Subsingleton ∧ s'.Subsingleton := by
   rw [Cycle.length_subsingleton_iff, Cycle.length_subsingleton_iff]
-  revert s s'
-  intro s s'
-  apply @Quotient.inductionOn₂' _ _ _ _ _ s s'
-  intro l l' hl hl'
-  simpa using formPerm_eq_formPerm_iff hl hl'
+  induction s, s' using Quotient.inductionOn₂'
+  simpa using formPerm_eq_formPerm_iff hs hs'
 
 end Cycle
 
@@ -209,7 +208,7 @@ theorem length_toList : length (toList p x) = (cycleOf p x).support.card := by s
 
 theorem toList_ne_singleton (y : α) : toList p x ≠ [y] := by
   intro H
-  simpa [card_support_ne_one] using congr_arg length H
+  simpa [card_support_ne_one] using congr(length $H)
 
 theorem two_le_length_toList_iff_mem_support {p : Perm α} {x : α} :
     2 ≤ length (toList p x) ↔ x ∈ p.support := by simp
@@ -218,7 +217,7 @@ theorem length_toList_pos_of_mem_support (h : x ∈ p.support) : 0 < length (toL
   zero_lt_two.trans_le (two_le_length_toList_iff_mem_support.mpr h)
 
 theorem getElem_toList (n : ℕ) (hn : n < length (toList p x)) :
-    (toList p x)[n] = (p ^ n) x := by simp [toList]
+    (toList p x)[n] = (p ^ n) x := by simp [toList, pull_end]
 
 theorem toList_getElem_zero (h : x ∈ p.support) :
     (toList p x)[0]'(length_toList_pos_of_mem_support _ _ h) = x := by simp [toList]
@@ -400,6 +399,7 @@ theorem toCycle_next (f : Perm α) (hf : f.IsCycle) (hx : x ∈ toCycle f hf) :
   simp only [hl, Cycle.mem_coe_iff] at ⊢ hx
   exact Equiv.Perm.next_toList_eq_apply f l x hx
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any cyclic `f : Perm α` is isomorphic to the nontrivial `Cycle α`
 that corresponds to repeated application of `f`.
 The forward direction is implemented by `Equiv.Perm.toCycle`.
@@ -434,6 +434,7 @@ section Finite
 
 variable [Finite α] [DecidableEq α]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsCycle.existsUnique_cycle {f : Perm α} (hf : IsCycle f) :
     ∃! s : Cycle α, ∃ h : s.Nodup, s.formPerm h = f := by
   cases nonempty_fintype α

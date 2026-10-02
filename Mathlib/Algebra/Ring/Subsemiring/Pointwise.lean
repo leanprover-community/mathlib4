@@ -30,6 +30,16 @@ variable {M R : Type*}
 
 namespace Subsemiring
 
+section NonAssocSemiring
+
+variable [NonAssocSemiring R]
+
+theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → Subsemiring R) :
+    ((⨆ i, S i : Subsemiring R) : Set R) = ⋃ s : Finset ι, (⨆ i ∈ s, S i : Subsemiring R) := by
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le fun _ _ ↦ biSup_mono]
+
+end NonAssocSemiring
+
 section Monoid
 
 variable [Monoid M] [Semiring R] [MulSemiringAction M R]
@@ -46,7 +56,7 @@ protected def pointwiseMulAction : MulAction M (Subsemiring R) where
 
 scoped[Pointwise] attribute [instance] Subsemiring.pointwiseMulAction
 
-open Pointwise
+open scoped Pointwise
 
 theorem pointwise_smul_def {a : M} (S : Subsemiring R) :
     a • S = S.map (MulSemiringAction.toRingHom _ _ a) :=
@@ -91,7 +101,7 @@ section Group
 
 variable [Group M] [Semiring R] [MulSemiringAction M R]
 
-open Pointwise
+open scoped Pointwise
 
 @[simp]
 theorem smul_mem_pointwise_smul_iff {a : M} {S : Subsemiring R} {x : R} : a • x ∈ a • S ↔ x ∈ S :=
@@ -124,7 +134,7 @@ section GroupWithZero
 
 variable [GroupWithZero M] [Semiring R] [MulSemiringAction M R]
 
-open Pointwise
+open scoped Pointwise
 
 @[simp]
 theorem smul_mem_pointwise_smul_iff₀ {a : M} (ha : a ≠ 0) (S : Subsemiring R) (x : R) :

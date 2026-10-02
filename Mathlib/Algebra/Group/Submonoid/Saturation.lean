@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Divisibility.Basic
 public import Mathlib.Algebra.Group.Submonoid.Basic
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
-public import Mathlib.Order.OmegaCompletePartialOrder
 
 /-! # Saturation of a submonoid
 
@@ -119,10 +118,10 @@ variable (M) in
 @[to_additive]
 instance : SetLike (SaturatedSubmonoid M) M where
   coe := (·.carrier)
-  coe_injective' _ _ h := toSubmonoid_injective <| SetLike.coe_injective h
+  coe_injective _ _ h := toSubmonoid_injective <| SetLike.coe_injective h
 
 @[to_additive]
-instance : PartialOrder (SaturatedSubmonoid M) := .ofSetLike ..
+instance : PartialOrder (SaturatedSubmonoid M) := .ofSetLike _
 
 @[to_additive]
 lemma ext' {s₁ s₂ : SaturatedSubmonoid M} (h : ∀ x, x ∈ s₁ ↔ x ∈ s₂) : s₁ = s₂ :=
@@ -168,8 +167,7 @@ theorem mem_sInf {f : Set (SaturatedSubmonoid M)} {x : M} : x ∈ sInf f ↔ ∀
 variable (M) in
 @[to_additive]
 instance : CompleteSemilatticeInf (SaturatedSubmonoid M) where
-  sInf_le f s hs x hx := mem_sInf.1 hx s hs
-  le_sInf f s ih x hx := mem_sInf.2 <| by tauto
+  isGLB_sInf _ := .of_image SetLike.coe_subset_coe isGLB_biInf
 
 end SaturatedSubmonoid
 
@@ -274,10 +272,10 @@ namespace SaturatedSubmonoid
 @[to_additive]
 instance (M : Type*) [MulOneClass M] :
     CompleteLattice (SaturatedSubmonoid M) :=
-  { inferInstanceAs (PartialOrder (SaturatedSubmonoid M)),
-    inferInstanceAs (Top (SaturatedSubmonoid M)),
-    inferInstanceAs (Min (SaturatedSubmonoid M)),
-    inferInstanceAs (CompleteSemilatticeInf (SaturatedSubmonoid M)),
+  { (inferInstance : PartialOrder (SaturatedSubmonoid M)),
+    (inferInstance : Top (SaturatedSubmonoid M)),
+    (inferInstance : Min (SaturatedSubmonoid M)),
+    (inferInstance : CompleteSemilatticeInf (SaturatedSubmonoid M)),
     (Submonoid.giSaturation M).liftCompleteLattice with }
 
 variable {M : Type*}

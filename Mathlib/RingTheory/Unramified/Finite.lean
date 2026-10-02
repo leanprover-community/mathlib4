@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.IdempotentFG
+import Mathlib.RingTheory.Ideal.IdempotentFG
 public import Mathlib.RingTheory.Unramified.Basic
 public import Mathlib.RingTheory.Flat.Stability
 
@@ -73,7 +73,7 @@ theorem iff_exists_tensorProduct [EssFiniteType R S] :
     rw [← sub_sub_self 1 t] at ht₁; generalize 1 - t = e at *
     constructor
     · suffices e ∈ (Submodule.span (S ⊗[R] S) {1 - e}).annihilator by
-        simpa [IsIdempotentElem, mul_sub, sub_eq_zero, eq_comm, -Ideal.submodule_span_eq,
+        simpa [IsIdempotentElem, mul_sub, sub_eq_zero, eq_comm,
           Submodule.mem_annihilator_span_singleton] using this
       exact (show Ideal.span _ ≤ _ by simpa only [Ideal.span_le, Set.range_subset_iff,
         Submodule.mem_annihilator_span_singleton, SetLike.mem_coe]) ht₂
@@ -131,6 +131,7 @@ variable (R S) in
 A finite-type `R`-algebra `S` is (formally) unramified iff there exists a `t : S ⊗[R] S` satisfying
 1. `t` annihilates every `1 ⊗ s - s ⊗ 1`.
 2. the image of `t` is `1` under the map `S ⊗[R] S → S`.
+
 See `Algebra.FormallyUnramified.iff_exists_tensorProduct`.
 This is the choice of such a `t`.
 -/
@@ -184,9 +185,8 @@ lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
       not_not] at hj
     simp only [Finsupp.sum]
     trans b.repr (f.support.sum (fun _ ↦ 0))
-    · refine congr_arg b.repr (Finset.sum_congr rfl ?_)
-      simp only [Finsupp.mem_support_iff]
-      intro i hi
+    · congr! with i hi
+      rw [Finsupp.mem_support_iff] at hi
       rw [hj i hi, zero_smul]
     · simp only [Finset.sum_const_zero, map_zero]
   -- And `G` such that `∑ₛ aᵢⱼfᵢ = ∑ Gᵢⱼbⱼ`, where `aᵢⱼ` are the coefficients `bᵢx = ∑ aᵢⱼbⱼ`.
@@ -218,7 +218,7 @@ lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
   have : ∀ j, x * f j = f.sum fun i y ↦ a i j • y := by
     intro j
     apply b.repr.injective
-    exact DFunLike.congr_fun this j
+    congrm $this j
   -- Since `∑ₛ fⱼbⱼ = 1`, `x = ∑ₛ aᵢⱼfᵢbⱼ` is indeed in the span of `{ fᵢbⱼ | i, j ∈ s }`.
   rw [← mul_one x, ← @lmul_elem R, hf, map_finsuppSum, Finsupp.sum, Finset.mul_sum]
   simp only [TensorProduct.lmul'_apply_tmul, Finset.coe_image₂, ← mul_assoc, this,
@@ -243,15 +243,13 @@ def sec :
       LinearMap.flip_apply, TensorProduct.AlgebraTensorModule.mapBilinear_apply, RingHom.id_apply]
     trans (TensorProduct.AlgebraTensorModule.map (LinearMap.id (R := S) (M := S))
       ((LinearMap.flip (AlgHom.toLinearMap (lsmul R R M))) m)) ((1 ⊗ₜ r) * elem R S)
-    · induction elem R S using TensorProduct.induction_on
-      · simp
+    · induction elem R S using TensorProduct.inductionOn
       · simp [smul_comm r]
       · simp only [map_add, mul_add, *]
     · have := one_tmul_sub_tmul_one_mul_elem (R := R) r
       rw [sub_mul, sub_eq_zero] at this
       rw [this]
-      induction elem R S using TensorProduct.induction_on
-      · simp
+      induction elem R S using TensorProduct.inductionOn
       · simp [TensorProduct.smul_tmul']
       · simp only [map_add, smul_add, mul_add, *]
 
@@ -264,8 +262,7 @@ lemma comp_sec :
     Function.comp_apply, LinearMap.flip_apply, TensorProduct.AlgebraTensorModule.mapBilinear_apply,
     TensorProduct.AlgebraTensorModule.lift_apply, LinearMap.id_coe, id_eq]
   trans (TensorProduct.lmul' R (elem R S)) • x
-  · induction elem R S using TensorProduct.induction_on with
-    | zero => simp
+  · induction elem R S using TensorProduct.inductionOn with
     | tmul r s => simp [mul_smul, smul_comm r s]
     | add y z hy hz => simp [hy, hz, add_smul]
   · rw [lmul_elem, one_smul]

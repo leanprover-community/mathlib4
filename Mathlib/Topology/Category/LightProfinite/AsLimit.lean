@@ -60,7 +60,6 @@ def asLimitAux : IsLimit S.asLimitConeAux :=
     S.toLightDiagram.isLimit.ofIsoLimit S.isoMapCone.symm
   isLimitOfReflects lightToProfinite hc
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A cone over `S.diagram` whose cone point is `S`. -/
 def asLimitCone : Cone S.diagram where
   pt := S
@@ -69,7 +68,6 @@ def asLimitCone : Cone S.diagram where
       (Cone.forget _).mapIso S.isoMapCone).inv ≫ S.asLimitConeAux.π.app n
     naturality := fun _ _ _ ↦ by simp only [Category.assoc, S.asLimitConeAux.w]; rfl }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `S.asLimitCone` is indeed a limit cone. -/
 def asLimit : IsLimit S.asLimitCone := S.asLimitAux.ofIsoLimit <|
   Cone.ext (lightToProfiniteFullyFaithful.preimageIso <|
@@ -83,7 +81,7 @@ abbrev proj (n : ℕ) : S ⟶ S.diagram.obj ⟨n⟩ := S.asLimitCone.π.app ⟨n
 
 lemma lightToProfinite_map_proj_eq (n : ℕ) : lightToProfinite.map (S.proj n) =
     (lightToProfinite.obj S).asLimitCone.π.app _ := by
-  simp only [Functor.comp_obj, toCompHausLike_map]
+  simp only [toCompHausLike_map]
   let c : Cone (S.diagram ⋙ lightToProfinite) := S.toLightDiagram.cone
   let hc : IsLimit c := S.toLightDiagram.isLimit
   exact liftedLimitMapsToOriginal_inv_map_π hc _

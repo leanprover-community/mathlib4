@@ -6,6 +6,8 @@ Authors: Eric Rodriguez, Joel Riou, Yury Kudryashov
 module
 
 public import Mathlib.Data.Fin.SuccPred
+public import Mathlib.Logic.Equiv.Basic
+
 /-!
 # Reverse on `Fin n`
 
@@ -31,7 +33,7 @@ theorem rev_involutive : Involutive (rev : Fin n → Fin n) := rev_rev
 
 /-- `Fin.rev` as an `Equiv.Perm`, the antitone involution `Fin n → Fin n` given by
 `i ↦ n-(i+1)`. -/
-@[simps! apply symm_apply]
+@[simps! apply]
 def revPerm : Equiv.Perm (Fin n) :=
   Involutive.toPerm rev rev_involutive
 

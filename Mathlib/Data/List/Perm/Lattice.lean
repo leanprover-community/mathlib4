@@ -5,10 +5,10 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.List.Forall2
+import Mathlib.Data.List.Forall2
 public import Mathlib.Data.List.TakeDrop
 public import Mathlib.Data.List.Lattice
-public import Mathlib.Data.List.Nodup
+import Mathlib.Data.List.Nodup
 
 /-!
 # List Permutations and list lattice operations.
@@ -44,6 +44,9 @@ theorem Perm.bagInter_left (l : List α) {t₁ t₂ : List α} (p : t₁ ~ t₂)
 theorem Perm.bagInter {l₁ l₂ t₁ t₂ : List α} (hl : l₁ ~ l₂) (ht : t₁ ~ t₂) :
     l₁.bagInter t₁ ~ l₂.bagInter t₂ :=
   ht.bagInter_left l₂ ▸ hl.bagInter_right _
+
+theorem Perm.bagInter_symm (l₁ l₂ : List α) : (l₁.bagInter l₂).Perm (l₂.bagInter l₁) :=
+  perm_iff_count.mpr fun _ ↦ (by simp [List.count_bagInter, Nat.min_comm])
 
 theorem Perm.inter_append {l t₁ t₂ : List α} (h : Disjoint t₁ t₂) :
     l ∩ (t₁ ++ t₂) ~ l ∩ t₁ ++ l ∩ t₂ := by

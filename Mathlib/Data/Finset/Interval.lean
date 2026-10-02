@@ -5,7 +5,7 @@ Authors: Yaël Dillies, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Finset.Grade
+import Mathlib.Data.Finset.Grade
 public import Mathlib.Data.Finset.Powerset
 public import Mathlib.Order.Interval.Finset.Basic
 
@@ -25,7 +25,7 @@ In addition, this file gives characterizations of monotone and strictly monotone
 out of `Finset α` in terms of `Finset.insert`
 -/
 
-@[expose] public section
+public section
 
 
 variable {α β : Type*}

@@ -290,16 +290,7 @@ variable (R : Type*) [Semiring R] (p q : R[X]) {S : Type*} [Semiring S]
 theorem smeval_commute_left (hc : Commute x y) : Commute (p.smeval x) y := by
   induction p using Polynomial.induction_on' with
   | add r s hr hs => exact (smeval_add R r s x) ▸ Commute.add_left hr hs
-  | monomial n a =>
-    simp only [smeval_monomial]
-    refine Commute.smul_left ?_ a
-    induction n with
-    | zero => simp only [npow_zero, Commute.one_left]
-    | succ n ih =>
-      refine (commute_iff_eq (x ^ (n + 1)) y).mpr ?_
-      rw [commute_iff_eq (x ^ n) y] at ih
-      rw [pow_succ, ← mul_assoc, ← ih]
-      exact Commute.right_comm hc (x ^ n)
+  | monomial n a => simpa [smeval_monomial] using Commute.smul_left (Commute.pow_left hc _) _
 
 theorem smeval_commute (hc : Commute x y) : Commute (p.smeval x) (q.smeval y) := by
   induction p using Polynomial.induction_on' with

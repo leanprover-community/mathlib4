@@ -5,8 +5,8 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Data.Finsupp.WellFounded
-public import Mathlib.RingTheory.MvPowerSeries.LexOrder
+import Mathlib.Data.Finsupp.WellFounded
+import Mathlib.RingTheory.MvPowerSeries.LexOrder
 public import Mathlib.RingTheory.MvPowerSeries.Order
 
 /-! # ZeroDivisors in a MvPowerSeries ring
@@ -35,7 +35,7 @@ The analogue of `Polynomial.notMem_nonZeroDivisors_iff`
 but not in general. See [Fields1971]
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -69,8 +69,7 @@ theorem mem_nonZeroDivisorsRight_of_constantCoeff {φ : MvPowerSeries σ R}
     · simp only [← mem_antidiagonal.mp huv, le_add_iff_nonneg_right, zero_le]
     · rintro rfl
       simp_all
-  · simp only [mem_antidiagonal, add_zero, not_true_eq_false, coeff_zero_eq_constantCoeff,
-      false_implies]
+  · simp
 
 -- TODO: derive from `mem_nonZeroDivisorsRight_of_constantCoeff` using `MulOpposite`
 theorem mem_nonZeroDivisorsLeft_of_constantCoeff {φ : MvPowerSeries σ R}
@@ -101,39 +100,50 @@ theorem mem_nonZeroDivisors_of_constantCoeff {φ : MvPowerSeries σ R}
     φ ∈ (MvPowerSeries σ R)⁰ :=
   ⟨mem_nonZeroDivisorsLeft_of_constantCoeff hφ.1, mem_nonZeroDivisorsRight_of_constantCoeff hφ.2⟩
 
-lemma monomial_mem_nonzeroDivisorsLeft {n : σ →₀ ℕ} {r} :
+lemma monomial_mem_nonZeroDivisorsLeft {n : σ →₀ ℕ} {r} :
     monomial n r ∈ nonZeroDivisorsLeft (MvPowerSeries σ R) ↔ r ∈ nonZeroDivisorsLeft R := by
   constructor
   · intro H s hrs
     have := H (C s) (by rw [← monomial_zero_eq_C, monomial_mul_monomial]; ext; simp [hrs])
-    simpa using congr(coeff 0 $(this))
+    simpa using congr(coeff 0 $this)
   · intro H p hrp
     ext i
     have := congr(coeff (i + n) $hrp)
-    rw [coeff_monomial_mul, if_pos le_add_self, add_tsub_cancel_right] at this
+    rw [coeff_monomial_mul, ite_eq_left le_add_self, add_tsub_cancel_right] at this
     simpa using H _ this
 
+@[deprecated (since := "2026-09-28")]
+alias monomial_mem_nonzeroDivisorsLeft := monomial_mem_nonZeroDivisorsLeft
+
 -- TODO: reduce duplication
-lemma monomial_mem_nonzeroDivisorsRight {n : σ →₀ ℕ} {r} :
+lemma monomial_mem_nonZeroDivisorsRight {n : σ →₀ ℕ} {r} :
     monomial n r ∈ nonZeroDivisorsRight (MvPowerSeries σ R) ↔ r ∈ nonZeroDivisorsRight R := by
   constructor
   · intro H s hrs
     have := H (C s) (by rw [← monomial_zero_eq_C, monomial_mul_monomial]; ext; simp [hrs])
-    simpa using congr(coeff 0 $(this))
+    simpa using congr(coeff 0 $this)
   · intro H p hrp
     ext i
     have := congr(coeff (i + n) $hrp)
-    rw [coeff_mul_monomial, if_pos le_add_self, add_tsub_cancel_right] at this
+    rw [coeff_mul_monomial, ite_eq_left le_add_self, add_tsub_cancel_right] at this
     simpa using H _ this
 
-lemma monomial_mem_nonzeroDivisors {n : σ →₀ ℕ} {r} :
-    monomial n r ∈ (MvPowerSeries σ R)⁰ ↔ r ∈ R⁰ :=
-  monomial_mem_nonzeroDivisorsLeft.and monomial_mem_nonzeroDivisorsRight
+@[deprecated (since := "2026-09-28")]
+alias monomial_mem_nonzeroDivisorsRight := monomial_mem_nonZeroDivisorsRight
 
-lemma X_mem_nonzeroDivisors {i : σ} :
+lemma monomial_mem_nonZeroDivisors {n : σ →₀ ℕ} {r} :
+    monomial n r ∈ (MvPowerSeries σ R)⁰ ↔ r ∈ R⁰ :=
+  monomial_mem_nonZeroDivisorsLeft.and monomial_mem_nonZeroDivisorsRight
+
+@[deprecated (since := "2026-09-28")]
+alias monomial_mem_nonzeroDivisors := monomial_mem_nonZeroDivisors
+
+lemma X_mem_nonZeroDivisors {i : σ} :
     X i ∈ (MvPowerSeries σ R)⁰ := by
-  rw [X, monomial_mem_nonzeroDivisors]
+  rw [X, monomial_mem_nonZeroDivisors]
   exact Submonoid.one_mem R⁰
+
+@[deprecated (since := "2026-09-28")] alias X_mem_nonzeroDivisors := X_mem_nonZeroDivisors
 
 end Semiring
 
@@ -141,10 +151,7 @@ variable [Semiring R] [NoZeroDivisors R]
 
 instance : NoZeroDivisors (MvPowerSeries σ R) where
   eq_zero_or_eq_zero_of_mul_eq_zero {φ ψ} h := by
-    letI : LinearOrder σ := LinearOrder.swap σ WellOrderingRel.isWellOrder.linearOrder
-    letI : WellFoundedGT σ := by
-      change IsWellFounded σ fun x y ↦ WellOrderingRel x y
-      exact IsWellOrder.toIsWellFounded
+    rcases exists_wellFoundedGT σ
     simpa only [← lexOrder_eq_top_iff_eq_zero, lexOrder_mul, WithTop.add_eq_top] using h
 
 theorem weightedOrder_mul (w : σ → ℕ) (f g : MvPowerSeries σ R) :
@@ -154,18 +161,18 @@ theorem weightedOrder_mul (w : σ → ℕ) (f g : MvPowerSeries σ R) :
   · by_cases hg : g.weightedOrder w < ⊤
     · let p := (f.weightedOrder w).toNat
       have hp : p = f.weightedOrder w := by
-        simpa only [p, ENat.coe_toNat_eq_self, ← lt_top_iff_ne_top]
+        simpa only [p, ENat.natCast_toNat_eq_self, ← lt_top_iff_ne_top]
       let q := (g.weightedOrder w).toNat
       have hq : q = g.weightedOrder w := by
-        simpa only [q, ENat.coe_toNat_eq_self, ← lt_top_iff_ne_top]
+        simpa only [q, ENat.natCast_toNat_eq_self, ← lt_top_iff_ne_top]
       have : f.weightedHomogeneousComponent w p * g.weightedHomogeneousComponent w q ≠ 0 := by
         simp only [ne_eq, mul_eq_zero]
         intro H
         rcases H with H | H <;>
         · refine weightedHomogeneousComponent_of_weightedOrder ?_ H
-          simp only [ENat.coe_toNat_eq_self, ne_eq, weightedOrder_eq_top_iff, p, q]
+          simp only [ENat.natCast_toNat_eq_self, ne_eq, weightedOrder_eq_top_iff, p, q]
           rw [← ne_eq, ne_zero_iff_weightedOrder_finite w]
-          exact ENat.coe_toNat (ne_top_of_lt (by simpa))
+          exact ENat.natCast_toNat (ne_top_of_lt (by simpa))
       rw [← weightedHomogeneousComponent_mul_of_le_weightedOrder
           (le_of_eq hp) (le_of_eq hq)] at this
       rw [← hp, ← hq, ← Nat.cast_add, ← not_lt]

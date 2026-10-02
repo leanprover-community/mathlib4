@@ -6,8 +6,6 @@ Authors: Yaël Dillies, Ella Yu
 module
 
 public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-public import Mathlib.Data.Finset.Prod
-public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
@@ -123,6 +121,7 @@ variable {s t}
     Eₘ[s, t] = #{x ∈ ((s ×ˢ t) ×ˢ s ×ˢ t) | x.1.1 * x.1.2 = x.2.1 * x.2.2} :=
   card_equiv (.prodProdProdComm _ _ _ _) (by simp [and_and_and_comm])
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive] lemma mulEnergy_eq_sum_sq' (s t : Finset α) :
     Eₘ[s, t] = ∑ a ∈ s * t, #{xy ∈ s ×ˢ t | xy.1 * xy.2 = a} ^ 2 := by
   simp_rw [mulEnergy_eq_card_filter, sq, ← card_product]
@@ -167,7 +166,7 @@ variable [CommMonoid α]
 
 @[to_additive] lemma mulEnergy_comm (s t : Finset α) : Eₘ[s, t] = Eₘ[t, s] := by
   rw [mulEnergy, ← Finset.card_map (Equiv.prodComm _ _).toEmbedding, map_filter]
-  simp [-Finset.card_map, mulEnergy, mul_comm, map_eq_image, Function.comp_def]
+  simp [mulEnergy, mul_comm, map_eq_image]
 
 end CommMonoid
 

@@ -6,10 +6,9 @@ Authors: Paul Reichert
 module
 
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
-public import Mathlib.CategoryTheory.Abelian.Subobject
+import Mathlib.CategoryTheory.Abelian.Subobject
 public import Mathlib.CategoryTheory.Abelian.Transfer
 public import Mathlib.CategoryTheory.Adjunction.AdjointFunctorTheorems
-public import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 
@@ -43,7 +42,7 @@ Relevant implications of `IsGrothendieckAbelian` are established in
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
@@ -99,12 +98,10 @@ variable [Abelian C] [IsGrothendieckAbelian.{w} C]
 instance IsGrothendieckAbelian.hasColimits : HasColimitsOfSize.{w, w} C :=
   has_colimits_of_finite_and_filtered
 
-set_option backward.isDefEq.respectTransparency false in
 instance IsGrothendieckAbelian.hasLimits : HasLimitsOfSize.{w, w} C :=
   have : HasLimits.{w, u} (ShrinkHoms C) := hasLimits_of_hasColimits_of_hasSeparator
   Adjunction.has_limits_of_equivalence (ShrinkHoms.equivalence C |>.functor)
 
-set_option backward.isDefEq.respectTransparency false in
 instance IsGrothendieckAbelian.wellPowered : WellPowered.{w} C :=
   wellPowered_of_equiv.{w} (ShrinkHoms.equivalence.{w} C).symm
 

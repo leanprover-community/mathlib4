@@ -54,7 +54,7 @@ but we could also consider a version of `NormalDomain` that only requires the lo
 `IsIntegrallyClosed` (even for Noetherian rings?).
 -/
 
-@[expose] public section
+public section
 
 
 open scoped nonZeroDivisors Polynomial
@@ -127,12 +127,10 @@ theorem isIntegrallyClosed_iff :
   simp [isIntegrallyClosed_iff_isIntegrallyClosedIn K, isIntegrallyClosedIn_iff,
         IsFractionRing.injective R K]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsIntegrallyClosedIn (integralClosure R A) A :=
   isIntegrallyClosedIn_iff.mpr
     ⟨FaithfulSMul.algebraMap_injective _ _, fun h ↦ ⟨⟨_, isIntegral_trans _ h⟩, rfl⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsIntegrallyClosedIn (integralClosure R A).toSubring A :=
   inferInstanceAs (IsIntegrallyClosedIn (integralClosure R A) A)
 
@@ -143,11 +141,11 @@ variable {C : Type*} [SetLike C A] [SubringClass C A] {S : C}
 protected theorem isIntegrallyClosedIn_iff :
     IsIntegrallyClosedIn S A ↔ ∀ ⦃x : A⦄, IsIntegral S x → x ∈ S := by
   rw [isIntegrallyClosedIn_iff, and_iff_right (FaithfulSMul.algebraMap_injective _ _)]
-  exact congr(∀ _ _, _ ∈ $Subtype.range_val)
+  congrm ∀ _ _, _ ∈ $Subtype.range_val
 
 protected theorem isIntegrallyClosed_iff [IsFractionRing S A] :
     IsIntegrallyClosed S ↔ ∀ ⦃x : A⦄, IsIntegral S x → x ∈ S := by
-  rw [isIntegrallyClosed_iff A]; exact congr(∀ _ _, _ ∈ $Subtype.range_val)
+  rw [isIntegrallyClosed_iff A]; congrm ∀ _ _, _ ∈ $Subtype.range_val
 
 theorem integralClosure_le_iff {T : Subring A} [IsIntegrallyClosedIn T A] :
     (integralClosure R A).toSubring ≤ T ↔ ∀ r, algebraMap R A r ∈ T where
@@ -159,7 +157,7 @@ theorem integralClosure_le_iff {T : Subring A} [IsIntegrallyClosedIn T A] :
 
 theorem integralClosure_subring_le_iff {T : Subring A} [IsIntegrallyClosedIn T A] :
     (integralClosure S A).toSubring ≤ T ↔ .ofClass S ≤ T := by
-  rw [integralClosure_le_iff, Subtype.forall, SetLike.le_def]; rfl
+  rw [integralClosure_le_iff, Subtype.forall, IsConcreteLE.le_iff]; rfl
 
 end Subring
 
@@ -185,7 +183,6 @@ theorem exists_algebraMap_eq_of_isIntegral_pow [IsIntegrallyClosedIn R A]
     (hx : IsIntegral R <| x ^ n) : ∃ y : R, algebraMap R A y = x :=
   isIntegral_iff.mp <| hx.of_pow hn
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_algebraMap_eq_of_pow_mem_subalgebra {A : Type*} [CommRing A] [Algebra R A]
     {S : Subalgebra R A} [IsIntegrallyClosedIn S A] {x : A} {n : ℕ} (hn : 0 < n)
     (hx : x ^ n ∈ S) : ∃ y : S, algebraMap S A y = x :=
@@ -256,7 +253,6 @@ theorem exists_algebraMap_eq_of_isIntegral_pow [IsIntegrallyClosed R] {x : K} {n
     (hx : IsIntegral R <| x ^ n) : ∃ y : R, algebraMap R K y = x :=
   IsIntegrallyClosedIn.exists_algebraMap_eq_of_isIntegral_pow hn hx
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_algebraMap_eq_of_pow_mem_subalgebra {K : Type*} [CommRing K] [Algebra R K]
     {S : Subalgebra R K} [IsIntegrallyClosed S] [IsFractionRing S K] {x : K} {n : ℕ} (hn : 0 < n)
     (hx : x ^ n ∈ S) : ∃ y : S, algebraMap S K y = x :=
@@ -286,7 +282,7 @@ lemma of_isIntegrallyClosedIn
     (FaithfulSMul.algebraMap_injective R K)
   rw [isIntegrallyClosed_iff (K := FractionRing R)]
   intro x hx
-  convert (IsIntegralClosure.isIntegral_iff (A := R)).mp (hx.map f)
+  convert! (IsIntegralClosure.isIntegral_iff (A := R)).mp (hx.map f)
   simp [← f.toRingHom.injective.eq_iff]
 
 lemma _root_.IsIntegralClosure.of_isIntegralClosure_of_isIntegrallyClosedIn
@@ -301,7 +297,8 @@ lemma _root_.IsIntegralClosure.of_isIntegralClosure_of_isIntegrallyClosedIn
   · intro x
     refine ⟨fun h ↦ ?_, ?_⟩
     · obtain ⟨x, rfl⟩ := (IsIntegralClosure.isIntegral_iff (R := T) (A := T)).mp h.tower_top
-      rw [isIntegral_algebraMap_iff (IsIntegralClosure.algebraMap_injective T T U)] at h
+      have := IsIntegralClosure.faithfulSMul T T U
+      rw [isIntegral_algebraMap_iff] at h
       obtain ⟨x, rfl⟩ := (IsIntegralClosure.isIntegral_iff (R := R) (A := S)).mp h
       exact ⟨x, IsScalarTower.algebraMap_apply ..⟩
     · rintro ⟨x, rfl⟩
@@ -335,7 +332,7 @@ theorem pow_dvd_pow_iff [IsDomain R] [IsIntegrallyClosed R]
   have hy : IsIntegral R y := by
     refine ⟨X ^ n - C x, monic_X_pow_sub_C _ hn, ?_⟩
     simp only [y, eval₂_sub, eval₂_X_pow, div_pow, eval₂_C]
-    replace hx := congr_arg (algebraMap R K) hx
+    replace hx := congr(algebraMap R K $hx)
     rw [map_pow] at hx
     simp [hx, ha]
   obtain ⟨k, hk⟩ := algebraMap_eq_of_integral hy
@@ -367,7 +364,6 @@ variable (K : Type*) [Field K] [Algebra R K]
 variable [IsFractionRing R K]
 variable {L : Type*} [Field L] [Algebra K L] [Algebra R L] [IsScalarTower R K L]
 
-set_option backward.isDefEq.respectTransparency false in
 -- Can't be an instance because you need to supply `K`.
 theorem isIntegrallyClosedOfFiniteExtension [IsDomain R] [FiniteDimensional K L] :
     IsIntegrallyClosed (integralClosure R L) :=
@@ -380,11 +376,12 @@ section localization
 
 variable {R : Type*} (S : Type*) [CommRing R] [CommRing S] [Algebra R S]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma isIntegrallyClosed_of_isLocalization [IsIntegrallyClosed R] [IsDomain R] (M : Submonoid R)
     (hM : M ≤ R⁰) [IsLocalization M S] : IsIntegrallyClosed S := by
   let K := FractionRing R
   let g : S →+* K := IsLocalization.map _ (T := R⁰) (RingHom.id R) hM
-  letI := g.toAlgebra
+  let := g.toAlgebra
   have : IsScalarTower R S K := IsScalarTower.of_algebraMap_eq'
     (by rw [RingHom.algebraMap_toAlgebra, IsLocalization.map_comp, RingHomCompTriple.comp_eq])
   have := IsFractionRing.isFractionRing_of_isDomain_of_isLocalization M S K

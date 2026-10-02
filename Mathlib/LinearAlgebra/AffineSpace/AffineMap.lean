@@ -9,9 +9,8 @@ public import Mathlib.Algebra.Order.Group.Pointwise.Interval
 public import Mathlib.Algebra.Order.Module.Defs
 public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.Pi
-public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.Tactic.Abel
-public import Mathlib.Algebra.AddTorsor.Basic
+public import Mathlib.Algebra.Torsor.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.Defs
 /-!
 # Affine maps
@@ -47,7 +46,9 @@ topology are defined elsewhere; see `Analysis.Normed.Affine.AddTorsor` and
 
 @[expose] public section
 
-open Affine Module
+open Module
+
+open scoped Affine
 
 /-- An `AffineMap k P1 P2` (notation: `P1 →ᵃ[k] P2`) is a map from `P1` to `P2` that
 induces a corresponding linear map from `V1` to `V2`. -/
@@ -65,11 +66,12 @@ structure AffineMap (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Typ
 induces a corresponding linear map from `V1` to `V2`. -/
 notation:25 P1 " →ᵃ[" k:25 "] " P2:0 => AffineMap k P1 P2
 
+@[macro_inline]
 instance AffineMap.instFunLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*)
     [Ring k] [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
     [AffineSpace V2 P2] : FunLike (P1 →ᵃ[k] P2) P1 P2 where
   coe := AffineMap.toFun
-  coe_injective' := fun ⟨f, f_linear, f_add⟩ ⟨g, g_linear, g_add⟩ => fun (h : f = g) => by
+  coe_injective := fun ⟨f, f_linear, f_add⟩ ⟨g, g_linear, g_add⟩ => fun (h : f = g) => by
     obtain ⟨p⟩ := (AddTorsor.nonempty : Nonempty P1)
     congr with v
     apply vadd_right_cancel (f p)
@@ -125,8 +127,10 @@ theorem map_vadd (f : P1 →ᵃ[k] P2) (p : P1) (v : V1) : f (v +ᵥ p) = f.line
 result of subtracting the result of the affine map on those two
 points. -/
 @[simp]
-theorem linearMap_vsub (f : P1 →ᵃ[k] P2) (p1 p2 : P1) : f.linear (p1 -ᵥ p2) = f p1 -ᵥ f p2 := by
+theorem linear_apply_vsub (f : P1 →ᵃ[k] P2) (p1 p2 : P1) : f.linear (p1 -ᵥ p2) = f p1 -ᵥ f p2 := by
   conv_rhs => rw [← vsub_vadd p1 p2, map_vadd, vadd_vsub]
+
+@[deprecated (since := "2026-09-22")] alias linearMap_vsub := linear_apply_vsub
 
 /-- Two affine maps are equal if they coerce to the same function. -/
 @[ext]
@@ -148,7 +152,7 @@ theorem ext_linear {f g : P1 →ᵃ[k] P2} (h₁ : f.linear = g.linear) {p : P1}
   ext q
   have hgl : g.linear (q -ᵥ p) = toFun g ((q -ᵥ p) +ᵥ q) -ᵥ toFun g q := by simp
   have := f.map_vadd' q (q -ᵥ p)
-  rw [h₁, hgl, toFun_eq_coe, map_vadd, linearMap_vsub, h₂] at this
+  rw [h₁, hgl, toFun_eq_coe, map_vadd, linear_apply_vsub, h₂] at this
   simpa
 
 /-- Two affine maps are equal if they have equal linear maps and are equal at some point. -/
@@ -184,7 +188,7 @@ theorem linear_eq_zero_iff_exists_const (f : P1 →ᵃ[k] P2) :
   refine ⟨fun h => ?_, fun h => ?_⟩
   · use f (Classical.arbitrary P1)
     ext
-    rw [coe_const, Function.const_apply, ← @vsub_eq_zero_iff_eq V2, ← f.linearMap_vsub, h,
+    rw [coe_const, Function.const_apply, ← @vsub_eq_zero_iff_eq V2, ← f.linear_apply_vsub, h,
       LinearMap.zero_apply]
   · rcases h with ⟨q, rfl⟩
     exact const_linear k P1 q
@@ -445,17 +449,17 @@ theorem image_vsub_image {s t : Set P1} (f : P1 →ᵃ[k] P2) :
     f '' s -ᵥ f '' t = f.linear '' (s -ᵥ t) := by
   ext v
   simp only [Set.mem_vsub, Set.mem_image,
-    exists_exists_and_eq_and, ← f.linearMap_vsub]
+    exists_exists_and_eq_and, ← f.linear_apply_vsub]
   grind
 
 /-- The product of two affine maps is an affine map. -/
 @[simps linear]
 def prod (f : P1 →ᵃ[k] P2) (g : P1 →ᵃ[k] P3) : P1 →ᵃ[k] P2 × P3 where
-  toFun := Pi.prod f g
+  toFun := Function.prod f g
   linear := f.linear.prod g.linear
   map_vadd' := by simp
 
-theorem coe_prod (f : P1 →ᵃ[k] P2) (g : P1 →ᵃ[k] P3) : prod f g = Pi.prod f g :=
+theorem coe_prod (f : P1 →ᵃ[k] P2) (g : P1 →ᵃ[k] P3) : prod f g = Function.prod f g :=
   rfl
 
 @[simp]
@@ -640,7 +644,7 @@ theorem image_uIcc {k : Type*} [Field k] [LinearOrder k] [IsStrictOrderedRing k]
   have : ⇑f = (fun x => x + f 0) ∘ fun x => x * (f 1 - f 0) := by
     ext x
     change f x = x • (f 1 -ᵥ f 0) +ᵥ f 0
-    rw [← f.linearMap_vsub, ← f.linear.map_smul, ← f.map_vadd]
+    rw [← f.linear_apply_vsub, ← f.linear.map_smul, ← f.map_vadd]
     simp only [vsub_eq_sub, add_zero, mul_one, vadd_eq_add, sub_zero, smul_eq_mul]
   rw [this, Set.image_comp]
   simp only [Set.image_add_const_uIcc, Set.image_mul_const_uIcc, Function.comp_apply]
@@ -804,7 +808,7 @@ note [partially-applied ext lemmas]. Analogous to `LinearMap.pi_ext'` -/
 theorem pi_ext_nonempty' [Nonempty ι] (h : ∀ i, f.comp (LinearMap.single _ _ i).toAffineMap =
     g.comp (LinearMap.single _ _ i).toAffineMap) : f = g := by
   refine pi_ext_nonempty fun i x => ?_
-  convert AffineMap.congr_fun (h i) x
+  convert! congr($(h i) x)
 
 end Ext
 
@@ -872,6 +876,17 @@ theorem homothety_eq_iff_of_mul_eq_one {c p q : P1} {r₁ r₂ : k} (h : r₁ * 
   all_goals
     rw [← h1, ← homothety_mul_apply]
     simp [h, h']
+
+theorem homothety_injective [Module.IsTorsionFree k V1] [IsCancelMulZero k] (c : P1) {r : k}
+    (hr : r ≠ 0) :
+    Function.Injective (homothety c r) :=
+  fun _ _ h ↦ by simpa [homothety_def, hr] using h
+
+@[simp]
+theorem homothety_inj [Module.IsTorsionFree k V1] [IsCancelMulZero k] (c : P1) {r : k} (hr : r ≠ 0)
+    {p q : P1} :
+    homothety c r p = homothety c r q ↔ p = q :=
+  (homothety_injective c hr).eq_iff
 
 /-- `homothety` as a multiplicative monoid homomorphism. -/
 def homothetyHom (c : P1) : k →* P1 →ᵃ[k] P1 where

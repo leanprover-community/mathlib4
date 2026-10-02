@@ -5,9 +5,6 @@ Authors: Antoine Chambert-Loir, Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.AlgebraMap
-public import Mathlib.Algebra.Polynomial.Identities
-public import Mathlib.RingTheory.Nilpotent.Lemmas
 public import Mathlib.RingTheory.Polynomial.Nilpotent
 
 /-!
@@ -16,8 +13,8 @@ public import Mathlib.RingTheory.Polynomial.Nilpotent
 Given a single-variable polynomial `P` with derivative `P'`, Newton's method concerns iteration of
 the rational map: `x ↦ x - P(x) / P'(x)`.
 
-Over a field it can serve as a root-finding algorithm. It is also useful tool in certain proofs
-such as Hensel's lemma and Jordan-Chevalley decomposition.
+Over a field, it can serve as a root-finding algorithm. It is also useful in proving results such
+as Hensel's lemma and the Jordan-Chevalley decomposition.
 
 ## Main definitions / results:
 
@@ -28,13 +25,13 @@ such as Hensel's lemma and Jordan-Chevalley decomposition.
 * `Polynomial.existsUnique_nilpotent_sub_and_aeval_eq_zero`: if `x` is almost a root of `P` in the
   sense that `P(x)` is nilpotent (and `P'(x)` is a unit) then we may write `x` as a sum
   `x = n + r` where `n` is nilpotent and `r` is a root of `P`. This can be used to prove the
-  Jordan-Chevalley decomposition of linear endomorphims.
+  Jordan-Chevalley decomposition of linear endomorphisms.
 
 -/
 
 @[expose] public section
 
-open Set Function
+open Function
 
 noncomputable section
 
@@ -105,7 +102,7 @@ theorem aeval_pow_two_pow_dvd_aeval_iterate_newtonMap
 unit) then we may write `x` as a sum `x = n + r` where `n` is nilpotent and `r` is a root of `P`.
 Moreover, `n` and `r` are unique.
 
-This can be used to prove the Jordan-Chevalley decomposition of linear endomorphims. -/
+This can be used to prove the Jordan-Chevalley decomposition of linear endomorphisms. -/
 theorem existsUnique_nilpotent_sub_and_aeval_eq_zero
     (h : IsNilpotent (aeval x P)) (h' : IsUnit (aeval x <| derivative P)) :
     ∃! r, IsNilpotent (x - r) ∧ aeval r P = 0 := by

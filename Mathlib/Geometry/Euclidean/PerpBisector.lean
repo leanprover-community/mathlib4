@@ -6,7 +6,6 @@ Authors: Yury Kudryashov, Joseph Myers
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Orthogonal
-public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.Convex.Between
 public import Mathlib.Analysis.InnerProductSpace.Affine
 
@@ -108,7 +107,6 @@ theorem perpBisector_comm (p₁ p₂ : P) : perpBisector p₁ p₂ = perpBisecto
 @[simp] theorem left_mem_perpBisector : p₁ ∈ perpBisector p₁ p₂ ↔ p₁ = p₂ := by
   rw [perpBisector_comm, right_mem_perpBisector, eq_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem perpBisector_self (p : P) : perpBisector p p = ⊤ :=
   top_unique fun _ ↦ by simp [mem_perpBisector_iff_inner_eq_inner]
 

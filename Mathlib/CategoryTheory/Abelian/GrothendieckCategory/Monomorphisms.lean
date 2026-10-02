@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
-public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
 public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 
 /-!
@@ -17,7 +17,7 @@ monomorphisms are stable under transfinite composition.
 
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 

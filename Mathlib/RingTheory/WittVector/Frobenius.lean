@@ -5,10 +5,7 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Algebra.ZMod
-public import Mathlib.Data.Nat.Multiplicity
-public import Mathlib.FieldTheory.Perfect
-public import Mathlib.RingTheory.WittVector.Basic
+import Mathlib.Algebra.Algebra.ZMod
 public import Mathlib.RingTheory.WittVector.IsPoly
 
 /-!
@@ -130,7 +127,6 @@ theorem map_frobeniusPoly.key₂ {n i j : ℕ} (hi : i ≤ n) (hj : j < p ^ (n -
   exact ⟨(Nat.pow_le_pow_iff_right hp.1.one_lt).1 (hle.trans hj),
      Nat.le_of_lt_succ ((m.lt_pow_self hp.1.one_lt).trans_le hle)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem map_frobeniusPoly (n : ℕ) :
     MvPolynomial.map (Int.castRingHom ℚ) (frobeniusPoly p n) = frobeniusPolyRat p n := by
   rw [frobeniusPoly, map_add, map_mul, map_pow, map_C, map_X, eq_intCast, Int.cast_natCast,
@@ -258,7 +254,7 @@ variable [CharP R p]
 @[simp]
 theorem coeff_frobenius_charP (x : 𝕎 R) (n : ℕ) : coeff (frobenius x) n = x.coeff n ^ p := by
   rw [coeff_frobenius]
-  letI : Algebra (ZMod p) R := ZMod.algebra _ _
+  let : Algebra (ZMod p) R := ZMod.algebra _ _
   -- outline of the calculation, proofs follow below
   calc
     aeval (fun k => x.coeff k) (frobeniusPoly p n) =

@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Geometry.Euclidean.Inversion.Basic
 public import Mathlib.Analysis.InnerProductSpace.Calculus
-public import Mathlib.Analysis.Calculus.Deriv.Inv
-public import Mathlib.Tactic.AdaptationNote
+import Mathlib.Analysis.Calculus.Deriv.Inv
+import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Derivative of the inversion
@@ -27,7 +27,7 @@ inversion, derivative
 
 public section
 
-open Metric Function AffineMap Set AffineSubspace
+open Function Set
 open scoped Topology RealInnerProductSpace
 
 variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -100,7 +100,7 @@ theorem hasFDerivAt_inversion (hx : x ≠ c) :
       (R ^ 2)
     exact (B.smul A).add_const c
   refine this.congr_fderiv (LinearMap.ext_on_codisjoint
-    (Submodule.isCompl_orthogonal_of_hasOrthogonalProjection (K := ℝ ∙ x)).codisjoint
+    (Submodule.isCompl_orthogonal (ℝ ∙ x)).codisjoint
     (LinearMap.eqOn_span' ?_) fun y hy ↦ ?_)
   · have : ((‖x‖ ^ 2) ^ 2)⁻¹ * (‖x‖ ^ 2) = (‖x‖ ^ 2)⁻¹ := by
       rw [← div_eq_inv_mul, sq (‖x‖ ^ 2), div_self_mul_self']

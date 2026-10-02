@@ -5,7 +5,7 @@ Authors: Anne Baanen, Yury Kudryashov, Joseph Myers, Heather Macbeth, Kim Morris
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Action.Units
+import Mathlib.Algebra.GroupWithZero.Action.Units
 public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
 /-!
@@ -15,7 +15,7 @@ This file proves more lemmas about the `NoZeroSMulDivisors` class, which is depr
 `Module.IsTorsionFree`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Multiset Set.indicator Pi.single_smul₀ Field
 

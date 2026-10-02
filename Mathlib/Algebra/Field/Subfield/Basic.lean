@@ -5,11 +5,11 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Field.Subfield.Defs
 public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-public import Mathlib.Algebra.Ring.Subring.Basic
 public import Mathlib.RingTheory.SimpleRing.Basic
+
+import Mathlib.Order.CompleteLattice.Finset
 
 /-!
 # Subfields
@@ -252,13 +252,11 @@ instance : InfSet (Subfield K) :=
 
 @[simp, norm_cast]
 theorem coe_sInf (S : Set (Subfield K)) : ((sInf S : Subfield K) : Set K) = ⋂ s ∈ S, ↑s :=
-  show ((sInf (Subfield.toSubring '' S) : Subring K) : Set K) = ⋂ s ∈ S, ↑s by
-    simp
+  show ((sInf (Subfield.toSubring '' S) : Subring K) : Set K) = ⋂ s ∈ S, ↑s by simp
 
 @[simp]
-theorem mem_sInf {S : Set (Subfield K)} {x : K} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
-  Subring.mem_sInf.trans
-    ⟨fun h p hp => h p.toSubring ⟨p, hp, rfl⟩, fun h _ ⟨p', hp', p_eq⟩ => p_eq ▸ h p' hp'⟩
+theorem mem_sInf {S : Set (Subfield K)} {x : K} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p := by
+  simpa only [Set.mem_iInter] using! Set.ext_iff.1 (coe_sInf S) x
 
 @[simp, norm_cast]
 theorem coe_iInf {ι : Sort*} {S : ι → Subfield K} : (↑(⨅ i, S i) : Set K) = ⋂ i, S i := by
@@ -426,14 +424,24 @@ theorem coe_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subfield K} (h
 
 theorem mem_sSup_of_directedOn {S : Set (Subfield K)} (Sne : S.Nonempty) (hS : DirectedOn (· ≤ ·) S)
     {x : K} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
-  haveI : Nonempty S := Sne.to_subtype
+  have : Nonempty S := Sne.to_subtype
   simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, Subtype.exists, exists_prop]
 
 theorem coe_sSup_of_directedOn {S : Set (Subfield K)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set K) = ⋃ s ∈ S, ↑s :=
   Set.ext fun x => by simp [mem_sSup_of_directedOn Sne hS]
 
+theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → Subfield K) :
+    ((⨆ i, S i : Subfield K) : Set K) = ⋃ s : Finset ι, (⨆ i ∈ s, S i : Subfield K) := by
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le fun _ _ ↦ biSup_mono]
+
 end Subfield
+
+variable (L) in
+/-- A field is finitely generated if it is the closure of a finite subset. -/
+@[mk_iff fg_iff]
+protected class Field.FG : Prop where
+  finitely_generated : ∃ S : Finset L, Subfield.closure (S : Set L) = ⊤
 
 namespace RingHom
 
@@ -525,7 +533,7 @@ variable {s t : Subfield K}
 /-- Makes the identity isomorphism from a proof two subfields of a multiplicative
     monoid are equal. -/
 def subfieldCongr (h : s = t) : s ≃+* t :=
-  { Equiv.setCongr <| SetLike.ext'_iff.1 h with
+  { Set.equivOfEq <| SetLike.ext'_iff.1 h with
     map_mul' := fun _ _ => rfl
     map_add' := fun _ _ => rfl }
 
@@ -552,7 +560,7 @@ protected theorem prod_mem {ι : Type*} {t : Finset ι} {f : ι → K} (h : ∀ 
   prod_mem h
 
 instance toAlgebra : Algebra s K :=
-  RingHom.toAlgebra s.subtype
+  inferInstance
 
 theorem algebraMap_ofSubfield : algebraMap s K = s.subtype :=
   rfl

@@ -6,7 +6,6 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
-public import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
 
 /-!
 # The universal property of the even subalgebra
@@ -80,7 +79,6 @@ def EvenHom.compr₂ (g : EvenHom Q A) (f : A →ₐ[R] B) : EvenHom Q B where
 
 variable (Q)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The embedding of pairs of vectors into the even subalgebra, as a bilinear map. -/
 nonrec def even.ι : EvenHom Q (even Q) where
   bilin :=
@@ -97,13 +95,11 @@ nonrec def even.ι : EvenHom Q (even Q) where
           simp only [mul_assoc]
         _ = Q m₂ • (ι Q m₁ * ι Q m₃) := by rw [Algebra.smul_def, ι_sq_scalar, Algebra.left_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Inhabited (EvenHom Q (even Q)) :=
   ⟨even.ι Q⟩
 
 variable (f : EvenHom Q A)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Two algebra morphisms from the even subalgebra are equal if they agree on pairs of generators.
 
 See note [partially-applied ext lemmas]. -/
@@ -116,11 +112,11 @@ theorem even.algHom_ext ⦃f g : even Q →ₐ[R] A⦄ (h : (even.ι Q).compr₂
   | algebraMap r =>
     exact (f.commutes r).trans (g.commutes r).symm
   | add x y hx hy ihx ihy =>
-    have := congr_arg₂ (· + ·) ihx ihy
-    exact (map_add f _ _).trans (this.trans <| (map_add g _ _).symm)
+    have := congr($ihx + $ihy)
+    exact (map_add f _ _).trans (this.trans (map_add g _ _).symm)
   | ι_mul_ι_mul m₁ m₂ x hx ih =>
-    have := congr_arg₂ (· * ·) (LinearMap.congr_fun (LinearMap.congr_fun h m₁) m₂) ih
-    exact (map_mul f _ _).trans (this.trans <| (map_mul g _ _).symm)
+    have := congr($h m₁ m₂ * $ih)
+    exact (map_mul f _ _).trans (this.trans (map_mul g _ _).symm)
 
 variable {Q}
 
@@ -148,7 +144,7 @@ private def fFold : M →ₗ[R] A × S f →ₗ[R] A × S f :=
         ```
         -/
       (acc.2.val m,
-        ⟨(LinearMap.mulRight R acc.1).comp (f.bilin.flip m), Submodule.subset_span <| ⟨_, _, rfl⟩⟩))
+        ⟨(LinearMap.mulRight R acc.1).comp (f.bilin.flip m), Submodule.subset_span ⟨_, _, rfl⟩⟩))
     (fun m₁ m₂ a =>
       Prod.ext (map_add _ m₁ m₂)
         (Subtype.ext <|
@@ -192,7 +188,6 @@ private theorem fFold_fFold (m : M) (x : A × S f) : fFold f m (fFold f m x) = Q
     · rintro x hx _c ihx
       rw [LinearMap.smul_apply, LinearMap.smul_apply, mul_smul_comm, ihx, smul_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- The final auxiliary construction for `CliffordAlgebra.even.lift`. This map is the forwards
@@ -206,13 +201,12 @@ def aux (f : EvenHom Q A) : CliffordAlgebra.even Q →ₗ[R] A := by
 theorem aux_one : aux f 1 = 1 :=
   congr_arg Prod.fst (foldr_one _ _ _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem aux_ι (m₁ m₂ : M) : aux f ((even.ι Q).bilin m₁ m₂) = f.bilin m₁ m₂ :=
-  (congr_arg Prod.fst (foldr_mul _ _ _ _ _ _)).trans
-    (by
-      rw [foldr_ι, foldr_ι]
-      exact mul_one _)
+theorem aux_ι (m₁ m₂ : M) : aux f ((even.ι Q).bilin m₁ m₂) = f.bilin m₁ m₂ := by
+  rw [CliffordAlgebra.even.lift.aux_apply]
+  refine (congr_arg Prod.fst (foldr_mul Q (fFold f) _ _ _ _)).trans ?_
+  rw [foldr_ι, foldr_ι]
+  exact mul_one _
 
 @[simp]
 theorem aux_algebraMap (r) :
@@ -229,7 +223,7 @@ theorem aux_mul (x y : even Q) : aux f (x * y) = aux f x * aux f y := by
   induction x, x_property using even_induction Q with
   | algebraMap r =>
     generalize_proofs at ⊢
-    simpa using Algebra.smul_def r _
+    simpa using! Algebra.smul_def r _
   | add x y hx hy ihx ihy =>
     rw [map_add, Prod.fst_add]
     simp [ihx, ihy, ← add_mul, ← map_add]
@@ -242,7 +236,6 @@ open even.lift
 
 variable (Q)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Every algebra morphism from the even subalgebra is in one-to-one correspondence with a
 bilinear map that sends duplicate arguments to the quadratic form, and contracts across
 multiplication. -/
@@ -253,7 +246,6 @@ def even.lift : EvenHom Q A ≃ (CliffordAlgebra.even Q →ₐ[R] A) where
   left_inv f := EvenHom.ext <| LinearMap.ext₂ <| even.lift.aux_ι f
   right_inv _ := even.algHom_ext Q <| EvenHom.ext <| LinearMap.ext₂ <| even.lift.aux_ι _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem even.lift_ι (f : EvenHom Q A) (m₁ m₂ : M) :
     even.lift Q f ((even.ι Q).bilin m₁ m₂) = f.bilin m₁ m₂ :=

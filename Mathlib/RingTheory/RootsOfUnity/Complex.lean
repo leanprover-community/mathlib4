@@ -9,7 +9,7 @@ public import Mathlib.Analysis.SpecialFunctions.Complex.Log
 public import Mathlib.RingTheory.Int.Basic
 public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 public import Mathlib.Tactic.Rify
-public import Mathlib.Tactic.Qify
+import Mathlib.Tactic.Qify
 
 /-!
 # Complex roots of unity
@@ -35,6 +35,13 @@ open Polynomial Real
 
 open scoped Nat Real
 
+theorem isPrimitiveRoot_I : IsPrimitiveRoot I 4 :=
+  .mk_of_lt I zero_lt_four I_pow_four fun l hl0 hl4 ↦ by
+    interval_cases l <;> norm_num [Complex.ext_iff]
+
+theorem isPrimitiveRoot_neg_I : IsPrimitiveRoot (-I) 4 := by
+  simpa only [inv_I] using isPrimitiveRoot_I.inv
+
 theorem isPrimitiveRoot_exp_of_isCoprime (i : ℤ) (n : ℕ) (h0 : n ≠ 0) (hi : IsCoprime i n) :
     IsPrimitiveRoot (exp (2 * π * I * (i / n))) n := by
   rw [IsPrimitiveRoot.iff_def]
@@ -54,8 +61,8 @@ theorem isPrimitiveRoot_exp_of_coprime (i n : ℕ) (h0 : n ≠ 0) (hi : i.Coprim
   isPrimitiveRoot_exp_of_isCoprime _ _ h0 hi.isCoprime
 
 theorem isPrimitiveRoot_exp_rat (q : ℚ) : IsPrimitiveRoot (exp (2 * π * I * q)) q.den := by
-  convert isPrimitiveRoot_exp_of_isCoprime _ _ q.den_nz <|
-    Int.isCoprime_iff_nat_coprime.mpr q.reduced
+  convert
+    isPrimitiveRoot_exp_of_isCoprime _ _ q.den_nz <| Int.isCoprime_iff_nat_coprime.mpr q.reduced
   nth_rw 1 [← Rat.num_div_den q]
   simp
 
@@ -71,7 +78,6 @@ theorem isPrimitiveRoot_exp_rat_of_even_num (q : ℚ) (h : Even q.num) :
     convert q.reduced
     grind
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isPrimitiveRoot_exp_rat_of_odd_num (q : ℚ) (h : Odd q.num) :
     IsPrimitiveRoot (exp (π * I * q)) (2 * q.den) := by
   convert isPrimitiveRoot_exp_rat (q / 2) using 1
@@ -84,7 +90,7 @@ theorem isPrimitiveRoot_exp_rat_of_odd_num (q : ℚ) (h : Odd q.num) :
         (c := Nat.Coprime.mul_right q.reduced h.natAbs.coprime_two_right)]
 
 theorem isPrimitiveRoot_exp (n : ℕ) (h0 : n ≠ 0) : IsPrimitiveRoot (exp (2 * π * I / n)) n := by
-  simpa only [Nat.cast_one, one_div] using
+  simpa only [Nat.cast_one, one_div] using!
     isPrimitiveRoot_exp_of_coprime 1 n h0 n.coprime_one_left
 
 theorem isPrimitiveRoot_iff (ζ : ℂ) (n : ℕ) (hn : n ≠ 0) :
@@ -109,8 +115,8 @@ nonrec theorem mem_rootsOfUnity (n : ℕ) [NeZero n] (x : Units ℂ) :
   have hn0 : (n : ℂ) ≠ 0 := mod_cast NeZero.out
   constructor
   · intro h
-    obtain ⟨i, hi, H⟩ : ∃ i < (n : ℕ), exp (2 * π * I / n) ^ i = x := by
-      simpa only using (isPrimitiveRoot_exp n NeZero.out).eq_pow_of_pow_eq_one h
+    obtain ⟨i, hi, H⟩ : ∃ i < (n : ℕ), exp (2 * π * I / n) ^ i = x :=
+      (isPrimitiveRoot_exp n NeZero.out).eq_pow_of_pow_eq_one h
     refine ⟨i, hi, ?_⟩
     rw [← H, ← exp_nat_mul]
     congr 1
@@ -120,7 +126,7 @@ nonrec theorem mem_rootsOfUnity (n : ℕ) [NeZero n] (x : Units ℂ) :
     use i
     simp [field]
 
-theorem card_rootsOfUnity (n : ℕ) [NeZero n] : Fintype.card (rootsOfUnity n ℂ) = n :=
+theorem card_rootsOfUnity (n : ℕ) [NeZero n] : Nat.card (rootsOfUnity n ℂ) = n :=
   (isPrimitiveRoot_exp n NeZero.out).card_rootsOfUnity
 
 theorem card_primitiveRoots (k : ℕ) : (primitiveRoots k ℂ).card = φ k := by
@@ -189,7 +195,7 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
   simp only [Int.cast_sub, Int.cast_natCast, Set.mem_Ioc]
   field_simp
   constructor
-  · push_neg at h₂
+  · push Not at h₂
     rify at h₂
     linear_combination h₂
   · rify at h

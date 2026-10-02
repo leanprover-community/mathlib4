@@ -5,10 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.FiniteStability
-public import Mathlib.RingTheory.Finiteness.FiniteTypeLocal
+import Mathlib.RingTheory.FiniteStability
+import Mathlib.RingTheory.Finiteness.FiniteTypeLocal
 public import Mathlib.RingTheory.Localization.InvSubmonoid
-public import Mathlib.RingTheory.RingHom.Finite
+public import Mathlib.RingTheory.LocalProperties.Basic
 
 /-!
 
@@ -53,8 +53,7 @@ theorem finiteType_isStableUnderBaseChange : IsStableUnderBaseChange @FiniteType
   · exact finiteType_respectsIso
   · introv h
     rw [finiteType_algebraMap] at h
-    suffices Algebra.FiniteType S (S ⊗[R] T) by
-      rw [RingHom.FiniteType]; convert this; ext; simp_rw [Algebra.smul_def]; rfl
+    apply finiteType_algebraMap.mpr
     infer_instance
 
 /-- If `S` is a finite type `R`-algebra, then `S' = M⁻¹S` is a finite type `R' = M⁻¹R`-algebra. -/
@@ -82,7 +81,7 @@ theorem finiteType_ofLocalizationSpanTarget : OfLocalizationSpanTarget @FiniteTy
   introv R hs H
   algebraize [f]
   replace H : ∀ r ∈ s, Algebra.FiniteType R (Localization.Away (r : S)) := by
-    intro r hr; simp_rw [RingHom.FiniteType] at H; convert H ⟨r, hr⟩; ext
+    intro r hr; simp_rw [RingHom.FiniteType] at H; convert! H ⟨r, hr⟩; ext
     simp_rw [Algebra.smul_def]; rfl
   exact Algebra.FiniteType.of_span_eq_top_target s hs H
 

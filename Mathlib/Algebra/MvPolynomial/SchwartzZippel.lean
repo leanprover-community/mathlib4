@@ -5,15 +5,14 @@ Authors: Bolton Bailey, Yaël Dillies, Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Field
-public import Mathlib.Algebra.MvPolynomial.Equiv
+import Mathlib.Algebra.BigOperators.Field
+import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.Algebra.MvPolynomial.Variables
-public import Mathlib.Algebra.Order.GroupWithZero.Finset
-public import Mathlib.Algebra.Order.Ring.Finset
-public import Mathlib.Algebra.Polynomial.Roots
-public import Mathlib.Data.Fin.Tuple.Finset
-public import Mathlib.Tactic.Positivity.Finset
-public import Mathlib.Tactic.GCongr
+import Mathlib.Algebra.Order.GroupWithZero.Finset
+import Mathlib.Algebra.Order.Ring.Finset
+import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.Data.Fin.Tuple.Finset
+import Mathlib.Tactic.Positivity.Finset
 
 /-!
 # The Schwartz-Zippel lemma
@@ -131,7 +130,7 @@ lemma schwartz_zippel_sup_sum :
                 {x₀ ∈ S 0 | eval (cons x₀ xₜ) p = 0}) := by
             rw [← filter_filter, filter_piFinset_eq_map_consEquiv S (fun r ↦ eval r pₖ ≠ 0),
               filter_map, card_map, product_eq_biUnion_right, filter_biUnion]
-            simp [Function.comp_def, filter_image]
+            simp [filter_image]
             rfl
           _ ≤ ∑ xₜ ∈ tail S ^^ n with eval xₜ pₖ ≠ 0,
                 #(image (fun x₀ ↦ (x₀, xₜ)) {x₀ ∈ S 0 | eval (cons x₀ xₜ) p = 0}) :=
@@ -184,7 +183,6 @@ lemma schwartz_zippel_sum_degreeOf {n} {p : MvPolynomial (Fin n) R} (hp : p ≠ 
     _ ≤ ∑ i, (p.degreeOf i / #(S i) : ℚ≥0) := Finset.sup_le fun s hs ↦ by
       gcongr with i; exact monomial_le_degreeOf i hs
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **Schwartz-Zippel lemma**
 
 For a nonzero multivariable polynomial `p` over an integral domain, the probability that `p`
@@ -198,7 +196,6 @@ lemma schwartz_zippel_totalDegree {n} {p : MvPolynomial (Fin n) R} (hp : p ≠ 0
     _ = p.totalDegree / #S := by
       obtain rfl | hs := S.eq_empty_or_nonempty
       · simp
-        simp only [← _root_.bot_eq_zero, sup_bot]
       simp_rw [totalDegree, Nat.cast_finsetSup]
       rw [sup_div₀ (by positivity)]
       simp [← sum_div, Finsupp.sum_fintype]

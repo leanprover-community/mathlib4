@@ -87,7 +87,6 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
       ENNReal.div_self A B, memLp_one_iff_integrable]
     · apply Integrable.congr (GammaIntegral_convergent hu)
       refine eventuallyEq_of_mem (self_mem_ae_restrict measurableSet_Ioi) fun x hx => ?_
-      dsimp only
       rw [fpow hc u hx]
       congr 1
       exact (norm_of_nonneg (posf _ _ x hx)).symm
@@ -98,10 +97,8 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
   rw [Gamma_eq_integral hs, Gamma_eq_integral ht, Gamma_eq_integral hst]
   convert
     MeasureTheory.integral_mul_le_Lp_mul_Lq_of_nonneg e (posf' a s) (posf' b t) (f_mem_Lp ha hs)
-      (f_mem_Lp hb ht) using
-    1
+      (f_mem_Lp hb ht) using 1
   · refine setIntegral_congr_fun measurableSet_Ioi fun x hx => ?_
-    dsimp only
     have A : exp (-x) = exp (-a * x) * exp (-b * x) := by
       rw [← exp_add, ← add_mul, ← neg_add, hab, neg_one_mul]
     have B : x ^ (a * s + b * t - 1) = x ^ (a * (s - 1)) * x ^ (b * (t - 1)) := by
@@ -183,7 +180,7 @@ theorem f_add_nat_ge (hf_conv : ConvexOn ℝ (Ioi 0) f)
     f n + x * log (n - 1) ≤ f (n + x) := by
   have npos : 0 < (n : ℝ) - 1 := by rw [← Nat.cast_one, sub_pos, Nat.cast_lt]; lia
   have c :=
-    (convexOn_iff_slope_mono_adjacent.mp <| hf_conv).2 npos (by linarith : 0 < (n : ℝ) + x)
+    (convexOn_iff_slope_mono_adjacent.mp hf_conv).2 npos (by linarith : 0 < (n : ℝ) + x)
       (by linarith : (n : ℝ) - 1 < (n : ℝ)) (by linarith)
   rw [add_sub_cancel_left, sub_sub_cancel, div_one] at c
   have : f (↑n - 1) = f n - log (↑n - 1) := by
@@ -286,7 +283,7 @@ theorem tendsto_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
       dsimp only [Function.comp_apply]
       rw [sub_add_cancel, Nat.add_sub_cancel]
     rw [this] at hm
-    convert hm.sub (tendsto_log_nat_add_one_sub_log.const_mul x) using 2
+    convert! hm.sub (tendsto_log_nat_add_one_sub_log.const_mul x) using 2
     · ring
     · have := hf_feq ((Nat.cast_nonneg m).trans_lt hy)
       rw [sub_add_cancel] at this
@@ -355,8 +352,8 @@ theorem Gamma_strictAntiOn_Ioc : StrictAntiOn Gamma (Ioc 0 1) :=
 
 theorem Gamma_strictMonoOn_Ici : StrictMonoOn Gamma (Ici 2) := by
   convert
-    convexOn_Gamma.strictMonoOn (by simp : (0 : ℝ) < 3 / 2)
-      (by norm_num : (3 / 2 : ℝ) < 2) (Gamma_two.symm ▸ Gamma_three_div_two_lt_one)
+    convexOn_Gamma.strictMonoOn (by simp : (0 : ℝ) < 3 / 2) (by norm_num : (3 / 2 : ℝ) < 2)
+      (Gamma_two.symm ▸ Gamma_three_div_two_lt_one)
   symm
   rw [inter_eq_right]
   exact fun x hx => two_pos.trans_le <| mem_Ici.mp hx
@@ -419,11 +416,11 @@ theorem doublingGamma_log_convex_Ioi : ConvexOn ℝ (Ioi (0 : ℝ)) (log ∘ dou
   · convert
       convexOn_log_Gamma.comp_affineMap (DistribSMul.toLinearMap ℝ ℝ (1 / 2 : ℝ)).toAffineMap
       using 1
-    · simpa only [zero_div] using (preimage_const_mul_Ioi₀ (0 : ℝ) one_half_pos).symm
+    · simpa only [zero_div] using! (preimage_const_mul_Ioi₀ (0 : ℝ) one_half_pos).symm
     · ext1 x
       simp only [LinearMap.coe_toAffineMap, Function.comp_apply, DistribSMul.toLinearMap_apply]
       rw [smul_eq_mul, mul_comm, mul_one_div]
-  · refine ConvexOn.subset ?_ (Ioi_subset_Ioi <| neg_one_lt_zero.le) (convex_Ioi _)
+  · refine ConvexOn.subset ?_ (Ioi_subset_Ioi neg_one_lt_zero.le) (convex_Ioi _)
     convert
       convexOn_log_Gamma.comp_affineMap
         ((DistribSMul.toLinearMap ℝ ℝ (1 / 2 : ℝ)).toAffineMap +
@@ -434,7 +431,7 @@ theorem doublingGamma_log_convex_Ioi : ConvexOn ℝ (Ioi (0 : ℝ)) (log ∘ dou
     · ext1 x
       change log (Gamma (x / 2 + 1 / 2)) = log (Gamma ((1 / 2 : ℝ) • x + 1 / 2))
       rw [smul_eq_mul, mul_comm, mul_one_div]
-  · simpa only [mul_comm _ (log _)] using
+  · simpa only [mul_comm _ (log _)] using!
       (convexOn_id (convex_Ioi (0 : ℝ))).smul (log_pos one_lt_two).le
 
 theorem doublingGamma_eq_Gamma {s : ℝ} (hs : 0 < s) : doublingGamma s = Gamma s := by

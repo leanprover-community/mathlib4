@@ -6,8 +6,8 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Data.List.Lattice
-public import Mathlib.Data.Bool.Basic
-public import Mathlib.Order.Lattice
+import Mathlib.Data.Bool.Basic
+import Mathlib.Order.Lattice
 
 /-!
 # Intervals in ℕ
@@ -125,9 +125,6 @@ theorem isChain_succ (n m : ℕ) : IsChain (fun a b => b = succ a) (Ico n m) := 
     exact isChain_range' _ (_ + 1) 1
   · rw [eq_nil_of_le h]
     exact .nil
-
-@[deprecated (since := "2025-09-19")]
-alias chain'_succ := isChain_succ
 
 theorem notMem_top {n m : ℕ} : m ∉ Ico n m := by simp
 

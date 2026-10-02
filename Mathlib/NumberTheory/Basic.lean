@@ -5,8 +5,8 @@ Authors: Johan Commelin, Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.Ring.GeomSum
-public import Mathlib.RingTheory.Ideal.Quotient.Defs
+import Mathlib.Algebra.Ring.GeomSum
+import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.Ideal.Span
 
 /-!
@@ -29,7 +29,6 @@ section
 
 open Ideal Ideal.Quotient
 
-set_option backward.isDefEq.respectTransparency false in
 theorem dvd_sub_pow_of_dvd_sub {R : Type*} [CommRing R] {p : ℕ} {a b : R} (h : (p : R) ∣ a - b)
     (k : ℕ) : (p ^ (k + 1) : R) ∣ a ^ p ^ k - b ^ p ^ k := by
   induction k with

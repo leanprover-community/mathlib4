@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
-public import Mathlib.CategoryTheory.MorphismProperty.FunctorCategory
+import Mathlib.CategoryTheory.MorphismProperty.FunctorCategory
 public import Mathlib.CategoryTheory.Types.Monomorphisms
 
 /-!
@@ -17,7 +17,7 @@ under coproducts, pushouts, filtered colimits and transfinite compositions.
 
 -/
 
-@[expose] public section
+public section
 
 universe v' u' u
 

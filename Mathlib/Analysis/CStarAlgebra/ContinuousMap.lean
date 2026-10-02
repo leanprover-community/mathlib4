@@ -15,7 +15,7 @@ We place these here because, for reasons related to the import hierarchy, they c
 earlier files.
 -/
 
-@[expose] public section
+public section
 
 variable {α A : Type*}
 noncomputable section
@@ -38,7 +38,6 @@ namespace ContinuousMap
 
 variable [TopologicalSpace α] [CompactSpace α]
 
-set_option backward.isDefEq.respectTransparency false in
 instance [NonUnitalCStarAlgebra A] : NonUnitalCStarAlgebra C(α, A) where
 
 instance [NonUnitalCommCStarAlgebra A] : NonUnitalCommCStarAlgebra C(α, A) where
@@ -51,7 +50,7 @@ end ContinuousMap
 
 namespace ZeroAtInftyContinuousMap
 
-open ZeroAtInfty
+open scoped ZeroAtInfty
 
 instance [TopologicalSpace α] [NonUnitalCStarAlgebra A] : NonUnitalCStarAlgebra C₀(α, A) where
 

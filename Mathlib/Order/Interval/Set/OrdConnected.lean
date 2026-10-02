@@ -15,13 +15,13 @@ public import Mathlib.Order.SetNotation
 We say that a set `s : Set α` is `OrdConnected` if for all `x y ∈ s` it includes the
 interval `[[x, y]]`. If `α` is a `DenselyOrdered` `ConditionallyCompleteLinearOrder` with
 the `OrderTopology`, then this condition is equivalent to `IsPreconnected s`. If `α` is a
-`LinearOrderedField`, then this condition is also equivalent to `Convex α s`.
+linearly ordered field, then this condition is also equivalent to `Convex α s`.
 
 In this file we prove that intersection of a family of `OrdConnected` sets is `OrdConnected` and
 that all standard intervals are `OrdConnected`.
 -/
 
-@[expose] public section
+public section
 
 open scoped Interval
 open Set
@@ -137,9 +137,7 @@ theorem dual_ordConnected {s : Set α} [OrdConnected s] : OrdConnected (ofDual �
 
 @[simp]
 theorem ordConnected_dual {s : Set α} : OrdConnected (OrderDual.ofDual ⁻¹' s) ↔ OrdConnected s :=
-  ⟨fun h => by simpa only [ordConnected_def] using h.dual, fun h => h.dual⟩
-
-@[deprecated (since := "2025-10-28")] alias dual_ordConnected_iff := ordConnected_dual
+  ⟨fun h => by simpa only [ordConnected_def] using! h.dual, fun h => h.dual⟩
 
 theorem ordConnected_sInter {S : Set (Set α)} (hS : ∀ s ∈ S, OrdConnected s) :
     OrdConnected (⋂₀ S) :=
@@ -165,36 +163,24 @@ instance ordConnected_pi' {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α 
     {t : ∀ i, Set (α i)} [h : ∀ i, OrdConnected (t i)] : OrdConnected (s.pi t) :=
   ordConnected_pi fun i _ => h i
 
-@[instance]
-theorem ordConnected_Ici {a : α} : OrdConnected (Ici a) :=
+@[to_dual]
+instance ordConnected_Ici {a : α} : OrdConnected (Ici a) :=
   ⟨fun _ hx _ _ _ hz => le_trans hx hz.1⟩
 
-@[instance]
-theorem ordConnected_Iic {a : α} : OrdConnected (Iic a) :=
-  ⟨fun _ _ _ hy _ hz => le_trans hz.2 hy⟩
-
-@[instance]
-theorem ordConnected_Ioi {a : α} : OrdConnected (Ioi a) :=
+@[to_dual]
+instance ordConnected_Ioi {a : α} : OrdConnected (Ioi a) :=
   ⟨fun _ hx _ _ _ hz => lt_of_lt_of_le hx hz.1⟩
 
-@[instance]
-theorem ordConnected_Iio {a : α} : OrdConnected (Iio a) :=
-  ⟨fun _ _ _ hy _ hz => lt_of_le_of_lt hz.2 hy⟩
-
-@[instance]
-theorem ordConnected_Icc {a b : α} : OrdConnected (Icc a b) :=
+@[to_dual self]
+instance ordConnected_Icc {a b : α} : OrdConnected (Icc a b) :=
   ordConnected_Ici.inter ordConnected_Iic
 
-@[instance]
-theorem ordConnected_Ico {a b : α} : OrdConnected (Ico a b) :=
+@[to_dual]
+instance ordConnected_Ico {a b : α} : OrdConnected (Ico a b) :=
   ordConnected_Ici.inter ordConnected_Iio
 
-@[instance]
-theorem ordConnected_Ioc {a b : α} : OrdConnected (Ioc a b) :=
-  ordConnected_Ioi.inter ordConnected_Iic
-
-@[instance]
-theorem ordConnected_Ioo {a b : α} : OrdConnected (Ioo a b) :=
+@[to_dual self]
+instance ordConnected_Ioo {a b : α} : OrdConnected (Ioo a b) :=
   ordConnected_Ioi.inter ordConnected_Iio
 
 @[instance]

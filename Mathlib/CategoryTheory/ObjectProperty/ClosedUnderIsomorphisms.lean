@@ -5,9 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Iso
 public import Mathlib.CategoryTheory.ObjectProperty.Basic
-public import Mathlib.Order.Basic
 
 /-! # Properties of objects which are closed under isomorphisms
 
@@ -57,6 +55,8 @@ lemma prop_isoClosure {X Y : C} (h : P X) (e : X ⟶ Y) [IsIso e] : isoClosure P
 
 lemma le_isoClosure : P ≤ isoClosure P :=
   fun X hX => ⟨X, hX, ⟨Iso.refl X⟩⟩
+
+instance [P.Nonempty] : P.isoClosure.Nonempty := .mono P.le_isoClosure
 
 variable {P Q} in
 lemma monotone_isoClosure (h : P ≤ Q) : isoClosure P ≤ isoClosure Q := by

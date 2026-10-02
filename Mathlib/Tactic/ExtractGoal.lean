@@ -10,7 +10,7 @@ public meta import Lean.Elab.Tactic.ElabTerm
 public meta import Lean.Meta.Tactic.Cleanup
 public meta import Lean.PrettyPrinter
 public meta import Batteries.Lean.Meta.Inaccessible
-public import Lean.Elab.Command
+import Lean.Elab.Command
 public import Mathlib.Tactic.MinImports
 
 /-!
@@ -26,6 +26,7 @@ example (i j k : Nat) (h₀ : i ≤ j) (h₁ : j ≤ k) : i ≤ k := by
 /-
 theorem extracted_1 (i j k : Nat) (h₀ : i ≤ j) (h₁ : j ≤ k) : i ≤ k := sorry
 -/
+
 ```
 
 * TODO: Add tactic code actions?

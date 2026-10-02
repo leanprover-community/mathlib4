@@ -7,7 +7,6 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
 module
 
 public import Mathlib.Algebra.Module.LinearMap.Defs
-public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.Module.Torsion.Pi
 public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
@@ -171,3 +170,21 @@ end nonAssocSemiring
 end mulLeftRight
 
 end LinearMap
+
+namespace Sum
+
+variable {ι κ R : Type*} [Semiring R]
+
+/-- The map `Sum.elim` specialised with zero in the first argument, as a linear map. -/
+@[simps] def elimZeroLeft : (ι → R) →ₗ[R] (κ ⊕ ι → R) where
+  toFun := Sum.elim 0
+  map_add' f g := by ext (i | i) <;> simp
+  map_smul' t f := by ext (i | i) <;> simp
+
+/-- The map `Sum.elim` specialised with zero in the second argument, as a linear map. -/
+@[simps] def elimZeroRight : (ι → R) →ₗ[R] (ι ⊕ κ → R) where
+  toFun := fun f ↦ Sum.elim f 0
+  map_add' f g := by ext (i | i) <;> simp
+  map_smul' t f := by ext (i | i) <;> simp
+
+end Sum

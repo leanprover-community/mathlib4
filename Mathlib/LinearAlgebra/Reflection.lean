@@ -5,24 +5,19 @@ Authors: Oliver Nash, Deepro Choudhury, Mitchell Lee, Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.EuclideanDomain.Basic
-public import Mathlib.Algebra.EuclideanDomain.Int
-public import Mathlib.Algebra.Module.LinearMap.Basic
-public import Mathlib.Algebra.Module.Submodule.Invariant
+import Mathlib.Algebra.EuclideanDomain.Basic
+import Mathlib.Algebra.EuclideanDomain.Int
 public import Mathlib.Algebra.Module.Torsion.Basic
-public import Mathlib.GroupTheory.OrderOfElement
-public import Mathlib.LinearAlgebra.Dual.Defs
-public import Mathlib.LinearAlgebra.FiniteSpan
+import Mathlib.LinearAlgebra.FiniteSpan
 public import Mathlib.RingTheory.Polynomial.Chebyshev
-public import Mathlib.Tactic.Module
 
 /-!
 # Reflections in linear algebra
 
 Given an element `x` in a module `M` together with a linear form `f` on `M` such that `f x = 2`, the
 map `y ↦ y - (f y) • x` is an involutive endomorphism of `M`, such that:
- 1. the kernel of `f` is fixed,
- 2. the point `x` maps to `-x`.
+1. the kernel of `f` is fixed,
+2. the point `x` maps to `-x`.
 
 Such endomorphisms are often called reflections of the module `M`. When `M` carries an inner product
 for which `x` is perpendicular to the kernel of `f`, then (with mild assumptions) the endomorphism
@@ -199,7 +194,7 @@ lemma reflection_mul_reflection_pow_apply (m : ℕ) (z : M)
     have S_eval_t_sq_add_S_eval_t_sq (k : ℤ) :
         (S R k).eval t ^ 2 + (S R (k + 1)).eval t ^ 2 - t * (S R k).eval t * (S R (k + 1)).eval t
         = 1 := by
-      simpa using congr_arg (Polynomial.eval t) (S_sq_add_S_sq R k)
+      simpa using congr(Polynomial.eval t $(S_sq_add_S_sq R k))
     -- Apply the inductive hypothesis.
     rw [pow_succ', LinearEquiv.mul_apply, ih, LinearEquiv.mul_apply]
     -- Expand out all the reflections and use `hf`, `hg`.
@@ -240,7 +235,6 @@ lemma reflection_mul_reflection_pow (m : ℕ)
   ext z
   simpa using reflection_mul_reflection_pow_apply hf hg m z t ht
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A formula for $(r_1 r_2)^m z$, where $m$ is an integer and $z \in M$. -/
 lemma reflection_mul_reflection_zpow_apply (m : ℤ) (z : M)
     (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := by rfl) :
@@ -389,12 +383,12 @@ lemma Dual.eq_of_preReflection_mapsTo' [CharZero R] [IsDomain R] [IsTorsionFree 
     rw [range_inclusion]
     simp
   let x' : span R Φ := ⟨x, hx⟩
-  have this : ∀ {F : Dual R M}, MapsTo (preReflection x F) Φ Φ →
+  have : ∀ {F : Dual R M}, MapsTo (preReflection x F) Φ Φ →
       MapsTo (preReflection x' ((span R Φ).subtype.dualMap F)) Φ' Φ' := by
     intro F hF ⟨y, hy⟩ hy'
     simp only [Φ'] at hy' ⊢
     rw [range_inclusion] at hy'
-    simp only [SetLike.coe_sort_coe, mem_setOf_eq] at hy' ⊢
+    simp only [SetLike.coe_sort_coe, mem_ofPred_eq] at hy' ⊢
     rw [range_inclusion]
     exact hF hy'
   exact eq_of_preReflection_mapsTo hΦ'₁ hΦ'₂ hf₁ (this hf₂) hg₁ (this hg₂)
@@ -418,13 +412,13 @@ lemma reflection_reflection_iterate
       map_nsmul, map_smul, smul_neg, hz, add_smul]
     abel
 
-lemma infinite_range_reflection_reflection_iterate_iff [IsAddTorsionFree M]
+lemma infinite_range_reflection_reflection_iterate_iff [HasUniqueDiv M]
     (hfx : f x = 2) (hgy : g y = 2) (hgxfy : f y * g x = 4) :
     (range <| fun n ↦ ((reflection hgy).trans (reflection hfx))^[n] y).Infinite ↔
     f y • x ≠ (2 : R) • y := by
   simp only [reflection_reflection_iterate hfx hgy hgxfy, infinite_range_add_nsmul_iff, sub_ne_zero]
 
-lemma eq_of_mapsTo_reflection_of_mem [IsAddTorsionFree M] {Φ : Set M} (hΦ : Φ.Finite)
+lemma eq_of_mapsTo_reflection_of_mem [HasUniqueDiv M] {Φ : Set M} (hΦ : Φ.Finite)
     (hfx : f x = 2) (hgy : g y = 2) (hgx : g x = 2) (hfy : f y = 2)
     (hxfΦ : MapsTo (preReflection x f) Φ Φ)
     (hygΦ : MapsTo (preReflection y g) Φ Φ)
@@ -442,7 +436,7 @@ lemma eq_of_mapsTo_reflection_of_mem [IsAddTorsionFree M] {Φ : Set M} (hΦ : Φ
     (bijOn_reflection_of_mapsTo hgy hygΦ)).image_eq n]
   exact mem_image_of_mem _ hyΦ
 
-lemma injOn_dualMap_subtype_span_range_range {ι : Type*} [IsAddTorsionFree M]
+lemma injOn_dualMap_subtype_span_range_range {ι : Type*} [HasUniqueDiv M]
     {r : ι ↪ M} {c : ι → Dual R M} (hfin : (range r).Finite)
     (h_two : ∀ i, c i (r i) = 2)
     (h_mapsTo : ∀ i, MapsTo (preReflection (r i) (c i)) (range r) (range r)) :
@@ -454,6 +448,6 @@ lemma injOn_dualMap_subtype_span_range_range {ι : Type*} [IsAddTorsionFree M]
     exact eq_of_mapsTo_reflection_of_mem (f := c i) (g := c j) hfin (h_two i) (h_two j)
       (by rw [← this, h_two]) (by rw [this, h_two]) (h_mapsTo i) (h_mapsTo j) (mem_range_self j)
   intro k
-  simpa using LinearMap.congr_fun hij ⟨r k, Submodule.subset_span (mem_range_self k)⟩
+  simpa using congr($hij ⟨r k, Submodule.subset_span (mem_range_self k)⟩)
 
 end Module

@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.AEMeasurable
+public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
 public import Mathlib.Order.Filter.EventuallyConst
 
 /-!
@@ -28,17 +28,16 @@ Isabelle formalization.
 measure-preserving map, measure
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory.Measure Function Set
 open scoped ENNReal
 
-variable {α β γ δ : Type*} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
-  [MeasurableSpace δ]
+variable {α β γ : Type*} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
 
 namespace MeasureTheory
 
-variable {μa : Measure α} {μb : Measure β} {μc : Measure γ} {μd : Measure δ}
+variable {μa : Measure α} {μb : Measure β} {μc : Measure γ}
 
 /-- `f` is a measure-preserving map w.r.t. measures `μa` and `μb` if `f` is measurable
 and `map f μa = μb`. -/
@@ -58,6 +57,12 @@ protected theorem id (μ : Measure α) : MeasurePreserving id μ μ :=
 
 protected theorem aemeasurable {f : α → β} (hf : MeasurePreserving f μa μb) : AEMeasurable f μa :=
   hf.1.aemeasurable
+
+protected theorem congr {f f' : α → β} (hf : MeasurePreserving f μa μb) (hf' : Measurable f')
+    (h : f =ᵐ[μa] f') : MeasurePreserving f' μa μb := by
+  refine ⟨hf', ?_⟩
+  rw [Measure.map_congr h.symm]
+  exact hf.map_eq
 
 @[nontriviality]
 theorem of_isEmpty [IsEmpty β] (f : α → β) (μa : Measure α) (μb : Measure β) :
@@ -169,7 +174,7 @@ theorem aeconst_comp [MeasurableSingletonClass γ] {f : α → β} (hf : Measure
 
 theorem aeconst_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
     (hs : NullMeasurableSet s μb) :
-    Filter.EventuallyConst (f ⁻¹' s) (ae μa) ↔ Filter.EventuallyConst s (ae μb) :=
+    (ae μa).EventuallyEmptyOrUniv (f ⁻¹' s) ↔ (ae μb).EventuallyEmptyOrUniv s :=
   aeconst_comp hf hs.mem
 
 theorem add_measure {f μa' μb'} (hf : MeasurePreserving f μa μb)
@@ -180,7 +185,7 @@ theorem add_measure {f μa' μb'} (hf : MeasurePreserving f μa μb)
 theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] {f : α → β}
     (hf : MeasurePreserving f μa μb) (c : R) : MeasurePreserving f (c • μa) (c • μb) where
   measurable := hf.measurable
-  map_eq := by rw [Measure.map_smul, hf.map_eq]
+  map_eq := by rw [Measure.map_smul _ hf.aemeasurable, hf.map_eq]
 
 variable {μ : Measure α} {f : α → α} {s : Set α}
 

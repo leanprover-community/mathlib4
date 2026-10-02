@@ -6,7 +6,6 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
-public import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # ℒp spaces and products
@@ -29,7 +28,7 @@ lemma MemLp.comp_fst {f : α → ε} (hf : MemLp f p μ) (ν : Measure β) [IsFi
   change MemLp (f ∘ Prod.fst) p (μ.prod ν)
   rw [← memLp_map_measure_iff ?_ (by fun_prop)]
   · simpa using hf'
-  · simpa using hf'.1
+  · simpa using hf'.aestronglyMeasurable
 
 lemma MemLp.comp_snd {f : β → ε} (hf : MemLp f p ν) (μ : Measure α) [IsFiniteMeasure μ]
     [SFinite ν] :
@@ -38,6 +37,6 @@ lemma MemLp.comp_snd {f : β → ε} (hf : MemLp f p ν) (μ : Measure α) [IsFi
   change MemLp (f ∘ Prod.snd) p (μ.prod ν)
   rw [← memLp_map_measure_iff ?_ (by fun_prop)]
   · simpa using hf'
-  · simpa using hf'.1
+  · simpa using hf'.aestronglyMeasurable
 
 end MeasureTheory

@@ -5,7 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 module
 
+public import Mathlib.Basic.IsEmpty.Basic
 public import Mathlib.Data.ULift
+public import Mathlib.Tactic.CrossRefAttribute
+public import Mathlib.Tactic.PPWithUniv
 public import Mathlib.Util.Delaborators
 
 /-!
@@ -52,7 +55,7 @@ Cantor's theorem, König's theorem, Konig's theorem
 
 assert_not_exists Monoid
 
-open List Function Set
+open List
 
 noncomputable section
 
@@ -75,7 +78,7 @@ instance Cardinal.isEquivalent : Setoid (Type u) where
 /-- `Cardinal.{u}` is the type of cardinal numbers in `Type u`,
   defined as the quotient of `Type u` by existence of an equivalence
   (a bijection with explicit inverse). -/
-@[pp_with_univ]
+@[pp_with_univ, wikidata Q163875]
 def Cardinal : Type (u + 1) :=
   Quotient Cardinal.isEquivalent
 
@@ -92,22 +95,22 @@ instance canLiftCardinalType : CanLift Cardinal.{u} (Type u) mk fun _ => True :=
   ⟨fun c _ => Quot.inductionOn c fun α => ⟨α, rfl⟩⟩
 
 @[elab_as_elim]
-theorem inductionOn {p : Cardinal → Prop} (c : Cardinal) (h : ∀ α, p #α) : p c :=
-  Quotient.inductionOn c h
+theorem inductionOn {motive : Cardinal → Prop} (c : Cardinal) (mk : ∀ α, motive #α) : motive c :=
+  Quotient.inductionOn c mk
 
 @[elab_as_elim]
-theorem inductionOn₂ {p : Cardinal → Cardinal → Prop} (c₁ : Cardinal) (c₂ : Cardinal)
-    (h : ∀ α β, p #α #β) : p c₁ c₂ :=
-  Quotient.inductionOn₂ c₁ c₂ h
+theorem inductionOn₂ {motive : Cardinal → Cardinal → Prop} (c₁ c₂ : Cardinal)
+    (mk : ∀ α β, motive #α #β) : motive c₁ c₂ :=
+  Quotient.inductionOn₂ c₁ c₂ mk
 
 @[elab_as_elim]
-theorem inductionOn₃ {p : Cardinal → Cardinal → Cardinal → Prop} (c₁ : Cardinal) (c₂ : Cardinal)
-    (c₃ : Cardinal) (h : ∀ α β γ, p #α #β #γ) : p c₁ c₂ c₃ :=
-  Quotient.inductionOn₃ c₁ c₂ c₃ h
+theorem inductionOn₃ {motive : Cardinal → Cardinal → Cardinal → Prop} (c₁ c₂ c₃ : Cardinal)
+    (mk : ∀ α β γ, motive #α #β #γ) : motive c₁ c₂ c₃ :=
+  Quotient.inductionOn₃ c₁ c₂ c₃ mk
 
-theorem induction_on_pi {ι : Type u} {p : (ι → Cardinal.{v}) → Prop}
-    (f : ι → Cardinal.{v}) (h : ∀ f : ι → Type v, p fun i ↦ #(f i)) : p f :=
-  Quotient.induction_on_pi f h
+theorem induction_on_pi {ι : Type*} {motive : (ι → Cardinal) → Prop}
+    (f : ι → Cardinal) (mk : ∀ f : ι → Type v, motive fun i ↦ #(f i)) : motive f :=
+  Quotient.induction_on_pi f mk
 
 protected theorem eq : #α = #β ↔ Nonempty (α ≃ β) :=
   Quotient.eq'
@@ -164,9 +167,13 @@ theorem lift_id' (a : Cardinal.{max u v}) : lift.{u} a = a :=
   inductionOn a fun _ => mk_congr Equiv.ulift
 
 /-- A cardinal lifted to the same universe equals itself. -/
-@[simp]
 theorem lift_id (a : Cardinal) : lift.{u, u} a = a :=
   lift_id'.{u, u} a
+
+/-- The map lifting a cardinal to the same universe is equal to the identity. -/
+@[simp]
+theorem lift_eq_id : lift.{u, u} = id := by
+  funext; exact lift_id _
 
 /-- A cardinal lifted to the zero universe equals itself. -/
 @[simp]

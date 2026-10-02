@@ -5,7 +5,7 @@ Authors: Julian Kuelshammer
 -/
 module
 
-public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Group.Semigroup
 
 /-!
 # Instances on pempty
@@ -14,7 +14,7 @@ This file collects facts about algebraic structures on the (universe-polymorphic
 that it is a semigroup.
 -/
 
-@[expose] public section
+public section
 
 
 universe u
