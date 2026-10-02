@@ -60,6 +60,12 @@ theorem coeff_derivative (f : R⟦X⟧) (n : ℕ) :
     coeff n (d⁄dX f) = coeff (n + 1) f * (n + 1) := by
   simp [coeff, derivative, MvPowerSeries.coeff_pderiv]
 
+/-- Mapping coefficients commutes with formal differentiation. -/
+theorem map_derivative {S : Type*} [CommSemiring S] (f : R →+* S) (φ : R⟦X⟧) :
+    map f (d⁄dX φ) = d⁄dX (map f φ) := by
+  ext n
+  simp [coeff_map, coeff_derivative]
+
 /-- The `k`-th coefficient of the `n`-th formal derivative: differentiating `n` times multiplies the
 `(k + n)`-th coefficient by the ascending factorial `(k + 1)(k + 2) ⋯ (k + n)`. -/
 theorem coeff_iterate_derivative (f : R⟦X⟧) (n k : ℕ) :

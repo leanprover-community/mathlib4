@@ -6,7 +6,9 @@ Authors: Seiichi Manyama
 module
 
 public import Mathlib.RingTheory.PowerSeries.Derivative
+public import Mathlib.RingTheory.PowerSeries.FixedPoint
 
+import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
@@ -15,8 +17,8 @@ import Mathlib.Tactic.Ring
 /-!
 # Lagrange inversion formula for formal power series
 
-This file proves the one-variable Lagrange inversion formula over a commutative ring without
-additive torsion. Let `P` and `Y` be formal power series satisfying
+This file proves the one-variable Lagrange inversion formula over a commutative ring.
+Let `P` and `Y` be formal power series satisfying
 
 `Y = X * P(Y)`.
 
@@ -36,16 +38,19 @@ characteristic zero.
 * `PowerSeries.eq_zero_of_fixedPoint_of_constantCoeff_eq_zero`: the degenerate case where the
   constant coefficient of `P` is zero.
 * `PowerSeries.lagrange_burmann_coeff`: the Lagrange–Bürmann coefficient formula over a
-  commutative ring without additive torsion.
+  commutative ring.
 * `PowerSeries.lagrange_inversion_coeff_pow`: the coefficient formula for powers of `Y`.
 * `PowerSeries.lagrange_burmann_coeff_div`: the divided Lagrange–Bürmann formula over a field of
   characteristic zero.
 * `PowerSeries.lagrange_inversion_coeff`: the usual divided coefficient formula over a field of
   characteristic zero.
 
-## TODO
+## Implementation details
 
-Generalize the division-free formulas to arbitrary commutative rings using universal coefficients.
+The induction in the reference below first proves the formulas over rings without additive
+torsion. Specializing the coefficients of power series over `MvPolynomial (ℕ ⊕ ℕ) ℤ`
+then gives the division-free formulas over arbitrary commutative rings. The existence and
+uniqueness results in `Mathlib.RingTheory.PowerSeries.FixedPoint` identify the specialized solution.
 
 ## References
 
@@ -133,11 +138,7 @@ private theorem lagrange_inversion_coeff_pow_of_le {m k : ℕ} (hk : k ≤ m + 1
     simp [hmt] at *
     linear_combination (k + t + 1) • hsum + hcoeff
 
-/-- **Lagrange–Bürmann formula.** If `Y = X * P(Y)`, then for a natural number `n` and
-a formal power series `H`,
-
-`(n + 1) * [X ^ (n + 1)] H(Y) = [X ^ n] (H' * P ^ (n + 1))`. -/
-theorem lagrange_burmann_coeff (n : ℕ) (H : R⟦X⟧) :
+private theorem lagrange_burmann_coeff_of_torsionFree (n : ℕ) (H : R⟦X⟧) :
     (n + 1) • coeff (n + 1) (H.subst Y) = (d⁄dX H * P ^ (n + 1)).coeff n := by
   have hlhs : (n + 1) • coeff (n + 1) (H.subst Y) =
         ∑ i ∈ range (n + 2), H.coeff i * (i • (P ^ (n + 1)).coeff (n + 1 - i)) := by
@@ -147,6 +148,53 @@ theorem lagrange_burmann_coeff (n : ℕ) (H : R⟦X⟧) :
     ring
   rw [hlhs, coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ_mk, sum_range_succ']
   grind [coeff_derivative]
+
+end TorsionFree
+
+section CommRing
+
+variable {R : Type*} [CommRing R]
+variable {P Y : R⟦X⟧}
+variable (hY : Y = X * P.subst Y)
+include hY
+
+/-- **Lagrange–Bürmann formula.** If `Y = X * P(Y)`, then for a natural number `n` and
+a formal power series `H`,
+
+`(n + 1) * [X ^ (n + 1)] H(Y) = [X ^ n] (H' * P ^ (n + 1))`. -/
+theorem lagrange_burmann_coeff (n : ℕ) (H : R⟦X⟧) :
+    (n + 1) • coeff (n + 1) (H.subst Y) = (d⁄dX H * P ^ (n + 1)).coeff n := by
+  let U := MvPolynomial (ℕ ⊕ ℕ) ℤ
+  let : HasUniqueDiv U := AddMonoidAlgebra.coeff_injective.hasUniqueDiv
+    AddMonoidAlgebra.coeffAddEquiv.toAddMonoidHom
+  let P₀ : U⟦X⟧ := mk fun i ↦ MvPolynomial.X (Sum.inl i)
+  let H₀ : U⟦X⟧ := mk fun i ↦ MvPolynomial.X (Sum.inr i)
+  let e : U →+* R := MvPolynomial.eval₂Hom (Int.castRingHom R)
+    (Sum.elim (fun i ↦ P.coeff i) (fun i ↦ H.coeff i))
+  have hP : map e P₀ = P := by
+    ext i
+    simp [P₀, e, U, coeff_map]
+  have hH : map e H₀ = H := by
+    ext i
+    simp [H₀, e, U, coeff_map]
+  obtain ⟨Y₀, hY₀, _⟩ := existsUnique_fixedPoint P₀
+  have hY₀s := hasSubst_of_fixedPoint hY₀
+  have hmap_subst (F : U⟦X⟧) : map e (F.subst Y₀) = (map e F).subst (map e Y₀) :=
+    map_subst hY₀s F
+  have hmapY : map e Y₀ = Y := by
+    apply fixedPoint_unique _ hY
+    calc
+      map e Y₀ = map e (X * P₀.subst Y₀) := congrArg (map e) hY₀
+      _ = X * P.subst (map e Y₀) := by
+        rw [map_mul, map_X, hmap_subst, hP]
+  calc
+    (n + 1) • coeff (n + 1) (H.subst Y) =
+        e ((n + 1) • coeff (n + 1) (H₀.subst Y₀)) := by
+      rw [map_nsmul, ← coeff_map, hmap_subst, hH, hmapY]
+    _ = e ((d⁄dX H₀ * P₀ ^ (n + 1)).coeff n) :=
+      congrArg e (lagrange_burmann_coeff_of_torsionFree hY₀ n H₀)
+    _ = (d⁄dX H * P ^ (n + 1)).coeff n := by
+      rw [← coeff_map, map_mul, map_pow, map_derivative, hH, hP]
 
 /-- **Lagrange inversion for powers.** If `Y = X * P(Y)`, then
 `(n + k) * [X ^ (n + k)] Y ^ k = k * [X ^ n] P ^ (n + k)` for all natural numbers
@@ -161,7 +209,7 @@ theorem lagrange_inversion_coeff_pow (n k : ℕ) :
     coeff_natCast_mul, add_assoc] at h
   simpa using h
 
-end TorsionFree
+end CommRing
 
 section Field
 
