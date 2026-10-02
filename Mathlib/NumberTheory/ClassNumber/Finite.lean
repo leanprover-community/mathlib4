@@ -6,12 +6,11 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
-public import Mathlib.LinearAlgebra.FreeModule.PID
-public import Mathlib.LinearAlgebra.Matrix.AbsoluteValue
+import Mathlib.LinearAlgebra.Matrix.AbsoluteValue
 public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 public import Mathlib.RingTheory.ClassGroup.Basic
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
-public import Mathlib.RingTheory.Norm.Basic
+import Mathlib.RingTheory.Norm.Basic
 
 /-!
 # Class numbers of global fields
@@ -78,7 +77,7 @@ theorem norm_le (a : S) {y : ℤ} (hy : ∀ k, abv (bS.repr a k) ≤ y) :
   rw [Algebra.norm_apply, ← LinearMap.det_toMatrix bS]
   simp only [map_sum, map_smul, map_sum, map_smul,
     normBound, smul_mul_assoc, ← mul_pow]
-  convert! Matrix.det_sum_smul_le Finset.univ _ hy using 3
+  convert Matrix.det_sum_smul_le Finset.univ _ hy using 3
   · rw [Finset.card_univ, smul_mul_assoc, mul_comm]
   · intro i j k
     apply Finset.le_max'
