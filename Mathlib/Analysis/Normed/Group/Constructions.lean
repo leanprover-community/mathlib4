@@ -372,9 +372,8 @@ lemma pi_nnnorm_comp_le' [Fintype F] (g : ι → E) (f : F → ι) : ‖g ∘ f�
   exact fun x ↦ norm_le_pi_norm' g (f x)
 
 @[to_additive pi_norm_comp_le]
-lemma pi_norm_comp_le' [Fintype F] (g : ι → E) (f : F → ι) : ‖g ∘ f‖ ≤ ‖g‖ := by
-  rw [pi_norm_le_iff_of_nonneg' (by positivity)]
-  exact fun x ↦ norm_le_pi_norm' g (f x)
+lemma pi_norm_comp_le' [Fintype F] (g : ι → E) (f : F → ι) : ‖g ∘ f‖ ≤ ‖g‖ :=
+  pi_nnnorm_comp_le' g f
 
 @[to_additive IsGreatest.pi_norm]
 lemma IsGreatest.pi_norm' [Nonempty ι] (f : ι → E) : IsGreatest (Set.range (‖f ·‖)) ‖f‖ := by
@@ -424,7 +423,7 @@ theorem Function.FactorsThrough.nnnorm_extend' {f : ι → ι'} {g : ι → E} {
     (h : FactorsThrough g f) (hj : ‖j‖₊ ≤ ‖g‖₊) :
     ‖extend f g j‖₊ = ‖g‖₊ := by
   grw [le_antisymm (Pi.nnnorm_extend_le' f g j), max_eq_left hj]
-  simpa [hj, h.extend_comp j] using pi_nnnorm_comp_le' (extend f g j) f
+  simpa [hj, h.extend_comp] using pi_nnnorm_comp_le' (extend f g j) f
 
 @[to_additive Function.FactorsThrough.norm_extend]
 theorem Function.FactorsThrough.norm_extend' {f : ι → ι'} {g : ι → E} {j : ι' → E}
@@ -435,8 +434,8 @@ theorem Function.FactorsThrough.norm_extend' {f : ι → ι'} {g : ι → E} {j 
 @[to_additive]
 theorem Function.FactorsThrough.nnnorm_extend_one {f : ι → ι'} {g : ι → E}
     (h : FactorsThrough g f) :
-    ‖extend f g 1‖₊ = ‖g‖₊ := by
-  exact h.nnnorm_extend' (by simp)
+    ‖extend f g 1‖₊ = ‖g‖₊ :=
+  h.nnnorm_extend' (by simp)
 
 @[to_additive]
 theorem Function.FactorsThrough.norm_extend_one {f : ι → ι'} {g : ι → E} (h : FactorsThrough g f) :
