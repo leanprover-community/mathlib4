@@ -478,6 +478,7 @@ theorem Filter.Tendsto.conj_nhds_one {ι : Type*} {l : Filter ι} {x : ι → β
   -- `exact` works but is quite slow...
   convert! tendsto_conj_nhds_one.comp this
 
+@[to_additive]
 theorem IsUniformGroup.of_left_right : IsUniformGroup β where
   uniformContinuous_div := by
     let φ : (β × β) × (β × β) → β := fun ⟨⟨x₁, x₂⟩, ⟨y₁, y₂⟩⟩ ↦ x₂ * y₂⁻¹ * y₁ * x₁⁻¹
@@ -499,6 +500,7 @@ theorem IsUniformGroup.of_left_right : IsUniformGroup β where
         exact tendsto_comap.comp tendsto_snd
     exact φ_ψ_conj ▸ ψ_tendsto.conj_nhds_one g
 
+@[to_additive]
 theorem isUniformGroup_iff_left_right {γ : Type*} [Group γ] [UniformSpace γ] :
     IsUniformGroup γ ↔ IsLeftUniformGroup γ ∧ IsRightUniformGroup γ :=
   ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ .of_left_right⟩
@@ -734,6 +736,60 @@ theorem isLeftUniformGroup_iff_leftUniformSpace_eq
 alias ⟨_, IsLeftUniformGroup.of_leftUniformSpace_eq⟩ :=
   isLeftUniformGroup_iff_leftUniformSpace_eq
 
+section RightUniformCommGroup
+
+variable (G : Type*) [CommGroup G] [UniformSpace G] [IsRightUniformGroup G]
+
+@[to_additive]
+theorem IsUniformGroup.of_rightUniformGroup_commGroup : IsUniformGroup G := by
+  rw [isUniformGroup_iff_left_right, and_iff_left ‹_›,
+    isLeftUniformGroup_iff_leftUniformSpace_eq]
+  apply UniformSpace.ext
+  rw [uniformity_eq_comap_nhds_one_left, uniformity_eq_comap_mul_inv_nhds_one]
+  simp [mul_comm]
+
+end RightUniformCommGroup
+
+section RightTopologicalCommGroup
+
+variable (G : Type*) [CommGroup G] [TopologicalSpace G] [IsTopologicalGroup G]
+
+attribute [local instance] IsTopologicalGroup.rightUniformSpace
+
+@[to_additive]
+theorem IsUniformGroup.rightUniformSpace_of_commGroup : IsUniformGroup G :=
+  have := IsRightUniformGroup.rightUniformSpace G
+  IsUniformGroup.of_rightUniformGroup_commGroup G
+
+end RightTopologicalCommGroup
+
+section LeftUniformCommGroup
+
+variable (G : Type*) [CommGroup G] [UniformSpace G] [IsLeftUniformGroup G]
+
+@[to_additive]
+theorem IsUniformGroup.of_leftUniformGroup_commGroup : IsUniformGroup G := by
+  rw [isUniformGroup_iff_left_right, and_iff_right ‹_›,
+    isRightUniformGroup_iff_rightUniformSpace_eq]
+  apply UniformSpace.ext
+  rw [uniformity_eq_comap_nhds_one_right, uniformity_eq_comap_inv_mul_nhds_one]
+  simp [mul_comm]
+
+end LeftUniformCommGroup
+
+section LeftTopologicalCommGroup
+
+variable (G : Type*) [CommGroup G] [TopologicalSpace G] [IsTopologicalGroup G]
+
+attribute [local instance] IsTopologicalGroup.leftUniformSpace
+
+@[to_additive]
+theorem IsUniformGroup.leftUniformSpace_of_commGroup : IsUniformGroup G :=
+  have := IsLeftUniformGroup.leftUniformSpace G
+  IsUniformGroup.of_leftUniformGroup_commGroup G
+
+end LeftTopologicalCommGroup
+
 section TopologicalCommGroup
 
 universe u v w x
@@ -748,7 +804,8 @@ attribute [local instance] IsTopologicalGroup.rightUniformSpace
 
 variable {G}
 
-@[to_additive]
+@[to_additive (attr :=
+  deprecated IsUniformGroup.rightUniformSpace_of_commGroup (since := "2026-10-02"))]
 theorem isUniformGroup_of_commGroup : IsUniformGroup G := by
   constructor
   have : (fun (x : (G × G) × (G × G)) ↦ x.1.2 * x.2.2⁻¹ * (x.2.1 * x.1.1⁻¹)) =
@@ -767,7 +824,7 @@ theorem isUniformGroup_of_commGroup : IsUniformGroup G := by
   apply Continuous.tendsto (by fun_prop)
 
 @[deprecated (since := "2026-08-21")]
-alias comm_topologicalGroup_is_uniform := isUniformGroup_of_commGroup
+alias comm_topologicalGroup_is_uniform := IsUniformGroup.rightUniformSpace_of_commGroup
 
 end
 
