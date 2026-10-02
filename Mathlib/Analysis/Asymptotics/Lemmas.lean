@@ -663,6 +663,16 @@ theorem isBigO_cofinite_iff (h : ∀ x, g'' x = 0 → f'' x = 0) :
     ⟨C, fun x => if hx : g'' x = 0 then by simp [h _ hx, hx] else hC hx⟩,
     fun h => (isBigO_top.2 h).mono le_top⟩
 
+theorem isBigO_cocompact_iff [TopologicalSpace α] : f =O[cocompact α] g'' ↔
+    ∃ c > 0, ∃ s, IsCompact sᶜ ∧ ∀ y ∈ s, ‖f y‖ ≤ c * ‖g'' y‖ := by
+  simp_rw [isBigO_iff', eventually_iff_exists_mem, Filter.mem_cocompact]
+  congrm ∃ c > 0, ?_
+  constructor
+  · intro ⟨s, ⟨t, ht, hs⟩, h⟩
+    exact ⟨tᶜ, (by simpa), fun y hy ↦ h y (hs hy)⟩
+  · intro ⟨s, hs, h⟩
+    exact ⟨s, ⟨sᶜ, hs, by simp⟩, h⟩
+
 theorem bound_of_isBigO_nat_atTop {f : ℕ → E} {g'' : ℕ → E''} (h : f =O[atTop] g'') :
     ∃ C > 0, ∀ ⦃x⦄, g'' x ≠ 0 → ‖f x‖ ≤ C * ‖g'' x‖ :=
   bound_of_isBigO_cofinite <| by rwa [Nat.cofinite_eq_atTop]
