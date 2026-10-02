@@ -5,8 +5,6 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Analysis.LocallyConvex.Bounded
-public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
 /-!
@@ -378,7 +376,7 @@ theorem IsCompactOperator.continuous {f : M₁ →ₛₗ[σ₁₂] M₂} (hf : I
   have hcnz : c ≠ 0 := ne_zero_of_norm_ne_zero (hr.trans hc).ne.symm
   -- We have `f ⁻¹' ((σ₁₂ c⁻¹) • K) = c⁻¹ • f ⁻¹' K ∈ 𝓝 0`. Thus, showing that
   -- `(σ₁₂ c⁻¹) • K ⊆ U` is enough to deduce that `f ⁻¹' U ∈ 𝓝 0`.
-  suffices (σ₁₂ <| c⁻¹) • K ⊆ U by
+  suffices (σ₁₂ c⁻¹) • K ⊆ U by
     grw [← this]
     have : IsUnit c⁻¹ := hcnz.isUnit.inv
     rwa [mem_map, this.preimage_smul_setₛₗ σ₁₂, set_smul_mem_nhds_zero_iff (inv_ne_zero hcnz)]
@@ -447,7 +445,7 @@ theorem isClosed_setOfPred_isCompactOperator {𝕜₁ 𝕜₂ : Type*} [Nontrivi
   rcases hTv with ⟨t, ht, htx⟩
   refine ⟨t, ht, ?_⟩
   rw [mem_preimage, mem_vadd_set_iff_neg_vadd_mem, vadd_eq_add, neg_add_eq_sub] at htx ⊢
-  convert! hVU _ htx _ (huv x hx) using 1
+  convert hVU _ htx _ (huv x hx) using 1
   rw [sub_apply]
   abel
 

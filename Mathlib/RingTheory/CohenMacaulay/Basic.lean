@@ -5,6 +5,7 @@ Authors: Nailin Guan, Yongle Hu
 -/
 module
 
+public import Mathlib.RingTheory.Ideal.AssociatedPrime.Localization
 public import Mathlib.RingTheory.KrullDimension.Regular
 public import Mathlib.RingTheory.Regular.Flat
 public import Mathlib.RingTheory.Depth.Ischebeck
