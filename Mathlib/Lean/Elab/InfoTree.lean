@@ -117,6 +117,7 @@ might find by considering every `parentDeclCtx` throughout the infotree.
 
 Assumes that every body elaboration proceeds through `Lean.Elab.Term.BodyInfo`.
 -/
+@[deprecated "no replacement" (since := "2026-10-02")]
 def getDeclsByBody (t : InfoTree) : List Name :=
   t.collectNodesBottomUp fun ctx i _ decls =>
     match i with
@@ -149,6 +150,7 @@ Get the declarations elaborated in the infotree `t` which are theorems according
 environment. This includes e.g. `instance`s of `Prop` classes in addition to declarations declared
 using the keyword `theorem` directly.
 -/
+@[deprecated "no replacement" (since := "2026-10-02")]
 def getTheorems (t : InfoTree) (env : Environment) : List ConstantVal :=
   t.getDeclsByBody.filterMap env.findTheoremConstVal?
 

@@ -188,8 +188,8 @@ optimization. However, the `Parameter`s are created in a telescope, and their fi
 have loose bound variables.
 -/
 def _root_.Lean.ConstantVal.onUnusedInstancesWhere (decl : ConstantVal)
-    (p : Expr → Bool) (logOnUnused : Array Parameter → TermElabM Unit) :
-    TermElabM Unit := do
+    (p : Expr → Bool) (logOnUnused : Array Parameter → MetaM Unit) :
+    CoreM Unit := MetaM.run' do
   let unusedInstances ← decl.type.collectUnnecessaryInstanceBinderIdxsWhere p
   if let some maxIdx := unusedInstances.back? then
     unless decl.type.hasSorry do -- only check for `sorry` in the "expensive" interactive case
@@ -209,8 +209,7 @@ def _root_.Lean.ConstantVal.onUnusedInstancesWhere (decl : ConstantVal)
           logOnUnused unusedInstances
 
 /--
-Finds theorems whose bodies were elaborated in the current infotrees and whose (full)
-declaration names satisfy `nameFilter`. Checks their type to see if it contains instance hypotheses
+Checks the type of `thm` to see if it contains instance hypotheses
 that (1) are unused in the remainder of the type (2) have types which satisfy `instanceTypeFilter`.
 (Note: `instanceTypeFilter` is non-monadic, and may encounter bound variables in its argument. This
 is a performance optimization. `isAppOrForallOfConstP` may be useful in detecting constant
@@ -243,22 +242,13 @@ Note: This linter can be disabled with `set_option {linter.fooLinter.name} false
 ```
 pluralizing as appropriate.
 -/
-@[nolint unusedArguments] -- TODO: we plan to use `_cmd` in future
-def _root_.Lean.Syntax.logUnusedInstancesInTheoremsWhere (_cmd : Syntax)
+def logUnusedInstancesInTheorem (thm : ConstantVal)
     (instanceTypeFilter : Expr → Bool)
-    (log : InfoTree → ConstantVal → Array Parameter → TermElabM Unit)
-    (declFilter : ConstantVal → Bool := fun _ => true) :
-    CommandElabM Unit := do
-  for t in ← getInfoTrees do
-    let thms := t.getTheorems (← getEnv) |>.filter fun thm =>
-      declFilter thm && thm.type.hasInstanceBinderOf instanceTypeFilter
-    -- use `liftTermElabM` on the outside in the hopes of sharing a cache
-    unless thms.isEmpty do liftTermElabM do for thm in thms do
-      thm.onUnusedInstancesWhere instanceTypeFilter
-        fun unusedParams =>
-          -- TODO: restore in order to log on type signature. See (#31729)[https://github.com/leanprover-community/mathlib4/pull/31729].
-          -- t.withDeclSigRef cmd thm.name do
-          log t thm unusedParams
+    (log : Array Parameter → MetaM Unit) :
+    CoreM Unit := do
+  if thm.type.hasInstanceBinderOf instanceTypeFilter then
+    -- TODO: log on type signature. See (#31729)[https://github.com/leanprover-community/mathlib4/pull/31729].
+    thm.onUnusedInstancesWhere instanceTypeFilter log
 
 section Decidable
 
@@ -319,28 +309,23 @@ public register_option linter.unusedDecidableInType : Bool := {
     replaced by a use of `classical` in the proof."
 }
 
-/-- Detects `Decidable*` instance hypotheses in the types of theorems which are not used in the
+/-- Detects `Decidable*` instance hypotheses in the type of `thm` which are not used in the
 remainder of the type, and suggests replacing them with a use of `classical` in the proof or
 `open scoped Classical in` at the term level. -/
-def unusedDecidableInType : Linter where
-  run := withSetBoolOptionIn fun cmd => do
-    unless getLinterValue linter.unusedDecidableInType (← getLinterOptions) do
-      return
-    cmd.logUnusedInstancesInTheoremsWhere
-      /- Theorems in the `Decidable` namespace such as `Decidable.eq_or_ne` are allowed to depend
-      on decidable instances without using them in the type. -/
-      (declFilter := (!(`Decidable).isPrefixOf ·.name))
-      isDecidableVariant
-      fun _ thm unusedParams => do
-        logLint linter.unusedDecidableInType (← getRef) m!"\
-          {thm.name.unusedInstancesMsg unusedParams}\n\n\
-          Consider removing \
-          {if unusedParams.size = 1 then "this hypothesis" else "these hypotheses"} \
-          and using `classical` in the proof instead. \
-          For terms, consider using `open scoped Classical in` at the term level (not the \
-          command level)."
-
-initialize addLinter unusedDecidableInType
+def unusedDecidableInType (thm : ConstantVal) : CoreM Unit := do
+  /- Theorems in the `Decidable` namespace such as `Decidable.eq_or_ne` are allowed to depend
+  on decidable instances without using them in the type. -/
+  if (`Decidable).isPrefixOf thm.name then return
+  logUnusedInstancesInTheorem thm
+    isDecidableVariant
+    fun unusedParams => do
+      logLint linter.unusedDecidableInType (← getRef) m!"\
+        {thm.name.unusedInstancesMsg unusedParams}\n\n\
+        Consider removing \
+        {if unusedParams.size = 1 then "this hypothesis" else "these hypotheses"} \
+        and using `classical` in the proof instead. \
+        For terms, consider using `open scoped Classical in` at the term level (not the \
+        command level)."
 
 end Decidable
 
@@ -360,34 +345,26 @@ public register_option linter.unusedFintypeInType : Bool := {
     replaced by a hypothesis of `Finite` or removed entirely."
 }
 
-/-- Detects `Fintype` instance hypotheses in the types of theorems which are not used in the
+/-- Detects `Fintype` instance hypotheses in the type of `thm` which are not used in the
 remainder of the type, and suggests replacing them with the corresponding hypothesis of `Finite`
 and the use of `Fintype.ofFinite` in the proof. -/
-def unusedFintypeInType : Linter where
-  run := withSetBoolOptionIn fun cmd => do
-    unless getLinterValue linter.unusedFintypeInType (← getLinterOptions) do
-      return
-    -- Cheap early exit if `Fintype` is not imported.
-    unless (← getEnv).isImportedConst `Fintype do
-      return
-    cmd.logUnusedInstancesInTheoremsWhere
-      (·.isAppOrForallOfConst `Fintype)
-      fun _ thm unusedParams => do
-        let importFintypeOfFiniteNote? :=
-          if (← getEnv).isImportedConst `Fintype.ofFinite then none else
-            some <| .note "Add `import Mathlib.Data.Fintype.EquivFin` \
-              to make `Fintype.ofFinite` available."
-        logLint linter.unusedFintypeInType (← getRef) m!"\
-          {thm.name.unusedInstancesMsg unusedParams}\n\n\
-          Consider replacing \
-          {if unusedParams.size = 1 then "this hypothesis" else "these hypotheses"} with the \
-          corresponding {if unusedParams.size = 1 then "instance" else "instances"} of \
-          `{.ofConstName `Finite}` and using \
-          `{.ofConstName `Fintype.ofFinite}` in the proof, or removing \
-          {if unusedParams.size = 1 then "it" else "them"} entirely.\
-          {importFintypeOfFiniteNote?.getD m!""}"
-
-initialize addLinter unusedFintypeInType
+def unusedFintypeInType (thm : ConstantVal) : CoreM Unit := do
+  logUnusedInstancesInTheorem thm
+    (·.isAppOrForallOfConst `Fintype)
+    fun unusedParams => do
+      let importFintypeOfFiniteNote? :=
+        if (← getEnv).isImportedConst `Fintype.ofFinite then none else
+          some <| .note "Add `import Mathlib.Data.Fintype.EquivFin` \
+            to make `Fintype.ofFinite` available."
+      logLint linter.unusedFintypeInType (← getRef) m!"\
+        {thm.name.unusedInstancesMsg unusedParams}\n\n\
+        Consider replacing \
+        {if unusedParams.size = 1 then "this hypothesis" else "these hypotheses"} with the \
+        corresponding {if unusedParams.size = 1 then "instance" else "instances"} of \
+        `{.ofConstName `Finite}` and using \
+        `{.ofConstName `Fintype.ofFinite}` in the proof, or removing \
+        {if unusedParams.size = 1 then "it" else "them"} entirely.\
+        {importFintypeOfFiniteNote?.getD m!""}"
 
 end Fintype
 
