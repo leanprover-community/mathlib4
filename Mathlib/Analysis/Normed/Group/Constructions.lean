@@ -9,8 +9,6 @@ public import Mathlib.Algebra.Group.PUnit
 public import Mathlib.Algebra.Group.ULift
 public import Mathlib.Analysis.Normed.Group.Basic
 
-import Mathlib.Data.Fintype.Order
-
 /-!
 # Product of normed groups and other constructions
 
