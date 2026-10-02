@@ -579,6 +579,7 @@ instance : Algebra.Etale R 𝓡' := by
       simp [Algebra.Presentation.dimension, hn]⟩
   infer_instance
 
+set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 set_option backward.isDefEq.respectTransparency false in
 /-- The universal factorization ring represents
 `S ↦ "factorizations of p into coprime (monic deg m) * (monic deg k) in S"`. -/

@@ -25,6 +25,7 @@ variable {R S A B : Type*} [CommSemiring R] [CommSemiring S] [Semiring A] [Semir
     [Algebra R S] [HopfAlgebra R A] [HopfAlgebra S B] [Algebra R B]
     [IsScalarTower R S B]
 
+set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 set_option backward.defeqAttrib.useBackward true in
 noncomputable
 instance : HopfAlgebra S (B ⊗[R] A) where

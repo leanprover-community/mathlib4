@@ -442,6 +442,7 @@ theorem sqrt_one_add_le (h : -1 ≤ x) : √(1 + x) ≤ 1 + x / 2 := by
     _ ≤ 1 + x + (x / 2) ^ 2 := le_add_of_nonneg_right <| sq_nonneg _
     _ = _ := by ring
 
+set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 theorem sqrt_prod {ι : Type*} (s : Finset ι) {x : ι → ℝ} (hx : ∀ i ∈ s, 0 ≤ x i) :
     √(∏ i ∈ s, x i) = ∏ i ∈ s, √(x i) := by
   convert! congr($(map_prod NNReal.sqrtHom (Real.toNNReal ∘ x) s).toReal) <;>

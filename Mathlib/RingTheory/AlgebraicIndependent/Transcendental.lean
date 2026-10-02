@@ -176,6 +176,7 @@ theorem sumElim_iff {ι'} {y : ι' → A} : AlgebraicIndependent R (Sum.elim y x
     ext (_ | _) <;> simp [e]
   simp_rw [hx, AlgebraicIndependent, this]; simp
 
+set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 theorem iff_adjoin_image (s : Set ι) :
     AlgebraicIndependent R x ↔ AlgebraicIndependent R (fun i : s ↦ x i) ∧
       AlgebraicIndepOn (adjoin R (x '' s)) x sᶜ := by

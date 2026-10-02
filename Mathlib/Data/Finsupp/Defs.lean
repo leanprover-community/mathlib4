@@ -492,6 +492,7 @@ theorem zipWith_apply {f : M → N → O} {hf : f 0 0 = 0} {g₁ : α →₀ M} 
     zipWith f hf g₁ g₂ a = f (g₁ a) (g₂ a) :=
   rfl
 
+set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 theorem support_zipWith [D : DecidableEq α] {f : M → N → O} {hf : f 0 0 = 0} {g₁ : α →₀ M}
     {g₂ : α →₀ N} : (zipWith f hf g₁ g₂).support ⊆ g₁.support ∪ g₂.support := by
   convert! support_onFinset_subset

@@ -390,6 +390,7 @@ instance hasPow : Pow (HomogeneousLocalization 𝒜 x) ℕ where
 
 @[simp] lemma mk_pow (i : NumDenSameDeg 𝒜 x) (n : ℕ) : mk (i ^ n) = mk i ^ n := rfl
 
+set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 instance : Add (HomogeneousLocalization 𝒜 x) where
   add :=
     Quotient.map₂ (· + ·)
@@ -403,6 +404,7 @@ instance : Add (HomogeneousLocalization 𝒜 x) where
 
 instance : Sub (HomogeneousLocalization 𝒜 x) where sub z1 z2 := z1 + -z2
 
+set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 instance : Mul (HomogeneousLocalization 𝒜 x) where
   mul :=
     Quotient.map₂ (· * ·)

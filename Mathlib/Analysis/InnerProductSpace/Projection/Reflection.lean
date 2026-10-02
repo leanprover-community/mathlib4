@@ -150,6 +150,7 @@ theorem reflection_mem_subspace_orthogonal_precomplement_eq_neg {v : E}
 theorem reflection_orthogonalComplement_singleton_eq_neg (v : E) : reflection (𝕜 ∙ v)ᗮ v = -v :=
   reflection_mem_subspace_orthogonal_precomplement_eq_neg (Submodule.mem_span_singleton_self v)
 
+set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 theorem reflection_sub {v w : F} (h : ‖v‖ = ‖w‖) : reflection (ℝ ∙ (v - w))ᗮ v = w := by
   set R : F ≃ₗᵢ[ℝ] F := reflection (ℝ ∙ (v - w))ᗮ
   suffices R v + R v = w + w by

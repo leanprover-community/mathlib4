@@ -133,6 +133,7 @@ lemma compl_support_eq_sUnion : μ.supportᶜ = ⋃₀ {t : Set X | IsOpen t ∧
   simp only [Set.mem_compl_iff, Set.mem_sUnion, Set.mem_ofPred_eq, and_right_comm,
     nhds_basis_opens x |>.notMem_measureSupport, fun t ↦ and_comm (b := x ∈ t)]
 
+set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 lemma support_eq_sInter : μ.support = ⋂₀ {t : Set X | IsClosed t ∧ μ tᶜ = 0} := by
   convert! congr($(compl_support_eq_sUnion (μ := μ))ᶜ)
   all_goals simp [Set.compl_sUnion, compl_involutive.image_eq_preimage_symm]

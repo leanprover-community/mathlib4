@@ -476,6 +476,7 @@ private lemma stereographic'_neg {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
   simp only [EmbeddingLike.map_eq_zero_iff]
   apply stereographic_neg_apply
 
+set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 -- Without this option, the lemmas `EmbeddingLike.map_eq_zero_iff` and `Submodule.range_subtype`
 -- are not applied by simp below.
 set_option backward.isDefEq.respectTransparency false in

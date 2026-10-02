@@ -124,6 +124,7 @@ noncomputable def matrixDecompositionAddEquiv (o : HomOrthogonal s) {α β : Typ
       dsimp [biproduct.components]
       simp }
 
+set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 @[simp]
@@ -140,6 +141,7 @@ theorem matrixDecomposition_id (o : HomOrthogonal s) {α : Type} [Finite α] {f 
     convert! comp_zero
     simpa using biproduct.ι_π_ne _ (Ne.symm h)
 
+set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 open scoped Classical in
 theorem matrixDecomposition_comp (o : HomOrthogonal s) {α β γ : Type} [Finite α] [Fintype β]
     [Finite γ] {f : α → ι} {g : β → ι} {h : γ → ι} (z : (⨁ fun a => s (f a)) ⟶ ⨁ fun b => s (g b))

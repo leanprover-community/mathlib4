@@ -273,6 +273,7 @@ lemma exists_derivative_mul_eq_and_isIntegral_coeff
 
 open TensorProduct
 
+set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Polynomial.algebra in
 @[stacks 03GE "without the generalization to arbitrary etale algebra"]
