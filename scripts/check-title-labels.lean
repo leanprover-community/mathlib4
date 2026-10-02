@@ -16,8 +16,6 @@ Currently, we only verify very basic checks: this could be made stricter in the 
 
 -/
 
--- TODO: temporary copy. delete in favour of `check-title-labels.lean` after #44306
-
 open Cli in
 /-- Implementation of the `check-title-labels` command line program.
 The exit code is the number of violations found. -/

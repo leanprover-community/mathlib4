@@ -228,8 +228,9 @@ to module `Foo.Bar` (no `srcDir` indirection).
   run via `lake exe mk_all`, regenerates the import-only files
   `Mathlib.lean`, `Mathlib/Tactic.lean`, `Archive.lean` and `Counterexamples.lean`
 - `lint-style.lean`: style linters written in Lean. Run via `lake exe lint-style`.
-- `check_title_labels.lean` verifies that a (non-WIP, non-draft) PR has a well-formed title.
+- `check-title-labels.lean` verifies that a (non-WIP, non-draft) PR has a well-formed title.
   In the future, it may also check that a feature PR has a topic label.
+  `check_title_labels.lean` is a temporary copy of `check-title-labels.lean` and will be deleted soon.
 - `lint-bib.sh`
   normalize the BibTeX file `docs/references.bib` using `bibtool`.
 - `yaml_check.py`, `check-yaml.lean`
