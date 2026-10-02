@@ -5388,7 +5388,6 @@ public import Mathlib.LinearAlgebra.PiTensorProduct.Dual
 public import Mathlib.LinearAlgebra.PiTensorProduct.Finite
 public import Mathlib.LinearAlgebra.PiTensorProduct.Finsupp
 public import Mathlib.LinearAlgebra.PiTensorProduct.Generators
-public import Mathlib.LinearAlgebra.PiTensorProduct.Projective
 public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.LinearAlgebra.Projection
 public import Mathlib.LinearAlgebra.Projectivization.Action
