@@ -83,6 +83,12 @@ def eval : M →ₗ[R] Dual R (Dual R M) :=
 theorem eval_apply (v : M) (a : Dual R M) : eval R M v a = a v :=
   rfl
 
+def dualBaseRingEquiv : Dual R R ≃ₗ[R] R := { LinearMap.applyₗ 1 with
+  invFun x := LinearMap.mulRight R x
+  left_inv := by intro; ext; simp
+  right_inv := by intro; simp
+}
+
 variable {R M} {M' : Type*}
 variable [AddCommMonoid M'] [Module R M']
 
