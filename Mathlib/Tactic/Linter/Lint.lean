@@ -111,6 +111,6 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
           m!"The namespaces {ns} are duplicated in the declaration \
           `{.ofConstName (fullNames := true) declName}`."
 
-initialize addLinter dupNamespace
+-- initialize addLinter dupNamespace
 
 end Mathlib.Linter.DupNamespaceLinter
