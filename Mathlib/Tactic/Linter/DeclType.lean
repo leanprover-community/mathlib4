@@ -13,16 +13,16 @@ import all Mathlib.Tactic.Linter.OverlappingInstances
 /-!
 # Instance linters
 
-We bundle a number of instance argument linters into a single linter:
+We bundle a number of linters that act on declaration types into a single linter:
 
-- Overlapping instances linter
-- Unused `Fintype` in type linter
-- Unused `Decidable` in type linter
+- The overlapping instances linter
+- The unused `Fintype` in type linter
+- The unused `Decidable` in type linter
 
 We bundle them because each of them acts on the `Lean.Elab.Term.BodyInfo` in the info tree,
 and it is expensive to do this search many times over.
 
-These linters run even if the declaration is not finished yet.
+These linters run even if the declaration contains an error.
 This is important because it means that a user will get a warning as soon as possible.
 -/
 
@@ -35,14 +35,14 @@ open Lean Elab Linter OverlappingInstances UnusedInstancesInType
 /-- Run all of the instance parameter linters.
 This linter collects the declaration bodies from the info trees,
 so that this work does not need to be duplicated. -/
-def instancesLinter : Linter where
+def declTypeLinter : Linter where
   run := withSetOptionIn fun cmd => do
     let opts ← getLinterOptions
     let overlap := getLinterValue linter.overlappingInstances opts
     let decidable := getLinterValue linter.unusedDecidableInType opts
     let fintype := getLinterValue linter.unusedFintypeInType opts
     unless overlap || decidable || fintype do return
-    profileitM Exception "instancesLinters" (← getOptions) do
+    profileitM Exception "declTypeLinter" (← getOptions) do
     for t in ← getInfoTrees do
       for (ref, ctx, info) in t.getDeclBodyInfos do
         if overlap then
@@ -53,6 +53,6 @@ def instancesLinter : Linter where
             if decidable then unusedDecidableInType thm
             if fintype then unusedFintypeInType thm
 
-initialize addLinter instancesLinter
+initialize addLinter declTypeLinter
 
 end Mathlib.Linter

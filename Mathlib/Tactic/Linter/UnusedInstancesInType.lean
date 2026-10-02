@@ -19,7 +19,7 @@ public import Batteries.Tactic.Lint.Misc
 # Linters for Unused Instances in Types
 
 This file declares linters which detect certain instance hypotheses in declarations that are unused
-in the remainder of the type.
+in the remainder of the type. They are registered as linters in `Mathlib.Tactic.Linter.DeclType`.
 
 Currently, these linters only handle theorems. (This also includes `lemma`s and `instance`s of
 `Prop` classes.)

@@ -7634,6 +7634,7 @@ public import Mathlib.Tactic.LinearCombination.Lemmas
 public import Mathlib.Tactic.Linter
 public import Mathlib.Tactic.Linter.AuxLemma
 public import Mathlib.Tactic.Linter.CommandRanges
+public import Mathlib.Tactic.Linter.DeclType
 public import Mathlib.Tactic.Linter.DeprecatedModule
 public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 public import Mathlib.Tactic.Linter.DirectoryDependency
@@ -7647,7 +7648,6 @@ public import Mathlib.Tactic.Linter.HashCommandLinter
 public import Mathlib.Tactic.Linter.HaveILetI
 public import Mathlib.Tactic.Linter.HaveLetLinter
 public import Mathlib.Tactic.Linter.Header
-public import Mathlib.Tactic.Linter.Instances
 public import Mathlib.Tactic.Linter.InternalConstructor
 public import Mathlib.Tactic.Linter.Lint
 public import Mathlib.Tactic.Linter.MinImports

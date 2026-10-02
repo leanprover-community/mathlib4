@@ -6,6 +6,7 @@ public import Mathlib.Lean.Linter -- linter utilities; will be transitively impo
 public import Mathlib.Tactic.AdaptationNote -- make #adaptation_note available everywhere
 public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.Linter.AuxLemma
+public import Mathlib.Tactic.Linter.DeclType
 public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 public import Mathlib.Tactic.Linter.DirectoryDependency
 public import Mathlib.Tactic.Linter.DocPrime
@@ -15,7 +16,6 @@ public import Mathlib.Tactic.Linter.GlobalAttributeIn
 public import Mathlib.Tactic.Linter.HashCommandLinter
 public import Mathlib.Tactic.Linter.HaveILetI
 public import Mathlib.Tactic.Linter.Header
-public import Mathlib.Tactic.Linter.Instances
 public import Mathlib.Tactic.Linter.InternalConstructor
 public import Mathlib.Tactic.Linter.FlexibleLinter
 public import Mathlib.Tactic.Linter.Multigoal

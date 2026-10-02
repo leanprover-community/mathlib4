@@ -16,7 +16,7 @@ If the same data can be obtained from two different instances, we risk having
 non-defeq versions of that data. This situation is known as an "instance diamond".
 This linter warns against instance diamonds in local contexts.
 
-This is a syntax linter. It is run on partially and fully elaborated declarations.
+This is registered as a linter in `Mathlib.Tactic.Linter.DeclType`.
 
 To find diamonds, we compute the parent classes of each local instance.
 For classes that aren't structures, this is just the class itself.
