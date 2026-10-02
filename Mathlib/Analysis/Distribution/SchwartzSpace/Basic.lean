@@ -1088,10 +1088,14 @@ open Real Filter MeasureTheory MeasureTheory.Measure Module
 
 variable [RCLike 𝕜]
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
-variable [NormedAddCommGroup V] [NormedSpace ℝ V] [NormedSpace 𝕜 V]
+variable [NormedAddCommGroup V] [NormedSpace 𝕜 V]
 variable [MeasurableSpace D]
 
 variable {μ : Measure D} [hμ : HasTemperateGrowth μ]
+
+section integral
+
+variable [NormedSpace ℝ V]
 
 attribute [local instance 101] secondCountableTopologyEither_of_left
 
@@ -1146,6 +1150,29 @@ def integralCLM : 𝓢(D, V) →L[𝕜] V := by
 variable (𝕜) in
 @[simp]
 lemma integralCLM_apply (f : 𝓢(D, V)) : integralCLM 𝕜 μ f = ∫ x, f x ∂μ := by rfl
+
+end integral
+
+variable [BorelSpace D] [SecondCountableTopology D]
+
+@[fun_prop]
+theorem integrable_smul_locallyIntegrable {f : D → V} {k : ℕ}
+    (hf : LocallyIntegrable f μ) (hf' : f =O[cocompact D] (‖·‖ ^ k)) (g : 𝓢(D, 𝕜)) :
+    Integrable (fun x ↦ g x • f x) μ := by
+  obtain ⟨c, _hc, s, hs₁, hs₂⟩ := Asymptotics.isBigO_cocompact_iff.mp hf'
+  simp only [norm_pow, norm_norm] at hs₂
+  suffices IntegrableOn (fun x ↦ g x • f x) s μ by
+    rw [← MeasureTheory.integrableOn_univ, ← Set.union_compl_self s]
+    exact this.union (by fun_prop)
+  have h_int := ((g.integrable_pow_mul μ k).integrableOn (s := s)).smul c
+  have : AEStronglyMeasurable f μ := by fun_prop
+  apply h_int.mono' (by fun_prop)
+  rw [MeasureTheory.ae_restrict_iff₀ <|
+    AEStronglyMeasurable.nullMeasurableSet_le (by fun_prop) (by fun_prop)]
+  filter_upwards with x hx
+  simp only [norm_smul, Pi.smul_apply, smul_eq_mul]
+  grw [hs₂ x hx]
+  grind
 
 end Integration
 

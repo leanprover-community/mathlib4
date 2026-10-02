@@ -112,28 +112,6 @@ open Asymptotics Filter
 variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
   {μ : Measure E} [hμ : μ.HasTemperateGrowth]
 
-attribute [fun_prop] IntegrableOn LocallyIntegrable LocallyIntegrable.integrableOn_isCompact
-  IntegrableOn.continuousOn_smul LocallyIntegrable.aestronglyMeasurable
-
-@[fun_prop]
-theorem _root_.SchwartzMap.integrable_smul_locallyIntegrable {f : E → F} {k : ℕ}
-    (hf : LocallyIntegrable f μ) (hf' : f =O[cocompact E] (‖·‖ ^ k)) (g : 𝓢(E, ℂ)) :
-    Integrable (fun x ↦ g x • f x) μ := by
-  obtain ⟨c, _hc, s, hs₁, hs₂⟩ := isBigO_cocompact_iff.mp hf'
-  simp only [norm_pow, norm_norm] at hs₂
-  suffices IntegrableOn (fun x ↦ g x • f x) s μ by
-    rw [← MeasureTheory.integrableOn_univ, ← Set.union_compl_self s]
-    exact this.union (by fun_prop)
-  have h_int := ((g.integrable_pow_mul μ k).integrableOn (s := s)).smul c
-  have : AEStronglyMeasurable f μ := by fun_prop
-  apply h_int.mono' (by fun_prop)
-  rw [MeasureTheory.ae_restrict_iff₀ <|
-    AEStronglyMeasurable.nullMeasurableSet_le (by fun_prop) (by fun_prop)]
-  filter_upwards with x hx
-  simp only [norm_smul, Pi.smul_apply, smul_eq_mul]
-  grw [hs₂ x hx]
-  grind
-
 def toTemperedDistribution {f : E → F} {k : ℕ} (hf : LocallyIntegrable f μ)
     (hf' : f =O[Filter.cocompact E] (‖·‖ ^ k)) : 𝓢'(E, F) :=
   toPointwiseConvergenceCLM _ _ _ _ <|
@@ -149,11 +127,12 @@ where finally
     simp only [norm_pow, norm_norm] at hs₂
     set C₁ := ∫ (a : E) in sᶜ, ‖f a‖ ∂μ
     have hC₁ : 0 ≤ C₁ := by positivity
-    set C₂ := c * 2 ^ μ.integrablePower * ∫ (x : E), ((1 + ‖x‖) ^ μ.integrablePower)⁻¹ ∂μ
-    use {(0,0), (k + μ.integrablePower, 0)}, 2 * (C₁ + C₂), by positivity
+    set μP := μ.integrablePower
+    set C₂ := c * 2 ^ μP * ∫ (x : E), ((1 + ‖x‖) ^ μP)⁻¹ ∂μ
+    use {(0, 0), (k + μP, 0)}, 2 * (C₁ + C₂), by positivity
     intro g
     set k₁ := g.seminorm ℂ 0 0
-    set k₂ := g.seminorm ℂ (k + μ.integrablePower) 0
+    set k₂ := g.seminorm ℂ (k + μP) 0
     have hs : ‖∫ x in sᶜ, g x • f x ∂μ‖ ≤ C₁ * k₁ := calc
       _ ≤ ∫ x in sᶜ, ‖g x • f x‖ ∂μ := by
         grw [MeasureTheory.norm_integral_le_integral_norm]
@@ -185,11 +164,10 @@ where finally
         · filter_upwards with; positivity
         · fun_prop
         · exact restrict_le_self
-      _ ≤ _ := by
-        have := integral_pow_mul_iteratedFDeriv_le ℂ μ g k 0
-        simp only [norm_iteratedFDeriv_zero, Real.rpow_neg_natCast, zpow_neg, zpow_natCast] at this
-        grw [this]
-        grind
+      _ ≤ c * (2 ^ μP * (∫ x, ((1 + ‖x‖) ^ μP)⁻¹ ∂μ) * (k₁ + k₂)) := by
+        gcongr
+        simpa using integral_pow_mul_iteratedFDeriv_le ℂ μ g k 0
+      _ = _ := by grind
     calc
       _ = ‖∫ (x : E), g x • f x ∂μ‖ := rfl
       _ ≤ ‖∫ x in sᶜ, g x • f x ∂μ‖ + ‖∫ x in s, g x • f x ∂μ‖ := by
