@@ -14,7 +14,8 @@ require "leanprover-community" / "proofwidgets" @ git "main"
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets failed to reuse pre-built JS code. \
     Please report this issue on the Lean Zulip."
-require "leanprover-community" / "importGraph" @ git "main"
+require importGraph from git "https://github.com/thorimur/import-graph" @ "precompile"
+
 require "leanprover-community" / "LeanSearchClient" @ git "main"
 require "leanprover-community" / "plausible" @ git "main"
 
