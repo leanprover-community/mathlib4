@@ -293,7 +293,7 @@ variable [TopologicalSpace G] [IsTopologicalGroup G]
 theorem Multipliable.nat_tprod_vanishing {f : ℕ → G} (hf : Multipliable f) ⦃e : Set G⦄
     (he : e ∈ 𝓝 1) : ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∏' n : t, f n) ∈ e :=
   letI : UniformSpace G := IsTopologicalGroup.rightUniformSpace G
-  have : IsUniformGroup G := isUniformGroup_of_commGroup
+  have : IsUniformGroup G := IsUniformGroup.rightUniformSpace_of_commGroup G
   cauchySeq_finset_iff_nat_tprod_vanishing.1 hf.hasProd.cauchySeq e he
 
 @[to_additive]

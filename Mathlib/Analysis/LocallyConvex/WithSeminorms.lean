@@ -1279,7 +1279,7 @@ theorem WithSeminorms.firstCountableTopology (hp : WithSeminorms p) :
     FirstCountableTopology E := by
   have := hp.isTopologicalAddGroup
   let _ : UniformSpace E := IsTopologicalAddGroup.rightUniformSpace E
-  have : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
+  have : IsUniformAddGroup E := IsUniformAddGroup.rightUniformSpace_of_addCommGroup E
   have : (𝓝 (0 : E)).IsCountablyGenerated := by
     rw [p.withSeminorms_iff_nhds_eq_iInf.mp hp]
     exact Filter.iInf.isCountablyGenerated _

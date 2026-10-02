@@ -413,7 +413,7 @@ theorem IsCompact.isVonNBounded [NormedField 𝕜] [AddCommGroup E] [Module 𝕜
     [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] {s : Set E}
     (hs : IsCompact s) : Bornology.IsVonNBounded 𝕜 s :=
   letI := IsTopologicalAddGroup.rightUniformSpace E
-  haveI := isUniformAddGroup_of_addCommGroup (G := E)
+  haveI := IsUniformAddGroup.rightUniformSpace_of_addCommGroup E
   hs.totallyBounded.isVonNBounded 𝕜
 
 variable (𝕜) in
@@ -421,7 +421,7 @@ theorem Filter.Tendsto.isVonNBounded_range [NormedField 𝕜] [AddCommGroup E] [
     [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
     {f : ℕ → E} {x : E} (hf : Tendsto f atTop (𝓝 x)) : Bornology.IsVonNBounded 𝕜 (range f) :=
   letI := IsTopologicalAddGroup.rightUniformSpace E
-  haveI := isUniformAddGroup_of_addCommGroup (G := E)
+  haveI := IsUniformAddGroup.rightUniformSpace_of_addCommGroup E
   hf.cauchySeq.totallyBounded_range.isVonNBounded 𝕜
 
 variable (𝕜) in

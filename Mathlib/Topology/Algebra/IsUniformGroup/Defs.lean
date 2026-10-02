@@ -616,16 +616,16 @@ variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 
 Warning: in general the right and left uniformities do not coincide and so one does not obtain a
 `IsUniformGroup` structure. Two important special cases where they _do_ coincide are for
-commutative groups (see `isUniformGroup_of_commGroup`) and for compact groups (see
-`IsUniformGroup.of_compactSpace`). -/
+commutative groups (see `IsUniformGroup.of_rightUniformGroup_commGroup`)
+and for compact groups (see `IsUniformGroup.of_compactSpace`). -/
 @[to_additive (attr := instance_reducible)
 /-- The right uniformity on a topological additive group (as opposed to the left
 uniformity).
 
 Warning: in general the right and left uniformities do not coincide and so one does not obtain a
 `IsUniformAddGroup` structure. Two important special cases where they _do_ coincide are for
-commutative additive groups (see `isUniformAddGroup_of_addCommGroup`) and for compact
-additive groups (see `IsUniformAddGroup.of_compactSpace`). -/]
+commutative additive groups (see `IsUniformAddGroup.of_rightUniformAddGroup_of_addCommGroup`)
+and for compact additive groups (see `IsUniformAddGroup.of_compactSpace`). -/]
 def IsTopologicalGroup.rightUniformSpace : UniformSpace G where
   uniformity := comap (fun p : G × G => p.2 * p.1⁻¹) (𝓝 1)
   symm :=
@@ -682,16 +682,16 @@ variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 
 Warning: in general the right and left uniformities do not coincide and so one does not obtain a
 `IsUniformGroup` structure. Two important special cases where they _do_ coincide are for
-commutative groups (see `isUniformGroup_of_commGroup`) and for compact groups (see
-`IsUniformGroup.of_compactSpace`). -/
+commutative groups (see `IsUniformGroup.of_leftUniformGroup_commGroup`)
+and for compact groups (see `IsUniformGroup.of_compactSpace`). -/
 @[to_additive (attr := instance_reducible)
 /-- The left uniformity on a topological additive group (as opposed to the right
 uniformity).
 
 Warning: in general the right and left uniformities do not coincide and so one does not obtain a
 `IsUniformAddGroup` structure. Two important special cases where they _do_ coincide are for
-commutative additive groups (see `isUniformAddGroup_of_addCommGroup`) and for compact
-additive groups (see `IsUniformAddGroup.of_compactSpace`). -/]
+commutative additive groups (see `IsUniformAddGroup.leftUniformAddGroup_of_addCommGroup`)
+and for compact additive groups (see `IsUniformAddGroup.of_compactSpace`). -/]
 def IsTopologicalGroup.leftUniformSpace : UniformSpace G where
   uniformity := comap (fun p : G × G => p.1⁻¹ * p.2) (𝓝 1)
   symm :=

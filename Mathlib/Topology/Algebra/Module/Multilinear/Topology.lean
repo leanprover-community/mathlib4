@@ -180,20 +180,20 @@ variable [TopologicalSpace F] [IsTopologicalAddGroup F]
 
 instance instIsTopologicalAddGroup : IsTopologicalAddGroup (ContinuousMultilinearMap 𝕜 E F) :=
   letI := IsTopologicalAddGroup.rightUniformSpace F
-  haveI := isUniformAddGroup_of_addCommGroup (G := F)
+  haveI := IsUniformAddGroup.rightUniformSpace_of_addCommGroup F
   inferInstance
 
 instance instContinuousConstSMul
     {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜 M F] [ContinuousConstSMul M F] :
     ContinuousConstSMul M (ContinuousMultilinearMap 𝕜 E F) := by
   let := IsTopologicalAddGroup.rightUniformSpace F
-  have := isUniformAddGroup_of_addCommGroup (G := F)
+  have := IsUniformAddGroup.rightUniformSpace_of_addCommGroup F
   infer_instance
 
 instance instContinuousSMul [ContinuousSMul 𝕜 F] :
     ContinuousSMul 𝕜 (ContinuousMultilinearMap 𝕜 E F) :=
   letI := IsTopologicalAddGroup.rightUniformSpace F
-  haveI := isUniformAddGroup_of_addCommGroup (G := F)
+  haveI := IsUniformAddGroup.rightUniformSpace_of_addCommGroup F
   let φ : ContinuousMultilinearMap 𝕜 E F →ₗ[𝕜] (Π i, E i) → F :=
     { toFun := (↑), map_add' := fun _ _ ↦ rfl, map_smul' := fun _ _ ↦ rfl }
   UniformOnFun.continuousSMul_induced_of_image_bounded _ _ _ _ φ
@@ -205,7 +205,7 @@ theorem hasBasis_nhds_zero_of_basis {ι : Type*} {p : ι → Prop} {b : ι → S
       (fun Si : Set (Π i, E i) × ι => IsVonNBounded 𝕜 Si.1 ∧ p Si.2)
       fun Si => { f | MapsTo f Si.1 (b Si.2) } := by
   let : UniformSpace F := IsTopologicalAddGroup.rightUniformSpace F
-  have : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
+  have : IsUniformAddGroup F := IsUniformAddGroup.rightUniformSpace_of_addCommGroup F
   rw [nhds_induced]
   refine (UniformOnFun.hasBasis_nhds_zero_of_basis _ ?_ ?_ h).comap DFunLike.coe
   · exact ⟨∅, isVonNBounded_empty _ _⟩
@@ -274,7 +274,7 @@ variable [∀ i, ContinuousSMul 𝕜 (E i)]
 instance : ContinuousEvalConst (ContinuousMultilinearMap 𝕜 E F) (Π i, E i) F where
   continuous_eval_const x :=
     let _ := IsTopologicalAddGroup.rightUniformSpace F
-    have _ := isUniformAddGroup_of_addCommGroup (G := F)
+    have _ := IsUniformAddGroup.rightUniformSpace_of_addCommGroup F
     (uniformContinuous_eval_const x).continuous
 
 instance instT2Space [T2Space F] : T2Space (ContinuousMultilinearMap 𝕜 E F) :=
@@ -292,7 +292,7 @@ theorem isEmbedding_restrictScalars :
     IsEmbedding
       (restrictScalars 𝕜' : ContinuousMultilinearMap 𝕜 E F → ContinuousMultilinearMap 𝕜' E F) :=
   letI : UniformSpace F := IsTopologicalAddGroup.rightUniformSpace F
-  haveI : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
+  haveI : IsUniformAddGroup F := IsUniformAddGroup.rightUniformSpace_of_addCommGroup F
   (isUniformEmbedding_restrictScalars _).isEmbedding
 
 @[continuity, fun_prop]

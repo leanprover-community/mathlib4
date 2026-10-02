@@ -198,9 +198,9 @@ theorem isInducing_postcomp [IsTopologicalAddGroup F] [IsTopologicalAddGroup G]
     (f : F →SL[τ] G) (hf : IsInducing f) :
     IsInducing (f.comp : (E →SL[σ] F) → (E →SL[ρ] G)) :=
   letI : UniformSpace F := IsTopologicalAddGroup.rightUniformSpace F
-  haveI : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
+  haveI : IsUniformAddGroup F := IsUniformAddGroup.rightUniformSpace_of_addCommGroup F
   letI : UniformSpace G := IsTopologicalAddGroup.rightUniformSpace G
-  haveI : IsUniformAddGroup G := isUniformAddGroup_of_addCommGroup
+  haveI : IsUniformAddGroup G := IsUniformAddGroup.rightUniformSpace_of_addCommGroup F
   (isUniformInducing_postcomp f <| AddMonoidHom.isUniformInducing_of_isInducing hf).isInducing
 
 theorem isEmbedding_postcomp [IsTopologicalAddGroup F] [IsTopologicalAddGroup G]
@@ -405,7 +405,7 @@ variable [TopologicalSpace F] [IsTopologicalAddGroup F] [Module 𝕜 F]
 theorem isEmbedding_restrictScalars :
     IsEmbedding (restrictScalars 𝕜' : (E →L[𝕜] F) → (E →L[𝕜'] F)) :=
   letI : UniformSpace F := IsTopologicalAddGroup.rightUniformSpace F
-  haveI : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
+  haveI : IsUniformAddGroup F := IsUniformAddGroup.rightUniformSpace_of_addCommGroup F
   (isUniformEmbedding_restrictScalars _).isEmbedding
 
 @[continuity, fun_prop]
