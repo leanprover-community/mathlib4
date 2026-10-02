@@ -121,7 +121,7 @@ lemma dist_inf_sup (x y : α) : dist (x ⊓ y) (x ⊔ y) = dist x y := by
 
 lemma dist_mono_left : MonotoneOn (dist · y) (Ici y) := by
   intro y₁ hy₁ y₂ hy₂ hy
-  simp only [dist_eq_norm, dist_eq_norm]
+  simp only [dist_eq_norm]
   apply norm_le_norm_of_abs_le_abs
   rw [abs_of_nonneg (sub_nonneg.mpr hy₁), abs_of_nonneg (sub_nonneg.mpr hy₂)]
   exact sub_le_sub_right hy y
@@ -131,7 +131,7 @@ lemma dist_mono_right : MonotoneOn (dist x) (Ici x) := by
 
 lemma dist_anti_left : AntitoneOn (dist · y) (Iic y) := by
   intro y₁ hy₁ y₂ hy₂ hy
-  simp only [dist_comm y₂, dist_comm y₁, dist_eq_norm, dist_eq_norm]
+  simp only [dist_comm, dist_eq_norm]
   apply norm_le_norm_of_abs_le_abs
   rw [abs_of_nonneg (sub_nonneg.mpr hy₂), abs_of_nonneg (sub_nonneg.mpr hy₁)]
   exact sub_le_sub_left hy y
