@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Module.Injective
 public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+public import Mathlib.GroupTheory.Divisible
+public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Injective objects in the category of $R$-modules
@@ -42,11 +44,33 @@ theorem injective_iff_injective_object :
   ⟨fun _ => injective_object_of_injective_module R M,
    fun _ => injective_module_of_injective_object R M⟩
 
+theorem Baer.of_divisible [IsPrincipalIdealRing R] [DivisibleBy M R] :
+    Module.Baer R M := fun I g ↦ by
+  rcases IsPrincipalIdealRing.principal I with ⟨m, rfl⟩
+  obtain rfl | h0 := eq_or_ne m 0
+  · refine ⟨0, fun n hn ↦ ?_⟩
+    rw [Submodule.span_zero_singleton] at hn
+    subst hn
+    exact (map_zero g).symm
+  let gₘ := g ⟨m, Submodule.subset_span (Set.mem_singleton _)⟩
+  refine ⟨LinearMap.toSpanSingleton R M (DivisibleBy.div gₘ m), fun n hn ↦ ?_⟩
+  rcases Submodule.mem_span_singleton.mp hn with ⟨n, rfl⟩
+  rw [map_smul, LinearMap.toSpanSingleton_apply, DivisibleBy.div_cancel gₘ h0, ← map_smul g,
+    SetLike.mk_smul_mk]
+
 end Module
 
-instance ModuleCat.ulift_injective_of_injective.{v'} [Small.{v} R]
+namespace ModuleCat
+
+instance injective_of_divisible [IsPrincipalIdealRing R] [DivisibleBy M R] :
+    Injective (C := ModuleCat R) (ModuleCat.of R M) :=
+  Module.injective_object_of_injective_module (inj := (Module.Baer.of_divisible R M).injective)
+
+instance ulift_injective_of_injective.{v'} [Small.{v} R]
     [CategoryTheory.Injective <| ModuleCat.of R M] :
     CategoryTheory.Injective <| ModuleCat.of R (ULift.{v'} M) :=
   Module.injective_object_of_injective_module
     (inj := Module.ulift_injective_of_injective
       (inj := Module.injective_module_of_injective_object _ _))
+
+end ModuleCat
