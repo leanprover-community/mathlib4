@@ -33,8 +33,8 @@ theorem find?_eq_find?_of_perm {p : α → Bool} {l₁ l₂ : List α}
 
 /-- If two predicates agree on all the elements, so does `find?`. -/
 @[congr]
-theorem find?_congr {p₁ p₂ : α → Bool} {l : List α} (h : ∀ x ∈ l, p₁ x = p₂ x) :
-    l.find? p₁ = l.find? p₂ := by
-  induction l with grind
+theorem find?_congr {p₁ p₂ : α → Bool} {l l' : List α} (hl' : l = l') (h : ∀ x ∈ l, p₁ x = p₂ x) :
+    l.find? p₁ = l'.find? p₂ := by
+  subst hl'; induction l with grind
 
 end List
