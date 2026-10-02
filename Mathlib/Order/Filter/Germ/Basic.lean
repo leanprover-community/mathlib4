@@ -61,17 +61,7 @@ assert_not_exists IsOrderedRing
 open scoped Relator
 namespace Filter
 
-variable {α β γ δ : Type*} {l : Filter α} {f g h : α → β}
-
-/-- Setoid used to define the space of germs. -/
-@[instance_reducible]
-def germSetoid (l : Filter α) (β : Type*) : Setoid (α → β) where
-  r := EventuallyEq l
-  iseqv := ⟨EventuallyEq.refl _, EventuallyEq.symm, EventuallyEq.trans⟩
-
-/-- The space of germs of functions `α → β` at a filter `l`. -/
-def Germ (l : Filter α) (β : Type*) : Type _ :=
-  Quotient (germSetoid l β)
+variable {α β γ δ : Type*} {l : Filter α}
 
 /-- Setoid used to define the filter product. This is a dependent version of
   `Filter.germSetoid`. -/
@@ -89,17 +79,111 @@ def Product (l : Filter α) (ε : α → Type*) : Type _ :=
 
 namespace Product
 
-variable {ε : α → Type*}
+variable {ε ζ η : α → Type*} {f g h : (x : α) → ε x}
 
-instance coeTC : CoeTC ((a : _) → ε a) (l.Product ε) :=
-  ⟨@Quotient.mk' _ (productSetoid _ ε)⟩
+@[coe]
+def ofFun (f : (a : α) → ε a) : l.Product ε :=
+  Quotient.mk (productSetoid l ε) f
 
-instance instInhabited [(a : _) → Inhabited (ε a)] : Inhabited (l.Product ε) :=
+instance coeTC : CoeTC ((a : α) → ε a) (l.Product ε) := ⟨ofFun⟩
+
+instance instInhabited [(a : α) → Inhabited (ε a)] : Inhabited (l.Product ε) :=
   ⟨(↑fun a => (default : ε a) : l.Product ε)⟩
+
+@[elab_as_elim]
+theorem inductionOn {motive : Product l ε → Prop} (t : Product l ε)
+    (ofFun : ∀ f, motive (ofFun f)) : motive t :=
+  Quotient.inductionOn' t ofFun
+
+@[elab_as_elim]
+theorem inductionOn₂
+    {motive : Product l ε → Product l ζ → Prop} (t₁ : Product l ε) (t₂ : Product l ζ)
+    (ofFun : ∀ f g, motive (ofFun f) (ofFun g)) : motive t₁ t₂ :=
+  inductionOn t₁ fun f => inductionOn t₂ (ofFun f)
+
+@[elab_as_elim]
+theorem inductionOn₃
+    {motive : Product l ε → Product l ζ → Product l η → Prop}
+    (t₁ : Product l ε) (t₂ : Product l ζ) (t₃ : Product l η)
+    (ofFun : ∀ f g h, motive (ofFun f) (ofFun g) (ofFun h)) : motive t₁ t₂ t₃ :=
+  inductionOn t₁ fun f => inductionOn₂ t₂ t₃ (ofFun f)
+
+/-- Given a germ `f : Product l ε` and a function `F : ((x : α) → ε x) → γ`
+sending eventually equal functions to the same value,
+returns the value `F` takes on functions having germ `f` at `l`. -/
+def liftOn {γ : Sort*} (f : Product l ε) (F : ((x : α) → ε x) → γ)
+    (hF : ∀ p q, (∀ᶠ x in l, p x = q x) → F p = F q) : γ :=
+  Quotient.liftOn' f F hF
+
+@[simp]
+theorem liftOn_ofFun {γ : Sort*} (f : (x : α) → ε x) (F : ((x : α) → ε x) → γ)
+    (hF : ∀ p q, (∀ᶠ x in l, p x = q x) → F p = F q) : liftOn (ofFun f) F hF = F f :=
+  (rfl)
+
+@[simp]
+theorem ofFun_eq : (ofFun f : Product l ε) = ofFun g ↔ ∀ᶠ x in l, f x = g x :=
+  Quotient.eq
+
+alias ⟨_, _root_.Filter.Eventually.product_eq⟩ := ofFun_eq
+
+/-- Lift a function `∀ x, ε x → ζ x` to a function `Germ l ε → Germ l ζ`. -/
+def map (op : ∀ x, ε x → ζ x) : Product l ε → Product l ζ :=
+  fun f => liftOn f (fun f => ofFun (fun x => op x (f x))) fun _ _ hpq =>
+    (hpq.mono fun x => congrArg (op x)).product_eq
+
+@[simp]
+theorem map_coe (op : ∀ x, ε x → ζ x) (f : (x : α) → ε x) :
+    map op (ofFun f : Product l ε) = ofFun fun x => op x (f x) :=
+  rfl
+
+@[simp]
+theorem map_id : map (fun _ => id) = (id : Product l ε → Product l ε) := by
+  ext ⟨f⟩
+  rfl
+
+theorem map_map (op₁ : ∀ x, ζ x → η x) (op₂ : ∀ x, ε x → ζ x) (f : Product l ε) :
+    map op₁ (map op₂ f) = map (fun i x => op₁ i (op₂ i x)) f :=
+  inductionOn f fun _ => rfl
+
+/-- Lift a binary function `∀ x, ε x → ζ x → η x` to a function
+`Product l ε → Product l ζ → Product l η`. -/
+def map₂ (op : ∀ x, ε x → ζ x → η x) : Product l ε → Product l ζ → Product l η :=
+  fun f g => liftOn f (fun f => liftOn g (fun g => ofFun (fun x => op x (f x) (g x)))
+    fun _ _ hpq => (hpq.mono fun x => congrArg (op x (f x))).product_eq) fun _ _ hpq =>
+    inductionOn g fun g => (hpq.mono fun x hx => congr(op x $hx (g x))).product_eq
+
+@[simp]
+theorem map₂_coe (op : ∀ x, ε x → ζ x → η x) (f : (x : α) → ε x) (g : (x : α) → ζ x) :
+    map₂ op (f : Product l ε) g = fun x => op x (f x) (g x) :=
+  rfl
+
+/-- Lift a predicate `∀ x, ε x → Prop` to `Product l ε`. -/
+def LiftPred (p : ∀ x, ε x → Prop) (f : Product l ε) : Prop :=
+  liftOn f (fun f => ∀ᶠ x in l, p x (f x)) fun _f _g H =>
+    propext <| eventually_congr <| H.mono fun _x hx => hx ▸ Iff.rfl
+
+@[simp]
+theorem liftPred_coe {p : ∀ x, ε x → Prop} {f : (x : α) → ε x} :
+    LiftPred p (f : Product l ε) ↔ ∀ᶠ x in l, p x (f x) :=
+  Iff.rfl
+
+/-- Lift a relation `r : ∀ x, ε x → ζ x → Prop` to `Product l ε → Product l ζ → Prop`. -/
+def LiftRel (r : ∀ x, ε x → ζ x → Prop) (f : Product l ε) (g : Product l ζ) : Prop :=
+  LiftPred (fun x c => r x c.1 c.2) (map₂ (fun _ => Prod.mk) f g)
+
+@[simp]
+theorem liftRel_coe {r : ∀ x, ε x → ζ x → Prop} {f : (x : α) → ε x} {g : (x : α) → ζ x} :
+    LiftRel r (f : Product l ε) g ↔ ∀ᶠ x in l, r x (f x) (g x) :=
+  Iff.rfl
 
 end Product
 
+/-- The space of germs of functions `α → β` at a filter `l`. -/
+abbrev Germ (l : Filter α) (β : Type*) : Type _ := l.Product fun _ => β
+
 namespace Germ
+
+variable {f g h : α → β}
 
 /-- The germ corresponding to a global function. -/
 @[coe]
