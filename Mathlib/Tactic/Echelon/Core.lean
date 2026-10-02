@@ -113,13 +113,16 @@ that the swaps move to position `i`, that is, `σ i`. -/
 def BareissData.rowOrder {V : Type} (d : BareissData V) : Array Nat :=
   d.swaps.foldl (fun ord (a, b) => ord.swapIfInBounds a b) (Array.range d.L.size)
 
-/-- An entry certifier proves arithmetic propositions about elements of the ring, such
-as an equality between an unreduced expression and a value (for an entry of a matrix product),
-or a disequality between two expressions (for checking that an entry is non-zero).
-It should return a proof of the proposition it is given, and throw when it fails to do so.
+/-- An entry certifier proves arithmetic propositions `e₁ = e₂` and `e₁ ≠ e₂`, where `e₁`
+and `e₂` are expressions of the ring. This is used in proving arithmetic facts required in the
+certificates, such as that an unreduced entry of a matrix product is equal to its computed
+value, or that a diagonal entry is nonzero. It should return a proof of the proposition it is
+given, and throw when it fails to do so.
 
-This is weaker than a normalizer since it only needs to check a given proposition instead of
-computing the normal form of an expression. -/
+A certifier is used instead of a normalizer returning `Simp.Result` to save the double evaluation
+on the kernel path, since the caller already know the exact expected outcome. Realistic certifiers
+such as `normNumCertifier` are built on a normalizer.
+-/
 abbrev EntryCertifier := Expr → MetaM Expr
 
 /-- Core algorithm of fraction-free Gaussian elimination, with the arithmetic supplied
