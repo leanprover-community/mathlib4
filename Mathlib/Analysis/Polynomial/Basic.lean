@@ -6,7 +6,7 @@ Authors: Anatole Dedecker, Devon Tuma
 module
 public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
-public import Mathlib.Order.Filter.Polynomial
+public import Mathlib.Topology.Algebra.Order.Polynomial
 
 /-!
 # Asymptotics of polynomial and rational functions
