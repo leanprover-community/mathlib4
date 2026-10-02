@@ -808,6 +808,13 @@ theorem comp_toSpanSingleton [AddCommMonoid M₂] [Module R M₂] (f : M →ₗ[
     f ∘ₗ toSpanSingleton R M x = toSpanSingleton R M₂ (f x) := by
   ext; simp
 
+theorem toSpanSingleton_comp [AddCommMonoid M₂] [Module R M₂] (f : M₂ →ₗ[R] R) (x : M) :
+    toSpanSingleton R M x ∘ₗ f = f.smulRight x := rfl
+
+theorem toSpanSingleton_comp_toSpanSingleton (x : M) (c : R) :
+    toSpanSingleton R M x ∘ₗ toSpanSingleton R R c = toSpanSingleton R M (c • x) := by
+  ext; simp
+
 theorem submoduleOf_span_singleton_of_mem (N : Submodule R M) {x : M} (hx : x ∈ N) :
     (span R {x}).submoduleOf N = span R {⟨x, hx⟩} := by
   ext y
