@@ -644,6 +644,10 @@ attribute [local instance] IsTopologicalGroup.rightUniformSpace
 theorem uniformity_eq_comap_nhds_one' : 𝓤 G = comap (fun p : G × G => p.2 * p.1⁻¹) (𝓝 (1 : G)) :=
   rfl
 
+@[to_additive]
+theorem IsTopologiacalGroup.isRightUniformGroup_rightUniformSpace : IsRightUniformGroup G where
+  uniformity_eq := rfl
+
 end IsTopologicalGroup
 
 @[to_additive]
@@ -651,6 +655,17 @@ theorem IsRightUniformGroup.rightUniformSpace_eq
     (G : Type*) [Group G] [u : UniformSpace G] [IsRightUniformGroup G] :
     IsTopologicalGroup.rightUniformSpace G = u :=
   UniformSpace.ext (uniformity_eq_comap_mul_inv_nhds_one G).symm
+
+@[to_additive]
+theorem isRightUniformGroup_iff_rightUniformSpace_eq
+    {G : Type*} [Group G] [u : UniformSpace G] [IsTopologicalGroup G] :
+    IsRightUniformGroup G ↔ IsTopologicalGroup.rightUniformSpace G = u :=
+  ⟨fun _ => IsRightUniformGroup.rightUniformSpace_eq G,
+    fun h => h ▸ IsTopologiacalGroup.isRightUniformGroup_rightUniformSpace G⟩
+
+@[to_additive]
+alias ⟨_, IsRightUniformGroup.of_rightUniformSpace_eq⟩ :=
+  isRightUniformGroup_iff_rightUniformSpace_eq
 
 section IsTopologicalGroup
 
@@ -693,6 +708,10 @@ theorem uniformity_eq_comap_nhds_one_left :
     𝓤 G = comap (fun p : G × G => p.1⁻¹ * p.2) (𝓝 (1 : G)) :=
   rfl
 
+@[to_additive]
+theorem IsTopologiacalGroup.isLeftUniformGroup_leftUniformSpace : IsLeftUniformGroup G where
+  uniformity_eq := rfl
+
 end IsTopologicalGroup
 
 @[to_additive]
@@ -700,6 +719,17 @@ theorem IsLeftUniformGroup.leftUniformSpace_eq
     (G : Type*) [Group G] [u : UniformSpace G] [IsLeftUniformGroup G] :
     IsTopologicalGroup.leftUniformSpace G = u :=
   UniformSpace.ext (uniformity_eq_comap_inv_mul_nhds_one G).symm
+
+@[to_additive]
+theorem isLeftUniformGroup_iff_leftUniformSpace_eq
+    {G : Type*} [Group G] [u : UniformSpace G] [IsTopologicalGroup G] :
+    IsLeftUniformGroup G ↔ IsTopologicalGroup.leftUniformSpace G = u :=
+  ⟨fun _ => IsLeftUniformGroup.leftUniformSpace_eq G,
+    fun h => h ▸ IsTopologiacalGroup.isLeftUniformGroup_leftUniformSpace G⟩
+
+@[to_additive]
+alias ⟨_, IsLeftUniformGroup.of_leftUniformSpace_eq⟩ :=
+  isLeftUniformGroup_iff_leftUniformSpace_eq
 
 section TopologicalCommGroup
 
