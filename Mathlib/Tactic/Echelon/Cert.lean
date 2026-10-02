@@ -16,9 +16,13 @@ import Mathlib.Util.Qq
 /-!
 # Certificate construction for the Bareiss decomposition
 
-`certifyDecomposition` constructs a proof of `Echelon.Decomposes` using a given decomposition.
-The conditions are proved using either kernel evaluation or using an "entry certifier" that
-proves equalities of ring expression in the base ring.
+`certifyDecomposition` constructs an `Echelon.Decomposition` from the given decomposition data.
+It proves that `L * A_σ` has the given pivots (through the product `L * A_σ = U`), and that `L`
+is lower triangular with nonzero diagonal entries.
+
+The `certify*` functions assemble these proofs from facts about single entries, including the
+arithmetic equalities for the product and the non-zeroness for `L`, which are established
+by the model's certifier (or the kernel).
 
 ## Implementation notes
 
