@@ -217,6 +217,10 @@ theorem mul_exp_neg_le_exp_neg_one (y : ℝ) : y * exp (-y) ≤ exp (-1) := by
   have h_mul_le : y * rexp (-y) ≤ rexp (y - 1) * rexp (-y) := by gcongr
   simpa [← exp_add, sub_add_eq_add_sub] using h_mul_le
 
+/-- The function `y ↦ y * exp y` is bounded below by `-(exp 1)⁻¹`. -/
+theorem neg_exp_one_inv_le_mul_exp (y : ℝ) : -(rexp 1)⁻¹ ≤ y * rexp y := by
+  grind [mul_exp_neg_le_exp_neg_one (-y), exp_neg]
+
 /-- The real exponential function tends to `0` at `-∞` or, equivalently, `exp(-x)` tends to `0`
 at `+∞` -/
 theorem tendsto_exp_neg_atTop_nhds_zero : Tendsto (fun x => exp (-x)) atTop (𝓝 0) :=
