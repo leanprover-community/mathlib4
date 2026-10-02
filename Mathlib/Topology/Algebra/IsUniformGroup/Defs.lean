@@ -641,8 +641,11 @@ def IsTopologicalGroup.rightUniformSpace : UniformSpace G where
 attribute [local instance] IsTopologicalGroup.rightUniformSpace
 
 @[to_additive]
-theorem uniformity_eq_comap_nhds_one' : 𝓤 G = comap (fun p : G × G => p.2 * p.1⁻¹) (𝓝 (1 : G)) :=
-  rfl
+theorem uniformity_eq_comap_nhds_one_right :
+    𝓤 G = comap (fun p : G × G => p.2 * p.1⁻¹) (𝓝 (1 : G)) := rfl
+
+@[to_additive (attr := deprecated (since := "2026-10-02"))]
+alias uniformity_eq_comap_nhds_one' := uniformity_eq_comap_nhds_one_right
 
 @[to_additive]
 theorem IsRightUniformGroup.rightUniformSpace : IsRightUniformGroup G where
