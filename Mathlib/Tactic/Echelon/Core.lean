@@ -25,7 +25,8 @@ extension registry.
 - `RingOps`: the arithmetic of a model's carrier.
 - `Model`: the computation model of a ring, including the encode/decode between the ring element
   and the carrier representation, and an optional entry certifier.
-- `EntryCertifier`: a function that proves the facts about single entries that a certificate needs.
+- `EntryCertifier`: a function that proves the ring arithmetic facts about single entries that a
+  certificate needs.
 - `bareissDecomp`: runs fraction-free elimination over a model's carrier.
 - `BareissData`: raw data of the computed decomposition.
 - `bareiss_ext`: the attribute registering a computation model.
@@ -112,7 +113,9 @@ that the swaps move to position `i`, that is, `σ i`. -/
 def BareissData.rowOrder {V : Type} (d : BareissData V) : Array Nat :=
   d.swaps.foldl (fun ord (a, b) => ord.swapIfInBounds a b) (Array.range d.L.size)
 
-/-- An entry certifier proves an arithmetic fact about matrix entries that a certificate needs.
+/-- An entry certifier proves arithmetic propositions about elements of the ring, such
+as an equality between an unreduced expression and a value (for an entry of a matrix product),
+or a disequality between two expressions (for checking that an entry is non-zero).
 It should return a proof of the proposition it is given, and throw when it fails to do so.
 
 This is weaker than a normalizer since it only needs to check a given proposition instead of
