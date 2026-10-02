@@ -118,7 +118,7 @@ lemma mono_iff {d : ℕ} {a b : Truncated d} {f : a ⟶ b} : Mono f ↔ Mono f.h
     have h : ObjectProperty.homMk (SimplexCategory.const ⦋0⦌ a.obj x) ≫ f =
         ObjectProperty.homMk (X := ⟨⦋0⦌, by simp⟩) (SimplexCategory.const ⦋0⦌ a.obj y) ≫ f :=
       Hom.ext _ _ <| OrderHom.ext _ _ <| funext fun _ ↦ hxy
-    exact congrArg (fun g ↦ g.hom.toOrderHom 0) ((cancel_mono f).1 h)
+    exact congr($((cancel_mono f).mp h).hom.toOrderHom 0)
   · intro hf
     exact (inclusion d).mono_of_mono_map hf
 
