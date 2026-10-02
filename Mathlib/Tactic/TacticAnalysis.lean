@@ -284,7 +284,7 @@ def tacticAnalysis : Linter where run := withSetOptionIn fun stx => do
   let trees ← getInfoTrees
   runPasses configs trees
 
-initialize addLinter tacticAnalysis
+-- initialize addLinter tacticAnalysis
 
 section ComplexConfig
 
