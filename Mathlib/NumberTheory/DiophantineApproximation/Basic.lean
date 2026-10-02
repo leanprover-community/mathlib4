@@ -6,9 +6,7 @@ Authors: Michael Geißer, Michael Stoll
 module
 
 public import Mathlib.NumberTheory.Real.Irrational
-public import Mathlib.RingTheory.Coprime.Lemmas
-public import Mathlib.RingTheory.Int.Basic
-public import Mathlib.Tactic.Basic
+import Mathlib.RingTheory.Int.Basic
 
 /-!
 # Diophantine Approximation
@@ -149,7 +147,7 @@ theorem exists_rat_abs_sub_le_and_den_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
   obtain ⟨j, k, hk₀, hk₁, h⟩ := exists_int_int_abs_mul_sub_le ξ n_pos
   have hk₀' : (0 : ℝ) < k := Int.cast_pos.mpr hk₀
   have hden : ((j / k : ℚ).den : ℤ) ≤ k := by
-    convert! le_of_dvd hk₀ (Rat.den_dvd j k)
+    convert le_of_dvd hk₀ (Rat.den_dvd j k)
     exact Rat.intCast_div_eq_divInt _ _
   refine ⟨j / k, ?_, Nat.cast_le.mp (hden.trans hk₁)⟩
   rw [← div_div, le_div_iff₀ (Nat.cast_pos.mpr <| Rat.pos _ : (0 : ℝ) < _)]
@@ -415,7 +413,7 @@ private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
     rw [← lt_sub_iff_add_lt, ← mul_assoc, ← sub_mul] at h
     exact mod_cast
       h.trans_le
-        ((mul_le_mul_iff_left₀ <| hv₀').mpr <|
+        ((mul_le_mul_iff_left₀ hv₀').mpr <|
           (sub_le_sub_iff_left (u : ℝ)).mpr ((mul_le_mul_iff_left₀ hv₀).mpr (floor_le ξ)))
   have hu₁ : u - ⌊ξ⌋ * v ≤ v := by
     refine _root_.le_of_mul_le_mul_right (le_of_lt_add_one ?_) hv₁
@@ -501,8 +499,8 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h : ContfracLegendre.Ass ξ u v) :
     obtain ⟨_, h₁, h₂⟩ := h
     rcases le_or_gt (u : ℝ) ξ with ht | ht
     · use 0
-      rw [convergent_zero, Rat.coe_int_inj, eq_comm, floor_eq_iff]
-      convert! And.intro ht (sub_lt_iff_lt_add'.mp (abs_lt.mp h₂).2) <;> norm_num
+      rw [convergent_zero, Rat.intCast_inj, eq_comm, floor_eq_iff]
+      convert And.intro ht (sub_lt_iff_lt_add'.mp (abs_lt.mp h₂).2) <;> norm_num
     · replace h₁ := lt_sub_iff_add_lt'.mp (h₁ rfl)
       have hξ₁ : ⌊ξ⌋ = u - 1 := by
         rw [floor_eq_iff, cast_sub, cast_one, sub_add_cancel]
@@ -515,7 +513,7 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h : ContfracLegendre.Ass ξ u v) :
             one_add_one_eq_two, inv_lt_comm₀ (fract_pos.mpr Hξ) zero_lt_two]
           refine ⟨(fract_lt_one ξ).le, ?_⟩
           rw [fract, hξ₁, cast_sub, cast_one, lt_sub_iff_add_lt', sub_add]
-          convert! h₁ using 1
+          convert h₁ using 1
           rw [sub_eq_add_neg]
           norm_num
         use 1

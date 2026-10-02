@@ -5,8 +5,7 @@ Authors: Kexing Ying
 -/
 module
 
-public import Mathlib.MeasureTheory.VectorMeasure.Basic
-public import Mathlib.Order.SymmDiff
+public import Mathlib.MeasureTheory.VectorMeasure.Order
 
 /-!
 # Hahn decomposition
@@ -110,13 +109,13 @@ private def findExistsOneDivLT (s : SignedMeasure α) (i : Set α) : ℕ :=
 
 private theorem findExistsOneDivLT_spec (hi : ¬s ≤[i] 0) :
     ExistsOneDivLT s i (findExistsOneDivLT s i) := by
-  rw [findExistsOneDivLT, dif_pos hi]
-  convert! Nat.find_spec (existsNatOneDivLTMeasure_of_not_negative hi)
+  rw [findExistsOneDivLT, dite_eq_left hi]
+  convert Nat.find_spec (existsNatOneDivLTMeasure_of_not_negative hi)
 
 private theorem findExistsOneDivLT_min (hi : ¬s ≤[i] 0) {m : ℕ}
     (hm : m < findExistsOneDivLT s i) : ¬ExistsOneDivLT s i m := by
   classical
-  rw [findExistsOneDivLT, dif_pos hi] at hm
+  rw [findExistsOneDivLT, dite_eq_left hi] at hm
   exact Nat.find_min _ hm
 
 open scoped Classical in
@@ -130,7 +129,7 @@ private theorem someExistsOneDivLT_spec (hi : ¬s ≤[i] 0) :
     someExistsOneDivLT s i ⊆ i ∧
       MeasurableSet (someExistsOneDivLT s i) ∧
         (1 / (findExistsOneDivLT s i + 1) : ℝ) < s (someExistsOneDivLT s i) := by
-  rw [someExistsOneDivLT, dif_pos hi]
+  rw [someExistsOneDivLT, dite_eq_left hi]
   exact Classical.choose_spec (findExistsOneDivLT_spec hi)
 
 private theorem someExistsOneDivLT_subset : someExistsOneDivLT s i ⊆ i := by
@@ -138,7 +137,7 @@ private theorem someExistsOneDivLT_subset : someExistsOneDivLT s i ⊆ i := by
   · exact
       let ⟨h, _⟩ := someExistsOneDivLT_spec hi
       h
-  · rw [someExistsOneDivLT, dif_neg hi]
+  · rw [someExistsOneDivLT, dite_eq_right hi]
     exact Set.empty_subset _
 
 private theorem someExistsOneDivLT_subset' : someExistsOneDivLT s (i \ j) ⊆ i :=
@@ -149,7 +148,7 @@ private theorem someExistsOneDivLT_measurableSet : MeasurableSet (someExistsOneD
   · exact
       let ⟨_, h, _⟩ := someExistsOneDivLT_spec hi
       h
-  · rw [someExistsOneDivLT, dif_neg hi]
+  · rw [someExistsOneDivLT, dite_eq_right hi]
     exact MeasurableSet.empty
 
 private theorem someExistsOneDivLT_lt (hi : ¬s ≤[i] 0) :
@@ -196,7 +195,7 @@ private theorem measure_of_restrictNonposSeq (hi₂ : ¬s ≤[i] 0) (n : ℕ)
     rw [restrictNonposSeq_succ]
     have h₁ : ¬s ≤[i \ ⋃ (k : ℕ) (_ : k ≤ n), restrictNonposSeq s i k] 0 := by
       refine mt (restrict_le_zero_subset _ ?_ (by simp)) hn
-      convert! measurable_of_not_restrict_le_zero _ hn using 3
+      convert measurable_of_not_restrict_le_zero _ hn using 3
       exact funext fun x => by rw [Nat.lt_succ_iff]
     rcases someExistsOneDivLT_spec h₁ with ⟨_, _, h⟩
     exact lt_trans Nat.one_div_pos_of_nat h
@@ -250,11 +249,11 @@ private theorem exists_subset_restrict_nonpos' (hi₁ : MeasurableSet i) (hi₂ 
       exact lt_of_lt_of_le hi₂ this
     refine tsum_nonneg ?_
     intro l; by_cases h : l < k
-    · convert! h₁ _ h
+    · convert h₁ _ h
       ext x
       rw [Set.mem_iUnion, exists_prop, and_iff_right_iff_imp]
       exact fun _ => h
-    · convert! le_of_eq s.empty.symm
+    · convert le_of_eq s.empty.symm
       ext; simp only [exists_prop, Set.mem_empty_iff_false, Set.mem_iUnion, not_and, iff_false]
       exact fun h' => False.elim (h h')
   · intro; exact MeasurableSet.iUnion fun _ => restrictNonposSeq_measurableSet _
@@ -279,7 +278,7 @@ theorem exists_subset_restrict_nonpos (hi : s i < 0) :
   set bdd : ℕ → ℕ := fun n => findExistsOneDivLT s (i \ ⋃ k ≤ n, restrictNonposSeq s i k)
   have hn' : ∀ n : ℕ, ¬s ≤[i \ ⋃ l ≤ n, restrictNonposSeq s i l] 0 := by
     intro n
-    convert! hn (n + 1) using 5 <;>
+    convert hn (n + 1) using 5 <;>
       · ext l
         simp only [exists_prop, Set.mem_iUnion, and_congr_left_iff]
         exact fun _ => Nat.lt_succ_iff.symm
@@ -327,7 +326,7 @@ theorem exists_subset_restrict_nonpos (hi : s i < 0) :
   refine
     findExistsOneDivLT_min (hn' k) (Nat.sub_lt hk₁ Nat.zero_lt_one)
       ⟨E, Set.Subset.trans hE₂ hA', hE₁, ?_⟩
-  convert! hk₂; norm_cast
+  convert hk₂; norm_cast
   exact tsub_add_cancel_of_le hk₁
 
 end ExistsSubsetRestrictNonpos
@@ -423,8 +422,7 @@ theorem of_symmDiff_compl_positive_negative {s : SignedMeasure α} {i j : Set α
       le_antisymm (hi'.2 (hi.compl.inter hj) Set.inter_subset_left)
         (hj'.1 (hi.compl.inter hj) Set.inter_subset_right),
       le_antisymm (hj'.2 (hj.compl.inter hi) Set.inter_subset_left)
-        (hi'.1 (hj.compl.inter hi) Set.inter_subset_right),
-      zero_apply, zero_apply, zero_add]
+        (hi'.1 (hj.compl.inter hi) Set.inter_subset_right), zero_apply, zero_apply, zero_add]
     · exact
         Set.disjoint_of_subset_left Set.inter_subset_left
           (Set.disjoint_of_subset_right Set.inter_subset_right
@@ -436,8 +434,7 @@ theorem of_symmDiff_compl_positive_negative {s : SignedMeasure α} {i j : Set α
       le_antisymm (hi'.2 (hj.inter hi.compl) Set.inter_subset_right)
         (hj'.1 (hj.inter hi.compl) Set.inter_subset_left),
       le_antisymm (hj'.2 (hi.inter hj.compl) Set.inter_subset_right)
-        (hi'.1 (hi.inter hj.compl) Set.inter_subset_left),
-      zero_apply, zero_apply, zero_add]
+        (hi'.1 (hi.inter hj.compl) Set.inter_subset_left), zero_apply, zero_apply, zero_add]
     · exact
         Set.disjoint_of_subset_left Set.inter_subset_left
           (Set.disjoint_of_subset_right Set.inter_subset_right

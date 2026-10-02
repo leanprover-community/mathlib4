@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.RCLike.Lemmas
+import Mathlib.Analysis.RCLike.Lemmas
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 
 /-!
@@ -17,8 +17,6 @@ public section
 
 
 noncomputable section
-
-open NNReal ENNReal
 
 namespace RCLike
 
@@ -66,14 +64,14 @@ theorem RCLike.measurable_ofReal : Measurable ((↑) : ℝ → 𝕜) :=
 theorem measurable_of_re_im (hre : Measurable fun x => RCLike.re (f x))
     (him : Measurable fun x => RCLike.im (f x)) : Measurable f := by
   convert!
-    Measurable.add (M := 𝕜) (RCLike.measurable_ofReal.comp hre)
+    Measurable.fun_add (M := 𝕜) (RCLike.measurable_ofReal.comp hre)
       ((RCLike.measurable_ofReal.comp him).mul_const RCLike.I)
   exact (RCLike.re_add_im _).symm
 
 theorem aemeasurable_of_re_im (hre : AEMeasurable (fun x => RCLike.re (f x)) μ)
     (him : AEMeasurable (fun x => RCLike.im (f x)) μ) : AEMeasurable f μ := by
   convert!
-    AEMeasurable.add (M := 𝕜) (RCLike.measurable_ofReal.comp_aemeasurable hre)
+    AEMeasurable.fun_add (M := 𝕜) (RCLike.measurable_ofReal.comp_aemeasurable hre)
       ((RCLike.measurable_ofReal.comp_aemeasurable him).mul_const RCLike.I)
   exact (RCLike.re_add_im _).symm
 

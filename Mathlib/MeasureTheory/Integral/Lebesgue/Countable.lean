@@ -110,7 +110,7 @@ theorem _root_.NNReal.count_const_le_le_of_tsum_le [MeasurableSingletonClass α]
   apply
     ENNReal.count_const_le_le_of_tsum_le (measurable_coe_nnreal_ennreal.comp a_mble) _
       (mod_cast ε_ne_zero) (@ENNReal.coe_ne_top ε)
-  convert! ENNReal.coe_le_coe.mpr tsum_le_c
+  convert ENNReal.coe_le_coe.mpr tsum_le_c
   simp_rw [Function.comp_apply]
   rw [ENNReal.tsum_coe_eq a_summable.hasSum]
 
@@ -170,7 +170,7 @@ that has the same Lebesgue integral over every set.
 
 For the integral over the whole space, the statement is true without extra assumptions,
 see `exists_measurable_le_lintegral_eq`.
-See also `MeasureTheory.Measure.restrict_toMeasurable_of_sFinite` for a similar result. -/
+See also `MeasureTheory.Measure.restrict_toMeasurable_of_sfinite` for a similar result. -/
 theorem exists_measurable_le_forall_setLIntegral_eq [SFinite μ] (f : α → ℝ≥0∞) :
     ∃ g : α → ℝ≥0∞, Measurable g ∧ g ≤ f ∧ ∀ s, ∫⁻ a in s, f a ∂μ = ∫⁻ a in s, g a ∂μ := by
   -- We only need to prove the `≤` inequality for the integrals, the other one follows from `g ≤ f`.
@@ -216,7 +216,7 @@ theorem exists_measurable_le_forall_setLIntegral_eq [SFinite μ] (f : α → ℝ
         IsFiniteMeasure.lintegral_lt_top_of_bounded_to_ennreal _ ⟨n, fun _ ↦ min_le_right ..⟩ |>.ne
       have hsm : MeasurableSet (toMeasurable μ s) := measurableSet_toMeasurable ..
       apply ENNReal.le_of_add_le_add_right this
-      rw [← μ.restrict_toMeasurable_of_sFinite, lintegral_add_compl _ hsm, hgint,
+      rw [← μ.restrict_toMeasurable_of_sfinite, lintegral_add_compl _ hsm, hgint,
         ← lintegral_add_compl _ hsm]
       gcongr with x
       exact le_min (hgf n x) (hgle n x)
@@ -238,7 +238,8 @@ theorem exists_pos_lintegral_lt_of_sigmaFinite (μ : Measure α) [SigmaFinite μ
   have hN_meas : Measurable N := measurableSet_spanningSetsIndex μ
   have hNs : ∀ n, N ⁻¹' {n} = s n := preimage_spanningSetsIndex_singleton μ
   refine ⟨δ ∘ N, fun x => δpos _, measurable_from_nat.comp hN_meas, ?_⟩
-  erw [lintegral_comp measurable_from_nat.coe_nnreal_ennreal hN_meas]
+  simp_rw [Function.comp_apply, ← Function.comp_apply (f := (fun n ↦ (↑(δ n) : ℝ≥0∞))),
+    lintegral_comp measurable_from_nat.coe_nnreal_ennreal hN_meas]
   simpa [N, hNs, lintegral_countable', measurableSet_spanningSetsIndex, mul_comm] using δsum
 
 omit [MeasurableSpace α]
@@ -344,7 +345,7 @@ theorem exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : MeasurableSpace α} 
   simp_rw [lintegral_eq_nnreal, lt_iSup_iff] at hL
   rcases hL with ⟨g₀, hg₀, g₀L⟩
   have h'L : L < ∫⁻ x, g₀ x ∂μ := by
-    convert! g₀L
+    convert g₀L
     rw [← SimpleFunc.lintegral_eq_lintegral, SimpleFunc.coe_map]
     simp only [Function.comp_apply]
   rcases SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral h'L with ⟨g, hg, gL, gtop⟩

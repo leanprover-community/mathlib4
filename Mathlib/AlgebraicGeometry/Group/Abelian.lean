@@ -5,10 +5,10 @@ Authors: Andrew Yang, Christian Merten
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.AlgClosed.Basic
+import Mathlib.AlgebraicGeometry.AlgClosed.Basic
 public import Mathlib.AlgebraicGeometry.Geometrically.Integral
 public import Mathlib.AlgebraicGeometry.ZariskisMainTheorem
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
+import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 
 /-!
 # Abelian varieties
@@ -31,7 +31,6 @@ variable {K : Type u} [Field K] {X : Scheme.{u}}
 
 open MonoidalCategory CartesianMonoidalCategory MonObj
 
-set_option backward.isDefEq.respectTransparency false in
 instance (G : Over (Spec (.of K))) [GrpObj G] : IsClosedImmersion η[G].left :=
   isClosedImmersion_of_comp_eq_id (Y := Spec (.of K)) G.hom η[G].left (by simp)
 
@@ -112,7 +111,7 @@ theorem isCommMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed [IsAlgCl
         γ.left.isClosedMap ((H ⟨_, hyU⟩).subset (Set.image_subset_iff.mpr fun _ ↦ by
           simp [← Scheme.Hom.comp_apply, -Scheme.Hom.comp_base, γ])) ?_ ?_
       · let α : G ⊗ G ⟶ G ⊗ G := toUnit _ ≫ x ⊗ₘ 𝟙 _
-        convert!
+        convert
           ((IrreducibleSpace.isIrreducible_univ _).image α.left
               α.left.continuous.continuousOn).isPreirreducible
         rw [Over.tensorHom_left]
@@ -122,7 +121,7 @@ theorem isCommMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed [IsAlgCl
         · simp [xe, ← Scheme.Hom.comp_apply, -Scheme.Hom.comp_base]
         · simp only [xe, γ, ← Scheme.Hom.comp_apply, ← Over.comp_left]
           congr 6; ext <;> simp
-    convert! congr((snd G G).left $this) using 1
+    convert congr((snd G G).left $this) using 1
     · simp [γ, ← Scheme.Hom.comp_apply]
     · simp [xe, ← Scheme.Hom.comp_apply, -Scheme.Hom.comp_base]
   · simp

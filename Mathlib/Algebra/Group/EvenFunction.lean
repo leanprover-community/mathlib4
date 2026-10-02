@@ -34,11 +34,17 @@ protected def Even (f : α → β) : Prop := ∀ a, f (-a) = f a
 /-- A function `f` is _odd_ if it satisfies `f (-x) = -f x` for all `x`. -/
 protected def Odd [Neg β] (f : α → β) : Prop := ∀ a, f (-a) = -(f a)
 
+/-- An even function `f` satisfies `f (-x) = f x`. -/
+lemma Even.eq {f : α → β} (hf : f.Even) (x : α) : f (-x) = f x := hf x
+
 /-- Any constant function is even. -/
 lemma Even.const (b : β) : Function.Even (fun _ : α ↦ b) := fun _ ↦ rfl
 
 /-- The zero function is even. -/
 lemma Even.zero [Zero β] : Function.Even (fun (_ : α) ↦ (0 : β)) := Even.const 0
+
+/-- An odd function `f` satisfies `f (-x) = -f x`. -/
+lemma Odd.eq [Neg β] {f : α → β} (hf : f.Odd) (x : α) : f (-x) = -f x := hf x
 
 /-- The zero function is odd. -/
 lemma Odd.zero [NegZeroClass β] : Function.Odd (fun (_ : α) ↦ (0 : β)) := fun _ ↦ neg_zero.symm
@@ -49,7 +55,7 @@ variable {γ : Type*}
 
 /-- If `f` is arbitrary and `g` is even, then `f ∘ g` is even. -/
 lemma Even.left_comp {g : α → β} (hg : g.Even) (f : β → γ) : (f ∘ g).Even :=
-  (congr_arg f <| hg ·)
+  (congr(f $(hg ·)))
 
 /-- If `f` is even and `g` is odd, then `f ∘ g` is even. -/
 lemma Even.comp_odd [Neg β] {f : β → γ} (hf : f.Even) {g : α → β} (hg : g.Odd) :
@@ -132,7 +138,7 @@ end mul
 section torsionfree
 
 -- need to redeclare variables since `InvolutiveNeg α` conflicts with `Neg α`
-variable {α β : Type*} [AddCommGroup β] [IsAddTorsionFree β] {f : α → β}
+variable {α β : Type*} [AddCommGroup β] [HasUniqueDiv β] {f : α → β}
 
 /--
 If `f` is both even and odd, and its target is a torsion-free commutative additive group,

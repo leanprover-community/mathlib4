@@ -22,7 +22,9 @@ assert_not_exists AddMonoidWithOne
 
 public section
 
-open Filter Set Topology Uniformity UniformSpace SetRel
+open Filter Set Topology UniformSpace SetRel
+
+open scoped Uniformity
 
 namespace TopologicalSpace
 
@@ -191,6 +193,12 @@ theorem IsSeparable.exists_countable_dense_subset [PseudoMetrizableSpace X]
   obtain ⟨y, hyx, hyt⟩ := mem_closure_iff_ball.1 (hst hx) (symmetrize_mem_uniformity hU)
   exact mem_biUnion hyt (ball_mono SetRel.symmetrize_subset_inv x hyx)
 
+/-- A compact set is separable. -/
+theorem _root_.IsCompact.isSeparable {α : Type*} [TopologicalSpace α] [PseudoMetrizableSpace α]
+    {s : Set α} (hs : IsCompact s) : IsSeparable s :=
+  haveI : CompactSpace s := isCompact_iff_compactSpace.mp hs
+  .of_subtype s
+
 /-- If a set `s` is separable, then the corresponding subtype is separable in a
 pseudo metrizable space.
 This is not obvious, as the countable set whose closure covers `s` does not need in
@@ -206,5 +214,11 @@ instance (priority := 100) DiscreteTopology.metrizableSpace [DiscreteTopology X]
     MetrizableSpace X where
   exists_countably_generated :=
     ⟨⊥, DiscreteTopology.eq_bot.symm, Filter.isCountablyGenerated_principal SetRel.id⟩
+
+/-- A compact set in a pseudo metrizable space is separable, i.e., it is a subset of the closure of
+a countable set. -/
+theorem _root_.IsCompact.exists_countable_dense_subset [PseudoMetrizableSpace X] {s : Set X}
+    (hs : IsCompact s) : ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t :=
+  hs.isSeparable.exists_countable_dense_subset
 
 end TopologicalSpace

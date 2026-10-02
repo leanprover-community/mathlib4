@@ -8,7 +8,6 @@ module
 public import Mathlib.AlgebraicTopology.DoldKan.EquivalenceAdditive
 public import Mathlib.AlgebraicTopology.DoldKan.Compatibility
 public import Mathlib.CategoryTheory.Idempotents.SimplicialObject
-public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 
@@ -113,6 +112,9 @@ theorem hη :
   simp only [Compatibility.τ₀_hom_app, Compatibility.τ₁_hom_app]
   exact (N₂Γ₂_compatible_with_N₁Γ₀ K).trans (by simp)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The counit isomorphism induced by `N₁Γ₀` -/
 @[simps!]
 def η : Γ ⋙ N ≅ 𝟭 (ChainComplex C ℕ) :=

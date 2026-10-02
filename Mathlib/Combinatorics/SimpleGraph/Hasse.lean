@@ -6,11 +6,10 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
-public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Combinatorics.SimpleGraph.Prod
-public import Mathlib.Data.Fin.SuccPredOrder
-public import Mathlib.Order.SuccPred.Relation
-public import Mathlib.Tactic.FinCases
+
+import Mathlib.Order.SuccPred.Fin
+import Mathlib.Order.SuccPred.Relation
 
 /-!
 # The Hasse diagram as a graph
@@ -40,7 +39,6 @@ variable [Preorder α]
 /-- The Hasse diagram of an order as a simple graph. The graph of the covering relation. -/
 def hasse : SimpleGraph α where
   Adj a b := a ⋖ b ∨ b ⋖ a
-  symm _a _b := Or.symm
 
 variable {α β} {a b : α}
 

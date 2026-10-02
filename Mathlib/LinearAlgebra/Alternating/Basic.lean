@@ -6,7 +6,6 @@ Authors: Eric Wieser, Zhangir Azerbayev
 module
 
 public import Mathlib.GroupTheory.Perm.Sign
-public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import Mathlib.LinearAlgebra.Multilinear.Basis
 
 
@@ -91,6 +90,7 @@ open Function
 
 section Coercions
 
+@[macro_inline]
 instance instFunLike : FunLike (M [⋀^ι]→ₗ[R] N) (ι → M) N where
   coe f := f.toFun
   coe_injective f g h := by
@@ -110,10 +110,10 @@ theorem coe_mk (f : MultilinearMap R (fun _ : ι => M) N) (h) :
   rfl
 
 protected theorem congr_fun {f g : M [⋀^ι]→ₗ[R] N} (h : f = g) (x : ι → M) : f x = g x :=
-  congr_arg (fun h : M [⋀^ι]→ₗ[R] N => h x) h
+  congr($h x)
 
 protected theorem congr_arg (f : M [⋀^ι]→ₗ[R] N) {x y : ι → M} (h : x = y) : f x = f y :=
-  congr_arg (fun x : ι → M => f x) h
+  congr(f $h)
 
 theorem coe_injective : Injective ((↑) : M [⋀^ι]→ₗ[R] N → (ι → M) → N) :=
   DFunLike.coe_injective
@@ -657,7 +657,7 @@ theorem map_update_update [DecidableEq ι] {i j : ι} (hij : i ≠ j) (m : M) :
 theorem map_swap_add [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
     f (v ∘ Equiv.swap i j) + f v = 0 := by
   rw [Equiv.comp_swap_eq_update]
-  convert! f.map_update_update v hij (v i + v j)
+  convert f.map_update_update v hij (v i + v j)
   simp [f.map_update_self _ hij, f.map_update_self _ hij.symm,
     Function.update_comm hij (v i + v j) (v _) v, Function.update_comm hij.symm (v i) (v i) v]
 
@@ -785,7 +785,7 @@ theorem map_linearDependent {K M N : Type*} [Ring K] [IsDomain K] [AddCommGroup 
     [AddCommGroup N] [Module K N] [IsTorsionFree K N] (f : M [⋀^ι]→ₗ[K] N)
     (v : ι → M) (h : ¬LinearIndependent K v) : f v = 0 := by
   obtain ⟨s, g, h, i, hi, hz⟩ := not_linearIndependent_iff.mp h
-  letI := Classical.decEq ι
+  let := Classical.decEq ι
   suffices f (update v i (g i • v i)) = 0 by
     rw [f.map_update_smul, Function.update_eq_self, smul_eq_zero] at this
     exact Or.resolve_left this hz
@@ -820,7 +820,7 @@ open Equiv
 
 variable [Fintype ι] [DecidableEq ι]
 
-private theorem alternization_map_eq_zero_of_eq_aux (m : MultilinearMap R (fun _ : ι => M) N')
+private theorem alternatization_map_eq_zero_of_eq_aux (m : MultilinearMap R (fun _ : ι => M) N')
     (v : ι → M) (i j : ι) (i_ne_j : i ≠ j) (hv : v i = v j) :
     (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ) v = 0 := by
   rw [sum_apply]
@@ -830,6 +830,9 @@ private theorem alternization_map_eq_zero_of_eq_aux (m : MultilinearMap R (fun _
       (fun σ _ _ => (not_congr swap_mul_eq_iff).mpr i_ne_j) (fun σ _ => Finset.mem_univ _)
       fun σ _ => swap_mul_involutive i j σ
 
+@[deprecated (since := "2026-09-17")]
+private alias alternization_map_eq_zero_of_eq_aux := alternatization_map_eq_zero_of_eq_aux
+
 /-- Produce an `AlternatingMap` out of a `MultilinearMap`, by summing over all argument
 permutations. -/
 def alternatization : MultilinearMap R (fun _ : ι => M) N' →+ M [⋀^ι]→ₗ[R] N' where
@@ -837,7 +840,7 @@ def alternatization : MultilinearMap R (fun _ : ι => M) N' →+ M [⋀^ι]→�
     { ∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ with
       toFun := ⇑(∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ)
       map_eq_zero_of_eq' := private fun v i j hvij hij =>
-        alternization_map_eq_zero_of_eq_aux m v i j hij hvij }
+        alternatization_map_eq_zero_of_eq_aux m v i j hij hvij }
   map_add' a b := by ext; simp [Finset.sum_add_distrib]
   map_zero' := by ext; simp
 
@@ -852,6 +855,14 @@ theorem alternatization_coe (m : MultilinearMap R (fun _ : ι => M) N') :
 theorem alternatization_apply (m : MultilinearMap R (fun _ : ι => M) N') (v : ι → M) :
     alternatization m v = ∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ v := by
   simp only [alternatization_def, smul_apply, sum_apply]
+
+@[simp]
+theorem alternatization_compLinearMap
+    (f : MultilinearMap R (fun _ : ι => M') N')
+    (g : M →ₗ[R] M') :
+    (f.compLinearMap fun _ => g).alternatization = f.alternatization.compLinearMap g := by
+  ext
+  simp [alternatization]
 
 end MultilinearMap
 
@@ -931,4 +942,4 @@ def AlternatingMap.constLinearEquivOfIsEmpty [IsEmpty ι] : N'' ≃ₗ[R'] (M'' 
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   invFun f := f 0
-  right_inv f := ext fun _ => AlternatingMap.congr_arg f <| Subsingleton.elim _ _
+  right_inv f := ext fun _ => congr(f $(Subsingleton.elim _ _))
