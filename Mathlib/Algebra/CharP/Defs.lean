@@ -150,6 +150,7 @@ end NonAssocSemiring
 end CharP
 
 /-- Noncomputable function that outputs the unique characteristic of a semiring. -/
+@[lmfdb ring.characteristic]
 noncomputable def ringChar [NonAssocSemiring R] : ℕ := Classical.choose (CharP.existsUnique R)
 
 namespace ringChar

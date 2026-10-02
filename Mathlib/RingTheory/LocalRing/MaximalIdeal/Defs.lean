@@ -27,6 +27,7 @@ namespace IsLocalRing
 variable (R : Type*) [CommSemiring R] [IsLocalRing R]
 
 /-- The ideal of elements that are not units. -/
+@[lmfdb lf.maximal_ideal]
 def maximalIdeal : Ideal R where
   __ := nonunitsAddSubmonoid R
   smul_mem' _ _ := mul_mem_nonunits_right

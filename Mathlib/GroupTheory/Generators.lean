@@ -43,6 +43,7 @@ variable {G H ι ι' : Type*} [Group G] [Group H]
 
 /-- The generators of a group are given by a generating family indexed by `ι` and an assignment
 `val : ι → G` such that `Subgroup.closure (Set.range val) = ⊤`. -/
+@[lmfdb group.generators]
 structure Group.Generators (G : Type*) [Group G] (ι : Type*) where
   /-- The generating family itself: `val i` is the element of `G` indexed by `i : ι`. -/
   val : ι → G

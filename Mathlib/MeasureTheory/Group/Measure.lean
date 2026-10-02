@@ -781,7 +781,7 @@ arbitrary locally compact groups. Use `[IsHaarMeasure μ] [Regular μ]` or
 `[IsHaarMeasure μ] [InnerRegular μ]` in these situations. Note that a Haar measure in our
 sense is automatically regular and inner regular on second countable locally compact groups, as
 checked just below this definition. -/
-@[to_additive existing]
+@[to_additive existing (attr := lmfdb group.haar_measure)]
 class IsHaarMeasure {G : Type*} [Group G] [TopologicalSpace G] [MeasurableSpace G]
     (μ : Measure G) : Prop
     extends IsFiniteMeasureOnCompacts μ, IsMulLeftInvariant μ, IsOpenPosMeasure μ

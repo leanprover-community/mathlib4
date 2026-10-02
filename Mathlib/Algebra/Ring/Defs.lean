@@ -142,7 +142,7 @@ class Semiring (α : Type u) extends AddCommMonoid α, MonoidWithZero α, NonUni
   NonAssocSemiring α
 
 /-- A `Ring` is a `Semiring` with negation making it an additive group. -/
-@[wikidata Q161172]
+@[wikidata Q161172, lmfdb ring]
 class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
 
 -- Add some short-cut instances to avoid going through the less used ring type classes.
@@ -433,7 +433,7 @@ is cancellative on both sides. In other words, a nontrivial semiring `R` satisfy
 
 This is implemented as a mixin for `Semiring α`.
 To obtain an integral domain use `[CommRing α] [IsDomain α]`. -/
-@[stacks 09FE]
+@[stacks 09FE, lmfdb ring.integral_domain]
 class IsDomain (α : Type u) [Semiring α] : Prop extends IsCancelMulZero α, Nontrivial α
 
 namespace IsMulCommutative
