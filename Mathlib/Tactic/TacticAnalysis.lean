@@ -264,8 +264,7 @@ def runPasses (configs : Array Pass) (trees : PersistentArray InfoTree) : Comman
   --   return
   for i in trees do
     for seq in (← findTacticSeqs i) do
-      for (opt, config) in #[] do
-        withLintTagging opt <| config.run seq
+      pure ()
 
 /-- A tactic analysis framework.
 It is aimed at allowing developers to specify refactoring patterns,
