@@ -1113,6 +1113,7 @@ lemma integrable_pow_mul_iteratedFDeriv
     ((f.smooth ⊤).continuous_iteratedFDeriv (mod_cast le_top)).aestronglyMeasurable
 
 variable (μ) in
+@[fun_prop]
 lemma integrable_pow_mul (f : 𝓢(D, V))
     (k : ℕ) : Integrable (fun x ↦ ‖x‖ ^ k * ‖f x‖) μ := by
   convert! integrable_pow_mul_iteratedFDeriv μ f k 0 with x
