@@ -166,7 +166,7 @@ open scoped Topology Uniformity
 /-- The metric on `Matrix m n 𝕜` arising from the operator norm given by the identification with
 (continuous) linear maps of `EuclideanSpace`. -/
 @[instance_reducible]
-def instL2OpMetricSpace : MetricSpace (Matrix m n 𝕜) := by
+def instL2OpMetricSpace : MetricSpace (Matrix m n 𝕜) :=
   /- We first replace the topology so that we can automatically replace the uniformity using
   `IsUniformAddGroup.toUniformSpace_eq`. -/
   letI normed_add_comm_group : NormedAddCommGroup (Matrix m n 𝕜) :=
@@ -175,10 +175,8 @@ def instL2OpMetricSpace : MetricSpace (Matrix m n 𝕜) := by
         |>.toContinuousLinearEquiv.toHomeomorph.isInducing.eq_induced with
       norm := l2OpNormedAddCommGroupAux.norm
       dist_eq := l2OpNormedAddCommGroupAux.dist_eq }
-  exact normed_add_comm_group.replaceUniformity <| by
-    congr
-    rw [← @IsUniformAddGroup.rightUniformSpace_eq _ (Matrix.instUniformSpace m n 𝕜) _ _]
-    rw [@IsUniformAddGroup.rightUniformSpace_eq _ PseudoEMetricSpace.toUniformSpace _ _]
+  normed_add_comm_group.replaceUniformity <| by
+    rw [@uniformity_eq_comap_add_neg_nhds_zero, @uniformity_eq_comap_add_neg_nhds_zero]
 
 scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instL2OpMetricSpace
 

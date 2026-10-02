@@ -619,7 +619,7 @@ instance QuotientGroup.completeSpace_right' (G : Type u) [Group G] [TopologicalS
   have key₀ : ∀ i j : ℕ, ∃ M : ℕ, j < M ∧ ∀ a b : ℕ, M ≤ a → M ≤ b →
       ∀ g : G, x b = g → ∃ g' : G, g / g' ∈ u i ∧ x a = g' := by
     have h𝓤GN : (𝓤 (G ⧸ N)).HasBasis (fun _ ↦ True) fun i ↦ { x | x.snd / x.fst ∈ (↑) '' u i } := by
-      simpa [uniformity_eq_comap_nhds_one', div_eq_mul_inv] using! hv.comap _
+      simpa [uniformity_eq_comap_nhds_one_right, div_eq_mul_inv] using! hv.comap _
     rw [h𝓤GN.cauchySeq_iff] at hx
     simp only [mem_ofPred_eq, forall_true_left, mem_image] at hx
     intro i j
@@ -659,7 +659,7 @@ instance QuotientGroup.completeSpace_right' (G : Type u) [Group G] [TopologicalS
     is to show by decreasing induction that `x' m / x' n ∈ u m` if `m ≤ n`. -/
   have x'_cauchy : CauchySeq fun n => (x' n).fst := by
     have h𝓤G : (𝓤 G).HasBasis (fun _ => True) fun i => { x | x.snd / x.fst ∈ u i } := by
-      simpa [uniformity_eq_comap_nhds_one', div_eq_mul_inv] using! hu.toHasBasis.comap _
+      simpa [uniformity_eq_comap_nhds_one_right, div_eq_mul_inv] using! hu.toHasBasis.comap _
     rw [h𝓤G.cauchySeq_iff']
     simp only [mem_ofPred_eq, forall_true_left]
     exact fun m =>
@@ -700,11 +700,7 @@ instance QuotientGroup.completeSpace_right (G : Type*)
     [Group G] [us : UniformSpace G] [IsRightUniformGroup G]
     [FirstCountableTopology G] (N : Subgroup G) [N.Normal] [hG : CompleteSpace G] :
     @CompleteSpace (G ⧸ N) (IsTopologicalGroup.rightUniformSpace (G ⧸ N)) := by
-  have : IsTopologicalGroup.rightUniformSpace G = us := by
-    ext : 1
-    rw [@IsRightUniformGroup.uniformity_eq (G := G) us _ _]
-    rfl
-  rw [← this] at hG
+  rw [← IsRightUniformGroup.rightUniformSpace_eq G] at hG
   infer_instance
 
 /-- The quotient `G ⧸ N` of a complete first countable topological group `G` by a normal subgroup
@@ -752,11 +748,7 @@ instance QuotientGroup.completeSpace_left (G : Type*)
     [Group G] [us : UniformSpace G] [IsLeftUniformGroup G]
     [FirstCountableTopology G] (N : Subgroup G) [N.Normal] [hG : CompleteSpace G] :
     @CompleteSpace (G ⧸ N) (IsTopologicalGroup.leftUniformSpace (G ⧸ N)) := by
-  have : IsTopologicalGroup.leftUniformSpace G = us := by
-    ext : 1
-    rw [@IsLeftUniformGroup.uniformity_eq (G := G) us _ _]
-    rfl
-  rw [← this] at hG
+  rw [← IsLeftUniformGroup.leftUniformSpace_eq G] at hG
   infer_instance
 
 end CompleteQuotient
