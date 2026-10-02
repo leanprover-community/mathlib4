@@ -5046,8 +5046,8 @@ public import Mathlib.Init
 public import Mathlib.Lean.ContextInfo
 public meta import Mathlib.Lean.CoreM
 public meta import Mathlib.Lean.Elab.InfoTree
-public meta import Mathlib.Lean.Elab.Tactic.Basic
-public meta import Mathlib.Lean.Elab.Tactic.Meta
+public import Mathlib.Lean.Elab.Tactic.Basic
+public import Mathlib.Lean.Elab.Tactic.Meta
 public import Mathlib.Lean.Elab.Term
 public meta import Mathlib.Lean.EnvExtension
 public meta import Mathlib.Lean.Environment
@@ -5055,15 +5055,15 @@ public meta import Mathlib.Lean.Exception
 public meta import Mathlib.Lean.Expr.Basic
 public meta import Mathlib.Lean.Expr.ExtraRecognizers
 public meta import Mathlib.Lean.Expr.Rat
-public meta import Mathlib.Lean.FoldEnvironment
+public import Mathlib.Lean.FoldEnvironment
 public meta import Mathlib.Lean.GoalsLocation
 public import Mathlib.Lean.Json
 public import Mathlib.Lean.Linter
 public meta import Mathlib.Lean.LocalContext
 public meta import Mathlib.Lean.MessageData.ForExprs
 public meta import Mathlib.Lean.MessageData.Trace
-public meta import Mathlib.Lean.Meta
-public meta import Mathlib.Lean.Meta.Basic
+public import Mathlib.Lean.Meta
+public import Mathlib.Lean.Meta.Basic
 public import Mathlib.Lean.Meta.CongrTheorems
 public meta import Mathlib.Lean.Meta.DiscrTree
 public meta import Mathlib.Lean.Meta.KAbstractPositions
@@ -5074,8 +5074,8 @@ public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
 public meta import Mathlib.Lean.Meta.Simp
 public meta import Mathlib.Lean.Meta.Tactic.Rewrite
-public meta import Mathlib.Lean.Name
-public meta import Mathlib.Lean.PrettyPrinter.Delaborator
+public import Mathlib.Lean.Name
+public import Mathlib.Lean.PrettyPrinter.Delaborator
 public import Mathlib.Lean.Thunk
 public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
