@@ -300,4 +300,217 @@ instance inhabitedTM2ComputableAux : Inhabited (TM2ComputableAux Bool Bool) :=
 
 end
 
+/-! ### Composition -/
+
+namespace TM2Compose
+
+attribute [local instance] FinTM2.kFin FinTM2.ΛFin FinTM2.σFin FinTM2.Γk₀Fin
+
+variable (tm₁ tm₂ : FinTM2)
+
+/-- Stacks of the composed machine: those of both machines and one more. -/
+abbrev K' : Type := tm₁.K ⊕ tm₂.K ⊕ Unit
+
+/-- Letters of the stacks of the composed machine; the extra stack holds input letters of
+`tm₂`. -/
+abbrev Γ' : K' tm₁ tm₂ → Type
+  | .inl k => tm₁.Γ k
+  | .inr (.inl k) => tm₂.Γ k
+  | .inr (.inr _) => tm₂.Γ tm₂.k₀
+
+/-- Labels of the composed machine: those of both machines and, for each of the two transfers `b`,
+a loop label `(b, none)` and a label `(b, some x)` pushing the letter `x`. -/
+abbrev Λ' : Type := tm₁.Λ ⊕ tm₂.Λ ⊕ Bool × Option (tm₂.Γ tm₂.k₀)
+
+/-- States of the composed machine: those of both machines and a one-letter buffer. -/
+abbrev σ' : Type := tm₁.σ × tm₂.σ × Option (tm₂.Γ tm₂.k₀)
+
+/-- Stacks of the composed machine from stacks of both machines and the extra stack. -/
+@[simp] def combine (S₁ : ∀ k, List (tm₁.Γ k)) (S₂ : ∀ k, List (tm₂.Γ k))
+    (t : List (tm₂.Γ tm₂.k₀)) : ∀ k, List (Γ' tm₁ tm₂ k)
+  | .inl k => S₁ k
+  | .inr (.inl k) => S₂ k
+  | .inr (.inr _) => t
+
+variable {tm₁ tm₂}
+
+theorem update_combine_inl (S₁ : ∀ k, List (tm₁.Γ k)) (S₂ : ∀ k, List (tm₂.Γ k))
+    (t : List (tm₂.Γ tm₂.k₀)) (k : tm₁.K) (x : List (tm₁.Γ k)) :
+    Function.update (combine tm₁ tm₂ S₁ S₂ t) (.inl k) x =
+      combine tm₁ tm₂ (Function.update S₁ k x) S₂ t := by
+  funext k'; rcases k' with k' | k' | u <;> simp [Function.update_of_ne]
+
+theorem update_combine_inr_inl (S₁ : ∀ k, List (tm₁.Γ k)) (S₂ : ∀ k, List (tm₂.Γ k))
+    (t : List (tm₂.Γ tm₂.k₀)) (k : tm₂.K) (x : List (tm₂.Γ k)) :
+    Function.update (combine tm₁ tm₂ S₁ S₂ t) (.inr (.inl k)) x =
+      combine tm₁ tm₂ S₁ (Function.update S₂ k x) t := by
+  funext k'; rcases k' with k' | k' | u <;> simp [Function.update_of_ne]
+
+theorem update_combine_inr_inr (S₁ : ∀ k, List (tm₁.Γ k)) (S₂ : ∀ k, List (tm₂.Γ k))
+    (t : List (tm₂.Γ tm₂.k₀)) (u : Unit) (x : List (tm₂.Γ tm₂.k₀)) :
+    Function.update (combine tm₁ tm₂ S₁ S₂ t) (.inr (.inr u)) x = combine tm₁ tm₂ S₁ S₂ x := by
+  funext k'; rcases k' with k' | k' | u <;> simp [Function.update_of_ne]
+
+/-- A statement of `tm₁` as one of the composed machine; `halt` starts the first transfer. -/
+def lift₁ : TM2.Stmt tm₁.Γ tm₁.Λ tm₁.σ → TM2.Stmt (Γ' tm₁ tm₂) (Λ' tm₁ tm₂) (σ' tm₁ tm₂)
+  | .push k f q => .push (.inl k) (fun s ↦ f s.1) (lift₁ q)
+  | .peek k f q => .peek (.inl k) (fun s o ↦ (f s.1 o, s.2)) (lift₁ q)
+  | .pop k f q => .pop (.inl k) (fun s o ↦ (f s.1 o, s.2)) (lift₁ q)
+  | .load f q => .load (fun s ↦ (f s.1, s.2)) (lift₁ q)
+  | .branch f q₁ q₂ => .branch (fun s ↦ f s.1) (lift₁ q₁) (lift₁ q₂)
+  | .goto f => .goto fun s ↦ .inl (f s.1)
+  | .halt => .goto fun _ ↦ .inr (.inr (false, none))
+
+/-- A statement of `tm₂` as one of the composed machine. -/
+def lift₂ : TM2.Stmt tm₂.Γ tm₂.Λ tm₂.σ → TM2.Stmt (Γ' tm₁ tm₂) (Λ' tm₁ tm₂) (σ' tm₁ tm₂)
+  | .push k f q => .push (.inr (.inl k)) (fun s ↦ f s.2.1) (lift₂ q)
+  | .peek k f q => .peek (.inr (.inl k)) (fun s o ↦ (s.1, f s.2.1 o, s.2.2)) (lift₂ q)
+  | .pop k f q => .pop (.inr (.inl k)) (fun s o ↦ (s.1, f s.2.1 o, s.2.2)) (lift₂ q)
+  | .load f q => .load (fun s ↦ (s.1, f s.2.1, s.2.2)) (lift₂ q)
+  | .branch f q₁ q₂ => .branch (fun s ↦ f s.2.1) (lift₂ q₁) (lift₂ q₂)
+  | .goto f => .goto fun s ↦ .inr (.inl (f s.2.1))
+  | .halt => .halt
+
+/-- A configuration of `tm₁` as one of the composed machine; halting starts the first transfer. -/
+def emb₁ (w : tm₂.σ × Option (tm₂.Γ tm₂.k₀)) (S₂ : ∀ k, List (tm₂.Γ k))
+    (t : List (tm₂.Γ tm₂.k₀)) (c : TM2.Cfg tm₁.Γ tm₁.Λ tm₁.σ) :
+    TM2.Cfg (Γ' tm₁ tm₂) (Λ' tm₁ tm₂) (σ' tm₁ tm₂) :=
+  ⟨some (c.l.elim (.inr (.inr (false, none))) .inl), (c.var, w), combine tm₁ tm₂ c.stk S₂ t⟩
+
+/-- A configuration of `tm₂` as one of the composed machine. -/
+def emb₂ (v₁ : tm₁.σ) (r : Option (tm₂.Γ tm₂.k₀)) (S₁ : ∀ k, List (tm₁.Γ k))
+    (t : List (tm₂.Γ tm₂.k₀)) (c : TM2.Cfg tm₂.Γ tm₂.Λ tm₂.σ) :
+    TM2.Cfg (Γ' tm₁ tm₂) (Λ' tm₁ tm₂) (σ' tm₁ tm₂) :=
+  ⟨c.l.map fun l ↦ .inr (.inl l), (v₁, c.var, r), combine tm₁ tm₂ S₁ c.stk t⟩
+
+theorem stepAux_lift₁ (q : TM2.Stmt tm₁.Γ tm₁.Λ tm₁.σ) (v : tm₁.σ)
+    (w : tm₂.σ × Option (tm₂.Γ tm₂.k₀)) (S₁ : ∀ k, List (tm₁.Γ k)) (S₂ : ∀ k, List (tm₂.Γ k))
+    (t : List (tm₂.Γ tm₂.k₀)) :
+    TM2.stepAux (lift₁ q) (v, w) (combine tm₁ tm₂ S₁ S₂ t) =
+      emb₁ w S₂ t (TM2.stepAux q v S₁) := by
+  induction q generalizing v S₁ with
+  | branch f q₁ q₂ ih₁ ih₂ => simp [lift₁, ih₁, ih₂, apply_ite (emb₁ w S₂ t)]
+  | _ => simp_all [lift₁, emb₁, update_combine_inl]
+
+theorem stepAux_lift₂ (q : TM2.Stmt tm₂.Γ tm₂.Λ tm₂.σ) (v₁ : tm₁.σ) (v : tm₂.σ)
+    (r : Option (tm₂.Γ tm₂.k₀)) (S₁ : ∀ k, List (tm₁.Γ k)) (S₂ : ∀ k, List (tm₂.Γ k))
+    (t : List (tm₂.Γ tm₂.k₀)) :
+    TM2.stepAux (lift₂ q) (v₁, v, r) (combine tm₁ tm₂ S₁ S₂ t) =
+      emb₂ v₁ r S₁ t (TM2.stepAux q v S₂) := by
+  induction q generalizing v S₂ with
+  | branch f q₁ q₂ ih₁ ih₂ => simp [lift₂, ih₁, ih₂, apply_ite (emb₂ v₁ r S₁ t)]
+  | _ => simp_all [lift₂, emb₂, update_combine_inr_inl]
+
+variable (e : tm₁.Γ tm₁.k₁ → tm₂.Γ tm₂.k₀)
+
+/-- The program of the composed machine. The first transfer pops the output stack of `tm₁` onto
+the extra stack, translating letters by `e`; the second pops the extra stack onto the input stack
+of `tm₂`. A popped letter `x` is pushed by the label `(b, some x)`. -/
+def prog : Λ' tm₁ tm₂ → TM2.Stmt (Γ' tm₁ tm₂) (Λ' tm₁ tm₂) (σ' tm₁ tm₂)
+  | .inl l => lift₁ (tm₁.m l)
+  | .inr (.inl l) => lift₂ (tm₂.m l)
+  | .inr (.inr (false, none)) => .pop (.inl tm₁.k₁) (fun s o ↦ (s.1, s.2.1, o.map e))
+      (.goto fun s ↦ s.2.2.elim (.inr (.inr (true, none))) fun x ↦ .inr (.inr (false, some x)))
+  | .inr (.inr (false, some x)) =>
+      .push (.inr (.inr ())) (fun _ ↦ x) (.goto fun _ ↦ .inr (.inr (false, none)))
+  | .inr (.inr (true, none)) => .pop (.inr (.inr ())) (fun s o ↦ (s.1, s.2.1, o))
+      (.goto fun s ↦ s.2.2.elim (.inr (.inl tm₂.main)) fun x ↦ .inr (.inr (true, some x)))
+  | .inr (.inr (true, some x)) =>
+      .push (.inr (.inl tm₂.k₀)) (fun _ ↦ x) (.goto fun _ ↦ .inr (.inr (true, none)))
+
+theorem step_emb₁ (w : tm₂.σ × Option (tm₂.Γ tm₂.k₀)) (S₂ : ∀ k, List (tm₂.Γ k))
+    (t : List (tm₂.Γ tm₂.k₀)) (c c' : TM2.Cfg tm₁.Γ tm₁.Λ tm₁.σ)
+    (h : TM2.step tm₁.m c = some c') :
+    TM2.step (prog e) (emb₁ w S₂ t c) = some (emb₁ w S₂ t c') := by
+  obtain ⟨_ | l, v, S⟩ := c <;> cases h
+  exact congrArg some (stepAux_lift₁ (tm₁.m l) v w S S₂ t)
+
+theorem step_emb₂ (v₁ : tm₁.σ) (r : Option (tm₂.Γ tm₂.k₀)) (S₁ : ∀ k, List (tm₁.Γ k))
+    (t : List (tm₂.Γ tm₂.k₀)) (c c' : TM2.Cfg tm₂.Γ tm₂.Λ tm₂.σ)
+    (h : TM2.step tm₂.m c = some c') :
+    TM2.step (prog e) (emb₂ v₁ r S₁ t c) = some (emb₂ v₁ r S₁ t c') := by
+  obtain ⟨_ | l, v, S⟩ := c <;> cases h
+  exact congrArg some (stepAux_lift₂ (tm₂.m l) v₁ v r S₁ S t)
+
+/-- A transfer pops the stack `k₁` letter by letter into the state and pushes each letter, from
+the label `P` of its value, onto the stack `k₂`; it takes two steps per letter and one more. -/
+theorem iterate_transfer {K Λ σ T : Type*} {Γ : K → Type*} [DecidableEq K]
+    (m : Λ → TM2.Stmt Γ Λ σ) {k₁ k₂ : K} (hk : k₁ ≠ k₂) {get : Γ k₁ → T} {put : T → Γ k₂}
+    {rd : σ → Option T} {w : σ → Option (Γ k₁) → σ} {L L' : Λ} {P : T → Λ}
+    (hL : m L = .pop k₁ w (.goto fun s ↦ (rd s).elim L' P))
+    (hP : ∀ x, m (P x) = .push k₂ (fun _ ↦ put x) (.goto fun _ ↦ L))
+    (hrd : ∀ s o, rd (w s o) = o.map get) (hw : ∀ s o o', w (w s o) o' = w s o')
+    (S : ∀ k, List (Γ k)) (s : σ) :
+    (flip bind (TM2.step m))^[2 * (S k₁).length + 1] (some ⟨some L, s, S⟩) =
+      some ⟨some L', w s none, Function.update (Function.update S k₁ []) k₂
+        (((S k₁).map (put ∘ get)).reverse ++ S k₂)⟩ := by
+  generalize hl : S k₁ = l
+  induction l generalizing S s with
+  | nil =>
+    have hS : Function.update S k₁ [] = S := Function.update_eq_self_iff.2 hl.symm
+    simp [flip, hL, hl, hrd, hS]
+  | cons x l ih =>
+    have h₂ : (flip bind (TM2.step m))^[2] (some ⟨some L, s, S⟩) = some ⟨some L, w s (some x),
+        Function.update (Function.update S k₁ l) k₂ (put (get x) :: S k₂)⟩ := by
+      simp [flip, hL, hP, hl, hrd, Function.update_of_ne hk.symm]
+    rw [show 2 * (x :: l).length + 1 = 2 * l.length + 1 + 2 by rw [List.length_cons]; omega,
+      Function.iterate_add_apply, h₂, ih _ _ (by simp [Function.update_of_ne hk])]
+    simp [hw, Function.update_comm hk.symm]
+
+/-- The composed machine: it runs `tm₁`, moves its output onto the input stack of `tm₂` through
+the extra stack, translating letters by `e`, and runs `tm₂`. -/
+abbrev machine : FinTM2 where
+  K := K' tm₁ tm₂
+  k₀ := .inl tm₁.k₀
+  k₁ := .inr (.inl tm₂.k₁)
+  Γ := Γ' tm₁ tm₂
+  Λ := Λ' tm₁ tm₂
+  main := .inl tm₁.main
+  σ := σ' tm₁ tm₂
+  initialState := (tm₁.initialState, tm₂.initialState, none)
+  m := prog e
+
+theorem initList_machine (l : List (tm₁.Γ tm₁.k₀)) :
+    initList (machine e) l =
+      emb₁ (tm₂.initialState, none) (fun _ ↦ []) [] (initList tm₁ l) := by
+  simp only [initList, emb₁]
+  congr 1
+  funext k; rcases k with k | k | u <;> simp [Function.update_of_ne]
+
+theorem emb₂_haltList (l : List (tm₂.Γ tm₂.k₁)) :
+    emb₂ tm₁.initialState none (fun _ ↦ []) [] (haltList tm₂ l) = haltList (machine e) l := by
+  simp only [haltList, emb₂]
+  congr 1
+  funext k; rcases k with k | k | u <;> simp [Function.update_of_ne]
+
+/-- The two transfers take the output `y` of `tm₁` to the input `y.map e` of `tm₂` in
+`4 * y.length + 2` steps. -/
+theorem iterate_transfers (y : List (tm₁.Γ tm₁.k₁)) :
+    (flip bind (machine e).step)^[4 * y.length + 2]
+      (some (emb₁ (tm₂.initialState, none) (fun _ ↦ []) [] (haltList tm₁ y))) =
+      some (emb₂ tm₁.initialState none (fun _ ↦ []) [] (initList tm₂ (y.map e))) := by
+  have h₁ := iterate_transfer (prog e) (k₁ := .inl tm₁.k₁) (k₂ := .inr (.inr ())) (get := e)
+    (put := id) (rd := (·.2.2)) (w := fun s o ↦ (s.1, s.2.1, o.map e))
+    (L := .inr (.inr (false, none))) (L' := .inr (.inr (true, none)))
+    (P := fun x ↦ .inr (.inr (false, some x))) (by simp) rfl (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ _ ↦ rfl) (combine tm₁ tm₂ (Function.update (fun _ ↦ []) tm₁.k₁ y) (fun _ ↦ []) [])
+    (tm₁.initialState, tm₂.initialState, none)
+  have h₂ := iterate_transfer (prog e) (k₁ := .inr (.inr ())) (k₂ := .inr (.inl tm₂.k₀))
+    (get := id) (put := id) (rd := (·.2.2)) (w := fun s o ↦ (s.1, s.2.1, o))
+    (L := .inr (.inr (true, none))) (L' := .inr (.inl tm₂.main))
+    (P := fun x ↦ .inr (.inr (true, some x))) (by simp) rfl (fun _ ↦ rfl) (fun _ _ ↦ by simp)
+    (fun _ _ _ ↦ rfl) (combine tm₁ tm₂ (fun _ ↦ []) (fun _ ↦ []) (y.map e).reverse)
+    (tm₁.initialState, tm₂.initialState, none)
+  simp only [combine, Function.update_self, update_combine_inl, update_combine_inr_inl,
+    update_combine_inr_inr, Function.update_idem, Function.update_eq_self, List.map_reverse,
+    List.length_reverse, List.length_map, List.append_nil, List.reverse_reverse, Function.id_comp,
+    List.map_id, Option.map_none] at h₁ h₂
+  rw [show 4 * y.length + 2 = 2 * y.length + 1 + (2 * y.length + 1) by omega,
+    Function.iterate_add_apply]
+  simp only [emb₁, emb₂, haltList, initList, FinTM2.step]
+  dsimp only [Option.elim, Option.map]
+  exact (congrArg (flip bind (TM2.step (prog e)))^[2 * y.length + 1] h₁).trans h₂
+
+end TM2Compose
+
 end Turing
