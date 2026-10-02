@@ -128,7 +128,7 @@ lemma epi_iff {d : ℕ} {a b : Truncated d} {f : a ⟶ b} : Epi f ↔ Epi f.hom 
   constructor
   · intro hf
     refine SimplexCategory.epi_iff_surjective.mpr fun j ↦ not_forall_not.mp fun hj ↦ ?_
-    have hb : 1 ≤ b.obj.len := by have := hj 0; grind
+    have hb : 1 ≤ b.obj.len := by grind [hj 0]
     let g (t : ℕ) : b ⟶ ⟨⦋1⦌, hb.trans b.property⟩ :=
       ObjectProperty.homMk <| Hom.mk ⟨fun x ↦ if t ≤ x then 1 else 0, fun x y h ↦ by grind⟩
     have hg (t x) : (g t).hom.toOrderHom x = if t ≤ x.val then 1 else 0 := rfl
