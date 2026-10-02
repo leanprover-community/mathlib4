@@ -305,13 +305,13 @@ theorem memLp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Ty
     (hbdd : ∀ n, eLpNorm (X n) p P ≤ R) : MemLp (limitProcess X 𝓕 P) p P := by
   rw [limitProcess]
   split_ifs with h
-  · refine ⟨StronglyMeasurable.aestronglyMeasurable
-      ((Classical.choose_spec h).1.mono (sSup_le fun m ⟨n, hn⟩ ↦ hn ▸ 𝓕.le _)),
-      lt_of_le_of_lt (Lp.eLpNorm_lim_le_liminf_eLpNorm hfm _ (Classical.choose_spec h).2)
-        (lt_of_le_of_lt ?_ (ENNReal.coe_lt_top : ↑R < ∞))⟩
-    simp_rw [liminf_eq, eventually_atTop]
+  swap; · exact .zero
+  refine lt_of_le_of_lt (Lp.eLpNorm_lim_le_liminf_eLpNorm hfm _ ?_ (Classical.choose_spec h).2)
+    (lt_of_le_of_lt ?_ (ENNReal.coe_lt_top : ↑R < ∞))
+  · exact StronglyMeasurable.aestronglyMeasurable
+      ((Classical.choose_spec h).1.mono (sSup_le fun m ⟨n, hn⟩ ↦ hn ▸ 𝓕.le _))
+  · simp_rw [liminf_eq, eventually_atTop]
     exact sSup_le fun b ⟨a, ha⟩ ↦ (ha a le_rfl).trans (hbdd _)
-  · exact MemLp.zero
 
 end limitProcess
 
