@@ -86,6 +86,36 @@ theorem dist_affineCombination {ι : Type*} {s : Finset ι} {w₁ w₂ : ι → 
     simp_rw [Pi.sub_apply, Finset.sum_sub_distrib, h₁, h₂, sub_self]
   exact inner_weightedVSub p h p h
 
+/-- The squared distance from an `affineCombination` to a constant point. -/
+theorem dist_affineCombination_const_sq {ι : Type*} {s : Finset ι} {w : ι → ℝ} (p : ι → P)
+    (q : P) (h : ∑ i ∈ s, w i = 1) :
+    dist (s.affineCombination ℝ p w) q ^ 2 =
+      ∑ i ∈ s, w i * dist (p i) q ^ 2 -
+        (∑ i ∈ s, ∑ j ∈ s, w i * w j * dist (p i) (p j) ^ 2) / 2 := calc
+  _ = ‖s.affineCombination ℝ p w -ᵥ q‖ ^ 2 := by rw [dist_eq_norm_vsub]
+  _ = ‖∑ i ∈ s, w i • (p i -ᵥ q)‖ ^ 2 := by
+    rw [Finset.sum_smul_vsub_const_eq_affineCombination_vsub _ _ _ _ h]
+  _ = ⟪∑ i ∈ s, w i • (p i -ᵥ q), ∑ i ∈ s, w i • (p i -ᵥ q)⟫ := by
+    rw [real_inner_self_eq_norm_sq]
+  _ = ∑ i ∈ s, ∑ j ∈ s, w i * w j * ⟪p i -ᵥ q, p j -ᵥ q⟫ := by
+    simp_rw [sum_inner, inner_sum, real_inner_smul_left, real_inner_smul_right, ← mul_assoc]
+  _ = ∑ i ∈ s, ∑ j ∈ s, w i * w j *
+      ((dist (p i) q ^ 2 + dist (p j) q ^ 2 - dist (p i) (p j) ^ 2) / 2) := by
+    simp_rw [real_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two,
+      dist_eq_norm_vsub, sq, vsub_sub_vsub_cancel_right]
+  _ = (∑ i ∈ s, ∑ j ∈ s, w i * w j * dist (p i) q ^ 2) / 2 +
+      (∑ i ∈ s, ∑ j ∈ s, w i * w j * dist (p j) q ^ 2) / 2 -
+      (∑ i ∈ s, ∑ j ∈ s, w i * w j * dist (p i) (p j) ^ 2) / 2 := by
+    simp_rw [← mul_div_assoc, ← Finset.sum_div, mul_sub, mul_add, Finset.sum_sub_distrib,
+      Finset.sum_add_distrib, sub_div, add_div]
+  _ = (∑ i ∈ s, w i * dist (p i) q ^ 2) / 2 +
+      (∑ j ∈ s, w j * dist (p j) q ^ 2) / 2 -
+      (∑ i ∈ s, ∑ j ∈ s, w i * w j * dist (p i) (p j) ^ 2) / 2 := by
+    congrm ?_ / 2 + ?_ / 2 - _
+    · simp_rw [mul_right_comm _ _ (_ ^ 2), ← Finset.mul_sum, h, mul_one]
+    · simp_rw [mul_assoc, ← Finset.mul_sum, ← Finset.sum_mul, h, one_mul]
+  _ = _ := by ring
+
 /-- The squared distance between points on a line (expressed as a
 multiple of a fixed vector added to a point) and another point,
 expressed as a quadratic. -/
