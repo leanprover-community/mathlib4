@@ -78,7 +78,7 @@ lemma IsVisible.of_convexHull_of_pos {ι : Type*} {t : Finset ι} {a : ι → V}
     (hi : i ∈ t) (hwi : 0 < w i) : IsVisible 𝕜 (convexHull 𝕜 s) x (a i) := by
   classical
   obtain hwi | hwi : w i = 1 ∨ w i < 1 := eq_or_lt_of_le <| (single_le_sum hw₀ hi).trans_eq hw₁
-  · convert! hw
+  · convert hw
     rw [← one_smul 𝕜 (a i), ← hwi, eq_comm]
     rw [← hwi, ← sub_eq_zero, ← sum_erase_eq_sub hi,
       sum_eq_zero_iff_of_nonneg fun j hj ↦ hw₀ _ <| erase_subset _ _ hj] at hw₁
