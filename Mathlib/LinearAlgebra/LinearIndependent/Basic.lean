@@ -187,16 +187,18 @@ theorem LinearIndependent.group_smul_iff {G : Type*} [hG : Group G] [MulAction G
   convert h.group_smul (fun i ↦ (w i)⁻¹)
   simp [funext_iff]
 
--- This lemma cannot be proved with `LinearIndependent.group_smul` since the action of
--- `Rˣ` on `R` is not commutative.
-theorem LinearIndependent.units_smul {v : ι → M} (hv : LinearIndependent R v) (w : ι → Rˣ) :
-    LinearIndependent R (w • v) := by
+theorem LinearIndependent.smul_of_isRightRegular {v : ι → M} (hv : LinearIndependent R v)
+    {w : ι → R} (hw : ∀ i, IsRightRegular (w i)) : LinearIndependent R (w • v) := by
   rw [linearIndependent_iff''ₛ] at hv ⊢
   intro s g₁ g₂ hgs hsum i
-  rw [← (w i).mul_left_inj]
+  apply hw i
   refine hv s (fun i ↦ g₁ i • w i) (fun i ↦ g₂ i • w i) (fun i hi ↦ ?_) ?_ i
   · simp_rw [hgs i hi]
   · simpa only [smul_eq_mul, mul_smul, Pi.smul_apply'] using! hsum
+
+theorem LinearIndependent.units_smul {v : ι → M} (hv : LinearIndependent R v) (w : ι → Rˣ) :
+    LinearIndependent R (w • v) :=
+  smul_of_isRightRegular hv (fun i _ _ h ↦ (w i).mul_left_inj.mp h)
 
 @[simp]
 theorem LinearIndependent.units_smul_iff (v : ι → M) (w : ι → Rˣ) :
