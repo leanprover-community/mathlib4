@@ -19,6 +19,12 @@ import Mathlib.Algebra.FiniteSupport.Basic
 * `UniqueFactorizationMonoid.emultiplicity_eq_count_normalizedFactors`: The multiplicity of an
   irreducible factor of a nonzero element is exactly the number of times the normalized factor
   occurs in the `normalizedFactors`.
+
+* `UniqueFactorizationMonoid.dvd_iff_multiplicity_le`: A nonzero element divides a nonzero element
+  iff its multiplicity at every prime is at most that of the other.
+
+* `UniqueFactorizationMonoid.associated_iff_multiplicity_eq`: Two nonzero elements are associated
+  iff they have the same multiplicity at every prime.
 -/
 
 public section
@@ -50,35 +56,10 @@ theorem FiniteMultiplicity.of_prime_left [CommMonoidWithZero α] [IsCancelMulZer
     {a b : α} (ha : Prime a) (hb : b ≠ 0) : FiniteMultiplicity a b :=
   .of_not_isUnit ha.not_isUnit hb
 
-/-- The `emultiplicity` of a prime at itself is `1`. -/
-theorem Prime.emultiplicity_self [CommMonoidWithZero α] [IsCancelMulZero α] [WfDvdMonoid α]
-    {a : α} (ha : Prime a) : emultiplicity a a = 1 :=
-  (FiniteMultiplicity.of_prime_left ha ha.ne_zero).emultiplicity_self
-
-/-- The `emultiplicity` of a prime `p` at another prime `q` is `1` if `p` and `q` are
-associated, and `0` otherwise. -/
-theorem Prime.emultiplicity_prime [CommMonoidWithZero α] [IsCancelMulZero α] [WfDvdMonoid α]
-    [DecidableRel ((· ∣ ·) : α → α → Prop)] {p q : α} (hp : Prime p) (hq : Prime q) :
-    emultiplicity p q = if Associated p q then 1 else 0 := by
-  split_ifs with h
-  · obtain ⟨u, rfl⟩ := h
-    rw [emultiplicity_mul hp, hp.emultiplicity_self,
-      emultiplicity_of_unit_right hp.not_isUnit, add_zero]
-  · rwa [emultiplicity_eq_zero, hp.dvd_prime_iff_associated hq]
-
-/-- An element of a `WfDvdMonoid` is zero iff every power of a fixed prime divides it. -/
-theorem WfDvdMonoid.eq_zero_iff_forall_prime_pow_dvd [CommMonoidWithZero α] [IsCancelMulZero α]
-    [WfDvdMonoid α] {a p : α} (hp : Prime p) : a = 0 ↔ ∀ n, p ^ n ∣ a := by
-  refine ⟨fun h ↦ by simp [h], fun h ↦ ?_⟩
-  by_contra!
-  have := FiniteMultiplicity.of_prime_left hp this
-  grind
-
-/-- A nonzero element of a `WfDvdMonoid` has finite multiplicity at every prime. -/
-theorem WfDvdMonoid.ne_zero_iff_finiteMultiplicity [CommMonoidWithZero α] [IsCancelMulZero α]
-    [WfDvdMonoid α] {a p : α} (hp : Prime p) : a ≠ 0 ↔ FiniteMultiplicity p a := by
-  rw [ne_eq, WfDvdMonoid.eq_zero_iff_forall_prime_pow_dvd hp,
-    ← FiniteMultiplicity.not_iff_forall, not_not]
+/-- An element of a `WfDvdMonoid` has finite multiplicity at a prime iff it is nonzero. -/
+theorem WfDvdMonoid.finiteMultiplicity_iff_ne_zero [CommMonoidWithZero α] [IsCancelMulZero α]
+    [WfDvdMonoid α] {a p : α} (hp : Prime p) : FiniteMultiplicity p a ↔ a ≠ 0 :=
+  ⟨FiniteMultiplicity.ne_zero, .of_prime_left hp⟩
 
 namespace UniqueFactorizationMonoid
 
@@ -198,43 +179,23 @@ lemma dvd_iff_emultiplicity_le {a b : R} (ha : a ≠ 0) :
     simpa [h1, h2, ENat.natCast_le_natCast] using h q hqprime
   · simp [Multiset.count_eq_zero_of_notMem hq]
 
+/-- A nonzero element of a `UniqueFactorizationMonoid` divides a nonzero element iff its
+`multiplicity` at every prime is at most that of the other. -/
+lemma dvd_iff_multiplicity_le {a b : R} (ha : a ≠ 0) (hb : b ≠ 0) :
+    a ∣ b ↔ ∀ p : R, Prime p → multiplicity p a ≤ multiplicity p b := by
+  rw [dvd_iff_emultiplicity_le ha]
+  refine forall₂_congr fun p hp ↦ ?_
+  rw [(FiniteMultiplicity.of_prime_left hp ha).emultiplicity_eq_multiplicity,
+    (FiniteMultiplicity.of_prime_left hp hb).emultiplicity_eq_multiplicity,
+    ENat.natCast_le_natCast]
+
 /-- Two nonzero elements of a `UniqueFactorizationMonoid` are associated iff they have the
-same `emultiplicity` at every prime. -/
-lemma associated_iff_emultiplicity_eq {a b : R} (ha : a ≠ 0) (hb : b ≠ 0) :
-    Associated a b ↔ ∀ p : R, Prime p → emultiplicity p a = emultiplicity p b := by
-  rw [← dvd_dvd_iff_associated, dvd_iff_emultiplicity_le ha, dvd_iff_emultiplicity_le hb,
+same `multiplicity` at every prime. -/
+lemma associated_iff_multiplicity_eq {a b : R} (ha : a ≠ 0) (hb : b ≠ 0) :
+    Associated a b ↔ ∀ p : R, Prime p → multiplicity p a = multiplicity p b := by
+  rw [← dvd_dvd_iff_associated, dvd_iff_multiplicity_le ha hb, dvd_iff_multiplicity_le hb ha,
     ← forall₂_and]
   simp_rw [le_antisymm_iff]
-
-/-- Version of `associated_iff_emultiplicity_eq` without the nonzero hypotheses, at the cost of
-fixing a prime `q` (used to detect whether `a` or `b` vanishes). -/
-lemma associated_iff_emultiplicity_eq' {a b : R} {q : R} (hq : Prime q) :
-    Associated a b ↔ ∀ p : R, Prime p → emultiplicity p a = emultiplicity p b := by
-  wlog ha : a = 0 generalizing a b with H
-  · by_cases hb : b = 0
-    · rw [Associated.comm]
-      exact (H hb).trans (forall₂_congr fun _ _ ↦ eq_comm)
-    · exact associated_iff_emultiplicity_eq ha hb
-  · rw [ha, Associated.comm, associated_zero_iff_eq_zero]
-    refine ⟨fun h ↦ by simp [h], fun h ↦ ?_⟩
-    rw [WfDvdMonoid.eq_zero_iff_forall_prime_pow_dvd hq]
-    have h := h q hq
-    rwa [emultiplicity_zero_right, eq_comm, emultiplicity_eq_top,
-      FiniteMultiplicity.not_iff_forall] at h
-
-/-- In a `UniqueFactorizationMonoid` with a unique unit and infinitely many elements, two
-elements are equal iff they have the same `emultiplicity` at every prime. -/
-lemma eq_iff_emultiplicity_eq [Subsingleton Rˣ] [Infinite R] {a b : R} :
-    a = b ↔ ∀ p : R, Prime p → emultiplicity p a = emultiplicity p b := by
-  obtain ⟨p, hp⟩ : ∃ p : R, Prime p := by
-    rw [exists_prime_iff]
-    obtain ⟨x, hx⟩ := Set.Finite.exists_notMem ((Set.finite_range ((↑·) : Rˣ → R)).insert 0)
-    refine ⟨x, ?_, ?_⟩
-    · rintro rfl
-      exact hx (Set.mem_insert 0 _)
-    · rintro ⟨u, rfl⟩
-      exact hx (Set.mem_insert_of_mem 0 (Set.mem_range_self u))
-  rw [← associated_iff_eq, associated_iff_emultiplicity_eq' hp]
 
 lemma pow_dvd_pow_iff_dvd {a b : R} {n : ℕ} (hn : n ≠ 0) : a ^ n ∣ b ^ n ↔ a ∣ b := by
   by_cases ha : a = 0

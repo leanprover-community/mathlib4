@@ -696,6 +696,11 @@ theorem multiplicity_self {a : α} (ha : FiniteMultiplicity a a) : multiplicity 
     simpa [this] using ha.not_isUnit
   · simpa using ha.ne_zero
 
+/-- The `multiplicity` of a prime at itself is `1`. -/
+protected theorem Prime.multiplicity_self {a : α} (ha : Prime a) : multiplicity a a = 1 :=
+  multiplicity_self ⟨1, fun h ↦ ha.not_isUnit
+    (isUnit_of_dvd_one ((mul_dvd_mul_iff_left ha.ne_zero).mp (by simpa [pow_two] using h)))⟩
+
 @[simp]
 theorem FiniteMultiplicity.emultiplicity_self {a : α} (hfin : FiniteMultiplicity a a) :
     emultiplicity a a = 1 := by
@@ -763,6 +768,22 @@ theorem emultiplicity_pow_self_of_prime {p : α} (hp : Prime p) (n : ℕ) :
 theorem multiplicity_pow_self_of_prime {p : α} (hp : Prime p) (n : ℕ) :
     multiplicity p (p ^ n) = n :=
   multiplicity_pow_self hp.ne_zero hp.not_isUnit n
+
+/-- The `multiplicity` of a prime `p` at an irreducible `q` is `1` if `p` and `q` are
+associated, and `0` otherwise. -/
+theorem Prime.multiplicity_irreducible {p q : α} [Decidable (Associated p q)] (hp : Prime p)
+    (hq : Irreducible q) : multiplicity p q = if Associated p q then 1 else 0 := by
+  split_ifs with h
+  · rw [multiplicity_eq_of_associated_right h.symm, hp.multiplicity_self]
+  · exact multiplicity_eq_zero_of_not_dvd
+      ((hp.irreducible.dvd_irreducible_iff_associated hq).not.mpr h)
+
+/-- The `multiplicity` of a prime `p` at another prime `q` is `1` if `p` and `q` are
+associated, and `0` otherwise. This is `Prime.multiplicity_irreducible` with both arguments
+prime, stated for convenience and symmetry. -/
+theorem Prime.multiplicity_prime {p q : α} [Decidable (Associated p q)] (hp : Prime p)
+    (hq : Prime q) : multiplicity p q = if Associated p q then 1 else 0 :=
+  hp.multiplicity_irreducible hq.irreducible
 
 end CancelCommMonoidWithZero
 
