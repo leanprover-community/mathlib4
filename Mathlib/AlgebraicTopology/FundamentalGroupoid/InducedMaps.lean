@@ -6,7 +6,6 @@ Authors: Praneeth Kolichala, Yury Kudryashov
 module
 
 public import Mathlib.Topology.Homotopy.Equiv
-public import Mathlib.CategoryTheory.Equivalence
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Product
 
 /-!
@@ -152,9 +151,9 @@ theorem heq_path_of_eq_image :
   apply Path.Homotopic.hpath_hext
   exact hfg
 
-private theorem start_path : f x₀ = g x₂ := by convert! hfg 0 <;> simp only [Path.source]
+private theorem start_path : f x₀ = g x₂ := by convert hfg 0 <;> simp only [Path.source]
 
-private theorem end_path : f x₁ = g x₃ := by convert! hfg 1 <;> simp only [Path.target]
+private theorem end_path : f x₁ = g x₃ := by convert hfg 1 <;> simp only [Path.target]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem eq_path_of_eq_image :

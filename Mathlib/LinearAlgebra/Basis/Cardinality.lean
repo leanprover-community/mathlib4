@@ -7,7 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
-public import Mathlib.LinearAlgebra.Span.Basic
+import Mathlib.LinearAlgebra.Span.Basic
 public import Mathlib.SetTheory.Cardinal.Pigeonhole
 
 /-!

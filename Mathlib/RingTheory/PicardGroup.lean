@@ -703,7 +703,7 @@ variable (I J : (Submodule R A)ˣ)
 `I ⊗[R] J` to `I * J` induced by multiplication is an isomorphism. -/
 noncomputable def tensorEquivMul : I ⊗[R] J ≃ₗ[R] I * J := by
   refine .ofBijective _ ⟨.of_comp (f := Submodule.subtype _) ?_, mulMap'_surjective _ _⟩
-  convert!
+  convert
     private_decl% ((projective_units_and_mul'_comp_lTensor_bijective J).2.1.comp
       (Flat.rTensor_preserves_injective_linearMap _ I.1.subtype_injective))
   simp_rw [← LinearMap.coe_comp]
@@ -796,7 +796,7 @@ set_option backward.defeqAttrib.useBackward true in
 the multiplication map induces an isomorphism `A ⊗[R] M ≃ₗ[A] A`. -/
 noncomputable def tensorSubmoduleAlgebraEquiv : A ⊗[R] submoduleAlgebra e ≃ₗ[A] A :=
   .ofBijective (.mul'' R A ∘ₗ AlgebraTensorModule.lTensor A A (Submodule.subtype _)) <| by
-    convert! (AlgebraTensorModule.congr (.refl ..) (submoduleAlgebraEquiv e) ≪≫ₗ e).bijective
+    convert (AlgebraTensorModule.congr (.refl ..) (submoduleAlgebraEquiv e) ≪≫ₗ e).bijective
     ext x
     refine x.inductionOn ?_ (by simp +contextual)
     intro a x
@@ -807,7 +807,7 @@ noncomputable def tensorSubmoduleAlgebraEquiv : A ⊗[R] submoduleAlgebra e ≃�
 
 theorem top_mul_submoduleAlgebra : ⊤ * submoduleAlgebra e = ⊤ := by
   rw [← Submodule.mulMap_range]
-  convert!
+  convert
     (Submodule.topEquiv.rTensor _ ≪≫ₗ (tensorSubmoduleAlgebraEquiv e).restrictScalars R).range
   ext; rfl
 
@@ -816,7 +816,7 @@ we have `I ⊗[R] M ≃ₗ[R] I * M` for any `R`-submodule `I` of `A`. -/
 noncomputable def tensorSubmoduleAlgebraEquivMul (I : Submodule R A) :
     I ⊗[R] submoduleAlgebra e ≃ₗ[R] I * submoduleAlgebra e := by
   refine .ofBijective _ ⟨.of_comp (f := Submodule.subtype _) ?_, Submodule.mulMap'_surjective _ _⟩
-  convert!
+  convert
     ((tensorSubmoduleAlgebraEquiv e).restrictScalars R).injective.comp
       (Flat.rTensor_preserves_injective_linearMap _ I.subtype_injective)
   simp_rw [← LinearEquiv.coe_toLinearMap, ← LinearMap.coe_comp]

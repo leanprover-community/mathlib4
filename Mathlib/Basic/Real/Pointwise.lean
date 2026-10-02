@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.Algebra.Order.Module.Pointwise
-public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # Pointwise operations on sets of reals

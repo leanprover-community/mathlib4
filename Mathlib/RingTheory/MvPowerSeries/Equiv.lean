@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.AdicCompletion.Algebra
 public import Mathlib.RingTheory.MvPolynomial.Ideal
-public import Mathlib.RingTheory.MvPowerSeries.Trunc
 public import Mathlib.RingTheory.MvPowerSeries.Rename
 public import Mathlib.RingTheory.PowerSeries.Substitution
 
@@ -335,7 +334,7 @@ theorem mk_truncTotal_toAdicCompletionInv {n : ℕ}
       ← smul_eq_mul, ← Ideal.Quotient.eq]
     simp only [Submodule.mapQ_eq_factor, Submodule.factor_eq_factor, Ideal.Quotient.mk_out]
     rw [← AdicCompletion.transitionMap_ideal_mk _ (Nat.lt_iff_add_one_le.mp h), eq_comm]
-    convert! f.prop h; simp
+    convert f.prop h; simp
   simp
 
 /-- The isomorphism from multivariate power series to the adic completion of
