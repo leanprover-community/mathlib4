@@ -100,7 +100,7 @@ theorem eLpNorm_of_not_aestronglyMeasurable [TopologicalSpace ε]
 
 theorem aestronglyMeasurable_of_eLpNorm_ne_top [TopologicalSpace ε]
     {f : α → ε} {p : ℝ≥0∞} (h : eLpNorm f p μ ≠ ∞) : AEStronglyMeasurable f μ := by
-  contrapose! h
+  contrapose h
   exact eLpNorm_of_not_aestronglyMeasurable h
 
 theorem eLpNorm_eq_eLpNorm' [TopologicalSpace ε]
@@ -209,7 +209,7 @@ theorem inhmgELpNorm_of_not_aestronglyMeasurable
 
 theorem aestronglyMeasurable_of_inhmgELpNorm_ne_top
     {f : α → ε} {p : ℝ≥0∞} (h : inhmgELpNorm f p μ ≠ ∞) : AEStronglyMeasurable f μ := by
-  contrapose! h
+  contrapose h
   exact inhmgELpNorm_of_not_aestronglyMeasurable h
 
 theorem inhmgELpNorm_eq_eLpNorm (hp : 1 ≤ p) {f : α → ε} :
