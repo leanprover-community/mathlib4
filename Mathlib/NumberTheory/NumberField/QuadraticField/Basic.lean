@@ -245,6 +245,14 @@ theorem isTotallyComplex_iff_discr_neg : IsTotallyComplex K ↔ discr K < 0 := b
     grind [h.finrank_eq_two ▸ InfinitePlace.card_add_two_mul_card_eq_rank K]
   rw [isTotallyReal_iff_discr_pos, not_lt_eq, Int.lt_iff_le_and_ne, and_iff_left (discr_ne_zero K)]
 
+/-- The discriminant of a totally real quadratic field is positive. -/
+theorem discr_pos [IsTotallyReal K] : 0 < discr K :=
+  (isTotallyReal_iff_discr_pos K).mp ‹_›
+
+/-- The discriminant of a totally complex quadratic field is negative. -/
+theorem discr_neg [IsTotallyComplex K] : discr K < 0 :=
+  (isTotallyComplex_iff_discr_neg K).mp ‹_›
+
 end embeddings
 
 end NumberField.QuadraticField
