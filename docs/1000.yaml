@@ -3636,6 +3636,10 @@ Q7130794:
 
 Q7137494:
   title: Paris–Harrington theorem
+  url: https://github.com/gotrevor/goodstein-independence/blob/main/src/GoodsteinPA/PH/Main.lean
+  authors: Trevor Morris
+  date: 2026-09-26
+  comment: "Peano Arithmetic does not prove the Paris–Harrington principle (Paris–Harrington, 1977); its truth is proved alongside. Standalone Lean 4 formalization built on the FormalizedFormalLogic/Foundation library."
 
 Q7139570:
   title: Parovicenko's theorem
