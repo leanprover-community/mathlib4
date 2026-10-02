@@ -8,6 +8,8 @@ module
 public import Mathlib.Order.Disjointed
 public import Mathlib.Topology.LocallyFinite
 
+import Mathlib.Basic.Finite.Sigma
+
 /-! # `σ`-locally finite families of sets
 In this file we define σ-locally finite families of sets, i.e. families of sets that consist of
 countably many locally finite families.
@@ -118,3 +120,20 @@ lemma SigmaLocallyFinite.prod_left {t : ι → Set Y} (ht : SigmaLocallyFinite t
 lemma Equiv.sigmaLocallyFinite_comp_iff {ι' : Type*} (e : ι' ≃ ι) :
     SigmaLocallyFinite (s ∘ e) ↔ SigmaLocallyFinite s :=
   ⟨fun hs ↦ hs.of_comp_surjective e.surjective, fun hs ↦ hs.comp_injective e.injective⟩
+
+/-- Every σ-locally finite open cover has a locally finite but not necessarily open refinement. -/
+lemma SigmaLocallyFinite.exists_locallyFinite_refinement (hs : SigmaLocallyFinite s)
+    (hs' : ∀ i, IsOpen (s i)) (hs'' : ⋃ i, s i = univ) :
+    ∃ t : ι → Set X, LocallyFinite t ∧ ⋃ i, t i = univ ∧ ∀ i, t i ⊆ s i := by
+  obtain ⟨κ, e, he⟩ := sigmaLocallyFinite_iff_exists_equiv.1 hs
+  refine ⟨fun i ↦ s i \ ⋃ n < (e i).fst, ⋃ i', s (e.symm ⟨n, i'⟩), fun x ↦ ?_, ?_, fun i ↦ by simp⟩
+  · have ⟨⟨n, k⟩, hk⟩ := e.exists_congr_left.1 <| iUnion_eq_univ_iff.1 hs'' x
+    choose u hu hu' using fun n ↦ he n x
+    refine ⟨s (e.symm ⟨n, k⟩) ∩ ⋂ m ≤ n, u m, Filter.inter_mem ((hs' _).mem_nhds hk) <|
+      (Filter.biInter_mem <| finite_Iic n).2 fun m _ ↦ hu m, ?_⟩
+    refine (((finite_Iic n).sigma (fun n _ ↦ hu' n)).preimage e.injective.injOn).subset
+      fun i ⟨x', hx'⟩ ↦ ?_
+    simp only [mem_inter_iff, mem_sdiff, mem_iUnion, mem_iInter] at hx' ⊢
+    exact ⟨by grind, x', by grind, by grind⟩
+  · rw [← e.symm.surjective.iUnion_comp, iUnion_sigma, ← iUnion_disjointed] at hs''
+    simpa [← e.symm.surjective.iUnion_comp, iUnion_sigma, disjointed_apply, iUnion_sdiff] using hs''

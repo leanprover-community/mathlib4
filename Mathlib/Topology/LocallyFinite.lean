@@ -126,9 +126,17 @@ theorem closure_iUnion (h : LocallyFinite f) : closure (⋃ i, f i) = ⋃ i, clo
   ext x
   simp only [mem_closure_iff_nhdsWithin_neBot, h.nhdsWithin_iUnion, iSup_neBot, mem_iUnion]
 
+theorem closure_biUnion {s : Set ι} (hf : LocallyFinite f) :
+    closure (⋃ i ∈ s, f i) = ⋃ i ∈ s, closure (f i) := by
+  simpa using (hf.comp_injective (ι' := s) Subtype.val_injective).closure_iUnion
+
 theorem isClosed_iUnion (hf : LocallyFinite f) (hc : ∀ i, IsClosed (f i)) :
     IsClosed (⋃ i, f i) := by
   simp only [← closure_eq_iff_isClosed, hf.closure_iUnion, (hc _).closure_eq]
+
+theorem isClosed_biUnion (hf : LocallyFinite f) {s : Set ι} (hf' : ∀ i ∈ s, IsClosed (f i)) :
+    IsClosed (⋃ i ∈ s, f i) := by
+  simpa [hf'] using (hf.comp_injective (ι' := s) Subtype.val_injective).isClosed_iUnion
 
 /-- If `f : β → Set α` is a locally finite family of closed sets, then for any `x : α`, the
 intersection of the complements to `f i`, `x ∉ f i`, is a neighbourhood of `x`. -/
