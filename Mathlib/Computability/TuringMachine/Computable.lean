@@ -110,17 +110,13 @@ end FinTM2
 def initList (tm : FinTM2) (s : List (tm.Γ tm.k₀)) : tm.Cfg where
   l := Option.some tm.main
   var := tm.initialState
-  stk k :=
-    @dite (List (tm.Γ k)) (k = tm.k₀) (tm.kDecidableEq k tm.k₀) (fun h => by rw [h]; exact s)
-      fun _ => []
+  stk := Function.update (fun _ ↦ []) tm.k₀ s
 
 /-- The final configuration corresponding to a list in the output alphabet. -/
 def haltList (tm : FinTM2) (s : List (tm.Γ tm.k₁)) : tm.Cfg where
   l := Option.none
   var := tm.initialState
-  stk k :=
-    @dite (List (tm.Γ k)) (k = tm.k₁) (tm.kDecidableEq k tm.k₁) (fun h => by rw [h]; exact s)
-      fun _ => []
+  stk := Function.update (fun _ ↦ []) tm.k₁ s
 
 @[deprecated (since := "2026-03-06")] protected alias EvalsTo :=
   StateTransition.EvalsTo
