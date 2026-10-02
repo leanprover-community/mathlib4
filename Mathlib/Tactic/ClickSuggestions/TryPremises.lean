@@ -123,12 +123,12 @@ where
       discard <| foldTasksM tasks ({} : SectionState α) fun s ↦ fun
         | .ok (some res) => do
           let s ← s.insertResult res isDup
-          token.updateLazy (renderSection tactic kind s)
+          token.updateLazy (renderSection kind s)
           return s
         | .ok none => pure s
         | .error e => do
           let s := { s with errors := s.errors.push e }
-          token.updateLazy (renderSection tactic kind s)
+          token.updateLazy (renderSection kind s)
           return s
       ).catchExceptions fun ex ↦ do
         if let .internal ex := ex then
