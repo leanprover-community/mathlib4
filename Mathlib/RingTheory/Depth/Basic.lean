@@ -42,6 +42,7 @@ all modules refer to `R`-module.
 ## References
 
 * [Commutative Algebra, Theorem 28][matsumuraCommAlg]
+* [W. Bruns, J. Herzog, Cohen–Macaulay rings][brunsHerzog1998]
 
 -/
 
