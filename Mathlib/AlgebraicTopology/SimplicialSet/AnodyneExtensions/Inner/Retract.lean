@@ -51,8 +51,7 @@ noncomputable def innerHornRetract {n : ℕ} (i : Fin (n + 1))
   let r : Δ[2] ⊗ Δ[n] ⟶ Δ[n] :=
     (prodStdSimplex.isoNerve 2 n).hom ≫ nerveMap (r₀ i).uliftMap.monotone.functor ≫
       (stdSimplex.isoNerve n).inv
-  refine (Subfunctor.retractArrow Λ[n, i] (Λ[2, 1].unionProd Λ[n, i])
-    ⟨s, r, ?_⟩ ?_ ?_).trans (Retract.refl _)
+  refine (Λ[n, i].retractArrow (Λ[2, 1].unionProd Λ[n, i]) ⟨s, r, ?_⟩ ?_ ?_)
   · ext ⟨⟨k⟩⟩ x j
     apply Fin.val_eq_of_eq
     change r₀ _ ((s₀ i) (x j), x j) = x j
@@ -61,9 +60,9 @@ noncomputable def innerHornRetract {n : ℕ} (i : Fin (n + 1))
   · intro k x hx
     exact Or.inl ⟨Set.mem_univ _, hx⟩
   · rintro ⟨⟨k⟩⟩ ⟨x, y⟩ h
-    change r.app _ (x, y) ∈ Λ[n, i].obj _
+    simp only [CategoryTheory.Monoidal.tensorObj_obj]
+    rw [Subfunctor.preimage_obj, Set.mem_preimage, mem_horn_iff_notMem_range]
     rw [Subcomplex.mem_unionProd_iff] at h
-    rw [mem_horn_iff_notMem_range]
     rcases h with hy | hx
     · obtain ⟨a, ha, hy⟩ := (mem_horn_iff_notMem_range y i).1 hy
       refine ⟨a, ha, fun ⟨j, hj⟩ ↦ ?_⟩
