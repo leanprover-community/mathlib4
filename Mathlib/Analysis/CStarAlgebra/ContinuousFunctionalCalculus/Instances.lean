@@ -74,7 +74,7 @@ functional calculus.
 -/
 noncomputable def cfcₙAux : C(σₙ 𝕜 a, 𝕜)₀ →⋆ₙₐ[𝕜] A⁺¹ :=
   (cfcHom (R := 𝕜) (hp₁.mpr ha)).toNonUnitalStarAlgHom |>.comp
-      (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 <| .setCongr <|
+      (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 <| .setCongr
         (quasispectrum_eq_spectrum_inr' 𝕜 𝕜 a).symm).toNonUnitalStarAlgHom
     |>.comp ContinuousMapZero.toContinuousMapHom
 
@@ -82,7 +82,7 @@ lemma cfcₙAux_id : cfcₙAux hp₁ a ha (.id _) = a := cfcHom_id (hp₁.mpr ha
 
 lemma continuous_cfcₙAux : Continuous (cfcₙAux hp₁ a ha) :=
   (cfcHom_continuous (hp₁.mpr ha)).comp <|
-    (ContinuousMap.continuous_precomp _).comp <|
+    (ContinuousMap.continuous_precomp _).comp
     ContinuousMapZero.isEmbedding_toContinuousMap.continuous
 
 lemma cfcₙAux_injective : Function.Injective (cfcₙAux hp₁ a ha) :=
@@ -118,7 +118,7 @@ lemma cfcₙAux_mem_range_inr (f : C(σₙ 𝕜 a, 𝕜)₀) :
     rw [SetLike.mem_coe, NonUnitalStarSubalgebra.mem_comap, cfcₙAux_id hp₁ a ha]
     exact ⟨a, rfl⟩
   · simp only [NonUnitalStarAlgHom.coe_range]
-    convert! IsClosed.preimage (Unitization.continuous_fst (𝕜 := 𝕜)) isClosed_singleton
+    convert IsClosed.preimage (Unitization.continuous_fst (𝕜 := 𝕜)) isClosed_singleton
     aesop
 
 variable [CStarRing A]
@@ -134,8 +134,8 @@ theorem RCLike.nonUnitalContinuousFunctionalCalculus :
     let ψ : C(σₙ 𝕜 a, 𝕜)₀ →⋆ₙₐ[𝕜] A := comp (inrRangeEquiv 𝕜 A).symm.toNonUnitalStarAlgHom <|
       codRestrict (cfcₙAux hp₁ a ha) _ (cfcₙAux_mem_range_inr hp₁ a ha)
     have coe_ψ (f : C(σₙ 𝕜 a, 𝕜)₀) : ψ f = cfcₙAux hp₁ a ha f :=
-      congr_arg Subtype.val <| (inrRangeEquiv 𝕜 A).apply_symm_apply
-        ⟨cfcₙAux hp₁ a ha f, cfcₙAux_mem_range_inr hp₁ a ha f⟩
+      congr($((inrRangeEquiv 𝕜 A).apply_symm_apply
+        ⟨cfcₙAux hp₁ a ha f, cfcₙAux_mem_range_inr hp₁ a ha f⟩).val)
     refine ⟨ψ, ?continuous, ?injective, ?map_id, fun f ↦ ?map_spec, fun f ↦ ?isStarNormal⟩
     case continuous =>
       rw [isometry_inr (𝕜 := 𝕜) |>.isEmbedding.continuous_iff]
@@ -173,7 +173,7 @@ theorem RCLike.nonUnitalContinuousFunctionalCalculusIsClosedEmbedding :
   toNonUnitalContinuousFunctionalCalculus := RCLike.nonUnitalContinuousFunctionalCalculus hp₁
   isClosedEmbedding a ha := by
     apply isometry_inr (𝕜 := 𝕜) (A := A) |>.isClosedEmbedding |>.of_comp_iff.mp
-    convert! isClosedEmbedding_cfcₙAux hp₁ a ha
+    convert isClosedEmbedding_cfcₙAux hp₁ a ha
     congrm (⇑$(inrNonUnitalStarAlgHom_comp_cfcₙHom_eq_cfcₙAux hp₁ a ha))
 
 end RCLike

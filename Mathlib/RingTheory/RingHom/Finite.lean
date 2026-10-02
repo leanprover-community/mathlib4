@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RingTheory.Localization.Finiteness
 public import Mathlib.RingTheory.LocalProperties.Basic
-public import Mathlib.RingTheory.TensorProduct.Finite
+import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 

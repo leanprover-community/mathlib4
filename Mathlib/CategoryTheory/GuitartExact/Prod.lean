@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.GuitartExact.Basic
 
 /-!
-# External products of Guitart exact quares
+# External products of Guitart exact squares
 
 In this file, we show that the external product of two Guitart exact
 squares is a Guitart exact square.
@@ -41,9 +41,8 @@ def functorObj (X : StructuredArrowRightwards (w.prod w') g) :
     StructuredArrowRightwards.mk w' g.2 _ X.hom.left.2 X.right.hom.2 (by
       simpa only [Category.comp_id] using! dsimp% congr($(X.hom.w).snd))⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `TwoSquare.StructuredArrowRightwards.prodEquivalence`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def functor : StructuredArrowRightwards (w.prod w') g ⥤
     (StructuredArrowRightwards w g.1) × (StructuredArrowRightwards w' g.2) where
   obj X := functorObj w w' g X
@@ -71,33 +70,26 @@ def inverseObj (X : (StructuredArrowRightwards w g.1) × (StructuredArrowRightwa
 def inverse : (StructuredArrowRightwards w g.1) × (StructuredArrowRightwards w' g.2) ⥤
     StructuredArrowRightwards (w.prod w') g where
   obj X := inverseObj w w' g X
-  map f := StructuredArrow.homMk
-    (CostructuredArrow.homMk ⟨f.1.right.left, f.2.right.left⟩ (by
-      dsimp
-      ext
-      · exact CostructuredArrow.w f.1.right
-      · exact CostructuredArrow.w f.2.right)) (by
-      dsimp
-      ext
-      · have := StructuredArrow.w f.1
-        cat_disch
-      · have := StructuredArrow.w f.2
+  map f :=
+    StructuredArrow.homMk
+      (CostructuredArrow.homMk ⟨f.1.right.left, f.2.right.left⟩) (by
+        have := StructuredArrow.w f.1
+        have := StructuredArrow.w f.2
         cat_disch)
 
 end prodEquivalence
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `w` and `w'` are two `2`-squares of functors, then the categories
 `StructuredArrowRightwards (w.prod w') g` decomposes as a product of two
 `StructuredArrowRightwards` for `w` and `w'`. -/
-@[simps]
+@[simps, implicit_reducible]
 def prodEquivalence {Y₂ : C₂ × D₂} {Y₃ : C₃ × D₃} (g : (R.prod R').obj Y₂ ⟶ (B.prod B').obj Y₃) :
     StructuredArrowRightwards (w.prod w') g ≌
       (StructuredArrowRightwards w g.1) × (StructuredArrowRightwards w' g.2) where
   functor := prodEquivalence.functor w w' g
   inverse := prodEquivalence.inverse w w' g
-  unitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
-  counitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
 
 end StructuredArrowRightwards
 

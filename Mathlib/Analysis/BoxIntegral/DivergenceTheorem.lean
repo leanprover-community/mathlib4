@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.BoxIntegral.Basic
-public import Mathlib.Analysis.BoxIntegral.Partition.Additive
 public import Mathlib.Analysis.Calculus.FDeriv.Prod
 
 /-!
