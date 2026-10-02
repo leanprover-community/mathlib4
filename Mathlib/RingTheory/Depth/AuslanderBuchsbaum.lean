@@ -55,7 +55,7 @@ end hom
 
 universe v u
 
-open IsLocalRing RingTheory.Sequence Ideal CategoryTheory Abelian Limits
+open IsLocalRing RingTheory.Sequence Ideal CategoryTheory Abelian Limits ModuleCat
 
 variable {R : Type u} [CommRing R] [Small.{v} R]
 
