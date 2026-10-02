@@ -242,7 +242,7 @@ theorem mem_ofZNum' : ∀ {m : Num} {n : ZNum}, m ∈ ofZNum' n ↔ n = toZNum m
   | 0, 0 => ⟨fun _ => rfl, fun _ => rfl⟩
   | pos _, 0 => ⟨nofun, nofun⟩
   | m, ZNum.pos p =>
-    Option.some_inj.trans <| by cases m <;> constructor <;> intro h <;> try cases h <;> rfl
+    Option.some_inj.trans <| by cases m <;> constructor <;> intro h <;> cases h <;> rfl
   | m, ZNum.neg p => ⟨nofun, fun h => by cases m <;> cases h⟩
 
 theorem ofZNum'_toNat : ∀ n : ZNum, (↑) <$> ofZNum' n = Int.toNat? n
