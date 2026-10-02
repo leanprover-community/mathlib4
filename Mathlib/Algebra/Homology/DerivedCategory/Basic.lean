@@ -280,10 +280,12 @@ def singleFunctorIsoCompQh (n : ℤ) :
     singleFunctor C n ≅ HomotopyCategory.singleFunctor C n ⋙ Qh :=
   (SingleFunctors.evaluation _ _ n).mapIso (singleFunctorsPostcompQhIso C)
 
+variable {C} in
 lemma isIso_Q_map_iff_quasiIso {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
     IsIso (Q.map φ) ↔ QuasiIso φ := by
   apply HomologicalComplexUpToQuasiIso.isIso_Q_map_iff_mem_quasiIso
 
+variable {C} in
 lemma Q_map_eq_of_homotopy {K L : CochainComplex C ℤ} {f g : K ⟶ L} (h : Homotopy f g) :
     DerivedCategory.Q.map f = DerivedCategory.Q.map g :=
   HomologicalComplexUpToQuasiIso.Q_map_eq_of_homotopy h
