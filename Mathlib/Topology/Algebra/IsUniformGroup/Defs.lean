@@ -616,7 +616,7 @@ variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 
 Warning: in general the right and left uniformities do not coincide and so one does not obtain a
 `IsUniformGroup` structure. Two important special cases where they _do_ coincide are for
-commutative groups (see `IsUniformGroup.of_rightUniformGroup_commGroup`)
+commutative groups (see `IsUniformGroup.of_isRightUniformGroup_commGroup`)
 and for compact groups (see `IsUniformGroup.of_compactSpace`). -/
 @[to_additive (attr := instance_reducible)
 /-- The right uniformity on a topological additive group (as opposed to the left
@@ -682,7 +682,7 @@ variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 
 Warning: in general the right and left uniformities do not coincide and so one does not obtain a
 `IsUniformGroup` structure. Two important special cases where they _do_ coincide are for
-commutative groups (see `IsUniformGroup.of_leftUniformGroup_commGroup`)
+commutative groups (see `IsUniformGroup.of_isLeftUniformGroup_commGroup`)
 and for compact groups (see `IsUniformGroup.of_compactSpace`). -/
 @[to_additive (attr := instance_reducible)
 /-- The left uniformity on a topological additive group (as opposed to the right
@@ -741,7 +741,7 @@ section RightUniformCommGroup
 variable (G : Type*) [CommGroup G] [UniformSpace G] [IsRightUniformGroup G]
 
 @[to_additive]
-theorem IsUniformGroup.of_rightUniformGroup_commGroup : IsUniformGroup G := by
+theorem IsUniformGroup.of_isRightUniformGroup_commGroup : IsUniformGroup G := by
   rw [isUniformGroup_iff_left_right, and_iff_left ‹_›,
     isLeftUniformGroup_iff_leftUniformSpace_eq]
   apply UniformSpace.ext
@@ -759,7 +759,7 @@ attribute [local instance] IsTopologicalGroup.rightUniformSpace
 @[to_additive]
 theorem IsUniformGroup.rightUniformSpace_of_commGroup : IsUniformGroup G :=
   have := IsRightUniformGroup.rightUniformSpace G
-  IsUniformGroup.of_rightUniformGroup_commGroup G
+  IsUniformGroup.of_isRightUniformGroup_commGroup G
 
 end RightTopologicalCommGroup
 
@@ -768,7 +768,7 @@ section LeftUniformCommGroup
 variable (G : Type*) [CommGroup G] [UniformSpace G] [IsLeftUniformGroup G]
 
 @[to_additive]
-theorem IsUniformGroup.of_leftUniformGroup_commGroup : IsUniformGroup G := by
+theorem IsUniformGroup.of_isLeftUniformGroup_commGroup : IsUniformGroup G := by
   rw [isUniformGroup_iff_left_right, and_iff_right ‹_›,
     isRightUniformGroup_iff_rightUniformSpace_eq]
   apply UniformSpace.ext
@@ -786,7 +786,7 @@ attribute [local instance] IsTopologicalGroup.leftUniformSpace
 @[to_additive]
 theorem IsUniformGroup.leftUniformSpace_of_commGroup : IsUniformGroup G :=
   have := IsLeftUniformGroup.leftUniformSpace G
-  IsUniformGroup.of_leftUniformGroup_commGroup G
+  IsUniformGroup.of_isLeftUniformGroup_commGroup G
 
 end LeftTopologicalCommGroup
 
