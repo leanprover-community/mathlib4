@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel, Kexing Ying
 module
 
 public import Mathlib.Probability.Moments.Covariance
-public import Mathlib.Probability.Notation
 import Mathlib.MeasureTheory.Function.LpSeminorm.Prod
 import Mathlib.Probability.Independence.Integrable
 
@@ -96,9 +95,9 @@ theorem variance_congr (h : X =ᵐ[μ] Y) : Var[X; μ] = Var[Y; μ] := by
 @[simp] lemma variance_zero_measure : Var[X; (0 : Measure Ω)] = 0 := by simp [variance]
 
 theorem evariance_lt_top [IsFiniteMeasure μ] (hX : MemLp X 2 μ) : evariance X μ < ∞ := by
-  have := ENNReal.pow_lt_top (hX.sub <| memLp_const <| μ[X]) (n := 2)
+  have := ENNReal.pow_lt_top (hX.sub <| memLp_const μ[X]) (n := 2)
   rw [eLpNorm_eq_lintegral_rpow_enorm_toReal two_ne_zero ENNReal.ofNat_ne_top
-    (hX.sub <| memLp_const <| μ[X]).aestronglyMeasurable, ← ENNReal.rpow_two]
+    (hX.sub <| memLp_const μ[X]).aestronglyMeasurable, ← ENNReal.rpow_two]
     at this
   simp only [ENNReal.toReal_ofNat, Pi.sub_apply, one_div] at this
   rw [← ENNReal.rpow_mul, inv_mul_cancel₀ (two_ne_zero : (2 : ℝ) ≠ 0), ENNReal.rpow_one] at this
@@ -119,7 +118,7 @@ theorem evariance_eq_top [IsFiniteMeasure μ] (hXm : AEStronglyMeasurable X μ) 
     simp only [ENNReal.toReal_ofNat, ENNReal.rpow_two]
     exact ENNReal.rpow_lt_top_of_nonneg (by linarith) h.ne
   refine hX ?_
-  convert! this.add (memLp_const μ[X])
+  convert this.add (memLp_const μ[X])
   ext ω
   rw [Pi.add_apply, sub_add_cancel]
 
@@ -219,7 +218,7 @@ theorem variance_smul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
 
 theorem variance_smul' {A : Type*} [CommSemiring A] [Algebra A ℝ] (c : A) (X : Ω → ℝ)
     (μ : Measure Ω) : variance (c • X) μ = c ^ 2 • variance X μ := by
-  convert! variance_smul (algebraMap A ℝ c) X μ using 1
+  convert variance_smul (algebraMap A ℝ c) X μ using 1
   · simp only [algebraMap_smul]
   · simp only [Algebra.smul_def, map_pow]
 
@@ -354,7 +353,7 @@ theorem variance_le_expectation_sq [IsProbabilityMeasure μ] {X : Ω → ℝ}
         (memLp_two_iff_integrable_sq (by fun_prop)).2 h
       have B : MemLp (fun _ : Ω => μ[X]) 2 μ := memLp_const _
       apply hX
-      convert! A.add B
+      convert A.add B
       simp
   · exact Eventually.of_forall fun x => sq_nonneg _
   · exact (AEMeasurable.pow_const (hm.aemeasurable.sub_const _) _).aestronglyMeasurable
@@ -381,7 +380,7 @@ theorem meas_ge_le_evariance_div_sq {X : Ω → ℝ} (hX : AEStronglyMeasurable 
     (hc : c ≠ 0) : μ {ω | ↑c ≤ |X ω - μ[X]|} ≤ evariance X μ / c ^ 2 := by
   have A : (c : ℝ≥0∞) ≠ 0 := by rwa [Ne, ENNReal.coe_eq_zero]
   have B : AEStronglyMeasurable (fun _ : Ω => μ[X]) μ := aestronglyMeasurable_const
-  convert!
+  convert
       meas_ge_le_mul_pow_eLpNorm_enorm μ two_ne_zero ENNReal.ofNat_ne_top
         (f := X - fun _ ↦ μ[X]) A (by simp)
     using 1
@@ -398,7 +397,7 @@ from its expectation in terms of the variance. -/
 theorem meas_ge_le_variance_div_sq [IsFiniteMeasure μ] {X : Ω → ℝ} (hX : MemLp X 2 μ) {c : ℝ}
     (hc : 0 < c) : μ {ω | c ≤ |X ω - μ[X]|} ≤ ENNReal.ofReal (variance X μ / c ^ 2) := by
   rw [ENNReal.ofReal_div_of_pos (sq_pos_of_ne_zero hc.ne.symm), hX.ofReal_variance_eq]
-  convert! @meas_ge_le_evariance_div_sq _ _ _ _ hX.aestronglyMeasurable c.toNNReal
+  convert @meas_ge_le_evariance_div_sq _ _ _ _ hX.aestronglyMeasurable c.toNNReal
     (by simp [hc]) using 1
   · simp
   · rw [ENNReal.ofReal_pow hc.le]

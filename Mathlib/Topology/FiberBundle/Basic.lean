@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel, Floris van Doorn, Heather Macbeth
 module
 
 public import Mathlib.Topology.FiberBundle.Trivialization
-public import Mathlib.Topology.Order.LeftRightNhds
+import Mathlib.Topology.Order.LeftRightNhds
 
 /-!
 # Fiber bundles
@@ -596,7 +596,7 @@ def localTriv (i : ι) : Trivialization F Z.proj where
       rw [PartialEquiv.EqOnSource.source_inter_preimage_eq (Z.localTrivAsPartialEquiv_trans i j)]
       exact (continuousOn_open_iff (Z.trivChange i j).open_source).1
         (Z.trivChange i j).continuousOn _ s_open
-    convert! this using 1
+    convert this using 1
     dsimp [f, PartialEquiv.trans_source]
     rw [← preimage_comp, inter_assoc]
   toPartialEquiv := Z.localTrivAsPartialEquiv i
@@ -801,7 +801,7 @@ def trivializationOfMemPretrivializationAtlas (he : e ∈ a.pretrivializationAtl
       refine isOpen_iSup_iff.mpr fun he' => ?_
       rw [isOpen_coinduced, isOpen_induced_iff]
       obtain ⟨u, hu1, hu2⟩ := continuousOn_iff'.mp (a.continuous_trivChange _ he _ he') s hs
-      have hu3 := congr_arg (fun s => (fun x : e'.target => (x : B × F)) ⁻¹' s) hu2
+      have hu3 := congr((fun x : e'.target => (x : B × F)) ⁻¹' $hu2)
       simp only [Subtype.coe_preimage_self, preimage_inter, univ_inter] at hu3
       refine ⟨u ∩ e'.toPartialEquiv.target ∩ e'.toPartialEquiv.symm ⁻¹' e.source, ?_, by
         simp only [preimage_inter, inter_univ, Subtype.coe_preimage_self, hu3.symm]; rfl⟩

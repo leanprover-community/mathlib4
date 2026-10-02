@@ -5,7 +5,7 @@ Authors: Jiedong Jiang
 -/
 module
 
-public import Mathlib.Analysis.Normed.Field.Approximation
+import Mathlib.Analysis.Normed.Field.Approximation
 public import Mathlib.Analysis.Normed.Field.Krasner
 
 /-!

@@ -205,6 +205,8 @@ lemma isRegular_of_maximalIdeal_mem_ofList_minimalPrimes
       have : IsLocalHom (Ideal.Quotient.mk (x • (⊤ : Ideal R))) :=
         IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
       have : IsLocalRing R' := IsLocalRing.of_surjective _ Ideal.Quotient.mk_surjective
+      have : IsNoetherianRing R' := isNoetherianRing_of_surjective _ _ _
+        Ideal.Quotient.mk_surjective
       have xreg : IsSMulRegular R x := by
         by_contra nreg
         have mem_ass : x ∈ {r : R | IsSMulRegular R r}ᶜ := nreg
@@ -239,6 +241,8 @@ lemma isRegular_of_maximalIdeal_mem_ofList_minimalPrimes
             use r
         have max_mem := maximalIdeal_mem_minimalPrimes_of_surjective (Ideal.Quotient.mk p)
           Ideal.Quotient.mk_surjective le mem netop
+        have : IsNoetherianRing (R ⧸ p) := isNoetherianRing_of_surjective _ _ _
+          Ideal.Quotient.mk_surjective
         have le := Ideal.ofList_height_le_length' (rs'.map (algebraMap R (R ⧸ p))) mem_max
         have coe_eq : ((rs'.length + 1 : ℕ) : WithBot ℕ∞) = ((rs'.length + 1 : ℕ) : ℕ∞) := rfl
         rw [height_eq_height_maximalIdeal_of_maximalIdeal_mem_minimalPrimes _ max_mem,
