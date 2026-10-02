@@ -5,8 +5,7 @@ Authors: Qinchuan Zhang
 -/
 module
 
-public import Mathlib.Tactic.FieldSimp
-public import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.FieldSimp
 public import Mathlib.RingTheory.Polynomial.Vieta
 
 /-!

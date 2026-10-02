@@ -5,7 +5,6 @@ Authors: Yaël Dillies, Kin Yau James Wong, Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
 public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 
 /-!
@@ -74,7 +73,6 @@ private lemma IsCondKernel.apply_of_ne_zero_of_measurableSet [MeasurableSingleto
   have := isSFiniteKernel ρ ρCond (by rintro rfl; simp at hx)
   nth_rewrite 2 [← ρ.disintegrate ρCond]
   rw [Measure.compProd_apply (measurableSet_prod.mpr (Or.inl ⟨measurableSet_singleton x, hs⟩))]
-  classical
   have (a : _) : ρCond a (Prod.mk a ⁻¹' {x} ×ˢ s) = ({x} : Set α).indicator (ρCond · s) a := by
     obtain rfl | hax := eq_or_ne a x
     · simp only [singleton_prod, mem_singleton_iff, indicator_of_mem]
@@ -140,7 +138,7 @@ lemma IsCondKernel.isProbabilityMeasure_ae [IsFiniteKernel κ.fst] [κ.IsCondKer
   by_cases h_sfin : IsSFiniteKernel κCond
   swap; · rw [Kernel.compProd_of_not_isSFiniteKernel_right _ _ h_sfin] at h; simp [h.symm]
   suffices ∀ᵐ b ∂(κ.fst a), κCond (a, b) Set.univ = 1 by
-    convert this with b
+    convert! this with b
     exact ⟨fun _ ↦ measure_univ, fun h ↦ ⟨h⟩⟩
   suffices (∀ᵐ b ∂(κ.fst a), κCond (a, b) Set.univ ≤ 1)
       ∧ (∀ᵐ b ∂(κ.fst a), 1 ≤ κCond (a, b) Set.univ) by

@@ -58,7 +58,7 @@ theorem parallelepiped_basis_eq (b : Basis ι ℝ E) :
     parallelepiped b = {x | ∀ i, b.repr x i ∈ Set.Icc 0 1} := by
   classical
   ext x
-  simp_rw [mem_parallelepiped_iff, mem_setOf_eq, b.ext_elem_iff, _root_.map_sum,
+  simp_rw [mem_parallelepiped_iff, mem_ofPred_eq, b.ext_elem_iff, _root_.map_sum,
     map_smul, Finset.sum_apply', Basis.repr_self, Finsupp.smul_single, smul_eq_mul,
     mul_one, Finsupp.single_apply, Finset.sum_ite_eq', Finset.mem_univ, ite_true, mem_Icc,
     Pi.le_def, Pi.zero_apply, Pi.one_apply, ← forall_and]
@@ -191,7 +191,7 @@ def parallelepiped (b : Basis ι ℝ E) : PositiveCompacts E where
   interior_nonempty' := by
     suffices H : Set.Nonempty (interior (b.equivFunL.symm.toHomeomorph '' Icc 0 1)) by
       dsimp only [_root_.parallelepiped]
-      convert H
+      convert! H
       exact (b.equivFun_symm_apply _).symm
     have A : Set.Nonempty (interior (Icc (0 : ι → ℝ) 1)) := by
       rw [← pi_univ_Icc, interior_pi_set (@finite_univ ι _)]

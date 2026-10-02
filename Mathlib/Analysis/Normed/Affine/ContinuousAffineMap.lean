@@ -5,8 +5,7 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Topology.Algebra.ContinuousAffineMap
-public import Mathlib.Topology.MetricSpace.TransferInstance
+public import Mathlib.Topology.Algebra.ContinuousAffineMap.Topology
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 
@@ -73,7 +72,7 @@ theorem norm_eq (h : f 0 = 0) : ‖f‖ = ‖f.contLinear‖ :=
     _ = ‖f.contLinear‖ := max_eq_right (norm_nonneg _)
 
 noncomputable instance : PseudoMetricSpace (V →ᴬ[𝕜] Q) :=
-  (decompEquiv 𝕜 V Q).pseudometricSpace
+  (decompHomeomorph 𝕜 V Q).isEmbedding.comapPseudoMetricSpace
 
 noncomputable instance : SeminormedAddCommGroup (V →ᴬ[𝕜] W) where
   dist_eq _ _ := dist_eq_norm_neg_add (E := W × (V →L[𝕜] W)) _ _
@@ -128,18 +127,16 @@ theorem decompLinearIsometryEquiv_symm_contLinear (p : W × (V →L[𝕜] W)) :
   rw [decompLinearIsometryEquiv, ← LinearIsometryEquiv.coe_symm_toLinearEquiv,
     decompLinearEquiv_symm_contLinear]
 
-@[deprecated decompLinearIsometryEquiv (since := "2026-03-03"),
+@[deprecated decompLinearIsometryEquiv +typeChanged (since := "2026-03-03"),
   inherit_doc decompLinearIsometryEquiv]
 abbrev toConstProdContinuousLinearMap := decompLinearIsometryEquiv 𝕜 𝕜 V W
 
-set_option linter.deprecated false in
-@[deprecated fst_decompLinearIsometryEquiv (since := "2026-03-03")]
+@[deprecated fst_decompLinearIsometryEquiv +typeChanged (since := "2026-03-03")]
 theorem toConstProdContinuousLinearMap_fst (f : V →ᴬ[𝕜] W) :
     (toConstProdContinuousLinearMap 𝕜 V W f).fst = f 0 :=
   rfl
 
-set_option linter.deprecated false in
-@[deprecated snd_decompLinearIsometryEquiv (since := "2026-03-03")]
+@[deprecated snd_decompLinearIsometryEquiv +typeChanged (since := "2026-03-03")]
 theorem toConstProdContinuousLinearMap_snd (f : V →ᴬ[𝕜] W) :
     (toConstProdContinuousLinearMap 𝕜 V W f).snd = f.contLinear :=
   rfl
@@ -153,7 +150,7 @@ variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W
 variable [MetricSpace Q] [NormedAddTorsor W Q]
 
 noncomputable instance : MetricSpace (V →ᴬ[𝕜] Q) :=
-  (decompEquiv 𝕜 V Q).metricSpace
+  (decompHomeomorph 𝕜 V Q).isEmbedding.comapMetricSpace
 
 noncomputable instance : NormedAddCommGroup (V →ᴬ[𝕜] W) where
   __ : SeminormedAddCommGroup (V →ᴬ[𝕜] W) := inferInstance

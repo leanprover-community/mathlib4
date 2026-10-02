@@ -31,12 +31,12 @@ namespace ClopenUpperSet
 
 instance : SetLike (ClopenUpperSet α) α where
   coe s := s.carrier
-  coe_injective' s t h := by
+  coe_injective s t h := by
     obtain ⟨⟨_, _⟩, _⟩ := s
     obtain ⟨⟨_, _⟩, _⟩ := t
     congr
 
-instance : PartialOrder (ClopenUpperSet α) := .ofSetLike (ClopenUpperSet α) α
+instance : PartialOrder (ClopenUpperSet α) := .ofSetLike (ClopenUpperSet α)
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : ClopenUpperSet α) : Set α := s

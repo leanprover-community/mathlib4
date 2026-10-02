@@ -17,7 +17,9 @@ unbounded.
 
 public section
 
-open AffineSpace Bornology Filter Topology
+open AffineSpace Bornology Filter
+
+open scoped Topology
 
 variable
   {V P : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
@@ -37,7 +39,7 @@ theorem AffineSpace.asymptoticNhds_le_cobounded {v : V} (hv : v ≠ 0) :
 theorem asymptoticCone_subset_singleton_of_bounded {s : Set P} (hs : IsBounded s) :
     asymptoticCone ℝ s ⊆ {0} := by
   intro v h
-  by_contra! hv
+  by_contra hv
   exact h (asymptoticNhds_le_cobounded hv hs)
 
 variable [FiniteDimensional ℝ V]

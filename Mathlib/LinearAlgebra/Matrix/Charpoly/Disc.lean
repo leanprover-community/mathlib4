@@ -5,7 +5,6 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 public import Mathlib.RingTheory.Polynomial.Resultant.Basic
 
 
@@ -42,9 +41,5 @@ lemma discr_of_card_eq_two (A : Matrix n n R) (hn : Fintype.card n = 2) :
 lemma discr_fin_two (A : Matrix (Fin 2) (Fin 2) R) :
     A.discr = A.trace ^ 2 - 4 * A.det :=
   A.discr_of_card_eq_two <| Fintype.card_fin _
-
-@[deprecated (since := "2025-10-20")] alias disc := discr
-@[deprecated (since := "2025-10-20")] alias disc_of_card_eq_two := discr_of_card_eq_two
-@[deprecated (since := "2025-10-20")] alias disc_fin_two := discr_fin_two
 
 end Matrix

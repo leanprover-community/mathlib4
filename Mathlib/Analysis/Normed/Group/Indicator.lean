@@ -5,7 +5,7 @@ Authors: Zhouhang Zhou, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Indicator
+import Mathlib.Algebra.Order.Group.Indicator
 public import Mathlib.Analysis.Normed.Group.Basic
 
 /-!

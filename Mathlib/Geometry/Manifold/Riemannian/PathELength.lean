@@ -6,8 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
-public import Mathlib.Analysis.SpecialFunctions.SmoothTransition
-public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
+import Mathlib.Analysis.SpecialFunctions.SmoothTransition
 public import Mathlib.Geometry.Manifold.Instances.Icc
 public import Mathlib.MeasureTheory.Constructions.UnitInterval
 public import Mathlib.MeasureTheory.Function.JacobianOneDim
@@ -50,7 +49,7 @@ variable
 
 namespace Manifold
 
-variable [∀ (x : M), ENorm (TangentSpace I x)] {a b c a' b' : ℝ} {γ γ' : ℝ → M}
+variable [∀ (x : M), ENorm (TangentSpace% x)] {a b c a' b' : ℝ} {γ γ' : ℝ → M}
 
 variable (I) in
 /-- The length on `Icc a b` of a path into a manifold, where the path is defined on the whole real
@@ -131,7 +130,7 @@ lemma lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc {a b : ℝ}
 
 open MeasureTheory
 
-variable [∀ (x : M), ENormSMulClass ℝ (TangentSpace I x)]
+variable [∀ (x : M), ENormSMulClass ℝ (TangentSpace% x)]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The length of a path in a manifold is invariant under a monotone reparametrization. -/
@@ -157,8 +156,8 @@ lemma pathELength_comp_of_monotoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : Monot
     · rw [uniqueMDiffWithinAt_iff_uniqueDiffWithinAt]
       exact uniqueDiffOn_Icc h _ ht
   rw [this]
-  simp only [Function.comp_apply, ContinuousLinearMap.coe_comp']
-  have : mfderiv[Icc a b] f t 1 = derivWithin f (Icc a b) t • (1 : TangentSpace 𝓘(ℝ) (f t)) := by
+  simp only [Function.comp_apply, ContinuousLinearMap.comp_apply]
+  have : mfderiv[Icc a b] f t 1 = derivWithin f (Icc a b) t • (1 : TangentSpace% (f t)) := by
     simp only [mfderivWithin_eq_fderivWithin, ← fderivWithin_derivWithin, smul_eq_mul, mul_one]
     rfl
   rw [this]
@@ -189,9 +188,9 @@ lemma pathELength_comp_of_antitoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : Antit
     · rw [uniqueMDiffWithinAt_iff_uniqueDiffWithinAt]
       exact uniqueDiffOn_Icc h _ ht
   rw [this]
-  simp only [Function.comp_apply, ContinuousLinearMap.coe_comp']
+  simp only [Function.comp_apply, ContinuousLinearMap.comp_apply]
   have : mfderiv[Icc a b] f t 1
-      = derivWithin f (Icc a b) t • (1 : TangentSpace 𝓘(ℝ) (f t)) := by
+      = derivWithin f (Icc a b) t • (1 : TangentSpace% (f t)) := by
     simp only [mfderivWithin_eq_fderivWithin, ← fderivWithin_derivWithin, smul_eq_mul, mul_one]
     rfl
   rw [this]
@@ -242,7 +241,7 @@ lemma riemannianEDist_le_pathELength {γ : ℝ → M} (hγ : CMDiff[Icc a b] 1 �
   · simpa [η, ContinuousAffineMap.coe_lineMap_eq] using hγ.mdifferentiableOn one_ne_zero
   · apply (AffineMap.lineMap_mono hab).monotoneOn
 
-omit [∀ (x : M), ENormSMulClass ℝ (TangentSpace I x)] in
+omit [∀ (x : M), ENormSMulClass ℝ (TangentSpace% x)] in
 /-- If some `r` is strictly larger than the Riemannian edistance between two points, there exists
 a path between these two points of length `< r`. Here, we get such a path on `[0, 1]`.
 For a more precise version giving locally constant paths around the endpoints, see
@@ -335,7 +334,6 @@ lemma riemannianEDist_comm : riemannianEDist I x y = riemannianEDist I y x := by
   ext t
   simp [η]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma riemannianEDist_triangle :
     riemannianEDist I x z ≤ riemannianEDist I x y + riemannianEDist I y z := by
   apply le_of_forall_gt (fun r hr ↦ ?_)

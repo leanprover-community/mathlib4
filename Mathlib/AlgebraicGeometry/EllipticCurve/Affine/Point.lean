@@ -7,8 +7,7 @@ module
 
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Formula
 public import Mathlib.LinearAlgebra.FreeModule.Norm
-public import Mathlib.RingTheory.ClassGroup
-public import Mathlib.RingTheory.Polynomial.UniqueFactorization
+public import Mathlib.RingTheory.ClassGroup.Basic
 
 /-!
 # Nonsingular points and the group law in affine coordinates
@@ -118,25 +117,37 @@ protected noncomputable def basis : Basis (Fin 2) R[X] W'.CoordinateRing :=
   (subsingleton_or_nontrivial R).by_cases (fun _ => default) fun _ =>
     (AdjoinRoot.powerBasis' monic_polynomial).basis.reindex <| finCongr natDegree_polynomial
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma basis_apply (n : Fin 2) :
     CoordinateRing.basis W' n = (AdjoinRoot.powerBasis' monic_polynomial).gen ^ (n : ℕ) := by
   classical
   nontriviality R
-  rw [CoordinateRing.basis, Or.by_cases, dif_neg <| not_subsingleton R, Basis.reindex_apply,
+  rw [CoordinateRing.basis, Or.by_cases, dite_eq_right <| not_subsingleton R, Basis.reindex_apply,
     PowerBasis.basis_eq_pow, finCongr_symm_apply, Fin.val_cast]
 
 @[simp]
 lemma basis_zero : CoordinateRing.basis W' 0 = 1 := by
-  simpa only [basis_apply] using pow_zero _
+  simpa only [basis_apply] using! pow_zero _
 
 @[simp]
 lemma basis_one : CoordinateRing.basis W' 1 = mk W' Y := by
-  simpa only [basis_apply] using pow_one _
+  simpa only [basis_apply] using! pow_one _
 
 lemma coe_basis : (CoordinateRing.basis W' : Fin 2 → W'.CoordinateRing) = ![1, mk W' Y] := by
   ext n
   fin_cases n
   exacts [basis_zero, basis_one]
+
+instance : Module.Free R[X] W'.CoordinateRing := .of_basis (CoordinateRing.basis W')
+
+instance : Module.Free R W'.CoordinateRing := .trans (S := R[X])
+
+instance [Nontrivial R] : Nontrivial W'.CoordinateRing :=
+  ⟨_, _, (CoordinateRing.basis W').ne_zero 0⟩
+
+instance : FaithfulSMul R[X] W'.CoordinateRing := by nontriviality R; infer_instance
+
+instance : FaithfulSMul R W'.CoordinateRing := .trans R R[X] _
 
 lemma smul (x : R[X]) (y : W'.CoordinateRing) : x • y = mk W' (C x) * y :=
   (algebraMap_smul W'.CoordinateRing x y).symm
@@ -224,7 +235,7 @@ lemma C_addPolynomial_slope [DecidableEq F] {x₁ x₂ y₁ y₂ : F}
     (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂) (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
     mk W (C <| W.addPolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) =
       -(XClass W x₁ * XClass W x₂ * XClass W (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂)) :=
-  congr_arg (mk W) <| W.C_addPolynomial_slope h₁ h₂ hxy
+  congr(mk W $(W.C_addPolynomial_slope h₁ h₂ hxy))
 
 variable (W') in
 /-- The ideal `⟨X - x⟩` of `R[W]` for some `x` in `R`. -/
@@ -241,6 +252,7 @@ variable (W') in
 noncomputable def XYIdeal (x : R) (y : R[X]) : Ideal W'.CoordinateRing :=
   .span {XClass W' x, YClass W' y}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The `R`-algebra isomorphism from `R[W] / ⟨X - x, Y - y(X)⟩` to `R` obtained by evaluation at
 some `y(X)` in `R[X]` and at some `x` in `R` provided that `W(x, y(x)) = 0`. -/
 noncomputable def quotientXYIdealEquiv {x : R} {y : R[X]} (h : (W'.polynomial.eval y).eval x = 0) :
@@ -269,10 +281,6 @@ lemma XYIdeal_eq₁ (x y ℓ : R) : XYIdeal W' x (C y) = XYIdeal W' x (linePolyn
   C_simp
   ring1
 
--- Non-terminal simp, used to be field_simp
-set_option linter.flexible false in
--- see https://github.com/leanprover-community/mathlib4/issues/29041
-set_option linter.unusedSimpArgs false in
 lemma XYIdeal_eq₂ [DecidableEq F] {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
     (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
     XYIdeal W x₂ (C y₂) = XYIdeal W x₂ (linePolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) := by
@@ -281,7 +289,7 @@ lemma XYIdeal_eq₂ [DecidableEq F] {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation
     · have hy : y₁ ≠ W.negY x₂ y₂ := fun h => hxy ⟨hx, h⟩
       rcases hx, Y_eq_of_Y_ne h₁ h₂ hx hy with ⟨rfl, rfl⟩
       simp [linePolynomial]
-    · simp [field, linePolynomial, slope_of_X_ne hx, sub_ne_zero_of_ne hx]
+    · simp [field, linePolynomial, slope_of_X_ne hx]
       ring1
   nth_rw 1 [hy₂]
   simp only [XYIdeal, XClass, YClass, linePolynomial]
@@ -297,11 +305,11 @@ lemma XYIdeal_neg_mul {x y : F} (h : W.Nonsingular x y) :
       C (X - C x) * (C (X ^ 2 + C (x + W.a₂) * X + C (x ^ 2 + W.a₂ * x + W.a₄)) - C (C W.a₁) * Y) =
         W.polynomial * 1 := by
     linear_combination (norm := (rw [negY, polynomial]; C_simp; ring1))
-      congr_arg C (congr_arg C ((equation_iff ..).mp h.left).symm)
+      congr(C (C $(((equation_iff ..).mp h.left).symm)))
   simp_rw [XYIdeal, XClass, YClass, span_pair_mul_span_pair, mul_comm, ← map_mul,
     AdjoinRoot.mk_eq_mk.mpr ⟨1, Y_rw⟩, map_mul, span_insert, ← span_singleton_mul_span_singleton,
     ← Ideal.mul_sup, ← span_insert]
-  convert mul_top (_ : Ideal W.CoordinateRing) using 2
+  convert! mul_top (_ : Ideal W.CoordinateRing) using 2
   on_goal 2 => infer_instance
   simp_rw [← Set.image_singleton (f := mk W), ← Set.image_insert_eq, ← map_span]
   convert map_top (R := F[X][Y]) (mk W) using 1
@@ -357,7 +365,7 @@ lemma XYIdeal_mul_XYIdeal [DecidableEq F] {x₁ x₂ y₁ y₂ : F}
     rw [polynomial, negPolynomial, ← mul_right_inj' <| C_ne_zero.mpr <| C_ne_zero.mpr hxy]
     simp only [y, mul_add, ← mul_assoc, ← C_mul, mul_inv_cancel₀ hxy]
     linear_combination (norm := (rw [b₂, b₄, negY]; C_simp; ring1))
-      -4 * congr_arg C (congr_arg C <| (equation_iff ..).mp h₁)
+      -4 * congr(C (C $((equation_iff ..).mp h₁)))
   · replace hx := sub_ne_zero_of_ne hx
     refine ⟨_, ⟨⟨C <| C (x₁ - x₂)⁻¹, C <| C <| (x₁ - x₂)⁻¹ * -1, 0, ?_⟩, map_one _⟩⟩
     rw [← mul_right_inj' <| C_ne_zero.mpr <| C_ne_zero.mpr hx]
@@ -377,21 +385,18 @@ lemma XYIdeal'_eq {x y : F} (h : W.Nonsingular x y) :
     (XYIdeal' h : FractionalIdeal W.CoordinateRing⁰ W.FunctionField) = XYIdeal W x (C y) :=
   rfl
 
--- note: giving `W` to `XYIdeal'` explicitly hugely speeds up elaboration for some reason.
--- see https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Field.20.28FunctionField.20.3Fm.2E19.29/near/594011283
 lemma mk_XYIdeal'_neg_mul {x y : F} (h : W.Nonsingular x y) :
-    ClassGroup.mk (XYIdeal' (W := W) <| (nonsingular_neg ..).mpr h) *
-      ClassGroup.mk (XYIdeal' (W := W) h) = 1 := by
+    ClassGroup.mk W.FunctionField (XYIdeal'  <| (nonsingular_neg ..).mpr h) *
+      ClassGroup.mk W.FunctionField (XYIdeal' h) = 1 := by
   rw [← map_mul]
   exact (ClassGroup.mk_eq_one_of_coe_ideal <| (coeIdeal_mul ..).symm.trans <|
     FractionalIdeal.coeIdeal_inj.mpr <| XYIdeal_neg_mul h).mpr ⟨_, XClass_ne_zero x, rfl⟩
 
--- note: giving `W` to `XYIdeal'` explicitly hugely speeds up elaboration for some reason.
--- see https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Field.20.28FunctionField.20.3Fm.2E19.29/near/594011283
 lemma mk_XYIdeal'_mul_mk_XYIdeal' [DecidableEq F] {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingular x₁ y₁)
     (h₂ : W.Nonsingular x₂ y₂) (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
-    ClassGroup.mk (XYIdeal' (W := W) h₁) * ClassGroup.mk (XYIdeal' (W := W) h₂) =
-      ClassGroup.mk (XYIdeal' (W := W) <| nonsingular_add h₁ h₂ hxy) := by
+    ClassGroup.mk W.FunctionField (XYIdeal' h₁) *
+        ClassGroup.mk W.FunctionField (XYIdeal' h₂) =
+      ClassGroup.mk W.FunctionField (XYIdeal' <| nonsingular_add h₁ h₂ hxy) := by
   rw [← map_mul]
   exact (ClassGroup.mk_eq_mk_of_coe_ideal (coeIdeal_mul ..).symm <| XYIdeal'_eq _).mpr
     ⟨_, _, XClass_ne_zero _, YClass_ne_zero _, XYIdeal_mul_XYIdeal h₁.left h₂.left hxy⟩
@@ -404,7 +409,7 @@ lemma norm_smul_basis (p q : R[X]) : Algebra.norm R[X] (p • (1 : W'.Coordinate
   simp_rw [Algebra.norm_eq_matrix_det <| CoordinateRing.basis W', Matrix.det_fin_two,
     Algebra.leftMulMatrix_eq_repr_mul, basis_zero, mul_one, basis_one, smul_basis_mul_Y, map_add,
     Finsupp.add_apply, map_smul, Finsupp.smul_apply, ← basis_zero, ← basis_one,
-    Basis.repr_self_apply, if_pos, one_ne_zero, if_false, smul_eq_mul]
+    Basis.repr_self_apply, ite_eq_left, one_ne_zero, ite_false, smul_eq_mul]
   ring1
 
 lemma coe_norm_smul_basis (p q : R[X]) : Algebra.norm R[X] (p • 1 + q • mk W' Y) =
@@ -435,14 +440,18 @@ lemma degree_norm_smul_basis [IsDomain R] (p q : R[X]) :
         · exact (hq hq').elim -- `hq'` should be `rfl`
         · rw [hq'] at hdpq hdq -- line should be redundant
           rcases le_or_gt dp (dq + 1) with hpq | hpq
-          · convert (degree_sub_eq_right_of_degree_lt <| (degree_sub_le _ _).trans_lt <|
-                      max_lt_iff.mpr ⟨hdp.trans_lt _, hdpq.trans_lt _⟩).trans
+          · convert
+            (degree_sub_eq_right_of_degree_lt <|
+                  (degree_sub_le _ _).trans_lt <|
+                    max_lt_iff.mpr ⟨hdp.trans_lt _, hdpq.trans_lt _⟩).trans
               (max_eq_right_of_lt _).symm <;> rw [hdq] <;>
                 exact WithBot.coe_lt_coe.mpr <| by dsimp; linarith only [hpq]
           · rw [sub_sub]
-            convert (degree_sub_eq_left_of_degree_lt <| (degree_add_le _ _).trans_lt <|
+            convert
+              (degree_sub_eq_left_of_degree_lt <|
+                    (degree_add_le _ _).trans_lt <|
                       max_lt_iff.mpr ⟨hdpq.trans_lt _, hdq.trans_lt _⟩).trans
-              (max_eq_left_of_lt _).symm <;> rw [hdp] <;>
+                (max_eq_left_of_lt _).symm <;> rw [hdp] <;>
                 exact WithBot.coe_lt_coe.mpr <| by dsimp; linarith only [hpq]
 
 lemma degree_norm_ne_one [IsDomain R] (x : W'.CoordinateRing) :
@@ -665,12 +674,12 @@ lemma add_def (P Q : W.Point) : P + Q = P.add Q :=
 lemma add_some {x₁ x₂ y₁ y₂ : F} (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) {h₁ : W.Nonsingular x₁ y₁}
     {h₂ : W.Nonsingular x₂ y₂} :
     some _ _ h₁ + some _ _ h₂ = some _ _ (nonsingular_add h₁ h₂ hxy) := by
-  simp only [add_def, add, dif_neg hxy]
+  simp only [add_def, add, dite_eq_right hxy]
 
 @[simp]
 lemma add_of_Y_eq {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}
     (hx : x₁ = x₂) (hy : y₁ = W.negY x₂ y₂) : some _ _ h₁ + some _ _ h₂ = 0 := by
-  simpa only [add_def, add] using dif_pos ⟨hx, hy⟩
+  simpa only [add_def, add] using dite_eq_left ⟨hx, hy⟩
 
 -- Removing `@[simp]`, because `hy` causes a maximum recursion depth error in the simpNF linter.
 lemma add_self_of_Y_eq {x₁ y₁ : F} {h₁ : W.Nonsingular x₁ y₁} (hy : y₁ = W.negY x₁ y₁) :
@@ -708,13 +717,41 @@ lemma add_of_X_ne' {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h
     some _ _ h₁ + some _ _ h₂ = -some _ _ (nonsingular_negAdd h₁ h₂ fun hxy => hx hxy.left) :=
   add_of_X_ne hx
 
+/-- A nonzero affine `2`-torsion point `some x y h` of `W` (that is, `P + P = 0`) has `X`-coordinate
+a root of `W.twoTorsionPolynomial`. -/
+theorem isRoot_twoTorsionPolynomial_of_add_self {x y : F} (h : W.Nonsingular x y)
+    (hP : some x y h + some x y h = 0) : W.twoTorsionPolynomial.toPoly.IsRoot x := by
+  rw [IsRoot.def, eval_toPoly_twoTorsionPolynomial, b₂, b₄, b₆]
+  have hy : y = W.negY x y := by
+    by_contra hne
+    rw [add_self_of_Y_ne hne] at hP
+    exact some_ne_zero _ hP
+  grind [h.left, negY, equation_iff]
+
+/-- `x` is a root of the `2`-torsion polynomial of a Weierstrass curve of characteristic
+different from `2` with nonzero discriminant if and only if it is the `X`-coordinate of a nonzero
+affine `2`-torsion point. -/
+theorem isRoot_twoTorsionPolynomial_iff (h2 : NeZero (2 : F)) (hΔ : W.Δ ≠ 0) (x : F) :
+    W.twoTorsionPolynomial.toPoly.IsRoot x ↔
+      ∃ y, ∃ h : W.Nonsingular x y, some x y h + some x y h = 0 := by
+  constructor
+  · intro hroot
+    rw [IsRoot.def, eval_toPoly_twoTorsionPolynomial, b₂, b₄, b₆] at hroot
+    set y := (-W.a₁ * x - W.a₃) / 2
+    have heq : W.Equation x y := by grind [NeZero.out, equation_iff]
+    refine ⟨y, (equation_iff_nonsingular_of_Δ_ne_zero hΔ).mp heq, add_self_of_Y_eq ?_⟩
+    grind [negY]
+  · rintro ⟨y, hns, hP⟩
+    exact isRoot_twoTorsionPolynomial_of_add_self hns hP
+
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The group homomorphism mapping a nonsingular affine point `(x, y)` of a Weierstrass curve `W` to
 the class of the non-zero fractional ideal `⟨X - x, Y - y⟩` in the ideal class group of `F[W]`. -/
 @[simps]
 noncomputable def toClass : W.Point →+ Additive (ClassGroup W.CoordinateRing) where
   toFun P := match P with
     | 0 => 0
-    | some _ _ h => ClassGroup.mk <| CoordinateRing.XYIdeal' h
+    | some _ _ h => ClassGroup.mk W.FunctionField <| CoordinateRing.XYIdeal' h
   map_zero' := rfl
   map_add' := by
     rintro (_ | ⟨x₁, y₁, h₁⟩) (_ | ⟨x₂, y₂, h₂⟩)
@@ -731,7 +768,7 @@ lemma toClass_zero : toClass (0 : W.Point) = 0 :=
 -- note: giving `W` to `XYIdeal'` explicitly hugely speeds up elaboration for some reason.
 -- see https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Field.20.28FunctionField.20.3Fm.2E19.29/near/594011283
 lemma toClass_some {x y : F} (h : W.Nonsingular x y) :
-    toClass (some _ _ h) = ClassGroup.mk (CoordinateRing.XYIdeal' (W := W) h) :=
+    toClass (some _ _ h) = ClassGroup.mk W.FunctionField (CoordinateRing.XYIdeal' (W := W) h) :=
   rfl
 
 private lemma add_eq_zero (P Q : W.Point) : P + Q = 0 ↔ P = -Q := by
@@ -794,7 +831,7 @@ noncomputable def map : (W'⁄F).Point →+ (W'⁄K).Point where
     by_cases hxy : x₁ = x₂ ∧ y₁ = (W'⁄F).negY x₂ y₂
     · rw [add_of_Y_eq hxy.left hxy.right,
         add_of_Y_eq (congr_arg _ hxy.left) <| by rw [hxy.right, baseChange_negY]]
-    · simpa only [add_some hxy, ← baseChange_addX, ← baseChange_addY, ← baseChange_slope] using
+    · simpa only [add_some hxy, ← baseChange_addX, ← baseChange_addY, ← baseChange_slope] using!
         (add_some fun h ↦ hxy ⟨f.injective h.1, f.injective (W'.baseChange_negY f .. ▸ h).2⟩).symm
 
 lemma map_zero : map f (0 : (W'⁄F).Point) = 0 :=
@@ -881,7 +918,56 @@ lemma xRep_eq_xRep_iff {P Q : W.Point} : P.xRep = Q.xRep ↔ P = Q ∨ P = -Q :=
   refine ⟨eq_or_eq_neg_of_xRep_eq_xRep, fun H ↦ ?_⟩
   rcases H with rfl | rfl <;> simp
 
+variable [DecidableEq F]
+
+/-- We give an explicit expression for `xRep` of `P + P` when `2*P ≠ 0`. -/
+lemma xRep_add_self_of_Y_ne {x y : F} (h : W.Nonsingular x y) (hn : y ≠ W.negY x y) :
+    (some x y h + some x y h).xRep =
+      ![(x ^ 4 - W.b₄ * x ^ 2 - 2 * W.b₆ * x - W.b₈) /
+        (4 * x ^ 3 + W.b₂ * x ^ 2 + 2 * W.b₄ * x + W.b₆), 1] := by
+  simp only [add_self_of_Y_ne hn, ← addX_self_of_Y_ne h.1 hn, xRep_some]
+
+/-- We give an explicit expression for `xRep` of `P + P` when `P ≠ 0` and `2*P = 0`. -/
+lemma xRep_add_self_of_Y_eq {x y : F} (h : W.Nonsingular x y) (hn : y = W.negY x y) :
+    (some x y h + some x y h).xRep = ![1, 0] := by
+  simp only [add_self_of_Y_eq hn, xRep_zero]
+
+/-- We give an explicit expression for `xRep` of `P + Q` when `P ≠ ±Q`. -/
+lemma xRep_add_of_X_ne {xP yP xQ yQ : F} (hP : W.Nonsingular xP yP)
+    (hQ : W.Nonsingular xQ yQ) (hn : xP ≠ xQ) :
+    (some xP yP hP + some xQ yQ hQ).xRep =
+      ![((yP - yQ) ^ 2 + W.a₁ * (yP - yQ) * (xP - xQ) - (W.a₂ + xP + xQ) * (xP - xQ) ^2) /
+         (xP - xQ) ^ 2, 1] := by
+  simp only [add_of_X_ne (h₁ := hP) (h₂ := hQ) hn, xRep_some, addX_of_X_ne hn]
+
+/-- We give an explicit expression for `xRep` of `P - Q` when `P ≠ ±Q`. -/
+lemma xRep_sub_of_X_ne {xP yP xQ yQ : F} (hP : W.Nonsingular xP yP)
+    (hQ : W.Nonsingular xQ yQ) (hn : xP ≠ xQ) :
+    (some xP yP hP - some xQ yQ hQ).xRep =
+      ![((yP + yQ + W.a₁ * xQ + W.a₃) ^ 2 + W.a₁ * (yP + yQ + W.a₁ * xQ + W.a₃) * (xP - xQ)
+           - (W.a₂ + xP + xQ) * (xP - xQ) ^2) / (xP - xQ) ^ 2, 1] := by
+  simp only [sub_eq_add_neg (some ..), neg_some hQ,
+    add_of_X_ne (h₁ := hP) (h₂ := (nonsingular_neg ..).mpr hQ) hn, xRep_some,
+    addX_of_X_ne hn]
+  grind only [negY]
+
 end Point
+
+lemma finite_preimage_xRep (x : F) : {P : W.Point | P.xRep = ![x, 1]}.Finite := by
+  rcases Set.eq_empty_or_nonempty {P : W.Point | P.xRep = ![x, 1]} with h | h
+  · exact h ▸ Set.finite_empty
+  choose Q hQ using h
+  simp only [Set.mem_ofPred_eq] at hQ
+  rw [show {P | P.xRep = ![x, 1]} = {Q, -Q} by ext : 1; simp [← hQ, Point.xRep_eq_xRep_iff]]
+  simp
+
+lemma finite_preimage_xRep0 (x : F) : {P : W.Point | P.xRep 0 = x}.Finite := by
+  have : {P : W.Point | P.xRep 0 = x} ⊆ {P | P.xRep = ![x, 1]} ∪ {0} := by
+    intro P hP
+    match P with
+    | 0 => simp
+    | .some x' y h => simp_all [Point.xRep_some]
+  exact (finite_preimage_xRep x).union (Set.finite_singleton 0) |>.subset this
 
 end Affine
 

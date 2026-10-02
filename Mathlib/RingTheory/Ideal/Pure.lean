@@ -5,10 +5,9 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorProduct.Quotient
 public import Mathlib.RingTheory.Flat.Tensor
-public import Mathlib.RingTheory.Ideal.IdempotentFG
-public import Mathlib.RingTheory.Idempotents
+import Mathlib.RingTheory.Ideal.IdempotentFG
+import Mathlib.RingTheory.Idempotents
 public import Mathlib.RingTheory.Spectrum.Prime.Basic
 public import Mathlib.RingTheory.LocalProperties.Basic
 
@@ -44,7 +43,7 @@ lemma injective_lTensor_quotient_iff_inf_eq_mul (I J : Ideal R) :
     Function.Injective (J.subtype.lTensor (R ⧸ I)) ↔ I ⊓ J = I * J := by
   let f : J ⧸ (I • ⊤ : Submodule R J) →ₗ[R] R ⧸ I :=
     Submodule.mapQ _ _ J.subtype <| by
-      simp [← Submodule.map_le_iff_le_comap, Ideal.mul_le_right]
+      simp [← Submodule.map_le_iff_le_comap, Ideal.mul_le_left]
   have : J.subtype.lTensor (R ⧸ I) =
       (TensorProduct.rid R (R ⧸ I)).symm ∘ₗ f ∘ₗ TensorProduct.quotTensorEquivQuotSMul J I := by
     ext
@@ -111,7 +110,7 @@ lemma Ideal.le_ker_atPrime_of_forall_exists_eq_mul {I : Ideal R}
 
 lemma Ideal.ker_piRingHom_atPrime_eq_of_pure (I : Ideal R) [I.Pure] :
     RingHom.ker
-      (Pi.ringHom fun p : zeroLocus (I : Set R) ↦
+      (RingHom.pi fun p : zeroLocus (I : Set R) ↦
         algebraMap R (Localization.AtPrime p.val.asIdeal)) = I := by
   refine le_antisymm ?_ fun x hx ↦ ?_
   · rw [Pi.ker_ringHom]
@@ -120,7 +119,7 @@ lemma Ideal.ker_piRingHom_atPrime_eq_of_pure (I : Ideal R) [I.Pure] :
     exact fun i hi hle ↦ iInf_le_of_le ⟨⟨i, hi⟩, hle⟩ le_rfl
   · rw [RingHom.mem_ker]
     ext p
-    rw [Pi.ringHom_apply, Pi.zero_apply]
+    rw [RingHom.pi_apply, Pi.zero_apply]
     exact Ideal.le_ker_atPrime_of_forall_exists_eq_mul
       (fun x hx ↦ Ideal.exists_eq_mul_of_pure hx) p.2 hx
 

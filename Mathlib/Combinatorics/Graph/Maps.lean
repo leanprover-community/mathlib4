@@ -40,7 +40,7 @@ def map (f : α → α') (G : Graph α β) : Graph α' β where
   vertexSet := f '' V(G)
   edgeSet := E(G)
   IsLink e := Relation.Map (G.IsLink e) f f
-  isLink_symm _ he := map_symmetric (G.isLink_symm he) f
+  isLink_symm _ he := have := G.isLink_symm he; .map f
   eq_or_eq_of_isLink_of_isLink := by
     rintro e - - - - ⟨x, y, hxy, rfl, rfl⟩ ⟨z, w, hzw, rfl, rfl⟩
     obtain rfl | rfl := hxy.left_eq_or_eq hzw <;> simp
@@ -97,7 +97,7 @@ protected lemma IsSpanningSubgraph.map (f : α → α') (hsle : G ≤s H) : G.ma
   le := hsle.le.map f
   vertexSet_eq := by simp [hsle.vertexSet_eq]
 
-@[gcongr]
+@[gcongr only]
 lemma map_eq_of_eqOn (h : EqOn f g V(G)) : G.map f = G.map g := by
   refine Graph.ext (by grind) fun _ _ _ ↦ ⟨fun ⟨_, _, hvw, _, _⟩ ↦ ?_, fun ⟨_, _, hvw, _, _⟩ ↦ ?_⟩
   <;> grind [h hvw.left_mem, h hvw.right_mem, hvw.map]

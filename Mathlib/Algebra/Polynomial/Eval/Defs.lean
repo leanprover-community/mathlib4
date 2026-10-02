@@ -5,7 +5,6 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-public import Mathlib.Algebra.Group.Nat.Hom
 public import Mathlib.Algebra.Polynomial.Basic
 public import Mathlib.Algebra.GroupWithZero.Associated
 
@@ -162,7 +161,7 @@ theorem eval₂_mul_C' (h : Commute (f a) x) : eval₂ f x (p * C a) = eval₂ f
   intro k
   by_cases hk : k = 0
   · simp only [hk, h, coeff_C_zero]
-  · simp only [coeff_C_ne_zero hk, map_zero, Commute.zero_left]
+  · simp only [coeff_C_of_ne_zero hk, map_zero, Commute.zero_left]
 
 theorem eval₂_list_prod_noncomm (ps : List R[X])
     (hf : ∀ p ∈ ps, ∀ (k), Commute (f <| coeff p k) x) :
@@ -218,6 +217,11 @@ def eval₂RingHom (f : R →+* S) (x : S) : R[X] →+* S :=
 @[simp]
 theorem coe_eval₂RingHom (f : R →+* S) (x) : ⇑(eval₂RingHom f x) = eval₂ f x :=
   rfl
+
+@[simp]
+theorem eval₂RingHom_comp_C (f : R →+* S) (x : S) : (eval₂RingHom f x).comp C = f := by
+  ext
+  simp
 
 theorem eval₂_pow (n : ℕ) : (p ^ n).eval₂ f x = p.eval₂ f x ^ n :=
   (eval₂RingHom _ _).map_pow _ _
@@ -324,6 +328,9 @@ theorem eval_mul_X_pow {k : ℕ} : (p * X ^ k).eval x = p.eval x * x ^ k := by
   induction k with
   | zero => simp
   | succ k ih => simp [pow_succ, ← mul_assoc, ih]
+
+theorem eval_mul_C_of_commute (h : Commute a x) : (p * C a).eval x = p.eval x * a := by
+  rw [eval, eval₂_mul_C'] <;> simp [h]
 
 /-- Polynomial evaluation commutes with `List.sum`. -/
 theorem eval_listSum (l : List R[X]) (x : R) : eval x l.sum = (l.map (eval x)).sum :=
@@ -636,11 +643,11 @@ theorem coe_compRingHom (q : R[X]) : (compRingHom q : R[X] → R[X]) = fun p => 
 theorem coe_compRingHom_apply (p q : R[X]) : (compRingHom q : R[X] → R[X]) p = comp p q :=
   rfl
 
-theorem root_mul_left_of_isRoot (p : R[X]) {q : R[X]} : IsRoot q a → IsRoot (p * q) a := fun H => by
-  rw [IsRoot, eval_mul, IsRoot.def.1 H, mul_zero]
+theorem root_mul_left_of_isRoot (p : R[X]) {q : R[X]} (hq : IsRoot q a) : IsRoot (p * q) a := by
+  rw [IsRoot, eval_mul, IsRoot.def.1 hq, mul_zero]
 
-theorem root_mul_right_of_isRoot {p : R[X]} (q : R[X]) : IsRoot p a → IsRoot (p * q) a := fun H =>
-  by rw [IsRoot, eval_mul, IsRoot.def.1 H, zero_mul]
+theorem root_mul_right_of_isRoot {p : R[X]} (q : R[X]) (hp : IsRoot p a) : IsRoot (p * q) a := by
+  rw [IsRoot, eval_mul, IsRoot.def.1 hp, zero_mul]
 
 theorem eval₂_multiset_prod (s : Multiset R[X]) (x : S) :
     eval₂ f x s.prod = (s.map (eval₂ f x)).prod :=

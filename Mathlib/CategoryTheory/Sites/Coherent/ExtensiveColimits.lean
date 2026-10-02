@@ -5,9 +5,9 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.Biproducts
+import Mathlib.CategoryTheory.Preadditive.Biproducts
 public import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
-public import Mathlib.CategoryTheory.Sites.Limits
+import Mathlib.CategoryTheory.Sites.Limits
 /-!
 
 # Colimits in categories of extensive sheaves
@@ -32,6 +32,7 @@ section
 variable {A C J : Type*} [Category* A] [Category* C] [Category* J]
   [FinitaryExtensive C] [HasColimitsOfShape J A]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isSheaf_pointwiseColimit [PreservesFiniteProducts (colim (J := J) (C := A))]
     (G : J ⥤ Sheaf (extensiveTopology C) A) :
     Presheaf.IsSheaf (extensiveTopology C) (pointwiseCocone (G ⋙ sheafToPresheaf _ A)).pt := by

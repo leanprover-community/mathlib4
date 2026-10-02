@@ -6,7 +6,7 @@ Authors: Gabriel Ebner, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Basic
-public import Mathlib.Analysis.Calculus.FDeriv.Linear
+import Mathlib.Analysis.Calculus.FDeriv.Linear
 
 /-!
 # Derivatives of continuous linear maps from the base field
@@ -26,13 +26,12 @@ public section
 
 universe u v w
 
-open Topology Filter
+open Filter
 
-open Filter Asymptotics Set
+open Filter Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {x : 𝕜}
 variable {s : Set 𝕜}
 variable {L : Filter (𝕜 × 𝕜)}

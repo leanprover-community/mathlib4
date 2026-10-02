@@ -10,7 +10,6 @@ public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 public import Mathlib.RingTheory.Ideal.Maximal
-public import Mathlib.Tactic.FinCases
 
 /-!
 
@@ -32,7 +31,7 @@ Support right ideals, and two-sided ideals over non-commutative rings.
 @[expose] public section
 
 
-variable {ι α β F : Type*}
+variable {ι α β : Type*}
 
 open Set Function
 
@@ -156,7 +155,7 @@ theorem sum_pow_mem_span_pow {ι} (s : Finset ι) (f : ι → α) (n : ℕ) :
     (∑ i ∈ s, f i) ^ (s.card * n + 1) ∈ span ((fun i => f i ^ (n + 1)) '' s) := by
   classical
   simpa only [Multiset.card_map, Multiset.map_map, comp_apply, Multiset.toFinset_map,
-    Finset.coe_image, Finset.val_toFinset] using pow_multiset_sum_mem_span_pow (s.1.map f) n
+    Finset.coe_image, Finset.val_toFinset] using! pow_multiset_sum_mem_span_pow (s.1.map f) n
 
 theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
     span ((fun (x : α) => x ^ n) '' s) = ⊤ := by
@@ -197,7 +196,7 @@ theorem prod_mem {ι : Type*} {f : ι → α} {s : Finset ι}
     (I : Ideal α) {i : ι} (hi : i ∈ s) (hfi : f i ∈ I) :
     ∏ i ∈ s, f i ∈ I := by
   classical
-  rw [Finset.prod_eq_prod_diff_singleton_mul hi]
+  rw [Finset.prod_eq_prod_sdiff_singleton_mul hi]
   exact Ideal.mul_mem_left _ _ hfi
 
 lemma span_single_eq_top {ι : Type*} [DecidableEq ι] [Finite ι] (R : ι → Type*)

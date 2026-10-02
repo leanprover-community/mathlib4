@@ -143,7 +143,6 @@ def SpecTensorTo : Spec T.tensor ⟶ pullback f g :=
     (Spec.map T.tensorInr ≫ Y.fromSpecResidueField T.y)
     (SpecMap_tensorInl_fromSpecResidueField _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma fst_SpecTensorTo_apply (p : Spec T.tensor) :
     pullback.fst f g (T.SpecTensorTo p) = T.x := by
@@ -151,7 +150,6 @@ lemma fst_SpecTensorTo_apply (p : Spec T.tensor) :
   rw [← Scheme.Hom.comp_apply]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma snd_SpecTensorTo_apply (p : Spec T.tensor) :
     pullback.snd f g (T.SpecTensorTo p) = T.y := by
@@ -183,6 +181,8 @@ lemma ofPoint_SpecTensorTo (T : Triplet f g) (p : Spec T.tensor) :
 
 end Triplet
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 lemma residueFieldCongr_inv_residueFieldMap_ofPoint (t : ↑(pullback f g)) :
     ((S.residueFieldCongr (Triplet.ofPoint t).hx).inv ≫ f.residueFieldMap (Triplet.ofPoint t).x) ≫
       (pullback.fst f g).residueFieldMap t = ((S.residueFieldCongr (Triplet.ofPoint t).hy).inv ≫
@@ -205,11 +205,11 @@ lemma ofPointTensor_SpecTensorTo (t : ↑(pullback f g)) :
       (pullback f g).fromSpecResidueField t := by
   apply pullback.hom_ext
   · rw [← Scheme.Hom.SpecMap_residueFieldMap_fromSpecResidueField]
-    simp only [Category.assoc, Triplet.specTensorTo_fst, Triplet.ofPoint_x]
+    simp only [Category.assoc, Triplet.specTensorTo_fst]
     rw [← pushout.inl_desc _ _ (residueFieldCongr_inv_residueFieldMap_ofPoint t), Spec.map_comp]
     rfl
   · rw [← Scheme.Hom.SpecMap_residueFieldMap_fromSpecResidueField]
-    simp only [Category.assoc, Triplet.specTensorTo_snd, Triplet.ofPoint_y]
+    simp only [Category.assoc, Triplet.specTensorTo_snd]
     rw [← pushout.inr_desc _ _ (residueFieldCongr_inv_residueFieldMap_ofPoint t), Spec.map_comp]
     rfl
 
@@ -218,6 +218,7 @@ point of `Spec κ(s)` in `Spec κ(x) ⊗[κ(s)] κ(y)`. -/
 def SpecOfPoint (t : ↑(pullback f g)) : Spec (Triplet.ofPoint t).tensor :=
     Spec.map (ofPointTensor t) (⊥ : PrimeSpectrum _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma SpecTensorTo_SpecOfPoint (t : ↑(pullback f g)) :
     (Triplet.ofPoint t).SpecTensorTo (SpecOfPoint t) = t := by
@@ -253,6 +254,7 @@ lemma carrierEquiv_eq_iff {T₁ T₂ : Σ T : Triplet f g, Spec T.tensor} :
     rintro ⟨rfl : T = T', e⟩
     simpa [e]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 The points of the underlying topological space of `X ×[S] Y` bijectively correspond to
 pairs of triples `x : X`, `y : Y`, `s : S` with `f x = s = f y` and prime ideals of
@@ -345,7 +347,6 @@ lemma range_snd_comp :
     Set.range (pullback.snd f g ≫ g) = Set.range f ∩ Set.range g := by
   rw [← pullback.condition, range_fst_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma range_map {X' Y' S' : Scheme.{u}} (f' : X' ⟶ S') (g' : Y' ⟶ S') (i₁ : X ⟶ X')
     (i₂ : Y ⟶ Y') (i₃ : S ⟶ S') (e₁ : f ≫ i₃ = i₁ ≫ f')
     (e₂ : g ≫ i₃ = i₂ ≫ g') [Mono i₃] :
@@ -433,10 +434,12 @@ instance : MorphismProperty.IsStableUnderBaseChange @Surjective := by
   simp only [surjective_iff, ← Set.range_eq_univ, Scheme.Pullback.range_fst] at hg ⊢
   rw [hg, Set.preimage_univ]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) [Surjective g] :
     Surjective (pullback.fst f g) :=
   MorphismProperty.pullback_fst _ _ inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) [Surjective f] :
     Surjective (pullback.snd f g) :=
   MorphismProperty.pullback_snd _ _ inferInstance

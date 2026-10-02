@@ -62,10 +62,10 @@ lemma mem_associatedPrimes_of_comap_mem_associatedPrimes_of_isLocalizedModule
       apply Ideal.IsTwoSided.mul_mem_of_left
       rw [IsLocalization.mk'_one, ← Ideal.mem_comap, hx]
       rcases eq_zero_or_pos n with rfl | hn
-      · exact Ideal.IsTwoSided.mul_mem_of_left _ ⟨1, by simpa using ht⟩
+      · exact Ideal.IsTwoSided.mul_mem_of_left _ ⟨1, by simpa using! ht⟩
       · use n
         rw [mem_colon_singleton, mul_pow, mul_smul, ← mem_colon_singleton]
-        exact Ideal.pow_mem_of_mem _ (by simpa using ht) n hn
+        exact Ideal.pow_mem_of_mem _ (by simpa using! ht) n hn
 
 lemma mem_associatedPrimes_atPrime_of_mem_associatedPrimes
     {p : Ideal R} [p.IsPrime] (ass : p ∈ associatedPrimes R M) :
@@ -74,10 +74,6 @@ lemma mem_associatedPrimes_atPrime_of_mem_associatedPrimes
   apply mem_associatedPrimes_of_comap_mem_associatedPrimes_of_isLocalizedModule
     p.primeCompl (LocalizedModule.mkLinearMap p.primeCompl M)
   simpa [Localization.AtPrime.under_maximalIdeal] using ass
-
-@[deprecated (since := "2025-11-27")]
-alias mem_associatePrimes_localizedModule_atPrime_of_mem_associated_primes :=
-  mem_associatedPrimes_atPrime_of_mem_associatedPrimes
 
 include S f in
 @[stacks 0310 "(2)"]
@@ -134,7 +130,7 @@ lemma minimalPrimes_annihilator_subset_associatedPrimes [IsNoetherianRing R] [Mo
   have prime := hp.isPrime
   let Rₚ := Localization.AtPrime p
   have : Nontrivial (LocalizedModule p.primeCompl M) := by
-    simpa [← Module.mem_support_iff (p := ⟨p, prime⟩), Module.support_eq_zeroLocus] using hp.le
+    simpa [← Module.mem_support_iff (p := ⟨p, prime⟩), Module.support_eq_zeroLocus] using! hp.1.2
   rcases associatedPrimes.nonempty Rₚ (LocalizedModule p.primeCompl M) with ⟨q, hq⟩
   have q_prime : q.IsPrime := IsAssociatedPrime.isPrime hq
   simp only [← preimage_comap_associatedPrimes_eq_associatedPrimes_of_isLocalizedModule p.primeCompl
@@ -144,7 +140,7 @@ lemma minimalPrimes_annihilator_subset_associatedPrimes [IsNoetherianRing R] [Mo
   have le : Ideal.comap (algebraMap R Rₚ) q ≤ p := by
     have := (IsLocalization.disjoint_under_iff p.primeCompl Rₚ q).mpr q_prime.ne_top
     simpa only [Ideal.primeCompl, Submonoid.coe_set_mk, Subsemigroup.coe_set_mk,
-      Set.disjoint_compl_left_iff_subset] using this
-  simpa [Minimal.eq_of_le hp.out ⟨IsAssociatedPrime.isPrime hq, ann_le⟩ le] using hq
+      Set.disjoint_compl_left_iff_subset] using! this
+  simpa [Minimal.eq_of_le hp.out ⟨IsAssociatedPrime.isPrime hq, ann_le⟩ le] using! hq
 
 end Module.associatedPrimes

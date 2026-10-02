@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.GroupWithZero.Range
 public import Mathlib.Algebra.Order.GroupWithZero.WithZero
 public import Mathlib.Algebra.Order.Hom.MonoidWithZero
-public import Mathlib.Algebra.Order.Monoid.Basic
+import Mathlib.Algebra.Order.Monoid.Basic
 
 /-! # The range of a MonoidWithZeroHom
 
@@ -41,7 +41,7 @@ lemma monoidWithZeroHom_strictMono :
 lemma embedding_strictMono : StrictMono (embedding (f := f)) := by
   intro x y hxy
   rw [← monoidWithZeroHom_strictMono.lt_iff_lt] at hxy
-  simpa using (OrderEmbedding.lt_iff_lt (OrderIso.withZeroUnits.toOrderEmbedding)).mpr hxy
+  simpa using! (OrderEmbedding.lt_iff_lt (OrderIso.withZeroUnits.toOrderEmbedding)).mpr hxy
 
 instance : IsOrderedMonoid (ValueGroup₀ f) :=
   Function.Injective.isOrderedMonoid embedding (map_mul _) embedding_strictMono.le_iff_le

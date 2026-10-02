@@ -54,7 +54,7 @@ protected theorem down_up (s : Set α) : s.up.down = s :=
 protected theorem up_down (s : SetSemiring α) : s.down.up = s :=
   rfl
 
--- TODO: These lemmas are not tagged `simp` because `Set.le_eq_subset` simplifies the LHS
+-- TODO: These lemmas should be tagged `simp`
 theorem up_le_up {s t : Set α} : s.up ≤ t.up ↔ s ⊆ t :=
   Iff.rfl
 
@@ -102,7 +102,7 @@ theorem down_add (s t : SetSemiring α) : (s + t).down = s.down ∪ t.down :=
 theorem _root_.Set.up_union (s t : Set α) : (s ∪ t).up = s.up + t.up :=
   rfl
 
-/- Since addition on `SetSemiring` is commutative (it is set union), there is no need
+/-- Since addition on `SetSemiring` is commutative (it is set union), there is no need
 to also have the instance `AddRightMono (SetSemiring α)`. -/
 instance addLeftMono : AddLeftMono (SetSemiring α) :=
   ⟨fun _ _ _ => union_subset_union_right _⟩

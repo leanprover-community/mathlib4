@@ -5,9 +5,7 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Algebra.Group.AddChar
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Disc
-public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 
 /-!
 # Classification of elements of `GL (Fin 2) R`
@@ -42,9 +40,6 @@ def IsParabolic : Prop := m ∉ Set.range (scalar _) ∧ m.discr = 0
 variable {m}
 
 section conjugation
-
-@[deprecated (since := "2025-10-20")] alias disc_conj := discr_conj
-@[deprecated (since := "2025-10-20")] alias disc_conj' := discr_conj'
 
 @[simp] lemma isParabolic_conj_iff : (g.val * m * g.val⁻¹).IsParabolic ↔ IsParabolic m := by
   simp_rw [IsParabolic, discr_conj, Set.mem_range, ← Matrix.coe_units_inv,
@@ -100,8 +95,6 @@ lemma sub_scalar_sq_eq_discr [NeZero (2 : K)] :
   fin_cases j <;>
   · simp [Matrix.mul_apply]
     field
-
-@[deprecated (since := "2025-10-20")] alias sub_scalar_sq_eq_disc := sub_scalar_sq_eq_discr
 
 variable (m) in
 /-- The unique eigenvalue of a parabolic matrix (junk if `m` is not parabolic). -/
@@ -240,9 +233,9 @@ lemma fixpointPolynomial_eq_zero_iff {g : GL (Fin 2) R} :
   rw [fixpointPolynomial]
   constructor
   · refine fun hP ↦ ⟨g 0 0, ?_⟩
-    have hb : g 0 1 = 0 := by simpa using congr_arg (coeff · 0) hP
-    have hc : g 1 0 = 0 := by simpa using congr_arg (coeff · 2) hP
-    have hd : g 1 1 = g 0 0 := by simpa [sub_eq_zero] using congr_arg (coeff · 1) hP
+    have hb : g 0 1 = 0 := by simpa using congr(coeff $hP 0)
+    have hc : g 1 0 = 0 := by simpa using congr(coeff $hP 2)
+    have hd : g 1 1 = g 0 0 := by simpa [sub_eq_zero] using congr(coeff $hP 1)
     ext i j
     fin_cases i <;>
     fin_cases j <;>
@@ -279,7 +272,7 @@ lemma IsParabolic.pow {g : GL (Fin 2) K} (hg : IsParabolic g) [CharZero K]
     refine fun ha ↦ (g ^ 2).det_ne_zero ?_
     rw [ha, map_zero, zero_add] at hg
     rw [← hg] at hmsq
-    rw [Units.val_pow_eq_pow_val, hmsq, det_zero ⟨0⟩]
+    rw [Units.val_pow_eq_pow_val, hmsq, det_zero]
 
 lemma isParabolic_iff_of_upperTriangular {g : GL (Fin 2) K} (hg : g 1 0 = 0) :
     g.IsParabolic ↔ g 0 0 = g 1 1 ∧ g 0 1 ≠ 0 :=

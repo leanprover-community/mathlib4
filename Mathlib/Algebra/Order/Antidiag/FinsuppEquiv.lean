@@ -6,7 +6,6 @@ Authors: Weiyi Wang
 module
 
 public import Mathlib.Algebra.Order.Antidiag.Finsupp
-public import Mathlib.Data.Finsupp.Basic
 public import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Data.Sym.Card
 
@@ -31,7 +30,7 @@ reduce imports.
 
 open Finsupp Function
 
-variable {ι μ μ' : Type*}
+variable {ι μ : Type*}
 
 namespace Finset
 variable [DecidableEq ι] [AddCommMonoid μ] [HasAntidiagonal μ] [DecidableEq μ] {s : Finset ι}

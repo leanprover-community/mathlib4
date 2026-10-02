@@ -16,7 +16,7 @@ intervals as finsets and fintypes.
 
 ## TODO
 
-Some lemmas can be generalized using `OrderedGroup`, `CanonicallyOrderedMul` or `SuccOrder`
+Some lemmas can be generalized using `IsOrderedAddMonoid`, `CanonicallyOrderedAdd` or `SuccOrder`
 and subsequently be moved upstream to `Order.Interval.Finset`.
 -/
 
@@ -30,6 +30,7 @@ variable (a b c : ℕ)
 
 namespace Nat
 
+set_option backward.isDefEq.respectTransparency false in
 instance instLocallyFiniteOrder : LocallyFiniteOrder ℕ where
   finsetIcc a b := ⟨List.range' a (b + 1 - a), List.nodup_range'⟩
   finsetIco a b := ⟨List.range' a (b - a), List.nodup_range'⟩
@@ -40,9 +41,9 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder ℕ where
   finset_mem_Ioc a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; lia
   finset_mem_Ioo a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; lia
 
-instance : Unique (Iic 0) := by
-  rw [← Nat.bot_eq_zero]
-  infer_instance
+instance : Unique (Iic 0) where
+  default := ⟨0, by simp⟩
+  uniq a := Subtype.ext (Nat.le_zero.1 (mem_Iic.1 a.2))
 
 theorem Icc_eq_range' : Icc a b = ⟨List.range' a (b + 1 - a), List.nodup_range'⟩ :=
   rfl
@@ -141,7 +142,6 @@ theorem Ico_succ_right_eq_insert_Ico (h : a ≤ b) : Ico a b.succ = insert b (Ic
   simp_rw [mem_insert, mem_Ico]
   lia
 
-set_option linter.deprecated false in
 theorem mod_injOn_Ico (n a : ℕ) : Set.InjOn (· % a) (Finset.Ico n (n + a)) := by
   induction n with
   | zero =>
@@ -197,7 +197,7 @@ open Multiset
 
 theorem multiset_Ico_map_mod (n a : ℕ) :
     (Multiset.Ico n (n + a)).map (· % a) = Multiset.range a := by
-  convert congr_arg Finset.val (image_Ico_mod n a)
+  convert! congr(Finset.val $(image_Ico_mod n a))
   refine ((nodup_map_iff_inj_on (Finset.Ico _ _).nodup).2 <| ?_).dedup.symm
   exact mod_injOn_Ico _ _
 

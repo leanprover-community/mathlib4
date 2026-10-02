@@ -6,7 +6,6 @@ Authors: Jingting Wang, Wanyi He, Nailin Guan
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-public import Mathlib.Algebra.Module.Submodule.Pointwise
 
 /-!
 # Categorical constructions for `IsSMulRegular`
@@ -51,4 +50,4 @@ variable {M} in
 lemma IsSMulRegular.smulShortComplex_shortExact {r : R} (reg : IsSMulRegular M r) :
     (ModuleCat.smulShortComplex M r).ShortExact where
   exact := ModuleCat.smulShortComplex_exact M r
-  mono_f := by simpa [ModuleCat.smulShortComplex, ModuleCat.mono_iff_injective] using reg
+  mono_f := by simpa [ModuleCat.smulShortComplex, ModuleCat.mono_iff_injective] using! reg

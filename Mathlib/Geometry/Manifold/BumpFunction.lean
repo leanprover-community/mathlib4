@@ -6,11 +6,11 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
-public import Mathlib.Geometry.Manifold.Algebra.SMul
-public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
+import Mathlib.Geometry.Manifold.Algebra.SMul
+import Mathlib.Geometry.Manifold.ContMDiff.Atlas
 public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
-public import Mathlib.Geometry.Manifold.Notation
-public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
+import Mathlib.Geometry.Manifold.Notation
+import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 
 /-!
 # Smooth bump functions on a smooth manifold
@@ -74,7 +74,7 @@ section FiniteDimensional
 
 variable [FiniteDimensional ℝ E]
 
-variable {c : M} (f : SmoothBumpFunction I c) {x : M}
+variable {c : M} (f : SmoothBumpFunction I c)
 
 /-- The function defined by `f : SmoothBumpFunction c`. Use automatic coercion to function
 instead. -/
