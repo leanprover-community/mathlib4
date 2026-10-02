@@ -235,7 +235,6 @@ lemma polynomialTensorProductEquiv_map_algebraMap (f : K[X]) :
     (polynomialTensorProductEquiv k K S) ((algebraMap K[X] (K[X] ⊗[k] S)) f) := by
   obtain ⟨g, rfl⟩ := (polyEquivTensor' k K).symm.surjective f
   induction g with
-  | zero => simp
   | add g1 g2 hg1 hg2 => simp only [map_add, Polynomial.map_add, hg1, hg2]
   | tmul x y =>
     have : Polynomial.map (algebraMap K (K ⊗[k] S)) ((polyEquivTensor k K).symm (x ⊗ₜ[k] y)) =
