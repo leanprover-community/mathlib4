@@ -27,10 +27,12 @@ open Nat Qq Lean Meta
 
 namespace Mathlib.Meta.NormNum
 
-/-- A predicate representing partial progress in a proof of `Squarefree n`: if every prime
-divisor of `n` is at least `k`, then `n` is squarefree. -/
+/-- A predicate representing partial progress in a proof of `Squarefree n`: if `n` and `k` are odd,
+`k ≥ 3` and every prime divisor of `n` is at least `k`, then `n` is squarefree. The parity and size
+conditions are part of the predicate so that they are only checked once, at the start of the trial
+division. -/
 def SquarefreeHelper (n k : ℕ) : Prop :=
-  (∀ p, p.Prime → p ∣ n → k ≤ p) → Squarefree n
+  n % 2 = 1 → k % 2 = 1 → 3 ≤ k → (∀ p, p.Prime → p ∣ n → k ≤ p) → Squarefree n
 
 theorem not_squarefree_mul (a b n : ℕ) (h : a * a * b = n) (h₁ : ble a 1 = false) :
     ¬ Squarefree n :=
@@ -40,7 +42,7 @@ theorem not_squarefree_mul (a b n : ℕ) (h : a * a * b = n) (h₁ : ble a 1 = f
 `n` is squarefree. This starts the trial division at `k = 3`. -/
 theorem squarefree_of_odd (n : ℕ) (hn : n % 2 = 1) (h : SquarefreeHelper n 3) :
     Squarefree n :=
-  h fun p hp hpn ↦ by obtain ⟨rfl | _⟩ := LE.le.eq_or_lt (hp.two_le) <;> lia
+  h hn rfl le_rfl fun p hp hpn ↦ by obtain ⟨rfl | _⟩ := LE.le.eq_or_lt (hp.two_le) <;> lia
 
 /-- Start of the trial division for an even `n = 2 * m` with `m` odd. -/
 theorem squarefree_two_mul (n m : ℕ) (e : 2 * m = n) (hm : m % 2 = 1) (h : SquarefreeHelper m 3) :
@@ -48,12 +50,12 @@ theorem squarefree_two_mul (n m : ℕ) (e : 2 * m = n) (hm : m % 2 = 1) (h : Squ
   e ▸ squarefree_mul_iff.mpr ⟨coprime_two_left.mpr (odd_iff.mpr hm), prime_two.squarefree,
     squarefree_of_odd m hm h⟩
 
-/-- If `n` and `k` are odd and `k` does not divide `n`, a prime divisor of `n` which is at least
-`k` is at least `k + 2`, so `SquarefreeHelper n (k + 2)` implies `SquarefreeHelper n k`. This is
-the step of the trial division when `k` does not divide `n`. -/
-theorem squarefreeHelper_1 (n k k' : ℕ) (e : k' = k + 2) (hn : n % 2 = 1) (hk : k % 2 = 1)
-    (hnk : (n % k).beq 0 = false) (h : SquarefreeHelper n k') : SquarefreeHelper n k :=
-  fun H ↦ h fun p hp hpn ↦ by
+/-- If `k` does not divide `n`, a prime divisor of `n` which is at least `k` is at least `k + 2`
+(both being odd), so `SquarefreeHelper n (k + 2)` implies `SquarefreeHelper n k`. This is the step
+of the trial division when `k` does not divide `n`. -/
+theorem squarefreeHelper_1 (n k k' : ℕ) (e : k' = k + 2) (hnk : (n % k).beq 0 = false)
+    (h : SquarefreeHelper n k') : SquarefreeHelper n k :=
+  fun hn hk _ H ↦ h hn (by lia) (by lia) fun p hp hpn ↦ by
     have : k ≤ p := H p hp hpn
     have : p ≠ k := fun h ↦ ne_of_beq_eq_false hnk (dvd_iff_mod_eq_zero.mp (h ▸ hpn))
     have : p % 2 = 1 := by
@@ -61,21 +63,21 @@ theorem squarefreeHelper_1 (n k k' : ℕ) (e : k' = k + 2) (hn : n % 2 = 1) (hk 
     lia
 
 /-- Step of the trial division when `k` divides `n`: `n = k * m` with `k` not dividing `m`. -/
-theorem squarefreeHelper_2 (n m k k' : ℕ) (e : k' = k + 2) (hn : n % 2 = 1) (hk : k % 2 = 1)
-    (hk₁ : Nat.ble 2 k = true) (hm : k * m = n) (hmk : (m % k).beq 0 = false)
-    (h : SquarefreeHelper m k') : SquarefreeHelper n k := fun H ↦ by
+theorem squarefreeHelper_2 (n m k k' : ℕ) (e : k' = k + 2) (hm : k * m = n)
+    (hmk : (m % k).beq 0 = false) (h : SquarefreeHelper m k') : SquarefreeHelper n k :=
+    fun hn hk hk₃ H ↦ by
   have hkp : k.Prime :=
-    prime_def_minFac.mpr ⟨le_of_ble_eq_true hk₁, le_antisymm (minFac_le (by lia))
-      (H _ (minFac_prime (by lia [ble_eq])) ((minFac_dvd k).trans ⟨m, hm.symm⟩))⟩
+    prime_def_minFac.mpr ⟨by lia, le_antisymm (minFac_le (by lia))
+      (H _ (minFac_prime (by lia)) ((minFac_dvd k).trans ⟨m, hm.symm⟩))⟩
   refine hm ▸ squarefree_mul_iff.mpr ⟨hkp.coprime_iff_not_dvd.mpr fun h ↦ ?_,
-    hkp.squarefree, squarefreeHelper_1 m k k' e ?_ hk hmk h
+    hkp.squarefree, squarefreeHelper_1 m k k' e hmk h ?_ hk hk₃
       fun p hp hpm ↦ H p hp (hpm.trans ⟨k, by rw [← hm, mul_comm]⟩)⟩
   · exact ne_of_beq_eq_false hmk <| mod_eq_zero_of_dvd h
   · exact odd_iff.mp (odd_mul.mp (odd_iff.mpr (hm ▸ hn))).2
 
 /-- End of the trial division: if `n < k * k`, a prime `p ≥ k` cannot have `p * p ∣ n`. -/
-theorem squarefreeHelper_3 (n k : ℕ) (hn : n % 2 = 1) (h : Nat.ble (k * k) n = false) :
-    SquarefreeHelper n k := fun H ↦ squarefree_iff_prime_squarefree.mpr fun p hp hpp ↦ by
+theorem squarefreeHelper_3 (n k : ℕ) (h : Nat.ble (k * k) n = false) :
+    SquarefreeHelper n k := fun hn _ _ H ↦ squarefree_iff_prime_squarefree.mpr fun p hp hpp ↦ by
   have : k * k ≤ p * p := by
     gcongr <;>
     exact H p hp ((Dvd.intro _ rfl).trans hpp)
@@ -93,25 +95,22 @@ theorem isNat_not_squarefree {n n' : ℕ} (h : IsNat n n') : ¬ Squarefree n' �
 `n` is squarefree, produce a proof of `SquarefreeHelper n k`. -/
 partial def proveSquarefreeHelper (en : Q(ℕ)) (n : ℕ) (ek : Q(ℕ)) (k : ℕ) :
     Q(SquarefreeHelper $en $ek) :=
-  have hn : Q($en % 2 = 1) := (q(Eq.refl 1) : Expr)
   if n < k * k then
     have h : Q(Nat.ble ($ek * $ek) $en = false) := (q(Eq.refl false) : Expr)
-    q(squarefreeHelper_3 $en $ek $hn $h)
+    q(squarefreeHelper_3 $en $ek $h)
   else
     have ek' : Q(ℕ) := mkRawNatLit (k + 2)
     have e : Q($ek' = $ek + 2) := (q(Eq.refl $ek') : Expr)
-    have hk : Q($ek % 2 = 1) := (q(Eq.refl 1) : Expr)
     if n % k = 0 then
       have em : Q(ℕ) := mkRawNatLit (n / k)
-      have hk₁ : Q(Nat.ble 2 $ek = true) := (q(Eq.refl true) : Expr)
       have hm : Q($ek * $em = $en) := (q(Eq.refl $en) : Expr)
       have hmk : Q(Nat.beq ($em % $ek) 0 = false) := (q(Eq.refl false) : Expr)
       let h := proveSquarefreeHelper em (n / k) ek' (k + 2)
-      q(squarefreeHelper_2 $en $em $ek $ek' $e $hn $hk $hk₁ $hm $hmk $h)
+      q(squarefreeHelper_2 $en $em $ek $ek' $e $hm $hmk $h)
     else
       have hnk : Q(Nat.beq ($en % $ek) 0 = false) := (q(Eq.refl false) : Expr)
       let h := proveSquarefreeHelper en n ek' (k + 2)
-      q(squarefreeHelper_1 $en $ek $ek' $e $hn $hk $hnk $h)
+      q(squarefreeHelper_1 $en $ek $ek' $e $hnk $h)
 
 /-- Given a numeral `en` with value `n ≥ 1` such that `n` is squarefree, produce a proof of
 `Squarefree n`. -/
