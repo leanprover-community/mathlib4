@@ -187,6 +187,9 @@ theorem LinearIndependent.group_smul_iff {G : Type*} [hG : Group G] [MulAction G
   convert h.group_smul (fun i ↦ (w i)⁻¹)
   simp [funext_iff]
 
+/-- Scaling a linearly independent family with right-regular scalars preserves
+linear independence. This applies in particular to non-zero-divisors
+(see `isRegular_iff_mem_nonZeroDivisors`). -/
 theorem LinearIndependent.smul_of_isRightRegular {v : ι → M} (hv : LinearIndependent R v)
     {w : ι → R} (hw : ∀ i, IsRightRegular (w i)) : LinearIndependent R (w • v) := by
   rw [linearIndependent_iff''ₛ] at hv ⊢
