@@ -18,8 +18,6 @@ category of simplicial sets in such a way that morphisms in
 
 ## TODO
 
-* construct a simplicial category structure on simplicial objects, so
-  that it applies in particular to simplicial sets
 * obtain the adjunction property `(K ⊗ X ⟶ Y) ≃ (K ⟶ sHom X Y)` when `K`, `X`, and `Y`
   are simplicial sets
 * develop the notion of "simplicial tensor" `K ⊗ₛ X : C` with `K : SSet` and `X : C`
