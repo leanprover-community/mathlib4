@@ -808,7 +808,7 @@ theorem comp_toSpanSingleton [AddCommMonoid M₂] [Module R M₂] (f : M →ₗ[
     f ∘ₗ toSpanSingleton R M x = toSpanSingleton R M₂ (f x) := by
   ext; simp
 
-theorem toSpanSingleton_comp [AddCommMonoid M₂] [Module R M₂] (f : M₂ →ₗ[R] R) (x : M) :
+theorem toSpanSingleton_comp [AddCommMonoid M₂] [Module R M₂] (x : M) (f : M₂ →ₗ[R] R) :
     toSpanSingleton R M x ∘ₗ f = f.smulRight x := rfl
 
 theorem toSpanSingleton_comp_toSpanSingleton (x : M) (c : R) :
