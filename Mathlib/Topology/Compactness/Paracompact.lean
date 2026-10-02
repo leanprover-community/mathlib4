@@ -38,6 +38,10 @@ We also prove the following facts.
 * Every `EMetricSpace` is a paracompact space, see instance `EMetric.instParacompactSpace` in
   `Topology/EMetricSpace/Paracompact`.
 
+* In order for a regular space to be paracompact, it suffices for every open cover of it to admit a
+  locally finite but not necessarily open refinement, or for every cover to admit a
+  σ-locally finite open refinement. In particular, every regular Lindelöf space is paracompact.
+
 ## TODO
 
 Prove (some of) [Michael's theorems](https://ncatlab.org/nlab/show/Michael%27s+theorem).
@@ -371,7 +375,7 @@ lemma ParacompactSpace.of_isClosed_refinements {X : Type u} [TopologicalSpace X]
 * every open cover of `X` has a locally finite refinement
 * every open cover of `X` has a locally finite closed refinement
 
-See Engelking, theorem 5.1.11. -/
+See [Engelking, *General Topology*][engelking1989], theorem 5.1.11. -/
 lemma paracompactSpace_tfae_of_regularSpace {X : Type u} [TopologicalSpace X] [RegularSpace X] :
     List.TFAE [ParacompactSpace X,
       ∀ ι : Type u, ∀ u : ι → Set X, (∀ i, IsOpen (u i)) → ⋃ i, u i = univ →
@@ -412,3 +416,9 @@ lemma paracompactSpace_tfae_of_regularSpace {X : Type u} [TopologicalSpace X] [R
   /- `4 → 1` was proven more generally in `ParacompactSpace.of_isClosed_refinements`. -/
   tfae_have 4 → 1 := ParacompactSpace.of_isClosed_refinements
   tfae_finish
+
+instance [RegularSpace X] [LindelofSpace X] : ParacompactSpace X := by
+  refine (paracompactSpace_tfae_of_regularSpace.out 1 2).2 fun ι u hu hu' ↦ ?_
+  have ⟨s, hs, hs'⟩ := isLindelof_univ.elim_countable_subcover u hu hu'.symm.subset
+  replace hs := hs.to_subtype
+  exact ⟨s, fun i ↦ u i, sigmaLocallyFinite_of_countable, by grind, by simpa using hs', by grind⟩
