@@ -133,7 +133,7 @@ lemma epi_iff {d : ℕ} {a b : Truncated d} {f : a ⟶ b} : Epi f ↔ Epi f.hom 
       ObjectProperty.homMk <| Hom.mk ⟨fun x ↦ if t ≤ x then 1 else 0, fun x y h ↦ by grind⟩
     have hg (t x) : (g t).hom.toOrderHom x = if t ≤ x.val then 1 else 0 := rfl
     have h := (cancel_epi f (g := g (j + 1)) (h := g j)).1 (by ext x : 4; simp [hg]; grind [hj x])
-    simpa [hg] using congrArg (fun φ ↦ φ.hom.toOrderHom j) h
+    simpa [hg] using congr($(h).hom.toOrderHom j)
   · intro hf
     exact (inclusion d).epi_of_epi_map hf
 
