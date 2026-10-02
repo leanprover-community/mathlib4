@@ -21,6 +21,7 @@ any time function) of a function between two types that have an encoding (as in 
 
 - `idComputableInPolyTime` : a TM + a proof it computes the identity on a type in polytime.
 - `idComputable`           : a TM + a proof it computes the identity on a type.
+- `TM2ComputableInPolyTime.length_le` : the output of a polytime TM has polynomial length.
 
 ## Implementation notes
 
@@ -102,6 +103,15 @@ instance inhabitedCfg : Inhabited (Cfg tm) :=
 def step : tm.Cfg → Option tm.Cfg :=
   Turing.TM2.step tm.m
 
+/-- The largest number of `push` instructions in a statement of this TM. -/
+def maxPushes : ℕ :=
+  letI := tm.ΛFin
+  Finset.univ.sup fun l ↦ (tm.m l).pushes
+
+theorem pushes_le_maxPushes (l : tm.Λ) : (tm.m l).pushes ≤ tm.maxPushes :=
+  letI := tm.ΛFin
+  Finset.le_sup (f := fun l ↦ (tm.m l).pushes) (Finset.mem_univ l)
+
 end
 
 end FinTM2
@@ -137,6 +147,16 @@ def TM2OutputsInTime.toTM2Outputs {tm : FinTM2} {l : List (tm.Γ tm.k₀)}
     {l' : Option (List (tm.Γ tm.k₁))} {m : ℕ} (h : TM2OutputsInTime tm l l' m) :
     TM2Outputs tm l l' :=
   h.toEvalsTo
+
+/-- The output is at most as long as the input plus `tm.maxPushes` letters per step. -/
+theorem TM2Outputs.length_le {tm : FinTM2} {l : List (tm.Γ tm.k₀)} {l' : List (tm.Γ tm.k₁)}
+    (h : TM2Outputs tm l (some l')) : l'.length ≤ l.length + tm.maxPushes * h.steps := by
+  have := TM2.length_stk_le_of_evalsTo tm.pushes_le_maxPushes (b := haltList tm l') h tm.k₁
+  simp only [haltList, initList, Function.update_self] at this
+  refine this.trans (Nat.add_le_add_right ?_ _)
+  by_cases hk : tm.k₁ = tm.k₀
+  · rw [hk, Function.update_self]
+  · simp [Function.update_of_ne hk]
 
 /-- A (bundled TM2) Turing machine
 with input alphabet equivalent to `Γ₀` and output alphabet equivalent to `Γ₁`. -/
@@ -193,6 +213,15 @@ def TM2ComputableInPolyTime.toTM2ComputableInTime {α β αΓ βΓ : Type} {ea :
     {eb : β → List βΓ} {f : α → β} (h : TM2ComputableInPolyTime ea eb f) :
     TM2ComputableInTime ea eb f :=
   ⟨h.toTM2ComputableAux, fun n => h.time.eval n, h.outputsFun⟩
+
+/-- The output of a polynomial-time machine has polynomial length. -/
+theorem TM2ComputableInPolyTime.length_le {α β αΓ βΓ : Type} {ea : α → List αΓ}
+    {eb : β → List βΓ} {f : α → β} (h : TM2ComputableInPolyTime ea eb f) (a : α) :
+    (eb (f a)).length ≤
+      (Polynomial.X + Polynomial.C h.tm.maxPushes * h.time).eval (ea a).length := by
+  have := (h.outputsFun a).toTM2Outputs.length_le
+  rw [List.length_map, List.length_map] at this
+  simpa using this.trans (Nat.add_le_add_left (Nat.mul_le_mul_left _ (h.outputsFun a).steps_le_m) _)
 
 open Turing.TM2.Stmt
 
