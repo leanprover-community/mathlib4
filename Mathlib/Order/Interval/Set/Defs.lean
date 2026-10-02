@@ -33,14 +33,16 @@ namespace Set
 variable {α : Type*} [Preorder α] {a b x : α}
 
 /-- `Iio b` is the left-infinite right-open interval $(-∞, b)$. -/
-@[implicit_reducible, to_dual /-- `Ioi a` is the left-open right-infinite interval $(a, ∞)$. -/]
+@[to_dual (attr := implicit_reducible)
+/-- `Ioi a` is the left-open right-infinite interval $(a, ∞)$. -/]
 def Iio (b : α) := { x | x < b }
 
 @[to_dual (attr := simp, grind =, push)] theorem mem_Iio : x ∈ Iio b ↔ x < b := .rfl
 @[to_dual] theorem Iio_def (a : α) : { x | x < a } = Iio a := rfl
 
 /-- `Iic b` is the left-infinite right-closed interval $(-∞, b]$. -/
-@[implicit_reducible, to_dual /-- `Ici a` is the left-closed right-infinite interval $[a, ∞)$. -/]
+@[to_dual (attr := implicit_reducible)
+/-- `Ici a` is the left-closed right-infinite interval $[a, ∞)$. -/]
 def Iic (b : α) := { x | x ≤ b }
 
 @[to_dual (attr := simp, grind =, push)] theorem mem_Iic : x ∈ Iic b ↔ x ≤ b := .rfl
