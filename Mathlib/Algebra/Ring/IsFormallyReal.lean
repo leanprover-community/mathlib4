@@ -5,6 +5,7 @@ Authors: Artie Khovanov
 -/
 module
 
+public import Mathlib.Algebra.Group.Submonoid.Support
 public import Mathlib.Algebra.Ring.SumsOfSquares
 import Mathlib.RingTheory.Nilpotent.Basic
 
@@ -152,3 +153,13 @@ theorem eq_zero_of_isSumSq_of_neg_isSumSq [NonUnitalNonAssocRing R] [IsFormallyR
   eq_zero_of_add_right h₁ h₂ (by simp)
 
 end IsFormallyReal
+
+variable (R) in
+protected theorem AddSubmonoid.IsPointed.sumSq [CommRing R] [IsFormallyReal R] :
+    (AddSubmonoid.sumSq R).IsPointed := fun _ ↦ by
+  simpa using IsFormallyReal.eq_zero_of_isSumSq_of_neg_isSumSq
+
+variable (R) in
+protected theorem Subsemiring.IsPointed.sumSq [CommRing R] [IsFormallyReal R] :
+    (Subsemiring.sumSq R).IsPointed := by
+  simpa using AddSubmonoid.IsPointed.sumSq R
