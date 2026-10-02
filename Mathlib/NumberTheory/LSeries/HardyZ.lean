@@ -35,7 +35,7 @@ The numerator is real, by `completedRiemannZeta_conj` together with the function
 
 ### References
 
-* E. C. Titchmarsh, *The theory of the Riemann zeta-function*, 2nd ed., Oxford, 1986, §4.17
+* [E. C. Titchmarsh, *The theory of the Riemann zeta-function*, §4.17][Titchmarsh1986]
 -/
 
 @[expose] public section
@@ -45,10 +45,6 @@ open scoped ComplexConjugate
 
 private lemma half_add_mul_I_re (t : ℝ) : ((1 : ℂ) / 2 + t * I).re = 1 / 2 := by simp
 
-private lemma conj_half_add_mul_I (t : ℝ) :
-    conj ((1 : ℂ) / 2 + t * I) = 1 - (1 / 2 + t * I) := by
-  simp [Complex.ext_iff]; norm_num
-
 private lemma half_add_mul_I_ne_zero (t : ℝ) : (1 : ℂ) / 2 + t * I ≠ 0 := by
   intro h
   have hre : ((1 : ℂ) / 2 + t * I).re = 0 := by rw [h]; simp
@@ -57,19 +53,22 @@ private lemma half_add_mul_I_ne_zero (t : ℝ) : (1 : ℂ) / 2 + t * I ≠ 0 := 
 
 /-- The completed zeta function is real on the critical line. -/
 theorem conj_completedRiemannZeta_half_add_mul_I (t : ℝ) :
-    conj (completedRiemannZeta (1 / 2 + t * I)) = completedRiemannZeta (1 / 2 + t * I) := by
-  rw [← completedRiemannZeta_conj, conj_half_add_mul_I, completedRiemannZeta_one_sub]
+    conj (completedRiemannZeta (1 / 2 + t * I)) = completedRiemannZeta (1 / 2 + t * I) :=
+  calc
+    _ = completedRiemannZeta (conj (1 / 2 + t * I)) := by rw [completedRiemannZeta_conj]
+    _ = completedRiemannZeta (1 - (1 / 2 + t * I)) := by simp [conj_ofNat]; ring_nf
+    _ = _ := by rw [completedRiemannZeta_one_sub]
 
 theorem completedRiemannZeta_half_add_mul_I_im (t : ℝ) :
     (completedRiemannZeta (1 / 2 + t * I)).im = 0 :=
-  Complex.conj_eq_iff_im.mp (conj_completedRiemannZeta_half_add_mul_I t)
+  conj_eq_iff_im.mp (conj_completedRiemannZeta_half_add_mul_I t)
 
 private theorem ofReal_completedRiemannZeta_half_add_mul_I_re (t : ℝ) :
     ((completedRiemannZeta (1 / 2 + t * I)).re : ℂ) = completedRiemannZeta (1 / 2 + t * I) :=
-  Complex.conj_eq_iff_re.mp (conj_completedRiemannZeta_half_add_mul_I t)
+  conj_eq_iff_re.mp (conj_completedRiemannZeta_half_add_mul_I t)
 
 private theorem Gammaℝ_half_add_mul_I_ne_zero (t : ℝ) : Gammaℝ (1 / 2 + t * I) ≠ 0 :=
-  Gammaℝ_ne_zero_of_re_pos (by rw [half_add_mul_I_re]; norm_num)
+  Gammaℝ_ne_zero_of_re_pos (by simp)
 
 /-- **Hardy's Z function**: the real-valued function on `ℝ` obtained by dividing `Λ` on the
 critical line by the modulus of its archimedean factor. Its zeros are exactly the heights of
@@ -80,18 +79,17 @@ noncomputable def hardyZ (t : ℝ) : ℝ :=
 theorem ofReal_hardyZ (t : ℝ) :
     (hardyZ t : ℂ) =
       completedRiemannZeta (1 / 2 + t * I) / (‖Gammaℝ (1 / 2 + t * I)‖ : ℝ) := by
-  rw [hardyZ, Complex.ofReal_div, ofReal_completedRiemannZeta_half_add_mul_I_re]
+  rw [hardyZ, ofReal_div, ofReal_completedRiemannZeta_half_add_mul_I_re]
 
 /-- `Z` has the same modulus as `ζ` on the critical line. -/
 theorem abs_hardyZ (t : ℝ) : |hardyZ t| = ‖riemannZeta (1 / 2 + t * I)‖ := by
   have hg := Gammaℝ_half_add_mul_I_ne_zero t
   have hL : completedRiemannZeta (1 / 2 + t * I) =
       riemannZeta (1 / 2 + t * I) * Gammaℝ (1 / 2 + t * I) := by
-    rw [riemannZeta_def_of_ne_zero (half_add_mul_I_ne_zero t)]
-    exact (div_mul_cancel₀ _ hg).symm
+    grind [riemannZeta_def_of_ne_zero (half_add_mul_I_ne_zero t)]
   have h1 : |(completedRiemannZeta (1 / 2 + t * I)).re| =
       ‖completedRiemannZeta (1 / 2 + t * I)‖ := by
-    rw [Complex.norm_def, Complex.normSq_apply, completedRiemannZeta_half_add_mul_I_im]
+    rw [norm_def, normSq_apply, completedRiemannZeta_half_add_mul_I_im]
     simp [Real.sqrt_mul_self_eq_abs]
   rw [hardyZ, abs_div, h1, hL, norm_mul, abs_norm, mul_div_assoc,
     div_self (norm_ne_zero_iff.mpr hg), mul_one]
@@ -101,12 +99,12 @@ theorem hardyZ_neg (t : ℝ) : hardyZ (-t) = hardyZ t := by
   have hnum : completedRiemannZeta (1 / 2 + (-t : ℝ) * I) =
       completedRiemannZeta (1 / 2 + t * I) := by
     have h : ((1 : ℂ) / 2 + (-t : ℝ) * I) = 1 - (1 / 2 + t * I) := by
-      simp [Complex.ext_iff]; norm_num
+      simp [ext_iff]; norm_num
     rw [h, completedRiemannZeta_one_sub]
   have hden : ‖Gammaℝ (1 / 2 + (-t : ℝ) * I)‖ = ‖Gammaℝ (1 / 2 + t * I)‖ := by
     have h : ((1 : ℂ) / 2 + (-t : ℝ) * I) = conj (1 / 2 + t * I) := by
-      simp [Complex.ext_iff]
-    rw [h, Complex.Gammaℝ_conj, Complex.norm_conj]
+      simp [ext_iff]
+    rw [h, Gammaℝ_conj, norm_conj]
   rw [hardyZ, hardyZ, hnum, hden]
 
 /-- The zeros of `Z` on `ℝ` are exactly the heights of the zeros of `ζ` on the critical line. -/
