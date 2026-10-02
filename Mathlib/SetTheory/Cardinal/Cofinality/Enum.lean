@@ -168,7 +168,7 @@ theorem isNormal_enum_iff_dirSupClosed :
   · refine enum_le_of_forall_lt (hs' ?_ ?_ (isLUB_csSup' bdd)) fun b hb ↦ ?_
     · grind
     · simpa using ha.ne_bot
-    · obtain ⟨c, hca, hbc⟩ := ha.lt_iff_exists_lt.1 hb
+    · obtain ⟨c, hbc, hca⟩ := ha.lt_iff_nonempty_Ioo.1 hb
       refine (H hbc).trans_le <| le_csSup bdd ⟨c, ?_⟩
       simpa
   · apply csSup_le'

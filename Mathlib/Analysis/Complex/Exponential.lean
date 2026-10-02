@@ -5,12 +5,12 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 -/
 module
 
-public import Mathlib.Algebra.CharP.Defs
-public import Mathlib.Analysis.Complex.Norm
+import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.Order.CauSeq.BigOperators
 public import Mathlib.Algebra.Order.Star.Basic
-public import Mathlib.Data.Complex.BigOperators
-public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.Analysis.Complex.Norm
+import Mathlib.Basic.Complex.BigOperators
+import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.Tactic.NormNum.BigOperators
 public import Mathlib.Tactic.NormNum.NatFactorial
 
@@ -177,7 +177,7 @@ theorem exp_int_mul (z : ℂ) (n : ℤ) : Complex.exp (n * z) = Complex.exp z ^ 
 theorem exp_conj : exp (conj x) = conj (exp x) := by
   simp only [exp]
   rw [← lim_conj]
-  refine congr_arg CauSeq.lim (CauSeq.ext fun _ => ?_)
+  congrm CauSeq.lim $(CauSeq.ext fun _ => ?_)
   dsimp [exp', Function.comp_def, cauSeqConj]
   rw [map_sum (starRingEnd _)]
   refine sum_congr rfl fun n _ => ?_
@@ -251,8 +251,7 @@ theorem sum_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) (n : ℕ) : ∑ i ∈ rang
       refine le_lim (CauSeq.le_of_exists ⟨n, fun j hj => ?_⟩)
       simp only [exp', const_apply, re_sum]
       norm_cast
-      refine sum_le_sum_of_subset_of_nonneg (range_mono hj) fun _ _ _ ↦ ?_
-      positivity
+      gcongr
     _ = exp x := by rw [exp, Complex.exp, ← cauSeqRe, lim_re]
 
 lemma pow_div_factorial_le_exp (hx : 0 ≤ x) (n : ℕ) : x ^ n / n ! ≤ exp x :=
@@ -388,7 +387,7 @@ theorem exp_bound {x : ℂ} (hx : ‖x‖ ≤ 1) {n : ℕ} (hn : 0 < n) :
   calc
     ‖∑ m ∈ range j with n ≤ m, (x ^ m / m.factorial : ℂ)‖
       = ‖∑ m ∈ range j with n ≤ m, (x ^ n * (x ^ (m - n) / m.factorial) : ℂ)‖ := by
-      refine congr_arg norm (sum_congr rfl fun m hm => ?_)
+      congrm norm $(sum_congr rfl fun m hm => ?_)
       rw [mem_filter, mem_range] at hm
       rw [← mul_div_assoc, ← pow_add, add_tsub_cancel_of_le hm.2]
     _ ≤ ∑ m ∈ range j with n ≤ m, ‖x ^ n * (x ^ (m - n) / m.factorial)‖ :=
@@ -491,7 +490,7 @@ lemma norm_exp_sub_sum_le_norm_mul_exp (x : ℂ) (n : ℕ) :
   calc
     ‖∑ m ∈ Ico n j, (x ^ m / m.factorial : ℂ)‖
       = ‖∑ m ∈ Ico n j, (x ^ n * (x ^ (m - n) / m.factorial) : ℂ)‖ := by
-      refine congr_arg norm (sum_congr rfl fun m hm => ?_)
+      congrm norm $(sum_congr rfl fun m hm => ?_)
       rw [mem_Ico] at hm
       rw [← mul_div_assoc, ← pow_add, add_tsub_cancel_of_le hm.1]
     _ ≤ ∑ m ∈ Ico n j, ‖x ^ n * (x ^ (m - n) / m.factorial)‖ :=
@@ -563,7 +562,7 @@ theorem expNear_sub (n x r₁ r₂) : expNear n x r₁ -
 theorem exp_approx_end (n m : ℕ) (x : ℝ) (e₁ : n + 1 = m) (h : |x| ≤ 1) :
     |exp x - expNear m x 0| ≤ |x| ^ m / m.factorial * ((m + 1) / m) := by
   simp only [expNear, mul_zero, add_zero]
-  convert! exp_bound (n := m) h ?_ using 1
+  convert exp_bound (n := m) h ?_ using 1
   · simp [field]
   · lia
 
@@ -573,7 +572,7 @@ theorem exp_approx_succ {n} {x a₁ b₁ : ℝ} (m : ℕ) (e₁ : n + 1 = m) (a�
     |exp x - expNear n x a₁| ≤ |x| ^ n / n.factorial * b₁ := by
   grw [abs_sub_le, h]
   subst e₁; rw [expNear_succ, expNear_sub, abs_mul]
-  convert!
+  convert
     mul_le_mul_of_nonneg_left (a := |x| ^ n / ↑(Nat.factorial n)) (le_sub_iff_add_le'.1 e) ?_
       using 1
   · simp [mul_add, pow_succ', div_eq_mul_inv, abs_mul, abs_inv, Nat.factorial]
@@ -611,7 +610,7 @@ theorem exp_bound_div_one_sub_of_interval' {x : ℝ} (h1 : 0 < x) (h2 : x < 1) :
       -- (It may also need the positivity extensions in https://github.com/leanprover-community/mathlib4/pull/3907.)
       rw [show 3 = 1 + 1 + 1 from rfl]
       repeat rw [Finset.sum_range_succ]
-      norm_num [Nat.factorial]
+      simp [Nat.factorial]
       nlinarith
     _ < 1 / (1 - x) := by rw [lt_div_iff₀] <;> nlinarith
 
@@ -643,8 +642,7 @@ lemma one_sub_le_exp_neg (x : ℝ) : 1 - x ≤ exp (-x) :=
 
 theorem one_sub_div_pow_le_exp_neg {n : ℕ} {t : ℝ} (ht' : t ≤ n) : (1 - t / n) ^ n ≤ exp (-t) := by
   rcases eq_or_ne n 0 with (rfl | hn)
-  · simp
-    rwa [Nat.cast_zero] at ht'
+  · simp_all
   calc
     (1 - t / n) ^ n ≤ rexp (-(t / n)) ^ n := by
       gcongr
@@ -683,7 +681,7 @@ lemma exp_le_two_add_div_two_sub {x : ℝ} (hx : 0 ≤ x) (hx' : x < 2) :
 
 theorem prod_one_add_le_exp_sum {ι : Type*} (s : Finset ι) {f : ι → ℝ}
     (hf : ∀ i, 0 ≤ f i) : ∏ i ∈ s, (1 + f i) ≤ exp (∑ i ∈ s, f i) :=
-  (Finset.prod_le_prod (fun i _ ↦ add_nonneg zero_le_one (hf i))
+  (Finset.prod_le_prod₀ (fun i _ ↦ add_nonneg zero_le_one (hf i))
     fun i _ ↦ (add_comm 1 (f i)).le.trans (add_one_le_exp _)).trans
     (exp_sum s f).symm.le
 

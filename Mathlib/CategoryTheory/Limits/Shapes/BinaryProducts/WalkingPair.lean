@@ -5,10 +5,8 @@ Authors: Kim Morrison, Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.Over.Basic
 public import Mathlib.CategoryTheory.Discrete.Basic
-public import Mathlib.CategoryTheory.EpiMono
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+public import Mathlib.Tactic.ToAdditive
 
 /-!
 # Walking pairs

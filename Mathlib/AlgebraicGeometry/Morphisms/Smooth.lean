@@ -5,13 +5,10 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
-public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 public import Mathlib.AlgebraicGeometry.Morphisms.Flat
 public import Mathlib.AlgebraicGeometry.FunctionField
 public import Mathlib.AlgebraicGeometry.Noetherian
 public import Mathlib.RingTheory.RingHom.LocallyStandardSmooth
-public import Mathlib.RingTheory.Smooth.Flat
 public import Mathlib.RingTheory.Smooth.Field
 
 /-!
@@ -65,8 +62,6 @@ class Smooth (f : X ⟶ Y) : Prop where
       (f.appLE U V e).hom.Smooth
 
 alias Scheme.Hom.smooth_appLE := Smooth.smooth_appLE
-
-@[deprecated (since := "2026-02-09")] alias IsSmooth := Smooth
 
 /-- The property of scheme morphisms `Smooth` is associated with the ring
 homomorphism property `Smooth`. -/
@@ -122,9 +117,6 @@ instance : MorphismProperty.Respects @Smooth @IsOpenImmersion :=
     (RingHom.Smooth.stableUnderComposition.stableUnderCompositionWithLocalizationAway
       RingHom.Smooth.holdsForLocalizationAway).1
 
-@[deprecated (since := "2026-02-09")]
-alias isSmooth_isStableUnderBaseChange := smooth_isStableUnderBaseChange
-
 /--
 A morphism of schemes `f : X ⟶ Y` is smooth of relative dimension `n` if for each `x : X` there
 exists an affine open neighborhood `V` of `x` and an affine open neighborhood `U` of
@@ -137,17 +129,12 @@ class SmoothOfRelativeDimension : Prop where
     (V : X.Opens) (_ : IsAffineOpen V) (_ : x ∈ V) (e : V ≤ f ⁻¹ᵁ U),
     IsStandardSmoothOfRelativeDimension n (f.appLE U V e).hom
 
-@[deprecated (since := "2026-02-09")] alias IsSmoothOfRelativeDimension := SmoothOfRelativeDimension
-
 /-- If `f` is smooth of any relative dimension, it is smooth. -/
 lemma SmoothOfRelativeDimension.smooth [SmoothOfRelativeDimension n f] : Smooth f := by
   rw [Smooth.iff_forall_exists_isStandardSmooth]
   intro x
   obtain ⟨U, hU, V, hV, hx, e, hf⟩ := exists_isStandardSmoothOfRelativeDimension (n := n) (f := f) x
   exact ⟨U, hU, V, hV, hx, e, hf.isStandardSmooth⟩
-
-@[deprecated (since := "2026-02-09")]
-alias IsSmoothOfRelativeDimension.isSmooth := SmoothOfRelativeDimension.smooth
 
 /-- The property of scheme morphisms `SmoothOfRelativeDimension n` is associated with the ring
 homomorphism property `Locally (IsStandardSmoothOfRelativeDimension n)`. -/
@@ -163,20 +150,28 @@ instance : HasRingHomProperty (@SmoothOfRelativeDimension n)
     grind [Scheme.affineOpens]
 
 /-- Smooth of relative dimension `n` is stable under base change. -/
-lemma smoothOfRelativeDimension_isStableUnderBaseChange :
+instance smoothOfRelativeDimension_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange (@SmoothOfRelativeDimension n) :=
   HasRingHomProperty.isStableUnderBaseChange <| locally_isStableUnderBaseChange
     isStandardSmoothOfRelativeDimension_respectsIso
     (isStandardSmoothOfRelativeDimension_isStableUnderBaseChange n)
 
-@[deprecated (since := "2026-02-09")]
-alias isSmoothOfRelativeDimension_isStableUnderBaseChange :=
-  smoothOfRelativeDimension_isStableUnderBaseChange
+set_option backward.isDefEq.respectTransparency.types false in
+instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [SmoothOfRelativeDimension n g] :
+    SmoothOfRelativeDimension n (pullback.fst f g) :=
+  have := smoothOfRelativeDimension_isStableUnderBaseChange n
+  MorphismProperty.pullback_fst f g inferInstance
+
+set_option backward.isDefEq.respectTransparency.types false in
+instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [SmoothOfRelativeDimension n f] :
+    SmoothOfRelativeDimension n (pullback.snd f g) :=
+  have := smoothOfRelativeDimension_isStableUnderBaseChange n
+  MorphismProperty.pullback_snd f g inferInstance
 
 /-- Open immersions are smooth of relative dimension `0`. -/
 instance (priority := 900) [IsOpenImmersion f] : SmoothOfRelativeDimension 0 f :=
   HasRingHomProperty.of_isOpenImmersion
-    (locally_holdsForLocalizationAway <|
+    (locally_holdsForLocalizationAway
       isStandardSmoothOfRelativeDimension_holdsForLocalizationAway).containsIdentities
 
 /-- Open immersions are smooth. -/
@@ -283,7 +278,7 @@ lemma exists_smooth_of_formallySmooth_stalk
       IsAffineOpen.isoSpec_hom, IsAffineOpen.toSpecΓ_fromSpec] at hrx
   · have := hV.isLocalization_basicOpen r
     rw [← RingHom.smooth_algebraMap] at hr
-    convert!
+    convert
       RingHom.Smooth.propertyIsLocal.respectsIso.1 _
         (IsLocalization.algEquiv (.powers r) _ Γ(X, X.basicOpen r)).toRingEquiv hr
     ext

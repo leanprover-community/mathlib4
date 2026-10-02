@@ -5,12 +5,8 @@ Authors: Fengyang Wang
 -/
 module
 
-public import Mathlib.Topology.Algebra.InfiniteSum.Basic
-public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
-public import Mathlib.Algebra.Module.LinearMap.Basic
 public import Mathlib.Algebra.Order.Antidiag.Prod
-public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.Data.Set.MulAntidiagonal
 public import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.GroupTheory.GroupAction.Ring
@@ -259,7 +255,7 @@ lemma convolution_eq_sum_mulAntidiagonal
     (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') (x : M) :
     (f ⋆[L] g) x = ∑ ab ∈ Finset.mulAntidiagonal x, L (f ab.1) (g ab.2) := by
   rw [convolution, ← Finset.tsum_subtype]
-  exact (Equiv.setCongr (mulFiber_eq_mulAntidiagonal x)).tsum_eq
+  exact (Set.equivOfEq (mulFiber_eq_mulAntidiagonal x)).tsum_eq
     (fun ab => L (f ab.1.1) (g ab.1.2))
 
 /-- Convolution exists whenever the index monoid has `Finset.HasMulAntidiagonal`, since every

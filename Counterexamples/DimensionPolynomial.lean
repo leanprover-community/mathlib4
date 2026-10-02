@@ -53,9 +53,9 @@ theorem ringKrullDim_A_eq_one : ringKrullDim (A k) = 1 := by
   have : IsLocalRing (A k) := Subring.isLocalRing_of_unit (A k) h_unit
   have : ¬ IsField (A k) := fun h ↦ by
     let Y : A k := ⟨PowerSeries.X, by simp [A]⟩
-    have : Y ≠ 0 := fun h ↦ PowerSeries.X_ne_zero congr(Subtype.val $h)
+    have : Y ≠ 0 := fun h ↦ PowerSeries.X_ne_zero congr($(h).val)
     obtain ⟨Y_inv, h'⟩ := h.mul_inv_cancel this
-    have := congr(PowerSeries.constantCoeff (Subtype.val $(h')))
+    have := congr(PowerSeries.constantCoeff $(h').val)
     simp [Y] at this
   refine ringKrullDim_eq_one_iff_of_isLocalRing_isDomain.mpr ⟨this, fun x hx y hy ↦ ?_⟩
   have : ringKrullDim (RatFunc k)⟦X⟧ = 1 := IsPrincipalIdealRing.ringKrullDim_eq_one _
@@ -91,7 +91,7 @@ theorem ringKrullDim_polynomial_A_eq_three : ringKrullDim (A k)[X] = 3 := by
     RingHom.ker_isPrime _⟩
   let Y : A k := ⟨PowerSeries.X, by simp⟩
   let tY : A k := ⟨PowerSeries.X * (PowerSeries.C RatFunc.X), by simp⟩
-  have Y_ne_zero : Y ≠ 0 := fun h ↦ by simpa [Y] using congr(Subtype.val $h)
+  have Y_ne_zero : Y ≠ 0 := fun h ↦ by simpa [Y] using congr($(h).val)
   have phi_Y_eq_zero : φ Y = 0 := RatFunc.C_injective (congr($h_phi Y).trans (by simp [Y]))
   have comp_eq : (algebraMap k[X] (RatFunc k)).comp g = PowerSeries.constantCoeff.comp f :=
     Polynomial.ringHom_ext (fun z ↦ by simpa [f, g] using congr($h_phi z)) (by simp [f, g])
