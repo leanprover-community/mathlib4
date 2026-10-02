@@ -92,7 +92,7 @@ theorem C_injective : Function.Injective (.C : R → QuadraticAlgebra R a b) :=
 theorem C_inj {x y : R} : (.C x : QuadraticAlgebra R a b) = .C y ↔ x = y :=
   C_injective.eq_iff
 
-instance : Zero (QuadraticAlgebra R a b) := ⟨⟨0, 0⟩⟩
+instance : Zero (QuadraticAlgebra R a b) := ⟨.C 0⟩
 
 @[simp] theorem re_zero : (0 : QuadraticAlgebra R a b).re = 0 := rfl
 
@@ -110,7 +110,7 @@ instance : Inhabited (QuadraticAlgebra R a b) := ⟨0⟩
 section One
 variable [One R]
 
-instance : One (QuadraticAlgebra R a b) := ⟨⟨1, 0⟩⟩
+instance : One (QuadraticAlgebra R a b) := ⟨.C 1⟩
 
 @[scoped simp] theorem re_one : (1 : QuadraticAlgebra R a b).re = 1 := rfl
 
