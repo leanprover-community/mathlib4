@@ -16,9 +16,9 @@ import Mathlib.Util.Qq
 /-!
 # Certificate construction for the Bareiss decomposition
 
-`certifyDecomposition` builds the certificates of the conditions of an `Echelon.Decomposition`
-from the decomposition data, proving each condition by kernel evaluation, or from proofs of the
-individual entries supplied by an entry certifier.
+`certifyDecomposition` constructs a proof of `Echelon.Decomposes` using a given decomposition.
+The conditions are proved using either kernel evaluation or using an "entry certifier" that
+proves equalities of ring expression in the base ring.
 
 ## Implementation notes
 
