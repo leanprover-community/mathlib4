@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 module
 
-public meta import Lean.Server.InfoUtils
+public meta import Lean.Elab.InfoTree.Util
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
@@ -186,7 +186,7 @@ elab "#show_kind " t:tactic : command =>
   logInfoAt t m!"The `{.ofConstName ``SyntaxNodeKind}` is `{t.raw.getKind}`."
 
 /-- The monad for collecting the ranges of the syntaxes that do not modify any goal. -/
-abbrev M := StateRefT (Std.HashMap Lean.Syntax.Range Syntax) IO
+abbrev M := StateRefT (Std.HashMap Lean.Syntax.Range Syntax) BaseIO
 
 /--
 A list of blocklisted syntax kinds, which are expected to have subterms that contain
@@ -206,7 +206,6 @@ initialize ignoreTacticKindsRef : IO.Ref NameHashSet ←
     `Batteries.Tactic.seq_focus,
     `Mathlib.Tactic.Hint.registerHintStx,
     `Mathlib.Tactic.LinearCombination.linearCombination,
-    `Mathlib.Tactic.LinearCombinationPrime.linearCombination',
     `Aesop.Frontend.Parser.addRules,
     `Aesop.Frontend.Parser.aesopTactic,
     `Aesop.Frontend.Parser.aesopTactic?,

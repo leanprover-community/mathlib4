@@ -5,9 +5,8 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveTopology
+import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveTopology
 public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
-public import Mathlib.CategoryTheory.Sites.LocallySurjective
 /-!
 
 # Locally surjective morphisms of coherent sheaves
@@ -126,14 +125,14 @@ lemma regularTopology.isLocallySurjective_sheaf_of_types [Preregular C] [Finitar
       NatTrans.op_app, Cofan.mk_ι_app, Functor.mapIso_symm, Iso.trans_hom, Iso.symm_hom,
       Functor.mapIso_inv, comp_apply, ← f.naturality_apply (Sigma.ι Z a).op, i']
     have : f.app ⟨Z a⟩ (x a) = G.map (π a).op y := (h' a).choose_spec
-    convert! this
+    convert this
     · rw [← Functor.map_comp_apply, opCoproductIsoProduct_inv_comp_ι, ← piComparison_comp_π]
       change ((PreservesProduct.iso F _).hom ≫ _) _ = _
       have := Types.productIso_hom_comp_eval (fun a ↦ F.obj (op (Z a))) a
       rw [← Iso.eq_inv_comp] at this
       simp only [types_comp_apply, Iso.inv_hom_id_apply]
       simp [← comp_apply]
-    · simp only [← Functor.map_comp_apply, ← op_comp, Sigma.ι_desc]
+    · simp only [← Functor.map_comp_apply, ← op_comp, Sigma.ι_comp_desc]
 
 lemma coherentTopology.presheafIsLocallySurjective_iff {F G : Cᵒᵖ ⥤ D} (f : F ⟶ G)
     [Preregular C] [FinitaryPreExtensive C] [PreservesFiniteProducts F] [PreservesFiniteProducts G]
