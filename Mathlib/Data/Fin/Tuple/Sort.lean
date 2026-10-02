@@ -25,6 +25,10 @@ This file provides an API for doing so, with the sorted `n`-tuple given by
 
 * `Tuple.sort`: given `f : Fin n → α`, produces a permutation on `Fin n`
 * `Tuple.monotone_sort`: `f ∘ Tuple.sort f` is `Monotone`
+* `Tuple.sortDesc`: given `f : Fin n → α`, produces a permutation on `Fin n` sorting into decreasing
+  order
+* `Tuple.antitone_sortDesc`: `f ∘ Tuple.sortDesc f` is `Antitone`
+* `Tuple.comp_sort_comp_rev_eq_comp_sortDesc`: sorting descending equals sorting ascending, reversed
 
 -/
 
@@ -96,6 +100,22 @@ theorem monotone_sort (f : Fin n → α) : Monotone (f ∘ sort f) := by
   rw [self_comp_sort]
   exact (monotone_proj f).comp (graphEquiv₂ f).monotone
 
+/-- `sortDesc f` is the permutation that orders `Fin n` according to the reverse order of the
+outputs of `f`, so that `f ∘ sortDesc f` is decreasing.
+
+Unlike `sort f ∘ Fin.revPerm`, which also arranges `f` in decreasing order, `sortDesc f` is a
+*stable* sort: among indices with equal `f`-value it keeps their original order
+(`isStable_sortDesc`), whereas `sort f ∘ Fin.revPerm` reverses it and so is stable only when `f`
+is injective (`isStable_sort_comp_rev_iff`), in which case the two coincide
+(`sort_comp_rev_eq_sortDesc_of_injective`). -/
+def sortDesc (f : Fin n → α) : Equiv.Perm (Fin n) :=
+  sort (OrderDual.toDual ∘ f)
+
+theorem antitone_sortDesc (f : Fin n → α) : Antitone (f ∘ sortDesc f) := by
+  have hmono : Monotone ((OrderDual.toDual ∘ f) ∘ sort (OrderDual.toDual ∘ f)) := monotone_sort _
+  rw [Function.comp_assoc] at hmono
+  exact monotone_toDual_comp_iff.mp hmono
+
 end Tuple
 
 namespace Tuple
@@ -159,18 +179,23 @@ theorem eq_sort_iff' : σ = sort f ↔ StrictMono (σ.trans <| graphEquiv₁ f) 
 /-- A permutation `σ` equals `sort f` if and only if `f ∘ σ` is monotone and whenever `i < j`
 and `f (σ i) = f (σ j)`, then `σ i < σ j`. This means that `sort f` is the lexicographically
 smallest permutation `σ` such that `f ∘ σ` is monotone. -/
-theorem eq_sort_iff :
-    σ = sort f ↔ Monotone (f ∘ σ) ∧ ∀ i j, i < j → f (σ i) = f (σ j) → σ i < σ j := by
+theorem eq_sort_iff : σ = sort f ↔ Monotone (f ∘ σ) ∧ IsStable f σ := by
   rw [eq_sort_iff']
   refine ⟨fun h => ⟨(monotone_proj f).comp h.monotone, fun i j hij hfij => ?_⟩, fun h i j hij => ?_⟩
   · exact ((Prod.Lex.toLex_lt_toLex.1 <| h hij).resolve_left hfij.not_lt).2
   · obtain he | hl := (h.1 hij.le).eq_or_lt <;> apply Prod.Lex.toLex_lt_toLex.2
-    exacts [Or.inr ⟨he, h.2 i j hij he⟩, Or.inl hl]
+    exacts [Or.inr ⟨he, h.2 hij he⟩, Or.inl hl]
+
+/-- A permutation `σ` equals `sortDesc f` if and only if `f ∘ σ` is antitone and `σ` is stable,
+i.e. `σ` breaks ties by increasing index. This is the descending analogue of `eq_sort_iff`. -/
+theorem eq_sortDesc_iff : σ = sortDesc f ↔ Antitone (f ∘ σ) ∧ IsStable f σ := by
+  have h := eq_sort_iff (σ := σ) (f := OrderDual.toDual ∘ f)
+  rwa [Function.comp_assoc, monotone_toDual_comp_iff, isStable_toDual_comp_iff] at h
 
 /-- The permutation that sorts `f` is the identity if and only if `f` is monotone. -/
 theorem sort_eq_refl_iff_monotone : sort f = Equiv.refl _ ↔ Monotone f := by
   rw [eq_comm, eq_sort_iff, Equiv.coe_refl, Function.comp_id]
-  simp only [id, and_iff_left_iff_imp]
+  simp only [and_iff_left_iff_imp]
   exact fun _ _ _ hij _ => hij
 
 /-- A permutation of a tuple `f` is `f` sorted if and only if it is monotone. -/
@@ -181,6 +206,32 @@ theorem comp_sort_eq_comp_iff_monotone : f ∘ σ = f ∘ sort f ↔ Monotone (f
 theorem comp_perm_comp_sort_eq_comp_sort : (f ∘ σ) ∘ sort (f ∘ σ) = f ∘ sort f := by
   rw [Function.comp_assoc, ← Equiv.Perm.coe_mul]
   exact unique_monotone (monotone_sort (f ∘ σ)) (monotone_sort f)
+
+/-- The sorted-descending versions of a tuple `f` and of any permutation of `f` agree. -/
+theorem comp_perm_comp_sortDesc_eq_comp_sortDesc :
+    (f ∘ σ) ∘ sortDesc (f ∘ σ) = f ∘ sortDesc f := by
+  rw [Function.comp_assoc, ← Equiv.Perm.coe_mul]
+  exact unique_antitone (antitone_sortDesc (f ∘ σ)) (antitone_sortDesc f)
+
+/-- Sorting `f` in descending order is the same as sorting it in ascending order, then reversing. -/
+theorem comp_sort_comp_rev_eq_comp_sortDesc : f ∘ sort f ∘ Fin.rev = f ∘ sortDesc f := by
+  rw [show ⇑(sort f) ∘ Fin.rev = ⇑(sort f * Fin.revPerm : Equiv.Perm (Fin n)) from rfl]
+  exact unique_antitone ((monotone_sort f).comp_antitone Fin.rev_anti) (antitone_sortDesc f)
+
+/-- Sorting `f` in ascending order is the same as sorting it in descending order, then reversing. -/
+theorem comp_sortDesc_comp_rev_eq_comp_sort : f ∘ sortDesc f ∘ Fin.rev = f ∘ sort f := by
+  rw [show ⇑(sortDesc f) ∘ Fin.rev = ⇑(sortDesc f * Fin.revPerm : Equiv.Perm (Fin n)) from rfl]
+  exact unique_monotone ((antitone_sortDesc f).comp Fin.rev_anti) (monotone_sort f)
+
+/-- When `f` is injective there are no ties, so sorting descending agrees with sorting ascending
+then reversing, already as an equality of permutations. -/
+theorem sort_comp_rev_eq_sortDesc_of_injective (inj : Function.Injective f) :
+    sort f ∘ Fin.rev = sortDesc f :=
+  inj.comp_left comp_sort_comp_rev_eq_comp_sortDesc
+
+theorem sortDesc_comp_rev_eq_sort_of_injective (inj : Function.Injective f) :
+    sortDesc f ∘ Fin.rev = sort f :=
+  inj.comp_left comp_sortDesc_comp_rev_eq_comp_sort
 
 /-- If a permutation `f ∘ σ` of the tuple `f` is not the same as `f ∘ sort f`, then `f ∘ σ`
 has a pair of strictly decreasing entries. -/
@@ -202,6 +253,31 @@ theorem sort_perm (σ : Equiv.Perm (Fin n)) :
   · simpa using monotone_id
   · intro _ _ hij h
     exact (hij.ne (by simpa using h)).elim
+
+theorem isStable_sort (f : Fin n → α) : IsStable f (sort f) :=
+  (eq_sort_iff.mp rfl).2
+
+theorem isStable_sortDesc (f : Fin n → α) : IsStable f (sortDesc f) :=
+  (eq_sort_iff (f := OrderDual.toDual ∘ f) (σ := sortDesc f)).mp rfl |>.2
+
+/-- `sort f ∘ Fin.rev` is a stable sort exactly when `f` is injective: on tied values it orders
+them by *decreasing* index, the opposite of the stable `sortDesc f`. -/
+theorem isStable_sort_comp_rev_iff :
+    IsStable f (sort f ∘ Fin.rev) ↔ Function.Injective f := by
+  refine ⟨fun hσ => ?_, fun inj => ?_⟩
+  · -- `sort f` and its reversal order any tied `x, y` oppositely, so `f` can have no tie.
+    have key : ∀ x y, f x = f y → (sort f).symm x < (sort f).symm y → False := by
+      intro x y hxy hlt
+      have h1 : x < y := by simpa using isStable_sort f hlt (by simp [hxy])
+      have h2 : y < x := by simpa using hσ (Fin.rev_strictAnti hlt) (by simp [hxy])
+      exact absurd h1 (asymm h2)
+    intro a b hfab
+    by_contra hab
+    rcases lt_or_gt_of_ne (fun h => hab ((sort f).symm.injective h)) with hlt | hlt
+    · exact key a b hfab hlt
+    · exact key b a hfab.symm hlt
+  · rw [sort_comp_rev_eq_sortDesc_of_injective inj]
+    exact isStable_sortDesc f
 
 end Tuple
 

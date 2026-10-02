@@ -277,18 +277,18 @@ set_option backward.privateInPublic.warn false in
 finite-dimensional inner product space `E`, sorted in decreasing order -/
 noncomputable irreducible_def eigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) :
     Fin n → ℝ :=
-  (hT.unsortedEigenvalues hn) ∘ Tuple.sort (hT.unsortedEigenvalues hn) ∘ @Fin.revPerm n
+  (hT.unsortedEigenvalues hn) ∘ Tuple.sortDesc (hT.unsortedEigenvalues hn)
 
 theorem exists_eigenvalues_eq (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) {μ : 𝕜}
     (hμ : HasEigenvalue T μ) : ∃ i : Fin n, hT.eigenvalues hn i = μ := by
   obtain ⟨i, hi⟩ := hT.exists_unsortedEigenvalues_eq hn hμ
-  use ((Tuple.sort (hT.unsortedEigenvalues hn)).symm i).revPerm
+  use (Tuple.sortDesc (hT.unsortedEigenvalues hn)).symm i
   simp [eigenvalues_def, hi]
 
 theorem card_filter_eigenvalues_eq (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) (μ : 𝕜) :
     Finset.card {i | hT.eigenvalues hn i = μ} = Module.finrank 𝕜 (eigenspace T μ) := by
   rw [← hT.card_filter_unsortedEigenvalues_eq hn, eigenvalues_def]
-  apply Finset.card_equiv (Fin.revPerm.trans (Tuple.sort (hT.unsortedEigenvalues hn)))
+  apply Finset.card_equiv (Tuple.sortDesc (hT.unsortedEigenvalues hn))
   simp
 
 set_option backward.privateInPublic true in
@@ -300,7 +300,7 @@ noncomputable irreducible_def eigenvectorBasis (hT : T.IsSymmetric) (hn : Module
     OrthonormalBasis (Fin n) 𝕜 E :=
   (hT.direct_sum_isInternal.subordinateOrthonormalBasis
     hn hT.orthogonalFamily_eigenspaces').reindex
-      (Tuple.sort (hT.unsortedEigenvalues hn) * @Fin.revPerm n).symm
+      (Tuple.sortDesc (hT.unsortedEigenvalues hn)).symm
 
 theorem hasEigenvector_eigenvectorBasis (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
     (i : Fin n) : HasEigenvector T (hT.eigenvalues hn i) (hT.eigenvectorBasis hn i) := by
@@ -310,11 +310,8 @@ theorem hasEigenvector_eigenvectorBasis (hT : T.IsSymmetric) (hn : Module.finran
 /-- Eigenvalues are sorted in decreasing order. -/
 theorem eigenvalues_antitone (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) :
     Antitone (hT.eigenvalues hn) := by
-  rw [eigenvalues_def, ← Function.comp_assoc]
-  refine Monotone.comp_antitone ?_ ?_
-  · apply Tuple.monotone_sort
-  intro _ _ h
-  exact Fin.rev_le_rev.mpr h
+  rw [eigenvalues_def]
+  exact Tuple.antitone_sortDesc _
 
 theorem hasEigenvalue_eigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) (i : Fin n) :
     HasEigenvalue T (hT.eigenvalues hn i) :=
