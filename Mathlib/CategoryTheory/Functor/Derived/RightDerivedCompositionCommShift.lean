@@ -41,8 +41,8 @@ namespace CategoryTheory
 
 namespace Functor
 
-variable {C₁ C₂ C₃ D₁ D₂ D₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
-  [Category D₁] [Category D₂] [Category D₃]
+variable {C₁ C₂ C₃ D₁ D₂ D₃ : Type*} [Category* C₁] [Category* C₂] [Category* C₃]
+  [Category* D₁] [Category* D₂] [Category* D₃]
   {F₁₂ : C₁ ⥤ C₂} {F₂₃ : C₂ ⥤ C₃} {F₁₃ : C₁ ⥤ C₃} (e : F₁₂ ⋙ F₂₃ ≅ F₁₃)
   (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂) (L₃ : C₃ ⥤ D₃)
   (W₁ : MorphismProperty C₁) [L₁.IsLocalization W₁]
