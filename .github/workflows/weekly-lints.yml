@@ -14,18 +14,6 @@ jobs:
     runs-on: pr
     if: github.repository == 'leanprover-community/mathlib4'
     steps:
-    - name: cleanup
-      run: |
-        find . -name . -o -prune -exec rm -rf -- {} +
-        # Delete all but the 5 most recent toolchains.
-        # Make sure to delete both the `~/.elan/toolchains/X` directory and the `~/.elan/update-hashes/X` file.
-        # Skip symbolic links (`-type d`), the current directory (`! -name .`), and `nightly` and `stable`.
-        if cd ~/.elan/toolchains && find . -maxdepth 1 -type d ! -name . -print0 | xargs -0 ls -1td | grep -v 'nightly$' | grep -v 'stable$' | tail -n +6 | xargs -I {} sh -c 'echo {} && rm -rf "{}" && rm "../update-hashes/{}"'; then
-            : # Do nothing on success
-        else
-            : # Do nothing on failure, but suppress errors
-        fi
-
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         ref: master
@@ -51,9 +39,6 @@ jobs:
 
     - name: add weekly linting option
       run: |
-        # Reset contents of the lakefile, so we don't leave the wrong options enabled.
-        git checkout HEAD -- lakefile.lean
-
         # we disable checking for backticks inside single quotes with the next line
         # shellcheck disable=SC2016
         # Enable the linter
@@ -80,18 +65,21 @@ jobs:
         SHA: ${{ github.sha }}
         REF: ${{ steps.mathlib-ci.outputs.ref }}
       run: |
-        set -euo pipefail
+        # The default step shell is `bash -e` without `pipefail`, so the status of
+        # `lake build | tee` would be tee's. Make the pipeline report lake's instead.
+        set -o pipefail
         # Use a temporary file to ensure we don't overflow max variable size.
         lean_outfile=$(mktemp)
         # Show the stdout in the GitHub build logs, while we process it from the file.
-        success=true
-        lake build | tee "${lean_outfile}" || success=false
+        build_status=0
+        lake build | tee "${lean_outfile}" || build_status=$?
+        if [ "${build_status}" -eq 0 ]; then build_success=true; else build_success=false; fi
 
         # Process output for posting to Zulip.
         # The description links to the linter set, this workflow and the reporting script.
         blob="https://github.com/${REPO}/blob/${SHA}"
-        SUCCESS="${success}" \
         INFO=true \
+        SUCCESS="${build_success}" \
         LOCATIONS_MAX_COUNT=2 \
         MAX_ROWS=20 \
         DESCRIPTION="\`lake build\` with [\`linter.weeklyLintSet\`](${blob}/Mathlib/Init.lean) enabled ([workflow](${blob}/.github/workflows/weekly-lints.yml), [reporting script](https://github.com/leanprover-community/mathlib-ci/blob/${REF}/scripts/reporting/zulip_build_report.sh))." \
