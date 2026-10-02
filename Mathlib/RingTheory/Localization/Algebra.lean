@@ -35,7 +35,7 @@ variable (M S) in
 /-- The span of `I` in a localization of `R` at `M` is the localization of `I` at `M`. -/
 instance Algebra.idealMap_isLocalizedModule (I : Ideal R) :
     IsLocalizedModule M (Algebra.idealMap S I) :=
-  IsLocalizedModule.of_linearEquiv M (Submodule.toLocalized' S M _ I)
+  .of_linearEquiv M (Submodule.toLocalized' S M _ I)
     ((LinearEquiv.ofEq _ _ (Ideal.localized'_eq_map S M I)).restrictScalars R)
 
 lemma IsLocalization.ker_map (hT : Submonoid.map g M = T) :
