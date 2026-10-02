@@ -99,11 +99,11 @@ theorem hardyZ_neg (t : ℝ) : hardyZ (-t) = hardyZ t := by
   have hnum : completedRiemannZeta (1 / 2 + (-t : ℝ) * I) =
       completedRiemannZeta (1 / 2 + t * I) := by
     have h : ((1 : ℂ) / 2 + (-t : ℝ) * I) = 1 - (1 / 2 + t * I) := by
-      simp [ext_iff]; norm_num
+      simp [Complex.ext_iff]; norm_num
     rw [h, completedRiemannZeta_one_sub]
   have hden : ‖Gammaℝ (1 / 2 + (-t : ℝ) * I)‖ = ‖Gammaℝ (1 / 2 + t * I)‖ := by
     have h : ((1 : ℂ) / 2 + (-t : ℝ) * I) = conj (1 / 2 + t * I) := by
-      simp [ext_iff]
+      simp [Complex.ext_iff]
     rw [h, Gammaℝ_conj, norm_conj]
   rw [hardyZ, hardyZ, hnum, hden]
 
