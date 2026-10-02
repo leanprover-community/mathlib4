@@ -70,6 +70,7 @@ lemma δ_fromSingleMk {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q)
 
 /-- Cochains of degree `n` from `(singleFunctor C p).obj X` to `K` identify
 to `X ⟶ K.X q` when `p + n = q`. -/
+@[simps -isSimp]
 noncomputable def fromSingleEquiv {p q n : ℤ} (h : p + n = q) :
     Cochain ((singleFunctor C p).obj X) K n ≃+ (X ⟶ K.X q) where
   toFun α := (HomologicalComplex.singleObjXSelf (.up ℤ) p X).inv ≫ α.v p q h
@@ -120,6 +121,13 @@ lemma fromSingleMk_postcomp {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n =
       (fromSingleMk f h).comp (.ofHom g) (add_zero n) :=
   (fromSingleEquiv h).injective (by simp [fromSingleEquiv, singleFunctor])
 
+lemma fromSingleMk_comp {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q)
+    {L : CochainComplex C ℤ} {r : ℤ} (α : Cochain K L r) {m : ℤ} (hm : n + r = m)
+    (s : ℤ) (hs : q + r = s) :
+    (fromSingleMk f h).comp α hm = fromSingleMk (f ≫ α.v q s hs) (by lia) := by
+  apply (fromSingleEquiv (show p + m = s by lia)).injective
+  simp [fromSingleEquiv, Cochain.comp_v _ _ _ _ _ _ h hs]
+
 /-- Constructor for cochains to a single complex. -/
 @[nolint unusedArguments]
 noncomputable def toSingleMk {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (_ : p + n = q) :
@@ -154,6 +162,7 @@ lemma δ_toSingleMk {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q)
 
 /-- Cochains of degree `n` from `(singleFunctor C q).obj X` to `K` identify
 to `K.X p ⟶ X` when `p + n = q`. -/
+@[simps -isSimp]
 noncomputable def toSingleEquiv {p q n : ℤ} (h : p + n = q) :
     Cochain K ((singleFunctor C q).obj X) n ≃+ (K.X p ⟶ X) where
   toFun α := α.v p q h ≫ (HomologicalComplex.singleObjXSelf (.up ℤ) q X).hom
@@ -204,6 +213,13 @@ lemma toSingleMk_precomp
     toSingleMk (g.f p ≫ f) h =
       (Cochain.ofHom g).comp (toSingleMk f h) (zero_add n) :=
   (toSingleEquiv h).injective (by simp [toSingleEquiv, singleFunctor])
+
+lemma comp_toSingleMk {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q)
+    {L : CochainComplex C ℤ} {r : ℤ} (α : Cochain L K r) {m : ℤ} (hm : r + n = m)
+    (s : ℤ) (hs : s + r = p) :
+    α.comp (toSingleMk f h) hm = toSingleMk (α.v s p hs ≫ f) (by lia) := by
+  apply (toSingleEquiv (show s + m = q by lia)).injective
+  simp [toSingleEquiv, Cochain.comp_v _ _ _ _ _ _ hs h]
 
 end Cochain
 
