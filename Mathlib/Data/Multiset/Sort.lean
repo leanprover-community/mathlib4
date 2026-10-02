@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.List.Sort
 public import Mathlib.Data.Multiset.Range
-public import Mathlib.Util.Qq
+public meta import Mathlib.Util.Qq
 public meta import Mathlib.Data.Multiset.Defs
 
 /-!
@@ -83,7 +83,7 @@ variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [Std.Antisymm 
 theorem mem_sort : a ∈ sort s r ↔ a ∈ s := by rw [← mem_coe, sort_eq]
 
 @[simp]
-theorem length_sort : (sort s r).length = card s := Quot.inductionOn s <| length_mergeSort
+theorem length_sort : (sort s r).length = card s := Quot.inductionOn s length_mergeSort
 
 end
 

@@ -5,8 +5,6 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 public import Mathlib.Algebra.Module.Torsion.Free
 
@@ -25,15 +23,14 @@ public section
 
 assert_not_exists IsOrderedMonoid Field
 
-open Function
 open scoped Pointwise
 
 variable {α β : Type*}
 
 namespace Set
 
-section Monoid
-variable [Monoid α] [AddGroup β] [DistribMulAction α β] (a : α) (s : Set α) (t : Set β)
+section DistribSMul
+variable [AddGroup β] [DistribSMul α β] (a : α) (s : Set α) (t : Set β)
 
 @[simp]
 lemma smul_set_neg : a • -t = -(a • t) := by
@@ -44,7 +41,7 @@ protected lemma smul_neg : s • -t = -(s • t) := by
   simp_rw [← image_neg_eq_neg]
   exact image_image2_right_comm smul_neg
 
-end Monoid
+end DistribSMul
 
 section Semiring
 variable [Semiring α] [AddCommMonoid β] [Module α β]

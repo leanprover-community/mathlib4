@@ -8,8 +8,8 @@ module
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.MeasureTheory.Measure.Tight
 
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
-import Mathlib.Order.CompletePartialOrder
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
+import Mathlib.Order.Filter.ENNReal
 
 /-!
 # Tight sets of measures in normed spaces
@@ -139,7 +139,7 @@ lemma isTightMeasureSet_of_forall_basis_tendsto (b : OrthonormalBasis ι 𝕜 E)
     IsTightMeasureSet S := by
   rcases subsingleton_or_nontrivial E with hE | hE
   · simp only [IsTightMeasureSet, cocompact_eq_bot, smallSets_bot]
-    convert! tendsto_pure_nhds (a := ∅) _
+    convert tendsto_pure_nhds (a := ∅) _
     simp
   have h_rank : (0 : ℝ) < Fintype.card ι := by
     simpa [← Module.finrank_eq_card_basis b.toBasis, Module.finrank_pos_iff]
@@ -153,7 +153,7 @@ lemma isTightMeasureSet_of_forall_basis_tendsto (b : OrthonormalBasis ι 𝕜 E)
     _ ≤ ⨆ μ ∈ S, μ (⋃ i, {x : E | r / √(Fintype.card ι) < ‖⟪b i, x⟫_𝕜‖}) := by
       gcongr with μ hμS
       intro x hx
-      simp only [Set.mem_setOf_eq, Set.mem_iUnion] at hx ⊢
+      simp only [Set.mem_ofPred_eq, Set.mem_iUnion] at hx ⊢
       have hx' : r < √(Fintype.card ι) * ⨆ i, ‖⟪b i, x⟫_𝕜‖ :=
         hx.trans_le (b.norm_le_card_mul_iSup_norm_inner x)
       rw [← div_lt_iff₀' (by positivity)] at hx'
@@ -199,7 +199,7 @@ lemma isTightMeasureSet_iff_inner_tendsto :
   intro r
   have h_le (μ : Measure E) : μ {x | r < ‖⟪y, x⟫_𝕜‖} ≤ μ {x | r * ‖y‖⁻¹ < ‖x‖} := by
     refine measure_mono fun x hx ↦ ?_
-    simp only [Set.mem_setOf_eq] at hx ⊢
+    simp only [Set.mem_ofPred_eq] at hx ⊢
     rw [mul_inv_lt_iff₀]
     · rw [mul_comm]
       exact hx.trans_le (norm_inner_le_norm y x)

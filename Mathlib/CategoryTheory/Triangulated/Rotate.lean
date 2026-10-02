@@ -5,7 +5,6 @@ Authors: Luke Kershaw
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Triangulated.Basic
 
 /-!
@@ -15,6 +14,8 @@ This file adds the ability to rotate triangles and triangle morphisms.
 It also shows that rotation gives an equivalence on the category of triangles.
 
 -/
+
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -81,6 +82,7 @@ attribute [local simp] shift_shift_neg' shift_neg_shift'
 
 variable (C)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Rotating triangles gives an endofunctor on the category of triangles in `C`.
 -/
 @[simps]
@@ -94,7 +96,6 @@ def rotate : Triangle C ⥤ Triangle C where
       dsimp
       simp only [comp_neg, neg_comp, ← Functor.map_comp, f.comm₁] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The inverse rotation of triangles gives an endofunctor on the category of triangles in `C`.
 -/
 @[simps]

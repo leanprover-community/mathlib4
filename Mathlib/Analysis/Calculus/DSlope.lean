@@ -6,9 +6,8 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Slope
-public import Mathlib.Analysis.Calculus.Deriv.Comp
-public import Mathlib.Analysis.Calculus.FDeriv.Add
-public import Mathlib.Analysis.Calculus.FDeriv.Mul
+import Mathlib.Analysis.Calculus.Deriv.Comp
+import Mathlib.Analysis.Calculus.FDeriv.Mul
 
 /-!
 # Slope of a differentiable function
@@ -29,7 +28,7 @@ open Function Set Filter
 
 variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-open Classical in
+open scoped Classical in
 /-- `dslope f a b` is defined as `slope f a b = (b - a)⁻¹ • (f b - f a)` for `a ≠ b` and
 `deriv f a` for `a = b`. -/
 noncomputable def dslope (f : 𝕜 → E) (a : 𝕜) : 𝕜 → E :=
@@ -52,7 +51,7 @@ theorem ContinuousLinearMap.dslope_comp {F : Type*} [NormedAddCommGroup F] [Norm
   rcases eq_or_ne b a with (rfl | hne)
   · simp only [dslope_same]
     exact (f.hasFDerivAt.comp_hasDerivAt b (H rfl).hasDerivAt).deriv
-  · simpa only [dslope_of_ne _ hne] using f.toLinearMap.slope_comp g a b
+  · simpa only [dslope_of_ne _ hne] using! f.toLinearMap.slope_comp g a b
 
 theorem eqOn_dslope_slope (f : 𝕜 → E) (a : 𝕜) : EqOn (dslope f a) (slope f a) {a}ᶜ := fun _ =>
   dslope_of_ne f

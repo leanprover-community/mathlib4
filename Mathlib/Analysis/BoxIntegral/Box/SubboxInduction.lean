@@ -30,7 +30,9 @@ rectangular box, induction
 
 @[expose] public section
 
-open Set Function Filter Topology
+open Set Function Filter
+
+open scoped Topology
 
 noncomputable section
 
@@ -40,7 +42,7 @@ namespace Box
 
 variable {ι : Type*} {I J : Box ι}
 
-open Classical in
+open scoped Classical in
 /-- For a box `I`, the hyperplanes passing through its center split `I` into `2 ^ card ι` boxes.
 `BoxIntegral.Box.splitCenterBox I s` is one of these boxes. See also
 `BoxIntegral.Partition.splitCenter` for the corresponding `BoxIntegral.Partition`. -/

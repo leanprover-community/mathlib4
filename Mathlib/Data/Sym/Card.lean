@@ -6,9 +6,7 @@ Authors: Yaël Dillies, Bhavik Mehta, Huỳnh Trần Khanh, Stuart Presnell
 module
 
 public import Mathlib.Data.Finset.Sym
-public import Mathlib.Data.Fintype.Sum
-public import Mathlib.Data.Fintype.Prod
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Data.Fintype.Sum
 
 /-!
 # Stars and bars
@@ -143,13 +141,8 @@ theorem card_image_offDiag (s : Finset α) :
   rw [Nat.choose_two_right, Nat.mul_sub_left_distrib, mul_one, ← offDiag_card,
     Nat.div_eq_of_eq_mul_right Nat.zero_lt_two (two_mul_card_image_offDiag s).symm]
 
-theorem card_subtype_diag [Fintype α] : card { a : Sym2 α // a.IsDiag } = card α := by
-  convert! card_image_diag (univ : Finset α)
-  rw [← filter_image_mk_isDiag, Fintype.card_of_subtype]
-  rintro x
-  rw [mem_filter, univ_product_univ, mem_image]
-  obtain ⟨a, ha⟩ := Quot.exists_rep x
-  exact and_iff_right ⟨a, mem_univ _, ha⟩
+theorem card_subtype_diag [Fintype α] : card { a : Sym2 α // a.IsDiag } = card α :=
+  card_congr diagElemEquiv
 
 theorem card_subtype_not_diag [Fintype α] :
     card { a : Sym2 α // ¬a.IsDiag } = (card α).choose 2 := by

@@ -61,14 +61,14 @@ theorem contDiffAt_arcsin {x : ℝ} (h₁ : x ≠ -1) (h₂ : x ≠ 1) {n : ℕ�
 theorem hasDerivWithinAt_arcsin_Ici {x : ℝ} (h : x ≠ -1) :
     HasDerivWithinAt arcsin (1 / √(1 - x ^ 2)) (Ici x) x := by
   rcases eq_or_ne x 1 with (rfl | h')
-  · convert! (hasDerivWithinAt_const (1 : ℝ) _ (π / 2)).congr _ _ <;>
+  · convert (hasDerivWithinAt_const (1 : ℝ) _ (π / 2)).congr _ _ <;>
       simp +contextual [arcsin_of_one_le]
   · exact (hasDerivAt_arcsin h h').hasDerivWithinAt
 
 theorem hasDerivWithinAt_arcsin_Iic {x : ℝ} (h : x ≠ 1) :
     HasDerivWithinAt arcsin (1 / √(1 - x ^ 2)) (Iic x) x := by
   rcases em (x = -1) with (rfl | h')
-  · convert! (hasDerivWithinAt_const (-1 : ℝ) _ (-(π / 2))).congr _ _ <;>
+  · convert (hasDerivWithinAt_const (-1 : ℝ) _ (-(π / 2))).congr _ _ <;>
       simp +contextual [arcsin_of_le_neg_one]
   · exact (hasDerivAt_arcsin h' h).hasDerivWithinAt
 
@@ -163,7 +163,7 @@ theorem contDiffOn_arccos {n : ℕ∞ω} : ContDiffOn ℝ n arccos {-1, 1}ᶜ :=
 theorem contDiffAt_arccos_iff {x : ℝ} {n : ℕ∞ω} :
     ContDiffAt ℝ n arccos x ↔ n = 0 ∨ x ≠ -1 ∧ x ≠ 1 := by
   refine Iff.trans ⟨fun h => ?_, fun h => ?_⟩ contDiffAt_arcsin_iff <;>
-    simpa [arccos] using (contDiffAt_const (c := π / 2)).sub h
+    simpa [arccos] using! (contDiffAt_const (c := π / 2)).sub h
 
 end Arccos
 

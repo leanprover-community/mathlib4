@@ -14,24 +14,12 @@ jobs:
     runs-on: pr
     if: github.repository == 'leanprover-community/mathlib4'
     steps:
-    - name: cleanup
-      run: |
-        find . -name . -o -prune -exec rm -rf -- {} +
-        # Delete all but the 5 most recent toolchains.
-        # Make sure to delete both the `~/.elan/toolchains/X` directory and the `~/.elan/update-hashes/X` file.
-        # Skip symbolic links (`-type d`), the current directory (`! -name .`), and `nightly` and `stable`.
-        if cd ~/.elan/toolchains && find . -maxdepth 1 -type d ! -name . -print0 | xargs -0 ls -1td | grep -v 'nightly$' | grep -v 'stable$' | tail -n +6 | xargs -I {} sh -c 'echo {} && rm -rf "{}" && rm "../update-hashes/{}"'; then
-            : # Do nothing on success
-        else
-            : # Do nothing on failure, but suppress errors
-        fi
-
-    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         ref: master
 
     - name: Checkout local actions
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         ref: ${{ github.workflow_sha }}
         fetch-depth: 1
@@ -41,7 +29,7 @@ jobs:
       uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
     - name: Configure Lean
-      uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
+      uses: leanprover/lean-action@f061402b660e0c34644504b324e830f2991d4865 # v1.6.1
       with:
         auto-config: false
         use-github-cache: false
@@ -50,9 +38,6 @@ jobs:
 
     - name: add weekly linting option
       run: |
-        # Reset contents of the lakefile, so we don't leave the wrong options enabled.
-        git checkout HEAD -- lakefile.lean
-
         # we disable checking for backticks inside single quotes with the next line
         # shellcheck disable=SC2016
         # Enable the linter
@@ -66,7 +51,7 @@ jobs:
         lake build Mathlib.Init
 
     - name: Add GitHub problem matcher wrapper
-      uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
+      uses: leanprover-community/gh-problem-matcher-wrap@65a654fcdf7b64ff7633bc7a558f7b46d59a27bf # 2026-06-25
       with:
         action: add
         linters: lean
@@ -75,26 +60,32 @@ jobs:
       id: build
       continue-on-error: true
       run: |
+        # The default step shell is `bash -e` without `pipefail`, so the status of
+        # `lake build | tee` would be tee's. Make the pipeline report lake's instead.
+        set -o pipefail
         # Use a temporary file to ensure we don't overflow max variable size.
         lean_outfile=$(mktemp)
         # Show the stdout in the GitHub build logs, while we process it from the file.
-        (lake build || true) | tee "${lean_outfile}"
+        build_status=0
+        lake build | tee "${lean_outfile}" || build_status=$?
+        if [ "${build_status}" -eq 0 ]; then build_success=true; else build_success=false; fi
 
         # Process output for posting to Zulip
         SHA=${{ github.sha }} \
         REPO=${{ github.repository }} \
         RUN_ID=${{ github.run_id }} \
         INFO=true \
+        SUCCESS="${build_success}" \
           "${CI_SCRIPTS_DIR}/reporting/zulip_build_report.sh" "${lean_outfile}" > "${GITHUB_OUTPUT}"
 
     - name: Remove GitHub problem matcher wrapper
-      uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
+      uses: leanprover-community/gh-problem-matcher-wrap@65a654fcdf7b64ff7633bc7a558f7b46d59a27bf # 2026-06-25
       with:
         action: remove
         linters: lean
 
     - name: Post output to Zulip
-      uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+      uses: zulip/github-actions-zulip/send-message@f675f2b4eb2a95fae974215476dcb7ad8dfeff6b # v2.0.2
       with:
         api-key: ${{ secrets.ZULIP_API_KEY }}
         email: 'github-mathlib4-bot@leanprover.zulipchat.com'

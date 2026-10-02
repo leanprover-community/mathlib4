@@ -5,10 +5,11 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.Localization.Finiteness
-public import Mathlib.RingTheory.RingHom.FiniteType
-public import Mathlib.RingTheory.Localization.Away.AdjoinRoot
-public import Mathlib.RingTheory.Finiteness.FinitePresentationLocal
+import Mathlib.RingTheory.Localization.Finiteness
+import Mathlib.RingTheory.Localization.Away.AdjoinRoot
+import Mathlib.RingTheory.Finiteness.FinitePresentationLocal
+public import Mathlib.RingTheory.FiniteStability
+public import Mathlib.RingTheory.LocalProperties.Basic
 
 /-!
 
@@ -32,7 +33,7 @@ theorem finitePresentation_stableUnderComposition : StableUnderComposition @Fini
 /-- Being finitely-presented respects isomorphisms. -/
 theorem finitePresentation_respectsIso : RingHom.RespectsIso @RingHom.FinitePresentation :=
   finitePresentation_stableUnderComposition.respectsIso
-    fun e ↦ .of_surjective _ e.surjective <| by simpa using Submodule.fg_bot
+    fun e ↦ .of_surjective _ e.surjective <| by simpa using! Submodule.fg_bot
 
 /-- Being finitely-presented is stable under base change. -/
 theorem finitePresentation_isStableUnderBaseChange :

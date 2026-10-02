@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Category.FGModuleCat.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Colimits
-public import Mathlib.Algebra.Category.ModuleCat.EpiMono
-public import Mathlib.Algebra.Category.ModuleCat.Products
-public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+import Mathlib.Algebra.Category.ModuleCat.EpiMono
+import Mathlib.Algebra.Category.ModuleCat.Products
+import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 public import Mathlib.LinearAlgebra.DirectSum.Finite
 
 /-!
@@ -47,7 +47,7 @@ instance (F : J ⥤ FGModuleCat k) :
     ((ModuleCat.epi_iff_surjective _).1 inferInstance)
 
 /-- The forgetful functor from `FGModuleCat k` to `ModuleCat k` creates all finite colimits. -/
-@[implicit_reducible]
+@[instance_reducible]
 def forget₂CreatesColimit (F : J ⥤ FGModuleCat k) :
     CreatesColimit F (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) :=
   createsColimitOfFullyFaithfulOfIso

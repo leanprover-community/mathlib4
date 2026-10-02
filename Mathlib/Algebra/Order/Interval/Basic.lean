@@ -227,6 +227,7 @@ instance commMonoid [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
 
 end NonemptyInterval
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance Interval.mulOneClass [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
     MulOneClass (Interval α) where
@@ -258,7 +259,7 @@ end NonemptyInterval
 
 namespace Interval
 
-variable [CommMonoid α] [Preorder α] [IsOrderedMonoid α] (s : Interval α) {n : ℕ}
+variable [CommMonoid α] [Preorder α] [IsOrderedMonoid α] {n : ℕ}
 
 @[to_additive]
 theorem bot_pow : ∀ {n : ℕ}, n ≠ 0 → (⊥ : Interval α) ^ n = ⊥
@@ -438,7 +439,7 @@ instance : Inv (Interval α) :=
 
 namespace NonemptyInterval
 
-variable (s t : NonemptyInterval α) (a : α)
+variable (s : NonemptyInterval α) (a : α)
 
 @[to_additive (attr := simp)]
 theorem fst_inv : s⁻¹.fst = s.snd⁻¹ :=
@@ -532,30 +533,30 @@ instance subtractionCommMonoid {α : Type u}
     [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] :
     SubtractionCommMonoid (Interval α) where
   sub_eq_add_neg := by
-    rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (sub_eq_add_neg _ _)
-  neg_neg := by rintro (_ | s) <;> first | rfl | exact congr_arg WithBot.some (neg_neg _)
+    rintro (_ | s) (_ | t) <;> first | rfl | congrm WithBot.some $(sub_eq_add_neg ..)
+  neg_neg := by rintro (_ | s) <;> first | rfl | congrm WithBot.some $(neg_neg _)
   neg_add_rev := by
-    rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (neg_add_rev _ _)
+    rintro (_ | s) (_ | t) <;> first | rfl | congrm WithBot.some $(neg_add_rev ..)
   neg_eq_of_add := by
     rintro (_ | s) (_ | t) h <;>
       first
         | cases h
-        | exact congr_arg WithBot.some (neg_eq_of_add_eq_zero_right <| WithBot.coe_injective h)
+        | congrm WithBot.some $(neg_eq_of_add_eq_zero_right <| WithBot.coe_injective h)
   -- TODO: use a better defeq
   zsmul := zsmulRec
 
 @[to_additive existing Interval.subtractionCommMonoid]
 instance divisionCommMonoid : DivisionCommMonoid (Interval α) where
   div_eq_mul_inv := by
-    rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (div_eq_mul_inv _ _)
-  inv_inv := by rintro (_ | s) <;> first | rfl | exact congr_arg WithBot.some (inv_inv _)
+    rintro (_ | s) (_ | t) <;> first | rfl | congrm WithBot.some $(div_eq_mul_inv ..)
+  inv_inv := by rintro (_ | s) <;> first | rfl | congrm WithBot.some $(inv_inv _)
   mul_inv_rev := by
-    rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (mul_inv_rev _ _)
+    rintro (_ | s) (_ | t) <;> first | rfl | congrm WithBot.some $(mul_inv_rev ..)
   inv_eq_of_mul := by
     rintro (_ | s) (_ | t) h <;>
       first
         | cases h
-        | exact congr_arg WithBot.some (inv_eq_of_mul_eq_one_right <| WithBot.coe_injective h)
+        | congrm WithBot.some $(inv_eq_of_mul_eq_one_right <| WithBot.coe_injective h)
 
 end Interval
 
@@ -655,12 +656,13 @@ end Interval
 end Length
 
 namespace Mathlib.Meta.Positivity
-open Lean Meta Qq
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: The length of an interval is always nonnegative. -/
 @[positivity NonemptyInterval.length _]
 meta def evalNonemptyIntervalLength : PositivityExt where
-  eval {u α} _ _ e := do
+  eval {u α} _ pα? e :=
+    match pα? with | none => pure .none | some _ => do
     let ~q(@NonemptyInterval.length _ $ig $ipo $a) := e |
       throwError "not NonemptyInterval.length"
     let _i ← synthInstanceQ q(IsOrderedAddMonoid $α)
@@ -670,7 +672,8 @@ meta def evalNonemptyIntervalLength : PositivityExt where
 /-- Extension for the `positivity` tactic: The length of an interval is always nonnegative. -/
 @[positivity Interval.length _]
 meta def evalIntervalLength : PositivityExt where
-  eval {u α} _ _ e := do
+  eval {u α} _ pα? e :=
+    match pα? with | none => pure .none | some _ => do
     let ~q(@Interval.length _ $ig $ipo $a) := e | throwError "not Interval.length"
     let _i ← synthInstanceQ q(IsOrderedAddMonoid $α)
     assumeInstancesCommute

@@ -33,7 +33,7 @@ namespace Finsupp
 
 section uniqueLinearEquiv
 
-variable (R : Type*) {S α : Type*} (M : Type*)
+variable (R : Type*) {α : Type*} (M : Type*)
 variable [AddCommMonoid M] [Semiring R] [Module R M]
 
 /-- If `α` has a unique term, then the type of finitely supported functions `α →₀ M` is
@@ -49,7 +49,7 @@ noncomputable def uniqueLinearEquiv [Subsingleton α] (a : α) : (α →₀ M) �
 
 /-- If `α` has a unique term, then the type of finitely supported functions `α →₀ M` is
 `R`-linearly equivalent to `M`. -/
-@[deprecated uniqueLinearEquiv (since := "2026-05-06")]
+@[deprecated uniqueLinearEquiv +typeChanged (since := "2026-05-06")]
 noncomputable def LinearEquiv.finsuppUnique (α : Type*) [Unique α] : (α →₀ M) ≃ₗ[R] M :=
   { Finsupp.equivFunOnFinite.trans (Equiv.funUnique α M) with
     map_add' := fun _ _ => rfl
@@ -57,14 +57,13 @@ noncomputable def LinearEquiv.finsuppUnique (α : Type*) [Unique α] : (α →�
 
 variable {R M}
 
-set_option linter.deprecated false in
-@[deprecated uniqueLinearEquiv_apply (since := "2026-05-06")]
+@[deprecated uniqueLinearEquiv_apply +typeChanged (since := "2026-05-06")]
 theorem LinearEquiv.finsuppUnique_apply (α : Type*) [Unique α] (f : α →₀ M) :
     LinearEquiv.finsuppUnique R M α f = f default :=
   rfl
 
-set_option linter.deprecated false in
-@[deprecated uniqueLinearEquiv_symm_apply (since := "2026-05-06")]
+set_option backward.isDefEq.respectTransparency.types false in
+@[deprecated uniqueLinearEquiv_symm_apply +typeChanged (since := "2026-05-06")]
 theorem LinearEquiv.finsuppUnique_symm_apply (α : Type*) [Unique α] (m : M) :
     (LinearEquiv.finsuppUnique R M α).symm m = Finsupp.single default m := by
   ext; simp [LinearEquiv.finsuppUnique, Equiv.funUnique, single, Pi.single,
@@ -72,10 +71,8 @@ theorem LinearEquiv.finsuppUnique_symm_apply (α : Type*) [Unique α] (m : M) :
 
 end uniqueLinearEquiv
 
-variable {α : Type*} {M : Type*} {N : Type*} {P : Type*} {R : Type*} {S : Type*}
-variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M]
-variable [AddCommMonoid N] [Module R N]
-variable [AddCommMonoid P] [Module R P]
+variable {α : Type*} {M : Type*} {R : Type*}
+variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-- Forget that a function is finitely supported.
 
@@ -185,7 +182,7 @@ theorem splittingOfFunOnFintypeSurjective_splits [Finite α] (f : M →ₗ[R] α
 
 theorem leftInverse_splittingOfFunOnFintypeSurjective [Finite α] (f : M →ₗ[R] α → R)
     (s : Surjective f) : LeftInverse f (splittingOfFunOnFintypeSurjective f s) := fun g =>
-  LinearMap.congr_fun (splittingOfFunOnFintypeSurjective_splits f s) g
+  congr($(splittingOfFunOnFintypeSurjective_splits f s) g)
 
 theorem splittingOfFunOnFintypeSurjective_injective [Finite α] (f : M →ₗ[R] α → R)
     (s : Surjective f) : Injective (splittingOfFunOnFintypeSurjective f s) :=
@@ -209,6 +206,27 @@ def submodule (S : α → Submodule R M) : Submodule R (α →₀ M) where
 lemma mem_submodule_iff (S : α → Submodule R M) (x : α →₀ M) :
     x ∈ submodule S ↔ ∀ i, x i ∈ S i := by
   rfl
+
+@[simp]
+lemma comap_lsingle_submodule (p : α → Submodule R M) (i : α) :
+    Submodule.comap (lsingle i) (submodule p) = p i := by
+  ext x
+  refine ⟨fun hx ↦ by simpa using hx i, fun hx j ↦ ?_⟩
+  rcases eq_or_ne i j with rfl|h <;> simp_all
+
+lemma submodule_eq_iSup (p : α → Submodule R M) :
+    Finsupp.submodule p = ⨆ i, Submodule.map (Finsupp.lsingle i) (p i) := by
+  refine le_antisymm ?_ ?_
+  · intro x hx
+    rw [← Finsupp.sum_single x]
+    refine Submodule.sum_mem _ (fun i _ ↦ ?_)
+    exact Submodule.mem_iSup_of_mem i (Submodule.mem_map_of_mem (hx i))
+  · simp [iSup_le_iff, Submodule.map_le_iff_le_comap]
+
+@[simp]
+lemma submodule_top : Finsupp.submodule (fun _ : α ↦ (⊤ : Submodule R M)) = ⊤ := by
+  ext
+  simp
 
 theorem ker_mapRange (f : M →ₗ[R] N) (I : Type*) :
     LinearMap.ker (mapRange.linearMap (α := I) f) = submodule (fun _ => LinearMap.ker f) := by
@@ -265,7 +283,7 @@ lemma map_id [Finite X] : map (_root_.id : X → X) (M := M) = _root_.id := by
 lemma map_comp [Finite X] [Finite Y] [Finite Z] (g : Y → Z) (f : X → Y) :
     map (g.comp f) (M := M) = (map g).comp (map f) := by
   ext s
-  simp [map, Finsupp.mapDomain_comp]
+  simp [map, Finsupp.mapDomain_fun_comp]
 
 end
 

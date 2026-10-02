@@ -5,8 +5,7 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Field
-public import Mathlib.Analysis.Normed.Ring.InfiniteSum
+import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.NumberTheory.LSeries.Convergence
 
@@ -78,6 +77,7 @@ lemma ArithmeticFunction.coe_mul {R : Type*} [Semiring R] (f g : ArithmeticFunct
 
 namespace LSeries
 
+set_option backward.isDefEq.respectTransparency false in
 lemma convolution_def {R : Type*} [Semiring R] (f g : ℕ → R) :
     f ⍟ g = fun n ↦ ∑ p ∈ n.divisorsAntidiagonal, f p.1 * g p.2 := by
   ext n

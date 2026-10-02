@@ -54,7 +54,7 @@ theorem eqvGen_colimitTypeRel_of_rel (x y : Σ j, F.obj j) :
     · exact (Relation.EqvGen.rel _ _ ⟨f, rfl⟩)
     · exact (Relation.EqvGen.symm _ _ (Relation.EqvGen.rel _ _ ⟨g, h⟩))
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Recognizing filtered colimits of types. -/
 noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x = t.ι.app i xi)
     (hinj :
@@ -82,7 +82,15 @@ noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x 
 
 variable [IsFilteredOrEmpty J]
 
-set_option backward.isDefEq.respectTransparency false in
+#adaptation_note
+/--
+Note that the body of `isColimitOf'` locally enables `respectTransparency true` for a subterm.
+The underlying reason is that there is one corner case where `respectTransparency true` unfolds
+*more*, and we need that here.
+The intended fix is to get rid of the outer `respectTransparency false`. After that, the inner
+`respectTransparency true` is redundant and can be removed, too.
+-/
+set_option backward.defeqAttrib.useBackward true in
 /-- Recognizing filtered colimits of types. The injectivity condition here is
 slightly easier to check as compared to `isColimitOf`. -/
 noncomputable def isColimitOf' (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x = t.ι.app i xi)
@@ -90,7 +98,8 @@ noncomputable def isColimitOf' (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x
     IsColimit t :=
   isColimitOf _ _ hsurj (fun i j xi xj h ↦ by
     obtain ⟨k, g, hg⟩ := hinj (IsFiltered.max i j) (F.map (IsFiltered.leftToMax i j) xi)
-      (F.map (IsFiltered.rightToMax i j) xj) (by simp_all [Cocone.w_apply])
+      (F.map (IsFiltered.rightToMax i j) xj)
+      (by set_option backward.isDefEq.respectTransparency true in simp_all)
     exact ⟨k, IsFiltered.leftToMax i j ≫ g, IsFiltered.rightToMax i j ≫ g, by simpa using hg⟩)
 
 protected theorem rel_equiv : _root_.Equivalence (FilteredColimit.Rel.{v, u} F) where
@@ -115,8 +124,9 @@ protected theorem rel_eq_eqvGen_colimitTypeRel :
   constructor
   · apply eqvGen_colimitTypeRel_of_rel
   · rw [← (FilteredColimit.rel_equiv F).eqvGen_iff]
-    exact Relation.EqvGen.mono (rel_of_colimitTypeRel F)
+    exact Relation.EqvGen.mono (rel_of_colimitTypeRel F) _ _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem colimit_eq_iff_aux [HasColimit F] {i j : J} {xi : F.obj i} {xj : F.obj j} :
     (colimitCocone F).ι.app i xi = (colimitCocone F).ι.app j xj ↔
@@ -125,7 +135,6 @@ theorem colimit_eq_iff_aux [HasColimit F] {i j : J} {xi : F.obj i} {xj : F.obj j
   rw [← (equivShrink _).symm.injective.eq_iff, Equiv.symm_apply_apply, Equiv.symm_apply_apply,
     Functor.ιColimitType_eq_iff, FilteredColimit.rel_eq_eqvGen_colimitTypeRel]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isColimit_eq_iff {t : Cocone F} (ht : IsColimit t) {i j : J} {xi : F.obj i} {xj : F.obj j} :
     t.ι.app i xi = t.ι.app j xj ↔ ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f xi = F.map g xj := by
   have : HasColimit F := ⟨_, ht⟩

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.Topology.Algebra.Ring.Ideal
-public import Mathlib.RingTheory.Ideal.Nonunits
 
 /-!
 # The group of units of a complete normed ring
@@ -194,7 +193,7 @@ end NormedRing
 
 namespace Units
 
-open MulOpposite Filter NormedRing
+open NormedRing
 
 /-- In a normed ring with summable geometric series, the coercion from `Rˣ` (equipped with the
 induced topology from the embedding in `R × R`) to `R` is an open embedding. -/
@@ -222,7 +221,7 @@ theorem eq_top_of_norm_lt_one (I : Ideal R) {x : R} (hxI : x ∈ I) (hx : ‖1 -
 geometric series is proper. -/
 theorem closure_ne_top (I : Ideal R) (hI : I ≠ ⊤) : I.closure ≠ ⊤ := by
   have h := closure_minimal (coe_subset_nonunits hI) nonunits.isClosed
-  simpa only [I.closure.eq_top_iff_one, Ne] using mt (@h 1) one_notMem_nonunits
+  simpa only [I.closure.eq_top_iff_one, Ne] using! mt (@h 1) one_notMem_nonunits
 
 /-- The `Ideal.closure` of a maximal ideal in a normed ring with summable
 geometric series is the ideal itself. -/
@@ -231,6 +230,6 @@ theorem IsMaximal.closure_eq {I : Ideal R} (hI : I.IsMaximal) : I.closure = I :=
 
 /-- Maximal ideals in normed rings with summable geometric series are closed. -/
 instance IsMaximal.isClosed {I : Ideal R} [hI : I.IsMaximal] : IsClosed (I : Set R) :=
-  isClosed_of_closure_subset <| Eq.subset <| congr_arg ((↑) : Ideal R → Set R) hI.closure_eq
+  isClosed_of_closure_subset <| Eq.subset congr($hI.closure_eq)
 
 end Ideal

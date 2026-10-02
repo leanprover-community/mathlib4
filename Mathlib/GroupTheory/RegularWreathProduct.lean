@@ -213,9 +213,9 @@ theorem IteratedWreathProduct.card [Finite G] : Nat.card (IteratedWreathProduct 
 variable [Group G]
 
 instance : Group (IteratedWreathProduct G n) := by
- induction n with
- | zero => rw [IteratedWreathProduct_zero]; infer_instance
- | succ n ih => rw [IteratedWreathProduct_succ]; infer_instance
+  induction n with
+  | zero => rw [IteratedWreathProduct_zero]; infer_instance
+  | succ n ih => rw [IteratedWreathProduct_succ]; infer_instance
 
 /-- The homomorphism from `IteratedWreathProduct G n` to `Perm (Fin n → G)`. -/
 def iteratedWreathToPermHom (G : Type*) [Group G] :
@@ -252,8 +252,7 @@ noncomputable def Sylow.mulEquivIteratedWreathProduct (p : ℕ) [hp : Fact (Nat.
   let g := (MonoidHom.ofInjective hf).symm
   let P' : Sylow p (Equiv.Perm α) := Sylow.ofCard (MonoidHom.range f) (by
     rw [Nat.card_congr g.toEquiv, IteratedWreathProduct.card, hG, Nat.card_perm, hα,
-        ← Nat.multiplicity_eq_factorization hp.out (p ^ n).factorial_ne_zero,
-        Nat.Prime.multiplicity_factorial_pow hp.out])
+        ← Nat.multiplicity_eq_factorization hp.out, Nat.Prime.multiplicity_factorial_pow hp.out])
   exact (P.equiv P').trans g
 
 end iterated

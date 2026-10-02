@@ -5,8 +5,7 @@ Authors: Yury Kudryashov, Patrick Massot
 -/
 module
 
-public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Data.Set.Function
+import Mathlib.Data.Set.Function
 public import Mathlib.Order.Interval.Set.Basic
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
@@ -16,8 +15,8 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 
 The lemmas in this file state that addition maps intervals bijectively. The typeclass
 `ExistsAddOfLE` is defined specifically to make them work when combined with
-`OrderedCancelAddCommMonoid`; the lemmas below therefore apply to all
-`OrderedAddCommGroup`, but also to `ℕ` and `ℝ≥0`, which are not groups.
+`IsOrderedCancelAddMonoid`; the lemmas below therefore apply to all ordered groups,
+but also to `ℕ` and `ℝ≥0`, which are not groups.
 -/
 
 public section

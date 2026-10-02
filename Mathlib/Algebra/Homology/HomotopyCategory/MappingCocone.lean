@@ -55,6 +55,7 @@ noncomputable def inl : Cochain K (mappingCocone φ) 0 :=
 noncomputable def inr : Cocycle L (mappingCocone φ) 1 :=
   (Cocycle.ofHom (mappingCone.inr φ)).rightShift (-1) 1 (by lia)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inl_v_fst_f (p : ℤ) :
@@ -62,6 +63,7 @@ lemma inl_v_fst_f (p : ℤ) :
   simp [inl, fst, Cochain.rightShift_v (n := -1) _ _ _ _ p _ _ (p + -1) (by lia),
     Cochain.leftShift_v (n := 1) _ _ _ _ _ p _ (p + -1) (by lia)]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inl_v_snd_v (p q : ℤ) (hpq : p + -1 = q) :
@@ -107,7 +109,7 @@ variable {M : CochainComplex C ℤ} {n m : ℤ}
 noncomputable def descCochain : Cochain (mappingCocone φ) M m :=
   (-m + 1).negOnePow • (mappingCone.descCochain φ α β h).leftShift (-1) m (by lia)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma inl_v_descCochain_v (p q : ℤ) (hpq : p + m = q) :
     (inl φ).v p p (add_zero _) ≫ (descCochain φ α β h).v p q hpq = α.v p q hpq := by
@@ -115,7 +117,7 @@ lemma inl_v_descCochain_v (p q : ℤ) (hpq : p + m = q) :
     Cochain.rightShift_v (n := -1) _ _ _ _ p _ _ (p + -1) (by lia), smul_smul,
     Cochain.leftShift_v (n := n) _ (-1) m (by lia) _ _ hpq (p + -1) (by lia)]
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma inr_v_descCochain_v (p q : ℤ) (hpq : p + 1 = q) (r : ℤ) (hr : q + m = r) :
     (inr φ).1.v p q hpq ≫ (descCochain φ α β h).v q r hr = β.v p r (by lia) := by
@@ -135,6 +137,7 @@ lemma inr_comp_descCochain :
   ext p q hpq
   simp [Cochain.comp_v (n₂ := m) _ _ _ _ (p + 1) q rfl (by lia)]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma δ_descCochain (n' : ℤ) (hn' : n + 1 = n') :
     δ m n (descCochain φ α β h) =
@@ -205,7 +208,7 @@ variable {M : CochainComplex C ℤ} {n m : ℤ}
 noncomputable def liftCochain : Cochain M (mappingCocone φ) n :=
   (mappingCone.liftCochain φ α β h).rightShift (-1) n (by lia)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma liftCochain_v_fst_f (p₁ p₂ : ℤ) (h₁₂ : p₁ + n = p₂) :
     (liftCochain φ α β h).v p₁ p₂ h₁₂ ≫ (fst φ).f p₂ = α.v p₁ p₂ h₁₂ := by
@@ -213,7 +216,7 @@ lemma liftCochain_v_fst_f (p₁ p₂ : ℤ) (h₁₂ : p₁ + n = p₂) :
     Cochain.rightShift_v (n := m) _ _ _ _ p₁ _ _ (p₂ + -1) (by lia),
     Cochain.leftShift_v (n := 1) _ _ _ _ _ p₂ _ (p₂ + -1) (by lia)]
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma liftCochain_v_snd_v (p₁ p₂ p₃ : ℤ) (h₁₂ : p₁ + n = p₂) (h₂₃ : p₂ + -1 = p₃) :
     (liftCochain φ α β h).v p₁ p₂ h₁₂ ≫ (snd φ).v p₂ p₃ h₂₃ = β.v p₁ p₃ (by lia) := by
@@ -310,6 +313,7 @@ noncomputable def triangle : Triangle (CochainComplex C ℤ) :=
   Triangle.mk (fst φ) φ
     ((mappingCone.triangle φ).mor₂ ≫ (shiftFunctorCompIsoId _ (-1 : ℤ) 1 (by lia)).inv.app _)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Rotating the triangle `mappingCocone.triangle φ` gives a triangle that is
 isomorphic to `mappingCone.triangle φ`. -/

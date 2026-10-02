@@ -72,6 +72,7 @@ noncomputable def inverse : (C ⥤ₗ Type v) ⥤ (C ⥤ₗ AddCommGrpCat.{v}) :
 
 open scoped MonObj
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [-instance] Functor.LaxMonoidal.comp Functor.Monoidal.instComp in
 /-- Implementation, see `leftExactFunctorForgetEquivalence`.

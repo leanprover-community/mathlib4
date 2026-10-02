@@ -6,8 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ExactSequence
-public import Mathlib.Algebra.Homology.ShortComplex.Limits
-public import Mathlib.CategoryTheory.Abelian.Refinements
+import Mathlib.CategoryTheory.Abelian.Refinements
 
 /-!
 # The snake lemma
@@ -98,6 +97,7 @@ attribute [instance] mono_L₂_f
 variable {C}
 variable (S : SnakeInput C)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The snake input in the opposite category that is deduced from a snake input. -/
 @[simps]
 noncomputable def op : SnakeInput Cᵒᵖ where
@@ -110,8 +110,8 @@ noncomputable def op : SnakeInput Cᵒᵖ where
   v₀₁ := opMap S.v₂₃
   v₁₂ := opMap S.v₁₂
   v₂₃ := opMap S.v₀₁
-  w₀₂ := congr_arg opMap S.w₁₃
-  w₁₃ := congr_arg opMap S.w₀₂
+  w₀₂ := congr(opMap $S.w₁₃)
+  w₁₃ := congr(opMap $S.w₀₂)
   h₀ := isLimitForkMapOfIsLimit' (ShortComplex.opEquiv C).functor _
       (CokernelCofork.IsColimit.ofπOp _ _ S.h₃)
   h₃ := isColimitCoforkMapOfIsColimit' (ShortComplex.opEquiv C).functor _
@@ -321,6 +321,7 @@ noncomputable def L₁' : ShortComplex C := ShortComplex.mk _ _ S.L₀_g_δ
 @[simps]
 noncomputable def L₂' : ShortComplex C := ShortComplex.mk _ _ S.δ_L₃_f
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Exactness of `L₀.X₂ ⟶ L₀.X₃ ⟶ L₃.X₁`. -/
 lemma L₁'_exact : S.L₁'.Exact := by
@@ -359,8 +360,9 @@ lemma op_δ : S.op.δ = S.δ.op := Quiver.Hom.unop_inj (by
     pushoutIsoUnopPullback_inr_hom, pullbackIsoUnopPushout_inv_snd_assoc,
     pushoutIsoUnopPullback_inl_hom, pullbackIsoUnopPushout_inv_fst_assoc]
   apply Quiver.Hom.op_inj
-  simpa only [op_comp, Quiver.Hom.op_unop, assoc] using S.op.snd_δ_inr)
+  simpa only [op_comp, Quiver.Hom.op_unop, assoc] using! S.op.snd_δ_inr)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The duality isomorphism `S.L₂'.op ≅ S.op.L₁'`. -/
 noncomputable def L₂'OpIso : S.L₂'.op ≅ S.op.L₁' :=
   ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp)
@@ -501,17 +503,17 @@ def functorL₃ : SnakeInput C ⥤ ShortComplex C where
   obj S := S.L₃
   map f := f.f₃
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor which sends `S : SnakeInput C` to the auxiliary object `S.P`,
 which is `pullback S.L₁.g S.v₀₁.τ₃`. -/
 @[simps]
 noncomputable def functorP : SnakeInput C ⥤ C where
   obj S := S.P
   map f := pullback.map _ _ _ _ f.f₁.τ₂ f.f₀.τ₃ f.f₁.τ₃ f.f₁.comm₂₃.symm
-      (congr_arg ShortComplex.Hom.τ₃ f.comm₀₁.symm)
+      congr(ShortComplex.Hom.τ₃ $f.comm₀₁.symm)
   map_id _ := by dsimp [P]; simp
   map_comp _ _ := by dsimp [P]; cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma naturality_φ₂ (f : S₁ ⟶ S₂) : S₁.φ₂ ≫ f.f₂.τ₂ = functorP.map f ≫ S₂.φ₂ := by

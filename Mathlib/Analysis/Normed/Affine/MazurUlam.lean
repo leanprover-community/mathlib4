@@ -35,7 +35,7 @@ variable {E PE F PF : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MetricS
   [NormedAddTorsor E PE] [NormedAddCommGroup F] [NormedSpace ℝ F] [MetricSpace PF]
   [NormedAddTorsor F PF]
 
-open Set AffineMap AffineIsometryEquiv
+open Set AffineIsometryEquiv
 
 noncomputable section
 
@@ -49,7 +49,7 @@ theorem midpoint_fixed {x y : PE} :
   set z := midpoint ℝ x y
   -- Consider the set of `e : E ≃ᵢ E` such that `e x = x` and `e y = y`
   set s := { e : PE ≃ᵢ PE | e x = x ∧ e y = y }
-  haveI : Nonempty s := ⟨⟨IsometryEquiv.refl PE, rfl, rfl⟩⟩
+  have : Nonempty s := ⟨⟨IsometryEquiv.refl PE, rfl, rfl⟩⟩
   -- On the one hand, `e` cannot send the midpoint `z` of `[x, y]` too far
   have h_bdd : BddAbove (range fun e : s => dist ((e : PE ≃ᵢ PE) z) z) := by
     refine ⟨dist x z + dist x z, forall_mem_range.2 <| Subtype.forall.2 ?_⟩
@@ -87,7 +87,7 @@ theorem midpoint_fixed {x y : PE} :
 /-- A bijective isometry sends midpoints to midpoints. -/
 theorem map_midpoint (f : PE ≃ᵢ PF) (x y : PE) : f (midpoint ℝ x y) = midpoint ℝ (f x) (f y) := by
   set e : PE ≃ᵢ PE :=
-    ((f.trans <| (pointReflection ℝ <| midpoint ℝ (f x) (f y)).toIsometryEquiv).trans f.symm).trans
+    ((f.trans (pointReflection ℝ <| midpoint ℝ (f x) (f y)).toIsometryEquiv).trans f.symm).trans
       (pointReflection ℝ <| midpoint ℝ x y).toIsometryEquiv
   have hx : e x = x := by simp [e]
   have hy : e y = y := by simp [e]
@@ -122,7 +122,7 @@ theorem coe_toRealLinearIsometryEquivOfMapZero_symm (f : E ≃ᵢ F) (h0 : f 0 =
 over `ℝ`, then `x ↦ f x - f 0` is a linear isometry equivalence. -/
 def toRealLinearIsometryEquiv (f : E ≃ᵢ F) : E ≃ₗᵢ[ℝ] F :=
   (f.trans (IsometryEquiv.addRight (f 0)).symm).toRealLinearIsometryEquivOfMapZero
-    (by simpa only [sub_eq_add_neg] using sub_self (f 0))
+    (by simpa only [sub_eq_add_neg] using! sub_self (f 0))
 
 @[simp]
 theorem toRealLinearIsometryEquiv_apply (f : E ≃ᵢ F) (x : E) :

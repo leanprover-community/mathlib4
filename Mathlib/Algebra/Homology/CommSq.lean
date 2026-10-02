@@ -55,6 +55,7 @@ noncomputable def CommSq.shortComplex (sq : CommSq f g inl inr) : ShortComplex C
   g := biprod.desc inl inr
   zero := by simp [sq.w]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A commutative square in a preadditive category is a pushout square iff
 the corresponding diagram `X₁ ⟶ X₂ ⊞ X₃ ⟶ X₄ ⟶ 0` makes `X₄` a cokernel. -/
 noncomputable def CommSq.isColimitEquivIsColimitCokernelCofork (sq : CommSq f g inl inr) :
@@ -64,7 +65,7 @@ noncomputable def CommSq.isColimitEquivIsColimitCokernelCofork (sq : CommSq f g 
       (fun s ↦ PushoutCocone.IsColimit.desc h
         (biprod.inl ≫ s.π) (biprod.inr ≫ s.π) (by
           rw [← sub_eq_zero, ← assoc, ← assoc, ← Preadditive.sub_comp]
-          convert! s.condition <;> cat_disch))
+          convert s.condition <;> cat_disch))
       (fun s ↦ by
         dsimp
         ext
@@ -135,6 +136,7 @@ noncomputable def CommSq.shortComplex' (sq : CommSq fst snd f g) : ShortComplex 
   g := biprod.desc f (-g)
   zero := by simp [sq.w]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A commutative square in a preadditive category is a pullback square iff
 the corresponding diagram `0 ⟶ X₁ ⟶ X₂ ⊞ X₃ ⟶ X₄ ⟶ 0` makes `X₁` a kernel. -/
 noncomputable def CommSq.isLimitEquivIsLimitKernelFork (sq : CommSq fst snd f g) :
@@ -144,7 +146,7 @@ noncomputable def CommSq.isLimitEquivIsLimitKernelFork (sq : CommSq fst snd f g)
       (fun s ↦ PullbackCone.IsLimit.lift h
         (s.ι ≫ biprod.fst) (s.ι ≫ biprod.snd) (by
           rw [← sub_eq_zero, assoc, assoc, ← Preadditive.comp_sub]
-          convert! s.condition <;> cat_disch))
+          convert s.condition <;> cat_disch))
       (fun s ↦ by
         dsimp
         ext

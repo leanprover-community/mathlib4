@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Topology.Sheaves.SheafOfFunctions
 public import Mathlib.Topology.Sheaves.Stalks
-public import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
 
 /-!
 # Functions satisfying a local predicate form a sheaf.
@@ -100,6 +99,7 @@ structure LocalPredicate extends PrelocalPredicate T where
       (_ : ∀ x : U, ∃ (V : Opens X) (_ : x.1 ∈ V) (i : V ⟶ U),
         pred fun x : V ↦ f (i x : U)), pred f
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Continuity is a "local" predicate on functions to a fixed topological space `T`.
 -/
 def continuousLocal (T) [TopologicalSpace T] : LocalPredicate fun _ : X ↦ T :=
@@ -160,7 +160,7 @@ namespace PrelocalPredicate
 
 theorem sheafifyOf {T : X → Type*} {P : PrelocalPredicate T} {U : Opens X}
     {f : ∀ x : U, T x} (h : P.pred f) : P.sheafify.pred f := fun x ↦
-  ⟨U, x.2, 𝟙 _, by convert! h⟩
+  ⟨U, x.2, 𝟙 _, by convert h⟩
 
 /-- For a unary operation (e.g. `x ↦ -x`) defined at each stalk, if a prelocal predicate is closed
 under the operation on each open set (possibly by refinement), then the sheafified predicate is
@@ -249,7 +249,7 @@ theorem isSheaf (P : LocalPredicate T) : (subpresheafToTypes P.toPrelocalPredica
     let sf' (i : ι) : (presheafToTypes X T).obj (op (U i)) := (sf i).val
     -- Since our original family is compatible, this one is as well
     have sf'_comp : (presheafToTypes X T).IsCompatible U sf' := fun i j ↦
-      congr_arg Subtype.val (sf_comp i j)
+      congr($(sf_comp i j).val)
     -- So, we can obtain a unique gluing
     obtain ⟨gl, gl_spec, gl_uniq⟩ := (sheafToTypes X T).existsUnique_gluing U sf'
       -- `by exact` to help Lean infer the `ConcreteCategory` instance
@@ -264,7 +264,7 @@ theorem isSheaf (P : LocalPredicate T) : (subpresheafToTypes P.toPrelocalPredica
       -- We claim that the predicate holds in `U i`
       use U i, hi, Opens.leSupr U i
       -- This follows, since our original family `sf` satisfies the predicate
-      convert! (sf i).property using 1
+      convert (sf i).property using 1
       exact gl_spec i
     -- It remains to show that the chosen lift is really a gluing for the subsheaf and
     -- that it is unique. Both of which follow immediately from the corresponding facts
@@ -272,7 +272,7 @@ theorem isSheaf (P : LocalPredicate T) : (subpresheafToTypes P.toPrelocalPredica
     · exact fun i ↦ Subtype.ext (gl_spec i)
     · intro gl' hgl'
       refine Subtype.ext ?_
-      exact gl_uniq gl'.1 fun i ↦ congr_arg Subtype.val (hgl' i)
+      exact gl_uniq gl'.1 fun i ↦ congr($(hgl' i).val)
 
 end subpresheafToTypes
 
@@ -294,6 +294,7 @@ def stalkToFiber (P : LocalPredicate T) (x : X) :
     (subsheafToTypes P).presheaf.stalk x ⟶ T x :=
   colimit.desc _ (P.cocone x)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma stalkToFiber_ι (P : LocalPredicate T) (x : X) (U : (OpenNhds x)ᵒᵖ)
     (fU : {f //  P.pred f}) :
@@ -318,7 +319,7 @@ theorem stalkToFiber_surjective (P : LocalPredicate T) (x : X)
   · exact (subsheafToTypes P).presheaf.germ _ x U.2 ⟨f, h⟩
   · exact stalkToFiber_germ P U.1 x U.2 ⟨f, h⟩
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The `stalkToFiber` map is injective at `x` if any two allowed sections which agree at `x`
 agree on some neighborhood of `x`.
 -/
