@@ -54,16 +54,9 @@ from mathlib: in summary,
 
 meta section
 
-open Lean Elab Linter
+open Lean Elab Parser Tactic
 
 namespace Mathlib.Linter.Style
-
-/-- Whether a syntax element is an `obtain` tactic call without a provided proof. -/
-def isObtainWithoutProof : Syntax → Bool
-  -- Using the `obtain` tactic without a proof requires proving a type;
-  -- a pattern is optional.
-  | `(tactic|obtain : $_type) | `(tactic|obtain $_pat : $_type) => true
-  | _ => false
 
 /-- The `oldObtain` linter emits a warning upon uses of the "stream-of-consciousness" variants
 of the `obtain` tactic, i.e. with the proof postponed. -/
@@ -72,15 +65,16 @@ public register_option linter.oldObtain : Bool := {
   descr := "enable the `oldObtain` linter"
 }
 
-/-- The `oldObtain` linter: see docstring above -/
-def oldObtainLinter : Linter where run := withSetOptionIn fun stx => do
-    unless getLinterValue linter.oldObtain (← getLinterOptions) do
-      return
-    if (← MonadState.get).messages.hasErrors then
-      return
-    if let some head := stx.find? isObtainWithoutProof then
-      Linter.logLint linter.oldObtain head m!"Please remove stream-of-consciousness `obtain` syntax"
+@[inherit_doc obtain]
+syntax (name := obtain') (priority := high) "obtain" (ppSpace rcasesPatMed)? (" : " term)? : tactic
 
-initialize addLinter oldObtainLinter
+/--
+Evaluate the overwritten `obtain` syntax as if it is the original syntax,
+and log a warning if there is no `:= ...` syntax.
+-/
+@[tactic obtain']
+public def evalObtain' : Tactic := fun stx => do
+  evalTactic (stx.setKind ``Lean.Parser.Tactic.obtain)
+  Linter.logLintIf linter.oldObtain stx m!"Please remove stream-of-consciousness `obtain` syntax"
 
 end Mathlib.Linter.Style
