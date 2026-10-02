@@ -5,11 +5,10 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.PDeriv
-public import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.Algebra.MvPolynomial.PDeriv
+import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Derivative
-public import Mathlib.Algebra.Polynomial.Eval.SMul
-public import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Algebra.Polynomial.Eval.SMul
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 public import Mathlib.RingTheory.Polynomial.Pochhammer
 
@@ -56,7 +55,7 @@ def bernsteinPolynomial (n ν : ℕ) : R[X] :=
   (choose n ν : R[X]) * X ^ ν * (1 - X) ^ (n - ν)
 
 example : bernsteinPolynomial ℤ 3 2 = 3 * X ^ 2 - 3 * X ^ 3 := by
-  norm_num [bernsteinPolynomial, choose]
+  simp [bernsteinPolynomial, choose]
   ring
 
 namespace bernsteinPolynomial
@@ -111,7 +110,7 @@ theorem derivative_succ_aux (n ν : ℕ) :
       bernsteinPolynomial, map_add, map_natCast, Nat.cast_one]
   conv_rhs => rw [mul_sub]
   -- We'll prove the two terms match up separately.
-  refine congr (congr_arg Sub.sub ?_) ?_
+  congrm ?_ - ?_
   · simp only [← mul_assoc]
     apply congr (congr_arg (· * ·) (congr (congr_arg (· * ·) _) rfl)) rfl
     -- Now it's just about binomial coefficients
@@ -120,8 +119,8 @@ theorem derivative_succ_aux (n ν : ℕ) :
     rw [mul_comm, ← mul_assoc, ← mul_assoc]; congr 1
     norm_cast
     congr 1
-    convert! (Nat.choose_mul_succ_eq n (ν + 1)).symm using 1
-    · convert! mul_comm _ _ using 2
+    convert (Nat.choose_mul_succ_eq n (ν + 1)).symm using 1
+    · convert mul_comm _ _ using 2
       simp
     · apply mul_comm
 

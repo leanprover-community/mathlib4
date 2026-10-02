@@ -5,7 +5,6 @@ Authors: Heather Macbeth
 -/
 module
 
-public import Mathlib.Topology.Algebra.MulAction
 public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
 public import Mathlib.Topology.Algebra.UniformMulAction
 public import Mathlib.Topology.MetricSpace.Lipschitz
@@ -79,7 +78,7 @@ instance (priority := 100) LipschitzMul.continuousMul : ContinuousMul β :=
 instance Submonoid.lipschitzMul (s : Submonoid β) : LipschitzMul s where
   lipschitz_mul := ⟨LipschitzMul.C β, by
     rintro ⟨x₁, x₂⟩ ⟨y₁, y₂⟩
-    convert! lipschitzWith_lipschitz_const_mul_edist ⟨(x₁ : β), x₂⟩ ⟨y₁, y₂⟩ using 1⟩
+    convert lipschitzWith_lipschitz_const_mul_edist ⟨(x₁ : β), x₂⟩ ⟨y₁, y₂⟩ using 1⟩
 
 @[to_additive]
 instance MulOpposite.lipschitzMul : LipschitzMul βᵐᵒᵖ where
