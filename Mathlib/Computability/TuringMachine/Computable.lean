@@ -20,7 +20,7 @@ any time function) of a function between two types that have an encoding (as in 
 ## Main theorems
 
 - `idComputableInPolyTime` : a TM + a proof it computes the identity on a type in polytime.
-- `idComputable`           : a TM + a proof it computes the identity on a type.
+- `idComputable` : a TM + a proof it computes the identity on a type.
 - `TM2ComputableInPolyTime.length_le` : the output of a polytime TM has polynomial length.
 
 ## Implementation notes
@@ -103,13 +103,14 @@ instance inhabitedCfg : Inhabited (Cfg tm) :=
 def step : tm.Cfg → Option tm.Cfg :=
   Turing.TM2.step tm.m
 
+attribute [local instance] ΛFin
+
 /-- The largest number of `push` instructions in a statement of this TM. -/
 def maxPushes : ℕ :=
-  letI := tm.ΛFin
   Finset.univ.sup fun l ↦ (tm.m l).pushes
 
+/-- Every statement of this TM has at most `tm.maxPushes` `push` instructions. -/
 theorem pushes_le_maxPushes (l : tm.Λ) : (tm.m l).pushes ≤ tm.maxPushes :=
-  letI := tm.ΛFin
   Finset.le_sup (f := fun l ↦ (tm.m l).pushes) (Finset.mem_univ l)
 
 end
@@ -148,7 +149,8 @@ def TM2OutputsInTime.toTM2Outputs {tm : FinTM2} {l : List (tm.Γ tm.k₀)}
     TM2Outputs tm l l' :=
   h.toEvalsTo
 
-/-- The output is at most as long as the input plus `tm.maxPushes` letters per step. -/
+/-- If `h` is a run of `tm` from `l` to `l'`, then `l'` is at most `tm.maxPushes * h.steps`
+letters longer than `l`. -/
 theorem TM2Outputs.length_le {tm : FinTM2} {l : List (tm.Γ tm.k₀)} {l' : List (tm.Γ tm.k₁)}
     (h : TM2Outputs tm l (some l')) : l'.length ≤ l.length + tm.maxPushes * h.steps := by
   have := TM2.length_stk_le_of_evalsTo tm.pushes_le_maxPushes (b := haltList tm l') h tm.k₁
@@ -214,14 +216,14 @@ def TM2ComputableInPolyTime.toTM2ComputableInTime {α β αΓ βΓ : Type} {ea :
     TM2ComputableInTime ea eb f :=
   ⟨h.toTM2ComputableAux, fun n => h.time.eval n, h.outputsFun⟩
 
-/-- The output of a polynomial-time machine has polynomial length. -/
+/-- The output of a polynomial-time machine has polynomial length: the encoding of `f a` is at most
+`h.tm.maxPushes * h.time.eval n` letters longer than the encoding of `a`, of length `n`. -/
 theorem TM2ComputableInPolyTime.length_le {α β αΓ βΓ : Type} {ea : α → List αΓ}
     {eb : β → List βΓ} {f : α → β} (h : TM2ComputableInPolyTime ea eb f) (a : α) :
-    (eb (f a)).length ≤
-      (Polynomial.X + Polynomial.C h.tm.maxPushes * h.time).eval (ea a).length := by
+    (eb (f a)).length ≤ (ea a).length + h.tm.maxPushes * h.time.eval (ea a).length := by
   have := (h.outputsFun a).toTM2Outputs.length_le
-  rw [List.length_map, List.length_map] at this
-  simpa using this.trans (Nat.add_le_add_left (Nat.mul_le_mul_left _ (h.outputsFun a).steps_le_m) _)
+  simp only [List.length_map] at this
+  exact this.trans (Nat.add_le_add_left (Nat.mul_le_mul_left _ (h.outputsFun a).steps_le_m) _)
 
 open Turing.TM2.Stmt
 

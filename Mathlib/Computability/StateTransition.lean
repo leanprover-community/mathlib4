@@ -279,9 +279,9 @@ def EvalsTo.trans {σ : Type*} (f : σ → Option σ) (a : σ) (b : σ) (c : Opt
 /-- Induction along the steps of a run: a property of the number of steps taken and the current
 state that holds at the start and is preserved by every step holds at the end of the run. -/
 theorem EvalsTo.induction_on {σ : Type*} {f : σ → Option σ} {a b : σ} (h : EvalsTo f a (some b))
-    (P : ℕ → σ → Prop) (zero : P 0 a) (succ : ∀ n c c', P n c → f c = some c' → P (n + 1) c') :
-    P h.steps b := by
-  suffices ∀ n c, (flip bind f)^[n] (some a) = some c → P n c from this _ _ h.evals_in_steps
+    (motive : ℕ → σ → Prop) (zero : motive 0 a)
+    (succ : ∀ n c c', motive n c → f c = some c' → motive (n + 1) c') : motive h.steps b := by
+  suffices ∀ n c, (flip bind f)^[n] (some a) = some c → motive n c from this _ _ h.evals_in_steps
   intro n
   induction n with
   | zero => rintro c ⟨⟩; exact zero

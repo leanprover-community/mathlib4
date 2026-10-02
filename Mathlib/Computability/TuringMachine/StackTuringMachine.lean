@@ -189,15 +189,9 @@ instructions. -/
 theorem length_stk_stepAux_le (q : Stmt Γ Λ σ) (v : σ) (S : ∀ k, List (Γ k)) (k : K) :
     ((stepAux q v S).stk k).length ≤ (S k).length + q.pushes := by
   induction q generalizing v S with
-  | push k' f q ih =>
-    refine (ih v _).trans ?_
-    obtain rfl | h := eq_or_ne k k'
-    · simp [Stmt.pushes]
-      omega
-    · simp [Stmt.pushes, h]
-  | pop k' f q ih =>
+  | push k' f q ih | pop k' f q ih =>
     refine (ih _ _).trans ?_
-    obtain rfl | h := eq_or_ne k k' <;> simp [Stmt.pushes, *]
+    obtain rfl | h := eq_or_ne k k' <;> simp [Stmt.pushes, *] <;> omega
   | branch f q₁ q₂ ih₁ ih₂ =>
     rw [stepAux, Stmt.pushes]
     cases f v
@@ -206,15 +200,15 @@ theorem length_stk_stepAux_le (q : Stmt Γ Λ σ) (v : σ) (S : ∀ k, List (Γ 
   | peek _ _ _ ih | load _ _ ih => exact ih _ S
   | goto _ | halt => exact Nat.le_add_right _ _
 
-/-- Along a run of a program whose statements have at most `c` pushes each, each stack gains at
-most `c` letters per step. -/
+/-- Along a run `h` of a program whose statements have at most `c` pushes each, each stack gains
+at most `c * h.steps` letters. -/
 theorem length_stk_le_of_evalsTo {M : Λ → Stmt Γ Λ σ} {c : ℕ} (hM : ∀ l, (M l).pushes ≤ c)
     {a b : Cfg Γ Λ σ} (h : StateTransition.EvalsTo (step M) a (some b)) (k : K) :
     (b.stk k).length ≤ (a.stk k).length + c * h.steps := by
-  refine h.induction_on (fun n x ↦ (x.stk k).length ≤ (a.stk k).length + c * n) le_rfl
-    fun n x y hx hxy ↦ ?_
+  refine h.induction_on (fun n x ↦ (x.stk k).length ≤ (a.stk k).length + c * n)
+    (Nat.le_add_right _ _) fun n x y hx hxy ↦ ?_
   obtain ⟨_ | l, v, S⟩ := x <;> cases hxy
-  grw [length_stk_stepAux_le, hx, hM, Nat.mul_succ, Nat.add_assoc]
+  grw [length_stk_stepAux_le, hx, hM, Nat.mul_add_one, Nat.add_assoc]
 
 end
 
