@@ -317,19 +317,37 @@ lemma moduleDepth_eq_sSup_length_isRegular [IsNoetherianRing R] (I : Ideal R)
     have rees := ((exists_isRegular_tfae I rs.length M smul_lt).out 4 1).mp (by use rs)
     exact rees N ‹_› ‹_› (le_of_eq hsupp)
 
+lemma Ideal.depth_eq_sSup_length_isRegular [IsNoetherianRing R] (I : Ideal R)
+    (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : I • (⊤ : Submodule R M) < ⊤) :
+    I.depth M = sSup {(List.length rs : ℕ∞) | (rs : List R)
+      (_ : IsRegular M rs) (_ : ∀ r ∈ rs, r ∈ I)} := by
+  have : Nontrivial (R ⧸ I) := by
+    apply Submodule.Quotient.nontrivial_iff.mpr
+    by_contra eq
+    simp [eq] at smul_lt
+  apply moduleDepth_eq_sSup_length_isRegular I ↧(Shrink.{v} (R ⧸ I)) M smul_lt
+  rw [(Shrink.linearEquiv R (R ⧸ I)).support_eq, Module.support_eq_zeroLocus,
+    Ideal.annihilator_quotient]
+
 @[stacks 00LW]
 lemma IsLocalRing.ideal_depth_eq_sSup_length_isRegular [IsLocalRing R] [IsNoetherianRing R]
     (I : Ideal R) (netop : I ≠ ⊤) (M : ModuleCat.{v} R) [Module.Finite R M]
     [Nontrivial M] : I.depth M = sSup {(List.length rs : ℕ∞) | (rs : List R)
-      (_ : RingTheory.Sequence.IsRegular M rs) (_ : ∀ r ∈ rs, r ∈ I) } := by
-  have : Nontrivial (R ⧸ I) := Ideal.Quotient.nontrivial_iff.mpr netop
-  have smul_lt : I • (⊤ : Submodule R M) < ⊤ := lt_of_le_of_lt
+      (_ : IsRegular M rs) (_ : ∀ r ∈ rs, r ∈ I)} :=
+  Ideal.depth_eq_sSup_length_isRegular I M (lt_of_le_of_lt
     (Submodule.smul_mono (le_maximalIdeal netop) (le_refl _))
       (Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
-        (IsLocalRing.maximalIdeal_le_jacobson _)).lt_top'
-  apply moduleDepth_eq_sSup_length_isRegular I (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M smul_lt
-  rw [(Shrink.linearEquiv R (R ⧸ I)).support_eq, Module.support_eq_zeroLocus,
-    Ideal.annihilator_quotient]
+        (IsLocalRing.maximalIdeal_le_jacobson _)).lt_top')
+
+lemma Ideal.depth_le_depth_of_le [IsNoetherianRing R] {I J : Ideal R} (h : I ≤ J)
+    (M : ModuleCat.{v} R) [Module.Finite R M] (smul_lt : J • (⊤ : Submodule R M) < ⊤) :
+    I.depth M ≤ J.depth M := by
+  rw [Ideal.depth_eq_sSup_length_isRegular I M
+    (lt_of_le_of_lt (Submodule.smul_mono h (le_refl _)) smul_lt),
+    Ideal.depth_eq_sSup_length_isRegular J M smul_lt]
+  apply sSup_le (fun n hn ↦ le_sSup ?_)
+  rcases hn with ⟨rs, reg, mem, len⟩
+  exact ⟨rs, reg, fun r hr ↦ h (mem r hr), len⟩
 
 lemma IsLocalRing.depth_eq_sSup_length_isRegular [IsLocalRing R] [IsNoetherianRing R]
     (M : ModuleCat.{v} R) [Module.Finite R M] [Nontrivial M] :
