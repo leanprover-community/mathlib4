@@ -5,11 +5,9 @@ Authors: Andrew Yang, Christian Merten
 -/
 module
 
-public import Mathlib.Algebra.Category.Ring.Colimits
 public import Mathlib.Algebra.Category.Ring.Constructions
-public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Topology.Algebra.Ring.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # Topology on `Hom(R, S)`
@@ -87,7 +85,7 @@ lemma isEmbedding_precomp_of_surjective
     Topology.IsEmbedding ((f ≫ ·) : (B ⟶ R) → (A ⟶ R)) := by
   refine IsEmbedding.of_comp (continuous_precomp _) (IsInducing.induced _).continuous ?_
   suffices IsEmbedding ((· ∘ f.hom) : (B → R) → (A → R)) from
-    this.comp (.induced (fun f g e ↦ by ext a; exact congr($e a)))
+    this.comp (.induced (fun f g e ↦ by ext a; congrm $e a))
   exact Function.Surjective.isEmbedding_comp _ hf
 
 /-- `Hom(A/I, R)` is a closed subspace of `Hom(A, R)` if `R` is T1. -/
@@ -97,7 +95,7 @@ lemma isClosedEmbedding_precomp_of_surjective
   refine ⟨isEmbedding_precomp_of_surjective f hf, ?_⟩
   have : IsClosed (⋂ i : RingHom.ker f.hom, { f : A ⟶ R | f i = 0 }) :=
     isClosed_iInter fun x ↦ (isClosed_singleton (x := 0)).preimage (continuous_apply (R := R) x.1)
-  convert! this
+  convert this
   ext x
   simp only [Set.mem_range, Set.mem_iInter, Set.mem_ofPred_eq, Subtype.forall, RingHom.mem_ker]
   constructor
@@ -178,7 +176,7 @@ lemma isEmbedding_pushout [IsTopologicalRing R] (φ : A ⟶ B) (ψ : A ⟶ C) :
     ((isEmbedding_graph continuous_id).prodMap Homeomorph.sumArrowHomeomorphProdArrow.isEmbedding)
   have H := (mvPolynomialHomeomorph B R A).symm.isEmbedding.prodMap
     (mvPolynomialHomeomorph C R A).symm.isEmbedding
-  convert!
+  convert
     ((H.comp hF).comp (mvPolynomialHomeomorph _ R A).isEmbedding).comp
       (isEmbedding_precomp_of_surjective (R := R) fBC hfBC)
   have (s : _) : (pushout.inr φ ψ).hom (ψ.hom s) = (pushout.inl φ ψ).hom (φ.hom s) :=

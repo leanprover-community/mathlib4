@@ -349,7 +349,7 @@ theorem NormedGroup.nhds_basis_norm_lt (x : E) :
 @[to_additive]
 theorem NormedGroup.nhds_one_basis_norm_lt :
     (𝓝 (1 : E)).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { y | ‖y‖ < ε } := by
-  convert! NormedGroup.nhds_basis_norm_lt (1 : E) using 1
+  convert NormedGroup.nhds_basis_norm_lt (1 : E) using 1
   simp
 
 @[to_additive]
@@ -504,19 +504,19 @@ theorem nnnorm_le_mul_nnnorm_add' (a b : E) : ‖b‖₊ ≤ ‖a * b‖₊ + �
 
 @[to_additive]
 lemma nnnorm_mul_eq_nnnorm_right {x : E} (y : E) (h : ‖x‖₊ = 0) : ‖x * y‖₊ = ‖y‖₊ :=
-  NNReal.eq <| norm_mul_eq_norm_right _ <| congr_arg NNReal.toReal h
+  NNReal.eq <| norm_mul_eq_norm_right _ congr($(h).toReal)
 
 @[to_additive]
 lemma nnnorm_mul_eq_nnnorm_left (x : E) {y : E} (h : ‖y‖₊ = 0) : ‖x * y‖₊ = ‖x‖₊ :=
-  NNReal.eq <| norm_mul_eq_norm_left _ <| congr_arg NNReal.toReal h
+  NNReal.eq <| norm_mul_eq_norm_left _ congr($(h).toReal)
 
 @[to_additive]
 lemma nnnorm_div_eq_nnnorm_right {x : E} (y : E) (h : ‖x‖₊ = 0) : ‖x / y‖₊ = ‖y‖₊ :=
-  NNReal.eq <| norm_div_eq_norm_right _ <| congr_arg NNReal.toReal h
+  NNReal.eq <| norm_div_eq_norm_right _ congr($(h).toReal)
 
 @[to_additive]
 lemma nnnorm_div_eq_nnnorm_left (x : E) {y : E} (h : ‖y‖₊ = 0) : ‖x / y‖₊ = ‖x‖₊ :=
-  NNReal.eq <| norm_div_eq_norm_left _ <| congr_arg NNReal.toReal h
+  NNReal.eq <| norm_div_eq_norm_left _ congr($(h).toReal)
 
 /-- The nonnegative norm seen as an `ENNReal` and then as a `Real` is equal to the norm. -/
 @[to_additive toReal_coe_nnnorm /-- The nonnegative norm seen as an `ENNReal` and

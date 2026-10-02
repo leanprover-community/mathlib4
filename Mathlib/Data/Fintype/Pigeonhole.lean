@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Finset.Union
+import Mathlib.Data.Finset.Union
 public import Mathlib.Data.Fintype.EquivFin
 
 /-!

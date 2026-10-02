@@ -7,9 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.DedekindDomain
 public import Mathlib.LinearAlgebra.FreeModule.PID
-public import Mathlib.Algebra.Module.Projective
 public import Mathlib.Algebra.Category.ModuleCat.Biproducts
-public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Structure of finitely generated modules over a PID
@@ -119,7 +117,7 @@ theorem _root_.Ideal.torsionOf_eq_span_pow_pOrder (x : M) :
       (Associates.mk <| generator <| torsionOf R M x) ∣ Associates.mk p ^ n := by
     ext n; rw [← Associates.mk_pow, Associates.mk_dvd_mk, ← mem_iff_generator_dvd]; rfl
   have := (isTorsion'_powers_iff p).mp hM x; rw [prop] at this
-  convert!
+  convert
     Associates.eq_pow_find_of_dvd_irreducible_pow (Associates.irreducible_mk.mpr hp)
       this.choose_spec
 
@@ -132,7 +130,7 @@ theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ p
     · have : f.symm ⟨p ^ k • x, h⟩ ∈
           R ∙ Ideal.Quotient.mk (R ∙ p ^ (pOrder hM y - k) * p ^ k) (p ^ k) := by
         rw [← Quotient.torsionBy_eq_span_singleton, mem_torsionBy_iff, ← f.symm.map_smul]
-        · convert! f.symm.map_zero; ext
+        · convert f.symm.map_zero; ext
           rw [coe_smul_of_tower, coe_mk, coe_zero, smul_smul, ← pow_add, Nat.sub_add_cancel hk,
             @hM' x]
         · exact mem_nonZeroDivisors_of_ne_zero (pow_ne_zero _ hp.ne_zero)
@@ -140,8 +138,8 @@ theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ p
       rw [f.eq_symm_apply, ← Ideal.Quotient.mk_eq_mk, ← Quotient.mk_smul] at ha
       dsimp only [smul_eq_mul, LinearEquiv.trans_apply, Submodule.quotEquivOfEq_mk,
         quotTorsionOfEquivSpanSingleton_apply_mk] at ha
-      rw [smul_smul, mul_comm]; exact congr_arg ((↑) : _ → M) ha.symm
-    · symm; convert! Ideal.torsionOf_eq_span_pow_pOrder hp hM y
+      rw [smul_smul, mul_comm]; congrm $ha.symm
+    · symm; convert Ideal.torsionOf_eq_span_pow_pOrder hp hM y
       rw [← pow_add, Nat.sub_add_cancel hk]
   · use 0
     rw [zero_smul, smul_zero, ← Nat.sub_add_cancel hk.le, pow_add, mul_smul, hM',
@@ -155,7 +153,7 @@ theorem exists_smul_eq_zero_and_mk_eq {z : M} (hz : Module.IsTorsionBy R M (p ^ 
   have f1 := mk_surjective (R ∙ z) (f 1)
   have : p ^ k • f1.choose ∈ R ∙ z := by
     rw [← Quotient.mk_eq_zero, mk_smul, f1.choose_spec, ← f.map_smul]
-    convert! f.map_zero; change _ • Submodule.Quotient.mk _ = _
+    convert f.map_zero; change _ • Submodule.Quotient.mk _ = _
     rw [← mk_smul, Quotient.mk_eq_zero, smul_eq_mul, mul_one]
     exact Submodule.mem_span_singleton_self _
   obtain ⟨a, ha⟩ := p_pow_smul_lift hp hM hz this
@@ -217,7 +215,7 @@ theorem torsion_by_prime_power_decomposition (hM : Module.IsTorsion' M (Submonoi
             map_one (Ideal.Quotient.mk _), (this i).choose_spec.right]
     · exact (mk_surjective _).forall.mpr fun x =>
         ⟨(@hM x).choose, by rw [← Quotient.mk_smul, (@hM x).choose_spec, Quotient.mk_zero]⟩
-    · have hs' := congr_arg (Submodule.map <| mkQ <| R ∙ s j) hs
+    · have hs' := congr((Submodule.map <| mkQ <| R ∙ s j) $hs)
       rw [Submodule.map_span, Submodule.map_top, range_mkQ] at hs'; simp only [mkQ_apply] at hs'
       simp only [s']; rw [← Function.comp_assoc, Set.range_comp (_ ∘ s), Fin.range_succAbove]
       rw [← Set.range_comp, ← Set.insert_image_compl_eq_range _ j, Function.comp_apply,
