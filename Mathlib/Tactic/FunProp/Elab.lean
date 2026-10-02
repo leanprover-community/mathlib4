@@ -13,7 +13,7 @@ import Lean.Elab.ConfigEval
 public meta import Lean.Elab.ConfigEval
 
 /-!
-## `funProp` tactic syntax
+# `funProp` tactic syntax
 -/
 
 public meta section
