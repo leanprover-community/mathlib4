@@ -8177,6 +8177,7 @@ public import Mathlib.Topology.Covering.Basic
 public import Mathlib.Topology.Covering.Deck
 public import Mathlib.Topology.Covering.FundamentalGroupCircle
 public import Mathlib.Topology.Covering.Quotient
+public import Mathlib.Topology.CoveringDimension.Basic
 public import Mathlib.Topology.Defs.Basic
 public import Mathlib.Topology.Defs.Filter
 public import Mathlib.Topology.Defs.Induced
