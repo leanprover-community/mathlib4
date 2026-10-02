@@ -51,7 +51,7 @@ theorem reflTransGen_of_succ_of_ge (r : α → α → Prop) {n m : α} (h : ∀ 
 /-- For `n < m`, `(n, m)` is in the transitive closure of a relation `~` if `i ~ succ i`
 for all `i` between `n` and `m`. -/
 @[to_dual transGen_of_pred_of_gt
-/-- For `m < n`, `(n, m)` is in the transitive closure of a relation `~` for `n ≠ m` if `i ~ pred i`
+/-- For `m < n`, `(n, m)` is in the transitive closure of a relation `~` if `i ~ pred i`
 for all `i` between `n` and `m`. -/]
 theorem transGen_of_succ_of_lt (r : α → α → Prop) {n m : α} (h : ∀ i ∈ Ico n m, r i (succ i))
     (hnm : n < m) : TransGen r n m :=
@@ -61,7 +61,7 @@ theorem transGen_of_succ_of_lt (r : α → α → Prop) {n m : α} (h : ∀ i �
 /-- For `m < n`, `(n, m)` is in the transitive closure of a relation `~` if `succ i ~ i`
 for all `i` between `n` and `m`. -/
 @[to_dual transGen_of_pred_of_lt
-/-- For `n < m`, `(n, m)` is in the transitive closure of a relation `~` for `n ≠ m` if `pred i ~ i`
+/-- For `n < m`, `(n, m)` is in the transitive closure of a relation `~` if `pred i ~ i`
 for all `i` between `n` and `m`. -/]
 theorem transGen_of_succ_of_gt (r : α → α → Prop) {n m : α} (h : ∀ i ∈ Ico m n, r (succ i) i)
     (hmn : m < n) : TransGen r n m :=
@@ -83,7 +83,7 @@ theorem reflTransGen_of_succ (r : α → α → Prop) {n m : α} (h1 : ∀ i ∈
     (h2 : ∀ i ∈ Ico m n, r (succ i) i) : ReflTransGen r n m :=
   (le_total n m).elim (reflTransGen_of_succ_of_le r h1) <| reflTransGen_of_succ_of_ge r h2
 
-/-- For `n ≠ m`,`(n, m)` is in the transitive closure of a relation `~` if `i ~ succ i` and
+/-- For `n ≠ m`, `(n, m)` is in the transitive closure of a relation `~` if `i ~ succ i` and
 `succ i ~ i` for all `i` between `n` and `m`. -/
 @[to_dual
 /-- For `n ≠ m`, `(n, m)` is in the transitive closure of a relation `~` if `i ~ pred i` and
