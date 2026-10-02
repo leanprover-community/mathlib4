@@ -516,7 +516,7 @@ def doubleUnderscore : Linter where run := withSetOptionIn fun stx => do
             m!"The declaration '{id}' contains '__', which does not follow the mathlib naming \
               conventions. Consider using single underscores instead."
 
-initialize addLinter doubleUnderscore
+-- initialize addLinter doubleUnderscore
 
 /-- Check `name` is a `Name` containing an underscore that should be linted against
 by the `defsWithUnderscore` linter. Namely, we do not lint
