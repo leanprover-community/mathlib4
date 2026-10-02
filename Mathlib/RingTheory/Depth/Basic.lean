@@ -407,16 +407,14 @@ lemma ModuleCat.moduleDepth_eq_of_linearEquiv (eN : N ≃ₗ[R] N') (eM : M ≃�
       (ULift.moduleEquiv.trans (eM.trans ULift.moduleEquiv.symm)).toModuleIso)
 
 lemma Ideal.depth_eq_of_linearEquiv (I : Ideal R) (eM : M ≃ₗ[R] M') : I.depth ↧M = I.depth ↧M' :=
-  moduleDepth_eq_of_linearEquiv
-    ((Shrink.linearEquiv R _).trans (Shrink.linearEquiv R _).symm) eM
+  moduleDepth_eq_of_linearEquiv ((Shrink.linearEquiv R _).trans (Shrink.linearEquiv R _).symm) eM
 
 lemma IsLocalRing.depth_eq_of_linearEquiv [IsLocalRing R] (eM : M ≃ₗ[R] M') :
     IsLocalRing.depth (ModuleCat.of R M) = IsLocalRing.depth (ModuleCat.of R M') :=
   Ideal.depth_eq_of_linearEquiv _ eM
 
 omit [Small.{w} R] in
-lemma Ideal.depth_shrink (I : Ideal R) :
-    I.depth ↧(Shrink.{v} R) = I.depth ↧R :=
+lemma Ideal.depth_shrink (I : Ideal R) : I.depth ↧(Shrink.{v} R) = I.depth ↧R :=
   Ideal.depth_eq_of_linearEquiv (M := Shrink.{v} R) (M' := R) I (Shrink.linearEquiv R R)
 
 end
