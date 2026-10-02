@@ -23,7 +23,7 @@ open Lean Elab.Tactic
 /--
 `specialize_all x` runs `specialize h x` for all hypotheses `h` where this tactic succeeds.
 -/
-elab (name := specialize_all) "specialize_all" x:term : tactic => withMainContext do
+local elab (name := specialize_all) "specialize_all" x:term : tactic => withMainContext do
   for h in ← getLCtx do
     unless h.isImplementationDetail do
       evalTactic (← `(tactic|specialize $(mkIdent h.userName) $x)) <|> pure ()
