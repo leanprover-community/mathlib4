@@ -112,6 +112,12 @@ def SimpleGraph.mk' {V : Type u} :
     funext v w
     simpa [Bool.coe_iff_coe] using congr($h v w)
 
+instance {V : Type*} (G : SimpleGraph V) : Std.Symm G.Adj :=
+  G.symm
+
+instance {V : Type*} (G : SimpleGraph V) : Std.Irrefl G.Adj :=
+  G.loopless
+
 /-- We can enumerate simple graphs by enumerating all functions `V → V → Bool`
 and filtering on whether they are symmetric and irreflexive. -/
 instance {V : Type u} [Fintype V] [DecidableEq V] : Fintype (SimpleGraph V) where
@@ -1019,6 +1025,9 @@ theorem isCompleteBetween_comm : G.IsCompleteBetween s t ↔ G.IsCompleteBetween
   mpr h _ h₁ _ h₂ := (h h₂ h₁).symm
 
 alias ⟨IsCompleteBetween.symm, _⟩ := isCompleteBetween_comm
+
+instance : Std.Symm G.IsCompleteBetween where
+  symm _ _ := .symm G
 
 theorem IsCompleteBetween.completeBipartiteGraph (V W : Type*) :
     (completeBipartiteGraph V W).IsCompleteBetween (.range .inl) (.range .inr) := by
