@@ -25,6 +25,10 @@ Let `K/k` be arbitrary field extension with characteristic `p > 0`, then TFAE
 3. `K ⊗ₖ k^{1/p}` is reduced.
 4. `K` is geometrically reduced over `k`.
 
+Note that separably generated field extensions is strictly stronger than
+transcendental separable field extensions, for example : `K = ∪ Kₙ` where `Kₙ = 𝔽ₚ(t^p⁻ⁿ)`,
+it is transcendental separable over `𝔽ₚ` but not separably generated.
+
 ## Main definitions and results
 
 * `Algebra.IsSeparablyGenerated` : A field extension is separably generated if there exists
@@ -37,7 +41,7 @@ Let `K/k` be arbitrary field extension with characteristic `p > 0`, then TFAE
   a transcendental separable field extension with a reduced algebra is reduced.
 
 * `tensorProduct_isReduced_of_isSeparablyGenerated_of_isReduced` : Tensor product of
-  a separably generated  field extension with a reduced algebra is reduced.
+  a separably generated field extension with a reduced algebra is reduced.
 
 * `Algebra.isTranscendentalSeparable_tfae` : The equivalent characterization of
   transcendental separable field extension mentioned above.
@@ -50,7 +54,7 @@ Let `K/k` be arbitrary field extension with characteristic `p > 0`, then TFAE
 
 # TODO
 Prove that "`k` and `Kᵖ` are linearly disjoint over `kᵖ` in `K`" is also equivalent to the
-four equivalent characterization of being transcendental seprarable for
+four equivalent characterization of being transcendental separable for
 finitely generated field extension `K/k`.
 
 -/
