@@ -115,11 +115,9 @@ lemma mono_iff {d : ℕ} {a b : Truncated d} {f : a ⟶ b} : Mono f ↔ Mono f.h
   · intro hf
     rw [SimplexCategory.mono_iff_injective]
     intro x y hxy
-    let z : Truncated d := ⟨⦋0⦌, by simp⟩
-    have h : ObjectProperty.homMk (X := z) (Y := a) (SimplexCategory.const ⦋0⦌ a.obj x) ≫ f =
-        ObjectProperty.homMk (X := z) (Y := a) (SimplexCategory.const ⦋0⦌ a.obj y) ≫ f := by
-      apply Hom.ext
-      exact OrderHom.ext _ _ (funext fun i ↦ hxy)
+    have h : ObjectProperty.homMk (SimplexCategory.const ⦋0⦌ a.obj x) ≫ f =
+        ObjectProperty.homMk (X := ⟨⦋0⦌, by simp⟩) (SimplexCategory.const ⦋0⦌ a.obj y) ≫ f :=
+      Hom.ext _ _ <| OrderHom.ext _ _ <| funext fun _ ↦ hxy
     exact congrArg (fun g ↦ g.hom.toOrderHom 0) ((cancel_mono f).1 h)
   · intro hf
     exact (inclusion d).mono_of_mono_map hf
