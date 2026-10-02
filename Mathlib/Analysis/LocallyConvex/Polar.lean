@@ -5,6 +5,7 @@ Authors: Moritz Doll, Kalle Kytölä
 -/
 module
 
+public import Mathlib.Analysis.LocallyConvex.Separation
 public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakBilin
 public import Mathlib.Analysis.Normed.Field.Lemmas
@@ -26,6 +27,8 @@ any bilinear form `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜`, where `𝕜` is a no
 * `LinearMap.polar_eq_iInter`: The polar as an intersection.
 * `LinearMap.subset_bipolar`: The polar is a subset of the bipolar.
 * `LinearMap.polar_isClosed`: The polar is closed in the weak topology induced by `B.flip`.
+* `Submodule.dense_iff_polarSubmodule_eq_bot`: A real submodule of a locally convex space is dense
+  if and only if its polar submodule is trivial.
 
 ## References
 
@@ -260,3 +263,17 @@ theorem polar_univ : polar 𝕜 (univ : Set E) = {(0 : StrongDual 𝕜 E)} :=
 end
 
 end StrongDual
+
+namespace Submodule
+
+variable [TopologicalSpace E] [AddCommGroup E] [Module ℝ E]
+  [IsTopologicalAddGroup E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E]
+
+/-- A real submodule of a locally convex space is dense if and only if its polar submodule is
+trivial. -/
+theorem dense_iff_polarSubmodule_eq_bot (s : Submodule ℝ E) :
+    Dense (s : Set E) ↔ StrongDual.polarSubmodule ℝ s = ⊥ := by
+  simp only [dense_iff_forall_dual_eq_zero, Submodule.eq_bot_iff,
+    StrongDual.mem_polarSubmodule]
+
+end Submodule
