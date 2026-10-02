@@ -8,6 +8,7 @@ module
 public import Mathlib.Tactic.Basify.Attr
 public import Mathlib.Tactic.Cases
 public import Mathlib.Util.AtomM
+public import Mathlib.Util.ElabWithoutMVars
 public meta import Lean.Meta.Tactic.Generalize
 
 /-!
@@ -284,10 +285,25 @@ goal using them needs the relevant `≠ 0` to be available; without it the desce
 example (a : ℝ≥0∞) (h : a ≠ 0) (h' : a ≠ ⊤) : a * a⁻¹ = 1 := by basify; field_simp
 ```
 
+`basify [f₁, f₂, …]` adds the facts to the context first. They are used like any other
+hypothesis: to discharge a `⊤` branch, or to supply a step the simp set does not know. Atoms
+occurring only inside them are collected too.
+
+```
+example (b c : ℝ≥0∞) (hb : b ≠ ⊤) (hc : c ≠ ⊤) : min b c ≤ b := by basify [min_le_left b c]
+```
+
 New types are supported by tagging an eliminator with `@[basify_elim]`, its operations with
 `@[basify_op]`, and the relevant rewrite lemmas with `@[basify_simp]`.
 -/
-elab "basify" : tactic => focus do
+elab "basify" facts:((" [" term,* "]")?) : tactic => focus do
+  let factStx := if facts.raw.isNone then #[] else facts.raw[1].getSepArgs
+  -- The facts are elaborated in the goal's context, which is what `withMainContext` provides:
+  -- a plain `elabTerm` would not see variables introduced by `intro`. They go in under fresh
+  -- inaccessible names, so they neither shadow each other nor clobber an existing `this`.
+  for fact in factStx do
+    let e ← withMainContext do elabTermWithoutNewMVars `basify ⟨fact⟩
+    liftMetaTactic1 fun g => do return (← g.note (← mkFreshUserName `fact) e).2
   let (g, varsToElim) ← generalizeAtoms (← getMainGoal)
   setGoals (← basifyLoop g varsToElim.toList)
   evalTactic (← `(tactic| all_goals first
