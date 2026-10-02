@@ -26,44 +26,54 @@ variable {F : Type*} [Field F] [LinearOrder F] [IsStrictOrderedRing F] {P Q : F[
 
 section PolynomialDivAtTop
 
-theorem div_tendsto_atTop_of_degree_lt_of_leadingCoeff_pos
-    [TopologicalSpace F] [OrderTopology F]
-    (hdeg : P.degree < Q.degree) (hP : 0 < P.leadingCoeff) (hQ : 0 < Q.leadingCoeff) :
-    Tendsto (fun x ↦ P.eval x / Q.eval x) atTop (𝓝[>] 0) := by
-  have : P ≠ 0 := by grind [leadingCoeff_zero]
-  have : Q ≠ 0 := by grind [degree_zero, not_lt_bot]
+theorem div_tendsto_atTop_of_degree_gt' (hdeg : Q.degree < P.degree)
+    (hpos : 0 < P.leadingCoeff / Q.leadingCoeff) :
+    Tendsto (fun x ↦ P.eval x / Q.eval x) atTop atTop := by
+  let := Preorder.topology F
+  have : OrderTopology F := ⟨rfl⟩
+  have : Q ≠ 0 := fun hc ↦ by simp [hc] at hpos
   rw [Filter.tendsto_iff_tendsto_inv_inv, inv_atTop₀,
     tendsto_congr' (f₂ := (fun x ↦
-      x ^ (Q.natDegree - P.natDegree) * P.reverse.eval x / Q.reverse.eval x))]
-  · apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
-    · convert ContinuousWithinAt.tendsto _
-      · simp [Nat.sub_ne_zero_of_lt (natDegree_lt_natDegree ‹P ≠ 0› hdeg)]
+      P.reverse.eval x / Q.reverse.eval x * x⁻¹ ^ (P.natDegree - Q.natDegree)))]
+  · refine Filter.Tendsto.pos_mul_atTop hpos ?_ (tendsto_inv_nhdsGT_zero.atTop_pow₀ ?_)
+    · convert ContinuousWithinAt.tendsto _ using 2
+      · simp
       · fun_prop (disch := simp [‹Q ≠ 0›])
-    · refine Filter.Eventually.mono ?_ (fun x ⟨hx₁, hx₂, hx₃⟩ ↦ ?_)
-        (p := fun x ↦ 0 < x ∧ 0 < P.reverse.eval x ∧ 0 < Q.reverse.eval x)
-      · have hpos : ∀ {f : F[X]}, 0 < f.leadingCoeff →
-            ∀ᶠ (x : F) in 𝓝[>] 0, 0 < eval x f.reverse := fun {f} hf ↦ by
-          convert ((ContinuousWithinAt.tendsto (f := f.reverse.eval) _).eventually_mem
-            (s := Set.Ioo 0 (2 * f.leadingCoeff)) _).mono _
-          · fun_prop
-          · grind [eval_reverse_zero, Ioo_mem_nhds]
-          · grind
-        filter_upwards [self_mem_nhdsWithin, hpos hP, hpos hQ] using by grind
-      · simpa using by positivity
+    · simp_all [← natDegree_lt_natDegree_iff, Nat.sub_ne_zero_of_lt]
   filter_upwards [show {0}ᶜ ∈ _ from ⟨Set.univ, by simp⟩] with x hx
-  simp [pow_sub₀ x hx (natDegree_le_natDegree hdeg.le),
-    ← eval_reverse_mul_pow₀ (x := x⁻¹) (by simpa using hx)]
-  field
+  simp_rw [pow_sub₀ x⁻¹ (by simpa) (natDegree_le_natDegree hdeg.le),
+    ← eval_reverse_mul_pow₀ (x := x⁻¹) (by simpa)]
+  field_simp
+
+theorem div_tendsto_atTop_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 0)
+    (hnng : 0 ≤ P.leadingCoeff / Q.leadingCoeff) :
+    Tendsto (fun x ↦ P.eval x / Q.eval x) atTop atTop :=
+  have hpos : 0 < P.leadingCoeff / Q.leadingCoeff :=
+    lt_of_le_of_ne' hnng (by grind [leadingCoeff_eq_zero, not_lt_bot])
+  div_tendsto_atTop_of_degree_gt' hdeg hpos
+
+theorem div_tendsto_atBot_of_degree_gt' (hdeg : Q.degree < P.degree)
+    (hneg : P.leadingCoeff / Q.leadingCoeff < 0) :
+    Tendsto (fun x ↦ P.eval x / Q.eval x) atTop atBot := by
+  convert tendsto_neg_atTop_atBot.comp <| div_tendsto_atTop_of_degree_gt'
+      (P := -P) (Q := Q) (by simpa) (by simp; grind)
+  simp
+  ring
+
+theorem div_tendsto_atBot_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 0)
+    (hnps : P.leadingCoeff / Q.leadingCoeff ≤ 0) :
+    Tendsto (fun x ↦ P.eval x / Q.eval x) atTop atBot :=
+  have hneg : P.leadingCoeff / Q.leadingCoeff < 0 :=
+    lt_of_le_of_ne' hnps (by grind [leadingCoeff_eq_zero, not_lt_bot])
+  div_tendsto_atBot_of_degree_gt' hdeg hneg
 
 theorem div_tendsto_atTop_of_degree_lt_of_leadingCoeff_div_pos
     [TopologicalSpace F] [OrderTopology F]
     (hdeg : P.degree < Q.degree) (hpos : 0 < P.leadingCoeff / Q.leadingCoeff) :
     Tendsto (fun x ↦ P.eval x / Q.eval x) atTop (𝓝[>] 0) := by
-  wlog hnng : 0 ≤ P.leadingCoeff
-  · simpa using this (P := - P) (Q := - Q)
-      (by simpa) (by simpa) (by grind [leadingCoeff_neg])
-  apply div_tendsto_atTop_of_degree_lt_of_leadingCoeff_pos <;>
-    grind [div_pos_iff, leadingCoeff_eq_zero, degree_zero, not_lt_bot]
+  convert tendsto_inv_atTop_nhdsGT_zero.comp <| div_tendsto_atTop_of_degree_gt'
+    (P := Q) (Q := P) hdeg (by grind [div_pos_iff])
+  simp
 
 theorem div_tendsto_atTop_of_degree_lt_of_leadingCoeff_div_neg
     [TopologicalSpace F] [OrderTopology F]
@@ -96,38 +106,6 @@ theorem div_tendsto_atTop_leadingCoeff_div_of_degree_eq [TopologicalSpace F] [Or
     · fun_prop (disch := simp [‹Q ≠ 0›])
   filter_upwards [show {0}ᶜ ∈ _ from ⟨Set.univ, by simp⟩] with x hx
   grind [eval_reverse_mul_pow₀ (x := x⁻¹), pow_ne_zero, natDegree_eq_natDegree]
-
-theorem div_tendsto_atTop_of_degree_gt' (hdeg : Q.degree < P.degree)
-    (hpos : 0 < P.leadingCoeff / Q.leadingCoeff) :
-    Tendsto (fun x ↦ P.eval x / Q.eval x) atTop atTop := by
-  let := Preorder.topology F
-  have : OrderTopology F := ⟨rfl⟩
-  convert (div_tendsto_atTop_of_degree_lt_of_leadingCoeff_div_pos hdeg
-    (by grind [div_pos_iff])).inv_tendsto_nhdsGT_zero
-  simp
-
-theorem div_tendsto_atTop_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 0)
-    (hnng : 0 ≤ P.leadingCoeff / Q.leadingCoeff) :
-    Tendsto (fun x ↦ P.eval x / Q.eval x) atTop atTop :=
-  have hpos : 0 < P.leadingCoeff / Q.leadingCoeff :=
-    lt_of_le_of_ne' hnng (by grind [leadingCoeff_eq_zero, not_lt_bot])
-  div_tendsto_atTop_of_degree_gt' hdeg hpos
-
-theorem div_tendsto_atBot_of_degree_gt' (hdeg : Q.degree < P.degree)
-    (hneg : P.leadingCoeff / Q.leadingCoeff < 0) :
-    Tendsto (fun x ↦ P.eval x / Q.eval x) atTop atBot := by
-  let := Preorder.topology F
-  have : OrderTopology F := ⟨rfl⟩
-  convert (div_tendsto_atTop_of_degree_lt_of_leadingCoeff_div_neg hdeg
-    (by grind [div_neg_iff])).inv_tendsto_nhdsLT_zero
-  simp
-
-theorem div_tendsto_atBot_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 0)
-    (hnps : P.leadingCoeff / Q.leadingCoeff ≤ 0) :
-    Tendsto (fun x ↦ P.eval x / Q.eval x) atTop atBot :=
-  have hneg : P.leadingCoeff / Q.leadingCoeff < 0 :=
-    lt_of_le_of_ne' hnps (by grind [leadingCoeff_eq_zero, not_lt_bot])
-  div_tendsto_atBot_of_degree_gt' hdeg hneg
 
 -- TODO : bounded iff version (see non-quotient part)
 
@@ -184,8 +162,6 @@ section PolynomialAtTop
 
 theorem tendsto_atTop_of_leadingCoeff_nonneg (hdeg : 0 < P.degree) (hlcf : 0 ≤ P.leadingCoeff) :
     Tendsto P.eval atTop atTop := by
-  let := Preorder.topology F
-  have : OrderTopology F := ⟨rfl⟩
   simpa using div_tendsto_atTop_of_degree_gt' (P := P) (Q := 1) (by simpa)
     (by simp; grind [leadingCoeff_eq_zero, not_lt_bot])
 
