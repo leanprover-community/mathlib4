@@ -700,11 +700,7 @@ instance QuotientGroup.completeSpace_right (G : Type*)
     [Group G] [us : UniformSpace G] [IsRightUniformGroup G]
     [FirstCountableTopology G] (N : Subgroup G) [N.Normal] [hG : CompleteSpace G] :
     @CompleteSpace (G ⧸ N) (IsTopologicalGroup.rightUniformSpace (G ⧸ N)) := by
-  have : IsTopologicalGroup.rightUniformSpace G = us := by
-    ext : 1
-    rw [@IsRightUniformGroup.uniformity_eq (G := G) us _ _]
-    rfl
-  rw [← this] at hG
+  rw [← IsRightUniformGroup.rightUniformSpace_eq G] at hG
   infer_instance
 
 /-- The quotient `G ⧸ N` of a complete first countable topological group `G` by a normal subgroup
@@ -752,11 +748,7 @@ instance QuotientGroup.completeSpace_left (G : Type*)
     [Group G] [us : UniformSpace G] [IsLeftUniformGroup G]
     [FirstCountableTopology G] (N : Subgroup G) [N.Normal] [hG : CompleteSpace G] :
     @CompleteSpace (G ⧸ N) (IsTopologicalGroup.leftUniformSpace (G ⧸ N)) := by
-  have : IsTopologicalGroup.leftUniformSpace G = us := by
-    ext : 1
-    rw [@IsLeftUniformGroup.uniformity_eq (G := G) us _ _]
-    rfl
-  rw [← this] at hG
+  rw [← IsLeftUniformGroup.leftUniformSpace_eq G] at hG
   infer_instance
 
 end CompleteQuotient

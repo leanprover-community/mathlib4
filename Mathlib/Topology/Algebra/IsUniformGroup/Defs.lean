@@ -646,6 +646,11 @@ theorem uniformity_eq_comap_nhds_one' : 𝓤 G = comap (fun p : G × G => p.2 * 
 
 end IsTopologicalGroup
 
+@[to_additive]
+theorem IsRightUniformGroup.rightUniformSpace_eq
+    (G : Type*) [Group G] [u : UniformSpace G] [IsRightUniformGroup G] :
+    IsTopologicalGroup.rightUniformSpace G = u :=
+  UniformSpace.ext (uniformity_eq_comap_mul_inv_nhds_one G).symm
 
 section IsTopologicalGroup
 
@@ -690,6 +695,12 @@ theorem uniformity_eq_comap_nhds_one_left :
 
 end IsTopologicalGroup
 
+@[to_additive]
+theorem IsLeftUniformGroup.leftUniformSpace_eq
+    (G : Type*) [Group G] [u : UniformSpace G] [IsLeftUniformGroup G] :
+    IsTopologicalGroup.leftUniformSpace G = u :=
+  UniformSpace.ext (uniformity_eq_comap_inv_mul_nhds_one G).symm
+
 section TopologicalCommGroup
 
 universe u v w x
@@ -727,7 +738,8 @@ alias comm_topologicalGroup_is_uniform := isUniformGroup_of_commGroup
 
 end
 
-@[to_additive]
+@[to_additive (attr :=
+  deprecated IsRightUniformGroup.rightUniformSpace_eq +typeChanged (since := "2026-10-02"))]
 theorem IsUniformGroup.rightUniformSpace_eq {G : Type*} [u : UniformSpace G] [Group G]
     [IsUniformGroup G] : IsTopologicalGroup.rightUniformSpace G = u := by
   ext : 1
