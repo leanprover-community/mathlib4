@@ -9,16 +9,13 @@ public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 public import Mathlib.Order.Filter.Polynomial
 
 /-!
-# Limits related to polynomial and rational functions
+# Asymptotics of polynomial and rational functions
 
-This file proves basic facts about limits of polynomial and rational functions.
+This file proves basic facts about the asymptotics of of polynomial and rational functions.
 The main result is `Polynomial.isEquivalent_atTop_lead`, which states that for
 any polynomial `P` of degree `n` with leading coefficient `a`, the corresponding
 polynomial function is equivalent to `a * x^n` as `x` goes to +∞.
 
-We can then use this result to prove various limits for polynomial and rational
-functions, depending on the degrees and leading coefficients of the considered
-polynomials.
 -/
 
 public section
