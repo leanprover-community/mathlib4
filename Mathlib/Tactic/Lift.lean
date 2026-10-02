@@ -60,11 +60,6 @@ instance PiSubtype.canLift (ι : Sort*) (α : ι → Sort*) [∀ i, Nonempty (α
     CanLift (∀ i : Subtype p, α i) (∀ i, α i) (fun f i => f i) fun _ => True where
   prf f _ := Subtype.exists_pi_extension f
 
--- TODO: test if we need this instance in Lean 4
-instance PiSubtype.canLift' (ι : Sort*) (α : Sort*) [Nonempty α] (p : ι → Prop) :
-    CanLift (Subtype p → α) (ι → α) (fun f i => f i) fun _ => True :=
-  PiSubtype.canLift ι (fun _ => α) p
-
 instance Subtype.canLift {α : Sort*} (p : α → Prop) :
     CanLift α { x // p x } Subtype.val p where prf a ha :=
   ⟨⟨a, ha⟩, rfl⟩
