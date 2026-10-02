@@ -5,10 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ContDiff.WithLp
+import Mathlib.Analysis.Calculus.ContDiff.WithLp
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Constructing examples of manifolds over ℝ
@@ -226,7 +225,7 @@ def modelWithCornersEuclideanQuadrant (n : ℕ) :
     rw [range_euclideanQuadrant, interior_euclideanQuadrant]
     exact ⟨toLp 2 fun i ↦ 1, by simp⟩
   continuous_toFun := continuous_subtype_val
-  continuous_invFun := Continuous.subtype_mk ((PiLp.continuous_toLp 2 _).comp <|
+  continuous_invFun := Continuous.subtype_mk ((PiLp.continuous_toLp 2 _).comp
     (continuous_pi fun i ↦ ((PiLp.continuous_apply 2 _ i).max continuous_const))) _
 
 /-- The model space used to define `n`-dimensional real manifolds without boundary. -/
@@ -362,7 +361,7 @@ lemma iccLeftChart_extend_zero {p : Set.Icc x y} :
 lemma IccLeftChart_extend_interior_pos {p : Set.Icc x y} (hp : x < p.val ∧ p.val < y) :
     0 < (IccLeftChart x y).extend (𝓡∂ 1) p 0 := by
   simp_rw [iccLeftChart_extend_zero]
-  norm_num [hp.1]
+  simp [hp.1]
 
 lemma IccLeftChart_extend_bot_mem_frontier :
     (IccLeftChart x y).extend (𝓡∂ 1) ⊥ ∈ frontier (range (𝓡∂ 1)) := by

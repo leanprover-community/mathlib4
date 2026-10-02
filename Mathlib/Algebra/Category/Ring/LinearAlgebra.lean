@@ -6,8 +6,8 @@ Authors: Christian Merten
 module
 
 public import Mathlib.Algebra.Category.Ring.Constructions
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
-public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
 /-!
 # Results on the category of rings requiring linear algebra

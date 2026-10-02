@@ -3,10 +3,11 @@ Copyright (c) 2026 Marcelo Lynch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marcelo Lynch
 -/
+module
 
-import Cache.Marker
-import Cache.Upload.Azure
-import Cache.Upload.S3
+public import Cache.Marker
+public import Cache.Upload.Azure
+public import Cache.Upload.S3
 
 /-!
 # The upload contract
@@ -27,6 +28,8 @@ backend. The marker path contract and write mechanics live in
 contract through `fileDirPath` and `markerDirPath` (`Cache/Infra.lean`), so
 every upload addresses the URLs the readers probe.
 -/
+
+public section
 
 namespace Cache.Requests
 
