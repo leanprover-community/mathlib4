@@ -351,7 +351,7 @@ theorem comap_ringConGen_equiv
     (ringConGen r).comap f = ringConGen (r on f) :=
   comap_ringConGen_ringEquiv r
     { EquivLike.toEquiv f with map_mul' := map_mul f, map_add' := map_add f }
-    
+
 end Lattice
 
 end RingCon
