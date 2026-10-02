@@ -306,6 +306,13 @@ example : Squarefree 10 := by norm_num1
 example : Squarefree (2*3*5*17) := by norm_num1
 example : ¬ Squarefree (2*3*5*5*17) := by norm_num1
 example : Squarefree 251 := by norm_num1
+example : ¬ Squarefree (0 : ℤ) := by norm_num1
+example : Squarefree (1 : ℤ) := by norm_num1
+example : Squarefree (-1 : ℤ) := by norm_num1
+example : Squarefree (-6 : ℤ) := by norm_num1
+example : ¬ Squarefree (-12 : ℤ) := by norm_num1
+example : Squarefree (2*3*5*17 : ℤ) := by norm_num1
+example : ¬ Squarefree (-2*3*5*5*17 : ℤ) := by norm_num1
 
 section NatLog
 

@@ -12,7 +12,8 @@ public meta import Mathlib.Data.Nat.Squarefree
 /-!
 # `norm_num` extension for `Squarefree`
 
-This file provides a `norm_num` extension to decide whether a natural number is squarefree.
+This file provides a `norm_num` extension to decide whether a natural number or an integer
+is squarefree.
 
 If `n` is not squarefree, the proof is given by a witness `a > 1` with `a * a ∣ n`. If `n` is
 squarefree, the proof is a trial division of `n` by the odd numbers `k = 3, 5, 7, …`, keeping the
@@ -91,6 +92,16 @@ theorem isNat_squarefree {n n' : ℕ} (h : IsNat n n') : Squarefree n' → Squar
 theorem isNat_not_squarefree {n n' : ℕ} (h : IsNat n n') : ¬ Squarefree n' → ¬ Squarefree n :=
   isNat.natElim h
 
+theorem isInt_squarefree {n n' : ℤ} {m : ℕ} (h : IsInt n n') (hm : n'.natAbs = m) :
+    Squarefree m → Squarefree n := by
+  obtain ⟨rfl⟩ := h
+  exact hm ▸ Int.squarefree_natAbs.mp
+
+theorem isInt_not_squarefree {n n' : ℤ} {m : ℕ} (h : IsInt n n') (hm : n'.natAbs = m) :
+    ¬ Squarefree m → ¬ Squarefree n := by
+  obtain ⟨rfl⟩ := h
+  exact hm ▸ mt Int.squarefree_natAbs.mpr
+
 /-- Given an odd numeral `en` with value `n` and an odd numeral `ek` with value `k ≥ 3`, such that
 `n` is squarefree, produce a proof of `SquarefreeHelper n k`. -/
 partial def proveSquarefreeHelper (en : Q(ℕ)) (n : ℕ) (ek : Q(ℕ)) (k : ℕ) :
@@ -126,26 +137,47 @@ def proveSquarefree (en : Q(ℕ)) (n : ℕ) : Q(Squarefree $en) :=
     let h := proveSquarefreeHelper em (n / 2) q(nat_lit 3) 3
     q(squarefree_two_mul $en $em $e $hm $h)
 
+/-- Given a numeral `en`, decide whether it is squarefree. -/
+def evalSquarefreeLit (en : Q(ℕ)) : Result q(Squarefree $en) :=
+  let n := en.natLit!
+  match n.minSqFac with
+  | some d =>
+    have ed : Q(ℕ) := mkRawNatLit d
+    have eb : Q(ℕ) := mkRawNatLit (n / (d * d))
+    have h : Q($ed * $ed * $eb = $en) := (q(Eq.refl $en) : Expr)
+    have h₁ : Q(Nat.ble $ed 1 = false) := (q(Eq.refl false) : Expr)
+    .isFalse q(not_squarefree_mul $ed $eb $en $h $h₁)
+  | none =>
+    if n = 0 then
+      have : $en =Q 0 := ⟨⟩
+      .isFalse q(not_squarefree_zero)
+    else .isTrue (proveSquarefree en n)
+
 /-- The `norm_num` extension which identifies expressions of the form `Squarefree (n : ℕ)`. -/
 @[norm_num @Squarefree ℕ _ _]
 def evalNatSquarefree : NormNumExt where eval {u αP} e := do
   match u, αP, e with
   | 0, ~q(Prop), ~q(@Squarefree ℕ $inst $a) => do
     let ⟨nn, pa⟩ ← deriveNat (u := 0) (α := q(ℕ)) a q(inferInstance)
-    let n := nn.natLit!
     assertInstancesCommute
-    match n.minSqFac with
-    | some d =>
-      have ed : Q(ℕ) := mkRawNatLit d
-      have eb : Q(ℕ) := mkRawNatLit (n / (d * d))
-      have h : Q($ed * $ed * $eb = $nn) := (q(Eq.refl $nn) : Expr)
-      have h₁ : Q(Nat.ble $ed 1 = false) := (q(Eq.refl false) : Expr)
-      return .isFalse q(isNat_not_squarefree $pa (not_squarefree_mul $ed $eb $nn $h $h₁))
-    | none =>
-      if n = 0 then
-        have : $nn =Q 0 := ⟨⟩
-        return .isFalse q(isNat_not_squarefree $pa not_squarefree_zero)
-      return .isTrue q(isNat_squarefree $pa $(proveSquarefree nn n))
+    match evalSquarefreeLit nn with
+    | .isTrue p => return .isTrue q(isNat_squarefree $pa $p)
+    | .isFalse p => return .isFalse q(isNat_not_squarefree $pa $p)
+    | _ => failure
+  | _ => failure
+
+/-- The `norm_num` extension which identifies expressions of the form `Squarefree (n : ℤ)`. -/
+@[norm_num @Squarefree ℤ _ _]
+def evalIntSquarefree : NormNumExt where eval {u αP} e := do
+  match u, αP, e with
+  | 0, ~q(Prop), ~q(@Squarefree ℤ $inst $a) => do
+    let ⟨na, pa⟩ ← deriveInt (u := 0) (α := q(ℤ)) a q(inferInstance)
+    let ⟨nn, pn⟩ := rawIntLitNatAbs na
+    assertInstancesCommute
+    match evalSquarefreeLit nn with
+    | .isTrue p => return .isTrue q(isInt_squarefree $pa $pn $p)
+    | .isFalse p => return .isFalse q(isInt_not_squarefree $pa $pn $p)
+    | _ => failure
   | _ => failure
 
 end Mathlib.Meta.NormNum
