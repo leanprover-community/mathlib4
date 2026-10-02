@@ -72,7 +72,10 @@ lemma Localization.AtPrime.isField_of_mem_minimalPrimes {S : Type*} [CommRing S]
   rw [← Localization.AtPrime.eq_maximalIdeal_iff_under_eq]
   exact le_antisymm this (min.2 ⟨q.comap_isPrime _, bot_le⟩ this)
 
-/-- The map of a ring to product of its localizations at minimal primes. -/
+/-- The map of a ring to product of its localizations at minimal primes.
+
+When `S` is reduced and has finitely many minimal primes, the target is actually the
+total fraction ring of `S`. -/
 @[expose]
 def MinimalPrimes.piLocalizationMap (S : Type*) [CommRing S] :=
   (RingHom.pi (fun (p : minimalPrimes S) ↦
