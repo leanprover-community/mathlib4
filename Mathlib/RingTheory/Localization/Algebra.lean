@@ -9,8 +9,6 @@ public import Mathlib.RingTheory.Localization.BaseChange
 public import Mathlib.RingTheory.Localization.Ideal
 public import Mathlib.RingTheory.PolynomialAlgebra
 
-import Mathlib.RingTheory.LocalProperties.Basic
-
 /-!
 # Localization of algebra maps
 

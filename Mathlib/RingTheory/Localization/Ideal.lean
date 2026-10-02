@@ -11,7 +11,7 @@ public import Mathlib.RingTheory.Ideal.Over
 public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.RingTheory.Spectrum.Prime.Defs
 
-import Mathlib.Algebra.Module.LocalizedModule.Submodule
+public import Mathlib.Algebra.Module.LocalizedModule.Submodule
 
 /-!
 # Ideals in localizations of commutative rings
@@ -51,6 +51,11 @@ This definition is only meant to be used in proving `mem_map_algebraMap_iff`,
 and any proof that needs to refer to the explicit carrier set should use that theorem. -/
 private def map_ideal (I : Ideal R) : Ideal S :=
   Submodule.localized' S M (Algebra.linearMap R S) I
+
+theorem _root_.Ideal.localized'_eq_map (S : Type*) {R : Type*} [CommSemiring R] [CommSemiring S]
+    [Algebra R S] (p : Submonoid R) [IsLocalization p S] (I : Ideal R) :
+    Submodule.localized' S p (Algebra.linearMap R S) I = I.map (algebraMap R S) := by
+  rw [Ideal.map, Ideal.span, Submodule.localized'_eq_span, Algebra.coe_linearMap]
 
 theorem mem_map_algebraMap_iff {I : Ideal R} {z} : z ∈ Ideal.map (algebraMap R S) I ↔
     ∃ x : I × M, z * algebraMap R S x.2 = algebraMap R S x.1 := by
