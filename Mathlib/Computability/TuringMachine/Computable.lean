@@ -22,6 +22,8 @@ any time function) of a function between two types that have an encoding (as in 
 - `idComputableInPolyTime` : a TM + a proof it computes the identity on a type in polytime.
 - `idComputable`           : a TM + a proof it computes the identity on a type.
 - `TM2ComputableInPolyTime.length_le` : the output of a polytime TM has polynomial length.
+- `TM2ComputableInPolyTime.comp` : the composition of two functions computable in polynomial
+  time is computable in polynomial time.
 
 ## Implementation notes
 
@@ -512,5 +514,46 @@ theorem iterate_transfers (y : List (tm₁.Γ tm₁.k₁)) :
   exact (congrArg (flip bind (TM2.step (prog e)))^[2 * y.length + 1] h₁).trans h₂
 
 end TM2Compose
+
+open TM2Compose in
+/-- If `f` and `g` are computable in polynomial time by TM2 machines, so is `g ∘ f`. -/
+noncomputable def TM2ComputableInPolyTime.comp {α β γ αΓ βΓ γΓ : Type} {eα : α → List αΓ}
+    {eβ : β → List βΓ} {eγ : γ → List γΓ} {f : α → β} {g : β → γ}
+    (h1 : TM2ComputableInPolyTime eα eβ f) (h2 : TM2ComputableInPolyTime eβ eγ g) :
+    TM2ComputableInPolyTime eα eγ (g ∘ f) :=
+  let e : h1.tm.Γ h1.tm.k₁ → h2.tm.Γ h2.tm.k₀ := h2.inputAlphabet.symm ∘ h1.outputAlphabet
+  let q : Polynomial ℕ := .X + .C h1.tm.maxPushes * h1.time
+  { tm := machine e
+    inputAlphabet := h1.inputAlphabet
+    outputAlphabet := h2.outputAlphabet
+    time := h1.time + 4 * q + 2 + h2.time.comp q
+    outputsFun a :=
+      { steps := (h2.outputsFun (f a)).steps +
+          (4 * (eβ (f a)).length + 2 + (h1.outputsFun a).steps)
+        evals_in_steps := by
+          have H₁ : (flip bind (machine e).step)^[(h1.outputsFun a).steps]
+              (some (emb₁ (h2.tm.initialState, none) (fun _ ↦ []) []
+                (initList h1.tm ((eα a).map h1.inputAlphabet.invFun)))) = _ :=
+            ((h1.outputsFun a).toEvalsTo.map _ (step_emb₁ e _ _ _)).evals_in_steps
+          have H₂ := ((h2.outputsFun (f a)).toEvalsTo.map _
+            (step_emb₂ e h1.tm.initialState none (fun _ ↦ []) [])).evals_in_steps
+          have hm : ((eβ (f a)).map h1.outputAlphabet.invFun).map e =
+              (eβ (f a)).map h2.inputAlphabet.invFun := by
+            simp [e, Function.comp_def]
+          have T := iterate_transfers e ((eβ (f a)).map h1.outputAlphabet.invFun)
+          rw [hm, List.length_map] at T
+          rw [Function.iterate_add_apply, Function.iterate_add_apply, initList_machine, H₁]
+          exact (congrArg _ T).trans (H₂.trans (congrArg some (emb₂_haltList e _)))
+        steps_le_m := by
+          have mono (p : Polynomial ℕ) {m n : ℕ} (h : m ≤ n) : p.eval m ≤ p.eval n := by
+            induction p using Polynomial.induction_on' with
+            | add p₁ p₂ hp₁ hp₂ => simpa using Nat.add_le_add hp₁ hp₂
+            | monomial k c => simpa using Nat.mul_le_mul_left c (Nat.pow_le_pow_left h k)
+          have hq : (eβ (f a)).length ≤ q.eval (eα a).length := h1.length_le a
+          have h₁ := (h1.outputsFun a).steps_le_m
+          have h₂ := ((h2.outputsFun (f a)).steps_le_m).trans (mono h2.time hq)
+          simp only [q, Polynomial.eval_add, Polynomial.eval_mul, Polynomial.eval_C,
+            Polynomial.eval_X, Polynomial.eval_comp, Polynomial.eval_ofNat] at h₂ hq ⊢
+          omega } }
 
 end Turing
