@@ -289,6 +289,18 @@ lemma iIndepFun.iIndepFun_process₀ {T : S → Type*} {𝓧 : (i : S) → (j : 
   refine iIndepFun_process (fun i j ↦ (hX i j).measurable_mk) fun I J ↦ ?_
   exact (h I J).process_congr (fun i j ↦ Measure.ae_ae_of_ae_comp (hX i j).ae_eq_mk)
 
+theorem iIndepFun.indepFun_set₀ {𝓧 : S → Type*} [∀ s, MeasurableSpace (𝓧 s)]
+    {X : (s : S) → Ω → 𝓧 s} {I J : Set S} (hIJ : Disjoint I J) (hX : iIndepFun X κ P)
+    (mX : ∀ s, AEMeasurable (X s) (κ ∘ₘ P)) :
+    IndepFun (fun ω (i : I) ↦ X i ω) (fun ω (j : J) ↦ X j ω) κ P := by
+  have h : IndepFun (fun ω (i : I) ↦ (mX i).mk (X i) ω)
+      (fun ω (j : J) ↦ (mX j).mk (X j) ω) κ P := by
+    refine iIndepFun.indepFun_set I J hIJ ?_ fun i ↦ (mX i).measurable_mk
+    exact hX.congr' fun i ↦ Measure.ae_ae_of_ae_comp (mX i).ae_eq_mk
+  refine IndepFun.process_congr h ?_ ?_
+  · exact fun i ↦ Measure.ae_ae_of_ae_comp (mX i).ae_eq_mk.symm
+  · exact fun j ↦ Measure.ae_ae_of_ae_comp (mX j).ae_eq_mk.symm
+
 end Kernel
 
 variable {P : Measure Ω}
@@ -425,5 +437,16 @@ lemma iIndepFun.iIndepFun_process₀ {T : S → Type*} {𝓧 : (i : S) → (j : 
     (h : ∀ (I : Finset S) (J : (i : I) → Finset (T i)), iIndepFun (fun i ω (j : J i) ↦ X i j ω) P) :
     iIndepFun (fun i ω j ↦ X i j ω) P :=
   Kernel.iIndepFun.iIndepFun_process₀ (by simpa) h
+
+theorem iIndepFun.indepFun_set₀ {𝓧 : S → Type*} [∀ s, MeasurableSpace (𝓧 s)]
+    {X : (s : S) → Ω → 𝓧 s} {I J : Set S} (hIJ : Disjoint I J) (hX : iIndepFun X P)
+    (mX : ∀ s, AEMeasurable (X s) P) :
+    (fun ω (i : I) ↦ X i ω) ⟂ᵢ[P] (fun ω (j : J) ↦ X j ω) := by
+  have h : (fun ω (i : I) ↦ (mX i).mk (X i) ω) ⟂ᵢ[P] (fun ω (j : J) ↦ (mX j).mk (X j) ω) := by
+    refine iIndepFun.indepFun_set I J hIJ ?_ fun i ↦ (mX i).measurable_mk
+    exact hX.congr fun i ↦ (mX i).ae_eq_mk
+  refine IndepFun.process_congr h ?_ ?_
+  · exact fun i ↦ (mX i).ae_eq_mk.symm
+  · exact fun j ↦ (mX j).ae_eq_mk.symm
 
 end ProbabilityTheory
