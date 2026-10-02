@@ -228,6 +228,12 @@ def unitNatIso [Closed (𝟙_ C)] : 𝟭 C ≅ ihom (𝟙_ C) :=
   conjugateIsoEquiv (Adjunction.id (C := C)) (ihom.adjunction (𝟙_ C))
     (leftUnitorNatIso C)
 
+instance [Closed (𝟙_ C)] : (ihom (𝟙_ C)).IsEquivalence :=
+  Functor.isEquivalence_of_iso MonoidalClosed.unitNatIso
+
+instance isIso_ihom_ev_unit [Closed (𝟙_ C)] : IsIso (ihom.ev (𝟙_ C)) :=
+  inferInstanceAs (IsIso ((ihom.adjunction _).counit))
+
 /-- The internal hom object from the unit to any object is isomorphic to that object.
 The typeclass argument is explicit: any instance can be used. -/
 def unitIsoSelf [Closed (𝟙_ C)] : ((𝟙_ C) ⟶[C] X) ≅ X :=
@@ -242,10 +248,19 @@ variable [Closed B]
 def pre (f : B ⟶ A) : ihom A ⟶ ihom B :=
   conjugateEquiv (ihom.adjunction _) (ihom.adjunction _) ((tensoringLeft C).map f)
 
+instance (f : B ⟶ A) [IsIso f] : IsIso (pre f) :=
+  inferInstanceAs (IsIso (conjugateEquiv _ _ _))
+
 @[reassoc (attr := simp)]
 theorem id_tensor_pre_app_comp_ev (f : B ⟶ A) (X : C) :
     B ◁ (pre f).app X ≫ (ihom.ev B).app X = f ▷ (A ⟶[C] X) ≫ (ihom.ev A).app X :=
   conjugateEquiv_counit _ _ ((tensoringLeft C).map f) X
+
+/-- Whether evaluation is an isomorphism is invariant under isomorphism of its source object. -/
+lemma isIso_ihom_ev_app_iff_of_iso (e : A ≅ B) (X : C) :
+    IsIso ((ihom.ev A).app X) ↔ IsIso ((ihom.ev B).app X) := by
+  rw [← isIso_comp_left_iff (A ◁ (pre e.hom).app X),
+    id_tensor_pre_app_comp_ev, isIso_comp_left_iff]
 
 @[simp]
 theorem uncurry_pre (f : B ⟶ A) (X : C) :
