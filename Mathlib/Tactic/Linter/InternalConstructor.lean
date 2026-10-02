@@ -5,12 +5,11 @@ Authors: Thomas R. Murrills
 -/
 module
 
-public meta import Lean.Linter.Basic
-public meta import Lean.Elab.InfoTree.Util
+public import Lean.Linter.Basic
+public import Mathlib.Tactic.Linter.InfoLinters
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
-public import Lean.Message
+import Mathlib.Tactic.Linter.Header  -- shake: keep
 
 /-!
 # Linting against internal constructors
@@ -37,7 +36,7 @@ a reason, and lints against using them.
 
 open Lean Elab Command
 
-namespace Mathlib.Tactic.Linter
+namespace Mathlib.Linter
 
 public meta section
 
@@ -56,26 +55,23 @@ register_option linter.internalConstructors : Bool := {
 }
 
 /-- Lints against using constructors with internal names during elaboration. -/
-def internalConstructor : Linter where
-  run := withSetOptionIn fun _ => do
+def internalConstructor : InfoCollectionLinter (Name × Syntax) where
+  collect? ctx i := Id.run do
+    if let .ofTermInfo i := i then
+      if let .const n _ := i.expr.cleanupAnnotations then
+        if
+          -- Putting the conjuncts in this order provides a performance benefit.
+          n.isInternal && !isPrivateName n && ctx.env.isImportedConst n && ctx.env.isConstructor n
+        then
+          return some (n, i.stx)
+    return none
+  log warnings := withSetOptionIn fun _ => do
+    -- TODO: move elsewhere to guard...
     unless Linter.getLinterValue linter.internalConstructors (← Linter.getLinterOptions) do
       return
-    for t in ← getInfoTrees do
-      -- Collect the warnings separately from logging them, since (compiled) `foldInfo` is faster
-      -- than (interpreted, specialized) `foldInfoM`.
-      let warnings := t.foldInfo (init := #[]) fun ctx info w => Id.run do
-        if let .ofTermInfo i := info then
-          if let .const n _ := i.expr.cleanupAnnotations then
-            if
-              -- Putting the conjuncts in this order provides a performance benefit.
-              n.isInternal && !isPrivateName n && ctx.env.isImportedConst n && ctx.env.isConstructor n
-            then
-              return w.push (n, i.stx)
-        return w
-      for (name, stx) in warnings do
-        logLintError linter.internalConstructors stx
-          m!"`{.ofConstName name}` is an internal constructor and should not be used directly."
-
+    for (name, stx) in warnings do
+      logLintError linter.internalConstructors stx
+        m!"`{.ofConstName name}` is an internal constructor and should not be used directly."
 where
   /-- We inline some of `logLint` so that we can log an error instead of a warning. -/
   logLintError (linterOption) (stx) (msg) := do
@@ -85,4 +81,4 @@ where
       .tagged linterOption.name <|
       .tagged Linter.linterMessageTag m!"{msg}{disable}"
 
-initialize addLinter internalConstructor
+initialize addInfoLinter <| .ofCollection internalConstructor
