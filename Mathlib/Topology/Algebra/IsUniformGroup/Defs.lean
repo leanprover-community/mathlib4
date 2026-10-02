@@ -645,7 +645,7 @@ theorem uniformity_eq_comap_nhds_one' : 𝓤 G = comap (fun p : G × G => p.2 * 
   rfl
 
 @[to_additive]
-theorem IsTopologiacalGroup.isRightUniformGroup_rightUniformSpace : IsRightUniformGroup G where
+theorem IsRightUniformGroup.rightUniformSpace : IsRightUniformGroup G where
   uniformity_eq := rfl
 
 end IsTopologicalGroup
@@ -661,7 +661,7 @@ theorem isRightUniformGroup_iff_rightUniformSpace_eq
     {G : Type*} [Group G] [u : UniformSpace G] [IsTopologicalGroup G] :
     IsRightUniformGroup G ↔ IsTopologicalGroup.rightUniformSpace G = u :=
   ⟨fun _ => IsRightUniformGroup.rightUniformSpace_eq G,
-    fun h => h ▸ IsTopologiacalGroup.isRightUniformGroup_rightUniformSpace G⟩
+    fun h => h ▸ IsRightUniformGroup.rightUniformSpace G⟩
 
 @[to_additive]
 alias ⟨_, IsRightUniformGroup.of_rightUniformSpace_eq⟩ :=
@@ -709,7 +709,7 @@ theorem uniformity_eq_comap_nhds_one_left :
   rfl
 
 @[to_additive]
-theorem IsTopologiacalGroup.isLeftUniformGroup_leftUniformSpace : IsLeftUniformGroup G where
+theorem IsLeftUniformGroup.leftUniformSpace : IsLeftUniformGroup G where
   uniformity_eq := rfl
 
 end IsTopologicalGroup
@@ -725,7 +725,7 @@ theorem isLeftUniformGroup_iff_leftUniformSpace_eq
     {G : Type*} [Group G] [u : UniformSpace G] [IsTopologicalGroup G] :
     IsLeftUniformGroup G ↔ IsTopologicalGroup.leftUniformSpace G = u :=
   ⟨fun _ => IsLeftUniformGroup.leftUniformSpace_eq G,
-    fun h => h ▸ IsTopologiacalGroup.isLeftUniformGroup_leftUniformSpace G⟩
+    fun h => h ▸ IsLeftUniformGroup.leftUniformSpace G⟩
 
 @[to_additive]
 alias ⟨_, IsLeftUniformGroup.of_leftUniformSpace_eq⟩ :=
