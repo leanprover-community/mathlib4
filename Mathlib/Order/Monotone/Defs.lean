@@ -59,12 +59,14 @@ section MonotoneDef
 variable [Preorder α] [Preorder β]
 
 /-- A function `f` is monotone if `a ≤ b` implies `f a ≤ f b`. -/
+@[wikidata Q194404, wikidata Q3075182]
 def Monotone (f : α → β) : Prop :=
   ∀ ⦃a b⦄, a ≤ b → f a ≤ f b
 
 to_dual_insert_cast Monotone := forall_comm.eq
 
 /-- A function `f` is antitone if `a ≤ b` implies `f b ≤ f a`. -/
+@[wikidata Q194404, wikidata Q3075231]
 def Antitone (f : α → β) : Prop :=
   ∀ ⦃a b⦄, a ≤ b → f b ≤ f a
 
@@ -83,12 +85,14 @@ def AntitoneOn (f : α → β) (s : Set α) : Prop :=
 to_dual_insert_cast AntitoneOn := by grind only
 
 /-- A function `f` is strictly monotone if `a < b` implies `f a < f b`. -/
+@[wikidata Q78055984, wikidata Q3075182]
 def StrictMono (f : α → β) : Prop :=
   ∀ ⦃a b⦄, a < b → f a < f b
 
 to_dual_insert_cast StrictMono := forall_comm.eq
 
 /-- A function `f` is strictly antitone if `a < b` implies `f b < f a`. -/
+@[wikidata Q78055984, wikidata Q3075231]
 def StrictAnti (f : α → β) : Prop :=
   ∀ ⦃a b⦄, a < b → f b < f a
 
