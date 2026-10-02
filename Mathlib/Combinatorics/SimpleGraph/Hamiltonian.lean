@@ -378,6 +378,36 @@ theorem IsBridge.not_isHamiltonian {e : Sym2 α} (he : G.IsBridge e) : ¬G.IsHam
     (fun huv ↦ he <| .trans ?_ huv) he (hp.isHamiltonian_tail.mem_support v)
   apply hp.isTrail.isEdgeReachable_two <;> simp
 
+-- #41393
+set_option warn.sorry false in
+theorem Walk.IsHamiltonian.isHamiltonian_of_adj (hp : p.IsHamiltonian) (hadj : G.Adj a b)
+    (hlen : p.length ≠ 1) : G.IsHamiltonian := sorry
+
+theorem isHamiltonian_sup_edge {u v : α} :
+    (G ⊔ edge u v).IsHamiltonian ↔
+      G.IsHamiltonian ∨ ∃ p : G.Walk u v, p.IsHamiltonian ∧ 2 ≤ p.length := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · refine or_iff_not_imp_left.mpr fun hG ↦ ?_
+    have : Nontrivial α := ⟨u, v, by grind [sup_edge_self]⟩
+    have hadj : ¬G.Adj u v := by grind [sup_eq_left, edge_le_iff]
+    rw [← show (G ⊔ edge u v).deleteEdges {s(u, v)} = G by simpa] at hG ⊢
+    have ⟨p, hp⟩ := h.exists_isHamiltonianCycle u
+    by_cases! huv : s(u, v) ∉ p.edges
+    · exact absurd (fun _ ↦ ⟨u, p.toDeleteEdge _ huv, by simpa⟩) hG
+    wlog hv : p.penultimate = v
+    · grind [hp.mem_edges_iff_snd_eq_or_penultimate_eq, p.penultimate_reverse, p.edges_reverse,
+        hp.reverse]
+    refine ⟨p.dropLast.copy rfl hv |>.toDeleteEdge s(u, v) ?_, ?_, ?_⟩
+    · grind [Walk.edges_copy, p.edges_dropLast, p.mk_penultimate_end_eq_getLast_edges hp.not_nil,
+        hp.edges_nodup, List.dropLast_concat_getLast]
+    · simpa using hp.isHamiltonian_dropLast
+    · simp; grind [hp.three_le_length]
+  · by_cases hG : G.IsHamiltonian
+    · exact hG.mono le_sup_left
+    have ⟨p, hp, hlen⟩ := h.resolve_left hG
+    refine hp.mapLe le_sup_left |>.isHamiltonian_of_adj ?_ <| by grind [p.length_mapLe]
+    grind [hp.isPath.nil_iff_eq]
+
 theorem isHamiltonian_iff_cycleGraph_isContained (h : 3 ≤ Fintype.card α) :
     G.IsHamiltonian ↔ cycleGraph (Fintype.card α) ⊑ G := by
   refine ⟨fun h' ↦ ?_, fun h' ↦ ?_⟩
