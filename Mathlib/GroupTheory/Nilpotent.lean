@@ -700,17 +700,12 @@ theorem isNilpotent_of_lowerCentralSeries_eq_bot {S : Subgroup G} {n : ℕ}
     (h : S.lowerCentralSeries n = ⊥) : Group.IsNilpotent S :=
   (isNilpotent_iff_lowerCentralSeries S).mpr ⟨n, h⟩
 
-/-- The subgroup counterpart of `Subgroup.top_lowerCentralSeries_nilpotencyClass`. -/
-@[to_additive (attr := simp) /-- The additive subgroup counterpart of
-`AddSubgroup.top_lowerCentralSeries_nilpotencyClass`. -/]
+@[to_additive (attr := simp)]
 theorem lowerCentralSeries_nilpotencyClass (S : Subgroup G) [Group.IsNilpotent S] :
     S.lowerCentralSeries (Group.nilpotencyClass S) = ⊥ := by
   rw [← top_subtype_lowerCentralSeries, top_lowerCentralSeries_nilpotencyClass, map_bot]
 
-/-- The subgroup counterpart of
-`Subgroup.top_lowerCentralSeries_eq_bot_iff_nilpotencyClass_le`. -/
-@[to_additive /-- The additive subgroup counterpart of
-`AddSubgroup.top_lowerCentralSeries_eq_bot_iff_nilpotencyClass_le`. -/]
+@[to_additive]
 theorem lowerCentralSeries_eq_bot_iff_nilpotencyClass_le {S : Subgroup G} [Group.IsNilpotent S]
     {n : ℕ} : S.lowerCentralSeries n = ⊥ ↔ Group.nilpotencyClass S ≤ n := by
   rw [← top_lowerCentralSeries_eq_bot_iff_nilpotencyClass_le,
