@@ -377,10 +377,9 @@ section
 
 universe w
 
-private lemma moduleDepth_uliftFunctor_obj (N M : ModuleCat R) :
-    @moduleDepth R _ (small_lift R : Small.{max v w} R) ((ModuleCat.uliftFunctor.{w} R).obj N)
-      ((ModuleCat.uliftFunctor.{w} R).obj M) = moduleDepth N M := by
-  have : Small.{max v w} R := small_lift R
+lemma moduleDepth_uliftFunctor_obj [Small.{max v w} R] (N M : ModuleCat.{v} R) :
+    moduleDepth ((ModuleCat.uliftFunctor.{w} R).obj N) ((ModuleCat.uliftFunctor.{w} R).obj M) =
+    moduleDepth N M := by
   simp only [moduleDepth]
   congr
   ext n
