@@ -502,8 +502,8 @@ lemma norm_eq_zero_iff_eq_zero {z : QuadraticAlgebra K a b} :
   · intro hz
     simp [hz]
 
-@[simps] instance : NNRatCast (QuadraticAlgebra K a b) where nnratCast q := .C q
-@[simps] instance : RatCast (QuadraticAlgebra K a b) where ratCast q := .C q
+@[simps -isSimp, simps!] instance : NNRatCast (QuadraticAlgebra K a b) where nnratCast q := .C q
+@[simps -isSimp, simps!] instance : RatCast (QuadraticAlgebra K a b) where ratCast q := .C q
 
 @[simps -isSimp, simps!] instance : Inv (QuadraticAlgebra K a b) where inv z := (norm z)⁻¹ • star z
 @[simps -isSimp, simps!] instance : Div (QuadraticAlgebra K a b) where div w z := w * z⁻¹
