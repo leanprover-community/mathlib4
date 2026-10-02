@@ -161,10 +161,12 @@ def arrowObjOrderIso : MorphismProperty T ≃o ObjectProperty (Arrow T) where
   map_rel_iff' := ⟨fun h _ _ f ha ↦ h f ha, fun h f ha ↦ h _ ha⟩
 
 @[simp]
-lemma arrowMorphismObj_eq (W : MorphismProperty T) : W.arrowObj.toMorphismProperty = W := rfl
+lemma toMorphismProperty_arrowObj (W : MorphismProperty T) :
+    W.arrowObj.toMorphismProperty = W := rfl
 
 @[simp]
-lemma arrowObjMorphism_eq (W : ObjectProperty (Arrow T)) : W.toMorphismProperty.arrowObj = W := rfl
+lemma _root_.CategoryTheory.ObjectProperty.arrowObj_toMorphismProperty
+    (W : ObjectProperty (Arrow T)) : W.toMorphismProperty.arrowObj = W := rfl
 
 @[simp]
 lemma inverseImage_op_overObj (W : MorphismProperty T) {X : T} :
