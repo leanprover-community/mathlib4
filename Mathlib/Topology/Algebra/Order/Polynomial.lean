@@ -75,7 +75,7 @@ theorem div_tendsto_atTop_of_degree_lt_of_leadingCoeff_div_neg
 
 theorem div_tendsto_atTop_zero_of_degree_lt [TopologicalSpace F] [OrderTopology F]
     (hdeg : P.degree < Q.degree) :
-    Tendsto (fun x ↦ P.eval x / eval x Q) atTop (𝓝 0) := by
+    Tendsto (fun x ↦ P.eval x / Q.eval x) atTop (𝓝 0) := by
   rcases lt_trichotomy (P.leadingCoeff / Q.leadingCoeff) 0 with neg | eq | pos
   · exact (div_tendsto_atTop_of_degree_lt_of_leadingCoeff_div_neg hdeg neg).mono_right
       nhdsWithin_le_nhds
@@ -108,14 +108,14 @@ theorem div_tendsto_atTop_of_degree_gt' (hdeg : Q.degree < P.degree)
 
 theorem div_tendsto_atTop_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 0)
     (hnng : 0 ≤ P.leadingCoeff / Q.leadingCoeff) :
-    Tendsto (fun x ↦ P.eval x / eval x Q) atTop atTop :=
+    Tendsto (fun x ↦ P.eval x / Q.eval x) atTop atTop :=
   have hpos : 0 < P.leadingCoeff / Q.leadingCoeff :=
     lt_of_le_of_ne' hnng (by grind [leadingCoeff_eq_zero, not_lt_bot])
   div_tendsto_atTop_of_degree_gt' hdeg hpos
 
 theorem div_tendsto_atBot_of_degree_gt' (hdeg : Q.degree < P.degree)
     (hneg : P.leadingCoeff / Q.leadingCoeff < 0) :
-    Tendsto (fun x ↦ P.eval x / eval x Q) atTop atBot := by
+    Tendsto (fun x ↦ P.eval x / Q.eval x) atTop atBot := by
   let := Preorder.topology F
   have : OrderTopology F := ⟨rfl⟩
   convert (div_tendsto_atTop_of_degree_lt_of_leadingCoeff_div_neg hdeg
@@ -124,7 +124,7 @@ theorem div_tendsto_atBot_of_degree_gt' (hdeg : Q.degree < P.degree)
 
 theorem div_tendsto_atBot_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 0)
     (hnps : P.leadingCoeff / Q.leadingCoeff ≤ 0) :
-    Tendsto (fun x ↦ P.eval x / eval x Q) atTop atBot :=
+    Tendsto (fun x ↦ P.eval x / Q.eval x) atTop atBot :=
   have hneg : P.leadingCoeff / Q.leadingCoeff < 0 :=
     lt_of_le_of_ne' hnps (by grind [leadingCoeff_eq_zero, not_lt_bot])
   div_tendsto_atBot_of_degree_gt' hdeg hneg
@@ -132,7 +132,7 @@ theorem div_tendsto_atBot_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 
 -- TODO : bounded iff version (see non-quotient part)
 
 theorem div_tendsto_atTop_zero_iff_degree_lt [TopologicalSpace F] [OrderTopology F] (hQ : Q ≠ 0) :
-    Tendsto (fun x ↦ P.eval x / eval x Q) atTop (𝓝 0) ↔ P.degree < Q.degree := by
+    Tendsto (fun x ↦ P.eval x / Q.eval x) atTop (𝓝 0) ↔ P.degree < Q.degree := by
   refine ⟨fun h ↦ ?_, div_tendsto_atTop_zero_of_degree_lt⟩
   contrapose! h
   rcases h.lt_or_eq' with lt | eq
@@ -143,7 +143,7 @@ theorem div_tendsto_atTop_zero_iff_degree_lt [TopologicalSpace F] [OrderTopology
         le_bot_iff, degree_eq_bot]
 
 theorem abs_div_tendsto_atTop_atTop_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 0) :
-    Tendsto (fun x ↦ |P.eval x / eval x Q|) atTop atTop := by
+    Tendsto (fun x ↦ |P.eval x / Q.eval x|) atTop atTop := by
   by_cases! h : 0 ≤ P.leadingCoeff / Q.leadingCoeff
   · exact tendsto_abs_atTop_atTop.comp (div_tendsto_atTop_of_degree_gt hdeg hQ h)
   · exact tendsto_abs_atBot_atTop.comp (div_tendsto_atBot_of_degree_gt hdeg hQ h.le)
@@ -153,7 +153,7 @@ end PolynomialDivAtTop
 section PolynomialDivAtBot
 
 theorem div_tendsto_atBot_zero_iff_degree_lt [TopologicalSpace F] [OrderTopology F] (hQ : Q ≠ 0) :
-    Tendsto (fun x ↦ P.eval x / eval x Q) atBot (𝓝 0) ↔ P.degree < Q.degree := by
+    Tendsto (fun x ↦ P.eval x / Q.eval x) atBot (𝓝 0) ↔ P.degree < Q.degree := by
   refine ⟨fun ht ↦ ?_, fun hdeg ↦ ?_⟩
   · rw [← P.degree_comp_neg_X, ← Q.degree_comp_neg_X,
         ← div_tendsto_atTop_zero_iff_degree_lt (by simpa)]
@@ -167,13 +167,13 @@ alias ⟨_, div_tendsto_atBot_zero_of_degree_lt⟩ := div_tendsto_atBot_zero_iff
 
 theorem div_tendsto_atBot_leadingCoeff_div_of_degree_eq [TopologicalSpace F] [OrderTopology F]
     (hdeg : P.degree = Q.degree) :
-    Tendsto (fun x ↦ P.eval x / eval x Q) atBot (𝓝 (P.leadingCoeff / Q.leadingCoeff)) := by
+    Tendsto (fun x ↦ P.eval x / Q.eval x) atBot (𝓝 (P.leadingCoeff / Q.leadingCoeff)) := by
   sorry
   -- degrees same so sign switch when going to -∞ same
 
 theorem abs_div_tendsto_atBot_atTop_of_degree_gt [TopologicalSpace F] [OrderTopology F]
     (hdeg : Q.degree < P.degree) (hQ : Q ≠ 0) :
-    Tendsto (fun x ↦ |P.eval x / eval x Q|) atBot atTop := by
+    Tendsto (fun x ↦ |P.eval x / Q.eval x|) atBot atTop := by
   rw [← P.degree_comp_neg_X, ← Q.degree_comp_neg_X] at hdeg
   convert (abs_div_tendsto_atTop_atTop_of_degree_gt hdeg (by simpa)).comp tendsto_neg_atBot_atTop
   simp
@@ -190,7 +190,7 @@ theorem tendsto_atTop_of_leadingCoeff_nonneg (hdeg : 0 < P.degree) (hlcf : 0 ≤
     (by simp; grind [leadingCoeff_eq_zero, not_lt_bot])
 
 theorem tendsto_atBot_of_leadingCoeff_nonpos (hdeg : 0 < P.degree) (hnps : P.leadingCoeff ≤ 0) :
-    Tendsto (fun x ↦ P.eval x) atTop atBot := by
+    Tendsto P.eval atTop atBot := by
   simpa using tendsto_atTop_of_leadingCoeff_nonneg (P := -P)
     (by simpa using hdeg) (by simpa using hnps)
 
