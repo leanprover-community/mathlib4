@@ -6,7 +6,8 @@ Authors: Anne Baanen
 
 import Mathlib.Tactic.Linter.Header
 
-set_option doc.verso true in
+set_option doc.verso true
+
 /-!
 # Test that Verso docstrings are recognized as module docs.
 -/
