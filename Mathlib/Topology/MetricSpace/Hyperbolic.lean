@@ -83,7 +83,7 @@ lemma isHyperbolicWith_of_forall_dist_le {k : ℝ} (hk : ∀ x y : X, dist x y �
   grind [IsHyperbolicWith, gromovProduct_le_dist_left]
 
 /-- A pseudometric space with at most one point is `0`-hyperbolic. -/
-lemma isHyperbolicWith_of_subsingleton [h : Subsingleton X] : IsHyperbolicWith X 0 :=
+lemma isHyperbolicWith_zero_of_subsingleton [h : Subsingleton X] : IsHyperbolicWith X 0 :=
   isHyperbolicWith_of_forall_dist_le (by simp)
 
 /-- A bounded space is δ-hyperbolic with respect to its diameter. -/
