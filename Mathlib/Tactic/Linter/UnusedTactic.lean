@@ -69,7 +69,7 @@ namespace UnusedTactic
 
 /--
 `Parser`s/tactics allowed to not change the tactic state.
-This can be increased dynamically, using `allow_unused_tactic` or `allow_unused_tactic!`.
+This can be increased dynamically, using `allow_unused_tactic` or `local allow_unused_tactic`.
 -/
 def initialAllowedUnusedTactics : Std.HashSet SyntaxNodeKind :=
   .ofArray #[
@@ -120,7 +120,7 @@ initialize allowedUnusedTacticExt :
 These are tactics that the unused tactic linter will ignore, since they are expected to not change
 the tactic state.
 
-See the `allow_unused_tactic! ids` command for dynamically extending the extension as a user-facing
+See the `allow_unused_tactic ids` command for dynamically extending the extension as a user-facing
 command.
 -/
 def addAllowedUnusedTactic {m : Type → Type} [Monad m] [MonadEnv m]
@@ -140,9 +140,8 @@ For instance, you can allow the `done` and `skip` tactics using
 allow_unused_tactic Lean.Parser.Tactic.done Lean.Parser.Tactic.skip
 ```
 
-This change is file-local.  If you want a *persistent* change, then use the `!`-flag:
-the command `allow_unused_tactic! ids` makes the change the linter continues to ignore these
-tactics also in files importing a file where this command is issued.
+This change is global and persistent across imports. For a file-local or scoped change, use
+`local allow_unused_tactic` or `scoped allow_unused_tactic`, respectively.
 
 The command `#show_kind tac` may help to find the `SyntaxNodeKind`.
 -/
