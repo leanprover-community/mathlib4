@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.Types.Basic
 public import Mathlib.Order.SuccPred.Limit
+import Mathlib.Order.LatticeIntervals
+import Mathlib.CategoryTheory.Limits.Final.Type
+import Mathlib.Order.Interval.Set.Final
 
 /-!
 # Limits of inverse systems indexed by well-ordered types
@@ -278,6 +281,35 @@ include d in
 lemma surjective :
     Function.Surjective ((fun s ↦ s (op ⊥)) ∘ Subtype.val : F.sections → F.obj (op ⊥)) :=
   fun val₀ ↦ ⟨d.sectionsMk val₀, d.sectionsMk_val_op_bot val₀⟩
+
+variable (t : J) in
+private def restrictIci (d : F.WellOrderInductionData) (t : J) :
+    ((Subtype.mono_coe (· ∈ Set.Ici t)).functor.op ⋙ F).WellOrderInductionData where
+  succ j hj p := by
+    dsimp at p ⊢
+  map_succ := sorry
+  lift := sorry
+  map_lift := sorry
+
+include d in
+lemma surjective' (t : J) :
+    Function.Surjective ((fun s ↦ s (op t)) ∘ Subtype.val : F.sections → F.obj (op t)) := by
+  -- The idea is to apply everything to Set.Ici t
+  let _ : OrderBot (Set.Ici t) := Set.Ici.orderBot
+  let F' : (Set.Ici t)ᵒᵖ ⥤ Type v := (Subtype.mono_coe (· ∈ Set.Ici t)).functor.op ⋙ F
+  let d' : F'.WellOrderInductionData := d.restrictIci t
+  let eq2 : F'.obj (op ⊥) ≃ F.obj (op t) := .refl _
+  intro u
+  obtain ⟨s, hs⟩ := d'.surjective (eq2.symm u)
+  have : (Subtype.mono_coe (· ∈ Set.Ici t)).functor.op.Initial := by
+    apply +allowSynthFailures Functor.initial_op_of_final
+  let EE : F.sections ≃ F'.sections := Equiv.ofBijective _ <|
+    (Subtype.mono_coe (· ∈ Set.Ici t)).functor.op.bijective_sectionsPrecomp F
+  use ⟨EE.symm s, by simp⟩
+  simp only [Function.comp_apply, Subtype.coe_eta] at hs ⊢
+  apply eq2.symm.injective
+  rw [← hs]
+  exact congr($(EE.apply_symm_apply s).1 (op ⊥))
 
 end WellOrderInductionData
 
