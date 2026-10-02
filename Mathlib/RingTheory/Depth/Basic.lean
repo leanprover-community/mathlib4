@@ -14,21 +14,21 @@ public import Mathlib.RingTheory.Depth.Rees
 
 # The Definition of Depth
 
-In this section, we give the definition of depth of a module over a local ring. We also extablished
+In this file, we give the definition of depth of a module over a local ring. We also establish
 some basic facts about it using the Rees theorem proven above.
-In this section, we set `R` be a noetherian commutative ring, all modules refer to `R`-module.
+In this file, most of the times we set `R` to be a noetherian commutative ring,
+all modules refer to `R`-module.
 
-# Main definition and results
+## Main definition and results
 
 * `moduleDepth` : The depth between two `R`-modules defined as the minimal nontrivial `Ext`
   between them, equal to `⊤ : ℕ∞` if no such index.
 
-* `Ideal.depth` : The depth of a `R`-module `M` with respect to an ideal `I`,
+* `Ideal.depth` : The depth of an `R`-module `M` with respect to an ideal `I`,
   defined as `moduleDepth (R⧸ I, M)`.
-  In some texts, only the following `IsLocalRing.depth` is called depth, for example in
-  Bruns–Herzog's **Cohen--Macaulay Rings**, it is called `grade(I,M)` (Definition 1.2.6).
+  This is `grade(I, M)` in Bruns–Herzog, where "depth" is reserved for the local case below..
 
-* `IsLocalRing.depth` : For a local ring `R`, the depth of a `R`-module with respect to
+* `IsLocalRing.depth` : For a local ring `R`, the depth of an `R`-module with respect to
   the maximal ideal.
 
 * `moduleDepth_eq_depth_of_support_eq` : For `I : Ideal R`, if support of a finitely generated
@@ -36,7 +36,7 @@ In this section, we set `R` be a noetherian commutative ring, all modules refer 
   module `M` with `IM < M`, `moduleDepth N M = I.depth M`
 
 * `moduleDepth_eq_sSup_length_isRegular` : For `I : Ideal R`, nontrivial finitely generated module
-  `M` and N`, if support of `N` is equal to `PrimeSpectrum.zeroLocus I` and `IM < M`,
+  `M` and `N`, if support of `N` is equal to `PrimeSpectrum.zeroLocus I` and `IM < M`,
   `moduleDepth N M` is equal to the supremum of length of `M`-regular sequence in `I`
 
 ## References
@@ -58,17 +58,17 @@ variable {R : Type u} [CommRing R] [Small.{v} R]
 section depth
 
 /-- The depth between two `R`-modules defined as the minimal nontrivial `Ext` between them. -/
-noncomputable def moduleDepth (N M : ModuleCat.{v} R) : ℕ∞ :=
+noncomputable def ModuleCat.moduleDepth (N M : ModuleCat.{v} R) : ℕ∞ :=
   sSup {n : ℕ∞ | ∀ i : ℕ, i < n → Subsingleton (Ext N M i)}
 
-/-- The depth of a `R`-module `M` with respect to an ideal `I`,
-defined as `moduleDepth (R⧸ I, M)`. -/
+/-- The depth of an `R`-module `M` with respect to an ideal `I`,
+defined as `moduleDepth (R ⧸ I) M`. -/
 @[stacks 00LI "Here we define depth using vanishing of Ext groups, it coincides with the
 regular sequence characterization in the case R is Noetherian and IM ≠ M."]
 noncomputable def Ideal.depth (I : Ideal R) (M : ModuleCat.{v} R) : ℕ∞ :=
   moduleDepth (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M
 
-/-- For a local ring `R`, the depth of a `R`-module with respect to the maximal ideal. -/
+/-- For a local ring `R`, the depth of an `R`-module with respect to the maximal ideal. -/
 @[stacks 00LI "The local ring case."]
 noncomputable def IsLocalRing.depth [IsLocalRing R] (M : ModuleCat.{v} R) : ℕ∞ :=
   (IsLocalRing.maximalIdeal R).depth M
@@ -145,6 +145,8 @@ lemma moduleDepth_eq_sSup_lt_top (N M : ModuleCat.{v} R) : moduleDepth N M =
     ext n
     exact ⟨fun mem ↦ ⟨top_notMem_iff.mp h n mem, mem⟩, fun mem ↦ mem.2⟩
 
+/-- This lemma relates the general depth between two modules and the depth of a module
+with respect to an ideal, which is used more frequently. -/
 lemma moduleDepth_eq_depth_of_support_eq [IsNoetherianRing R] (I : Ideal R)
     (N M : ModuleCat.{v} R) [Module.Finite R M] [Module.Finite R N]
     [Nontrivial N] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
