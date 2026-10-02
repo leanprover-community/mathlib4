@@ -42,18 +42,18 @@ private def innerHornRetract.r₀ {n : ℕ} (i : Fin (n + 1)) :
 
 open innerHornRetract in
 set_option backward.isDefEq.respectTransparency false in
-/-- An inner horn inclusion is a retract of its pushout-product with `Λ[2, 1].ι`. -/
+/-- An inner horn inclusion `Λ[n, i].ι` is a retract of `(Λ[2, 1] ⊔ Λ[n, i]).ι`
+its pushout-product with `Λ[2, 1].ι`. -/
 @[no_expose]
 noncomputable def innerHornRetract {n : ℕ} (i : Fin (n + 1))
     (h0 : 0 < i) (hn : i < Fin.last n) :
-    RetractArrow Λ[n, i].ι
-      (PushoutObjObj.ofHasPushout (curriedTensor SSet.{u}) Λ[2, 1].ι Λ[n, i].ι).ι := by
+    RetractArrow Λ[n, i].ι (Λ[2, 1].unionProd Λ[n, i]).ι := by
   let s : Δ[n] ⟶ Δ[2] ⊗ Δ[n] := lift (stdSimplex.map (SimplexCategory.Hom.mk (s₀ i))) (𝟙 _)
   let r : Δ[2] ⊗ Δ[n] ⟶ Δ[n] :=
     (prodStdSimplex.isoNerve 2 n).hom ≫ nerveMap (r₀ i).uliftMap.monotone.functor ≫
       (stdSimplex.isoNerve n).inv
   refine (Subfunctor.retractArrow Λ[n, i] (Λ[2, 1].unionProd Λ[n, i])
-    ⟨s, r, ?_⟩ ?_ ?_).trans (Retract.ofIso (Subcomplex.unionProd.ιIso _ _))
+    ⟨s, r, ?_⟩ ?_ ?_).trans (Retract.refl _)
   · ext ⟨⟨k⟩⟩ x j
     apply Fin.val_eq_of_eq
     change r₀ _ ((s₀ i) (x j), x j) = x j
