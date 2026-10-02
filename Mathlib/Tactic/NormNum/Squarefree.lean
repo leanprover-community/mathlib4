@@ -24,8 +24,7 @@ This is adapted from the Mathlib 3 `norm_num` extension for `squarefree`, writte
 ## Implementation Notes
 
 The proof that `n` is squarefree has depth about `√n / 2`. As for the primality proofs of
-`Mathlib.Tactic.NormNum.Prime`, the kernel raises a deep recursion error when type-checking it for
-large `n` (for example `n = 1000000007`).
+`Mathlib.Tactic.NormNum.Prime`, type-checking it for large `n` requires increasing `maxRecDepth`.
 -/
 
 public meta section
