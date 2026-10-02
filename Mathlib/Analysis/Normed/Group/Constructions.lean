@@ -422,14 +422,14 @@ theorem Pi.norm_extend_le' (f : ι → ι') (g : ι → E) (j : ι' → E) :
   nnnorm_extend_le' f g j
 
 @[to_additive Function.FactorsThrough.nnnorm_extend]
-theorem Function.FactorsThrough.nnnorm_extend' [Nonempty ι] {f : ι → ι'} {g : ι → E} {j : ι' → E}
+theorem Function.FactorsThrough.nnnorm_extend' {f : ι → ι'} {g : ι → E} {j : ι' → E}
     (h : FactorsThrough g f) (hj : ‖j‖₊ ≤ ‖g‖₊) :
     ‖extend f g j‖₊ = ‖g‖₊ := by
   grw [le_antisymm (Pi.nnnorm_extend_le' f g j), max_eq_left hj]
   simpa [hj, h.extend_comp j] using pi_nnnorm_comp_le' (extend f g j) f
 
 @[to_additive Function.FactorsThrough.norm_extend]
-theorem Function.FactorsThrough.norm_extend' [Nonempty ι] {f : ι → ι'} {g : ι → E} {j : ι' → E}
+theorem Function.FactorsThrough.norm_extend' {f : ι → ι'} {g : ι → E} {j : ι' → E}
     (h : FactorsThrough g f) (hj : ‖j‖ ≤ ‖g‖) :
     ‖extend f g j‖ = ‖g‖ :=
   congr(↑$(h.nnnorm_extend' hj))
