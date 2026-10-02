@@ -438,8 +438,6 @@ theorem Function.FactorsThrough.norm_extend' {f : ι → ι'} {g : ι → E} {j 
 theorem Function.FactorsThrough.nnnorm_extend_one {f : ι → ι'} {g : ι → E}
     (h : FactorsThrough g f) :
     ‖extend f g 1‖₊ = ‖g‖₊ := by
-  rcases isEmpty_or_nonempty ι with _ | _
-  · simp [Pi.nnnorm_def']
   exact h.nnnorm_extend' (by simp)
 
 @[to_additive]
