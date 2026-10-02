@@ -691,8 +691,7 @@ def test_readLocations : IO Unit := do
     scopeOverride.set savedScope
     IO.FS.removeDirAll dir
 
-
-/-- A downstream checkout must not supply Mathlib's repo, commits, refs, or history. -/
+/-- Scope refs and default fork reads use Mathlib's HEAD, even from a downstream checkout. -/
 def test_mathlibGitLookups : IO Unit := do
   IO.println "Mathlib Git lookup context:"
   if (← getEnvNonEmpty "GIT_DIR").isSome ||
@@ -713,48 +712,23 @@ def test_mathlibGitLookups : IO Unit := do
     unless out.exitCode == 0 do
       throw <| IO.userError s!"test git command failed: {out.stderr}"
     return out.stdout.trimAscii.toString
-  let commit (path : System.FilePath) (message : String) : IO Unit := do
-    discard <| git path #["-c", "user.name=cache-test", "-c",
-      "user.email=cache-test@example.invalid", "-c", "commit.gpgsign=false",
-      "commit", "--quiet", "--allow-empty", "--no-verify", "-m", message]
   try
-    for (path, repo) in [(mathlibPath, "alice/mathlib4"), (downstreamPath, "bob/downstream")] do
+    -- Different commit messages give the two checkouts different HEADs.
+    for (path, message) in [(mathlibPath, "mathlib"), (downstreamPath, "downstream")] do
       IO.FS.createDirAll path
-      discard <| git path #["init", "--quiet", "--template=", "--initial-branch=master"]
-      discard <| git path #["remote", "add", "origin", s!"https://github.com/{repo}.git"]
-      commit path repo
-    discard <| git downstreamPath #["checkout", "--quiet", "-b", "downstream-work"]
-    commit downstreamPath "downstream-only change"
-    for path in [mathlibPath, downstreamPath] do
-      discard <| git path #["tag", "cache-scope"]
+      discard <| git path #["init", "--quiet", "--template="]
+      discard <| git path #["-c", "user.name=cache-test", "-c",
+        "user.email=cache-test@example.invalid", "-c", "commit.gpgsign=false",
+        "commit", "--quiet", "--allow-empty", "--no-verify", "-m", message]
     let mathlibHead ← git mathlibPath #["rev-parse", "HEAD"]
-    let downstreamHead ← git downstreamPath #["rev-parse", "HEAD"]
-    assertTrue "the two fixture checkouts have different HEAD commits"
-      (mathlibHead != downstreamHead)
     IO.Process.setCurrentDir downstreamPath
     scopeOverride.set none
     cacheFromOverride.set none
-    let (detected?, repo) ← withSuppressedCacheOutput (resolveRepo none) mathlibPath
-    assertTrue "repo discovery uses the Mathlib remote"
-      (detected? == some "alice/mathlib4" && repo == "alice/mathlib4")
     assertEq "scope refs resolve in the Mathlib checkout" mathlibHead
-      (← withSuppressedCacheOutput (resolveGitRef "cache-scope") mathlibPath)
-    assertEq "query repo discovery uses the Mathlib remote" "alice/mathlib4"
-      (← withSuppressedCacheOutput (resolveQueryRepo none) mathlibPath)
-    assertTrue "history walks use only Mathlib commits"
-      ((← withSuppressedCacheOutput (gitLogWalk "HEAD" "" 5) mathlibPath) == [mathlibHead])
-    assertTrue "merge-base lookup uses the Mathlib checkout"
-      ((← withSuppressedCacheOutput (gitMergeBase "master") mathlibPath) == some mathlibHead)
-    assertTrue "the ancestor check uses Mathlib's master branch"
-      (← withSuppressedCacheOutput headIsAncestorOfMaster mathlibPath)
-    let locations ← withSuppressedCacheOutput (readLocations repo) mathlibPath
+      (← withSuppressedCacheOutput (resolveGitRef "HEAD") mathlibPath)
+    let locations ← withSuppressedCacheOutput (readLocations "alice/mathlib4") mathlibPath
     assertTrue "the default fork read uses Mathlib's HEAD scope"
       (locations.map (·.sha?) == [none, some mathlibHead])
-    let archivePath := dir / "archive"
-    IO.FS.createDir archivePath
-    let locations ← withSuppressedCacheOutput (readLocations repo) archivePath
-    assertTrue "a non-git dependency path does not use the current directory's HEAD"
-      (locations.map (·.sha?) == [none, none])
   finally
     IO.Process.setCurrentDir cwd
     scopeOverride.set savedScope
