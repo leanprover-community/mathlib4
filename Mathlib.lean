@@ -1990,6 +1990,7 @@ public import Mathlib.Analysis.Convex.Birkhoff
 public import Mathlib.Analysis.Convex.Body
 public import Mathlib.Analysis.Convex.Caratheodory
 public import Mathlib.Analysis.Convex.Combination
+public import Mathlib.Analysis.Convex.Compact
 public import Mathlib.Analysis.Convex.Cone.Basic
 public import Mathlib.Analysis.Convex.Cone.Closure
 public import Mathlib.Analysis.Convex.Cone.Dual
