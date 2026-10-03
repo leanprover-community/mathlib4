@@ -6,9 +6,7 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 module
 
 public import Mathlib.Analysis.Normed.Group.Basic
-public import Mathlib.Topology.Algebra.Ring.Real
 public import Mathlib.Topology.Instances.ENNReal.Lemmas
-public import Mathlib.Topology.Metrizable.Uniformity
 public import Mathlib.Topology.Sequences
 
 /-!
@@ -24,7 +22,9 @@ public section
 variable {α ι κ E F G : Type*}
 
 open Filter Function Metric
-open ENNReal Filter NNReal Uniformity Topology
+open ENNReal Filter NNReal Topology
+
+open scoped Uniformity
 
 section SeminormedGroup
 

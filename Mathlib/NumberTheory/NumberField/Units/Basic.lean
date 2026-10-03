@@ -7,7 +7,6 @@ module
 
 public import Mathlib.GroupTheory.Torsion
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
-public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 public import Mathlib.RingTheory.RootsOfUnity.Complex
 
 /-!
@@ -58,7 +57,7 @@ variable {K}
 
 theorem NumberField.isUnit_iff_norm [NumberField K] {x : 𝓞 K} :
     IsUnit x ↔ |(RingOfIntegers.norm ℚ x : ℚ)| = 1 := by
-  convert! (RingOfIntegers.isUnit_norm ℚ (F := K)).symm
+  convert (RingOfIntegers.isUnit_norm ℚ (F := K)).symm
   rw [← abs_one, abs_eq_abs, ← Rat.RingOfIntegers.isUnit_iff]
 
 end IsUnit
@@ -138,7 +137,7 @@ variable {K} in
 theorem sum_mult_mul_log [NumberField K] (x : (𝓞 K)ˣ) :
     ∑ w : InfinitePlace K, w.mult * Real.log (w x) = 0 := by
   simpa [Units.norm, Real.log_prod, Real.log_pow] using
-    congr_arg Real.log (prod_eq_abs_norm (x : K))
+    congr(Real.log $(prod_eq_abs_norm (x : K)))
 
 section torsion
 
@@ -184,6 +183,11 @@ instance : NeZero (torsionOrder K) :=
   ⟨torsionOrder_ne_zero K⟩
 
 omit [NumberField K] in
+theorem pow_torsionOrder_eq_one {ζ : (𝓞 K)ˣ} (hζ : ζ ∈ torsion K) :
+    ζ ^ torsionOrder K = 1 :=
+  Subtype.ext_iff.mp <| @pow_card_eq_one' (torsion K) _ ⟨ζ, hζ⟩
+
+omit [NumberField K] in
 /-- If `k` does not divide `torsionOrder` then there are no nontrivial roots of unity of
   order dividing `k`. -/
 theorem rootsOfUnity_eq_one {k : ℕ+} (hc : Nat.Coprime k (torsionOrder K))
@@ -204,10 +208,9 @@ theorem rootsOfUnity_eq_torsion :
     rootsOfUnity (torsionOrder K) (𝓞 K) = torsion K := by
   ext ζ
   rw [torsion, mem_rootsOfUnity]
-  refine ⟨fun h => ?_, fun h => ?_⟩
-  · rw [CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
-    exact ⟨torsionOrder K, torsionOrder_pos K, h⟩
-  · exact Subtype.ext_iff.mp (@pow_card_eq_one' (torsion K) _ ⟨ζ, h⟩)
+  refine ⟨fun h ↦ ?_, fun h ↦ pow_torsionOrder_eq_one K h⟩
+  rw [CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
+  exact ⟨torsionOrder K, torsionOrder_pos K, h⟩
 
 /--
 The image of `torsion K` by a complex embedding is the group of complex roots of unity of

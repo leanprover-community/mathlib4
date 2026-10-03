@@ -6,13 +6,12 @@ Authors: Joseph Myers, Sébastien Gouëzel, Heather Macbeth
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
-public import Mathlib.Analysis.Normed.Lp.PiLp
 public import Mathlib.Analysis.Normed.Lp.Matrix
+public import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.UnitaryGroup
-public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Util.Superscript
-public import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
+import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
 
 /-!
 # `L²` inner product space structure on finite products of inner product spaces
@@ -114,6 +113,17 @@ analogous to `![x, y, ...]` notation. -/
 abbrev EuclideanSpace (𝕜 : Type*) (n : Type*) : Type _ :=
   PiLp 2 fun _ : n => 𝕜
 
+namespace EuclideanSpace
+
+variable {n : Type*}
+
+instance : Lattice (EuclideanSpace ℝ n) := (WithLp.equiv 2 (n → ℝ)).lattice
+
+instance : IsOrderedAddMonoid (EuclideanSpace ℝ n) :=
+  Function.Injective.isOrderedAddMonoid WithLp.ofLp (fun _ _ ↦ rfl) .rfl
+
+end EuclideanSpace
+
 section Notation
 open Lean Meta Elab Term Macro TSyntax PrettyPrinter.Delaborator SubExpr
 open Mathlib.Tactic (subscriptTerm)
@@ -133,7 +143,7 @@ macro_rules | `(!$p:subscript[$e:term,*]) => do
 meta def EuclideanSpace.delabVecNotation : Delab :=
   whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <| withOverApp 3 do
     -- check that the `WithLp.toLp _` is present
-    let p : Term ← withNaryArg 0 <| delab
+    let p : Term ← withNaryArg 0 delab
     -- to be conservative, only allow subscripts which are numerals
     guard <| p matches `($_:num)
     let `(![$elems,*]) ← withNaryArg 2 delab | failure
@@ -147,7 +157,7 @@ theorem EuclideanSpace.nnnorm_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Finty
 
 theorem EuclideanSpace.norm_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
     (x : EuclideanSpace 𝕜 n) : ‖x‖ = √(∑ i, ‖x i‖ ^ 2) := by
-  simpa only [Real.coe_sqrt, NNReal.coe_sum] using! congr_arg ((↑) : ℝ≥0 → ℝ) x.nnnorm_eq
+  simpa only [Real.coe_sqrt, NNReal.coe_sum] using! congr(($x.nnnorm_eq : ℝ))
 
 theorem EuclideanSpace.norm_sq_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
     (x : EuclideanSpace 𝕜 n) : ‖x‖ ^ 2 = ∑ i, ‖x i‖ ^ 2 :=
@@ -156,6 +166,12 @@ theorem EuclideanSpace.norm_sq_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fint
 theorem EuclideanSpace.real_norm_sq_eq {n : Type*} [Fintype n] (x : EuclideanSpace ℝ n) :
     ‖x‖ ^ 2 = ∑ i, (x i) ^ 2 := by
   simp [EuclideanSpace.norm_sq_eq]
+
+instance {n : Type*} [Fintype n] : HasSolidNorm (EuclideanSpace ℝ n) where
+  solid {x y} h := by
+    rw [← sq_le_sq₀ (norm_nonneg x) (norm_nonneg y), EuclideanSpace.real_norm_sq_eq,
+      EuclideanSpace.real_norm_sq_eq]
+    exact Finset.sum_le_sum fun i _ ↦ sq_le_sq.2 (h i)
 
 @[wikidata Q847073]
 theorem EuclideanSpace.dist_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
@@ -202,7 +218,7 @@ variable [Fintype ι]
 @[simp]
 theorem finrank_euclideanSpace :
     Module.finrank 𝕜 (EuclideanSpace 𝕜 ι) = Fintype.card ι := by
-  convert! (WithLp.linearEquiv 2 𝕜 (ι → 𝕜)).finrank_eq
+  convert (WithLp.linearEquiv 2 𝕜 (ι → 𝕜)).finrank_eq
   simp
 
 theorem finrank_euclideanSpace_fin {n : ℕ} :
@@ -299,20 +315,20 @@ variable [DecidableEq ι]
 all other coordinates. -/
 abbrev EuclideanSpace.single (i : ι) (a : 𝕜) : EuclideanSpace 𝕜 ι := PiLp.single 2 i a
 
-@[deprecated PiLp.ofLp_single (since := "2026-03-15")]
+@[deprecated PiLp.ofLp_single +typeChanged (since := "2026-03-15")]
 lemma EuclideanSpace.ofLp_single (i : ι) (a : 𝕜) : ofLp (single i a) = Pi.single i a := by
   simp
 
-@[deprecated PiLp.toLp_single (since := "2026-03-15")]
+@[deprecated PiLp.toLp_single +typeChanged (since := "2026-03-15")]
 lemma EuclideanSpace.toLp_single (i : ι) (a : 𝕜) : toLp _ (Pi.single i a) = single i a := by
   simp
 
-@[deprecated PiLp.single_apply (since := "2026-03-15")]
+@[deprecated PiLp.single_apply +typeChanged (since := "2026-03-15")]
 theorem EuclideanSpace.single_apply (i : ι) (a : 𝕜) (j : ι) :
     (EuclideanSpace.single i a) j = ite (j = i) a 0 := by
   simp
 
-@[deprecated PiLp.single_eq_zero_iff (since := "2026-03-15")]
+@[deprecated PiLp.single_eq_zero_iff +typeChanged (since := "2026-03-15")]
 theorem EuclideanSpace.single_eq_zero_iff {i : ι} {a : 𝕜} :
     EuclideanSpace.single i a = 0 ↔ a = 0 := by simp
 
@@ -325,25 +341,25 @@ theorem EuclideanSpace.inner_single_left (i : ι) (a : 𝕜) (v : EuclideanSpace
 theorem EuclideanSpace.inner_single_right (i : ι) (a : 𝕜) (v : EuclideanSpace 𝕜 ι) :
     ⟪v, EuclideanSpace.single i (a : 𝕜)⟫ = a * conj (v i) := by simp [PiLp.inner_apply]
 
-@[deprecated PiLp.norm_single (since := "2026-03-15")]
+@[deprecated PiLp.norm_single +typeChanged (since := "2026-03-15")]
 theorem EuclideanSpace.norm_single (i : ι) (a : 𝕜) :
     ‖EuclideanSpace.single i (a : 𝕜)‖ = ‖a‖ := by simp
 
-@[deprecated PiLp.nnnorm_single (since := "2026-03-15")]
+@[deprecated PiLp.nnnorm_single +typeChanged (since := "2026-03-15")]
 theorem EuclideanSpace.nnnorm_single (i : ι) (a : 𝕜) :
     ‖EuclideanSpace.single i (a : 𝕜)‖₊ = ‖a‖₊ := by simp
 
-@[deprecated PiLp.dist_single_same (since := "2026-03-15")]
+@[deprecated PiLp.dist_single_same +typeChanged (since := "2026-03-15")]
 theorem EuclideanSpace.dist_single_same (i : ι) (a b : 𝕜) :
     dist (EuclideanSpace.single i (a : 𝕜)) (EuclideanSpace.single i (b : 𝕜)) = dist a b := by
   simp
 
-@[deprecated PiLp.nndist_single_same (since := "2026-03-15")]
+@[deprecated PiLp.nndist_single_same +typeChanged (since := "2026-03-15")]
 theorem EuclideanSpace.nndist_single_same (i : ι) (a b : 𝕜) :
     nndist (EuclideanSpace.single i (a : 𝕜)) (EuclideanSpace.single i (b : 𝕜)) = nndist a b := by
   simp
 
-@[deprecated PiLp.edist_single_same (since := "2026-03-15")]
+@[deprecated PiLp.edist_single_same +typeChanged (since := "2026-03-15")]
 theorem EuclideanSpace.edist_single_same (i : ι) (a b : 𝕜) :
     edist (EuclideanSpace.single i (a : 𝕜)) (EuclideanSpace.single i (b : 𝕜)) = edist a b := by
   simp
@@ -405,6 +421,7 @@ theorem repr_injective :
   congr
 
 /-- `b i` is the `i`th basis vector. -/
+@[macro_inline]
 instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι E where
   coe b i := by classical exact b.repr.symm (EuclideanSpace.single i (1 : 𝕜))
   coe_injective b b' h := repr_injective <| LinearIsometryEquiv.toLinearEquiv_injective <|
@@ -415,7 +432,7 @@ instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι E where
         refine LinearMap.pi_ext fun i k => ?_
         have : k = k • (1 : 𝕜) := by rw [smul_eq_mul, mul_one]
         rw [this, Pi.single_smul]
-        replace h := congr_fun h i
+        replace h := congr($h i)
         simp only [LinearEquiv.comp_coe, map_smul, LinearEquiv.coe_coe, LinearEquiv.trans_apply,
           coe_symm_linearEquiv, PiLp.toLp_single,
           LinearIsometryEquiv.coe_symm_toLinearEquiv] at h ⊢
@@ -507,7 +524,7 @@ protected theorem sum_repr_symm (b : OrthonormalBasis ι 𝕜 E) (v : EuclideanS
 
 protected theorem sum_inner_mul_inner (b : OrthonormalBasis ι 𝕜 E) (x y : E) :
     ∑ i, ⟪x, b i⟫ * ⟪b i, y⟫ = ⟪x, y⟫ := by
-  have := congr_arg (innerSL 𝕜 x) (b.sum_repr y)
+  have := congr(innerSL 𝕜 x $(b.sum_repr y))
   rw [map_sum] at this
   convert! this
   rw [map_smul, b.repr_apply_apply, mul_comm]
@@ -940,7 +957,7 @@ theorem OrthonormalBasis.toMatrix_orthonormalBasis_conjTranspose_mul_self [Finty
     (a : OrthonormalBasis ι' 𝕜 E) (b : OrthonormalBasis ι 𝕜 E) :
     (a.toBasis.toMatrix b)ᴴ * a.toBasis.toMatrix b = 1 := by
   ext i j
-  convert! a.repr.inner_map_map (b i) (b j)
+  convert a.repr.inner_map_map (b i) (b j)
   · simp only [Matrix.mul_apply, Matrix.conjTranspose_apply, star_def, PiLp.inner_apply,
       inner_apply']
     congr
@@ -1216,8 +1233,7 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
     rw [← sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _), norm_sq_eq_add_norm_sq_projection x S]
     simp only [sq, Mx_decomp]
     rw [norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero (L (p1 x)) (L3 (p2 x)) Mx_orth]
-    simp only [p1, p2, LinearIsometry.norm_map,
-      ContinuousLinearMap.coe_coe, Submodule.coe_norm]
+    simp [p1, p2]
   exact
     { toLinearMap := M
       norm_map' := M_norm_map }

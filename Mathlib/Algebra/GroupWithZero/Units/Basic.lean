@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Group.Units.Basic
 public import Mathlib.Algebra.GroupWithZero.Basic
 public import Mathlib.Data.Nat.Basic  -- shake: keep (non-recorded `nontrivial` dependency?)
-public import Mathlib.Lean.Meta.CongrTheorems
 public import Mathlib.Tactic.Contrapose
 public import Mathlib.Tactic.Spread
 public import Mathlib.Tactic.Convert
@@ -152,7 +151,7 @@ theorem IsUnit.ringInverse {a : M₀} : IsUnit a → IsUnit a⁻¹ʳ
 theorem isUnit_ringInverse {a : M₀} : IsUnit a⁻¹ʳ ↔ IsUnit a :=
   ⟨fun h => by
     cases subsingleton_or_nontrivial M₀
-    · convert! h
+    · convert h
     · contrapose h
       rw [Ring.inverse_non_unit _ h]
       exact not_isUnit_zero,
