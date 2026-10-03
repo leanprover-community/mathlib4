@@ -22,7 +22,7 @@ public import Mathlib.RingTheory.TensorProduct.IsBaseChangeRightExact
 
 # Ext Commute with Flat Base Change
 
-The `Ext` functor over `R`-module commute with flat base change if `R` is Noethrian and two modules
+The `Ext` functor over `R`-module commute with flat base change if `R` is Noetherian and two modules
 are finitely generated.
 
 -/
@@ -56,7 +56,7 @@ noncomputable def ExtendScalars'.obj' [UnivLE.{v, v'}] [Small.{v'} S]
   ModuleCat.of S (Shrink.{v'} (TensorProduct R S M))
 
 /-- Auxiliary construction for `ModuleCat.ExtendScalars'.map`,
-sending `l : M1 ⟶ M2` to `s ⊗ m ↦ s ⊗ l m` with compostion of `Shrink.linearEquiv`. -/
+sending `l : M1 ⟶ M2` to `s ⊗ m ↦ s ⊗ l m` with composition of `Shrink.linearEquiv`. -/
 noncomputable def ExtendScalars'.map' [UnivLE.{v, v'}] [Small.{v'} S]
     {M1 M2 : ModuleCat.{v} R} (g : M1 ⟶ M2) : obj' S M1 ⟶ obj' S M2 :=
   ModuleCat.ofHom (((Shrink.linearEquiv.{v'} S (TensorProduct R S M2)).symm.toLinearMap.comp
@@ -82,7 +82,7 @@ lemma ExtendScalars'.map'_comp [UnivLE.{v, v'}] [Small.{v'} S]
 variable (R) in
 /-- A version of `ModuleCat.extendScalars` with more general universe level,
 turning an `R`-module into an `S`-module by `M` ↦ `Shrink S ⨂ M`,
-sending `l : M1 ⟶ M2` to `s ⊗ m ↦ s ⊗ l m` with compostion of `Shrink.linearEquiv`. -/
+sending `l : M1 ⟶ M2` to `s ⊗ m ↦ s ⊗ l m` with composition of `Shrink.linearEquiv`. -/
 noncomputable def extendScalars' [UnivLE.{v, v'}] [Small.{v'} S] :
     (ModuleCat.{v} R) ⥤ (ModuleCat.{v'} S) where
   obj := ExtendScalars'.obj' S
@@ -298,7 +298,7 @@ theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module
       exact Ext.mapExactFunctor_comp (ModuleCat.extendScalars'.{v, v'} R S) _ x (add_comm 1 n)
 
 /-- If `MS` in `ModuleCat S` is base change of an `R`-module `M`,
-then it is isomporhic to `(ModuleCat.extendScalars' R S).obj M`. -/
+then it is isomorphic to `(ModuleCat.extendScalars' R S).obj M`. -/
 noncomputable def ModuleCat.isoExtendScalars'OfIsBaseChange' {M : ModuleCat.{v} R}
     {MS : ModuleCat.{v'} S} [Module R MS] [IsScalarTower R S MS] (f : M →ₗ[R] MS)
     (isb1 : IsBaseChange S f) : MS ≅ (ModuleCat.extendScalars'.{v, v'} R S).obj M :=
@@ -308,7 +308,7 @@ namespace CategoryTheory.Abelian
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-/-- The isomprohism on `Ext` induced by `ModuleCat.isoExtendScalars'OfIsBaseChange'`. -/
+/-- The isomorphism on `Ext` induced by `ModuleCat.isoExtendScalars'OfIsBaseChange'`. -/
 noncomputable def Ext.isBaseChangeMapAux {M N : ModuleCat.{v} R}
     {MS NS : ModuleCat.{v'} S} [Module R MS] [IsScalarTower R S MS]
     [Module R NS] [IsScalarTower R S NS] (f : M →ₗ[R] MS) (isb1 : IsBaseChange S f)
