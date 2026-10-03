@@ -153,7 +153,7 @@ theorem ergodic_smul_of_denseRange_zpow {g : G} (hg : DenseRange (g ^ · : ℤ �
   refine aeconst_of_dense_aestabilizer_smul hsm.nullMeasurableSet (hg.mono ?_)
   rw [← Subgroup.coe_zpowers, SetLike.coe_subset_coe, ← Subgroup.zpowers_inv, Subgroup.zpowers_le,
     MulAction.mem_aestabilizer, ← preimage_smul]
-  exact hs.eventuallyEq
+  exact .of_eq hs
 
 end MulActionGroup
 
@@ -191,7 +191,8 @@ theorem DenseRange.zpow_of_ergodic_mul_left [OpensMeasurableSpace G]
     simp only [s, preimage_iUnion, ← smul_eq_mul, preimage_smul]
     refine iUnion_congr_of_surjective _ (add_left_surjective (-1)) fun m ↦ ?_
     simp [zpow_add, mul_smul]
-  cases hg.measure_self_or_compl_eq_zero hso.measurableSet.nullMeasurableSet hgs.eventuallyEq with
+  cases hg.measure_self_or_compl_eq_zero hso.measurableSet.nullMeasurableSet
+    hgs.eventuallyEqSet with
   | inl h => exact hso.measure_ne_zero _ hsne h
   | inr h =>
     refine (hVo.smul a).measure_ne_zero μ (.image _ ⟨1, hV₁⟩) (measure_mono_null ?_ h)
