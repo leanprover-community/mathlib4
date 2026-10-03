@@ -100,7 +100,7 @@ See `_root.rank_mul_rank` for when your modules are free.
 -/
 theorem rank_mul_rank_of_isFractionRing_isLocalization :
     rank R S * rank S M₁ = rank R M₁ := by
-  convert lift_rank_mul_lift_rank_of_isFractionRing_isLocalization R S FS M₁ <;> rw [lift_id]
+  simpa using lift_rank_mul_lift_rank_of_isFractionRing_isLocalization R S FS M₁
 
 /-- **Tower law over domains.**
 When `M` is a module over an algebra `S/R` of domains such that `(R⁰)⁻¹ S = (S⁰)⁻¹ S`,
@@ -110,9 +110,8 @@ See `Module.finrank_mul_finrank` for when your modules are free.
 -/
 theorem finrank_mul_finrank_of_isFractionRing_isLocalization :
     finrank R S * finrank S M = finrank R M := by
-  simp_rw [finrank]
-  rw [← toNat_lift.{w} (rank R S), ← toNat_lift.{v} (rank S M), ← toNat_mul,
-    lift_rank_mul_lift_rank_of_isFractionRing_isLocalization R S FS, toNat_lift]
+  simpa [finrank] using
+    congr(toNat $(lift_rank_mul_lift_rank_of_isFractionRing_isLocalization R S FS M))
 
 end isFractionRing_isLocalization
 
