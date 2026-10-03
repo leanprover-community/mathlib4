@@ -377,7 +377,7 @@ theorem curveIntegralFun_zero : curveIntegralFun (0 : E → E →L[𝕜] F) γ =
 theorem curveIntegralFun_fun_zero : curveIntegralFun (fun _ ↦ 0 : E → E →L[𝕜] F) γ = 0 :=
   curveIntegralFun_zero
 
-@[to_fun]
+@[to_fun (attr := simp)]
 theorem CurveIntegrable.zero : CurveIntegrable (0 : E → E →L[𝕜] F) γ := by
   simp [CurveIntegrable, IntervalIntegrable.zero]
 
@@ -460,7 +460,7 @@ theorem curveIntegralFun_smul : curveIntegralFun (c • ω) γ = c • curveInte
   ext
   simp [curveIntegralFun]
 
-theorem CurveIntegrable.smul (h : CurveIntegrable ω γ) :
+theorem CurveIntegrable.smul (h : CurveIntegrable ω γ) (c : 𝕝) :
     CurveIntegrable (c • ω) γ := by
   simpa [CurveIntegrable] using IntervalIntegrable.smul h c
 
@@ -469,8 +469,13 @@ theorem curveIntegrable_smul_iff : CurveIntegrable (c • ω) γ ↔ c = 0 ∨ C
   rcases eq_or_ne c 0 with rfl | hc
   · simp [CurveIntegrable.zero]
   · simp only [hc, false_or]
-    refine ⟨fun h ↦ ?_, .smul⟩
-    simpa [hc] using h.smul (c := c⁻¹)
+    refine ⟨fun h ↦ ?_, (.smul · c)⟩
+    simpa [hc] using h.smul c⁻¹
+
+@[simp]
+theorem curveIntegrable_fun_smul_iff :
+    CurveIntegrable (c • ω ·) γ ↔ c = 0 ∨ CurveIntegrable ω γ :=
+  curveIntegrable_smul_iff
 
 @[simp]
 theorem curveIntegral_smul : curveIntegral (c • ω) γ = c • curveIntegral ω γ := by
