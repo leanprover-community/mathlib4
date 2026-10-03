@@ -910,26 +910,24 @@ theorem normal_of_normalizerCondition (hnc : NormalizerCondition G) {p : ℕ} [F
 of these Sylow subgroups. -/
 noncomputable def directProductOfNormal [Finite G]
     (hn : ∀ {p : ℕ} [Fact p.Prime] (P : Sylow p G), P.Normal) :
-    (∀ p : (Nat.card G).primeFactors, ∀ P : Sylow p G, P) ≃* G := by
-  haveI := Fintype.ofFinite G
+    (∀ p : (Nat.card G).primeFactors, ∀ P : Sylow p G, P) ≃* G :=
   letI ps := (Nat.card G).primeFactors
   -- “The” Sylow subgroup for p
-  letI P : ∀ p, Sylow p G := default
+  letI P p : Sylow p G := default
   haveI (p : ℕ) : Fintype (P p) := Fintype.ofFinite (P p)
-  haveI (p : ps) : Fact (Nat.Prime p) := ⟨Nat.prime_of_mem_primeFactors p.property⟩
+  haveI (p : ps) : Fact (Nat.Prime p) := ⟨Nat.prime_of_mem_primeFactors p.prop⟩
+  letI (p : ps) : Unique (Sylow p G) := unique_of_normal (P p) (hn (P p))
   haveI hcomm : Pairwise fun p₁ p₂ : ps ↦ ∀ x y : G, x ∈ P p₁ → y ∈ P p₂ → Commute x y := by
     intro p₁ p₂ hne
     apply commute_of_normal_of_disjoint _ _ (hn (P p₁)) (hn (P p₂))
     exact IsPGroup.disjoint_of_ne p₁ p₂ (by simpa) _ _ (P p₁).isPGroup' (P p₂).isPGroup'
-  refine .trans (.piCongrRight fun p ↦ ?_) (.ofBijective (noncommPiCoprod hcomm) ?_)
-  -- There is only one Sylow subgroup for each `p`, so the inner product is trivial
-  · letI := unique_of_normal _ <| hn (P p)
-    apply MulEquiv.piUnique
-  refine Fintype.bijective_iff_injective_and_card _ |>.mpr ⟨?_, ?_⟩
-  · apply injective_noncommPiCoprod_of_iSupIndep
-    refine independent_of_coprime_order hcomm fun p₁ p₂ hne ↦ ?_
-    simpa using IsPGroup.coprime_card_of_ne p₁ p₂ (by simpa) _ _ (P p₁).isPGroup' (P p₂).isPGroup'
-  · simp_rw [Fintype.card_eq_nat_card, Nat.card_pi, card_eq_multiplicity]
-    simp [← Nat.prod_primeFactors_pow_factorization]
+  haveI hbij : Bijective (noncommPiCoprod hcomm) := by
+    refine Nat.bijective_iff_injective_and_card _ |>.mpr ⟨?_, ?_⟩
+    · apply injective_noncommPiCoprod_of_iSupIndep
+      refine independent_of_coprime_order hcomm fun p₁ p₂ hne ↦ ?_
+      simpa using IsPGroup.coprime_card_of_ne p₁ p₂ (by simpa) _ _ (P p₁).isPGroup' (P p₂).isPGroup'
+    · simp_rw [Nat.card_pi, card_eq_multiplicity, univ_eq_attach, Finsupp.prod_attach_index]
+      exact (Nat.prod_primeFactors_pow_factorization Nat.card_pos.ne').symm
+  .trans (.piCongrRight fun _ ↦ MulEquiv.piUnique _) (.ofBijective (noncommPiCoprod hcomm) hbij)
 
 end Sylow
