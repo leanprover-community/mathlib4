@@ -28,8 +28,12 @@ variable {V : Type*} {G : SimpleGraph V}
 /-- Build a walk of length `n` from `v` to `f^[n] v` following `f`,
 given that each step is adjacent in `G`. -/
 def iterate (f : V → V) (v : V) (n : ℕ) (hadj : ∀ v, G.Adj v (f v)) : G.Walk v (f^[n] v) :=
-  (Walk.ofSupport _ (by simp) <| .iterate v hadj <| n + 1).copy rfl <|
-    List.getLast_iterate f v (n + 1) <| by simp
+  have hne : List.iterate f v (n + 1) ≠ [] := List.iterate_eq_nil.not.mpr n.succ_ne_zero
+  have hhd : (List.iterate f v (n + 1)).head hne = v :=
+    (List.head_eq_getElem hne).trans <| (List.getElem_iterate f v (n + 1) 0 _).trans <|
+      iterate_zero_apply f v
+  (Walk.ofSupport _ hne <| .iterate v hadj <| n + 1).copy hhd <|
+    List.getLast_iterate f v (n + 1) hne
 
 /-- The walk built by `Walk.iterate` has length `n`. -/
 @[simp]
@@ -49,7 +53,8 @@ theorem edges_iterate (f : V → V) (v : V) (n : ℕ) (hadj : ∀ v, G.Adj v (f 
   rw [edges_eq_zipWith_support, support_iterate]
   induction n generalizing v with
   | zero => simp
-  | succ n ih => simpa [List.range_succ_eq_map] using congr(s(v, f v) :: $(ih <| f v))
+  | succ n ih =>
+    simpa [List.range_succ_eq_map, Function.comp_def] using congr(s(v, f v) :: $(ih <| f v))
 
 end Walk
 
