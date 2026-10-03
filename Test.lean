@@ -45,14 +45,16 @@ theorem cons_induction {R : Type*} [Semiring R] {motive : R[X] → Prop}
 -- Mathlib.Algebra.Polynomial.Inductions
 theorem horner_induction {R : Type*} [Semiring R] {motive : R[X] → Prop}
     (hC : ∀ a, motive (C a))
-    (ha : ∀ p a, (hp : p.coeff 0 = 0) → (hdeg : 0 < p.natDegree) → (ih : motive p) → motive (p + C a))
+    (ha : ∀ p a, (hp : p.coeff 0 = 0) → (hdeg : 0 < p.natDegree) → (ha : a ≠ 0) →
+      (ih : motive p) → motive (p + C a))
     (hX : ∀ p, (hp : p ≠ 0) → (ih : motive p) → motive (p * X)) (p : R[X]) : motive p := by
   cases subsingleton_or_nontrivial R
   · simp_all [Subsingleton.eq_zero]
-  induction hn : p.natDegree using Nat.strong_induction_on generalizing p with
-  | h n ih =>
-    grind [p.divX_mul_X_add, mul_coeff_zero, coeff_divX, coeff_X_zero, natDegree_mul_X,
-      divX_eq_zero_iff, eq_C_coeff_zero_iff_natDegree_eq_zero]
+  induction _ : p.natDegree using Nat.strong_induction_on generalizing p with
+  | _ _ _ =>
+    by_cases p.coeff 0 = 0 <;>
+      grind [p.divX_mul_X_add, mul_coeff_zero, coeff_divX, coeff_X_zero, natDegree_mul_X,
+        divX_eq_zero_iff, eq_C_coeff_zero_iff_natDegree_eq_zero]
 
 variable {F : Type*} [Field F] [LinearOrder F] [IsStrictOrderedRing F] (P Q : F[X])
 
@@ -61,15 +63,15 @@ section PolynomialAtTop
 theorem tendsTo_atTop_div_pow_natDegree [TopologicalSpace F] [OrderTopology F] :
     Tendsto (fun x ↦ P.eval x / x ^ P.natDegree) atTop (nhds P.leadingCoeff) := by
   induction P using horner_induction with
-  | hC a => simp
-  | ha p a hp hdeg ih =>
-    convert Tendsto.add ih ((tendsto_pow_neg_atTop hdeg.ne').const_mul a)
+  | hC _ => simp
+  | ha _ a _ hdeg _ ih =>
+    convert ih.add ((tendsto_pow_neg_atTop hdeg.ne').const_mul a)
     · grind [eval_add, eval_C, zpow_neg, zpow_natCast]
     · simp_all [leadingCoeff_add_of_degree_lt' (degree_lt_degree _)]
-  | hX p hp ih =>
-    convert (tendsto_congr' _).mp ih using 2
+  | hX _ _ ih =>
+    convert ih.congr' _ using 2
     · simp
-    · filter_upwards [show {0}ᶜ ∈ _ by simpa using ⟨1, by grind⟩] with x _
+    · filter_upwards [eventually_ne_atTop 0] with x _
       grind [eval_mul, eval_X,natDegree_mul_X, pow_succ]
 
 theorem tendsto_atTop_of_leadingCoeff_nonneg (hdeg : 0 < P.degree) (hnng : 0 ≤ P.leadingCoeff) :
