@@ -128,6 +128,11 @@ theorem toSubalgebra_iSup_of_directed (dir : Directed (· ≤ ·) t) :
   · simp_rw [iSup_of_empty, bot_toSubalgebra]
   · exact SetLike.ext' ((coe_iSup_of_directed dir).trans (Subalgebra.coe_iSup_of_directed dir).symm)
 
+theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → IntermediateField K L) :
+    ((⨆ i, S i : IntermediateField K L) : Set L) =
+      ⋃ s : Finset ι, (⨆ i ∈ s, S i : IntermediateField K L) := by
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le fun _ _ ↦ biSup_mono]
+
 instance finiteDimensional_iSup_of_finite [h : Finite ι] [∀ i, FiniteDimensional K (t i)] :
     FiniteDimensional K (⨆ i, t i : IntermediateField K L) := by
   rw [← iSup_univ]
@@ -409,7 +414,7 @@ theorem minpoly_gen (α : E) :
 
 theorem aeval_gen_minpoly (α : E) : aeval (AdjoinSimple.gen F α) (minpoly F α) = 0 := by
   ext
-  convert! minpoly.aeval F α
+  convert minpoly.aeval F α
   conv in aeval α => rw [← AdjoinSimple.algebraMap_gen F α]
   exact (aeval_algebraMap_apply E (AdjoinSimple.gen F α) _).symm
 
@@ -526,7 +531,7 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
     simp_all
   refine eq_of_le_of_finrank_le' hsub ?_
   simp_rw [finrank_eq]
-  convert!
+  convert
     natDegree_le_of_dvd dvd_g
       ((g.monic_toSubring _ _).mpr <| (minpoly.monic <| .of_finite K α).map _).ne_zero using 1
   rw [natDegree_toSubring, natDegree_map]
@@ -663,8 +668,8 @@ theorem card_algHom_adjoin_integral (h : IsIntegral F α) (h_sep : IsSeparable F
   exact h_sep
 
 theorem _root_.Polynomial.irreducible_comp_iff {f g : K[X]} :
-    Irreducible (f.comp g) ↔ Irreducible f ∧
-      Irreducible (g.map (AdjoinRoot.of f) - C (AdjoinRoot.root f)) := by
+    Irreducible (f.comp g) ↔
+      Irreducible f ∧ Irreducible (g.map (AdjoinRoot.of f) - C (AdjoinRoot.root f)) := by
   suffices h : Irreducible (f.comp g) → Irreducible f by
     rw [← and_iff_right_of_imp h, and_congr_right_iff]
     intro hf
@@ -685,24 +690,14 @@ theorem _root_.Polynomial.irreducible_comp_iff {f g : K[X]} :
     exact hr
   · intro a b hf
     have hg : f.comp g = a.comp g * b.comp g := by simp [hf]
-    refine (hfg.isUnit_or_isUnit hg).imp (fun ha => ?_) (fun hb => ?_)
+    refine (hfg.isUnit_or_isUnit hg).imp (fun ha => ?_) (fun ha => ?_) <;>
     · rw [isUnit_iff] at ha
       obtain ⟨r, hr, ha⟩ := ha
       have hga := congrArg Polynomial.natDegree ha.symm
-      rw [natDegree_C, natDegree_comp, Nat.mul_eq_zero,
-        or_iff_left hg0, natDegree_eq_zero] at hga
+      rw [natDegree_C, natDegree_comp, Nat.mul_eq_zero, or_iff_left hg0, natDegree_eq_zero] at hga
       obtain ⟨x, rfl⟩ := hga
       rw [C_comp, C_inj] at ha
       rw [← ha, isUnit_C]
-      exact hr
-    · rw [isUnit_iff] at hb
-      obtain ⟨r, hr, hb⟩ := hb
-      have hgb := congrArg Polynomial.natDegree hb.symm
-      rw [natDegree_C, natDegree_comp, Nat.mul_eq_zero,
-        or_iff_left hg0, natDegree_eq_zero] at hgb
-      obtain ⟨x, rfl⟩ := hgb
-      rw [C_comp, C_inj] at hb
-      rw [← hb, isUnit_C]
       exact hr
 
 /-- Let `f, g` be monic polynomials over `K`. If `f` is irreducible, and `g(x) - α` is irreducible
