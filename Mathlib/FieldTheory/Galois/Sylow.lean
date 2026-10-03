@@ -13,7 +13,6 @@ public import Mathlib.GroupTheory.Sylow
 
 We prove the existence of intermediate fields of particular degrees in a Galois extension
 using Sylow's first theorem.
-
 -/
 
 @[expose] public section
