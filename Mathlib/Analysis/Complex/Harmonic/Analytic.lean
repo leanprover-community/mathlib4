@@ -5,9 +5,9 @@ Authors: Stefan Kebekus
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
+import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 public import Mathlib.Analysis.Complex.Conformal
-public import Mathlib.Analysis.Complex.HasPrimitives
+import Mathlib.Analysis.Complex.HasPrimitives
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
 
 /-!
@@ -20,7 +20,7 @@ holomorphic on the ball.  This implies in particular that harmonic functions are
 
 public section
 
-open Complex InnerProductSpace Metric Set Topology
+open Complex InnerProductSpace Metric Set
 
 variable
   {f : ℂ → ℝ} {x : ℂ}

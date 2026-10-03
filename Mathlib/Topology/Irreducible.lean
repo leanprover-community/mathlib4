@@ -5,11 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Minimal
-public import Mathlib.Order.Zorn
-public import Mathlib.Topology.ContinuousOn
 public import Mathlib.Topology.DiscreteSubset
-public import Mathlib.Tactic.CrossRefAttribute
 import Mathlib.Topology.WithTopology
 
 /-!
@@ -499,7 +495,6 @@ lemma image_mem_irreducibleComponents_of_isPreirreducible_fiber
     rw [← Set.image_preimage_eq Z hf₄]
     exact Set.image_mono this⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f : X → Y` is continuous, open, and has irreducible fibers, then it induces an
 bijection between irreducible components -/
 @[stacks 037A]

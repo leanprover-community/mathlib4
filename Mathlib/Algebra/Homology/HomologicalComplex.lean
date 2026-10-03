@@ -79,7 +79,7 @@ theorem d_comp_d (C : HomologicalComplex V c) (i j k : ι) : C.d i j ≫ C.d j k
 theorem ext {C₁ C₂ : HomologicalComplex V c} (h_X : C₁.X = C₂.X)
     (h_d :
       ∀ i j : ι,
-        c.Rel i j → C₁.d i j ≫ eqToHom (congr_fun h_X j) = eqToHom (congr_fun h_X i) ≫ C₂.d i j) :
+        c.Rel i j → C₁.d i j ≫ eqToHom congr($h_X j) = eqToHom congr($h_X i) ≫ C₂.d i j) :
     C₁ = C₂ := by
   obtain ⟨X₁, d₁, s₁, h₁⟩ := C₁
   obtain ⟨X₂, d₂, s₂, h₂⟩ := C₂
@@ -265,9 +265,17 @@ theorem comp_f {C₁ C₂ C₃ : HomologicalComplex V c} (f : C₁ ⟶ C₂) (g 
 @[simp]
 theorem eqToHom_f {C₁ C₂ : HomologicalComplex V c} (h : C₁ = C₂) (n : ι) :
     HomologicalComplex.Hom.f (eqToHom h) n =
-      eqToHom (congr_fun (congr_arg HomologicalComplex.X h) n) := by
+      eqToHom congr(HomologicalComplex.X $h n) := by
   subst h
   rfl
+
+lemma ext_of_hom {C₁ C₂ : HomologicalComplex V c} (f : C₁ ⟶ C₂) (h₁ : ∀ i, C₁.X i = C₂.X i)
+    (h₂ : ∀ i, f.f i = eqToHom (h₁ i) := by cat_disch) : C₁ = C₂ :=
+  HomologicalComplex.ext (by cat_disch) (fun _ _ _ ↦ by simp [← h₂])
+
+lemma ext_of_iso {C₁ C₂ : HomologicalComplex V c} (e : C₁ ≅ C₂) (h₁ : ∀ i, C₁.X i = C₂.X i)
+    (h₂ : ∀ i, e.hom.f i = eqToHom (h₁ i) := by cat_disch) : C₁ = C₂ :=
+  ext_of_hom e.hom h₁ h₂
 
 -- We'll use this later to show that `HomologicalComplex V c` is preadditive when `V` is.
 theorem hom_f_injective {C₁ C₂ : HomologicalComplex V c} :
@@ -304,7 +312,7 @@ noncomputable instance [HasZeroObject V] : Inhabited (HomologicalComplex V c) :=
 
 theorem congr_hom {C D : HomologicalComplex V c} {f g : C ⟶ D} (w : f = g) (i : ι) :
     f.f i = g.f i :=
-  congr_fun (congr_arg Hom.f w) i
+  congr($(w).f i)
 
 lemma mono_of_mono_f {K L : HomologicalComplex V c} (φ : K ⟶ L)
     (hφ : ∀ i, Mono (φ.f i)) : Mono φ where
@@ -325,7 +333,7 @@ section
 variable (V c)
 
 /-- The functor picking out the `i`-th object of a complex. -/
-@[simps]
+@[simps, implicit_reducible]
 def eval (i : ι) : HomologicalComplex V c ⥤ V where
   obj C := C.X i
   map f := f.f i
@@ -333,26 +341,22 @@ def eval (i : ι) : HomologicalComplex V c ⥤ V where
 instance (i : ι) : (eval V c i).PreservesZeroMorphisms where
 
 /-- The functor forgetting the differential in a complex, obtaining a graded object. -/
-@[simps]
+@[simps, implicit_reducible]
 def forget : HomologicalComplex V c ⥤ GradedObject ι V where
   obj C := C.X
   map f := f.f
 
 instance : (forget V c).Faithful where
-  map_injective h := by
-    ext i
-    exact congr_fun h i
+  map_injective h := by ext i; congrm $h i
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Forgetting the differentials than picking out the `i`-th object is the same as
 just picking out the `i`-th object. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def forgetEval (i : ι) : forget V c ⋙ GradedObject.eval i ≅ eval V c i :=
   NatIso.ofComponents fun _ => Iso.refl _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The differential as a natural transformation between `eval`. -/
-@[simps] def dNatTrans (i j : ι) :
+@[implicit_reducible, simps] def dNatTrans (i j : ι) :
     HomologicalComplex.eval V c i ⟶ HomologicalComplex.eval V c j where
   app X := X.d i j
 
@@ -373,7 +377,7 @@ and so the differentials only differ by an `eqToHom`.
 -/
 @[simp]
 theorem d_comp_eqToHom {i j j' : ι} (rij : c.Rel i j) (rij' : c.Rel i j') :
-    C.d i j' ≫ eqToHom (congr_arg C.X (c.next_eq rij' rij)) = C.d i j := by
+    C.d i j' ≫ eqToHom congr(C.X $(c.next_eq rij' rij)) = C.d i j := by
   obtain rfl := c.next_eq rij rij'
   simp only [eqToHom_refl, comp_id]
 
@@ -382,7 +386,7 @@ and so the differentials only differ by an `eqToHom`.
 -/
 @[simp]
 theorem eqToHom_comp_d {i i' j : ι} (rij : c.Rel i j) (rij' : c.Rel i' j) :
-    eqToHom (congr_arg C.X (c.prev_eq rij rij')) ≫ C.d i' j = C.d i j := by
+    eqToHom congr(C.X $(c.prev_eq rij rij')) ≫ C.d i' j = C.d i j := by
   obtain rfl := c.prev_eq rij rij'
   simp only [eqToHom_refl, id_comp]
 
@@ -408,14 +412,7 @@ def xPrevIso {i j : ι} (r : c.Rel i j) : C.xPrev j ≅ C.X i :=
 
 /-- If there is no `i` so `c.Rel i j`, then `C.xPrev j` is isomorphic to `C.X j`. -/
 def xPrevIsoSelf {j : ι} (h : ¬c.Rel (c.prev j) j) : C.xPrev j ≅ C.X j :=
-  eqToIso <|
-    congr_arg C.X
-      (by
-        dsimp [ComplexShape.prev]
-        rw [dite_eq_right]
-        push Not; intro i hi
-        have : c.prev j = i := c.prev_eq' hi
-        rw [this] at h; contradiction)
+  eqToIso <| by rw [xPrev, ComplexShape.prev, dite_eq_right]; rintro ⟨i, hi⟩; grind [c.prev_eq' hi]
 
 /-- Either `C.X j`, if there is some `j` with `c.rel i j`, or `C.X i`. -/
 abbrev xNext (i : ι) : V :=
@@ -427,13 +424,7 @@ def xNextIso {i j : ι} (r : c.Rel i j) : C.xNext i ≅ C.X j :=
 
 /-- If there is no `j` so `c.Rel i j`, then `C.xNext i` is isomorphic to `C.X i`. -/
 def xNextIsoSelf {i : ι} (h : ¬c.Rel i (c.next i)) : C.xNext i ≅ C.X i :=
-  eqToIso <|
-    congr_arg C.X
-      (by
-        dsimp [ComplexShape.next]
-        rw [dite_eq_right]; rintro ⟨j, hj⟩
-        have : c.next i = j := c.next_eq' hj
-        rw [this] at h; contradiction)
+  eqToIso <| by rw [xNext, ComplexShape.next, dite_eq_right]; rintro ⟨j, hj⟩; grind [c.next_eq' hj]
 
 /-- The differential mapping into `C.X j`, or zero if there isn't one.
 -/
@@ -503,7 +494,7 @@ def isoApp (f : C₁ ≅ C₂) (i : ι) : C₁.X i ≅ C₂.X i :=
 
 /-- Construct an isomorphism of chain complexes from isomorphism of the objects
 which commute with the differentials. -/
-@[simps]
+@[simps, implicit_reducible]
 def isoOfComponents (f : ∀ i, C₁.X i ≅ C₂.X i)
     (hf : ∀ i j, c.Rel i j → (f i).hom ≫ C₂.d i j = C₁.d i j ≫ (f j).hom := by cat_disch) :
     C₁ ≅ C₂ where
@@ -634,7 +625,6 @@ variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 def of.d (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (i : α) (j : α) : X i ⟶ X j :=
   if h : i = j + 1 then eqToHom (by rw [h]) ≫ d j else 0
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Construct an `α`-indexed chain complex from a dependently-typed differential.
 -/
 abbrev of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0) :
@@ -895,7 +885,6 @@ variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 def of.d (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (i : α) (j : α) : X i ⟶ X j :=
   if h : i + 1 = j then d _ ≫ eqToHom (by rw [h]) else 0
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Construct an `α`-indexed cochain complex from a dependently-typed differential.
 -/
 abbrev of (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n + 1) = 0) :

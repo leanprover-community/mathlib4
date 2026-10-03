@@ -7,6 +7,8 @@ module
 
 public meta import Lean.Meta.Tactic.Rewrite
 public import Mathlib.Tactic.GCongr.Core
+public import Lean.Meta.Tactic.Rewrite
+meta import Mathlib.Tactic.GCongr.Core
 
 /-!
 # The generalized rewriting tactic
@@ -92,9 +94,9 @@ def grewriteUsingKAbstract (goal : MVarId) (e hrel pattern replacement : Expr)
   let mkImp (e₁ e₂ : Expr) : Expr := .forallE `_a e₁ e₂ .default
   let imp := if forwardImp then mkImp e' eNew else mkImp eNew e'
   let gcongrGoal ← mkFreshExprMVar imp
-  let (_, sideGoals) ← gcongrGoal.mvarId!.gcongr forwardImp
+  let (_, s) ← gcongrGoal.mvarId!.gcongr forwardImp
     |>.run (mainGoalDischarger := GRewrite.dischargeMain hrel)
-  pure (eNew, gcongrGoal, sideGoals)
+  pure (eNew, gcongrGoal, s.newGoals)
 
 end kabstract
 
@@ -166,10 +168,16 @@ def GRewriteLemma.apply (lem : GRewriteLemma) (goal : MVarId) (symm : Bool)
     goal.assign proof
     return true
   let mctx ← getMCtx
+  -- `@[gcongr_forward]` extensions are metaprograms retrieved from `forwardExt`, so `shake` sees
+  -- no reference to the module that registered them. We record that module below, for whichever
+  -- extension closes the goal.
   for (n, tac) in (forwardExt.getState (← getEnv)).2 do
     -- Explicitly exclude a few `gcongr_forward` extensions that are not relevant here.
     if n matches ``GCongr.exact | ``GCongr.exactRefl then continue
-    try tac.eval proof goal; return true
+    try
+      tac.eval proof goal
+      recordExtraModUseFromDecl (isMeta := true) n
+      return true
     catch _ => setMCtx mctx
   return false
 
@@ -407,14 +415,14 @@ public def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
         else throwTacticEx `grewrite goal m!"{hrelType} is not a valid relation"
       let index := (pattern.toHeadIndex, pattern.headNumArgs)
       let mvarIds := mvarIds ++ newMVars.map (·.mvarId!, #[])
-      if let ((some (eNew, impProof), { progress, ..}), newGoals) ←
+      if let ((some (eNew, impProof), { progress, ..}), s) ←
         grewriteCore `_Implies none e (forward := forwardImp) config |>.run
           { symm := symm', proof := hrel, type := hrelType, index, mvarIds }
           |>.run {} |>.run then
         let lctx? := match progress with
           | .matchedOutOfScope lctx => some lctx
           | _ => none
-        pure (lctx?, eNew, impProof, newGoals)
+        pure (lctx?, eNew, impProof, s.newGoals)
       else
         withLocalDeclD `_ (← inferType replacement) fun replacement' ↦ do
           let hrelType := updateRel hrelType replacement' symm

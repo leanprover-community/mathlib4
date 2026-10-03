@@ -9,7 +9,7 @@ public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.CharP.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.Submonoid.Defs
-public import Mathlib.Algebra.Order.BigOperators.Group.Multiset
+import Mathlib.Algebra.Order.BigOperators.Group.Multiset
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Data.ZMod.Defs
 
@@ -62,7 +62,7 @@ an `AddMonoid`/`Monoid` instead of the `AddMonoid`/`Monoid` itself.
 * Affine maps are Freiman homomorphisms.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field Ideal TwoSidedIdeal
 
@@ -465,7 +465,7 @@ lemma isAddFreimanIso_Iio (hm : m ≠ 0) (hkmn : m * k ≤ n) :
   obtain _ | k := k
   · simp
   have hkmn' : m * k ≤ n := (Nat.mul_le_mul_left _ k.le_succ).trans hkmn
-  convert! isAddFreimanIso_Iic hm hkmn' using 1 <;> ext x
+  convert isAddFreimanIso_Iic hm hkmn' using 1 <;> ext x
   · simp only [Nat.cast_add, Nat.cast_one, mem_Iio, lt_def, mem_Iic, le_iff_val_le_val,
       val_natCast, aux hm hkmn', Nat.mod_eq_of_lt]
     simp_rw [← Nat.cast_add_one]

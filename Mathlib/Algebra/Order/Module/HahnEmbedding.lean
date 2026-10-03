@@ -6,11 +6,10 @@ Authors: Weiyi Wang
 module
 
 public import Mathlib.Algebra.DirectSum.Decomposition
-public import Mathlib.Algebra.DirectSum.Module
 public import Mathlib.Algebra.Module.Submodule.Order
 public import Mathlib.Algebra.Order.Module.Archimedean
 public import Mathlib.Algebra.Order.Module.Equiv
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.LinearAlgebra.LinearPMap
 public import Mathlib.RingTheory.HahnSeries.Lex
 
@@ -134,7 +133,7 @@ theorem iSupIndep_stratum : iSupIndep u.stratum := by
       exact hxy
     rw [ArchimedeanClass.mk_sum hnonempty hmono, u.archimedeanClassMk_of_mem_stratum (hmem _)
       (by simpa using f.support.min'_mem hnonempty), ← val_mk h0, Subtype.coe_ne_coe]
-    by_contra!
+    by_contra
     obtain h := this ▸ Finset.min'_mem f.support hnonempty
     contrapose! h
     have := u.archimedeanClassMk_of_mem_stratum ha h0
@@ -158,7 +157,7 @@ abbrev stratum' (c : FiniteArchimedeanClass M) : Submodule K (baseDomain u) :=
 theorem iSupIndep_stratum' : iSupIndep u.stratum' := by
   apply (iSupIndep_map_orderIso_iff (Submodule.mapIic u.baseDomain)).mp
   apply iSupIndep.of_coe_Iic_comp
-  convert! u.iSupIndep_stratum
+  convert u.iSupIndep_stratum
   ext1 c
   simpa using! le_iSup _ _
 
@@ -209,7 +208,6 @@ theorem hahnCoeff_apply {x : seed.baseDomain} {f : Π₀ c, seed.stratum c}
   let f' : ⨁ c, seed.stratum' c :=
     f.mapRange (fun c x ↦ (⟨⟨x.val, hxm x⟩, by simp⟩ : seed.stratum' c)) (by simp)
   have hf : f c = (seed.baseDomain.subtype.submoduleComap (seed.stratum c)) (f' c) := by
-    set_option backward.isDefEq.respectTransparency false in
     apply Subtype.ext
     simp [f']
   have hx : x = (decompose seed.stratum').symm f' := by
@@ -359,7 +357,7 @@ theorem truncLT_mem_range_baseEmbedding (x : seed.baseEmbedding.domain)
   · rw [HahnSeries.coe_truncLTLinearMap, HahnSeries.coeff_truncLT_of_le hdc]
     have hcd : c.val ≤ d.val := hdc
     simp only [DFinsupp.mk_apply, hcd, ↓reduceIte]
-    convert! LinearMap.map_zero _
+    convert LinearMap.map_zero _
     simp
 
 /-- `HahnEmbedding.Seed.baseEmbedding` is a partial Hahn embedding. -/
@@ -565,7 +563,7 @@ def eval [IsOrderedAddMonoid R] [Archimedean R] (x : M) :
 @[simp]
 theorem eval_zero [IsOrderedAddMonoid R] [Archimedean R] : f.eval 0 = 0 := by
   unfold eval
-  convert! toLex_zero
+  convert toLex_zero
   ext c
   rw [f.evalCoeff_eq (y := 0) (by simp)]
   simp
@@ -639,7 +637,7 @@ theorem eval_ne [IsOrderedAddMonoid R] [Archimedean R] {x : M} (hx : x ∉ f.val
   -- `z = x - u = y + v` is also in the domain.
   -- Assuming `f.eval x = f.val y` allows us to use `archimedeanClassMk_le_of_eval_eq` on `z`
   have hyv : y.val + v ∈ f.val.domain := Submodule.add_mem _ (by simp) (f.mem_domain hv)
-  by_contra! h
+  by_contra h
   obtain h := f.archimedeanClassMk_le_of_eval_eq h ⟨y.val + v, hyv⟩
   contrapose! h
   simp_rw [← sub_sub, huv']
@@ -853,7 +851,7 @@ theorem lt_extend [IsOrderedAddMonoid R] [Archimedean R] {x : M} (hx : x ∉ f.v
   apply lt_of_le_of_ne
   · change f.val ≤ (f.extend hx).val
     simpa [extend, extendFun] using! LinearPMap.left_le_sup _ _ _
-  by_contra!
+  by_contra
   have : f.val.domain = (f.extend hx).val.domain := by congr
   rw [this] at hx
   contrapose! hx with h

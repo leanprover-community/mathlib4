@@ -5,8 +5,7 @@ Authors: Winston Yin
 -/
 module
 
-public import Mathlib.Analysis.ODE.Basic
-public import Mathlib.Analysis.ODE.Gronwall
+import Mathlib.Analysis.ODE.Gronwall
 public import Mathlib.Analysis.ODE.PicardLindelof
 
 /-!
@@ -39,7 +38,7 @@ integral curve, vector field, existence, uniqueness, Picard-Lindelöf, Gronwall
 
 @[expose] public section
 
-open Function intervalIntegral MeasureTheory Metric Set
+open Function Metric Set
 open scoped Nat NNReal Topology
 
 /-! ## Existence of solutions to ODEs -/
@@ -237,12 +236,12 @@ theorem ODE_solution_unique_of_mem_Icc_left
     (hf.comp continuousOn_neg hmt1) _ (fun _ ht ↦ hfs _ (hmt2 ht))
     (hg.comp continuousOn_neg hmt1) _ (fun _ ht ↦ hgs _ (hmt2 ht)) (by simp [hb])
   · intro t ht
-    convert!
+    convert
       HasFDerivWithinAt.comp_hasDerivWithinAt t (hf' (-t) (hmt2 ht))
         (hasDerivAt_neg t).hasDerivWithinAt (hmt3 t)
     simp
   · intro t ht
-    convert!
+    convert
       HasFDerivWithinAt.comp_hasDerivWithinAt t (hg' (-t) (hmt2 ht))
         (hasDerivAt_neg t).hasDerivWithinAt (hmt3 t)
     simp

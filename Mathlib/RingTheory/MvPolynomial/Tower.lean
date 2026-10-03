@@ -5,7 +5,7 @@ Authors: Yuyang Zhao
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Subalgebra.Tower
+import Mathlib.Algebra.Algebra.Subalgebra.Tower
 public import Mathlib.Algebra.MvPolynomial.Eval
 
 /-!

@@ -6,7 +6,7 @@ Authors: Niels Voss, Arnav Mehta
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Positive
-public import Mathlib.LinearAlgebra.Eigenspace.Zero
+import Mathlib.LinearAlgebra.Eigenspace.Zero
 
 /-!
 # Singular values for finite-dimensional linear maps
@@ -135,7 +135,7 @@ theorem sq_singularValues_of_lt {n : ℕ} (hn : finrank 𝕜 E = n) {i : ℕ} (h
 
 theorem hasEigenvalue_adjoint_comp_self_sq_singularValues {n : ℕ} (hn : n < finrank 𝕜 E) :
     End.HasEigenvalue (adjoint T ∘ₗ T) (T.singularValues n ^ 2) := by
-  convert! T.isSymmetric_adjoint_comp_self.hasEigenvalue_eigenvalues rfl ⟨n, hn⟩ using 1
+  convert T.isSymmetric_adjoint_comp_self.hasEigenvalue_eigenvalues rfl ⟨n, hn⟩ using 1
   simp [← T.sq_singularValues_fin]
 
 theorem singularValues_antitone : Antitone T.singularValues := by
@@ -154,7 +154,7 @@ this.
 -/
 theorem injective_iff_forall_lt_finrank_singularValues_pos :
     Function.Injective T ↔ ∀ i < finrank 𝕜 E, 0 < T.singularValues i := by
-  have := (adjoint T ∘ₗ T).not_hasEigenvalue_zero_tfae.out 4 0
+  have := (adjoint T ∘ₗ T).not_hasEigenvalue_zero_tfae.out 5 1
   rw [← adjoint_comp_self_injective_iff, ← coe_comp, ← ker_eq_bot, ← not_iff_not, this.not_left]
   push Not
   constructor
@@ -163,7 +163,7 @@ theorem injective_iff_forall_lt_finrank_singularValues_pos :
     use i, i.isLt
     simp [RCLike.ofReal_eq_zero.mp hi, T.singularValues_fin rfl]
   · intro ⟨i, h, hz⟩
-    convert! T.isSymmetric_adjoint_comp_self.hasEigenvalue_eigenvalues rfl ⟨i, h⟩
+    convert T.isSymmetric_adjoint_comp_self.hasEigenvalue_eigenvalues rfl ⟨i, h⟩
     rw [← sq_singularValues_of_lt, le_antisymm hz (T.singularValues_nonneg i)]
     simp
 

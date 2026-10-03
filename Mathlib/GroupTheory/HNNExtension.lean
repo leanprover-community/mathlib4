@@ -11,8 +11,7 @@ public import Mathlib.GroupTheory.Coprod.Basic
 public import Mathlib.GroupTheory.Complement
 
 /-!
-
-## HNN Extensions of Groups
+# HNN Extensions of Groups
 
 This file defines the HNN extension of a group `G`, `HNNExtension G A B φ`. Given a group `G`,
 subgroups `A` and `B` and an isomorphism `φ` of `A` and `B`, we adjoin a letter `t` to `G`, such
@@ -71,7 +70,7 @@ def t : HNNExtension G A B φ :=
 
 theorem t_mul_of (a : A) :
     t * (of (a : G) : HNNExtension G A B φ) = of (φ a : G) * t :=
-  (Con.eq _).2 <| ConGen.Rel.of _ _ <| ⟨a, by simp⟩
+  (Con.eq _).2 <| ConGen.Rel.of _ _ ⟨a, by simp⟩
 
 theorem of_mul_t (b : B) :
     (of (b : G) : HNNExtension G A B φ) * t = t * of (φ.symm b : G) := by
@@ -118,7 +117,6 @@ theorem hom_ext {f g : HNNExtension G A B φ →* M}
   (MonoidHom.cancel_right Con.mk'_surjective).mp <|
     Coprod.hom_ext hg (MonoidHom.ext_mint ht)
 
-set_option backward.isDefEq.respectTransparency false in
 @[elab_as_elim]
 theorem induction_on {motive : HNNExtension G A B φ → Prop}
     (x : HNNExtension G A B φ) (of : ∀ g, motive (of g))
@@ -593,7 +591,7 @@ theorem prod_injective : Injective
   (equiv φ d).symm.injective
 
 instance : FaithfulSMul (HNNExtension G A B φ) (NormalWord d) :=
-  ⟨fun h => by simpa using congr_arg (fun w => w.prod φ) (h empty)⟩
+  ⟨fun h => by simpa using congr($(h empty).prod φ)⟩
 
 end NormalWord
 
@@ -646,7 +644,7 @@ theorem exists_normalWord_prod_eq
         simp only [Cancels, group_smul_head, group_smul_toList, Option.map_eq_some_iff,
           Prod.exists, exists_and_right, exists_eq_right, not_and, not_exists]
         intro hS x hx
-        have hx' := congr_arg (Option.map Prod.fst) hx
+        have hx' := congr(Option.map Prod.fst $hx)
         rw [← List.head?_map, hw'2, List.head?_map, Option.map_some] at hx'
         have : w'.head ∈ toSubgroup A B a.fst := by
           simpa using hw'3 _ hx'

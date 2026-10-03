@@ -5,10 +5,9 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
 
 import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
-import Mathlib.Probability.Notation
+public import Mathlib.Probability.Notation
 
 /-! # Conditional Lebesgue expectation
 
@@ -52,7 +51,9 @@ is just used to show existence. However for (potential) convenience the actual d
 
 public section
 
-open MeasureTheory ProbabilityTheory Measure
+open MeasureTheory Measure
+
+open scoped ProbabilityTheory
 
 open scoped ENNReal
 
@@ -136,7 +137,7 @@ theorem setLIntegral_condLExp (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.tri
   by_cases hX : Measurable[mΩ] X
   · simp [condLExp_eq_self hm _ hX]
   have h := AbsolutelyContinuous.trim (withDensity_absolutelyContinuous P X) hm
-  have : SFinite ((P.withDensity X).trim hm) := sFinite_of_absolutelyContinuous h
+  have : SFinite ((P.withDensity X).trim hm) := sfinite_of_absolutelyContinuous h
   rw [condLExp_of_not_sub_sigma_measurable hm _ hX, ← lintegral_indicator (hm s hs),
     ← lintegral_trim hm (by measurability), lintegral_indicator hs, setLIntegral_rnDeriv' h hs,
     trim_measurableSet_eq hm hs, withDensity_apply _ (hm s hs)]
@@ -335,7 +336,7 @@ theorem condLExp_tsum [Countable ι] {X : ι → Ω → ℝ≥0∞}
 theorem condLExp_finsetSum (s : Finset ι) {X : ι → Ω → ℝ≥0∞}
     (hX : ∀ i, AEMeasurable[mΩ₀] (X i) P) :
     P⁻[∑ i ∈ s, X i|mΩ] =ᵐ[P] ∑ i ∈ s, P⁻[X i|mΩ] := by
-  convert! condLExp_tsum mΩ (fun i : s ↦ hX i)
+  convert condLExp_tsum mΩ (fun i : s ↦ hX i)
   · simp [Finset.sum_attach]
   · simp [Finset.sum_attach _ (f := (P⁻[X ·|mΩ]))]
 

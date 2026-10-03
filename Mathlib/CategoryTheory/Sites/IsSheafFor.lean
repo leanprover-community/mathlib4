@@ -6,7 +6,8 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
-public import Mathlib.CategoryTheory.Sites.Sieves
+public import Mathlib.CategoryTheory.Sites.Sieves.Functoriality
+public import Mathlib.CategoryTheory.Sites.Sieves.Shrink
 
 /-!
 # The sheaf condition for a presieve
@@ -730,7 +731,7 @@ lemma isSheafFor_iff_of_nat_equiv {P₁ : Cᵒᵖ ⥤ Type w} {P₂ : Cᵒᵖ �
 theorem isSheafFor_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') (hP : IsSheafFor P R) :
     IsSheafFor P' R :=
   isSheafFor_of_nat_equiv (fun X ↦ (i.app (op X)).toEquiv)
-    (fun _ _ f x ↦ ConcreteCategory.congr_hom (i.hom.naturality f.op) x) hP
+    (fun _ _ f x ↦ congr($(i.hom.naturality f.op) x)) hP
 
 theorem isSheafFor_iff_of_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') :
     IsSheafFor P R ↔ IsSheafFor P' R :=
@@ -856,13 +857,13 @@ def Arrows.toCompatible (s : P.obj (op B)) :
   property i j Z gi gj h := by
     simp [← comp_apply, ← Functor.map_comp, ← op_comp, h]
 
-theorem isSheafFor_ofArrows_iff_bijective_toCompabible :
+theorem isSheafFor_ofArrows_iff_bijective_toCompatible :
     IsSheafFor P (ofArrows X π) ↔
       Function.Bijective (Arrows.toCompatible P π) := by
   rw [isSheafFor_arrows_iff]
   refine ⟨fun h ↦ ⟨fun x₁ x₂ hx ↦
       (h _ (Arrows.toCompatible P π x₁).property).unique (fun _ ↦ rfl)
-        (congr_fun (congr_arg Subtype.val hx.symm)),
+        (congr_fun congr($(hx.symm).val)),
       fun ⟨y, hy⟩ ↦ ?_⟩, fun h x hx ↦ ?_⟩
   · obtain ⟨x, hx, _⟩ := h y hy
     exact ⟨x, by ext; apply hx⟩
@@ -872,7 +873,10 @@ theorem isSheafFor_ofArrows_iff_bijective_toCompabible :
     subst hy
     exact ⟨y, fun _ ↦ rfl, fun y' hy' ↦ h.1 (by ext; apply hy')⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
+@[deprecated (since := "2026-09-17")]
+alias isSheafFor_ofArrows_iff_bijective_toCompabible :=
+  isSheafFor_ofArrows_iff_bijective_toCompatible
+
 @[simp]
 lemma isSheafFor_pullback_iff (P : Cᵒᵖ ⥤ Type w) {X : C} (R : Sieve X)
     {Y : C} (f : Y ⟶ X) [IsIso f] :
@@ -890,14 +894,13 @@ lemma isSheafFor_pullback_iff (P : Cᵒᵖ ⥤ Type w) {X : C} (R : Sieve X)
         simp only [Category.assoc] at h
         exact s.property _ _ _ _ _ h⟩ }
   simp only [this, ← isSheafFor_iff_generate,
-    isSheafFor_ofArrows_iff_bijective_toCompabible, ← e.bijective.of_comp_iff',
+    isSheafFor_ofArrows_iff_bijective_toCompatible, ← e.bijective.of_comp_iff',
     ← Function.Bijective.of_comp_iff _ (P.mapIso (asIso f).symm.op).toEquiv.bijective]
-  convert! Iff.rfl using 2
+  convert Iff.rfl using 2
   ext
   simp [e]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma isSheafFor_over_map_op_comp_ofArrows_iff
     {B B' : C} (p : B ⟶ B') (P : (Over B')ᵒᵖ ⥤ Type w)
     {X : Over B} {Y : I → Over B} (f : ∀ i, Y i ⟶ X) :
@@ -915,18 +918,17 @@ lemma isSheafFor_over_map_op_comp_ofArrows_iff
             rw [reassoc_of% h, this])) (by cat_disch)
         let φ : Z ⟶ (Over.map p).obj (Over.mk (g₁.left ≫ (f i₁).left ≫ X.hom)) :=
           Over.homMk (𝟙 _) (by simpa using Over.w g₁)
-        replace this := congr_arg (P.map φ.op) this
+        replace this := congr(P.map φ.op $this)
         dsimp at this
         simp only [← comp_apply, ← Functor.map_comp, ← op_comp] at this
-        convert! this <;> cat_disch⟩
+        convert this <;> cat_disch⟩
       invFun s := ⟨fun i ↦ s.val i, fun i₁ i₂ Z g₁ g₂ h ↦
         s.property i₁ i₂ _ ((Over.map p).map g₁) ((Over.map p).map g₂)
           (by simp only [← Functor.map_comp, h])⟩ }
-  simp only [isSheafFor_ofArrows_iff_bijective_toCompabible,
+  simp only [isSheafFor_ofArrows_iff_bijective_toCompatible,
     ← e.bijective.of_comp_iff']
   rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma isSheafFor_over_map_op_comp_iff
     {B B' : C} (p : B ⟶ B') (P : (Over B')ᵒᵖ ⥤ Type w)
     {X : Over B} (R : Sieve X) {X' : Over B'}
@@ -936,7 +938,7 @@ lemma isSheafFor_over_map_op_comp_iff
   obtain ⟨ι, Z, g, rfl⟩ := R.exists_eq_ofArrows
   rw [← isSheafFor_iff_generate, isSheafFor_pullback_iff,
     isSheafFor_over_map_op_comp_ofArrows_iff, isSheafFor_iff_generate]
-  convert! Iff.rfl
+  convert Iff.rfl
   refine le_antisymm ?_ ?_
   · rintro W _ ⟨T, _, a, ⟨_, b, _, ⟨i⟩, rfl⟩, rfl⟩
     refine ⟨(Over.map p).obj (Z i), Over.homMk (a.left ≫ b.left) ?_, _, ⟨i⟩, ?_⟩
@@ -986,6 +988,53 @@ lemma isSheafFor_singleton {X Y : C} {f : X ⟶ Y} :
   rw [IsSheafFor, Equiv.forall_congr_left (Presieve.FamilyOfElements.singletonEquiv P f)]
   simp_rw [FamilyOfElements.compatible_singleton_iff,
     FamilyOfElements.isAmalgamation_singleton_iff, FamilyOfElements.singletonEquiv_symm_apply_self]
+
+lemma IsSeparatedFor.of_singleton_comp {S : C} (p : Y ⟶ X) (f : X ⟶ S)
+    (h : IsSeparatedFor P (singleton (p ≫ f))) :
+    IsSeparatedFor P (singleton f) := by
+  simp only [isSeparatedFor_singleton, op_comp, Functor.map_comp] at h ⊢
+  exact Function.Injective.of_comp (f := P.map p.op) h
+
+lemma IsSheafFor.of_singleton_comp {S : C} (p : Y ⟶ X) (f : X ⟶ S)
+    (h : IsSheafFor P (singleton (p ≫ f))) (h' : IsSeparatedFor P (singleton p)) :
+    IsSheafFor P (singleton f) := by
+  have h'' := h.isSeparatedFor.of_singleton_comp
+  rw [isSheafFor_singleton] at h ⊢
+  rw [isSeparatedFor_singleton] at h' h''
+  intro β hβ
+  refine existsUnique_of_exists_of_unique ?_
+    (fun α α' hα hα' ↦ h'' (by rw [hα, hα']))
+  obtain ⟨γ, hγ⟩ := (h (P.map p.op β) (fun a b eq ↦ by
+    simp only [← ConcreteCategory.comp_apply, ← P.map_comp, ← op_comp]
+    exact hβ _ _ (by simpa))).exists
+  exact ⟨γ, h' (by simpa using hγ)⟩
+
+/-- Let `P` be a presheaf of types. Let `f : X ⟶ S` be a morphism such
+that `P` is a sheaf for the presieve generated by `f`.
+We show that `P` is a sheaf for `R` if `f` belongs to `R` and `P` satisfies
+the following technical condition: for any morphism `g : Y ⟶ S`
+which belongs to `R`, there exists a commutative square `a ≫ g = b ≫ f`
+such that `P` is separated for `a`. -/
+lemma IsSheafFor.of_singleton {S : C} {f : X ⟶ S} (hf : IsSheafFor P (singleton f))
+    {R : Presieve S} (hf' : R f)
+    (H : ∀ {Y : C} (g : Y ⟶ S) (_ : R g),
+      ∃ (Z : C) (a : Z ⟶ Y) (b : Z ⟶ X), a ≫ g = b ≫ f ∧ IsSeparatedFor P (singleton a)) :
+    IsSheafFor P R := by
+  simp only [isSeparatedFor_singleton] at H
+  intro x hx
+  refine existsUnique_of_exists_of_unique ?_ (fun α α' hα hα' ↦ ?_)
+  · let x' : FamilyOfElements P (singleton f) := x.restrict (by simpa)
+    have hx' : x'.Compatible := FamilyOfElements.Compatible.restrict _ hx
+    refine ⟨hf.amalgamate x' hx', fun Y g hg ↦ ?_⟩
+    obtain ⟨Z, a, b, fac, ha⟩ := H g hg
+    refine ha ?_
+    rw [← ConcreteCategory.comp_apply, ← Functor.map_comp, ← op_comp, fac,
+      op_comp, Functor.map_comp, ConcreteCategory.comp_apply,
+      hf.valid_glue hx' f (by simp)]
+    exact hx _ _ _ _ fac.symm
+  · refine hf.isSeparatedFor.ext ?_
+    rintro _ _ ⟨⟩
+    rw [hα f hf', hα' f hf']
 
 /--
 To show `P` is a sheaf for the binding of `U` with `B`, it suffices to show that `P` is a sheaf for

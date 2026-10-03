@@ -19,7 +19,7 @@ at position `(i, j)`, and zeroes elsewhere.
 assert_not_exists Matrix.trace
 
 variable {l m n o : Type*}
-variable {R S α β γ : Type*}
+variable {R S α β : Type*}
 
 namespace Matrix
 
@@ -67,7 +67,7 @@ theorem single_eq_of_single_single (i : m) (j : n) (a : α) :
 @[simp]
 theorem of_symm_single (i : m) (j : n) (a : α) :
     of.symm (single i j a) = Pi.single i (Pi.single j a) :=
-  congr_arg of.symm <| single_eq_of_single_single i j a
+  congr(of.symm $(single_eq_of_single_single i j a))
 
 @[simp]
 theorem smul_single [SMulZeroClass R α] (r : R) (i : m) (j : n) (a : α) :
@@ -235,7 +235,7 @@ theorem ext_addMonoidHom
   rw [matrix_eq_sum_single x]
   simp_rw [map_sum]
   congr! 2
-  exact DFunLike.congr_fun (h _ _) _
+  congrm $(h _ _) _
 
 /-- Linear maps from finite matrices are equal if they agree on the standard basis.
 

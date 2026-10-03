@@ -34,7 +34,7 @@ def binaryCofan : BinaryCofan A B := .mk (ofHom includeLeft) (ofHom <| includeRi
 
 @[simp] lemma binaryCofan_inl : (binaryCofan A B).inl = ofHom includeLeft := rfl
 @[simp] lemma binaryCofan_inr : (binaryCofan A B).inr = ofHom includeRight := rfl
-@[simp] lemma binaryCofan_pt : (binaryCofan A B).pt = .of R (A ⊗[R] B) := rfl
+@[simp] lemma binaryCofan_pt : (binaryCofan A B).pt = ↧(A ⊗[R] B) := rfl
 
 /-- Verify that the pushout cocone is indeed the colimit. -/
 def binaryCofanIsColimit : IsColimit (binaryCofan A B) :=
@@ -57,7 +57,7 @@ instance : MonoidalCategory (CommAlgCat.{u} R) where
   whiskerLeft _ {_ _} f := ofHom (map (.id _ _) f.hom)
   whiskerRight f T := ofHom (map f.hom (.id _ _))
   tensorHom f g := ofHom (map f.hom g.hom)
-  tensorUnit := .of R R
+  tensorUnit := ↧R
   associator _ _ _ := isoMk (assoc R R R _ _ _)
   leftUnitor _ := isoMk (lid R _)
   rightUnitor _ := isoMk (rid R R _)
@@ -104,7 +104,7 @@ instance : CartesianMonoidalCategory (CommAlgCat.{u} R)ᵒᵖ where
   fst_def S T := by ext x; change x ⊗ₜ 1 = x ⊗ₜ algebraMap R T.unop 1; simp
   snd_def S T := by ext x; change 1 ⊗ₜ x = algebraMap R S.unop 1 ⊗ₜ x; simp
 
-variable {A B C D : (CommAlgCat.{u} R)ᵒᵖ}
+variable {A B C : (CommAlgCat.{u} R)ᵒᵖ}
 
 @[simp] lemma fst_unop_hom (A B : (CommAlgCat.{u} R)ᵒᵖ) : (fst A B).unop.hom = includeLeft := rfl
 @[simp] lemma snd_unop_hom (A B : (CommAlgCat.{u} R)ᵒᵖ) : (snd A B).unop.hom = includeRight := rfl

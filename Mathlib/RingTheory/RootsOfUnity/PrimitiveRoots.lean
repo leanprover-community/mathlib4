@@ -5,8 +5,7 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Data.Nat.Factorization.LCM
-public import Mathlib.Algebra.Group.TypeTags.Finite
+import Mathlib.Algebra.Group.TypeTags.Finite
 public import Mathlib.RingTheory.RootsOfUnity.Basic
 
 /-!
@@ -176,19 +175,21 @@ lemma isUnit_unit {ζ : M} {n} (hn) (hζ : IsPrimitiveRoot ζ n) :
 lemma isUnit_unit' {ζ : G} {n} (hn) (hζ : IsPrimitiveRoot ζ n) :
     IsPrimitiveRoot (hζ.isUnit hn).unit' n := coe_units_iff.mp hζ
 
+theorem pow_div_gcd (h : IsPrimitiveRoot ζ k) (j : ℕ) (h0 : k.gcd j ≠ 0) :
+    IsPrimitiveRoot (ζ ^ j) (k / k.gcd j) where
+  pow_eq_one := by
+    rw [← pow_mul, ← Nat.mul_div_assoc j (k.gcd_dvd_left j), mul_comm,
+      Nat.mul_div_assoc k (k.gcd_dvd_right j), pow_mul, h.pow_eq_one, one_pow]
+  dvd_of_pow_eq_one l hl := by
+    rw [Nat.div_dvd_iff_dvd_mul (k.gcd_dvd_left j) h0.pos]
+    grw [← k.gcd_dvd_right l, ← Nat.gcd_mul_right_dvd_mul_gcd]
+    apply h.dvd_of_pow_eq_one
+    rw [pow_gcd_eq_one]
+    exact ⟨h.pow_eq_one, by rwa [pow_mul]⟩
+
 theorem pow_of_coprime (h : IsPrimitiveRoot ζ k) (i : ℕ) (hi : i.Coprime k) :
     IsPrimitiveRoot (ζ ^ i) k := by
-  by_cases h0 : k = 0
-  · subst k; simp_all only [pow_one, Nat.coprime_zero_right]
-  rcases h.isUnit h0 with ⟨ζ, rfl⟩
-  rw [← Units.val_pow_eq_pow_val]
-  rw [coe_units_iff] at h ⊢
-  refine
-    { pow_eq_one := by rw [← pow_mul', pow_mul, h.pow_eq_one, one_pow]
-      dvd_of_pow_eq_one := fun l hl ↦ h.dvd_of_pow_eq_one l ?_ }
-  rw [← pow_one ζ, ← zpow_natCast ζ, ← hi.gcd_eq_one, Nat.gcd_eq_gcd_ab, zpow_add, mul_pow,
-    ← zpow_natCast, ← zpow_mul, mul_right_comm]
-  simp only [zpow_mul, hl, h.pow_eq_one, one_zpow, one_pow, one_mul, zpow_natCast]
+  grind [pow_div_gcd h i (by grind)]
 
 theorem pow_of_prime (h : IsPrimitiveRoot ζ k) {p : ℕ} (hprime : Nat.Prime p) (hdiv : ¬p ∣ k) :
     IsPrimitiveRoot (ζ ^ p) k :=
@@ -234,8 +235,8 @@ theorem pow_mul_pow_lcm {ζ' : M} {k' : ℕ} (hζ : IsPrimitiveRoot ζ k) (hζ' 
     IsPrimitiveRoot
       (ζ ^ (k / Nat.factorizationLCMLeft k k') * ζ' ^ (k' / Nat.factorizationLCMRight k k'))
       (Nat.lcm k k') := by
-  convert! IsPrimitiveRoot.orderOf _
-  convert!
+  convert IsPrimitiveRoot.orderOf _
+  convert
     ((Commute.all ζ ζ').orderOf_mul_pow_eq_lcm (by simpa [← hζ.eq_orderOf])
         (by simpa [← hζ'.eq_orderOf])).symm using 2
   all_goals simp [hζ.eq_orderOf, hζ'.eq_orderOf]
@@ -435,7 +436,7 @@ theorem eq_neg_one_of_two_right [NoZeroDivisors R] {ζ : R} (h : IsPrimitiveRoot
 
 theorem neg_one (p : ℕ) [Nontrivial R] [h : CharP R p] (hp : p ≠ 2) :
     IsPrimitiveRoot (-1 : R) 2 := by
-  convert! IsPrimitiveRoot.orderOf (-1 : R)
+  convert IsPrimitiveRoot.orderOf (-1 : R)
   rw [orderOf_neg_one, ite_eq_right <| by rwa [ringChar.eq_iff.mpr h]]
 
 /-- If `1 < k` then `(∑ i ∈ range k, ζ ^ i) = 0`. -/
@@ -793,7 +794,7 @@ noncomputable def autToPow [NeZero n] : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
         replace h : μ' = μ' ^ h1.choose :=
           rootsOfUnity.coe_injective (by simpa only [rootsOfUnity.coe_pow] using! h)
         nth_rw 1 [← pow_one μ'] at h
-        convert! ho ▸ (ZMod.natCast_eq_natCast_iff ..).mpr (pow_eq_pow_iff_modEq.mp h).symm
+        convert ho ▸ (ZMod.natCast_eq_natCast_iff ..).mpr (pow_eq_pow_iff_modEq.mp h).symm
         exact Nat.cast_one.symm
       map_mul' := by
         intro x y

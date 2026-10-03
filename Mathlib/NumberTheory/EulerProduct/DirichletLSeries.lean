@@ -82,7 +82,9 @@ lemma tsum_dirichletSummand {N : ℕ} (χ : DirichletCharacter ℂ N) (hs : 1 < 
   simp only [dirichletSummandHom, cpow_neg, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, LSeries,
     LSeries.term_of_ne_zero' (ne_zero_of_one_lt_re hs), div_eq_mul_inv]
 
-open Filter Nat Topology EulerProduct
+open Filter Nat EulerProduct
+
+open scoped Topology
 
 /-- The Euler product for the Riemann ζ function, valid for `s.re > 1`.
 This version is stated in terms of `HasProd`. -/
@@ -209,7 +211,7 @@ lemma DirichletCharacter.LSeries_changeLevel {M N : ℕ} [NeZero N]
 section LogDirichlet
 
 open Real hiding log exp_nat_mul exp_add
-open ArithmeticFunction Primes Summable
+open ArithmeticFunction Summable
 
 variable {N : ℕ} (χ : DirichletCharacter ℂ N) {s : ℂ}
 
@@ -249,7 +251,7 @@ theorem DirichletCharacter.eulerProduct_log_eq_LSeries (hs : 1 < s.re) :
       suffices (Function.support f) ⊆ {n | IsPrimePow n} from
         tsum_subtype_eq_of_support_subset this
       intro n hn
-      contrapose! hn
+      contrapose hn
       simp [f, vonMangoldt_eq_zero_iff.mpr hn]
 
 /-- For `1 < s.re`, the Dirichlet L-function is the exponential of the `L`-series of

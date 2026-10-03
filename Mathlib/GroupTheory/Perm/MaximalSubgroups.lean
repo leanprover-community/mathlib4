@@ -6,9 +6,6 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.GroupTheory.GroupAction.Jordan
-public import Mathlib.GroupTheory.SpecificGroups.Cyclic
-public import Mathlib.GroupTheory.Subgroup.Simple
-public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 
 /-! # Maximal subgroups of the symmetric groups
 
@@ -28,7 +25,7 @@ public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
   * Formalize the other cases of the classification.
     The next one should be the *imprimitive case*.
 
-## Reference
+## References
 
 The argument is taken from [M. Liebeck, C. Praeger, J. Saxl,
 *A classification of the maximal subgroups of the finite
@@ -173,21 +170,19 @@ theorem has_swap_mem_of_lt_stabilizer [DecidableEq α]
     use g, hg
     rw [stabilizer_compl] at hg'
     exact hG.le hg'
-  have hα : Set.encard (_root_.Set.univ : Set α) = 2 := by
+  have hα : ENat.card α = 2 := by
     rw [← Set.encard_add_encard_compl s]
-    have : (1 + 1 : ENat) = 2 := by norm_num
-    convert! this <;>
+    convert one_add_one_eq_two <;>
     · apply le_antisymm
       · assumption
       rw [one_le_encard_iff_nonempty, Set.nonempty_iff_ne_empty]
       aesop
   have _ : Finite α := by
-    rw [finite_iff_nonempty_fintype]
-    refine univ_finite_iff_nonempty_fintype.mp ?_
-    exact finite_of_encard_eq_coe hα
+    rw [← ENat.card_lt_top, hα]
+    exact ENat.ofNat_ne_top 2 |>.lt_top
   have hα : Nat.card α = 2 := by
-    rw [← ENat.card_coe_set_eq, ENat.card_eq_coe_natCard, Nat.card_coe_set_eq, ncard_univ] at hα
-    exact ENat.natCast_inj.mp hα
+    rw [ENat.card_eq_coe_natCard] at hα
+    exact_mod_cast hα
   have hα2 : Fact (Nat.card (Perm α)).Prime := by
     apply Fact.mk
     rw [Nat.card_perm, hα, Nat.factorial_two]
@@ -216,7 +211,7 @@ lemma _root_.Subgroup.isPretransitive_of_stabilizer_lt
     apply not_lt_of_ge
     --  `G ≤ stabilizer (Equiv.Perm α) s`
     have : G = Subgroup.map G.subtype ⊤ := by
-      rw [← MonoidHom.range_eq_map, Subgroup.range_subtype]
+      rw [Subgroup.map_top, Subgroup.range_subtype]
     rw [this, Subgroup.map_le_iff_le_comap]
     rw [show Subgroup.comap G.subtype (stabilizer M s) = stabilizer G s from rfl, hG]
 
@@ -271,7 +266,7 @@ lemma subsingleton_of_stabilizer_lt_of_subset {B : Set α}
     · -- `Subtype.val ⁻¹' B = s`
       have hBs' : B = s := Set.Subset.antisymm hBs (by simp_all)
       subst hBs'
-      obtain ⟨g', hg', hg's⟩ := SetLike.exists_of_lt hG
+      obtain ⟨g', hg', hg's⟩ := IsConcreteLE.exists_of_lt hG
       have h := (isBlock_iff_smul_eq_or_disjoint.mp hB ⟨g', hg'⟩).resolve_left hg's
       suffices (g' • B).Subsingleton by
         exact subsingleton_of_image (MulAction.injective g') B this

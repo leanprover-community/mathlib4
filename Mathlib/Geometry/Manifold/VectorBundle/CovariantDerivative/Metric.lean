@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
-public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 
 /-! # Metric connections
 
@@ -66,7 +65,7 @@ In our definition, we ask for this identity to hold at each `x : M`, whenever `X
 differentiable at `x`.
 -/
 
-variable {σ σ' σ'' τ τ' τ'' : Π x : M, V x}
+variable {σ σ' τ : Π x : M, V x}
 
 local notation "⟪" σ ", " τ "⟫" => fun x ↦ inner ℝ (σ x) (τ x)
 

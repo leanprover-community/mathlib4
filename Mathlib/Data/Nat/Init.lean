@@ -54,10 +54,8 @@ The relevant files are:
 /- We don't want to import the algebraic hierarchy in this file. -/
 assert_not_exists Monoid
 
-open Function
-
 namespace Nat
-variable {a b c d e m n k : ℕ} {p : ℕ → Prop}
+variable {a b m n k : ℕ} {p : ℕ → Prop}
 
 /-! ### `succ`, `pred` -/
 

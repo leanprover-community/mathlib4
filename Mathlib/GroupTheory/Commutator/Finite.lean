@@ -5,12 +5,13 @@ Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Finite
-public import Mathlib.GroupTheory.Commutator.Basic
+import Mathlib.Algebra.Group.Subgroup.Finite
 public import Mathlib.GroupTheory.Rank
 public import Mathlib.GroupTheory.Index
 
 /-!
+# Commutators of finite direct products
+
 The commutator of a finite direct product is contained in the direct product of the commutators.
 -/
 

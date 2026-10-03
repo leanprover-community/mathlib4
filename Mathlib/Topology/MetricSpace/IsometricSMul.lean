@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
 public import Mathlib.Topology.Algebra.ConstMulAction
+public import Mathlib.Topology.EMetricSpace.MulOpposite
 public import Mathlib.Topology.MetricSpace.Isometry
 public import Mathlib.Topology.MetricSpace.Lipschitz
 
@@ -314,35 +314,37 @@ normed spaces. -/
 `X` under translation by `c : G` is bounded. -/]
 theorem Bornology.IsBounded.smul [PseudoMetricSpace X] [SMul G X] [IsIsometricSMul G X] {s : Set X}
     (hs : IsBounded s) (c : G) : IsBounded (c • s) :=
-  (isometry_smul X c).lipschitz.isBounded_image hs
+  (isometry_smul X c).lipschitzWith.isBounded_image hs
 
 namespace Metric
 
 variable [PseudoMetricSpace X] [Group G] [MulAction G X] [IsIsometricSMul G X]
 
 @[to_additive (attr := simp)]
-theorem smul_ball (c : G) (x : X) (r : ℝ) : c • ball x r = ball (c • x) r :=
+protected theorem smul_ball (c : G) (x : X) (r : ℝ) : c • ball x r = ball (c • x) r :=
   (IsometryEquiv.constSMul c).image_ball _ _
 
 @[to_additive (attr := simp)]
 theorem preimage_smul_ball (c : G) (x : X) (r : ℝ) : (c • ·) ⁻¹' ball x r = ball (c⁻¹ • x) r := by
-  rw [preimage_smul, smul_ball]
+  rw [preimage_smul, Metric.smul_ball]
 
 @[to_additive (attr := simp)]
-theorem smul_closedBall (c : G) (x : X) (r : ℝ) : c • closedBall x r = closedBall (c • x) r :=
+protected theorem smul_closedBall (c : G) (x : X) (r : ℝ) :
+    c • closedBall x r = closedBall (c • x) r :=
   (IsometryEquiv.constSMul c).image_closedBall _ _
 
 @[to_additive (attr := simp)]
 theorem preimage_smul_closedBall (c : G) (x : X) (r : ℝ) :
-    (c • ·) ⁻¹' closedBall x r = closedBall (c⁻¹ • x) r := by rw [preimage_smul, smul_closedBall]
+    (c • ·) ⁻¹' closedBall x r = closedBall (c⁻¹ • x) r := by
+  rw [preimage_smul, Metric.smul_closedBall]
 
 @[to_additive (attr := simp)]
-theorem smul_sphere (c : G) (x : X) (r : ℝ) : c • sphere x r = sphere (c • x) r :=
+protected theorem smul_sphere (c : G) (x : X) (r : ℝ) : c • sphere x r = sphere (c • x) r :=
   (IsometryEquiv.constSMul c).image_sphere _ _
 
 @[to_additive (attr := simp)]
 theorem preimage_smul_sphere (c : G) (x : X) (r : ℝ) :
-    (c • ·) ⁻¹' sphere x r = sphere (c⁻¹ • x) r := by rw [preimage_smul, smul_sphere]
+    (c • ·) ⁻¹' sphere x r = sphere (c⁻¹ • x) r := by rw [preimage_smul, Metric.smul_sphere]
 
 variable [PseudoMetricSpace G]
 

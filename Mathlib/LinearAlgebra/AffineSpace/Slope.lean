@@ -6,10 +6,10 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
-public import Mathlib.Tactic.Field
+import Mathlib.Tactic.Field
 public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.Module
-public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Slope of a function
@@ -75,7 +75,7 @@ theorem eq_of_slope_eq_zero {f : k → PE} {a b : k} (h : slope f a b = (0 : E))
 
 theorem AffineMap.slope_comp {F PF : Type*} [AddCommGroup F] [Module k F] [AddTorsor F PF]
     (f : PE →ᵃ[k] PF) (g : k → PE) (a b : k) : slope (f ∘ g) a b = f.linear (slope g a b) := by
-  simp only [slope, (· ∘ ·), f.linear.map_smul, f.linearMap_vsub]
+  simp only [slope, (· ∘ ·), f.linear.map_smul, f.linear_apply_vsub]
 
 theorem LinearMap.slope_comp {F : Type*} [AddCommGroup F] [Module k F] (f : E →ₗ[k] F) (g : k → E)
     (a b : k) : slope (f ∘ g) a b = f (slope g a b) :=
@@ -112,7 +112,6 @@ theorem sub_div_sub_smul_slope_add_sub_div_sub_smul_slope (f : k → PE) (a b c 
     smul_inv_smul₀ (sub_ne_zero.2 <| Ne.symm hab), smul_inv_smul₀ (sub_ne_zero.2 <| Ne.symm hbc),
     vsub_add_vsub_cancel]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `slope f a c` is an affine combination of `slope f a b` and `slope f b c`. This version uses
 `lineMap` to express this property. -/
 theorem lineMap_slope_slope_sub_div_sub (f : k → PE) (a b c : k) (h : a ≠ c) :
@@ -122,14 +121,13 @@ theorem lineMap_slope_slope_sub_div_sub (f : k → PE) (a b c : k) (h : a ≠ c)
   match_scalars
   field [sub_ne_zero.2 h.symm]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `slope f a b` is an affine combination of `slope f a (lineMap a b r)` and
 `slope f (lineMap a b r) b`. We use `lineMap` to express this property. -/
 theorem lineMap_slope_lineMap_slope_lineMap (f : k → PE) (a b r : k) :
     lineMap (slope f (lineMap a b r) b) (slope f a (lineMap a b r)) r = slope f a b := by
   obtain rfl | hab : a = b ∨ a ≠ b := Classical.em _; · simp
   rw [slope_comm _ a, slope_comm _ a, slope_comm _ _ b]
-  convert! lineMap_slope_slope_sub_div_sub f b (lineMap a b r) a hab.symm using 2
+  convert lineMap_slope_slope_sub_div_sub f b (lineMap a b r) a hab.symm using 2
   rw [lineMap_apply_ring, eq_div_iff (sub_ne_zero.2 hab), sub_mul, one_mul, mul_sub, ← sub_sub,
     sub_sub_cancel]
 

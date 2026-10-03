@@ -5,17 +5,17 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Algebra.DirectSum.Module
+import Mathlib.Algebra.DirectSum.Module
 public import Mathlib.LinearAlgebra.DFinsupp
-public import Mathlib.LinearAlgebra.Finsupp.Span
-public import Mathlib.LinearAlgebra.Isomorphisms
+import Mathlib.LinearAlgebra.Finsupp.Span
+import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.LinearAlgebra.Projection
 public import Mathlib.Order.Atoms.Finite
 public import Mathlib.Order.CompactlyGenerated.Intervals
 public import Mathlib.Order.JordanHolder
 public import Mathlib.RingTheory.Ideal.Colon
 public import Mathlib.RingTheory.Noetherian.Defs
-public import Mathlib.SetTheory.Cardinal.NatCard
+import Mathlib.SetTheory.Cardinal.NatCard
 public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
@@ -155,7 +155,7 @@ theorem ker_toSpanSingleton_isMaximal {m : M} (hm : m ≠ 0) :
   exact congr (quotKerEquivOfSurjective _ <| toSpanSingleton_surjective R hm)
 
 open scoped IsSimpleOrder in
-instance : IsNoetherian R M := isNoetherian_iff'.mpr inferInstance
+instance : IsNoetherian R M := isNoetherian_iff.mpr inferInstance
 
 end IsSimpleModule
 
@@ -169,7 +169,7 @@ theorem isSimpleModule_iff_quot_maximal :
     have ⟨m, hm⟩ := exists_ne (0 : M)
     exact ⟨_, ker_toSpanSingleton_isMaximal R hm,
       ⟨(LinearMap.quotKerEquivOfSurjective _ <| toSpanSingleton_surjective R hm).symm⟩⟩
-  · convert! congr equiv; rwa [isSimpleModule_iff_isCoatom]
+  · convert congr equiv; rwa [isSimpleModule_iff_isCoatom]
 
 /-- In general, the annihilator of a simple module is called a primitive ideal, and it is
 always a two-sided prime ideal, but mathlib's `Ideal.IsPrime` is not the correct definition
@@ -568,7 +568,6 @@ theorem jacobson_density (f : End (End R M) M) (s : Finset M) :
   have ⟨r, hr⟩ := mem_span_singleton.mp this
   ⟨r, fun m hm ↦ by simpa [x] using! congr($hr ⟨m, hm⟩).symm⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Jacobson density theorem for a module finite over its endomorphism ring. -/
 protected theorem Module.Finite.toModuleEnd_moduleEnd_surjective [Module.Finite (End R M) M] :
     Function.Surjective (Module.toModuleEnd (End R M) (S := R) M) := by

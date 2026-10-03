@@ -36,7 +36,9 @@ which shall be an equivalence for any additive category `C`.
 noncomputable section
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits SimplexCategory
-  SimplicialObject Opposite CategoryTheory.Idempotents Simplicial DoldKan
+  SimplicialObject Opposite CategoryTheory.Idempotents
+
+open scoped Simplicial DoldKan
 
 namespace AlgebraicTopology
 
@@ -172,7 +174,6 @@ def map (K : ChainComplex C ℕ) {Δ' Δ : SimplexCategoryᵒᵖ} (θ : Δ ⟶ �
   Sigma.desc fun A =>
     Termwise.mapMono K (image.ι (θ.unop ≫ A.e)) ≫ Sigma.ι (summand K Δ') (A.pull θ)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem map_on_summand₀ {Δ Δ' : SimplexCategoryᵒᵖ} (A : Splitting.IndexSet Δ) {θ : Δ ⟶ Δ'}
     {Δ'' : SimplexCategory} {e : Δ'.unop ⟶ Δ''} {i : Δ'' ⟶ A.1.unop} [Epi e] [Mono i]
@@ -335,7 +336,7 @@ theorem HigherFacesVanish.on_Γ₀_summand_id (K : ChainComplex C ℕ) (n : ℕ)
   have eq := Γ₀.Obj.mapMono_on_summand_id K (SimplexCategory.δ j.succ)
   rw [Γ₀.Obj.Termwise.mapMono_eq_zero K, zero_comp] at eq; rotate_left
   · intro h
-    exact (Nat.succ_ne_self n) (congr_arg SimplexCategory.len h)
+    exact (Nat.succ_ne_self n) congr($(h).len)
   · exact fun h => Fin.succ_ne_zero j (by simpa only [Isδ₀.iff] using h)
   exact eq
 
