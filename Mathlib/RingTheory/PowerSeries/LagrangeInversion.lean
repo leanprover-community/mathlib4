@@ -179,8 +179,7 @@ private theorem lagrange_inversion_coeff_pow_of_le {m k : ℕ} (hk : k ≤ m + 1
         (P ^ k).coeff l * (l • (P ^ (t + 1)).coeff (t + 1 - l)) := by
       intro l hl
       rw [← mul_smul_comm, ih t (by omega) (mem_range_succ_iff.mp hl)]
-    have hpoly : (k + t + 1) • (d⁄dX (P ^ k) * P ^ (t + 1)) =
-        k • d⁄dX (P ^ (k + (t + 1))) := by
+    have hpoly : (k + t + 1) • (d⁄dX (P ^ k) * P ^ (t + 1)) = k • d⁄dX (P ^ (k + (t + 1))) := by
       rw [derivative_pow, derivative_pow, Nat.sub_add_comm hk0, pow_add]
       push_cast
       ring
