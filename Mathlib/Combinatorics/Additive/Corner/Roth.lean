@@ -112,7 +112,7 @@ theorem corners_theorem_nat (hε : 0 < ε) (hn : cornersTheoremBound (ε / 9) �
     lia
   rw [this] at hA
   have : IsCornerFree (Prod.map (Fin.ofNat (2 * n).succ) (Fin.ofNat (2 * n).succ) '' A) := by
-    have := Fin.isAddFreimanIso_Iio (n := 2 * n) two_ne_zero (le_refl _)
+    have := Fin.isAddFreimanIso_Iio two_ne_zero (le_refl (2 * n))
     refine hA.of_image this.isAddFreimanHom Fin.val_injective.injOn ?_
     refine Set.image_subset_iff.2 <| hAn.trans fun ⟨x, y⟩ ⟨hx, hy⟩ ↦ ?_
     exact ⟨Fin.natCast_strictMono (by lia) hx, Fin.natCast_strictMono (by lia) hy⟩
@@ -167,7 +167,7 @@ theorem roth_3ap_theorem_nat (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound
     lia
   rw [this] at hA
   have : ThreeAPFree ((Fin.ofNat (2 * n + 1)) '' A) := by
-    have := Fin.isAddFreimanIso_Iio (n := 2 * n) two_ne_zero (le_refl (2 * n))
+    have := Fin.isAddFreimanIso_Iio two_ne_zero (le_refl (2 * n))
     refine hA.of_image this.isAddFreimanHom Fin.val_injective.injOn ?_
     exact Set.image_subset_iff.2 <| hAn.trans fun x hx ↦ Fin.natCast_strictMono (by lia) hx
   rw [← coe_image] at this
