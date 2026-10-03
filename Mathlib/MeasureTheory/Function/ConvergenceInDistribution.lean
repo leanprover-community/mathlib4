@@ -64,10 +64,10 @@ This is the weak convergence of the laws of the random variables: `Tendsto` in t
 structure TendstoInDistribution [OpensMeasurableSpace E] (X : (i : ι) → Ω i → E) (l : Filter ι)
     (Z : Ω' → E) (μ : (i : ι) → Measure (Ω i)) [∀ i, IsProbabilityMeasure (μ i)]
     (μ' : Measure Ω' := by volume_tac) [IsProbabilityMeasure μ'] : Prop where
-  forall_aemeasurable : ∀ i, AEMeasurable (X i) (μ i)
+  forall_aemeasurable : ∀ i, AEMeasurable (X i) (μ i) := by fun_prop
   aemeasurable_limit : AEMeasurable Z μ' := by fun_prop
   tendsto : Tendsto (β := ProbabilityMeasure E)
-      (fun n ↦ ⟨(μ n).map (X n), inferInstance⟩) l (𝓝 ⟨μ'.map Z, inferInstance⟩)
+      (fun n ↦ ((μ n).map (X n)).toProbabilityMeasure) l (𝓝 (μ'.map Z).toProbabilityMeasure)
 
 theorem tendstoInDistribution_iff_forall_integral_rclike_tendsto
     (𝕜 : Type*) [RCLike 𝕜] [OpensMeasurableSpace E]
@@ -90,7 +90,11 @@ lemma tendstoInDistribution_const [OpensMeasurableSpace E] (hZ : AEMeasurable Z 
   forall_aemeasurable := fun _ ↦ by fun_prop
   tendsto := tendsto_const_nhds
 
-set_option backward.isDefEq.respectTransparency.types false in
+@[simp]
+lemma TendstoInDistribution.const_const [OpensMeasurableSpace E] {c : E} :
+    TendstoInDistribution (fun _ _ ↦ c) l (fun _ ↦ c) μ μ' where
+  tendsto := by simpa using tendsto_const_nhds
+
 lemma tendstoInDistribution_of_identDistrib [OpensMeasurableSpace E] (i : ι)
     (hX : ∀ j, IdentDistrib (X i) (X j) (μ i) (μ j)) (hZ : IdentDistrib (X i) Z (μ i) μ') :
     TendstoInDistribution X l Z μ μ' where
@@ -100,7 +104,6 @@ lemma tendstoInDistribution_of_identDistrib [OpensMeasurableSpace E] (i : ι)
     convert! tendsto_const_nhds with j
     exact (hX j).map_eq.symm.trans hZ.map_eq
 
-set_option backward.isDefEq.respectTransparency.types false in
 protected lemma TendstoInDistribution.congr [OpensMeasurableSpace E] {T : Ω' → E}
     (hXY : ∀ i, X i =ᵐ[μ i] Y i) (hZT : Z =ᵐ[μ'] T) (h : TendstoInDistribution X l Z μ μ') :
     TendstoInDistribution Y l T μ μ' where
@@ -108,7 +111,8 @@ protected lemma TendstoInDistribution.congr [OpensMeasurableSpace E] {T : Ω' �
   aemeasurable_limit := h.aemeasurable_limit.congr hZT
   tendsto := by
     convert! h.tendsto using 2 with n
-    · simpa using Measure.map_congr (hXY n).symm
+    · simpa only [Measure.toProbabilityMeasure_inj] using
+        Measure.map_congr (hXY n).symm
     · rw! [Measure.map_congr hZT]
       rfl
 
@@ -130,7 +134,6 @@ lemma tendstoInDistribution_unique [HasOuterApproxClosed E] [BorelSpace E]
   rw [Subtype.ext_iff] at h_eq
   simpa using h_eq
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- **Continuous mapping theorem**: if `X n` tends to `Z` in distribution and `g` is continuous,
 then `g ∘ X n` tends to `g ∘ Z` in distribution. -/
 theorem TendstoInDistribution.continuous_comp {F : Type*} [OpensMeasurableSpace E]
@@ -141,11 +144,12 @@ theorem TendstoInDistribution.continuous_comp {F : Type*} [OpensMeasurableSpace 
   aemeasurable_limit := hg.measurable.comp_aemeasurable h.aemeasurable_limit
   tendsto := by
     convert! ProbabilityMeasure.tendsto_map_of_tendsto_of_continuous _ _ h.tendsto hg
-    · simp only [ProbabilityMeasure.map, ProbabilityMeasure.coe_mk, Subtype.mk.injEq]
-      rw [AEMeasurable.map_map_of_aemeasurable hg.aemeasurable (h.forall_aemeasurable _)]
-    · simp only [ProbabilityMeasure.map, ProbabilityMeasure.coe_mk]
-      congr
-      rw [AEMeasurable.map_map_of_aemeasurable hg.aemeasurable h.aemeasurable_limit]
+    · rw! [← ProbabilityMeasure.toProbabilityMeasure_map, AEMeasurable.map_map_of_aemeasurable
+          hg.aemeasurable (h.forall_aemeasurable _)]
+      rfl
+    · rw! [← ProbabilityMeasure.toProbabilityMeasure_map, AEMeasurable.map_map_of_aemeasurable
+          hg.aemeasurable h.aemeasurable_limit]
+      rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- Almost sure convergence implies convergence in distribution. -/
@@ -157,7 +161,8 @@ theorem tendstoInDistribution_of_ae_tendsto [l.IsCountablyGenerated]
   forall_aemeasurable := hX₁
   aemeasurable_limit := hZ
   tendsto := by
-    simp_rw [ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto, ProbabilityMeasure.coe_mk]
+    simp_rw [ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto,
+      Measure.coe_toProbabilityMeasure]
     intro f
     rw [lintegral_map' (by fun_prop) hZ]
     conv in ∫⁻ _, _ ∂_ => rw [lintegral_map' (by fun_prop) (hX₁ i)]
