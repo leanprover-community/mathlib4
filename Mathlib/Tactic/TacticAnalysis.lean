@@ -260,11 +260,12 @@ def runPasses (configs : Array Pass) (trees : PersistentArray InfoTree) : Comman
   let enabledConfigs := configs.filterMap fun config =>
     -- This can be `none` in the file where the option is declared.
     config.opt.filter (getLinterValue · opts) |>.map ((·, config))
-  -- if enabledConfigs.isEmpty then
-  --   return
+  if enabledConfigs.isEmpty then
+    return
   for i in trees do
     for seq in (← findTacticSeqs i) do
-      pure ()
+      for (opt, config) in enabledConfigs do
+        withLintTagging opt <| config.run seq
 
 /-- A tactic analysis framework.
 It is aimed at allowing developers to specify refactoring patterns,

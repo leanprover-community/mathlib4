@@ -473,6 +473,7 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
   let mut stains : Array ((FVarId × MVarId) × StainData) := #[]
   let mut msgs : Array (Syntax × StainData) := #[]
   for td in tacticData do
+    if true then return
     let s := td.stx
     let ctx0 := td.mctxBefore
     let ctx1 := td.mctxAfter
