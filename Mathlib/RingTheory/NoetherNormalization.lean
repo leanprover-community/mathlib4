@@ -25,7 +25,7 @@ First, we construct an algebra equivalence `T` from `k[X_0,...,X_n]` to itself s
 More precisely, `T` maps `X_i` to `X_i + X_0 ^ r_i` when `i ≠ 0`, and `X_0` to `X_0`.
 Here we choose `r_i` to be `up ^ i` where `up` is big enough, so that `T` maps
 different monomials of `f` to polynomials with different degrees in `X_0`.
-See `degreeOf_t_ne_of_ne`.
+See `NoetherNormalization.varChange` and `degreeOf_varChange_ne_of_ne`.
 
 Secondly, we construct the following maps: let `I` be an ideal containing `f` and
 let `φ : k[X_0,...X_{n-1}] ≃ₐ[k] k[X_1,...X_n][X]` be the natural isomorphism.
@@ -78,22 +78,15 @@ noncomputable abbrev T1 (c : k) :
     MvPolynomial (Fin (n + 1)) k →ₐ[k] MvPolynomial (Fin (n + 1)) k :=
   aeval fun i ↦ if i = 0 then X 0 else X i + c • X 0 ^ r i
 
-/-- The substitutions `T1 f c` and `T1 f (-c)` are mutually inverse. This is what makes
-`NoetherNormalization.T` an algebra equivalence. -/
-lemma T1_comp_T1_neg (c : k) : (T1 f c).comp (T1 f (-c)) = AlgHom.id _ _ := by
+lemma t1_comp_t1_neg (c : k) : (T1 f c).comp (T1 f (-c)) = AlgHom.id _ _ := by
   rw [comp_aeval, ← MvPolynomial.aeval_X_left]
   ext i v
   cases i using Fin.cases <;> simp
 
-/-- The triangular change of variables attached to a polynomial `f`: the algebra automorphism of
-`MvPolynomial (Fin (n + 1)) k` sending `X i` to `X i + X 0 ^ (2 + f.totalDegree) ^ i` for `i ≠ 0`
-and fixing `X 0`. It is `T1 f 1`, with inverse `T1 f (-1)`.
-
-The exponents grow fast enough that `T f` sends distinct monomials of `f` to polynomials of
-distinct degrees in `X 0`, so that `T f f` becomes monic in `X 0` up to a unit; see
-`NoetherNormalization.T_leadingCoeff_isUnit`. -/
-noncomputable abbrev T := AlgEquiv.ofAlgHom (T1 f 1) (T1 f (-1))
-  (T1_comp_T1_neg f 1) (by simpa using T1_comp_T1_neg f (-1))
+/-- The algebra automorphism of `k[X_0, ..., X_n]` that fixes `X_0` and sends `X_i` to
+`X_i + X_0 ^ r_i` for `i ≠ 0`, where `r_i = (2 + f.totalDegree) ^ i`. -/
+noncomputable abbrev varChange := AlgEquiv.ofAlgHom (T1 f 1) (T1 f (-1))
+  (t1_comp_t1_neg f 1) (by simpa using t1_comp_t1_neg f (-1))
 
 private lemma sum_r_mul_ne (vlt : ∀ i, v i < up) (wlt : ∀ i, w i < up) (ne : v ≠ w) :
     ∑ x : Fin (n + 1), r x * v x ≠ ∑ x : Fin (n + 1), r x * w x := by
@@ -104,8 +97,8 @@ private lemma sum_r_mul_ne (vlt : ∀ i, v i < up) (wlt : ∀ i, w i < up) (ne :
   simpa only [ofDigits_eq_sum_mapIdx, mapIdx_eq_ofFn, get_ofFn, length_ofFn,
     Fin.val_cast, mul_comm, sum_ofFn] using! h
 
-private lemma degreeOf_zero_t {a : k} (ha : a ≠ 0) : ((T f) (monomial v a)).degreeOf 0 =
-    ∑ i : Fin (n + 1), (r i) * v i := by
+private lemma degreeOf_zero_varChange {a : k} (ha : a ≠ 0) :
+    ((varChange f) (monomial v a)).degreeOf 0 = ∑ i : Fin (n + 1), (r i) * v i := by
   rw [← natDegree_finSuccEquiv, monomial_eq, Finsupp.prod_pow v fun a ↦ X a]
   simp only [Fin.prod_univ_succ, Fin.sum_univ_succ, map_mul, map_prod, map_pow,
     AlgEquiv.ofAlgHom_apply, MvPolynomial.aeval_C, MvPolynomial.aeval_X, ite_eq_left,
@@ -122,16 +115,17 @@ private lemma degreeOf_zero_t {a : k} (ha : a ≠ 0) : ((T f) (monomial v a)).de
     rw [add_comm (Polynomial.C _), natDegree_X_pow_add_C, mul_comm])
 
 /-- `T` maps different monomials of `f` to polynomials with different degrees in `X_0`. -/
-private lemma degreeOf_t_ne_of_ne (hv : v ∈ f.support) (hw : w ∈ f.support) (ne : v ≠ w) :
-    (T f <| monomial v <| f.coeff v).degreeOf 0 ≠
-    (T f <| monomial w <| f.coeff w).degreeOf 0 := by
-  rw [degreeOf_zero_t _ _ <| mem_support_iff.mp hv, degreeOf_zero_t _ _ <| mem_support_iff.mp hw]
+private lemma degreeOf_varChange_ne_of_ne (hv : v ∈ f.support) (hw : w ∈ f.support) (ne : v ≠ w) :
+    (varChange f <| monomial v <| f.coeff v).degreeOf 0 ≠
+    (varChange f <| monomial w <| f.coeff w).degreeOf 0 := by
+  rw [degreeOf_zero_varChange _ _ <| mem_support_iff.mp hv,
+    degreeOf_zero_varChange _ _ <| mem_support_iff.mp hw]
   refine sum_r_mul_ne f v w (fun i ↦ ?_) (fun i ↦ ?_) ne <;>
   exact lt_of_le_of_lt ((monomial_le_degreeOf i ‹_›).trans (degreeOf_le_totalDegree f i))
     (by lia)
 
-private lemma leadingCoeff_finSuccEquiv_t :
-    (finSuccEquiv k n <| T f <| monomial v <| f.coeff v).leadingCoeff =
+private lemma leadingCoeff_finSuccEquiv_varChange :
+    (finSuccEquiv k n <| varChange f <| monomial v <| f.coeff v).leadingCoeff =
     algebraMap k _ (f.coeff v) := by
   rw [monomial_eq, Finsupp.prod_fintype]
   · simp only [map_mul, map_prod, leadingCoeff_mul, leadingCoeff_prod]
@@ -148,34 +142,32 @@ private lemma leadingCoeff_finSuccEquiv_t :
     simp only [this, one_pow, Finset.prod_const_one, mul_one]
   exact fun i ↦ pow_zero _
 
-/-- If `f ≠ 0`, then `T f f`, seen through `finSuccEquiv` as a polynomial in `X 0` with
-coefficients in `k[X_1, ..., X_n]`, has invertible leading coefficient. In other words, the
-change of variables `T f` makes `f` monic in `X 0` up to a unit. -/
-lemma T_leadingCoeff_isUnit (fne : f ≠ 0) :
-    IsUnit (finSuccEquiv k n (T f f)).leadingCoeff := by
+/-- If `f ≠ 0`, the leading coefficient of `varChange f f` as a polynomial in `X_0` is a unit. -/
+lemma isUnit_leadingCoeff_finSuccEquiv_varChange (fne : f ≠ 0) :
+    IsUnit (finSuccEquiv k n (varChange f f)).leadingCoeff := by
   obtain ⟨v, vin, vs⟩ := Finset.exists_max_image f.support
-    (fun v ↦ (T f <| monomial v <| f.coeff v).degreeOf 0) (support_nonempty.mpr fne)
+    (fun v ↦ (varChange f <| monomial v <| f.coeff v).degreeOf 0) (support_nonempty.mpr fne)
   set h := fun w ↦ MvPolynomial.monomial w (f.coeff w)
   simp only [← natDegree_finSuccEquiv] at vs
-  replace vs : ∀ x ∈ f.support \ {v}, (finSuccEquiv k n ((T f) (h x))).degree <
-      (finSuccEquiv k n ((T f) (h v))).degree := by
+  replace vs : ∀ x ∈ f.support \ {v}, (finSuccEquiv k n ((varChange f) (h x))).degree <
+      (finSuccEquiv k n ((varChange f) (h v))).degree := by
     intro x hx
     obtain ⟨h1, h2⟩ := Finset.mem_sdiff.mp hx
     apply degree_lt_degree <| lt_of_le_of_ne (vs x h1) ?_
     simpa only [natDegree_finSuccEquiv]
-      using degreeOf_t_ne_of_ne f _ _ h1 vin <| ne_of_not_mem_cons h2
-  have coeff : (finSuccEquiv k n ((T f) (h v + ∑ x ∈ f.support \ {v}, h x))).leadingCoeff =
-      (finSuccEquiv k n ((T f) (h v))).leadingCoeff := by
+      using degreeOf_varChange_ne_of_ne f _ _ h1 vin <| ne_of_not_mem_cons h2
+  have coeff : (finSuccEquiv k n ((varChange f) (h v + ∑ x ∈ f.support \ {v}, h x))).leadingCoeff =
+      (finSuccEquiv k n ((varChange f) (h v))).leadingCoeff := by
     simp only [map_add, map_sum]
     rw [add_comm]
     apply leadingCoeff_add_of_degree_lt <| (lt_of_le_of_lt <| degree_sum_le _ _) ?_
     have h2 : h v ≠ 0 := by simpa [h] using mem_support_iff.mp vin
-    replace h2 : (finSuccEquiv k n ((T f) (h v))) ≠ 0 := fun eq ↦ h2 <|
+    replace h2 : (finSuccEquiv k n ((varChange f) (h v))) ≠ 0 := fun eq ↦ h2 <|
       by simpa only [map_eq_zero_iff _ (AlgEquiv.injective _)] using eq
     exact (Finset.sup_lt_iff <| Ne.bot_lt (fun x ↦ h2 <| degree_eq_bot.mp x)).mpr vs
   nth_rw 2 [← f.support_sum_monomial_coeff]
   rw [Finset.sum_eq_add_sum_sdiff_singleton_of_mem vin h]
-  rw [leadingCoeff_finSuccEquiv_t] at coeff
+  rw [leadingCoeff_finSuccEquiv_varChange] at coeff
   simpa only [coeff, algebraMap_eq] using (mem_support_iff.mp vin).isUnit.map MvPolynomial.C
 
 end equivT
@@ -187,40 +179,40 @@ variable (I : Ideal (MvPolynomial (Fin (n + 1)) k))
 /-- `hom1` is a homomorphism from `k[X_0,...X_{n-1}]` to `k[X_1,...X_n][X]/φ(T(I))`,
 where `φ` is the isomorphism from `k[X_0,...X_{n-1}]` to `k[X_1,...X_n][X]`. -/
 private noncomputable abbrev hom1 : MvPolynomial (Fin n) k →ₐ[MvPolynomial (Fin n) k]
-    (MvPolynomial (Fin n) k)[X] ⧸ (I.map <| T f).map (finSuccEquiv k n) :=
-  (Quotient.mkₐ (MvPolynomial (Fin n) k) (map (finSuccEquiv k n) (map (T f) I))).comp
+    (MvPolynomial (Fin n) k)[X] ⧸ (I.map <| varChange f).map (finSuccEquiv k n) :=
+  (Quotient.mkₐ (MvPolynomial (Fin n) k) (map (finSuccEquiv k n) (map (varChange f) I))).comp
   (Algebra.ofId (MvPolynomial (Fin n) k) ((MvPolynomial (Fin n) k)[X]))
 
 /-- `hom1 f I` is integral. -/
 private lemma hom1_isIntegral (fne : f ≠ 0) (fi : f ∈ I) : (hom1 f I).IsIntegral := by
-  obtain u := T_leadingCoeff_isUnit f fne
+  obtain u := isUnit_leadingCoeff_finSuccEquiv_varChange f fne
   exact (monic_of_isUnit_leadingCoeff_inv_smul u).quotient_isIntegral <|
     Submodule.smul_of_tower_mem _ u.unit⁻¹.val <| mem_map_of_mem _ <| mem_map_of_mem _ fi
 
 /-- `eqv1` is the isomorphism from `k[X_1,...X_n][X]/φ(T(I))`
 to `k[X_0,...,X_n]/T(I)`, induced by `φ`. -/
 private noncomputable abbrev eqv1 :
-    ((MvPolynomial (Fin n) k)[X] ⧸ (I.map (T f)).map (finSuccEquiv k n)) ≃ₐ[k]
-    MvPolynomial (Fin (n + 1)) k ⧸ I.map (T f) := quotientEquivAlg
-  ((I.map (T f)).map (finSuccEquiv k n)) (I.map (T f)) (finSuccEquiv k n).symm <| by
+    ((MvPolynomial (Fin n) k)[X] ⧸ (I.map (varChange f)).map (finSuccEquiv k n)) ≃ₐ[k]
+    MvPolynomial (Fin (n + 1)) k ⧸ I.map (varChange f) := quotientEquivAlg
+  ((I.map (varChange f)).map (finSuccEquiv k n)) (I.map (varChange f)) (finSuccEquiv k n).symm <| by
   set g := (finSuccEquiv k n)
   have : g.symm.toRingEquiv.toRingHom.comp g = RingHom.id _ :=
     g.toRingEquiv.symm_toRingHom_comp_toRingHom
   calc
-    _ = Ideal.map ((RingHom.id _).comp <| T f) I := by rw [id_comp, Ideal.map_coe]
-    _ = (I.map (T f)).map (RingHom.id _) := by simp only [← Ideal.map_map, Ideal.map_coe]
-    _ = (I.map (T f)).map (g.symm.toAlgHom.toRingHom.comp g) :=
-      congr(Ideal.map $(this.symm) (I.map (T f)))
+    _ = Ideal.map ((RingHom.id _).comp <| varChange f) I := by rw [id_comp, Ideal.map_coe]
+    _ = (I.map (varChange f)).map (RingHom.id _) := by simp only [← Ideal.map_map, Ideal.map_coe]
+    _ = (I.map (varChange f)).map (g.symm.toAlgHom.toRingHom.comp g) :=
+      congr(Ideal.map $(this.symm) (I.map (varChange f)))
     _ = _ := by simp [← Ideal.map_map, Ideal.map_coe]
 
 /-- `eqv2` is the isomorphism from `k[X_0,...,X_n]/T(I)` into `k[X_0,...,X_n]/I`,
 induced by `T`. -/
 private noncomputable abbrev eqv2 :
-    (MvPolynomial (Fin (n + 1)) k ⧸ I.map (T f)) ≃ₐ[k] MvPolynomial (Fin (n + 1)) k ⧸ I :=
-  quotientEquivAlg (R₁ := k) (I.map (T f)) I (T f).symm <| by
+    (MvPolynomial (Fin (n + 1)) k ⧸ I.map (varChange f)) ≃ₐ[k] MvPolynomial (Fin (n + 1)) k ⧸ I :=
+  quotientEquivAlg (R₁ := k) (I.map (varChange f)) I (varChange f).symm <| by
   calc
-    _ = I.map ((T f).symm.toRingEquiv.toRingHom.comp (T f)) := by
-      have : (T f).symm.toRingEquiv.toRingHom.comp (T f) = RingHom.id _ :=
+    _ = I.map ((varChange f).symm.toRingEquiv.toRingHom.comp (varChange f)) := by
+      have : (varChange f).symm.toRingEquiv.toRingHom.comp (varChange f) = RingHom.id _ :=
         RingEquiv.symm_toRingHom_comp_toRingHom _
       rw [this, Ideal.map_id]
     _ = _ := by
