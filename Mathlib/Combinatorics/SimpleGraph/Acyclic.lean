@@ -674,4 +674,26 @@ theorem IsAcyclic.cliqueFree (h : G.IsAcyclic) {n : ℕ} (hn : 3 ≤ n) : G.Cliq
   refine not_cliqueFree_iff_top_isContained n |>.not_right.mpr fun hle ↦ ?_
   exact isAcyclic_iff_free_cycleGraph.mp h n hn <| hle.trans' <| .of_le le_top
 
+section Hasse
+
+theorem isAcyclic_hasse_of_linearOrder (α : Type*) [LinearOrder α] : (hasse α).IsAcyclic := by
+  refine isAcyclic_iff_forall_adj_isBridge.mpr fun u v huv ↦ ?_
+  wlog hle : u < v
+  · grind [Adj.symm]
+  refine isBridge_iff.mpr fun ⟨w⟩ ↦ ?_
+  have := w.exists_boundary_dart (.Iio v) hle Set.self_notMem_Iio
+  grind [Dart.adj, hasse_adj, deleteEdges_adj, CovBy]
+
+@[simp]
+theorem isAcyclic_pathGraph (n : ℕ) : (pathGraph n).IsAcyclic := isAcyclic_hasse_of_linearOrder _
+
+theorem isTree_pathGraph_add_one (n : ℕ) : (pathGraph (n + 1)).IsTree :=
+  ⟨connected_pathGraph_add_one n, isAcyclic_pathGraph (n + 1)⟩
+
+@[simp]
+theorem isTree_pathGraph {n : ℕ} : (pathGraph n).IsTree ↔ n ≠ 0 := by
+  simp [isTree_iff, connected_iff, ← Fin.isEmpty_iff]
+
+end Hasse
+
 end SimpleGraph
