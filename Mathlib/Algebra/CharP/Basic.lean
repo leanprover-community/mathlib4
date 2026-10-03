@@ -194,6 +194,12 @@ open Fin.NatCast
 @[stacks 09FS "First part. We don't require `p` to be a prime in mathlib."]
 instance charP (n : ℕ) [NeZero n] : CharP (Fin n) n where cast_eq_zero_iff _ := natCast_eq_zero
 
+/-- The natural-number cast into `Fin n` is injective below any `m ≤ n`. -/
+lemma ofNat_injOn_Iio {n m : ℕ} [NeZero n] (hmn : m ≤ n) :
+    Set.InjOn (Fin.ofNat n) (Set.Iio m) := by
+  change Set.InjOn ((↑) : ℕ → Fin n) (Set.Iio m)
+  exact (CharP.natCast_injOn_Iio (Fin n) n).mono fun _ h ↦ lt_of_lt_of_le h hmn
+
 end Fin
 
 section AddMonoidWithOne

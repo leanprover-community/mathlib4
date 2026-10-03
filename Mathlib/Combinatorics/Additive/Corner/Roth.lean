@@ -66,14 +66,6 @@ variable [Fintype G]
 
 open Corners
 
-private lemma Fin.ofNat_injOn_Iio (n : ℕ) : Set.InjOn (Fin.ofNat (2 * n).succ) (Set.Iio n) := by
-  intro a ha b hb hab
-  have ha' : a < n := ha
-  have hb' : b < n := hb
-  have haM : a < (2 * n).succ := by lia
-  have hbM : b < (2 * n).succ := by lia
-  grind [Fin.val_ofNat, Nat.mod_eq_of_lt haM, Nat.mod_eq_of_lt hbM]
-
 /-- An explicit form for the constant in the corners theorem.
 
 Note that this depends on `SzemerediRegularity.bound`, which is a tower-type exponential. This means
@@ -132,7 +124,7 @@ theorem corners_theorem_nat (hε : 0 < ε) (hn : cornersTheoremBound (ε / 9) �
     _ ≤ #A := hAε
     _ = _ := by
       rw [card_image_of_injOn]
-      exact ((Fin.ofNat_injOn_Iio n).prodMap (Fin.ofNat_injOn_Iio n)).mono hAn
+      exact ((Fin.ofNat_injOn_Iio (by lia)).prodMap (Fin.ofNat_injOn_Iio (by lia))).mono hAn
 
 /-- **Roth's theorem** for finite abelian groups.
 
@@ -186,7 +178,7 @@ theorem roth_3ap_theorem_nat (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound
     _ ≤ #A := hAε
     _ = _ := by
       rw [card_image_of_injOn]
-      exact (Fin.ofNat_injOn_Iio n).mono hAn
+      exact (Fin.ofNat_injOn_Iio (by lia)).mono hAn
 
 open Asymptotics Filter
 
