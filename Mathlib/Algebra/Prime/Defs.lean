@@ -111,13 +111,12 @@ theorem Irreducible.not_dvd_unit [CommMonoid M] {p : M} (u : Mˣ) (hp : Irreduci
     ¬ p ∣ u :=
   hp.not_dvd_isUnit u.isUnit
 
-/-- The square of a non-unit does not divide an irreducible element. -/
-theorem Irreducible.not_mul_self_dvd [CommMonoid M] {p a : M} (hp : Irreducible p)
-    (ha : ¬ IsUnit a) : ¬ a * a ∣ p := by
-  rintro ⟨b, hb⟩
-  obtain h | h := hp.isUnit_or_isUnit (hb.trans (mul_assoc a a b))
-  · exact ha h
-  · exact ha (isUnit_of_mul_isUnit_left h)
+theorem Irreducible.isUnit_of_mul_self_dvd [CommMonoid M] {p a : M} (hp : Irreducible p)
+    (ha : a * a ∣ p) : IsUnit a := by
+  obtain ⟨b, hb⟩ := ha
+  obtain h | h := hp.isUnit_or_isUnit (mul_assoc a a b ▸ hb)
+  · exact h
+  · exact isUnit_of_mul_isUnit_left h
 
 @[simp]
 theorem not_irreducible_zero [MonoidWithZero M] : ¬Irreducible (0 : M)

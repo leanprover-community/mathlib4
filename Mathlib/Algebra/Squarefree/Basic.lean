@@ -64,7 +64,7 @@ theorem Squarefree.ne_zero [MonoidWithZero R] [Nontrivial R] {m : R} (hm : Squar
 
 @[simp]
 theorem Irreducible.squarefree [CommMonoid R] {x : R} (h : Irreducible x) : Squarefree x :=
-  fun _ hy ↦ by_contra fun hu ↦ h.not_mul_self_dvd hu hy
+  fun _ ↦ h.isUnit_of_mul_self_dvd
 
 @[simp]
 theorem Prime.squarefree [CommMonoidWithZero R] [IsCancelMulZero R] {x : R} (h : Prime x) :
