@@ -83,8 +83,7 @@ lemma t1_comp_t1_neg (c : k) : (T1 f c).comp (T1 f (-c)) = AlgHom.id _ _ := by
   ext i v
   cases i using Fin.cases <;> simp
 
-/-- The algebra automorphism of `k[X_0, ..., X_n]` that fixes `X_0` and sends `X_i` to
-`X_i + X_0 ^ r_i` for `i ≠ 0`, where `r_i = (2 + f.totalDegree) ^ i`. -/
+/-- The automorphism of `k[X_0, ..., X_n]` fixing `X_0` and sending `X_i` to `X_i + X_0 ^ r_i`. -/
 noncomputable abbrev varChange := AlgEquiv.ofAlgHom (T1 f 1) (T1 f (-1))
   (t1_comp_t1_neg f 1) (by simpa using t1_comp_t1_neg f (-1))
 
@@ -143,7 +142,7 @@ private lemma leadingCoeff_finSuccEquiv_varChange :
   exact fun i ↦ pow_zero _
 
 /-- If `f ≠ 0`, the leading coefficient of `varChange f f` as a polynomial in `X_0` is a unit. -/
-lemma isUnit_leadingCoeff_finSuccEquiv_varChange (fne : f ≠ 0) :
+lemma varChange_leadingCoeff_isUnit (fne : f ≠ 0) :
     IsUnit (finSuccEquiv k n (varChange f f)).leadingCoeff := by
   obtain ⟨v, vin, vs⟩ := Finset.exists_max_image f.support
     (fun v ↦ (varChange f <| monomial v <| f.coeff v).degreeOf 0) (support_nonempty.mpr fne)
@@ -185,7 +184,7 @@ private noncomputable abbrev hom1 : MvPolynomial (Fin n) k →ₐ[MvPolynomial (
 
 /-- `hom1 f I` is integral. -/
 private lemma hom1_isIntegral (fne : f ≠ 0) (fi : f ∈ I) : (hom1 f I).IsIntegral := by
-  obtain u := isUnit_leadingCoeff_finSuccEquiv_varChange f fne
+  obtain u := varChange_leadingCoeff_isUnit f fne
   exact (monic_of_isUnit_leadingCoeff_inv_smul u).quotient_isIntegral <|
     Submodule.smul_of_tower_mem _ u.unit⁻¹.val <| mem_map_of_mem _ <| mem_map_of_mem _ fi
 
