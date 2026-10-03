@@ -626,6 +626,42 @@ theorem mfderiv_prod_eq_add_apply {f : M × M' → M''} {p : M × M'} {v : Tange
 
 end Prod
 
+section PiSpace
+
+/-!
+### Regularity of functions with codomain `Π i, F i`
+
+We have no `ModelWithCorners.pi` yet, so we prove lemmas about functions `f : M → Π i, F i` and
+use `𝓘(𝕜, Π i, F i)` as the model space.
+-/
+
+variable {ι : Type*} [Fintype ι] {Fi : ι → Type*} [∀ i, NormedAddCommGroup (Fi i)]
+  [∀ i, NormedSpace 𝕜 (Fi i)] {φ : M → ∀ i, Fi i}
+
+theorem mdifferentiableWithinAt_pi_space :
+    MDifferentiableWithinAt I 𝓘(𝕜, ∀ i, Fi i) φ s x ↔
+      ∀ i, MDifferentiableWithinAt I 𝓘(𝕜, Fi i) (fun x => φ x i) s x := by
+  simp only [mdifferentiableWithinAt_iff, continuousWithinAt_pi, differentiableWithinAt_pi,
+    forall_and, extChartAt_model_space_eq_id, Function.comp_def, PartialEquiv.refl_coe, id]
+
+theorem mdifferentiableOn_pi_space :
+    MDifferentiableOn I 𝓘(𝕜, ∀ i, Fi i) φ s ↔
+      ∀ i, MDifferentiableOn I 𝓘(𝕜, Fi i) (fun x => φ x i) s :=
+  ⟨fun h i x hx => mdifferentiableWithinAt_pi_space.1 (h x hx) i, fun h x hx =>
+    mdifferentiableWithinAt_pi_space.2 fun i => h i x hx⟩
+
+theorem mdifferentiableAt_pi_space :
+    MDifferentiableAt I 𝓘(𝕜, ∀ i, Fi i) φ x ↔
+      ∀ i, MDifferentiableAt I 𝓘(𝕜, Fi i) (fun x => φ x i) x :=
+  mdifferentiableWithinAt_pi_space
+
+theorem mdifferentiable_pi_space :
+    MDifferentiable I 𝓘(𝕜, ∀ i, Fi i) φ ↔ ∀ i, MDifferentiable I 𝓘(𝕜, Fi i) fun x => φ x i :=
+  ⟨fun h i x => mdifferentiableAt_pi_space.1 (h x) i,
+    fun h x => mdifferentiableAt_pi_space.2 fun i => h i x⟩
+
+end PiSpace
+
 section disjointUnion
 
 variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {p : M ⊕ M'}
