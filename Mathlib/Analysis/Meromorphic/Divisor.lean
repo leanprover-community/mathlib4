@@ -525,4 +525,89 @@ theorem divisor_sphere_comp_sub_const_eq_divisor_sphere {c : 𝕜} {R : ℝ} {f 
     divisor (f ∘ (· - c)) (sphere c R) (z + c) = divisor f (sphere 0 R) z := by
   rw [divisor_comp_sub_const_eq_divisor, sphere_sub_singleton, sub_self]
 
+/-!
+## Divisor of the Derivative
+-/
+
+open Function in
+/--
+Pole divisor of the derivative: the poles of `deriv f` are exactly the poles of `f`, with
+multiplicity increased by exactly one.
+-/
+theorem negPart_divisor_deriv [CompleteSpace E] [CharZero 𝕜] {f : 𝕜 → E}
+    (hf : MeromorphicOn f U) :
+    (divisor (deriv f) U)⁻ = (divisor f U)⁻ + ((divisor f U)⁻).truncate₁ := by
+  ext z
+  by_cases hz : z ∈ U
+  · simp only [locallyFinsuppWithin.negPart_apply, locallyFinsuppWithin.coe_add, Pi.add_apply,
+      locallyFinsuppWithin.truncate_apply, divisor_apply hf hz, divisor_apply hf.deriv hz]
+    obtain h | h := le_or_gt 0 (meromorphicOrderAt f z)
+    · -- No pole of `f` at `z`, hence no pole of `deriv f`.
+      have h' := meromorphicOrderAt_deriv_nonneg (hf z hz) h
+      simp [negPart_eq_zero.2 (WithTop.untop₀_nonneg.2 h),
+        negPart_eq_zero.2 (WithTop.untop₀_nonneg.2 h')]
+    · -- Pole of order `-n` at `z`: there, `deriv f` has a pole of order `-n + 1`.
+      lift meromorphicOrderAt f z to ℤ using h.ne_top with n hn
+      have hn₀ : n < 0 := mod_cast h
+      rw [meromorphicOrderAt_deriv_eq_sub_one (mod_cast hn₀.ne) hn.symm]
+      simp only [WithTop.untop₀_coe, negPart_def]
+      omega
+  · simp [hz]
+
+open Function in
+/--
+Zero divisor of the derivative, one target: an `a`-point of `f` of multiplicity `m` is a zero of
+`deriv f` of multiplicity `m - 1`.
+-/
+theorem posPart_divisor_sub_truncate_le_divisor_deriv [CompleteSpace E] [CharZero 𝕜]
+    {f : 𝕜 → E} {a : E} (hf : MeromorphicOn f U) :
+    (divisor (f · - a) U)⁺ - ((divisor (f · - a) U)⁺).truncate₁ ≤ (divisor (deriv f) U)⁺ := by
+  have hfa : MeromorphicOn (f · - a) U := by fun_prop
+  have hderiv : deriv (f · - a) = deriv f := funext fun z ↦ deriv_sub_const a
+  rw [locallyFinsuppWithin.le_def]
+  intro z
+  by_cases hz : z ∈ U
+  · simp only [locallyFinsuppWithin.coe_sub, Pi.sub_apply, locallyFinsuppWithin.posPart_apply,
+      locallyFinsuppWithin.truncate_apply, divisor_apply hfa hz, divisor_apply hf.deriv hz]
+    cases hn : meromorphicOrderAt (f · - a) z with
+    | top => simp
+    | coe n =>
+      obtain h | h := le_or_gt n 0
+      · -- No `a`-point at `z`: the left-hand side vanishes.
+        simp [posPart_eq_zero.2 h]
+      · -- An `a`-point of multiplicity `n` is a zero of `deriv f` of multiplicity `n - 1`.
+        rw [← hderiv, meromorphicOrderAt_deriv_eq_sub_one (mod_cast h.ne') hn]
+        simp only [WithTop.untop₀_coe, posPart_def]
+        omega
+  · simp [hz]
+
+open Function in
+/--
+Zero divisor of the derivative, several targets: multiple `a`-points of `f`, for `a` in a finite set
+`s`, are zeros of `deriv f`, since at most one target is attained at any given point.
+-/
+theorem sum_posPart_divisor_sub_truncate_le_divisor_deriv [CompleteSpace E] [CharZero 𝕜]
+    {f : 𝕜 → E} (hf : MeromorphicOn f U) (s : Finset E) :
+    ∑ a ∈ s, ((divisor (f · - a) U)⁺ - ((divisor (f · - a) U)⁺).truncate₁) ≤
+      (divisor (deriv f) U)⁺ := by
+  rw [locallyFinsuppWithin.le_def]
+  intro z
+  simp only [locallyFinsuppWithin.coe_sum, Finset.sum_apply]
+  -- Targets `a` that are not attained at `z` do not contribute to the sum.
+  have hzero (a : E) (ha : meromorphicOrderAt (f · - a) z ≤ 0) :
+      ((divisor (f · - a) U)⁺ - ((divisor (f · - a) U)⁺).truncate₁) z = 0 := by
+    have : divisor (f · - a) U z ≤ 0 := by
+      by_cases hz : z ∈ U
+      · rw [divisor_apply (by fun_prop) hz]
+        simpa using WithTop.untop₀_le_untop₀ (by simp) ha
+      · simp [hz]
+    simp [posPart_eq_zero.2 this]
+  by_cases! H : ∃ a₀ ∈ s, 0 < meromorphicOrderAt (f · - a₀) z
+  · -- At most one target `a₀` is attained at `z`.
+    obtain ⟨a₀, ha₀s, ha₀⟩ := H
+    rw [Finset.sum_eq_single_of_mem a₀ ha₀s fun b _ hb ↦
+      hzero b (meromorphicOrderAt_sub_const_eq_zero_of_ne hb ha₀).le]
+    exact locallyFinsuppWithin.le_def.1 (posPart_divisor_sub_truncate_le_divisor_deriv hf) z
+  · exact (Finset.sum_eq_zero fun a ha ↦ hzero a (H a ha)).trans_le (by simp [posPart_nonneg])
+
 end MeromorphicOn
