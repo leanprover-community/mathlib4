@@ -54,10 +54,11 @@ public register_option linter.style.docStringVerso : Bool := {
 Extract all `declModifiers` from the input syntax. We later extract the `docstring` from it,
 but we avoid extracting directly the `docComment` node, to skip `#adaptation_note`s.
 -/
-public def getDeclModifiers : Syntax → Array Syntax
-  | s@(.node _ kind args) =>
-    (if kind == ``Parser.Command.declModifiers then #[s] else #[]) ++ args.flatMap getDeclModifiers
-  | _ => #[]
+partial def getDeclModifiers (s : Syntax) : StateRefT (Array Syntax) BaseIO Unit := do
+  if let .node _ kind args := s then
+    args.forM getDeclModifiers
+    if kind == ``Parser.Command.declModifiers then
+      modify (·.push s)
 
 /--
 Currently, this function simply removes `currIndent` spaces after each `\n`
@@ -173,7 +174,8 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if (← get).messages.hasErrors then
     return
   let fm ← getFileMap
-  for declMods in getDeclModifiers stx do
+  let (_, allDeclMods) ← getDeclModifiers stx |>.run #[]
+  for declMods in allDeclMods do
     -- `docStx` extracts the `Lean.Parser.Command.docComment` node from the declaration modifiers.
     -- In particular, this ignores parsing `#adaptation_note`s.
     let docStx := declMods[0][0]
