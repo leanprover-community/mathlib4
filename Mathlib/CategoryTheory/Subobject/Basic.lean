@@ -646,7 +646,7 @@ composed with the projection `Subobject.pullbackπ` onto `y`, vanishes. -/
 lemma ofLE_comp_pullbackπ_eq_zero (h : x.arrow ≫ f = 0) :
     ofLE x _ (le_pullback_of_comp_eq_zero f y h) ≫ pullbackπ f y = 0 := by
   apply (cancel_mono y.arrow).mp
-  simp [Category.assoc, (isPullback f y).toCommSq.w, 
+  simp [Category.assoc, (isPullback f y).toCommSq.w,
      reassoc_of% ofLE_arrow (le_pullback_of_comp_eq_zero f y h), h]
 
 /-- If `x.arrow` is a kernel of `f`, then the canonical inclusion of `x` into the pullback of a
@@ -656,7 +656,7 @@ This is a form of the fact that the horizontal maps in a pullback square have th
 kernel. -/
 def isLimitKernelForkPullbackπ (h : x.arrow ≫ f = 0)
     (hx : IsLimit (KernelFork.ofι x.arrow h)) :
-    IsLimit (KernelFork.ofι _ (ofLE_comp_pullbackπ_eq_zero f y h)) := 
+    IsLimit (KernelFork.ofι _ (ofLE_comp_pullbackπ_eq_zero f y h)) :=
   KernelFork.IsLimit.ofι' _ (ofLE_comp_pullbackπ_eq_zero f y h) fun {Z} z hz ↦
   -- a map into the pullback killed by `pullbackπ` is, after the arrow, killed by `f`,
   -- so it factors through `x`; that factorization is the required lift
