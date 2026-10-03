@@ -911,25 +911,25 @@ of these Sylow subgroups. -/
 noncomputable def directProductOfNormal [Finite G]
     (hn : ∀ {p : ℕ} [Fact p.Prime] (P : Sylow p G), P.Normal) :
     (∀ p : (Nat.card G).primeFactors, ∀ P : Sylow p G, P) ≃* G := by
-  have := Fintype.ofFinite G
-  set ps := (Nat.card G).primeFactors
+  haveI := Fintype.ofFinite G
+  letI ps := (Nat.card G).primeFactors
   -- “The” Sylow subgroup for p
-  let P : ∀ p, Sylow p G := default
-  have (p : ℕ) : Fintype (P p) := Fintype.ofFinite (P p)
-  have (p : ps) : Fact (Nat.Prime p) := ⟨Nat.prime_of_mem_primeFactors p.property⟩
-  have hcomm : Pairwise fun p₁ p₂ : ps ↦ ∀ x y : G, x ∈ P p₁ → y ∈ P p₂ → Commute x y := by
+  letI P : ∀ p, Sylow p G := default
+  haveI (p : ℕ) : Fintype (P p) := Fintype.ofFinite (P p)
+  haveI (p : ps) : Fact (Nat.Prime p) := ⟨Nat.prime_of_mem_primeFactors p.property⟩
+  haveI hcomm : Pairwise fun p₁ p₂ : ps ↦ ∀ x y : G, x ∈ P p₁ → y ∈ P p₂ → Commute x y := by
     intro p₁ p₂ hne
     apply commute_of_normal_of_disjoint _ _ (hn (P p₁)) (hn (P p₂))
     exact IsPGroup.disjoint_of_ne p₁ p₂ (by simpa) _ _ (P p₁).isPGroup' (P p₂).isPGroup'
   refine .trans (.piCongrRight fun p ↦ ?_) (.ofBijective (noncommPiCoprod hcomm) ?_)
   -- There is only one Sylow subgroup for each `p`, so the inner product is trivial
-  · let := unique_of_normal _ <| hn (P p)
+  · letI := unique_of_normal _ <| hn (P p)
     apply MulEquiv.piUnique
   refine Fintype.bijective_iff_injective_and_card _ |>.mpr ⟨?_, ?_⟩
   · apply injective_noncommPiCoprod_of_iSupIndep
     refine independent_of_coprime_order hcomm fun p₁ p₂ hne ↦ ?_
     simpa using IsPGroup.coprime_card_of_ne p₁ p₂ (by simpa) _ _ (P p₁).isPGroup' (P p₂).isPGroup'
-  · simp_rw [Fintype.card_eq_nat_card, Nat.card_pi, card_eq_multiplicity, ps]
+  · simp_rw [Fintype.card_eq_nat_card, Nat.card_pi, card_eq_multiplicity]
     simp [← Nat.prod_primeFactors_pow_factorization]
 
 end Sylow
