@@ -461,6 +461,7 @@ theorem Free.cliqueFree_card [Finite β] {H : SimpleGraph β} (h : H.Free G) :
 
 theorem Free.cliqueFree {n : ℕ} {H : SimpleGraph (Fin n)} (h : H.Free G) : G.CliqueFree n := by
   simpa using h.cliqueFree_card
+
 /-- If a graph is cliquefree, any graph that is contained in it is also cliquefree. -/
 @[gcongr only]
 theorem CliqueFree.comap {H : SimpleGraph β} (hle : H ⊑ G) (h : G.CliqueFree n) :
