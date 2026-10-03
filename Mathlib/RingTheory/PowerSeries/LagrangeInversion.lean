@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.PowerSeries.Derivative
 public import Mathlib.RingTheory.PowerSeries.FixedPoint
 
 import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Ring
@@ -47,8 +46,8 @@ characteristic zero.
 
 ## Implementation details
 
-The induction in the reference below first proves the formulas over rings without additive
-torsion. Specializing the coefficients of power series over `MvPolynomial (ℕ ⊕ ℕ) ℤ`
+We first prove the formulas over rings without additive torsion, following the induction in the
+reference below. Specializing the coefficients of power series over `MvPolynomial (ℕ ⊕ ℕ) ℤ`
 then gives the division-free formulas over arbitrary commutative rings. The existence and
 uniqueness results in `Mathlib.RingTheory.PowerSeries.FixedPoint` identify the specialized solution.
 
@@ -78,13 +77,8 @@ private lemma hasSubst_of_fixedPoint : HasSubst Y :=
 
 /-- If `Y = X * P(Y)` and the constant coefficient of `P` is zero, then `Y = 0`. -/
 theorem eq_zero_of_fixedPoint_of_constantCoeff_eq_zero (hP : P.constantCoeff = 0) : Y = 0 := by
-  have hsubst := hasSubst_of_fixedPoint hY
-  obtain ⟨Q, rfl⟩ := X_dvd_iff.mpr hP
-  rw [subst_mul hsubst, subst_X hsubst] at hY
-  have hunit : IsUnit (1 - X * Q.subst Y) := by
-    simp [isUnit_iff_constantCoeff]
-  rw [← hunit.mul_left_eq_zero]
-  linear_combination hY
+  apply fixedPoint_unique hY
+  simp [hP]
 
 end CommRing
 
