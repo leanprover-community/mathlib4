@@ -336,6 +336,33 @@ set_option backward.isDefEq.respectTransparency false in
 theorem MapsTo.restrict_inj (h : MapsTo f s t) : Injective (h.restrict f s t) ↔ InjOn f s := by
   rw [h.restrict_eq_codRestrict, injective_codRestrict, injOn_iff_injective]
 
+lemma injOn_domRestrict_iff {s : Set α} {f : α → β} {t : Set s} :
+    t.InjOn (s.domRestrict f) ↔ ((↑) '' t).InjOn f := by
+  refine ⟨fun h a ha a' ha' h' ↦ ?_, fun h a ha a' ha' h' ↦ ?_⟩
+  · have := @h ⟨a, ?_⟩ ?_ ⟨a', ?_⟩ ?_ <;> grind
+  · have := @h a ?_ a' ?_ <;> grind
+
+lemma InjOn.domRestrict {s : Set α} {f : α → β} (hf : s.InjOn f) (t : Set α) :
+    ((↑) ⁻¹' s).InjOn (t.domRestrict f) := by
+  rw [injOn_domRestrict_iff]
+  grind [InjOn]
+
+@[simp]
+lemma injOn_codRestrict_iff {f : α → β} {s : Set α} {t : Set β}
+    (h : ∀ a, f a ∈ t) : s.InjOn (t.codRestrict f h) ↔ s.InjOn f := by
+  simp [InjOn, Subtype.ext_iff]
+
+lemma injOn_restrict_iff {s : Set α} {s' : Set β} {f : α → β} (hf : MapsTo f s s')
+    {t : Set s} : t.InjOn (hf.restrict) ↔ ((↑) '' t).InjOn f := by
+  rw [hf.restrict_eq_codRestrict]
+  exact (injOn_codRestrict_iff _).trans injOn_domRestrict_iff
+
+lemma InjOn.restrict {t : Set α} {f : α → β} (hf : t.InjOn f) {s : Set α}
+    {s' : Set β} (hf' : MapsTo f s s') :
+    ((↑) ⁻¹' t).InjOn (hf'.restrict) := by
+  rw [injOn_restrict_iff]
+  grind [InjOn]
+
 end injOn
 
 /-! ### Surjectivity on a set -/
