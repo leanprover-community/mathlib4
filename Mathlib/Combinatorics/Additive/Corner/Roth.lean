@@ -66,6 +66,13 @@ variable [Fintype G]
 
 open Corners
 
+private lemma Fin.ofNat_injOn_Iio (n : ℕ) : Set.InjOn (Fin.ofNat (2 * n).succ) (Set.Iio n) := by
+  intro a ha b hb hab
+  have ha' : a < n := ha
+  have hb' : b < n := hb
+  have haM : a < (2 * n).succ := by lia
+  have hbM : b < (2 * n).succ := by lia
+  grind [Fin.val_ofNat, Nat.mod_eq_of_lt haM, Nat.mod_eq_of_lt hbM]
 
 /-- An explicit form for the constant in the corners theorem.
 
@@ -93,7 +100,6 @@ theorem corners_theorem (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound ε �
   rw [card_triangles, card_triangleIndices] at h₁
   convert h₁.trans (Nat.cast_le.2 <| card_le_univ _) using 1 <;> simp <;> ring
 
-open Fin.NatCast in -- TODO: refactor to avoid needing the coercion
 /-- The **corners theorem** for `ℕ`.
 
 The maximum density of a corner-free set in `{1, ..., n} × {1, ..., n}` goes to zero as `n` tends to
@@ -102,34 +108,31 @@ theorem corners_theorem_nat (hε : 0 < ε) (hn : cornersTheoremBound (ε / 9) �
     (A : Finset (ℕ × ℕ)) (hAn : A ⊆ range n ×ˢ range n) (hAε : ε * n ^ 2 ≤ #A) :
     ¬ IsCornerFree (A : Set (ℕ × ℕ)) := by
   rintro hA
-  rw [← coe_subset, coe_product] at hAn
+  simp only [← coe_subset, coe_product, coe_range] at hAn
   have : A = Prod.map Fin.val Fin.val ''
-      (Prod.map Nat.cast Nat.cast '' A : Set (Fin (2 * n).succ × Fin (2 * n).succ)) := by
+      (Prod.map (.ofNat (2 * n).succ) (.ofNat (2 * n).succ) '' A) := by
     rw [Set.image_image, Set.image_congr, Set.image_id]
-    simp only [mem_coe, Nat.succ_eq_add_one, Prod.map_apply, Fin.val_natCast, id_eq, Prod.forall,
+    simp only [mem_coe, Nat.succ_eq_add_one, Prod.map_apply, Fin.val_ofNat, id_eq, Prod.forall,
       Prod.mk.injEq, Nat.mod_succ_eq_iff_lt]
     rintro a b hab
     have := hAn hab
     simp at this
     lia
   rw [this] at hA
-  have := Fin.isAddFreimanIso_Iio two_ne_zero (le_refl (2 * n))
-  have := hA.of_image this.isAddFreimanHom Fin.val_injective.injOn <| by
-    refine Set.image_subset_iff.2 <| hAn.trans fun x hx ↦ ?_
-    simp only [coe_range, Set.mem_prod, Set.mem_Iio] at hx
-    exact ⟨Fin.natCast_strictMono (by lia) hx.1, Fin.natCast_strictMono (by lia) hx.2⟩
+  have : IsCornerFree (Prod.map (Fin.ofNat (2 * n).succ) (Fin.ofNat (2 * n).succ) '' A) := by
+    have := Fin.isAddFreimanIso_Iio (n := 2 * n) two_ne_zero (le_refl _)
+    refine hA.of_image this.isAddFreimanHom Fin.val_injective.injOn ?_
+    refine Set.image_subset_iff.2 <| hAn.trans fun ⟨x, y⟩ ⟨hx, hy⟩ ↦ ?_
+    exact ⟨Fin.natCast_strictMono (by lia) hx, Fin.natCast_strictMono (by lia) hy⟩
   rw [← coe_image] at this
   refine corners_theorem (ε / 9) (by positivity) (by simp; lia) _ ?_ this
   calc
-    _ = ε / 9 * (2 * n + 1) ^ 2 := by simp
     _ ≤ ε / 9 * (2 * n + n) ^ 2 := by gcongr; simp; unfold cornersTheoremBound at hn; lia
     _ = ε * n ^ 2 := by ring
     _ ≤ #A := hAε
     _ = _ := by
       rw [card_image_of_injOn]
-      have : Set.InjOn Nat.cast (range n) :=
-        (CharP.natCast_injOn_Iio (Fin (2 * n).succ) (2 * n).succ).mono (by simp; lia)
-      exact (this.prodMap this).mono hAn
+      exact ((Fin.ofNat_injOn_Iio n).prodMap (Fin.ofNat_injOn_Iio n)).mono hAn
 
 /-- **Roth's theorem** for finite abelian groups.
 
@@ -156,7 +159,6 @@ theorem roth_3ap_theorem (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound ε 
       sub_eq_sub_iff_add_eq_add, add_comm, hxy, add_comm]
   exact hx₁x₂ <| by simpa using this.symm
 
-open Fin.NatCast in -- TODO: refactor to avoid needing the coercion
 /-- **Roth's theorem** for `ℕ`.
 
 The maximum density of a 3AP-free set in `{1, ..., n}` goes to zero as `n` tends to infinity. -/
@@ -164,29 +166,27 @@ theorem roth_3ap_theorem_nat (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound
     (A : Finset ℕ) (hAn : A ⊆ range n) (hAε : ε * n ≤ #A) : ¬ ThreeAPFree (A : Set ℕ) := by
   rintro hA
   rw [← coe_subset, coe_range] at hAn
-  have : A = Fin.val '' (Nat.cast '' A : Set (Fin (2 * n).succ)) := by
+  have : A = Fin.val '' (.ofNat (2 * n).succ '' A) := by
     rw [Set.image_image, Set.image_congr, Set.image_id]
-    simp only [mem_coe, Nat.succ_eq_add_one, Fin.val_natCast, id_eq, Nat.mod_succ_eq_iff_lt]
+    simp only [mem_coe, Nat.succ_eq_add_one, Fin.val_ofNat, id_eq, Nat.mod_succ_eq_iff_lt]
     rintro a ha
     have := hAn ha
     simp at this
     lia
   rw [this] at hA
-  have := Fin.isAddFreimanIso_Iio two_ne_zero (le_refl (2 * n))
-  have := hA.of_image this.isAddFreimanHom Fin.val_injective.injOn <| Set.image_subset_iff.2 <|
-      hAn.trans fun x hx ↦ Fin.natCast_strictMono (by lia) <| by
-        simpa only [coe_range, Set.mem_Iio] using hx
+  have : ThreeAPFree ((Fin.ofNat (2 * n + 1)) '' A) := by
+    have := Fin.isAddFreimanIso_Iio (n := 2 * n) two_ne_zero (le_refl (2 * n))
+    refine hA.of_image this.isAddFreimanHom Fin.val_injective.injOn ?_
+    exact Set.image_subset_iff.2 <| hAn.trans fun x hx ↦ Fin.natCast_strictMono (by lia) hx
   rw [← coe_image] at this
   refine roth_3ap_theorem (ε / 3) (by positivity) (by simp; lia) _ ?_ this
   calc
-    _ = ε / 3 * (2 * n + 1) := by simp
     _ ≤ ε / 3 * (2 * n + n) := by gcongr; simp; unfold cornersTheoremBound at hG; lia
     _ = ε * n := by ring
     _ ≤ #A := hAε
     _ = _ := by
       rw [card_image_of_injOn]
-      exact (CharP.natCast_injOn_Iio (Fin (2 * n).succ) (2 * n).succ).mono <| hAn.trans <| by
-        simp; lia
+      exact (Fin.ofNat_injOn_Iio n).mono hAn
 
 open Asymptotics Filter
 
