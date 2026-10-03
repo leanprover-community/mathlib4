@@ -185,10 +185,8 @@ private theorem lagrange_inversion_coeff_pow_of_le {m k : ℕ} (hk : k ≤ m + 1
       ring
     have hcoeff : (k + t + 1) • (d⁄dX (P ^ k) * P ^ (t + 1)).coeff t =
         k • (t + 1) • (P ^ (k + (t + 1))).coeff (t + 1) := by
-      have h := congrArg (coeff t) hpoly
-      simp only [nsmul_eq_mul, coeff_natCast_mul, coeff_derivative] at h
-      push_cast at h
-      linear_combination h
+      simpa only [map_nsmul, coeff_derivative, ← Nat.cast_add_one, ← nsmul_eq_mul'] using
+        congrArg (coeff t) hpoly
     have hsum : (t + 1) • (Y ^ k).coeff (m + 1) = (d⁄dX (P ^ k) * P ^ (t + 1)).coeff t := by
       rw [hcoe, coeff_subst_of_constantCoeff_zero (constantCoeff_eq_zero hY), smul_sum,
         coeff_derivative_mul]
@@ -237,14 +235,8 @@ theorem lagrange_burmann_coeff (n : ℕ) (H : R⟦X⟧) :
   have hmapY : map e Y₀ = Y := by
     apply fixedPoint_unique _ hY
     simpa only [map_mul, map_X, hmap_subst, hP] using congrArg (map e) hY₀
-  calc
-    (n + 1) • coeff (n + 1) (H.subst Y) =
-        e ((n + 1) • coeff (n + 1) (H₀.subst Y₀)) := by
-      rw [map_nsmul, ← coeff_map, hmap_subst, hH, hmapY]
-    _ = e ((d⁄dX H₀ * P₀ ^ (n + 1)).coeff n) :=
-      congrArg e hcoeff
-    _ = (d⁄dX H * P ^ (n + 1)).coeff n := by
-      rw [← coeff_map, map_mul, map_pow, map_derivative, hH, hP]
+  simpa only [map_nsmul, ← coeff_map, hmap_subst, map_mul, map_pow, map_derivative,
+    hH, hP, hmapY] using congrArg e hcoeff
 
 /-- **Lagrange inversion for powers.** If `Y = X * P(Y)`, then
 `(n + k) * [X ^ (n + k)] Y ^ k = k * [X ^ n] P ^ (n + k)` for all natural numbers
