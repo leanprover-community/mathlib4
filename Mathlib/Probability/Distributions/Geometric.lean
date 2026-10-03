@@ -84,7 +84,7 @@ lemma geometricMeasure_real_singleton_pos (h1 : p ≠ 0) (h2 : p ≠ 1) n :
 
 lemma hasSum_one_geometricMeasure (hp : p ≠ 0) :
     HasSum (fun n ↦ (1 - p : ℝ) ^ n * p) 1 := by
-  convert! (hasSum_geometric_of_lt_one (r := 1 - p) (by grind) (by grind)).mul_right (p : ℝ)
+  convert (hasSum_geometric_of_lt_one (r := 1 - p) (by grind) (by grind)).mul_right (p : ℝ)
   grind
 
 instance isProbabilityMeasure_geometricMeasure :

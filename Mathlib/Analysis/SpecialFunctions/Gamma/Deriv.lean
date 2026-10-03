@@ -210,7 +210,7 @@ theorem deriv_Gamma_one_eq_integral_log_log {s : ℝ} (hs : 1 < s) :
       simp_rw [add_mul]
       convert integral_add (integrableOn_log_log_mul_rpow hs) (.const_mul ?_ _)
       · rw [integral_const_mul]; congr; symm
-        convert! integral_Ioi_rpow_of_lt (a := -s) (c := 1) (by linarith) zero_lt_one using 1
+        convert integral_Ioi_rpow_of_lt (a := -s) (c := 1) (by linarith) zero_lt_one using 1
         simp; grind
       exact integrableOn_Ioi_rpow_of_lt (by linarith) zero_lt_one
     _ = _ := by grind
