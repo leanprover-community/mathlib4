@@ -633,6 +633,41 @@ lemma le_pullback_of_comm (f : X ⟶ Y) {X' : Subobject X} {Y' : Subobject Y}
     (u : (X' : C) ⟶ Y') (h : u ≫ Y'.arrow = X'.arrow ≫ f) : X' ≤ (pullback f).obj Y' :=
   le_of_comm ((isPullback f Y').lift u X'.arrow h) ((isPullback f Y').lift_snd u X'.arrow h)
 
+section
+
+variable [HasZeroMorphisms C] {x : Subobject X} (f : X ⟶ Y) (y : Subobject Y)
+
+/-- If `x.arrow ≫ f = 0`, then `x` is contained in the pullback of any subobject `y` along `f`. -/
+lemma le_pullback_of_comp_eq_zero (h : x.arrow ≫ f = 0) : x ≤ (pullback f).obj y :=
+  le_pullback_of_comm f 0 (by simp [h])
+
+/-- If `x.arrow ≫ f = 0`, the canonical inclusion of `x` into the pullback of `y` along `f`,
+composed with the projection `Subobject.pullbackπ` onto `y`, vanishes. -/
+lemma ofLE_comp_pullbackπ_eq_zero (h : x.arrow ≫ f = 0) :
+    ofLE x _ (le_pullback_of_comp_eq_zero f y h) ≫ pullbackπ f y = 0 := by
+  apply (cancel_mono y.arrow).mp
+  simp [Category.assoc, (isPullback f y).toCommSq.w,
+     reassoc_of% ofLE_arrow (le_pullback_of_comp_eq_zero f y h), h]
+
+/-- If `x.arrow` is a kernel of `f`, then the canonical inclusion of `x` into the pullback of a
+subobject `y` along `f` is a kernel of `Subobject.pullbackπ f y`.
+
+This is a form of the fact that the horizontal maps in a pullback square have the same
+kernel. -/
+def isLimitKernelForkPullbackπ (h : x.arrow ≫ f = 0)
+    (hx : IsLimit (KernelFork.ofι x.arrow h)) :
+    IsLimit (KernelFork.ofι _ (ofLE_comp_pullbackπ_eq_zero f y h)) :=
+  KernelFork.IsLimit.ofι' _ (ofLE_comp_pullbackπ_eq_zero f y h) fun {Z} z hz ↦
+  -- a map into the pullback killed by `pullbackπ` is, after the arrow, killed by `f`,
+  -- so it factors through `x`; that factorization is the required lift
+  ⟨hx.lift (KernelFork.ofι (z ≫ ((pullback f).obj y).arrow) (by
+    simp [← (isPullback f y).toCommSq.w, reassoc_of% hz])), by
+  simp [← cancel_mono ((pullback f).obj y).arrow,
+    ofLE_arrow (le_pullback_of_comp_eq_zero f y h),
+    dsimp% Fork.IsLimit.lift_ι hx]⟩
+
+end
+
 end Pullback
 
 section Map
