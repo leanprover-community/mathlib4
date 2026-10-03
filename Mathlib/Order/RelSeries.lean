@@ -64,7 +64,7 @@ instance [Inhabited α] : Inhabited (RelSeries r) where
 instance [Nonempty α] : Nonempty (RelSeries r) :=
   Nonempty.map (singleton r) inferInstance
 
-variable {r}
+variable {r} {p q : RelSeries r}
 
 @[ext (iff := false)]
 lemma ext {x y : RelSeries r} (length_eq : x.length = y.length)
@@ -81,6 +81,11 @@ lemma rel_of_lt [r.IsTrans] (x : RelSeries r) {i j : Fin (x.length + 1)} (h : i 
 lemma rel_or_eq_of_le [r.IsTrans] (x : RelSeries r) {i j : Fin (x.length + 1)} (h : i ≤ j) :
     x i ~[r] x j ∨ x i = x j :=
   (Fin.lt_or_eq_of_le h).imp (x.rel_of_lt ·) (by rw [·])
+
+variable (p) in
+theorem isChain_setRange [r.IsTrans] : IsChain (· ~[r] ·) (.range p) := by
+  rintro _ ⟨i, rfl⟩ _ ⟨j, rfl⟩ hne
+  exact (Fin.lt_or_lt_of_ne <| mt (congrArg _) hne).imp p.rel_of_lt p.rel_of_lt
 
 /--
 Given two relations `r, s` on `α` such that `r ≤ s`, any relation series of `r` induces a relation
@@ -136,6 +141,21 @@ lemma toList_injective : Function.Injective (RelSeries.toList (r := r)) :=
 
 -- TODO : build a similar bijection between `RelSeries α` and `Quiver.Path`
 
+open List in
+/-- Relation series are ordered by refinement. -/
+instance : PartialOrder (RelSeries r) where
+  le p q := p.toList <+ q.toList
+  le_refl _ := .refl _
+  le_trans _ _ _ := .trans
+  le_antisymm _ _ hpq hqp := toList_injective <| hpq.antisymm hqp
+
+open List in
+theorem le_def : p ≤ q ↔ p.toList <+ q.toList :=
+  .rfl
+
+theorem length_strictMono : StrictMono (length : RelSeries r → ℕ) :=
+  fun p q ⟨hpq, hqp⟩ ↦ by grind [length_toList]
+
 end RelSeries
 
 namespace SetRel
@@ -177,7 +197,7 @@ protected noncomputable def withLength [r.InfiniteDimensional] (n : ℕ) : RelSe
   (SetRel.InfiniteDimensional.exists_relSeries_with_length n).choose_spec
 
 section
-variable {r} {s : RelSeries r} {x : α}
+variable {r} {s p q : RelSeries r} {x : α}
 
 /-- If a relation on `α` is infinite dimensional, then `α` is nonempty. -/
 lemma nonempty_of_infiniteDimensional [r.InfiniteDimensional] : Nonempty α :=
@@ -187,6 +207,11 @@ lemma nonempty_of_finiteDimensional [r.FiniteDimensional] : Nonempty α := by
   obtain ⟨p, _⟩ := (r.finiteDimensional_iff).mp ‹_›
   exact ⟨p 0⟩
 
+instance [r.FiniteDimensional] : Std.Asymm (· ~[r] ·) where
+  asymm a b hab hba := by
+    let n := (RelSeries.longestOf r).length
+    simpa [n] using length_le_length_longestOf r ⟨n + 1, (if ·.val % 2 = 0 then a else b), by grind⟩
+
 instance membership : Membership α (RelSeries r) :=
   ⟨Function.swap (· ∈ Set.range ·)⟩
 
@@ -194,6 +219,31 @@ theorem mem_def : x ∈ s ↔ x ∈ Set.range s := Iff.rfl
 
 @[simp] theorem mem_toList : x ∈ s.toList ↔ x ∈ s := by
   rw [RelSeries.toList, List.mem_ofFn', RelSeries.mem_def]
+
+theorem mem_of_le_of_mem (h : p ≤ q) (ha : x ∈ p) : x ∈ q :=
+  mem_toList.mp <| h.mem <| mem_toList.mpr ha
+
+variable (r) in
+theorem setRange_monotone : Monotone (Set.range · : RelSeries r → Set α) :=
+  fun _ _ hle _ ↦ mem_of_le_of_mem hle
+
+theorem setRange_mono [r.IsIrrefl] [r.IsTrans] {p q : RelSeries r} :
+    Set.range p ⊆ Set.range q ↔ p ≤ q := by
+  refine ⟨fun h ↦ ?_, (setRange_monotone r ·)⟩
+  refine List.sublist_of_subperm_of_pairwise ?_ p.isChain_toList.pairwise q.isChain_toList.pairwise
+  exact p.isChain_toList.pairwise.nodup.subperm fun a ha ↦ mem_toList.mpr <| h <| mem_toList.mp ha
+
+variable (r) in
+theorem setRange_injective [r.IsIrrefl] [r.IsTrans] :
+    (Set.range · : RelSeries r → Set α).Injective := by
+  refine fun p q h ↦ toList_injective ?_
+  apply p.isChain_toList.pairwise.eq_of_mem_iff q.isChain_toList.pairwise
+  simp [mem_def, h]
+
+variable (r) in
+theorem setRange_strictMono [r.IsIrrefl] [r.IsTrans] :
+    StrictMono (Set.range · : RelSeries r → Set α) :=
+  setRange_monotone r |>.strictMono_of_injective <| setRange_injective r
 
 theorem subsingleton_of_length_eq_zero (hs : s.length = 0) : {x | x ∈ s}.Subsingleton := by
   rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩
@@ -275,7 +325,7 @@ lemma getLast_toList (p : RelSeries r) : p.toList.getLast (by simp [toList]) = p
 
 end
 
-variable {r s}
+variable {r s} {p q : RelSeries r}
 
 /--
 If `a₀ -r→ a₁ -r→ ... -r→ aₙ` and `b₀ -r→ b₁ -r→ ... -r→ bₘ` are two strict series
@@ -351,14 +401,19 @@ lemma append_assoc (p q w : RelSeries r) (hpq : p.last ~[r] q.head) (hqw : q.las
     lia
   · simp [append, Fin.append_assoc]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toList_append (p q : RelSeries r) (connect : p.last ~[r] q.head) :
     (p.append q connect).toList = p.toList ++ q.toList := by
   apply List.ext_getElem
   · simp; grind
-  · simp [List.getElem_append, Fin.append, Fin.addCases]
+  · simp [RelSeries.append, List.getElem_append, Fin.append, Fin.addCases]
+
+theorem left_lt_append (connect : p.last ~[r] q.head) : p < p.append q connect := by
+  refine ⟨by simp, (by simp [toList_ne_nil] at ·)⟩
+
+theorem right_lt_append (connect : p.last ~[r] q.head) : q < p.append q connect := by
+  refine ⟨by simp, (by simp [toList_ne_nil] at ·)⟩
+
 /--
 For two types `α, β` and relation on them `r, s`, if `f : α → β` preserves relation `r`, then an
 `r`-series can be pushed out to an `s`-series by
@@ -376,6 +431,15 @@ def map (p : RelSeries r) (f : r.Hom s) : RelSeries s where
 @[simp] lemma head_map (p : RelSeries r) (f : r.Hom s) : (p.map f).head = f p.head := rfl
 
 @[simp] lemma last_map (p : RelSeries r) (f : r.Hom s) : (p.map f).last = f p.last := rfl
+
+variable (p) in
+@[simp]
+theorem toList_map (f : r.Hom s) : (p.map f).toList = p.toList.map f := by
+  simp [toList, RelSeries.map, -List.ofFn_succ]
+
+theorem map_monotone (f : r.Hom s) : Monotone (RelSeries.map · f) := by
+  intro s t hle
+  simpa [le_def] using hle.map f
 
 set_option backward.isDefEq.respectTransparency false in
 /--
@@ -404,6 +468,10 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
         simpa
       · rw [Fin.insertNth_apply_above (by simpa), Fin.insertNth_apply_above (by simpa)]
         simpa using p.step m
+
+variable (p) in
+proof_wanted insertNth_lt (i : Fin p.length) (a : α) (hl : p i.castSucc ~[r] a)
+    (hr : a ~[r] p i.succ) : p < p.insertNth i a hl hr
 
 /--
 A relation series `a₀ -r→ a₁ -r→ ... -r→ aₙ` of `r` gives a relation series of the reverse of `r`
@@ -439,6 +507,15 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma reverse_reverse {r : SetRel α α} (p : RelSeries r) : p.reverse.reverse = p := by
   ext <;> simp
 
+variable (p) in
+@[simp]
+theorem toList_reverse : p.reverse.toList = p.toList.reverse := by
+  unfold reverse
+  apply List.ext_get <;> grind [length_toList, toList_getElem]
+
+theorem reverse_mono : p.reverse ≤ q.reverse ↔ p ≤ q := by
+  simp [le_def]
+
 /--
 Given a series `a₀ -r→ a₁ -r→ ... -r→ aₙ` and an `a` such that `a₀ -r→ a` holds, there is
 a series of length `n+1`: `a -r→ a₀ -r→ a₁ -r→ ... -r→ aₙ`.
@@ -472,6 +549,9 @@ lemma toList_cons (p : RelSeries r) (x : α) (hx : x ~[r] p.head) :
     (p.cons x hx).toList = x :: p.toList := by
   rw [cons, toList_append]
   simp
+
+theorem lt_cons {a : α} (h : a ~[r] p.head) : p < p.cons a h :=
+  ⟨by simp, (by simpa using ·.length_le)⟩
 
 lemma fromListIsChain_cons (l : List α) (l_ne_nil : l ≠ [])
     (hl : l.IsChain (· ~[r] ·)) (x : α) (hx : x ~[r] l.head l_ne_nil) :
@@ -574,6 +654,9 @@ lemma cons_self_tail {p : RelSeries r} (hp : p.length ≠ 0) :
   apply toList_injective
   simp [← head_toList]
 
+theorem tail_lt (h : p.length ≠ 0) : p.tail h < p :=
+  ⟨by simp [List.tail_sublist], (by simpa using ·.length_le)⟩
+
 /--
 To show a proposition `p` for `xs : RelSeries r` it suffices to show it for all singletons
 and to show that when `p` holds for `xs` it also holds for `xs` prepended with one element.
@@ -609,6 +692,9 @@ lemma toList_snoc (p : RelSeries r) (newLast : α) (rel : p.last ~[r] newLast) :
     (p.snoc newLast rel).toList = p.toList ++ [newLast] := by
   simp [snoc]
 
+theorem lt_snoc {a : α} (h : p.last ~[r] a) : p < p.snoc a h :=
+  left_lt_append h
+
 /--
 If a series ``a₀ -r→ a₁ -r→ ... -r→ aₙ``, then `a₀ -r→ a₁ -r→ ... -r→ aₙ₋₁` is
 another series -/
@@ -622,6 +708,10 @@ def eraseLast (p : RelSeries r) : RelSeries r where
 
 @[simp] lemma last_eraseLast (p : RelSeries r) :
     p.eraseLast.last = p ⟨p.length.pred, Nat.lt_succ_iff.2 (Nat.pred_le _)⟩ := rfl
+
+@[simp]
+theorem eraseLast_eq_self_iff : p.eraseLast = p ↔ p.length = 0 :=
+  ⟨fun _ ↦ by grind [eraseLast_length], fun h ↦ ext (by simp [h]) rfl⟩
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- In a non-trivial series `p`, the last element of `p.eraseLast` is related to `p.last` -/
@@ -644,6 +734,13 @@ lemma snoc_self_eraseLast (p : RelSeries r) (h : p.length ≠ 0) :
     p.eraseLast.snoc p.last (p.eraseLast_last_rel_last h) = p := by
   apply toList_injective
   rw [toList_snoc, ← getLast_toList, toList_eraseLast _ h, List.dropLast_append_getLast]
+
+theorem eraseLast_lt (h : p.length ≠ 0) : p.eraseLast < p :=
+  ⟨by simp [h, List.dropLast_sublist], (by simpa [h] using ·.length_le)⟩
+
+variable (p) in
+theorem eraseLast_le : p.eraseLast ≤ p :=
+  eq_or_ne p.length 0 |>.elim (eraseLast_eq_self_iff.mpr · |>.le) (eraseLast_lt · |>.le)
 
 /--
 To show a proposition `p` for `xs : RelSeries r` it suffices to show it for all singletons
@@ -722,6 +819,10 @@ lemma smash_succ_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.len
   dsimp only [smash, last]
   rw [← Fin.natAdd_last, Fin.addCases_right]
 
+proof_wanted left_le_smash (h : p.last = q.head) : p ≤ p.smash q h
+
+proof_wanted right_le_smash (h : p.last = q.head) : q ≤ p.smash q h
+
 /-- Given the series `a₀ -r→ … -r→ aᵢ -r→ … -r→ aₙ`, the series `a₀ -r→ … -r→ aᵢ`. -/
 @[simps! length]
 def take {r : SetRel α α} (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
@@ -736,6 +837,15 @@ lemma head_take (p : RelSeries r) (i : Fin (p.length + 1)) :
 @[simp]
 lemma last_take (p : RelSeries r) (i : Fin (p.length + 1)) :
     (p.take i).last = p i := by simp [take, last, Fin.last]
+
+variable (p) in
+@[simp]
+theorem toList_take (i : Fin (p.length + 1)) : (p.take i).toList = p.toList.take (i + 1) := by
+  apply List.ext_get <;> simp [i.is_le, take]
+
+variable (p) in
+theorem take_le (i : Fin (p.length + 1)) : p.take i ≤ p := by
+  simp [le_def, List.take_sublist]
 
 /-- Given the series `a₀ -r→ … -r→ aᵢ -r→ … -r→ aₙ`, the series `aᵢ₊₁ -r→ … -r→ aₙ`. -/
 @[simps! length]
@@ -755,6 +865,27 @@ lemma last_drop (p : RelSeries r) (i : Fin (p.length + 1)) : (p.drop i).last = p
   simp only [last, drop, Fin.last]
   congr
   lia
+
+variable (p) in
+@[simp]
+theorem toList_drop (i : Fin (p.length + 1)) :
+    (p.drop i).toList = p.toList.drop i := by
+  unfold drop
+  apply List.ext_get <;> grind [length_toList, toList_getElem]
+
+variable (p) in
+theorem drop_le (i : Fin (p.length + 1)) : p.drop i ≤ p := by
+  simp [le_def, List.drop_sublist]
+
+proof_wanted isMaxChain_setRange_of_isMax [r.IsTrans] (h : IsMax p) :
+    IsMaxChain (· ~[r] ·) (.range p)
+
+theorem isMax_of_isMaxChain_setRange [r.IsIrrefl] [r.IsTrans]
+    (h : IsMaxChain (· ~[r] ·) (.range p)) : IsMax p :=
+  fun t hst ↦ (setRange_injective r <| h.right t.isChain_setRange <| setRange_monotone r hst).ge
+
+proof_wanted isMaxChain_setRange_iff [r.IsIrrefl] [r.IsTrans] :
+    IsMaxChain (· ~[r] ·) (.range p) ↔ IsMax p
 
 end RelSeries
 
@@ -947,6 +1078,16 @@ def range (n : ℕ) : LTSeries ℕ where
 
 @[simp] lemma last_range (n : ℕ) : (range n).last = n := rfl
 
+@[simp]
+theorem toList_range (n : ℕ) : (range n).toList = .range (n + 1) := by
+  simp [RelSeries.toList, range, List.ofFn_eq_pmap, -List.ofFn_succ]
+
+theorem setRange_strictMono : StrictMono range :=
+  fun _ _ h ↦ ⟨by simp [h.le], by simp [h]⟩
+
+theorem setRange_injective : range.Injective :=
+  setRange_strictMono.injective
+
 set_option backward.isDefEq.respectTransparency false in
 /-- Any `LTSeries` can be refined to a `CovBy`-`RelSeries`
 in a bidirectionally well-founded order. -/
@@ -993,6 +1134,9 @@ theorem exists_relSeries_covBy_and_head_eq_bot_and_last_eq_bot
   refine ⟨t, i, hit, ?_, ?_⟩
   · rw [← h₁, RelSeries.head, RelSeries.head, ← hi₁, ← hit, Function.comp]
   · rw [← h₂, RelSeries.last, RelSeries.last, ← hi₂, ← hit, Function.comp]
+
+proof_wanted covBy_castSucc_succ_of_isMax {p : LTSeries α} (h : IsMax p) (i : Fin p.length) :
+    p i.castSucc ⋖ p i.succ
 
 /--
 In ℕ, two entries in an `LTSeries` differ by at least the difference of their indices.
