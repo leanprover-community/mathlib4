@@ -188,15 +188,10 @@ localizations at maximal ideals are free. -/
 theorem Module.projective_iff_localization_maximal_free [Module.FinitePresentation R M] :
     Module.Projective R M ↔ ∀ (I : Ideal R) (_ : I.IsMaximal),
       Module.Free (Localization.AtPrime I) (LocalizedModule.AtPrime I M) := by
-  constructor
-  · intro _ I _
-    have : Module.Projective (Localization.AtPrime I) (LocalizedModule.AtPrime I M) :=
+  refine ⟨fun _ I _ ↦ ?_, fun h ↦ projective_of_localization_maximal ?_⟩
+  · have : Module.Projective (Localization.AtPrime I) (LocalizedModule.AtPrime I M) :=
       Module.projective_of_isLocalizedModule I.primeCompl
         (LocalizedModule.mkLinearMap I.primeCompl M)
     exact Module.free_of_flat_of_isLocalRing
-  · intro h
-    apply Module.projective_of_localization_maximal
-    intro I hI
-    have hFree : Module.Free (Localization.AtPrime I) (LocalizedModule.AtPrime I M) :=
-      h I hI
-    exact Module.Projective.of_free
+  · intro I hI
+    exact @Module.Projective.of_free _ _ _ _ _ (h I hI)
