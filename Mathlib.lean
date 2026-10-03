@@ -4808,6 +4808,7 @@ public import Mathlib.Geometry.Euclidean.Volume.Measure
 public import Mathlib.Geometry.Euclidean.Volume.MeasureSimplex
 public import Mathlib.Geometry.Group.Growth.LinearLowerBound
 public import Mathlib.Geometry.Group.Growth.QuotientInter
+public import Mathlib.Geometry.Group.Hyperbolic
 public import Mathlib.Geometry.Group.WordMetric
 public import Mathlib.Geometry.Group.WordProd
 public import Mathlib.Geometry.Manifold.Algebra.LeftInvariantDerivation
@@ -8345,6 +8346,7 @@ public import Mathlib.Topology.MetricSpace.HausdorffDimension
 public import Mathlib.Topology.MetricSpace.HausdorffDistance
 public import Mathlib.Topology.MetricSpace.Holder
 public import Mathlib.Topology.MetricSpace.HolderNorm
+public import Mathlib.Topology.MetricSpace.Hyperbolic
 public import Mathlib.Topology.MetricSpace.Infsep
 public import Mathlib.Topology.MetricSpace.IsometricSMul
 public import Mathlib.Topology.MetricSpace.Isometry
