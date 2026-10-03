@@ -7,8 +7,8 @@ module
 
 import Mathlib.Init
 public meta import Lean.Elab.Tactic.Basic
-public import Qq
-import Qq.Typ
+public meta import Qq
+meta import Qq.Typ
 
 /-!
 # `SynthesizeUsing`

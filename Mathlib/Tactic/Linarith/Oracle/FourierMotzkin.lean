@@ -8,7 +8,6 @@ module
 public meta import Std.Data.HashMap.AdditionalOperations
 public meta import Batteries.Lean.HashMap
 public import Mathlib.Tactic.Linarith.Datatypes
-public import Batteries.Lean.HashMap
 public meta import Mathlib.Tactic.Linarith.Datatypes
 public import Std.Data.HashMap
 

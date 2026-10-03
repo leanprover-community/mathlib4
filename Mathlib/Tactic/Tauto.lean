@@ -11,9 +11,8 @@ public meta import Mathlib.Lean.Meta
 public import Mathlib.Basic.Logic.Basic  -- shake: keep (dependency of tactic output)
 public import Mathlib.Tactic.CasesM
 public import Mathlib.Tactic.Core
-public import Lean.Elab.ConfigEval
 public meta import Lean.Elab.ConfigEval
-public import Qq
+public meta import Qq
 
 /-!
 The `tauto` tactic.

@@ -6,7 +6,7 @@ Authors: Miyahara Kō
 module
 
 import Mathlib.Init
-public import Aesop
+public meta import Aesop
 
 /-!
 # Measurability Rule Set

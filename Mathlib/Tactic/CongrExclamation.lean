@@ -11,7 +11,6 @@ public meta import Lean.Meta.Tactic.Assumption
 
 public import Mathlib.Lean.Meta.CongrTheorems
 public import Mathlib.Tactic.Relation.Rfl
-public import Lean.Elab.ConfigEval
 public import Mathlib.Basic.Logic.Basic
 
 /-!

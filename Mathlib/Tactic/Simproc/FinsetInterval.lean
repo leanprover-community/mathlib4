@@ -11,7 +11,6 @@ public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Order.SuccPred.Int
 public meta import Mathlib.Tactic.ToAdditive
 public meta import Mathlib.Util.Qq
-public import Mathlib.Util.Qq
 
 /-!
 # Simproc for intervals of natural numbers

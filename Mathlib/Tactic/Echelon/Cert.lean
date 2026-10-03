@@ -7,7 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Decomposition  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.Echelon.Core
-import Mathlib.Util.Qq
+meta import Mathlib.Util.Qq
 public meta import Mathlib.Tactic.Echelon.Core
 
 /-!
