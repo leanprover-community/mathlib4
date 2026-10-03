@@ -5,8 +5,7 @@ Authors: Artie Khovanov
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Lattice
-
+public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.Algebra.Group.Submonoid.Pointwise
 
 /-!
@@ -44,7 +43,7 @@ the largest subgroup of `G` contained in `M`.
 the largest subgroup of `G` contained in `M`. -/]
 def mulSupport : Subgroup G where
   toSubmonoid := M ⊓ M⁻¹
-  inv_mem' := by aesop
+  inv_mem' := by simp_all
 
 variable {M} in
 @[to_additive (attr := simp)]
@@ -57,43 +56,40 @@ theorem mulSupport_toSubmonoid : M.mulSupport.toSubmonoid = M ⊓ M⁻¹ := rfl
 @[to_additive /-- The support of a submonoid is the largest subgroup it contains. -/]
 theorem _root_.Subgroup.gc_toSubmonoid_mulSupport :
     GaloisConnection (α := Subgroup G) Subgroup.toSubmonoid mulSupport :=
-  fun _ _ ↦ ⟨fun _ _ ↦ by aesop, fun h _ hx ↦ (h hx).1⟩
+  fun _ ↦ by grind [IsConcreteLE.le_iff, mem_mulSupport, Subgroup.mem_toSubmonoid, inv_mem_iff]
 
-variable {M}
-
-variable (M) in
 /-- A submonoid is pointed if it has zero support. -/
 @[to_additive /-- A submonoid is pointed if it has zero support. -/]
 def IsMulPointed := ∀ x ∈ M, x⁻¹ ∈ M → x = 1
 
 namespace IsMulPointed
 
-@[to_additive (attr := aesop 90%)]
-theorem mk (h : ∀ x ∈ M, x⁻¹ ∈ M → x = 1) : M.IsMulPointed := h -- for Aesop
+variable {M}
 
-@[to_additive (attr := aesop safe forward (immediate := [hM, hx₁]))]
+@[to_additive (attr := deprecated "Trivially true" (since := "2026-09-28"))]
+theorem mk (h : ∀ x ∈ M, x⁻¹ ∈ M → x = 1) : M.IsMulPointed := h
+
+@[to_additive]
 theorem eq_one_of_mem_of_inv_mem (hM : M.IsMulPointed)
     {x : G} (hx₁ : x ∈ M) (hx₂ : x⁻¹ ∈ M) : x = 1 := hM _ hx₁ hx₂
 
-@[to_additive (attr := aesop safe forward (immediate := [hM, hx₂]))]
-alias eq_one_of_mem_of_inv_mem₂ := eq_one_of_mem_of_inv_mem -- for Aesop
+@[to_additive (attr := deprecated (since := "2026-09-28"))]
+alias eq_one_of_mem_of_inv_mem₂ := eq_one_of_mem_of_inv_mem
 
 @[to_additive]
 theorem _root_.isMulPointed_iff_mulSupport_eq_bot : M.IsMulPointed ↔ M.mulSupport = ⊥ where
-  mp := by aesop
+  mp _ := by ext; grind [IsMulPointed, one_mem, mem_mulSupport, Subgroup.mem_bot]
   mpr h := fun x ↦ by
     apply_fun (x ∈ ·) at h
-    aesop
+    grind [IsMulPointed, one_mem, mem_mulSupport, Subgroup.mem_bot]
 
 @[to_additive (attr := simp)]
 alias ⟨mulSupport_eq_bot, _⟩ := isMulPointed_iff_mulSupport_eq_bot
 
-@[to_additive]
-alias ⟨_, of_mulSupport_eq_bot⟩ := isMulPointed_iff_mulSupport_eq_bot
+@[to_additive] alias ⟨_, of_mulSupport_eq_bot⟩ := isMulPointed_iff_mulSupport_eq_bot
 
 end IsMulPointed
 
-variable (M) in
 /-- A submonoid `M` of a group `G` is spanning if `M` generates `G` as a subgroup. -/
 @[to_additive
 /-- A submonoid `M` of a group `G` is spanning if `M` generates `G` as a subgroup. -/]
@@ -101,19 +97,86 @@ def IsMulSpanning := ∀ a : G, a ∈ M ∨ a⁻¹ ∈ M
 
 namespace IsMulSpanning
 
-@[to_additive (attr := aesop 90%)]
-theorem mk (h : ∀ a : G, a ∈ M ∨ a⁻¹ ∈ M) : M.IsMulSpanning := h -- for Aesop
+variable {M}
 
-@[to_additive (attr := aesop safe forward)]
-theorem mem_or_inv_mem (hM : M.IsMulSpanning) (a : G) : a ∈ M ∨ a⁻¹ ∈ M := by aesop
+
+@[to_additive (attr := deprecated "Trivially true" (since := "2026-09-28"))]
+theorem mk (h : ∀ a : G, a ∈ M ∨ a⁻¹ ∈ M) : M.IsMulSpanning := h
 
 @[to_additive]
-theorem of_le {N : Submonoid G} (hM : M.IsMulSpanning) (h : M ≤ N) :
-    N.IsMulSpanning := by aesop
+theorem mem_or_inv_mem (hM : M.IsMulSpanning) (a : G) : a ∈ M ∨ a⁻¹ ∈ M := by
+  simp_all [IsMulSpanning]
+
+@[to_additive]
+theorem of_le {N : Submonoid G} (hM : M.IsMulSpanning) (h : M ≤ N) : N.IsMulSpanning := by
+  grind [IsMulSpanning, IsConcreteLE.le_iff]
 
 @[to_additive]
 theorem maximal_isMulPointed (hMp : M.IsMulPointed) (hMs : M.IsMulSpanning) :
     Maximal IsMulPointed M :=
-  ⟨hMp, fun N hN h ↦ by rw [IsConcreteLE.le_iff] at h ⊢; aesop⟩
+  by grind [Maximal, IsConcreteLE.le_iff, IsMulPointed, IsMulSpanning, one_mem, inv_one]
 
-end Submonoid.IsMulSpanning
+end IsMulSpanning
+
+section Group
+
+variable {G H : Type*} [Group G] [Group H] (f : G →* H) (M N : Submonoid G) (M' : Submonoid H)
+
+@[to_additive (attr := simp)]
+theorem mulSupport_bot : (⊥ : Submonoid G).mulSupport = ⊥ := by ext; simp
+
+@[to_additive (attr := simp)]
+theorem mulSupport_top : (⊤ : Submonoid G).mulSupport = ⊤ := by ext; simp
+
+variable {M N} in
+@[to_additive]
+theorem mulSupport_mono (h : M ≤ N) : M.mulSupport ≤ N.mulSupport := by
+  grind [mem_mulSupport, IsConcreteLE.le_iff]
+
+@[to_additive (attr := simp)]
+theorem mulSupport_inf : (M ⊓ N).mulSupport = M.mulSupport ⊓ N.mulSupport := by
+  ext; grind [mem_mulSupport, Subgroup.mem_inf]
+
+@[to_additive (attr := simp)]
+theorem mulSupport_sInf (s : Set (Submonoid G)) :
+    (sInf s).mulSupport = InfSet.sInf (mulSupport '' s) := by ext; simp; grind
+
+@[to_additive (attr := simp)]
+theorem mulSupport_iInf {ι : Type*} (f : ι → Submonoid G) :
+    (⨅ i, f i).mulSupport = ⨅ i, (f i).mulSupport := by
+  ext; grind [mem_mulSupport, mem_iInf, Subgroup.mem_iInf]
+
+variable {M'} in
+@[to_additive]
+theorem IsMulSpanning.comap (hM' : M'.IsMulSpanning) : (M'.comap f).IsMulSpanning := by
+  grind [IsMulSpanning, mem_comap]
+
+@[to_additive (attr := simp)]
+theorem mulSupport_comap : (M'.comap f).mulSupport = M'.mulSupport.comap f := by ext; simp
+
+variable {f M} in
+@[to_additive]
+theorem IsMulSpanning.map (hM : M.IsMulSpanning) (hf : Function.Surjective f) :
+    (M.map f).IsMulSpanning := fun x ↦ by
+  obtain ⟨x', rfl⟩ := hf x
+  grind [IsMulSpanning, mem_map]
+
+end Group
+
+section CommGroup
+
+variable {G H : Type*} [CommGroup G] [Group H] (f : G →* H) (M : Submonoid G)
+
+variable {f M} in
+@[to_additive (attr := simp)]
+theorem mulSupport_map (hsupp : f.ker ≤ M.mulSupport) :
+    (M.map f).mulSupport = M.mulSupport.map f := by
+  ext
+  refine ⟨fun ⟨⟨a, ⟨ha₁, ha₂⟩⟩, ⟨b, ⟨hb₁, hb₂⟩⟩⟩ ↦ ?_,
+    by grind [Subgroup.mem_map, mem_map, mem_mulSupport]⟩
+  have : (a * b)⁻¹ * b ∈ M := mul_mem (hsupp (show f (a * b) = 1 by simp_all)).2 hb₁
+  grind [mem_mulSupport, SetLike.mem_coe, mul_inv_rev, inv_mul_cancel_comm, Subgroup.mem_map]
+
+end CommGroup
+
+end Submonoid
