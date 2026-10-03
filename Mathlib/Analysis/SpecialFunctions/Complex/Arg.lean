@@ -526,6 +526,11 @@ theorem arg_coe_angle_eq_iff_eq_toReal {z : ℂ} {θ : Real.Angle} :
 theorem arg_coe_angle_eq_iff {x y : ℂ} : (arg x : Real.Angle) = arg y ↔ arg x = arg y := by
   simp_rw [← Real.Angle.toReal_inj, arg_coe_angle_toReal_eq_arg]
 
+theorem arg_mul_eq_toIocMod {x y : ℂ} (hx : x ≠ 0) (hy : y ≠ 0) :
+    (x * y).arg = toIocMod Real.two_pi_pos (-π) (x.arg + y.arg) := by
+  rw [← arg_coe_angle_toReal_eq_arg, arg_mul_coe_angle hx hy]
+  rfl
+
 lemma arg_mul_eq_add_arg_iff {x y : ℂ} (hx₀ : x ≠ 0) (hy₀ : y ≠ 0) :
     (x * y).arg = x.arg + y.arg ↔ arg x + arg y ∈ Set.Ioc (-π) π := by
   rw [← arg_coe_angle_toReal_eq_arg, arg_mul_coe_angle hx₀ hy₀, ← Real.Angle.coe_add,
