@@ -8,7 +8,6 @@ module
 
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Module.Torsion.Pi
-public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
 /-!
 # Further results on (semi)linear maps
