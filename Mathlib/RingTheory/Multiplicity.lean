@@ -519,7 +519,7 @@ theorem Irreducible.multiplicity_eq_ite (p : α) {q : α} [Decidable (Associated
   · exact (h.symm.irreducible hq).multiplicity_of_associated h
   · by_cases hp : IsUnit p
     · exact multiplicity_of_isUnit_left hp q
-    · exact multiplicity_eq_zero_of_not_dvd fun hd ↦ (hq.dvd_iff.mp hd).elim hp fun ha ↦ h ha.symm
+    · exact multiplicity_eq_zero_of_not_dvd (by simp [hq.dvd_iff, hp, h, Associated.comm])
 
 end CommMonoid
 

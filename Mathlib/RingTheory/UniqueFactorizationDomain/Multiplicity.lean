@@ -57,7 +57,7 @@ theorem FiniteMultiplicity.of_prime_left [CommMonoidWithZero α] [IsCancelMulZer
   .of_not_isUnit ha.not_isUnit hb
 
 /-- An element of a `WfDvdMonoid` has finite multiplicity at a prime iff it is nonzero. -/
-theorem WfDvdMonoid.finiteMultiplicity_iff_ne_zero [CommMonoidWithZero α] [IsCancelMulZero α]
+theorem Prime.finiteMultiplicity_iff_ne_zero [CommMonoidWithZero α] [IsCancelMulZero α]
     [WfDvdMonoid α] {a p : α} (hp : Prime p) : FiniteMultiplicity p a ↔ a ≠ 0 :=
   ⟨FiniteMultiplicity.ne_zero, .of_prime_left hp⟩
 
@@ -193,9 +193,8 @@ lemma dvd_iff_multiplicity_le {a b : R} (ha : a ≠ 0) (hb : b ≠ 0) :
 same `multiplicity` at every prime. -/
 lemma associated_iff_multiplicity_eq {a b : R} (ha : a ≠ 0) (hb : b ≠ 0) :
     Associated a b ↔ ∀ p : R, Prime p → multiplicity p a = multiplicity p b := by
-  rw [← dvd_dvd_iff_associated, dvd_iff_multiplicity_le ha hb, dvd_iff_multiplicity_le hb ha,
-    ← forall₂_and]
-  simp_rw [le_antisymm_iff]
+  rw [← dvd_dvd_iff_associated, dvd_iff_multiplicity_le ha hb, dvd_iff_multiplicity_le hb ha]
+  simp_rw [le_antisymm_iff, forall_and]
 
 lemma pow_dvd_pow_iff_dvd {a b : R} {n : ℕ} (hn : n ≠ 0) : a ^ n ∣ b ^ n ↔ a ∣ b := by
   by_cases ha : a = 0
