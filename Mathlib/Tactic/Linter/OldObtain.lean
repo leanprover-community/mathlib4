@@ -65,7 +65,7 @@ public register_option linter.oldObtain : Bool := {
   descr := "enable the `oldObtain` linter"
 }
 
-@[inherit_doc obtain]
+@[tactic_alt obtain]
 syntax (name := obtain') (priority := high) "obtain" (ppSpace rcasesPatMed)? (" : " term)? : tactic
 
 /--
