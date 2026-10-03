@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Category.Grp.Limits
 public import Mathlib.CategoryTheory.CofilteredSystem
 public import Mathlib.CategoryTheory.Galois.Decomposition
 public import Mathlib.CategoryTheory.Limits.IndYoneda
-public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
 /-!
 # Pro-Representability of fiber functors

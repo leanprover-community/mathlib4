@@ -8,7 +8,6 @@ module
 public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 public import Mathlib.Topology.Algebra.WithZeroTopology
 public import Mathlib.Topology.Algebra.UniformField
-public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 public import Mathlib.Topology.Algebra.ValuativeRel.Completion
 
 /-!
@@ -202,7 +201,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → _) := by
       have : (v (1 : K) : Γ₀) ≠ 0 := by
         rw [Valuation.map_one]
         exact zero_ne_one.symm
-      convert! Valued.locally_const this
+      convert Valued.locally_const this
       ext x
       rw [Valuation.map_one, mem_preimage, mem_singleton_iff, mem_ofPred_eq]
     obtain ⟨V, V_in, hV⟩ : ∃ V ∈ 𝓝 (1 : hat K), ∀ x : K, (x : hat K) ∈ V → (v x : Γ₀) = 1 := by
@@ -218,7 +217,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → _) := by
           rw [← one_mul (1 : hat K)]
         refine
           Tendsto.mul continuous_fst.continuousAt (Tendsto.comp ?_ continuous_snd.continuousAt)
-        convert! (continuousAt_inv₀ (zero_ne_one.symm : 1 ≠ (0 : hat K))).tendsto
+        convert (continuousAt_inv₀ (zero_ne_one.symm : 1 ≠ (0 : hat K))).tendsto
         exact inv_one.symm
       rcases tendsto_prod_self_iff.mp this V V_in with ⟨U, U_in, hU⟩
       let hatKstar := ({0}ᶜ : Set <| hat K)
@@ -332,7 +331,7 @@ lemma exists_coe_eq_v (x : hat K) : ∃ r : K, extensionValuation x = v r := by
           ValueGroup₀.embedding a = ValueGroup₀.embedding b ↔ a = b := by
         rw [embedding_strictMono.injective.eq_iff]
       simp_rw [← hr, ← Valuation.restrict_def, h]
-      convert! valuation_isClosedMap.isClosed_range.preimage (continuous_extension (hv := hv))
+      convert valuation_isClosedMap.isClosed_range.preimage (continuous_extension (hv := hv))
       simp_rw [eq_comm (a := extension _)]
       #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
       (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this
@@ -515,7 +514,7 @@ lemma valuedCompletion_surjective_iff :
           have hr' : restrict₀ ((valuedCompletion (K := K)).v : hat K →*₀ Γ₀) r ≠ 0 := by
             rw [ne_eq, ← embedding_inj, embedding_restrict₀ r]
             simpa [hr]
-          convert! isClosed_univ.sdiff (isOpen_sphere (hat K) hr') using 1
+          convert isClosed_univ.sdiff (isOpen_sphere (hat K) hr') using 1
           ext x
           simp [← hr, ← v.restrict_def, v.restrict_inj]
     · exact ⟨_, by simpa using ha⟩

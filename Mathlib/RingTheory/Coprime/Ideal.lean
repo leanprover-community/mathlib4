@@ -5,7 +5,7 @@ Authors: Pierre-Alexandre Bazin
 -/
 module
 
-public import Mathlib.LinearAlgebra.DFinsupp
+import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.RingTheory.Ideal.BigOperators
 public import Mathlib.RingTheory.Ideal.Operations
 

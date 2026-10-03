@@ -5,7 +5,6 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.Regular.Basic
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
 public import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 public import Mathlib.LinearAlgebra.Matrix.Polynomial
@@ -114,7 +113,7 @@ theorem cramer_transpose_row_self (i : n) : Aᵀ.cramer (A i) = Pi.single i A.de
 
 theorem cramer_row_self (i : n) (h : ∀ j, b j = A j i) : A.cramer b = Pi.single i A.det := by
   rw [← transpose_transpose A, det_transpose]
-  convert! cramer_transpose_row_self Aᵀ i
+  convert cramer_transpose_row_self Aᵀ i
   exact funext h
 
 @[simp]
