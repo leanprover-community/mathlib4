@@ -812,6 +812,12 @@ theorem IsCycleOn.extendDomain {p : β → Prop} [DecidablePred p] (f : α ≃ S
     rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩
     exact (h.2 ha hb).extendDomain⟩
 
+theorem IsCycleOn.subtypePerm_general {p : α → Prop} (hp : ∀ x : α, p (f x) ↔ p x)
+    (h : f.IsCycleOn s) : (f.subtypePerm hp).IsCycleOn ((↑) ⁻¹' s) := by
+  refine ⟨h.1.subtypePerm hp, fun _ hx _ hy ↦ ?_⟩
+  have ⟨i, hi⟩ := h.2 hx hy
+  exact ⟨i, f.subtypePerm_zpow i hp ▸ Subtype.ext hi⟩
+
 protected theorem IsCycleOn.countable (hs : f.IsCycleOn s) : s.Countable := by
   obtain rfl | ⟨a, ha⟩ := s.eq_empty_or_nonempty
   · exact Set.countable_empty

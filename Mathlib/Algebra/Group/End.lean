@@ -626,6 +626,26 @@ lemma zpow_mulRight : ∀ n : ℤ, Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n)
 end Group
 end Equiv
 
+namespace Set
+
+variable {p : α → Prop} {f : Equiv.Perm α} {s t : Set α}
+
+lemma MapsTo.subtypePerm (hp : ∀ x : α, p (f x) ↔ p x) (h : MapsTo f s t) :
+    MapsTo (f.subtypePerm hp) ((↑) ⁻¹' s) ((↑) ⁻¹' t) :=
+  fun _ hx ↦ h hx
+
+lemma SurjOn.subtypePerm (hp : ∀ x : α, p (f x) ↔ p x) (h : SurjOn f s t) :
+    SurjOn (f.subtypePerm hp) ((↑) ⁻¹' s) ((↑) ⁻¹' t) := by
+  intro x hx
+  have ⟨y, hy, heq⟩ := h hx
+  exact ⟨⟨y, (hp y).mp (heq ▸ x.prop)⟩, hy, Subtype.ext heq⟩
+
+lemma BijOn.subtypePerm (hp : ∀ x : α, p (f x) ↔ p x) (h : BijOn f s t) :
+    BijOn (f.subtypePerm hp) ((↑) ⁻¹' s) ((↑) ⁻¹' t) :=
+  ⟨h.1.subtypePerm hp, fun _ _ _ _ hxy ↦ (f.subtypePerm hp).injective hxy, h.2.2.subtypePerm hp⟩
+
+end Set
+
 /-- The group of multiplicative automorphisms. -/
 @[to_additive /-- The group of additive automorphisms. -/]
 abbrev MulAut (M : Type*) [Mul M] :=
