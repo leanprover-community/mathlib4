@@ -5,6 +5,7 @@ Authors: Jujian Zhang
 -/
 module
 
+public import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
 public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 public import Mathlib.Algebra.Category.ModuleCat.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.Limits
@@ -1063,3 +1064,11 @@ end
 end ModuleCat
 
 end ModuleCat
+
+universe u in
+/-- The functor sending an abelian group to the corresponding module over `ULift.{u} ℤ`,
+which is an equivalence of categories. -/
+@[implicit_reducible, simps! functor inverse]
+noncomputable def AddCommGrpCat.toModuleCatULiftInt : Ab.{u} ≌ ModuleCat.{u} (ULift.{u} ℤ) :=
+  ModuleCat.intEquivalence.symm.trans
+    (ModuleCat.restrictScalarsEquivalenceOfRingEquiv ULift.ringEquiv)
