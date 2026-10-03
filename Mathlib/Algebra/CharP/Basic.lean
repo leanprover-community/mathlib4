@@ -188,16 +188,20 @@ end CharZero
 
 namespace Fin
 
-open Fin.NatCast
+/-- The natural-number cast into `Fin n` is injective below any `m ≤ n`. -/
+lemma ofNat_injOn_Iio {n m : ℕ} [NeZero n] (hmn : m ≤ n) :
+    Set.InjOn (Fin.ofNat n) (Set.Iio m) := by
+  intro i ha j hb _
+  simp only [mem_Iio] at ha hb
+  have hi : i < n := by lia
+  have hj : j < n := by lia
+  grind [Fin.val_ofNat, Nat.mod_eq_of_lt hi, Nat.mod_eq_of_lt hj]
+
+open Fin.NatCast 
 
 /-- The characteristic of `F_p` is `p`. -/
 @[stacks 09FS "First part. We don't require `p` to be a prime in mathlib."]
 instance charP (n : ℕ) [NeZero n] : CharP (Fin n) n where cast_eq_zero_iff _ := natCast_eq_zero
-
-/-- The natural-number cast into `Fin n` is injective below any `m ≤ n`. -/
-lemma ofNat_injOn_Iio {n m : ℕ} [NeZero n] (hmn : m ≤ n) :
-    Set.InjOn (Fin.ofNat n) (Set.Iio m) :=
-  (CharP.natCast_injOn_Iio (Fin n) n).mono fun _ h ↦ lt_of_lt_of_le h hmn
 
 end Fin
 
