@@ -460,9 +460,10 @@ theorem finrank_range_le_card {ι : Type*} [Fintype ι] (b : ι → M) :
   rw [Set.toFinset_range]
   exact Finset.card_image_le
 
-theorem finrank_span_eq_card [Nontrivial R] {ι : Type*} [Fintype ι] {b : ι → M}
+theorem finrank_span_eq_card {ι : Type*} [Fintype ι] {b : ι → M}
     (hb : LinearIndependent R b) :
     finrank R (span R (Set.range b)) = Fintype.card ι :=
+  have := nontrivial_of_invariantBasisNumber R
   finrank_eq_of_rank_eq
     (by
       have : Module.rank R (span R (Set.range b)) = #(Set.range b) := rank_span hb
@@ -510,9 +511,10 @@ lemma finrank_le_of_span_eq_top {ι : Type*} [Fintype ι] {v : ι → M}
   exact (finrank_span_le_card _).trans (by convert Fintype.card_range_le v; rw [Set.toFinset_card])
 
 @[simp]
-lemma Pi.dim_spanSubset [Finite ι] [Nontrivial R] {s : Set ι} :
+lemma Pi.dim_spanSubset [Finite ι] {s : Set ι} :
     Module.finrank R (Pi.spanSubset R s) = s.ncard := by
   classical
+  have := nontrivial_of_invariantBasisNumber R
   have := Fintype.ofFinite ι
   rw [Pi.spanSubset, finrank_span_set_eq_card <| (Pi.basisFun R ι).linearIndepOn _ |>.id_image,
     Set.toFinset_card, Fintype.card_eq_nat_card, Nat.card_coe_set_eq]
