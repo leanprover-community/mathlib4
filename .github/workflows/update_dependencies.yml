@@ -14,6 +14,9 @@ jobs:
       id-token: write
     env:
       BRANCH_NAME: "update-dependencies-bot-use-only"
+      # Pinned commit of https://github.com/kim-em/paranoid-lake-update, which prepares
+      # the diffs of every dependency the PR would pull in, for a human or AI audit.
+      PARANOID_LAKE_UPDATE_REF: da98273a581e1bcc8fe4668275d2e1127f0e6186
     steps:
       - name: Generate app token
         id: app-token
@@ -177,6 +180,33 @@ jobs:
           fi
           echo "create_pr=$create_pr" >> "$GITHUB_OUTPUT"
 
+      - name: Prepare dependency diffs for audit
+        # Everything the PR would pull in, as full diffs: the packages whose revision
+        # changed in lake-manifest.json (base master vs the updated tree) plus the
+        # mathlib-ci pin bumped above.  Nothing from upstream is executed here.
+        if: ${{ steps.determine_state.outputs.create_pr == 'true' && steps.determine_state.outputs.state != 'SUPERSEDED' }}
+        id: paranoid
+        run: |
+          git clone --quiet https://github.com/kim-em/paranoid-lake-update /tmp/paranoid-lake-update
+          git -C /tmp/paranoid-lake-update checkout --quiet "$PARANOID_LAKE_UPDATE_REF"
+          old_ci=$(git show origin/master:.github/actions/get-mathlib-ci/action.yml | sed -n 's/^ *default: \([0-9a-f]\{40\}\)$/\1/p')
+          new_ci=$(sed -n 's/^ *default: \([0-9a-f]\{40\}\)$/\1/p' .github/actions/get-mathlib-ci/action.yml)
+          extra=()
+          if [ -n "$old_ci" ] && [ -n "$new_ci" ] && [ "$old_ci" != "$new_ci" ]; then
+            extra+=(--extra "https://github.com/leanprover-community/mathlib-ci@${old_ci}..${new_ci}")
+          fi
+          python3 /tmp/paranoid-lake-update/paranoid-lake-update compare \
+            --base origin/master \
+            --title "Mathlib dependency update $(date -u +%Y-%m-%d)" \
+            --out /tmp/paranoid-out "${extra[@]}"
+
+      - name: Upload dependency diffs
+        if: ${{ steps.paranoid.outcome == 'success' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: dependency-diffs
+          path: /tmp/paranoid-out
+
       - name: Generate PR title
         id: pr-title
         if: ${{ steps.determine_state.outputs.create_pr == 'true' }}
@@ -185,6 +215,7 @@ jobs:
           echo "pr_title=chore: update Mathlib dependencies $(date -u +"%Y-%m-%d")" >> "$GITHUB_ENV"
 
       - name: Create Pull Request
+        id: cpr
         if: ${{ steps.pr-title.outcome == 'success' }}
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
@@ -205,6 +236,19 @@ jobs:
             ---
 
             [workflow run for this PR](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+      - name: Comment dependency audit on the PR
+        # Summary table with links to every upstream commit and GitHub compare view,
+        # the artifact with the full diffs, and the audit prompt so that anyone can
+        # run their own model over the same material.
+        if: ${{ steps.paranoid.outcome == 'success' && steps.cpr.outputs.pull-request-number != '' }}
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          python3 /tmp/paranoid-lake-update/paranoid-lake-update publish --out /tmp/paranoid-out \
+            --comment-pr "${{ steps.cpr.outputs.pull-request-number }}" \
+            --github-repo "${{ github.repository }}" \
+            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
       - name: Send Zulip message (failure)
         if: ${{ failure() }}
