@@ -93,9 +93,9 @@ variable [LinearOrder α]
 the vertices between its endpoints. -/
 theorem Walk.mem_support_hasse_of_ge_of_le {u v : α} (w : (hasse α).Walk u v) {x : α} (hu : u ≤ x)
     (hv : x ≤ v) : x ∈ w.support := by
-  rcases eq_or_ne x v with rfl | hx
+  rcases eq_or_lt_of_le hv with rfl | hx
   · exact w.end_mem_support
-  · have ⟨d, hd, _⟩ := w.exists_boundary_dart (.Iic x) hu (hx.lt_of_le hv).not_ge
+  · have ⟨d, hd, _⟩ := w.exists_boundary_dart (.Iic x) hu hx.not_ge
     rw [show x = d.fst by grind [not_le, Dart.adj, hasse_adj, CovBy]]
     exact w.dart_fst_mem_support_of_mem_darts hd
 
@@ -104,7 +104,7 @@ the darts between its endpoints, oriented from the walk's start to its end. -/
 theorem Walk.mem_darts_hasse_of_ge_of_le_of_le {u v : α} (w : (hasse α).Walk u v)
     {d : (hasse α).Dart} (hu : u ≤ d.fst) (hd : d.fst ≤ d.snd) (hv : d.snd ≤ v) : d ∈ w.darts := by
   replace hd := hd.lt_of_ne d.fst_ne_snd
-  have ⟨e, he, _⟩ := w.exists_boundary_dart (.Iic d.fst) hu (hd.trans_le hv).not_ge
+  have := w.exists_boundary_dart (.Iic d.fst) hu (hd.trans_le hv).not_ge
   grind [Dart.ext, Dart.adj, hasse_adj, CovBy, covBy_iff_lt_iff_le_left]
 
 theorem preconnected_hasse_of_succOrder [SuccOrder α] [IsSuccArchimedean α] :

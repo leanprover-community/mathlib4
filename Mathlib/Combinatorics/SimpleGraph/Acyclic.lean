@@ -678,10 +678,10 @@ section Hasse
 
 theorem isAcyclic_hasse_of_linearOrder (α : Type*) [LinearOrder α] : (hasse α).IsAcyclic := by
   refine isAcyclic_iff_forall_adj_isBridge.mpr fun u v huv ↦ ?_
-  wlog hle : u < v with h
+  wlog hle : u < v
   · grind [Adj.symm]
   refine isBridge_iff.mpr fun ⟨w⟩ ↦ ?_
-  have ⟨d, _⟩ := w.exists_boundary_dart (.Iio v) hle Set.self_notMem_Iio
+  have := w.exists_boundary_dart (.Iio v) hle Set.self_notMem_Iio
   grind [Dart.adj, hasse_adj, deleteEdges_adj, CovBy]
 
 @[simp]
