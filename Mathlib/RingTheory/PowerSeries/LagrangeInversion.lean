@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.PowerSeries.Derivative
 
 import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Ring
 
@@ -28,8 +27,8 @@ We also give the Lagrange–Bürmann form
 
 `(n + 1) * [X ^ (n + 1)] H(Y) = [X ^ n] (H' * P ^ (n + 1))`
 
-for a formal power series `H`, together with the corresponding divided formulas over a field of
-characteristic zero.
+for a formal power series `H`. When `n + 1` is a unit, this gives a coefficient formula using
+its inverse; over a field of characteristic zero, it gives the usual divided formulas.
 
 ## Main results
 
@@ -41,6 +40,7 @@ characteristic zero.
 * `PowerSeries.lagrange_burmann_coeff`: the Lagrange–Bürmann coefficient formula over a
   commutative ring.
 * `PowerSeries.lagrange_inversion_coeff_pow`: the coefficient formula for powers of `Y`.
+* `PowerSeries.lagrange_burmann_coeff_of_isUnit`: the coefficient formula when `n + 1` is a unit.
 * `PowerSeries.lagrange_burmann_coeff_div`: the divided Lagrange–Bürmann formula over a field of
   characteristic zero.
 * `PowerSeries.lagrange_inversion_coeff`: the usual divided coefficient formula over a field of
@@ -250,6 +250,13 @@ theorem lagrange_inversion_coeff_pow (n k : ℕ) :
     coeff_natCast_mul, add_assoc] at h
   simpa using h
 
+open scoped Ring in
+/-- The coefficient form of the Lagrange–Bürmann formula when `n + 1` is a unit. -/
+theorem lagrange_burmann_coeff_of_isUnit (n : ℕ) (H : R⟦X⟧) (hn : IsUnit (n + 1 : R)) :
+    coeff (n + 1) (H.subst Y) = (d⁄dX H * P ^ (n + 1)).coeff n * (n + 1 : R)⁻¹ʳ := by
+  apply (Ring.eq_mul_inverse_iff_mul_eq _ _ _ hn).2
+  simpa [mul_comm] using lagrange_burmann_coeff hY n H
+
 end CommRing
 
 section Field
@@ -262,15 +269,14 @@ include hY
 characteristic zero. -/
 theorem lagrange_burmann_coeff_div (n : ℕ) (H : K⟦X⟧) :
     coeff (n + 1) (H.subst Y) = (d⁄dX H * P ^ (n + 1)).coeff n / (n + 1) := by
-  field_simp [Nat.cast_add_one_ne_zero n]
-  simpa [nsmul_eq_mul, mul_comm] using lagrange_burmann_coeff hY n H
+  simpa [Ring.inverse_eq_inv, div_eq_mul_inv] using
+    lagrange_burmann_coeff_of_isUnit hY n H (Nat.cast_add_one_ne_zero n).isUnit
 
 /-- The usual coefficient form of the formal Lagrange inversion formula. This is the
 case `H = X`, equivalently `k = 1`, of `lagrange_burmann_coeff_div`. -/
 theorem lagrange_inversion_coeff (n : ℕ) :
     Y.coeff (n + 1) = (P ^ (n + 1)).coeff n / (n + 1) := by
-  simpa [subst_X (hasSubst_of_fixedPoint hY)] using
-    lagrange_burmann_coeff_div hY n X
+  simpa [subst_X (hasSubst_of_fixedPoint hY)] using lagrange_burmann_coeff_div hY n X
 
 end Field
 
