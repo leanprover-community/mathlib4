@@ -46,7 +46,7 @@ attribute [local instance] FractionRing.liftAlgebra FractionRing.isScalarTower_l
 
 variable (A K : Type*) {L : Type u} {B} [CommRing A] [Field K] [CommRing B] [Field L]
 variable [Algebra A K] [Algebra B L] [Algebra A B] [Algebra K L] [Algebra A L]
-variable [IsScalarTower A K L] [IsScalarTower A B L]
+variable [IsScalarTower A K L] [IsScalarTower A B L] [FiniteDimensional K L]
 
 open nonZeroDivisors IsLocalization Matrix Algebra Pointwise Polynomial Submodule
 section BIsDomain
@@ -99,7 +99,7 @@ variable (A) in
 If the module `I` is spanned by the basis `b`, then its `traceDual` module is spanned by
 `b.traceDual`.
 -/
-theorem traceDual_span_of_basis [FiniteDimensional K L] [Algebra.IsSeparable K L]
+theorem traceDual_span_of_basis [Algebra.IsSeparable K L]
     (I : Submodule B L) {ι : Type*} [Finite ι] [DecidableEq ι] (b : Basis ι K L)
     (hb : I.restrictScalars A = Submodule.span A (Set.range b)) :
     (traceDual A K I).restrictScalars A = span A (Set.range b.traceDual) := by
@@ -126,7 +126,7 @@ lemma traceDual_top' :
     obtain ⟨c, hc, hc0⟩ := hx'
     simpa [hc0] using hc (c⁻¹ * b)
 
-variable [IsDomain A] [IsFractionRing A K] [FiniteDimensional K L] [Algebra.IsSeparable K L]
+variable [IsDomain A] [IsFractionRing A K] [Algebra.IsSeparable K L]
 
 lemma traceDual_top [Decidable (IsField A)] :
     (⊤ : Submodule B L)ᵛ = if IsField A then ⊤ else ⊥ := by
@@ -144,7 +144,8 @@ variable [IsFractionRing A K]
 
 variable (A K) in
 lemma map_equiv_traceDual [IsDomain A] [IsFractionRing B L] [IsDomain B]
-    [FaithfulSMul A B] (I : Submodule B (FractionRing B)) :
+    [FaithfulSMul A B] [FiniteDimensional (FractionRing A) (FractionRing B)]
+    (I : Submodule B (FractionRing B)) :
     (traceDual A (FractionRing A) I).map (FractionRing.algEquiv B L).toLinearMap =
       traceDual A K (I.map (FractionRing.algEquiv B L).toLinearMap) := by
   change Submodule.map (FractionRing.algEquiv B L).toLinearEquiv.toLinearMap _ =
@@ -171,7 +172,7 @@ lemma Submodule.mem_traceDual_iff_isIntegral {I : Submodule B L} {x} :
     x ∈ Iᵛ ↔ ∀ a ∈ I, IsIntegral A (traceForm K L x a) :=
   forall₂_congr fun _ _ ↦ mem_one.trans IsIntegrallyClosed.isIntegral_iff.symm
 
-variable [FiniteDimensional K L] [IsIntegralClosure B A L]
+variable [IsIntegralClosure B A L]
 
 lemma Submodule.one_le_traceDual_one :
     (1 : Submodule B L) ≤ 1ᵛ := by
@@ -249,7 +250,7 @@ end FractionalIdeal
 end BIsDomain
 
 variable [IsDomain A] [IsFractionRing A K]
-  [FiniteDimensional K L] [Algebra.IsSeparable K L] [IsIntegralClosure B A L]
+  [Algebra.IsSeparable K L] [IsIntegralClosure B A L]
 
 namespace FractionalIdeal
 
@@ -477,7 +478,7 @@ variable [IsIntegrallyClosed A] [IsDedekindDomain B] [IsTorsionFree A B]
 
 /-- The different ideal of an extension of integral domains `B/A` is the inverse of the dual of `A`
 as an ideal of `B`. See `coeIdeal_differentIdeal` and `coeSubmodule_differentIdeal`. -/
-noncomputable def differentIdeal : Ideal B :=
+noncomputable def differentIdeal [FiniteDimensional (FractionRing A) (FractionRing B)] : Ideal B :=
   (1 / Submodule.traceDual A (FractionRing A) 1 : Submodule B (FractionRing B)).comap
     (Algebra.linearMap B (FractionRing B))
 
@@ -498,7 +499,7 @@ lemma coeSubmodule_differentIdeal_fractionRing [Algebra.IsIntegral A B]
 
 section
 
-variable [IsFractionRing B L]
+variable [IsFractionRing B L] [FiniteDimensional (FractionRing A) (FractionRing B)]
 
 lemma coeSubmodule_differentIdeal :
     coeSubmodule L (differentIdeal A B) = 1 / Submodule.traceDual A K 1 := by
@@ -516,7 +517,6 @@ lemma coeSubmodule_differentIdeal :
     rw [IsScalarTower.algebraMap_apply A B L, AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
   have : Algebra.IsSeparable (FractionRing A) (FractionRing B) :=
     Algebra.IsSeparable.of_equiv_equiv _ _ H
-  have : FiniteDimensional (FractionRing A) (FractionRing B) := Module.Finite.of_equiv_equiv _ _ H
   have : Algebra.IsIntegral A B := IsIntegralClosure.isIntegral_algebra _ L
   simp only [AlgEquiv.toLinearEquiv_toLinearMap, Submodule.map_comp]
   rw [← coeSubmodule, coeSubmodule_differentIdeal_fractionRing _ _,
@@ -631,7 +631,7 @@ lemma traceForm_dualSubmodule_adjoin
 
 end
 
-variable (L) {B}
+variable (L) {B} [FiniteDimensional (FractionRing A) (FractionRing B)]
 
 open Polynomial Pointwise in
 lemma conductor_mul_differentIdeal

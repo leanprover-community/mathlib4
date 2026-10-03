@@ -42,7 +42,7 @@ namespace LieAlgebra.IsKilling
 open LieModule Module
 
 variable {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
-  [IsKilling K L] [FiniteDimensional K L]
+  [FiniteDimensional K L] [IsKilling K L]
   {H : LieSubalgebra K L} [H.IsCartanSubalgebra] [IsTriangularizable K H L]
 
 variable (α β : Weight K H L)

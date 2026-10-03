@@ -537,7 +537,7 @@ If `A` and `B` are subalgebras in a commutative algebra `S` over `R`, and if the
 linearly disjoint and such that `A ⊔ B = S`, then `trace` and `algebraMap` commutes.
 -/
 theorem trace_algebraMap (H : A.LinearDisjoint B) (H' : A ⊔ B = ⊤) [Module.Free R B]
-    [Module.Finite R B] (x : B) :
+    [Module.Finite R B] [Module.Finite A S] [Module.Projective A S] (x : B) :
     Algebra.trace A S (algebraMap B S x) = algebraMap R A (Algebra.trace R B x) := by
   simp_rw [Algebra.trace_eq_matrix_trace (Module.Free.chooseBasis R B),
     Algebra.trace_eq_matrix_trace (H.basisOfBasisRight H' (Module.Free.chooseBasis R B)),

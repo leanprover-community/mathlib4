@@ -6,8 +6,10 @@ Authors: Andrew Yang, Riccardo Brasca
 module
 
 import Mathlib.RingTheory.DedekindDomain.Dvr
+public import Mathlib.RingTheory.Finiteness.Quotient
 public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 import Mathlib.RingTheory.LocalRing.Quotient
+import Mathlib.RingTheory.LocalRing.Module
 
 /-!
 
@@ -32,13 +34,14 @@ section IsLocalRing
 local notation "p" => maximalIdeal R
 local notation "pS" => Ideal.map (algebraMap R S) p
 
-variable [Module.Free R S] [Module.Finite R S]
+variable [Module.Projective R S] [Module.Finite R S]
 
 attribute [local instance] Ideal.Quotient.field
 
 lemma Algebra.trace_quotient_mk [IsLocalRing R] (x : S) :
     Algebra.trace (R ⧸ p) (S ⧸ pS) (Ideal.Quotient.mk pS x) =
       Ideal.Quotient.mk p (Algebra.trace R S x) := by
+  have : Module.Free R S := Module.free_of_flat_of_isLocalRing
   let ι := Module.Free.ChooseBasisIndex R S
   let b : Module.Basis ι R S := Module.Free.chooseBasis R S
   rw [trace_eq_matrix_trace b, trace_eq_matrix_trace (basisQuotient b), AddMonoidHom.map_trace]
@@ -65,7 +68,8 @@ local notation "pSₚ" => Ideal.map (algebraMap Rₚ Sₚ) (maximalIdeal Rₚ)
 
 variable (S)
 
-lemma trace_quotient_eq_trace_localization_quotient (x) :
+lemma trace_quotient_eq_trace_localization_quotient [Module.Finite (R ⧸ p) (S ⧸ pS)]
+    [Module.Finite (Rₚ ⧸ maximalIdeal Rₚ) (Sₚ ⧸ pSₚ)] (x) :
     Algebra.trace (R ⧸ p) (S ⧸ pS) (Ideal.Quotient.mk pS x) =
       (equivQuotMaximalIdeal p Rₚ).symm
         (Algebra.trace (Rₚ ⧸ maximalIdeal Rₚ) (Sₚ ⧸ pSₚ) (algebraMap S _ x)) := by

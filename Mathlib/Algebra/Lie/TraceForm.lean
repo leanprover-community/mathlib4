@@ -11,14 +11,14 @@ public import Mathlib.Algebra.Lie.Weights.Cartan
 public import Mathlib.Algebra.Lie.Weights.Linear
 public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 public import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
-import Mathlib.LinearAlgebra.PID
 
 /-!
 # The trace and Killing forms of a Lie algebra.
 
-Let `L` be a Lie algebra with coefficients in a commutative ring `R`. Suppose `M` is a finite, free
-`R`-module and we have a representation `φ : L → End M`. This data induces a natural bilinear form
-`B` on `L`, called the trace form associated to `M`; it is defined as `B(x, y) = Tr (φ x) (φ y)`.
+Let `L` be a Lie algebra with coefficients in a commutative ring `R`. Suppose `M` is a finite,
+projective `R`-module and we have a representation `φ : L → End M`. This data induces a natural
+bilinear form `B` on `L`, called the trace form associated to `M`; it is defined as
+`B(x, y) = Tr (φ x) (φ y)`.
 
 In the special case that `M` is `L` itself and `φ` is the adjoint representation, the trace form
 is known as the Killing form.
@@ -27,12 +27,12 @@ We define the trace / Killing form in this file and prove some basic properties.
 
 ## Main definitions
 
-* `LieModule.traceForm`: a finite, free representation of a Lie algebra `L` induces a bilinear form
-  on `L` called the trace form.
+* `LieModule.traceForm`: a finite, projective representation of a Lie algebra `L` induces a bilinear
+  form on `L` called the trace form.
 * `LieModule.traceForm_eq_zero_of_isNilpotent`: the trace form induced by a nilpotent
   representation of a Lie algebra vanishes.
-* `killingForm`: the adjoint representation of a (finite, free) Lie algebra `L` induces a bilinear
-  form on `L` via the trace form construction.
+* `killingForm`: the adjoint representation of a (finite, projective) Lie algebra `L` induces a
+  bilinear form on `L` via the trace form construction.
 -/
 
 @[expose] public section
@@ -47,9 +47,11 @@ open Set Module
 
 namespace LieModule
 
+variable [Module.Finite R M] [Module.Projective R M]
+
 attribute [local instance 100] LieRing.ofAssociativeRing
 
-/-- A finite, free representation of a Lie algebra `L` induces a bilinear form on `L` called
+/-- A finite, projective representation of a Lie algebra `L` induces a bilinear form on `L` called
 the trace form. See also `killingForm`. -/
 noncomputable def traceForm : LinearMap.BilinForm R L :=
   ((LinearMap.mul _ _).compl₁₂ (φ).toLinearMap (φ).toLinearMap).compr₂ (trace R M)
@@ -109,7 +111,7 @@ lemma traceForm_lieInvariant : (traceForm R L M).lieInvariant L := by
   exact isNilpotent_toEnd_of_isNilpotent₂ R L M x y
 
 open scoped TensorProduct in
-@[simp] lemma traceForm_baseChange [Module.Free R M] [Module.Finite R M]
+@[simp] lemma traceForm_baseChange
     (A : Type*) [CommRing A] [Algebra R A] :
     traceForm A (A ⊗[R] L) (A ⊗[R] M) = (traceForm R L M).baseChange A := by
   ext; simp [traceForm_apply_apply, ← LinearMap.baseChange_comp, Algebra.algebraMap_eq_smul_one]
@@ -134,6 +136,7 @@ lemma trace_toEnd_mul_eq_zero_of_traceForm_eq_zero (h : traceForm R L M = 0)
   | add u v _ _ hu hv => simp [add_mul, hu, hv]
   | smul t u _ hu => simp [hu]
 
+omit [Module.Finite R M] [Module.Projective R M] in
 @[simp]
 lemma traceForm_genWeightSpace_eq [Module.Free R M]
     [IsDomain R] [IsPrincipalIdealRing R]
@@ -190,6 +193,7 @@ lemma traceForm_eq_zero_of_isTrivial [IsTrivial L M] :
   ext m
   simp [trivial_lie_zero]
 
+omit [Module.Finite R M] [Module.Projective R M] in
 /-- Given a bilinear form `B` on a representation `M` of a nilpotent Lie algebra `L`, if `B` is
 invariant (in the sense that the action of `L` is skew-adjoint w.r.t. `B`) then components of the
 Fitting decomposition of `M` are orthogonal w.r.t. `B`. -/
@@ -268,7 +272,7 @@ lemma traceForm_eq_sum_genWeightSpaceOf [IsPrincipalIdealRing R]
 
 -- In characteristic zero (or even just `LinearWeights R L M`) a stronger result holds (no
 -- `⊓ LieAlgebra.center R L`) TODO prove this using `LieModule.traceForm_eq_sum_finrank_nsmul_mul`.
-lemma lowerCentralSeries_one_inf_center_le_ker_traceForm [Module.Free R M] [Module.Finite R M] :
+lemma lowerCentralSeries_one_inf_center_le_ker_traceForm :
     lowerCentralSeries R L L 1 ⊓ LieAlgebra.center R L ≤ LinearMap.ker (traceForm R L M) := by
   /- Sketch of proof (due to Zassenhaus):
 
@@ -316,7 +320,7 @@ lemma lowerCentralSeries_one_inf_center_le_ker_traceForm [Module.Free R M] [Modu
   · exact commute_toEnd_of_mem_center_right (A ⊗[R] M) hzc (1 ⊗ₜ x)
 
 /-- A nilpotent Lie algebra with a representation whose trace form is non-singular is Abelian. -/
-lemma isLieAbelian_of_ker_traceForm_eq_bot [Module.Free R M] [Module.Finite R M]
+lemma isLieAbelian_of_ker_traceForm_eq_bot
     (h : LinearMap.ker (traceForm R L M) = ⊥) : IsLieAbelian L := by
   simpa only [← disjoint_lowerCentralSeries_maxTrivSubmodule_iff R L L, disjoint_iff_inf_le,
     LieIdeal.toLieSubalgebra_toSubmodule, LieSubmodule.toSubmodule_eq_bot, h]
@@ -329,18 +333,15 @@ namespace LieSubmodule
 open LieModule (traceForm)
 
 variable {R L M}
-variable [Module.Free R M] [Module.Finite R M]
-variable [IsDomain R] [IsPrincipalIdealRing R]
-  (N : LieSubmodule R L M) (I : LieIdeal R L) (h : I ≤ N.idealizer) (x : L) {y : L} (hy : y ∈ I)
+variable [Module.Finite R M] [Module.Projective R M]
+variable (N : LieSubmodule R L M) [Module.Finite R N] [Module.Projective R N]
+  (I : LieIdeal R L) (h : I ≤ N.idealizer) (x : L) {y : L} (hy : y ∈ I)
 
 lemma trace_eq_trace_restrict_of_le_idealizer
     (hy' : ∀ m ∈ N, (φ x ∘ₗ φ y) m ∈ N := fun m _ ↦ N.lie_mem (N.mem_idealizer.mp (h hy) m)) :
     trace R M (φ x ∘ₗ φ y) = trace R N ((φ x ∘ₗ φ y).restrict hy') := by
-  suffices ∀ m, ⁅x, ⁅y, m⁆⁆ ∈ N by
-    have : (trace R { x // x ∈ N }) ((φ x ∘ₗ φ y).restrict _) = (trace R M) (φ x ∘ₗ φ y) :=
-      (φ x ∘ₗ φ y).trace_restrict_eq_of_forall_mem _ this
-    simp [this]
-  exact fun m ↦ N.lie_mem (h hy m)
+  exact (LinearMap.trace_restrict_eq_of_forall_mem N.toSubmodule (φ x ∘ₗ φ y)
+    (fun m ↦ N.lie_mem (h hy m)) hy').symm
 
 include h in
 lemma traceForm_eq_of_le_idealizer :
@@ -367,7 +368,9 @@ end LieSubmodule
 
 section LieAlgebra
 
-/-- A finite, free (as an `R`-module) Lie algebra `L` carries a bilinear form on `L`.
+variable [Module.Finite R L] [Module.Projective R L]
+
+/-- A finite, projective (as an `R`-module) Lie algebra `L` carries a bilinear form on `L`.
 
 This is a specialisation of `LieModule.traceForm` to the adjoint representation of `L`. -/
 noncomputable abbrev killingForm : LinearMap.BilinForm R L := LieModule.traceForm R L L
@@ -410,7 +413,7 @@ lemma restrict_killingForm :
     (killingForm R L).restrict I = LieModule.traceForm R I L :=
   rfl
 
-variable [Module.Free R L] [Module.Finite R L] [IsDomain R] [IsPrincipalIdealRing R]
+variable [Module.Finite R I] [Module.Projective R I]
 
 lemma killingForm_eq :
     killingForm R I = (killingForm R L).restrict I :=

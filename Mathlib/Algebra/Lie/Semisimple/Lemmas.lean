@@ -80,7 +80,8 @@ variable {k L M}
 variable {R : Type*} [CommRing R] [LieAlgebra R L] [Module R M] [LieModule R L M]
 
 open LinearMap in
-lemma trace_toEnd_eq_zero {s : Set L} (hs : ∀ x ∈ s, LinearMap.trace R _ (toEnd R _ M x) = 0)
+lemma trace_toEnd_eq_zero [Module.Finite R M] [Module.Projective R M]
+    {s : Set L} (hs : ∀ x ∈ s, LinearMap.trace R _ (toEnd R _ M x) = 0)
     {x : L} (hx : x ∈ LieSubalgebra.lieSpan R L s) :
     trace R _ (toEnd R _ M x) = 0 := by
   induction hx using LieSubalgebra.lieSpan_induction with

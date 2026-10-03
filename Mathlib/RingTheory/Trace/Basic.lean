@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.Trace.Defs
 /-!
 # Trace for (finite) ring extensions.
 
-Suppose we have an `R`-algebra `S` with a finite basis. For each `s : S`,
+Suppose we have an `R`-algebra `S` that is finite and projective as an `R`-module. For each `s : S`,
 the trace of the linear map given by multiplying by `s` gives information about
 the roots of the minimal polynomial of `s` over `R`.
 
@@ -61,7 +61,8 @@ open Matrix
 
 open scoped Matrix
 
-theorem Algebra.traceForm_toMatrix_powerBasis (h : PowerBasis R S) :
+theorem Algebra.traceForm_toMatrix_powerBasis [Module.Finite R S] [Module.Projective R S]
+    (h : PowerBasis R S) :
     (traceForm R S).toMatrix h.basis = of fun i j => trace R S (h.gen ^ (i.1 + j.1)) := by
   ext; rw [traceForm_toMatrix, of_apply, pow_add, h.basis_eq_pow, h.basis_eq_pow]
 
@@ -73,7 +74,8 @@ variable {F : Type*} [Field F]
 variable [Algebra K S] [Algebra K F]
 
 /-- Given `pb : PowerBasis K S`, the trace of `pb.gen` is `-(minpoly K pb.gen).nextCoeff`. -/
-theorem PowerBasis.trace_gen_eq_nextCoeff_minpoly [Nontrivial S] (pb : PowerBasis K S) :
+theorem PowerBasis.trace_gen_eq_nextCoeff_minpoly [FiniteDimensional K S] [Nontrivial S]
+    (pb : PowerBasis K S) :
     Algebra.trace K S pb.gen = -(minpoly K pb.gen).nextCoeff := by
   have d_pos : 0 < pb.dim := PowerBasis.dim_pos pb
   have d_pos' : 0 < (minpoly K pb.gen).natDegree := by simpa
@@ -83,8 +85,8 @@ theorem PowerBasis.trace_gen_eq_nextCoeff_minpoly [Nontrivial S] (pb : PowerBasi
 
 /-- Given `pb : PowerBasis K S`, then the trace of `pb.gen` is
 `((minpoly K pb.gen).aroots F).sum`. -/
-theorem PowerBasis.trace_gen_eq_sum_roots [Nontrivial S] (pb : PowerBasis K S)
-    (hf : ((minpoly K pb.gen).map (algebraMap K F)).Splits) :
+theorem PowerBasis.trace_gen_eq_sum_roots [FiniteDimensional K S] [Nontrivial S]
+    (pb : PowerBasis K S) (hf : ((minpoly K pb.gen).map (algebraMap K F)).Splits) :
     algebraMap K F (trace K S pb.gen) = ((minpoly K pb.gen).aroots F).sum := by
   rw [PowerBasis.trace_gen_eq_nextCoeff_minpoly, map_neg,
     ← nextCoeff_map_eq, hf.nextCoeff_eq_neg_sum_roots_of_monic
@@ -95,21 +97,14 @@ namespace IntermediateField.AdjoinSimple
 
 open IntermediateField
 
-theorem trace_gen_eq_zero {x : L} (hx : ¬IsIntegral K x) :
-    Algebra.trace K K⟮x⟯ (AdjoinSimple.gen K x) = 0 := by
-  rw [trace_eq_zero_of_not_exists_basis, LinearMap.zero_apply]
-  contrapose hx
-  obtain ⟨s, ⟨b⟩⟩ := hx
-  refine .of_mem_of_fg K⟮x⟯.toSubalgebra ?_ x ?_
-  · exact (Submodule.fg_iff_finiteDimensional _).mpr (b.finiteDimensional_of_finite)
-  · exact subset_adjoin K _ (Set.mem_singleton x)
-
-theorem trace_gen_eq_sum_roots (x : L) (hf : ((minpoly K x).map (algebraMap K F)).Splits) :
+theorem trace_gen_eq_sum_roots (x : L) [FiniteDimensional K K⟮x⟯]
+    (hf : ((minpoly K x).map (algebraMap K F)).Splits) :
     algebraMap K F (trace K K⟮x⟯ (AdjoinSimple.gen K x)) =
       ((minpoly K x).aroots F).sum := by
   have injKxL := (algebraMap K⟮x⟯ L).injective
-  by_cases hx : IsIntegral K x; swap
-  · simp [minpoly.eq_zero hx, trace_gen_eq_zero hx, aroots_def]
+  have hx : IsIntegral K x := by
+    simpa only [AdjoinSimple.algebraMap_gen] using
+      (IsIntegral.of_finite K (AdjoinSimple.gen K x)).algebraMap (B := L)
   rw [← adjoin.powerBasis_gen hx, (adjoin.powerBasis hx).trace_gen_eq_sum_roots] <;>
     rw [adjoin.powerBasis_gen hx, ← minpoly.algebraMap_eq injKxL] <;>
     try simp only [AdjoinSimple.algebraMap_gen _ _]
@@ -130,7 +125,7 @@ theorem trace_eq_trace_adjoin [FiniteDimensional K L] (x : L) :
 variable {K} in
 /-- Trace of the generator of a simple adjoin equals negative of the next coefficient of
 its minimal polynomial coefficient. -/
-theorem trace_adjoinSimpleGen {x : L} (hx : IsIntegral K x) :
+theorem trace_adjoinSimpleGen {x : L} [FiniteDimensional K K⟮x⟯] (hx : IsIntegral K x) :
     trace K K⟮x⟯ (AdjoinSimple.gen K x) = -(minpoly K x).nextCoeff := by
   simpa [minpoly_gen K x] using PowerBasis.trace_gen_eq_nextCoeff_minpoly <| adjoin.powerBasis hx
 
@@ -169,37 +164,36 @@ theorem Algebra.isIntegral_trace [FiniteDimensional L F] {x : F} (hx : IsIntegra
   · apply IsAlgClosed.splits
 
 lemma Algebra.trace_eq_of_algEquiv {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
-    [Algebra A B] [Algebra A C] (e : B ≃ₐ[A] C) (x) :
+    [Algebra A B] [Algebra A C] [Module.Finite A B] [Module.Projective A B]
+    [Module.Finite A C] [Module.Projective A C] (e : B ≃ₐ[A] C) (x) :
     Algebra.trace A C (e x) = Algebra.trace A B x := by
   simp_rw [Algebra.trace_apply, ← LinearMap.trace_conj' _ e.toLinearEquiv]
   congr; ext; simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Algebra.trace_eq_of_ringEquiv {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
-    [Algebra A C] [Algebra B C] (e : A ≃+* B) (he : (algebraMap B C).comp e = algebraMap A C) (x) :
+    [Algebra A C] [Algebra B C] [Module.Finite A C] [Module.Projective A C]
+    [Module.Finite B C] [Module.Projective B C]
+    (e : A ≃+* B) (he : (algebraMap B C).comp e = algebraMap A C) (x) :
     e (Algebra.trace A C x) = Algebra.trace B C x := by
-  classical
-  by_cases h : ∃ s : Finset C, Nonempty (Basis s B C)
-  · obtain ⟨s, ⟨b⟩⟩ := h
-    let : Algebra A B := RingHom.toAlgebra e
-    let : IsScalarTower A B C := IsScalarTower.of_algebraMap_eq' he.symm
-    rw [Algebra.trace_eq_matrix_trace b,
-      Algebra.trace_eq_matrix_trace (b.mapCoeffs e.symm (by simp [Algebra.smul_def, ← he]))]
-    rw [AddMonoidHom.map_trace]
-    congr
-    ext i j
-    simp [leftMulMatrix_apply, LinearMap.toMatrix_apply]
-  rw [trace_eq_zero_of_not_exists_basis _ h, trace_eq_zero_of_not_exists_basis,
-    LinearMap.zero_apply, LinearMap.zero_apply, map_zero]
-  intro ⟨s, ⟨b⟩⟩
-  exact h ⟨s, ⟨b.mapCoeffs e (by simp [Algebra.smul_def, ← he])⟩⟩
+  let : Algebra A B := RingHom.toAlgebra e
+  let : IsScalarTower A B C := IsScalarTower.of_algebraMap_eq' he.symm
+  let e' : A ≃ₐ[A] B := { e with commutes' := fun _ ↦ rfl }
+  let := Module.Finite.equiv e'.toLinearEquiv
+  let := Module.Projective.of_equiv' e'.toLinearEquiv
+  rw [← Algebra.trace_trace (S := B), ← Algebra.trace_eq_of_algEquiv e'.symm,
+    Algebra.trace_self_apply]
+  exact e.apply_symm_apply _
 
 lemma Algebra.trace_eq_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [CommRing B₁]
-    [CommRing A₂] [CommRing B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
+    [CommRing A₂] [CommRing B₂] [Algebra A₁ B₁] [Algebra A₂ B₂]
+    [Module.Finite A₁ B₁] [Module.Projective A₁ B₁] [Module.Finite A₂ B₂] [Module.Projective A₂ B₂]
+    (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
     (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁)) (x) :
     Algebra.trace A₁ B₁ x = e₁.symm (Algebra.trace A₂ B₂ (e₂ x)) := by
   let := (RingHom.comp (e₂ : B₁ →+* B₂) (algebraMap A₁ B₁)).toAlgebra
   let e' : B₁ ≃ₐ[A₁] B₂ := { e₂ with commutes' := fun _ ↦ rfl }
+  let := Module.Finite.equiv e'.toLinearEquiv
+  let := Module.Projective.of_equiv' e'.toLinearEquiv
   rw [← Algebra.trace_eq_of_ringEquiv e₁ he, ← Algebra.trace_eq_of_algEquiv e',
     RingEquiv.symm_apply_apply]
   rfl
@@ -212,7 +206,7 @@ open Algebra IntermediateField
 
 variable (F) (E : Type*) [Field E] [Algebra K E]
 
-theorem trace_eq_sum_embeddings_gen (pb : PowerBasis K L)
+theorem trace_eq_sum_embeddings_gen [FiniteDimensional K L] (pb : PowerBasis K L)
     (hE : ((minpoly K pb.gen).map (algebraMap K E)).Splits) (hfx : IsSeparable K pb.gen) :
     algebraMap K E (Algebra.trace K L pb.gen) =
       (@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).sum fun σ => σ pb.gen := by
@@ -272,15 +266,12 @@ end EqSumEmbeddings
 
 section NotIsSeparable
 
-lemma Algebra.trace_eq_zero_of_not_isSeparable (H : ¬ Algebra.IsSeparable K L) :
+lemma Algebra.trace_eq_zero_of_not_isSeparable [FiniteDimensional K L]
+    (H : ¬ Algebra.IsSeparable K L) :
     trace K L = 0 := by
   obtain ⟨p, hp⟩ := ExpChar.exists K
   have := expChar_ne_zero K p
   ext x
-  by_cases h₀ : FiniteDimensional K L; swap
-  · rw [trace_eq_zero_of_not_exists_basis]
-    rintro ⟨s, ⟨b⟩⟩
-    exact h₀ (Module.Finite.of_basis b)
   by_cases hx : IsSeparable K x
   · lift x to separableClosure K L using hx
     rw [← IntermediateField.algebraMap_apply, ← trace_trace (S := separableClosure K L),
@@ -332,6 +323,10 @@ variable (A : Type u) {B : Type v} (C : Type z)
 variable [CommRing A] [CommRing B] [Algebra A B] [CommRing C] [Algebra A C]
 
 open Finset
+
+section TraceMatrix
+
+variable [Module.Finite A B] [Module.Projective A B]
 
 /-- Given an `A`-algebra `B` and `b`, a `κ`-indexed family of elements of `B`, we define
 `traceMatrix A b` as the matrix whose `(i j)`-th element is the trace of `b i * b j`. -/
@@ -401,7 +396,7 @@ theorem traceMatrix_of_basis_mulVec [Fintype ι] (b : Basis ι A B) (z : B) :
   congr
   rw [b.sum_equivFun]
 
-variable (A)
+end TraceMatrix
 
 /-- `embeddingsMatrix A C b : Matrix κ (B →ₐ[A] C) C` is the matrix whose `(i, σ)` coefficient is
   `σ (b i)`. It is mostly useful for fields when `Fintype.card κ = finrank A B` and `C` is
@@ -456,7 +451,8 @@ open Algebra
 
 variable (pb : PowerBasis K L)
 
-theorem det_traceMatrix_ne_zero' [Algebra.IsSeparable K L] : det (traceMatrix K pb.basis) ≠ 0 := by
+theorem det_traceMatrix_ne_zero' [Algebra.IsSeparable K L] [FiniteDimensional K L] :
+    det (traceMatrix K pb.basis) ≠ 0 := by
   suffices algebraMap K (AlgebraicClosure L) (det (traceMatrix K pb.basis)) ≠ 0 by
     refine mt (fun ht => ?_) this
     rw [ht, map_zero]
@@ -471,10 +467,9 @@ theorem det_traceMatrix_ne_zero' [Algebra.IsSeparable K L] : det (traceMatrix K 
     exact (Finset.mem_Ioi.mp hij).ne' (e.injective <| pb.algHom_ext h)
   · rw [AlgHom.card, pb.finrank]
 
-theorem det_traceForm_ne_zero [Algebra.IsSeparable K L] [Fintype ι] [DecidableEq ι]
-    (b : Basis ι K L) :
+theorem det_traceForm_ne_zero [FiniteDimensional K L] [Algebra.IsSeparable K L] [Fintype ι]
+    [DecidableEq ι] (b : Basis ι K L) :
     det ((traceForm K L).toMatrix b) ≠ 0 := by
-  have : FiniteDimensional K L := b.finiteDimensional_of_finite
   let pb : PowerBasis K L := Field.powerBasisOfFiniteOfSeparable _ _
   rw [← LinearMap.BilinForm.toMatrix_mul_basis_toMatrix pb.basis b, ←
     det_comm' (pb.basis.toMatrix_mul_toMatrix_flip b) _, ← Matrix.mul_assoc, det_mul]
@@ -529,7 +524,8 @@ section isNilpotent
 namespace Algebra
 
 /-- The trace of a nilpotent element is nilpotent. -/
-lemma isNilpotent_trace_of_isNilpotent {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] {x : S}
+lemma isNilpotent_trace_of_isNilpotent {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+    [Module.Finite R S] [Module.Projective R S] {x : S}
     (hx : IsNilpotent x) : IsNilpotent (trace R S x) :=
   LinearMap.isNilpotent_trace_of_isNilpotent (hx.map (lmul R S))
 

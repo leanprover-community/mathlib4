@@ -245,13 +245,11 @@ theorem IsSymmetricProjection.le_iff_range_le_range {p q : E →ₗ[𝕜] E}
   simpa [Submodule.toLinearMap_starProjection_eq_isComplProjection] using
     U.mem_iff_norm_starProjection _ |>.mpr <| le_antisymm (U.norm_starProjection_apply_le a) h2
 
+variable [FiniteDimensional 𝕜 E]
+
 theorem IsPositive.trace_nonneg {f : E →ₗ[𝕜] E} (hf : f.IsPositive) : 0 ≤ f.trace 𝕜 E := by
-  unfold trace
-  split_ifs with h
-  · have : FiniteDimensional 𝕜 E := Module.Finite.of_basis h.choose_spec.some
-    simp_rw [traceAux_eq 𝕜 _ (stdOrthonormalBasis 𝕜 E).toBasis]
-    exact posSemidef_toMatrix_iff (stdOrthonormalBasis 𝕜 E) |>.mpr hf |>.trace_nonneg
-  · simp
+  rw [trace_eq_matrix_trace 𝕜 (stdOrthonormalBasis 𝕜 E).toBasis]
+  exact posSemidef_toMatrix_iff (stdOrthonormalBasis 𝕜 E) |>.mpr hf |>.trace_nonneg
 
 variable (𝕜 E) in
 /-- `LinearMap.trace` as a positive linear map. -/
