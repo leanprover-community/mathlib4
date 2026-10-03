@@ -132,6 +132,42 @@ def underObj (W : MorphismProperty T) {X : T} : ObjectProperty (Under X) := fun 
 instance [W.RespectsIso] : (W.underObj (X := X)).IsClosedUnderIsomorphisms :=
   inferInstanceAs <| (W.commaObj _ _).IsClosedUnderIsomorphisms
 
+/-- The object property on `Arrow T` induced by a morphism property on `T`. -/
+def arrowObj (W : MorphismProperty T) : ObjectProperty (Arrow T) := fun f ↦ W f.hom
+
+@[simp] lemma arrowObj_iff (Y : Arrow T) : W.arrowObj Y ↔ W Y.hom := .rfl
+
+instance [W.RespectsIso] : W.arrowObj.IsClosedUnderIsomorphisms :=
+  inferInstanceAs <| (W.commaObj _ _).IsClosedUnderIsomorphisms
+
+/-- The morphism property on `T` induced by an object property on `Arrow T`. -/
+def _root_.CategoryTheory.ObjectProperty.toMorphismProperty (W : ObjectProperty (Arrow T)) :
+    MorphismProperty T := fun _ _ f ↦ W f
+
+@[simp]
+lemma _root_.CategoryTheory.ObjectProperty.toMorphismProperty_iff {W : ObjectProperty (Arrow T)}
+    {X Y : T} (f : X ⟶ Y) : W.toMorphismProperty f ↔ W (Arrow.mk f) := .rfl
+
+lemma respectsIso_iff : W.RespectsIso ↔ W.arrowObj.IsClosedUnderIsomorphisms :=
+  ⟨fun _ ↦ inferInstance, fun h ↦ RespectsIso.of_respects_arrow_iso _ (fun _ _ ↦ h.of_iso)⟩
+
+variable (T) in
+/-- There is an equivalence between morphism properties on `T` and object properties
+on `Arrow T`. -/
+@[simps]
+def arrowObjOrderIso : MorphismProperty T ≃o ObjectProperty (Arrow T) where
+  toFun := arrowObj
+  invFun := ObjectProperty.toMorphismProperty
+  map_rel_iff' := ⟨fun h _ _ f ha ↦ h f ha, fun h f ha ↦ h _ ha⟩
+
+@[simp]
+lemma toMorphismProperty_arrowObj (W : MorphismProperty T) :
+    W.arrowObj.toMorphismProperty = W := rfl
+
+@[simp]
+lemma _root_.CategoryTheory.ObjectProperty.arrowObj_toMorphismProperty
+    (W : ObjectProperty (Arrow T)) : W.toMorphismProperty.arrowObj = W := rfl
+
 @[simp]
 lemma inverseImage_op_overObj (W : MorphismProperty T) {X : T} :
     W.overObj.op.inverseImage (Under.opEquivOpOver X).functor = W.op.underObj := rfl
