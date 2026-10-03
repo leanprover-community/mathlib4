@@ -276,6 +276,30 @@ def EvalsTo.trans {σ : Type*} (f : σ → Option σ) (a : σ) (b : σ) (c : Opt
     (h₁ : EvalsTo f a b) (h₂ : EvalsTo f b c) : EvalsTo f a c :=
   ⟨h₂.steps + h₁.steps, by rw [Function.iterate_add_apply, h₁.evals_in_steps, h₂.evals_in_steps]⟩
 
+/-- Induction along a run `h` from `a` to `b`: if `motive 0 a` holds and every step `f c = some c'`
+takes `motive n c` to `motive (n + 1) c'`, then `motive h.steps b` holds. -/
+theorem EvalsTo.induction_on {σ : Type*} {f : σ → Option σ} {a b : σ} (h : EvalsTo f a (some b))
+    (motive : ℕ → σ → Prop) (zero : motive 0 a)
+    (succ : ∀ n c c', motive n c → f c = some c' → motive (n + 1) c') : motive h.steps b := by
+  suffices ∀ n c, (flip bind f)^[n] (some a) = some c → motive n c from this _ _ h.evals_in_steps
+  intro n
+  induction n with
+  | zero => rintro c ⟨⟩; exact zero
+  | succ n ih =>
+    intro c' hc'
+    rw [Function.iterate_succ_apply'] at hc'
+    obtain ⟨c, hc, hc'⟩ := Option.bind_eq_some_iff.1 hc'
+    exact succ n c c' (ih c hc) hc'
+
+/-- A map sending every step of `f` to a step of `g` sends a run of `f` to a run of `g` with the
+same number of steps. -/
+def EvalsTo.map {σ τ : Type*} {f : σ → Option σ} {g : τ → Option τ} (tr : σ → τ)
+    (htr : ∀ c c', f c = some c' → g (tr c) = some (tr c')) {a b : σ} (h : EvalsTo f a (some b)) :
+    EvalsTo g (tr a) (some (tr b)) where
+  steps := h.steps
+  evals_in_steps := h.induction_on (fun n c ↦ (flip bind g)^[n] (some (tr a)) = some (tr c)) rfl
+    fun n c c' ih hc ↦ by rw [Function.iterate_succ_apply', ih]; exact htr c c' hc
+
 /-- Reflexivity of `EvalsToInTime` in 0 steps. -/
 def EvalsToInTime.refl {σ : Type*} (f : σ → Option σ) (a : σ) : EvalsToInTime f a (some a) 0 :=
   ⟨EvalsTo.refl f a, le_refl 0⟩
