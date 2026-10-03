@@ -37,21 +37,52 @@ instance : Subsingleton (Subfield ℚ) :=
 instance (p : ℕ) [hp : Fact (Nat.Prime p)] : Subsingleton (Subfield (ZMod p)) :=
   subsingleton_of_top_le_bot fun x _ ↦ by simpa using natCast_mem (⊥ : Subfield (ZMod p)) x.val
 
+variable {K : Type*} [Field K]
+
 /--
 The smallest subfield of a field of characteristic `0` is (the image of) `ℚ`.
 -/
-theorem Subfield.bot_eq_of_charZero {K : Type*} [Field K] [CharZero K] :
+theorem Subfield.bot_eq_of_charZero [CharZero K] :
     (⊥ : Subfield K) = (algebraMap ℚ K).fieldRange := by
   rw [eq_comm, eq_bot_iff, ← Subfield.map_bot (algebraMap ℚ K),
     subsingleton_iff_bot_eq_top.mpr inferInstance, ← RingHom.fieldRange_eq_map]
+
+variable (K) in
+/-- Equivalence between the smallest subfield of a field of characteristic `0` and `ℚ`. -/
+@[expose] noncomputable
+def Subfield.botEquivRat [CharZero K] : (⊥ : Subfield K) ≃+* ℚ :=
+  (RingEquiv.subfieldCongr Subfield.bot_eq_of_charZero).trans
+    (algebraMap ℚ K).rangeRestrictFieldEquiv.symm
 
 /--
 The smallest subfield of a field of characteristic `p` is (the image of) `ZMod p`.
 Note that the fact that the field `K` is of characteristic `p` is stated by the fact that it is
 `ZMod p`-algebra.
 -/
-theorem Subfield.bot_eq_of_zMod_algebra {K : Type*} (p : ℕ) [hp : Fact (Nat.Prime p)]
-    [Field K] [Algebra (ZMod p) K] :
+theorem Subfield.bot_eq_of_zmod_algebra (p : ℕ) [Fact (Nat.Prime p)] [Algebra (ZMod p) K] :
     (⊥ : Subfield K) = (algebraMap (ZMod p) K).fieldRange := by
   rw [eq_comm, eq_bot_iff, ← Subfield.map_bot (algebraMap (ZMod p) K),
     subsingleton_iff_bot_eq_top.mpr inferInstance, ← RingHom.fieldRange_eq_map]
+
+@[deprecated (since := "2026-10-03")] alias Subfield.bot_eq_of_zMod_algebra :=
+  Subfield.bot_eq_of_zmod_algebra
+
+variable (K) in
+/-- Equivalence between the smallest subfield of a field of characteristic `p` and `ZMod p`. -/
+@[expose] noncomputable
+def Subfield.botEquivZMod (p : ℕ) [Fact (Nat.Prime p)] [Algebra (ZMod p) K] :
+    (⊥ : Subfield K) ≃+* ZMod p :=
+  (RingEquiv.subfieldCongr (Subfield.bot_eq_of_zmod_algebra p)).trans
+    (algebraMap (ZMod p) K).rangeRestrictFieldEquiv.symm
+
+@[simp]
+theorem Subfield.botEquivZMod_symm_apply (p : ℕ) [Fact (Nat.Prime p)] [Algebra (ZMod p) K]
+    [Algebra (ZMod p) (⊥ : Subfield K)] (x : ZMod p) :
+    (Subfield.botEquivZMod K p).symm x = algebraMap (ZMod p) (⊥ : Subfield K) x := by
+  rcases ZMod.natCast_zmod_surjective x with ⟨n, rfl⟩
+  simp
+
+theorem Subfield.coe_botEquivZMod_symm_apply (p : ℕ) [Fact (Nat.Prime p)] [Algebra (ZMod p) K]
+    (x : ZMod p) :
+    ↑((Subfield.botEquivZMod K p).symm x) = algebraMap (ZMod p) K x :=
+  rfl
