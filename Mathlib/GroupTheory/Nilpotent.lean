@@ -1301,7 +1301,7 @@ theorem Group.isNilpotent_of_product_of_sylow_group
   have : ∀ (p : ps) (P : Sylow p G), IsNilpotent (↑P : Subgroup G) := by
     intro p P
     have : Fact (Nat.Prime ↑p) := Fact.mk <| Nat.prime_of_mem_primeFactors p.2
-    exact P.isPGroup'.isNilpotent
+    exact P.isPGroup.isNilpotent
   exact nilpotent_of_mulEquiv e
 
 /-- A finite group is nilpotent iff the normalizer condition holds, and iff all maximal groups are
@@ -1334,7 +1334,7 @@ lemma Group.IsNilpotent.prime_dvd_card_center [IsNilpotent G] {p : ℕ} [hp : Fa
   obtain P : Sylow p G := Classical.arbitrary ..
   refine dvd_trans ?_ <| (↑P ⊓ center G).card_dvd_of_le inf_le_right
   have hnt := mt (eq_bot_iff_card _).mpr (inf_center_ne_bot_of_normal (P.ne_bot_of_dvd_card hcard))
-  exact P.isPGroup'.to_inf_left.card_eq_or_dvd.resolve_left hnt
+  exact P.isPGroup.to_inf_left.card_eq_or_dvd.resolve_left hnt
 
 /-- A finite nilpotent group has normal subgroups of every possible index. -/
 theorem Group.IsNilpotent.exists_normal_index_eq_of_dvd_card [IsNilpotent G] {k : ℕ}
