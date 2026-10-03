@@ -6,6 +6,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 module
 
 public import Mathlib.Analysis.Calculus.ContDiff.RCLike
+public import Mathlib.Analysis.Calculus.Deriv.Inv
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
 public import Mathlib.Analysis.Complex.RealDeriv
 public import Mathlib.Analysis.SpecialFunctions.Exp
@@ -211,6 +212,29 @@ theorem iteratedDeriv_cexp_const_mul (n : ℕ) (c : ℂ) :
     (iteratedDeriv n fun s : ℂ => exp (c * s)) = fun s => c ^ n * exp (c * s) := by
   rw [iteratedDeriv_comp_const_mul contDiff_exp, iteratedDeriv_eq_iterate, iter_deriv_exp]
 
+theorem deriv_eq_self_iff {𝕜 : Type*} [RCLike 𝕜]
+  {f : 𝕜 → 𝕜}
+  (g : 𝕜 → 𝕜)
+  (hf : Differentiable 𝕜 f)
+  (hg : Differentiable 𝕜 g)
+  (hg_deriv_self : deriv g = g)
+  (hg_ne_zero : ∀ z, g z ≠ 0) :
+    deriv f = f ↔ f = ((f 0) * (g 0)⁻¹) • g where
+  mp h := by
+    have f_g_deriv y : deriv (f / g) y = 0 := by
+      rw [deriv_div (hf _) (hg _) (hg_ne_zero _)]
+      simp [h, hg_deriv_self]
+    ext
+    rw [Pi.smul_apply, smul_eq_mul, ← div_eq_iff (hg_ne_zero _), eq_comm, ← div_eq_mul_inv,
+        ← Pi.div_apply, ← Pi.div_apply]
+    apply is_const_of_deriv_eq_zero (by fun_prop (disch := assumption)) f_g_deriv 0
+  mpr h := by rw [h]; simp [Pi.smul_def, hg_deriv_self]
+
+open Complex in
+theorem deriv_eq_self_iff_smul_cexp {f : ℂ → ℂ} (hf : Differentiable ℂ f) :
+  deriv f = f ↔ f = f 0 • exp := by
+    simpa using deriv_eq_self_iff exp hf (by simp) (by simp) (by simp)
+
 /-! ## `Real.exp` -/
 
 section
@@ -393,3 +417,8 @@ open Real in
 theorem iteratedDeriv_exp_const_mul (n : ℕ) (c : ℝ) :
     (iteratedDeriv n fun s => exp (c * s)) = fun s => c ^ n * exp (c * s) := by
   rw [iteratedDeriv_comp_const_mul contDiff_exp, iteratedDeriv_eq_iterate, iter_deriv_exp]
+
+open Real in
+theorem deriv_eq_self_iff_smul_rexp {f : ℝ → ℝ} (hf : Differentiable ℝ f) :
+  deriv f = f ↔ f = f 0 • exp := by
+    simpa using deriv_eq_self_iff exp hf (by simp) (by simp) (by simp)
