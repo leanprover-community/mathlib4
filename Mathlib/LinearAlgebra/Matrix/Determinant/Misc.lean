@@ -45,7 +45,7 @@ theorem submatrix_succAbove_det_eq_negOnePow_submatrix_succAbove_det {n : ℕ}
       simp_rw [neg_one_smul, updateRow_apply, Finset.sum_neg_distrib, Pi.neg_apply,
         Finset.sum_apply, submatrix_apply, id_eq]
       split_ifs with h
-      · replace hv := congr_fun hv b
+      · replace hv := congr($hv b)
         rw [Fin.sum_univ_succAbove _ i.succ, Pi.add_apply, Finset.sum_apply] at hv
         rwa [h, Fin.succAbove_castSucc_self, neg_eq_iff_add_eq_zero, add_comm]
       · obtain h | h := ne_iff_lt_or_gt.mp h
@@ -76,7 +76,7 @@ theorem det_eq_sum_column_mul_submatrix_succAbove_succAbove_det {n : ℕ}
     M.det = (-1) ^ (i₀ + j₀ : ℕ) *
       (∑ i, M i j₀) * (M.submatrix (Fin.succAbove i₀) (Fin.succAbove j₀)).det := by
   rw [← one_smul R M.det, ← Matrix.det_updateRow_sum _ i₀ (fun _ ↦ 1), Matrix.det_succ_row _ i₀]
-  simp only [updateRow_apply, if_true, one_smul, submatrix_updateRow_succAbove, Finset.sum_apply]
+  simp only [updateRow_apply, ite_true, one_smul, submatrix_updateRow_succAbove, Finset.sum_apply]
   rw [Fintype.sum_eq_add_sum_subtype_ne _ j₀]
   conv_lhs =>
     enter [2, 2, i]

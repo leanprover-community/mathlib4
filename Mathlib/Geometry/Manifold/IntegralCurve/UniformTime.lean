@@ -29,13 +29,15 @@ public section
 
 open scoped Topology
 
-open Function Manifold Set
+open Function Set
+
+open scoped Manifold
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 1 M]
-  [T2Space M] {γ γ' : ℝ → M} {v : (x : M) → TangentSpace I x} {s s' : Set ℝ} {t₀ : ℝ}
+  [T2Space M] {γ γ' : ℝ → M} {v : (x : M) → TangentSpace I x} {s : Set ℝ} {t₀ : ℝ}
 
 /-- This is the uniqueness theorem of integral curves applied to a real-indexed family of integral
 curves with the same starting point. -/
@@ -76,7 +78,10 @@ lemma isMIntegralCurve_abs_add_one_of_isMIntegralCurveOn_Ioo [BoundarylessManifo
   have ht : t ∈ Ioo (-(|t| + 1)) (|t| + 1) := by
     rw [mem_Ioo, ← abs_lt]
     exact lt_add_one _
-  apply HasMFDerivAt.congr_of_eventuallyEq (f := γ (|t| + 1))
+  /- TODO: to fix the defeq abuse, the correct fix is probably to introduce `vmfderiv` as
+  the derivative from a vector space to a manifold, and use it in the definition of
+  `IsMIntegralCurveOn` and friends. -/
+  apply HasMFDerivAt.congr_of_eventuallyEq_abuse (f := γ (|t| + 1))
   · exact hγ (|t| + 1) (by positivity) _ ht |>.hasMFDerivAt (Ioo_mem_nhds ht.1 ht.2)
   · rw [Filter.eventuallyEq_iff_exists_mem]
     refine ⟨Ioo (-(|t| + 1)) (|t| + 1), ?_,
@@ -110,10 +115,10 @@ lemma eqOn_piecewise_of_isMIntegralCurveOn_Ioo [BoundarylessManifold I M]
   intro t ht
   suffices H : EqOn γ γ' (Ioo (max a a') (min b b')) by
     by_cases hmem : t ∈ Ioo a b
-    · rw [piecewise, if_pos hmem]
+    · rw [piecewise, ite_eq_left hmem]
       apply H
       simp [ht.1, ht.2, hmem.1, hmem.2]
-    · rw [piecewise, if_neg hmem]
+    · rw [piecewise, ite_eq_right hmem]
   apply isMIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless _ hv
     (hγ.mono (Ioo_subset_Ioo (le_max_left ..) (min_le_left ..)))
     (hγ'.mono (Ioo_subset_Ioo (le_max_right ..) (min_le_right ..))) h
@@ -135,19 +140,19 @@ lemma isMIntegralCurveOn_piecewise [BoundarylessManifold I M]
     IsMIntegralCurveOn (piecewise (Ioo a b) γ γ') v (Ioo a b ∪ Ioo a' b') := by
   intro t ht
   by_cases hmem : t ∈ Ioo a b
-  · rw [piecewise, if_pos hmem]
+  · rw [piecewise, ite_eq_left hmem]
     apply hγ t hmem |>.hasMFDerivAt (Ioo_mem_nhds hmem.1 hmem.2) |>.hasMFDerivWithinAt
-      (s := Ioo a b ∪ Ioo a' b') |>.congr_of_eventuallyEq _ (by rw [piecewise, if_pos hmem])
+      (s := Ioo a b ∪ Ioo a' b') |>.congr_of_eventuallyEq _ (by rw [piecewise, ite_eq_left hmem])
     rw [Filter.eventuallyEq_iff_exists_mem]
-    refine ⟨Ioo a b, ?_, fun _ ht' ↦ by rw [piecewise, if_pos ht']⟩
+    refine ⟨Ioo a b, ?_, fun _ ht' ↦ by rw [piecewise, ite_eq_left ht']⟩
     rw [(isOpen_Ioo.union isOpen_Ioo).nhdsWithin_eq ht]
     exact Ioo_mem_nhds hmem.1 hmem.2
   · have ht' := ht
     rw [mem_union, or_iff_not_imp_left] at ht
-    rw [piecewise, if_neg hmem]
+    rw [piecewise, ite_eq_right hmem]
     apply hγ' t (ht hmem) |>.hasMFDerivAt (Ioo_mem_nhds (ht hmem).1 (ht hmem).2)
       |>.hasMFDerivWithinAt (s := Ioo a b ∪ Ioo a' b')
-      |>.congr_of_eventuallyEq _ (by rw [piecewise, if_neg hmem])
+      |>.congr_of_eventuallyEq _ (by rw [piecewise, ite_eq_right hmem])
     rw [Filter.eventuallyEq_iff_exists_mem]
     refine ⟨Ioo a' b', ?_,
       eqOn_piecewise_of_isMIntegralCurveOn_Ioo hv hγ hγ' ht₀ h⟩
@@ -201,14 +206,14 @@ lemma exists_isMIntegralCurve_of_isMIntegralCurveOn [BoundarylessManifold I M]
   set γ_ext : ℝ → M := piecewise (Ioo (-(asup + ε / 2)) a)
     (piecewise (Ioo (-a) a) γ γ1) γ2 with γ_ext_def
   have heq_ext : γ_ext 0 = x := by
-    rw [γ_ext_def, piecewise, if_pos ⟨by linarith, by linarith⟩, piecewise,
-      if_pos ⟨by linarith, by linarith⟩, h0]
+    rw [γ_ext_def, piecewise, ite_eq_left ⟨by linarith, by linarith⟩, piecewise,
+      ite_eq_left ⟨by linarith, by linarith⟩, h0]
   -- `asup + ε / 2` is an element of `s` greater than `asup`, a contradiction
   suffices hext : IsMIntegralCurveOn γ_ext v (Ioo (-(asup + ε / 2)) (asup + ε / 2)) from
     (not_lt.mpr <| le_csSup hbdd ⟨γ_ext, heq_ext, hext⟩) <| lt_add_of_pos_right asup (half_pos hε)
   apply (isMIntegralCurveOn_piecewise (t₀ := asup - ε / 2) hv _ hγ2
       ⟨⟨by linarith, hlt⟩, ⟨by linarith, by linarith⟩⟩
-      (by rw [piecewise, if_pos ⟨by linarith, hlt⟩, ← heq2])).mono
+      (by rw [piecewise, ite_eq_left ⟨by linarith, hlt⟩, ← heq2])).mono
     (Ioo_subset_Ioo_union_Ioo le_rfl (by linarith) (by linarith))
   exact (isMIntegralCurveOn_piecewise (t₀ := -(asup - ε / 2)) hv hγ hγ1
       ⟨⟨neg_lt_neg hlt, by linarith⟩, ⟨by linarith, by linarith⟩⟩ heq1.symm).mono

@@ -5,11 +5,11 @@ Authors: Daniel Weber
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Field
-public import Mathlib.Algebra.BigOperators.Field
+import Mathlib.Algebra.Algebra.Field
+import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.FieldTheory.Differential.Basic
-public import Mathlib.FieldTheory.Galois.Basic
-public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+import Mathlib.FieldTheory.Galois.Basic
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 
 /-!
 # Liouville's theorem
@@ -140,7 +140,7 @@ private local instance isLiouville_of_finiteDimensional_galois [FiniteDimensiona
       simp only [u₁, map_prod]
       apply Fintype.prod_equiv (Equiv.mulLeft e)
       simp
-    have ffb : fixedField ⊤ = ⊥ := (IsGalois.tfae.out 0 1).mp (inferInstance : IsGalois F K)
+    have ffb : fixedField ⊤ = ⊥ := (IsGalois.tfae.out 1 2).mp (inferInstance : IsGalois F K)
     simp_rw [ffb, IntermediateField.mem_bot, Set.mem_range] at this
     -- Therefore they are all in `F`. We use `choose` to get their values in `F`.
     choose u₀ hu₀ using this
@@ -187,7 +187,7 @@ private local instance isLiouville_of_finiteDimensional_galois [FiniteDimensiona
       · rcongr e
         apply_fun e at h
         simp only [AlgEquiv.commutes, map_add, map_sum, map_mul] at h
-        convert! h using 2
+        convert h using 2
         · rcongr x
           simp [logDeriv, algEquiv_deriv']
         · rw [algEquiv_deriv']
@@ -206,7 +206,7 @@ instance isLiouville_of_finiteDimensional [FiniteDimensional F K] :
   let B : IntermediateField F K'' := IntermediateField.restrict
     (F := K') (IntermediateField.le_normalClosure ..)
   have kequiv : K ≃ₐ[F] ↥B := (show K ≃ₐ[F] K' from AlgEquiv.ofInjectiveField map).trans
-    (IntermediateField.restrict_algEquiv _)
+    (IntermediateField.restrictAlgEquiv _)
   IsLiouville.equiv kequiv.symm
 
 end Algebraic

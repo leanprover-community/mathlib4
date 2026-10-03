@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Group.Units.Equiv
 public import Mathlib.Data.Set.Basic
 public import Mathlib.Tactic.Common
-public import Mathlib.Tactic.Attr.Register
 
 /-!
 # Monoids of endomorphisms, groups of automorphisms
@@ -105,15 +104,15 @@ theorem mul_apply (f g : Perm α) (x) : (f * g) x = f (g x) :=
 theorem one_apply (x) : (1 : Perm α) x = x :=
   rfl
 
-@[pull_end, push_end← ]
+@[pull_end, push_end ←]
 theorem one_def : (1 : Perm α) = Equiv.refl α :=
   rfl
 
-@[pull_end, push_end← ]
+@[pull_end, push_end ←]
 theorem mul_def (f g : Perm α) : f * g = g.trans f :=
   rfl
 
-@[pull_end, push_end← ]
+@[pull_end, push_end ←]
 theorem inv_def (f : Perm α) : f⁻¹ = f.symm :=
   rfl
 
@@ -125,7 +124,7 @@ theorem inv_def (f : Perm α) : f⁻¹ = f.symm :=
 
 @[norm_cast] lemma coe_pow (f : Perm α) (n : ℕ) : ⇑(f ^ n) = f^[n] := rfl
 
-@[pull_end← , push_end]
+@[pull_end ←, push_end]
 lemma iterate_eq_pow (f : Perm α) (n : ℕ) : f^[n] = ⇑(f ^ n) := rfl
 
 theorem eq_inv_iff_eq {f : Perm α} {x y : α} : x = f⁻¹ y ↔ f x = y :=
@@ -214,8 +213,8 @@ theorem sumCongrHom_injective {α β : Type*} : Function.Injective (sumCongrHom 
   rintro ⟨⟩ ⟨⟩ h
   rw [Prod.mk_inj]
   constructor <;> ext i
-  · simpa using Equiv.congr_fun h (Sum.inl i)
-  · simpa using Equiv.congr_fun h (Sum.inr i)
+  · simpa using congr($h (Sum.inl i))
+  · simpa using congr($h (Sum.inr i))
 
 @[simp]
 theorem sumCongr_swap_one {α β : Type*} [DecidableEq α] [DecidableEq β] (i j : α) :
@@ -259,7 +258,7 @@ theorem sigmaCongrRightHom_injective {α : Type*} {β : α → Type*} :
     Function.Injective (sigmaCongrRightHom β) := by
   intro x y h
   ext a b
-  simpa using Equiv.congr_fun h ⟨a, b⟩
+  simpa using congr($h ⟨a, b⟩)
 
 /-- `Equiv.Perm.subtypeCongr` as a `MonoidHom`. -/
 @[simps]
@@ -273,7 +272,7 @@ theorem subtypeCongrHom_injective (p : α → Prop) [DecidablePred p] :
     Function.Injective (subtypeCongrHom p) := by
   rintro ⟨⟩ ⟨⟩ h
   rw [Prod.mk_inj]
-  constructor <;> ext i <;> simpa using Equiv.congr_fun h i
+  constructor <;> ext i <;> simpa using congr($h i)
 
 /-- If `e` is also a permutation, we can write `permCongr`
 completely in terms of the group structure. -/

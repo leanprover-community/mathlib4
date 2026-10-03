@@ -148,7 +148,7 @@ theorem map_modEq_iff {N F : Type*} [AddCommMonoid N] [FunLike F M N] [AddMonoid
   simp only [modEq_iff_nsmul, ← map_nsmul, ← map_add, hf.eq_iff]
 
 @[simp]
-theorem nsmul_modEq_nsmul [IsAddTorsionFree M] {n : ℕ} (hn : n ≠ 0) :
+theorem nsmul_modEq_nsmul [HasUniqueDiv M] {n : ℕ} (hn : n ≠ 0) :
     n • a ≡ n • b [PMOD n • p] ↔ a ≡ b [PMOD p] := by
   simp only [modEq_iff_nsmul, ← mul_nsmul _ n, mul_nsmul' _ n, ← nsmul_add, nsmul_right_inj hn]
 
@@ -264,7 +264,7 @@ protected theorem zsmul (h : a ≡ b [PMOD p]) : z • a ≡ z • b [PMOD z •
 end ModEq
 
 @[simp]
-theorem zsmul_modEq_zsmul [IsAddTorsionFree G] (hn : z ≠ 0) :
+theorem zsmul_modEq_zsmul [HasUniqueDiv G] (hn : z ≠ 0) :
     z • a ≡ z • b [PMOD z • p] ↔ a ≡ b [PMOD p] := by
   simp [modEq_iff_zsmul, ← zsmul_sub, zsmul_comm, zsmul_right_inj hn]
 

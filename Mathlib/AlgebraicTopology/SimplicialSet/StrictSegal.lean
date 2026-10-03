@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Emily Riehl, Joël Riou, Johan Commelin, Nick Ward
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
 public import Mathlib.AlgebraicTopology.SimplicialSet.Path
 
 /-!
@@ -29,7 +28,9 @@ in `Mathlib/AlgebraicTopology/SimplicialSet/Coskeletal.lean`.
 
 universe v u
 
-open CategoryTheory Simplicial SimplexCategory
+open CategoryTheory SimplexCategory
+
+open scoped Simplicial
 
 namespace SSet
 namespace Truncated
@@ -109,12 +110,12 @@ section spineToSimplex
 @[simp]
 lemma spine_spineToSimplex_apply (m : ℕ) (h : m ≤ n + 1) (f : Path X m) :
     X.spine m h (sx.spineToSimplex m h f) = f :=
-  congr_fun (sx.spine_spineToSimplex m h) f
+  congr($(sx.spine_spineToSimplex m h) f)
 
 @[simp]
 lemma spineToSimplex_spine_apply (m : ℕ) (h : m ≤ n + 1) (Δ : X _⦋m⦌ₙ₊₁) :
     sx.spineToSimplex m h (X.spine m h Δ) = Δ :=
-  congr_fun (sx.spineToSimplex_spine m h) Δ
+  congr($(sx.spineToSimplex_spine m h) Δ)
 
 section autoParam
 
@@ -159,7 +160,6 @@ theorem spineToSimplex_arrow (i : Fin m) (f : Path X m) :
     X.map (tr (mkOfSucc i)).op (sx.spineToSimplex m h f) = f.arrow i := by
   rw [← spine_arrow, spine_spineToSimplex_apply]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem spineToSimplex_interval (f : Path X m) (j l : ℕ) (hjl : j + l ≤ m) :
     X.map (tr (subinterval j l hjl)).op (sx.spineToSimplex m h f) =
@@ -167,7 +167,7 @@ theorem spineToSimplex_interval (f : Path X m) (j l : ℕ) (hjl : j + l ≤ m) :
   apply sx.spineInjective l
   dsimp only [spineEquiv, Equiv.coe_fn_mk]
   rw [spine_spineToSimplex_apply]
-  convert! spine_map_subinterval X m h j l hjl <| sx.spineToSimplex m h f
+  convert spine_map_subinterval X m h j l hjl <| sx.spineToSimplex m h f
   exact sx.spine_spineToSimplex_apply m h f |>.symm
 
 theorem spineToSimplex_edge (f : Path X m) (j l : ℕ) (hjl : j + l ≤ m) :
@@ -179,7 +179,6 @@ theorem spineToSimplex_edge (f : Path X m) (j l : ℕ) (hjl : j + l ≤ m) :
 
 end spineToSimplex
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- For any `σ : X ⟶ Y` between `n + 1`-truncated `StrictSegal` simplicial sets,
 `spineToSimplex` commutes with `Path.map`. -/
 lemma spineToSimplex_map {X Y : SSet.Truncated.{u} (n + 1)} (sx : StrictSegal X)
@@ -303,12 +302,12 @@ instance [X.IsStrictSegal] (n : ℕ) :
 @[simp]
 lemma spine_spineToSimplex_apply {n : ℕ} (f : Path X n) :
     X.spine n (sx.spineToSimplex f) = f :=
-  congr_fun (sx.spine_spineToSimplex n) f
+  congr($(sx.spine_spineToSimplex n) f)
 
 @[simp]
 lemma spineToSimplex_spine_apply {n : ℕ} (Δ : X _⦋n⦌) :
     sx.spineToSimplex (X.spine n Δ) = Δ :=
-  congr_fun (sx.spineToSimplex_spine n) Δ
+  congr($(sx.spineToSimplex_spine n) Δ)
 
 /-- The fields of `StrictSegal` define an equivalence between `X _⦋n⦌`
 and `Path X n`. -/
@@ -348,7 +347,6 @@ section interval
 
 variable (f : Path X n) (j l : ℕ) (hjl : j + l ≤ n)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem spineToSimplex_interval :
     X.map (subinterval j l hjl).op (sx.spineToSimplex f) =
@@ -367,7 +365,6 @@ theorem spineToSimplex_edge :
 
 end interval
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- For any `σ : X ⟶ Y` between `StrictSegal` simplicial sets, `spineToSimplex`
 commutes with `Path.map`. -/
 lemma spineToSimplex_map {X Y : SSet.{u}} (sx : StrictSegal X)
@@ -530,8 +527,7 @@ def strictSegal : StrictSegal (nerve C) :=
       δ₀_concat f s h := rfl
       injective {f g} h h₀ :=
         ComposableArrows.ext_succ (Functor.congr_obj h 0) h₀
-          ((Arrow.mk_eq_mk_iff _ _).1
-            (DFunLike.congr_arg ComposableArrows.arrowEquiv h)).2.2 })
+          ((Arrow.mk_eq_mk_iff _ _).1 congr(ComposableArrows.arrowEquiv $h)).2.2 })
 
 instance isStrictSegal : IsStrictSegal (nerve C) :=
   strictSegal C |>.isStrictSegal

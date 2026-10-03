@@ -29,7 +29,7 @@ A finite set is defined to be a set whose coercion to a type has a `Finite` inst
 
 There are two components to finiteness constructions. The first is `Fintype` instances for each
 construction. This gives a way to actually compute a `Finset` that represents the set, and these
-may be accessed using `set.toFinset`. This gets the `Finset` in the correct form, since otherwise
+may be accessed using `Set.toFinset`. This gets the `Finset` in the correct form, since otherwise
 `Finset.univ : Finset s` is a `Finset` for the subtype for `s`. The second component is
 "constructors" for `Set.Finite` that give proofs that `Fintype` instances exist classically given
 other `Set.Finite` proofs. Unlike the `Fintype` instances, these *do not* use any decidability
@@ -49,7 +49,7 @@ open scoped symmDiff
 
 universe u v w x
 
-variable {α : Type u} {β : Type v} {ι : Sort w} {γ : Type x}
+variable {α : Type u} {β : Type v} {γ : Type x}
 
 namespace Set
 
@@ -297,7 +297,6 @@ instance fintypeInsert (a : α) (s : Set α) [DecidableEq α] [Fintype s] :
     Fintype (insert a s : Set α) :=
   Fintype.ofFinset (insert a s.toFinset) <| by simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A `Fintype` structure on `insert a s` when inserting a new element. -/
 @[instance_reducible]
 def fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
@@ -375,10 +374,16 @@ lemma «forall» {p : Finset α → Prop} :
   mp h s hs := h _
   mpr h s := by simpa using h s s.finite_toSet
 
+theorem forall_toSet {p : Set α → Prop} : (∀ s : Finset α, p s) ↔ ∀ s : Set α, s.Finite → p s := by
+  simp [Finset.forall]
+
 lemma «exists» {p : Finset α → Prop} :
     (∃ s, p s) ↔ ∃ (s : Set α) (hs : s.Finite), p hs.toFinset where
   mp := fun ⟨s, hs⟩ ↦ ⟨s, s.finite_toSet, by simpa⟩
   mpr := fun ⟨s, hs, hs'⟩ ↦ ⟨hs.toFinset, hs'⟩
+
+theorem exists_toSet {p : Set α → Prop} : (∃ s : Finset α, p s) ↔ ∃ s : Set α, s.Finite ∧ p s := by
+  simp [Finset.exists, and_comm]
 
 lemma mem_range_coe_iff {s : Set α} : s ∈ Set.range ((↑) : Finset α → Set α) ↔ s.Finite where
   mp := by
@@ -498,6 +503,7 @@ theorem finite_univ_iff : (@univ α).Finite ↔ Finite α := (Equiv.Set.univ α)
 
 alias ⟨_root_.Finite.of_finite_univ, _⟩ := finite_univ_iff
 
+@[gcongr]
 theorem Finite.subset {s : Set α} (hs : s.Finite) {t : Set α} (ht : t ⊆ s) : t.Finite := by
   have := hs.to_subtype
   exact Finite.Set.subset _ ht
@@ -760,7 +766,7 @@ theorem seq_of_forall_finite_exists {γ : Type*} {P : γ → Set γ → Prop}
   set f : (n : ℕ) → (g : (m : ℕ) → m < n → γ) → γ := fun n g => c (range fun k : Iio n => g k.1 k.2)
   set u : ℕ → γ := fun n ↦ Nat.strongRecOn n f
   refine ⟨u, fun n ↦ ?_⟩
-  convert! hc (u '' Iio n) ((finite_lt_nat _).image _)
+  convert hc (u '' Iio n) ((finite_lt_nat _).image _)
   rw [image_eq_range]
   exact Nat.strongRecOn_eq f n
 
@@ -771,7 +777,6 @@ end
 theorem card_empty : Fintype.card (∅ : Set α) = 0 :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
     @Fintype.card _ (fintypeInsertOfNotMem s h) = Fintype.card s + 1 := by
   simp [Fintype.card_ofFinset]
@@ -834,6 +839,9 @@ theorem infinite_univ_iff : (@univ α).Infinite ↔ Infinite α := by
 
 theorem infinite_univ [h : Infinite α] : (@univ α).Infinite :=
   infinite_univ_iff.2 h
+
+theorem Infinite.to_type (hs : s.Infinite) : Infinite α :=
+  infinite_univ_iff.mp <| hs.mono s.subset_univ
 
 lemma Infinite.exists_notMem_finite (hs : s.Infinite) (ht : t.Finite) : ∃ a, a ∈ s ∧ a ∉ t := by
   by_contra! h; exact hs <| ht.subset h

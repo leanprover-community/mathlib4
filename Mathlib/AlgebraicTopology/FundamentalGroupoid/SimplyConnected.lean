@@ -6,10 +6,10 @@ Authors: Praneeth Kolichala
 module
 
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
-public import Mathlib.AlgebraicTopology.FundamentalGroupoid.InducedMaps
+import Mathlib.AlgebraicTopology.FundamentalGroupoid.InducedMaps
 public import Mathlib.Topology.Homotopy.Contractible
-public import Mathlib.CategoryTheory.PUnit
-public import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
+import Mathlib.CategoryTheory.PUnit
+import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
 
 /-!
 # Simply connected spaces
@@ -39,9 +39,6 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 @[mk_iff]
 class SimplyConnectedSpace (X : Type*) [TopologicalSpace X] : Prop where
   equiv_unit : Nonempty (FundamentalGroupoid X ≌ Discrete Unit)
-
-@[deprecated (since := "2026-01-08")]
-alias simply_connected_def := simplyConnectedSpace_iff
 
 theorem simply_connected_iff_unique_homotopic (X : Type*) [TopologicalSpace X] :
     SimplyConnectedSpace X ↔

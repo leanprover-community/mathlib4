@@ -6,8 +6,8 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Algebra.Order.Group.Multiset
-public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Data.Vector.Basic
+public import Mathlib.Order.Setoid.Basic
 public import Mathlib.Tactic.ApplyFun
 
 /-!
@@ -533,8 +533,8 @@ theorem fill_filterNe [DecidableEq α] (a : α) (m : Sym α n) :
       ext b; dsimp
       rw [count_add, count_filter, Sym.coe_replicate, count_replicate]
       obtain rfl | h := eq_or_ne a b
-      · rw [if_pos rfl, if_neg (not_not.2 rfl), zero_add]
-      · rw [if_pos h, if_neg h, add_zero])
+      · rw [ite_eq_left rfl, ite_eq_right (not_not.2 rfl), zero_add]
+      · rw [ite_eq_left h, ite_eq_right h, add_zero])
 
 theorem filter_ne_fill
     [DecidableEq α] (a : α) (m : Σ i : Fin (n + 1), Sym α (n - i)) (h : a ∉ m.2) :
@@ -584,7 +584,7 @@ def encode [DecidableEq α] (s : Sym (Option α) n.succ) : Sym (Option α) n ⊕
 @[simp]
 theorem encode_of_none_mem [DecidableEq α] (s : Sym (Option α) n.succ) (h : none ∈ s) :
     encode s = Sum.inl (s.erase none h) :=
-  dif_pos h
+  dite_eq_left h
 
 @[simp]
 theorem encode_of_none_notMem [DecidableEq α] (s : Sym (Option α) n.succ) (h : none ∉ s) :
@@ -592,7 +592,7 @@ theorem encode_of_none_notMem [DecidableEq α] (s : Sym (Option α) n.succ) (h :
       Sum.inr
         (s.attach.map fun o =>
           o.1.get <| Option.ne_none_iff_isSome.1 <| ne_of_mem_of_not_mem o.2 h) :=
-  dif_neg h
+  dite_eq_right h
 
 /-- Inverse of `Sym_option_succ_equiv.decode`. -/
 def decode : Sym (Option α) n ⊕ Sym α n.succ → Sym (Option α) n.succ
@@ -613,7 +613,7 @@ theorem decode_encode [DecidableEq α] (s : Sym (Option α) n.succ) : decode (en
   · simp [h]
   · simp only [decode, h, not_false_iff, encode_of_none_notMem, Embedding.some_apply, map_map,
       comp_apply, Option.some_get]
-    convert! s.attach_map_coe
+    convert s.attach_map_coe
 
 @[simp]
 theorem encode_decode [DecidableEq α] (s : Sym (Option α) n ⊕ Sym α n.succ) :
@@ -624,7 +624,7 @@ theorem encode_decode [DecidableEq α] (s : Sym (Option α) n ⊕ Sym α n.succ)
     split_ifs with h
     · obtain ⟨a, _, ha⟩ := Multiset.mem_map.mp h
       exact Option.some_ne_none _ ha
-    · refine congr_arg Sum.inr ?_
+    · congrm Sum.inr ?_
       refine map_injective (Option.some_injective _) _ ?_
       refine Eq.trans ?_ (.trans (SymOptionSuccEquiv.decode (Sum.inr s)).attach_map_coe ?_) <;> simp
 

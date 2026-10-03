@@ -7,8 +7,6 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 public import Mathlib.AlgebraicGeometry.Morphisms.FormallyUnramified
-public import Mathlib.CategoryTheory.MorphismProperty.Comma
-public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
 public import Mathlib.CategoryTheory.Limits.MorphismProperty
 
 /-!
@@ -44,8 +42,6 @@ class Etale {X Y : Scheme.{u}} (f : X ⟶ Y) : Prop where
       (f.appLE U V e).hom.Etale
 
 alias Scheme.Hom.etale_appLE := Etale.etale_appLE
-
-@[deprecated (since := "2026-02-09")] alias IsEtale := Etale
 
 namespace Etale
 
@@ -162,17 +158,14 @@ variable (X : Scheme.{u})
 set_option backward.defeqAttrib.useBackward true in
 instance (Y : X.Etale) : dsimp% Etale Y.hom := Y.prop
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance {X : Scheme.{u}} {Z Y : X.Etale} (f : Z ⟶ Y) : Etale f.left := by
   have : Etale (f.left ≫ Y.hom) := by rw [CategoryTheory.Over.w]; infer_instance
   exact Etale.of_comp f.left Y.hom
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The forgetful functor from schemes étale over `X` to schemes over `X`. -/
 def Etale.forget : X.Etale ⥤ Over X :=
   MorphismProperty.Over.forget @Etale ⊤ X
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The forgetful functor from schemes étale over `X` to schemes over `X` is fully faithful. -/
 def Etale.forgetFullyFaithful : (Etale.forget X).FullyFaithful :=
   MorphismProperty.Comma.forgetFullyFaithful _ _ _

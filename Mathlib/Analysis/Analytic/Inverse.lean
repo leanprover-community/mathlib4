@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Analytic.Composition
-public import Mathlib.Analysis.Analytic.Linear
+import Mathlib.Analysis.Analytic.Linear
 public import Mathlib.Tactic.Positivity
 
 /-!
@@ -133,7 +133,7 @@ theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
         -∑ c ∈ {c : Composition (n + 2) | c.length < n + 2}.toFinset,
             (p.leftInv i x c.length) (p.applyComposition c v) := by
       simp only [leftInv, _root_.neg_apply, neg_inj, _root_.sum_apply]
-      convert!
+      convert
         (sum_toFinset_eq_subtype (fun c : Composition (n + 2) => c.length < n + 2)
               (fun c : Composition (n + 2) =>
                 (ContinuousMultilinearMap.compAlongComposition
@@ -563,7 +563,7 @@ end FormalMultilinearSeries
 ### The inverse of an analytic open partial homeomorphism is analytic
 -/
 
-open FormalMultilinearSeries List
+open FormalMultilinearSeries
 
 lemma HasFPowerSeriesAt.tendsto_partialSum_prod_of_comp
     {f : E → G} {q : FormalMultilinearSeries 𝕜 F G}
@@ -641,7 +641,7 @@ lemma HasFPowerSeriesAt.eventually_hasSum_of_comp {f : E → F} {g : F → G}
         (partialSum_continuous q a).continuousAt
       apply this.tendsto.comp
       apply Tendsto.sub h'y
-      convert! tendsto_const_nhds
+      convert tendsto_const_nhds
       exact (HasFPowerSeriesAt.coeff_zero hf fun _ ↦ 0).symm
     apply u_closed.mem_of_tendsto this
     filter_upwards [Ici_mem_atTop b₀] with b hb using vu (hab _ _ ha hb)

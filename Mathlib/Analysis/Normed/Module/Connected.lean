@@ -6,8 +6,8 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Convex.Contractible
-public import Mathlib.Analysis.Convex.Topology
-public import Mathlib.Analysis.Normed.Module.Convex
+import Mathlib.Analysis.Convex.Topology
+import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.LinearAlgebra.Dimension.DivisionRing
 public import Mathlib.Topology.Algebra.Module.Cardinality
 
@@ -91,7 +91,7 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
     rw [sub_eq_add_neg _ x]
     apply Eq.subset
     apply segment_inter_eq_endpoint_of_linearIndependent_of_ne _ htt'.symm
-    convert! hy.units_smul ![-1, 1]
+    convert hy.units_smul ![-1, 1]
     simp [← List.ofFn_inj]
   obtain ⟨t, ht⟩ : Set.Nonempty ({t : ℝ | ([c + x -[ℝ] c + t • y] ∩ s).Nonempty}
       ∪ {t : ℝ | ([c - x -[ℝ] c + t • y] ∩ s).Nonempty})ᶜ := ((A.union B).dense_compl ℝ).nonempty
@@ -101,12 +101,12 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
   have JA : JoinedIn sᶜ a z := by
     apply JoinedIn.of_segment_subset
     rw [subset_compl_iff_disjoint_right, disjoint_iff_inter_eq_empty]
-    convert! ht.2
+    convert ht.2
     exact Ia.symm
   have JB : JoinedIn sᶜ b z := by
     apply JoinedIn.of_segment_subset
     rw [subset_compl_iff_disjoint_right, disjoint_iff_inter_eq_empty]
-    convert! ht.1
+    convert ht.1
     exact Ib.symm
   exact JA.trans JB.symm
 
@@ -140,15 +140,9 @@ theorem contractibleSpace_ball {x : E} {r : ℝ} (hr : 0 < r) :
     ContractibleSpace (ball x r) :=
   (convex_ball _ _).contractibleSpace (by simpa)
 
-@[deprecated (since := "2026-02-02")]
-alias ball_contractible := contractibleSpace_ball
-
 theorem contractibleSpace_eball {x : E} {r : ℝ≥0∞} (hr : 0 < r) :
     ContractibleSpace (eball x r) :=
   (convex_eball _ _).contractibleSpace ⟨x, by simpa⟩
-
-@[deprecated (since := "2026-02-02")]
-alias eball_contractible := contractibleSpace_eball
 
 theorem contractibleSpace_closedBall {x : E} {r : ℝ} (hr : 0 ≤ r) :
     ContractibleSpace (closedBall x r) :=

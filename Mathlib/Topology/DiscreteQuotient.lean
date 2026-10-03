@@ -5,10 +5,11 @@ Authors: Calle Sönne, Adam Topaz
 -/
 module
 
-public import Mathlib.Data.Setoid.Partition
-public import Mathlib.Topology.LocallyConstant.Basic
-public import Mathlib.Topology.Separation.Regular
+public import Mathlib.Order.Setoid.Partition
 public import Mathlib.Topology.Connected.TotallyDisconnected
+public import Mathlib.Topology.LocallyConstant.Basic
+
+import Mathlib.Topology.Separation.Regular
 
 /-!
 
@@ -233,7 +234,7 @@ instance [LocallyConnectedSpace X] : OrderBot (DiscreteQuotient X) where
   bot :=
     { toSetoid := connectedComponentSetoid X
       isOpen_setOfPred_rel := fun x => by
-        convert! isOpen_connectedComponent (x := x)
+        convert isOpen_connectedComponent (x := x)
         ext y
         simpa only [connectedComponentSetoid, ← connectedComponent_eq_iff_mem] using! eq_comm }
   bot_le S := fun x y (h : connectedComponent x = connectedComponent y) =>

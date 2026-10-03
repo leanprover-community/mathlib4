@@ -49,6 +49,14 @@ theorem of_comp {C₁ C₂ C₃ : Type*} [Category* C₁] [Category* C₂] [Cate
   dsimp
   infer_instance
 
+lemma of_comp_of_reflectsIsomorphisms
+    {W : MorphismProperty C} {F : C ⥤ D} {E : Type*} [Category* E]
+    (G : D ⥤ E) [G.ReflectsIsomorphisms] (h : W.IsInvertedBy (F ⋙ G)) :
+    W.IsInvertedBy F :=
+  fun _ _ f hf ↦ by
+    rw [← isIso_iff_of_reflects_iso _ G]
+    exact h _ hf
+
 set_option backward.defeqAttrib.useBackward true in
 theorem op {W : MorphismProperty C} {L : C ⥤ D} (h : W.IsInvertedBy L) : W.op.IsInvertedBy L.op :=
   fun X Y f hf => by
@@ -77,7 +85,6 @@ theorem unop {W : MorphismProperty C} {L : Cᵒᵖ ⥤ Dᵒᵖ} (h : W.op.IsInve
   dsimp
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 lemma prod {C₁ C₂ : Type*} [Category* C₁] [Category* C₂]
     {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
     {E₁ E₂ : Type*} [Category* E₁] [Category* E₂] {F₁ : C₁ ⥤ E₁} {F₂ : C₂ ⥤ E₂}
@@ -138,7 +145,6 @@ theorem IsInvertedBy.iff_of_iso (W : MorphismProperty C) {F₁ F₂ : C ⥤ D} (
   dsimp [IsInvertedBy]
   simp only [NatIso.isIso_map_iff e]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma IsInvertedBy.isoClosure_iff (W : MorphismProperty C) (F : C ⥤ D) :
     W.isoClosure.IsInvertedBy F ↔ W.IsInvertedBy F := by
