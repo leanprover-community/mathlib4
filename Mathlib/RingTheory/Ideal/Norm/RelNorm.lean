@@ -66,7 +66,7 @@ variable {R} in
 @[simp]
 theorem spanNorm_eq_bot_iff {I : Ideal S} : spanNorm R I = ⊥ ↔ I = ⊥ := by
   simp only [spanNorm, span_eq_bot, Set.mem_image, SetLike.mem_coe, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂, Algebra.intNorm_eq_zero, @eq_bot_iff _ _ _ I, IsConcreteLE.le_iff,
+    forall_apply_eq_imp_iff₂, Algebra.intNorm_eq_zero, @eq_bot_iff _ _ _ I, le_iff_mem_imp_mem,
     map, mem_bot]
 
 theorem intNorm_mem_spanNorm {I : Ideal S} {x : S} (hx : x ∈ I) :
