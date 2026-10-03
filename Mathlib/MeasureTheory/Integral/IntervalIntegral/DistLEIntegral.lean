@@ -103,7 +103,7 @@ lemma norm_sub_le_mul_volume_of_norm_deriv_le_of_le {C : ℝ} (hab : a ≤ b)
         integral_indicator hsm, Measure.restrict_restrict hsm,
         setIntegral_const, smul_eq_mul, mul_comm]
       simp only [s, Measure.real,
-        Measure.measure_toMeasurable_inter_of_sFinite measurableSet_Ioo]
+        Measure.measure_toMeasurable_inter_of_sfinite measurableSet_Ioo]
       simp only [inter_def, mem_ofPred, and_comm]
 
 end Line
