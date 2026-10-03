@@ -907,8 +907,7 @@ theorem normal_of_normalizerCondition (hnc : NormalizerCondition G) {p : ℕ} [F
     normalizerCondition_iff_only_full_group_self_normalizing.mp hnc _ <| normalizer_normalizer _
 
 /-- If all its Sylow subgroups are normal, then a finite group is isomorphic to the direct product
-of these Sylow subgroups.
--/
+of these Sylow subgroups. -/
 noncomputable def directProductOfNormal [Finite G]
     (hn : ∀ {p : ℕ} [Fact p.Prime] (P : Sylow p G), P.Normal) :
     (∀ p : (Nat.card G).primeFactors, ∀ P : Sylow p G, P) ≃* G := by
