@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Algebra.Subalgebra.Pointwise
 public import Mathlib.RingTheory.DedekindDomain.Basic
 public import Mathlib.RingTheory.FractionalIdeal.Inverse
-public import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
 # Dedekind domains and invertible ideals
@@ -69,7 +68,7 @@ theorem FractionalIdeal.adjoinIntegral_eq_one_of_isUnit (x : K)
     apply coeToSubmodule_injective
     simp only [coe_mul, adjoinIntegral_coe, I]
     rw [(Algebra.adjoin A {x}).isIdempotentElem_toSubmodule]
-  convert! congr_arg (· * I⁻¹) mul_self <;>
+  convert! congr($mul_self * I⁻¹) <;>
     simp only [(mul_inv_cancel_iff_isUnit K).mpr hI, mul_assoc, mul_one]
 
 theorem FractionalIdeal.one_mem_inv_coe_ideal [IsDomain A] {I : Ideal A} (hI : I ≠ ⊥) :
@@ -112,7 +111,7 @@ theorem PrimeSpectrum.exists_multiset_prod_cons_le_and_prod_not_le [IsDedekindDo
     subst hPM'
     -- By minimality of `Z`, erasing `P` from `Z` is exactly what we need.
     refine ⟨Z.erase P, ?_, ?_⟩
-    · convert! hZI
+    · convert hZI
       rw [this, Multiset.cons_erase hPZ']
     · refine fun h => h_eraseZ (Z.erase P) ⟨h, ?_⟩ (Multiset.erase_lt.mpr hPZ)
       exact hZP0
@@ -431,6 +430,11 @@ instance : WfDvdMonoid (Ideal A) := by
   unfold WfDvdMonoid
   eta_expand; simp_rw [Ideal.dvdNotUnit_iff_lt]
   infer_instance
+
+/-- In a Dedekind domain, the multiplicity of a proper ideal in a nonzero ideal is finite. -/
+theorem Ideal.finiteMultiplicity {I J : Ideal A} (hI : I ≠ ⊤) (hJ : J ≠ ⊥) :
+    FiniteMultiplicity I J :=
+  FiniteMultiplicity.of_not_isUnit (by rwa [Ideal.isUnit_iff]) hJ
 
 instance Ideal.uniqueFactorizationMonoid : UniqueFactorizationMonoid (Ideal A) :=
   { irreducible_iff_prime := by
