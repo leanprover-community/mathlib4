@@ -252,7 +252,9 @@ theorem lagrange_burmann_coeff (n : ℕ) (H : R⟦X⟧) :
       rw [← lagrange_inversion_coeff_pow_of_le hY₀ (mem_range_succ_iff.mp hi)]
       ring
     rw [hlhs, coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ_mk, sum_range_succ']
-    grind [coeff_derivative]
+    simp only [zero_smul, mul_zero, add_zero]
+    refine sum_congr rfl fun i _ ↦ ?_
+    rw [coeff_derivative, Nat.add_sub_add_right, nsmul_eq_mul, mul_assoc]
   let e : U →+* R := MvPolynomial.eval₂Hom (Int.castRingHom R)
     (Sum.elim (fun i ↦ P.coeff i) (fun i ↦ H.coeff i))
   have hP : map e P₀ = P := by
