@@ -843,10 +843,10 @@ theorem isPrincipal_of_isPrincipal_num [IsDomain R]
     <| (FractionalIdeal.equivNumOfIsLocalization I).isPrincipal_iff.mpr
     <| Module.isPrincipal_submodule_iff.mpr hI
 
-/-- If the ideal monoid of `R` is torsion-free and `S ≤ R⁰`, then the monoid of fractional
-ideals of `R` (localized at `S`) is also torsion-free. -/
-theorem isMulTorsionFree_of_le_nonZeroDivisors (h : S ≤ nonZeroDivisors R)
-    [IsMulTorsionFree (Ideal R)] : IsMulTorsionFree (FractionalIdeal S P) where
+/-- If the ideal monoid of `R` has unique roots and `S ≤ R⁰`, then the monoid of fractional
+ideals of `R` (localized at `S`) also has unique roots. -/
+theorem hasUniqueRoots_of_le_nonZeroDivisors (h : S ≤ nonZeroDivisors R)
+    [HasUniqueRoots (Ideal R)] : HasUniqueRoots (FractionalIdeal S P) where
   pow_left_injective {n} hn I J hIJ := by
     let a := algebraMap R P I.den
     let b := algebraMap R P J.den
@@ -857,7 +857,7 @@ theorem isMulTorsionFree_of_le_nonZeroDivisors (h : S ≤ nonZeroDivisors R)
         (IsLocalization.map_units _ J.den).map spanSingletonHom
     have main : Ideal.span {J.den.val} * I.num = Ideal.span {I.den.val} * J.num := by
       dsimp at hIJ
-      rw [← (IsMulTorsionFree.pow_left_injective hn).eq_iff, ← coeIdeal_inj' (P := P) h]
+      rw [← (pow_left_injective hn).eq_iff, ← coeIdeal_inj' (P := P) h]
       simp only [mul_pow, coeIdeal_mul, coeIdeal_pow, coeIdeal_span_singleton]
       rw [← den_mul_self_eq_num', mul_pow, hIJ, ← mul_assoc, mul_right_comm,
         ← mul_pow, den_mul_self_eq_num', mul_comm]
@@ -872,9 +872,9 @@ theorem isMulTorsionFree_of_le_nonZeroDivisors (h : S ≤ nonZeroDivisors R)
       _ = spanSingleton S a * spanSingleton S b * J := by ring
       _ = spanSingleton S (a * b) * J := by rw [spanSingleton_mul_spanSingleton]
 
-instance instIsMulTorsionFree [IsLocalization (nonZeroDivisors R) P]
-    [IsMulTorsionFree (Ideal R)] : IsMulTorsionFree (FractionalIdeal (nonZeroDivisors R) P) :=
-  isMulTorsionFree_of_le_nonZeroDivisors le_rfl
+instance instHasUniqueRoots [IsLocalization (nonZeroDivisors R) P]
+    [HasUniqueRoots (Ideal R)] : HasUniqueRoots (FractionalIdeal (nonZeroDivisors R) P) :=
+  hasUniqueRoots_of_le_nonZeroDivisors le_rfl
 
 end PrincipalIdeal
 
