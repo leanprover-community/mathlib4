@@ -6,7 +6,6 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Topology.LocallyConstant.Algebra
-public import Mathlib.Topology.ContinuousMap.Basic
 public import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!

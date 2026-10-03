@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.RingTheory.Finiteness.Ideal
-public import Mathlib.RingTheory.Ideal.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.Noetherian.Defs
 

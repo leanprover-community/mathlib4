@@ -6,10 +6,9 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Analysis.CStarAlgebra.Unitization
-public import Mathlib.Analysis.Complex.Convex
+import Mathlib.Analysis.Complex.Convex
 public import Mathlib.Analysis.Normed.Algebra.GelfandFormula
 public import Mathlib.Analysis.SpecialFunctions.Exponential
-public import Mathlib.Algebra.Star.StarAlgHom
 
 /-! # Spectral properties in C⋆-algebras
 
@@ -142,7 +141,7 @@ theorem IsStarNormal.spectralRadius_eq_nnnorm (a : A) [IsStarNormal a] :
     ((ENNReal.continuous_pow 2).tendsto (spectralRadius ℂ a)).comp
       (spectrum.pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius a)
   rw [← heq] at h₂
-  convert! tendsto_nhds_unique h₂ (pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a⋆ * a))
+  convert tendsto_nhds_unique h₂ (pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a⋆ * a))
   rw [(IsSelfAdjoint.star_mul_self a).spectralRadius_eq_nnnorm, sq, nnnorm_star_mul_self, coe_mul]
 
 namespace CStarAlgebra
@@ -305,7 +304,7 @@ lemma nnnorm_map (φ : F) (a : A) : ‖φ a‖₊ = ‖a‖₊ :=
       (symm (ofClass φ : A ≃⋆ₐ[ℂ] B)) ((ofClass φ : A ≃⋆ₐ[ℂ] B) a)
 
 lemma norm_map (φ : F) (a : A) : ‖φ a‖ = ‖a‖ :=
-  congr_arg NNReal.toReal (nnnorm_map φ a)
+  congr($(nnnorm_map φ a).toReal)
 
 lemma isometry (φ : F) : Isometry φ :=
   AddMonoidHomClass.isometry_of_norm φ (norm_map φ)

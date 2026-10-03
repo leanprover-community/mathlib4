@@ -154,7 +154,7 @@ theorem monomial_def [DecidableEq σ] (n : σ →₀ ℕ) :
     monomial n = LinearMap.single R (fun _ ↦ R) n := by
   rw [monomial]
   -- unify the `Decidable` arguments
-  convert! rfl
+  convert rfl
 
 set_option backward.isDefEq.respectTransparency false in
 theorem coeff_monomial [DecidableEq σ] (m n : σ →₀ ℕ) (a : R) :
@@ -358,7 +358,7 @@ theorem coeff_C_of_ne_zero {n : σ →₀ ℕ} (h : n ≠ 0) (a : R) : coeff n (
 @[simp]
 theorem coeff_add_single_C {m : ℕ} [NeZero m] {n : σ →₀ ℕ} (a : R) (i : σ) :
     coeff (n + single i m) (C a) = 0 :=
-  coeff_C_of_ne_zero (fun H ↦ by simpa [NeZero.ne] using congr($(H) i)) a
+  coeff_C_of_ne_zero (fun H ↦ by simpa [NeZero.ne] using congr($H i)) a
 
 @[grind inj]
 theorem C_injective : Function.Injective (C : R → MvPowerSeries σ R) := by
@@ -490,7 +490,7 @@ theorem X_inj [Nontrivial R] {s t : σ} : (X s : MvPowerSeries σ R) = X t ↔ s
   ⟨by
     classical
     intro h
-    replace h := congr_arg (coeff (single s 1)) h
+    replace h := congr(coeff (single s 1) $h)
     rw [coeff_X, ite_eq_left rfl, coeff_X] at h
     split_ifs at h with H
     · rw [Finsupp.single_eq_single_iff] at H
@@ -621,7 +621,7 @@ theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
     by_cases H : m - single s n + single s n = m
     · rw [coeff_mul, Finset.sum_eq_single (single s n, m - single s n)]
       · rw [coeff_X_pow, ite_eq_left rfl, one_mul]
-        simpa using! congr_arg (fun m : σ →₀ ℕ => coeff m φ) H.symm
+        simpa using! congr(coeff $H.symm φ)
       · rintro ⟨i, j⟩ hij hne
         rw [mem_antidiagonal] at hij
         rw [coeff_X_pow]
@@ -703,7 +703,7 @@ theorem coeff_prod [DecidableEq ι] [DecidableEq σ]
         Prod.forall, Prod.mk.injEq]
       rintro u v rfl u' v' huv h k - l - hkl
       obtain rfl : u' = u := by
-        simpa only [Finsupp.coe_update, Function.update_self] using DFunLike.congr_fun hkl a
+        simpa only [Finsupp.coe_update, Function.update_self] using congr($hkl a)
       simp only [add_right_inj] at huv
       exact h rfl huv.symm
 
@@ -759,7 +759,7 @@ theorem coeff_eq_zero_of_constantCoeff_nilpotent {f : MvPowerSeries σ R} {m : �
   simp only [add_comm m, Nat.add_le_add_iff_right, ← hk.1,
     ← sum_sdiff (hs), sum_eq_zero (s := s) hs'', add_zero]
   rw [← hs_def]
-  convert! Finset.card_nsmul_le_sum (range n \ s) (fun x ↦ degree (k x)) 1 _
+  convert Finset.card_nsmul_le_sum (range n \ s) (fun x ↦ degree (k x)) 1 _
   · simp only [smul_eq_mul, mul_one]
   · simp only [degree_eq_weight_one, map_sum]
   · simp only [hs_def, mem_filter, mem_sdiff, mem_range, not_and, and_imp]

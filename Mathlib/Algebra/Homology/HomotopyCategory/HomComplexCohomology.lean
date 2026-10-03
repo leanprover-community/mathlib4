@@ -188,14 +188,15 @@ section
 variable [Linear R C]
 
 instance : SMul R (CohomologyClass K L n) where
-  smul r := CohomologyClass.descAddMonoidHom
-    ((CohomologyClass.mkAddMonoidHom K L n).comp (AddMonoidHom.smul r)) (fun z hz' ↦ by
-      simp only [AddMonoidHom.coe_smul', AddMonoidHom.mem_ker, AddMonoidHom.coe_comp,
-        Function.comp_apply, DistribSMul.toAddMonoidHom_apply, CohomologyClass.mkAddMonoidHom_apply,
-        CohomologyClass.mk_eq_zero_iff]
-      rw [mem_coboundaries_iff _ (n - 1) (by simp)] at hz' ⊢
-      obtain ⟨α, hα⟩ := hz'
-      exact ⟨r • α, by simp [hα]⟩)
+  smul r :=
+    CohomologyClass.descAddMonoidHom
+      ((CohomologyClass.mkAddMonoidHom K L n).comp (AddMonoidHom.smul r)) (fun z hz' ↦ by
+        simp only [AddMonoidHom.coe_smul', AddMonoidHom.mem_ker, AddMonoidHom.coe_comp,
+          Function.comp_apply, DistribSMul.toAddMonoidHom_apply,
+          CohomologyClass.mkAddMonoidHom_apply, CohomologyClass.mk_eq_zero_iff]
+        rw [mem_coboundaries_iff _ (n - 1) (by simp)] at hz' ⊢
+        obtain ⟨α, hα⟩ := hz'
+        exact ⟨r • α, by simp [hα]⟩)
 
 variable {R} in
 lemma mk_smul (r : R) (x : Cocycle K L n) : mk (r • x) = r • mk x := rfl
@@ -222,8 +223,6 @@ def mkLinearMap [Linear R C] : Cocycle K L n →ₗ[R] CohomologyClass K L n whe
 
 end CohomologyClass
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- `CohomologyClass K L m` identifies to the cohomology of the complex `HomComplex K L`
 in degree `m`. -/
 @[simps, implicit_reducible]
@@ -238,7 +237,7 @@ def leftHomologyData' (hm : n + 1 = m) (hp : m + 1 = p) :
   wπ := by
     ext x
     dsimp
-    rw [CohomologyClass.mk_eq_zero_iff]
+    rw [CohomologyClass.mkAddMonoidHom_apply, CohomologyClass.mk_eq_zero_iff]
     exact ⟨n, hm, x, rfl⟩
   hπ :=
     Cofork.IsColimit.mk _
@@ -246,12 +245,12 @@ def leftHomologyData' (hm : n + 1 = m) (hp : m + 1 = p) :
         (by
           rintro ⟨_, _⟩ ⟨q, hq, y, rfl⟩
           obtain rfl : n = q := by lia
-          simpa only [zero_comp] using! ConcreteCategory.congr_hom s.condition y)))
+          simpa only [zero_comp] using! congr($s.condition y))))
       (fun s ↦ rfl)
       (fun s l hl ↦ by
         ext x
         obtain ⟨y, rfl⟩ := x.mk_surjective
-        simpa using! ConcreteCategory.congr_hom hl y)
+        simpa using! congr($hl y))
 
 lemma leftHomologyData'_f'_apply_coe (hm : n + 1 = m) (hp : m + 1 = p) (x : Cochain K L n) :
     ((leftHomologyData' K L n m p hm hp).f' x).1 = δ n m x := rfl
@@ -268,8 +267,6 @@ noncomputable def homologyAddEquiv :
     (HomComplex K L).homology n ≃+ CohomologyClass K L n :=
   (leftHomologyData K L n).homologyIso.addCommGroupIsoToAddEquiv
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- `CohomologyClass K L m` identifies to the cohomology of the
 complex `linearHomComplex R K L` in degree `m`. -/
 @[simps, implicit_reducible]
@@ -285,7 +282,7 @@ noncomputable def linearLeftHomologyData' [Linear R C] (hm : n + 1 = m) (hp : m 
     dsimp
     ext x
     dsimp
-    rw [CohomologyClass.mk_eq_zero_iff]
+    rw [CohomologyClass.mkLinearMap_apply, CohomologyClass.mk_eq_zero_iff]
     refine ⟨n, hm, x, ?_⟩
     rw [HomComplex.Cocycle.isKernel'_lift_apply_coe_eq_δ R K L n m p hp]
   hπ :=

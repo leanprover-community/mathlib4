@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Homology.Homotopy
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.Ring.NegOnePow
-public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-! # The cochain complex of homomorphisms between cochain complexes
 
@@ -737,7 +736,7 @@ def isKernel (hm : n + 1 = m) :
     (fun s ↦ AddCommGrpCat.ofHom
       { toFun x := ⟨s.ι x, by
           rw [mem_iff _ _ hm]
-          exact ConcreteCategory.congr_hom s.condition x⟩
+          congrm $s.condition x⟩
         map_zero' := by
           #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
           this was just `cat_disch`. -/
@@ -980,6 +979,8 @@ def linearHomComplex : CochainComplex (ModuleCat R) ℤ where
   d_comp_d' _ _ _ _ _ := by ext; simp [δ_δ]
 
 variable (R K L) in
+/-- `Cocycle K L n` is the kernel of the differential on `HomComplex K L`
+in the category of `R`-modules when the category is `R`-linear. -/
 @[no_expose]
 noncomputable def HomComplex.Cocycle.isKernel' (hm : n + 1 = m) :
     IsLimit (KernelFork.ofι (f := (linearHomComplex R K L).d n m)
