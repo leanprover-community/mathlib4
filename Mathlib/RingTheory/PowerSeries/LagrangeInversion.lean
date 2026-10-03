@@ -75,23 +75,6 @@ private lemma constantCoeff_eq_zero (hY : Y = X * P.subst Y) : Y.constantCoeff =
 private lemma hasSubst_of_fixedPoint (hY : Y = X * P.subst Y) : HasSubst Y :=
   HasSubst.of_constantCoeff_zero' (constantCoeff_eq_zero hY)
 
-private lemma coeff_pow_congr {f g : R⟦X⟧} (n k : ℕ)
-    (h : ∀ j ≤ n, f.coeff j = g.coeff j) : (f ^ k).coeff n = (g ^ k).coeff n := by
-  have ht : f.trunc (n + 1) = g.trunc (n + 1) := by
-    ext j
-    by_cases hj : j < n + 1
-    · simp [coeff_trunc, hj, h j (by omega)]
-    · simp [coeff_trunc, hj]
-  have hp : (f ^ k).trunc (n + 1) = (g ^ k).trunc (n + 1) := by
-    rw [← trunc_trunc_pow f, ht, trunc_trunc_pow]
-  simpa [coeff_trunc] using congrArg (fun p : Polynomial R ↦ p.coeff n) hp
-
-private lemma coeff_subst_congr {f g : R⟦X⟧} (hf : f.constantCoeff = 0)
-    (hg : g.constantCoeff = 0) (P : R⟦X⟧) (n : ℕ)
-    (h : ∀ j ≤ n, f.coeff j = g.coeff j) : coeff n (P.subst f) = coeff n (P.subst g) := by
-  rw [coeff_subst_of_constantCoeff_zero hf, coeff_subst_of_constantCoeff_zero hg]
-  exact sum_congr rfl fun k _ ↦ congrArg (P.coeff k * ·) (coeff_pow_congr n k h)
-
 /-- Solutions of `Y = X * P(Y)` over a commutative ring are unique. -/
 theorem fixedPoint_unique {Z : R⟦X⟧} (hY : Y = X * P.subst Y)
     (hZ : Z = X * P.subst Z) : Y = Z := by
@@ -196,15 +179,6 @@ private theorem lagrange_inversion_coeff_pow_of_le {m k : ℕ} (hk : k ≤ m + 1
         (P ^ k).coeff l * (l • (P ^ (t + 1)).coeff (t + 1 - l)) := by
       intro l hl
       rw [← mul_smul_comm, ih t (by omega) (mem_range_succ_iff.mp hl)]
-    have hconv :
-        ∑ l ∈ range (t + 2), (P ^ k).coeff l * (l • (P ^ (t + 1)).coeff (t + 1 - l)) =
-          (d⁄dX (P ^ k) * P ^ (t + 1)).coeff t := by
-      rw [coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ_mk, sum_range_succ', zero_smul,
-        mul_zero, add_zero]
-      refine sum_congr rfl fun p _ ↦ ?_
-      rw [coeff_derivative]
-      push_cast
-      ring
     have hpoly : (k + t + 1) • (d⁄dX (P ^ k) * P ^ (t + 1)) = k • d⁄dX (P ^ (k + (t + 1))) := by
       rw [derivative_pow, derivative_pow, Nat.sub_add_comm hk0, pow_add]
       push_cast
@@ -216,7 +190,8 @@ private theorem lagrange_inversion_coeff_pow_of_le {m k : ℕ} (hk : k ≤ m + 1
       push_cast at h
       linear_combination h
     have hsum : (t + 1) • (Y ^ k).coeff (m + 1) = (d⁄dX (P ^ k) * P ^ (t + 1)).coeff t := by
-      rw [hcoe, coeff_subst_of_constantCoeff_zero (constantCoeff_eq_zero hY), smul_sum, ← hconv]
+      rw [hcoe, coeff_subst_of_constantCoeff_zero (constantCoeff_eq_zero hY), smul_sum,
+        coeff_derivative_mul]
       exact sum_congr rfl hih
     apply nsmul_right_injective (Nat.succ_ne_zero t)
     simp [hmt] at *
@@ -245,17 +220,10 @@ theorem lagrange_burmann_coeff (n : ℕ) (H : R⟦X⟧) :
   obtain ⟨Y₀, hY₀, _⟩ := existsUnique_fixedPoint P₀
   have hcoeff : (n + 1) • coeff (n + 1) (H₀.subst Y₀) =
       (d⁄dX H₀ * P₀ ^ (n + 1)).coeff n := by
-    have hlhs : (n + 1) • coeff (n + 1) (H₀.subst Y₀) =
-        ∑ i ∈ range (n + 2), H₀.coeff i * (i • (P₀ ^ (n + 1)).coeff (n + 1 - i)) := by
-      rw [coeff_subst_of_constantCoeff_zero (constantCoeff_eq_zero hY₀) H₀, smul_sum]
-      refine sum_congr rfl fun i hi ↦ ?_
-      rw [← lagrange_inversion_coeff_pow_of_le hY₀ (mem_range_succ_iff.mp hi)]
-      ring
-    rw [hlhs, coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ_mk, sum_range_succ']
-    simp only [zero_smul, mul_zero, add_zero]
-    refine sum_congr rfl fun i _ ↦ ?_
-    rw [coeff_derivative, Nat.add_sub_add_right, nsmul_eq_mul, mul_assoc]
-    simp only [Nat.cast_add, Nat.cast_one]
+    rw [coeff_subst_of_constantCoeff_zero (constantCoeff_eq_zero hY₀) H₀, smul_sum,
+      coeff_derivative_mul]
+    refine sum_congr rfl fun i hi ↦ ?_
+    rw [← mul_smul_comm, lagrange_inversion_coeff_pow_of_le hY₀ (mem_range_succ_iff.mp hi)]
   let e : U →+* R := MvPolynomial.eval₂Hom (Int.castRingHom R)
     (Sum.elim (fun i ↦ P.coeff i) (fun i ↦ H.coeff i))
   have hP : map e P₀ = P := by

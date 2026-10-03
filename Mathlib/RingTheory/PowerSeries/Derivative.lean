@@ -25,6 +25,7 @@ See also `MvPowerSeries.pderiv` for the multivariate setting.
 
 - `PowerSeries.coeff_derivative`: coefficient formula
   `coeff n (d⁄dX R f) = coeff (n + 1) f * (n + 1)`.
+- `PowerSeries.coeff_derivative_mul`: finite-sum formula for the coefficients of `d⁄dX f * g`.
 - `PowerSeries.derivative_coe`: compatibility with `Polynomial.derivative`.
 - `PowerSeries.trunc_derivative`: truncation commutes with differentiation.
 - `PowerSeries.derivative.ext`: a power series is determined by its constant term and derivative.
@@ -59,6 +60,17 @@ theorem derivative_one : d⁄dX (1 : R⟦X⟧) = 0 := MvPowerSeries.pderiv_one
 theorem coeff_derivative (f : R⟦X⟧) (n : ℕ) :
     coeff n (d⁄dX f) = coeff (n + 1) f * (n + 1) := by
   simp [coeff, derivative, MvPowerSeries.coeff_pderiv]
+
+/-- The coefficient of a product with a formal derivative, written as a finite sum. -/
+theorem coeff_derivative_mul (f g : R⟦X⟧) (n : ℕ) :
+    (d⁄dX f * g).coeff n =
+      ∑ i ∈ Finset.range (n + 2), f.coeff i * (i • g.coeff (n + 1 - i)) := by
+  symm
+  rw [coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk, Finset.sum_range_succ']
+  simp only [zero_smul, mul_zero, add_zero]
+  refine Finset.sum_congr rfl fun i _ ↦ ?_
+  rw [coeff_derivative, Nat.add_sub_add_right, nsmul_eq_mul, mul_assoc]
+  simp only [Nat.cast_add, Nat.cast_one]
 
 /-- Mapping coefficients commutes with formal differentiation. -/
 theorem map_derivative {S : Type*} [CommSemiring S] (f : R →+* S) (φ : R⟦X⟧) :

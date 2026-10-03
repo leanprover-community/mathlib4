@@ -261,6 +261,14 @@ theorem coeff_subst_of_constantCoeff_zero {b : R⟦X⟧} (hb : b.constantCoeff =
     by_contra hde
     simp [coeff_pow_eq_zero_of_lt hb (by omega : e < d)] at hd
 
+/-- Substituting series with zero constant coefficient and matching coefficients up to degree
+`n` gives matching coefficients in degree `n`. -/
+theorem coeff_subst_congr {f g : R⟦X⟧} (hf : f.constantCoeff = 0)
+    (hg : g.constantCoeff = 0) (P : R⟦X⟧) (n : ℕ)
+    (h : ∀ j ≤ n, f.coeff j = g.coeff j) : coeff n (P.subst f) = coeff n (P.subst g) := by
+  rw [coeff_subst_of_constantCoeff_zero hf, coeff_subst_of_constantCoeff_zero hg]
+  exact Finset.sum_congr rfl fun k _ ↦ congrArg (P.coeff k * ·) (coeff_pow_congr n k h)
+
 theorem constantCoeff_subst (ha : HasSubst a) (f : PowerSeries R) :
     MvPowerSeries.constantCoeff (subst a f) =
       finsum (fun d ↦ coeff d f • MvPowerSeries.constantCoeff (a ^ d)) := by
