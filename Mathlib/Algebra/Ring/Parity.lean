@@ -445,3 +445,26 @@ theorem natCast_eq_zero_or_one_of_two_eq_zero (n : ℕ) (h : (2 : R) = 0) :
   · exact Or.inr <| natCast_eq_one_of_odd_of_two_eq_zero hn h
 
 end CharTwo
+
+namespace Nat
+
+/-- $3^a$ is odd for any natural number $a$. -/
+lemma Odd.three_pow (a : ℕ) : Odd (3 ^ a) :=
+  Odd.pow (by decide)
+
+/-- $2^b$ is even for any non-zero natural number $b$. -/
+lemma Even.two_pow {b : ℕ} (hb : b ≠ 0) : Even (2 ^ b) :=
+  Nat.even_pow.mpr ⟨by decide, hb⟩
+
+/--
+Diophantine parity obstruction: a power of 2 with non-zero exponent can never equal
+a power of 3. In particular, $2^b = 3^a$ has no solutions for $b > 0$.
+-/
+theorem two_pow_ne_three_pow {a b : ℕ} (hb : b ≠ 0) : 2 ^ b ≠ 3 ^ a := by
+  intro h
+  have h_even : Even (2 ^ b) := Even.two_pow hb
+  have h_odd : Odd (3 ^ a) := Odd.three_pow a
+  rw [h] at h_even
+  exact Nat.even_iff_not_odd.mp h_even h_odd
+
+end Nat
