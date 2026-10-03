@@ -744,6 +744,35 @@ theorem mul_mod_mul_left {p₁ p₂ q : R[X]} : (q * p₁) % (q * p₂) = q * (p
     rw [h1, mod_eq_self_iff (mul_ne_zero hq hp₂), degree_mul, degree_mul]
     exact WithBot.add_lt_add_left (degree_ne_bot.mpr hq) (degree_mod_lt p₁ hp₂)
 
+theorem exists_root_of_odd_natDegree_imp_not_irreducible
+    (h : ∀ {q : R[X]}, Odd q.natDegree → q.natDegree ≠ 1 → ¬ Irreducible q)
+    (hf : Odd p.natDegree) : ∃ x, p.IsRoot x := by
+  induction hdeg : p.natDegree using Nat.strong_induction_on generalizing p with | h n ih =>
+    subst hdeg
+    by_cases hdeg1 : p.natDegree = 1
+    · exact exists_root_of_degree_eq_one <| by
+        simpa [← degree_eq_iff_natDegree_eq_of_neZero] using hdeg1
+    · rcases irreducible_or_factor (not_isUnit_of_natDegree_pos p (by grind)) with
+          _ | ⟨a, b, ha, hb, rfl⟩
+      · grind
+      have hsum : (a * b).natDegree = a.natDegree + b.natDegree :=
+        natDegree_mul (by grind) (by grind)
+      wlog h : Odd a.natDegree generalizing a b
+      · rw [mul_comm, add_comm] at *
+        apply this b a <;> grind
+      · have : b.natDegree ≠ 0 := fun _ ↦ by
+          simp_all [isUnit_iff_degree_eq_zero, degree_eq_natDegree (show b ≠ 0 by grind)]
+        rcases ih a.natDegree (by lia) h rfl with ⟨r, hr⟩
+        exact ⟨r, hr.dvd (by simp)⟩
+
+theorem exists_root_of_monic_odd_natDegree_imp_not_irreducible
+    (h : ∀ {g : R[X]}, g.Monic → Odd g.natDegree → g.natDegree ≠ 1 → ¬ Irreducible g)
+    {f : R[X]} (hf : Odd f.natDegree) : ∃ x, f.IsRoot x := by
+  classical
+  refine exists_root_of_odd_natDegree_imp_not_irreducible (fun {f} hf₁ hf₂ hf₃ ↦ ?_) hf
+  exact h (monic_normalize hf₃.ne_zero)
+    (by simpa using hf₁) (by simpa using hf₂) (by simpa using hf₃)
+
 end Field
 
 end Polynomial

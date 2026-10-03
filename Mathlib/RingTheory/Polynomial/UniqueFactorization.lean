@@ -144,9 +144,15 @@ end MvPolynomial
 
 end UniqueFactorizationDomain
 
+section Field
+
+namespace Polynomial
+
+variable {F : Type*} [Field F]
+
 /-- A polynomial over a field which is not a unit must have a monic irreducible factor.
 See also `WfDvdMonoid.exists_irreducible_factor`. -/
-theorem Polynomial.exists_monic_irreducible_factor {F : Type*} [Field F] (f : F[X])
+theorem exists_monic_irreducible_factor (f : F[X])
     (hu : ¬IsUnit f) : ∃ g : F[X], g.Monic ∧ Irreducible g ∧ g ∣ f := by
   by_cases hf : f = 0
   · exact ⟨X, monic_X, irreducible_X, hf ▸ dvd_zero X⟩
@@ -154,3 +160,20 @@ theorem Polynomial.exists_monic_irreducible_factor {F : Type*} [Field F] (f : F[
   have ha : Associated g (g * C g.leadingCoeff⁻¹) := associated_mul_unit_right _ _ <|
     isUnit_C.2 (leadingCoeff_ne_zero.2 hi.ne_zero).isUnit.inv
   exact ⟨_, monic_mul_leadingCoeff_inv hi.ne_zero, ha.irreducible hi, ha.dvd_iff_dvd_left.1 hf⟩
+
+theorem exists_odd_natDegree_monic_irreducible_factor {f : F[X]} (hf : Odd f.natDegree) :
+    ∃ g : F[X], Odd g.natDegree ∧ g.Monic ∧ Irreducible g ∧ g ∣ f := by
+  induction h : f.natDegree using Nat.strong_induction_on generalizing f with | h n ih =>
+    have hu : ¬ IsUnit f := not_isUnit_of_natDegree_pos _ (Odd.pos hf)
+    rcases exists_monic_irreducible_factor f hu with ⟨g, g_monic, g_irred, g_div⟩
+    by_cases g_deg : Odd g.natDegree
+    · exact ⟨g, g_deg, g_monic, g_irred, g_div⟩
+    · rcases g_div with ⟨k, rfl⟩
+      have : (g * k).natDegree = g.natDegree + k.natDegree := natDegree_mul (by grind) (by grind)
+      rcases ih k.natDegree (by lia [Irreducible.natDegree_pos]) (by grind) rfl
+        with ⟨l, h₁, h₂, h₃, h₄⟩
+      exact ⟨l, h₁, h₂, h₃, dvd_trans h₄ (by simp)⟩
+
+end Polynomial
+
+end Field
