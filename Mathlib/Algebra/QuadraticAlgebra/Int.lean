@@ -43,13 +43,11 @@ theorem algebraMap_eq (x : QuadraticAlgebra ℤ a b) :
 
 @[simp]
 theorem algebraMap_re_eq (x : QuadraticAlgebra ℤ a b) :
-    (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) x).re = x.re := by
-  simp [algebraMap_eq, re_baseChange_apply ℚ]
+    (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) x).re = x.re := rfl
 
 @[simp]
 theorem algebraMap_im_eq (x : QuadraticAlgebra ℤ a b) :
-    (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) x).im = x.im := by
-  simp [algebraMap_eq, im_baseChange_apply ℚ]
+    (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) x).im = x.im := rfl
 
 instance : FaithfulSMul (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) :=
   (faithfulSMul_iff_algebraMap_injective _ _).mpr <| baseChange_injective ℚ _ _
@@ -67,7 +65,7 @@ theorem exists_nat_smul_mem (z : QuadraticAlgebra ℚ a b) :
     ⟨z.re.den * z.im.den, by positivity, z.im.den * z.re.num, z.re.den * z.im.num,
       by push_cast; grind [← Rat.mul_den_eq_num]⟩
   refine ⟨n, hn, x • 1 + y • ω, ?_⟩
-  ext <;> simp [re_baseChange_apply ℚ, im_baseChange_apply ℚ, hx, hy]
+  ext <;> rw [← algebraMap_eq] <;> simp [hx, hy]
 
 /-- `QuadraticAlgebra ℚ a b` is the localization of the order `QuadraticAlgebra ℤ a b` at the
 nonzero integers. This is not `IsFractionRing` in general: `QuadraticAlgebra ℤ a b` need not be a
@@ -87,8 +85,10 @@ instance : IsFractionRing (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) 
   · rintro _ ⟨x, hx, rfl⟩
     exact norm_mem_nonZeroDivisors_iff.mp <| by simpa using hx
   · intro x hx
-    rwa [isUnit_iff_norm_isUnit, isUnit_iff_ne_zero, algebraMap_eq, norm_baseChange ℚ a b,
-      eq_intCast, Int.cast_ne_zero, ← mem_nonZeroDivisors_iff_ne_zero, norm_mem_nonZeroDivisors_iff]
+    have : norm (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) x) = norm x :=
+      norm_mapRingHom (algebraMap ℤ ℚ) a b x
+    rwa [isUnit_iff_norm_isUnit, isUnit_iff_ne_zero, this, Int.cast_ne_zero,
+      ← mem_nonZeroDivisors_iff_ne_zero, norm_mem_nonZeroDivisors_iff]
 
 theorem isDomain_iff :
     IsDomain (QuadraticAlgebra ℤ a b) ↔ ¬ IsSquare (discr a b) := by
