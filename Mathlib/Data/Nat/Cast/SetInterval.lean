@@ -5,10 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Data.Nat.Cast.Order.Basic
-public import Mathlib.Order.Interval.Set.OrdConnected
-public import Mathlib.Order.Nat
+import Mathlib.Order.Interval.Set.OrdConnected
+import Mathlib.Order.Nat
 public import Mathlib.Order.UpperLower.Basic
 
 /-!
