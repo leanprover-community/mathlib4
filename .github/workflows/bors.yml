@@ -74,3 +74,51 @@ jobs:
       # We don't want 'bors try' runs to compete with merge-candidates, so we pool trying with PR runs
       runs_on: ${{ github.ref_name == 'trying' && 'pr' || 'bors' }}
     secrets: inherit
+
+  # When a merge-queue batch fails the environment linters, label every PR in the batch
+  # `full-lint`. Pull-request CI lints only the modules a PR changes (except simpNF), so a PR whose
+  # change breaks lint in a module it did not touch passes its own CI and fails only here. The
+  # label makes its next PR run lint everything, so the author sees the failure there.
+  label-full-lint:
+    name: label the batch full-lint after a lint failure
+    needs: build
+    # `!cancelled()` rather than `always()`: run after the reusable workflow fails (that is the point),
+    # but not when the run was cancelled.
+    if: ${{ !cancelled() && github.repository == 'leanprover-community/mathlib4' && github.ref_name == 'staging' && needs.build.outputs.build-outcome == 'success' && needs.build.outputs.lint-outcome == 'failure' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write         # to create the label if it does not exist yet
+      pull-requests: write  # to add it to the batch's PRs
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 100
+          persist-credentials: false
+      - name: label the batch's PRs full-lint
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          git fetch --quiet --depth=100 origin master
+          # Without a common ancestor in the fetched history, origin/master..HEAD would reach back
+          # into unrelated old commits (master can move far while this run finishes); deepen, and
+          # if that is not enough, label nothing rather than the wrong PRs.
+          if ! git merge-base origin/master HEAD > /dev/null; then
+            git fetch --quiet --deepen=1000 origin master "$GITHUB_SHA" || true
+          fi
+          if ! git merge-base origin/master HEAD > /dev/null; then
+            echo "::warning::no merge base between master and this staging commit; not labelling"
+            exit 0
+          fi
+          # Each PR in a batch is one squashed commit on top of master, titled `... (#N)`.
+          prs=$(git log --format=%s origin/master..HEAD | sed -nE 's/.*\(#([0-9]+)\)$/\1/p' | sort -u)
+          if [ -z "$prs" ]; then echo "No PR numbers found in the batch."; exit 0; fi
+          gh label create full-lint -R "$REPO" --color d93f0b \
+            --description "Lint the whole library, not just the changed modules" 2>/dev/null || true
+          for pr in $prs; do
+            echo "Labelling #$pr full-lint"
+            gh api -X POST "repos/$REPO/issues/$pr/labels" -f 'labels[]=full-lint' > /dev/null
+          done

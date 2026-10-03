@@ -40,6 +40,13 @@ on:
         type: boolean
         required: false
         default: false
+    outputs:
+      build-outcome:
+        description: The outcome of the Mathlib build step.
+        value: ${{ jobs.build.outputs.build-outcome }}
+      lint-outcome:
+        description: The outcome of the `lint mathlib` step.
+        value: ${{ jobs.test_lint.outputs.lint-outcome }}
 
 env:
   # Disable Lake's automatic fetching of cloud builds.
