@@ -134,9 +134,6 @@ theorem isCyclic_of_injective_ringHom [Finite G] (f : G →* R) (hf : Injective 
     intro n hn
     exact le_trans (card_nthRoots_subgroup_units f hf hn 1) (card_nthRoots n (f 1))
 
-@[deprecated (since := "2026-03-04")]
-alias isCyclic_of_subgroup_isDomain := isCyclic_of_injective_ringHom
-
 /-- The unit group of a finite integral domain is cyclic.
 
 To support `ℤˣ` and other infinite monoids with finite groups of units, this requires only
@@ -152,8 +149,6 @@ variable (S : Subgroup Rˣ) [Finite S]
 instance isCyclic_subgroup_units : IsCyclic S :=
   isCyclic_of_injective_ringHom { toFun s := (s.val : R), map_one' := rfl, map_mul' := by simp }
     (Units.val_injective.comp Subtype.val_injective)
-
-@[deprecated (since := "2026-03-03")] alias subgroup_units_cyclic := isCyclic_subgroup_units
 
 end
 

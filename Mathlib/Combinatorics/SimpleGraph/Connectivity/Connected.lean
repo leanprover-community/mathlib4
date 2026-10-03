@@ -785,9 +785,6 @@ theorem reachable_deleteEdges_iff_exists_walk {v w v' w' : V} :
     rw [edgeSet_deleteEdges]
     exact ⟨p.edges_subset_edgeSet ep, fun h' => h (h' ▸ ep)⟩
 
-@[deprecated (since := "2026-03-18")]
-alias reachable_delete_edges_iff_exists_walk := reachable_deleteEdges_iff_exists_walk
-
 theorem isBridge_iff_forall_walk_mem_edges {v w : V} :
     G.IsBridge s(v, w) ↔ ∀ p : G.Walk v w, s(v, w) ∈ p.edges := by
   rw [isBridge_iff, reachable_deleteEdges_iff_exists_walk, not_exists_not]
@@ -897,10 +894,6 @@ theorem IsBridge.anti {G' : SimpleGraph V} {e : Sym2 V} (hG : G ≤ G') (h : G'.
 theorem IsBridge.sup_edge_of_not_reachable {u v : V} (h : ¬G.Reachable u v) :
     (G ⊔ edge u v).IsBridge s(u, v) := isBridge_sup_edge.mpr (of_not_reachable h)
 
-set_option linter.deprecated.deprecatedTarget false in
-@[deprecated (since := "2026-03-18")]
-alias IsBridge.sup_fromEdgeSet_of_not_reachable := IsBridge.sup_edge_of_not_reachable
-
 /-- Connecting two unreachable vertices by an edge preserves existing bridges,
 provided the bridge is already an edge. -/
 theorem IsBridge.sup_edge_of_not_reachable_of_isBridge {u v : V} {e : Sym2 V}
@@ -912,10 +905,6 @@ theorem IsBridge.sup_edge_of_not_reachable_of_isBridge {u v : V} {e : Sym2 V}
   refine edgeSet_sup .. ▸ Walk.edges_subset_edgeSet _ he' |>.elim id fun h' ↦ h ?_ |>.elim
   exact .mono (sdiff_le_iff'.mpr le_rfl) <|
     adj_and_reachable_delete_edges_iff_exists_cycle.mpr ⟨_, p, by simp_all⟩ |>.right
-
-@[deprecated (since := "2026-03-18")]
-alias IsBridge.sup_fromEdgeSet_of_not_reachable_of_isBridge :=
-  IsBridge.sup_edge_of_not_reachable_of_isBridge
 
 end BridgeEdges
 

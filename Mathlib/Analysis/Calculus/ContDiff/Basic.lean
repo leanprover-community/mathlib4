@@ -57,9 +57,6 @@ theorem iteratedFDerivWithin_fun_zero {i : ℕ} :
     iteratedFDerivWithin 𝕜 i (fun (_ : E) ↦ (0 : F)) s = 0 := by
   apply iteratedFDerivWithin_zero
 
-@[deprecated (since := "2026-03-18")]
-alias iteratedFDerivWithin_zero_fun := iteratedFDerivWithin_fun_zero
-
 @[simp]
 theorem ftaylorSeriesWithin_zero :
     ftaylorSeriesWithin 𝕜 (0 : E → F) = 0 := by
@@ -80,8 +77,6 @@ theorem iteratedFDeriv_zero {n : ℕ} :
 theorem iteratedFDeriv_fun_zero {n : ℕ} :
     iteratedFDeriv 𝕜 n (fun (_ : E) ↦ (0 : F)) = 0 := by
   apply iteratedFDeriv_zero
-
-@[deprecated (since := "2026-03-18")] alias iteratedFDeriv_zero_fun := iteratedFDeriv_fun_zero
 
 @[simp]
 theorem ftaylorSeries_zero :

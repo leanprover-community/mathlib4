@@ -84,15 +84,11 @@ theorem cfcHom_mem_elemental {a : A} (ha : p a) (f : C(spectrum 𝕜 a, 𝕜)) :
     cfcHom ha f ∈ elemental 𝕜 a :=
   range_cfcHom_le 𝕜 ha ⟨f, rfl⟩
 
-@[deprecated (since := "2026-03-20")] alias cfcHom_apply_mem_elemental := cfcHom_mem_elemental
-
 @[simp, grind ←]
 theorem cfc_mem_elemental (f : 𝕜 → 𝕜) (a : A) :
     cfc f a ∈ elemental 𝕜 a :=
   cfc_cases _ a f (zero_mem _) fun hf ha ↦
     cfcHom_mem_elemental ha ⟨_, hf.domRestrict⟩
-
-@[deprecated (since := "2026-03-20")] alias cfc_apply_mem_elemental := cfc_mem_elemental
 
 lemma cfc_mem {𝕜' S : Type*} [Monoid 𝕜'] [MulAction 𝕜' A] [SetLike S A] [SubringClass S A]
     [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' A] [SMulMemClass S 𝕜' A] [StarMemClass S A] {s : S}
@@ -204,15 +200,11 @@ theorem cfcₙHom_mem_elemental {a : A} (ha : p a) (f : C(quasispectrum 𝕜 a, 
     cfcₙHom ha f ∈ elemental 𝕜 a :=
   range_cfcₙHom_le 𝕜 ha ⟨f, rfl⟩
 
-@[deprecated (since := "2026-03-20")] alias cfcₙHom_apply_mem_elemental := cfcₙHom_mem_elemental
-
 @[simp, grind ←]
 theorem cfcₙ_mem_elemental (f : 𝕜 → 𝕜) (a : A) :
     cfcₙ f a ∈ elemental 𝕜 a :=
   cfcₙ_cases _ a f (zero_mem _) fun hf hf₀ ha ↦
     cfcₙHom_mem_elemental ha ⟨⟨_, hf.domRestrict⟩, hf₀⟩
-
-@[deprecated (since := "2026-03-20")] alias cfcₙ_apply_mem_elemental := cfcₙ_mem_elemental
 
 lemma cfcₙ_mem {𝕜' S : Type*} [Monoid 𝕜'] [MulAction 𝕜' A] [SetLike S A] [NonUnitalSubringClass S A]
     [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' A] [SMulMemClass S 𝕜' A] [StarMemClass S A] {s : S}

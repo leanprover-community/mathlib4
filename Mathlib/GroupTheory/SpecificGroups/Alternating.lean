@@ -254,10 +254,6 @@ theorem closure_cycleType_eq_two_two_eq_alternatingGroup (h5 : 5 ≤ Nat.card α
     · apply Subgroup.subset_closure
       exact cycleType_swap_mul_swap_of_nodup (by grind [Finset.mem_compl])
 
-@[deprecated (since := "2026-03-10")]
-alias closure_cycleType_eq_2_2_eq_alternatingGroup :=
-  closure_cycleType_eq_two_two_eq_alternatingGroup
-
 theorem cycleType_eq_two_two_subset_alternatingGroup :
     {g : Perm α | g.cycleType = {2, 2}} ⊆ alternatingGroup α := by
   intro g hg

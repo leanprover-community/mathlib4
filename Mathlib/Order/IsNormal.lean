@@ -217,8 +217,6 @@ theorem ext_iff [OrderBot α] {g : α → β} (hf : IsNormal f) (hg : IsNormal g
     convert hg.isLUB_image_Iio_of_isSuccLimit ha using 1
     aesop
 
-@[deprecated (since := "2026-03-22")] protected alias ext := IsNormal.ext_iff
-
 theorem exists_map_le_lt_map_succ_of_exists_ge [NoMaxOrder α] [OrderBot α] [WellFoundedLT β]
     {f : α → β} {x : β} (hf : IsNormal f) (hf' : ∃ y, x ≤ f y) (hx : f ⊥ ≤ x) :
     ∃ a, f a ≤ x ∧ x < f (succ a) := by
