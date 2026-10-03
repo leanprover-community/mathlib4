@@ -6,7 +6,6 @@ Authors: Seiichi Manyama
 module
 
 public import Mathlib.RingTheory.PowerSeries.Derivative
-public import Mathlib.RingTheory.PowerSeries.FixedPoint
 
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Tactic.FieldSimp
@@ -34,6 +33,9 @@ characteristic zero.
 
 ## Main results
 
+* `PowerSeries.existsUnique_fixedPoint`: existence and uniqueness of a solution of
+  `Y = X * P(Y)`.
+* `PowerSeries.fixedPoint_unique`: any two solutions of the fixed-point equation are equal.
 * `PowerSeries.eq_zero_of_fixedPoint_of_constantCoeff_eq_zero`: the degenerate case where the
   constant coefficient of `P` is zero.
 * `PowerSeries.lagrange_burmann_coeff`: the Lagrange–Bürmann coefficient formula over a
@@ -48,8 +50,8 @@ characteristic zero.
 
 We first prove the formulas over rings without additive torsion, following the induction in the
 reference below. Specializing the coefficients of power series over `MvPolynomial (ℕ ⊕ ℕ) ℤ`
-then gives the division-free formulas over arbitrary commutative rings. The existence and
-uniqueness results in `Mathlib.RingTheory.PowerSeries.FixedPoint` identify the specialized solution.
+then gives the division-free formulas over arbitrary commutative rings. Fixed-point uniqueness
+identifies the specialized solution.
 
 ## References
 
@@ -66,14 +68,92 @@ section CommRing
 
 variable {R : Type*} [CommRing R]
 variable {P Y : R⟦X⟧}
-variable (hY : Y = X * P.subst Y)
-include hY
 
-private lemma constantCoeff_eq_zero : Y.constantCoeff = 0 := by
+private lemma constantCoeff_eq_zero (hY : Y = X * P.subst Y) : Y.constantCoeff = 0 := by
   simpa using congrArg constantCoeff hY
 
-private lemma hasSubst_of_fixedPoint : HasSubst Y :=
+private lemma hasSubst_of_fixedPoint (hY : Y = X * P.subst Y) : HasSubst Y :=
   HasSubst.of_constantCoeff_zero' (constantCoeff_eq_zero hY)
+
+private lemma coeff_pow_congr {f g : R⟦X⟧} (n k : ℕ)
+    (h : ∀ j ≤ n, f.coeff j = g.coeff j) : (f ^ k).coeff n = (g ^ k).coeff n := by
+  have ht : f.trunc (n + 1) = g.trunc (n + 1) := by
+    ext j
+    by_cases hj : j < n + 1
+    · simp [coeff_trunc, hj, h j (by omega)]
+    · simp [coeff_trunc, hj]
+  have hp : (f ^ k).trunc (n + 1) = (g ^ k).trunc (n + 1) := by
+    rw [← trunc_trunc_pow f, ht, trunc_trunc_pow]
+  simpa [coeff_trunc] using congrArg (fun p : Polynomial R ↦ p.coeff n) hp
+
+private lemma coeff_subst_congr {f g : R⟦X⟧} (hf : f.constantCoeff = 0)
+    (hg : g.constantCoeff = 0) (P : R⟦X⟧) (n : ℕ)
+    (h : ∀ j ≤ n, f.coeff j = g.coeff j) : coeff n (P.subst f) = coeff n (P.subst g) := by
+  rw [coeff_subst_of_constantCoeff_zero hf, coeff_subst_of_constantCoeff_zero hg]
+  exact sum_congr rfl fun k _ ↦ congrArg (P.coeff k * ·) (coeff_pow_congr n k h)
+
+/-- Solutions of `Y = X * P(Y)` over a commutative ring are unique. -/
+theorem fixedPoint_unique {Z : R⟦X⟧} (hY : Y = X * P.subst Y)
+    (hZ : Z = X * P.subst Z) : Y = Z := by
+  ext n
+  induction n using Nat.strong_induction_on with
+  | h n ih =>
+    cases n with
+    | zero =>
+      simp only [coeff_zero_eq_constantCoeff_apply, constantCoeff_eq_zero hY,
+        constantCoeff_eq_zero hZ]
+    | succ n =>
+      rw [hY, hZ, coeff_succ_X_mul, coeff_succ_X_mul]
+      apply coeff_subst_congr (constantCoeff_eq_zero hY) (constantCoeff_eq_zero hZ)
+      intro j hj
+      exact ih j (by omega)
+
+private noncomputable def fixedPointApprox (P : R⟦X⟧) : ℕ → R⟦X⟧
+  | 0 => 0
+  | n + 1 => X * P.subst (fixedPointApprox P n)
+
+private lemma constantCoeff_fixedPointApprox (P : R⟦X⟧) (n : ℕ) :
+    (fixedPointApprox P n).constantCoeff = 0 := by
+  cases n <;> simp [fixedPointApprox]
+
+private lemma coeff_fixedPointApprox_stable (P : R⟦X⟧) (n s j : ℕ) (hj : j < n) :
+    (fixedPointApprox P n).coeff j = (fixedPointApprox P (n + s)).coeff j := by
+  induction n generalizing j with
+  | zero => omega
+  | succ n ih =>
+    cases j with
+    | zero => simp only [coeff_zero_eq_constantCoeff_apply, constantCoeff_fixedPointApprox]
+    | succ j =>
+      simp only [Nat.succ_add, fixedPointApprox, coeff_succ_X_mul]
+      apply coeff_subst_congr (constantCoeff_fixedPointApprox P n)
+        (constantCoeff_fixedPointApprox P (n + s))
+      intro i hi
+      exact ih i (by omega)
+
+/-- Existence and uniqueness of a solution of `Y = X * P(Y)`. -/
+theorem existsUnique_fixedPoint (P : R⟦X⟧) : ∃! Y : R⟦X⟧, Y = X * P.subst Y := by
+  let Y : R⟦X⟧ := mk fun n ↦ (fixedPointApprox P (n + 1)).coeff n
+  have hcoeff {n j : ℕ} (hj : j < n) : Y.coeff j = (fixedPointApprox P n).coeff j := by
+    obtain ⟨s, rfl⟩ := Nat.exists_eq_add_of_le (Nat.succ_le_of_lt hj)
+    simp only [Y, coeff_mk]
+    exact coeff_fixedPointApprox_stable P (j + 1) s j (by omega)
+  have hY₀ : Y.constantCoeff = 0 := by
+    simpa only [Y, constantCoeff_mk, coeff_zero_eq_constantCoeff_apply] using
+      constantCoeff_fixedPointApprox P 1
+  have hY : Y = X * P.subst Y := by
+    ext n
+    cases n with
+    | zero => simp [hY₀]
+    | succ n =>
+      nth_rw 1 [Y]
+      rw [coeff_mk, fixedPointApprox, coeff_succ_X_mul, coeff_succ_X_mul]
+      apply coeff_subst_congr (constantCoeff_fixedPointApprox P (n + 1)) hY₀
+      intro j hj
+      exact (hcoeff (by omega : j < n + 1)).symm
+  exact ⟨Y, hY, fun _ hZ ↦ fixedPoint_unique hZ hY⟩
+
+variable (hY : Y = X * P.subst Y)
+include hY
 
 /-- If `Y = X * P(Y)` and the constant coefficient of `P` is zero, then `Y = 0`. -/
 theorem eq_zero_of_fixedPoint_of_constantCoeff_eq_zero (hP : P.constantCoeff = 0) : Y = 0 := by
