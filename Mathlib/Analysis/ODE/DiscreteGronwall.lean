@@ -86,7 +86,7 @@ theorem discrete_gronwall {n₀ : ℕ} (hun₀ : 0 ≤ u n₀)
         discrete_gronwall_prod_general hu (by grind) hn
     _ ≤ u n₀ * ∏ i ∈ Ico n₀ n, (1 + c i) +
           ∑ k ∈ Ico n₀ n, b k * ∏ i ∈ Ico n₀ n, (1 + c i) := by
-        gcongr <;> grind
+        gcongr; grind
     _ = (u n₀ + ∑ k ∈ Ico n₀ n, b k) * ∏ i ∈ Ico n₀ n, (1 + c i) := by rw [add_mul, sum_mul]
     _ ≤ (u n₀ + ∑ k ∈ Ico n₀ n, b k) * exp (∑ i ∈ Ico n₀ n, c i) := by
         gcongr <;> try exact add_nonneg hun₀ <| sum_nonneg <| by grind

@@ -90,7 +90,6 @@ lemma CFC.log_monotoneOn : MonotoneOn log {a : A | IsStrictlyPositive a} := by
   filter_upwards [h₁] with p ⟨hp, hp'⟩
   refine MonotoneOn.congr (fun a ha b hb hab ↦ ?_) CFC.cfc_rpow_sub_one_eqOn.symm
   gcongr
-  grind
 
 @[gcongr]
 lemma CFC.log_le_log {a b : A} (hab : a ≤ b) (ha : IsStrictlyPositive a := by cfc_tac) :
