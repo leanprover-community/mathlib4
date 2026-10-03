@@ -163,7 +163,7 @@ variable (hY : Y = X * P.subst Y)
 include hY
 
 private theorem lagrange_inversion_coeff_pow_of_le {m k : ℕ} (hk : k ≤ m + 1) :
-      (m + 1) • (Y ^ k).coeff (m + 1) = k • (P ^ (m + 1)).coeff (m + 1 - k) := by
+    (m + 1) • (Y ^ k).coeff (m + 1) = k • (P ^ (m + 1)).coeff (m + 1 - k) := by
   induction m using Nat.strong_induction_on generalizing k with
   | h m ih =>
     rcases Nat.eq_zero_or_pos k with rfl | hk0
@@ -179,7 +179,8 @@ private theorem lagrange_inversion_coeff_pow_of_le {m k : ℕ} (hk : k ≤ m + 1
         (P ^ k).coeff l * (l • (P ^ (t + 1)).coeff (t + 1 - l)) := by
       intro l hl
       rw [← mul_smul_comm, ih t (by omega) (mem_range_succ_iff.mp hl)]
-    have hpoly : (k + t + 1) • (d⁄dX (P ^ k) * P ^ (t + 1)) = k • d⁄dX (P ^ (k + (t + 1))) := by
+    have hpoly : (k + t + 1) • (d⁄dX (P ^ k) * P ^ (t + 1)) =
+        k • d⁄dX (P ^ (k + (t + 1))) := by
       rw [derivative_pow, derivative_pow, Nat.sub_add_comm hk0, pow_add]
       push_cast
       ring
@@ -279,7 +280,7 @@ case `H = X`, equivalently `k = 1`, of `lagrange_burmann_coeff_div`. -/
 theorem lagrange_inversion_coeff (n : ℕ) :
     Y.coeff (n + 1) = (P ^ (n + 1)).coeff n / (n + 1) := by
   simpa [subst_X (hasSubst_of_fixedPoint hY)] using
-    lagrange_burmann_coeff_div (P := P) (Y := Y) hY n X
+    lagrange_burmann_coeff_div hY n X
 
 end Field
 
