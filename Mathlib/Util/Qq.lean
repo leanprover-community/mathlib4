@@ -87,10 +87,32 @@ def mkNatLitQ (n : Nat) : Q(Nat) := mkNatLit n
 This is a Qq version of `Lean.mkIntLit`. -/
 def mkIntLitQ (n : Int) : Q(Int) := mkIntLit n
 
+/-- Build the numeral `i : Fin n`. -/
+def mkFinLitQ (n : Nat) (i : Nat) : MetaM Q(Fin $n) := do
+  if h : i < n then return toExpr (⟨i, h⟩ : Fin n)
+  throwError "mkFinLitQ: {i} is out of range for `Fin {n}`"
+
 /-- The list literal `[a₀, …]` of the entries `as`. -/
 def mkListLitQ {u : Level} {α : Q(Type u)} : List Q($α) → Q(List $α)
   | [] => q([])
   | a :: as => q($a :: $(mkListLitQ as))
+
+/-- `List.drop n` on the list literal `l`. -/
+def dropListLitQ {u : Level} {α : Q(Type u)} (n : Nat) (l : Q(List $α)) : Q(List $α) :=
+  match n with
+  | 0 => l
+  | n + 1 => match_expr l with
+    | List.cons _ _ tl => dropListLitQ (α := α) n tl
+    | _ => l
+
+/-- A specialised version of `~q($hd :: $tl)`. -/
+def unconsListLitQ {u : Level} {α : Q(Type u)} (l : Q(List $α)) :
+    MetaM ((hd : Q($α)) × (tl : Q(List $α)) ×' $l =Q $hd :: $tl) := do
+  let_expr List.cons _ hd tl := l | throwError "unconsListLitQ: expected a cons cell{indentExpr l}"
+  have hd : Q($α) := hd
+  have tl : Q(List $α) := tl
+  have : $l =Q $hd :: $tl := ⟨⟩
+  return ⟨hd, tl, ⟨⟩⟩
 
 /-- Version of `instantiateMVarsQ` that returns the Qq-fact that the new expression is equal to the
 previous one. -/

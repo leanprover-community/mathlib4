@@ -20,6 +20,17 @@ A computation model supplies the carrier, its arithmetic operations (`RingOps`) 
 encoding between entry syntax and values, and the tactic selects a model through the `bareiss_ext`
 extension registry.
 
+## Main definitions
+
+- `RingOps`: the arithmetic of a model's carrier.
+- `Model`: the computation model of a ring, including the encode/decode between the ring element
+  and the carrier representation, and an optional entry certifier.
+- `EntryCertifier`: a function that proves the ring arithmetic facts about single entries that a
+  certificate needs.
+- `bareissDecomp`: runs fraction-free elimination over a model's carrier.
+- `BareissData`: raw data of the computed decomposition.
+- `bareiss_ext`: the attribute registering a computation model.
+
 ## Implementation notes
 
 The elimination in `bareissDecomp` maintains the invariant `L * A_σ = W`, where
@@ -41,6 +52,8 @@ so `L` is conjugated by the matrix of `τ`, as in LU factorisation with partial 
 public meta section
 
 open Lean Meta
+
+initialize registerTraceClass `Tactic.evalRank
 
 namespace Mathlib.Tactic.Echelon
 
@@ -99,6 +112,18 @@ def BareissData.mapM {V W : Type} (f : V → MetaM W) (d : BareissData V) :
 that the swaps move to position `i`, that is, `σ i`. -/
 def BareissData.rowOrder {V : Type} (d : BareissData V) : Array Nat :=
   d.swaps.foldl (fun ord (a, b) => ord.swapIfInBounds a b) (Array.range d.L.size)
+
+/-- An entry certifier proves arithmetic propositions `e₁ = e₂` and `e₁ ≠ e₂`, where `e₁`
+and `e₂` are expressions of the ring. This is used in proving arithmetic facts required in the
+certificates, such as that an unreduced entry of a matrix product is equal to its computed
+value, or that a diagonal entry is nonzero. It should return a proof of the proposition it is
+given, and throw when it fails to do so.
+
+A certifier is used instead of a normalizer returning `Simp.Result` to save the double evaluation
+on the kernel path, since the caller already know the exact expected outcome. Realistic certifiers
+such as `normNumCertifier` are built on a normalizer.
+-/
+abbrev EntryCertifier := Expr → MetaM Expr
 
 /-- Core algorithm of fraction-free Gaussian elimination, with the arithmetic supplied
 by the model.
@@ -181,6 +206,8 @@ structure Model (V : Type) where
   commonMultiple : V → V → V := ops.mul
   /-- The expression of the ring denoting a value. -/
   mkEntry : V → MetaM Expr
+  /-- An optional certifier for the ring, or `none` to leave the conditions to the kernel. -/
+  entryCertifier? : Option EntryCertifier := none
 
 /-- Clear the denominators of the rows before the decomposition algorithm. -/
 def scaleRows {V : Type} (ops : RingOps V) (commonMultiple : V → V → V)
