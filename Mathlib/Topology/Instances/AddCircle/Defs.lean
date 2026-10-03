@@ -515,7 +515,6 @@ theorem equivAddCircle_eq [LinearOrder 𝕜] [IsOrderedAddMonoid 𝕜] [Archimed
     [hp : Fact (0 < p)] (hq : q ≠ 0) :
     ⇑(equivAddCircle p q hp.out.ne' hq)
       = fun x ↦ ((equivIco p 0 x : 𝕜) * (p⁻¹ * q) : AddCircle q) := by
-  ext x
   grind [coe_equivIco, equivAddCircle_apply_mk]
 
 section

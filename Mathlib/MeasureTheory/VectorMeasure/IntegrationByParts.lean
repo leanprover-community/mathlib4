@@ -71,9 +71,7 @@ theorem _root_.MeasureTheory.VectorMeasure.ext_of_Icc
     simp only [mem_iUnion, mem_Icc]
     exact ((tendsto_atBot.1 hv x).and (tendsto_atTop.1 hu x)).exists
   rw [← this]
-  have M : Monotone (fun n ↦ Icc (v n) (u n)) := by
-    intro m n hmn x hx
-    grind [Monotone, Antitone]
+  have M : Monotone (fun n ↦ Icc (v n) (u n)) := by grind [Monotone, Antitone]
   apply tendsto_nhds_unique (VectorMeasure.tendsto_vectorMeasure_iUnion_atTop_nat M (v := μ)
     (fun n ↦ measurableSet_Icc))
   have A a b : μ (Icc a b) = ν (Icc a b) := by

@@ -313,7 +313,6 @@ theorem taylor_mean_remainder {f : ℝ → ℝ} {g g' : ℝ → ℝ} {x x₀ : �
       (continuousOn_taylorWithinEval (uniqueDiffOn_Icc hx₁) hf)
       (fun _ hy => taylorWithinEval_hasDerivAt_Ioo x hx₁ hy hf hf')
     g g' gcont gdiff with ⟨y, hy, h⟩
-  use y, hy
   -- The rest is simplifications and trivial calculations
   grind [uIoo, smul_eq_mul, taylorWithinEval_self]
 

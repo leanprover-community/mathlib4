@@ -70,7 +70,6 @@ theorem isFundamentalDiscr_iff_squarefree :
     exact (IsCoprime.pow hp.isCoprime_two).dvd_mul_left_iff
   by_cases h : 4 ∣ D
   · obtain ⟨d, rfl⟩ := h
-    simp +contextual only [Int.mul_ediv_cancel_left d four_ne_zero]
     grind [isFundamentalDiscr_def]
   · grind [isFundamentalDiscr_def]
 
