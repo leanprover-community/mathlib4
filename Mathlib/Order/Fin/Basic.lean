@@ -398,12 +398,17 @@ theorem coe_natAddOrderEmb (n : ℕ) : (natAddOrderEmb n : Fin m → _) = natAdd
   rfl
 
 /-- `Fin.succAbove p` as an `OrderEmbedding`. -/
-@[simps! apply toEmbedding]
+@[simps! apply]
 def succAboveOrderEmb (p : Fin (n + 1)) : Fin n ↪o Fin (n + 1) :=
   OrderEmbedding.ofStrictMono (succAbove p) (strictMono_succAbove p)
 
 @[simp]
 theorem coe_succAboveOrderEmb (p : Fin (n + 1)) : succAboveOrderEmb p = succAbove p :=
+  rfl
+
+@[simp]
+theorem succAboveOrderEmb_toEmbedding (p : Fin (n + 1)) :
+    (succAboveOrderEmb p).toEmbedding = succAboveEmb p :=
   rfl
 
 lemma range_succAboveOrderEmb {n : ℕ} (i : Fin (n + 1)) :
