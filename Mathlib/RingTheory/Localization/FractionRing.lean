@@ -241,7 +241,7 @@ lemma surjective_iff_isField [IsDomain R] : Function.Surjective (algebraMap R K)
     (IsLocalization.atUnits R _ (S := K)
       (fun _ hx ↦ Ne.isUnit (mem_nonZeroDivisors_iff_ne_zero.mp hx))).surjective
 
-/-- The fraction ring `K` of `R` is a field iff `R` is an integral domain. -/
+/-- The ring `R` is an integral domain iff its fraction ring `K` is a field. -/
 theorem isDomain_iff_isField : IsDomain R ↔ IsField K := by
   refine ⟨fun h ↦ (IsFractionRing.toField R).toIsField K, fun h ↦ ?_⟩
   let := h.toField
