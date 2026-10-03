@@ -23,7 +23,7 @@ open OrderDual (toDual ofDual)
 
 universe u v w x
 
-variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x}
+variable {α : Type u} {β : Type v} {γ : Type w} {ι ι' : Sort*}
 
 namespace MonotoneOn
 
