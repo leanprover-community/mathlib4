@@ -79,11 +79,11 @@ example (a b : Nat) (h : a + 1 ≤ b + 1) : max a b ≤ b := by
 
 section allowing_more_unused_tactics
 
-/-- info: The `SyntaxNodeKind` is 'Lean.Parser.Tactic.refine'. -/
+/-- info: The `Lean.SyntaxNodeKind` is `Lean.Parser.Tactic.refine`. -/
 #guard_msgs in
 #show_kind refine _
 
-/-- info: The `SyntaxNodeKind` is 'Lean.Parser.Tactic.skip'. -/
+/-- info: The `Lean.SyntaxNodeKind` is `Lean.Parser.Tactic.skip`. -/
 #guard_msgs in
 #show_kind skip
 
@@ -92,10 +92,10 @@ error: Unknown constant `skip`
 The command `#show_kind skip` may help to find the correct `SyntaxNodeKind`.
 -/
 #guard_msgs in
-#allow_unused_tactic rfl skip
+allow_unused_tactic rfl skip
 
 --  test that allowing more unused tactics has the desired effect of silencing the linter
-#allow_unused_tactic Lean.Parser.Tactic.done Lean.Parser.Tactic.skip
+allow_unused_tactic Lean.Parser.Tactic.done Lean.Parser.Tactic.skip
 
 #guard_msgs in
 example : True := by
