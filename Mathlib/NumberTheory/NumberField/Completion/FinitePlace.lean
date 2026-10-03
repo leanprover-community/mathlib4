@@ -66,9 +66,9 @@ instance : IsDiscreteValuationRing (v.valuation K).integer :=
 
 instance : IsPrincipalIdealRing (v.adicCompletionIntegers K) := by
   unfold HeightOneSpectrum.adicCompletionIntegers
-  rw [(Valuation.valuationSubring.integers (Valued.v)).isPrincipalIdealRing_iff_not_denselyOrdered,
+  rw [(Valuation.valuationSubring.integers _).isPrincipalIdealRing_iff_not_denselyOrdered,
     WithZero.denselyOrdered_set_iff_subsingleton]
-  simpa using Valued.v.range_nontrivial
+  simpa using (adicCompletion.valuation K v).range_nontrivial
 
 -- TODO: make this inferred from `IsRankOneDiscrete`, or
 -- develop the API for a completion of a base `IsDVR` ring
