@@ -67,6 +67,13 @@ theorem IsAtomic.liftAt {k m : ℕ} (h : IsAtomic φ) : (φ.liftAt k m).IsAtomic
 theorem IsAtomic.castLE {h : l ≤ n} (hφ : IsAtomic φ) : (φ.castLE h).IsAtomic :=
   IsAtomic.recOn hφ (fun _ _ => IsAtomic.equal _ _) fun _ _ => IsAtomic.rel _ _
 
+/-- Turning all bound variables into free variables preserves atomicity. -/
+theorem IsAtomic.toFormula {φ : L.BoundedFormula α n} (hφ : φ.IsAtomic) :
+    φ.toFormula.IsAtomic := by
+  cases hφ with
+  | equal t₁ t₂ => exact .equal (t₁.relabel Sum.inl) (t₂.relabel Sum.inl)
+  | rel R ts => exact .rel R fun i => (ts i).relabel Sum.inl
+
 /-- A quantifier-free formula is a formula defined without quantifiers. These are all equivalent
 to Boolean combinations of atomic formulas. -/
 inductive IsQF : L.BoundedFormula α n → Prop
@@ -102,6 +109,13 @@ protected theorem liftAt {k m : ℕ} (h : IsQF φ) : (φ.liftAt k m).IsQF :=
 
 protected theorem castLE {h : l ≤ n} (hφ : IsQF φ) : (φ.castLE h).IsQF :=
   IsQF.recOn hφ isQF_bot (fun ih => ih.castLE.isQF) fun _ _ ih1 ih2 => ih1.imp ih2
+
+theorem toFormula {φ : L.BoundedFormula α n} (hφ : φ.IsQF) :
+    φ.toFormula.IsQF := by
+  induction hφ with
+  | falsum => exact IsQF.falsum
+  | of_isAtomic hφ => exact hφ.toFormula.isQF
+  | imp _ _ ih₁ ih₂ => simpa [BoundedFormula.toFormula] using ih₁.imp ih₂
 
 end IsQF
 
