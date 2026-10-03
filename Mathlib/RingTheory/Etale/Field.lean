@@ -60,7 +60,7 @@ theorem of_isSeparable_aux [Algebra.IsSeparable K L] [EssFiniteType K L] :
   have := FormallyUnramified.of_isSeparable K L
   have := FormallyUnramified.finite_of_free (R := K) (S := L)
   -- We shall show that any `f : L → B/I` can be lifted to `L → B` if `I^2 = ⊥`
-  refine FormallyEtale.iff_comp_bijective.mpr fun B _ _ I h ↦ ?_
+  refine FormallyEtale.iff_comp_bijective.mpr fun B _ _ _ I h ↦ ?_
   refine ⟨FormallyUnramified.iff_comp_injective_of_small.mp
     (FormallyUnramified.of_isSeparable K L) I h, ?_⟩
   intro f
@@ -97,7 +97,7 @@ theorem of_isSeparable_aux [Algebra.IsSeparable K L] [EssFiniteType K L] :
 open scoped IntermediateField in
 lemma of_isSeparable [Algebra.IsSeparable K L] : FormallyEtale K L := by
   -- We shall show that any `f : L → B/I` can be lifted to `L → B` if `I^2 = ⊥`.
-  refine FormallyEtale.iff_comp_bijective.mpr fun B _ _ I h ↦ ?_
+  refine FormallyEtale.iff_comp_bijective.mpr fun B _ _ _ I h ↦ ?_
   -- But we already know that there exists a unique lift for every finite subfield of `L`
   -- by `of_isSeparable_aux`, so we can glue them all together.
   refine ⟨FormallyUnramified.iff_comp_injective_of_small.mp

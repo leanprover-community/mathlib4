@@ -38,7 +38,7 @@ instance divisionSemiring [DivisionSemiring α] : DivisionSemiring (ULift α) wh
   nnratCast_def _ := congrArg up <| DivisionSemiring.nnratCast_def _
 
 instance semifield [Semifield α] : Semifield (ULift α) :=
-  { ULift.divisionSemiring, ULift.commGroupWithZero with }
+  { ULift.divisionSemiring with }
 
 instance divisionRing [DivisionRing α] : DivisionRing (ULift α) where
   toRing := ring

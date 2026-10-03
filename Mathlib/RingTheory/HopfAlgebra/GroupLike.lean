@@ -67,8 +67,3 @@ instance : Group (GroupLike R A) where
 end GroupLike
 end Semiring
 
-variable [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [HopfAlgebra R A] {a b : A}
-
-instance GroupLike.instCommGroup : CommGroup (GroupLike R A) where
-  __ := instCommMonoid
-  __ := instGroup

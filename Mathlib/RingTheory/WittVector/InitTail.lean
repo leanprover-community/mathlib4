@@ -73,9 +73,9 @@ theorem coeff_select (x : 𝕎 R) (n : ℕ) :
   dsimp [select, selectPoly]
   split_ifs with hi <;> simp
 
-instance select_isPoly {P : ℕ → Prop} : IsPoly p fun _ _ x => select P x := by
+instance select_isPoly {P : ℕ → Prop} : IsPoly p fun _ _ _ x => select P x := by
   use selectPoly P
-  rintro R _Rcr x
+  rintro R _Rcr _Rc x
   funext i
   apply coeff_select
 
@@ -215,7 +215,7 @@ section
 variable (p)
 
 /-- `WittVector.init n x` is polynomial in the coefficients of `x`. -/
-theorem init_isPoly (n : ℕ) : IsPoly p fun _ _ => init n :=
+theorem init_isPoly (n : ℕ) : IsPoly p fun _ _ _ => init n :=
   select_isPoly (P := fun i => i < n)
 
 end

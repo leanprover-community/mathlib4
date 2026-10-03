@@ -663,7 +663,7 @@ attribute [local ext] Preadditive
 instance subsingleton_preadditive_of_hasBinaryBiproducts {C : Type u} [Category.{v} C]
     [HasZeroMorphisms C] [HasBinaryBiproducts C] : Subsingleton (Preadditive C) where
   allEq := fun a b => by
-    apply Preadditive.ext; funext X Y; apply AddCommGroup.ext; funext f g
+    apply Preadditive.ext; funext X Y; apply AddGroup.ext; funext f g
     have h₁ := @biprod.add_eq_lift_id_desc _ _ a _ _ f g
       (by convert! (inferInstance : HasBinaryBiproduct X X); subsingleton)
     have h₂ := @biprod.add_eq_lift_id_desc _ _ b _ _ f g

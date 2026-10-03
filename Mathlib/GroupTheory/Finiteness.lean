@@ -835,8 +835,8 @@ theorem Submonoid.fg_of_divisive {P : Submonoid M} (hP : ∀ x ∈ P, ∀ y, x *
       exact (one_lt_of_ne_one hz₃).not_ge
 
 /-- A canonically ordered and well-quasi-ordered monoid must be finitely generated. -/
-@[to_additive /-- A canonically ordered and well-quasi-ordered additive monoid must be finitely
-generated. -/]
+@[to_additive AddCommMonoid.fg_of_wellQuasiOrderedLE
+  /-- A canonically ordered and well-quasi-ordered additive monoid must be finitely generated. -/]
 theorem CommMonoid.fg_of_wellQuasiOrderedLE : Monoid.FG M :=
   Submonoid.isMulFG_top_iff.mp (Submonoid.fg_of_divisive (by simp))
 

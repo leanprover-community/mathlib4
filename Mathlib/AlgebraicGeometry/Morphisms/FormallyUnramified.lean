@@ -107,7 +107,7 @@ instance (priority := 900) [IsOpenImmersion (pullback.diagonal f)] : FormallyUnr
 
 theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [FormallyUnramified (f ≫ g)] : FormallyUnramified f :=
-  HasRingHomProperty.of_comp (fun {R S T _ _ _} f g H ↦ by
+  HasRingHomProperty.of_comp (fun {R S T _ _ _ _ _ _} f g H ↦ by
     algebraize [f, g, g.comp f]
     exact Algebra.FormallyUnramified.of_restrictScalars R S T) ‹_›
 
@@ -241,7 +241,7 @@ protected lemma of_hom_ext (f : X ⟶ Y)
     FormallyUnramified f := by
   refine ⟨fun {U hU V hV hVU} ↦ ?_⟩
   let := (f.appLE U V hVU).hom.toAlgebra
-  refine Algebra.FormallyUnramified.iff_comp_injective.mpr fun R _ _ I hI g₁ g₂ hg₁g₂ ↦ ?_
+  refine Algebra.FormallyUnramified.iff_comp_injective.mpr fun R _ _ _ I hI g₁ g₂ hg₁g₂ ↦ ?_
   have hg₁ : f.appLE U V hVU ≫ CommRingCat.ofHom g₁ = CommRingCat.ofHom (algebraMap _ R) :=
     CommRingCat.hom_ext g₁.comp_algebraMap
   have hg₂ : f.appLE U V hVU ≫ CommRingCat.ofHom g₂ = CommRingCat.ofHom (algebraMap _ R) :=

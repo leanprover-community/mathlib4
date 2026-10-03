@@ -103,7 +103,7 @@ protected lemma algebraMap [Algebra R S] (r : R) [IsLocalization.Away r S] :
   isStandardOpenImmersion_algebraMap.2 ⟨r, inferInstance⟩
 
 lemma toAlgebra {f : R →+* S} (hf : f.IsStandardOpenImmersion) :
-    @Algebra.IsStandardOpenImmersion R S _ _ f.toAlgebra :=
+    @Algebra.IsStandardOpenImmersion R S _ _ _ _ f.toAlgebra :=
   letI := f.toAlgebra; hf
 
 /-- A bijective ring map is a standard open immersion. -/

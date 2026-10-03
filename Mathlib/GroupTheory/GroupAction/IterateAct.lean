@@ -40,16 +40,19 @@ instance instCountable : Countable (IterateMulAct f) :=
   Function.Injective.countable fun _ _ ↦ IterateMulAct.ext
 
 @[to_additive]
-instance instCommMonoid : CommMonoid (IterateMulAct f) where
+instance instMonoid : Monoid (IterateMulAct f) where
   one := ⟨0⟩
   mul m n := ⟨m.1 + n.1⟩
   mul_assoc a b c := by ext; apply Nat.add_assoc
   one_mul _ := by ext; apply Nat.zero_add
   mul_one _ := rfl
-  mul_comm _ _ := by ext; apply Nat.add_comm
   npow n a := ⟨n * a.val⟩
   npow_zero _ := by ext; apply Nat.zero_mul
   npow_succ n a := by ext; apply Nat.succ_mul
+
+@[to_additive]
+instance instIsMulCommutative : IsMulCommutative (IterateMulAct f) :=
+  ⟨⟨fun _ _ ↦ by ext; apply Nat.add_comm⟩⟩
 
 @[to_additive]
 instance instMulAction : MulAction (IterateMulAct f) α where

@@ -307,7 +307,7 @@ end Grp
 @[to_additive
 /-- If `G` is a commutative additive group object, then `Hom(X, G)` has a commutative
 additive group structure. -/]
-abbrev Hom.commGroup [IsCommMonObj G] : CommGroup (X ⟶ G) where
+theorem Hom.commGroup [IsCommMonObj G] : IsMulCommutative (X ⟶ G) := Hom.commMonoid
 
 scoped[CategoryTheory.MonObj] attribute [instance] Hom.commGroup
 scoped[CategoryTheory.AddMonObj] attribute [instance] Hom.addCommGroup

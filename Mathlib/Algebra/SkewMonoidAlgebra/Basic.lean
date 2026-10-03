@@ -357,9 +357,8 @@ section AddCommMonoid
 
 variable [AddMonoid k] [IsAddCommutative k]
 
-instance : AddCommMonoid (SkewMonoidAlgebra k G) where
-  __ := coeff_injective.addCommMonoid _ coeff_zero coeff_add
-    (fun _ _ ↦ coeff_smul _ _)
+instance : IsAddCommutative (SkewMonoidAlgebra k G) :=
+  coeff_injective.isAddCommutative _ coeff_add
 
 section sum
 
@@ -614,15 +613,6 @@ theorem single_neg (a : G) (b : k) : single a (-b) = -single a b := by
 
 end AddGroup
 
-section AddCommGroup
-
-variable [AddGroup k] [IsAddCommutative k]
-
-instance : AddCommGroup (SkewMonoidAlgebra k G) where
-  add_comm
-
-end AddCommGroup
-
 section AddGroupWithOne
 
 variable [AddGroupWithOne k] [One G]
@@ -753,22 +743,22 @@ section DerivedInstances
 
 instance instNonUnitalNonAssocRing [Ring k] [Monoid G] [MulSemiringAction G k] :
     NonUnitalNonAssocRing (SkewMonoidAlgebra k G) where
-  __ := instAddCommGroup
+  __ := instAddGroup
   __ := instNonUnitalNonAssocSemiring
 
 instance instNonUnitalRing [Ring k] [Monoid G] [MulSemiringAction G k] :
     NonUnitalRing (SkewMonoidAlgebra k G) where
-  __ := instAddCommGroup
+  __ := instAddGroup
   __ := instNonUnitalSemiring
 
 instance instNonAssocRing [Ring k] [Monoid G] [MulSemiringAction G k] :
     NonAssocRing (SkewMonoidAlgebra k G) where
-  __ := instAddCommGroup
+  __ := instAddGroup
   __ := instNonAssocSemiring
 
 instance instCommSemiring [Semiring k] [IsMulCommutative k] [Monoid G] [IsMulCommutative G] [MulSemiringAction G k]
-    [SMulCommClass G k k] : CommSemiring (SkewMonoidAlgebra k G) where
-  mul_comm a b := by
+    [SMulCommClass G k k] : IsMulCommutative (SkewMonoidAlgebra k G) where
+  is_comm.comm a b := by
     have hgk (g : G) (r : k) : g • r = r := by
       rw [← Algebra.algebraMap_self_apply r, smul_algebraMap g r]
     simp only [mul_def, hgk]

@@ -36,7 +36,8 @@ dirichlet character, multiplicative character
 
 /-- The type of Dirichlet characters of level `n`. -/
 @[wikidata Q1063579]
-abbrev DirichletCharacter (R : Type*) [MonoidWithZero R] [IsMulCommutative R] (n : ℕ) := MulChar (ZMod n) R
+abbrev DirichletCharacter (R : Type*) [MonoidWithZero R] [IsMulCommutative R] (n : ℕ) :=
+    MulChar (ZMod n) R
 
 open MulChar
 
@@ -272,7 +273,7 @@ lemma eq_one_iff_conductor_eq_one [NeZero n] : χ = 1 ↔ conductor χ = 1 := by
 lemma conductor_eq_zero_iff_level_eq_zero : conductor χ = 0 ↔ n = 0 := by
   refine ⟨?_, ?_⟩
   · contrapose!
-    exact fun h ↦ @conductor_ne_zero _ _ _ χ ⟨h⟩
+    exact fun h ↦ @conductor_ne_zero _ _ _ _ χ ⟨h⟩
   · rintro rfl
     exact Nat.sInf_eq_zero.mpr <| Or.inl <| level_mem_conductorSet χ
 
@@ -319,7 +320,7 @@ lemma primitiveCharacter_isPrimitive : IsPrimitive (χ.primitiveCharacter) := by
 
 lemma primitiveCharacter_one [NeZero n] : (1 : DirichletCharacter R n).primitiveCharacter = 1 := by
   have : NeZero (conductor (1 : DirichletCharacter R n)) :=
-    ⟨@conductor_one R _ n _ ▸ Nat.one_ne_zero⟩
+    ⟨@conductor_one R _ _ n _ ▸ Nat.one_ne_zero⟩
   rw [eq_one_iff_conductor_eq_one,
     (isPrimitive_def _).1 (1 : DirichletCharacter R n).primitiveCharacter_isPrimitive,
     conductor_one]

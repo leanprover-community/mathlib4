@@ -134,21 +134,23 @@ protected abbrev Function.Surjective.monoidWithZero [Zero M₀'] [Mul M₀'] [On
     MonoidWithZero M₀' :=
   { hf.monoid f one mul npow, hf.mulZeroClass f zero mul with }
 
-/-- Pull back a `CommMonoidWithZero` along an injective function.
-See note [reducible non-instances]. -/
-protected abbrev Function.Injective.commMonoidWithZero [Zero M₀'] [Mul M₀'] [One M₀'] [Pow M₀' ℕ]
-    [MonoidWithZero M₀] [IsMulCommutative M₀] (f : M₀' → M₀) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
-    (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
-    CommMonoidWithZero M₀' :=
-  { hf.commMonoid f one mul npow, hf.mulZeroClass f zero mul with }
+/-- The commutativity half of a commutative monoid with zero structure pulled back along an
+injective function; the `MonoidWithZero` half is `Function.Injective.monoidWithZero`. -/
+protected theorem Function.Injective.commMonoidWithZero [Zero M₀'] [Mul M₀'] [One M₀']
+    [Pow M₀' ℕ] [MonoidWithZero M₀] [IsMulCommutative M₀] (f : M₀' → M₀) (hf : Injective f)
+    (_zero : f 0 = 0) (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
+    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
+    IsMulCommutative M₀' :=
+  hf.commMonoid f one mul npow
 
-/-- Push forward a `CommMonoidWithZero` along a surjective function.
-See note [reducible non-instances]. -/
-protected abbrev Function.Surjective.commMonoidWithZero [Zero M₀'] [Mul M₀'] [One M₀'] [Pow M₀' ℕ]
-    [MonoidWithZero M₀] [IsMulCommutative M₀] (f : M₀ → M₀') (hf : Surjective f) (zero : f 0 = 0) (one : f 1 = 1)
-    (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
-    CommMonoidWithZero M₀' :=
-  { hf.commMonoid f one mul npow, hf.mulZeroClass f zero mul with }
+/-- The commutativity half of a commutative monoid with zero structure pushed forward along a
+surjective function; the `MonoidWithZero` half is `Function.Surjective.monoidWithZero`. -/
+protected theorem Function.Surjective.commMonoidWithZero [Zero M₀'] [Mul M₀'] [One M₀']
+    [Pow M₀' ℕ] [MonoidWithZero M₀] [IsMulCommutative M₀] (f : M₀ → M₀') (hf : Surjective f)
+    (_zero : f 0 = 0) (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
+    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
+    IsMulCommutative M₀' :=
+  hf.commMonoid f one mul npow
 
 end MonoidWithZero
 
@@ -190,24 +192,23 @@ section CommGroupWithZero
 
 variable [GroupWithZero G₀] [IsMulCommutative G₀]
 
-/-- Pull back a `CommGroupWithZero` along an injective function.
-See note [reducible non-instances]. -/
-protected abbrev Function.Injective.commGroupWithZero [Zero G₀'] [Mul G₀'] [One G₀'] [Inv G₀']
-    [Div G₀'] [Pow G₀' ℕ] [Pow G₀' ℤ] (f : G₀' → G₀) (hf : Injective f) (zero : f 0 = 0)
-    (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
-    (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
-    (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : CommGroupWithZero G₀' :=
-  { hf.groupWithZero f zero one mul inv div npow zpow, hf.commSemigroup f mul with }
+/-- The commutativity half of a commutative group with zero structure pulled back along an
+injective function; the `GroupWithZero` half is `Function.Injective.groupWithZero`. -/
+protected theorem Function.Injective.commGroupWithZero [Zero G₀'] [Mul G₀'] [One G₀'] [Inv G₀']
+    [Div G₀'] [Pow G₀' ℕ] [Pow G₀' ℤ] (f : G₀' → G₀) (hf : Injective f) (_zero : f 0 = 0)
+    (_one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (_inv : ∀ x, f x⁻¹ = (f x)⁻¹)
+    (_div : ∀ x y, f (x / y) = f x / f y) (_npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
+    (_zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : IsMulCommutative G₀' :=
+  hf.isMulCommutative f mul
 
-/-- Push forward a `CommGroupWithZero` along a surjective function.
-See note [reducible non-instances]. -/
-@[instance_reducible]
-protected def Function.Surjective.commGroupWithZero [Zero G₀'] [Mul G₀'] [One G₀'] [Inv G₀']
-    [Div G₀'] [Pow G₀' ℕ] [Pow G₀' ℤ] (h01 : (0 : G₀') ≠ 1) (f : G₀ → G₀') (hf : Surjective f)
-    (zero : f 0 = 0) (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
-    (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y)
-    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) :
-    CommGroupWithZero G₀' :=
-  { hf.groupWithZero h01 f zero one mul inv div npow zpow, hf.commSemigroup f mul with }
+/-- The commutativity half of a commutative group with zero structure pushed forward along a
+surjective function; the `GroupWithZero` half is `Function.Surjective.groupWithZero`. -/
+protected theorem Function.Surjective.commGroupWithZero [Zero G₀'] [Mul G₀'] [One G₀'] [Inv G₀']
+    [Div G₀'] [Pow G₀' ℕ] [Pow G₀' ℤ] (_h01 : (0 : G₀') ≠ 1) (f : G₀ → G₀') (hf : Surjective f)
+    (_zero : f 0 = 0) (_one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
+    (_inv : ∀ x, f x⁻¹ = (f x)⁻¹) (_div : ∀ x y, f (x / y) = f x / f y)
+    (_npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (_zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) :
+    IsMulCommutative G₀' :=
+  hf.isMulCommutative_of_map_mul f mul
 
 end CommGroupWithZero

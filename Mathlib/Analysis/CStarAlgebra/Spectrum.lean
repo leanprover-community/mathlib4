@@ -135,8 +135,9 @@ theorem IsStarNormal.spectralRadius_eq_nnnorm (a : A) [IsStarNormal a] :
     (fun n : ℕ => (‖(a⋆ * a) ^ n‖₊ : ℝ≥0∞) ^ (1 / n : ℝ)) =
       (fun x => x ^ 2) ∘ fun n : ℕ => (‖a ^ n‖₊ : ℝ≥0∞) ^ (1 / n : ℝ) := by
     funext n
-    rw [Function.comp_apply, ← rpow_natCast, ← rpow_mul, mul_comm, rpow_mul, rpow_natCast, ←
-      coe_pow, sq, ← nnnorm_star_mul_self, Commute.mul_pow (star_comm_self' a), star_pow]
+    rw [Function.comp_apply, ← rpow_natCast, ← rpow_mul, mul_comm (1 / (n : ℝ)), rpow_mul,
+      rpow_natCast, ← coe_pow, sq, ← nnnorm_star_mul_self, Commute.mul_pow (star_comm_self' a),
+      star_pow]
   have h₂ :=
     ((ENNReal.continuous_pow 2).tendsto (spectralRadius ℂ a)).comp
       (spectrum.pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius a)

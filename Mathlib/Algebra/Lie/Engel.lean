@@ -157,19 +157,20 @@ be nilpotent is that the image of the map `L → End(M)` consists of nilpotent e
 Engel's theorem `LieAlgebra.isEngelian_of_isNoetherian` states that any Noetherian Lie algebra is
 Engelian. -/
 def LieAlgebra.IsEngelian : Prop :=
-  ∀ (M : Type u₄) [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M] [LieModule R L M],
+  ∀ (M : Type u₄) [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M]
+    [LieModule R L M],
     (∀ x : L, IsNilpotent (toEnd R L M x)) → LieModule.IsNilpotent L M
 
 variable {R L}
 
 theorem LieAlgebra.isEngelian_of_subsingleton [Subsingleton L] : LieAlgebra.IsEngelian R L := by
-  intro M _i1 _i2 _i3 _i4 _h
+  intro M _i1 _i2 _i3 _i4 _i5 _h
   use 1
   simp
 
 theorem Function.Surjective.isEngelian {f : L →ₗ⁅R⁆ L₂} (hf : Function.Surjective f)
     (h : LieAlgebra.IsEngelian.{u₁, u₂, u₄} R L) : LieAlgebra.IsEngelian.{u₁, u₃, u₄} R L₂ := by
-  intro M _i1 _i2 _i3 _i4 h'
+  intro M _i1 _i2 _i3 _i4 _i5 h'
   let : LieRingModule L M := LieRingModule.compLieHom M f
   let : LieModule R L M := compLieHom M f
   have hnp : ∀ x, IsNilpotent (toEnd R L M x) := fun x => h' (f x)
@@ -195,7 +196,7 @@ theorem LieAlgebra.exists_engelian_lieSubalgebra_of_lt_normalizer {K : LieSubalg
     rw [← LieSubalgebra.toSubmodule_le_toSubmodule]
     exact sup_le ((Submodule.span_singleton_le_iff_mem _ _).mpr hx₁) hK₂.le
   refine ⟨K', ?_, lt_iff_le_and_ne.mpr ⟨hKK', fun contra => hx₂ (contra.symm ▸ hxK')⟩⟩
-  intro M _i1 _i2 _i3 _i4 h
+  intro M _i1 _i2 _i3 _i4 _i5 h
   obtain ⟨I, hI₁ : (I : LieSubalgebra R K') = LieSubalgebra.ofLe hKK'⟩ :=
     LieSubalgebra.exists_nested_lieIdeal_ofLe_normalizer hKK' hK'
   have hI₂ : R ∙ (⟨x, hxK'⟩ : K') ⊔ LieSubmodule.toSubmodule I = ⊤ := by
@@ -219,7 +220,7 @@ Note that this implies all traditional forms of Engel's theorem via
 `LieModule.nontrivial_max_triv_of_isNilpotent`, `LieModule.isNilpotent_iff_forall`,
 `LieAlgebra.isNilpotent_iff_forall`. -/
 theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.IsEngelian R L := by
-  intro M _i1 _i2 _i3 _i4 h
+  intro M _i1 _i2 _i3 _i4 _i5 h
   rw [← isNilpotent_range_toEnd_iff R]
   let L' := (toEnd R L M).range
   replace h : ∀ y : L', IsNilpotent (y : Module.End R M) := by

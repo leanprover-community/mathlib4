@@ -57,8 +57,11 @@ namespace GaussianInt
 instance : Repr ℤ[i] :=
   ⟨fun x _ => "⟨" ++ repr x.re ++ ", " ++ repr x.im ++ "⟩"⟩
 
-instance instCommRing : CommRing ℤ[i] :=
+instance instCommRing : Ring ℤ[i] :=
   Zsqrtd.commRing
+
+instance instIsMulCommutative : IsMulCommutative ℤ[i] :=
+  Zsqrtd.isMulCommutative
 
 section
 

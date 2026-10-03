@@ -274,14 +274,14 @@ instance toSemiring {R A} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebr
   S.toSubsemiring.toSemiring
 
 instance toCommSemiring {R A} [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Algebra R A] (S : Subalgebra R A) :
-    CommSemiring S :=
+    IsMulCommutative S :=
   S.toSubsemiring.toCommSemiring
 
 instance toRing {R A} [Ring R] [IsMulCommutative R] [Ring A] [Algebra R A] (S : Subalgebra R A) : Ring S :=
   S.toSubring.toRing
 
 instance toCommRing {R A} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A] (S : Subalgebra R A) :
-    CommRing S :=
+    IsMulCommutative S :=
   S.toSubring.toCommRing
 
 end
@@ -913,11 +913,11 @@ theorem center_toSubring (R A : Type*) [Ring R] [IsMulCommutative R] [Ring A] [A
 
 variable {R A}
 
-instance : CommSemiring (center R A) :=
-  inferInstanceAs (CommSemiring (Subsemiring.center A))
+instance : IsMulCommutative (center R A) :=
+  inferInstanceAs (IsMulCommutative (Subsemiring.center A))
 
-instance {A : Type*} [Ring A] [Algebra R A] : CommRing (center R A) :=
-  inferInstanceAs (CommRing (Subring.center A))
+instance {A : Type*} [Ring A] [Algebra R A] : IsMulCommutative (center R A) :=
+  inferInstanceAs (IsMulCommutative (Subring.center A))
 
 theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :=
   Subsemigroup.mem_center_iff

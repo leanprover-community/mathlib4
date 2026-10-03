@@ -30,8 +30,9 @@ variable [Finite ι]
 variable [Ring R] [IsMulCommutative R] [AddGroup M₂] [IsAddCommutative M₂] [Module R M₂]
 variable [Module.Finite R M₂] [Module.Free R M₂]
 
-private theorem free_and_finite_fin (n : ℕ) (N : Fin n → Type*) [∀ i, AddGroup (N i)] [∀ i, IsAddCommutative (N i)]
-    [∀ i, Module R (N i)] [∀ i, Module.Finite R (N i)] [∀ i, Module.Free R (N i)] :
+private theorem free_and_finite_fin (n : ℕ) (N : Fin n → Type*) [∀ i, AddGroup (N i)]
+    [∀ i, IsAddCommutative (N i)] [∀ i, Module R (N i)] [∀ i, Module.Finite R (N i)]
+    [∀ i, Module.Free R (N i)] :
     Module.Free R (MultilinearMap R N M₂) ∧ Module.Finite R (MultilinearMap R N M₂) := by
   induction n with
   | zero =>
@@ -57,7 +58,7 @@ variable [∀ i, Module.Finite R (M₁ i)] [∀ i, Module.Free R (M₁ i)]
 private theorem free_and_finite :
     Module.Free R (MultilinearMap R M₁ M₂) ∧ Module.Finite R (MultilinearMap R M₁ M₂) := by
   cases nonempty_fintype ι
-  have := @free_and_finite_fin R M₂ _ _ _ _ _ (Fintype.card ι)
+  have := @free_and_finite_fin R M₂ _ _ _ _ _ _ _ (Fintype.card ι)
     (fun x => M₁ ((Fintype.equivFin ι).symm x))
   obtain ⟨l, r⟩ := this
   have e := domDomCongrLinearEquiv' R R M₁ M₂ (Fintype.equivFin ι)

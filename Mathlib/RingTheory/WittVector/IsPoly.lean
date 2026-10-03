@@ -153,15 +153,15 @@ class IsPoly (f : ∀ ⦃R⦄ [Ring R] [IsMulCommutative R], WittVector p R → 
       ∀ ⦃R⦄ [Ring R] [IsMulCommutative R] (x : 𝕎 R), (f x).coeff = fun n => aeval x.coeff (φ n)
 
 /-- The identity function on Witt vectors is a polynomial function. -/
-instance idIsPoly : IsPoly p fun _ _ => id :=
+instance idIsPoly : IsPoly p fun _ _ _ => id :=
   ⟨⟨X, by intros; simp only [aeval_X, id]⟩⟩
 
-instance idIsPolyI' : IsPoly p fun _ _ a => a :=
+instance idIsPolyI' : IsPoly p fun _ _ _ a => a :=
   WittVector.idIsPoly _
 
 namespace IsPoly
 
-instance : Inhabited (IsPoly p fun _ _ => id) :=
+instance : Inhabited (IsPoly p fun _ _ _ => id) :=
   ⟨WittVector.idIsPoly p⟩
 
 variable {p}
@@ -193,7 +193,7 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly p f) (hg : IsPoly p g)
 
 /-- The composition of polynomial functions is polynomial. -/
 instance comp {g f} [hg : IsPoly p g] [hf : IsPoly p f] :
-    IsPoly p fun R _Rcr => @g R _Rcr ∘ @f R _Rcr := by
+    IsPoly p fun R _Rcr _Rc => @g R _Rcr _Rc ∘ @f R _Rcr _Rc := by
   obtain ⟨φ, hf⟩ := hf
   obtain ⟨ψ, hg⟩ := hg
   use fun n => bind₁ φ (ψ n)
@@ -222,7 +222,7 @@ variable {p}
 
 /-- The composition of polynomial functions is polynomial. -/
 instance IsPoly₂.comp {h f g} [hh : IsPoly₂ p h] [hf : IsPoly p f] [hg : IsPoly p g] :
-    IsPoly₂ p fun _ _Rcr x y => h (f x) (g y) := by
+    IsPoly₂ p fun _ _Rcr _Rc x y => h (f x) (g y) := by
   obtain ⟨φ, hf⟩ := hf
   obtain ⟨ψ, hg⟩ := hg
   obtain ⟨χ, hh⟩ := hh
@@ -239,7 +239,7 @@ instance IsPoly₂.comp {h f g} [hh : IsPoly₂ p h] [hf : IsPoly p f] [hg : IsP
 
 /-- The composition of a polynomial function with a binary polynomial function is polynomial. -/
 instance IsPoly.comp₂ {g f} [hg : IsPoly p g] [hf : IsPoly₂ p f] :
-    IsPoly₂ p fun _ _Rcr x y => g (f x y) := by
+    IsPoly₂ p fun _ _Rcr _Rc x y => g (f x y) := by
   obtain ⟨φ, hf⟩ := hf
   obtain ⟨ψ, hg⟩ := hg
   use fun n => bind₁ φ (ψ n)
@@ -247,7 +247,7 @@ instance IsPoly.comp₂ {g f} [hg : IsPoly p g] [hf : IsPoly₂ p f] :
   simp only [peval, aeval_bind₁, hg, hf]
 
 /-- The diagonal `fun x ↦ f x x` of a polynomial function `f` is polynomial. -/
-instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun _ _Rcr x => f x x := by
+instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun _ _Rcr _Rc x => f x x := by
   obtain ⟨φ, hf⟩ := hf
   refine ⟨⟨fun n => bind₁ (uncurry ![X, X]) (φ n), ?_⟩⟩
   intros; funext n
@@ -257,7 +257,7 @@ instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun _ _Rcr x => f x 
   fin_cases i <;> simp
 
 /-- The additive negation is a polynomial function on Witt vectors. -/
-instance negIsPoly [Fact p.Prime] : IsPoly p fun R _ => @Neg.neg (𝕎 R) _ :=
+instance negIsPoly [Fact p.Prime] : IsPoly p fun R _ _ => @Neg.neg (𝕎 R) _ :=
   ⟨⟨fun n => rename Prod.snd (wittNeg p n), by
       intros; funext n
       rw [neg_coeff, aeval_eq_eval₂Hom, eval₂Hom_rename]
@@ -269,7 +269,7 @@ section ZeroOne
 /- To avoid a theory of 0-ary functions (a.k.a. constants)
 we model them as constant unary functions. -/
 /-- The function that is constantly zero on Witt vectors is a polynomial function. -/
-instance zeroIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 0 :=
+instance zeroIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ _ => 0 :=
   ⟨⟨0, by intros; funext n; simp only [Pi.zero_apply, map_zero, zero_coeff]⟩⟩
 
 @[simp]
@@ -292,7 +292,7 @@ theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
   · simp
 
 /-- The function that is constantly one on Witt vectors is a polynomial function. -/
-instance oneIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 1 :=
+instance oneIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ _ => 1 :=
   ⟨⟨onePoly, by
       intros; funext n; cases n
       · simp only [one_coeff_zero, onePoly, ite_true, map_one]
@@ -303,11 +303,11 @@ instance oneIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 1 :=
 end ZeroOne
 
 /-- Addition of Witt vectors is a polynomial function. -/
-instance addIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· + ·) :=
+instance addIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ _ => (· + ·) :=
   ⟨⟨wittAdd p, by intros; ext; exact add_coeff _ _ _⟩⟩
 
 /-- Multiplication of Witt vectors is a polynomial function. -/
-instance mulIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· * ·) :=
+instance mulIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ _ => (· * ·) :=
   ⟨⟨wittMul p, by intros; ext; exact mul_coeff _ _ _⟩⟩
 
 -- unfortunately this is not universe polymorphic, merely because `f` isn't
@@ -323,7 +323,7 @@ theorem IsPoly.map [Fact p.Prime] {f} (hf : IsPoly p f) (g : R →+* S) (x : �
 
 namespace IsPoly₂
 
-instance [Fact p.Prime] : Inhabited (IsPoly₂ p (fun _ _ => (· + ·))) :=
+instance [Fact p.Prime] : Inhabited (IsPoly₂ p (fun _ _ _ => (· + ·))) :=
   ⟨addIsPoly₂⟩
 
 theorem ext [Fact p.Prime] {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
@@ -434,11 +434,14 @@ elab_rules : tactic | `(tactic| ghost_calc $[$ids']*) => do
     | throwError "ghost_calc expecting target to be an equality"
   let (``WittVector, #[_, R]) := α.getAppFnArgs
     | throwError "ghost_calc expecting target to be an equality of `WittVector`s"
-  let instR ← Meta.synthInstance (← Meta.mkAppM ``CommRing #[R])
+  let instR ← Meta.synthInstance (← Meta.mkAppM ``Ring #[R])
   unless instR.isFVar do
     throwError "{← Meta.inferType instR} instance is not local"
-  let f ← Meta.mkLambdaFVars (#[R, instR] ++ ids.map .fvar) lhs
-  let g ← Meta.mkLambdaFVars (#[R, instR] ++ ids.map .fvar) rhs
+  let instRc ← Meta.synthInstance (← Meta.mkAppOptM ``IsMulCommutative #[R, none])
+  unless instRc.isFVar do
+    throwError "{← Meta.inferType instRc} instance is not local"
+  let f ← Meta.mkLambdaFVars (#[R, instR, instRc] ++ ids.map .fvar) lhs
+  let g ← Meta.mkLambdaFVars (#[R, instR, instRc] ++ ids.map .fvar) rhs
   let fS ← Elab.Term.exprToSyntax f
   let gS ← Elab.Term.exprToSyntax g
   match idsS with
@@ -453,7 +456,8 @@ elab_rules : tactic | `(tactic| ghost_calc $[$ids']*) => do
   evalTactic <| ← `(tactic| iterate 2 infer_instance)
   let R := mkIdent nm
   evalTactic <| ← `(tactic| clear! $R)
-  evalTactic <| ← `(tactic| intro $(mkIdent nm):ident $(mkIdent (.str nm "_inst")):ident $ids'*)
+  evalTactic <| ← `(tactic| intro $(mkIdent nm):ident $(mkIdent (.str nm "_inst")):ident
+    $(mkIdent (.str nm "_inst_comm")):ident $ids'*)
 
 end Tactic
 

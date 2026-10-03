@@ -62,16 +62,6 @@ theorem nontrivial_iff :
 
 end MonoidWithZero
 
-section CommMonoidWithZero
-
-variable {R : Type*} [MonoidWithZero R] [IsMulCommutative R] {S : Submonoid R} [OreSet S]
-
-instance : CommMonoidWithZero R[S⁻¹] where
-  __ := (inferInstance : MonoidWithZero R[S⁻¹])
-  __ := (inferInstance : CommMonoid R[S⁻¹])
-
-end CommMonoidWithZero
-
 section DistribMulAction
 
 variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S] {X : Type*} [AddMonoid X]
@@ -254,8 +244,8 @@ protected theorem add_comm (x y : X[S⁻¹]) : x + y = y + x := by
   rw [ha', oreDiv_add_char' s' s _ _ ha.symm (ha ▸ (sa * s).2), add_comm]
   congr; ext; exact ha
 
-instance instAddCommMonoidOreLocalization : AddCommMonoid X[S⁻¹] where
-  add_comm := OreLocalization.add_comm
+instance instAddCommMonoidOreLocalization : IsAddCommutative X[S⁻¹] where
+  is_comm := ⟨OreLocalization.add_comm⟩
 
 end AddCommMonoid
 
@@ -290,16 +280,5 @@ instance instAddGroupOreLocalization : AddGroup X[S⁻¹] where
   zsmul := OreLocalization.zsmul
 
 end AddGroup
-
-section AddCommGroup
-
-variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S]
-variable {X : Type*} [AddGroup X] [IsAddCommutative X] [DistribMulAction R X]
-
-instance : AddCommGroup X[S⁻¹] where
-  __ := (inferInstance : AddGroup X[S⁻¹])
-  __ := (inferInstance : AddCommMonoid X[S⁻¹])
-
-end AddCommGroup
 
 end OreLocalization

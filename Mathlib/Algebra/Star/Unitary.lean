@@ -371,8 +371,8 @@ section CommMonoid
 
 variable [Monoid R] [IsMulCommutative R] [StarMul R]
 
-instance : CommGroup (unitary R) :=
-  { (inferInstance : Group (unitary R)), Submonoid.toCommMonoid _ with }
+instance : IsMulCommutative (unitary R) :=
+  Submonoid.toCommMonoid _
 
 theorem mem_iff_star_mul_self {U : R} : U ∈ unitary R ↔ star U * U = 1 :=
   mem_iff.trans <| and_iff_left_of_imp fun h => mul_comm (star U) U ▸ h

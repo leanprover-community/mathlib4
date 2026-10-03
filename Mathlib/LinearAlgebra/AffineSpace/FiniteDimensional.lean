@@ -669,12 +669,12 @@ theorem Collinear.collinear_insert_iff_of_ne {s : Set P} (h : Collinear k s) {p�
   have hv : vectorSpan k (insert p₁ s) = vectorSpan k ({p₁, p₂, p₃} : Set P) := by
     conv_rhs => rw [← direction_affineSpan, ← affineSpan_insert_affineSpan]
     rw [← direction_affineSpan, ← affineSpan_insert_affineSpan, h.affineSpan_eq_of_ne hp₂ hp₃ hp₂p₃]
-  rw [Collinear, Collinear, hv]
+  rw [collinear_iff_rank_le_one, collinear_iff_rank_le_one, hv]
 
 /-- Adding a point in the affine span of a set does not change whether that set is collinear. -/
 theorem collinear_insert_iff_of_mem_affineSpan {s : Set P} {p : P} (h : p ∈ affineSpan k s) :
     Collinear k (insert p s) ↔ Collinear k s := by
-  rw [Collinear, Collinear, vectorSpan_insert_eq_vectorSpan h]
+  rw [collinear_iff_rank_le_one, collinear_iff_rank_le_one, vectorSpan_insert_eq_vectorSpan h]
 
 /-- If a point lies in the affine span of two points, those three points are collinear. -/
 theorem collinear_insert_of_mem_affineSpan_pair {p₁ p₂ p₃ : P} (h : p₁ ∈ line[k, p₂, p₃]) :
@@ -796,7 +796,7 @@ variable {k}
 /-- Adding a point in the affine span of a set does not change whether that set is coplanar. -/
 theorem coplanar_insert_iff_of_mem_affineSpan {s : Set P} {p : P} (h : p ∈ affineSpan k s) :
     Coplanar k (insert p s) ↔ Coplanar k s := by
-  rw [Coplanar, Coplanar, vectorSpan_insert_eq_vectorSpan h]
+  rw [Coplanar, Coplanar, (LinearEquiv.ofEq _ _ (vectorSpan_insert_eq_vectorSpan h)).rank_eq]
 
 end AffineSpace'
 

@@ -287,8 +287,8 @@ set_option backward.privateInPublic.warn false in
 `‖x‖ = sqrt (x * M * xᴴ).trace`. -/
 @[instance_reducible]
 noncomputable def toMatrixSeminormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
-    SeminormedAddCommGroup (Matrix n n 𝕜) :=
-  @InnerProductSpace.Core.toSeminormedAddCommGroup _ _ _ _ _ hM.matrixPreInnerProductSpace
+    SeminormedAddGroup (Matrix n n 𝕜) :=
+  InnerProductSpace.Core.toSeminormedAddCommGroup (c := hM.matrixPreInnerProductSpace)
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -296,7 +296,7 @@ set_option backward.privateInPublic.warn false in
 `‖x‖ = sqrt (x * M * xᴴ).trace`. -/
 @[instance_reducible]
 noncomputable def toMatrixNormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosDef) :
-    NormedAddCommGroup (Matrix n n 𝕜) :=
+    NormedAddGroup (Matrix n n 𝕜) :=
   letI : InnerProductSpace.Core 𝕜 (Matrix n n 𝕜) :=
   { __ := hM.posSemidef.matrixPreInnerProductSpace
     definite x hx := by
@@ -314,7 +314,7 @@ noncomputable def toMatrixNormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosDe
 `⟪x, y⟫ = (y * M * xᴴ).trace`. -/
 @[instance_reducible]
 def toMatrixInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
-    letI : SeminormedAddCommGroup (Matrix n n 𝕜) := M.toMatrixSeminormedAddCommGroup hM
+    letI : SeminormedAddGroup (Matrix n n 𝕜) := M.toMatrixSeminormedAddCommGroup hM
     InnerProductSpace 𝕜 (Matrix n n 𝕜) :=
   InnerProductSpace.ofCore _
 

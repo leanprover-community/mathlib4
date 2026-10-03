@@ -79,9 +79,12 @@ theorem nsmul_f_apply (n : ℕ) (f : C ⟶ D) (i : ι) : (n • f).f i = n • f
 theorem zsmul_f_apply (n : ℤ) (f : C ⟶ D) (i : ι) : (n • f).f i = n • f.f i :=
   rfl
 
-instance : AddCommGroup (C ⟶ D) :=
-  Function.Injective.addCommGroup Hom.f HomologicalComplex.hom_f_injective
+instance : AddGroup (C ⟶ D) :=
+  Function.Injective.addGroup Hom.f HomologicalComplex.hom_f_injective
     (by cat_disch) (by cat_disch) (by cat_disch) (by cat_disch) (by cat_disch) (by cat_disch)
+
+instance : IsAddCommutative (C ⟶ D) :=
+  Function.Injective.isAddCommutative Hom.f HomologicalComplex.hom_f_injective (by cat_disch)
 
 instance : Preadditive (HomologicalComplex V c) where
 

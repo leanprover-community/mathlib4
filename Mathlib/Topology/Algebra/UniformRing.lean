@@ -79,7 +79,8 @@ instance : ContinuousMul (Completion α) where
     exact (di.extend_Z_bilin di this :)
 
 instance ring : Ring (Completion α) :=
-  { AddMonoidWithOne.unary, ((inferInstance : AddCommGroup (Completion α))),
+  { AddMonoidWithOne.unary, ((inferInstance : AddGroup (Completion α))),
+      ((inferInstance : IsAddCommutative (Completion α))),
       ((inferInstance : Mul (Completion α))), ((inferInstance : One (Completion α))) with
     zero_mul a :=
       Completion.induction_on a (isClosed_eq (by fun_prop) continuous_const)
@@ -213,12 +214,11 @@ section CommRing
 
 variable (R : Type*) [Ring R] [IsMulCommutative R] [UniformSpace R] [IsUniformAddGroup R] [IsTopologicalRing R]
 
-instance commRing : CommRing (Completion R) :=
-  { Completion.ring with
-    mul_comm a b :=
-      Completion.induction_on₂ a b
-        (isClosed_eq (by fun_prop) (by fun_prop))
-        fun a b => by rw [← coe_mul, ← coe_mul, mul_comm] }
+instance isMulCommutative : IsMulCommutative (Completion R) :=
+  ⟨⟨fun a b =>
+    Completion.induction_on₂ a b
+      (isClosed_eq (by fun_prop) (by fun_prop))
+      fun a b => by rw [← coe_mul, ← coe_mul, mul_comm]⟩⟩
 
 /-- A shortcut instance for the common case -/
 instance algebra' : Algebra R (Completion R) := by infer_instance

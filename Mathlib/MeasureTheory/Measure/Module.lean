@@ -138,9 +138,12 @@ end SMul
 instance [Monoid R] [MulAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] : MulAction R (Measure α) :=
   Injective.mulAction _ toOuterMeasure_injective smul_toOuterMeasure
 
-instance : AddCommMonoid (Measure α) :=
-  toOuterMeasure_injective.addCommMonoid toOuterMeasure zero_toOuterMeasure add_toOuterMeasure
+instance : AddMonoid (Measure α) :=
+  toOuterMeasure_injective.addMonoid toOuterMeasure zero_toOuterMeasure add_toOuterMeasure
     fun _ _ => smul_toOuterMeasure _ _
+
+instance : IsAddCommutative (Measure α) :=
+  toOuterMeasure_injective.isAddCommutative toOuterMeasure add_toOuterMeasure
 
 /-- Coercion to function as an additive monoid homomorphism. -/
 def coeAddHom : Measure α →+ Set α → ℝ≥0∞ where

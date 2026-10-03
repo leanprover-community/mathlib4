@@ -236,9 +236,8 @@ theorem transcendental_adjoin {s : Set ι} {i : ι} (hi : i ∉ s) :
 
 theorem transcendental_adjoin_iff [Nontrivial A] {s : Set ι} {i : ι} :
     Transcendental (adjoin R (x '' s)) (x i) ↔ i ∉ s := by
-  rw [← Set.disjoint_singleton_right]
-  convert! ← hx.adjoin_iff_disjoint (t := { i })
-  rw [algebraicIndependent_singleton_iff ⟨i, rfl⟩]
+  rw [← Set.disjoint_singleton_right, ← hx.adjoin_iff_disjoint (t := {i}),
+    algebraicIndependent_singleton_iff ⟨i, rfl⟩]
 
 end AlgebraicIndependent
 

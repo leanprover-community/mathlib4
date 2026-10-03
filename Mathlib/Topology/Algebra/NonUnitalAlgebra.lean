@@ -67,18 +67,6 @@ instance isMulCommutative_topologicalClosure [T2Space A] (s : NonUnitalSubalgebr
     [IsMulCommutative s] : IsMulCommutative s.topologicalClosure :=
   s.toSubsemigroup.isMulCommutative_topologicalClosure
 
-open scoped IsMulCommutative in
-/-- If a non-unital subalgebra of a non-unital topological algebra is commutative, then so is its
-topological closure.
-
-See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
-abbrev nonUnitalCommSemiringTopologicalClosure [T2Space A] (s : NonUnitalSubalgebra R A)
-    (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommSemiring s.topologicalClosure :=
-  fast_instance%
-  haveI : IsMulCommutative s := ⟨⟨hs⟩⟩
-  inferInstance
-
 variable [TopologicalSpace B] [NonUnitalSemiring B] [Module R B] [IsTopologicalSemiring B]
     [ContinuousConstSMul R B] (s : NonUnitalSubalgebra R A) {φ : A →ₙₐ[R] B}
 
@@ -118,17 +106,6 @@ instance instIsSemitopologicalRing [IsSemitopologicalRing A] (s : NonUnitalSubal
   s.toNonUnitalSubring.instIsSemitopologicalRing
 
 variable [IsSemitopologicalRing A]
-
-open scoped IsMulCommutative in
-/-- If a non-unital subalgebra of a non-unital topological algebra is commutative, then so is its
-topological closure.
-
-See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
-abbrev nonUnitalCommRingTopologicalClosure [T2Space A] (s : NonUnitalSubalgebra R A)
-    (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommRing s.topologicalClosure :=
-  haveI : IsMulCommutative s := ⟨⟨hs⟩⟩
-  inferInstance
 
 end Ring
 

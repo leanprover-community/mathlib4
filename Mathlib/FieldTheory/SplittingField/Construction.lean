@@ -77,7 +77,7 @@ theorem factor_dvd_of_natDegree_ne_zero {f : K[X]} (hf : f.natDegree ≠ 0) : fa
 lemma isCoprime_iff_aeval_ne_zero (f g : K[X]) : IsCoprime f g ↔ ∀ {A : Type v} [Ring A] [IsMulCommutative A]
     [IsDomain A] [Algebra K A] (a : A), aeval a f ≠ 0 ∨ aeval a g ≠ 0 := by
   refine ⟨fun h => aeval_ne_zero_of_isCoprime h, fun h => isCoprime_of_dvd _ _ ?_ fun x hx _ => ?_⟩
-  · replace h := @h K _ _ _ 0
+  · replace h := @h K _ _ _ _ 0
     contrapose! h
     rw [h.left, h.right, map_zero, and_self]
   · rintro ⟨_, rfl⟩ ⟨_, rfl⟩
@@ -222,7 +222,9 @@ variable (f : K[X])
 variable {S : Type*} [DistribSMul S K] [IsScalarTower S K K] in
 deriving instance SMul S for SplittingField f
 
-instance : CommRing (SplittingField f) := inferInstanceAs <| CommRing (_ ⧸ _)
+instance : Ring (SplittingField f) := inferInstanceAs <| Ring (_ ⧸ _)
+
+instance : IsMulCommutative (SplittingField f) := inferInstanceAs <| IsMulCommutative (_ ⧸ _)
 
 variable {R : Type*} [Semiring R] [IsMulCommutative R] [Algebra R K] in
 deriving instance Algebra R, IsScalarTower R K for SplittingField f
@@ -242,7 +244,7 @@ instance instGroupWithZero : GroupWithZero (SplittingField f) :=
     __ := e.surjective.nontrivial }
 
 instance instField : Field (SplittingField f) where
-  __ := (inferInstance : CommRing (SplittingField f))
+  __ := (inferInstance : Ring (SplittingField f))
   __ := instGroupWithZero f
   nnratCast q := algebraMap K _ q
   ratCast q := algebraMap K _ q

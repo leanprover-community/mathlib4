@@ -208,7 +208,8 @@ theorem tendsto_vectorMeasure_iInter_atTop_nat
 
 /-- If two vector measures give the same mass to the whole space and coincide on a
 generating π-system, then they coincide. -/
-theorem ext_of_generateFrom {M : Type*} [AddGroup M] [IsAddCommutative M] [TopologicalSpace M] [T2Space M]
+theorem ext_of_generateFrom {M : Type*} [AddGroup M] [IsAddCommutative M] [TopologicalSpace M]
+    [T2Space M]
     {X : Type*} {mX : MeasurableSpace X} {μ ν : VectorMeasure X M}
     (C : Set (Set X)) (hμν : ∀ s ∈ C, μ s = ν s)
     (hA : mX = MeasurableSpace.generateFrom C) (hC : IsPiSystem C)
@@ -294,8 +295,11 @@ instance : IsAddApply (VectorMeasure α M) (Set α) M where
 
 @[deprecated (since := "2026-06-10")] protected alias add_apply := add_apply
 
-instance instAddCommMonoid : AddCommMonoid (VectorMeasure α M) :=
-  fast_instance% FunLike.addCommMonoid
+instance instAddMonoid : AddMonoid (VectorMeasure α M) :=
+  fast_instance% FunLike.addMonoid
+
+instance instAddCommMonoid : IsAddCommutative (VectorMeasure α M) :=
+  FunLike.addCommMonoid
 
 @[deprecated (since := "2026-06-10")] alias coeFnAddMonoidHom := FunLike.coeAddMonoidHom
 
@@ -307,7 +311,8 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable {M : Type*} [AddGroup M] [IsAddCommutative M] [TopologicalSpace M] [IsTopologicalAddGroup M]
+variable {M : Type*} [AddGroup M] [IsAddCommutative M] [TopologicalSpace M]
+  [IsTopologicalAddGroup M]
 
 /-- The negative of a vector measure is a vector measure. -/
 def neg (v : VectorMeasure α M) : VectorMeasure α M where
@@ -341,7 +346,9 @@ instance : IsSubApply (VectorMeasure α M) (Set α) M where
 
 @[deprecated (since := "2026-06-10")] protected alias sub_apply := sub_apply
 
-instance instAddCommGroup : AddCommGroup (VectorMeasure α M) := fast_instance% FunLike.addCommGroup
+instance instAddGroup : AddGroup (VectorMeasure α M) := fast_instance% FunLike.addGroup
+
+instance instAddCommGroup : IsAddCommutative (VectorMeasure α M) := FunLike.addCommGroup
 
 end AddCommGroup
 

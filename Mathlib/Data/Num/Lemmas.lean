@@ -355,7 +355,7 @@ instance addMonoidWithOne : AddMonoidWithOne Num :=
     natCast_zero := ofNat'_zero
     natCast_succ := fun _ => ofNat'_succ }
 
-instance commSemiring : CommSemiring Num where
+instance commSemiring : Semiring Num where
   __ := Num.addMonoid
   __ := Num.addMonoidWithOne
   npow := @npowRec Num ⟨1⟩ ⟨(· * ·)⟩
@@ -363,11 +363,12 @@ instance commSemiring : CommSemiring Num where
   zero_mul := by transfer
   mul_one := by transfer
   one_mul := by transfer
-  add_comm := by transfer
-  mul_comm := by transfer
+  is_comm := ⟨by transfer⟩
   mul_assoc := by transfer
   left_distrib := by transfer
   right_distrib := by transfer
+
+instance isMulCommutative : IsMulCommutative Num := ⟨⟨by transfer⟩⟩
 
 instance partialOrder : PartialOrder Num where
   lt_iff_le_not_ge := by transfer
@@ -520,16 +521,18 @@ example (n : PosNum) (m : PosNum) : n ≤ n + m := by transfer
 scoped macro (name := transfer) "transfer" : tactic => `(tactic|
     ((repeat intro (_ : PosNum)); transfer_rw; try grind))
 
-instance addCommSemigroup : AddCommSemigroup PosNum where
+instance addCommSemigroup : AddSemigroup PosNum where
   add_assoc := by transfer
-  add_comm := by transfer
 
-instance commMonoid : CommMonoid PosNum where
+instance isAddCommutative : IsAddCommutative PosNum := ⟨⟨by transfer⟩⟩
+
+instance commMonoid : Monoid PosNum where
   npow := @npowRec PosNum ⟨1⟩ ⟨(· * ·)⟩
   mul_assoc := by transfer
   one_mul := by transfer
   mul_one := by transfer
-  mul_comm := by transfer
+
+instance isMulCommutative : IsMulCommutative PosNum := ⟨⟨by transfer⟩⟩
 
 instance distrib : Distrib PosNum where
   left_distrib := by transfer

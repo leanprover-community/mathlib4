@@ -124,7 +124,7 @@ theorem Submodule.FG.rTensor.directLimit_apply [DecidableEq {P : Submodule R M /
     (Submodule.FG.rTensor.directLimit R M N)
       ((Module.DirectLimit.of R {P : Submodule R M // P.FG} (fun P ↦ P.val ⊗[R] N)
         (fun ⦃_ _⦄ h ↦ (Submodule.inclusion h).rTensor N) P) u)
-      = (rTensor N (Submodule.subtype P)) u := by
+      = (rTensor N (Submodule.subtype P.val)) u := by
   suffices (Submodule.FG.rTensor.directLimit R M N).toLinearMap.comp
       (Module.DirectLimit.of R {P : Submodule R M // P.FG} (fun P ↦ P.val ⊗[R] N)
         (fun _ _ hPQ ↦ rTensor N (Submodule.inclusion hPQ)) P)

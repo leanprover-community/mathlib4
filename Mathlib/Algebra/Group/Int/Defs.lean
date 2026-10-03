@@ -25,8 +25,7 @@ namespace Int
 
 /-! ### Instances -/
 
-instance instCommMonoid : CommMonoid ℤ where
-  mul_comm := Int.mul_comm
+instance instMonoid : Monoid ℤ where
   mul_one := Int.mul_one
   one_mul := Int.one_mul
   npow n x := x ^ n
@@ -34,8 +33,9 @@ instance instCommMonoid : CommMonoid ℤ where
   npow_succ _ _ := by simp [Int.pow_succ]
   mul_assoc := Int.mul_assoc
 
-instance instAddCommGroup : AddCommGroup ℤ where
-  add_comm := Int.add_comm
+instance instIsMulCommutative : IsMulCommutative ℤ := ⟨⟨Int.mul_comm⟩⟩
+
+instance instAddGroup : AddGroup ℤ where
   add_assoc := Int.add_assoc
   add_zero := Int.add_zero
   zero_add := Int.zero_add
@@ -50,6 +50,8 @@ instance instAddCommGroup : AddCommGroup ℤ where
     simp only [HSMul.hSMul, SMul.smul, natCast_succ, Int.add_mul, Int.add_comm, Int.one_mul]
   zsmul_neg' m n := by simp only [HSMul.hSMul, SMul.smul, negSucc_eq, natCast_succ, Int.neg_mul]
   sub_eq_add_neg _ _ := Int.sub_eq_add_neg
+
+instance instIsAddCommutative : IsAddCommutative ℤ := ⟨⟨Int.add_comm⟩⟩
 
 -- This instance can also be found from the `LinearOrderedCommMonoidWithZero ℤ` instance by
 -- typeclass search, but it is better practice to not rely on algebraic order theory to prove
@@ -68,13 +70,8 @@ these instances non-computably.
 section
 set_option linter.style.whitespace false -- manual alignment is not recognised
 
-instance instAddCommMonoid    : AddCommMonoid ℤ    := by infer_instance
 instance instAddMonoid        : AddMonoid ℤ        := by infer_instance
-instance instMonoid           : Monoid ℤ           := by infer_instance
-instance instCommSemigroup    : CommSemigroup ℤ    := by infer_instance
 instance instSemigroup        : Semigroup ℤ        := by infer_instance
-instance instAddGroup         : AddGroup ℤ         := by infer_instance
-instance instAddCommSemigroup : AddCommSemigroup ℤ := by infer_instance
 instance instAddSemigroup     : AddSemigroup ℤ     := by infer_instance
 
 end

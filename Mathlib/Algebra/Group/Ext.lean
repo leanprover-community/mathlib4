@@ -51,17 +51,6 @@ theorem Monoid.ext {M : Type u} ⦃m₁ m₂ : Monoid M⦄
   congr
 
 @[to_additive]
-theorem CommMonoid.toMonoid_injective {M : Type u} :
-    Function.Injective (@CommMonoid.toMonoid M) := by
-  rintro ⟨⟩ ⟨⟩ h
-  congr
-
-@[to_additive (attr := ext)]
-theorem CommMonoid.ext {M : Type*} ⦃m₁ m₂ : CommMonoid M⦄
-    (h_mul : (letI := m₁; HMul.hMul : M → M → M) = (letI := m₂; HMul.hMul : M → M → M)) : m₁ = m₂ :=
-  CommMonoid.toMonoid_injective <| Monoid.ext h_mul
-
-@[to_additive]
 theorem LeftCancelMonoid.toMonoid_injective {M : Type u} :
     Function.Injective (@LeftCancelMonoid.toMonoid M) := by
   rintro @⟨@⟨⟩⟩ @⟨@⟨⟩⟩ h
@@ -105,18 +94,6 @@ theorem CancelMonoid.toRightCancelMonoid_injective {M : Type u} :
   exact congrArg (fun m : Monoid M => (letI := m; HMul.hMul : M → M → M)) <|
     congrArg (@RightCancelMonoid.toMonoid M) h
 
-@[to_additive]
-theorem CancelCommMonoid.toCommMonoid_injective {M : Type u} :
-    Function.Injective (@CancelCommMonoid.toCommMonoid M) := by
-  rintro @⟨@⟨@⟨⟩⟩⟩ @⟨@⟨@⟨⟩⟩⟩ h
-  grind
-
-@[to_additive (attr := ext)]
-theorem CancelCommMonoid.ext {M : Type*} ⦃m₁ m₂ : CancelCommMonoid M⦄
-    (h_mul : (letI := m₁; HMul.hMul : M → M → M) = (letI := m₂; HMul.hMul : M → M → M)) :
-    m₁ = m₂ :=
-  CancelCommMonoid.toCommMonoid_injective <| CommMonoid.ext h_mul
-
 @[to_additive (attr := ext)]
 theorem DivInvMonoid.ext {M : Type*} ⦃m₁ m₂ : DivInvMonoid M⦄
     (h_mul : (letI := m₁; HMul.hMul : M → M → M) = (letI := m₂; HMul.hMul : M → M → M))
@@ -153,12 +130,3 @@ theorem Group.ext {G : Type*} ⦃g₁ g₂ : Group G⦄
     Group.toDivInvMonoid_injective
       (DivInvMonoid.ext h_mul
         (funext <| @MonoidHom.map_inv G G g₁ g₂.toDivisionMonoid f))
-
-@[to_additive]
-lemma CommGroup.toGroup_injective {G : Type*} : Injective (@CommGroup.toGroup G) := by
-  rintro ⟨⟩ ⟨⟩ ⟨⟩; rfl
-
-@[to_additive (attr := ext)]
-theorem CommGroup.ext {G : Type*} ⦃g₁ g₂ : CommGroup G⦄
-    (h_mul : (letI := g₁; HMul.hMul : G → G → G) = (letI := g₂; HMul.hMul : G → G → G)) : g₁ = g₂ :=
-  CommGroup.toGroup_injective <| Group.ext h_mul

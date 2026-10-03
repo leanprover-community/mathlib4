@@ -499,12 +499,14 @@ instance : Add (LieSubalgebra R L) where add := max
 
 instance : Zero (LieSubalgebra R L) where zero := ⊥
 
-instance addCommMonoid : AddCommMonoid (LieSubalgebra R L) where
+instance addCommMonoid : AddMonoid (LieSubalgebra R L) where
   add_assoc := sup_assoc
   zero_add := bot_sup_eq
   add_zero := sup_bot_eq
-  add_comm := sup_comm
   nsmul := nsmulRec
+
+instance isAddCommutative : IsAddCommutative (LieSubalgebra R L) :=
+  ⟨⟨sup_comm⟩⟩
 
 instance : IsOrderedAddMonoid (LieSubalgebra R L) where
   add_le_add_left _ _ := sup_le_sup_right

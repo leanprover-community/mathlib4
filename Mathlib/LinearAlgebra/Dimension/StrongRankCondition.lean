@@ -378,7 +378,7 @@ theorem rank_span {v : ι → M} (hv : LinearIndependent R v) :
     Module.rank R ↑(span R (range v)) = #(range v) := by
   have := nontrivial_of_invariantBasisNumber R
   rw [← Cardinal.lift_inj, ← (Basis.span hv).mk_eq_rank,
-    Cardinal.mk_range_eq_of_injective (@LinearIndependent.injective ι R M v _ _ _ _ hv)]
+    Cardinal.mk_range_eq_of_injective (@LinearIndependent.injective ι R M v _ _ _ _ _ hv)]
 
 theorem rank_span_set {s : Set M} (hs : LinearIndepOn R id s) : Module.rank R ↑(span R s) = #s := by
   rw [← @ofPred_mem_eq _ s, ← Subtype.range_coe_subtype]

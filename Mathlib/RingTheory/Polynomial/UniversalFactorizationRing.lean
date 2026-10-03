@@ -311,15 +311,16 @@ lemma universalFactorizationMapPresentation_jacobian :
   let := (universalFactorizationMap R n m k hn).toAlgebra
   rw [Algebra.PreSubmersivePresentation.jacobian_eq_jacobiMatrix_det,
     MvPolynomial.universalFactorizationMapPresentation_jacobiMatrix]
-  simp only [AlgHom.toRingHom_eq_coe, Matrix.det_neg, Matrix.det_transpose, Matrix.det_reindex_self,
+  simp -dsimp only [AlgHom.toRingHom_eq_coe, Matrix.det_neg, Matrix.det_transpose,
+    Matrix.det_reindex_self,
     Algebra.Generators.algebraMap_apply, ← Polynomial.resultant.eq_def,
     Fintype.card_fin, map_mul, map_pow, map_neg, map_one]
   congr 1
   rw [← (aeval _).coe_toRingHom, ← Polynomial.resultant_map_map,
     Polynomial.map_map, Polynomial.map_map]
   congr 2
-  · ext <;> simp [-algebraMap_apply, -AddMonoidAlgebra.coe_algebraMap, ← algebraMap_eq]
-  · ext <;> simp [-algebraMap_apply, -AddMonoidAlgebra.coe_algebraMap, ← algebraMap_eq]
+  · ext <;> simp -dsimp [-algebraMap_apply, -AddMonoidAlgebra.coe_algebraMap, ← algebraMap_eq]
+  · ext <;> simp -dsimp [-algebraMap_apply, -AddMonoidAlgebra.coe_algebraMap, ← algebraMap_eq]
   · rw [(monic_freeMonic ..).natDegree_map, natDegree_freeMonic]
   · rw [(monic_freeMonic ..).natDegree_map, natDegree_freeMonic]
 
@@ -392,7 +393,7 @@ def UniversalFactorizationRing : Type _ :=
   letI := (MvPolynomial.universalFactorizationMap R n m k hn).toAlgebra
   letI := ((MvPolynomial.mapEquivMonic R _ n).symm p).toAlgebra
   R ⊗[MvPolynomial (Fin n) R] (MvPolynomial (Fin m) R ⊗[R] MvPolynomial (Fin k) R)
-  deriving CommRing, Algebra R
+  deriving Ring, IsMulCommutative, Algebra R
 
 local notation "𝓡" => UniversalFactorizationRing m k hn p
 
@@ -486,7 +487,11 @@ instance : Module.Finite R 𝓡 :=
   letI := (MvPolynomial.universalFactorizationMap R n m k hn).toAlgebra
   letI := ((MvPolynomial.mapEquivMonic R _ n).symm p).toAlgebra
   letI : Module.Finite _ _ := MvPolynomial.finite_universalFactorizationMap R n m k hn
-  inferInstanceAs (Module.Finite R (R ⊗[_] _))
+  letI : Semiring
+    (R ⊗[MvPolynomial (Fin n) R] (MvPolynomial (Fin m) R ⊗[R] MvPolynomial (Fin k) R)) :=
+    inferInstance
+  inferInstanceAs (Module.Finite R
+    (R ⊗[MvPolynomial (Fin n) R] (MvPolynomial (Fin m) R ⊗[R] MvPolynomial (Fin k) R)))
 
 set_option backward.isDefEq.respectTransparency false in
 attribute [-instance] leftModule in
@@ -495,7 +500,8 @@ instance : Algebra.FinitePresentation R 𝓡 :=
   letI := ((MvPolynomial.mapEquivMonic R _ n).symm p).toAlgebra
   letI : Algebra.FinitePresentation _ _ :=
     MvPolynomial.finitePresentation_universalFactorizationMap R n m k hn
-  inferInstanceAs (Algebra.FinitePresentation R (R ⊗[_] _))
+  inferInstanceAs (Algebra.FinitePresentation R
+    (R ⊗[MvPolynomial (Fin n) R] (MvPolynomial (Fin m) R ⊗[R] MvPolynomial (Fin k) R)))
 
 /-- The presentation of `UniversalFactorizationRing`.
 Its jacobian is the resultant of the two factors (up to sign). -/
@@ -690,7 +696,8 @@ lemma _root_.Algebra.exists_etale_bijective_residueFieldMap_and_map_eq_mul_and_i
     (P : Ideal R) [P.IsPrime] (p : R[X])
     (f g : P.ResidueField[X]) (hp : p.Monic) (hf : f.Monic) (hg : g.Monic)
     (H : p.map (algebraMap R _) = f * g) (Hpq : IsCoprime f g) :
-    ∃ (R' : Type u) (_ : CommRing R') (_ : Algebra R R') (_ : Algebra.Etale R R')
+    ∃ (R' : Type u) (_ : Ring R') (_ : IsMulCommutative R') (_ : Algebra R R')
+      (_ : Algebra.Etale R R')
       (Q : Ideal R') (_ : Q.IsPrime) (_ : Q.LiesOver P) (f' g' : R'[X]),
     Function.Bijective (Ideal.ResidueField.mapₐ P Q (Algebra.ofId _ _) (Ideal.over_def Q P)) ∧
     f'.Monic ∧ g'.Monic ∧ p.map (algebraMap R R') = f' * g' ∧ IsCoprime f' g' ∧
@@ -702,7 +709,7 @@ lemma _root_.Algebra.exists_etale_bijective_residueFieldMap_and_map_eq_mul_and_i
     exists_liesOver_residueFieldMap_bijective f.natDegree g.natDegree
     (by simpa [hf.natDegree_mul hg, hp.natDegree_map] using congr(($H).natDegree)) (.mk p hp rfl)
     P (.mk f hf rfl) (.mk g hg rfl) H Hpq
-  exact ⟨_, _, _, inferInstance, Q, ‹_›, ‹_›, (factor₁ ..).1, (factor₂ ..).1, h₁,
+  exact ⟨_, _, _, _, inferInstance, Q, ‹_›, ‹_›, (factor₁ ..).1, (factor₂ ..).1, h₁,
     (factor₁ ..).monic, (factor₂ ..).monic, (factor₁_mul_factor₂ ..).symm,
     isCoprime_factor₁_factor₂ .., congr(($h₂).1), congr(($h₃).1)⟩
 

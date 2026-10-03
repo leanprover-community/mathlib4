@@ -75,13 +75,13 @@ theorem embeddingPiTangent_injective (f : SmoothBumpCovering ι I M) :
 
 theorem comp_embeddingPiTangent_mfderiv (x : M) (hx : x ∈ s) :
     ((ContinuousLinearMap.fst ℝ E ℝ).comp
-            (@ContinuousLinearMap.proj ℝ _ ι (fun _ => E × ℝ) _ _ (fun _ => inferInstance)
+            (@ContinuousLinearMap.proj ℝ _ ι (fun _ => E × ℝ) _ _ _ (fun _ => inferInstance)
               (f.ind x hx))).comp
         (mfderiv I 𝓘(ℝ, ι → E × ℝ) f.embeddingPiTangent x) =
       mfderiv% (chartAt H (f.c (f.ind x hx))) x := by
   set L :=
     (ContinuousLinearMap.fst ℝ E ℝ).comp
-      (@ContinuousLinearMap.proj ℝ _ ι (fun _ => E × ℝ) _ _ (fun _ => inferInstance) (f.ind x hx))
+      (@ContinuousLinearMap.proj ℝ _ ι (fun _ => E × ℝ) _ _ _ (fun _ => inferInstance) (f.ind x hx))
   have := L.hasMFDerivAt.comp x
     (f.embeddingPiTangent.contMDiff.mdifferentiableAt (by simp)).hasMFDerivAt
   convert! hasMFDerivAt_unique this _

@@ -214,7 +214,7 @@ theorem IsIntegral.of_mem_closure' (G : Set A) (hG : ∀ x ∈ G, IsIntegral R x
 
 theorem IsIntegral.of_mem_closure'' {S : Type*} [Ring S] [IsMulCommutative S] {f : R →+* S} (G : Set S)
     (hG : ∀ x ∈ G, f.IsIntegralElem x) : ∀ x ∈ Subring.closure G, f.IsIntegralElem x := fun x hx =>
-  @IsIntegral.of_mem_closure' R S _ _ f.toAlgebra G hG x hx
+  @IsIntegral.of_mem_closure' R S _ _ _ _ f.toAlgebra G hG x hx
 
 theorem IsIntegral.pow {x : B} (h : IsIntegral R x) (n : ℕ) : IsIntegral R (x ^ n) :=
   .of_mem_of_fg _ h.fg_adjoin_singleton _ <|

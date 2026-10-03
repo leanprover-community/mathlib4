@@ -243,9 +243,9 @@ namespace IsDedekindDomainInv
 variable (K) [IsDomain A] (h : IsDedekindDomainInv A) {I J : FractionalIdeal A⁰ K}
 include h
 
-/-- `IsDedekindDomainInv A` implies that fractional ideals over it form a commutative group with
-zero. -/
-noncomputable abbrev commGroupWithZero : CommGroupWithZero (FractionalIdeal A⁰ K) where
+/-- `IsDedekindDomainInv A` implies that fractional ideals over it form a group with zero
+(commutative, via the `IsMulCommutative` instance on fractional ideals). -/
+noncomputable abbrev commGroupWithZero : GroupWithZero (FractionalIdeal A⁰ K) where
   inv_zero := inv_zero' _
   mul_inv_cancel := isDedekindDomainInv_iff.mp h
   div_eq_mul_inv I J := by
@@ -324,8 +324,8 @@ theorem isDedekindDomain_iff_isDedekindDomainInv [IsDomain A] :
     rw [mul_inv_cancel_iff]
     exact ⟨spanSingleton A⁰ (algebraMap _ _ a) * (J : FractionalIdeal A⁰ _)⁻¹, h₂⟩
   subst hJ
-  rw [mul_assoc, mul_left_comm (J : FractionalIdeal A⁰ _), coe_ideal_mul_inv, mul_one,
-    spanSingleton_mul_spanSingleton, inv_mul_cancel₀, spanSingleton_one]
+  rw [mul_assoc, mul_left_comm (J : FractionalIdeal A⁰ (FractionRing A)), coe_ideal_mul_inv,
+    mul_one, spanSingleton_mul_spanSingleton, inv_mul_cancel₀, spanSingleton_one]
   · exact mt ((injective_iff_map_eq_zero (algebraMap A _)).mp (IsFractionRing.injective A _) _) ha
   · exact coeIdeal_ne_zero.mp (right_ne_zero_of_mul hI)
 
@@ -346,7 +346,7 @@ namespace FractionalIdeal
 
 noncomputable instance semifield : Semifield (FractionalIdeal A⁰ K) where
   __ := coeIdeal_injective.nontrivial
-  __ : CommSemiring (FractionalIdeal A⁰ K) := inferInstance
+  __ : Semiring (FractionalIdeal A⁰ K) := inferInstance
   inv_zero := inv_zero' K
   mul_inv_cancel := isDedekindDomain_iff_mul_inv_cancel.mp ‹_›
   div_eq_mul_inv := by

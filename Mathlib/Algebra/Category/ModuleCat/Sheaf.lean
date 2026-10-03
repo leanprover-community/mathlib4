@@ -126,7 +126,10 @@ noncomputable def toSheafCompSheafToPresheafIso :
 instance : (toSheaf.{v} R).Faithful :=
   Functor.Faithful.of_comp_iso (toSheafCompSheafToPresheafIso.{v} R)
 
-instance (M N : SheafOfModules.{v} R) : AddCommGroup (M ⟶ N) :=
+instance (M N : SheafOfModules.{v} R) : AddGroup (M ⟶ N) :=
+  (fullyFaithfulForget R).homEquiv.addGroup
+
+instance (M N : SheafOfModules.{v} R) : IsAddCommutative (M ⟶ N) :=
   (fullyFaithfulForget R).homEquiv.addCommGroup
 
 @[simp]

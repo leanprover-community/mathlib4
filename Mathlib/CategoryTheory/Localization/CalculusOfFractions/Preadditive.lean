@@ -220,18 +220,24 @@ variable (L X Y)
 /-- The abelian group structure on `L.obj X ⟶ L.obj Y` when `L : C ⥤ D` is a localization
 functor, `C` is preadditive and there is a left calculus of fractions. -/
 @[instance_reducible]
-noncomputable def addCommGroup' : AddCommGroup (L.obj X ⟶ L.obj Y) := by
+noncomputable def addCommGroup' : AddGroup (L.obj X ⟶ L.obj Y) := by
   letI : Zero (L.obj X ⟶ L.obj Y) := ⟨L.map 0⟩
   letI : Add (L.obj X ⟶ L.obj Y) := ⟨add' W⟩
   letI : Neg (L.obj X ⟶ L.obj Y) := ⟨neg' W⟩
   exact
     { add_assoc := add'_assoc _
       add_zero := add'_zero _
-      add_comm := add'_comm _
       zero_add := zero_add' _
       neg_add_cancel := neg'_add'_self _
       nsmul := nsmulRec
       zsmul := zsmulRec }
+
+/-- The commutativity half of `addCommGroup'`. -/
+lemma isAddCommutative' :
+    letI := addCommGroup' L W X Y
+    IsAddCommutative (L.obj X ⟶ L.obj Y) :=
+  letI := addCommGroup' L W X Y
+  ⟨⟨add'_comm W⟩⟩
 
 variable {X Y}
 
@@ -277,9 +283,19 @@ variable (L X' Y') in
 /-- The abelian group structure on morphisms in `D`, when `L : C ⥤ D` is a localization
 functor, `C` is preadditive and there is a left calculus of fractions. -/
 @[instance_reducible]
-noncomputable def addCommGroup : AddCommGroup (X' ⟶ Y') := by
+noncomputable def addCommGroup : AddGroup (X' ⟶ Y') := by
   have := Localization.essSurj L W
   letI := addCommGroup' L W (L.objPreimage X') (L.objPreimage Y')
+  exact Equiv.addGroup (homEquiv (L.objObjPreimageIso X') (L.objObjPreimageIso Y'))
+
+variable (L X' Y') in
+/-- The commutativity half of `addCommGroup`. -/
+lemma isAddCommutative :
+    letI := addCommGroup L W X' Y'
+    IsAddCommutative (X' ⟶ Y') := by
+  have := Localization.essSurj L W
+  let := addCommGroup' L W (L.objPreimage X') (L.objPreimage Y')
+  have := isAddCommutative' L W (L.objPreimage X') (L.objPreimage Y')
   exact Equiv.addCommGroup (homEquiv (L.objObjPreimageIso X') (L.objObjPreimageIso Y'))
 
 lemma add_eq (f₁ f₂ : X' ⟶ Y') :
@@ -306,6 +322,7 @@ functor, `C` is preadditive and there is a left calculus of fractions. -/
 @[instance_reducible]
 noncomputable def preadditive : Preadditive D where
   homGroup := Preadditive.addCommGroup L W
+  isAddComm := Preadditive.isAddCommutative L W
   add_comp _ _ _ _ _ _ := by apply Preadditive.add_comp
   comp_add _ _ _ _ _ _ := by apply Preadditive.comp_add
 

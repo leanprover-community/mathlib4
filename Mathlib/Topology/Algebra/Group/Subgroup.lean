@@ -119,21 +119,6 @@ instance Subgroup.isMulCommutative_topologicalClosure [T2Space G] (s : Subgroup 
     [IsMulCommutative s] : IsMulCommutative s.topologicalClosure :=
   s.toSubmonoid.isMulCommutative_topologicalClosure
 
-open scoped IsMulCommutative in
-/-- If a subgroup of a topological group is commutative, then so is its topological closure.
-
-See note [reducible non-instances]. -/
-@[to_additive (attr := deprecated Subgroup.isMulCommutative_topologicalClosure
-  +typeChanged (since := "2026-07-29"))
-  /-- If a subgroup of an additive topological group is commutative, then so is its
-topological closure.
-
-See note [reducible non-instances]. -/]
-abbrev Subgroup.commGroupTopologicalClosure [T2Space G] (s : Subgroup G)
-    (hs : ∀ x y : s, x * y = y * x) : CommGroup s.topologicalClosure :=
-  haveI : IsMulCommutative s := ⟨⟨hs⟩⟩
-  inferInstance
-
 variable (G) in
 @[to_additive]
 lemma Subgroup.coe_topologicalClosure_bot :

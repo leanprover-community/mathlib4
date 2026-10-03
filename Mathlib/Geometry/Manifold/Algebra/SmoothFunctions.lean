@@ -130,8 +130,8 @@ variable {I I'}
 
 @[to_additive]
 instance commMonoid {G : Type*} [Monoid G] [IsMulCommutative G] [TopologicalSpace G] [ChartedSpace H' G]
-    [ContMDiffMul I' n G] : CommMonoid C^n⟮I, N; I', G⟯ :=
-  DFunLike.coe_injective.commMonoid _ coe_one coe_mul coe_pow
+    [ContMDiffMul I' n G] : IsMulCommutative C^n⟮I, N; I', G⟯ :=
+  DFunLike.coe_injective.isMulCommutative _ coe_mul
 
 @[to_additive]
 instance group {G : Type*} [Group G] [TopologicalSpace G] [ChartedSpace H' G] [LieGroup I' n G] :
@@ -154,8 +154,8 @@ theorem coe_div {G : Type*} [Group G] [TopologicalSpace G] [ChartedSpace H' G] [
 
 @[to_additive]
 instance commGroup {G : Type*} [Group G] [IsMulCommutative G] [TopologicalSpace G] [ChartedSpace H' G]
-    [LieGroup I' n G] : CommGroup C^n⟮I, N; I', G⟯ :=
-  { ContMDiffMap.group, ContMDiffMap.commMonoid with }
+    [LieGroup I' n G] : IsMulCommutative C^n⟮I, N; I', G⟯ :=
+  ContMDiffMap.commMonoid
 
 end GroupStructure
 
@@ -180,11 +180,11 @@ instance semiring {R : Type*} [Semiring R] [TopologicalSpace R] [ChartedSpace H'
 
 instance ring {R : Type*} [Ring R] [TopologicalSpace R] [ChartedSpace H' R] [ContMDiffRing I' n R] :
     Ring C^n⟮I, N; I', R⟯ :=
-  { ContMDiffMap.semiring, ContMDiffMap.addCommGroup with }
+  { ContMDiffMap.semiring, ContMDiffMap.addGroup with }
 
 instance commRing {R : Type*} [Ring R] [IsMulCommutative R] [TopologicalSpace R] [ChartedSpace H' R]
-    [ContMDiffRing I' n R] : CommRing C^n⟮I, N; I', R⟯ :=
-  { ContMDiffMap.semiring, ContMDiffMap.addCommGroup, ContMDiffMap.commMonoid with }
+    [ContMDiffRing I' n R] : IsMulCommutative C^n⟮I, N; I', R⟯ :=
+  ContMDiffMap.commMonoid
 
 variable (I N)
 

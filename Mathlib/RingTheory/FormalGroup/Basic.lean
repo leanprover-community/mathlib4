@@ -31,7 +31,7 @@ of the formal group law `F(X,Y)`.
 that constant coefficient is nilpotent. We have the following typeclass:
 - `AddMonoid (F.Point σ)`
 when `F` is a commutative formal group law
-- `AddCommMonoid (F.Point σ)`
+- `IsAddCommutative (F.Point σ)`
 
 ## References
 * [Hazewinkel, Michiel. Formal Groups and Applications][hazewinkel1978]
@@ -336,8 +336,8 @@ instance : AddMonoid (F.Point σ) where
   nsmul := nsmulRec
   add_assoc x y z := Subtype.ext <| F.assoc' x.prop y.prop z.prop
 
-instance [F.IsComm] : AddCommMonoid (F.Point σ) where
-  add_comm x y := Subtype.ext <| F.comm' x.prop y.prop
+instance [F.IsComm] : IsAddCommutative (F.Point σ) where
+  is_comm := ⟨fun x y => Subtype.ext <| F.comm' x.prop y.prop⟩
 
 end FormalGroup
 

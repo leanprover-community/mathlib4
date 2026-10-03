@@ -345,7 +345,8 @@ def entryLinearMap (i : m) (j : n) : Matrix m n α →ₗ[R] α where
 -- for unification to succeed
 lemma entryLinearMap_eq_comp {i : m} {j : n} :
     entryLinearMap R α i j =
-      LinearMap.proj j ∘ₗ LinearMap.proj i ∘ₗ (ofLinearEquiv R).symm.toLinearMap := by
+      LinearMap.proj (φ := fun _ => α) j ∘ₗ LinearMap.proj i ∘ₗ
+        (ofLinearEquiv R).symm.toLinearMap := by
   rfl
 
 @[simp] lemma proj_comp_diagLinearMap (i : m) :

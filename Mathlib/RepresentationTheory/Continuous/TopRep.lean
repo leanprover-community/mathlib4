@@ -32,7 +32,7 @@ structure TopRep (k : Type u) (G : Type v) [Ring k] [TopologicalSpace k] [Monoid
   _mkInternal ::
   /-- the underlying type of an object in `TopRep k G` -/
   V : Type w
-  [hV1 : AddGroup V] [IsAddCommutative V]
+  [hV1 : AddGroup V] [hV1' : IsAddCommutative V]
   [hV2 : Module k V]
   [hV3 : TopologicalSpace V]
   [hV4 : IsTopologicalAddGroup V]
@@ -44,15 +44,15 @@ namespace TopRep
 
 variable {k : Type u} {G : Type v} {X Y : Type w} [TopologicalSpace k] [Ring k]
   [Monoid G] [AddGroup X] [IsAddCommutative X] [Module k X] [TopologicalSpace X]
-  [IsTopologicalAddGroup X] [ContinuousSMul k X] [AddGroup Y] [IsAddCommutative Y] [Module k Y] [TopologicalSpace Y]
-  [IsTopologicalAddGroup Y] [ContinuousSMul k Y] {ρ : ContRepresentation k G X}
+  [IsTopologicalAddGroup X] [ContinuousSMul k X] [AddGroup Y] [IsAddCommutative Y] [Module k Y]
+  [TopologicalSpace Y] [IsTopologicalAddGroup Y] [ContinuousSMul k Y] {ρ : ContRepresentation k G X}
   {σ : ContRepresentation k G Y}
 
 open ContRepresentation CategoryTheory
 
-attribute [instance] hV1 hV2 hV3 hV4 hV5
+attribute [instance] hV1 hV1' hV2 hV3 hV4 hV5
 
-initialize_simps_projections TopRep (-hV1, -hV2)
+initialize_simps_projections TopRep (-hV1, -hV1', -hV2)
 
 instance : CoeSort (TopRep k G) (Type w) := ⟨TopRep.V⟩
 
@@ -127,7 +127,9 @@ variable {A B} in
 lemma hom_comm_apply (f : A ⟶ B) (g : G) (a : A) : f.hom (A.ρ g a) = B.ρ g (f.hom a) := by
   simpa using! congr($(f.hom.2 g) a)
 
-instance : AddCommGroup (A ⟶ B) := fast_instance% ConcreteCategory.homEquiv.addCommGroup
+instance : AddGroup (A ⟶ B) := fast_instance% ConcreteCategory.homEquiv.addGroup
+
+instance : IsAddCommutative (A ⟶ B) := ConcreteCategory.homEquiv.addCommGroup
 
 @[simp] lemma hom_zero : (0 : A ⟶ B).hom = 0 := rfl
 
@@ -154,8 +156,8 @@ section Linear
 
 variable {k : Type u} {G : Type v} {X Y : Type w} [TopologicalSpace k] [Ring k] [IsMulCommutative k]
   [Monoid G] [AddGroup X] [IsAddCommutative X] [Module k X] [TopologicalSpace X]
-  [IsTopologicalAddGroup X] [ContinuousSMul k X] [AddGroup Y] [IsAddCommutative Y] [Module k Y] [TopologicalSpace Y]
-  [IsTopologicalAddGroup Y] [ContinuousSMul k Y] {ρ : ContRepresentation k G X}
+  [IsTopologicalAddGroup X] [ContinuousSMul k X] [AddGroup Y] [IsAddCommutative Y] [Module k Y]
+  [TopologicalSpace Y] [IsTopologicalAddGroup Y] [ContinuousSMul k Y] {ρ : ContRepresentation k G X}
   {σ : ContRepresentation k G Y} {A B C : TopRep k G}
 
 instance : Module k (A ⟶ B) := fast_instance%
@@ -237,7 +239,8 @@ abbrev invariantsFunctor : TopRep k G ⥤ TopModuleCat k where
 
 instance : (invariantsFunctor k G).Additive where
 
-instance {k : Type u} [Ring k] [IsMulCommutative k] [TopologicalSpace k] : (invariantsFunctor k G).Linear k where
+instance {k : Type u} [Ring k] [IsMulCommutative k] [TopologicalSpace k] :
+    (invariantsFunctor k G).Linear k where
 
 /-- The top rep induced by the coinduced representation. -/
 abbrev coind₁ (A : TopRep k G) : TopRep k G := of A.ρ.coind₁
@@ -251,7 +254,8 @@ abbrev coind₁Functor : TopRep k G ⥤ TopRep k G where
 
 instance : (TopRep.coind₁Functor k G).Additive where
 
-instance {k : Type u} [Ring k] [IsMulCommutative k] [TopologicalSpace k] : (coind₁Functor k G).Linear k where
+instance {k : Type u} [Ring k] [IsMulCommutative k] [TopologicalSpace k] :
+    (coind₁Functor k G).Linear k where
 
 /-- The constant function `rep ⟶ C(G, rep)` as a natural transformation. -/
 @[implicit_reducible, simps]

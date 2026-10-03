@@ -41,7 +41,7 @@ Denoted as `C^n⟮I, M; 𝕜⟯⟨x⟩` within the `Derivation` namespace. -/
 @[nolint unusedArguments]
 def PointedContMDiffMap (_ : M) :=
   C^n⟮I, M; 𝕜⟯
-deriving FunLike, CommRing, Algebra 𝕜
+deriving FunLike, Ring, IsMulCommutative, Algebra 𝕜
 
 @[inherit_doc]
 scoped[Derivation] notation "C^" n "⟮" I ", " M "; " 𝕜 "⟯⟨" x "⟩" => PointedContMDiffMap 𝕜 I M n x

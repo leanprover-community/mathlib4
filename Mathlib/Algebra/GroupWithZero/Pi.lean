@@ -66,10 +66,6 @@ instance monoidWithZero [∀ i, MonoidWithZero (α i)] : MonoidWithZero (∀ i, 
   __ := monoid
   __ := mulZeroClass
 
-instance commMonoidWithZero [∀ i, MonoidWithZero (α i)] [∀ i, IsMulCommutative (α i)] : CommMonoidWithZero (∀ i, α i) where
-  __ := monoidWithZero
-  __ := commMonoid
-
 instance semigroupWithZero [∀ i, SemigroupWithZero (α i)] : SemigroupWithZero (∀ i, α i) where
   __ := semigroup
   __ := mulZeroClass

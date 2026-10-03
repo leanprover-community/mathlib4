@@ -63,7 +63,7 @@ open scoped TensorProduct in
 lemma isIntegral_coeff_of_dvd (p : R[X]) (q : S[X]) (hp : p.Monic) (hq : q.Monic)
     (H : q ∣ p.map (algebraMap R S)) (i : ℕ) : IsIntegral R (q.coeff i) := by
   nontriviality S
-  obtain ⟨T, _, _, _, _, _, hqT⟩ := hq.exists_splits_map
+  obtain ⟨T, _, _, _, _, _, _, hqT⟩ := hq.exists_splits_map
   algebraize [(algebraMap S T).comp (algebraMap R S)]
   refine (isIntegral_algHom_iff (IsScalarTower.toAlgHom R S T)
     (FaithfulSMul.algebraMap_injective S _)).mp ?_

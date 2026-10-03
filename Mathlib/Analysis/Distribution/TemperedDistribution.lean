@@ -119,8 +119,9 @@ def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [hμ : μ.HasTem
   toFun f := toPointwiseConvergenceCLM _ _ _ _ <| integralCLM ℂ μ ∘L pairing (lsmul ℂ ℂ).flip f
   map_add' _ _ := by simp
   map_smul' _ _ := by simp
-  cont := PointwiseConvergenceCLM.continuous_of_continuous_eval
-    fun g ↦ (integralCLM ℂ μ).cont.comp <| pairing_continuous_left (lsmul ℂ ℂ).flip g
+  cont := by
+    refine PointwiseConvergenceCLM.continuous_of_continuous_eval fun g ↦ ?_
+    exact (integralCLM ℂ μ).cont.comp <| pairing_continuous_left (lsmul ℂ ℂ (E := F)).flip g
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]

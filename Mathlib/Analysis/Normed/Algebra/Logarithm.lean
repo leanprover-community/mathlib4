@@ -118,12 +118,12 @@ private lemma neg_one_pow_div_natCast_smul_eq {E : Type*} (R S : Type*) [AddGrou
     inv_intCast_smul_eq R S]
 
 theorem logSeries_sum_eq_rat [Algebra ℚ 𝔸] : (logSeries 𝕂 𝔸).sum = (logSeries ℚ 𝔸).sum := by
-  ext; simp_rw [logSeries_sum_eq, neg_one_pow_div_natCast_smul_eq 𝕂 ℚ]
+  ext; simp_rw [logSeries_sum_eq, neg_one_pow_div_natCast_smul_eq (E := 𝔸) 𝕂 ℚ]
 
 theorem logSeries_eq_logSeries_rat [Algebra ℚ 𝔸] (n : ℕ) :
     (⇑(logSeries 𝕂 𝔸 n) : (Fin n → 𝔸) → 𝔸) = logSeries ℚ 𝔸 n := by
   ext c
-  simp [logSeries, neg_one_pow_div_natCast_smul_eq 𝕂 ℚ]
+  simp [logSeries, neg_one_pow_div_natCast_smul_eq (E := 𝔸) 𝕂 ℚ]
 
 variable (𝕂) in
 theorem log_eq_logSeries_sum [CharZero 𝕂] : log = fun x : 𝔸 ↦ (logSeries 𝕂 𝔸).sum (x - 1) := by

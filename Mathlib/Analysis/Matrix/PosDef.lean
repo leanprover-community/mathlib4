@@ -47,7 +47,8 @@ lemma re_dotProduct_nonneg (hA : A.PosSemidef) (x : n → 𝕜) : 0 ≤ RCLike.r
 
 -- TODO generalise this lemma. Similarly to `Matrix.PosDef.det_pos`, it requires just the following
 -- assumptions on the scalars `R`:
--- `[Ring R] [IsMulCommutative R] [PartialOrder R] [StarRing R] [Nontrivial R] [IsOrderedRing R] [PosMulReflectLE R]`
+-- `[Ring R] [IsMulCommutative R] [PartialOrder R] [StarRing R] [Nontrivial R] [IsOrderedRing R]
+-- [PosMulReflectLE R]`
 lemma det_nonneg [DecidableEq n] (hA : A.PosSemidef) : 0 ≤ A.det := by
   rw [hA.isHermitian.det_eq_prod_eigenvalues]
   exact Finset.prod_nonneg fun i _ ↦ by simpa using hA.eigenvalues_nonneg i
@@ -106,15 +107,15 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- A positive semi-definite matrix `M` induces a norm `‖x‖ = sqrt (re xᴴMx)`. -/
 noncomputable abbrev toSeminormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
-    SeminormedAddCommGroup (n → 𝕜) :=
-  @InnerProductSpace.Core.toSeminormedAddCommGroup _ _ _ _ _ hM.preInnerProductSpace
+    SeminormedAddGroup (n → 𝕜) :=
+  @InnerProductSpace.Core.toSeminormedAddCommGroup _ _ _ _ _ _ hM.preInnerProductSpace
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- A positive definite matrix `M` induces a norm `‖x‖ = sqrt (re xᴴMx)`. -/
 noncomputable abbrev toNormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosDef) :
-    NormedAddCommGroup (n → 𝕜) :=
-  @InnerProductSpace.Core.toNormedAddCommGroup _ _ _ _ _
+    NormedAddGroup (n → 𝕜) :=
+  @InnerProductSpace.Core.toNormedAddCommGroup _ _ _ _ _ _
   { __ := hM.posSemidef.preInnerProductSpace
     definite x (hx : _ ⬝ᵥ _ = 0) := by
       by_contra! h
@@ -123,7 +124,7 @@ noncomputable abbrev toNormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosDef) 
 /-- A positive semi-definite matrix `M` induces an inner product `⟪x, y⟫ = xᴴMy`. -/
 @[instance_reducible]
 def toInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
-    @InnerProductSpace 𝕜 (n → 𝕜) _ (M.toSeminormedAddCommGroup hM) :=
+    @InnerProductSpace 𝕜 (n → 𝕜) _ (M.toSeminormedAddCommGroup hM) _ :=
   InnerProductSpace.ofCore _
 
 end Matrix

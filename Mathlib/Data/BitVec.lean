@@ -83,9 +83,9 @@ lemma toFin_pow (x : BitVec w) (n : ℕ) : toFin (x ^ n) = x.toFin ^ n := by
 example : @instHPow (Fin (2 ^ w)) ℕ NPow.toPow =
     @instHPow (Fin (2 ^ w)) ℕ (@_root_.instPowNat _ Fin.instNatPow) := rfl
 
-instance : CommSemiring (BitVec w) :=
+instance : Semiring (BitVec w) :=
   open Fin.CommRing in
-  toFin_injective.commSemiring _
+  toFin_injective.semiring _
     toFin_zero
     toFin_one
     toFin_add
@@ -95,11 +95,14 @@ instance : CommSemiring (BitVec w) :=
     toFin_natCast
 -- The statement in the new API would be: `n#(k.succ) = ((n / 2)#k).concat (n % 2 != 0)`
 
-instance : CommRing (BitVec w) :=
+instance : Ring (BitVec w) :=
   open Fin.CommRing in
-  toFin_injective.commRing _
+  toFin_injective.ring _
     toFin_zero toFin_one toFin_add toFin_mul toFin_neg toFin_sub
     toFin_nsmul toFin_zsmul toFin_pow toFin_natCast toFin_intCast
+
+instance : IsMulCommutative (BitVec w) :=
+  toFin_injective.isMulCommutative _ toFin_mul
 
 /-- The ring `BitVec m` is isomorphic to `Fin (2 ^ m)`. -/
 @[simps]

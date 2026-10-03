@@ -163,18 +163,17 @@ section AddCommMonoid
 
 variable [AddMonoid α] [IsAddCommutative α] [Preorder α] [AddLeftMono α]
 
-instance addCommMonoid : AddCommMonoid (Nonneg α) :=
-  fast_instance%
-    Subtype.coe_injective.addCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) (fun _ _ => rfl)
+instance addCommMonoid : IsAddCommutative (Nonneg α) :=
+  Subtype.coe_injective.addCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) (fun _ _ => rfl)
 
 end AddCommMonoid
 
 section AddCancelCommMonoid
 variable [AddCancelMonoid α] [IsAddCommutative α] [Preorder α] [AddLeftMono α]
 
-instance addCancelCommMonoid : AddCancelCommMonoid (Nonneg α) :=
+instance addCancelCommMonoid : AddCancelMonoid (Nonneg α) :=
   fast_instance%
-    Subtype.coe_injective.addCancelCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) (fun _ _ => rfl)
+    Subtype.coe_injective.addCancelMonoid _ Nonneg.coe_zero (fun _ _ => rfl) (fun _ _ => rfl)
 
 end AddCancelCommMonoid
 
@@ -247,12 +246,10 @@ section CommSemiring
 variable [Semiring α] [IsMulCommutative α] [PartialOrder α] [ZeroLEOneClass α]
   [AddLeftMono α] [PosMulMono α]
 
-instance commSemiring : CommSemiring (Nonneg α) :=
-  fast_instance% Subtype.coe_injective.commSemiring _ Nonneg.coe_zero Nonneg.coe_one
+instance commSemiring : IsMulCommutative (Nonneg α) :=
+  Subtype.coe_injective.commSemiring _ Nonneg.coe_zero Nonneg.coe_one
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ => rfl
-
-instance commMonoidWithZero : CommMonoidWithZero (Nonneg α) := inferInstance
 
 end CommSemiring
 

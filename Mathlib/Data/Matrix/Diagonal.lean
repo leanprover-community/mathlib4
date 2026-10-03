@@ -271,16 +271,6 @@ instance instAddGroupWithOne [AddGroupWithOne α] : AddGroupWithOne (Matrix n n 
   __ := addGroup
   __ := instAddMonoidWithOne
 
-instance instAddCommMonoidWithOne [AddMonoidWithOne α] [IsAddCommutative α] :
-    AddCommMonoidWithOne (Matrix n n α) where
-  __ := addCommMonoid
-  __ := instAddMonoidWithOne
-
-instance instAddCommGroupWithOne [AddGroupWithOne α] [IsAddCommutative α] :
-    AddCommGroupWithOne (Matrix n n α) where
-  __ := addCommGroup
-  __ := instAddGroupWithOne
-
 end Diagonal
 
 section Diag

@@ -42,7 +42,12 @@ variable {R} in
 of `Fin n → R` (i.e. `Rⁿ`) by the submodule `S` provided. -/
 def repr (x : FGModuleRepr R) : Type u :=
   _ ⧸ x.S
-deriving AddCommGroup, Module R
+deriving AddGroup, IsAddCommutative
+
+-- `deriving Module R` fails with a `wrapInstance` unification error once the
+-- `IsAddCommutative` argument of `Module` is a separate (Prop) instance, so we state it directly.
+instance instModuleRepr (x : FGModuleRepr R) : Module R x.repr :=
+  inferInstanceAs <| Module R (_ ⧸ x.S)
 
 instance : CoeSort (FGModuleRepr R) (Type u) :=
   ⟨repr⟩

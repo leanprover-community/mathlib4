@@ -488,13 +488,15 @@ instance instMul : Mul (Associates M) :=
 theorem mk_mul_mk {x y : M} : Associates.mk x * Associates.mk y = Associates.mk (x * y) :=
   rfl
 
-instance instCommMonoid : CommMonoid (Associates M) where
+instance instMonoid : Monoid (Associates M) where
   mul_one a' := Quotient.inductionOn a' fun a => show ⟦a * 1⟧ = ⟦a⟧ by simp
   one_mul a' := Quotient.inductionOn a' fun a => show ⟦1 * a⟧ = ⟦a⟧ by simp
   mul_assoc a' b' c' :=
     Quotient.inductionOn₃ a' b' c' fun a b c =>
       show ⟦a * b * c⟧ = ⟦a * (b * c)⟧ by rw [mul_assoc]
-  mul_comm a' b' :=
+
+instance instIsMulCommutative : IsMulCommutative (Associates M) where
+  is_comm.comm a' b' :=
     Quotient.inductionOn₂ a' b' fun a b => show ⟦a * b⟧ = ⟦b * a⟧ by rw [mul_comm]
 
 instance instPreorder : Preorder (Associates M) where
@@ -642,7 +644,7 @@ section CommMonoidWithZero
 
 variable [MonoidWithZero M] [IsMulCommutative M]
 
-instance instCommMonoidWithZero : CommMonoidWithZero (Associates M) where
+instance instMonoidWithZero : MonoidWithZero (Associates M) where
     zero_mul := forall_associated.2 fun a ↦ by rw [← mk_zero, mk_mul_mk, zero_mul]
     mul_zero := forall_associated.2 fun a ↦ by rw [← mk_zero, mk_mul_mk, mul_zero]
 
@@ -717,7 +719,7 @@ instance instPartialOrder : PartialOrder (Associates M) where
     associated_of_dvd_dvd (dvd_of_mk_le_mk hab) (dvd_of_mk_le_mk hba)
 
 instance instIsCancelMulZero : IsCancelMulZero (Associates M) :=
-  @IsLeftCancelMulZero.to_isCancelMulZero _ _ _
+  @IsLeftCancelMulZero.to_isCancelMulZero _ _ _ _
   { mul_left_cancel_of_ne_zero := by
       rintro ⟨a⟩ ha ⟨b⟩ ⟨c⟩ h
       rcases Quotient.exact' h with ⟨u, hu⟩

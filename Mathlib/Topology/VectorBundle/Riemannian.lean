@@ -430,7 +430,7 @@ As this instance is quite specific and very costly because of higher-order unifi
 also scope it to the `Bundle` namespace. -/
 noncomputable scoped instance (priority := 80)
     {B : Type*} {E : B → Type*} [(b : B) → TopologicalSpace (E b)]
-    [(b : B) → AddCommGroup (E b)] [(b : B) → Module ℝ (E b)]
+    [(b : B) → AddGroup (E b)] [(b : B) → IsAddCommutative (E b)] [(b : B) → Module ℝ (E b)]
     /- We are careful about the parameter order, putting `RiemannianBundle E`
     before `IsTopologicalAddGroup` to avoid the following loop: to put a `IsTopologicalAddGroup`
     structure on `E b`, one tries to find a `NormedAddCommGroup`, then one tries to apply the
@@ -440,7 +440,7 @@ noncomputable scoped instance (priority := 80)
     at different depth levels. See lean4#13063. -/
     [h : RiemannianBundle E] [∀ (b : B), IsTopologicalAddGroup (E b)]
     [∀ (b : B), ContinuousConstSMul ℝ (E b)] (b : B) :
-    NormedAddCommGroup (E b) := fast_instance%
+    NormedAddGroup (E b) := fast_instance%
   (h.g.toCore b).toNormedAddCommGroupOfTopology (h.g.continuousAt b) (h.g.isVonNBounded b)
 
 /-- A fiber in a bundle satisfying the `[RiemannianBundle E]` typeclass inherits
@@ -452,7 +452,7 @@ As this instance is quite specific and very costly because of higher-order unifi
 also scope it to the `Bundle` namespace. -/
 noncomputable scoped instance (priority := 80)
     {B : Type*} {E : B → Type*} [(b : B) → TopologicalSpace (E b)]
-    [(b : B) → AddCommGroup (E b)] [(b : B) → Module ℝ (E b)]
+    [(b : B) → AddGroup (E b)] [(b : B) → IsAddCommutative (E b)] [(b : B) → Module ℝ (E b)]
     [h : RiemannianBundle E] [∀ (b : B), IsTopologicalAddGroup (E b)]
     [∀ (b : B), ContinuousConstSMul ℝ (E b)] (b : B) :
     InnerProductSpace ℝ (E b) := fast_instance%

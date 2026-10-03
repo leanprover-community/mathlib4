@@ -187,7 +187,7 @@ theorem content_eq_gcd_range_succ (p : R[X]) :
   content_eq_gcd_range_of_lt _ _ (Nat.lt_succ_self _)
 
 theorem content_eq_gcd_leadingCoeff_content_eraseLead (p : R[X]) :
-    p.content = gcd p.leadingCoeff (eraseLead p).content := by
+    p.content = @gcd R inferInstance _ _ p.leadingCoeff (eraseLead p).content := by
   by_cases h : p = 0
   · simp [h]
   rw [← leadingCoeff_eq_zero, leadingCoeff, ← Ne, ← mem_support_iff] at h
@@ -296,7 +296,7 @@ theorem eval₂_primPart_eq_zero {S : Type*} [Semiring S] [IsMulCommutative S] [
 end PrimPart
 
 theorem gcd_content_eq_of_dvd_sub {a : R} {p q : R[X]} (h : C a ∣ p - q) :
-    gcd a p.content = gcd a q.content := by
+    @gcd R inferInstance _ _ a p.content = @gcd R inferInstance _ _ a q.content := by
   rw [content_eq_gcd_range_of_lt p (max p.natDegree q.natDegree).succ
       (lt_of_le_of_lt (le_max_left _ _) (Nat.lt_succ_self _))]
   rw [content_eq_gcd_range_of_lt q (max p.natDegree q.natDegree).succ
@@ -308,8 +308,8 @@ theorem gcd_content_eq_of_dvd_sub {a : R} {p q : R[X]} (h : C a ∣ p - q) :
   rw [← coeff_sub, hw, coeff_C_mul]
 
 theorem content_mul_aux {p q : R[X]} :
-    gcd (p * q).eraseLead.content p.leadingCoeff =
-      gcd (p.eraseLead * q).content p.leadingCoeff := by
+    @gcd R inferInstance _ _ (p * q).eraseLead.content p.leadingCoeff =
+      @gcd R inferInstance _ _ (p.eraseLead * q).content p.leadingCoeff := by
   rw [gcd_comm (content _) _, gcd_comm (content _) _]
   apply gcd_content_eq_of_dvd_sub
   rw [← self_sub_C_mul_X_pow, ← self_sub_C_mul_X_pow, sub_mul, sub_sub, add_comm, sub_add,
@@ -460,10 +460,10 @@ noncomputable instance normalizedGcdMonoid : NormalizedGCDMonoid R[X] :=
     rcases exists_primitive_lcm_of_isPrimitive p.isPrimitive_primPart
         q.isPrimitive_primPart with
       ⟨r, rprim, hr⟩
-    refine ⟨C (lcm p.content q.content) * r, fun s => ?_⟩
+    refine ⟨C (@lcm R inferInstance _ _ p.content q.content) * r, fun s => ?_⟩
     by_cases hs : s = 0
     · simp [hs]
-    by_cases hpq : C (lcm p.content q.content) = 0
+    by_cases hpq : C (@lcm R inferInstance _ _ p.content q.content) = 0
     · rw [C_eq_zero, lcm_eq_zero_iff, content_eq_zero_iff, content_eq_zero_iff] at hpq
       rcases hpq with (hpq | hpq) <;> simp [hpq, hs]
     iterate 3 rw [dvd_iff_content_dvd_content_and_primPart_dvd_primPart hs]
@@ -474,11 +474,13 @@ noncomputable instance normalizedGcdMonoid : NormalizedGCDMonoid R[X] :=
       (isUnit_primPart_C (lcm p.content q.content)).mul_left_dvd, ← hr s.primPart]
     tauto
 
-theorem degree_gcd_le_left {p : R[X]} (hp : p ≠ 0) (q) : (gcd p q).degree ≤ p.degree := by
+theorem degree_gcd_le_left {p : R[X]} (hp : p ≠ 0) (q) :
+    (@gcd R[X] inferInstance _ _ p q).degree ≤ p.degree := by
   have := natDegree_le_iff_degree_le.mp (natDegree_le_of_dvd (gcd_dvd_left p q) hp)
   rwa [degree_eq_natDegree hp]
 
-theorem degree_gcd_le_right (p) {q : R[X]} (hq : q ≠ 0) : (gcd p q).degree ≤ q.degree := by
+theorem degree_gcd_le_right (p) {q : R[X]} (hq : q ≠ 0) :
+    (@gcd R[X] inferInstance _ _ p q).degree ≤ q.degree := by
   rw [gcd_comm]
   exact degree_gcd_le_left hq p
 

@@ -215,12 +215,12 @@ lemma Module.length_pi_of_fintype : ∀ {ι : Type*} [Fintype ι]
     (M : ι → Type*) [∀ i, AddGroup (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, Module R (M i)],
     Module.length R (Π i, M i) = ∑ i, Module.length R (M i) := by
   apply Fintype.induction_empty_option
-  · intro α β _ e IH M _ _
+  · intro α β _ e IH M _ _ _
     let _ : Fintype α := .ofEquiv β e.symm
     rw [← (LinearEquiv.piCongrLeft R M e).length_eq, IH, e.sum_comp (length R <| M ·)]
-  · intro M _ _
+  · intro M _ _ _
     simp [Module.length_eq_zero]
-  · intro ι _ IH M _ _
+  · intro ι _ IH M _ _ _
     rw [(LinearEquiv.piOptionEquivProd _).length_eq, Module.length_prod, IH, add_comm,
       Fintype.sum_option, add_comm]
 

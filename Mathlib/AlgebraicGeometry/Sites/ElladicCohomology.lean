@@ -75,8 +75,12 @@ lemma isZero_ellAdicSheaf_of_isEmpty [IsEmpty X] : IsZero (X.ellAdicSheaf ℓ) :
 def EllAdicCohomology (ℓ : ℕ) [Fact ℓ.Prime] (n : ℕ) : Type (u + 1) :=
   ((sheafCompose _ AddCommGrpCat.uliftFunctor.{u + 1}).obj <| X.ellAdicSheaf ℓ).H n
 
-noncomputable instance (ℓ : ℕ) [Fact ℓ.Prime] (n : ℕ) : AddCommGroup (X.EllAdicCohomology ℓ n) :=
-  inferInstanceAs <| AddCommGroup <|
+noncomputable instance (ℓ : ℕ) [Fact ℓ.Prime] (n : ℕ) : AddGroup (X.EllAdicCohomology ℓ n) :=
+  inferInstanceAs <| AddGroup <|
+    ((sheafCompose _ AddCommGrpCat.uliftFunctor.{u + 1}).obj <| X.ellAdicSheaf ℓ).H n
+
+instance (ℓ : ℕ) [Fact ℓ.Prime] (n : ℕ) : IsAddCommutative (X.EllAdicCohomology ℓ n) :=
+  inferInstanceAs <| IsAddCommutative <|
     ((sheafCompose _ AddCommGrpCat.uliftFunctor.{u + 1}).obj <| X.ellAdicSheaf ℓ).H n
 
 /-- `ℓ`-adic cohomology is trivial for the empty scheme. -/

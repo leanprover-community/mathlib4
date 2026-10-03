@@ -226,8 +226,9 @@ instance instAddMonoid : AddMonoid C₀(α, β) := fast_instance%
 
 end AddMonoid
 
-instance instAddCommMonoid [AddMonoid β] [IsAddCommutative β] [ContinuousAdd β] : AddCommMonoid C₀(α, β) :=
-  fast_instance% DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
+instance instAddCommMonoid [AddMonoid β] [IsAddCommutative β] [ContinuousAdd β] :
+    IsAddCommutative C₀(α, β) :=
+  DFunLike.coe_injective.isAddCommutative _ coe_add
 
 section AddGroup
 
@@ -258,10 +259,9 @@ instance instAddGroup : AddGroup C₀(α, β) := fast_instance%
 
 end AddGroup
 
-instance instAddCommGroup [AddGroup β] [IsAddCommutative β] [IsTopologicalAddGroup β] : AddCommGroup C₀(α, β) :=
-  fast_instance%
-  DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ =>
-    rfl
+instance instAddCommGroup [AddGroup β] [IsAddCommutative β] [IsTopologicalAddGroup β] :
+    IsAddCommutative C₀(α, β) :=
+  DFunLike.coe_injective.isAddCommutative _ coe_add
 
 instance instIsCentralScalar [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [SMulWithZero Rᵐᵒᵖ β]
     [ContinuousConstSMul R β] [IsCentralScalar R β] : IsCentralScalar R C₀(α, β) :=
@@ -298,8 +298,8 @@ instance instNonUnitalSemiring [NonUnitalSemiring β] [IsTopologicalSemiring β]
   DFunLike.coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
 
 instance instNonUnitalCommSemiring [NonUnitalSemiring β] [IsMulCommutative β] [IsTopologicalSemiring β] :
-    NonUnitalCommSemiring C₀(α, β) := fast_instance%
-  DFunLike.coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
+    IsMulCommutative C₀(α, β) :=
+  DFunLike.coe_injective.isMulCommutative _ coe_mul
 
 instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing β] [IsTopologicalRing β] :
     NonUnitalNonAssocRing C₀(α, β) := fast_instance%
@@ -312,9 +312,8 @@ instance instNonUnitalRing [NonUnitalRing β] [IsTopologicalRing β] : NonUnital
     fun _ _ => rfl
 
 instance instNonUnitalCommRing [NonUnitalRing β] [IsMulCommutative β] [IsTopologicalRing β] :
-    NonUnitalCommRing C₀(α, β) := fast_instance%
-  DFunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
-    (fun _ _ => rfl) fun _ _ => rfl
+    IsMulCommutative C₀(α, β) :=
+  DFunLike.coe_injective.isMulCommutative _ coe_mul
 
 instance instIsScalarTower {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring β]
     [IsTopologicalSemiring β] [Module R β] [ContinuousConstSMul R β] [IsScalarTower R β β] :
@@ -461,11 +460,11 @@ field `𝕜` whenever `β` is as well.
 section NormedSpace
 
 noncomputable instance instSeminormedAddCommGroup [SeminormedAddGroup β] [IsAddCommutative β] :
-    SeminormedAddCommGroup C₀(α, β) := fast_instance%
+    SeminormedAddGroup C₀(α, β) := fast_instance%
   SeminormedAddCommGroup.induced _ _ (⟨⟨toBCF, rfl⟩, fun _ _ => rfl⟩ : C₀(α, β) →+ α →ᵇ β)
 
 noncomputable instance instNormedAddCommGroup [NormedAddGroup β] [IsAddCommutative β] :
-    NormedAddCommGroup C₀(α, β) := fast_instance%
+    NormedAddGroup C₀(α, β) := fast_instance%
   NormedAddCommGroup.induced _ _ (⟨⟨toBCF, rfl⟩, fun _ _ => rfl⟩ : C₀(α, β) →+ α →ᵇ β)
     (toBCF_injective α β)
 
@@ -492,12 +491,12 @@ noncomputable instance instNonUnitalNormedRing [NonUnitalNormedRing β] :
   { instNonUnitalSeminormedRing, instNormedAddCommGroup with }
 
 noncomputable instance instNonUnitalSeminormedCommRing [NonUnitalSeminormedRing β] [IsMulCommutative β] :
-    NonUnitalSeminormedCommRing C₀(α, β) :=
-  { instNonUnitalSeminormedRing, instNonUnitalCommRing with }
+    IsMulCommutative C₀(α, β) :=
+  DFunLike.coe_injective.isMulCommutative _ coe_mul
 
 noncomputable instance instNonUnitalNormedCommRing [NonUnitalNormedRing β] [IsMulCommutative β] :
-    NonUnitalNormedCommRing C₀(α, β) :=
-  { instNonUnitalNormedRing, instNonUnitalCommRing with }
+    IsMulCommutative C₀(α, β) :=
+  DFunLike.coe_injective.isMulCommutative _ coe_mul
 
 end NormedRing
 

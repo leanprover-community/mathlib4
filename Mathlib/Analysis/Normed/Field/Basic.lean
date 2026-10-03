@@ -191,7 +191,7 @@ instance (priority := 100) NormedField.toNormedDivisionRing : NormedDivisionRing
   { ‹NormedField α› with }
 
 -- see Note [lower instance priority]
-instance (priority := 100) NormedField.toNormedCommRing : NormedCommRing α :=
+instance (priority := 100) NormedField.toNormedCommRing : NormedRing α :=
   { ‹NormedField α› with norm_mul_le a b := (norm_mul a b).le }
 
 end NormedField
@@ -299,7 +299,7 @@ def NontriviallyNormedField.ofNormNeOne {𝕜 : Type*} [h' : NormedField 𝕜]
     · exact ⟨x, hlt⟩
 
 noncomputable instance Real.normedField : NormedField ℝ :=
-  { Real.normedAddCommGroup, Real.instField with
+  { Real.normedAddGroup, Real.instField with
     norm_mul := abs_mul }
 
 noncomputable instance Real.denselyNormedField : DenselyNormedField ℝ where
@@ -340,8 +340,7 @@ abbrev NormedDivisionRing.induced [DivisionRing R] [NormedDivisionRing S]
 See note [reducible non-instances] -/
 abbrev NormedField.induced [Field R] [NormedField S] [NonUnitalRingHomClass F R S] (f : F)
     (hf : Function.Injective f) : NormedField R :=
-  fast_instance% { NormedDivisionRing.induced R S f hf with
-    mul_comm := mul_comm }
+  fast_instance% { NormedDivisionRing.induced R S f hf, ‹Field R› with }
 
 end Induced
 

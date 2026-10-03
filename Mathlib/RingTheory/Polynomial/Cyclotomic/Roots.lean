@@ -178,6 +178,9 @@ theorem cyclotomic_eq_minpoly {n : ℕ} {K : Type*} [Field K] {μ : K} (h : IsPr
 theorem cyclotomic_eq_minpoly_rat {n : ℕ} {K : Type*} [Field K] {μ : K} (h : IsPrimitiveRoot μ n)
     (hpos : 0 < n) [CharZero K] : cyclotomic n ℚ = minpoly ℚ μ := by
   rw [← map_cyclotomic_int, cyclotomic_eq_minpoly h hpos]
+  -- TC cannot find `IsScalarTower ℤ ℚ K` through `AddCommGroup.intIsScalarTower` when `M` is
+  -- left implicit (see `IsIntegral.ratCast_iff` in `Mathlib/NumberTheory/Niven.lean`).
+  have : IsScalarTower ℤ ℚ K := AddCommGroup.intIsScalarTower (M := K)
   exact (minpoly.isIntegrallyClosed_eq_field_fractions' _ (IsPrimitiveRoot.isIntegral h hpos)).symm
 
 /-- `cyclotomic n ℤ` is irreducible. -/

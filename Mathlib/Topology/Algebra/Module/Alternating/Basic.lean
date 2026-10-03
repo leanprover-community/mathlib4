@@ -223,8 +223,11 @@ theorem toAlternatingMap_add (f g : M [⋀^ι]→L[R] N) :
     (f + g).toAlternatingMap = f.toAlternatingMap + g.toAlternatingMap :=
   rfl
 
-instance addCommMonoid : AddCommMonoid (M [⋀^ι]→L[R] N) := fast_instance%
-  toContinuousMultilinearMap_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
+instance : AddMonoid (M [⋀^ι]→L[R] N) := fast_instance%
+  toContinuousMultilinearMap_injective.addMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
+
+instance addCommMonoid : IsAddCommutative (M [⋀^ι]→L[R] N) :=
+  toContinuousMultilinearMap_injective.isAddCommutative _ fun _ _ => rfl
 
 /-- Evaluation of a `ContinuousAlternatingMap` at a vector as an `AddMonoidHom`. -/
 def applyAddHom (v : ι → M) : M [⋀^ι]→L[R] N →+ N :=
@@ -494,8 +497,8 @@ instance : Sub (M [⋀^ι]→L[R] N) :=
 
 theorem sub_apply (m : ι → M) : (f - g) m = f m - g m := rfl
 
-instance : AddCommGroup (M [⋀^ι]→L[R] N) := fast_instance%
-  toContinuousMultilinearMap_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
+instance : AddGroup (M [⋀^ι]→L[R] N) := fast_instance%
+  toContinuousMultilinearMap_injective.addGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 end IsTopologicalAddGroup

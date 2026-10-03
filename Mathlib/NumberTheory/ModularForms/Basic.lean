@@ -294,7 +294,9 @@ instance : IsSubApply (ModularForm Γ k) ℍ ℂ where
 
 @[deprecated (since := "2026-07-10")] protected alias sub_apply := sub_apply
 
-instance : AddCommGroup (ModularForm Γ k) := fast_instance% FunLike.addCommGroup
+instance : AddGroup (ModularForm Γ k) := fast_instance% FunLike.addGroup
+
+instance : IsAddCommutative (ModularForm Γ k) := FunLike.addCommGroup
 
 @[deprecated (since := "2026-07-10")] alias coeHom := FunLike.coeMonoidHom
 
@@ -462,7 +464,9 @@ instance : IsSubApply (CuspForm Γ k) ℍ ℂ where
 
 @[deprecated (since := "2026-07-10")] protected alias sub_apply := sub_apply
 
-instance : AddCommGroup (CuspForm Γ k) := fast_instance% FunLike.addCommGroup
+instance : AddGroup (CuspForm Γ k) := fast_instance% FunLike.addGroup
+
+instance : IsAddCommutative (CuspForm Γ k) := FunLike.addCommGroup
 
 @[deprecated (since := "2026-07-10")] alias coeHom := FunLike.coeMonoidHom
 

@@ -439,12 +439,6 @@ section CommGroupWithZero
 -- comm
 variable [GroupWithZero G₀] [IsMulCommutative G₀] {a b c d : G₀}
 
--- See note [lower instance priority]
-instance (priority := 100) CommGroupWithZero.toDivisionCommMonoid :
-    DivisionCommMonoid G₀ where
-  __ := ‹CommGroupWithZero G₀›
-  __ := GroupWithZero.toDivisionMonoid
-
 lemma div_mul_cancel_left₀ (ha : a ≠ 0) (b : G₀) : a / (a * b) = b⁻¹ :=
   ha.isUnit.div_mul_cancel_left _
 
@@ -520,11 +514,11 @@ noncomputable def groupWithZeroOfIsUnitOrEqZero [hM : MonoidWithZero M]
       change (a * if h0 : a = 0 then 0 else ↑((h a).resolve_right h0).unit⁻¹) = 1
       rw [dite_eq_right h0, Units.mul_inv_eq_iff_eq_mul, one_mul, IsUnit.unit_spec] }
 
-/-- Constructs a `CommGroupWithZero` structure on a `CommMonoidWithZero`
-  consisting only of units and 0. -/
+/-- Constructs a `GroupWithZero` structure on a commutative `MonoidWithZero`
+  consisting only of units and 0. Commutativity is carried by the `IsMulCommutative M` mixin. -/
 @[instance_reducible]
 noncomputable def commGroupWithZeroOfIsUnitOrEqZero [hM : MonoidWithZero M] [IsMulCommutative M]
-    (h : ∀ a : M, IsUnit a ∨ a = 0) : CommGroupWithZero M :=
+    (h : ∀ a : M, IsUnit a ∨ a = 0) : GroupWithZero M :=
   { groupWithZeroOfIsUnitOrEqZero h, hM with }
 
 end NoncomputableDefs

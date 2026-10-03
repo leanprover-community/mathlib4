@@ -162,8 +162,8 @@ theorem exists_coeff_ne_zero_and_weightedOrder
     ∃ d, coeff d f ≠ 0 ∧ weight w d = f.weightedOrder w := by
   classical
   simp_rw [weightedOrder, dite_eq_right ((ne_zero_iff_weightedOrder_finite w).mpr h), Nat.cast_inj]
-  generalize_proofs h1
-  exact Nat.find_spec h1
+  generalize_proofs
+  exact Nat.find_spec ‹∃ _, _›
 
 /-- If the `d`th coefficient of a formal power series is nonzero,
 then the weighted order of the power series is less than or equal to `weight d w`. -/

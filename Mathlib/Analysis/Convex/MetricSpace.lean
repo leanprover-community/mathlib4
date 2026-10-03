@@ -265,7 +265,7 @@ instance (priority := low) {V P : Type*}
       Finset.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ _ f.total p]
     suffices ‖f.weights.sum fun a b ↦ b • (a.1 -ᵥ a.2)‖ ≤
       f.weights.sum fun a b ↦ b * ‖a.1 -ᵥ a.2‖ by
-      simpa [dist_eq_norm_vsub, Finsupp.sum, ← Finset.sum_sub_distrib, ← smul_sub]
+      simpa [dist_eq_norm_vsub V, Finsupp.sum, ← Finset.sum_sub_distrib, ← smul_sub]
     grw [Finsupp.sum, Finsupp.sum, norm_sum_le]
     simp [norm_smul, abs_eq_self.mpr (f.nonneg _)]
 

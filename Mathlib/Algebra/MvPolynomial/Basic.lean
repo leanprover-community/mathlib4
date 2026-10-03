@@ -570,7 +570,7 @@ def lcoeff (m : σ →₀ ℕ) : MvPolynomial σ R →ₗ[R] R where
 
 theorem coeff_sum {X : Type*} (s : Finset X) (f : X → MvPolynomial σ R) (m : σ →₀ ℕ) :
     (∑ x ∈ s, f x).coeff m = ∑ x ∈ s, (f x).coeff m :=
-  map_sum (@coeffAddMonoidHom R σ _ _) _ s
+  map_sum (@coeffAddMonoidHom R σ _ _ _) _ s
 
 theorem monic_monomial_eq (m) :
     monomial m (1 : R) = (m.prod fun n e => X n ^ e : MvPolynomial σ R) := by simp [monomial_eq]
@@ -991,7 +991,8 @@ lemma monomial_mem_coeffsIn : monomial i x ∈ coeffsIn σ M ↔ x ∈ M := by
   exact ⟨fun h ↦ by simpa using h i, fun hs j ↦ by split <;> simp [hs]⟩
 
 @[simp]
-lemma C_mem_coeffsIn : C x ∈ coeffsIn σ M ↔ x ∈ M := by simpa using monomial_mem_coeffsIn (i := 0)
+lemma C_mem_coeffsIn : C x ∈ coeffsIn σ M ↔ x ∈ M := by
+  simpa using monomial_mem_coeffsIn (M := M) (i := 0)
 
 @[simp]
 lemma one_coeffsIn : 1 ∈ coeffsIn σ M ↔ 1 ∈ M := by simpa using C_mem_coeffsIn (x := (1 : S))

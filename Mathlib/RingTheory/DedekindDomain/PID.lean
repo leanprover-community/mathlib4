@@ -149,8 +149,9 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [Ring 
 https://math.stackexchange.com/a/95857 -/
 theorem Ideal.IsPrincipal.of_finite_maximals_of_isUnit (hf : {I : Ideal R | I.IsMaximal}.Finite)
     {I : Ideal R} (hI : IsUnit (I : FractionalIdeal R⁰ (FractionRing R))) : I.IsPrincipal :=
-  (IsLocalization.coeSubmodule_isPrincipal _ le_rfl).mp
-    (FractionalIdeal.isPrincipal.of_finite_maximals_of_inv le_rfl hf I
+  (IsLocalization.coeSubmodule_isPrincipal (FractionRing R) le_rfl).mp
+    (FractionalIdeal.isPrincipal.of_finite_maximals_of_inv le_rfl hf
+      (I : FractionalIdeal R⁰ (FractionRing R))
       (↑hI.unit⁻¹ : FractionalIdeal R⁰ (FractionRing R)) hI.unit.mul_inv)
 
 /-- A Dedekind domain is a PID if its set of maximal ideals is finite. -/

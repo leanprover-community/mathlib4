@@ -538,8 +538,8 @@ instance instMonoid [Monoid R] [BoundedMul R] [ContinuousMul R] :
 
 @[to_additive]
 instance instCommMonoid [Monoid R] [IsMulCommutative R] [BoundedMul R] [ContinuousMul R] :
-    CommMonoid (α →ᵇ R) := fast_instance%
-  Injective.commMonoid _ DFunLike.coe_injective rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    IsMulCommutative (α →ᵇ R) :=
+  DFunLike.coe_injective.isMulCommutative _ (fun _ _ ↦ rfl)
 
 /-- Coercion of a `BoundedContinuousFunction` is a `MonoidHom`. Similar to `MonoidHom.coeFn`. -/
 @[to_additive (attr := simps) /-- Coercion of a `BoundedContinuousFunction` is an `AddMonoidHom`.
@@ -562,12 +562,14 @@ def toContinuousMapMonoidHom [Monoid R] [BoundedMul R] [ContinuousMul R] : (α �
     simp
 
 @[to_additive (attr := simp)]
-lemma coe_prod {ι : Type*} (s : Finset ι) [Monoid R] [IsMulCommutative R] [BoundedMul R] [ContinuousMul R]
+lemma coe_prod {ι : Type*} (s : Finset ι) [Monoid R] [IsMulCommutative R]
+    [BoundedMul R] [ContinuousMul R]
     (f : ι → α →ᵇ R) :
     ⇑(∏ i ∈ s, f i) = ∏ i ∈ s, ⇑(f i) := map_prod coeFnMonoidHom f s
 
 @[to_additive]
-lemma prod_apply {ι : Type*} (s : Finset ι) [Monoid R] [IsMulCommutative R] [BoundedMul R] [ContinuousMul R]
+lemma prod_apply {ι : Type*} (s : Finset ι) [Monoid R] [IsMulCommutative R]
+    [BoundedMul R] [ContinuousMul R]
     (f : ι → α →ᵇ R) (a : α) :
     (∏ i ∈ s, f i) a = ∏ i ∈ s, f i a := by simp
 

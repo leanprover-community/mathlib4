@@ -59,8 +59,8 @@ variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Al
 variable [DecidableEq ι] [AddMonoid ι]
 variable [Semiring A] [IsMulCommutative A] [Algebra R A] (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜]
 
-instance : CommSemiring ((𝒜 0).baseChange S) :=
-  GradeZero.instCommSemiring fun i ↦ (𝒜 i).baseChange S
+instance : IsMulCommutative ((𝒜 0).baseChange S) :=
+  GradeZero.instIsMulCommutative fun i ↦ (𝒜 i).baseChange S
 
 end CommSemiring
 
@@ -85,16 +85,6 @@ instance : Ring ((𝒜 0).baseChange S) :=
   GradeZero.instRing fun i ↦ (𝒜 i).baseChange S
 
 end Ring
-
-section CommRing
-variable [Semiring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
-variable [DecidableEq ι] [AddMonoid ι] [IsAddCommutative ι]
-variable [Semiring A] [IsMulCommutative A] [Algebra R A] (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜]
-
-instance : CommRing ((𝒜 0).baseChange S) :=
-  GradeZero.instCommRing fun i ↦ (𝒜 i).baseChange S
-
-end CommRing
 
 end GradedAlgebra
 

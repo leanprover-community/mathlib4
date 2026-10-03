@@ -607,14 +607,14 @@ end
 variable (Rₘ Sₘ)
 
 theorem localizationAlgebraMap_def :
-    @algebraMap Rₘ Sₘ _ _ (localizationAlgebra M S) =
+    @algebraMap Rₘ Sₘ _ _ _ (localizationAlgebra M S) =
       map Sₘ (algebraMap R S)
         (show _ ≤ (Algebra.algebraMapSubmonoid S M).comap _ from M.le_comap_map) :=
   rfl
 
 /-- Injectivity of the underlying `algebraMap` descends to the algebra induced by localization. -/
 theorem localizationAlgebra_injective (hRS : Function.Injective (algebraMap R S)) :
-    Function.Injective (@algebraMap Rₘ Sₘ _ _ (localizationAlgebra M S)) :=
+    Function.Injective (@algebraMap Rₘ Sₘ _ _ _ (localizationAlgebra M S)) :=
   have : IsLocalization (M.map (algebraMap R S)) Sₘ := i
   IsLocalization.map_injective_of_injective _ _ _ hRS
 

@@ -111,7 +111,7 @@ section DirectSum
 open TensorProduct LinearMap DirectSum
 
 variable {ι : Type*}
-    {N : ι → Type*} [(i : ι) → AddCommMonoid (N i)] [(i : ι) → Module R (N i)]
+    {N : ι → Type*} [(i : ι) → AddMonoid (N i)] [(i : ι) → IsAddCommutative (N i)] [(i : ι) → Module R (N i)]
     {P : ι → Type*} [∀ i, AddMonoid (P i)] [∀ i, IsAddCommutative (P i)] [∀ i, Module R (P i)]
     [∀ i, Module S (P i)] [∀ i, IsScalarTower R S (P i)]
     {ε : (i : ι) → N i →ₗ[R] P i}

@@ -341,15 +341,6 @@ theorem eq_inv_of_mul_eq_one_left (h : a * b = 1) : a = b⁻¹ :=
 
 end DivisionMonoid
 
-/-- Commutative `SubtractionMonoid`. -/
-class SubtractionCommMonoid (G : Type*) extends SubtractionMonoid G, AddCommMonoid G
-
-/-- Commutative `DivisionMonoid`.
-
-This is the immediate common ancestor of `CommGroup` and `CommGroupWithZero`. -/
-@[to_additive SubtractionCommMonoid]
-class DivisionCommMonoid (G : Type*) extends DivisionMonoid G, CommMonoid G
-
 /-! We initialize the projections for the group structures for `@[simps]` here.
 
 The lemmas generated for the `npow`/`zpow` projections will *not* apply to `x ^ y`, since the
@@ -361,5 +352,3 @@ initialize_simps_projections DivInvOneMonoid
 initialize_simps_projections SubNegZeroMonoid
 initialize_simps_projections DivisionMonoid
 initialize_simps_projections SubtractionMonoid
-initialize_simps_projections DivisionCommMonoid
-initialize_simps_projections SubtractionCommMonoid

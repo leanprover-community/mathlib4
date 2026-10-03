@@ -35,18 +35,18 @@ variable {R : Type*} [Semiring R] [IsMulCommutative R] {A : Type*} [Semiring A]
   {X : Type*} [Module R A] [Coalgebra R A]
 
 variable (R A X) in
-@[to_additive]
+@[to_additive (dont_translate := R)]
 instance instCoalgebra : Coalgebra R A[X] := (coeffLinearEquiv R).coalgebra _
 
-@[to_additive]
+@[to_additive (dont_translate := R)]
 instance instIsCocomm [IsCocomm R A] : IsCocomm R A[X] := (coeffLinearEquiv R).coalgebraIsCocomm _
 
-@[to_additive (attr := simp)]
+@[to_additive (dont_translate := R) (attr := simp)]
 lemma counit_single (x : X) (a : A) :
     Coalgebra.counit (single x a) = Coalgebra.counit (R := R) a :=
   Finsupp.counit_single _ _ _ _ _
 
-@[to_additive]
+@[to_additive (dont_translate := R)]
 lemma comul_def :
     Coalgebra.comul (R := R) (A := A[X]) =
       TensorProduct.map (coeffLinearEquiv R).symm.toLinearMap (coeffLinearEquiv R).symm.toLinearMap

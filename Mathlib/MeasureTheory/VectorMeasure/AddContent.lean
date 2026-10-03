@@ -328,7 +328,7 @@ theorem exists_extension_of_isSetSemiring_of_le_measure [NormedSpace ℝ E]
   have Mle : M ≤ hα := generateFrom_le h'C
   set μ' := μ.trim Mle with hμ'
   obtain ⟨m', m'C, hm'⟩ :
-      ∃ m' : @VectorMeasure α M E _ _, (∀ s ∈ C, m' s = m s) ∧ ∀ s, ‖m' s‖ₑ ≤ μ' s := by
+      ∃ m' : @VectorMeasure α M E _ _ _, (∀ s ∈ C, m' s = m s) ∧ ∀ s, ‖m' s‖ₑ ≤ μ' s := by
     apply exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom hC (fun s hs ↦ ?_) rfl
     apply (hm s hs).trans_eq
     exact (MeasureTheory.trim_measurableSet_eq Mle (measurableSet_generateFrom hs)).symm

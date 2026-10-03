@@ -646,7 +646,9 @@ def latticeBasis :
     -- and it's a basis since it has the right cardinality
     refine basisOfLinearIndependentOfCardEqFinrank this ?_
     rw [← finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank, finrank_prod, finrank_pi,
-      finrank_pi_fintype, Complex.finrank_real_complex, sum_const, card_univ, ← nrRealPlaces,
+      finrank_pi_fintype]
+    beta_reduce
+    rw [Complex.finrank_real_complex, sum_const, card_univ, ← nrRealPlaces,
       ← nrComplexPlaces, ← card_real_embeddings, smul_eq_mul, mul_comm,
       ← card_complex_embeddings, ← NumberField.Embeddings.card K ℂ, Fintype.card_subtype_compl,
       Nat.add_sub_of_le (Fintype.card_subtype_le _)]
@@ -849,7 +851,7 @@ theorem stdOrthonormalBasis_map_eq :
 
 open scoped Classical in
 theorem volumePreserving_toMixed :
-    MeasurePreserving (toMixed K) where
+    MeasurePreserving (toMixed K) (@volume _ measureSpaceOfInnerProductSpace) where
   measurable := (toMixed K).continuous.measurable
   map_eq := by
     rw [← (OrthonormalBasis.addHaar_eq_volume (euclidean.stdOrthonormalBasis K)), Basis.map_addHaar,
@@ -859,8 +861,9 @@ theorem volumePreserving_toMixed :
 
 open scoped Classical in
 theorem volumePreserving_toMixed_symm :
-    MeasurePreserving (toMixed K).symm := by
-  have : MeasurePreserving (toMixed K).toHomeomorph.toMeasurableEquiv := volumePreserving_toMixed K
+    MeasurePreserving (toMixed K).symm (μb := @volume _ measureSpaceOfInnerProductSpace) := by
+  have : MeasurePreserving (toMixed K).toHomeomorph.toMeasurableEquiv
+      (@volume _ measureSpaceOfInnerProductSpace) := volumePreserving_toMixed K
   exact this.symm
 
 open scoped Classical in

@@ -331,7 +331,8 @@ theorem finInsepDegree_eq_of_equiv (i : E ≃ₐ[F] K) :
 
 @[simp]
 theorem sepDegree_self : sepDegree F F = 1 := by
-  rw [sepDegree, Subsingleton.elim (separableClosure F F) ⊥, IntermediateField.rank_bot]
+  change Module.rank F (separableClosure F F) = 1
+  rw [Subsingleton.elim (separableClosure F F) ⊥, IntermediateField.rank_bot]
 
 @[simp]
 theorem insepDegree_self : insepDegree F F = 1 := by
@@ -469,7 +470,8 @@ end IntermediateField
 /-- A separable extension has separable degree equal to degree. -/
 theorem Algebra.IsSeparable.sepDegree_eq [Algebra.IsSeparable F E] :
     sepDegree F E = Module.rank F E := by
-  rw [sepDegree, (separableClosure.eq_top_iff F E).2 ‹_›, IntermediateField.rank_top']
+  change Module.rank F (separableClosure F E) = _
+  rw [(separableClosure.eq_top_iff F E).2 ‹_›, IntermediateField.rank_top']
 
 /-- A separable extension has inseparable degree one. -/
 theorem Algebra.IsSeparable.insepDegree_eq [Algebra.IsSeparable F E] : insepDegree F E = 1 := by

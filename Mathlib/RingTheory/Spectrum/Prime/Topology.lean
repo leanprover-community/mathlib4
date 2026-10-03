@@ -571,7 +571,7 @@ theorem eq_biUnion_of_isOpen {s : Set (PrimeSpectrum R)} (hs : IsOpen s) :
     s = ⋃ (r : R) (_ : ↑(basicOpen r) ⊆ s), basicOpen r :=
   (isTopologicalBasis_basic_opens.open_eq_sUnion' hs).trans <| by aesop
 
-theorem isBasis_basic_opens : TopologicalSpace.Opens.IsBasis (Set.range (@basicOpen R _)) := by
+theorem isBasis_basic_opens : TopologicalSpace.Opens.IsBasis (Set.range (@basicOpen R _ _)) := by
   unfold TopologicalSpace.Opens.IsBasis
   convert! isTopologicalBasis_basic_opens (R := R)
   rw [← Set.range_comp]
@@ -844,7 +844,7 @@ end Order
 localization of `x`. -/
 def localizationMapOfSpecializes {x y : PrimeSpectrum R} (h : x ⤳ y) :
     Localization.AtPrime y.asIdeal →+* Localization.AtPrime x.asIdeal :=
-  @IsLocalization.lift _ _ _ _ _ _ _ _ Localization.isLocalization
+  @IsLocalization.lift _ _ _ _ _ _ _ _ _ _ _ Localization.isLocalization
     (algebraMap R (Localization.AtPrime x.asIdeal))
     (by
       rintro ⟨a, ha⟩

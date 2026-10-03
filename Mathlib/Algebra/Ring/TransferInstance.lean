@@ -94,20 +94,21 @@ protected abbrev semiring [Semiring β] : Semiring α := by
   let npow := e.pow ℕ
   apply e.injective.semiring _ <;> intros <;> exact e.apply_symm_apply _
 
-/-- Transfer `NonUnitalCommSemiring` across an `Equiv` -/
-protected abbrev nonUnitalCommSemiring [NonUnitalSemiring β] [IsMulCommutative β] : NonUnitalCommSemiring α := by
-  let zero := e.zero
-  let add := e.add
-  let mul := e.mul
-  let nsmul := e.smul ℕ
-  apply e.injective.nonUnitalCommSemiring _ <;> intros <;> exact e.apply_symm_apply _
+/-- Transfer `NonUnitalCommSemiring` across an `Equiv`. Under the unbundling this is the
+commutativity half; the `NonUnitalSemiring` half is `Equiv.nonUnitalSemiring`. -/
+protected theorem nonUnitalCommSemiring [NonUnitalSemiring β] [IsMulCommutative β] :
+    letI := e.nonUnitalSemiring
+    IsMulCommutative α := by
+  let := e.nonUnitalSemiring
+  exact e.injective.isMulCommutative _ fun _ _ ↦ e.apply_symm_apply _
 
-/-- Transfer `CommSemiring` across an `Equiv` -/
-protected abbrev commSemiring [Semiring β] [IsMulCommutative β] : CommSemiring α := by
-  let mul := e.mul
-  let add_monoid_with_one := e.addMonoidWithOne
-  let npow := e.pow ℕ
-  apply e.injective.commSemiring _ <;> intros <;> exact e.apply_symm_apply _
+/-- Transfer `CommSemiring` across an `Equiv`. Under the unbundling this is the commutativity
+half; the `Semiring` half is `Equiv.semiring`. -/
+protected theorem commSemiring [Semiring β] [IsMulCommutative β] :
+    letI := e.semiring
+    IsMulCommutative α := by
+  let := e.semiring
+  exact e.injective.isMulCommutative _ fun _ _ ↦ e.apply_symm_apply _
 
 /-- Transfer `NonUnitalNonAssocRing` across an `Equiv` -/
 protected abbrev nonUnitalNonAssocRing [NonUnitalNonAssocRing β] : NonUnitalNonAssocRing α := by
@@ -144,23 +145,21 @@ protected abbrev ring [Ring β] : Ring α := by
   let npow := e.pow ℕ
   apply e.injective.ring _ <;> intros <;> exact e.apply_symm_apply _
 
-/-- Transfer `NonUnitalCommRing` across an `Equiv` -/
-protected abbrev nonUnitalCommRing [NonUnitalRing β] [IsMulCommutative β] : NonUnitalCommRing α := by
-  let zero := e.zero
-  let add := e.add
-  let mul := e.mul
-  let neg := e.Neg
-  let sub := e.sub
-  let nsmul := e.smul ℕ
-  let zsmul := e.smul ℤ
-  apply e.injective.nonUnitalCommRing _ <;> intros <;> exact e.apply_symm_apply _
+/-- Transfer `NonUnitalCommRing` across an `Equiv`. Under the unbundling this is the
+commutativity half; the `NonUnitalRing` half is `Equiv.nonUnitalRing`. -/
+protected theorem nonUnitalCommRing [NonUnitalRing β] [IsMulCommutative β] :
+    letI := e.nonUnitalRing
+    IsMulCommutative α := by
+  let := e.nonUnitalRing
+  exact e.injective.isMulCommutative _ fun _ _ ↦ e.apply_symm_apply _
 
-/-- Transfer `CommRing` across an `Equiv` -/
-protected abbrev commRing [Ring β] [IsMulCommutative β] : CommRing α := by
-  let mul := e.mul
-  let add_group_with_one := e.addGroupWithOne
-  let npow := e.pow ℕ
-  apply e.injective.commRing _ <;> intros <;> exact e.apply_symm_apply _
+/-- Transfer `CommRing` across an `Equiv`. Under the unbundling this is the commutativity
+half; the `Ring` half is `Equiv.ring`. -/
+protected theorem commRing [Ring β] [IsMulCommutative β] :
+    letI := e.ring
+    IsMulCommutative α := by
+  let := e.ring
+  exact e.injective.isMulCommutative _ fun _ _ ↦ e.apply_symm_apply _
 
 /-- Transfer `IsDomain` across an `Equiv` -/
 protected lemma isDomain [Semiring β] [IsDomain β] (e : α ≃ β) :

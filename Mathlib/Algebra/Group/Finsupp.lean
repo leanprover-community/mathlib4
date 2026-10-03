@@ -356,9 +356,8 @@ end AddMonoid
 section AddCommMonoid
 variable [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [AddMonoid O] [IsAddCommutative O]
 
-instance instAddCommMonoid : AddCommMonoid (ι →₀ M) :=
-  fast_instance% DFunLike.coe_injective.addCommMonoid
-    DFunLike.coe coe_zero coe_add (fun _ _ => rfl)
+instance instIsAddCommutative : IsAddCommutative (ι →₀ M) :=
+  DFunLike.coe_injective.isAddCommutative DFunLike.coe coe_add
 
 lemma single_add_single_eq_single_add_single {k l m n : ι} {u v : M} (hu : u ≠ 0) (hv : v ≠ 0) :
     single k u + single l v = single m u + single n v ↔
@@ -498,9 +497,5 @@ lemma erase_sub (a : ι) (f₁ f₂ : ι →₀ G) : erase a (f₁ - f₂) = era
   (eraseAddHom a : (_ →₀ G) →+ _).map_sub f₁ f₂
 
 end AddGroup
-
-instance instAddCommGroup [AddGroup G] [IsAddCommutative G] : AddCommGroup (ι →₀ G) :=
-  fast_instance% DFunLike.coe_injective.addCommGroup DFunLike.coe coe_zero coe_add coe_neg coe_sub
-    (fun _ _ => rfl) fun _ _ => rfl
 
 end Finsupp

@@ -553,8 +553,9 @@ lemma map_posFittingComp_eq (e : M ≃ₗ⁅R,L⁆ M₂) :
     exact LieSubmodule.map_mono (map_posFittingComp_le _)
   rw [← LieSubmodule.map_comp]
   convert! LieSubmodule.map_id
-  ext
-  simp
+  · ext
+    simp
+  · infer_instance
 
 lemma posFittingComp_map_incl_sup_of_codisjoint [IsNoetherian R M] [IsArtinian R M]
     {N₁ N₂ : LieSubmodule R L M} (h : Codisjoint N₁ N₂) :

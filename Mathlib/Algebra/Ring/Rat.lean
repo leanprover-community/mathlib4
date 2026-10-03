@@ -27,9 +27,10 @@ namespace Rat
 
 /-! ### Instances -/
 
-instance commRing : CommRing ℚ where
-  __ := addCommGroup
-  __ := commMonoid
+instance ring : Ring ℚ where
+  __ := addGroup
+  __ := isAddCommutative
+  __ := monoid
   zero_mul := Rat.zero_mul
   mul_zero := Rat.mul_zero
   left_distrib := Rat.mul_add
@@ -41,7 +42,7 @@ instance commRing : CommRing ℚ where
     simp only [intCast_eq_divInt, divInt_add_divInt _ _ Int.one_ne_zero Int.one_ne_zero,
       ← divInt_one_one, Int.natCast_add, Int.natCast_one, mul_one]
 
-instance commGroupWithZero : CommGroupWithZero ℚ :=
+instance groupWithZero : GroupWithZero ℚ :=
   { exists_pair_ne := ⟨0, 1, Rat.zero_ne_one⟩
     inv_zero := Rat.inv_zero
     mul_inv_cancel := Rat.mul_inv_cancel
@@ -62,7 +63,6 @@ instance instCharZero : CharZero ℚ where cast_injective a b hab := by simpa us
 These also prevent non-computable instances being used to construct these instances non-computably.
 -/
 
-instance commSemiring : CommSemiring ℚ := by infer_instance
 instance semiring : Semiring ℚ := by infer_instance
 
 /-! ### Miscellaneous lemmas -/

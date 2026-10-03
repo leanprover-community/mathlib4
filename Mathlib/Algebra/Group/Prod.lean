@@ -67,18 +67,11 @@ instance [InvolutiveInv M] [InvolutiveInv N] : InvolutiveInv (M × N) :=
 @[to_additive]
 instance isMulCommutative [Mul M] [Mul N] [IsMulCommutative M] [IsMulCommutative N] :
     IsMulCommutative (M × N) where
-  is_comm.comm _ _ := by ext <;> apply mul_comm'
-
-@[to_additive]
-instance commMagma [Mul M] [IsMulCommutative M] [Mul N] [IsMulCommutative N] : CommMagma (M × N) where
-  mul_comm _ _ := by ext <;> apply mul_comm
+  is_comm.comm _ _ := by ext <;> apply mul_comm
 
 @[to_additive]
 instance instSemigroup [Semigroup M] [Semigroup N] : Semigroup (M × N) where
   mul_assoc _ _ _ := by ext <;> exact mul_assoc ..
-
-@[to_additive]
-instance instCommSemigroup [Semigroup G] [IsMulCommutative G] [Semigroup H] [IsMulCommutative H] : CommSemigroup (G × H) where
 
 @[to_additive]
 instance instMulOneClass [MulOneClass M] [MulOneClass N] : MulOneClass (M × N) where
@@ -120,10 +113,6 @@ instance [DivisionMonoid G] [DivisionMonoid H] : DivisionMonoid (G × H) :=
         (inv_eq_of_mul_eq_one_right congr(snd $h)),
     inv_inv := by simp }
 
-@[to_additive SubtractionCommMonoid]
-instance [DivisionMonoid G] [IsMulCommutative G] [DivisionMonoid H] [IsMulCommutative H] : DivisionCommMonoid (G × H) :=
-  { mul_comm := fun ⟨g₁, h₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mul_comm g₁, mul_comm h₁]; rfl }
-
 @[to_additive]
 instance instGroup [Group G] [Group H] : Group (G × H) where
   inv_mul_cancel _ := by ext <;> exact inv_mul_cancel _
@@ -160,18 +149,6 @@ instance [RightCancelMonoid M] [RightCancelMonoid N] : RightCancelMonoid (M × N
 @[to_additive]
 instance [CancelMonoid M] [CancelMonoid N] : CancelMonoid (M × N) :=
   { mul_right_cancel _ _ := by simp only [mul_left_inj, imp_self, forall_const] }
-
-@[to_additive]
-instance instCommMonoid [Monoid M] [IsMulCommutative M] [Monoid N] [IsMulCommutative N] : CommMonoid (M × N) :=
-  { mul_comm := fun ⟨m₁, n₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mk_mul_mk, mul_comm m₁, mul_comm n₁] }
-
-@[to_additive]
-instance [CancelMonoid M] [IsMulCommutative M] [CancelMonoid N] [IsMulCommutative N] : CancelCommMonoid (M × N) :=
-  { mul_left_cancel _ _ := by simp }
-
-@[to_additive]
-instance instCommGroup [Group G] [IsMulCommutative G] [Group H] [IsMulCommutative H] : CommGroup (G × H) :=
-  { mul_comm := fun ⟨g₁, h₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mk_mul_mk, mul_comm g₁, mul_comm h₁] }
 
 end Prod
 

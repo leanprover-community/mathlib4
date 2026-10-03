@@ -140,10 +140,11 @@ universe u in
 -- TODO: show that the constructed `f` is of finite presentation
 lemma exists_range_eq_of_isConstructible {R : Type u} [Ring R] [IsMulCommutative R]
     {s : Set (PrimeSpectrum R)} (hs : IsConstructible s) :
-    ∃ (S : Type u) (_ : CommRing S) (f : R →+* S), Set.range (comap f) = s := by
+    ∃ (S : Type u) (_ : Ring S) (_ : IsMulCommutative S) (f : R →+* S),
+      Set.range (comap f) = s := by
   obtain ⟨s, rfl⟩ := exists_constructibleSetData_iff.mpr hs
   refine ⟨Π i : s, Localization.Away (Ideal.Quotient.mk (Ideal.span (Set.range i.1.g)) i.1.f),
-    inferInstance, algebraMap _ _, ?_⟩
+    inferInstance, inferInstance, algebraMap _ _, ?_⟩
   rw [← iUnion_range_comap_comp_evalRingHom, ConstructibleSetData.toSet]
   simp_rw [← Finset.mem_coe, Set.biUnion_eq_iUnion]
   congr! with _ _ C
@@ -160,7 +161,7 @@ lemma exists_range_eq_of_isConstructible {R : Type u} [Ring R] [IsMulCommutative
 lemma isClosed_of_stableUnderSpecialization_of_isConstructible {R : Type*} [Ring R] [IsMulCommutative R]
     {s : Set (PrimeSpectrum R)} (hs : StableUnderSpecialization s) (hs' : IsConstructible s) :
     IsClosed s := by
-  obtain ⟨S, _, f, rfl⟩ := exists_range_eq_of_isConstructible hs'
+  obtain ⟨S, _, _, f, rfl⟩ := exists_range_eq_of_isConstructible hs'
   exact isClosed_range_of_stableUnderSpecialization _ hs
 
 @[stacks 00I0 "(1)"]

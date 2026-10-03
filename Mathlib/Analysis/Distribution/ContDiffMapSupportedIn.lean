@@ -238,7 +238,9 @@ instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstS
 
 @[deprecated (since := "2026-06-15")] alias coe_smul := FunLike.coe_smul
 
-instance : AddCommGroup 𝓓^{n}_{K}(E, F) := fast_instance% FunLike.addCommGroup
+instance : AddGroup 𝓓^{n}_{K}(E, F) := fast_instance% FunLike.addGroup
+
+instance : IsAddCommutative 𝓓^{n}_{K}(E, F) := FunLike.addCommGroup
 
 @[deprecated (since := "2026-06-15")] alias coeHom := FunLike.coeAddMonoidHom
 

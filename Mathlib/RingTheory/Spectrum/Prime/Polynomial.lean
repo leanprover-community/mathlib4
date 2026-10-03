@@ -179,7 +179,7 @@ lemma isCompact_image_comap_of_monic (f g : R[X]) (hg : g.Monic) :
   obtain ⟨t, ht⟩ := exists_image_comap_of_monic f g hg
   rw [ht, ← (t : Set R).iUnion_of_singleton_coe, zeroLocus_iUnion, Set.compl_iInter]
   apply isCompact_iUnion
-  exact fun _ ↦ by simpa using isCompact_basicOpen _
+  exact fun _ ↦ by simpa using isCompact_basicOpen (_ : R)
 
 lemma isOpen_image_comap_of_monic (f g : R[X]) (hg : g.Monic) :
     IsOpen (comap C '' (zeroLocus {g} \ zeroLocus {f})) := by

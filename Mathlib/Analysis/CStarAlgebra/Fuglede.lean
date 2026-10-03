@@ -70,7 +70,8 @@ noncomputable def expMulMulExp (a b x : A) (z : ℂ) : A := exp (z • star b) *
 
 lemma expMulMulExp_eq_expUnitary_mul_mul_expUnitary (h : SemiconjBy x a b) (z : ℂ) :
     expMulMulExp a b x z =
-      expUnitary ((2 : ℝ) • ℑ (z • star b)) * x * expUnitary ((2 : ℝ) • ℑ (star z • a)) := by
+      expUnitary ((2 : ℝ) • imaginaryPart (A := A) (z • star b)) * x *
+        expUnitary ((2 : ℝ) • imaginaryPart (A := A) (star z • a)) := by
   let _ : NormedAlgebra ℚ A := .restrictScalars ℚ ℂ A
   nth_rw 1 [expMulMulExp, ← (h.smul_right (star z)).exp_neg_mul_mul_exp_eq_self]
   simp_rw [← mul_assoc, mul_assoc (_ * _ * x)]
@@ -110,7 +111,7 @@ public lemma isStarNormal_iff_forall_exp_mul_exp_mem_unitary {a : A} :
   refine ⟨fun ha x ↦ ?_, fun ha ↦ ?_⟩
   /- If `a` is normal, then clearly `exp (x • a) * exp (- x • star a) = exp (I • x • 2 • ℑ a)`
   and the latter is clearly an exponential unitary. -/
-  · convert! (selfAdjoint.expUnitary (x • (2 : ℝ) • ℑ a)).2
+  · convert! (selfAdjoint.expUnitary (x • (2 : ℝ) • imaginaryPart (A := A) a)).2
     have hcomm := star_comm_self (x := a) |>.symm.smul_left x |>.smul_right (-x)
     rw [← exp_add_of_commute hcomm]
     simp [imaginaryPart_apply_coe, smul_comm (2 : ℝ) I, smul_comm x I, smul_smul I I, smul_add x,

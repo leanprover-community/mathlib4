@@ -259,12 +259,12 @@ def freeDFinsuppEquiv :
   fromDFinsuppEquiv κ R (M := fun _ _ => R)
 
 theorem freeDFinsuppEquiv_def (f : Π₀ (_ : (Π i, κ i) × ι'), R) :
-    freeDFinsuppEquiv f =
+    freeDFinsuppEquiv (κ := κ) (R := R) (ι' := ι') f =
       fromDFinsuppEquiv κ R
       (LinearEquiv.piCongrRight (fun _ => MultilinearMap.piRingEquiv) <|
       DFinsupp.linearEquivFunOnFintype (R := R) <|
-      DFinsupp.sigmaCurryLEquiv (R := R) <|
-      (DFinsupp.domLCongr (R := R) (Equiv.sigmaEquivProd _ _).symm) f) :=
+      DFinsupp.sigmaCurryLEquiv (R := R) (M := fun _ _ => R) <|
+      (DFinsupp.domLCongr (R := R) (M := fun _ => R) (Equiv.sigmaEquivProd _ _).symm) f) :=
   rfl
 
 /--
@@ -275,7 +275,8 @@ component of the domain.
 @[simp]
 theorem freeDFinsuppEquiv_single [DecidableEq ι'] (p : (Π i, κ i) × ι') (r : R)
     (x : Π i, Π₀ _ : κ i, R) :
-    freeDFinsuppEquiv (.single p r) x = r • .single p.2 ((∏ i, (x i) (p.1 i))) := by
+    freeDFinsuppEquiv (κ := κ) (R := R) (ι' := ι') (.single p r) x =
+      r • .single p.2 ((∏ i, (x i) (p.1 i))) := by
   classical
   conv_lhs => rw [← mul_one r, ← smul_eq_mul, DFinsupp.single_smul, map_smul, smul_apply]
   congr
@@ -291,7 +292,8 @@ theorem freeDFinsuppEquiv_single [DecidableEq ι'] (p : (Π i, κ i) × ι') (r 
 
 theorem freeDFinsuppEquiv_apply [DecidableEq ι'] [Fintype ι']
     (f : Π₀ (_ : (Π i, κ i) × ι'), R) (x : Π i, Π₀ _ : κ i, R) :
-    freeDFinsuppEquiv f x = ∑ p, f p • .single p.2 ((∏ i, (x i) (p.1 i))) := by
+    freeDFinsuppEquiv (κ := κ) (R := R) (ι' := ι') f x =
+      ∑ p, f p • .single p.2 ((∏ i, (x i) (p.1 i))) := by
   apply DFinsupp.induction f
   · simp
   · rintro p r f - - hfx

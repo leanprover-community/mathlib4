@@ -46,7 +46,7 @@ section lcm
 
 /-- Least common multiple of a finite set -/
 def lcm (s : Finset β) (f : β → α) : α :=
-  s.fold GCDMonoid.lcm 1 f
+  s.fold (@GCDMonoid.lcm α ‹_› _ _) 1 f
 
 variable {s s₁ s₂ : Finset β} {f : β → α}
 
@@ -71,7 +71,7 @@ theorem dvd_lcm {b : β} (hb : b ∈ s) : f b ∣ s.lcm f :=
 
 @[simp]
 theorem lcm_insert [DecidableEq β] {b : β} :
-    (insert b s : Finset β).lcm f = GCDMonoid.lcm (f b) (s.lcm f) := by
+    (insert b s : Finset β).lcm f = @GCDMonoid.lcm α ‹_› _ _ (f b) (s.lcm f) := by
   by_cases h : b ∈ s
   · rw [insert_eq_of_mem h,
       (lcm_eq_right_iff (f b) (s.lcm f) (Multiset.normalize_lcm (s.1.map f))).2 (dvd_lcm h)]
@@ -84,7 +84,8 @@ theorem lcm_singleton {b : β} : ({b} : Finset β).lcm f = normalize (f b) :=
 @[local simp] -- This will later be provable by other `simp` lemmas.
 theorem normalize_lcm : normalize (s.lcm f) = s.lcm f := by simp [lcm_def]
 
-theorem lcm_union [DecidableEq β] : (s₁ ∪ s₂).lcm f = GCDMonoid.lcm (s₁.lcm f) (s₂.lcm f) :=
+theorem lcm_union [DecidableEq β] :
+    (s₁ ∪ s₂).lcm f = @GCDMonoid.lcm α ‹_› _ _ (s₁.lcm f) (s₂.lcm f) :=
   Finset.induction_on s₁ (by rw [empty_union, lcm_empty, lcm_one_left, normalize_lcm])
     fun a s _ ih ↦ by rw [insert_union, lcm_insert, lcm_insert, ih, lcm_assoc]
 
@@ -122,7 +123,7 @@ section gcd
 
 /-- Greatest common divisor of a finite set -/
 def gcd (s : Finset β) (f : β → α) : α :=
-  s.fold GCDMonoid.gcd 0 f
+  s.fold (@GCDMonoid.gcd α ‹_› _ _) 0 f
 
 variable {s s₁ s₂ : Finset β} {f : β → α}
 
@@ -145,12 +146,12 @@ theorem dvd_gcd {a : α} : (∀ b ∈ s, a ∣ f b) → a ∣ s.gcd f :=
   dvd_gcd_iff.2
 
 theorem gcd_cons {b : β} (h : b ∉ s) :
-    (cons b s h : Finset β).gcd f = GCDMonoid.gcd (f b) (s.gcd f) :=
+    (cons b s h : Finset β).gcd f = @GCDMonoid.gcd α ‹_› _ _ (f b) (s.gcd f) :=
   fold_cons h
 
 @[simp]
 theorem gcd_insert [DecidableEq β] {b : β} :
-    (insert b s : Finset β).gcd f = GCDMonoid.gcd (f b) (s.gcd f) := by
+    (insert b s : Finset β).gcd f = @GCDMonoid.gcd α ‹_› _ _ (f b) (s.gcd f) := by
   by_cases h : b ∈ s
   · rw [insert_eq_of_mem h,
       (gcd_eq_right_iff (f b) (s.gcd f) (Multiset.normalize_gcd (s.1.map f))).2 (gcd_dvd h)]
@@ -163,7 +164,8 @@ theorem gcd_singleton {b : β} : ({b} : Finset β).gcd f = normalize (f b) :=
 @[local simp] -- This will later be provable by other `simp` lemmas.
 theorem normalize_gcd : normalize (s.gcd f) = s.gcd f := by simp [gcd_def]
 
-theorem gcd_union [DecidableEq β] : (s₁ ∪ s₂).gcd f = GCDMonoid.gcd (s₁.gcd f) (s₂.gcd f) :=
+theorem gcd_union [DecidableEq β] :
+    (s₁ ∪ s₂).gcd f = @GCDMonoid.gcd α ‹_› _ _ (s₁.gcd f) (s₂.gcd f) :=
   Finset.induction_on s₁ (by rw [empty_union, gcd_empty, gcd_zero_left, normalize_gcd])
     fun a s _ ih ↦ by rw [insert_union, gcd_insert, gcd_insert, ih, gcd_assoc]
 
@@ -199,7 +201,8 @@ theorem gcd_eq_gcd_filter_ne_zero [DecidablePred fun x : β ↦ f x = 0] :
     trans ({x ∈ s | f x = 0} ∪ {x ∈ s | f x ≠ 0}).gcd f
     · rw [filter_union_filter_not_eq]
     rw [gcd_union]
-    refine Eq.trans (?_ : _ = GCDMonoid.gcd (0 : α) ?_) (?_ : GCDMonoid.gcd (0 : α) _ = _)
+    refine Eq.trans (?_ : _ = @GCDMonoid.gcd α ‹_› _ _ (0 : α) ?_)
+      (?_ : @GCDMonoid.gcd α ‹_› _ _ (0 : α) _ = _)
     · exact gcd {x ∈ s | f x ≠ 0} f
     · refine congr (congr rfl <| s.induction_on ?_ ?_) (by simp)
       · simp
@@ -208,7 +211,8 @@ theorem gcd_eq_gcd_filter_ne_zero [DecidablePred fun x : β ↦ f x = 0] :
         split_ifs with h1 <;> simp [h, h1]
     simp only [gcd_zero_left, normalize_gcd]
 
-nonrec theorem gcd_mul_left {α} [MonoidWithZero α] [IsMulCommutative α] [StrongNormalizedGCDMonoid α]
+nonrec theorem gcd_mul_left {α} [MonoidWithZero α] [IsMulCommutative α]
+    [StrongNormalizedGCDMonoid α]
     {s : Finset β} {f : β → α} {a : α} :
     (s.gcd fun x ↦ a * f x) = normalize a * s.gcd f := by
   classical
@@ -218,7 +222,8 @@ nonrec theorem gcd_mul_left {α} [MonoidWithZero α] [IsMulCommutative α] [Stro
       rw [gcd_insert, gcd_insert, h, ← gcd_mul_left]
       apply ((normalize_associated a).mul_right _).gcd_eq_right
 
-nonrec theorem gcd_mul_right {α} [MonoidWithZero α] [IsMulCommutative α] [StrongNormalizedGCDMonoid α]
+nonrec theorem gcd_mul_right {α} [MonoidWithZero α] [IsMulCommutative α]
+    [StrongNormalizedGCDMonoid α]
     {s : Finset β} {f : β → α} {a : α} :
     (s.gcd fun x ↦ f x * a) = s.gcd f * normalize a := by
   simp_rw [mul_comm]; exact gcd_mul_left
@@ -246,7 +251,7 @@ theorem extract_gcd (f : β → α) (hs : s.Nonempty) :
     by_cases! h : ∀ x ∈ s, f x = (0 : α)
     · refine ⟨fun _ ↦ 1, fun b hb ↦ by rw [h b hb, gcd_eq_zero_iff.2 h, mul_one], ?_⟩
       rw [gcd_eq_gcd_image, image_const hs, gcd_singleton, id, normalize_one]
-    · choose g' hg using @gcd_dvd _ _ _ _ s f
+    · choose g' hg using @gcd_dvd _ _ _ _ _ s f
       refine ⟨fun b ↦ if hb : b ∈ s then g' hb else 0, fun b hb ↦ ?_,
           extract_gcd' f _ h fun b hb ↦ ?_⟩
       · simp only [hb, hg, dite_true]
@@ -277,7 +282,8 @@ variable [Ring α] [IsMulCommutative α] [NormalizedGCDMonoid α]
 
 theorem gcd_eq_of_dvd_sub {s : Finset β} {f g : β → α} {a : α}
     (h : ∀ x : β, x ∈ s → a ∣ f x - g x) :
-    GCDMonoid.gcd a (s.gcd f) = GCDMonoid.gcd a (s.gcd g) := by
+    @GCDMonoid.gcd α inferInstance _ _ a (s.gcd f) =
+      @GCDMonoid.gcd α inferInstance _ _ a (s.gcd g) := by
   classical
     revert h
     refine s.induction_on ?_ ?_

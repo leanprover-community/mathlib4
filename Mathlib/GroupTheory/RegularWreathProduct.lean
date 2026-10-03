@@ -232,9 +232,9 @@ lemma iteratedWreathToPermHomInj (G : Type*) [Group G] :
       simp only [IteratedWreathProduct_zero]
       apply Function.injective_of_subsingleton
   | n + 1 => by
-      let _ := MulAction.compHom (Fin n → G) (iteratedWreathToPermHom G n)
-      have : FaithfulSMul (IteratedWreathProduct G n) (Fin n → G) :=
-        ⟨fun h ↦ iteratedWreathToPermHomInj G n (Equiv.ext h)⟩
+      let inst := MulAction.compHom (Fin n → G) (iteratedWreathToPermHom G n)
+      have : @FaithfulSMul (IteratedWreathProduct G n) (Fin n → G) inst.toSMul :=
+        @FaithfulSMul.mk _ _ inst.toSMul fun h ↦ iteratedWreathToPermHomInj G n (Equiv.ext h)
       exact ((Fin.succFunEquiv G n).symm.permCongrHom.toEquiv.comp_injective _).mpr
         (RegularWreathProduct.toPermInj (IteratedWreathProduct G n) G (Fin n → G))
 

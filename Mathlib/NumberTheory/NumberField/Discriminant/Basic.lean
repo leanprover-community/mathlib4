@@ -385,6 +385,10 @@ theorem minkowskiBound_lt_boundOfDiscBdd : minkowskiBound K ↑1 < boundOfDiscBd
 include hK in
 theorem natDegree_le_rankOfDiscrBdd (a : 𝓞 K) (h : ℚ⟮(a : K)⟯ = ⊤) :
     natDegree (minpoly ℤ (a : K)) ≤ rankOfDiscrBdd N := by
+  -- `IsScalarTower ℤ ℚ K` is not found by instance search here: while unifying the `SMul ℚ K`
+  -- argument of `AddCommGroup.intIsScalarTower`, the pending `Module ℚ K` subgoal tries
+  -- `NormedSpace.toModule`, which throws (stuck) instead of failing, aborting the search.
+  have : IsScalarTower ℤ ℚ K := AddCommGroup.intIsScalarTower (R := ℚ) (M := K)
   rw [Field.primitive_element_iff_minpoly_natDegree_eq,
     minpoly.isIntegrallyClosed_eq_field_fractions' ℚ a.isIntegral_coe,
     (minpoly.monic a.isIntegral_coe).natDegree_map] at h

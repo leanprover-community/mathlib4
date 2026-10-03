@@ -799,11 +799,13 @@ lemma toClass_injective : Function.Injective <| toClass (W := W) := by
   · exact zero_add 0
   · exact CoordinateRing.mk_XYIdeal'_neg_mul h
 
-instance : AddCommSemigroup W.Point where
-  add_comm _ _ := toClass_injective <| by simp only [map_add, add_comm]
+instance : AddSemigroup W.Point where
   add_assoc _ _ _ := toClass_injective <| by simp only [map_add, add_assoc]
 
-instance : AddCommGroup W.Point where
+instance : IsAddCommutative W.Point :=
+  ⟨⟨fun _ _ => toClass_injective <| by simp only [map_add, add_comm]⟩⟩
+
+instance : AddGroup W.Point where
   nsmul := nsmulBinRec
   nsmul_succ := nsmulBinRec_succ
   zsmul := zsmulRec nsmulBinRec

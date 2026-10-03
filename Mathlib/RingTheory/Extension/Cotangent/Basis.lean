@@ -41,7 +41,7 @@ variable {ι : Type*} (P : Generators R S ι) {σ : Type*}
 structure Aux where
   /-- A section of the projection `I → I/I²`. -/
   f : P.toExtension.Cotangent → P.toExtension.ker
-  hf : ∀ (b : P.toExtension.Cotangent), Extension.Cotangent.mk (f b) = b
+  hf : ∀ (b : P.toExtension.Cotangent), Extension.Cotangent.mk (P := P.toExtension) (f b) = b
   /-- An element `g` that becomes invertible in `S = R[X₁, ..., Xₙ] / I`. -/
   g : P.Ring
   hgmem : g - 1 ∈ P.ker
@@ -55,7 +55,8 @@ variable (D : Aux P b)
 /-- `T = R[X₁, ..., Xₙ] / (b₁, ..., bᵣ)` where the `bᵢ` are lifts of the basis elements
 of `I/I²` in `I`. -/
 abbrev T :=
-  MvPolynomial ι R ⧸ (Ideal.span <| Set.range <| Subtype.val ∘ D.f ∘ b)
+  MvPolynomial ι R ⧸
+    (Ideal.span (Set.range <| Subtype.val ∘ D.f ∘ b : Set (MvPolynomial ι R)))
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -138,8 +139,8 @@ def tensorCotangentHom : S ⊗[D.T] D.presLeft.toExtension.Cotangent →ₗ[S] P
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma tensorCotangentHom_tmul (x : D.presLeft.toExtension.ker) :
-    D.tensorCotangentHom (1 ⊗ₜ[D.T] Extension.Cotangent.mk x) =
-      .mk ⟨x.val, D.ker_presLeft_le x.2⟩ := by
+    D.tensorCotangentHom (1 ⊗ₜ[D.T] Extension.Cotangent.mk (P := D.presLeft.toExtension) x) =
+      Extension.Cotangent.mk (P := P.toExtension) ⟨x.val, D.ker_presLeft_le x.2⟩ := by
   simp_rw +instances [tensorCotangentHom, LinearMap.liftBaseChange_tmul, one_smul, presLeft,
     Extension.Cotangent.map_mk, Extension.Hom.toAlgHom_apply, Hom.toExtensionHom_toRingHom,
     toAlgHom_fhom, AlgHom.toRingHom_eq_coe, AlgHom.id_toRingHom, toExtension_Ring,
@@ -147,17 +148,18 @@ lemma tensorCotangentHom_tmul (x : D.presLeft.toExtension.ker) :
 
 /-- The backwards direction of the isomorphism `S ⊗[T] J/J² ≃ₗ[S] I/I²`. -/
 def tensorCotangentInv : P.toExtension.Cotangent →ₗ[S] S ⊗[D.T] D.presLeft.toExtension.Cotangent :=
-  b.constr S fun i : σ ↦ 1 ⊗ₜ Extension.Cotangent.mk (D.kerGen i)
+  b.constr S fun i : σ ↦ 1 ⊗ₜ Extension.Cotangent.mk (P := D.presLeft.toExtension) (D.kerGen i)
 
 @[simp]
 lemma tensorCotangentInv_apply (i : σ) :
-    D.tensorCotangentInv (b i) = 1 ⊗ₜ Extension.Cotangent.mk (D.kerGen i) :=
+    D.tensorCotangentInv (b i) =
+      1 ⊗ₜ Extension.Cotangent.mk (P := D.presLeft.toExtension) (D.kerGen i) :=
   Module.Basis.constr_basis _ _ _ _
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma span_range_mk_kerGen : Submodule.span D.T
-    (Set.range fun i ↦ Extension.Cotangent.mk (D.kerGen i)) = ⊤ := by
+    (Set.range fun i ↦ Extension.Cotangent.mk (P := D.presLeft.toExtension) (D.kerGen i)) = ⊤ := by
   refine Extension.Cotangent.span_eq_top_of_span_eq_ker _ ?_
   dsimp only [presLeft, Presentation.naive_toGenerators]
   exact (Generators.ker_naive _ _).symm
@@ -177,7 +179,8 @@ def tensorCotangentEquiv :
 
 set_option backward.isDefEq.respectTransparency false in
 lemma tensorCotangentEquiv_symm_apply (i : σ) :
-    D.tensorCotangentEquiv.symm (b i) = 1 ⊗ₜ Extension.Cotangent.mk (D.kerGen i) :=
+    D.tensorCotangentEquiv.symm (b i) =
+      1 ⊗ₜ Extension.Cotangent.mk (P := D.presLeft.toExtension) (D.kerGen i) :=
   D.tensorCotangentInv_apply i
 
 set_option backward.isDefEq.respectTransparency false in
@@ -196,7 +199,9 @@ set_option backward.isDefEq.respectTransparency false in
 lemma map_ofComp_mk [Nontrivial S] :
     (Extension.Cotangent.map
       ((localizationAway S D.gbar).ofComp D.presLeft.toGenerators).toExtensionHom)
-      (Extension.Cotangent.mk ⟨D.pres.relation (Sum.inl ()), D.pres.relation_mem_ker _⟩) =
+      (Extension.Cotangent.mk
+        (P := ((localizationAway S D.gbar).comp D.presLeft.toGenerators).toExtension)
+        ⟨D.pres.relation (Sum.inl ()), D.pres.relation_mem_ker _⟩) =
       Generators.cMulXSubOneCotangent S D.gbar := by
   simp_rw [Extension.Cotangent.map_mk, Generators.Hom.toExtensionHom_toAlgHom_apply]
   congr 2
@@ -306,7 +311,9 @@ lemma pres_val_comp_inr : D.pres.val ∘ Sum.inr = P.val := funext (aeval_X _)
 set_option backward.isDefEq.respectTransparency false in
 /-- The constructed basis indeed is given by the images of the relations. -/
 lemma basis_apply [Nontrivial S] (r : Unit ⊕ σ) :
-    D.basis r = Extension.Cotangent.mk ⟨D.pres.relation r, D.pres.relation_mem_ker r⟩ := by
+    D.basis r =
+      Extension.Cotangent.mk (P := D.pres.toExtension)
+        ⟨D.pres.relation r, D.pres.relation_mem_ker r⟩ := by
   obtain (r | r) := r
   · rw [basis_inl, cotangentEquivProd_symm_apply]
     exact cotangentCompLocalizationAwayEquiv_symm_inr _ _ _
@@ -364,7 +371,8 @@ public lemma exists_presentation_of_basis_cotangent [Algebra.FinitePresentation 
     ∃ (P' : Presentation R S (Unit ⊕ α) (Unit ⊕ σ))
       (b : Module.Basis (Unit ⊕ σ) S P'.toExtension.Cotangent),
       P'.val ∘ Sum.inr = P.val ∧
-      ∀ r, b r = Extension.Cotangent.mk ⟨P'.relation r, P'.relation_mem_ker r⟩ := by
+      ∀ r, b r =
+        Extension.Cotangent.mk (P := P'.toExtension) ⟨P'.relation r, P'.relation_mem_ker r⟩ := by
   cases subsingleton_or_nontrivial S
   · let P' : Presentation R S (Unit ⊕ α) (Unit ⊕ σ) :=
       { toGenerators := .ofSurjective (fun i : Unit ⊕ α ↦ 0) (Function.surjective_to_subsingleton _)
@@ -416,7 +424,8 @@ public lemma exists_presentation_of_free_cotangent [Algebra.FinitePresentation R
       (b : Module.Basis (Unit ⊕ Fin (Module.finrank S P.toExtension.Cotangent))
         S P'.toExtension.Cotangent),
       P'.val ∘ Sum.inr = P.val ∧
-      ∀ r, b r = Extension.Cotangent.mk ⟨P'.relation r, P'.relation_mem_ker r⟩ := by
+      ∀ r, b r =
+        Extension.Cotangent.mk (P := P'.toExtension) ⟨P'.relation r, P'.relation_mem_ker r⟩ := by
   cases subsingleton_or_nontrivial S
   · let P' : Presentation R S (Unit ⊕ α) (Unit ⊕ Fin (Module.finrank S P.toExtension.Cotangent)) :=
       { toGenerators := .ofSurjective (fun i : Unit ⊕ α ↦ 0) (Function.surjective_to_subsingleton _)

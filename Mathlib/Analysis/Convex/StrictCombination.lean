@@ -118,7 +118,7 @@ lemma dist_affineCombination_lt_of_strictConvexSpace {t : Finset ι} {w : ι →
     dist (t.affineCombination ℝ p w) p₀ < r := by
   rw [affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ _ h1 p₀,
     weightedVSubOfPoint_apply, dist_vadd_left]
-  simp_rw [dist_eq_norm_vsub] at hp
+  simp_rw [dist_eq_norm_vsub V] at hp
   exact norm_sum_lt_of_strictConvexSpace h0 h1 hi hj (by simpa using hij) hi0 hj0 hp
 
 namespace Affine

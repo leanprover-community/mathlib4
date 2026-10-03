@@ -81,7 +81,9 @@ instance : SubringClass (ValuationSubring K) K where
 theorem toSubring_injective : Function.Injective (toSubring : ValuationSubring K → Subring K) :=
   fun x y h => by cases x; cases y; congr
 
-instance : CommRing A := inferInstanceAs <| CommRing A.toSubring
+instance : Ring A := inferInstanceAs <| Ring A.toSubring
+
+instance : IsMulCommutative A := inferInstanceAs <| IsMulCommutative A.toSubring
 
 instance : IsDomain A := inferInstanceAs <| IsDomain A.toSubring
 

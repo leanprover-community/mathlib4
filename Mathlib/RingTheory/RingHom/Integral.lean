@@ -28,13 +28,13 @@ theorem isIntegral_stableUnderComposition : StableUnderComposition fun f => f.Is
 
 theorem isIntegral_respectsIso : RespectsIso fun f => f.IsIntegral := by
   apply isIntegral_stableUnderComposition.respectsIso
-  introv x
+  intro R S _ _ _ _ e x
   rw [← e.apply_symm_apply x]
   apply RingHom.isIntegralElem_map
 
 theorem isIntegral_isStableUnderBaseChange : IsStableUnderBaseChange fun f => f.IsIntegral := by
   refine IsStableUnderBaseChange.mk isIntegral_respectsIso ?_
-  introv int
+  intro R S T _ _ _ _ _ _ _ _ int
   rw [algebraMap_isIntegral_iff] at int ⊢
   infer_instance
 

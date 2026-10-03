@@ -194,8 +194,9 @@ instance instAddMonoidWithOne [AddMonoidWithOne R] : AddMonoidWithOne (Arithmeti
   natCast_zero := by ext; simp
   natCast_succ n := by ext x; by_cases h : x = 1 <;> simp [h]
 
-instance instAddCommMonoid [AddMonoid R] [IsAddCommutative R] : AddCommMonoid (ArithmeticFunction R) where
-  add_comm _ _ := ext fun _ ↦ add_comm _ _
+instance instAddCommMonoid [AddMonoid R] [IsAddCommutative R] :
+    IsAddCommutative (ArithmeticFunction R) where
+  is_comm := ⟨fun _ _ ↦ ext fun _ ↦ add_comm _ _⟩
 
 instance [NegZeroClass R] : Neg (ArithmeticFunction R) where
   neg f := ⟨-f, by simp⟩
@@ -207,9 +208,6 @@ theorem neg_apply [NegZeroClass R] {f : ArithmeticFunction R} {n : ℕ} : (-f) n
 instance [AddGroup R] : AddGroup (ArithmeticFunction R) where
   neg_add_cancel _ := ext fun _ ↦ neg_add_cancel _
   zsmul := zsmulRec
-
-instance [AddGroup R] [IsAddCommutative R] : AddCommGroup (ArithmeticFunction R) where
-  add_comm := fun _ _ ↦ add_comm _ _
 
 section SMul
 
@@ -289,15 +287,14 @@ instance instSemiring : Semiring (ArithmeticFunction R) where
 
 end Semiring
 
-instance [Semiring R] [IsMulCommutative R] : CommSemiring (ArithmeticFunction R) where
-  mul_comm f g := by
+instance [Semiring R] [IsMulCommutative R] : IsMulCommutative (ArithmeticFunction R) where
+  is_comm := ⟨fun f g ↦ by
     ext
     rw [mul_apply, ← map_swap_divisorsAntidiagonal, sum_map]
-    simp [mul_comm]
+    simp [mul_comm]⟩
 
-instance [Ring R] [IsMulCommutative R] : CommRing (ArithmeticFunction R) where
+instance [Ring R] [IsMulCommutative R] : Ring (ArithmeticFunction R) where
   neg_add_cancel := neg_add_cancel
-  mul_comm := mul_comm
 
 instance {S : Type*} [Semiring R] [AddMonoid S] [IsAddCommutative S] [Module R S] :
     Module R (ArithmeticFunction S) where

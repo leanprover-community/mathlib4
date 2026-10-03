@@ -45,7 +45,7 @@ theorem freeFinsuppEquiv_def (f : ((Π i, κ i) × ι') →₀ R) :
     freeFinsuppEquiv f =
       LinearEquiv.multilinearMapCongrLeft (fun _ => finsuppLequivDFinsupp R)
       (((finsuppLequivDFinsupp R).multilinearMapCongrRight R).symm <|
-      freeDFinsuppEquiv (finsuppLequivDFinsupp R f)) :=
+      freeDFinsuppEquiv (κ := κ) (R := R) (ι' := ι') (finsuppLequivDFinsupp (M := R) R f)) :=
   rfl
 
 /--

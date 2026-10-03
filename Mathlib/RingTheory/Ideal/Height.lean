@@ -33,7 +33,7 @@ private noncomputable def Ideal.primeHeight [hI : I.IsPrime] : ℕ∞ :=
 
 /-- The height of an ideal is defined as the infimum of the heights of its minimal prime ideals. -/
 noncomputable def Ideal.height : ℕ∞ :=
-  ⨅ J ∈ I.minimalPrimes, @Ideal.primeHeight _ _ J ‹J ∈ I.minimalPrimes›.isPrime
+  ⨅ J ∈ I.minimalPrimes, @Ideal.primeHeight _ _ _ J ‹J ∈ I.minimalPrimes›.isPrime
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- For a prime ideal, its height equals its prime height. -/
@@ -559,7 +559,8 @@ section isLocalization
 
 variable
   (Rₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
-  [∀ (P : Ideal R) [P.IsMaximal], CommRing (Rₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], Ring (Rₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsMulCommutative (Rₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], Algebra R (Rₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], IsLocalization.AtPrime (Rₚ P) P]
 

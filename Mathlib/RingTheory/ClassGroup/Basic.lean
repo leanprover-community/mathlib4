@@ -88,7 +88,7 @@ modulo the principal ideals. -/
 @[wikidata Q912083]
 def ClassGroup :=
   (FractionalIdeal R⁰ (FractionRing R))ˣ ⧸ (toPrincipalIdeal R (FractionRing R)).range
-deriving CommGroup, Inhabited
+deriving Group, IsMulCommutative, Inhabited
 
 /-- The class group of `R` is isomorphic to the group of invertible `R`-submodules in `Frac(R)`
 modulo the principal submodules (invertible submodules are automatically fractional ideals). -/
@@ -358,7 +358,7 @@ theorem ClassGroup.mk_eq_one_iff {I : (FractionalIdeal R⁰ K)ˣ} :
     coe_toPrincipalIdeal, coe_mapEquiv, MulEquiv.refl_apply]
   refine ⟨fun ⟨x, hx⟩ => ⟨⟨x, by rw [← hx, coe_spanSingleton]⟩⟩, ?_⟩
   intro hI
-  obtain ⟨x, hx⟩ := @Submodule.IsPrincipal.principal _ _ _ _ _ _ hI
+  obtain ⟨x, hx⟩ := hI.principal
   have hx' : (I : FractionalIdeal R⁰ K) = spanSingleton R⁰ x := by
     apply Subtype.coe_injective
     simp only [val_eq_coe, hx, coe_spanSingleton]

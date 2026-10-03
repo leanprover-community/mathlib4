@@ -66,7 +66,8 @@ noncomputable def Core : Type _ := P.core
 
 -- Note: `Set` has no computational content, but Lean still attempts to compile it.
 -- See https://github.com/leanprover/lean4/issues/14084.
-noncomputable instance : CommRing P.Core := fast_instance% (inferInstanceAs <| CommRing P.core)
+noncomputable instance : Ring P.Core := fast_instance% (inferInstanceAs <| Ring P.core)
+instance : IsMulCommutative P.Core := inferInstanceAs <| IsMulCommutative P.core
 -- Note: `Set` has no computational content, but Lean still attempts to compile it.
 -- See https://github.com/leanprover/lean4/issues/14084.
 noncomputable instance : Algebra P.Core R := fast_instance% (inferInstanceAs <| Algebra P.core R)

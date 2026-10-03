@@ -689,13 +689,13 @@ abbrev SeminormedGroup.induced [Group E] [SeminormedGroup F] [MonoidHomClass �
 -- See note [reducible non-instances]
 /-- A group homomorphism from a `CommGroup` to a `SeminormedGroup` induces a
 `SeminormedCommGroup` structure on the domain. -/
-@[to_additive /-- A group homomorphism from an `AddCommGroup` to a
+@[to_additive SeminormedAddCommGroup.induced
+/-- A group homomorphism from an `AddCommGroup` to a
 `SeminormedAddGroup` induces a `SeminormedAddCommGroup` structure on the domain. -/]
 abbrev SeminormedCommGroup.induced
     [Group E] [IsMulCommutative E] [SeminormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) :
-    SeminormedCommGroup E :=
-  fast_instance% { SeminormedGroup.induced E F f with
-    mul_comm := mul_comm }
+    SeminormedGroup E :=
+  SeminormedGroup.induced E F f
 
 -- See note [reducible non-instances].
 /-- An injective group homomorphism from a `Group` to a `NormedGroup` induces a `NormedGroup`
@@ -710,11 +710,12 @@ abbrev NormedGroup.induced
 -- See note [reducible non-instances].
 /-- An injective group homomorphism from a `CommGroup` to a `NormedGroup` induces a
 `NormedCommGroup` structure on the domain. -/
-@[to_additive /-- An injective group homomorphism from a `CommGroup` to a
+@[to_additive NormedAddCommGroup.induced
+/-- An injective group homomorphism from a `CommGroup` to a
 `NormedCommGroup` induces a `NormedCommGroup` structure on the domain. -/]
 abbrev NormedCommGroup.induced [Group E] [IsMulCommutative E] [NormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕)
-    (h : Injective f) : NormedCommGroup E :=
-  fast_instance% { SeminormedCommGroup.induced E F f, MetricSpace.induced f h _ with }
+    (h : Injective f) : NormedGroup E :=
+  NormedGroup.induced E F f h
 
 end Induced
 
@@ -968,17 +969,17 @@ theorem nnnorm_prod_le_of_le (s : Finset ι) {f : ι → E} {n : ι → ℝ≥0}
     ‖∏ b ∈ s, f b‖₊ ≤ ∑ b ∈ s, n b :=
   (norm_prod_le_of_le s h).trans_eq (NNReal.coe_sum ..).symm
 
-@[to_additive]
+@[to_additive NormedAddCommGroup.tendsto_nhds_nhds]
 theorem NormedCommGroup.tendsto_nhds_nhds {f : E → F} {x : E} {y : F} :
     Tendsto f (𝓝 x) (𝓝 y) ↔ ∀ ε > 0, ∃ δ > 0, ∀ x', ‖x' / x‖ < δ → ‖f x' / y‖ < ε := by
   simpa [norm_inv_mul] using NormedGroup.tendsto_nhds_nhds (f := f) (x := x) (y := y)
 
-@[to_additive]
+@[to_additive NormedAddCommGroup.nhds_basis_norm_lt]
 theorem NormedCommGroup.nhds_basis_norm_lt (x : E) :
     (𝓝 x).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { y | ‖y / x‖ < ε } := by
   simpa [norm_inv_mul] using NormedGroup.nhds_basis_norm_lt x
 
-@[to_additive]
+@[to_additive NormedAddCommGroup.uniformity_basis_dist]
 theorem NormedCommGroup.uniformity_basis_dist :
     (𝓤 E).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { p : E × E | ‖p.fst / p.snd‖ < ε } := by
   simpa [norm_inv_mul] using NormedGroup.uniformity_basis_dist (E := E)

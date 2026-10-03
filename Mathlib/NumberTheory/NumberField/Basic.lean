@@ -100,7 +100,7 @@ The drawback is we have to copy over instances manually.
 @[wikidata Q1358313]
 def RingOfIntegers : Type _ :=
   integralClosure ℤ K
-deriving CommRing, IsDomain, Nontrivial
+deriving Ring, IsMulCommutative, IsDomain, Nontrivial
 
 @[inherit_doc] scoped notation "𝓞" => NumberField.RingOfIntegers
 
@@ -359,8 +359,8 @@ instance : IsIntegralClosure (𝓞 L) (𝓞 K) L :=
   IsIntegralClosure.tower_top (R := ℤ)
 
 /-- The ring of integers of `L` is isomorphic to any integral closure of `𝓞 K` in `L` -/
-protected noncomputable def algEquiv (R : Type*) [Ring R] [IsMulCommutative R] [Algebra (𝓞 K) R] [Algebra R L]
-    [IsScalarTower (𝓞 K) R L] [IsIntegralClosure R (𝓞 K) L] : 𝓞 L ≃ₐ[𝓞 K] R :=
+protected noncomputable def algEquiv (R : Type*) [Ring R] [IsMulCommutative R] [Algebra (𝓞 K) R]
+    [Algebra R L] [IsScalarTower (𝓞 K) R L] [IsIntegralClosure R (𝓞 K) L] : 𝓞 L ≃ₐ[𝓞 K] R :=
   (IsIntegralClosure.equiv (𝓞 K) R L _).symm
 
 /-- Any extension between ring of integers is integral. -/

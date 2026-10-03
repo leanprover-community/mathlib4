@@ -532,7 +532,7 @@ def Result.mul {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (
     nnratArm dsα
   | .isNegNat rα .., _ | _, .isNegNat rα .. => intArm rα
   | .isNat mα' na pa, .isNat mα nb pb => do
-    haveI' : $mα =Q by clear! $mα $mα'; apply AddCommMonoidWithOne.toAddMonoidWithOne := ⟨⟩
+    haveI' : $mα =Q by clear! $mα $mα'; apply NonAssocSemiring.toAddMonoidWithOne := ⟨⟩
     assumeInstancesCommute
     have c : Q(ℕ) := mkRawNatLit (na.natLit! * nb.natLit!)
     haveI' : Nat.mul $na $nb =Q $c := ⟨⟩

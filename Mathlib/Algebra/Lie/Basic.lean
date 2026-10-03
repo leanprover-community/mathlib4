@@ -58,7 +58,7 @@ open Function
 
 /-- A Lie ring is an additive group with compatible product, known as the bracket, satisfying the
 Jacobi identity. -/
-class LieRing (L : Type v) extends AddCommGroup L, Bracket L L where
+class LieRing (L : Type v) extends AddGroup L, IsAddCommutative L, Bracket L L where
   /-- A Lie ring bracket is additive in its first component. -/
   protected add_lie : ∀ x y z : L, ⁅x + y, z⁆ = ⁅x, z⁆ + ⁅y, z⁆
   /-- A Lie ring bracket is additive in its second component. -/
@@ -128,7 +128,7 @@ end IsLieTower
 section BasicProperties
 
 theorem LieAlgebra.toModule_injective (L : Type*) [LieRing L] :
-    Function.Injective (@LieAlgebra.toModule _ _ _ _ : LieAlgebra ℚ L → Module ℚ L) := by
+    Function.Injective (@LieAlgebra.toModule _ _ _ _ _ : LieAlgebra ℚ L → Module ℚ L) := by
   rintro ⟨h₁⟩ ⟨h₂⟩ heq
   congr
 
@@ -485,7 +485,7 @@ theorem LieRingModule.compLieHom_apply (x : L₁) (m : M) :
 
 /-- A Lie module may be pulled back along a morphism of Lie algebras. -/
 theorem LieModule.compLieHom [Module R M] [LieModule R L₂ M] :
-    @LieModule R L₁ M _ _ _ _ _ (LieRingModule.compLieHom M f) :=
+    @LieModule R L₁ M _ _ _ _ _ _ _ (LieRingModule.compLieHom M f) :=
   { __ := LieRingModule.compLieHom M f
     smul_lie := fun t x m => by
       simp only [LieRingModule.compLieHom_apply, smul_lie, map_smul]
@@ -840,7 +840,9 @@ instance : IsSMulApply ℤ (M →ₗ⁅R,L⁆ N) M N where
 
 @[deprecated (since := "2026-07-27")] protected alias zsmul_apply := smul_apply
 
-instance : AddCommGroup (M →ₗ⁅R,L⁆ N) := fast_instance% FunLike.addCommGroup
+instance : AddGroup (M →ₗ⁅R,L⁆ N) := fast_instance% FunLike.addGroup
+
+instance : IsAddCommutative (M →ₗ⁅R,L⁆ N) := FunLike.addCommGroup
 
 variable [LieAlgebra R L] [LieModule R L N]
 

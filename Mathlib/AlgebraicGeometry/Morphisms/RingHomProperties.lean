@@ -271,7 +271,7 @@ lemma copy {P' : MorphismProperty Scheme.{u}}
     HasRingHomProperty P' Q' := by
   subst e
   have heq : @Q = @Q' := by
-    ext R S _ _ f
+    ext R S _ _ _ _ f
     exact (e' f)
   rw [← heq]
   infer_instance
@@ -334,7 +334,7 @@ theorem of_source_openCover [IsAffine Y]
     apply (isLocal_ringHomProperty P).ofLocalizationSpanTarget.ofIsLocalization
       (isLocal_ringHomProperty P).respectsIso _ _ hs
     rintro r
-    refine ⟨_, _, _, IsAffineOpen.isLocalization_basicOpen U.2 r, ?_⟩
+    refine ⟨_, _, _, _, IsAffineOpen.isLocalization_basicOpen U.2 r, ?_⟩
     rw [RingHom.algebraMap_toAlgebra, ← CommRingCat.hom_comp, Scheme.Hom.appLE_map]
     exact H r
   | hU i =>
@@ -355,6 +355,7 @@ theorem iff_of_isAffine [IsAffine X] [IsAffine Y] :
     P f ↔ Q (f.appTop).hom := by
   rw [iff_of_source_openCover (P := P) (Scheme.coverOfIsIso.{u} (𝟙 _))]
   simp +instances
+  exact ⟨fun H => H PUnit.unit, fun H _ => H⟩
 
 theorem Spec_iff {R S : CommRingCat.{u}} {φ : R ⟶ S} :
     P (Spec.map φ) ↔ Q φ.hom := by
@@ -405,24 +406,24 @@ lemma isLocal_ringHomProperty_of_isZariskiLocalAtSource_of_isZariskiLocalAtTarge
     RingHom.toMorphismProperty_respectsIso_iff.mpr
       (inferInstanceAs (P.inverseImage Scheme.Spec).unop.RespectsIso)
   constructor
-  · intro R S _ _ f r R' S' _ _ _ _ _ _ H
+  · intro R S _ _ _ _ f r R' S' _ _ _ _ _ _ _ _ H
     refine (RingHom.RespectsIso.isLocalization_away_iff hP ..).mp ?_
     exact (MorphismProperty.arrow_mk_iso_iff P (SpecMapRestrictBasicOpenIso
       (CommRingCat.ofHom f) r)).mp (IsZariskiLocalAtTarget.restrict H (basicOpen r))
-  · intro R S _ _ f s hs H
+  · intro R S _ _ _ _ f s hs H
     apply IsZariskiLocalAtSource.of_openCover (Scheme.affineOpenCoverOfSpanRangeEqTop
       (fun i : s ↦ (i : S)) (by simpa)).openCover
     intro i
     simp only [CommRingCat.coe_of, ← Spec.map_comp,
       Scheme.AffineOpenCover.openCover_f, Scheme.affineOpenCoverOfSpanRangeEqTop_f]
     exact H i
-  · intro R S _ _ f s hs H
+  · intro R S _ _ _ _ f s hs H
     apply IsZariskiLocalAtTarget.of_iSup_eq_top _ (PrimeSpectrum.iSup_basicOpen_eq_top_iff
       (f := fun i : s ↦ (i : R)).mpr (by simpa))
     intro i
     exact (MorphismProperty.arrow_mk_iso_iff P (SpecMapRestrictBasicOpenIso
       (CommRingCat.ofHom f) i.1)).mpr (H i)
-  · intro R S T _ _ _ _ r _ f hf
+  · intro R S T _ _ _ _ _ _ _ r _ f hf
     have := AlgebraicGeometry.IsOpenImmersion.of_isLocalization (S := T) r
     change P (Spec.map (CommRingCat.ofHom f ≫ CommRingCat.ofHom (algebraMap _ _)))
     rw [Spec.map_comp]
@@ -470,13 +471,13 @@ lemma inf {P P' : MorphismProperty Scheme.{u}}
     grind
 
 lemma stalkwise {P} (hP : RingHom.RespectsIso P) :
-    HasRingHomProperty (stalkwise P) fun {_ S _ _} φ ↦
+    HasRingHomProperty (stalkwise P) fun {_ S _ _ _ _} φ ↦
       ∀ (p : Ideal S) (_ : p.IsPrime), P (Localization.localRingHom _ p φ rfl) := by
   have := stalkwiseIsZariskiLocalAtTarget_of_respectsIso hP
   have := stalkwise_isZariskiLocalAtSource_of_respectsIso hP
   convert!
     of_isZariskiLocalAtSource_of_isZariskiLocalAtTarget (P := AlgebraicGeometry.stalkwise P) with R
-    S _ _ φ
+    S _ _ _ _ φ
   exact (stalkwise_SpecMap_iff hP (CommRingCat.ofHom φ)).symm
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -656,7 +657,7 @@ lemma iff_exists_appLE
     apply @copy (P := P) (P' := P) (Q := Q) (Q' := Locally Q)
     · infer_instance
     · rfl
-    · intro R S _ _ f
+    · intro R S _ _ _ _ f
       exact (locally_iff_of_localizationSpanTarget (isLocal_ringHomProperty P).respectsIso
         (isLocal_ringHomProperty P).ofLocalizationSpanTarget _).symm
   rw [iff_exists_appLE_locally (P := P) hQ]

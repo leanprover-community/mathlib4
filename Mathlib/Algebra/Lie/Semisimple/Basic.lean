@@ -66,7 +66,7 @@ theorem hasTrivialRadical_of_no_solvable_ideals (h : ∀ I : LieIdeal R L, IsSol
 
 theorem hasTrivialRadical_iff_no_solvable_ideals :
     HasTrivialRadical R L ↔ ∀ I : LieIdeal R L, IsSolvable I → I = ⊥ :=
-  ⟨@HasTrivialRadical.eq_bot_of_isSolvable _ _ _ _ _, hasTrivialRadical_of_no_solvable_ideals⟩
+  ⟨@HasTrivialRadical.eq_bot_of_isSolvable _ _ _ _ _ _, hasTrivialRadical_of_no_solvable_ideals⟩
 
 theorem hasTrivialRadical_iff_no_abelian_ideals :
     HasTrivialRadical R L ↔ ∀ I : LieIdeal R L, IsLieAbelian I → I = ⊥ := by

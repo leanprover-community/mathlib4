@@ -23,7 +23,8 @@ public section
 namespace Algebra.FormallyUnramified
 
 variable {R : Type*} {I : Type*} [Finite I] (f : I → Type*)
-variable [Ring R] [IsMulCommutative R] [∀ i, Ring (f i)] [∀ i, IsMulCommutative (f i)] [∀ i, Algebra R (f i)]
+variable [Ring R] [IsMulCommutative R] [∀ i, Ring (f i)] [∀ i, IsMulCommutative (f i)]
+  [∀ i, Algebra R (f i)]
 
 theorem pi_iff :
     FormallyUnramified R (∀ i, f i) ↔ ∀ i, FormallyUnramified R (f i) := by
@@ -34,7 +35,7 @@ theorem pi_iff :
     exact FormallyUnramified.of_surjective (Pi.evalAlgHom R f i) (Function.surjective_eval i)
   · intro H
     rw [iff_comp_injective]
-    intro B _ _ J hJ f₁ f₂ e
+    intro B _ _ _ J hJ f₁ f₂ e
     ext g
     rw [← Finset.univ_sum_single g, map_sum, map_sum]
     refine Finset.sum_congr rfl ?_

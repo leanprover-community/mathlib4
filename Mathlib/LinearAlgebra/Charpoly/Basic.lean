@@ -140,6 +140,7 @@ variable {R M} [Ring R] [IsMulCommutative R] [Ring M] [Algebra R M]
 theorem Algebra.aeval_self_charpoly_lmul (α : M) :
     aeval α (Algebra.lmul R M α).charpoly = 0 :=
   Algebra.lmul_injective (R := R) <| by
-    simpa [← aeval_algHom_apply] using LinearMap.aeval_self_charpoly <| Algebra.lmul _ _ α
+    simp only [← aeval_algHom_apply, map_zero]
+    exact LinearMap.aeval_self_charpoly <| Algebra.lmul _ _ α
 
 end Algebra

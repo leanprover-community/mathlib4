@@ -35,7 +35,8 @@ instance [MulZeroOneClass G] [MonoidWithZero H] (f : G →*₀ H) :
     MonoidWithZero (MonoidHom.mrange f) where
 
 instance [MulZeroOneClass G] [MonoidWithZero H] [IsMulCommutative H] (f : G →*₀ H) :
-    CommMonoidWithZero (MonoidHom.mrange f) where
+    IsMulCommutative (MonoidHom.mrange f) :=
+  Submonoid.toCommMonoid _
 
 instance [GroupWithZero G] [GroupWithZero H] (f : G →*₀ H) :
     GroupWithZero (MonoidHom.mrange f) where
@@ -51,7 +52,8 @@ instance [GroupWithZero G] [GroupWithZero H] (f : G →*₀ H) :
     simpa using mul_inv_cancel₀ h
 
 instance [GroupWithZero G] [GroupWithZero H] [IsMulCommutative H] (f : G →*₀ H) :
-    CommGroupWithZero (MonoidHom.mrange f) where
+    IsMulCommutative (MonoidHom.mrange f) :=
+  Submonoid.toCommMonoid _
 
 lemma mker_inverse [GroupWithZero H] [IsMulCommutative H] :
     MonoidHom.mker (MonoidWithZero.inverse (M := H)) = ⊥ := by

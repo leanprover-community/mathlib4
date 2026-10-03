@@ -165,7 +165,14 @@ itself). See also note [forgetful inheritance].
 
 If the semifield has positive characteristic `p`, our division by zero convention forces
 `nnratCast (1 / p) = 1 / 0 = 0`. -/
-class Semifield (K : Type*) extends CommSemiring K, DivisionSemiring K, CommGroupWithZero K
+-- The commutativity mixin is an instance-implicit field rather than a syntactic `extends` parent
+-- because the `is_comm` fields of `IsAddCommutative` (inherited via `Semiring`) and
+-- `IsMulCommutative` would collide during structure flattening. It is a Prop parent in all but
+-- syntax: the projection is `Semifield.toIsMulCommutative`, registered as an instance below.
+class Semifield (K : Type*) extends DivisionSemiring K where
+  [toIsMulCommutative : IsMulCommutative K]
+
+attribute [instance] Semifield.toIsMulCommutative
 
 /-- A `Field` is a `CommRing` with multiplicative inverses for nonzero elements.
 
@@ -177,7 +184,14 @@ See also note [forgetful inheritance].
 If the field has positive characteristic `p`, our division by zero convention forces
 `ratCast (1 / p) = 1 / 0 = 0`. -/
 @[stacks 09FD "first part"]
-class Field (K : Type u) extends CommRing K, DivisionRing K
+-- The commutativity mixin is an instance-implicit field rather than a syntactic `extends` parent
+-- because the `is_comm` fields of `IsAddCommutative` (inherited via `Ring`) and
+-- `IsMulCommutative` would collide during structure flattening. It is a Prop parent in all but
+-- syntax: the projection is `Field.toIsMulCommutative`, registered as an instance below.
+class Field (K : Type u) extends DivisionRing K where
+  [toIsMulCommutative : IsMulCommutative K]
+
+attribute [instance] Field.toIsMulCommutative
 
 -- see Note [lower instance priority]
 instance (priority := 100) Field.toSemifield [Field K] : Semifield K := { ‹Field K› with }

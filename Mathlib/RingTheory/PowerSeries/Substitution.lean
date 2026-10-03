@@ -388,7 +388,8 @@ theorem substAlgHom_comp_substAlgHom_apply (ha : HasSubst a) (hb : HasSubst b) (
 
 theorem subst_comp_subst (ha : HasSubst a) (hb : HasSubst b) :
     (subst b) ∘ (subst a) = subst (R := R) (subst b a) := by
-  simpa [funext_iff, DFunLike.ext_iff, coe_substAlgHom] using substAlgHom_comp_substAlgHom ha hb
+  simpa [funext_iff, DFunLike.ext_iff, coe_substAlgHom] using
+    substAlgHom_comp_substAlgHom (R := R) ha hb
 
 theorem subst_comp_subst_apply (ha : HasSubst a) (hb : HasSubst b) (f : PowerSeries R) :
     subst b (subst a f) = subst (subst b a) f :=

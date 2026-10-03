@@ -86,7 +86,7 @@ meta def evalFinsetSum : PositivityExt where eval {u α} zα pα? e :=
   | none => pure .none -- TODO: the case without PartialOrder
   | some pα => do
   match e with
-  | ~q(@Finset.sum $ι _ $instα $s $f) =>
+  | ~q(@Finset.sum $ι _ $instα $instc $s $f) =>
     let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
     have body : Q($α) := .betaRev f #[i]
     let rbody ← core zα pα body

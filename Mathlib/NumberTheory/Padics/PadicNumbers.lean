@@ -530,7 +530,8 @@ end PadicSeq
 @[wikidata Q311627]
 def Padic (p : ℕ) [Fact p.Prime] :=
   CauSeq.Completion.Cauchy (padicNorm p)
-deriving Zero, One, Add, Neg, Sub, Mul, Div, AddCommGroup, Ring, CommRing, Field, Inhabited
+deriving Zero, One, Add, Neg, Sub, Mul, Div, AddGroup, IsAddCommutative, Ring, IsMulCommutative,
+  Field, Inhabited
 
 /-- notation for p-padic rationals -/
 notation "ℚ_[" p "]" => Padic p

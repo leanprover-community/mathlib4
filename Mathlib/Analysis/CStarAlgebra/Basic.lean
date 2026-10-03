@@ -98,7 +98,7 @@ end NormedStarGroup
 
 instance RingHomIsometric.starRingEnd [NormedRing E] [IsMulCommutative E] [StarRing E] [NormedStarGroup E] :
     RingHomIsometric (starRingEnd E) :=
-  ⟨@norm_star _ _ _ _⟩
+  ⟨@norm_star _ _ _ _ _⟩
 
 /-- A C⋆-ring is a normed star ring that satisfies the stronger condition `‖x‖ ^ 2 ≤ ‖x⋆ * x‖`
 for every `x`. Note that this condition actually implies equality, as is shown in

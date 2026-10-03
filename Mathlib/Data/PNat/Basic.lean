@@ -23,12 +23,12 @@ that `Data.PNat.Defs` can have very few imports.
 @[expose] public section
 
 deriving instance Add, Mul, Distrib, AddLeftCancelSemigroup, AddRightCancelSemigroup,
-  AddCommSemigroup, CommMonoid, IsOrderedCancelMonoid, WellFoundedLT, AddLeftMono,
-  AddLeftStrictMono, AddLeftReflectLE, AddLeftReflectLT for PNat
+  AddSemigroup, IsAddCommutative, Monoid, IsMulCommutative, IsOrderedCancelMonoid, WellFoundedLT,
+  AddLeftMono, AddLeftStrictMono, AddLeftReflectLE, AddLeftReflectLT for PNat
 
 namespace PNat
 
-instance instCancelCommMonoid : CancelCommMonoid ℕ+ where
+instance instCancelCommMonoid : CancelMonoid ℕ+ where
 
 @[simp]
 theorem one_add_natPred (n : ℕ+) : 1 + n.natPred = n := by

@@ -117,21 +117,21 @@ namespace RingHom
 
 lemma FiniteType.codescendsAlong_faithfullyFlat :
     CodescendsAlong FiniteType FaithfullyFlat := by
-  refine .mk _ finiteType_respectsIso fun R S T _ _ _ _ _ h h' ↦ ?_
+  refine .mk _ finiteType_respectsIso fun R S T _ _ _ _ _ _ _ _ h h' ↦ ?_
   rw [finiteType_algebraMap] at h' ⊢
   rw [faithfullyFlat_algebraMap_iff] at h
   exact .of_finiteType_tensorProduct_of_faithfullyFlat S
 
 lemma FinitePresentation.codescendsAlong_faithfullyFlat :
     CodescendsAlong FinitePresentation FaithfullyFlat := by
-  refine .mk _ finitePresentation_respectsIso fun R S T _ _ _ _ _ h h' ↦ ?_
+  refine .mk _ finitePresentation_respectsIso fun R S T _ _ _ _ _ _ _ _ h h' ↦ ?_
   rw [finitePresentation_algebraMap] at h' ⊢
   rw [faithfullyFlat_algebraMap_iff] at h
   exact .of_finitePresentation_tensorProduct_of_faithfullyFlat S
 
 lemma Finite.codescendsAlong_faithfullyFlat :
     CodescendsAlong Finite FaithfullyFlat := by
-  refine .mk _ finite_respectsIso fun R S T _ _ _ _ _ h h' ↦ ?_
+  refine .mk _ finite_respectsIso fun R S T _ _ _ _ _ _ _ _ h h' ↦ ?_
   rw [finite_algebraMap] at h' ⊢
   rw [faithfullyFlat_algebraMap_iff] at h
   exact .of_finite_tensorProduct_of_faithfullyFlat S

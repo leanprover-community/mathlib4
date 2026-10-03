@@ -43,11 +43,7 @@ instance [Mul α] [Zero α] [IsRightCancelMulZero α] : IsRightCancelMulZero α�
 
 instance [Mul α] [Zero α] [IsCancelMulZero α] : IsCancelMulZero αᵒᵈ where
 
-instance [MonoidWithZero α] [IsMulCommutative α] : CommMonoidWithZero αᵒᵈ := inferInstanceAs <| CommMonoidWithZero α
-
 instance [GroupWithZero α] : GroupWithZero αᵒᵈ := inferInstanceAs <| GroupWithZero α
-
-instance [GroupWithZero α] [IsMulCommutative α] : CommGroupWithZero αᵒᵈ := inferInstanceAs <| CommGroupWithZero α
 
 end OrderDual
 
@@ -76,11 +72,6 @@ instance [Mul α] [Zero α] [IsRightCancelMulZero α] : IsRightCancelMulZero (Le
 instance [Mul α] [Zero α] [IsCancelMulZero α] : IsCancelMulZero (Lex α) :=
   inferInstanceAs <| IsCancelMulZero α
 
-instance [MonoidWithZero α] [IsMulCommutative α] : CommMonoidWithZero (Lex α) :=
-  inferInstanceAs <| CommMonoidWithZero α
-
 instance [GroupWithZero α] : GroupWithZero (Lex α) := inferInstanceAs <| GroupWithZero α
-
-instance [GroupWithZero α] [IsMulCommutative α] : CommGroupWithZero (Lex α) := inferInstanceAs <| CommGroupWithZero α
 
 end Lex

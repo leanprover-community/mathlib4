@@ -31,7 +31,8 @@ public section
 namespace IsLocalization
 
 variable {ι : Type*} (R S : ι → Type*)
-  [Π i, CommSemiring (R i)] [Π i, CommSemiring (S i)] [Π i, Algebra (R i) (S i)]
+  [Π i, Semiring (R i)] [Π i, IsMulCommutative (R i)] [Π i, Semiring (S i)]
+  [Π i, IsMulCommutative (S i)] [Π i, Algebra (R i) (S i)]
 
 /-- If `S i` is a localization of `R i` at the submonoid `M i` for each `i`,
 then `Π i, S i` is a localization of `Π i, R i` at the product submonoid. -/
@@ -45,7 +46,8 @@ instance (M : Π i, Submonoid (R i)) [∀ i, IsLocalization (M i) (S i)] :
     choose c hc using fun i ↦ exists_of_eq (M := M i) congr($eq i)
     exact ⟨⟨_, fun i _ ↦ (c i).2⟩, funext hc⟩
 
-variable (S' : Type*) [Semiring S'] [IsMulCommutative S'] [Algebra (Π i, R i) S'] (M : Submonoid (Π i, R i))
+variable (S' : Type*) [Semiring S'] [IsMulCommutative S'] [Algebra (Π i, R i) S']
+  (M : Submonoid (Π i, R i))
 
 theorem iff_map_piEvalRingHom [Finite ι] :
     IsLocalization M S' ↔ IsLocalization (.pi .univ fun i ↦ M.map (Pi.evalRingHom R i)) S' :=

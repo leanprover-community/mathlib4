@@ -518,10 +518,9 @@ lemma FiniteDimensional.isUnit (F : Type*) {K : Type*} [Field F] [Ring K] [IsDom
 
 /-- An integral domain that is module-finite as an algebra over a field is a field. -/
 @[instance_reducible]
-noncomputable def fieldOfFiniteDimensional (F K : Type*) [Field F] [h : Ring K] [IsMulCommutative K] [IsDomain K]
-    [Algebra F K] [FiniteDimensional F K] : Field K :=
-  { divisionRingOfFiniteDimensional F K with
-    toCommRing := h }
+noncomputable def fieldOfFiniteDimensional (F K : Type*) [Field F] [Ring K] [IsMulCommutative K]
+    [IsDomain K] [Algebra F K] [FiniteDimensional F K] : Field K :=
+  { divisionRingOfFiniteDimensional F K with }
 
 end
 section DivisionRing

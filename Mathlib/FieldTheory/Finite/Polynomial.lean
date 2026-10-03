@@ -154,10 +154,14 @@ variable (σ : Type u) (K : Type u) [Fintype K]
 than the cardinality of K. -/
 def R [Ring K] [IsMulCommutative K] : Type u :=
   restrictDegree σ K (Fintype.card K - 1)
--- The `AddCommGroup, Module K, Inhabited` instances should be constructed by a deriving handler.
+-- The `AddGroup, IsAddCommutative, Module K, Inhabited` instances should be constructed by a
+-- deriving handler.
 
-noncomputable instance [Ring K] [IsMulCommutative K] : AddCommGroup (R σ K) :=
-  inferInstanceAs (AddCommGroup (restrictDegree σ K (Fintype.card K - 1)))
+noncomputable instance [Ring K] [IsMulCommutative K] : AddGroup (R σ K) :=
+  inferInstanceAs (AddGroup (restrictDegree σ K (Fintype.card K - 1)))
+
+instance [Ring K] [IsMulCommutative K] : IsAddCommutative (R σ K) :=
+  inferInstanceAs (IsAddCommutative (restrictDegree σ K (Fintype.card K - 1)))
 
 noncomputable instance [Ring K] [IsMulCommutative K] : Module K (R σ K) :=
   inferInstanceAs (Module K (restrictDegree σ K (Fintype.card K - 1)))

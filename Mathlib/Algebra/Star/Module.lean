@@ -174,16 +174,16 @@ def skewAdjointPart : A →ₗ[R] skewAdjoint A where
       show r * ⅟2 = ⅟2 * r from Commute.invOf_right <| (2 : ℕ).commute_cast r]
 
 theorem StarModule.selfAdjointPart_add_skewAdjointPart (x : A) :
-    (selfAdjointPart R x : A) + skewAdjointPart R x = x := by
+    (selfAdjointPart (A := A) R x : A) + skewAdjointPart (A := A) R x = x := by
   simp only [smul_sub, selfAdjointPart_apply_coe, smul_add, skewAdjointPart_apply_coe,
     add_add_sub_cancel, invOf_two_smul_add_invOf_two_smul]
 
 theorem IsSelfAdjoint.coe_selfAdjointPart_apply {x : A} (hx : IsSelfAdjoint x) :
-    (selfAdjointPart R x : A) = x := by
+    (selfAdjointPart (A := A) R x : A) = x := by
   rw [selfAdjointPart_apply_coe, hx.star_eq, smul_add, invOf_two_smul_add_invOf_two_smul]
 
 theorem IsSelfAdjoint.selfAdjointPart_apply {x : A} (hx : IsSelfAdjoint x) :
-    selfAdjointPart R x = ⟨x, hx⟩ :=
+    selfAdjointPart (A := A) R x = ⟨x, hx⟩ :=
   Subtype.ext (hx.coe_selfAdjointPart_apply R)
 
 @[simp]
@@ -192,7 +192,7 @@ theorem selfAdjointPart_comp_subtype_selfAdjoint :
   LinearMap.ext fun x ↦ x.2.selfAdjointPart_apply R
 
 theorem IsSelfAdjoint.skewAdjointPart_apply {x : A} (hx : IsSelfAdjoint x) :
-    skewAdjointPart R x = 0 := Subtype.ext <| by
+    skewAdjointPart (A := A) R x = 0 := Subtype.ext <| by
   rw [skewAdjointPart_apply_coe, hx.star_eq, sub_self, smul_zero, ZeroMemClass.coe_zero]
 
 @[simp]

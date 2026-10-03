@@ -466,11 +466,14 @@ section CommRing
 
 variable [Ring R] [IsMulCommutative R] [StarRing R]
 
-instance : CommRing (selfAdjoint R) :=
-  Function.Injective.commRing _ Subtype.coe_injective (selfAdjoint R).coe_zero val_one
+instance : Ring (selfAdjoint R) :=
+  Function.Injective.ring _ Subtype.coe_injective (selfAdjoint R).coe_zero val_one
     (selfAdjoint R).coe_add val_mul (selfAdjoint R).coe_neg (selfAdjoint R).coe_sub
     (by intros; rfl) (by intros; rfl) val_pow
     (fun _ => rfl) fun _ => rfl
+
+instance : IsMulCommutative (selfAdjoint R) :=
+  Function.Injective.isMulCommutative _ Subtype.coe_injective val_mul
 
 end CommRing
 

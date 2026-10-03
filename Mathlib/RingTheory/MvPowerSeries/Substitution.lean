@@ -94,7 +94,7 @@ lemma hasSubst_iff_hasEval_of_discreteTopology [TopologicalSpace S] [DiscreteTop
 
 theorem HasSubst.hasEval [TopologicalSpace S] (ha : HasSubst a) :
     HasEval a := HasEval.mono (instTopologicalSpace_mono τ bot_le) <|
-  (@hasSubst_iff_hasEval_of_discreteTopology σ τ _ _ a ⊥ (@DiscreteTopology.mk S ⊥ rfl)).mp ha
+  (@hasSubst_iff_hasEval_of_discreteTopology σ τ _ _ _ a ⊥ (@DiscreteTopology.mk S ⊥ rfl)).mp ha
 
 theorem HasSubst.zero : HasSubst (fun (_ : σ) ↦ (0 : MvPowerSeries τ S)) := by
   let : UniformSpace S := ⊥
@@ -195,7 +195,9 @@ noncomputable def subst (a : σ → MvPowerSeries τ S) (f : MvPowerSeries σ R)
 theorem subst_eq_eval₂
     [UniformSpace R] [DiscreteUniformity R] [UniformSpace S] [DiscreteUniformity S] :
     (subst : (σ → MvPowerSeries τ S) → (MvPowerSeries σ R) → _) = eval₂ (algebraMap _ _) := by
-  ext; simp +instances [subst, DiscreteUniformity.eq_bot]
+  obtain rfl := DiscreteUniformity.eq_bot (X := R)
+  obtain rfl := DiscreteUniformity.eq_bot (X := S)
+  rfl
 
 theorem subst_coe (p : MvPolynomial σ R) :
     subst (R := R) a p = MvPolynomial.aeval a p := by

@@ -557,16 +557,23 @@ nonrec lemma resultant_mul_right (f g₁ g₂ : R[X]) (m : ℕ) (hm : f.natDegre
     simp [resultant_add_left_deg, this f g₁ g₂, coeff_mul_degree_add_degree]
     ring_nf
   subst hgn; clear hm
-  induction f using induction_of_Splits_of_injective_of_surjective with
-  | Splits R f hff =>
+  revert g₁ g₂
+  refine induction_of_Splits_of_injective_of_surjective f
+    (P := fun {R : Type _} [Ring R] [IsMulCommutative R] (f : R[X]) ↦ ∀ g₁ g₂ : R[X],
+      resultant f (g₁ * g₂) f.natDegree (g₁.natDegree + g₂.natDegree) =
+        resultant f g₁ f.natDegree * resultant f g₂ f.natDegree) ?Splits ?injective ?surjective
+  case Splits =>
+    intro R _ f hff g₁ g₂
     simp [resultant_eq_prod_eval, natDegree_mul_le, hff]
     ring_nf
-  | injective R SatisfiesM φ hφ f IH =>
+  case injective =>
+    intro R SatisfiesM _ _ _ _ φ hφ f IH g₁ g₂
     apply hφ
     have := IH (g₁.map φ) (g₂.map φ)
     rw [← Polynomial.map_mul] at this
     simpa only [resultant_map_map, ← map_mul, natDegree_map_eq_of_injective hφ] using this
-  | surjective R S φ hφ f IH =>
+  case surjective =>
+    intro R S _ _ _ _ φ hφ f IH g₁ g₂
     obtain ⟨f', hf', e⟩ := exists_degree_eq_of_mem_lifts (Polynomial.map_surjective φ hφ f)
     obtain ⟨g₁', hg₁, e₁⟩ := exists_degree_eq_of_mem_lifts (Polynomial.map_surjective φ hφ g₁)
     obtain ⟨g₂', hg₂, e₂⟩ := exists_degree_eq_of_mem_lifts (Polynomial.map_surjective φ hφ g₂)
@@ -584,16 +591,21 @@ lemma resultant_mul_left (f₁ f₂ g : R[X]) (n : ℕ) (hn : g.natDegree ≤ n)
 
 /-- `Res(f, f) = 0` unless `deg f = 0`. Also see `resultant_self_eq_zero`. -/
 @[simp] nonrec lemma resultant_self (f : R[X]) : resultant f f = 0 ^ f.natDegree := by
-  induction f using induction_of_Splits_of_injective_of_surjective with
-  | Splits R f hf =>
+  refine induction_of_Splits_of_injective_of_surjective f
+    (P := fun {R : Type _} [Ring R] [IsMulCommutative R] (f : R[X]) ↦
+      resultant f f = 0 ^ f.natDegree) ?Splits ?injective ?surjective
+  case Splits =>
+    intro R _ f hf
     by_cases h : f.natDegree = 0
     · obtain ⟨r, rfl⟩ := natDegree_eq_zero.mp h; simp
     rw [resultant_eq_prod_eval _ _ _ le_rfl hf]
     simp [zero_pow h, h, hf.exists_eval_eq_zero (degree_ne_of_natDegree_ne h), eq_or_ne f]
-  | injective R S φ hφ f IH =>
+  case injective =>
+    intro R S _ _ _ _ φ hφ f IH
     apply hφ
     simpa only [resultant_map_map, natDegree_map_eq_of_injective hφ, map_zero, map_pow] using IH
-  | surjective R S φ hφ f IH =>
+  case surjective =>
+    intro R S _ _ _ _ φ hφ f IH
     obtain ⟨f', hf', e⟩ := exists_degree_eq_of_mem_lifts (Polynomial.map_surjective φ hφ f)
     rw [← hf', resultant_map_map, hf', ← natDegree_eq_natDegree e, IH f', map_pow, map_zero]
 
@@ -668,7 +680,7 @@ lemma resultant_pow_right (hm : f.natDegree ≤ m) (hg : g.leadingCoeff ^ n ≠ 
 lemma resultant_X_sub_C_pow_left (r : R) (g : R[X]) (m n : ℕ) (hn : g.natDegree ≤ n) :
     ((X - C r) ^ m).resultant g m n = eval r g ^ m := by
   nontriviality R
-  convert! resultant_pow_left _ _ _ _ _ _ <;> simp [natDegree_pow', hn]
+  convert! resultant_pow_left (R := R) _ _ _ _ _ _ <;> simp [natDegree_pow', hn]
 
 lemma resultant_X_sub_C_pow_right (f : R[X]) (r : R) (m n : ℕ) (hm : f.natDegree ≤ m) :
     f.resultant ((X - C r) ^ n) m n = (-1) ^ (m * n) * eval r f ^ n := by
@@ -688,8 +700,13 @@ nonrec lemma resultant_scaleRoots (f g : R[X]) (r : R) :
   rw [natDegree_scaleRoots, natDegree_scaleRoots]
   obtain rfl | hf := eq_or_ne f 0; · simp
   obtain rfl | hg := eq_or_ne g 0; · simp
-  induction f using induction_of_Splits_of_injective_of_surjective with
-  | Splits R f hf' =>
+  revert g r hf hg
+  refine induction_of_Splits_of_injective_of_surjective f
+    (P := fun {R : Type _} [Ring R] [IsMulCommutative R] (f : R[X]) ↦ ∀ (g : R[X]) (r : R),
+      f ≠ 0 → g ≠ 0 → resultant (f.scaleRoots r) (g.scaleRoots r) f.natDegree g.natDegree =
+        r ^ (f.natDegree * g.natDegree) * resultant f g) ?Splits ?injective ?surjective
+  case Splits =>
+    intro R _ f hf' g r hf hg
     by_cases hf0 : f.natDegree = 0
     · obtain ⟨a, rfl⟩ := natDegree_eq_zero.mp hf0; simp
     by_cases hg0 : g.natDegree = 0
@@ -705,14 +722,16 @@ nonrec lemma resultant_scaleRoots (f g : R[X]) (r : R) :
     simp only [leadingCoeff_scaleRoots, natDegree_scaleRoots, Multiset.prod_map_mul,
       Multiset.map_const', Multiset.prod_replicate, ← hf'.natDegree_eq_card_roots]
     ring
-  | injective R S φ hφ f IH =>
+  case injective =>
+    intro R S _ _ _ _ φ hφ f IH g r hf hg
     have := IH (g.map φ) (φ r) (by simpa using (map_injective _ hφ).ne hf)
       (by simpa using (map_injective _ hφ).ne hg)
     apply hφ
     rw [← map_scaleRoots, ← map_scaleRoots] at this
     · simpa [natDegree_map_eq_of_injective hφ] using this
     all_goals simpa [map_eq_zero_iff _ hφ]
-  | surjective R S φ hφ f IH =>
+  case surjective =>
+    intro R S _ _ _ _ φ hφ f IH g r hf hg
     obtain ⟨f', hf', ef⟩ := exists_degree_eq_of_mem_lifts (Polynomial.map_surjective φ hφ f)
     obtain ⟨g', hg', eg⟩ := exists_degree_eq_of_mem_lifts (Polynomial.map_surjective φ hφ g)
     obtain ⟨r, rfl⟩ := hφ r
@@ -759,8 +778,12 @@ lemma resultant_integralNormalization (f g : R[X]) (hg : g.natDegree ≠ 0) :
 /-- `Res(f(x + r), g(x + r)) = Res(f, g)`. -/
 nonrec lemma resultant_taylor (f g : R[X]) (r : R) :
     resultant (f.taylor r) (g.taylor r) = resultant f g := by
-  induction f using induction_of_Splits_of_injective_of_surjective with
-  | Splits R f hf' =>
+  revert g r
+  refine induction_of_Splits_of_injective_of_surjective f
+    (P := fun {R : Type _} [Ring R] [IsMulCommutative R] (f : R[X]) ↦ ∀ (g : R[X]) (r : R),
+      resultant (f.taylor r) (g.taylor r) = resultant f g) ?Splits ?injective ?surjective
+  case Splits =>
+    intro R _ f hf' g r
     induction hf' using Submonoid.closure_induction with
     | mem x h =>
       obtain (⟨s, rfl⟩ | ⟨s, rfl⟩) := h
@@ -774,12 +797,14 @@ nonrec lemma resultant_taylor (f g : R[X]) (r : R) :
       by_cases hy0 : y = 0; · simp [hy0]
       rw [taylor_mul, natDegree_mul' (by simp [*]), resultant_mul_left _ _ _ _ le_rfl]
       simp [natDegree_mul', hx0, hy0, resultant_mul_left, ← hx', ← hy']
-  | injective R S φ hφ f IH =>
+  case injective =>
+    intro R S _ _ _ _ φ hφ f IH g r
     apply hφ
     have := IH (g.map φ) (φ r)
     rw [← map_taylor, ← map_taylor] at this
     simpa [natDegree_map_eq_of_injective hφ] using this
-  | surjective R S φ hφ f IH =>
+  case surjective =>
+    intro R S _ _ _ _ φ hφ f IH g r
     obtain ⟨f', hf', ef⟩ := exists_degree_eq_of_mem_lifts (Polynomial.map_surjective φ hφ f)
     obtain ⟨g', hg', eg⟩ := exists_degree_eq_of_mem_lifts (Polynomial.map_surjective φ hφ g)
     obtain ⟨r, rfl⟩ := hφ r

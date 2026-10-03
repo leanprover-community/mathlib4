@@ -28,21 +28,23 @@ variable {M : Type uM}
 
 namespace AddMonoid.End
 
-instance instAddMonoidWithOne (M) [AddMonoid M] [IsAddCommutative M] : AddMonoidWithOne (AddMonoid.End M) where
+instance instAddMonoidWithOne (M) [AddMonoid M] [IsAddCommutative M] :
+    AddMonoidWithOne (AddMonoid.End M) where
   natCast n := n • (1 : AddMonoid.End M)
   natCast_zero := AddMonoid.nsmul_zero _
   natCast_succ n := AddMonoid.nsmul_succ n 1
 
 /-- See also `AddMonoid.End.natCast_def`. -/
 @[simp]
-lemma natCast_apply [AddMonoid M] [IsAddCommutative M] (n : ℕ) (m : M) : (↑n : AddMonoid.End M) m = n • m := rfl
+lemma natCast_apply [AddMonoid M] [IsAddCommutative M] (n : ℕ) (m : M) :
+    (↑n : AddMonoid.End M) m = n • m := rfl
 
 @[simp] lemma ofNat_apply [AddMonoid M] [IsAddCommutative M] (n : ℕ) [n.AtLeastTwo] (m : M) :
     (ofNat(n) : AddMonoid.End M) m = n • m := rfl
 
 instance instSemiring [AddMonoid M] [IsAddCommutative M] : Semiring (AddMonoid.End M) :=
   fast_instance% { AddMonoid.End.instMonoid M,
-    AddMonoidHom.instAddCommMonoid,
+    AddMonoid.End.instAddMonoid, AddMonoid.End.instIsAddCommutative,
     AddMonoid.End.instAddMonoidWithOne M with
     zero_mul := fun _ => AddMonoidHom.ext fun _ => rfl,
     mul_zero := fun _ => AddMonoidHom.ext fun _ => AddMonoidHom.map_zero _,
@@ -50,13 +52,14 @@ instance instSemiring [AddMonoid M] [IsAddCommutative M] : Semiring (AddMonoid.E
     right_distrib := fun _ _ _ => AddMonoidHom.ext fun _ => rfl }
 
 instance instRing [AddGroup M] [IsAddCommutative M] : Ring (AddMonoid.End M) :=
-  fast_instance% { AddMonoid.End.instSemiring, AddMonoid.End.instAddCommGroup with
+  fast_instance% { AddMonoid.End.instSemiring, AddMonoid.End.instAddGroup with
     intCast := fun z => z • (1 : AddMonoid.End M),
     intCast_ofNat := natCast_zsmul _,
     intCast_negSucc := negSucc_zsmul _ }
 
 example [AddGroup M] [IsAddCommutative M] :
-    (AddMonoid.End.instRing (M := M)).toAddCommGroup.toAddGroup.toSubNegMonoid =
+    ((AddMonoid.End.instRing (M := M)).toNonAssocRing.toNonUnitalNonAssocRing.toAddGroup
+      ).toSubNegMonoid =
     (AddMonoid.End.instRing (M := M)).toAddGroupWithOne.toAddGroup.toSubNegMonoid := by
   with_reducible_and_instances rfl
 

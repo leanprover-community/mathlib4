@@ -136,7 +136,7 @@ def inferBaseAtLocation (loc : Location) : TacticM (Σ u : Level, Q(Type u)) :=
     inferBase (← (← mapNondepPropLocation loc (fun fvarId => fvarId.getType) getMainTarget).mapM
       (whnf ·))
 
-/-- Rewrite `e`, an expression in some `AddCommMonoid`, into `module`'s internal normal form using
+/-- Rewrite `e`, an expression in some commutative `AddMonoid`, into `module`'s internal normal form using
 `Mathlib.Tactic.Module.eval`. -/
 def evalExpr (base : Σ u : Level, Q(Type u)) (postCtx : Simp.Context) (e : Expr) :
     AtomM Simp.Result := do
@@ -145,8 +145,9 @@ def evalExpr (base : Σ u : Level, Q(Type u)) (postCtx : Simp.Context) (e : Expr
   -- `Module.eval` also checks for atoms, but this check avoids instance search and `Module.parse`.
   guard e.isApp
   let ⟨_, M, e⟩ ← inferTypeQ' e
-  let iM : Q(AddCommMonoid $M) ← synthInstanceQ q(AddCommMonoid $M)
-  Mathlib.Tactic.Module.eval iM base postCtx e
+  let iM : Q(AddMonoid $M) ← synthInstanceQ q(AddMonoid $M)
+  let iMc : Q(IsAddCommutative $M) ← synthInstanceQ q(IsAddCommutative $M)
+  Mathlib.Tactic.Module.eval iM iMc base postCtx e
 
 /-- The `Simp.Context` used by `ModuleNF.cleanup`. -/
 def cleanupCtx : MetaM Simp.Context := do

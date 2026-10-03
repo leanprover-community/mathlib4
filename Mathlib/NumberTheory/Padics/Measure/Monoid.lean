@@ -169,11 +169,11 @@ order of the two integration variables. The Fubini theorem we use
 variable [Monoid G] [IsMulCommutative G] [ContinuousMul G]
   [CompactSpace G] [T2Space G] [TotallyDisconnectedSpace G] [T0Space R]
 
-noncomputable instance : CommRing D(G, R) where
-  mul_comm μ ν := by
+instance : IsMulCommutative D(G, R) where
+  is_comm := ⟨fun μ ν => by
     ext
     simp [mul_apply, convolveFunRight, ContinuousMap.comp, Function.comp_def,
-      ← prodMk'_apply, prodMk'_flip μ ν, prodMk_eq_prodMk', mul_comm]
+      ← prodMk'_apply, prodMk'_flip μ ν, prodMk_eq_prodMk', mul_comm]⟩
 
 end CommMonoid
 

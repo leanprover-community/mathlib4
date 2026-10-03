@@ -505,11 +505,11 @@ instance instAddMonoid : AddMonoid (E →ₛₗ.[σ] F) where
     simp
   nsmul := nsmulRec
 
-instance instAddCommMonoid : AddCommMonoid (E →ₛₗ.[σ] F) :=
-  ⟨fun f g => by
+instance instAddCommMonoid : IsAddCommutative (E →ₛₗ.[σ] F) :=
+  ⟨⟨fun f g => by
     ext x y hxy
     · simp only [add_domain, inf_comm]
-    · simp only [add_apply, add_comm]⟩
+    · simp only [add_apply, add_comm]⟩⟩
 
 end Add
 
@@ -552,8 +552,7 @@ theorem sub_domain (f g : E →ₛₗ.[σ] F) : (f - g).domain = f.domain ⊓ g.
 theorem sub_apply (f g : E →ₛₗ.[σ] F) (x : (f.domain ⊓ g.domain : Submodule R E)) :
     (f - g) x = f ⟨x, x.prop.1⟩ - g ⟨x, x.prop.2⟩ := rfl
 
-instance instSubtractionCommMonoid : SubtractionCommMonoid (E →ₛₗ.[σ] F) where
-  add_comm := add_comm
+instance instSubtractionCommMonoid : SubtractionMonoid (E →ₛₗ.[σ] F) where
   sub_eq_add_neg f g := by
     ext x _ h
     · rfl
@@ -773,7 +772,7 @@ theorem domRestrict_domain (f : E →ₛₗ.[σ] F) {S : Submodule R E} :
 
 theorem domRestrict_apply {f : E →ₛₗ.[σ] F} {S : Submodule R E} ⦃x : ↥(S ⊓ f.domain)⦄ ⦃y : f.domain⦄
     (h : (x : E) = y) : f.domRestrict S x = f y := by
-  have : Submodule.inclusion (by simp) x = y := by
+  have : Submodule.inclusion (show S ⊓ f.domain ≤ f.domain by simp) x = y := by
     ext
     simp [h]
   rw [← this]

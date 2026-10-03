@@ -29,6 +29,10 @@ variable {α : Type*} [DivisionRing α] [CharZero α] {q : ℚ} {x : α}
 
 @[simp]
 theorem ratCast_iff : IsIntegral ℤ (q : α) ↔ IsIntegral ℤ q :=
+  -- TC cannot find `IsScalarTower ℤ ℚ α` here: the `[AddGroup α] [IsAddCommutative α]`
+  -- arguments of `AddCommGroup.intIsScalarTower` are still metavariables when `Module ℚ α`
+  -- is synthesized, and the `NormedSpace.toModule` candidate aborts the search.
+  have : IsScalarTower ℤ ℚ α := AddCommGroup.intIsScalarTower (M := α)
   isIntegral_algebraMap_iff (A := ℚ)
 
 theorem exists_int_iff_exists_rat (h₁ : IsIntegral ℤ x) : (∃ q : ℚ, x = q) ↔ ∃ k : ℤ, x = k := by

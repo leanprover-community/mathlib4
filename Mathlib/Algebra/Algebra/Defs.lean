@@ -92,11 +92,12 @@ universe u v w u₁ v₁
 
 See the implementation notes in this file for discussion of the details of this definition.
 -/
-class Algebra (R : Type u) (A : Type v) [Semiring R] [IsMulCommutative R] [Semiring A] extends SMul R A where
+class Algebra (R : Type u) (A : Type v) [Semiring R] [hR : IsMulCommutative R] [Semiring A] extends
+    SMul R A where
   /-- Embedding `R →+* A` given by `Algebra` structure. -/
-  algebraMap (R) (A) : R →+* A
-  commutes' : ∀ r x, algebraMap r * x = x * algebraMap r
-  smul_def' : ∀ r x, r • x = algebraMap r * x
+  algebraMap (R) (A) [hR] : R →+* A
+  commutes' [hR] : ∀ r x, algebraMap r * x = x * algebraMap r
+  smul_def' [hR] : ∀ r x, r • x = algebraMap r * x
 
 export Algebra (algebraMap)
 
@@ -185,7 +186,7 @@ theorem RingHom.smul_toAlgebra' {R S} [Semiring R] [IsMulCommutative R] [Semirin
 set_option linter.docPrime false in
 theorem RingHom.algebraMap_toAlgebra' {R S} [Semiring R] [IsMulCommutative R] [Semiring S] (i : R →+* S)
     (h : ∀ c x, i c * x = x * i c) :
-    @algebraMap R S _ _ (i.toAlgebra' h) = i :=
+    @algebraMap R S _ _ _ (i.toAlgebra' h) = i :=
   rfl
 
 /-- Creating an algebra from a morphism to a commutative semiring.
@@ -203,7 +204,7 @@ theorem RingHom.smul_toAlgebra {R S} [Semiring R] [IsMulCommutative R] [Semiring
     r • s = i r * s := rfl
 
 theorem RingHom.algebraMap_toAlgebra {R S} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] (i : R →+* S) :
-    @algebraMap R S _ _ i.toAlgebra = i :=
+    @algebraMap R S _ _ _ i.toAlgebra = i :=
   rfl
 
 namespace Algebra
@@ -264,7 +265,7 @@ lemma _root_.toAlgebra_algebraMap [Algebra R S] :
   algebra_ext _ _ fun _ ↦ rfl
 
 -- see Note [lower instance priority]
-instance (priority := 200) toModule {R A} {_ : CommSemiring R} {_ : Semiring A} [Algebra R A] :
+instance (priority := 200) toModule {R A} {_ : Semiring R} [IsMulCommutative R] {_ : Semiring A} [Algebra R A] :
     Module R A where
   one_smul _ := by simp [smul_def']
   mul_smul := by simp [smul_def', mul_assoc]

@@ -81,11 +81,11 @@ instance : SMul ℕ (ArchimedeanClass R) where
 
 @[simp] theorem mk_pow (n : ℕ) (x : R) : mk (x ^ n) = n • mk x := rfl
 
-instance : AddCommMagma (ArchimedeanClass R) where
-  add_comm x y := by
+instance : IsAddCommutative (ArchimedeanClass R) where
+  is_comm := ⟨fun x y ↦ by
     induction x with | mk x
     induction y with | mk y
-    rw [← mk_mul, mul_comm, mk_mul]
+    rw [← mk_mul, mul_comm, mk_mul]⟩
 
 private theorem zero_add' (x : ArchimedeanClass R) : 0 + x = x := by
   induction x with | mk x
@@ -97,7 +97,7 @@ private theorem add_assoc' (x y z : ArchimedeanClass R) : x + y + z = x + (y + z
   induction z with | mk z
   simp_rw [← mk_mul, mul_assoc]
 
-instance : AddCommMonoid (ArchimedeanClass R) where
+instance : AddMonoid (ArchimedeanClass R) where
   add_assoc := private add_assoc'
   zero_add := private zero_add'
   add_zero x := private add_comm x _ ▸ zero_add' x

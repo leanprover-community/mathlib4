@@ -45,12 +45,12 @@ def pushforward₀Obj (R : Dᵒᵖ ⥤ RingCat.{u}) (M : PresheafOfModules R) :
     map_id X := by
       refine ModuleCat.hom_ext
         -- Work around an instance diamond for `restrictScalarsId'`
-        (@LinearMap.ext _ _ _ _ _ _ _ _ (_) (_) _ _ _ (fun x => ?_))
+        (@LinearMap.ext _ _ _ _ _ _ _ _ _ _ (_) (_) _ _ _ (fun x => ?_))
       exact (M.congr_map_apply (F.op.map_id X) x).trans (by simp)
     map_comp := fun f g ↦ by
       refine ModuleCat.hom_ext
         -- Work around an instance diamond for `restrictScalarsId'`
-        (@LinearMap.ext _ _ _ _ _ _ _ _ (_) (_) _ _ _ (fun x => ?_))
+        (@LinearMap.ext _ _ _ _ _ _ _ _ _ _ (_) (_) _ _ _ (fun x => ?_))
       exact (M.congr_map_apply (F.op.map_comp f g) x).trans (by simp) }
 
 @[deprecated (since := "2026-04-27")] alias pushforward₀_obj := pushforward₀Obj

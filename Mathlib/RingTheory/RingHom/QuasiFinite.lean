@@ -21,11 +21,11 @@ variable {R S T : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutativ
 /-- A ring hom `R →+* S` is quasi-finite if `S` is a quasi-finite `R`-algebra. -/
 @[algebraize RingHom.QuasiFinite.toAlgebra]
 def QuasiFinite {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S) : Prop :=
-  @Algebra.QuasiFinite R S _ _ f.toAlgebra
+  @Algebra.QuasiFinite R S _ _ _ f.toAlgebra
 
 /-- Helper lemma for the `algebraize` tactic -/
 lemma QuasiFinite.toAlgebra {f : R →+* S} (hf : QuasiFinite f) :
-    @Algebra.QuasiFinite R S _ _ f.toAlgebra := hf
+    @Algebra.QuasiFinite R S _ _ _ f.toAlgebra := hf
 
 variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S)
 
@@ -52,7 +52,7 @@ lemma QuasiFinite.of_finite {f : S →+* T} (hf : f.Finite) : f.QuasiFinite := b
   exact inferInstanceAs (Algebra.QuasiFinite _ _)
 
 lemma QuasiFinite.stableUnderComposition : StableUnderComposition QuasiFinite :=
-  fun _ _ _ _ _ _ _ _ hf hg ↦ comp hg hf
+  fun _ _ _ _ _ _ _ _ _ _ _ hf hg ↦ comp hg hf
 
 lemma QuasiFinite.respectsIso : RespectsIso QuasiFinite :=
   stableUnderComposition.respectsIso fun e ↦ .of_finite e.finite

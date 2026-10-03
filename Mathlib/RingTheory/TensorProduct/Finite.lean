@@ -48,7 +48,7 @@ theorem exists_fg_le_subset_range_rTensor_subtype (s : Set (N ⊗[R] M)) (hs : s
   choose J fg y eq using exists_fg_le_eq_rTensor_subtype (R := R) (M := M) (N := N)
   rw [← Set.finite_coe_iff] at hs
   refine ⟨⨆ x : s, J x, fg_iSup _ fun _ ↦ fg _, fun x hx ↦
-    ⟨rTensor M (inclusion <| le_iSup _ ⟨x, hx⟩) (y x), .trans ?_ (eq x).symm⟩⟩
+    ⟨rTensor M (inclusion <| le_iSup (fun x : s ↦ J x) ⟨x, hx⟩) (y x), .trans ?_ (eq x).symm⟩⟩
   rw [← comp_apply, ← rTensor_comp]; rfl
 
 open TensorProduct LinearMap
@@ -67,7 +67,7 @@ theorem exists_fg_le_subset_range_rTensor_inclusion (s : Set (I ⊗[R] M)) (hs :
   choose J fg hle y eq using exists_fg_le_eq_rTensor_inclusion (M := M) (I := I)
   rw [← Set.finite_coe_iff] at hs
   refine ⟨⨆ x : s, J x, fg_iSup _ fun _ ↦ fg _, iSup_le fun _ ↦ hle _, fun x hx ↦
-    ⟨rTensor M (inclusion <| le_iSup _ ⟨x, hx⟩) (y x), .trans ?_ (eq x).symm⟩⟩
+    ⟨rTensor M (inclusion <| le_iSup (fun x : s ↦ J x) ⟨x, hx⟩) (y x), .trans ?_ (eq x).symm⟩⟩
   rw [← comp_apply, ← rTensor_comp]; rfl
 
 end Submodule
@@ -103,7 +103,7 @@ variable (R M : Type*) [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutat
 
 lemma Module.exists_isPrincipal_quotient_of_finite :
     ∃ N : Submodule R M, N ≠ ⊤ ∧ Submodule.IsPrincipal (⊤ : Submodule R (M ⧸ N)) := by
-  obtain ⟨n, f, hf⟩ := @Module.Finite.exists_fin R M _ _ _ _
+  obtain ⟨n, f, hf⟩ := Module.Finite.exists_fin (R := R) (M := M)
   let s := { m : ℕ | Submodule.span R (f '' Fin.val ⁻¹' Set.Iio m) ≠ ⊤ }
   have hns : ∀ x ∈ s, x < n := by
     refine fun x hx ↦ lt_iff_not_ge.mpr fun e ↦ ?_

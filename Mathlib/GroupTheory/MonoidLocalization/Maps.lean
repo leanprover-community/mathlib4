@@ -270,7 +270,7 @@ Localization of `P` at `T`: if `f : M →+ N` and `k : P →+ Q` are Localizatio
 `T` respectively, we send `z : N` to `k (g x) - k (g y)`, where `(x, y) : M × S` are such
 that `z = f x - f y`. -/]
 noncomputable def map : N →* Q :=
-  @lift _ _ _ _ _ _ _ f (k.toMonoidHom.comp g) fun y ↦ k.map_units ⟨g y, hy y⟩
+  f.lift (g := k.toMonoidHom.comp g) fun y ↦ k.map_units ⟨g y, hy y⟩
 
 variable {k}
 

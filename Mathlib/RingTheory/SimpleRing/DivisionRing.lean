@@ -44,7 +44,7 @@ lemma DivisionRing.nonempty_linearEquiv_of_isSimpleModule (N : Type*) [AddGroup 
 lemma isSimpleModule_iff_eq_zero_or_injective (R : Type u) (M : Type v) [Ring R] [AddGroup M] [IsAddCommutative M]
     [Module R M] : IsSimpleModule R M ↔ (Nontrivial M ∧ ∀ (N : Type v) [AddGroup N] [IsAddCommutative N]
     [Module R N] (f : M →ₗ[R] N), f = 0 ∨ Function.Injective f) :=
-  ⟨fun hM ↦ ⟨Submodule.nontrivial_iff _|>.1 hM.1.1, fun N _ _ f ↦ hM.1.2 (LinearMap.ker f)|>.elim
+  ⟨fun hM ↦ ⟨Submodule.nontrivial_iff _|>.1 hM.1.1, fun N _ _ _ f ↦ hM.1.2 (LinearMap.ker f)|>.elim
     (fun h ↦ Or.inr <| by rwa [LinearMap.ker_eq_bot] at h) (fun h ↦ Or.inl <|by simp_all)⟩,
   fun ⟨hM1, hM2⟩ ↦ isSimpleModule_iff R M|>.2 ⟨fun p ↦ (hM2 (M ⧸ p) p.mkQ).elim
   (fun h ↦ Or.inr <| by simpa [Submodule.ext_iff, LinearMap.ext_iff] using h)

@@ -378,7 +378,7 @@ def skewAdjoint.negISMul : skewAdjoint A →ₗ[ℝ] selfAdjoint A where
   map_add' a b := by simp
   map_smul' a b := by ext; simp [smul_comm I]
 
-theorem skewAdjoint.I_smul_neg_I (a : skewAdjoint A) : I • (skewAdjoint.negISMul a : A) = a := by
+theorem skewAdjoint.I_smul_neg_I (a : skewAdjoint A) : I • (skewAdjoint.negISMul (A := A) a : A) = a := by
   simp [smul_smul]
 
 /-- The real part `ℜ a` of an element `a` of a star module over `ℂ`, as a linear map. This is just
@@ -402,49 +402,49 @@ scoped[ComplexStarModule] notation "ℑ" => imaginaryPart
 
 open ComplexStarModule
 
-theorem realPart_apply_coe (a : A) : (ℜ a : A) = (2 : ℝ)⁻¹ • (a + star a) := by
+theorem realPart_apply_coe (a : A) : (realPart (A := A) a : A) = (2 : ℝ)⁻¹ • (a + star a) := by
   simp [realPart]
 
-theorem imaginaryPart_apply_coe (a : A) : (ℑ a : A) = -I • (2 : ℝ)⁻¹ • (a - star a) := by
+theorem imaginaryPart_apply_coe (a : A) : (imaginaryPart (A := A) a : A) = -I • (2 : ℝ)⁻¹ • (a - star a) := by
   simp [imaginaryPart]
 
 /-- The standard decomposition of `ℜ a + Complex.I • ℑ a = a` of an element of a star module over
 `ℂ` into a linear combination of self adjoint elements. -/
-theorem realPart_add_I_smul_imaginaryPart (a : A) : (ℜ a : A) + I • (ℑ a : A) = a := by
+theorem realPart_add_I_smul_imaginaryPart (a : A) : (realPart (A := A) a : A) + I • (imaginaryPart (A := A) a : A) = a := by
   simp [realPart, imaginaryPart, smul_smul, ← smul_add, inv_smul_eq_iff₀, two_smul]
 
 @[simp]
-theorem realPart_I_smul (a : A) : ℜ (I • a) = -ℑ a := by
+theorem realPart_I_smul (a : A) : realPart (A := A) (I • a) = -imaginaryPart (A := A) a := by
   ext
   simp [realPart_apply_coe, imaginaryPart_apply_coe, smul_comm I, sub_eq_add_neg, add_comm]
 
 @[simp]
-theorem imaginaryPart_I_smul (a : A) : ℑ (I • a) = ℜ a := by
+theorem imaginaryPart_I_smul (a : A) : imaginaryPart (A := A) (I • a) = realPart (A := A) a := by
   ext
   simp [realPart_apply_coe, imaginaryPart_apply_coe, smul_comm I (2⁻¹ : ℝ), smul_smul I]
 
-theorem realPart_smul (z : ℂ) (a : A) : ℜ (z • a) = z.re • ℜ a - z.im • ℑ a := by
-  have := congr(ℜ ($((re_add_im z).symm) • a))
+theorem realPart_smul (z : ℂ) (a : A) : realPart (A := A) (z • a) = z.re • realPart (A := A) a - z.im • imaginaryPart (A := A) a := by
+  have := congr(realPart (A := A) ($((re_add_im z).symm) • a))
   simpa [-re_add_im, add_smul, ← smul_smul, sub_eq_add_neg]
 
-theorem imaginaryPart_smul (z : ℂ) (a : A) : ℑ (z • a) = z.re • ℑ a + z.im • ℜ a := by
-  have := congr(ℑ ($((re_add_im z).symm) • a))
+theorem imaginaryPart_smul (z : ℂ) (a : A) : imaginaryPart (A := A) (z • a) = z.re • imaginaryPart (A := A) a + z.im • realPart (A := A) a := by
+  have := congr(imaginaryPart (A := A) ($((re_add_im z).symm) • a))
   simpa [-re_add_im, add_smul, ← smul_smul]
 
 lemma skewAdjointPart_eq_I_smul_imaginaryPart (x : A) :
-    (skewAdjointPart ℝ x : A) = I • (imaginaryPart x : A) := by
+    (skewAdjointPart (A := A) ℝ x : A) = I • (imaginaryPart (A := A) x : A) := by
   simp [imaginaryPart_apply_coe, smul_smul]
 
 lemma imaginaryPart_eq_neg_I_smul_skewAdjointPart (x : A) :
-    (imaginaryPart x : A) = -I • (skewAdjointPart ℝ x : A) :=
+    (imaginaryPart (A := A) x : A) = -I • (skewAdjointPart (A := A) ℝ x : A) :=
   rfl
 
 lemma IsSelfAdjoint.coe_realPart {x : A} (hx : IsSelfAdjoint x) :
-    (ℜ x : A) = x :=
+    (realPart (A := A) x : A) = x :=
   hx.coe_selfAdjointPart_apply ℝ
 
 nonrec lemma IsSelfAdjoint.imaginaryPart {x : A} (hx : IsSelfAdjoint x) :
-    ℑ x = 0 := by
+    imaginaryPart (A := A) x = 0 := by
   rw [imaginaryPart, LinearMap.comp_apply, hx.skewAdjointPart_apply _, map_zero]
 
 lemma realPart_comp_subtype_selfAdjoint :
@@ -457,24 +457,24 @@ lemma imaginaryPart_comp_subtype_selfAdjoint :
   ext; simp [imaginaryPart]
 
 @[simp]
-lemma selfAdjoint.realPart_coe {x : selfAdjoint A} : ℜ (x : A) = x :=
+lemma selfAdjoint.realPart_coe {x : selfAdjoint A} : realPart (A := A) (x : A) = x :=
   Subtype.ext x.property.coe_realPart
 
 @[simp]
-lemma selfAdjoint.imaginaryPart_coe {x : selfAdjoint A} : ℑ (x : A) = 0 :=
+lemma selfAdjoint.imaginaryPart_coe {x : selfAdjoint A} : imaginaryPart (A := A) (x : A) = 0 :=
   x.property.imaginaryPart
 
-lemma imaginaryPart_realPart {x : A} : ℑ (ℜ x : A) = 0 :=
-  (ℜ x).property.imaginaryPart
+lemma imaginaryPart_realPart {x : A} : imaginaryPart (A := A) (realPart (A := A) x : A) = 0 :=
+  (realPart (A := A) x).property.imaginaryPart
 
-lemma imaginaryPart_imaginaryPart {x : A} : ℑ (ℑ x : A) = 0 :=
-  (ℑ x).property.imaginaryPart
+lemma imaginaryPart_imaginaryPart {x : A} : imaginaryPart (A := A) (imaginaryPart (A := A) x : A) = 0 :=
+  (imaginaryPart (A := A) x).property.imaginaryPart
 
-lemma realPart_idem {x : A} : ℜ (ℜ x : A) = ℜ x :=
-  Subtype.ext (ℜ x).property.coe_realPart
+lemma realPart_idem {x : A} : realPart (A := A) (realPart (A := A) x : A) = realPart (A := A) x :=
+  Subtype.ext (realPart (A := A) x).property.coe_realPart
 
-lemma realPart_imaginaryPart {x : A} : ℜ (ℑ x : A) = ℑ x :=
-  Subtype.ext (ℑ x).property.coe_realPart
+lemma realPart_imaginaryPart {x : A} : realPart (A := A) (imaginaryPart (A := A) x : A) = imaginaryPart (A := A) x :=
+  Subtype.ext (imaginaryPart (A := A) x).property.coe_realPart
 
 lemma realPart_surjective : Function.Surjective (realPart (A := A)) :=
   fun x ↦ ⟨(x : A), Subtype.ext x.property.coe_realPart⟩
@@ -483,10 +483,10 @@ lemma imaginaryPart_surjective : Function.Surjective (imaginaryPart (A := A)) :=
   fun x ↦
     ⟨I • (x : A), Subtype.ext <| by simp only [imaginaryPart_I_smul, x.property.coe_realPart]⟩
 
-lemma ComplexStarModule.ext {x y : A} (h₁ : ℜ x = ℜ y) (h₂ : ℑ x = ℑ y) : x = y := by
+lemma ComplexStarModule.ext {x y : A} (h₁ : realPart (A := A) x = realPart (A := A) y) (h₂ : imaginaryPart (A := A) x = imaginaryPart (A := A) y) : x = y := by
   rw [← realPart_add_I_smul_imaginaryPart x, ← realPart_add_I_smul_imaginaryPart y, h₁, h₂]
 
-lemma ComplexStarModule.ext_iff {x y : A} : x = y ↔ ℜ x = ℜ y ∧ ℑ x = ℑ y where
+lemma ComplexStarModule.ext_iff {x y : A} : x = y ↔ realPart (A := A) x = realPart (A := A) y ∧ imaginaryPart (A := A) x = imaginaryPart (A := A) y where
   mp := by grind
   mpr h := ext h.1 h.2
 
@@ -495,10 +495,10 @@ section StarHomClass
 variable {B F : Type*} [AddGroup B] [IsAddCommutative B] [Module ℂ B] [StarAddMonoid B] [StarModule ℂ B]
     [FunLike F A B] [StarHomClass F A B] [LinearMapClass F ℂ A B]
 
-lemma map_realPart (f : F) (x : A) : f (ℜ x) = ℜ (f x) := by
+lemma map_realPart (f : F) (x : A) : f (realPart (A := A) x) = realPart (A := B) (f x) := by
   simp [realPart_apply_coe, ← Complex.coe_smul, map_star]
 
-lemma map_imaginaryPart (f : F) (x : A) : f (ℑ x) = ℑ (f x) := by
+lemma map_imaginaryPart (f : F) (x : A) : f (imaginaryPart (A := A) x) = imaginaryPart (A := B) (f x) := by
   simp [imaginaryPart_apply_coe, ← Complex.coe_smul, map_star]
 
 end StarHomClass
@@ -511,7 +511,7 @@ theorem ker_imaginaryPart : imaginaryPart.ker = selfAdjoint.submodule ℝ A := b
   grind
 
 @[simp]
-lemma imaginaryPart_eq_zero_iff {x : A} : ℑ x = 0 ↔ IsSelfAdjoint x := by
+lemma imaginaryPart_eq_zero_iff {x : A} : imaginaryPart (A := A) x = 0 ↔ IsSelfAdjoint x := by
   simpa [-ker_imaginaryPart] using! SetLike.ext_iff.mp ker_imaginaryPart x
 
 open Submodule
@@ -519,8 +519,8 @@ open Submodule
 lemma span_selfAdjoint : span ℂ (selfAdjoint A : Set A) = ⊤ := by
   refine eq_top_iff'.mpr fun x ↦ ?_
   rw [← realPart_add_I_smul_imaginaryPart x]
-  exact add_mem (subset_span (ℜ x).property) <|
-    SMulMemClass.smul_mem _ <| subset_span (ℑ x).property
+  exact add_mem (subset_span (realPart (A := A) x).property) <|
+    SMulMemClass.smul_mem _ <| subset_span (imaginaryPart (A := A) x).property
 
 end AddCommGroup
 
@@ -540,15 +540,15 @@ lemma Complex.coe_selfAdjointEquiv (z : selfAdjoint ℂ) :
   simpa [selfAdjointEquiv_symm_apply] using congr($(Complex.selfAdjointEquiv.left_inv z).val)
 
 @[simp]
-lemma realPart_ofReal (r : ℝ) : (ℜ (r : ℂ) : ℂ) = r := by
+lemma realPart_ofReal (r : ℝ) : (realPart (A := ℂ) (r : ℂ) : ℂ) = r := by
   rw [realPart_apply_coe, star_def, conj_ofReal, ← two_smul ℝ (r : ℂ)]
   simp
 
 @[simp]
-lemma imaginaryPart_ofReal (r : ℝ) : ℑ (r : ℂ) = 0 := by
+lemma imaginaryPart_ofReal (r : ℝ) : imaginaryPart (A := ℂ) (r : ℂ) = 0 := by
   ext1; simp [imaginaryPart_apply_coe, conj_ofReal]
 
-lemma Complex.coe_realPart (z : ℂ) : (ℜ z : ℂ) = z.re := by
+lemma Complex.coe_realPart (z : ℂ) : (realPart (A := ℂ) z : ℂ) = z.re := by
   conv_lhs => rw [← re_add_im z]
   simp [-re_add_im, realPart_I_smul, mul_comm _ I, ← smul_eq_mul]
 
@@ -558,39 +558,39 @@ variable [NonUnitalNonAssocRing A] [StarRing A] [Module ℂ A] [IsScalarTower �
   [SMulCommClass ℂ A A] [StarModule ℂ A]
 
 lemma star_mul_self_add_self_mul_star (a : A) :
-    star a * a + a * star a = 2 • (ℜ a * ℜ a + ℑ a * ℑ a) :=
+    star a * a + a * star a = 2 • (realPart (A := A) a * realPart (A := A) a + imaginaryPart (A := A) a * imaginaryPart (A := A) a) :=
   have a_eq := (realPart_add_I_smul_imaginaryPart a).symm
   calc
     star a * a + a * star a = _ := congr((star $a_eq) * $a_eq + $a_eq * star $a_eq)
-    _ = 2 • (ℜ a * ℜ a + ℑ a * ℑ a) := by
+    _ = 2 • (realPart (A := A) a * realPart (A := A) a + imaginaryPart (A := A) a * imaginaryPart (A := A) a) := by
       simp [mul_add, add_mul, smul_smul, mul_smul_comm,
         smul_mul_assoc]
       abel
 
 lemma star_mul_self_sub_self_mul_star (a : A) :
-    star a * a - a * star a = 2 • I • (ℜ a * ℑ a - ℑ a * ℜ a) :=
+    star a * a - a * star a = 2 • I • (realPart (A := A) a * imaginaryPart (A := A) a - imaginaryPart (A := A) a * realPart (A := A) a) :=
   have a_eq := (realPart_add_I_smul_imaginaryPart a).symm
   calc
     star a * a - a * star a = _ := congr((star $a_eq) * $a_eq - $a_eq * star $a_eq)
-    _ = 2 • I • (ℜ a * ℑ a - ℑ a * ℜ a) := by
+    _ = 2 • I • (realPart (A := A) a * imaginaryPart (A := A) a - imaginaryPart (A := A) a * realPart (A := A) a) := by
       simp [mul_add, add_mul, mul_smul_comm, smul_mul_assoc, smul_smul]
       module
 
 /-- An element in a non-unital star `ℂ`-algebra is normal if and only if its real and imaginary
 parts commute. -/
 lemma isStarNormal_iff_commute_realPart_imaginaryPart {x : A} :
-    IsStarNormal x ↔ Commute (ℜ x : A) (ℑ x : A) := by
+    IsStarNormal x ↔ Commute (realPart (A := A) x : A) (imaginaryPart (A := A) x : A) := by
   rw [isStarNormal_iff, commute_iff_eq, ← sub_eq_zero, star_mul_self_sub_self_mul_star,
     two_smul ℕ, ← two_smul ℂ, smul_eq_zero_iff_right two_ne_zero, smul_eq_zero_iff_right I_ne_zero,
     sub_eq_zero, commute_iff_eq]
 
 lemma Commute.realPart_imaginaryPart (x : A) [IsStarNormal x] :
-    Commute (ℜ x : A) (ℑ x : A) :=
+    Commute (realPart (A := A) x : A) (imaginaryPart (A := A) x : A) :=
   isStarNormal_iff_commute_realPart_imaginaryPart.mp inferInstance
 
 lemma star_mul_self_eq_realPart_sq_add_imaginaryPart_sq (x : A) [hx : IsStarNormal x] :
-    star x * x = ℜ x * ℜ x + ℑ x * ℑ x := calc
-  star x * x = ℜ x * ℜ x + ℑ x * ℑ x + Complex.I • (ℜ x * ℑ x - ℑ x * ℜ x) := by
+    star x * x = realPart (A := A) x * realPart (A := A) x + imaginaryPart (A := A) x * imaginaryPart (A := A) x := calc
+  star x * x = realPart (A := A) x * realPart (A := A) x + imaginaryPart (A := A) x * imaginaryPart (A := A) x + Complex.I • (realPart (A := A) x * imaginaryPart (A := A) x - imaginaryPart (A := A) x * realPart (A := A) x) := by
     conv_lhs => rw [← realPart_add_I_smul_imaginaryPart x]
     simp [add_mul, mul_add, smul_mul_assoc, mul_smul_comm, smul_smul, smul_sub]
     grind
@@ -604,44 +604,44 @@ variable [NonUnitalRing A] [StarRing A] [PartialOrder A]
     [StarOrderedRing A] [Module ℂ A] [StarModule ℂ A]
 
 lemma nonneg_iff_realPart_imaginaryPart {a : A} :
-    0 ≤ a ↔ 0 ≤ ℜ a ∧ ℑ a = 0 := by
+    0 ≤ a ↔ 0 ≤ realPart (A := A) a ∧ imaginaryPart (A := A) a = 0 := by
   refine ⟨fun h ↦ ⟨?_, h.isSelfAdjoint.imaginaryPart⟩, fun h ↦ ?_⟩
   · simpa +singlePass [← h.isSelfAdjoint.coe_realPart] using! h
   · rw [← realPart_add_I_smul_imaginaryPart a, h.2]
     simpa using! h.1
 
 lemma nonpos_iff_realPart_imaginaryPart {a : A} :
-    a ≤ 0 ↔ ℜ a ≤ 0 ∧ ℑ a = 0 := by
+    a ≤ 0 ↔ realPart (A := A) a ≤ 0 ∧ imaginaryPart (A := A) a = 0 := by
   simpa using nonneg_iff_realPart_imaginaryPart (a := -a)
 
-lemma realPart_nonneg_of_nonneg {a : A} (ha : 0 ≤ a) : 0 ≤ ℜ a :=
+lemma realPart_nonneg_of_nonneg {a : A} (ha : 0 ≤ a) : 0 ≤ realPart (A := A) a :=
   nonneg_iff_realPart_imaginaryPart.mp ha |>.1
 
-lemma realPart_nonpos_of_nonpos {a : A} (ha : a ≤ 0) : ℜ a ≤ 0 :=
+lemma realPart_nonpos_of_nonpos {a : A} (ha : a ≤ 0) : realPart (A := A) a ≤ 0 :=
   nonpos_iff_realPart_imaginaryPart.mp ha |>.1
 
 lemma le_iff_realPart_imaginaryPart {a b : A} :
-    a ≤ b ↔ ℜ a ≤ ℜ b ∧ ℑ a = ℑ b := by
-  simpa [sub_eq_zero, eq_comm (a := ℑ a)] using nonneg_iff_realPart_imaginaryPart (a := b - a)
+    a ≤ b ↔ realPart (A := A) a ≤ realPart (A := A) b ∧ imaginaryPart (A := A) a = imaginaryPart (A := A) b := by
+  simpa [sub_eq_zero, eq_comm (a := imaginaryPart (A := A) a)] using nonneg_iff_realPart_imaginaryPart (a := b - a)
 
 lemma imaginaryPart_eq_of_le {a b : A} (hab : a ≤ b) :
-    ℑ a = ℑ b :=
+    imaginaryPart (A := A) a = imaginaryPart (A := A) b :=
   le_iff_realPart_imaginaryPart.mp hab |>.2
 
 lemma realPart_mono {a b : A} (hab : a ≤ b) :
-    ℜ a ≤ ℜ b :=
+    realPart (A := A) a ≤ realPart (A := A) b :=
   le_iff_realPart_imaginaryPart.mp hab |>.1
 
 end StarOrderedRing
 
 @[simp]
 lemma realPart_one [Ring A] [StarRing A] [Module ℂ A] [StarModule ℂ A] :
-    ℜ (1 : A) = 1 := by
+    realPart (A := A) (1 : A) = 1 := by
   ext; simp [realPart_apply_coe, ← two_smul ℝ]
 
 lemma mem_unitary_iff_isStarNormal_and_realPart_sq_add_imaginaryPart_sq_eq_one [Ring A]
     [StarRing A] [Module ℂ A] [SMulCommClass ℂ A A] [IsScalarTower ℂ A A] [StarModule ℂ A] {x : A} :
-    x ∈ unitary A ↔ IsStarNormal x ∧ ℜ x ^ 2 + ℑ x ^ 2 = (1 : A) := by
+    x ∈ unitary A ↔ IsStarNormal x ∧ realPart (A := A) x ^ 2 + imaginaryPart (A := A) x ^ 2 = (1 : A) := by
   rw [Unitary.mem_iff]
   refine ⟨fun ⟨h, h'⟩ ↦ ?_, fun ⟨hx, h⟩ ↦ ?_⟩
   · have : IsStarNormal x := ⟨h.trans h'.symm⟩
@@ -656,6 +656,7 @@ instance {F E A : Type*} [AddGroup E] [IsAddCommutative E] [PartialOrder E]
     StarHomClass F E A where
   map_star φ x := by
     rw [← realPart_add_I_smul_imaginaryPart x]
-    simp [(ℜ x).2.map' φ, IsSelfAdjoint.star_eq, (ℑ x).2.map' φ]
+    simp [(realPart (A := E) x).2.map' φ, IsSelfAdjoint.star_eq,
+      (imaginaryPart (A := E) x).2.map' φ]
 
 end RealImaginaryPart

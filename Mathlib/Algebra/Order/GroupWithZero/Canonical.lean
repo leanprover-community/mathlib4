@@ -38,12 +38,12 @@ The solutions is to use a typeclass, and that is exactly what we do in this file
 variable {α β : Type*}
 
 /-- A linearly ordered commutative monoid with a zero element. -/
-class LinearOrderedCommMonoidWithZero (α : Type*) extends CommMonoidWithZero α, LinearOrder α,
-    PosMulStrictMono α, OrderBot α, IsBotZeroClass α where
+class LinearOrderedCommMonoidWithZero (α : Type*) extends MonoidWithZero α, IsMulCommutative α,
+    LinearOrder α, PosMulStrictMono α, OrderBot α, IsBotZeroClass α where
 
 /-- A linearly ordered commutative group with a zero element. -/
 class LinearOrderedCommGroupWithZero (α : Type*) extends LinearOrderedCommMonoidWithZero α,
-  CommGroupWithZero α
+  GroupWithZero α
 
 section LinearOrderedCommMonoidWithZero
 variable [LinearOrderedCommMonoidWithZero α] {a b : α} {n : ℕ}
@@ -84,7 +84,8 @@ abbrev Function.Injective.linearOrderedCommMonoidWithZero {β : Type*} [Zero β]
     (compare : ∀ x y, compare (f x) (f y) = compare x y) :
     LinearOrderedCommMonoidWithZero β where
   __ := hf.linearOrder f le lt hinf hsup compare
-  __ := hf.commMonoidWithZero f zero one mul npow
+  __ := hf.monoidWithZero f zero one mul npow
+  __ := hf.isMulCommutative f mul
   __ := Function.Injective.posMulStrictMono f zero mul lt
   isBot_zero _ := le.1 <| zero ▸ zero_le
   bot_le _ := le.1 <| bot ▸ bot_le
@@ -482,7 +483,8 @@ elements are ≤ 1 and then 1 is the top element.
 -/
 /-- If `0` is the least element in `α`, then `WithZero α` is an ordered `AddMonoid`. -/
 -- See note [reducible non-instances]
-protected lemma isOrderedAddMonoid [AddMonoid α] [IsAddCommutative α] [PartialOrder α] [IsOrderedAddMonoid α]
+protected lemma isOrderedAddMonoid [AddMonoid α] [IsAddCommutative α] [PartialOrder α]
+    [IsOrderedAddMonoid α]
     (zero_le : ∀ a : α, 0 ≤ a) :
     IsOrderedAddMonoid (WithZero α) := by
   have := WithZero.addLeftMono zero_le
@@ -507,7 +509,8 @@ instance instLinearOrderedCommMonoidWithZero [Monoid α] [IsMulCommutative α] [
   | (a : α), _, 0, (c : α), _ => by simp [← WithZero.coe_mul]
   | (a : α), _, (b : α), (c : α), hbc => by norm_cast at *; exact mul_lt_mul_right hbc _
 
-instance instLinearOrderedCommGroupWithZero [Group α] [IsMulCommutative α] [LinearOrder α] [IsOrderedMonoid α] :
+instance instLinearOrderedCommGroupWithZero [Group α] [IsMulCommutative α] [LinearOrder α]
+    [IsOrderedMonoid α] :
     LinearOrderedCommGroupWithZero (WithZero α) where
 
 -- Add a shortcut instance for the common case, to speed up unification.

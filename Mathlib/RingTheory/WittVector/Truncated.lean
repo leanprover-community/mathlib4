@@ -21,6 +21,7 @@ The ring of Witt vectors is the projective limit of all the rings of truncated W
 
 - `TruncatedWittVector`: the underlying type of the ring of truncated Witt vectors
 - `TruncatedWittVector.instCommRing`: the ring structure on truncated Witt vectors
+  (commutativity is `TruncatedWittVector.instIsMulCommutative`)
 - `WittVector.truncate`: the quotient homomorphism that truncates a Witt vector,
   to obtain a truncated Witt vector
 - `TruncatedWittVector.truncate`: the homomorphism that truncates
@@ -267,7 +268,13 @@ variable (p n R)
 variable [Ring R] [IsMulCommutative R]
 variable [Fact p.Prime]
 
-instance instCommRing : CommRing (TruncatedWittVector p n R) :=
+instance instCommRing : Ring (TruncatedWittVector p n R) :=
+  (truncateFun_surjective p n R).ring _ (truncateFun_zero p n R) (truncateFun_one p n R)
+    (truncateFun_add n) (truncateFun_mul n) (truncateFun_neg n) (truncateFun_sub n)
+    (truncateFun_nsmul n) (truncateFun_zsmul n) (truncateFun_pow n) (truncateFun_natCast n)
+    (truncateFun_intCast n)
+
+instance instIsMulCommutative : IsMulCommutative (TruncatedWittVector p n R) :=
   (truncateFun_surjective p n R).commRing _ (truncateFun_zero p n R) (truncateFun_one p n R)
     (truncateFun_add n) (truncateFun_mul n) (truncateFun_neg n) (truncateFun_sub n)
     (truncateFun_nsmul n) (truncateFun_zsmul n) (truncateFun_pow n) (truncateFun_natCast n)
@@ -369,7 +376,7 @@ theorem truncate_surjective {m : ℕ} (hm : n ≤ m) : Surjective (truncate (p :
 @[simp]
 theorem coeff_truncate {m : ℕ} (hm : n ≤ m) (i : Fin n) (x : TruncatedWittVector p m R) :
     (truncate hm x).coeff i = x.coeff (Fin.castLE hm i) := by
-  obtain ⟨y, rfl⟩ := @WittVector.truncate_surjective p _ _ _ _ x
+  obtain ⟨y, rfl⟩ := @WittVector.truncate_surjective p _ _ _ _ _ x
   simp only [truncate_wittVector_truncate, WittVector.coeff_truncate, Fin.val_castLE]
 
 end

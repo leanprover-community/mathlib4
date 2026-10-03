@@ -116,7 +116,8 @@ that the images of the `fᵢ` form a basis of `I/I²` and that the restricted
 cotangent complex `I/I² → S ⊗[R] (Ω[R[Xᵢ]⁄R]) = ⊕ᵢ S → ⊕ⱼ S` is bijective. -/
 lemma isUnit_jacobian_of_cotangentRestrict_bijective
     (b : Module.Basis σ S P.toExtension.Cotangent)
-    (hb : ∀ r, b r = Extension.Cotangent.mk ⟨P.relation r, P.relation_mem_ker r⟩)
+    (hb : ∀ r, b r =
+      Extension.Cotangent.mk (P := P.toExtension) ⟨P.relation r, P.relation_mem_ker r⟩)
     (h : Function.Bijective (P.cotangentRestrict P.map_inj)) :
     IsUnit P.jacobian := by
   have heq : (fun j i ↦ (aeval P.val) (pderiv (P.map i) (P.relation j))) =

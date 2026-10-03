@@ -162,7 +162,7 @@ instance instSemiring : Semiring (Language α) where
   add_assoc := union_assoc
   zero_add := empty_union
   add_zero := union_empty
-  add_comm := union_comm
+  is_comm := ⟨union_comm⟩
   mul_assoc _ _ _ := image2_assoc append_assoc
   zero_mul _ := image2_empty_left
   mul_zero _ := image2_empty_right

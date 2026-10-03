@@ -60,12 +60,12 @@ lemma inv_mk (m : M) (s : (⊤ : Submonoid M)) : (mk m s)⁻¹ = .mk s ⟨m, Sub
 
 /-- The Grothendieck group is a group. -/
 @[to_additive /-- The Grothendieck group is a group. -/]
-instance instCommGroup : CommGroup (GrothendieckGroup M) where
-  __ : CommMonoid (GrothendieckGroup M) := inferInstance
+instance instCommGroup : Group (GrothendieckGroup M) where
+  __ : Monoid (GrothendieckGroup M) := inferInstance
   inv_mul_cancel a := by
     cases a using ind
     rw [inv_mk, mk_eq_monoidOf_mk', ← Submonoid.LocalizationMap.mk'_mul]
-    convert! Submonoid.LocalizationMap.mk'_self' _ _
+    convert (monoidOf (⊤ : Submonoid M)).mk'_self' _
     rw [mul_comm, Submonoid.coe_mul]
 
 @[to_additive (attr := simp)]

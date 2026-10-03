@@ -753,8 +753,9 @@ end Mul
 instance instAddMonoid [AddMonoid γ] [ContinuousAdd γ] : AddMonoid (α →ₘ[μ] γ) :=
   toGerm_injective.addMonoid toGerm zero_toGerm add_toGerm fun _ _ => smul_toGerm _ _
 
-instance instAddCommMonoid [AddMonoid γ] [IsAddCommutative γ] [ContinuousAdd γ] : AddCommMonoid (α →ₘ[μ] γ) :=
-  toGerm_injective.addCommMonoid toGerm zero_toGerm add_toGerm fun _ _ => smul_toGerm _ _
+instance instAddCommMonoid [Add γ] [IsAddCommutative γ] [ContinuousAdd γ] :
+    IsAddCommutative (α →ₘ[μ] γ) :=
+  toGerm_injective.isAddCommutative toGerm add_toGerm
 
 section Monoid
 
@@ -790,8 +791,9 @@ def toGermMonoidHom : (α →ₘ[μ] γ) →* (ae μ).Germ γ where
 end Monoid
 
 @[to_additive existing]
-instance instCommMonoid [Monoid γ] [IsMulCommutative γ] [ContinuousMul γ] : CommMonoid (α →ₘ[μ] γ) :=
-  toGerm_injective.commMonoid toGerm one_toGerm mul_toGerm pow_toGerm
+instance instCommMonoid [Mul γ] [IsMulCommutative γ] [ContinuousMul γ] :
+    IsMulCommutative (α →ₘ[μ] γ) :=
+  toGerm_injective.isMulCommutative toGerm mul_toGerm
 
 @[to_additive]
 theorem coeFn_finsetProd [Monoid γ] [IsMulCommutative γ] [ContinuousMul γ]
@@ -881,16 +883,22 @@ instance instAddGroup [AddGroup γ] [IsTopologicalAddGroup γ] : AddGroup (α �
   toGerm_injective.addGroup toGerm zero_toGerm add_toGerm neg_toGerm sub_toGerm
     (fun _ _ => smul_toGerm _ _) fun _ _ => smul_toGerm _ _
 
-instance instAddCommGroup [AddGroup γ] [IsAddCommutative γ] [IsTopologicalAddGroup γ] : AddCommGroup (α →ₘ[μ] γ) :=
-  { add_comm := add_comm }
+/-- The commutativity half of the former `AddCommGroup (α →ₘ[μ] γ)` instance; the instance
+itself is provided by `AEEqFun.instAddCommMonoid`. -/
+theorem instAddCommGroup [AddGroup γ] [IsAddCommutative γ] [IsTopologicalAddGroup γ] :
+    IsAddCommutative (α →ₘ[μ] γ) :=
+  inferInstance
 
 @[to_additive existing]
 instance instGroup [Group γ] [IsTopologicalGroup γ] : Group (α →ₘ[μ] γ) :=
   toGerm_injective.group _ one_toGerm mul_toGerm inv_toGerm div_toGerm pow_toGerm zpow_toGerm
 
+/-- The commutativity half of the former `CommGroup (α →ₘ[μ] γ)` instance; the instance
+itself is provided by `AEEqFun.instCommMonoid`. -/
 @[to_additive existing]
-instance instCommGroup [Group γ] [IsMulCommutative γ] [IsTopologicalGroup γ] : CommGroup (α →ₘ[μ] γ) :=
-  { mul_comm := mul_comm }
+theorem instCommGroup [Group γ] [IsMulCommutative γ] [IsTopologicalGroup γ] :
+    IsMulCommutative (α →ₘ[μ] γ) :=
+  inferInstance
 
 section Module
 
@@ -1027,8 +1035,9 @@ def toAEEqFunMulHom : C(α, β) →* α →ₘ[μ] β where
     AEEqFun.mk_mul_mk _ _ f.continuous.aestronglyMeasurable g.continuous.aestronglyMeasurable
 
 variable {𝕜 : Type*} [Semiring 𝕜]
-variable [TopologicalSpace γ] [PseudoMetrizableSpace γ] [AddGroup γ] [IsAddCommutative γ] [Module 𝕜 γ]
-  [IsTopologicalAddGroup γ] [ContinuousConstSMul 𝕜 γ] [SecondCountableTopologyEither α γ]
+variable [TopologicalSpace γ] [PseudoMetrizableSpace γ] [AddGroup γ] [IsAddCommutative γ]
+  [Module 𝕜 γ] [IsTopologicalAddGroup γ] [ContinuousConstSMul 𝕜 γ]
+  [SecondCountableTopologyEither α γ]
 
 /-- The linear map from the group of continuous maps from `α` to `β` to the group of equivalence
 classes of `μ`-almost-everywhere measurable functions. -/

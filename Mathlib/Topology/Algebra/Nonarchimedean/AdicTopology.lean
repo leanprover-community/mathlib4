@@ -115,7 +115,7 @@ theorem hasBasis_nhds_adic (I : Ideal R) (x : R) :
   have := I.hasBasis_nhds_zero_adic.map fun y => x + y
   rwa [map_add_left_nhds_zero x] at this
 
-theorem isLinearTopology (I : Ideal R) : @IsLinearTopology R R _ _ _ I.adicTopology :=
+theorem isLinearTopology (I : Ideal R) : @IsLinearTopology R R _ _ _ _ I.adicTopology :=
   letI := I.adicTopology
   IsLinearTopology.mk_of_hasBasis _ I.hasBasis_nhds_zero_adic
 
@@ -137,7 +137,7 @@ theorem adic_module_basis :
 written `I^n • ⊤` form a basis of neighborhoods of zero. -/
 @[instance_reducible]
 def adicModuleTopology : TopologicalSpace M :=
-  @ModuleFilterBasis.topology R M _ I.adic_basis.topology _ _
+  @ModuleFilterBasis.topology R M _ I.adic_basis.topology _ _ _
     (I.ringFilterBasis.moduleFilterBasis (I.adic_module_basis M))
 
 /-- The elements of the basis of neighborhoods of zero for the `I`-adic topology

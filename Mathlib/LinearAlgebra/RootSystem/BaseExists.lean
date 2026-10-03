@@ -145,8 +145,8 @@ lemma linearIndepOn_root_baseOf (f : M →+ ℚ) (hf : ∀ i, f (P.root i) ≠ 0
   replace h_span : span R (range <| (P.rootSpan ℚ).subtype ∘ v) = ⊤ := by
     rw [range_comp, ← span_span_of_tower ℚ, span_image, h_span]
     simp
-  rw [linearIndependent_iff_card_eq_finrank_span, Set.finrank, h_span, finrank_top, ← h_card,
-    Fintype.card_eq_nat_card]
+  rw [linearIndependent_iff_card_eq_finrank_span, Set.finrank,
+    (LinearEquiv.ofEq _ _ h_span).finrank_eq, finrank_top, ← h_card, Fintype.card_eq_nat_card]
 
 lemma eq_baseOf_of_linearIndepOn_of_mem_or_neg_mem_closure
     (s : Set ι)

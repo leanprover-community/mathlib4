@@ -482,7 +482,8 @@ end OrderedCommMonoid
 
 section OrderedCommGroup
 
-variable {_ : CommGroup α} {_ : Preorder α} {_ : CommGroup β} {_ : PartialOrder β}
+variable {_ : Group α} {_ : IsMulCommutative α} {_ : Preorder α} {_ : Group β}
+  {_ : IsMulCommutative β} {_ : PartialOrder β}
 
 /-- Makes an ordered group homomorphism from a proof that the map preserves multiplication. -/
 @[to_additive
@@ -749,7 +750,8 @@ end Preorder
 
 section OrderedCommGroup
 
-variable {_ : CommGroup α} {_ : Preorder α} {_ : CommGroup β} {_ : PartialOrder β}
+variable {_ : Group α} {_ : IsMulCommutative α} {_ : Preorder α} {_ : Group β}
+  {_ : IsMulCommutative β} {_ : PartialOrder β}
 
 /-- Makes an ordered group isomorphism from a proof that the map preserves multiplication. -/
 @[to_additive

@@ -36,8 +36,8 @@ instance [NonUnitalNonAssocSemiring α] : NonUnitalNonAssocSemiring (WithConv (M
   zero_mul := by simp
   mul_zero := by simp
 
-instance [Mul α] [IsMulCommutative α] : CommMagma (WithConv (Matrix m n α)) where
-  mul_comm := by simp [hadamard_comm]
+instance [Mul α] [IsMulCommutative α] : IsMulCommutative (WithConv (Matrix m n α)) where
+  is_comm := ⟨fun _ _ => by simp [hadamard_comm]⟩
 
 instance [One α] : One (WithConv (Matrix m n α)) where one := toConv (of 1)
 
@@ -50,23 +50,13 @@ instance [MulOneClass α] : MulOneClass (WithConv (Matrix m n α)) where
   mul_one := by simp
 
 instance [Monoid α] : Monoid (WithConv (Matrix m n α)) where
-instance [Monoid α] [IsMulCommutative α] : CommMonoid (WithConv (Matrix m n α)) where
 instance [NonAssocSemiring α] : NonAssocSemiring (WithConv (Matrix m n α)) where
 instance [NonUnitalSemiring α] : NonUnitalSemiring (WithConv (Matrix m n α)) where
-instance [NonUnitalNonAssocSemiring α] [IsMulCommutative α] :
-    NonUnitalNonAssocCommSemiring (WithConv (Matrix m n α)) where
-instance [NonUnitalSemiring α] [IsMulCommutative α] : NonUnitalCommSemiring (WithConv (Matrix m n α)) where
-instance [NonAssocSemiring α] [IsMulCommutative α] : NonAssocCommSemiring (WithConv (Matrix m n α)) where
 instance [Semiring α] : Semiring (WithConv (Matrix m n α)) where
-instance [Semiring α] [IsMulCommutative α] : CommSemiring (WithConv (Matrix m n α)) where
 instance [NonUnitalNonAssocRing α] : NonUnitalNonAssocRing (WithConv (Matrix m n α)) where
-instance [NonUnitalNonAssocRing α] [IsMulCommutative α] : NonUnitalNonAssocCommRing (WithConv (Matrix m n α)) where
 instance [NonUnitalRing α] : NonUnitalRing (WithConv (Matrix m n α)) where
-instance [NonUnitalRing α] [IsMulCommutative α] : NonUnitalCommRing (WithConv (Matrix m n α)) where
 instance [NonAssocRing α] : NonAssocRing (WithConv (Matrix m n α)) where
-instance [NonAssocRing α] [IsMulCommutative α] : NonAssocCommRing (WithConv (Matrix m n α)) where
 instance [Ring α] : Ring (WithConv (Matrix m n α)) where
-instance [Ring α] [IsMulCommutative α] : CommRing (WithConv (Matrix m n α)) where
 
 instance [Star α] : Star (WithConv (Matrix m n α)) where star x := toConv (x.ofConv.map star)
 
@@ -93,7 +83,8 @@ instance [Monoid β] [MulAction β α] [Mul α] [SMulCommClass β α α] :
 instance [Monoid β] [MulAction β α] [Mul α] [IsScalarTower β α α] :
     IsScalarTower β (WithConv (Matrix m n α)) (WithConv (Matrix m n α)) where smul_assoc := by simp
 
-instance [Semiring β] [IsMulCommutative β] [Semiring α] [Algebra β α] : Algebra β (WithConv (Matrix m n α)) :=
+instance [Semiring β] [IsMulCommutative β] [Semiring α] [Algebra β α] :
+    Algebra β (WithConv (Matrix m n α)) :=
   .ofModule smul_mul_assoc mul_smul_comm
 
 /-- All matrices are intrinsically self-adjoint if they are convolutively idempotent. -/

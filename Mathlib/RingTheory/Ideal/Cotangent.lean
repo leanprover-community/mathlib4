@@ -41,8 +41,17 @@ def Cotangent : Type _ := I ⧸ (I • ⊤ : Submodule R I)
 deriving Inhabited
 
 -- The `SMul` instance exists to avoid nsmul and zsmul diamonds.
-deriving instance SMul S, AddCommGroup, Module (R ⧸ I), Module S, IsScalarTower S S',
-  IsScalarTower R (R ⧸ I) for Cotangent I
+deriving instance SMul S, AddGroup, IsAddCommutative for Cotangent I
+
+-- The `deriving` handler cannot build these `Module` instances: it fails to unify the unfolded
+-- `IsAddCommutative` proof with the one for `Cotangent I` at instance transparency.
+instance : Module (R ⧸ I) I.Cotangent :=
+  inferInstanceAs (Module (R ⧸ I) (I ⧸ (I • ⊤ : Submodule R I)))
+
+instance : Module S I.Cotangent :=
+  inferInstanceAs (Module S (I ⧸ (I • ⊤ : Submodule R I)))
+
+deriving instance IsScalarTower S S', IsScalarTower R (R ⧸ I) for Cotangent I
 
 variable [IsNoetherian R I] in
 deriving instance IsNoetherian R for Cotangent I

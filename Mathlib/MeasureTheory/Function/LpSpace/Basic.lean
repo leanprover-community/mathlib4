@@ -397,9 +397,11 @@ theorem norm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ} (hC :
   have := nnnorm_le_of_ae_bound hfC
   rwa [← NNReal.coe_le_coe, NNReal.coe_mul, NNReal.coe_rpow] at this
 
-instance instAddCommGroup : AddCommGroup (Lp E p μ) := inferInstance
+instance instAddCommGroup : AddGroup (Lp E p μ) := inferInstance
 
-instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E p μ) :=
+instance instIsAddCommutative : IsAddCommutative (Lp E p μ) := inferInstance
+
+instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddGroup (Lp E p μ) :=
   fast_instance%
   { AddGroupNorm.toNormedAddCommGroup
       { toFun := (norm : Lp E p μ → ℝ)
@@ -551,7 +553,7 @@ theorem memLp_enorm_rpow_iff {q : ℝ≥0∞} {f : α → ε} (hf : AEStronglyMe
   convert! h.enorm_rpow_div q⁻¹ using 1
   · ext x
     have : q.toReal * q.toReal⁻¹ = 1 :=
-      CommGroupWithZero.mul_inv_cancel q.toReal <| ENNReal.toReal_ne_zero.mpr ⟨q_zero, q_top⟩
+      mul_inv_cancel₀ <| ENNReal.toReal_ne_zero.mpr ⟨q_zero, q_top⟩
     simp [← ENNReal.rpow_mul, this, ENNReal.rpow_one]
   · rw [div_eq_mul_inv, inv_inv, div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel q_zero q_top,
       mul_one]
@@ -902,7 +904,7 @@ def compLpL₂ [Fact (1 ≤ p)] (B : G →L[𝕜] E →L[𝕜] F) :
 
 theorem norm_compLpL₂_le [Fact (1 ≤ p)] (B : G →L[𝕜] E →L[𝕜] F) :
     ‖B.compLpL₂ p μ‖ ≤ ‖B‖ :=
-  LinearMap.mkContinuous₂_norm_le _ (norm_nonneg _) _
+  LinearMap.mkContinuous₂_norm_le _ (norm_nonneg B) _
 
 end Bilinear
 

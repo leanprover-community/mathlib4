@@ -82,7 +82,8 @@ lemma Cotangent.surjective_map_ofComp :
   rw [← map_ofComp_ker Q P, Ideal.mem_map_iff_of_surjective
     _ (toAlgHom_ofComp_surjective Q P)] at this
   obtain ⟨x, hx', rfl⟩ := this
-  exact ⟨.mk ⟨x, hx'⟩, Extension.Cotangent.map_mk _ _⟩
+  exact ⟨Extension.Cotangent.mk (P := (Q.comp P).toExtension) ⟨x, hx'⟩,
+    Extension.Cotangent.map_mk _ _⟩
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -121,7 +122,7 @@ lemma Cotangent.exact :
     let z : (Q.comp P).ker := ⟨x - y, Ideal.sub_mem _ hx' (Ideal.mul_le_right hy)⟩
     have hz : z.1 ∈ P.ker.map (Q.toComp P).toAlgHom.toRingHom := e
     have : Extension.Cotangent.mk (P := (Q.comp P).toExtension) ⟨x, hx'⟩ =
-      Extension.Cotangent.mk z := by
+      Extension.Cotangent.mk (P := (Q.comp P).toExtension) z := by
       ext; simpa only [val_mk, Ideal.toCotangent_eq, sub_sub_cancel, pow_two, z]
     rw [this, ← Submodule.restrictScalars_mem (Q.comp P).Ring, ← Submodule.mem_comap,
       ← Submodule.span_singleton_le_iff_mem, ← Submodule.map_le_map_iff_of_injective
@@ -134,7 +135,8 @@ lemma Cotangent.exact :
       Submodule.mem_map, Submodule.mem_comap, Submodule.restrictScalars_mem, Submodule.coe_subtype,
       Subtype.exists, exists_and_right, exists_eq_right,
       toExtension_Ring]
-    refine ⟨?_, Submodule.subset_span ⟨Extension.Cotangent.mk ⟨w, hw⟩, ?_⟩⟩
+    refine ⟨?_, Submodule.subset_span
+      ⟨Extension.Cotangent.mk (P := P.toExtension) ⟨w, hw⟩, ?_⟩⟩
     · simp only [ker_eq_ker_aeval_val, RingHom.mem_ker, Hom.algebraMap_toAlgHom]
       rw [aeval_val_eq_zero hw, map_zero]
     · rw [map_mk]
@@ -265,7 +267,7 @@ variable {Q} {Q'} in
 lemma δAux_toAlgHom (f : Hom Q Q') (x) :
     δAux R Q' (f.toAlgHom x) = δAux R Q x + Finsupp.linearCombination _ (δAux R Q' ∘ f.val)
       (Q.cotangentSpaceBasis.repr ((1 : T) ⊗ₜ[Q.Ring] D S Q.Ring x :)) := by
-  let : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
+  let : AddGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   have : IsScalarTower Q.Ring Q.Ring T := IsScalarTower.left _
   induction x using MvPolynomial.induction_on with
   | C s => simp [MvPolynomial.algebraMap_eq, δAux_C]
@@ -287,7 +289,7 @@ lemma δAux_ofComp (x : (Q.comp P).Ring) :
     δAux R Q ((Q.ofComp P).toAlgHom x) =
       P.toExtension.toKaehler.baseChange T (CotangentSpace.compEquiv Q P
         (1 ⊗ₜ[(Q.comp P).Ring] (D R (Q.comp P).Ring) x : _)).2 := by
-  let : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
+  let : AddGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   have : IsScalarTower (Q.comp P).Ring (Q.comp P).Ring T := IsScalarTower.left _
   induction x using MvPolynomial.induction_on with
   | C s =>
@@ -392,9 +394,10 @@ lemma δ_eq (x : Q.toExtension.H1Cotangent) (y)
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma δ_eq_δAux (x : Q.ker) (hx) :
-    δ Q P ⟨.mk x, hx⟩ = δAux R Q x.1 := by
+    δ Q P ⟨Extension.Cotangent.mk (P := Q.toExtension) x, hx⟩ = δAux R Q x.1 := by
   let y := Extension.Cotangent.mk (P := (Q.comp P).toExtension) (Q.kerCompPreimage P x)
-  have hy : (Extension.Cotangent.map (Q.ofComp P).toExtensionHom) y = Extension.Cotangent.mk x := by
+  have hy : (Extension.Cotangent.map (Q.ofComp P).toExtensionHom) y =
+      Extension.Cotangent.mk (P := Q.toExtension) x := by
     simp only [y, Extension.Cotangent.map_mk]
     congr
     exact ofComp_kerCompPreimage Q P x
@@ -416,7 +419,8 @@ lemma δ_eq_δAux (x : Q.ker) (hx) :
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma δ_C {r : S} (hr : C r ∈ Q.ker) :
-    δ Q P ⟨Extension.Cotangent.mk ⟨C r, hr⟩, Extension.Cotangent.mk_C_mem_ker_cotangentComplex ..⟩
+    δ Q P ⟨Extension.Cotangent.mk (P := Q.toExtension) ⟨C r, hr⟩,
+        Extension.Cotangent.mk_C_mem_ker_cotangentComplex ..⟩
       = 1 ⊗ₜ[S] D R S r := by
   rw [δ_eq_δAux, δAux_C]
 
@@ -438,7 +442,7 @@ lemma exact_map_δ :
 set_option backward.isDefEq.respectTransparency false in
 lemma δ_map (f : Hom Q' Q) (x) :
     δ Q P (Extension.H1Cotangent.map f.toExtensionHom x) = δ Q' P' x := by
-  let : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
+  let : AddGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   obtain ⟨x, hx⟩ := x
   obtain ⟨⟨y, hy⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
   change δ _ _ ⟨_, _⟩ = δ _ _ _

@@ -32,9 +32,9 @@ structure SemiNormedGrp : Type (u + 1) where
   of ::
   /-- The underlying seminormed abelian group. -/
   carrier : Type u
-  [str : SeminormedAddGroup carrier] [IsAddCommutative carrier]
+  [str : SeminormedAddGroup carrier] [isComm : IsAddCommutative carrier]
 
-attribute [instance] SemiNormedGrp.str
+attribute [instance] SemiNormedGrp.str SemiNormedGrp.isComm
 
 namespace SemiNormedGrp
 
@@ -201,9 +201,12 @@ instance Hom.zsmul {M N : SemiNormedGrp} : SMul ℤ (M ⟶ N) where
 theorem hom_zsum {V W : SemiNormedGrp} (n : ℤ) (f : V ⟶ W) : (n • f).hom = n • f.hom :=
   rfl
 
-instance Hom.addCommGroup {V W : SemiNormedGrp} : AddCommGroup (V ⟶ W) :=
-  Function.Injective.addCommGroup _ ConcreteCategory.hom_injective rfl (fun _ _ => rfl)
+instance Hom.addCommGroup {V W : SemiNormedGrp} : AddGroup (V ⟶ W) :=
+  Function.Injective.addGroup _ ConcreteCategory.hom_injective rfl (fun _ _ => rfl)
     (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+
+instance Hom.isAddCommutative {V W : SemiNormedGrp} : IsAddCommutative (V ⟶ W) :=
+  Function.Injective.isAddCommutative _ ConcreteCategory.hom_injective (fun _ _ => rfl)
 
 end SemiNormedGrp
 
@@ -215,9 +218,9 @@ structure SemiNormedGrp₁ : Type (u + 1) where
   of ::
   /-- The underlying seminormed abelian group. -/
   carrier : Type u
-  [str : SeminormedAddGroup carrier] [IsAddCommutative carrier]
+  [str : SeminormedAddGroup carrier] [isComm : IsAddCommutative carrier]
 
-attribute [instance] SemiNormedGrp₁.str
+attribute [instance] SemiNormedGrp₁.str SemiNormedGrp₁.isComm
 
 namespace SemiNormedGrp₁
 
@@ -331,8 +334,11 @@ lemma hom_inv_apply {M N : SemiNormedGrp₁} (e : M ≅ N) (s : N) : e.hom (e.in
   rw [← comp_apply]
   simp
 
-instance (M : SemiNormedGrp₁) : SeminormedAddCommGroup M :=
+instance (M : SemiNormedGrp₁) : SeminormedAddGroup M :=
   M.str
+
+instance (M : SemiNormedGrp₁) : IsAddCommutative M :=
+  M.isComm
 
 /-- Promote an isomorphism in `SemiNormedGrp` to an isomorphism in `SemiNormedGrp₁`. -/
 @[simps]

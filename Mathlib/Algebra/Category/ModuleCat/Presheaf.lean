@@ -259,15 +259,17 @@ instance : Sub (M₁ ⟶ M₂) where
 @[simp] lemma add_app (f g : M₁ ⟶ M₂) (X : Cᵒᵖ) : (f + g).app X = f.app X + g.app X := rfl
 @[simp] lemma sub_app (f g : M₁ ⟶ M₂) (X : Cᵒᵖ) : (f - g).app X = f.app X - g.app X := rfl
 
-instance : AddCommGroup (M₁ ⟶ M₂) where
+instance : AddGroup (M₁ ⟶ M₂) where
   add_assoc := by intros; ext1; simp only [add_app, add_assoc]
   zero_add := by intros; ext1; simp only [add_app, zero_app, zero_add]
   neg_add_cancel := by intros; ext1; simp only [add_app, neg_app, neg_add_cancel, zero_app]
   add_zero := by intros; ext1; simp only [add_app, zero_app, add_zero]
-  add_comm := by intros; ext1; simp only [add_app]; apply add_comm
   sub_eq_add_neg := by intros; ext1; simp only [add_app, sub_app, neg_app, sub_eq_add_neg]
   nsmul := nsmulRec
   zsmul := zsmulRec
+
+instance : IsAddCommutative (M₁ ⟶ M₂) :=
+  ⟨⟨fun _ _ => by ext1; simp only [add_app]; apply add_comm⟩⟩
 
 instance : Preadditive (PresheafOfModules R) where
 

@@ -92,6 +92,7 @@ lemma AnalyticAt.analyticOrderAt_eq_natCast (hf : AnalyticAt 𝕜 f z₀) :
     analyticOrderAt f z₀ = n ↔
       ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z := by
   unfold analyticOrderAt
+  rw [dite_eq_left hf]
   split_ifs with h
   · simp only [ENat.top_ne_natCast, false_iff]
     contrapose h
@@ -167,6 +168,7 @@ lemma natCast_le_analyticOrderAt (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
     n ≤ analyticOrderAt f z₀ ↔
       ∃ g, AnalyticAt 𝕜 g z₀ ∧ ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z := by
   unfold analyticOrderAt
+  rw [dite_eq_left hf]
   split_ifs with h
   · simpa using ⟨0, analyticAt_const .., by simpa⟩
   · let m := (hf.exists_eventuallyEq_pow_smul_nonzero_iff.mpr h).choose

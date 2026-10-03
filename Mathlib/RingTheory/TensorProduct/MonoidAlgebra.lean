@@ -35,7 +35,7 @@ noncomputable def _root_.AddMonoidAlgebra.rTensorEquivAlgEquiv.invFun [AddMonoid
       fun _ _ ↦ .all ..
 
 /-- Implementation detail. -/
-@[to_additive existing (dont_translate := R)]
+@[to_additive existing (dont_translate := R S A B)]
 def rTensorEquivAlgEquiv.invFun : (A ⊗[R] B)[M] →ₐ[S] A ⊗[R] B[M] :=
   MonoidAlgebra.liftNCAlgHom (Algebra.TensorProduct.map (.id _ _) singleOneAlgHom)
     (Algebra.TensorProduct.includeRight.toMonoidHom.comp (of B M)) fun _ _ ↦ .all ..
@@ -47,17 +47,38 @@ lemma _root_.AddMonoidAlgebra.rTensorEquivAlgEquiv.invFun_tmul (a : A) (m : M) (
        a ⊗ₜ .single m b := by
   simp [AddMonoidAlgebra.rTensorEquivAlgEquiv.invFun]
 
-@[to_additive existing (dont_translate := R) (attr := simp)]
+@[to_additive existing (dont_translate := R S A B) (attr := simp)]
 lemma rTensorEquivAlgEquiv.invFun_tmul (a : A) (m : M) (b : B) :
     rTensorEquivAlgEquiv.invFun (S := S) (single m (a ⊗ₜ[R] b)) = a ⊗ₜ single m b := by
   simp [rTensorEquivAlgEquiv.invFun]
 
+-- Note: Not additivised automatically: the auxiliary proof of `IsAddCommutative B[M]` created
+-- when elaborating `rTensorEquivAlgEquiv.invFun` lives in the namespace `rTensorEquivAlgEquiv`,
+-- and `to_additive` maps it onto the unrelated existing
+-- `AddMonoidAlgebra.rTensorEquivAlgEquiv.invFun._proof_1` instead of translating it.
+omit [Monoid M] [IsMulCommutative M] in
+variable (R S A B) [AddMonoid M] [IsAddCommutative M] in
+/-- The base change of `B[M]` to an `R`-algebra `A` is isomorphic to `(A ⊗[R] B)[M]`
+as an `A`-algebra. -/
+noncomputable def _root_.AddMonoidAlgebra.rTensorEquivAlgEquiv :
+    A ⊗[R] AddMonoidAlgebra B M ≃ₐ[S] AddMonoidAlgebra (A ⊗[R] B) M := by
+  refine .restrictScalars S <| .ofAlgHom
+    (Algebra.TensorProduct.lift
+      ((IsScalarTower.toAlgHom A (A ⊗[R] B) _).comp Algebra.TensorProduct.includeLeft)
+      (AddMonoidAlgebra.mapAlgHom _ Algebra.TensorProduct.includeRight) fun p n ↦ .all ..)
+      AddMonoidAlgebra.rTensorEquivAlgEquiv.invFun ?_ ?_
+  · apply AlgHom.toLinearMap_injective
+    ext
+    simp
+  · ext : 1
+    apply AlgHom.toLinearMap_injective
+    ext
+    simp
+
 variable (R S A B) in
 /-- The base change of `B[M]` to an `R`-algebra `A` is isomorphic to `(A ⊗[R] B)[M]`
 as an `A`-algebra. -/
-@[to_additive (dont_translate := R S A B)
-/-- The base change of `B[M]` to an `R`-algebra `A` is isomorphic to `(A ⊗[R] B)[M]`
-as an `A`-algebra. -/]
+@[to_additive existing (dont_translate := R S A B)]
 noncomputable def rTensorEquivAlgEquiv : A ⊗[R] B[M] ≃ₐ[S] (A ⊗[R] B)[M] := by
   refine .restrictScalars S <| .ofAlgHom
     (Algebra.TensorProduct.lift
@@ -72,13 +93,13 @@ noncomputable def rTensorEquivAlgEquiv : A ⊗[R] B[M] ≃ₐ[S] (A ⊗[R] B)[M]
     ext
     simp
 
-@[to_additive (dont_translate := R A B) (attr := simp)]
+@[to_additive (dont_translate := R S A B) (attr := simp)]
 lemma rTensorEquiv_tmulAlgEquiv (a : A) (p : B[M]) :
     rTensorEquivAlgEquiv R S A B (a ⊗ₜ p) =
       a • mapAlgHom M Algebra.TensorProduct.includeRight p := by
   simp [rTensorEquivAlgEquiv, Algebra.smul_def]
 
-@[to_additive (dont_translate := R A B) (attr := simp)]
+@[to_additive (dont_translate := R S A B) (attr := simp)]
 lemma rTensorEquiv_symm_singleAlgEquiv (m : M) (a : A) (b : B) :
     (rTensorEquivAlgEquiv R S A B).symm (single m (a ⊗ₜ b)) = a ⊗ₜ single m b :=
   rTensorEquivAlgEquiv.invFun_tmul ..
@@ -118,13 +139,13 @@ open scoped AlgebraMonoidAlgebra
 
 variable [Algebra S B] [Algebra A B] [IsScalarTower R A B] [IsScalarTower R S B]
 
-@[to_additive (dont_translate := R S B)]
+@[to_additive (dont_translate := R S A B)]
 instance instIsPushout [IsPushout R S A B] : IsPushout R S A[M] B[M] where
   out := .of_equiv ((rTensorEquivAlgEquiv R S S A (M := M)).trans <|
       mapAlgEquiv S M <| IsPushout.equiv R S A B).toLinearEquiv fun x ↦ by
     induction x using induction_linear <;> simp_all [IsPushout.equiv_tmul]
 
-@[to_additive (dont_translate := R)]
+@[to_additive (dont_translate := R S A B)]
 instance instIsPushout' [IsPushout R A S B] : IsPushout R A[M] S B[M] :=
   have : IsPushout R S A B := .symm ‹_›; .symm inferInstance
 

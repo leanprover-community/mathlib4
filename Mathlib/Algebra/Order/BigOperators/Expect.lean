@@ -220,7 +220,7 @@ attribute [local instance] monadLiftOptionMetaM in
 meta def evalFinsetExpect : PositivityExt where eval {u α} zα pα? e :=
   match pα? with | none => pure .none | some pα => do
   match e with
-  | ~q(@Finset.expect $ι _ $instα $instmod $s $f) =>
+  | ~q(@Finset.expect $ι _ $instα $instc $instmod $s $f) =>
     let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
     have body : Q($α) := .betaRev f #[i]
     let rbody ← core zα pα body
@@ -232,7 +232,7 @@ meta def evalFinsetExpect : PositivityExt where eval {u α} zα pα? e :=
       assumeInstancesCommute
       let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
       pure <| some
-        q(@expect_pos $ι $α $instα $pα $pα' $instmod $instαordsmul $s $f (fun i _ ↦ $pr i) $ps)
+        q(@expect_pos $ι $α $instα $instc $pα $pα' $instmod $instαordsmul $s $f (fun i _ ↦ $pr i) $ps)
     -- Try to show that the sum is positive
     if let some p_pos := p_pos then
       return .positive p_pos
@@ -244,7 +244,7 @@ meta def evalFinsetExpect : PositivityExt where eval {u α} zα pα? e :=
       let instαordsmul ← synthInstanceQ q(PosSMulMono ℚ≥0 $α)
       assumeInstancesCommute
       return .nonnegative
-        q(@expect_nonneg $ι $α $instα $pα $instαordmon $instmod $s $f $instαordsmul fun i _ ↦ $pr i)
+        q(@expect_nonneg $ι $α $instα $instc $pα $instαordmon $instmod $s $f $instαordsmul fun i _ ↦ $pr i)
   | _ => throwError "not Finset.expect"
 
 example (n : ℕ) (a : ℕ → ℚ) : 0 ≤ 𝔼 j ∈ range n, a j ^ 2 := by positivity

@@ -192,7 +192,9 @@ instance : IsSubApply (SlashInvariantForm Γ k) ℍ ℂ where
 
 @[deprecated (since := "2026-07-10")] protected alias sub_apply := sub_apply
 
-instance : AddCommGroup (SlashInvariantForm Γ k) := fast_instance% FunLike.addCommGroup
+instance : AddGroup (SlashInvariantForm Γ k) := fast_instance% FunLike.addGroup
+
+instance : IsAddCommutative (SlashInvariantForm Γ k) := FunLike.addCommGroup
 
 @[deprecated (since := "2026-07-10")] alias coeHom := FunLike.coeMonoidHom
 

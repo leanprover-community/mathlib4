@@ -37,7 +37,7 @@ open AffineMap
 @[simp]
 theorem dist_homothety (p₁ p₂ p : P) (c : 𝕜) :
     dist (homothety p c p₁) (homothety p c p₂) = ‖c‖ * dist p₁ p₂ := by
-  simp [dist_eq_norm_vsub, ← (homothety p c).linearMap_vsub, homothety_linear, norm_smul]
+  simp [dist_eq_norm_vsub V, ← (homothety p c).linearMap_vsub, homothety_linear, norm_smul]
 
 @[simp]
 theorem nndist_homothety (p₁ p₂ p : P) (c : 𝕜) :
@@ -70,7 +70,7 @@ theorem nndist_homothety_center (p₁ p₂ : P) (c : 𝕜) :
 theorem dist_lineMap_lineMap (p₁ p₂ : P) (c₁ c₂ : 𝕜) :
     dist (lineMap p₁ p₂ c₁) (lineMap p₁ p₂ c₂) = dist c₁ c₂ * dist p₁ p₂ := by
   rw [dist_comm p₁ p₂]
-  simp only [lineMap_apply, dist_eq_norm_vsub, vadd_vsub_vadd_cancel_right,
+  simp only [lineMap_apply, dist_eq_norm_vsub V, dist_eq_norm_vsub 𝕜, vadd_vsub_vadd_cancel_right,
     ← sub_smul, norm_smul, vsub_eq_sub]
 
 @[simp]

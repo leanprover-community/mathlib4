@@ -35,7 +35,7 @@ variable (M : Type*) [AddMonoid M] [IsAddCommutative M] [Module R M] [Module S M
 set_option backward.isDefEq.respectTransparency.types false in
 include p in
 theorem IsLocalization.flat : Module.Flat R S := by
-  refine Module.Flat.iff_lTensor_injectiveₛ.mpr fun P _ _ N ↦ ?_
+  refine Module.Flat.iff_lTensor_injectiveₛ.mpr fun P _ _ _ N ↦ ?_
   have h := ((range N.subtype).isLocalizedModule S p (TensorProduct.mk R S P 1)).isBaseChange _ S
   let e := (LinearEquiv.ofInjective _ Subtype.val_injective).lTensor S ≪≫ₗ h.equiv.restrictScalars R
   have : N.subtype.lTensor S = Submodule.subtype _ ∘ₗ e.toLinearMap := by
@@ -55,7 +55,8 @@ theorem flat_iff_of_isLocalization : Flat S M ↔ Flat R M :=
   ⟨fun _ ↦ .trans R S M, fun _ ↦ .of_isLocalizedModule S p .id⟩
 
 variable (Mₚ : ∀ (P : Ideal S) [P.IsMaximal], Type*)
-  [∀ (P : Ideal S) [P.IsMaximal], AddCommMonoid (Mₚ P)]
+  [∀ (P : Ideal S) [P.IsMaximal], AddMonoid (Mₚ P)]
+  [∀ (P : Ideal S) [P.IsMaximal], IsAddCommutative (Mₚ P)]
   [∀ (P : Ideal S) [P.IsMaximal], Module R (Mₚ P)]
   [∀ (P : Ideal S) [P.IsMaximal], Module S (Mₚ P)]
   [∀ (P : Ideal S) [P.IsMaximal], IsScalarTower R S (Mₚ P)]
@@ -67,7 +68,7 @@ theorem flat_of_isLocalized_maximal (H : ∀ (P : Ideal S) [P.IsMaximal], Flat R
     Module.Flat R M := by
   simp_rw [Flat.iff_lTensor_injectiveₛ] at H ⊢
   simp_rw [← AlgebraTensorModule.coe_lTensor (A := S)]
-  refine fun _ _ _ N ↦ injective_of_isLocalized_maximal _
+  refine fun _ _ _ _ N ↦ injective_of_isLocalized_maximal _
     (fun P ↦ AlgebraTensorModule.rTensor R _ (f P)) _
     (fun P ↦ AlgebraTensorModule.rTensor R _ (f P)) _ fun P hP ↦ ?_
   simpa [IsLocalizedModule.map_lTensor] using H P N
@@ -92,7 +93,7 @@ theorem flat_of_isLocalized_span (H : ∀ r : s, Module.Flat R (Mₛ r)) :
     Module.Flat R M := by
   simp_rw [Flat.iff_lTensor_injectiveₛ] at H ⊢
   simp_rw [← AlgebraTensorModule.coe_lTensor (A := S)]
-  refine fun _ _ _ N ↦ injective_of_isLocalized_span s spn _
+  refine fun _ _ _ _ N ↦ injective_of_isLocalized_span s spn _
     (fun r ↦ AlgebraTensorModule.rTensor R _ (g r)) _
     (fun r ↦ AlgebraTensorModule.rTensor R _ (g r)) _ fun r ↦ ?_
   simpa [IsLocalizedModule.map_lTensor] using H r N

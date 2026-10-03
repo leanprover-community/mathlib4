@@ -165,7 +165,7 @@ theorem Sphere.dist_secondInter_secondInter (s₁ s₂ : Sphere P) (p : P) (v : 
     dist (s₁.secondInter p v) (s₂.secondInter p v) = 2 * |⟪v, s₁.center -ᵥ s₂.center⟫| / ‖v‖ := by
   rcases eq_or_ne v 0 with rfl | hv
   · simp
-  simp [dist_eq_norm_vsub, secondInter_vsub_secondInter, norm_smul]
+  simp [dist_eq_norm_vsub V, secondInter_vsub_secondInter, norm_smul]
   grind
 
 /-- The distance between the second intersections of two spheres along a common

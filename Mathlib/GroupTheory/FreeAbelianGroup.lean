@@ -41,7 +41,7 @@ Here we use the following variables: `(α β : Type*) (A : Type*) [AddGroup A] [
 
 * `instance [Monoid α] : Semigroup (FreeAbelianGroup α)`
 
-* `instance [Monoid α] [IsMulCommutative α] : CommRing (FreeAbelianGroup α)`
+* `instance [Monoid α] [IsMulCommutative α] : IsMulCommutative (FreeAbelianGroup α)`
 
 It has been suggested that we would be better off refactoring this file
 and using `Finsupp` instead.
@@ -95,7 +95,7 @@ TODO: rename to `FreeAddCommGroup` and introduce a multiplicative version
 -/
 def FreeAbelianGroup : Type u :=
   Additive <| Abelianization <| FreeGroup α
-deriving Inhabited, AddCommGroup
+deriving Inhabited, AddGroup, IsAddCommutative
 
 instance [IsEmpty α] : Unique (FreeAbelianGroup α) :=
   inferInstanceAs <| Unique (delta% FreeAbelianGroup α)
@@ -527,8 +527,8 @@ theorem liftMonoid_symm_coe (f : FreeAbelianGroup α →+* R) :
 
 end Monoid
 
-instance [Monoid α] [IsMulCommutative α] : CommRing (FreeAbelianGroup α) where
-  mul_comm x y := by
+instance [Monoid α] [IsMulCommutative α] : IsMulCommutative (FreeAbelianGroup α) where
+  is_comm.comm x y := by
     induction x using FreeAbelianGroup.induction_on with
     | zero => exact zero_mul y
     | of s =>

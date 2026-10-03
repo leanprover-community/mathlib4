@@ -39,11 +39,15 @@ and the action of `f` is `f • (of R M a m) = of R M a ((aeval a f) • m)`.
 @[nolint unusedArguments]
 def AEval (R M : Type*) {A : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]
     [AddMonoid M] [IsAddCommutative M] [Module A M] [Module R M] [IsScalarTower R A M] (_ : A) := M
-  deriving AddCommMonoid, Module R
+  deriving AddMonoid, IsAddCommutative
+
+instance {R A M} [Semiring R] [IsMulCommutative R] [Semiring A] (a : A)
+    [Algebra R A] [AddMonoid M] [IsAddCommutative M] [Module A M] [Module R M]
+    [IsScalarTower R A M] : Module R <| AEval R M a := inferInstanceAs (Module R M)
 
 instance AEval.instAddCommGroup {R A M} [Semiring R] [IsMulCommutative R] [Semiring A] (a : A) [Algebra R A]
     [AddGroup M] [IsAddCommutative M] [Module A M] [Module R M] [IsScalarTower R A M] :
-    AddCommGroup <| AEval R M a := inferInstanceAs (AddCommGroup M)
+    AddGroup <| AEval R M a := inferInstanceAs (AddGroup M)
 
 variable {R A M} [Semiring R] [IsMulCommutative R] [Semiring A] (a : A) [Algebra R A] [AddMonoid M] [IsAddCommutative M] [Module A M]
   [Module R M] [IsScalarTower R A M]

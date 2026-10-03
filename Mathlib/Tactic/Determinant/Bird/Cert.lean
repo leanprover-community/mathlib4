@@ -18,7 +18,7 @@ This file contains an evaluator that computes the ring tactic normal form of
 unfolding its definition, using the ring tactic for ring operations, and caching
 intermediate certificates.
 
-The structure `Cert rα` carries the proof certificate and the evaluator builds
+The structure `Cert rα iα` carries the proof certificate and the evaluator builds
 larger certificates as `birdDet` is unfolded.
 
 The entrypoint of the evaluator `certBirdDet` follows the two branches (n=0,
@@ -77,41 +77,41 @@ public meta section
 open Lean Qq
 open Mathlib.Tactic.Ring
 
-variable {u : Level} {α : Q(Type u)} {rα : Q(CommRing $α)}
+variable {u : Level} {α : Q(Type u)} {rα : Q(Ring $α)} {iα : Q(IsMulCommutative $α)}
 
 namespace Mathlib.Tactic.Determinant
 
 /-- The ring tactic normal-form value. -/
 abbrev CertVal {u : Level} {α : Q(Type u)}
-    (rα : Q(CommRing $α)) (e : Q($α)) :=
-  Common.ExSum RatCoeff (commSemiringOfCommRing rα) e
+    (rα : Q(Ring $α)) (iα : Q(IsMulCommutative $α)) (e : Q($α)) :=
+  Common.ExSum RatCoeff (commSemiringOfCommRing rα iα) iα e
 
 /-- The ring tactic result carried by a certificate. -/
 abbrev CertResult {u : Level} {α : Q(Type u)}
-    (rα : Q(CommRing $α)) (subject : Q($α)) :=
-  Common.Result (CertVal rα) subject
+    (rα : Q(Ring $α)) (iα : Q(IsMulCommutative $α)) (subject : Q($α)) :=
+  Common.Result (CertVal rα iα) subject
 
 namespace Ctx
 
 /-- Return the expression `(stepEntry n A)^[t] (get n A)`. -/
-def iterStepEntry (ctx : Ctx rα) (t : ℕ) : Q(ℕ → ℕ → $α) :=
+def iterStepEntry (ctx : Ctx rα iα) (t : ℕ) : Q(ℕ → ℕ → $α) :=
   let dim : Q(ℕ) := ctx.dimensionLit
   let A : Q(Array $α) := ctx.arrayExpr
   q((BirdDet.stepEntry $dim $A)^[$t] (BirdDet.get $dim $A))
 
 /-- Return an expression `sumFrom n lo f` -/
-def sumFrom (ctx : Ctx rα) (lo : ℕ) (f : Q(ℕ → $α)) : Q($α) :=
+def sumFrom (ctx : Ctx rα iα) (lo : ℕ) (f : Q(ℕ → $α)) : Q($α) :=
   let dim : Q(ℕ) := ctx.dimensionLit
   q(BirdDet.sumFrom $dim $lo $f)
 
 end Ctx
 
 /-- A certificate that proves `subject = result.norm` via `result.proof` -/
-structure Cert {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) where
+structure Cert {u : Level} {α : Q(Type u)} (rα : Q(Ring $α)) (iα : Q(IsMulCommutative $α)) where
   /-- The expression being certified. -/
   {subject : Q($α)}
   /-- The result of evaluating `subject` using the ring tactic. -/
-  result : CertResult rα subject
+  result : CertResult rα iα subject
   /-- `true` when `norm` is zero, used as a hint to the evaluator. -/
   isZero : Bool
 
@@ -120,18 +120,18 @@ namespace Cert
 variable
   {u : Level}
   {α : Q(Type u)}
-  {rα : Q(CommRing $α)}
+  {rα : Q(Ring $α)} {iα : Q(IsMulCommutative $α)}
 
 /-- The ring tactic normal form of `c.subject` -/
-def norm (c : Cert rα) : Q($α) :=
+def norm (c : Cert rα iα) : Q($α) :=
   c.result.expr
 
 /-- The internal ring tactic representation of `c.norm` -/
-def val (c : Cert rα) : CertVal rα c.norm :=
+def val (c : Cert rα iα) : CertVal rα iα c.norm :=
   c.result.val
 
 /-- The proof that `c.subject = c.norm` -/
-def proof (c : Cert rα) : Q($c.subject = $c.norm) :=
+def proof (c : Cert rα iα) : Q($c.subject = $c.norm) :=
   c.result.proof
 
 /-- Prepend an equality to an existing normalized certificate.
@@ -139,7 +139,7 @@ def proof (c : Cert rα) : Q($c.subject = $c.norm) :=
 Given `c.proof : s.subject = c.norm` and `h : lhs = s.subject` return a
 certificate with `proof : lhs = c.norm`.
 -/
-def chainProof {lhs rhs : Q($α)} (c : Cert rα) (h : Q($lhs = $rhs)) : Cert rα :=
+def chainProof {lhs rhs : Q($α)} (c : Cert rα iα) (h : Q($lhs = $rhs)) : Cert rα iα :=
   have : $rhs =Q $c.subject := ⟨⟩
   let hProof : Q($lhs = $c.subject) := h
   let proof : Q($lhs = $c.norm) := q(Eq.trans $hProof $c.proof)
@@ -151,31 +151,32 @@ def chainProof {lhs rhs : Q($α)} (c : Cert rα) (h : Q($lhs = $rhs)) : Cert rα
 end Cert
 
 /-- Cache certificates that are reused by the recursive Bird evaluator. -/
-structure CertCache {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) where
+structure CertCache {u : Level} {α : Q(Type u)} (rα : Q(Ring $α))
+    (iα : Q(IsMulCommutative $α)) where
   /-- Cache for entry certificates, keyed by matrix indices. -/
-  entryCache : Std.HashMap (ℕ × ℕ) (Cert rα) := {}
+  entryCache : Std.HashMap (ℕ × ℕ) (Cert rα iα) := {}
   /-- Cache for iterated `stepEntry` certificates, keyed by step and matrix indices. -/
-  iterStepEntryCache : Std.HashMap (ℕ × ℕ × ℕ) (Cert rα) := {}
+  iterStepEntryCache : Std.HashMap (ℕ × ℕ × ℕ) (Cert rα iα) := {}
   /-- Cache for diagonal-tail certificates, keyed by recursion index and lower bound. -/
-  diagCache : Std.HashMap (ℕ × ℕ) (Cert rα) := {}
+  diagCache : Std.HashMap (ℕ × ℕ) (Cert rα iα) := {}
 
 /-- The monad used by the certificate-chaining evaluator -/
-abbrev CertM {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) :=
-  StateT (CertCache rα) (ReaderT (Ctx rα) AtomM)
+abbrev CertM {u : Level} {α : Q(Type u)} (rα : Q(Ring $α)) (iα : Q(IsMulCommutative $α)) :=
+  StateT (CertCache rα iα) (ReaderT (Ctx rα iα) AtomM)
 
 /-- Checks if `val` is zero according to the ring tactic -/
-def isZeroVal {e : Q($α)} (val : CertVal rα e) : Bool :=
+def isZeroVal {e : Q($α)} (val : CertVal rα iα e) : Bool :=
   match val with
   | .zero => true
   | .add .. => false
 
-/-- Construct a `Cert rα` from a ring tactic result -/
-def toCert {e : Q($α)} (res : Common.Result (CertVal rα) e) : Cert rα :=
+/-- Construct a `Cert rα iα` from a ring tactic result -/
+def toCert {e : Q($α)} (res : Common.Result (CertVal rα iα) e) : Cert rα iα :=
   { result := res
     isZero := isZeroVal res.val }
 
 /-- Build a zero certificate from a proof `lhs = 0`. -/
-def zeroCertOfProof {lhs : Q($α)} (h : Q($lhs = 0)) : Cert rα where
+def zeroCertOfProof {lhs : Q($α)} (h : Q($lhs = 0)) : Cert rα iα where
   result.expr := q(0)
   result.val := .zero
   result.proof := h
@@ -183,8 +184,8 @@ def zeroCertOfProof {lhs : Q($α)} (h : Q($lhs = 0)) : Cert rα where
 
 /-- If c.norm = 0, return a certificate with proof `x * c.subject = 0` without
 recursively certifying `x`. -/
-def zeroProdCert (x : Q($α)) (c : Cert rα) :
-    MetaM (Cert rα) := do
+def zeroProdCert (x : Q($α)) (c : Cert rα iα) :
+    MetaM (Cert rα iα) := do
   let zero : Q($α) := q(0)
   have : $c.norm =Q $zero := ⟨⟩
   let h : Q($x * $c.subject = $x * $zero) :=
@@ -192,13 +193,13 @@ def zeroProdCert (x : Q($α)) (c : Cert rα) :
   return zeroCertOfProof q(Eq.trans $h (mul_zero $x))
 
 /-- Certify `e = norm` by evaluating `e` with the `ring` normalizer. -/
-def certEval (e : Q($α)) : CertM rα (Cert rα) := do
+def certEval (e : Q($α)) : CertM rα iα (Cert rα iα) := do
   let ctx ← read
   let res ← Common.eval rcℕ ctx.rc ctx.cα e
   return toCert res
 
 /-- Certify `a.subject + b.subject` from certificates for `a` and `b`. -/
-def certAdd (a b : Cert rα) : CertM rα (Cert rα) := do
+def certAdd (a b : Cert rα iα) : CertM rα iα (Cert rα iα) := do
   let ctx ← read
   let c ← toCert <$> Common.evalAdd ctx.rc rcℕ a.val b.val
   let h : Q($a.subject + $b.subject = $a.norm + $b.norm) :=
@@ -206,7 +207,7 @@ def certAdd (a b : Cert rα) : CertM rα (Cert rα) := do
   return c.chainProof h
 
 /-- Certify `a.subject * b.subject` from certificates for `a` and `b`. -/
-def certMul (a b : Cert rα) : CertM rα (Cert rα) := do
+def certMul (a b : Cert rα iα) : CertM rα iα (Cert rα iα) := do
   let ctx ← read
   let c ← toCert <$> Common.evalMul ctx.rc rcℕ a.val b.val
   let h : Q($a.subject * $b.subject = $a.norm * $b.norm) :=
@@ -214,7 +215,7 @@ def certMul (a b : Cert rα) : CertM rα (Cert rα) := do
   return c.chainProof h
 
 /-- Certify `-a.subject` from a certificate for `a`. -/
-def certNeg (a : Cert rα) : CertM rα (Cert rα) := do
+def certNeg (a : Cert rα iα) : CertM rα iα (Cert rα iα) := do
   let ctx ← read
   let c ← toCert <$> Common.evalNeg ctx.rc rα a.val
   let h : Q(-$a.subject = -$a.norm) :=
@@ -222,11 +223,11 @@ def certNeg (a : Cert rα) : CertM rα (Cert rα) := do
   return c.chainProof h
 
 /-- Certify the sign factor `(-1)^k` from `BirdDet.birdDet_eq`. -/
-def certBirdSign (k : ℕ) : CertM rα (Cert rα) := do
+def certBirdSign (k : ℕ) : CertM rα iα (Cert rα iα) := do
   certEval q((-1 : $α) ^ $k)
 
 /-- Certify one matrix entry lookup `BirdDet.get n A i j`. -/
-def certEntry (i j : ℕ) : CertM rα (Cert rα) := do
+def certEntry (i j : ℕ) : CertM rα iα (Cert rα iα) := do
   if let some c := (← get).entryCache[(i, j)]? then
     return c
   let ctx ← read
@@ -254,7 +255,7 @@ sumFrom n lo f = if lo < n then f lo + sumFrom n (lo + 1) f else 0
 
 Throws a meta-level error if called with `lo` such that `lo < ctx.dimension`.
 -/
-def certSumFromStop (lo : ℕ) (f : Q(ℕ → $α)) : CertM rα (Cert rα) := do
+def certSumFromStop (lo : ℕ) (f : Q(ℕ → $α)) : CertM rα iα (Cert rα iα) := do
   let ctx ← read
   if lo < ctx.dimension then
     throwError "certSumFromStop called with {lo} such that {lo} < {ctx.dimension}"
@@ -274,7 +275,7 @@ Throws a meta-level error if called with `lo` such that `¬ lo < ctx.dimension`.
 -/
 def certSumFromStep
     (lo : ℕ) (f : Q(ℕ → $α))
-    (headCert tailCert : CertM rα (Cert rα)) : CertM rα (Cert rα) := do
+    (headCert tailCert : CertM rα iα (Cert rα iα)) : CertM rα iα (Cert rα iα) := do
   let ctx ← read
   unless lo < ctx.dimension do
     throwError "certSumFromStep called with {lo} such that ¬ {lo} < {ctx.dimension}"
@@ -286,7 +287,7 @@ def certSumFromStep
 mutual
 
 /-- Certify an entry of `(BirdDet.stepEntry n A)^[t] (BirdDet.get n A)`. -/
-partial def certIterStepEntry (t i j : ℕ) : CertM rα (Cert rα) := do
+partial def certIterStepEntry (t i j : ℕ) : CertM rα iα (Cert rα iα) := do
   if let some c := (← get).iterStepEntryCache[(t, i, j)]? then
     return c
   let ctx ← read
@@ -336,7 +337,7 @@ partial def certIterStepEntry (t i j : ℕ) : CertM rα (Cert rα) := do
 sumFrom n (i + 1) fun k => (stepEntry n A)^[t] F k k)
 ```
 -/
-partial def certDiag (t lo : ℕ) : CertM rα (Cert rα) := do
+partial def certDiag (t lo : ℕ) : CertM rα iα (Cert rα iα) := do
   if let some c := (← get).diagCache[(t, lo)]? then
     return c
   let ctx ← read
@@ -362,7 +363,7 @@ partial def certDiag (t lo : ℕ) : CertM rα (Cert rα) := do
 sumFrom n (i + 1) fun k => (stepEntry n A)^[t] F i k * get n A k j
 ```
 -/
-partial def certTail (t i j lo : ℕ) : CertM rα (Cert rα) := do
+partial def certTail (t i j lo : ℕ) : CertM rα iα (Cert rα iα) := do
   let ctx ← read
   let {dimensionLit := dimLit, arrayExpr := A, ..} := ctx
   let tailSummand :=
@@ -396,7 +397,7 @@ partial def certTail (t i j lo : ℕ) : CertM rα (Cert rα) := do
 end
 
 /-- Certify a `BirdDet.birdDet n A` call. -/
-def certBirdDet : CertM rα (Cert rα) := do
+def certBirdDet : CertM rα iα (Cert rα iα) := do
   let ctx ← read
   let {dimension := dim, dimensionLit := dimLit, arrayExpr, ..} := ctx
   if dim == 0

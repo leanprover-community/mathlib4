@@ -63,14 +63,17 @@ namespace DirectLimit
 
 section Basic
 
-instance addCommMonoid : AddCommMonoid (DirectLimit G f) :=
-  inferInstanceAs (AddCommMonoid (moduleCon f).Quotient)
+instance addCommMonoid : AddMonoid (DirectLimit G f) :=
+  inferInstanceAs (AddMonoid (moduleCon f).Quotient)
+
+instance isAddCommutative : IsAddCommutative (DirectLimit G f) :=
+  inferInstanceAs (IsAddCommutative (moduleCon f).Quotient)
 
 instance module : Module R (DirectLimit G f) := inferInstanceAs (Module R (moduleCon f).Quotient)
 
 instance addCommGroup (G : ι → Type*) [∀ i, AddGroup (G i)] [∀ i, IsAddCommutative (G i)] [∀ i, Module R (G i)]
-    (f : ∀ i j, i ≤ j → G i →ₗ[R] G j) : AddCommGroup (DirectLimit G f) :=
-  inferInstanceAs (AddCommGroup (moduleCon f).Quotient)
+    (f : ∀ i j, i ≤ j → G i →ₗ[R] G j) : AddGroup (DirectLimit G f) :=
+  inferInstanceAs (AddGroup (moduleCon f).Quotient)
 
 instance inhabited : Inhabited (DirectLimit G f) :=
   ⟨0⟩
@@ -281,8 +284,8 @@ variable (G) [∀ i, AddMonoid (G i)] [∀ i, IsAddCommutative (G i)]
 
 /-- The direct limit of a directed system is the abelian groups glued together along the maps. -/
 def DirectLimit [DecidableEq ι] (f : ∀ i j, i ≤ j → G i →+ G j) : Type _ :=
-  @Module.DirectLimit ℕ _ ι _ G _ _ (fun i j hij ↦ (f i j hij).toNatLinearMap) _
-deriving AddCommMonoid, Inhabited
+  @Module.DirectLimit ℕ _ ι _ G _ _ _ (fun i j hij ↦ (f i j hij).toNatLinearMap) _
+deriving AddMonoid, IsAddCommutative, Inhabited
 
 namespace DirectLimit
 
@@ -295,8 +298,8 @@ local instance directedSystem [h : DirectedSystem G fun i j h ↦ f i j h] :
 variable [DecidableEq ι]
 
 instance addCommGroup (G : ι → Type*) [∀ i, AddGroup (G i)] [∀ i, IsAddCommutative (G i)]
-    (f : ∀ i j, i ≤ j → G i →+ G j) : AddCommGroup (DirectLimit G f) :=
-  inferInstanceAs <| AddCommGroup (Module.DirectLimit G _)
+    (f : ∀ i j, i ≤ j → G i →+ G j) : AddGroup (DirectLimit G f) :=
+  inferInstanceAs <| AddGroup (Module.DirectLimit G _)
 
 instance [IsEmpty ι] : Unique (DirectLimit G f) :=
   inferInstanceAs <| Unique (Module.DirectLimit G _)

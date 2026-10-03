@@ -165,7 +165,7 @@ def selmerGroup : Subgroup <| K / n where
   inv_mem' hx v hv := by rw [map_inv, hx v hv, inv_one]
 
 -- Porting note: was `scoped[SelmerGroup]` but that does not work even using `open SelmerGroup`
-local notation K "⟮" S "," n "⟯" => @selmerGroup _ _ _ K _ _ _ S n
+local notation K "⟮" S "," n "⟯" => @selmerGroup _ _ _ _ K _ _ _ S n
 
 namespace selmerGroup
 
@@ -197,7 +197,7 @@ def fromUnit {n : ℕ} : Rˣ →* K⟮(∅ : Set <| HeightOneSpectrum R),n⟯ wh
     MulMemClass.mk_mul_mk]
 
 theorem fromUnit_ker [hn : Fact <| 0 < n] :
-    (@fromUnit R _ _ K _ _ _ n).ker = (powMonoidHom n : Rˣ →* Rˣ).range := by
+    (@fromUnit R _ _ _ K _ _ _ n).ker = (powMonoidHom n : Rˣ →* Rˣ).range := by
   ext ⟨_, _, _, _⟩
   constructor
   · intro hx
@@ -229,7 +229,7 @@ def fromUnitLift [Fact <| 0 < n] : (R / n) →* K⟮(∅ : Set <| HeightOneSpect
     (QuotientGroup.quotientMulEquivOfEq (fromUnit_ker (R := R))).symm.toMonoidHom
 
 theorem fromUnitLift_injective [Fact <| 0 < n] :
-    Function.Injective <| @fromUnitLift R _ _ K _ _ _ n _ := by
+    Function.Injective <| @fromUnitLift R _ _ _ K _ _ _ n _ := by
   dsimp only [fromUnitLift, MonoidHom.coe_comp, MulEquiv.coe_toMonoidHom]
   exact Function.Injective.comp (QuotientGroup.kerLift_injective _) (MulEquiv.injective _)
 

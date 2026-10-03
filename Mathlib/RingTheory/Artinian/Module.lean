@@ -245,7 +245,7 @@ instance isArtinian_sup (M₁ M₂ : Submodule R P) [IsArtinian R M₁] [IsArtin
 variable {ι : Type*} [Finite ι]
 
 instance isArtinian_pi :
-    ∀ {M : ι → Type*} [Π i, AddCommGroup (M i)]
+    ∀ {M : ι → Type*} [Π i, AddGroup (M i)] [Π i, IsAddCommutative (M i)]
       [Π i, Module R (M i)] [∀ i, IsArtinian R (M i)], IsArtinian R (Π i, M i) := by
   apply Finite.induction_empty_option _ _ _ ι
   · exact fun e h ↦ isArtinian_of_linearEquiv (LinearEquiv.piCongrLeft R _ e)

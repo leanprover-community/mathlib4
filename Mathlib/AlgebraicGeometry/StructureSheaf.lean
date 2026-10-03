@@ -172,7 +172,11 @@ def structureSheafInType : Sheaf (Type u) (PrimeSpectrum.Top R) :=
   subsheafToTypes (isLocallyFraction R M)
 
 instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
-    AddCommGroup ((structureSheafInType R M).obj.obj U) :=
+    AddGroup ((structureSheafInType R M).obj.obj U) :=
+  (sectionsSubmodule M U.unop).toAddSubgroup.toAddGroup
+
+instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
+    IsAddCommutative ((structureSheafInType R M).obj.obj U) :=
   (sectionsSubmodule M U.unop).toAddSubgroup.toAddCommGroup
 
 instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
@@ -180,7 +184,11 @@ instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
   (sectionsSubmodule M U.unop).module
 
 instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
-    CommRing ((structureSheafInType R A).obj.obj U) :=
+    Ring ((structureSheafInType R A).obj.obj U) :=
+  (sectionsSubalgebra A U.unop).toRing
+
+instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
+    IsMulCommutative ((structureSheafInType R A).obj.obj U) :=
   (sectionsSubalgebra A U.unop).toCommRing
 
 instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
@@ -229,7 +237,7 @@ def structurePresheafInCommRingCat : Presheaf CommRingCat (PrimeSpectrum.Top R) 
 
 instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     Module ((structureSheafInType R R).obj.obj U) ((structureSheafInType R M).obj.obj U) :=
-  inferInstanceAs (Module (sectionsSubalgebra R _) (sectionsSubalgebraSubmodule M _))
+  inferInstanceAs (Module (sectionsSubalgebra R U.unop) (sectionsSubalgebraSubmodule M U.unop))
 
 instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     IsScalarTower R ((structureSheafInType R R).obj.obj U) ((structureSheafInType R M).obj.obj U) :=

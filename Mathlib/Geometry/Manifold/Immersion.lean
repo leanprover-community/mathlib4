@@ -188,7 +188,7 @@ where the choice of `F` enters.
 If you need stronger control over the complement `F`, use `IsImmersionAtOfComplement` instead.
 -/
 def IsImmersionAt (f : M → N) (x : M) : Prop :=
-  ∃ (F : Type u) (_ : NormedAddCommGroup F) (_ : NormedSpace 𝕜 F),
+  ∃ (F : Type u) (_ : NormedAddGroup F) (_ : IsAddCommutative F) (_ : NormedSpace 𝕜 F),
     IsImmersionAtOfComplement F I J n f x
 
 variable {f g : M → N} {x : M}
@@ -341,9 +341,13 @@ def smallComplement (hf : IsImmersionAtOfComplement F I J n f x) : Type u :=
   haveI := hf.small
   Shrink.{u} F
 
-instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedAddCommGroup hf.smallComplement :=
+instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedAddGroup hf.smallComplement :=
   haveI := hf.small
-  inferInstanceAs <| NormedAddCommGroup (Shrink F)
+  inferInstanceAs <| NormedAddGroup (Shrink F)
+
+instance (hf : IsImmersionAtOfComplement F I J n f x) : IsAddCommutative hf.smallComplement :=
+  haveI := hf.small
+  inferInstanceAs <| IsAddCommutative (Shrink F)
 
 instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedSpace 𝕜 hf.smallComplement :=
   haveI := hf.small
@@ -396,7 +400,7 @@ the model normed space of `N`. This is solved by `smallComplement` and `smallEqu
 -/
 lemma isImmersionAt (h : IsImmersionAtOfComplement F I J n f x) :
     IsImmersionAt I J n f x := by
-  use h.smallComplement, by infer_instance, by infer_instance
+  use h.smallComplement, by infer_instance, by infer_instance, by infer_instance
   exact (IsImmersionAtOfComplement.congr_F h.smallEquiv).mp h
 
 open IsManifold in
@@ -574,7 +578,7 @@ lemma mk_of_charts (equiv : (E × F) ≃L[𝕜] E'')
       (domChart.extend I).target) : IsImmersionAt I J n f x := by
   have aux : IsImmersionAtOfComplement F I J n f x := by
     apply IsImmersionAtOfComplement.mk_of_charts <;> assumption
-  use aux.smallComplement, by infer_instance, by infer_instance
+  use aux.smallComplement, by infer_instance, by infer_instance, by infer_instance
   rwa [← IsImmersionAtOfComplement.congr_F aux.smallEquiv]
 
 /-- `f : M → N` is a `C^n` immersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
@@ -590,22 +594,26 @@ lemma mk_of_continuousAt {f : M → N} {x : M} (hf : ContinuousAt f x) (equiv : 
       (domChart.extend I).target) : IsImmersionAt I J n f x := by
   have aux : IsImmersionAtOfComplement F I J n f x := by
     apply IsImmersionAtOfComplement.mk_of_continuousAt <;> assumption
-  use aux.smallComplement, by infer_instance, by infer_instance
+  use aux.smallComplement, by infer_instance, by infer_instance, by infer_instance
   rwa [← IsImmersionAtOfComplement.congr_F aux.smallEquiv]
 
 /-- A choice of complement of the model normed space `E` of `M` in the model normed space
 `E'` of `N` -/
 def complement (h : IsImmersionAt I J n f x) : Type u := Classical.choose h
 
-@[no_expose] instance (h : IsImmersionAt I J n f x) : NormedAddCommGroup h.complement :=
+@[no_expose] instance (h : IsImmersionAt I J n f x) : NormedAddGroup h.complement :=
   Classical.choose <| Classical.choose_spec h
 
-@[no_expose] instance (h : IsImmersionAt I J n f x) : NormedSpace 𝕜 h.complement :=
+instance (h : IsImmersionAt I J n f x) : IsAddCommutative h.complement :=
   Classical.choose <| Classical.choose_spec <| Classical.choose_spec h
+
+@[no_expose] instance (h : IsImmersionAt I J n f x) : NormedSpace 𝕜 h.complement :=
+  Classical.choose <| Classical.choose_spec <| Classical.choose_spec <| Classical.choose_spec h
 
 lemma isImmersionAtOfComplement_complement (h : IsImmersionAt I J n f x) :
     IsImmersionAtOfComplement h.complement I J n f x :=
-  Classical.choose_spec <| Classical.choose_spec <| Classical.choose_spec h
+  Classical.choose_spec <| Classical.choose_spec <| Classical.choose_spec <|
+    Classical.choose_spec h
 
 /-- A choice of chart on the domain `M` of an immersion `f` at `x`:
 w.r.t. this chart and the data `h.codChart` and `h.equiv`,
@@ -690,7 +698,7 @@ lemma target_subset_preimage_target (h : IsImmersionAt I J n f x) :
 then `g` is an immersion at `x`. -/
 lemma congr_of_eventuallyEq (hf : IsImmersionAt I J n f x) (hfg : f =ᶠ[𝓝 x] g) :
     IsImmersionAt I J n g x := by
-  use hf.complement, by infer_instance, by infer_instance
+  use hf.complement, by infer_instance, by infer_instance, by infer_instance
   exact hf.isImmersionAtOfComplement_complement.congr_of_eventuallyEq hfg
 
 /-- If `f = g` on some neighbourhood of `x`,
@@ -719,13 +727,13 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
 /- The inclusion of an open subset `s` of a smooth manifold `M` is an immersion at every point. -/
 lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) (hx : x ∈ s) :
     IsImmersionAt I I n (Subtype.val : s → M) ⟨x, hx⟩ := by
-  use PUnit, by infer_instance, by infer_instance
+  use PUnit, by infer_instance, by infer_instance, by infer_instance
   apply IsImmersionAtOfComplement.of_opens
 
 /-- Every `ModelWithCorners 𝕜 E H` is an immersion when viewed as a map `H → E`. -/
 protected lemma _root_.ModelWithCorners.isImmersionAt {n : ℕ} {x : H} :
     IsImmersionAt I (modelWithCornersSelf 𝕜 E) n I x := by
-  use PUnit, by infer_instance, by infer_instance
+  use PUnit, by infer_instance, by infer_instance, by infer_instance
   exact I.isImmersionAtOfComplement
 
 /-- Prefer using `IsImmersionAt.continuousAt` instead -/
@@ -759,7 +767,7 @@ lemma comp_diffeomorph
     {N' : Type*} [TopologicalSpace N'] [ChartedSpace G N'] [IsManifold J n N']
     (h : IsImmersionAt I J n f x) (Φ : Diffeomorph J J N N' n) :
     IsImmersionAt I J n (Φ ∘ f) x := by
-  use h.complement, by infer_instance, by infer_instance
+  use h.complement, by infer_instance, by infer_instance, by infer_instance
   exact h.isImmersionAtOfComplement_complement.comp_diffeomorph Φ
 
 /-- If `f` is an immersion at `x`, then `mfderiv f x` has a continuous left inverse. -/
@@ -799,7 +807,8 @@ Note that our global choice of complement is a bit stronger than asking `f` to b
 each `x ∈ M` w.r.t. potentially varying complements: see `isImmersionAt` for details.
 -/
 def IsImmersion (f : M → N) : Prop :=
-  ∃ (F : Type u) (_ : NormedAddCommGroup F) (_ : NormedSpace 𝕜 F), IsImmersionOfComplement F I J n f
+  ∃ (F : Type u) (_ : NormedAddGroup F) (_ : IsAddCommutative F) (_ : NormedSpace 𝕜 F),
+    IsImmersionOfComplement F I J n f
 
 namespace IsImmersionOfComplement
 
@@ -840,11 +849,11 @@ the model normed space of `N`. This is solved by `smallComplement` and `smallEqu
 lemma isImmersion (h : IsImmersionOfComplement F I J n f) : IsImmersion I J n f := by
   by_cases! hM : IsEmpty M
   · rw [IsImmersion]
-    use PUnit, by infer_instance, by infer_instance
+    use PUnit, by infer_instance, by infer_instance, by infer_instance
     exact fun x ↦ (IsEmpty.false x).elim
   inhabit M
   let x : M := Inhabited.default
-  use (h x).smallComplement, by infer_instance, by infer_instance
+  use (h x).smallComplement, by infer_instance, by infer_instance, by infer_instance
   exact (IsImmersionOfComplement.congr_F (h x).smallEquiv).mp h
 
 open IsManifold in
@@ -928,15 +937,19 @@ variable {f g : M → N}
 `E'` of `N` -/
 def complement (h : IsImmersion I J n f) : Type u := Classical.choose h
 
-@[no_expose] instance (h : IsImmersion I J n f) : NormedAddCommGroup h.complement :=
+@[no_expose] instance (h : IsImmersion I J n f) : NormedAddGroup h.complement :=
   Classical.choose <| Classical.choose_spec h
 
-@[no_expose] instance (h : IsImmersion I J n f) : NormedSpace 𝕜 h.complement :=
+instance (h : IsImmersion I J n f) : IsAddCommutative h.complement :=
   Classical.choose <| Classical.choose_spec <| Classical.choose_spec h
+
+@[no_expose] instance (h : IsImmersion I J n f) : NormedSpace 𝕜 h.complement :=
+  Classical.choose <| Classical.choose_spec <| Classical.choose_spec <| Classical.choose_spec h
 
 lemma isImmersionOfComplement_complement (h : IsImmersion I J n f) :
     IsImmersionOfComplement h.complement I J n f :=
-  Classical.choose_spec <| Classical.choose_spec <| Classical.choose_spec h
+  Classical.choose_spec <| Classical.choose_spec <| Classical.choose_spec <|
+    Classical.choose_spec h
 
 /-- If `f` is an immersion, it is an immersion at each point.
 
@@ -951,7 +964,7 @@ different connected components of `M`.
 -/
 lemma isImmersionAt (h : IsImmersion I J n f) (x : M) : IsImmersionAt I J n f x := by
   rw [IsImmersionAt]
-  use h.complement, by infer_instance, by infer_instance
+  use h.complement, by infer_instance, by infer_instance, by infer_instance
   exact h.isImmersionOfComplement_complement x
 
 /-- If `f = g` and `f` is an immersion, so is `g`. -/
@@ -969,19 +982,19 @@ theorem prodMap {f : M → N} {g : M' → N'}
 open IsManifold in
 /-- The identity map is an immersion. -/
 protected lemma id [IsManifold I n M] : IsImmersion I I n (@id M) := by
-  use PUnit, by infer_instance, by infer_instance
+  use PUnit, by infer_instance, by infer_instance, by infer_instance
   exact IsImmersionOfComplement.id
 
 /- The inclusion of an open subset `s` of a smooth manifold `M` is an immersion. -/
 lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
     IsImmersion I I n (Subtype.val : s → M) := by
-  use PUnit, by infer_instance, by infer_instance
+  use PUnit, by infer_instance, by infer_instance, by infer_instance
   exact IsImmersionOfComplement.of_opens s
 
 /-- Every `ModelWithCorners 𝕜 E H` is an immersion when viewed as a map `H → E`. -/
 protected lemma _root_.ModelWithCorners.isImmersion {n : ℕ} :
     IsImmersion I (modelWithCornersSelf 𝕜 E) n I := by
-  use PUnit, by infer_instance, by infer_instance
+  use PUnit, by infer_instance, by infer_instance, by infer_instance
   exact I.isImmersionOfComplement
 
 /-- A `C^n` immersion is `C^n`. -/
@@ -1000,7 +1013,7 @@ still yields an immersion. -/
 lemma comp_diffeomorph {N' : Type*} [TopologicalSpace N'] [ChartedSpace G N'] [IsManifold J n N']
     (h : IsImmersion I J n f) (Φ : Diffeomorph J J N N' n) :
     IsImmersion I J n (Φ ∘ f) := by
-  use h.complement, by infer_instance, by infer_instance
+  use h.complement, by infer_instance, by infer_instance, by infer_instance
   exact h.isImmersionOfComplement_complement.comp_diffeomorph Φ
 
 /-- If `f` is an immersion, each differential `mfderiv f x` has a continuous left inverse. -/

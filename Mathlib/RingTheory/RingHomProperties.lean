@@ -193,16 +193,16 @@ lemma toMorphismProperty_respectsIso_iff :
     exact h.right f.hom e.commRingCatIsoToRingEquiv hf
   · intro X Y Z e f hf
     exact h.left f.hom e.commRingCatIsoToRingEquiv hf
-  · intro X Y Z _ _ _ f e hf
+  · intro X Y Z _ _ _ _ _ _ f e hf
     exact MorphismProperty.RespectsIso.postcomp (toMorphismProperty P)
       e.toCommRingCatIso.hom (CommRingCat.ofHom f) hf
-  · intro X Y Z _ _ _ f e
+  · intro X Y Z _ _ _ _ _ _ f e
     exact MorphismProperty.RespectsIso.precomp (toMorphismProperty P)
       e.toCommRingCatIso.hom (CommRingCat.ofHom f)
 
 lemma isStableUnderCobaseChange_toMorphismProperty_iff :
     (toMorphismProperty P).IsStableUnderCobaseChange ↔ IsStableUnderBaseChange P := by
-  refine ⟨fun h R S R' S' _ _ _ _ _ _ _ _ _ _ _ hsq hRS ↦ ?_,
+  refine ⟨fun h R S R' S' _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ hsq hRS ↦ ?_,
       fun h ↦ ⟨fun {R} S R' S' f g f' g' hsq hf ↦ ?_⟩⟩
   · rw [← CommRingCat.isPushout_iff_isPushout] at hsq
     exact h.1 (f := CommRingCat.ofHom (algebraMap R S)) hsq.flip hRS
@@ -269,7 +269,7 @@ variable {Q} {P' : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Ring S] [Is
 
 lemma CodescendsAlong.and (hP : CodescendsAlong P Q) (hP' : CodescendsAlong P' Q) :
     CodescendsAlong (fun f ↦ P f ∧ P' f) Q :=
-  fun _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ h₁ h₂ ↦ ⟨hP h₁ h₂.1, hP' h₁ h₂.2⟩
+  fun _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ h₁ h₂ ↦ ⟨hP h₁ h₂.1, hP' h₁ h₂.2⟩
 
 end Descent
 
@@ -293,6 +293,6 @@ def HasFiniteProducts (P : ∀ {R S : Type u} [Ring R] [IsMulCommutative R] [Rin
 
 lemma HasFiniteProducts.and (hP : HasFiniteProducts P) (hQ : HasFiniteProducts Q) :
     HasFiniteProducts (fun f ↦ P f ∧ Q f) :=
-  fun _ _ _ hS ↦ ⟨hP _ fun i ↦ (hS i).1, hQ _ fun i ↦ (hS i).2⟩
+  fun _ _ _ _ hS ↦ ⟨hP _ fun i ↦ (hS i).1, hQ _ fun i ↦ (hS i).2⟩
 
 end RingHom

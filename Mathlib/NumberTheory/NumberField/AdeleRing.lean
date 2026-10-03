@@ -48,7 +48,7 @@ in practice are easier to work with than `AdeleRing (𝓞 ℚ) ℚ`.
 Note that this definition does not give the correct answer in the function field case.
 -/
 def AdeleRing := InfiniteAdeleRing K × FiniteAdeleRing R K
-deriving CommRing, TopologicalSpace, IsTopologicalRing, Algebra K
+deriving Ring, IsMulCommutative, TopologicalSpace, IsTopologicalRing, Algebra K
 
 namespace AdeleRing
 

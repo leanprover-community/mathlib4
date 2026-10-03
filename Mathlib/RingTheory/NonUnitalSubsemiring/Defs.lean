@@ -74,15 +74,13 @@ instance (priority := 75) toNonUnitalNonAssocSemiring :
   Subtype.coe_injective.nonUnitalNonAssocSemiring Subtype.val rfl (by simp) (fun _ _ => rfl)
     fun _ _ => rfl
 
-/- Prefer subclasses of `NonUnitalNonAssocCommSemiring` over subclasses of
+/- Prefer subclasses of `NonUnitalNonAssocSemiring` with `IsMulCommutative` over subclasses of
 `NonUnitalSubsemiringClass`. -/
-/-- A non-unital subsemiring of a `NonUnitalNonAssocCommSemiring` inherits a
-`NonUnitalNonAssocCommSemiring` structure -/
+/-- A non-unital subsemiring of a commutative `NonUnitalNonAssocSemiring` is commutative. -/
 instance (priority := 75) toNonUnitalNonAssocCommSemiring {R} [NonUnitalNonAssocSemiring R] [IsMulCommutative R]
     [SetLike S R] [NonUnitalSubsemiringClass S R] :
-    NonUnitalNonAssocCommSemiring s := fast_instance%
-  Subtype.coe_injective.nonUnitalNonAssocCommSemiring Subtype.val rfl (by simp) (fun _ _ => rfl)
-    fun _ _ => rfl
+    IsMulCommutative s :=
+  Subtype.coe_injective.isMulCommutative Subtype.val fun _ _ => rfl
 
 instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s :=
   Subtype.coe_injective.noZeroDivisors Subtype.val rfl fun _ _ => rfl
@@ -109,11 +107,10 @@ instance toNonUnitalSemiring {R} [NonUnitalSemiring R] [SetLike S R]
     [NonUnitalSubsemiringClass S R] : NonUnitalSemiring s := fast_instance%
   Subtype.coe_injective.nonUnitalSemiring Subtype.val rfl (by simp) (fun _ _ => rfl) fun _ _ => rfl
 
-/-- A non-unital subsemiring of a `NonUnitalCommSemiring` is a `NonUnitalCommSemiring`. -/
+/-- A non-unital subsemiring of a commutative `NonUnitalSemiring` is commutative. -/
 instance toNonUnitalCommSemiring {R} [NonUnitalSemiring R] [IsMulCommutative R] [SetLike S R]
-    [NonUnitalSubsemiringClass S R] : NonUnitalCommSemiring s := fast_instance%
-  Subtype.coe_injective.nonUnitalCommSemiring Subtype.val rfl (by simp) (fun _ _ => rfl)
-    fun _ _ => rfl
+    [NonUnitalSubsemiringClass S R] : IsMulCommutative s :=
+  Subtype.coe_injective.isMulCommutative Subtype.val fun _ _ => rfl
 
 /-! Note: currently, there are no ordered versions of non-unital rings. -/
 

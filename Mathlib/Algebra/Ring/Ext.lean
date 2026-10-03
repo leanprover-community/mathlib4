@@ -12,7 +12,7 @@ import Mathlib.Algebra.Group.Ext
 # Extensionality lemmas for rings and similar structures
 
 In this file we prove extensionality lemmas for the ring-like structures defined in
-`Mathlib/Algebra/Ring/Defs.lean`, ranging from `NonUnitalNonAssocSemiring` to `CommRing`. These
+`Mathlib/Algebra/Ring/Defs.lean`, ranging from `NonUnitalNonAssocSemiring` to `Ring`. These
 extensionality lemmas take the form of asserting that two algebraic structures on a type are equal
 whenever the addition and multiplication defined by them are both the same.
 
@@ -63,8 +63,8 @@ namespace NonUnitalNonAssocSemiring
     (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
     inst₁ = inst₂ := by
   -- Split into `AddMonoid` instance, `mul` function and properties.
-  rcases inst₁ with @⟨_, ⟨⟩⟩
-  rcases inst₂ with @⟨_, ⟨⟩⟩
+  rcases inst₁ with @⟨_, _, ⟨⟩⟩
+  rcases inst₂ with @⟨_, _, ⟨⟩⟩
   -- Prove equality of parts using already-proved extensionality lemmas.
   congr; ext : 1; assumption
 
@@ -94,7 +94,7 @@ end NonUnitalSemiring
 
 /-! ### NonAssocSemiring and its ancestors
 
-This section also includes results for `AddMonoidWithOne`, `AddCommMonoidWithOne`, etc.
+This section also includes results for `AddMonoidWithOne` etc.
 as these are considered implementation detail of the ring classes.
 TODO consider relocating these lemmas.
 -/
@@ -115,17 +115,6 @@ TODO consider relocating these lemmas.
   rcases inst₁ with @⟨⟨⟩⟩; rcases inst₂ with @⟨⟨⟩⟩
   congr
 
-theorem AddCommMonoidWithOne.toAddMonoidWithOne_injective :
-    Function.Injective (@AddCommMonoidWithOne.toAddMonoidWithOne R) := by
-  rintro ⟨⟩ ⟨⟩ _; congr
-
-@[ext] theorem AddCommMonoidWithOne.ext ⦃inst₁ inst₂ : AddCommMonoidWithOne R⦄
-    (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
-    (h_one : (letI := inst₁; One.one : R) = (letI := inst₂; One.one : R)) :
-    inst₁ = inst₂ :=
-  AddCommMonoidWithOne.toAddMonoidWithOne_injective <|
-    AddMonoidWithOne.ext h_add h_one
-
 namespace NonAssocSemiring
 
 /-! The best place to prove that the `NatCast` is determined by the other operations is probably in
@@ -145,7 +134,7 @@ defined in `Mathlib/Algebra/GroupWithZero/Defs.lean` as well. -/
   have h_one : (inst₁.toMulZeroOneClass).toMulOneClass.toOne.one
                = (inst₂.toMulZeroOneClass).toMulOneClass.toOne.one :=
     congrArg (@One.one R) h_one'
-  have : inst₁.toAddCommMonoidWithOne = inst₂.toAddCommMonoidWithOne := by
+  have : inst₁.toAddMonoidWithOne = inst₂.toAddMonoidWithOne := by
     ext : 1 <;> assumption
   have : inst₁.toNatCast = inst₂.toNatCast :=
     congrArg (·.toNatCast) this
@@ -167,8 +156,8 @@ namespace NonUnitalNonAssocRing
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
     (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
     inst₁ = inst₂ := by
-  -- Split into `AddCommGroup` instance, `mul` function and properties.
-  rcases inst₁ with @⟨_, ⟨⟩⟩; rcases inst₂ with @⟨_, ⟨⟩⟩
+  -- Split into `AddGroup` instance, `mul` function and properties.
+  rcases inst₁ with @⟨_, _, ⟨⟩⟩; rcases inst₂ with @⟨_, _, ⟨⟩⟩
   congr; (ext : 1; assumption)
 
 theorem toNonUnitalNonAssocSemiring_injective :
@@ -213,7 +202,7 @@ end NonUnitalRing
 
 /-! ### NonAssocRing and its ancestors
 
-This section also includes results for `AddGroupWithOne`, `AddCommGroupWithOne`, etc.
+This section also includes results for `AddGroupWithOne` etc.
 as these are considered implementation detail of the ring classes.
 TODO consider relocating these lemmas. -/
 @[ext] theorem AddGroupWithOne.ext ⦃inst₁ inst₂ : AddGroupWithOne R⦄
@@ -233,18 +222,6 @@ TODO consider relocating these lemmas. -/
   rcases inst₁ with @⟨⟨⟩⟩; rcases inst₂ with @⟨⟨⟩⟩
   congr
 
-@[ext] theorem AddCommGroupWithOne.ext ⦃inst₁ inst₂ : AddCommGroupWithOne R⦄
-    (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
-    (h_one : (letI := inst₁; One.one : R) = (letI := inst₂; One.one)) :
-    inst₁ = inst₂ := by
-  have : inst₁.toAddCommGroup = inst₂.toAddCommGroup :=
-    AddCommGroup.ext h_add
-  have : inst₁.toAddGroupWithOne = inst₂.toAddGroupWithOne :=
-    AddGroupWithOne.ext h_add h_one
-  injection this with _ h_addMonoidWithOne; injection h_addMonoidWithOne
-  cases inst₁; cases inst₂
-  congr
-
 namespace NonAssocRing
 
 @[ext] theorem ext ⦃inst₁ inst₂ : NonAssocRing R⦄
@@ -256,8 +233,8 @@ namespace NonAssocRing
   have h₂ : inst₁.toNonAssocSemiring = inst₂.toNonAssocSemiring := by
     ext : 1 <;> assumption
   -- Mathematically non-trivial fact: `intCast` is determined by the rest.
-  have h₃ : inst₁.toAddCommGroupWithOne = inst₂.toAddCommGroupWithOne :=
-    AddCommGroupWithOne.ext h_add (congrArg (·.toOne.one) h₂)
+  have h₃ : inst₁.toAddGroupWithOne = inst₂.toAddGroupWithOne :=
+    AddGroupWithOne.ext h_add (congrArg (·.toOne.one) h₂)
   cases inst₁; cases inst₂
   congr <;> solve | injection h₁ | injection h₂ | injection h₃
 
@@ -286,7 +263,7 @@ namespace Semiring
     (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
     inst₁ = inst₂ := by
   -- Show that enough substructures are equal.
-  have h₀ : inst₁.toAddCommMonoid = inst₂.toAddCommMonoid := by
+  have h₀ : inst₁.toAddMonoid = inst₂.toAddMonoid := by
     ext : 1 <;> assumption
   have h₁ : inst₁.toNonUnitalSemiring = inst₂.toNonUnitalSemiring := by
     ext : 1 <;> assumption
@@ -328,8 +305,8 @@ namespace Ring
     ext : 1 <;> assumption
   /- We prove that the `SubNegMonoid`s are equal because they are one
   field away from `Sub` and `Neg`, enabling use of `injection`. -/
-  have h₃ : (inst₁.toAddCommGroup).toAddGroup.toSubNegMonoid
-            = (inst₂.toAddCommGroup).toAddGroup.toSubNegMonoid :=
+  have h₃ : inst₁.toAddGroup.toSubNegMonoid
+            = inst₂.toAddGroup.toSubNegMonoid :=
     congrArg (@AddGroup.toSubNegMonoid R) <| by ext : 1; exact h_add
   -- Split into fields and prove they are equal using the above.
   cases inst₁; cases inst₂
@@ -357,101 +334,3 @@ theorem toSemiring_injective :
   · exact congrArg (·.toMul.mul x y) h
 
 end Ring
-
-/-! ### NonUnitalNonAssocCommSemiring -/
-namespace NonUnitalNonAssocCommSemiring
-
-theorem toNonUnitalNonAssocSemiring_injective :
-    Function.Injective (@toNonUnitalNonAssocSemiring R) := by
-  rintro ⟨⟩ ⟨⟩ _; congr
-
-@[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalNonAssocCommSemiring R⦄
-    (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
-    (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
-    inst₁ = inst₂ :=
-  toNonUnitalNonAssocSemiring_injective <|
-    NonUnitalNonAssocSemiring.ext h_add h_mul
-
-end NonUnitalNonAssocCommSemiring
-
-/-! ### NonUnitalCommSemiring -/
-namespace NonUnitalCommSemiring
-
-theorem toNonUnitalSemiring_injective :
-    Function.Injective (@toNonUnitalSemiring R) := by
-  rintro ⟨⟩ ⟨⟩ _; congr
-
-@[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalCommSemiring R⦄
-    (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
-    (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
-    inst₁ = inst₂ :=
-  toNonUnitalSemiring_injective <|
-    NonUnitalSemiring.ext h_add h_mul
-
-end NonUnitalCommSemiring
-
--- At present, there is no `NonAssocCommSemiring` in Mathlib.
-
-/-! ### NonUnitalNonAssocCommRing -/
-namespace NonUnitalNonAssocCommRing
-
-theorem toNonUnitalNonAssocRing_injective :
-    Function.Injective (@toNonUnitalNonAssocRing R) := by
-  rintro ⟨⟩ ⟨⟩ _; congr
-
-@[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalNonAssocCommRing R⦄
-    (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
-    (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
-    inst₁ = inst₂ :=
-  toNonUnitalNonAssocRing_injective <|
-    NonUnitalNonAssocRing.ext h_add h_mul
-
-end NonUnitalNonAssocCommRing
-
-/-! ### NonUnitalCommRing -/
-namespace NonUnitalCommRing
-
-theorem toNonUnitalRing_injective :
-    Function.Injective (@toNonUnitalRing R) := by
-  rintro ⟨⟩ ⟨⟩ _; congr
-
-@[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalCommRing R⦄
-    (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
-    (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
-    inst₁ = inst₂ :=
-  toNonUnitalRing_injective <|
-    NonUnitalRing.ext h_add h_mul
-
-end NonUnitalCommRing
-
--- At present, there is no `NonAssocCommRing` in Mathlib.
-
-/-! ### CommSemiring -/
-namespace CommSemiring
-
-theorem toSemiring_injective :
-    Function.Injective (@toSemiring R) := by
-  rintro ⟨⟩ ⟨⟩ _; congr
-
-@[ext] theorem ext ⦃inst₁ inst₂ : CommSemiring R⦄
-    (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
-    (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
-    inst₁ = inst₂ :=
-  toSemiring_injective <|
-    Semiring.ext h_add h_mul
-
-end CommSemiring
-
-/-! ### CommRing -/
-namespace CommRing
-
-theorem toRing_injective : Function.Injective (@toRing R) := by
-  rintro ⟨⟩ ⟨⟩ _; congr
-
-@[ext] theorem ext ⦃inst₁ inst₂ : CommRing R⦄
-    (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
-    (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
-    inst₁ = inst₂ :=
-  toRing_injective <| Ring.ext h_add h_mul
-
-end CommRing

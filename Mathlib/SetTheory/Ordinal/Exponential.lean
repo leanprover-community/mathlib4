@@ -486,7 +486,7 @@ theorem sub_omega0_opow_log_lt {a : Ordinal} (ha : a ≠ 0) : a - ω ^ log ω a 
   | zero =>
     simpa using ((div_pos (opow_ne_zero _ omega0_ne_zero)).2 (opow_log_le_self _ ha)).trans_eq hn
   | succ n =>
-    rw [add_comm, Nat.cast_add, Nat.cast_one, mul_one_add, add_assoc, Ordinal.add_sub_cancel]
+    rw [add_comm n, Nat.cast_add, Nat.cast_one, mul_one_add, add_assoc, Ordinal.add_sub_cancel]
     apply (opow_mul_add_lt_opow_mul _ (lt_add_one _)).trans_le
     · rw [Ordinal.mul_le_iff_le_div, hn] <;> simp
     · exact mod_lt _ (opow_ne_zero _ omega0_ne_zero)

@@ -431,13 +431,12 @@ lemma support_pow (n : ℕ) (hn : n ≠ 0) : (I ^ n).support = I.support := by c
 lemma mul_inf : I * (J ⊔ K) = I * J ⊔ I * K := by ext U : 2; exact mul_add _ _ _
 lemma inf_mul : (I ⊔ J) * K = I * K ⊔ J * K := by ext U : 2; exact add_mul _ _ _
 
-instance : IdemCommSemiring X.IdealSheafData where
+instance : IdemSemiring X.IdealSheafData where
   add_assoc := sup_assoc
   zero_add := bot_sup_eq
   add_zero := sup_bot_eq
-  add_comm := sup_comm
+  is_comm := ⟨sup_comm⟩
   mul_assoc _ _ _ := IdealSheafData.ext (mul_assoc _ _ _)
-  mul_comm _ _ := IdealSheafData.ext (mul_comm _ _)
   zero_mul := bot_mul
   mul_zero := mul_bot
   one_mul := top_mul
@@ -448,6 +447,9 @@ instance : IdemCommSemiring X.IdealSheafData where
   npow n I := I ^ n
   npow_zero _ := by ext; simp [show (1 : X.IdealSheafData) = ⊤ from rfl]
   npow_succ _ _ := by ext; rfl
+
+instance : IsMulCommutative X.IdealSheafData :=
+  ⟨⟨fun _ _ ↦ IdealSheafData.ext (mul_comm _ _)⟩⟩
 
 instance : IsOrderedRing X.IdealSheafData where
 

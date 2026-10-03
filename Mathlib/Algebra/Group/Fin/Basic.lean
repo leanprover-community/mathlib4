@@ -29,15 +29,17 @@ variable {n : ℕ}
 
 /-! ### Instances -/
 
-instance addCommSemigroup (n : ℕ) : AddCommSemigroup (Fin n) where
+instance addSemigroup (n : ℕ) : AddSemigroup (Fin n) where
   add_assoc := by simp [add_def, Nat.add_assoc]
-  add_comm := by simp [add_def, Nat.add_comm]
 
-instance addCommMonoid (n : ℕ) [NeZero n] : AddCommMonoid (Fin n) where
+instance instIsAddCommutative (n : ℕ) : IsAddCommutative (Fin n) :=
+  ⟨⟨by simp [add_def, Nat.add_comm]⟩⟩
+
+instance addMonoid (n : ℕ) [NeZero n] : AddMonoid (Fin n) where
   zero_add := Fin.zero_add
   add_zero := Fin.add_zero
   nsmul := nsmulRec
-  __ := Fin.addCommSemigroup n
+  __ := Fin.addSemigroup n
 
 /--
 This is not a global instance, but can introduced locally using `open Fin.NatCast in ...`.
@@ -53,7 +55,7 @@ silently introducing wraparound arithmetic.
 -/
 @[instance_reducible]
 def instAddMonoidWithOne (n) [NeZero n] : AddMonoidWithOne (Fin n) where
-  __ := (inferInstance : AddCommMonoid (Fin n))
+  __ := (inferInstance : AddMonoid (Fin n))
   natCast i := Fin.ofNat n i
   natCast_zero := rfl
   natCast_succ _ := Fin.ext (add_mod _ _ _)
@@ -64,8 +66,8 @@ attribute [scoped instance] Fin.instAddMonoidWithOne
 
 end NatCast
 
-instance addCommGroup (n : ℕ) [NeZero n] : AddCommGroup (Fin n) where
-  __ := addCommMonoid n
+instance addGroup (n : ℕ) [NeZero n] : AddGroup (Fin n) where
+  __ := addMonoid n
   __ := neg n
   neg_add_cancel := fun ⟨a, ha⟩ ↦
     Fin.ext <| (Nat.mod_add_mod _ _ _).trans <| by
@@ -76,22 +78,22 @@ instance addCommGroup (n : ℕ) [NeZero n] : AddCommGroup (Fin n) where
     Fin.ext <| by simp [Fin.sub_def, Fin.neg_def, Fin.add_def, Nat.add_comm]
   zsmul := zsmulRec
 
-/-- Note this is more general than `Fin.addCommGroup` as it applies (vacuously) to `Fin 0` too. -/
+/-- Note this is more general than `Fin.addGroup` as it applies (vacuously) to `Fin 0` too. -/
 instance instInvolutiveNeg (n : ℕ) : InvolutiveNeg (Fin n) where
   neg_neg := Nat.casesOn n finZeroElim fun _i ↦ neg_neg
 
-/-- Note this is more general than `Fin.addCommGroup` as it applies (vacuously) to `Fin 0` too. -/
+/-- Note this is more general than `Fin.addGroup` as it applies (vacuously) to `Fin 0` too. -/
 instance instIsCancelAdd (n : ℕ) : IsCancelAdd (Fin n) where
   add_left_cancel := Nat.casesOn n finZeroElim fun _i _ _ _ ↦ add_left_cancel
   add_right_cancel := Nat.casesOn n finZeroElim fun _i _ _ _ ↦ add_right_cancel
 
-/-- Note this is more general than `Fin.addCommGroup` as it applies (vacuously) to `Fin 0` too. -/
+/-- Note this is more general than `Fin.addGroup` as it applies (vacuously) to `Fin 0` too. -/
 instance instAddLeftCancelSemigroup (n : ℕ) : AddLeftCancelSemigroup (Fin n) :=
-  { Fin.addCommSemigroup n, Fin.instIsCancelAdd n with }
+  { Fin.addSemigroup n, Fin.instIsCancelAdd n with }
 
-/-- Note this is more general than `Fin.addCommGroup` as it applies (vacuously) to `Fin 0` too. -/
+/-- Note this is more general than `Fin.addGroup` as it applies (vacuously) to `Fin 0` too. -/
 instance instAddRightCancelSemigroup (n : ℕ) : AddRightCancelSemigroup (Fin n) :=
-  { Fin.addCommSemigroup n, Fin.instIsCancelAdd n with }
+  { Fin.addSemigroup n, Fin.instIsCancelAdd n with }
 
 /-! ### Miscellaneous lemmas -/
 

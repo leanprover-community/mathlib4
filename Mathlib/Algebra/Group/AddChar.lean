@@ -261,13 +261,21 @@ section toCommMonoid
 
 variable {ι A M : Type*} [AddMonoid A] [Monoid M] [IsMulCommutative M]
 
+/-- When `M` is commutative, `AddChar A M` is a monoid. -/
+instance instMonoid : Monoid (AddChar A M) :=
+  fast_instance% toMonoidHomEquiv.monoid
+
 /-- When `M` is commutative, `AddChar A M` is a commutative monoid. -/
-instance instCommMonoid : CommMonoid (AddChar A M) :=
-  fast_instance% toMonoidHomEquiv.commMonoid
+instance instIsMulCommutative : IsMulCommutative (AddChar A M) :=
+  toMonoidHomEquiv.commMonoid
+
+/-- When `M` is commutative, `AddChar A M` is an additive monoid. -/
+instance instAddMonoid : AddMonoid (AddChar A M) :=
+  inferInstanceAs (AddMonoid (Additive (AddChar A M)))
 
 /-- When `M` is commutative, `AddChar A M` is an additive commutative monoid. -/
-instance instAddCommMonoid : AddCommMonoid (AddChar A M) :=
-  inferInstanceAs (AddCommMonoid (Additive (AddChar A M)))
+instance instIsAddCommutative : IsAddCommutative (AddChar A M) :=
+  inferInstanceAs (IsAddCommutative (Additive (AddChar A M)))
 
 @[simp, norm_cast] lemma coe_mul (ψ χ : AddChar A M) : ⇑(ψ * χ) = ψ * χ := rfl
 @[simp, norm_cast] lemma coe_add (ψ χ : AddChar A M) : ⇑(ψ + χ) = ψ * χ := rfl
@@ -356,12 +364,12 @@ variable {A M : Type*} [AddGroup A] [IsAddCommutative A] [Monoid M] [IsMulCommut
 
 Note that the inverse is defined using negation on the domain; we do not assume `M` has an
 inversion operation for the definition (but see `AddChar.map_neg_eq_inv` below). -/
-instance instCommGroup : CommGroup (AddChar A M) where
+instance instGroup : Group (AddChar A M) where
   inv ψ := ψ.compAddMonoidHom negAddMonoidHom
   inv_mul_cancel ψ := by ext1 x; simp [negAddMonoidHom, ← map_add_eq_mul]
 
 /-- The additive characters on a commutative additive group form a commutative group. -/
-instance : AddCommGroup (AddChar A M) := inferInstanceAs <| AddCommGroup (Additive (AddChar A M))
+instance : AddGroup (AddChar A M) := inferInstanceAs <| AddGroup (Additive (AddChar A M))
 
 @[simp] lemma inv_apply (ψ : AddChar A M) (a : A) : ψ⁻¹ a = ψ (-a) := rfl
 @[simp] lemma neg_apply (ψ : AddChar A M) (a : A) : (-ψ) a = ψ (-a) := rfl

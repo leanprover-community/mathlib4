@@ -101,15 +101,16 @@ theorem adjoin_singleton_induction {M : R[x] → Prop}
   grind
 
 instance instCommSemiringAdjoinSingleton :
-    CommSemiring <| R[x] where
-  mul_comm := fun ⟨p, hp⟩ ⟨q, hq⟩ ↦ by
+    IsMulCommutative <| R[x] where
+  is_comm := ⟨fun ⟨p, hp⟩ ⟨q, hq⟩ ↦ by
       obtain ⟨p', rfl⟩ := Algebra.adjoin_singleton_eq_range_aeval R x ▸ hp
       obtain ⟨q', rfl⟩ := Algebra.adjoin_singleton_eq_range_aeval R x ▸ hq
       simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, MulMemClass.mk_mul_mk, ← map_mul,
-        mul_comm p' q']
+        mul_comm p' q']⟩
 
-instance instCommRingAdjoinSingleton {R A : Type*} [Ring R] [IsMulCommutative R] [Ring A] [Algebra R A] (x : A) :
-    CommRing R[x] where
+instance instCommRingAdjoinSingleton {R A : Type*} [Ring R] [IsMulCommutative R] [Ring A]
+    [Algebra R A] (x : A) : IsMulCommutative R[x] :=
+  instCommSemiringAdjoinSingleton R x
 
 end aeval
 

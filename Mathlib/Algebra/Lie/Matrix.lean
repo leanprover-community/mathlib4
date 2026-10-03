@@ -45,7 +45,7 @@ is compatible with the Lie algebra structures. -/
 def lieEquivMatrix' : Module.End R (n → R) ≃ₗ⁅R⁆ Matrix n n R :=
   { LinearMap.toMatrix' with
     map_lie' := fun {T S} => by
-      let f := @LinearMap.toMatrix' R _ n n _ _
+      let f := @LinearMap.toMatrix' R _ _ n n _ _
       change f (T.comp S - S.comp T) = f T * f S - f S * f T
       have h : ∀ T S : Module.End R _, f (T.comp S) = f T * f S := LinearMap.toMatrix'_comp
       rw [map_sub, h, h] }
@@ -57,14 +57,15 @@ theorem lieEquivMatrix'_apply (f : Module.End R (n → R)) :
 
 @[simp]
 theorem lieEquivMatrix'_symm_apply (A : Matrix n n R) :
-    (@lieEquivMatrix' R _ n _ _).symm A = Matrix.toLin' A :=
+    (lieEquivMatrix' (R := R) (n := n)).symm A = Matrix.toLin' A :=
   rfl
 
 namespace Matrix
 
 /-- An invertible matrix induces a Lie algebra equivalence from the space of matrices to itself. -/
 def lieConj (P : Matrix n n R) (h : Invertible P) : Matrix n n R ≃ₗ⁅R⁆ Matrix n n R :=
-  ((@lieEquivMatrix' R _ n _ _).symm.trans (P.toLinearEquiv' h).lieConj).trans lieEquivMatrix'
+  ((lieEquivMatrix' (R := R) (n := n)).symm.trans (P.toLinearEquiv' h).lieConj).trans
+    lieEquivMatrix'
 
 @[simp]
 theorem lieConj_apply (P A : Matrix n n R) (h : Invertible P) :

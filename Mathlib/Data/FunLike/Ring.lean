@@ -47,7 +47,8 @@ variable [FunLike F α α] [Zero F] [One F] [Mul F] [Add F] [AddMonoid α] [IsAd
 is a `Semiring`. -/
 protected abbrev FunLike.semiring : Semiring F where
   __ := FunLike.monoidWithZero
-  __ := FunLike.addCommMonoid
+  __ := FunLike.addMonoid
+  toIsAddCommutative := FunLike.addCommMonoid
   left_distrib f g h := by apply DFunLike.ext; simp
   right_distrib _ _ _ := by apply DFunLike.ext; simp
   natCast_zero := by apply DFunLike.ext; simp
@@ -69,7 +70,7 @@ variable [FunLike F α α] [Zero F] [One F] [Mul F] [Add F] [Neg F] [Sub F]
 `Ring`. -/
 protected abbrev FunLike.ring : Ring F where
   __ := FunLike.semiring
-  __ := FunLike.addCommGroup
+  __ := FunLike.addGroup
   intCast_ofNat _ := by apply DFunLike.ext; simp
   intCast_negSucc n := by apply DFunLike.ext; simp [succ_nsmul]
 

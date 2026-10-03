@@ -73,8 +73,8 @@ theorem induction {motive : SymmetricAlgebra R M → Prop}
   | add x y hx hy => rw [map_add]; exact add _ _ hx hy
 
 open TensorAlgebra in
-instance : CommSemiring (SymmetricAlgebra R M) where
-  mul_comm a b := by
+instance : IsMulCommutative (SymmetricAlgebra R M) where
+  is_comm := ⟨fun a b => by
     change Commute a b
     induction b using SymmetricAlgebra.induction with
     | algebraMap r => exact Algebra.commute_algebraMap_right _ _
@@ -86,11 +86,7 @@ instance : CommSemiring (SymmetricAlgebra R M) where
       | mul a b ha hb => exact ha.mul_left hb
       | add a b ha hb => exact ha.add_left hb
     | mul b c hb hc => exact hb.mul_right hc
-    | add b c hb hc => exact hb.add_right hc
-
-instance (R M) [Ring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] : CommRing (SymmetricAlgebra R M) where
-  __ := (inferInstance : CommSemiring (SymmetricAlgebra R M))
-  __ := (inferInstance : Ring (SymmetricAlgebra R M))
+    | add b c hb hc => exact hb.add_right hc⟩
 
 variable {R M} {A : Type*} [Semiring A] [IsMulCommutative A] [Algebra R A]
 

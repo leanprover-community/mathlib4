@@ -39,10 +39,9 @@ mapping `⨁ i, A i →+ ⨆ i, A i` can be obtained as
 This file also provides some extra structure on `A 0`, namely:
 * `SetLike.GradeZero.subsemiring`, which leads to
   * `SetLike.GradeZero.instSemiring`
-  * `SetLike.GradeZero.instCommSemiring`
+  * `SetLike.GradeZero.instIsMulCommutative`
 * `SetLike.GradeZero.subring`, which leads to
   * `SetLike.GradeZero.instRing`
-  * `SetLike.GradeZero.instCommRing`
 * `SetLike.GradeZero.subalgebra`, which leads to
   * `SetLike.GradeZero.instAlgebra`
 
@@ -352,9 +351,10 @@ variable [Semiring R] [IsMulCommutative R] [AddMonoid ι] [SetLike σ R] [AddSub
 variable (A : ι → σ) [SetLike.GradedMonoid A]
 
 -- TODO: it might be expensive to unify `A` in this instance in practice
-/-- The commutative semiring `A 0` inherited from `R` in the presence of
-`SetLike.GradedMonoid A`. -/
-instance instCommSemiring : CommSemiring (A 0) := inferInstanceAs <| CommSemiring (subsemiring A)
+/-- The multiplication on `A 0` inherited from `R` in the presence of
+`SetLike.GradedMonoid A` is commutative. -/
+instance instIsMulCommutative : IsMulCommutative (A 0) :=
+  inferInstanceAs <| IsMulCommutative (subsemiring A)
 
 instance : Algebra (A 0) R :=
   inferInstanceAs <| Algebra (SetLike.GradeZero.subsemiring A) R
@@ -379,16 +379,6 @@ instance instRing : Ring (A 0) := inferInstanceAs <| Ring (subring A)
 theorem coe_intCast (z : ℤ) : (z : A 0) = (z : R) := rfl
 
 end Ring
-
-section CommRing
-variable [Ring R] [IsMulCommutative R] [AddMonoid ι] [IsAddCommutative ι] [SetLike σ R] [AddSubgroupClass σ R]
-variable (A : ι → σ) [SetLike.GradedMonoid A]
-
--- TODO: it might be expensive to unify `A` in this instance in practice
-/-- The commutative ring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
-instance instCommRing : CommRing (A 0) := inferInstanceAs <| CommRing (subring A)
-
-end CommRing
 
 section Algebra
 variable [Semiring S] [IsMulCommutative S] [Semiring R] [Algebra S R] [AddMonoid ι]

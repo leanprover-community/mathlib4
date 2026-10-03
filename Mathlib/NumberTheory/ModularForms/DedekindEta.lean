@@ -85,8 +85,8 @@ lemma multipliableLocallyUniformlyOn_one_sub_pow :
 lemma differentiableOn_tprod_one_sub_pow :
     DifferentiableOn ℂ (fun q ↦ ∏' n, (1 - q ^ (n + 1))) (Metric.ball (0 : ℂ) 1) :=
   multipliableLocallyUniformlyOn_one_sub_pow.hasProdLocallyUniformlyOn.differentiableOn
-    (.of_forall fun _ ↦ by simpa [Finset.prod_fn] using
-      DifferentiableOn.finsetProd (fun _ _ ↦ by fun_prop)) Metric.isOpen_ball
+    (.of_forall fun _ ↦ DifferentiableOn.fun_finsetProd (fun _ _ ↦ by fun_prop))
+    Metric.isOpen_ball
 
 /-- For any `k`, the function `q ↦ ∏' n, (1 - q^(n+1))^k` is differentiable on the
 open unit disc. -/

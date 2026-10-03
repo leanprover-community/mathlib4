@@ -180,7 +180,7 @@ partial def typeToCharP (expensive := false) (t : Q(Type u)) : MetaM (TypeToChar
 match Expr.getAppFnArgs t with
 | (``ZMod, #[(n : Q(ℕ))]) =>
   return .intLike n
-    (q((ZMod.commRing _).toRing) : Q(Ring (ZMod $n)))
+    (q(ZMod.commRing _) : Q(Ring (ZMod $n)))
     (q(ZMod.charP _) : Q(CharP (ZMod $n) $n))
 | (``Polynomial, #[(R : Q(Type u)), _]) => do match ← typeToCharP (expensive := expensive) R with
   | (.intLike n _ _) =>

@@ -668,8 +668,8 @@ lemma toSpec_base_apply_eq_comap {f} (x : Proj| pbo f) :
         (IsLocalRing.closedPoint ((Proj| pbo f).presheaf.stalk x)) = _
   rw [awayToΓ_ΓToStalk, CommRingCat.hom_comp, PrimeSpectrum.comap_comp]
   congrm PrimeSpectrum.comap _ $(@IsLocalRing.comap_closedPoint
-   (HomogeneousLocalization.AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) _ _
-   ((Proj| pbo f).presheaf.stalk x) _ _ _ (isLocalHom_of_isIso _))
+   (HomogeneousLocalization.AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) _ _ _
+   ((Proj| pbo f).presheaf.stalk x) _ _ _ _ (isLocalHom_of_isIso _))
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma toSpec_base_apply_eq {f} (x : Proj| pbo f) :
@@ -731,7 +731,7 @@ of `A⁰_f` at `φ(x)` where `φ : Proj|D(f) ⟶ Spec A⁰_f` is the morphism of
 constructed as above.
 -/
 lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
-    @IsLocalization (Away 𝒜 f) _ ((toSpec 𝒜 f).base x).asIdeal.primeCompl
+    @IsLocalization (Away 𝒜 f) _ _ ((toSpec 𝒜 f).base x).asIdeal.primeCompl
       (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) _
       (mapId 𝒜 (Submonoid.powers_le.mpr x.2)).toAlgebra := by
   let : Algebra (Away 𝒜 f) (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) :=

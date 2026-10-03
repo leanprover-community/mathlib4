@@ -20,7 +20,7 @@ variable (R : Type*) {B : Type*} (F : Type*) (E : B → Type*)
   [TopologicalSpace (TotalSpace F E)]
   [NormedAddGroup F] [IsAddCommutative F] [NormedSpace R F]
   [(x : B) → TopologicalSpace (E x)] [FiberBundle F E]
-  [(x : B) → AddCommGroup (E x)] [(x : B) → Module R (E x)] [VectorBundle R F E]
+  [(x : B) → AddGroup (E x)] [(x : B) → IsAddCommutative (E x)] [(x : B) → Module R (E x)] [VectorBundle R F E]
 
 include E F
 

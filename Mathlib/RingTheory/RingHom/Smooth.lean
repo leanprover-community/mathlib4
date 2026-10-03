@@ -34,7 +34,7 @@ def FormallySmooth (f : R →+* S) : Prop :=
 
 /-- Helper lemma for the `algebraize` tactic -/
 lemma FormallySmooth.toAlgebra {f : R →+* S} (hf : FormallySmooth f) :
-    @Algebra.FormallySmooth R S _ _ f.toAlgebra := hf
+    @Algebra.FormallySmooth R S _ _ _ _ f.toAlgebra := hf
 
 lemma formallySmooth_algebraMap [Algebra R S] :
     (algebraMap R S).FormallySmooth ↔ Algebra.FormallySmooth R S := by
@@ -52,10 +52,10 @@ lemma FormallySmooth.of_bijective {f : R →+* S} (hf : Function.Bijective f) :
   exact Algebra.FormallySmooth.of_equiv (AlgEquiv.ofBijective (Algebra.ofId R S) hf)
 
 lemma FormallySmooth.holdsForLocalizationAway : HoldsForLocalizationAway @FormallySmooth :=
-  fun _ _ _ _ _ r _ ↦ formallySmooth_algebraMap.mpr <| .of_isLocalization (.powers r)
+  fun _ _ _ _ _ _ _ r _ ↦ formallySmooth_algebraMap.mpr <| .of_isLocalization (.powers r)
 
 lemma FormallySmooth.stableUnderComposition : StableUnderComposition @FormallySmooth :=
-  fun _ _ _ _ _ _ _ _ hf hg ↦ hf.comp hg
+  fun _ _ _ _ _ _ _ _ _ _ _ hf hg ↦ hf.comp hg
 
 lemma FormallySmooth.respectsIso : RespectsIso @FormallySmooth :=
   stableUnderComposition.respectsIso fun e ↦ holdsForLocalizationAway.of_bijective _ _ e.bijective
@@ -77,7 +77,7 @@ def Smooth (f : R →+* S) : Prop :=
 
 /-- Helper lemma for the `algebraize` tactic -/
 lemma Smooth.toAlgebra {f : R →+* S} (hf : Smooth f) :
-    @Algebra.Smooth R _ S _ f.toAlgebra := hf
+    @Algebra.Smooth R _ _ S _ _ f.toAlgebra := hf
 
 lemma smooth_algebraMap [Algebra R S] :
     (algebraMap R S).Smooth ↔ Algebra.Smooth R S := by
@@ -105,7 +105,7 @@ lemma comp {f : R →+* S} {g : S →+* T} (hf : f.Smooth) (hg : g.Smooth) : (g.
   exact Algebra.Smooth.comp R S T
 
 lemma stableUnderComposition : StableUnderComposition Smooth :=
-  fun _ _ _ _ _ _ _ _ ↦ RingHom.Smooth.comp
+  fun _ _ _ _ _ _ _ _ _ _ _ ↦ RingHom.Smooth.comp
 
 lemma isStableUnderBaseChange : IsStableUnderBaseChange Smooth := by
   convert!

@@ -399,7 +399,8 @@ def Sign.expr : Sign M → Q($M) → Q($M)
 
 /-- Given an expression `y : Q($M)` with specified sign (either + or -), construct a proof that
 the product with `c` of (± `y`) (here taking the specified sign) is ± `c * y`. -/
-def Sign.mulRight (iM : Q(CommGroupWithZero $M)) (c y : Q($M)) (g : Sign M) :
+def Sign.mulRight (iM : Q(GroupWithZero $M)) (iC : Q(IsMulCommutative $M))
+    (c y : Q($M)) (g : Sign M) :
     MetaM Q($(g.expr q($c * $y)) = $c * $(g.expr y)) := do
   match (dependent := true) g with
   | .plus => pure q(rfl)
@@ -410,7 +411,8 @@ def Sign.mulRight (iM : Q(CommGroupWithZero $M)) (c y : Q($M)) (g : Sign M) :
 /-- Given expressions `y₁ y₂ : Q($M)` with specified signs (either + or -), construct a proof that
 the product of (± `y₁`) and (± `y₂`) (here taking the specified signs) is ± `y₁ * y₂`; return this
 proof and the computed sign. -/
-def Sign.mul (iM : Q(CommGroupWithZero $M)) (y₁ y₂ : Q($M)) (g₁ g₂ : Sign M) :
+def Sign.mul (iM : Q(GroupWithZero $M)) (iC : Q(IsMulCommutative $M))
+    (y₁ y₂ : Q($M)) (g₁ g₂ : Sign M) :
     MetaM (Σ (G : Sign M), Q($(g₁.expr y₁) * $(g₂.expr y₂) = $(G.expr q($y₁ * $y₂)))) := do
   match (dependent := true) g₁, g₂ with
   | .plus, .plus => pure ⟨.plus, q(rfl)⟩
@@ -426,7 +428,8 @@ def Sign.mul (iM : Q(CommGroupWithZero $M)) (y₁ y₂ : Q($M)) (g₁ g₂ : Sig
 
 /-- Given an expression `y : Q($M)` with specified sign (either + or -), construct a proof that
 the inverse of (± `y`) (here taking the specified sign) is ± `y⁻¹`. -/
-def Sign.inv (iM : Q(CommGroupWithZero $M)) (y : Q($M)) (g : Sign M) :
+def Sign.inv (iM : Q(GroupWithZero $M)) (iC : Q(IsMulCommutative $M))
+    (y : Q($M)) (g : Sign M) :
     MetaM (Q($(g.expr y)⁻¹ = $(g.expr q($y⁻¹)))) := do
   match (dependent := true) g with
   | .plus => pure q(rfl)
@@ -437,7 +440,8 @@ def Sign.inv (iM : Q(CommGroupWithZero $M)) (y : Q($M)) (g : Sign M) :
 /-- Given expressions `y₁ y₂ : Q($M)` with specified signs (either + or -), construct a proof that
 the quotient of (± `y₁`) and (± `y₂`) (here taking the specified signs) is ± `y₁ / y₂`; return this
 proof and the computed sign. -/
-def Sign.div (iM : Q(CommGroupWithZero $M)) (y₁ y₂ : Q($M)) (g₁ g₂ : Sign M) :
+def Sign.div (iM : Q(GroupWithZero $M)) (iC : Q(IsMulCommutative $M))
+    (y₁ y₂ : Q($M)) (g₁ g₂ : Sign M) :
     MetaM (Σ (G : Sign M), Q($(g₁.expr y₁) / $(g₂.expr y₂) = $(G.expr q($y₁ / $y₂)))) := do
   match (dependent := true) g₁, g₂ with
   | .plus, .plus => pure ⟨.plus, q(rfl)⟩
@@ -464,7 +468,8 @@ def Sign.neg (iM : Q(Field $M)) (y : Q($M)) (g : Sign M) :
 /-- Given an expression `y : Q($M)` with specified sign (either + or -), construct a proof that
 the exponentiation to power `s : ℕ` of (± `y`) (here taking the specified signs) is ± `y ^ s`;
 return this proof and the computed sign. -/
-def Sign.pow (iM : Q(CommGroupWithZero $M)) (y : Q($M)) (g : Sign M) (s : ℕ) :
+def Sign.pow (iM : Q(GroupWithZero $M)) (iC : Q(IsMulCommutative $M))
+    (y : Q($M)) (g : Sign M) (s : ℕ) :
     MetaM (Σ (G : Sign M), Q($(g.expr y) ^ $s = $(G.expr q($y ^ $s)))) := do
   match (dependent := true) g with
   | .plus => pure ⟨.plus, q(rfl)⟩
@@ -480,7 +485,8 @@ def Sign.pow (iM : Q(CommGroupWithZero $M)) (y : Q($M)) (g : Sign M) (s : ℕ) :
 /-- Given an expression `y : Q($M)` with specified sign (either + or -), construct a proof that
 the exponentiation to power `s : ℤ` of (± `y`) (here taking the specified signs) is ± `y ^ s`;
 return this proof and the computed sign. -/
-def Sign.zpow (iM : Q(CommGroupWithZero $M)) (y : Q($M)) (g : Sign M) (s : ℤ) :
+def Sign.zpow (iM : Q(GroupWithZero $M)) (iC : Q(IsMulCommutative $M))
+    (y : Q($M)) (g : Sign M) (s : ℤ) :
     MetaM (Σ (G : Sign M), Q($(g.expr y) ^ $s = $(G.expr q($y ^ $s)))) := do
   match (dependent := true) g with
   | .plus => pure ⟨.plus, q(rfl)⟩
@@ -501,11 +507,12 @@ def Sign.congr {y y' : Q($M)} (g : Sign M) (pf : Q($y = $y')) : Q($(g.expr y)= $
   | .minus _ => q(congr_arg Neg.neg $pf)
 
 /-- If `a` = ± `b`, `b = C * d`, and `d = e`, construct a proof that `a` = `C` * ± `e`. -/
-def Sign.mkEqMul (iM : Q(CommGroupWithZero $M)) {a b C d e : Q($M)} {g : Sign M}
+def Sign.mkEqMul (iM : Q(GroupWithZero $M)) (iC : Q(IsMulCommutative $M))
+    {a b C d e : Q($M)} {g : Sign M}
       (pf₁ : Q($a = $(g.expr b))) (pf₂ : Q($b = $C * $d))
       (pf₃ : Q($d = $e)) : MetaM Q($a = $C * $(g.expr e)) := do
     let pf₂' : Q($(g.expr b) = $(g.expr q($C * $d))) := g.congr pf₂
-    let pf' ← Sign.mulRight iM C d g
+    let pf' ← Sign.mulRight iM iC C d g
     pure q(eq_mul_of_eq_eq_eq_mul $pf₁ $pf₂' $pf' $(g.congr pf₃))
 
 end Sign

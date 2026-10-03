@@ -45,7 +45,7 @@ This instance is dangerous as it doesn't round trip from a ring to a monoid obje
 to a ring, since the `npow` field is lost in the middle. Therefore, it is scoped. -/
 @[instance_reducible]
 def MonObj.toRing (A : ModuleCat.{u} R) [MonObj A] : Ring A :=
-  { (inferInstance : AddCommGroup A) with
+  { (inferInstance : AddGroup A), (inferInstance : IsAddCommutative A) with
     one := η[A] (1 : R)
     mul := fun x y => μ[A] (x ⊗ₜ y)
     one_mul := fun x => by
@@ -205,14 +205,14 @@ def monModuleEquivalenceAlgebra : Mon (ModuleCat.{u} R) ≌ AlgCat R where
               map_zero' := rfl
               map_add' := fun _ _ => rfl
               map_one' := (algebraMap R A).map_one
-              map_mul' := fun x y => @LinearMap.mul'_apply R _ _ _ _ _ _ x y
+              map_mul' := fun x y => @LinearMap.mul'_apply R _ _ _ _ _ _ _ x y
               commutes' := fun _ => rfl }
           inv := AlgCat.ofHom
             { toFun := _root_.id
               map_zero' := rfl
               map_add' := fun _ _ => rfl
               map_one' := (algebraMap R A).map_one.symm
-              map_mul' := fun x y => (@LinearMap.mul'_apply R _ _ _ _ _ _ x y).symm
+              map_mul' := fun x y => (@LinearMap.mul'_apply R _ _ _ _ _ _ _ x y).symm
               commutes' := fun _ => rfl } })
 
 /-- The equivalence `Mon (ModuleCat R) ≌ AlgCat R`

@@ -20,7 +20,7 @@ import Mathlib.Data.Nat.Cast.Order.Basic
 @[expose] public section
 
 deriving instance
-  AddMonoidWithOne, CommSemiring, LinearOrderedAddCommMonoidWithTop,
+  AddMonoidWithOne, Semiring, IsMulCommutative, LinearOrderedAddCommMonoidWithTop,
   OrderedSub, CanonicallyOrderedAdd, IsOrderedRing,
   CharZero, NoZeroDivisors
   for ENat

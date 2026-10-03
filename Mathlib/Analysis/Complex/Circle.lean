@@ -58,7 +58,9 @@ variable {x y : Circle}
 
 instance instCoeOut : CoeOut Circle ℂ := subtypeCoe
 
-instance instCommGroup : CommGroup Circle := inferInstanceAs <| CommGroup (sphere _ _)
+instance instGroup : Group Circle := inferInstanceAs <| Group (sphere _ _)
+instance instCommGroup : IsMulCommutative Circle :=
+  inferInstanceAs <| IsMulCommutative (sphere _ _)
 instance : HasDistribNeg Circle := inferInstanceAs <| HasDistribNeg (sphere _ _)
 instance : ContinuousNeg Circle := inferInstanceAs <| ContinuousNeg (sphere _ _)
 instance instMetricSpace : MetricSpace Circle := inferInstanceAs <| MetricSpace (sphere _ _)
@@ -200,7 +202,8 @@ instance instContinuousSMul [TopologicalSpace α] [MulAction ℂ α] [Continuous
 
 section Norm
 
-variable {E : Type*} [SeminormedAddGroup E] [IsAddCommutative E] [NormedSpace ℂ E] (u : Circle) (v : E)
+variable {E : Type*} [SeminormedAddGroup E] [IsAddCommutative E] [NormedSpace ℂ E]
+  (u : Circle) (v : E)
 
 @[simp] protected lemma norm_smul : ‖u • v‖ = ‖v‖ := by simp [smul_def, norm_smul]
 @[simp] protected lemma nnnorm_smul : ‖u • v‖₊ = ‖v‖₊ := NNReal.coe_injective (u.norm_smul v)

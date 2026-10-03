@@ -20,7 +20,7 @@ See `RingCon.Quotient` for quotients of (possibly non-commutative) semirings.
 ## Main definitions
 
 - `Ideal.instHasQuotient`: the quotient of a commutative ring `R` by an ideal `I : Ideal R`
-- `Ideal.Quotient.commRing`: the ring structure of the ideal quotient
+- `Ideal.Quotient.ring`: the ring structure of the ideal quotient
 - `Ideal.Quotient.mk`: map an element of `R` to the quotient `R ⧸ I`
 - `Ideal.Quotient.lift`: turn a map `R → S` into a map `R ⧸ I → S`
 - `Ideal.quotEquivOfEq`: quotienting by equal ideals gives isomorphic rings
@@ -65,17 +65,23 @@ protected def ringCon (I : Ideal R) [I.IsTwoSided] : RingCon R where
 instance ring (I : Ideal R) [I.IsTwoSided] : Ring (R ⧸ I) :=
   inferInstanceAs <| Ring (Quotient.ringCon I).Quotient
 
-instance semiring {R} [Ring R] [IsMulCommutative R] (I : Ideal R) : Semiring (R ⧸ I) := (ring I).toSemiring
-instance commSemiring {R} [Ring R] [IsMulCommutative R] (I : Ideal R) : CommSemiring (R ⧸ I) where
-  mul_comm := by rintro ⟨a⟩ ⟨b⟩; exact congr_arg _ (mul_comm a b)
+instance semiring {R} [Ring R] [IsMulCommutative R] (I : Ideal R) : Semiring (R ⧸ I) :=
+  (ring I).toSemiring
+instance isMulCommutative {R} [Ring R] [IsMulCommutative R] (I : Ideal R) :
+    IsMulCommutative (R ⧸ I) :=
+  ⟨⟨by rintro ⟨a⟩ ⟨b⟩; exact congr_arg _ (mul_comm a b)⟩⟩
 
 instance {R} [Ring R] [IsMulCommutative R] (I : Ideal R) : Ring (R ⧸ I) := ring I
-instance commRing {R} [Ring R] [IsMulCommutative R] (I : Ideal R) : CommRing (R ⧸ I) where
 
 variable [I.IsTwoSided]
 
--- Sanity test to make sure no diamonds have emerged in `commRing`
-example : (ring I).toAddCommGroup = Submodule.Quotient.addCommGroup I := by
+-- Sanity test to make sure no diamonds have emerged in `ring`
+-- (`Ring.toAddGroup` is not an instance, as `AddGroup` is reached through `AddGroupWithOne`.)
+example : (ring I).toAddGroupWithOne.toAddGroup = Submodule.Quotient.addGroup I := by
+  with_reducible_and_instances rfl
+
+example : (ring I).toNonAssocRing.toNonUnitalNonAssocRing.toAddGroup =
+    Submodule.Quotient.addGroup I := by
   with_reducible_and_instances rfl
 
 variable (I) in

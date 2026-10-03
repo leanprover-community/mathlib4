@@ -19,25 +19,29 @@ public section
 
 open scoped nonZeroDivisors
 
-variable {R M M₁ : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M]
+variable {R M M₁ : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M]
+  [Module R M]
   [AddMonoid M₁] [IsAddCommutative M₁] [Module R M₁]
 
 section maximal
 
 variable
   (Rₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
-  [∀ (P : Ideal R) [P.IsMaximal], CommSemiring (Rₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], Semiring (Rₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsMulCommutative (Rₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], Algebra R (Rₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], IsLocalization.AtPrime (Rₚ P) P]
   (Mₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
-  [∀ (P : Ideal R) [P.IsMaximal], AddCommMonoid (Mₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], AddMonoid (Mₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsAddCommutative (Mₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], Module R (Mₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], Module (Rₚ P) (Mₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], IsScalarTower R (Rₚ P) (Mₚ P)]
   (f : ∀ (P : Ideal R) [P.IsMaximal], M →ₗ[R] Mₚ P)
   [∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule P.primeCompl (f P)]
   (M₁ₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
-  [∀ (P : Ideal R) [P.IsMaximal], AddCommMonoid (M₁ₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], AddMonoid (M₁ₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsAddCommutative (M₁ₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], Module R (M₁ₚ P)]
   (f₁ : ∀ (P : Ideal R) [P.IsMaximal], M₁ →ₗ[R] M₁ₚ P)
   [∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule P.primeCompl (f₁ P)]

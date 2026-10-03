@@ -401,8 +401,8 @@ instance toMonoid {M : Type*} [Monoid M] {A : Type*} [SetLike A M]
 /-- A submonoid of a `CommMonoid` is a `CommMonoid`. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddCommMonoid` is an `AddCommMonoid`. -/]
 instance toCommMonoid {M} [Monoid M] [IsMulCommutative M] {A : Type*} [SetLike A M]
-    [SubmonoidClass A M] (S : A) : CommMonoid S := fast_instance%
-  Subtype.coe_injective.commMonoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
+    [SubmonoidClass A M] (S : A) : IsMulCommutative S :=
+  Subtype.coe_injective.isMulCommutative Subtype.val fun _ _ => rfl
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/
 @[to_additive /-- The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`. -/]
@@ -481,7 +481,7 @@ instance toMonoid {M : Type*} [Monoid M] (S : Submonoid M) : Monoid S :=
 
 /-- A submonoid of a `CommMonoid` is a `CommMonoid`. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddCommMonoid` is an `AddCommMonoid`. -/]
-instance toCommMonoid {M} [Monoid M] [IsMulCommutative M] (S : Submonoid M) : CommMonoid S :=
+instance toCommMonoid {M} [Monoid M] [IsMulCommutative M] (S : Submonoid M) : IsMulCommutative S :=
   SubmonoidClass.toCommMonoid S
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/

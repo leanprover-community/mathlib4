@@ -186,7 +186,7 @@ theorem summable_nat_add (f : ℕ → ℝ≥0) (hf : Summable f) (k : ℕ) : Sum
 nonrec theorem summable_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) :
     (Summable fun i => f (i + k)) ↔ Summable f := by
   rw [← summable_coe, ← summable_coe]
-  exact @summable_nat_add_iff ℝ _ _ _ (fun i => (f i : ℝ)) k
+  exact summable_nat_add_iff (f := fun i => (f i : ℝ)) k
 
 nonrec theorem hasSum_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) {a : ℝ≥0} :
     HasSum (fun n => f (n + k)) a ↔ HasSum f (a + ∑ i ∈ range k, f i) := by

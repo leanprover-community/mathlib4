@@ -208,7 +208,9 @@ lemma toContinuousLinearMap_nsmul (f : E₁ →P[R] E₂) (n : ℕ) :
 
 instance : IsSMulApply ℕ (E₁ →P[R] E₂) E₁ E₂ where
 
-instance : AddCommMonoid (E₁ →P[R] E₂) := fast_instance% FunLike.addCommMonoid
+instance : AddMonoid (E₁ →P[R] E₂) := fast_instance% FunLike.addMonoid
+
+instance : IsAddCommutative (E₁ →P[R] E₂) := FunLike.addCommMonoid
 
 end General
 

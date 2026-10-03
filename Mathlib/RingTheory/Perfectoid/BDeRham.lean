@@ -74,7 +74,7 @@ definition is the zero ring.
 -/
 def BDeRhamPlus : Type u :=
   AdicCompletion (RingHom.ker (fontaineThetaInvertP R p)) (Localization.Away (p : 𝕎 R♭))
-deriving CommRing
+deriving Ring, IsMulCommutative
 
 /--
 The de Rham period ring $\mathbb{B}_{dR}$ for general perfectoid ring.

@@ -355,20 +355,21 @@ attribute [local instance] monadLiftOptionMetaM in
 
 If your finset is not supported, you can add it to the match in `Finset.proveEmptyOrCons`.
 -/
-@[norm_num @Finset.prod _ _ _ _ _]
+@[norm_num @Finset.prod _ _ _ _ _ _]
 partial def evalFinsetProd : NormNumExt where eval {u β} e := do
-  let .app (.app (.app (.app (.app (.const ``Finset.prod [v, _]) α) β') _) s) f ←
+  let .app (.app (.app (.app (.app (.app (.const ``Finset.prod [v, _]) α) β') _) _) s) f ←
     whnfR e | failure
   guard <| ← withNewMCtxDepth <| isDefEq β β'
   have α : Q(Type v) := α
   have s : Q(Finset $α) := s
   have f : Q($α → $β) := f
-  let instCS : Q(CommSemiring $β) ← synthInstanceQ q(CommSemiring $β) <|>
+  let instS : Q(Semiring $β) ← synthInstanceQ q(Semiring $β) <|>
     throwError "not a commutative semiring: {β}"
-  let instS : Q(Semiring $β) := q(CommSemiring.toSemiring)
+  let instC : Q(IsMulCommutative $β) ← synthInstanceQ q(IsMulCommutative $β) <|>
+    throwError "not a commutative semiring: {β}"
   -- Have to construct this expression manually, `q(1)` doesn't parse correctly:
   let n : Q(ℕ) := .lit (.natVal 1)
-  let pf : Q(IsNat (Finset.prod ∅ $f) $n) := q(@Finset.prod_empty $β $α $instCS $f)
+  let pf : Q(IsNat (Finset.prod ∅ $f) $n) := q(@Finset.prod_empty $β $α $instS $instC $f)
   let res_empty := Result.isNat _ n pf
 
   evalFinsetBigop q(Finset.prod) f res_empty (fun {a s' h} res_fa res_prod_s' ↦ do
@@ -384,17 +385,19 @@ attribute [local instance] monadLiftOptionMetaM in
 
 If your finset is not supported, you can add it to the match in `Finset.proveEmptyOrCons`.
 -/
-@[norm_num @Finset.sum _ _ _ _ _]
+@[norm_num @Finset.sum _ _ _ _ _ _]
 partial def evalFinsetSum : NormNumExt where eval {u β} e := do
-  let .app (.app (.app (.app (.app (.const ``Finset.sum [v, _]) α) β') _) s) f ←
+  let .app (.app (.app (.app (.app (.app (.const ``Finset.sum [v, _]) α) β') _) _) s) f ←
     whnfR e | failure
   guard <| ← withNewMCtxDepth <| isDefEq β β'
   have α : Q(Type v) := α
   have s : Q(Finset $α) := s
   have f : Q($α → $β) := f
-  let instCS : Q(CommSemiring $β) ← synthInstanceQ q(CommSemiring $β) <|>
+  let instS : Q(Semiring $β) ← synthInstanceQ q(Semiring $β) <|>
     throwError "not a commutative semiring: {β}"
-  let pf : Q(IsNat (Finset.sum ∅ $f) (nat_lit 0)) := q(@Finset.sum_empty $β $α $instCS $f)
+  let instC : Q(IsMulCommutative $β) ← synthInstanceQ q(IsMulCommutative $β) <|>
+    throwError "not a commutative semiring: {β}"
+  let pf : Q(IsNat (Finset.sum ∅ $f) (nat_lit 0)) := q(@Finset.sum_empty $β $α $instS $instC $f)
   let res_empty := Result.isNat _ _ q($pf)
 
   evalFinsetBigop q(Finset.sum) f res_empty (fun {a s' h} res_fa res_sum_s' ↦ do

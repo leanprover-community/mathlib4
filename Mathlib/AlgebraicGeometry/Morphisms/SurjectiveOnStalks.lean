@@ -90,7 +90,7 @@ instance stableUnderBaseChange :
   apply HasRingHomProperty.isStableUnderBaseChange
   apply RingHom.IsStableUnderBaseChange.mk
   · exact (HasRingHomProperty.isLocal_ringHomProperty @SurjectiveOnStalks).respectsIso
-  intro R S T _ _ _ _ _ H
+  intro R S T _ _ _ _ _ _ _ _ H
   exact H.baseChange
 
 variable {f} in

@@ -217,21 +217,21 @@ variable [IsScalarTower R₀ R M] [AddMonoid N] [IsAddCommutative N] [Module R�
 /-- A variant of `Projective.iff_split` allowing for a more flexible selection of the universe
   for the free module `M`. -/
 theorem Projective.iff_split' [Small.{w} R] [Small.{w} P] : Module.Projective R P ↔
-    ∃ (M : Type w) (_ : AddCommMonoid M) (_ : Module R M) (_ : Module.Free R M)
+    ∃ (M : Type w) (_ : AddMonoid M) (_ : IsAddCommutative M) (_ : Module R M) (_ : Module.Free R M)
       (i : P →ₗ[R] M) (s : M →ₗ[R] P), s.comp i = LinearMap.id := by
   let e : (Shrink.{w, v} P →₀ Shrink.{w, u} R) ≃ₗ[R] P →₀ R :=
     Finsupp.mapDomain.linearEquiv _ R (equivShrink P).symm ≪≫ₗ
       Finsupp.mapRange.linearEquiv (Shrink.linearEquiv R R)
-  refine ⟨fun ⟨i, hi⟩ ↦ ⟨(Shrink.{w} P) →₀ (Shrink.{w} R), _, _, Free.of_basis ⟨e⟩,
+  refine ⟨fun ⟨i, hi⟩ ↦ ⟨(Shrink.{w} P) →₀ (Shrink.{w} R), _, _, _, Free.of_basis ⟨e⟩,
     e.symm.toLinearMap ∘ₗ i, (linearCombination R id) ∘ₗ e.toLinearMap, ?_⟩,
-      fun ⟨_, _, _, _, i, s, H⟩ ↦ Projective.of_split i s H⟩
+      fun ⟨_, _, _, _, _, i, s, H⟩ ↦ Projective.of_split i s H⟩
   apply LinearMap.ext
   simp only [coe_comp, LinearEquiv.coe_coe, Function.comp_apply, e.apply_symm_apply]
   exact hi
 
 /-- A module is projective iff it is the direct summand of a free module. -/
 theorem Projective.iff_split : Module.Projective R P ↔
-    ∃ (M : Type max u v) (_ : AddCommMonoid M) (_ : Module R M) (_ : Module.Free R M)
+    ∃ (M : Type max u v) (_ : AddMonoid M) (_ : IsAddCommutative M) (_ : Module R M) (_ : Module.Free R M)
       (i : P →ₗ[R] M) (s : M →ₗ[R] P), s.comp i = LinearMap.id :=
   Projective.iff_split'.{max u v}
 
@@ -289,7 +289,8 @@ end OfLiftingProperty
 section DirectSum
 
 variable {R : Type u} [Semiring R]
-variable {ι : Type v} {M : ι → Type w} [(i : ι) → AddCommMonoid (M i)] [(i : ι) → Module R (M i)]
+variable {ι : Type v} {M : ι → Type w} [(i : ι) → AddMonoid (M i)] [(i : ι) → IsAddCommutative (M i)]
+  [(i : ι) → Module R (M i)]
 
 theorem Projective.directSum_iff : Projective R (⨁ i, M i) ↔ ∀ (i : ι), Projective R (M i) := by
   classical

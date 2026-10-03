@@ -94,8 +94,11 @@ are in `R_v` for all but finitely many `v`.
 def FiniteAdeleRing : Type _ :=
   Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K]
 
-instance : CommRing (FiniteAdeleRing R K) := inferInstanceAs <|
-  CommRing <| Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K]
+instance : Ring (FiniteAdeleRing R K) := inferInstanceAs <|
+  Ring <| Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K]
+
+instance : IsMulCommutative (FiniteAdeleRing R K) := inferInstanceAs <|
+  IsMulCommutative <| Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K]
 
 instance : TopologicalSpace (FiniteAdeleRing R K) := inferInstanceAs <|
   TopologicalSpace <| Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K]

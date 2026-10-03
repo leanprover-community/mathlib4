@@ -68,7 +68,7 @@ instance map (f : F[X]) [IsSplittingField F L f] : IsSplittingField K L (f.map <
     Subalgebra.restrictScalars_injective F <| by
       rw [rootSet, aroots, map_map, ← IsScalarTower.algebraMap_eq, Subalgebra.restrictScalars_top,
         eq_top_iff, ← adjoin_rootSet L f, Algebra.adjoin_le_iff]
-      exact fun x hx => @Algebra.subset_adjoin K _ _ _ _ _ _ hx⟩
+      exact fun x hx => Algebra.subset_adjoin (R := K) hx⟩
 
 theorem splits_iff (f : K[X]) [IsSplittingField K L f] :
     Splits f ↔ (⊤ : Subalgebra K L) = ⊥ where
@@ -125,7 +125,7 @@ def lift [Algebra K F] (f : K[X]) [IsSplittingField K L f]
 
 theorem finiteDimensional (f : K[X]) [IsSplittingField K L f] : FiniteDimensional K L := by
   classical
-  exact ⟨@Algebra.top_toSubmodule K L _ _ _ ▸
+  exact ⟨Algebra.top_toSubmodule (R := K) (A := L) ▸
     adjoin_rootSet L f ▸ fg_adjoin_of_finite (Finset.finite_toSet _) fun y hy ↦
       if hf : f = 0 then by rw [hf, rootSet_zero] at hy; cases hy
       else IsAlgebraic.isIntegral ⟨f, hf, (mem_rootSet'.mp hy).2⟩⟩

@@ -631,8 +631,8 @@ theorem oreDiv_mul_oreDiv_comm {r₁ r₂ : R} {s₁ s₂ : S} :
   rw [oreDiv_mul_char r₁ r₂ s₁ s₂ r₁ s₂ (by simp [mul_comm]), mul_comm s₂]
 
 @[to_additive]
-instance : CommMonoid R[S⁻¹] where
-  mul_comm := fun x y => by
+instance : IsMulCommutative R[S⁻¹] where
+  is_comm.comm := fun x y => by
     cases x with | _ r₁ s₁
     cases y with | _ r₂ s₂
     rw [oreDiv_mul_oreDiv_comm, oreDiv_mul_oreDiv_comm, mul_comm r₁, mul_comm s₁]

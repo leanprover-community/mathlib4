@@ -41,6 +41,7 @@ structure IsField (R : Type u) [Semiring R] : Prop where
 /-- Transferring from `Semifield` to `IsField`. -/
 theorem Semifield.toIsField (R : Type u) [Semifield R] : IsField R where
   __ := ‹Semifield R›
+  mul_comm := mul_comm
   mul_inv_cancel {a} ha := ⟨a⁻¹, mul_inv_cancel₀ ha⟩
 
 /-- Transferring from `Field` to `IsField`. -/
@@ -82,6 +83,7 @@ noncomputable def IsField.toSemifield {R : Type u} [Semiring R] (h : IsField R) 
     exact dite_eq_right ha
   nnqsmul := _
   nnqsmul_def _ _ := rfl
+  toIsMulCommutative := ⟨⟨h.mul_comm⟩⟩
 
 /-- Transferring from `IsField` to `Field`. -/
 @[instance_reducible]

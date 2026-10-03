@@ -182,14 +182,11 @@ section UniformAddCommGroup
 
 variable [UniformSpace α] [AddGroup α] [IsAddCommutative α] [IsUniformAddGroup α]
 
-instance instAddCommGroup : AddCommGroup (Completion α) :=
-  { (inferInstance : AddGroup <| Completion α) with
-    add_comm a b :=
+instance instIsAddCommutative : IsAddCommutative (Completion α) :=
+  ⟨⟨fun a b ↦
       Completion.induction_on₂ a b
         (isClosed_eq (by fun_prop) (by fun_prop))
-        fun x y ↦ by
-        change (x : Completion α) + ↑y = ↑y + ↑x
-        rw [← coe_add, ← coe_add, add_comm] }
+        fun x y ↦ by rw [← coe_add, ← coe_add, add_comm]⟩⟩
 
 instance instModule [Semiring R] [Module R α] [UniformContinuousConstSMul R α] :
     Module R (Completion α) :=

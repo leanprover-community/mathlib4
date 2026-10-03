@@ -224,8 +224,8 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
   refine ⟨q, r, (mem_finsetApprox bS adm).mpr ?_, ?_⟩
   · exact ⟨k, j, j_ne_k.symm, rfl⟩
   have : r • a - b • q = ∑ x : ι, (rs k x • bS x - rs j x • bS x) := by
-    simp only [q, r_eq, sub_smul, μ_mul_a_eq, Finset.smul_sum, ← Finset.sum_add_distrib,
-      ← Finset.sum_sub_distrib, smul_sub]
+    simp only [q, r_eq, sub_smul (R := R) (M := S), μ_mul_a_eq, Finset.smul_sum,
+      ← Finset.sum_add_distrib, ← Finset.sum_sub_distrib, smul_sub]
     refine Finset.sum_congr rfl fun x _ => ?_
     ring
   rw [this, Algebra.norm_algebraMap_of_basis bS, abv.map_pow]
@@ -297,7 +297,7 @@ theorem exists_mk0_eq_mk0 [IsDedekindDomain S] [Algebra.IsAlgebraic R S] (I : (I
   intro r' hr' a ha
   rw [Ideal.mem_span_singleton] at hr' ⊢
   obtain ⟨q, r, r_mem, lt⟩ := exists_mem_finset_approx' bS adm a b_ne_zero
-  apply @dvd_of_mul_left_dvd _ _ q
+  apply dvd_of_mul_left_dvd (a := q)
   simp only [Algebra.smul_def] at lt
   rw [←
     sub_eq_zero.mp (b_min _ (I.1.sub_mem (I.1.mul_mem_left _ ha) (I.1.mul_mem_left _ b_mem)) lt)]

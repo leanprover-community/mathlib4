@@ -40,6 +40,9 @@ discriminant of the power basis given by `ζ - 1`. -/
 theorem discr_zeta_eq_discr_zeta_sub_one (hζ : IsPrimitiveRoot ζ n) :
     discr ℚ (hζ.powerBasis ℚ).basis = discr ℚ (hζ.subOnePowerBasis ℚ).basis := by
   have : NumberField K := @NumberField.mk _ _ _ (IsCyclotomicExtension.finiteDimensional {n} ℚ K)
+  -- TC cannot find `IsScalarTower ℤ ℚ K` here: trying `NormedSpace.toModule` for the `Module ℚ K`
+  -- argument of `AddCommGroup.intIsScalarTower` throws inside the search and aborts it.
+  have : IsScalarTower ℤ ℚ K := AddCommGroup.intIsScalarTower (M := K)
   have H₁ : (aeval (hζ.powerBasis ℚ).gen) (X - 1 : ℤ[X]) = (hζ.subOnePowerBasis ℚ).gen := by simp
   have H₂ : (aeval (hζ.subOnePowerBasis ℚ).gen) (X + 1 : ℤ[X]) = (hζ.powerBasis ℚ).gen := by simp
   refine discr_eq_discr_of_toMatrix_coeff_isIntegral _ (fun i j => toMatrix_isIntegral H₁ ?_ ?_ _ _)

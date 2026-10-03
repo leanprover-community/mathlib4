@@ -251,8 +251,8 @@ theorem HasFiniteFPowerSeriesOnBall.bound_zero_of_eq_zero (hf : ∀ y ∈ Metric
     exact le_top
   · intro y hy
     rw [hf (x + y)]
-    · convert! hasSum_zero
-      rw [hp, zero_apply]
+    · simp only [hp, zero_apply]
+      exact hasSum_zero
     · rwa [Metric.mem_eball, edist_eq_enorm_sub, add_comm, add_sub_cancel_right,
         ← edist_zero_right, ← Metric.mem_eball]
 

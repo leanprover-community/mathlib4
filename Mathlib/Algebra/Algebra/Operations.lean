@@ -99,8 +99,7 @@ theorem one_eq_span_one_set : (1 : Submodule R A) = span R 1 :=
 theorem one_le {P : Submodule R A} : (1 : Submodule R A) ≤ P ↔ (1 : A) ∈ P := by
   simp [one_eq_span]
 
-instance : AddCommMonoidWithOne (Submodule R A) where
-  add_comm := sup_comm
+instance : AddMonoidWithOne (Submodule R A) where
 
 variable {M : Type*} [AddMonoid M] [IsAddCommutative M] [Module R M] [Module A M] [IsScalarTower R A M]
 
@@ -802,8 +801,8 @@ protected theorem mul_comm : M * N = N * M :=
     (mul_le.2 fun _r hrn _s hsm => mul_mem_mul_rev hsm hrn)
 
 /-- Sub-R-modules of an R-algebra A form a semiring. -/
-instance : IdemCommSemiring (Submodule R A) :=
-  { Submodule.idemSemiring with mul_comm := Submodule.mul_comm }
+instance : IsMulCommutative (Submodule R A) :=
+  ⟨⟨Submodule.mul_comm⟩⟩
 
 theorem prod_span {ι : Type*} (s : Finset ι) (M : ι → Set A) :
     (∏ i ∈ s, Submodule.span R (M i)) = Submodule.span R (∏ i ∈ s, M i) := by

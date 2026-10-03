@@ -240,11 +240,12 @@ because `compareHyp` can't look for assumptions behind binders.
 meta def evalFinsetProd : PositivityExt where eval {u α} zα pα? e :=
   match pα? with | none => pure .none | some pα => do
   match e with
-  | ~q(@Finset.prod $ι _ $instα $s $f) =>
+  | ~q(@Finset.prod $ι _ $instα $instαcomm $s $f) =>
     let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
     have body : Q($α) := Expr.betaRev f #[i]
     let rbody ← core zα pα body
-    let _instαmon ← synthInstanceQ q(CommMonoidWithZero $α)
+    let _instαmon ← synthInstanceQ q(MonoidWithZero $α)
+    let _instαcomm' ← synthInstanceQ q(IsMulCommutative $α)
     -- Try to show that the product is positive
     let p_pos : Option Q(0 < $e) ← do
       let .positive pbody := rbody | pure none -- Fail if the body is not provably positive

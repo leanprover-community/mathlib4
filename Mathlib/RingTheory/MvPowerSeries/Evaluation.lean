@@ -110,7 +110,7 @@ def hasEvalIdeal : Ideal (σ → S) where
   smul_mem' := HasEval.mul_left
 
 theorem mem_hasEvalIdeal_iff {a : σ → S} :
-    a ∈ hasEvalIdeal ↔ HasEval a := by
+    a ∈ hasEvalIdeal (σ := σ) (S := S) ↔ HasEval a := by
   simp [hasEvalIdeal]
 
 theorem HasEval.pow (x : σ → S) (ha : HasEval x) {p : ℕ} (hp : 0 < p) :

@@ -31,7 +31,7 @@ structure TopCommRingCat where
   of ::
   /-- carrier of a topological commutative ring. -/
   α : Type u
-  [isCommRing : Ring α] [IsMulCommutative α]
+  [isCommRing : Ring α] [isComm : IsMulCommutative α]
   [isTopologicalSpace : TopologicalSpace α]
   [isTopologicalRing : IsTopologicalRing α]
 
@@ -54,7 +54,7 @@ instance : Inhabited TopCommRingCat :=
 instance : CoeSort TopCommRingCat (Type u) :=
   ⟨TopCommRingCat.α⟩
 
-attribute [instance] isCommRing isTopologicalSpace isTopologicalRing
+attribute [instance] isCommRing isComm isTopologicalSpace isTopologicalRing
 
 instance : Category TopCommRingCat.{u} where
   Hom R S := { f : R →+* S // Continuous f }
@@ -76,7 +76,8 @@ instance : ConcreteCategory TopCommRingCat.{u} fun R S => { f : R →+* S // Con
   hom f := f
   ofHom f := f
 
-theorem coe_of (X : Type u) [Ring X] [IsMulCommutative X] [TopologicalSpace X] [IsTopologicalRing X] :
+theorem coe_of (X : Type u) [Ring X] [IsMulCommutative X] [TopologicalSpace X]
+    [IsTopologicalRing X] :
     (of X : Type u) = X := rfl
 
 instance hasForgetToCommRingCat : HasForget₂ TopCommRingCat CommRingCat :=
@@ -92,8 +93,12 @@ instance hasForgetToTopCat : HasForget₂ TopCommRingCat TopCat :=
   HasForget₂.mk' (fun R => ↧R) (fun _ => rfl) (fun f => TopCat.ofHom ⟨⇑f.1, f.2⟩) HEq.rfl
 
 instance forgetToTopCatCommRing (R : TopCommRingCat) :
-    CommRing ((forget₂ TopCommRingCat TopCat).obj R) :=
+    Ring ((forget₂ TopCommRingCat TopCat).obj R) :=
   R.isCommRing
+
+instance forgetToTopCatIsMulCommutative (R : TopCommRingCat) :
+    IsMulCommutative ((forget₂ TopCommRingCat TopCat).obj R) :=
+  R.isComm
 
 instance forgetToTopCatTopologicalRing (R : TopCommRingCat) :
     IsTopologicalRing ((forget₂ TopCommRingCat TopCat).obj R) :=

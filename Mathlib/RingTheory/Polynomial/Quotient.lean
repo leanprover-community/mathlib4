@@ -29,7 +29,7 @@ isomorphism of $R$-algebras $R[X] / \langle X - x \rangle \cong R$. -/
 def quotientSpanXSubCAlgEquiv (x : R) :
     (R[X] ⧸ Ideal.span ({X - C x} : Set R[X])) ≃ₐ[R] R :=
   let e := RingHom.quotientKerEquivOfRightInverse (fun x => by
-    exact eval_C : Function.RightInverse (fun a : R => (C a : R[X])) (@aeval R R _ _ _ x))
+    exact eval_C : Function.RightInverse (fun a : R => (C a : R[X])) (@aeval R R _ _ _ _ x))
   (Ideal.quotientEquivAlgOfEq R (ker_evalRingHom x).symm).trans
     { e with commutes' := fun r => e.apply_symm_apply r }
 
@@ -57,7 +57,7 @@ def quotientSpanCXSubCAlgEquiv (x y : R) :
 /-- For a commutative ring $R$, evaluating a polynomial at elements $y(X) \in R[X]$ and $x \in R$
 induces an isomorphism of $R$-algebras $R[X, Y] / \langle X - x, Y - y(X) \rangle \cong R$. -/
 def quotientSpanCXSubCXSubCAlgEquiv {x : R} {y : R[X]} :
-    @AlgEquiv R (R[X][X] ⧸ (Ideal.span {C (X - C x), X - C y} : Ideal <| R[X][X])) R _ _ _
+    @AlgEquiv R (R[X][X] ⧸ (Ideal.span {C (X - C x), X - C y} : Ideal <| R[X][X])) R _ _ _ _
       (Ideal.Quotient.algebra R) _ :=
 ((quotientSpanCXSubCAlgEquiv (X - C x) y).restrictScalars R).trans <| quotientSpanXSubCAlgEquiv x
 

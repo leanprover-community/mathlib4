@@ -69,9 +69,11 @@ lemma isCollinear_subset (s t : Set (ℙ K V)) (hst : s ⊆ t) (h : IsCollinear 
 lemma isCollinear_singleton' (a : ℙ K V) : IsCollinear {a} := by
   induction a using ind with | h v hv =>
   refine ⟨(Submodule.span K {v}).projectivization, ?_, ?_, ?_⟩
-  · rw [Subspace.submodule.apply_symm_apply]
+  · change Module.Finite K (Subspace.submodule (Submodule.span K {v}).projectivization)
+    rw [Subspace.submodule.apply_symm_apply]
     exact Module.Finite.span_of_finite _ (Set.toFinite _)
-  · rw [Subspace.submodule.apply_symm_apply, finrank_span_singleton hv]
+  · change Module.finrank K (Subspace.submodule (Submodule.span K {v}).projectivization) ≤ 2
+    rw [Subspace.submodule.apply_symm_apply, finrank_span_singleton hv]
     omega
   · simp [Submodule.mem_span_of_mem]
 
@@ -85,9 +87,11 @@ lemma isCollinear_pair (a b : ℙ K V) : IsCollinear {a, b} := by
   induction b using Projectivization.ind with | h w hw =>
   rw [← ne_eq, ← independent_pair_iff_ne, independent_mk_iff_LinearIndependent] at h
   refine ⟨(Submodule.span K {v, w}).projectivization, ?_, ?_, fun s hs ↦ hs.casesOn ?_ ?_⟩
-  · rw [Subspace.submodule.apply_symm_apply]
+  · change Module.Finite K (Subspace.submodule (Submodule.span K {v, w}).projectivization)
+    rw [Subspace.submodule.apply_symm_apply]
     exact Module.Finite.span_of_finite _ (Set.toFinite _)
-  · rw [Subspace.submodule.apply_symm_apply, ← Matrix.range_cons_cons_empty v w ![]]
+  · change Module.finrank K (Subspace.submodule (Submodule.span K {v, w}).projectivization) ≤ 2
+    rw [Subspace.submodule.apply_symm_apply, ← Matrix.range_cons_cons_empty v w ![]]
     simp [finrank_span_eq_card h]
   all_goals rintro rfl; simp [Submodule.mem_span_of_mem]
 

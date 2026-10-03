@@ -222,8 +222,13 @@ namespace NonemptyInterval
 
 @[to_additive]
 instance commMonoid [Monoid α] [IsMulCommutative α] [Preorder α] [IsOrderedMonoid α] :
-    CommMonoid (NonemptyInterval α) :=
-  fast_instance% NonemptyInterval.toProd_injective.commMonoid _ toProd_one toProd_mul toProd_pow
+    Monoid (NonemptyInterval α) :=
+  fast_instance% NonemptyInterval.toProd_injective.monoid _ toProd_one toProd_mul toProd_pow
+
+@[to_additive]
+instance isMulCommutative [Preorder α] [Mul α] [IsMulCommutative α] [MulLeftMono α]
+    [MulRightMono α] : IsMulCommutative (NonemptyInterval α) :=
+  NonemptyInterval.toProd_injective.isMulCommutative _ toProd_mul
 
 end NonemptyInterval
 
@@ -240,9 +245,13 @@ instance Interval.mulOneClass [Monoid α] [IsMulCommutative α] [Preorder α] [I
 
 @[to_additive]
 instance Interval.commMonoid [Monoid α] [IsMulCommutative α] [Preorder α] [IsOrderedMonoid α] :
-    CommMonoid (Interval α) where
-  mul_comm := fun _ _ => Option.map₂_comm mul_comm
+    Monoid (Interval α) where
   mul_assoc := fun _ _ _ => Option.map₂_assoc mul_assoc
+
+@[to_additive]
+instance Interval.isMulCommutative [Preorder α] [Mul α] [IsMulCommutative α] [MulLeftMono α]
+    [MulRightMono α] : IsMulCommutative (Interval α) :=
+  ⟨⟨fun _ _ => Option.map₂_comm mul_comm⟩⟩
 
 namespace NonemptyInterval
 
@@ -297,8 +306,8 @@ end NatCast
 namespace NonemptyInterval
 
 instance [Semiring α] [IsMulCommutative α] [PartialOrder α] [CanonicallyOrderedAdd α] :
-    CommSemiring (NonemptyInterval α) :=
-  fast_instance% NonemptyInterval.toProd_injective.commSemiring _
+    Semiring (NonemptyInterval α) :=
+  fast_instance% NonemptyInterval.toProd_injective.semiring _
     toProd_zero toProd_one toProd_add toProd_mul (swap toProd_nsmul) toProd_pow (fun _ => rfl)
 
 end NonemptyInterval
@@ -486,7 +495,7 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pur
 
 instance subtractionCommMonoid {α : Type u}
     [AddGroup α] [IsAddCommutative α] [PartialOrder α] [IsOrderedAddMonoid α] :
-    SubtractionCommMonoid (NonemptyInterval α) where
+    SubtractionMonoid (NonemptyInterval α) where
   sub_eq_add_neg := fun s t => by
     refine NonemptyInterval.ext (Prod.ext ?_ ?_) <;>
     exact sub_eq_add_neg _ _
@@ -501,7 +510,7 @@ instance subtractionCommMonoid {α : Type u}
   zsmul := zsmulRec
 
 @[to_additive existing NonemptyInterval.subtractionCommMonoid]
-instance divisionCommMonoid : DivisionCommMonoid (NonemptyInterval α) where
+instance divisionCommMonoid : DivisionMonoid (NonemptyInterval α) where
   div_eq_mul_inv := fun s t => by
     refine NonemptyInterval.ext (Prod.ext ?_ ?_) <;>
     exact div_eq_mul_inv _ _
@@ -531,7 +540,7 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pur
 
 instance subtractionCommMonoid {α : Type u}
     [AddGroup α] [IsAddCommutative α] [PartialOrder α] [IsOrderedAddMonoid α] :
-    SubtractionCommMonoid (Interval α) where
+    SubtractionMonoid (Interval α) where
   sub_eq_add_neg := by
     rintro (_ | s) (_ | t) <;> first | rfl | congrm WithBot.some $(sub_eq_add_neg ..)
   neg_neg := by rintro (_ | s) <;> first | rfl | congrm WithBot.some $(neg_neg _)
@@ -546,7 +555,7 @@ instance subtractionCommMonoid {α : Type u}
   zsmul := zsmulRec
 
 @[to_additive existing Interval.subtractionCommMonoid]
-instance divisionCommMonoid : DivisionCommMonoid (Interval α) where
+instance divisionCommMonoid : DivisionMonoid (Interval α) where
   div_eq_mul_inv := by
     rintro (_ | s) (_ | t) <;> first | rfl | congrm WithBot.some $(div_eq_mul_inv ..)
   inv_inv := by rintro (_ | s) <;> first | rfl | congrm WithBot.some $(inv_inv _)
@@ -649,7 +658,7 @@ theorem length_sub_le : (s - t).length ≤ s.length + t.length := by
 
 theorem length_sum_le (f : ι → Interval α) (s : Finset ι) :
     (∑ i ∈ s, f i).length ≤ ∑ i ∈ s, (f i).length :=
-  Finset.le_sum_of_subadditive _ length_zero.le length_add_le _ _
+  Finset.le_sum_of_subadditive length length_zero.le length_add_le _ _
 
 end Interval
 
@@ -665,6 +674,7 @@ meta def evalNonemptyIntervalLength : PositivityExt where
     match pα? with | none => pure .none | some _ => do
     let ~q(@NonemptyInterval.length _ $ig $ipo $a) := e |
       throwError "not NonemptyInterval.length"
+    let _i ← synthInstanceQ q(IsAddCommutative $α)
     let _i ← synthInstanceQ q(IsOrderedAddMonoid $α)
     assertInstancesCommute
     return .nonnegative q(NonemptyInterval.length_nonneg $a)
@@ -675,6 +685,7 @@ meta def evalIntervalLength : PositivityExt where
   eval {u α} _ pα? e :=
     match pα? with | none => pure .none | some _ => do
     let ~q(@Interval.length _ $ig $ipo $a) := e | throwError "not Interval.length"
+    let _i ← synthInstanceQ q(IsAddCommutative $α)
     let _i ← synthInstanceQ q(IsOrderedAddMonoid $α)
     assumeInstancesCommute
     return .nonnegative q(Interval.length_nonneg $a)

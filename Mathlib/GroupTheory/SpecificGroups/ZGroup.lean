@@ -128,8 +128,8 @@ instance [Finite G] [IsZGroup G] [hG : Group.IsNilpotent G] : IsCyclic G := by
   have (p : { x // x ∈ (Nat.card G).primeFactors }) : Fact p.1.Prime :=
     ⟨Nat.prime_of_mem_primeFactors p.2⟩
   obtain ⟨ϕ⟩ := ((Group.isNilpotent_of_finite_tfae (G := G)).out 1 5).mp hG
-  let _ : CommGroup G :=
-    ⟨fun g h ↦ by rw [← ϕ.symm.injective.eq_iff, map_mul, mul_comm, ← map_mul]⟩
+  have : IsMulCommutative G :=
+    ⟨⟨fun g h ↦ by rw [← ϕ.symm.injective.eq_iff, map_mul, mul_comm, ← map_mul]⟩⟩
   exact IsCyclic.of_exponent_eq_card (exponent_eq_card G)
 
 /-- A finite Z-group has cyclic abelianization. -/
@@ -160,13 +160,13 @@ theorem isCyclic_commutator [Finite G] [IsZGroup G] : IsCyclic (commutator G) :=
       exact isCyclic_of_surjective f f.surjective
     suffices h : commutator (commutator H) ≤ Subgroup.center (commutator H) by
       rw [← Abelianization.ker_of (commutator H)] at h
-      let _ := commGroupOfCyclicCenterQuotient Abelianization.of h
+      have := Abelianization.of.isMulCommutative_of_isCyclic_of_ker_le_center h
       infer_instance
     suffices h : (commutator (commutator H)).map (commutator H).subtype ≤
         Subgroup.centralizer (commutator H) by
       simpa [IsConcreteLE.le_iff, Subgroup.mem_center_iff, Subgroup.mem_centralizer_iff] using h
     rw [Subgroup.map_subtype_commutator, Subgroup.le_centralizer_iff]
-    let _ := (hH.mulAutMulEquiv _).toMonoidHom.commGroupOfInjective (hH.mulAutMulEquiv _).injective
+    have := (hH.mulAutMulEquiv _).toMonoidHom.commGroupOfInjective (hH.mulAutMulEquiv _).injective
     have h := Abelianization.commutator_subset_ker ⁅commutator H, commutator H⁆.normalizerMonoidHom
     rwa [Subgroup.normalizerMonoidHom_ker, Subgroup.normalizer_eq_top,
       ← Subgroup.map_subtype_le_map_subtype, Subgroup.map_subtype_commutator,

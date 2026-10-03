@@ -62,7 +62,7 @@ Also see
 `equivAwayQuotient         : P.Ring ≃ R[X][1/g]/f`
 `equivMvPolynomialQuotient : P.Ring ≃ R[X, Y]/⟨f, Yg-1⟩` -/
 protected def StandardEtalePair.Ring := R[X][Y] ⧸ Ideal.span {C P.f, Y * C P.g - 1}
-  deriving CommRing, Algebra R
+  deriving Ring, IsMulCommutative, Algebra R
 
 namespace StandardEtalePair
 
@@ -177,7 +177,7 @@ lemma existsUnique_hasMap_of_hasMap_quotient_of_sq_eq_bot
 
 -- This works even if `f` is not monic. Generalize if we care.
 instance : Algebra.FormallyEtale R P.Ring := by
-  refine Algebra.FormallyEtale.iff_comp_bijective.mpr fun S _ _ I hI ↦ ?_
+  refine Algebra.FormallyEtale.iff_comp_bijective.mpr fun S _ _ _ I hI ↦ ?_
   rw [← P.homEquiv.symm.bijective.of_comp_iff, ← P.homEquiv.bijective.of_comp_iff']
   suffices ∀ x, P.HasMap (Ideal.Quotient.mk I x) → ∃! a : { x : S // P.HasMap x }, a - x ∈ I by
     simpa [Function.bijective_iff_existsUnique, Ideal.Quotient.mk_surjective.forall,

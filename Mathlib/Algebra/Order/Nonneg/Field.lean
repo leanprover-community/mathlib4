@@ -118,7 +118,6 @@ variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {x y : α}
 
 instance semifield : Semifield { x : α // 0 ≤ x } := fast_instance% {
   __ := divisionSemiring
-  mul_comm := mul_comm
 }
 
 end LinearOrderedSemifield

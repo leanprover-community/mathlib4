@@ -105,9 +105,8 @@ theorem sub_eq_add : a - b = a + b := by rw [sub_eq_add_neg, add_right_inj, neg_
 theorem mul_one_add_self : a * (1 + a) = 0 := by rw [mul_add, mul_one, mul_self, add_self]
 
 -- Note [lower instance priority]
-instance (priority := 100) toCommRing : CommRing α :=
-  { (inferInstance : BooleanRing α) with
-    mul_comm := fun a b => by rw [← add_eq_zero', mul_add_mul] }
+instance (priority := 100) isMulCommutative : IsMulCommutative α :=
+  ⟨⟨fun a b => by rw [← add_eq_zero', mul_add_mul]⟩⟩
 
 end BooleanRing
 
@@ -390,7 +389,7 @@ following data:
 * `0` unfolds to `⊥`
 -/
 abbrev GeneralizedBooleanAlgebra.toNonUnitalCommRing [GeneralizedBooleanAlgebra α] :
-    NonUnitalCommRing α where
+    NonUnitalRing α where
   add := (· ∆ ·)
   add_assoc := symmDiff_assoc
   zero := ⊥
@@ -400,17 +399,26 @@ abbrev GeneralizedBooleanAlgebra.toNonUnitalCommRing [GeneralizedBooleanAlgebra 
   mul_zero := inf_bot_eq
   neg := id
   neg_add_cancel := symmDiff_self
-  add_comm := symmDiff_comm
+  is_comm := ⟨symmDiff_comm⟩
   mul := (· ⊓ ·)
   mul_assoc := inf_assoc
-  mul_comm := inf_comm
   left_distrib := inf_symmDiff_distrib_left
   right_distrib := inf_symmDiff_distrib_right
   nsmul := letI : Zero α := ⟨⊥⟩; letI : Add α := ⟨(· ∆ ·)⟩; nsmulRec
   zsmul := letI : Zero α := ⟨⊥⟩; letI : Add α := ⟨(· ∆ ·)⟩; letI : Neg α := ⟨id⟩; zsmulRec
 
-instance [GeneralizedBooleanAlgebra α] : NonUnitalCommRing (AsBoolRing α) :=
+/-- The multiplication `a * b = a ⊓ b` of `GeneralizedBooleanAlgebra.toNonUnitalCommRing` is
+commutative. -/
+theorem GeneralizedBooleanAlgebra.isMulCommutative [GeneralizedBooleanAlgebra α] :
+    @IsMulCommutative α (GeneralizedBooleanAlgebra.toNonUnitalCommRing (α := α)).toMul :=
+  letI := GeneralizedBooleanAlgebra.toNonUnitalCommRing (α := α)
+  ⟨⟨inf_comm⟩⟩
+
+instance [GeneralizedBooleanAlgebra α] : NonUnitalRing (AsBoolRing α) :=
   @GeneralizedBooleanAlgebra.toNonUnitalCommRing α _
+
+instance [GeneralizedBooleanAlgebra α] : IsMulCommutative (AsBoolRing α) :=
+  @GeneralizedBooleanAlgebra.isMulCommutative α _
 
 variable [BooleanAlgebra α] [BooleanAlgebra β] [BooleanAlgebra γ]
 
@@ -431,7 +439,8 @@ abbrev BooleanAlgebra.toBooleanRing : BooleanRing α where
   isIdempotentElem := inf_idem
 
 scoped[BooleanRingOfBooleanAlgebra]
-  attribute [instance] GeneralizedBooleanAlgebra.toNonUnitalCommRing BooleanAlgebra.toBooleanRing
+  attribute [instance] GeneralizedBooleanAlgebra.toNonUnitalCommRing
+    GeneralizedBooleanAlgebra.isMulCommutative BooleanAlgebra.toBooleanRing
 
 instance : BooleanRing (AsBoolRing α) :=
   fast_instance% @BooleanAlgebra.toBooleanRing α _
@@ -553,7 +562,7 @@ instance : BooleanRing Bool where
   zero_add := Bool.false_xor
   add_zero := Bool.xor_false
   neg_add_cancel := Bool.xor_self
-  add_comm := xor_comm
+  is_comm := ⟨xor_comm⟩
   mul_assoc := and_assoc
   one_mul := Bool.true_and
   mul_one := Bool.and_true

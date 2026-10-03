@@ -76,8 +76,8 @@ variable [SeminormedAddGroup α] [IsAddCommutative α] [SeminormedAddGroup β] [
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible]
-protected def seminormedAddCommGroup : SeminormedAddCommGroup (Matrix m n α) :=
-  fast_instance% Pi.seminormedAddCommGroup
+protected def seminormedAddCommGroup : SeminormedAddGroup (Matrix m n α) :=
+  fast_instance% Pi.seminormedAddGroup
 
 attribute [local instance] Matrix.seminormedAddCommGroup
 
@@ -179,8 +179,8 @@ end SeminormedAddCommGroup
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible]
-protected def normedAddCommGroup [NormedAddGroup α] [IsAddCommutative α] : NormedAddCommGroup (Matrix m n α) :=
-  fast_instance% Pi.normedAddCommGroup
+protected def normedAddCommGroup [NormedAddGroup α] [IsAddCommutative α] : NormedAddGroup (Matrix m n α) :=
+  fast_instance% Pi.normedAddGroup
 
 section NormedSpace
 
@@ -236,18 +236,18 @@ declared as an instance because there are several natural choices for defining t
 matrix. -/
 @[instance_reducible, local instance]
 protected def linftyOpSeminormedAddCommGroup [SeminormedAddGroup α] [IsAddCommutative α] :
-    SeminormedAddCommGroup (Matrix m n α) :=
+    SeminormedAddGroup (Matrix m n α) :=
   fast_instance%
-  @Pi.seminormedAddCommGroup m _ _ (fun _ ↦ PiLp.seminormedAddCommGroupToPi 1 (fun _ : n ↦ α))
+  @Pi.seminormedAddGroup m _ _ (fun _ ↦ PiLp.seminormedAddCommGroupToPi 1 (fun _ : n ↦ α))
 
 /-- Normed group instance (using sup norm of L1 norm) for matrices over a normed ring.  Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible, local instance]
 protected def linftyOpNormedAddCommGroup [NormedAddGroup α] [IsAddCommutative α] :
-    NormedAddCommGroup (Matrix m n α) :=
+    NormedAddGroup (Matrix m n α) :=
   fast_instance%
-  @Pi.normedAddCommGroup m _ _ (fun _ ↦ PiLp.normedAddCommGroupToPi 1 (fun _ : n ↦ α))
+  @Pi.normedAddGroup m _ _ (fun _ ↦ PiLp.normedAddCommGroupToPi 1 (fun _ : n ↦ α))
 
 /-- This applies to the sup norm of L1 norm. -/
 @[local instance]
@@ -509,16 +509,16 @@ declared as an instance because there are several natural choices for defining t
 matrix. -/
 @[instance_reducible, local instance]
 def frobeniusSeminormedAddCommGroup [SeminormedAddGroup α] [IsAddCommutative α] :
-    SeminormedAddCommGroup (Matrix m n α) :=
+    SeminormedAddGroup (Matrix m n α) :=
   fast_instance%
-  @PiLp.seminormedAddCommGroupToPi 2 _ _ _ _ (fun _ ↦ PiLp.seminormedAddCommGroupToPi 2 _)
+  @PiLp.seminormedAddCommGroupToPi 2 _ _ _ _ (fun _ ↦ PiLp.seminormedAddCommGroupToPi 2 _) _
 
 /-- Normed group instance (using the Frobenius norm) for matrices over a normed group.  Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible, local instance]
-def frobeniusNormedAddCommGroup [NormedAddGroup α] [IsAddCommutative α] : NormedAddCommGroup (Matrix m n α) :=
-  fast_instance% @PiLp.normedAddCommGroupToPi 2 _ _ _ _ (fun _ ↦ PiLp.normedAddCommGroupToPi 2 _)
+def frobeniusNormedAddCommGroup [NormedAddGroup α] [IsAddCommutative α] : NormedAddGroup (Matrix m n α) :=
+  fast_instance% @PiLp.normedAddCommGroupToPi 2 _ _ _ _ (fun _ ↦ PiLp.normedAddCommGroupToPi 2 _) _
 
 /-- This applies to the Frobenius norm. -/
 @[local instance]

@@ -168,11 +168,8 @@ section
 variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 variable {β : Type*} [Ring β] [IsMulCommutative β] {abv : β → α} [IsAbsoluteValue abv]
 
-instance Cauchy.commRing : CommRing (Cauchy abv) := fast_instance%
-  Function.Surjective.commRing mk Quotient.mk'_surjective rfl rfl
-    (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
-    (fun _ _ => (mk_sub _ _).symm) (fun _ _ => (mk_smul _ _).symm) (fun _ _ => (mk_smul _ _).symm)
-    (fun _ _ => (mk_pow _ _).symm) (fun _ => rfl) fun _ => rfl
+instance Cauchy.commRing : IsMulCommutative (Cauchy abv) :=
+  Quotient.mk'_surjective.isMulCommutative_of_map_mul mk fun _ _ => (mk_mul _ _).symm
 
 end
 
@@ -268,7 +265,7 @@ variable {β : Type*} [Field β] {abv : β → α} [IsAbsoluteValue abv]
 
 /-- The Cauchy completion forms a field. -/
 noncomputable instance Cauchy.field : Field (Cauchy abv) :=
-  { Cauchy.divisionRing, Cauchy.commRing with }
+  { Cauchy.divisionRing, Cauchy.commRing (abv := abv) with }
 
 end
 

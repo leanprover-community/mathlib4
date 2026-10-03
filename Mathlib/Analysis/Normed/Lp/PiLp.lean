@@ -681,7 +681,7 @@ lemma isometry_ofLp_infty [∀ i, PseudoEMetricSpace (β i)] :
 /-- seminormed group instance on the product of finitely many normed groups, using the `L^p`
 norm. -/
 instance seminormedAddCommGroup [∀ i, SeminormedAddGroup (β i)] [∀ i, IsAddCommutative (β i)] :
-    SeminormedAddCommGroup (PiLp p β) where
+    SeminormedAddGroup (PiLp p β) where
   dist_eq := fun x y => by
     rcases p.dichotomy with (rfl | h)
     · simp only [dist_eq_iSup, norm_eq_ciSup, dist_eq_norm, add_apply, neg_apply, norm_neg_add]
@@ -717,7 +717,8 @@ theorem norm_apply_le [∀ i, SeminormedAddGroup (β i)] [∀ i, IsAddCommutativ
 end
 
 /-- normed group instance on the product of finitely many normed groups, using the `L^p` norm. -/
-instance normedAddCommGroup [∀ i, NormedAddGroup (α i)] [∀ i, IsAddCommutative (α i)] : NormedAddCommGroup (PiLp p α) :=
+instance normedAddCommGroup [∀ i, NormedAddGroup (α i)] [∀ i, IsAddCommutative (α i)] :
+    NormedAddGroup (PiLp p α) :=
   { PiLp.seminormedAddCommGroup p α with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
@@ -1246,17 +1247,17 @@ lemma dist_pseudoMetricSpaceToPi [∀ i, PseudoMetricSpace (α i)] (x y : Π i, 
 being defeq to the product ones. It is useful to endow a type synonym of `Π i, α i` with the
 Lp norm. -/
 abbrev seminormedAddCommGroupToPi [∀ i, SeminormedAddGroup (α i)] [∀ i, IsAddCommutative (α i)] :
-    SeminormedAddCommGroup (Π i, α i) where
+    SeminormedAddGroup (Π i, α i) where
   norm x := ‖toLp p x‖
   toPseudoMetricSpace := pseudoMetricSpaceToPi p α
   dist_eq x y := by
-    rw [dist_pseudoMetricSpaceToPi, SeminormedAddCommGroup.dist_eq, toLp_add, toLp_neg]
+    rw [dist_pseudoMetricSpaceToPi, SeminormedAddGroup.dist_eq, toLp_add, toLp_neg]
 
 lemma norm_seminormedAddCommGroupToPi [∀ i, SeminormedAddGroup (α i)] [∀ i, IsAddCommutative (α i)] (x : Π i, α i) :
     @Norm.norm _ (seminormedAddCommGroupToPi p α).toNorm x = ‖toLp p x‖ := rfl
 
 lemma nnnorm_seminormedAddCommGroupToPi [∀ i, SeminormedAddGroup (α i)] [∀ i, IsAddCommutative (α i)] (x : Π i, α i) :
-    @NNNorm.nnnorm _ (seminormedAddCommGroupToPi p α).toSeminormedAddGroup.toNNNorm x =
+    @NNNorm.nnnorm _ (seminormedAddCommGroupToPi p α).toNNNorm x =
     ‖toLp p x‖₊ := rfl
 
 lemma isBoundedSMulSeminormedAddCommGroupToPi
@@ -1293,11 +1294,11 @@ abbrev normedSpaceSeminormedAddCommGroupToPi
 being defeq to the product ones. It is useful to endow a type synonym of `Π i, α i` with the
 Lp norm. -/
 abbrev normedAddCommGroupToPi [∀ i, NormedAddGroup (α i)] [∀ i, IsAddCommutative (α i)] :
-    NormedAddCommGroup (Π i, α i) where
+    NormedAddGroup (Π i, α i) where
   norm x := ‖toLp p x‖
   toPseudoMetricSpace := pseudoMetricSpaceToPi p α
   dist_eq x y := by
-    rw [dist_pseudoMetricSpaceToPi, SeminormedAddCommGroup.dist_eq, toLp_add, toLp_neg]
+    rw [dist_pseudoMetricSpaceToPi, SeminormedAddGroup.dist_eq, toLp_add, toLp_neg]
   eq_of_dist_eq_zero {x y} h := by
     rw [dist_pseudoMetricSpaceToPi] at h
     apply eq_of_dist_eq_zero at h

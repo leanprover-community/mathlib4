@@ -112,18 +112,14 @@ instance (priority := 75) toRing {R} [Ring R] [SetLike S R] [SubringClass S R] :
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a `NonAssocCommRing` is a `NonAssocCommRing`. -/
 instance (priority := 75) toNonAssocCommRing {R} [NonAssocRing R] [IsMulCommutative R] [SetLike S R]
-    [SubringClass S R] : NonAssocCommRing s := fast_instance%
-  Subtype.coe_injective.nonAssocCommRing Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    fun _ => rfl
+    [SubringClass S R] : IsMulCommutative s :=
+  Subtype.coe_injective.isMulCommutative Subtype.val fun _ _ => rfl
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a `CommRing` is a `CommRing`. -/
 instance (priority := 75) toCommRing {R} [Ring R] [IsMulCommutative R] [SetLike S R] [SubringClass S R] :
-    CommRing s := fast_instance%
-  Subtype.coe_injective.commRing Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) fun _ => rfl
+    IsMulCommutative s :=
+  Subtype.coe_injective.isMulCommutative Subtype.val fun _ _ => rfl
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a domain is a domain. -/
@@ -359,7 +355,7 @@ theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 :=
 @[simp] lemma mk_eq_zero {x : R} (hx : x ∈ s) : (⟨x, hx⟩ : s) = 0 ↔ x = 0 := Subtype.ext_iff
 
 /-- A subring of a `CommRing` is a `CommRing`. -/
-instance toCommRing {R} [Ring R] [IsMulCommutative R] (s : Subring R) : CommRing s :=
+instance toCommRing {R} [Ring R] [IsMulCommutative R] (s : Subring R) : IsMulCommutative s :=
   SubringClass.toCommRing s
 
 /-- A subring of a non-trivial ring is non-trivial. -/

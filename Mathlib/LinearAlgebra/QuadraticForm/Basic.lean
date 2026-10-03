@@ -262,7 +262,7 @@ variable [Module R M] [Module R N] (Q : QuadraticMap R M N)
 
 @[simp]
 protected theorem map_neg (x : M) : Q (-x) = Q x := by
-  rw [← @neg_one_smul R _ _ _ _ x, Q.map_smul, neg_one_mul, neg_neg, one_smul]
+  rw [← neg_one_smul R x, Q.map_smul, neg_one_mul, neg_neg, one_smul]
 
 protected theorem map_sub (x y : M) : Q (x - y) = Q (y - x) := by rw [← neg_sub, Q.map_neg]
 
@@ -449,7 +449,9 @@ instance : IsAddApply (QuadraticMap R M N) M N where
 
 @[deprecated (since := "2026-07-27")] protected alias add_apply := add_apply
 
-instance : AddCommMonoid (QuadraticMap R M N) := fast_instance% FunLike.addCommMonoid
+instance : AddMonoid (QuadraticMap R M N) := fast_instance% FunLike.addMonoid
+
+instance : IsAddCommutative (QuadraticMap R M N) := FunLike.addCommMonoid
 
 @[deprecated (since := "2026-07-27")] alias coeFnAddMonoidHom := FunLike.coeAddMonoidHom
 
@@ -499,7 +501,9 @@ instance : IsSubApply (QuadraticMap R M N) M N where
 
 @[deprecated (since := "2026-07-27")] protected alias sub_apply := sub_apply
 
-instance : AddCommGroup (QuadraticMap R M N) := fast_instance% FunLike.addCommGroup
+instance : AddGroup (QuadraticMap R M N) := fast_instance% FunLike.addGroup
+
+instance : IsAddCommutative (QuadraticMap R M N) := FunLike.addCommGroup
 
 end RingOperators
 
@@ -626,7 +630,7 @@ def sq : QuadraticMap R A A :=
 
 /-- `proj i j` is the quadratic map sending the vector `x : n → R` to `x i * x j` -/
 def proj (i j : n) : QuadraticMap R (n → A) A :=
-  linMulLin (@LinearMap.proj _ _ _ (fun _ => A) _ _ i) (@LinearMap.proj _ _ _ (fun _ => A) _ _ j)
+  linMulLin (@LinearMap.proj _ _ _ (fun _ => A) _ _ _ i) (@LinearMap.proj _ _ _ (fun _ => A) _ _ _ j)
 
 @[simp]
 theorem proj_apply (i j : n) (x : n → A) : proj (R := R) i j x = x i * x j :=
@@ -1020,7 +1024,7 @@ alias ⟨IsOrtho.symm, _⟩ := isOrtho_comm
 theorem _root_.LinearMap.BilinForm.toQuadraticMap_isOrtho [IsCancelAdd R]
     [NoZeroDivisors R] [CharZero R] {B : BilinMap R M R} {x y : M} (h : B.IsSymm) :
     B.toQuadraticMap.IsOrtho x y ↔ B x y = 0 := by
-  let : AddCancelMonoid R := { ‹IsCancelAdd R›, (inferInstance : AddCommMonoid R) with }
+  let : AddCancelMonoid R := { ‹IsCancelAdd R›, (inferInstance : AddMonoid R) with }
   simp_rw [isOrtho_def, B.toQuadraticMap_apply, map_add,
     LinearMap.add_apply, add_comm _ (B y y), add_add_add_comm _ _ (B y y), add_comm (B y y)]
   rw [add_eq_left (a := B x x + B y y), ← h.eq, RingHom.id_apply, add_self_eq_zero]

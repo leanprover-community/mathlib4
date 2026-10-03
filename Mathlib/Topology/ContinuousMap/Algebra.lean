@@ -247,8 +247,8 @@ instance [Semigroup β] [ContinuousMul β] : Semigroup C(α, β) := fast_instanc
   coe_injective.semigroup _ coe_mul
 
 @[to_additive]
-instance [Semigroup β] [IsMulCommutative β] [ContinuousMul β] : CommSemigroup C(α, β) := fast_instance%
-  coe_injective.commSemigroup _ coe_mul
+instance [Mul β] [IsMulCommutative β] [ContinuousMul β] : IsMulCommutative C(α, β) :=
+  coe_injective.isMulCommutative _ coe_mul
 
 @[to_additive]
 instance [MulOneClass β] [ContinuousMul β] : MulOneClass C(α, β) := fast_instance%
@@ -266,13 +266,6 @@ instance [Monoid β] [ContinuousMul β] : Monoid C(α, β) := fast_instance%
 
 instance [MonoidWithZero β] [ContinuousMul β] : MonoidWithZero C(α, β) := fast_instance%
   coe_injective.monoidWithZero _ coe_zero coe_one coe_mul coe_pow
-
-@[to_additive]
-instance [Monoid β] [IsMulCommutative β] [ContinuousMul β] : CommMonoid C(α, β) := fast_instance%
-  coe_injective.commMonoid _ coe_one coe_mul coe_pow
-
-instance [MonoidWithZero β] [IsMulCommutative β] [ContinuousMul β] : CommMonoidWithZero C(α, β) := fast_instance%
-  coe_injective.commMonoidWithZero _ coe_zero coe_one coe_mul coe_pow
 
 @[to_additive]
 instance [LocallyCompactSpace α] [Mul β] [ContinuousMul β] : ContinuousMul C(α, β) :=
@@ -327,10 +320,12 @@ theorem prod_apply [Monoid β] [IsMulCommutative β] [ContinuousMul β] {ι : Ty
 instance [Group β] [IsTopologicalGroup β] : Group C(α, β) := fast_instance%
   coe_injective.group _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 
-@[to_additive]
-instance instCommGroupContinuousMap [Group β] [IsMulCommutative β] [IsTopologicalGroup β] :
-    CommGroup C(α, β) := fast_instance%
-  coe_injective.commGroup _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
+/-- The commutativity half of the former `CommGroup C(α, β)` instance; the instance itself is
+provided by the general `IsMulCommutative C(α, β)` instance above. -/
+@[to_additive /-- The commutativity half of the former `AddCommGroup C(α, β)` instance; the
+instance itself is provided by the general `IsAddCommutative C(α, β)` instance above. -/]
+theorem instCommGroupContinuousMap [Group β] [IsMulCommutative β] [IsTopologicalGroup β] :
+    IsMulCommutative C(α, β) := inferInstance
 
 @[to_additive]
 instance [Group β] [IsMulCommutative β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) where
@@ -445,24 +440,6 @@ instance instRing {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSp
     [IsTopologicalRing β] : Ring C(α, β) := fast_instance%
   coe_injective.ring _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul coe_pow
     coe_natCast coe_intCast
-
-instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
-    [NonUnitalSemiring β] [IsMulCommutative β] [IsTopologicalSemiring β] : NonUnitalCommSemiring C(α, β) :=
-  fast_instance%
-  coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul coe_nsmul
-
-instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [Semiring β] [IsMulCommutative β]
-    [IsTopologicalSemiring β] : CommSemiring C(α, β) := fast_instance%
-  coe_injective.commSemiring _ coe_zero coe_one coe_add coe_mul coe_nsmul coe_pow coe_natCast
-
-instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NonUnitalRing β] [IsMulCommutative β]
-    [IsTopologicalRing β] : NonUnitalCommRing C(α, β) := fast_instance%
-  coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
-
-instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [Ring β] [IsMulCommutative β]
-    [IsTopologicalRing β] : CommRing C(α, β) := fast_instance%
-  coe_injective.commRing _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
-    coe_pow coe_natCast coe_intCast
 
 instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [LocallyCompactSpace α]
     [NonUnitalSemiring β] [IsTopologicalSemiring β] : IsTopologicalSemiring C(α, β) where

@@ -87,7 +87,10 @@ instance instSubNegMonoid [SubNegMonoid E] : SubNegMonoid C⋆ᵐᵒᵈ(A, E) :=
 instance instSubNegZeroMonoid [SubNegZeroMonoid E] : SubNegZeroMonoid C⋆ᵐᵒᵈ(A, E) :=
   ‹SubNegZeroMonoid E›
 
-instance instAddCommGroup [AddGroup E] [IsAddCommutative E] : AddCommGroup C⋆ᵐᵒᵈ(A, E) := ‹AddCommGroup E›
+instance instAddGroup [AddGroup E] : AddGroup C⋆ᵐᵒᵈ(A, E) := ‹AddGroup E›
+
+instance instAddCommGroup [AddGroup E] [IsAddCommutative E] : IsAddCommutative C⋆ᵐᵒᵈ(A, E) :=
+  ‹IsAddCommutative E›
 
 instance instSMul {R : Type*} [SMul R E] : SMul R C⋆ᵐᵒᵈ(A, E) := ‹SMul R E›
 

@@ -91,7 +91,7 @@ attribute [local instance] monadLiftOptionMetaM in
 @[positivity UniqueFactorizationMonoid.radical _]
 meta def evalRadical : PositivityExt where eval {u α} _ _ e := do
   match e with
-  | ~q(@radical _ $inst $inst' $inst'' $n) =>
+  | ~q(@radical _ $inst $instComm $inst' $inst'' $n) =>
     have _ := ← synthInstanceQ q(Nontrivial $α)
     assertInstancesCommute
     return .nonzero q(radical_ne_zero)

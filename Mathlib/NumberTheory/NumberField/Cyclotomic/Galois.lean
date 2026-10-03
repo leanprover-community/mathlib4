@@ -84,8 +84,11 @@ Gal(ℚ(ζₘ)/ℚ) → (ℤ/mℤ)ˣ
 where the horizontal maps are `galEquivZMod`, the left map is the restriction map and the right map
 is the natural map.
 -/
+-- `IsScalarTower ℚ F K` is supplied explicitly: instance search for it gets stuck (see task-0863).
 theorem galEquivZMod_restrictNormal_apply (h : m ∣ n) (σ : Gal(K/ℚ)) :
+    haveI : IsScalarTower ℚ F K := IsScalarTower.rat (R := F) (M := K)
     galEquivZMod m F (σ.restrictNormal F) = ZMod.unitsMap h (galEquivZMod n K σ) := by
+  have : IsScalarTower ℚ F K := IsScalarTower.rat (R := F) (M := K)
   have hζ := IsCyclotomicExtension.zeta_spec m ℚ F
   let ζ := IsCyclotomicExtension.zeta m ℚ F
   suffices ζ ^ (galEquivZMod m F (σ.restrictNormal F)).val.val = ζ ^ (galEquivZMod n K σ).val.val by

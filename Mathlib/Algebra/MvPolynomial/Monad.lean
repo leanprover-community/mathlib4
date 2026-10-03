@@ -113,7 +113,7 @@ section
 variable (σ R)
 
 @[simp]
-theorem aeval_id_eq_join₁ : aeval id = @join₁ σ R _ :=
+theorem aeval_id_eq_join₁ : aeval id = @join₁ σ R _ _ :=
   rfl
 
 theorem eval₂Hom_C_id_eq_join₁ (φ : MvPolynomial (MvPolynomial σ R) R) :
@@ -121,7 +121,7 @@ theorem eval₂Hom_C_id_eq_join₁ (φ : MvPolynomial (MvPolynomial σ R) R) :
   rfl
 
 @[simp]
-theorem eval₂Hom_id_X_eq_join₂ : eval₂Hom (RingHom.id _) X = @join₂ σ R _ :=
+theorem eval₂Hom_id_X_eq_join₂ : eval₂Hom (RingHom.id _) X = @join₂ σ R _ _ :=
   rfl
 
 end

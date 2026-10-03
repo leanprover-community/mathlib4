@@ -217,17 +217,31 @@ namespace CommGrpCat
 variable (F : J ⥤ CommGrpCat.{u})
 
 @[to_additive]
-instance commGroupObj (j) : CommGroup ((F ⋙ forget CommGrpCat).obj j) :=
-  inferInstanceAs <| CommGroup (F.obj j)
+instance commGroupObj (j) : Group ((F ⋙ forget CommGrpCat).obj j) :=
+  inferInstanceAs <| Group (F.obj j)
+
+@[to_additive]
+instance isMulCommutativeObj (j) : IsMulCommutative ((F ⋙ forget CommGrpCat).obj j) :=
+  inferInstanceAs <| IsMulCommutative (F.obj j)
 
 @[to_additive]
 noncomputable instance limitCommGroup
     [Small.{u} (Functor.sections (F ⋙ forget CommGrpCat))] :
-    CommGroup (Types.Small.limitCone.{v, u} (F ⋙ forget CommGrpCat.{u})).pt :=
-  letI : CommGroup (F ⋙ forget CommGrpCat.{u}).sections :=
-    @Subgroup.toCommGroup (∀ j, F.obj j) _
+    Group (Types.Small.limitCone.{v, u} (F ⋙ forget CommGrpCat.{u})).pt :=
+  letI : Group (F ⋙ forget CommGrpCat.{u}).sections :=
+    (GrpCat.sectionsSubgroup (F ⋙ forget₂ CommGrpCat.{u} GrpCat.{u})).toGroup
+  inferInstanceAs <| Group (Shrink (F ⋙ forget CommGrpCat.{u}).sections)
+
+@[to_additive]
+noncomputable instance limitIsMulCommutative
+    [Small.{u} (Functor.sections (F ⋙ forget CommGrpCat))] :
+    IsMulCommutative (Types.Small.limitCone.{v, u} (F ⋙ forget CommGrpCat.{u})).pt :=
+  letI : Group (F ⋙ forget CommGrpCat.{u}).sections :=
+    (GrpCat.sectionsSubgroup (F ⋙ forget₂ CommGrpCat.{u} GrpCat.{u})).toGroup
+  letI : IsMulCommutative (F ⋙ forget CommGrpCat.{u}).sections :=
+    @Subgroup.toCommGroup (∀ j, F.obj j) _ _
       (GrpCat.sectionsSubgroup (F ⋙ forget₂ CommGrpCat.{u} GrpCat.{u}))
-  inferInstanceAs <| CommGroup (Shrink (F ⋙ forget CommGrpCat.{u}).sections)
+  inferInstanceAs <| IsMulCommutative (Shrink (F ⋙ forget CommGrpCat.{u}).sections)
 
 @[to_additive]
 instance : (forget₂ CommGrpCat.{u} GrpCat.{u}).ReflectsIsomorphisms :=

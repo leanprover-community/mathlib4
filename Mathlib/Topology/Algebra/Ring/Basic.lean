@@ -179,17 +179,6 @@ instance isMulCommutative_topologicalClosure [T2Space R] (s : NonUnitalSubsemiri
     [IsMulCommutative s] : IsMulCommutative s.topologicalClosure :=
   s.toSubsemigroup.isMulCommutative_topologicalClosure
 
-open scoped IsMulCommutative in
-/-- If a non-unital subsemiring of a non-unital topological semiring is commutative, then so is its
-topological closure.
-
-See note [reducible non-instances] -/
-@[deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
-abbrev nonUnitalCommSemiringTopologicalClosure [T2Space R] (s : NonUnitalSubsemiring R)
-    (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommSemiring s.topologicalClosure :=
-  haveI : IsMulCommutative s := ⟨⟨hs⟩⟩
-  inferInstance
-
 end NonUnitalSubsemiring
 
 variable [TopologicalSpace R] [Semiring R]
@@ -245,17 +234,6 @@ topological closure. -/
 instance Subsemiring.isMulCommutative_topologicalClosure [T2Space R] (s : Subsemiring R)
     [IsMulCommutative s] : IsMulCommutative s.topologicalClosure :=
   s.toSubmonoid.isMulCommutative_topologicalClosure
-
-open scoped IsMulCommutative in
-/-- If a subsemiring of a topological semiring is commutative, then so is its
-topological closure.
-
-See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
-abbrev Subsemiring.commSemiringTopologicalClosure [T2Space R] (s : Subsemiring R)
-    (hs : ∀ x y : s, x * y = y * x) : CommSemiring s.topologicalClosure :=
-  haveI : IsMulCommutative s := ⟨⟨hs⟩⟩
-  inferInstance
 
 end
 
@@ -462,17 +440,6 @@ instance isMulCommutative_topologicalClosure [T2Space R] (s : NonUnitalSubring R
     [IsMulCommutative s] : IsMulCommutative s.topologicalClosure :=
   s.toSubsemigroup.isMulCommutative_topologicalClosure
 
-open scoped IsMulCommutative in
-/-- If a non-unital subring of a non-unital topological ring is commutative, then so is its
-topological closure.
-
-See note [reducible non-instances] -/
-@[deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
-abbrev nonUnitalCommRingTopologicalClosure [T2Space R] (s : NonUnitalSubring R)
-    (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommRing s.topologicalClosure :=
-  haveI : IsMulCommutative s := ⟨⟨hs⟩⟩
-  inferInstance
-
 end NonUnitalSubring
 
 variable [Ring R]
@@ -517,16 +484,6 @@ theorem Subring.topologicalClosure_mono {s t : Subring R} (h : s ≤ t) :
 instance Subring.isMulCommutative_topologicalClosure [T2Space R] (s : Subring R)
     [IsMulCommutative s] : IsMulCommutative s.topologicalClosure :=
   s.toSubsemigroup.isMulCommutative_topologicalClosure
-
-open scoped IsMulCommutative in
-/-- If a subring of a topological ring is commutative, then so is its topological closure.
-
-See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
-abbrev Subring.commRingTopologicalClosure [T2Space R] (s : Subring R)
-    (hs : ∀ x y : s, x * y = y * x) : CommRing s.topologicalClosure :=
-  haveI : IsMulCommutative s := ⟨⟨hs⟩⟩
-  inferInstance
 
 end IsTopologicalSemiring
 

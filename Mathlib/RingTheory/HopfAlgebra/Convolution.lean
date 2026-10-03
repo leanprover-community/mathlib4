@@ -159,7 +159,9 @@ instance convGroup : Group (WithConv <| A →ₐ[R] C) where
     ext
     simp
 
-instance [IsCocomm R A] : CommGroup (WithConv <| A →ₐ[R] C) where
+-- The commutative-group structure for `[IsCocomm R A]` is now `convGroup` together with the
+-- `IsMulCommutative (WithConv <| A →ₐ[R] C)` instance from `Mathlib.RingTheory.Bialgebra.Convolution`.
+example [IsCocomm R A] : IsMulCommutative (WithConv <| A →ₐ[R] C) := inferInstance
 
 lemma antipode_id_cancel :
     toConv (HopfAlgebra.antipodeAlgHom R A) * toConv (AlgHom.id R A) = 1 := by

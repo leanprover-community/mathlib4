@@ -143,7 +143,7 @@ open Lean Elab Tactic
 elab "ghost_fun_tac " φ:term ", " fn:term : tactic => do
   evalTactic (← `(tactic| (
   ext n
-  have := congr_fun (congr_arg (@peval R _ _) (wittStructureInt_prop p $φ n)) $fn
+  have := congr_fun (congr_arg (@peval R _ _ _) (wittStructureInt_prop p $φ n)) $fn
   simp only [wittZero, OfNat.ofNat, Zero.zero, wittOne, One.one,
     HAdd.hAdd, Add.add, HSub.hSub, Sub.sub, Neg.neg, HMul.hMul, Mul.mul, HPow.hPow, Pow.pow,
     wittNSMul, wittZSMul, HSMul.hSMul, SMul.smul]
@@ -229,22 +229,37 @@ private def ghostEquiv' [Invertible (p : R)] : 𝕎 R ≃ (ℕ → R) where
 
 variable [Fact p.Prime]
 
-private local instance comm_ring_aux₁ : CommRing (𝕎 (MvPolynomial R ℚ)) :=
-  (ghostEquiv' p (MvPolynomial R ℚ)).injective.commRing ghostFun ghostFun_zero ghostFun_one
+private local instance comm_ring_aux₁ : Ring (𝕎 (MvPolynomial R ℚ)) :=
+  (ghostEquiv' p (MvPolynomial R ℚ)).injective.ring ghostFun ghostFun_zero ghostFun_one
     ghostFun_add ghostFun_mul ghostFun_neg ghostFun_sub ghostFun_nsmul ghostFun_zsmul
     ghostFun_pow ghostFun_natCast ghostFun_intCast
 
+private local instance comm_ring_aux₁_isMulCommutative :
+    IsMulCommutative (𝕎 (MvPolynomial R ℚ)) :=
+  (ghostEquiv' p (MvPolynomial R ℚ)).injective.isMulCommutative ghostFun ghostFun_mul
+
 set_option backward.privateInPublic true in
-private local instance comm_ring_aux₂ : CommRing (𝕎 (MvPolynomial R ℤ)) :=
-  (mapFun.injective _ <| map_injective (Int.castRingHom ℚ) Int.cast_injective).commRing _
+private local instance comm_ring_aux₂ : Ring (𝕎 (MvPolynomial R ℤ)) :=
+  (mapFun.injective _ <| map_injective (Int.castRingHom ℚ) Int.cast_injective).ring _
     (mapFun.zero _) (mapFun.one _) (mapFun.add _) (mapFun.mul _) (mapFun.neg _) (mapFun.sub _)
     (mapFun.nsmul _) (mapFun.zsmul _) (mapFun.pow _) (mapFun.natCast _) (mapFun.intCast _)
 
+set_option backward.privateInPublic true in
+private local instance comm_ring_aux₂_isMulCommutative :
+    IsMulCommutative (𝕎 (MvPolynomial R ℤ)) :=
+  (mapFun.injective _ <| map_injective (Int.castRingHom ℚ) Int.cast_injective).isMulCommutative _
+    (mapFun.mul _)
+
 /-- The commutative ring structure on `𝕎 R`. -/
-instance : CommRing (𝕎 R) :=
-  (mapFun.surjective _ <| counit_surjective _).commRing (mapFun <| MvPolynomial.counit _)
+instance : Ring (𝕎 R) :=
+  (mapFun.surjective _ <| counit_surjective _).ring (mapFun <| MvPolynomial.counit _)
     (mapFun.zero _) (mapFun.one _) (mapFun.add _) (mapFun.mul _) (mapFun.neg _) (mapFun.sub _)
     (mapFun.nsmul _) (mapFun.zsmul _) (mapFun.pow _) (mapFun.natCast _) (mapFun.intCast _)
+
+/-- The ring structure on `𝕎 R` is commutative. -/
+instance : IsMulCommutative (𝕎 R) :=
+  (mapFun.surjective _ <| counit_surjective _).isMulCommutative_of_map_mul
+    (mapFun <| MvPolynomial.counit _) (mapFun.mul _)
 
 variable {p R}
 

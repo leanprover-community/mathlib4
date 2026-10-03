@@ -292,7 +292,7 @@ open Qq Mathlib.Meta.Positivity in
 meta def evalHeight : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
-  | 0, ~q(ℝ), ~q(@height $V $P $i1 $i2 $i3 $i4 $n $hn $s $i) =>
+  | 0, ~q(ℝ), ~q(@height $V $P $i1 $i1c $i2 $i3 $i4 $n $hn $s $i) =>
     assertInstancesCommute
     return .positive q(height_pos $s $i)
   | _, _, _ => throwError "not Simplex.height"
@@ -343,8 +343,8 @@ lemma abs_inner_vsub_altitudeFoot_lt_mul {i j : Fin (n + 1)} (hij : i ≠ j) :
       < s.height i * s.height j := by
   apply lt_of_le_of_ne
   · convert! abs_real_inner_le_norm _ _ using 1
-    simp only [dist_eq_norm_vsub, height]
-  · simp_rw [height, dist_eq_norm_vsub]
+    simp only [dist_eq_norm_vsub V, height]
+  · simp_rw [height, dist_eq_norm_vsub V]
     rw [← Real.norm_eq_abs, ne_eq, norm_inner_eq_norm_iff (by simp) (by simp)]
     rintro ⟨r, hr, h⟩
     suffices s.points j -ᵥ s.altitudeFoot j = 0 by

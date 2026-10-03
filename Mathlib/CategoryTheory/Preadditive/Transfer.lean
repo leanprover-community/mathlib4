@@ -32,7 +32,8 @@ namespace Preadditive
 structure on `C`. -/
 @[instance_reducible]
 def ofFullyFaithful : Preadditive C where
-  homGroup P Q := hF.homEquiv.addCommGroup
+  homGroup P Q := hF.homEquiv.addGroup
+  isAddComm P Q := hF.homEquiv.addCommGroup
   add_comp P Q R f f' g := hF.map_injective (by simp [Equiv.add_def])
   comp_add P Q R f g g' := hF.map_injective (by simp [Equiv.add_def])
 

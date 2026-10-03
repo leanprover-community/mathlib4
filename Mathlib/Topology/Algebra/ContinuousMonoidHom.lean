@@ -233,12 +233,15 @@ def mul : (E × E) →ₜ* E := ⟨mulMonoidHom, continuous_mul⟩
 variable {A B C D E}
 
 @[to_additive]
-instance : CommMonoid (A →ₜ* E) where
+instance : Monoid (A →ₜ* E) where
   mul f g := (mul E).comp (f.prod g)
-  mul_comm f g := ext fun x => mul_comm (f x) (g x)
   mul_assoc f g h := ext fun x => mul_assoc (f x) (g x) (h x)
   one_mul f := ext fun x => one_mul (f x)
   mul_one f := ext fun x => mul_one (f x)
+
+@[to_additive]
+instance : IsMulCommutative (A →ₜ* E) :=
+  ⟨⟨fun f g => ext fun x => mul_comm (f x) (g x)⟩⟩
 
 @[to_additive (attr := simp)]
 theorem mul_apply (f g : A →ₜ* E) (a : A) : (f * g) a = f a * g a := by
@@ -267,8 +270,8 @@ def inv : ContinuousMonoidHom E E :=
   ⟨invMonoidHom, continuous_inv⟩
 
 @[to_additive]
-instance : CommGroup (ContinuousMonoidHom A E) where
-  __ : CommMonoid (ContinuousMonoidHom A E) := inferInstance
+instance : Group (ContinuousMonoidHom A E) where
+  __ : Monoid (ContinuousMonoidHom A E) := inferInstance
   inv f := (inv E).comp f
   inv_mul_cancel f := ext fun x => inv_mul_cancel (f x)
   div f g := .comp ⟨divMonoidHom, continuous_div'⟩ (f.prod g)

@@ -236,7 +236,11 @@ this abelian group structure. It is then shown that the bijection
 `homEquiv` between `Ext X Y n` and Hom-types in the derived category
 can be promoted to an additive equivalence for any `[HasDerivedCategory C]` instance. -/
 
-noncomputable instance : AddCommGroup (Ext X Y n) :=
+noncomputable instance : AddGroup (Ext X Y n) :=
+  letI := HasDerivedCategory.standard C
+  homEquiv.addGroup
+
+instance : IsAddCommutative (Ext X Y n) :=
   letI := HasDerivedCategory.standard C
   homEquiv.addCommGroup
 

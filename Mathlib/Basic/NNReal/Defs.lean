@@ -80,7 +80,7 @@ instance : Bot ℝ≥0 := ⟨0⟩
 deriving instance
   Nontrivial, Inhabited,
   PartialOrder, SemilatticeSup, SemilatticeInf, DistribLattice,
-  Semiring, CommMonoidWithZero, CommSemiring, AddCancelCommMonoid,
+  Semiring, MonoidWithZero, IsMulCommutative, AddCancelMonoid, IsAddCommutative,
   Sub, OrderedSub, OrderBot,
   CanonicallyOrderedAdd, NoZeroDivisors, DenselyOrdered,
   Archimedean, MulArchimedean, IsOrderedRing, IsStrictOrderedRing
@@ -238,7 +238,9 @@ variable {r r₁ r₂ : ℝ≥0} {x y : ℝ}
 
 @[norm_cast] lemma coe_ne_one : (r : ℝ) ≠ 1 ↔ r ≠ 1 := coe_eq_one.not
 
-example : CommSemiring ℝ≥0 := by infer_instance
+example : Semiring ℝ≥0 := by infer_instance
+
+example : IsMulCommutative ℝ≥0 := by infer_instance
 
 /-- Coercion `ℝ≥0 → ℝ` as a `RingHom`.
 
@@ -297,9 +299,9 @@ end Actions
 
 example : MonoidWithZero ℝ≥0 := by infer_instance
 
-example : CommMonoidWithZero ℝ≥0 := by infer_instance
+example : IsMulCommutative ℝ≥0 := by infer_instance
 
-noncomputable example : CommGroupWithZero ℝ≥0 := by infer_instance
+noncomputable example : GroupWithZero ℝ≥0 := by infer_instance
 
 @[simp, norm_cast, basify_op]
 theorem coe_pow (r : ℝ≥0) (n : ℕ) : ((r ^ n : ℝ≥0) : ℝ) = (r : ℝ) ^ n := rfl
@@ -384,7 +386,9 @@ example : OrderBot ℝ≥0 := by infer_instance
 
 example : PartialOrder ℝ≥0 := by infer_instance
 
-example : AddCommMonoid ℝ≥0 := by infer_instance
+example : AddMonoid ℝ≥0 := by infer_instance
+
+example : IsAddCommutative ℝ≥0 := by infer_instance
 
 example : IsOrderedAddMonoid ℝ≥0 := by infer_instance
 
@@ -396,7 +400,9 @@ example : SemilatticeSup ℝ≥0 := by infer_instance
 
 example : Semiring ℝ≥0 := by infer_instance
 
-example : CommMonoid ℝ≥0 := by infer_instance
+example : Monoid ℝ≥0 := by infer_instance
+
+example : IsMulCommutative ℝ≥0 := by infer_instance
 
 example : IsOrderedMonoid ℝ≥0 := instLinearOrderedCommGroupWithZero.toIsOrderedMonoid
 

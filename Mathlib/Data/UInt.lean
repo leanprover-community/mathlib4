@@ -11,7 +11,7 @@ public import Mathlib.Data.BitVec
 /-!
 # Adds Mathlib specific instances to the `UIntX` data types.
 
-The `CommRing` instances (and the `NatCast` and `IntCast` instances from which they are built) are
+The `Ring` instances (and the `NatCast` and `IntCast` instances from which they are built) are
 scoped in the `UIntX.CommRing` namespace, rather than available globally. As a result, the `ring`
 tactic will not work on `UIntX` types without `open scoped UIntX.Ring`.
 
@@ -86,15 +86,19 @@ run_cmd
       lemma toBitVec_injective : Function.Injective toBitVec := @eq_of_toBitVec_eq
 
       open $typeName (toBitVec_one toBitVec_mul toBitVec_pow) in
-      instance instCommMonoid : CommMonoid $typeName :=
-        Function.Injective.commMonoid toBitVec toBitVec_injective
+      instance instMonoid : Monoid $typeName :=
+        Function.Injective.monoid toBitVec toBitVec_injective
           toBitVec_one (fun _ _ => toBitVec_mul) (fun _ _ => toBitVec_pow _ _)
+
+      open $typeName (toBitVec_mul) in
+      instance instIsMulCommutative : IsMulCommutative $typeName :=
+        Function.Injective.isMulCommutative toBitVec toBitVec_injective (fun _ _ => toBitVec_mul)
 
       open $typeName (
         toBitVec_zero toBitVec_add toBitVec_mul toBitVec_neg toBitVec_sub toBitVec_nsmul
         toBitVec_zsmul) in
-      instance instNonUnitalCommRing : NonUnitalCommRing $typeName :=
-        Function.Injective.nonUnitalCommRing toBitVec toBitVec_injective
+      instance instNonUnitalRing : NonUnitalRing $typeName :=
+        Function.Injective.nonUnitalRing toBitVec toBitVec_injective
           toBitVec_zero (fun _ _ => toBitVec_add) (fun _ _ => toBitVec_mul) (fun _ => toBitVec_neg)
           (fun _ _ => toBitVec_sub)
           (fun _ _ => toBitVec_nsmul _ _) (fun _ _ => toBitVec_zsmul _ _)
@@ -106,8 +110,8 @@ run_cmd
         toBitVec_sub toBitVec_nsmul toBitVec_zsmul toBitVec_pow
         toBitVec_natCast toBitVec_intCast) in
       -- `noncomputable` should not be necessary but triggers some codegen assertion
-      noncomputable local instance instCommRing : CommRing $typeName :=
-        Function.Injective.commRing toBitVec toBitVec_injective
+      noncomputable local instance instRing : Ring $typeName :=
+        Function.Injective.ring toBitVec toBitVec_injective
           toBitVec_zero toBitVec_one (fun _ _ => toBitVec_add) (fun _ _ => toBitVec_mul)
           (fun _ => toBitVec_neg) (fun _ _ => toBitVec_sub)
           (fun _ _ => toBitVec_nsmul _ _) (fun _ _ => toBitVec_zsmul _ _)
@@ -115,7 +119,7 @@ run_cmd
           toBitVec_natCast toBitVec_intCast
 
       namespace CommRing
-      attribute [scoped instance] instCommRing natCast intCast
+      attribute [scoped instance] instRing natCast intCast
       end CommRing
 
     end $typeName
@@ -124,7 +128,7 @@ run_cmd
   let docString :=
     s!"To use this instance, use `open scoped {typeName'}.CommRing`.\n\n" ++
     "See the module docstring for an explanation"
-  Lean.addDocStringCore (typeName'.mkStr "instCommRing") docString
+  Lean.addDocStringCore (typeName'.mkStr "instRing") docString
   -- TODO: add these docstrings in core?
   -- Lean.addDocStringCore (typeName'.mkStr "instNatCast") docString
   -- Lean.addDocStringCore (typeName'.mkStr "instIntCast") docString

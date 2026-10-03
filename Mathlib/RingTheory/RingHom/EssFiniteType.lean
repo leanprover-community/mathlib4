@@ -34,13 +34,13 @@ lemma of_comp (f : R →+* S) {g : S →+* T} (h : (g.comp f).EssFiniteType) :
   exact Algebra.EssFiniteType.of_comp R S T
 
 lemma stableUnderComposition : StableUnderComposition EssFiniteType :=
-  fun _ _ _ _ _ _ _ _ hf hg ↦ hf.comp hg
+  fun _ _ _ _ _ _ _ _ _ _ _ hf hg ↦ hf.comp hg
 
 lemma respectsIso : RespectsIso EssFiniteType :=
   stableUnderComposition.respectsIso fun e ↦ (FiniteType.of_surjective _ e.surjective).essFiniteType
 
 lemma isStableUnderBaseChange : IsStableUnderBaseChange EssFiniteType :=
-  .mk respectsIso fun R S T _ _ _ _ _ h ↦ by
+  .mk respectsIso fun R S T _ _ _ _ _ _ _ _ h ↦ by
     rw [essFiniteType_algebraMap] at h ⊢
     infer_instance
 

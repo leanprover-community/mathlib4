@@ -176,7 +176,7 @@ instance : IsAddApply (Seminorm 𝕜 E) E ℝ where
 
 instance instAddMonoid : AddMonoid (Seminorm 𝕜 E) := fast_instance% FunLike.addMonoid
 
-instance instAddCommMonoid : AddCommMonoid (Seminorm 𝕜 E) := fast_instance% FunLike.addCommMonoid
+instance instAddCommMonoid : IsAddCommutative (Seminorm 𝕜 E) := FunLike.addCommMonoid
 
 instance instPartialOrder : PartialOrder (Seminorm 𝕜 E) :=
   PartialOrder.lift _ DFunLike.coe_injective
@@ -357,7 +357,9 @@ theorem zero_or_exists_apply_eq_finset_sup (p : ι → Seminorm 𝕜 E) (s : Fin
   · right; exact exists_apply_eq_finset_sup p hs x
 
 theorem finset_sup_smul (p : ι → Seminorm 𝕜 E) (s : Finset ι) (C : ℝ≥0) :
-    s.sup (C • p) = C • s.sup p := by
+    -- the `SMul ℝ≥0 (ι → Seminorm 𝕜 E)` search gets stuck on `IsAddCommutative (ι → _)` via
+    -- `Module.toMulActionWithZero`; give the instance the baseline finds (`Pi.instSMul`).
+    s.sup (letI : SMul ℝ≥0 (ι → Seminorm 𝕜 E) := Pi.instSMul; C • p) = C • s.sup p := by
   ext x
   rw [smul_apply, finset_sup_apply, finset_sup_apply]
   symm
@@ -1197,7 +1199,7 @@ lemma uniformSpace_eq_of_hasBasis
     (h₁ : ∃ r, p.closedBall 0 r ∈ 𝓝 0) (h₂ : ∀ i, p' i → ∃ r > 0, p.ball 0 r ⊆ s i) :
     ‹UniformSpace E› = p.toAddGroupSeminorm.toSeminormedAddGroup.toUniformSpace := by
   refine IsUniformAddGroup.ext ‹_›
-    p.toAddGroupSeminorm.toSeminormedAddCommGroup.to_isUniformAddGroup ?_
+    (@SeminormedCommGroup.to_isUniformAddGroup _ p.toAddGroupSeminorm.toSeminormedAddGroup _) ?_
   apply le_antisymm
   · rw [← @comap_norm_nhds_zero E p.toAddGroupSeminorm.toSeminormedAddGroup, ← tendsto_iff_comap]
     suffices Continuous p from this.tendsto' 0 _ (map_zero p)

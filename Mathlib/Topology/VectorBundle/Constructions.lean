@@ -186,8 +186,12 @@ instance [Semiring R] [∀ x : B, AddMonoid (E x)] [∀ x : B, IsAddCommutative 
     SMul R ((f *ᵖ E) x) :=
   inferInstanceAs <| SMul R (E (f x))
 
-instance [i : ∀ x : B, AddMonoid (E x)] [∀ x : B, IsAddCommutative (E x)] (x : B') : AddCommMonoid ((f *ᵖ E) x) :=
-  inferInstanceAs <| AddCommMonoid (E (f x))
+instance [i : ∀ x : B, AddMonoid (E x)] (x : B') : AddMonoid ((f *ᵖ E) x) :=
+  inferInstanceAs <| AddMonoid (E (f x))
+
+instance [∀ x : B, AddMonoid (E x)] [∀ x : B, IsAddCommutative (E x)] (x : B') :
+    IsAddCommutative ((f *ᵖ E) x) :=
+  inferInstanceAs <| IsAddCommutative (E (f x))
 
 instance [Semiring R] [∀ x : B, AddMonoid (E x)] [∀ x : B, IsAddCommutative (E x)] [i : ∀ x, Module R (E x)] (x : B') :
     Module R ((f *ᵖ E) x) :=

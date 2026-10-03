@@ -41,7 +41,8 @@ abbrev Field.ofMinimalAxioms (K : Type u)
     (exists_pair_ne : ∃ x y : K, x ≠ y) : Field K :=
   letI := CommRing.ofMinimalAxioms add_assoc zero_add
     neg_add_cancel mul_assoc mul_comm one_mul left_distrib
-  { exists_pair_ne := exists_pair_ne
+  { toIsMulCommutative := ⟨⟨mul_comm⟩⟩
+    exists_pair_ne := exists_pair_ne
     mul_inv_cancel := mul_inv_cancel
     inv_zero := inv_zero
     nnqsmul := _

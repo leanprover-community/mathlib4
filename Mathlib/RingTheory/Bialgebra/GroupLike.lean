@@ -85,7 +85,8 @@ variable (R A) in
 end GroupLike
 end Semiring
 
-variable [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Bialgebra R A] {a b : A}
+variable [Semiring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A] [Bialgebra R A]
+  {a b : A}
 
-instance GroupLike.instCommMonoid : CommMonoid (GroupLike R A) :=
-  val_injective.commMonoid val val_one val_mul val_pow
+instance GroupLike.instCommMonoid : IsMulCommutative (GroupLike R A) :=
+  val_injective.isMulCommutative val val_mul

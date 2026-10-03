@@ -131,11 +131,11 @@ end SMul
 instance addMonoid : AddMonoid (M ⧸ p) :=
   inferInstanceAs <| AddMonoid (M ⧸ p.toAddSubgroup)
 
-instance addCommMonoid : AddCommMonoid (M ⧸ p) :=
-  inferInstanceAs <| AddCommMonoid (M ⧸ p.toAddSubgroup)
+instance addGroup : AddGroup (M ⧸ p) :=
+  inferInstanceAs <| AddGroup (M ⧸ p.toAddSubgroup)
 
-instance addCommGroup : AddCommGroup (M ⧸ p) :=
-  inferInstanceAs <| AddCommGroup (M ⧸ p.toAddSubgroup)
+instance isAddCommutative : IsAddCommutative (M ⧸ p) :=
+  inferInstanceAs <| IsAddCommutative (M ⧸ p.toAddSubgroup)
 
 @[simp]
 theorem mk_add : (mk (x + y) : M ⧸ p) = mk x + mk y :=
@@ -204,12 +204,13 @@ end Module
 theorem induction_on {C : M ⧸ p → Prop} (x : M ⧸ p) (H : ∀ z, C (Submodule.Quotient.mk z)) :
     C x := Quotient.inductionOn' x H
 
-theorem mk_surjective : Function.Surjective (@mk _ _ _ _ _ p) := by
+theorem mk_surjective : Function.Surjective (@mk _ _ _ _ _ _ p) := by
   rintro ⟨x⟩
   exact ⟨x, rfl⟩
 
 universe u in
-instance {R M : Type*} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] {N : Submodule R M} [Small.{u} M] :
+instance {R M : Type*} [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] {N : Submodule R M}
+    [Small.{u} M] :
     Small.{u} (M ⧸ N) :=
   small_of_surjective (Submodule.Quotient.mk_surjective _)
 
@@ -238,7 +239,8 @@ theorem mkQ_surjective : Function.Surjective p.mkQ := by
 
 end
 
-variable {R₂ M₂ : Type*} [Ring R₂] [AddGroup M₂] [IsAddCommutative M₂] [Module R₂ M₂] {τ₁₂ : R →+* R₂}
+variable {R₂ M₂ : Type*} [Ring R₂] [AddGroup M₂] [IsAddCommutative M₂] [Module R₂ M₂]
+  {τ₁₂ : R →+* R₂}
 
 /-- Two `LinearMap`s from a quotient module are equal if their compositions with
 `submodule.mkQ` are equal.

@@ -58,7 +58,7 @@ attribute [to_additive existing] isDedekindFiniteMonoid_iff
 
 @[to_additive] instance (priority := low) (M) [MulOne M] [IsMulCommutative M] :
     IsDedekindFiniteMonoid M where
-  mul_eq_one_symm := mul_comm' .. |>.trans
+  mul_eq_one_symm := mul_comm .. |>.trans
 
 /-- Typeclass for expressing that a type `M` with addition and a zero satisfies
 `0 + a = a` and `a + 0 = a` for all `a : M`. -/
@@ -518,19 +518,13 @@ class IsMulTorsionFree (M : Type*) [Monoid M] where
 
 attribute [to_additive existing] isMulTorsionFree_iff
 
-/-- An additive commutative monoid is an additive monoid with commutative `(+)`. -/
-class AddCommMonoid (M : Type*) extends AddMonoid M, AddCommSemigroup M
-
-/-- A commutative monoid is a monoid with commutative `(*)`. -/
-@[to_additive]
-class CommMonoid (M : Type*) extends Monoid M, CommSemigroup M
-
 /-- Shortcut instance for `IsCommutativeHMul M → IsDedekindFiniteMonoid M`.
 
 This is assigned default rather than low priority because it gives the most common examples
 of Dedekind-finite monoids and is used the most often. Benchmark results indicate default
 priority performs better than low or high priority. -/
-@[to_additive] instance (M) [Monoid M] [IsMulCommutative M] : IsDedekindFiniteMonoid M := inferInstance
+@[to_additive] instance (M) [Monoid M] [IsMulCommutative M] : IsDedekindFiniteMonoid M :=
+  inferInstance
 
 section LeftCancelMonoid
 
@@ -577,23 +571,6 @@ class AddCancelMonoid (M : Type*) extends AddLeftCancelMonoid M, AddRightCancelM
 @[to_additive]
 class CancelMonoid (M : Type*) extends LeftCancelMonoid M, RightCancelMonoid M
 
-/-- Commutative version of `AddCancelMonoid`. -/
-class AddCancelCommMonoid (M : Type*) extends AddCommMonoid M, AddLeftCancelMonoid M
-
-attribute [instance 75] AddCancelCommMonoid.toAddCommMonoid -- See note [lower cancel priority]
-
-/-- Commutative version of `CancelMonoid`. -/
-@[to_additive]
-class CancelCommMonoid (M : Type*) extends CommMonoid M, LeftCancelMonoid M
-
-attribute [instance 75] CancelCommMonoid.toCommMonoid -- See note [lower cancel priority]
-
--- see Note [lower instance priority]
-@[to_additive]
-instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type*) [CancelMonoid M] [IsMulCommutative M] :
-    CancelMonoid M :=
-  { CommMagma.IsLeftCancelMul.toIsRightCancelMul M with }
-
 /-- Any `CancelMonoid G` satisfies `IsCancelMul G`. -/
 @[to_additive /-- Any `AddCancelMonoid G` satisfies `IsCancelAdd G`. -/]
 instance (priority := 100) CancelMonoid.toIsCancelMul (M : Type*) [CancelMonoid M] :
@@ -608,13 +585,9 @@ argument order of these projections does not match the argument order of `^`. Th
 lemmas are correct. -/
 initialize_simps_projections Monoid
 initialize_simps_projections AddMonoid
-initialize_simps_projections CommMonoid
-initialize_simps_projections AddCommMonoid
 initialize_simps_projections LeftCancelMonoid
 initialize_simps_projections AddLeftCancelMonoid
 initialize_simps_projections RightCancelMonoid
 initialize_simps_projections AddRightCancelMonoid
 initialize_simps_projections CancelMonoid
 initialize_simps_projections AddCancelMonoid
-initialize_simps_projections CancelCommMonoid
-initialize_simps_projections AddCancelCommMonoid

@@ -62,8 +62,10 @@ protected def DegLex.rec {β : DegLex α → Sort*} (h : ∀ a, β (toDegLex a))
 @[simp] lemma DegLex.forall_iff {p : DegLex α → Prop} : (∀ a, p a) ↔ ∀ a, p (toDegLex a) := Iff.rfl
 @[simp] lemma DegLex.exists_iff {p : DegLex α → Prop} : (∃ a, p a) ↔ ∃ a, p (toDegLex a) := Iff.rfl
 
-noncomputable instance [AddMonoid α] [IsAddCommutative α] :
-    AddCommMonoid (DegLex α) := ofDegLex.addCommMonoid
+noncomputable instance [AddMonoid α] : AddMonoid (DegLex α) := ofDegLex.addMonoid
+
+instance [AddMonoid α] [IsAddCommutative α] : IsAddCommutative (DegLex α) :=
+  ofDegLex.addCommMonoid
 
 theorem toDegLex_add [AddMonoid α] [IsAddCommutative α] (a b : α) :
     toDegLex (a + b) = toDegLex a + toDegLex b := rfl

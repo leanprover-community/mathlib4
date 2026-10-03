@@ -25,12 +25,13 @@ variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative 
 
 /-- A ring hom `R →+* S` is étale, if `S` is an étale `R`-algebra. -/
 @[algebraize RingHom.Etale.toAlgebra]
-def Etale {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S) : Prop :=
-  @Algebra.Etale R S _ _ f.toAlgebra
+def Etale {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
+    (f : R →+* S) : Prop :=
+  @Algebra.Etale R S _ _ _ _ f.toAlgebra
 
 /-- Helper lemma for the `algebraize` tactic -/
 lemma Etale.toAlgebra {f : R →+* S} (hf : Etale f) :
-    @Algebra.Etale R S _ _ f.toAlgebra := hf
+    @Algebra.Etale R S _ _ _ _ f.toAlgebra := hf
 
 variable {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] (f : R →+* S)
 
@@ -44,7 +45,8 @@ lemma etale_iff_formallyUnramified_and_smooth : f.Etale ↔ f.FormallyUnramified
     fun ⟨h1, h2⟩ ↦ ⟨.of_formallyUnramified_and_formallySmooth, inferInstance⟩⟩
 
 lemma Etale.eq_formallyUnramified_and_smooth :
-    @Etale = fun R S (_ : CommRing R) (_ : CommRing S) f ↦ f.FormallyUnramified ∧ f.Smooth := by
+    @Etale = fun R S (_ : Ring R) (_ : IsMulCommutative R) (_ : Ring S) (_ : IsMulCommutative S) f ↦
+      f.FormallyUnramified ∧ f.Smooth := by
   ext
   rw [etale_iff_formallyUnramified_and_smooth]
 

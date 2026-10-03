@@ -33,7 +33,8 @@ namespace Multiset
 
 section CommMonoid
 
-variable [Monoid M] [IsMulCommutative M] [Monoid N] [IsMulCommutative N] {s : Multiset M} {a : M} {m : Multiset ι} {f g : ι → M}
+variable [Monoid M] [IsMulCommutative M] [Monoid N] [IsMulCommutative N] {s : Multiset M} {a : M}
+  {m : Multiset ι} {f g : ι → M}
 
 /-- Product of a multiset given a commutative monoid structure on `M`.
   `prod {a, b, c} = a * b * c` -/
@@ -66,7 +67,7 @@ theorem prod_map_toList (s : Multiset ι) (f : ι → M) : (s.toList.map f).prod
   rw [← Multiset.prod_coe, ← Multiset.map_coe, coe_toList]
 
 @[to_additive (attr := simp, grind =)]
-theorem prod_zero : @prod M _ 0 = 1 :=
+theorem prod_zero : @prod M _ _ 0 = 1 :=
   rfl
 
 @[to_additive (attr := simp)]

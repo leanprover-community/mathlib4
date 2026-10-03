@@ -167,7 +167,7 @@ theorem IsMaximal.isPrime {I : Ideal α} (H : I.IsMaximal) : I.IsPrime :=
 
 -- see Note [lower instance priority]
 instance (priority := 100) IsMaximal.isPrime' (I : Ideal α) : ∀ [_H : I.IsMaximal], I.IsPrime :=
-  @IsMaximal.isPrime _ _ _
+  @IsMaximal.isPrime _ _ _ _
 
 theorem exists_disjoint_powers_of_span_eq_top (s : Set α) (hs : span s = ⊤) (I : Ideal α)
     (hI : I ≠ ⊤) : ∃ r ∈ s, Disjoint (I : Set α) (Submonoid.powers r) := by

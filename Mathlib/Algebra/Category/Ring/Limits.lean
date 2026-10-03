@@ -186,17 +186,31 @@ namespace CommSemiRingCat
 variable {J : Type v} [Category.{w} J] (F : J ⥤ CommSemiRingCat.{u})
 
 instance commSemiringObj (j) :
-    CommSemiring ((F ⋙ forget CommSemiRingCat).obj j) :=
-  inferInstanceAs <| CommSemiring (F.obj j)
+    Semiring ((F ⋙ forget CommSemiRingCat).obj j) :=
+  inferInstanceAs <| Semiring (F.obj j)
+
+instance isMulCommutativeObj (j) :
+    IsMulCommutative ((F ⋙ forget CommSemiRingCat).obj j) :=
+  inferInstanceAs <| IsMulCommutative (F.obj j)
 
 variable [Small.{u} (Functor.sections (F ⋙ forget CommSemiRingCat))]
 
 instance limitCommSemiring :
-    CommSemiring (Types.Small.limitCone.{v, u} (F ⋙ forget CommSemiRingCat.{u})).pt :=
-  let _ : CommSemiring (F ⋙ forget CommSemiRingCat.{u}).sections :=
-    @Subsemiring.toCommSemiring (∀ j, F.obj j) _
+    Semiring (Types.Small.limitCone.{v, u} (F ⋙ forget CommSemiRingCat.{u})).pt :=
+  let _ : Semiring (F ⋙ forget CommSemiRingCat.{u}).sections :=
+    (SemiRingCat.sectionsSubsemiring.{v, u}
+      (F ⋙ forget₂ CommSemiRingCat.{u} SemiRingCat.{u})).toSemiring
+  inferInstanceAs <| Semiring (Shrink (F ⋙ forget CommSemiRingCat.{u}).sections)
+
+instance limitIsMulCommutative :
+    IsMulCommutative (Types.Small.limitCone.{v, u} (F ⋙ forget CommSemiRingCat.{u})).pt :=
+  let _ : Semiring (F ⋙ forget CommSemiRingCat.{u}).sections :=
+    (SemiRingCat.sectionsSubsemiring.{v, u}
+      (F ⋙ forget₂ CommSemiRingCat.{u} SemiRingCat.{u})).toSemiring
+  let _ : IsMulCommutative (F ⋙ forget CommSemiRingCat.{u}).sections :=
+    @Subsemiring.toCommSemiring (∀ j, F.obj j) _ _
       (SemiRingCat.sectionsSubsemiring.{v, u} (F ⋙ forget₂ CommSemiRingCat.{u} SemiRingCat.{u}))
-  inferInstanceAs <| CommSemiring (Shrink (F ⋙ forget CommSemiRingCat.{u}).sections)
+  inferInstanceAs <| IsMulCommutative (Shrink (F ⋙ forget CommSemiRingCat.{u}).sections)
 
 /-- We show that the forgetful functor `CommSemiRingCat ⥤ SemiRingCat` creates limits.
 
@@ -409,16 +423,28 @@ namespace CommRingCat
 
 variable {J : Type v} [Category.{w} J] (F : J ⥤ CommRingCat.{u})
 
-instance commRingObj (j) : CommRing ((F ⋙ forget CommRingCat).obj j) :=
-  inferInstanceAs <| CommRing (F.obj j)
+instance commRingObj (j) : Ring ((F ⋙ forget CommRingCat).obj j) :=
+  inferInstanceAs <| Ring (F.obj j)
+
+instance isMulCommutativeObj (j) : IsMulCommutative ((F ⋙ forget CommRingCat).obj j) :=
+  inferInstanceAs <| IsMulCommutative (F.obj j)
 
 variable [Small.{u} (Functor.sections (F ⋙ forget CommRingCat))]
 
 instance limitCommRing :
-    CommRing.{u} (Types.Small.limitCone.{v, u} (F ⋙ forget CommRingCat.{u})).pt :=
-  let _ : CommRing (F ⋙ forget CommRingCat).sections := @Subring.toCommRing (∀ j, F.obj j) _
-    (RingCat.sectionsSubring.{v, u} (F ⋙ forget₂ CommRingCat RingCat.{u}))
-  inferInstanceAs <| CommRing (Shrink _)
+    Ring.{u} (Types.Small.limitCone.{v, u} (F ⋙ forget CommRingCat.{u})).pt :=
+  let _ : Ring (F ⋙ forget CommRingCat).sections :=
+    (RingCat.sectionsSubring.{v, u} (F ⋙ forget₂ CommRingCat RingCat.{u})).toRing
+  inferInstanceAs <| Ring (Shrink _)
+
+instance limitIsMulCommutative :
+    IsMulCommutative (Types.Small.limitCone.{v, u} (F ⋙ forget CommRingCat.{u})).pt :=
+  let _ : Ring (F ⋙ forget CommRingCat).sections :=
+    (RingCat.sectionsSubring.{v, u} (F ⋙ forget₂ CommRingCat RingCat.{u})).toRing
+  let _ : IsMulCommutative (F ⋙ forget CommRingCat).sections :=
+    @Subring.toCommRing (∀ j, F.obj j) _ _
+      (RingCat.sectionsSubring.{v, u} (F ⋙ forget₂ CommRingCat RingCat.{u}))
+  inferInstanceAs <| IsMulCommutative (Shrink (F ⋙ forget CommRingCat).sections)
 
 /-- We show that the forgetful functor `CommRingCat ⥤ RingCat` creates limits.
 

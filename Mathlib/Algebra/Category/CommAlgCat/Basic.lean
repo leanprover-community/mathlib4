@@ -31,16 +31,16 @@ structure CommAlgCat where
   _mkInternal ::
   /-- The underlying type. -/
   carrier : Type v
-  [commRing : Ring carrier] [IsMulCommutative carrier]
+  [commRing : Ring carrier] [isComm : IsMulCommutative carrier]
   [algebra : Algebra R carrier]
 
 namespace CommAlgCat
 variable {A B C : CommAlgCat.{v} R} {X Y Z : Type v} [Ring X] [IsMulCommutative X] [Algebra R X]
   [Ring Y] [IsMulCommutative Y] [Algebra R Y] [Ring Z] [IsMulCommutative Z] [Algebra R Z]
 
-attribute [instance] commRing algebra
+attribute [instance] commRing isComm algebra
 
-initialize_simps_projections CommAlgCat (-commRing, -algebra)
+initialize_simps_projections CommAlgCat (-commRing, -isComm, -algebra)
 
 instance : CoeSort (CommAlgCat R) (Type v) := ⟨carrier⟩
 
@@ -122,7 +122,10 @@ lemma forget_obj (A : CommAlgCat.{v} R) : (forget (CommAlgCat.{v} R)).obj A = A 
 @[deprecated ConcreteCategory.forget_map_eq_ofHom +typeChanged (since := "2026-03-06")]
 lemma forget_map (f : A ⟶ B) : (forget (CommAlgCat.{v} R)).map f = (f : _ → _) := rfl
 
-instance : CommRing ((forget (CommAlgCat R)).obj A) := inferInstanceAs <| CommRing A
+instance : Ring ((forget (CommAlgCat R)).obj A) := inferInstanceAs <| Ring A
+
+instance : IsMulCommutative ((forget (CommAlgCat R)).obj A) :=
+  inferInstanceAs <| IsMulCommutative A
 
 instance : Algebra R ((forget (CommAlgCat R)).obj A) := inferInstanceAs <| Algebra R A
 
@@ -160,7 +163,8 @@ def homEquivCommRingCat :
 /-- Build an isomorphism in the category `CommAlgCat R` from an `AlgEquiv` between commutative
 `Algebra`s. -/
 @[simps]
-def isoMk {X Y : Type v} {_ : CommRing X} {_ : CommRing Y} {_ : Algebra R X} {_ : Algebra R Y}
+def isoMk {X Y : Type v} {_ : Ring X} {_ : IsMulCommutative X} {_ : Ring Y}
+    {_ : IsMulCommutative Y} {_ : Algebra R X} {_ : Algebra R Y}
     (e : X ≃ₐ[R] Y) : of R X ≅ of R Y where
   hom := ofHom (e : X →ₐ[R] Y)
   inv := ofHom (e.symm : Y →ₐ[R] X)

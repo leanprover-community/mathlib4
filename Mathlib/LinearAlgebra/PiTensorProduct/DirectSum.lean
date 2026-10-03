@@ -26,7 +26,8 @@ namespace PiTensorProduct
 open PiTensorProduct DirectSum TensorProduct
 
 variable {R ι : Type*} {κ : ι → Type*} {M : (i : ι) → κ i → Type*}
-  [Semiring R] [IsMulCommutative R] [Π i (j : κ i), AddCommMonoid (M i j)] [Π i (j : κ i), Module R (M i j)]
+  [Semiring R] [IsMulCommutative R] [Π i (j : κ i), AddMonoid (M i j)]
+  [Π i (j : κ i), IsAddCommutative (M i j)] [Π i (j : κ i), Module R (M i j)]
 
 open scoped Classical in
 /-- The n-ary tensor product distributes over m-ary direct sums. -/

@@ -80,12 +80,12 @@ theorem nonempty_algHom_of_minpoly_eq
   nonempty_algHom_of_exists_root fun x ↦ have ⟨y, hy⟩ := h x; ⟨y, by rw [hy, minpoly.aeval]⟩
 
 theorem nonempty_algHom_of_range_minpoly_subset
-    (h : Set.range (@minpoly F E _ _ _) ⊆ Set.range (@minpoly F K _ _ _)) :
+    (h : Set.range (@minpoly F E _ _ _ _) ⊆ Set.range (@minpoly F K _ _ _ _)) :
     Nonempty (E →ₐ[F] K) :=
   nonempty_algHom_of_minpoly_eq fun x ↦ have ⟨y, hy⟩ := h ⟨x, rfl⟩; ⟨y, hy.symm⟩
 
 theorem nonempty_algEquiv_of_range_minpoly_eq
-    (h : Set.range (@minpoly F E _ _ _) = Set.range (@minpoly F K _ _ _)) :
+    (h : Set.range (@minpoly F E _ _ _ _) = Set.range (@minpoly F K _ _ _ _)) :
     Nonempty (E ≃ₐ[F] K) :=
   have ⟨σ⟩ := nonempty_algHom_of_range_minpoly_subset h.le
   have : Algebra.IsAlgebraic F K := ⟨fun y ↦ IsIntegral.isAlgebraic <| by

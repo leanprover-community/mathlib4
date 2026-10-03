@@ -364,7 +364,7 @@ instance [AddMonoid Y] : AddMonoid (locallyFinsuppWithin U Y) :=
   Injective.addMonoid (M₁ := locallyFinsuppWithin U Y) (M₂ := X → Y)
     _ coe_injective coe_zero coe_add coe_nsmul
 
-instance [AddMonoid Y] [IsAddCommutative Y] : AddCommMonoid (locallyFinsuppWithin U Y) :=
+instance [AddMonoid Y] [IsAddCommutative Y] : IsAddCommutative (locallyFinsuppWithin U Y) :=
   Injective.addCommMonoid (M₁ := locallyFinsuppWithin U Y) (M₂ := X → Y)
     _ coe_injective coe_zero coe_add coe_nsmul
 
@@ -397,7 +397,7 @@ its negative.
 @[simp] lemma support_neg [AddGroup Y] (D : locallyFinsuppWithin U Y) :
     (-D).support = D.support := by rw [support, coe_neg, Function.support_neg]
 
-instance [AddGroup Y] [IsAddCommutative Y] : AddCommGroup (locallyFinsuppWithin U Y) :=
+instance [AddGroup Y] [IsAddCommutative Y] : IsAddCommutative (locallyFinsuppWithin U Y) :=
   Injective.addCommGroup (M₁ := locallyFinsuppWithin U Y) (M₂ := X → Y)
     _ coe_injective coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
 

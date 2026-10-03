@@ -68,7 +68,8 @@ def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Q(Equiv.Perm (Fin $m))
 certificate conditions will be decided by kernel reduction. This needs to be changed when
 the cert-checking tactic is updated. -/
 def checkKernelDecide {u : Level} (α : Q(Type u)) : MetaM Unit := do
-  have _cr : Q(CommRing $α) := ← synthInstanceQ q(CommRing $α)
+  have _r : Q(Ring $α) := ← synthInstanceQ q(Ring $α)
+  have _c : Q(IsMulCommutative $α) := ← synthInstanceQ q(IsMulCommutative $α)
   -- `Decidable` of the single equality rather than `DecidableEq`: a ring where equality
   -- is only decidable against zero should pass
   let some _inst ← synthInstanceQ? q(Decidable (((1 : ℤ) : $α) = 0)) |
@@ -90,7 +91,8 @@ def certifyCondition (name : String) (c : Q(Prop)) : MetaM Q($c) := do
 
 /-- Build the `Echelon.Decomposition` certificate of `A` from the decomposition data and
 `entries`, the parsed entries of `A`. -/
-def mkCertificate {u : Level} {m n : ℕ} {α : Q(Type u)} (_cr : Q(CommRing $α))
+def mkCertificate {u : Level} {m n : ℕ} {α : Q(Type u)} (_r : Q(Ring $α))
+    (_c : Q(IsMulCommutative $α))
     (A : Q(Matrix (Fin $m) (Fin $n) $α)) (entries : Array (Array Expr))
     (data : BareissData Expr) : MetaM Q(Echelon.Decomposition $A) := do
   have L := mkMatrixLit α m m data.L

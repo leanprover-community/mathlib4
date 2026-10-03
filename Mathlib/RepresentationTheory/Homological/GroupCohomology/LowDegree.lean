@@ -750,7 +750,7 @@ section cocyclesIso₀
 
 instance : Mono (shortComplexH0 A).f := by
   rw [ModuleCat.mono_iff_injective]
-  apply Submodule.injective_subtype
+  exact Submodule.injective_subtype A.ρ.invariants
 
 lemma shortComplexH0_exact : (shortComplexH0 A).Exact := by
   rw [ShortComplex.moduleCat_exact_iff]

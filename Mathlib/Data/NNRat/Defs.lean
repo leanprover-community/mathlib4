@@ -56,9 +56,13 @@ instance Rat.instPosMulMono : PosMulMono ℚ where
   mul_le_mul_of_nonneg_left r hr p q hpq := by
     simpa [mul_sub, sub_nonneg] using Rat.mul_nonneg hr (sub_nonneg.2 hpq)
 
-deriving instance CommSemiring for NNRat
+deriving instance Semiring for NNRat
 
-deriving instance AddCancelCommMonoid for NNRat
+deriving instance IsMulCommutative for NNRat
+
+deriving instance AddCancelMonoid for NNRat
+
+deriving instance IsAddCommutative for NNRat
 
 deriving instance LinearOrder for NNRat
 

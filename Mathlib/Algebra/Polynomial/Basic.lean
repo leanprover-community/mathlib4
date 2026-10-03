@@ -1072,9 +1072,8 @@ section CommSemiring
 
 variable [Semiring R] [IsMulCommutative R]
 
-instance commSemiring : CommSemiring R[X] :=
-  fast_instance% { Function.Injective.commSemigroup toFinsupp toFinsupp_injective toFinsupp_mul with
-    toSemiring := Polynomial.semiring }
+instance commSemiring : IsMulCommutative R[X] :=
+  Function.Injective.commSemigroup toFinsupp toFinsupp_injective toFinsupp_mul
 
 end CommSemiring
 
@@ -1135,11 +1134,6 @@ theorem C_sub : C (a - b) = C a - C b :=
   map_sub C a b
 
 end Ring
-
-instance commRing [Ring R] [IsMulCommutative R] : CommRing R[X] :=
-  --TODO: add reference to library note in PR https://github.com/leanprover-community/mathlib4/pull/7432
-  { toRing := Polynomial.ring
-    mul_comm := mul_comm }
 
 section Semiring
 

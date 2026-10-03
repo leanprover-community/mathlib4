@@ -230,7 +230,7 @@ theorem Convex.setOfPred_gauge_le (hs : Convex ℝ s) (h₀ : (0 : E) ∈ s) (ab
   by_cases ha : 0 ≤ a
   · rw [setOfPred_gauge_le_eq hs h₀ absorbs ha]
     exact convex_iInter fun i => convex_iInter fun _ => hs.smul _
-  · convert! convex_empty (𝕜 := ℝ)
+  · convert! convex_empty (𝕜 := ℝ) (E := E)
     exact eq_empty_iff_forall_notMem.2 fun x hx => ha <| (gauge_nonneg _).trans hx
 
 @[deprecated (since := "2026-07-09")]

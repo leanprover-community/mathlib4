@@ -411,9 +411,9 @@ def preadditive : Preadditive C where
       add_zero := add_zero
       neg_add_cancel := neg_add_cancel
       sub_eq_add_neg f g := (add_neg f g).symm
-      add_comm := add_comm
       nsmul := nsmulRec
       zsmul := zsmulRec }
+  isAddComm _ _ := ⟨⟨add_comm⟩⟩
   add_comp := add_comp
   comp_add := comp_add
 

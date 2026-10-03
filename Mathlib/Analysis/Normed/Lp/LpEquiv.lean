@@ -47,7 +47,8 @@ open scoped ENNReal
 section LpPiLp
 
 
-variable {α : Type*} {E : α → Type*} [∀ i, NormedAddGroup (E i)] [∀ i, IsAddCommutative (E i)] {p : ℝ≥0∞}
+variable {α : Type*} {E : α → Type*} [∀ i, NormedAddGroup (E i)] [∀ i, IsAddCommutative (E i)]
+  {p : ℝ≥0∞}
 
 section Finite
 
@@ -157,7 +158,7 @@ section RingAlgebra
 
 /-- The canonical map between `lp (fun _ : α ↦ R) ∞` and `α →ᵇ R` as a `RingEquiv`. -/
 noncomputable def RingEquiv.lpBCF : lp (fun _ : α ↦ R) ∞ ≃+* (α →ᵇ R) :=
-  { @AddEquiv.lpBCF _ R _ _ _ with
+  { @AddEquiv.lpBCF _ R _ _ _ _ with
     map_mul' := fun _f _g => rfl }
 
 theorem coe_ringEquiv_lpBCF (f : lp (fun _ : α ↦ R) ∞) : (RingEquiv.lpBCF f : α → R) = f :=

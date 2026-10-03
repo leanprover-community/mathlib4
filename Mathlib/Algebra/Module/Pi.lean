@@ -34,8 +34,10 @@ theorem _root_.IsSMulRegular.pi {α : Type*} [∀ i, SMul α <| f i] {k : α}
 
 variable (I f)
 
-instance module (α) {r : Semiring α} {m : ∀ i, AddCommMonoid <| f i} [∀ i, Module α <| f i] :
-    @Module α (∀ i : I, f i) r (@Pi.addCommMonoid I f m) :=
+instance module (α) {r : Semiring α} {m : ∀ i, AddMonoid <| f i} {c : ∀ i, IsAddCommutative <| f i}
+    [∀ i, Module α <| f i] :
+    @Module α (∀ i : I, f i) r (@Pi.addMonoid I f m)
+      (@Pi.isAddCommutative I f (fun i => (m i).toAdd) c) :=
   { Pi.distribMulAction _ with
     add_smul := fun _ _ _ => funext fun _ => add_smul _ _ _
     zero_smul := fun _ => funext fun _ => zero_smul α _ }
@@ -43,19 +45,21 @@ instance module (α) {r : Semiring α} {m : ∀ i, AddCommMonoid <| f i} [∀ i,
 /- Extra instance to short-circuit type class resolution.
 For unknown reasons, this is necessary for certain inference problems. E.g., for this to succeed:
 ```lean
-example (β X : Type*) [NormedAddGroup β] [IsAddCommutative β] [NormedSpace ℝ β] : Module ℝ (X → β) := inferInstance
+example (β X : Type*) [NormedAddGroup β] [IsAddCommutative β] [NormedSpace ℝ β] :
+    Module ℝ (X → β) := inferInstance
 ```
 See: https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Typeclass.20resolution.20under.20binders/near/281296989
 -/
 /-- A special case of `Pi.module` for non-dependent types. Lean struggles to elaborate
 definitions elsewhere in the library without this. -/
-instance Function.module (α β : Type*) [Semiring α] [AddMonoid β] [IsAddCommutative β] [Module α β] :
-    Module α (I → β) :=
+instance Function.module (α β : Type*) [Semiring α] [AddMonoid β] [IsAddCommutative β]
+    [Module α β] : Module α (I → β) :=
   Pi.module _ _ _
 
 variable {I f}
 
-instance module' {g : I → Type*} {r : ∀ i, Semiring (f i)} {m : ∀ i, AddCommMonoid (g i)}
+instance module' {g : I → Type*} {r : ∀ i, Semiring (f i)} {m : ∀ i, AddMonoid (g i)}
+    {c : ∀ i, IsAddCommutative (g i)}
     [∀ i, Module (f i) (g i)] : Module (∀ i, f i) (∀ i, g i) where
   add_smul := by
     intros

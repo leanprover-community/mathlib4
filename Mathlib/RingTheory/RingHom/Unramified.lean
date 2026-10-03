@@ -51,12 +51,12 @@ lemma comp {T : Type*} [Ring T] [IsMulCommutative T] {f : R →+* S} {g : S →+
   exact Algebra.FormallyUnramified.comp R S T
 
 lemma stableUnderComposition : StableUnderComposition FormallyUnramified :=
-  fun _ _ _ _ _ _ _ _ hf hg ↦ .comp hf hg
+  fun _ _ _ _ _ _ _ _ _ _ _ hf hg ↦ .comp hf hg
 
 lemma respectsIso :
     RespectsIso FormallyUnramified := by
   refine stableUnderComposition.respectsIso ?_
-  intro R S _ _ e
+  intro R S _ _ _ _ e
   exact .of_surjective e.surjective
 
 lemma isStableUnderBaseChange :
@@ -68,7 +68,7 @@ lemma isStableUnderBaseChange :
 
 lemma holdsForLocalization :
     HoldsForLocalization FormallyUnramified := by
-  intro R S _ _ _ M _
+  intro R S _ _ _ _ _ M _
   rw [formallyUnramified_algebraMap]
   exact .of_isLocalization M
 
@@ -78,7 +78,7 @@ lemma holdsForLocalizationAway :
 
 lemma ofLocalizationPrime :
     OfLocalizationPrime FormallyUnramified := by
-  intro R S _ _ f H
+  intro R S _ _ _ _ f H
   algebraize [f]
   rw [FormallyUnramified, Algebra.formallyUnramified_iff_forall]
   intro x
@@ -92,7 +92,7 @@ lemma ofLocalizationPrime :
 
 lemma ofLocalizationSpanTarget :
     OfLocalizationSpanTarget FormallyUnramified := by
-  intro R S _ _ f s hs H
+  intro R S _ _ _ _ f s hs H
   algebraize [f]
   rw [FormallyUnramified, Algebra.formallyUnramified_iff_forall]
   intro x

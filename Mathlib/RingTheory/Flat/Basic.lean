@@ -137,7 +137,7 @@ in a universe that `R` fits in. -/
 lemma iff_rTensor_preserves_injective_linearMapₛ [Small.{v'} R] : Flat R M ↔
     ∀ ⦃N N' : Type v'⦄ [AddMonoid N] [IsAddCommutative N] [AddMonoid N'] [IsAddCommutative N'] [Module R N] [Module R N']
       (f : N →ₗ[R] N'), Function.Injective f → Function.Injective (f.rTensor M) :=
-  ⟨by introv _; apply rTensor_preserves_injective_linearMap, fun h ↦ ⟨fun P _ _ _ _ _ ↦ by
+  ⟨by introv _; apply rTensor_preserves_injective_linearMap, fun h ↦ ⟨fun P _ _ _ _ _ _ ↦ by
     have := Finite.small.{v'} R P
     rw [rTensor_injective_iff_subtype Subtype.val_injective (Shrink.linearEquiv R P).symm]
     exact h _ Subtype.val_injective⟩⟩
@@ -152,8 +152,8 @@ lemma iff_lTensor_preserves_injective_linearMapₛ [Small.{v'} R] : Flat R M ↔
 /-- An easier-to-use version of `Module.flat_iff`, with finiteness conditions removed. -/
 lemma iff_rTensor_injectiveₛ : Flat R M ↔ ∀ ⦃P : Type u⦄ [AddMonoid P] [IsAddCommutative P] [Module R P]
     (N : Submodule R P), Function.Injective (N.subtype.rTensor M) :=
-  ⟨fun _ _ _ _ _ ↦ rTensor_preserves_injective_linearMap _ Subtype.val_injective,
-    fun h ↦ ⟨fun _ _ _ _ _ _ ↦ h _⟩⟩
+  ⟨fun _ _ _ _ _ _ ↦ rTensor_preserves_injective_linearMap _ Subtype.val_injective,
+    fun h ↦ ⟨fun _ _ _ _ _ _ _ ↦ h _⟩⟩
 
 lemma iff_lTensor_injectiveₛ : Flat R M ↔ ∀ ⦃P : Type u⦄ [AddMonoid P] [IsAddCommutative P] [Module R P]
     (N : Submodule R P), Function.Injective (N.subtype.lTensor M) := by
@@ -163,7 +163,7 @@ instance instSubalgebraToSubmodule {S : Type v} [Semiring S] [Algebra R S]
     (A : Subalgebra R S) [Flat R A] : Flat R A.toSubmodule := ‹Flat R A›
 
 instance self : Flat R R where
-  out _ _ _ _ I _ := by
+  out _ _ _ _ _ I _ := by
     rw [← (TensorProduct.rid R I).symm.injective_comp, ← (TensorProduct.rid R _).comp_injective]
     convert! Subtype.coe_injective using 1
     ext; simp
@@ -172,7 +172,7 @@ instance self : Flat R R where
 lemma of_retract [f : Flat R M] (i : N →ₗ[R] M) (r : M →ₗ[R] N) (h : r.comp i = LinearMap.id) :
     Flat R N := by
   rw [iff_rTensor_injectiveₛ] at *
-  refine fun P _ _ Q ↦ .of_comp (f := lTensor P i) ?_
+  refine fun P _ _ _ Q ↦ .of_comp (f := lTensor P i) ?_
   rw [← coe_comp, lTensor_comp_rTensor, ← rTensor_comp_lTensor, coe_comp]
   refine (f Q).comp (Function.RightInverse.injective (g := lTensor Q r) fun x ↦ ?_)
   simp [← comp_apply, ← lTensor_comp, h]
@@ -202,7 +202,7 @@ lemma of_shrink [Small.{v'} M] [Flat R (Shrink.{v'} M)] : Flat R M :=
 
 section DirectSum
 
-variable {ι : Type v} {M : ι → Type w} [Π i, AddCommMonoid (M i)] [Π i, Module R (M i)]
+variable {ι : Type v} {M : ι → Type w} [Π i, AddMonoid (M i)] [Π i, IsAddCommutative (M i)] [Π i, Module R (M i)]
 
 theorem directSum_iff : Flat R (⨁ i, M i) ↔ ∀ i, Flat R (M i) := by
   classical
@@ -232,7 +232,7 @@ instance of_free [Free R M] : Flat R M := inferInstance
 
 instance {S} [Semiring S] [IsMulCommutative S] [Algebra R S] [Module S M] [IsScalarTower R S M]
     [Flat S M] [Flat R N] : Flat S (M ⊗[R] N) :=
-  iff_rTensor_injectiveₛ.mpr fun P _ _ I ↦ by
+  iff_rTensor_injectiveₛ.mpr fun P _ _ _ I ↦ by
     let := RestrictScalars.moduleOrig R S P
     change Submodule S (RestrictScalars R S P) at I
     change Function.Injective (rTensor _ I.subtype)
@@ -289,7 +289,7 @@ lemma iff_rTensor_preserves_injective_linearMap' [Small.{v'} R] : Flat R M ↔
     ∀ ⦃N N' : Type v'⦄ [AddGroup N] [IsAddCommutative N] [AddGroup N'] [IsAddCommutative N'] [Module R N] [Module R N']
       (f : N →ₗ[R] N'), Function.Injective f → Function.Injective (f.rTensor M) :=
   ⟨by introv _; apply rTensor_preserves_injective_linearMap, fun h ↦
-    iff_rTensor_preserves_injective_linearMapₛ.mpr fun P N _ _ _ _ ↦ by
+    iff_rTensor_preserves_injective_linearMapₛ.mpr fun P N _ _ _ _ _ _ ↦ by
       let := Module.addCommMonoidToAddCommGroup R (M := P)
       let := Module.addCommMonoidToAddCommGroup R (M := N)
       apply h⟩
@@ -359,9 +359,9 @@ theorem iff_lTensor_exact' [Small.{v'} R] : Flat R M ↔
       [Module R N] [Module R N'] [Module R N''] ⦃f : N →ₗ[R] N'⦄ ⦃g : N' →ₗ[R] N''⦄,
         Function.Exact f g → Function.Exact (f.lTensor M) (g.lTensor M) := by
   refine ⟨fun _ ↦ lTensor_exact _, fun H ↦ iff_lTensor_preserves_injective_linearMap'.mpr
-    fun N' N'' _ _ _ _ L hL ↦ LinearMap.ker_eq_bot |>.mp <| eq_bot_iff |>.mpr
+    fun N' N'' _ _ _ _ _ _ L hL ↦ LinearMap.ker_eq_bot |>.mp <| eq_bot_iff |>.mpr
       fun x (hx : _ = 0) ↦ ?_⟩
-  simpa [Eq.comm] using @H PUnit N' N'' _ _ _ _ _ _ 0 L (fun x ↦ by
+  simpa [Eq.comm] using @H PUnit N' N'' _ _ _ _ _ _ _ _ _ 0 L (fun x ↦ by
     simp_rw [Set.mem_range, LinearMap.zero_apply, exists_const]
     exact (L.map_eq_zero_iff hL).trans eq_comm) x |>.mp hx
 
@@ -381,9 +381,9 @@ theorem iff_rTensor_exact' [Small.{v'} R] : Flat R M ↔
       [Module R N] [Module R N'] [Module R N''] ⦃f : N →ₗ[R] N'⦄ ⦃g : N' →ₗ[R] N''⦄,
         Function.Exact f g → Function.Exact (f.rTensor M) (g.rTensor M) := by
   refine ⟨fun _ ↦ rTensor_exact _, fun H ↦ iff_rTensor_preserves_injective_linearMap'.mpr
-    fun N' N'' _ _ _ _ f hf ↦ LinearMap.ker_eq_bot |>.mp <| eq_bot_iff |>.mpr
+    fun N' N'' _ _ _ _ _ _ f hf ↦ LinearMap.ker_eq_bot |>.mp <| eq_bot_iff |>.mpr
       fun x (hx : _ = 0) ↦ ?_⟩
-  simpa [Eq.comm] using @H PUnit N' N'' _ _ _ _ _ _ 0 f (fun x ↦ by
+  simpa [Eq.comm] using @H PUnit N' N'' _ _ _ _ _ _ _ _ _ 0 f (fun x ↦ by
     simp_rw [Set.mem_range, LinearMap.zero_apply, exists_const]
     exact (f.map_eq_zero_iff hf).trans eq_comm) x |>.mp hx
 

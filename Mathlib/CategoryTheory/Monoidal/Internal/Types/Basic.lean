@@ -95,10 +95,9 @@ noncomputable instance monTypeInhabited : Inhabited (Mon (Type u)) :=
 
 namespace CommMonTypeEquivalenceCommMon
 
-instance commMonCommMonoid (A : Type u) [MonObj A] [IsCommMonObj A] : CommMonoid A :=
-  { MonTypeEquivalenceMon.monMonoid A with
-    mul_comm := fun x y => by
-      convert! congr_hom (CC := fun X ↦ X) (IsCommMonObj.mul_comm A) (y, x) }
+instance commMonCommMonoid (A : Type u) [MonObj A] [IsCommMonObj A] : IsMulCommutative A :=
+  ⟨⟨fun x y => by
+      convert! congr_hom (CC := fun X ↦ X) (IsCommMonObj.mul_comm A) (y, x)⟩⟩
 
 /-- Converting a commutative monoid object in `Type` to a bundled commutative monoid.
 -/
@@ -114,7 +113,7 @@ noncomputable def inverse : CommMonCat.{u} ⥤ CommMon (Type u) where
       comm :=
         { mul_comm := by
             ext ⟨x : A, y : A⟩
-            exact CommMonoid.mul_comm y x } }
+            exact _root_.mul_comm y x } }
   map f := CommMon.homMk (MonTypeEquivalenceMon.inverse.map ((forget₂ CommMonCat MonCat).map f))
 
 end CommMonTypeEquivalenceCommMon

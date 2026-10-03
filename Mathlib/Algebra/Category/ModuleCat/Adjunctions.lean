@@ -254,7 +254,8 @@ namespace Free
 section
 
 instance : Preadditive (Free R C) where
-  homGroup _ _ := Finsupp.instAddCommGroup
+  homGroup _ _ := Finsupp.instAddGroup
+  isAddComm _ _ := Finsupp.instIsAddCommutative
   add_comp X Y Z f f' g := by
     dsimp +instances [CategoryTheory.categoryFree]
     rw [Finsupp.sum_add_index'] <;> · simp [add_mul]

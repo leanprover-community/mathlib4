@@ -39,7 +39,9 @@ with kernel-decidable equality. -/
 def checkBareissApplicable (R : Expr) : MetaM (Except MessageData Unit) := do
   let u ← getDecLevel R
   have α : Q(Type u) := R
-  let .some _cr ← trySynthInstanceQ q(CommRing $α)
+  let .some _r ← trySynthInstanceQ q(Ring $α)
+    | return .error m!"expected the element type to be a commutative ring"
+  let .some _c ← trySynthInstanceQ q(IsMulCommutative $α)
     | return .error m!"expected the element type to be a commutative ring"
   let .some _ ← trySynthInstanceQ q(IsDomain $α)
     | return .error m!"expected the element type to be a domain"
@@ -70,8 +72,9 @@ structure BareissResult where
 def mkBareissDecomposition {u : Level} (A : Expr) (m n : Nat) (α : Q(Type u))
     (entries : Array (Array Expr)) : MetaM BareissResult := do
   let d ← (← producerFor α) entries
-  have _cr : Q(CommRing $α) := ← synthInstanceQ q(CommRing $α)
+  have _r : Q(Ring $α) := ← synthInstanceQ q(Ring $α)
+  have _c : Q(IsMulCommutative $α) := ← synthInstanceQ q(IsMulCommutative $α)
   have A : Q(Matrix (Fin $m) (Fin $n) $α) := A
-  return { cert := ← mkCertificate _cr A entries d, data := d }
+  return { cert := ← mkCertificate _r _c A entries d, data := d }
 
 end Mathlib.Tactic.Echelon

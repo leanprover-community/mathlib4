@@ -30,23 +30,25 @@ structure CommHopfAlgCat (R : Type u) [Ring R] [IsMulCommutative R] where
   of (R) ::
   /-- The underlying type. -/
   protected X : Type v
-  [commRing : Ring X] [IsMulCommutative X]
+  [commRing : Ring X] [isComm : IsMulCommutative X]
   [hopfAlgebra : HopfAlgebra R X]
 
 namespace CommHopfAlgCat
-variable {A B C : CommHopfAlgCat.{v} R} {X Y Z : Type v} [Ring X] [IsMulCommutative X] [HopfAlgebra R X]
-  [Ring Y] [IsMulCommutative Y] [HopfAlgebra R Y] [Ring Z] [IsMulCommutative Z] [HopfAlgebra R Z]
+variable {A B C : CommHopfAlgCat.{v} R} {X Y Z : Type v} [Ring X] [IsMulCommutative X]
+  [HopfAlgebra R X] [Ring Y] [IsMulCommutative Y] [HopfAlgebra R Y] [Ring Z] [IsMulCommutative Z]
+  [HopfAlgebra R Z]
 
-attribute [instance] commRing hopfAlgebra
+attribute [instance] commRing isComm hopfAlgebra
 
-initialize_simps_projections CommHopfAlgCat (-commRing, -hopfAlgebra)
+initialize_simps_projections CommHopfAlgCat (-commRing, -isComm, -hopfAlgebra)
 
 instance : CoeSort (CommHopfAlgCat R) (Type v) := ⟨CommHopfAlgCat.X⟩
 
 attribute [coe] CommHopfAlgCat.X
 
 variable (R) in
-lemma coe_of (X : Type v) [Ring X] [IsMulCommutative X] [HopfAlgebra R X] : (of R X : Type v) = X := rfl
+lemma coe_of (X : Type v) [Ring X] [IsMulCommutative X] [HopfAlgebra R X] :
+    (of R X : Type v) = X := rfl
 
 /-- The type of morphisms in `CommHopfAlgCat R`. -/
 @[ext]
@@ -68,7 +70,8 @@ instance : ConcreteCategory (CommHopfAlgCat.{v} R) (· →ₐc[R] ·) where
 abbrev Hom.hom (f : Hom A B) := ConcreteCategory.hom (C := CommHopfAlgCat R) f
 
 /-- Typecheck a `BialgHom` as a morphism in `CommHopfAlgCat R`. -/
-abbrev ofHom {_ : CommRing X} {_ : CommRing Y} {_ : HopfAlgebra R X} {_ : HopfAlgebra R Y}
+abbrev ofHom {_ : Ring X} [IsMulCommutative X] {_ : Ring Y} [IsMulCommutative Y]
+    {_ : HopfAlgebra R X} {_ : HopfAlgebra R Y}
     (f : X →ₐc[R] Y) : of R X ⟶ of R Y := ConcreteCategory.ofHom (C := CommHopfAlgCat R) f
 
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
@@ -109,7 +112,10 @@ instance : Inhabited (CommHopfAlgCat R) := ⟨of R R⟩
 
 lemma forget_obj (A : CommHopfAlgCat.{v} R) : (forget (CommHopfAlgCat.{v} R)).obj A = A := rfl
 
-instance : CommRing ((forget (CommHopfAlgCat R)).obj A) := inferInstanceAs <| CommRing A
+instance : Ring ((forget (CommHopfAlgCat R)).obj A) := inferInstanceAs <| Ring A
+
+instance : IsMulCommutative ((forget (CommHopfAlgCat R)).obj A) :=
+  inferInstanceAs <| IsMulCommutative A
 
 instance : HopfAlgebra R ((forget (CommHopfAlgCat R)).obj A) := inferInstanceAs <| HopfAlgebra R A
 
@@ -133,7 +139,8 @@ def ofIsoSelf (A : CommHopfAlgCat.{v} R) : of R A ≅ A where
 /-- Build an isomorphism in the category `CommHopfAlgCat R` from a `BialgEquiv` between
 `HopfAlgebra`s. -/
 @[expose, simps]
-def isoMk {X Y : Type v} {_ : CommRing X} {_ : CommRing Y} {_ : HopfAlgebra R X}
+def isoMk {X Y : Type v} {_ : Ring X} [IsMulCommutative X] {_ : Ring Y} [IsMulCommutative Y]
+    {_ : HopfAlgebra R X}
     {_ : HopfAlgebra R Y} (e : X ≃ₐc[R] Y) : of R X ≅ of R Y where
   hom := ofHom (e : X →ₐc[R] Y)
   inv := ofHom (e.symm : Y →ₐc[R] X)

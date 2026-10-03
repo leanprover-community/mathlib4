@@ -79,12 +79,13 @@ theorem IsIntegrallyClosed.of_localization_maximal [IsDomain R]
     rw [subalgebra.ofField_eq, MaximalSpectrum.toPrimeSpectrum]
 
 theorem isIntegrallyClosed_ofLocalizationMaximal :
-    OfLocalizationMaximal fun R _ => ([IsDomain R] → IsIntegrallyClosed R) :=
-  fun _ _ h _ ↦ IsIntegrallyClosed.of_localization_maximal fun p _ hpm ↦ h p hpm
+    OfLocalizationMaximal fun R _ _ => ([IsDomain R] → IsIntegrallyClosed R) :=
+  fun _ _ _ h _ ↦ IsIntegrallyClosed.of_localization_maximal fun p _ hpm ↦ h p hpm
 
 variable
   (Rₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
-  [∀ (P : Ideal R) [P.IsMaximal], CommRing (Rₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], Ring (Rₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsMulCommutative (Rₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], Algebra R (Rₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], IsLocalization.AtPrime (Rₚ P) P]
 

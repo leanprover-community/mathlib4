@@ -43,14 +43,13 @@ lemma GroupSeminormClass.toSeminormedGroup_norm_eq [Group α] [GroupSeminormClas
 -- See note [reducible non-instances]
 @[to_additive /-- Constructs a `SeminormedAddCommGroup` structure from an `AddGroupSeminormClass`
 on an `AddCommGroup`. -/]
-abbrev GroupSeminormClass.toSeminormedCommGroup [Group α] [IsMulCommutative α] [GroupSeminormClass F α ℝ]
-    (f : F) : SeminormedCommGroup α where
-  __ := GroupSeminormClass.toSeminormedGroup f
-  __ : CommGroup α := inferInstance
+abbrev GroupSeminormClass.toSeminormedCommGroup [Group α] [IsMulCommutative α]
+    [GroupSeminormClass F α ℝ] (f : F) : SeminormedGroup α :=
+  GroupSeminormClass.toSeminormedGroup f
 
 @[to_additive]
-lemma GroupSeminormClass.toSeminormedCommGroup_norm_eq [Group α] [IsMulCommutative α] [GroupSeminormClass F α ℝ]
-    (f : F) (x : α) : @norm _ (GroupSeminormClass.toSeminormedCommGroup f).toNorm x = f x := rfl
+lemma GroupSeminormClass.toSeminormedCommGroup_norm_eq [Group α] [IsMulCommutative α]
+    [GroupSeminormClass F α ℝ] (f : F) (x : α) : @norm _ (GroupSeminormClass.toSeminormedCommGroup f).toNorm x = f x := rfl
 
 /-- Constructs a `NormedGroup` structure from a `GroupNormClass` on a `Group`. -/
 -- See note [reducible non-instances]
@@ -70,10 +69,9 @@ lemma GroupNormClass.toNormedGroup_norm_eq [Group α] [GroupNormClass F α ℝ]
 @[to_additive /-- Constructs a `NormedAddCommGroup` structure from an `AddGroupNormClass` on an
 `AddCommGroup`. -/]
 abbrev GroupNormClass.toNormedCommGroup [Group α] [IsMulCommutative α] [GroupNormClass F α ℝ]
-    (f : F) : NormedCommGroup α where
-  __ := GroupNormClass.toNormedGroup f
-  __ : CommGroup α := inferInstance
+    (f : F) : NormedGroup α :=
+  GroupNormClass.toNormedGroup f
 
 @[to_additive]
-lemma GroupNormClass.toNormedCommGroup_norm_eq [Group α] [IsMulCommutative α] [GroupNormClass F α ℝ]
-    (f : F) (x : α) : @norm _ (GroupNormClass.toNormedCommGroup f).toNorm x = f x := rfl
+lemma GroupNormClass.toNormedCommGroup_norm_eq [Group α] [IsMulCommutative α]
+    [GroupNormClass F α ℝ] (f : F) (x : α) : @norm _ (GroupNormClass.toNormedCommGroup f).toNorm x = f x := rfl

@@ -540,10 +540,10 @@ theorem iterate_derivative_X_add_pow (n k : ℕ) (c : R) :
       ring
 
 theorem iterate_derivative_mul_X_pow (n m : ℕ) (p : R[X]) :
-    derivative^[n] (p * X ^ m) =
+    (derivative^[n] (p * X ^ m) : R[X]) =
       ∑ k ∈ range (min m n).succ,
         (n.choose k * m.descFactorial k) • (derivative^[n - k] p * X ^ (m - k)) := by
-  have hsum : derivative^[n] (p * X ^ m) =
+  have hsum : (derivative^[n] (p * X ^ m) : R[X]) =
       ∑ k ∈ range n.succ,
         (n.choose k * m.descFactorial k) • (derivative^[n - k] p * X ^ (m - k)) := by
     simp_rw [iterate_derivative_mul, iterate_derivative_X_pow_eq_smul, mul_smul]
@@ -715,7 +715,7 @@ theorem iterate_derivative_eq_zero_of_degree_lt {k : ℕ} {P : R[X]} (h : P.degr
         linarith [(natDegree_lt_iff_degree_lt hP).mpr h, natDegree_derivative_lt hP'']
 
 theorem iterate_derivative_prod_X_sub_C {k : ℕ} {S : Finset R} (hk : k ≤ #S) :
-    derivative^[k] (∏ a ∈ S, (X - C a)) =
+    (derivative^[k] (∏ a ∈ S, (X - C a)) : R[X]) =
     k.factorial * ∑ T ∈ S.powersetCard (#S - k), ∏ a ∈ T, (X - C a) := by
   classical
   induction k
@@ -727,7 +727,7 @@ theorem iterate_derivative_prod_X_sub_C {k : ℕ} {S : Finset R} (hk : k ≤ #S)
       nsmul_eq_mul, derivative_sum, Nat.factorial_succ, mul_comm (k + 1), Nat.cast_mul, mul_assoc]
     congr 1
     calc
-      ∑ T ∈ S.powersetCard (#S - k), derivative (∏ a ∈ T, (X - C a)) =
+      (∑ T ∈ S.powersetCard (#S - k), derivative (∏ a ∈ T, (X - C a)) : R[X]) =
       ∑ T ∈ S.powersetCard (#S - k), ∑ i ∈ T, ∏ a ∈ T.erase i, (X - C a) := by
         congr! with T hT
         simp_rw [derivative_prod_finset, derivative_X_sub_C, mul_one]

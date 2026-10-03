@@ -502,7 +502,7 @@ theorem HasStrictFDerivAt.list_prod' {l : List ι} {x : E}
   simp_rw [Fin.getElem_fin, ← l.get_eq_getElem, ← List.map_get_finRange l, List.map_map]
   -- After https://github.com/leanprover-community/mathlib4/issues/19108, we have to be optimistic with `:)`s; otherwise Lean decides it need to find
   -- `NormedAddCommGroup (List 𝔸)` which is nonsense.
-  refine .congr_fderiv (hasStrictFDerivAt_list_prod_finRange'.comp x
+  refine .congr_fderiv ((hasStrictFDerivAt_list_prod_finRange' (𝕜 := 𝕜) (𝔸 := 𝔸)).comp x
     (hasStrictFDerivAt_pi.mpr fun i ↦ h (l.get i) (List.getElem_mem ..)) :) ?_
   ext m
   simp_rw [List.map_take, List.map_drop, List.map_map, comp_apply, sum_apply, smul_apply,
@@ -518,7 +518,7 @@ theorem HasFDerivAt.list_prod' {l : List ι} {x : E}
       (∑ i : Fin l.length, ((l.take i).map (f · x)).prod •
         f' l[i] <• ((l.drop (.succ i)).map (f · x)).prod) x := by
   simp_rw [Fin.getElem_fin, ← l.get_eq_getElem, ← List.map_get_finRange l, List.map_map]
-  refine .congr_fderiv (hasFDerivAt_list_prod_finRange'.comp x
+  refine .congr_fderiv ((hasFDerivAt_list_prod_finRange' (𝕜 := 𝕜) (𝔸 := 𝔸)).comp x
     (hasFDerivAt_pi.mpr fun i ↦ h (l.get i) (l.get_mem i)) :) ?_
   ext m
   simp_rw [List.map_take, List.map_drop, List.map_map, comp_apply, sum_apply, smul_apply,
@@ -531,7 +531,7 @@ theorem HasFDerivWithinAt.list_prod' {l : List ι} {x : E}
       (∑ i : Fin l.length, ((l.take i).map (f · x)).prod •
         f' l[i] <• ((l.drop (.succ i)).map (f · x)).prod) s x := by
   simp_rw [Fin.getElem_fin, ← l.get_eq_getElem, ← List.map_get_finRange l, List.map_map]
-  refine .congr_fderiv (hasFDerivAt_list_prod_finRange'.comp_hasFDerivWithinAt x
+  refine .congr_fderiv ((hasFDerivAt_list_prod_finRange' (𝕜 := 𝕜) (𝔸 := 𝔸)).comp_hasFDerivWithinAt x
     (hasFDerivWithinAt_pi.mpr fun i ↦ h (l.get i) (l.get_mem i)) :) ?_
   ext m
   simp_rw [List.map_take, List.map_drop, List.map_map, comp_apply, sum_apply, smul_apply,
@@ -558,7 +558,7 @@ theorem HasStrictFDerivAt.multiset_prod [DecidableEq ι] {u : Multiset ι} {x : 
       (u.map fun i ↦ ((u.erase i).map (g · x)).prod • g' i).sum x := by
   simp only [← Multiset.attach_map_val u, Multiset.map_map]
   exact .congr_fderiv
-    (hasStrictFDerivAt_multiset_prod.comp x <|
+    ((hasStrictFDerivAt_multiset_prod (𝕜 := 𝕜) (𝔸' := 𝔸')).comp x <|
       hasStrictFDerivAt_pi.mpr fun i ↦ h (Subtype.val i) i.prop :)
     (by ext; simp [Finset.sum_multiset_map_count, u.erase_attach_map (g · x)])
 
@@ -572,7 +572,7 @@ theorem HasFDerivAt.multiset_prod [DecidableEq ι] {u : Multiset ι} {x : E}
       (u.map fun i ↦ ((u.erase i).map (g · x)).prod • g' i).sum x := by
   simp only [← Multiset.attach_map_val u, Multiset.map_map]
   exact .congr_fderiv
-    (hasFDerivAt_multiset_prod.comp x <| hasFDerivAt_pi.mpr fun i ↦ h (Subtype.val i) i.prop :)
+    ((hasFDerivAt_multiset_prod (𝕜 := 𝕜) (𝔸' := 𝔸')).comp x <| hasFDerivAt_pi.mpr fun i ↦ h (Subtype.val i) i.prop :)
     (by ext; simp [Finset.sum_multiset_map_count, u.erase_attach_map (g · x)])
 
 @[fun_prop]
@@ -582,7 +582,7 @@ theorem HasFDerivWithinAt.multiset_prod [DecidableEq ι] {u : Multiset ι} {x : 
       (u.map fun i ↦ ((u.erase i).map (g · x)).prod • g' i).sum s x := by
   simp only [← Multiset.attach_map_val u, Multiset.map_map]
   exact .congr_fderiv
-    (hasFDerivAt_multiset_prod.comp_hasFDerivWithinAt x <|
+    ((hasFDerivAt_multiset_prod (𝕜 := 𝕜) (𝔸' := 𝔸')).comp_hasFDerivWithinAt x <|
       hasFDerivWithinAt_pi.mpr fun i ↦ h (Subtype.val i) i.prop :)
     (by ext; simp [Finset.sum_multiset_map_count, u.erase_attach_map (g · x)])
 
@@ -612,7 +612,7 @@ theorem HasFDerivAt.finsetProd [DecidableEq ι] {x : E}
     (hg : ∀ i ∈ u, HasFDerivAt (g i) (g' i) x) :
     HasFDerivAt (∏ i ∈ u, g i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, g j x) • g' i) x := by
   simpa [← Finset.prod_attach u] using .congr_fderiv
-    (hasFDerivAt_finsetProd.comp x <| hasFDerivAt_pi.mpr fun i ↦ hg (Subtype.val i) i.prop :)
+    ((hasFDerivAt_finsetProd (𝕜 := 𝕜) (𝔸' := 𝔸')).comp x <| hasFDerivAt_pi.mpr fun i ↦ hg (Subtype.val i) i.prop :)
     (by ext; simp [Finset.prod_erase_attach (g · x), ← u.sum_attach])
 
 @[deprecated (since := "2026-04-08")] alias HasFDerivAt.finset_prod := HasFDerivAt.finsetProd
@@ -621,7 +621,7 @@ theorem HasFDerivWithinAt.finsetProd [DecidableEq ι] {x : E}
     (hg : ∀ i ∈ u, HasFDerivWithinAt (g i) (g' i) s x) :
     HasFDerivWithinAt (∏ i ∈ u, g i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, g j x) • g' i) s x := by
   simpa [← Finset.prod_attach u] using .congr_fderiv
-    (hasFDerivAt_finsetProd.comp_hasFDerivWithinAt x <|
+    ((hasFDerivAt_finsetProd (𝕜 := 𝕜) (𝔸' := 𝔸')).comp_hasFDerivWithinAt x <|
       hasFDerivWithinAt_pi.mpr fun i ↦ hg (Subtype.val i) i.prop :)
     (by ext; simp [Finset.prod_erase_attach (g · x), ← u.sum_attach])
 

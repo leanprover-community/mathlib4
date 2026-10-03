@@ -48,7 +48,7 @@ variable {α V P W Q : Type*} [SeminormedAddGroup V] [IsAddCommutative V] [Pseud
 
 instance (priority := 100) NormedAddTorsor.to_isIsIsometricVAdd : IsIsometricVAdd V P :=
   ⟨fun c => Isometry.of_dist_eq fun x y => by
-    simp [NormedAddTorsor.dist_eq_norm']⟩
+    simp [NormedAddTorsor.dist_eq_norm' (V := V)]⟩
 
 /-- A `SeminormedAddCommGroup` is a `NormedAddTorsor` over itself. -/
 instance (priority := 100) SeminormedAddCommGroup.toNormedAddTorsor : NormedAddTorsor V V where
@@ -63,7 +63,8 @@ instance AffineSubspace.toNormedAddTorsor {R : Type*} [Ring R] [Module R V]
 
 instance : NormedAddTorsor (V × W) (P × Q) where
   dist_eq_norm' x y := by
-    simp only [Prod.dist_eq, NormedAddTorsor.dist_eq_norm', Prod.norm_def, Prod.fst_vsub,
+    simp only [Prod.dist_eq, NormedAddTorsor.dist_eq_norm' (V := V),
+      NormedAddTorsor.dist_eq_norm' (V := W), Prod.norm_def, Prod.fst_vsub,
       Prod.snd_vsub]
 
 section
@@ -241,7 +242,7 @@ abbrev Function.Injective.normedAddTorsor {Q : Type*} [VAdd V Q] [VSub V Q]
     (vsub : ∀ (x y : Q), x -ᵥ y = f x -ᵥ f y)
     (norm : ∀ (x y : Q), dist x y = dist (f x) (f y)) : NormedAddTorsor V Q where
   __ := hf.addTorsor f vadd vsub
-  dist_eq_norm' x y := by simp [norm, NormedAddTorsor.dist_eq_norm', vsub]
+  dist_eq_norm' x y := by simp [norm, NormedAddTorsor.dist_eq_norm' (V := V), vsub]
 
 /-- Pushforward of a normed add torsor along a surjective map. -/
 abbrev Function.Surjective.normedAddTorsor
@@ -251,4 +252,4 @@ abbrev Function.Surjective.normedAddTorsor
     (vsub : ∀ (x y : P), x -ᵥ y = f x -ᵥ f y)
     (norm : ∀ (x y : P), dist x y = dist (f x) (f y)) : NormedAddTorsor V Q where
   __ := hf.addTorsor f vadd vsub
-  dist_eq_norm' := by simp [hf.forall, ← norm, NormedAddTorsor.dist_eq_norm', ← vsub]
+  dist_eq_norm' := by simp [hf.forall, ← norm, NormedAddTorsor.dist_eq_norm' (V := V), ← vsub]

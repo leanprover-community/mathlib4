@@ -80,6 +80,11 @@ theorem discr_prime_pow_eq_unit_mul_pow' [IsCyclotomicExtension {p ^ k} ℚ K]
 integral closure of `ℤ` in `K`. -/
 theorem isIntegralClosure_adjoin_singleton_of_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} ℚ K]
     (hζ : IsPrimitiveRoot ζ (p ^ k)) : IsIntegralClosure (adjoin ℤ ({ζ} : Set K)) ℤ K := by
+  -- TC cannot find `IsScalarTower ℤ _ _` through `AddCommGroup.intIsScalarTower` here: the
+  -- `[AddGroup M] [IsAddCommutative M]` arguments are still metavariables when the `Module R M`
+  -- argument is unified, so the unifier gets stuck.
+  have : IsScalarTower ℤ ℚ K := AddCommGroup.intIsScalarTower (M := K)
+  have : IsScalarTower ℤ (𝓞 K) K := AddCommGroup.intIsScalarTower (M := K)
   refine ⟨Subtype.val_injective, @fun x => ⟨fun h => ⟨⟨x, ?_⟩, rfl⟩, ?_⟩⟩
   swap
   · rintro ⟨y, rfl⟩
@@ -166,6 +171,10 @@ noncomputable def _root_.IsPrimitiveRoot.adjoinEquivRingOfIntegersOfPrimePow
     [IsCyclotomicExtension {p ^ k} ℚ K] (hζ : IsPrimitiveRoot ζ (p ^ k)) :
     adjoin ℤ ({ζ} : Set K) ≃ₐ[ℤ] 𝓞 K :=
   let _ := isIntegralClosure_adjoin_singleton_of_prime_pow hζ
+  -- TC cannot find `IsScalarTower ℤ _ _` through `AddCommGroup.intIsScalarTower` here: the
+  -- `[AddGroup M] [IsAddCommutative M]` arguments are still metavariables when the `Module R M`
+  -- argument is unified, so the unifier gets stuck.
+  haveI : IsScalarTower ℤ (𝓞 K) K := AddCommGroup.intIsScalarTower (M := K)
   IsIntegralClosure.equiv ℤ (adjoin ℤ ({ζ} : Set K)) K (𝓞 K)
 
 /-- The ring of integers of a `p ^ k`-th cyclotomic extension of `ℚ` is a cyclotomic extension. -/
@@ -258,6 +267,11 @@ set_option backward.isDefEq.respectTransparency.types false in
 theorem zeta_sub_one_prime_of_ne_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ (p ^ (k + 1))) (hodd : p ≠ 2) :
     Prime (hζ.toInteger - 1) := by
+  -- TC cannot find `IsScalarTower ℤ _ _` through `AddCommGroup.intIsScalarTower` here: the
+  -- `[AddGroup M] [IsAddCommutative M]` arguments are still metavariables when the `Module R M`
+  -- argument is unified, so the unifier gets stuck.
+  have : IsScalarTower ℤ ℚ K := AddCommGroup.intIsScalarTower (M := K)
+  have : IsScalarTower ℤ (𝓞 K) K := AddCommGroup.intIsScalarTower (M := K)
   let := IsCyclotomicExtension.numberField {p ^ (k + 1)} ℚ K
   refine Ideal.prime_of_irreducible_absNorm_span (fun h ↦ ?_) ?_
   · apply hζ.pow_ne_one_of_pos_of_lt one_ne_zero (one_lt_pow₀ hp.out.one_lt (by simp))
@@ -277,6 +291,11 @@ set_option backward.isDefEq.respectTransparency.types false in
 theorem zeta_sub_one_prime_of_two_pow [IsCyclotomicExtension {2 ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ (2 ^ (k + 1))) :
     Prime (hζ.toInteger - 1) := by
+  -- TC cannot find `IsScalarTower ℤ _ _` through `AddCommGroup.intIsScalarTower` here: the
+  -- `[AddGroup M] [IsAddCommutative M]` arguments are still metavariables when the `Module R M`
+  -- argument is unified, so the unifier gets stuck.
+  have : IsScalarTower ℤ ℚ K := AddCommGroup.intIsScalarTower (M := K)
+  have : IsScalarTower ℤ (𝓞 K) K := AddCommGroup.intIsScalarTower (M := K)
   have := IsCyclotomicExtension.numberField {2 ^ (k + 1)} ℚ K
   refine Ideal.prime_of_irreducible_absNorm_span (fun h ↦ ?_) ?_
   · apply hζ.pow_ne_one_of_pos_of_lt one_ne_zero (one_lt_pow₀ (by decide) (by simp))
@@ -326,6 +345,11 @@ theorem norm_toInteger_sub_one_eq_one {n : ℕ} [IsCyclotomicExtension {n} ℚ K
     (hζ : IsPrimitiveRoot ζ n) (h₁ : 2 < n) (h₂ : ∀ {p : ℕ}, Nat.Prime p → ∀ (k : ℕ), p ^ k ≠ n) :
     have : NeZero n := NeZero.of_gt h₁
     norm ℤ (hζ.toInteger - 1) = 1 := by
+  -- TC cannot find `IsScalarTower ℤ _ _` through `AddCommGroup.intIsScalarTower` here: the
+  -- `[AddGroup M] [IsAddCommutative M]` arguments are still metavariables when the `Module R M`
+  -- argument is unified, so the unifier gets stuck.
+  have : IsScalarTower ℤ ℚ K := AddCommGroup.intIsScalarTower (M := K)
+  have : IsScalarTower ℤ (𝓞 K) K := AddCommGroup.intIsScalarTower (M := K)
   have : NumberField K := IsCyclotomicExtension.numberField {n} ℚ K
   have : NeZero n := NeZero.of_gt h₁
   dsimp only
@@ -339,6 +363,11 @@ is `p ^ p ^ s` if `s ≤ k` and `p ^ (k - s + 1) ≠ 2`. -/
 lemma norm_toInteger_pow_sub_one_of_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ (p ^ (k + 1))) {s : ℕ} (hs : s ≤ k) (htwo : p ^ (k - s + 1) ≠ 2) :
     Algebra.norm ℤ (hζ.toInteger ^ p ^ s - 1) = p ^ p ^ s := by
+  -- TC cannot find `IsScalarTower ℤ _ _` through `AddCommGroup.intIsScalarTower` here: the
+  -- `[AddGroup M] [IsAddCommutative M]` arguments are still metavariables when the `Module R M`
+  -- argument is unified, so the unifier gets stuck.
+  have : IsScalarTower ℤ ℚ K := AddCommGroup.intIsScalarTower (M := K)
+  have : IsScalarTower ℤ (𝓞 K) K := AddCommGroup.intIsScalarTower (M := K)
   have : NumberField K := IsCyclotomicExtension.numberField {p ^ (k + 1)} ℚ K
   rw [Algebra.norm_eq_iff ℤ (Sₘ := K) (Rₘ := ℚ) le_rfl]
   simp [hζ.norm_pow_sub_one_of_prime_pow_ne_two (cyclotomic.irreducible_rat (NeZero.pos _)) hs htwo]
@@ -349,6 +378,11 @@ is `(-2) ^ 2 ^ k`. -/
 lemma norm_toInteger_pow_sub_one_of_two [IsCyclotomicExtension {2 ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ (2 ^ (k + 1))) :
     Algebra.norm ℤ (hζ.toInteger ^ 2 ^ k - 1) = (-2) ^ 2 ^ k := by
+  -- TC cannot find `IsScalarTower ℤ _ _` through `AddCommGroup.intIsScalarTower` here: the
+  -- `[AddGroup M] [IsAddCommutative M]` arguments are still metavariables when the `Module R M`
+  -- argument is unified, so the unifier gets stuck.
+  have : IsScalarTower ℤ ℚ K := AddCommGroup.intIsScalarTower (M := K)
+  have : IsScalarTower ℤ (𝓞 K) K := AddCommGroup.intIsScalarTower (M := K)
   have : NumberField K := IsCyclotomicExtension.numberField {2 ^ (k + 1)} ℚ K
   rw [Algebra.norm_eq_iff ℤ (Sₘ := K) (Rₘ := ℚ) le_rfl]
   simp [hζ.norm_pow_sub_one_two (cyclotomic.irreducible_rat (pow_pos (by decide) _))]
@@ -370,6 +404,11 @@ theorem norm_toInteger_sub_one_of_eq_two_pow {k : ℕ} {K : Type*} [Field K]
     {ζ : K} [CharZero K] [IsCyclotomicExtension {2 ^ (k + 2)} ℚ K]
     (hζ : IsPrimitiveRoot ζ (2 ^ (k + 2))) :
     norm ℤ (hζ.toInteger - 1) = 2 := by
+  -- TC cannot find `IsScalarTower ℤ _ _` through `AddCommGroup.intIsScalarTower` here: the
+  -- `[AddGroup M] [IsAddCommutative M]` arguments are still metavariables when the `Module R M`
+  -- argument is unified, so the unifier gets stuck.
+  have : IsScalarTower ℤ ℚ K := AddCommGroup.intIsScalarTower (M := K)
+  have : IsScalarTower ℤ (𝓞 K) K := AddCommGroup.intIsScalarTower (M := K)
   have : NumberField K := IsCyclotomicExtension.numberField {2 ^ (k + 2)} ℚ K
   rw [norm_eq_iff ℤ (Sₘ := K) (Rₘ := ℚ) le_rfl, map_sub, map_one, eq_intCast, Int.cast_ofNat,
     RingOfIntegers.map_mk, hζ.norm_sub_one_two (Nat.le_add_left 2 k)
@@ -555,6 +594,11 @@ theorem prime_dvd_of_dvd_norm_sub_one {n : ℕ} (hn : 2 ≤ n) {K : Type*}
     [Field K] [NumberField K] {ζ : K} {p : ℕ} [hF : Fact (Nat.Prime p)] (hζ : IsPrimitiveRoot ζ n)
     (hp : haveI : NeZero n := NeZero.of_gt hn; (p : ℤ) ∣ norm ℤ (hζ.toInteger - 1)) :
     p ∣ n := by
+  -- TC cannot find `IsScalarTower ℤ _ _` through `AddCommGroup.intIsScalarTower` here: the
+  -- `[AddGroup M] [IsAddCommutative M]` arguments are still metavariables when the `Module R M`
+  -- argument is unified, so the unifier gets stuck.
+  have : IsScalarTower ℤ ℚ K := AddCommGroup.intIsScalarTower (M := K)
+  have : IsScalarTower ℤ (𝓞 K) K := AddCommGroup.intIsScalarTower (M := K)
   have : NeZero n := NeZero.of_gt hn
   obtain ⟨μ, hC, hμ, h⟩ :
       ∃ μ : ℚ⟮ζ⟯, ∃ (_ : IsCyclotomicExtension {n} ℚ ℚ⟮ζ⟯), ∃ (hμ : IsPrimitiveRoot μ n),
@@ -562,6 +606,7 @@ theorem prime_dvd_of_dvd_norm_sub_one {n : ℕ} (hn : 2 ≤ n) {K : Type*}
     refine ⟨IntermediateField.AdjoinSimple.gen ℚ ζ,
       intermediateField_adjoin_isCyclotomicExtension ℚ hζ, coe_submonoidClass_iff.mp hζ, ?_⟩
     have : NumberField ℚ⟮ζ⟯ := of_intermediateField _
+    have : IsScalarTower ℤ (𝓞 ℚ⟮ζ⟯) ℚ⟮ζ⟯ := AddCommGroup.intIsScalarTower (M := ℚ⟮ζ⟯)
     rw [norm_eq_iff ℤ (Sₘ := K) (Rₘ := ℚ) le_rfl, map_sub, map_one, RingOfIntegers.map_mk,
       show ζ - 1 = algebraMap ℚ⟮ζ⟯ K (IntermediateField.AdjoinSimple.gen ℚ ζ - 1) by rfl,
       ← norm_norm (S := ℚ⟮ζ⟯), Algebra.norm_algebraMap, map_pow, map_pow, ← norm_localization ℤ
@@ -620,6 +665,11 @@ theorem discr_prime_pow [IsCyclotomicExtension {p ^ k} ℚ K] :
     haveI : NumberField K := IsCyclotomicExtension.numberField {p ^ k} ℚ K
     NumberField.discr K =
     (-1) ^ ((p ^ k).totient / 2) * p ^ (p ^ (k - 1) * ((p - 1) * k - 1)) := by
+  -- TC cannot find `IsScalarTower ℤ _ _` through `AddCommGroup.intIsScalarTower` here: the
+  -- `[AddGroup M] [IsAddCommutative M]` arguments are still metavariables when the `Module R M`
+  -- argument is unified, so the unifier gets stuck.
+  have : IsScalarTower ℤ ℚ K := AddCommGroup.intIsScalarTower (M := K)
+  have : IsScalarTower ℤ (𝓞 K) K := AddCommGroup.intIsScalarTower (M := K)
   have hζ := IsCyclotomicExtension.zeta_spec (p ^ k) ℚ K
   have : NumberField K := IsCyclotomicExtension.numberField {p ^ k} ℚ K
   let pB₁ := integralPowerBasisOfPrimePow hζ
@@ -741,6 +791,17 @@ private theorem adjoin_singleton_eq_top_aux [NumberField K] (F₁ F₂ : Interme
     (h₂ : ℤ[hζ₂.toInteger] = ⊤) (h : n₁.Coprime n₂) (htop : F₁ ⊔ F₂ = ⊤)
     {ζ : K} (hζ : IsPrimitiveRoot ζ (n₁ * n₂)) :
     ℤ[hζ.toInteger] = ⊤ := by
+  -- TC cannot find `IsScalarTower ℤ _ _` through `AddCommGroup.intIsScalarTower` here: the
+  -- `[AddGroup M] [IsAddCommutative M]` arguments are still metavariables when the `Module R M`
+  -- argument is unified, so the unifier gets stuck.
+  have : IsScalarTower ℤ ℚ K := AddCommGroup.intIsScalarTower (M := K)
+  have : IsScalarTower ℤ (𝓞 K) K := AddCommGroup.intIsScalarTower (M := K)
+  have : IsScalarTower ℤ (𝓞 F₁) K := AddCommGroup.intIsScalarTower (M := K)
+  have : IsScalarTower ℤ (𝓞 F₂) K := AddCommGroup.intIsScalarTower (M := K)
+  have : IsScalarTower ℤ (𝓞 F₁) F₁ := AddCommGroup.intIsScalarTower (M := F₁)
+  have : IsScalarTower ℤ (𝓞 F₂) F₂ := AddCommGroup.intIsScalarTower (M := F₂)
+  have : IsScalarTower ℤ (𝓞 F₁) (𝓞 K) := AddCommGroup.intIsScalarTower (M := 𝓞 K)
+  have : IsScalarTower ℤ (𝓞 F₂) (𝓞 K) := AddCommGroup.intIsScalarTower (M := 𝓞 K)
   have h_cpr : IsCoprime (NumberField.discr F₁) (NumberField.discr F₂) := by
     rw [Int.isCoprime_iff_nat_coprime, natAbs_discr n₁ F₁, natAbs_discr n₂ F₂]
     refine Coprime.coprime_div_left ?_ (prod_primeFactors_pow_totient_ediv_dvd (NeZero.pos _))
@@ -801,6 +862,10 @@ open Algebra in
 theorem isIntegralClosure_adjoin_singleton {ζ : K} [hcycl : IsCyclotomicExtension {n} ℚ K]
     (hζ : IsPrimitiveRoot ζ n) :
     IsIntegralClosure (ℤ[ζ]) ℤ K := by
+  -- TC cannot find `IsScalarTower ℤ _ _` through `AddCommGroup.intIsScalarTower` here: the
+  -- `[AddGroup M] [IsAddCommutative M]` arguments are still metavariables when the `Module R M`
+  -- argument is unified, so the unifier gets stuck.
+  have : IsScalarTower ℤ (𝓞 K) K := AddCommGroup.intIsScalarTower (M := K)
   constructor
   · exact FaithfulSMul.algebraMap_injective _ K
   · intro _
@@ -837,6 +902,10 @@ noncomputable def adjoinEquivRingOfIntegers [IsCyclotomicExtension {n} ℚ K]
     (hζ : IsPrimitiveRoot ζ n) :
     adjoin ℤ ({ζ} : Set K) ≃ₐ[ℤ] 𝓞 K :=
   let _ := isIntegralClosure_adjoin_singleton hζ
+  -- TC cannot find `IsScalarTower ℤ _ _` through `AddCommGroup.intIsScalarTower` here: the
+  -- `[AddGroup M] [IsAddCommutative M]` arguments are still metavariables when the `Module R M`
+  -- argument is unified, so the unifier gets stuck.
+  haveI : IsScalarTower ℤ (𝓞 K) K := AddCommGroup.intIsScalarTower (M := K)
   IsIntegralClosure.equiv ℤ (adjoin ℤ ({ζ} : Set K)) K (𝓞 K)
 
 /-- The ring of integers of an `n`-th cyclotomic extension of `ℚ` is a cyclotomic extension. -/

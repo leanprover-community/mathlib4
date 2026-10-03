@@ -27,16 +27,14 @@ Respectively, these five typeclasses imbue the external direct sum `⨁ i, A i` 
 * `DirectSum.nonUnitalNonAssocSemiring`, `DirectSum.nonUnitalNonAssocRing`
 * `DirectSum.semiring`
 * `DirectSum.ring`
-* `DirectSum.commSemiring`
-* `DirectSum.commRing`
+* `DirectSum.commSemiring` (an `IsMulCommutative` instance)
 
 the base ring `A 0` with instances of these types:
 
 * `NonUnitalNonAssocSemiring (A 0)`, `NonUnitalNonAssocRing (A 0)`
 * `Semiring (A 0)`
 * `Ring (A 0)`
-* `CommSemiring (A 0)`
-* `CommRing (A 0)`
+* `IsMulCommutative (A 0)`
 
 and the `i`th grade `A i` with `A 0`-actions (`•`) of these types:
 
@@ -316,9 +314,9 @@ private theorem mul_comm (a b : ⨁ i, A i) : a * b = b * a := by
   rw [AddMonoidHom.flip_apply, mulHom_of_of, mulHom_of_of]
   exact of_eq_of_gradedMonoid_eq (GCommSemiring.mul_comm ⟨ai, ax⟩ ⟨bi, bx⟩)
 
-/-- The `CommSemiring` structure derived from `GCommSemiring A`. -/
-instance commSemiring : CommSemiring (⨁ i, A i) where
-  mul_comm := private mul_comm A
+/-- The commutative multiplication on `⨁ i, A i` derived from `GCommSemiring A`. -/
+instance commSemiring : IsMulCommutative (⨁ i, A i) where
+  is_comm := ⟨DirectSum.mul_comm A⟩
 
 end CommSemiring
 
@@ -344,15 +342,6 @@ instance ring : Ring (⨁ i, A i) where
     (congrArg (of A 0) <| GRing.intCast_negSucc_ofNat _).trans <| map_neg _ _
 
 end Ring
-
-section CommRing
-
-variable [∀ i, AddGroup (A i)] [∀ i, IsAddCommutative (A i)] [AddMonoid ι] [IsAddCommutative ι] [GCommRing A]
-
-/-- The `CommRing` derived from `GCommSemiring A`. -/
-instance commRing : CommRing (⨁ i, A i) where
-
-end CommRing
 
 /-! ### Instances for `A 0`
 
@@ -457,11 +446,9 @@ section CommSemiring
 
 variable [∀ i, AddMonoid (A i)] [∀ i, IsAddCommutative (A i)] [AddMonoid ι] [IsAddCommutative ι] [GCommSemiring A]
 
-/-- The `CommSemiring` structure derived from `GCommSemiring A`. -/
-scoped instance (priority := 900) : CommSemiring (A 0) :=
-  Function.Injective.commSemiring (of A 0) DFinsupp.single_injective (of A 0).map_zero
-    (of_zero_one A) (of A 0).map_add (of_zero_mul A) (fun _ _ ↦ map_nsmul _ _ _)
-    (fun _ _ => of_zero_pow _ _ _) (of_natCast A)
+/-- The commutative multiplication on `A 0` derived from `GCommSemiring A`. -/
+scoped instance (priority := 900) : IsMulCommutative (A 0) :=
+  Function.Injective.isMulCommutative (of A 0) DFinsupp.single_injective (of_zero_mul A)
 
 end CommSemiring
 
@@ -496,18 +483,6 @@ scoped instance (priority := 900) : Ring (A 0) :=
     (fun _ _ ↦ map_zsmul _ _ _) (fun _ _ => of_zero_pow _ _ _) (of_natCast A) (of_intCast A)
 
 end Ring
-
-section CommRing
-
-variable [∀ i, AddGroup (A i)] [∀ i, IsAddCommutative (A i)] [AddMonoid ι] [IsAddCommutative ι] [GCommRing A]
-
-/-- The `CommRing` derived from `GCommSemiring A`. -/
-scoped instance (priority := 900) : CommRing (A 0) :=
-  Function.Injective.commRing (of A 0) DFinsupp.single_injective (of A 0).map_zero (of_zero_one A)
-    (of A 0).map_add (of_zero_mul A) (of A 0).map_neg (of A 0).map_sub (fun _ _ ↦ map_nsmul _ _ _)
-    (fun _ _ ↦ map_zsmul _ _ _) (fun _ _ => of_zero_pow _ _ _) (of_natCast A) (of_intCast A)
-
-end CommRing
 
 end GradeZero
 

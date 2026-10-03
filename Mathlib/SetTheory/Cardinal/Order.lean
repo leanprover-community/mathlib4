@@ -212,17 +212,16 @@ private theorem cast_succ (n : ℕ) : ((n + 1 : ℕ) : Cardinal.{u}) = n + 1 := 
   rw [← mk_option]
   simp
 
-instance commSemiring : CommSemiring Cardinal.{u} where
+instance semiring : Semiring Cardinal.{u} where
   zero_add a := inductionOn a fun α => mk_congr <| Equiv.emptySum _ α
   add_zero a := inductionOn a fun α => mk_congr <| Equiv.sumEmpty α _
   add_assoc a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.sumAssoc α β γ
-  add_comm a b := inductionOn₂ a b fun α β => mk_congr <| Equiv.sumComm α β
+  is_comm := ⟨fun a b => inductionOn₂ a b fun α β => mk_congr <| Equiv.sumComm α β⟩
   zero_mul a := inductionOn a fun _ => mk_eq_zero _
   mul_zero a := inductionOn a fun _ => mk_eq_zero _
   one_mul a := inductionOn a fun α => mk_congr <| Equiv.uniqueProd α _
   mul_one a := inductionOn a fun α => mk_congr <| Equiv.prodUnique α _
   mul_assoc a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.prodAssoc α β γ
-  mul_comm a b := inductionOn₂ a b fun α β => mk_congr <| Equiv.prodComm α β
   left_distrib a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.prodSumDistrib α β γ
   right_distrib a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.sumProdDistrib α β γ
   nsmul := nsmulRec
@@ -232,6 +231,9 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   natCast n := lift #(Fin n)
   natCast_zero := rfl
   natCast_succ n := private cast_succ n
+
+instance isMulCommutative : IsMulCommutative Cardinal.{u} :=
+  ⟨⟨fun a b => inductionOn₂ a b fun α β => mk_congr <| Equiv.prodComm α β⟩⟩
 
 theorem mk_bool : #Bool = 2 := by simp
 
@@ -306,12 +308,12 @@ instance noZeroDivisors : NoZeroDivisors Cardinal.{u} where
       simpa only [mul_def, mk_eq_zero_iff, isEmpty_prod] using id
 
 -- Computable instance to prevent a non-computable one being found via the one above
-instance : CommMonoidWithZero Cardinal.{u} :=
-  { Cardinal.commSemiring with }
+instance : MonoidWithZero Cardinal.{u} :=
+  { Cardinal.semiring with }
 
 -- Computable instance to prevent a non-computable one being found via the one above
-instance : CommMonoid Cardinal.{u} :=
-  { Cardinal.commSemiring with }
+instance : Monoid Cardinal.{u} :=
+  { Cardinal.semiring with }
 
 theorem zero_power_le (c : Cardinal.{u}) : (0 : Cardinal.{u}) ^ c ≤ 1 := by
   by_cases h : c = 0

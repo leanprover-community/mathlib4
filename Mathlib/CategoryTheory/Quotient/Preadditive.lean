@@ -60,8 +60,8 @@ with the addition. -/
 @[instance_reducible]
 def preadditive
     (hr : ∀ ⦃X Y : C⦄ (f₁ f₂ g₁ g₂ : X ⟶ Y) (_ : r f₁ f₂) (_ : r g₁ g₂), r (f₁ + g₁) (f₂ + g₂)) :
-    Preadditive (Quotient r) where
-  homGroup P Q :=
+    Preadditive (Quotient r) :=
+  letI homGroup (P Q : Quotient r) : AddGroup (P ⟶ Q) :=
     let iZ : Zero (P ⟶ Q) :=
       { zero := Quot.mk _ 0 }
     let iA : Add (P ⟶ Q) :=
@@ -71,17 +71,18 @@ def preadditive
     { add_assoc := by rintro ⟨_⟩ ⟨_⟩ ⟨_⟩; congrm (functor r).map $(add_assoc _ _ _)
       zero_add := by rintro ⟨_⟩; congrm (functor r).map $(zero_add _)
       add_zero := by rintro ⟨_⟩; congrm (functor r).map $(add_zero _)
-      add_comm := by rintro ⟨_⟩ ⟨_⟩; congrm (functor r).map $(add_comm _ _)
       neg_add_cancel := by rintro ⟨_⟩; congrm (functor r).map $(neg_add_cancel _)
       -- todo: use a better defeq
       nsmul := nsmulRec
       zsmul := zsmulRec }
-  add_comp := by
-    rintro _ _ _ ⟨_⟩ ⟨_⟩ ⟨_⟩
-    congrm (functor r).map $(by apply Preadditive.add_comp)
-  comp_add := by
-    rintro _ _ _ ⟨_⟩ ⟨_⟩ ⟨_⟩
-    congrm (functor r).map $(by apply Preadditive.comp_add)
+  { homGroup
+    isAddComm _ _ := ⟨⟨by rintro ⟨_⟩ ⟨_⟩; congrm (functor r).map $(add_comm _ _)⟩⟩
+    add_comp := by
+      rintro _ _ _ ⟨_⟩ ⟨_⟩ ⟨_⟩
+      congrm (functor r).map $(by apply Preadditive.add_comp)
+    comp_add := by
+      rintro _ _ _ ⟨_⟩ ⟨_⟩ ⟨_⟩
+      congrm (functor r).map $(by apply Preadditive.comp_add) }
 
 lemma functor_additive
     (hr : ∀ ⦃X Y : C⦄ (f₁ f₂ g₁ g₂ : X ⟶ Y) (_ : r f₁ f₂) (_ : r g₁ g₂), r (f₁ + g₁) (f₂ + g₂)) :

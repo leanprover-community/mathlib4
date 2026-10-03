@@ -152,7 +152,7 @@ def Hom.residueDegree (f : X ⟶ Y) (x : X) : ℕ :=
 lemma Hom.residueDegree_id (x : X) : (𝟙 _ : X ⟶ X).residueDegree x = 1 := by
   dsimp [residueDegree]
   rw [residueFieldMap_id]
-  exact CommSemiring.finrank_self _
+  exact CommSemiring.finrank_self (X.residueField ((𝟙 X) x))
 
 @[reassoc]
 lemma evaluation_naturality {V : Opens Y} (x : X) (hx : f x ∈ V) :

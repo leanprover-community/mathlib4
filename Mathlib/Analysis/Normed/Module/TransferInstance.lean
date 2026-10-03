@@ -25,16 +25,23 @@ namespace Equiv
 
 variable (e : α ≃ β)
 
-/-- Transfer a `SeminormedCommGroup` across an `Equiv` -/
-@[to_additive /-- Transfer a `SeminormedAddCommGroup` across an `Equiv` -/]
+/-- Transfer a `SeminormedCommGroup` across an `Equiv`. Under the unbundling this is the
+`SeminormedGroup` half; the commutativity half is `Equiv.commGroup`. -/
+@[to_additive /-- Transfer a `SeminormedAddCommGroup` across an `Equiv`. Under the unbundling
+this is the `SeminormedAddGroup` half; the commutativity half is `Equiv.addCommGroup`. -/]
 protected abbrev seminormedCommGroup [SeminormedGroup β] [IsMulCommutative β] (e : α ≃ β) :
-    SeminormedCommGroup α :=
+    SeminormedGroup α :=
+  letI := e.group
   letI := e.commGroup
   { SeminormedCommGroup.induced _ _ e.mulEquiv with toPseudoMetricSpace := e.pseudometricSpace }
 
-/-- Transfer a `NormedCommGroup` across an `Equiv` -/
-@[to_additive /-- Transfer a `NormedAddCommGroup` across an `Equiv` -/]
-protected abbrev normedCommGroup [NormedGroup β] [IsMulCommutative β] (e : α ≃ β) : NormedCommGroup α :=
+/-- Transfer a `NormedCommGroup` across an `Equiv`. Under the unbundling this is the
+`NormedGroup` half; the commutativity half is `Equiv.commGroup`. -/
+@[to_additive /-- Transfer a `NormedAddCommGroup` across an `Equiv`. Under the unbundling this
+is the `NormedAddGroup` half; the commutativity half is `Equiv.addCommGroup`. -/]
+protected abbrev normedCommGroup [NormedGroup β] [IsMulCommutative β] (e : α ≃ β) :
+    NormedGroup α :=
+  letI := e.group
   letI := e.commGroup
   { NormedCommGroup.induced _ _ e.mulEquiv e.injective
     with toPseudoMetricSpace := e.pseudometricSpace }
@@ -43,8 +50,9 @@ end Equiv
 
 /-- Transfer `NormedSpace` across an `AddEquiv` -/
 protected abbrev AddEquiv.normedSpace (𝕜 : Type*) [NormedField 𝕜]
-    [AddGroup α] [IsAddCommutative α] [SeminormedAddGroup β] [IsAddCommutative β] [NormedSpace 𝕜 β] (e : α ≃+ β) :
-    letI : SeminormedAddCommGroup α := .induced _ _ e
+    [AddGroup α] [IsAddCommutative α] [SeminormedAddGroup β] [IsAddCommutative β] [NormedSpace 𝕜 β]
+    (e : α ≃+ β) :
+    letI : SeminormedAddGroup α := SeminormedAddCommGroup.induced _ _ e
     NormedSpace 𝕜 α :=
   letI := e.module 𝕜
   .induced _ _ _ (e.linearEquiv _)

@@ -89,9 +89,9 @@ lemma ord_eq_addVal (x : R) : ord R x = IsDiscreteValuationRing.addVal R x := by
     by_contra!
     rw [Module.length_ne_top_iff, isFiniteLength_iff_isNoetherian_isArtinian] at this
     have art := this.2
-    rw [Ideal.span_singleton_zero] at art
     have : IsArtinianRing R :=
-      (LinearEquiv.isArtinian_iff (Submodule.quotEquivOfEqBot ⊥ rfl).symm).mpr art
+      (LinearEquiv.isArtinian_iff
+        (Submodule.quotEquivOfEqBot _ Ideal.span_singleton_zero).symm).mpr art
     exact IsDiscreteValuationRing.not_krullDimLE_zero R inferInstance
   obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible R
   obtain ⟨m, α, rfl⟩ := IsDiscreteValuationRing.eq_unit_mul_pow_irreducible hx hϖ

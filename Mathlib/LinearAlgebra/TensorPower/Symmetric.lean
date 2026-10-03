@@ -51,7 +51,7 @@ is the quotient of the `ι`-indexed tensor power of `M` by the relation that two
 if they are related by a permutation of `ι`. -/
 def SymmetricPower : Type max u v :=
   (addConGen (SymmetricPower.Rel R ι M)).Quotient
-deriving AddCommMonoid
+deriving AddMonoid, IsAddCommutative
 
 @[inherit_doc]
 scoped[TensorProduct] notation:max "Sym[" R "] " ι:arg M:arg => SymmetricPower R ι M
@@ -62,8 +62,8 @@ scoped[TensorProduct] notation:max "Sym[" R "]^" n:arg M:arg => Sym[R] (Fin n) M
 namespace SymmetricPower
 
 instance (R : Type u) [Ring R] [IsMulCommutative R] (M : Type v) [AddGroup M] [IsAddCommutative M] [Module R M] :
-    AddCommGroup (Sym[R] ι M) :=
-  inferInstanceAs <| AddCommGroup (AddCon.Quotient _)
+    AddGroup (Sym[R] ι M) :=
+  inferInstanceAs <| AddGroup (AddCon.Quotient _)
 
 variable {R ι M} in
 lemma smul (r : R) (x y : ⨂[R] _, M) (h : addConGen (Rel R ι M) x y) :

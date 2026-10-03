@@ -74,8 +74,7 @@ then the coefficient indexed by the order is nonzero. -/
 theorem coeff_order (h : φ ≠ 0) : coeff φ.order.toNat φ ≠ 0 := by
   classical
   simp only [order, h, not_false_iff, dite_eq_right]
-  generalize_proofs h
-  exact Nat.find_spec h
+  exact Nat.find_spec (exists_coeff_ne_zero_iff_ne_zero.mpr h)
 
 /-- If the `n`th coefficient of a formal power series is nonzero,
 then the order of the power series is less than or equal to `n`. -/

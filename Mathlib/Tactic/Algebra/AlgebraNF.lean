@@ -61,11 +61,13 @@ meta def evalExpr {u : Lean.Level} (R : Q(Type u)) (e : Expr) : AtomM Simp.Resul
   let e ← withReducible <| whnf e
   guard e.isApp -- all interesting ring expressions are applications
   let ⟨v, A, e⟩ ← inferTypeQ' e
-  let sA ← synthInstanceQ q(CommSemiring $A)
-  let sR ← synthInstanceQ q(CommSemiring $R)
+  let sA ← synthInstanceQ q(Semiring $A)
+  let iA ← synthInstanceQ q(IsMulCommutative $A)
+  let sR ← synthInstanceQ q(Semiring $R)
+  let iR ← synthInstanceQ q(IsMulCommutative $R)
   let sAlg ← synthInstanceQ q(Algebra $R $A)
-  let cr ← Algebra.mkCache sR
-  let ca ← Algebra.mkCache sA
+  let cr ← Algebra.mkCache sR iR
+  let ca ← Algebra.mkCache sA iA
   assumeInstancesCommute
   let ⟨a, _, pa⟩ ← match
     ← Common.isAtomOrDerivable (Algebra.ringCompute q($sAlg) cr ca) ca.toCache q($e) with

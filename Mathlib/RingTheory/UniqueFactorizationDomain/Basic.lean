@@ -374,12 +374,13 @@ theorem UniqueFactorizationMonoid.iff_exists_prime_factors [MonoidWithZero α] [
     [IsCancelMulZero α] :
     UniqueFactorizationMonoid α ↔
       ∀ a : α, a ≠ 0 → ∃ f : Multiset α, (∀ b ∈ f, Prime b) ∧ f.prod ~ᵤ a :=
-  ⟨fun h => @UniqueFactorizationMonoid.exists_prime_factors _ _ h,
+  ⟨fun h => @UniqueFactorizationMonoid.exists_prime_factors _ _ _ h,
     UniqueFactorizationMonoid.of_exists_prime_factors⟩
 
 section
 
-variable {β : Type*} [MonoidWithZero α] [IsMulCommutative α] [MonoidWithZero β] [IsMulCommutative β]
+variable {β : Type*} [MonoidWithZero α] [IsMulCommutative α] [MonoidWithZero β]
+  [IsMulCommutative β]
 
 theorem MulEquiv.uniqueFactorizationMonoid (e : α ≃* β) (hα : UniqueFactorizationMonoid α) :
     UniqueFactorizationMonoid β := by

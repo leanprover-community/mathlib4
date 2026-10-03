@@ -32,7 +32,7 @@ variable {R : Type*} [Semiring R] [IsMulCommutative R] (S : Submonoid R)
 /-- The forward direction of `isLocalizedModule_iff_isBaseChange`. It is also used to prove the
 other direction. -/
 theorem IsLocalizedModule.isBaseChange [IsLocalizedModule S f] : IsBaseChange A f :=
-  .of_lift_unique _ fun Q _ _ _ _ g ↦ by
+  .of_lift_unique _ fun Q _ _ _ _ _ g ↦ by
     obtain ⟨ℓ, rfl, h₂⟩ := IsLocalizedModule.is_universal S f g fun s ↦ by
       rw [← (Algebra.lsmul R (A := A) R Q).commutes]; exact (IsLocalization.map_units A s).map _
     refine ⟨ℓ.extendScalarsOfIsLocalization S A, by simp, fun g'' h ↦ ?_⟩

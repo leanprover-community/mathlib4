@@ -34,8 +34,9 @@ This file defines the group law on nonsingular projective points.
 
 * `WeierstrassCurve.Projective.nonsingular_neg`: negation preserves the nonsingular condition.
 * `WeierstrassCurve.Projective.nonsingular_add`: addition preserves the nonsingular condition.
-* `WeierstrassCurve.Projective.Point.instAddCommGroup`: the type of nonsingular projective points
-  forms an abelian group under addition.
+* `WeierstrassCurve.Projective.Point.instAddGroup` and
+  `WeierstrassCurve.Projective.Point.instIsAddCommutative`: the type of nonsingular projective
+  points forms an abelian group under addition.
 
 ## Implementation notes
 
@@ -569,7 +570,7 @@ noncomputable def toAffineAddEquiv [DecidableEq F] : W.Point ≃+ W.toAffine.Poi
     · rw [fromAffine_some, toAffineLift_some]
   map_add' := toAffineLift_add
 
-noncomputable instance : AddCommGroup W.Point where
+noncomputable instance : AddGroup W.Point where
   nsmul := nsmulRec
   zsmul := zsmulRec
   zero_add _ := by
@@ -584,14 +585,16 @@ noncomputable instance : AddCommGroup W.Point where
     classical
     apply (toAffineAddEquiv W).injective
     simp only [map_add, toAffineAddEquiv_apply, toAffineLift_neg, neg_add_cancel, toAffineLift_zero]
-  add_comm _ _ := by
-    classical
-    apply (toAffineAddEquiv W).injective
-    simp only [map_add, add_comm]
   add_assoc _ _ _ := by
     classical
     apply (toAffineAddEquiv W).injective
     simp only [map_add, add_assoc]
+
+instance : IsAddCommutative W.Point :=
+  ⟨⟨fun _ _ => by
+    classical
+    apply (toAffineAddEquiv W).injective
+    simp only [map_add, add_comm]⟩⟩
 
 end Point
 

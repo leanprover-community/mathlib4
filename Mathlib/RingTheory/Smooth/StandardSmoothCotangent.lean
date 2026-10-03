@@ -55,7 +55,8 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma cotangentComplexAux_apply [Finite σ] (P : PreSubmersivePresentation R S ι σ)
     (x : P.ker) (i : σ) :
-    P.cotangentComplexAux (Cotangent.mk x) i = (aeval P.val) (pderiv (P.map i) x.val) := by
+    P.cotangentComplexAux (Cotangent.mk (P := P.toExtension) x) i =
+      (aeval P.val) (pderiv (P.map i) x.val) := by
   dsimp only [cotangentComplexAux, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
     cotangentComplex_mk]
   simp only [Generators.toExtension_Ring, Finsupp.lcomapDomain_apply,
@@ -63,7 +64,7 @@ lemma cotangentComplexAux_apply [Finite σ] (P : PreSubmersivePresentation R S �
     Generators.cotangentSpaceBasis_repr_tmul, one_mul]
 
 lemma cotangentComplexAux_zero_iff [Finite σ] {P : PreSubmersivePresentation R S ι σ} (x : P.ker) :
-    P.cotangentComplexAux (Cotangent.mk x) = 0 ↔
+    P.cotangentComplexAux (Cotangent.mk (P := P.toExtension) x) = 0 ↔
       ∀ i : σ, (aeval P.val) (pderiv (P.map i) x.val) = 0 := by
   rw [funext_iff]
   simp_rw [cotangentComplexAux_apply, Pi.zero_apply]
@@ -116,7 +117,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 lemma cotangentComplexAux_surjective : Function.Surjective P.cotangentComplexAux := by
   rw [← LinearMap.range_eq_top, _root_.eq_top_iff, ← P.basisDeriv.span_eq, Submodule.span_le]
   rintro - ⟨i, rfl⟩
-  use Cotangent.mk ⟨P.relation i, P.relation_mem_ker i⟩
+  use Cotangent.mk (P := P.toExtension) ⟨P.relation i, P.relation_mem_ker i⟩
   ext j
   rw [P.cotangentComplexAux_apply]
   simp
@@ -144,7 +145,8 @@ noncomputable def basisCotangent : Basis σ S P.toExtension.Cotangent :=
   P.basisDeriv.map P.cotangentEquiv.symm
 
 lemma basisCotangent_apply (r : σ) :
-    P.basisCotangent r = Extension.Cotangent.mk ⟨P.relation r, P.relation_mem_ker r⟩ := by
+    P.basisCotangent r =
+      Extension.Cotangent.mk (P := P.toExtension) ⟨P.relation r, P.relation_mem_ker r⟩ := by
   symm
   apply P.cotangentEquiv.injective
   ext
@@ -262,10 +264,13 @@ variable (S) in
 of the localization of `S` away from `g`. -/
 noncomputable
 abbrev Generators.cMulXSubOneCotangent : (Generators.localizationAway S r).toExtension.Cotangent :=
-  Extension.Cotangent.mk ⟨C r * X () - 1, C_mul_X_sub_one_mem_ker _⟩
+  Extension.Cotangent.mk (P := (Generators.localizationAway S r).toExtension)
+    ⟨C r * X () - 1, C_mul_X_sub_one_mem_ker _⟩
 
 lemma Generators.cMulXSubOneCotangent_eq :
-    cMulXSubOneCotangent S r = Extension.Cotangent.mk ⟨C r * X () - 1, C_mul_X_sub_one_mem_ker _⟩ :=
+    cMulXSubOneCotangent S r =
+      Extension.Cotangent.mk (P := (Generators.localizationAway S r).toExtension)
+      ⟨C r * X () - 1, C_mul_X_sub_one_mem_ker _⟩ :=
   rfl
 
 lemma SubmersivePresentation.basisCotangent_localizationAway_apply (x : Unit) :

@@ -118,10 +118,9 @@ alias _root_.isSolvable_def := Group.isSolvable_def
 instance (priority := 100) {G : Type*} [Group G] [IsMulCommutative G] : IsSolvable G :=
   ⟨⟨1, le_bot_iff.mp (Abelianization.commutator_subset_ker (MonoidHom.id G))⟩⟩
 
-theorem isSolvable_of_comm {G : Type*} [hG : Group G] (h : ∀ a b : G, a * b = b * a) :
+theorem isSolvable_of_comm {G : Type*} [Group G] (h : ∀ a b : G, a * b = b * a) :
     IsSolvable G := by
-  let hG' : CommGroup G := { hG with mul_comm := h }
-  cases hG
+  have : IsMulCommutative G := ⟨⟨h⟩⟩
   infer_instance
 
 @[deprecated (since := "2026-07-16")]

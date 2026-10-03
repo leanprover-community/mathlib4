@@ -427,7 +427,7 @@ theorem TangentBundle.symmL_trivializationAt
     (trivializationAt E (TangentSpace I) x₀).symmL 𝕜 x =
       mfderiv[range I] (extChartAt I x₀).symm (extChartAt I x₀ x) := by
   have : MDiffAt[range I] ((chartAt H x₀).symm ∘ I.symm) (I (chartAt H x₀ x)) := by
-    simpa using mdifferentiableWithinAt_extChartAt_symm (by simp [hx])
+    simpa using mdifferentiableWithinAt_extChartAt_symm (I := I) (x := x₀) (by simp [hx])
   simp only [hx, mfderivWithin, this, mfld_simps]
   rfl
 

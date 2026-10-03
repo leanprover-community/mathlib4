@@ -261,26 +261,30 @@ local macro "smul_tac" : tactic => `(tactic|
 section CommRing
 
 variable (K) [Ring K] [IsMulCommutative K]
-/-- `K⟮X⟯` is a commutative monoid.
+/-- `K⟮X⟯` is a monoid (commutative, see `RatFunc.instIsMulCommutative`).
 
 This is an intermediate step on the way to the full instance `RatFunc.instCommRing`.
 -/
 @[instance_reducible]
-def instCommMonoid : CommMonoid K⟮X⟯ where
+def instCommMonoid : Monoid K⟮X⟯ where
   mul_assoc := by frac_tac
-  mul_comm := by frac_tac
   one_mul := by frac_tac
   mul_one := by frac_tac
   npow := npowRec
 
-/-- `K⟮X⟯` is an additive commutative group.
+instance instIsMulCommutative : IsMulCommutative K⟮X⟯ :=
+  ⟨⟨by frac_tac⟩⟩
+
+instance instIsAddCommutative : IsAddCommutative K⟮X⟯ :=
+  ⟨⟨by frac_tac⟩⟩
+
+/-- `K⟮X⟯` is an additive group (commutative, see `RatFunc.instIsAddCommutative`).
 
 This is an intermediate step on the way to the full instance `RatFunc.instCommRing`.
 -/
 @[instance_reducible]
-def instAddCommGroup : AddCommGroup K⟮X⟯ where
+def instAddCommGroup : AddGroup K⟮X⟯ where
   add_assoc := by frac_tac
-  add_comm := by frac_tac
   zero_add := by frac_tac
   add_zero := by frac_tac
   neg_add_cancel := by frac_tac
@@ -291,8 +295,8 @@ def instAddCommGroup : AddCommGroup K⟮X⟯ where
   zsmul_succ' _ := by smul_tac
   zsmul_neg' _ := by smul_tac
 
-instance instCommRing : CommRing K⟮X⟯ :=
-  { instCommMonoid K, instAddCommGroup K with
+instance instCommRing : Ring K⟮X⟯ :=
+  { instCommMonoid K, instAddCommGroup K, instIsAddCommutative K with
     zero_mul := by frac_tac
     mul_zero := by frac_tac
     left_distrib := by frac_tac

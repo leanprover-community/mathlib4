@@ -227,9 +227,12 @@ instance [NormedAddGroup E] [IsAddCommutative E] [CompleteSpace E] [InnerProduct
 lemma rank_rankOne {𝕜 E F : Type*} [RCLike 𝕜] [SeminormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
     [NormedAddGroup F] [IsAddCommutative F] [InnerProductSpace 𝕜 F] {x : E} {y : F} (hx : x ≠ 0) (hy : y ≠ 0) :
     (rankOne 𝕜 x y).rank = 1 := by
-  rw [LinearMap.rank, rankOne_def, range_smulRight_apply, Module.rank_eq_one_iff_finrank_eq_one]
-  · exact finrank_span_singleton hx
-  · exact map_eq_zero_iff _ (toDualMap 𝕜 F).injective |>.not.mpr hy
+  have hf : innerSL 𝕜 y ≠ 0 := map_eq_zero_iff _ (toDualMap 𝕜 F).injective |>.not.mpr hy
+  -- unfolding `LinearMap.rank` exposes an auxiliary `IsAddCommutative` proof term that blocks
+  -- `rw`; restate the goal with the generic instance (defeq by proof irrelevance)
+  change Module.rank 𝕜 (LinearMap.range (rankOne 𝕜 x y : F →ₗ[𝕜] E)) = 1
+  rw [rankOne_def, range_smulRight_apply hf, Module.rank_eq_one_iff_finrank_eq_one]
+  exact finrank_span_singleton hx
 
 end InnerProductSpace
 

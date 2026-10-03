@@ -50,13 +50,9 @@ instance addGroupWithOne [∀ i, AddGroupWithOne (f i)] : AddGroupWithOne (∀ i
   intCast_ofNat n := funext fun _ ↦ AddGroupWithOne.intCast_ofNat n
   intCast_negSucc n := funext fun _ ↦ AddGroupWithOne.intCast_negSucc n
 
-/-- A product of `AddCommGroupWithOne`s is an `AddCommGroupWithOne`. -/
-instance addCommGroupWithOne [∀ i, AddGroupWithOne (f i)] [∀ i, IsAddCommutative (f i)] : AddCommGroupWithOne (∀ i, f i) :=
-  { Pi.addGroupWithOne, Pi.addCommGroup with }
-
 instance nonUnitalNonAssocSemiring [∀ i, NonUnitalNonAssocSemiring <| f i] :
     NonUnitalNonAssocSemiring (∀ i : I, f i) :=
-  { Pi.distrib, Pi.addCommMonoid, Pi.mulZeroClass with }
+  { Pi.distrib, Pi.addMonoid, Pi.isAddCommutative, Pi.mulZeroClass with }
 
 instance nonUnitalSemiring [∀ i, NonUnitalSemiring <| f i] : NonUnitalSemiring (∀ i : I, f i) :=
   { Pi.nonUnitalNonAssocSemiring, Pi.semigroupWithZero with }
@@ -67,16 +63,9 @@ instance nonAssocSemiring [∀ i, NonAssocSemiring <| f i] : NonAssocSemiring (�
 instance semiring [∀ i, Semiring <| f i] : Semiring (∀ i : I, f i) :=
   { Pi.nonUnitalSemiring, Pi.nonAssocSemiring, Pi.monoidWithZero with }
 
-instance nonUnitalCommSemiring [∀ i, NonUnitalSemiring <| f i] [∀ i, IsMulCommutative <| f i] :
-    NonUnitalCommSemiring (∀ i : I, f i) :=
-  { Pi.nonUnitalSemiring, Pi.commSemigroup with }
-
-instance commSemiring [∀ i, Semiring <| f i] [∀ i, IsMulCommutative <| f i] : CommSemiring (∀ i : I, f i) :=
-  { Pi.semiring, Pi.commMonoid with }
-
 instance nonUnitalNonAssocRing [∀ i, NonUnitalNonAssocRing <| f i] :
     NonUnitalNonAssocRing (∀ i : I, f i) :=
-  { Pi.addCommGroup, Pi.nonUnitalNonAssocSemiring with }
+  { Pi.addGroup, Pi.nonUnitalNonAssocSemiring with }
 
 instance nonUnitalRing [∀ i, NonUnitalRing <| f i] : NonUnitalRing (∀ i : I, f i) :=
   { Pi.nonUnitalNonAssocRing, Pi.nonUnitalSemiring with }
@@ -85,13 +74,7 @@ instance nonAssocRing [∀ i, NonAssocRing <| f i] : NonAssocRing (∀ i : I, f 
   { Pi.nonUnitalNonAssocRing, Pi.nonAssocSemiring, Pi.addGroupWithOne with }
 
 instance ring [∀ i, Ring <| f i] : Ring (∀ i : I, f i) :=
-  { Pi.semiring, Pi.addCommGroup, Pi.addGroupWithOne with }
-
-instance nonUnitalCommRing [∀ i, NonUnitalRing <| f i] [∀ i, IsMulCommutative <| f i] : NonUnitalCommRing (∀ i : I, f i) :=
-  { Pi.nonUnitalRing, Pi.commSemigroup with }
-
-instance commRing [∀ i, Ring <| f i] [∀ i, IsMulCommutative <| f i] : CommRing (∀ i : I, f i) :=
-  { Pi.ring, Pi.commSemiring with }
+  { Pi.semiring, Pi.addGroup, Pi.addGroupWithOne with }
 
 end Pi
 

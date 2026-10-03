@@ -23,7 +23,7 @@ variable {K : Type*} [Field K]
 
 -- see Note [lower instance priority]
 instance (priority := 100) toEuclideanDomain : EuclideanDomain K :=
-{ toCommRing := toCommRing
+{ toRing := DivisionRing.toRing
   quotient := (· / ·), remainder := fun a b => a - a * b / b, quotient_zero := div_zero,
   quotient_mul_add_remainder_eq := fun a b => by
     by_cases h : b = 0 <;> simp [h, mul_div_cancel₀]

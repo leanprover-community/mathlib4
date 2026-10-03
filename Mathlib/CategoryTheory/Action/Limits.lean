@@ -327,8 +327,9 @@ instance : SMul ℤ (X ⟶ Y) where
 
 instance : Preadditive (Action V G) where
   homGroup X Y :=
-    hom_injective.addCommGroup (M₂ := X.V ⟶ Y.V) _ zero_hom add_hom neg_hom sub_hom
+    hom_injective.addGroup (M₂ := X.V ⟶ Y.V) _ zero_hom add_hom neg_hom sub_hom
       (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  isAddComm X Y := hom_injective.isAddCommutative (M := X ⟶ Y) (N := X.V ⟶ Y.V) _ add_hom
   add_comp := by intros; ext; exact Preadditive.add_comp _ _ _ _ _ _
   comp_add := by intros; ext; exact Preadditive.comp_add _ _ _ _ _ _
 

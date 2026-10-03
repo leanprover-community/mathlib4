@@ -19,7 +19,6 @@ members.
 ## Main definitions
 
 * `GroupWithZero`
-* `CommGroupWithZero`
 -/
 
 public section
@@ -137,10 +136,6 @@ theorem pow_mul_apply_eq_pow_mul {M : Type*} [Monoid M] (f : M₀ → M) {x : M�
 
 end MonoidWithZero
 
-/-- A type `M` is a commutative “monoid with zero” if it is a commutative monoid with zero
-element, and `0` is left and right absorbing. -/
-class CommMonoidWithZero (M₀ : Type*) extends CommMonoid M₀, MonoidWithZero M₀
-
 section MulZeroClass
 
 variable (M₀) [MulZeroClass M₀]
@@ -231,12 +226,6 @@ instance (priority := 100) GroupWithZero.toMulDivCancelClass : MulDivCancelClass
   mul_div_cancel a b hb := by rw [div_eq_mul_inv, mul_assoc, mul_inv_cancel₀ hb, mul_one]
 
 end GroupWithZero
-
-/-- A type `G₀` is a commutative “group with zero”
-if it is a commutative monoid with zero element (distinct from `1`)
-such that every nonzero element is invertible.
-The type is required to come with an “inverse” function, and the inverse of `0` must be `0`. -/
-class CommGroupWithZero (G₀ : Type*) extends CommMonoidWithZero G₀, GroupWithZero G₀
 
 lemma eq_zero_or_one_of_sq_eq_self [MonoidWithZero M₀] [IsRightCancelMulZero M₀]
     {x : M₀} (hx : x ^ 2 = x) :

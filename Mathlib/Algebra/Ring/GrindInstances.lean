@@ -27,6 +27,7 @@ instance (priority := 100) Semiring.toGrindSemiring [s : Semiring α] :
     npow := ⟨fun a n => a^n⟩
     ofNat | 0 | 1 | n + 2 => inferInstance
     natCast := inferInstance
+    add_comm := add_comm
     add_zero := by simp [add_zero]
     mul_one := by simp [mul_one]
     zero_mul := by simp
@@ -47,10 +48,10 @@ instance (priority := 100) Semiring.toGrindSemiring [s : Semiring α] :
       rw [← AddMonoidWithOne.natCast_succ]
     nsmul_eq_natCast_mul n a := nsmul_eq_mul n a }
 
-instance (priority := 100) CommSemiring.toGrindCommSemiring [s : Semiring α] [IsMulCommutative α] :
+instance (priority := 100) CommSemiring.toGrindCommSemiring [Semiring α] [IsMulCommutative α] :
     Grind.CommSemiring α :=
   { Semiring.toGrindSemiring α with
-    mul_comm := s.mul_comm }
+    mul_comm := mul_comm }
 
 instance (priority := 100) Ring.toGrindRing [s : Ring α] :
     Grind.Ring α :=
@@ -69,10 +70,10 @@ instance (priority := 100) Ring.toGrindRing [s : Ring α] :
     intCast_neg := Int.cast_neg
     zsmul_natCast_eq_nsmul n a := natCast_zsmul a n }
 
-instance (priority := 100) CommRing.toGrindCommRing [s : Ring α] [IsMulCommutative α] :
+instance (priority := 100) CommRing.toGrindCommRing [Ring α] [IsMulCommutative α] :
     Grind.CommRing α :=
   { Ring.toGrindRing α with
-    mul_comm := s.mul_comm }
+    mul_comm := mul_comm }
 
 theorem Semiring.toGrindSemiring_ofNat [Semiring α] (n : ℕ) :
     @OfNat.ofNat α n (Lean.Grind.Semiring.ofNat n) = n.cast := by
@@ -82,12 +83,14 @@ theorem Semiring.toGrindSemiring_ofNat [Semiring α] (n : ℕ) :
   | n + 2 => rfl
 
 attribute [local instance] Grind.Semiring.natCast Grind.Ring.intCast in
--- Verify that we can construct a `CommRing` from a `Lean.Grind.CommRing`.
+-- Verify that we can construct a commutative ring (`Ring` plus `IsMulCommutative`) from a
+-- `Lean.Grind.CommRing`.
 -- This is not an instance (or even a `def`) because this direction should never be used.
 -- There is no reason to expect that using `CommRing.toGrindCommRing` and then this construction
--- will give a result defeq to the original `CommRing α`.
-example (s : Grind.CommRing α) : CommRing α :=
+-- will give a result defeq to the original ring structure.
+example (s : Grind.CommRing α) : Ring α :=
   { s with
+    is_comm := ⟨Grind.AddCommMonoid.add_comm⟩
     zero_add := Grind.AddCommMonoid.zero_add
     right_distrib := Grind.Semiring.right_distrib
     mul_zero := Grind.Semiring.mul_zero
@@ -103,6 +106,8 @@ example (s : Grind.CommRing α) : CommRing α :=
     intCast_negSucc n := by
       rw [Int.negSucc_eq, Grind.Ring.intCast_neg,
         Grind.Ring.intCast_natCast_add_one, Grind.Semiring.natCast_succ] }
+
+example (s : Grind.CommRing α) : IsMulCommutative α := ⟨⟨Grind.CommSemiring.mul_comm⟩⟩
 
 -- Verify that we do not have a defeq problems in `Lean.Grind.Semiring` instances.
 example : (inferInstance : Lean.Grind.Semiring Nat) =

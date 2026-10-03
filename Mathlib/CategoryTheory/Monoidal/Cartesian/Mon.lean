@@ -272,8 +272,9 @@ variable [BraidedCategory C]
 @[to_additive
 /-- If `M` is a commutative additive monoid object, then `Hom(X, M)` has a commutative additive
 monoid structure. -/]
-abbrev Hom.commMonoid [IsCommMonObj M] : CommMonoid (X ⟶ M) where
-  mul_comm f g := by simpa [-IsCommMonObj.mul_comm] using! lift g f ≫= IsCommMonObj.mul_comm M
+theorem Hom.commMonoid [IsCommMonObj M] : IsMulCommutative (X ⟶ M) where
+  is_comm := ⟨fun f g ↦ by
+    simpa [-IsCommMonObj.mul_comm] using! lift g f ≫= IsCommMonObj.mul_comm M⟩
 
 namespace Mon.Hom
 variable {M N : Mon C} [IsCommMonObj N.X]

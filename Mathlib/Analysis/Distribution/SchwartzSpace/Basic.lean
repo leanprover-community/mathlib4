@@ -363,7 +363,9 @@ end Sub
 
 section AddCommGroup
 
-instance instAddCommGroup : AddCommGroup 𝓢(E, F) := fast_instance% FunLike.addCommGroup
+instance instAddGroup : AddGroup 𝓢(E, F) := fast_instance% FunLike.addGroup
+
+instance instAddCommGroup : IsAddCommutative 𝓢(E, F) := FunLike.addCommGroup
 
 @[deprecated (since := "2026-06-10")] protected alias sum_apply := sum_apply
 

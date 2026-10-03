@@ -41,7 +41,7 @@ noncomputable def unitization_addEquiv_prod : WithLp 1 (Unitization 𝕜 A) ≃+
     (addEquiv 𝕜 A).trans (WithLp.linearEquiv 1 𝕜 (𝕜 × A)).symm.toAddEquiv
 
 noncomputable instance instUnitizationNormedAddCommGroup :
-    NormedAddCommGroup (WithLp 1 (Unitization 𝕜 A)) :=
+    NormedAddGroup (WithLp 1 (Unitization 𝕜 A)) :=
   NormedAddCommGroup.induced (WithLp 1 (Unitization 𝕜 A)) (WithLp 1 (𝕜 × A))
     (unitization_addEquiv_prod 𝕜 A) (AddEquiv.injective _)
 
@@ -90,7 +90,8 @@ instance instUnitizationRing : Ring (WithLp 1 (Unitization 𝕜 A)) :=
 @[simp]
 lemma unitization_mul (x y : WithLp 1 (Unitization 𝕜 A)) : ofLp (x * y) = ofLp x * ofLp y := rfl
 
-instance {R : Type*} [Semiring R] [IsMulCommutative R] [Algebra R 𝕜] [DistribMulAction R A] [IsScalarTower R 𝕜 A] :
+instance {R : Type*} [Semiring R] [IsMulCommutative R] [Algebra R 𝕜] [DistribMulAction R A]
+    [IsScalarTower R 𝕜 A] :
     Algebra R (WithLp 1 (Unitization 𝕜 A)) :=
   (WithLp.equiv 1 (Unitization 𝕜 A)).algebra R
 
@@ -109,8 +110,9 @@ lemma unitization_algebraMap (r : 𝕜) :
 
 /-- `equiv` bundled as an algebra isomorphism with `Unitization 𝕜 A`. -/
 @[simps!]
-def unitizationAlgEquiv (R : Type*) [Semiring R] [IsMulCommutative R] [Algebra R 𝕜] [DistribMulAction R A]
-    [IsScalarTower R 𝕜 A] : WithLp 1 (Unitization 𝕜 A) ≃ₐ[R] Unitization 𝕜 A where
+def unitizationAlgEquiv (R : Type*) [Semiring R] [IsMulCommutative R] [Algebra R 𝕜]
+    [DistribMulAction R A] [IsScalarTower R 𝕜 A] :
+    WithLp 1 (Unitization 𝕜 A) ≃ₐ[R] Unitization 𝕜 A where
   __ := WithLp.linearEquiv _ R _
   map_mul' _ _ := rfl
   map_add' _ _ := rfl

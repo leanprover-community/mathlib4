@@ -44,7 +44,7 @@ namespace LinearMap
 universe i
 
 variable [Semiring R] [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₂] [AddMonoid M₃] [IsAddCommutative M₃] [Module R M₃]
-  {φ : ι → Type i} [(i : ι) → AddCommMonoid (φ i)] [(i : ι) → Module R (φ i)]
+  {φ : ι → Type i} [(i : ι) → AddMonoid (φ i)] [(i : ι) → IsAddCommutative (φ i)] [(i : ι) → Module R (φ i)]
 
 /-- `pi` construction for linear functions. From a family of linear functions it produces a linear
 function into a family of modules. -/
@@ -361,7 +361,7 @@ end LinearMap
 
 namespace Submodule
 
-variable [Semiring R] {φ : ι → Type*} [(i : ι) → AddCommMonoid (φ i)] [(i : ι) → Module R (φ i)]
+variable [Semiring R] {φ : ι → Type*} [(i : ι) → AddMonoid (φ i)] [(i : ι) → IsAddCommutative (φ i)] [(i : ι) → Module R (φ i)]
 
 open LinearMap
 
@@ -452,9 +452,9 @@ end LinearMap
 namespace LinearEquiv
 
 variable [Semiring R] {φ ψ χ : ι → Type*}
-variable [(i : ι) → AddCommMonoid (φ i)] [(i : ι) → Module R (φ i)]
-variable [(i : ι) → AddCommMonoid (ψ i)] [(i : ι) → Module R (ψ i)]
-variable [(i : ι) → AddCommMonoid (χ i)] [(i : ι) → Module R (χ i)]
+variable [(i : ι) → AddMonoid (φ i)] [(i : ι) → IsAddCommutative (φ i)] [(i : ι) → Module R (φ i)]
+variable [(i : ι) → AddMonoid (ψ i)] [(i : ι) → IsAddCommutative (ψ i)] [(i : ι) → Module R (ψ i)]
+variable [(i : ι) → AddMonoid (χ i)] [(i : ι) → IsAddCommutative (χ i)] [(i : ι) → Module R (χ i)]
 
 /-- Combine a family of linear equivalences into a linear equivalence of `pi`-types.
 
@@ -522,7 +522,7 @@ def piCurry {ι : Type*} {κ : ι → Type*} (α : ∀ i, κ i → Type*)
   rfl
 
 /-- This is `Equiv.piOptionEquivProd` as a `LinearEquiv` -/
-def piOptionEquivProd {ι : Type*} {M : Option ι → Type*} [(i : Option ι) → AddCommMonoid (M i)]
+def piOptionEquivProd {ι : Type*} {M : Option ι → Type*} [(i : Option ι) → AddMonoid (M i)] [(i : Option ι) → IsAddCommutative (M i)]
     [(i : Option ι) → Module R (M i)] :
     ((i : Option ι) → M i) ≃ₗ[R] M none × ((i : ι) → M (some i)) :=
   { Equiv.piOptionEquivProd with
@@ -603,7 +603,7 @@ variable (R M)
 /-- Linear equivalence between dependent functions `(i : Fin 2) → M i` and `M 0 × M 1`. -/
 @[simps +simpRhs -fullyApplied symm_apply]
 def piFinTwo (M : Fin 2 → Type v)
-    [(i : Fin 2) → AddCommMonoid (M i)] [(i : Fin 2) → Module R (M i)] :
+    [(i : Fin 2) → AddMonoid (M i)] [(i : Fin 2) → IsAddCommutative (M i)] [(i : Fin 2) → Module R (M i)] :
     ((i : Fin 2) → M i) ≃ₗ[R] M 0 × M 1 :=
   { piFinTwoEquiv M with
     map_add' := fun _ _ => rfl
@@ -611,7 +611,7 @@ def piFinTwo (M : Fin 2 → Type v)
 
 @[simp]
 theorem piFinTwo_apply (M : Fin 2 → Type v)
-    [(i : Fin 2) → AddCommMonoid (M i)] [(i : Fin 2) → Module R (M i)] :
+    [(i : Fin 2) → AddMonoid (M i)] [(i : Fin 2) → IsAddCommutative (M i)] [(i : Fin 2) → Module R (M i)] :
     (piFinTwo R M : ((i : Fin 2) → M i) → M 0 × M 1) = fun f => (f 0, f 1) := rfl
 
 /-- Linear equivalence between vectors in `M² = Fin 2 → M` and `M × M`. -/
@@ -731,8 +731,8 @@ lemma Module.pi_induction {ι : Type v} [Finite ι]
   cases nonempty_fintype ι
   revert M
   refine Fintype.induction_empty_option
-    (fun α β _ e h M _ _ hM ↦ equiv' (LinearEquiv.piCongrLeft R M e) <| h _ fun i ↦ hM _)
-    (fun M _ _ _ ↦ equiv default unit) (fun α _ h M _ _ hn ↦ ?_) ι
+    (fun α β _ e h M _ _ _ hM ↦ equiv' (LinearEquiv.piCongrLeft R M e) <| h _ fun i ↦ hM _)
+    (fun M _ _ _ _ ↦ equiv default unit) (fun α _ h M _ _ _ hn ↦ ?_) ι
   exact equiv' (LinearEquiv.piOptionEquivProd R).symm <| prod (hn _) (h _ fun i ↦ hn i)
 
 end Semiring
@@ -779,8 +779,8 @@ lemma Module.pi_induction' {ι : Type v} [Finite ι] (R : Type*) [Ring R]
   cases nonempty_fintype ι
   revert M
   refine Fintype.induction_empty_option
-    (fun α β _ e h M _ _ hM ↦ equiv' (LinearEquiv.piCongrLeft R M e) <| h _ fun i ↦ hM _)
-    (fun M _ _ _ ↦ equiv default unit) (fun α _ h M _ _ hn ↦ ?_) ι
+    (fun α β _ e h M _ _ _ hM ↦ equiv' (LinearEquiv.piCongrLeft R M e) <| h _ fun i ↦ hM _)
+    (fun M _ _ _ _ ↦ equiv default unit) (fun α _ h M _ _ _ hn ↦ ?_) ι
   exact equiv' (LinearEquiv.piOptionEquivProd R).symm <| prod (hn _) (h _ fun i ↦ hn i)
 
 end Fin

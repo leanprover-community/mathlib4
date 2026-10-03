@@ -198,7 +198,7 @@ lemma det_one_add_X_smul (M : Matrix n n R) :
     det (1 + (X : R[X]) • M.map C) =
       (1 : R[X]) + trace M • X + (det (1 + (X : R[X]) • M.map C)).divX.divX * X ^ 2 := by
   rw [Algebra.smul_def (trace M), ← C_eq_algebraMap, pow_two, ← mul_assoc, add_assoc,
-    ← add_mul, ← coeff_det_one_add_X_smul_one, ← coeff_divX, add_comm (C _), divX_mul_X_add,
+    ← add_mul, ← coeff_det_one_add_X_smul_one, ← coeff_divX, add_comm (C (_ : R)), divX_mul_X_add,
     add_comm (1 : R[X]), ← C.map_one]
   convert! (divX_mul_X_add _).symm
   rw [coeff_zero_eq_eval_zero, eval_det_add_X_smul, det_one, eval_one]
@@ -231,7 +231,8 @@ lemma charpoly_fin_two [Nontrivial R] (M : Matrix (Fin 2) (Fin 2) R) :
 
 end Matrix
 
-theorem matPolyEquiv_eq_X_pow_sub_C {K : Type*} (k : ℕ) [Ring K] [IsMulCommutative K] (M : Matrix n n K) :
+theorem matPolyEquiv_eq_X_pow_sub_C {K : Type*} (k : ℕ) [Ring K] [IsMulCommutative K]
+    (M : Matrix n n K) :
     matPolyEquiv ((expand K k : K[X] →+* K[X]).mapMatrix (charmatrix (M ^ k))) =
       X ^ k - C (M ^ k) := by
   ext m i j

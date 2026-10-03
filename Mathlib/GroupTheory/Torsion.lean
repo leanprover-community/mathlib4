@@ -226,16 +226,17 @@ namespace CommMonoid
 
 (Note that by `IsMulTorsion.group` torsion monoids are truthfully groups.)
 -/
-@[to_additive addTorsion /-- The torsion additive submonoid of an additive commutative monoid. -/]
+@[to_additive AddCommMonoid.addTorsion
+  /-- The torsion additive submonoid of an additive commutative monoid. -/]
 def torsion : Submonoid G where
   carrier := { x | IsOfFinOrder x }
   one_mem' := IsOfFinOrder.one
   mul_mem' hx hy := hx.mul hy
 
-@[to_additive]
+@[to_additive AddCommMonoid.mem_torsion]
 theorem mem_torsion (g : G) : g ∈ torsion G ↔ IsOfFinOrder g := Iff.rfl
 
-@[to_additive]
+@[to_additive AddCommMonoid.torsion_sum]
 lemma torsion_prod : torsion (G × H) = (torsion G).prod (torsion H) := by
   simp [Submonoid.ext_iff, Submonoid.mem_prod, mem_torsion, IsOfFinOrder.prod_iff]
 
@@ -261,7 +262,7 @@ variable (G) (p : ℕ)
 
 /-- The `p`-primary component is the submonoid of elements `g` such that `g ^ p ^ k = 1`
 for some `k`. For prime `p`, these are exactly the elements of `p`-power order. -/
-@[to_additive
+@[to_additive AddCommMonoid.primaryComponent
 /-- The additive `p`-primary component is the submonoid of elements `g` such that
 `p ^ k • g = 0` for some `k`. For prime `p`, these are exactly the elements of additive
 `p`-power order. -/]
@@ -274,13 +275,13 @@ def primaryComponent : Submonoid G where
 variable {G} {p}
 
 /-- `g` lies in the `p`-primary component iff `g ^ p ^ k = 1` for some `k`. -/
-@[to_additive (attr := simp)
+@[to_additive (attr := simp) AddCommMonoid.mem_primaryComponent
 /-- `g` lies in the additive `p`-primary component iff `p ^ k • g = 0` for some `k`. -/]
 theorem mem_primaryComponent {g : G} : g ∈ primaryComponent G p ↔ ∃ k : ℕ, g ^ p ^ k = 1 :=
   .rfl
 
 /-- For prime `p`, `g` lies in the `p`-primary component iff its order is a power of `p`. -/
-@[to_additive
+@[to_additive AddCommMonoid.mem_primaryComponent_iff_addOrderOf
 /-- For prime `p`, `g` lies in the additive `p`-primary component iff its additive
 order is a power of `p`. -/]
 theorem mem_primaryComponent_iff_orderOf [Fact p.Prime] {g : G} :
@@ -290,7 +291,7 @@ theorem mem_primaryComponent_iff_orderOf [Fact p.Prime] {g : G} :
 variable [hp : Fact p.Prime]
 
 /-- Elements of the `p`-primary component have order `p^n` for some `n`. -/
-@[to_additive primaryComponent.exists_orderOf_eq_prime_nsmul
+@[to_additive AddCommMonoid.primaryComponent.exists_orderOf_eq_prime_nsmul
 /-- Elements of the `p`-primary component have additive order `p^n` for some `n`. -/]
 theorem primaryComponent.exists_orderOf_eq_prime_pow (g : CommMonoid.primaryComponent G p) :
     ∃ n : ℕ, orderOf g = p ^ n := by
@@ -350,7 +351,7 @@ end IsMulTorsion
   IsAddTorsion.torsionAddEquiv_symm_apply_coe
 
 /-- Torsion submonoids of a torsion submonoid are isomorphic to the submonoid. -/
-@[to_additive (attr := simp)
+@[to_additive (attr := simp) AddCommMonoid.Torsion.ofTorsion
 /-- Torsion additive submonoids of a torsion additive submonoid are
 isomorphic to the additive submonoid. -/]
 def CommMonoid.Torsion.ofTorsion : torsion (torsion G) ≃* torsion G :=
@@ -367,12 +368,13 @@ variable (G) [Group G] [IsMulCommutative G] [Group H] [IsMulCommutative H]
 namespace CommGroup
 
 /-- The torsion subgroup of an abelian group. -/
-@[to_additive /-- The torsion additive subgroup of an additive abelian group. -/]
+@[to_additive AddCommGroup.torsion
+  /-- The torsion additive subgroup of an additive abelian group. -/]
 def torsion : Subgroup G :=
   { CommMonoid.torsion G with inv_mem' := fun hx ↦ IsOfFinOrder.inv hx }
 
 /-- The torsion submonoid of an abelian group equals the torsion subgroup as a submonoid. -/
-@[to_additive
+@[to_additive AddCommGroup.torsion_eq_torsion_addSubmonoid
 /-- The torsion additive submonoid of an abelian group equals the torsion
 additive subgroup as an additive submonoid. -/]
 theorem torsion_eq_torsion_submonoid : CommMonoid.torsion G = (torsion G).toSubmonoid :=
@@ -384,28 +386,28 @@ theorem torsion_eq_torsion_submonoid : CommMonoid.torsion G = (torsion G).toSubm
 
 variable {G}
 
-@[to_additive]
+@[to_additive AddCommGroup.mem_torsion]
 theorem mem_torsion (g : G) : g ∈ torsion G ↔ IsOfFinOrder g := Iff.rfl
 
-@[to_additive]
+@[to_additive AddCommGroup.torsion_eq_top_iff]
 lemma torsion_eq_top_iff : torsion G = ⊤ ↔ IsMulTorsion G :=
   (torsion G).eq_top_iff'
 
-@[to_additive]
+@[to_additive AddCommGroup.isAddTorsionFree_iff_torsion_eq_bot]
 lemma isMulTorsionFree_iff_torsion_eq_bot : IsMulTorsionFree G ↔ CommGroup.torsion G = ⊥ := by
   rw [isMulTorsionFree_iff_not_isOfFinOrder, eq_bot_iff, IsConcreteLE.le_iff]
   simp [not_imp_not, CommGroup.mem_torsion]
 
-@[to_additive]
+@[to_additive AddCommGroup.le_comap_torsion]
 lemma le_comap_torsion (f : G →* H) : torsion G ≤ (torsion H).comap f := by
   intro x
   exact f.isOfFinOrder
 
-@[to_additive]
+@[to_additive AddCommGroup.map_torsion_le]
 lemma map_torsion_le (f : G →* H) : (torsion G).map f ≤ torsion H :=
   Subgroup.map_le_iff_le_comap.mpr (le_comap_torsion f)
 
-@[to_additive]
+@[to_additive AddCommGroup.comap_torsion_of_injective]
 lemma comap_torsion_of_injective {f : G →* H} (hf : Function.Injective f) :
     (torsion H).comap f = torsion G := by
   ext x
@@ -419,13 +421,13 @@ lemma _root_.MulEquiv.comap_torsion (e : G ≃* H) : (torsion H).comap e = torsi
 lemma _root_.MulEquiv.map_torsion (e : G ≃* H) : (torsion G).map e = torsion H := by
   rw [Subgroup.map_equiv_eq_comap_symm, e.symm.comap_torsion]
 
-@[to_additive]
+@[to_additive AddCommGroup.torsion_sum]
 lemma torsion_prod : torsion (G × H) = (torsion G).prod (torsion H) := by
   simp [Subgroup.ext_iff, Subgroup.mem_prod, mem_torsion, IsOfFinOrder.prod_iff]
 
 variable (G)
 
-@[to_additive]
+@[to_additive AddCommGroup.isAddTorsion_quotient_range_nsmulAddMonoidHom]
 lemma isMulTorsion_quotient_range_powMonoidHom {n : ℕ} (hn : n ≠ 0) :
     IsMulTorsion (G ⧸ (powMonoidHom (α := G) n).range) := by
   simp only [IsMulTorsion, isOfFinOrder_iff_pow_eq_one]
@@ -443,7 +445,7 @@ variable (p : ℕ)
 
 /-- The `p`-primary component is the subgroup of elements `g` such that `g ^ p ^ k = 1`
 for some `k`. For prime `p`, these are exactly the elements of `p`-power order. -/
-@[to_additive
+@[to_additive AddCommGroup.primaryComponent
 /-- The additive `p`-primary component is the subgroup of elements `g` such that
 `p ^ k • g = 0` for some `k`. For prime `p`, these are exactly the elements of additive
 `p`-power order. -/]
@@ -454,13 +456,13 @@ def primaryComponent : Subgroup G :=
 variable {G} {p}
 
 /-- `g` lies in the `p`-primary component iff `g ^ p ^ k = 1` for some `k`. -/
-@[to_additive (attr := simp)
+@[to_additive (attr := simp) AddCommGroup.mem_primaryComponent
 /-- `g` lies in the additive `p`-primary component iff `p ^ k • g = 0` for some `k`. -/]
 theorem mem_primaryComponent {g : G} : g ∈ primaryComponent G p ↔ ∃ k : ℕ, g ^ p ^ k = 1 :=
   .rfl
 
 /-- For prime `p`, `g` lies in the `p`-primary component iff its order is a power of `p`. -/
-@[to_additive
+@[to_additive AddCommGroup.mem_primaryComponent_iff_addOrderOf
 /-- For prime `p`, `g` lies in the additive `p`-primary component iff its additive
 order is a power of `p`. -/]
 theorem mem_primaryComponent_iff_orderOf [Fact p.Prime] {g : G} :
@@ -474,34 +476,34 @@ theorem primaryComponent.isPGroup : IsPGroup p (primaryComponent G p) := fun g �
 variable (G H)
 
 /-- The free rank of a finitely generated abelian group is the rank of its free part. -/
-@[to_additive
+@[to_additive AddCommGroup.freeRank
 /-- The free rank of a finitely generated abelian group is the rank of its free part. -/]
 noncomputable def freeRank [Group.FG G] : ℕ := Group.rank (G ⧸ torsion G)
 
-@[to_additive]
+@[to_additive AddCommGroup.freeRank_def]
 theorem freeRank_def [Group.FG G] : freeRank G = Group.rank (G ⧸ torsion G) := rfl
 
 variable {G H}
 
-@[to_additive]
+@[to_additive AddCommGroup.freeRank_eq_zero_iff]
 theorem freeRank_eq_zero_iff [Group.FG G] : freeRank G = 0 ↔ IsMulTorsion G := by
   rw [freeRank, Group.rank_eq_zero_iff, QuotientGroup.subsingleton_iff, torsion_eq_top_iff]
 
-@[to_additive]
+@[to_additive AddCommGroup.freeRank_eq_zero]
 theorem freeRank_eq_zero (hG : IsMulTorsion G) [Group.FG G] : freeRank G = 0 :=
   freeRank_eq_zero_iff.mpr hG
 
-@[to_additive]
+@[to_additive AddCommGroup.freeRank_eq_zero_of_finite]
 theorem freeRank_eq_zero_of_finite [Finite G] : freeRank G = 0 :=
   freeRank_eq_zero isMulTorsion_of_finite
 
-@[to_additive]
+@[to_additive AddCommGroup.freeRank_congr]
 theorem freeRank_congr [Group.FG G] [Group.FG H] (e : G ≃* H) : freeRank G = freeRank H :=
   Group.rank_congr (QuotientGroup.congr (torsion G) (torsion H) e e.map_torsion)
 
 -- TODO: Prove monotonicity of `freeRank` along injective homomorphisms. This would require proving
 -- monotonicity of `rank` along injective homomorphism of abelian groups.
-@[to_additive]
+@[to_additive AddCommGroup.freeRank_ge_of_surjective]
 theorem freeRank_ge_of_surjective [Group.FG G] [Group.FG H] (e : G →* H)
     (he : Function.Surjective e) : freeRank H ≤ freeRank G :=
   Group.rank_le_of_surjective _ <| QuotientGroup.map_surjective_of_surjective

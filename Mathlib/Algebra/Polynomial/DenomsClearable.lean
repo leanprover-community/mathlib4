@@ -60,7 +60,7 @@ theorem DenomsClearable.add {N : ℕ} {f g : R[X]} :
   ⟨Df + Dg, bf, bfu, by
     rw [map_add, Polynomial.map_add, eval_add, mul_add, Hf, Hg]
     congr
-    refine @inv_unique K _ (i b) bg bf ?_ ?_ <;> rwa [mul_comm]⟩
+    refine @inv_unique K _ _ (i b) bg bf ?_ ?_ <;> rwa [mul_comm]⟩
 
 theorem denomsClearable_of_natDegree_le (N : ℕ) (a : R) (bu : bi * i b = 1) :
     ∀ f : R[X], f.natDegree ≤ N → DenomsClearable a b N f i :=

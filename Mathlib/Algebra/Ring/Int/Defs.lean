@@ -14,7 +14,7 @@ public import Mathlib.Data.Int.Cast.Basic
 /-!
 # The integers are a ring
 
-This file contains the commutative ring instance on `ℤ`.
+This file contains the ring instance on `ℤ` (commutativity is `Int.instIsMulCommutative`).
 
 See note [foundational algebra order theory].
 -/
@@ -25,9 +25,10 @@ assert_not_exists DenselyOrdered Set.Subsingleton
 
 namespace Int
 
-instance instCommRing : CommRing ℤ where
-  __ := instAddCommGroup
-  __ := instCommSemigroup
+instance instRing : Ring ℤ where
+  __ := instAddGroup
+  __ := instIsAddCommutative
+  __ := instSemigroup
   zero_mul := Int.zero_mul
   mul_zero := Int.mul_zero
   left_distrib := Int.mul_add
@@ -83,9 +84,7 @@ these instances non-computably.
 
 set_option linter.style.whitespace false -- manual alignment is not recognised
 
-instance instCommSemiring : CommSemiring ℤ := inferInstance
 instance instSemiring     : Semiring ℤ     := inferInstance
-instance instRing         : Ring ℤ         := inferInstance
 instance instDistrib      : Distrib ℤ      := inferInstance
 
 set_option linter.style.whitespace true

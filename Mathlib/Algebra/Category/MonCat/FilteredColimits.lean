@@ -299,9 +299,8 @@ noncomputable abbrev M : MonCat.{max v u} :=
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
-noncomputable instance colimitCommMonoid : CommMonoid.{max v u} (M.{v, u} F) :=
-  { (M.{v, u} F) with
-    mul_comm := fun x y => by
+noncomputable instance colimitCommMonoid : IsMulCommutative (M.{v, u} F) :=
+  ⟨⟨fun x y => by
       obtain ⟨i, x, rfl⟩ := x.mk_surjective
       obtain ⟨j, y, rfl⟩ := y.mk_surjective
       let k := max' i j
@@ -310,7 +309,7 @@ noncomputable instance colimitCommMonoid : CommMonoid.{max v u} (M.{v, u} F) :=
       rw [colimit_mul_mk_eq.{v, u} (F ⋙ forget₂ CommMonCat MonCat) ⟨i, x⟩ ⟨j, y⟩ k f g,
         colimit_mul_mk_eq.{v, u} (F ⋙ forget₂ CommMonCat MonCat) ⟨j, y⟩ ⟨i, x⟩ k g f]
       dsimp
-      rw [mul_comm] }
+      rw [mul_comm]⟩⟩
 
 /-- The bundled commutative monoid giving the filtered colimit of a diagram. -/
 @[to_additive

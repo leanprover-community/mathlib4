@@ -252,13 +252,11 @@ instance [∀ i, AddMonoid (β i)] : AddMonoid (Hamming β) :=
 instance [∀ i, AddGroup (β i)] : AddGroup (Hamming β) :=
   inferInstanceAs <| AddGroup (∀ i, β i)
 
-instance [∀ i, AddMonoid (β i)] [∀ i, IsAddCommutative (β i)] : AddCommMonoid (Hamming β) :=
-  inferInstanceAs <| AddCommMonoid (∀ i, β i)
+instance [∀ i, Add (β i)] [∀ i, IsAddCommutative (β i)] : IsAddCommutative (Hamming β) :=
+  inferInstanceAs <| IsAddCommutative (∀ i, β i)
 
-instance [∀ i, AddGroup (β i)] [∀ i, IsAddCommutative (β i)] : AddCommGroup (Hamming β) :=
-  inferInstanceAs <| AddCommGroup (∀ i, β i)
-
-instance (α) [Semiring α] (β : ι → Type*) [∀ i, AddMonoid (β i)] [∀ i, IsAddCommutative (β i)] [∀ i, Module α (β i)] :
+instance (α) [Semiring α] (β : ι → Type*) [∀ i, AddMonoid (β i)] [∀ i, IsAddCommutative (β i)]
+    [∀ i, Module α (β i)] :
     Module α (Hamming β) :=
   inferInstanceAs <| Module α (∀ i, β i)
 
@@ -400,9 +398,6 @@ theorem norm_eq_hammingNorm [∀ i, Zero (β i)] (x : Hamming β) : ‖x‖ = ha
 
 instance [∀ i, AddGroup (β i)] : NormedAddGroup (Hamming β) where
   dist_eq := by push_cast; exact mod_cast hammingDist_eq_hammingNorm
-
-instance [∀ i, AddGroup (β i)] [∀ i, IsAddCommutative (β i)] : NormedAddCommGroup (Hamming β) where
-  dist_eq := fun x y => NormedAddGroup.dist_eq x y
 
 @[simp, push_cast]
 theorem nnnorm_eq_hammingNorm [∀ i, AddGroup (β i)] (x : Hamming β) :

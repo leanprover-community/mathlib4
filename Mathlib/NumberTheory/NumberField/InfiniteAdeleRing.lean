@@ -50,7 +50,7 @@ infinite places. See `NumberField.InfinitePlace` for the definition of an infini
 
 /-- The infinite adele ring of a number field. -/
 def InfiniteAdeleRing (K : Type*) [Field K] := (v : InfinitePlace K) → v.Completion
-deriving CommRing, Inhabited, TopologicalSpace, IsTopologicalRing, Algebra K
+deriving Ring, IsMulCommutative, Inhabited, TopologicalSpace, IsTopologicalRing, Algebra K
 
 namespace InfiniteAdeleRing
 

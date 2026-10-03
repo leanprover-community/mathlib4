@@ -57,11 +57,11 @@ structure ModuleCat where
   _mkInternal ::
   /-- the underlying type of an object in `ModuleCat R` -/
   carrier : Type v
-  [isAddCommGroup : AddGroup carrier] [IsAddCommutative carrier]
+  [isAddCommGroup : AddGroup carrier] [isAddCommutative : IsAddCommutative carrier]
   [isModule : Module R carrier]
 
-initialize_simps_projections ModuleCat (-isModule, -isAddCommGroup)
-attribute [instance] ModuleCat.isAddCommGroup
+initialize_simps_projections ModuleCat (-isModule, -isAddCommGroup, -isAddCommutative)
+attribute [instance] ModuleCat.isAddCommGroup ModuleCat.isAddCommutative
 attribute [instance 1100] ModuleCat.isModule
 
 namespace ModuleCat
@@ -271,8 +271,8 @@ section
 
 /-- Build an isomorphism in the category `Module R` from a `LinearEquiv` between `Module`s. -/
 @[simps]
-def LinearEquiv.toModuleIso {g₁ : AddCommGroup X₁} {g₂ : AddCommGroup X₂} {m₁ : Module R X₁}
-    {m₂ : Module R X₂} (e : X₁ ≃ₗ[R] X₂) : ModuleCat.of R X₁ ≅ ModuleCat.of R X₂ where
+def LinearEquiv.toModuleIso {g₁ : AddGroup X₁} {c₁ : IsAddCommutative X₁} {g₂ : AddGroup X₂}
+    {c₂ : IsAddCommutative X₂} {m₁ : Module R X₁} {m₂ : Module R X₂} (e : X₁ ≃ₗ[R] X₂) : ModuleCat.of R X₁ ≅ ModuleCat.of R X₂ where
   hom := ofHom (e : X₁ →ₗ[R] X₂)
   inv := ofHom (e.symm : X₂ →ₗ[R] X₁)
   hom_inv_id := by ext; apply e.left_inv
@@ -337,9 +337,12 @@ instance : SMul ℤ (M ⟶ N) where
 
 @[simp] lemma hom_zsmul (n : ℤ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
 
-instance : AddCommGroup (M ⟶ N) :=
-  Function.Injective.addCommGroup (Hom.hom) hom_injective
+instance : AddGroup (M ⟶ N) :=
+  Function.Injective.addGroup (Hom.hom) hom_injective
     rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+
+instance : IsAddCommutative (M ⟶ N) :=
+  Function.Injective.isAddCommutative Hom.hom hom_injective (fun _ _ => rfl)
 
 @[simp] lemma hom_sum {ι : Type*} (f : ι → (M ⟶ N)) (s : Finset ι) :
     (∑ i ∈ s, f i).hom = ∑ i ∈ s, (f i).hom :=
@@ -513,8 +516,11 @@ section
 
 variable {A : AddCommGrpCat} (φ : R →+* End A)
 
-instance : AddCommGroup (mkOfSMul' φ) :=
-  inferInstanceAs <| AddCommGroup A
+instance : AddGroup (mkOfSMul' φ) :=
+  inferInstanceAs <| AddGroup A
+
+instance : IsAddCommutative (mkOfSMul' φ) :=
+  inferInstanceAs <| IsAddCommutative A
 
 instance : SMul R (mkOfSMul' φ) := ⟨fun r (x : A) => (show A ⟶ A from φ r) x⟩
 

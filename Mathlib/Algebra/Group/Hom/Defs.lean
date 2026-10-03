@@ -941,7 +941,7 @@ theorem Function.Surjective.isMulCommutative [Mul M] [Mul N] [FunLike F M N] [Mu
   is_comm.comm a b := by
     have ⟨a', ha'⟩ := is_surj a
     have ⟨b', hb'⟩ := is_surj b
-    simp [← ha', ← hb', ← map_mul, mul_comm']
+    simp [← ha', ← hb', ← map_mul, mul_comm]
 
 @[deprecated (since := "2026-08-11")]
 alias Function.Surjective.add_comm := Function.Surjective.isAddCommutative

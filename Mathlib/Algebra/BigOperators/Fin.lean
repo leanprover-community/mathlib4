@@ -713,7 +713,7 @@ theorem finSigmaFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (k : (i : Fin m) ×
 theorem finSigmaFinEquiv_one {n : Fin 1 → ℕ} (ij : (i : Fin 1) × Fin (n i)) :
     (finSigmaFinEquiv ij : ℕ) = ij.2 := by
   rw [finSigmaFinEquiv_apply, add_eq_right]
-  apply @Finset.sum_of_isEmpty _ _ _ _ (by simp)
+  apply @Finset.sum_of_isEmpty _ _ _ _ _ (by simp)
 
 namespace List
 

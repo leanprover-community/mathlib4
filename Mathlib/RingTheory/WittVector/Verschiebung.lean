@@ -87,14 +87,17 @@ variable (p)
 
 /-- `WittVector.verschiebung` has polynomial structure given by `WittVector.verschiebungPoly`.
 -/
-instance verschiebungFun_isPoly : IsPoly p fun R _Rcr => @verschiebungFun p R _Rcr := by
+instance verschiebungFun_isPoly : IsPoly p fun R _Rcr _Rc => @verschiebungFun p R _Rcr := by
   use verschiebungPoly
-  simp only [aeval_verschiebung_poly', forall₃_true_iff]
+  simp only [aeval_verschiebung_poly', implies_true]
 
 -- We add this example as a verification that Lean 4's instance resolution can handle the `IsPoly`
 -- typeclass, whereas Lean 3 needed a bespoke `@[is_poly]` attribute.
-example (p : ℕ) (f : ⦃R : Type _⦄ → [Ring R] [IsMulCommutative R] → WittVector p R → WittVector p R) [IsPoly p f] :
-    IsPoly p (fun (R : Type*) (I : CommRing R) ↦ verschiebungFun ∘ (@f R I)) :=
+example (p : ℕ)
+    (f : ⦃R : Type _⦄ → [Ring R] → [IsMulCommutative R] → WittVector p R → WittVector p R)
+    [IsPoly p f] :
+    IsPoly p
+      (fun (R : Type*) (I : Ring R) (Ic : IsMulCommutative R) ↦ verschiebungFun ∘ (@f R I Ic)) :=
   inferInstance
 
 variable {p}
@@ -117,7 +120,7 @@ noncomputable def verschiebung : 𝕎 R →+ 𝕎 R where
 
 /-- `WittVector.verschiebung` is a polynomial function. -/
 @[is_poly]
-theorem verschiebung_isPoly : IsPoly p fun _ _ => verschiebung (p := p) :=
+theorem verschiebung_isPoly : IsPoly p fun _ _ _ => verschiebung (p := p) :=
   verschiebungFun_isPoly p
 
 /-- verschiebung is a natural transformation -/

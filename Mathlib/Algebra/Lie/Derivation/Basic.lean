@@ -257,8 +257,11 @@ instance instSMulNat : SMulBracketCommClass ℕ L M := ⟨fun s l a => (lie_nsmu
 
 instance instSMulInt : SMulBracketCommClass ℤ L M := ⟨fun s l a => (lie_zsmul l a s).symm⟩
 
-instance instAddCommGroup : AddCommGroup (LieDerivation R L M) :=
-  coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
+instance instAddGroup : AddGroup (LieDerivation R L M) :=
+  coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
+
+instance instAddCommGroup : IsAddCommutative (LieDerivation R L M) :=
+  coe_injective.isAddCommutative _ coe_add
 
 /-- `coe_fn` as an `AddMonoidHom`. -/
 def coeFnAddMonoidHom : LieDerivation R L M →+ L → M where

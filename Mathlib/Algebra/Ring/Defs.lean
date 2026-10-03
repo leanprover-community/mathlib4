@@ -116,40 +116,41 @@ TODO: clean this once https://github.com/leanprover/lean4/issues/2115 is fixed
 /-- A not-necessarily-unital, not-necessarily-associative semiring. See `CommutatorRing` and the
   documentation thereof in case you need a `NonUnitalNonAssocSemiring` instance on a Lie ring
   or a Lie algebra. -/
-class NonUnitalNonAssocSemiring (α : Type u) extends AddCommMonoid α, Distrib α, MulZeroClass α
+class NonUnitalNonAssocSemiring (α : Type u) extends AddMonoid α, IsAddCommutative α, Distrib α,
+    MulZeroClass α
 
 /-- An associative but not-necessarily unital semiring. -/
 class NonUnitalSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, SemigroupWithZero α
 
 /-- A unital but not-necessarily-associative semiring. -/
 class NonAssocSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, MulZeroOneClass α,
-    AddCommMonoidWithOne α
+    AddMonoidWithOne α
 
 /-- A not-necessarily-unital, not-necessarily-associative ring. -/
-class NonUnitalNonAssocRing (α : Type u) extends AddCommGroup α, NonUnitalNonAssocSemiring α
+class NonUnitalNonAssocRing (α : Type u) extends AddGroup α, NonUnitalNonAssocSemiring α
 
 /-- An associative but not-necessarily unital ring. -/
 class NonUnitalRing (α : Type*) extends NonUnitalNonAssocRing α, NonUnitalSemiring α
 
 /-- A unital but not-necessarily-associative ring. -/
 class NonAssocRing (α : Type*) extends NonUnitalNonAssocRing α, NonAssocSemiring α,
-    AddCommGroupWithOne α
+    AddGroupWithOne α
 
 /-- A `Semiring` is a type with addition, multiplication, a `0` and a `1` where addition is
 commutative and associative, multiplication is associative and left and right distributive over
 addition, and `0` and `1` are additive and multiplicative identities. -/
-class Semiring (α : Type u) extends AddCommMonoid α, MonoidWithZero α, NonUnitalSemiring α,
+class Semiring (α : Type u) extends AddMonoid α, MonoidWithZero α, NonUnitalSemiring α,
   NonAssocSemiring α
 
 /-- A `Ring` is a `Semiring` with negation making it an additive group. -/
 @[wikidata Q161172]
-class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
+class Ring (R : Type u) extends Semiring R, AddGroup R, AddGroupWithOne R
 
 -- Add some short-cut instances to avoid going through the less used ring type classes.
 instance [Semiring α] : Distrib α := inferInstance
 instance [Semiring α] : MulZeroClass α := inferInstance
 instance [Semiring α] : MulZeroOneClass α := inferInstance
-attribute [instance] Semiring.toAddCommMonoid Semiring.toMonoid
+attribute [instance] Semiring.toAddMonoid Semiring.toMonoid
 
 /-!
 ### Semirings
@@ -207,46 +208,6 @@ theorem mul_boole {α} [MulZeroOneClass α] (P : Prop) [Decidable P] (a : α) :
 
 theorem boole_mul {α} [MulZeroOneClass α] (P : Prop) [Decidable P] (a : α) :
     (if P then 1 else 0) * a = if P then a else 0 := by simp
-
-/-- A not-necessarily-unital, not-necessarily-associative, but commutative semiring. -/
-class NonUnitalNonAssocCommSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, CommMagma α
-
-attribute [instance 100] NonUnitalNonAssocCommSemiring.toNonUnitalNonAssocSemiring
-
-/-- A non-unital commutative semiring is a `NonUnitalSemiring` with commutative multiplication.
-In other words, it is a type with the following structures: additive commutative monoid
-(`AddCommMonoid`), commutative semigroup (`CommSemigroup`), distributive laws (`Distrib`), and
-multiplication by zero law (`MulZeroClass`). -/
-class NonUnitalCommSemiring (α : Type u) extends NonUnitalSemiring α, CommSemigroup α
-
-/-- A non-associative commutative semiring is a `NonAssocSemiring` with commutative
-multiplication. -/
-class NonAssocCommSemiring (α : Type u)
-  extends NonAssocSemiring α, NonUnitalNonAssocCommSemiring α
-
-/-- A commutative semiring is a semiring with commutative multiplication. -/
-class CommSemiring (R : Type u) extends Semiring R, CommMonoid R
-
-attribute [instance 100] NonAssocCommSemiring.toNonAssocSemiring
-attribute [instance 100] NonAssocCommSemiring.toNonUnitalNonAssocCommSemiring
-
--- see Note [lower instance priority]
-instance (priority := 100) NonUnitalCommSemiring.toNonUnitalNonAssocCommSemiring
-    [NonUnitalSemiring α] [IsMulCommutative α] : NonUnitalNonAssocCommSemiring α where
-
--- see Note [lower instance priority]
-instance (priority := 100) CommSemiring.toNonAssocCommSemiring [Semiring α] [IsMulCommutative α] :
-    NonAssocCommSemiring α where
-
--- see Note [lower instance priority]
-instance (priority := 100) CommSemiring.toNonUnitalCommSemiring [Semiring α] [IsMulCommutative α] :
-    NonUnitalCommSemiring α :=
-  { (inferInstance : CommMonoid α), (inferInstance : CommSemiring α) with }
-
--- see Note [lower instance priority]
-instance (priority := 100) CommSemiring.toCommMonoidWithZero [Semiring α] [IsMulCommutative α] :
-    CommMonoidWithZero α :=
-  { (inferInstance : CommMonoid α), (inferInstance : CommSemiring α) with }
 
 section CommSemiring
 
@@ -387,45 +348,6 @@ instance (priority := 100) Ring.toNonAssocRing : NonAssocRing α :=
 
 end Ring
 
-/-- A non-unital non-associative commutative ring is a `NonUnitalNonAssocRing` with commutative
-multiplication. -/
-class NonUnitalNonAssocCommRing (α : Type u)
-  extends NonUnitalNonAssocRing α, NonUnitalNonAssocCommSemiring α
-
-/-- A non-unital commutative ring is a `NonUnitalRing` with commutative multiplication. -/
-class NonUnitalCommRing (α : Type u) extends NonUnitalRing α, NonUnitalNonAssocCommRing α
-
-/-- A non-associative commutative ring is a `NonAssocRing` with commutative multiplication. -/
-class NonAssocCommRing (α : Type u)
-  extends NonAssocRing α, NonUnitalNonAssocCommRing α, NonAssocCommSemiring α
-
-attribute [instance 100] NonAssocCommRing.toNonAssocRing
-attribute [instance 100] NonAssocCommRing.toNonUnitalNonAssocCommRing
-attribute [instance 100] NonAssocCommRing.toNonAssocCommSemiring
-
--- see Note [lower instance priority]
-instance (priority := 100) NonUnitalCommRing.toNonUnitalCommSemiring [s : NonUnitalRing α] [IsMulCommutative α] :
-    NonUnitalCommSemiring α :=
-  { s with }
-
-/-- A commutative ring is a ring with commutative multiplication. -/
-@[wikidata Q858656]
-class CommRing (α : Type u) extends Ring α, CommMonoid α
-
-instance (priority := 100) CommRing.toNonAssocCommRing [Ring α] [IsMulCommutative α] : NonAssocCommRing α where
-
-instance (priority := 100) CommRing.toCommSemiring [s : Ring α] [IsMulCommutative α] : CommSemiring α :=
-  { s with }
-
--- see Note [lower instance priority]
-instance (priority := 100) CommRing.toNonUnitalCommRing [s : Ring α] [IsMulCommutative α] : NonUnitalCommRing α :=
-  { s with }
-
--- see Note [lower instance priority]
-instance (priority := 100) CommRing.toAddCommGroupWithOne [s : Ring α] [IsMulCommutative α] :
-    AddCommGroupWithOne α :=
-  { s with }
-
 /-- A domain is a nontrivial semiring such that multiplication by a nonzero element
 is cancellative on both sides. In other words, a nontrivial semiring `R` satisfying
 `∀ {a b c : R}, a ≠ 0 → a * b = a * c → b = c` and
@@ -435,98 +357,6 @@ This is implemented as a mixin for `Semiring α`.
 To obtain an integral domain use `[Ring α] [IsMulCommutative α] [IsDomain α]`. -/
 @[stacks 09FE]
 class IsDomain (α : Type u) [Semiring α] : Prop extends IsCancelMulZero α, Nontrivial α
-
-namespace IsMulCommutative
-
-/-- A `NonUnitalNonAssocSemiring` which `IsMulCommutative` is a `NonUnitalNonAssocCommSemiring`.
-
-This is primarily used to deduce the bundled version from the unbundled one for commutative
-subobjects in a noncommutative ambient type. As such this is only available inside the
-`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
-commutativity.
-
-See note [commutative subobjects]. -/
-scoped instance (priority := 50) [NonUnitalNonAssocSemiring R] [IsMulCommutative R] :
-    NonUnitalNonAssocCommSemiring R where
-
-/-- A `NonUnitalSemiring` which `IsMulCommutative` is a `NonUnitalCommSemiring`.
-
-This is primarily used to deduce the bundled version from the unbundled one for commutative
-subobjects in a noncommutative ambient type. As such this is only available inside the
-`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
-commutativity.
-
-See note [commutative subobjects]. -/
-scoped instance (priority := 50) [NonUnitalSemiring R] [IsMulCommutative R] :
-    NonUnitalCommSemiring R where
-
-/-- A `NonUnitalNonAssocRing` which `IsMulCommutative` is a `NonUnitalNonAssocCommRing`.
-
-This is primarily used to deduce the bundled version from the unbundled one for commutative
-subobjects in a noncommutative ambient type. As such this is only available inside the
-`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
-commutativity.
-
-See note [commutative subobjects]. -/
-scoped instance (priority := 50) [NonUnitalNonAssocRing R] [IsMulCommutative R] :
-    NonUnitalNonAssocCommRing R where
-
-/-- A `NonUnitalRing` which `IsMulCommutative` is a `NonUnitalCommRing`.
-
-This is primarily used to deduce the bundled version from the unbundled one for commutative
-subobjects in a noncommutative ambient type. As such this is only available inside the
-`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
-commutativity.
-
-See note [commutative subobjects]. -/
-scoped instance (priority := 50) [NonUnitalRing R] [IsMulCommutative R] :
-    NonUnitalCommRing R where
-
-/-- A `NonAssocSemiring` which `IsMulCommutative` is a `NonAssocCommSemiring`.
-
-This is primarily used to deduce the bundled version from the unbundled one for commutative
-subobjects in a noncommutative ambient type. As such this is only available inside the
-`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
-commutativity.
-
-See note [commutative subobjects]. -/
-scoped instance (priority := 50) [NonAssocSemiring R] [IsMulCommutative R] :
-    NonAssocCommSemiring R where
-
-/-- A `Semiring` which `IsMulCommutative` is a `CommSemiring`.
-
-This is primarily used to deduce the bundled version from the unbundled one for commutative
-subobjects in a noncommutative ambient type. As such this is only available inside the
-`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
-commutativity.
-
-See note [commutative subobjects]. -/
-scoped instance (priority := 50) [Semiring R] [IsMulCommutative R] :
-    CommSemiring R where
-
-/-- A `NonAssocRing` which `IsMulCommutative` is a `NonAssocCommRing`.
-
-This is primarily used to deduce the bundled version from the unbundled one for commutative
-subobjects in a noncommutative ambient type. As such this is only available inside the
-`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
-commutativity.
-
-See note [commutative subobjects]. -/
-scoped instance (priority := 50) [NonAssocRing R] [IsMulCommutative R] :
-    NonAssocCommRing R where
-
-/-- A `Ring` which `IsMulCommutative` is a `CommRing`.
-
-This is primarily used to deduce the bundled version from the unbundled one for commutative
-subobjects in a noncommutative ambient type. As such this is only available inside the
-`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
-commutativity.
-
-See note [commutative subobjects]. -/
-scoped instance (priority := 50) [Ring R] [IsMulCommutative R] :
-    CommRing R where
-
-end IsMulCommutative
 
 noncomputable section
 namespace IsUnital
@@ -540,25 +370,11 @@ This constructor is primarily intended to be used within proofs since it creates
 equalities. -/
 abbrev toNonAssocSemiring [NonUnitalNonAssocSemiring A] [IsUnital A] : NonAssocSemiring A where
 
-/-- A unital non-unital non-associative commutative semiring is a non-associative
-commutative semiring.
-
-This constructor is primarily intended to be used within proofs since it creates bad definitional
-equalities. -/
-abbrev toNonAssocCommSemiring [NonUnitalNonAssocSemiring A] [IsMulCommutative A] [IsUnital A] :
-    NonAssocCommSemiring A where
-
 /-- A unital non-unital semiring is a semiring.
 
 This constructor is primarily intended to be used within proofs since it creates bad definitional
 equalities. -/
 abbrev toSemiring [NonUnitalSemiring A] [IsUnital A] : Semiring A where
-
-/-- A unital non-unital commutative semiring is a commutative semiring.
-
-This constructor is primarily intended to be used within proofs since it creates bad definitional
-equalities. -/
-abbrev toCommSemiring [NonUnitalSemiring A] [IsMulCommutative A] [IsUnital A] : CommSemiring A where
 
 /-- A unital non-unital non-associative ring is a non-associative ring.
 
@@ -566,23 +382,11 @@ This constructor is primarily intended to be used within proofs since it creates
 equalities. -/
 abbrev toNonAssocRing [NonUnitalNonAssocRing A] [IsUnital A] : NonAssocRing A where
 
-/-- A unital non-unital non-associative commutative ring is a non-associative commutative ring.
-
-This constructor is primarily intended to be used within proofs since it creates bad definitional
-equalities. -/
-abbrev toNonAssocCommRing [NonUnitalNonAssocRing A] [IsMulCommutative A] [IsUnital A] : NonAssocCommRing A where
-
 /-- A unital non-unital ring is a ring.
 
 This constructor is primarily intended to be used within proofs since it creates bad definitional
 equalities. -/
 abbrev toRing [NonUnitalRing A] [IsUnital A] : Ring A where
-
-/-- A unital non-unital commutative ring is a commutative ring.
-
-This constructor is primarily intended to be used within proofs since it creates bad definitional
-equalities. -/
-abbrev toCommRing [NonUnitalRing A] [IsMulCommutative A] [IsUnital A] : CommRing A where
 
 end IsUnital
 end

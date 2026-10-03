@@ -53,8 +53,8 @@ to rat casts if the scientific notation is inherited from the one for rationals.
     let some ⟨q, n, d, p⟩ := rme.toNNRat' dα | failure
     return .isNNRat dα q n d q(isNNRat_ofScientific_of_true $p)
   | ~q(false) =>
-    let ⟨nm, pm⟩ ← deriveNat m q(AddCommMonoidWithOne.toAddMonoidWithOne)
-    let ⟨ne, pe⟩ ← deriveNat exp q(AddCommMonoidWithOne.toAddMonoidWithOne)
+    let ⟨nm, pm⟩ ← deriveNat m q(Nat.instAddMonoidWithOne)
+    let ⟨ne, pe⟩ ← deriveNat exp q(Nat.instAddMonoidWithOne)
     have pm : Q(IsNat $m $nm) := pm
     have pe : Q(IsNat $exp $ne) := pe
     let m' := nm.natLit!

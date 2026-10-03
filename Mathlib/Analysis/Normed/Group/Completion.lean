@@ -36,7 +36,7 @@ instance [UniformSpace E] [Norm E] : Norm (Completion E) where
 theorem norm_coe {E} [SeminormedAddGroup E] [IsAddCommutative E] (x : E) : ‖(x : Completion E)‖ = ‖x‖ :=
   Completion.extension_coe uniformContinuous_norm x
 
-instance [SeminormedAddGroup E] [IsAddCommutative E] : NormedAddCommGroup (Completion E) where
+instance [SeminormedAddGroup E] [IsAddCommutative E] : NormedAddGroup (Completion E) where
   dist_eq x y := by
     induction x, y using Completion.induction_on₂
     · refine isClosed_eq (Completion.uniformContinuous_extension₂ _).continuous ?_

@@ -377,7 +377,7 @@ instance toPseudoMetricSpace : PseudoMetricSpace (E →SL[σ₁₂] F) := .repla
   ContinuousLinearMap.seminorm.toSeminormedAddCommGroup.toPseudoMetricSpace uniformity_eq_seminorm
 
 /-- Continuous linear maps themselves form a seminormed space with respect to the operator norm. -/
-instance toSeminormedAddCommGroup : SeminormedAddCommGroup (E →SL[σ₁₂] F) where
+instance toSeminormedAddCommGroup : SeminormedAddGroup (E →SL[σ₁₂] F) where
 
 /-- If a normed space is (topologically) non-trivial, then the norm of the identity equals `1`. -/
 @[simp]

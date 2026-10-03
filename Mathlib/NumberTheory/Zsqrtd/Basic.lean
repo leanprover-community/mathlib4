@@ -132,7 +132,7 @@ theorem re_mul (z w : ℤ√d) : (z * w).re = z.re * w.re + d * z.im * w.im :=
 theorem im_mul (z w : ℤ√d) : (z * w).im = z.re * w.im + z.im * w.re :=
   rfl
 
-instance addCommGroup : AddCommGroup (ℤ√d) := by
+instance addCommGroup : AddGroup (ℤ√d) := by
   refine
   { sub := fun a b => a + -b
     nsmul := @nsmulRec (ℤ√d) ⟨0⟩ ⟨(· + ·)⟩
@@ -140,11 +140,13 @@ instance addCommGroup : AddCommGroup (ℤ√d) := by
     add_assoc := ?_
     zero_add := ?_
     add_zero := ?_
-    neg_add_cancel := ?_
-    add_comm := ?_ } <;>
+    neg_add_cancel := ?_ } <;>
   intros <;>
   ext <;>
   simp [add_comm, add_left_comm]
+
+instance isAddCommutative : IsAddCommutative (ℤ√d) :=
+  ⟨⟨fun _ _ => by ext <;> simp [add_comm]⟩⟩
 
 @[simp]
 theorem re_sub (z w : ℤ√d) : (z - w).re = z.re - w.re :=
@@ -159,39 +161,33 @@ instance addGroupWithOne : AddGroupWithOne (ℤ√d) :=
     natCast := fun n => ofInt n
     intCast := ofInt }
 
-instance commRing : CommRing (ℤ√d) := by
+instance commRing : Ring (ℤ√d) := by
   refine
   { Zsqrtd.addGroupWithOne with
     npow := @npowRec (ℤ√d) ⟨1⟩ ⟨(· * ·)⟩,
-    add_comm := ?_
+    is_comm := isAddCommutative.is_comm
     left_distrib := ?_
     right_distrib := ?_
     zero_mul := ?_
     mul_zero := ?_
     mul_assoc := ?_
     one_mul := ?_
-    mul_one := ?_
-    mul_comm := ?_ } <;>
+    mul_one := ?_ } <;>
   intros <;>
   ext <;>
   simp <;>
   ring
 
+instance isMulCommutative : IsMulCommutative (ℤ√d) :=
+  ⟨⟨fun _ _ => by ext <;> simp <;> ring⟩⟩
+
 instance : AddMonoid (ℤ√d) := by infer_instance
 
 instance : Monoid (ℤ√d) := by infer_instance
 
-instance : CommMonoid (ℤ√d) := by infer_instance
-
-instance : CommSemigroup (ℤ√d) := by infer_instance
-
 instance : Semigroup (ℤ√d) := by infer_instance
 
-instance : AddCommSemigroup (ℤ√d) := by infer_instance
-
 instance : AddSemigroup (ℤ√d) := by infer_instance
-
-instance : CommSemiring (ℤ√d) := by infer_instance
 
 instance : Semiring (ℤ√d) := by infer_instance
 

@@ -218,7 +218,7 @@ theorem descPochhammer_smeval_eq_descFactorial (n k : ℕ) :
   | zero =>
     rw [descPochhammer_zero, Nat.descFactorial_zero, Nat.cast_one, smeval_one, npow_zero, one_smul]
   | succ k ih =>
-    rw [descPochhammer_succ_right, Nat.descFactorial_succ, smeval_mul, ih, mul_comm, Nat.cast_mul,
+    rw [descPochhammer_succ_right, Nat.descFactorial_succ, smeval_mul, ih, mul_comm (n - k), Nat.cast_mul,
       smeval_sub, smeval_X, smeval_natCast, npow_one, npow_zero, nsmul_one]
     by_cases! h : n < k
     · simp only [Nat.descFactorial_eq_zero_iff_lt.mpr h, Nat.cast_zero, zero_mul]
@@ -502,8 +502,8 @@ theorem descPochhammer_smeval_add [Ring R] {r s : R} (k : ℕ) (h : Commute r s)
       refine (commute_iff_eq ((descPochhammer ℤ ij.1).smeval r)
         ((X - (ij.2 : ℤ[X])).smeval s)).mp ?_
       exact smeval_commute ℤ (descPochhammer ℤ ij.1) (X - (ij.2 : ℤ[X])) h
-    rw [descPochhammer_succ_right, mul_comm, smeval_mul, descPochhammer_succ_right, mul_comm,
-      smeval_mul, ← mul_assoc ((descPochhammer ℤ ij.1).smeval r), hdx]
+    rw [descPochhammer_succ_right, mul_comm (descPochhammer ℤ ij.2), smeval_mul,
+      descPochhammer_succ_right, mul_comm (descPochhammer ℤ ij.1), smeval_mul, ← mul_assoc ((descPochhammer ℤ ij.1).smeval r), hdx]
     simp only [mul_assoc _ ((descPochhammer ℤ ij.1).smeval r) _,
       ← mul_assoc _ _ (((descPochhammer ℤ ij.1).smeval r) * _)]
     have hl : (r + s - k • 1) * (k.choose ij.1) = (k.choose ij.1) * (X - (ij.2 : ℤ[X])).smeval s +

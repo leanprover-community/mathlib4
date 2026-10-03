@@ -541,7 +541,7 @@ noncomputable def VectorBundle.continuousLinearEquivAt (b : B) : E b ≃L[R] F :
 variable (F) in
 /-- If the model fiber of a vector bundle `E → B` is a complete space, so is each fiber `E x`. -/
 lemma VectorBundle.completeSpace [CompleteSpace F]
-    (E : B → Type*) [(x : B) → AddCommGroup (E x)] [(x : B) → Module R (E x)]
+    (E : B → Type*) [(x : B) → AddGroup (E x)] [(x : B) → IsAddCommutative (E x)] [(x : B) → Module R (E x)]
     [TopologicalSpace (TotalSpace F E)] [(x : B) → UniformSpace (E x)]
     [(x : B) → IsUniformAddGroup (E x)] [FiberBundle F E] [VectorBundle R F E] (b : B) :
     CompleteSpace (E b) := by
@@ -625,8 +625,11 @@ instance topologicalSpaceFiber (x : B) : TopologicalSpace (Z.Fiber x) :=
     Z.toFiberBundleCore.topologicalSpaceFiber x
   inferInstanceAs <| TopologicalSpace (Z.toFiberBundleCore.Fiber x)
 
-instance addCommGroupFiber (x : B) : AddCommGroup (Z.Fiber x) :=
-  inferInstanceAs <| AddCommGroup F
+instance addCommGroupFiber (x : B) : AddGroup (Z.Fiber x) :=
+  inferInstanceAs <| AddGroup F
+
+instance isAddCommutativeFiber (x : B) : IsAddCommutative (Z.Fiber x) :=
+  inferInstanceAs <| IsAddCommutative F
 
 instance moduleFiber (x : B) : Module R (Z.Fiber x) :=
   inferInstanceAs <| Module R F
@@ -927,7 +930,8 @@ number of "pretrivializations" identifying parts of `E` with product spaces `U �
 establishes that for the topology constructed on the sigma-type using
 `VectorPrebundle.totalSpaceTopology`, these "pretrivializations" are actually
 "trivializations" (i.e., homeomorphisms with respect to the constructed topology). -/
-theorem toVectorBundle : @VectorBundle R _ F E _ _ _ _ _ _ a.totalSpaceTopology _ a.toFiberBundle :=
+theorem toVectorBundle :
+    @VectorBundle R _ F E _ _ _ _ _ _ _ _ a.totalSpaceTopology _ a.toFiberBundle :=
   letI := a.totalSpaceTopology; letI := a.toFiberBundle
   { trivialization_linear' := by
       rintro _ ⟨e, he, rfl⟩

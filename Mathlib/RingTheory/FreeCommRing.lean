@@ -75,7 +75,7 @@ with coefficients in the integers and variables indexed by `α`.
 -/
 def FreeCommRing (α : Type u) : Type u :=
   MonoidAlgebra ℤ <| Multiplicative <| Multiset α
-deriving CommRing, Inhabited
+deriving Ring, IsMulCommutative, Inhabited
 
 namespace FreeCommRing
 
@@ -357,8 +357,8 @@ protected theorem coe_surjective : Surjective ((↑) : FreeRing α → FreeCommR
     rcases hx with ⟨x, rfl⟩; rcases hy with ⟨y, rfl⟩
     exact ⟨x * y, (FreeRing.lift _).map_mul _ _⟩
 
-instance instCommRing [Subsingleton α] : CommRing (FreeRing α) where
-  mul_comm a b := by
+instance instCommRing [Subsingleton α] : IsMulCommutative (FreeRing α) where
+  is_comm := ⟨fun a b => by
     induction a with
     | neg_one => simp
     | add x y ihx ihy => rw [add_mul, mul_add, ihx, ihy]
@@ -368,7 +368,7 @@ instance instCommRing [Subsingleton α] : CommRing (FreeRing α) where
       | neg_one => simp
       | add x y ihx ihy => rw [add_mul, mul_add, ihx, ihy]
       | mul x y ihx ihy => rw [← mul_assoc, ihx, mul_assoc, ihy, ← mul_assoc]
-      | of v => rw [Subsingleton.elim u v]
+      | of v => rw [Subsingleton.elim u v]⟩
 
 /-- If α has size at most 1 then the natural map from the free ring on `α` to the
 free commutative ring on `α` is an isomorphism of rings. -/

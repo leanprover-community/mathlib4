@@ -820,7 +820,7 @@ theorem summable_of_ratio_norm_eventually_le {α : Type*} [SeminormedAddGroup α
   by_cases! hr₀ : 0 ≤ r
   · rw [eventually_atTop] at h
     rcases h with ⟨N, hN⟩
-    rw [← @summable_nat_add_iff α _ _ _ _ N]
+    rw [← summable_nat_add_iff (f := f) N]
     refine .of_norm_bounded (g := fun n ↦ ‖f N‖ * r ^ n)
       (Summable.mul_left _ <| summable_geometric_of_lt_one hr₀ hr₁) fun n ↦ ?_
     conv_rhs => rw [mul_comm, ← zero_add N]
@@ -847,7 +847,7 @@ theorem not_summable_of_ratio_norm_eventually_ge {α : Type*} [SeminormedAddGrou
   rcases h with ⟨N₀, hN₀⟩
   rw [frequently_atTop] at hf
   rcases hf N₀ with ⟨N, hNN₀ : N₀ ≤ N, hN⟩
-  rw [← @summable_nat_add_iff α _ _ _ _ N]
+  rw [← summable_nat_add_iff (f := f) N]
   refine mt Summable.tendsto_atTop_zero
     fun h' ↦ not_tendsto_atTop_of_tendsto_nhds (tendsto_norm_zero.comp h') ?_
   convert! tendsto_atTop_of_geom_le _ hr _

@@ -34,11 +34,10 @@ variable (G : Type u) [Group G]
 
 open Subgroup (centralizer)
 
-open scoped IsMulCommutative in
 /-- The abelianization of G is the quotient of G by its commutator subgroup. -/
 def Abelianization : Type u :=
   G ⧸ commutator G
-deriving CommGroup
+deriving Group, IsMulCommutative
 
 namespace Abelianization
 
@@ -72,7 +71,7 @@ variable {A : Type v} [Group A] [IsMulCommutative A] (f : G →* A)
 theorem commutator_subset_ker : commutator G ≤ f.ker := by
   rw [commutator_eq_closure, Subgroup.closure_le]
   rintro x ⟨p, q, rfl⟩
-  simp [MonoidHom.mem_ker, mul_comm' (f p) (f q), commutatorElement_def]
+  simp [MonoidHom.mem_ker, mul_comm (f p) (f q), commutatorElement_def]
 
 /-- If `f : G → A` is a group homomorphism to an abelian group, then `lift f` is the unique map
   from the abelianization of a `G` to `A` that factors through `f`. -/
@@ -182,7 +181,8 @@ end AbelianizationCongr
 
 /-- An Abelian group is equivalent to its own abelianization. -/
 @[simps]
-def Abelianization.equivOfComm {H : Type*} [Group H] [IsMulCommutative H] : H ≃* Abelianization H :=
+def Abelianization.equivOfComm {H : Type*} [Group H] [IsMulCommutative H] :
+    H ≃* Abelianization H :=
   { Abelianization.of with
     toFun := Abelianization.of
     invFun := Abelianization.lift (MonoidHom.id H)

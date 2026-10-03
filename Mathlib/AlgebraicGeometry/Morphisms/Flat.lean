@@ -160,7 +160,7 @@ lemma epi_of_flat_of_surjective (f : X ⟶ Y) [Flat f] [Surjective f] : Epi f :=
   apply ConcreteCategory.mono_of_injective
   algebraize [(f.stalkMap x).hom]
   have : Module.FaithfullyFlat (Y.presheaf.stalk (f x)) (X.presheaf.stalk x) :=
-    @Module.FaithfullyFlat.of_flat_of_isLocalHom _ _ _ _ _ _ _
+    @Module.FaithfullyFlat.of_flat_of_isLocalHom _ _ _ _ _ _ _ _ _
       (Flat.stalkMap f x) (f.toLRSHom.prop x)
   exact ‹RingHom.FaithfullyFlat _›.injective
 

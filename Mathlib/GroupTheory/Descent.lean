@@ -100,7 +100,8 @@ If `G` is a commutative group and `n : ℕ`, `h : G → ℝ` satisfy
 
 where `0 ≤ a < b` and `c₀` are real numbers, `c : G → ℝ`, then `G` is finitely generated.
 -/
-@[to_additive /-- If `G` is a commutative additive group and `n : ℕ`, `h : G → ℝ` satisfy
+@[to_additive AddCommGroup.fg_of_descent
+/-- If `G` is a commutative additive group and `n : ℕ`, `h : G → ℝ` satisfy
 * `G / n • G` is finite,
 * for all `g x : G`, `h x ≤ a * h (g + x) + c g`,
 * for all `x : G`, `h (n • x) ≥ b * h x - c₀`,
@@ -137,7 +138,8 @@ If `G` is a commutative group and `n : ℕ`, `h : G → ℝ` satisfy
 
 then `G` is finitely generated.
 -/
-@[to_additive /-- If `G` is a commutative additive group and `n : ℕ`, `h : G → ℝ` satisfy
+@[to_additive AddCommGroup.fg_of_descent'
+/-- If `G` is a commutative additive group and `n : ℕ`, `h : G → ℝ` satisfy
 * `G / 2 • G` is finite,
 * `0 ≤ h x` for all `x : G`,
 * there is `C : ℝ` such that for all `x y : G`, `|h (x + y) + h(x - y) - 2 * (h x + h y)| ≤ C`,
@@ -185,7 +187,8 @@ If `G` is a commutative group and `n : ℕ`, `h : G → ℝ` satisfy
 
 where `1 < b` and `c₀` are real numbers, then the torsion subgroup of `G` is finite.
 -/
-@[to_additive /-- If `G` is a commutative additive group and `n : ℕ`, `h : G → ℝ` satisfy
+@[to_additive AddCommGroup.finite_torsion_of_descent
+/-- If `G` is a commutative additive group and `n : ℕ`, `h : G → ℝ` satisfy
 * for all `x : G`, `h (n • x) ≥ b * h x - c₀`,
 * for all `B : ℝ`, there are only finitely many `x : G` such that `h x ≤ B`,
 
@@ -202,7 +205,8 @@ If `G` is a commutative group and `n : ℕ`, `h : G → ℝ` satisfy
 
 then the torsion subgroup of `G` is finite.
 -/
-@[to_additive /-- If `G` is a commutative additive group and `n : ℕ`, `h : G → ℝ` satisfy
+@[to_additive AddCommGroup.finite_torsion_of_descent'
+/-- If `G` is a commutative additive group and `n : ℕ`, `h : G → ℝ` satisfy
 * there is `C : ℝ` such that for all `x y : G`, `|h (x + y) + h(x - y) - 2 * (h x + h y)| ≤ C`,
 * for all `B : ℝ`, there are only finitely many `x : G` such that `h x ≤ B`,
 

@@ -152,7 +152,7 @@ theorem IsCoprime.mul_left_iff : IsCoprime (x * y) z ↔ IsCoprime x z ∧ IsCop
   ⟨fun H => ⟨H.of_mul_left_left, H.of_mul_left_right⟩, fun ⟨H1, H2⟩ => H1.mul_left H2⟩
 
 theorem IsCoprime.mul_right_iff : IsCoprime x (y * z) ↔ IsCoprime x y ∧ IsCoprime x z := by
-  rw [isCoprime_comm, IsCoprime.mul_left_iff, isCoprime_comm, @isCoprime_comm _ _ z]
+  rw [isCoprime_comm, IsCoprime.mul_left_iff, isCoprime_comm, @isCoprime_comm _ _ _ z]
 
 theorem IsCoprime.of_isCoprime_of_dvd_left (h : IsCoprime y z) (hdvd : x ∣ y) : IsCoprime x z := by
   obtain ⟨d, rfl⟩ := hdvd
@@ -314,7 +314,7 @@ section CommRing
 variable {R : Type u} [Ring R] [IsMulCommutative R]
 
 theorem add_mul_left_left {x y : R} (h : IsCoprime x y) (z : R) : IsCoprime (x + y * z) y :=
-  @of_add_mul_left_left R _ _ _ (-z) <| by simpa only [mul_neg, add_neg_cancel_right] using h
+  @of_add_mul_left_left R _ _ _ _ (-z) <| by simpa only [mul_neg, add_neg_cancel_right] using h
 
 theorem add_mul_right_left {x y : R} (h : IsCoprime x y) (z : R) : IsCoprime (x + z * y) y := by
   rw [mul_comm]
@@ -498,7 +498,7 @@ namespace IsRelPrime
 variable {R} [Ring R] [IsMulCommutative R] {x y : R}
 
 theorem add_mul_left_left (h : IsRelPrime x y) (z : R) : IsRelPrime (x + y * z) y :=
-  @of_add_mul_left_left R _ _ _ (-z) <| by simpa only [mul_neg, add_neg_cancel_right] using h
+  @of_add_mul_left_left R _ _ _ _ (-z) <| by simpa only [mul_neg, add_neg_cancel_right] using h
 
 theorem add_mul_right_left (h : IsRelPrime x y) (z : R) : IsRelPrime (x + z * y) y :=
   mul_comm z y ▸ h.add_mul_left_left z

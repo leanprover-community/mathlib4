@@ -144,8 +144,9 @@ noncomputable instance monoidalCategoryStruct :
   rightUnitor M := Iso.symm (isoMk (fun _ ↦ (ρ_ _).symm) (fun X Y f ↦ by
     ext m
     dsimp [CommRingCat.forgetToRingCat_obj]
-    erw [ModuleCat.MonoidalCategory.rightUnitor_inv_apply,
-      ModuleCat.MonoidalCategory.rightUnitor_inv_apply, tensorObj_map_tmul, (R.map f).hom.map_one]
+    erw [ModuleCat.MonoidalCategory.rightUnitor_inv_apply (M := M.obj Y) (M.map f m),
+      ModuleCat.MonoidalCategory.rightUnitor_inv_apply (M := M.obj X) m, tensorObj_map_tmul,
+      (R.map f).hom.map_one]
     rfl))
 
 noncomputable instance monoidalCategory :

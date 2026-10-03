@@ -59,11 +59,14 @@ instance (𝕜') [Semiring 𝕜'] [Module 𝕜' F] [ContinuousConstSMul 𝕜' F]
 
 section AddCommMonoid
 
-/-- Copy `Pi.addCommMonoid`, ensuring the pointwise operations hold by defeq. -/
-instance : AddCommMonoid (FormalMultilinearSeries 𝕜 E F) := fast_instance% {
-  __ := Pi.addCommMonoid
+/-- Copy `Pi.addMonoid`, ensuring the pointwise operations hold by defeq. -/
+instance : AddMonoid (FormalMultilinearSeries 𝕜 E F) := fast_instance% {
+  __ := Pi.addMonoid
   zero _ := 0
   add x y n := x n + y n }
+
+instance : IsAddCommutative (FormalMultilinearSeries 𝕜 E F) :=
+  inferInstanceAs <| IsAddCommutative <| ∀ n : ℕ, E [×n]→L[𝕜] F
 
 end AddCommMonoid
 
@@ -180,8 +183,8 @@ variable [Ring 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [Topologi
   [ContinuousConstSMul 𝕜 E] [AddGroup F] [IsAddCommutative F] [Module 𝕜 F] [TopologicalSpace F]
   [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
 
-instance : AddCommGroup (FormalMultilinearSeries 𝕜 E F) :=
-  inferInstanceAs <| AddCommGroup <| ∀ n : ℕ, E [×n]→L[𝕜] F
+instance : AddGroup (FormalMultilinearSeries 𝕜 E F) :=
+  inferInstanceAs <| AddGroup <| ∀ n : ℕ, E [×n]→L[𝕜] F
 
 @[simp]
 theorem neg_apply (f : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (-f) n = - f n := rfl

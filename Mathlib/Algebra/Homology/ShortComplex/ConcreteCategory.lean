@@ -110,7 +110,7 @@ variable (S)
 noncomputable def cyclesMk [S.HasHomology] (x₂ : (forget₂ C Ab).obj S.X₂)
     (hx₂ : ((forget₂ C Ab).map S.g) x₂ = 0) :
     (forget₂ C Ab).obj S.cycles :=
-  (S.mapCyclesIso (forget₂ C Ab)).hom ((ShortComplex.abCyclesIso _).inv ⟨x₂, hx₂⟩)
+  (S.mapCyclesIso (forget₂ C Ab)).hom ((S.map (forget₂ C Ab)).abCyclesIso.inv ⟨x₂, hx₂⟩)
 
 set_option backward.defeqAttrib.useBackward true in
 @[simp]

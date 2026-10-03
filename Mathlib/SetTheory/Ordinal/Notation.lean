@@ -493,8 +493,8 @@ theorem repr_sub : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ - o₂) = rep
                   oadd_lt_oadd_2 h₁ <|
                     lt_of_le_of_ne (tsub_eq_zero_iff_le.1 mn) (mt PNat.eq en)).symm
       · simp only [Nat.succPNat, Nat.succ_eq_add_one, repr, PNat.mk_coe, ← succ_eq_add_one]
-        rw [(tsub_eq_iff_eq_add_of_le <| le_of_lt <| Nat.lt_of_sub_eq_succ mn).1 mn, add_comm,
-          Nat.cast_add, mul_add, add_assoc, add_sub_add_cancel]
+        rw [(tsub_eq_iff_eq_add_of_le <| le_of_lt <| Nat.lt_of_sub_eq_succ mn).1 mn,
+          add_comm _ (n₂ : ℕ), Nat.cast_add, mul_add, add_assoc, add_sub_add_cancel]
         refine
           (Ordinal.sub_eq_of_add_eq <|
               add_of_omega0_opow_le h₂.snd'.repr_lt <| le_trans ?_ le_self_add).symm

@@ -192,7 +192,7 @@ theorem eval_apply_eq_zero_iff (v : V) : (eval K V) v = 0 ↔ v = 0 :=
 /-- This is a linear map version of `SeparatingDual.exists_ne_zero` in a projective module. -/
 theorem Projective.exists_dual_ne_zero (R : Type*) [Semiring R] [Module R V]
     [Projective R V] {x : V} (hx : x ≠ 0) : ∃ f : Dual R V, f x ≠ 0 :=
-  have ⟨M, _, _, _, ⟨i, s, his⟩⟩ := Projective.iff_split.mp ‹Projective R V›
+  have ⟨M, _, _, _, _, ⟨i, s, his⟩⟩ := Projective.iff_split.mp ‹Projective R V›
   let b := Free.chooseBasis R M
   have : i x ≠ 0 := i.map_eq_zero_iff (injective_of_comp_eq_id i s his) |>.not.mpr hx
   have ⟨j, hj⟩ := not_forall.mp fun h ↦ b.repr.map_ne_zero_iff.mpr this <| Finsupp.ext h
@@ -989,19 +989,22 @@ variable {K V : Type*} [Field K] [AddGroup V] [IsAddCommutative V] [Module K V]
 
 theorem quotDualCoannihilatorToDual_bijective (W : Subspace K (Dual K V)) [FiniteDimensional K W] :
     Function.Bijective W.quotDualCoannihilatorToDual :=
-  ⟨W.quotDualCoannihilatorToDual_injective, letI : AddCommGroup W := inferInstance
+  ⟨W.quotDualCoannihilatorToDual_injective, letI : AddGroup W := inferInstance
+    haveI : IsAddCommutative W := inferInstance
     flip_injective_iff₂.mp W.flip_quotDualCoannihilatorToDual_injective⟩
 
 theorem flip_quotDualCoannihilatorToDual_bijective (W : Subspace K (Dual K V))
     [FiniteDimensional K W] : Function.Bijective W.quotDualCoannihilatorToDual.flip :=
-  letI : AddCommGroup W := inferInstance
+  letI : AddGroup W := inferInstance
+  haveI : IsAddCommutative W := inferInstance
   flip_bijective_iff₂.mpr W.quotDualCoannihilatorToDual_bijective
 
 theorem dualCoannihilator_dualAnnihilator_eq {W : Subspace K (Dual K V)} [FiniteDimensional K W] :
     W.dualCoannihilator.dualAnnihilator = W :=
   let e := (LinearEquiv.ofBijective _ W.flip_quotDualCoannihilatorToDual_bijective).trans
     (Submodule.dualQuotEquivDualAnnihilator _)
-  letI : AddCommGroup W := inferInstance
+  letI : AddGroup W := inferInstance
+  haveI : IsAddCommutative W := inferInstance
   haveI : FiniteDimensional K W.dualCoannihilator.dualAnnihilator := LinearEquiv.finiteDimensional e
   (eq_of_le_of_finrank_eq W.le_dualCoannihilator_dualAnnihilator e.finrank_eq).symm
 

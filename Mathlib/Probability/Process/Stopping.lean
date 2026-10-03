@@ -390,7 +390,7 @@ theorem add_const [AddGroup ι] [Preorder ι] [AddRightMono ι]
     {i : ι} (hi : 0 ≤ i) : IsStoppingTime f fun ω => τ ω + i := by
   intro j
   simp only
-  have h_eq : {ω | τ ω + i ≤ j} = {ω | τ ω ≤ j - i} := by
+  have h_eq : {ω | τ ω + i ≤ j} = {ω | τ ω ≤ ((j - i : ι) : WithTop ι)} := by
     ext ω
     simp only [Set.mem_ofPred_eq, coe_sub]
     cases τ ω with

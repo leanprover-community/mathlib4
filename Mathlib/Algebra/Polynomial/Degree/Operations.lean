@@ -500,7 +500,7 @@ theorem Monic.natDegree_eq_zero (hf : p.Monic) : p.natDegree = 0 ↔ p = 1 :=
   ⟨eq_one_of_monic_natDegree_zero hf, by rintro rfl; simp⟩
 
 theorem degree_sum_fin_lt {n : ℕ} (f : Fin n → R) :
-    degree (∑ i : Fin n, C (f i) * X ^ (i : ℕ)) < n :=
+    degree (∑ i : Fin n, C (f i) * X ^ (i : ℕ) : R[X]) < n :=
   (degree_sum_le _ _).trans_lt <|
     (Finset.sup_lt_iff <| WithBot.bot_lt_coe n).2 fun k _hk =>
       (degree_C_mul_X_pow_le _ _).trans_lt <| WithBot.coe_lt_coe.2 k.is_lt

@@ -64,8 +64,10 @@ instance [DistribMulAction Sᵐᵒᵖ M] [IsCentralScalar S M] :
 
 end SMul
 
-instance : AddCommMonoid (ConvexSpace.AffineMap R X M) :=
-  fast_instance% FunLike.addCommMonoid
+instance : AddMonoid (ConvexSpace.AffineMap R X M) :=
+  fast_instance% FunLike.addMonoid
+
+instance : IsAddCommutative (ConvexSpace.AffineMap R X M) := FunLike.addCommMonoid
 
 instance [Monoid S] [DistribMulAction S M] [SMulCommClass S R M] :
     DistribMulAction S (ConvexSpace.AffineMap R X M) := fast_instance% FunLike.distribMulAction
@@ -88,8 +90,8 @@ instance : Sub (ConvexSpace.AffineMap R X M) where
 
 instance : IsSubApply (ConvexSpace.AffineMap R X M) X M where
 
-instance : AddCommGroup (ConvexSpace.AffineMap R X M) :=
-  fast_instance% FunLike.addCommGroup
+instance : AddGroup (ConvexSpace.AffineMap R X M) :=
+  fast_instance% FunLike.addGroup
 
 end AddCommGroup
 end ConvexSpace.AffineMap
@@ -98,9 +100,9 @@ end ConvexSpace.AffineMap
 
 section Pointwise
 variable {R S : Type*} [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [Semiring S]
-  [PartialOrder S] [IsStrictOrderedRing S] [ConvexSpace R X] [AddMonoid M] [IsAddCommutative M] [Module R M]
-  [Module S M] [SMulCommClass S R M] [ConvexSpace R M] [IsModuleConvexSpace R M] [ConvexSpace S M]
-  [IsModuleConvexSpace S M]
+  [PartialOrder S] [IsStrictOrderedRing S] [ConvexSpace R X] [AddMonoid M] [IsAddCommutative M]
+  [Module R M] [Module S M] [SMulCommClass S R M] [ConvexSpace R M] [IsModuleConvexSpace R M]
+  [ConvexSpace S M] [IsModuleConvexSpace S M]
 
 instance ConvexSpace.AffineMap.instIsModuleConvexSpace :
     IsModuleConvexSpace S (ConvexSpace.AffineMap R X M) where

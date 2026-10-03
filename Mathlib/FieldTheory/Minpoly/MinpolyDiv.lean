@@ -194,8 +194,8 @@ variable {K}
 lemma sum_smul_minpolyDiv_eq_X_pow (E) [Field E] [Algebra K E] [IsAlgClosed E]
     [FiniteDimensional K L] [Algebra.IsSeparable K L]
     {x : L} (hxL : K[x] = ⊤) {r : ℕ} (hr : r < finrank K L) :
-    ∑ σ : L →ₐ[K] E, ((x ^ r / aeval x (derivative <| minpoly K x)) •
-      minpolyDiv K x).map σ = (X ^ r : E[X]) := by
+    (∑ σ : L →ₐ[K] E, ((x ^ r / aeval x (derivative <| minpoly K x)) •
+      minpolyDiv K x).map σ : E[X]) = (X ^ r : E[X]) := by
   classical
   rw [← sub_eq_zero]
   have : Function.Injective (fun σ : L →ₐ[K] E ↦ σ x) := fun _ _ h =>

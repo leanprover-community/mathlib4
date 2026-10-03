@@ -251,22 +251,21 @@ instance [Monoid S] [AddMonoid R] [DistribMulAction S R] :
   smul_zero _ := by ext <;> simp
   smul_add _ _ _ := by ext <;> simp
 
-instance [AddMonoid R] [IsAddCommutative R] : AddCommMonoid (QuadraticAlgebra R a b) := fast_instance% by
+instance [AddMonoid R] [IsAddCommutative R] : IsAddCommutative (QuadraticAlgebra R a b) := by
   refine (equivProd a b).injective.addCommMonoid _ rfl ?_ ?_ <;> intros <;> rfl
 
-instance [Semiring S] [AddMonoid R] [IsAddCommutative R] [Module S R] : Module S (QuadraticAlgebra R a b) where
+instance [Semiring S] [AddMonoid R] [IsAddCommutative R] [Module S R] :
+    Module S (QuadraticAlgebra R a b) where
   add_smul r s x := by ext <;> simp [add_smul]
   zero_smul x := by ext <;> simp
 
 instance [AddGroup R] : AddGroup (QuadraticAlgebra R a b) := fast_instance% by
   refine (equivProd a b).injective.addGroup _ rfl ?_ ?_ ?_ ?_ ?_ <;> intros <;> rfl
 
-instance [AddGroup R] [IsAddCommutative R] : AddCommGroup (QuadraticAlgebra R a b) where
-
 section AddCommMonoidWithOne
 variable [AddMonoidWithOne R] [IsAddCommutative R]
 
-instance : AddCommMonoidWithOne (QuadraticAlgebra R a b) where
+instance : AddMonoidWithOne (QuadraticAlgebra R a b) where
   natCast n := .C n
   natCast_zero := by ext <;> simp
   natCast_succ n := by ext <;> simp
@@ -295,7 +294,7 @@ end AddCommMonoidWithOne
 section AddCommGroupWithOne
 variable [AddGroupWithOne R] [IsAddCommutative R]
 
-instance : AddCommGroupWithOne (QuadraticAlgebra R a b) where
+instance : AddGroupWithOne (QuadraticAlgebra R a b) where
   intCast n := .C n
   intCast_ofNat n := by norm_cast
   intCast_negSucc n := by rw [Int.negSucc_eq, Int.cast_neg, C_neg]; norm_cast
@@ -402,11 +401,14 @@ end Semiring
 section CommSemiring
 variable [Semiring R] [IsMulCommutative R]
 
-instance instCommSemiring : CommSemiring (QuadraticAlgebra R a b) where
+instance instCommSemiring : Semiring (QuadraticAlgebra R a b) where
   mul_assoc _ _ _ := by ext <;> simp <;> ring
-  mul_comm _ _ := by ext <;> simp <;> ring
 
-instance [Semiring S] [IsMulCommutative S] [Algebra S R] : Algebra S (QuadraticAlgebra R a b) where
+instance : IsMulCommutative (QuadraticAlgebra R a b) :=
+  ⟨⟨fun _ _ ↦ by ext <;> simp <;> ring⟩⟩
+
+instance [Semiring S] [IsMulCommutative S] [Algebra S R] :
+    Algebra S (QuadraticAlgebra R a b) where
   algebraMap.toFun s := ⟨algebraMap S R s, 0⟩
   algebraMap.map_one' := by ext <;> simp
   algebraMap.map_mul' x y := by ext <;> simp
@@ -470,7 +472,7 @@ section CommRing
 
 variable [Ring R] [IsMulCommutative R]
 
-instance instCommRing : CommRing (QuadraticAlgebra R a b) where
+instance instCommRing : Ring (QuadraticAlgebra R a b) where
 
 instance [CharZero R] : CharZero (QuadraticAlgebra R a b) where
   cast_injective m n := by

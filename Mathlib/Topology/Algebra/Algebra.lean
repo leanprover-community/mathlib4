@@ -515,11 +515,11 @@ theorem coe_codRestrict_apply (f : A →A[R] B) (p : Subalgebra R B) (h : ∀ x,
 /-- Restrict the codomain of a continuous algebra homomorphism `f` to `f.range`. -/
 @[reducible]
 def rangeRestrict (f : A →A[R] B) :=
-  f.codRestrict (@AlgHom.range R A B _ _ _ _ _ f) (@AlgHom.mem_range_self R A B _ _ _ _ _ f)
+  f.codRestrict (@AlgHom.range R A B _ _ _ _ _ _ f) (@AlgHom.mem_range_self R A B _ _ _ _ _ _ f)
 
 @[simp]
 theorem coe_rangeRestrict (f : A →A[R] B) :
-    (f.rangeRestrict : A →ₐ[R] (@AlgHom.range R A B _ _ _ _ _ f)) =
+    (f.rangeRestrict : A →ₐ[R] (@AlgHom.range R A B _ _ _ _ _ _ f)) =
       (f : A →ₐ[R] B).rangeRestrict :=
   rfl
 
@@ -542,7 +542,7 @@ theorem _root_.Subalgebra.valA_apply (p : Subalgebra R A) (x : p) : p.valA x = x
 
 @[simp]
 theorem _root_.Submodule.range_valA (p : Subalgebra R A) :
-    @AlgHom.range R p A _ _ _ _ _ p.valA = p :=
+    @AlgHom.range R p A _ _ _ _ _ _ p.valA = p :=
   Subalgebra.range_val p
 
 end subalgebra
@@ -625,16 +625,6 @@ instance Subalgebra.isMulCommutative_topologicalClosure [T2Space A] (s : Subalge
     [IsMulCommutative s] : IsMulCommutative s.topologicalClosure :=
   s.toSubsemiring.isMulCommutative_topologicalClosure
 
-open scoped IsMulCommutative in
-/-- If a subalgebra of a topological algebra is commutative, then so is its topological closure.
-
-See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
-abbrev Subalgebra.commSemiringTopologicalClosure [T2Space A] (s : Subalgebra R A)
-    (hs : ∀ x y : s, x * y = y * x) : CommSemiring s.topologicalClosure :=
-  haveI : IsMulCommutative s := ⟨⟨hs⟩⟩
-  inferInstance
-
 /-- This is really a statement about topological algebra isomorphisms,
 but we don't have those, so we use the clunky approach of talking about
 an algebra homomorphism, and a separate homeomorphism,
@@ -698,21 +688,3 @@ lemma le_centralizer_centralizer [T2Space A] (x : A) :
 end Algebra.elemental
 
 end TopologicalAlgebra
-
-section Ring
-
-variable {R : Type*} [Ring R] [IsMulCommutative R]
-variable {A : Type u} [TopologicalSpace A]
-variable [Ring A]
-variable [Algebra R A] [IsSemitopologicalRing A]
-
-open scoped IsMulCommutative in
-/-- If a subalgebra of a topological algebra is commutative, then so is its topological closure.
-See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
-abbrev Subalgebra.commRingTopologicalClosure [T2Space A] (s : Subalgebra R A)
-    (hs : ∀ x y : s, x * y = y * x) : CommRing s.topologicalClosure :=
-  have : IsMulCommutative s := ⟨⟨hs⟩⟩
-  inferInstance
-
-end Ring

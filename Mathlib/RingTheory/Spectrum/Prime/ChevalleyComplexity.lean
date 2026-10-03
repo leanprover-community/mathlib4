@@ -417,8 +417,8 @@ private lemma induction_aux (R : Type*) [Ring R] [IsMulCommutative R] [Algebra R
           · exact one_le_coeffSubmodule
           · exact Set.subset_union_right
           · lia
-    · exact le_self_pow one_le_coeffSubmodule powBound_ne_zero <| subset_span <| .inr <| by
-        simpa using ⟨_, _, hi.symm⟩
+    · exact le_self_pow (M := Submodule R₀ R) one_le_coeffSubmodule powBound_ne_zero <|
+        subset_span <| .inr <| by simpa using ⟨_, _, hi.symm⟩
     · unfold powBound
       gcongr
       · exact one_le_coeffSubmodule
@@ -428,8 +428,9 @@ private lemma induction_aux (R : Type*) [Ring R] [IsMulCommutative R] [Algebra R
 See the docstring of `induction_structure` for the overview. -/
 private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
   intro S; revert R₀; revert S
-  apply induction_structure
-  · intro R _ R₀ _ _ f
+  refine induction_structure n (fun R _ _ S ↦ ∀ {R₀ : Type _} [Ring R₀] [IsMulCommutative R₀]
+    [Algebra R₀ R], Statement R₀ R n S) ?_ ?_ ?_ ?_
+  · intro R _ _ R₀ _ _ _ f
     refine ⟨(Finset.range (f.natDegree + 2)).image fun j ↦ ⟨f.coeff j, 0, 0⟩, ?_, ?_⟩
     · convert! image_comap_C_basicOpen f
       · simp only [basicOpen_eq_zeroLocus_compl, Set.compl_eq_univ_sdiff]
@@ -448,7 +449,7 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
           · exact ⟨f.natDegree + 1, by simp, by simp [f.coeff_eq_zero_of_natDegree_lt hi]⟩
         · ext; simp [eq_comm]
     · simp
-  · intro R _ g i hi hi_min _ R₀ _ f
+  · intro R _ _ g i hi hi_min _ R₀ _ _ f
     let M := R[X] ⧸ Ideal.span {g.1 i}
     have : Module.Free R M := .of_basis (AdjoinRoot.powerBasis' hi).basis
     have : Module.Finite R M := .of_basis (AdjoinRoot.powerBasis' hi).basis
@@ -465,7 +466,7 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
         IsScalarTower.algebraMap_apply R[X] M, isNilpotent_tensor_residueField_iff]
       simp [BasicConstructibleSetData.toSet, ConstructibleSetData.toSet, Set.subset_def, M]
     · simp
-  · intro R _ c i j hi hle hne H R₀ _ _ f
+  · intro R _ _ c i j hi hle hne H R₀ _ _ _ f
     cases subsingleton_or_nontrivial R
     · use ∅
       simp [ConstructibleSetData.toSet, Subsingleton.elim f 0]
@@ -524,15 +525,16 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
       simp only [Submodule.span_le, Set.union_subset_iff, Set.singleton_subset_iff, SetLike.mem_coe,
         Set.iUnion_subset_iff, Set.range_subset_iff, c']
       constructor
-      · apply one_le_pow_of_one_le' c.one_le_coeffSubmodule
+      · apply one_le_pow_of_one_le' (M := Submodule R₀ R) c.one_le_coeffSubmodule
         rw [Submodule.one_eq_span]
         exact Submodule.subset_span rfl
       · intro l m
         rw [update_apply]
         split_ifs with hlj
         · convert!
-          coeff_modByMonic_mem_pow_natDegree_mul _ _ _ (fun _ ↦ coeff_mem_coeffSubmodule)
-            one_mem_coeffSubmodule _ (fun _ ↦ coeff_mem_coeffSubmodule) one_mem_coeffSubmodule _
+          coeff_modByMonic_mem_pow_natDegree_mul (c.val j) (c.val i) _
+            (fun _ ↦ coeff_mem_coeffSubmodule) one_mem_coeffSubmodule _
+            (fun _ ↦ coeff_mem_coeffSubmodule) one_mem_coeffSubmodule _
           rw [← pow_succ, Polynomial.degree_eq_natDegree, WithBot.succ_natCast, Nat.cast_id]
           intro e
           simp [show c.val i = 0 by simpa [e] using hle] at hi
@@ -543,9 +545,9 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
             rw [bot_lt_iff_ne_bot, ne_eq, degree_eq_bot]
             intro e
             simp [e] at hi
-          refine le_self_pow c.one_le_coeffSubmodule this ?_
+          refine le_self_pow (M := Submodule R₀ R) c.one_le_coeffSubmodule this ?_
           exact Submodule.subset_span (.inr (Set.mem_iUnion_of_mem l ⟨m, rfl⟩))
-  · intro R _ c i e he hc H₁ H₂ R₀ _ _
+  · intro R _ _ c i e he hc H₁ H₂ R₀ _ _ _
     exact induction_aux (R₀ := R₀) R c i e he hc H₁ H₂
 
 end PolynomialC

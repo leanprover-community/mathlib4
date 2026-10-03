@@ -48,7 +48,7 @@ public theorem Module.free_of_isStablyFree_of_invertible
     [IsStablyFree R M] [Module.Invertible R M] : Module.Free R M := by
   rcases subsingleton_or_nontrivial R with _ | _
   · exact Module.Free.of_subsingleton' R M
-  obtain ⟨N, _, _, _, _, _⟩ := IsStablyFree.exist_free_prod R M
+  obtain ⟨N, _, _, _, _, _, _⟩ := IsStablyFree.exist_free_prod R M
   let n := Module.finrank R N
   have hp : Module.finrank R (M × N) = n + 1 := by
     let 𝔭 : PrimeSpectrum R := Nonempty.some inferInstance

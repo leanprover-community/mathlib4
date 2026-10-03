@@ -67,7 +67,8 @@ open TensorProduct
 universe u v
 
 variable (R : Type u) (M : Type v) (N P Q A : Type*) [Semiring R] [IsMulCommutative R]
-variable [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N] [AddMonoid P] [IsAddCommutative P] [AddMonoid Q] [IsAddCommutative Q]
+variable [AddMonoid M] [IsAddCommutative M] [AddMonoid N] [IsAddCommutative N]
+  [AddMonoid P] [IsAddCommutative P] [AddMonoid Q] [IsAddCommutative Q]
 variable [Module R M] [Module R N] [Module R P] [Module R Q]
 
 namespace Module
@@ -121,7 +122,9 @@ theorem rTensorInv_leftInverse : Function.LeftInverse (rTensorInv P Q e) (.rTens
     ext; simp [LinearEquiv.congrLeft, LinearEquiv.congrRight, LinearEquiv.arrowCongrAddEquiv]
 
 theorem rTensorInv_injective : Function.Injective (rTensorInv P Q e) := by
-  simpa [rTensorInv] using (rTensorInv_leftInverse _ _ <| TensorProduct.comm R N M ≪≫ₗ e).injective
+  have := (rTensorInv_leftInverse (P ⊗[R] M) (Q ⊗[R] M) <| TensorProduct.comm R N M ≪≫ₗ e).injective
+  simp only [LinearMap.coe_rTensorHom] at this
+  simpa [rTensorInv] using this
 
 /-- If `M` is an invertible `R`-module, `(· ⊗[R] M)` is an auto-equivalence of the category
 of `R`-modules. -/
@@ -411,7 +414,8 @@ open CategoryTheory Module
 instance (M : (Skeleton <| SemimoduleCat.{u} R)ˣ) : Module.Invertible R M :=
   .right (Quotient.eq.mp M.inv_mul).some.toLinearEquivₛ
 
-instance (R : Type u) [Ring R] [IsMulCommutative R] (M : (Skeleton <| ModuleCat.{u} R)ˣ) : Module.Invertible R M :=
+instance (R : Type u) [Ring R] [IsMulCommutative R] (M : (Skeleton <| ModuleCat.{u} R)ˣ) :
+    Module.Invertible R M :=
   .right (Quotient.eq.mp M.inv_mul).some.toLinearEquiv
 
 instance : Small.{u} (Skeleton <| SemimoduleCat.{u} R)ˣ :=
@@ -431,7 +435,9 @@ def CommRing.Pic (R : Type u) [Semiring R] [IsMulCommutative R] : Type u :=
 
 open CommRing (Pic)
 
-noncomputable instance : CommGroup (Pic R) := fast_instance% (equivShrink _).symm.commGroup
+noncomputable instance : Group (Pic R) := fast_instance% (equivShrink _).symm.group
+
+instance : IsMulCommutative (Pic R) := (equivShrink _).symm.commGroup
 
 variable [Module.Invertible R M] [Module.Invertible R N]
 
@@ -445,7 +451,7 @@ abbrev AsModule (M : Pic R) : Type u := ((equivShrink _).symm M).val
 
 noncomputable instance : CoeSort (Pic R) (Type u) := ⟨AsModule⟩
 
-noncomputable instance (R) [Ring R] [IsMulCommutative R] (M : Pic R) : AddCommGroup M :=
+noncomputable instance (R) [Ring R] [IsMulCommutative R] (M : Pic R) : AddGroup M :=
   Module.addCommMonoidToAddCommGroup R
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -518,13 +524,15 @@ theorem mul_eq_tensor (M N : Pic R) : M * N = Pic.mk R (M ⊗[R] N) := by
   rw [mk_tensor, mk_eq_self, mk_eq_self]
 
 theorem subsingleton_iffₛ : Subsingleton (Pic R) ↔
-    ∀ (M : Type u) [AddMonoid M] [IsAddCommutative M] [Module R M], Module.Invertible R M → Free R M :=
-  .trans ⟨fun _ M _ _ _ ↦ Subsingleton.elim ..,
+    ∀ (M : Type u) [AddMonoid M] [IsAddCommutative M] [Module R M],
+      Module.Invertible R M → Free R M :=
+  .trans ⟨fun _ M _ _ _ _ ↦ Subsingleton.elim ..,
       fun h ↦ ⟨fun M N ↦ by rw [← mk_eq_self (M := M), ← mk_eq_self (M := N), h, h]⟩⟩ <|
-    forall₄_congr fun _ _ _ _ ↦ mk_eq_one_iff_free
+    forall₅_congr fun _ _ _ _ _ ↦ mk_eq_one_iff_free
 
 theorem subsingleton_iff {R : Type u} [Ring R] [IsMulCommutative R] : Subsingleton (Pic R) ↔
-    ∀ (M : Type u) [AddGroup M] [IsAddCommutative M] [Module R M], Module.Invertible R M → Free R M :=
+    ∀ (M : Type u) [AddGroup M] [IsAddCommutative M] [Module R M],
+      Module.Invertible R M → Free R M :=
   subsingleton_iffₛ.trans
     ⟨fun h M ↦ h M, fun h M ↦ let _ := @Module.addCommMonoidToAddCommGroup R; h M⟩
 
@@ -533,7 +541,7 @@ instance [Subsingleton (Pic R)] : Free R M :=
   .of_equiv (Finite.reprEquivₛ R M)
 
 /-- The Picard group of a local semiring is trivial. -/
-instance [IsLocalRing R] : Subsingleton (Pic R) := subsingleton_iffₛ.mpr fun M _ _ _ ↦ by
+instance [IsLocalRing R] : Subsingleton (Pic R) := subsingleton_iffₛ.mpr fun M _ _ _ _ ↦ by
   obtain ⟨S, hS⟩ := ((Invertible.linearEquiv R M).symm 1).exists_finset
   replace hS : 1 = ∑ i ∈ S, i.1 i.2 := by
     simpa [LinearEquiv.symm_apply_eq, Invertible.linearEquiv] using hS
@@ -543,10 +551,11 @@ instance [IsLocalRing R] : Subsingleton (Pic R) := subsingleton_iffₛ.mpr fun M
 
 /-- The Picard group of a semilocal ring is trivial. -/
 instance (R) [Ring R] [IsMulCommutative R] [Finite (MaximalSpectrum R)] : Subsingleton (Pic R) :=
-  subsingleton_iff.mpr fun _ _ _ _ ↦ free_of_flat_of_finrank_eq _ _ 1
+  subsingleton_iff.mpr fun _ _ _ _ _ ↦ free_of_flat_of_finrank_eq _ _ 1
     fun _ ↦ let _ := @Ideal.Quotient.field; Invertible.finrank_eq_one ..
 
-variable (R) (A B : Type*) [Semiring A] [IsMulCommutative A] [Semiring B] [IsMulCommutative B] [Algebra R A]
+variable (R) (A B : Type*) [Semiring A] [IsMulCommutative A] [Semiring B] [IsMulCommutative B]
+  [Algebra R A]
 
 open AlgebraTensorModule in
 /-- Every `R`-algebra `A` gives rise to a homomorphism between Picard groups of `R` and `A`. -/
@@ -572,7 +581,8 @@ theorem mapAlgebra_self_apply {M : Pic R} : mapAlgebra R R M = M :=
 
 theorem mapAlgebra_self : mapAlgebra R R = .id _ := by ext; exact mapAlgebra_self_apply
 
-variable {S T : Type*} [Semiring S] [IsMulCommutative S] [Semiring T] [IsMulCommutative T] (f : R →+* S) (g : S →+* T)
+variable {S T : Type*} [Semiring S] [IsMulCommutative S] [Semiring T] [IsMulCommutative T]
+  (f : R →+* S) (g : S →+* T)
 
 /-- Every ring homomorphism between commutative semirings induces a homomorphism between
 Picard groups. -/
@@ -705,7 +715,8 @@ set_option backward.privateInPublic.warn false in
 /-- Given two invertible `R`-submodules in an `R`-algebra `A`, the `R`-linear map from
 `I ⊗[R] J` to `I * J` induced by multiplication is an isomorphism. -/
 noncomputable def tensorEquivMul : I ⊗[R] J ≃ₗ[R] I * J := by
-  refine .ofBijective _ ⟨.of_comp (f := Submodule.subtype _) ?_, mulMap'_surjective _ _⟩
+  refine .ofBijective _ ⟨.of_comp (f := Submodule.subtype (R := R) (M := A) _) ?_,
+    mulMap'_surjective _ _⟩
   convert!
     (projective_units_and_mul'_comp_lTensor_bijective J).2.1.comp
       (Flat.rTensor_preserves_injective_linearMap _ I.1.subtype_injective)
@@ -818,7 +829,8 @@ theorem top_mul_submoduleAlgebra : ⊤ * submoduleAlgebra e = ⊤ := by
 we have `I ⊗[R] M ≃ₗ[R] I * M` for any `R`-submodule `I` of `A`. -/
 noncomputable def tensorSubmoduleAlgebraEquivMul (I : Submodule R A) :
     I ⊗[R] submoduleAlgebra e ≃ₗ[R] I * submoduleAlgebra e := by
-  refine .ofBijective _ ⟨.of_comp (f := Submodule.subtype _) ?_, Submodule.mulMap'_surjective _ _⟩
+  refine .ofBijective _ ⟨.of_comp (f := Submodule.subtype (R := R) (M := A) _) ?_,
+    Submodule.mulMap'_surjective _ _⟩
   convert!
     ((tensorSubmoduleAlgebraEquiv e).restrictScalars R).injective.comp
       (Flat.rTensor_preserves_injective_linearMap _ I.subtype_injective)

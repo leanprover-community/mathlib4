@@ -42,12 +42,12 @@ theorem surjective_stableUnderComposition : StableUnderComposition surjective :=
 
 theorem surjective_respectsIso : RespectsIso surjective := by
   apply surjective_stableUnderComposition.respectsIso
-  intro _ _ _ _ e
+  intro _ _ _ _ _ _ e
   exact e.surjective
 
 theorem surjective_isStableUnderBaseChange : IsStableUnderBaseChange surjective := by
   refine IsStableUnderBaseChange.mk surjective_respectsIso ?_
-  introv h x
+  introv _ h x
   induction x with
   | tmul x y =>
     obtain ⟨y, rfl⟩ := h y; use y • x; dsimp

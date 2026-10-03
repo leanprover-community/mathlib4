@@ -19,8 +19,8 @@ namespace Submodule
 /-- A submodule of a seminormed group is also a seminormed group, with the restriction of the norm.
 -/
 instance seminormedAddCommGroup [Ring 𝕜] [SeminormedAddGroup E] [IsAddCommutative E] [Module 𝕜 E]
-    (s : Submodule 𝕜 E) : SeminormedAddCommGroup s :=
-  fast_instance% SeminormedAddCommGroup.induced _ _ s.subtype.toAddMonoidHom
+    (s : Submodule 𝕜 E) : SeminormedAddGroup s :=
+  fast_instance% SeminormedAddGroup.induced _ _ s.subtype.toAddMonoidHom
 
 /-- If `x` is an element of a submodule `s` of a normed group `E`, its norm in `s` is equal to its
 norm in `E`. -/
@@ -38,7 +38,7 @@ theorem norm_coe [Ring 𝕜] [SeminormedAddGroup E] [IsAddCommutative E] [Module
 
 /-- A submodule of a normed group is also a normed group, with the restriction of the norm. -/
 instance normedAddCommGroup [Ring 𝕜] [NormedAddGroup E] [IsAddCommutative E] [Module 𝕜 E]
-    (s : Submodule 𝕜 E) : NormedAddCommGroup s :=
+    (s : Submodule 𝕜 E) : NormedAddGroup s :=
   { Submodule.seminormedAddCommGroup s with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
@@ -49,7 +49,7 @@ namespace ClosedSubmodule
 /-- A closed submodule of a seminormed group is also a seminormed group, with the restriction of the
 norm. -/
 instance seminormedAddCommGroup [Ring 𝕜] [SeminormedAddGroup E] [IsAddCommutative E] [Module 𝕜 E]
-    (s : ClosedSubmodule 𝕜 E) : SeminormedAddCommGroup s :=
+    (s : ClosedSubmodule 𝕜 E) : SeminormedAddGroup s :=
   fast_instance% s.toSubmodule.seminormedAddCommGroup
 
 /-- If `x` is an element of a closed submodule `s` of a normed group `E`, its norm in `s` is equal
@@ -62,7 +62,7 @@ theorem norm_coe [Ring 𝕜] [SeminormedAddGroup E] [IsAddCommutative E] [Module
 /-- A closed submodule of a normed group is also a normed group, with the restriction of the norm.
 -/
 instance normedAddCommGroup [Ring 𝕜] [NormedAddGroup E] [IsAddCommutative E] [Module 𝕜 E]
-    (s : ClosedSubmodule 𝕜 E) : NormedAddCommGroup s :=
+    (s : ClosedSubmodule 𝕜 E) : NormedAddGroup s :=
   fast_instance% s.toSubmodule.normedAddCommGroup
 
 end ClosedSubmodule

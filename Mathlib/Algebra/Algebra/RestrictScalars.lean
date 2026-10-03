@@ -55,7 +55,8 @@ Warning: use this type synonym judiciously! Consider an example where we want to
 `R`-linear map from `M` to `S`, given:
 ```lean
 variable (R S M : Type*)
-variable [Semiring R] [IsMulCommutative R] [Semiring S] [Algebra R S] [AddMonoid M] [IsAddCommutative M] [Module S M]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [Algebra R S] [AddMonoid M]
+  [IsAddCommutative M] [Module S M]
 ```
 With the assumptions above we can't directly state our map as we have no `Module R M` structure, but
 `RestrictScalars` permits it to be written as:
@@ -83,9 +84,11 @@ def RestrictScalars (_R _S M : Type*) : Type _ := M
 
 instance [I : Inhabited M] : Inhabited (RestrictScalars R S M) := I
 
-instance [I : AddMonoid M] [IsAddCommutative M] : AddCommMonoid (RestrictScalars R S M) := I
+instance [I : AddMonoid M] : AddMonoid (RestrictScalars R S M) := I
 
-instance [I : AddGroup M] [IsAddCommutative M] : AddCommGroup (RestrictScalars R S M) := I
+instance [AddMonoid M] [I : IsAddCommutative M] : IsAddCommutative (RestrictScalars R S M) := I
+
+instance [I : AddGroup M] : AddGroup (RestrictScalars R S M) := I
 
 section Module
 
@@ -198,9 +201,7 @@ instance [I : Semiring A] : Semiring (RestrictScalars R S A) := I
 
 instance [I : Ring A] : Ring (RestrictScalars R S A) := I
 
-instance [I : Semiring A] [IsMulCommutative A] : CommSemiring (RestrictScalars R S A) := I
-
-instance [I : Ring A] [IsMulCommutative A] : CommRing (RestrictScalars R S A) := I
+instance [Semiring A] [I : IsMulCommutative A] : IsMulCommutative (RestrictScalars R S A) := I
 
 variable [Semiring A]
 
@@ -208,7 +209,8 @@ variable [Semiring A]
 def RestrictScalars.ringEquiv : RestrictScalars R S A ≃+* A :=
   RingEquiv.refl _
 
-variable [Semiring S] [IsMulCommutative S] [Algebra S A] [Semiring R] [IsMulCommutative R] [Algebra R S]
+variable [Semiring S] [IsMulCommutative S] [Algebra S A] [Semiring R] [IsMulCommutative R]
+  [Algebra R S]
 
 @[simp]
 theorem RestrictScalars.ringEquiv_map_smul (r : R) (x : RestrictScalars R S A) :

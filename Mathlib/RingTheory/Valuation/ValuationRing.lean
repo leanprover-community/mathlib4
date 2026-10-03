@@ -165,11 +165,10 @@ noncomputable instance linearOrder : LinearOrder (ValueGroup A K) where
   toDecidableLE := Classical.decRel _
 
 instance commGroupWithZero :
-    CommGroupWithZero (ValueGroup A K) :=
+    GroupWithZero (ValueGroup A K) :=
   { mul_assoc := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; apply Quotient.sound'; rw [mul_assoc]
     one_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [one_mul]
     mul_one := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_one]
-    mul_comm := by rintro ⟨a⟩ ⟨b⟩; apply Quotient.sound'; rw [mul_comm]
     zero_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [zero_mul]
     mul_zero := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_zero]
     inv_zero := by apply Quotient.sound'; rw [inv_zero]
@@ -182,6 +181,9 @@ instance commGroupWithZero :
       contrapose ha
       rw [ha]
       rfl }
+
+instance : IsMulCommutative (ValueGroup A K) :=
+  ⟨⟨by rintro ⟨a⟩ ⟨b⟩; apply Quotient.sound'; rw [mul_comm]⟩⟩
 
 noncomputable instance linearOrderedCommGroupWithZero :
     LinearOrderedCommGroupWithZero (ValueGroup A K) where

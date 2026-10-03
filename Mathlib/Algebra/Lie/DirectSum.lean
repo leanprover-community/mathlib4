@@ -99,7 +99,7 @@ variable (L : ι → Type w)
 variable [∀ i, LieRing (L i)] [∀ i, LieAlgebra R (L i)]
 
 instance lieRing : LieRing (⨁ i, L i) :=
-  { (inferInstance : AddCommGroup _) with
+  { (inferInstance : AddGroup _), (inferInstance : IsAddCommutative _) with
     bracket := zipWith (fun _ => fun x y => ⁅x, y⁆) fun _ => lie_zero 0
     add_lie := fun x y z => by
       ext

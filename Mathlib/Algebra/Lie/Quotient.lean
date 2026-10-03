@@ -48,8 +48,11 @@ namespace Quotient
 
 variable {N}
 
-instance addCommGroup : AddCommGroup (M ⧸ N) :=
-  Submodule.Quotient.addCommGroup _
+instance addGroup : AddGroup (M ⧸ N) :=
+  Submodule.Quotient.addGroup _
+
+instance isAddCommutative : IsAddCommutative (M ⧸ N) :=
+  Submodule.Quotient.isAddCommutative _
 
 instance module' {S : Type*} [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
     Module S (M ⧸ N) :=

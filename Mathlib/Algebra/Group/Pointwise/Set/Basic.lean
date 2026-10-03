@@ -574,11 +574,13 @@ section CommSemigroup
 
 variable [Semigroup α] [IsMulCommutative α] {s t : Set α}
 
-/-- `Set α` is a `CommSemigroup` under pointwise operations if `α` is. -/
-@[to_additive (attr := instance_reducible)
-  /-- `Set α` is an `AddCommSemigroup` under pointwise operations if `α` is. -/]
-protected def commSemigroup : CommSemigroup (Set α) :=
-  { Set.semigroup with mul_comm := fun _ _ => image2_comm mul_comm }
+/-- Pointwise multiplication on `Set α` is commutative if it is on `α` (the commutativity half of
+the pointwise `CommSemigroup` structure; the `Semigroup` half is `Set.semigroup`). -/
+@[to_additive
+  /-- Pointwise addition on `Set α` is commutative if it is on `α` (the commutativity half of the
+  pointwise `AddCommSemigroup` structure; the `AddSemigroup` half is `Set.addSemigroup`). -/]
+protected theorem commSemigroup : IsMulCommutative (Set α) :=
+  ⟨⟨fun _ _ => image2_comm mul_comm⟩⟩
 
 @[to_additive]
 theorem inter_mul_union_subset : s ∩ t * (s ∪ t) ⊆ s * t :=
@@ -761,13 +763,14 @@ lemma Nontrivial.pow (hs : s.Nontrivial) : ∀ {n}, n ≠ 0 → (s ^ n).Nontrivi
 
 end CancelMonoid
 
-/-- `Set α` is a `CommMonoid` under pointwise operations if `α` is. -/
-@[to_additive (attr := instance_reducible)
-  /-- `Set α` is an `AddCommMonoid` under pointwise operations if `α` is. -/]
-protected def commMonoid [Monoid α] [IsMulCommutative α] : CommMonoid (Set α) :=
-  { Set.monoid, Set.commSemigroup with }
-
-scoped[Pointwise] attribute [instance] Set.commMonoid Set.addCommMonoid
+/-- The commutativity half of the pointwise `CommMonoid` structure on `Set α`; the `Monoid` half
+is `Set.monoid`. The instance itself is provided by `Set.commSemigroup`. -/
+@[to_additive
+  /-- The commutativity half of the pointwise `AddCommMonoid` structure on `Set α`; the
+  `AddMonoid` half is `Set.addMonoid`. The instance itself is provided by
+  `Set.addCommSemigroup`. -/]
+protected theorem commMonoid [Monoid α] [IsMulCommutative α] : IsMulCommutative (Set α) :=
+  Set.commSemigroup
 
 open scoped Pointwise
 
@@ -856,14 +859,16 @@ lemma singleton_zpow (a : α) (n : ℤ) : ({a} : Set α) ^ n = {a ^ n} := by cas
 
 end DivisionMonoid
 
-/-- `Set α` is a commutative division monoid under pointwise operations if `α` is. -/
-@[to_additive (attr := instance_reducible) subtractionCommMonoid
-      /-- `Set α` is a commutative subtraction monoid under pointwise operations if `α` is. -/]
-protected def divisionCommMonoid [DivisionMonoid α] [IsMulCommutative α] :
-    DivisionCommMonoid (Set α) :=
-  { Set.divisionMonoid, Set.commSemigroup with }
-
-scoped[Pointwise] attribute [instance] Set.divisionCommMonoid Set.subtractionCommMonoid
+/-- The commutativity half of the pointwise `DivisionCommMonoid` structure on `Set α`; the
+`DivisionMonoid` half is `Set.divisionMonoid`. The instance itself is provided by
+`Set.commSemigroup`. -/
+@[to_additive subtractionCommMonoid
+      /-- The commutativity half of the pointwise `SubtractionCommMonoid` structure on `Set α`;
+      the `SubtractionMonoid` half is `Set.subtractionMonoid`. The instance itself is provided by
+      `Set.addCommSemigroup`. -/]
+protected theorem divisionCommMonoid [DivisionMonoid α] [IsMulCommutative α] :
+    IsMulCommutative (Set α) :=
+  Set.commSemigroup
 
 section Group
 

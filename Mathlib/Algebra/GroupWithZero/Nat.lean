@@ -10,9 +10,9 @@ public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.Tactic.Spread
 
 /-!
-# The natural numbers form a cancellative `CommMonoidWithZero`
+# The natural numbers form a cancellative commutative `MonoidWithZero`
 
-This file contains the `CommMonoidWithZero` and `IsCancelMulZero` instances on the natural numbers.
+This file contains the `MonoidWithZero` and `IsCancelMulZero` instances on the natural numbers.
 
 See note [foundational algebra order theory].
 -/
@@ -35,10 +35,6 @@ instance instMonoidWithZero : MonoidWithZero ℕ where
   __ := instMonoid
   __ := instMulZeroClass
   __ := instSemigroupWithZero
-
-instance instCommMonoidWithZero : CommMonoidWithZero ℕ where
-  __ := instCommMonoid
-  __ := instMonoidWithZero
 
 instance instIsCancelMulZero : IsCancelMulZero ℕ where
   mul_left_cancel_of_ne_zero h _ _ := Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero h)

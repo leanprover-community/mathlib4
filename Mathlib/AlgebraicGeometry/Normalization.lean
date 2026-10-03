@@ -162,8 +162,7 @@ lemma ι_toNormalization (U : Y.affineOpens) :
   trans ((directedCover Y).pullback₁ f).f U ≫ f.toNormalization
   · congr 1; simp
   delta toNormalization
-  generalize_proofs _ _ _ _ H
-  exact Scheme.OpenCover.map_glueMorphismsOfLocallyDirected _ _ H _
+  exact Scheme.OpenCover.map_glueMorphismsOfLocallyDirected _ _ _ _
 
 /-- The morphism from the relative normalization to itself. This map is integral. -/
 def fromNormalization : f.normalization ⟶ Y :=

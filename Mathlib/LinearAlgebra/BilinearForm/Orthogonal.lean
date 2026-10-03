@@ -268,7 +268,7 @@ theorem finrank_add_finrank_orthogonal' (W : Submodule K V) :
   rw [← toLin_restrict_ker_eq_inf_ker _ _, ←
     toLin_restrict_range_dualCoannihilator_eq_orthogonal _ _, finrank_map_subtype_eq]
   conv_rhs =>
-    rw [← @Subspace.finrank_add_finrank_dualCoannihilator_eq K V _ _ _ _
+    rw [← Subspace.finrank_add_finrank_dualCoannihilator_eq (K := K) (V := V)
         (LinearMap.range (B.domRestrict W)),
       add_comm, ← add_assoc, add_comm (finrank K (LinearMap.ker (B.domRestrict W))),
       LinearMap.finrank_range_add_finrank_ker]

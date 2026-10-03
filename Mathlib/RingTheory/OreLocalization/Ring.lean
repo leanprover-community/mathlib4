@@ -79,7 +79,8 @@ theorem right_distrib (x y z : R[S⁻¹]) : (x + y) * z = x * z + y * z :=
 
 instance : Semiring R[S⁻¹] where
   __ := (inferInstance : MonoidWithZero (R[S⁻¹]))
-  __ := (inferInstance : AddCommMonoid (R[S⁻¹]))
+  __ := (inferInstance : AddMonoid (R[S⁻¹]))
+  __ := (inferInstance : IsAddCommutative (R[S⁻¹]))
   left_distrib := OreLocalization.left_distrib
   right_distrib := right_distrib
 
@@ -218,26 +219,6 @@ instance : DivisionRing R[R⁰⁻¹] where
 
 end DivisionRing
 
-section CommSemiring
-
-variable {R : Type*} [Semiring R] [IsMulCommutative R] {S : Submonoid R} [OreSet S]
-
-instance : CommSemiring R[S⁻¹] where
-  __ := (inferInstance : Semiring R[S⁻¹])
-  __ := (inferInstance : CommMonoid R[S⁻¹])
-
-end CommSemiring
-
-section CommRing
-
-variable {R : Type*} [Ring R] [IsMulCommutative R] {S : Submonoid R} [OreSet S]
-
-instance : CommRing R[S⁻¹] where
-  __ := (inferInstance : Ring R[S⁻¹])
-  __ := (inferInstance : CommMonoid R[S⁻¹])
-
-end CommRing
-
 section Field
 
 open nonZeroDivisors
@@ -247,7 +228,7 @@ variable {R : Type*} [Ring R] [IsMulCommutative R] [Nontrivial R] [NoZeroDivisor
 noncomputable
 instance : Field R[R⁰⁻¹] where
   __ := (inferInstance : DivisionRing R[R⁰⁻¹])
-  __ := (inferInstance : CommMonoid R[R⁰⁻¹])
+  __ := (inferInstance : IsMulCommutative R[R⁰⁻¹])
 
 end Field
 

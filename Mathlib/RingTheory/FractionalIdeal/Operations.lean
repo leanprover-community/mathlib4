@@ -209,7 +209,7 @@ theorem fg_of_isUnit (I : FractionalIdeal S P) (h : IsUnit I) : FG (I : Submodul
 theorem _root_.Ideal.fg_of_isUnit (inj : Function.Injective (algebraMap R P)) (I : Ideal R)
     (h : IsUnit (I : FractionalIdeal S P)) : I.FG := by
   rw [← coeIdeal_fg S inj I]
-  exact FractionalIdeal.fg_of_isUnit (R := R) I h
+  exact FractionalIdeal.fg_of_isUnit (R := R) (S := S) (P := P) (I : FractionalIdeal S P) h
 
 variable (S P P')
 
@@ -293,7 +293,7 @@ theorem exists_ne_zero_mem_isInteger [Nontrivial R] (hI : I ≠ 0) :
   have y_ne_zero : y ≠ 0 := by simpa using y_notMem
   obtain ⟨z, ⟨x, hx⟩⟩ := exists_integer_multiple R⁰ y
   refine ⟨x, ?_, ?_⟩
-  · rw [Ne, ← @IsFractionRing.to_map_eq_zero_iff R _ K, hx, Algebra.smul_def]
+  · rw [Ne, ← @IsFractionRing.to_map_eq_zero_iff R _ _ K, hx, Algebra.smul_def]
     exact mul_ne_zero (IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors z.2) y_ne_zero
   · rw [hx]
     exact smul_mem _ _ y_mem

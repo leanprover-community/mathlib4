@@ -234,11 +234,13 @@ theorem num_add (c1 c2 : NumDenSameDeg 𝒜 x) :
 theorem den_add (c1 c2 : NumDenSameDeg 𝒜 x) : ((c1 + c2).den : A) = c1.den * c2.den :=
   rfl
 
-instance : CommMonoid (NumDenSameDeg 𝒜 x) where
+instance : Monoid (NumDenSameDeg 𝒜 x) where
   mul_assoc _ _ _ := ext _ (add_assoc _ _ _) (mul_assoc _ _ _) (mul_assoc _ _ _)
   one_mul _ := ext _ (zero_add _) (one_mul _) (one_mul _)
   mul_one _ := ext _ (add_zero _) (mul_one _) (mul_one _)
-  mul_comm _ _ := ext _ (add_comm _ _) (mul_comm _ _) (mul_comm _ _)
+
+instance : IsMulCommutative (NumDenSameDeg 𝒜 x) :=
+  ⟨⟨fun _ _ => ext _ (add_comm _ _) (mul_comm _ _) (mul_comm _ _)⟩⟩
 
 instance : Pow (NumDenSameDeg 𝒜 x) ℕ where
   pow c n :=
@@ -468,9 +470,13 @@ theorem val_natCast (n : ℕ) : (n : HomogeneousLocalization 𝒜 x).val = n :=
 theorem val_intCast (n : ℤ) : (n : HomogeneousLocalization 𝒜 x).val = n :=
   show val (Int.castDef n) = _ by cases n <;> simp [Int.castDef, *]
 
-instance homogeneousLocalizationCommRing : CommRing (HomogeneousLocalization 𝒜 x) :=
-  (HomogeneousLocalization.val_injective x).commRing _ val_zero val_one val_add val_mul val_neg
+instance homogeneousLocalizationCommRing : Ring (HomogeneousLocalization 𝒜 x) :=
+  (HomogeneousLocalization.val_injective x).ring _ val_zero val_one val_add val_mul val_neg
     val_sub (val_nsmul x · ·) (val_zsmul x · ·) val_pow val_natCast val_intCast
+
+instance homogeneousLocalization_isMulCommutative :
+    IsMulCommutative (HomogeneousLocalization 𝒜 x) :=
+  (HomogeneousLocalization.val_injective x).isMulCommutative _ val_mul
 
 instance homogeneousLocalizationAlgebra :
     Algebra (HomogeneousLocalization 𝒜 x) (Localization x) where

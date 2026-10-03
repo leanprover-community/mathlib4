@@ -165,7 +165,7 @@ variable (S)
 of `M⁻¹S` acting on `N⁻¹S`. -/
 noncomputable abbrev localizationAlgebraOfSubmonoidLe (M N : Submonoid R) (h : M ≤ N)
     [IsLocalization M S] [IsLocalization N T] : Algebra S T :=
-  (@IsLocalization.lift R _ M S _ _ T _ _ (algebraMap R T)
+  (@IsLocalization.lift R _ _ M S _ _ _ T _ _ _ (algebraMap R T)
     (fun y => map_units T ⟨↑y, h y.prop⟩)).toAlgebra
 
 /-- If `M ≤ N` are submonoids of `R`, then the natural map `M⁻¹S →+* N⁻¹S` commutes with the
@@ -260,7 +260,7 @@ theorem isFractionRing_of_isLocalization (S T : Type*) [Ring S] [IsMulCommutativ
     [Algebra R T] [Algebra S T] [IsScalarTower R S T] [IsLocalization M S] [IsFractionRing R T]
     (hM : M ≤ nonZeroDivisors R) : IsFractionRing S T := by
   have := isLocalization_of_submonoid_le S T M (nonZeroDivisors R) hM
-  refine @isLocalization_of_is_exists_mul_mem _ _ _ _ _ _ _ this ?_ ?_
+  refine @isLocalization_of_is_exists_mul_mem _ _ _ _ _ _ _ _ _ this ?_ ?_
   · exact map_nonZeroDivisors_le M S
   · rintro ⟨x, -, hx⟩
     obtain ⟨⟨y, s⟩, e⟩ := IsLocalization.surj M x
@@ -284,7 +284,7 @@ theorem isFractionRing_of_isDomain_of_isLocalization [IsDomain R] (S T : Type*) 
   rw [mem_nonZeroDivisors_iff_ne_zero]
   intro hx'
   apply @zero_ne_one S
-  rw [← (algebraMap R S).map_one, ← @mk'_one R _ M, @comm _ Eq, mk'_eq_zero_iff]
+  rw [← (algebraMap R S).map_one, ← @mk'_one R _ _ M, @comm _ Eq, mk'_eq_zero_iff]
   exact ⟨⟨x, hx⟩, by simp [hx']⟩
 
 instance {R : Type*} [Ring R] [IsMulCommutative R] [IsDomain R] (p : Ideal R) [p.IsPrime] :

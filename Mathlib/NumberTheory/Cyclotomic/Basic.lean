@@ -728,7 +728,7 @@ is nonzero in `A`, it has the instance `IsCyclotomicExtension {n} A (CyclotomicR
 @[nolint unusedArguments]
 def CyclotomicRing : Type w :=
   adjoin A {b : CyclotomicField n K | b ^ n = 1}
-deriving CommRing, IsDomain, Inhabited
+deriving Ring, IsMulCommutative, IsDomain, Inhabited
 
 namespace CyclotomicRing
 
@@ -812,7 +812,7 @@ instance [IsFractionRing A K] [IsDomain A] [NeZero (n : A)] :
       let : IsScalarTower A K (CyclotomicField n K) :=
         IsScalarTower.of_algebraMap_eq (congr_fun rfl)
       rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply,
-        @IsScalarTower.algebraMap_apply A K _ _ _ _ _ (_root_.CyclotomicField.algebra n K) _ _ w,
+        @IsScalarTower.algebraMap_apply A K _ _ _ _ _ _ _ (_root_.CyclotomicField.algebra n K) _ _ w,
         ← map_mul, hw, ← IsScalarTower.algebraMap_apply]
     · rintro y z - - ⟨a, ha⟩ ⟨b, hb⟩
       refine ⟨⟨a.1 * b.2 + b.1 * a.2, a.2 * b.2, mul_mem_nonZeroDivisors.2 ⟨a.2.2, b.2.2⟩⟩, ?_⟩
@@ -939,6 +939,7 @@ theorem IsCyclotomicExtension.lcm_sup [NeZero n₁] [NeZero n₂] :
 theorem IntermediateField.isCyclotomicExtension_singleton_iff_eq_adjoin (F : IntermediateField K L)
     {ζ : L} (hζ : IsPrimitiveRoot ζ n) :
     IsCyclotomicExtension {n} K F ↔ F = IntermediateField.adjoin K {ζ} := by
+  have : IsScalarTower ℤ K L := AddCommGroup.intIsScalarTower (M := L)
   rw [← toSubalgebra_inj, adjoin_simple_toSubalgebra_of_isAlgebraic
     (hζ.isIntegral (NeZero.pos _)).tower_top.isAlgebraic]
   exact _root_.isCyclotomicExtension_singleton_iff_eq_adjoin n F.toSubalgebra hζ

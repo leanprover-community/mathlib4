@@ -204,8 +204,11 @@ theorem unsym_ne_one_iff [One α] (a : αˢʸᵐ) : unsym a ≠ (1 : α) ↔ a �
 theorem sym_ne_one_iff [One α] (a : α) : sym a ≠ (1 : αˢʸᵐ) ↔ a ≠ (1 : α) :=
   not_congr <| sym_eq_one_iff a
 
-instance addCommSemigroup [AddSemigroup α] [IsAddCommutative α] : AddCommSemigroup αˢʸᵐ :=
-  unsym_injective.addCommSemigroup _ unsym_add
+instance addSemigroup [AddSemigroup α] : AddSemigroup αˢʸᵐ :=
+  unsym_injective.addSemigroup _ unsym_add
+
+instance isAddCommutative [Add α] [IsAddCommutative α] : IsAddCommutative αˢʸᵐ :=
+  unsym_injective.isAddCommutative _ unsym_add
 
 instance addMonoid [AddMonoid α] : AddMonoid αˢʸᵐ :=
   unsym_injective.addMonoid _ unsym_zero unsym_add fun _ _ => rfl
@@ -213,12 +216,6 @@ instance addMonoid [AddMonoid α] : AddMonoid αˢʸᵐ :=
 instance addGroup [AddGroup α] : AddGroup αˢʸᵐ :=
   unsym_injective.addGroup _ unsym_zero unsym_add unsym_neg unsym_sub (fun _ _ => rfl) fun _ _ =>
     rfl
-
-instance addCommMonoid [AddMonoid α] [IsAddCommutative α] : AddCommMonoid αˢʸᵐ :=
-  { SymAlg.addCommSemigroup, SymAlg.addMonoid with }
-
-instance addCommGroup [AddGroup α] [IsAddCommutative α] : AddCommGroup αˢʸᵐ :=
-  { SymAlg.addCommMonoid, SymAlg.addGroup with }
 
 instance {R : Type*} [Semiring R] [AddMonoid α] [IsAddCommutative α] [Module R α] : Module R αˢʸᵐ :=
   Function.Injective.module R ⟨⟨unsym, unsym_zero⟩, unsym_add⟩ unsym_injective unsym_smul
@@ -238,7 +235,7 @@ theorem invOf_sym [Mul α] [AddMonoidWithOne α] [Invertible (2 : α)] (a : α) 
 
 set_option backward.isDefEq.respectTransparency false in
 instance nonAssocSemiring [Semiring α] [Invertible (2 : α)] : NonAssocSemiring αˢʸᵐ :=
-  { SymAlg.addCommMonoid with
+  { SymAlg.addMonoid, SymAlg.isAddCommutative with
     zero_mul := fun _ => by
       rw [mul_def, unsym_zero, zero_mul, mul_zero, add_zero,
         mul_zero, sym_zero]
@@ -262,7 +259,7 @@ instance nonAssocSemiring [Semiring α] [Invertible (2 : α)] : NonAssocSemiring
 
 /-- The symmetrization of a real (unital, associative) algebra is a non-associative ring. -/
 instance [Ring α] [Invertible (2 : α)] : NonAssocRing αˢʸᵐ :=
-  { SymAlg.nonAssocSemiring, SymAlg.addCommGroup with }
+  { SymAlg.nonAssocSemiring, SymAlg.addGroup with }
 
 /-! The squaring operation coincides for both multiplications -/
 
@@ -278,8 +275,8 @@ theorem mul_comm [Mul α] [AddSemigroup α] [IsAddCommutative α] [One α] [OfNa
     (a b : αˢʸᵐ) :
     a * b = b * a := by rw [mul_def, mul_def, add_comm]
 
-instance [Ring α] [Invertible (2 : α)] : CommMagma αˢʸᵐ where
-  mul_comm := SymAlg.mul_comm
+instance [Ring α] [Invertible (2 : α)] : IsMulCommutative αˢʸᵐ where
+  is_comm := ⟨SymAlg.mul_comm⟩
 
 instance [Ring α] [Invertible (2 : α)] : IsCommJordan αˢʸᵐ where
   lmul_comm_rmul_rmul a b := by

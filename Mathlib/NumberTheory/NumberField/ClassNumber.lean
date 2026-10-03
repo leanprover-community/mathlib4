@@ -56,6 +56,11 @@ namespace NumberField
 namespace RingOfIntegers
 
 noncomputable instance instFintypeClassGroup : Fintype (ClassGroup (𝓞 K)) :=
+  -- `IsScalarTower ℤ ℚ K` and `IsScalarTower ℤ (𝓞 K) K` are not found by instance search: the
+  -- pending `Module _ K` argument of `AddCommGroup.intIsScalarTower` tries
+  -- `NormedSpace.toModule`, which throws (stuck) instead of failing, aborting the search.
+  haveI : IsScalarTower ℤ ℚ K := @AddCommGroup.intIsScalarTower ℚ K _ _ _ _
+  haveI : IsScalarTower ℤ (𝓞 K) K := @AddCommGroup.intIsScalarTower (𝓞 K) K _ _ _ _
   ClassGroup.fintypeOfAdmissibleOfFinite ℚ K AbsoluteValue.absIsAdmissible
 
 end RingOfIntegers

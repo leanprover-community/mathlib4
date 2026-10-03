@@ -211,7 +211,7 @@ variable {A B C : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutativ
 /-- A ring morphism `A →+* B` is of `FiniteType` if `B` is finitely generated as `A`-algebra. -/
 @[algebraize]
 def FiniteType (f : A →+* B) : Prop :=
-  @Algebra.FiniteType A B _ _ f.toAlgebra
+  @Algebra.FiniteType A B _ _ _ f.toAlgebra
 
 lemma finiteType_algebraMap [Algebra A B] :
     (algebraMap A B).FiniteType ↔ Algebra.FiniteType A B := by
@@ -220,7 +220,7 @@ lemma finiteType_algebraMap [Algebra A B] :
 namespace Finite
 
 theorem finiteType {f : A →+* B} (hf : f.Finite) : FiniteType f :=
-  @Module.Finite.finiteType _ _ _ _ f.toAlgebra hf
+  @Module.Finite.finiteType _ _ _ _ _ f.toAlgebra hf
 
 end Finite
 
@@ -248,7 +248,7 @@ theorem comp {g : B →+* C} {f : A →+* B} (hg : g.FiniteType) (hf : f.FiniteT
   exact Algebra.FiniteType.trans hf hg
 
 theorem of_finite {f : A →+* B} (hf : f.Finite) : f.FiniteType :=
-  @Module.Finite.finiteType _ _ _ _ f.toAlgebra hf
+  @Module.Finite.finiteType _ _ _ _ _ f.toAlgebra hf
 
 alias _root_.RingHom.Finite.to_finiteType := of_finite
 
@@ -439,8 +439,8 @@ variable {R M}
 finite type. -/
 theorem finiteType_iff_fg [Ring R] [IsMulCommutative R] [Nontrivial R] :
     FiniteType R R[M] ↔ AddMonoid.FG M := by
-  refine ⟨fun h => ?_, fun h => @AddMonoidAlgebra.finiteType_of_fg _ _ _ _ h⟩
-  obtain ⟨S, hS⟩ := @exists_finset_adjoin_eq_top R M _ _ h
+  refine ⟨fun h => ?_, fun h => @AddMonoidAlgebra.finiteType_of_fg _ _ _ _ _ h⟩
+  obtain ⟨S, hS⟩ := @exists_finset_adjoin_eq_top R M _ _ _ h
   refine AddMonoid.isAddFG_iff.2 ⟨S, (eq_top_iff' _).2 fun m => ?_⟩
   have hm : of' R M m ∈ Subalgebra.toSubmodule (adjoin R (of' R M '' ↑S)) := by
     simp only [hS, top_toSubmodule, Submodule.mem_top]
@@ -624,7 +624,7 @@ A shortcut instance `commRing_strongRankCondition` is also provided.
 -/
 instance (priority := 100) CommRing.orzechProperty
     (R : Type*) [Ring R] [IsMulCommutative R] : OrzechProperty R := by
-  refine ⟨fun {M} _ _ _ {N} f hf ↦ ?_⟩
+  refine ⟨fun {M} _ _ _ _ {N} f hf ↦ ?_⟩
   let := addCommMonoidToAddCommGroup R (M := M)
   let := addCommMonoidToAddCommGroup R (M := N)
   let i := N.subtype

@@ -791,7 +791,7 @@ theorem image_support_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {i : ℕ} 
 lemma mem_image_support_coeff_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {i : ℕ} {x} :
     x ∈ Finsupp.cons i '' ((finSuccEquiv R n f).coeff i).support ↔
       x ∈ f.support ∧ x 0 = i := by
-  simpa using congr(x ∈ $image_support_finSuccEquiv)
+  simpa using congr(x ∈ $(image_support_finSuccEquiv (f := f) (i := i)))
 
 -- TODO: generalize `finSuccEquiv R n` to an arbitrary ZeroHom
 theorem nonempty_support_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} (h : f ≠ 0) :

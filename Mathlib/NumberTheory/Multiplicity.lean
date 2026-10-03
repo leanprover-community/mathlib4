@@ -160,7 +160,7 @@ theorem emultiplicity_geom_sum₂_eq_one :
   rw [dvd_iff_dvd_of_dvd_sub hxy] at hx
   obtain ⟨k, hk⟩ := hxy
   rw [one_add_one_eq_two, eq_add_of_sub_eq' hk]
-  refine mt (dvd_iff_dvd_of_dvd_sub (@odd_sq_dvd_geom_sum₂_sub _ _ y k _ hp1)).mp ?_
+  refine mt (dvd_iff_dvd_of_dvd_sub (odd_sq_dvd_geom_sum₂_sub (a := y) (b := k) hp1)).mp ?_
   rw [pow_two, mul_dvd_mul_iff_left hp.ne_zero]
   exact mt hp.dvd_of_dvd_pow hx
 

@@ -59,7 +59,7 @@ theorem exist_mem_one_of_mem_two {p₁ p₀ p₂ : PrimeSpectrum R}
   have hm : closedPoint (Localization.AtPrime p₂.1) =
     e.symm ⟨p₂, le_refl p₂⟩ := (PrimeSpectrum.ext Localization.AtPrime.map_eq_maximalIdeal).symm
   obtain ⟨q, hxq, h₀, h₁⟩ :=
-    @exist_mem_one_of_mem_maximal_ideal (Localization.AtPrime p₂.1) _ _ _
+    @exist_mem_one_of_mem_maximal_ideal (Localization.AtPrime p₂.1) _ _ _ _
       (e.symm ⟨p₁, h₁.le⟩) (e.symm ⟨p₀, (h₀.trans h₁).le⟩) (e.symm.lt_iff_lt.mpr h₀)
         (by simp [hm, h₁]) (algebraMap R (Localization.AtPrime p₂.1) x) <| by
           rw [← Localization.AtPrime.map_eq_maximalIdeal]

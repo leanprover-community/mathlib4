@@ -163,8 +163,11 @@ instance monoidalCategory : MonoidalCategory (SemimoduleCat.{u} R) := MonoidalCa
   (triangle := fun M N ↦ triangle M N)
 
 /-- Remind ourselves that the monoidal unit, being just `R`, is still a commutative semiring. -/
-instance : CommSemiring ((𝟙_ (SemimoduleCat.{u} R) : SemimoduleCat.{u} R) : Type u) :=
-  inferInstanceAs <| CommSemiring R
+instance : Semiring ((𝟙_ (SemimoduleCat.{u} R) : SemimoduleCat.{u} R) : Type u) :=
+  inferInstanceAs <| Semiring R
+
+instance : IsMulCommutative ((𝟙_ (SemimoduleCat.{u} R) : SemimoduleCat.{u} R) : Type u) :=
+  inferInstanceAs <| IsMulCommutative R
 
 theorem hom_tensorHom {K L M N : SemimoduleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) :
     (f ⊗ₘ g).hom = TensorProduct.map f.hom g.hom :=
@@ -243,12 +246,14 @@ theorem rightUnitor_inv_apply {M : SemimoduleCat.{u} R} (m : M) :
 
 @[simp]
 theorem associator_hom_apply {M N K : SemimoduleCat.{u} R} (m : M) (n : N) (k : K) :
-    ((α_ M N K).hom : (M ⊗ N) ⊗ K ⟶ M ⊗ N ⊗ K) (m ⊗ₜ n ⊗ₜ k) = m ⊗ₜ (n ⊗ₜ k) :=
+    ((α_ M N K).hom : (M ⊗ N) ⊗ K ⟶ M ⊗ N ⊗ K) (m ⊗ₜ n ⊗ₜ k) =
+      m ⊗ₜ (n ⊗ₜ k : (N ⊗ K : SemimoduleCat.{u} R)) :=
   rfl
 
 @[simp]
 theorem associator_inv_apply {M N K : SemimoduleCat.{u} R} (m : M) (n : N) (k : K) :
-    ((α_ M N K).inv : M ⊗ N ⊗ K ⟶ (M ⊗ N) ⊗ K) (m ⊗ₜ (n ⊗ₜ k)) = m ⊗ₜ n ⊗ₜ k :=
+    ((α_ M N K).inv : M ⊗ N ⊗ K ⟶ (M ⊗ N) ⊗ K) (m ⊗ₜ (n ⊗ₜ k : (N ⊗ K : SemimoduleCat.{u} R))) =
+      (m ⊗ₜ n : (M ⊗ N : SemimoduleCat.{u} R)) ⊗ₜ k :=
   rfl
 
 variable {M₁ M₂ M₃ M₄ : SemimoduleCat.{u} R}
@@ -318,8 +323,11 @@ instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) :=
 open MonoidalCategory
 
 /-- Remind ourselves that the monoidal unit, being just `R`, is still a commutative ring. -/
-instance : CommRing ((𝟙_ (ModuleCat.{u} R) : ModuleCat.{u} R) : Type u) :=
-  inferInstanceAs <| CommRing R
+instance : Ring ((𝟙_ (ModuleCat.{u} R) : ModuleCat.{u} R) : Type u) :=
+  inferInstanceAs <| Ring R
+
+instance : IsMulCommutative ((𝟙_ (ModuleCat.{u} R) : ModuleCat.{u} R) : Type u) :=
+  inferInstanceAs <| IsMulCommutative R
 
 theorem hom_tensorHom {K L M N : ModuleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) :
     (f ⊗ₘ g).hom = TensorProduct.map f.hom g.hom :=

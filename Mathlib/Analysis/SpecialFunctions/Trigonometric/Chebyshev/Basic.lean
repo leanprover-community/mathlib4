@@ -26,19 +26,19 @@ open Polynomial
 
 @[simp, norm_cast]
 theorem complex_ofReal_eval_T : ∀ (x : ℝ) n, (((T ℝ n).eval x : ℝ) : ℂ) = (T ℂ n).eval (x : ℂ) :=
-  @algebraMap_eval_T ℝ ℂ _ _ _
+  @algebraMap_eval_T ℝ ℂ _ _ _ _ _
 
 @[simp, norm_cast]
 theorem complex_ofReal_eval_U : ∀ (x : ℝ) n, (((U ℝ n).eval x : ℝ) : ℂ) = (U ℂ n).eval (x : ℂ) :=
-  @algebraMap_eval_U ℝ ℂ _ _ _
+  @algebraMap_eval_U ℝ ℂ _ _ _ _ _
 
 @[simp, norm_cast]
 theorem complex_ofReal_eval_C : ∀ (x : ℝ) n, (((C ℝ n).eval x : ℝ) : ℂ) = (C ℂ n).eval (x : ℂ) :=
-  @algebraMap_eval_C ℝ ℂ _ _ _
+  @algebraMap_eval_C ℝ ℂ _ _ _ _ _
 
 @[simp, norm_cast]
 theorem complex_ofReal_eval_S : ∀ (x : ℝ) n, (((S ℝ n).eval x : ℝ) : ℂ) = (S ℂ n).eval (x : ℂ) :=
-  @algebraMap_eval_S ℝ ℂ _ _ _
+  @algebraMap_eval_S ℝ ℂ _ _ _ _ _
 
 /-! ### Complex versions -/
 

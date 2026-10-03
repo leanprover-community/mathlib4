@@ -27,10 +27,9 @@ open CategoryTheory MonObj ConcreteCategory
 
 namespace CommGrpTypeEquivalenceCommGrp
 
-instance commGrpCommGroup (A : Type u) [GrpObj A] [IsCommMonObj A] : CommGroup A :=
-  { GrpTypeEquivalenceGrp.grpGroup A with
-    mul_comm := fun x y => by
-      convert! congr_hom (CC := fun X ↦ X) (IsCommMonObj.mul_comm A) (y, x) }
+instance commGrpCommGroup (A : Type u) [GrpObj A] [IsCommMonObj A] : IsMulCommutative A :=
+  ⟨⟨fun x y => by
+      convert! congr_hom (CC := fun X ↦ X) (IsCommMonObj.mul_comm A) (y, x)⟩⟩
 
 /-- Converting a commutative group object in `Type u` into a group. -/
 noncomputable def functor : CommGrp (Type u) ⥤ CommGrpCat.{u} where
@@ -44,7 +43,7 @@ noncomputable def inverse : CommGrpCat.{u} ⥤ CommGrp (Type u) where
       comm :=
         { mul_comm := by
             ext ⟨x : A, y : A⟩
-            exact CommMonoid.mul_comm y x } }
+            exact _root_.mul_comm y x } }
   map f := InducedCategory.homMk
     (GrpTypeEquivalenceGrp.inverse.map ((forget₂ CommGrpCat GrpCat).map f))
 

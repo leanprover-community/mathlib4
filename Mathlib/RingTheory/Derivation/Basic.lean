@@ -227,8 +227,11 @@ theorem coe_smul_linearMap (r : S) (D : Derivation R A M) : ↑(r • D) = r •
 theorem smul_apply (r : S) (D : Derivation R A M) : (r • D) a = r • D a :=
   rfl
 
-instance : AddCommMonoid (Derivation R A M) :=
-  coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
+instance : AddMonoid (Derivation R A M) :=
+  coe_injective.addMonoid _ coe_zero coe_add fun _ _ => rfl
+
+instance : IsAddCommutative (Derivation R A M) :=
+  coe_injective.isAddCommutative _ coe_add
 
 /-- `coe` as an `AddMonoidHom`. -/
 def coeAddMonoidHom : Derivation R A M →+ A →ₗ[R] M where
@@ -560,8 +563,8 @@ theorem coe_sub_linearMap (D1 D2 : Derivation R A M) : ↑(D1 - D2) = (D1 - D2 :
 theorem sub_apply : (D1 - D2) a = D1 a - D2 a :=
   rfl
 
-instance : AddCommGroup (Derivation R A M) :=
-  coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
+instance : AddGroup (Derivation R A M) :=
+  coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
 
 end
 

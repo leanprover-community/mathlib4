@@ -275,7 +275,8 @@ lemma norm_dualPairing [Fact (1 ≤ p)] [Fact (1 ≤ q)] [p.HolderConjugate q]
     (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] H) {K : ℝ≥0} (hBK : ∀ i, ‖B i‖ ≤ K) :
     ‖dualPairing p q B hBK‖ ≤ K := calc
   ‖dualPairing p q B hBK‖
-  _ ≤ ‖(tsumCLM 𝕜 ι H).postcomp (lp F q)‖ * ‖holderL 1 B hBK‖ :=
+  _ ≤ ‖(tsumCLM 𝕜 ι H).postcomp (σ := RingHom.id 𝕜) (lp F q)‖ *
+      ‖holderL (p := p) (q := q) 1 B hBK‖ :=
     ContinuousLinearMap.opNorm_comp_le _ _
   _ ≤ 1 * K := by
     gcongr

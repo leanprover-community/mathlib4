@@ -30,22 +30,24 @@ The underlying constructor is marked as private. The intended constructor of `Is
 `IsStablyFree.of_free_prod`, and use `IsStablyFree.exist_free_prod` to extract the property from
 `IsStablyFree`. -/
 @[stacks 0BC3 "(2)"]
-class IsStablyFree (R : Type u) [Ring R] (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M] : Prop where
-  private exist_free_prod' : ∃ (N : Type u) (_ : AddCommGroup N) (_ : Module R N)
-    (_ : Module.Finite R N) (_ : Free R N), Free R (M × N)
+class IsStablyFree (R : Type u) [Ring R] (M : Type*) [AddGroup M] [IsAddCommutative M]
+    [Module R M] : Prop where
+  private exist_free_prod' : ∃ (N : Type u) (_ : AddGroup N) (_ : IsAddCommutative N)
+    (_ : Module R N) (_ : Module.Finite R N) (_ : Free R N), Free R (M × N)
 
 variable (R : Type u) [Ring R] (M : Type v) [AddGroup M] [IsAddCommutative M] [Module R M]
   (N : Type w) [AddGroup N] [IsAddCommutative N] [Module R N]
 
 theorem IsStablyFree.exist_free_prod [IsStablyFree R M] :
-    ∃ (N : Type u) (_ : AddCommGroup N) (_ : Module R N) (_ : Module.Finite R N) (_ : Free R N),
+    ∃ (N : Type u) (_ : AddGroup N) (_ : IsAddCommutative N) (_ : Module R N)
+      (_ : Module.Finite R N) (_ : Free R N),
       Free R (M × N) :=
   IsStablyFree.exist_free_prod'
 
 variable {R M N} in
 theorem IsStablyFree.equiv (e : M ≃ₗ[R] N) [IsStablyFree R M] : IsStablyFree R N := by
-  obtain ⟨P, hPc, hPm, hPfin, hPfree, _⟩ := IsStablyFree.exist_free_prod R M
-  exact ⟨P, hPc, hPm, hPfin, hPfree, Free.of_equiv (e.prodCongr (LinearEquiv.refl R P))⟩
+  obtain ⟨P, hPg, hPc, hPm, hPfin, hPfree, _⟩ := IsStablyFree.exist_free_prod R M
+  exact ⟨P, hPg, hPc, hPm, hPfin, hPfree, Free.of_equiv (e.prodCongr (LinearEquiv.refl R P))⟩
 
 variable {R M N} in
 theorem IsStablyFree.equiv_iff (e : M ≃ₗ[R] N) : IsStablyFree R M ↔ IsStablyFree R N :=
@@ -65,13 +67,14 @@ theorem IsStablyFree.of_shrink [Small.{w, v} M] [IsStablyFree R (Shrink.{w} M)] 
   IsStablyFree.equiv (Shrink.linearEquiv R M)
 
 instance [Free R M] : IsStablyFree R M :=
-  ⟨PUnit, inferInstance, inferInstance, inferInstance, inferInstance, inferInstance⟩
+  ⟨PUnit, inferInstance, inferInstance, inferInstance, inferInstance, inferInstance,
+    inferInstance⟩
 
 theorem IsStablyFree.of_free_prod [Module.Finite R N] [Free R N] [Free R (M × N)] :
     IsStablyFree R M :=
   have : Small.{u} N := Module.Finite.small.{u} R N
   let +nondep eN : N ≃ₗ[R] Shrink.{u} N := (Shrink.linearEquiv R N).symm
-  ⟨Shrink.{u} N, inferInstance, inferInstance, Module.Finite.equiv eN,
+  ⟨Shrink.{u} N, inferInstance, inferInstance, inferInstance, Module.Finite.equiv eN,
     Free.of_equiv eN, Free.of_equiv ((LinearEquiv.refl R M).prodCongr eN)⟩
 
 theorem IsStablyFree.of_free_prod' [Module.Finite R N] [Free R N] [Free R (N × M)] :
@@ -80,7 +83,7 @@ theorem IsStablyFree.of_free_prod' [Module.Finite R N] [Free R N] [Free R (N × 
   .of_free_prod R M N
 
 instance (priority := low) [IsStablyFree R M] : Projective R M := by
-  obtain ⟨N, _, _, _, _, _⟩ := IsStablyFree.exist_free_prod R M
+  obtain ⟨N, _, _, _, _, _, _⟩ := IsStablyFree.exist_free_prod R M
   exact Projective.of_split (LinearMap.inl R M N) (LinearMap.fst R M N) (LinearMap.ext fun _ ↦ rfl)
 
 end Module

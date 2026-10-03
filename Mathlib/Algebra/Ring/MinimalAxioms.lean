@@ -12,14 +12,14 @@ public import Mathlib.Algebra.Group.MinimalAxioms
 /-!
 # Minimal Axioms for a Ring
 
-This file defines constructors to define a `Ring` or `CommRing` structure on a Type, while proving
-a minimum number of equalities.
+This file defines constructors to define a `Ring` structure (possibly with commutative
+multiplication) on a Type, while proving a minimum number of equalities.
 
 ## Main Definitions
 
 * `Ring.ofMinimalAxioms`: Define a `Ring` structure on a Type by proving a minimized set of axioms
-* `CommRing.ofMinimalAxioms`: Define a `CommRing` structure on a Type by proving a minimized set of
-  axioms
+* `CommRing.ofMinimalAxioms`: Define a `Ring` structure on a Type with commutative multiplication
+  by proving a minimized set of axioms
 
 -/
 
@@ -61,7 +61,7 @@ abbrev Ring.ofMinimalAxioms {R : Type u}
       calc a * 0 = a * (0 + 0) := by rw [zero_add]
       _ = a * 0 + a * 0 := by rw [left_distrib]
     rwa [left_eq_add] at this
-  { add_comm := add_comm
+  { is_comm := ⟨add_comm⟩
     left_distrib := left_distrib
     right_distrib := right_distrib
     zero_mul := zero_mul
@@ -71,7 +71,9 @@ abbrev Ring.ofMinimalAxioms {R : Type u}
     mul_one := mul_one
     neg_add_cancel := neg_add_cancel }
 
-/-- Define a `CommRing` structure on a Type by proving a minimized set of axioms.
+/-- Define a `Ring` structure on a Type with a commutative multiplication by proving a minimized
+set of axioms (using commutativity of multiplication to omit `mul_one` and `right_distrib`).
+Together with `IsMulCommutative R` (which follows from `mul_comm`) this gives a commutative ring.
 Note that this uses the default definitions for `npow`, `nsmul`, `zsmul` and `sub`
 See note [reducible non-instances]. -/
 abbrev CommRing.ofMinimalAxioms {R : Type u}
@@ -82,11 +84,10 @@ abbrev CommRing.ofMinimalAxioms {R : Type u}
     (mul_assoc : ∀ a b c : R, a * b * c = a * (b * c))
     (mul_comm : ∀ a b : R, a * b = b * a)
     (one_mul : ∀ a : R, 1 * a = a)
-    (left_distrib : ∀ a b c : R, a * (b + c) = a * b + a * c) : CommRing R :=
+    (left_distrib : ∀ a b c : R, a * (b + c) = a * b + a * c) : Ring R :=
   haveI mul_one : ∀ a : R, a * 1 = a := fun a => by
     rw [mul_comm, one_mul]
   haveI right_distrib : ∀ a b c : R, (a + b) * c = a * c + b * c := fun a b c => by
     rw [mul_comm, left_distrib, mul_comm, mul_comm b c]
-  letI := Ring.ofMinimalAxioms add_assoc zero_add neg_add_cancel mul_assoc
+  Ring.ofMinimalAxioms add_assoc zero_add neg_add_cancel mul_assoc
     one_mul mul_one left_distrib right_distrib
-  { mul_comm := mul_comm }

@@ -127,8 +127,8 @@ noncomputable instance : AddMonoid (ConvexBody V) :=
 theorem coe_add (K L : ConvexBody V) : (↑(K + L) : Set V) = (K : Set V) + L :=
   rfl
 
-noncomputable instance : AddCommMonoid (ConvexBody V) :=
-  SetLike.coe_injective.addCommMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ coe_nsmul _ _
+instance : IsAddCommutative (ConvexBody V) :=
+  SetLike.coe_injective.isAddCommutative _ fun _ _ ↦ rfl
 
 end ContinuousAdd
 

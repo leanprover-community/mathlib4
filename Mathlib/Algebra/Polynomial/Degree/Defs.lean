@@ -199,7 +199,7 @@ theorem degree_C_mul_X (ha : a ≠ 0) : degree (C a * X) = 1 := by
 
 theorem degree_monomial_le (n : ℕ) (a : R) : degree (monomial n a) ≤ n :=
   letI := Classical.decEq R
-  if h : a = 0 then by rw [h, (monomial n).map_zero, degree_zero]; exact bot_le
+  if h : a = 0 then by rw [h, map_zero, degree_zero]; exact bot_le
   else le_of_eq (degree_monomial n h)
 
 theorem degree_C_mul_X_pow_le (n : ℕ) (a : R) : degree (C a * X ^ n) ≤ n := by
@@ -416,7 +416,7 @@ theorem degree_pow_le_of_le {a : WithBot ℕ} (b : ℕ) (hp : degree p ≤ a) :
 theorem leadingCoeff_monomial (a : R) (n : ℕ) : leadingCoeff (monomial n a) = a := by
   classical
   by_cases ha : a = 0
-  · simp only [ha, (monomial n).map_zero, leadingCoeff_zero]
+  · simp only [ha, map_zero, leadingCoeff_zero]
   · rw [leadingCoeff, natDegree_monomial, ite_eq_right ha, coeff_monomial]
     simp
 

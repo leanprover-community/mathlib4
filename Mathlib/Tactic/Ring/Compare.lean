@@ -54,7 +54,8 @@ runtime is devoted to type class inference. -/
 section Typeclass
 
 /-- `CommSemiring` implies `AddMonoidWithOne`. -/
-abbrev addMonoidWithOneOfCommSemiring (α : Type*) [Semiring α] [IsMulCommutative α] : AddMonoidWithOne α :=
+abbrev addMonoidWithOneOfCommSemiring (α : Type*) [Semiring α] [IsMulCommutative α] :
+    AddMonoidWithOne α :=
   inferInstance
 
 /-- `PartialOrder` implies `LE`. -/
@@ -84,33 +85,33 @@ generality simply to require `OrderedCommSemiring`/`StrictOrderedCommSemiring`. 
 
 section Lemma
 
-theorem add_le_add_left {α : Type*} [Semiring α] [IsMulCommutative α] [PartialOrder α] [IsOrderedRing α]
-    {b c : α} (bc : b ≤ c) (a : α) :
+theorem add_le_add_left {α : Type*} [Semiring α] [IsMulCommutative α] [PartialOrder α]
+    [IsOrderedRing α] {b c : α} (bc : b ≤ c) (a : α) :
     b + a ≤ c + a :=
   _root_.add_le_add_left bc a
 
-theorem add_le_of_nonpos_left {α : Type*} [Semiring α] [IsMulCommutative α] [PartialOrder α] [IsOrderedRing α]
-    (a : α) {b : α} (h : b ≤ 0) :
+theorem add_le_of_nonpos_left {α : Type*} [Semiring α] [IsMulCommutative α] [PartialOrder α]
+    [IsOrderedRing α] (a : α) {b : α} (h : b ≤ 0) :
     b + a ≤ a :=
   _root_.add_le_of_nonpos_left h
 
-theorem le_add_of_nonneg_left {α : Type*} [Semiring α] [IsMulCommutative α] [PartialOrder α] [IsOrderedRing α]
-    (a : α) {b : α} (h : 0 ≤ b) :
+theorem le_add_of_nonneg_left {α : Type*} [Semiring α] [IsMulCommutative α] [PartialOrder α]
+    [IsOrderedRing α] (a : α) {b : α} (h : 0 ≤ b) :
     a ≤ b + a :=
   _root_.le_add_of_nonneg_left h
 
-theorem add_lt_add_left {α : Type*} [Semiring α] [IsMulCommutative α] [PartialOrder α] [IsStrictOrderedRing α]
-    {b c : α} (bc : b < c) (a : α) :
+theorem add_lt_add_left {α : Type*} [Semiring α] [IsMulCommutative α] [PartialOrder α]
+    [IsStrictOrderedRing α] {b c : α} (bc : b < c) (a : α) :
     b + a < c + a :=
   _root_.add_lt_add_left bc a
 
-theorem add_lt_of_neg_left {α : Type*} [Semiring α] [IsMulCommutative α] [PartialOrder α] [IsStrictOrderedRing α]
-    (a : α) {b : α} (h : b < 0) :
+theorem add_lt_of_neg_left {α : Type*} [Semiring α] [IsMulCommutative α] [PartialOrder α]
+    [IsStrictOrderedRing α] (a : α) {b : α} (h : b < 0) :
     b + a < a :=
   _root_.add_lt_of_neg_left a h
 
-theorem lt_add_of_pos_left {α : Type*} [Semiring α] [IsMulCommutative α] [PartialOrder α] [IsStrictOrderedRing α]
-    (a : α) {b : α} (h : 0 < b) :
+theorem lt_add_of_pos_left {α : Type*} [Semiring α] [IsMulCommutative α] [PartialOrder α]
+    [IsStrictOrderedRing α] (a : α) {b : α} (h : 0 < b) :
     a < b + a :=
   _root_.lt_add_of_pos_left a h
 
@@ -125,8 +126,9 @@ export ExceptType (tooSmall notComparable)
 (additive) constant, construct a proof of `$a < $b`, where `a` (resp. `b`) is the expression in the
 semiring to which `va` (resp. `vb`) evaluates. -/
 def evalLE {v : Level} {α : Q(Type v)}
-    (ics : Q(CommSemiring $α)) (_ : Q(PartialOrder $α)) (_ : Q(IsOrderedRing $α))
-    {a b : Q($α)} (va : Ring.ExSum q($ics) a) (vb : Ring.ExSum q($ics) b) :
+    (ics : Q(Semiring $α)) (ici : Q(IsMulCommutative $α)) (_ : Q(PartialOrder $α))
+    (_ : Q(IsOrderedRing $α))
+    {a b : Q($α)} (va : Ring.ExSum q($ics) q($ici) a) (vb : Ring.ExSum q($ics) q($ici) b) :
     MetaM (Except ExceptType Q($a ≤ $b)) := do
   let lα : Q(LE $α) := q(leOfPartialOrder $α)
   assumeInstancesCommute
@@ -159,13 +161,14 @@ def evalLE {v : Level} {α : Q(Type v)}
   | _, _ =>
     unless va.eq rcℕ ringCompare vb do return .error notComparable
     pure <| .ok (q(le_refl $a):)
---[Semiring α] [IsMulCommutative α] [PartialOrder α] [IsStrictOrderedRing α]
+
 /-- In a commutative semiring, given `Ring.ExSum` objects `va`, `vb` which differ by a positive
 (additive) constant, construct a proof of `$a < $b`, where `a` (resp. `b`) is the expression in the
 semiring to which `va` (resp. `vb`) evaluates. -/
 def evalLT {v : Level} {α : Q(Type v)}
-    (ics : Q(CommSemiring $α)) (_ : Q(PartialOrder $α)) (_ : Q(IsStrictOrderedRing $α))
-    {a b : Q($α)} (va : Ring.ExSum q($ics) a) (vb : Ring.ExSum q($ics) b) :
+    (ics : Q(Semiring $α)) (ici : Q(IsMulCommutative $α)) (_ : Q(PartialOrder $α))
+    (_ : Q(IsStrictOrderedRing $α))
+    {a b : Q($α)} (va : Ring.ExSum q($ics) q($ici) a) (vb : Ring.ExSum q($ics) q($ici) b) :
     MetaM (Except ExceptType Q($a < $b)) := do
   let lα : Q(LT $α) := q(ltOfPartialOrder $α)
   assumeInstancesCommute
@@ -215,17 +218,18 @@ def proveLE (g : MVarId) : MetaM Unit := do
   let .sort u ← whnf (← inferType α) | unreachable!
   let v ← try u.dec catch _ => throwError "not a type{indentExpr α}"
   have α : Q(Type v) := α
-  let ics ← synthInstanceQ q(CommSemiring $α)
+  let ics ← synthInstanceQ q(Semiring $α)
+  let ici ← synthInstanceQ q(IsMulCommutative $α)
   let ipo ← synthInstanceQ q(PartialOrder $α)
   let sα ← synthInstanceQ q(IsOrderedRing $α)
   assumeInstancesCommute
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
-  let c ← Common.mkCache q($ics)
+  let c ← Common.mkCache q($ics) q($ici)
   let (⟨a, va, pa⟩, ⟨b, vb, pb⟩)
     ← AtomM.run .instances do
       pure (← Common.eval rcℕ (ringCompute c) c e₁,
             ← Common.eval rcℕ (ringCompute c) c e₂)
-  match ← evalLE ics ipo sα va vb with
+  match ← evalLE ics ici ipo sα va vb with
   | .ok p => g.assign q(le_congr $pa $p $pb)
   | .error e =>
     let g' ← mkFreshExprMVar (← (← ringCleanupRef.get) q($a ≤ $b))
@@ -243,17 +247,18 @@ def proveLT (g : MVarId) : MetaM Unit := do
   let .sort u ← whnf (← inferType α) | unreachable!
   let v ← try u.dec catch _ => throwError "not a type{indentExpr α}"
   have α : Q(Type v) := α
-  let ics ← synthInstanceQ q(CommSemiring $α)
+  let ics ← synthInstanceQ q(Semiring $α)
+  let ici ← synthInstanceQ q(IsMulCommutative $α)
   let ipo ← synthInstanceQ q(PartialOrder $α)
   let sα ← synthInstanceQ q(IsStrictOrderedRing $α)
   assumeInstancesCommute
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
-  let c ← Common.mkCache q($ics)
+  let c ← Common.mkCache q($ics) q($ici)
   let (⟨a, va, pa⟩, ⟨b, vb, pb⟩)
     ← AtomM.run .instances do
       pure (← Common.eval rcℕ (ringCompute c) c e₁,
             ← Common.eval rcℕ (ringCompute c) c e₂)
-  match ← evalLT ics ipo sα va vb with
+  match ← evalLT ics ici ipo sα va vb with
   | .ok p => g.assign q(lt_congr $pa $p $pb)
   | .error e =>
     let g' ← mkFreshExprMVar (← (← ringCleanupRef.get) q($a < $b))

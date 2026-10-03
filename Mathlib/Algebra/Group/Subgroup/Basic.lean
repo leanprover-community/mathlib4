@@ -386,7 +386,7 @@ section Normalizer
 theorem normalizer_empty : normalizer (∅ : Set G) = ⊤ :=
   ext fun _ ↦ ⟨fun _ ↦ trivial, fun _ _ ↦ .rfl⟩
 
-@[to_additive]
+@[to_additive _root_.AddCommGroup.normalizer_eq_top]
 theorem _root_.CommGroup.normalizer_eq_top {G : Type*} [Group G] [IsMulCommutative G] (s : Set G) :
     normalizer s = ⊤ := by
   ext

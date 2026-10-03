@@ -65,7 +65,7 @@ instance : StarRing (Subsemiring.center (CentroidHom α)) where
   star_mul f g := by
     ext a
     calc
-      star (f * g) a = star (g * f) a := by rw [CommMonoid.mul_comm f g]
+      star (f * g) a = star (g * f) a := by rw [mul_comm f g]
       _ = star (g (f (star a))) := rfl
       _ = star (g (star (star (f (star a))))) := by simp only [star_star]
       _ = (star g * star f) a := rfl

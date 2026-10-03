@@ -355,8 +355,8 @@ theorem cyclotomic.dvd_X_pow_sub_one (n : ℕ) (R : Type*) [Ring R] :
   exact Finset.dvd_prod_of_mem _ (n.mem_divisors_self hn.ne')
 
 theorem prod_cyclotomic_eq_geom_sum {n : ℕ} (h : 0 < n) (R) [Ring R] [IsMulCommutative R] :
-    ∏ i ∈ n.divisors.erase 1, cyclotomic i R = ∑ i ∈ Finset.range n, X ^ i := by
-  suffices (∏ i ∈ n.divisors.erase 1, cyclotomic i ℤ) = ∑ i ∈ Finset.range n, X ^ i by
+    ∏ i ∈ n.divisors.erase 1, cyclotomic i R = ∑ i ∈ Finset.range n, (X : R[X]) ^ i := by
+  suffices (∏ i ∈ n.divisors.erase 1, cyclotomic i ℤ) = ∑ i ∈ Finset.range n, (X : ℤ[X]) ^ i by
     simpa only [Polynomial.map_prod, map_cyclotomic_int, Polynomial.map_sum, Polynomial.map_pow,
       Polynomial.map_X] using congr(map (Int.castRingHom R) $this)
   rw [← mul_left_inj' (cyclotomic_ne_zero 1 ℤ), prod_erase_mul _ _ (Nat.one_mem_divisors.2 h.ne'),
@@ -364,8 +364,8 @@ theorem prod_cyclotomic_eq_geom_sum {n : ℕ} (h : 0 < n) (R) [Ring R] [IsMulCom
 
 /-- If `p` is prime, then `cyclotomic p R = ∑ i ∈ range p, X ^ i`. -/
 theorem cyclotomic_prime (R : Type*) [Ring R] (p : ℕ) [hp : Fact p.Prime] :
-    cyclotomic p R = ∑ i ∈ Finset.range p, X ^ i := by
-  suffices cyclotomic p ℤ = ∑ i ∈ range p, X ^ i by
+    cyclotomic p R = ∑ i ∈ Finset.range p, (X : R[X]) ^ i := by
+  suffices cyclotomic p ℤ = ∑ i ∈ range p, (X : ℤ[X]) ^ i by
     simpa only [map_cyclotomic_int, Polynomial.map_sum, Polynomial.map_pow, Polynomial.map_X] using
       congr(map (Int.castRingHom R) $this)
   rw [← prod_cyclotomic_eq_geom_sum hp.out.pos, hp.out.divisors,
@@ -483,7 +483,7 @@ theorem cyclotomic_eq_prod_X_sub_primitiveRoots {K : Type*} [Ring K] [IsMulCommu
     obtain ⟨d, hd⟩ := (Nat.mem_properDivisors.1 hi).1
     rw [mul_comm] at hd
     exact hk i (Nat.mem_properDivisors.1 hi).2 (IsPrimitiveRoot.pow hpos hz hd)
-  rw [@cyclotomic_eq_X_pow_sub_one_div _ _ _ hpos, cyclotomic'_eq_X_pow_sub_one_div hpos hz,
+  rw [@cyclotomic_eq_X_pow_sub_one_div _ _ _ _ hpos, cyclotomic'_eq_X_pow_sub_one_div hpos hz,
     Finset.prod_congr (refl k.properDivisors) h]
 
 theorem eq_cyclotomic_iff {R : Type*} [Ring R] [IsMulCommutative R] {n : ℕ} (hpos : 0 < n) (P : R[X]) :
@@ -497,7 +497,7 @@ theorem eq_cyclotomic_iff {R : Type*} [Ring R] [IsMulCommutative R] {n : ℕ} (h
       apply monic_prod_of_monic
       intro i _
       exact cyclotomic.monic i R
-    rw [@cyclotomic_eq_X_pow_sub_one_div R _ _ hpos, (div_modByMonic_unique P 0 prod_monic _).1]
+    rw [@cyclotomic_eq_X_pow_sub_one_div R _ _ _ hpos, (div_modByMonic_unique P 0 prod_monic _).1]
     refine ⟨by rwa [zero_add, mul_comm], ?_⟩
     rw [degree_zero, bot_lt_iff_ne_bot]
     intro h
@@ -506,9 +506,9 @@ theorem eq_cyclotomic_iff {R : Type*} [Ring R] [IsMulCommutative R] {n : ℕ} (h
 /-- If `p ^ k` is a prime power, then
 `cyclotomic (p ^ (n + 1)) R = ∑ i ∈ range p, (X ^ (p ^ n)) ^ i`. -/
 theorem cyclotomic_prime_pow_eq_geom_sum {R : Type*} [Ring R] [IsMulCommutative R] {p n : ℕ} (hp : p.Prime) :
-    cyclotomic (p ^ (n + 1)) R = ∑ i ∈ Finset.range p, (X ^ p ^ n) ^ i := by
-  have : ∀ m, (cyclotomic (p ^ (m + 1)) R = ∑ i ∈ Finset.range p, (X ^ p ^ m) ^ i) ↔
-      ((∑ i ∈ Finset.range p, (X ^ p ^ m) ^ i) *
+    cyclotomic (p ^ (n + 1)) R = ∑ i ∈ Finset.range p, ((X : R[X]) ^ p ^ n) ^ i := by
+  have : ∀ m, (cyclotomic (p ^ (m + 1)) R = ∑ i ∈ Finset.range p, ((X : R[X]) ^ p ^ m) ^ i) ↔
+      ((∑ i ∈ Finset.range p, ((X : R[X]) ^ p ^ m) ^ i) *
         ∏ x ∈ Finset.range (m + 1), cyclotomic (p ^ x) R) = X ^ p ^ (m + 1) - 1 := by
     intro m
     have := eq_cyclotomic_iff (R := R) (P := ∑ i ∈ range p, (X ^ p ^ m) ^ i)

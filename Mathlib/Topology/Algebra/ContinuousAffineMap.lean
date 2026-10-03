@@ -306,9 +306,12 @@ theorem coe_neg (f : P →ᴬ[R] W) : ⇑(-f) = -f := rfl
 
 theorem neg_apply (f : P →ᴬ[R] W) (x : P) : (-f) x = -f x := rfl
 
-instance : AddCommGroup (P →ᴬ[R] W) :=
-  coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ ↦ coe_smul _ _) fun _ _ ↦
+instance : AddGroup (P →ᴬ[R] W) :=
+  coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ ↦ coe_smul _ _) fun _ _ ↦
     coe_smul _ _
+
+instance : IsAddCommutative (P →ᴬ[R] W) :=
+  coe_injective.isAddCommutative _ coe_add
 
 instance [Monoid S] [DistribMulAction S W] [SMulCommClass R S W] [ContinuousConstSMul S W] :
     DistribMulAction S (P →ᴬ[R] W) :=

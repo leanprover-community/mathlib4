@@ -142,7 +142,7 @@ variable [∀ i, NonAssocSemiring (R i)]
 theorem RingHom.functions_ext [Finite I] (S : Type*) [NonAssocSemiring S] (g h : (∀ i, R i) →+* S)
     (H : ∀ (i : I) (x : R i), g (single i x) = h (single i x)) : g = h :=
   RingHom.toAddMonoidHom_injective <|
-    @AddMonoidHom.functions_ext I _ R _ _ S _ (g : (∀ i, R i) →+ S) h H
+    @AddMonoidHom.functions_ext I _ R _ _ _ S _ _ (g : (∀ i, R i) →+ S) h H
 
 end RingHom
 
@@ -168,7 +168,8 @@ commutative monoids to another commutative monoid and the product of the homomor
 a finite product of additive commutative monoids to another additive commutative monoid and
 the product of the homomorphism monoids. -/]
 def Pi.monoidHomMulEquiv {ι : Type*} [Fintype ι] [DecidableEq ι] (M : ι → Type*)
-    [(i : ι) → CommMonoid (M i)] (M' : Type*) [Monoid M'] [IsMulCommutative M'] :
+    [(i : ι) → Monoid (M i)] [(i : ι) → IsMulCommutative (M i)]
+    (M' : Type*) [Monoid M'] [IsMulCommutative M'] :
     (((i : ι) → M i) →* M') ≃* ((i : ι) → (M i →* M')) where
   toFun φ i := φ.comp <| MonoidHom.mulSingle M i
   invFun φ := ∏ (i : ι), (φ i).comp (Pi.evalMonoidHom M i)

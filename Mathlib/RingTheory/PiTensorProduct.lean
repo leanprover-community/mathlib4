@@ -25,7 +25,7 @@ variable {ι R' R : Type*} {A : ι → Type*}
 
 namespace PiTensorProduct
 
-noncomputable section AddCommMonoidWithOne
+noncomputable section AddMonoidWithOne
 
 variable [Semiring R] [IsMulCommutative R] [∀ i, AddMonoidWithOne (A i)] [∀ i, IsAddCommutative (A i)] [∀ i, Module R (A i)]
 
@@ -34,11 +34,11 @@ instance instOne : One (⨂[R] i, A i) where
 
 lemma one_def : 1 = tprod R (1 : Π i, A i) := rfl
 
-instance instAddCommMonoidWithOne : AddCommMonoidWithOne (⨂[R] i, A i) where
-  __ := (inferInstance : AddCommMonoid (⨂[R] i, A i))
+instance instAddMonoidWithOne : AddMonoidWithOne (⨂[R] i, A i) where
+  __ := (inferInstance : AddMonoid (⨂[R] i, A i))
   __ := instOne
 
-end AddCommMonoidWithOne
+end AddMonoidWithOne
 
 noncomputable section NonUnitalNonAssocSemiring
 
@@ -80,7 +80,8 @@ lemma smul_tprod_mul_smul_tprod (r s : R) (x y : Π i, A i) :
 
 instance instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (⨂[R] i, A i) where
   __ := instMul
-  __ := (inferInstance : AddCommMonoid (⨂[R] i, A i))
+  __ := (inferInstance : AddMonoid (⨂[R] i, A i))
+  __ := (inferInstance : IsAddCommutative (⨂[R] i, A i))
   left_distrib _ _ _ := (mul _).map_add _ _
   right_distrib _ _ _ := mul.map_add₂ _ _ _
   zero_mul _ := mul.map_zero₂ _
@@ -232,7 +233,7 @@ variable [Ring R] [IsMulCommutative R] [∀ i, Ring (A i)] [∀ i, Algebra R (A 
 
 instance instRing : Ring (⨂[R] i, A i) where
   __ := instSemiring
-  __ := (inferInstance : AddCommGroup (⨂[R] i, A i))
+  __ := (inferInstance : AddGroup (⨂[R] i, A i))
 
 end Ring
 
@@ -247,10 +248,8 @@ protected lemma mul_comm (x y : ⨂[R] i, A i) : mul x y = mul y x := by
   dsimp
   simp only [mul_tprod_tprod, mul_tprod_tprod, mul_comm x y]
 
-instance instCommSemiring : CommSemiring (⨂[R] i, A i) where
-  __ := instSemiring
-  __ := (inferInstance : AddCommMonoid (⨂[R] i, A i))
-  mul_comm := PiTensorProduct.mul_comm
+instance instIsMulCommutative : IsMulCommutative (⨂[R] i, A i) :=
+  ⟨⟨PiTensorProduct.mul_comm⟩⟩
 
 @[simp] lemma tprod_prod {κ : Type*} (s : Finset κ) (x : κ → Π i, A i) :
     tprod R (∏ k ∈ s, x k) = ∏ k ∈ s, tprod R (x k) :=
@@ -301,14 +300,5 @@ theorem constantBaseRingEquiv_symm (r : R) :
 end
 
 end CommSemiring
-
-noncomputable section CommRing
-
-variable [Ring R] [IsMulCommutative R] [∀ i, Ring (A i)] [∀ i, IsMulCommutative (A i)] [∀ i, Algebra R (A i)]
-instance instCommRing : CommRing (⨂[R] i, A i) where
-  __ := instCommSemiring
-  __ := (inferInstance : AddCommGroup (⨂[R] i, A i))
-
-end CommRing
 
 end PiTensorProduct

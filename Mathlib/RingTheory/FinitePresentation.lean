@@ -389,7 +389,7 @@ variable {A B C : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutativ
 `A`-algebra. -/
 @[algebraize]
 def FinitePresentation (f : A →+* B) : Prop :=
-  @Algebra.FinitePresentation A B _ _ f.toAlgebra
+  @Algebra.FinitePresentation A B _ _ _ f.toAlgebra
 
 @[simp]
 lemma finitePresentation_algebraMap [Algebra A B] :
@@ -399,7 +399,7 @@ lemma finitePresentation_algebraMap [Algebra A B] :
 namespace FiniteType
 
 theorem of_finitePresentation {f : A →+* B} (hf : f.FinitePresentation) : f.FiniteType :=
-  @Algebra.FiniteType.of_finitePresentation A B _ _ f.toAlgebra hf
+  @Algebra.FiniteType.of_finitePresentation A B _ _ _ _ f.toAlgebra hf
 
 end FiniteType
 
@@ -431,7 +431,7 @@ lemma of_bijective {f : A →+* B} (hf : Function.Bijective f) : f.FinitePresent
     exact Submodule.fg_bot
 
 theorem of_finiteType [IsNoetherianRing A] {f : A →+* B} : f.FiniteType ↔ f.FinitePresentation :=
-  @Algebra.FinitePresentation.of_finiteType A B _ _ f.toAlgebra _
+  @Algebra.FinitePresentation.of_finiteType A B _ _ _ _ f.toAlgebra _
 
 theorem comp {g : B →+* C} {f : A →+* B} (hg : g.FinitePresentation) (hf : f.FinitePresentation) :
     (g.comp f).FinitePresentation := by

@@ -219,7 +219,7 @@ variable {R : Type u} [Semiring R] [IsMulCommutative R] {S : Type v} [Semiring S
 
 /-- A polynomial `p` lifts if and only if it is in the image of `mapAlg`. -/
 theorem mem_lifts_iff_mem_alg (R : Type u) [Semiring R] [IsMulCommutative R] {S : Type v} [Semiring S] [Algebra R S]
-    (p : S[X]) : p ∈ lifts (algebraMap R S) ↔ p ∈ AlgHom.range (@mapAlg R _ S _ _) := by
+    (p : S[X]) : p ∈ lifts (algebraMap R S) ↔ p ∈ AlgHom.range (@mapAlg R _ _ S _ _) := by
   simp only [coe_mapRingHom, lifts, mapAlg_eq_map, AlgHom.mem_range, RingHom.mem_rangeS]
 
 /-- If `p` lifts and `(r : R)` then `r • p` lifts. -/

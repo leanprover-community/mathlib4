@@ -63,15 +63,17 @@ open scoped Fin.IntCast Fin.NatCast
       have : x % n < n := Int.emod_lt_of_pos x (by have := NeZero.ne n; lia)
       lia
 
-/-- Multiplicative commutative semigroup structure on `Fin n`. -/
-instance instCommSemigroup (n : ℕ) : CommSemigroup (Fin n) where
+/-- Multiplicative semigroup structure on `Fin n` (commutativity is `Fin.instIsMulCommutative`). -/
+instance instCommSemigroup (n : ℕ) : Semigroup (Fin n) where
   mul_assoc := fun ⟨a, _⟩ ⟨b, _⟩ ⟨c, _⟩ =>
     Fin.eq_of_val_eq <|
       calc
         a * b % n * c ≡ a * b * c [MOD n] := (Nat.mod_modEq _ _).mul_right _
         _ ≡ a * (b * c) [MOD n] := by rw [mul_assoc]
         _ ≡ a * (b * c % n) [MOD n] := (Nat.mod_modEq _ _).symm.mul_left _
-  mul_comm := Fin.mul_comm
+
+instance instIsMulCommutative (n : ℕ) : IsMulCommutative (Fin n) :=
+  ⟨⟨Fin.mul_comm⟩⟩
 
 private theorem left_distrib_aux (n : ℕ) : ∀ a b c : Fin n, a * (b + c) = a * b + a * c :=
   fun ⟨a, _⟩ ⟨b, _⟩ ⟨c, _⟩ =>
@@ -87,11 +89,11 @@ instance instDistrib (n : ℕ) : Distrib (Fin n) where
   right_distrib := fun a b c => by
     rw [mul_comm, left_distrib_aux, mul_comm _ b, mul_comm]
 
-instance instNonUnitalCommRing (n : ℕ) [NeZero n] : NonUnitalCommRing (Fin n) where
+instance instNonUnitalCommRing (n : ℕ) [NeZero n] : NonUnitalRing (Fin n) where
   zero_mul := Fin.zero_mul
   mul_zero := Fin.mul_zero
 
-instance instCommMonoid (n : ℕ) [NeZero n] : CommMonoid (Fin n) where
+instance instCommMonoid (n : ℕ) [NeZero n] : Monoid (Fin n) where
   one_mul := Fin.one_mul
   mul_one := Fin.mul_one
   -- Use core's `Fin.npow`, which computes by modular exponentiation.
@@ -119,7 +121,7 @@ it causes `x < n` to be elaborated as `x < ↑n` rather than `↑x < n`,
 silently introducing wraparound arithmetic.
 -/
 @[instance_reducible]
-def instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) where
+def instCommRing (n : ℕ) [NeZero n] : Ring (Fin n) where
   intCast n := Fin.intCast n
 
 namespace CommRing
@@ -168,7 +170,7 @@ open Fin.CommRing in
 /- We define each field by cases, to ensure that the eta-expanded `ZMod.commRing` is defeq to the
 original, this helps avoid diamonds with instances coming from classes extending `CommRing` such as
 field. -/
-instance commRing (n : ℕ) : CommRing (ZMod n) where
+instance commRing (n : ℕ) : Ring (ZMod n) where
   add := Nat.casesOn n (@Add.add Int _) fun n => @Add.add (Fin n.succ) _
   add_assoc := Nat.casesOn n (@add_assoc Int _) fun n => @add_assoc (Fin n.succ) _
   zero := Nat.casesOn n (0 : Int) fun n => (0 : Fin n.succ)
@@ -178,26 +180,27 @@ instance commRing (n : ℕ) : CommRing (ZMod n) where
   sub := Nat.casesOn n (@Sub.sub Int _) fun n => @Sub.sub (Fin n.succ) _
   sub_eq_add_neg := Nat.casesOn n (@sub_eq_add_neg Int _) fun n => @sub_eq_add_neg (Fin n.succ) _
   zsmul := Nat.casesOn n
-    ((inferInstance : CommRing ℤ)).zsmul fun n => ((inferInstance : CommRing (Fin n.succ))).zsmul
+    ((inferInstance : Ring ℤ)).zsmul fun n => ((inferInstance : Ring (Fin n.succ))).zsmul
   zsmul_zero' := Nat.casesOn n
-    ((inferInstance : CommRing ℤ)).zsmul_zero'
-    fun n => ((inferInstance : CommRing (Fin n.succ))).zsmul_zero'
+    ((inferInstance : Ring ℤ)).zsmul_zero'
+    fun n => ((inferInstance : Ring (Fin n.succ))).zsmul_zero'
   zsmul_succ' := Nat.casesOn n
-    ((inferInstance : CommRing ℤ)).zsmul_succ'
-    fun n => ((inferInstance : CommRing (Fin n.succ))).zsmul_succ'
+    ((inferInstance : Ring ℤ)).zsmul_succ'
+    fun n => ((inferInstance : Ring (Fin n.succ))).zsmul_succ'
   zsmul_neg' := Nat.casesOn n
-    ((inferInstance : CommRing ℤ)).zsmul_neg'
-    fun n => ((inferInstance : CommRing (Fin n.succ))).zsmul_neg'
+    ((inferInstance : Ring ℤ)).zsmul_neg'
+    fun n => ((inferInstance : Ring (Fin n.succ))).zsmul_neg'
   nsmul := Nat.casesOn n
-    ((inferInstance : CommRing ℤ)).nsmul fun n => ((inferInstance : CommRing (Fin n.succ))).nsmul
+    ((inferInstance : Ring ℤ)).nsmul fun n => ((inferInstance : Ring (Fin n.succ))).nsmul
   nsmul_zero := Nat.casesOn n
-    ((inferInstance : CommRing ℤ)).nsmul_zero
-    fun n => ((inferInstance : CommRing (Fin n.succ))).nsmul_zero
+    ((inferInstance : Ring ℤ)).nsmul_zero
+    fun n => ((inferInstance : Ring (Fin n.succ))).nsmul_zero
   nsmul_succ := Nat.casesOn n
-    ((inferInstance : CommRing ℤ)).nsmul_succ
-    fun n => ((inferInstance : CommRing (Fin n.succ))).nsmul_succ
+    ((inferInstance : Ring ℤ)).nsmul_succ
+    fun n => ((inferInstance : Ring (Fin n.succ))).nsmul_succ
   neg_add_cancel := Nat.casesOn n (@neg_add_cancel Int _) fun n => @neg_add_cancel (Fin n.succ) _
-  add_comm := Nat.casesOn n (@add_comm Int _) fun n => @add_comm (Fin n.succ) _
+  is_comm := Nat.casesOn n (@IsAddCommutative.is_comm Int _ _)
+    fun n => @IsAddCommutative.is_comm (Fin n.succ) _ _
   mul := Nat.casesOn n (@Mul.mul Int _) fun n => @Mul.mul (Fin n.succ) _
   mul_assoc := Nat.casesOn n (@mul_assoc Int _) fun n => @mul_assoc (Fin n.succ) _
   one := Nat.casesOn n (1 : Int) fun n => (1 : Fin n.succ)
@@ -213,17 +216,19 @@ instance commRing (n : ℕ) : CommRing (ZMod n) where
   left_distrib := Nat.casesOn n (@left_distrib Int _ _ _) fun n => @left_distrib (Fin n.succ) _ _ _
   right_distrib :=
     Nat.casesOn n (@right_distrib Int _ _ _) fun n => @right_distrib (Fin n.succ) _ _ _
-  mul_comm := Nat.casesOn n (@mul_comm Int _) fun n => @mul_comm (Fin n.succ) _
   zero_mul := Nat.casesOn n (@zero_mul Int _) fun n => @zero_mul (Fin n.succ) _
   mul_zero := Nat.casesOn n (@mul_zero Int _) fun n => @mul_zero (Fin n.succ) _
   npow := Nat.casesOn n
-    ((inferInstance : CommRing ℤ)).npow fun n => ((inferInstance : CommRing (Fin n.succ))).npow
+    ((inferInstance : Ring ℤ)).npow fun n => ((inferInstance : Ring (Fin n.succ))).npow
   npow_zero := Nat.casesOn n
-    ((inferInstance : CommRing ℤ)).npow_zero
-    fun n => ((inferInstance : CommRing (Fin n.succ))).npow_zero
+    ((inferInstance : Ring ℤ)).npow_zero
+    fun n => ((inferInstance : Ring (Fin n.succ))).npow_zero
   npow_succ := Nat.casesOn n
-    ((inferInstance : CommRing ℤ)).npow_succ
-    fun n => ((inferInstance : CommRing (Fin n.succ))).npow_succ
+    ((inferInstance : Ring ℤ)).npow_succ
+    fun n => ((inferInstance : Ring (Fin n.succ))).npow_succ
+
+instance instIsMulCommutative (n : ℕ) : IsMulCommutative (ZMod n) :=
+  ⟨⟨Nat.casesOn n (@mul_comm Int _ _) fun n => @mul_comm (Fin n.succ) _ _⟩⟩
 
 instance inhabited (n : ℕ) : Inhabited (ZMod n) :=
   ⟨0⟩

@@ -55,11 +55,10 @@ instance : Neg (u ⟶ v) where
 
 end CommaMorphism
 
-instance : AddCommGroup (u ⟶ v) where
+instance : AddGroup (u ⟶ v) where
   add_assoc _ _ _ := by ext <;> simp [add_assoc]
   zero_add _ := by cat_disch
   add_zero _ := by cat_disch
-  add_comm _ _ := by ext <;> simp [add_comm]
   neg_add_cancel _ := by cat_disch
   sub_eq_add_neg _ _ := by ext <;> simp [sub_eq_add_neg]
   nsmul n α := CommaMorphism.mk (n • α.left) (n • α.right)
@@ -73,6 +72,9 @@ instance : AddCommGroup (u ⟶ v) where
   zsmul_neg' _ _ := by
     simp_rw [HSMul.hSMul, SMul.smul]
     ext <;> dsimp <;> simp [add_nsmul, add_zsmul]
+
+instance : IsAddCommutative (u ⟶ v) :=
+  ⟨⟨fun _ _ => by ext <;> simp [add_comm]⟩⟩
 
 /-- If we have additive functors `L : A ⥤ T` and `R : B ⥤ T` between preadditive categories,
 then the category `Comma L R` is preadditive.

@@ -69,7 +69,9 @@ def toProd : K ⋊⁅ψ⁆ L ≃ K × L where
 @[simp] lemma toProd_symm_apply (x : K × L) : (toProd : K ⋊⁅ψ⁆ L ≃ K × L).symm x = ⟨x.1, x.2⟩ :=
   rfl
 
-instance : AddCommGroup (K ⋊⁅ψ⁆ L) := toProd.addCommGroup
+instance : AddGroup (K ⋊⁅ψ⁆ L) := toProd.addGroup
+
+instance : IsAddCommutative (K ⋊⁅ψ⁆ L) := toProd.addCommGroup
 
 instance : Module R (K ⋊⁅ψ⁆ L) :=
   { toProd with map_add' _ _ := rfl : (K ⋊⁅ψ⁆ L) ≃+ K × L }.module R

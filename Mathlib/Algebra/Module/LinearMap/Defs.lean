@@ -26,8 +26,8 @@ In this file we define
 
 We then provide `LinearMap` with the following instances:
 
-* `LinearMap.addCommMonoid` and `LinearMap.addCommGroup`: the elementwise addition structures
-  corresponding to addition in the codomain
+* `LinearMap.addMonoid`, `LinearMap.addGroup` and `LinearMap.isAddCommutative`: the elementwise
+  addition structures corresponding to addition in the codomain
 * `LinearMap.distribMulAction` and `LinearMap.module`: the elementwise scalar action structures
   corresponding to applying the action in the codomain.
 
@@ -260,7 +260,7 @@ theorem ofClass_injective {F : Type*} [FunLike F M M₃] [SemilinearMapClass F �
 def id : M →ₗ[R] M :=
   { DistribMulActionHom.id R with toFun x := x }
 
-theorem id_apply (x : M) : @id R M _ _ _ x = x :=
+theorem id_apply (x : M) : @id R M _ _ _ _ x = x :=
   rfl
 
 @[simp, norm_cast]
@@ -695,7 +695,7 @@ def AddMonoidHom.toNatLinearMap [AddMonoid M] [IsAddCommutative M] [AddMonoid M�
   map_smul' := map_nsmul f
 
 theorem AddMonoidHom.toNatLinearMap_injective [AddMonoid M] [IsAddCommutative M] [AddMonoid M₂] [IsAddCommutative M₂] :
-    Function.Injective (@AddMonoidHom.toNatLinearMap M M₂ _ _) := by
+    Function.Injective (@AddMonoidHom.toNatLinearMap M M₂ _ _ _ _) := by
   intro f g h
   ext x
   congrm $h x
@@ -712,7 +712,7 @@ def AddMonoidHom.toIntLinearMap [AddGroup M] [IsAddCommutative M] [AddGroup M₂
   map_smul' := map_zsmul f
 
 theorem AddMonoidHom.toIntLinearMap_injective [AddGroup M] [IsAddCommutative M] [AddGroup M₂] [IsAddCommutative M₂] :
-    Function.Injective (@AddMonoidHom.toIntLinearMap M M₂ _ _) := by
+    Function.Injective (@AddMonoidHom.toIntLinearMap M M₂ _ _ _ _) := by
   intro f g h
   ext x
   congrm $h x
@@ -841,9 +841,9 @@ theorem comp_add (f g : M →ₛₗ[σ₁₂] M₂) (h : M₂ →ₛₗ[σ₂₃
 instance addMonoid : AddMonoid (M →ₛₗ[σ₁₂] M₂) := fast_instance%
   DFunLike.coe_injective.addMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
-/-- The type of linear maps is an additive monoid. -/
-instance addCommMonoid : AddCommMonoid (M →ₛₗ[σ₁₂] M₂) := fast_instance%
-  DFunLike.coe_injective.addCommMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+/-- The type of linear maps is additively commutative. -/
+instance isAddCommutative : IsAddCommutative (M →ₛₗ[σ₁₂] M₂) :=
+  DFunLike.coe_injective.isAddCommutative _ fun _ _ ↦ rfl
 
 /-- The negation of a linear map is linear. -/
 instance : Neg (M →ₛₗ[σ₁₂] N₂) :=
@@ -886,8 +886,8 @@ theorem comp_sub (f g : M →ₛₗ[σ₁₂] N₂) (h : N₂ →ₛₗ[σ₂₃
   ext fun _ ↦ h.map_sub _ _
 
 /-- The type of linear maps is an additive group. -/
-instance addCommGroup : AddCommGroup (M →ₛₗ[σ₁₂] N₂) := fast_instance%
-  DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+instance addGroup : AddGroup (M →ₛₗ[σ₁₂] N₂) := fast_instance%
+  DFunLike.coe_injective.addGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 /-- Evaluation of a `σ₁₂`-linear map at a fixed `a`, as an `AddMonoidHom`. -/

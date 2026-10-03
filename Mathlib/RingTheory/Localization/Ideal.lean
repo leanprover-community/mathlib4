@@ -236,7 +236,7 @@ correspond to prime ideals in the original ring `R` that are disjoint from `M` -
     { p : Ideal S // p.IsPrime } ≃o { p : Ideal R // p.IsPrime ∧ Disjoint (M : Set R) ↑p } where
   toFun p := ⟨p.1.under R, (isPrime_iff_isPrime_disjoint M S p.1).1 p.2⟩
   invFun p := ⟨Ideal.map (algebraMap R S) p.1, isPrime_of_isPrime_disjoint M S p.1 p.2.1 p.2.2⟩
-  left_inv J := Subtype.ext (map_under M S J)
+  left_inv J := Subtype.ext (map_under M S J.1)
   right_inv I := Subtype.ext (under_map_of_isPrime_disjoint M S I.2.1 I.2.2)
   map_rel_iff' {I I'} := by
     constructor

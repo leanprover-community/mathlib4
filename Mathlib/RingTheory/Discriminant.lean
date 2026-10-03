@@ -181,7 +181,7 @@ theorem discr_powerBasis_eq_prod'' [Algebra.IsSeparable K L] (e : Fin pb.dim ≃
   simp_rw [Fin.card_Ioi, Nat.sub_sub, add_comm 1]
   simp only [Nat.cast_sub, this, Finset.card_fin, nsmul_eq_mul, sum_const, sum_sub_distrib,
     Nat.cast_add, Nat.cast_one, sum_add_distrib, mul_one]
-  rw [← Nat.cast_sum, ← @Finset.sum_range ℕ _ pb.dim fun i => i, sum_range_id]
+  rw [← Nat.cast_sum, ← @Finset.sum_range ℕ _ _ pb.dim fun i => i, sum_range_id]
   have hn : n = pb.dim := by
     rw [← AlgHom.card K L E, ← Fintype.card_fin pb.dim]
     exact card_congr e.symm

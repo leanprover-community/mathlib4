@@ -138,10 +138,10 @@ noncomputable def fieldEndOfFiniteDimensional (X : C) [Simple X] [I : FiniteDime
     Field (End X) := by
   exact
     { (inferInstance : DivisionRing (End X)) with
-      mul_comm := fun f g => by
+      toIsMulCommutative := ⟨⟨fun f g => by
         obtain ⟨c, rfl⟩ := endomorphism_simple_eq_smul_id 𝕜 f
         obtain ⟨d, rfl⟩ := endomorphism_simple_eq_smul_id 𝕜 g
-        simp [← mul_smul, mul_comm c d] }
+        simp [← mul_smul, mul_comm c d]⟩⟩ }
 
 -- There is a symmetric argument that uses `[FiniteDimensional 𝕜 (Y ⟶ Y)]` instead,
 -- but we don't bother proving that here.

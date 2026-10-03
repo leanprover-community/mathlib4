@@ -131,7 +131,7 @@ private protected theorem re_inner_self_nonneg (x : E ⊗[𝕜] F) :
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (E ⊗[𝕜] F) :=
+noncomputable instance instNormedAddCommGroup : NormedAddGroup (E ⊗[𝕜] F) :=
   letI : InnerProductSpace.Core 𝕜 (E ⊗[𝕜] F) :=
   { conj_inner_symm x y :=
       x.inductionOn (y.inductionOn (by simp)

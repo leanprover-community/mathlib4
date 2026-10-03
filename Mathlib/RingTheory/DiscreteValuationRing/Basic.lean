@@ -499,7 +499,6 @@ lemma addVal_eq_iff_associated (x y : R) :
       associated_unit_mul_left_iff] at h ⊢
     simp only [addVal_uniformizer hϖ, mul_one, ENat.natCast_inj] at h
     rw [h]
-    exact Associates.mk_eq_mk_iff_associated.mp rfl
   · rintro ⟨u, rfl⟩
     simp_all
 
@@ -655,8 +654,8 @@ end
 
 namespace Valuation.Integers
 
-variable {K Γ₀ O : Type*} [Field K] [LinearOrderedCommGroupWithZero Γ₀] [Ring O] [IsMulCommutative O]
-    [Algebra O K] {v : Valuation K Γ₀} (hv : v.Integers O)
+variable {K Γ₀ O : Type*} [Field K] [LinearOrderedCommGroupWithZero Γ₀] [Ring O]
+    [IsMulCommutative O] [Algebra O K] {v : Valuation K Γ₀} (hv : v.Integers O)
 include hv
 
 lemma maximalIdeal_eq_setOfPred_le_v_algebraMap :

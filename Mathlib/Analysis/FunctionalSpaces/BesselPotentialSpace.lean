@@ -184,9 +184,12 @@ theorem toDistr_smul (c : R) (f : H^{s, p}(E, F)) : (c • f).toDistr = c • f 
 @[simp]
 theorem toLp_smul (c : R) (f : H^{s, p}(E, F)) : (c • f).toLp = c • f.toLp := rfl
 
-instance : AddCommGroup H^{s, p}(E, F) :=
-  fast_instance% (injective_toLp E F s p).addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
+instance : AddGroup H^{s, p}(E, F) :=
+  fast_instance% (injective_toLp E F s p).addGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+
+instance : IsAddCommutative H^{s, p}(E, F) :=
+  (injective_toLp E F s p).isAddCommutative _ fun _ _ => rfl
 
 variable (E F s p) in
 /-- Coercion to tempered distributions as an additive homomorphism. -/
@@ -234,7 +237,7 @@ theorem ofLp_toLp (f : H^{s, p}(E, F)) :
 theorem toLpₗ_apply (f : H^{s, p}(E, F)) :
     toLpₗ E F s p f = toLp f := by rfl
 
-instance : NormedAddCommGroup H^{s, p}(E, F) :=
+instance : NormedAddGroup H^{s, p}(E, F) :=
   fast_instance% NormedAddCommGroup.induced H^{s, p}(E, F)
     (Lp F p (volume : Measure E)) (toLpₗ E F s p) (by exact injective_toLp E F s p)
 

@@ -51,8 +51,8 @@ variable {R N L M : Type*}
 
 section IsExtension
 
-variable [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L] [LieRing N] [LieAlgebra R N] [LieRing M]
-  [LieAlgebra R M]
+variable [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L] [LieRing N] [LieAlgebra R N]
+  [LieRing M] [LieAlgebra R M]
 
 /-- A sequence of two Lie algebra homomorphisms is an extension if it is short exact. -/
 class IsExtension (i : N →ₗ⁅R⁆ L) (p : L →ₗ⁅R⁆ M) : Prop where
@@ -132,8 +132,8 @@ open LieModule.Cohomology
 
 /-- A one-field structure giving a type synonym for a direct product. We use this to describe an
 alternative Lie algebra structure on the product, where the bracket is shifted by a 2-cocycle. -/
-structure ofTwoCocycle {R L M} [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L] [AddGroup M] [IsAddCommutative M]
-    [Module R M] [LieRingModule L M] [LieModule R L M]
+structure ofTwoCocycle {R L M} [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
+    [AddGroup M] [IsAddCommutative M] [Module R M] [LieRingModule L M] [LieModule R L M]
     (c : twoCocycle R L M) where
   /-- The underlying type. -/
   carrier : L × M
@@ -149,7 +149,8 @@ def ofProd : L × M ≃ ofTwoCocycle c where
   invFun a := a.carrier
 
 -- transport instances along the equivalence
-instance : AddCommGroup (ofTwoCocycle c) := (ofProd c).symm.addCommGroup
+instance : AddGroup (ofTwoCocycle c) := (ofProd c).symm.addGroup
+instance : IsAddCommutative (ofTwoCocycle c) := (ofProd c).symm.addCommGroup
 instance : Module R (ofTwoCocycle c) :=
   ({ (ofProd c).symm with map_add' _ _ := rfl : ofTwoCocycle c ≃+ L × M}).module R
 

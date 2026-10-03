@@ -206,18 +206,31 @@ namespace CommMonCat
 variable {J : Type v} [Category.{w} J] (F : J ⥤ CommMonCat.{u})
 
 @[to_additive]
-instance commMonoidObj (j) : CommMonoid ((F ⋙ forget CommMonCat.{u}).obj j) :=
-  inferInstanceAs <| CommMonoid (F.obj j)
+instance commMonoidObj (j) : Monoid ((F ⋙ forget CommMonCat.{u}).obj j) :=
+  inferInstanceAs <| Monoid (F.obj j)
+
+@[to_additive]
+instance isMulCommutativeObj (j) : IsMulCommutative ((F ⋙ forget CommMonCat.{u}).obj j) :=
+  inferInstanceAs <| IsMulCommutative (F.obj j)
 
 variable [Small.{u} (Functor.sections (F ⋙ forget CommMonCat))]
 
 @[to_additive]
 noncomputable instance limitCommMonoid :
-    CommMonoid (Types.Small.limitCone (F ⋙ forget CommMonCat.{u})).pt :=
-  letI : CommMonoid (F ⋙ forget CommMonCat.{u}).sections :=
-    @Submonoid.toCommMonoid (∀ j, F.obj j) _
+    Monoid (Types.Small.limitCone (F ⋙ forget CommMonCat.{u})).pt :=
+  letI : Monoid (F ⋙ forget CommMonCat.{u}).sections :=
+    (MonCat.sectionsSubmonoid (F ⋙ forget₂ CommMonCat.{u} MonCat.{u})).toMonoid
+  inferInstanceAs <| Monoid (Shrink (F ⋙ forget CommMonCat.{u}).sections)
+
+@[to_additive]
+noncomputable instance limitIsMulCommutative :
+    IsMulCommutative (Types.Small.limitCone (F ⋙ forget CommMonCat.{u})).pt :=
+  letI : Monoid (F ⋙ forget CommMonCat.{u}).sections :=
+    (MonCat.sectionsSubmonoid (F ⋙ forget₂ CommMonCat.{u} MonCat.{u})).toMonoid
+  letI : IsMulCommutative (F ⋙ forget CommMonCat.{u}).sections :=
+    @Submonoid.toCommMonoid (∀ j, F.obj j) _ _
       (MonCat.sectionsSubmonoid (F ⋙ forget₂ CommMonCat.{u} MonCat.{u}))
-  inferInstanceAs <| CommMonoid (Shrink (F ⋙ forget CommMonCat.{u}).sections)
+  inferInstanceAs <| IsMulCommutative (Shrink (F ⋙ forget CommMonCat.{u}).sections)
 
 @[to_additive]
 instance : Small.{u} (Functor.sections ((F ⋙ forget₂ CommMonCat MonCat) ⋙ forget MonCat)) :=

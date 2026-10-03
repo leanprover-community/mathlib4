@@ -188,13 +188,13 @@ variable (E : Type*) [Field E] [Algebra F E] [Algebra K₁ E] [Algebra K₂ E] [
   an algebra homomorphism `ϕ : K₁ →ₐ[F] K₂` to `ϕ.liftNormal E : E →ₐ[F] E`. -/
 @[stacks 0BME "Part 2"]
 noncomputable def AlgHom.liftNormal [h : Normal F E] : E →ₐ[F] E :=
-  @AlgHom.restrictScalars F K₁ E E _ _ _ _ _ _
+  @AlgHom.restrictScalars F K₁ E E _ _ _ _ _ _ _ _
       ((IsScalarTower.toAlgHom F K₂ E).comp ϕ).toRingHom.toAlgebra _ _ _ _ <|
     Nonempty.some <|
       @IntermediateField.nonempty_algHom_of_adjoin_splits _ _ _ _ _ _ _
         ((IsScalarTower.toAlgHom F K₂ E).comp ϕ).toRingHom.toAlgebra _
         (fun x _ ↦ ⟨(h.out x).1.tower_top,
-          @IsIntegral.minpoly_splits_tower_top F K₁ E E _ _ _ _ _ _ _ _ x
+          @IsIntegral.minpoly_splits_tower_top F K₁ E E _ _ _ _ _ _ _ _ _ _ x
             (RingHom.toAlgebra _) _ _ (h.out x).1 (h.out x).2⟩)
         (IntermediateField.adjoin_univ _ _)
 
@@ -202,7 +202,7 @@ noncomputable def AlgHom.liftNormal [h : Normal F E] : E →ₐ[F] E :=
 theorem AlgHom.liftNormal_commutes [Normal F E] (x : K₁) :
     ϕ.liftNormal E (algebraMap K₁ E x) = algebraMap K₂ E (ϕ x) :=
   -- We have to specify one `Algebra` instance by unification, not synthesis.
-  @AlgHom.commutes K₁ E E _ _ _ _ (_) _ _
+  @AlgHom.commutes K₁ E E _ _ _ _ _ (_) _ _
 
 @[simp]
 theorem AlgHom.restrict_liftNormal (ϕ : K₁ →ₐ[F] K₁) [Normal F K₁] [Normal F E] :

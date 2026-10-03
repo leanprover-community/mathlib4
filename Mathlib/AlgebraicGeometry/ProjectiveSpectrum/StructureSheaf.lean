@@ -176,7 +176,11 @@ def structureSheafInType : Sheaf (Type _) (ProjectiveSpectrum.top 𝒜) :=
   subsheafToTypes (isLocallyFraction 𝒜)
 
 instance commRingStructureSheafInTypeObj (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) :
-    CommRing ((structureSheafInType 𝒜).1.obj U) :=
+    Ring ((structureSheafInType 𝒜).1.obj U) :=
+  (sectionsSubring U).toRing
+
+instance isMulCommutativeStructureSheafInTypeObj (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) :
+    IsMulCommutative ((structureSheafInType 𝒜).1.obj U) :=
   (sectionsSubring U).toCommRing
 
 /-- The structure presheaf, valued in `CommRing`, constructed by dressing up the `Type`-valued

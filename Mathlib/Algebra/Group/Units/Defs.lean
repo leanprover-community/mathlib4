@@ -263,8 +263,8 @@ instance instGroup : Group αˣ where
 /-- Units of a commutative monoid form a commutative group. -/
 @[to_additive /-- Additive units of an additive commutative monoid form
 an additive commutative group. -/]
-instance instCommGroupUnits {α} [Monoid α] [IsMulCommutative α] : CommGroup αˣ where
-  mul_comm := fun _ _ => ext <| mul_comm _ _
+instance instCommGroupUnits {α} [Monoid α] [IsMulCommutative α] : IsMulCommutative αˣ :=
+  .of_comm fun _ _ => ext <| mul_comm _ _
 
 @[to_additive (attr := simp, norm_cast)]
 lemma val_pow_eq_pow_val (n : ℕ) : ↑(a ^ n) = (a ^ n : α) := rfl
@@ -649,9 +649,11 @@ noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Grou
       change ↑(h a).unit⁻¹ * a = 1
       rw [Units.inv_mul_eq_iff_eq_mul, (h a).unit_spec, mul_one] }
 
-/-- Constructs a `CommGroup` structure on a `CommMonoid` consisting only of units. -/
+/-- Constructs a `Group` structure on a commutative `Monoid` consisting only of units.
+Commutativity of the result is the `IsMulCommutative M` mixin (ISMULCOMM.md §1). -/
 @[instance_reducible]
-noncomputable def commGroupOfIsUnit [hM : Monoid M] [IsMulCommutative M] (h : ∀ a : M, IsUnit a) : CommGroup M :=
+noncomputable def commGroupOfIsUnit [hM : Monoid M] [IsMulCommutative M] (h : ∀ a : M, IsUnit a) :
+    Group M :=
   { hM with
     toInv := invOfIsUnit h,
     inv_mul_cancel := fun a => by

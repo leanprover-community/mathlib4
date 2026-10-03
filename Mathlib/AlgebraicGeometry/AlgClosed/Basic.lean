@@ -79,7 +79,7 @@ def pointEquivClosedPoint :
     rw [Scheme.SpecToEquivOfField_eq_iff]
     dsimp [Scheme.SpecToEquivOfField]
     simp only [Category.id_comp, exists_const]
-    generalize_proofs _ h
+    generalize_proofs _ _ _ h
     refine (Category.comp_id _).symm.trans (((residueFieldIsoBase f _ h).eq_inv_comp).mp ?_)
     rw [← Spec.map_injective.eq_iff]
     simp only [Spec.map_id, Spec.map_comp, SpecMap_residueFieldIsoBase_inv]

@@ -27,7 +27,7 @@ variable (R : Type*) [Ring R] [IsMulCommutative R] [IsLocalRing R]
 @[wikidata Q7315530]
 def ResidueField :=
   R ⧸ maximalIdeal R
-deriving CommRing, Inhabited
+deriving Ring, IsMulCommutative, Inhabited
 
 noncomputable instance ResidueField.field : Field (ResidueField R) :=
   fast_instance% Ideal.Quotient.field (maximalIdeal R)

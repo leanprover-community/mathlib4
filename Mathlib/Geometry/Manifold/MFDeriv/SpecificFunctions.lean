@@ -717,7 +717,8 @@ theorem hasMFDerivWithinAt_inl :
 set_option backward.isDefEq.respectTransparency false in
 theorem hasMFDerivAt_inl :
     HasMFDerivAt% (@Sum.inl M M') q (ContinuousLinearMap.id 𝕜 (TangentSpace% p)) := by
-  simpa [HasMFDerivAt, hasMFDerivWithinAt_univ] using! hasMFDerivWithinAt_inl (s := Set.univ)
+  simpa [HasMFDerivAt, hasMFDerivWithinAt_univ] using!
+    hasMFDerivWithinAt_inl (I := I) (s := Set.univ)
 
 theorem hasMFDerivWithinAt_inr {t : Set M'} :
     HasMFDerivAt[t] (@Sum.inr M M') q' (ContinuousLinearMap.id 𝕜 (TangentSpace% q')) := by
@@ -731,7 +732,8 @@ theorem hasMFDerivWithinAt_inr {t : Set M'} :
 set_option backward.isDefEq.respectTransparency false in
 theorem hasMFDerivAt_inr :
     HasMFDerivAt% (@Sum.inr M M') q' (ContinuousLinearMap.id 𝕜 (TangentSpace% p)) := by
-  simpa [HasMFDerivAt, hasMFDerivWithinAt_univ] using! hasMFDerivWithinAt_inr (t := Set.univ)
+  simpa [HasMFDerivAt, hasMFDerivWithinAt_univ] using!
+    hasMFDerivWithinAt_inr (I := I) (t := Set.univ)
 
 theorem mfderivWithin_sumInl (hU : UniqueMDiffAt[s] q) :
     mfderiv[s] (@Sum.inl M M') q = ContinuousLinearMap.id 𝕜 (TangentSpace% p) :=
@@ -1010,7 +1012,7 @@ lemma HasMFDerivWithinAt.prod [DecidableEq ι]
     rw [t.sum_insert hi, t.erase_insert hi, t.prod_insert hi, add_comm]
     rw [t.forall_mem_insert] at hf
     convert! hf.1.mul (IH hf.2) using 2
-    · simp only [t.smul_sum, ← mul_smul]
+    · simp only [Finset.smul_sum (N := TangentSpace I z →L[𝕜] F'), ← mul_smul]
       refine t.sum_congr rfl (fun j hj ↦ ?_)
       rw [t.erase_insert_of_ne (by grind), Finset.prod_insert (by grind)]
     · simp

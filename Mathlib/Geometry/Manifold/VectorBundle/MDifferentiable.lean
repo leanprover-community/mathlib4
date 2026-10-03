@@ -145,7 +145,8 @@ end Bundle
 
 section coordChange
 
-variable [(x : B) → AddCommMonoid (E x)] [(x : B) → Module 𝕜 (E x)]
+variable [(x : B) → AddMonoid (E x)] [(x : B) → IsAddCommutative (E x)]
+  [(x : B) → Module 𝕜 (E x)]
 variable (e e' : Trivialization F (π F E)) [MemTrivializationAtlas e] [MemTrivializationAtlas e']
   [VectorBundle 𝕜 F E] [ContMDiffVectorBundle 1 F E IB]
 variable {IB}
@@ -217,7 +218,8 @@ protected theorem MDifferentiable.coordChange
 
 end coordChange
 
-variable [(x : B) → AddCommMonoid (E x)] [(x : B) → Module 𝕜 (E x)]
+variable [(x : B) → AddMonoid (E x)] [(x : B) → IsAddCommutative (E x)]
+  [(x : B) → Module 𝕜 (E x)]
   [VectorBundle 𝕜 F E] [ContMDiffVectorBundle 1 F E IB]
 
 lemma MDifferentiableWithinAt.change_section_trivialization
@@ -355,7 +357,8 @@ variable
   [TopologicalSpace B] [TopologicalSpace (TotalSpace F E)] [∀ x, TopologicalSpace (E x)]
   [NormedAddGroup F] [IsAddCommutative F] [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 F] [FiberBundle F E]
   -- Moreover let `E` be a vector bundle
-  [(x : B) → AddCommGroup (E x)] [(x : B) → Module 𝕜 (E x)] [VectorBundle 𝕜 F E]
+  [(x : B) → AddGroup (E x)] [(x : B) → IsAddCommutative (E x)] [(x : B) → Module 𝕜 (E x)]
+  [VectorBundle 𝕜 F E]
   -- Let the base `B` be charted over a fixed model space `HB`
   {HB : Type*} [TopologicalSpace HB] [ChartedSpace HB B]
   -- Moreover let `HB` be modelled on a normed space `EB` so that `B` (and hence `E`) have
@@ -692,7 +695,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   (F : Type*) [NormedAddGroup F] [IsAddCommutative F]
-  {V : M → Type*} [TopologicalSpace (TotalSpace F V)] [(x : M) → AddCommGroup (V x)]
+  {V : M → Type*} [TopologicalSpace (TotalSpace F V)] [(x : M) → AddGroup (V x)]
+  [(x : M) → IsAddCommutative (V x)]
   [(x : M) → TopologicalSpace (V x)]
   [FiberBundle F V] [NormedSpace 𝕜 F] {k : WithTop ℕ∞}
 

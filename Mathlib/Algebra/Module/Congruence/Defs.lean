@@ -91,26 +91,18 @@ instance [SMul S M] [Add M] (c : ModuleCon S M) : Add c.Quotient :=
 instance [SMul S M] [AddZeroClass M] (c : ModuleCon S M) : AddZeroClass c.Quotient :=
   inferInstanceAs (AddZeroClass c.toAddCon.Quotient)
 
-instance [SMul S M] [Add M] [IsAddCommutative M] (c : ModuleCon S M) : AddCommMagma c.Quotient :=
-  inferInstanceAs (AddCommMagma c.toAddCon.Quotient)
+instance [SMul S M] [Add M] [IsAddCommutative M] (c : ModuleCon S M) :
+    IsAddCommutative c.Quotient :=
+  inferInstanceAs (IsAddCommutative c.toAddCon.Quotient)
 
 instance [SMul S M] [AddSemigroup M] (c : ModuleCon S M) : AddSemigroup c.Quotient :=
   inferInstanceAs (AddSemigroup c.toAddCon.Quotient)
 
-instance [SMul S M] [AddSemigroup M] [IsAddCommutative M] (c : ModuleCon S M) : AddCommSemigroup c.Quotient :=
-  inferInstanceAs (AddCommSemigroup c.toAddCon.Quotient)
-
 instance [SMul S M] [AddMonoid M] (c : ModuleCon S M) : AddMonoid c.Quotient :=
   inferInstanceAs (AddMonoid c.toAddCon.Quotient)
 
-instance [SMul S M] [AddMonoid M] [IsAddCommutative M] (c : ModuleCon S M) : AddCommMonoid c.Quotient :=
-  inferInstanceAs (AddCommMonoid c.toAddCon.Quotient)
-
 instance [SMul S M] [AddGroup M] (c : ModuleCon S M) : AddGroup c.Quotient :=
   inferInstanceAs (AddGroup c.toAddCon.Quotient)
-
-instance [SMul S M] [AddGroup M] [IsAddCommutative M] (c : ModuleCon S M) : AddCommGroup c.Quotient :=
-  inferInstanceAs (AddCommGroup c.toAddCon.Quotient)
 
 instance [Zero M] [Add M] [SMulZeroClass S M] (c : ModuleCon S M) : SMulZeroClass S c.Quotient :=
   inferInstanceAs (SMulZeroClass S c.toSMulCon.Quotient)

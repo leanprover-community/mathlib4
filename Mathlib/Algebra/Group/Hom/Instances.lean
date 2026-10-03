@@ -14,9 +14,10 @@ public import Mathlib.Tactic.FastInstance
 /-!
 # Instances on spaces of monoid and group morphisms
 
-We endow the space of monoid morphisms `M →* N` with a `CommMonoid` structure when the target is
-commutative, through pointwise multiplication, and with a `CommGroup` structure when the target
-is a commutative group. We also prove the same instances for additive situations.
+We endow the space of monoid morphisms `M →* N` with a `Monoid` structure and an
+`IsMulCommutative` instance when the target is commutative, through pointwise multiplication, and
+with a `Group` structure when the target is a commutative group. We also prove the same instances
+for additive situations.
 
 Since these structures permit morphisms of morphisms, we also provide some composition-like
 operations.
@@ -61,17 +62,23 @@ instance OneHom.instMonoid [One M] [Monoid N] : Monoid (OneHom M N) :=
   fast_instance%
     DFunLike.coe_injective.monoid DFunLike.coe rfl (fun _ _ => rfl) (fun _ _ => rfl)
 
-/-- `OneHom M N` is a `CommMonoid` if `N` is commutative. -/
-@[to_additive /-- `ZeroHom M N` is an `AddCommMonoid` if `N` is commutative. -/]
-instance OneHom.instCommMonoid [One M] [Monoid N] [IsMulCommutative N] : CommMonoid (OneHom M N) :=
-  fast_instance%
-    DFunLike.coe_injective.commMonoid DFunLike.coe rfl (fun _ _ => rfl) (fun _ _ => rfl)
+/-- `OneHom M N` is commutative if `N` is commutative. -/
+@[to_additive /-- `ZeroHom M N` is commutative if `N` is commutative. -/]
+instance OneHom.instIsMulCommutative [One M] [MulOneClass N] [IsMulCommutative N] :
+    IsMulCommutative (OneHom M N) :=
+  DFunLike.coe_injective.isMulCommutative DFunLike.coe (fun _ _ => rfl)
 
-/-- `(M →* N)` is a `CommMonoid` if `N` is commutative. -/
-@[to_additive /-- `(M →+ N)` is an `AddCommMonoid` if `N` is commutative. -/]
-instance MonoidHom.instCommMonoid [MulOneClass M] [Monoid N] [IsMulCommutative N] : CommMonoid (M →* N) :=
+/-- `(M →* N)` is a `Monoid` if `N` is a commutative monoid. -/
+@[to_additive /-- `(M →+ N)` is an `AddMonoid` if `N` is an additive commutative monoid. -/]
+instance MonoidHom.instMonoid [MulOneClass M] [Monoid N] [IsMulCommutative N] : Monoid (M →* N) :=
   fast_instance%
-    DFunLike.coe_injective.commMonoid DFunLike.coe rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    DFunLike.coe_injective.monoid DFunLike.coe rfl (fun _ _ => rfl) (fun _ _ => rfl)
+
+/-- `(M →* N)` is commutative if `N` is a commutative monoid. -/
+@[to_additive /-- `(M →+ N)` is commutative if `N` is an additive commutative monoid. -/]
+instance MonoidHom.instIsMulCommutative [MulOneClass M] [Monoid N] [IsMulCommutative N] :
+    IsMulCommutative (M →* N) :=
+  DFunLike.coe_injective.isMulCommutative DFunLike.coe (fun _ _ => rfl)
 
 @[to_additive]
 instance OneHom.instZPow [One M] [Group N] : Pow (OneHom M N) ℤ where
@@ -103,19 +110,12 @@ instance OneHom.instGroup [One M] [Group N] : Group (OneHom M N) :=
     DFunLike.coe_injective.group DFunLike.coe
       rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
 
-/-- If `G` is a commutative group, then so is `OneHom M G`. -/
-@[to_additive /-- If `G` is an additive commutative group, then so is `ZeroHom M G`. -/]
-instance OneHom.instCommGroup [One M] [Group N] [IsMulCommutative N] : CommGroup (OneHom M N) :=
-  fast_instance%
-    DFunLike.coe_injective.commGroup DFunLike.coe
-      rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-
-/-- If `G` is a commutative group, then `M →* G` is a commutative group too. -/
-@[to_additive /-- If `G` is an additive commutative group, then `M →+ G` is an additive commutative
+/-- If `G` is a commutative group, then `M →* G` is a group too. -/
+@[to_additive /-- If `G` is an additive commutative group, then `M →+ G` is an additive
       group too. -/]
-instance MonoidHom.instCommGroup [MulOneClass M] [Group N] [IsMulCommutative N] : CommGroup (M →* N) :=
+instance MonoidHom.instGroup [MulOneClass M] [Group N] [IsMulCommutative N] : Group (M →* N) :=
   fast_instance%
-    DFunLike.coe_injective.commGroup DFunLike.coe
+    DFunLike.coe_injective.group DFunLike.coe
       rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
 
 @[to_additive]
@@ -142,8 +142,13 @@ instance [MulOneClass M] [Monoid N] [IsMulCommutative N] [IsCancelMul N] : IsCan
 
 section End
 
-instance AddMonoid.End.instAddCommMonoid [AddMonoid M] [IsAddCommutative M] : AddCommMonoid (AddMonoid.End M) :=
-  inferInstanceAs <| AddCommMonoid (M →+ M)
+instance AddMonoid.End.instAddMonoid [AddMonoid M] [IsAddCommutative M] :
+    AddMonoid (AddMonoid.End M) :=
+  inferInstanceAs <| AddMonoid (M →+ M)
+
+instance AddMonoid.End.instIsAddCommutative [AddMonoid M] [IsAddCommutative M] :
+    IsAddCommutative (AddMonoid.End M) :=
+  inferInstanceAs <| IsAddCommutative (M →+ M)
 
 @[simp]
 theorem AddMonoid.End.zero_apply [AddMonoid M] [IsAddCommutative M] (m : M) : (0 : AddMonoid.End M) m = 0 :=
@@ -153,8 +158,9 @@ theorem AddMonoid.End.zero_apply [AddMonoid M] [IsAddCommutative M] (m : M) : (0
 theorem AddMonoid.End.one_apply [AddZeroClass M] (m : M) : (1 : AddMonoid.End M) m = m :=
   rfl
 
-instance AddMonoid.End.instAddCommGroup [AddGroup M] [IsAddCommutative M] : AddCommGroup (AddMonoid.End M) :=
-  inferInstanceAs <| AddCommGroup (M →+ M)
+instance AddMonoid.End.instAddGroup [AddGroup M] [IsAddCommutative M] :
+    AddGroup (AddMonoid.End M) :=
+  inferInstanceAs <| AddGroup (M →+ M)
 
 instance AddMonoid.End.instIntCast [AddGroup M] [IsAddCommutative M] : IntCast (AddMonoid.End M) where
   intCast := fun z => z • 1
@@ -178,13 +184,13 @@ is commutative.
 namespace MonoidHom
 
 @[to_additive]
-theorem ext_iff₂ {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommMonoid P} {f g : M →* N →* P} :
+theorem ext_iff₂ {_ : MulOneClass M} {_ : MulOneClass N} {_ : Monoid P} [IsMulCommutative P] {f g : M →* N →* P} :
     f = g ↔ ∀ x y, f x y = g x y :=
   DFunLike.ext_iff.trans <| forall_congr' fun _ => DFunLike.ext_iff
 
 /-- `flip` arguments of `f : M →* N →* P` -/
 @[to_additive /-- `flip` arguments of `f : M →+ N →+ P` -/]
-def flip {mM : MulOneClass M} {mN : MulOneClass N} {mP : CommMonoid P} (f : M →* N →* P) :
+def flip {mM : MulOneClass M} {mN : MulOneClass N} {mP : Monoid P} [IsMulCommutative P] (f : M →* N →* P) :
     N →* M →* P where
   toFun y :=
     { toFun := fun x => f x y,
@@ -194,27 +200,27 @@ def flip {mM : MulOneClass M} {mN : MulOneClass N} {mP : CommMonoid P} (f : M �
   map_mul' y₁ y₂ := ext fun x => (f x).map_mul y₁ y₂
 
 @[to_additive (attr := simp)]
-theorem flip_apply {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommMonoid P} (f : M →* N →* P)
+theorem flip_apply {_ : MulOneClass M} {_ : MulOneClass N} {_ : Monoid P} [IsMulCommutative P] (f : M →* N →* P)
     (x : M) (y : N) : f.flip y x = f x y :=
   rfl
 
 @[to_additive]
-theorem map_one₂ {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommMonoid P} (f : M →* N →* P)
+theorem map_one₂ {_ : MulOneClass M} {_ : MulOneClass N} {_ : Monoid P} [IsMulCommutative P] (f : M →* N →* P)
     (n : N) : f 1 n = 1 :=
   (flip f n).map_one
 
 @[to_additive]
-theorem map_mul₂ {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommMonoid P} (f : M →* N →* P)
+theorem map_mul₂ {_ : MulOneClass M} {_ : MulOneClass N} {_ : Monoid P} [IsMulCommutative P] (f : M →* N →* P)
     (m₁ m₂ : M) (n : N) : f (m₁ * m₂) n = f m₁ n * f m₂ n :=
   (flip f n).map_mul _ _
 
 @[to_additive]
-theorem map_inv₂ {_ : Group M} {_ : MulOneClass N} {_ : CommGroup P} (f : M →* N →* P) (m : M)
+theorem map_inv₂ {_ : Group M} {_ : MulOneClass N} {_ : Group P} [IsMulCommutative P] (f : M →* N →* P) (m : M)
     (n : N) : f m⁻¹ n = (f m n)⁻¹ :=
   (flip f n).map_inv _
 
 @[to_additive]
-theorem map_div₂ {_ : Group M} {_ : MulOneClass N} {_ : CommGroup P} (f : M →* N →* P)
+theorem map_div₂ {_ : Group M} {_ : MulOneClass N} {_ : Group P} [IsMulCommutative P] (f : M →* N →* P)
     (m₁ m₂ : M) (n : N) : f (m₁ / m₂) n = f m₁ n / f m₂ n :=
   (flip f n).map_div _ _
 
@@ -260,7 +266,7 @@ def compHom [MulOneClass M] [Monoid N] [IsMulCommutative N] [Monoid P] [IsMulCom
 @[to_additive (attr := simps)
       /-- Flipping arguments of additive monoid morphisms (`AddMonoidHom.flip`)
       as an additive monoid morphism. -/]
-def flipHom {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommMonoid P} :
+def flipHom {_ : MulOneClass M} {_ : MulOneClass N} {_ : Monoid P} [IsMulCommutative P] :
     (M →* N →* P) →* N →* M →* P where
   toFun := MonoidHom.flip
   map_one' := rfl

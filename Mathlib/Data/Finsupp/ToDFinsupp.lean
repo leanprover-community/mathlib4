@@ -330,8 +330,6 @@ theorem sigmaFinsuppEquivDFinsupp_smul {R} [Monoid R] [AddMonoid N] [DistribMulA
   ext
   rfl
 
-attribute [-instance] Finsupp.instAddMonoid
-
 /-- `Finsupp.split` is a linear equivalence between `(Σ i, η i) →₀ N` and `Π₀ i, (η i →₀ N)`. -/
 @[simps]
 def sigmaFinsuppLequivDFinsupp [AddMonoid N] [IsAddCommutative N] [Module R N] :

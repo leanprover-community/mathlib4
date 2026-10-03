@@ -104,20 +104,14 @@ instance [Neg α] : Neg (Holor α ds) :=
 instance [AddSemigroup α] : AddSemigroup (Holor α ds) :=
   inferInstanceAs <| AddSemigroup (HolorIndex ds → α)
 
-instance [AddSemigroup α] [IsAddCommutative α] : AddCommSemigroup (Holor α ds) :=
-  inferInstanceAs <| AddCommSemigroup (HolorIndex ds → α)
+instance [Add α] [IsAddCommutative α] : IsAddCommutative (Holor α ds) :=
+  inferInstanceAs <| IsAddCommutative (HolorIndex ds → α)
 
 instance [AddMonoid α] : AddMonoid (Holor α ds) :=
   inferInstanceAs <| AddMonoid (HolorIndex ds → α)
 
-instance [AddMonoid α] [IsAddCommutative α] : AddCommMonoid (Holor α ds) :=
-  inferInstanceAs <| AddCommMonoid (HolorIndex ds → α)
-
 instance [AddGroup α] : AddGroup (Holor α ds) :=
   inferInstanceAs <| AddGroup (HolorIndex ds → α)
-
-instance [AddGroup α] [IsAddCommutative α] : AddCommGroup (Holor α ds) :=
-  inferInstanceAs <| AddCommGroup (HolorIndex ds → α)
 
 -- scalar product
 instance [Mul α] : SMul α (Holor α ds) :=

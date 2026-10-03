@@ -173,10 +173,8 @@ noncomputable abbrev G : GrpCat.{max v u} :=
   GrpCat.FilteredColimits.colimit.{v, u} (F ⋙ forget₂ CommGrpCat.{max v u} GrpCat.{max v u})
 
 @[to_additive]
-noncomputable instance colimitCommGroup : CommGroup.{max v u} (G.{v, u} F) :=
-  { (G F).str,
-    CommMonCat.FilteredColimits.colimitCommMonoid
-      (F ⋙ forget₂ CommGrpCat CommMonCat.{max v u}) with }
+noncomputable instance colimitCommGroup : IsMulCommutative (G.{v, u} F) :=
+  CommMonCat.FilteredColimits.colimitCommMonoid (F ⋙ forget₂ CommGrpCat CommMonCat.{max v u})
 
 /-- The bundled commutative group giving the filtered colimit of a diagram. -/
 @[to_additive

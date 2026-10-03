@@ -53,8 +53,8 @@ instance functorCategoryPreadditive : Preadditive (C ⥤ D) where
       zsmul_zero' _ := NatTrans.ext <| zero_zsmul _
       zsmul_succ' _ _ := NatTrans.ext <| SubNegMonoid.zsmul_succ' _ _
       zsmul_neg' _ _ := NatTrans.ext <| SubNegMonoid.zsmul_neg' _ _
-      neg_add_cancel _ := NatTrans.ext <| neg_add_cancel _
-      add_comm _ _ := NatTrans.ext <| add_comm _ _ }
+      neg_add_cancel _ := NatTrans.ext <| neg_add_cancel _ }
+  isAddComm _ _ := ⟨⟨fun _ _ => NatTrans.ext <| add_comm _ _⟩⟩
   add_comp _ _ _ _ _ _ := NatTrans.ext <| funext fun _ ↦ add_comp _ _ _ _ _ _
   comp_add _ _ _ _ _ _ := NatTrans.ext <| funext fun _ ↦ comp_add _ _ _ _ _ _
 

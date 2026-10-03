@@ -34,8 +34,8 @@ variable {ι : Type*}
 
 section SemiRing
 
-variable {R : Type*} {M : ι → Type*} [Semiring R] [IsMulCommutative R] [Π i, AddCommMonoid (M i)]
-  [Π i, Module R (M i)]
+variable {R : Type*} {M : ι → Type*} [Semiring R] [IsMulCommutative R] [Π i, AddMonoid (M i)]
+  [Π i, IsAddCommutative (M i)] [Π i, Module R (M i)]
 
 /-- The canonical linear map from `⨂[R] i, Dual R (M i)` to `Dual R (⨂[R] i, M i)`,
 sending `⨂ₜ[R] i, f i` to the composition of `PiTensorProduct.map f` with
@@ -54,8 +54,8 @@ end SemiRing
 
 section Ring
 
-variable {R : Type*} {κ : ι → Type*} {M : ι → Type*} [Ring R] [IsMulCommutative R] [Π i, AddCommGroup (M i)]
-  [Π i, Module R (M i)]
+variable {R : Type*} {κ : ι → Type*} {M : ι → Type*} [Ring R] [IsMulCommutative R]
+  [Π i, AddGroup (M i)] [Π i, IsAddCommutative (M i)] [Π i, Module R (M i)]
 
 open scoped Classical in
 /-- An inverse to `PiTensorProduct.dualDistrib` given bases. -/

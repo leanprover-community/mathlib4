@@ -35,7 +35,8 @@ public section
 
 namespace Algebra
 
-variable {R A S : Type*} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A] [Ring S] [IsMulCommutative S] [Algebra R S]
+variable {R A S : Type*} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A]
+  [Ring S] [IsMulCommutative S] [Algebra R S]
 
 lemma FormallySmooth.flat_of_algHom_of_isNoetherianRing (f : S →ₐ[R] A) (hf : Function.Surjective f)
     [Module.Flat R S] [IsNoetherianRing S] [FormallySmooth R A] :
@@ -55,14 +56,15 @@ theorem Smooth.flat_of_isNoetherianRing [IsNoetherianRing R] [Smooth R A] :
 
 /-- Any smooth algebra is flat. -/
 instance Smooth.flat [Smooth R A] : Module.Flat R A := by
-  obtain ⟨A₀, B₀, _, _, _, _, _, _, _, _, ⟨e⟩⟩ := exists_finiteType ℤ R A
+  obtain ⟨A₀, B₀, _, _, _, _, _, _, _, _, _, _, ⟨e⟩⟩ := exists_finiteType ℤ R A
   have : IsNoetherianRing A₀ := Algebra.FiniteType.isNoetherianRing ℤ _
   have : Module.Flat A₀ B₀ := Smooth.flat_of_isNoetherianRing _ _
   exact .of_linearEquiv e.toLinearEquiv
 
 end Algebra
 
-lemma RingHom.Smooth.flat {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] {f : R →+* S} (hf : f.Smooth) :
+lemma RingHom.Smooth.flat {R S : Type*} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
+    {f : R →+* S} (hf : f.Smooth) :
     f.Flat := by
   algebraize [f]
   exact Algebra.Smooth.flat R S

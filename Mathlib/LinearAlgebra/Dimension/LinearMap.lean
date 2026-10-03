@@ -32,7 +32,8 @@ namespace LinearMap
 
 section Semiring
 
-variable [Semiring K] [AddMonoid V] [IsAddCommutative V] [Module K V] [AddMonoid V₁] [IsAddCommutative V₁] [Module K V₁]
+variable [Semiring K] [AddMonoid V] [IsAddCommutative V] [Module K V]
+  [AddMonoid V₁] [IsAddCommutative V₁] [Module K V₁]
 variable [AddMonoid V'] [IsAddCommutative V'] [Module K V']
 
 /-- `rank f` is the rank of a `LinearMap` `f`, defined as the dimension of `f.range`. -/
@@ -47,7 +48,8 @@ theorem rank_le_domain (f : V →ₗ[K] V₁) : rank f ≤ Module.rank K V :=
 
 @[simp]
 theorem rank_zero [Nontrivial K] : rank (0 : V →ₗ[K] V') = 0 := by
-  rw [rank, LinearMap.range_zero, rank_bot]
+  change Module.rank K (LinearMap.range (0 : V →ₗ[K] V')) = 0
+  rw [LinearMap.range_zero, rank_bot]
 
 variable [AddMonoid V''] [IsAddCommutative V''] [Module K V'']
 
@@ -58,7 +60,9 @@ theorem rank_comp_le_left (g : V →ₗ[K] V') (f : V' →ₗ[K] V'') : rank (f.
 
 theorem lift_rank_comp_le_right (g : V →ₗ[K] V') (f : V' →ₗ[K] V'') :
     Cardinal.lift.{v'} (rank (f.comp g)) ≤ Cardinal.lift.{v''} (rank g) := by
-  rw [rank, rank, LinearMap.range_comp]; exact lift_rank_map_le _ _
+  change Cardinal.lift.{v'} (Module.rank K (LinearMap.range (f.comp g))) ≤
+    Cardinal.lift.{v''} (Module.rank K (LinearMap.range g))
+  rw [LinearMap.range_comp]; exact lift_rank_map_le _ _
 
 /-- The rank of the composition of two maps is less than the minimum of their ranks. -/
 theorem lift_rank_comp_le (g : V →ₗ[K] V') (f : V' →ₗ[K] V'') :
@@ -82,8 +86,9 @@ end Semiring
 
 section HasRankNullity
 
-variable [Ring K] [HasRankNullity.{v'} K] [AddGroup V] [IsAddCommutative V] [Module K V] [AddGroup V₁] [IsAddCommutative V₁]
-  [Module K V₁] [AddGroup V'] [IsAddCommutative V'] [Module K V']
+variable [Ring K] [HasRankNullity.{v'} K] [AddGroup V] [IsAddCommutative V] [Module K V]
+  [AddGroup V₁] [IsAddCommutative V₁] [Module K V₁]
+  [AddGroup V'] [IsAddCommutative V'] [Module K V']
 
 theorem rank_add_le (f g : V →ₗ[K] V') : rank (f + g) ≤ rank f + rank g :=
   calc
@@ -97,7 +102,7 @@ theorem rank_add_le (f g : V →ₗ[K] V') : rank (f + g) ≤ rank f + rank g :=
 theorem rank_finsetSum_le {η} (s : Finset η) (f : η → V →ₗ[K] V') :
     rank (∑ d ∈ s, f d) ≤ ∑ d ∈ s, rank (f d) :=
   have := nontrivial_of_hasRankNullity K
-  @Finset.sum_hom_rel _ _ _ _ _ (fun a b => rank a ≤ b) f (fun d => rank (f d)) s
+  Finset.sum_hom_rel (r := fun a b => rank a ≤ b) (f := f) (g := fun d => rank (f d)) (s := s)
     (le_of_eq rank_zero) fun _ _ _ h => le_trans (rank_add_le _ _) (by gcongr)
 
 @[deprecated (since := "2026-04-08")] alias rank_finset_sum_le := rank_finsetSum_le
@@ -106,7 +111,8 @@ end HasRankNullity
 
 section DivisionRing
 
-variable [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V] [AddGroup V₁] [IsAddCommutative V₁] [Module K V₁]
+variable [DivisionRing K] [AddGroup V] [IsAddCommutative V] [Module K V]
+  [AddGroup V₁] [IsAddCommutative V₁] [Module K V₁]
 variable [AddGroup V'] [IsAddCommutative V'] [Module K V']
 
 theorem le_rank_iff_exists_linearIndependent {c : Cardinal} {f : V →ₗ[K] V'} :

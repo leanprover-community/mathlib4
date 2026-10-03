@@ -160,7 +160,7 @@ instance : MulAction R (M →ₚₗ[R] N) where
   one_smul := one_smul
   mul_smul a b f := by ext; simp only [smul_def, mul_smul]
 
-instance : AddCommMonoid (M →ₚₗ[R] N) where
+instance : AddMonoid (M →ₚₗ[R] N) where
   add_assoc f g h := by ext; simp only [add_def, add_assoc]
   zero_add f := by ext; simp only [add_def, zero_add, zero_def]
   add_zero f := by ext; simp only [add_def, add_zero, zero_def]
@@ -169,7 +169,9 @@ instance : AddCommMonoid (M →ₚₗ[R] N) where
   nsmul_succ n f := by
     simp_rw [HSMul.hSMul, SMul.smul]
     simp only [Nat.cast_add, Nat.cast_one, add_smul, one_smul]
-  add_comm f g := by ext; simp only [add_def, add_comm]
+
+instance : IsAddCommutative (M →ₚₗ[R] N) where
+  is_comm := ⟨fun f g ↦ by ext; simp only [add_def, add_comm]⟩
 
 instance : Module R (M →ₚₗ[R] N) where
   smul_zero a := rfl
@@ -195,7 +197,7 @@ instance : Neg (M →ₚₗ[R] N) := ⟨neg⟩
 theorem neg_def (S : Type u) [Semiring S] [IsMulCommutative S] [Algebra R S] :
     (-f).toFun' S = (-1 : R) • f.toFun' S := rfl
 
-instance : AddCommGroup (M →ₚₗ[R] N) where
+instance : AddGroup (M →ₚₗ[R] N) where
   zsmul n f := (n : R) • f
   zsmul_zero' f := by simp_rw [HSMul.hSMul, SMul.smul]; simp only [Int.cast_zero, zero_smul]
   zsmul_succ' n f := by
@@ -203,7 +205,7 @@ instance : AddCommGroup (M →ₚₗ[R] N) where
     simp only [Nat.cast_succ, Int.cast_add, Int.cast_natCast, Int.cast_one, add_smul, one_smul]
   zsmul_neg' n f := by
     simp_rw [HSMul.hSMul, SMul.smul]
-    ext S _ _ m
+    ext S _ _ _ m
     rw [neg_def]
     simp only [Int.cast_negSucc, Nat.cast_add, Nat.cast_one, neg_add_rev, add_smul,
       add_def_apply, smul_def_apply, Nat.succ_eq_add_one, Int.cast_add, Int.cast_natCast,
@@ -211,12 +213,11 @@ instance : AddCommGroup (M →ₚₗ[R] N) where
       smul_smul, neg_mul, one_mul]
     rw [add_comm]
   neg_add_cancel f := by
-    ext S _ _ m
+    ext S _ _ _ m
     simp only [add_def_apply, neg_def, Pi.smul_apply, zero_def, Pi.zero_apply]
     nth_rewrite 2 [← _root_.one_smul (M := R) (b := f.toFun' S m)]
     rw [← _root_.add_smul]
     simp only [neg_add_cancel, _root_.zero_smul]
-  add_comm f g := by ext; simp only [add_def, add_comm]
 
 end CommRing
 

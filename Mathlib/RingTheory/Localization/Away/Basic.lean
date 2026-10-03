@@ -352,7 +352,7 @@ noncomputable def atUnit (x : R) (e : IsUnit x) [IsLocalization.Away x S] : R �
 
 /-- The localization at one is isomorphic to the ring. -/
 noncomputable def atOne [IsLocalization.Away (1 : R) S] : R ≃ₐ[R] S :=
-  @atUnit R _ S _ _ (1 : R) isUnit_one _
+  @atUnit R _ _ S _ _ _ (1 : R) isUnit_one _
 
 theorem away_of_isUnit_of_bijective {R : Type*} (S : Type*) [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S]
     [Algebra R S] {r : R} (hr : IsUnit r) (H : Function.Bijective (algebraMap R S)) :

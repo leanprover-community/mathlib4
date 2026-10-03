@@ -132,8 +132,8 @@ instance instAdd [Add A] : Add (CStarMatrix m n A) :=
 instance instAddSemigroup [AddSemigroup A] : AddSemigroup (CStarMatrix m n A) :=
   inferInstanceAs <| AddSemigroup (Matrix m n A)
 
-instance instAddCommSemigroup [AddSemigroup A] [IsAddCommutative A] : AddCommSemigroup (CStarMatrix m n A) :=
-  inferInstanceAs <| AddCommSemigroup (Matrix m n A)
+instance instIsAddCommutative [Add A] [IsAddCommutative A] : IsAddCommutative (CStarMatrix m n A) :=
+  inferInstanceAs <| IsAddCommutative (Matrix m n A)
 
 instance instZero [Zero A] : Zero (CStarMatrix m n A) :=
   inferInstanceAs <| Zero (Matrix m n A)
@@ -148,9 +148,6 @@ instance instAddMonoid [AddMonoid A] : AddMonoid (CStarMatrix m n A) where
   nsmul := letI := instSMul (R := ℕ) (A := A) (m := m) (n := n); (· • · )
   __ : AddMonoid (CStarMatrix m n A) := inferInstanceAs <| AddMonoid (Matrix m n A)
 
-instance instAddCommMonoid [AddMonoid A] [IsAddCommutative A] : AddCommMonoid (CStarMatrix m n A) :=
-  inferInstanceAs <| AddCommMonoid (Matrix m n A)
-
 instance instNeg [Neg A] : Neg (CStarMatrix m n A) :=
   inferInstanceAs <| Neg (Matrix m n A)
 
@@ -160,9 +157,6 @@ instance instSub [Sub A] : Sub (CStarMatrix m n A) :=
 instance instAddGroup [AddGroup A] : AddGroup (CStarMatrix m n A) where
   zsmul := letI := instSMul (R := ℤ) (A := A) (m := m) (n := n); (· • · )
   __ : AddGroup (CStarMatrix m n A) := inferInstanceAs <| AddGroup (Matrix m n A)
-
-instance instAddCommGroup [AddGroup A] [IsAddCommutative A] : AddCommGroup (CStarMatrix m n A) :=
-  inferInstanceAs <| AddCommGroup (Matrix m n A)
 
 instance instUnique [Unique A] : Unique (CStarMatrix m n A) :=
   inferInstanceAs <| Unique (Matrix m n A)
@@ -283,14 +277,6 @@ instance instAddMonoidWithOne [AddMonoidWithOne A] : AddMonoidWithOne (CStarMatr
 
 instance instAddGroupWithOne [AddGroupWithOne A] : AddGroupWithOne (CStarMatrix n n A) :=
   inferInstanceAs <| AddGroupWithOne (Matrix n n A)
-
-instance instAddCommMonoidWithOne [AddMonoidWithOne A] [IsAddCommutative A] :
-    AddCommMonoidWithOne (CStarMatrix n n A) :=
-  inferInstanceAs <| AddCommMonoidWithOne (Matrix n n A)
-
-instance instAddCommGroupWithOne [AddGroupWithOne A] [IsAddCommutative A] :
-    AddCommGroupWithOne (CStarMatrix n n A) :=
-  inferInstanceAs <| AddCommGroupWithOne (Matrix n n A)
 
 -- We want to be lower priority than `instHMul`, but without this we can't have operands with
 -- implicit dimensions.
@@ -483,9 +469,14 @@ end basic
 variable [Fintype m] [NonUnitalCStarAlgebra A]
 
 set_option backward.isDefEq.respectTransparency false in
+-- The redundant instance `ContinuousLinearMap.addCommGroup` would otherwise be baked into the
+-- type of `toCLM`; unifying it against `ContinuousLinearMap.addCommMonoid` gets stuck when
+-- `m`, `n`, `A` are still metavariables (e.g. in `toCLM M`), so the coercion to a function fails.
+attribute [-instance] ContinuousLinearMap.addCommGroup in
 /-- Interpret a `CStarMatrix m n A` as a continuous linear map acting on `C⋆ᵐᵒᵈ (n → A)`. -/
 noncomputable def toCLM : CStarMatrix m n A →ₗ[ℂ] C⋆ᵐᵒᵈ(A, m → A) →L[ℂ] C⋆ᵐᵒᵈ(A, n → A) where
-  toFun M := { toFun := (WithCStarModule.equivL ℂ).symm ∘ M.vecMul ∘ WithCStarModule.equivL ℂ
+  toFun M := { toFun := (WithCStarModule.equivL ℂ (A := A) (E := n → A)).symm ∘ M.vecMul ∘
+                 WithCStarModule.equivL ℂ (A := A) (E := m → A)
                map_add' := M.add_vecMul
                map_smul' := M.smul_vecMul }
   map_add' M₁ M₂ := by
@@ -640,8 +631,8 @@ variable {m n A : Type*} [Fintype m] [Fintype n]
   [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 private noncomputable local instance normedAddCommGroupAux :
-    NormedAddCommGroup (CStarMatrix m n A) :=
-  .ofCore CStarMatrix.normedSpaceCore
+    NormedAddGroup (CStarMatrix m n A) :=
+  NormedAddCommGroup.ofCore CStarMatrix.normedSpaceCore
 
 @[instance_reducible]
 private noncomputable def normedSpaceAux : NormedSpace ℂ (CStarMatrix m n A) :=
@@ -751,8 +742,8 @@ instance instContinuousSMul {R : Type*} [SMul R A] [TopologicalSpace R] [Continu
   inferInstanceAs <| ContinuousSMul R (Matrix m n A)
 
 noncomputable instance instNormedAddCommGroup :
-    NormedAddCommGroup (CStarMatrix m n A) :=
-  fast_instance% .ofCoreReplaceAll CStarMatrix.normedSpaceCore ?_ (fun _ ↦ ?_)
+    NormedAddGroup (CStarMatrix m n A) :=
+  fast_instance% NormedAddCommGroup.ofCoreReplaceAll CStarMatrix.normedSpaceCore ?_ (fun _ ↦ ?_)
 where finally
   exacts [CStarMatrix.uniformity_eq_aux.symm, Filter.ext_iff.1 CStarMatrix.cobounded_eq_aux.symm _]
 
@@ -762,7 +753,7 @@ noncomputable instance instNormedSpace : NormedSpace ℂ (CStarMatrix m n A) :=
 noncomputable instance instNonUnitalNormedRing :
     NonUnitalNormedRing (CStarMatrix n n A) where
   __ : NonUnitalRing (CStarMatrix n n A) := inferInstance
-  __ : NormedAddCommGroup (CStarMatrix n n A) := inferInstance
+  __ : NormedAddGroup (CStarMatrix n n A) := inferInstance
   norm_mul_le _ _ := by simpa only [norm_def', map_mul] using norm_mul_le _ _
 
 open ContinuousLinearMap CStarModule in

@@ -51,9 +51,12 @@ protected abbrev monoidWithZero [MonoidWithZero β] : MonoidWithZero α := by
   let _ := e.pow ℕ
   apply e.injective.monoidWithZero _ <;> intros <;> exact e.apply_symm_apply _
 
-/-- Transfer `CommMonoidWithZero` across an `Equiv` -/
-protected abbrev commMonoidWithZero [MonoidWithZero β] [IsMulCommutative β] : CommMonoidWithZero α := by
+/-- Transfer `CommMonoidWithZero` across an `Equiv`. Under the unbundling this is the
+commutativity half; the `MonoidWithZero` half is `Equiv.monoidWithZero`. -/
+protected theorem commMonoidWithZero [MonoidWithZero β] [IsMulCommutative β] :
+    letI := e.monoidWithZero
+    IsMulCommutative α := by
   let _ := e.monoidWithZero
-  apply e.injective.commMonoidWithZero _ <;> intros <;> exact e.apply_symm_apply _
+  exact e.injective.isMulCommutative _ fun _ _ ↦ e.apply_symm_apply _
 
 end Equiv

@@ -45,9 +45,8 @@ noncomputable instance [Monoid M] : Group (IsUnit.submonoid M) :=
       Subtype.ext ((Units.val_mul x.prop.unit⁻¹ _).trans x.prop.unit.inv_val) }
 
 @[to_additive]
-noncomputable instance [Monoid M] [IsMulCommutative M] : CommGroup (IsUnit.submonoid M) :=
-  { (inferInstance : Group (IsUnit.submonoid M)) with
-    mul_comm := fun a b ↦ by convert! mul_comm a b }
+instance [Monoid M] [IsMulCommutative M] : IsMulCommutative (IsUnit.submonoid M) :=
+  ⟨⟨fun a b ↦ by convert! mul_comm a b⟩⟩
 
 @[to_additive]
 theorem _root_.IsUnit.submonoid.coe_inv [Monoid M] (x : IsUnit.submonoid M) :

@@ -212,7 +212,7 @@ theorem coe_mapAlgEquiv (f : A ≃ₐ[R] B) : ⇑(mapAlgEquiv f) = map f :=
   rfl
 
 @[simp]
-theorem mapAlgEquiv_id : mapAlgEquiv (@AlgEquiv.refl R A _ _ _) = AlgEquiv.refl :=
+theorem mapAlgEquiv_id : mapAlgEquiv (@AlgEquiv.refl R A _ _ _ _) = AlgEquiv.refl :=
   AlgEquiv.ext fun _x => map_id
 
 @[simp]
@@ -265,7 +265,7 @@ lemma aevalEquiv_apply (x : A) : aevalEquiv R A x = aeval x :=
 /-- The map `R[X] → S[X]` as an algebra homomorphism. -/
 def mapAlg (R : Type u) [Semiring R] [IsMulCommutative R] (S : Type v) [Semiring S] [Algebra R S] :
     R[X] →ₐ[R] S[X] :=
-  @aeval _ S[X] _ _ _ (X : S[X])
+  @aeval _ S[X] _ _ _ _ (X : S[X])
 
 @[ext 1200]
 theorem algHom_ext {f g : R[X] →ₐ[R] B} (hX : f X = g X) :
@@ -403,7 +403,7 @@ theorem aeval_X_left : aeval (X : R[X]) = AlgHom.id R R[X] :=
   algHom_ext <| aeval_X X
 
 theorem aeval_X_left_apply (p : R[X]) : aeval X p = p :=
-  congr($(@aeval_X_left R _) p)
+  congr($(@aeval_X_left R _ _) p)
 
 lemma aeval_X_left_eq_map [Semiring S] [IsMulCommutative S] [Algebra R S] (p : R[X]) :
     aeval X p = map (algebraMap R S) p :=
@@ -600,8 +600,8 @@ end aevalTower
 open LinearMap TensorProduct in
 lemma X_pow_smul_rTensor_monomial [Semiring S] [IsMulCommutative S] [Algebra R S] {N : Type*}
     [AddMonoid N] [IsAddCommutative N] [Module R N] (k : ℕ) (sn : S ⊗[R] N) :
-    X (R := S) ^ k • (LinearMap.rTensor N ((monomial 0).restrictScalars R)) sn =
-      (LinearMap.rTensor N ((monomial k).restrictScalars R)) sn := by
+    X (R := S) ^ k • (LinearMap.rTensor N ((monomial (R := S) 0).restrictScalars R)) sn =
+      (LinearMap.rTensor N ((monomial (R := S) k).restrictScalars R)) sn := by
   induction sn using TensorProduct.inductionOn with
   | add x y hx hy => simp [hx, hy]
   | tmul s n =>

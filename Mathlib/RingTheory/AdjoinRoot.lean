@@ -67,10 +67,13 @@ deriving instance Inhabited for AdjoinRoot
 instance instSMulAdjoinRoot [DistribSMul S R] [IsScalarTower S R R] : SMul S (AdjoinRoot f) :=
   inferInstanceAs <| SMul S (_ ⧸ _)
 
-instance : CommRing (AdjoinRoot f) where
+instance instRing : Ring (AdjoinRoot f) where
   nsmul := letI := instSMulAdjoinRoot (S := ℕ) (R := R); (· • ·)
   zsmul := letI := instSMulAdjoinRoot (S := ℤ) (R := R); (· • ·)
-  __ : CommRing (AdjoinRoot f) := inferInstanceAs <| CommRing (_ ⧸ _)
+  __ : Ring (AdjoinRoot f) := inferInstanceAs <| Ring (_ ⧸ _)
+
+instance instIsMulCommutative : IsMulCommutative (AdjoinRoot f) :=
+  inferInstanceAs <| IsMulCommutative (_ ⧸ _)
 
 instance [DistribSMul S R] [IsScalarTower S R R] : DistribSMul S (AdjoinRoot f) :=
   inferInstanceAs <| DistribSMul S (_ ⧸ _)
@@ -307,7 +310,7 @@ theorem lift_of {x : R} : lift i a h x = i x := by rw [← mk_C x, lift_mk, eval
 
 @[simp]
 theorem lift_comp_of : (lift i a h).comp (of f) = i :=
-  RingHom.ext fun _ => @lift_of _ _ _ _ _ _ _ h _
+  RingHom.ext fun _ => lift_of h
 
 section
 variable [Ring T] [IsMulCommutative T] [Algebra S R] [Algebra S T] (p : R[X])
@@ -367,7 +370,7 @@ theorem algHom_subsingleton {S : Type*} [Ring S] [IsMulCommutative S] [Algebra R
     Subsingleton (AdjoinRoot (C r * X - 1) →ₐ[R] S) :=
   ⟨fun f g =>
     algHom_ext
-      (@inv_unique _ _ (algebraMap R S r) _ _
+      (@inv_unique _ _ _ (algebraMap R S r) _ _
         (by rw [← f.commutes, ← map_mul, algebraMap_eq, root_isInv, map_one])
         (by rw [← g.commutes, ← map_mul, algebraMap_eq, root_isInv, map_one]))⟩
 
@@ -614,7 +617,8 @@ noncomputable instance instGroupWithZero [Fact (Irreducible f)] : GroupWithZero 
 /-- If `R` is a field and `f` is irreducible, then `AdjoinRoot f` is a field -/
 @[stacks 09FX "first part, see also 09FI"]
 noncomputable instance instField [Fact (Irreducible f)] : Field (AdjoinRoot f) where
-  __ := instCommRing _
+  __ := instRing f
+  __ := instIsMulCommutative f
   __ := instGroupWithZero
   nnqsmul := (· • ·)
   qsmul := (· • ·)
@@ -1192,22 +1196,23 @@ theorem Irreducible.exists_dvd_monic_irreducible_of_isIntegral {K L : Type*}
 /-- If `p : R[X]` is monic, then there exists a finite free extension of `R` that splits `p`. -/
 lemma Polynomial.Monic.exists_splits_map.{u}
     {R : Type u} [Ring R] [IsMulCommutative R] [Nontrivial R] {p : R[X]} (hp : p.Monic) :
-    ∃ (S : Type u) (_ : CommRing S) (_ : Algebra R S) (_ : Module.Finite R S) (_ : Module.Free R S)
-      (_ : Nontrivial S), (p.map (algebraMap R S)).Splits := by
+    ∃ (S : Type u) (_ : Ring S) (_ : IsMulCommutative S) (_ : Algebra R S) (_ : Module.Finite R S)
+      (_ : Module.Free R S) (_ : Nontrivial S), (p.map (algebraMap R S)).Splits := by
   induction hn : p.natDegree using Nat.strong_induction_on generalizing R with | h n IH =>
   by_cases hpu : IsUnit p
   · obtain rfl := hp.eq_one_of_isUnit hpu
-    exact ⟨R, inferInstance, inferInstance, inferInstance, inferInstance, inferInstance, by simp⟩
+    exact ⟨R, inferInstance, inferInstance, inferInstance, inferInstance, inferInstance,
+      inferInstance, by simp⟩
   obtain ⟨q, hq⟩ : X - C (AdjoinRoot.root p) ∣ p.map (algebraMap _ _) := by
     simp [dvd_iff_isRoot, -AdjoinRoot.algebraMap_eq]
   have hqm : q.Monic := .of_mul_monic_left (monic_X_sub_C (.root _)) (hq ▸ hp.map _)
   have := hp.free_adjoinRoot
   have := hp.finite_adjoinRoot
   have : Nontrivial (AdjoinRoot p) := Ideal.Quotient.nontrivial_iff.mpr (by simpa)
-  obtain ⟨S, _, _, _, _, _, hS⟩ := IH _
+  obtain ⟨S, _, _, _, _, _, _, hS⟩ := IH _
     (by rw [← hn, ← hp.natDegree_map (algebraMap R (AdjoinRoot p)), hq,
       Monic.natDegree_mul (monic_X_sub_C _) hqm]; simp) hqm rfl
   algebraize [(algebraMap (AdjoinRoot p) S).comp (algebraMap R (AdjoinRoot p))]
-  refine ⟨S, ‹_›, ‹_›, .trans (AdjoinRoot p) _, .trans (S := AdjoinRoot p), ‹_›, ?_⟩
+  refine ⟨S, ‹_›, ‹_›, ‹_›, .trans (AdjoinRoot p) _, .trans (S := AdjoinRoot p), ‹_›, ?_⟩
   rw [IsScalarTower.algebraMap_eq R (AdjoinRoot p), ← Polynomial.map_map, hq, Polynomial.map_mul]
   exact .mul (by simp) hS

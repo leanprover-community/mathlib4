@@ -339,8 +339,11 @@ end SMul
 instance [Monoid S] [MulAction S R] : MulAction S ℍ[R,c₁,c₂,c₃] :=
   (equivProd ..).injective.mulAction _ fun _ _ ↦ rfl
 
-instance [AddGroup R] [IsAddCommutative R] : AddCommGroup ℍ[R,c₁,c₂,c₃] := by
-  apply (equivProd c₁ c₂ c₃).injective.addCommGroup <;> intros <;> rfl
+instance [AddGroup R] : AddGroup ℍ[R,c₁,c₂,c₃] := by
+  apply (equivProd c₁ c₂ c₃).injective.addGroup <;> intros <;> rfl
+
+instance [Add R] [IsAddCommutative R] : IsAddCommutative ℍ[R,c₁,c₂,c₃] :=
+  (equivProd c₁ c₂ c₃).injective.isAddCommutative _ fun _ _ ↦ rfl
 
 @[simp, norm_cast]
 theorem coe_smul [Zero R] [SMulZeroClass S R] (s : S) (r : R) :
@@ -356,7 +359,7 @@ instance [Semiring S] [AddGroup R] [IsAddCommutative R] [Module S R] : Module S 
 section AddCommGroupWithOne
 variable [AddGroupWithOne R] [IsAddCommutative R]
 
-instance : AddCommGroupWithOne ℍ[R,c₁,c₂,c₃] where
+instance : AddGroupWithOne ℍ[R,c₁,c₂,c₃] where
   natCast n := ((n : R) : ℍ[R,c₁,c₂,c₃])
   natCast_zero := by simp
   natCast_succ := by simp

@@ -73,12 +73,14 @@ instance : Zero (SetSemiring α) where zero := (∅ : Set α).up
 
 instance : Add (SetSemiring α) where add s t := (s.down ∪ t.down).up
 
-instance : AddCommMonoid (SetSemiring α) where
+instance : AddMonoid (SetSemiring α) where
   add_assoc := union_assoc
   zero_add := empty_union
   add_zero := union_empty
-  add_comm := union_comm
   nsmul := nsmulRec
+
+instance : IsAddCommutative (SetSemiring α) :=
+  ⟨⟨union_comm⟩⟩
 
 theorem zero_def : (0 : SetSemiring α) = Set.up ∅ :=
   rfl
@@ -181,15 +183,8 @@ noncomputable instance [Monoid α] : IdemSemiring (SetSemiring α) :=
     (inferInstance : NonUnitalSemiring (SetSemiring α)),
     (inferInstance : CompleteBooleanAlgebra (SetSemiring α)) with }
 
-instance [Semigroup α] [IsMulCommutative α] : CommSemigroup (SetSemiring α) :=
-  inferInstanceAs <| CommSemigroup (Set α)
-
-instance [Semigroup α] [IsMulCommutative α] : NonUnitalCommSemiring (SetSemiring α) where
-
-noncomputable instance [Monoid α] [IsMulCommutative α] : CommMonoid (SetSemiring α) :=
-  inferInstanceAs <| CommMonoid (Set α)
-
-noncomputable instance [Monoid α] [IsMulCommutative α] : IdemCommSemiring (SetSemiring α) where
+instance [Semigroup α] [IsMulCommutative α] : IsMulCommutative (SetSemiring α) :=
+  inferInstanceAs <| IsMulCommutative (Set α)
 
 instance : CanonicallyOrderedAdd (SetSemiring α) where
   exists_add_of_le {_ b} ab := ⟨b, (union_eq_right.2 ab).symm⟩

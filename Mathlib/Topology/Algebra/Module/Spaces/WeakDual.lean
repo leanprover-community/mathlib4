@@ -72,7 +72,7 @@ instance instMulAction (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass �
     [ContinuousConstSMul M 𝕜] : MulAction M (WeakDual 𝕜 E) :=
   inferInstanceAs <| MulAction M (E →L[𝕜] 𝕜)
 
-deriving instance AddCommMonoid, ContinuousAdd for WeakDual
+deriving instance AddMonoid, IsAddCommutative, ContinuousAdd for WeakDual
 
 /-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
 multiplication on `𝕜`, then it acts distributively on `WeakDual 𝕜 E`. -/
@@ -184,8 +184,8 @@ section Ring
 variable [Ring 𝕜] [IsMulCommutative 𝕜] [TopologicalSpace 𝕜] [IsTopologicalAddGroup 𝕜] [ContinuousConstSMul 𝕜 𝕜]
 variable [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]
 
-instance instAddCommGroup : AddCommGroup (WeakDual 𝕜 E) :=
-  inferInstanceAs <| AddCommGroup (WeakBilin (topDualPairing 𝕜 E))
+instance instAddCommGroup : AddGroup (WeakDual 𝕜 E) :=
+  inferInstanceAs <| AddGroup (WeakBilin (topDualPairing 𝕜 E))
 
 instance instIsTopologicalAddGroup : IsTopologicalAddGroup (WeakDual 𝕜 E) :=
   WeakBilin.instIsTopologicalAddGroup (topDualPairing 𝕜 E)
@@ -211,7 +211,7 @@ variable [AddMonoid E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E]
 variable [Semiring 𝕝] [IsMulCommutative 𝕝] [Module 𝕝 E] in
 deriving instance SMul 𝕝 for WeakSpace 𝕜 E
 
-deriving instance AddCommMonoid, ContinuousAdd for WeakSpace
+deriving instance AddMonoid, IsAddCommutative, ContinuousAdd for WeakSpace
 
 namespace WeakSpace
 
@@ -293,8 +293,8 @@ namespace WeakSpace
 variable [Ring 𝕜] [IsMulCommutative 𝕜] [TopologicalSpace 𝕜] [IsTopologicalAddGroup 𝕜] [ContinuousConstSMul 𝕜 𝕜]
 variable [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]
 
-instance instAddCommGroup : AddCommGroup (WeakSpace 𝕜 E) :=
-  inferInstanceAs <| AddCommGroup (WeakBilin (topDualPairing 𝕜 E).flip)
+instance instAddCommGroup : AddGroup (WeakSpace 𝕜 E) :=
+  inferInstanceAs <| AddGroup (WeakBilin (topDualPairing 𝕜 E).flip)
 
 instance instIsTopologicalAddGroup : IsTopologicalAddGroup (WeakSpace 𝕜 E) :=
   WeakBilin.instIsTopologicalAddGroup (topDualPairing 𝕜 E).flip

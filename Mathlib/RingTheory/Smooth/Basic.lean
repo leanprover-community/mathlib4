@@ -52,9 +52,12 @@ open Algebra.Extension KaehlerDifferential MvPolynomial
 
 universe u v w
 
-variable {R : Type u} {A : Type v} [Ring R] [IsMulCommutative R] [Ring A] [IsMulCommutative A] [Algebra R A]
-variable {B P C : Type*} [Ring B] [IsMulCommutative B] [Algebra R B] [Ring C] [IsMulCommutative C] [Algebra R C]
-  [Ring P] [IsMulCommutative P] [Algebra R P]
+-- `_root_.Ring` because these binders are also elaborated inside `namespace Algebra.Extension`,
+-- where `Ring` resolves to the field `Algebra.Extension.Ring`.
+variable {R : Type u} {A : Type v} [_root_.Ring R] [IsMulCommutative R] [_root_.Ring A]
+  [IsMulCommutative A] [Algebra R A]
+variable {B P C : Type*} [_root_.Ring B] [IsMulCommutative B] [Algebra R B] [_root_.Ring C]
+  [IsMulCommutative C] [Algebra R C] [_root_.Ring P] [IsMulCommutative P] [Algebra R P]
 namespace Algebra
 
 section
@@ -129,8 +132,8 @@ theorem exists_lift
   change Function.Surjective (Ideal.Quotient.mkₐ R I).comp
   revert ‹Algebra R B›
   apply Ideal.IsNilpotent.induction_on (S := B) I hI
-  · intro B _ I hI _; exact FormallySmooth.comp_surjective R A I hI
-  · intro B _ I J hIJ h₁ h₂ _ g
+  · intro B _ _ I hI _; exact FormallySmooth.comp_surjective R A I hI
+  · intro B _ _ I J hIJ h₁ h₂ _ g
     let : ((B ⧸ I) ⧸ J.map (Ideal.Quotient.mk I)) ≃ₐ[R] B ⧸ J :=
       { (DoubleQuot.quotQuotEquivQuotSup I J).trans
           (Ideal.quotEquivOfEq (sup_eq_right.mpr hIJ)) with
@@ -405,7 +408,7 @@ variable (A : Type*) [Ring A] [IsMulCommutative A] [Algebra R A]
 variable (B : Type*) [Ring B] [IsMulCommutative B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
 
 theorem comp [FormallySmooth R A] [FormallySmooth A B] : FormallySmooth R B := by
-  refine .of_comp_surjective fun C _ _ I hI f ↦ ?_
+  refine .of_comp_surjective fun C _ _ _ I hI f ↦ ?_
   obtain ⟨f', e⟩ := FormallySmooth.comp_surjective _ _ I hI (f.comp (IsScalarTower.toAlgHom R A B))
   let := f'.toRingHom.toAlgebra
   obtain ⟨f'', e'⟩ := comp_surjective _ _ I hI { f with commutes' := AlgHom.congr_fun e.symm }
@@ -414,7 +417,7 @@ theorem comp [FormallySmooth R A] [FormallySmooth A B] : FormallySmooth R B := b
 
 lemma of_restrictScalars [FormallyUnramified R A] [FormallySmooth R B] :
     FormallySmooth A B := by
-  refine iff_comp_surjective.mpr fun C _ _ I hI f ↦ ?_
+  refine iff_comp_surjective.mpr fun C _ _ _ I hI f ↦ ?_
   algebraize [(algebraMap A C).comp (algebraMap R A)]
   obtain ⟨g, hg⟩ := Algebra.FormallySmooth.comp_surjective _ _ I hI (f.restrictScalars R)
   suffices g.comp (IsScalarTower.toAlgHom R A B) = IsScalarTower.toAlgHom R A C from
@@ -456,7 +459,7 @@ variable (B : Type*) [Ring B] [IsMulCommutative B] [Algebra R B]
 
 set_option backward.isDefEq.respectTransparency.types false in
 instance [FormallySmooth R A] : FormallySmooth B (B ⊗[R] A) := by
-  refine .of_comp_surjective fun C _ _ I hI f ↦ ?_
+  refine .of_comp_surjective fun C _ _ _ I hI f ↦ ?_
   let := ((algebraMap B C).comp (algebraMap R B)).toAlgebra
   have : IsScalarTower R B C := IsScalarTower.of_algebraMap_eq' rfl
   refine ⟨TensorProduct.productLeftAlgHom (Algebra.ofId B C) ?_, ?_⟩
@@ -479,7 +482,7 @@ variable [IsLocalization M Rₘ] [IsLocalization (M.map (algebraMap R A)) Sₘ]
 include M
 
 theorem of_isLocalization : FormallySmooth R Rₘ := by
-  refine .of_comp_surjective fun Q _ _ I e f ↦ ?_
+  refine .of_comp_surjective fun Q _ _ _ I e f ↦ ?_
   have : ∀ x : M, IsUnit (algebraMap R Q x) := by
     intro x
     apply (IsNilpotent.isUnit_quotient_mk_iff ⟨2, e⟩).mp
@@ -499,7 +502,7 @@ instance [FormallySmooth R A] (M : Submonoid A) : FormallySmooth R (Localization
 
 set_option backward.isDefEq.respectTransparency.types false in
 theorem localization_base [FormallySmooth R Sₘ] : FormallySmooth Rₘ Sₘ := by
-  refine .of_comp_surjective fun Q _ _ I e f ↦ ?_
+  refine .of_comp_surjective fun Q _ _ _ I e f ↦ ?_
   let := ((algebraMap Rₘ Q).comp (algebraMap R Rₘ)).toAlgebra
   let : IsScalarTower R Rₘ Q := IsScalarTower.of_algebraMap_eq' rfl
   let f : Sₘ →ₐ[Rₘ] Q := by

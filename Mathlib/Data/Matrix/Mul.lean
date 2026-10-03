@@ -368,7 +368,7 @@ protected theorem add_mul [Fintype m] (L M : Matrix l m α) (N : Matrix m n α) 
   apply add_dotProduct
 
 instance nonUnitalNonAssocSemiring [Fintype n] : NonUnitalNonAssocSemiring (Matrix n n α) :=
-  { Matrix.addCommMonoid with
+  { Matrix.addMonoid, (inferInstance : IsAddCommutative (Matrix n n α)) with
     mul_zero := Matrix.mul_zero
     zero_mul := Matrix.zero_mul
     left_distrib := Matrix.mul_add
@@ -469,7 +469,7 @@ protected theorem mul_one [Fintype n] [DecidableEq n] (M : Matrix m n α) :
   rw [← diagonal_one, mul_diagonal, mul_one]
 
 instance nonAssocSemiring [Fintype n] [DecidableEq n] : NonAssocSemiring (Matrix n n α) :=
-  { Matrix.nonUnitalNonAssocSemiring, Matrix.instAddCommMonoidWithOne with
+  { Matrix.nonUnitalNonAssocSemiring, Matrix.instAddMonoidWithOne with
     one_mul := Matrix.one_mul
     mul_one := Matrix.mul_one }
 
@@ -529,19 +529,19 @@ protected theorem mul_sub (M : Matrix m n α) (N N' : Matrix n o α) :
   rw [sub_eq_add_neg, Matrix.mul_add, Matrix.mul_neg, sub_eq_add_neg]
 
 instance nonUnitalNonAssocRing : NonUnitalNonAssocRing (Matrix n n α) :=
-  { Matrix.nonUnitalNonAssocSemiring, Matrix.addCommGroup with }
+  { Matrix.nonUnitalNonAssocSemiring, Matrix.addGroup with }
 
 end NonUnitalNonAssocRing
 
 instance instNonUnitalRing [Fintype n] [NonUnitalRing α] : NonUnitalRing (Matrix n n α) :=
-  { Matrix.nonUnitalSemiring, Matrix.addCommGroup with }
+  { Matrix.nonUnitalSemiring, Matrix.addGroup with }
 
 instance instNonAssocRing [Fintype n] [DecidableEq n] [NonAssocRing α] :
     NonAssocRing (Matrix n n α) :=
-  { Matrix.nonAssocSemiring, Matrix.instAddCommGroupWithOne with }
+  { Matrix.nonAssocSemiring, Matrix.instAddGroupWithOne with }
 
 instance instRing [Fintype n] [DecidableEq n] [Ring α] : Ring (Matrix n n α) :=
-  { Matrix.semiring, Matrix.instAddCommGroupWithOne with }
+  { Matrix.semiring, Matrix.instAddGroupWithOne with }
 
 section Semiring
 

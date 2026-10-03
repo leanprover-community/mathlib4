@@ -115,14 +115,14 @@ currently it is induction for `Module.Finite A M`. -/
 @[elab_as_elim]
 theorem IsNoetherianRing.induction_on_isQuotientEquivQuotientPrime
     ⦃M : Type v⦄ [AddGroup M] [IsAddCommutative M] [Module A M] (_ : Module.Finite A M)
-    {motive : (N : Type v) → [AddGroup N] [IsAddCommutative N] → [Module A N] → [Module.Finite A N] → Prop}
-    (subsingleton : (N : Type v) → [AddGroup N] [IsAddCommutative N] → [Module A N] → [Module.Finite A N] →
+    {motive : (N : Type v) → [AddGroup N] → [IsAddCommutative N] → [Module A N] → [Module.Finite A N] → Prop}
+    (subsingleton : (N : Type v) → [AddGroup N] → [IsAddCommutative N] → [Module A N] → [Module.Finite A N] →
       [Subsingleton N] → motive N)
-    (quotient : (N : Type v) → [AddGroup N] [IsAddCommutative N] → [Module A N] → [Module.Finite A N] →
+    (quotient : (N : Type v) → [AddGroup N] → [IsAddCommutative N] → [Module A N] → [Module.Finite A N] →
       (p : PrimeSpectrum A) → (N ≃ₗ[A] A ⧸ p.1) → motive N)
-    (exact : (N₁ : Type v) → [AddGroup N₁] [IsAddCommutative N₁] → [Module A N₁] → [Module.Finite A N₁] →
-      (N₂ : Type v) → [AddGroup N₂] [IsAddCommutative N₂] → [Module A N₂] → [Module.Finite A N₂] →
-      (N₃ : Type v) → [AddGroup N₃] [IsAddCommutative N₃] → [Module A N₃] → [Module.Finite A N₃] →
+    (exact : (N₁ : Type v) → [AddGroup N₁] → [IsAddCommutative N₁] → [Module A N₁] → [Module.Finite A N₁] →
+      (N₂ : Type v) → [AddGroup N₂] → [IsAddCommutative N₂] → [Module A N₂] → [Module.Finite A N₂] →
+      (N₃ : Type v) → [AddGroup N₃] → [IsAddCommutative N₃] → [Module A N₃] → [Module.Finite A N₃] →
       (f : N₁ →ₗ[A] N₂) → (g : N₂ →ₗ[A] N₃) →
       Function.Injective f → Function.Surjective g → Function.Exact f g →
       motive N₁ → motive N₃ → motive N₂) : motive M := by

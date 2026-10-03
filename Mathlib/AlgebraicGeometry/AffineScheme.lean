@@ -734,7 +734,7 @@ def appBasicOpenIsoAwayMap {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens}
 
 include hU in
 theorem isLocalization_of_eq_basicOpen {V : X.Opens} (i : V ⟶ U) (e : V = X.basicOpen f) :
-    @IsLocalization.Away _ _ f Γ(X, V) _ (X.presheaf.map i.op).hom.toAlgebra := by
+    @IsLocalization.Away _ _ _ f Γ(X, V) _ _ (X.presheaf.map i.op).hom.toAlgebra := by
   subst e; exact isLocalization_basicOpen hU f
 
 instance _root_.AlgebraicGeometry.Γ_restrict_isLocalization
@@ -814,12 +814,12 @@ set_option backward.isDefEq.respectTransparency.types false in
 theorem isLocalization_stalk' (y : PrimeSpectrum Γ(X, U)) (hy : hU.fromSpec y ∈ U) :
     @IsLocalization.AtPrime
       (R := Γ(X, U))
-      (S := X.presheaf.stalk <| hU.fromSpec y) _ _
+      (S := X.presheaf.stalk <| hU.fromSpec y) _ _ _
       ((TopCat.Presheaf.algebra_section_stalk X.presheaf _)) y.asIdeal _ := by
   apply
     (@IsLocalization.isLocalization_iff_of_ringEquiv (R := Γ(X, U))
-      (S := X.presheaf.stalk (hU.fromSpec y)) _ y.asIdeal.primeCompl _
-      (TopCat.Presheaf.algebra_section_stalk X.presheaf ⟨hU.fromSpec y, hy⟩) _ _
+      (S := X.presheaf.stalk (hU.fromSpec y)) _ _ y.asIdeal.primeCompl _ _
+      (TopCat.Presheaf.algebra_section_stalk X.presheaf ⟨hU.fromSpec y, hy⟩) _ _ _
       (asIso <| hU.fromSpec.stalkMap y).commRingCatIsoToRingEquiv).mpr
   convert StructureSheaf.IsLocalization.to_stalk Γ(X, U) y
   delta IsLocalization.AtPrime StructureSheaf.stalkAlgebra
@@ -852,7 +852,8 @@ lemma mem_ideal_iff {s : Γ(X, U)} {I : Ideal Γ(X, U)} :
   refine ⟨fun hs x hxU ↦ Ideal.mem_map_of_mem _ hs, fun H ↦ ?_⟩
   let (x : _) : Algebra Γ(X, U) (X.presheaf.stalk (hU.fromSpec x)) :=
     TopCat.Presheaf.algebra_section_stalk X.presheaf _
-  have (P : Ideal Γ(X, U)) [hP : P.IsPrime] : IsLocalization.AtPrime _ P :=
+  have (P : Ideal Γ(X, U)) [hP : P.IsPrime] :
+      IsLocalization.AtPrime (X.presheaf.stalk (hU.fromSpec ⟨P, hP⟩)) P :=
       hU.isLocalization_stalk' ⟨P, hP⟩ (hU.isoSpec.inv _).2
   refine Submodule.mem_of_localization_maximal
       (fun P hP ↦ X.presheaf.stalk (hU.fromSpec ⟨P, hP.isPrime⟩))

@@ -257,9 +257,9 @@ instance [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
   DFunLike.coe_injective.monoid _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 @[to_additive]
-instance [Π i, CommMonoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
-    CommMonoid (Πʳ i, [R i, B i]_[𝓕]) :=
-  DFunLike.coe_injective.commMonoid _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+instance [Π i, Monoid (R i)] [Π i, IsMulCommutative (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
+    IsMulCommutative (Πʳ i, [R i, B i]_[𝓕]) :=
+  DFunLike.coe_injective.isMulCommutative _ (fun _ _ ↦ rfl)
 
 @[to_additive]
 instance instZPow [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)] :
@@ -282,10 +282,9 @@ instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] :
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 @[to_additive]
-instance [Π i, CommGroup (R i)] [∀ i, SubgroupClass (S i) (R i)] :
-    CommGroup (Πʳ i, [R i, B i]_[𝓕]) :=
-  DFunLike.coe_injective.commGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+instance [Π i, Group (R i)] [Π i, IsMulCommutative (R i)] [∀ i, SubgroupClass (S i) (R i)] :
+    IsMulCommutative (Πʳ i, [R i, B i]_[𝓕]) :=
+  DFunLike.coe_injective.isMulCommutative _ (fun _ _ ↦ rfl)
 
 instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] :
     IntCast (Πʳ i, [R i, B i]_[𝓕]) where
@@ -296,9 +295,9 @@ instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] :
   DFunLike.coe_injective.ring _ rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
 
-instance [Π i, CommRing (R i)] [∀ i, SubringClass (S i) (R i)] :
-    CommRing (Πʳ i, [R i, B i]_[𝓕]) where
-  mul_comm _ _ := DFunLike.coe_injective <| funext (fun _ ↦ mul_comm _ _)
+instance [Π i, Ring (R i)] [Π i, IsMulCommutative (R i)] [∀ i, SubringClass (S i) (R i)] :
+    IsMulCommutative (Πʳ i, [R i, B i]_[𝓕]) where
+  is_comm := ⟨fun _ _ ↦ DFunLike.coe_injective <| funext (fun _ ↦ mul_comm _ _)⟩
 
 variable {R} in
 /-- The coercion from the restricted product of monoids `A i` to the (normal) product
@@ -311,7 +310,8 @@ def coeMonoidHom [∀ i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
   map_one' := rfl
   map_mul' _ _ := rfl
 
-instance {R₀ : Type*} [Semiring R₀] [Π i, AddCommMonoid (R i)] [Π i, Module R₀ (R i)]
+instance {R₀ : Type*} [Semiring R₀] [Π i, AddMonoid (R i)] [Π i, IsAddCommutative (R i)]
+    [Π i, Module R₀ (R i)]
     [∀ i, AddSubmonoidClass (S i) (R i)] [∀ i, SMulMemClass (S i) R₀ (R i)] :
   Module R₀ (Πʳ i, [R i, B i]_[𝓕]) :=
   DFunLike.coe_injective.module R₀ (M := Π i, R i) coeAddMonoidHom (fun _ _ ↦ rfl)

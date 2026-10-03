@@ -143,8 +143,8 @@ will have computable inverses (and `qsmul`, `ratCast`) in some applications.
 See note [reducible non-instances]. -/
 protected noncomputable abbrev field {R} [Ring R] [IsMulCommutative R] (I : Ideal R) [I.IsMaximal] :
     Field (R ⧸ I) := fast_instance%
-  { __ := commRing _
-    __ := Quotient.divisionRing I }
+  { __ := Quotient.divisionRing I
+    __ := Quotient.isMulCommutative I }
 
 /-- If the quotient by an ideal is a field, then the ideal is maximal. -/
 theorem maximal_of_isField {R} [Ring R] [IsMulCommutative R] (I : Ideal R) (hqf : IsField (R ⧸ I)) :
@@ -163,7 +163,7 @@ theorem maximal_of_isField {R} [Ring R] [IsMulCommutative R] (I : Ideal R) (hqf 
 theorem maximal_ideal_iff_isField_quotient {R} [Ring R] [IsMulCommutative R] (I : Ideal R) :
     I.IsMaximal ↔ IsField (R ⧸ I) :=
   ⟨fun h =>
-    let _i := @Quotient.field _ _ I h
+    let _i := @Quotient.field _ _ _ I h
     Field.toIsField _,
     maximal_of_isField _⟩
 

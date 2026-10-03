@@ -231,7 +231,8 @@ section CommRing
 
 variable [Ring R] [IsMulCommutative R] (v : Valuation R Γ₀)
 
-instance : CommRing (WithVal v) := fast_instance% (equiv v).commRing
+instance : IsMulCommutative (WithVal v) :=
+  (ofVal_injective v).isMulCommutative _ (ofVal_mul v)
 
 end CommRing
 
@@ -339,8 +340,8 @@ def algEquiv : WithVal v ≃ₐ[R] S := (equiv v).algEquiv R
 
 @[simp] theorem algEquiv_symm_apply (x : S) : (algEquiv R v).symm x = toVal v x := rfl
 
-instance {S : Type*} [Ring S] [IsMulCommutative S] [Algebra R S] (M : Submonoid R) [IsLocalization M S]
-    (v : Valuation S Γ₀) : IsLocalization M (WithVal v) := by
+instance {S : Type*} [Ring S] [IsMulCommutative S] [Algebra R S] (M : Submonoid R)
+    [IsLocalization M S] (v : Valuation S Γ₀) : IsLocalization M (WithVal v) := by
   rwa [← IsLocalization.isLocalization_iff_of_algEquiv M (algEquiv R v).symm]
 
 end Algebra
@@ -390,6 +391,7 @@ instance : Field (WithVal v) := fast_instance% ofVal_injective v |>.field _
   (ofVal_natCast _) (ofVal_intCast _) (ofVal_nnratCast _) (ofVal_ratCast _)
 
 instance [NumberField R] : NumberField (WithVal v) where
+  to_finiteDimensional := .equiv (linearEquiv ℚ v).symm
 
 end Field
 

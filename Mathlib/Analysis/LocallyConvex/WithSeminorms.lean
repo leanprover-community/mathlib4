@@ -771,7 +771,7 @@ protected theorem equicontinuous_TFAE {κ : Type*}
   rw [q.withSeminorms_iff_uniformSpace_eq_iInf.mp hq, uniformEquicontinuous_iInf_rng,
       equicontinuous_iInf_rng, equicontinuousAt_iInf_rng]
   refine forall_tfae [_, _, _, _, _] fun i ↦ ?_
-  let _ : SeminormedAddCommGroup F := (q i).toSeminormedAddCommGroup
+  let _ : SeminormedAddGroup F := (q i).toSeminormedAddCommGroup
   clear u hu hq
   -- Now we can prove the equivalence in this setting
   simp only [List.map]
@@ -928,7 +928,7 @@ lemma bound_of_continuous [t : TopologicalSpace E] (hp : WithSeminorms p)
   -- Now forget that `E` already had a topology and view it as the (semi)normed space
   -- `(E, s.sup p)`.
   clear hp hq t
-  let _ : SeminormedAddCommGroup E := (s.sup p).toSeminormedAddCommGroup
+  let _ : SeminormedAddGroup E := (s.sup p).toSeminormedAddCommGroup
   let _ : NormedSpace 𝕜 E := { norm_smul_le := fun a b ↦ le_of_eq (map_smul_eq_mul (s.sup p) a b) }
   -- The inclusion `hε` tells us exactly that `q` is *still* continuous for this new topology
   have : Continuous q := by
@@ -1049,7 +1049,10 @@ theorem SeminormFamily.comp_apply (q : SeminormFamily 𝕜₂ F ι) (i : ι) (f 
 
 theorem SeminormFamily.comp_smul_nnreal (q : SeminormFamily 𝕜₂ F ι) (c : NNReal)
     (f : E →ₛₗ[σ₁₂] F) :
-    c • q.comp f = (c • q).comp f := by
+    -- the `SMul ℝ≥0 (SeminormFamily _ _ ι)` search gets stuck on `IsAddCommutative (ι → _)` via
+    -- `Module.toMulActionWithZero`; give the instance the baseline finds (`Pi.instSMul`).
+    (letI : SMul ℝ≥0 (SeminormFamily 𝕜 E ι) := Pi.instSMul; c • q.comp f) =
+      (letI : SMul ℝ≥0 (SeminormFamily 𝕜₂ F ι) := Pi.instSMul; c • q).comp f := by
   ext
   simp [SeminormFamily.comp_apply, Seminorm.comp_apply]
 
@@ -1124,9 +1127,9 @@ theorem withSeminorms_iInf {κ : ι → Type*}
     (hp : ∀ i, WithSeminorms (topology := t i) (p i)) :
     WithSeminorms (topology := ⨅ i, t i) (SeminormFamily.sigma p) := by
   have : ∀ i, @IsTopologicalAddGroup E (t i) _ :=
-    fun i ↦ @WithSeminorms.isTopologicalAddGroup _ _ _ _ _ _ (t i) _ (hp i)
+    fun i ↦ @WithSeminorms.isTopologicalAddGroup _ _ _ _ _ _ _ (t i) _ (hp i)
   have : @IsTopologicalAddGroup E (⨅ i, t i) _ := isTopologicalAddGroup_iInf inferInstance
-  simp_rw [@SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf _ _ _ _ _ _ _ (_)] at hp ⊢
+  simp_rw [@SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf _ _ _ _ _ _ _ _ (_)] at hp ⊢
   rw [iInf_sigma]
   exact iInf_congr hp
 

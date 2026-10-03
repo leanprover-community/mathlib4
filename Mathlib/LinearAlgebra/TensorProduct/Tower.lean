@@ -269,11 +269,11 @@ def rTensor : (M →ₗ[A] P) →ₗ[R] M ⊗[R] N →ₗ[A] P ⊗[R] N where
 
 @[simp]
 lemma coe_rTensor (f : M →ₗ[A] P) :
-    (rTensor R N f : M ⊗[R] N → P ⊗[R] N) = f.rTensor N := rfl
+    (rTensor R N f : M ⊗[R] N → P ⊗[R] N) = (f.restrictScalars R).rTensor N := rfl
 
 @[simp]
 lemma restrictScalars_rTensor (f : M →ₗ[A] P) :
-    (rTensor R N f).restrictScalars R = f.rTensor N := rfl
+    (rTensor R N f).restrictScalars R = (f.restrictScalars R).rTensor N := rfl
 
 @[simp] lemma rTensor_tmul (f : M →ₗ[A] P) (m : M) (n : N) :
     rTensor R N f (m ⊗ₜ[R] n) = f m ⊗ₜ n :=

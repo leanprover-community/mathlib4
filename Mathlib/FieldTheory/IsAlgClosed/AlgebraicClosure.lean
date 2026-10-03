@@ -134,10 +134,13 @@ deriving instance Inhabited for AlgebraicClosure
 instance {S : Type*} [DistribSMul S k] [IsScalarTower S k k] : SMul S (AlgebraicClosure k) :=
   inferInstanceAs <| SMul S (_ ⧸ _)
 
-instance : CommRing (AlgebraicClosure k) where
+instance instRing : Ring (AlgebraicClosure k) where
   nsmul := letI := AlgebraicClosure.instSMulOfIsScalarTower k (S := ℕ); (· • · )
   zsmul := letI := AlgebraicClosure.instSMulOfIsScalarTower k (S := ℤ); (· • · )
-  __ : CommRing (AlgebraicClosure k) := inferInstanceAs <| CommRing (_ ⧸ _)
+  __ : Ring (AlgebraicClosure k) := inferInstanceAs <| Ring (_ ⧸ _)
+
+instance instIsMulCommutative : IsMulCommutative (AlgebraicClosure k) :=
+  inferInstanceAs <| IsMulCommutative (_ ⧸ _)
 
 instance instAlgebra {R : Type*} [Semiring R] [IsMulCommutative R] [Algebra R k] : Algebra R (AlgebraicClosure k) :=
   inferInstanceAs <| Algebra R (_ ⧸ _)
@@ -151,7 +154,8 @@ instance instGroupWithZero : GroupWithZero (AlgebraicClosure k) :=
   inferInstanceAs <| GroupWithZero (_ ⧸ _)
 
 instance instField : Field (AlgebraicClosure k) where
-  __ := instCommRing _
+  __ := instRing k
+  __ := instIsMulCommutative k
   __ := instGroupWithZero _
   nnqsmul := (· • ·)
   qsmul := (· • ·)

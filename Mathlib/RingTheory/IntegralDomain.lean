@@ -107,11 +107,11 @@ def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableE
 can be found in `Mathlib/RingTheory/LittleWedderburn.lean`. -/
 @[instance_reducible]
 def Fintype.fieldOfDomain (R) [Ring R] [IsMulCommutative R] [IsDomain R] [DecidableEq R] [Fintype R] : Field R :=
-  { Fintype.divisionRingOfIsDomain R, ‹CommRing R› with }
+  { Fintype.divisionRingOfIsDomain R, ‹IsMulCommutative R› with }
 
 theorem Finite.isField_of_domain (R) [Ring R] [IsMulCommutative R] [IsDomain R] [Finite R] : IsField R := by
   cases nonempty_fintype R
-  exact @Field.toIsField R (@Fintype.fieldOfDomain R _ _ (Classical.decEq R) _)
+  exact @Field.toIsField R (@Fintype.fieldOfDomain R _ _ _ (Classical.decEq R) _)
 
 end Ring
 

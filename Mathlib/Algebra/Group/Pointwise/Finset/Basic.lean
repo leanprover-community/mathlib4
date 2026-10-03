@@ -723,10 +723,13 @@ section CommSemigroup
 
 variable [Semigroup α] [IsMulCommutative α] {s t : Finset α}
 
-/-- `Finset α` is a `CommSemigroup` under pointwise operations if `α` is. -/
-@[to_additive (attr := instance_reducible)
-  /-- `Finset α` is an `AddCommSemigroup` under pointwise operations if `α` is. -/]
-protected def commSemigroup : CommSemigroup (Finset α) :=
+/-- Pointwise multiplication on `Finset α` is commutative if it is on `α` (the commutativity half
+of the pointwise `CommSemigroup` structure; the `Semigroup` half is `Finset.semigroup`). -/
+@[to_additive
+  /-- Pointwise addition on `Finset α` is commutative if it is on `α` (the commutativity half of
+  the pointwise `AddCommSemigroup` structure; the `AddSemigroup` half is
+  `Finset.addSemigroup`). -/]
+protected theorem commSemigroup : IsMulCommutative (Finset α) :=
   coe_injective.commSemigroup _ coe_mul
 
 @[to_additive]
@@ -933,10 +936,12 @@ section CommMonoid
 
 variable [Monoid α] [IsMulCommutative α]
 
-/-- `Finset α` is a `CommMonoid` under pointwise operations if `α` is. -/
-@[to_additive (attr := instance_reducible)
-  /-- `Finset α` is an `AddCommMonoid` under pointwise operations if `α` is. -/]
-protected def commMonoid : CommMonoid (Finset α) :=
+/-- The commutativity half of the pointwise `CommMonoid` structure on `Finset α`; the `Monoid`
+half is `Finset.monoid`. -/
+@[to_additive
+  /-- The commutativity half of the pointwise `AddCommMonoid` structure on `Finset α`; the
+  `AddMonoid` half is `Finset.addMonoid`. -/]
+protected theorem commMonoid : IsMulCommutative (Finset α) :=
   coe_injective.commMonoid _ coe_one coe_mul coe_pow
 
 scoped[Pointwise] attribute [instance] Finset.commMonoid Finset.addCommMonoid
@@ -1012,11 +1017,13 @@ lemma singleton_zpow (a : α) (n : ℤ) : ({a} : Finset α) ^ n = {a ^ n} := by 
 
 end DivisionMonoid
 
-/-- `Finset α` is a commutative division monoid under pointwise operations if `α` is. -/
-@[to_additive (attr := instance_reducible) subtractionCommMonoid
-  /-- `Finset α` is a commutative subtraction monoid under pointwise operations if `α` is. -/]
-protected def divisionCommMonoid [DivisionMonoid α] [IsMulCommutative α] :
-    DivisionCommMonoid (Finset α) :=
+/-- The commutativity half of the pointwise `DivisionCommMonoid` structure on `Finset α`; the
+`DivisionMonoid` half is `Finset.divisionMonoid`. -/
+@[to_additive subtractionCommMonoid
+  /-- The commutativity half of the pointwise `SubtractionCommMonoid` structure on `Finset α`; the
+  `SubtractionMonoid` half is `Finset.subtractionMonoid`. -/]
+protected theorem divisionCommMonoid [DivisionMonoid α] [IsMulCommutative α] :
+    IsMulCommutative (Finset α) :=
   coe_injective.divisionCommMonoid _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 
 scoped[Pointwise] attribute [instance] Finset.divisionCommMonoid Finset.subtractionCommMonoid

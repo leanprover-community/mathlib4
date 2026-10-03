@@ -194,8 +194,8 @@ theorem toMultilinearMap_add (f g : ContinuousMultilinearMap R M₁ M₂) :
 instance : AddMonoid (ContinuousMultilinearMap R M₁ M₂) := fast_instance%
   toMultilinearMap_injective.addMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
-instance addCommMonoid : AddCommMonoid (ContinuousMultilinearMap R M₁ M₂) := fast_instance%
-  toMultilinearMap_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
+instance addCommMonoid : IsAddCommutative (ContinuousMultilinearMap R M₁ M₂) :=
+  toMultilinearMap_injective.isAddCommutative _ fun _ _ => rfl
 
 /-- Evaluation of a `ContinuousMultilinearMap` at a vector as an `AddMonoidHom`. -/
 def applyAddHom (m : ∀ i, M₁ i) : ContinuousMultilinearMap R M₁ M₂ →+ M₂ where
@@ -488,8 +488,8 @@ instance : IsSubApply (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M�
 
 @[deprecated (since := "2026-06-10")] protected alias sub_apply := sub_apply
 
-instance : AddCommGroup (ContinuousMultilinearMap R M₁ M₂) := fast_instance%
-  toMultilinearMap_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+instance : AddGroup (ContinuousMultilinearMap R M₁ M₂) := fast_instance%
+  toMultilinearMap_injective.addGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
 theorem neg_prod_neg [AddGroup M₃] [IsAddCommutative M₃] [Module R M₃] [TopologicalSpace M₃]

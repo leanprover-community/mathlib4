@@ -181,8 +181,9 @@ abbrev convIntrinsicStarRing [Coalgebra R C]
   __ := intrinsicStarAddMonoid
   star_mul := intrinsicStar_convMul h
 
-variable {n : Type*} [DecidableEq n] {B : n → Type*} [Π i, AddCommMonoid (B i)]
-  [Π i, Module R (B i)] [Π i, StarAddMonoid (B i)] [∀ i, StarModule R (B i)]
+variable {n : Type*} [DecidableEq n] {B : n → Type*} [Π i, AddMonoid (B i)]
+  [Π i, IsAddCommutative (B i)] [Π i, Module R (B i)] [Π i, StarAddMonoid (B i)]
+  [∀ i, StarModule R (B i)]
 
 @[simp] theorem intrinsicStar_single (i : n) :
     star (toConv (single R B i)) = toConv (single R B i) := by
@@ -272,7 +273,8 @@ open Module.End in
   ⟨fun h ↦ star_star f ▸ h.intrinsicStar, fun h ↦ h.intrinsicStar⟩
 
 section eigenspace
-variable {R V : Type*} [Ring R] [IsMulCommutative R] [InvolutiveStar R] [AddGroup V] [IsAddCommutative V] [StarAddMonoid V]
+variable {R V : Type*} [Ring R] [IsMulCommutative R] [InvolutiveStar R]
+  [AddGroup V] [IsAddCommutative V] [StarAddMonoid V]
   [Module R V] [StarModule R V]
 
 open LinearMap

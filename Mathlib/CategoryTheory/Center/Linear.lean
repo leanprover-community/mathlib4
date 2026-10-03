@@ -37,7 +37,7 @@ def toCatCenter [Linear R C] : R →+* CatCenter C where
     { app := fun X => a • 𝟙 X }
   map_one' := by cat_disch
   map_mul' a b := by
-    rw [mul_comm]
+    rw [mul_comm (M := CatCenter C)]
     ext X
     dsimp only [CatCenter.mul_app']
     rw [Linear.smul_comp, Linear.comp_smul, smul_smul]

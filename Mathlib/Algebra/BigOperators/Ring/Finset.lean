@@ -164,7 +164,7 @@ lemma sum_prod_piFinset [Fintype ι] (s : Finset κ) (g : ι → κ → R) :
 
 lemma sum_pow' (s : Finset κ) (f : κ → R) (n : ℕ) :
     (∑ a ∈ s, f a) ^ n = ∑ p ∈ piFinset fun _i : Fin n ↦ s, ∏ i, f (p i) := by
-  convert! @prod_univ_sum (Fin n) _ _ _ _ _ (fun _i ↦ s) fun _i d ↦ f d; simp
+  convert! @prod_univ_sum (Fin n) _ _ _ _ _ _ (fun _i ↦ s) fun _i d ↦ f d; simp
 
 /-- The product of `f a + g a` over all of `s` is the sum over the powerset of `s` of the product of
 `f` over a subset `t` times the product of `g` over the complement of `t` -/
@@ -334,7 +334,8 @@ lemma cast_multiset_sum [AddMonoidWithOne R] [IsAddCommutative R] (s : Multiset 
   map_multiset_sum (castAddMonoidHom R) _
 
 @[simp, norm_cast]
-lemma cast_multiset_prod [Semiring R] [IsMulCommutative R] (s : Multiset ℕ) : (↑s.prod : R) = (s.map (↑)).prod :=
+lemma cast_multiset_prod [Semiring R] [IsMulCommutative R] (s : Multiset ℕ) :
+    (↑s.prod : R) = (s.map (↑)).prod :=
   map_multiset_prod (castRingHom R) _
 
 @[simp, norm_cast]

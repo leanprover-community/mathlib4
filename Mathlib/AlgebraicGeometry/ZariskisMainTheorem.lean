@@ -66,7 +66,7 @@ theorem exists_etale_isCompl_of_quasiFiniteAt [IsSeparated f]
     simp
   have : Algebra.QuasiFiniteAt Γ(S, U) (hV.primeIdealOf ⟨x, hxV⟩).asIdeal :=
     hx.quasiFiniteAt hV hU hUV hxV
-  obtain ⟨R, _, _, _, P, _, _, e, _, P', _, _, hP', heP', -, _, -⟩ :=
+  obtain ⟨R, _, _, _, _, P, _, _, e, _, P', _, _, hP', heP', -, _, -⟩ :=
     Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq
     (hU.primeIdealOf ⟨f x, hxU⟩).asIdeal (hV.primeIdealOf ⟨x, hxV⟩).asIdeal
   have : (algebraMap R (Localization.Away e)).Finite := RingHom.finite_algebraMap.mpr ‹_›

@@ -145,16 +145,12 @@ lemma map₀_mul [Nonempty ι] (r s : ∀ i, G i) : map₀ f (r * s) = map₀ f 
 end AddMul
 
 @[to_additive] instance [∀ i, Mul (G i)] [∀ i, IsMulCommutative (G i)] [∀ i j h, MulHomClass (T h) (G i) (G j)] :
-    CommMagma (DirectLimit G f) where
-  mul_comm := DirectLimit.induction₂ _ fun i _ _ ↦ by simp_rw [mul_def, mul_comm]
+    IsMulCommutative (DirectLimit G f) where
+  is_comm := ⟨DirectLimit.induction₂ _ fun i _ _ ↦ by simp_rw [mul_def, mul_comm]⟩
 
 @[to_additive] instance [∀ i, Semigroup (G i)] [∀ i j h, MulHomClass (T h) (G i) (G j)] :
     Semigroup (DirectLimit G f) where
   mul_assoc := DirectLimit.induction₃ _ fun i _ _ _ ↦ by simp_rw [mul_def, mul_assoc]
-
-@[to_additive] instance [∀ i, Semigroup (G i)] [∀ i, IsMulCommutative (G i)] [∀ i j h, MulHomClass (T h) (G i) (G j)] :
-    CommSemigroup (DirectLimit G f) where
-  mul_comm := mul_comm
 
 section StarMul
 variable [∀ i, Mul (G i)] [∀ i j h, MulHomClass (T h) (G i) (G j)]
@@ -236,10 +232,6 @@ theorem lift_npow (g : ∀ i, H i) (h) (x : DirectLimit G f) (n : ℕ) :
 
 end Monoid
 
-@[to_additive] instance [∀ i, Monoid (G i)] [∀ i, IsMulCommutative (G i)] [∀ i j h, MonoidHomClass (T h) (G i) (G j)] :
-    CommMonoid (DirectLimit G f) where
-  mul_comm := mul_comm
-
 section StarAddMonoid
 variable [∀ i, AddMonoid (G i)] [∀ i j h, AddMonoidHomClass (T h) (G i) (G j)]
 variable [∀ i, StarAddMonoid (G i)] [∀ i j h, StarHomClass (T h) (G i) (G j)]
@@ -294,10 +286,6 @@ theorem lift_zpow (g : ∀ i, H i) (h) (x : DirectLimit G f) (z : ℤ) :
 
 end Group
 
-@[to_additive] instance [∀ i, Group (G i)] [∀ i, IsMulCommutative (G i)] [∀ i j h, MonoidHomClass (T h) (G i) (G j)] :
-    CommGroup (DirectLimit G f) where
-  mul_comm := mul_comm
-
 instance [∀ i, MulZeroClass (G i)] [∀ i j h, MulHomClass (T h) (G i) (G j)]
     [∀ i j h, ZeroHomClass (T h) (G i) (G j)] :
     MulZeroClass (DirectLimit G f) where
@@ -325,11 +313,6 @@ instance [∀ i, SemigroupWithZero (G i)] [∀ i j h, MulHomClass (T h) (G i) (G
 
 instance [∀ i, MonoidWithZero (G i)] [∀ i j h, MonoidWithZeroHomClass (T h) (G i) (G j)] :
     MonoidWithZero (DirectLimit G f) where
-  zero_mul := zero_mul
-  mul_zero := mul_zero
-
-instance [∀ i, MonoidWithZero (G i)] [∀ i, IsMulCommutative (G i)] [∀ i j h, MonoidWithZeroHomClass (T h) (G i) (G j)] :
-    CommMonoidWithZero (DirectLimit G f) where
   zero_mul := zero_mul
   mul_zero := mul_zero
 
@@ -381,11 +364,6 @@ theorem lift_zpow₀ (g : ∀ i, H i) (h) (x : DirectLimit G f) (z : ℤ) :
 
 end GroupWithZero
 
-instance [∀ i, GroupWithZero (G i)] [∀ i, IsMulCommutative (G i)] [∀ i j h, MonoidWithZeroHomClass (T h) (G i) (G j)] :
-    CommGroupWithZero (DirectLimit G f) where
-  __ : GroupWithZero _ := inferInstance
-  mul_comm := mul_comm
-
 section AddMonoidWithOne
 
 variable [∀ i, AddMonoidWithOne (G i)] [∀ i j h, AddMonoidHomClass (T h) (G i) (G j)]
@@ -418,15 +396,6 @@ theorem intCast_def [∀ i j h, OneHomClass (T h) (G i) (G j)] (n : ℤ) (i) :
   map₀_def _ _ (fun _ _ _ ↦ map_intCast' _ (map_one _) _) _
 
 end AddGroupWithOne
-
-instance [∀ i, AddMonoidWithOne (G i)] [∀ i, IsAddCommutative (G i)] [∀ i j h, AddMonoidHomClass (T h) (G i) (G j)] :
-    AddCommMonoidWithOne (DirectLimit G f) where
-  add_comm := add_comm
-
-instance [∀ i, AddGroupWithOne (G i)] [∀ i, IsAddCommutative (G i)] [∀ i j h, AddMonoidHomClass (T h) (G i) (G j)] :
-    AddCommGroupWithOne (DirectLimit G f) where
-  __ : AddGroupWithOne _ := inferInstance
-  add_comm := add_comm
 
 instance [∀ i, NonUnitalNonAssocSemiring (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
     NonUnitalNonAssocSemiring (DirectLimit G f) where
@@ -465,19 +434,6 @@ def map₀RingHom [∀ i, NonAssocSemiring (G i)] [∀ i j h, RingHomClass (T h)
   __ := map₀AddMonoidHom f
   __ := map₀MonoidHom f
 
-instance [∀ i, NonUnitalNonAssocSemiring (G i)] [∀ i, IsMulCommutative (G i)]
-    [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
-    NonUnitalNonAssocCommSemiring (DirectLimit G f) where
-
-instance [∀ i, NonUnitalSemiring (G i)] [∀ i, IsMulCommutative (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
-    NonUnitalCommSemiring (DirectLimit G f) where
-
-instance [∀ i, NonAssocSemiring (G i)] [∀ i, IsMulCommutative (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
-    NonAssocCommSemiring (DirectLimit G f) where
-
-instance [∀ i, Semiring (G i)] [∀ i, IsMulCommutative (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
-    CommSemiring (DirectLimit G f) where
-
 instance [∀ i, NonUnitalNonAssocRing (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
     NonUnitalNonAssocRing (DirectLimit G f) where
 
@@ -488,19 +444,6 @@ instance [∀ i, NonAssocRing (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)]
     NonAssocRing (DirectLimit G f) where
 
 instance [∀ i, Ring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] : Ring (DirectLimit G f) where
-
-instance [∀ i, NonUnitalNonAssocRing (G i)] [∀ i, IsMulCommutative (G i)]
-    [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
-    NonUnitalNonAssocCommRing (DirectLimit G f) where
-
-instance [∀ i, NonUnitalRing (G i)] [∀ i, IsMulCommutative (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
-    NonUnitalCommRing (DirectLimit G f) where
-
-instance [∀ i, NonAssocRing (G i)] [∀ i, IsMulCommutative (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
-    NonAssocCommRing (DirectLimit G f) where
-
-instance [∀ i, Ring (G i)] [∀ i, IsMulCommutative (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
-    CommRing (DirectLimit G f) where
 
 section Action
 
@@ -591,7 +534,7 @@ end DivisionSemiring
 instance [∀ i, Semifield (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
     Semifield (DirectLimit G f) where
   __ : DivisionSemiring _ := inferInstance
-  mul_comm := mul_comm
+  __ : IsMulCommutative (DirectLimit G f) := inferInstance
 
 section DivisionRing
 variable [∀ i, DivisionRing (G i)] [DivisionRing C]
@@ -621,7 +564,7 @@ end DivisionRing
 instance [∀ i, Field (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
     Field (DirectLimit G f) where
   __ : DivisionRing _ := inferInstance
-  mul_comm := mul_comm
+  __ : IsMulCommutative (DirectLimit G f) := inferInstance
 
 section Algebra
 

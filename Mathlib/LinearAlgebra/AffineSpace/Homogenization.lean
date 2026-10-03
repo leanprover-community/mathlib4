@@ -74,7 +74,10 @@ def equivProdAux : Homogenization R P ≃ V × R :=
   .refl _
 
 -- This instance must be exposed to avoid publicly non-defeq instances for `NSMul`.
-instance : AddCommGroup (Homogenization R P) :=
+instance : AddGroup (Homogenization R P) :=
+  equivProdAux.addGroup
+
+instance : IsAddCommutative (Homogenization R P) :=
   equivProdAux.addCommGroup
 
 section SMul

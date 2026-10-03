@@ -60,10 +60,6 @@ instance instAddMonoidWithOne [AddMonoidWithOne R] : AddMonoidWithOne Rᵐᵒᵖ
   natCast_zero := show op ((0 : ℕ) : R) = 0 by rw [Nat.cast_zero, op_zero]
   natCast_succ := show ∀ n, op ((n + 1 : ℕ) : R) = op ↑(n : ℕ) + 1 by simp
 
-instance instAddCommMonoidWithOne [AddMonoidWithOne R] [IsAddCommutative R] : AddCommMonoidWithOne Rᵐᵒᵖ where
-  toAddMonoidWithOne := instAddMonoidWithOne
-  __ := instAddCommMonoid
-
 instance instAddGroupWithOne [AddGroupWithOne R] : AddGroupWithOne Rᵐᵒᵖ where
   toAddMonoidWithOne := instAddMonoidWithOne
   toIntCast := instIntCast
@@ -71,13 +67,10 @@ instance instAddGroupWithOne [AddGroupWithOne R] : AddGroupWithOne Rᵐᵒᵖ wh
   intCast_ofNat n := show op ((n : ℤ) : R) = op (n : R) by rw [Int.cast_natCast]
   intCast_negSucc n := show op _ = op (-unop (op ((n + 1 : ℕ) : R))) by simp
 
-instance instAddCommGroupWithOne [AddGroupWithOne R] [IsAddCommutative R] : AddCommGroupWithOne Rᵐᵒᵖ where
-  toAddCommGroup := instAddCommGroup
-  __ := instAddGroupWithOne
-
 instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring R] :
     NonUnitalNonAssocSemiring Rᵐᵒᵖ where
-  __ := instAddCommMonoid
+  __ := instAddMonoid
+  __ := instIsAddCommutative
   __ := instDistrib
   __ := instMulZeroClass
 
@@ -88,23 +81,15 @@ instance instNonUnitalSemiring [NonUnitalSemiring R] : NonUnitalSemiring Rᵐᵒ
 instance instNonAssocSemiring [NonAssocSemiring R] : NonAssocSemiring Rᵐᵒᵖ where
   __ := instNonUnitalNonAssocSemiring
   __ := instMulZeroOneClass
-  __ := instAddCommMonoidWithOne
+  __ := instAddMonoidWithOne
 
 instance instSemiring [Semiring R] : Semiring Rᵐᵒᵖ where
   __ := instNonUnitalSemiring
   __ := instNonAssocSemiring
   __ := instMonoidWithZero
 
-instance instNonUnitalCommSemiring [NonUnitalSemiring R] [IsMulCommutative R] : NonUnitalCommSemiring Rᵐᵒᵖ where
-  __ := instNonUnitalSemiring
-  __ := instCommSemigroup
-
-instance instCommSemiring [Semiring R] [IsMulCommutative R] : CommSemiring Rᵐᵒᵖ where
-  __ := instSemiring
-  __ := instCommMonoid
-
 instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing R] : NonUnitalNonAssocRing Rᵐᵒᵖ where
-  __ := instAddCommGroup
+  __ := instAddGroup
   __ := instNonUnitalNonAssocSemiring
 
 instance instNonUnitalRing [NonUnitalRing R] : NonUnitalRing Rᵐᵒᵖ where
@@ -114,19 +99,11 @@ instance instNonUnitalRing [NonUnitalRing R] : NonUnitalRing Rᵐᵒᵖ where
 instance instNonAssocRing [NonAssocRing R] : NonAssocRing Rᵐᵒᵖ where
   __ := instNonUnitalNonAssocRing
   __ := instNonAssocSemiring
-  __ := instAddCommGroupWithOne
+  __ := instAddGroupWithOne
 
 instance instRing [Ring R] : Ring Rᵐᵒᵖ where
   __ := instSemiring
-  __ := instAddCommGroupWithOne
-
-instance instNonUnitalCommRing [NonUnitalRing R] [IsMulCommutative R] : NonUnitalCommRing Rᵐᵒᵖ where
-  __ := instNonUnitalRing
-  __ := instNonUnitalCommSemiring
-
-instance instCommRing [Ring R] [IsMulCommutative R] : CommRing Rᵐᵒᵖ where
-  __ := instRing
-  __ := instCommMonoid
+  __ := instAddGroupWithOne
 
 instance instIsDomain [Ring R] [IsDomain R] : IsDomain Rᵐᵒᵖ :=
   NoZeroDivisors.to_isDomain _
@@ -140,23 +117,30 @@ instance instDistrib [Distrib R] : Distrib Rᵃᵒᵖ where
   right_distrib _ _ _ := unop_injective <| add_mul _ _ _
 
 -- NOTE: `addMonoidWithOne R → addMonoidWithOne Rᵃᵒᵖ` does not hold
-instance instAddCommMonoidWithOne [AddMonoidWithOne R] [IsAddCommutative R] : AddCommMonoidWithOne Rᵃᵒᵖ where
+/-- Under the unbundling this is the `AddMonoidWithOne` half of the former
+`AddCommMonoidWithOne Rᵃᵒᵖ` instance; commutativity is `AddOpposite.instIsAddCommutative`. -/
+instance instAddCommMonoidWithOne [AddMonoidWithOne R] [IsAddCommutative R] :
+    AddMonoidWithOne Rᵃᵒᵖ where
   toNatCast := instNatCast
   toOne := instOne
-  __ := instAddCommMonoid
+  __ := instAddMonoid
   natCast_zero := show op ((0 : ℕ) : R) = 0 by rw [Nat.cast_zero, op_zero]
   natCast_succ := show ∀ n, op ((n + 1 : ℕ) : R) = op ↑(n : ℕ) + 1 by simp [add_comm]
 
-instance instAddCommGroupWithOne [AddGroupWithOne R] [IsAddCommutative R] : AddCommGroupWithOne Rᵃᵒᵖ where
+/-- Under the unbundling this is the `AddGroupWithOne` half of the former
+`AddCommGroupWithOne Rᵃᵒᵖ` instance; commutativity is `AddOpposite.instIsAddCommutative`. -/
+instance instAddCommGroupWithOne [AddGroupWithOne R] [IsAddCommutative R] :
+    AddGroupWithOne Rᵃᵒᵖ where
   toIntCast := instIntCast
-  toAddCommGroup := instAddCommGroup
+  toAddGroup := instAddGroup
   __ := instAddCommMonoidWithOne
   intCast_ofNat _ := congr_arg op <| Int.cast_natCast _
   intCast_negSucc _ := congr_arg op <| Int.cast_negSucc _
 
 instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring R] :
     NonUnitalNonAssocSemiring Rᵃᵒᵖ where
-  __ := instAddCommMonoid
+  __ := instAddMonoid
+  __ := instIsAddCommutative
   __ := instDistrib
   __ := instMulZeroClass
 
@@ -174,16 +158,8 @@ instance instSemiring [Semiring R] : Semiring Rᵃᵒᵖ where
   __ := instNonAssocSemiring
   __ := instMonoidWithZero
 
-instance instNonUnitalCommSemiring [NonUnitalSemiring R] [IsMulCommutative R] : NonUnitalCommSemiring Rᵃᵒᵖ where
-  __ := instNonUnitalSemiring
-  __ := instCommSemigroup
-
-instance instCommSemiring [Semiring R] [IsMulCommutative R] : CommSemiring Rᵃᵒᵖ where
-  __ := instSemiring
-  __ := instCommMonoid
-
 instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing R] : NonUnitalNonAssocRing Rᵃᵒᵖ where
-  __ := instAddCommGroup
+  __ := instAddGroup
   __ := instNonUnitalNonAssocSemiring
 
 instance instNonUnitalRing [NonUnitalRing R] : NonUnitalRing Rᵃᵒᵖ where
@@ -198,14 +174,6 @@ instance instNonAssocRing [NonAssocRing R] : NonAssocRing Rᵃᵒᵖ where
 instance instRing [Ring R] : Ring Rᵃᵒᵖ where
   __ := instSemiring
   __ := instAddCommGroupWithOne
-
-instance instNonUnitalCommRing [NonUnitalRing R] [IsMulCommutative R] : NonUnitalCommRing Rᵃᵒᵖ where
-  __ := instNonUnitalRing
-  __ := instNonUnitalCommSemiring
-
-instance instCommRing [Ring R] [IsMulCommutative R] : CommRing Rᵃᵒᵖ where
-  __ := instRing
-  __ := instCommMonoid
 
 instance instIsDomain [Ring R] [IsDomain R] : IsDomain Rᵃᵒᵖ :=
   NoZeroDivisors.to_isDomain _

@@ -111,7 +111,7 @@ private lemma degreeOf_zero_t {a : k} (ha : a ≠ 0) : ((T f) (monomial v a)).de
     natDegree_prod _ _ (fun i _ ↦ h i), natDegree_finSuccEquiv, degreeOf_C]
   simpa only [natDegree_pow, zero_add, natDegree_X, mul_one, Fin.val_zero, pow_zero, one_mul,
     add_right_inj] using Finset.sum_congr rfl (fun i _ ↦ by
-    rw [add_comm (Polynomial.C _), natDegree_X_pow_add_C, mul_comm])
+    rw [add_comm (Polynomial.C (R := MvPolynomial (Fin n) k) _), natDegree_X_pow_add_C, mul_comm])
 
 /-- `T` maps different monomials of `f` to polynomials with different degrees in `X_0`. -/
 private lemma degreeOf_t_ne_of_ne (hv : v ∈ f.support) (hw : w ∈ f.support) (ne : v ≠ w) :

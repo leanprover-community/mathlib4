@@ -29,7 +29,7 @@ We provide a group instance using path composition and show commutativity when `
 * `HomotopyGroup.Pi n X x` denoted `π_ n X x` is the quotient of `GenLoop (Fin n) x` by
   homotopy relative to the boundary,
 * group instance `Group (π_(n+1) X x)`,
-* commutative group instance `CommGroup (π_(n+2) X x)`.
+* commutativity instance `IsMulCommutative (π_(n+2) X x)`.
 
 ## TODO
 
@@ -600,9 +600,9 @@ theorem inv_spec [Nonempty N] {i} {p : Ω^ N X x} :
 
 /-- Multiplication on `HomotopyGroup N X x` is commutative for nontrivial `N`.
   In particular, multiplication on `π_(n+2)` is commutative. -/
-instance commGroup [Nontrivial N] : CommGroup (HomotopyGroup N X x) :=
+instance commGroup [Nontrivial N] : IsMulCommutative (HomotopyGroup N X x) :=
   let h := exists_ne (Classical.arbitrary N)
-  fast_instance% @EckmannHilton.commGroup (HomotopyGroup N X x) _ 1
+  @EckmannHilton.commGroup (HomotopyGroup N X x) _ 1
     (isUnital_auxGroup <| Classical.choose h) _
     (by
       rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ⟨d⟩

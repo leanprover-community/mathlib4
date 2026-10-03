@@ -75,7 +75,12 @@ def GradedTensorProduct
     [GradedAlgebra 𝒜] [GradedAlgebra ℬ] :
     Type _ :=
   A ⊗[R] B
-deriving AddCommGroupWithOne, Module R
+deriving AddGroupWithOne, IsAddCommutative
+
+-- `deriving Module R` fails with a `wrapInstance` unification error once the
+-- `IsAddCommutative` argument of `Module` is a separate (Prop) instance, so we state it directly.
+instance instModuleGradedTensorProduct : Module R (GradedTensorProduct R 𝒜 ℬ) :=
+  inferInstanceAs <| Module R (A ⊗[R] B)
 
 namespace GradedTensorProduct
 

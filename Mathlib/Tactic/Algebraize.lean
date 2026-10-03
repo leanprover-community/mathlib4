@@ -137,7 +137,7 @@ as when `algebraize` calls `addAlgebraInstanceFromRingHom` it has already comput
 def addAlgebraInstanceFromRingHom (f ft : Expr) : TacticM Unit := withMainContext do
   let (_, l) := ft.getAppFnArgs
   -- The type of the corresponding algebra instance
-  let alg ← mkAppOptM ``Algebra #[l[0]!, l[1]!, none, none]
+  let alg ← mkAppOptM ``Algebra #[l[0]!, l[1]!, none, none, none]
   -- If the instance already exists, we do not do anything
   unless (← synthInstance? alg).isSome do
   liftMetaTactic fun mvarid => do
@@ -156,14 +156,14 @@ def addIsScalarTowerInstanceFromRingHomComp (fn : Expr) : TacticM Unit := withMa
   liftMetaTactic fun mvarid => do
     let nm ← mkFreshBinderNameForTactic `scalarTowerInst
     let h ← mkFreshExprMVar (← mkAppM ``Eq #[
-      ← mkAppOptM ``algebraMap #[l[0]!, l[2]!, none, none, none],
+      ← mkAppOptM ``algebraMap #[l[0]!, l[2]!, none, none, none, none],
       ← mkAppM ``RingHom.comp #[
-        ← mkAppOptM ``algebraMap #[l[1]!, l[2]!, none, none, none],
-        ← mkAppOptM ``algebraMap #[l[0]!, l[1]!, none, none, none]]])
+        ← mkAppOptM ``algebraMap #[l[1]!, l[2]!, none, none, none, none],
+        ← mkAppOptM ``algebraMap #[l[0]!, l[1]!, none, none, none, none]]])
     -- Note: this could fail, but then `algebraize` will just continue, and won't add this instance
     h.mvarId!.refl
     let val ← mkAppOptM ``IsScalarTower.of_algebraMap_eq'
-      #[l[0]!, l[1]!, l[2]!, none, none, none, none, none, none, h]
+      #[l[0]!, l[1]!, l[2]!, none, none, none, none, none, none, none, none, h]
     let mvar ← mvarid.define nm tower val
     let (_, mvar) ← mvar.intro1P
     return [mvar]

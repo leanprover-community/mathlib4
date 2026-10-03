@@ -80,7 +80,7 @@ theorem hasProd_zero_of_not_isUnit {x : 𝔸ᶠ[R, K]} (hx : ¬IsUnit x) :
   · exact hasProd_zero_of_exists_eq_zero (by simpa using hx₀)
   have hT := hasProd_zero_subset_lt_one_valued hx (by simpa using hx₀)
   have h : HasProd (fun v : {v | Valued.v (x v) = 1} ↦ ‖x.1 v‖) 1 := by
-    convert hasProd_one; aesop (add simp [Valued.toNormedField.norm_eq_one_iff])
+    convert hasProd_one (α := ℝ); aesop (add simp [Valued.toNormedField.norm_eq_one_iff])
   have := HasProd.mul_disjoint (by grind) (hasProd_subset_valued_one_lt x) h (f := fun v ↦ ‖x v‖)
   simpa using this.mul_isCompl ⟨by grind, fun _ _ _ ↦ by grind⟩ hT
 

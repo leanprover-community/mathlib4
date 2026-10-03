@@ -424,7 +424,7 @@ theorem IsPurelyInseparable.finSepDegree_eq_one [IsPurelyInseparable F E] :
 /-- A purely inseparable extension has separable degree one. -/
 theorem IsPurelyInseparable.sepDegree_eq_one [IsPurelyInseparable F E] :
     sepDegree F E = 1 := by
-  rw [sepDegree, separableClosure.eq_bot_of_isPurelyInseparable, IntermediateField.rank_bot]
+  rw [sepDegree, IntermediateField.rank_eq_one_iff, separableClosure.eq_bot_of_isPurelyInseparable]
 
 /-- A purely inseparable extension has inseparable degree equal to degree. -/
 theorem IsPurelyInseparable.insepDegree_eq [IsPurelyInseparable F E] :

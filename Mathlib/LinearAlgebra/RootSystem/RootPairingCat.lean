@@ -42,19 +42,22 @@ variable {R : Type u} [Ring R] [IsMulCommutative R]
 structure RootPairingCat (R : Type u) [Ring R] [IsMulCommutative R] where
   /-- The weight space of a root pairing. -/
   weight : Type v
-  [weightIsAddCommGroup : AddGroup weight] [IsAddCommutative weight]
+  [weightIsAddCommGroup : AddGroup weight] [weightIsAddCommutative : IsAddCommutative weight]
   [weightIsModule : Module R weight]
   /-- The coweight space of a root pairing. -/
   coweight : Type v
-  [coweightIsAddCommGroup : AddGroup coweight] [IsAddCommutative coweight]
+  [coweightIsAddCommGroup : AddGroup coweight]
+  [coweightIsAddCommutative : IsAddCommutative coweight]
   [coweightIsModule : Module R coweight]
   /-- The set that indexes roots and coroots. -/
   index : Type v
   /-- The root pairing structure. -/
   pairing : RootPairing index R weight coweight
 
-attribute [instance] RootPairingCat.weightIsAddCommGroup RootPairingCat.weightIsModule
-attribute [instance] RootPairingCat.coweightIsAddCommGroup RootPairingCat.coweightIsModule
+attribute [instance] RootPairingCat.weightIsAddCommGroup RootPairingCat.weightIsAddCommutative
+  RootPairingCat.weightIsModule
+attribute [instance] RootPairingCat.coweightIsAddCommGroup
+  RootPairingCat.coweightIsAddCommutative RootPairingCat.coweightIsModule
 
 namespace RootPairingCat
 

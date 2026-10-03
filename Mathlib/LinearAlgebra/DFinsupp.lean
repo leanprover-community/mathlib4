@@ -133,7 +133,7 @@ def domLCongr (e : ι ≃ ι') : (Π₀ i, M i) ≃ₗ[R] (Π₀ i, M (e.symm i)
 This is the `DFinsupp` version of `Finsupp.curryLinearEquiv`. -/
 @[simps! apply symm_apply]
 def sigmaCurryLEquiv {α : ι → Type*} {M : (i : ι) → α i → Type*}
-    [Π i j, AddCommMonoid (M i j)] [Π i j, Module R (M i j)] :
+    [Π i j, AddMonoid (M i j)] [Π i j, IsAddCommutative (M i j)] [Π i j, Module R (M i j)] :
     (Π₀ (i : (x : ι) × α x), M i.fst i.snd) ≃ₗ[R] Π₀ (i : ι) (j : α i), M i j where
   __ := DFinsupp.sigmaCurryEquiv
   map_add' _ _ := by ext; rfl
@@ -549,7 +549,7 @@ theorem iSupIndep.dfinsupp_lsum_injective {p : ι → Submodule R N} (h : iSupIn
   rw [iSupIndep_iff_forall_dfinsupp] at h
   suffices LinearMap.ker (lsum ℕ fun i => (p i).subtype) = ⊥ by
     -- Lean can't find this without our help
-    let thisI : AddCommGroup (Π₀ i, p i) := inferInstance
+    let thisI : AddGroup (Π₀ i, p i) := inferInstance
     rw [LinearMap.ker_eq_bot] at this
     exact this
   rw [LinearMap.ker_eq_bot']

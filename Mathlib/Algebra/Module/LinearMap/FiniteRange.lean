@@ -83,7 +83,7 @@ lemma HasNoetherianRange.hasFiniteRange {u : V →ₗ[K] V₂} (h : u.HasNoether
 
 lemma HasNoetherianRange.comp_left {u : V →ₗ[K] V₂} (h : u.HasNoetherianRange)
     (v : V₂ →ₗ[K] V₃) : (v ∘ₗ u).HasNoetherianRange := by
-  rw [LinearMap.HasNoetherianRange, LinearMap.range_comp] at *
+  rw [hasNoetherianRange_iff_range, LinearMap.range_comp] at *
   infer_instance
 
 lemma HasFiniteRange.comp_left {u : V →ₗ[K] V₂} (h : u.HasFiniteRange)
@@ -128,7 +128,7 @@ lemma hasNoetherianRange_iff_hasFiniteRange [IsNoetherianRing K] {u : V →ₗ[K
 
 lemma HasNoetherianRange.comp_right {v : V₂ →ₗ[K] V₃} (h : v.HasNoetherianRange)
     (u : V →ₗ[K] V₂) : (v ∘ₗ u).HasNoetherianRange := by
-  rw [HasNoetherianRange, LinearMap.range_comp] at *
+  rw [hasNoetherianRange_iff_range, LinearMap.range_comp] at *
   exact isNoetherian_of_le map_le_range
 
 lemma HasFiniteRange.comp_right [IsNoetherianRing K] {v : V₂ →ₗ[K] V₃} (h : v.HasFiniteRange)
@@ -137,7 +137,7 @@ lemma HasFiniteRange.comp_right [IsNoetherianRing K] {v : V₂ →ₗ[K] V₃} (
 
 @[simp] lemma HasNoetherianRange.neg {f : V →ₗ[K] V₂}
     (hf : f.HasNoetherianRange) : (-f).HasNoetherianRange := by
-  rwa [HasNoetherianRange, LinearMap.range_neg]
+  rwa [hasNoetherianRange_iff_range, LinearMap.range_neg]
 
 @[simp] lemma HasFiniteRange.neg {f : V →ₗ[K] V₂}
     (hf : f.HasFiniteRange) : (-f).HasFiniteRange := by

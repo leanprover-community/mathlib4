@@ -79,7 +79,7 @@ def evalMkRat : NormNumExt where eval {u α} (e : Q(ℚ)) : MetaM (Result e) := 
   haveI' : $e =Q mkRat $a $b := ⟨⟩
   let ra ← derive a
   let some ⟨_, na, pa⟩ := ra.toInt (q(Int.instRing) : Q(Ring Int)) | failure
-  let ⟨nb, pb⟩ ← deriveNat q($b) q(AddCommMonoidWithOne.toAddMonoidWithOne)
+  let ⟨nb, pb⟩ ← deriveNat q($b) q(Nat.instAddMonoidWithOne)
   let rab ← derive q($na / $nb : Rat)
   let ⟨q, n, d, p⟩ ← rab.toRat' q(Rat.instDivisionRing)
   return .isRat _ q n d q(isRat_mkRat $pa $pb $p)
@@ -91,8 +91,8 @@ def evalNNRatDivNat : NormNumExt where eval {u α} (e : Q(ℚ≥0)) : MetaM (Res
   let .app (.app (.const ``NNRat.divNat _) (a : Q(ℕ))) (b : Q(ℕ)) ← whnfR e | failure
   haveI' : $e =Q NNRat.divNat $a $b := ⟨⟩
   let ra ← derive q($a)
-  let ⟨na, pa⟩ ← deriveNat q($a) q(AddCommMonoidWithOne.toAddMonoidWithOne)
-  let ⟨nb, pb⟩ ← deriveNat q($b) q(AddCommMonoidWithOne.toAddMonoidWithOne)
+  let ⟨na, pa⟩ ← deriveNat q($a) q(Nat.instAddMonoidWithOne)
+  let ⟨nb, pb⟩ ← deriveNat q($b) q(Nat.instAddMonoidWithOne)
   let rab ← derive q($na / $nb : NNRat)
   let some ⟨q, n, d, p⟩ := rab.toNNRat' q(NNRat.instSemifield.toDivisionSemiring) | failure
   return .isNNRat _ q n d q(isNNRat_divNat $pa $pb $p)

@@ -216,7 +216,7 @@ theorem finprod_unique [Unique α] (f : α → M) : ∏ᶠ i, f i = f default :=
 
 @[to_additive (attr := simp)]
 theorem finprod_true (f : True → M) : ∏ᶠ i, f i = f trivial :=
-  @finprod_unique M True _ ⟨⟨trivial⟩, fun _ => rfl⟩ f
+  @finprod_unique M True _ _ ⟨⟨trivial⟩, fun _ => rfl⟩ f
 
 @[to_additive]
 theorem finprod_eq_dif {p : Prop} [Decidable p] (f : p → M) :

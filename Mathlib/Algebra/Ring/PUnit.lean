@@ -21,9 +21,10 @@ assert_not_exists Field
 
 namespace PUnit
 
-instance commRing : CommRing PUnit where
+instance commRing : Ring PUnit where
   __ := PUnit.commGroup
   __ := PUnit.addCommGroup
+  __ := PUnit.isAddCommutative
   left_distrib := by intros; rfl
   right_distrib := by intros; rfl
   zero_mul := by intros; rfl

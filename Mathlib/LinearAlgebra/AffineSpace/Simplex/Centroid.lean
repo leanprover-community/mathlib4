@@ -499,8 +499,10 @@ theorem eq_centroid_of_forall_mem_median [CharZero k] (s : Simplex k P n) {hn : 
   have h_span : ∀ i : s', p -ᵥ s.centroid ∈ (Submodule.span k ({u i} : Set V)) := by
     intro i
     have hi := h i
-    grind only [median_eq_line_point_centroid, vadd_right_mem_affineSpan_pair,
-      Submodule.smul_mem, Submodule.mem_span_singleton_self]
+    rw [median_eq_line_point_centroid, hp] at hi
+    obtain ⟨r, hr⟩ := vadd_right_mem_affineSpan_pair.mp hi
+    rw [← hr]
+    exact Submodule.smul_mem _ _ (Submodule.mem_span_singleton_self _)
   have hi : LinearIndependent k u := by
     set p : Fin (n + 1) → P := fun x => if x = i₀ then s.centroid else s.points x
     have hindep : AffineIndependent k p := by

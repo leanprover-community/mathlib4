@@ -21,7 +21,7 @@ assert_not_exists MonoidWithZero
 namespace PUnit
 
 @[to_additive]
-instance commGroup : CommGroup PUnit where
+instance commGroup : Group PUnit where
   mul _ _ := unit
   one := unit
   inv _ := unit
@@ -32,7 +32,9 @@ instance commGroup : CommGroup PUnit where
   one_mul _ := rfl
   mul_one _ := rfl
   inv_mul_cancel _ := rfl
-  mul_comm _ _ := rfl
+
+@[to_additive]
+instance isMulCommutative : IsMulCommutative PUnit := ⟨⟨fun _ _ => rfl⟩⟩
 
 -- shortcut instances
 @[to_additive] instance : One PUnit where one := unit

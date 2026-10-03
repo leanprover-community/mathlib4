@@ -26,7 +26,6 @@ Kleene star, such that (informally) `a∗ = 1 + a + a * a + a * a * a + ...`
 ## Main declarations
 
 * `IdemSemiring`: Idempotent semiring
-* `IdemCommSemiring`: Idempotent commutative semiring
 * `KleeneAlgebra`: Kleene algebra
 
 ## Notation
@@ -60,10 +59,6 @@ variable {α β ι : Type*} {π : ι → Type*}
 -/
 class IdemSemiring (α : Type*) extends Semiring α, SemilatticeSup α, OrderBot α where
   protected add_eq_sup (a b : α) : a + b = a ⊔ b := by intros; rfl
-
-/-- An idempotent commutative semiring is a commutative semiring with the additional property that
-addition is idempotent. -/
-class IdemCommSemiring (α : Type*) extends CommSemiring α, IdemSemiring α
 
 /-- Notation typeclass for the Kleene star `∗`. -/
 class KStar (α : Type*) where
@@ -260,10 +255,6 @@ namespace Prod
 instance instIdemSemiring [IdemSemiring α] [IdemSemiring β] : IdemSemiring (α × β) where
   add_eq_sup _ _ := Prod.ext (add_eq_sup _ _) (add_eq_sup _ _)
 
-instance [IdemSemiring α] [IsMulCommutative α] [IdemSemiring β] [IsMulCommutative β] : IdemCommSemiring (α × β) where
-  __ := Prod.instCommSemiring
-  __ := Prod.instIdemSemiring
-
 variable [KleeneAlgebra α] [KleeneAlgebra β]
 
 instance : KleeneAlgebra (α × β) where
@@ -291,10 +282,6 @@ namespace Pi
 
 instance instIdemSemiring [∀ i, IdemSemiring (π i)] : IdemSemiring (∀ i, π i) where
   add_eq_sup _ _ := funext fun _ ↦ add_eq_sup _ _
-
-instance [∀ i, IdemSemiring (π i)] [∀ i, IsMulCommutative (π i)] : IdemCommSemiring (∀ i, π i) where
-  __ := Pi.commSemiring
-  __ := Pi.instIdemSemiring
 
 variable [∀ i, KleeneAlgebra (π i)]
 
@@ -333,18 +320,18 @@ protected abbrev idemSemiring [IdemSemiring α] [LE β] [LT β] [Zero β] [One �
   add_eq_sup a b := hf <| by rw [sup, add, add_eq_sup]
   bot_le a := le.1 <| bot.trans_le bot_le
 
--- See note [reducible non-instances]
-/-- Pullback an `IdemCommSemiring` instance along an injective function. -/
-protected abbrev idemCommSemiring [IdemSemiring α] [IsMulCommutative α] [LE β] [LT β] [Zero β] [One β]
+/-- The commutativity half of an idempotent commutative semiring structure pulled back along an
+injective function; the `IdemSemiring` half is `Function.Injective.idemSemiring`. -/
+protected theorem idemCommSemiring [IdemSemiring α] [IsMulCommutative α] [LE β] [LT β] [Zero β]
+    [One β]
     [Add β] [Mul β] [Pow β ℕ] [SMul ℕ β] [NatCast β] [Max β] [Bot β] (f : β → α)
-    (hf : Injective f) (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
-    (zero : f 0 = 0) (one : f 1 = 1)
-    (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
-    (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
-    (natCast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥) :
-    IdemCommSemiring β where
-  __ := hf.commSemiring f zero one add mul nsmul npow natCast
-  __ := hf.idemSemiring f le lt zero one add mul nsmul npow natCast sup bot
+    (hf : Injective f) (_le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (_lt : ∀ {x y}, f x < f y ↔ x < y)
+    (_zero : f 0 = 0) (_one : f 1 = 1)
+    (_add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
+    (_nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (_npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
+    (_natCast : ∀ n : ℕ, f n = n) (_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (_bot : f ⊥ = ⊥) :
+    IsMulCommutative β :=
+  hf.isMulCommutative f mul
 
 -- See note [reducible non-instances]
 /-- Pullback a `KleeneAlgebra` instance along an injective function. -/

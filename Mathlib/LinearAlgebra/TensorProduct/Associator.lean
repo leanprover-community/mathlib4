@@ -167,7 +167,7 @@ with `M ⊗ (N ⊗ P)` and `(Q ⊗ S) ⊗ T` with `Q ⊗ (S ⊗ T)`, then this l
 lemma map_map_comp_assoc_eq (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →ₗ[R] T) :
     map f (map g h) ∘ₗ TensorProduct.assoc R M N P =
       TensorProduct.assoc R Q S T ∘ₗ map (map f g) h :=
-  ext <| ext <| LinearMap.ext fun _ => LinearMap.ext fun _ => LinearMap.ext fun _ => rfl
+  ext <| ext <| LinearMap.ext fun _ => LinearMap.ext fun _ => LinearMap.ext fun _ => by rfl
 
 lemma map_map_assoc (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →ₗ[R] T) (x : M ⊗[R] N ⊗[R] P) :
     map f (map g h) (TensorProduct.assoc R M N P x) =
@@ -180,7 +180,7 @@ with `(M ⊗ N) ⊗ P` and `Q ⊗ (S ⊗ T)` with `(Q ⊗ S) ⊗ T`, then this l
 lemma map_map_comp_assoc_symm_eq (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →ₗ[R] T) :
     map (map f g) h ∘ₗ (TensorProduct.assoc R M N P).symm =
       (TensorProduct.assoc R Q S T).symm ∘ₗ map f (map g h) :=
-  ext <| LinearMap.ext fun _ => ext <| LinearMap.ext fun _ => LinearMap.ext fun _ => rfl
+  ext <| LinearMap.ext fun _ => ext <| LinearMap.ext fun _ => LinearMap.ext fun _ => by rfl
 
 lemma map_map_assoc_symm (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →ₗ[R] T) (x : M ⊗[R] (N ⊗[R] P)) :
     map (map f g) h ((TensorProduct.assoc R M N P).symm x) =
@@ -350,7 +350,7 @@ lemma lTensor_tensor (f : P →ₗ[R] Q) :
 
 theorem rTensor_tensor : rTensor (M ⊗[R] N) g =
     assoc R Q M N ∘ₗ rTensor N (rTensor M g) ∘ₗ (assoc R P M N).symm :=
-  TensorProduct.ext <| LinearMap.ext fun _ ↦ TensorProduct.ext rfl
+  TensorProduct.ext <| LinearMap.ext fun _ ↦ TensorProduct.ext (by rfl)
 
 open TensorProduct
 

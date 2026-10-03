@@ -14,7 +14,7 @@ public section
 
 namespace Rat
 
-instance instNormedAddCommGroup : NormedAddCommGroup ℚ where
+instance instNormedAddCommGroup : NormedAddGroup ℚ where
   norm r := ‖(r : ℝ)‖
   dist_eq r₁ r₂ := by
     simp only [dist_eq, norm, cast_add, cast_neg]

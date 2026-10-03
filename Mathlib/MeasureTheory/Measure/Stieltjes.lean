@@ -193,11 +193,13 @@ instance : AddZeroClass (StieltjesFunction R) where
   zero_add _ := ext fun _ ↦ zero_add _
   add_zero _ := ext fun _ ↦ add_zero _
 
-instance : AddCommMonoid (StieltjesFunction R) where
+instance : AddMonoid (StieltjesFunction R) where
   nsmul n f := nsmulRec n f
   add_assoc _ _ _ := ext fun _ ↦ add_assoc _ _ _
-  add_comm _ _ := ext fun _ ↦ add_comm _ _
   __ := StieltjesFunction.instAddZeroClass
+
+instance : IsAddCommutative (StieltjesFunction R) :=
+  ⟨⟨fun _ _ ↦ ext fun _ ↦ add_comm _ _⟩⟩
 
 instance : Module ℝ≥0 (StieltjesFunction R) where
   smul c f := {

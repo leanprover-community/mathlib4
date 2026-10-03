@@ -222,7 +222,7 @@ instance instDistrib : Distrib (FreeAlgebra R X) where
     exact Quot.sound Rel.right_distrib
 
 set_option backward.isDefEq.respectTransparency false in
-instance instAddCommMonoid : AddCommMonoid (FreeAlgebra R X) where
+instance instAddMonoid : AddMonoid (FreeAlgebra R X) where
   add_assoc := by
     rintro ⟨⟩ ⟨⟩ ⟨⟩
     exact Quot.sound Rel.add_assoc
@@ -233,9 +233,6 @@ instance instAddCommMonoid : AddCommMonoid (FreeAlgebra R X) where
     rintro ⟨⟩
     change Quot.mk _ _ = _
     rw [Quot.sound Rel.add_comm, Quot.sound Rel.zero_add]
-  add_comm := by
-    rintro ⟨⟩ ⟨⟩
-    exact Quot.sound Rel.add_comm
   nsmul_zero := by
     rintro ⟨⟩
     change Quot.mk _ (_ * _) = _
@@ -248,9 +245,15 @@ instance instAddCommMonoid : AddCommMonoid (FreeAlgebra R X) where
     congr 1
     exact Quot.sound Rel.add_scalar
 
+instance instIsAddCommutative : IsAddCommutative (FreeAlgebra R X) where
+  is_comm := ⟨by
+    rintro ⟨⟩ ⟨⟩
+    exact Quot.sound Rel.add_comm⟩
+
 instance : Semiring (FreeAlgebra R X) where
   __ := instMonoidWithZero R X
-  __ := instAddCommMonoid R X
+  __ := instAddMonoid R X
+  __ := instIsAddCommutative R X
   __ := instDistrib R X
   natCast n := Quot.mk _ (n : R)
   natCast_zero := by simp; rfl

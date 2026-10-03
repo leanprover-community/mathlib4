@@ -41,7 +41,8 @@ noncomputable section
 open scoped Topology
 
 -- We begin with some general lemmas that are used below in the computation.
-theorem padic_polynomial_dist {p : ℕ} [Fact p.Prime] {R : Type*} [Semiring R] [IsMulCommutative R] [Algebra R ℤ_[p]]
+theorem padic_polynomial_dist {p : ℕ} [Fact p.Prime] {R : Type*} [Semiring R] [IsMulCommutative R]
+    [Algebra R ℤ_[p]]
     (F : Polynomial R) (x y : ℤ_[p]) :
     ‖F.aeval x - F.aeval y‖ ≤ ‖x - y‖ := by
   let ⟨z, hz⟩ := (F.map (algebraMap R ℤ_[p])).evalSubFactor x y
@@ -101,7 +102,8 @@ theorem limit_zero_of_norm_tendsto_zero : F.aeval ncs.lim = 0 := by
 
 end
 
-private theorem a_soln_is_unique {p : ℕ} [Fact p.Prime] {R : Type*} [Semiring R] [IsMulCommutative R]
+private theorem a_soln_is_unique {p : ℕ} [Fact p.Prime] {R : Type*} [Semiring R]
+    [IsMulCommutative R]
     [Algebra R ℤ_[p]] {F : Polynomial R} {a : ℤ_[p]} (ha : F.aeval a = 0) (z' : ℤ_[p])
     (hz' : F.aeval z' = 0) (hnormz' : ‖z' - a‖ < ‖F.derivative.aeval a‖) : z' = a := by
   let h := z' - a
@@ -131,7 +133,7 @@ variable (p : ℕ) [Fact p.Prime] {R : Type*} [Semiring R] [IsMulCommutative R] 
 /-- `T` is an auxiliary value that is used to control the behavior of the polynomial `F`. -/
 private def T_gen : ℝ := ‖F.aeval a / ((F.derivative.aeval a ^ 2 : ℤ_[p]) : ℚ_[p])‖
 
-local notation "T" => @T_gen p _ _ _ _ F a
+local notation "T" => @T_gen p _ _ _ _ _ F a
 
 variable {p F a}
 
@@ -174,7 +176,7 @@ private def ih_gen (n : ℕ) (z : ℤ_[p]) : Prop :=
   ‖F.derivative.aeval z‖ = ‖F.derivative.aeval a‖ ∧ ‖F.aeval z‖ ≤
     ‖F.derivative.aeval a‖ ^ 2 * T ^ 2 ^ n
 
-local notation "ih" => @ih_gen p _ _ _ _ F a
+local notation "ih" => @ih_gen p _ _ _ _ _ F a
 
 private theorem ih_0 : ih 0 a :=
   ⟨rfl, by simp [T_def, mul_div_cancel₀ _ (ne_of_gt (deriv_sq_norm_pos hnorm))]⟩

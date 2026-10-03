@@ -54,7 +54,7 @@ universe w u v
 
 open TensorProduct MvPolynomial
 
-variable (R : Type u) (S : Type v) (ι : Type w) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
+variable (R : Type u) (S : Type v) (ι : Type w) [_root_.Ring R] [IsMulCommutative R] [_root_.Ring S] [IsMulCommutative S] [Algebra R S]
 
 /-- A family of generators of an `R`-algebra `S` consists of
 1. `ι`: The type of variables.
@@ -96,7 +96,7 @@ initialize_simps_projections Algebra.Generators (σ' → σ)
 @[simp]
 lemma aeval_val_σ (s) : aeval P.val (P.σ s) = s := P.aeval_val_σ' s
 
-noncomputable instance {R₀} [Ring R₀] [IsMulCommutative R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
+noncomputable instance {R₀} [_root_.Ring R₀] [IsMulCommutative R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
     IsScalarTower R₀ P.Ring S := IsScalarTower.of_algebraMap_eq' <|
   P.algebraMap_eq ▸ ((aeval (R := R) P.val).comp_algebraMap_of_tower R₀).symm
 
@@ -182,7 +182,7 @@ def toExtension : Extension R S where
 
 /-- Transport generators along an algebra isomorphism. -/
 noncomputable def ofAlgEquiv
-    (P : Generators R S ι) {T : Type*} [Ring T] [IsMulCommutative T] [Algebra R T] (e : S ≃ₐ[R] T) :
+    (P : Generators R S ι) {T : Type*} [_root_.Ring T] [IsMulCommutative T] [Algebra R T] (e : S ≃ₐ[R] T) :
     Generators R T ι where
   val := e ∘ P.val
   σ' := P.σ ∘ e.symm
@@ -191,7 +191,7 @@ noncomputable def ofAlgEquiv
     simp
 
 @[simp]
-lemma ofAlgEquiv_val (P : Generators R S ι) {T : Type*} [Ring T] [IsMulCommutative T] [Algebra R T] (e : S ≃ₐ[R] T) :
+lemma ofAlgEquiv_val (P : Generators R S ι) {T : Type*} [_root_.Ring T] [IsMulCommutative T] [Algebra R T] (e : S ≃ₐ[R] T) :
     (P.ofAlgEquiv e).val = e ∘ P.val :=
   rfl
 
@@ -220,7 +220,7 @@ def localizationAway : Generators R S Unit where
 
 end Localization
 
-variable {ι' : Type*} {T} [Ring T] [IsMulCommutative T] [Algebra R T]
+variable {ι' : Type*} {T} [_root_.Ring T] [IsMulCommutative T] [Algebra R T]
 
 /-- Given two families of generators `S[X] → T` and `R[Y] → S`,
 we may construct the family of generators `R[X, Y] → T`. -/
@@ -257,7 +257,7 @@ def extendScalars [Algebra S T] [IsScalarTower R S T] (P : Generators R T ι) :
 obtain a natural family of generators of `T ⊗[R] S` over `T`. -/
 @[simps! val]
 noncomputable
-def baseChange (T) [Ring T] [IsMulCommutative T] [Algebra R T] (P : Generators R S ι) :
+def baseChange (T) [_root_.Ring T] [IsMulCommutative T] [Algebra R T] (P : Generators R S ι) :
     Generators T (T ⊗[R] S) ι := by
   apply Generators.ofSurjective (fun x ↦ 1 ⊗ₜ[R] P.val x)
   intro x
@@ -387,8 +387,8 @@ lemma _root_.Algebra.FiniteType.iff_exists_generators :
 
 end Construction
 
-variable {R' S' ι' : Type*} [Ring R'] [IsMulCommutative R'] [Ring S'] [IsMulCommutative S'] [Algebra R' S'] (P' : Generators R' S' ι')
-variable {R'' S'' ι'' : Type*} [Ring R''] [IsMulCommutative R''] [Ring S''] [IsMulCommutative S''] [Algebra R'' S'']
+variable {R' S' ι' : Type*} [_root_.Ring R'] [IsMulCommutative R'] [_root_.Ring S'] [IsMulCommutative S'] [Algebra R' S'] (P' : Generators R' S' ι')
+variable {R'' S'' ι'' : Type*} [_root_.Ring R''] [IsMulCommutative R''] [_root_.Ring S''] [IsMulCommutative S''] [Algebra R'' S'']
   (P'' : Generators R'' S'' ι'')
 
 section Hom
@@ -515,7 +515,7 @@ lemma Hom.toAlgHom_comp_apply
   | add x y hx hy => simp only [map_add, hx, hy]
   | mul_X p i hp => simp only [map_mul, hp, toAlgHom_X, comp_val]; rfl
 
-variable {T : Type*} [Ring T] [IsMulCommutative T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable {T : Type*} [_root_.Ring T] [IsMulCommutative T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 /-- Given families of generators `X ⊆ T` over `S` and `Y ⊆ S` over `R`,
 there is a map of generators `R[Y] → R[X, Y]`. -/
@@ -651,7 +651,7 @@ lemma ker_ofAlgHom {I : Type*} (f : MvPolynomial I R →ₐ[R] S) (h : Function.
   exact MvPolynomial.ringHom_ext (by simp) (by simp [ofAlgHom])
 
 @[simp]
-lemma ker_ofAlgEquiv (P : Generators R S ι) {T : Type*} [Ring T] [IsMulCommutative T] [Algebra R T] (e : S ≃ₐ[R] T) :
+lemma ker_ofAlgEquiv (P : Generators R S ι) {T : Type*} [_root_.Ring T] [IsMulCommutative T] [Algebra R T] (e : S ≃ₐ[R] T) :
     (P.ofAlgEquiv e).ker = P.ker := by
   rw [ker_eq_ker_aeval_val, ofAlgEquiv_val, Function.comp_def, ← AlgHom.coe_ofClass,
     ← MvPolynomial.comp_aeval, ← AlgHom.comap_ker, ← RingHom.ker_coe_toRingHom,

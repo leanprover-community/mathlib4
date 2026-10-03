@@ -25,7 +25,7 @@ instance : LinearOrder Dyadic where
   le_total := Std.IsLinearOrder.le_total
   toDecidableLE := Dyadic.instDecidableLE
 
-instance : AddCommGroup Dyadic where
+instance : AddGroup Dyadic where
   nsmul := (· * ·)
   zsmul := (· * ·)
   add_zero := Dyadic.add_zero
@@ -33,12 +33,13 @@ instance : AddCommGroup Dyadic where
   add_assoc := Dyadic.add_assoc
   sub_eq_add_neg _ _ := rfl
   neg_add_cancel := Dyadic.neg_add_cancel
-  add_comm := Dyadic.add_comm
   nsmul_zero := by grind
   nsmul_succ := by grind
   zsmul_zero' := by grind
   zsmul_succ' := by grind
   zsmul_neg' := by grind
+
+instance : IsAddCommutative Dyadic := ⟨⟨Dyadic.add_comm⟩⟩
 
 namespace Dyadic
 

@@ -33,23 +33,27 @@ variable {R M N L : Type*} [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAd
 -- of `M` (resp. `N`, resp. `L`) at `p`.
 variable
   (Rₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
-  [∀ (P : Ideal R) [P.IsMaximal], CommSemiring (Rₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], Semiring (Rₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsMulCommutative (Rₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], Algebra R (Rₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], IsLocalization.AtPrime (Rₚ P) P]
   (Mₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
-  [∀ (P : Ideal R) [P.IsMaximal], AddCommMonoid (Mₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], AddMonoid (Mₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsAddCommutative (Mₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], Module R (Mₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], Module (Rₚ P) (Mₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], IsScalarTower R (Rₚ P) (Mₚ P)]
   (f : ∀ (P : Ideal R) [P.IsMaximal], M →ₗ[R] Mₚ P)
   [∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule.AtPrime P (f P)]
   (Nₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
-  [∀ (P : Ideal R) [P.IsMaximal], AddCommMonoid (Nₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], AddMonoid (Nₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsAddCommutative (Nₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], Module R (Nₚ P)]
   (g : ∀ (P : Ideal R) [P.IsMaximal], N →ₗ[R] Nₚ P)
   [∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule.AtPrime P (g P)]
   (Lₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
-  [∀ (P : Ideal R) [P.IsMaximal], AddCommMonoid (Lₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], AddMonoid (Lₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsAddCommutative (Lₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], Module R (Lₚ P)]
   (h : ∀ (P : Ideal R) [P.IsMaximal], L →ₗ[R] Lₚ P)
   [∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule.AtPrime P (h P)]
@@ -222,10 +226,12 @@ variable {R S : Type*} [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulComm
 -- and `Sₚ` the localization of `S` at `p`.
 variable
   (Rₚ : ∀ (p : Ideal R) [p.IsMaximal], Type*)
-  [∀ (p : Ideal R) [p.IsMaximal], CommSemiring (Rₚ p)]
+  [∀ (p : Ideal R) [p.IsMaximal], Semiring (Rₚ p)]
+  [∀ (p : Ideal R) [p.IsMaximal], IsMulCommutative (Rₚ p)]
   [∀ (p : Ideal R) [p.IsMaximal], Algebra R (Rₚ p)]
   (Sₚ : ∀ (p : Ideal R) [p.IsMaximal], Type*)
-  [∀ (p : Ideal R) [p.IsMaximal], CommSemiring (Sₚ p)]
+  [∀ (p : Ideal R) [p.IsMaximal], Semiring (Sₚ p)]
+  [∀ (p : Ideal R) [p.IsMaximal], IsMulCommutative (Sₚ p)]
   [∀ (p : Ideal R) [p.IsMaximal], Algebra S (Sₚ p)]
   [∀ (p : Ideal R) [p.IsMaximal], Algebra (Rₚ p) (Sₚ p)]
   [∀ (p : Ideal R) [p.IsMaximal], Algebra R (Sₚ p)]

@@ -109,6 +109,9 @@ smaller in norm than `B` is finite. -/
 theorem finite_of_norm_le (B : ℝ) : {x : K | IsIntegral ℤ x ∧ ∀ φ : K →+* A, ‖φ x‖ ≤ B}.Finite := by
   classical
   let C := Nat.ceil (max B 1 ^ finrank ℚ K * (finrank ℚ K).choose (finrank ℚ K / 2))
+  -- `IsScalarTower ℤ ℚ K` is no longer found by instance search here: synthesizing the pending
+  -- `Module ℚ K` argument of `AddCommGroup.intIsScalarTower` gets stuck on `NormedSpace.toModule`.
+  have : IsScalarTower ℤ ℚ K := @AddCommGroup.intIsScalarTower ℚ K _ _ _ _
   have := bUnion_roots_finite (algebraMap ℤ K) (finrank ℚ K) (finite_Icc (-C : ℤ) C)
   refine this.subset fun x hx => ?_; simp_rw [mem_iUnion]
   have h_map_ℚ_minpoly := minpoly.isIntegrallyClosed_eq_field_fractions' ℚ hx.1

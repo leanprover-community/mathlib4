@@ -201,7 +201,7 @@ lemma Algebra.exists_notMem_and_isIntegral_forall_mem_of_ne_of_liesOver
 lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux
     {R : Type u} {S : Type v} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] [Algebra.FiniteType R S]
     (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p] [Algebra.QuasiFiniteAt R q] :
-    ∃ (R' : Type u) (_ : CommRing R') (_ : Algebra R R') (_ : Algebra.Etale R R') (P : Ideal R')
+    ∃ (R' : Type u) (_ : Ring R') (_ : IsMulCommutative R') (_ : Algebra R R') (_ : Algebra.Etale R R') (P : Ideal R')
       (_ : P.IsPrime) (_ : P.LiesOver p) (e : R' ⊗[R] S) (_ : IsIdempotentElem e)
       (e₀ : R' ⊗[R] integralClosure R S) (_ : IsIdempotentElem e₀)
       (_ : Algebra.TensorProduct.map (.id R' R') (integralClosure R S).val e₀ = e)
@@ -226,7 +226,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux
       by simp [f, hq, pow_succ', mul_assoc], by simp [f]⟩
     simpa [IsCoprime.pow_left_iff,
       (prime_X (R := p.ResidueField)).irreducible.coprime_iff_not_dvd] using! hq'
-  obtain ⟨R', _, _, _, P, _, _, a', b', hP, ha'm, hb'm, hfab', ⟨c, d, hcd⟩, ha', hb'⟩ :=
+  obtain ⟨R', _, _, _, _, P, _, _, a', b', hP, ha'm, hb'm, hfab', ⟨c, d, hcd⟩, ha', hb'⟩ :=
     Algebra.exists_etale_bijective_residueFieldMap_and_map_eq_mul_and_isCoprime p f
       (X ^ (m + 1)) b hfm (monic_X.pow _) hbm hfab hab
   let s₀ : integralClosure R S := ⟨s, hRs⟩
@@ -266,7 +266,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux
     rw [← map_mul, eq_sub_iff_add_eq'.mpr hcd, map_sub, Submodule.sub_mem_iff_left _ H,
       map_one] at this
     exact Ideal.one_notMem _ this
-  refine ⟨_, inferInstance, inferInstance, inferInstance, P, ‹_›, ‹_›, e, he, e₀, he₀, he₀e, P',
+  refine ⟨_, inferInstance, inferInstance, inferInstance, inferInstance, P, ‹_›, ‹_›, e, he, e₀, he₀, he₀e, P',
     inferInstance, P'.2.2, hP'q, heP', hP, fun P'' _ _ H ↦ ?_, fun P'' _ _ H ↦ ?_⟩
   · have : (P'.1.comap φ.toRingHom).LiesOver P := inferInstanceAs ((P'.1.comap φ).LiesOver P)
     apply Ideal.eq_of_comap_eq_comap_of_bijective_residueFieldMap hP
@@ -377,14 +377,14 @@ The actual lemma is stated in terms of the idempotent element `e = (1, 0)`.
 lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq
     {R : Type u} {S : Type v} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] [Algebra.FiniteType R S]
     (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p] [Algebra.QuasiFiniteAt R q] :
-    ∃ (R' : Type u) (_ : CommRing R') (_ : Algebra R R') (_ : Algebra.Etale R R') (P : Ideal R')
+    ∃ (R' : Type u) (_ : Ring R') (_ : IsMulCommutative R') (_ : Algebra R R') (_ : Algebra.Etale R R') (P : Ideal R')
       (_ : P.IsPrime) (_ : P.LiesOver p) (e : R' ⊗[R] S) (_ : IsIdempotentElem e)
       (P' : Ideal (R' ⊗[R] S)) (_ : P'.IsPrime) (_ : P'.LiesOver P), P'.comap
         Algebra.TensorProduct.includeRight.toRingHom = q ∧ e ∉ P' ∧
       Function.Bijective (Ideal.ResidueField.mapₐ p P (Algebra.ofId _ _) (P.over_def p)) ∧
       Module.Finite R' (Localization.Away e) ∧
       ∀ P'' : Ideal (R' ⊗[R] S), P''.IsPrime → P''.LiesOver P → e ∉ P'' → P'' = P' := by
-  obtain ⟨R', _, _, _, P, _, _, e, he, e₀, he₀, he₀e, P', _, _, hP'q, heP', hpP, H', H⟩ :=
+  obtain ⟨R', _, _, _, _, P, _, _, e, he, e₀, he₀, he₀e, P', _, _, hP'q, heP', hpP, H', H⟩ :=
     exists_etale_isIdempotentElem_forall_liesOver_eq_aux p q
   obtain ⟨g, hgq, hg⟩ := Algebra.ZariskisMainProperty.of_finiteType (R := R) q
   obtain ⟨f, hfP, hf⟩ := exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂ q P e e₀ he₀
@@ -415,7 +415,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq
       (Localization.Away f) (.powers f) (a₁ := ⟨Pf, ‹_›⟩)
       (a₂ := ⟨P'f.under _, inferInstance⟩)
       (PrimeSpectrum.ext ((Pf.over_def P).symm.trans (P'f.over_def P)))).1)⟩
-  refine ⟨Localization.Away f, inferInstance, inferInstance, inferInstance, Pf, inferInstance,
+  refine ⟨Localization.Away f, inferInstance, inferInstance, inferInstance, inferInstance, Pf, inferInstance,
     .trans _ P _, Algebra.TensorProduct.map (Algebra.ofId _ _) (.id _ _) e,
     he.map _, P'f, ‹_›, ‹_›, ?_, ?_, ?_, hf, ?_⟩
   · rw [← hP'q, P'f.over_def P', Ideal.under, Ideal.comap_comap]
@@ -465,7 +465,7 @@ private theorem Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOv
     (hQ' : ∀ (i : Fin n), e' i.succ.castSucc ∉ Q' i)
     (H' : ∀ (P'' : Ideal (R'' ⊗[R] S)), e' 0 ∈ P'' → P''.IsPrime → P''.LiesOver Q →
       e' (.last _) ∈ P'' ∧ ∀ (i : Fin n), e' i.succ.castSucc ∉ P'' → P'' = Q' i) :
-    ∃ (R' : Type u) (_ : CommRing R') (_ : Algebra R R') (_ : Algebra.Etale R R') (P : Ideal R')
+    ∃ (R' : Type u) (_ : Ring R') (_ : IsMulCommutative R') (_ : Algebra R R') (_ : Algebra.Etale R R') (P : Ideal R')
       (_ : P.IsPrime) (_ : P.LiesOver p) (n : ℕ) (e : Fin (n + 1) → R' ⊗[R] S)
       (_ : CompleteOrthogonalIdempotents e) (P' : Fin n → Ideal (R' ⊗[R] S))
       (_ : ∀ i, (P' i).IsPrime) (_ : ∀ i, (P' i).LiesOver P),
@@ -489,7 +489,7 @@ private theorem Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOv
     convert Ideal.comap_fiberIsoOfBijectiveResidueField_symm hpQ _
     · ext; simp [φ]
     · simp; rfl
-  refine ⟨R'', inferInstance, _, .comp R R' R'', Q, ‹_›, .trans _ P _, _, _, he', Fin.cons P'φ
+  refine ⟨R'', inferInstance, inferInstance, _, .comp R R' R'', Q, ‹_›, .trans _ P _, _, _, he', Fin.cons P'φ
     Q', Fin.cases P'φ.2.1 ?_, Fin.cases P'φ.2.2 ?_, hpQ, Fin.cases ?_ ?_, ?_⟩
   · intro P'' _ _
     by_cases heP'' : e ∈ P''.comap φ
@@ -518,7 +518,7 @@ private theorem Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOv
 private lemma Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq'
     {R : Type u} {S : Type max u v} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] [Module.Finite R S]
     (p : Ideal R) [p.IsPrime] :
-    ∃ (R' : Type u) (_ : CommRing R') (_ : Algebra R R') (_ : Algebra.Etale R R') (P : Ideal R')
+    ∃ (R' : Type u) (_ : Ring R') (_ : IsMulCommutative R') (_ : Algebra R R') (_ : Algebra.Etale R R') (P : Ideal R')
       (_ : P.IsPrime) (_ : P.LiesOver p) (n : ℕ) (e : Fin (n + 1) → R' ⊗[R] S)
       (_ : CompleteOrthogonalIdempotents e) (P' : Fin n → Ideal (R' ⊗[R] S))
       (_ : ∀ i, (P' i).IsPrime) (_ : ∀ i, (P' i).LiesOver P),
@@ -534,7 +534,7 @@ private lemma Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOver
     cases n with
     | zero =>
       have := (Set.ncard_eq_zero hpSfin).mp h
-      refine ⟨R, inferInstance, inferInstance, inferInstance, p, inferInstance, ⟨rfl⟩, 0, 1,
+      refine ⟨R, inferInstance, inferInstance, inferInstance, inferInstance, p, inferInstance, ⟨rfl⟩, 0, 1,
         ⟨⟨by simp [IsIdempotentElem],
           by simp only [Nat.reduceAdd, Pi.one_apply, mul_one, Subsingleton.pairwise]⟩,
           by simp⟩, nofun, nofun, nofun, ?_, nofun, ?_⟩
@@ -544,14 +544,14 @@ private lemma Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOver
           ⟨by simp [P.over_def p, Ideal.under, Ideal.comap_comap]⟩⟩).elim
     | succ n =>
     obtain ⟨q, hq, hq'⟩ := Set.nonempty_of_ncard_ne_zero (h.trans_ne (by simp))
-    obtain ⟨R', _, _, _, P, _, _, e, he, P', _, _, hP'q, heP', hpP, _, H⟩ :=
+    obtain ⟨R', _, _, _, _, P, _, _, e, he, P', _, _, hP'q, heP', hpP, _, H⟩ :=
       Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq p q
     have : (P.primesOver (R' ⊗[R] S ⧸ Ideal.span {e})).ncard < n + 1 := by
       let F := Ideal.fiberIsoOfBijectiveResidueField hpP (S := S)
       refine (Ideal.ncard_primesOver_quotient_singleton_lt_of_notMem _ _
         P' heP' (F.finite_iff.mpr hpSfin)).trans_le ?_
       rw [← h, ← Nat.card_coe_set_eq, ← Nat.card_coe_set_eq, Nat.card_congr F.toEquiv]
-    obtain ⟨R'', _, _, _, Q, _, _, n, e' : _ → R'' ⊗[R'] (R' ⊗[R] S ⧸ Ideal.span {e}),
+    obtain ⟨R'', _, _, _, _, Q, _, _, n, e' : _ → R'' ⊗[R'] (R' ⊗[R] S ⧸ Ideal.span {e}),
       he', Q' : _ → Ideal (R'' ⊗[R'] (R' ⊗[R] S ⧸ Ideal.span {e})), _, _, hPQ, hQ', H'⟩ :=
       IH _ this (R := R') (S := R' ⊗[R] S ⧸ Ideal.span {e}) P rfl
     let : Algebra R R'' := .compHom _ (algebraMap R R')
@@ -610,7 +610,7 @@ the corresponding stronger statement is even harder to state and even more annoy
 lemma Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq
     {R : Type u} {S : Type v} [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S] [Module.Finite R S]
     (p : Ideal R) [p.IsPrime] :
-    ∃ (R' : Type u) (_ : CommRing R') (_ : Algebra R R') (_ : Algebra.Etale R R') (P : Ideal R')
+    ∃ (R' : Type u) (_ : Ring R') (_ : IsMulCommutative R') (_ : Algebra R R') (_ : Algebra.Etale R R') (P : Ideal R')
       (_ : P.IsPrime) (_ : P.LiesOver p) (n : ℕ) (e : Fin (n + 1) → R' ⊗[R] S)
       (_ : CompleteOrthogonalIdempotents e) (P' : Fin n → Ideal (R' ⊗[R] S))
       (_ : ∀ i, (P' i).IsPrime) (_ : ∀ i, (P' i).LiesOver P),
@@ -618,11 +618,11 @@ lemma Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq
       (∀ i, e i.castSucc ∉ P' i) ∧
       ∀ (P'' : Ideal (R' ⊗[R] S)), P''.IsPrime → P''.LiesOver P →
         e (.last n) ∈ P'' ∧ ∀ i, e i.castSucc ∉ P'' → P'' = P' i := by
-  have ⟨R', _, _, _, P, _, _, n, e, he, P', _, _, hP, hP', H⟩ :=
+  have ⟨R', _, _, _, _, P, _, _, n, e, he, P', _, _, hP, hP', H⟩ :=
     exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq' (S := ULift.{u} S) p
   let e₁ : R' ⊗[R] S ≃ₐ[R'] R' ⊗[R] ULift.{u} S :=
     Algebra.TensorProduct.congr .refl ULift.algEquiv.symm
-  refine ⟨R', _, _, ‹_›, P, ‹_›, ‹_›, n, e₁.symm ∘ e, he.map _,
+  refine ⟨R', _, _, _, ‹_›, P, ‹_›, ‹_›, n, e₁.symm ∘ e, he.map _,
     fun i ↦ (P' i).comap e₁.toAlgHom, inferInstance, inferInstance, hP, by simpa,
     fun P'' _ _ ↦ ?_⟩
   have := H (P''.comap e₁.symm.toAlgHom) inferInstance inferInstance

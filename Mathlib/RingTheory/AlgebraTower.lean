@@ -36,7 +36,8 @@ namespace IsScalarTower
 
 section Semiring
 
-variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring A] [Semiring B]
+variable [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] [Semiring A]
+  [Semiring B]
 variable [Algebra R S] [Algebra S A] [Algebra S B] [Algebra R A] [Algebra R B]
 variable [IsScalarTower R S A] [IsScalarTower R S B]
 
@@ -60,7 +61,8 @@ end IsScalarTower
 
 section AlgebraMapCoeffs
 namespace Module.Basis
-variable {R} {ι M : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [AddMonoid M] [IsAddCommutative M]
+variable {R} {ι M : Type*} [Semiring R] [IsMulCommutative R] [Semiring A] [AddMonoid M]
+  [IsAddCommutative M]
 variable [Algebra R A] [Module A M] [Module R M] [IsScalarTower R A M]
 variable (b : Basis ι R M) (h : Function.Bijective (algebraMap R A))
 
@@ -180,10 +182,11 @@ end Ring
 
 section AlgHomTower
 
-variable {A} {C D : Type*} [Semiring A] [IsMulCommutative A] [Semiring C] [IsMulCommutative C] [Semiring D] [IsMulCommutative D] [Algebra A C]
-  [Algebra A D]
+variable {A} {C D : Type*} [Semiring A] [IsMulCommutative A] [Semiring C] [IsMulCommutative C]
+  [Semiring D] [IsMulCommutative D] [Algebra A C] [Algebra A D]
 
-variable [Semiring B] [IsMulCommutative B] [Algebra A B] [Algebra B C] [IsScalarTower A B C] (f : C →ₐ[A] D)
+variable [Semiring B] [IsMulCommutative B] [Algebra A B] [Algebra B C] [IsScalarTower A B C]
+  (f : C →ₐ[A] D)
 
 /-- Restrict the domain of an `AlgHom`. -/
 def AlgHom.domRestrict : B →ₐ[A] D :=
@@ -192,7 +195,7 @@ def AlgHom.domRestrict : B →ₐ[A] D :=
 @[deprecated (since := "2026-07-19")] alias AlgHom.restrictDomain := AlgHom.domRestrict
 
 /-- Extend the scalars of an `AlgHom`. -/
-def AlgHom.extendScalars : @AlgHom B C D _ _ _ _ (f.domRestrict B).toRingHom.toAlgebra where
+def AlgHom.extendScalars : @AlgHom B C D _ _ _ _ _ (f.domRestrict B).toRingHom.toAlgebra where
   __ := f
   commutes' := fun _ ↦ rfl
   __ := (f.domRestrict B).toRingHom.toAlgebra
@@ -201,7 +204,7 @@ variable {B}
 
 /-- `AlgHom`s from the top of a tower are equivalent to a pair of `AlgHom`s. -/
 def algHomEquivSigma :
-    (C →ₐ[A] D) ≃ Σ f : B →ₐ[A] D, @AlgHom B C D _ _ _ _ f.toRingHom.toAlgebra where
+    (C →ₐ[A] D) ≃ Σ f : B →ₐ[A] D, @AlgHom B C D _ _ _ _ _ f.toRingHom.toAlgebra where
   toFun f := ⟨f.domRestrict B, f.extendScalars B⟩
   invFun fg :=
     let _ := fg.1.toRingHom.toAlgebra

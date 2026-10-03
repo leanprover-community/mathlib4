@@ -60,11 +60,10 @@ instance : One (A ⊗[R] B) where one := 1 ⊗ₜ 1
 theorem one_def : (1 : A ⊗[R] B) = (1 : A) ⊗ₜ (1 : B) :=
   rfl
 
-instance instAddCommMonoidWithOne : AddCommMonoidWithOne (A ⊗[R] B) where
+instance instAddCommMonoidWithOne : AddMonoidWithOne (A ⊗[R] B) where
   natCast n := n ⊗ₜ 1
   natCast_zero := by simp
   natCast_succ n := by simp [add_tmul, one_def]
-  add_comm := add_comm
 
 theorem natCast_def (n : ℕ) : (n : A ⊗[R] B) = (n : A) ⊗ₜ (1 : B) := rfl
 
@@ -335,8 +334,8 @@ variable [Semiring R] [IsMulCommutative R]
 variable [AddGroupWithOne A] [IsAddCommutative A] [Module R A]
 variable [AddMonoidWithOne B] [IsAddCommutative B] [Module R B]
 
-instance instAddCommGroupWithOne : AddCommGroupWithOne (A ⊗[R] B) where
-  toAddCommGroup := TensorProduct.addCommGroup
+instance instAddCommGroupWithOne : AddGroupWithOne (A ⊗[R] B) where
+  __ := TensorProduct.addCommGroup
   __ := instAddCommMonoidWithOne
   intCast z := z ⊗ₜ (1 : B)
   intCast_ofNat n := by simp [natCast_def]
@@ -352,7 +351,7 @@ variable [NonUnitalNonAssocRing A] [Module R A] [SMulCommClass R A A] [IsScalarT
 variable [NonUnitalNonAssocSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 
 instance instNonUnitalNonAssocRing : NonUnitalNonAssocRing (A ⊗[R] B) where
-  toAddCommGroup := TensorProduct.addCommGroup
+  toAddGroup := TensorProduct.addCommGroup
   __ := instNonUnitalNonAssocSemiring
 
 end NonUnitalNonAssocRing
@@ -363,7 +362,7 @@ variable [NonAssocRing A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A 
 variable [NonAssocSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 
 instance instNonAssocRing : NonAssocRing (A ⊗[R] B) where
-  toAddCommGroup := TensorProduct.addCommGroup
+  toAddGroup := TensorProduct.addCommGroup
   __ := instNonAssocSemiring
   __ := instAddCommGroupWithOne
 
@@ -375,7 +374,7 @@ variable [NonUnitalRing A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A
 variable [NonUnitalSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 
 instance instNonUnitalRing : NonUnitalRing (A ⊗[R] B) where
-  toAddCommGroup := TensorProduct.addCommGroup
+  toAddGroup := TensorProduct.addCommGroup
   __ := instNonUnitalSemiring
 
 end NonUnitalRing
@@ -385,9 +384,8 @@ variable [Semiring R] [IsMulCommutative R]
 variable [Semiring A] [IsMulCommutative A] [Algebra R A]
 variable [Semiring B] [IsMulCommutative B] [Algebra R B]
 
-instance instCommSemiring : CommSemiring (A ⊗[R] B) where
-  toSemiring := inferInstance
-  mul_comm x y := by
+instance instCommSemiring : IsMulCommutative (A ⊗[R] B) where
+  is_comm.comm x y := by
     refine TensorProduct.inductionOn x ?_ ?_
     · intro a₁ b₁
       refine TensorProduct.inductionOn y ?_ ?_
@@ -414,23 +412,14 @@ theorem intCast_def' {B} [Ring B] [Algebra R B] (z : ℤ) : (z : A ⊗[R] B) = (
   rw [intCast_def, ← zsmul_one, smul_tmul, zsmul_one]
 
 -- verify there are no diamonds
-example : (instRing : Ring (A ⊗[R] B)).toAddCommGroup = addCommGroup := by
+-- (`Ring.toAddGroup` is not an instance and not reducible, since `AddGroup` is a redundant
+-- parent of `Ring`; the `AddGroup` instance is reached through `AddGroupWithOne`.)
+example : (instRing : Ring (A ⊗[R] B)).toAddGroupWithOne.toAddGroup = addCommGroup := by
   with_reducible_and_instances rfl
 -- fails at `with_reducible_and_instances rfl` https://github.com/leanprover-community/mathlib4/issues/10906
 example : (Ring.toIntAlgebra _ : Algebra ℤ (ℤ ⊗[ℤ] A)) = leftAlgebra := rfl
 
 end Ring
-
-section CommRing
-variable [Semiring R] [IsMulCommutative R]
-variable [Ring A] [IsMulCommutative A] [Algebra R A]
-variable [Semiring B] [IsMulCommutative B] [Algebra R B]
-
-instance instCommRing : CommRing (A ⊗[R] B) :=
-  { toRing := inferInstance
-    mul_comm := mul_comm }
-
-end CommRing
 
 section RightAlgebra
 
@@ -475,7 +464,10 @@ example [Ring A] [Ring B] : Ring (A ⊗[ℤ] B) := by infer_instance
 /-- Verify that typeclass search finds the CommRing structure on `A ⊗[ℤ] B`
 when `A` and `B` are merely `CommRing`s, by treating both as `ℤ`-algebras.
 -/
-example [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] : CommRing (A ⊗[ℤ] B) := by infer_instance
+example [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] : Ring (A ⊗[ℤ] B) := by infer_instance
+
+example [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] :
+    IsMulCommutative (A ⊗[ℤ] B) := by infer_instance
 
 variable (R A B) in
 lemma closure_range_union_range_eq_top [Ring R] [IsMulCommutative R] [Ring A] [Ring B]

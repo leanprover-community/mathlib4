@@ -219,7 +219,7 @@ end SMul
 -- The `AddMonoid` instance exists to help speedup unification
 instance : AddMonoid (MultilinearMap R M₁ M₂) := fast_instance% FunLike.addMonoid
 
-instance addCommMonoid : AddCommMonoid (MultilinearMap R M₁ M₂) := fast_instance%
+instance addCommMonoid : IsAddCommutative (MultilinearMap R M₁ M₂) :=
   FunLike.addCommMonoid
 
 @[deprecated (since := "2026-06-10")] alias coeAddMonoidHom := FunLike.coeAddMonoidHom
@@ -405,7 +405,7 @@ section compMultilinear
 
 variable {β : ι → Type*}
 variable {N : (i : ι) → (b : β i) → Type*}
-variable [∀ i, ∀ b, AddCommMonoid (N i b)] [∀ i, ∀ b, Module R (N i b)]
+variable [∀ i, ∀ b, AddMonoid (N i b)] [∀ i, ∀ b, IsAddCommutative (N i b)] [∀ i, ∀ b, Module R (N i b)]
 
 /-- Composition of multilinear maps. If `g` is multilinear, and if for every `i : ι`, we have a
 multilinear map `f i` with index type `β i`, then `m ↦ g (f₁ m_11 m_12 ...) (f₂ m_21 m_22 ...) ...`
@@ -878,7 +878,7 @@ namespace MultilinearMap
 
 section Semiring
 
-variable [Semiring R] [(i : ι) → AddCommMonoid (M₁ i)] [(i : ι) → Module R (M₁ i)]
+variable [Semiring R] [(i : ι) → AddMonoid (M₁ i)] [(i : ι) → IsAddCommutative (M₁ i)] [(i : ι) → Module R (M₁ i)]
   [AddMonoid M₂] [IsAddCommutative M₂] [Module R M₂]
 
 instance [Monoid S] [DistribMulAction S M₂] [SMulCommClass R S M₂] :
@@ -1007,7 +1007,7 @@ variable [Semiring R] [IsMulCommutative R] [∀ i, AddMonoid (M₁ i)] [∀ i, I
   [∀ i, Module R (M i)] [∀ i, Module R (M₁ i)] [Module R M₂] (f f' : MultilinearMap R M₁ M₂)
 
 section
-variable [Π i, AddCommMonoid (M₁' i)] [Π i, Module R (M₁' i)]
+variable [Π i, AddMonoid (M₁' i)] [Π i, IsAddCommutative (M₁' i)] [Π i, Module R (M₁' i)]
 
 /-- Given a predicate `P`, one may associate to a multilinear map `f` a multilinear map
 from the elements satisfying `P` to the multilinear maps on elements not satisfying `P`.
@@ -1095,7 +1095,7 @@ sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g
 `f₁, ..., fₙ`. -/
 @[simps] def compLinearMapMultilinear :
     @MultilinearMap R ι (fun i ↦ M₁ i →ₗ[R] M₁' i)
-      ((MultilinearMap R M₁' M₂) →ₗ[R] MultilinearMap R M₁ M₂) _ _ _
+      ((MultilinearMap R M₁' M₂) →ₗ[R] MultilinearMap R M₁ M₂) _ _ _ _ _
         (fun _ ↦ LinearMap.module) _ where
   toFun := MultilinearMap.compLinearMapₗ
   map_update_add' := by
@@ -1299,7 +1299,9 @@ instance : IsSubApply (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
 
 @[deprecated (since := "2026-06-10")] protected alias sub_apply := sub_apply
 
-instance : AddCommGroup (MultilinearMap R M₁ M₂) := fast_instance% FunLike.addCommGroup
+instance : AddGroup (MultilinearMap R M₁ M₂) := fast_instance% FunLike.addGroup
+
+instance : IsAddCommutative (MultilinearMap R M₁ M₂) := FunLike.addCommGroup
 
 end RangeAddCommGroup
 

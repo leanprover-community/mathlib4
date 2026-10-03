@@ -28,20 +28,22 @@ variable (R : Type*) [Ring R]
 /-- A module of finite length is either trivial or a simple extension of a module known
 to be of finite length. -/
 inductive IsFiniteLength : ∀ (M : Type*) [AddGroup M] [IsAddCommutative M] [Module R M], Prop
-  | of_subsingleton {M} [AddGroup M] [IsAddCommutative M] [Module R M] [Subsingleton M] : IsFiniteLength M
+  | of_subsingleton {M} [AddGroup M] [IsAddCommutative M] [Module R M] [Subsingleton M] :
+      IsFiniteLength M
   | of_simple_quotient {M} [AddGroup M] [IsAddCommutative M] [Module R M] {N : Submodule R M}
       [IsSimpleModule R (M ⧸ N)] : IsFiniteLength N → IsFiniteLength M
 
 attribute [nontriviality] IsFiniteLength.of_subsingleton
 
-variable {R} {M N : Type*} [AddGroup M] [IsAddCommutative M] [Module R M] [AddGroup N] [IsAddCommutative N] [Module R N]
+variable {R} {M N : Type*} [AddGroup M] [IsAddCommutative M] [Module R M]
+  [AddGroup N] [IsAddCommutative N] [Module R N]
 
 theorem LinearEquiv.isFiniteLength (e : M ≃ₗ[R] N)
     (h : IsFiniteLength R M) : IsFiniteLength R N := by
   induction h generalizing N with
   | of_subsingleton =>
     have := e.symm.toEquiv.subsingleton; exact .of_subsingleton
-  | @of_simple_quotient M _ _ S _ _ ih =>
+  | @of_simple_quotient M _ _ _ S _ _ ih =>
     have : IsSimpleModule R (N ⧸ Submodule.map (e : M →ₗ[R] N) S) :=
       IsSimpleModule.congr (Submodule.Quotient.equiv S _ e rfl).symm
     exact .of_simple_quotient (ih <| e.submoduleMap S)
@@ -73,7 +75,7 @@ theorem isFiniteLength_of_exists_compositionSeries
 theorem isFiniteLength_iff_isNoetherian_isArtinian :
     IsFiniteLength R M ↔ IsNoetherian R M ∧ IsArtinian R M :=
   open scoped IsSimpleOrder in
-  ⟨fun h ↦ h.rec (fun {M} _ _ _ ↦ ⟨inferInstance, inferInstance⟩) fun M _ _ {N} _ _ ⟨_, _⟩ ↦
+  ⟨fun h ↦ h.rec (fun {M} _ _ _ _ ↦ ⟨inferInstance, inferInstance⟩) fun M _ _ _ {N} _ _ ⟨_, _⟩ ↦
     ⟨(isNoetherian_iff_submodule_quotient N).mpr ⟨‹_›, inferInstance⟩,
       (isArtinian_iff_submodule_quotient N).mpr ⟨‹_›, inferInstance⟩⟩,
     fun ⟨_, _⟩ ↦ isFiniteLength_of_exists_compositionSeries

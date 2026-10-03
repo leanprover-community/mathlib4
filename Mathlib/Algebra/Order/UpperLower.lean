@@ -135,8 +135,12 @@ instance : MulAction α (UpperSet α) :=
   SetLike.coe_injective.mulAction _ (fun _ _ => rfl)
 
 @[to_additive]
-instance commSemigroup : CommSemigroup (UpperSet α) :=
-  { (SetLike.coe_injective.commSemigroup _ coe_mul : CommSemigroup (UpperSet α)) with }
+instance semigroup : Semigroup (UpperSet α) :=
+  SetLike.coe_injective.semigroup _ coe_mul
+
+@[to_additive]
+instance isMulCommutative : IsMulCommutative (UpperSet α) :=
+  SetLike.coe_injective.isMulCommutative _ coe_mul
 
 @[to_additive]
 private theorem one_mul (s : UpperSet α) : 1 * s = s :=
@@ -146,8 +150,8 @@ private theorem one_mul (s : UpperSet α) : 1 * s = s :=
       exact Set.iUnion₂_subset fun _ ↦ s.upper.smul_subset
 
 @[to_additive]
-instance : CommMonoid (UpperSet α) :=
-  { UpperSet.commSemigroup with
+instance : Monoid (UpperSet α) :=
+  { UpperSet.semigroup with
     one_mul := private one_mul
     mul_one := fun s ↦ by
       rw [mul_comm]
@@ -191,8 +195,12 @@ instance : MulAction α (LowerSet α) :=
   SetLike.coe_injective.mulAction _ (fun _ _ => rfl)
 
 @[to_additive]
-instance commSemigroup : CommSemigroup (LowerSet α) :=
-  { (SetLike.coe_injective.commSemigroup _ coe_mul : CommSemigroup (LowerSet α)) with }
+instance semigroup : Semigroup (LowerSet α) :=
+  SetLike.coe_injective.semigroup _ coe_mul
+
+@[to_additive]
+instance isMulCommutative : IsMulCommutative (LowerSet α) :=
+  SetLike.coe_injective.isMulCommutative _ coe_mul
 
 @[to_additive]
 private theorem one_mul (s : LowerSet α) : 1 * s = s :=
@@ -202,8 +210,8 @@ private theorem one_mul (s : LowerSet α) : 1 * s = s :=
       exact Set.iUnion₂_subset fun _ ↦ s.lower.smul_subset
 
 @[to_additive]
-instance : CommMonoid (LowerSet α) :=
-  { LowerSet.commSemigroup with
+instance : Monoid (LowerSet α) :=
+  { LowerSet.semigroup with
     one_mul := private one_mul
     mul_one := fun s ↦ by
       rw [mul_comm]

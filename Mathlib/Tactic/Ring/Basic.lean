@@ -75,14 +75,14 @@ attribute [local instance] monadLiftOptionMetaM
 
 open Lean (MetaM Expr mkRawNatLit)
 
-variable {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
+variable {u : Lean.Level} {α : Q(Type u)} (sα : Q(Semiring $α)) (iα : Q(IsMulCommutative $α))
 
 @[expose, reducible, inherit_doc Common.ExBase]
-def ExBase := Common.ExBase RatCoeff sα
+def ExBase := Common.ExBase RatCoeff sα iα
 @[expose, reducible, inherit_doc Common.ExProd]
-def ExProd := Common.ExProd RatCoeff sα
+def ExProd := Common.ExProd RatCoeff sα iα
 @[expose, reducible, inherit_doc Common.ExSum]
-def ExSum := Common.ExSum RatCoeff sα
+def ExSum := Common.ExSum RatCoeff sα iα
 
 section
 variable {R : Type*} [Semiring R] [IsMulCommutative R] {a : R}
@@ -112,7 +112,7 @@ section
 Constructs the expression corresponding to `.const n`.
 (The `.const` constructor does not check that the expression is correct.)
 -/
-def ExProd.mkNat (n : ℕ) : (e : Q($α)) × ExProd sα e :=
+def ExProd.mkNat (n : ℕ) : (e : Q($α)) × ExProd sα iα e :=
   let lit : Q(ℕ) := .lit (.natVal n)
   ⟨q(($lit).rawCast : $α), .const ⟨n, none⟩⟩
 
@@ -120,7 +120,7 @@ def ExProd.mkNat (n : ℕ) : (e : Q($α)) × ExProd sα e :=
 Constructs the expression corresponding to `.const (-n)`.
 (The `.const` constructor does not check that the expression is correct.)
 -/
-def ExProd.mkNegNat (_ : Q(Ring $α)) (n : ℕ) : (e : Q($α)) × ExProd sα e :=
+def ExProd.mkNegNat (_ : Q(Ring $α)) (n : ℕ) : (e : Q($α)) × ExProd sα iα e :=
   let lit : Q(ℕ) := mkRawNatLit n
   ⟨q((Int.negOfNat $lit).rawCast : $α), .const ⟨(-n), none⟩⟩
 
@@ -130,7 +130,7 @@ and `h` a proof that `(d : α) ≠ 0`.
 (The `.const` constructor does not check that the expression is correct.)
 -/
 def ExProd.mkNNRat (_ : Q(DivisionSemiring $α)) (q : ℚ) (n : Q(ℕ)) (d : Q(ℕ)) (h : Expr) :
-    (e : Q($α)) × ExProd sα e :=
+    (e : Q($α)) × ExProd sα iα e :=
   ⟨q(NNRat.rawCast $n $d : $α), .const ⟨q, h⟩⟩
 
 /--
@@ -139,7 +139,7 @@ and `h` a proof that `(d : α) ≠ 0`.
 (The `.const` constructor does not check that the expression is correct.)
 -/
 def ExProd.mkNegNNRat (_ : Q(DivisionRing $α)) (q : ℚ) (n : Q(ℕ)) (d : Q(ℕ)) (h : Expr) :
-    (e : Q($α)) × ExProd sα e :=
+    (e : Q($α)) × ExProd sα iα e :=
   ⟨q(Rat.rawCast (.negOfNat $n) $d : $α), .const ⟨q, h⟩⟩
 end
 
@@ -151,24 +151,25 @@ end
 * `e = NNRat.rawCast n d + 0` if `norm_num` returns `IsNNRat e n d`
 * `e = Rat.rawCast n d + 0` if `norm_num` returns `IsRat e n d`
 -/
-def evalCast {α : Q(Type u)} (sα : Q(CommSemiring $α)) {e : Q($α)} :
-    NormNum.Result e → Option (Result (ExSum sα) e)
+def evalCast {α : Q(Type u)} (sα : Q(Semiring $α)) (iα : Q(IsMulCommutative $α)) {e : Q($α)} :
+    NormNum.Result e → Option (Result (ExSum sα iα) e)
   | .isNat _ (.lit (.natVal 0)) p => do
     assumeInstancesCommute
     pure ⟨_, .zero, q(cast_zero $p)⟩
   | .isNat _ lit p => do
     assumeInstancesCommute
-    have ⟨e', s⟩ := ExProd.mkNat sα lit.natLit!
+    have ⟨e', s⟩ := ExProd.mkNat sα iα lit.natLit!
     have : $e' =Q ($lit).rawCast := ⟨⟩
     pure ⟨_, s.toSum, q(cast_pos $p)⟩
   /- In the following cases, Qq needs help identifying the `0` in the produced type with the `0`
   in the expected type, which arise from different instances. -/
   | .isNegNat rα lit p =>
-    pure ⟨_, (ExProd.mkNegNat sα rα lit.natLit!).2.toSum, (q(cast_neg $p) : Expr)⟩
+    pure ⟨_, (ExProd.mkNegNat sα iα rα lit.natLit!).2.toSum, (q(cast_neg $p) : Expr)⟩
   | .isNNRat dsα q n d p =>
-    pure ⟨_, (ExProd.mkNNRat sα dsα q n d q(IsNNRat.den_nz $p)).2.toSum, (q(cast_nnrat $p) : Expr)⟩
+    pure ⟨_, (ExProd.mkNNRat sα iα dsα q n d q(IsNNRat.den_nz $p)).2.toSum,
+      (q(cast_nnrat $p) : Expr)⟩
   | .isNegNNRat dα q n d p =>
-    pure ⟨_, (ExProd.mkNegNNRat sα dα q n d q(IsRat.den_nz $p)).2.toSum, (q(cast_rat $p) : Expr)⟩
+    pure ⟨_, (ExProd.mkNegNNRat sα iα dα q n d q(IsRat.den_nz $p)).2.toSum, (q(cast_rat $p) : Expr)⟩
   | _ => none
 
 section
@@ -191,7 +192,7 @@ theorem natCast_add {a₁ a₂ : ℕ}
 
 mutual -- partial only to speed up compilation
 
-variable {v : Lean.Level} {β : Q(Type v)} (sβ : Q(CommSemiring $β))
+variable {v : Lean.Level} {β : Q(Type v)} (sβ : Q(Semiring $β)) (iβ : Q(IsMulCommutative $β))
   (_ : v =QL 0) (_ : $β =Q ℕ) (_ : $sβ =Q inferInstance)
 
 /-- Applies `Nat.cast` to a nat polynomial to produce a polynomial in `α`.
@@ -199,7 +200,8 @@ variable {v : Lean.Level} {β : Q(Type v)} (sβ : Q(CommSemiring $β))
 * An atom `e` causes `↑e` to be allocated as a new atom.
 * A sum delegates to `ExSum.evalNatCast`.
 -/
-partial def ExBase.evalNatCast {a : Q(ℕ)} (va : ExBase sβ a) : AtomM (Result (ExBase sα) q($a)) :=
+partial def ExBase.evalNatCast {a : Q(ℕ)} (va : ExBase sβ iβ a) :
+    AtomM (Result (ExBase sα iα) q($a)) :=
   match va with
   | .atom _ => do
     let (i, ⟨b', _⟩) ← addAtomQ q($a)
@@ -213,7 +215,8 @@ partial def ExBase.evalNatCast {a : Q(ℕ)} (va : ExBase sβ a) : AtomM (Result 
 * `↑c = c` if `c` is a numeric literal
 * `↑(a ^ n * b) = ↑a ^ n * ↑b`
 -/
-partial def ExProd.evalNatCast {a : Q(ℕ)} (va : ExProd sβ a) : AtomM (Result (ExProd sα) q($a)) :=
+partial def ExProd.evalNatCast {a : Q(ℕ)} (va : ExProd sβ iβ a) :
+    AtomM (Result (ExProd sα iα) q($a)) :=
   match va with
   | .const ⟨c, hc⟩ =>
     have n : Q(ℕ) := a.appArg!
@@ -230,7 +233,8 @@ partial def ExProd.evalNatCast {a : Q(ℕ)} (va : ExProd sβ a) : AtomM (Result 
 * `↑0 = 0`
 * `↑(a + b) = ↑a + ↑b`
 -/
-partial def ExSum.evalNatCast {a : Q(ℕ)} (va : ExSum sβ a) : AtomM (Result (ExSum sα) q($a)) := do
+partial def ExSum.evalNatCast {a : Q(ℕ)} (va : ExSum sβ iβ a) :
+    AtomM (Result (ExSum sα iα) q($a)) := do
   assumeInstancesCommute
   match (dependent := true) va with
   | .zero => pure ⟨_, .zero, q(natCast_zero (R := $α))⟩
@@ -243,12 +247,14 @@ end
 
 /-! ### Scalar multiplication by `ℤ` -/
 
-theorem natCast_int {R} [Ring R] [IsMulCommutative R] (n) : ((Nat.rawCast n : ℤ) : R) = Nat.rawCast n := by simp
+theorem natCast_int {R} [Ring R] [IsMulCommutative R] (n) :
+    ((Nat.rawCast n : ℤ) : R) = Nat.rawCast n := by simp
 
 theorem intCast_negOfNat_Int {R} [Ring R] [IsMulCommutative R] (n) :
     ((Int.rawCast (Int.negOfNat n) : ℤ) : R) = Int.rawCast (Int.negOfNat n) := by simp
 
-theorem intCast_mul {R} [Ring R] [IsMulCommutative R] {b₁ b₃ : R} {a₁ a₃ : ℤ} (a₂) (_ : ((a₁ : ℤ) : R) = b₁)
+theorem intCast_mul {R} [Ring R] [IsMulCommutative R] {b₁ b₃ : R} {a₁ a₃ : ℤ} (a₂)
+    (_ : ((a₁ : ℤ) : R) = b₁)
     (_ : ((a₃ : ℤ) : R) = b₃) : ((a₁ ^ a₂ * a₃ : ℤ) : R) = b₁ ^ a₂ * b₃ := by
   subst_vars; simp
 
@@ -261,7 +267,7 @@ theorem intCast_add {R} [Ring R] [IsMulCommutative R] {b₁ b₂ : R} {a₁ a₂
 
 mutual
 
-variable {v : Lean.Level} {β : Q(Type v)} (sβ : Q(CommSemiring $β))
+variable {v : Lean.Level} {β : Q(Type v)} (sβ : Q(Semiring $β)) (iβ : Q(IsMulCommutative $β))
   (_ : v =QL 0) (_ : $β =Q ℤ) (_ : $sβ =Q inferInstance)
 
 /-- Applies `Int.cast` to an int polynomial to produce a polynomial in `α`.
@@ -269,8 +275,8 @@ variable {v : Lean.Level} {β : Q(Type v)} (sβ : Q(CommSemiring $β))
 * An atom `e` causes `↑e` to be allocated as a new atom.
 * A sum delegates to `ExSum.evalIntCast`.
 -/
-def ExBase.evalIntCast {a : Q(ℤ)} (rα : Q(CommRing $α)) (va : ExBase sβ a) :
-    AtomM (Result (ExBase sα) q($a)) :=
+def ExBase.evalIntCast {a : Q(ℤ)} (rα : Q(Ring $α)) (va : ExBase sβ iβ a) :
+    AtomM (Result (ExBase sα iα) q($a)) :=
   match va with
   | .atom _ => do
     assumeInstancesCommute
@@ -286,10 +292,11 @@ def ExBase.evalIntCast {a : Q(ℤ)} (rα : Q(CommRing $α)) (va : ExBase sβ a) 
 * `↑c = c` if `c` is a numeric literal
 * `↑(a ^ n * b) = ↑a ^ n * ↑b`
 -/
-def ExProd.evalIntCast {a : Q(ℤ)} (rα : Q(CommRing $α)) (va : ExProd sβ a) :
-    AtomM (Result (ExProd sα) q($a)) :=
+def ExProd.evalIntCast {a : Q(ℤ)} (rα : Q(Ring $α)) (va : ExProd sβ iβ a) :
+    AtomM (Result (ExProd sα iα) q($a)) :=
   match va with
   | .const ⟨c, hc⟩ => do
+    assumeInstancesCommute
     match a with
     | ~q(Nat.rawCast $m) =>
       pure ⟨q(Nat.rawCast $m), .const ⟨c, hc⟩, q(natCast_int (R := $α) $m)⟩
@@ -307,9 +314,9 @@ def ExProd.evalIntCast {a : Q(ℤ)} (rα : Q(CommRing $α)) (va : ExProd sβ a) 
 * `↑0 = 0`
 * `↑(a + b) = ↑a + ↑b`
 -/
-def ExSum.evalIntCast {a : Q(ℤ)} (rα : Q(CommRing $α))
-    (va : ExSum sβ a) :
-    AtomM (Result (ExSum sα) q($a)) :=
+def ExSum.evalIntCast {a : Q(ℤ)} (rα : Q(Ring $α))
+    (va : ExSum sβ iβ a) :
+    AtomM (Result (ExSum sα iα) q($a)) :=
   match va with
   | .zero => do
     assumeInstancesCommute
@@ -327,22 +334,25 @@ mutual
 
 /-- Converts `ExBase sα` to `ExBase sβ`, assuming `sα` and `sβ` are defeq. -/
 def ExBase.cast
-    {v : Lean.Level} {β : Q(Type v)} {sβ : Q(CommSemiring $β)} {a : Q($α)} :
-    ExBase sα a → Σ a, ExBase sβ a
+    {v : Lean.Level} {β : Q(Type v)} {sβ : Q(Semiring $β)}
+    {iβ : Q(IsMulCommutative $β)} {a : Q($α)} :
+    ExBase sα iα a → Σ a, ExBase sβ iβ a
   | .atom i => ⟨a, .atom i⟩
   | .sum a => let ⟨_, vb⟩ := ExSum.cast a; ⟨_, .sum vb⟩
 
 /-- Converts `ExProd sα` to `ExProd sβ`, assuming `sα` and `sβ` are defeq. -/
 def ExProd.cast
-    {v : Lean.Level} {β : Q(Type v)} {sβ : Q(CommSemiring $β)} {a : Q($α)} :
-    ExProd sα a → Σ a, ExProd sβ a
+    {v : Lean.Level} {β : Q(Type v)} {sβ : Q(Semiring $β)}
+    {iβ : Q(IsMulCommutative $β)} {a : Q($α)} :
+    ExProd sα iα a → Σ a, ExProd sβ iβ a
   | .const ⟨i, h⟩ => ⟨a, .const ⟨i, h⟩⟩
   | .mul a₁ a₂ a₃ => ⟨_, .mul (ExBase.cast a₁).2 a₂ (ExProd.cast a₃).2⟩
 
 /-- Converts `ExSum sα` to `ExSum sβ`, assuming `sα` and `sβ` are defeq. -/
 def ExSum.cast
-    {v : Lean.Level} {β : Q(Type v)} {sβ : Q(CommSemiring $β)} {a : Q($α)} :
-    ExSum sα a → Σ a, ExSum sβ a
+    {v : Lean.Level} {β : Q(Type v)} {sβ : Q(Semiring $β)}
+    {iβ : Q(IsMulCommutative $β)} {a : Q($α)} :
+    ExSum sα iα a → Σ a, ExSum sβ iβ a
   | .zero => ⟨_, .zero⟩
   | .add a₁ a₂ => ⟨_, .add (ExProd.cast a₁).2 (ExSum.cast a₂).2⟩
 
@@ -356,7 +366,8 @@ theorem Nat.smul_eq_mul {n n' : ℕ} {r : R} (hr : n = r) (hn : n' = n) (a : R) 
   subst_vars
   simp only [nsmul_eq_mul]
 
-theorem Int.smul_eq_mul {R} {n n' : ℤ} {r : R} [Ring R] [IsMulCommutative R] (hr : n = r) (hn : n' = n) (a : R) :
+theorem Int.smul_eq_mul {R} {n n' : ℤ} {r : R} [Ring R] [IsMulCommutative R] (hr : n = r)
+    (hn : n' = n) (a : R) :
     n' • a = r * a := by
   subst_vars
   simp only [zsmul_eq_mul]
@@ -375,7 +386,8 @@ namespace RingCompute
 mutual
 
 /-- Add two rational number expressions. If the result is zero, returns a proof of this fact. -/
-partial def add {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
+partial def add {u : Lean.Level} {α : Q(Type u)} (sα : Q(Semiring $α))
+    (_iα : Q(IsMulCommutative $α))
     {a b : Q($α)} (za : RatCoeff a) (zb : RatCoeff b) :
     MetaM (Result RatCoeff q($a + $b) × Option Q(IsNat ($a + $b) 0)) := do
   let res ← za.toResult.add zb.toResult
@@ -390,42 +402,46 @@ partial def add {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
   return ⟨r, isZero⟩
 
 /-- Evaluate the product of two rational number expressions. -/
-partial def mul {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
+partial def mul {u : Lean.Level} {α : Q(Type u)} (sα : Q(Semiring $α))
+    (_iα : Q(IsMulCommutative $α))
     {a b : Q($α)} (za : RatCoeff a) (zb : RatCoeff b) :
     MetaM (Result RatCoeff q($a * $b)) := do
   let res ← za.toResult.mul zb.toResult
   return ← RatCoeff.ofResult res
 
 /-- Cast ℕ and ℤ normalized expressions ExSums into `α`, used to evaluate scalar multiplications. -/
-partial def cast {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α)) (cα : Common.Cache sα)
-    (v : Lean.Level) (β : Q(Type v)) (sβ : Q(CommSemiring $β)) (_smul : Q(SMul $β $α))
+partial def cast {u : Lean.Level} {α : Q(Type u)} (sα : Q(Semiring $α))
+    (iα : Q(IsMulCommutative $α)) (cα : Common.Cache sα iα)
+    (v : Lean.Level) (β : Q(Type v)) (sβ : Q(Semiring $β)) (iβ : Q(IsMulCommutative $β))
+    (_smul : Q(SMul $β $α))
     (x : Q($β)) :
-    AtomM ((y : Q($α)) × Common.ExSum RatCoeff sα q($y) ×
+    AtomM ((y : Q($α)) × Common.ExSum RatCoeff sα iα q($y) ×
       Q(∀ (a : $α), $x • a = $y * a)) := do
-  let cβ ← Common.mkCache sβ
+  let cβ ← Common.mkCache sβ iβ
   let ⟨x', vx, px⟩ ← Common.eval (ringCompute .nat) (ringCompute cβ) cβ x
   if (← isDefEq sα sβ) then
     have : u =QL v := ⟨⟩
     have : $α =Q $β := ⟨⟩
     have : $sα =Q $sβ := ⟨⟩
-    let ⟨b, vb⟩ := (ExSum.cast (u := v) (v := u) (sα := sβ) (sβ := sα) vx)
+    have : $iα =Q $iβ := ⟨⟩
+    let ⟨b, vb⟩ := (ExSum.cast (u := v) (v := u) (sα := sβ) (iα := iβ) (sβ := sα) (iβ := iα) vx)
     have : $b =Q $x' := ⟨⟩
     assumeInstancesCommute
     return ⟨_, vb, q(smul_eq_mul $px)⟩
   match v, β, sβ, cα.rα with
   | 0, ~q(ℕ), ~q(inferInstance), _ =>
-    let ⟨y, vy, py⟩ ← ExSum.evalNatCast sα sβ vx
+    let ⟨y, vy, py⟩ ← ExSum.evalNatCast sα iα sβ iβ vx
     assumeInstancesCommute
     return ⟨y, vy, q(Nat.smul_eq_mul $py $px)⟩
   | 0, ~q(ℤ), ~q(inferInstance), some rα =>
-    let ⟨y, vy, py⟩ ← ExSum.evalIntCast sα sβ rα vx
+    let ⟨y, vy, py⟩ ← ExSum.evalIntCast sα iα sβ iβ rα vx
     assumeInstancesCommute
     return ⟨y, vy, q(Int.smul_eq_mul $py $px)⟩
   | _ => failure
 
 /-- Negate rational number expressions. -/
 partial def neg {u : Lean.Level} {α : Q(Type u)}
-    {a : Q($α)} (_crα : Q(CommRing $α)) (za : RatCoeff a) :
+    {a : Q($α)} (_rα : Q(Ring $α)) (za : RatCoeff a) :
     MetaM (Result RatCoeff q(-$a)) := do
   let res ← za.toResult.neg q(inferInstance)
   -- We have to unpack this result due to instance issues.
@@ -435,7 +451,8 @@ partial def neg {u : Lean.Level} {α : Q(Type u)}
 /-- Raise a rational number expression to the power of a natural number.
 
 Fails if the exponent is not a literal. -/
-partial def pow {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
+partial def pow {u : Lean.Level} {α : Q(Type u)} (sα : Q(Semiring $α))
+    (_iα : Q(IsMulCommutative $α))
     {a : Q($α)} {b : Q(ℕ)} (za : RatCoeff a)
     (vb : Common.ExProdNat q($b)) :
     OptionT MetaM (Result RatCoeff q($a ^ $b)) := do
@@ -453,7 +470,8 @@ partial def pow {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
   | _ => OptionT.fail
 
 /-- Evaluate the inverse of a natural number expression. -/
-partial def inv {u : Lean.Level} {α : Q(Type u)} (_sα : Q(CommSemiring $α))
+partial def inv {u : Lean.Level} {α : Q(Type u)} (_sα : Q(Semiring $α))
+    (_iα : Q(IsMulCommutative $α))
     {a : Q($α)} (czα : Option Q(CharZero $α)) (_sfα : Q(Semifield $α)) (za : RatCoeff a) :
     AtomM (Option (Result RatCoeff q($a⁻¹))) := do
   match (← (Lean.observing? <| za.toResult.inv _ czα :)) with
@@ -463,14 +481,16 @@ partial def inv {u : Lean.Level} {α : Q(Type u)} (_sα : Q(CommSemiring $α))
   | none => return none
 
 /-- Try to evaluate an expression as a rational constant using `norm_num`. -/
-partial def derive {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α)) (x : Q($α)) :
-    MetaM (Result (Common.ExSum RatCoeff sα) q($x)) := do
+partial def derive {u : Lean.Level} {α : Q(Type u)} (sα : Q(Semiring $α))
+    (iα : Q(IsMulCommutative $α)) (x : Q($α)) :
+    MetaM (Result (Common.ExSum RatCoeff sα iα) q($x)) := do
   let res ← NormNum.derive x
-  let ⟨_, va, pa⟩ ← evalCast sα res
+  let ⟨_, va, pa⟩ ← evalCast sα iα res
   return ⟨_, va, q($pa)⟩
 
 /-- Decide if `x` is 1 and provide a proof if so. -/
-partial def isOne {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
+partial def isOne {u : Lean.Level} {α : Q(Type u)} (sα : Q(Semiring $α))
+    (_iα : Q(IsMulCommutative $α))
     {x : Q($α)} (zx : RatCoeff x) : Option Q(IsNat $x 1) := do
   let ⟨qx, _hx⟩ := zx
   if qx == 1 then
@@ -488,16 +508,17 @@ partial def _root_.Mathlib.Tactic.Ring.ringCompare {u : Lean.Level} {α : Q(Type
 
 /-- The data used by the `ring` tactic to normalize the constant coefficients. -/
 partial def _root_.Mathlib.Tactic.Ring.ringCompute
-    {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring $α)} (cα : Common.Cache sα) :
-    Common.RingCompute RatCoeff sα where
-  add := add sα
-  mul := mul sα
-  cast := cast sα cα
+    {u : Lean.Level} {α : Q(Type u)} {sα : Q(Semiring $α)} {iα : Q(IsMulCommutative $α)}
+    (cα : Common.Cache sα iα) :
+    Common.RingCompute RatCoeff sα iα where
+  add := add sα iα
+  mul := mul sα iα
+  cast := cast sα iα cα
   neg := neg
-  pow := pow sα
-  inv := inv sα
-  derive := derive sα
-  isOne := isOne sα
+  pow := pow sα iα
+  inv := inv sα iα
+  derive := derive sα iα
+  isOne := isOne sα iα
   one := ⟨q((nat_lit 1).rawCast), ⟨1, none⟩, q(rfl)⟩
   toRingCompare := ringCompare
 
@@ -506,7 +527,7 @@ end RingCompute
 
 /-- The data used by `ring`-like tactics to normalize constant coefficients of natural number
 expressions. -/
-def rcℕ : Common.RingCompute (u := 0) Common.btℕ Common.sℕ := Ring.ringCompute .nat
+def rcℕ : Common.RingCompute (u := 0) Common.btℕ Common.sℕ Common.iℕ := Ring.ringCompute .nat
 
 universe u
 
@@ -552,30 +573,34 @@ def proveEq (g : MVarId) : AtomM Unit := do
   let v ← try u.dec catch _ => throwError "not a type{indentExpr α}"
   have α : Q(Type v) := α
   let sα ←
-    try Except.ok <$> synthInstanceQ q(CommSemiring $α)
+    try Except.ok <$> (do
+      let sα ← synthInstanceQ q(Semiring $α)
+      let iα ← synthInstanceQ q(IsMulCommutative $α)
+      pure (sα, iα))
     catch e => pure (.error e)
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
   let eq ← match sα with
-  | .ok sα => ringCore sα e₁ e₂
+  | .ok (sα, iα) => ringCore sα iα e₁ e₂
   | .error e =>
     let β ← mkFreshExprMVarQ q(Type v)
     let e₁' ← mkFreshExprMVarQ q($β)
     let e₂' ← mkFreshExprMVarQ q($β)
-    let (sβ, (pf : Q($e₁' = $e₂' → $e₁ = $e₂))) ← try
+    let (sβ, iβ, (pf : Q($e₁' = $e₂' → $e₁ = $e₂))) ← try
       let _l ← synthInstanceQ q(CSLift $α $β)
-      let sβ ← synthInstanceQ q(CommSemiring $β)
+      let sβ ← synthInstanceQ q(Semiring $β)
+      let iβ ← synthInstanceQ q(IsMulCommutative $β)
       let _ ← synthInstanceQ q(CSLiftVal $e₁ $e₁')
       let _ ← synthInstanceQ q(CSLiftVal $e₂ $e₂')
-      pure (sβ, q(of_lift (a := $e₁) (b := $e₂)))
+      pure (sβ, iβ, q(of_lift (a := $e₁) (b := $e₂)))
     catch _ => throw e
-    pure q($pf $(← ringCore sβ e₁' e₂'))
+    pure q($pf $(← ringCore sβ iβ e₁' e₂'))
   g.assign eq
 where
-  /-- The core of `proveEq` takes expressions `e₁ e₂ : α` where `α` is a `CommSemiring`,
-  and returns a proof that they are equal (or fails). -/
-  ringCore {v : Level} {α : Q(Type v)} (sα : Q(CommSemiring $α))
+  /-- The core of `proveEq` takes expressions `e₁ e₂ : α` where `α` is a commutative
+  semiring, and returns a proof that they are equal (or fails). -/
+  ringCore {v : Level} {α : Q(Type v)} (sα : Q(Semiring $α)) (iα : Q(IsMulCommutative $α))
       (e₁ e₂ : Q($α)) : AtomM Q($e₁ = $e₂) := do
-    let c ← Common.mkCache sα
+    let c ← Common.mkCache sα iα
     profileitM Exception "ring" (← getOptions) do
       let ⟨a, va, pa⟩ ← Common.eval rcℕ (ringCompute c) c e₁
       let ⟨b, vb, pb⟩ ← Common.eval rcℕ (ringCompute c) c e₂

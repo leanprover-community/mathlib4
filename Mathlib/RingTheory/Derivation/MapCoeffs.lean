@@ -134,7 +134,7 @@ The unique derivation which can be made to a `DifferentialAlgebra` on `A[X]` wit
 -/
 def implicitDeriv (v : A[X]) :
     Derivation ℤ A[X] A[X] :=
-  mapCoeffs + v • derivative'.restrictScalars ℤ
+  mapCoeffs + v • (derivative' (R := A)).restrictScalars ℤ
 
 @[simp]
 lemma implicitDeriv_C (v : A[X]) (b : A) :

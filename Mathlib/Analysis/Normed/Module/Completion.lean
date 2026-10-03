@@ -40,7 +40,8 @@ instance [NormedField 𝕜] [SeminormedAddGroup E] [IsAddCommutative E] [NormedS
 section Module
 
 variable {𝕜 E}
-variable [Semiring 𝕜] [SeminormedAddGroup E] [IsAddCommutative E] [Module 𝕜 E] [UniformContinuousConstSMul 𝕜 E]
+variable [Semiring 𝕜] [SeminormedAddGroup E] [IsAddCommutative E] [Module 𝕜 E]
+  [UniformContinuousConstSMul 𝕜 E]
 
 /-- Embedding of a normed space to its completion as a linear isometry. -/
 def toComplₗᵢ : E →ₗᵢ[𝕜] Completion E :=
@@ -54,8 +55,9 @@ theorem coe_toComplₗᵢ : ⇑(toComplₗᵢ : E →ₗᵢ[𝕜] Completion E) 
     (toComplₗᵢ : E →ₗᵢ[𝕜] Completion E).toContinuousLinearMap = toComplL := rfl
 
 @[simp]
-theorem norm_toComplL {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddGroup E] [IsAddCommutative E]
-    [NormedSpace 𝕜 E] [Nontrivial E] : ‖(toComplL : E →L[𝕜] Completion E)‖ = 1 :=
+theorem norm_toComplL {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddGroup E]
+    [IsAddCommutative E] [NormedSpace 𝕜 E] [Nontrivial E] :
+    ‖(toComplL : E →L[𝕜] Completion E)‖ = 1 :=
   (toComplₗᵢ : E →ₗᵢ[𝕜] Completion E).norm_toContinuousLinearMap
 
 end Module
@@ -65,16 +67,12 @@ section Algebra
 variable (A : Type*)
 
 instance [SeminormedRing A] : NormedRing (Completion A) where
-  __ : NormedAddCommGroup (Completion A) := inferInstance
+  __ : NormedAddGroup (Completion A) := inferInstance
   __ : Ring (Completion A) := inferInstance
   norm_mul_le x y := by
     induction x, y using induction_on₂ with
     | hp => apply isClosed_le <;> fun_prop
     | ih x y => simpa only [← coe_mul, norm_coe] using norm_mul_le x y
-
-instance [SeminormedRing A] [IsMulCommutative A] : NormedCommRing (Completion A) where
-  __ : CommRing (Completion A) := inferInstance
-  __ : NormedRing (Completion A) := inferInstance
 
 instance [NormedField 𝕜] [SeminormedRing A] [IsMulCommutative A] [NormedAlgebra 𝕜 A] :
     NormedAlgebra 𝕜 (Completion A) where
@@ -82,7 +80,7 @@ instance [NormedField 𝕜] [SeminormedRing A] [IsMulCommutative A] [NormedAlgeb
 
 instance [NormedField A] [CompletableTopField A] :
     NormedField (UniformSpace.Completion A) where
-  __ : NormedCommRing (Completion A) := inferInstance
+  __ : NormedRing (Completion A) := inferInstance
   __ : Field (Completion A) := inferInstance
   norm_mul x y := induction_on₂ x y (isClosed_eq (by fun_prop) (by fun_prop)) (by simp [← coe_mul])
 

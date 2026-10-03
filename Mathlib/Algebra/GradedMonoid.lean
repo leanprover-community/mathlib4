@@ -255,8 +255,8 @@ class GCommMonoid [AddMonoid ι] [IsAddCommutative ι] extends GMonoid A where
 /-- `GCommMonoid` implies a `CommMonoid (GradedMonoid A)`, although this is only used as an
 instance locally to define notation in `gmonoid` and similar typeclasses. -/
 instance GCommMonoid.toCommMonoid [AddMonoid ι] [IsAddCommutative ι] [GCommMonoid A] :
-    CommMonoid (GradedMonoid A) where
-  mul_comm := GCommMonoid.mul_comm
+    IsMulCommutative (GradedMonoid A) where
+  is_comm := ⟨GCommMonoid.mul_comm⟩
 
 end Defs
 
@@ -333,7 +333,7 @@ section Monoid
 variable [AddMonoid ι] [IsAddCommutative ι] [GCommMonoid A]
 
 /-- The `CommMonoid` structure derived from `GCommMonoid A`. -/
-instance (priority := 900) GradeZero.commMonoid : CommMonoid (A 0) :=
+instance (priority := 900) GradeZero.commMonoid : IsMulCommutative (A 0) :=
   Function.Injective.commMonoid (mk 0) sigma_mk_injective rfl mk_zero_smul mk_zero_pow
 
 end Monoid
@@ -544,8 +544,8 @@ instance instMonoid : Monoid (A 0) :=
 instance instCommMonoid
     {R S : Type*} [SetLike S R] [Monoid R] [IsMulCommutative R]
     {A : ι → S} [SetLike.GradedMonoid A] :
-    CommMonoid (A 0) :=
-  inferInstanceAs <| CommMonoid (GradeZero.submonoid A)
+    IsMulCommutative (A 0) :=
+  inferInstanceAs <| IsMulCommutative (GradeZero.submonoid A)
 
 @[simp, norm_cast] theorem coe_one : ↑(1 : A 0) = (1 : R) := rfl
 
@@ -601,8 +601,9 @@ theorem SetLike.coe_gnpow {S : Type*} [SetLike S R] [Monoid R] [AddMonoid ι] (A
   rfl
 
 /-- Build a `GCommMonoid` instance for a collection of subobjects. -/
-instance SetLike.gCommMonoid {S : Type*} [SetLike S R] [Monoid R] [IsMulCommutative R] [AddMonoid ι] [IsAddCommutative ι] (A : ι → S)
-    [SetLike.GradedMonoid A] : GradedMonoid.GCommMonoid fun i => A i where
+instance SetLike.gCommMonoid {S : Type*} [SetLike S R] [Monoid R] [IsMulCommutative R]
+    [AddMonoid ι] [IsAddCommutative ι] (A : ι → S) [SetLike.GradedMonoid A] :
+    GradedMonoid.GCommMonoid fun i => A i where
   mul_comm := fun ⟨_, _, _⟩ ⟨_, _, _⟩ => Sigma.subtype_ext (add_comm _ _) (mul_comm _ _)
 
 section DProd
@@ -670,7 +671,8 @@ section CommMonoid
 
 namespace SetLike
 
-variable {ι R S : Type*} [SetLike S R] [Monoid R] [IsMulCommutative R] [AddMonoid ι] [IsAddCommutative ι]
+variable {ι R S : Type*} [SetLike S R] [Monoid R] [IsMulCommutative R] [AddMonoid ι]
+  [IsAddCommutative ι]
 variable (A : ι → S) [SetLike.GradedMonoid A]
 
 variable {κ : Type*} (i : κ → ι) (g : κ → R) {F : Finset κ}

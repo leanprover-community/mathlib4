@@ -122,7 +122,7 @@ of `∑ j, Π i, ‖mⱼ i‖`. -/
 noncomputable def projectiveSeminorm : Seminorm 𝕜 (⨂[𝕜] i, E i) := .ofSMulLE
     norm projectiveSeminorm_zero projectiveSeminorm_add_le projectiveSeminorm_smul_le
 
-noncomputable instance : SeminormedAddCommGroup (⨂[𝕜] i, E i) :=
+noncomputable instance : SeminormedAddGroup (⨂[𝕜] i, E i) :=
   fast_instance% AddGroupSeminorm.toSeminormedAddCommGroup projectiveSeminorm.toAddGroupSeminorm
 
 noncomputable instance : NormedSpace 𝕜 (⨂[𝕜] i, E i) := ⟨projectiveSeminorm_smul_le⟩

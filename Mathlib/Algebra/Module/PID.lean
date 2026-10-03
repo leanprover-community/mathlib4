@@ -168,7 +168,7 @@ omit dec in
 theorem torsion_by_prime_power_decomposition (hM : Module.IsTorsion' M (Submonoid.powers p))
     [h' : Module.Finite R M] :
     ∃ (d : ℕ) (k : Fin d → ℕ), Nonempty <| M ≃ₗ[R] ⨁ i : Fin d, R ⧸ R ∙ p ^ (k i : ℕ) := by
-  obtain ⟨d, s, hs⟩ := @Module.Finite.exists_fin _ _ _ _ _ h'; use d; clear h'
+  obtain ⟨d, s, hs⟩ := Module.Finite.exists_fin (R := R) (M := M); use d; clear h'
   induction d generalizing M with
   | zero =>
     use finZeroElim
@@ -256,8 +256,8 @@ theorem equiv_free_prod_directSum [h' : Module.Finite R M] :
     ∃ (n : ℕ) (ι : Type u) (_ : Fintype ι) (p : ι → R) (_ : ∀ i, Irreducible <| p i) (e : ι → ℕ),
       Nonempty <| M ≃ₗ[R] (Fin n →₀ R) × ⨁ i : ι, R ⧸ R ∙ p i ^ e i := by
   obtain ⟨I, fI, p, hp, e, ⟨h⟩⟩ :=
-    equiv_directSum_of_isTorsion.{u, v} (@torsion_isTorsion R M _ _ _)
-  obtain ⟨n, ⟨g⟩⟩ := @Module.basisOfFiniteTypeTorsionFree' R _ (M ⧸ torsion R M) _ _ _ _ _ _
+    equiv_directSum_of_isTorsion.{u, v} (torsion_isTorsion (R := R) (M := M))
+  obtain ⟨n, ⟨g⟩⟩ := Module.basisOfFiniteTypeTorsionFree' (R := R) (M := M ⧸ torsion R M)
   obtain ⟨f, hf⟩ := Module.projective_lifting_property _ LinearMap.id (torsion R M).mkQ_surjective
   refine
     ⟨n, I, fI, p, hp, e,

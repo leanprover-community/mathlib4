@@ -126,7 +126,7 @@ Note we do not make this an instance as a conflicting one already exists
 via `LieRing.ofAssociativeRing`. -/
 @[instance_reducible]
 def Cross.lieRing : LieRing (Fin 3 → R) :=
-  { Pi.addCommGroup with
+  { Pi.addGroup, Pi.isAddCommutative with
     bracket := fun u v => u ⨯₃ v
     add_lie := LinearMap.map_add₂ _
     lie_add := fun _ => map_add _

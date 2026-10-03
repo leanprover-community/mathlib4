@@ -82,20 +82,20 @@ between their additive monoid algebras. -/]
 def mapDomainBialgHom (f : M →* N) : R[M] →ₐc[R] R[N] :=
   .ofAlgHom (mapDomainAlgHom R R f) (by ext; simp) (by ext; simp)
 
-@[to_additive (attr := simp)]
+@[to_additive (dont_translate := R) (attr := simp)]
 lemma mapDomainBialgHom_id : mapDomainBialgHom R (.id M) = .id R R[M] := by ext; simp
 
-@[to_additive (attr := simp)]
+@[to_additive (dont_translate := R) (attr := simp)]
 lemma mapDomainBialgHom_comp (f : N →* O) (g : M →* N) :
     mapDomainBialgHom R (f.comp g) = (mapDomainBialgHom R f).comp (mapDomainBialgHom R g) := by
   ext; simp [Finsupp.mapDomain_fun_comp]
 
-@[to_additive]
+@[to_additive (dont_translate := R)]
 lemma mapDomainBialgHom_mapDomainBialgHom (f : N →* O) (g : M →* N) (x : R[M]) :
     mapDomainBialgHom R f (mapDomainBialgHom R g x) = mapDomainBialgHom R (f.comp g) x := by
   ext; simp
 
-@[to_additive (attr := simp)]
+@[to_additive (dont_translate := R) (attr := simp)]
 lemma mapDomainBialgHom_single (f : M →* N) (m : M) (r : R) :
     mapDomainBialgHom R f (single m r) = single (f m) r := mapDomain_single
 
@@ -104,7 +104,7 @@ values on the functions `single m 1` and `single 1 a`.
 
 See note [partially-applied ext lemmas]. Note that the first assumption isn't written as an
 equality of `MonoidHom`s because `of` doesn't additivise. -/
-@[to_additive (dont_translate := A) (attr := ext high)
+@[to_additive (dont_translate := R A) (attr := ext high)
 /-- A `R`-bialgebra homomorphism from `A[M]` is uniquely defined by its
 values on the functions `single m 1` and `single 1 a`.
 
@@ -123,7 +123,7 @@ lemma bialgHom_ext' ⦃φ₁ φ₂ : A[M] →ₐc[R] B⦄
       (φ₂ : A[M] →ₐ[R] B).comp singleOneAlgHom) : φ₁ = φ₂ :=
   BialgHom.coe_toAlgHom_injective <| algHom_ext' single_one_right single_one_left
 
-@[to_additive (attr := simp)]
+@[to_additive (dont_translate := R) (attr := simp)]
 lemma counit_domCongr (e : M ≃* N) (x : A[M]) : counit (R := R) (domCongr R A e x) = counit x := by
   induction x using MonoidAlgebra.induction_linear <;> simp [*]
 
@@ -303,11 +303,11 @@ lemma mapDomainOfBialgHom_mapDomainBialgHom (f : G →* H) :
     mapDomainOfBialgHom (mapDomainBialgHom (R := R) f) = f := by
   ext g; refine single_left_injective (R := R) one_ne_zero ?_; simp [single_mapDomainOfBialgHom]
 
-@[to_additive (attr := simp)]
+@[to_additive (dont_translate := R) (attr := simp)]
 lemma mapDomainOfBialgHom_id : mapDomainOfBialgHom (.id R R[G]) = .id _ := by
   simp [← mapDomainBialgHom_id]
 
-@[to_additive (attr := simp)]
+@[to_additive (dont_translate := R) (attr := simp)]
 lemma mapDomainOfBialgHom_comp (f : R[H] →ₐc[R] R[I]) (g : R[G] →ₐc[R] R[H]) :
     mapDomainOfBialgHom (f.comp g) = (mapDomainOfBialgHom f).comp (mapDomainOfBialgHom g) := by
   rw [← mapDomainOfBialgHom_mapDomainBialgHom (R := R)
@@ -317,7 +317,7 @@ lemma mapDomainOfBialgHom_comp (f : R[H] →ₐc[R] R[I]) (g : R[G] →ₐc[R] R
 
 /-- The equivalence between group homs `G → H` and bialgebra homs `R[G] → R[H]` of group algebras
 over a domain. -/
-@[expose, to_additive (attr := simps)
+@[expose, to_additive (dont_translate := R) (attr := simps)
 /-- The equivalence between group homs `G → H` and bialgebra homs `R[G] → R[H]` of group algebras
 over a domain. -/]
 def mapDomainBialgHomEquiv : (G →* H) ≃ (R[G] →ₐc[R] R[H]) where

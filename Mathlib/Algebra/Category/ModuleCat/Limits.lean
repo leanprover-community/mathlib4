@@ -33,8 +33,12 @@ variable {R : Type u} [Ring R]
 variable {J : Type v} [Category.{t} J] (F : J ⥤ ModuleCat.{w} R)
 
 instance addCommGroupObj (j) :
-    AddCommGroup ((F ⋙ forget (ModuleCat R)).obj j) :=
-  inferInstanceAs <| AddCommGroup (F.obj j)
+    AddGroup ((F ⋙ forget (ModuleCat R)).obj j) :=
+  inferInstanceAs <| AddGroup (F.obj j)
+
+instance isAddCommutativeObj (j) :
+    IsAddCommutative ((F ⋙ forget (ModuleCat R)).obj j) :=
+  inferInstanceAs <| IsAddCommutative (F.obj j)
 
 instance moduleObj (j) :
     Module.{u, w} R ((F ⋙ forget (ModuleCat R)).obj j) :=
@@ -50,8 +54,11 @@ def sectionsSubmodule : Submodule R (∀ j, F.obj j) :=
     smul_mem' := fun r s sh j j' f => by
       simpa [Functor.sections] using congr(r • $(sh f)) }
 
-instance : AddCommMonoid (F ⋙ forget (ModuleCat R)).sections :=
-  inferInstanceAs <| AddCommMonoid (sectionsSubmodule F)
+instance : AddMonoid (F ⋙ forget (ModuleCat R)).sections :=
+  inferInstanceAs <| AddMonoid (sectionsSubmodule F)
+
+instance : IsAddCommutative (F ⋙ forget (ModuleCat R)).sections :=
+  inferInstanceAs <| IsAddCommutative (sectionsSubmodule F)
 
 instance : Module R (F ⋙ forget (ModuleCat R)).sections :=
   inferInstanceAs <| Module R (sectionsSubmodule F)
@@ -66,12 +73,16 @@ instance : Small.{w} (sectionsSubmodule F) :=
 -- Adding the following instance speeds up `limitModule` noticeably,
 -- by preventing a bad unfold of `limitAddCommGroup`.
 instance limitAddCommMonoid :
-    AddCommMonoid (Types.Small.limitCone.{v, w} (F ⋙ forget (ModuleCat.{w} R))).pt :=
-  inferInstanceAs <| AddCommMonoid (Shrink (sectionsSubmodule F))
+    AddMonoid (Types.Small.limitCone.{v, w} (F ⋙ forget (ModuleCat.{w} R))).pt :=
+  inferInstanceAs <| AddMonoid (Shrink (sectionsSubmodule F))
 
 instance limitAddCommGroup :
-    AddCommGroup (Types.Small.limitCone.{v, w} (F ⋙ forget (ModuleCat.{w} R))).pt :=
-  inferInstanceAs <| AddCommGroup (Shrink.{w} (sectionsSubmodule F))
+    AddGroup (Types.Small.limitCone.{v, w} (F ⋙ forget (ModuleCat.{w} R))).pt :=
+  inferInstanceAs <| AddGroup (Shrink.{w} (sectionsSubmodule F))
+
+instance limitIsAddCommutative :
+    IsAddCommutative (Types.Small.limitCone.{v, w} (F ⋙ forget (ModuleCat.{w} R))).pt :=
+  inferInstanceAs <| IsAddCommutative (Shrink.{w} (sectionsSubmodule F))
 
 instance limitModule :
     Module R (Types.Small.limitCone.{v, w} (F ⋙ forget (ModuleCat.{w} R))).pt :=

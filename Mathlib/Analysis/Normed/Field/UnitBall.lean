@@ -47,8 +47,8 @@ instance Metric.unitBall.instContinuousMul [NonUnitalSeminormedRing 𝕜] :
   (Subsemigroup.unitBall 𝕜).continuousMul
 
 instance Metric.unitBall.instCommSemigroup [SeminormedRing 𝕜] [IsMulCommutative 𝕜] :
-    CommSemigroup (ball (0 : 𝕜) 1) :=
-  inferInstanceAs <| CommSemigroup (Subsemigroup.unitBall 𝕜)
+    IsMulCommutative (ball (0 : 𝕜) 1) :=
+  inferInstanceAs <| IsMulCommutative (Subsemigroup.unitBall 𝕜)
 
 instance Metric.unitBall.instHasDistribNeg [NonUnitalSeminormedRing 𝕜] :
     HasDistribNeg (ball (0 : 𝕜) 1) :=
@@ -150,9 +150,10 @@ instance Metric.unitClosedBall.instMonoid [SeminormedRing 𝕜] [NormOneClass �
     Monoid (closedBall (0 : 𝕜) 1) :=
   inferInstanceAs <| Monoid (Submonoid.unitClosedBall 𝕜)
 
-instance Metric.unitClosedBall.instCommMonoid [SeminormedRing 𝕜] [IsMulCommutative 𝕜] [NormOneClass 𝕜] :
-    CommMonoid (closedBall (0 : 𝕜) 1) :=
-  inferInstanceAs <| CommMonoid (Submonoid.unitClosedBall 𝕜)
+instance Metric.unitClosedBall.instCommMonoid [SeminormedRing 𝕜] [IsMulCommutative 𝕜]
+    [NormOneClass 𝕜] :
+    IsMulCommutative (closedBall (0 : 𝕜) 1) :=
+  inferInstanceAs <| IsMulCommutative (Submonoid.unitClosedBall 𝕜)
 
 @[simp, norm_cast]
 protected theorem Metric.unitClosedBall.coe_one [SeminormedRing 𝕜] [NormOneClass 𝕜] :
@@ -222,9 +223,10 @@ instance Metric.unitSphere.instMonoid [SeminormedRing 𝕜] [NormMulClass 𝕜] 
     Monoid (sphere (0 : 𝕜) 1) :=
   inferInstanceAs <| Monoid (Submonoid.unitSphere 𝕜)
 
-instance Metric.unitSphere.instCommMonoid [SeminormedRing 𝕜] [IsMulCommutative 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
-    CommMonoid (sphere (0 : 𝕜) 1) :=
-  inferInstanceAs <| CommMonoid (Submonoid.unitSphere 𝕜)
+instance Metric.unitSphere.instCommMonoid [SeminormedRing 𝕜] [IsMulCommutative 𝕜] [NormMulClass 𝕜]
+    [NormOneClass 𝕜] :
+    IsMulCommutative (sphere (0 : 𝕜) 1) :=
+  inferInstanceAs <| IsMulCommutative (Submonoid.unitSphere 𝕜)
 
 @[simp, norm_cast]
 protected theorem Metric.unitSphere.coe_one [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
@@ -274,4 +276,5 @@ instance Metric.sphere.instIsTopologicalGroup [NormedDivisionRing 𝕜] :
     IsTopologicalGroup (sphere (0 : 𝕜) 1) where
   continuous_inv := (continuous_subtype_val.inv₀ ne_zero_of_mem_unit_sphere).subtype_mk _
 
-instance Metric.sphere.instCommGroup [NormedField 𝕜] : CommGroup (sphere (0 : 𝕜) 1) where
+instance Metric.sphere.instCommGroup [NormedField 𝕜] : IsMulCommutative (sphere (0 : 𝕜) 1) :=
+  inferInstance

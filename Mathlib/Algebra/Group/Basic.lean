@@ -1081,6 +1081,7 @@ instance AddCommMonoid.toGrindNatModule [s : AddMonoid α] [IsAddCommutative α]
     Grind.NatModule α :=
   { s with
     nsmul := ⟨s.nsmul⟩
+    add_comm := add_comm
     zero_nsmul := AddMonoid.nsmul_zero
     add_one_nsmul n a := by change (n + 1) • a = n • a + a; rw [add_nsmul, one_nsmul] }
 
@@ -1089,6 +1090,7 @@ instance AddCommGroup.toGrindIntModule [s : AddGroup α] [IsAddCommutative α] :
   { s with
     nsmul := ⟨s.nsmul⟩
     zsmul := ⟨s.zsmul⟩
+    add_comm := add_comm
     zero_zsmul := SubNegMonoid.zsmul_zero'
     one_zsmul := one_zsmul
     add_zsmul n m a := add_zsmul a n m

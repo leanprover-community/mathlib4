@@ -217,15 +217,9 @@ instance instAddMonoid [AddMonoid R] [AddMonoid A] : AddMonoid (Unitization R A)
 instance instAddGroup [AddGroup R] [AddGroup A] : AddGroup (Unitization R A) :=
   fast_instance% equiv.addGroup
 
-instance instAddCommSemigroup [AddSemigroup R] [IsAddCommutative R] [AddSemigroup A] [IsAddCommutative A] :
-    AddCommSemigroup (Unitization R A) :=
-  fast_instance% equiv.addCommSemigroup
-
-instance instAddCommMonoid [AddMonoid R] [IsAddCommutative R] [AddMonoid A] [IsAddCommutative A] : AddCommMonoid (Unitization R A) :=
-  fast_instance% equiv.addCommMonoid
-
-instance instAddCommGroup [AddGroup R] [IsAddCommutative R] [AddGroup A] [IsAddCommutative A] : AddCommGroup (Unitization R A) :=
-  fast_instance% equiv.addCommGroup
+instance instIsAddCommutative [Add R] [IsAddCommutative R] [Add A] [IsAddCommutative A] :
+    IsAddCommutative (Unitization R A) where
+  is_comm.comm _ _ := Unitization.ext (add_comm ..) (add_comm ..)
 
 @[simp]
 theorem toProd_zero [Zero R] [Zero A] : (0 : Unitization R A).toProd = 0 :=
@@ -510,7 +504,7 @@ instance instNonAssocSemiring [Semiring R] [NonUnitalNonAssocSemiring A] [Module
     NonAssocSemiring (Unitization R A) :=
   fast_instance%
   { Unitization.instMulOneClass,
-    Unitization.instAddCommMonoid with
+    Unitization.instAddMonoid, Unitization.instIsAddCommutative with
     zero_mul _ := Unitization.ext (zero_mul _) <| by simp
     mul_zero _ := Unitization.ext (mul_zero _) <| by simp
     left_distrib _ _ _ := Unitization.ext (mul_add ..) <| by
@@ -529,36 +523,25 @@ instance instMonoid [Monoid R] [IsMulCommutative R] [NonUnitalSemiring A] [Distr
         mul_smul_comm, mul_comm z.fst x.fst, mul_comm z.fst y.fst]
       abel }
 
-instance instCommMonoid [Monoid R] [IsMulCommutative R] [NonUnitalSemiring A] [IsMulCommutative A] [DistribMulAction R A]
-    [IsScalarTower R A A] [SMulCommClass R A A] : CommMonoid (Unitization R A) :=
-  fast_instance%
-  { Unitization.instMonoid with
-    mul_comm _ _ := Unitization.ext (mul_comm ..) <| by simp [add_comm, mul_comm] }
+instance instIsMulCommutative [Monoid R] [IsMulCommutative R] [NonUnitalSemiring A]
+    [IsMulCommutative A] [DistribMulAction R A] [IsScalarTower R A A] [SMulCommClass R A A] :
+    IsMulCommutative (Unitization R A) where
+  is_comm.comm _ _ := Unitization.ext (mul_comm ..) <| by simp [add_comm, mul_comm]
 
 instance instSemiring [Semiring R] [IsMulCommutative R] [NonUnitalSemiring A] [Module R A] [IsScalarTower R A A]
     [SMulCommClass R A A] : Semiring (Unitization R A) :=
   fast_instance%
   { Unitization.instMonoid, Unitization.instNonAssocSemiring with }
 
-instance instCommSemiring [Semiring R] [IsMulCommutative R] [NonUnitalSemiring A] [IsMulCommutative A] [Module R A]
-    [IsScalarTower R A A] [SMulCommClass R A A] : CommSemiring (Unitization R A) :=
-  fast_instance%
-  { Unitization.instCommMonoid, Unitization.instNonAssocSemiring with }
-
 instance instNonAssocRing [Ring R] [IsMulCommutative R] [NonUnitalNonAssocRing A] [Module R A] :
     NonAssocRing (Unitization R A) :=
   fast_instance%
-  { Unitization.instAddCommGroup, Unitization.instNonAssocSemiring with }
+  { Unitization.instAddGroup, Unitization.instNonAssocSemiring with }
 
 instance instRing [Ring R] [IsMulCommutative R] [NonUnitalRing A] [Module R A] [IsScalarTower R A A]
     [SMulCommClass R A A] : Ring (Unitization R A) :=
   fast_instance%
-  { Unitization.instAddCommGroup, Unitization.instSemiring with }
-
-instance instCommRing [Ring R] [IsMulCommutative R] [NonUnitalRing A] [IsMulCommutative A] [Module R A] [IsScalarTower R A A]
-    [SMulCommClass R A A] : CommRing (Unitization R A) :=
-  fast_instance%
-  { Unitization.instAddCommGroup, Unitization.instCommSemiring with }
+  { Unitization.instAddGroup, Unitization.instSemiring with }
 
 variable (R A)
 

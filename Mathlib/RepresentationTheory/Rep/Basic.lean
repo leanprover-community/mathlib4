@@ -31,7 +31,7 @@ structure Rep (k : Type u) (G : Type v) [Semiring k] [Monoid G] where
   _mkInternal ::
   /-- the underlying type of an object in `Rep k G` -/
   V : Type w
-  [hV1 : AddGroup V] [IsAddCommutative V]
+  [hV1 : AddGroup V] [hV1Comm : IsAddCommutative V]
   [hV2 : Module k V]
   /-- the underlying representation of an object in `Rep k G` -/
   ρ : Representation k G V
@@ -46,11 +46,11 @@ variable {k : Type u} {G : Type v} [Semiring k] [Monoid G] {X Y : Type w} [AddGr
   [AddGroup Y] [IsAddCommutative Y] [Module k X] [Module k Y] {ρ : Representation k G X} {σ : Representation k G Y}
   (A B C : Rep.{w} k G)
 
-attribute [instance] hV1
+attribute [instance] hV1 hV1Comm
 
 attribute [instance 1100] hV2
 
-initialize_simps_projections Rep (-hV1, -hV2)
+initialize_simps_projections Rep (-hV1, -hV1Comm, -hV2)
 
 instance : CoeSort (Rep k G) (Type w) := ⟨Rep.V⟩
 
@@ -262,8 +262,10 @@ lemma ofHom_zsmul (f : ρ.IntertwiningMap σ) (n : ℤ) : ofHom (n • f) = n �
 
 lemma zsmul_hom (f : A ⟶ B) (n : ℤ) : (n • f).hom = n • f.hom := rfl
 
-instance : AddCommGroup (A ⟶ B) := fast_instance% hom_injective.addCommGroup
+instance : AddGroup (A ⟶ B) := fast_instance% hom_injective.addGroup
     Rep.Hom.hom zero_hom add_hom neg_hom sub_hom nsmul_hom zsmul_hom
+
+instance : IsAddCommutative (A ⟶ B) := hom_injective.isAddCommutative Rep.Hom.hom add_hom
 
 instance : Preadditive (Rep.{w} k G) where
   add_comp := by simp [add_comp]

@@ -58,16 +58,8 @@ theorem norm_coe {s : Subgroup E} (x : s) : ‖(x : E)‖ = ‖x‖ :=
 end SeminormedGroup
 
 @[to_additive]
-instance seminormedCommGroup [SeminormedGroup E] [IsMulCommutative E] {s : Subgroup E} : SeminormedCommGroup s :=
-  fast_instance% SeminormedCommGroup.induced _ _ s.subtype
-
-@[to_additive]
 instance normedGroup [NormedGroup E] {s : Subgroup E} : NormedGroup s :=
   fast_instance% NormedGroup.induced _ _ s.subtype Subtype.coe_injective
-
-@[to_additive]
-instance normedCommGroup [NormedGroup E] [IsMulCommutative E] {s : Subgroup E} : NormedCommGroup s :=
-  fast_instance% NormedCommGroup.induced _ _ s.subtype Subtype.coe_injective
 
 end Subgroup
 
@@ -97,18 +89,8 @@ theorem coe_norm (x : s) : ‖x‖ = ‖(x : E)‖ :=
 end SeminormedGroup
 
 @[to_additive]
-instance (priority := 75) seminormedCommGroup [SeminormedGroup E] [IsMulCommutative E] {S : Type*} [SetLike S E]
-    [SubgroupClass S E] (s : S) : SeminormedCommGroup s :=
-  fast_instance% SeminormedCommGroup.induced _ _ (SubgroupClass.subtype s)
-
-@[to_additive]
 instance (priority := 75) normedGroup [NormedGroup E] {S : Type*} [SetLike S E] [SubgroupClass S E]
     (s : S) : NormedGroup s :=
   fast_instance% NormedGroup.induced _ _ (SubgroupClass.subtype s) Subtype.coe_injective
-
-@[to_additive]
-instance (priority := 75) normedCommGroup [NormedGroup E] [IsMulCommutative E] {S : Type*} [SetLike S E]
-    [SubgroupClass S E] (s : S) : NormedCommGroup s :=
-  fast_instance% NormedCommGroup.induced _ _ (SubgroupClass.subtype s) Subtype.coe_injective
 
 end SubgroupClass

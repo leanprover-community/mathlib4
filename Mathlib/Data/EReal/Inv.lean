@@ -13,8 +13,9 @@ public import Mathlib.Data.Nat.Cast.Order.Field
 /-!
 # Absolute value, sign, inversion and division on extended real numbers
 
-This file defines an absolute value and sign function on `EReal` and uses them to provide a
-`CommMonoidWithZero` instance, based on the absolute value and sign characterising all `EReal`s.
+This file defines an absolute value and sign function on `EReal` and uses them to provide
+`MonoidWithZero` and `IsMulCommutative` instances, based on the absolute value and sign
+characterising all `EReal`s.
 Then it defines the inverse of an `EReal` as `⊤⁻¹ = ⊥⁻¹ = 0`, which leads to a
 `DivInvMonoid` instance and division.
 -/
@@ -71,7 +72,7 @@ theorem abs_mul (x y : EReal) : (x * y).abs = x.abs * y.abs := by
   induction x, y using induction₂_symm_neg with
   | top_zero => simp only [mul_zero, abs_zero]
   | top_top => rfl
-  | symm h => rwa [mul_comm, EReal.mul_comm]
+  | symm h => rwa [mul_comm (M := ℝ≥0∞), EReal.mul_comm]
   | coe_coe => simp only [← coe_mul, abs_def, _root_.abs_mul, ENNReal.ofReal_mul (abs_nonneg _)]
   | top_pos _ h =>
     rw [top_mul_coe_of_pos h, abs_top, ENNReal.top_mul]
@@ -105,7 +106,7 @@ theorem sign_mul (x y : EReal) : sign (x * y) = sign x * sign y := by
   induction x, y using induction₂_symm_neg with
   | top_zero => simp only [mul_zero, sign_zero]
   | top_top => rfl
-  | symm h => rwa [mul_comm, EReal.mul_comm]
+  | symm h => rwa [mul_comm (M := SignType), EReal.mul_comm]
   | coe_coe => simp only [← coe_mul, sign_coe, _root_.sign_mul]
   | top_pos _ h =>
     rw [top_mul_coe_of_pos h, sign_top, one_mul, sign_pos (EReal.coe_pos.2 h)]
@@ -144,12 +145,13 @@ theorem le_iff_sign {x y : EReal} :
     · exact (sign.monotone.reflect_lt h).le
     all_goals rw [← x.sign_mul_abs, ← y.sign_mul_abs]; simp [h]
 
-instance : CommMonoidWithZero EReal :=
+instance : MonoidWithZero EReal :=
   { (inferInstance : MulZeroOneClass EReal) with
     mul_assoc := fun x y z => by
       rw [← sign_eq_and_abs_eq_iff_eq]
-      simp only [mul_assoc, abs_mul, sign_mul, and_self_iff]
-    mul_comm := EReal.mul_comm }
+      simp only [mul_assoc, abs_mul, sign_mul, and_self_iff] }
+
+instance : IsMulCommutative EReal := ⟨⟨EReal.mul_comm⟩⟩
 
 instance : PosMulMono EReal := posMulMono_iff_covariant_pos.2 <| .mk <| by
   rintro ⟨x, x0⟩ a b h

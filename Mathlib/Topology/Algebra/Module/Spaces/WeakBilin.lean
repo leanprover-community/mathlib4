@@ -68,11 +68,18 @@ namespace WeakBilin
 
 variable [Semiring 𝕜] [IsMulCommutative 𝕜] [AddMonoid E] [IsAddCommutative E] [Module 𝕜 E] [AddMonoid F] [IsAddCommutative F] [Module 𝕜 F]
   (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) [Semiring 𝕝] [IsMulCommutative 𝕝] [Module 𝕝 E] in
-deriving instance SMul 𝕝, AddCommMonoid, Module 𝕝 for WeakBilin B
+deriving instance SMul 𝕝, AddMonoid, IsAddCommutative for WeakBilin B
+
+-- `deriving instance Module 𝕝` fails here with a `wrapInstance` unification error once the
+-- `IsAddCommutative` argument of `Module` is a separate (Prop) instance, so we state it directly.
+variable [Semiring 𝕜] [IsMulCommutative 𝕜] [AddMonoid E] [IsAddCommutative E] [Module 𝕜 E] [AddMonoid F] [IsAddCommutative F] [Module 𝕜 F]
+  (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) [Semiring 𝕝] [IsMulCommutative 𝕝] [Module 𝕝 E] in
+instance instModule : Module 𝕝 (WeakBilin B) :=
+  inferInstanceAs <| Module 𝕝 E
 
 instance instAddCommGroup [Semiring 𝕜] [IsMulCommutative 𝕜] [AddGroup E] [IsAddCommutative E] [Module 𝕜 E] [AddMonoid F] [IsAddCommutative F]
-    [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : AddCommGroup (WeakBilin B) :=
-  inferInstanceAs <| AddCommGroup E
+    [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : AddGroup (WeakBilin B) :=
+  inferInstanceAs <| AddGroup E
 
 instance [Semiring 𝕜] [IsMulCommutative 𝕜] [AddMonoid E] [IsAddCommutative E] [Module 𝕜 E] [AddMonoid F] [IsAddCommutative F] [Module 𝕜 F]
     (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : Module 𝕜 (WeakBilin B) :=

@@ -399,8 +399,8 @@ set_option linter.docPrime false in
 theorem norm_mk' (p : E) : ‖mk p‖ = ‖p‖ := rfl
 
 @[to_additive]
-instance : NormedCommGroup (SeparationQuotient E) where
-  __ : CommGroup (SeparationQuotient E) := instCommGroup
+instance : NormedGroup (SeparationQuotient E) where
+  __ : Group (SeparationQuotient E) := instGroup
   dist_eq := Quotient.ind₂ dist_eq_norm_inv_mul
 
 @[to_additive]

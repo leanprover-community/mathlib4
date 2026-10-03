@@ -169,7 +169,7 @@ where the choice of `F` enters.
 If you need stronger control over the complement `F`, use `IsSubmersionAtOfComplement` instead.
 -/
 def IsSubmersionAt (f : M → N) (x : M) : Prop :=
-  ∃ (F : Type u) (_ : NormedAddCommGroup F) (_ : NormedSpace 𝕜 F),
+  ∃ (F : Type u) (_ : NormedAddGroup F) (_ : IsAddCommutative F) (_ : NormedSpace 𝕜 F),
     IsSubmersionAtOfComplement F I J n f x
 
 variable {f g : M → N} {x : M}
@@ -300,9 +300,13 @@ def smallComplement (hf : IsSubmersionAtOfComplement F I J n f x) : Type u :=
   haveI := hf.small
   Shrink.{u} F
 
-instance (hf : IsSubmersionAtOfComplement F I J n f x) : NormedAddCommGroup hf.smallComplement :=
+instance (hf : IsSubmersionAtOfComplement F I J n f x) : NormedAddGroup hf.smallComplement :=
   haveI := hf.small
-  inferInstanceAs <| NormedAddCommGroup (Shrink F)
+  inferInstanceAs <| NormedAddGroup (Shrink F)
+
+instance (hf : IsSubmersionAtOfComplement F I J n f x) : IsAddCommutative hf.smallComplement :=
+  haveI := hf.small
+  inferInstanceAs <| IsAddCommutative (Shrink F)
 
 instance (hf : IsSubmersionAtOfComplement F I J n f x) : NormedSpace 𝕜 hf.smallComplement :=
   haveI := hf.small
@@ -355,7 +359,7 @@ while being a submersion at `x` requires the existence of a complement in the sa
 the model normed space of `N`. This is solved by `smallComplement` and `smallEquiv`. -/
 lemma isSubmersionAt (h : IsSubmersionAtOfComplement F I J n f x) :
     IsSubmersionAt I J n f x := by
-  use h.smallComplement, by infer_instance, by infer_instance
+  use h.smallComplement, by infer_instance, by infer_instance, by infer_instance
   exact (IsSubmersionAtOfComplement.congr_F h.smallEquiv).mp h
 
 /-- If `f` is a `C^n` submersion at `x`, then `f` is `C^n` on its domain chart's source,
@@ -388,7 +392,7 @@ lemma mk_of_charts (equiv : E ≃L[𝕜] (E'' × F))
       (domChart.extend I).target) : IsSubmersionAt I J n f x := by
   have aux : IsSubmersionAtOfComplement F I J n f x := by
     apply IsSubmersionAtOfComplement.mk_of_charts <;> assumption
-  use aux.smallComplement, by infer_instance, by infer_instance
+  use aux.smallComplement, by infer_instance, by infer_instance, by infer_instance
   rwa [← IsSubmersionAtOfComplement.congr_F aux.smallEquiv]
 
 /-- `f : M → N` is a `C^n` submersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
@@ -404,22 +408,26 @@ lemma mk_of_continuousAt {f : M → N} {x : M} (hf : ContinuousAt f x) (equiv : 
       (domChart.extend I).target) : IsSubmersionAt I J n f x := by
   have aux : IsSubmersionAtOfComplement F I J n f x := by
     apply IsSubmersionAtOfComplement.mk_of_continuousAt <;> assumption
-  use aux.smallComplement, by infer_instance, by infer_instance
+  use aux.smallComplement, by infer_instance, by infer_instance, by infer_instance
   rwa [← IsSubmersionAtOfComplement.congr_F aux.smallEquiv]
 
 /-- A choice of complement of the model normed space `E` of `M` in the model normed space
 `E'` of `N` -/
 def complement (h : IsSubmersionAt I J n f x) : Type u := Classical.choose h
 
-@[no_expose] instance (h : IsSubmersionAt I J n f x) : NormedAddCommGroup h.complement :=
-  Classical.choose (Classical.choose_spec h)
+@[no_expose] instance (h : IsSubmersionAt I J n f x) : NormedAddGroup h.complement :=
+  Classical.choose <| Classical.choose_spec h
+
+instance (h : IsSubmersionAt I J n f x) : IsAddCommutative h.complement :=
+  Classical.choose <| Classical.choose_spec <| Classical.choose_spec h
 
 @[no_expose] instance (h : IsSubmersionAt I J n f x) : NormedSpace 𝕜 h.complement :=
-  Classical.choose <| Classical.choose_spec <| Classical.choose_spec h
+  Classical.choose <| Classical.choose_spec <| Classical.choose_spec <| Classical.choose_spec h
 
 lemma isSubmersionAtOfComplement_complement (h : IsSubmersionAt I J n f x) :
     IsSubmersionAtOfComplement h.complement I J n f x :=
-  Classical.choose_spec <| Classical.choose_spec <| Classical.choose_spec h
+  Classical.choose_spec <| Classical.choose_spec <| Classical.choose_spec <|
+    Classical.choose_spec h
 
 /-- A choice of chart on the domain `M` of a submersion `f` at `x`:
 w.r.t. this chart and the data `h.codChart` and `h.equiv`,
@@ -487,7 +495,7 @@ lemma target_subset_preimage_target (h : IsSubmersionAt I J n f x) :
 then `g` is a submersion at `x`. -/
 lemma congr_of_eventuallyEq (hf : IsSubmersionAt I J n f x) (hfg : f =ᶠ[𝓝 x] g) :
     IsSubmersionAt I J n g x := by
-  use hf.complement, by infer_instance, by infer_instance
+  use hf.complement, by infer_instance, by infer_instance, by infer_instance
   exact hf.isSubmersionAtOfComplement_complement.congr_of_eventuallyEq hfg
 
 /-- If `f = g` on some neighbourhood of `x`,
@@ -551,7 +559,7 @@ Note that our global choice of complement is a bit stronger than asking `f` to b
 each `x ∈ M` w.r.t. to potentially varying complements: see `isSubmersionAt` for details.
 -/
 def IsSubmersion (f : M → N) : Prop :=
-  ∃ (F : Type u) (_ : NormedAddCommGroup F) (_ : NormedSpace 𝕜 F),
+  ∃ (F : Type u) (_ : NormedAddGroup F) (_ : IsAddCommutative F) (_ : NormedSpace 𝕜 F),
     IsSubmersionOfComplement F I J n f
 
 namespace IsSubmersionOfComplement
@@ -588,11 +596,11 @@ the model normed space of `N`. This is solved by `smallComplement` and `smallEqu
 lemma isSubmersion (h : IsSubmersionOfComplement F I J n f) : IsSubmersion I J n f := by
   by_cases! hM : IsEmpty M
   · rw [IsSubmersion]
-    use PUnit, by infer_instance, by infer_instance
+    use PUnit, by infer_instance, by infer_instance, by infer_instance
     exact fun x ↦ (IsEmpty.false x).elim
   inhabit M
   let x : M := Inhabited.default
-  use (h x).smallComplement, by infer_instance, by infer_instance
+  use (h x).smallComplement, by infer_instance, by infer_instance, by infer_instance
   exact (IsSubmersionOfComplement.congr_F (h x).smallEquiv).mp h
 
 open IsManifold in
@@ -622,20 +630,24 @@ variable {f g : M → N}
 `E'` of `N` -/
 def complement (h : IsSubmersion I J n f) : Type u := Classical.choose h
 
-@[no_expose] instance (h : IsSubmersion I J n f) : NormedAddCommGroup h.complement :=
+@[no_expose] instance (h : IsSubmersion I J n f) : NormedAddGroup h.complement :=
   Classical.choose <| Classical.choose_spec h
 
-@[no_expose] instance (h : IsSubmersion I J n f) : NormedSpace 𝕜 h.complement :=
+instance (h : IsSubmersion I J n f) : IsAddCommutative h.complement :=
   Classical.choose <| Classical.choose_spec <| Classical.choose_spec h
+
+@[no_expose] instance (h : IsSubmersion I J n f) : NormedSpace 𝕜 h.complement :=
+  Classical.choose <| Classical.choose_spec <| Classical.choose_spec <| Classical.choose_spec h
 
 lemma isSubmersionOfComplement_complement (h : IsSubmersion I J n f) :
     IsSubmersionOfComplement h.complement I J n f :=
-  Classical.choose_spec <| Classical.choose_spec <| Classical.choose_spec h
+  Classical.choose_spec <| Classical.choose_spec <| Classical.choose_spec <|
+    Classical.choose_spec h
 
 /-- If `f` is a submersion, it is a submersion at each point. -/
 lemma isSubmersionAt (h : IsSubmersion I J n f) (x : M) : IsSubmersionAt I J n f x := by
   rw [IsSubmersionAt]
-  use h.complement, by infer_instance, by infer_instance
+  use h.complement, by infer_instance, by infer_instance, by infer_instance
   exact h.isSubmersionOfComplement_complement x
 
 /-- If `f: M → N` and `g: M' → N'` are submersions at `x` and `x'`, respectively,
@@ -649,7 +661,7 @@ theorem prodMap {f : M → N} {g : M' → N'}
 
 /-- The identity map is an submersion. -/
 protected lemma id [IsManifold I n M] : IsSubmersion I I n (@id M) := by
-  use PUnit, by infer_instance, by infer_instance
+  use PUnit, by infer_instance, by infer_instance, by infer_instance
   exact IsSubmersionOfComplement.id
 
 /-- A `C^n` submersion is `C^n` -/

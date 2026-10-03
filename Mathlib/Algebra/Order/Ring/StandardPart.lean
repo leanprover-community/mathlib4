@@ -48,7 +48,7 @@ variable (K) in
 some natural number. -/
 def FiniteElement : Type _ :=
   (addValuation K).toValuation.valuationSubring
-deriving CommRing, IsDomain, ValuationRing, LinearOrder, IsStrictOrderedRing
+deriving Ring, IsMulCommutative, IsDomain, ValuationRing, LinearOrder, IsStrictOrderedRing
 
 namespace FiniteElement
 

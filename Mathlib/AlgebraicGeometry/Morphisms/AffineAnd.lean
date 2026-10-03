@@ -91,7 +91,8 @@ lemma affineAnd_isLocal (hPi : RingHom.RespectsIso Q) (hQl : RingHom.Localizatio
         exact (hf ⟨r, hr⟩).left
     refine ⟨inferInstance, hQs.ofIsLocalization' hPi (f.appTop).hom s hs fun a ↦ ?_⟩
     refine ⟨Γ(Y, Y.basicOpen a.val), Γ(X, X.basicOpen (f.appTop a.val)), inferInstance,
-      inferInstance, inferInstance, inferInstance, inferInstance, ?_, ?_⟩
+      inferInstance, inferInstance, inferInstance, inferInstance, inferInstance, inferInstance,
+      ?_, ?_⟩
     · exact (isAffineOpen_top X).isLocalization_basicOpen (f.appTop a.val)
     · obtain ⟨_, hf⟩ := hf a
       rw [morphismRestrict_appTop, CommRingCat.hom_comp, hPi.cancel_right_isIso] at hf

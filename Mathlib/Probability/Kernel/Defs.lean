@@ -106,8 +106,10 @@ instance : IsSMulApply ℕ (Kernel α β) α (Measure β) where
 @[deprecated (since := "2026-06-30")] protected alias add_apply := add_apply
 @[deprecated (since := "2026-06-30")] protected alias nsmul_apply := smul_apply
 
-noncomputable instance instAddCommMonoid : AddCommMonoid (Kernel α β) :=
-  fast_instance% FunLike.addCommMonoid
+noncomputable instance instAddMonoid : AddMonoid (Kernel α β) :=
+  fast_instance% FunLike.addMonoid
+
+instance instAddCommMonoid : IsAddCommutative (Kernel α β) := FunLike.addCommMonoid
 
 instance instPartialOrder : PartialOrder (Kernel α β) := .lift _ DFunLike.coe_injective
 

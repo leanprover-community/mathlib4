@@ -199,7 +199,7 @@ to `M`. -/
 def restrictScalarsId'App (hf : f = RingHom.id R) (M : ModuleCat R) :
     (restrictScalars f).obj M ≅ M :=
   LinearEquiv.toModuleIso <|
-    @AddEquiv.toLinearEquiv _ _ _ _ _ _ (((restrictScalars f).obj M).isModule) _
+    @AddEquiv.toLinearEquiv _ _ _ _ _ _ _ _ (((restrictScalars f).obj M).isModule) _
       (by rfl) (fun r x ↦ by subst hf; rfl)
 
 variable (hf : f = RingHom.id R)
@@ -357,7 +357,7 @@ variable (M : Type v) [AddMonoid M] [IsAddCommutative M] [Module R M]
 This notation is necessary because we need to reason about `s ⊗ₜ m` where `s : S` and `m : M`;
 without this notation, one needs to work with `s : (restrictScalars f).obj ⟨S⟩`. -/
 scoped[ChangeOfRings] notation:100 s:100 " ⊗ₜ[" R "," f "] " m:101 =>
-  @TensorProduct.tmul R _ _ _ _ _ (Module.compHom _ f) _ s m
+  @TensorProduct.tmul R _ _ _ _ _ _ _ (Module.compHom _ f) _ s m
 
 end Unbundled
 
@@ -378,7 +378,8 @@ set_option backward.isDefEq.respectTransparency false in
 `l : M1 ⟶ M2` is sent to `s ⊗ m ↦ s ⊗ l m`
 -/
 def map' {M1 M2 : ModuleCat.{v} R} (l : M1 ⟶ M2) : obj' f M1 ⟶ obj' f M2 :=
-  ofHom (@LinearMap.baseChange R S M1 M2 _ _ ((algebraMap S _).comp f).toAlgebra _ _ _ _ l.hom)
+  ofHom (@LinearMap.baseChange R S M1 M2 _ _ _ ((algebraMap S _).comp f).toAlgebra
+    _ _ _ _ _ _ l.hom)
 
 set_option backward.isDefEq.respectTransparency false in
 theorem map'_id {M : ModuleCat.{v} R} : map' f (𝟙 M) = 𝟙 _ := by
@@ -714,7 +715,7 @@ The map `S → X →ₗ[R] Y` given by `fun s x => s • (g x)`
 def HomEquiv.evalAt {X : ModuleCat R} {Y : ModuleCat S} (s : S)
     (g : X ⟶ (restrictScalars f).obj Y) : have : Module R Y := Module.compHom Y f
     X →ₗ[R] Y :=
-  @LinearMap.mk _ _ _ _ (RingHom.id R) X Y _ _ _ (_)
+  @LinearMap.mk _ _ _ _ (RingHom.id R) X Y _ _ _ _ _ (_)
     { toFun := fun x => s • (g x : Y)
       map_add' := by
         intros

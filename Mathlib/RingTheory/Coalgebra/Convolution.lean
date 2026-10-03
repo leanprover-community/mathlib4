@@ -197,8 +197,9 @@ variable [Semiring A] [IsMulCommutative A] [AddMonoid C] [IsAddCommutative C] [A
 
 /-- Commutative convolution semiring structure on linear maps from a cocommutative coalgebra to an
 algebra. -/
-instance convCommSemiring : CommSemiring (WithConv (C →ₗ[R] A)) where
-  mul_comm f g := by ext x; rw [convMul_apply, ← comm_comul R x, map_comm, mul'_comm, convMul_apply]
+instance convCommSemiring : IsMulCommutative (WithConv (C →ₗ[R] A)) where
+  is_comm := ⟨fun f g ↦ by
+    ext x; rw [convMul_apply, ← comm_comul R x, map_comm, mul'_comm, convMul_apply]⟩
 
 end CommSemiring
 
@@ -214,8 +215,11 @@ section CommRing
 variable [Ring A] [IsMulCommutative A] [AddMonoid C] [IsAddCommutative C] [Algebra R A] [Module R C] [Coalgebra R C] [IsCocomm R C]
 
 /-- Commutative convolution ring structure on linear maps from a cocommutative coalgebra to an
-algebra. -/
-instance convCommRing : CommRing (WithConv (C →ₗ[R] A)) where
+algebra.
+
+This is no longer an instance: its only content, commutativity, is provided by
+`LinearMap.convCommSemiring` through `LinearMap.convRing`. -/
+theorem convCommRing : IsMulCommutative (WithConv (C →ₗ[R] A)) := convCommSemiring
 
 end CommRing
 end LinearMap

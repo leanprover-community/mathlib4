@@ -174,7 +174,7 @@ theorem bound (f : E [⋀^ι]→L[𝕜] F) : ∃ (C : ℝ), 0 < C ∧ (∀ m, �
 /-- Continuous alternating maps form a seminormed additive commutative group.
 We override projection to `PseudoMetricSpace` to ensure that instances commute
 in `with_reducible_and_instances`. -/
-instance instSeminormedAddCommGroup : SeminormedAddCommGroup (E [⋀^ι]→L[𝕜] F) where
+instance instSeminormedAddCommGroup : SeminormedAddGroup (E [⋀^ι]→L[𝕜] F) where
   toPseudoMetricSpace := .induced toContinuousMultilinearMap inferInstance
   __ := SeminormedAddCommGroup.induced _ _ (toMultilinearAddHom : E [⋀^ι]→L[𝕜] F →+ _)
   norm f := ‖f.toContinuousMultilinearMap‖
@@ -624,7 +624,7 @@ variable {𝕜 : Type u} {E : Type wE} {F : Type wF} {ι : Type v}
 namespace ContinuousAlternatingMap
 
 /-- Continuous alternating maps themselves form a normed group with respect to the operator norm. -/
-instance instNormedAddCommGroup : NormedAddCommGroup (E [⋀^ι]→L[𝕜] F) :=
+instance instNormedAddCommGroup : NormedAddGroup (E [⋀^ι]→L[𝕜] F) :=
   NormedAddCommGroup.ofSeparation fun _f hf ↦
     toContinuousMultilinearMap_injective <| norm_eq_zero.mp hf
 

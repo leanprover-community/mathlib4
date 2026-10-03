@@ -649,7 +649,7 @@ lemma bot_mul_of_neg {x : EReal} (h : x < 0) : ⊥ * x = ⊤ := by
 lemma toReal_mul {x y : EReal} : toReal (x * y) = toReal x * toReal y := by
   induction x, y using induction₂_symm with
   | top_zero | zero_bot | top_top | top_bot | bot_bot => simp
-  | symm h => rwa [mul_comm, EReal.mul_comm]
+  | symm h => rwa [mul_comm (toReal _), EReal.mul_comm]
   | coe_coe => norm_cast
   | top_pos _ h => simp [top_mul_coe_of_pos h]
   | top_neg _ h => simp [top_mul_coe_of_neg h]

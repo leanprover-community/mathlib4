@@ -194,14 +194,14 @@ theorem bernoulli_comp_one_add_X (n : ℕ) :
   congr 1
   rw [show ∀ a b c d : ℚ[X], a - b = c + d ↔ a - c = b + d by grind]
   calc ((d + 2) • X ^ (d + 1)).comp (1 + X) - (d + 2) • X ^ (d + 1)
-    _ = (d + 2) • ∑ i ∈ range (d + 1), (d + 1).choose i • X ^ i := by
+    _ = (d + 2) • ∑ i ∈ range (d + 1), (d + 1).choose i • (X : ℚ[X]) ^ i := by
       rw [smul_comp, ← smul_sub, X_pow_comp, one_add_X_pow_sub_X_pow]
-    _ = ∑ i ∈ range (d + 1), ((d + 2).choose (i + 1) * (i + 1)) • X ^ i := by
+    _ = ∑ i ∈ range (d + 1), ((d + 2).choose (i + 1) * (i + 1)) • (X : ℚ[X]) ^ i := by
       simp_rw [smul_sum, smul_smul, ← add_one_mul_choose_eq (d + 1)]
-    _ = ∑ i ∈ range (d + 1), ((d + 2).choose i * i) • X ^ (i - 1) +
-          (((d + 2).choose (d + 1)) * (d + 1)) • X ^ (d + 1 - 1) := by
+    _ = ∑ i ∈ range (d + 1), ((d + 2).choose i * i) • (X : ℚ[X]) ^ (i - 1) +
+          (((d + 2).choose (d + 1)) * (d + 1)) • (X : ℚ[X]) ^ (d + 1 - 1) := by
       rw [← sum_range_succ _ (d + 1)]; simp [sum_range_succ']
-    _ = ∑ i ∈ range (d + 1), (d + 2).choose i • i • X ^ (i - 1) +
+    _ = ∑ i ∈ range (d + 1), (d + 2).choose i • i • (X : ℚ[X]) ^ (i - 1) +
           ((d + 2) * (d + 1)) • X ^ (d + 1 - 1) := by
       simp [choose_succ_self_right, add_assoc, mul_assoc]
 

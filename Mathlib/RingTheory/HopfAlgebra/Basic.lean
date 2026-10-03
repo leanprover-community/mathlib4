@@ -142,7 +142,7 @@ instance toHopfAlgebra : HopfAlgebra R R where
   mul_antipode_lTensor_comul := by ext; simp
 
 @[simp]
-theorem antipode_eq_id : antipode R (A := R) = .id := rfl
+theorem antipode_eq_id : @antipode R R _ ‹_› _ _ = .id := rfl
 
 end CommSemiring
 

@@ -503,11 +503,14 @@ scoped[Pointwise] attribute [instance] Filter.instNSMul Filter.instNPow
 protected def semigroup [Semigroup α] : Semigroup (Filter α) where
   mul_assoc _ _ _ := map₂_assoc mul_assoc
 
-/-- `Filter α` is a `CommSemigroup` under pointwise operations if `α` is. -/
-@[to_additive (attr := instance_reducible)
-  /-- `Filter α` is an `AddCommSemigroup` under pointwise operations if `α` is. -/]
-protected def commSemigroup [Semigroup α] [IsMulCommutative α] : CommSemigroup (Filter α) :=
-  { Filter.semigroup with mul_comm := fun _ _ => map₂_comm mul_comm }
+/-- Pointwise multiplication on `Filter α` is commutative if it is on `α` (the commutativity half
+of the pointwise `CommSemigroup` structure; the `Semigroup` half is `Filter.semigroup`). -/
+@[to_additive
+  /-- Pointwise addition on `Filter α` is commutative if it is on `α` (the commutativity half of
+  the pointwise `AddCommSemigroup` structure; the `AddSemigroup` half is
+  `Filter.addSemigroup`). -/]
+protected theorem commSemigroup [Semigroup α] [IsMulCommutative α] : IsMulCommutative (Filter α) :=
+  ⟨⟨fun _ _ => map₂_comm mul_comm⟩⟩
 
 section MulOneClass
 
@@ -616,11 +619,14 @@ protected theorem _root_.IsUnit.filter : IsUnit a → IsUnit (pure a : Filter α
 
 end Monoid
 
-/-- `Filter α` is a `CommMonoid` under pointwise operations if `α` is. -/
-@[to_additive (attr := instance_reducible)
-  /-- `Filter α` is an `AddCommMonoid` under pointwise operations if `α` is. -/]
-protected def commMonoid [Monoid α] [IsMulCommutative α] : CommMonoid (Filter α) :=
-  { Filter.mulOneClass, Filter.commSemigroup with }
+/-- The commutativity half of the pointwise `CommMonoid` structure on `Filter α`; the `Monoid`
+half is `Filter.monoid`. The instance itself is provided by `Filter.commSemigroup`. -/
+@[to_additive
+  /-- The commutativity half of the pointwise `AddCommMonoid` structure on `Filter α`; the
+  `AddMonoid` half is `Filter.addMonoid`. The instance itself is provided by
+  `Filter.addCommSemigroup`. -/]
+protected theorem commMonoid [Monoid α] [IsMulCommutative α] : IsMulCommutative (Filter α) :=
+  Filter.commSemigroup
 
 section DivisionMonoid
 
@@ -663,11 +669,16 @@ theorem isUnit_iff : IsUnit f ↔ ∃ a, f = pure a ∧ IsUnit a := by
 
 end DivisionMonoid
 
-/-- `Filter α` is a commutative division monoid under pointwise operations if `α` is. -/
-@[to_additive (attr := instance_reducible) subtractionCommMonoid
-/-- `Filter α` is a commutative subtraction monoid under pointwise operations if `α` is. -/]
-protected def divisionCommMonoid [DivisionMonoid α] [IsMulCommutative α] : DivisionCommMonoid (Filter α) :=
-  { Filter.divisionMonoid, Filter.commSemigroup with }
+/-- The commutativity half of the pointwise `DivisionCommMonoid` structure on `Filter α`; the
+`DivisionMonoid` half is `Filter.divisionMonoid`. The instance itself is provided by
+`Filter.commSemigroup`. -/
+@[to_additive subtractionCommMonoid
+/-- The commutativity half of the pointwise `SubtractionCommMonoid` structure on `Filter α`; the
+`SubtractionMonoid` half is `Filter.subtractionMonoid`. The instance itself is provided by
+`Filter.addCommSemigroup`. -/]
+protected theorem divisionCommMonoid [DivisionMonoid α] [IsMulCommutative α] :
+    IsMulCommutative (Filter α) :=
+  Filter.commSemigroup
 
 /-- `Filter α` has distributive negation if `α` has. -/
 @[instance_reducible]
@@ -676,8 +687,7 @@ protected def instDistribNeg [Mul α] [HasDistribNeg α] : HasDistribNeg (Filter
     neg_mul := fun _ _ => map₂_map_left_comm neg_mul
     mul_neg := fun _ _ => map_map₂_right_comm mul_neg }
 
-scoped[Pointwise] attribute [instance] Filter.commMonoid Filter.addCommMonoid Filter.divisionMonoid
-  Filter.subtractionMonoid Filter.divisionCommMonoid Filter.subtractionCommMonoid
+scoped[Pointwise] attribute [instance] Filter.divisionMonoid Filter.subtractionMonoid
   Filter.instDistribNeg
 
 section Distrib

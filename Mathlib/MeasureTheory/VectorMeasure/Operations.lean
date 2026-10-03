@@ -535,8 +535,8 @@ open scoped Classical in
 /-- Restriction of a vector measure onto a sub-σ-algebra. -/
 @[simps]
 def trim {m n : MeasurableSpace α} (v : VectorMeasure α M) (hle : m ≤ n) :
-    @VectorMeasure α m M _ _ :=
-  @VectorMeasure.mk α m M _ _
+    @VectorMeasure α m M _ _ _ :=
+  @VectorMeasure.mk α m M _ _ _
     (fun i => if MeasurableSet[m] i then v i else 0)
     (by rw [ite_eq_left (@MeasurableSet.empty _ m), v.empty])
     (fun i hi => by rw [ite_eq_right hi])
@@ -563,7 +563,7 @@ theorem trim_measurableSet_eq (hle : m ≤ n) {i : Set α} (hi : MeasurableSet[m
   ite_eq_left hi
 
 theorem restrict_trim (hle : m ≤ n) {i : Set α} (hi : MeasurableSet[m] i) :
-    @VectorMeasure.restrict α m M _ _ (v.trim hle) i = (v.restrict i).trim hle := by
+    @VectorMeasure.restrict α m M _ _ _ (v.trim hle) i = (v.restrict i).trim hle := by
   ext j hj
   rw [@restrict_apply _ m, trim_measurableSet_eq hle hj, restrict_apply, trim_measurableSet_eq]
   all_goals measurability

@@ -33,11 +33,13 @@ variable (M : Type*) [AddMonoid M] [IsAddCommutative M] [Module R M]
 
 variable
   (Rₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
-  [∀ (P : Ideal R) [P.IsMaximal], CommSemiring (Rₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], Semiring (Rₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsMulCommutative (Rₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], Algebra R (Rₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], IsLocalization.AtPrime (Rₚ P) P]
   (Mₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
-  [∀ (P : Ideal R) [P.IsMaximal], AddCommMonoid (Mₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], AddMonoid (Mₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsAddCommutative (Mₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], Module R (Mₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], Module (Rₚ P) (Mₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], IsScalarTower R (Rₚ P) (Mₚ P)]
@@ -111,7 +113,8 @@ section IsLocalization
 variable {R : Type*} [Ring R] [IsMulCommutative R] [Finite (MaximalSpectrum R)]
 variable
   (Rₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
-  [∀ (P : Ideal R) [P.IsMaximal], CommRing (Rₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], Ring (Rₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsMulCommutative (Rₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], Algebra R (Rₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], IsLocalization.AtPrime (Rₚ P) P]
 

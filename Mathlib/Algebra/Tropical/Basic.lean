@@ -265,9 +265,12 @@ instance : Add (MinTropical R) :=
   ⟨fun x y => trop (min (untrop x) (untrop y))⟩
 
 @[to_dual]
-instance : AddCommSemigroup (MinTropical R) where
+instance : AddSemigroup (MinTropical R) where
   add_assoc _ _ _ := untrop_injective (min_assoc _ _ _)
-  add_comm _ _ := untrop_injective (min_comm _ _)
+
+@[to_dual]
+instance : IsAddCommutative (MinTropical R) :=
+  ⟨⟨fun _ _ => untrop_injective (min_comm _ _)⟩⟩
 
 @[to_dual (attr := simp)]
 theorem untrop_add (x y : MinTropical R) : untrop (x + y) = min (untrop x) (untrop y) :=
@@ -370,7 +373,7 @@ theorem add_eq_zero_iff {a b : MinTropical (WithTop R)} : a + b = 0 ↔ a = 0 �
     simp
 
 @[to_dual]
-instance [OrderTop R] : AddCommMonoid (MinTropical R) where
+instance [OrderTop R] : AddMonoid (MinTropical R) where
   zero_add _ := untrop_injective (min_top_left _)
   add_zero _ := untrop_injective (min_top_right _)
   nsmul := nsmulRec
@@ -447,8 +450,8 @@ instance [AddSemigroup R] : Semigroup (MinTropical R) where
   mul_assoc _ _ _ := untrop_injective (add_assoc _ _ _)
 
 @[to_dual]
-instance [AddSemigroup R] [IsAddCommutative R] : CommSemigroup (MinTropical R) where
-  mul_comm := fun _ _ => untrop_injective (add_comm _ _)
+instance [Add R] [IsAddCommutative R] : IsMulCommutative (MinTropical R) :=
+  ⟨⟨fun _ _ => untrop_injective (add_comm _ _)⟩⟩
 
 @[to_dual]
 instance {α : Type*} [SMul α R] : Pow (MinTropical R) α where pow x n := trop <| n • untrop x
@@ -478,9 +481,6 @@ theorem trop_nsmul [AddMonoid R] (x : R) (n : ℕ) : trop (n • x) = trop x ^ n
   rfl
 
 @[to_dual]
-instance [AddMonoid R] [IsAddCommutative R] : CommMonoid (MinTropical R) where
-
-@[to_dual]
 instance [AddGroup R] : Group (MinTropical R) where
   div_eq_mul_inv := fun _ _ => untrop_injective <| by simp [sub_eq_add_neg]
   inv_mul_cancel := fun _ => untrop_injective <| neg_add_cancel _
@@ -488,10 +488,6 @@ instance [AddGroup R] : Group (MinTropical R) where
   zpow_zero' := fun _ => untrop_injective <| zero_zsmul _
   zpow_succ' := fun _ _ => untrop_injective <| SubNegMonoid.zsmul_succ' _ _
   zpow_neg' := fun _ _ => untrop_injective <| SubNegMonoid.zsmul_neg' _ _
-
-@[to_dual]
-instance [AddGroup R] [IsAddCommutative R] : CommGroup (MinTropical R) where
-  mul_comm := fun _ _ => untrop_injective (add_comm _ _)
 
 @[to_dual (attr := simp)]
 theorem untrop_zpow [AddGroup R] (x : MinTropical R) (n : ℤ) : untrop (x ^ n) = n • untrop x :=
@@ -580,7 +576,7 @@ section Semiring
 
 variable [LinearOrderedAddCommMonoidWithTop R]
 
-instance : CommSemiring (MinTropical R) where
+instance : Semiring (MinTropical R) where
   zero_mul := fun _ => untrop_injective (by simp [top_add])
   mul_zero := fun _ => untrop_injective (by simp [add_top])
 

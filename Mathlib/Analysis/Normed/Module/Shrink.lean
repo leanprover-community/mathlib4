@@ -21,13 +21,14 @@ namespace Shrink
 universe v
 variable {𝕜 α : Type*} [Small.{v} α] [NormedField 𝕜]
 
-instance [SeminormedAddGroup α] [IsAddCommutative α] : SeminormedAddCommGroup (Shrink.{v} α) :=
+instance [SeminormedAddGroup α] [IsAddCommutative α] : SeminormedAddGroup (Shrink.{v} α) :=
   (equivShrink α).symm.seminormedAddCommGroup
 
-instance [NormedAddGroup α] [IsAddCommutative α] : NormedAddCommGroup (Shrink.{v} α) :=
+instance [NormedAddGroup α] [IsAddCommutative α] : NormedAddGroup (Shrink.{v} α) :=
   (equivShrink α).symm.normedAddCommGroup
 
-instance [SeminormedAddGroup α] [IsAddCommutative α] [NormedSpace 𝕜 α] : NormedSpace 𝕜 (Shrink.{v} α) :=
+instance [SeminormedAddGroup α] [IsAddCommutative α] [NormedSpace 𝕜 α] :
+    NormedSpace 𝕜 (Shrink.{v} α) :=
   (Shrink.addEquiv (α := α)).normedSpace 𝕜
 
 end Shrink

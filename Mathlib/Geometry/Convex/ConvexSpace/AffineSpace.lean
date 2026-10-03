@@ -153,7 +153,7 @@ alias convexCombination_eq_affineCombination := sConvexComb_eq_affineCombination
 theorem iConvexComb_eq_affineCombination (s : StdSimplex R I) (f : I → P) :
     s.iConvexComb f = s.weights.support.affineCombination R f s.weights := by
   let p : P := Nonempty.some inferInstance
-  simp only [iConvexComb, sConvexComb_eq_affineCombination]
+  simp only [iConvexComb, sConvexComb_eq_affineCombination (V := V)]
   rw [Finset.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one
     (b := p) (h := (s.map f).total),
     Finset.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one
@@ -166,8 +166,8 @@ theorem iConvexComb_eq_affineCombination (s : StdSimplex R I) (f : I → P) :
 theorem convexCombPair_eq_lineMap (s t : R) (hs : 0 ≤ s) (ht : 0 ≤ t)
     (h : s + t = 1) (x y : P) :
     convexCombPair s t hs ht h x y = AffineMap.lineMap y x s := by
-  simp only [convexCombPair, AddTorsor.sConvexComb_eq_affineCombination, StdSimplex.duple,
-    AffineMap.lineMap_apply]
+  simp only [convexCombPair, AddTorsor.sConvexComb_eq_affineCombination (V := V),
+    StdSimplex.duple, AffineMap.lineMap_apply]
   classical
   -- Use weighted subtraction with base point y
   rw [Finset.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ id (b := y)]

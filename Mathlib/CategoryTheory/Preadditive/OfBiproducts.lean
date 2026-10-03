@@ -92,17 +92,23 @@ theorem distrib (f g h k : X ⟶ Y) : (f +ᵣ g) +ₗ h +ᵣ k = (f +ₗ h) +ᵣ
     ext <;> simp [reassoc_of% hd₁, reassoc_of% hd₂]
   rw [leftAdd, h₁, Category.assoc, h₂, rightAdd]
 
-/-- In a category with binary biproducts, the morphisms form a commutative monoid. -/
+/-- In a category with binary biproducts, the morphisms form a commutative monoid
+(the commutativity is `isAddCommutative_addCommMonoidHomOfHasBinaryBiproducts`). -/
 @[instance_reducible]
-def addCommMonoidHomOfHasBinaryBiproducts : AddCommMonoid (X ⟶ Y) where
+def addCommMonoidHomOfHasBinaryBiproducts : AddMonoid (X ⟶ Y) where
   add := (· +ᵣ ·)
   add_assoc :=
     (EckmannHilton.mul_assoc (isUnital_leftAdd X Y) (isUnital_rightAdd X Y) (distrib X Y)).assoc
   zero_add := (isUnital_rightAdd X Y).left_id
   add_zero := (isUnital_rightAdd X Y).right_id
-  add_comm :=
-    (EckmannHilton.mul_comm (isUnital_leftAdd X Y) (isUnital_rightAdd X Y) (distrib X Y)).comm
   nsmul := letI : Add (X ⟶ Y) := ⟨(· +ᵣ ·)⟩; nsmulRec
+
+/-- In a category with binary biproducts, the addition of morphisms is commutative. -/
+theorem isAddCommutative_addCommMonoidHomOfHasBinaryBiproducts :
+    letI := addCommMonoidHomOfHasBinaryBiproducts X Y
+    IsAddCommutative (X ⟶ Y) :=
+  letI := addCommMonoidHomOfHasBinaryBiproducts X Y
+  ⟨EckmannHilton.mul_comm (isUnital_leftAdd X Y) (isUnital_rightAdd X Y) (distrib X Y)⟩
 
 end
 
@@ -111,6 +117,7 @@ section
 variable {X Y Z : C}
 
 attribute [local instance] addCommMonoidHomOfHasBinaryBiproducts
+  isAddCommutative_addCommMonoidHomOfHasBinaryBiproducts
 
 theorem add_eq_right_addition (f g : X ⟶ Y) : f + g = biprod.lift (𝟙 X) (𝟙 X) ≫ biprod.desc f g :=
   rfl

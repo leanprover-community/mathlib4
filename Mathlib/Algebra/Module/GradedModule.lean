@@ -206,8 +206,8 @@ def isModule : Module A (⨁ i, 𝓜 i) :=
 "The internal version" and "the external version" are isomorphism as `A`-modules.
 -/
 def linearEquiv [DirectSum.Decomposition 𝓜] :
-    @LinearEquiv A A _ _ (RingHom.id A) (RingHom.id A) _ _ M (⨁ i, 𝓜 i) _
-    _ _ (by letI := isModule 𝓐 𝓜; infer_instance) := by
+    @LinearEquiv A A _ _ (RingHom.id A) (RingHom.id A) _ _ M (⨁ i, 𝓜 i) _ _
+    _ _ _ (by letI := isModule 𝓐 𝓜; infer_instance) := by
   letI h := isModule 𝓐 𝓜
   refine ⟨⟨(DirectSum.decomposeAddEquiv 𝓜).toAddHom, ?_⟩,
     (DirectSum.decomposeAddEquiv 𝓜).symm.toFun, (DirectSum.decomposeAddEquiv 𝓜).left_inv,

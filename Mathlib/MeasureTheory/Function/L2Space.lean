@@ -205,7 +205,8 @@ equal to the integral of the inner product over `s`: `∫ x in s, ⟪c, f x⟫ �
 theorem inner_indicatorConstLp_eq_setIntegral_inner (f : Lp E 2 μ) (hs : MeasurableSet s) (c : E)
     (hμs : μ s ≠ ∞) : (⟪indicatorConstLp 2 hs hμs c, f⟫ : 𝕜) = ∫ x in s, ⟪c, f x⟫ ∂μ := by
   rw [inner_def, ← integral_indicator hs]
-  refine integral_congr_ae ((@indicatorConstLp_coeFn _ _ _ 2 μ _ s hs hμs c).mono fun x hx ↦ ?_)
+  refine integral_congr_ae
+    ((indicatorConstLp_coeFn (p := 2) (hs := hs) (hμs := hμs) (c := c)).mono fun x hx ↦ ?_)
   have : ⟪indicatorConstLp 2 hs hμs c x, f x⟫ = s.indicator (fun x ↦ ⟪c, f x⟫) x := by
     by_cases hxs : x ∈ s <;> simp [hx, hxs]
   simpa

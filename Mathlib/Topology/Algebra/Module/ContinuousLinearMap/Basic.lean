@@ -435,7 +435,7 @@ theorem toContinuousAddMonoidHom_add (f g : M₁ →SL[σ₁₂] M₂) :
 -- The `AddMonoid` instance exists to help speedup unification
 instance : AddMonoid (M₁ →SL[σ₁₂] M₂) := fast_instance% FunLike.addMonoid
 
-instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) := fast_instance% FunLike.addCommMonoid
+instance addCommMonoid : IsAddCommutative (M₁ →SL[σ₁₂] M₂) := FunLike.addCommMonoid
 
 @[simp, norm_cast]
 theorem toLinearMap_sum {ι : Type*} (t : Finset ι) (f : ι → M₁ →SL[σ₁₂] M₂) :
@@ -459,7 +459,7 @@ def comp (g : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) : M₁ 
 @[inherit_doc comp]
 infixr:80 " ∘L " =>
   @ContinuousLinearMap.comp _ _ _ _ _ _ (RingHom.id _) (RingHom.id _) (RingHom.id _) _ _ _ _ _ _ _ _
-    _ _ _ _ RingHomCompTriple.ids
+    _ _ _ _ _ _ _ RingHomCompTriple.ids
 
 @[inherit_doc comp]
 infixr:90 " ∘SL " =>
@@ -843,7 +843,9 @@ instance sub : Sub (M →SL[σ₁₂] M₂) :=
 
 instance : IsSubApply (M →SL[σ₁₂] M₂) M M₂ where
 
-instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) := fast_instance% FunLike.addCommGroup
+instance : AddGroup (M →SL[σ₁₂] M₂) := fast_instance% FunLike.addGroup
+
+instance addCommGroup : IsAddCommutative (M →SL[σ₁₂] M₂) := FunLike.addCommGroup
 
 @[simp, norm_cast]
 theorem toLinearMap_sub (f g : M →SL[σ₁₂] M₂) : (↑(f - g) : M →ₛₗ[σ₁₂] M₂) = f - g :=

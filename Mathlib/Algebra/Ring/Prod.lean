@@ -38,7 +38,8 @@ instance instDistrib [Distrib R] [Distrib S] : Distrib (R × S) where
 /-- Product of two `NonUnitalNonAssocSemiring`s is a `NonUnitalNonAssocSemiring`. -/
 instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] :
     NonUnitalNonAssocSemiring (R × S) :=
-  { (inferInstance : AddCommMonoid (R × S)),
+  { (inferInstance : AddMonoid (R × S)),
+    (inferInstance : IsAddCommutative (R × S)),
     (inferInstance : Distrib (R × S)),
     (inferInstance : MulZeroClass (R × S)) with }
 
@@ -61,23 +62,9 @@ instance instSemiring [Semiring R] [Semiring S] : Semiring (R × S) :=
     (inferInstance : NonAssocSemiring (R × S)),
     (inferInstance : MonoidWithZero (R × S)) with }
 
-/-- Product of two `NonUnitalCommSemiring`s is a `NonUnitalCommSemiring`. -/
-instance instNonUnitalCommSemiring [NonUnitalSemiring R] [IsMulCommutative R] [NonUnitalSemiring S] [IsMulCommutative S] :
-    NonUnitalCommSemiring (R × S) :=
-  { (inferInstance : NonUnitalSemiring (R × S)), (inferInstance : CommSemigroup (R × S)) with }
-
-/-- Product of two commutative semirings is a commutative semiring. -/
-instance instCommSemiring [Semiring R] [IsMulCommutative R] [Semiring S] [IsMulCommutative S] : CommSemiring (R × S) :=
-  { (inferInstance : Semiring (R × S)), (inferInstance : CommMonoid (R × S)) with }
-
-/-- Product of two `AddCommGroupWithOne`s is an `AddCommGroupWithOne`. -/
-instance instAddCommGroupWithOne [AddGroupWithOne R] [IsAddCommutative R] [AddGroupWithOne S] [IsAddCommutative S] :
-    AddCommGroupWithOne (R × S) :=
-  { (inferInstance : AddGroupWithOne (R × S)), (inferInstance : AddCommGroup (R × S)) with }
-
 instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S] :
     NonUnitalNonAssocRing (R × S) :=
-  { (inferInstance : AddCommGroup (R × S)),
+  { (inferInstance : AddGroup (R × S)),
     (inferInstance : NonUnitalNonAssocSemiring (R × S)) with }
 
 instance instNonUnitalRing [NonUnitalRing R] [NonUnitalRing S] : NonUnitalRing (R × S) :=
@@ -92,17 +79,8 @@ instance instNonAssocRing [NonAssocRing R] [NonAssocRing S] : NonAssocRing (R ×
 /-- Product of two rings is a ring. -/
 instance instRing [Ring R] [Ring S] : Ring (R × S) :=
   { (inferInstance : Semiring (R × S)),
-    (inferInstance : AddCommGroup (R × S)),
+    (inferInstance : AddGroup (R × S)),
     (inferInstance : AddGroupWithOne (R × S)) with }
-
-/-- Product of two `NonUnitalCommRing`s is a `NonUnitalCommRing`. -/
-instance instNonUnitalCommRing [NonUnitalRing R] [IsMulCommutative R] [NonUnitalRing S] [IsMulCommutative S] :
-    NonUnitalCommRing (R × S) :=
-  { (inferInstance : NonUnitalRing (R × S)), (inferInstance : CommSemigroup (R × S)) with }
-
-/-- Product of two commutative rings is a commutative ring. -/
-instance instCommRing [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] : CommRing (R × S) :=
-  { (inferInstance : Ring (R × S)), (inferInstance : CommMonoid (R × S)) with }
 
 end Prod
 

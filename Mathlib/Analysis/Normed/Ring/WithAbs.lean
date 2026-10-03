@@ -163,7 +163,7 @@ section CommSemiring
 
 variable [Semiring R] [IsMulCommutative R] (v : AbsoluteValue R S)
 
-instance : CommSemiring (WithAbs v) := fast_instance% (equiv v).commSemiring
+instance instCommSemiring : IsMulCommutative (WithAbs v) := (equiv v).commSemiring
 
 end CommSemiring
 
@@ -192,14 +192,6 @@ variable (v : AbsoluteValue R S)
 @[simp] lemma ofAbs_neg (x : WithAbs v) : ofAbs (-x) = - ofAbs x := rfl
 
 end Ring
-
-section CommRing
-
-variable [Ring R] [IsMulCommutative R] (v : AbsoluteValue R S)
-
-instance : CommRing (WithAbs v) := fast_instance% (equiv v).commRing
-
-end CommRing
 
 section Module
 

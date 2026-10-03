@@ -25,8 +25,9 @@ rat, rationals, field, ℚ, numerator, denominator, num, denom
 namespace Rat
 
 instance instField : Field ℚ where
-  __ := commRing
-  __ := commGroupWithZero
+  __ := ring
+  __ := groupWithZero
+  __ := isMulCommutative
   nnqsmul := _
   nnqsmul_def := fun _ _ => rfl
   qsmul := _
@@ -99,9 +100,9 @@ instance instSemifield : Semifield ℚ≥0 where
   nnqsmul q a := q * a
   nnqsmul_def q a := rfl
   zpow n a := a ^ n
-  zpow_zero' a := by ext; apply Field.zpow_zero'
-  zpow_succ' n a := by ext; apply Field.zpow_succ'
-  zpow_neg' n a := by ext; apply Field.zpow_neg'
+  zpow_zero' a := by ext; apply DivisionRing.zpow_zero'
+  zpow_succ' n a := by ext; apply DivisionRing.zpow_succ'
+  zpow_neg' n a := by ext; apply DivisionRing.zpow_neg'
 
 end NNRat
 

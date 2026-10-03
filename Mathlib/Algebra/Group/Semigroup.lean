@@ -184,51 +184,47 @@ lemma isMulCommutative_iff {M : Type*} [Mul M] : IsMulCommutative M ↔ ∀ a b 
 @[to_additive]
 alias ⟨_, IsMulCommutative.of_comm⟩ := isMulCommutative_iff
 
-/-- An alternative to `mul_comm` which uses the mixin `IsMulCommutative` instead of bundled
-commutative algebraic structures. In general, you should prefer `mul_comm` unless you are working
-with commutative subobjects in a noncommutative algebraic structure. -/
-@[to_additive
-/-- An alternative to `add_comm` which uses the mixin `IsAddCommutative` instead of bundled
-commutative algebraic structures. In general, you should prefer `add_comm` unless you are working
-with commutative subobjects in a noncommutative algebraic structure. -/ ]
+/-- Multiplication is commutative in a type with `IsMulCommutative` multiplication. -/
+@[to_additive /-- Addition is commutative in a type with `IsAddCommutative` addition. -/]
+theorem mul_comm {M : Type*} [Mul M] [IsMulCommutative M] : ∀ a b : M, a * b = b * a :=
+  fun _ _ => IsMulCommutative.is_comm.comm ..
+
+/-- A deprecated alternative spelling of `mul_comm`; use `mul_comm` instead. -/
+@[to_additive /-- A deprecated alternative spelling of `add_comm`; use `add_comm` instead. -/]
 lemma mul_comm' {M : Type*} [Mul M] [IsMulCommutative M] (a b : M) : a * b = b * a :=
-  IsMulCommutative.is_comm.comm ..
+  mul_comm a b
+
+attribute [deprecated mul_comm (since := "2026-09-28")] mul_comm'
+attribute [deprecated add_comm (since := "2026-09-28")] add_comm'
+
+/-- Pull back `IsMulCommutative` along an injective map that preserves multiplication. -/
+@[to_additive
+/-- Pull back `IsAddCommutative` along an injective map that preserves addition. -/]
+theorem Function.Injective.isMulCommutative {M N : Type*} [Mul M] [Mul N] [IsMulCommutative N]
+    (f : M → N) (hf : Injective f) (mul : ∀ x y, f (x * y) = f x * f y) :
+    IsMulCommutative M where
+  is_comm := ⟨fun a b => hf <| by rw [mul, mul, mul_comm]⟩
+
+/-- Push forward `IsMulCommutative` along a surjective map that preserves multiplication.
+
+This is not named `Function.Surjective.isMulCommutative`: that name belongs to the (baseline)
+`MulHomClass` version in `Mathlib.Algebra.Group.Hom.Defs`. -/
+@[to_additive
+/-- Push forward `IsAddCommutative` along a surjective map that preserves addition. -/]
+theorem Function.Surjective.isMulCommutative_of_map_mul {M N : Type*} [Mul M] [Mul N]
+    [IsMulCommutative M]
+    (f : M → N) (hf : Surjective f) (mul : ∀ x y, f (x * y) = f x * f y) :
+    IsMulCommutative N where
+  is_comm := ⟨fun a b => by
+    obtain ⟨x, rfl⟩ := hf a
+    obtain ⟨y, rfl⟩ := hf b
+    rw [← mul, ← mul, mul_comm]⟩
 
 end IsCommutative
-
-/-- A commutative additive magma is a type with an addition which commutes. -/
-@[ext]
-class AddCommMagma (G : Type*) extends Add G where
-  /-- Addition is commutative in a commutative additive magma. -/
-  protected add_comm : ∀ a b : G, a + b = b + a
-
-/-- A commutative multiplicative magma is a type with a multiplication which commutes. -/
-@[ext]
-class CommMagma (G : Type*) extends Mul G where
-  /-- Multiplication is commutative in a commutative multiplicative magma. -/
-  protected mul_comm : ∀ a b : G, a * b = b * a
-
-attribute [to_additive] CommMagma
-
-/-- A commutative semigroup is a type with an associative commutative `(*)`. -/
-@[ext]
-class CommSemigroup (G : Type*) extends Semigroup G, CommMagma G where
-
-/-- A commutative additive semigroup is a type with an associative commutative `(+)`. -/
-@[ext]
-class AddCommSemigroup (G : Type*) extends AddSemigroup G, AddCommMagma G where
-
-attribute [to_additive] CommSemigroup
 
 section CommMagma
 
 variable [Mul G] [IsMulCommutative G] {a : G}
-
-@[to_additive]
-theorem mul_comm : ∀ a b : G, a * b = b * a := CommMagma.mul_comm
-
-@[to_additive]
-instance CommMagma.to_isCommutative : IsMulCommutative G := ⟨⟨mul_comm⟩⟩
 
 @[to_additive (attr := simp)]
 lemma isLeftRegular_iff_isRegular : IsLeftRegular a ↔ IsRegular a := by
@@ -241,28 +237,28 @@ lemma isRightRegular_iff_isRegular : IsRightRegular a ↔ IsRegular a := by
 /-- Any `CommMagma G` that satisfies `IsRightCancelMul G` also satisfies `IsLeftCancelMul G`. -/
 @[to_additive AddCommMagma.IsRightCancelAdd.toIsLeftCancelAdd /-- Any `AddCommMagma G` that
 satisfies `IsRightCancelAdd G` also satisfies `IsLeftCancelAdd G`. -/]
-lemma CommMagma.IsRightCancelMul.toIsLeftCancelMul (G : Type*) [Mul G] [IsMulCommutative G] [IsRightCancelMul G] :
-    IsLeftCancelMul G :=
+lemma CommMagma.IsRightCancelMul.toIsLeftCancelMul (G : Type*) [Mul G] [IsMulCommutative G]
+    [IsRightCancelMul G] : IsLeftCancelMul G :=
   ⟨fun _ _ _ h => mul_right_cancel <| (mul_comm _ _).trans (h.trans (mul_comm _ _))⟩
 
 /-- Any `CommMagma G` that satisfies `IsLeftCancelMul G` also satisfies `IsRightCancelMul G`. -/
 @[to_additive AddCommMagma.IsLeftCancelAdd.toIsRightCancelAdd /-- Any `AddCommMagma G` that
 satisfies `IsLeftCancelAdd G` also satisfies `IsRightCancelAdd G`. -/]
-lemma CommMagma.IsLeftCancelMul.toIsRightCancelMul (G : Type*) [Mul G] [IsMulCommutative G] [IsLeftCancelMul G] :
-    IsRightCancelMul G :=
+lemma CommMagma.IsLeftCancelMul.toIsRightCancelMul (G : Type*) [Mul G] [IsMulCommutative G]
+    [IsLeftCancelMul G] : IsRightCancelMul G :=
   ⟨fun _ _ _ h => mul_left_cancel <| (mul_comm _ _).trans (h.trans (mul_comm _ _))⟩
 
 /-- Any `CommMagma G` that satisfies `IsLeftCancelMul G` also satisfies `IsCancelMul G`. -/
 @[to_additive AddCommMagma.IsLeftCancelAdd.toIsCancelAdd /-- Any `AddCommMagma G` that satisfies
 `IsLeftCancelAdd G` also satisfies `IsCancelAdd G`. -/]
-lemma CommMagma.IsLeftCancelMul.toIsCancelMul (G : Type*) [Mul G] [IsMulCommutative G] [IsLeftCancelMul G] :
-    IsCancelMul G := { CommMagma.IsLeftCancelMul.toIsRightCancelMul G with }
+lemma CommMagma.IsLeftCancelMul.toIsCancelMul (G : Type*) [Mul G] [IsMulCommutative G]
+    [IsLeftCancelMul G] : IsCancelMul G := { CommMagma.IsLeftCancelMul.toIsRightCancelMul G with }
 
 /-- Any `CommMagma G` that satisfies `IsRightCancelMul G` also satisfies `IsCancelMul G`. -/
 @[to_additive AddCommMagma.IsRightCancelAdd.toIsCancelAdd /-- Any `AddCommMagma G` that satisfies
 `IsRightCancelAdd G` also satisfies `IsCancelAdd G`. -/]
-lemma CommMagma.IsRightCancelMul.toIsCancelMul (G : Type*) [Mul G] [IsMulCommutative G] [IsRightCancelMul G] :
-    IsCancelMul G := { CommMagma.IsRightCancelMul.toIsLeftCancelMul G with }
+lemma CommMagma.IsRightCancelMul.toIsCancelMul (G : Type*) [Mul G] [IsMulCommutative G]
+    [IsRightCancelMul G] : IsCancelMul G := { CommMagma.IsRightCancelMul.toIsLeftCancelMul G with }
 
 end CommMagma
 
@@ -318,8 +314,6 @@ add_decl_doc AddRightCancelSemigroup.toIsRightCancelAdd
 /-! We initialize the projections for the semigroup structures for `@[simps]` here. -/
 initialize_simps_projections Semigroup
 initialize_simps_projections AddSemigroup
-initialize_simps_projections CommSemigroup
-initialize_simps_projections AddCommSemigroup
 initialize_simps_projections LeftCancelSemigroup
 initialize_simps_projections AddLeftCancelSemigroup
 initialize_simps_projections RightCancelSemigroup

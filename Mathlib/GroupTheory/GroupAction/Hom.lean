@@ -450,8 +450,8 @@ instance [SMul M X] [AddMonoid Y] [DistribSMul N Y] :
   nsmul_succ n f := ext fun x ↦ AddMonoid.nsmul_succ n (f x)
 
 instance [SMul M X] [AddMonoid Y] [IsAddCommutative Y] [DistribSMul N Y] :
-    AddCommMonoid (X →ₑ[σ] Y) where
-  add_comm _ _ := ext fun _ ↦ add_comm _ _
+    IsAddCommutative (X →ₑ[σ] Y) :=
+  ⟨⟨fun _ _ ↦ ext fun _ ↦ add_comm _ _⟩⟩
 
 @[to_additive]
 instance [SMul M X] [SMul N Y] [Monoid R] [MulAction R Y] [SMulCommClass N R Y] :
@@ -493,8 +493,6 @@ lemma coe_neg [SMul M X] [AddGroup Y] [DistribSMul N Y] (f : X →ₑ[σ] Y) :
 lemma coe_sub [SMul M X] [AddGroup Y] [DistribSMul N Y] (f g : X →ₑ[σ] Y) :
     ⇑(f - g) = ⇑f - ⇑g := rfl
 
-instance [SMul M X] [AddGroup Y] [IsAddCommutative Y] [DistribSMul N Y] : AddCommGroup (X →ₑ[σ] Y) where
-
 instance [SMul M X] [Monoid N] [Monoid Y] [MulDistribMulAction N Y] :
     Monoid (X →ₑ[σ] Y) where
   mul f g := ⟨f * g, by simp⟩
@@ -512,26 +510,23 @@ lemma coe_one [SMul M X] [Monoid N] [Monoid Y] [MulDistribMulAction N Y] :
     ⇑(1 : X →ₑ[σ] Y) = 1 := rfl
 
 instance [SMul M X] [Monoid N] [Monoid Y] [IsMulCommutative Y] [MulDistribMulAction N Y] :
-    CommMonoid (X →ₑ[σ] Y) where
-  mul_comm _ _ := ext fun _ ↦ mul_comm _ _
+    IsMulCommutative (X →ₑ[σ] Y) :=
+  ⟨⟨fun _ _ ↦ ext fun _ ↦ mul_comm _ _⟩⟩
 
 instance [SMul M X] [Monoid N] [Semiring Y] [MulSemiringAction N Y] :
     Semiring (X →ₑ[σ] Y) where
   __ := (inferInstance : Monoid _)
-  __ := (inferInstance : AddCommMonoid _)
+  __ := (inferInstance : AddMonoid _)
+  __ := (inferInstance : IsAddCommutative _)
   zero_mul _ := ext fun x ↦ zero_mul _
   mul_zero _ := ext fun x ↦ mul_zero _
   left_distrib _ _ _ := ext fun x ↦ left_distrib _ _ _
   right_distrib _ _ _ := ext fun x ↦ right_distrib _ _ _
 
-instance [SMul M X] [Monoid N] [Semiring Y] [IsMulCommutative Y] [MulSemiringAction N Y] :
-    CommSemiring (X →ₑ[σ] Y) where
-
 instance [SMul M X] [Monoid N] [Ring Y] [MulSemiringAction N Y] :
     Ring (X →ₑ[σ] Y) where
-
-instance [SMul M X] [Monoid N] [Ring Y] [IsMulCommutative Y] [MulSemiringAction N Y] :
-    CommRing (X →ₑ[σ] Y) where
+  __ := (inferInstance : Semiring _)
+  __ := (inferInstance : AddGroup _)
 
 namespace End
 

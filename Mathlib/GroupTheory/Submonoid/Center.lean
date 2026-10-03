@@ -66,8 +66,13 @@ variable {M N} [MulOneClass N]
 This is not an instance as it forms a non-defeq diamond with `Submonoid.toMonoid` in the `npow`
 field. -/
 @[to_additive /-- The center of an addition with zero is commutative and associative. -/]
-abbrev center.commMonoid' : CommMonoid (center M) :=
-  { (center M).toMulOneClass, Subsemigroup.center.commSemigroup with }
+abbrev center.commMonoid' : Monoid (center M) :=
+  { (center M).toMulOneClass, Subsemigroup.center.semigroup with }
+
+/-- The center of a multiplication with unit is commutative. -/
+@[to_additive /-- The center of an addition with zero is commutative. -/]
+instance center.isMulCommutative : IsMulCommutative (center M) :=
+  ⟨⟨fun a _ => Subtype.ext <| a.2.comm _⟩⟩
 
 @[to_additive]
 protected theorem center_prod {N : Type*} [MulOneClass N] :
@@ -100,14 +105,9 @@ section Monoid
 
 variable {M} [Monoid M]
 
-/-- The center of a monoid is commutative. -/
-@[to_additive /-- The center of an additive monoid is additively commutative. -/]
-instance center.commMonoid : CommMonoid (center M) :=
-  { (center M).toMonoid, Subsemigroup.center.commSemigroup with }
-
--- no instance diamond, unlike the primed version
-example : center.commMonoid.toMonoid = Submonoid.toMonoid (center M) := by
-  with_reducible_and_instances rfl
+-- The center of a monoid is commutative: `Submonoid.toMonoid` together with
+-- `Submonoid.center.isMulCommutative`.
+example : IsMulCommutative (center M) := inferInstance
 
 @[to_additive]
 theorem mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g := by

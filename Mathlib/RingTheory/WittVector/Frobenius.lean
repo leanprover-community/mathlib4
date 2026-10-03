@@ -244,7 +244,7 @@ theorem ghostComponent_frobenius (n : ℕ) (x : 𝕎 R) :
 variable (p)
 
 /-- `frobenius` is tautologically a polynomial function. -/
-instance frobenius_isPoly : IsPoly p fun R _Rcr => @frobenius p R _ _Rcr :=
+instance frobenius_isPoly : IsPoly p fun R _Rcr _Rc => @frobenius p R _ _Rcr _Rc :=
   frobeniusFun_isPoly _
 
 section CharP
@@ -267,7 +267,7 @@ theorem coeff_frobenius_charP (x : 𝕎 R) (n : ℕ) : coeff (frobenius x) n = x
   · rw [frobeniusPoly_zmod]
   · rw [map_pow, aeval_X]
 
-theorem frobenius_eq_map_frobenius : @frobenius p R _ _ = map (_root_.frobenius R p) := by
+theorem frobenius_eq_map_frobenius : @frobenius p R _ _ _ = map (_root_.frobenius R p) := by
   ext (x n)
   simp only [coeff_frobenius_charP, map_coeff, frobenius_def]
 
@@ -292,7 +292,7 @@ def frobeniusEquiv [PerfectRing R p] : WittVector p R ≃+* WittVector p R :=
       exact frobenius_apply_frobeniusEquiv_symm R p _ }
 
 theorem frobenius_bijective [PerfectRing R p] :
-    Function.Bijective (@WittVector.frobenius p R _ _) :=
+    Function.Bijective (@WittVector.frobenius p R _ _ _) :=
   (frobeniusEquiv p R).bijective
 
 end CharP

@@ -74,7 +74,7 @@ theorem norm_eq (h : f 0 = 0) : ‖f‖ = ‖f.contLinear‖ :=
 noncomputable instance : PseudoMetricSpace (V →ᴬ[𝕜] Q) :=
   (decompHomeomorph 𝕜 V Q).isEmbedding.comapPseudoMetricSpace
 
-noncomputable instance : SeminormedAddCommGroup (V →ᴬ[𝕜] W) where
+noncomputable instance : SeminormedAddGroup (V →ᴬ[𝕜] W) where
   dist_eq _ _ := dist_eq_norm_neg_add (E := W × (V →L[𝕜] W)) _ _
 
 noncomputable instance : NormedAddTorsor (V →ᴬ[𝕜] W) (V →ᴬ[𝕜] Q) where
@@ -152,8 +152,8 @@ variable [MetricSpace Q] [NormedAddTorsor W Q]
 noncomputable instance : MetricSpace (V →ᴬ[𝕜] Q) :=
   (decompHomeomorph 𝕜 V Q).isEmbedding.comapMetricSpace
 
-noncomputable instance : NormedAddCommGroup (V →ᴬ[𝕜] W) where
-  __ : SeminormedAddCommGroup (V →ᴬ[𝕜] W) := inferInstance
+noncomputable instance : NormedAddGroup (V →ᴬ[𝕜] W) where
+  __ : SeminormedAddGroup (V →ᴬ[𝕜] W) := inferInstance
   __ : MetricSpace (V →ᴬ[𝕜] W) := inferInstance
 
 end Normed

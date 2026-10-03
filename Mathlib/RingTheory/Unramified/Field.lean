@@ -37,13 +37,14 @@ open scoped TensorProduct
 
 universe u
 
-variable (K A L : Type*) [Field K] [Field L] [Ring A] [IsMulCommutative A] [Algebra K A] [Algebra K L]
+variable (K A L : Type*) [Field K] [Field L] [Ring A] [IsMulCommutative A] [Algebra K A]
+  [Algebra K L]
 
 namespace Algebra.FormallyUnramified
 
 theorem of_isSeparable [Algebra.IsSeparable K L] : FormallyUnramified K L := by
   rw [iff_comp_injective]
-  intro B _ _ I hI f₁ f₂ e
+  intro B _ _ _ I hI f₁ f₂ e
   ext x
   have : f₁ x - f₂ x ∈ I := by
     simpa [Ideal.Quotient.mk_eq_mk_iff_sub_mem] using congr($e x)

@@ -156,7 +156,13 @@ of slope `m : ℤ`.
 @[nolint unusedArguments]
 def StandardOneDimIsocrystal (_m : ℤ) : Type _ :=
   K(p, k)
-deriving AddCommGroup, Module K(p, k)
+deriving AddGroup, IsAddCommutative
+
+-- `deriving Module K(p, k)` fails here: the delta-deriving handler synthesizes the
+-- `IsAddCommutative` argument on the unfolded type `K(p, k)`, which does not unify with the
+-- `AddMonoid` instance derived on the synonym.
+instance (m : ℤ) : Module K(p, k) (StandardOneDimIsocrystal p k m) :=
+  inferInstanceAs (Module K(p, k) K(p, k))
 
 section PerfectRing
 

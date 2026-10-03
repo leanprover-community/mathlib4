@@ -106,6 +106,11 @@ attribute [local instance] FractionRing.liftAlgebra in
 theorem map_eq_span_zeta_sub_one_pow :
     (map (algebraMap ℤ (𝓞 K)) 𝒑) = span {hζ.toInteger - 1} ^ Module.finrank ℚ K := by
   have : IsGalois ℚ K := isGalois {p ^ (k + 1)} ℚ K
+  -- `IsScalarTower ℤ ℚ K` and `IsScalarTower ℤ (𝓞 K) K` are not found by instance search: the
+  -- pending `Module _ K` argument of `AddCommGroup.intIsScalarTower` tries
+  -- `NormedSpace.toModule`, which aborts the search.
+  have : IsScalarTower ℤ ℚ K := AddCommGroup.intIsScalarTower (M := K)
+  have : IsScalarTower ℤ (𝓞 K) K := AddCommGroup.intIsScalarTower (M := K)
   have : IsGalois (FractionRing ℤ) (FractionRing (𝓞 K)) := by
     refine IsGalois.of_equiv_equiv (f := (FractionRing.algEquiv ℤ ℚ).toRingEquiv.symm)
       (g := (FractionRing.algEquiv (𝓞 K) K).toRingEquiv.symm) <|
@@ -370,6 +375,10 @@ private theorem inertiaDegIn_ramificationIdxIn_aux (hn : n = p ^ (k + 1) * m) (h
     (isCyclotomicExtension_singleton_iff_eq_adjoin _ _ _ _ hζₚ).mpr rfl
   -- A prime ideal of `Fₚ` above `𝒑`
   obtain ⟨Pₚ, hP₁, _⟩ := exists_maximal_ideal_liesOver_of_isIntegral 𝒑 (S := 𝓞 Fₚ)
+  -- Not found by instance search: the pending `Module _ (𝓞 K)` argument of
+  -- `AddCommGroup.intIsScalarTower` tries `NormedSpace.toModule`, which aborts the search.
+  have : IsScalarTower ℤ (𝓞 Fₘ) (𝓞 K) := AddCommGroup.intIsScalarTower (M := 𝓞 K)
+  have : IsScalarTower ℤ (𝓞 Fₚ) (𝓞 K) := AddCommGroup.intIsScalarTower (M := 𝓞 K)
   suffices Pₚ.ramificationIdxIn (𝓞 K) *
       Pₘ.inertiaDegIn (𝓞 K) * (Pₘ.primesOver (𝓞 K)).ncard = 1 by
     replace this := Nat.eq_one_of_mul_eq_one_right this

@@ -40,6 +40,11 @@ that is ramified over `ℤ`. -/
 lemma NumberField.exists_not_isUnramifiedAt_int (H : Module.finrank ℚ K ≠ 1) :
     ∃ (P : Ideal 𝒪) (_ : P.IsMaximal), ¬ Algebra.IsUnramifiedAt ℤ P := by
   obtain ⟨p, hp1, hp2⟩ := NumberField.exists_not_isUnramifiedIn (𝒪 := 𝒪) H
+  -- `IsScalarTower ℤ ℚ K` and `IsScalarTower ℤ 𝒪 K` are not found by instance search: the
+  -- pending `Module _ K` argument of `AddCommGroup.intIsScalarTower` tries
+  -- `NormedSpace.toModule`, which throws (stuck) instead of failing, aborting the search.
+  have : IsScalarTower ℤ ℚ K := AddCommGroup.intIsScalarTower (M := K)
+  have : IsScalarTower ℤ 𝒪 K := AddCommGroup.intIsScalarTower (M := K)
   have := (IsIntegralClosure.algebraMap_injective 𝒪 ℤ K).isDomain
   have := IsIntegralClosure.isDedekindDomain ℤ ℚ K 𝒪
   have := IsIntegralClosure.isTorsionFree ℤ (A := 𝒪) K
@@ -60,7 +65,9 @@ lemma bijective_algebraMap_int_of_finite_of_unramified
   have := IsDedekindDomain.of_formallyUnramified ℤ 𝒪
   let K := FractionRing 𝒪
   let : Algebra ℤ K := Ring.toIntAlgebra K
+  -- See `NumberField.exists_not_isUnramifiedAt_int` for why this is needed.
   have : CharZero 𝒪 := Algebra.charZero_of_charZero ℤ _
+  have : IsScalarTower ℤ ℚ K := @AddCommGroup.intIsScalarTower ℚ K _ _ _ _
   have : NumberField K := { to_finiteDimensional := Module.Finite.of_isLocalization ℤ 𝒪 ℤ⁰ }
   have := NumberField.finrank_eq_one_of_unramified (K := K) (𝒪 := 𝒪)
   have : IsIntegralClosure ℤ ℤ K := .of_algEquiv _ (.ofBijective (IsScalarTower.toAlgHom _ _ _)
@@ -72,6 +79,9 @@ some rational prime `p : ℕ` such that every prime of `K` over `p` is ramified.
 lemma NumberField.exists_not_isUnramifiedAt_int_of_isGalois [IsGalois ℚ K]
     (H : 1 < Module.finrank ℚ K) :
     ∃ p : ℕ, p.Prime ∧ ∀ (P : Ideal 𝒪) (_ : P.IsPrime), ↑p ∈ P → ¬ Algebra.IsUnramifiedAt ℤ P := by
+  -- See `NumberField.exists_not_isUnramifiedAt_int` for why these are needed.
+  have : IsScalarTower ℤ ℚ K := AddCommGroup.intIsScalarTower (M := K)
+  have : IsScalarTower ℤ 𝒪 K := AddCommGroup.intIsScalarTower (M := K)
   have := (IsIntegralClosure.algebraMap_injective 𝒪 ℤ K).isDomain
   have := IsIntegralClosure.isDedekindDomain ℤ ℚ K 𝒪
   have := IsIntegralClosure.isFractionRing_of_finite_extension ℤ ℚ K 𝒪

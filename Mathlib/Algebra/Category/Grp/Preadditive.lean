@@ -56,9 +56,12 @@ instance : SMul ℤ (M ⟶ N) where
 
 @[simp] lemma hom_zsmul (n : ℤ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
 
-instance (P Q : AddCommGrpCat) : AddCommGroup (P ⟶ Q) :=
-  Function.Injective.addCommGroup (Hom.hom) ConcreteCategory.hom_injective
+instance (P Q : AddCommGrpCat) : AddGroup (P ⟶ Q) :=
+  Function.Injective.addGroup (Hom.hom) ConcreteCategory.hom_injective
     rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+
+instance (P Q : AddCommGrpCat) : IsAddCommutative (P ⟶ Q) :=
+  Function.Injective.isAddCommutative (Hom.hom) ConcreteCategory.hom_injective (fun _ _ => rfl)
 
 instance : Preadditive AddCommGrpCat where
 

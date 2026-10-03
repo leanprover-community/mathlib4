@@ -76,18 +76,18 @@ prove in `PiTensorProduct.norm_eval_le_injectiveSeminorm` that this gives the sa
   "`injectiveSeminorm` is deprecated in favor of the extensionally equal `projectiveSeminorm`"
   (since := "2026-06-10")]
 noncomputable irreducible_def injectiveSeminorm : Seminorm 𝕜 (⨂[𝕜] i, E i) :=
-  sSup {p | ∃ (G : Type (max uι u𝕜 uE)) (_ : SeminormedAddCommGroup G)
+  sSup {p | ∃ (G : Type (max uι u𝕜 uE)) (_ : SeminormedAddGroup G) (_ : IsAddCommutative G)
   (_ : NormedSpace 𝕜 G), p = Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
   (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E))}
 
 @[deprecated "no replacement" (since := "2026-06-10")]
 lemma dualSeminorms_bounded : BddAbove {p | ∃ (G : Type (max uι u𝕜 uE))
-    (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G),
+    (_ : SeminormedAddGroup G) (_ : IsAddCommutative G) (_ : NormedSpace 𝕜 G),
     p = Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
     (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E))} := by
   use projectiveSeminorm
   simp only [mem_upperBounds, Set.mem_ofPred_eq, forall_exists_index]
-  intro p G _ _ hp x
+  intro p G _ _ _ hp x
   simpa [hp] using! toDualContinuousMultilinearMap_le_projectiveSeminorm _
 
 @[deprecated
@@ -95,13 +95,13 @@ lemma dualSeminorms_bounded : BddAbove {p | ∃ (G : Type (max uι u𝕜 uE))
   (since := "2026-06-10")]
 theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
     injectiveSeminorm x = ⨆ p : {p | ∃ (G : Type (max uι u𝕜 uE))
-    (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G), p = Seminorm.comp (normSeminorm 𝕜
-    (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
+    (_ : SeminormedAddGroup G) (_ : IsAddCommutative G) (_ : NormedSpace 𝕜 G),
+    p = Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
     (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E))}, p.1 x := by
   simpa only [injectiveSeminorm, Set.coe_ofPred, Set.mem_ofPred_eq]
     using Seminorm.sSup_apply dualSeminorms_bounded
 
-attribute [-instance] instSeminormedAddCommGroup in
+attribute [-instance] instSeminormedAddGroup in
 @[deprecated
   "`injectiveSeminorm` is deprecated in favor of the extensionally equal `projectiveSeminorm`"
   (since := "2026-06-10")]
@@ -151,7 +151,7 @@ theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (
     simp only [injectiveSeminorm]
     refine le_csSup dualSeminorms_bounded ?_
     rw [Set.mem_ofPred]
-    existsi G, inferInstance, inferInstance
+    existsi G, inferInstance, inferInstance, inferInstance
     rfl
   refine le_trans ?_ (mul_le_mul_of_nonneg_left (hle x) (norm_nonneg f'))
   simp only [Seminorm.comp_apply, coe_normSeminorm, ← toDualContinuousMultilinearMap_apply_apply]
@@ -167,14 +167,14 @@ theorem injectiveSeminorm_le_projectiveSeminorm :
   refine csSup_le ?_ ?_
   · existsi 0
     simp only [Set.mem_ofPred_eq]
-    existsi PUnit, inferInstance, inferInstance
+    existsi PUnit, inferInstance, inferInstance, inferInstance
     ext x
     simp only [Seminorm.zero_apply, Seminorm.comp_apply, coe_normSeminorm]
     rw [Subsingleton.elim (toDualContinuousMultilinearMap PUnit.{(max (max uE uι) u𝕜) + 1} x) 0,
       norm_zero]
   · intro p hp
     simp only [Set.mem_ofPred_eq] at hp
-    obtain ⟨G, _, _, h⟩ := hp
+    obtain ⟨G, _, _, _, h⟩ := hp
     rw [h]; intro x; simp only [Seminorm.comp_apply, coe_normSeminorm]
     exact toDualContinuousMultilinearMap_le_projectiveSeminorm _
 

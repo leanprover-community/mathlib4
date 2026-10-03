@@ -140,7 +140,12 @@ You should use `asModuleEquiv : ρ.asModule ≃+ V` to translate terms.
 -/
 @[nolint unusedArguments]
 def asModule (_ : Representation k G V) := V
-deriving AddCommMonoid, Module k
+deriving AddMonoid, IsAddCommutative
+
+-- `deriving Module k` fails with a `wrapInstance` unification error once the
+-- `IsAddCommutative` argument of `Module` is a separate (Prop) instance, so we state it directly.
+instance instModuleAsModule (ρ : Representation k G V) : Module k ρ.asModule :=
+  inferInstanceAs <| Module k V
 
 instance (ρ : Representation k G V) : Inhabited ρ.asModule where
   default := 0
@@ -369,7 +374,7 @@ section AddCommGroup
 variable {k G V : Type*} [Ring k] [Monoid G] [AddGroup V] [IsAddCommutative V] [Module k V]
 variable (ρ : Representation k G V)
 
-instance : AddCommGroup ρ.asModule := inferInstanceAs <| AddCommGroup V
+instance : AddGroup ρ.asModule := inferInstanceAs <| AddGroup V
 
 /- Given a representation `(V, ρ)` of a monoid `G`, this says
 `(ρ(g) - Id)(x + ρ(g)(x) + ... + ρ(gⁿ)(x)) = ρ(gⁿ⁺¹)(x) - x` for all `n : ℕ, g : G` and `x : V`. -/
@@ -571,7 +576,7 @@ section DirectSum
 
 variable {k G : Type*} [Semiring k] [Monoid G]
 variable {ι : Type*} {V : ι → Type*}
-variable [(i : ι) → AddCommMonoid (V i)] [(i : ι) → Module k (V i)]
+variable [(i : ι) → AddMonoid (V i)] [∀ i, IsAddCommutative (V i)] [(i : ι) → Module k (V i)]
 variable (ρ : (i : ι) → Representation k G (V i))
 
 open DirectSum
@@ -718,8 +723,8 @@ noncomputable abbrev free (k G : Type*) [Semiring k] [IsMulCommutative k] [Monoi
   finsupp (leftRegular k G) α
 
 noncomputable instance (k G : Type*) [Ring k] [IsMulCommutative k] [Monoid G] (α : Type*) :
-    AddCommGroup (free k G α).asModule :=
-  inferInstanceAs <| AddCommGroup (α →₀ k[G])
+    AddGroup (free k G α).asModule :=
+  inferInstanceAs <| AddGroup (α →₀ k[G])
 
 lemma free_single_single (g h : G) (i : α) (r : k) :
     free k G α g (single i (single h r)) = .single i (single (g * h) r) := by

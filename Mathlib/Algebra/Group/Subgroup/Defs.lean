@@ -209,13 +209,15 @@ instance (priority := 75) toGroup : Group H := fast_instance%
   Subtype.coe_injective.group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
--- Prefer subclasses of `CommGroup` over subclasses of `SubgroupClass`.
+-- Not an instance in the unbundled hierarchy: `SubmonoidClass.toCommMonoid` already provides
+-- `IsMulCommutative H`, and as an instance this lemma makes unification of its conclusion throw
+-- `isDefEqStuck` (on the `Group G` argument) whenever the carrier is only a `Monoid`, which
+-- aborts unrelated searches such as `SMul R S'` for `S'` in an `SMulMemClass`.
 /-- A subgroup of a `CommGroup` is a `CommGroup`. -/
 @[to_additive /-- An additive subgroup of an `AddCommGroup` is an `AddCommGroup`. -/]
-instance (priority := 75) toCommGroup {G : Type*} [Group G] [IsMulCommutative G] [SetLike S G] [SubgroupClass S G] :
-    CommGroup H := fast_instance%
-  Subtype.coe_injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+theorem toCommGroup {G : Type*} [Group G] [IsMulCommutative G] [SetLike S G]
+    [SubgroupClass S G] : IsMulCommutative H :=
+  Subtype.coe_injective.isMulCommutative Subtype.val fun _ _ => rfl
 
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive (attr := coe)
@@ -557,7 +559,8 @@ instance toGroup {G : Type*} [Group G] (H : Subgroup G) : Group H :=
 
 /-- A subgroup of a `CommGroup` is a `CommGroup`. -/
 @[to_additive /-- An `AddSubgroup` of an `AddCommGroup` is an `AddCommGroup`. -/]
-instance toCommGroup {G : Type*} [Group G] [IsMulCommutative G] (H : Subgroup G) : CommGroup H :=
+instance toCommGroup {G : Type*} [Group G] [IsMulCommutative G] (H : Subgroup G) :
+    IsMulCommutative H :=
   SubgroupClass.toCommGroup H
 
 /-- The natural group hom from a subgroup of group `G` to `G`. -/

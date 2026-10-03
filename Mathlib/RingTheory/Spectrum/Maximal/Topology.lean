@@ -32,7 +32,7 @@ namespace MaximalSpectrum
 open PrimeSpectrum Set
 
 theorem toPrimeSpectrum_range :
-    Set.range (@toPrimeSpectrum R _) = { x | IsClosed ({x} : Set <| PrimeSpectrum R) } := by
+    Set.range (@toPrimeSpectrum R _ _) = { x | IsClosed ({x} : Set <| PrimeSpectrum R) } := by
   simp only [isClosed_singleton_iff_isMaximal]
   ext ⟨x, _⟩
   exact ⟨fun ⟨y, hy⟩ => hy ▸ y.isMaximal, fun hx => ⟨⟨x, hx⟩, rfl⟩⟩
@@ -47,7 +47,7 @@ instance : T1Space <| MaximalSpectrum R :=
     ⟨{toPrimeSpectrum x}, (isClosed_singleton_iff_isMaximal _).mpr x.isMaximal, by
       simpa only [← image_singleton] using preimage_image_eq {x} toPrimeSpectrum_injective⟩⟩
 
-theorem toPrimeSpectrum_continuous : Continuous <| @toPrimeSpectrum R _ :=
+theorem toPrimeSpectrum_continuous : Continuous <| @toPrimeSpectrum R _ _ :=
   continuous_induced_dom
 
 end MaximalSpectrum

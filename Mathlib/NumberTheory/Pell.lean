@@ -98,8 +98,11 @@ namespace Solution₁
 
 variable {d : ℤ}
 
-instance instCommGroup : CommGroup (Solution₁ d) :=
-  inferInstanceAs (CommGroup (unitary (ℤ√d)))
+instance instGroup : Group (Solution₁ d) :=
+  inferInstanceAs (Group (unitary (ℤ√d)))
+
+instance instCommGroup : IsMulCommutative (Solution₁ d) :=
+  inferInstanceAs (IsMulCommutative (unitary (ℤ√d)))
 
 instance instHasDistribNeg : HasDistribNeg (Solution₁ d) :=
   inferInstanceAs (HasDistribNeg (unitary (ℤ√d)))

@@ -118,7 +118,7 @@ private lemma innerProductForm_self (x : ⋀[ℝ]^n E) {ι : Type*} [Fintype ι]
     apply Module.Basis.ext_elem ((stdOrthonormalBasis ℝ E).toBasis.exteriorPower n)
     simpa using h
 
-instance [FiniteDimensional ℝ E] : NormedAddCommGroup (⋀[ℝ]^n E) :=
+instance [FiniteDimensional ℝ E] : NormedAddGroup (⋀[ℝ]^n E) :=
   InnerProductSpace.Core.toNormedAddCommGroup (𝕜 := ℝ)
 
 instance [FiniteDimensional ℝ E] : InnerProductSpace ℝ (⋀[ℝ]^n E) :=

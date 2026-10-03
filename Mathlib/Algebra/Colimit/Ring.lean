@@ -58,7 +58,7 @@ def DirectLimit : Type _ :=
           (∃ i, of (⟨i, 1⟩ : Σ i, G i) - 1 = a) ∨
             (∃ i x y, of (⟨i, x + y⟩ : Σ i, G i) - (of ⟨i, x⟩ + of ⟨i, y⟩) = a) ∨
               ∃ i x y, of (⟨i, x * y⟩ : Σ i, G i) - of ⟨i, x⟩ * of ⟨i, y⟩ = a }
-deriving Zero, One, AddCommMonoid, Ring, CommRing, Inhabited
+deriving Zero, One, AddMonoid, IsAddCommutative, Ring, IsMulCommutative, Inhabited
 
 namespace DirectLimit
 

@@ -312,7 +312,7 @@ alias ⟨mem_unitary, norm_eq_one⟩ := norm_eq_one_iff_mem_unitary
 /-- The kernel of the norm map on `QuadraticAlgebra R a b` equals
 the submonoid of unitary elements. -/
 theorem mker_norm_eq_unitary :
-    MonoidHom.mker (@norm R a b _) = unitary (QuadraticAlgebra R a b) :=
+    MonoidHom.mker (@norm R a b _ _) = unitary (QuadraticAlgebra R a b) :=
   Submonoid.ext fun _ => norm_eq_one_iff_mem_unitary
 
 open nonZeroDivisors

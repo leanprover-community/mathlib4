@@ -81,8 +81,8 @@ end Mul
 instance instSemigroupWithZero [Semigroup α] : SemigroupWithZero (WithZero α) where
   mul_assoc _ _ _ := Option.map₂_assoc mul_assoc
 
-instance instCommSemigroup [Semigroup α] [IsMulCommutative α] : CommSemigroup (WithZero α) where
-  mul_comm _ _ := Option.map₂_comm mul_comm
+instance instIsMulCommutative [Mul α] [IsMulCommutative α] : IsMulCommutative (WithZero α) where
+  is_comm.comm _ _ := Option.map₂_comm mul_comm
 
 section MulOneClass
 
@@ -203,9 +203,6 @@ instance instMonoidWithZero [Monoid α] : MonoidWithZero (WithZero α) where
     | n, 0 => by simp only [mul_zero]; rfl
     | n, some _ => congr(some $(pow_succ ..))
 
-instance instCommMonoidWithZero [Monoid α] [IsMulCommutative α] : CommMonoidWithZero (WithZero α) :=
-  { WithZero.instMonoidWithZero, WithZero.instCommSemigroup with }
-
 section Inv
 variable [Inv α]
 
@@ -277,8 +274,6 @@ instance instDivisionMonoid [DivisionMonoid α] : DivisionMonoid (WithZero α) w
     | some _, some _, h =>
       congr(some $(inv_eq_of_mul_eq_one_right <| Option.some_injective _ h))
 
-instance instDivisionCommMonoid [DivisionMonoid α] [IsMulCommutative α] : DivisionCommMonoid (WithZero α) where
-
 section Group
 variable [Group α]
 
@@ -341,8 +336,6 @@ abbrev _root_.MulEquiv.unzero [Group β] (e : WithZero α ≃* WithZero β) :
   _root_.MulEquiv.withZero.symm e
 
 end Group
-
-instance instCommGroupWithZero [Group α] [IsMulCommutative α] : CommGroupWithZero (WithZero α) where
 
 instance instAddMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithZero α) where
   natCast n := if n = 0 then 0 else (n : α)

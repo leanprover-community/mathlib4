@@ -253,19 +253,19 @@ end GrpCat
 structure AddCommGrpCat : Type (u + 1) where
   /-- The underlying type. -/
   (carrier : Type u)
-  [str : AddGroup carrier] [IsAddCommutative carrier]
+  [str : AddGroup carrier] [isComm : IsAddCommutative carrier]
 
 /-- The category of groups and group morphisms. -/
 @[to_additive]
 structure CommGrpCat : Type (u + 1) where
   /-- The underlying type. -/
   (carrier : Type u)
-  [str : Group carrier] [IsMulCommutative carrier]
+  [str : Group carrier] [isComm : IsMulCommutative carrier]
 
-attribute [instance] AddCommGrpCat.str CommGrpCat.str
+attribute [instance] AddCommGrpCat.str CommGrpCat.str AddCommGrpCat.isComm CommGrpCat.isComm
 
-initialize_simps_projections AddCommGrpCat (carrier → coe, -str)
-initialize_simps_projections CommGrpCat (carrier → coe, -str)
+initialize_simps_projections AddCommGrpCat (carrier → coe, -str, -isComm)
+initialize_simps_projections CommGrpCat (carrier → coe, -str, -isComm)
 
 /-- `Ab` is an abbreviation for `AddCommGrpCat`, for the sake of mathematicians' sanity. -/
 abbrev Ab := AddCommGrpCat

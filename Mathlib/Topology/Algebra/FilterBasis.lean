@@ -293,8 +293,8 @@ end RingFilterBasis
   Example : if `M` is a topological module then the neighbourhoods of zero are a
   `ModuleFilterBasis`. Conversely given a `ModuleFilterBasis` one can define a topology
   compatible with the module structure on `M`. -/
-structure ModuleFilterBasis (R M : Type*) [Semiring R] [TopologicalSpace R] [AddGroup M] [IsAddCommutative M]
-  [Module R M] extends AddGroupFilterBasis M where
+structure ModuleFilterBasis (R M : Type*) [Semiring R] [TopologicalSpace R] [AddGroup M]
+  [IsAddCommutative M] [Module R M] extends AddGroupFilterBasis M where
   smul' : ∀ {U}, U ∈ sets → ∃ V ∈ 𝓝 (0 : R), ∃ W ∈ sets, V • W ⊆ U
   smul_left' : ∀ (x₀ : R) {U}, U ∈ sets → ∃ V ∈ sets, V ⊆ (fun x ↦ x₀ • x) ⁻¹' U
   smul_right' : ∀ (m₀ : M) {U}, U ∈ sets → ∀ᶠ x in 𝓝 (0 : R), x • m₀ ∈ U
@@ -303,7 +303,8 @@ namespace ModuleFilterBasis
 
 section Semiring
 
-variable {R M : Type*} [Semiring R] [TopologicalSpace R] [AddGroup M] [IsAddCommutative M] [Module R M]
+variable {R M : Type*} [Semiring R] [TopologicalSpace R] [AddGroup M] [IsAddCommutative M]
+  [Module R M]
   (B : ModuleFilterBasis R M)
 
 instance GroupFilterBasis.hasMem : Membership (Set M) (ModuleFilterBasis R M) :=
@@ -349,7 +350,8 @@ def topology : TopologicalSpace M :=
 It has the given basis as a basis of neighborhoods of zero. This version gets the ring
 topology by unification instead of type class inference. -/
 @[instance_reducible]
-def topology' {R M : Type*} [Semiring R] {_ : TopologicalSpace R} [AddGroup M] [IsAddCommutative M] [Module R M]
+def topology' {R M : Type*} [Semiring R] {_ : TopologicalSpace R} [AddGroup M] [IsAddCommutative M]
+    [Module R M]
     (B : ModuleFilterBasis R M) : TopologicalSpace M :=
   B.toAddGroupFilterBasis.topology
 
@@ -357,7 +359,8 @@ end Semiring
 
 section Ring
 
-variable {R M : Type*} [Ring R] [TopologicalSpace R] [AddGroup M] [IsAddCommutative M] [Module R M]
+variable {R M : Type*} [Ring R] [TopologicalSpace R] [AddGroup M] [IsAddCommutative M]
+  [Module R M]
   (B : ModuleFilterBasis R M)
 
 /-- A topological additive group with a basis of `𝓝 0` satisfying the axioms of `ModuleFilterBasis`
@@ -406,7 +409,7 @@ def ofBases (BR : RingFilterBasis R) (BM : AddGroupFilterBasis M)
     (smul : ∀ {U}, U ∈ BM → ∃ V ∈ BR, ∃ W ∈ BM, V • W ⊆ U)
     (smul_left : ∀ (x₀ : R) {U}, U ∈ BM → ∃ V ∈ BM, V ⊆ (fun x ↦ x₀ • x) ⁻¹' U)
     (smul_right : ∀ (m₀ : M) {U}, U ∈ BM → ∃ V ∈ BR, V ⊆ (fun x ↦ x • m₀) ⁻¹' U) :
-    @ModuleFilterBasis R M _ BR.topology _ _ :=
+    @ModuleFilterBasis R M _ BR.topology _ _ _ :=
   let _ := BR.topology
   { BM with
     smul' := by

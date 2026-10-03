@@ -469,12 +469,14 @@ variable {N N'}
 
 instance : Add (LieSubmodule R L M) where add := max
 
-instance : AddCommMonoid (LieSubmodule R L M) where
+instance : AddMonoid (LieSubmodule R L M) where
   add_assoc := sup_assoc
   zero_add := bot_sup_eq
   add_zero := sup_bot_eq
-  add_comm := sup_comm
   nsmul := nsmulRec
+
+instance : IsAddCommutative (LieSubmodule R L M) :=
+  ⟨⟨sup_comm⟩⟩
 
 variable (N N')
 

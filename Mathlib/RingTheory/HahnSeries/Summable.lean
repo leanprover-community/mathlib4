@@ -166,8 +166,11 @@ theorem smul_apply' (m : M) (s : SummableFamily Γ R α) (a : α) : (m • s) a 
 
 end SMul
 
-instance : AddCommMonoid (SummableFamily Γ R α) := fast_instance%
-  DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add (fun _ _ => coe_smul' _ _)
+instance : AddMonoid (SummableFamily Γ R α) := fast_instance%
+  DFunLike.coe_injective.addMonoid _ coe_zero coe_add (fun _ _ => coe_smul' _ _)
+
+instance : IsAddCommutative (SummableFamily Γ R α) :=
+  DFunLike.coe_injective.isAddCommutative _ coe_add
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The coefficient function of a summable family, as a finsupp on the parameter type. -/
@@ -360,8 +363,8 @@ theorem sub_apply : (s - t) a = s a - t a :=
   rfl
 
 
-instance : AddCommGroup (SummableFamily Γ R α) := fast_instance%
-  DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub
+instance : AddGroup (SummableFamily Γ R α) := fast_instance%
+  DFunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub
     (fun _ _ => coe_smul' _ _) (fun _ _ => coe_smul' _ _)
 
 end AddCommGroup

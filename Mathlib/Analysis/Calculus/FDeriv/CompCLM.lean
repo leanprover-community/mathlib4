@@ -47,7 +47,8 @@ variable {H : Type*} [NormedAddGroup H] [IsAddCommutative H] [NormedSpace 𝕜 H
 theorem HasStrictFDerivAt.clm_comp (hc : HasStrictFDerivAt c c' x) (hd : HasStrictFDerivAt d d' x) :
     HasStrictFDerivAt (fun y => (c y).comp (d y))
       ((compL 𝕜 F G H (c x)).comp d' + ((compL 𝕜 F G H).flip (d x)).comp c') x :=
-  (isBoundedBilinearMap_comp.hasStrictFDerivAt (c x, d x)).comp x (hc.prodMk hd)
+  ((isBoundedBilinearMap_comp (E := F) (F := G) (G := H)).hasStrictFDerivAt (c x, d x)).comp x
+    (hc.prodMk hd)
 
 @[fun_prop]
 theorem HasFDerivWithinAt.clm_comp (hc : HasFDerivWithinAt c c' s x)
@@ -55,14 +56,16 @@ theorem HasFDerivWithinAt.clm_comp (hc : HasFDerivWithinAt c c' s x)
     HasFDerivWithinAt (fun y => (c y).comp (d y))
       ((compL 𝕜 F G H (c x)).comp d' + ((compL 𝕜 F G H).flip (d x)).comp c') s x := by
   -- `by exact` to solve unification issues.
-  exact (isBoundedBilinearMap_comp.hasFDerivAt (c x, d x)).comp_hasFDerivWithinAt x (hc.prodMk hd)
+  exact ((isBoundedBilinearMap_comp (E := F) (F := G) (G := H)).hasFDerivAt
+    (c x, d x)).comp_hasFDerivWithinAt x (hc.prodMk hd)
 
 @[fun_prop]
 theorem HasFDerivAt.clm_comp (hc : HasFDerivAt c c' x) (hd : HasFDerivAt d d' x) :
     HasFDerivAt (fun y => (c y).comp (d y))
       ((compL 𝕜 F G H (c x)).comp d' + ((compL 𝕜 F G H).flip (d x)).comp c') x := by
   -- `by exact` to solve unification issues.
-  exact (isBoundedBilinearMap_comp.hasFDerivAt (c x, d x)).comp x <| hc.prodMk hd
+  exact ((isBoundedBilinearMap_comp (E := F) (F := G) (G := H)).hasFDerivAt (c x, d x)).comp x <|
+    hc.prodMk hd
 
 @[fun_prop]
 theorem DifferentiableWithinAt.clm_comp (hc : DifferentiableWithinAt 𝕜 c s x)

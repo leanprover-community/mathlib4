@@ -215,9 +215,10 @@ lemma pow_lt_top [Preorder α] (hx : x < ⊤) : x ^ n < ⊤ := pow_lt_top_iff.2 
 end MonoidWithZero
 
 @[to_dual]
-instance instCommMonoidWithZero [MonoidWithZero α] [IsMulCommutative α] [NoZeroDivisors α] [Nontrivial α] :
-    CommMonoidWithZero (WithTop α) where
-  mul_comm a b := by simp_rw [mul_def]; exact if_congr or_comm rfl (Option.map₂_comm mul_comm)
+instance instIsMulCommutative [MulZeroClass α] [IsMulCommutative α] :
+    IsMulCommutative (WithTop α) where
+  is_comm := ⟨fun a b => by
+    simp_rw [mul_def]; exact if_congr or_comm rfl (Option.map₂_comm mul_comm)⟩
 
 @[to_dual]
 instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α]
@@ -261,12 +262,8 @@ instance instNonUnitalSemiring [NonUnitalSemiring α] [Subsingleton (AddUnits α
 instance instSemiring [Semiring α] [Subsingleton (AddUnits α)]
     [NoZeroDivisors α] [Nontrivial α] : Semiring (WithTop α) where
 
-@[to_dual]
-instance instCommSemiring [Semiring α] [IsMulCommutative α] [Subsingleton (AddUnits α)]
-    [NoZeroDivisors α] [Nontrivial α] : CommSemiring (WithTop α) where
-
-instance instIsOrderedRing [Semiring α] [IsMulCommutative α] [PartialOrder α] [CanonicallyOrderedAdd α]
-    [NoZeroDivisors α] [Nontrivial α] : IsOrderedRing (WithTop α) :=
+instance instIsOrderedRing [Semiring α] [IsMulCommutative α] [PartialOrder α]
+    [CanonicallyOrderedAdd α] [NoZeroDivisors α] [Nontrivial α] : IsOrderedRing (WithTop α) :=
   CanonicallyOrderedAdd.toIsOrderedRing
 
 /-- A version of `WithTop.map` for `RingHom`s. -/

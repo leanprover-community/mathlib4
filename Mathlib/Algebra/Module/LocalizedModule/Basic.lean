@@ -209,7 +209,8 @@ theorem mk_pow {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} (n : ℕ
 instance (priority := 900) {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
     Semiring (LocalizedModule S A) :=
   fast_instance%
-  { __ := (inferInstance : AddCommMonoid (LocalizedModule S A))
+  { __ := (inferInstance : AddMonoid (LocalizedModule S A))
+    __ := (inferInstance : IsAddCommutative (LocalizedModule S A))
     __ := (inferInstance : Monoid (LocalizedModule S A))
     left_distrib := by
       rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨a₃, s₃⟩
@@ -233,36 +234,26 @@ instance (priority := 900) {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid
       rintro ⟨a, s⟩
       exact mk_eq.mpr ⟨1, by simp only [mul_zero, smul_zero]⟩ }
 
--- For the instance on `Localization S`, we prefer `OreLocalization.instCommSemiring`.
+-- For the instance on `Localization S`, we prefer `OreLocalization.instIsMulCommutative`.
 -- They are defeq but Lean needs to unfold a bunch to verify it.
-instance (priority := 900) {A : Type*} [Semiring A] [IsMulCommutative A] [Algebra R A] {S : Submonoid R} :
-    CommSemiring (LocalizedModule S A) :=
-  fast_instance%
-  { __ := (inferInstance : Semiring (LocalizedModule S A))
-    mul_comm := by
-      rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩
-      exact mk_eq.mpr ⟨1, by simp only [one_smul, mul_comm]⟩ }
+instance (priority := 900) {A : Type*} [Semiring A] [IsMulCommutative A] [Algebra R A]
+    {S : Submonoid R} : IsMulCommutative (LocalizedModule S A) where
+  is_comm.comm := by
+    rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩
+    exact mk_eq.mpr ⟨1, by simp only [one_smul, mul_comm]⟩
 
 -- For the instance on `Localization S`, we prefer `OreLocalization.instRing`.
 -- They are defeq but Lean needs to unfold a bunch to verify it.
 instance (priority := 900) {A : Type*} [Ring A] [Algebra R A] {S : Submonoid R} :
     Ring (LocalizedModule S A) :=
   fast_instance%
-  { __ := (inferInstance : AddCommGroup (LocalizedModule S A))
+  { __ := (inferInstance : AddGroup (LocalizedModule S A))
     __ := (inferInstance : Semiring (LocalizedModule S A)) }
-
--- For the instance on `Localization S`, we prefer `OreLocalization.instCommRing`.
--- They are defeq but Lean needs to unfold a bunch to verify it.
-instance (priority := 900) {A : Type*} [Ring A] [IsMulCommutative A] [Algebra R A] {S : Submonoid R} :
-    CommRing (LocalizedModule S A) :=
-  fast_instance%
-  { __ := (inferInstance : Ring (LocalizedModule S A))
-    __ := (inferInstance : CommSemiring (LocalizedModule S A)) }
 
 set_option backward.isDefEq.respectTransparency false in
 private lemma example_oreLocalizationInstCommRing_eq_localizedModuleInstCommRing
     {R : Type*} [Ring R] [IsMulCommutative R] {S : Submonoid R} :
-    OreLocalization.instCommRing = (LocalizedModule.instCommRing : CommRing R[S⁻¹]) := by
+    OreLocalization.instRing = (LocalizedModule.instRing : Ring R[S⁻¹]) := by
   with_reducible_and_instances rfl
 
 theorem smul'_mk
@@ -459,7 +450,7 @@ noncomputable instance (priority := 900) algebra' {A : Type*} [Semiring A] [Alge
     induction x using induction_on with | _ a s => _
     simp only [RingHom.coe_comp, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
       Function.comp_apply]
-    rw [mk_mul_mk, mk_mul_mk, mul_comm, Algebra.commutes]
+    rw [mk_mul_mk, mk_mul_mk, mul_comm (1 : S), Algebra.commutes]
   smul_def' r x := by
     induction x using induction_on with | _ a s => _
     simp only [RingHom.coe_comp, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,

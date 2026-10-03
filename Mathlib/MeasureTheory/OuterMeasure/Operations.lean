@@ -106,7 +106,9 @@ end SMul
 instance instMulAction {R : Type*} [Monoid R] [MulAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] :
     MulAction R (OuterMeasure α) := fast_instance% FunLike.mulAction
 
-instance addCommMonoid : AddCommMonoid (OuterMeasure α) := fast_instance% FunLike.addCommMonoid
+instance instAddMonoid : AddMonoid (OuterMeasure α) := fast_instance% FunLike.addMonoid
+
+instance addCommMonoid : IsAddCommutative (OuterMeasure α) := FunLike.addCommMonoid
 
 @[deprecated (since := "2026-06-23")] alias coeFnAddMonoidHom := FunLike.coeAddMonoidHom
 

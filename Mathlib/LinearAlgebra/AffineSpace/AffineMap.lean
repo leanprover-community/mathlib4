@@ -278,9 +278,12 @@ theorem neg_linear (f : P1 →ᵃ[k] V2) : (-f).linear = -f.linear :=
   rfl
 
 /-- The set of affine maps to a vector space is an additive commutative group. -/
-instance : AddCommGroup (P1 →ᵃ[k] V2) :=
-  coeFn_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_smul _ _)
+instance : AddGroup (P1 →ᵃ[k] V2) :=
+  coeFn_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_smul _ _)
     fun _ _ => coe_smul _ _
+
+instance : IsAddCommutative (P1 →ᵃ[k] V2) :=
+  coeFn_injective.isAddCommutative _ coe_add
 
 /-- The space of affine maps from `P1` to `P2` is an affine space over the space of affine maps
 from `P1` to the vector space `V2` corresponding to `P2`. -/
@@ -655,15 +658,15 @@ variable {ι : Type*} {V : ι → Type*} {P : ι → Type*} [∀ i, AddGroup (V 
 /-- Evaluation at a point as an affine map. -/
 def proj (i : ι) : (∀ i : ι, P i) →ᵃ[k] P i where
   toFun f := f i
-  linear := @LinearMap.proj k ι _ V _ _ i
+  linear := @LinearMap.proj k ι _ V _ _ _ i
   map_vadd' _ _ := rfl
 
 @[simp]
-theorem proj_apply (i : ι) (f : ∀ i, P i) : @proj k _ ι V P _ _ _ i f = f i :=
+theorem proj_apply (i : ι) (f : ∀ i, P i) : @proj k _ ι V P _ _ _ _ i f = f i :=
   rfl
 
 @[simp]
-theorem proj_linear (i : ι) : (@proj k _ ι V P _ _ _ i).linear = @LinearMap.proj k ι _ V _ _ i :=
+theorem proj_linear (i : ι) : (@proj k _ ι V P _ _ _ _ i).linear = @LinearMap.proj k ι _ V _ _ _ i :=
   rfl
 
 theorem pi_lineMap_apply (f g : ∀ i, P i) (c : k) (i : ι) :
@@ -735,7 +738,7 @@ lemma lineMap_apply' [SMulCommClass k k V2] (f g : P1 →ᵃ[k] P2) (c : k)
 
 section Pi
 
-variable {ι : Type*} {φv φp : ι → Type*} [(i : ι) → AddCommGroup (φv i)]
+variable {ι : Type*} {φv φp : ι → Type*} [(i : ι) → AddGroup (φv i)] [(i : ι) → IsAddCommutative (φv i)]
   [(i : ι) → Module k (φv i)] [(i : ι) → AffineSpace (φv i) (φp i)]
 /-- `pi` construction for affine maps. From a family of affine maps it produces an affine
 map into a family of affine spaces.

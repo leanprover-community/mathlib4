@@ -168,31 +168,36 @@ theorem mul_apply (f g : Poly α) (x : α → ℕ) : (f * g) x = f x * g x := rf
 
 instance (α : Type*) : Inhabited (Poly α) := ⟨0⟩
 
-instance : AddCommGroup (Poly α) where
+instance : AddGroup (Poly α) where
   nsmul := @nsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩
   zsmul := @zsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩ ⟨Neg.neg⟩ (@nsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩)
   add_zero _ := by ext; simp_rw [add_apply, zero_apply, add_zero]
   zero_add _ := by ext; simp_rw [add_apply, zero_apply, zero_add]
-  add_comm _ _ := by ext; simp_rw [add_apply, add_comm]
   add_assoc _ _ _ := by ext; simp_rw [add_apply, ← add_assoc]
   neg_add_cancel _ := by ext; simp_rw [add_apply, neg_apply, neg_add_cancel, zero_apply]
+
+instance : IsAddCommutative (Poly α) :=
+  ⟨⟨fun _ _ => by ext; simp_rw [add_apply, add_comm]⟩⟩
 
 instance : AddGroupWithOne (Poly α) where
   natCast := fun n => Poly.const n
   intCast := Poly.const
 
-instance : CommRing (Poly α) where
-  __ := (inferInstance : AddCommGroup (Poly α))
+instance : Ring (Poly α) where
+  __ := (inferInstance : AddGroup (Poly α))
   __ := (inferInstance : AddGroupWithOne (Poly α))
+  __ := (inferInstance : IsAddCommutative (Poly α))
   npow := @npowRec _ ⟨(1 : Poly α)⟩ ⟨(· * ·)⟩
   mul_zero _ := by ext; rw [mul_apply, zero_apply, mul_zero]
   zero_mul _ := by ext; rw [mul_apply, zero_apply, zero_mul]
   mul_one _ := by ext; rw [mul_apply, one_apply, mul_one]
   one_mul _ := by ext; rw [mul_apply, one_apply, one_mul]
-  mul_comm _ _ := by ext; simp_rw [mul_apply, mul_comm]
   mul_assoc _ _ _ := by ext; simp_rw [mul_apply, mul_assoc]
   left_distrib _ _ _ := by ext; simp_rw [add_apply, mul_apply]; apply mul_add
   right_distrib _ _ _ := by ext; simp only [add_apply, mul_apply]; apply add_mul
+
+instance : IsMulCommutative (Poly α) :=
+  ⟨⟨fun _ _ => by ext; simp_rw [mul_apply, mul_comm]⟩⟩
 
 theorem induction {C : Poly α → Prop} (H1 : ∀ i, C (proj i)) (H2 : ∀ n, C (const n))
     (H3 : ∀ f g, C f → C g → C (f - g)) (H4 : ∀ f g, C f → C g → C (f * g)) (f : Poly α) : C f := by

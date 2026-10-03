@@ -54,8 +54,12 @@ def submonoid (M : Type*) [Monoid M] [IsMulCommutative M] (p : ℕ) : Submonoid 
 @[deprecated (since := "2026-03-03")]
 alias _root_.Monoid.perfection := submonoid
 
-instance (M : Type*) [Monoid M] [IsMulCommutative M] (p : ℕ) : CommMonoid (Perfection M p) :=
-  inferInstanceAs <| CommMonoid (submonoid M p)
+instance (M : Type*) [Monoid M] [IsMulCommutative M] (p : ℕ) : Monoid (Perfection M p) :=
+  inferInstanceAs <| Monoid (submonoid M p)
+
+instance (M : Type*) [Monoid M] [IsMulCommutative M] (p : ℕ) :
+    IsMulCommutative (Perfection M p) :=
+  inferInstanceAs <| IsMulCommutative (submonoid M p)
 
 variable (M : Type*) [Monoid M] [IsMulCommutative M] (p : ℕ)
 
@@ -203,8 +207,8 @@ alias _root_.Ring.perfectionSubsemiring := subsemiring
 
 variable (R : Type*) [Semiring R] [IsMulCommutative R] (p : ℕ) [hp : Fact p.Prime] [CharP R p]
 
-instance : CommSemiring (Perfection R p) :=
-  inferInstanceAs <| CommSemiring (subsemiring R p)
+instance : Semiring (Perfection R p) :=
+  inferInstanceAs <| Semiring (subsemiring R p)
 
 instance : CharP (Perfection R p) p :=
   CharP.subsemiring _ _ (subsemiring R p)
@@ -374,9 +378,6 @@ variable (R : Type*) [Ring R] [IsMulCommutative R] (p : ℕ) [hp : Fact p.Prime]
 
 instance : Ring (Perfection R p) :=
   inferInstanceAs <| Ring (subring R p)
-
-instance : CommRing (Perfection R p) :=
-  inferInstanceAs <| CommRing (subring R p)
 
 end CommRing
 
@@ -637,8 +638,11 @@ namespace PreTilt
 
 variable [Fact p.Prime] [Fact (¬ IsUnit (p : O))]
 
-instance : CommRing (PreTilt O p) :=
-  inferInstanceAs <| CommRing <| Perfection _ _
+instance : Ring (PreTilt O p) :=
+  inferInstanceAs <| Ring <| Perfection _ _
+
+instance : IsMulCommutative (PreTilt O p) :=
+  inferInstanceAs <| IsMulCommutative <| Perfection _ _
 
 instance : CharP (PreTilt O p) p :=
   inferInstanceAs <| CharP (Perfection _ _) _

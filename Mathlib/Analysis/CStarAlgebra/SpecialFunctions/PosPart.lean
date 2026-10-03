@@ -60,7 +60,8 @@ open Complex in
 lemma exists_sum_four_nonneg {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A]
     [StarOrderedRing A] (a : A) :
     ∃ x : Fin 4 → A, (∀ i, 0 ≤ x i) ∧ (∀ i, ‖x i‖ ≤ ‖a‖) ∧ a = ∑ i : Fin 4, I ^ (i : ℕ) • x i := by
-  use ![(realPart a)⁺, (imaginaryPart a)⁺, (realPart a)⁻, (imaginaryPart a)⁻]
+  use ![(realPart (A := A) a)⁺, (imaginaryPart (A := A) a)⁺, (realPart (A := A) a)⁻,
+    (imaginaryPart (A := A) a)⁻]
   rw [← and_assoc, ← forall_and]
   constructor
   · intro i

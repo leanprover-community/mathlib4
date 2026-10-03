@@ -65,7 +65,8 @@ variable [Semiring R] [AddMonoid M] [IsAddCommutative M] [Module R M] (r s : R) 
 -- see Note [lower instance priority]
 /-- A module over a semiring automatically inherits a `MulActionWithZero` structure. -/
 instance (priority := 100) Module.toMulActionWithZero
-    {R M} {_ : Semiring R} {_ : AddCommMonoid M} [Module R M] : MulActionWithZero R M :=
+    {R M} {_ : Semiring R} {_ : AddMonoid M} [IsAddCommutative M] [Module R M] :
+    MulActionWithZero R M :=
   { (inferInstance : MulAction R M) with
     smul_zero := smul_zero
     zero_smul := Module.zero_smul }
@@ -82,7 +83,8 @@ theorem two_smul : (2 : R) • x = x + x := by rw [← one_add_one_eq_two, add_s
 
 /-- Pullback a `Module` structure along an injective additive monoid homomorphism.
 See note [reducible non-instances]. -/
-protected abbrev Function.Injective.module [AddMonoid M₂] [IsAddCommutative M₂] [SMul R M₂] (f : M₂ →+ M)
+protected abbrev Function.Injective.module [AddMonoid M₂] [IsAddCommutative M₂] [SMul R M₂]
+    (f : M₂ →+ M)
     (hf : Injective f) (smul : ∀ (c : R) (x), f (c • x) = c • f x) : Module R M₂ :=
   { hf.distribMulAction f smul with
     add_smul := fun c₁ c₂ x => hf <| by simp only [smul, f.map_add, add_smul]
@@ -90,7 +92,8 @@ protected abbrev Function.Injective.module [AddMonoid M₂] [IsAddCommutative M�
 
 /-- Pushforward a `Module` structure along a surjective additive monoid homomorphism.
 See note [reducible non-instances]. -/
-protected abbrev Function.Surjective.module [AddMonoid M₂] [IsAddCommutative M₂] [SMul R M₂] (f : M →+ M₂)
+protected abbrev Function.Surjective.module [AddMonoid M₂] [IsAddCommutative M₂] [SMul R M₂]
+    (f : M →+ M₂)
     (hf : Surjective f) (smul : ∀ (c : R) (x), f (c • x) = c • f x) : Module R M₂ :=
   { toDistribMulAction := hf.distribMulAction f smul
     add_smul := fun c₁ c₂ x => by
@@ -125,7 +128,8 @@ end AddCommGroup
 
 -- We'll later use this to show `Module ℕ M` and `Module ℤ M` are subsingletons.
 /-- A variant of `Module.ext` that's convenient for term-mode. -/
-theorem Module.ext' {R : Type*} [Semiring R] {M : Type*} [AddMonoid M] [IsAddCommutative M] (P Q : Module R M)
+theorem Module.ext' {R : Type*} [Semiring R] {M : Type*} [AddMonoid M] [IsAddCommutative M]
+    (P Q : Module R M)
     (w : ∀ (r : R) (m : M), (haveI := P; r • m) = (haveI := Q; r • m)) :
     P = Q := by
   ext

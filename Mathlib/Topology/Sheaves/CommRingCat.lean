@@ -196,10 +196,13 @@ instance : SMul ℤ (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) where
 instance : Pow (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) ℕ where
   pow f n := ofHom (f.hom ^ n)
 
-instance : CommRing (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) :=
-  Function.Injective.commRing _ ConcreteCategory.hom_injective
+instance : Ring (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) :=
+  Function.Injective.ring _ ConcreteCategory.hom_injective
     rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl)
+
+instance : IsMulCommutative (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) :=
+  Function.Injective.isMulCommutative _ ConcreteCategory.hom_injective (fun _ _ => rfl)
 
 -- TODO upgrade the result to TopCommRing?
 /-- The (bundled) commutative ring of continuous functions from a topological space

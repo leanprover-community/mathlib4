@@ -163,7 +163,7 @@ lemma abs_signedDist_le_dist : |signedDist v p q| ≤ dist p q := by
   by_cases h : v = 0
   · simp [h]
   · grw [abs_real_inner_le_norm]
-    simp [norm_normalize h, dist_eq_norm_vsub']
+    simp [norm_normalize h, dist_eq_norm_vsub' V]
 
 lemma signedDist_le_dist : signedDist v p q ≤ dist p q :=
   le_trans (le_abs_self _) (abs_signedDist_le_dist _ _ _)
@@ -276,7 +276,7 @@ lemma abs_signedInfDist_eq_dist_of_mem_affineSpan_insert {x : P}
     |s.signedInfDist p x| = dist x (orthogonalProjection s x) := by
   rw [mem_affineSpan_insert_iff (orthogonalProjection s p).property] at h
   rcases h with ⟨r, p₀, hp₀, rfl⟩
-  simp [hp₀, dist_eq_norm_vsub, orthogonalProjection_eq_self_iff.2 hp₀,
+  simp [hp₀, dist_eq_norm_vsub V, orthogonalProjection_eq_self_iff.2 hp₀,
     orthogonalProjection_vsub_orthogonalProjection, norm_smul, abs_mul]
 
 lemma signedInfDist_singleton :

@@ -118,9 +118,12 @@ instance : SMul ℕ (IntertwiningMap ρ σ) :=
 @[simp] lemma coe_nsmul (f : IntertwiningMap ρ σ) (n : ℕ) :
     ((n • f : IntertwiningMap ρ σ) : V → W) = n • f := rfl
 
-instance instAddCommMonoid : AddCommMonoid (IntertwiningMap ρ σ) :=
+instance instAddMonoid : AddMonoid (IntertwiningMap ρ σ) :=
   fast_instance%
-  DFunLike.coe_injective.addCommMonoid _ (coe_zero ρ σ) (coe_add ρ σ) (by intro f n; rw [coe_nsmul])
+  DFunLike.coe_injective.addMonoid _ (coe_zero ρ σ) (coe_add ρ σ) (by intro f n; rw [coe_nsmul])
+
+instance instAddCommMonoid : IsAddCommutative (IntertwiningMap ρ σ) :=
+  DFunLike.coe_injective.isAddCommutative _ (coe_add ρ σ)
 
 /-- The range of an intertwining map from `V` to `W` as a subrepresentation of `W`. -/
 @[simps]
@@ -182,9 +185,9 @@ instance : SMul ℤ (IntertwiningMap ρ σ) :=
 @[simp] lemma coe_zsmul (f : IntertwiningMap ρ σ) (z : ℤ) :
     ((z • f : IntertwiningMap ρ σ) : V → W) = z • f := rfl
 
-instance : AddCommGroup (IntertwiningMap ρ σ) :=
+instance : AddGroup (IntertwiningMap ρ σ) :=
   fast_instance%
-  DFunLike.coe_injective.addCommGroup _ (coe_zero ρ σ) (coe_add ρ σ) (coe_neg ρ σ) (coe_sub ρ σ)
+  DFunLike.coe_injective.addGroup _ (coe_zero ρ σ) (coe_add ρ σ) (coe_neg ρ σ) (coe_sub ρ σ)
     (coe_nsmul ρ σ) (coe_zsmul ρ σ)
 
 end group

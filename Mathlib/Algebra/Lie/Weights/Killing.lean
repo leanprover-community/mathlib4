@@ -40,7 +40,8 @@ forms.
 
 @[expose] public section
 
-variable (R K L : Type*) [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L] [Field K] [LieAlgebra K L]
+variable (R K L : Type*) [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L]
+  [Field K] [LieAlgebra K L]
 
 namespace LieAlgebra
 
@@ -652,7 +653,7 @@ lemma mem_sl2SubalgebraOfRoot_iff {α : Weight K H L} (hα : α.IsNonZero) {h e 
     (t : IsSl2Triple h e f) (hte : e ∈ rootSpace H α) (htf : f ∈ rootSpace H (-α)) {x : L} :
     x ∈ sl2SubalgebraOfRoot hα ↔ ∃ c₁ c₂ c₃ : K, x = c₁ • e + c₂ • f + c₃ • ⁅e, f⁆ := by
   simp only [sl2SubalgebraOfRoot, IsSl2Triple.mem_toLieSubalgebra_iff]
-  generalize_proofs _ _ _ he hf
+  generalize_proofs _ _ _ _ _ he hf
   obtain ⟨ce, hce⟩ : ∃ c : K, he.choose = c • e := by
     obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_nonzero' ⟨e, hte⟩ (by simpa using t.e_ne_zero)).mp
       (finrank_rootSpace_eq_one α hα) ⟨_, he.choose_spec.choose_spec.2.1⟩

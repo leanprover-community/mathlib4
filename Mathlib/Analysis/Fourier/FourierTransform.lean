@@ -420,7 +420,7 @@ open scoped RealInnerProductSpace
 
 @[simp] theorem fourierIntegral_convergent_iff {μ : Measure V} {f : V → E} (w : V) :
     Integrable (fun v : V ↦ 𝐞 (- ⟪v, w⟫) • f v) μ ↔ Integrable f μ :=
-  fourierIntegral_convergent_iff' (innerSL ℝ) w
+  fourierIntegral_convergent_iff' (μ := μ) (f := f) (innerSL ℝ) w
 
 variable [FiniteDimensional ℝ V]
 
@@ -489,13 +489,13 @@ theorem fourier_continuousLinearMap_apply
     {F : Type*} [NormedAddGroup F] [IsAddCommutative F] [NormedSpace ℝ F]
     {f : V → (F →L[ℝ] E)} {a : F} {v : V} (hf : Integrable f) :
     𝓕 f v a = 𝓕 (fun x ↦ f x a) v :=
-  fourierIntegral_continuousLinearMap_apply' (L := innerSL ℝ) hf
+  (fourierIntegral_continuousLinearMap_apply' (L := innerSL ℝ) hf :)
 
 theorem fourier_continuousMultilinearMap_apply {ι : Type*} [Fintype ι]
     {M : ι → Type*} [∀ i, NormedAddGroup (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, NormedSpace ℝ (M i)]
     {f : V → ContinuousMultilinearMap ℝ M E} {m : (i : ι) → M i} {v : V} (hf : Integrable f) :
     𝓕 f v m = 𝓕 (fun x ↦ f x m) v :=
-  fourierIntegral_continuousMultilinearMap_apply' (L := innerSL ℝ) hf
+  (fourierIntegral_continuousMultilinearMap_apply' (L := innerSL ℝ) hf :)
 
 open scoped BoundedContinuousFunction
 

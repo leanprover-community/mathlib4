@@ -53,11 +53,9 @@ instance instDivisionRing [DivisionRing α] : DivisionRing αᵐᵒᵖ where
     unop_natCast, unop_intCast, Int.commute_cast, div_eq_mul_inv]
 
 instance instSemifield [Semifield α] : Semifield αᵐᵒᵖ where
-  __ := instCommSemiring
   __ := instDivisionSemiring
 
 instance instField [Field α] : Field αᵐᵒᵖ where
-  __ := instCommRing
   __ := instDivisionRing
 
 end MulOpposite
@@ -81,11 +79,9 @@ instance instDivisionRing [DivisionRing α] : DivisionRing αᵃᵒᵖ where
     unop_intCast, div_eq_mul_inv]
 
 instance instSemifield [Semifield α] : Semifield αᵃᵒᵖ where
-  __ := instCommSemiring
   __ := instDivisionSemiring
 
 instance instField [Field α] : Field αᵃᵒᵖ where
-  __ := instCommRing
   __ := instDivisionRing
 
 end AddOpposite

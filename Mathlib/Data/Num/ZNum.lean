@@ -414,11 +414,12 @@ instance addMonoid : AddMonoid ZNum where
   add_zero := add_zero
   nsmul := nsmulRec
 
-instance addCommGroup : AddCommGroup ZNum :=
+instance addCommGroup : AddGroup ZNum :=
   { ZNum.addMonoid with
-    add_comm := by transfer
     zsmul := zsmulRec
     neg_add_cancel := by transfer }
+
+instance isAddCommutative : IsAddCommutative ZNum := ⟨⟨by transfer⟩⟩
 
 instance addMonoidWithOne : AddMonoidWithOne ZNum :=
   { ZNum.addMonoid with
@@ -432,8 +433,9 @@ instance addMonoidWithOne : AddMonoidWithOne ZNum :=
 
 private theorem mul_comm : ∀ (a b : ZNum), a * b = b * a := by transfer
 
-instance commRing : CommRing ZNum :=
+instance commRing : Ring ZNum :=
   { ZNum.addCommGroup, ZNum.addMonoidWithOne with
+    is_comm := ZNum.isAddCommutative.is_comm
     mul_assoc a b c := by transfer
     zero_mul := by transfer
     mul_zero := by transfer
@@ -444,8 +446,9 @@ instance commRing : CommRing ZNum :=
       simp [mul_add]
     right_distrib := by
       transfer
-      simp [mul_add, _root_.mul_comm]
-    mul_comm := private mul_comm }
+      simp [mul_add, _root_.mul_comm] }
+
+instance isMulCommutative : IsMulCommutative ZNum := ⟨⟨mul_comm⟩⟩
 
 instance nontrivial : Nontrivial ZNum :=
   { exists_pair_ne := ⟨0, 1, by decide⟩ }

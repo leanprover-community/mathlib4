@@ -107,27 +107,9 @@ instance (priority := 100) Group.toCancelMonoid : CancelMonoid G where
 
 end Group
 
-/-- An additive commutative group is an additive group with commutative `(+)`. -/
-class AddCommGroup (G : Type*) extends AddGroup G, AddCommMonoid G
-
-/-- A commutative group is a group with commutative `(*)`. -/
--- There is intentionally no `IsMulCommutative` for `CommGroup` instance for performance reasons.
-@[to_additive (attr := wikidata Q181296)]
-class CommGroup (G : Type*) extends Group G, CommMonoid G
-
 section CommGroup
 
 variable [Group G] [IsMulCommutative G]
-
--- see Note [lower instance priority]
-@[to_additive]
-instance (priority := 100) CommGroup.toCancelCommMonoid : CancelCommMonoid G :=
-  { ‹CommGroup G›, Group.toCancelMonoid with }
-
--- see Note [lower instance priority]
-@[to_additive]
-instance (priority := 100) CommGroup.toDivisionCommMonoid : DivisionCommMonoid G :=
-  { ‹CommGroup G›, Group.toDivisionMonoid with }
 
 @[to_additive (attr := simp)] lemma inv_mul_cancel_comm (a b : G) : a⁻¹ * b * a = b := by
   rw [mul_comm, mul_inv_cancel_left]
@@ -151,5 +133,3 @@ argument order of these projections does not match the argument order of `^`. Th
 lemmas are correct. -/
 initialize_simps_projections Group
 initialize_simps_projections AddGroup
-initialize_simps_projections CommGroup
-initialize_simps_projections AddCommGroup

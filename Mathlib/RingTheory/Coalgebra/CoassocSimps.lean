@@ -128,13 +128,13 @@ lemma assoc_comp_map (f₃ : M₃ →ₗ[R] N₃) (f₁₂ : M →ₗ[R] M₁ �
 /-- Simproc version of `assoc_comp_map` that only fires when `f₃ ≠ id`. -/
 simproc_decl assoc_comp_map_simproc
     ((TensorProduct.assoc _ _ _ _).toLinearMap ∘ₗ (_ ⊗ₘ _)) := .ofQ fun _ t e ↦ do
-  let_expr LinearMap R _ _ _ _ T₁ T₂ _ _ _ _ ←  t
+  let_expr LinearMap R _ _ _ _ T₁ T₂ _ _ _ _ _ _ ←  t
     | return .continue
-  let_expr TensorProduct _ instR M M₃ instM instM₃ instRM instRM₃ ←  T₁
+  let_expr TensorProduct _ instR M M₃ instM instMc instM₃ instM₃c instRM instRM₃ ←  T₁
     | return Lean.Meta.Simp.StepQ.continue
-  let_expr TensorProduct _ _ M₁ T₃ instM₁ _ instRM₁ _ ←  T₂
+  let_expr TensorProduct _ _ M₁ T₃ instM₁ instM₁c _ _ instRM₁ _ ←  T₂
     | return Lean.Meta.Simp.StepQ.continue
-  let_expr TensorProduct _ _ M₂ N₃ instM₂ instN₃ instRM₂ instRN₃ ←  T₃
+  let_expr TensorProduct _ _ M₂ N₃ instM₂ instM₂c instN₃ instN₃c instRM₂ instRN₃ ←  T₃
     | return Lean.Meta.Simp.StepQ.continue
   let .succ u₁ := (← Lean.Meta.inferType R).sortLevel! | return .continue
   let .succ u₂ := (← Lean.Meta.inferType M).sortLevel! | return .continue
@@ -148,12 +148,19 @@ simproc_decl assoc_comp_map_simproc
   have M₂ : Q(Type u₄) := M₂
   have M₃ : Q(Type u₅) := M₃
   have N₃ : Q(Type u₆) := N₃
-  have : Q(CommSemiring $R) := instR
-  have : Q(AddCommMonoid $M) := instM
-  have : Q(AddCommMonoid $M₁) := instM₁
-  have : Q(AddCommMonoid $M₂) := instM₂
-  have : Q(AddCommMonoid $M₃) := instM₃
-  have : Q(AddCommMonoid $N₃) := instN₃
+  have : Q(Semiring $R) := instR
+  let .some instRc ← trySynthInstanceQ q(IsMulCommutative $R) | return .continue
+  have : Q(IsMulCommutative $R) := instRc
+  have : Q(AddMonoid $M) := instM
+  have : Q(IsAddCommutative $M) := instMc
+  have : Q(AddMonoid $M₁) := instM₁
+  have : Q(IsAddCommutative $M₁) := instM₁c
+  have : Q(AddMonoid $M₂) := instM₂
+  have : Q(IsAddCommutative $M₂) := instM₂c
+  have : Q(AddMonoid $M₃) := instM₃
+  have : Q(IsAddCommutative $M₃) := instM₃c
+  have : Q(AddMonoid $N₃) := instN₃
+  have : Q(IsAddCommutative $N₃) := instN₃c
   have : Q(Module $R $M) := instRM
   have : Q(Module $R $M₁) := instRM₁
   have : Q(Module $R $M₂) := instRM₂
@@ -163,7 +170,7 @@ simproc_decl assoc_comp_map_simproc
   match e with
   | ~q((TensorProduct.assoc «$R» «$M₁» «$M₂» «$N₃»).toLinearMap ∘ₗ ($f₁₂ ⊗ₘ $f₃)) =>
   match_expr f₃ with
-  | LinearMap.id _ _ _ _ _ => return .continue
+  | LinearMap.id _ _ _ _ _ _ => return .continue
   | _ =>
   return .visit (e := e) <| .mk q((id ⊗ₘ (id ⊗ₘ $f₃)) ∘ₗ (TensorProduct.assoc _ _ _ _).toLinearMap
     ∘ₗ ($f₁₂ ⊗ₘ id)) (some q(assoc_comp_map ..))
@@ -181,15 +188,15 @@ lemma assoc_comp_map_assoc (f₃ : M₃ →ₗ[R] N₃)
 /-- Simproc version of `assoc_comp_map_assoc` that only fires when `f₃ ≠ id`. -/
 simproc_decl assoc_comp_map_assoc_simproc
     ((TensorProduct.assoc _ _ _ _).toLinearMap ∘ₗ (_ ⊗ₘ _) ∘ₗ _) := .ofQ fun _ _ e ↦ do
-  let_expr LinearMap.comp R _ _ P _ T₂ _ _ _ instP _ _ instRP _ _ _ _ _ _ _ e' ←  e
+  let_expr LinearMap.comp R _ _ P _ T₂ _ _ _ instP instPc _ _ _ _ instRP _ _ _ _ _ _ _ e' ←  e
     | return .continue
-  let_expr LinearMap.comp _ _ _ _ T₁ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ←  e'
+  let_expr LinearMap.comp _ _ _ _ T₁ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ←  e'
     | return Lean.Meta.Simp.StepQ.continue
-  let_expr TensorProduct _ instR M M₃ instM instM₃ instRM instRM₃ ←  T₁
+  let_expr TensorProduct _ instR M M₃ instM instMc instM₃ instM₃c instRM instRM₃ ←  T₁
     | return Lean.Meta.Simp.StepQ.continue
-  let_expr TensorProduct _ _ M₁ T₃ instM₁ _ instRM₁ _ ←  T₂
+  let_expr TensorProduct _ _ M₁ T₃ instM₁ instM₁c _ _ instRM₁ _ ←  T₂
     | return Lean.Meta.Simp.StepQ.continue
-  let_expr TensorProduct _ _ M₂ N₃ instM₂ instN₃ instRM₂ instRN₃ ←  T₃
+  let_expr TensorProduct _ _ M₂ N₃ instM₂ instM₂c instN₃ instN₃c instRM₂ instRN₃ ←  T₃
     | return Lean.Meta.Simp.StepQ.continue
   let .succ u₁ := (← Lean.Meta.inferType R).sortLevel! | return .continue
   let .succ u₂ := (← Lean.Meta.inferType M).sortLevel! | return .continue
@@ -205,13 +212,21 @@ simproc_decl assoc_comp_map_assoc_simproc
   have M₃ : Q(Type u₅) := M₃
   have N₃ : Q(Type u₆) := N₃
   have P  : Q(Type u₇) := P
-  have : Q(CommSemiring $R) := instR
-  have : Q(AddCommMonoid $M) := instM
-  have : Q(AddCommMonoid $M₁) := instM₁
-  have : Q(AddCommMonoid $M₂) := instM₂
-  have : Q(AddCommMonoid $M₃) := instM₃
-  have : Q(AddCommMonoid $N₃) := instN₃
-  have : Q(AddCommMonoid $P)  := instP
+  have : Q(Semiring $R) := instR
+  let .some instRc ← trySynthInstanceQ q(IsMulCommutative $R) | return .continue
+  have : Q(IsMulCommutative $R) := instRc
+  have : Q(AddMonoid $M) := instM
+  have : Q(IsAddCommutative $M) := instMc
+  have : Q(AddMonoid $M₁) := instM₁
+  have : Q(IsAddCommutative $M₁) := instM₁c
+  have : Q(AddMonoid $M₂) := instM₂
+  have : Q(IsAddCommutative $M₂) := instM₂c
+  have : Q(AddMonoid $M₃) := instM₃
+  have : Q(IsAddCommutative $M₃) := instM₃c
+  have : Q(AddMonoid $N₃) := instN₃
+  have : Q(IsAddCommutative $N₃) := instN₃c
+  have : Q(AddMonoid $P)  := instP
+  have : Q(IsAddCommutative $P) := instPc
   have : Q(Module $R $M) := instRM
   have : Q(Module $R $M₁) := instRM₁
   have : Q(Module $R $M₂) := instRM₂
@@ -223,7 +238,7 @@ simproc_decl assoc_comp_map_assoc_simproc
   | ~q((TensorProduct.assoc «$R» «$M₁» «$M₂» «$N₃»).toLinearMap ∘ₗ
       ($f₁₂ ⊗ₘ $f₃) ∘ₗ ($f : _ →ₗ[_] «$M» ⊗ «$M₃»)) =>
   match_expr f₃ with
-  | LinearMap.id _ _ _ _ _ => return .continue
+  | LinearMap.id _ _ _ _ _ _ => return .continue
   | _ =>
   return .visit (e := e) <| .mk q((id ⊗ₘ (id ⊗ₘ $f₃)) ∘ₗ (TensorProduct.assoc _ _ _ _).toLinearMap
     ∘ₗ ($f₁₂ ⊗ₘ id) ∘ₗ $f) (some q(assoc_comp_map_assoc ..))
@@ -241,13 +256,13 @@ lemma assoc_symm_comp_map
 /-- Simproc version of `assoc_symm_comp_map` that only fires when `f₁ ≠ id`. -/
 simproc_decl assoc_symm_comp_map_simproc
     ((TensorProduct.assoc _ _ _ _).symm.toLinearMap ∘ₗ (_ ⊗ₘ _)) := .ofQ fun _ t e ↦ do
-  let_expr LinearMap R _ _ _ _ T₁ T₂ _ _ _ _ ←  t
+  let_expr LinearMap R _ _ _ _ T₁ T₂ _ _ _ _ _ _ ←  t
     | return .continue
-  let_expr TensorProduct _ instR M₁ M instM₁ instM instRM₁ instRM ←  T₁
+  let_expr TensorProduct _ instR M₁ M instM₁ instM₁c instM instMc instRM₁ instRM ←  T₁
     | return Lean.Meta.Simp.StepQ.continue
-  let_expr TensorProduct _ _ T₃ M₃ _ instM₃ _ instRM₃ ←  T₂
+  let_expr TensorProduct _ _ T₃ M₃ _ _ instM₃ instM₃c _ instRM₃ ←  T₂
     | return Lean.Meta.Simp.StepQ.continue
-  let_expr TensorProduct _ _ N₁ M₂ instN₁ instM₂ instRN₁ instRM₂ ←  T₃
+  let_expr TensorProduct _ _ N₁ M₂ instN₁ instN₁c instM₂ instM₂c instRN₁ instRM₂ ←  T₃
     | return Lean.Meta.Simp.StepQ.continue
   let .succ u₁ := (← Lean.Meta.inferType R).sortLevel! | return .continue
   let .succ u₂ := (← Lean.Meta.inferType M).sortLevel! | return .continue
@@ -261,12 +276,19 @@ simproc_decl assoc_symm_comp_map_simproc
   have M₂ : Q(Type u₄) := M₂
   have M₃ : Q(Type u₅) := M₃
   have N₁ : Q(Type u₆) := N₁
-  have : Q(CommSemiring $R) := instR
-  have : Q(AddCommMonoid $M) := instM
-  have : Q(AddCommMonoid $M₁) := instM₁
-  have : Q(AddCommMonoid $M₂) := instM₂
-  have : Q(AddCommMonoid $M₃) := instM₃
-  have : Q(AddCommMonoid $N₁) := instN₁
+  have : Q(Semiring $R) := instR
+  let .some instRc ← trySynthInstanceQ q(IsMulCommutative $R) | return .continue
+  have : Q(IsMulCommutative $R) := instRc
+  have : Q(AddMonoid $M) := instM
+  have : Q(IsAddCommutative $M) := instMc
+  have : Q(AddMonoid $M₁) := instM₁
+  have : Q(IsAddCommutative $M₁) := instM₁c
+  have : Q(AddMonoid $M₂) := instM₂
+  have : Q(IsAddCommutative $M₂) := instM₂c
+  have : Q(AddMonoid $M₃) := instM₃
+  have : Q(IsAddCommutative $M₃) := instM₃c
+  have : Q(AddMonoid $N₁) := instN₁
+  have : Q(IsAddCommutative $N₁) := instN₁c
   have : Q(Module $R $M) := instRM
   have : Q(Module $R $M₁) := instRM₁
   have : Q(Module $R $M₂) := instRM₂
@@ -276,7 +298,7 @@ simproc_decl assoc_symm_comp_map_simproc
   match e with
   | ~q((TensorProduct.assoc «$R» «$N₁» «$M₂» «$M₃»).symm.toLinearMap ∘ₗ ($f₁ ⊗ₘ $f₂₃)) =>
   match_expr f₁ with
-  | LinearMap.id _ _ _ _ _ => return .continue
+  | LinearMap.id _ _ _ _ _ _ => return .continue
   | _ =>
   return .visit (e := e) <| .mk q((($f₁ ⊗ₘ id) ⊗ₘ id) ∘ₗ
     (TensorProduct.assoc _ _ _ _).symm.toLinearMap ∘ₗ (id ⊗ₘ $f₂₃))
@@ -295,15 +317,15 @@ lemma assoc_symm_comp_map_assoc (f₁ : M₁ →ₗ[R] N₁)
 /-- Simproc version of `assoc_symm_comp_map_assoc` that only fires when `f₁ ≠ id`. -/
 simproc_decl assoc_symm_comp_map_assoc_simproc
     ((TensorProduct.assoc _ _ _ _).symm.toLinearMap ∘ₗ (_ ⊗ₘ _) ∘ₗ _) := .ofQ fun _ _ e ↦ do
-  let_expr LinearMap.comp R _ _ P _ T₂ _ _ _ instP _ _ instRP _ _ _ _ _ _ _ e' ← e
+  let_expr LinearMap.comp R _ _ P _ T₂ _ _ _ instP instPc _ _ _ _ instRP _ _ _ _ _ _ _ e' ← e
     | return .continue
-  let_expr LinearMap.comp _ _ _ _ T₁ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ←  e'
+  let_expr LinearMap.comp _ _ _ _ T₁ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ←  e'
     | return Lean.Meta.Simp.StepQ.continue
-  let_expr TensorProduct _ instR M₁ M instM₁ instM instRM₁ instRM ←  T₁
+  let_expr TensorProduct _ instR M₁ M instM₁ instM₁c instM instMc instRM₁ instRM ←  T₁
     | return Lean.Meta.Simp.StepQ.continue
-  let_expr TensorProduct _ _ T₃ M₃ _ instM₃ _ instRM₃ ←  T₂
+  let_expr TensorProduct _ _ T₃ M₃ _ _ instM₃ instM₃c _ instRM₃ ←  T₂
     | return Lean.Meta.Simp.StepQ.continue
-  let_expr TensorProduct _ _ N₁ M₂ instN₁ instM₂ instRN₁ instRM₂ ←  T₃
+  let_expr TensorProduct _ _ N₁ M₂ instN₁ instN₁c instM₂ instM₂c instRN₁ instRM₂ ←  T₃
     | return Lean.Meta.Simp.StepQ.continue
   let .succ u₁ := (← Lean.Meta.inferType R).sortLevel! | return .continue
   let .succ u₂ := (← Lean.Meta.inferType M).sortLevel! | return .continue
@@ -319,13 +341,21 @@ simproc_decl assoc_symm_comp_map_assoc_simproc
   have M₃ : Q(Type u₅) := M₃
   have N₁ : Q(Type u₆) := N₁
   have P  : Q(Type u₇) := P
-  have : Q(CommSemiring $R) := instR
-  have : Q(AddCommMonoid $M) := instM
-  have : Q(AddCommMonoid $M₁) := instM₁
-  have : Q(AddCommMonoid $M₂) := instM₂
-  have : Q(AddCommMonoid $M₃) := instM₃
-  have : Q(AddCommMonoid $N₁) := instN₁
-  have : Q(AddCommMonoid $P)  := instP
+  have : Q(Semiring $R) := instR
+  let .some instRc ← trySynthInstanceQ q(IsMulCommutative $R) | return .continue
+  have : Q(IsMulCommutative $R) := instRc
+  have : Q(AddMonoid $M) := instM
+  have : Q(IsAddCommutative $M) := instMc
+  have : Q(AddMonoid $M₁) := instM₁
+  have : Q(IsAddCommutative $M₁) := instM₁c
+  have : Q(AddMonoid $M₂) := instM₂
+  have : Q(IsAddCommutative $M₂) := instM₂c
+  have : Q(AddMonoid $M₃) := instM₃
+  have : Q(IsAddCommutative $M₃) := instM₃c
+  have : Q(AddMonoid $N₁) := instN₁
+  have : Q(IsAddCommutative $N₁) := instN₁c
+  have : Q(AddMonoid $P)  := instP
+  have : Q(IsAddCommutative $P) := instPc
   have : Q(Module $R $M) := instRM
   have : Q(Module $R $M₁) := instRM₁
   have : Q(Module $R $M₂) := instRM₂
@@ -337,7 +367,7 @@ simproc_decl assoc_symm_comp_map_assoc_simproc
   | ~q((TensorProduct.assoc «$R» «$N₁» «$M₂» «$M₃»).symm.toLinearMap ∘ₗ
       ($f₁ ⊗ₘ $f₂₃) ∘ₗ ($f : _ →ₗ[_] «$M₁» ⊗ «$M»)) =>
   match_expr f₁ with
-  | LinearMap.id _ _ _ _ _ => return .continue
+  | LinearMap.id _ _ _ _ _ _ => return .continue
   | _ =>
   return .visit (e := e) <| .mk q((($f₁ ⊗ₘ id) ⊗ₘ id) ∘ₗ
     (TensorProduct.assoc _ _ _ _).symm.toLinearMap ∘ₗ (id ⊗ₘ $f₂₃) ∘ₗ $f)
@@ -426,9 +456,9 @@ lemma lid_comp_map (f : M →ₗ[R] R) (g : N →ₗ[R] M') :
 /-- Simproc version of `lid_comp_map` that only fires when `g ≠ id`. -/
 simproc_decl lid_comp_map_simproc
     ((TensorProduct.lid _ _).toLinearMap ∘ₗ (_ ⊗ₘ _)) := .ofQ fun _ t e ↦ do
-  let_expr LinearMap R _ _ _ _ T₁ M' _ instM' _ instRM' ←  t
+  let_expr LinearMap R _ _ _ _ T₁ M' _ _ instM' instM'c _ instRM' ←  t
     | return .continue
-  let_expr TensorProduct _ instR M N instM instN instRM instRN ←  T₁
+  let_expr TensorProduct _ instR M N instM instMc instN instNc instRM instRN ←  T₁
     | return Lean.Meta.Simp.StepQ.continue
   let .succ u₁ := (← Lean.Meta.inferType R).sortLevel! | return .continue
   let .succ u₂ := (← Lean.Meta.inferType M).sortLevel! | return .continue
@@ -438,10 +468,15 @@ simproc_decl lid_comp_map_simproc
   have M  : Q(Type u₂) := M
   have M' : Q(Type u₃) := M'
   have N  : Q(Type u₄) := N
-  have : Q(CommSemiring $R)   := instR
-  have : Q(AddCommMonoid $M)  := instM
-  have : Q(AddCommMonoid $M') := instM'
-  have : Q(AddCommMonoid $N)  := instN
+  have : Q(Semiring $R)   := instR
+  let .some instRc ← trySynthInstanceQ q(IsMulCommutative $R) | return .continue
+  have : Q(IsMulCommutative $R) := instRc
+  have : Q(AddMonoid $M)  := instM
+  have : Q(IsAddCommutative $M) := instMc
+  have : Q(AddMonoid $M') := instM'
+  have : Q(IsAddCommutative $M') := instM'c
+  have : Q(AddMonoid $N)  := instN
+  have : Q(IsAddCommutative $N) := instNc
   have : Q(Module $R $M)  := instRM
   have : Q(Module $R $M') := instRM'
   have : Q(Module $R $N)  := instRN
@@ -449,7 +484,7 @@ simproc_decl lid_comp_map_simproc
   match e with
   | ~q((TensorProduct.lid «$R» «$M'»).toLinearMap ∘ₗ ($f ⊗ₘ $g)) =>
   match_expr g with
-  | LinearMap.id _ _ _ _ _ => return .continue
+  | LinearMap.id _ _ _ _ _ _ => return .continue
   | _ =>
   return .visit (e := e) <| .mk q($g ∘ₗ (TensorProduct.lid $R _).toLinearMap ∘ₗ ($f ⊗ₘ .id))
     (some q(lid_comp_map ..))
@@ -465,11 +500,11 @@ lemma lid_comp_map_assoc (f : M →ₗ[R] R) (g : N →ₗ[R] M') (h : P →ₗ[
 /-- Simproc version of `lid_comp_map_assoc` that only fires when `g ≠ id`. -/
 simproc_decl lid_comp_map_assoc_simproc
     ((TensorProduct.lid _ _).toLinearMap ∘ₗ (_ ⊗ₘ _) ∘ₗ _) := .ofQ fun _ _ e ↦ do
-  let_expr LinearMap.comp R _ _ P _ M' _ _ _ instP _ instM' instRP _ instRM' _ _ _ _ _ e' ← e
+  let_expr LinearMap.comp R _ _ P _ M' _ _ _ instP instPc _ _ instM' instM'c instRP _ instRM' _ _ _ _ _ e' ← e
     | return .continue
-  let_expr LinearMap.comp _ _ _ _ T₁ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ← e'
+  let_expr LinearMap.comp _ _ _ _ T₁ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ← e'
     | return Lean.Meta.Simp.StepQ.continue
-  let_expr TensorProduct _ instR M N instM instN instRM instRN ← T₁
+  let_expr TensorProduct _ instR M N instM instMc instN instNc instRM instRN ← T₁
     | return Lean.Meta.Simp.StepQ.continue
   let .succ u₁ := (← Lean.Meta.inferType R).sortLevel! | return .continue
   let .succ u₂ := (← Lean.Meta.inferType M).sortLevel! | return .continue
@@ -481,11 +516,17 @@ simproc_decl lid_comp_map_assoc_simproc
   have M' : Q(Type u₃) := M'
   have N  : Q(Type u₄) := N
   have P  : Q(Type u₅) := P
-  have : Q(CommSemiring $R)   := instR
-  have : Q(AddCommMonoid $M)  := instM
-  have : Q(AddCommMonoid $M') := instM'
-  have : Q(AddCommMonoid $N)  := instN
-  have : Q(AddCommMonoid $P)  := instP
+  have : Q(Semiring $R)   := instR
+  let .some instRc ← trySynthInstanceQ q(IsMulCommutative $R) | return .continue
+  have : Q(IsMulCommutative $R) := instRc
+  have : Q(AddMonoid $M)  := instM
+  have : Q(IsAddCommutative $M) := instMc
+  have : Q(AddMonoid $M') := instM'
+  have : Q(IsAddCommutative $M') := instM'c
+  have : Q(AddMonoid $N)  := instN
+  have : Q(IsAddCommutative $N) := instNc
+  have : Q(AddMonoid $P)  := instP
+  have : Q(IsAddCommutative $P) := instPc
   have : Q(Module $R $M)  := instRM
   have : Q(Module $R $M') := instRM'
   have : Q(Module $R $N)  := instRN
@@ -495,7 +536,7 @@ simproc_decl lid_comp_map_assoc_simproc
   | ~q((TensorProduct.lid «$R» «$M'»).toLinearMap ∘ₗ ($f ⊗ₘ $g) ∘ₗ
       ($h : «$P» →ₗ[«$R»] «$M» ⊗[«$R»] «$N»)) =>
   match_expr g with
-  | LinearMap.id _ _ _ _ _ => return .continue
+  | LinearMap.id _ _ _ _ _ _ => return .continue
   | _ =>
   return .visit (e := e) <| .mk q($g ∘ₗ (TensorProduct.lid $R _).toLinearMap ∘ₗ ($f ⊗ₘ .id) ∘ₗ $h)
     (some q(lid_comp_map_assoc ..))
@@ -511,9 +552,9 @@ lemma rid_comp_map (f : M →ₗ[R] M') (g : N →ₗ[R] R) :
 /-- Simproc version of `rid_comp_map` that only fires when `g ≠ id`. -/
 simproc_decl rid_comp_map_simproc
     ((TensorProduct.rid _ _).toLinearMap ∘ₗ (_ ⊗ₘ _)) := .ofQ fun _ t e ↦ do
-  let_expr LinearMap R _ _ _ _ T₁ M' _ instM' _ instRM' ← t
+  let_expr LinearMap R _ _ _ _ T₁ M' _ _ instM' instM'c _ instRM' ← t
     | return .continue
-  let_expr TensorProduct _ instR M N instM instN instRM instRN ← T₁
+  let_expr TensorProduct _ instR M N instM instMc instN instNc instRM instRN ← T₁
     | return Lean.Meta.Simp.StepQ.continue
   let .succ u₁ := (← Lean.Meta.inferType R).sortLevel! | return .continue
   let .succ u₂ := (← Lean.Meta.inferType M).sortLevel! | return .continue
@@ -523,10 +564,15 @@ simproc_decl rid_comp_map_simproc
   have M  : Q(Type u₂) := M
   have M' : Q(Type u₃) := M'
   have N  : Q(Type u₄) := N
-  have : Q(CommSemiring $R)   := instR
-  have : Q(AddCommMonoid $M)  := instM
-  have : Q(AddCommMonoid $M') := instM'
-  have : Q(AddCommMonoid $N)  := instN
+  have : Q(Semiring $R)   := instR
+  let .some instRc ← trySynthInstanceQ q(IsMulCommutative $R) | return .continue
+  have : Q(IsMulCommutative $R) := instRc
+  have : Q(AddMonoid $M)  := instM
+  have : Q(IsAddCommutative $M) := instMc
+  have : Q(AddMonoid $M') := instM'
+  have : Q(IsAddCommutative $M') := instM'c
+  have : Q(AddMonoid $N)  := instN
+  have : Q(IsAddCommutative $N) := instNc
   have : Q(Module $R $M)  := instRM
   have : Q(Module $R $M') := instRM'
   have : Q(Module $R $N)  := instRN
@@ -534,7 +580,7 @@ simproc_decl rid_comp_map_simproc
   match e with
   | ~q((TensorProduct.rid «$R» «$M'»).toLinearMap ∘ₗ ($f ⊗ₘ $g)) =>
   match_expr f with
-  | LinearMap.id _ _ _ _ _ => return .continue
+  | LinearMap.id _ _ _ _ _ _ => return .continue
   | _ =>
   return .visit (e := e) <| .mk q($f ∘ₗ (TensorProduct.rid $R _).toLinearMap ∘ₗ (.id ⊗ₘ $g))
     (some q(rid_comp_map ..))
@@ -550,11 +596,11 @@ lemma rid_comp_map_assoc (f : M →ₗ[R] M') (g : N →ₗ[R] R) (h : P →ₗ[
 /-- Simproc version of `rid_comp_map_assoc` that only fires when `f ≠ id`. -/
 simproc_decl rid_comp_map_assoc_simproc
     ((TensorProduct.rid _ _).toLinearMap ∘ₗ (_ ⊗ₘ _) ∘ₗ _) := .ofQ fun _ _ e ↦ do
-  let_expr LinearMap.comp R _ _ P _ M' _ _ _ instP _ instM' instRP _ instRM' _ _ _ _ _ e' ← e
+  let_expr LinearMap.comp R _ _ P _ M' _ _ _ instP instPc _ _ instM' instM'c instRP _ instRM' _ _ _ _ _ e' ← e
     | return Lean.Meta.Simp.StepQ.continue
-  let_expr LinearMap.comp _ _ _ _ T₁ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ← e'
+  let_expr LinearMap.comp _ _ _ _ T₁ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ← e'
     | return Lean.Meta.Simp.StepQ.continue
-  let_expr TensorProduct _ instR M N instM instN instRM instRN ← T₁
+  let_expr TensorProduct _ instR M N instM instMc instN instNc instRM instRN ← T₁
     | return Lean.Meta.Simp.StepQ.continue
   let .succ u₁ := (← Lean.Meta.inferType R).sortLevel! | return .continue
   let .succ u₂ := (← Lean.Meta.inferType M).sortLevel! | return .continue
@@ -566,11 +612,17 @@ simproc_decl rid_comp_map_assoc_simproc
   have M' : Q(Type u₃) := M'
   have N  : Q(Type u₄) := N
   have P  : Q(Type u₅) := P
-  have : Q(CommSemiring $R)   := instR
-  have : Q(AddCommMonoid $M)  := instM
-  have : Q(AddCommMonoid $M') := instM'
-  have : Q(AddCommMonoid $N)  := instN
-  have : Q(AddCommMonoid $P)  := instP
+  have : Q(Semiring $R)   := instR
+  let .some instRc ← trySynthInstanceQ q(IsMulCommutative $R) | return .continue
+  have : Q(IsMulCommutative $R) := instRc
+  have : Q(AddMonoid $M)  := instM
+  have : Q(IsAddCommutative $M) := instMc
+  have : Q(AddMonoid $M') := instM'
+  have : Q(IsAddCommutative $M') := instM'c
+  have : Q(AddMonoid $N)  := instN
+  have : Q(IsAddCommutative $N) := instNc
+  have : Q(AddMonoid $P)  := instP
+  have : Q(IsAddCommutative $P) := instPc
   have : Q(Module $R $M)  := instRM
   have : Q(Module $R $M') := instRM'
   have : Q(Module $R $N)  := instRN
@@ -580,7 +632,7 @@ simproc_decl rid_comp_map_assoc_simproc
   | ~q((TensorProduct.rid «$R» «$M'»).toLinearMap ∘ₗ ($f ⊗ₘ $g) ∘ₗ
       ($h : «$P» →ₗ[«$R»] «$M» ⊗[«$R»] «$N»)) =>
   match_expr f with
-  | LinearMap.id _ _ _ _ _ => return .continue
+  | LinearMap.id _ _ _ _ _ _ => return .continue
   | _ =>
   return .visit (e := e) <| .mk q($f ∘ₗ (TensorProduct.rid $R _).toLinearMap ∘ₗ (.id ⊗ₘ $g) ∘ₗ $h)
     (some q(rid_comp_map_assoc ..))

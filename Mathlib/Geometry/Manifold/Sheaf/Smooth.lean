@@ -209,8 +209,8 @@ variable [Group A] [IsMulCommutative A] [Group A'] [IsMulCommutative A'] [LieGro
 
 open Manifold in
 @[to_additive] noncomputable instance (U : (Opens (TopCat.of M))ᵒᵖ) :
-    CommGroup ((smoothSheaf IM I M A).presheaf.obj U) :=
-  inferInstanceAs <| CommGroup C^∞⟮IM, (unop U : Opens M); I, A⟯
+    IsMulCommutative ((smoothSheaf IM I M A).presheaf.obj U) :=
+  inferInstanceAs <| IsMulCommutative C^∞⟮IM, (unop U : Opens M); I, A⟯
 
 /-- The presheaf of smooth functions from `M` to `A`, for `A` an abelian Lie group, as a
 presheaf of abelian groups. -/
@@ -279,8 +279,9 @@ section SmoothCommRing
 variable [Ring R] [IsMulCommutative R] [ContMDiffRing I ∞ R]
 
 open Manifold in
-instance (U : (Opens (TopCat.of M))ᵒᵖ) : CommRing ((smoothSheaf IM I M R).presheaf.obj U) :=
-  inferInstanceAs <| CommRing C^∞⟮IM, (unop U : Opens M); I, R⟯
+instance (U : (Opens (TopCat.of M))ᵒᵖ) :
+    IsMulCommutative ((smoothSheaf IM I M R).presheaf.obj U) :=
+  inferInstanceAs <| IsMulCommutative C^∞⟮IM, (unop U : Opens M); I, R⟯
 
 /-- The presheaf of smooth functions from `M` to `R`, for `R` a smooth commutative ring, as a
 presheaf of commutative rings. -/

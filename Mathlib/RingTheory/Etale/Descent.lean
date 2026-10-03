@@ -86,20 +86,20 @@ end Algebra
 namespace RingHom
 
 lemma Smooth.codescendsAlong_faithfullyFlat : CodescendsAlong Smooth FaithfullyFlat := by
-  refine .mk _ Smooth.respectsIso fun R S T _ _ _ _ _ h h' ↦ ?_
+  refine .mk _ Smooth.respectsIso fun R S T _ _ _ _ _ _ _ _ h h' ↦ ?_
   rw [smooth_algebraMap] at h' ⊢
   rw [faithfullyFlat_algebraMap_iff] at h
   exact .of_smooth_tensorProduct_of_faithfullyFlat S
 
 lemma FormallyUnramified.codescendsAlong_faithfullyFlat :
     CodescendsAlong FormallyUnramified FaithfullyFlat := by
-  refine .mk _ FormallyUnramified.respectsIso fun R S T _ _ _ _ _ h h' ↦ ?_
+  refine .mk _ FormallyUnramified.respectsIso fun R S T _ _ _ _ _ _ _ _ h h' ↦ ?_
   rw [formallyUnramified_algebraMap] at h' ⊢
   rw [faithfullyFlat_algebraMap_iff] at h
   exact .of_formallyUnramified_tensorProduct_of_faithfullyFlat S
 
 lemma Etale.codescendsAlong_faithfullyFlat : CodescendsAlong Etale FaithfullyFlat := by
-  refine .mk _ Etale.respectsIso fun R S T _ _ _ _ _ h h' ↦ ?_
+  refine .mk _ Etale.respectsIso fun R S T _ _ _ _ _ _ _ _ h h' ↦ ?_
   rw [etale_algebraMap] at h' ⊢
   rw [faithfullyFlat_algebraMap_iff] at h
   exact .of_etale_tensorProduct_of_faithfullyFlat S

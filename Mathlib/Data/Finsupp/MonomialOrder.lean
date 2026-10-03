@@ -60,8 +60,10 @@ it is customary to order them using the opposite order : `MvPolynomial.X 0 > MvP
 structure MonomialOrder (σ : Type*) where
   /-- The synonym type -/
   syn : Type*
-  /-- `syn` is an additive commutative monoid -/
-  addCommMonoidSyn : AddCommMonoid syn := by infer_instance
+  /-- `syn` is an additive monoid -/
+  addCommMonoidSyn : AddMonoid syn := by infer_instance
+  /-- `syn` is additively commutative -/
+  isAddCommutativeSyn : IsAddCommutative syn := by infer_instance
   /-- `syn` is linearly ordered -/
   linearOrderSyn : LinearOrder syn := by infer_instance
   /-- `syn` is a linearly ordered cancellative additive commutative monoid -/
@@ -73,7 +75,8 @@ structure MonomialOrder (σ : Type*) where
   /-- `syn` is a well ordering -/
   wellFoundedLT_syn : WellFoundedLT syn := by infer_instance
 
-attribute [instance] MonomialOrder.addCommMonoidSyn MonomialOrder.linearOrderSyn
+attribute [instance] MonomialOrder.addCommMonoidSyn MonomialOrder.isAddCommutativeSyn
+  MonomialOrder.linearOrderSyn
   MonomialOrder.isOrderedAddMonoid_syn MonomialOrder.wellFoundedLT_syn
 
 namespace MonomialOrder
@@ -86,8 +89,11 @@ variable {σ : Type*} (m : MonomialOrder σ)
 
 @[deprecated (since := "2026-07-07")] alias wf := MonomialOrder.wellFoundedLT_syn
 
-instance : AddCancelCommMonoid m.syn where
+instance : AddCancelMonoid m.syn where
   add_left_cancel := m.toSyn.symm.injective.isLeftCancelAdd _ (map_add _) |>.add_left_cancel
+  add_right_cancel :=
+    haveI := m.toSyn.symm.injective.isLeftCancelAdd _ (map_add _)
+    (AddCommMagma.IsLeftCancelAdd.toIsRightCancelAdd m.syn).add_right_cancel
 
 instance isOrderedCancelAddMonoid_syn : IsOrderedCancelAddMonoid m.syn :=
   IsOrderedAddMonoid.toIsOrderedCancelAddMonoid'

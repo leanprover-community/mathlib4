@@ -146,11 +146,13 @@ theorem Module.projective_of_localization_maximal (H : ∀ (I : Ideal R) (_ : I.
 
 variable
   (Rₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
-  [∀ (P : Ideal R) [P.IsMaximal], CommRing (Rₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], Ring (Rₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsMulCommutative (Rₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], Algebra R (Rₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], IsLocalization.AtPrime (Rₚ P) P]
   (Mₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
-  [∀ (P : Ideal R) [P.IsMaximal], AddCommGroup (Mₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], AddGroup (Mₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsAddCommutative (Mₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], Module R (Mₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], Module (Rₚ P) (Mₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], IsScalarTower R (Rₚ P) (Mₚ P)]

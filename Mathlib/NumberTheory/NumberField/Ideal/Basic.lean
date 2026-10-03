@@ -157,6 +157,10 @@ theorem Ideal.torsionMapQuot_injective' {P : Ideal (𝓞 K)} [hP : P.IsPrime]
     hζ_pow.intermediateField_adjoin_isCyclotomicExtension ℚ
   suffices 1 < P.ramificationIdx ℤ by
     rwa [P.ramificationIdx_eq_one ℤ, lt_self_iff_false] at this
+  -- TC cannot find `IsScalarTower ℤ (𝓞 F) (𝓞 K)` through `AddCommGroup.intIsScalarTower`: the
+  -- `[AddGroup M] [IsAddCommutative M]` arguments are still metavariables when the `Module R M`
+  -- argument is unified, so the unifier gets stuck.
+  have : IsScalarTower ℤ (𝓞 F) (𝓞 K) := AddCommGroup.intIsScalarTower (M := 𝓞 K)
   refine lt_of_lt_of_le ?_ <| ramificationIdx_below_le (P.under (𝓞 F)) P
   rwa [IsCyclotomicExtension.Rat.ramificationIdx_eq_of_prime p F, Nat.lt_sub_iff_add_lt']
 

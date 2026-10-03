@@ -82,15 +82,6 @@ alias IsAddCyclic.commutative := IsAddCyclic.isAddCommutative
 @[to_additive existing, deprecated (since := "2026-04-09")]
 alias IsCyclic.commutative := IsCyclic.isMulCommutative
 
-open scoped IsMulCommutative in
-/-- A cyclic group is always commutative. This is not an `instance` because often we have a better
-proof of `CommGroup`. -/
-@[to_additive (attr := instance_reducible)
-      /-- A cyclic group is always commutative. This is not an `instance` because often we have
-      a better proof of `AddCommGroup`. -/]
-def IsCyclic.commGroup [Group α] [IsCyclic α] : CommGroup α :=
-  inferInstance
-
 variable [Group α] [Group G] [Group G']
 
 /-- A non-cyclic multiplicative group is non-trivial. -/

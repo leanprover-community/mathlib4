@@ -77,19 +77,17 @@ instance (priority := 75) toNonUnitalRing {R : Type*} [NonUnitalRing R] [SetLike
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 -- Prefer subclasses of `NonUnitalRing` over subclasses of `NonUnitalSubringClass`.
-/-- A non-unital subring of a `NonUnitalNonAssocCommRing` is a `NonUnitalNonAssocCommRing`. -/
-instance (priority := 75) toNonUnitalNonAssocCommRing {R} [NonUnitalNonAssocRing R] [IsMulCommutative R]
-    [SetLike S R] [NonUnitalSubringClass S R] (s : S) :
-    NonUnitalNonAssocCommRing s := fast_instance%
-  Subtype.val_injective.nonUnitalNonAssocCommRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+/-- A non-unital subring of a commutative `NonUnitalNonAssocRing` is commutative. -/
+instance (priority := 75) toNonUnitalNonAssocCommRing {R} [NonUnitalNonAssocRing R]
+    [IsMulCommutative R] [SetLike S R] [NonUnitalSubringClass S R] (s : S) :
+    IsMulCommutative s :=
+  Subtype.val_injective.isMulCommutative _ fun _ _ => rfl
 
 -- Prefer subclasses of `NonUnitalRing` over subclasses of `NonUnitalSubringClass`.
-/-- A non-unital subring of a `NonUnitalCommRing` is a `NonUnitalCommRing`. -/
-instance (priority := 75) toNonUnitalCommRing {R} [NonUnitalRing R] [IsMulCommutative R] [SetLike S R]
-    [NonUnitalSubringClass S R] : NonUnitalCommRing s := fast_instance%
-  Subtype.val_injective.nonUnitalCommRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+/-- A non-unital subring of a commutative `NonUnitalRing` is commutative. -/
+instance (priority := 75) toNonUnitalCommRing {R} [NonUnitalRing R] [IsMulCommutative R]
+    [SetLike S R] [NonUnitalSubringClass S R] : IsMulCommutative s :=
+  Subtype.val_injective.isMulCommutative _ fun _ _ => rfl
 
 /-- The natural non-unital ring hom from a non-unital subring of a non-unital ring `R` to `R`. -/
 def subtype (s : S) : s →ₙ+* R :=
@@ -319,9 +317,9 @@ theorem val_zero : ((0 : s) : R) = 0 :=
 theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 := by
   simp
 
-/-- A non-unital subring of a `NonUnitalCommRing` is a `NonUnitalCommRing`. -/
+/-- A non-unital subring of a commutative `NonUnitalRing` is commutative. -/
 instance toNonUnitalCommRing {R} [NonUnitalRing R] [IsMulCommutative R] (s : NonUnitalSubring R) :
-    NonUnitalCommRing s :=
+    IsMulCommutative s :=
   NonUnitalSubringClass.toNonUnitalCommRing s
 
 /-! ## Partial order -/

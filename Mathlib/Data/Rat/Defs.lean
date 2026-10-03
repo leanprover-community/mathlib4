@@ -146,10 +146,9 @@ instance nontrivial : Nontrivial ℚ where exists_pair_ne := ⟨1, 0, by decide�
 
 /-! ### The rational numbers are a group -/
 
-instance addCommGroup : AddCommGroup ℚ where
+instance addGroup : AddGroup ℚ where
   zero_add := Rat.zero_add
   add_zero := Rat.add_zero
-  add_comm := Rat.add_comm
   add_assoc := Rat.add_assoc
   neg_add_cancel := Rat.neg_add_cancel
   sub_eq_add_neg := Rat.sub_eq_add_neg
@@ -166,9 +165,7 @@ instance addCommGroup : AddCommGroup ℚ where
     simp_rw [HSMul.hSMul, SMul.smul]
     rw [Int.negSucc_eq, Rat.intCast_neg, Rat.neg_mul]; rfl
 
-instance addGroup : AddGroup ℚ := by infer_instance
-
-instance addCommMonoid : AddCommMonoid ℚ := by infer_instance
+instance isAddCommutative : IsAddCommutative ℚ := ⟨⟨Rat.add_comm⟩⟩
 
 instance addMonoid : AddMonoid ℚ := by infer_instance
 
@@ -176,22 +173,17 @@ instance addLeftCancelSemigroup : AddLeftCancelSemigroup ℚ := by infer_instanc
 
 instance addRightCancelSemigroup : AddRightCancelSemigroup ℚ := by infer_instance
 
-instance addCommSemigroup : AddCommSemigroup ℚ := by infer_instance
-
 instance addSemigroup : AddSemigroup ℚ := by infer_instance
 
-instance commMonoid : CommMonoid ℚ where
+instance monoid : Monoid ℚ where
   mul_one := Rat.mul_one
   one_mul := Rat.one_mul
-  mul_comm := Rat.mul_comm
   mul_assoc := Rat.mul_assoc
   npow n q := q ^ n
   npow_zero := Rat.pow_zero
   npow_succ n q := Rat.pow_succ q n
 
-instance monoid : Monoid ℚ := by infer_instance
-
-instance commSemigroup : CommSemigroup ℚ := by infer_instance
+instance isMulCommutative : IsMulCommutative ℚ := ⟨⟨Rat.mul_comm⟩⟩
 
 instance semigroup : Semigroup ℚ := by infer_instance
 

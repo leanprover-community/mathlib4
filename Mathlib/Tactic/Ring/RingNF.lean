@@ -61,9 +61,11 @@ def evalExpr? (e : Expr) : AtomM (Option Simp.Result) := do
   let e ← withReducible <| whnf e
   unless e.isApp do return none -- all interesting ring expressions are applications
   let ⟨u, α, e⟩ ← inferTypeQ' e
-  let .some sαe ← trySynthInstance q(CommSemiring $α) | return none
-  have sα : Q(CommSemiring $α) := sαe
-  let c ← Common.mkCache sα
+  let .some sαe ← trySynthInstance q(Semiring $α) | return none
+  have sα : Q(Semiring $α) := sαe
+  let .some iαe ← trySynthInstance q(IsMulCommutative $α) | return none
+  have iα : Q(IsMulCommutative $α) := iαe
+  let c ← Common.mkCache sα iα
   let ⟨a, _, pa⟩ ← match
     (← Common.isAtomOrDerivable (ringCompute c) c q($e)) with
   | none => Common.eval rcℕ (ringCompute c) c e

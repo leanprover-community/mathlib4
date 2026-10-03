@@ -23,13 +23,13 @@ open Mathlib.Tactic.Determinant
 
 /-- reify a `BirdDet` call and normalize it using the certificate-chain evaluator -/
 private def normalizeBirdDet (e : Expr) : MetaM Simp.Result := do
-  let ⟨rα, ctx⟩ ← reifyBirdDet e
-  let detNorm ← certBirdDet (rα := rα) |>.run' {} |>.run ctx |>.run .reducible
+  let ⟨rα, iα, ctx⟩ ← reifyBirdDet e
+  let detNorm ← certBirdDet (rα := rα) (iα := iα) |>.run' {} |>.run ctx |>.run .reducible
   Mathlib.Tactic.RingNF.cleanup {} {expr := detNorm.norm, proof? := some detNorm.proof}
 
 /-- Normalize the determinant of `A` from its `entries` in row-major order -/
-private def normalizeDetFromEntries {u : Level} {α : Q(Type u)} {n : Q(ℕ)} (rα : Q(CommRing $α))
-  (A : Q(Matrix (Fin $n) (Fin $n) $α)) (entries : Array Q($α)) :
+private def normalizeDetFromEntries {u : Level} {α : Q(Type u)} {n : Q(ℕ)} (rα : Q(Ring $α))
+  (iα : Q(IsMulCommutative $α)) (A : Q(Matrix (Fin $n) (Fin $n) $α)) (entries : Array Q($α)) :
     MetaM Simp.Result := do
   let xs : Q(List $α) ← mkListLit α entries.toList
   let arrayExpr : Q(Array $α) := q(List.toArray $xs)
@@ -68,9 +68,9 @@ notation over a commutative ring. -/
 simproc_decl norm_det (Matrix.det _) := fun e => do
   let e ← instantiateMVars e
   let ⟨_, _, e⟩ ← inferTypeQ' e
-  let ~q(@Matrix.det (Fin $n) _ _ _ $rα $matrix) := e | return .continue
+  let ~q(@Matrix.det (Fin $n) _ _ _ $rα $iα $matrix) := e | return .continue
   let some entries ← entriesOfMatrixLiteral? matrix | return .continue
-  return .done (← normalizeDetFromEntries rα matrix entries)
+  return .done (← normalizeDetFromEntries rα iα matrix entries)
 
 /--
 `eval_det` normalizes determinants of matrices written using `!![...]` notation

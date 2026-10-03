@@ -60,15 +60,19 @@ variable (C : Type u) [Category.{v} C]
 linear in both variables. -/
 @[stacks 00ZY]
 class Preadditive where
-  homGroup : ∀ P Q : C, AddCommGroup (P ⟶ Q) := by infer_instance
+  homGroup : ∀ P Q : C, AddGroup (P ⟶ Q) := by infer_instance
+  isAddComm : ∀ P Q : C, IsAddCommutative (P ⟶ Q) := by infer_instance
   add_comp : ∀ (P Q R : C) (f f' : P ⟶ Q) (g : Q ⟶ R), (f + f') ≫ g = f ≫ g + f' ≫ g := by
     cat_disch
   comp_add : ∀ (P Q R : C) (f : P ⟶ Q) (g g' : Q ⟶ R), f ≫ (g + g') = f ≫ g + f ≫ g' := by
     cat_disch
 
-attribute [inherit_doc Preadditive] Preadditive.homGroup Preadditive.add_comp Preadditive.comp_add
+attribute [inherit_doc Preadditive] Preadditive.homGroup Preadditive.isAddComm Preadditive.add_comp
+  Preadditive.comp_add
 
 attribute [instance_reducible, instance] Preadditive.homGroup
+
+attribute [instance] Preadditive.isAddComm
 
 -- simp can already prove reassoc version
 attribute [reassoc, simp] Preadditive.add_comp
@@ -98,7 +102,8 @@ universe u'
 variable {D : Type u'} (F : D → C)
 
 instance inducedCategory : Preadditive.{v} (InducedCategory C F) where
-  homGroup P Q := InducedCategory.homEquiv.addCommGroup
+  homGroup P Q := InducedCategory.homEquiv.addGroup
+  isAddComm P Q := InducedCategory.homEquiv.addCommGroup
   add_comp _ _ _ _ _ _ := by ext; apply add_comp
   comp_add _ _ _ _ _ _ := by ext; apply comp_add
 
@@ -118,12 +123,16 @@ instance fullSubcategory (Z : ObjectProperty C) : Preadditive Z.FullSubcategory 
   homGroup P Q := {
       -- Note: Add zero field explicitly for a better transparency of definitional properties
       zero := Z.homMk 0
-      __ := InducedCategory.homEquiv.addCommGroup }
+      __ := InducedCategory.homEquiv.addGroup }
+  isAddComm P Q := InducedCategory.homEquiv.addCommGroup
   add_comp _ _ _ _ _ _ := by ext; apply add_comp
   comp_add _ _ _ _ _ _ := by ext; apply comp_add
 
-instance (X : C) : AddCommGroup (End X) :=
-  inferInstanceAs <| AddCommGroup (X ⟶ X)
+instance (X : C) : AddGroup (End X) :=
+  inferInstanceAs <| AddGroup (X ⟶ X)
+
+instance (X : C) : IsAddCommutative (End X) :=
+  inferInstanceAs <| IsAddCommutative (X ⟶ X)
 
 /-- Composition by a fixed left argument as a group homomorphism -/
 def leftComp {P Q : C} (R : C) (f : P ⟶ Q) : (Q ⟶ R) →+ (P ⟶ R) :=
@@ -219,7 +228,7 @@ instance {X : C} : Semiring (End X) :=
 
 instance {X : C} : Ring (End X) :=
   { (inferInstance : Semiring (End X)),
-    (inferInstance : AddCommGroup (End X)) with
+    (inferInstance : AddGroup (End X)) with
     neg_add_cancel := neg_add_cancel }
 
 instance moduleEndRight {X Y : C} : Module (End Y) (X ⟶ Y) where

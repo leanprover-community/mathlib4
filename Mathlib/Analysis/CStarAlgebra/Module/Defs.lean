@@ -70,7 +70,8 @@ open scoped ComplexOrder RightActions
 (where `A` is typically a C⋆-algebra) and an inner product `⟪x, y⟫_A` which satisfies the
 following properties. -/
 class CStarModule (A E : Type*) [NonUnitalSemiring A] [StarRing A]
-    [Module ℂ A] [AddGroup E] [IsAddCommutative E] [Module ℂ E] [PartialOrder A] [SMul A E] [Norm A] [Norm E]
+    [Module ℂ A] [AddGroup E] [IsAddCommutative E]
+    [Module ℂ E] [PartialOrder A] [SMul A E] [Norm A] [Norm E]
     extends Inner A E where
   inner_add_right {x} {y} {z} : inner x (y + z) = inner x y + inner x z
   inner_self_nonneg {x} : 0 ≤ inner x x
@@ -272,13 +273,13 @@ lemma normedSpaceCore : NormedSpace.Core ℂ E where
 variable (A) in
 /-- This is not listed as an instance because we often want to replace the topology, uniformity
 and bornology instead of inheriting them from the norm. -/
-noncomputable abbrev normedAddCommGroup : NormedAddCommGroup E :=
+noncomputable abbrev normedAddCommGroup : NormedAddGroup E :=
   NormedAddCommGroup.ofCore (CStarModule.normedSpaceCore A)
 
 open scoped InnerProductSpace in
 lemma norm_eq_csSup (v : E) :
     ‖v‖ = sSup { ‖⟪w, v⟫_A‖ | (w : E) (_ : ‖w‖ ≤ 1) } := by
-  let instNACG : NormedAddCommGroup E := NormedAddCommGroup.ofCore (normedSpaceCore A)
+  let instNACG : NormedAddGroup E := NormedAddCommGroup.ofCore (normedSpaceCore A)
   let instNS : NormedSpace ℂ E := .ofCore (normedSpaceCore A)
   refine Eq.symm <| IsGreatest.csSup_eq ⟨⟨‖v‖⁻¹ • v, ?_, ?_⟩, ?_⟩
   · simpa only [norm_smul, norm_inv, norm_norm] using inv_mul_le_one_of_le₀ le_rfl (by positivity)

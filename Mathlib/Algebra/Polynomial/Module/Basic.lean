@@ -93,7 +93,10 @@ instance instUnique [Subsingleton M] : Unique (PolynomialModule R M) := fast_ins
 instance instDecidableEq [DecidableEq M] : DecidableEq (PolynomialModule R M) :=
   (coeffEquiv R).decidableEq
 
-instance instAddCommGroup : AddCommGroup (PolynomialModule R M) := fast_instance%
+instance instAddGroup : AddGroup (PolynomialModule R M) := fast_instance%
+  (coeffEquiv R).addGroup
+
+instance instIsAddCommutative : IsAddCommutative (PolynomialModule R M) :=
   (coeffEquiv R).addCommGroup
 
 /-- `PolynomialModule.coeff` as an `AddEquiv`. -/

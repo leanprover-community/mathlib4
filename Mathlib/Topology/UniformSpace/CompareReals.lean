@@ -85,7 +85,7 @@ instead of the metric space one. We proved in `Rat.uniformSpace_eq` that they ar
 but they are not definitionaly equal, so it would confuse the type class system (and probably
 also human readers). -/
 def Q :=
-  ℚ deriving CommRing, Inhabited
+  ℚ deriving Ring, IsMulCommutative, Inhabited
 
 instance uniformSpace : UniformSpace Q :=
   fast_instance% (@AbsoluteValue.abs ℚ _).uniformSpace

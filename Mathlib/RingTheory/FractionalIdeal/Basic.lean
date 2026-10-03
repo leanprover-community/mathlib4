@@ -608,9 +608,13 @@ theorem coe_natCast (n : ℕ) : ((n : FractionalIdeal S P) : Submodule R P) = n 
   change ((n.unaryCast : FractionalIdeal S P) : Submodule R P) = n
   induction n <;> simp [*, Nat.unaryCast]
 
-instance commSemiring : CommSemiring (FractionalIdeal S P) :=
-  Function.Injective.commSemiring _ Subtype.coe_injective coe_zero coe_one coe_add coe_mul
+instance commSemiring : Semiring (FractionalIdeal S P) :=
+  Function.Injective.semiring _ Subtype.coe_injective coe_zero coe_one coe_add coe_mul
     (fun _ _ => coe_nsmul _ _) coe_pow coe_natCast
+
+instance : IsMulCommutative (FractionalIdeal S P) :=
+  Function.Injective.isMulCommutative ((↑) : FractionalIdeal S P → Submodule R P)
+    Subtype.coe_injective coe_mul
 
 instance : CanonicallyOrderedAdd (FractionalIdeal S P) where
   exists_add_of_le h := ⟨_, (sup_eq_right.mpr h).symm⟩

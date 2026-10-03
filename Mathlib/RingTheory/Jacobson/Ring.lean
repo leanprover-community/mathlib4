@@ -202,7 +202,8 @@ def IsLocalization.orderIsoOfMaximal [IsJacobsonRing R] :
   toFun p := ⟨Ideal.comap (algebraMap R S) p.1, (isMaximal_iff_isMaximal_disjoint S y p.1).1 p.2⟩
   invFun p := ⟨Ideal.map (algebraMap R S) p.1,
     isMaximal_of_isMaximal_notMem y p.1 p.2.1 p.2.2⟩
-  left_inv J := Subtype.ext (map_under (powers y) S J)
+  left_inv J := Subtype.ext <| by
+    exact map_under (powers y) S J.1
   right_inv := fun ⟨_, hIm, hI⟩ ↦ Subtype.ext <| under_map_of_isPrime_disjoint _ S hIm.isPrime
     ((disjoint_powers_iff_notMem_of_isPrime y).2 hI)
   map_rel_iff' {I I'} := ⟨fun h => show I.val ≤ I'.val from
@@ -294,7 +295,7 @@ theorem isIntegral_isLocalization_polynomial_quotient
     rw [← φ'.map_one, ← congr(φ' $hq''), φ'.map_mul, ← φ'.comp_apply]
     simp only [φ', IsLocalization.map_comp _, RingHom.comp_apply]
   dsimp at hp
-  refine @IsIntegral.of_mem_closure'' Rₘ _ Sₘ _ φ'
+  refine @IsIntegral.of_mem_closure'' Rₘ _ _ Sₘ _ _ φ'
     ((algebraMap (R[X] ⧸ P) Sₘ).comp (Ideal.Quotient.mk P) '' insert X { p | p.degree ≤ 0 }) ?_
     ((algebraMap (R[X] ⧸ P) Sₘ) p') ?_
   · rintro x ⟨p, hp, rfl⟩
@@ -463,8 +464,8 @@ theorem isMaximal_comap_C_of_isMaximal [IsJacobsonRing R] [Nontrivial R]
         quotientMap_injective))]
     refine isMaximal_comap_of_isIntegral_of_isMaximal _ ?_ ⊥
     have isloc : IsLocalization (Submonoid.map φ M) (Localization M') := by infer_instance
-    exact @isIntegral_isLocalization_polynomial_quotient R _
-      (Localization M) (Localization M') _ _ P m hmem_P _ _ _ isloc
+    exact @isIntegral_isLocalization_polynomial_quotient R _ _
+      (Localization M) (Localization M') _ _ _ _ P m hmem_P _ _ _ isloc
   rw [(map_bot.symm :
     (⊥ : Ideal (Localization M')) = Ideal.map (algebraMap (R[X] ⧸ P) (Localization M')) ⊥)]
   let bot_maximal := (bot_quotient_isMaximal_iff _).mpr hP
@@ -505,8 +506,8 @@ private theorem quotient_mk_comp_C_isIntegral_of_jacobson' [Nontrivial R] (hR : 
       · -- `convert` here is faster than `exact`, and this proof is near the time limit.
         -- convert isIntegral_isLocalization_polynomial_quotient P pX hpX
         have isloc : IsLocalization M' (Localization M') := by infer_instance
-        exact @isIntegral_isLocalization_polynomial_quotient R _
-          (Localization M) (Localization M') _ _ P pX hpX _ _ _ isloc
+        exact @isIntegral_isLocalization_polynomial_quotient R _ _
+          (Localization M) (Localization M') _ _ _ _ P pX hpX _ _ _ isloc
     rw [IsLocalization.map_comp M.le_comap_map]
 
 variable [IsJacobsonRing R]
@@ -670,7 +671,7 @@ lemma isJacobsonRing_of_finiteType {A B : Type*} [Ring A] [IsMulCommutative A] [
 
 lemma RingHom.FiniteType.isJacobsonRing {A B : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B]
     {f : A →+* B} [IsJacobsonRing A] (H : f.FiniteType) : IsJacobsonRing B :=
-  @isJacobsonRing_of_finiteType A B _ _ f.toAlgebra _ H
+  @isJacobsonRing_of_finiteType A B _ _ _ _ f.toAlgebra _ H
 
 @[stacks 0CY7 "See also https://en.wikipedia.org/wiki/Zariski%27s_lemma."]
 lemma finite_of_finite_type_of_isJacobsonRing (R S : Type*) [Ring R] [IsMulCommutative R] [Field S]

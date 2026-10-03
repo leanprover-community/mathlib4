@@ -43,7 +43,7 @@ theorem finiteType_stableUnderComposition : StableUnderComposition @FiniteType :
   exact hg.comp hf
 
 theorem finiteType_respectsIso : RingHom.RespectsIso @RingHom.FiniteType := by
-  refine finiteType_stableUnderComposition.respectsIso (fun {R S} _ _ e ↦ ?_)
+  refine finiteType_stableUnderComposition.respectsIso (fun {R S} _ _ _ _ e ↦ ?_)
   algebraize [e.toRingHom]
   apply Algebra.FiniteType.equiv (inferInstanceAs <| Algebra.FiniteType R R) <|
     .ofRingEquiv (congrFun rfl)

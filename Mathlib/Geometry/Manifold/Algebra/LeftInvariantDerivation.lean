@@ -156,8 +156,11 @@ instance hasNatScalar : SMul ℕ (LeftInvariantDerivation I G) where
 instance hasIntScalar : SMul ℤ (LeftInvariantDerivation I G) where
   smul r X := ⟨r • X.1, fun g => by simp_rw [LinearMap.map_smul_of_tower _ r, left_invariant']⟩
 
-instance : AddCommGroup (LeftInvariantDerivation I G) :=
-  coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
+instance : AddGroup (LeftInvariantDerivation I G) :=
+  coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
+
+instance : IsAddCommutative (LeftInvariantDerivation I G) :=
+  coe_injective.isAddCommutative _ coe_add
 
 instance : SMul 𝕜 (LeftInvariantDerivation I G) where
   smul r X := ⟨r • X.1, fun g => by

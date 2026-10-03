@@ -36,20 +36,14 @@ instance instAddLeftCancelSemigroup [AddLeftCancelSemigroup α] : AddLeftCancelS
 instance instAddRightCancelSemigroup [AddRightCancelSemigroup α] : AddRightCancelSemigroup αᵐᵒᵖ :=
   unop_injective.addRightCancelSemigroup _ fun _ _ => rfl
 
-instance instAddCommMagma [Add α] [IsAddCommutative α] : AddCommMagma αᵐᵒᵖ :=
-  unop_injective.addCommMagma _ fun _ _ => rfl
-
-instance instAddCommSemigroup [AddSemigroup α] [IsAddCommutative α] : AddCommSemigroup αᵐᵒᵖ :=
-  unop_injective.addCommSemigroup _ fun _ _ => rfl
+instance instIsAddCommutative [Add α] [IsAddCommutative α] : IsAddCommutative αᵐᵒᵖ :=
+  unop_injective.isAddCommutative _ fun _ _ => rfl
 
 instance instAddZeroClass [AddZeroClass α] : AddZeroClass αᵐᵒᵖ :=
   unop_injective.addZeroClass _ (by exact rfl) fun _ _ => rfl
 
 instance instAddMonoid [AddMonoid α] : AddMonoid αᵐᵒᵖ :=
   unop_injective.addMonoid _ (by exact rfl) (fun _ _ => rfl) fun _ _ => rfl
-
-instance instAddCommMonoid [AddMonoid α] [IsAddCommutative α] : AddCommMonoid αᵐᵒᵖ :=
-  unop_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
 instance instSubNegMonoid [SubNegMonoid α] : SubNegMonoid αᵐᵒᵖ :=
   unop_injective.subNegMonoid _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
@@ -58,10 +52,6 @@ instance instSubNegMonoid [SubNegMonoid α] : SubNegMonoid αᵐᵒᵖ :=
 instance instAddGroup [AddGroup α] : AddGroup αᵐᵒᵖ :=
   unop_injective.addGroup _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
   (fun _ _ => rfl) fun _ _ => rfl
-
-instance instAddCommGroup [AddGroup α] [IsAddCommutative α] : AddCommGroup αᵐᵒᵖ :=
-  unop_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
 
 /-!
 ### Multiplicative structures on `αᵐᵒᵖ`
@@ -90,10 +80,6 @@ instance instLeftCancelSemigroup [RightCancelSemigroup α] : LeftCancelSemigroup
 @[to_additive]
 instance instRightCancelSemigroup [LeftCancelSemigroup α] : RightCancelSemigroup αᵐᵒᵖ where
   mul_right_cancel _ _ _ := mul_right_cancel
-
-@[to_additive]
-instance instCommSemigroup [Semigroup α] [IsMulCommutative α] : CommSemigroup αᵐᵒᵖ where
-  mul_comm x y := unop_injective <| mul_comm (unop y) (unop x)
 
 @[to_additive] instance instMulOne [MulOne α] : MulOne αᵐᵒᵖ where
 
@@ -125,16 +111,6 @@ instance instCancelMonoid [CancelMonoid α] : CancelMonoid αᵐᵒᵖ where
   toLeftCancelMonoid := instLeftCancelMonoid
   __ := instRightCancelMonoid
 
-@[to_additive]
-instance instCommMonoid [Monoid α] [IsMulCommutative α] : CommMonoid αᵐᵒᵖ where
-  toMonoid := instMonoid
-  __ := instCommSemigroup
-
-@[to_additive]
-instance instCancelCommMonoid [CancelMonoid α] [IsMulCommutative α] : CancelCommMonoid αᵐᵒᵖ where
-  toCommMonoid := instCommMonoid
-  __ := instLeftCancelMonoid
-
 @[to_additive AddOpposite.instSubNegMonoid]
 instance instDivInvMonoid [DivInvMonoid α] : DivInvMonoid αᵐᵒᵖ where
   toMonoid := instMonoid
@@ -153,20 +129,10 @@ instance instDivisionMonoid [DivisionMonoid α] : DivisionMonoid αᵐᵒᵖ whe
   mul_inv_rev _ _ := unop_injective <| mul_inv_rev _ _
   inv_eq_of_mul _ _ h := unop_injective <| inv_eq_of_mul_eq_one_left <| congr_arg unop h
 
-@[to_additive AddOpposite.instSubtractionCommMonoid]
-instance instDivisionCommMonoid [DivisionMonoid α] [IsMulCommutative α] : DivisionCommMonoid αᵐᵒᵖ where
-  toDivisionMonoid := instDivisionMonoid
-  __ := instCommSemigroup
-
 @[to_additive]
 instance instGroup [Group α] : Group αᵐᵒᵖ where
   toDivInvMonoid := instDivInvMonoid
   inv_mul_cancel _ := unop_injective <| mul_inv_cancel _
-
-@[to_additive]
-instance instCommGroup [Group α] [IsMulCommutative α] : CommGroup αᵐᵒᵖ where
-  toGroup := instGroup
-  __ := instCommSemigroup
 
 section Monoid
 variable [Monoid α]
@@ -266,8 +232,8 @@ instance instLeftCancelSemigroup [LeftCancelSemigroup α] : LeftCancelSemigroup 
 instance instRightCancelSemigroup [RightCancelSemigroup α] : RightCancelSemigroup αᵃᵒᵖ :=
   unop_injective.rightCancelSemigroup _ fun _ _ => rfl
 
-instance instCommSemigroup [Semigroup α] [IsMulCommutative α] : CommSemigroup αᵃᵒᵖ :=
-  unop_injective.commSemigroup _ fun _ _ => rfl
+instance instIsMulCommutative [Mul α] [IsMulCommutative α] : IsMulCommutative αᵃᵒᵖ :=
+  unop_injective.isMulCommutative _ fun _ _ => rfl
 
 instance instMulOneClass [MulOneClass α] : MulOneClass αᵃᵒᵖ :=
   unop_injective.mulOneClass _ (by exact rfl) fun _ _ => rfl
@@ -285,19 +251,12 @@ theorem unop_pow {β} [Pow α β] (a : αᵃᵒᵖ) (b : β) : unop (a ^ b) = un
 instance instMonoid [Monoid α] : Monoid αᵃᵒᵖ :=
   unop_injective.monoid _ (by exact rfl) (fun _ _ => rfl) fun _ _ => rfl
 
-instance instCommMonoid [Monoid α] [IsMulCommutative α] : CommMonoid αᵃᵒᵖ :=
-  unop_injective.commMonoid _ (by exact rfl) (fun _ _ => rfl) fun _ _ => rfl
-
 instance instDivInvMonoid [DivInvMonoid α] : DivInvMonoid αᵃᵒᵖ :=
   unop_injective.divInvMonoid _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
 instance instGroup [Group α] : Group αᵃᵒᵖ :=
   unop_injective.group _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
-
-instance instCommGroup [Group α] [IsMulCommutative α] : CommGroup αᵃᵒᵖ :=
-  unop_injective.commGroup _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
 @[to_additive]

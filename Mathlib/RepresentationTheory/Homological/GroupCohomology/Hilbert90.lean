@@ -127,7 +127,6 @@ theorem norm_ofAlgebraAutOnUnits_eq (x : Lˣ) :
 variable [IsCyclic (L ≃ₐ[K] L)] {g : Gal(L/K)}
 
 set_option backward.isDefEq.respectTransparency false in
-attribute [local instance] IsCyclic.commGroup in
 /-- Hilbert's Theorem 90: given a finite cyclic Galois extension `L/K`, an element `x : L` such
 that `N_{L/K}(x) = 1`, and a generator `g` of `Gal(L/K)`, there exists `y : Lˣ`
 such that `y/g y = x`. -/
@@ -158,7 +157,8 @@ theorem exists_div_of_norm_eq_one (hg : ∀ x, x ∈ Subgroup.zpowers g) {x : L}
   rw [← this, toMul_sub]
   simp
 
-variable {A B : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra A B] [Algebra A L] [Algebra A K]
+variable {A B : Type*} [Ring A] [IsMulCommutative A] [Ring B] [IsMulCommutative B] [Algebra A B]
+  [Algebra A L] [Algebra A K]
 variable [Algebra B L] [IsScalarTower A B L] [IsScalarTower A K L] [IsFractionRing A K] [IsDomain A]
 variable [IsIntegralClosure B A L]
 

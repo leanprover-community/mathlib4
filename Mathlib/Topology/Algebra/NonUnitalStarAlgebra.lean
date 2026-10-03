@@ -71,18 +71,6 @@ instance isMulCommutative_topologicalClosure [T2Space A] (s : NonUnitalStarSubal
     [IsMulCommutative s] : IsMulCommutative s.topologicalClosure :=
   s.toNonUnitalSubalgebra.isMulCommutative_topologicalClosure
 
-open scoped IsMulCommutative in
-/-- If a non-unital star subalgebra of a non-unital topological star algebra is commutative, then
-so is its topological closure.
-
-See note [reducible non-instances] -/
-@[deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
-abbrev nonUnitalCommSemiringTopologicalClosure [T2Space A] (s : NonUnitalStarSubalgebra R A)
-    (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommSemiring s.topologicalClosure :=
-  fast_instance%
-  have : IsMulCommutative s := ⟨⟨hs⟩⟩
-  inferInstance
-
 variable [TopologicalSpace B] [Star B] [NonUnitalSemiring B] [Module R B]
     [IsSemitopologicalSemiring B] [ContinuousConstSMul R B] [ContinuousStar B]
     (s : NonUnitalStarSubalgebra R A) {φ : A →⋆ₙₐ[R] B}
@@ -125,17 +113,6 @@ instance instIsSemitopologicalRing [IsSemitopologicalRing A] (s : NonUnitalStarS
   s.toNonUnitalSubring.instIsSemitopologicalRing
 
 variable [IsSemitopologicalRing A]
-
-open scoped IsMulCommutative in
-/-- If a non-unital star subalgebra of a non-unital topological star algebra is commutative, then
-so is its topological closure.
-
-See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
-abbrev nonUnitalCommRingTopologicalClosure [T2Space A] (s : NonUnitalStarSubalgebra R A)
-    (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommRing s.topologicalClosure :=
-  have : IsMulCommutative s := ⟨⟨hs⟩⟩
-  inferInstance
 
 end Ring
 

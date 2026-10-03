@@ -40,8 +40,9 @@ open EuclideanSpace in
 multiplication map. -/
 theorem Pi.comul_eq_adjoint {n : Type*} [Fintype n] [DecidableEq n] :
     comul = map (equiv n 𝕜).toLinearMap (equiv n 𝕜).toLinearMap ∘ₗ
-      ((equiv n 𝕜).symm.toLinearMap ∘ₗ mul' 𝕜 (n → 𝕜) ∘ₗ
-        map (equiv n 𝕜).toLinearMap (equiv n 𝕜).toLinearMap).adjoint ∘ₗ
+      adjoint (𝕜 := 𝕜) (E := EuclideanSpace 𝕜 n ⊗[𝕜] EuclideanSpace 𝕜 n)
+        ((equiv n 𝕜).symm.toLinearMap ∘ₗ mul' 𝕜 (n → 𝕜) ∘ₗ
+          map (equiv n 𝕜).toLinearMap (equiv n 𝕜).toLinearMap) ∘ₗ
       (equiv n 𝕜).symm.toLinearMap := by
   ext
   simp only [comp_apply, ← toLinearMap_congr, LinearEquiv.coe_coe, ← LinearEquiv.symm_apply_eq]
@@ -138,40 +139,41 @@ noncomputable abbrev ringOfCoalgebra :
       adjoint_toLinearMap_eq_symm]
     exact one_smul _ _
 
-attribute [local instance] InnerProductSpace.ringOfCoalgebra in
 /-- A finite-dimensional inner product space with a coalgebra structure induces an algebra
 structure, where `x * y = (adjoint comul) (x ⊗ₜ y)`, `1 = (adjoint counit) 1` and
 `algebraMap = adjoint counit`.
 
 See note [reducible non-instances]. -/
-noncomputable abbrev algebraOfCoalgebra : Algebra 𝕜 E where
-  algebraMap :=
-    { toFun := adjoint (Coalgebra.counit (R := 𝕜) (A := E))
-      map_one' := rfl
-      map_mul' x y := by
-        simp_rw [AlgebraOfCoalgebra.mul_def, ← map_tmul, ← adjoint_map, ← comp_apply,
-          ← adjoint_comp, ← lTensor_comp_rTensor, comp_assoc, rTensor_counit_comp_comul,
-          adjoint_comp, ← toLinearMap_symm_lid, ← toLinearEquiv_lidIsometry, ← toLinearEquiv_symm,
-          adjoint_toLinearMap_eq_symm]
-        simp only [LinearIsometryEquiv.symm_symm, toLinearEquiv_lidIsometry, adjoint_lTensor,
-          coe_comp, LinearEquiv.coe_coe, Function.comp_apply, lTensor_tmul, lid_tmul]
-        rw [← smul_eq_mul, ← _root_.map_smul]
-      map_zero' := map_zero _
-      map_add' := map_add _ }
-  commutes' r x := by
-    dsimp
-    simp_rw [← rTensor_tmul, ← lTensor_tmul, ← adjoint_lTensor, ← adjoint_rTensor,
-      ← comp_apply, ← adjoint_comp, rTensor_counit_comp_comul, lTensor_counit_comp_comul,
-      ← toLinearMap_symm_rid, ← toLinearMap_symm_lid, ← comm_trans_lid,
-      ← toLinearEquiv_commIsometry, ← toLinearEquiv_lidIsometry, ← toLinearEquiv_trans,
-      ← toLinearEquiv_symm, adjoint_toLinearMap_eq_symm]
-    simp
-  smul_def' r x := by
-    dsimp
-    simp_rw [← rTensor_tmul, ← adjoint_rTensor, ← comp_apply, ← adjoint_comp,
-      rTensor_counit_comp_comul, ← toLinearMap_symm_lid, ← toLinearEquiv_lidIsometry,
-      ← toLinearEquiv_symm, adjoint_toLinearMap_eq_symm]
-    simp
+noncomputable abbrev algebraOfCoalgebra :
+    @Algebra 𝕜 E _ _ (ringOfCoalgebra (𝕜 := 𝕜) (E := E)).toSemiring :=
+  letI := ringOfCoalgebra (𝕜 := 𝕜) (E := E)
+  { algebraMap :=
+      { toFun := adjoint (Coalgebra.counit (R := 𝕜) (A := E))
+        map_one' := rfl
+        map_mul' x y := by
+          simp_rw [AlgebraOfCoalgebra.mul_def, ← map_tmul, ← adjoint_map, ← comp_apply,
+            ← adjoint_comp, ← lTensor_comp_rTensor, comp_assoc, rTensor_counit_comp_comul,
+            adjoint_comp, ← toLinearMap_symm_lid, ← toLinearEquiv_lidIsometry, ← toLinearEquiv_symm,
+            adjoint_toLinearMap_eq_symm]
+          simp only [LinearIsometryEquiv.symm_symm, toLinearEquiv_lidIsometry, adjoint_lTensor,
+            coe_comp, LinearEquiv.coe_coe, Function.comp_apply, lTensor_tmul, lid_tmul]
+          rw [← smul_eq_mul, ← _root_.map_smul]
+        map_zero' := map_zero _
+        map_add' := map_add _ }
+    commutes' r x := by
+      dsimp
+      simp_rw [← rTensor_tmul, ← lTensor_tmul, ← adjoint_lTensor, ← adjoint_rTensor,
+        ← comp_apply, ← adjoint_comp, rTensor_counit_comp_comul, lTensor_counit_comp_comul,
+        ← toLinearMap_symm_rid, ← toLinearMap_symm_lid, ← comm_trans_lid,
+        ← toLinearEquiv_commIsometry, ← toLinearEquiv_lidIsometry, ← toLinearEquiv_trans,
+        ← toLinearEquiv_symm, adjoint_toLinearMap_eq_symm]
+      simp
+    smul_def' r x := by
+      dsimp
+      simp_rw [← rTensor_tmul, ← adjoint_rTensor, ← comp_apply, ← adjoint_comp,
+        rTensor_counit_comp_comul, ← toLinearMap_symm_lid, ← toLinearEquiv_lidIsometry,
+        ← toLinearEquiv_symm, adjoint_toLinearMap_eq_symm]
+      simp }
 
 end algebraOfCoalgebra
 end InnerProductSpace

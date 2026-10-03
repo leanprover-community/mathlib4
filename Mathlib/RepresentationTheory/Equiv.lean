@@ -104,7 +104,7 @@ def finsuppTensorLeft (α : Type w') [DecidableEq α] :
     ext; simp [TensorProduct.finsuppLeft_apply_tmul]
 
 lemma finsuppTensorLeft_apply_tmul {α : Type w'} [DecidableEq α] (f : α →₀ V) (w : W) :
-    finsuppTensorLeft σ ρ α (f ⊗ₜ w) = f.sum fun i v ↦ Finsupp.single i (v ⊗ₜ w) := by
+    finsuppTensorLeft σ ρ α (f ⊗ₜ w) = f.sum fun i v ↦ Finsupp.single i (v ⊗ₜ[k] w) := by
   simp [finsuppTensorLeft, TensorProduct.finsuppLeft_apply_tmul]
 
 @[simp]
@@ -125,7 +125,7 @@ def finsuppTensorRight (α : Type w') [DecidableEq α] :
     ext; simp [TensorProduct.finsuppRight_apply_tmul]
 
 lemma finsuppTensorRight_apply_tmul {α : Type w'} [DecidableEq α] (v : V) (f : α →₀ W) :
-    finsuppTensorRight σ ρ α (v ⊗ₜ f) = f.sum fun i w ↦ Finsupp.single i (v ⊗ₜ w) := by
+    finsuppTensorRight σ ρ α (v ⊗ₜ f) = f.sum fun i w ↦ Finsupp.single i (v ⊗ₜ[k] w) := by
   simp [finsuppTensorRight, TensorProduct.finsuppRight_apply_tmul]
 
 @[simp]

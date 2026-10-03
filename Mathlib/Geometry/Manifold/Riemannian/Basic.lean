@@ -211,15 +211,15 @@ open scoped NNReal
 variable [RiemannianBundle (fun (x : M) ↦ TangentSpace% x)]
   [IsManifold I 1 M] [IsContinuousRiemannianBundle E (fun (x : M) ↦ TangentSpace% x)]
 
-/-- Register on the tangent space to a normed vector space the same `NormedAddCommGroup` structure
+/-- Register on the tangent space to a normed vector space the same `NormedAddGroup` structure
 as in the vector space.
 
 Should not be a global instance, as it does not coincide definitionally with the Riemannian
 structure for inner product spaces, but can be activated locally. -/
 @[instance_reducible]
 def normedAddCommGroupTangentSpaceVectorSpace (x : E) :
-    NormedAddCommGroup (TangentSpace% x) :=
-  inferInstanceAs (NormedAddCommGroup E)
+    NormedAddGroup (TangentSpace% x) :=
+  inferInstanceAs (NormedAddGroup E)
 
 attribute [local instance] normedAddCommGroupTangentSpaceVectorSpace
 

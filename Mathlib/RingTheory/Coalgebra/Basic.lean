@@ -34,11 +34,11 @@ open scoped TensorProduct
 
 See `Coalgebra` for documentation. -/
 class CoalgebraStruct (R : Type u) (A : Type v)
-    [Semiring R] [IsMulCommutative R] [AddMonoid A] [IsAddCommutative A] [Module R A] where
+    [Semiring R] [hR : IsMulCommutative R] [AddMonoid A] [IsAddCommutative A] [Module R A] where
   /-- The comultiplication of the coalgebra -/
-  comul : A →ₗ[R] A ⊗[R] A
+  comul [hR] : A →ₗ[R] A ⊗[R] A
   /-- The counit of the coalgebra -/
-  counit : A →ₗ[R] R
+  counit [hR] : A →ₗ[R] R
 
 @[inherit_doc] scoped[RingTheory.LinearMap] notation "ε" => CoalgebraStruct.counit
 @[inherit_doc] scoped[RingTheory.LinearMap] notation "δ" => CoalgebraStruct.comul
@@ -77,17 +77,19 @@ end Coalgebra
 /-- A coalgebra over a commutative (semi)ring `R` is an `R`-module equipped with a coassociative
 comultiplication `Δ` and a counit `ε` obeying the left and right counitality laws. -/
 class Coalgebra (R : Type u) (A : Type v)
-    [Semiring R] [IsMulCommutative R] [AddMonoid A] [IsAddCommutative A] [Module R A] extends CoalgebraStruct R A where
+    [Semiring R] [hR : IsMulCommutative R] [AddMonoid A] [IsAddCommutative A] [Module R A]
+    extends CoalgebraStruct R A where
   /-- The comultiplication is coassociative -/
-  coassoc : TensorProduct.assoc R A A A ∘ₗ comul.rTensor A ∘ₗ comul = comul.lTensor A ∘ₗ comul
+  coassoc [hR] : TensorProduct.assoc R A A A ∘ₗ comul.rTensor A ∘ₗ comul = comul.lTensor A ∘ₗ comul
   /-- The counit satisfies the left counitality law -/
-  rTensor_counit_comp_comul : counit.rTensor A ∘ₗ comul = TensorProduct.mk R _ _ 1
+  rTensor_counit_comp_comul [hR] : counit.rTensor A ∘ₗ comul = TensorProduct.mk R _ _ 1
   /-- The counit satisfies the right counitality law -/
-  lTensor_counit_comp_comul : counit.lTensor A ∘ₗ comul = (TensorProduct.mk R _ _).flip 1
+  lTensor_counit_comp_comul [hR] : counit.lTensor A ∘ₗ comul = (TensorProduct.mk R _ _).flip 1
 
 namespace Coalgebra
 variable {R : Type u} {A : Type v} {ι : Type*} {κ Λ : ι → Type*}
-variable [Semiring R] [IsMulCommutative R] [AddMonoid A] [IsAddCommutative A] [Module R A] [Coalgebra R A] {a : A}
+variable [Semiring R] [IsMulCommutative R] [AddMonoid A] [IsAddCommutative A] [Module R A]
+  [Coalgebra R A] {a : A}
 
 /-- The indexing type of a representation of `comul a` -/
 @[nolint unusedArguments, deprecated "The indexing type is now unbundled" (since := "2026-05-31")]
@@ -180,11 +182,11 @@ lemma lift_lsmul_comp_counit_comp_comul :
   ext
   simp [this]
 
-variable (R A) in
 /-- A coalgebra `A` is cocommutative if its comultiplication `δ : A → A ⊗ A` commutes with the
 swapping `β : A ⊗ A ≃ A ⊗ A` of the factors in the tensor product. -/
-class IsCocomm where
-  protected comm_comp_comul : (TensorProduct.comm R A A).comp comul = comul
+class IsCocomm (R : Type u) (A : Type v) [Semiring R] [hR : IsMulCommutative R] [AddMonoid A]
+    [IsAddCommutative A] [Module R A] [Coalgebra R A] : Prop where
+  protected comm_comp_comul [hR] : (TensorProduct.comm R A A).comp comul = comul
 
 variable [IsCocomm R A]
 
@@ -437,7 +439,7 @@ end Finsupp
 
 namespace Pi
 variable {R n : Type*} [Semiring R] [IsMulCommutative R] [Fintype n] [DecidableEq n]
-  {A : n → Type*} [Π i, AddCommMonoid (A i)] [Π i, Module R (A i)]
+  {A : n → Type*} [Π i, AddMonoid (A i)] [Π i, IsAddCommutative (A i)] [Π i, Module R (A i)]
 
 open TensorProduct LinearMap
 

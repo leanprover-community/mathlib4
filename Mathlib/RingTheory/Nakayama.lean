@@ -128,7 +128,7 @@ theorem sup_eq_sup_smul_of_le_smul_of_le_jacobson {I J : Ideal R} {N N' : Submod
   have : (I • N').map N.mkQ = N'.map N.mkQ := by
     simpa only [← h_comap.eq_iff, comap_map_mkQ, sup_comm, eq_comm] using hNN'
   have :=
-    @Submodule.eq_smul_of_le_smul_of_le_jacobson _ _ _ _ _ I J (N'.map N.mkQ) (hN'.map _)
+    @Submodule.eq_smul_of_le_smul_of_le_jacobson _ _ _ _ _ _ _ I J (N'.map N.mkQ) (hN'.map _)
       (by rw [← map_smul'', this]) hIJ
   rwa [← map_smul'', ← h_comap.eq_iff, comap_map_eq, comap_map_eq, Submodule.ker_mkQ, sup_comm,
     sup_comm (b := N)] at this

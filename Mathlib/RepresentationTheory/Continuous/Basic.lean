@@ -194,9 +194,12 @@ instance : AddZeroClass (π₁ →ⁱL π₂) :=
   fast_instance% toContinuousLinearMap_injective.addZeroClass _
     toContinuousLinearMap_zero toContinuousLinearMap_add
 
-instance : AddCommSemigroup (π₁ →ⁱL π₂) :=
-  fast_instance% toContinuousLinearMap_injective.addCommSemigroup _
+instance : AddSemigroup (π₁ →ⁱL π₂) :=
+  fast_instance% toContinuousLinearMap_injective.addSemigroup _
     toContinuousLinearMap_add
+
+instance : IsAddCommutative (π₁ →ⁱL π₂) :=
+  toContinuousLinearMap_injective.isAddCommutative _ toContinuousLinearMap_add
 
 instance : Neg (π₁ →ⁱL π₂) where
   neg f := ⟨-f.toContinuousLinearMap, by simp [f.2]⟩
@@ -253,8 +256,8 @@ lemma comp_smul {S : Type*} [Monoid S] [DistribMulAction S U] [SMulCommClass R S
     (s : S) (f : π₂ →ⁱL π₃) (g : π₁ →ⁱL π₂) : f.comp (s • g) = s • (f.comp g) := by
   ext; simp
 
-instance : AddCommGroup (π₁ →ⁱL π₂) :=
-  fast_instance% toContinuousLinearMap_injective.addCommGroup _ toContinuousLinearMap_zero
+instance : AddGroup (π₁ →ⁱL π₂) :=
+  fast_instance% toContinuousLinearMap_injective.addGroup _ toContinuousLinearMap_zero
     toContinuousLinearMap_add toContinuousLinearMap_neg toContinuousLinearMap_sub
     (fun _ _ ↦ toContinuousLinearMap_smul _ _) (fun _ _ ↦ toContinuousLinearMap_smul _ _)
 

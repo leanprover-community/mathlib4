@@ -69,7 +69,7 @@ def PadicInt.subring : Subring ℚ_[p] where
 
 /-- The `p`-adic integers `ℤ_[p]` are the `p`-adic numbers with norm `≤ 1`. -/
 def PadicInt : Type := PadicInt.subring p
-deriving CommRing
+deriving Ring, IsMulCommutative
 
 /-- The ring of `p`-adic integers. -/
 notation "ℤ_[" p "]" => PadicInt p
@@ -207,7 +207,7 @@ instance : Norm ℤ_[p] := ⟨fun z => ‖(z : ℚ_[p])‖⟩
 variable {p} in
 theorem norm_def {z : ℤ_[p]} : ‖z‖ = ‖(z : ℚ_[p])‖ := rfl
 
-instance : NormedCommRing ℤ_[p] where
+instance : NormedRing ℤ_[p] where
   dist_eq := by
     rintro ⟨x, hx⟩ ⟨y, hy⟩
     exact dist_eq_norm_neg_add x y

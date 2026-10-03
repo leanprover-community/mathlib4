@@ -207,7 +207,7 @@ lemma exists_derivative_mul_eq_and_isIntegral_coeff
   have := (algebraMap S B).domain_nontrivial
   obtain ⟨y, rfl⟩ := hφ y
   -- Consider the universal extension `S'` of `S` that splits `f`, so that `f = ∏ᵢ X - aᵢ`.
-  obtain ⟨S', _, _, _, _, _, hS'⟩ := hf.exists_splits_map
+  obtain ⟨S', _, _, _, _, _, _, hS'⟩ := hf.exists_splits_map
   obtain ⟨m, hm⟩ := Polynomial.splits_iff_exists_multiset.mp hS'
   simp only [hf.map _, Monic.leadingCoeff, map_one, one_mul] at hm
   algebraize [(algebraMap S S').comp (algebraMap R S)]

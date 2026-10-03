@@ -100,9 +100,9 @@ protected abbrev semigroup [Semigroup β] [IsMulApply F α β] : Semigroup F :=
 commutative semigroup. -/
 @[to_additive /-- A `FunLike` type that satisfies `(f + g) x = f x + g x` is a commatative additive
 semigroup if `β` is a commatative additive semigroup. -/]
-protected abbrev commSemigroup [Semigroup β] [IsMulCommutative β] [IsMulApply F α β] :
-    CommSemigroup F :=
-  DFunLike.coe_injective.commSemigroup (fun (f : F) ↦ (f : α → β)) coe_mul
+protected theorem commSemigroup [Semigroup β] [IsMulCommutative β] [IsMulApply F α β] :
+    IsMulCommutative F :=
+  DFunLike.coe_injective.isMulCommutative (fun (f : F) ↦ (f : α → β)) coe_mul
 
 /-- A `FunLike` type that satisfies `(f * g) x = f x * g x` has left cancellative multiplication if
 `β` has left cancellative multiplication. -/
@@ -192,18 +192,18 @@ protected abbrev cancelMonoid [CancelMonoid β] [IsOneApply F α β] [IsMulApply
 is a commutative monoid if `β` is a commutative monoid. -/
 @[to_additive /-- A `FunLike` type that satisfies `(f + g) x = f x + g x`, `0 x = 0`, and
 `(n • f) x = n • f x` is a commutative additive monoid if `β` is a commutative additive monoid. -/]
-protected abbrev commMonoid [Monoid β] [IsMulCommutative β] [IsOneApply F α β] [IsMulApply F α β]
-    [IsPowApply ℕ F α β] : CommMonoid F :=
-  DFunLike.coe_injective.commMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_pow
+protected theorem commMonoid [Monoid β] [IsMulCommutative β] [IsOneApply F α β]
+    [IsMulApply F α β] [IsPowApply ℕ F α β] : IsMulCommutative F :=
+  DFunLike.coe_injective.isMulCommutative (fun (f : F) ↦ (f : α → β)) coe_mul
 
 /-- A `FunLike` type that satisfies `(f * g) x = f x * g x`, `1 x = 1`, and `(f ^ n) x = f x ^ n`
 is a cancel commutative monoid if `β` is a cancel commutative monoid. -/
 @[to_additive /-- A `FunLike` type that satisfies `(f + g) x = f x + g x`, `0 x = 0`, and
 `(n • f) x = n • f x` is a cancel commutative additive monoid if `β` is a cancel commutative
 additive monoid. -/]
-protected abbrev cancelCommMonoid [CancelMonoid β] [IsMulCommutative β] [IsOneApply F α β] [IsMulApply F α β]
-    [IsPowApply ℕ F α β] : CancelCommMonoid F :=
-  DFunLike.coe_injective.cancelCommMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_pow
+protected theorem cancelCommMonoid [CancelMonoid β] [IsMulCommutative β] [IsOneApply F α β]
+    [IsMulApply F α β] [IsPowApply ℕ F α β] : IsMulCommutative F :=
+  DFunLike.coe_injective.isMulCommutative (fun (f : F) ↦ (f : α → β)) coe_mul
 
 variable [Inv F]
 
@@ -251,11 +251,10 @@ protected abbrev divisionMonoid [DivisionMonoid β] [IsOneApply F α β] [IsMulA
 /-- A `FunLike` type is a division commutative monoid if `β` is a division commutative monoid. -/
 @[to_additive subtractionCommMonoid /-- A `FunLike` type is a subtraction commutative monoid if `β`
 is a subtraction commutative monoid. -/]
-protected abbrev divisionCommMonoid [DivisionMonoid β] [IsMulCommutative β] [IsOneApply F α β] [IsMulApply F α β]
-    [IsInvApply F α β] [IsDivApply F α β] [IsPowApply ℕ F α β] [IsPowApply ℤ F α β] :
-    DivisionCommMonoid F :=
-  DFunLike.coe_injective.divisionCommMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_inv
-    coe_div coe_pow coe_pow
+protected theorem divisionCommMonoid [DivisionMonoid β] [IsMulCommutative β] [IsOneApply F α β]
+    [IsMulApply F α β] [IsInvApply F α β] [IsDivApply F α β] [IsPowApply ℕ F α β]
+    [IsPowApply ℤ F α β] : IsMulCommutative F :=
+  DFunLike.coe_injective.isMulCommutative (fun (f : F) ↦ (f : α → β)) coe_mul
 
 /-- A `FunLike` type is a group if `β` is a group. -/
 @[to_additive /-- A `FunLike` type is an additive group if `β` is an additive group. -/]
@@ -268,11 +267,10 @@ protected abbrev group [Group β] [IsOneApply F α β] [IsMulApply F α β] [IsI
 /-- A `FunLike` type is a commutative group if `β` is a commutative group. -/
 @[to_additive /-- A `FunLike` type is an additive commutative group if `β` is an additive
 commutative group. -/]
-protected abbrev commGroup [Group β] [IsMulCommutative β] [IsOneApply F α β] [IsMulApply F α β] [IsInvApply F α β]
-    [IsDivApply F α β] [IsPowApply ℕ F α β] [IsPowApply ℤ F α β] :
-    CommGroup F :=
-  DFunLike.coe_injective.commGroup (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_inv coe_div
-    coe_pow coe_pow
+protected theorem commGroup [Group β] [IsMulCommutative β] [IsOneApply F α β] [IsMulApply F α β]
+    [IsInvApply F α β] [IsDivApply F α β] [IsPowApply ℕ F α β] [IsPowApply ℤ F α β] :
+    IsMulCommutative F :=
+  DFunLike.coe_injective.isMulCommutative (fun (f : F) ↦ (f : α → β)) coe_mul
 
 end GroupInstances
 

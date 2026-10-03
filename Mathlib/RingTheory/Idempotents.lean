@@ -573,19 +573,13 @@ instance [NonUnitalSemiring R] (idem : IsIdempotentElem e) : Semiring idem.Corne
   one_mul r := Subtype.ext ((Subsemigroup.mem_corner_iff idem).mp r.2).1
   mul_one r := Subtype.ext ((Subsemigroup.mem_corner_iff idem).mp r.2).2
 
-instance [NonUnitalSemiring R] [IsMulCommutative R] (idem : IsIdempotentElem e) : CommSemiring idem.Corner where
-  __ : Semiring idem.Corner := inferInstance
-  __ : NonUnitalCommSemiring idem.Corner :=
-    inferInstanceAs <| NonUnitalCommSemiring (NonUnitalSubsemiring.corner e)
+instance [NonUnitalSemiring R] [IsMulCommutative R] (idem : IsIdempotentElem e) :
+    IsMulCommutative idem.Corner :=
+  ⟨⟨fun a b => Subtype.ext (mul_comm a.1 b.1)⟩⟩
 
 instance [NonUnitalRing R] (idem : IsIdempotentElem e) : Ring idem.Corner where
   __ : Semiring idem.Corner := inferInstance
   __ : NonUnitalRing idem.Corner := inferInstanceAs <| NonUnitalRing (NonUnitalRing.corner e)
-
-instance [NonUnitalRing R] [IsMulCommutative R] (idem : IsIdempotentElem e) : CommRing idem.Corner where
-  __ : Ring idem.Corner := inferInstance
-  __ : NonUnitalCommRing idem.Corner :=
-    inferInstanceAs <| NonUnitalCommRing (NonUnitalRing.corner e)
 
 variable {I : Type*} [Fintype I] {e : I → R}
 

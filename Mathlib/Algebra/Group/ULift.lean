@@ -79,8 +79,8 @@ instance semigroup [Semigroup α] : Semigroup (ULift α) :=
   (MulEquiv.ulift.injective.semigroup _) fun _ _ => rfl
 
 @[to_additive]
-instance commSemigroup [Semigroup α] [IsMulCommutative α] : CommSemigroup (ULift α) :=
-  (Equiv.ulift.injective.commSemigroup _) fun _ _ => rfl
+instance isMulCommutative [Mul α] [IsMulCommutative α] : IsMulCommutative (ULift α) :=
+  Equiv.ulift.injective.isMulCommutative _ fun _ _ => rfl
 
 @[to_additive]
 instance mulOneClass [MulOneClass α] : MulOneClass (ULift α) :=
@@ -91,10 +91,6 @@ instance monoid [Monoid α] : Monoid (ULift α) :=
   Equiv.ulift.injective.monoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
 @[to_additive]
-instance commMonoid [Monoid α] [IsMulCommutative α] : CommMonoid (ULift α) :=
-  Equiv.ulift.injective.commMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
-
-@[to_additive]
 instance divInvMonoid [DivInvMonoid α] : DivInvMonoid (ULift α) :=
   Equiv.ulift.injective.divInvMonoid _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
@@ -102,11 +98,6 @@ instance divInvMonoid [DivInvMonoid α] : DivInvMonoid (ULift α) :=
 @[to_additive]
 instance group [Group α] : Group (ULift α) :=
   Equiv.ulift.injective.group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
-
-@[to_additive]
-instance commGroup [Group α] [IsMulCommutative α] : CommGroup (ULift α) :=
-  Equiv.ulift.injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
 @[to_additive]
@@ -128,10 +119,6 @@ instance rightCancelMonoid [RightCancelMonoid α] : RightCancelMonoid (ULift α)
 @[to_additive]
 instance cancelMonoid [CancelMonoid α] : CancelMonoid (ULift α) :=
   Equiv.ulift.injective.cancelMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
-
-@[to_additive]
-instance cancelCommMonoid [CancelMonoid α] [IsMulCommutative α] : CancelCommMonoid (ULift α) :=
-  Equiv.ulift.injective.cancelCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
 instance nontrivial [Nontrivial α] : Nontrivial (ULift α) :=
   Equiv.ulift.symm.injective.nontrivial

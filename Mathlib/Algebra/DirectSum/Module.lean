@@ -568,7 +568,7 @@ section Congr
 
 variable {R : Type*} [Semiring R]
     {ι : Type*}
-    {N : ι → Type*} [(i : ι) → AddCommMonoid (N i)] [(i : ι) → Module R (N i)]
+    {N : ι → Type*} [(i : ι) → AddMonoid (N i)] [(i : ι) → IsAddCommutative (N i)] [(i : ι) → Module R (N i)]
     {P : ι → Type*} [∀ i, AddMonoid (P i)] [∀ i, IsAddCommutative (P i)] [∀ i, Module R (P i)]
 
 /-- Direct sums of isomorphic additive groups are isomorphic. -/

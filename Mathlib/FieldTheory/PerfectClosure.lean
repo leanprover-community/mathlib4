@@ -151,7 +151,7 @@ theorem mk_mul_mk (x y : ℕ × K) :
       mk K p (x.1 + y.1, (frobenius K p)^[y.1] x.2 * (frobenius K p)^[x.1] y.2) :=
   rfl
 
-instance instCommMonoid : CommMonoid (PerfectClosure K p) :=
+instance instCommMonoid : Monoid (PerfectClosure K p) :=
   { (inferInstance : Mul (PerfectClosure K p)) with
     mul_assoc := fun e f g =>
       Quot.inductionOn e fun ⟨m, x⟩ =>
@@ -168,11 +168,13 @@ instance instCommMonoid : CommMonoid (PerfectClosure K p) :=
     mul_one := fun e =>
       Quot.inductionOn e fun ⟨n, x⟩ =>
         congr(Quot.mk _ $(by
-          simp only [iterate_map_one, iterate_zero_apply, mul_one, add_zero]))
-    mul_comm := fun e f =>
+          simp only [iterate_map_one, iterate_zero_apply, mul_one, add_zero])) }
+
+instance instIsMulCommutative : IsMulCommutative (PerfectClosure K p) :=
+  ⟨⟨fun e f =>
       Quot.inductionOn e fun ⟨m, x⟩ =>
         Quot.inductionOn f fun ⟨n, y⟩ =>
-          congr(Quot.mk _ $(by simp only [add_comm, mul_comm])) }
+          congr(Quot.mk _ $(by simp only [add_comm, mul_comm]))⟩⟩
 
 theorem one_def : (1 : PerfectClosure K p) = mk K p (0, 1) :=
   rfl
@@ -260,7 +262,7 @@ theorem R.sound (m n : ℕ) (x y : K) (H : (frobenius K p)^[m] x = y) :
     apply Quot.sound
     apply R.intro
 
-instance instAddCommGroup : AddCommGroup (PerfectClosure K p) :=
+instance instAddCommGroup : AddGroup (PerfectClosure K p) :=
   { (inferInstance : Add (PerfectClosure K p)),
     (inferInstance : Neg (PerfectClosure K p)) with
     add_assoc := fun e f g =>
@@ -281,15 +283,17 @@ instance instAddCommGroup : AddCommGroup (PerfectClosure K p) :=
     neg_add_cancel := fun e =>
       Quot.inductionOn e fun ⟨n, x⟩ => by
         simp only [quot_mk_eq_mk, neg_mk, mk_add_mk, iterate_map_neg, neg_add_cancel, mk_zero_right]
-    add_comm := fun e f =>
-      Quot.inductionOn e fun ⟨m, x⟩ =>
-        Quot.inductionOn f fun ⟨n, y⟩ => congr(Quot.mk _ $(by simp only [add_comm]))
     nsmul := nsmulRec
     zsmul := zsmulRec }
 
-instance instCommRing : CommRing (PerfectClosure K p) :=
-  { instAddCommGroup K p, AddMonoidWithOne.unary,
-    (inferInstance : CommMonoid (PerfectClosure K p)) with
+instance instIsAddCommutative : IsAddCommutative (PerfectClosure K p) :=
+  ⟨⟨fun e f =>
+      Quot.inductionOn e fun ⟨m, x⟩ =>
+        Quot.inductionOn f fun ⟨n, y⟩ => congr(Quot.mk _ $(by simp only [add_comm]))⟩⟩
+
+instance instCommRing : Ring (PerfectClosure K p) :=
+  { instAddCommGroup K p, AddMonoidWithOne.unary, instIsAddCommutative K p,
+    (inferInstance : Monoid (PerfectClosure K p)) with
     zero_mul := fun a => by
       refine Quot.inductionOn a fun ⟨m, x⟩ => ?_
       rw [zero_def, quot_mk_eq_mk, mk_mul_mk]
@@ -497,7 +501,7 @@ instance instDivisionRing : DivisionRing (PerfectClosure K p) where
 
 instance instField : Field (PerfectClosure K p) :=
   { (inferInstance : DivisionRing (PerfectClosure K p)),
-    (inferInstance : CommRing (PerfectClosure K p)) with }
+    (inferInstance : IsMulCommutative (PerfectClosure K p)) with }
 
 instance instPerfectField : PerfectField (PerfectClosure K p) := PerfectRing.toPerfectField _ p
 

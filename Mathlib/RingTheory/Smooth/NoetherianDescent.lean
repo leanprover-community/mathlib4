@@ -25,7 +25,8 @@ open TensorProduct MvPolynomial
 namespace Algebra.Smooth
 
 variable {R : Type*} [Ring R] [IsMulCommutative R]
-variable {A : Type u} {B : Type*} [Ring A] [IsMulCommutative A] [Algebra R A] [Ring B] [IsMulCommutative B] [Algebra A B]
+variable {A : Type u} {B : Type*} [Ring A] [IsMulCommutative A] [Algebra R A]
+  [Ring B] [IsMulCommutative B] [Algebra A B]
 
 variable (A B) in
 /-- (Implementation detail): If `S` is an `R`-algebra with presentation `P`
@@ -62,8 +63,11 @@ noncomputable def subalgebra (D : DescentAux A B) : Subalgebra R A :=
 
 -- Note: `Set` has no computational content, but Lean still attempts to compile it.
 -- See https://github.com/leanprover/lean4/issues/14084.
-noncomputable instance : CommRing (D.subalgebra R) :=
-  inferInstanceAs <| CommRing (Algebra.adjoin _ _)
+noncomputable instance : Ring (D.subalgebra R) :=
+  inferInstanceAs <| Ring (Algebra.adjoin _ _)
+
+instance : IsMulCommutative (D.subalgebra R) :=
+  inferInstanceAs <| IsMulCommutative (Algebra.adjoin _ _)
 
 -- Note: `Set` has no computational content, but Lean still attempts to compile it.
 -- See https://github.com/leanprover/lean4/issues/14084.
@@ -104,7 +108,7 @@ instance hasCoeffs : D.P.HasCoeffs (D.subalgebra R) where
     problem in the new canonicalizer; a minimization would help. The original proof was:
     `grind [subalgebra, Subalgebra.setRange_algebraMap, Algebra.subset_adjoin]` -/
     rw [Subalgebra.setRange_algebraMap]
-    grind [subalgebra, Algebra.subset_adjoin]
+    exact Set.subset_union_left.trans (Algebra.subset_adjoin (R := R))
 
 set_option quotPrecheck false in
 local notation "f₀" =>
@@ -121,7 +125,8 @@ lemma coeffs_h_subset (i) : ↑(D.h i).coeffs ⊆ Set.range ⇑(algebraMap (D.su
   problem in the new canonicalizer; a minimization would help. The original proof was:
   `grind [subalgebra, Subalgebra.setRange_algebraMap, Algebra.subset_adjoin]` -/
   rw [Subalgebra.setRange_algebraMap]
-  grind [subalgebra, Algebra.subset_adjoin]
+  exact this.trans <| (Set.subset_union_left.trans <| Set.subset_union_left.trans
+    Set.subset_union_right).trans (Algebra.subset_adjoin (R := R))
 
 set_option backward.isDefEq.respectTransparency false in
 lemma coeffs_p_subset (i) :
@@ -137,7 +142,8 @@ lemma coeffs_p_subset (i) :
   `grind [MvPolynomial.mem_range_map_iff_coeffs_subset, subalgebra,
     Subalgebra.setRange_algebraMap, Algebra.subset_adjoin]` -/
   rw [MvPolynomial.mem_range_map_iff_coeffs_subset, Subalgebra.setRange_algebraMap]
-  grind [subalgebra, Algebra.subset_adjoin]
+  exact this.trans <| (Set.subset_union_right.trans Set.subset_union_right).trans
+    (Algebra.subset_adjoin (R := R))
 
 set_option backward.isDefEq.respectTransparency false in
 lemma coeffs_q_subset (i) :
@@ -153,7 +159,8 @@ lemma coeffs_q_subset (i) :
   `grind [MvPolynomial.mem_range_map_iff_coeffs_subset, subalgebra,
     Subalgebra.setRange_algebraMap, Algebra.subset_adjoin]` -/
   rw [MvPolynomial.mem_range_map_iff_coeffs_subset, Subalgebra.setRange_algebraMap]
-  grind [subalgebra, Algebra.subset_adjoin]
+  exact this.trans <| (Set.subset_union_right.trans <| Set.subset_union_left.trans
+    Set.subset_union_right).trans (Algebra.subset_adjoin (R := R))
 
 set_option backward.isDefEq.respectTransparency false in
 lemma exists_kerSquareLift_comp_eq_id :
@@ -212,7 +219,8 @@ Let `A` be an `R`-algebra. If `B` is a smooth `A`-algebra, there exists an
 See `Algebra.Smooth.exists_finiteType` for a version in terms of `Function.Injective`.
 -/
 public theorem exists_subalgebra_fg [Smooth A B] :
-    ∃ (A₀ : Subalgebra R A) (B₀ : Type u) (_ : CommRing B₀) (_ : Algebra A₀ B₀),
+    ∃ (A₀ : Subalgebra R A) (B₀ : Type u) (_ : Ring B₀) (_ : IsMulCommutative B₀)
+      (_ : Algebra A₀ B₀),
       A₀.FG ∧ Smooth A₀ B₀ ∧ Nonempty (B ≃ₐ[A] A ⊗[A₀] B₀) := by
   let P := Presentation.ofFinitePresentation A B
   let f : P.Ring →ₐ[A] B := IsScalarTower.toAlgHom _ _ _
@@ -248,7 +256,7 @@ public theorem exists_subalgebra_fg [Smooth A B] :
   have : P.HasCoeffs (D.subalgebra R) := D.hasCoeffs R
   obtain ⟨σ₀, hσ₀⟩ := D.exists_kerSquareLift_comp_eq_id R
   exact ⟨D.subalgebra R, P.ModelOfHasCoeffs (D.subalgebra R), inferInstance, inferInstance,
-    D.fg_subalgebra R, ⟨.of_split _ σ₀ hσ₀, inferInstance⟩,
+    inferInstance, D.fg_subalgebra R, ⟨.of_split _ σ₀ hσ₀, inferInstance⟩,
     ⟨(P.tensorModelOfHasCoeffsEquiv (D.subalgebra R)).symm⟩⟩
 
 /--
@@ -259,22 +267,24 @@ See `Algebra.Smooth.exists_subalgebra_fg` for a version in terms of `Subalgebra`
 -/
 @[stacks 00TP]
 public theorem exists_finiteType [Smooth A B] :
-    ∃ (A₀ : Type u) (B₀ : Type u) (_ : CommRing A₀) (_ : CommRing B₀)
+    ∃ (A₀ : Type u) (B₀ : Type u) (_ : Ring A₀) (_ : IsMulCommutative A₀) (_ : Ring B₀)
+      (_ : IsMulCommutative B₀)
       (_ : Algebra R A₀) (_ : Algebra A₀ A) (_ : Algebra A₀ B₀),
       Function.Injective (algebraMap A₀ A) ∧ FiniteType R A₀ ∧ Smooth A₀ B₀ ∧
       Nonempty (B ≃ₐ[A] A ⊗[A₀] B₀) := by
-  obtain ⟨A₀, B₀, _, _, hA₀, _, _⟩ := exists_subalgebra_fg R A B
+  obtain ⟨A₀, B₀, _, _, _, hA₀, _, _⟩ := exists_subalgebra_fg R A B
   use A₀, B₀, inferInstance, inferInstance, inferInstance, inferInstance, inferInstance,
-    Subtype.val_injective, ⟨A₀.fg_top.mpr hA₀⟩, inferInstance
+    inferInstance, inferInstance, Subtype.val_injective, ⟨A₀.fg_top.mpr hA₀⟩, inferInstance
 
 public theorem _root_.Algebra.IsStandardSmoothOfRelativeDimension.exists_subalgebra_fg
     (n : ℕ) [IsStandardSmoothOfRelativeDimension n A B] :
-    ∃ (A₀ : Subalgebra R A) (B₀ : Type u) (_ : CommRing B₀) (_ : Algebra A₀ B₀),
+    ∃ (A₀ : Subalgebra R A) (B₀ : Type u) (_ : Ring B₀) (_ : IsMulCommutative B₀)
+      (_ : Algebra A₀ B₀),
       A₀.FG ∧ IsStandardSmoothOfRelativeDimension n A₀ B₀ ∧ Nonempty (B ≃ₐ[A] A ⊗[A₀] B₀) := by
   obtain ⟨ι, σ, _, _, P, hP⟩ := IsStandardSmoothOfRelativeDimension.out (n := n) (R := A) (S := B)
   let A₀ := Algebra.adjoin R P.coeffs
   have : P.HasCoeffs A₀ := ⟨by simp [A₀]⟩
-  exact ⟨A₀, (P.ModelOfHasCoeffs A₀:), inferInstance, inferInstance,
+  exact ⟨A₀, (P.ModelOfHasCoeffs A₀:), inferInstance, inferInstance, inferInstance,
     ⟨P.finite_coeffs.toFinset, by simp [A₀]⟩, ⟨_, _, _, inferInstance,
       P.ofHasCoeffs A₀, hP⟩, ⟨(P.tensorModelOfHasCoeffsEquiv A₀).symm⟩⟩
 
@@ -285,7 +295,8 @@ Let `A` be an `R`-algebra. If `B` is an etale `A`-algebra, there exists an
 -/
 @[stacks 00U2 "(8)"]
 public theorem _root_.Algebra.Etale.exists_subalgebra_fg [Etale A B] :
-    ∃ (A₀ : Subalgebra R A) (B₀ : Type u) (_ : CommRing B₀) (_ : Algebra A₀ B₀),
+    ∃ (A₀ : Subalgebra R A) (B₀ : Type u) (_ : Ring B₀) (_ : IsMulCommutative B₀)
+      (_ : Algebra A₀ B₀),
       A₀.FG ∧ Etale A₀ B₀ ∧ Nonempty (B ≃ₐ[A] A ⊗[A₀] B₀) := by
   simp only [Etale.iff_isStandardSmoothOfRelativeDimension_zero] at *
   exact IsStandardSmoothOfRelativeDimension.exists_subalgebra_fg ..

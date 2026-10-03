@@ -111,30 +111,32 @@ section Nonempty
 /-- A commutative ring can be constructed on any non-empty type.
 
 See also `Infinite.nonempty_field`. -/
-instance nonempty_commRing [Nonempty α] : Nonempty (CommRing α) := by
+instance nonempty_commRing [Nonempty α] : Nonempty (Σ' _ : Ring α, IsMulCommutative α) := by
   obtain hR | hR := finite_or_infinite α
   · obtain ⟨x⟩ := nonempty_fintype α
     have : NeZero (Fintype.card α) := ⟨by simp⟩
     classical
     obtain ⟨e⟩ := Fintype.truncEquivFin α
-    exact ⟨open scoped Fin.CommRing in e.commRing⟩
+    exact ⟨open scoped Fin.CommRing in ⟨e.ring, e.commRing⟩⟩
   · have ⟨e⟩ : Nonempty (α ≃ FreeCommRing α) := by simp [← Cardinal.eq]
-    exact ⟨e.commRing⟩
+    exact ⟨⟨e.ring, e.commRing⟩⟩
 
 @[simp]
-theorem nonempty_commRing_iff : Nonempty (CommRing α) ↔ Nonempty α :=
-  ⟨Nonempty.map (·.zero), fun _ => nonempty_commRing _⟩
+theorem nonempty_commRing_iff : Nonempty (Σ' _ : Ring α, IsMulCommutative α) ↔ Nonempty α :=
+  ⟨Nonempty.map (·.1.zero), fun _ => nonempty_commRing _⟩
 
 @[simp]
 theorem nonempty_ring_iff : Nonempty (Ring α) ↔ Nonempty α :=
-  ⟨Nonempty.map (·.zero), fun _ => (nonempty_commRing _).map (·.toRing)⟩
+  ⟨Nonempty.map (·.zero), fun _ => (nonempty_commRing _).map (·.1)⟩
 
 @[simp]
-theorem nonempty_commSemiring_iff : Nonempty (CommSemiring α) ↔ Nonempty α :=
-  ⟨Nonempty.map (·.zero), fun _ => (nonempty_commRing _).map (·.toCommSemiring)⟩
+theorem nonempty_commSemiring_iff :
+    Nonempty (Σ' _ : Semiring α, IsMulCommutative α) ↔ Nonempty α :=
+  ⟨Nonempty.map (·.1.zero), fun _ => (nonempty_commRing _).map fun r ↦
+    ⟨r.1.toSemiring, letI := r.1; r.2⟩⟩
 
 @[simp]
 theorem nonempty_semiring_iff : Nonempty (Semiring α) ↔ Nonempty α :=
-  ⟨Nonempty.map (·.zero), fun _ => (nonempty_commRing _).map (·.toSemiring)⟩
+  ⟨Nonempty.map (·.zero), fun _ => (nonempty_commRing _).map (·.1.toSemiring)⟩
 
 end Nonempty

@@ -50,7 +50,8 @@ namespace CStarAlgebra
 
 section Comm
 
-variable (A : Type*) [NonUnitalCStarAlgebra A] [IsMulCommutative A] [PartialOrder A] [StarOrderedRing A]
+variable (A : Type*) [NonUnitalCStarAlgebra A] [IsMulCommutative A] [PartialOrder A]
+  [StarOrderedRing A]
 
 open ContinuousMap WeakDual in
 /-- In a commutative C⋆-algebra, the positive part map `fun a ↦ a⁺` is monotone. -/
@@ -97,7 +98,7 @@ protected lemma Commute.posPart_mono {a b : A} (hab : Commute a b) (hle : a ≤ 
   lift a to S using h.1
   lift b to S using h.2
   have : (↑a⁺ : A) ≤ (↑b⁺ : A) := by simpa using CStarAlgebra.posPart_mono S hle
-  simp only [← NonUnitalStarSubalgebraClass.subtype_apply, CFC.posPart_def] at this ⊢
+  simp only [← NonUnitalStarSubalgebraClass.subtype_apply (R := ℂ), CFC.posPart_def] at this ⊢
   rwa [← NonUnitalStarAlgHomClass.map_cfcₙ .., ← NonUnitalStarAlgHomClass.map_cfcₙ ..]
 
 /-- The negative part map `fun a ↦ a⁻` is antitone on commuting selfadjoint elements in

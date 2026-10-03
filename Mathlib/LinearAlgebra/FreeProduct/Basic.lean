@@ -52,7 +52,8 @@ open scoped DirectSum
 
 /-- A variant of `DirectSum.induction_on` that uses `DirectSum.lof` instead of `.of` -/
 theorem induction_lon {R : Type*} [Semiring R] {ι : Type*} [DecidableEq ι]
-    {M : ι → Type*} [(i : ι) → AddCommMonoid <| M i] [(i : ι) → Module R (M i)]
+    {M : ι → Type*} [(i : ι) → AddMonoid <| M i] [(i : ι) → IsAddCommutative <| M i]
+    [(i : ι) → Module R (M i)]
     {motive : (⨁ i, M i) → Prop} (x : ⨁ i, M i)
     (zero : motive 0)
     (lof : ∀ i (x : M i), motive (lof R ι M i x))

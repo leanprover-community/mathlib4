@@ -64,7 +64,9 @@ def NormalClosure : Type _ := integralClosure S E
 
 local notation3 "T" => NormalClosure R S
 
-instance : CommRing T := inferInstanceAs (CommRing (integralClosure S E))
+instance : Ring T := inferInstanceAs (Ring (integralClosure S E))
+
+instance : IsMulCommutative T := inferInstanceAs (IsMulCommutative (integralClosure S E))
 
 instance : IsDomain T := inferInstanceAs (IsDomain (integralClosure S E))
 

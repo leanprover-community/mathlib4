@@ -135,7 +135,7 @@ theorem coe_toAddMonoidHom : ⇑f.toAddMonoidHom = f :=
   rfl
 
 theorem toAddMonoidHom_injective :
-    Function.Injective (@NormedAddGroupHom.toAddMonoidHom V₁ V₂ _ _) := fun f g h =>
+    Function.Injective (@NormedAddGroupHom.toAddMonoidHom V₁ V₂ _ _ _ _) := fun f g h =>
   coe_inj <| by rw [← coe_toAddMonoidHom f, ← coe_toAddMonoidHom g, h]
 
 @[simp]
@@ -499,13 +499,16 @@ theorem zsmul_apply (r : ℤ) (f : NormedAddGroupHom V₁ V₂) (v : V₁) : (r 
 
 
 /-- Homs between two given normed groups form a commutative additive group. -/
-instance toAddCommGroup : AddCommGroup (NormedAddGroupHom V₁ V₂) :=
-  coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+instance toAddCommGroup : AddGroup (NormedAddGroupHom V₁ V₂) :=
+  coe_injective.addGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     fun _ _ => rfl
+
+instance isAddCommutative : IsAddCommutative (NormedAddGroupHom V₁ V₂) :=
+  coe_injective.isAddCommutative _ fun _ _ => rfl
 
 /-- Normed group homomorphisms themselves form a seminormed group with respect to
 the operator norm. -/
-instance toSeminormedAddCommGroup : SeminormedAddCommGroup (NormedAddGroupHom V₁ V₂) :=
+instance toSeminormedAddCommGroup : SeminormedAddGroup (NormedAddGroupHom V₁ V₂) :=
   AddGroupSeminorm.toSeminormedAddCommGroup
     { toFun := opNorm
       map_zero' := opNorm_zero
@@ -515,7 +518,7 @@ instance toSeminormedAddCommGroup : SeminormedAddCommGroup (NormedAddGroupHom V�
 /-- Normed group homomorphisms themselves form a normed group with respect to
 the operator norm. -/
 instance toNormedAddCommGroup {V₁ V₂ : Type*} [NormedAddGroup V₁] [IsAddCommutative V₁] [NormedAddGroup V₂] [IsAddCommutative V₂] :
-    NormedAddCommGroup (NormedAddGroupHom V₁ V₂) :=
+    NormedAddGroup (NormedAddGroupHom V₁ V₂) :=
   AddGroupNorm.toNormedAddCommGroup
     { toFun := opNorm
       map_zero' := opNorm_zero
@@ -624,7 +627,7 @@ def incl (s : AddSubgroup V) : NormedAddGroupHom s V where
   map_add' _ _ := AddSubgroup.coe_add _ _ _
   bound' := ⟨1, fun v => by rw [one_mul, AddSubgroup.coe_norm]⟩
 
-theorem norm_incl {V' : AddSubgroup V} (x : V') : ‖incl _ x‖ = ‖x‖ :=
+theorem norm_incl {V' : AddSubgroup V} (x : V') : ‖incl V' x‖ = ‖x‖ :=
   rfl
 
 /-!### Kernel -/

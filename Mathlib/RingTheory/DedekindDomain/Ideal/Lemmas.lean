@@ -304,13 +304,13 @@ and the lcm is their infimum, and use this to instantiate `NormalizedGCDMonoid (
 @[simp]
 theorem sup_mul_inf (I J : Ideal A) : (I ⊔ J) * (I ⊓ J) = I * J := by
   let := UniqueFactorizationMonoid.toNormalizedGCDMonoid (Ideal A)
-  have hgcd : gcd I J = I ⊔ J := by
+  have hgcd : @gcd (Ideal A) inferInstance _ _ I J = I ⊔ J := by
     rw [gcd_eq_normalize _ _, normalize_eq]
     · rw [dvd_iff_le, sup_le_iff, ← dvd_iff_le, ← dvd_iff_le]
       exact ⟨gcd_dvd_left _ _, gcd_dvd_right _ _⟩
     · rw [dvd_gcd_iff, dvd_iff_le, dvd_iff_le]
       simp
-  have hlcm : lcm I J = I ⊓ J := by
+  have hlcm : @lcm (Ideal A) inferInstance _ _ I J = I ⊓ J := by
     rw [lcm_eq_normalize _ _, normalize_eq]
     · rw [lcm_dvd_iff, dvd_iff_le, dvd_iff_le]
       simp

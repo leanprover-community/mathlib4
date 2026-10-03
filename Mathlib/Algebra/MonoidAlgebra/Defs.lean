@@ -177,7 +177,7 @@ instance instDecidableEq [DecidableEq R] [DecidableEq M] : DecidableEq R[M] :=
 instance instAddMonoid : AddMonoid R[M] := fast_instance% coeffEquiv.addMonoid
 
 @[to_additive instAddCommMonoid]
-instance instAddCommMonoid : AddCommMonoid R[M] := fast_instance% coeffEquiv.addCommMonoid
+instance instAddCommMonoid : IsAddCommutative R[M] := coeffEquiv.addCommMonoid
 
 @[to_additive]
 instance instIsCancelAdd [IsCancelAdd R] : IsCancelAdd R[M] :=
@@ -304,7 +304,7 @@ instance smulZeroClass : SMulZeroClass A R[M] :=
 
 section
 -- Ensure that the different smul instances do not create a diamond.
-example : (smulZeroClass (A := ℕ) (R := R) (M := M)).smul = instAddCommMonoid.nsmul := by
+example : (smulZeroClass (A := ℕ) (R := R) (M := M)).smul = instAddMonoid.nsmul := by
   with_reducible_and_instances rfl
 
 -- Ensure that smul has good defeq properties
@@ -848,8 +848,8 @@ section CommSemiring
 variable [Semiring R] [IsMulCommutative R]
 
 @[to_additive (dont_translate := R)]
-instance nonUnitalCommSemiring [Semigroup M] [IsMulCommutative M] : NonUnitalCommSemiring R[M] where
-  mul_comm f g := by simp [mul_def, Finsupp.sum, mul_comm, f.coeff.support.sum_comm]
+instance nonUnitalCommSemiring [Semigroup M] [IsMulCommutative M] : IsMulCommutative R[M] where
+  is_comm.comm f g := by simp [mul_def, Finsupp.sum, mul_comm, f.coeff.support.sum_comm]
 
 @[to_additive (dont_translate := R)]
 lemma single_one_comm [MulOneClass M] (r : R) (f : R[M]) :
@@ -858,9 +858,6 @@ lemma single_one_comm [MulOneClass M] (r : R) (f : R[M]) :
 
 section CommMonoid
 variable [Monoid M] [IsMulCommutative M]
-
-@[to_additive (dont_translate := R)]
-instance commSemiring : CommSemiring R[M] where
 
 open Finset in
 @[to_additive (dont_translate := R) (attr := simp) prod_single]
@@ -880,8 +877,8 @@ end CommSemiring
 section Ring
 variable [Ring R]
 
-@[to_additive (dont_translate := R) addCommGroup]
-instance addCommGroup : AddCommGroup R[M] := fast_instance% coeffEquiv.addCommGroup
+@[to_additive (dont_translate := R) addGroup]
+instance addGroup : AddGroup R[M] := fast_instance% coeffEquiv.addGroup
 
 @[to_additive (attr := simp)]
 lemma coeff_neg (x : R[M]) : coeff (-x) = -coeff x := rfl
@@ -923,17 +920,6 @@ instance ring [Monoid M] : Ring R[M] where
 lemma neg_apply (m : M) (x : R[M]) : (-x).coeff m = -x.coeff m := rfl
 
 end Ring
-
-section CommRing
-variable [Ring R] [IsMulCommutative R]
-
-@[to_additive (dont_translate := R)]
-instance nonUnitalCommRing [Semigroup M] [IsMulCommutative M] : NonUnitalCommRing R[M] where
-
-@[to_additive (dont_translate := R)]
-instance commRing [Monoid M] [IsMulCommutative M] : CommRing R[M] where
-
-end CommRing
 end MonoidAlgebra
 
 /-! ### Additive monoids -/

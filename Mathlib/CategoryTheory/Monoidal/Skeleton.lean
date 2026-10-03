@@ -42,9 +42,12 @@ abbrev monoidOfSkeletalMonoidal (hC : Skeletal C) : Monoid C where
   mul_one X := hC ⟨ρ_ X⟩
   mul_assoc X Y Z := hC ⟨α_ X Y Z⟩
 
-/-- If `C` is braided and skeletal, it is a commutative monoid. -/
-abbrev commMonoidOfSkeletalBraided [BraidedCategory C] (hC : Skeletal C) : CommMonoid C :=
-  { monoidOfSkeletalMonoidal hC with mul_comm := fun X Y => hC ⟨β_ X Y⟩ }
+/-- If `C` is braided and skeletal, it is a commutative monoid: the multiplication of
+`monoidOfSkeletalMonoidal` is commutative. -/
+theorem commMonoidOfSkeletalBraided [BraidedCategory C] (hC : Skeletal C) :
+    let _ := monoidOfSkeletalMonoidal hC
+    IsMulCommutative C :=
+  by intros; exact ⟨⟨fun X Y => hC ⟨β_ X Y⟩⟩⟩
 
 namespace Skeleton
 
@@ -77,7 +80,7 @@ The skeleton of a braided monoidal category can be viewed as a commutative monoi
 multiplication is given by the tensor product, and satisfies the monoid axioms since it is a
 skeleton.
 -/
-noncomputable instance instCommMonoid [BraidedCategory C] : CommMonoid (Skeleton C) :=
+instance instCommMonoid [BraidedCategory C] : IsMulCommutative (Skeleton C) :=
   commMonoidOfSkeletalBraided (skeleton_isSkeleton _).skel
 
 end Skeleton

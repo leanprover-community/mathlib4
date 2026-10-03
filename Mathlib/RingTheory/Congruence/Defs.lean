@@ -373,25 +373,18 @@ instance [AddZeroClass R] [Mul R] (c : RingCon R) : AddZeroClass c.Quotient :=
 instance [AddSemigroup R] [Mul R] (c : RingCon R) : AddSemigroup c.Quotient :=
   inferInstanceAs <| AddSemigroup c.toAddCon.Quotient
 
-instance [Add R] [IsAddCommutative R] [Mul R] (c : RingCon R) : AddCommMagma c.Quotient :=
-  inferInstanceAs <| AddCommMagma c.toAddCon.Quotient
-
-instance [AddSemigroup R] [IsAddCommutative R] [Mul R] (c : RingCon R) : AddCommSemigroup c.Quotient :=
-  inferInstanceAs <| AddCommSemigroup c.toAddCon.Quotient
+/-- The additive commutativity of the quotient; this covers the quotients of additive
+commutative semigroups, monoids and groups. -/
+instance [Add R] [IsAddCommutative R] [Mul R] (c : RingCon R) : IsAddCommutative c.Quotient :=
+  inferInstanceAs <| IsAddCommutative c.toAddCon.Quotient
 
 instance [AddMonoid R] [Mul R] (c : RingCon R) : AddMonoid c.Quotient where
   nsmul n x := n • x
   __ : AddMonoid c.Quotient := inferInstanceAs <| AddMonoid c.toAddCon.Quotient
 
-instance [AddMonoid R] [IsAddCommutative R] [Mul R] (c : RingCon R) : AddCommMonoid c.Quotient :=
-  inferInstanceAs <| AddCommMonoid c.toAddCon.Quotient
-
 instance [AddGroup R] [Mul R] (c : RingCon R) : AddGroup c.Quotient where
   zsmul n x := n • x
   __ : AddGroup c.Quotient := inferInstanceAs <| AddGroup c.toAddCon.Quotient
-
-instance [AddGroup R] [IsAddCommutative R] [Mul R] (c : RingCon R) : AddCommGroup c.Quotient :=
-  inferInstanceAs <| AddCommGroup c.toAddCon.Quotient
 
 end Add
 
@@ -403,19 +396,15 @@ instance [Add R] [MulOneClass R] (c : RingCon R) : MulOneClass c.Quotient :=
 instance [Add R] [Semigroup R] (c : RingCon R) : Semigroup c.Quotient :=
   inferInstanceAs <| Semigroup c.toCon.Quotient
 
-instance [Add R] [Mul R] [IsMulCommutative R] (c : RingCon R) : CommMagma c.Quotient :=
-  inferInstanceAs <| CommMagma c.toCon.Quotient
-
-instance [Add R] [Semigroup R] [IsMulCommutative R] (c : RingCon R) : CommSemigroup c.Quotient :=
-  inferInstanceAs <| CommSemigroup c.toCon.Quotient
+/-- The multiplicative commutativity of the quotient; this covers the quotients of commutative
+semigroups, monoids and (non-unital, non-associative) commutative (semi)rings. -/
+instance [Add R] [Mul R] [IsMulCommutative R] (c : RingCon R) : IsMulCommutative c.Quotient :=
+  inferInstanceAs <| IsMulCommutative c.toCon.Quotient
 
 instance [Add R] [Monoid R] (c : RingCon R) : Monoid c.Quotient := fast_instance%
   { __ : Monoid c.toCon.Quotient := inferInstanceAs _
     -- see https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/inferInstanceAs.20creates.20non-reducible.20diamonds/near/603969174
     npow n x := x ^ n }
-
-instance [Add R] [Monoid R] [IsMulCommutative R] (c : RingCon R) : CommMonoid c.Quotient :=
-  inferInstanceAs <| CommMonoid c.toCon.Quotient
 
 end Mul
 
@@ -424,35 +413,16 @@ instance [NonUnitalNonAssocSemiring R] (c : RingCon R) :
   Function.Surjective.nonUnitalNonAssocSemiring _ Quotient.mk''_surjective rfl
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
-instance [NonUnitalNonAssocSemiring R] [IsMulCommutative R] (c : RingCon R) :
-    NonUnitalNonAssocCommSemiring c.Quotient := fast_instance%
-  Function.Surjective.nonUnitalNonAssocCommSemiring _ Quotient.mk''_surjective rfl
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
-
 instance [NonAssocSemiring R] (c : RingCon R) : NonAssocSemiring c.Quotient := fast_instance%
   Function.Surjective.nonAssocSemiring _ Quotient.mk''_surjective rfl rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
-
-instance [NonAssocSemiring R] [IsMulCommutative R] (c : RingCon R) :
-    NonAssocCommSemiring c.Quotient := fast_instance%
-  Function.Surjective.nonAssocCommSemiring _ Quotient.mk''_surjective rfl rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
 instance [NonUnitalSemiring R] (c : RingCon R) : NonUnitalSemiring c.Quotient := fast_instance%
   Function.Surjective.nonUnitalSemiring _ Quotient.mk''_surjective rfl (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
-instance [NonUnitalSemiring R] [IsMulCommutative R] (c : RingCon R) :
-    NonUnitalCommSemiring c.Quotient := fast_instance%
-  Function.Surjective.nonUnitalCommSemiring _ Quotient.mk''_surjective rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
-
 instance [Semiring R] (c : RingCon R) : Semiring c.Quotient := fast_instance%
   Function.Surjective.semiring _ Quotient.mk''_surjective rfl rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
-
-instance [Semiring R] [IsMulCommutative R] (c : RingCon R) : CommSemiring c.Quotient := fast_instance%
-  Function.Surjective.commSemiring _ Quotient.mk''_surjective rfl rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
 instance [NonUnitalNonAssocRing R] (c : RingCon R) :
@@ -460,18 +430,8 @@ instance [NonUnitalNonAssocRing R] (c : RingCon R) :
   Function.Surjective.nonUnitalNonAssocRing _ Quotient.mk''_surjective rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
-instance [NonUnitalNonAssocRing R] [IsMulCommutative R] (c : RingCon R) :
-    NonUnitalNonAssocCommRing c.Quotient := fast_instance%
-  Function.Surjective.nonUnitalNonAssocCommRing _ Quotient.mk''_surjective rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
-
 instance [NonAssocRing R] (c : RingCon R) : NonAssocRing c.Quotient := fast_instance%
   Function.Surjective.nonAssocRing _ Quotient.mk''_surjective rfl rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) fun _ => rfl
-
-instance [NonAssocRing R] [IsMulCommutative R] (c : RingCon R) : NonAssocCommRing c.Quotient := fast_instance%
-  Function.Surjective.nonAssocCommRing _ Quotient.mk''_surjective rfl rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ => rfl) fun _ => rfl
 
@@ -479,17 +439,8 @@ instance [NonUnitalRing R] (c : RingCon R) : NonUnitalRing c.Quotient := fast_in
   Function.Surjective.nonUnitalRing _ Quotient.mk''_surjective rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
-instance [NonUnitalRing R] [IsMulCommutative R] (c : RingCon R) : NonUnitalCommRing c.Quotient := fast_instance%
-  Function.Surjective.nonUnitalCommRing _ Quotient.mk''_surjective rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
-
 instance [Ring R] (c : RingCon R) : Ring c.Quotient := fast_instance%
   Function.Surjective.ring _ Quotient.mk''_surjective rfl rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
-
-instance [Ring R] [IsMulCommutative R] (c : RingCon R) : CommRing c.Quotient := fast_instance%
-  Function.Surjective.commRing _ Quotient.mk''_surjective rfl rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
 

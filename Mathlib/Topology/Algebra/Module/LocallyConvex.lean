@@ -170,30 +170,30 @@ variable {ι : Sort*} {𝕜 E F : Type*} [Semiring 𝕜] [PartialOrder 𝕜]
   [AddMonoid F] [IsAddCommutative F] [Module 𝕜 F]
 
 protected theorem LocallyConvexSpace.sInf {ts : Set (TopologicalSpace E)}
-    (h : ∀ t ∈ ts, @LocallyConvexSpace 𝕜 E _ _ _ _ t) :
-    @LocallyConvexSpace 𝕜 E _ _ _ _ (sInf ts) := by
+    (h : ∀ t ∈ ts, @LocallyConvexSpace 𝕜 E _ _ _ _ _ t) :
+    @LocallyConvexSpace 𝕜 E _ _ _ _ _ (sInf ts) := by
   let : TopologicalSpace E := sInf ts
   refine .ofBases 𝕜 E (fun _ => fun If : Set ts × (ts → Set E) => ⋂ i ∈ If.1, If.2 i)
       (fun x => fun If : Set ts × (ts → Set E) =>
         If.1.Finite ∧ ∀ i ∈ If.1, If.2 i ∈ @nhds _ (↑i) x ∧ Convex 𝕜 (If.2 i))
       (fun x => ?_) fun x If hif => convex_iInter fun i => convex_iInter fun hi => (hif.2 i hi).2
   rw [nhds_sInf, ← iInf_subtype'']
-  exact .iInf' fun i : ts => (@locallyConvexSpace_iff 𝕜 E _ _ _ _ ↑i).mp (h (↑i) i.2) x
+  exact .iInf' fun i : ts => (@locallyConvexSpace_iff 𝕜 E _ _ _ _ _ ↑i).mp (h (↑i) i.2) x
 
 protected theorem LocallyConvexSpace.iInf {ts' : ι → TopologicalSpace E}
-    (h' : ∀ i, @LocallyConvexSpace 𝕜 E _ _ _ _ (ts' i)) :
-    @LocallyConvexSpace 𝕜 E _ _ _ _ (⨅ i, ts' i) :=
+    (h' : ∀ i, @LocallyConvexSpace 𝕜 E _ _ _ _ _ (ts' i)) :
+    @LocallyConvexSpace 𝕜 E _ _ _ _ _ (⨅ i, ts' i) :=
   .sInf <| by rwa [forall_mem_range]
 
 protected theorem LocallyConvexSpace.inf {t₁ t₂ : TopologicalSpace E}
-    (h₁ : @LocallyConvexSpace 𝕜 E _ _ _ _ t₁)
-    (h₂ : @LocallyConvexSpace 𝕜 E _ _ _ _ t₂) : @LocallyConvexSpace 𝕜 E _ _ _ _ (t₁ ⊓ t₂) := by
+    (h₁ : @LocallyConvexSpace 𝕜 E _ _ _ _ _ t₁)
+    (h₂ : @LocallyConvexSpace 𝕜 E _ _ _ _ _ t₂) : @LocallyConvexSpace 𝕜 E _ _ _ _ _ (t₁ ⊓ t₂) := by
   rw [inf_eq_iInf]
   refine .iInf fun b => ?_
   cases b <;> assumption
 
 protected theorem LocallyConvexSpace.induced {t : TopologicalSpace F} [LocallyConvexSpace 𝕜 F]
-    (f : E →ₗ[𝕜] F) : @LocallyConvexSpace 𝕜 E _ _ _ _ (t.induced f) := by
+    (f : E →ₗ[𝕜] F) : @LocallyConvexSpace 𝕜 E _ _ _ _ _ (t.induced f) := by
   let : TopologicalSpace E := t.induced f
   refine LocallyConvexSpace.ofBases 𝕜 E (fun _ => preimage f)
     (fun x => fun s : Set F => s ∈ 𝓝 (f x) ∧ Convex 𝕜 s) (fun x => ?_) fun x s ⟨_, hs⟩ =>

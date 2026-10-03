@@ -287,11 +287,11 @@ instance toSemigroup {M : Type*} [Semigroup M] {A : Type*} [SetLike A M] [MulMem
     (S : A) : Semigroup S := fast_instance%
   Subtype.coe_injective.semigroup Subtype.val fun _ _ => rfl
 
-/-- A subsemigroup of a `CommSemigroup` is a `CommSemigroup`. -/
-@[to_additive /-- An `AddSubsemigroup` of an `AddCommSemigroup` is an `AddCommSemigroup`. -/]
-instance toCommSemigroup {M} [Semigroup M] [IsMulCommutative M] {A : Type*} [SetLike A M] [MulMemClass A M]
-    (S : A) : CommSemigroup S := fast_instance%
-  Subtype.coe_injective.commSemigroup Subtype.val fun _ _ => rfl
+/-- A subsemigroup of a commutative semigroup is commutative. -/
+@[to_additive /-- An `AddSubsemigroup` of a commutative additive semigroup is commutative. -/]
+instance toCommSemigroup {M} [Semigroup M] [IsMulCommutative M] {A : Type*} [SetLike A M]
+    [MulMemClass A M] (S : A) : IsMulCommutative S :=
+  Subtype.coe_injective.isMulCommutative Subtype.val fun _ _ => rfl
 
 /-- A submagma of a left cancellative magma inherits left cancellation. -/
 @[to_additive

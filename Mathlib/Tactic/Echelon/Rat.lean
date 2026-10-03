@@ -65,7 +65,8 @@ def ratProducer (R : Expr) : MetaM Producer := do
   let u ← getDecLevel R
   have α : Q(Type u) := R
   -- the characteristic determines the zero test
-  have _cr : Q(CommRing $α) := ← synthInstanceQ q(CommRing $α)
+  have _r : Q(Ring $α) := ← synthInstanceQ q(Ring $α)
+  have _cr : Q(IsMulCommutative $α) := ← synthInstanceQ q(IsMulCommutative $α)
   let pE : Q(ℕ) ← mkFreshExprMVarQ q(ℕ)
   let .some _ ← trySynthInstanceQ q(CharP $α $pE)
     | throwError "could not determine the characteristic of the element type{indentExpr α}"

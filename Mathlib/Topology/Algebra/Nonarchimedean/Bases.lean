@@ -373,7 +373,7 @@ structure RingFilterBasis.SubmodulesBasis (BR : RingFilterBasis R) (B : ι → S
   smul : ∀ (m : M) (i : ι), ∃ U ∈ BR, U ⊆ (· • m) ⁻¹' B i
 
 theorem RingFilterBasis.submodulesBasisIsBasis (BR : RingFilterBasis R) {B : ι → Submodule R M}
-    (hB : BR.SubmodulesBasis B) : @_root_.SubmodulesBasis ι R _ M _ _ BR.topology B :=
+    (hB : BR.SubmodulesBasis B) : @_root_.SubmodulesBasis ι R _ M _ _ _ BR.topology B :=
   let _ := BR.topology
   { inter := hB.inter
     smul := by
@@ -386,5 +386,5 @@ theorem RingFilterBasis.submodulesBasisIsBasis (BR : RingFilterBasis R) {B : ι 
 This allows to build a topological module structure compatible with the given module structure
 and the topology associated to the given ring filter basis. -/
 def RingFilterBasis.moduleFilterBasis [Nonempty ι] (BR : RingFilterBasis R) {B : ι → Submodule R M}
-    (hB : BR.SubmodulesBasis B) : @ModuleFilterBasis R M _ BR.topology _ _ :=
-  @SubmodulesBasis.toModuleFilterBasis ι R _ M _ _ BR.topology _ _ (BR.submodulesBasisIsBasis hB)
+    (hB : BR.SubmodulesBasis B) : @ModuleFilterBasis R M _ BR.topology _ _ _ :=
+  @SubmodulesBasis.toModuleFilterBasis ι R _ M _ _ _ BR.topology _ _ (BR.submodulesBasisIsBasis hB)

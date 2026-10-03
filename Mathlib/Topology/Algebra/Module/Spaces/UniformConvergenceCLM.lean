@@ -169,8 +169,12 @@ instance (M : Type*) [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M 
   smul c f := (ofFun σ F 𝔖) (c • (ofFun σ F 𝔖).symm f)
 
 instance instAddCommGroup [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
-    AddCommGroup (E →SLᵤ[σ, 𝔖] F) :=
-  inferInstanceAs <| AddCommGroup (E →SL[σ] F)
+    AddGroup (E →SLᵤ[σ, 𝔖] F) :=
+  inferInstanceAs <| AddGroup (E →SL[σ] F)
+
+instance instIsAddCommutative [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
+    IsAddCommutative (E →SLᵤ[σ, 𝔖] F) :=
+  inferInstanceAs <| IsAddCommutative (E →SL[σ] F)
 
 instance [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
     IsNegApply (E →SLᵤ[σ, 𝔖] F) E F where

@@ -206,14 +206,9 @@ instance addGroup [AddGroup R] [AddGroup M] : AddGroup (tsze R M) where
   zsmul := letI := smul (S := ℤ) (R := R) (M := M); (· • ·)
   __ : AddGroup (tsze R M) := inferInstanceAs <| AddGroup (R × M)
 
-instance addCommSemigroup [AddSemigroup R] [IsAddCommutative R] [AddSemigroup M] [IsAddCommutative M] : AddCommSemigroup (tsze R M) :=
-  inferInstanceAs <| AddCommSemigroup (R × M)
-
-instance addCommMonoid [AddMonoid R] [IsAddCommutative R] [AddMonoid M] [IsAddCommutative M] : AddCommMonoid (tsze R M) :=
-  inferInstanceAs <| AddCommMonoid (R × M)
-
-instance addCommGroup [AddGroup R] [IsAddCommutative R] [AddGroup M] [IsAddCommutative M] : AddCommGroup (tsze R M) :=
-  inferInstanceAs <| AddCommGroup (R × M)
+instance isAddCommutative [Add R] [IsAddCommutative R] [Add M] [IsAddCommutative M] :
+    IsAddCommutative (tsze R M) :=
+  inferInstanceAs <| IsAddCommutative (R × M)
 
 instance isScalarTower [SMul T R] [SMul T M] [SMul S R] [SMul S M] [SMul T S]
     [IsScalarTower T S R] [IsScalarTower T S M] : IsScalarTower T S (tsze R M) :=
@@ -324,8 +319,8 @@ theorem inl_smul [Monoid S] [AddMonoid M] [SMul S R] [DistribMulAction S M] (s :
   ext rfl (smul_zero s).symm
 
 theorem inl_sum {ι} [AddMonoid R] [IsAddCommutative R] [AddMonoid M] [IsAddCommutative M] (s : Finset ι) (f : ι → R) :
-    (inl (∑ i ∈ s, f i) : tsze R M) = ∑ i ∈ s, inl (f i) :=
-  map_sum (LinearMap.inl ℕ _ _) _ _
+    (inl (∑ i ∈ s, f i) : tsze R M) = ∑ i ∈ s, inl (f i) := by
+  ext <;> simp [fst_sum, snd_sum]
 
 end
 
@@ -357,8 +352,8 @@ theorem inr_smul [Zero R] [SMulZeroClass S R] [SMul S M] (r : S) (m : M) :
   ext (smul_zero _).symm rfl
 
 theorem inr_sum {ι} [AddMonoid R] [IsAddCommutative R] [AddMonoid M] [IsAddCommutative M] (s : Finset ι) (f : ι → M) :
-    (inr (∑ i ∈ s, f i) : tsze R M) = ∑ i ∈ s, inr (f i) :=
-  map_sum (LinearMap.inr ℕ _ _) _ _
+    (inr (∑ i ∈ s, f i) : tsze R M) = ∑ i ∈ s, inr (f i) := by
+  ext <;> simp [fst_sum, snd_sum]
 
 end
 
@@ -649,19 +644,12 @@ theorem snd_list_prod [Monoid R] [AddMonoid M] [IsAddCommutative M] [DistribMulA
 instance ring [Ring R] [AddGroup M] [IsAddCommutative M] [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] :
     Ring (tsze R M) where
 
-instance commMonoid [Monoid R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [DistribMulAction R M]
-    [DistribMulAction Rᵐᵒᵖ M] [IsCentralScalar R M] : CommMonoid (tsze R M) :=
-  { TrivSqZeroExt.monoid with
-    mul_comm := fun x₁ x₂ =>
-      ext (mul_comm x₁.1 x₂.1) <|
-        show x₁.1 •> x₂.2 + x₁.2 <• x₂.1 = x₂.1 •> x₁.2 + x₂.2 <• x₁.1 by
-          rw [op_smul_eq_smul, op_smul_eq_smul, add_comm] }
-
-instance commSemiring [Semiring R] [IsMulCommutative R] [AddMonoid M] [IsAddCommutative M] [Module R M] [Module Rᵐᵒᵖ M]
-    [IsCentralScalar R M] : CommSemiring (tsze R M) where
-
-instance commRing [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M] :
-    CommRing (tsze R M) where
+instance isMulCommutative [Mul R] [IsMulCommutative R] [Add M] [IsAddCommutative M] [SMul R M]
+    [SMul Rᵐᵒᵖ M] [IsCentralScalar R M] : IsMulCommutative (tsze R M) where
+  is_comm.comm x₁ x₂ :=
+    ext (mul_comm x₁.1 x₂.1) <|
+      show x₁.1 •> x₂.2 + x₁.2 <• x₂.1 = x₂.1 •> x₁.2 + x₂.2 <• x₁.1 by
+        rw [op_smul_eq_smul, op_smul_eq_smul, add_comm]
 
 variable (R M)
 

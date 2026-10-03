@@ -83,7 +83,7 @@ instance gMul : GradedMonoid.GMul fun i => ⨂[R]^i M where
 local infixl:70 " ₜ* " => @GradedMonoid.GMul.mul ℕ (fun i => ⨂[R]^i M) _ _ _ _
 
 theorem gMul_def {i j} (a : ⨂[R]^i M) (b : (⨂[R]^j) M) :
-    a ₜ* b = @mulEquiv R M _ _ _ i j (a ⊗ₜ b) :=
+    a ₜ* b = @mulEquiv R M _ _ _ _ _ i j (a ⊗ₜ b) :=
   rfl
 
 theorem gMul_eq_coe_linearMap {i j} (a : ⨂[R]^i M) (b : (⨂[R]^j) M) :
@@ -220,7 +220,7 @@ theorem mul_algebraMap₀ {n} (r : R) (a : ⨂[R]^n M) :
 theorem algebraMap₀_mul_algebraMap₀ (r s : R) :
     cast R M (add_zero _) (algebraMap₀ r ₜ* algebraMap₀ s) = algebraMap₀ (r * s) := by
   rw [← smul_eq_mul, map_smul]
-  exact algebraMap₀_mul r (@algebraMap₀ R M _ _ _ s)
+  exact algebraMap₀_mul r (@algebraMap₀ R M _ _ _ _ _ s)
 
 instance gsemiring : DirectSum.GSemiring fun i => ⨂[R]^i M :=
   { TensorPower.gmonoid with

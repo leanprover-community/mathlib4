@@ -16,8 +16,9 @@ The main application lies in proving that higher homotopy groups (`πₙ` for `n
 
 ## Main declarations
 
-* `EckmannHilton.commMonoid`: If a type carries a unital magma structure that distributes
-  over a unital binary operation, then the magma is a commutative monoid.
+* `EckmannHilton.commMonoid`, `EckmannHilton.isMulCommutative`: If a type carries a unital magma
+  structure that distributes over a unital binary operation, then the magma is a commutative
+  monoid.
 * `EckmannHilton.commGroup`: If a type carries a group structure that distributes
   over a unital binary operation, then the group is commutative.
 
@@ -83,23 +84,35 @@ theorem mul_assoc : Std.Associative m₂ :=
   ⟨fun a b c => by simpa [mul h₁ h₂ distrib, h₂.left_id, h₂.right_id] using distrib a b e₂ c⟩
 
 /-- If a type carries a unital magma structure that distributes over a unital binary
-operation, then the magma structure is a commutative monoid. -/
+operation, then the magma structure is a monoid. It is moreover commutative, see
+`EckmannHilton.isMulCommutative`. -/
 @[to_additive
       /-- If a type carries a unital additive magma structure that distributes over a unital binary
-      operation, then the additive magma structure is a commutative additive monoid. -/]
+      operation, then the additive magma structure is an additive monoid. It is moreover
+      commutative, see `EckmannHilton.isAddCommutative`. -/]
 abbrev commMonoid [h : MulOneClass X]
-    (distrib : ∀ a b c d, ((a * b) <m₁> c * d) = (a <m₁> c) * b <m₁> d) : CommMonoid X :=
+    (distrib : ∀ a b c d, ((a * b) <m₁> c * d) = (a <m₁> c) * b <m₁> d) : Monoid X :=
   { h with
-      mul_comm := (mul_comm h₁ MulOneClass.isUnital distrib).comm,
       mul_assoc := (mul_assoc h₁ MulOneClass.isUnital distrib).assoc }
 
+omit h₂ distrib in
+/-- If a type carries a unital magma structure that distributes over a unital binary
+operation, then the magma structure is commutative. -/
+@[to_additive
+      /-- If a type carries a unital additive magma structure that distributes over a unital binary
+      operation, then the additive magma structure is commutative. -/]
+theorem isMulCommutative [h : MulOneClass X]
+    (distrib : ∀ a b c d, ((a * b) <m₁> c * d) = (a <m₁> c) * b <m₁> d) : IsMulCommutative X :=
+  ⟨mul_comm h₁ MulOneClass.isUnital distrib⟩
+
+omit h₂ distrib in
 /-- If a type carries a group structure that distributes over a unital binary operation,
 then the group is commutative. -/
 @[to_additive
       /-- If a type carries an additive group structure that distributes over a unital binary
       operation, then the additive group is commutative. -/]
-abbrev commGroup [G : Group X]
-    (distrib : ∀ a b c d, ((a * b) <m₁> c * d) = (a <m₁> c) * b <m₁> d) : CommGroup X :=
-  { G, EckmannHilton.commMonoid h₁ distrib with .. }
+theorem commGroup [G : Group X]
+    (distrib : ∀ a b c d, ((a * b) <m₁> c * d) = (a <m₁> c) * b <m₁> d) : IsMulCommutative X :=
+  EckmannHilton.isMulCommutative h₁ distrib
 
 end EckmannHilton

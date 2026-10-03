@@ -927,7 +927,7 @@ theorem isNoetherianRing_fin [IsNoetherianRing R] :
   | n + 1 =>
     @isNoetherianRing_of_ringEquiv (Polynomial (MvPolynomial (Fin n) R)) _ _ _
       (MvPolynomial.finSuccEquiv _ n).toRingEquiv.symm
-      (@Polynomial.isNoetherianRing (MvPolynomial (Fin n) R) _ isNoetherianRing_fin)
+      (@Polynomial.isNoetherianRing (MvPolynomial (Fin n) R) _ _ isNoetherianRing_fin)
 
 /-- The multivariate polynomial ring in finitely many variables over a Noetherian ring
 is itself a Noetherian ring. -/

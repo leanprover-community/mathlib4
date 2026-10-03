@@ -266,7 +266,7 @@ def center : Subsemiring R :=
 
 This is not an instance as it forms a non-defeq diamond with
 `NonUnitalSubringClass.toNonUnitalRing` in the `npow` field. -/
-abbrev center.commSemiring' : CommSemiring (center R) :=
+abbrev center.commSemiring' : Semiring (center R) :=
   { Submonoid.center.commMonoid', (center R).toNonAssocSemiring with }
 
 variable {R}
@@ -285,14 +285,8 @@ end NonAssocSemiring
 section Semiring
 
 /-- The center is commutative. -/
-instance center.commSemiring {R} [Semiring R] : CommSemiring (center R) where
-  __ := (center R).toSemiring
-  __ : CommMonoid (center R) := inferInstanceAs <| CommMonoid (Submonoid.center R)
-
--- no instance diamond, unlike the primed version
-example {R} [Semiring R] :
-    center.commSemiring.toSemiring = Subsemiring.toSemiring (center R) := by
-  with_reducible_and_instances rfl
+instance center.isMulCommutative {R} [Semiring R] : IsMulCommutative (center R) :=
+  inferInstanceAs <| IsMulCommutative (Submonoid.center R)
 
 theorem mem_center_iff {R} [Semiring R] {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g :=
   Subsemigroup.mem_center_iff
@@ -1036,14 +1030,6 @@ theorem isMulCommutative_closure {s : Set R'} (hcomm : s.Pairwise Commute) :
   have := closure_le_centralizer_centralizer s
   .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
     Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂)
-
-open scoped IsMulCommutative in
-/-- If all the elements of a set `s` commute, then `closure s` is a commutative semiring. -/
-@[deprecated isMulCommutative_closure +typeChanged (since := "2026-03-11")]
-abbrev closureCommSemiringOfComm {s : Set R'} (hcomm : s.Pairwise Commute) :
-    CommSemiring (closure s) :=
-  have := isMulCommutative_closure hcomm
-  inferInstance
 
 instance instIsMulCommutative_closure {S : Type*} [SetLike S R'] [MulMemClass S R'] (s : S)
     [IsMulCommutative s] : IsMulCommutative (closure (s : Set R')) :=

@@ -162,7 +162,7 @@ instance (priority := 100) [IsIntegral X] : X.IsGermInjective := by
   have : Nonempty (X.affineCover.f _).opensRange := ⟨⟨_, X.affineCover.covers x⟩⟩
   have := (isAffineOpen_opensRange (X.affineCover.f _)).isLocalization_stalk
     ⟨_, X.affineCover.covers x⟩
-  exact @IsLocalization.injective _ _ _ _ _ (show _ from _) this
+  exact @IsLocalization.injective _ _ _ _ _ _ _ (show _ from _) this
     (Ideal.primeCompl_le_nonZeroDivisors _)
 
 set_option backward.isDefEq.respectTransparency.types false in

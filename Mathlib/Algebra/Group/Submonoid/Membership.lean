@@ -380,8 +380,8 @@ abbrev groupPowers {x : M} {n : ℕ} (hpos : 0 < n) (hx : x ^ n = 1) : Group (po
     obtain ⟨_, k, rfl⟩ := x
     simp only [← pow_mul, Int.natMod, SubmonoidClass.coe_pow, coe_mul]
     norm_cast
-    iterate 2 rw [Int.toNat_natCast, mul_comm, pow_mul, ← pow_eq_pow_mod _ hx]
-    rw [← pow_mul _ m, mul_comm, pow_mul, ← pow_succ, ← pow_mul, mul_comm, pow_mul]
+    iterate 2 rw [Int.toNat_natCast, Nat.mul_comm, pow_mul, ← pow_eq_pow_mod _ hx]
+    rw [← pow_mul _ m, Nat.mul_comm, pow_mul, ← pow_succ, ← pow_mul, Nat.mul_comm, pow_mul]
 
 /-- Exponentiation map from natural numbers to powers. -/
 @[simps!]

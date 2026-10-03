@@ -330,7 +330,7 @@ theorem exists_ideal_over_prime_of_isIntegral_of_isPrime
     (I : Ideal S) [IsPrime I] (hIP : I.under R ≤ P) :
     ∃ Q ≥ I, IsPrime Q ∧ Q.under R = P := by
   obtain ⟨Q' : Ideal (S ⧸ I), ⟨Q'_prime, hQ'⟩⟩ :=
-    @exists_ideal_over_prime_of_isIntegral_of_isDomain (R ⧸ I.under R) _ (S ⧸ I) _
+    @exists_ideal_over_prime_of_isIntegral_of_isDomain (R ⧸ I.under R) _ _ (S ⧸ I) _ _
       Ideal.quotientAlgebra _ _
       (map (Ideal.Quotient.mk (I.under R)) P)
       (map_isPrime_of_surjective Quotient.mk_surjective (by simp [hIP]))

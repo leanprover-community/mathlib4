@@ -538,15 +538,15 @@ def Result.toSimpResult {α : Q(Type u)} {e : Q($α)} : Result e → MetaM Simp.
     let ⟨a', pa'⟩ ← mkOfNat α sα lit
     return { expr := a', proof? := q(IsNat.to_eq $p $pa') }
   | .isNegNat _rα lit p => do
-    let ⟨a', pa'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) lit
+    let ⟨a', pa'⟩ ← mkOfNat α q(NonAssocSemiring.toAddMonoidWithOne) lit
     return { expr := q(-$a'), proof? := q(IsInt.neg_to_eq $p $pa') }
   | .isNNRat _ _ n d p => do
-    let ⟨n', pn'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) n
-    let ⟨d', pd'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) d
+    let ⟨n', pn'⟩ ← mkOfNat α q(NonAssocSemiring.toAddMonoidWithOne) n
+    let ⟨d', pd'⟩ ← mkOfNat α q(NonAssocSemiring.toAddMonoidWithOne) d
     return { expr := q($n' / $d'), proof? := q(IsNNRat.to_eq $p $pn' $pd') }
   | .isNegNNRat _ _ n d p => do
-    let ⟨n', pn'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) n
-    let ⟨d', pd'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) d
+    let ⟨n', pn'⟩ ← mkOfNat α q(NonAssocSemiring.toAddMonoidWithOne) n
+    let ⟨d', pd'⟩ ← mkOfNat α q(NonAssocSemiring.toAddMonoidWithOne) d
     return { expr := q(-($n' / $d')), proof? := q(IsRat.neg_to_eq $p $pn' $pd') }
 
 /-- Given `Mathlib.Meta.NormNum.Result.isBool p b`, this is the type of `p`.

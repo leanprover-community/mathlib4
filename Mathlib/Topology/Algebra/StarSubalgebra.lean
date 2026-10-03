@@ -130,28 +130,6 @@ instance isMulCommutative_topologicalClosure [T2Space A] (s : StarSubalgebra R A
     [IsMulCommutative s] : IsMulCommutative s.topologicalClosure :=
   s.toSubalgebra.isMulCommutative_topologicalClosure
 
-open scoped IsMulCommutative in
-/-- If a star subalgebra of a topological star algebra is commutative, then so is its topological
-closure. See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
-abbrev commSemiringTopologicalClosure [T2Space A] (s : StarSubalgebra R A)
-    (hs : ∀ x y : s, x * y = y * x) : CommSemiring s.topologicalClosure :=
-  fast_instance%
-  have : IsMulCommutative s := ⟨⟨hs⟩⟩
-  inferInstance
-
-open scoped IsMulCommutative in
-/-- If a star subalgebra of a topological star algebra is commutative, then so is its topological
-closure. See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
-abbrev commRingTopologicalClosure {R A} [Ring R] [IsMulCommutative R] [StarRing R] [TopologicalSpace A] [Ring A]
-    [Algebra R A] [StarRing A] [StarModule R A] [IsSemitopologicalRing A] [ContinuousStar A]
-    [T2Space A] (s : StarSubalgebra R A) (hs : ∀ x y : s, x * y = y * x) :
-    CommRing s.topologicalClosure :=
-  fast_instance%
-  have : IsMulCommutative s := ⟨⟨hs⟩⟩
-  inferInstance
-
 set_option backward.isDefEq.respectTransparency false in
 /-- Continuous `StarAlgHom`s from the topological closure of a `StarSubalgebra` whose
 compositions with the `StarSubalgebra.inclusion` map agree are, in fact, equal. -/

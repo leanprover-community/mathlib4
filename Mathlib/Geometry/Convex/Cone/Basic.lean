@@ -378,9 +378,11 @@ instance instAddZeroClass : AddZeroClass (ConvexCone R M) where
   zero_add _ := by ext; simp
   add_zero _ := by ext; simp
 
-instance instAddCommSemigroup : AddCommSemigroup (ConvexCone R M) where
+instance instAddSemigroup : AddSemigroup (ConvexCone R M) where
   add_assoc _ _ _ := SetLike.coe_injective <| add_assoc _ _ _
-  add_comm _ _ := SetLike.coe_injective <| add_comm _ _
+
+instance instAddCommSemigroup : IsAddCommutative (ConvexCone R M) where
+  is_comm := ⟨fun _ _ => SetLike.coe_injective <| add_comm _ _⟩
 
 end Monoid
 

@@ -128,7 +128,11 @@ lemma ofCLM_bijective : Function.Bijective (ofCLM : (E →SL[σ] F) → E →SWO
   equiv.symm.bijective
 
 instance instAddCommGroup [IsTopologicalAddGroup F] :
-    AddCommGroup (E →SWOT[σ] F) :=
+    AddGroup (E →SWOT[σ] F) :=
+  equiv.addGroup
+
+instance instIsAddCommutative [IsTopologicalAddGroup F] :
+    IsAddCommutative (E →SWOT[σ] F) :=
   equiv.addCommGroup
 
 /-- The additive group equivalence between `ContinuousLinearMapWOT` and `ContinuousLinearMap`. -/

@@ -119,7 +119,7 @@ theorem equiv_free_prod_directSum_zmod [hG : AddGroup.FG G] :
     ∃ (n : ℕ) (ι : Type) (_ : Fintype ι) (p : ι → ℕ) (_ : ∀ i, Nat.Prime <| p i) (e : ι → ℕ),
       Nonempty <| G ≃+ (Fin n →₀ ℤ) × ⨁ i : ι, ZMod (p i ^ e i) := by
   obtain ⟨n, ι, fι, p, hp, e, ⟨f⟩⟩ :=
-    @Module.equiv_free_prod_directSum _ _ _ _ _ _ _ (Module.Finite.iff_addGroup_fg.mpr hG)
+    Module.equiv_free_prod_directSum (R := ℤ) (M := G) (h' := Module.Finite.iff_addGroup_fg.mpr hG)
   refine ⟨n, ι, fι, fun i => (p i).natAbs, fun i => ?_, e, ⟨?_⟩⟩
   · rw [← Int.prime_iff_natAbs_prime, ← irreducible_iff_prime]; exact hp i
   exact
@@ -158,8 +158,8 @@ lemma equiv_directSum_zmod_of_finite' (G : Type*) [AddGroup G] [IsAddCommutative
   exact one_lt_pow₀ (hp _).one_lt hi
 
 theorem finite_of_fg_isAddTorsion [hG' : AddGroup.FG G] (hG : IsAddTorsion G) : Finite G :=
-  @Module.finite_of_fg_torsion _ _ _ (Module.Finite.iff_addGroup_fg.mpr hG') <|
-    isAddTorsion_iff_isTorsion_int.mp hG
+  have := Module.Finite.iff_addGroup_fg.mpr hG'
+  Module.finite_of_fg_torsion G <| isAddTorsion_iff_isTorsion_int.mp hG
 
 @[deprecated (since := "2026-07-01")] alias finite_of_fg_torsion := finite_of_fg_isAddTorsion
 
@@ -167,7 +167,7 @@ end AddCommGroup
 
 namespace CommGroup
 
-@[to_additive existing]
+@[to_additive existing AddCommGroup.finite_of_fg_isAddTorsion]
 theorem finite_of_fg_isMulTorsion [Group G] [IsMulCommutative G] [Group.FG G] (hG : IsMulTorsion G) : Finite G :=
   @Finite.of_equiv _ _ (AddCommGroup.finite_of_fg_isAddTorsion (Additive G) hG) Multiplicative.ofAdd
 

@@ -69,7 +69,10 @@ def Cochain := ∀ (T : Triplet n), F.X T.p ⟶ G.X T.q
 namespace Cochain
 
 -- The `SMul` instance exists to avoid a zsmul diamond.
-deriving instance SMul R, AddCommGroup, Module R for Cochain F G n
+deriving instance SMul R, AddGroup, IsAddCommutative for Cochain F G n
+
+instance : Module R (Cochain F G n) :=
+  inferInstanceAs (Module R (∀ (T : Triplet n), F.X T.p ⟶ G.X T.q))
 
 variable {F G n}
 
@@ -600,8 +603,11 @@ instance : SMul R (Cocycle F G n) where
 
 variable (F G n)
 
-instance : AddCommGroup (Cocycle F G n) :=
-  inferInstanceAs <| AddCommGroup (cocycle F G n)
+instance : AddGroup (Cocycle F G n) :=
+  inferInstanceAs <| AddGroup (cocycle F G n)
+
+instance : IsAddCommutative (Cocycle F G n) :=
+  inferInstanceAs <| IsAddCommutative (cocycle F G n)
 
 @[simp]
 lemma coe_zero : (↑(0 : Cocycle F G n) : Cochain F G n) = 0 := by rfl

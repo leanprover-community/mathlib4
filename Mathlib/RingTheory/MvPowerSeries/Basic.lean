@@ -104,11 +104,8 @@ instance [AddMonoid R] : AddMonoid (MvPowerSeries σ R) :=
 instance [AddGroup R] : AddGroup (MvPowerSeries σ R) :=
   inferInstanceAs <| AddGroup ((σ →₀ ℕ) → R)
 
-instance [AddMonoid R] [IsAddCommutative R] : AddCommMonoid (MvPowerSeries σ R) :=
-  inferInstanceAs <| AddCommMonoid ((σ →₀ ℕ) → R)
-
-instance [AddGroup R] [IsAddCommutative R] : AddCommGroup (MvPowerSeries σ R) :=
-  inferInstanceAs <| AddCommGroup ((σ →₀ ℕ) → R)
+instance [AddMonoid R] [IsAddCommutative R] : IsAddCommutative (MvPowerSeries σ R) :=
+  inferInstanceAs <| IsAddCommutative ((σ →₀ ℕ) → R)
 
 instance [Nontrivial R] : Nontrivial (MvPowerSeries σ R) :=
   inferInstanceAs <| Nontrivial ((σ →₀ ℕ) → R)
@@ -301,16 +298,14 @@ instance : Semiring (MvPowerSeries σ R) where
 
 end Semiring
 
-instance [Semiring R] [IsMulCommutative R] : CommSemiring (MvPowerSeries σ R) where
-  mul_comm := fun φ ψ =>
+instance [Semiring R] [IsMulCommutative R] : IsMulCommutative (MvPowerSeries σ R) where
+  is_comm := ⟨fun φ ψ =>
     ext fun n => by
       classical
       simpa only [coeff_mul, mul_comm] using
-        sum_antidiagonal_swap n fun a b => coeff a φ * coeff b ψ
+        sum_antidiagonal_swap n fun a b => coeff a φ * coeff b ψ⟩
 
 instance [Ring R] : Ring (MvPowerSeries σ R) where
-
-instance [Ring R] [IsMulCommutative R] : CommRing (MvPowerSeries σ R) where
 
 section Semiring
 

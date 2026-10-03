@@ -383,7 +383,9 @@ namespace TrivialLieModule
 
 variable (R L M : Type*) [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra R L] [AddGroup M] [IsAddCommutative M] [Module R M]
 
-instance : AddCommGroup (TrivialLieModule R L M) := inferInstanceAs (AddCommGroup M)
+instance : AddGroup (TrivialLieModule R L M) := inferInstanceAs (AddGroup M)
+
+instance : IsAddCommutative (TrivialLieModule R L M) := inferInstanceAs (IsAddCommutative M)
 
 instance : Module R (TrivialLieModule R L M) := inferInstanceAs (Module R M)
 

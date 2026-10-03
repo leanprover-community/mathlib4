@@ -352,9 +352,9 @@ instance ring : Ring (CauSeq β abv) :=
   Function.Injective.ring Subtype.val Subtype.val_injective rfl rfl coe_add coe_mul coe_neg coe_sub
     (fun _ _ => coe_smul _ _) (fun _ _ => coe_smul _ _) coe_pow (fun _ => rfl) fun _ => rfl
 
-instance {β : Type*} [Ring β] [IsMulCommutative β] {abv : β → α} [IsAbsoluteValue abv] : CommRing (CauSeq β abv) :=
-  { CauSeq.ring with
-    mul_comm := fun a b => ext fun n => by simp [mul_comm] }
+instance {β : Type*} [Ring β] [IsMulCommutative β] {abv : β → α} [IsAbsoluteValue abv] :
+    IsMulCommutative (CauSeq β abv) :=
+  ⟨⟨fun a b => ext fun n => by simp [mul_comm]⟩⟩
 
 /-- `LimZero f` holds when `f` approaches 0. -/
 def LimZero {abv : β → α} (f : CauSeq β abv) : Prop :=

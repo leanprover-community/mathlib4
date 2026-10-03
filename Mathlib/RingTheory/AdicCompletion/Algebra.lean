@@ -94,11 +94,15 @@ instance : IntCast (AdicCompletion I R) where
 instance : Pow (AdicCompletion I R) ℕ where
   pow x n := ⟨x.val ^ n, fun hmn ↦ by simp [x.property, transitionMap_map_pow I hmn]⟩
 
-instance : CommRing (AdicCompletion I R) :=
+instance : Ring (AdicCompletion I R) :=
   let f : AdicCompletion I R → ∀ n, R ⧸ (I ^ n • ⊤ : Ideal R) := Subtype.val
-  Subtype.val_injective.commRing f rfl rfl
+  Subtype.val_injective.ring f rfl rfl
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
+
+instance : IsMulCommutative (AdicCompletion I R) :=
+  let f : AdicCompletion I R → ∀ n, R ⧸ (I ^ n • ⊤ : Ideal R) := Subtype.val
+  Subtype.val_injective.isMulCommutative f (fun _ _ ↦ rfl)
 
 instance [Algebra S R] : Algebra S (AdicCompletion I R) where
   algebraMap :=
@@ -222,11 +226,15 @@ instance : IntCast (AdicCauchySequence I R) where
 instance : Pow (AdicCauchySequence I R) ℕ where
   pow x n := ⟨x.val ^ n, fun hmn ↦ SModEq.pow n (x.property hmn)⟩
 
-instance : CommRing (AdicCauchySequence I R) :=
+instance : Ring (AdicCauchySequence I R) :=
   let f : AdicCauchySequence I R → (ℕ → R) := Subtype.val
-  Subtype.val_injective.commRing f rfl rfl
+  Subtype.val_injective.ring f rfl rfl
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
+
+instance : IsMulCommutative (AdicCauchySequence I R) :=
+  let f : AdicCauchySequence I R → (ℕ → R) := Subtype.val
+  Subtype.val_injective.isMulCommutative f (fun _ _ ↦ rfl)
 
 instance : Algebra R (AdicCauchySequence I R) where
   algebraMap :=
@@ -342,7 +350,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- A priori `AdicCompletion I R` has two `AdicCompletion I R`-module instances.
 Both agree definitionally. -/
 example : module I = @Algebra.toModule (AdicCompletion I R)
-    (AdicCompletion I R) _ _ (Algebra.id _) := by
+    (AdicCompletion I R) _ _ _ (Algebra.id _) := by
   with_reducible_and_instances rfl
 
 section liftRingHom

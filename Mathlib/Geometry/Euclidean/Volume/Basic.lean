@@ -26,9 +26,11 @@ open MeasureTheory Measure
 namespace Affine.Simplex
 
 variable {V P : Type*}
-variable [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
+variable [NormedAddGroup V] [IsAddCommutative V] [InnerProductSpace ℝ V] [MetricSpace P]
+  [NormedAddTorsor V P]
 variable {V₂ P₂ : Type*}
-variable [NormedAddGroup V₂] [IsAddCommutative V₂] [InnerProductSpace ℝ V₂] [MetricSpace P₂] [NormedAddTorsor V₂ P₂]
+variable [NormedAddGroup V₂] [IsAddCommutative V₂] [InnerProductSpace ℝ V₂] [MetricSpace P₂]
+  [NormedAddTorsor V₂ P₂]
 
 @[simp]
 theorem volume_eq_one (s : Simplex ℝ P 0) : s.volume = 1 := rfl
@@ -81,7 +83,7 @@ open Qq Mathlib.Meta.Positivity in
 meta def evalVolume : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
-  | 0, ~q(ℝ), ~q(@volume $V $P $i1 $i2 $i3 $i4 $n $s) =>
+  | 0, ~q(ℝ), ~q(@volume $V $P $i1 $i2 $i3 $i4 $i5 $n $s) =>
     assertInstancesCommute
     return .positive q(volume_pos $s)
   | _, _, _ => throwError "not Simplex.volume"

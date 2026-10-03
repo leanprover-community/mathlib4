@@ -68,8 +68,11 @@ a module structure below. -/
 @[nolint unusedArguments]
 def ModuleColimit (_ : IsColimit cR) (_ : IsColimit cM) : Type w := cM.pt
 
-instance : AddCommGroup (ModuleColimit hcR hcM) :=
-  inferInstanceAs (AddCommGroup cM.pt)
+instance : AddGroup (ModuleColimit hcR hcM) :=
+  inferInstanceAs (AddGroup cM.pt)
+
+instance : IsAddCommutative (ModuleColimit hcR hcM) :=
+  inferInstanceAs (IsAddCommutative cM.pt)
 
 namespace ModuleColimit
 
@@ -244,10 +247,10 @@ noncomputable def homEquiv {N : ModuleCat.{w} cR.pt} :
     (homEquiv' hcR hcM ((forget₂ _ AddCommGrpCat).map φ).hom)
       ((map_smul_homEquiv'_iff hcR hcM ((forget₂ _ AddCommGrpCat).map φ).hom).2 (by simp))
   invFun ψ := ModuleCat.ofHom
-    { toFun := (homEquiv' hcR hcM).symm ((toPresheaf _).map ψ)
+    { toFun := (homEquiv' hcR hcM (N := N)).symm ((toPresheaf _).map ψ)
       map_add' := by simp
       map_smul' := by
-        obtain ⟨φ, hφ⟩ := (homEquiv' hcR hcM).surjective ((toPresheaf _).map ψ)
+        obtain ⟨φ, hφ⟩ := (homEquiv' hcR hcM (N := N)).surjective ((toPresheaf _).map ψ)
         simp only [← hφ, AddEquiv.symm_apply_apply, RingHom.id_apply]
         refine (map_smul_homEquiv'_iff hcR hcM φ).1 (fun U r m ↦ ?_)
         rw [hφ]

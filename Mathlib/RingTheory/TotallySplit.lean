@@ -144,12 +144,13 @@ This is the commutative algebra version of
 -/
 lemma exists_tensorProduct_of_etale [Etale R S] [Module.Finite R S] {n : ℕ}
     (hn : Module.rankAtStalk (R := R) S = n) :
-    ∃ (T : Type u) (_ : CommRing T) (_ : Algebra R T)
+    ∃ (T : Type u) (_ : Ring T) (_ : IsMulCommutative T) (_ : Algebra R T)
       (_ : Module.FaithfullyFlat R T) (_ : Module.Finite R T) (_ : Algebra.Etale R T),
       IsFiniteSplit T (T ⊗[R] S) := by
   induction n generalizing R S with
   | zero =>
-    use R, inferInstance, inferInstance, inferInstance, inferInstance, inferInstance
+    use R, inferInstance, inferInstance, inferInstance, inferInstance, inferInstance,
+      inferInstance
     let e : R ⊗[R] S ≃ₐ[R] S := TensorProduct.lid R S
     have : IsFiniteSplit R S := by
       rw [Nat.cast_zero, Module.rankAtStalk_eq_zero_iff_subsingleton] at hn
@@ -157,7 +158,8 @@ lemma exists_tensorProduct_of_etale [Etale R S] [Module.Finite R S] {n : ℕ}
     apply IsFiniteSplit.of_algEquiv e.symm
   | succ n ih =>
     cases subsingleton_or_nontrivial R
-    · use R, inferInstance, inferInstance, inferInstance, inferInstance, inferInstance
+    · use R, inferInstance, inferInstance, inferInstance, inferInstance, inferInstance,
+        inferInstance
       have : IsFiniteSplit R S := .of_subsingleton
       exact .of_algEquiv (TensorProduct.lid R S).symm
     have : Nontrivial S := by
@@ -165,7 +167,7 @@ lemma exists_tensorProduct_of_etale [Etale R S] [Module.Finite R S] {n : ℕ}
       simp [hn]
     /- Because `S` is unramified over `R`, there exists an `S`-algebra `U` such that
     `S ⊗[R] S ≃ₐ[S] S × U`. -/
-    obtain ⟨U, _, _, ⟨e⟩⟩ := Algebra.FormallyUnramified.exists_algEquiv_prod R S
+    obtain ⟨U, _, _, _, ⟨e⟩⟩ := Algebra.FormallyUnramified.exists_algEquiv_prod R S
     algebraize [RingHom.snd S U]
     have : IsScalarTower S (S × U) U := IsScalarTower.of_algebraMap_eq' rfl
     have : Etale S U := by
@@ -187,7 +189,7 @@ lemma exists_tensorProduct_of_etale [Etale R S] [Module.Finite R S] {n : ℕ}
       grind
     /- We obtain a finite étale, faithfully flat `S`-algebra `V` such that `V ⊗[S] U` is finite
     split. We claim that `V` viewed as an `R`-algebra works. -/
-    obtain ⟨V, _, _, _, _, _, hV⟩ := ih this
+    obtain ⟨V, _, _, _, _, _, _, hV⟩ := ih this
     obtain ⟨n, ⟨f⟩⟩ := hV.nonempty_algEquiv_fun
     algebraize [(algebraMap S V).comp (algebraMap R S)]
     let e : V ⊗[R] S ≃ₐ[V] Unit ⊕ Fin n → V :=
@@ -197,7 +199,7 @@ lemma exists_tensorProduct_of_etale [Etale R S] [Module.Finite R S] {n : ℕ}
         (AlgEquiv.prodCongr (TensorProduct.rid S V V) f).trans <|
         (AlgEquiv.prodCongr (AlgEquiv.funUnique _ _ _).symm AlgEquiv.refl).trans
         (AlgEquiv.sumArrowEquivProdArrow Unit (Fin n) V V).symm
-    refine ⟨V, inferInstance, inferInstance, ?_, ?_, ?_, ?_⟩
+    refine ⟨V, inferInstance, inferInstance, inferInstance, ?_, ?_, ?_, ?_⟩
     · have : Module.FaithfullyFlat R S := by
         apply Module.FaithfullyFlat.of_comap_surjective
         rw [← PrimeSpectrum.rankAtStalk_pos_iff_comap_surjective]

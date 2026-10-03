@@ -291,7 +291,9 @@ theorem coe_mem (x : p) : (x : M) ∈ p :=
 
 variable (p)
 
-instance addCommMonoid : AddCommMonoid p := AddSubmonoidClass.toAddCommMonoid p
+instance addMonoid : AddMonoid p := AddSubmonoidClass.toAddMonoid p
+
+instance addCommMonoid : IsAddCommutative p := AddSubmonoidClass.toAddCommMonoid p
 
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
     Module S p := fast_instance%
@@ -361,7 +363,9 @@ theorem sub_mem_iff_left (hy : y ∈ p) : x - y ∈ p ↔ x ∈ p := by
 theorem sub_mem_iff_right (hx : x ∈ p) : x - y ∈ p ↔ y ∈ p := by
   rw [sub_eq_add_neg, p.add_mem_iff_right hx, p.neg_mem_iff]
 
-instance addCommGroup : AddCommGroup p := AddSubgroupClass.toAddCommGroup p
+instance addGroup : AddGroup p := AddSubgroupClass.toAddGroup p
+
+instance addCommGroup : IsAddCommutative p := AddSubgroupClass.toAddCommGroup p
 
 end AddCommGroup
 

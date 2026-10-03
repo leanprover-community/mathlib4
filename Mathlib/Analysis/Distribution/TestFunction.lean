@@ -214,7 +214,9 @@ instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstS
 
 @[deprecated (since := "2026-06-15")] alias coe_smul := FunLike.coe_smul
 
-instance : AddCommGroup 𝓓^{n}(Ω, F) := fast_instance% FunLike.addCommGroup
+instance : AddGroup 𝓓^{n}(Ω, F) := fast_instance% FunLike.addGroup
+
+instance : IsAddCommutative 𝓓^{n}(Ω, F) := FunLike.addCommGroup
 
 @[deprecated (since := "2026-06-15")] alias coeFnAddMonoidHom := FunLike.coeAddMonoidHom
 
@@ -273,7 +275,7 @@ noncomputable instance topologicalSpace : TopologicalSpace 𝓓^{n}(Ω, F) :=
   sInf {t : TopologicalSpace 𝓓^{n}(Ω, F) | originalTop Ω F n ≤ t ∧
     @IsTopologicalAddGroup 𝓓^{n}(Ω, F) t _ ∧
     @ContinuousSMul ℝ 𝓓^{n}(Ω, F) _ _ t ∧
-    @LocallyConvexSpace ℝ 𝓓^{n}(Ω, F) _ _ _ _ t}
+    @LocallyConvexSpace ℝ 𝓓^{n}(Ω, F) _ _ _ _ _ t}
 
 noncomputable instance : IsTopologicalAddGroup 𝓓^{n}(Ω, F) :=
   isTopologicalAddGroup_sInf fun _ ⟨_, ht, _, _⟩ ↦ ht
@@ -299,7 +301,7 @@ on `𝓓^{n}(Ω, F)` if and only if it is coarser than the "original topology" g
 `TestFunction.originalTop`. -/
 theorem topologicalSpace_le_iff {t : TopologicalSpace 𝓓^{n}(Ω, F)}
     [@IsTopologicalAddGroup _ t _] [@ContinuousSMul ℝ _ _ _ t]
-    [@LocallyConvexSpace ℝ _ _ _ _ _ t] :
+    [@LocallyConvexSpace ℝ _ _ _ _ _ _ t] :
     topologicalSpace Ω F n ≤ t ↔ originalTop Ω F n ≤ t :=
   ⟨le_trans originalTop_le, fun H ↦ sInf_le ⟨H, inferInstance, inferInstance, inferInstance⟩⟩
 
@@ -339,7 +341,7 @@ protected theorem continuous_iff_continuous_comp [Algebra ℝ 𝕜] [IsScalarTow
   have : @IsTopologicalAddGroup _ (induced (f.restrictScalars ℝ) t) _ :=
     isTopologicalAddGroup_induced _
   have : @ContinuousSMul ℝ _ _ _ (induced (f.restrictScalars ℝ) t) := continuousSMul_induced _
-  have : @LocallyConvexSpace ℝ _ _ _ _ _ (induced (f.restrictScalars ℝ) t) := .induced _
+  have : @LocallyConvexSpace ℝ _ _ _ _ _ _ (induced (f.restrictScalars ℝ) t) := .induced _
   simp_rw [topologicalSpace_le_iff, originalTop, iSup₂_le_iff, ← continuous_iff_le_induced,
     continuous_coinduced_dom]
 

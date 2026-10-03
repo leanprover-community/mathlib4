@@ -44,7 +44,10 @@ namespace UnitDisc
 /-- Coercion to `ℂ`. -/
 @[coe] protected def coe : 𝔻 → ℂ := Subtype.val
 
-instance instCommSemigroup : CommSemigroup UnitDisc := inferInstanceAs <| CommSemigroup (ball _ _)
+instance instSemigroup : Semigroup UnitDisc := inferInstanceAs <| Semigroup (ball _ _)
+
+instance instCommSemigroup : IsMulCommutative UnitDisc :=
+  inferInstanceAs <| IsMulCommutative (ball _ _)
 
 instance instSemigroupWithZero : SemigroupWithZero UnitDisc :=
   inferInstanceAs <| SemigroupWithZero (ball _ _)

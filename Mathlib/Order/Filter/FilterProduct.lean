@@ -59,12 +59,12 @@ instance instDivisionRing [DivisionRing β] : DivisionRing β* where
   qsmul_def := fun _ _ => rfl
 
 instance instSemifield [Semifield β] : Semifield β* where
-  __ := instCommSemiring
   __ := instDivisionSemiring
+  toIsMulCommutative := inferInstance
 
 instance instField [Field β] : Field β* where
-  __ := instCommRing
   __ := instDivisionRing
+  toIsMulCommutative := inferInstance
 
 theorem coe_lt [Preorder β] {f g : α → β} : (f : β*) < g ↔ ∀* x, f x < g x := by
   simp only [lt_iff_le_not_ge, eventually_and, coe_le, eventually_not, EventuallyLE]

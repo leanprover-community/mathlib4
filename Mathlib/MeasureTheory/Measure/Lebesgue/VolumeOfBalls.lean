@@ -82,14 +82,14 @@ theorem MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p
   -- We copy `E` to a new type `F` on which we will put the norm defined by `g`
   let F : Type _ := E
   let p : AddGroupNorm F := ⟨⟨g, h1, h3, h2⟩, fun x hx ↦ h4 hx⟩
-  let : NormedAddCommGroup F := AddGroupNorm.toNormedAddCommGroup p
+  let : NormedAddGroup F := AddGroupNorm.toNormedAddCommGroup p
   let : NormedSpace ℝ F := { norm_smul_le := fun _ _ ↦ h5 _ _ }
   -- We put the new topology on F
   let : TopologicalSpace F := UniformSpace.toTopologicalSpace
   let : MeasurableSpace F := borel F
   have : BorelSpace F := { measurable_eq := rfl }
   -- The map between `E` and `F` as a continuous linear equivalence
-  let φ := @LinearEquiv.toContinuousLinearEquiv ℝ _ E _ _ tE _ _ F _ _ _ _ _ _ _ _ _
+  let φ := @LinearEquiv.toContinuousLinearEquiv ℝ _ E _ _ _ tE _ _ F _ _ _ _ _ _ _ _ _ _
     (LinearEquiv.refl ℝ E : E ≃ₗ[ℝ] F)
   -- The measure `ν` is the measure on `F` defined by `μ`
   -- Since we have two different topologies, it is necessary to specify the topology of E
@@ -100,10 +100,10 @@ theorem MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p
       simp_rw [Metric.ball, dist_zero_right]
       rfl
     · refine @Continuous.measurable E F tE mE _ _ _ _ φ ?_
-      exact @ContinuousLinearEquiv.continuous ℝ ℝ _ _ _ _ _ _ E tE _ F _ _ _ _ φ
+      exact @ContinuousLinearEquiv.continuous ℝ ℝ _ _ _ _ _ _ E tE _ _ F _ _ _ _ _ φ
   · -- The map between `E` and `F` as a measurable equivalence
     let ψ := @Homeomorph.toMeasurableEquiv E F tE mE _ _ _ _
-      (@ContinuousLinearEquiv.toHomeomorph ℝ ℝ _ _ _ _ _ _ E tE _ F _ _ _ _ φ)
+      (@ContinuousLinearEquiv.toHomeomorph ℝ ℝ _ _ _ _ _ _ E tE _ _ F _ _ _ _ _ φ)
     -- The map `ψ` is measure preserving by construction
     have : @MeasurePreserving E F mE _ ψ μ ν :=
       @Measurable.measurePreserving E F mE _ ψ (@MeasurableEquiv.measurable E F mE _ ψ) _
@@ -115,14 +115,14 @@ theorem MeasureTheory.measure_le_eq_lt [Nontrivial E] (r : ℝ) :
   -- We copy `E` to a new type `F` on which we will put the norm defined by `g`
   let F : Type _ := E
   let p : AddGroupNorm F := ⟨⟨g, h1, h3, h2⟩, fun x hx ↦ h4 hx⟩
-  let : NormedAddCommGroup F := AddGroupNorm.toNormedAddCommGroup p
+  let : NormedAddGroup F := AddGroupNorm.toNormedAddCommGroup p
   let : NormedSpace ℝ F := { norm_smul_le := fun _ _ ↦ h5 _ _ }
   -- We put the new topology on F
   let : TopologicalSpace F := UniformSpace.toTopologicalSpace
   let : MeasurableSpace F := borel F
   have : BorelSpace F := { measurable_eq := rfl }
   -- The map between `E` and `F` as a continuous linear equivalence
-  let φ := @LinearEquiv.toContinuousLinearEquiv ℝ _ E _ _ tE _ _ F _ _ _ _ _ _ _ _ _
+  let φ := @LinearEquiv.toContinuousLinearEquiv ℝ _ E _ _ _ tE _ _ F _ _ _ _ _ _ _ _ _ _
     (LinearEquiv.refl ℝ E : E ≃ₗ[ℝ] F)
   -- The measure `ν` is the measure on `F` defined by `μ`
   -- Since we have two different topologies, it is necessary to specify the topology of E
@@ -133,13 +133,13 @@ theorem MeasureTheory.measure_le_eq_lt [Nontrivial E] (r : ℝ) :
       simp_rw [Metric.closedBall, dist_zero_right]
       rfl
     · refine @Continuous.measurable E F tE mE _ _ _ _ φ ?_
-      exact @ContinuousLinearEquiv.continuous ℝ ℝ _ _ _ _ _ _ E tE _ F _ _ _ _ φ
+      exact @ContinuousLinearEquiv.continuous ℝ ℝ _ _ _ _ _ _ E tE _ _ F _ _ _ _ _ φ
   · rw [@Measure.map_apply E F mE _ μ φ _ _ measurableSet_ball]
     · congr!
       simp_rw [Metric.ball, dist_zero_right]
       rfl
     · refine @Continuous.measurable E F tE mE _ _ _ _ φ ?_
-      exact @ContinuousLinearEquiv.continuous ℝ ℝ _ _ _ _ _ _ E tE _ F _ _ _ _ φ
+      exact @ContinuousLinearEquiv.continuous ℝ ℝ _ _ _ _ _ _ E tE _ _ F _ _ _ _ _ φ
 
 end general_case
 
@@ -251,7 +251,8 @@ theorem Complex.volume_sum_rpow_lt_one {p : ℝ} (hp : 1 ≤ p) :
       ← Finset.sum_neg_distrib, Real.exp_sum]
     rw [integral_fintype_prod_volume_eq_pow fun x : ℂ => Real.exp (- ‖x‖ ^ p),
       Complex.integral_exp_neg_rpow hp]
-  · rw [finrank_pi_fintype, Complex.finrank_real_complex, Finset.sum_const, smul_eq_mul,
+  · simp_rw [finrank_pi_fintype, Complex.finrank_real_complex]
+    rw [Finset.sum_const, smul_eq_mul,
       Nat.cast_mul, Nat.cast_ofNat, Fintype.card, mul_comm]
 
 theorem Complex.volume_sum_rpow_lt [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) (r : ℝ) :

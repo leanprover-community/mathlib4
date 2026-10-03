@@ -34,7 +34,7 @@ noncomputable section
 @[wikidata Q2039387]
 def EReal := WithBot (WithTop ℝ)
 deriving Nontrivial,
-  Zero, One, AddMonoid, AddCommMonoid, AddCommMonoidWithOne, CharZero,
+  Zero, One, AddMonoid, IsAddCommutative, AddMonoidWithOne, CharZero,
   Top, Bot, SupSet, InfSet, PartialOrder, LinearOrder, CompleteLinearOrder, DenselyOrdered,
   ZeroLEOneClass, IsOrderedAddMonoid
 

@@ -61,7 +61,7 @@ theorem rank_quotient_add_rank_of_divisionRing (p : Submodule K V) :
 
 instance DivisionRing.hasRankNullity : HasRankNullity.{u₀} K where
   rank_quotient_add_rank := rank_quotient_add_rank_of_divisionRing
-  exists_set_linearIndependent V _ _ := by
+  exists_set_linearIndependent V _ _ _ := by
     let b := Module.Free.chooseBasis K V
     refine ⟨range b, ?_, b.linearIndependent.linearIndepOn_id⟩
     rw [← lift_injective.eq_iff, mk_range_eq_of_injective b.injective,

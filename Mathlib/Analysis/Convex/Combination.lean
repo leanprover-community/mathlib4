@@ -559,7 +559,7 @@ end
 
 section pi
 variable {𝕜 ι : Type*} {E : ι → Type*} [Finite ι] [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
-  [Π i, AddCommGroup (E i)] [Π i, Module 𝕜 (E i)] {s : Set ι} {t : Π i, Set (E i)} {x : Π i, E i}
+  [Π i, AddGroup (E i)] [∀ i, IsAddCommutative (E i)] [Π i, Module 𝕜 (E i)] {s : Set ι} {t : Π i, Set (E i)} {x : Π i, E i}
 
 open Finset Fintype
 

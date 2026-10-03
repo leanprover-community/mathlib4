@@ -199,7 +199,7 @@ variable [SeminormedRing S] [IsMulCommutative S] [SeminormedRing R] [SeminormedA
 variable [Algebra S R] [Module S M]
 variable [IsBoundedSMul S R] [IsBoundedSMul S M]
 
-instance instL1SeminormedAddCommGroup : SeminormedAddCommGroup (tsze R M) :=
+instance instL1SeminormedAddCommGroup : SeminormedAddGroup (tsze R M) :=
   fast_instance% {
     WithLp.seminormedAddCommGroupToProd 1 R M with
     toUniformSpace := inferInstance }
@@ -244,7 +244,7 @@ instance instL1SeminormedRing : SeminormedRing (tsze R M) where
       positivity
     _ = (‖r₁‖ + ‖m₁‖) * (‖r₂‖ + ‖m₂‖) := by ring
   __ : Ring (tsze R M) := inferInstance
-  __ : SeminormedAddCommGroup (tsze R M) := inferInstance
+  __ : SeminormedAddGroup (tsze R M) := inferInstance
 
 instance instL1IsBoundedSMul : IsBoundedSMul S (tsze R M) :=
   WithLp.isBoundedSMulSeminormedAddCommGroupToProd 1 R M
@@ -253,18 +253,6 @@ instance [NormOneClass R] : NormOneClass (tsze R M) where
   norm_one := by rw [norm_def, fst_one, snd_one, norm_zero, norm_one, add_zero]
 
 end Ring
-
-section CommRing
-
-variable [SeminormedRing R] [IsMulCommutative R] [SeminormedAddGroup M] [IsAddCommutative M]
-variable [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
-variable [IsBoundedSMul R M]
-
-instance instL1SeminormedCommRing : SeminormedCommRing (tsze R M) where
-  __ : SeminormedRing (tsze R M) := inferInstance
-  __ : CommRing (tsze R M) := inferInstance
-
-end CommRing
 
 end Seminormed
 
@@ -275,26 +263,14 @@ section Ring
 variable [NormedRing R] [NormedAddGroup M] [IsAddCommutative M] [Module R M] [Module Rᵐᵒᵖ M]
 variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 
-instance instL1NormedAddCommGroup : NormedAddCommGroup (tsze R M) :=
+instance instL1NormedAddCommGroup : NormedAddGroup (tsze R M) :=
   fast_instance% WithLp.normedAddCommGroupToProd 1 R M
 
 instance instL1NormedRing : NormedRing (tsze R M) where
   __ : SeminormedRing (tsze R M) := inferInstance
-  __ : NormedAddCommGroup (tsze R M) := inferInstance
+  __ : NormedAddGroup (tsze R M) := inferInstance
 
 end Ring
-
-section CommRing
-
-variable [NormedRing R] [IsMulCommutative R] [NormedAddGroup M] [IsAddCommutative M]
-variable [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
-variable [IsBoundedSMul R M]
-
-instance instL1NormedCommRing : NormedCommRing (tsze R M) where
-  __ : NormedRing (tsze R M) := inferInstance
-  __ : CommRing (tsze R M) := inferInstance
-
-end CommRing
 
 section Algebra
 

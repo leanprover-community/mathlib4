@@ -168,16 +168,16 @@ theorem _root_.BoundedContinuousFunction.norm_toContinuousMap_eq (f : α →ᵇ 
 
 open BoundedContinuousFunction
 
-instance : SeminormedAddCommGroup C(α, E) where
+instance : SeminormedAddGroup C(α, E) where
   __ := ContinuousMap.instPseudoMetricSpace _ _
-  __ := ContinuousMap.instAddCommGroupContinuousMap
+  __ : AddGroup C(α, E) := inferInstance
   dist_eq x y := by rw [← norm_mkOfCompact, ← dist_mkOfCompact, dist_eq_norm_neg_add,
     mkOfCompact_add, mkOfCompact_neg]
   dist := dist
   norm := norm
 
-instance {E : Type*} [NormedAddGroup E] [IsAddCommutative E] : NormedAddCommGroup C(α, E) where
-  __ : SeminormedAddCommGroup C(α, E) := inferInstance
+instance {E : Type*} [NormedAddGroup E] [IsAddCommutative E] : NormedAddGroup C(α, E) where
+  __ : SeminormedAddGroup C(α, E) := inferInstance
   __ : MetricSpace C(α, E) := inferInstance
 
 instance [Nonempty α] {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [Nontrivial E] :
@@ -202,19 +202,19 @@ theorem dist_le_two_norm (x y : α) : dist (f x) (f y) ≤ 2 * ‖f‖ :=
 
 /-- The norm of a function is controlled by the supremum of the pointwise norms. -/
 theorem norm_le {C : ℝ} (C0 : (0 : ℝ) ≤ C) : ‖f‖ ≤ C ↔ ∀ x : α, ‖f x‖ ≤ C :=
-  @BoundedContinuousFunction.norm_le _ _ _ _ (mkOfCompact f) _ C0
+  @BoundedContinuousFunction.norm_le _ _ _ _ _ (mkOfCompact f) _ C0
 
 theorem norm_le_of_nonempty [Nonempty α] {M : ℝ} : ‖f‖ ≤ M ↔ ∀ x, ‖f x‖ ≤ M :=
-  @BoundedContinuousFunction.norm_le_of_nonempty _ _ _ _ _ (mkOfCompact f) _
+  @BoundedContinuousFunction.norm_le_of_nonempty _ _ _ _ _ _ (mkOfCompact f) _
 
 theorem norm_lt_iff {M : ℝ} (M0 : 0 < M) : ‖f‖ < M ↔ ∀ x, ‖f x‖ < M :=
-  @BoundedContinuousFunction.norm_lt_iff_of_compact _ _ _ _ _ (mkOfCompact f) _ M0
+  @BoundedContinuousFunction.norm_lt_iff_of_compact _ _ _ _ _ _ (mkOfCompact f) _ M0
 
 theorem nnnorm_lt_iff {M : ℝ≥0} (M0 : 0 < M) : ‖f‖₊ < M ↔ ∀ x : α, ‖f x‖₊ < M :=
   f.norm_lt_iff M0
 
 theorem norm_lt_iff_of_nonempty [Nonempty α] {M : ℝ} : ‖f‖ < M ↔ ∀ x, ‖f x‖ < M :=
-  @BoundedContinuousFunction.norm_lt_iff_of_nonempty_compact _ _ _ _ _ _ (mkOfCompact f) _
+  @BoundedContinuousFunction.norm_lt_iff_of_nonempty_compact _ _ _ _ _ _ _ (mkOfCompact f) _
 
 theorem nnnorm_lt_iff_of_nonempty [Nonempty α] {M : ℝ≥0} : ‖f‖₊ < M ↔ ∀ x, ‖f x‖₊ < M :=
   f.norm_lt_iff_of_nonempty
@@ -257,37 +257,21 @@ section
 variable {R : Type*}
 
 instance [NonUnitalSeminormedRing R] : NonUnitalSeminormedRing C(α, R) where
-  __ : SeminormedAddCommGroup C(α, R) := inferInstance
+  __ : SeminormedAddGroup C(α, R) := inferInstance
   __ : NonUnitalRing C(α, R) := inferInstance
   norm_mul_le f g := norm_mul_le (mkOfCompact f) (mkOfCompact g)
-
-instance [NonUnitalSeminormedRing R] [IsMulCommutative R] : NonUnitalSeminormedCommRing C(α, R) where
-  __ : NonUnitalSeminormedRing C(α, R) := inferInstance
-  __ : NonUnitalCommRing C(α, R) := inferInstance
 
 instance [SeminormedRing R] : SeminormedRing C(α, R) where
   __ : NonUnitalSeminormedRing C(α, R) := inferInstance
   __ : Ring C(α, R) := inferInstance
 
-instance [SeminormedRing R] [IsMulCommutative R] : SeminormedCommRing C(α, R) where
-  __ : SeminormedRing C(α, R) := inferInstance
-  __ : CommRing C(α, R) := inferInstance
-
 instance [NonUnitalNormedRing R] : NonUnitalNormedRing C(α, R) where
-  __ : NormedAddCommGroup C(α, R) := inferInstance
+  __ : NormedAddGroup C(α, R) := inferInstance
   __ : NonUnitalSeminormedRing C(α, R) := inferInstance
 
-instance [NonUnitalNormedRing R] [IsMulCommutative R] : NonUnitalNormedCommRing C(α, R) where
-  __ : NonUnitalNormedRing C(α, R) := inferInstance
-  __ : NonUnitalCommRing C(α, R) := inferInstance
-
 instance [NormedRing R] : NormedRing C(α, R) where
-  __ : NormedAddCommGroup C(α, R) := inferInstance
+  __ : NormedAddGroup C(α, R) := inferInstance
   __ : SeminormedRing C(α, R) := inferInstance
-
-instance [NormedRing R] [IsMulCommutative R] : NormedCommRing C(α, R) where
-  __ : NormedRing C(α, R) := inferInstance
-  __ : CommRing C(α, R) := inferInstance
 
 end
 
@@ -345,13 +329,13 @@ theorem linearIsometryBoundedOfCompact_of_compact_toEquiv :
 
 end
 
-@[simp] lemma nnnorm_smul_const {R β : Type*} [SeminormedAddGroup β] [IsAddCommutative β] [SeminormedRing R]
-    [Module R β] [NormSMulClass R β] (f : C(α, R)) (b : β) :
+@[simp] lemma nnnorm_smul_const {R β : Type*} [SeminormedAddGroup β] [IsAddCommutative β]
+    [SeminormedRing R] [Module R β] [NormSMulClass R β] (f : C(α, R)) (b : β) :
     ‖f • const α b‖₊ = ‖f‖₊ * ‖b‖₊ := by
   simp only [nnnorm_eq_iSup_nnnorm, smul_apply', const_apply, nnnorm_smul, iSup_mul]
 
-@[simp] lemma norm_smul_const {R β : Type*} [SeminormedAddGroup β] [IsAddCommutative β] [SeminormedRing R]
-    [Module R β] [NormSMulClass R β] (f : C(α, R)) (b : β) :
+@[simp] lemma norm_smul_const {R β : Type*} [SeminormedAddGroup β] [IsAddCommutative β]
+    [SeminormedRing R] [Module R β] [NormSMulClass R β] (f : C(α, R)) (b : β) :
     ‖f • const α b‖ = ‖f‖ * ‖b‖ := by
   simp only [← coe_nnnorm, NNReal.coe_mul, nnnorm_smul_const]
 

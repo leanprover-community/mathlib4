@@ -144,11 +144,6 @@ instance NormedGroup.toENormedMonoid {F : Type*} [NormedGroup F] : ENormedMonoid
   enorm_eq_zero := by simp [enorm_eq_nnnorm]
   enorm_mul_le := by simp [enorm_eq_nnnorm, ← coe_add, nnnorm_mul_le']
 
-@[to_additive]
-instance NormedCommGroup.toENormedCommMonoid [NormedGroup E] [IsMulCommutative E] : ENormedCommMonoid E where
-  __ := NormedGroup.toENormedMonoid
-  __ := ‹NormedCommGroup E›
-
 end Instances
 
 section SeminormedGroup
@@ -311,7 +306,7 @@ theorem tendsto_iff_enorm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E
     Tendsto f a (𝓝 b) ↔ Tendsto (fun e => ‖f e / b‖ₑ) a (𝓝 0) := by
   simp only [← edist_eq_enorm_div, ← tendsto_iff_edist_tendsto_0]
 
-@[to_additive]
+@[to_additive SeminormedAddCommGroup.mem_closure_iff]
 theorem SeminormedCommGroup.mem_closure_iff {s : Set E} :
     a ∈ closure s ↔ ∀ ε, 0 < ε → ∃ b ∈ s, ‖a / b‖ < ε := by
   simp [Metric.mem_closure_iff, dist_eq_norm_div]

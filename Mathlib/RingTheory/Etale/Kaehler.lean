@@ -23,7 +23,8 @@ public import Mathlib.RingTheory.Flat.Localization
 
 universe u
 
-variable (R S T : Type*) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Ring T] [IsMulCommutative T]
+variable (R S T : Type*) [_root_.Ring R] [IsMulCommutative R] [_root_.Ring S] [IsMulCommutative S]
+  [_root_.Ring T] [IsMulCommutative T]
 variable [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 open TensorProduct
@@ -174,7 +175,7 @@ def tensorCotangentInvFun
         simp only [LinearMap.liftBaseChange_tmul, LinearMap.coe_comp, SetLike.val_smul,
           LinearMap.coe_restrictScalars, Function.comp_apply, mk_apply, smul_eq_mul, e,
           LinearMap.liftBaseChange_tmul, LinearEquiv.ofBijective_apply]
-        have h₂ : b.1 • Cotangent.mk d = 0 := by ext; simp [Cotangent.smul_eq_zero_of_mem _ b.2]
+        have h₂ : b.1 • Cotangent.mk (P := P) d = 0 := by ext; simp [Cotangent.smul_eq_zero_of_mem _ b.2]
         rw [TensorProduct.smul_tmul', mul_smul, f.mapKer_apply_coe, ← halg,
           algebraMap_smul, ← TensorProduct.tmul_smul, h₂, tmul_zero, smul_zero]
 
@@ -182,16 +183,16 @@ omit [IsScalarTower R S T] in
 lemma tensorCotangentInvFun_smul_mk
     [alg : Algebra P.Ring Q.Ring] (halg : algebraMap P.Ring Q.Ring = f.toRingHom)
     (H : Function.Bijective ((f.mapKer halg).liftBaseChange Q.Ring)) (x : Q.Ring) (y : P.ker) :
-    tensorCotangentInvFun f halg H (x • .mk ⟨f.toRingHom y, (f.mapKer halg y).2⟩) =
-      x • 1 ⊗ₜ .mk y := by
+    tensorCotangentInvFun f halg H (x • .mk (P := Q) ⟨f.toRingHom y, (f.mapKer halg y).2⟩) =
+      x • 1 ⊗ₜ .mk (P := P) y := by
   let := ((algebraMap S T).comp (algebraMap P.Ring S)).toAlgebra
   have : IsScalarTower P.Ring S T := .of_algebraMap_eq' rfl
   have : IsScalarTower P.Ring Q.Ring T :=
     .of_algebraMap_eq fun r ↦ halg ▸ (f.algebraMap_toRingHom r).symm
   let e := LinearEquiv.ofBijective _ H
-  trans tensorCotangentInvFun f halg H (.mk ((f.mapKer halg).liftBaseChange Q.Ring (x ⊗ₜ y)))
+  trans tensorCotangentInvFun f halg H (.mk (P := Q) ((f.mapKer halg).liftBaseChange Q.Ring (x ⊗ₜ y)))
   · simp; rfl
-  change ((TensorProduct.mk _ _ _ 1).restrictScalars _ ∘ₗ Cotangent.mk).liftBaseChange _
+  change ((TensorProduct.mk _ _ _ 1).restrictScalars _ ∘ₗ Cotangent.mk (P := P)).liftBaseChange _
     (e.symm (e (x ⊗ₜ y))) = _
   rw [e.symm_apply_apply]
   simp

@@ -315,10 +315,14 @@ lemma ext {x y : AdicCompletion I M} (h : ∀ n, x.val n = y.val n) : x = y := S
 
 variable (I M)
 
-instance : AddCommGroup (AdicCompletion I M) :=
+instance : AddGroup (AdicCompletion I M) :=
   let f : AdicCompletion I M → ∀ n, M ⧸ (I ^ n • ⊤ : Submodule R M) := Subtype.val
-  Subtype.val_injective.addCommGroup f rfl val_add val_neg val_sub (fun _ _ ↦ val_smul ..)
+  Subtype.val_injective.addGroup f rfl val_add val_neg val_sub (fun _ _ ↦ val_smul ..)
     (fun _ _ ↦ val_smul ..)
+
+instance : IsAddCommutative (AdicCompletion I M) :=
+  Subtype.val_injective.isAddCommutative
+    (Subtype.val : AdicCompletion I M → ∀ n, M ⧸ (I ^ n • ⊤ : Submodule R M)) val_add
 
 instance [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
     Module S (AdicCompletion I M) :=
@@ -462,10 +466,14 @@ instance : SMul ℕ (AdicCauchySequence I M) where
 instance : SMul ℤ (AdicCauchySequence I M) where
   smul n x := ⟨n • x.val, fun hmn ↦ SModEq.zsmul (x.property hmn) n⟩
 
-instance : AddCommGroup (AdicCauchySequence I M) := by
+instance : AddGroup (AdicCauchySequence I M) := by
   let f : AdicCauchySequence I M → (ℕ → M) := Subtype.val
-  apply Subtype.val_injective.addCommGroup f rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+  apply Subtype.val_injective.addGroup f rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+
+instance : IsAddCommutative (AdicCauchySequence I M) :=
+  Subtype.val_injective.isAddCommutative (Subtype.val : AdicCauchySequence I M → (ℕ → M))
+    (fun _ _ ↦ rfl)
 
 instance : SMul R (AdicCauchySequence I M) where
   smul r x := ⟨r • x.val, fun hmn ↦ SModEq.smul (x.property hmn) r⟩

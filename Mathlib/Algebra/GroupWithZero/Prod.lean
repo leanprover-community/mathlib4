@@ -45,10 +45,7 @@ instance instMonoidWithZero [MonoidWithZero M₀] [MonoidWithZero N₀] : Monoid
   zero_mul := by simp
   mul_zero := by simp
 
-instance instCommMonoidWithZero [MonoidWithZero M₀] [IsMulCommutative M₀] [MonoidWithZero N₀] [IsMulCommutative N₀] :
-    CommMonoidWithZero (M₀ × N₀) where
-  zero_mul := by simp
-  mul_zero := by simp
+-- `IsMulCommutative (M₀ × N₀)` is provided by `Prod.isMulCommutative`.
 
 end Prod
 

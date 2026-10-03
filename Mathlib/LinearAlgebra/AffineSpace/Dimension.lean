@@ -61,7 +61,11 @@ theorem finDim_bot : finDim (⊥ : AffineSubspace R A) = ⊥ := by
 
 @[simp]
 theorem dim_singleton [Nontrivial R] (x : A) : dim ({x} : AffineSubspace R A) = 0 := by
-  unfold dim
+  have h : ({x} : AffineSubspace R A) ≠ ⊥ := by simp
+  simp only [dim, h, ↓reduceIte]
+  -- re-elaborate so the `IsAddCommutative` proof mentions `direction {x}` rather than being the
+  -- auxiliary `dim._proof_1 {x}`, which would make the `rw` motive ill-typed
+  change ((Module.rank R ({x} : AffineSubspace R A).direction : Cardinal) : WithBot Cardinal) = 0
   rw [direction_singleton]
   simp
 

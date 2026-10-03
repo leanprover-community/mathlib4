@@ -57,9 +57,13 @@ instance : FunLike (AbstractMeasure X R E) C(X, R) E :=
 instance : ContinuousLinearMapClass (AbstractMeasure X R E) R C(X, R) E :=
   inferInstanceAs (ContinuousLinearMapClass (C(X, R) →L[R] E) R C(X, R) E)
 
-/-- Inherit `AddCommGroup` structure from `C(X, R) →L[R] E`. -/
-instance : AddCommGroup (AbstractMeasure X R E) :=
-  inferInstanceAs (AddCommGroup (C(X, R) →L[R] E))
+/-- Inherit `AddGroup` structure from `C(X, R) →L[R] E`. -/
+instance : AddGroup (AbstractMeasure X R E) :=
+  inferInstanceAs (AddGroup (C(X, R) →L[R] E))
+
+/-- Inherit additive commutativity from `C(X, R) →L[R] E`. -/
+instance : IsAddCommutative (AbstractMeasure X R E) :=
+  inferInstanceAs (IsAddCommutative (C(X, R) →L[R] E))
 
 instance isAddApply : IsAddApply (AbstractMeasure X R E) C(X, R) E where
 

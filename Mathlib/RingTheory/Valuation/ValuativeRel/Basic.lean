@@ -471,7 +471,7 @@ theorem ValueGroupWithZero.lift_mul {α : Type*} [Mul α] (f : R → posSubmonoi
   induction b using ValueGroupWithZero.ind
   simpa using hdist _ _ _ _
 
-instance : CommMonoidWithZero (ValueGroupWithZero R) where
+instance : MonoidWithZero (ValueGroupWithZero R) where
   mul_assoc a b c := by
     induction a using ValueGroupWithZero.ind
     induction b using ValueGroupWithZero.ind
@@ -485,13 +485,6 @@ instance : CommMonoidWithZero (ValueGroupWithZero R) where
   mul_zero := ValueGroupWithZero.ind <| fun _ _ => by
     rw [← ValueGroupWithZero.mk_zero 1, ValueGroupWithZero.mk_mul_mk]
     simp
-  mul_comm a b := by
-    induction a using ValueGroupWithZero.ind
-    induction b using ValueGroupWithZero.ind
-    apply ValuativeRel.ValueGroupWithZero.sound <;>
-    · simp only [Submonoid.coe_mul]
-      nth_grw 2 [veq_mul_comm]
-      nth_grw 6 [veq_mul_comm]
   npow n := ValueGroupWithZero.lift (fun a b => ValueGroupWithZero.mk (a ^ n) (b ^ n)) <| by
     intro x y t s h₁ h₂
     induction n with
@@ -502,6 +495,15 @@ instance : CommMonoidWithZero (ValueGroupWithZero R) where
       exact ValueGroupWithZero.sound h₁ h₂
   npow_zero := ValueGroupWithZero.ind (by simp_rw [HPow.hPow, Pow.pow]; simp)
   npow_succ n := ValueGroupWithZero.ind (by simp_rw [HPow.hPow, Pow.pow]; simp [pow_succ])
+
+instance : IsMulCommutative (ValueGroupWithZero R) where
+  is_comm := ⟨fun a b => by
+    induction a using ValueGroupWithZero.ind
+    induction b using ValueGroupWithZero.ind
+    apply ValuativeRel.ValueGroupWithZero.sound <;>
+    · simp only [Submonoid.coe_mul]
+      nth_grw 2 [veq_mul_comm]
+      nth_grw 6 [veq_mul_comm]⟩
 
 instance : LE (ValueGroupWithZero R) where
   le := ValueGroupWithZero.lift₂ (fun a s b t => a * t ≤ᵥ b * s) <| by

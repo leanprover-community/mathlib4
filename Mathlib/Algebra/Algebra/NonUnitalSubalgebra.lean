@@ -216,7 +216,7 @@ instance toNonUnitalSemiring [Semiring R] [IsMulCommutative R] [NonUnitalSemirin
   inferInstance
 
 instance toNonUnitalCommSemiring [Semiring R] [IsMulCommutative R] [NonUnitalSemiring A] [IsMulCommutative A] [Module R A]
-    (S : NonUnitalSubalgebra R A) : NonUnitalCommSemiring S :=
+    (S : NonUnitalSubalgebra R A) : IsMulCommutative S :=
   inferInstance
 
 instance toNonUnitalNonAssocRing [Ring R] [IsMulCommutative R] [NonUnitalNonAssocRing A] [Module R A]
@@ -228,7 +228,7 @@ instance toNonUnitalRing [Ring R] [IsMulCommutative R] [NonUnitalRing A] [Module
   inferInstance
 
 instance toNonUnitalCommRing [Ring R] [IsMulCommutative R] [NonUnitalRing A] [IsMulCommutative A] [Module R A]
-    (S : NonUnitalSubalgebra R A) : NonUnitalCommRing S :=
+    (S : NonUnitalSubalgebra R A) : IsMulCommutative S :=
   inferInstance
 
 end
@@ -1085,13 +1085,17 @@ def center : NonUnitalSubalgebra R A :=
 theorem coe_center : (center R A : Set A) = Set.center A :=
   rfl
 
-/-- The center of a non-unital algebra is commutative and associative -/
-instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R A) :=
-  inferInstanceAs <| NonUnitalCommSemiring (NonUnitalSubsemiring.center A)
+/-- The center of a non-unital algebra is associative -/
+instance center.instNonUnitalCommSemiring : NonUnitalSemiring (center R A) :=
+  inferInstanceAs <| NonUnitalSemiring (NonUnitalSubsemiring.center A)
+
+/-- The center of a non-unital algebra is commutative -/
+instance center.isMulCommutative : IsMulCommutative (center R A) :=
+  inferInstanceAs <| IsMulCommutative (NonUnitalSubsemiring.center A)
 
 instance center.instNonUnitalCommRing {A : Type*} [NonUnitalNonAssocRing A] [Module R A]
-    [IsScalarTower R A A] [SMulCommClass R A A] : NonUnitalCommRing (center R A) :=
-  inferInstanceAs <| NonUnitalCommRing (NonUnitalSubring.center A)
+    [IsScalarTower R A A] [SMulCommClass R A A] : NonUnitalRing (center R A) :=
+  inferInstanceAs <| NonUnitalRing (NonUnitalSubring.center A)
 
 @[simp]
 theorem center_toNonUnitalSubsemiring :
@@ -1114,7 +1118,7 @@ variable (R A : Type*) [Semiring R] [IsMulCommutative R] [NonUnitalSemiring A] [
   [SMulCommClass R A A]
 
 -- no instance diamond, as the `npow` field isn't present in the non-unital case.
-example : center.instNonUnitalCommSemiring.toNonUnitalSemiring =
+example : (center.instNonUnitalCommSemiring : NonUnitalSemiring (center R A)) =
     NonUnitalSubsemiringClass.toNonUnitalSemiring (center R A) := by
   with_reducible_and_instances rfl
 
@@ -1223,33 +1227,9 @@ instance isMulCommutative_adjoin_singleton (x : A) :
     IsMulCommutative (adjoin R ({x} : Set A)) :=
   isMulCommutative_adjoin R (by simp)
 
-open scoped IsMulCommutative in
-variable (R) in
-/-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a non-unital commutative
-semiring.
-
-See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_adjoin +typeChanged (since := "2026-03-11")]
-abbrev adjoinNonUnitalCommSemiringOfComm {s : Set A} (hcomm : s.Pairwise Commute) :
-    NonUnitalCommSemiring (adjoin R s) :=
-  have := isMulCommutative_adjoin R hcomm
-  inferInstance
-
 instance instIsMulCommutative_adjoin {S : Type*} [SetLike S A] [MulMemClass S A] (s : S)
     [IsMulCommutative s] : IsMulCommutative (adjoin R (s : Set A)) :=
   isMulCommutative_adjoin R fun _ h₁ _ h₂ _ => setLike_mul_comm h₁ h₂
-
-open scoped IsMulCommutative in
-/-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a non-unital commutative
-ring.
-
-See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_adjoin +typeChanged (since := "2026-03-11")]
-abbrev adjoinNonUnitalCommRingOfComm (R : Type*) {A : Type*} [Ring R] [IsMulCommutative R] [NonUnitalRing A]
-    [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] {s : Set A}
-    (hcomm : s.Pairwise Commute) : NonUnitalCommRing (adjoin R s) :=
-  have := isMulCommutative_adjoin R hcomm
-  inferInstance
 
 end NonUnitalAlgebra
 

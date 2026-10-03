@@ -88,7 +88,7 @@ theorem ne_zero [Nontrivial R] (i : ι) : x i ≠ 0 :=
 theorem map {f : A →ₐ[R] A'} (hf_inj : Set.InjOn f (adjoin R (range x))) :
     AlgebraicIndependent R (f ∘ x) := by
   have : aeval (f ∘ x) = f.comp (aeval x) := by ext; simp
-  have h : ∀ p : MvPolynomial ι R, aeval x p ∈ (@aeval R _ _ _ _ _ ((↑) : range x → A)).range := by
+  have h : ∀ p : MvPolynomial ι R, aeval x p ∈ (aeval (R := R) ((↑) : range x → A)).range := by
     intro p
     rw [AlgHom.mem_range]
     refine ⟨MvPolynomial.rename (codRestrict x (range x) mem_range_self) p, ?_⟩
@@ -168,7 +168,7 @@ theorem isTranscendenceBasis_iff_of_subsingleton [Subsingleton R] (x : ι → A)
 
 theorem algebraicIndependent_adjoin (hs : AlgebraicIndependent R x) :
     @AlgebraicIndependent ι R (adjoin R (range x))
-      (fun i : ι => ⟨x i, subset_adjoin (mem_range_self i)⟩) _ _ _ :=
+      (fun i : ι => ⟨x i, subset_adjoin (mem_range_self i)⟩) _ _ _ _ _ :=
   AlgebraicIndependent.of_comp (adjoin R (range x)).val hs
 
 /-- A set of algebraically independent elements in an algebra `A` over a ring `K` is also

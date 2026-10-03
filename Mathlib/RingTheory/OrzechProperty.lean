@@ -60,20 +60,21 @@ in fact implies the universe polymorphic versions
 and `OrzechProperty.injective_of_surjective_of_submodule`. -/
 @[mk_iff]
 class OrzechProperty : Prop where
-  injective_of_surjective_of_submodule' : ∀ {M : Type u} [AddMonoid M] [IsAddCommutative M] [Module R M]
-    [Module.Finite R M] {N : Submodule R M} (f : N →ₗ[R] M), Surjective f → Injective f
+  injective_of_surjective_of_submodule' : ∀ {M : Type u} [AddMonoid M] [IsAddCommutative M]
+    [Module R M] [Module.Finite R M] {N : Submodule R M} (f : N →ₗ[R] M), Surjective f → Injective f
 
 namespace OrzechProperty
 
 instance [Finite R] : OrzechProperty R where
-  injective_of_surjective_of_submodule' {M} _ _ _ {N} _f hf :=
+  injective_of_surjective_of_submodule' {M} _ _ _ _ {N} _f hf :=
     have : Finite M := Module.finite_of_finite R
     have ⟨_g, hg⟩ := N.subtype_injective.hasLeftInverse
     .of_comp (hg.surjective.comp hf).bijective_of_finite.1
 
 variable {R}
 
-variable [OrzechProperty R] {M : Type v} [AddMonoid M] [IsAddCommutative M] [Module R M] [Module.Finite R M]
+variable [OrzechProperty R] {M : Type v} [AddMonoid M] [IsAddCommutative M] [Module R M]
+  [Module.Finite R M]
 
 theorem injective_of_surjective_of_injective
     {N : Type w} [AddMonoid N] [IsAddCommutative N] [Module R N]

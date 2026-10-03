@@ -61,7 +61,10 @@ namespace PontryaginDual
 
 open ContinuousMonoidHom
 
-instance : CommGroup (PontryaginDual A) := inferInstanceAs (CommGroup (A →ₜ* Circle))
+instance : Group (PontryaginDual A) := inferInstanceAs (Group (A →ₜ* Circle))
+
+instance : IsMulCommutative (PontryaginDual A) :=
+  inferInstanceAs (IsMulCommutative (A →ₜ* Circle))
 
 deriving instance
   T2Space, IsTopologicalGroup,

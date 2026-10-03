@@ -88,7 +88,7 @@ variable (R) in
 structure.
 See note [reducible non-instances]. -/
 abbrev Module.addCommMonoidToAddCommGroup
-    [Ring R] [AddMonoid M] [IsAddCommutative M] [Module R M] : AddCommGroup M where
+    [Ring R] [AddMonoid M] [IsAddCommutative M] [Module R M] : AddGroup M where
   neg := fun a => (-1 : R) • a
   neg_add_cancel := fun a =>
     show (-1 : R) • a + a = 0 by
@@ -192,7 +192,7 @@ end AddCommGroup
 /-- All `ℤ`-module structures are equal. See also `AddCommGroup.uniqueIntModule`. -/
 instance AddCommMonoid.subsingletonIntModule [AddMonoid M] [IsAddCommutative M] : Subsingleton (Module ℤ M) where
   allEq a b :=
-    let : AddCommGroup M := Module.addCommMonoidToAddCommGroup ℤ
+    let : AddGroup M := Module.addCommMonoidToAddCommGroup ℤ
     AddCommGroup.uniqueIntModule.instSubsingleton.allEq a b
 
 theorem map_intCast_smul [AddGroup M] [IsAddCommutative M] [AddGroup M₂] [IsAddCommutative M₂] {F : Type*} [FunLike F M M₂]

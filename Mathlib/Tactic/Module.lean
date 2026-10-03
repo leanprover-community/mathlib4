@@ -303,7 +303,8 @@ meta def add (iR : Q(Semiring $R)) : qNF R M → qNF R M → qNF R M
 and a natural number), recursively construct a proof that in the `$R`-module `$M`, the sum of the
 "linear combinations" represented by `l₁` and `l₂` is the linear combination represented by
 `Module.qNF.add iR l₁ l₁`. -/
-meta def mkAddProof {iR : Q(Semiring $R)} {iM : Q(AddCommMonoid $M)} (iRM : Q(Module $R $M))
+meta def mkAddProof {iR : Q(Semiring $R)} {iM : Q(AddMonoid $M)} {iMc : Q(IsAddCommutative $M)}
+    (iRM : Q(Module $R $M))
     (l₁ l₂ : qNF R M) :
     Q(NF.eval $(l₁.toNF) + NF.eval $(l₂.toNF) = NF.eval $((qNF.add iR l₁ l₂).toNF)) :=
   match l₁, l₂ with
@@ -348,7 +349,8 @@ def sub (iR : Q(Ring $R)) : qNF R M → qNF R M → qNF R M
 and a natural number), recursively construct a proof that in the `$R`-module `$M`, the difference
 of the "linear combinations" represented by `l₁` and `l₂` is the linear combination represented by
 `Module.qNF.sub iR l₁ l₁`. -/
-def mkSubProof (iR : Q(Ring $R)) (iM : Q(AddCommGroup $M)) (iRM : Q(Module $R $M))
+def mkSubProof (iR : Q(Ring $R)) (iM : Q(AddGroup $M)) (iMc : Q(IsAddCommutative $M))
+    (iRM : Q(Module $R $M))
     (l₁ l₂ : qNF R M) :
     Q(NF.eval $(l₁.toNF) - NF.eval $(l₂.toNF) = NF.eval $((qNF.sub iR l₁ l₂).toNF)) :=
   match l₁, l₂ with
@@ -356,18 +358,18 @@ def mkSubProof (iR : Q(Ring $R)) (iM : Q(AddCommGroup $M)) (iRM : Q(Module $R $M
   | l, [] => (q(sub_zero (NF.eval $(l.toNF))):)
   | ((a₁, x₁), k₁) :: t₁, ((a₂, x₂), k₂) :: t₂ =>
     if k₁ < k₂ then
-      let pf := mkSubProof iR iM iRM t₁ (((a₂, x₂), k₂) :: t₂)
+      let pf := mkSubProof iR iM iMc iRM t₁ (((a₂, x₂), k₂) :: t₂)
       (q(NF.sub_eq_eval₁ ($a₁, $x₁) $pf):)
     else if k₁ = k₂ then
-      let pf := mkSubProof iR iM iRM t₁ t₂
+      let pf := mkSubProof iR iM iMc iRM t₁ t₂
       (q(NF.sub_eq_eval₂ $a₁ $a₂ $x₁ $pf):)
     else
-      let pf := mkSubProof iR iM iRM (((a₁, x₁), k₁) :: t₁) t₂
+      let pf := mkSubProof iR iM iMc iRM (((a₁, x₁), k₁) :: t₁) t₂
       (q(NF.sub_eq_eval₃ ($a₂, $x₂) $pf):)
 
-variable {iM : Q(AddCommMonoid $M)}
-  {u₁ : Level} {R₁ : Q(Type u₁)} {iR₁ : Q(Semiring $R₁)} (iRM₁ : Q(@Module $R₁ $M $iR₁ $iM))
-  {u₂ : Level} {R₂ : Q(Type u₂)} (iR₂ : Q(Semiring $R₂)) (iRM₂ : Q(@Module $R₂ $M $iR₂ $iM))
+variable {iM : Q(AddMonoid $M)} {iMc : Q(IsAddCommutative $M)}
+  {u₁ : Level} {R₁ : Q(Type u₁)} {iR₁ : Q(Semiring $R₁)} (iRM₁ : Q(@Module $R₁ $M $iR₁ $iM $iMc))
+  {u₂ : Level} {R₂ : Q(Type u₂)} (iR₂ : Q(Semiring $R₂)) (iRM₂ : Q(@Module $R₂ $M $iR₂ $iM $iMc))
 
 /-- Given an expression `M` representing a type which is an `AddCommMonoid` and a module over *two*
 semirings `R₁` and `R₂`, find the "bigger" of the two semirings.  That is, we assume that it will
@@ -379,7 +381,7 @@ Moreover, given expressions representing particular scalar multiplications of `R
 `M` (a `List (R₁ × M)`, a `List (R₂ × M)`, a pair `(r, x) : R₂ × M`), bump these up to the "big"
 ring by applying the algebra-map where needed. -/
 def matchRings (l₁ : qNF R₁ M) (l₂ : qNF R₂ M) (r : Q($R₂)) (x : Q($M)) :
-    MetaM <| Σ u : Level, Σ R : Q(Type u), Σ iR : Q(Semiring $R), Σ _ : Q(@Module $R $M $iR $iM),
+    MetaM <| Σ u : Level, Σ R : Q(Type u), Σ iR : Q(Semiring $R), Σ _ : Q(@Module $R $M $iR $iM $iMc),
       (Σ l₁' : qNF R M, Q(NF.eval $(l₁'.toNF) = NF.eval $(l₁.toNF)))
       × (Σ l₂' : qNF R M, Q(NF.eval $(l₂'.toNF) = NF.eval $(l₂.toNF)))
       × (Σ r' : Q($R), Q($r' • $x = $r • $x)) := do
@@ -390,7 +392,7 @@ def matchRings (l₁ : qNF R₁ M) (l₂ : qNF R₂ M) (r : Q($R₂)) (x : Q($M)
   -- otherwise the "smaller" of the two rings must be commutative
   else try
     -- first try to exhibit `R₂` as an `R₁`-algebra
-    let _i₁ ← synthInstanceQ q(CommSemiring $R₁)
+    let _i₁ ← synthInstanceQ q(IsMulCommutative $R₁)
     let _i₃ ← synthInstanceQ q(Algebra $R₁ $R₂)
     let _i₄ ← synthInstanceQ q(IsScalarTower $R₁ $R₂ $M)
     assumeInstancesCommute
@@ -399,7 +401,7 @@ def matchRings (l₁ : qNF R₁ M) (l₂ : qNF R₂ M) (r : Q($R₂)) (x : Q($M)
       r, q(rfl)⟩
   catch _ => try
     -- then if that fails, try to exhibit `R₁` as an `R₂`-algebra
-    let _i₁ ← synthInstanceQ q(CommSemiring $R₂)
+    let _i₁ ← synthInstanceQ q(IsMulCommutative $R₂)
     let _i₃ ← synthInstanceQ q(Algebra $R₂ $R₁)
     let _i₄ ← synthInstanceQ q(IsScalarTower $R₂ $R₁ $M)
     assumeInstancesCommute
@@ -433,14 +435,15 @@ Mathlib.
 Possible TODO, if poor performance on large problems is witnessed: switch the implementation from
 `AtomM` to `CanonM`, per the discussion
 https://github.com/leanprover-community/mathlib4/pull/16593/files#r1749623191 -/
-partial def parse (iM : Q(AddCommMonoid $M)) (x : Q($M)) :
-    AtomM (Σ u : Level, Σ R : Q(Type u), Σ iR : Q(Semiring $R), Σ _ : Q(@Module $R $M $iR $iM),
+partial def parse (iM : Q(AddMonoid $M)) (iMc : Q(IsAddCommutative $M))
+    (x : Q($M)) :
+    AtomM (Σ u : Level, Σ R : Q(Type u), Σ iR : Q(Semiring $R), Σ _ : Q(@Module $R $M $iR $iM $iMc),
       Σ l : qNF R M, Q($x = NF.eval $(l.toNF))) := do
   match x with
   /- parse an addition: `x₁ + x₂` -/
   | ~q($x₁ + $x₂) =>
-    let ⟨_, _, _, iRM₁, l₁', pf₁'⟩ ← parse iM x₁
-    let ⟨_, _, _, iRM₂, l₂', pf₂'⟩ ← parse iM x₂
+    let ⟨_, _, _, iRM₁, l₁', pf₁'⟩ ← parse iM iMc x₁
+    let ⟨_, _, _, iRM₂, l₂', pf₂'⟩ ← parse iM iMc x₂
     -- lift from the semirings of scalars parsed from `x₁`, `x₂` (say `R₁`, `R₂`) to `R₁ ⊗ R₂`
     let ⟨u, R, iR, iRM, ⟨l₁, pf₁⟩, ⟨l₂, pf₂⟩, _⟩ ← qNF.matchRings iRM₁ _ iRM₂ l₁' l₂' q(0) q(0)
     -- build the new list and proof
@@ -448,8 +451,8 @@ partial def parse (iM : Q(AddCommMonoid $M)) (x : Q($M)) :
     pure ⟨u, R, iR, iRM, qNF.add iR l₁ l₂, (q(NF.add_eq_eval $pf₁' $pf₂' $pf₁ $pf₂ $pf):)⟩
   /- parse a subtraction: `x₁ - x₂` -/
   | ~q(@HSub.hSub _ _ _ (@instHSub _ $iM') $x₁ $x₂) =>
-    let ⟨_, _, _, iRM₁, l₁'', pf₁''⟩ ← parse iM x₁
-    let ⟨_, _, _, iRM₂, l₂'', pf₂''⟩ ← parse iM x₂
+    let ⟨_, _, _, iRM₁, l₁'', pf₁''⟩ ← parse iM iMc x₁
+    let ⟨_, _, _, iRM₂, l₂'', pf₂''⟩ ← parse iM iMc x₂
     -- lift from the semirings of scalars parsed from `x₁`, `x₂` (say `R₁`, `R₂`) to `R₁ ⊗ R₂ ⊗ ℤ`
     let iZ := q(Int.instSemiring)
     let iMZ ← synthInstanceQ q(Module ℤ $M)
@@ -457,17 +460,18 @@ partial def parse (iM : Q(AddCommMonoid $M)) (x : Q($M)) :
     let ⟨_, _, _, iRM₂', ⟨l₂', pf₂'⟩, _, _⟩ ← qNF.matchRings iRM₂ iZ iMZ l₂'' [] q(0) q(0)
     let ⟨u, R, iR, iRM, ⟨l₁, pf₁⟩, ⟨l₂, pf₂⟩, _⟩ ← qNF.matchRings iRM₁' _ iRM₂' l₁' l₂' q(0) q(0)
     let iR' ← synthInstanceQ q(Ring $R)
-    let iM' ← synthInstanceQ q(AddCommGroup $M)
+    let iM' ← synthInstanceQ q(AddGroup $M)
+    let iMc' ← synthInstanceQ q(IsAddCommutative $M)
     assumeInstancesCommute
     -- build the new list and proof
-    let pf := qNF.mkSubProof iR' iM' iRM l₁ l₂
+    let pf := qNF.mkSubProof iR' iM' iMc' iRM l₁ l₂
     pure ⟨u, R, iR, iRM, qNF.sub iR' l₁ l₂,
       q(NF.sub_eq_eval $pf₁'' $pf₂'' $pf₁' $pf₂' $pf₁ $pf₂ $pf)⟩
   /- parse a negation: `-y` -/
   | ~q(@Neg.neg _ $iM' $y) =>
-    let ⟨u₀, _, _, iRM₀, l₀, pf₀⟩ ← parse iM y
+    let ⟨u₀, _, _, iRM₀, l₀, pf₀⟩ ← parse iM iMc y
     -- lift from original semiring of scalars (say `R₀`) to `R₀ ⊗ ℤ`
-    let _i ← synthInstanceQ q(AddCommGroup $M)
+    let _i ← synthInstanceQ q(AddGroup $M)
     let iZ := q(Int.instSemiring)
     let iMZ ← synthInstanceQ q(Module ℤ $M)
     let ⟨u, R, iR, iRM, ⟨l, pf⟩, _, _⟩ ← qNF.matchRings iRM₀ iZ iMZ l₀ [] q(0) q(0)
@@ -477,7 +481,7 @@ partial def parse (iM : Q(AddCommMonoid $M)) (x : Q($M)) :
     pure ⟨u, R, iR, iRM, l.onScalar q(Neg.neg), (q(NF.neg_eq_eval $pf $pf₀):)⟩
   /- parse a scalar multiplication: `(s₀ : S) • y` -/
   | ~q(@HSMul.hSMul _ _ _ (@instHSMul $S _ $iS) $s₀ $y) =>
-    let ⟨_, _, _, iRM₀, l₀, pf₀⟩ ← parse iM y
+    let ⟨_, _, _, iRM₀, l₀, pf₀⟩ ← parse iM iMc y
     let i₁ ← synthInstanceQ q(Semiring $S)
     let i₂ ← synthInstanceQ q(Module $S $M)
     assumeInstancesCommute
@@ -504,7 +508,8 @@ and a natural number), construct a list of new goals: that the `R`-coefficient o
 appears in only one list is zero, and that the `R`-coefficients of an `M`-atom which appears in both
 lists are equal.  Also construct (dependent on these new goals) a proof that the "linear
 combinations" represented by `l₁` and `l₂` are equal in `M`. -/
-partial def reduceCoefficientwise {R : Q(Type u)} {_ : Q(AddCommMonoid $M)} {_ : Q(Semiring $R)}
+partial def reduceCoefficientwise {R : Q(Type u)} {_ : Q(AddMonoid $M)}
+    {_ : Q(IsAddCommutative $M)} {_ : Q(Semiring $R)}
     (iRM : Q(Module $R $M)) (l₁ l₂ : qNF R M) :
     MetaM (List MVarId × Q(NF.eval $(l₁.toNF) = NF.eval $(l₂.toNF))) := do
   match l₁, l₂ with
@@ -556,11 +561,12 @@ def matchScalarsAux (g : MVarId) : AtomM (List MVarId) := do
   let .sort v₀ ← whnf (← inferType eqData.1) | unreachable!
   let some v := v₀.dec | unreachable!
   let ((M : Q(Type v)), (lhs : Q($M)), (rhs :Q($M))) := eqData
-  let iM ← synthInstanceQ q(AddCommMonoid.{v} $M)
+  let iM ← synthInstanceQ q(AddMonoid.{v} $M)
+  let iMc ← synthInstanceQ q(IsAddCommutative.{v} $M)
   /- Construct from the `lhs` expression a term `l₁` of type `qNF R₁ M` for some semiring `R₁` --
   that is, a list of `(Q($R₁) × Q($M)) × ℕ`s (two `Expr`s and a natural number) -- together with a
   proof that `lhs` is equal to the `R₁`-linear combination in `M` this represents. -/
-  let e₁ ← parse iM lhs
+  let e₁ ← parse iM iMc lhs
   have u₁ : Level := e₁.fst
   have R₁ : Q(Type u₁) := e₁.snd.fst
   have _iR₁ : Q(Semiring.{u₁} $R₁) := e₁.snd.snd.fst
@@ -570,7 +576,7 @@ def matchScalarsAux (g : MVarId) : AtomM (List MVarId) := do
   let pf₁ : Q($lhs = NF.eval $(l₁.toNF)) := e₁.snd.snd.snd.snd.snd
   /- Do the same for the `rhs` expression, obtaining a term `l₂` of type `qNF R₂ M` for some
   semiring `R₂`. -/
-  let e₂ ← parse iM rhs
+  let e₂ ← parse iM iMc rhs
   have u₂ : Level := e₂.fst
   have R₂ : Q(Type u₂) := e₂.snd.fst
   have _iR₂ : Q(Semiring.{u₂} $R₂) := e₂.snd.snd.fst
@@ -634,8 +640,9 @@ def normalizeScalar (postCtx : Simp.Context) (e : Expr) : AtomM Simp.Result := d
 
 /-- Rebuild the reified list `l` as an expression `c₁' • x₁ + (c₂' • x₂ + ... + 0)`
 with normalized scalars and a proof that it equals `NF.eval l`. -/
-def qNF.rebuild {M : Q(Type v)} {R : Q(Type u)} (iM : Q(AddCommMonoid $M))
-    (iR : Q(Semiring $R)) (iRM : Q(Module $R $M)) (postCtx : Simp.Context) (l : qNF R M) :
+def qNF.rebuild {M : Q(Type v)} {R : Q(Type u)} (iM : Q(AddMonoid $M))
+    (iMc : Q(IsAddCommutative $M)) (iR : Q(Semiring $R)) (iRM : Q(Module $R $M))
+    (postCtx : Simp.Context) (l : qNF R M) :
     AtomM (Σ e : Q($M), Q(NF.eval $(l.toNF) = $e)) :=
   match l with
   | [] => pure ⟨q(0), q(NF.eval_nil (R := $R) (M := $M))⟩
@@ -643,7 +650,7 @@ def qNF.rebuild {M : Q(Type v)} {R : Q(Type u)} (iM : Q(AddCommMonoid $M))
     let res ← normalizeScalar postCtx r
     have r' : Q($R) := res.expr
     let hr : Q($r = $r') ← res.getProof
-    let ⟨e, pfT⟩ ← qNF.rebuild iM iR iRM postCtx t
+    let ⟨e, pfT⟩ ← qNF.rebuild iM iMc iR iRM postCtx t
     pure ⟨q($r' • $x + $e), (q(NF.eval_cons_eq $x $hr $pfT) :)⟩
 
 /-- Attempt to lift the scalars of `l` into the ring `base`.
@@ -652,11 +659,12 @@ def qNF.rebuild {M : Q(Type v)} {R : Q(Type u)} (iM : Q(AddCommMonoid $M))
 `R` to it (it throws when the two rings are not comparable; this is caught here and returned as
 `none`).  On success, the lifted list is returned together with a proof that its evaluation agrees
 with that of `l`. -/
-def qNF.liftToBase? {M : Q(Type v)} {R : Q(Type u)} (iM : Q(AddCommMonoid $M))
-    (iR : Q(Semiring $R)) (iRM : Q(Module $R $M)) (base : Σ w : Level, Q(Type w))
+def qNF.liftToBase? {M : Q(Type v)} {R : Q(Type u)} (iM : Q(AddMonoid $M))
+    (iMc : Q(IsAddCommutative $M)) (iR : Q(Semiring $R)) (iRM : Q(Module $R $M))
+    (base : Σ w : Level, Q(Type w))
     (l : qNF R M) :
     MetaM (Option (Σ w : Level, Σ B : Q(Type w), Σ iB : Q(Semiring $B),
-      Σ _ : Q(@Module $B $M $iB $iM), Σ l' : qNF B M,
+      Σ _ : Q(@Module $B $M $iB $iM $iMc), Σ l' : qNF B M,
       Q(NF.eval $(l'.toNF) = NF.eval $(l.toNF)))) := do
   let ⟨w, B⟩ := base
   let some iB ← synthInstanceQ? q(Semiring.{w} $B) | return none
@@ -672,22 +680,23 @@ with normalized scalars by chaining `parse` and `qNF.rebuild`.
 When `base?` is provided, `eval` will also attempt to lift the coefficients into `base?`. If `base?`
 is not a semiring acting on `M` or when `qNF.matchRings` cannot relate the parsed ring to `base?`
 then the result falls back to the parsed ring. -/
-def eval {M : Q(Type v)} (iM : Q(AddCommMonoid $M)) (base? : Option (Σ u : Level, Q(Type u)))
+def eval {M : Q(Type v)} (iM : Q(AddMonoid $M)) (iMc : Q(IsAddCommutative $M))
+    (base? : Option (Σ u : Level, Q(Type u)))
     (postCtx : Simp.Context) (e : Q($M)) : AtomM Simp.Result := do
-  let ⟨_, _, iR, iRM, l, pf⟩ ← parse iM e
+  let ⟨_, _, iR, iRM, l, pf⟩ ← parse iM iMc e
   if let [((_, x), _)] := l then
     -- a single atom with unit coefficient is already in normal form
     if ← withTransparency (← read).red <| isDefEq x e then
       return { expr := e }
   let lifted? ← match base? with
-    | some base => qNF.liftToBase? iM iR iRM base l
+    | some base => qNF.liftToBase? iM iMc iR iRM base l
     | none => pure none
   let (e', pf') ← match lifted? with
     | some ⟨_, _, iB, iBM, l', pfL⟩ => do
-      let ⟨e', pf'⟩ ← qNF.rebuild iM iB iBM postCtx l'
+      let ⟨e', pf'⟩ ← qNF.rebuild iM iMc iB iBM postCtx l'
       pure ((e' : Expr), ← mkEqTrans (← mkEqSymm pfL) pf')
     | none => do
-      let ⟨e', pf'⟩ ← qNF.rebuild iM iR iRM postCtx l
+      let ⟨e', pf'⟩ ← qNF.rebuild iM iMc iR iRM postCtx l
       pure ((e' : Expr), (pf' : Expr))
   return { expr := e', proof? := some (← mkEqTrans pf pf') }
 

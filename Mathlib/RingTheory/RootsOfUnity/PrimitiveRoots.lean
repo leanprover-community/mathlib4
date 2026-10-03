@@ -239,7 +239,7 @@ theorem pow_mul_pow_lcm {ζ' : M} {k' : ℕ} (hζ : IsPrimitiveRoot ζ k) (hζ' 
   convert!
     ((Commute.all ζ ζ').orderOf_mul_pow_eq_lcm (by simpa [← hζ.eq_orderOf])
         (by simpa [← hζ'.eq_orderOf])).symm using 2
-  all_goals simp [hζ.eq_orderOf, hζ'.eq_orderOf]
+  all_goals first | infer_instance | simp [hζ.eq_orderOf, hζ'.eq_orderOf]
 
 theorem pow_of_dvd (h : IsPrimitiveRoot ζ k) {p : ℕ} (hp : p ≠ 0) (hdiv : p ∣ k) :
     IsPrimitiveRoot (ζ ^ p) (k / p) := by
@@ -446,7 +446,7 @@ theorem geom_sum_eq_zero [IsDomain R] {ζ : R} (hζ : IsPrimitiveRoot ζ k) (hk 
   rw [mul_neg_geom_sum, hζ.pow_eq_one, sub_self]
 
 theorem isRoot_geom_sum [IsDomain R] {ζ : R} (hζ : IsPrimitiveRoot ζ k) (hk : 1 < k) :
-    (∑ i ∈ range k, X ^ i).IsRoot ζ := by
+    (∑ i ∈ range k, (X : R[X]) ^ i).IsRoot ζ := by
   simp [geom_sum_eq_zero hζ hk]
 
 /-- If `1 < k`, then `ζ ^ k.pred = -(∑ i ∈ range k.pred, ζ ^ i)`. -/
@@ -524,7 +524,6 @@ theorem zpowers_eq {k : ℕ} [NeZero k] {ζ : Rˣ} (h : IsPrimitiveRoot ζ k) :
 lemma map_rootsOfUnity {S F} [Ring S] [IsMulCommutative S] [IsDomain S] [FunLike F R S] [MonoidHomClass F R S]
     {ζ : R} {n : ℕ} [NeZero n] (hζ : IsPrimitiveRoot ζ n) {f : F} (hf : Function.Injective f) :
     (rootsOfUnity n R).map (Units.map f) = rootsOfUnity n S := by
-  let : CommMonoid Sˣ := inferInstance
   replace hζ := hζ.isUnit_unit NeZero.out
   rw [← hζ.zpowers_eq,
     ← (hζ.map_of_injective (Units.map_injective (f := (f : R →* S)) hf)).zpowers_eq,

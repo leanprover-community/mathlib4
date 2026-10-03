@@ -196,8 +196,7 @@ lemma hom_inv_apply {M N : MonCat} (e : M ≅ N) (s : N) : e.hom (e.inv s) = s :
 @[to_additive]
 instance : Inhabited MonCat :=
   -- The default instance for `Monoid PUnit` is derived via `CommRing` which breaks to_additive
-  ⟨@of PUnit (@DivInvMonoid.toMonoid _ (@Group.toDivInvMonoid _
-    (@CommGroup.toGroup _ PUnit.commGroup)))⟩
+  ⟨@of PUnit (@DivInvMonoid.toMonoid _ (@Group.toDivInvMonoid _ PUnit.commGroup))⟩
 
 @[to_additive]
 instance (X Y : MonCat.{u}) : One (X ⟶ Y) := ⟨ofHom 1⟩
@@ -231,19 +230,19 @@ end MonCat
 structure AddCommMonCat : Type (u + 1) where
   /-- The underlying type. -/
   (carrier : Type u)
-  [str : AddMonoid carrier] [IsAddCommutative carrier]
+  [str : AddMonoid carrier] [isComm : IsAddCommutative carrier]
 
 /-- The category of commutative monoids and monoid morphisms. -/
 @[to_additive AddCommMonCat]
 structure CommMonCat : Type (u + 1) where
   /-- The underlying type. -/
   (carrier : Type u)
-  [str : Monoid carrier] [IsMulCommutative carrier]
+  [str : Monoid carrier] [isComm : IsMulCommutative carrier]
 
-attribute [instance] AddCommMonCat.str CommMonCat.str
+attribute [instance] AddCommMonCat.str CommMonCat.str AddCommMonCat.isComm CommMonCat.isComm
 
-initialize_simps_projections AddCommMonCat (carrier → coe, -str)
-initialize_simps_projections CommMonCat (carrier → coe, -str)
+initialize_simps_projections AddCommMonCat (carrier → coe, -str, -isComm)
+initialize_simps_projections CommMonCat (carrier → coe, -str, -isComm)
 
 namespace CommMonCat
 
@@ -384,7 +383,8 @@ lemma hom_inv_apply {M N : CommMonCat} (e : M ≅ N) (s : N) : e.hom (e.inv s) =
 @[to_additive]
 instance : Inhabited CommMonCat :=
   -- The default instance for `CommMonoid PUnit` is derived via `CommRing` which breaks to_additive
-  ⟨@of PUnit (@CommGroup.toCommMonoid _ PUnit.commGroup)⟩
+  ⟨@of PUnit (@DivInvMonoid.toMonoid _ (@Group.toDivInvMonoid _ PUnit.commGroup))
+    PUnit.isMulCommutative⟩
 
 @[to_additive]
 theorem coe_of (R : Type u) [Monoid R] [IsMulCommutative R] : (CommMonCat.of R : Type u) = R :=

@@ -188,7 +188,7 @@ theorem cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi {p₁ p₂ p₃ p₄ 
   let p₂' : S := ⟨p₂, hp₂⟩
   let p₄' : S := ⟨p₄, hp₄⟩
   have h_dist' : dist p₁' p' * dist p₂' p' = dist p₃' p' * dist p₄' p' := by
-    simpa [dist_eq_norm_vsub, ← s_isom.dist_map] using h
+    simpa [dist_eq_norm_vsub V, dist_eq_norm_vsub S.direction, ← s_isom.dist_map] using h
   have hp₁'p₂' : ∠ p₁' p' p₂' = π := by simpa [AffineIsometry.angle_map s_isom]
   have hp₃'p₄' : ∠ p₃' p' p₄' = π := by simpa [AffineIsometry.angle_map s_isom]
   suffices h_cospherical' : Cospherical {p₁', p₂', p₃', p₄'} by

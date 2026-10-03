@@ -216,9 +216,8 @@ noncomputable abbrev DivisionRing.ofIsUnitOrEqZero [Ring R] (h : ∀ a : R, IsUn
 
 /-- Constructs a `Field` structure on a `CommRing` consisting only of units and 0. -/
 -- See note [reducible non-instances]
-noncomputable abbrev Field.ofIsUnitOrEqZero [Ring R] [IsMulCommutative R] (h : ∀ a : R, IsUnit a ∨ a = 0) :
-    Field R where
-  toCommRing := ‹CommRing R›
+noncomputable abbrev Field.ofIsUnitOrEqZero [Ring R] [IsMulCommutative R]
+    (h : ∀ a : R, IsUnit a ∨ a = 0) : Field R where
   __ := DivisionRing.ofIsUnitOrEqZero h
 
 end NoncomputableDefs
@@ -268,9 +267,8 @@ protected abbrev semifield [Semifield L] (zero : f 0 = 0) (one : f 1 = 1)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (nnqsmul : ∀ (q : ℚ≥0) (x), f (q • x) = q • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) (nnratCast : ∀ q : ℚ≥0, f q = q) : Semifield K where
-  toCommSemiring := hf.commSemiring f zero one add mul nsmul npow natCast
-  __ := hf.commGroupWithZero f zero one mul inv div npow zpow
   __ := hf.divisionSemiring f zero one add mul inv div nsmul nnqsmul npow zpow natCast nnratCast
+  toIsMulCommutative := hf.commSemiring f zero one add mul nsmul npow natCast
 
 /-- Pullback a `Field` along an injective function. -/
 -- See note [reducible non-instances]
@@ -284,9 +282,9 @@ protected abbrev field [Field L] (zero : f 0 = 0) (one : f 1 = 1)
     (natCast : ∀ n : ℕ, f n = n) (intCast : ∀ n : ℤ, f n = n) (nnratCast : ∀ q : ℚ≥0, f q = q)
     (ratCast : ∀ q : ℚ, f q = q) :
     Field K where
-  toCommRing := hf.commRing f zero one add mul neg sub nsmul zsmul npow natCast intCast
   __ := hf.divisionRing f zero one add mul neg sub inv div nsmul zsmul nnqsmul qsmul npow zpow
     natCast intCast nnratCast ratCast
+  toIsMulCommutative := hf.commRing f zero one add mul neg sub nsmul zsmul npow natCast intCast
 
 end Function.Injective
 

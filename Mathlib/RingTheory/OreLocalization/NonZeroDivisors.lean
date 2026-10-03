@@ -92,9 +92,13 @@ end MonoidWithZero
 
 section CommMonoidWithZero
 
-variable {R : Type*} [MonoidWithZero R] [IsMulCommutative R] [Nontrivial R] [OreSet R⁰] [NoZeroDivisors R]
+variable {R : Type*} [MonoidWithZero R] [IsMulCommutative R] [Nontrivial R] [OreSet R⁰]
+  [NoZeroDivisors R]
 
-noncomputable instance : CommGroupWithZero R[R⁰⁻¹] where
+/- The former `CommGroupWithZero R[R⁰⁻¹]` instance is covered by the `GroupWithZero` instance
+above together with the general `IsMulCommutative R[S⁻¹]` instance. -/
+noncomputable example : GroupWithZero R[R⁰⁻¹] := inferInstance
+example : IsMulCommutative R[R⁰⁻¹] := inferInstance
 
 end CommMonoidWithZero
 

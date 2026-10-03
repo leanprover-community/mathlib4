@@ -39,7 +39,7 @@ def linearYoneda : C ⥤ Cᵒᵖ ⥤ ModuleCat R where
     { obj := fun Y => ↧(unop Y ⟶ X)
       map := fun f => ModuleCat.ofHom (Linear.leftComp R _ f.unop) }
   map {X₁ X₂} f :=
-    { app := fun Y => @ModuleCat.ofHom R _ (Y.unop ⟶ X₁) (Y.unop ⟶ X₂) _ _ _ _
+    { app := fun Y => @ModuleCat.ofHom R _ (Y.unop ⟶ X₁) (Y.unop ⟶ X₂) _ _ _ _ _ _
         (Linear.rightComp R _ f) }
 
 /-- The Yoneda embedding for `R`-linear categories `C`,
@@ -51,7 +51,7 @@ def linearCoyoneda : Cᵒᵖ ⥤ C ⥤ ModuleCat R where
     { obj := fun X => ↧(unop Y ⟶ X)
       map := fun f => ModuleCat.ofHom (Linear.rightComp R _ f) }
   map {Y₁ Y₂} f :=
-    { app := fun X => @ModuleCat.ofHom R _ (unop Y₁ ⟶ X) (unop Y₂ ⟶ X) _ _ _ _
+    { app := fun X => @ModuleCat.ofHom R _ (unop Y₁ ⟶ X) (unop Y₂ ⟶ X) _ _ _ _ _ _
         (Linear.leftComp _ _ f.unop) }
 
 instance linearYoneda_obj_additive (X : C) : ((linearYoneda R C).obj X).Additive where

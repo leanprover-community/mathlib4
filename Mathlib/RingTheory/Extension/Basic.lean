@@ -38,7 +38,7 @@ universe w u v
 
 open TensorProduct MvPolynomial
 
-variable (R : Type u) (S : Type v) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
+variable (R : Type u) (S : Type v) [_root_.Ring R] [IsMulCommutative R] [_root_.Ring S] [IsMulCommutative S] [Algebra R S]
 
 /--
 An extension of an `R`-algebra `S` is an `R` algebra `P` together with a surjection `P →ₐ[R] S`.
@@ -47,7 +47,7 @@ Also see `Algebra.Extension.ofSurjective`.
 structure Algebra.Extension where
   /-- The underlying algebra of an extension. -/
   Ring : Type w
-  [commRing : Ring Ring] [IsMulCommutative Ring]
+  [commRing : _root_.Ring Ring] [isComm : IsMulCommutative Ring]
   [algebra₁ : Algebra R Ring]
   [algebra₂ : Algebra Ring S]
   [isScalarTower : IsScalarTower R Ring S]
@@ -60,26 +60,26 @@ namespace Algebra.Extension
 variable {R S}
 variable (P : Extension.{w} R S)
 
-attribute [instance] commRing algebra₁ algebra₂ isScalarTower
+attribute [instance] commRing isComm algebra₁ algebra₂ isScalarTower
 
 attribute [simp] algebraMap_σ
 
 -- We want to make sure `R₀` acts compatibly on `R` and `S` to avoid nonsensical instances
 @[nolint unusedArguments]
-noncomputable instance {R₀} [Ring R₀] [IsMulCommutative R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
+noncomputable instance {R₀} [_root_.Ring R₀] [IsMulCommutative R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
     Algebra R₀ P.Ring := Algebra.compHom P.Ring (algebraMap R₀ R)
 
-instance {R₀} [Ring R₀] [IsMulCommutative R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
+instance {R₀} [_root_.Ring R₀] [IsMulCommutative R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
     IsScalarTower R₀ R P.Ring := IsScalarTower.of_algebraMap_eq' rfl
 
-instance {R₀} [Ring R₀] [IsMulCommutative R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S]
-    {R₁} [Ring R₁] [IsMulCommutative R₁] [Algebra R₁ R] [Algebra R₁ S] [IsScalarTower R₁ R S]
+instance {R₀} [_root_.Ring R₀] [IsMulCommutative R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S]
+    {R₁} [_root_.Ring R₁] [IsMulCommutative R₁] [Algebra R₁ R] [Algebra R₁ S] [IsScalarTower R₁ R S]
     [Algebra R₀ R₁] [IsScalarTower R₀ R₁ R] :
     IsScalarTower R₀ R₁ P.Ring := IsScalarTower.of_algebraMap_eq' <| by
   rw [IsScalarTower.algebraMap_eq R₀ R, IsScalarTower.algebraMap_eq R₁ R,
     RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq R₀ R₁ R]
 
-instance {R₀} [Ring R₀] [IsMulCommutative R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
+instance {R₀} [_root_.Ring R₀] [IsMulCommutative R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
     IsScalarTower R₀ P.Ring S := IsScalarTower.of_algebraMap_eq' <| by
   rw [IsScalarTower.algebraMap_eq R₀ R P.Ring, ← RingHom.comp_assoc,
     ← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq]
@@ -99,7 +99,7 @@ section Construction
 /-- Construct `Extension` from a surjective algebra homomorphism. -/
 @[simps -isSimp Ring σ]
 noncomputable
-def ofSurjective {P : Type w} [Ring P] [IsMulCommutative P] [Algebra R P] (f : P →ₐ[R] S)
+def ofSurjective {P : Type w} [_root_.Ring P] [IsMulCommutative P] [Algebra R P] (f : P →ₐ[R] S)
     (h : Function.Surjective f) : Extension.{w} R S where
   Ring := P
   algebra₂ := f.toAlgebra
@@ -121,7 +121,7 @@ abbrev ker : Ideal P.Ring := RingHom.ker (algebraMap P.Ring S)
 
 section Localization
 
-variable (M : Submonoid S) {S' : Type*} [Ring S'] [IsMulCommutative S'] [Algebra S S'] [IsLocalization M S']
+variable (M : Submonoid S) {S' : Type*} [_root_.Ring S'] [IsMulCommutative S'] [Algebra S S'] [IsLocalization M S']
 variable [Algebra R S'] [IsScalarTower R S S']
 
 /--
@@ -150,11 +150,11 @@ def localization (P : Extension.{w} R S) : Extension R S' where
 
 end Localization
 
-variable {T} [Ring T] [IsMulCommutative T] [Algebra R T]
+variable {T} [_root_.Ring T] [IsMulCommutative T] [Algebra R T]
 
 /-- The base change of an `R`-extension of `S` to `T` gives a `T`-extension of `T ⊗[R] S`. -/
 noncomputable
-def baseChange {T} [Ring T] [IsMulCommutative T] [Algebra R T] (P : Extension R S) : Extension T (T ⊗[R] S) where
+def baseChange {T} [_root_.Ring T] [IsMulCommutative T] [Algebra R T] (P : Extension R S) : Extension T (T ⊗[R] S) where
   Ring := T ⊗[R] P.Ring
   __ := ofSurjective (P := T ⊗[R] P.Ring) (Algebra.TensorProduct.map (AlgHom.id T T)
     (IsScalarTower.toAlgHom _ _ _)) (LinearMap.lTensor_surjective T
@@ -183,8 +183,8 @@ instance : IsScalarTower R P.Ring (P.baseChange (T := T)).Ring :=
 
 end Construction
 
-variable {R' S'} [Ring R'] [IsMulCommutative R'] [Ring S'] [IsMulCommutative S'] [Algebra R' S'] (P' : Extension R' S')
-variable {R'' S''} [Ring R''] [IsMulCommutative R''] [Ring S''] [IsMulCommutative S''] [Algebra R'' S''] (P'' : Extension R'' S'')
+variable {R' S'} [_root_.Ring R'] [IsMulCommutative R'] [_root_.Ring S'] [IsMulCommutative S'] [Algebra R' S'] (P' : Extension R' S')
+variable {R'' S''} [_root_.Ring R''] [IsMulCommutative R''] [_root_.Ring S''] [IsMulCommutative S''] [Algebra R'' S''] (P'' : Extension R'' S'')
 
 section Hom
 
@@ -285,7 +285,7 @@ set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /-- The canonical hom from `P` to its base change `P.baseChange`. -/
 @[simps]
-noncomputable def toBaseChange (T : Type*) [Ring T] [IsMulCommutative T] [Algebra R T] :
+noncomputable def toBaseChange (T : Type*) [_root_.Ring T] [IsMulCommutative T] [Algebra R T] :
     P.Hom (P.baseChange (T := T)) where
   toRingHom := TensorProduct.includeRight.toRingHom
   toRingHom_algebraMap x := by simp [baseChange]
@@ -331,7 +331,9 @@ a diamond. -/
 def Cotangent : Type _ := P.ker.Cotangent
 
 noncomputable
-instance : AddCommGroup P.Cotangent := inferInstanceAs (AddCommGroup P.ker.Cotangent)
+instance : AddGroup P.Cotangent := inferInstanceAs (AddGroup P.ker.Cotangent)
+
+instance : IsAddCommutative P.Cotangent := inferInstanceAs (IsAddCommutative P.ker.Cotangent)
 
 variable {P}
 
@@ -382,10 +384,10 @@ instance Cotangent.module : Module S P.Cotangent where
     simpa only [sub_smul, mul_smul, sub_eq_zero] using! this
 
 noncomputable
-instance {R₀} [Ring R₀] [IsMulCommutative R₀] [Algebra R₀ S] : Module R₀ P.Cotangent :=
+instance {R₀} [_root_.Ring R₀] [IsMulCommutative R₀] [Algebra R₀ S] : Module R₀ P.Cotangent :=
   Module.compHom P.Cotangent (algebraMap R₀ S)
 
-instance {R₁ R₂} [Ring R₁] [IsMulCommutative R₁] [Ring R₂] [IsMulCommutative R₂] [Algebra R₁ S] [Algebra R₂ S] [Algebra R₁ R₂]
+instance {R₁ R₂} [_root_.Ring R₁] [IsMulCommutative R₁] [_root_.Ring R₂] [IsMulCommutative R₂] [Algebra R₁ S] [Algebra R₂ S] [Algebra R₁ R₂]
     [IsScalarTower R₁ R₂ S] :
     IsScalarTower R₁ R₂ P.Cotangent := by
   constructor
@@ -394,7 +396,7 @@ instance {R₁ R₂} [Ring R₁] [IsMulCommutative R₁] [Ring R₂] [IsMulCommu
   rw [Algebra.smul_def, map_mul, mul_smul, ← IsScalarTower.algebraMap_apply]
 
 /-- The action of `R₀` on `P.Cotangent` for an extension `P → S`, if `S` is an `R₀` algebra. -/
-lemma Cotangent.val_smul''' {R₀} [Ring R₀] [IsMulCommutative R₀] [Algebra R₀ S] (r : R₀) (x : P.Cotangent) :
+lemma Cotangent.val_smul''' {R₀} [_root_.Ring R₀] [IsMulCommutative R₀] [Algebra R₀ S] (r : R₀) (x : P.Cotangent) :
     (r • x).val = P.σ (algebraMap R₀ S r) • x.val := rfl
 
 /-- The action of `S` on `P.Cotangent` for an extension `P → S`. -/
@@ -422,22 +424,22 @@ def cotangentEquivCotangentKer : P.Cotangent ≃ₗ[P.Ring] P.ker.Cotangent wher
 
 /-- The quotient map from the kernel of `P → S` onto the cotangent space. -/
 noncomputable def Cotangent.mk : P.ker →ₗ[P.Ring] P.Cotangent where
-  toFun x := .of (Ideal.toCotangent _ x)
+  toFun x := .of (P.ker.toCotangent x)
   map_add' x y := by simp
   map_smul' x y := ext <| by simp
 
 @[simp]
-lemma Cotangent.val_mk (x : P.ker) : (mk x).val = Ideal.toCotangent _ x := rfl
+lemma Cotangent.val_mk (x : P.ker) : (mk (P := P) x).val = P.ker.toCotangent x := rfl
 
 lemma Cotangent.mk_surjective : Function.Surjective (mk (P := P)) :=
   fun x ↦ Ideal.toCotangent_surjective P.ker x.val
 
 lemma Cotangent.mk_eq_zero_iff {P : Extension R S} (x : P.ker) :
-    Cotangent.mk x = 0 ↔ x.val ∈ P.ker ^ 2 := by
+    Cotangent.mk (P := P) x = 0 ↔ x.val ∈ P.ker ^ 2 := by
   simp [Cotangent.ext_iff, Ideal.toCotangent_eq_zero]
 
 lemma Cotangent.mk_eq_mk_iff_sub_mem (x y : P.ker) :
-    mk x = mk y ↔ x.val - y.val ∈ P.ker ^ 2 := by
+    mk (P := P) x = mk (P := P) y ↔ x.val - y.val ∈ P.ker ^ 2 := by
   simp [Extension.Cotangent.ext_iff, Ideal.toCotangent_eq]
 
 variable (P) in
@@ -447,7 +449,7 @@ lemma Cotangent.ker_mk : LinearMap.ker (mk (P := P)) = P.ker • ⊤ := by
 
 lemma Cotangent.span_eq_top_of_span_eq_ker {ι : Type*} (s : ι → P.Ring)
     (hs : Ideal.span (Set.range s) = P.ker) :
-    Submodule.span S (.range (fun i ↦ mk ⟨s i, hs.le (Ideal.subset_span ⟨i, rfl⟩)⟩)) = ⊤ := by
+    Submodule.span S (.range (fun i ↦ mk (P := P) ⟨s i, hs.le (Ideal.subset_span ⟨i, rfl⟩)⟩)) = ⊤ := by
   rw [Ideal.span, ← Submodule.span_range_subtype_eq_top_iff] at hs
   · apply Submodule.span_eq_top_of_span_eq_top (R := P.Ring)
     rw [← Function.comp_def, Set.range_comp, ← Submodule.map_span, hs, Submodule.map_top,
@@ -479,8 +481,8 @@ def Cotangent.map (f : Hom P P') : P.Cotangent →ₗ[S] P'.Cotangent where
 
 @[simp]
 lemma Cotangent.map_mk (f : Hom P P') (x) :
-    Cotangent.map f (.mk x) =
-      .mk ⟨f.toAlgHom x, by simpa [-map_aeval] using congr(algebraMap S S' $(x.2))⟩ :=
+    Cotangent.map f (.mk (P := P) x) =
+      .mk (P := P') ⟨f.toAlgHom x, by simpa [-map_aeval] using congr(algebraMap S S' $(x.2))⟩ :=
   rfl
 
 @[simp]
@@ -513,7 +515,7 @@ lemma Cotangent.map_surjective_of_comap_eq {P P' : Extension R S} {f : P.Hom P'}
     Function.Surjective (Cotangent.map f) := fun x ↦ by
   obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x
   obtain ⟨y, y_in, hy⟩ := Ideal.exists_of_comap_eq_ker_sup _ h eq x.prop
-  exact ⟨Cotangent.mk ⟨y, y_in⟩, by simp [hy]⟩
+  exact ⟨Cotangent.mk (P := P) ⟨y, y_in⟩, by simp [hy]⟩
 
 lemma Cotangent.map_ker_of_surjective {P P' : Extension R S} {f : P.Hom P'}
     (h : Function.Surjective f) (eq : P'.ker.comap f.toRingHom = RingHom.ker f.toRingHom ⊔ P.ker) :
@@ -563,7 +565,7 @@ noncomputable def cotangentEquiv : S ⊗[P.Ring] P.ker ≃ₗ[S] P.Cotangent := 
     exact ⟨1 ⊗ₜ x, by simp⟩
 
 @[simp]
-lemma cotangentEquiv_tmul (s : S) (x : P.ker) : P.cotangentEquiv (s ⊗ₜ x) = s • .mk x := rfl
+lemma cotangentEquiv_tmul (s : S) (x : P.ker) : P.cotangentEquiv (s ⊗ₜ x) = s • .mk (P := P) x := rfl
 
 @[deprecated (since := "2026-09-17")] alias contangentEquiv_tmul := cotangentEquiv_tmul
 

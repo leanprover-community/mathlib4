@@ -106,7 +106,7 @@ theorem neg_eq_self_iff_neg_le {S : Submodule R M} : -S = S ↔ -S ≤ S :=
 /-- `Submodule.pointwiseNeg` as an order isomorphism. -/
 def negOrderIso : Submodule R M ≃o Submodule R M where
   toEquiv := Equiv.neg _
-  map_rel_iff' := @neg_le_neg _ _ _ _ _
+  map_rel_iff' := @neg_le_neg _ _ _ _ _ _
 
 @[simp]
 theorem neg_inf (S T : Submodule R M) : -(S ⊓ T) = -S ⊓ -T := rfl
@@ -152,12 +152,14 @@ instance pointwiseZero : Zero (Submodule R M) where
 instance pointwiseAdd : Add (Submodule R M) where
   add := (· ⊔ ·)
 
-instance pointwiseAddCommMonoid : AddCommMonoid (Submodule R M) where
+instance pointwiseAddCommMonoid : AddMonoid (Submodule R M) where
   add_assoc := sup_assoc
   zero_add := bot_sup_eq
   add_zero := sup_bot_eq
-  add_comm := sup_comm
   nsmul := nsmulRec
+
+instance pointwiseIsAddCommutative : IsAddCommutative (Submodule R M) :=
+  ⟨⟨sup_comm⟩⟩
 
 @[simp]
 theorem add_eq_sup (p q : Submodule R M) : p + q = p ⊔ q :=

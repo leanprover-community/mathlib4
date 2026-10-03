@@ -63,6 +63,8 @@ abbrev R : MonCat.{max v u} :=
 
 instance colimitSemiring : Semiring.{max v u} <| R.{v, u} F :=
   { (R.{v, u} F).str,
+    (AddCommMonCat.FilteredColimits.M.{v, u}
+      (F ⋙ forget₂ SemiRingCat AddCommMonCat.{max v u})).str,
     AddCommMonCat.FilteredColimits.colimitAddCommMonoid.{v, u}
       (F ⋙ forget₂ SemiRingCat AddCommMonCat.{max v u}) with
     mul_zero := fun x => by
@@ -204,10 +206,9 @@ In the following, we will show that this has the structure of a _commutative_ se
 abbrev R : SemiRingCat.{max v u} :=
   SemiRingCat.FilteredColimits.colimit (F ⋙ forget₂ CommSemiRingCat SemiRingCat.{max v u})
 
-instance colimitCommSemiring : CommSemiring.{max v u} <| R.{v, u} F :=
-  { (R F).semiring,
-    CommMonCat.FilteredColimits.colimitCommMonoid
-      (F ⋙ forget₂ CommSemiRingCat CommMonCat.{max v u}) with }
+instance colimitCommSemiring : IsMulCommutative <| R.{v, u} F :=
+  CommMonCat.FilteredColimits.colimitCommMonoid
+    (F ⋙ forget₂ CommSemiRingCat CommMonCat.{max v u})
 
 /-- The bundled commutative semiring giving the filtered colimit of a diagram. -/
 def colimit : CommSemiRingCat.{max v u} :=
@@ -264,8 +265,8 @@ abbrev R : SemiRingCat.{max v u} :=
 
 instance colimitRing : Ring.{max v u} <| R.{v, u} F :=
   { (R F).semiring,
-    AddCommGrpCat.FilteredColimits.colimitAddCommGroup.{v, u}
-      (F ⋙ forget₂ RingCat AddCommGrpCat.{max v u}) with }
+    (AddCommGrpCat.FilteredColimits.G.{v, u}
+      (F ⋙ forget₂ RingCat AddCommGrpCat.{max v u})).str with }
 
 /-- The bundled ring giving the filtered colimit of a diagram. -/
 def colimit : RingCat.{max v u} :=
@@ -325,10 +326,9 @@ In the following, we will show that this has the structure of a _commutative_ ri
 abbrev R : RingCat.{max v u} :=
   RingCat.FilteredColimits.colimit.{v, u} (F ⋙ forget₂ CommRingCat RingCat.{max v u})
 
-instance colimitCommRing : CommRing.{max v u} <| R.{v, u} F :=
-  { (R.{v, u} F).ring,
-    CommSemiRingCat.FilteredColimits.colimitCommSemiring
-      (F ⋙ forget₂ CommRingCat CommSemiRingCat.{max v u}) with }
+instance colimitCommRing : IsMulCommutative <| R.{v, u} F :=
+  CommSemiRingCat.FilteredColimits.colimitCommSemiring
+    (F ⋙ forget₂ CommRingCat CommSemiRingCat.{max v u})
 
 /-- The bundled commutative ring giving the filtered colimit of a diagram. -/
 def colimit : CommRingCat.{max v u} :=

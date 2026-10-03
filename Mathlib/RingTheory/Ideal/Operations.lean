@@ -187,7 +187,7 @@ theorem mem_ideal_smul_span_iff_exists_sum {ι : Type*} (f : ι → M) (x : M) :
       split_ifs
       · assumption
       · exact I.zero_mem
-    refine @Finsupp.sum_single_index ι R M _ _ i _ (fun i y => y • f i) ?_
+    refine @Finsupp.sum_single_index ι R M _ _ _ i _ (fun i y => y • f i) ?_
     simp
   · exact ⟨0, fun _ => I.zero_mem, Finsupp.sum_zero_index⟩
   · rintro x y - - ⟨ax, hax, rfl⟩ ⟨ay, hay, rfl⟩
@@ -978,7 +978,10 @@ theorem radical_bot_of_isReduced {R : Type u} [Semiring R] [IsMulCommutative R] 
 @[deprecated (since := "2026-08-03")]
 alias radical_bot_of_noZeroDivisors := radical_bot_of_isReduced
 
-instance : IdemCommSemiring (Ideal R) :=
+instance : IdemSemiring (Ideal R) :=
+  inferInstance
+
+instance : IsMulCommutative (Ideal R) :=
   inferInstance
 
 variable (I)

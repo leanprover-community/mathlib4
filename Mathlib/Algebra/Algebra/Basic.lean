@@ -172,12 +172,12 @@ abbrev semiringToRing (R : Type*) [Ring R] [IsMulCommutative R] [Semiring A] [Al
     intCast_ofNat := fun z => by simp only [Int.cast_natCast, map_natCast]
     intCast_negSucc := fun z => by simp }
 
-/-- The `CommRing` structure on a `CommSemiring` induced by a ring morphism from a `CommRing`. -/
+/-- The `Ring` structure on a commutative semiring induced by a ring morphism from a commutative
+ring (commutativity is carried separately by `IsMulCommutative`). -/
 abbrev _root_.RingHom.commSemiringToCommRing {R A : Type*} [Ring R] [IsMulCommutative R] [Semiring A] [IsMulCommutative A]
-    (φ : R →+* A) : CommRing A :=
+    (φ : R →+* A) : Ring A :=
   let _ : Algebra R A := RingHom.toAlgebra φ
-  { __ := Algebra.semiringToRing R
-    mul_comm := CommMonoid.mul_comm }
+  Algebra.semiringToRing R
 
 instance {R : Type*} [Ring R] : Algebra (Subring.center R) R where
   algebraMap :=

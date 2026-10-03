@@ -61,7 +61,7 @@ def field (hD : InductionHyp D) {R : Subring D} (hR : R < ⊤)
     [Fintype D] [DecidableEq D] [DecidablePred (· ∈ R)] :
     Field R :=
   { show DivisionRing R from Fintype.divisionRingOfIsDomain R with
-    mul_comm := fun x y ↦ Subtype.ext <| hD hR x.2 y.2 }
+    toIsMulCommutative := ⟨⟨fun x y ↦ Subtype.ext <| hD hR x.2 y.2⟩⟩ }
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- We prove that if every subring of `D` is central, then so is `D`. -/
@@ -168,7 +168,8 @@ open LittleWedderburn
 may cause diamonds if used improperly. -/
 instance (priority := 100) littleWedderburn (D : Type*) [DivisionRing D] [Finite D] : Field D :=
   { ‹DivisionRing D› with
-    mul_comm := fun x y ↦ by simp [Subring.mem_center_iff.mp ?_ x, center_eq_top D] }
+    toIsMulCommutative :=
+      ⟨⟨fun x y ↦ by simp [Subring.mem_center_iff.mp ?_ x, center_eq_top D]⟩⟩ }
 
 alias Finite.divisionRing_to_field := littleWedderburn
 

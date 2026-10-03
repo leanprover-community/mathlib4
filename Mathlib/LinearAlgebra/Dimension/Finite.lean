@@ -456,8 +456,8 @@ end
 
 @[simp]
 theorem Set.finrank_empty [Nontrivial R] :
-    Set.finrank R (∅ : Set M) = 0 := by
-  rw [Set.finrank, span_empty, finrank_bot]
+    Set.finrank R (∅ : Set M) = 0 :=
+  (congrArg (fun S : Submodule R M => finrank R S) span_empty).trans (finrank_bot R M)
 
 variable [Module.Free R M]
 

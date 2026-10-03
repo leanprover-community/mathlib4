@@ -54,8 +54,11 @@ the diagram.
 def Quot [DecidableEq J] : Type (max u w) :=
   DFinsupp (fun j ↦ F.obj j) ⧸ Relations F
 
-instance [DecidableEq J] : AddCommGroup (Quot F) :=
-  QuotientAddGroup.Quotient.addCommGroup (Relations F)
+instance [DecidableEq J] : AddGroup (Quot F) :=
+  QuotientAddGroup.Quotient.addGroup (Relations F)
+
+instance [DecidableEq J] : IsAddCommutative (Quot F) :=
+  QuotientAddGroup.Quotient.isAddCommutative (Relations F)
 
 /-- Inclusion of `F.obj j` into the candidate colimit.
 -/

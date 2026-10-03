@@ -41,6 +41,12 @@ variable [Module.Finite ℤ 𝒪]
 open nonZeroDivisors IntermediateField Module
 
 lemma absNorm_differentIdeal : (differentIdeal ℤ 𝒪).absNorm = (discr K).natAbs := by
+  -- TC cannot find `IsScalarTower ℤ _ _` through `AddCommGroup.intIsScalarTower` here: the
+  -- `[AddGroup M] [IsAddCommutative M]` arguments are still metavariables when the `Module R M`
+  -- argument is unified, so the unifier gets stuck.
+  have : IsScalarTower ℤ 𝒪 K := AddCommGroup.intIsScalarTower (M := K)
+  have : IsScalarTower ℤ ℚ K := AddCommGroup.intIsScalarTower (M := K)
+  have : IsScalarTower ℤ (𝓞 K) K := AddCommGroup.intIsScalarTower (M := K)
   refine (differentIdeal ℤ 𝒪).toAddSubgroup.relIndex_top_right.symm.trans ?_
   rw [← Submodule.comap_map_eq_of_injective (f := Algebra.linearMap 𝒪 K)
     (FaithfulSMul.algebraMap_injective 𝒪 K) (differentIdeal ℤ 𝒪)]
@@ -93,6 +99,10 @@ theorem natAbs_discr_eq_absNorm_differentIdeal_mul_natAbs_discr_pow (L 𝒪' : T
     [Module.Finite ℤ 𝒪'] [Module.Finite 𝒪 𝒪'] :
     (discr L).natAbs = Ideal.absNorm (differentIdeal 𝒪 𝒪') *
       (discr K).natAbs ^ Module.finrank K L := by
+  -- TC cannot find `IsScalarTower ℤ _ _` through `AddCommGroup.intIsScalarTower` here: the
+  -- `[AddGroup M] [IsAddCommutative M]` arguments are still metavariables when the `Module R M`
+  -- argument is unified, so the unifier gets stuck.
+  have : IsScalarTower ℤ 𝒪 𝒪' := AddCommGroup.intIsScalarTower (M := 𝒪')
   have := congr(Ideal.absNorm $(differentIdeal_eq_differentIdeal_mul_differentIdeal ℤ 𝒪 𝒪'))
   rwa [absNorm_differentIdeal L, map_mul, Ideal.absNorm_algebraMap,
     absNorm_differentIdeal K, ← IsFractionRing.finrank_eq 𝒪 K 𝒪' L] at this
@@ -153,6 +163,14 @@ theorem natAbs_discr_eq_natAbs_discr_pow_mul_natAbs_discr_pow (K₁ K₂ : Inter
     (discr L).natAbs =
       (discr K₁).natAbs ^ Module.finrank ℚ K₂ * (discr K₂).natAbs ^ Module.finrank ℚ K₁ := by
   let _ : Algebra (FractionRing (𝓞 K₁)) (FractionRing (𝓞 L)) := FractionRing.liftAlgebra _ _
+  -- TC cannot find `IsScalarTower ℤ _ _` through `AddCommGroup.intIsScalarTower` here: the
+  -- `[AddGroup M] [IsAddCommutative M]` arguments are still metavariables when the `Module R M`
+  -- argument is unified, so the unifier gets stuck.
+  have : IsScalarTower ℤ ℚ L := AddCommGroup.intIsScalarTower (M := L)
+  have : IsScalarTower ℤ (𝓞 K₂) L := AddCommGroup.intIsScalarTower (M := L)
+  have : IsScalarTower ℤ (𝓞 K₁) K₁ := AddCommGroup.intIsScalarTower (M := K₁)
+  have : IsScalarTower ℤ (𝓞 K₁) (𝓞 L) := AddCommGroup.intIsScalarTower (M := 𝓞 L)
+  have : IsScalarTower ℤ (𝓞 K₂) (𝓞 L) := AddCommGroup.intIsScalarTower (M := 𝓞 L)
   have h_main := natAbs_discr_eq_absNorm_differentIdeal_mul_natAbs_discr_pow K₂ (𝓞 K₂) L (𝓞 L)
   rwa [differentIdeal_eq_map_differentIdeal ℤ (𝓞 L) (𝓞 K₂) (𝓞 K₁) (F₁ := K₂) (F₂ := K₁)
     (by rwa [linearDisjoint_comm]) (by rwa [sup_comm]) (by rwa [isCoprime_comm]),
@@ -166,6 +184,11 @@ lemma not_dvd_discr_iff_forall_liesOver [IsIntegralClosure 𝒪 ℤ K] {p : ℤ}
     ¬ p ∣ discr K ↔ ∀ (P : Ideal 𝒪) (_ : P.IsMaximal), P.LiesOver (.span {p}) →
       Algebra.IsUnramifiedAt ℤ P := by
   have := (IsIntegralClosure.algebraMap_injective 𝒪 ℤ K).isDomain
+  -- TC cannot find `IsScalarTower ℤ _ _` through `AddCommGroup.intIsScalarTower` here: the
+  -- `[AddGroup M] [IsAddCommutative M]` arguments are still metavariables when the `Module R M`
+  -- argument is unified, so the unifier gets stuck.
+  have : IsScalarTower ℤ ℚ K := AddCommGroup.intIsScalarTower (M := K)
+  have : IsScalarTower ℤ 𝒪 K := AddCommGroup.intIsScalarTower (M := K)
   have := IsIntegralClosure.isDedekindDomain ℤ ℚ K 𝒪
   have := IsIntegralClosure.isFractionRing_of_finite_extension ℤ ℚ K 𝒪
   have := IsIntegralClosure.finite ℤ ℚ K 𝒪
@@ -191,6 +214,11 @@ whose RHS does not use `Algebra.IsUnramifiedIn`. -/
 lemma not_dvd_discr_iff_isUnramifiedIn [IsIntegralClosure 𝒪 ℤ K] {p : ℤ} (hp : Prime p) :
     ¬ p ∣ discr K ↔ Algebra.IsUnramifiedIn 𝒪 (Ideal.span {p}) := by
   have := (IsIntegralClosure.algebraMap_injective 𝒪 ℤ K).isDomain
+  -- TC cannot find `IsScalarTower ℤ _ _` through `AddCommGroup.intIsScalarTower` here: the
+  -- `[AddGroup M] [IsAddCommutative M]` arguments are still metavariables when the `Module R M`
+  -- argument is unified, so the unifier gets stuck.
+  have : IsScalarTower ℤ ℚ K := AddCommGroup.intIsScalarTower (M := K)
+  have : IsScalarTower ℤ 𝒪 K := AddCommGroup.intIsScalarTower (M := K)
   have := IsIntegralClosure.isDedekindDomain ℤ ℚ K 𝒪
   have := CharZero.of_module (R := 𝒪) K
   rw [not_dvd_discr_iff_forall_liesOver K 𝒪 hp]
@@ -202,6 +230,11 @@ lemma not_dvd_discr_iff_forall_mem [IsIntegralClosure 𝒪 ℤ K] {p : ℤ} (hp 
     ¬ p ∣ discr K ↔ ∀ (P : Ideal 𝒪) (_ : P.IsPrime), ↑p ∈ P →
       Algebra.IsUnramifiedAt ℤ P := by
   have := (IsIntegralClosure.algebraMap_injective 𝒪 ℤ K).isDomain
+  -- TC cannot find `IsScalarTower ℤ _ _` through `AddCommGroup.intIsScalarTower` here: the
+  -- `[AddGroup M] [IsAddCommutative M]` arguments are still metavariables when the `Module R M`
+  -- argument is unified, so the unifier gets stuck.
+  have : IsScalarTower ℤ ℚ K := AddCommGroup.intIsScalarTower (M := K)
+  have : IsScalarTower ℤ 𝒪 K := AddCommGroup.intIsScalarTower (M := K)
   have := IsIntegralClosure.isDedekindDomain ℤ ℚ K 𝒪
   have := CharZero.of_module (R := 𝒪) K
   rw [NumberField.not_dvd_discr_iff_forall_liesOver K 𝒪 hp]

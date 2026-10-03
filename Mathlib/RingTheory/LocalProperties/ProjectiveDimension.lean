@@ -103,7 +103,7 @@ lemma hasProjectiveDimensionLE_iff_forall_maximalSpectrum (n : ℕ) [Small.{v} R
         (M.localizedModuleMkLinearMap p.primeCompl)
         (LocalizedModule.mkLinearMap p.primeCompl M)))
   | succ n ih =>
-    rcases Module.exists_finite_presentation R M with ⟨P, _, _, _, _, f, surjf⟩
+    rcases Module.exists_finite_presentation R M with ⟨P, _, _, _, _, _, f, surjf⟩
     let S := f.shortComplexKer
     have S_exact := LinearMap.shortExact_shortComplexKer surjf
     have proj := ModuleCat.projective_of_categoryTheory_projective S.X₂

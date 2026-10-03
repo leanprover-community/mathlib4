@@ -55,11 +55,12 @@ structure SemimoduleCat where
   _mkInternal ::
   /-- the underlying type of an object in `SemimoduleCat R` -/
   carrier : Type v
-  [isAddCommMonoid : AddMonoid carrier] [IsAddCommutative carrier]
+  [isAddCommMonoid : AddMonoid carrier] [isAddCommutative : IsAddCommutative carrier]
   [isModule : Module R carrier]
 
-initialize_simps_projections SemimoduleCat (-isModule, -isAddCommMonoid)
-attribute [instance] SemimoduleCat.isAddCommMonoid SemimoduleCat.isModule
+initialize_simps_projections SemimoduleCat (-isModule, -isAddCommMonoid, -isAddCommutative)
+attribute [instance] SemimoduleCat.isAddCommMonoid SemimoduleCat.isAddCommutative
+  SemimoduleCat.isModule
 
 namespace SemimoduleCat
 
@@ -250,8 +251,9 @@ section
 
 /-- Build an isomorphism in the category `Module R` from a `LinearEquiv` between `Module`s. -/
 @[simps]
-def LinearEquiv.toModuleIsoₛ {g₁ : AddCommMonoid X₁} {g₂ : AddCommMonoid X₂} {m₁ : Module R X₁}
-    {m₂ : Module R X₂} (e : X₁ ≃ₗ[R] X₂) : SemimoduleCat.of R X₁ ≅ SemimoduleCat.of R X₂ where
+def LinearEquiv.toModuleIsoₛ {g₁ : AddMonoid X₁} {c₁ : IsAddCommutative X₁} {g₂ : AddMonoid X₂}
+    {c₂ : IsAddCommutative X₂} {m₁ : Module R X₁} {m₂ : Module R X₂} (e : X₁ ≃ₗ[R] X₂) :
+    SemimoduleCat.of R X₁ ≅ SemimoduleCat.of R X₂ where
   hom := ofHom (e : X₁ →ₗ[R] X₂)
   inv := ofHom (e.symm : X₂ →ₗ[R] X₁)
   hom_inv_id := by ext; apply e.left_inv
@@ -297,8 +299,11 @@ instance : SMul ℕ (M ⟶ N) where
 
 @[simp] lemma hom_nsmul (n : ℕ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
 
-instance : AddCommMonoid (M ⟶ N) :=
-  Function.Injective.addCommMonoid Hom.hom hom_injective rfl (fun _ _ => rfl) (fun _ _ => rfl)
+instance : AddMonoid (M ⟶ N) :=
+  Function.Injective.addMonoid Hom.hom hom_injective rfl (fun _ _ => rfl) (fun _ _ => rfl)
+
+instance : IsAddCommutative (M ⟶ N) :=
+  Function.Injective.isAddCommutative Hom.hom hom_injective (fun _ _ => rfl)
 
 @[simp] lemma hom_sum {ι : Type*} (f : ι → (M ⟶ N)) (s : Finset ι) :
     (∑ i ∈ s, f i).hom = ∑ i ∈ s, (f i).hom :=

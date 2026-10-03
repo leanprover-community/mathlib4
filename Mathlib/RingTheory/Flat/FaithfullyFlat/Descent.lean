@@ -56,14 +56,14 @@ end
 lemma RingHom.FaithfullyFlat.codescendsAlong_injective :
     CodescendsAlong (fun f ↦ Function.Injective f) FaithfullyFlat := by
   apply CodescendsAlong.mk _ injective_respectsIso
-  introv h H
+  intro R S T _ _ _ _ _ _ _ _ h H
   rw [faithfullyFlat_algebraMap_iff] at h
   exact h.injective_of_tensorProduct H
 
 lemma RingHom.FaithfullyFlat.codescendsAlong_surjective :
     CodescendsAlong (fun f ↦ Function.Surjective f) FaithfullyFlat := by
   apply CodescendsAlong.mk _ surjective_respectsIso
-  introv h H
+  intro R S T _ _ _ _ _ _ _ _ h H
   rw [faithfullyFlat_algebraMap_iff] at h
   exact h.surjective_of_tensorProduct H
 

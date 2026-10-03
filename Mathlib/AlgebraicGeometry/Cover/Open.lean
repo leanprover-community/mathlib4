@@ -213,7 +213,7 @@ def affineOpenCoverOfSpanRangeEqTop {R : CommRingCat} {ι : Type*} (s : ι → R
       by_contra! h; apply x.2.ne_top; rwa [← top_le_iff, ← hs, Ideal.span_le, Set.range_subset_iff]
     exact this.choose
   covers x := by
-    generalize_proofs H
+    generalize_proofs _ _ _ H
     let i := H.choose
     have := PrimeSpectrum.localization_away_comap_range (Localization.Away (s i)) (s i)
     exact (eq_iff_iff.mp congr(x ∈ $this)).mpr H.choose_spec
@@ -283,7 +283,7 @@ def affineBasisCover (X : Scheme.{u}) : OpenCover X :=
 
 /-- The coordinate ring of a component in the `affine_basis_cover`. -/
 def affineBasisCoverRing (X : Scheme.{u}) (i : X.affineBasisCover.I₀) : CommRingCat :=
-  ↧(@Localization.Away (X.local_affine i.1).choose_spec.choose _ i.2)
+  ↧(@Localization.Away (X.local_affine i.1).choose_spec.choose _ _ i.2)
 
 theorem affineBasisCover_obj (X : Scheme.{u}) (i : X.affineBasisCover.I₀) :
     X.affineBasisCover.X i = Spec (X.affineBasisCoverRing i) :=

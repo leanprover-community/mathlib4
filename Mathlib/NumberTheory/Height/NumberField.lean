@@ -261,6 +261,9 @@ open Module AddSubgroup LinearMap in
 lemma exists_nat_ne_zero_exists_integer_mul_eq_and_absNorm_span_eq_pow (x : K) :
     ∃ n : ℕ, n ≠ 0 ∧ ∃ a : 𝓞 K, n * x = a ∧
       (span {(n : 𝓞 K), a}).absNorm = n ^ (Module.finrank ℚ K - 1) := by
+  -- TC cannot find `IsScalarTower ℤ ℚ K` here: trying `NormedSpace.toModule` for the `Module ℚ K`
+  -- argument of `AddCommGroup.intIsScalarTower` throws inside the search and aborts it.
+  have : IsScalarTower ℤ ℚ K := AddCommGroup.intIsScalarTower (M := K)
   have hx : IsAlgebraic ℤ x := IsFractionRing.isAlgebraic_iff ℤ _ _ |>.mpr (.of_finite ℚ x)
   obtain ⟨m, r, hm, hmr⟩ := hx.exists_nsmul_eq (𝓞 K)
   rw [← RingOfIntegers.coe_eq_algebraMap r] at hmr

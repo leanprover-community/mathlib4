@@ -159,8 +159,9 @@ end Smul
 instance instAddMonoid [AddMonoid 𝕜] [LE α] : AddMonoid (IncidenceAlgebra 𝕜 α) :=
   DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ ↦ rfl
 
-instance instAddCommMonoid [AddMonoid 𝕜] [IsAddCommutative 𝕜] [LE α] : AddCommMonoid (IncidenceAlgebra 𝕜 α) :=
-  DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ ↦ rfl
+instance instIsAddCommutative [AddMonoid 𝕜] [IsAddCommutative 𝕜] [LE α] :
+    IsAddCommutative (IncidenceAlgebra 𝕜 α) :=
+  DFunLike.coe_injective.isAddCommutative _ coe_add
 
 section AddGroup
 variable [AddGroup 𝕜] [LE α]
@@ -180,10 +181,6 @@ instance instAddGroup : AddGroup (IncidenceAlgebra 𝕜 α) :=
   DFunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 end AddGroup
-
-instance instAddCommGroup [AddGroup 𝕜] [IsAddCommutative 𝕜] [LE α] : AddCommGroup (IncidenceAlgebra 𝕜 α) :=
-  DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ ↦ rfl)
-    fun _ _ ↦ rfl
 
 section One
 variable [Preorder α] [DecidableEq α] [Zero 𝕜] [One 𝕜]
@@ -215,7 +212,8 @@ end Mul
 
 instance instNonUnitalNonAssocSemiring [Preorder α] [LocallyFiniteOrder α]
     [NonUnitalNonAssocSemiring 𝕜] : NonUnitalNonAssocSemiring (IncidenceAlgebra 𝕜 α) where
-  __ := instAddCommMonoid
+  __ := instAddMonoid
+  __ := instIsAddCommutative
   zero_mul := fun f ↦ by ext; exact sum_eq_zero fun x _ ↦ zero_mul _
   mul_zero := fun f ↦ by ext; exact sum_eq_zero fun x _ ↦ mul_zero _
   left_distrib := fun f g h ↦ by

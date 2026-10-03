@@ -23,7 +23,8 @@ public section
 namespace Algebra.FormallySmooth
 
 variable {R : Type*} {I : Type*} (A : I → Type*)
-variable [Ring R] [IsMulCommutative R] [∀ i, Ring (A i)] [∀ i, IsMulCommutative (A i)] [∀ i, Algebra R (A i)]
+variable [Ring R] [IsMulCommutative R] [∀ i, Ring (A i)] [∀ i, IsMulCommutative (A i)]
+  [∀ i, Algebra R (A i)]
 
 theorem of_pi [FormallySmooth R (Π i, A i)] (i) :
     FormallySmooth R (A i) := by
@@ -52,7 +53,7 @@ theorem pi_iff [Finite I] :
   cases nonempty_fintype I
   constructor
   · exact fun _ ↦ of_pi A
-  · refine fun H ↦ .of_comp_surjective fun B _ _ J hJ g ↦ ?_
+  · refine fun H ↦ .of_comp_surjective fun B _ _ _ J hJ g ↦ ?_
     have hJ' (x) (hx : x ∈ RingHom.ker (Ideal.Quotient.mk J)) : IsNilpotent x := by
       refine ⟨2, show x ^ 2 ∈ (⊥ : Ideal B) from ?_⟩
       rw [← hJ]

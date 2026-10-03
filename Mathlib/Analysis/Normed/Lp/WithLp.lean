@@ -84,7 +84,10 @@ instance instUnique [Unique V] : Unique (WithLp p V) := (WithLp.equiv p V).uniqu
 instance instDecidableEq [DecidableEq V] : DecidableEq (WithLp p V) :=
   (WithLp.equiv p V).decidableEq
 
-instance instAddCommGroup [AddGroup V] [IsAddCommutative V] : AddCommGroup (WithLp p V) :=
+instance instAddGroup [AddGroup V] : AddGroup (WithLp p V) :=
+  (WithLp.equiv p V).addGroup
+instance instIsAddCommutative [AddGroup V] [IsAddCommutative V] :
+    IsAddCommutative (WithLp p V) :=
   (WithLp.equiv p V).addCommGroup
 @[to_additive] instance instSMul [SMul K V] : SMul K (WithLp p V) :=
   (WithLp.equiv p V).smul K

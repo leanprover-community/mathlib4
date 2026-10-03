@@ -274,7 +274,7 @@ def restrictScalarsId' {R : Type*} [Ring R] [IsMulCommutative R] (f : R →+* R)
     AlgCat.restrictScalars.{v} f ≅ 𝟭 _ :=
   NatIso.ofComponents
     fun A ↦ AlgEquiv.toAlgebraIso <|
-      @AlgEquiv.ofRingEquiv (f := RingEquiv.refl _) _ _ _ _ _ _
+      @AlgEquiv.ofRingEquiv (f := RingEquiv.refl _) _ _ _ _ _ _ _
         ((restrictScalars f).obj A).isAlgebra _ fun _ ↦ by subst hf; rfl
 
 -- The option makes `simps` produce the correct lemmas
@@ -288,7 +288,7 @@ def restrictScalarsComp' {R S T : Type*} [Ring R] [IsMulCommutative R] [Ring S] 
       AlgCat.restrictScalars.{v} g ⋙ AlgCat.restrictScalars.{v} f :=
   NatIso.ofComponents
     fun A ↦ AlgEquiv.toAlgebraIso <|
-      @AlgEquiv.ofRingEquiv (f := RingEquiv.refl _) _ _ _ _ _ _
+      @AlgEquiv.ofRingEquiv (f := RingEquiv.refl _) _ _ _ _ _ _ _
         ((restrictScalars gf).obj A).isAlgebra
         ((restrictScalars f).obj ((restrictScalars g).obj A)).isAlgebra
         fun _ ↦ by subst hfg; rfl
@@ -320,7 +320,7 @@ def intEquivalence : AlgCat.{u} ℤ ≌ RingCat.{u} where
   inverse.map f := AlgCat.ofHom f.hom.toIntAlgHom
   unitIso := NatIso.ofComponents
     fun A ↦ AlgEquiv.toAlgebraIso (@.ofRingEquiv (f := RingEquiv.refl _)
-      _ _ _ _ _ _ _ (Ring.toIntAlgebra _) fun _ ↦ by simp)
+      _ _ _ _ _ _ _ _ (Ring.toIntAlgebra _) fun _ ↦ by simp)
   counitIso := Iso.refl _
 
 instance : (forget₂ (AlgCat.{u} ℤ) RingCat.{u}).IsEquivalence :=

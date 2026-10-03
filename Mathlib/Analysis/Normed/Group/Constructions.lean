@@ -26,7 +26,7 @@ variable {ι E F : Type*} {G : ι → Type*}
 
 namespace PUnit
 
-instance normedAddCommGroup : NormedAddCommGroup PUnit where
+instance normedAddGroup : NormedAddGroup PUnit where
   norm := Function.const _ 0
   dist_eq _ _ := rfl
 
@@ -71,23 +71,8 @@ instance seminormedGroup [SeminormedGroup E] : SeminormedGroup (ULift E) :=
     map_mul' := fun _ _ => rfl : ULift E →* E }
 
 @[to_additive]
-instance seminormedCommGroup [SeminormedGroup E] [IsMulCommutative E] : SeminormedCommGroup (ULift E) :=
-  SeminormedCommGroup.induced _ _
-  { toFun := ULift.down,
-    map_one' := rfl,
-    map_mul' := fun _ _ => rfl : ULift E →* E }
-
-@[to_additive]
 instance normedGroup [NormedGroup E] : NormedGroup (ULift E) :=
   NormedGroup.induced _ _
-  { toFun := ULift.down,
-    map_one' := rfl,
-    map_mul' := fun _ _ => rfl : ULift E →* E }
-  down_injective
-
-@[to_additive]
-instance normedCommGroup [NormedGroup E] [IsMulCommutative E] : NormedCommGroup (ULift E) :=
-  NormedCommGroup.induced _ _
   { toFun := ULift.down,
     map_one' := rfl,
     map_mul' := fun _ _ => rfl : ULift E →* E }
@@ -142,33 +127,12 @@ instance Multiplicative.seminormedGroup [SeminormedAddGroup E] :
     SeminormedGroup (Multiplicative E) where
   dist_eq x y := dist_eq_norm_neg_add x.toAdd y.toAdd
 
-instance Additive.seminormedCommGroup [SeminormedGroup E] [IsMulCommutative E] :
-    SeminormedAddCommGroup (Additive E) :=
-  { Additive.seminormedAddGroup with
-    add_comm := add_comm }
-
-instance Multiplicative.seminormedAddCommGroup [SeminormedAddGroup E] [IsAddCommutative E] :
-    SeminormedCommGroup (Multiplicative E) :=
-  { Multiplicative.seminormedGroup with
-    mul_comm := mul_comm }
-
 instance Additive.normedAddGroup [NormedGroup E] : NormedAddGroup (Additive E) :=
   { Additive.seminormedAddGroup with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 instance Multiplicative.normedGroup [NormedAddGroup E] : NormedGroup (Multiplicative E) :=
   { Multiplicative.seminormedGroup with
-    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
-
-instance Additive.normedAddCommGroup [NormedGroup E] [IsMulCommutative E] : NormedAddCommGroup (Additive E) :=
-  { Additive.seminormedAddGroup with
-    add_comm := add_comm
-    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
-
-instance Multiplicative.normedCommGroup [NormedAddGroup E] [IsAddCommutative E] :
-    NormedCommGroup (Multiplicative E) :=
-  { Multiplicative.seminormedGroup with
-    mul_comm := mul_comm
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 end AdditiveMultiplicative
@@ -211,18 +175,8 @@ instance (priority := 100) seminormedGroup [SeminormedGroup E] : SeminormedGroup
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) seminormedCommGroup [SeminormedGroup E] [IsMulCommutative E] : SeminormedCommGroup Eᵒᵈ :=
-  inferInstanceAs <| SeminormedCommGroup E
-
--- See note [lower instance priority]
-@[to_additive]
 instance (priority := 100) normedGroup [NormedGroup E] : NormedGroup Eᵒᵈ :=
   inferInstanceAs <| NormedGroup E
-
--- See note [lower instance priority]
-@[to_additive]
-instance (priority := 100) normedCommGroup [NormedGroup E] [IsMulCommutative E] : NormedCommGroup Eᵒᵈ :=
-  inferInstanceAs <| NormedCommGroup E
 
 end OrderDual
 end OrderDual
@@ -268,24 +222,10 @@ end SeminormedGroup
 
 namespace Prod
 
-/-- Product of seminormed groups, using the sup norm. -/
-@[to_additive /-- Product of seminormed groups, using the sup norm. -/]
-instance seminormedCommGroup [SeminormedGroup E] [IsMulCommutative E] [SeminormedGroup F] [IsMulCommutative F] :
-    SeminormedCommGroup (E × F) :=
-  { Prod.seminormedGroup with
-    mul_comm := mul_comm }
-
 /-- Product of normed groups, using the sup norm. -/
 @[to_additive /-- Product of normed groups, using the sup norm. -/]
 instance normedGroup [NormedGroup E] [NormedGroup F] : NormedGroup (E × F) :=
   { Prod.seminormedGroup with
-    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
-
-/-- Product of normed groups, using the sup norm. -/
-@[to_additive /-- Product of normed groups, using the sup norm. -/]
-instance normedCommGroup [NormedGroup E] [IsMulCommutative E] [NormedGroup F] [IsMulCommutative F] : NormedCommGroup (E × F) :=
-  { Prod.seminormedGroup with
-    mul_comm := mul_comm
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 end Prod
@@ -405,23 +345,10 @@ lemma Pi.sum_nnnorm_apply_le_nnnorm' : ∑ i, ‖f i‖₊ ≤ Fintype.card ι �
 
 end SeminormedGroup
 
-/-- Finite product of seminormed groups, using the sup norm. -/
-@[to_additive /-- Finite product of seminormed groups, using the sup norm. -/]
-instance Pi.seminormedCommGroup [∀ i, SeminormedGroup (G i)] [∀ i, IsMulCommutative (G i)] : SeminormedCommGroup (∀ i, G i) :=
-  { Pi.seminormedGroup with
-    mul_comm := mul_comm }
-
 /-- Finite product of normed groups, using the sup norm. -/
 @[to_additive /-- Finite product of seminormed groups, using the sup norm. -/]
 instance Pi.normedGroup [∀ i, NormedGroup (G i)] : NormedGroup (∀ i, G i) :=
   { Pi.seminormedGroup with
-    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
-
-/-- Finite product of normed groups, using the sup norm. -/
-@[to_additive /-- Finite product of seminormed groups, using the sup norm. -/]
-instance Pi.normedCommGroup [∀ i, NormedGroup (G i)] [∀ i, IsMulCommutative (G i)] : NormedCommGroup (∀ i, G i) :=
-  { Pi.seminormedGroup with
-    mul_comm := mul_comm
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 theorem Pi.nnnorm_single [DecidableEq ι] [∀ i, NormedAddGroup (G i)] [∀ i, IsAddCommutative (G i)] {i : ι} (y : G i) :
@@ -469,12 +396,5 @@ lemma nnnorm_unop [SeminormedAddGroup E] (a : Eᵐᵒᵖ) : ‖MulOpposite.unop 
 instance instNormedAddGroup [NormedAddGroup E] : NormedAddGroup Eᵐᵒᵖ where
   __ := instMetricSpace
   __ := instSeminormedAddGroup
-
-instance instSeminormedAddCommGroup [SeminormedAddGroup E] [IsAddCommutative E] : SeminormedAddCommGroup Eᵐᵒᵖ where
-  dist_eq _ _ := dist_eq_norm_neg_add _ _
-
-instance instNormedAddCommGroup [NormedAddGroup E] [IsAddCommutative E] : NormedAddCommGroup Eᵐᵒᵖ where
-  __ := instSeminormedAddCommGroup
-  __ := instNormedAddGroup
 
 end MulOpposite

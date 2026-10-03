@@ -380,7 +380,7 @@ theorem isLocalizedModule_toPushforwardStalkAlgHom_aux (y) :
     rw [h]; exact e
   clear_value s'; clear! U
   obtain ⟨⟨s, ⟨_, n, rfl⟩⟩, hsn⟩ :=
-    @IsLocalization.surj _ _ _ _ _ _
+    @IsLocalization.surj _ _ _ _ _ _ _ _
       (StructureSheaf.IsLocalization.to_basicOpen S <| algebraMap R S r) s'
   refine ⟨⟨s, ⟨r, hpr⟩ ^ n⟩, ?_⟩
   rw [Submonoid.smul_def, Algebra.smul_def, algebraMap_pushforward_stalk, toPushforwardStalk,
@@ -418,7 +418,7 @@ instance isLocalizedModule_toPushforwardStalkAlgHom :
         (homOfLE hrU).op at e
     have : algebraMap S ((structureSheaf S).presheaf.obj _) x = 0 := e
     have :=
-      (@IsLocalization.mk'_one _ _ _ _ _ _
+      (@IsLocalization.mk'_one _ _ _ _ _ _ _ _
             (StructureSheaf.IsLocalization.to_basicOpen S <| algebraMap R S r) x).trans
         this
     obtain ⟨⟨_, n, rfl⟩, e⟩ := (IsLocalization.mk'_eq_zero_iff _ _).mp this

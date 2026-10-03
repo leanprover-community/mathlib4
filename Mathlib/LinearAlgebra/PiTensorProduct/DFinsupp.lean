@@ -26,7 +26,8 @@ namespace PiTensorProduct
 open LinearMap TensorProduct
 
 variable {R ι : Type*} {κ : ι → Type*} {M : (i : ι) → κ i → Type*}
-  [Semiring R] [IsMulCommutative R] [Π i (j : κ i), AddCommMonoid (M i j)] [Π i (j : κ i), Module R (M i j)]
+  [Semiring R] [IsMulCommutative R] [Π i (j : κ i), AddMonoid (M i j)]
+  [Π i (j : κ i), IsAddCommutative (M i j)] [Π i (j : κ i), Module R (M i j)]
   [Fintype ι] [DecidableEq ι] [(i : ι) → DecidableEq (κ i)]
 
 /-- The `ι`-ary tensor product distributes over `κ i`-ary finitely supported functions. -/

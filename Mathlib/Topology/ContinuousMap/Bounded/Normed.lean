@@ -195,15 +195,15 @@ theorem coe_zsmul (r : ℤ) (f : α →ᵇ β) : ⇑(r • f) = r • ⇑f := rf
 @[simp]
 theorem zsmul_apply (r : ℤ) (f : α →ᵇ β) (v : α) : (r • f) v = r • f v := rfl
 
-instance instAddCommGroup : AddCommGroup (α →ᵇ β) := fast_instance%
-  DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
+instance instAddCommGroup : AddGroup (α →ᵇ β) := fast_instance%
+  DFunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
     fun _ _ => coe_zsmul _ _
 
-instance instSeminormedAddCommGroup : SeminormedAddCommGroup (α →ᵇ β) where
+instance instSeminormedAddCommGroup : SeminormedAddGroup (α →ᵇ β) where
   dist_eq f g := by simp only [norm_eq, dist_eq, dist_eq_norm_neg_add, add_apply, neg_apply]
 
 instance instNormedAddCommGroup {α β} [TopologicalSpace α] [NormedAddGroup β] [IsAddCommutative β] :
-    NormedAddCommGroup (α →ᵇ β) :=
+    NormedAddGroup (α →ᵇ β) :=
   { instSeminormedAddCommGroup with
     eq_of_dist_eq_zero }
 
@@ -386,17 +386,15 @@ lemma nnnorm_sum_eq_sup [IsCancelMulZero R] {ι : Type*} {f : ι → (α →ᵇ 
 
 end Seminormed
 
+/-- The commutativity half of the former `NonUnitalSeminormedCommRing (α →ᵇ R)` instance; the
+`NonUnitalSeminormedRing` half is `instNonUnitalSeminormedRing`. -/
 instance instNonUnitalSeminormedCommRing [NonUnitalSeminormedRing R] [IsMulCommutative R] :
-    NonUnitalSeminormedCommRing (α →ᵇ R) where
-  mul_comm _ _ := ext fun _ ↦ mul_comm ..
+    IsMulCommutative (α →ᵇ R) :=
+  DFunLike.coe_injective.isMulCommutative _ coe_mul
 
 instance instNonUnitalNormedRing [NonUnitalNormedRing R] : NonUnitalNormedRing (α →ᵇ R) where
   __ := instNonUnitalSeminormedRing
   __ := instNormedAddCommGroup
-
-instance instNonUnitalNormedCommRing [NonUnitalNormedRing R] [IsMulCommutative R] :
-    NonUnitalNormedCommRing (α →ᵇ R) where
-  mul_comm := mul_comm
 
 end NonUnital
 
@@ -456,23 +454,6 @@ instance instNormedRing [NormedRing R] : NormedRing (α →ᵇ R) where
   __ := instNonUnitalNormedRing
 
 end NormedRing
-
-section NormedCommRing
-
-variable [TopologicalSpace α] {R : Type*}
-
-instance instCommRing [SeminormedRing R] [IsMulCommutative R] : CommRing (α →ᵇ R) where
-  mul_comm _ _ := ext fun _ ↦ mul_comm _ _
-
-instance instSeminormedCommRing [SeminormedRing R] [IsMulCommutative R] : SeminormedCommRing (α →ᵇ R) where
-  __ := instCommRing
-  __ := instNonUnitalSeminormedRing
-
-instance instNormedCommRing [NormedRing R] [IsMulCommutative R] : NormedCommRing (α →ᵇ R) where
-  __ := instSeminormedCommRing
-  __ := instNormedAddCommGroup
-
-end NormedCommRing
 
 section NonUnitalAlgebra
 

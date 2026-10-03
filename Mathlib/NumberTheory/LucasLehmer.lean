@@ -237,7 +237,8 @@ variable {q : ℕ}
 
 instance : Inhabited (X q) := inferInstanceAs (Inhabited (ZMod q × ZMod q))
 instance : DecidableEq (X q) := inferInstanceAs (DecidableEq (ZMod q × ZMod q))
-instance : AddCommGroup (X q) := inferInstanceAs (AddCommGroup (ZMod q × ZMod q))
+instance : AddGroup (X q) := inferInstanceAs (AddGroup (ZMod q × ZMod q))
+instance : IsAddCommutative (X q) := inferInstanceAs (IsAddCommutative (ZMod q × ZMod q))
 
 @[ext]
 theorem ext {x y : X q} (h₁ : x.1 = y.1) (h₂ : x.2 = y.2) : x = y := by
@@ -304,7 +305,7 @@ instance : NatCast (X q) where
   rfl
 
 instance : AddGroupWithOne (X q) :=
-  { (inferInstance : Monoid (X q)), (inferInstance : AddCommGroup (X q)),
+  { (inferInstance : Monoid (X q)), (inferInstance : AddGroup (X q)),
       (inferInstance : NatCast (X q)) with
     natCast_zero := by ext <;> simp
     natCast_succ := fun _ ↦ by ext <;> simp
@@ -319,16 +320,15 @@ theorem right_distrib (x y z : X q) : (x + y) * z = x * z + y * z := by
   ext <;> dsimp <;> ring
 
 instance : Ring (X q) :=
-  { (inferInstance : AddGroupWithOne (X q)), (inferInstance : AddCommGroup (X q)),
+  { (inferInstance : AddGroupWithOne (X q)), (inferInstance : IsAddCommutative (X q)),
       (inferInstance : Monoid (X q)) with
     left_distrib := left_distrib
     right_distrib := right_distrib
     mul_zero := fun _ ↦ by ext <;> simp
     zero_mul := fun _ ↦ by ext <;> simp }
 
-instance : CommRing (X q) :=
-  { (inferInstance : Ring (X q)) with
-    mul_comm := fun _ _ ↦ by ext <;> dsimp <;> ring }
+instance : IsMulCommutative (X q) :=
+  ⟨⟨fun _ _ ↦ by ext <;> dsimp <;> ring⟩⟩
 
 instance [Fact (1 < (q : ℕ))] : Nontrivial (X q) :=
   ⟨⟨0, 1, ne_of_apply_ne Prod.fst zero_ne_one⟩⟩

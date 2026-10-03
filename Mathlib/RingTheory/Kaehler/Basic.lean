@@ -151,8 +151,18 @@ deriving Inhabited
 
 -- The `SMul R'` instance exists to avoid a zsmul diamond.
 variable {R' : Type*} [Ring R'] [IsMulCommutative R'] [Algebra R' S] [SMulCommClass R R' S] in
-deriving instance SMul R', AddCommGroup, Module R', Module (S ⊗[R] S), IsScalarTower S (S ⊗[R] S)
-  for KaehlerDifferential R S
+deriving instance SMul R', AddGroup, IsAddCommutative for KaehlerDifferential R S
+
+-- The `deriving` handler cannot build these `Module` instances: it fails to unify the unfolded
+-- `IsAddCommutative` proof with the one for `KaehlerDifferential R S` at instance transparency.
+variable {R' : Type*} [Ring R'] [IsMulCommutative R'] [Algebra R' S] [SMulCommClass R R' S] in
+instance : Module R' (KaehlerDifferential R S) :=
+  inferInstanceAs (Module R' (KaehlerDifferential.ideal R S).Cotangent)
+
+instance : Module (S ⊗[R] S) (KaehlerDifferential R S) :=
+  inferInstanceAs (Module (S ⊗[R] S) (KaehlerDifferential.ideal R S).Cotangent)
+
+deriving instance IsScalarTower S (S ⊗[R] S) for KaehlerDifferential R S
 
 @[inherit_doc KaehlerDifferential]
 notation "Ω[" S "⁄" R "]" => KaehlerDifferential R S
@@ -811,7 +821,8 @@ def KaehlerDifferential.kerCotangentToTensor :
 
 @[simp]
 lemma KaehlerDifferential.kerCotangentToTensor_toCotangent (x) :
-    kerCotangentToTensor R A B (Ideal.toCotangent _ x) = 1 ⊗ₜ D _ _ x.1 := rfl
+    kerCotangentToTensor R A B (Ideal.toCotangent (RingHom.ker (algebraMap A B)) x) =
+      1 ⊗ₜ D _ _ x.1 := rfl
 
 variable [Algebra R B] [IsScalarTower R A B]
 
@@ -846,7 +857,8 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
       simpa [Finsupp.mapDomain, Finsupp.sum, Finsupp.finsetSum_apply, RingHom.mem_ker,
         Finsupp.single_apply, ← Finset.sum_filter] using congr($hx c)
     obtain ⟨a, ha⟩ := h c
-    use ∑ i ∈ {i ∈ x.support | algebraMap A B i = c}.attach, x i • Ideal.toCotangent _ ⟨i - a, ?_⟩
+    use ∑ i ∈ {i ∈ x.support | algebraMap A B i = c}.attach,
+      x i • Ideal.toCotangent (RingHom.ker (algebraMap A B)) ⟨i - a, ?_⟩
     · simp only [map_sum, LinearMapClass.map_smul, kerCotangentToTensor_toCotangent, map_sub]
       simp_rw [← TensorProduct.tmul_smul]
       -- TODO: was `simp [kerCotangentToTensor_toCotangent, RingHom.mem_ker.mp x.2]` and very slow

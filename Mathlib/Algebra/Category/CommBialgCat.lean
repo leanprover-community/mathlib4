@@ -32,16 +32,17 @@ structure CommBialgCat where
   _mkInternal ::
   /-- The underlying type. -/
   carrier : Type v
-  [commRing : Ring carrier] [IsMulCommutative carrier]
+  [commRing : Ring carrier] [isComm : IsMulCommutative carrier]
   [bialgebra : Bialgebra R carrier]
 
 namespace CommBialgCat
-variable {A B C : CommBialgCat.{v} R} {X Y Z : Type v} [Ring X] [IsMulCommutative X] [Bialgebra R X]
-  [Ring Y] [IsMulCommutative Y] [Bialgebra R Y] [Ring Z] [IsMulCommutative Z] [Bialgebra R Z]
+variable {A B C : CommBialgCat.{v} R} {X Y Z : Type v} [Ring X] [IsMulCommutative X]
+  [Bialgebra R X] [Ring Y] [IsMulCommutative Y] [Bialgebra R Y] [Ring Z] [IsMulCommutative Z]
+  [Bialgebra R Z]
 
-attribute [instance] commRing bialgebra
+attribute [instance] commRing isComm bialgebra
 
-initialize_simps_projections CommBialgCat (-commRing, -bialgebra)
+initialize_simps_projections CommBialgCat (-commRing, -isComm, -bialgebra)
 
 instance : CoeSort (CommBialgCat R) (Type v) := ⟨carrier⟩
 
@@ -59,7 +60,8 @@ open Lean.PrettyPrinter.Delaborator in
 meta def delabOf : Delab := CategoryTheory.delabOf
 
 variable (R) in
-lemma coe_of (X : Type v) [Ring X] [IsMulCommutative X] [Bialgebra R X] : (of R X : Type v) = X := rfl
+lemma coe_of (X : Type v) [Ring X] [IsMulCommutative X] [Bialgebra R X] :
+    (of R X : Type v) = X := rfl
 
 /-- The type of morphisms in `CommBialgCat R`. -/
 @[ext]
@@ -81,7 +83,8 @@ instance : ConcreteCategory (CommBialgCat.{v} R) (· →ₐc[R] ·) where
 abbrev Hom.hom (f : Hom A B) : A →ₐc[R] B := ConcreteCategory.hom (C := CommBialgCat R) f
 
 /-- Typecheck a `BialgHom` as a morphism in `CommBialgCat R`. -/
-abbrev ofHom {X Y : Type v} {_ : CommRing X} {_ : CommRing Y} {_ : Bialgebra R X}
+abbrev ofHom {X Y : Type v} {_ : Ring X} [IsMulCommutative X] {_ : Ring Y}
+    [IsMulCommutative Y] {_ : Bialgebra R X}
     {_ : Bialgebra R Y} (f : X →ₐc[R] Y) : of R X ⟶ of R Y :=
   ConcreteCategory.ofHom (C := CommBialgCat R) f
 
@@ -123,7 +126,10 @@ lemma forget_obj (A : CommBialgCat.{v} R) : (forget (CommBialgCat.{v} R)).obj A 
 @[deprecated ConcreteCategory.forget_map_eq_ofHom +typeChanged (since := "2026-03-06")]
 lemma forget_map (f : A ⟶ B) : (forget (CommBialgCat.{v} R)).map f = (f : _ → _) := rfl
 
-instance : CommRing ((forget (CommBialgCat R)).obj A) := inferInstanceAs <| CommRing A
+instance : Ring ((forget (CommBialgCat R)).obj A) := inferInstanceAs <| Ring A
+
+instance : IsMulCommutative ((forget (CommBialgCat R)).obj A) :=
+  inferInstanceAs <| IsMulCommutative A
 
 instance : Bialgebra R ((forget (CommBialgCat R)).obj A) := inferInstanceAs <| Bialgebra R A
 
@@ -150,7 +156,8 @@ def ofIsoSelf (M : CommBialgCat.{v} R) : of R M ≅ M where
 /-- Build an isomorphism in the category `CommBialgCat R` from a `BialgEquiv` between
 `Bialgebra`s. -/
 @[simps]
-def isoMk {X Y : Type v} {_ : CommRing X} {_ : CommRing Y} {_ : Bialgebra R X}
+def isoMk {X Y : Type v} {_ : Ring X} [IsMulCommutative X] {_ : Ring Y}
+    [IsMulCommutative Y] {_ : Bialgebra R X}
     {_ : Bialgebra R Y} (e : X ≃ₐc[R] Y) : of R X ≅ of R Y where
   hom := ofHom (e : X →ₐc[R] Y)
   inv := ofHom (e.symm : Y →ₐc[R] X)
@@ -202,7 +209,8 @@ instance {A : Type u} [Ring A] [IsMulCommutative A] [Bialgebra R A] [IsCocomm R 
     IsCommMonObj (Opposite.op <| CommAlgCat.of R A) where
   mul_comm := by ext; exact comm_comul R _
 
-instance {A B : Type u} [Ring A] [IsMulCommutative A] [Bialgebra R A] [Ring B] [IsMulCommutative B] [Bialgebra R B]
+instance {A B : Type u} [Ring A] [IsMulCommutative A] [Bialgebra R A] [Ring B]
+    [IsMulCommutative B] [Bialgebra R B]
     (f : A →ₐc[R] B) : IsMonHom (CommAlgCat.ofHom f.toAlgHom).op where
 
 instance (A : (CommAlgCat R)ᵒᵖ) [MonObj A] : Bialgebra R A.unop :=

@@ -818,7 +818,7 @@ theorem mem_vectorSpan_iff_eq_weightedVSub {v : V} {p : ι → P} :
         change (fun i => w i • (p i -ᵥ p i0 : V)) i0 = 0 at hz
         rw [Finset.weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero _ w p hw (p i0),
           Finset.weightedVSubOfPoint_apply, ← hv, Finsupp.linearCombination_apply,
-          @Finset.sum_insert_zero _ _ l.support i0 _ _ _ hz]
+          Finset.sum_insert_zero (s := l.support) hz]
         change (∑ i ∈ l.support, l i • _) = _
         congr with i
         by_cases h : i = i0

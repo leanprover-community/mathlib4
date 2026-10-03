@@ -30,7 +30,7 @@ theorem injective_object_of_injective_module [inj : Injective R M] :
 theorem injective_module_of_injective_object
     [inj : CategoryTheory.Injective <| ModuleCat.of R M] :
     Module.Injective R M where
-  out X Y _ _ _ _ f hf g := by
+  out X Y _ _ _ _ _ _ f hf g := by
     have : CategoryTheory.Mono (ModuleCat.ofHom f) := (ModuleCat.mono_iff_injective _).mpr hf
     obtain ⟨l, h⟩ := inj.factors (ModuleCat.ofHom g) (ModuleCat.ofHom f)
     obtain rfl := ModuleCat.hom_ext_iff.mp h

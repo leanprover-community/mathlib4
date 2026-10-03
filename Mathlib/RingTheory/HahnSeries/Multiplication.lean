@@ -104,11 +104,13 @@ protected lemma map_one [MonoidWithZero R] [MonoidWithZero S] (f : R →*₀ S) 
     (1 : R⟦Γ⟧).map f = (1 : S⟦Γ⟧) :=
   HahnSeries.map_single (a := (0 : Γ)) f.toZeroHom |>.trans <| congrArg _ f.map_one
 
-instance [AddMonoidWithOne R] [IsAddCommutative R] : AddCommMonoidWithOne R⟦Γ⟧ where
+instance instAddCommMonoidWithOne [AddMonoidWithOne R] [IsAddCommutative R] :
+    AddMonoidWithOne R⟦Γ⟧ where
   natCast_zero := by simp [← single_zero_natCast]
   natCast_succ n := by simp [← single_zero_natCast]
 
-instance [AddGroupWithOne R] [IsAddCommutative R] : AddCommGroupWithOne R⟦Γ⟧ where
+instance instAddCommGroupWithOne [AddGroupWithOne R] [IsAddCommutative R] :
+    AddGroupWithOne R⟦Γ⟧ where
   intCast_ofNat n := by simp [← single_zero_natCast, ← single_zero_intCast]
   intCast_negSucc n := by simp [← single_zero_natCast, ← single_zero_intCast]
 
@@ -150,10 +152,16 @@ variable [PartialOrder Γ] [SMul R V]
 
 instance instZero [Zero V] : Zero (HahnModule Γ R V) :=
   inferInstanceAs <| Zero V⟦Γ⟧
-instance instAddCommMonoid [AddMonoid V] [IsAddCommutative V] : AddCommMonoid (HahnModule Γ R V) :=
-  inferInstanceAs <| AddCommMonoid V⟦Γ⟧
-instance instAddCommGroup [AddGroup V] [IsAddCommutative V] : AddCommGroup (HahnModule Γ R V) :=
-  inferInstanceAs <| AddCommGroup V⟦Γ⟧
+instance instAddMonoid [AddMonoid V] : AddMonoid (HahnModule Γ R V) :=
+  inferInstanceAs <| AddMonoid V⟦Γ⟧
+instance instAddCommMonoid [AddMonoid V] [IsAddCommutative V] :
+    IsAddCommutative (HahnModule Γ R V) :=
+  inferInstanceAs <| IsAddCommutative V⟦Γ⟧
+instance instAddGroup [AddGroup V] : AddGroup (HahnModule Γ R V) :=
+  inferInstanceAs <| AddGroup V⟦Γ⟧
+instance instAddCommGroup [AddGroup V] [IsAddCommutative V] :
+    IsAddCommutative (HahnModule Γ R V) :=
+  inferInstanceAs <| IsAddCommutative V⟦Γ⟧
 instance instBaseSMul {V} [Monoid R] [AddMonoid V] [DistribMulAction R V] :
     SMul R (HahnModule Γ R V) :=
   inferInstanceAs <| SMul R V⟦Γ⟧
@@ -601,20 +609,17 @@ instance [NonAssocSemiring R] : NonAssocSemiring R⟦Γ⟧ where
 
 instance [Semiring R] : Semiring R⟦Γ⟧ where
 
-instance [NonUnitalSemiring R] [IsMulCommutative R] : NonUnitalCommSemiring R⟦Γ⟧ where
-  __ : NonUnitalSemiring R⟦Γ⟧ := inferInstance
-  mul_comm x y := by
+instance instNonUnitalCommSemiring [NonUnitalSemiring R] [IsMulCommutative R] :
+    IsMulCommutative R⟦Γ⟧ where
+  is_comm := ⟨fun x y => by
     ext
     simp_rw [coeff_mul, mul_comm]
-    exact Finset.sum_equiv (Equiv.prodComm _ _) (fun _ ↦ swap_mem_antidiagonal.symm) <| by simp
+    exact Finset.sum_equiv (Equiv.prodComm _ _) (fun _ ↦ swap_mem_antidiagonal.symm) <| by simp⟩
 
-instance [Semiring R] [IsMulCommutative R] : CommSemiring R⟦Γ⟧ where
 instance [NonUnitalNonAssocRing R] : NonUnitalNonAssocRing R⟦Γ⟧ where
 instance [NonUnitalRing R] : NonUnitalRing R⟦Γ⟧ where
 instance [NonAssocRing R] : NonAssocRing R⟦Γ⟧ where
 instance [Ring R] : Ring R⟦Γ⟧ where
-instance [NonUnitalRing R] [IsMulCommutative R] : NonUnitalCommRing R⟦Γ⟧ where
-instance [Ring R] [IsMulCommutative R] : CommRing R⟦Γ⟧ where
 
 end Ring
 
@@ -948,7 +953,7 @@ variable [NonUnitalNonAssocSemiring R]
 instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R⟦Γ⟧ where
   -- TODO: This proof is painful because `coeff_mul` isn't stated in terms of `Finsupp.sum`.
   mul_left_cancel_of_ne_zero {x} hx y z hyz := by
-    let : AddCancelCommMonoid R := ⟨⟩
+    let : AddCancelMonoid R := { }
     contrapose! hyz
     simp only [ne_eq, ← coeff_inj, funext_iff, not_forall] at ⊢ hyz
     have : Set.IsWF {a | y.coeff a ≠ z.coeff a} :=
@@ -970,7 +975,7 @@ instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R⟦Γ⟧ where
     · simp +contextual [← and_or_left, ← or_and_right]
     · simp +contextual [← and_or_left, ← or_and_right]
   mul_right_cancel_of_ne_zero {x} hx y z hyz := by
-    let : AddCancelCommMonoid R := ⟨⟩
+    let : AddCancelMonoid R := { }
     contrapose! hyz
     simp only [ne_eq, ← coeff_inj, funext_iff, not_forall] at ⊢ hyz
     have : Set.IsWF {a | y.coeff a ≠ z.coeff a} :=

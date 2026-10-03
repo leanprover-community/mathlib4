@@ -570,12 +570,12 @@ instance instPi : IsModuleTopology R (∀ i, A i) := by
   -- for binary products above. We use a "decategorified" induction principle for finite types.
   induction ι using Finite.induction_empty_option
   · -- invariance under equivalence of the finite type we're taking the product over
-    case of_equiv X Y e _ _ _ _ _ =>
+    case of_equiv X Y e _ _ _ _ _ _ =>
     exact .iso (ContinuousLinearEquiv.piCongrLeft R A e)
   · -- empty case
     infer_instance
   · -- "inductive step" is to check for product over `Option ι` case when known for product over `ι`
-    case h_option ι _ hind _ _ _ _ =>
+    case h_option ι _ hind _ _ _ _ _ =>
     -- `Option ι` is a `Sum` of `ι` and `Unit`
     let e : Option ι ≃ ι ⊕ Unit := Equiv.optionEquivSumPUnit ι
     -- so suffices to check for a product of modules over `ι ⊕ Unit`

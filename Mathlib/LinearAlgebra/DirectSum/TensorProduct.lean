@@ -167,7 +167,7 @@ alias directSumRight'_restrict := restrictScalar_directSumRight
 
 lemma coe_directSumRight :
     ⇑(directSumRight R S M₁' M₂) = directSumRight R R M₁' M₂ :=
-  congr($(restrictScalar_directSumRight ..))
+  congr($(restrictScalar_directSumRight R S R))
 
 @[deprecated (since := "2026-03-04")] alias coe_directSumRight' := coe_directSumRight
 

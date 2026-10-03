@@ -34,9 +34,6 @@ open scoped NNReal Nat ContDiff
 
 universe u uE uF uG
 
-attribute [local instance 1001]
-  NormedAddCommGroup.toAddCommGroup AddCommGroup.toAddCommMonoid
-
 open Set Fin Filter Function
 
 open scoped Topology
@@ -61,7 +58,7 @@ theorem hasFTaylorSeriesUpToOn_pi {n : ℕ∞ω} :
     HasFTaylorSeriesUpToOn n (fun x i => φ i x)
         (fun x m => ContinuousMultilinearMap.pi fun i => p' i x m) s ↔
       ∀ i, HasFTaylorSeriesUpToOn n (φ i) (p' i) s := by
-  set pr := @ContinuousLinearMap.proj 𝕜 _ ι F' _ _ _
+  set pr := @ContinuousLinearMap.proj 𝕜 _ ι F' _ _ _ _
   set L : ∀ m : ℕ, (∀ i, E [×m]→L[𝕜] F' i) ≃ₗᵢ[𝕜] E [×m]→L[𝕜] ∀ i, F' i := fun m =>
     ContinuousMultilinearMap.piₗᵢ _ _
   refine ⟨fun h i => ?_, fun h => ⟨fun x hx => ?_, ?_, ?_⟩⟩
@@ -78,13 +75,13 @@ theorem hasFTaylorSeriesUpToOn_pi {n : ℕ∞ω} :
 theorem hasFTaylorSeriesUpToOn_pi' {n : ℕ∞ω} :
     HasFTaylorSeriesUpToOn n Φ P' s ↔
       ∀ i, HasFTaylorSeriesUpToOn n (fun x => Φ x i)
-        (fun x m => (@ContinuousLinearMap.proj 𝕜 _ ι F' _ _ _ i).compContinuousMultilinearMap
+        (fun x m => (@ContinuousLinearMap.proj 𝕜 _ ι F' _ _ _ _ i).compContinuousMultilinearMap
           (P' x m)) s := by
   convert! hasFTaylorSeriesUpToOn_pi (𝕜 := 𝕜) (φ := fun i x ↦ Φ x i); ext; rfl
 
 theorem contDiffWithinAt_pi :
     ContDiffWithinAt 𝕜 n Φ s x ↔ ∀ i, ContDiffWithinAt 𝕜 n (fun x => Φ x i) s x := by
-  set pr := @ContinuousLinearMap.proj 𝕜 _ ι F' _ _ _
+  set pr := @ContinuousLinearMap.proj 𝕜 _ ι F' _ _ _ _
   refine ⟨fun h i => h.continuousLinearMap_comp (pr i), fun h ↦ ?_⟩
   match n with
   | ω =>

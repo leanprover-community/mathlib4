@@ -125,8 +125,8 @@ def invertibleOfInvertibleTranspose [Invertible Aᵀ] : Invertible A where
 equivalence, although both sides of the equiv are subsingleton anyway. -/
 @[simps]
 def transposeInvertibleEquivInvertible : Invertible Aᵀ ≃ Invertible A where
-  toFun := @invertibleOfInvertibleTranspose _ _ _ _ _ _
-  invFun := @invertibleTranspose _ _ _ _ _ _
+  toFun := @invertibleOfInvertibleTranspose _ _ _ _ _ _ _
+  invFun := @invertibleTranspose _ _ _ _ _ _ _
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
 

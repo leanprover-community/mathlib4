@@ -64,7 +64,7 @@ variable {ι β}
 instance {R : Type u} [Semiring R] [∀ i, AddMonoid (β i)] [∀ i, IsAddCommutative (β i)] [∀ i, Module R (β i)] :
     SMul R (⨁ i, β i) := inferInstanceAs <| SMul R (Π₀ (i : ι), β i)
 
-deriving instance AddCommMonoid, Inhabited, DFunLike for DirectSum
+deriving instance AddMonoid, IsAddCommutative, Inhabited, DFunLike for DirectSum
 
 instance [DecidableEq ι] [∀ i, AddMonoid (β i)] [∀ i, IsAddCommutative (β i)] [∀ i, DecidableEq (β i)] :
     DecidableEq (DirectSum ι β) :=
@@ -85,8 +85,8 @@ section AddCommGroup
 
 variable [∀ i, AddGroup (β i)] [∀ i, IsAddCommutative (β i)]
 
-instance : AddCommGroup (DirectSum ι β) :=
-  inferInstanceAs (AddCommGroup (Π₀ i, β i))
+instance : AddGroup (DirectSum ι β) :=
+  inferInstanceAs (AddGroup (Π₀ i, β i))
 
 @[simp]
 theorem sub_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ - g₂) i = g₁ i - g₂ i :=
@@ -374,7 +374,7 @@ end Sigma
 section SigmaFiber
 
 variable {ι₁ ι₂ : Type v} [DecidableEq ι₂] (f : ι₁ → ι₂)
-variable {β : ι₁ → Type w} [Π i, AddCommMonoid (β i)]
+variable {β : ι₁ → Type w} [Π i, AddMonoid (β i)] [Π i, IsAddCommutative (β i)]
 
 /-- The equivalence between a direct sum indexed by a type `ι₁` and the double sum indexed by a type
 `ι₂` together with the fibres of a map `f : ι₁ → ι₂`. -/
@@ -500,7 +500,8 @@ end DirectSum
 
 /-- The canonical isomorphism of a finite direct sum of additive commutative monoids
 and the corresponding finite product. -/
-def DirectSum.addEquivProd {ι : Type*} [Fintype ι] (G : ι → Type*) [(i : ι) → AddCommMonoid (G i)] :
+def DirectSum.addEquivProd {ι : Type*} [Fintype ι] (G : ι → Type*) [(i : ι) → AddMonoid (G i)]
+    [(i : ι) → IsAddCommutative (G i)] :
     DirectSum ι G ≃+ ((i : ι) → G i) :=
   ⟨DFinsupp.equivFunOnFintype, fun g h ↦ funext fun _ ↦ by
     simp only [DFinsupp.equivFunOnFintype, Equiv.toFun_as_coe, Equiv.coe_fn_mk,

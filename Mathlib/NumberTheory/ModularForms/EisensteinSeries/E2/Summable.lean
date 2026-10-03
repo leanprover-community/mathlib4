@@ -293,7 +293,7 @@ lemma tsum_symmetricIco_tsum_sub_eq :
 
 lemma tsum_tsum_symmetricIco_sub_eq :
     ∑' m : ℤ, ∑'[symmetricIco ℤ] n : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) = 0 := by
-  convert! tsum_zero
+  refine (tsum_congr fun m ↦ ?_).trans tsum_zero
   exact tsum_symmetricIco_linear_sub_linear_add_one_eq_zero z _
 
 end Auxiliary

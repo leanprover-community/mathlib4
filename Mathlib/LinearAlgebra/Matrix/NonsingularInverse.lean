@@ -111,8 +111,8 @@ theorem det_invOf [Invertible A] [Invertible A.det] : (⅟A).det = ⅟A.det := b
 equivalence, although both sides of the equiv are subsingleton anyway. -/
 @[simps]
 def invertibleEquivDetInvertible : Invertible A ≃ Invertible A.det where
-  toFun := @detInvertibleOfInvertible _ _ _ _ _ A
-  invFun := @invertibleOfDetInvertible _ _ _ _ _ A
+  toFun := @detInvertibleOfInvertible _ _ _ _ _ _ A
+  invFun := @invertibleOfDetInvertible _ _ _ _ _ _ A
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
 
@@ -549,7 +549,7 @@ def invertibleOfDiagonalInvertible (v : n → α) [Invertible (diagonal v)] : In
 equivalence, although both sides of the equiv are subsingleton anyway. -/
 @[simps]
 def diagonalInvertibleEquivInvertible (v : n → α) : Invertible (diagonal v) ≃ Invertible v where
-  toFun := @invertibleOfDiagonalInvertible _ _ _ _ _ _
+  toFun := @invertibleOfDiagonalInvertible _ _ _ _ _ _ _
   invFun := @diagonalInvertible _ _ _ _ _ _
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _

@@ -103,11 +103,11 @@ theorem Module.FinitePresentation.exists_fin' [fp : Module.FinitePresentation R 
 /-- A finitely presented module is isomorphic to the quotient of a finite free module by a finitely
 generated submodule. -/
 theorem Module.FinitePresentation.equiv_quotient [Module.FinitePresentation R M] [Small.{v} R] :
-    ∃ (L : Type v) (_ : AddCommGroup L) (_ : Module R L) (K : Submodule R L)
-      (_ : M ≃ₗ[R] L ⧸ K), Module.Free R L ∧ Module.Finite R L ∧ K.FG :=
+    ∃ (L : Type v) (_ : AddGroup L) (_ : IsAddCommutative L) (_ : Module R L)
+      (K : Submodule R L) (_ : M ≃ₗ[R] L ⧸ K), Module.Free R L ∧ Module.Finite R L ∧ K.FG :=
   have ⟨_n, _K, e, fg⟩ := Module.FinitePresentation.exists_fin R M
   let es := Shrink.linearEquiv
-  ⟨_, inferInstance, inferInstance, _, e ≪≫ₗ Submodule.Quotient.equiv _ _ (es ..).symm rfl,
+  ⟨_, inferInstance, inferInstance, inferInstance, _, e ≪≫ₗ Submodule.Quotient.equiv _ _ (es ..).symm rfl,
     .of_equiv (es ..).symm, .equiv (es ..).symm, fg.map (es ..).symm.toLinearMap⟩
 
 end

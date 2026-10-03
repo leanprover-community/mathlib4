@@ -29,10 +29,11 @@ open Mathlib.Tactic.Ring
 
 namespace Mathlib.Tactic.Determinant
 
-/-- Construct a `CommSemiring` instance expression from a `CommRing` instance expression -/
+/-- Construct a `Semiring` instance expression from a `Ring` instance expression (the
+commutativity instance `iα` is carried along unchanged). -/
 abbrev commSemiringOfCommRing {u : Level} {α : Q(Type u)}
-    (rα : Q(CommRing $α)) : Q(CommSemiring $α) :=
-  q(CommRing.toCommSemiring (α := $α) (s := $rα))
+    (rα : Q(Ring $α)) (_iα : Q(IsMulCommutative $α)) : Q(Semiring $α) :=
+  q(Ring.toSemiring (R := $α) (self := $rα))
 
 /-- Parse an array literal into an array of element expressions.
 
@@ -46,11 +47,11 @@ def arrayLiteral? (e : Expr) : MetaM (Option (Array Expr)) := do
   | _ => return none
 
 /-- The context for a certificate evaluation. -/
-structure Ctx {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) where
+structure Ctx {u : Level} {α : Q(Type u)} (rα : Q(Ring $α)) (iα : Q(IsMulCommutative $α)) where
   /-- `Ring` evaluation cache for the scalar ring. -/
-  cα : Common.Cache (commSemiringOfCommRing rα)
+  cα : Common.Cache (commSemiringOfCommRing rα iα) iα
   /-- Proof-producing ring arithmetic. -/
-  rc : Common.RingCompute RatCoeff (commSemiringOfCommRing rα)
+  rc : Common.RingCompute RatCoeff (commSemiringOfCommRing rα iα) iα
   /-- The dimension of the reified matrix -/
   dimension : ℕ
   /-- The quoted dimension expression from the reified determinant call. -/
@@ -66,10 +67,12 @@ structure ReifiedBirdDet where
   {u : Level}
   /-- The type of a matrix entry -/
   {α : Q(Type u)}
-  /-- The `CommRing` instance for matrix entries -/
-  rα : Q(CommRing $α)
+  /-- The `Ring` instance for matrix entries -/
+  rα : Q(Ring $α)
+  /-- The `IsMulCommutative` instance for matrix entries -/
+  iα : Q(IsMulCommutative $α)
   /-- The evaluator context for the parsed determinant expression. -/
-  ctx : Ctx rα
+  ctx : Ctx rα iα
 
 /-- Recognise a `birdDet` call and reify it into an evaluator context. -/
 def reifyBirdDet (e : Expr) : MetaM ReifiedBirdDet := do
@@ -77,8 +80,11 @@ def reifyBirdDet (e : Expr) : MetaM ReifiedBirdDet := do
   let ⟨_, α, _⟩ ← inferTypeQ' e
   let_expr BirdDet.birdDet _ birdRingInst dimensionExpr arrayExpr := e
     | throwError "expected an application of `birdDet, got {e}"
-  let some rα ← checkTypeQ birdRingInst q(CommRing $α)
-    | throwError "expected `birdDet` ring instance to have type {q(CommRing $α)}"
+  let some rα ← checkTypeQ birdRingInst q(Ring $α)
+    | throwError "expected `birdDet` ring instance to have type {q(Ring $α)}"
+  -- `birdDet` itself only takes a `Ring` instance; commutativity is needed by the evaluator.
+  let .some iα ← trySynthInstanceQ q(IsMulCommutative $α)
+    | throwError "failed to synthesize {q(IsMulCommutative $α)}"
   let dimensionExpr ← whnf dimensionExpr
   let some dimensionLit ← checkTypeQ dimensionExpr q(ℕ)
     | throwError "expected the dimension to have type `ℕ`, got {dimensionExpr}"
@@ -95,14 +101,15 @@ def reifyBirdDet (e : Expr) : MetaM ReifiedBirdDet := do
     let some entry ← checkTypeQ entry α
       | throwError "expected array entry to have type {α}"
     return entry
-  let sα := commSemiringOfCommRing rα
-  let cα : Common.Cache sα := {
+  let sα := commSemiringOfCommRing rα iα
+  let cα : Common.Cache sα iα := {
     rα := some rα
     dsα := none
     czα := none
   }
   return {
     rα
+    iα
     ctx := {
       cα
       rc := ringCompute cα

@@ -399,7 +399,7 @@ theorem extension_property_addMonoidHom (h : Module.Baer ℤ Q)
 /-- **Baer's criterion** for injective module : a Baer module is an injective module, i.e. if every
 linear map from an ideal can be extended, then the module is injective. -/
 protected theorem injective (h : Module.Baer R Q) : Module.Injective R Q where
-  out X Y _ _ _ _ i hi f := by
+  out X Y _ _ _ _ _ _ i hi f := by
     obtain ⟨h, H⟩ := Module.Baer.extension_property h i hi f
     exact ⟨h, DFunLike.congr_fun H⟩
 
@@ -429,7 +429,7 @@ lemma Module.ulift_injective_of_injective [Small.{v} R]
 lemma Module.injective_of_ulift_injective
     (inj : Module.Injective R (ULift.{v'} M)) :
     Module.Injective R M where
-  out X Y _ _ _ _ f hf g :=
+  out X Y _ _ _ _ _ _ f hf g :=
     let eX := ULift.moduleEquiv.{_, _, v'} (R := R) (M := X)
     have ⟨g', hg'⟩ := inj.out (ULift.moduleEquiv.{_, _, v'}.symm.toLinearMap ∘ₗ f ∘ₗ eX.toLinearMap)
       (by exact ULift.moduleEquiv.symm.injective.comp <| hf.comp eX.injective)
@@ -469,7 +469,7 @@ instance Module.Injective.pi
     [∀ i, AddGroup (M i)] [∀ i, IsAddCommutative (M i)] [∀ i, Module R (M i)]
     [∀ i, Module.Injective R (M i)] :
     Module.Injective R (∀ i, M i) :=
-  ⟨fun X Y _ _ _ _ f hf g ↦ by
+  ⟨fun X Y _ _ _ _ _ _ f hf g ↦ by
     choose l hl using fun i ↦ extension_property R _ _ _ f hf ((LinearMap.proj i).comp g)
     refine ⟨LinearMap.pi l, fun x ↦ ?_⟩
     ext i

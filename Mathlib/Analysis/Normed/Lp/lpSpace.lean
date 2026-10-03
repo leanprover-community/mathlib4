@@ -346,7 +346,7 @@ namespace PreLp
 
 -- The `SMul` instance exists to avoid a zsmul diamond.
 variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] in
-deriving instance SMul 𝕜, AddCommMonoid, AddCommGroup for PreLp E
+deriving instance SMul 𝕜, AddMonoid, AddGroup, IsAddCommutative for PreLp E
 
 @[simp] lemma add_apply {x y : PreLp E} {i : α} : (x + y) i = x i + y i := rfl
 @[simp] lemma zero_apply {i : α} : (0 : PreLp E) i = 0 := rfl
@@ -542,8 +542,8 @@ theorem norm_neg ⦃f : lp E p⦄ : ‖-f‖ = ‖f‖ := by
     apply (lp.hasSum_norm hp (-f)).unique
     simpa only [coeFn_neg, Pi.neg_apply, _root_.norm_neg] using lp.hasSum_norm hp f
 
-instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) :=
-  fast_instance% AddGroupNorm.toNormedAddCommGroup
+instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddGroup (lp E p) :=
+  fast_instance% AddGroupNorm.toNormedAddGroup
     { toFun := norm
       map_zero' := norm_zero
       neg' := norm_neg
@@ -869,8 +869,8 @@ instance nonUnitalNormedRing : NonUnitalNormedRing (lp B ∞) :=
         (lp.norm_apply_le_norm ENNReal.top_ne_zero g i) (norm_nonneg _) (norm_nonneg _) }
 
 instance nonUnitalNormedCommRing {B : I → Type*} [∀ i, NonUnitalNormedRing (B i)] [∀ i, IsMulCommutative (B i)] :
-    NonUnitalNormedCommRing (lp B ∞) where
-  mul_comm _ _ := ext <| mul_comm ..
+    IsMulCommutative (lp B ∞) where
+  is_comm.comm _ _ := ext <| mul_comm ..
 
 -- we also want a `NonUnitalNormedCommRing` instance, but this has to wait for https://github.com/leanprover-community/mathlib3/pull/13719
 instance infty_isScalarTower {𝕜} [NormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, IsBoundedSMul 𝕜 (B i)]
@@ -961,8 +961,8 @@ section NormedCommRing
 
 variable {I : Type*} {B : I → Type*} [∀ i, NormedRing (B i)] [∀ i, IsMulCommutative (B i)] [∀ i, NormOneClass (B i)]
 
-instance inftyNormedCommRing : NormedCommRing (lp B ∞) where
-  mul_comm := mul_comm
+instance inftyNormedCommRing : IsMulCommutative (lp B ∞) where
+  is_comm.comm := mul_comm
 
 end NormedCommRing
 

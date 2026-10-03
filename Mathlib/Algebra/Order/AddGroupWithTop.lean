@@ -32,7 +32,7 @@ variable {G α : Type*}
 /-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
   Instances should include number systems with an infinite element adjoined. -/
 class LinearOrderedAddCommMonoidWithTop (α : Type*) extends
-    AddCommMonoid α, LinearOrder α, IsOrderedAddMonoid α, OrderTop α where
+    AddMonoid α, IsAddCommutative α, LinearOrder α, IsOrderedAddMonoid α, OrderTop α where
   /-- In a `LinearOrderedAddCommMonoidWithTop`, the `⊤` element is invariant under addition. -/
   protected top_add' : ∀ x : α, ⊤ + x = ⊤
   protected isAddLeftRegular_of_ne_top ⦃x : α⦄ : x ≠ ⊤ → IsAddLeftRegular x
@@ -42,7 +42,8 @@ class LinearOrderedAddCommMonoidWithTop (α : Type*) extends
 -- We do not extend `LinearOrderedAddCommMonoidWithTop` as that would bring in the unnecessary
 -- `isAddLeftRegular_of_ne_top` field.
 class LinearOrderedAddCommGroupWithTop (α : Type*)
-    extends AddCommMonoid α, LinearOrder α, IsOrderedAddMonoid α, OrderTop α, SubNegMonoid α,
+    extends AddMonoid α, IsAddCommutative α, LinearOrder α, IsOrderedAddMonoid α, OrderTop α,
+    SubNegMonoid α,
     Nontrivial α where
   /-- In a `LinearOrderedAddCommMonoidWithTop`, the `⊤` element is invariant under addition. -/
   protected top_add' (x : α) : ⊤ + x = ⊤

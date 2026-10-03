@@ -149,7 +149,7 @@ protected def finOrthonormalBasis (hn : 0 < n) (h : finrank ℝ E = n) (x : Orie
     OrthonormalBasis (Fin n) ℝ E := by
   haveI := Fin.pos_iff_nonempty.1 hn
   haveI : FiniteDimensional ℝ E := .of_finrank_pos <| h.symm ▸ hn
-  exact ((@stdOrthonormalBasis _ _ _ _ _ this).reindex <| finCongr h).adjustToOrientation x
+  exact ((@stdOrthonormalBasis _ _ _ _ _ _ this).reindex <| finCongr h).adjustToOrientation x
 
 /-- `Orientation.finOrthonormalBasis` gives a basis with the required orientation. -/
 @[simp]
@@ -157,7 +157,7 @@ theorem finOrthonormalBasis_orientation (hn : 0 < n) (h : finrank ℝ E = n)
     (x : Orientation ℝ E (Fin n)) : (x.finOrthonormalBasis hn h).toBasis.orientation = x := by
   have := Fin.pos_iff_nonempty.1 hn
   have : FiniteDimensional ℝ E := .of_finrank_pos <| h.symm ▸ hn
-  exact ((@stdOrthonormalBasis _ _ _ _ _ this).reindex <|
+  exact ((@stdOrthonormalBasis _ _ _ _ _ _ this).reindex <|
     finCongr h).orientation_adjustToOrientation x
 
 section VolumeForm
@@ -224,7 +224,8 @@ theorem volumeForm_neg_orientation : (-o).volumeForm = -o.volumeForm := by
   rcases n with - | n
   · refine o.eq_or_eq_neg_of_isEmpty.elim ?_ ?_ <;> rintro rfl
     · simp [volumeForm_zero_neg]
-    · simp [volumeForm_zero_neg]
+    · rw [neg_neg (positiveOrientation : Orientation ℝ E (Fin 0))]
+      simp [volumeForm_zero_neg]
   let e : OrthonormalBasis (Fin n.succ) ℝ E := o.finOrthonormalBasis n.succ_pos Fact.out
   have h₁ : e.toBasis.orientation = o := o.finOrthonormalBasis_orientation _ _
   have h₂ : e.toBasis.orientation ≠ -o := by

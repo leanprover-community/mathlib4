@@ -71,7 +71,12 @@ universe u
   This definition is slightly generalised to include a well-founded relation
   `r` with the property that `r (a % b) b`, instead of a valuation. -/
 @[wikidata Q867345]
-class EuclideanDomain (R : Type u) extends CommRing R, Nontrivial R where
+class EuclideanDomain (R : Type u) extends Ring R, Nontrivial R where
+  /-- Multiplication in a Euclidean domain is commutative. This is the Prop parent
+    `IsMulCommutative R`; it is a field rather than an `extends` parent only because its field
+    `is_comm` would clash with the `is_comm` field of `IsAddCommutative R` inherited from `Ring R`.
+    It is registered as an instance below. -/
+  [toIsMulCommutative : IsMulCommutative R]
   /-- A division function (denoted `/`) on `R`.
     This satisfies the property `b * (a / b) + a % b = a`, where `%` denotes `remainder`. -/
   protected quotient : R → R → R
@@ -96,14 +101,15 @@ class EuclideanDomain (R : Type u) extends CommRing R, Nontrivial R where
 
 /-
 Lean has far more theorems about fields than about Euclidean domains. We thus
-lower the priority of `Euclideandomain.toCommRing`, encouraging typeclass inference
-to try `Field.toCommRing` first. Without this priority-lowering, typeclass inference
-finds the more inefficient path `Field.toEuclideanDomain.toCommRing` by default. This
+lower the priority of `EuclideanDomain.toRing` and `EuclideanDomain.toIsMulCommutative`
+(which replace the former `EuclideanDomain.toCommRing`), encouraging typeclass inference
+to try the `Field` paths first. Without this priority-lowering, typeclass inference
+finds the more inefficient path through `Field.toEuclideanDomain` by default. This
 priority change saves over 500G instructions across mathlib. See
 https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/We.20need.20to.20talk.20about.20Euclidean.20Domains/near/594655420
 -/
 -- see Note [lower instance priority]
-attribute [instance 100] EuclideanDomain.toCommRing
+attribute [instance 100] EuclideanDomain.toRing EuclideanDomain.toIsMulCommutative
 
 namespace EuclideanDomain
 

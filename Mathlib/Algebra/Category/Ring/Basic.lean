@@ -359,7 +359,7 @@ structure CommSemiRingCat where
   of ::
   /-- The underlying type. -/
   carrier : Type u
-  [commSemiring : Semiring carrier] [IsMulCommutative carrier]
+  [commSemiring : Semiring carrier] [isComm : IsMulCommutative carrier]
 
 section Notation
 
@@ -372,9 +372,9 @@ meta def CommSemiRingCat.delabOf : Delab := CategoryTheory.delabOf
 
 end Notation
 
-attribute [instance] CommSemiRingCat.commSemiring
+attribute [instance] CommSemiRingCat.commSemiring CommSemiRingCat.isComm
 
-initialize_simps_projections CommSemiRingCat (-commSemiring)
+initialize_simps_projections CommSemiRingCat (-commSemiring, -isComm)
 
 namespace CommSemiRingCat
 
@@ -476,8 +476,11 @@ unif_hint forget_obj_eq_coe (R R' : CommSemiRingCat) where
   R ≟ R' ⊢
   (forget CommSemiRingCat).obj R ≟ CommSemiRingCat.carrier R'
 
-instance {R : CommSemiRingCat} : CommSemiring ((forget CommSemiRingCat).obj R) :=
-  inferInstanceAs <| CommSemiring R.carrier
+instance {R : CommSemiRingCat} : Semiring ((forget CommSemiRingCat).obj R) :=
+  inferInstanceAs <| Semiring R.carrier
+
+instance {R : CommSemiRingCat} : IsMulCommutative ((forget CommSemiRingCat).obj R) :=
+  inferInstanceAs <| IsMulCommutative R.carrier
 
 instance hasForgetToSemiRingCat : HasForget₂ CommSemiRingCat SemiRingCat where
   forget₂ :=
@@ -522,7 +525,7 @@ structure CommRingCat where
   of ::
   /-- The underlying type. -/
   carrier : Type u
-  [commRing : Ring carrier] [IsMulCommutative carrier]
+  [commRing : Ring carrier] [isComm : IsMulCommutative carrier]
 
 section Notation
 
@@ -535,9 +538,9 @@ meta def CommRingCat.delabOf : Delab := CategoryTheory.delabOf
 
 end Notation
 
-attribute [instance] CommRingCat.commRing
+attribute [instance] CommRingCat.commRing CommRingCat.isComm
 
-initialize_simps_projections CommRingCat (-commRing)
+initialize_simps_projections CommRingCat (-commRing, -isComm)
 
 namespace CommRingCat
 
@@ -641,8 +644,11 @@ unif_hint forget_obj_eq_coe (R R' : CommRingCat) where
   R ≟ R' ⊢
   (forget CommRingCat).obj R ≟ CommRingCat.carrier R'
 
-instance {R : CommRingCat} : CommRing ((forget CommRingCat).obj R) :=
-  inferInstanceAs <| CommRing R.carrier
+instance {R : CommRingCat} : Ring ((forget CommRingCat).obj R) :=
+  inferInstanceAs <| Ring R.carrier
+
+instance {R : CommRingCat} : IsMulCommutative ((forget CommRingCat).obj R) :=
+  inferInstanceAs <| IsMulCommutative R.carrier
 
 instance hasForgetToRingCat : HasForget₂ CommRingCat RingCat where
   forget₂ :=

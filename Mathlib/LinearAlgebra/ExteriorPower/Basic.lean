@@ -186,7 +186,7 @@ noncomputable def isPresentationCore :
   desc s := LinearMap.comp (ExteriorAlgebra.liftAlternating
       (Function.update 0 n (relationsSolutionEquiv s))) (Submodule.subtype _)
   postcomp_desc s := by aesop
-  postcomp_injective {N _ _ f f' h} := by
+  postcomp_injective {N _ _ _ f f' h} := by
     rw [Submodule.linearMap_eq_iff_of_span_eq_top _ _ (ιMulti_span R n M)]
     rintro ⟨_, ⟨f, rfl⟩⟩
     exact Module.Relations.Solution.congr_var h f
@@ -403,7 +403,8 @@ of elements of `v`, is the image of the map of exterior powers induced by the in
 the span of `v` into `M`. -/
 lemma ιMulti_family_span {I : Type*} [LinearOrder I] (v : I → M) :
     (map n (span R (range v)).subtype).range = span R (range (ιMulti_family R n v)) := by
-  have ⟨f, hf⟩ : ∃ f : I → Submodule.span R (Set.range v), Submodule.subtype _ ∘ f = v :=
+  have ⟨f, hf⟩ : ∃ f : I → Submodule.span R (Set.range v),
+      Submodule.subtype (Submodule.span R (Set.range v)) ∘ f = v :=
     ⟨fun i ↦ ⟨v i, Submodule.subset_span (Set.mem_range_self i)⟩, rfl⟩
   have htop : Submodule.span R (Set.range f) = ⊤ := by
     apply SetLike.coe_injective

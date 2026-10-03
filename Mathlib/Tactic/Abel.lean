@@ -86,52 +86,63 @@ structure Context where
   α0 : Expr
   /-- Specify whether we are in an additive commutative group or an additive commutative monoid. -/
   isGroup : Bool
-  /-- The `AddCommGroup α` or `AddCommMonoid α` expression. -/
+  /-- The `AddGroup α` or `AddMonoid α` expression. -/
   inst : Expr
+  /-- The `IsAddCommutative α` expression (stated for the `Add α` instance derived from `inst`). -/
+  comm : Expr
 
 /-- Populate a `context` object for evaluating `e`. -/
 def mkContext (e : Expr) : MetaM Context := do
   let α ← inferType e
-  let c ← synthInstance (← mkAppM ``AddCommMonoid #[α])
-  let cg ← synthInstance? (← mkAppM ``AddCommGroup #[α])
+  let c ← synthInstance (← mkAppM ``AddMonoid #[α])
+  let cg ← synthInstance? (← mkAppM ``AddGroup #[α])
   let u ← mkFreshLevelMVar
   _ ← isDefEq (.sort (.succ u)) (← inferType α)
   let α0 ← Expr.ofNat α 0
-  match cg with
-  | some cg => return ⟨α, u, α0, true, cg⟩
-  | _ => return ⟨α, u, α0, false, c⟩
+  let (isGroup, inst) := match cg with
+    | some cg => (true, cg)
+    | none => (false, c)
+  -- The type of the commutativity instance expected by the `abel` lemmas, read off from the
+  -- binder of `term`/`termg` so that its `Add α` argument is the one derived from `inst`.
+  let lem := if isGroup then ``termg else ``term
+  let .forallE _ commTy _ _ ← whnfR (← inferType (mkApp2 (.const lem [u]) α inst))
+    | throwError "abel: unexpected type of {lem}"
+  let comm ← synthInstance commTy
+  return ⟨α, u, α0, isGroup, inst, comm⟩
 
 /-- The monad for `Abel` contains, in addition to the `AtomM` state,
 some information about the current type we are working over, so that we can consistently
 use group lemmas or monoid lemmas as appropriate. -/
 abbrev M := ReaderT Context AtomM
 
-/-- Apply the function `n : ∀ {α} [inst : AddWhatever α], _` to the
+/-- Apply the function `n : ∀ {α} [inst : AddWhatever α] [IsAddCommutative α], _` to the
 implicit parameters in the context, and the given list of arguments. -/
 def Context.app (c : Context) (n : Name) (inst : Expr) : Array Expr → Expr :=
-  mkAppN (((@Expr.const n [c.univ]).app c.α).app inst)
+  mkAppN ((((@Expr.const n [c.univ]).app c.α).app inst).app c.comm)
 
-/-- Apply the function `n : ∀ {α} [inst α], _` to the implicit parameters in the
-context, and the given list of arguments.
+/-- Apply the function `n : ∀ {α} [inst α], _` (with no commutativity argument) to the implicit
+parameters in the context, and the given list of arguments.
 
 Compared to `context.app`, this takes the name of the typeclass, rather than an
 inferred typeclass instance.
 -/
 def Context.mkApp (c : Context) (n inst : Name) (l : Array Expr) : MetaM Expr := do
-  return c.app n (← synthInstance ((Expr.const inst [c.univ]).app c.α)) l
+  return mkAppN (((@Expr.const n [c.univ]).app c.α).app
+    (← synthInstance ((Expr.const inst [c.univ]).app c.α))) l
 
 /-- Add the letter "g" to the end of the name, e.g. turning `term` into `termg`.
 
-This is used to choose between declarations taking `AddCommMonoid` and those
-taking `AddCommGroup` instances.
+This is used to choose between declarations taking `AddMonoid` and those
+taking `AddGroup` instances (both together with `IsAddCommutative`).
 -/
 def addG : Name → Name
   | .str p s => .str p (s ++ "g")
   | n => n
 
-/-- Apply the function `n : ∀ {α} [AddComm{Monoid,Group} α]` to the given list of arguments.
+/-- Apply the function `n : ∀ {α} [Add{Monoid,Group} α] [IsAddCommutative α]` to the given list
+of arguments.
 
-Will use the `AddComm{Monoid,Group}` instance that has been cached in the context.
+Will use the `Add{Monoid,Group}` and `IsAddCommutative` instances cached in the context.
 -/
 def iapp (n : Name) (xs : Array Expr) : M Expr := do
   let c ← read
@@ -171,35 +182,36 @@ def NormalExpr.zero' : M NormalExpr := return NormalExpr.zero (← read).α0
 open NormalExpr
 
 theorem const_add_term {α} [AddMonoid α] [IsAddCommutative α] (k n x a a') (h : k + a = a') :
-    k + @term α _ n x a = term n x a' := by
+    k + @term α _ _ n x a = term n x a' := by
   simp [h.symm, term, add_comm, add_assoc]
 
 theorem const_add_termg {α} [AddGroup α] [IsAddCommutative α] (k n x a a') (h : k + a = a') :
-    k + @termg α _ n x a = termg n x a' := by
+    k + @termg α _ _ n x a = termg n x a' := by
   simp [h.symm, termg, add_comm, add_assoc]
 
 theorem term_add_const {α} [AddMonoid α] [IsAddCommutative α] (n x a k a') (h : a + k = a') :
-    @term α _ n x a + k = term n x a' := by
+    @term α _ _ n x a + k = term n x a' := by
   simp [h.symm, term, add_assoc]
 
 theorem term_add_constg {α} [AddGroup α] [IsAddCommutative α] (n x a k a') (h : a + k = a') :
-    @termg α _ n x a + k = termg n x a' := by
+    @termg α _ _ n x a + k = termg n x a' := by
   simp [h.symm, termg, add_assoc]
 
-theorem term_add_term {α} [AddMonoid α] [IsAddCommutative α] (n₁ x a₁ n₂ a₂ n' a') (h₁ : n₁ + n₂ = n')
-    (h₂ : a₁ + a₂ = a') : @term α _ n₁ x a₁ + @term α _ n₂ x a₂ = term n' x a' := by
+theorem term_add_term {α} [AddMonoid α] [IsAddCommutative α] (n₁ x a₁ n₂ a₂ n' a')
+    (h₁ : n₁ + n₂ = n') (h₂ : a₁ + a₂ = a') :
+    @term α _ _ n₁ x a₁ + @term α _ _ n₂ x a₂ = term n' x a' := by
   simp [h₁.symm, h₂.symm, term, add_nsmul, add_assoc, add_left_comm]
 
 theorem term_add_termg {α} [AddGroup α] [IsAddCommutative α] (n₁ x a₁ n₂ a₂ n' a')
     (h₁ : n₁ + n₂ = n') (h₂ : a₁ + a₂ = a') :
-    @termg α _ n₁ x a₁ + @termg α _ n₂ x a₂ = termg n' x a' := by
+    @termg α _ _ n₁ x a₁ + @termg α _ _ n₂ x a₂ = termg n' x a' := by
   simp only [termg, h₁.symm, add_zsmul, h₂.symm]
   exact add_add_add_comm (n₁ • x) a₁ (n₂ • x) a₂
 
-theorem zero_term {α} [AddMonoid α] [IsAddCommutative α] (x a) : @term α _ 0 x a = a := by
+theorem zero_term {α} [AddMonoid α] [IsAddCommutative α] (x a) : @term α _ _ 0 x a = a := by
   simp [term, zero_nsmul]
 
-theorem zero_termg {α} [AddGroup α] [IsAddCommutative α] (x a) : @termg α _ 0 x a = a := by
+theorem zero_termg {α} [AddGroup α] [IsAddCommutative α] (x a) : @termg α _ _ 0 x a = a := by
   simp [termg, zero_zsmul]
 
 /--
@@ -231,7 +243,7 @@ partial def evalAdd : NormalExpr → NormalExpr → M (NormalExpr × Expr)
       return (← term' n₂ x₂ a', ← iapp ``const_add_term #[e₁, n₂.1, x₂.2, a₂, a', h])
 
 theorem term_neg {α} [AddGroup α] [IsAddCommutative α] (n x a n' a')
-    (h₁ : -n = n') (h₂ : -a = a') : -@termg α _ n x a = termg n' x a' := by
+    (h₁ : -n = n') (h₂ : -a = a') : -@termg α _ _ n x a = termg n' x a' := by
   simpa [h₂.symm, h₁.symm, termg] using add_comm _ _
 
 /--
@@ -255,12 +267,12 @@ theorem zero_smulg {α} [AddGroup α] [IsAddCommutative α] (c) : smulg c (0 : �
 
 theorem term_smul {α} [AddMonoid α] [IsAddCommutative α] (c n x a n' a')
     (h₁ : c * n = n') (h₂ : smul c a = a') :
-    smul c (@term α _ n x a) = term n' x a' := by
+    smul c (@term α _ _ n x a) = term n' x a' := by
   simp [h₂.symm, h₁.symm, term, smul, nsmul_add, mul_nsmul']
 
 theorem term_smulg {α} [AddGroup α] [IsAddCommutative α] (c n x a n' a')
     (h₁ : c * n = n') (h₂ : smulg c a = a') :
-    smulg c (@termg α _ n x a) = termg n' x a' := by
+    smulg c (@termg α _ _ n x a) = termg n' x a' := by
   simp [h₂.symm, h₁.symm, termg, smulg, zsmul_add, mul_zsmul]
 
 /--
@@ -274,11 +286,15 @@ def evalSMul (k : Expr × ℤ) : NormalExpr → M (NormalExpr × Expr)
     return (← term' (n'.expr, k.2 * n.2) x a',
       ← iapp ``term_smul #[k.1, n.1, x.2, a, n'.expr, a', ← n'.getProof, h₂])
 
-theorem term_atom {α} [AddMonoid α] [IsAddCommutative α] (x : α) : x = term 1 x 0 := by simp [term, one_nsmul]
-theorem term_atomg {α} [AddGroup α] [IsAddCommutative α] (x : α) : x = termg 1 x 0 := by simp [termg]
-theorem term_atom_pf {α} [AddMonoid α] [IsAddCommutative α] (x x' : α) (h : x = x') : x = term 1 x' 0 := by
+theorem term_atom {α} [AddMonoid α] [IsAddCommutative α] (x : α) : x = term 1 x 0 := by
+  simp [term, one_nsmul]
+theorem term_atomg {α} [AddGroup α] [IsAddCommutative α] (x : α) : x = termg 1 x 0 := by
+  simp [termg]
+theorem term_atom_pf {α} [AddMonoid α] [IsAddCommutative α] (x x' : α) (h : x = x') :
+    x = term 1 x' 0 := by
   simp [term, h, one_nsmul]
-theorem term_atom_pfg {α} [AddGroup α] [IsAddCommutative α] (x x' : α) (h : x = x') : x = termg 1 x' 0 := by
+theorem term_atom_pfg {α} [AddGroup α] [IsAddCommutative α] (x x' : α) (h : x = x') :
+    x = termg 1 x' 0 := by
   simp [termg, h]
 
 /-- Interpret an expression as an atom for `abel`'s normal form. -/
@@ -304,15 +320,15 @@ theorem unfold_zsmul {α} [AddGroup α] [IsAddCommutative α] (n : ℤ) (x y : �
 
 lemma subst_into_smul {α} [AddMonoid α] [IsAddCommutative α]
     (l r tl tr t) (prl : l = tl) (prr : r = tr)
-    (prt : @smul α _ tl tr = t) : smul l r = t := by simp [prl, prr, prt]
+    (prt : @smul α _ _ tl tr = t) : smul l r = t := by simp [prl, prr, prt]
 
 lemma subst_into_smulg {α} [AddGroup α] [IsAddCommutative α]
     (l r tl tr t) (prl : l = tl) (prr : r = tr)
-    (prt : @smulg α _ tl tr = t) : smulg l r = t := by simp [prl, prr, prt]
+    (prt : @smulg α _ _ tl tr = t) : smulg l r = t := by simp [prl, prr, prt]
 
 lemma subst_into_smul_upcast {α} [AddGroup α] [IsAddCommutative α]
     (l r tl zl tr t) (prl₁ : l = tl) (prl₂ : ↑tl = zl) (prr : r = tr)
-    (prt : @smulg α _ zl tr = t) : smul l r = t := by
+    (prt : @smulg α _ _ zl tr = t) : smul l r = t := by
   simp [← prt, prl₁, ← prl₂, prr, smul, smulg, natCast_zsmul]
 
 lemma subst_into_add {α} [AddMonoid α] [IsAddCommutative α] (l r tl tr t)
@@ -449,9 +465,11 @@ elab (name := abel1) "abel1" tk:"!"? : tactic => withMainContext do
 @[tactic_alt abel]
 macro (name := abel1!) "abel1!" : tactic => `(tactic| abel1 !)
 
-theorem term_eq {α : Type*} [AddMonoid α] [IsAddCommutative α] (n : ℕ) (x a : α) : term n x a = n • x + a := (rfl)
+theorem term_eq {α : Type*} [AddMonoid α] [IsAddCommutative α] (n : ℕ) (x a : α) :
+    term n x a = n • x + a := (rfl)
 /-- A type synonym used by `abel` to represent `n • x + a` in an additive commutative group. -/
-theorem termg_eq {α : Type*} [AddGroup α] [IsAddCommutative α] (n : ℤ) (x a : α) : termg n x a = n • x + a := (rfl)
+theorem termg_eq {α : Type*} [AddGroup α] [IsAddCommutative α] (n : ℤ) (x a : α) :
+    termg n x a = n • x + a := (rfl)
 
 /-- True if this represents an atomic expression. -/
 def NormalExpr.isAtom : NormalExpr → Bool

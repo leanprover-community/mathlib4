@@ -490,12 +490,12 @@ instance instPseudoMetricSpace : PseudoMetricSpace (ContinuousMultilinearMap �
 /-- Continuous multilinear maps themselves form a seminormed space with respect to
 the operator norm. -/
 instance seminormedAddCommGroup :
-    SeminormedAddCommGroup (ContinuousMultilinearMap 𝕜 E G) := ⟨fun _ _ ↦ rfl⟩
+    SeminormedAddGroup (ContinuousMultilinearMap 𝕜 E G) := ⟨fun _ _ ↦ rfl⟩
 
 /-- An alias of `ContinuousMultilinearMap.seminormedAddCommGroup` with non-dependent types to help
 typeclass search. -/
 instance seminormedAddCommGroup' :
-    SeminormedAddCommGroup (ContinuousMultilinearMap 𝕜 (fun _ : ι => G) G') :=
+    SeminormedAddGroup (ContinuousMultilinearMap 𝕜 (fun _ : ι => G) G') :=
   ContinuousMultilinearMap.seminormedAddCommGroup
 
 instance : IsBoundedSMul 𝕜' (ContinuousMultilinearMap 𝕜 E G) := .of_norm_smul_le opNorm_smul_le
@@ -1245,13 +1245,13 @@ theorem opNorm_zero_iff {f : ContinuousMultilinearMap 𝕜 E G} : ‖f‖ = 0 �
 
 /-- Continuous multilinear maps themselves form a normed group with respect to
 the operator norm. -/
-instance normedAddCommGroup : NormedAddCommGroup (ContinuousMultilinearMap 𝕜 E G) :=
+instance normedAddCommGroup : NormedAddGroup (ContinuousMultilinearMap 𝕜 E G) :=
   NormedAddCommGroup.ofSeparation fun _ ↦ opNorm_zero_iff.mp
 
 /-- An alias of `ContinuousMultilinearMap.normedAddCommGroup` with non-dependent types to help
 typeclass search. -/
 instance normedAddCommGroup' :
-    NormedAddCommGroup (ContinuousMultilinearMap 𝕜 (fun _ : ι => G') G) :=
+    NormedAddGroup (ContinuousMultilinearMap 𝕜 (fun _ : ι => G') G) :=
   ContinuousMultilinearMap.normedAddCommGroup
 
 variable (𝕜 G)

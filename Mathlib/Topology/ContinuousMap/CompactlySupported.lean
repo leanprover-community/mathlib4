@@ -261,8 +261,9 @@ instance [AddMonoid β] [ContinuousAdd β] : AddMonoid C_c(α, β) := fast_insta
 
 end AddMonoid
 
-instance [AddMonoid β] [IsAddCommutative β] [ContinuousAdd β] : AddCommMonoid C_c(α, β) := fast_instance%
-  DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
+instance instAddCommMonoidOfContinuousAdd [AddMonoid β] [IsAddCommutative β] [ContinuousAdd β] :
+    IsAddCommutative C_c(α, β) :=
+  DFunLike.coe_injective.isAddCommutative _ coe_add
 
 @[simp]
 theorem coe_sum [AddMonoid β] [IsAddCommutative β] [ContinuousAdd β] {ι : Type*} (s : Finset ι) (f : ι → C_c(α, β)) :
@@ -306,9 +307,11 @@ instance : AddGroup C_c(α, β) := fast_instance%
 
 end AddGroup
 
-instance [AddGroup β] [IsAddCommutative β] [IsTopologicalAddGroup β] : AddCommGroup C_c(α, β) := fast_instance%
-  DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ =>
-    rfl
+/-- The commutativity half of the former `AddCommGroup C_c(α, β)` instance; the instance itself
+is provided by `instAddCommMonoidOfContinuousAdd`. -/
+theorem instAddCommGroupOfIsTopologicalAddGroup [AddGroup β] [IsAddCommutative β]
+    [IsTopologicalAddGroup β] : IsAddCommutative C_c(α, β) :=
+  inferInstance
 
 instance [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [SMulWithZero Rᵐᵒᵖ β]
     [ContinuousConstSMul R β] [IsCentralScalar R β] : IsCentralScalar R C_c(α, β) :=
@@ -334,9 +337,9 @@ instance [NonUnitalSemiring β] [IsTopologicalSemiring β] :
     NonUnitalSemiring C_c(α, β) := fast_instance%
   DFunLike.coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
 
-instance [NonUnitalSemiring β] [IsMulCommutative β] [IsTopologicalSemiring β] :
-    NonUnitalCommSemiring C_c(α, β) := fast_instance%
-  DFunLike.coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
+instance instNonUnitalCommSemiringOfIsTopologicalSemiring [NonUnitalSemiring β]
+    [IsMulCommutative β] [IsTopologicalSemiring β] : IsMulCommutative C_c(α, β) :=
+  DFunLike.coe_injective.isMulCommutative _ coe_mul
 
 instance [NonUnitalNonAssocRing β] [IsTopologicalRing β] :
     NonUnitalNonAssocRing C_c(α, β) := fast_instance%
@@ -347,10 +350,11 @@ instance [NonUnitalRing β] [IsTopologicalRing β] : NonUnitalRing C_c(α, β) :
   DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub (fun _ _ => rfl)
     fun _ _ => rfl
 
-instance [NonUnitalRing β] [IsMulCommutative β] [IsTopologicalRing β] :
-    NonUnitalCommRing C_c(α, β) := fast_instance%
-  DFunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
-    (fun _ _ => rfl) fun _ _ => rfl
+/-- The commutativity half of the former `NonUnitalCommRing C_c(α, β)` instance; the instance
+itself is provided by `instNonUnitalCommSemiringOfIsTopologicalSemiring`. -/
+theorem instNonUnitalCommRingOfIsTopologicalRing [NonUnitalRing β] [IsMulCommutative β]
+    [IsTopologicalRing β] : IsMulCommutative C_c(α, β) :=
+  inferInstance
 
 instance {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring β]
     [IsTopologicalSemiring β] [Module R β] [ContinuousConstSMul R β] [IsScalarTower R β β] :

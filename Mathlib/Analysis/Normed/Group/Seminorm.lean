@@ -610,8 +610,11 @@ instance [SMul R' ℝ] [SMul R' ℝ≥0] [IsScalarTower R' ℝ≥0 ℝ] [SMul R 
     IsScalarTower R R' (GroupSeminorm E) :=
   FunLike.isScalarTower
 
-@[to_additive instAddCommMonoid]
-instance : AddCommMonoid (GroupSeminorm E) := fast_instance% FunLike.addCommMonoid
+@[to_additive instAddMonoid]
+instance : AddMonoid (GroupSeminorm E) := fast_instance% FunLike.addMonoid
+
+@[to_additive]
+instance : IsAddCommutative (GroupSeminorm E) := FunLike.addCommMonoid
 
 @[to_additive (dont_translate := R) smul_sup]
 theorem smul_sup (r : R) (p q : GroupSeminorm E) : r • (p ⊔ q) = r • p ⊔ r • q :=

@@ -134,7 +134,7 @@ namespace Valued
 def mk' (v : Valuation R Γ₀) : Valued R Γ₀ :=
   { v
     toUniformSpace := @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _
-    toIsUniformAddGroup := @isUniformAddGroup_of_addCommGroup _ _ v.subgroups_basis.topology _
+    toIsUniformAddGroup := @isUniformAddGroup_of_addCommGroup _ _ _ v.subgroups_basis.topology _
     is_topological_valuation := by
       let := @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _
       intro s

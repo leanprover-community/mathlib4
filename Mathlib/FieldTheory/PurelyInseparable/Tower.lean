@@ -124,7 +124,9 @@ intermediate result used to prove it. -/
 lemma lift_rank_mul_lift_sepDegree_of_isSeparable [Algebra.IsSeparable F E] :
     Cardinal.lift.{w} (Module.rank F E) * Cardinal.lift.{v} (sepDegree E K) =
     Cardinal.lift.{v} (sepDegree F K) := by
-  rw [sepDegree, sepDegree, separableClosure.eq_restrictScalars_of_isSeparable F E K]
+  change Cardinal.lift.{w} (Module.rank F E) * Cardinal.lift.{v} (Module.rank E
+    (separableClosure E K)) = Cardinal.lift.{v} (Module.rank F (separableClosure F K))
+  rw [separableClosure.eq_restrictScalars_of_isSeparable F E K]
   exact lift_rank_mul_lift_rank F E (separableClosure E K)
 
 /-- The same-universe version of `Field.lift_rank_mul_lift_sepDegree_of_isSeparable`. -/
@@ -150,7 +152,8 @@ lemma sepDegree_eq_of_isPurelyInseparable [IsPurelyInseparable F E] :
     sepDegree F K = sepDegree E K := by
   convert! sepDegree_eq_of_isPurelyInseparable_of_isSeparable F E (separableClosure E K)
   have : IsScalarTower F (separableClosure E K) K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
-  rw [sepDegree, ← separableClosure.map_eq_of_separableClosure_eq_bot F
+  change Module.rank F (separableClosure F K) = _
+  rw [← separableClosure.map_eq_of_separableClosure_eq_bot F
     (separableClosure.separableClosure_eq_bot E K)]
   exact (separableClosure F (separableClosure E K)).equivMap
     (IsScalarTower.toAlgHom F (separableClosure E K) K) |>.symm.toLinearEquiv.rank_eq

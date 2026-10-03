@@ -85,7 +85,7 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Highe
     dsimp
     lia
   -- cleaning up the second sum
-  rw [← Fin.sum_congr' _ (hnaq_shift 3).symm, @Fin.sum_trunc _ _ (a + 3)]
+  rw [← Fin.sum_congr' _ (hnaq_shift 3).symm, Fin.sum_trunc (a := a + 3)]
   swap
   · rintro ⟨k, hk⟩
     rw [assoc, X.δ_comp_σ_of_gt', v.comp_δ_eq_zero_assoc, zero_comp, zsmul_zero]

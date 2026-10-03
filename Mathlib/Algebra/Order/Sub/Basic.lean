@@ -94,10 +94,12 @@ variable (α)
 cancellative. This is not an instance as it would form a typeclass loop.
 
 See note [reducible non-instances]. -/
-abbrev CanonicallyOrderedAddCommMonoid.toAddCancelCommMonoid : AddCancelCommMonoid α :=
-  { (by infer_instance : AddCommMonoid α) with
+abbrev CanonicallyOrderedAddCommMonoid.toAddCancelCommMonoid : AddCancelMonoid α :=
+  { (by infer_instance : AddMonoid α) with
     add_left_cancel := fun a b c h => by
-      simpa only [add_tsub_cancel_left] using congr_arg (fun x => x - a) h }
+      simpa only [add_tsub_cancel_left] using congr_arg (fun x => x - a) h
+    add_right_cancel := fun a b c h => by
+      simpa only [add_tsub_cancel_right] using congr_arg (fun x => x - a) h }
 
 end Contra
 
@@ -108,7 +110,8 @@ end CanonicallyOrderedAddCommMonoid
 
 section CanonicallyLinearOrderedAddCommMonoid
 
-variable [AddMonoid α] [IsAddCommutative α] [LinearOrder α] [CanonicallyOrderedAdd α] [Sub α] [OrderedSub α]
+variable [AddMonoid α] [IsAddCommutative α] [LinearOrder α]
+  [CanonicallyOrderedAdd α] [Sub α] [OrderedSub α]
   {a b c : α}
 
 @[simp]

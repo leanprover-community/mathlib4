@@ -379,7 +379,7 @@ set_option backward.defeqAttrib.useBackward true in
 instance [Algebra R T] :
     (pullbackSymmetry .. ≪≫ pullbackSpecIso' R S T).hom.IsOver (Spec ↧S) where
   comp_over := by
-    rw [← cancel_epi (pullbackSymmetry .. ≪≫ pullbackSpecIso' ..).inv,
+    rw [← cancel_epi (pullbackSymmetry .. ≪≫ pullbackSpecIso' R S T).inv,
       Scheme.canonicallyOverPullback_over, Iso.inv_hom_id_assoc, Iso.trans_inv, Category.assoc,
       pullbackSymmetry_inv_comp_snd]
     exact (pullbackSpecIso_inv_fst ..).symm
@@ -424,7 +424,7 @@ instance [Bialgebra R T] :
     IsMonHom <| (pullbackSymmetry .. ≪≫ pullbackSpecIso' R S T).hom.asOver (Spec ↧S) where
   one_hom := by
     ext
-    rw [← cancel_mono (pullbackSpecIso' ..).inv]
+    rw [← cancel_mono (pullbackSpecIso' R S T).inv]
     ext
     · simp [Scheme.monObjAsOverPullback_one, ε_algSpec_left (R := ↧_),
         pullbackSpecIso', specOverSpec_over, ← Spec.map_comp, ← CommRingCat.ofHom_comp,
@@ -438,7 +438,7 @@ instance [Bialgebra R T] :
       simp [AlgHom.comp_toRingHom, Algebra.toRingHom_ofId]
   mul_hom := by
     ext
-    rw [← cancel_mono (pullbackSpecIso' ..).inv]
+    rw [← cancel_mono (pullbackSpecIso' R S T).inv]
     ext
     · have : includeLeftRingHom = algebraMap S (S ⊗[R] T) := rfl
       simp [Scheme.monObjAsOverPullback_mul, pullbackSpecIso', specOverSpec_over, ← Spec.map_comp,

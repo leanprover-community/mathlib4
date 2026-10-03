@@ -161,7 +161,7 @@ instance instNeg [Preadditive C] {P Q : Karoubi C} : Neg (P ⟶ Q) where
 instance instZero [Preadditive C] {P Q : Karoubi C} : Zero (P ⟶ Q) where
   zero := ⟨0, by simp only [comp_zero, zero_comp]⟩
 
-instance instAddCommGroupHom [Preadditive C] {P Q : Karoubi C} : AddCommGroup (P ⟶ Q) where
+instance instAddCommGroupHom [Preadditive C] {P Q : Karoubi C} : AddGroup (P ⟶ Q) where
   zero_add f := by
     ext
     apply zero_add
@@ -171,14 +171,17 @@ instance instAddCommGroupHom [Preadditive C] {P Q : Karoubi C} : AddCommGroup (P
   add_assoc f g h' := by
     ext
     apply add_assoc
-  add_comm f g := by
-    ext
-    apply add_comm
   neg_add_cancel f := by
     ext
     apply neg_add_cancel
   zsmul := zsmulRec
   nsmul := nsmulRec
+
+instance instIsAddCommutativeHom [Preadditive C] {P Q : Karoubi C} :
+    IsAddCommutative (P ⟶ Q) :=
+  ⟨⟨fun f g => by
+    ext
+    apply add_comm⟩⟩
 
 namespace Karoubi
 

@@ -59,8 +59,8 @@ instance Monad.algebraPreadditive : Preadditive (Monad.Algebra T) where
       zsmul_zero' _ := Algebra.Hom.ext <| zero_zsmul _
       zsmul_succ' _ _ := Algebra.Hom.ext <| SubNegMonoid.zsmul_succ' _ _
       zsmul_neg' _ _ := Algebra.Hom.ext <| SubNegMonoid.zsmul_neg' _ _
-      neg_add_cancel _ := Algebra.Hom.ext <| neg_add_cancel _
-      add_comm _ _ := Algebra.Hom.ext <| add_comm _ _ }
+      neg_add_cancel _ := Algebra.Hom.ext <| neg_add_cancel _ }
+  isAddComm _ _ := @IsAddCommutative.mk _ (_) ⟨fun _ _ => Algebra.Hom.ext <| add_comm _ _⟩
   add_comp _ _ _ _ _ _ := Algebra.Hom.ext <| add_comp _ _ _ _ _ _
   comp_add _ _ _ _ _ _ := Algebra.Hom.ext <| comp_add _ _ _ _ _ _
 
@@ -99,8 +99,8 @@ instance Comonad.coalgebraPreadditive : Preadditive (Comonad.Coalgebra U) where
       zsmul_zero' _ := Coalgebra.Hom.ext <| zero_zsmul _
       zsmul_succ' _ _ := Coalgebra.Hom.ext <| SubNegMonoid.zsmul_succ' _ _
       zsmul_neg' _ _ := Coalgebra.Hom.ext <| SubNegMonoid.zsmul_neg' _ _
-      neg_add_cancel _ := Coalgebra.Hom.ext <| neg_add_cancel _
-      add_comm _ _ := Coalgebra.Hom.ext <| add_comm _ _ }
+      neg_add_cancel _ := Coalgebra.Hom.ext <| neg_add_cancel _ }
+  isAddComm _ _ := @IsAddCommutative.mk _ (_) ⟨fun _ _ => Coalgebra.Hom.ext <| add_comm _ _⟩
   add_comp _ _ _ _ _ _ := Coalgebra.Hom.ext <| add_comp _ _ _ _ _ _
   comp_add _ _ _ _ _ _ := Coalgebra.Hom.ext <| comp_add _ _ _ _ _ _
 

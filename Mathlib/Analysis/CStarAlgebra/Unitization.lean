@@ -181,7 +181,4 @@ scoped[CStarAlgebra] postfix:max "⁺¹" => Unitization ℂ
 noncomputable instance Unitization.instCStarAlgebra {A : Type*} [NonUnitalCStarAlgebra A] :
     CStarAlgebra (Unitization ℂ A) where
 
-noncomputable instance Unitization.instCommCStarAlgebra {A : Type*} [NonUnitalCStarAlgebra A] [IsMulCommutative A] :
-    CommCStarAlgebra (Unitization ℂ A) where
-
 end CStarProperty

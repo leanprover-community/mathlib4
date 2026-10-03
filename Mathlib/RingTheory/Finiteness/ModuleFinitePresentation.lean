@@ -30,35 +30,37 @@ public section
 
 universe u
 
-variable (R : Type u) (S : Type*) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S] [Algebra R S]
+variable (R : Type u) (S : Type*) [Ring R] [IsMulCommutative R] [Ring S] [IsMulCommutative S]
+  [Algebra R S]
 
 /-- EGA IV₁, 1.4.7.1 -/
 lemma Module.Finite.exists_free_surjective [Module.Finite R S] :
-    ∃ (S' : Type u) (_ : CommRing S') (_ : Algebra R S') (_ : Module.Finite R S')
-      (_ : Module.Free R S') (_ : Algebra.FinitePresentation R S')
+    ∃ (S' : Type u) (_ : Ring S') (_ : IsMulCommutative S') (_ : Algebra R S')
+      (_ : Module.Finite R S') (_ : Module.Free R S') (_ : Algebra.FinitePresentation R S')
       (f : S' →ₐ[R] S), Function.Surjective f := by
   classical
   obtain ⟨s, hs⟩ : (⊤ : Submodule R S).FG := Module.finite_def.mp inferInstance
-  suffices h : ∃ (S' : Type u) (_ : CommRing S') (_ : Algebra R S') (_ : Module.Finite R S')
-      (_ : Module.Free R S') (_ : Algebra.FinitePresentation R S')
+  suffices h : ∃ (S' : Type u) (_ : Ring S') (_ : IsMulCommutative S') (_ : Algebra R S')
+      (_ : Module.Finite R S') (_ : Module.Free R S') (_ : Algebra.FinitePresentation R S')
       (f : S' →ₐ[R] S), (s : Set S) ⊆ AlgHom.range f by
-    obtain ⟨S', _, _, _, _, _, f, hsf⟩ := h
+    obtain ⟨S', _, _, _, _, _, _, f, hsf⟩ := h
     have hf : Function.Surjective f := by
       have := (Submodule.span_le (p := LinearMap.range f.toLinearMap)).mpr hsf
       rwa [hs, top_le_iff, LinearMap.range_eq_top] at this
-    use S', ‹_›, ‹_›, ‹_›, ‹_›, ‹_›, f
+    use S', ‹_›, ‹_›, ‹_›, ‹_›, ‹_›, ‹_›, f
   clear hs
   induction s using Finset.induction with
   | empty =>
-    exact ⟨R, _, _, inferInstance, inferInstance, inferInstance, Algebra.ofId R S, by simp⟩
+    exact ⟨R, _, inferInstance, _, inferInstance, inferInstance, inferInstance, Algebra.ofId R S,
+      by simp⟩
   | insert a s has IH =>
-    obtain ⟨S', _, _, _, _, _, f, hsf⟩ := IH
+    obtain ⟨S', _, _, _, _, _, _, f, hsf⟩ := IH
     have ha := Algebra.IsIntegral.isIntegral (R := R) a
     have := ((minpoly.monic ha).map (algebraMap R S')).finite_adjoinRoot
     have := ((minpoly.monic ha).map (algebraMap R S')).free_adjoinRoot
     algebraize [f.toRingHom]
     refine ⟨AdjoinRoot ((minpoly R a).map (algebraMap R S')), inferInstance, inferInstance,
-      .trans S' _, .trans (S := S'), .trans _ S' _,
+      inferInstance, .trans S' _, .trans (S := S'), .trans _ S' _,
       (AdjoinRoot.liftAlgHom _ (Algebra.ofId _ _) a
         (by simp [← Polynomial.aeval_def])).restrictScalars R, ?_⟩
     simp only [Finset.coe_insert, AlgHom.coe_range, AlgHom.coe_restrictScalars',
@@ -69,7 +71,7 @@ lemma Module.Finite.exists_free_surjective [Module.Finite R S] :
 presented as an algebra over `R`. -/
 instance Algebra.FinitePresentation.of_finitePresentation
     [Module.FinitePresentation R S] : Algebra.FinitePresentation R S := by
-  obtain ⟨S', _, _, _, _, _, f, hf⟩ := Module.Finite.exists_free_surjective R S
+  obtain ⟨S', _, _, _, _, _, _, f, hf⟩ := Module.Finite.exists_free_surjective R S
   refine .of_surjective hf ?_
   apply Submodule.FG.of_restrictScalars R
   exact Module.FinitePresentation.fg_ker f.toLinearMap hf
@@ -80,7 +82,7 @@ it is finitely presented as a module over `R`. -/
 lemma Module.FinitePresentation.of_finite_of_finitePresentation
     [Module.Finite R S] [Algebra.FinitePresentation R S] :
     Module.FinitePresentation R S := by
-  obtain ⟨R', _, _, _, _, _, f, hf⟩ := Module.Finite.exists_free_surjective R S
+  obtain ⟨R', _, _, _, _, _, _, f, hf⟩ := Module.Finite.exists_free_surjective R S
   let := f.toRingHom.toAlgebra
   have : IsScalarTower R R' S := .of_algebraMap_eq' f.comp_algebraMap.symm
   have : Module.FinitePresentation R R' :=

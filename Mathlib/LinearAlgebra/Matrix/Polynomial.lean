@@ -86,7 +86,7 @@ theorem leadingCoeff_det_X_one_add_C (A : Matrix n n α) :
     leadingCoeff (det ((X : α[X]) • (1 : Matrix n n α[X]) + A.map C)) = 1 := by
   cases subsingleton_or_nontrivial α
   · simp [eq_iff_true_of_subsingleton]
-  rw [← @det_one n, ← coeff_det_X_add_C_card _ A, leadingCoeff]
+  rw [← @det_one n _ _ α, ← coeff_det_X_add_C_card _ A, leadingCoeff]
   simp only [Matrix.map_one, C_eq_zero, map_one]
   rcases (natDegree_det_X_add_C_le 1 A).eq_or_lt with h | h
   · simp only [map_one, Matrix.map_one, C_eq_zero] at h

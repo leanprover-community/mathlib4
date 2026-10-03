@@ -292,7 +292,7 @@ theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux (X : Scheme
     ∃ n : ℕ, ∀ m, n ≤ m →
       ((f |_ U₁) ^ (m + n₂) * y₁) |_ S.1 = ((f |_ U₂) ^ (m + n₁) * y₂) |_ S.1 := by
   obtain ⟨⟨_, n, rfl⟩, e⟩ :=
-    (@IsLocalization.eq_iff_exists _ _ _ _ _ _
+    (@IsLocalization.eq_iff_exists _ _ _ _ _ _ _ _
       (S.2.isLocalization_basicOpen (f |_ S.1))
         (((f |_ U₁) ^ n₂ * y₁) |_ S.1)
         (((f |_ U₂) ^ n₁ * y₂) |_ S.1)).mp <| by

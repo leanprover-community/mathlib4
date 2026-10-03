@@ -1035,11 +1035,29 @@ def TangentSpace {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
     {M : Type*} [TopologicalSpace M] [ChartedSpace H M] (_x : M) : Type u := E
 deriving
-  TopologicalSpace, AddCommGroup, IsTopologicalAddGroup, Module 𝕜,
-  ContinuousSMul 𝕜,
-  -- the following instance derives from the previous one, but through an instance with priority 100
-  -- which takes a long time to be found. We register a shortcut instance instead
-  ContinuousConstSMul 𝕜
+  TopologicalSpace, AddGroup, IsAddCommutative, IsTopologicalAddGroup
+
+section TangentSpaceInstances
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {E : Type u} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]
+    {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M] (x : M)
+
+-- `deriving Module 𝕜` fails with a `wrapInstance` unification error once the
+-- `IsAddCommutative` argument of `Module` is a separate (Prop) instance, so we state it directly.
+instance instModuleTangentSpace : Module 𝕜 (TangentSpace I x) :=
+  inferInstanceAs <| Module 𝕜 E
+
+instance instContinuousSMulTangentSpace : ContinuousSMul 𝕜 (TangentSpace I x) :=
+  inferInstanceAs <| ContinuousSMul 𝕜 E
+
+-- the following instance derives from the previous one, but through an instance with priority 100
+-- which takes a long time to be found. We register a shortcut instance instead
+instance instContinuousConstSMulTangentSpace : ContinuousConstSMul 𝕜 (TangentSpace I x) :=
+  inferInstanceAs <| ContinuousConstSMul 𝕜 E
+
+end TangentSpaceInstances
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddGroup E] [IsAddCommutative E] [NormedSpace 𝕜 E]

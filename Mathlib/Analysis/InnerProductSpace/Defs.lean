@@ -396,7 +396,7 @@ theorem norm_inner_le_norm (x y : F) : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ :=
 
 /-- Seminormed group structure constructed from a `PreInnerProductSpace.Core` structure -/
 @[instance_reducible]
-def toSeminormedAddCommGroup : SeminormedAddCommGroup F :=
+def toSeminormedAddCommGroup : SeminormedAddGroup F :=
   AddGroupSeminorm.toSeminormedAddCommGroup
     { toFun := fun x => √(re ⟪x, x⟫)
       map_zero' := by simp only [sqrt_zero, inner_zero_right, map_zero]
@@ -469,7 +469,7 @@ attribute [local instance] toNorm
 
 /-- Normed group structure constructed from an `InnerProductSpace.Core` structure -/
 @[instance_reducible]
-def toNormedAddCommGroup : NormedAddCommGroup F :=
+def toNormedAddCommGroup : NormedAddGroup F :=
   AddGroupNorm.toNormedAddCommGroup
     { toFun := fun x => √(re ⟪x, x⟫)
       map_zero' := by simp only [sqrt_zero, inner_zero_right, map_zero]
@@ -510,7 +510,7 @@ lemma topology_eq
     (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
     (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
     tF = cd.toNormedAddCommGroup.toMetricSpace.toUniformSpace.toTopologicalSpace := by
-  let p : Seminorm 𝕜 F := @normSeminorm 𝕜 F _ cd.toNormedAddCommGroup.toSeminormedAddCommGroup
+  let p : Seminorm 𝕜 F := @normSeminorm 𝕜 F _ cd.toNormedAddCommGroup.toSeminormedAddGroup _
     InnerProductSpace.Core.toNormedSpace
   suffices WithSeminorms (fun (i : Unit) ↦ p) by
     rw [(SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf _).1 this]
@@ -536,7 +536,7 @@ topology to make sure it is defeq to an already existing topology. -/
     [tF : TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
     (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
     (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
-    NormedAddCommGroup F :=
+    NormedAddGroup F :=
   NormedAddCommGroup.ofCoreReplaceTopology cd.toNormedSpaceCore (cd.topology_eq h h')
 
 /-- Normed space structure constructed from an `InnerProductSpace.Core` structure, adjusting the
@@ -545,9 +545,9 @@ topology to make sure it is defeq to an already existing topology. -/
     [tF : TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
     (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
     (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
-    letI : NormedAddCommGroup F := cd.toNormedAddCommGroupOfTopology h h';
+    letI : NormedAddGroup F := cd.toNormedAddCommGroupOfTopology h h';
     NormedSpace 𝕜 F :=
-  letI : NormedAddCommGroup F := cd.toNormedAddCommGroupOfTopology h h'
+  letI : NormedAddGroup F := cd.toNormedAddCommGroupOfTopology h h'
   { norm_smul_le r x := by
       rw [norm_eq_sqrt_re_inner, inner_smul_left, inner_smul_right, ← mul_assoc]
       rw [RCLike.conj_mul, ← ofReal_pow, re_ofReal_mul, sqrt_mul, ← ofReal_normSq_eq_inner_self,
@@ -588,9 +588,9 @@ def InnerProductSpace.ofCoreOfTopology [AddGroup F] [IsAddCommutative F] [hF : M
     (cd : InnerProductSpace.Core 𝕜 F)
     (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
     (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
-    letI : NormedAddCommGroup F := cd.toNormedAddCommGroupOfTopology h h';
+    letI : NormedAddGroup F := cd.toNormedAddCommGroupOfTopology h h';
     InnerProductSpace 𝕜 F :=
-  letI : NormedAddCommGroup F := cd.toNormedAddCommGroupOfTopology h h'
+  letI : NormedAddGroup F := cd.toNormedAddCommGroupOfTopology h h'
   letI : NormedSpace 𝕜 F := cd.toNormedSpaceOfTopology h h'
   { cd with
     norm_sq_eq_re_inner := fun x => by

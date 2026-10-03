@@ -63,8 +63,11 @@ lemma mem_coboundaries_iff (α : Cocycle K L n) (m : ℤ) (hm : m + 1 = n) :
 from `K` to `L`. -/
 def CohomologyClass : Type v := Cocycle K L n ⧸ coboundaries K L n
 
-instance : AddCommGroup (CohomologyClass K L n) :=
-  inferInstanceAs (AddCommGroup (Cocycle K L n ⧸ coboundaries K L n))
+instance : AddGroup (CohomologyClass K L n) :=
+  inferInstanceAs (AddGroup (Cocycle K L n ⧸ coboundaries K L n))
+
+instance : IsAddCommutative (CohomologyClass K L n) :=
+  inferInstanceAs (IsAddCommutative (Cocycle K L n ⧸ coboundaries K L n))
 
 namespace CohomologyClass
 

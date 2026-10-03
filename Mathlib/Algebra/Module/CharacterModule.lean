@@ -54,8 +54,11 @@ instance : LinearMapClass (CharacterModule A) ℤ A (AddCircle (1 : ℚ)) where
   map_add := AddMonoidHom.map_add
   map_smulₛₗ := AddMonoidHom.map_zsmul
 
-instance : AddCommGroup (CharacterModule A) :=
-  inferInstanceAs (AddCommGroup (A →+ _))
+instance : AddGroup (CharacterModule A) :=
+  inferInstanceAs (AddGroup (A →+ _))
+
+instance : IsAddCommutative (CharacterModule A) :=
+  inferInstanceAs (IsAddCommutative (A →+ _))
 
 @[ext] theorem ext {c c' : CharacterModule A} (h : ∀ x, c x = c' x) : c = c' := DFunLike.ext _ _ h
 

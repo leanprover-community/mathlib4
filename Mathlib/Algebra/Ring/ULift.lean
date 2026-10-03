@@ -68,13 +68,9 @@ instance addMonoidWithOne [AddMonoidWithOne R] : AddMonoidWithOne (ULift R) wher
   natCast_zero := congr_arg ULift.up Nat.cast_zero
   natCast_succ _ := congr_arg ULift.up (Nat.cast_succ _)
 
-instance addCommMonoidWithOne [AddMonoidWithOne R] [IsAddCommutative R] : AddCommMonoidWithOne (ULift R) where
-
 instance addGroupWithOne [AddGroupWithOne R] : AddGroupWithOne (ULift R) where
   intCast_ofNat _ := congr_arg ULift.up (Int.cast_natCast _)
   intCast_negSucc _ := congr_arg ULift.up (Int.cast_negSucc _)
-
-instance addCommGroupWithOne [AddGroupWithOne R] [IsAddCommutative R] : AddCommGroupWithOne (ULift R) where
 
 instance nonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring R] :
     NonUnitalNonAssocSemiring (ULift R) where
@@ -94,10 +90,6 @@ def ringEquiv [NonUnitalNonAssocSemiring R] : ULift R ≃+* R where
   left_inv _ := rfl
   right_inv _ := rfl
 
-instance nonUnitalCommSemiring [NonUnitalSemiring R] [IsMulCommutative R] : NonUnitalCommSemiring (ULift R) where
-
-instance commSemiring [Semiring R] [IsMulCommutative R] : CommSemiring (ULift R) where
-
 instance nonUnitalNonAssocRing [NonUnitalNonAssocRing R] : NonUnitalNonAssocRing (ULift R) where
 
 instance nonUnitalRing [NonUnitalRing R] : NonUnitalRing (ULift R) where
@@ -105,10 +97,6 @@ instance nonUnitalRing [NonUnitalRing R] : NonUnitalRing (ULift R) where
 instance nonAssocRing [NonAssocRing R] : NonAssocRing (ULift R) where
 
 instance ring [Ring R] : Ring (ULift R) where
-
-instance nonUnitalCommRing [NonUnitalRing R] [IsMulCommutative R] : NonUnitalCommRing (ULift R) where
-
-instance commRing [Ring R] [IsMulCommutative R] : CommRing (ULift R) where
 
 end ULift
 

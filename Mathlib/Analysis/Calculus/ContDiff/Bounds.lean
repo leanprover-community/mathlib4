@@ -315,7 +315,10 @@ theorem norm_iteratedFDerivWithin_prod_le [DecidableEq ι] [NormOneClass A'] {u 
     refine le_of_eq ?_
     rw [Finset.prod_insert hi]
     have hip : i ∉ p := mt (hp i) hi
-    rw [Sym.count_coe_fill_self_of_notMem hip, Sym.countPerms_coe_fill_of_notMem hip]
+    have hc : ‖iteratedFDerivWithin 𝕜 (Multiset.count i (Sym.fill i m p : Multiset ι)) (f i) s x‖ =
+        ‖iteratedFDerivWithin 𝕜 m (f i) s x‖ := by
+      rw [Sym.count_coe_fill_self_of_notMem hip]
+    rw [hc, Sym.countPerms_coe_fill_of_notMem hip]
     suffices ∏ j ∈ u, ‖iteratedFDerivWithin 𝕜 (Multiset.count j p) (f j) s x‖ =
         ∏ j ∈ u, ‖iteratedFDerivWithin 𝕜 (Multiset.count j (Sym.fill i m p)) (f j) s x‖ by
       rw [this, Nat.cast_mul]

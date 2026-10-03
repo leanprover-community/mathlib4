@@ -262,7 +262,7 @@ def tensorKaehlerEquiv [h : Algebra.IsPushout R S A B] :
       (algebraMap A B a * algebraMap S B b) • z • x • KaehlerDifferential.map R S A B y by
     simpa [e₂, e₁, smul_tmul', Algebra.IsPushout.equiv_tmul, ← mul_smul,
       Algebra.IsPushout.equiv_symm_algebraMap_left, Algebra.IsPushout.equiv_symm_algebraMap_right]
-  simp only [← mul_smul, ← @algebraMap_smul S _ B, ← @algebraMap_smul A _ B]
+  simp only [← mul_smul, ← algebraMap_smul (R := S) B, ← algebraMap_smul (R := A) B]
   ring_nf
 
 @[simp]

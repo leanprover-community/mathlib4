@@ -420,8 +420,12 @@ instance Pi.isIsometricSMul' {ι} {M X : ι → Type*} [Fintype ι] [∀ i, SMul
 @[to_additive]
 instance Pi.isIsometricSMul'' {ι} {M : ι → Type*} [Fintype ι] [∀ i, Mul (M i)]
     [∀ i, PseudoEMetricSpace (M i)] [∀ i, IsIsometricSMul (M i)ᵐᵒᵖ (M i)] :
-    IsIsometricSMul (∀ i, M i)ᵐᵒᵖ (∀ i, M i) :=
-  ⟨fun c => .piMap (fun i (x : M i) => x * c.unop i) fun _ => isometry_mul_right _⟩
+    -- The `SMul` instance is given explicitly: plain instance search gets stuck on
+    -- `IsAddCommutative (∀ i, M i)` via `Module.toMulActionWithZero` (whose
+    -- `[IsAddCommutative M]` is now searched before `[Module R M]`).
+    @IsIsometricSMul (∀ i, M i)ᵐᵒᵖ (∀ i, M i) _ (Mul.toSMulMulOpposite _) :=
+  @IsIsometricSMul.mk _ _ _ (Mul.toSMulMulOpposite _)
+    fun c => .piMap (fun i (x : M i) => x * c.unop i) fun _ => isometry_mul_right _
 
 instance Additive.isIsIsometricVAdd : IsIsometricVAdd (Additive M) X :=
   ⟨fun c => isometry_smul X c.toMul⟩

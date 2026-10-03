@@ -81,10 +81,10 @@ namespace TensorProduct
 
 section Module
 
-instance addCommSemigroup : AddCommSemigroup (M ⊗[R] N) where
-  add_comm := fun x y =>
+instance isAddCommutative : IsAddCommutative (M ⊗[R] N) :=
+  ⟨⟨fun x y =>
     AddCon.induction_on₂ x y fun _ _ =>
-      Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.add_comm _ _
+      Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.add_comm _ _⟩⟩
 
 instance : Inhabited (M ⊗[R] N) :=
   ⟨0⟩
@@ -268,8 +268,6 @@ protected theorem add_smul (r s : R'') (x : M ⊗[R] N) : (r + s) • x = r • 
 instance addMonoid : AddMonoid (M ⊗[R] N) where
   nsmul_zero := by simp [TensorProduct.zero_smul]
   nsmul_succ := by simp only [TensorProduct.one_smul, TensorProduct.add_smul, forall_const]
-
-instance addCommMonoid : AddCommMonoid (M ⊗[R] N) where
 
 variable (R)
 

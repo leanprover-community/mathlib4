@@ -481,18 +481,10 @@ theorem cyclic_center_quotient_of_card_eq_prime_sq (hG : Nat.card G = p ^ 2) :
   rw [hk]
   exact dvd_pow_self p hk0.ne'
 
-/-- A group of order `p ^ 2` is commutative. See also `IsPGroup.commGroupOfCardEqPrimeSq`
-for the `CommGroup` instance. -/
+/-- A group of order `p ^ 2` is commutative. -/
 theorem isMulCommutative_of_card_eq_prime_sq (hG : Nat.card G = p ^ 2) : IsMulCommutative G :=
   let := cyclic_center_quotient_of_card_eq_prime_sq hG
   isMulCommutative_of_isCyclic_quotient_center_self G
-
-/-- A group of order `p ^ 2` is commutative. See also
-`IsPGroup.isMulCommutative_of_card_eq_prime_sq` for just the proof that `G` is commutative. -/
-@[instance_reducible]
-def commGroupOfCardEqPrimeSq (hG : Nat.card G = p ^ 2) : CommGroup G :=
-  let := cyclic_center_quotient_of_card_eq_prime_sq hG
-  commGroupOfCyclicCenterQuotient _ (QuotientGroup.ker_mk' <| center G).le
 
 @[deprecated isMulCommutative_of_card_eq_prime_sq +typeChanged (since := "2026-05-26")]
 theorem commutative_of_card_eq_prime_sq (hG : Nat.card G = p ^ 2) : ∀ a b : G, a * b = b * a :=

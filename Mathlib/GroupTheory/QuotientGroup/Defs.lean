@@ -150,8 +150,9 @@ theorem eq_iff_div_mem {N : Subgroup G} [nN : N.Normal] {x y : G} :
 
 -- for commutative groups we don't need normality assumption
 @[to_additive]
-instance Quotient.commGroup {G : Type*} [Group G] [IsMulCommutative G] (N : Subgroup G) : CommGroup (G ⧸ N) where
-  mul_comm := fun a b => Quotient.inductionOn₂' a b fun a b => congr(mk $(mul_comm a b))
+instance Quotient.isMulCommutative {G : Type*} [Group G] [IsMulCommutative G] (N : Subgroup G) :
+    IsMulCommutative (G ⧸ N) :=
+  ⟨⟨fun a b => Quotient.inductionOn₂' a b fun a b => congr(mk $(mul_comm a b))⟩⟩
 
 local notation " Q" => G ⧸ N
 

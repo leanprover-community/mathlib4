@@ -147,12 +147,12 @@ theorem expSeries_sum_eq (x : 𝔸) : (expSeries 𝕂 𝔸).sum x = ∑' n : ℕ
   tsum_congr fun n => expSeries_apply_eq x n
 
 theorem expSeries_sum_eq_rat [Algebra ℚ 𝔸] : (expSeries 𝕂 𝔸).sum = (expSeries ℚ 𝔸).sum := by
-  ext; simp_rw [expSeries_sum_eq, inv_natCast_smul_eq 𝕂 ℚ]
+  ext; simp_rw [expSeries_sum_eq, inv_natCast_smul_eq (E := 𝔸) 𝕂 ℚ]
 
 theorem expSeries_eq_expSeries_rat [Algebra ℚ 𝔸] (n : ℕ) :
     ⇑(expSeries 𝕂 𝔸 n) = expSeries ℚ 𝔸 n := by
   ext c
-  simp [expSeries, inv_natCast_smul_eq 𝕂 ℚ]
+  simp [expSeries, inv_natCast_smul_eq (E := 𝔸) 𝕂 ℚ]
 
 variable (𝕂) in
 theorem exp_eq_expSeries_sum [CharZero 𝕂] : exp = (expSeries 𝕂 𝔸).sum := by
@@ -249,7 +249,7 @@ variable {𝕂 𝔸 : Type*} [Field 𝕂] [DivisionRing 𝔸] [Algebra 𝕂 𝔸
 
 theorem expSeries_apply_eq_div (x : 𝔸) (n : ℕ) : (expSeries 𝕂 𝔸 n fun _ => x) = x ^ n / n ! := by
   rw [div_eq_mul_inv, ← (Nat.cast_commute n ! (x ^ n)).inv_left₀.eq, ← smul_eq_mul,
-    expSeries_apply_eq, inv_natCast_smul_eq 𝕂 𝔸]
+    expSeries_apply_eq, inv_natCast_smul_eq (E := 𝔸) 𝕂 𝔸]
 
 theorem expSeries_apply_eq_div' (x : 𝔸) :
     (fun n => expSeries 𝕂 𝔸 n fun _ => x) = fun n => x ^ n / n ! :=
@@ -683,7 +683,7 @@ variable (𝕂 𝕂' 𝔸 : Type*) [Field 𝕂] [Field 𝕂'] [Ring 𝔸] [Algeb
 `expSeries` on `𝔸`. -/
 theorem expSeries_eq_expSeries (n : ℕ) (x : 𝔸) :
     (expSeries 𝕂 𝔸 n fun _ => x) = expSeries 𝕂' 𝔸 n fun _ => x := by
-  rw [expSeries_apply_eq, expSeries_apply_eq, inv_natCast_smul_eq 𝕂 𝕂']
+  rw [expSeries_apply_eq, expSeries_apply_eq, inv_natCast_smul_eq (E := 𝔸) 𝕂 𝕂']
 
 /-- A version of `Complex.ofReal_exp` for `NormedSpace.exp` instead of `Complex.exp` -/
 @[simp, norm_cast]

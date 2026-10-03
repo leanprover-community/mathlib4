@@ -254,14 +254,23 @@ noncomputable def integral (μ : VectorMeasure X F) (f : X → E) (B : E →L[�
 @[inherit_doc integral]
 notation3 "∫ᵛ "(...)", "r:60:(scoped f => f)" ∂["B:65"; "μ:65"]" => integral μ r B
 
+-- In the four notations below, the `SeminormedAddGroup` instance of `lsmul` is given explicitly
+-- as coming from a `NormedAddGroup` instance: otherwise, when elaborating the pattern for the
+-- delaborator, the `IsAddCommutative` instance arguments of `→L[ℝ]` cannot be unified (their
+-- `Add` structures come from different, not yet determined, normed group instances).
+
 /-- The special case of the pairing integral where the pairing is just the scalar multiplication by
 `ℝ` on `F` and `f` is real-valued. The resulting integral is `F`-valued.-/
-notation3 "∫ᵛ "(...)", "r:60:(scoped f => f)" ∂•"μ:70 => integral μ r (lsmul ℝ ℝ)
+notation3 "∫ᵛ "(...)", "r:60:(scoped f => f)" ∂•"μ:70 =>
+  integral μ r
+    (@lsmul ℝ _ _ NormedAddGroup.toSeminormedAddGroup _ _ ℝ _ _ _ _ _)
 
 /-- The special case of the pairing integral where the pairing is just the flip of scalar
 multiplication by `ℝ` on `F` and `f` is `F`-valued and `μ` is a signed measure.
 The resulting integral is `F`-valued.-/
-notation3 "∫ᵛ "(...)", "r:60:(scoped f => f)" ∂<•"μ:70 => integral μ r (lsmul ℝ ℝ).flip
+notation3 "∫ᵛ "(...)", "r:60:(scoped f => f)" ∂<•"μ:70 =>
+  integral μ r
+    (@lsmul ℝ _ _ NormedAddGroup.toSeminormedAddGroup _ _ ℝ _ _ _ _ _).flip
 
 @[inherit_doc integral]
 notation3 "∫ᵛ "(...)" in "s", "r:60:(scoped f => f)" ∂["B:70"; "μ:70"]" =>
@@ -270,13 +279,15 @@ notation3 "∫ᵛ "(...)" in "s", "r:60:(scoped f => f)" ∂["B:70"; "μ:70"]" =
 /-- The special case of the pairing integral in a set where the pairing is just the scalar
 multiplication by `ℝ` on `F` and `f` is real-valued. The resulting integral is `F`-valued.-/
 notation3 "∫ᵛ "(...)" in "s", "r:60:(scoped f => f)" ∂•"μ:70 =>
-  integral (VectorMeasure.restrict μ s) r (lsmul ℝ ℝ)
+  integral (VectorMeasure.restrict μ s) r
+    (@lsmul ℝ _ _ NormedAddGroup.toSeminormedAddGroup _ _ ℝ _ _ _ _ _)
 
 /-- The special case of the pairing integral in a set where the pairing is just the flip of the
 scalar multiplication by `ℝ` on `F` and `f` is `F`-valued and `μ` is a signed measure.
 The resulting integral is `F`-valued.-/
 notation3 "∫ᵛ "(...)" in "s", "r:60:(scoped f => f)" ∂<•"μ:70 =>
-  integral (VectorMeasure.restrict μ s) r (lsmul ℝ ℝ).flip
+  integral (VectorMeasure.restrict μ s) r
+    (@lsmul ℝ _ _ NormedAddGroup.toSeminormedAddGroup _ _ ℝ _ _ _ _ _).flip
 
 variable {μ ν B}
 

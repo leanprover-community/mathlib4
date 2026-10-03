@@ -22,7 +22,8 @@ Main definitions:
 
 section
 
-variable {R M L : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M] [Module R M] [LieRing L] [LieAlgebra R L]
+variable {R M L : Type*} [Ring R] [IsMulCommutative R] [AddGroup M] [IsAddCommutative M]
+  [Module R M] [LieRing L] [LieAlgebra R L]
 
 /-- Transfer `LieRing` across an `AddEquiv` -/
 protected abbrev AddEquiv.lieRing (e : M ≃+ L) : LieRing M where
@@ -73,6 +74,7 @@ variable {R L' L : Type*} [Ring R] [IsMulCommutative R] [LieRing L] [LieAlgebra 
 /-- Transfer `LieRing` across an `Equiv` -/
 @[deprecated AddEquiv.lieRing +typeChanged (since := "2026-07-30")]
 protected abbrev lieRing : LieRing L' :=
+  letI := e.addGroup
   letI := e.addCommGroup
   e.addEquiv.lieRing
 

@@ -74,7 +74,8 @@ instance instMonoid : Monoid (Module.End R M) where
 instance instSemiring : Semiring (Module.End R M) where
   __ := AddMonoidWithOne.unary
   __ := instMonoid
-  __ := addCommMonoid
+  __ := (addMonoid : AddMonoid (M →ₗ[R] M))
+  __ := (isAddCommutative : IsAddCommutative (M →ₗ[R] M))
   mul_zero := comp_zero
   zero_mul := zero_comp
   left_distrib := fun _ _ _ ↦ comp_add _ _ _

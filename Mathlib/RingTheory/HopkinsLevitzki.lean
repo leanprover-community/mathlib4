@@ -80,7 +80,7 @@ variable [IsScalarTower R₀ R R] [Module.Finite R₀ (R ⧸ Ring.jacobson R)]
 private theorem finite_of_isNoetherian_or_isArtinian :
     IsNoetherian R M ∨ IsArtinian R M → Module.Finite R₀ M := by
   refine IsSemiprimaryRing.induction R₀ R M (P := fun M ↦ IsNoetherian R M ∨ IsArtinian R M →
-    Module.Finite R₀ M) (fun M _ _ _ _ _ hJ h ↦ ?_) (fun M _ _ _ _ hs hq h ↦ ?_)
+    Module.Finite R₀ M) (fun M _ _ _ _ _ _ hJ h ↦ ?_) (fun M _ _ _ _ _ hs hq h ↦ ?_)
   · let _ := hJ.module
     have := IsSemisimpleModule.finite_tfae (R := R) (M := M)
     simp_rw [this.out 2 1, this.out 3 1, or_self,
@@ -103,16 +103,16 @@ variable {R M}
 
 theorem isNoetherian_iff_isArtinian : IsNoetherian R M ↔ IsArtinian R M :=
   IsSemiprimaryRing.induction R R M (P := fun M ↦ IsNoetherian R M ↔ IsArtinian R M)
-    (fun M _ _ _ _ _ _ ↦ IsSemisimpleModule.finite_tfae.out 2 3)
-    fun M _ _ _ _ h h' ↦ let N : Submodule R M := Ring.jacobson R • ⊤; by
+    (fun M _ _ _ _ _ _ _ ↦ IsSemisimpleModule.finite_tfae.out 2 3)
+    fun M _ _ _ _ _ h h' ↦ let N : Submodule R M := Ring.jacobson R • ⊤; by
       simp_rw [isNoetherian_iff_submodule_quotient N, isArtinian_iff_submodule_quotient N, N, h, h']
 
 theorem isNoetherian_iff_finite_of_jacobson_fg (fg : (Ring.jacobson R).FG) :
     IsNoetherian R M ↔ Module.Finite R M :=
   ⟨fun _ ↦ inferInstance, IsSemiprimaryRing.induction R R M
     (P := fun M ↦ Module.Finite R M → IsNoetherian R M)
-    (fun M _ _ _ _ _ _ ↦ (IsSemisimpleModule.finite_tfae.out 1 2).mp)
-    fun M _ _ _ _ hs hq fin ↦ (isNoetherian_iff_submodule_quotient (Ring.jacobson R • ⊤)).mpr
+    (fun M _ _ _ _ _ _ _ ↦ (IsSemisimpleModule.finite_tfae.out 1 2).mp)
+    fun M _ _ _ _ _ hs hq fin ↦ (isNoetherian_iff_submodule_quotient (Ring.jacobson R • ⊤)).mpr
       ⟨hs (.of_fg (.smul fg fin.1)), hq inferInstance⟩⟩
 
 theorem isNoetherianRing_iff_jacobson_fg : IsNoetherianRing R ↔ (Ring.jacobson R).FG :=
@@ -173,16 +173,19 @@ theorem IsNoetherianRing.isArtinianRing_of_krullDimLE_zero {R} [Ring R] [IsMulCo
   have : IsSemiprimaryRing R := ⟨this, eq ▸ IsNoetherianRing.isNilpotent_nilradical R⟩
   IsSemiprimaryRing.isNoetherian_iff_isArtinian.mp ‹_›
 
-@[stacks 00KH] theorem isArtinianRing_iff_isNoetherianRing_krullDimLE_zero {R} [Ring R] [IsMulCommutative R] :
+@[stacks 00KH] theorem isArtinianRing_iff_isNoetherianRing_krullDimLE_zero {R} [Ring R]
+    [IsMulCommutative R] :
     IsArtinianRing R ↔ IsNoetherianRing R ∧ Ring.KrullDimLE 0 R :=
   ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨h, _⟩ ↦ h.isArtinianRing_of_krullDimLE_zero⟩
 
-theorem isArtinianRing_iff_krullDimLE_zero {R : Type*} [Ring R] [IsMulCommutative R] [IsNoetherianRing R] :
+theorem isArtinianRing_iff_krullDimLE_zero {R : Type*} [Ring R] [IsMulCommutative R]
+    [IsNoetherianRing R] :
     IsArtinianRing R ↔ Ring.KrullDimLE 0 R := by
   rwa [isArtinianRing_iff_isNoetherianRing_krullDimLE_zero, and_iff_right]
 
-lemma isArtinianRing_iff_isNilpotent_maximalIdeal (R : Type*) [Ring R] [IsMulCommutative R] [IsNoetherianRing R]
-    [IsLocalRing R] : IsArtinianRing R ↔ IsNilpotent (IsLocalRing.maximalIdeal R) := by
+lemma isArtinianRing_iff_isNilpotent_maximalIdeal (R : Type*) [Ring R] [IsMulCommutative R]
+    [IsNoetherianRing R] [IsLocalRing R] :
+    IsArtinianRing R ↔ IsNilpotent (IsLocalRing.maximalIdeal R) := by
   rw [isArtinianRing_iff_krullDimLE_zero,
     Ideal.FG.isNilpotent_iff_le_nilradical (IsNoetherian.noetherian _),
     ← and_iff_left (a := Ring.KrullDimLE 0 R) ‹IsLocalRing R›,

@@ -42,7 +42,8 @@ open TensorProduct KaehlerDifferential
 
 open Function (Surjective)
 
-variable {R P S : Type*} [Ring R] [IsMulCommutative R] [Ring P] [IsMulCommutative P] [Ring S] [IsMulCommutative S]
+variable {R P S : Type*} [_root_.Ring R] [IsMulCommutative R] [_root_.Ring P] [IsMulCommutative P]
+  [_root_.Ring S] [IsMulCommutative S]
 variable [Algebra R P] [Algebra P S]
 
 section ofSection
@@ -405,7 +406,7 @@ lemma Cotangent.map_toInfinitesimal_bijective (P : Extension.{u} R S) :
     obtain ⟨⟨x, hx⟩, rfl⟩ := Cotangent.mk_surjective x
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
     rw [ker_infinitesimal, Ideal.mk_mem_cotangentIdeal] at hx
-    exact ⟨.mk ⟨x, hx⟩, rfl⟩
+    exact ⟨Cotangent.mk (P := P) ⟨x, hx⟩, rfl⟩
 
 lemma H1Cotangent.map_toInfinitesimal_bijective (P : Extension.{u} R S) :
     Function.Bijective (H1Cotangent.map P.toInfinitesimal) := by

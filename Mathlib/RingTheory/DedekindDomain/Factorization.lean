@@ -261,7 +261,7 @@ theorem finprod_heightOneSpectrum_factorization {I : FractionalIdeal R⁰ K} (hI
   rw [← finprod_mul_distrib (by fun_prop) (by fun_prop)]
   apply finprod_congr
   intro v
-  rw [← zpow_add₀ ((@coeIdeal_ne_zero R _ K _ _ _ _).mpr v.ne_bot), sub_eq_add_neg]
+  rw [← zpow_add₀ ((coeIdeal_ne_zero (R := R) (K := K)).mpr v.ne_bot), sub_eq_add_neg]
 
 /-- For a nonzero `k = r/s ∈ K`, the fractional ideal `(k)` is equal to the product
 `∏_v v^(val_v(r) - val_v(s))`. -/

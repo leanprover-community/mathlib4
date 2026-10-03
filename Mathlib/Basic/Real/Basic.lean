@@ -173,7 +173,7 @@ lemma cauchy_intCast (z : ℤ) : (z : ℝ).cauchy = z := rfl
 lemma cauchy_nnratCast (q : ℚ≥0) : (q : ℝ).cauchy = q := rfl
 lemma cauchy_ratCast (q : ℚ) : (q : ℝ).cauchy = q := rfl
 
-instance commRing : CommRing ℝ where
+instance commRing : Ring ℝ where
   natCast n := ⟨n⟩
   intCast z := ⟨z⟩
   npow := @npowRec ℝ ⟨1⟩ ⟨(· * ·)⟩
@@ -181,13 +181,12 @@ instance commRing : CommRing ℝ where
   zsmul := @zsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩ ⟨@Neg.neg ℝ _⟩ (@nsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩)
   add_zero a := by apply ext_cauchy; simp [cauchy_add, cauchy_zero]
   zero_add a := by apply ext_cauchy; simp [cauchy_add, cauchy_zero]
-  add_comm a b := by apply ext_cauchy; simp only [cauchy_add, add_comm]
+  is_comm := ⟨fun a b => by apply ext_cauchy; simp only [cauchy_add, add_comm]⟩
   add_assoc a b c := by apply ext_cauchy; simp only [cauchy_add, add_assoc]
   mul_zero a := by apply ext_cauchy; simp [cauchy_mul, cauchy_zero]
   zero_mul a := by apply ext_cauchy; simp [cauchy_mul, cauchy_zero]
   mul_one a := by apply ext_cauchy; simp [cauchy_mul, cauchy_one]
   one_mul a := by apply ext_cauchy; simp [cauchy_mul, cauchy_one]
-  mul_comm a b := by apply ext_cauchy; simp only [cauchy_mul, mul_comm]
   mul_assoc a b c := by apply ext_cauchy; simp only [cauchy_mul, mul_assoc]
   left_distrib a b c := by apply ext_cauchy; simp only [cauchy_add, cauchy_mul, mul_add]
   right_distrib a b c := by apply ext_cauchy; simp only [cauchy_add, cauchy_mul, add_mul]
@@ -195,6 +194,9 @@ instance commRing : CommRing ℝ where
   natCast_zero := by apply ext_cauchy; simp [cauchy_zero]
   natCast_succ n := by apply ext_cauchy; simp [cauchy_one, cauchy_add]
   intCast_negSucc z := by apply ext_cauchy; simp [cauchy_neg, cauchy_natCast]
+
+instance isMulCommutative : IsMulCommutative ℝ :=
+  ⟨⟨fun a b => by apply ext_cauchy; simp only [cauchy_mul, mul_comm]⟩⟩
 
 /-- `Real.equivCauchy` as a ring equivalence. -/
 @[simps]
@@ -213,19 +215,11 @@ version of them. -/
 
 instance instRing : Ring ℝ := by infer_instance
 
-instance : CommSemiring ℝ := by infer_instance
-
 instance semiring : Semiring ℝ := by infer_instance
-
-instance : CommMonoidWithZero ℝ := by infer_instance
 
 instance : MonoidWithZero ℝ := by infer_instance
 
-instance : AddCommGroup ℝ := by infer_instance
-
 instance : AddGroup ℝ := by infer_instance
-
-instance : AddCommMonoid ℝ := by infer_instance
 
 instance : AddMonoid ℝ := by infer_instance
 
@@ -233,15 +227,9 @@ instance : AddLeftCancelSemigroup ℝ := by infer_instance
 
 instance : AddRightCancelSemigroup ℝ := by infer_instance
 
-instance : AddCommSemigroup ℝ := by infer_instance
-
 instance : AddSemigroup ℝ := by infer_instance
 
-instance : CommMonoid ℝ := by infer_instance
-
 instance : Monoid ℝ := by infer_instance
-
-instance : CommSemigroup ℝ := by infer_instance
 
 instance : Semigroup ℝ := by infer_instance
 

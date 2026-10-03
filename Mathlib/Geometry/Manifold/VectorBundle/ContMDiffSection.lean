@@ -371,8 +371,11 @@ theorem coe_zsmul (s : Cₛ^n⟮I; F, V⟯) (z : ℤ) : ⇑(z • s : Cₛ^n⟮I
   · refine congr(-$(coe_nsmul s (n + 1))).trans ?_
     simp only [negSucc_zsmul]
 
-instance instAddCommGroup : AddCommGroup Cₛ^n⟮I; F, V⟯ :=
-  coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
+instance instAddCommGroup : AddGroup Cₛ^n⟮I; F, V⟯ :=
+  coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
+
+instance instIsAddCommutative : IsAddCommutative Cₛ^n⟮I; F, V⟯ :=
+  coe_injective.isAddCommutative _ coe_add
 
 instance instSMul : SMul 𝕜 Cₛ^n⟮I; F, V⟯ :=
   ⟨fun c s ↦ ⟨c • ⇑s, s.contMDiff.const_smul_section⟩⟩

@@ -316,7 +316,9 @@ theorem zero_or_exists_mk' (x : ValueGroup₀ f) :
 
 end ValueGroup₀
 
-instance : CommGroupWithZero (ValueGroup₀ f) where
+instance : GroupWithZero (ValueGroup₀ f) := inferInstance
+
+instance : IsMulCommutative (ValueGroup₀ f) := inferInstance
 
 end CommGroupWithZero
 

@@ -134,10 +134,13 @@ def _root_.CategoryTheory.Iso.toContinuousLinearEquiv
   left_inv x := by cat_disch
   right_inv x := by cat_disch
 
-instance {X Y : TopModuleCat R} : AddCommGroup (X ⟶ Y) where
+instance {X Y : TopModuleCat R} : AddGroup (X ⟶ Y) where
   add f g := ofHom (f.hom + g.hom)
   zero := ofHom 0
-  __ := Equiv.addCommGroup CategoryTheory.ConcreteCategory.homEquiv
+  __ := Equiv.addGroup CategoryTheory.ConcreteCategory.homEquiv
+
+instance {X Y : TopModuleCat R} : IsAddCommutative (X ⟶ Y) :=
+  CategoryTheory.ConcreteCategory.homEquiv.injective.isAddCommutative _ fun _ _ ↦ rfl
 
 instance : Preadditive (TopModuleCat R) where
   add_comp _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.comp_add _ _ _)

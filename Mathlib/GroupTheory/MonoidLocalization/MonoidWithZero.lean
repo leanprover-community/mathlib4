@@ -59,7 +59,7 @@ variable {S}
 
 theorem mk_zero (x : S) : mk 0 (x : S) = 0 := OreLocalization.zero_oreDiv' _
 
-instance : CommMonoidWithZero (Localization S) where
+instance instCommMonoidWithZero : MonoidWithZero (Localization S) where
   zero_mul := fun x ↦ Localization.induction_on x fun y => by
     simp only [← Localization.mk_zero y.2, mk_mul, mk_eq_mk_iff, mul_zero, zero_mul, r_of_eq]
   mul_zero := fun x ↦ Localization.induction_on x fun y => by
@@ -86,7 +86,7 @@ homomorphism induced from `N` to `P` sending `z : N` to `g x * (g y)⁻¹`, wher
 are such that `z = f x * (f y)⁻¹`. -/
 noncomputable def lift₀ (f : LocalizationMap S N) (g : M →*₀ P)
     (hg : ∀ y : S, IsUnit (g y)) : N →*₀ P :=
-  { @LocalizationMap.lift _ _ _ _ _ _ _ f g.toMonoidHom hg with
+  { f.lift (g := g.toMonoidHom) hg with
     map_zero' := by
       dsimp only [OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe]
       rw [LocalizationMap.lift_spec f hg 0 0, mul_zero, ← map_zero g, ← g.toMonoidHom_coe]

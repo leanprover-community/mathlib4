@@ -115,7 +115,8 @@ ring object such that the multiplicative law is commutative. -/
 class CommRingObj (R : C) extends RingObj R, IsCommMonObj R where
 
 /-- If `G` is a commutative ring object, then `Hom(X, G)` has a commutative ring structure. -/
-abbrev Hom.commRing {R : C} {X : C} [CommRingObj R] : CommRing (X ⟶ R) where
+theorem Hom.commRing {R : C} {X : C} [CommRingObj R] : IsMulCommutative (X ⟶ R) :=
+  Hom.commMonoid
 
 scoped[CategoryTheory.CommRingObj] attribute [instance] Hom.commRing
 

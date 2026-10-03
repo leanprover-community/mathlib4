@@ -944,7 +944,7 @@ theorem Group.IsNilpotent.nilpotencyClass_le_one_iff [IsNilpotent G] :
   exact upperCentralSeries_one_eq_top_iff
 
 /-- Abelian groups are nilpotent. -/
-@[to_additive /-- Abelian groups are nilpotent. -/]
+@[to_additive AddCommGroup.isNilpotent /-- Abelian groups are nilpotent. -/]
 instance (priority := 100) CommGroup.isNilpotent {G : Type*} [Group G] [IsMulCommutative G] :
     IsNilpotent G := by
   use 1
@@ -952,16 +952,17 @@ instance (priority := 100) CommGroup.isNilpotent {G : Type*} [Group G] [IsMulCom
   exact Subgroup.center_eq_top
 
 /-- Abelian groups have nilpotency class at most one. -/
-@[to_additive /-- Abelian groups have nilpotency class at most one. -/]
+@[to_additive AddCommGroup.nilpotencyClass_le_one
+  /-- Abelian groups have nilpotency class at most one. -/]
 theorem CommGroup.nilpotencyClass_le_one {G : Type*} [Group G] [IsMulCommutative G] :
     Group.nilpotencyClass G ≤ 1 := by
   rw [← upperCentralSeries_eq_top_iff_nilpotencyClass_le, upperCentralSeries_one]
   apply CommGroup.center_eq_top
 
 /-- Groups with nilpotency class at most one are abelian. -/
-@[to_additive /-- Additive groups with nilpotency class at most one are abelian. -/,
-  instance_reducible]
-def commGroupOfNilpotencyClass [IsNilpotent G] (h : Group.nilpotencyClass G ≤ 1) : CommGroup G :=
+@[to_additive /-- Additive groups with nilpotency class at most one are abelian. -/]
+theorem commGroupOfNilpotencyClass [IsNilpotent G] (h : Group.nilpotencyClass G ≤ 1) :
+    IsMulCommutative G :=
   Group.commGroupOfCenterEqTop <| by
     rw [← upperCentralSeries_one]
     exact upperCentralSeries_eq_top_iff_nilpotencyClass_le.mpr h
@@ -1178,8 +1179,10 @@ instance (priority := 100) IsNilpotent.to_isSolvable [h : IsNilpotent G] : Group
   exact derived_le_lower_central n
 
 /-- A simple nilpotent group is commutative. -/
-@[to_additive /-- A simple nilpotent additive group is commutative. -/]
-instance [IsSimpleGroup G] [IsNilpotent G] : CommGroup G :=
+@[to_additive instAddCommGroupOfIsAddSimpleGroupOfIsAddNilpotent
+  /-- A simple nilpotent additive group is commutative. -/]
+instance instCommGroupOfIsSimpleGroupOfIsNilpotent [IsSimpleGroup G] [IsNilpotent G] :
+    IsMulCommutative G :=
   Group.commGroupOfCenterEqTop <|
     (IsSimpleGroup.eq_bot_or_eq_top_of_normal (center G)).resolve_left
       (Group.IsNilpotent.center_ne_bot G)

@@ -209,7 +209,7 @@ instance instSMulCommClass [Semiring T] [IsMulCommutative T] [Algebra S R] [Alge
     SMulCommClass S T (RingQuot r) :=
   ⟨fun s t ⟨a⟩ => Quot.inductionOn a fun a' => by simp only [RingQuot.smul_quot, smul_comm s t]⟩
 
-instance instAddCommMonoid (r : R → R → Prop) : AddCommMonoid (RingQuot r) where
+instance instAddMonoid (r : R → R → Prop) : AddMonoid (RingQuot r) where
   add_assoc := by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ ⟨⟨⟩⟩
     simp only [add_quot, add_assoc]
@@ -219,9 +219,6 @@ instance instAddCommMonoid (r : R → R → Prop) : AddCommMonoid (RingQuot r) w
   add_zero := by
     rintro ⟨⟨⟩⟩
     simp only [add_quot, ← zero_quot, add_zero]
-  add_comm := by
-    rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
-    simp only [add_quot, add_comm]
   nsmul := (· • ·)
   nsmul_zero := by
     rintro ⟨⟨⟩⟩
@@ -230,6 +227,11 @@ instance instAddCommMonoid (r : R → R → Prop) : AddCommMonoid (RingQuot r) w
     rintro n ⟨⟨⟩⟩
     simp only [smul_quot, nsmul_eq_mul, Nat.cast_add, Nat.cast_one, add_mul, one_mul,
                add_comm, add_quot]
+
+instance instIsAddCommutative (r : R → R → Prop) : IsAddCommutative (RingQuot r) :=
+  ⟨⟨by
+    rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
+    simp only [add_quot, add_comm]⟩⟩
 
 instance instMonoidWithZero (r : R → R → Prop) : MonoidWithZero (RingQuot r) where
   mul_assoc := by
@@ -292,14 +294,11 @@ instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot
   intCast_negSucc := fun n => congrArg RingQuot.mk <| by
     exact congrArg (Quot.mk _) (Int.cast_negSucc n)
 
-instance instCommSemiring {R : Type uR} [Semiring R] [IsMulCommutative R] (r : R → R → Prop) :
-    CommSemiring (RingQuot r) where
-  mul_comm := by
+instance instIsMulCommutative {R : Type uR} [Semiring R] [IsMulCommutative R]
+    (r : R → R → Prop) : IsMulCommutative (RingQuot r) :=
+  ⟨⟨by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
-    simp [mul_quot, mul_comm]
-
-instance {R : Type uR} [Ring R] [IsMulCommutative R] (r : R → R → Prop) : CommRing (RingQuot r) :=
-  { RingQuot.instCommSemiring r, RingQuot.instRing r with }
+    simp [mul_quot, mul_comm]⟩⟩
 
 instance instInhabited (r : R → R → Prop) : Inhabited (RingQuot r) :=
   ⟨0⟩

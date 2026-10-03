@@ -144,8 +144,11 @@ instance (M N : Mat_ C) : Inhabited (M ⟶ N) :=
 
 end
 
-instance (M N : Mat_ C) : AddCommGroup (M ⟶ N) :=
-  inferInstanceAs <| AddCommGroup (DMatrix M.ι N.ι _)
+instance (M N : Mat_ C) : AddGroup (M ⟶ N) :=
+  inferInstanceAs <| AddGroup (DMatrix M.ι N.ι _)
+
+instance (M N : Mat_ C) : IsAddCommutative (M ⟶ N) :=
+  inferInstanceAs <| IsAddCommutative (DMatrix M.ι N.ι _)
 
 @[simp]
 theorem add_apply {M N : Mat_ C} (f g : M ⟶ N) (i j) : (f + g) i j = f i j + g i j :=
@@ -605,8 +608,11 @@ and the category of matrices over that ring considered as a single-object catego
 def equivalenceSingleObj : Mat R ≌ Mat_ (SingleObj Rᵐᵒᵖ) :=
   (equivalenceSingleObjInverse R).asEquivalence.symm
 
-instance (X Y : Mat R) : AddCommGroup (X ⟶ Y) :=
-  inferInstanceAs <| AddCommGroup (Matrix X Y R)
+instance (X Y : Mat R) : AddGroup (X ⟶ Y) :=
+  inferInstanceAs <| AddGroup (Matrix X Y R)
+
+instance (X Y : Mat R) : IsAddCommutative (X ⟶ Y) :=
+  inferInstanceAs <| IsAddCommutative (Matrix X Y R)
 
 variable {R}
 

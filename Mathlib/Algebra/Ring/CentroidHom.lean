@@ -331,8 +331,11 @@ theorem toEnd_add (x y : CentroidHom α) : (x + y).toEnd = x.toEnd + y.toEnd :=
 theorem toEnd_smul (m : M) (x : CentroidHom α) : (m • x).toEnd = m • x.toEnd :=
   rfl
 
-instance : AddCommMonoid (CentroidHom α) :=
-  coe_toAddMonoidHom_injective.addCommMonoid _ toEnd_zero toEnd_add (swap toEnd_smul)
+instance : AddMonoid (CentroidHom α) :=
+  coe_toAddMonoidHom_injective.addMonoid _ toEnd_zero toEnd_add (swap toEnd_smul)
+
+instance : IsAddCommutative (CentroidHom α) :=
+  toEnd_injective.isAddCommutative _ toEnd_add
 
 instance : NatCast (CentroidHom α) where natCast n := n • (1 : CentroidHom α)
 
@@ -575,8 +578,8 @@ theorem toEnd_neg (x : CentroidHom α) : (-x).toEnd = -x.toEnd :=
 theorem toEnd_sub (x y : CentroidHom α) : (x - y).toEnd = x.toEnd - y.toEnd :=
   rfl
 
-instance : AddCommGroup (CentroidHom α) :=
-  toEnd_injective.addCommGroup _
+instance : AddGroup (CentroidHom α) :=
+  toEnd_injective.addGroup _
     toEnd_zero toEnd_add toEnd_neg toEnd_sub (swap toEnd_smul) (swap toEnd_smul)
 
 @[simp, norm_cast]
@@ -609,16 +612,17 @@ section NonUnitalRing
 
 variable [NonUnitalRing α]
 
--- See note [reducible non-instances]
-/-- A prime associative ring has commutative centroid. -/
-abbrev commRing
-    (h : ∀ a b : α, (∀ r : α, a * r * b = 0) → a = 0 ∨ b = 0) : CommRing (CentroidHom α) :=
-  { CentroidHom.instRing with
-    mul_comm := fun f g ↦ by
-      ext
-      refine sub_eq_zero.1 (or_self_iff.1 <| (h _ _) fun r ↦ ?_)
-      rw [mul_assoc, sub_mul, sub_eq_zero, ← map_mul_right, ← map_mul_right, coe_mul, coe_mul,
-        comp_mul_comm] }
+/-- A prime associative ring has commutative centroid.
+
+This is the commutativity half of the former `CommRing` builder; the `Ring` half is
+`CentroidHom.instRing`. -/
+theorem commRing
+    (h : ∀ a b : α, (∀ r : α, a * r * b = 0) → a = 0 ∨ b = 0) : IsMulCommutative (CentroidHom α) :=
+  ⟨⟨fun f g ↦ by
+    ext
+    refine sub_eq_zero.1 (or_self_iff.1 <| (h _ _) fun r ↦ ?_)
+    rw [mul_assoc, sub_mul, sub_eq_zero, ← map_mul_right, ← map_mul_right, coe_mul, coe_mul,
+      comp_mul_comm]⟩⟩
 
 end NonUnitalRing
 

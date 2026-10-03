@@ -144,7 +144,7 @@ lemma orthRadius_parallel_orthRadius_iff {s : Sphere P} {p q : P} :
 
 lemma dist_sq_eq_iff_mem_orthRadius {s : Sphere P} {p q : P} :
     (dist q s.center) ^ 2 = (dist p s.center) ^ 2 + (dist q p) ^ 2 ↔ q ∈ s.orthRadius p := by
-  simp_rw [dist_eq_norm_vsub, pow_two]
+  simp_rw [dist_eq_norm_vsub V, pow_two]
   rw [← vsub_add_vsub_cancel q p s.center]
   nth_rw 3 [add_comm]
   rw [norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero, ← mem_orthRadius_iff_inner_left]

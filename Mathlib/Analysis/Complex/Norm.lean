@@ -63,7 +63,7 @@ protected theorem norm_map_zero' : ‖(0 : ℂ)‖ = 0 :=
 protected theorem norm_neg' (z : ℂ) : ‖-z‖ = ‖z‖ := by
   rw [Complex.norm_def, norm_def, normSq_neg]
 
-instance instNormedAddCommGroup : NormedAddCommGroup ℂ :=
+instance instNormedAddCommGroup : NormedAddGroup ℂ :=
   AddGroupNorm.toNormedAddCommGroup
   { toFun := norm
     map_zero' := Complex.norm_map_zero'

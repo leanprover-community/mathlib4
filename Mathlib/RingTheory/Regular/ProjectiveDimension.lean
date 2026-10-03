@@ -51,7 +51,7 @@ lemma hasProjectiveDimensionLT_of_forall_finite (M : ModuleCat.{v} R) [Module.Fi
     have : Limits.IsZero M := (Limits.IsZero.iff_id_eq_zero M).mpr (Subsingleton.eq_zero (𝟙 M))
     exact this.hasProjectiveDimensionLT_zero
   | succ n hn =>
-    rcases Module.exists_finite_presentation R M with ⟨_, _, _, _, _, f, surjf⟩
+    rcases Module.exists_finite_presentation R M with ⟨_, _, _, _, _, _, f, surjf⟩
     let S : ShortComplex (ModuleCat.{v} R) := f.shortComplexKer
     have hS : S.ShortExact := LinearMap.shortExact_shortComplexKer surjf
     match n with

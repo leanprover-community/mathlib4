@@ -231,10 +231,14 @@ theorem center_toSubsemigroup :
     (center R).toSubsemigroup = Subsemigroup.center R :=
   rfl
 
-/-- The center is commutative and associative. -/
-instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R) :=
-  { Subsemigroup.center.commSemigroup,
+/-- The center is associative. -/
+instance center.instNonUnitalCommSemiring : NonUnitalSemiring (center R) :=
+  { Subsemigroup.center.semigroup,
     NonUnitalSubsemiringClass.toNonUnitalNonAssocSemiring (center R) with }
+
+/-- The center is commutative. -/
+instance center.isMulCommutative : IsMulCommutative (center R) :=
+  ⟨⟨fun a _ => Subtype.ext <| a.2.comm _⟩⟩
 
 /-- A point-free means of proving membership in the center, for a non-associative ring.
 
@@ -267,7 +271,7 @@ section NonUnitalSemiring
 set_option backward.isDefEq.respectTransparency false in
 -- no instance diamond, unlike the unital version
 example {R} [NonUnitalSemiring R] :
-    (center.instNonUnitalCommSemiring _).toNonUnitalSemiring =
+    center.instNonUnitalCommSemiring _ =
       NonUnitalSubsemiringClass.toNonUnitalSemiring (center R) := by
   with_reducible_and_instances rfl
 
@@ -383,15 +387,6 @@ theorem isMulCommutative_closure {R : Type*} [NonUnitalSemiring R] {s : Set R}
   have := closure_le_centralizer_centralizer s
   .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
     Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂)
-
-open scoped IsMulCommutative in
-/-- If all the elements of a set `s` commute, then `closure s` is a non-unital commutative
-semiring. -/
-@[deprecated isMulCommutative_closure +typeChanged (since := "2026-03-11")]
-abbrev closureNonUnitalCommSemiringOfComm {R : Type*} [NonUnitalSemiring R] {s : Set R}
-    (hcomm : s.Pairwise Commute) : NonUnitalCommSemiring (closure s) :=
-  have := isMulCommutative_closure hcomm
-  inferInstance
 
 instance instIsMulCommutative_closure {S R : Type*} [NonUnitalSemiring R]
     [SetLike S R] [MulMemClass S R] (s : S) [IsMulCommutative s] :

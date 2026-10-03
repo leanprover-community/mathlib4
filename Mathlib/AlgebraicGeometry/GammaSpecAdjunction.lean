@@ -147,7 +147,7 @@ theorem toΓSpecCApp_iff
       f = X.toΓSpecCApp r := by
   have loc_inst := IsLocalization.to_basicOpen (Γ.obj (op X)) r
   refine ConcreteCategory.ext_iff.trans ?_
-  rw [← @IsLocalization.Away.lift_comp _ _ _ _ _ _ _ r loc_inst _
+  rw [← @IsLocalization.Away.lift_comp _ _ _ _ _ _ _ _ _ _ r loc_inst _
       (X.isUnit_res_toΓSpecMapBasicOpen r)]
   constructor
   · intro h

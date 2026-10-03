@@ -11,7 +11,8 @@ public import Mathlib.RingTheory.IsTensorProduct
 /-!
 # Base change of polynomial algebras
 
-Given `[Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]` we show `A[X] ≃ₐ[R] (A ⊗[R] R[X])`.
+Given `[Semiring R] [IsMulCommutative R] [Semiring A] [Algebra R A]`
+we show `A[X] ≃ₐ[R] (A ⊗[R] R[X])`.
 -/
 
 @[expose] public section
@@ -122,7 +123,7 @@ theorem invFun_add {p q} : invFun R A (p + q) = invFun R A p + invFun R A q := b
   simp only [invFun, eval₂_add]
 
 theorem invFun_monomial (n : ℕ) (a : A) :
-    invFun R A (monomial n a) = (a ⊗ₜ[R] 1) * 1 ⊗ₜ[R] X ^ n :=
+    invFun R A (monomial n a) = (a ⊗ₜ[R] 1) * 1 ⊗ₜ[R] (X : R[X]) ^ n :=
   eval₂_monomial _ _
 
 theorem left_inv (x : A ⊗ R[X]) : invFun R A ((toFunAlgHom R A) x) = x := by

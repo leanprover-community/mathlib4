@@ -297,7 +297,7 @@ instance instPreInnerProductSpaceCoreH₀ : PreInnerProductSpace.Core 𝕜 (H₀
     rw [Finsupp.sum_smul_index] <;> simp [Finsupp.mul_sum, ← mul_assoc]
   re_inner_nonneg := (Fact.out : K.PosSemidef).re_sum_kernel
 
-instance instSeminormedAddCommGroupH₀ : SeminormedAddCommGroup (H₀ K) :=
+instance instSeminormedAddCommGroupH₀ : SeminormedAddGroup (H₀ K) :=
   InnerProductSpace.Core.toSeminormedAddCommGroup (𝕜 := 𝕜)
 
 instance instInnerProductSpaceH₀ : InnerProductSpace 𝕜 (H₀ K) := .ofCore _

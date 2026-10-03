@@ -280,11 +280,10 @@ omit [∀ (n : ℤ), (shiftFunctor C n).Additive]
 
 end
 
-instance : AddCommGroup (T₁ ⟶ T₂) where
+instance : AddGroup (T₁ ⟶ T₂) where
   zero_add f := by ext <;> apply zero_add
   add_assoc f g h := by ext <;> apply add_assoc
   add_zero f := by ext <;> apply add_zero
-  add_comm f g := by ext <;> apply add_comm
   neg_add_cancel f := by ext <;> apply neg_add_cancel
   sub_eq_add_neg f g := by ext <;> apply sub_eq_add_neg
   nsmul_zero f := by cat_disch
@@ -292,6 +291,9 @@ instance : AddCommGroup (T₁ ⟶ T₂) where
   zsmul_zero' := by cat_disch
   zsmul_succ' n f := by ext <;> apply SubNegMonoid.zsmul_succ'
   zsmul_neg' n f := by ext <;> apply SubNegMonoid.zsmul_neg'
+
+instance : IsAddCommutative (T₁ ⟶ T₂) :=
+  ⟨⟨fun f g => by ext <;> apply add_comm⟩⟩
 
 instance : Preadditive (Triangle C) where
 

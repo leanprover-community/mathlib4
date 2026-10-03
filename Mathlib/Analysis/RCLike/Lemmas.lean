@@ -25,7 +25,7 @@ lemma convex_RCLike_iff_convex_real [AddMonoid E] [IsAddCommutative E] [Module K
 namespace Polynomial
 
 theorem ofReal_eval (p : ℝ[X]) (x : ℝ) : (↑(p.eval x) : K) = aeval (↑x) p :=
-  (@aeval_algebraMap_apply_eq_algebraMap_eval ℝ K _ _ _ x p).symm
+  (aeval_algebraMap_apply_eq_algebraMap_eval (A := K) x p).symm
 
 end Polynomial
 

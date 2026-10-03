@@ -120,11 +120,15 @@ protected abbrev semigroup [Semigroup β] : Semigroup α := by
   let mul := e.mul
   apply e.injective.semigroup _; intros; exact e.apply_symm_apply _
 
-/-- Transfer `CommSemigroup` across an `Equiv` -/
-@[to_additive /-- Transfer `AddCommSemigroup` across an `Equiv` -/]
-protected abbrev commSemigroup [Semigroup β] [IsMulCommutative β] : CommSemigroup α := by
-  let mul := e.mul
-  apply e.injective.commSemigroup _; intros; exact e.apply_symm_apply _
+/-- Transfer `CommSemigroup` across an `Equiv`. Under the unbundling this is the commutativity
+half; the `Semigroup` half is `Equiv.semigroup`. -/
+@[to_additive /-- Transfer `AddCommSemigroup` across an `Equiv`. Under the unbundling this is the
+commutativity half; the `AddSemigroup` half is `Equiv.addSemigroup`. -/]
+protected theorem commSemigroup [Semigroup β] [IsMulCommutative β] :
+    letI := e.semigroup
+    IsMulCommutative α := by
+  let := e.semigroup
+  exact e.injective.isMulCommutative _ fun _ _ ↦ e.apply_symm_apply _
 
 /-- Transfer `IsLeftCancelMul` across an `Equiv` -/
 @[to_additive /-- Transfer `IsLeftCancelAdd` across an `Equiv` -/]
@@ -162,13 +166,15 @@ protected abbrev monoid [Monoid β] : Monoid α := by
   let pow := e.pow ℕ
   apply e.injective.monoid _ <;> intros <;> exact e.apply_symm_apply _
 
-/-- Transfer `CommMonoid` across an `Equiv` -/
-@[to_additive /-- Transfer `AddCommMonoid` across an `Equiv` -/]
-protected abbrev commMonoid [Monoid β] [IsMulCommutative β] : CommMonoid α := by
-  let one := e.one
-  let mul := e.mul
-  let pow := e.pow ℕ
-  apply e.injective.commMonoid _ <;> intros <;> exact e.apply_symm_apply _
+/-- Transfer `CommMonoid` across an `Equiv`. Under the unbundling this is the commutativity
+half; the `Monoid` half is `Equiv.monoid`. -/
+@[to_additive /-- Transfer `AddCommMonoid` across an `Equiv`. Under the unbundling this is the
+commutativity half; the `AddMonoid` half is `Equiv.addMonoid`. -/]
+protected theorem commMonoid [Monoid β] [IsMulCommutative β] :
+    letI := e.monoid
+    IsMulCommutative α := by
+  let := e.monoid
+  exact e.injective.isMulCommutative _ fun _ _ ↦ e.apply_symm_apply _
 
 /-- Transfer `Group` across an `Equiv` -/
 @[to_additive /-- Transfer `AddGroup` across an `Equiv` -/]
@@ -181,16 +187,15 @@ protected abbrev group [Group β] : Group α := by
   let zpow := e.pow ℤ
   apply e.injective.group _ <;> intros <;> exact e.apply_symm_apply _
 
-/-- Transfer `CommGroup` across an `Equiv` -/
-@[to_additive /-- Transfer `AddCommGroup` across an `Equiv` -/]
-protected abbrev commGroup [Group β] [IsMulCommutative β] : CommGroup α := by
-  let one := e.one
-  let mul := e.mul
-  let inv := e.Inv
-  let div := e.div
-  let npow := e.pow ℕ
-  let zpow := e.pow ℤ
-  apply e.injective.commGroup _ <;> intros <;> exact e.apply_symm_apply _
+/-- Transfer `CommGroup` across an `Equiv`. Under the unbundling this is the commutativity
+half; the `Group` half is `Equiv.group`. -/
+@[to_additive /-- Transfer `AddCommGroup` across an `Equiv`. Under the unbundling this is the
+commutativity half; the `AddGroup` half is `Equiv.addGroup`. -/]
+protected theorem commGroup [Group β] [IsMulCommutative β] :
+    letI := e.group
+    IsMulCommutative α := by
+  let := e.group
+  exact e.injective.isMulCommutative _ fun _ _ ↦ e.apply_symm_apply _
 
 end Equiv
 

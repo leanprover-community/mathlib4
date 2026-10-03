@@ -295,7 +295,9 @@ lemma UpperHalfPlane.hasSum_norm_sq_qExpansion_coeff_mul_exp {f : ℍ → ℂ} {
     HasSum (fun n : ℕ ↦ ‖(qExpansion h f).coeff n‖ ^ 2 * Real.exp (-(4 * π * n * y / h)))
       (h⁻¹ * ∫ x in 0..h, ‖f ⟨x + y * UpperHalfPlane.I, by simpa using hy⟩‖ ^ 2) := by
   let g : ℝ → ℂ := fun x ↦ f ⟨x + y * UpperHalfPlane.I, by simpa using hy⟩
-  have hg : Continuous g := by fun_prop
+  have hg : Continuous g := by
+    have := hfhol.continuous
+    fun_prop
   -- Parseval over `ℤ`, regrouped as a sum over `ℕ` of the terms `n` and `-(n + 1)`.
   have hP := (hasSum_sq_fourierCoeffOn hh <|
     (MeasureTheory.memLp_two_iff_integrable_sq_norm hg.aestronglyMeasurable).2

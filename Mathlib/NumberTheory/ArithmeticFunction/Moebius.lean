@@ -245,7 +245,7 @@ theorem sum_eq_iff_sum_mul_moebius_eq [NonAssocRing R] {f g : ℕ → R} :
 theorem prod_eq_iff_prod_pow_moebius_eq [Group R] [IsMulCommutative R] {f g : ℕ → R} :
     (∀ n > 0, ∏ i ∈ n.divisors, f i = g n) ↔
       ∀ n > 0, ∏ x ∈ n.divisorsAntidiagonal, g x.snd ^ μ x.fst = f n :=
-  @sum_eq_iff_sum_smul_moebius_eq (Additive R) _ _ _
+  @sum_eq_iff_sum_smul_moebius_eq (Additive R) _ _ _ _
 
 /-- Möbius inversion for functions to a `CommGroupWithZero`. -/
 theorem prod_eq_iff_prod_pow_moebius_eq_of_nonzero [GroupWithZero R] [IsMulCommutative R] {f g : ℕ → R}
@@ -255,7 +255,7 @@ theorem prod_eq_iff_prod_pow_moebius_eq_of_nonzero [GroupWithZero R] [IsMulCommu
   refine
       Iff.trans
         (Iff.trans (forall_congr' fun n => ?_)
-          (@prod_eq_iff_prod_pow_moebius_eq Rˣ _
+          (@prod_eq_iff_prod_pow_moebius_eq Rˣ _ _
             (fun n => if h : 0 < n then Units.mk0 (f n) (hf n h) else 1) fun n =>
             if h : 0 < n then Units.mk0 (g n) (hg n h) else 1))
         (forall_congr' fun n => ?_) <;>
@@ -326,7 +326,7 @@ theorem prod_eq_iff_prod_pow_moebius_eq_on [Group R] [IsMulCommutative R] {f g :
     (s : Set ℕ) (hs : ∀ m n, m ∣ n → n ∈ s → m ∈ s) :
     (∀ n > 0, n ∈ s → (∏ i ∈ n.divisors, f i) = g n) ↔
       ∀ n > 0, n ∈ s → (∏ x ∈ n.divisorsAntidiagonal, g x.snd ^ μ x.fst) = f n :=
-  @sum_eq_iff_sum_smul_moebius_eq_on (Additive R) _ _ _ s hs
+  @sum_eq_iff_sum_smul_moebius_eq_on (Additive R) _ _ _ _ s hs
 
 /-- Möbius inversion for functions to a `CommGroupWithZero`, where the equalities only hold on
 a well-behaved set. -/
@@ -338,7 +338,7 @@ theorem prod_eq_iff_prod_pow_moebius_eq_on_of_nonzero [GroupWithZero R] [IsMulCo
   refine
       Iff.trans
         (Iff.trans (forall_congr' fun n => ?_)
-          (@prod_eq_iff_prod_pow_moebius_eq_on Rˣ _
+          (@prod_eq_iff_prod_pow_moebius_eq_on Rˣ _ _
             (fun n => if h : 0 < n then Units.mk0 (f n) (hf n h) else 1)
             (fun n => if h : 0 < n then Units.mk0 (g n) (hg n h) else 1)
             s hs))

@@ -34,7 +34,8 @@ variable {k : Type*} [DivisionRing k]
 
 /-- The Euler characteristic of a finite exact sequence is zero. -/
 public lemma sum_neg_one_pow_finrank_eq_zero_of_exact {n : ℕ} (V : Fin (n + 2) → Type*)
-    [∀ i, AddGroup (V i)] [∀ i, IsAddCommutative (V i)] [∀ i, Module k (V i)] [∀ i, FiniteDimensional k (V i)]
+    [∀ i, AddGroup (V i)] [∀ i, IsAddCommutative (V i)] [∀ i, Module k (V i)]
+    [∀ i, FiniteDimensional k (V i)]
     (f : (i : Fin (n + 1)) → V i.castSucc →ₗ[k] V i.succ)
     (inj : Injective (f 0))
     (h_exact : ∀ i : Fin n, Exact (f i.castSucc) (f i.succ))
@@ -82,7 +83,9 @@ private lemma sum_neg_one_pow_finrank_eq_zero_of_exact_six_aux {V₀ V₁ V₂ V
     (finrank k V₀ : ℤ) - finrank k V₁ + finrank k V₂ -
       finrank k V₃ + finrank k V₄ - finrank k V₅ = 0 := by
   let Vs := ![V₀, V₁, V₂, V₃, V₄, V₅]
-  let (i : Fin 6) : AddCommGroup (Vs i) := match i with
+  let (i : Fin 6) : AddGroup (Vs i) := match i with
+  | 0 => ‹_› | 1 => ‹_› | 2 => ‹_› | 3 => ‹_› | 4 => ‹_› | 5 => ‹_›
+  have (i : Fin 6) : IsAddCommutative (Vs i) := match i with
   | 0 => ‹_› | 1 => ‹_› | 2 => ‹_› | 3 => ‹_› | 4 => ‹_› | 5 => ‹_›
   let (i : Fin 6) : Module k (Vs i) := match i with
   | 0 => ‹_› | 1 => ‹_› | 2 => ‹_› | 3 => ‹_› | 4 => ‹_› | 5 => ‹_›

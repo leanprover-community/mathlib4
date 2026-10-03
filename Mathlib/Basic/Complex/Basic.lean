@@ -322,7 +322,7 @@ theorem real_smul {x : ℝ} {z : ℂ} : x • z = x * z :=
 
 end SMul
 
-instance addCommGroup : AddCommGroup ℂ where
+instance addCommGroup : AddGroup ℂ where
   zsmul_zero' := by intros; ext <;> simp [smul_re, smul_im]
   nsmul_zero := by intros; ext <;> simp [smul_re, smul_im]
   nsmul_succ := by intros; ext <;> simp [smul_re, smul_im] <;> ring
@@ -331,8 +331,10 @@ instance addCommGroup : AddCommGroup ℂ where
   add_assoc := by intros; ext <;> simp <;> ring
   zero_add := by intros; ext <;> simp
   add_zero := by intros; ext <;> simp
-  add_comm := by intros; ext <;> simp <;> ring
   neg_add_cancel := by intros; ext <;> simp
+
+instance isAddCommutative : IsAddCommutative ℂ :=
+  ⟨⟨fun _ _ => by ext <;> simp <;> ring⟩⟩
 
 /-! ### Casts -/
 
@@ -374,18 +376,20 @@ instance addGroupWithOne : AddGroupWithOne ℂ :=
     intCast_ofNat _ := by ext <;> simp
     intCast_negSucc _ := by ext <;> simp }
 
-instance commRing : CommRing ℂ :=
+instance commRing : Ring ℂ :=
   { addGroupWithOne with
     npow := @npowRec _ ⟨(1 : ℂ)⟩ ⟨(· * ·)⟩
-    add_comm := by intros; ext <;> simp <;> ring
+    is_comm := isAddCommutative.is_comm
     left_distrib := by intros; ext <;> simp [mul_re, mul_im] <;> ring
     right_distrib := by intros; ext <;> simp [mul_re, mul_im] <;> ring
     zero_mul := by intros; ext <;> simp
     mul_zero := by intros; ext <;> simp
     mul_assoc := by intros; ext <;> simp <;> ring
     one_mul := by intros; ext <;> simp
-    mul_one := by intros; ext <;> simp
-    mul_comm := by intros; ext <;> simp <;> ring }
+    mul_one := by intros; ext <;> simp }
+
+instance isMulCommutative : IsMulCommutative ℂ :=
+  ⟨⟨fun _ _ => by ext <;> simp <;> ring⟩⟩
 
 section computable_shortcuts
 
@@ -394,14 +398,9 @@ instance. -/
 instance : Ring ℂ :=
   delta% inferInstance
 
-/-- This shortcut instance ensures we do not find `NonUnitalCommRing` via the noncomputable
+/-- This shortcut instance ensures we do not find `NonUnitalRing` via the noncomputable
 `instCommCStarAlgebraComplex` instance. -/
-instance : NonUnitalCommRing ℂ :=
-  delta% inferInstance
-
-/-- This shortcut instance ensures we do not find `CommSemiring` via the noncomputable
-`Complex.field` instance. -/
-instance : CommSemiring ℂ :=
+instance : NonUnitalRing ℂ :=
   delta% inferInstance
 
 /-- This shortcut instance ensures we do not find `Semiring` via the noncomputable
@@ -409,9 +408,9 @@ instance : CommSemiring ℂ :=
 instance : Semiring ℂ :=
   delta% inferInstance
 
-/-- This shortcut instance ensures we do not find `AddCommMonoid` via the noncomputable
+/-- This shortcut instance ensures we do not find `AddMonoid` via the noncomputable
 `Complex.instNormedField` instance. -/
-instance : AddCommMonoid ℂ :=
+instance : AddMonoid ℂ :=
   delta% inferInstance
 
 end computable_shortcuts

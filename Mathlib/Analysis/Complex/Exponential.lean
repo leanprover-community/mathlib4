@@ -140,7 +140,7 @@ theorem exp_list_sum (l : List ℂ) : exp l.sum = (l.map exp).prod :=
   map_list_prod (M := Multiplicative ℂ) expMonoidHom l
 
 theorem exp_multiset_sum (s : Multiset ℂ) : exp s.sum = (s.map exp).prod :=
-  @MonoidHom.map_multiset_prod (Multiplicative ℂ) ℂ _ _ expMonoidHom s
+  MonoidHom.map_multiset_prod (M := Multiplicative ℂ) (N := ℂ) expMonoidHom s
 
 theorem exp_sum {α : Type*} (s : Finset α) (f : α → ℂ) :
     exp (∑ x ∈ s, f x) = ∏ x ∈ s, exp (f x) :=
@@ -221,7 +221,7 @@ theorem exp_list_sum (l : List ℝ) : exp l.sum = (l.map exp).prod :=
   map_list_prod (M := Multiplicative ℝ) expMonoidHom l
 
 theorem exp_multiset_sum (s : Multiset ℝ) : exp s.sum = (s.map exp).prod :=
-  @MonoidHom.map_multiset_prod (Multiplicative ℝ) ℝ _ _ expMonoidHom s
+  MonoidHom.map_multiset_prod (M := Multiplicative ℝ) (N := ℝ) expMonoidHom s
 
 theorem exp_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
     exp (∑ x ∈ s, f x) = ∏ x ∈ s, exp (f x) :=

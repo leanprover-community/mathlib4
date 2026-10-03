@@ -357,7 +357,7 @@ theorem mul_div_eq_iff_isRoot : (X - C a) * (p / (X - C a)) = p ↔ IsRoot p a :
 alias ⟨_, IsRoot.mul_div_eq⟩ := mul_div_eq_iff_isRoot
 
 instance instEuclideanDomain : EuclideanDomain R[X] :=
-  { Polynomial.commRing,
+  { Polynomial.ring,
     Polynomial.nontrivial with
     quotient := (· / ·)
     quotient_zero := by simp [div_def]
@@ -573,7 +573,7 @@ theorem div_C_mul : p / (C a * q) = C a⁻¹ * (p / q) := by
   rw [mul_left_comm q, ← mul_assoc, ← C.map_mul, mul_inv_cancel₀ ha, C.map_one, one_mul]
 
 lemma div_C : p / C a = p * C a⁻¹ := by
-  simpa [mul_comm] using div_C_mul (q := 1)
+  simpa [mul_comm] using div_C_mul (p := p) (a := a) (q := 1)
 
 lemma C_div : C (a / b) = C a / C b := by
   rw [div_C, ← C_mul, div_eq_mul_inv]

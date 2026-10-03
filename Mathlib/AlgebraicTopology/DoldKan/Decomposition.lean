@@ -72,7 +72,7 @@ theorem decomposition_Q (n q : ℕ) :
       symm
       conv_rhs => rw [sub_eq_add_neg, add_comm]
       let q' : Fin (n + 1) := ⟨q, Nat.lt_succ_of_le hqn⟩
-      rw [← @Finset.add_sum_erase _ _ _ _ _ _ q' (by simp [q'])]
+      rw [← Finset.add_sum_erase (a := q') _ _ (by simp [q'])]
       congr
       · have hnaq' : n = a + q := by lia
         simp only [(HigherFacesVanish.of_P q n).comp_Hσ_eq hnaq', q'.rev_eq hnaq', neg_neg]

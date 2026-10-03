@@ -124,8 +124,8 @@ instance : Bot ℝ≥0∞ := ⟨0⟩
 
 example : (0 : ℝ≥0∞) = ⊥ := by with_reducible_and_instances rfl
 
-deriving instance Top, LE, PartialOrder, Add, AddCommMonoidWithOne, SemilatticeSup, DistribLattice,
-  Nontrivial for ENNReal
+deriving instance Top, LE, PartialOrder, Add, AddMonoidWithOne, IsAddCommutative, SemilatticeSup,
+  DistribLattice, Nontrivial for ENNReal
 
 instance : OrderBot ℝ≥0∞ := inferInstanceAs (OrderBot (WithTop ℝ≥0))
 
@@ -139,8 +139,14 @@ instance : Min ℝ≥0∞ := SemilatticeInf.toMin
 
 instance : Max ℝ≥0∞ := SemilatticeSup.toMax
 
-noncomputable instance : CommSemiring ℝ≥0∞ :=
-  inferInstanceAs (CommSemiring (WithTop ℝ≥0))
+instance : AddMonoid ℝ≥0∞ :=
+  inferInstanceAs (AddMonoid (WithTop ℝ≥0))
+
+noncomputable instance : Semiring ℝ≥0∞ :=
+  inferInstanceAs (Semiring (WithTop ℝ≥0))
+
+instance : IsMulCommutative ℝ≥0∞ :=
+  inferInstanceAs (IsMulCommutative (WithTop ℝ≥0))
 
 instance : IsOrderedRing ℝ≥0∞ :=
   inferInstanceAs (IsOrderedRing (WithTop ℝ≥0))
@@ -155,9 +161,6 @@ noncomputable instance : CompleteLinearOrder ℝ≥0∞ :=
   inferInstanceAs (CompleteLinearOrder (WithTop ℝ≥0))
 
 instance : DenselyOrdered ℝ≥0∞ := inferInstanceAs (DenselyOrdered (WithTop ℝ≥0))
-
-noncomputable instance : AddCommMonoid ℝ≥0∞ :=
-  inferInstanceAs (AddCommMonoid (WithTop ℝ≥0))
 
 noncomputable instance : LinearOrder ℝ≥0∞ :=
   inferInstanceAs (LinearOrder (WithTop ℝ≥0))

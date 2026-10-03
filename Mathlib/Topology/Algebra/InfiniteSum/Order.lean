@@ -402,19 +402,20 @@ requires more assumptions. -/
 meta def evalTsum : PositivityExt where eval {u α} zα pα? e :=
   match pα? with | none => pure .none | some pα => do
   match e with
-  | ~q(@tsum _ $ι $instCommMonoid $instTopSpace $f $L) =>
+  | ~q(@tsum _ $ι $instAddMonoid $instAddComm $instTopSpace $f $L) =>
     lambdaBoundedTelescope f 1 fun args (body : Q($α)) => do
       let #[(i : Q($ι))] := args | failure
       let rbody ← core zα pα body
       let pbody ← rbody.toNonneg
       let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
-      let mα' ← synthInstanceQ q(AddCommMonoid $α)
+      let mα' ← synthInstanceQ q(AddMonoid $α)
+      let cα' ← synthInstanceQ q(IsAddCommutative $α)
       let oα' ← synthInstanceQ q(Preorder $α)
       let pα' ← synthInstanceQ q(IsOrderedAddMonoid $α)
       let instOrderClosed ← synthInstanceQ q(OrderClosedTopology $α)
       assertInstancesCommute
       return .nonnegative
-        q(@tsum_nonneg $ι $α $L $mα' $oα' $pα' $instTopSpace $instOrderClosed $f $pr)
+        q(@tsum_nonneg $ι $α $L $mα' $cα' $oα' $pα' $instTopSpace $instOrderClosed $f $pr)
   | _ => throwError "not tsum"
 
 end Mathlib.Meta.Positivity

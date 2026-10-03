@@ -61,7 +61,7 @@ instance subalgebra (S₀ : Subalgebra R S) : IsScalarTower S₀ S A :=
 variable [Algebra R A] [IsScalarTower R S A]
 
 instance subalgebra' (S₀ : Subalgebra R S) : IsScalarTower R S₀ A :=
-  @IsScalarTower.of_algebraMap_eq R S₀ A _ _ _ _ _ _ fun _ ↦
+  @IsScalarTower.of_algebraMap_eq R S₀ A _ _ _ _ _ _ _ _ fun _ ↦
     (IsScalarTower.algebraMap_apply R S A _ :)
 
 end Semiring
