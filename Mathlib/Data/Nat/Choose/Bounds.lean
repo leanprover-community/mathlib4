@@ -98,16 +98,16 @@ theorem choose_le_two_pow (n k : ℕ) : n.choose k ≤ 2 ^ n := by
   · cases k <;> simp
   · exact (Nat.choose_lt_two_pow _ _ hn).le
 
-theorem le_mul_add_choose_of_succ_succ'_le {c : α} {g : ℕ → ℕ → α} (hg₀_left : ∀ ℓ, g 0 ℓ ≤ c)
+theorem le_mul_add_choose_of_succ_succ'_le {c : α} {g : ℕ → ℕ → α} (hg₀_left : ∀ l, g 0 l ≤ c)
     (hg₀_right : ∀ k, g k 0 ≤ c)
-    (hg : ∀ k ℓ, g (k + 1) (ℓ + 1) ≤ g (k + 1) ℓ + g k (ℓ + 1)) (k ℓ : ℕ) :
-    g k ℓ ≤ c * (k + ℓ).choose k := by
-  induction h : k + ℓ generalizing k ℓ with
+    (hg : ∀ k l, g (k + 1) (l + 1) ≤ g (k + 1) l + g k (l + 1)) (k l : ℕ) :
+    g k l ≤ c * (k + l).choose k := by
+  induction h : k + l generalizing k l with
   | zero => simp_all
   | succ n ih =>
     obtain _ | k := k
-    · simpa using hg₀_left ℓ
-    obtain _ | ℓ := ℓ
+    · simpa using hg₀_left l
+    obtain _ | l := l
     · simpa [h] using hg₀_right _
     grw [choose_succ_succ', cast_add, mul_add]
     grind only
