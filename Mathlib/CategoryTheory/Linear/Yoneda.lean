@@ -6,6 +6,7 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-!
 # The Yoneda embedding for `R`-linear categories
@@ -14,8 +15,6 @@ The Yoneda embedding for `R`-linear categories `C`,
 sends an object `X : C` to the `ModuleCat R`-valued presheaf on `C`,
 with value on `Y : Cᵒᵖ` given by `ModuleCat.of R (unop Y ⟶ X)`.
 
-TODO: `linearYoneda R C` is `R`-linear.
-TODO: In fact, `linearYoneda` itself is additive and `R`-linear.
 -/
 
 @[expose] public section
@@ -26,6 +25,8 @@ universe w v u
 open Opposite CategoryTheory.Functor
 
 namespace CategoryTheory
+
+section Ring
 
 variable (R : Type w) [Ring R] {C : Type u} [Category.{v} C] [Preadditive C] [Linear R C]
 variable (C)
@@ -98,5 +99,18 @@ instance faithful_linearYoneda : (linearYoneda R C).Faithful :=
 
 instance faithful_linearCoyoneda : (linearCoyoneda R C).Faithful :=
   Functor.Faithful.of_comp_eq (whiskering_linearCoyoneda R C)
+
+end Ring
+
+section CommRing
+
+variable (R : Type w) [CommRing R] {C : Type u} [Category.{v} C] [Preadditive C] [Linear R C]
+variable (C)
+
+instance (X : C) : ((linearYoneda R C).obj X).Linear R where
+
+instance linearCoyoneda_obj_linear (Y : Cᵒᵖ) : ((linearCoyoneda R C).obj Y).Linear R where
+
+end CommRing
 
 end CategoryTheory
