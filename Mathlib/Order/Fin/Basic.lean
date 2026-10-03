@@ -350,51 +350,76 @@ def succOrderEmb (n : ℕ) : Fin n ↪o Fin (n + 1) := .ofStrictMono succ strict
 /-- `Fin.castLE` as an `OrderEmbedding`.
 
 `castLEEmb h i` embeds `i` into a larger `Fin` type. -/
-@[simps! apply toEmbedding]
+@[simps! apply]
 def castLEOrderEmb (h : n ≤ m) : Fin n ↪o Fin m := .ofStrictMono (castLE h) (strictMono_castLE h)
 
 @[simp]
 theorem coe_castLEOrderEmb (h : n ≤ m) : castLEOrderEmb h = castLE h :=
   rfl
 
+@[simp]
+theorem castLEOrderEmb_toEmbedding (h : n ≤ m) :
+    (castLEOrderEmb h).toEmbedding = castLEEmb h :=
+  rfl
+
 /-- `Fin.castAdd` as an `OrderEmbedding`.
 
 `castAddEmb m i` embeds `i : Fin n` in `Fin (n+m)`. See also `Fin.natAddEmb` and `Fin.addNatEmb`. -/
-@[simps! apply toEmbedding]
+@[simps! apply]
 def castAddOrderEmb (m) : Fin n ↪o Fin (n + m) := .ofStrictMono (castAdd m) (strictMono_castAdd m)
 
 @[simp]
 theorem coe_castAddOrderEmb (m : ℕ) : (castAddOrderEmb m : Fin n → _) = castAdd m :=
   rfl
 
+@[simp]
+theorem castAddOrderEmb_toEmbedding (m : ℕ) :
+    (castAddOrderEmb m : Fin n ↪o _).toEmbedding = castAddEmb m :=
+  rfl
+
 /-- `Fin.castSucc` as an `OrderEmbedding`.
 
 `castSuccOrderEmb i` embeds `i : Fin n` in `Fin (n+1)`. -/
-@[simps! apply toEmbedding]
+@[simps! apply]
 def castSuccOrderEmb : Fin n ↪o Fin (n + 1) := .ofStrictMono castSucc strictMono_castSucc
 
 @[simp]
 theorem coe_castSuccOrderEmb : (castSuccOrderEmb : Fin n → _) = castSucc :=
   rfl
 
+@[simp]
+theorem castSuccOrderEmb_toEmbedding :
+    (castSuccOrderEmb : Fin n ↪o _).toEmbedding = castSuccEmb :=
+  rfl
+
 /-- `Fin.addNat` as an `OrderEmbedding`.
 
 `addNatOrderEmb m i` adds `m` to `i`, generalizes `Fin.succ`. -/
-@[simps! apply toEmbedding]
+@[simps! apply]
 def addNatOrderEmb (m) : Fin n ↪o Fin (n + m) := .ofStrictMono (addNat · m) (strictMono_addNat m)
 
 @[simp]
 theorem coe_addNatOrderEmb (m : ℕ) : (addNatOrderEmb m : Fin n → _) = (addNat · m) :=
   rfl
 
+@[simp]
+theorem addNatOrderEmb_toEmbedding (m : ℕ) :
+    (addNatOrderEmb m : Fin n ↪o _).toEmbedding = addNatEmb m :=
+  rfl
+
 /-- `Fin.natAdd` as an `OrderEmbedding`.
 
 `natAddOrderEmb n i` adds `n` to `i` "on the left". -/
-@[simps! apply toEmbedding]
+@[simps! apply]
 def natAddOrderEmb (n) : Fin m ↪o Fin (n + m) := .ofStrictMono (natAdd n) (strictMono_natAdd n)
 
 @[simp]
 theorem coe_natAddOrderEmb (n : ℕ) : (natAddOrderEmb n : Fin m → _) = natAdd n :=
+  rfl
+
+@[simp]
+theorem natAddOrderEmb_toEmbedding (n : ℕ) :
+    (natAddOrderEmb n : Fin m ↪o _).toEmbedding = natAddEmb n :=
   rfl
 
 /-- `Fin.succAbove p` as an `OrderEmbedding`. -/
