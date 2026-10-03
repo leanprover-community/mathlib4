@@ -646,8 +646,8 @@ composed with the projection `Subobject.pullbackπ` onto `y`, vanishes. -/
 lemma ofLE_comp_pullbackπ_eq_zero (h : x.arrow ≫ f = 0) :
     ofLE x _ (le_pullback_of_comp_eq_zero f y h) ≫ pullbackπ f y = 0 := by
   apply (cancel_mono y.arrow).mp
-  rw [Category.assoc, (isPullback f y).toCommSq.w, ← Category.assoc,
-    ofLE_arrow (le_pullback_of_comp_eq_zero f y h), h, zero_comp]
+  simp [Category.assoc, (isPullback f y).toCommSq.w, 
+     reassoc_of% ofLE_arrow (le_pullback_of_comp_eq_zero f y h), h]
 
 /-- If `x.arrow` is a kernel of `f`, then the canonical inclusion of `x` into the pullback of a
 subobject `y` along `f` is a kernel of `Subobject.pullbackπ f y`.
