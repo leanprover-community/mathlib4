@@ -84,7 +84,8 @@ can be automatically inferred. -/
 local instance uniformSpace : UniformSpace R := IsTopologicalAddGroup.rightUniformSpace R
 
 /-- This is not made into a global instance to avoid diamonds. -/
-local instance isUniformAddGroup : IsUniformAddGroup R := isUniformAddGroup_of_addCommGroup
+local instance isUniformAddGroup : IsUniformAddGroup R :=
+  IsUniformAddGroup.rightUniformSpace_of_addCommGroup R
 
 end ValuativeRel
 
@@ -267,7 +268,7 @@ variable [_t : TopologicalSpace R] [IsValuativeTopology R] (v : Valuation R Γ�
 theorem toTopologicalSpace_eq :
     _t = v.subgroups_basis.topology := by
   let u := IsTopologicalAddGroup.rightUniformSpace R
-  let := isUniformAddGroup_of_addCommGroup (G := R)
+  let := IsUniformAddGroup.rightUniformSpace_of_addCommGroup R
   exact congrArg (fun u ↦ @UniformSpace.toTopologicalSpace R u) v.toUniformSpace_eq
 
 instance (priority := low) _root_.IsValuativeTopology.isTopologicalRing : IsTopologicalRing R := by
