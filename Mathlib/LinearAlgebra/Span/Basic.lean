@@ -134,7 +134,7 @@ lemma linearMap_eq_iff_of_span_eq_top (f g : M →ₗ[R] N)
     rfl
   · intro h
     ext x
-    exact DFunLike.congr_fun h ⟨x, by simp⟩
+    congrm $h ⟨x, by simp⟩
 
 lemma linearMap_eq_zero_iff_of_span_eq_top (f : M →ₗ[R] N)
     {S : Set M} (hM : span R S = ⊤) :

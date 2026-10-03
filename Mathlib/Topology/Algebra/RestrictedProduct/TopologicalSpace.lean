@@ -5,7 +5,7 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Topology.Algebra.Group.Pointwise
+import Mathlib.Topology.Algebra.Group.Pointwise
 public import Mathlib.Topology.Algebra.RestrictedProduct.Basic
 public import Mathlib.Topology.Algebra.Ring.Basic
 

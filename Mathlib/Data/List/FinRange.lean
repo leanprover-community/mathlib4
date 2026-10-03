@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Kenny Lau, Kim Morrison, Alex Keizer
 -/
 module
 
-public import Mathlib.Data.List.Nodup
+import Mathlib.Data.List.Nodup
 public import Mathlib.Data.Fin.Tuple.Basic
 
 /-!

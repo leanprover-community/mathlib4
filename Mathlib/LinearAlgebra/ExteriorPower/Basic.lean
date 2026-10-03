@@ -227,7 +227,7 @@ lemma alternatingMapLinearEquiv_comp_ιMulti (f : M [⋀^Fin n]→ₗ[R] N) :
 @[simp]
 lemma alternatingMapLinearEquiv_apply_ιMulti (f : M [⋀^Fin n]→ₗ[R] N) (a : Fin n → M) :
     alternatingMapLinearEquiv f (ιMulti R n a) = f a :=
-  DFunLike.congr_fun (alternatingMapLinearEquiv_comp_ιMulti f) a
+  congr($(alternatingMapLinearEquiv_comp_ιMulti f) a)
 
 @[simp]
 lemma alternatingMapLinearEquiv_symm_apply (F : ⋀[R]^n M →ₗ[R] N) (m : Fin n → M) :
