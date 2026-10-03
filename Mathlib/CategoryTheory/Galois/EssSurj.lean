@@ -242,7 +242,7 @@ lemma exists_lift_of_quotient_openSubgroup (V : OpenSubgroup (Aut F)) :
       apply Quotient.sound
       apply (QuotientGroup.leftRel_apply).mpr
       simp only [mul_inv_rev]
-      exact Subgroup.Normal.conj_mem hUnormal _ (Subgroup.inv_mem U.toSubgroup σinU) _
+      exact Subgroup.Normal.conj_mem _ (Subgroup.inv_mem U.toSubgroup σinU) _
     simp [← cancel_mono u.hom.hom, show σ.hom.app A ≫ u.hom.hom = _ from u.hom.comm σ, hi]
   have h2 (σ : Aut F) (σinU : σ ∈ U) : ∀ X : I, σ.hom.app X = 𝟙 (F.obj X) := by
     intro ⟨X, hX⟩

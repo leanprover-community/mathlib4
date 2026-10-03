@@ -317,7 +317,7 @@ theorem upperCentralSeries_mono : Monotone (upperCentralSeries G) := by
   refine monotone_nat_of_le_succ ?_
   intro n x hx y
   rw [commutatorElement_def, mul_assoc, mul_assoc, ← mul_assoc y x⁻¹ y⁻¹]
-  exact mul_mem hx (Normal.conj_mem inferInstance x⁻¹ (inv_mem hx) y)
+  exact mul_mem hx (Normal.conj_mem x⁻¹ (inv_mem hx) y)
 
 /-- A group `G` is nilpotent iff there exists an ascending central series which reaches `G` in
 finitely many steps. -/
