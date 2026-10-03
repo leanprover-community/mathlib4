@@ -25,8 +25,6 @@ public section
 
 open Filter Asymptotics ContinuousLinearMap Set
 
-noncomputable section
-
 section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]

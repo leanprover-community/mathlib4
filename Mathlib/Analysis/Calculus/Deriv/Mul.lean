@@ -26,8 +26,6 @@ public section
 
 universe u v w
 
-noncomputable section
-
 open scoped Topology Filter ENNReal
 
 open Filter Set

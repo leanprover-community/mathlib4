@@ -26,8 +26,6 @@ mimicking the API for Fréchet derivatives.
 
 public section
 
-noncomputable section
-
 assert_not_exists tangentBundleCore
 
 open scoped Topology Manifold

@@ -39,8 +39,6 @@ theorems that need it.
 
 public section
 
-noncomputable section
-
 open scoped RealInnerProductSpace
 
 namespace EuclideanGeometry

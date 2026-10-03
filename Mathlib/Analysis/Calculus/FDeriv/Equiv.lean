@@ -27,8 +27,6 @@ open Filter Asymptotics ContinuousLinearMap Set NNReal
 
 open scoped Topology
 
-noncomputable section
-
 section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]

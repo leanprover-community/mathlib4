@@ -23,8 +23,6 @@ matrix, diagonal, linear map
 public section
 
 
-noncomputable section
-
 open LinearMap Matrix Set Submodule Matrix
 
 universe u v w

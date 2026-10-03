@@ -43,8 +43,6 @@ equivalence to an inner-product space.
 
 public section
 
-noncomputable section
-
 open MeasureTheory Filter Complex Set Module
 
 open scoped Filter Topology Real ENNReal FourierTransform RealInnerProductSpace NNReal

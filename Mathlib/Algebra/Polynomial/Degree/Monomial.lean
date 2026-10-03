@@ -14,8 +14,6 @@ import Mathlib.Algebra.Polynomial.Monomial
 
 public section
 
-noncomputable section
-
 open Finset Polynomial
 
 namespace Polynomial
