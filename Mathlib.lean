@@ -2189,9 +2189,11 @@ public import Mathlib.Analysis.Normed.Algebra.DualNumber
 public import Mathlib.Analysis.Normed.Algebra.Exponential
 public import Mathlib.Analysis.Normed.Algebra.GelfandFormula
 public import Mathlib.Analysis.Normed.Algebra.GelfandMazur
+public import Mathlib.Analysis.Normed.Algebra.GelfandRadius
 public import Mathlib.Analysis.Normed.Algebra.Logarithm
 public import Mathlib.Analysis.Normed.Algebra.MatrixExponential
 public import Mathlib.Analysis.Normed.Algebra.QuaternionExponential
+public import Mathlib.Analysis.Normed.Algebra.SpectralNorm
 public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.Analysis.Normed.Algebra.TrivSqZeroExt
 public import Mathlib.Analysis.Normed.Algebra.Ultra
@@ -2335,6 +2337,7 @@ public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
 public import Mathlib.Analysis.Normed.Unbundled.FiniteExtension
 public import Mathlib.Analysis.Normed.Unbundled.InvariantExtension
 public import Mathlib.Analysis.Normed.Unbundled.IsPowMulFaithful
+public import Mathlib.Analysis.Normed.Unbundled.IsPowMulUnique
 public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 public import Mathlib.Analysis.Normed.Unbundled.SeminormFromBounded
 public import Mathlib.Analysis.Normed.Unbundled.SeminormFromConst
