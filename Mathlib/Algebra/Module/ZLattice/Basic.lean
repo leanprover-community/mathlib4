@@ -42,8 +42,9 @@ point of view are in the `ZLattice` namespace.
 
 ## Note
 
-There is also `Submodule.IsLattice` which has slightly different applications. There no
-topology is needed and the discrete condition is replaced by finitely generated.
+There is also `Submodule.IsFullLattice` which has slightly different applications. There no
+topology is needed and discreteness is replaced by finite generation together with a linear
+independence condition.
 
 ## Implementation Notes
 
