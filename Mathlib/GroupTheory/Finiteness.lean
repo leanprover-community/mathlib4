@@ -808,31 +808,20 @@ generated. -/
 theorem Submonoid.fg_of_divisive {P : Submonoid M} (hP : ∀ x ∈ P, ∀ y, x * y ∈ P → y ∈ P) :
     P.FG := by
   have hpwo := Set.isPWO_of_wellQuasiOrderedLE { x | x ∈ P ∧ x ≠ 1 }
-  rw [fg_iff]
-  refine ⟨_, ?_, (setOfPred_minimal_antichain _).finite_of_partiallyWellOrderedOn
+  refine fg_iff P |>.mpr ⟨_, ?_, (setOfPred_minimal_antichain _).finite_of_partiallyWellOrderedOn
     (hpwo.mono (setOfPred_minimal_subset _))⟩
-  ext x
-  constructor
-  · intro hx
-    rw [← P.closure_eq]
-    exact closure_mono ((setOfPred_minimal_subset _).trans fun _ => And.left) hx
-  · intro hx₁
-    by_cases hx₂ : x = 1
-    · simp [hx₂]
-    refine hpwo.wellFoundedOn.induction ⟨hx₁, hx₂⟩ fun y ⟨hy₁, hy₂⟩ ih => ?_
-    simp only [Set.mem_ofPred_eq, and_imp] at ih
-    by_cases hy₃ : Minimal (· ∈ { x | x ∈ P ∧ x ≠ 1 }) y
+  refine ext fun x ↦ ⟨fun hx ↦ ?_, fun hx₁ ↦ ?_⟩
+  · rw [← P.closure_eq]
+    exact closure_mono ((setOfPred_minimal_subset _).trans fun _ ↦ And.left) hx
+  · rcases eq_or_ne x 1 with rfl | hx₂
+    · simp
+    refine hpwo.wellFoundedOn.induction ⟨hx₁, hx₂⟩ fun y ⟨hy₁, hy₂⟩ ih ↦ ?_
+    by_cases hy₃ : Minimal (fun x ↦ x ∈ P ∧ x ≠ 1) y
     · exact mem_closure_of_mem hy₃
     rcases exists_lt_of_not_minimal ⟨hy₁, hy₂⟩ hy₃ with ⟨z, hz₁, hz₂, hz₃⟩
     rcases exists_mul_of_le hz₁.le with ⟨y, rfl⟩
-    apply mul_mem
-    · exact ih _ hz₂ hz₃ hz₁.le hz₁.not_ge
-    apply ih
-    · exact hP _ hz₂ _ hy₁
-    · exact (one_lt_of_lt_mul_right hz₁).ne.symm
-    · exact le_mul_self
-    · rw [mul_le_iff_le_one_left']
-      exact (one_lt_of_ne_one hz₃).not_ge
+    refine mul_mem (ih z ⟨hz₂, hz₃⟩ ⟨hz₁.le, hz₁.not_ge⟩) ?_
+    exact ih y ⟨hP z hz₂ y hy₁, (one_lt_of_lt_mul_right hz₁).ne'⟩ ⟨le_mul_self, by simp [hz₃]⟩
 
 /-- A canonically ordered and well-quasi-ordered monoid must be finitely generated. -/
 @[to_additive /-- A canonically ordered and well-quasi-ordered additive monoid must be finitely
