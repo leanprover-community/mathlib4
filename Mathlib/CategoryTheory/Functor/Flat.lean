@@ -5,13 +5,16 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.Filtered.Connected
+import Mathlib.CategoryTheory.Filtered.Connected
+import Mathlib.CategoryTheory.Limits.Bicones
 public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
+public import Mathlib.CategoryTheory.Limits.ConeCategory
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
+public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
-public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
-public import Mathlib.CategoryTheory.Limits.Bicones
 public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
+public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+
 /-!
 # Representably flat functors
 

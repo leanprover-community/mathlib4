@@ -6,6 +6,7 @@ Authors: Christian Merten
 module
 
 import Mathlib.CategoryTheory.Comma.Final
+import Mathlib.CategoryTheory.Limits.ConeCategory
 public import Mathlib.CategoryTheory.Presentable.Basic
 
 /-!
