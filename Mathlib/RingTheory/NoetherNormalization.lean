@@ -78,14 +78,22 @@ noncomputable abbrev T1 (c : k) :
     MvPolynomial (Fin (n + 1)) k →ₐ[k] MvPolynomial (Fin (n + 1)) k :=
   aeval fun i ↦ if i = 0 then X 0 else X i + c • X 0 ^ r i
 
-private lemma t1_comp_t1_neg (c : k) : (T1 f c).comp (T1 f (-c)) = AlgHom.id _ _ := by
+/-- The substitutions `T1 f c` and `T1 f (-c)` are mutually inverse. This is what makes
+`NoetherNormalization.T` an algebra equivalence. -/
+lemma T1_comp_T1_neg (c : k) : (T1 f c).comp (T1 f (-c)) = AlgHom.id _ _ := by
   rw [comp_aeval, ← MvPolynomial.aeval_X_left]
   ext i v
   cases i using Fin.cases <;> simp
 
-/-- `T1 f 1` leads to an algebra equiv `T f`. -/
-private noncomputable abbrev T := AlgEquiv.ofAlgHom (T1 f 1) (T1 f (-1))
-  (t1_comp_t1_neg f 1) (by simpa using t1_comp_t1_neg f (-1))
+/-- The triangular change of variables attached to a polynomial `f`: the algebra automorphism of
+`MvPolynomial (Fin (n + 1)) k` sending `X i` to `X i + X 0 ^ (2 + f.totalDegree) ^ i` for `i ≠ 0`
+and fixing `X 0`. It is `T1 f 1`, with inverse `T1 f (-1)`.
+
+The exponents grow fast enough that `T f` sends distinct monomials of `f` to polynomials of
+distinct degrees in `X 0`, so that `T f f` becomes monic in `X 0` up to a unit; see
+`NoetherNormalization.T_leadingCoeff_isUnit`. -/
+noncomputable abbrev T := AlgEquiv.ofAlgHom (T1 f 1) (T1 f (-1))
+  (T1_comp_T1_neg f 1) (by simpa using T1_comp_T1_neg f (-1))
 
 private lemma sum_r_mul_ne (vlt : ∀ i, v i < up) (wlt : ∀ i, w i < up) (ne : v ≠ w) :
     ∑ x : Fin (n + 1), r x * v x ≠ ∑ x : Fin (n + 1), r x * w x := by
@@ -140,8 +148,10 @@ private lemma leadingCoeff_finSuccEquiv_t :
     simp only [this, one_pow, Finset.prod_const_one, mul_one]
   exact fun i ↦ pow_zero _
 
-/-- `T` maps `f` into some polynomial in `X_0` such that the leading coefficient is invertible. -/
-private lemma T_leadingcoeff_isUnit (fne : f ≠ 0) :
+/-- If `f ≠ 0`, then `T f f`, seen through `finSuccEquiv` as a polynomial in `X 0` with
+coefficients in `k[X_1, ..., X_n]`, has invertible leading coefficient. In other words, the
+change of variables `T f` makes `f` monic in `X 0` up to a unit. -/
+lemma T_leadingCoeff_isUnit (fne : f ≠ 0) :
     IsUnit (finSuccEquiv k n (T f f)).leadingCoeff := by
   obtain ⟨v, vin, vs⟩ := Finset.exists_max_image f.support
     (fun v ↦ (T f <| monomial v <| f.coeff v).degreeOf 0) (support_nonempty.mpr fne)
@@ -183,7 +193,7 @@ private noncomputable abbrev hom1 : MvPolynomial (Fin n) k →ₐ[MvPolynomial (
 
 /-- `hom1 f I` is integral. -/
 private lemma hom1_isIntegral (fne : f ≠ 0) (fi : f ∈ I) : (hom1 f I).IsIntegral := by
-  obtain u := T_leadingcoeff_isUnit f fne
+  obtain u := T_leadingCoeff_isUnit f fne
   exact (monic_of_isUnit_leadingCoeff_inv_smul u).quotient_isIntegral <|
     Submodule.smul_of_tower_mem _ u.unit⁻¹.val <| mem_map_of_mem _ <| mem_map_of_mem _ fi
 
