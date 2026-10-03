@@ -223,19 +223,21 @@ lemma variance_eval_multivariateGaussian (hS : S.PosSemidef) (i : ι) :
   rw [← covariance_self, covariance_eval_multivariateGaussian hS]
   exact Measurable.aemeasurable <| by fun_prop
 
-lemma multivariateGaussian_map_inner (hS : S.PosSemidef) (t : EuclideanSpace ℝ ι) :
-    (multivariateGaussian μ S).map (fun x ↦ ⟪x, t⟫) =
-      gaussianReal ⟪μ, t⟫ (t ⬝ᵥ S *ᵥ t).toNNReal := by
-  have ht : (fun x : EuclideanSpace ℝ ι ↦ ⟪x, t⟫) = innerSL ℝ t := by
-    ext x
-    exact real_inner_comm t x
-  rw [ht, IsGaussian.map_eq_gaussianReal]
-  congr
-  · rw [ContinuousLinearMap.integral_comp_id_comm]
-    · simp [real_inner_comm]
-    · exact IsGaussian.integrable_id
-  · rw [coe_innerSL_apply, ← covarianceBilin_self IsGaussian.memLp_two_id,
-      covarianceBilin_multivariateGaussian hS]
+lemma measurePreserving_inner_multivariateGaussian (hS : S.PosSemidef) (t : EuclideanSpace ℝ ι) :
+    MeasurePreserving (fun x ↦ ⟪x, t⟫) (multivariateGaussian μ S)
+      (gaussianReal ⟪μ, t⟫ (t ⬝ᵥ S *ᵥ t).toNNReal) where
+  measurable := by fun_prop
+  map_eq := by
+    have ht : (fun x : EuclideanSpace ℝ ι ↦ ⟪x, t⟫) = innerSL ℝ t := by
+      ext x
+      exact real_inner_comm t x
+    rw [ht, IsGaussian.map_eq_gaussianReal]
+    congr
+    · rw [ContinuousLinearMap.integral_comp_id_comm]
+      · simp [real_inner_comm]
+      · exact IsGaussian.integrable_id
+    · rw [coe_innerSL_apply, ← covarianceBilin_self IsGaussian.memLp_two_id,
+        covarianceBilin_multivariateGaussian hS]
 
 lemma measurePreserving_eval_multivariateGaussian (hS : S.PosSemidef) {i : ι} :
     MeasurePreserving (fun x ↦ x i) (multivariateGaussian μ S)
