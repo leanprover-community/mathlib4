@@ -49,19 +49,19 @@ theorem toSubsemiring_mono : Monotone (toSubsemiring : RingPreordering R → _) 
 theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : RingPreordering R → _) :=
   fun _ _ => id
 
-@[aesop unsafe 90% apply (rule_sets := [SetLike])]
+@[aesop unsafe 90% apply (rule_sets := [SetLike]), membership .]
 theorem unitsInv_mem {a : Rˣ} (ha : ↑a ∈ P) : ↑a⁻¹ ∈ P := by
   have : (a * (a⁻¹ * a⁻¹) : R) ∈ P := by aesop (config := { enableSimp := false })
   simp_all
 
-@[aesop unsafe 90% apply (rule_sets := [SetLike])]
+@[aesop unsafe 90% apply (rule_sets := [SetLike]), membership .]
 theorem inv_mem {F : Type*} [Field F] {P : RingPreordering F} {a : F} (ha : a ∈ P) :
     a⁻¹ ∈ P := by
   have mem : a * (a⁻¹ * a⁻¹) ∈ P := by aesop
   field_simp at mem
   simp_all
 
-@[aesop unsafe 80% apply (rule_sets := [SetLike])]
+@[aesop unsafe 80% apply (rule_sets := [SetLike]), membership .]
 theorem mem_of_isSumSq {x : R} (hx : IsSumSq x) : x ∈ P := by
   induction hx using IsSumSq.rec' <;> aesop
 
