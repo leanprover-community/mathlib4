@@ -42,22 +42,31 @@ theorem cons_induction {R : Type*} [Semiring R] {motive : R[X] → Prop}
     · grind [divX_eq_zero_iff]
     · grind [divX_mul_X_add, natDegree_lt_natDegree, degree_divX_lt, divX_zero]
 
+-- Mathlib.Algebra.Polynomial.Inductions
+theorem horner_induction {R : Type*} [Semiring R] {motive : R[X] → Prop}
+    (hC : ∀ a, motive (C a))
+    (ha : ∀ p a, (hp : p.coeff 0 = 0) → (hdeg : 0 < p.natDegree) → (ih : motive p) → motive (p + C a))
+    (hX : ∀ p, (hp : p ≠ 0) → (ih : motive p) → motive (p * X)) (p : R[X]) : motive p := by
+  cases subsingleton_or_nontrivial R
+  · simp_all [Subsingleton.eq_zero]
+  induction hn : p.natDegree using Nat.strong_induction_on generalizing p with
+  | h n ih =>
+    grind [p.divX_mul_X_add, mul_coeff_zero, coeff_divX, coeff_X_zero, natDegree_mul_X,
+      divX_eq_zero_iff, eq_C_coeff_zero_iff_natDegree_eq_zero]
+
 variable {F : Type*} [Field F] [LinearOrder F] [IsStrictOrderedRing F] (P Q : F[X])
 
 section PolynomialAtTop
 
 theorem tendsTo_atTop_div_pow_natDegree [TopologicalSpace F] [OrderTopology F] :
     Tendsto (fun x ↦ P.eval x / x ^ P.natDegree) atTop (nhds P.leadingCoeff) := by
-  induction P using recOnHorner with
-  | M0 => simp
-  | MC p a _ _ ih =>
-    rcases p.natDegree.eq_zero_or_pos with eq | pos
-    · rw [eq_C_of_natDegree_eq_zero eq]
-      simp [← map_add]
-    convert Tendsto.add ih ((tendsto_pow_neg_atTop pos.ne').const_mul a)
+  induction P using horner_induction with
+  | hC a => simp
+  | ha p a hp hdeg ih =>
+    convert Tendsto.add ih ((tendsto_pow_neg_atTop hdeg.ne').const_mul a)
     · grind [eval_add, eval_C, zpow_neg, zpow_natCast]
     · simp_all [leadingCoeff_add_of_degree_lt' (degree_lt_degree _)]
-  | MX _ _ ih =>
+  | hX p hp ih =>
     convert (tendsto_congr' _).mp ih using 2
     · simp
     · filter_upwards [show {0}ᶜ ∈ _ by simpa using ⟨1, by grind⟩] with x _
