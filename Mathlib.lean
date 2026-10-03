@@ -541,6 +541,7 @@ public import Mathlib.Algebra.GroupWithZero.Conj
 public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.Algebra.GroupWithZero.Divisibility
 public import Mathlib.Algebra.GroupWithZero.Equiv
+public import Mathlib.Algebra.GroupWithZero.FunLike
 public import Mathlib.Algebra.GroupWithZero.Hom
 public import Mathlib.Algebra.GroupWithZero.Idempotent
 public import Mathlib.Algebra.GroupWithZero.Indicator
@@ -4336,6 +4337,7 @@ public import Mathlib.Data.Nat.Cast.NeZero
 public import Mathlib.Data.Nat.Cast.Order.Basic
 public import Mathlib.Data.Nat.Cast.Order.Field
 public import Mathlib.Data.Nat.Cast.Order.Ring
+public import Mathlib.Data.Nat.Cast.Pi
 public import Mathlib.Data.Nat.Cast.Prod
 public import Mathlib.Data.Nat.Cast.SetInterval
 public import Mathlib.Data.Nat.Cast.Synonym
