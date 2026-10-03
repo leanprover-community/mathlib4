@@ -102,7 +102,6 @@ namespace MonoidalCategory
 
 variable [MonoidalCategory C]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Tensoring on the right gives a monoidal functor from `C` into endofunctors of `C`.
 -/
