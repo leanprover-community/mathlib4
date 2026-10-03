@@ -188,15 +188,6 @@ end CharZero
 
 namespace Fin
 
-/-- The natural-number cast into `Fin n` is injective below any `m ≤ n`. -/
-lemma ofNat_injOn_Iio {n m : ℕ} [NeZero n] (hmn : m ≤ n) :
-    Set.InjOn (Fin.ofNat n) (Set.Iio m) := by
-  intro i ha j hb _
-  simp only [mem_Iio] at ha hb
-  have hi : i < n := by lia
-  have hj : j < n := by lia
-  grind [Fin.val_ofNat, Nat.mod_eq_of_lt hi, Nat.mod_eq_of_lt hj]
-
 open Fin.NatCast
 
 /-- The characteristic of `F_p` is `p`. -/
