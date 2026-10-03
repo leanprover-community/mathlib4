@@ -45,9 +45,8 @@ private def isAuxName (s : String) : Bool :=
 
 /-- Returns `true` if any component of the name is an auto-generated auxiliary name. -/
 private def nameRefersToAuxLemma : Name → Bool
-  | .str p s => isAuxName s || nameRefersToAuxLemma p
-  | .num p _ => nameRefersToAuxLemma p
-  | .anonymous => false
+  | .str _ s => isAuxName s
+  | _ => false
 
 /-- The `auxLemma` linter emits a warning on any explicit reference to an auto-generated
 auxiliary declaration (such as `_proof_1`, `match_1`, or `_sizeOf_1`).
