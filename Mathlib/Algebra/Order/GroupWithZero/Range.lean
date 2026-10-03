@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.GroupWithZero.Range
 public import Mathlib.Algebra.Order.GroupWithZero.WithZero
 public import Mathlib.Algebra.Order.Hom.MonoidWithZero
-public import Mathlib.Algebra.Order.Monoid.Basic
+import Mathlib.Algebra.Order.Monoid.Basic
 
 /-! # The range of a MonoidWithZeroHom
 

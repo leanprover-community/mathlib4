@@ -254,6 +254,22 @@ jobs:
           gh pr edit "${PR}" --add-label "tech debt"
         fi
 
+        # mathlib-ci classifies tech debt into `strong` (e.g. porting notes,
+        # adaptation notes, erw, maxHeartbeats modifications — should rarely
+        # increase) and `weak` (large files, exposed public sections, simp
+        # +instances, deprecated files — fine to increase in a normal PR).
+        # The `increases-technical-debt` label flags a PR that increases a
+        # STRONG metric, so that a reviewer notices. It does not block merging.
+        #
+        # We test for the *safe* patterns rather than the *unsafe* one so that
+        # if mathlib-ci changes the script's output wording we fail loudly
+        # (label added) rather than silently (label never added).
+        if printf '%s' "${techDebtVar}" | grep -qE 'Decrease in strong tech debt:|No changes to strong technical debt\.'; then
+          gh pr edit "${PR}" --remove-label increases-technical-debt
+        else
+          gh pr edit "${PR}" --add-label increases-technical-debt
+        fi
+
         echo "Compute documentation reminder"
         workflowFilesChanged="$(grep '^\.github/workflows/' changed_files.txt || true)"
         if [ -n "${workflowFilesChanged}" ]
