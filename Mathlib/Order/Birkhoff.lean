@@ -120,6 +120,19 @@ noncomputable def supIrredLowerSet : α ≃o {s : LowerSet α // SupIrred s} :=
 @[to_dual (attr := simp)]
 lemma supIrredLowerSet_apply (a : α) : supIrredLowerSet a = ⟨Iic a, supIrred_Iic _⟩ := rfl
 
+/-- Upper sets in a finite linear order `α` are order-isomorphic to `α` adjoining a top element. -/
+noncomputable def upperSetWithTopOfFinite {α} [LinearOrder α] [Finite α] :
+    UpperSet α ≃o WithTop α :=
+  WithTop.subtypeOrderIso.symm.trans <| .withTopCongr <| .trans
+    (.setCongr {⊤}ᶜ (setOf InfIrred) <| by ext; simp) <| .symm .infIrredUpperSet
+
+/-- Lower sets in a finite linear order `α` are order-isomorphic to `α` adjoining a bottom element.
+-/
+noncomputable def lowerSetWithBotOfFinite {α} [LinearOrder α] [Finite α] :
+    LowerSet α ≃o WithBot α :=
+  WithBot.subtypeOrderIso.symm.trans <| .withBotCongr <| .trans
+    (.setCongr {⊥}ᶜ (setOf SupIrred) <| by ext; simp) <| .symm .supIrredLowerSet
+
 end OrderIso
 end PartialOrder
 
