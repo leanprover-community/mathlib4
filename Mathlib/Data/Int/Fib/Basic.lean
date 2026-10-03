@@ -27,6 +27,7 @@ namespace Int
 
 This is an extension of `Nat.fib`. -/
 @[pp_nodot]
+@[oeis A000045]
 def fib (n : ℤ) : ℤ :=
   if 0 ≤ n then n.toNat.fib else
   if Even n then -(-n).toNat.fib else (-n).toNat.fib

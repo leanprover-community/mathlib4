@@ -61,6 +61,7 @@ theorem card_derangements_fin_add_two (n : ℕ) :
     mul_add, Nat.cast_id]
 
 /-- The number of derangements of an `n`-element set. -/
+@[oeis A000166]
 def numDerangements : ℕ → ℕ
   | 0 => 1
   | 1 => 0

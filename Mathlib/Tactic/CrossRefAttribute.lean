@@ -20,6 +20,7 @@ to entries in external mathematical databases:
 * `@[lmfdb ID]` — [LMFDB](https://www.lmfdb.org)
 * `@[pibase <topic> ID]` — [π-Base](https://pi-base.org/) databases (by topic)
 * `@[dlmf REF]` — [DLMF](https://dlmf.nist.gov/)
+* `@[oeis ID]` — [OEIS](https://oeis.org/)
 
 Each attribute records the cross-reference in an environment extension and appends
 a link to the declaration's docstring.
@@ -63,6 +64,7 @@ inductive Database where
   | dlmf
   | kerodon
   | lmfdb
+  | oeis
   | pibase (topic : PiBaseTopic)
   | stacks
   | wikidata
@@ -79,6 +81,7 @@ def url : Database → String → String
   | .dlmf, id => s!"https://dlmf.nist.gov/{id}"
   | .kerodon, id => s!"https://kerodon.net/tag/{id}"
   | .lmfdb, id => s!"https://www.lmfdb.org/knowledge/show/{id}"
+  | .oeis, id => s!"https://oeis.org/{id}"
   | .pibase topic, id =>
     -- The `.toString` is required: `String.take` returns a `String.Slice`, and matching a slice
     -- against a string literal compares the slice structurally, so it would never match here.
@@ -96,6 +99,7 @@ def label : Database → String
   | .dlmf => "DLMF"
   | .kerodon => "Kerodon Tag"
   | .lmfdb => "LMFDB"
+  | .oeis => "OEIS"
   | .pibase topic => s!"π-Base ({topic.label})"
   | .stacks => "Stacks Tag"
   | .wikidata => "Wikidata"
@@ -105,6 +109,7 @@ def shortName : Database → String
   | .dlmf => "dlmf"
   | .kerodon  => "kerodon"
   | .lmfdb    => "lmfdb"
+  | .oeis => "oeis"
   | .pibase topic => s!"pibase-{topic.shortName}"
   | .stacks   => "stacks"
   | .wikidata => "wikidata"
@@ -335,6 +340,41 @@ def dlmfIdNoAntiquot : Parser := {
 def dlmfIdParser : Parser :=
   withAntiquot (mkAntiquot "dlmfId" dlmfIdKind) dlmfIdNoAntiquot
 
+/-! ### OEIS parser -/
+
+/-- `oeisId` is the node kind of OEIS identifiers: the letter `A` followed by six digits. -/
+abbrev oeisIdKind : SyntaxNodeKind := `oeisId
+
+/-- `isOeisId` checks whether a string is an OEIS identifier. -/
+private def isOeisId (id : List Char) : Bool :=
+  match id with
+  | 'A' :: rest => rest.length == 6 && rest.all Char.isDigit
+  | _ => false
+
+/-- The main parser for OEIS identifiers: it accepts `A` followed by six digits. -/
+def oeisIdFn : ParserFn := fun c s =>
+  let i := s.pos
+  let s := takeWhileFn (fun c => c.isAlphanum) c s
+  if s.hasError then
+    s
+  else if s.pos == i then
+    ParserState.mkError s "oeis id"
+  else if isOeisId (c.extract i s.pos).toList then
+    mkNodeToken oeisIdKind i true c s
+  else
+    ParserState.mkUnexpectedError s
+      "OEIS ids must be the letter A followed by exactly six digits, e.g. A123456."
+
+@[inherit_doc oeisIdFn]
+def oeisIdNoAntiquot : Parser := {
+  fn   := oeisIdFn
+  info := mkAtomicInfo "oeisId"
+}
+
+@[inherit_doc oeisIdFn]
+def oeisIdParser : Parser :=
+  withAntiquot (mkAntiquot "oeisId" oeisIdKind) oeisIdNoAntiquot
+
 end Mathlib.CrossRef
 
 open Mathlib.CrossRef
@@ -364,6 +404,11 @@ def Lean.TSyntax.getDlmfId (stx : TSyntax dlmfIdKind) : CoreM String := do
   let some val := Syntax.isLit? dlmfIdKind stx | throwError "Malformed DLMF ref."
   return val
 
+/-- Extract the underlying identifier as a string from an `oeisId` node. -/
+def Lean.TSyntax.getOeisId (stx : TSyntax oeisIdKind) : CoreM String := do
+  let some val := Syntax.isLit? oeisIdKind stx | throwError "Malformed OEIS id."
+  return val
+
 namespace Lean.PrettyPrinter
 
 namespace Formatter
@@ -388,6 +433,10 @@ namespace Formatter
 @[combinator_formatter dlmfIdNoAntiquot] def dlmfIdNoAntiquot.formatter :=
   visitAtom dlmfIdKind
 
+/-- The formatter for OEIS identifier syntax. -/
+@[combinator_formatter oeisIdNoAntiquot] def oeisIdNoAntiquot.formatter :=
+  visitAtom oeisIdKind
+
 end Formatter
 
 namespace Parenthesizer
@@ -406,6 +455,9 @@ namespace Parenthesizer
 
 /-- The parenthesizer for DLMF identifier syntax. -/
 @[combinator_parenthesizer dlmfIdNoAntiquot] def dlmfIdAntiquot.parenthesizer := visitToken
+
+/-- The parenthesizer for OEIS identifier syntax. -/
+@[combinator_parenthesizer oeisIdNoAntiquot] def oeisIdAntiquot.parenthesizer := visitToken
 
 end Lean.PrettyPrinter.Parenthesizer
 
@@ -550,6 +602,28 @@ initialize Lean.registerBuiltinAttribute {
   applicationTime := .beforeElaboration
 }
 
+/-! ### OEIS attribute -/
+
+/-- The `oeis` attribute.
+Use it as `@[oeis A123456 "Optional comment"]` to associate a Mathlib declaration with
+the corresponding [OEIS](https://oeis.org/) item.
+
+The identifier must be the letter `A` followed by six digits.
+-/
+syntax (name := oeisTag) "oeis" oeisIdParser (ppSpace str)? : attr
+
+initialize Lean.registerBuiltinAttribute {
+  name := `oeisTag
+  descr := "Apply an OEIS identifier to a declaration."
+  add := fun decl stx _attrKind => do
+    let (id, comment) ← match stx with
+      | `(attr| oeis $id $[$comment]?) => pure (id, comment)
+      | _ => throwUnsupportedSyntax
+    addCrossRefDoc .oeis decl (← id.getOeisId) ((comment.map (·.getString)).getD "")
+  -- docstrings are immutable once an asynchronous elaboration task has been started
+  applicationTime := .beforeElaboration
+}
+
 end Mathlib.CrossRef
 
 /-- Returns the array of `Tag`s in the environment, sorted alphabetically by tag. -/
@@ -658,5 +732,17 @@ or declaration type (for definitions, structures, instances, etc.) after each su
 -/
 elab (name := dlmfTags) "#dlmf_tags" tk:("!")? : command =>
   traceCrossRefs .dlmf (tk.isSome)
+
+/-- The `#oeis_tags` command retrieves all declarations that have the `oeis` attribute.
+
+For each found declaration, it prints a line
+```
+'declaration_name' corresponds to tag 'declaration_tag'.
+```
+The variant `#oeis_tags!` also adds the theorem statement (for theorems)
+or declaration type (for definitions, structures, instances, etc.) after each summary line.
+-/
+elab (name := oeisTags) "#oeis_tags" tk:("!")? : command =>
+  traceCrossRefs .oeis (tk.isSome)
 
 end Mathlib.CrossRef

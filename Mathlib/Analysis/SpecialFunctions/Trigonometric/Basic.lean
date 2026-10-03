@@ -124,7 +124,7 @@ from which one can derive all its properties. For explicit bounds on π,
 see `Mathlib/Analysis/Real/Pi/Bounds.lean`.
 
 Denoted `π`, once the `Real` namespace is opened. -/
-@[wikidata Q167]
+@[wikidata Q167, oeis A000796 "decimal expansion"]
 protected noncomputable def pi : ℝ :=
   2 * Classical.choose exists_cos_eq_zero
 

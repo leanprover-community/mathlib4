@@ -43,6 +43,7 @@ namespace ArithmeticFunction
 
 /-- `λ` is the Carmichael function, also known as the reduced totient function,
 defined as the exponent of the unit group of `ZMod n`. -/
+@[oeis A002322]
 def carmichael : ArithmeticFunction ℕ where
   toFun
     | 0 => 0
